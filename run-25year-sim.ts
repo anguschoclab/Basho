@@ -23,8 +23,11 @@ async function run25YearSim() {
   console.log("World generated and rosters synchronized. Starting simulation loop...");
   console.time("simulation-duration");
 
+  const durationFlagIdx = process.argv.indexOf("--duration");
+  const durationCount = durationFlagIdx !== -1 ? parseInt(process.argv[durationFlagIdx + 1]) : 25;
+
   const result = runAutoSim(currentWorld, {
-    duration: { type: "years", count: 25 },
+    duration: { type: "years", count: durationCount },
     stopConditions: ["stableInsolvency"], // Stop if player stable goes bankrupt (shouldn't happen in headless but good safety)
     verbosity: "standard",
     delegationPolicy: "aggressive",
@@ -99,6 +102,7 @@ async function run25YearSim() {
     console.log("\nEntropy & Drift Audit:");
     console.log(`  Max World Stat:         ${metrics.entropyAudit.maxStat.toFixed(1)}`);
     console.log(`  Average Rikishi Age:    ${metrics.entropyAudit.avgAge.toFixed(1)}`);
+    console.log(`  Average Oyakata Age:    ${metrics.entropyAudit.oyakataAvgAge.toFixed(1)}`);
     console.log(`  Active Injury Rate:     ${metrics.entropyAudit.injuryRate.toFixed(1)}%`);
   }
 }

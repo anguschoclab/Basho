@@ -218,7 +218,7 @@ export function simulateEntireBasho(
     injuries: Array.from(new Set(injuries)),
     promotions,
     demotions,
-    finalWorld: {
+    world: {
       ...world,
       rikishi: nextRikishiMap,
       heyas: nextHeyaMap,

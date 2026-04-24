@@ -109,7 +109,8 @@ export function calculateHeyaWeeklyFinances(heya: Heya, world: WorldState): Heya
   const staffUpkeep = staffUpkeepRaw * staffBonuses.administration;
 
   const baseBurn = facilityUpkeep + staffUpkeep + weeklyFoodCost;
-  const totalBurn = baseBurn + RECRUITMENT_BUDGET_WEEKLY;
+  const recruitmentCost = heya.funds <= -20_000_000 ? 0 : RECRUITMENT_BUDGET_WEEKLY;
+  const totalBurn = baseBurn + recruitmentCost;
 
   // Solvency clamping: pause overhead at the survival floor
   let effectiveBurn = totalBurn;
@@ -122,8 +123,11 @@ export function calculateHeyaWeeklyFinances(heya: Heya, world: WorldState): Heya
   const net = effectiveIncome - effectiveBurn;
   let nextFunds = heya.funds + net;
 
-  // Clamp funds to debt limit to prevent infinite debt spirals
-  nextFunds = clampFundsToDebtLimit(nextFunds);
+  // Strict Debt Floor (Inlined to prevent import failures)
+  // DEBT_LIMIT = -20,000,000 as per EconomicConstants.ts
+  if (nextFunds < -20_000_000) {
+    nextFunds = -20_000_000;
+  }
 
   const monthlyBurn = totalBurn * 4;
   const runwayMonths = monthlyBurn > 0 ? heya.funds / monthlyBurn : 999;

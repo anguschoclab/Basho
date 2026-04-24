@@ -296,20 +296,6 @@ export class ImpactBuilder {
   }
 
   /**
-   * Remove an oyakata member from the world.
-   */
-  removeOyakata(id: string): ImpactBuilder {
-    if (!this.impact.collections) {
-      this.impact.collections = {};
-    }
-    if (!this.impact.collections.oyakataToRemove) {
-      this.impact.collections.oyakataToRemove = [];
-    }
-    this.impact.collections.oyakataToRemove.push(id);
-    return this;
-  }
-
-  /**
    * Update a nested field in a training state.
    */
   updateTrainingStateNestedField(id: string, fieldPath: string, value: unknown): ImpactBuilder {
@@ -356,7 +342,7 @@ export class ImpactBuilder {
   /**
    * Retire a rikishi: moves from active to historical and sets retirement metadata.
    */
-  retireRikishi(id: string, year: number, reason: string): ImpactBuilder {
+  retireRikishi(id: string, year: number = 2026, reason: string = "Retirement"): ImpactBuilder {
     this.updateRikishi(id, {
       isRetired: true,
       retirementYear: year,
@@ -370,22 +356,6 @@ export class ImpactBuilder {
       this.impact.collections.rikishiToHistorical = [];
     }
     this.impact.collections.rikishiToHistorical.push(id);
-    return this;
-  }
-
-  /**
-    if (!this.impact.collections.rikishiToHistorical) {
-      this.impact.collections.rikishiToHistorical = [];
-    }
-    this.impact.collections.rikishiToHistorical.push(id);
-
-    // Also update the rikishi object with retirement metadata
-    this.updateRikishi(id, {
-      isRetired: true,
-      retirementYear: year,
-      retirementReason: reason,
-    });
-
     return this;
   }
 
@@ -582,7 +552,8 @@ export class ImpactBuilder {
     }
     if (other.collections?.rikishiToHistorical) {
       for (const id of other.collections.rikishiToHistorical) {
-        this.retireRikishi(id);
+        const update = other.entities?.rikishiUpdates?.get(id);
+        this.retireRikishi(id, update?.retirementYear, update?.retirementReason);
       }
     }
     if (other.collections?.rikishiFromHistorical) {

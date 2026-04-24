@@ -1,7 +1,7 @@
 import type { WorldState } from "../types/world";
 import type { BashoSimResult, BanzukeUpdateHook, BashoResult } from "../types/basho";
 import { getNextBasho, getBashoNumber } from "../calendar";
-import { advanceDays } from "../tick/tickDaily";
+import { advanceDays, enterPostBasho, enterInterim } from "../tick/tickDaily";
 import { simulateEntireBasho } from "./TournamentSimulator";
 import { ChronicleService } from "./ChronicleService";
 import { SimTuningService, type TuningMetrics } from "./SimTuningService";
@@ -74,13 +74,14 @@ export function runAutoSim(
 
   let currentWorld = world;
   while (bashoSimulated < targetBasho) {
-    const bashoName = currentWorld.currentBashoName || "hatsu";
+    let bashoName = currentWorld.currentBashoName || "hatsu";
     const bashoSeed = `${currentWorld.seed}-basho-${currentWorld.year}-${bashoName}`;
 
     const bashoResult = simulateEntireBasho(currentWorld, bashoName, bashoSeed, {
       banzukeUpdateHook: opts?.banzukeUpdateHook,
     });
 
+    currentWorld = bashoResult.world;
     bashoSimulated++;
     daysSimulated += 15;
 
@@ -94,7 +95,7 @@ export function runAutoSim(
     if (config.verbosity !== "minimal") {
       ChronicleService.addHighlight(
         chronicle,
-        `${titleCase(bashoName)} ${currentWorld.year}: ${bashoResult.yushoWinner.shikona} wins (${bashoResult.yushoWinner.wins}-${bashoResult.yushoWinner.losses})`
+        `${titleCase(bashoName)} ${currentWorld.calendar.year}: ${bashoResult.yushoWinner.shikona} wins (${bashoResult.yushoWinner.wins}-${bashoResult.yushoWinner.losses})`
       );
     }
 
@@ -106,14 +107,9 @@ export function runAutoSim(
     }
     if (stoppedBy !== "completed") break;
 
-    // Advance to next basho
-    const nextBasho = getNextBasho(bashoName);
-    const isNewYear = nextBasho === "hatsu";
+    const nextBashoName = getNextBasho(bashoName);
 
-    // Boundary-aware time skip
-    currentWorld = advanceDays(currentWorld, 42); // Canon: 6 weeks inter-basho
-
-    // Map active rikishi to BanzukeEntry for the update logic
+    // 1. Process Banzuke Updates Immediately Post-Basho
     const activeRikishi = Array.from(currentWorld.rikishi.values()).filter(r => !r.isRetired);
     const currentBanzuke = activeRikishi.map(r => ({
       rikishiId: r.id,
@@ -121,7 +117,6 @@ export function runAutoSim(
       position: { rank: r.rank, rankNumber: r.rankNumber, side: r.side }
     }));
 
-    // Translate standings to BashoPerformance for the banzuke system
     const perfById = new Map<string, BashoPerformance>();
     bashoResult.standings.forEach((stats, id) => {
       perfById.set(id, {
@@ -132,7 +127,6 @@ export function runAutoSim(
       });
     });
 
-    // Banzuke Update Hook
     const banzukeResult = updateBanzuke(
       currentBanzuke,
       perfById,
@@ -141,39 +135,54 @@ export function runAutoSim(
       currentWorld.heyas
     );
 
-    // Update the world state with the new banzuke results
-    // CRITICAL: We MUST update the existing map to preserve rikishi who aren't on the banzuke (the lower ranks)
     const nextRikishiMap = new Map(currentWorld.rikishi);
     banzukeResult.newBanzuke.forEach(e => {
       const r = nextRikishiMap.get(e.rikishiId);
       if (r) {
-        nextRikishiMap.set(e.rikishiId, { ...r, ...e });
+        nextRikishiMap.set(e.rikishiId, { 
+          ...r, 
+          division: e.division,
+          position: e.position,
+          rank: e.position.rank,
+          side: e.position.side,
+          rankNumber: e.position.rankNumber || 1,
+          currentBashoWins: 0,
+          currentBashoLosses: 0
+        });
       }
     });
 
     currentWorld = {
       ...currentWorld,
       rikishi: nextRikishiMap,
-      currentBashoName: nextBasho,
+      currentBashoName: nextBashoName,
       ozekiKadoban: banzukeResult.updatedOzekiKadoban,
+      history: [
+        ...(currentWorld.history || []),
+        {
+          bashoName: bashoName as any,
+          year: currentWorld.year,
+          bashoNumber: getBashoNumber(bashoName),
+          yusho: bashoResult.yushoWinner.id,
+          junYusho: bashoResult.junYusho,
+          prizes: {
+            yushoAmount: 10_000_000,
+            junYushoAmount: 2_000_000,
+            specialPrizes: 2_000_000,
+          },
+        } as BashoResult,
+      ],
     };
 
-    if (isNewYear) currentWorld.year++;
+    // 2. Advance through off-season phases to trigger yearly boundary & training
+    currentWorld = enterPostBasho(currentWorld);
+    currentWorld = advanceDays(currentWorld, 7); 
+    
+    currentWorld = enterInterim(currentWorld);
+    currentWorld = advanceDays(currentWorld, 42); 
 
-    // History tracking
-    if (!currentWorld.history) currentWorld.history = [];
-    currentWorld.history.push({
-      year: bashoResult.year,
-      bashoNumber: getBashoNumber(bashoName),
-      bashoName,
-      yusho: bashoResult.yushoWinner.id,
-      junYusho: bashoResult.junYusho,
-      prizes: {
-        yushoAmount: 10_000_000,
-        junYushoAmount: 2_000_000,
-        specialPrizes: 2_000_000,
-      },
-    } as BashoResult);
+    // Preparation for next basho
+    bashoName = nextBashoName;
 
     if (
       config.duration.type === "untilEvent" &&
@@ -185,11 +194,14 @@ export function runAutoSim(
   }
 
   // Final Metrics Calculation
-  const yokozunaCount = Array.from(currentWorld.rikishi.values()).filter(r => r.rank === "yokozuna" && !r.isRetired).length;
-  const uniqueWinners = new Set(currentWorld.history?.map(h => h.yusho)).size;
+  const activeRikishi = Array.from(currentWorld.rikishi.values()).filter(r => !r.isRetired);
+  const successions = (currentWorld.governanceLog || []).filter(l => l.incident === "oyakata_promotion" || l.data?.status === "oyakata_promotion").length;
+  const yokozunaVacancy = activeRikishi.filter(r => r.rank === "yokozuna").length === 0 ? 1 : 0;
+
   const tuningMetrics = SimTuningService.calculateMetrics(currentWorld, {
-    yokozunaVacancy: yokozunaCount === 0 ? 1 : 0,
-    uniqueWinners
+    yokozunaVacancy,
+    uniqueWinners: championCounts.size,
+    successions
   });
 
   return {

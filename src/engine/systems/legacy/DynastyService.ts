@@ -29,11 +29,14 @@ export const DynastyService = {
   tickSuccessionCheck(world: WorldState): StateImpact {
     const builder = createImpactBuilder("tickSuccessionCheck");
 
-    for (const heya of world.heyas.values()) {
-      const oyakata = world.oyakata?.get(heya.oyakataId);
+    for (const [heyaId, heya] of world.heyas) {
+      const oyakata = world.oyakata?.get(heya.oyakataId || "");
       if (!oyakata) continue;
 
       const age = oyakata.age;
+      // console.log(`[SuccessionCheck] ${heya.name} Oyakata ${oyakata.name} age: ${age}`);
+      
+      // 1. Soft Readiness (60-65)
       // Readiness reaches 100 at age 65 (JSA Rules)
       const readinessValue = Math.max(0, Math.min(100, (age - 55) * 10));
       const readiness: "stable" | "transitioning" | "mandatory" =
@@ -56,34 +59,14 @@ export const DynastyService = {
 
       // Forced succession at 65
       if (age >= 65 && !oyakata.retirementYear) {
-        let successorId = oyakata.successorCandidateId;
-
-        // Phase 5 Depth: NPC Auto-Succession
-        if (!successorId && !heya.isPlayerOwned) {
-          const candidates = this.findEligibleSuccessors(world, heya.id);
-          if (candidates.length > 0) {
-            successorId = candidates[0].id; // Pick the top eligible candidate
-          }
-        }
-
-        if (successorId) {
+        const eligible = this.findEligibleSuccessors(world, heya.id);
+        if (eligible.length > 0) {
+          const successorId = eligible[0]; // Pick the top eligible candidate
           builder.merge(this.triggerSuccession(world, heya.id, successorId));
         } else {
-          // Identify potential alumni/roster successors for player warning
-          const candidates = this.findEligibleSuccessors(world, heya.id);
-          if (candidates.length > 0 && heya.isPlayerOwned) {
-            builder.logEvent(
-              "GOVERNANCE_RULING",
-              "discipline",
-              {
-                incident: "succession_overdue",
-                status: "critical",
-                reason: `${oyakata.name} has reached 60. A successor must be chosen from alumni or current roster.`,
-                candidateCount: candidates.length,
-              },
-              { heyaId: heya.id, importance: "headline" }
-            );
-          }
+          // Fallback: Generate a generic oyakata if no rikishi is eligible
+          const dummyId = `oyakata_trustee_${heya.id}_${world.year}`;
+          builder.merge(this.triggerSuccessionWithGeneric(world, heya.id, dummyId));
         }
       }
     }
@@ -100,20 +83,25 @@ export const DynastyService = {
   findEligibleSuccessors(world: WorldState, heyaId: string): string[] {
     const eligible: string[] = [];
 
+    // 1. Current roster & alumni
     for (const rikishi of world.rikishi.values()) {
-      // 1. Current roster sekitori (Makuuchi + Juryo)
       const isSekitori = rikishi.division === "makuuchi" || rikishi.division === "juryo";
       if (rikishi.heyaId === heyaId && isSekitori) {
         eligible.push(rikishi.id);
         continue;
       }
-
-      // 2. Alumni tracking (Phase 5)
+      
       const wasAlumnus = rikishi.heyaHistory?.some((h) => h.heyaId === heyaId);
-      if (wasAlumnus && isSekitori) {
-        // Must be a Sekitori to be eligible for Master status
-        if (rikishi.makuuchiWins > 0 || rikishi.rank === "yokozuna") {
-          eligible.push(rikishi.id);
+      if (wasAlumnus && isSekitori && (rikishi.makuuchiWins > 0 || rikishi.rank === "yokozuna")) {
+        eligible.push(rikishi.id);
+      }
+    }
+
+    // 2. Fallback: Check historical rikishi (retired legends)
+    if (eligible.length === 0 && world.historicalRikishi) {
+      for (const [id, r] of world.historicalRikishi) {
+        if (r.highestRank === "yokozuna" || r.highestRank === "ozeki") {
+          eligible.push(id);
         }
       }
     }
@@ -184,6 +172,7 @@ export const DynastyService = {
       },
       successionReadiness: 0,
       avatarConfig: successorRikishi.avatarConfig,
+      formerRikishiId: successorRikishiId,
     };
 
     builder.addOyakata(newOyakata as any);
@@ -199,13 +188,54 @@ export const DynastyService = {
 
     builder.logEvent(
       "LIFECYCLE_EVENT",
-      "career",
+      "narrative",
       {
         rikishiId: successorRikishiId,
         shikona: successorRikishi.shikona,
         status: "oyakata_promotion",
         reason: `${currentOyakata.name} has reached the JSA retirement age of 65. ${successorRikishi.shikona} takes command.`,
         incident: `A new era begins at ${heya.name}.`,
+      },
+      { heyaId, importance: "headline" }
+    );
+
+    return builder.build();
+  },
+
+  /**
+   * Fallback for when no eligible rikishi exists. JSA appoints a trustee.
+   */
+  triggerSuccessionWithGeneric(world: WorldState, heyaId: string, dummyId: string): StateImpact {
+    const builder = createImpactBuilder("triggerSuccessionWithGeneric");
+    const heya = world.heyas.get(heyaId);
+    const currentOyakata = world.oyakata?.get(heya?.oyakataId ?? "");
+
+    if (!heya || !currentOyakata) return builder.build();
+
+    const name = `JSA Trustee (${currentOyakata.shikona} lineage)`;
+
+    const newOyakata: any = {
+      id: dummyId,
+      heyaId,
+      name,
+      shikona: "Trustee",
+      age: 45,
+      yearsInCharge: 0,
+      archetype: "traditionalist",
+      traits: { ambition: 30, patience: 50, risk: 20, tradition: 80, compassion: 50 },
+      successionReadiness: 0,
+    };
+
+    builder.addOyakata(newOyakata);
+    builder.updateHeya(heyaId, { oyakataId: dummyId });
+    builder.removeOyakata(currentOyakata.id);
+
+    builder.logEvent(
+      "LIFECYCLE_EVENT",
+      "narrative",
+      {
+        status: "oyakata_promotion",
+        reason: `${currentOyakata.name} has retired. JSA has appointed a trustee for ${heya.name}.`,
       },
       { heyaId, importance: "headline" }
     );
@@ -252,6 +282,9 @@ export const DynastyService = {
   generateDynastyReport(world: WorldState, heyaId: string) {
     const heya = world.heyas.get(heyaId);
     if (!heya?.dynasty) return null;
+
+    // Bankrupt stables get a "Scholarship Quota" of at least 1 (A6.2)
+    if (heya.funds < 0) return 1;
 
     return {
       eras: heya.dynasty,

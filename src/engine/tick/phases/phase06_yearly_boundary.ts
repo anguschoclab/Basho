@@ -149,14 +149,20 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
     }
   }
 
-  // 6. Oyakata Avatar Aging
+  // 6. Oyakata Avatar Aging & Tenure
   if (world.oyakata) {
+    const nextOyakata = new Map(world.oyakata);
     for (const [id, o] of world.oyakata) {
+      const updated = { ...o };
+      updated.age += 1;
+      updated.yearsInCharge = (updated.yearsInCharge || 0) + 1;
+      
       if (o.avatarConfig) {
-        const updated = updateAvatarForAging(o.avatarConfig, o.age);
-        builder.updateOyakata(id, { avatarConfig: updated });
+        updated.avatarConfig = updateAvatarForAging(o.avatarConfig, updated.age);
       }
+      nextOyakata.set(id, updated);
     }
+    builder.updateWorldField("oyakata", nextOyakata);
   }
 
   // Phase 5 Depth: Training Philosophy Drift
@@ -191,6 +197,11 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
       participantCount: world.globalCup.participants.length,
     });
   }
+
+  // 9. Sync & Increment Authoritative Year (E4/C5)
+  const nextYear = (world.calendar?.year || world.year) + 1;
+  builder.updateWorldField("year", nextYear);
+  builder.updateWorldField("calendar", { ...world.calendar, year: nextYear });
 
   return builder.build();
 }

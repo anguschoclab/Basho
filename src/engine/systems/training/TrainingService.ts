@@ -272,7 +272,7 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
 
     // 4. Final Enforcements (Clamping & Stat Floors)
     (Object.keys(STAT_GROUP) as Array<keyof typeof STAT_GROUP>).forEach((key) => {
-      const ceiling = getEffectiveCeiling(updates, key, world.calendar.year);
+      const ceiling = getEffectiveCeiling({ ...rikishi, ...updates } as Rikishi, key, world);
       let val = updates[key as keyof Rikishi] as number;
 
       // Enforce Ceiling

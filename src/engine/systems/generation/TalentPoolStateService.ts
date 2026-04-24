@@ -30,7 +30,7 @@ export function ensureTalentPoolState(world: WorldState): TalentPoolWorldState {
           poolType: "high_school",
           refreshCadence: "yearly",
           populationCap: 50,
-          hiddenReserveCap: 20,
+          hiddenReserveCap: 40,
           candidatesVisible: [],
           candidatesHidden: [],
           lastRefreshWeek: world.week ?? 0,
@@ -42,7 +42,7 @@ export function ensureTalentPoolState(world: WorldState): TalentPoolWorldState {
           poolType: "university",
           refreshCadence: "yearly",
           populationCap: 40,
-          hiddenReserveCap: 15,
+          hiddenReserveCap: 30,
           candidatesVisible: [],
           candidatesHidden: [],
           lastRefreshWeek: world.week ?? 0,
@@ -54,7 +54,7 @@ export function ensureTalentPoolState(world: WorldState): TalentPoolWorldState {
           poolType: "foreign",
           refreshCadence: "yearly",
           populationCap: 30,
-          hiddenReserveCap: 10,
+          hiddenReserveCap: 20,
           candidatesVisible: [],
           candidatesHidden: [],
           lastRefreshWeek: world.week ?? 0,
@@ -290,7 +290,7 @@ export function tickYear(world: WorldState): StateImpact {
     }
 
     // 2. Inject fresh prospects for the new year
-    const targetFill = Math.floor(pool.hiddenReserveCap * 0.6);
+    const targetFill = Math.floor(pool.hiddenReserveCap * 0.9);
     const currentTotal = pool.candidatesVisible.length + pool.candidatesHidden.length;
     const toGenerate = Math.max(0, targetFill - currentTotal);
 

@@ -73,20 +73,19 @@ import { offSeasonPipeline } from "./pipelines/offSeasonPipeline";
  * Now fully migrated to the Strict Pipeline Architecture.
  */
 export function advanceOneDay(world: WorldState): WorldState {
-  // 1. Logic to determine if we run the full weekly sub-pipeline
-  // Note: we check boundaries BEFORE running preflight to know if today is a tick day,
-  // OR we look at the state as it was left by the previous day.
-  const daysSinceTick = (world._daysSinceLastWeeklyTick ?? world.dayIndexGlobal % 7) + 1;
+  // 1. Run Preflight to advance calendar and determine boundaries
+  let nextWorld = runPipeline(world, [phases.phase00_preflight]);
+  
+  const boundaries = nextWorld.transientContext?.boundaries || {
+    monthBoundary: false,
+    yearBoundary: false,
+  };
 
-  const aboutToStartBasho =
-    (world.cyclePhase === "pre_basho" || world.cyclePhase === "banzuke_reveal") &&
-    (world._interimDaysRemaining || 0) <= 1; // 1 because preflight will decr it
-
-  const isWeeklyTick = daysSinceTick >= 7 || aboutToStartBasho;
+  const daysSinceTick = (nextWorld._daysSinceLastWeeklyTick ?? nextWorld.dayIndexGlobal % 7);
+  const isWeeklyTick = daysSinceTick === 0; // Preflight just incremented it, so 0 means we hit 7
 
   // 2. Determine which phases to run
   const activePhases: import("./pipelineRunner").PipelinePhase[] = [
-    phases.phase00_preflight,
     phases.phase01_daily_economy,
     phases.phase01_daily_welfare,
     phases.phase01_daily_sponsors,
@@ -95,20 +94,21 @@ export function advanceOneDay(world: WorldState): WorldState {
   ];
 
   if (isWeeklyTick) {
-    if (world.cyclePhase === "active_basho") {
+    if (nextWorld.cyclePhase === "active_basho") {
       activePhases.push(...bashoPipeline);
     } else {
       activePhases.push(...offSeasonPipeline);
+      if (boundaries.yearBoundary) {
+        activePhases.push(phases.phase06_yearly_boundary);
+      }
     }
   }
 
-  // 3. Boundary Gates (Standardized as phases)
-  // These will internally check world.transientContext.boundaries
-  activePhases.push(phase05_monthly_boundary);
-  activePhases.push(phase06_yearly_boundary);
+  if (boundaries.monthBoundary) {
+    activePhases.push(phases.phase05_monthly_boundary);
+  }
 
-  // 4. Execution
-  let nextWorld = runPipeline(world, activePhases);
+  nextWorld = runPipeline(nextWorld, activePhases);
 
   // 5. Update Weekly Tick Counter purely
   nextWorld = {

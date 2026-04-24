@@ -3,6 +3,7 @@ import type { StateImpact } from "../../core/StateImpact";
 import type { WorldState } from "../../types/world";
 import { ensureTalentPoolState, refreshAllPools } from "./TalentPoolStateService";
 import { resolveCandidateSuitor } from "./TalentPoolOffers";
+import { RNGRegistry } from "../../core/RNGRegistry";
 
 /**
  * Weekly maintenance for the talent pool.
@@ -50,14 +51,33 @@ export function tickWeekTalentPool(world: WorldState): StateImpact {
     }
   }
 
-  // 3. Update world state via impact
+  // 3. Passive Discovery: move 1-2 candidates from hidden to visible pools every week
+  const nextPools = { ...tp.pools };
+  const rng = RNGRegistry.getSystemRNG(world, "scouting", `discovery_${world.week}`);
+  
+  for (const pt of ["high_school", "university", "foreign"] as const) {
+    const pool = { ...nextPools[pt] };
+    if (pool.candidatesHidden.length > 0) {
+      const count = rng.int(1, 2);
+      for (let i = 0; i < count; i++) {
+        const cId = pool.candidatesHidden.shift();
+        if (cId) {
+          pool.candidatesVisible.push(cId);
+        }
+      }
+    }
+    nextPools[pt] = pool;
+  }
+
+  // 4. Update world state via impact
   builder.updateWorldField("talentPool", {
     ...tp,
     candidates: nextCandidates,
+    pools: nextPools,
     playerScouting: nextScouting,
   });
 
-  // 4. Periodic pool refresh logic (basho cadence)
+  // 5. Periodic pool refresh logic (basho cadence)
   if (world.calendar && world.calendar.month % 2 !== 0 && world.calendar.currentDay === 1) {
     builder.merge(refreshAllPools(world));
   }
