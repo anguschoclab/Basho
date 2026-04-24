@@ -231,8 +231,21 @@ export function spawnGlobalWorker(ctx: GlobalWorkerContext): GlobalWorkerResult 
     return { reasoning };
   }
 
-  // Pick the highest prestige invitation
-  const invitation = invitations.sort((a, b) => b.prestige - a.prestige)[0];
+  // Pick the best invitation based on prestige AND style alignment (Style Drift)
+  const sortedInvitations = invitations.sort((a, b) => {
+    let scoreA = a.prestige;
+    let scoreB = b.prestige;
+
+    // Style Drift awareness: prefer regions that match our styleBias
+    if (ctx.styleBias && ctx.styleBias !== "neutral") {
+      if (a.dominantStyle === ctx.styleBias) scoreA += 20;
+      if (b.dominantStyle === ctx.styleBias) scoreB += 20;
+    }
+
+    return scoreB - scoreA;
+  });
+
+  const invitation = sortedInvitations[0];
 
   // Evaluate if we have a suitable rikishi
   const candidates = ctx.perception.rikishiPerceptions
@@ -257,7 +270,7 @@ export function spawnGlobalWorker(ctx: GlobalWorkerContext): GlobalWorkerResult 
   }
 
   if (rankMet && (ctx.ambition > 40 || invitation.prestige > 50)) {
-    reasoning.push(`[Global Worker] Accepting ${invitation.region} exhibition for ${bestRikishi.shikona} (Prestige: ${invitation.prestige})`);
+    reasoning.push(`[Global Worker] Accepting ${invitation.region} exhibition for ${bestRikishi.shikona} (Style Match: ${invitation.dominantStyle === ctx.styleBias})`);
     return {
       acceptedExhibitionId: invitation.id,
       rikishiId: bestRikishi.id,
@@ -273,11 +286,13 @@ export function spawnGlobalWorker(ctx: GlobalWorkerContext): GlobalWorkerResult 
  * Helper: Isolated perception view
  */
 export function rpPerception(p: PerceptionSnapshot) {
-  return {
+  // Deep clone or filter to ensure absolute isolation from WorldState
+  return JSON.parse(JSON.stringify({
     rikishiPerceptions: p.rikishiPerceptions,
     welfareRiskBand: p.welfareRiskBand,
     rosterSize: p.rosterSize,
     moraleBand: p.moraleBand,
     rosterStrengthBand: p.rosterStrengthBand,
-  };
+    runwayBand: p.runwayBand,
+  }));
 }

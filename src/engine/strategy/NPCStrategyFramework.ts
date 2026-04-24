@@ -10,6 +10,9 @@ import type { Heya } from "../types/heya";
 import type { Oyakata } from "../types/oyakata";
 import { EventBus } from "../events";
 
+import type { StateImpact } from "../core/StateImpact";
+import { createImpactBuilder } from "../core/ImpactBuilder";
+
 /** Base context for all strategy evaluations */
 export interface StrategyContext {
   world: WorldState;
@@ -23,8 +26,8 @@ export type TraitCheck = (oyakata: Oyakata) => boolean;
 /** Threshold calculator based on traits and state */
 export type ThresholdCalculator = (ctx: StrategyContext) => number;
 
-/** Decision action that may mutate world state */
-export type StrategyAction = (ctx: StrategyContext) => boolean;
+/** Decision action that returns a state impact */
+export type StrategyAction = (ctx: StrategyContext) => StateImpact;
 
 /** Event to emit on successful action */
 export interface StrategyEvent {
@@ -39,8 +42,8 @@ export interface StrategyRule {
   id: string;
   /** Check if this rule should be evaluated */
   condition: (ctx: StrategyContext) => boolean;
-  /** Attempt the strategy action, return true if executed */
-  action: (ctx: StrategyContext) => boolean;
+  /** Attempt the strategy action, return StateImpact */
+  action: (ctx: StrategyContext) => StateImpact;
   /** Generate event details on success */
   buildEvent: (ctx: StrategyContext) => StrategyEvent;
   /** Event importance */
@@ -49,51 +52,64 @@ export interface StrategyRule {
 
 /**
  * Evaluate a single strategy rule.
- * @returns true if rule was executed
+ * @returns StateImpact if rule was executed, empty impact otherwise
  */
-export function evaluateRule(ctx: StrategyContext, rule: StrategyRule): boolean {
-  if (!rule.condition(ctx)) return false;
+export function evaluateRule(ctx: StrategyContext, rule: StrategyRule): StateImpact {
+  if (!rule.condition(ctx)) return createImpactBuilder(rule.id).build();
 
-  const executed = rule.action(ctx);
-  if (executed) {
+  const impact = rule.action(ctx);
+  // Check if impact actually did something (rough check via events or updates)
+  const hasChanges = (impact.entities && Object.keys(impact.entities).length > 0) || 
+                     (impact.worldFields && Object.keys(impact.worldFields).length > 0) ||
+                     (impact.arrayAppends && impact.arrayAppends.length > 0);
+
+  if (hasChanges) {
     const event = rule.buildEvent(ctx);
-    EventBus.managementDecision(
-      ctx.world,
-      ctx.heya.id,
+    const builder = createImpactBuilder(rule.id);
+    builder.merge(impact);
+    builder.logEvent(
+      "NPC_MANAGER_DECISION",
+      "narrative",
       {
         archetype: ctx.oyakata.archetype,
         ...event,
       },
-      rule.importance ?? "minor"
+      {
+        heyaId: ctx.heya.id,
+        importance: rule.importance ?? "minor"
+      }
     );
+    return builder.build();
   }
-  return executed;
+  return impact;
 }
 
 /**
  * Evaluate multiple rules in priority order.
  * Stops after first executed rule (mutually exclusive strategies).
  */
-export function evaluateRulesExclusive(ctx: StrategyContext, rules: StrategyRule[]): boolean {
+export function evaluateRulesExclusive(ctx: StrategyContext, rules: StrategyRule[]): StateImpact {
   for (const rule of rules) {
-    if (evaluateRule(ctx, rule)) {
-      return true; // Stop after first match
+    const impact = evaluateRule(ctx, rule);
+    const hasChanges = (impact.entities && Object.keys(impact.entities).length > 0) || 
+                       (impact.worldFields && Object.keys(impact.worldFields).length > 0) ||
+                       (impact.arrayAppends && impact.arrayAppends.length > 0);
+    if (hasChanges) {
+      return impact; // Stop after first match
     }
   }
-  return false;
+  return createImpactBuilder("exclusive_fallback").build();
 }
 
 /**
  * Evaluate all rules regardless of execution (cumulative strategies).
  */
-export function evaluateRulesCumulative(ctx: StrategyContext, rules: StrategyRule[]): number {
-  let executedCount = 0;
+export function evaluateRulesCumulative(ctx: StrategyContext, rules: StrategyRule[]): StateImpact {
+  const finalBuilder = createImpactBuilder("cumulative_rules");
   for (const rule of rules) {
-    if (evaluateRule(ctx, rule)) {
-      executedCount++;
-    }
+    finalBuilder.merge(evaluateRule(ctx, rule));
   }
-  return executedCount;
+  return finalBuilder.build();
 }
 
 // ============================================================================
@@ -130,6 +146,16 @@ export const TraitChecks = {
     (threshold = 70): TraitCheck =>
     (o) =>
       (o.traits.patience ?? 0) > threshold,
+
+  isVindictive:
+    (): TraitCheck =>
+    (o) =>
+      o.temperament === "Vindictive" || (o.traits.ambition > 80 && o.traits.risk > 70),
+
+  isGreedy:
+    (): TraitCheck =>
+    (o) =>
+      o.traits.risk < 20 || o.quirks?.includes("Numbers Guy"),
 
   hasMood:
     (mood: Oyakata["mood"]): TraitCheck =>

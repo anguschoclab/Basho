@@ -4,6 +4,7 @@ import { getNextBasho, getBashoNumber } from "../calendar";
 import { advanceDays } from "../tick/tickDaily";
 import { simulateEntireBasho } from "./TournamentSimulator";
 import { ChronicleService } from "./ChronicleService";
+import { SimTuningService, type TuningMetrics } from "./SimTuningService";
 import type { ChronicleReport } from "../types/records";
 import { RANK_HIERARCHY } from "../banzuke";
 import { assertNever } from "../utils/types";
@@ -47,6 +48,7 @@ export interface AutoSimResult {
   stoppedBy: StopCondition | "completed";
   chronicle: ChronicleReport;
   finalWorld: WorldState;
+  tuningMetrics: TuningMetrics;
 }
 
 /**
@@ -69,11 +71,12 @@ export function runAutoSim(
 
   const targetBasho = computeTargetBasho(config.duration);
 
+  let currentWorld = world;
   while (bashoSimulated < targetBasho) {
-    const bashoName = world.currentBashoName || "hatsu";
-    const bashoSeed = `${world.seed}-basho-${world.year}-${bashoName}`;
+    const bashoName = currentWorld.currentBashoName || "hatsu";
+    const bashoSeed = `${currentWorld.seed}-basho-${currentWorld.year}-${bashoName}`;
 
-    const bashoResult = simulateEntireBasho(world, bashoName, bashoSeed, {
+    const bashoResult = simulateEntireBasho(currentWorld, bashoName, bashoSeed, {
       banzukeUpdateHook: opts?.banzukeUpdateHook,
     });
 
@@ -90,12 +93,12 @@ export function runAutoSim(
     if (config.verbosity !== "minimal") {
       ChronicleService.addHighlight(
         chronicle,
-        `${titleCase(bashoName)} ${world.year}: ${bashoResult.yushoWinner.shikona} wins (${bashoResult.yushoWinner.wins}-${bashoResult.yushoWinner.losses})`
+        `${titleCase(bashoName)} ${currentWorld.year}: ${bashoResult.yushoWinner.shikona} wins (${bashoResult.yushoWinner.wins}-${bashoResult.yushoWinner.losses})`
       );
     }
 
     for (const condition of config.stopConditions) {
-      if (checkStopCondition(condition, bashoResult, world, config)) {
+      if (checkStopCondition(condition, bashoResult, currentWorld, config)) {
         stoppedBy = condition;
         break;
       }
@@ -107,14 +110,14 @@ export function runAutoSim(
     const isNewYear = nextBasho === "hatsu";
 
     // Boundary-aware time skip
-    advanceDays(world, 42); // Canon: 6 weeks inter-basho
+    currentWorld = advanceDays(currentWorld, 42); // Canon: 6 weeks inter-basho
 
-    world.currentBashoName = nextBasho;
-    if (isNewYear) world.year++;
+    currentWorld.currentBashoName = nextBasho;
+    if (isNewYear) currentWorld.year++;
 
     // History tracking
-    if (!world.history) world.history = [];
-    world.history.push({
+    if (!currentWorld.history) currentWorld.history = [];
+    currentWorld.history.push({
       year: bashoResult.year,
       bashoNumber: getBashoNumber(bashoName),
       bashoName,
@@ -129,21 +132,24 @@ export function runAutoSim(
 
     if (
       config.duration.type === "untilEvent" &&
-      checkStopCondition(config.duration.eventType, bashoResult, world, config)
+      checkStopCondition(config.duration.eventType, bashoResult, currentWorld, config)
     ) {
       stoppedBy = config.duration.eventType;
       break;
     }
   }
 
+  const tuningMetrics = SimTuningService.calculateMetrics(currentWorld);
+
   return {
     startYear,
-    endYear: world.year,
+    endYear: currentWorld.year,
     bashoSimulated,
     daysSimulated,
     stoppedBy,
-    chronicle: ChronicleService.finalizeReport(world, chronicle, championCounts, startYear),
-    finalWorld: world,
+    chronicle: ChronicleService.finalizeReport(currentWorld, chronicle, championCounts, startYear),
+    finalWorld: currentWorld,
+    tuningMetrics,
   };
 }
 

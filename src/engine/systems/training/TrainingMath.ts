@@ -27,7 +27,7 @@ import {
   STAT_CEILING_KEYS,
   type TrainingAttribute,
 } from "./TrainingConstants";
-import { ATTRIBUTE_PEAK, STAT_GROUP } from "../../constants/DevelopmentCurves";
+import { ATTRIBUTE_PEAK, STAT_GROUP, maturityFactor } from "../../constants/DevelopmentCurves";
 
 /**
  * Derives the stat ceiling for a given attribute from talentSeed.
@@ -162,12 +162,30 @@ export function calculateGrowthVector(
 
   // Use PA (potential) as ceiling when present; fall back to talentSeed for legacy/unrolled rikishi.
   const potential = rikishi.potential;
+  const age = world?.year && rikishi.birthYear ? world.year - rikishi.birthYear : 25;
+
   const resolveCeiling = (stat: keyof RikishiStats): number => {
+    let baseCeiling = 0;
     if (potential?.stats && stat in potential.stats) {
       const pa = potential.stats[stat] ?? 0;
-      return Math.round(pa * potential.ceilingFraction);
+      baseCeiling = pa * (potential.ceilingFraction ?? 1.0);
+    } else {
+      baseCeiling = getStatCeiling(talentSeed, stat);
     }
-    return getStatCeiling(talentSeed, stat);
+
+    // Apply age-based maturity decline to the ceiling itself
+    const group = STAT_GROUP[stat as keyof typeof STAT_GROUP];
+    if (group) {
+      const mFactor = maturityFactor({
+        age,
+        group,
+        developmentSpeed: potential?.developmentSpeed ?? 1.0,
+        peakAgeOffset: potential?.peakAgeOffset ?? 0,
+      });
+      return Math.round(baseCeiling * mFactor);
+    }
+
+    return Math.round(baseCeiling);
   };
 
   const applyCapped = (stat: keyof RikishiStats, rawMult: number, currentVal: number) => {
