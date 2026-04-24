@@ -79,8 +79,7 @@ export const WorldCircuitService = {
     );
 
     // Store pending invitations in world state
-    const existing = world.pendingExhibitions || [];
-    builder.updateWorldField("pendingExhibitions", [...existing, ...invitations]);
+    builder.appendToWorldArray("pendingExhibitions", invitations);
 
     return builder.build();
   },
