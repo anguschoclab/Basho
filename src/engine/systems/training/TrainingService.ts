@@ -19,7 +19,12 @@ import { EntityCollection } from "../../core/EntityCollection";
 import { EntityService } from "../../core/EntityService";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
-import { calculateFatigueDelta, calculateGrowthVector, calculateAgeDecay } from "./TrainingMath";
+import {
+  calculateFatigueDelta,
+  calculateGrowthVector,
+  calculateAgeDecay,
+  getEffectiveCeiling,
+} from "./TrainingMath";
 import { getHeyaStaffBonuses } from "../../staff";
 import { DRILL_EFFECTS } from "./TrainingConstants";
 import { InfrastructureService } from "../economy/InfrastructureService";
@@ -202,32 +207,33 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
       const decay = calculateAgeDecay(rikishi, world.year);
 
       // Apply Growth (net of age decay)
+      // We cap at getEffectiveCeiling to ensure age-based decline is enforceable
       updates.power = Math.min(
-        100,
+        getEffectiveCeiling(rikishi, "strength", world),
         Math.max(10, (rikishi.power || 50) + finalGrowth.strength + decay.strength)
       );
       updates.speed = Math.min(
-        100,
+        getEffectiveCeiling(rikishi, "speed", world),
         Math.max(10, (rikishi.speed || 50) + finalGrowth.speed + decay.speed)
       );
       updates.technique = Math.min(
-        100,
+        getEffectiveCeiling(rikishi, "technique", world),
         Math.max(10, (rikishi.technique || 50) + finalGrowth.technique + decay.technique)
       );
       updates.balance = Math.min(
-        100,
+        getEffectiveCeiling(rikishi, "balance", world),
         Math.max(10, (rikishi.balance || 50) + finalGrowth.balance + decay.balance)
       );
       updates.stamina = Math.min(
-        100,
+        getEffectiveCeiling(rikishi, "stamina", world),
         Math.max(10, (rikishi.stamina || 50) + finalGrowth.stamina + decay.stamina)
       );
       updates.adaptability = Math.min(
-        100,
+        getEffectiveCeiling(rikishi, "adaptability", world),
         Math.max(10, (rikishi.adaptability || 50) + finalGrowth.adaptability + decay.adaptability)
       );
       updates.experience = Math.min(
-        100,
+        getEffectiveCeiling(rikishi, "mental", world),
         Math.max(10, (rikishi.experience || 0) + finalGrowth.mental * 0.5 + decay.mental)
       );
 

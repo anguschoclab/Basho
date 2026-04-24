@@ -41,6 +41,40 @@ export function getStatCeiling(talentSeed: number, statKey: keyof RikishiStats):
 }
 
 /**
+ * Returns the effective stat ceiling, factoring in talentSeed, PA, and age-based maturity.
+ */
+export function getEffectiveCeiling(
+  rikishi: Rikishi,
+  stat: keyof RikishiStats,
+  world?: WorldState
+): number {
+  const talentSeed = rikishi.talentSeed ?? 50;
+  const potential = rikishi.potential;
+  const age = world?.year && rikishi.birthYear ? world.year - rikishi.birthYear : 25;
+
+  let baseCeiling = 0;
+  if (potential?.stats && stat in potential.stats) {
+    const pa = potential.stats[stat] ?? 0;
+    baseCeiling = pa * (potential.ceilingFraction ?? 1.0);
+  } else {
+    baseCeiling = getStatCeiling(talentSeed, stat);
+  }
+
+  const group = STAT_GROUP[stat as keyof typeof STAT_GROUP];
+  if (group) {
+    const mFactor = maturityFactor({
+      age,
+      group,
+      developmentSpeed: potential?.developmentSpeed ?? 1.0,
+      peakAgeOffset: potential?.peakAgeOffset ?? 0,
+    });
+    return Math.round(baseCeiling * mFactor);
+  }
+
+  return Math.round(baseCeiling);
+}
+
+/**
  * cubic diminishing returns for smooth capping.
  */
 export function diminishingReturnsMult(currentStat: number, ceiling: number): number {
@@ -161,31 +195,8 @@ export function calculateGrowthVector(
   };
 
   // Use PA (potential) as ceiling when present; fall back to talentSeed for legacy/unrolled rikishi.
-  const potential = rikishi.potential;
-  const age = world?.year && rikishi.birthYear ? world.year - rikishi.birthYear : 25;
-
   const resolveCeiling = (stat: keyof RikishiStats): number => {
-    let baseCeiling = 0;
-    if (potential?.stats && stat in potential.stats) {
-      const pa = potential.stats[stat] ?? 0;
-      baseCeiling = pa * (potential.ceilingFraction ?? 1.0);
-    } else {
-      baseCeiling = getStatCeiling(talentSeed, stat);
-    }
-
-    // Apply age-based maturity decline to the ceiling itself
-    const group = STAT_GROUP[stat as keyof typeof STAT_GROUP];
-    if (group) {
-      const mFactor = maturityFactor({
-        age,
-        group,
-        developmentSpeed: potential?.developmentSpeed ?? 1.0,
-        peakAgeOffset: potential?.peakAgeOffset ?? 0,
-      });
-      return Math.round(baseCeiling * mFactor);
-    }
-
-    return Math.round(baseCeiling);
+    return getEffectiveCeiling(rikishi, stat, world);
   };
 
   const applyCapped = (stat: keyof RikishiStats, rawMult: number, currentVal: number) => {
