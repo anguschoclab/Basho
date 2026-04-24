@@ -245,6 +245,11 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
             history: [...append.items, ...(result.myosekiMarket.history || [])],
           },
         };
+      } else if (append.field === "pendingExhibitions") {
+        result = {
+          ...result,
+          pendingExhibitions: [...(result.pendingExhibitions || []), ...append.items],
+        };
       }
     }
   }
@@ -413,6 +418,8 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
           } else if (existing.field === "awardLog" && append.field === "awardLog") {
             existing.items.push(...append.items);
           } else if (existing.field === "myosekiMarket.history" && append.field === "myosekiMarket.history") {
+            existing.items.push(...append.items);
+          } else if (existing.field === "pendingExhibitions" && append.field === "pendingExhibitions") {
             existing.items.push(...append.items);
           }
         } else {
