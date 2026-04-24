@@ -46,7 +46,6 @@ export function BoutControls({
         onClick={onRestart}
         aria-label="Restart replay"
         tooltip="Restart replay"
-        tooltipSide="top"
       >
         <RotateCcw className="h-4 w-4" />
       </Button>
