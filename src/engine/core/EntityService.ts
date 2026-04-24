@@ -47,7 +47,7 @@ export const EntityService = {
     factory: () => T
   ): T {
     if (!world[rootKey]) {
-      (world as any)[rootKey] = {};
+      (world as Record<keyof WorldState, unknown>)[rootKey] = {};
     }
     const root = world[rootKey] as Record<string, T>;
     if (!root[id]) {

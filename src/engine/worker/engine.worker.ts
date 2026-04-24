@@ -14,7 +14,7 @@ import * as myoseki from "../myosekiMarket";
 import * as sponsorService from "../systems/economy/SponsorContractService";
 import * as legacy from "../systems/legacy/DynastyService";
 import * as governance from "../systems/governance/GovernanceService";
-import { PoliticalFavorsService } from "../systems/politics/PoliticalFavorsService";
+import { PoliticalFavorsService, type FavorType } from "../systems/politics/PoliticalFavorsService";
 import * as staffService from "../staff";
 import * as loans from "../loans";
 import { resolveImpacts } from "../core/ImpactResolver";
@@ -260,7 +260,7 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
           const impact = PoliticalFavorsService.requestFavor(
             currentWorld,
             command.heyaId,
-            command.favorId as any
+            command.favorId as FavorType
           );
           currentWorld = resolveImpacts(currentWorld, [impact]);
           emitDigest();

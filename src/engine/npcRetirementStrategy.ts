@@ -81,7 +81,7 @@ export const ScientistRetirementStrategy: RetirementStrategy = {
 export const GamblerRetirementStrategy: RetirementStrategy = {
   evaluateRetirements(world, heya, oyakata) {
     return evaluateRetirementsBase(world, heya, (r, retireReason) => {
-      if (retireReason || (oyakata.traits.risk > 60 && r.stats && (r.stats as any).strength < 30)) {
+      if (retireReason || (oyakata.traits.risk > 60 && r.stats && r.stats.strength < 30)) {
         return retireReason || "Cut due to poor performance";
       }
       return false;
@@ -105,7 +105,7 @@ export const NurturerRetirementStrategy: RetirementStrategy = {
 export const TyrantRetirementStrategy: RetirementStrategy = {
   evaluateRetirements(world, heya, _oyakata) {
     return evaluateRetirementsBase(world, heya, (r, retireReason) => {
-      const isUnderperforming = r.stats && (r.stats as any).strength < 25;
+      const isUnderperforming = r.stats && r.stats.strength < 25;
       const isLowRank = r.rank && (r.rank.startsWith("maegashira") || r.rank.startsWith("juryo"));
       if (retireReason || (isUnderperforming && isLowRank)) {
         return retireReason || "Forced out by tyrant master";
@@ -126,7 +126,7 @@ export const StrictRetirementStrategy: RetirementStrategy = {
     return evaluateRetirementsBase(world, heya, (r, retireReason) => {
       if (
         retireReason ||
-        (r.stats && (r.stats as any).strength < 30 && r.rank && r.rank.startsWith("juryo"))
+        (r.stats && r.stats.strength < 30 && r.rank && r.rank.startsWith("juryo"))
       ) {
         return retireReason || "Cut due to poor performance";
       }

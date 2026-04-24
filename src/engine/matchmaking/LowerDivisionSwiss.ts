@@ -248,7 +248,7 @@ export function buildLowerDivisionSwiss(
   }
 ): MatchPairing[] {
   const pool = rikishi.filter((r) => {
-    if (r.isRetired || r.injured || (r as any).isKyujo) return false;
+    if (r.isRetired || r.injured || r.isKyujo) return false;
     if (options.division && r.division !== options.division) return false;
     return true;
   });

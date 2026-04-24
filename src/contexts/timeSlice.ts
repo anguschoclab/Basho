@@ -34,8 +34,7 @@ export function timeSlice(state: GameState, action: GameAction): GameState {
       if (!state.world) return state;
       const world = cloneWorldForTick(state.world);
       const hPhase = world.cyclePhase === "active_basho" ? "day_preview" : "interim";
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Phase type narrowing limitation
-      return { ...state, world, phase: hPhase as any };
+      return { ...state, world, phase: hPhase };
     }
 
     case "RUN_AUTO_SIM": {

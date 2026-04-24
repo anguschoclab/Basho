@@ -114,8 +114,7 @@ export function WeeklyDrillPlanner({
       // If we have selected IDs, only autoset those, otherwise autoset all
       if (selectedIds.size > 0 && !selectedIds.has(rikishi.id)) return;
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Archetype is a dynamic property
-      const arch = (rikishi as any).archetype || "hybrid";
+      const arch = rikishi.archetype ?? rikishi.combatProfile?.archetype ?? "hybrid";
       const schedule: Record<number, DrillType> = {};
 
       DAYS.forEach((d) => {

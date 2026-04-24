@@ -76,17 +76,7 @@ export function checkNaturalizations(world: WorldState): StateImpact {
           severity: 'national'
         });
         
-        // Merge headline impact into main builder
-        if (headlineImpact.entities?.heyaUpdates) {
-          for (const [id, update] of headlineImpact.entities.heyaUpdates) {
-            builder.updateHeya(id, update);
-          }
-        }
-        if (headlineImpact.worldFields) {
-          for (const [field, value] of Object.entries(headlineImpact.worldFields)) {
-            (builder as any).updateWorldField(field, value);
-          }
-        }
+        builder.merge(headlineImpact);
       }
     }
   }

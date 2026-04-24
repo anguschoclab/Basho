@@ -395,6 +395,7 @@ export class ImpactBuilder {
       | "heyas"
       | "transientContext"
       | "settings"
+      | "playerKnowledge"
     >,
   >(field: K, value: WorldState[K]): ImpactBuilder {
     if (!this.impact.worldFields) {

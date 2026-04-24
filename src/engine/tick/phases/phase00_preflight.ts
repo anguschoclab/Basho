@@ -48,8 +48,8 @@ export function phase00_preflight(world: WorldState): StateImpact {
     ...world.transientContext,
     boundaries: { monthBoundary, yearBoundary },
     deltas: emptyDeltas(),
-    modifiers: defaultActiveModifiers()
-  } as any;
+    activeModifiers: defaultActiveModifiers(),
+  };
 
   // 4. Check Phase Transitions
   const transition = checkPhaseTransition(world, builder);

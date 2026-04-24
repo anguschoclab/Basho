@@ -21,6 +21,7 @@ import { HeyaCard, STATURE_CONFIG } from "@/components/menu/HeyaCard";
 import { SaveSlotManager } from "@/components/menu/SaveSlotManager";
 import { HeyaPreview } from "@/components/menu/HeyaPreview";
 import { RANK_HIERARCHY, projectHeyaRosterWithAge } from "@/presenters/uiDigest";
+import type { Rank } from "@/engine/types/banzuke";
 import type { Heya } from "@/engine/types/heya";
 import type { StatureBand, StableSelectionMode } from "@/engine/types/narrative";
 
@@ -62,8 +63,7 @@ export default function MainMenu() {
       let count = 0;
       for (const rid of (h.rikishiIds ?? []) as string[]) {
         const r = state.world.rikishi.get(rid);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- RANK_HIERARCHY type mismatch
-        if (r && (RANK_HIERARCHY as any)?.[r.rank]?.isSekitori) count += 1;
+        if (r && RANK_HIERARCHY[r.rank as Rank]?.isSekitori) count += 1;
       }
       map.set(h.id, count);
     }

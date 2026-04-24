@@ -25,7 +25,7 @@ import { OYAKATA_BACKGROUNDS, ICHIMON_FACTIONS } from "@/components/wizard/wizar
 
 export default function NewGameWizard() {
   const navigate = useNavigate();
-  const { createWorld, state } = useGame() as any;
+  const { createWorld, state } = useGame();
 
   useEffect(() => {
     if (!state.world) {

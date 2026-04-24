@@ -46,6 +46,9 @@ import {
   projectBashoUIDigest,
 } from "@/presenters/uiDigest";
 import type { UIRikishi } from "@/presenters/uiModels";
+import type { Division } from "@/engine/types/banzuke";
+import type { BoutTactic } from "@/engine/types/combat";
+import type { BashoName } from "@/engine/types/basho";
 
 /** Defines the structure for selected bout. */
 interface SelectedBout {
@@ -72,7 +75,7 @@ interface ScheduleOverviewProps {
  * schedule overview.
  */
 function ScheduleOverview({ currentDay }: ScheduleOverviewProps) {
-  const divisions = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"];
+  const divisions: Division[] = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"];
 
   return (
     <div className="space-y-3">
@@ -81,8 +84,7 @@ function ScheduleOverview({ currentDay }: ScheduleOverviewProps) {
       </div>
 
       {divisions.map((division) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const totalDays = getTotalBashodays(division as any);
+        const totalDays = getTotalBashodays(division);
         const divisionName = division.charAt(0).toUpperCase() + division.slice(1);
 
         return (
@@ -94,8 +96,7 @@ function ScheduleOverview({ currentDay }: ScheduleOverviewProps) {
 
             <div className="grid grid-cols-15 gap-1">
               {Array.from({ length: 15 }, (_, i) => i + 1).map((day) => {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const needsScheduling = needsScheduleForDay(division as any, day);
+                const needsScheduling = needsScheduleForDay(division, day);
                 const isCurrent = day === currentDay;
                 const isPast = day < currentDay;
 
@@ -208,7 +209,7 @@ export default function BashoPage() {
   }, [bashoDigest, advanceDay]);
 
   const handleTacticChange = useCallback(
-    (id: string, tactic: string) => setBoutTactic(id, tactic as any), // eslint-disable-line @typescript-eslint/no-explicit-any
+    (id: string, tactic: string) => setBoutTactic(id, tactic as BoutTactic),
     [setBoutTactic]
   );
 
@@ -389,18 +390,15 @@ export default function BashoPage() {
           {/* Match viewer */}
           <div className="lg:col-span-3 lg:order-1 space-y-3">
             <MatchDayViewer
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              matches={matches as any}
+              matches={matches}
               world={world}
               playerRikishiIds={new Set(playerRikishiIds)}
               onSimulateBout={simulateBout}
               onSimulateAll={simulateAllBouts}
               onTacticChange={handleTacticChange}
               onEndDay={handleNextDay}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              highlightRikishiId={(state as any).selectedRikishiId || undefined}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              playerTactics={(state as any).boutTactics}
+              highlightRikishiId={state.selectedRikishiId || undefined}
+              playerTactics={state.boutTactics}
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               onBoutClick={(match: any) => {
                 if (!match.result || !match.eastRikishi || !match.westRikishi) return;
@@ -424,7 +422,7 @@ export default function BashoPage() {
           east={selectedBout.east}
           west={selectedBout.west}
           result={selectedBout.result}
-          bashoName={bashoName as any} // eslint-disable-line @typescript-eslint/no-explicit-any
+          bashoName={bashoName as BashoName}
           day={day}
         />
       )}
@@ -435,7 +433,7 @@ export default function BashoPage() {
           east={autoShowPlayerBout.east}
           west={autoShowPlayerBout.west}
           result={autoShowPlayerBout.result}
-          bashoName={bashoName as any} // eslint-disable-line @typescript-eslint/no-explicit-any
+          bashoName={bashoName as BashoName}
           day={day}
         />
       )}

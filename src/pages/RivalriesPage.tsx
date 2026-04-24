@@ -24,8 +24,7 @@ export default function RivalriesPage() {
 
   const rivalriesState = useMemo<RivalriesState>(() => {
     if (!world) return createDefaultRivalriesState();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- WorldState type mismatch
-    const rs = (world as any).rivalries;
+    const rs = world.rivalriesState;
     return rs && typeof rs === "object" && rs.pairs ? rs : createDefaultRivalriesState();
   }, [world]);
 

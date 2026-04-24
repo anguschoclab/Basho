@@ -4,8 +4,6 @@
  * Helper functions for event generation.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { rngFromSeed } from "./rng";
 import type { WorldState } from "./types/world";
 import type {
@@ -20,29 +18,12 @@ import type { Id } from "./types/common";
 import { BardEngine } from "./narrative/BardEngine";
 import { logEngineEvent } from "./events";
 
-interface LogEngineEventParams {
+export interface EventFactoryConfig {
   type: EngineEventType;
   category: EventCategory;
+  importance?: EventImportance;
   phase?: EventPhase;
-  importance?: EventImportance;
   scope?: EventScope;
-  heyaId?: Id;
-  rikishiId?: Id;
-  title: string;
-  summary: string;
-  data: NarrativeContext;
-  truthLevel?: "public" | "limited" | "private";
-  tags?: string[];
-  causalEventId?: Id;
-  dedupeKey?: string;
-}
-
-export interface EventFactoryConfig {
-  type: string;
-  category: string;
-  importance?: EventImportance;
-  phase?: string;
-  scope?: string;
   heyaId?: Id;
   rikishiId?: Id;
   titleKey: string;
@@ -62,21 +43,19 @@ export function createEventWithNarrative(
     ? BardEngine.resolve(rng, config.summaryKey, ctx)
     : { text: "" };
 
-  const params: LogEngineEventParams = {
-    type: config.type as any,
-    category: config.category as any,
+  return logEngineEvent(world, {
+    type: config.type,
+    category: config.category,
     importance: config.importance,
-    phase: config.phase as any,
-    scope: config.scope as any,
+    phase: config.phase,
+    scope: config.scope,
     heyaId: config.heyaId,
     rikishiId: config.rikishiId,
     title: titleRes.text,
     summary: summaryRes.text,
     data: ctx,
     tags: config.tags,
-  };
-
-  return logEngineEvent(world, params);
+  });
 }
 
 export function createRngForEvent(world: WorldState, seedPrefix: string) {

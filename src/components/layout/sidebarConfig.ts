@@ -121,6 +121,7 @@ export function getMenuGroups(
         { title: "Stable History", url: "/history", icon: Archive },
         { title: "Almanac", url: "/almanac", icon: BookOpen },
         { title: "Hall of Fame", url: "/hall-of-fame", icon: Award },
+        { title: "Museum", url: "/museum", icon: Crown },
       ],
     },
   ];
