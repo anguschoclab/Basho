@@ -115,10 +115,22 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
 
   // Apply collection operations
   if (impact.collections) {
+    const nextHeyas = new Map(result.heyas);
+    let heyasChanged = false;
+
     if (impact.collections.rikishiToAdd) {
       const nextRikishi = new Map(result.rikishi);
       for (const rikishi of impact.collections.rikishiToAdd) {
         nextRikishi.set(rikishi.id, rikishi);
+        
+        // Sync Heya Roster
+        const heya = nextHeyas.get(rikishi.heyaId) || result.heyas.get(rikishi.heyaId);
+        if (heya) {
+          const ids = new Set(heya.rikishiIds || []);
+          ids.add(rikishi.id);
+          nextHeyas.set(rikishi.heyaId, { ...heya, rikishiIds: Array.from(ids) });
+          heyasChanged = true;
+        }
       }
       result = { ...result, rikishi: nextRikishi };
     }
@@ -126,6 +138,15 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
     if (impact.collections.rikishiToRemove) {
       const nextRikishi = new Map(result.rikishi);
       for (const id of impact.collections.rikishiToRemove) {
+        const r = nextRikishi.get(id);
+        if (r) {
+          // Sync Heya Roster
+          const heya = nextHeyas.get(r.heyaId) || result.heyas.get(r.heyaId);
+          if (heya) {
+            nextHeyas.set(r.heyaId, { ...heya, rikishiIds: (heya.rikishiIds || []).filter(rid => rid !== id) });
+            heyasChanged = true;
+          }
+        }
         nextRikishi.delete(id);
       }
       result = { ...result, rikishi: nextRikishi };
@@ -139,9 +160,20 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
         if (rikishi) {
           nextRikishi.delete(id);
           nextHistorical.set(id, rikishi);
+
+          // Sync Heya Roster (Remove from active roster)
+          const heya = nextHeyas.get(rikishi.heyaId) || result.heyas.get(rikishi.heyaId);
+          if (heya) {
+            nextHeyas.set(rikishi.heyaId, { ...heya, rikishiIds: (heya.rikishiIds || []).filter(rid => rid !== id) });
+            heyasChanged = true;
+          }
         }
       }
       result = { ...result, rikishi: nextRikishi, historicalRikishi: nextHistorical };
+    }
+
+    if (heyasChanged) {
+      result = { ...result, heyas: nextHeyas };
     }
 
     if (impact.collections.rikishiFromHistorical) {

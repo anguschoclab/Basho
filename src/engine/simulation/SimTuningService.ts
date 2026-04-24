@@ -158,7 +158,14 @@ export const SimTuningService = {
       uniqueWinnerCount: historyStats?.uniqueWinners ?? 0,
       beyaDominance,
       entropyAudit: {
-        maxStat: Math.max(...activeRikishi.map(r => Math.max(r.power, r.speed, r.technique, r.stamina))),
+        maxStat: Math.max(...activeRikishi.map(r => 
+          Math.max(
+            r.power || 0, 
+            r.speed || 0, 
+            r.stats?.technique || r.technique || 0, 
+            r.stats?.stamina || 0
+          )
+        )),
         avgAge: activeRikishi.length > 0 ? activeRikishi.reduce((sum, r) => sum + (world.year - r.birthYear), 0) / activeRikishi.length : 0,
         injuryRate: activeRikishi.length > 0 ? (activeRikishi.filter(r => r.injured).length / activeRikishi.length) * 100 : 0,
         archetypeWinRates: {}, // Populated if history is available

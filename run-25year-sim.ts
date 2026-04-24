@@ -6,12 +6,24 @@ import { join } from "path";
 async function run25YearSim() {
   console.log("=== Starting 25-Year Headless Simulation ===");
   const seed = "long-term-stability-test-" + Date.now();
-  const initialWorld = generateInitialWorld(seed);
+  // 1. Initial World Generation
+  let currentWorld = generateInitialWorld(seed);
 
-  console.log("World generated. Starting simulation loop...");
+  // 1.5. ROSTER INTEGRITY CLEAN-UP (Hardening)
+  // Ensure heya.rikishiIds matches reality before starting the 25-year march
+  const nextHeyas = new Map(currentWorld.heyas);
+  for (const [heyaId, heya] of nextHeyas) {
+    const actualRikishiIds = Array.from(currentWorld.rikishi.values())
+      .filter(r => r.heyaId === heyaId && !r.isRetired)
+      .map(r => r.id);
+    nextHeyas.set(heyaId, { ...heya, rikishiIds: actualRikishiIds });
+  }
+  currentWorld = { ...currentWorld, heyas: nextHeyas };
+
+  console.log("World generated and rosters synchronized. Starting simulation loop...");
   console.time("simulation-duration");
 
-  const result = runAutoSim(initialWorld, {
+  const result = runAutoSim(currentWorld, {
     duration: { type: "years", count: 25 },
     stopConditions: ["stableInsolvency"], // Stop if player stable goes bankrupt (shouldn't happen in headless but good safety)
     verbosity: "standard",
