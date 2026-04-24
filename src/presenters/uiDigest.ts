@@ -103,6 +103,8 @@ export {
   getKimarite,
   setScoutingInvestment,
   spendPoliticalCapital,
+  getStatusLabel,
+  formatFinePenalty,
   scoutPool,
   scoutCandidate,
   offerCandidate,

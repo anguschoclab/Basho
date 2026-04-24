@@ -71,6 +71,7 @@ export {
 } from "../engine/scoutingStore";
 export {
   spendPoliticalCapital,
+  getStatusLabel,
 } from "../engine/governance/GovernanceService";
 export {
   scoutPool,
