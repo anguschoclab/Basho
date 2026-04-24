@@ -28,6 +28,7 @@ import { runElections } from "../../governance/GovernanceService";
 import { DynastyService } from "../../systems/legacy/DynastyService";
 import { WorldCircuitService } from "../../systems/global/WorldCircuitService";
 import { TrainingPhilosophyService } from "../../systems/legacy/TrainingPhilosophyService";
+import { TalentPoolService } from "../../systems/generation/TalentPoolService";
 
 export function phase06_yearly_boundary(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase06_yearly_boundary");
@@ -110,119 +111,7 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
 
   // 2. Talent Pool Refresh
   if (world.talentPool) {
-    const rng = RNGRegistry.getSystemRNG(world, "scouting", `year-${world.year}`);
-    const candidates = { ...world.talentPool.candidates };
-
-    // Age out candidates who weren't recruited (keep for 3 years max)
-    const currentYear = world.year;
-    const idsToDelete: string[] = [];
-    for (const [id, candidate] of Object.entries(candidates)) {
-      const cand = candidate as TalentCandidate;
-      const age = currentYear - cand.birthYear;
-      if (age >= 25 || cand.availabilityState === "withdrawn") {
-        idsToDelete.push(id);
-      }
-    }
-
-    const nextCandidates: Record<string, TalentCandidate> = {};
-    for (const [id, candidate] of Object.entries(candidates)) {
-      if (!idsToDelete.includes(id)) {
-        nextCandidates[id] = candidate as TalentCandidate;
-      }
-    }
-
-    // Generate 5-10 new candidates per year
-    const newCandidateCount = 5 + rng.int(0, 6);
-    const archetypes: CombatArchetype[] = [
-      "oshi",
-      "yotsu",
-      "tsuppari",
-      "giant",
-      "trickster",
-      "hybrid",
-      "speedster",
-      "defensive",
-    ];
-    const styles: Style[] = ["oshi", "yotsu", "hybrid"];
-    const origins = [
-      "Tokyo",
-      "Osaka",
-      "Fukuoka",
-      "Hokkaido",
-      "Aichi",
-      "Mongolia",
-      "Georgia",
-      "USA",
-      "Estonia",
-    ];
-
-    for (let i = 0; i < newCandidateCount; i++) {
-      const candidateId = rng.uuid("CANDIDATE");
-      const archetype = archetypes[rng.int(0, archetypes.length - 1)];
-      const style = styles[rng.int(0, styles.length - 1)];
-      const origin = origins[rng.int(0, origins.length - 1)];
-      const isForeign = !["Tokyo", "Osaka", "Fukuoka", "Hokkaido", "Aichi"].includes(origin);
-
-      const candidate: TalentCandidate = {
-        candidateId,
-        personId: rng.uuid("PERSON"),
-        name: generateRikishiName(`${rng.seed}::${candidateId}`, rng),
-        birthYear: currentYear - (15 + rng.int(0, 5)),
-        originRegion: origin,
-        nationality: isForeign ? origin : "Japan",
-        visibilityBand: rng.next() < 0.3 ? "rumored" : "hidden",
-        reputationSeed: rng.int(0, 1000000),
-        tags: isForeign ? ["foreign", "prospect"] : ["prospect"],
-        combatProfile: {
-          archetype,
-          familyPreferences: {
-            push:
-              archetype === "oshi" || archetype === "tsuppari" || archetype === "giant" ? 0.6 : 0.2,
-            belt: archetype === "yotsu" ? 0.6 : 0.2,
-            trick: archetype === "trickster" ? 0.6 : 0.1,
-            speed: archetype === "speedster" ? 0.6 : 0.1,
-          },
-          preferredGrip: archetype === "yotsu" ? "migi" : "none",
-          preferredGripDepth: archetype === "yotsu" ? "deep" : "standard",
-          statModifiers: {
-            strength: archetype === "oshi" || archetype === "giant" ? 1.2 : 1.0,
-            technique: archetype === "trickster" || archetype === "yotsu" ? 1.2 : 1.0,
-            speed: archetype === "tsuppari" || archetype === "speedster" ? 1.2 : 1.0,
-            height: archetype === "giant" ? 1.15 : 1.0,
-            weight: archetype === "giant" ? 1.2 : 1.0,
-          },
-        },
-        availabilityState: "available",
-        competingSuitors: [],
-        archetype,
-        style,
-        heightPotentialCm: 170 + rng.int(0, 25),
-        weightPotentialKg: 90 + rng.int(0, 80),
-        talentSeed: rng.int(0, 1000000),
-        temperament: {
-          discipline: 40 + rng.int(0, 50),
-          volatility: rng.int(0, 40),
-        },
-        isAmateurStar: rng.next() < 0.15,
-      };
-
-      nextCandidates[candidateId] = candidate;
-
-      if (candidate.isAmateurStar || candidate.visibilityBand === "rumored") {
-        builder.logEvent("RECRUIT_DISCOVERED", "narrative", {
-          rikishiId: candidateId,
-          shikona: candidate.name,
-          origin: candidate.originRegion,
-          archetype: candidate.archetype,
-        });
-      }
-    }
-
-    builder.updateWorldField("talentPool", {
-      ...world.talentPool,
-      candidates: nextCandidates,
-      lastYearlyRefreshYear: currentYear,
-    });
+    builder.merge(TalentPoolService.tickYear(world));
   }
 
   // 3. NPC Yearly Logic

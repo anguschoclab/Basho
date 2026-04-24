@@ -140,6 +140,15 @@ export function calculateGrowthVector(
   const archetype = rikishi.combatProfile?.archetype as CombatArchetype;
   const affinity = archetype ? ARCHETYPE_AFFINITY[archetype] : null;
 
+  // Phase 5 Depth: Training Philosophy Drift (Style Drift)
+  // Numeric accumulators for cultural influence provide subtle stat gain multipliers
+  const philosophy = heya?.trainingPhilosophy;
+  const styleDriftMults = {
+    strength: 1.0 + (philosophy?.powerBias || 0),
+    speed: 1.0 + (philosophy?.speedBias || 0),
+    technique: 1.0 + (philosophy?.techniqueBias || 0),
+  };
+
   const growth: Record<TrainingAttribute, number> = {
     strength: 0,
     speed: 0,
@@ -169,9 +178,9 @@ export function calculateGrowthVector(
   };
 
   growth.strength =
-    applyCapped("strength", bias.strength, rikishi.stats?.strength || 50) * nutritionMult;
-  growth.speed = applyCapped("speed", bias.speed, rikishi.stats?.speed || 50);
-  growth.technique = applyCapped("technique", bias.technique, rikishi.stats?.technique || 50);
+    applyCapped("strength", bias.strength, rikishi.stats?.strength || 50) * nutritionMult * styleDriftMults.strength;
+  growth.speed = applyCapped("speed", bias.speed, rikishi.stats?.speed || 50) * styleDriftMults.speed;
+  growth.technique = applyCapped("technique", bias.technique, rikishi.stats?.technique || 50) * styleDriftMults.technique;
   growth.balance = applyCapped("balance", bias.balance, rikishi.stats?.balance || 50);
   growth.stamina = applyCapped("stamina", 0.5, rikishi.stats?.stamina || 50) * nutritionMult;
   growth.mental = applyCapped("mental", 0.2, rikishi.stats?.mental || 50);

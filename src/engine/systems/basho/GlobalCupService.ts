@@ -41,26 +41,57 @@ export const GlobalCupService = {
     }));
 
     const rng = RNGRegistry.getSystemRNG(world, "global_cup", `challengers_${world.year}`);
+    const talentPool = world.talentPool;
+    const foreignCandidates = talentPool ? 
+      Object.values(talentPool.candidates).filter(c => c.nationality !== "Japan" && c.availabilityState === "available") : [];
     
-    const challenger1: GlobalCupParticipant = {
-      rikishiId: `challenger_${world.year}_1`,
-      shikona: "Giant of the Steppe",
-      rank: "Ozeki",
-      nationality: "Mongolia",
-      isChallenger: true,
-      seed: 7,
-    };
+    // Pick or generate challenger 1
+    let c1: GlobalCupParticipant;
+    if (foreignCandidates.length > 0) {
+      const best = foreignCandidates.sort((a, b) => (b.talentSeed || 0) - (a.talentSeed || 0))[0];
+      c1 = {
+        rikishiId: best.candidateId,
+        shikona: best.name,
+        rank: "Ozeki",
+        nationality: best.nationality,
+        isChallenger: true,
+        seed: 7,
+      };
+    } else {
+      c1 = {
+        rikishiId: `challenger_${world.year}_1`,
+        shikona: "Giant of the Steppe",
+        rank: "Ozeki",
+        nationality: "Mongolia",
+        isChallenger: true,
+        seed: 7,
+      };
+    }
 
-    const challenger2: GlobalCupParticipant = {
-      rikishiId: `challenger_${world.year}_2`,
-      shikona: "Estonian Colossus",
-      rank: "Ozeki",
-      nationality: "Estonia",
-      isChallenger: true,
-      seed: 8,
-    };
+    // Pick or generate challenger 2
+    let c2: GlobalCupParticipant;
+    if (foreignCandidates.length > 1) {
+      const best = foreignCandidates.sort((a, b) => (b.talentSeed || 0) - (a.talentSeed || 0))[1];
+      c2 = {
+        rikishiId: best.candidateId,
+        shikona: best.name,
+        rank: "Ozeki",
+        nationality: best.nationality,
+        isChallenger: true,
+        seed: 8,
+      };
+    } else {
+      c2 = {
+        rikishiId: `challenger_${world.year}_2`,
+        shikona: "Estonian Colossus",
+        rank: "Ozeki",
+        nationality: "Estonia",
+        isChallenger: true,
+        seed: 8,
+      };
+    }
 
-    return [...jsaElites, challenger1, challenger2];
+    return [...jsaElites, c1, c2];
   },
 
   /**

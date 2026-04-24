@@ -16,6 +16,7 @@ export type ExhibitionRegion = "Mongolia" | "Georgia" | "Europe" | "Americas" | 
 
 export interface ExhibitionInvitation {
   id: string;
+  heyaId: string;
   region: ExhibitionRegion;
   prestige: number; // 1–100: affects reward magnitude
   expiresAtWeek: number;
@@ -55,6 +56,7 @@ export const WorldCircuitService = {
 
       invitations.push({
         id: rng.uuid("EX"),
+        heyaId,
         region,
         prestige,
         expiresAtWeek: (world.week ?? 0) + 8,
@@ -183,6 +185,12 @@ export const WorldCircuitService = {
     if (score >= PRESENCE_GATES.ACADEMY_THRESHOLD) return "academy";
     if (score >= PRESENCE_GATES.VISIBLE_THRESHOLD) return "visible";
     return "hidden";
+  },
+
+  hasForeignAcademy(world: WorldState, heyaId: string, region: ExhibitionRegion): boolean {
+    const heya = world.heyas.get(heyaId);
+    if (!heya) return false;
+    return this.getRegionVisibility(heya, region) === "academy";
   },
 
   /**

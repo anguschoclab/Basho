@@ -8,45 +8,27 @@
  *   TalentPoolRecruitment   — offers, signing resolution, NPC fill, materialization
  */
 
-export {
-  ensureTalentPoolState,
-  reinjectToTalentPool,
-  injectRikishiAsCandidate,
-  refreshAllPools,
-  tickYear,
-} from "./TalentPoolStateService";
+export * from "./TalentPoolStateService";
+export * from "./TalentPoolScouting";
+export * from "./TalentPoolConstants";
+export * from "./TalentPoolOffers";
+export * from "./TalentPoolMaintenance";
+export * from "./TalentPoolNPCRecruitment";
+export * from "./TalentPoolMaterialization";
 
-export {
-  listVisibleCandidates,
-  getCandidateScoutingLevel,
-  getForeignCountInHeya,
-  countsAsForeignFromRikishi,
-  scoutPool,
-  scoutCandidate,
-  getScoutedCandidateView,
-} from "./TalentPoolScouting";
+import * as State from "./TalentPoolStateService";
+import * as Scouting from "./TalentPoolScouting";
+import * as Offers from "./TalentPoolOffers";
+import * as Maintenance from "./TalentPoolMaintenance";
+import * as NPCRecruitment from "./TalentPoolNPCRecruitment";
+import * as Materialization from "./TalentPoolMaterialization";
 
-export {
-  FOREIGN_RIKISHI_LIMIT_PER_HEYA,
-  BASE_SCOUT_COST,
-  REVEAL_COST,
-} from "./TalentPoolConstants";
+export const TalentPoolService = {
+  ...State,
+  ...Scouting,
+  ...Offers,
+  ...Maintenance,
+  ...NPCRecruitment,
+  ...Materialization,
+};
 
-export {
-  offerCandidate,
-  resolveCandidateSuitor,
-} from "./TalentPoolOffers";
-
-export {
-  tickWeekTalentPool,
-} from "./TalentPoolMaintenance";
-
-export {
-  fillVacanciesForNPC,
-  fillVacanciesForNPCWithBidding,
-} from "./TalentPoolNPCRecruitment";
-
-export {
-  materializeCandidateToRikishi,
-  finalizeSignedCandidates,
-} from "./TalentPoolMaterialization";

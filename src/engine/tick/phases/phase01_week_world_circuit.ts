@@ -20,11 +20,7 @@ export function phase01_week_world_circuit(world: WorldState, report: DailyTickR
     }
   }
 
-  // 2. Yearly Invitations (Run in week 1 of the year)
-  if (world.week === 1) {
-    const invitationImpact = WorldCircuitService.generateYearlyInvitations(nextWorld, world.playerHeyaId || "");
-    nextWorld = applyImpact(nextWorld, invitationImpact);
-  }
+  // 2. Yearly Invitations (REMOVED: Now handled by phase06_yearly_boundary for all stables)
 
   return nextWorld;
 }
