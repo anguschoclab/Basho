@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Star, ArrowRight, User, Info, Trophy, MapPin, Building } from "lucide-react";
 import type { Heya } from "@/engine/types/heya";
-import { STATURE_CONFIG } from "./HeyaCard";
+import { STATURE_CONFIG } from "./statureConfig";
 import { RANK_HIERARCHY } from "@/presenters/uiDigest";
 import { sortRikishiByRank } from "@/utils/engineUtils";
 import { StableName } from "@/components/ClickableName";
