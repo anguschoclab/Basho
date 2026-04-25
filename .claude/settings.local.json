@@ -77,7 +77,9 @@
       "Bash(claude mcp *)",
       "Bash(sort -t: -k2 -rn)",
       "Bash(ls .claude/)",
-      "Bash(dir \".claude\")"
+      "Bash(dir \".claude\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('scripts',{}\\), indent=2\\)\\)\")",
+      "Bash(bun scripts/headless-sim-25yr.ts)"
     ]
   },
   "outputStyle": "default"
