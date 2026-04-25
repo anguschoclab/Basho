@@ -19,7 +19,7 @@ import {
   STAFF_UPKEEP_PER_MEMBER,
   clampFundsToDebtLimit,
   JSA_PER_WRESTLER_SUBSIDY_MONTHLY,
-  DIET_COSTS,
+  JSA_STABLE_WEEKLY_GRANT,
   KOENKAI_INCOME_SPLIT,
 } from "../../constants/EconomicConstants";
 
@@ -72,11 +72,14 @@ export function calculateHeyaWeeklyFinances(heya: Heya, world: WorldState): Heya
   }
   const weeklySponsorTierIncome = monthlySponsorTierIncome / 4;
 
+  // JSA base operational grant (all stables, every week)
+  const jsaBaseGrant = JSA_STABLE_WEEKLY_GRANT;
+
   // JSA Maintenance Subsidy (Safety Net for insolvent stables)
   const maintenanceSubsidy = heya.funds < 0 ? 500_000 : 0;
 
   const effectiveIncome = Math.max(
-    weeklyKoenkai + weeklyJsaSubsidy + weeklySponsorTierIncome + maintenanceSubsidy,
+    weeklyKoenkai + weeklyJsaSubsidy + weeklySponsorTierIncome + jsaBaseGrant + maintenanceSubsidy,
     KOENKAI_SURVIVAL_FLOOR
   );
 
@@ -95,23 +98,12 @@ export function calculateHeyaWeeklyFinances(heya: Heya, world: WorldState): Heya
 
   const staffUpkeepRaw = (heya.staffIds?.length ?? 0) * STAFF_UPKEEP_PER_MEMBER;
 
-  // Food costs based on rikishi diet regimens
-  let weeklyFoodCost = 0;
-  for (const rId of heya.rikishiIds ?? []) {
-    const r = world.rikishi.get(rId);
-    if (!r) continue;
-    // Default to maintenance diet if not specified
-    const diet =
-      ((r as unknown as Record<string, unknown>).diet as string | undefined) || "maintenance";
-    const dailyCost = DIET_COSTS[diet] || DIET_COSTS.maintenance;
-    weeklyFoodCost += dailyCost * 7;
-  }
-
   // Apply administration discount (Administrator role)
   const facilityUpkeep = facilityUpkeepRaw * staffBonuses.administration;
   const staffUpkeep = staffUpkeepRaw * staffBonuses.administration;
 
-  const baseBurn = facilityUpkeep + staffUpkeep + weeklyFoodCost;
+  // Food is charged daily by phase01_daily_economy — do not double-count here.
+  const baseBurn = facilityUpkeep + staffUpkeep;
   const recruitmentCost = heya.funds <= -20_000_000 ? 0 : RECRUITMENT_BUDGET_WEEKLY;
   const totalBurn = baseBurn + recruitmentCost;
 

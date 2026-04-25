@@ -8,7 +8,7 @@ import type { WorldState } from "../../types/world";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { WelfareService } from "../../systems/welfare/WelfareService";
-import { DIET_COSTS } from "../../constants/EconomicConstants";
+import { DIET_COSTS, DEBT_LIMIT } from "../../constants/EconomicConstants";
 
 export function phase01_daily_economy(world: WorldState): StateImpact {
   const builder = createImpactBuilder('phase01_daily_economy');
@@ -23,9 +23,10 @@ export function phase01_daily_economy(world: WorldState): StateImpact {
     const diet = welfare.activeDiet || "maintenance";
     const costPerRikishi = DIET_COSTS[diet] ?? 3000;
     const dailyFoodCost = rikishiCount * costPerRikishi;
-    
+    const nextFunds = Math.max(DEBT_LIMIT, heya.funds - dailyFoodCost);
+
     totalDailyFoodCost += dailyFoodCost;
-    builder.updateHeya(id, { funds: heya.funds - dailyFoodCost });
+    builder.updateHeya(id, { funds: nextFunds });
   }
 
   // Update transientContext via builder for pipeline compliance

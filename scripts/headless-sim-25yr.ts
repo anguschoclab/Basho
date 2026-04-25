@@ -36,6 +36,7 @@ interface YearSnapshot {
   avgAge: number;
   injuredCount: number;
   retiredTotal: number;
+  historicalTotal: number;
   errors: string[];
 }
 
@@ -78,6 +79,7 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
     avgAge: Math.round(avgAge * 10) / 10,
     injuredCount: active.filter((r) => r.injured).length,
     retiredTotal: allRikishi.filter((r) => r.isRetired).length,
+    historicalTotal: world.historicalRikishi?.size ?? 0,
     errors: [...errors],
   };
 }
@@ -170,7 +172,7 @@ for (let yr = 0; yr < YEARS; yr++) {
   const marker = flagged ? "⚠" : "✓";
 
   console.log(
-    `${marker} Year ${snap.year} | rikishi=${snap.rikishiActive}(+${snap.retiredTotal} ret) ` +
+    `${marker} Year ${snap.year} | rikishi=${snap.rikishiActive}(+${snap.historicalTotal} hist) ` +
     `heyas=${snap.heyaCount} Y=${snap.yokozunaCount} O=${snap.ozekiCount} ` +
     `mak=${snap.makuuchiCount} injured=${snap.injuredCount} ` +
     `funds=¥${(snap.avgFunds / 1_000_000).toFixed(1)}M avg [min=${(snap.minFunds / 1_000_000).toFixed(1)}M] ` +
@@ -193,7 +195,7 @@ console.log(`${"═".repeat(70)}`);
 const last = yearSnapshots.at(-1);
 if (last) {
   console.log(`\nFinal state (year ${last.year}):`);
-  console.log(`  Active rikishi: ${last.rikishiActive} (${last.retiredTotal} retired)`);
+  console.log(`  Active rikishi: ${last.rikishiActive} (${last.historicalTotal} historical/retired)`);
   console.log(`  Heyas: ${last.heyaCount}`);
   console.log(`  Yokozuna: ${last.yokozunaCount} | Ozeki: ${last.ozekiCount} | Makuuchi: ${last.makuuchiCount}`);
   console.log(`  HoF inductees: ${last.hofInductees}`);

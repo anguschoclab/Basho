@@ -9,6 +9,8 @@ import type { ChronicleReport } from "../types/records";
 import { RANK_HIERARCHY, updateBanzuke } from "../banzuke";
 import type { BashoPerformance } from "../types/banzuke";
 import { assertNever } from "../utils/types";
+import { phase06_yearly_boundary } from "../tick/phases/phase06_yearly_boundary";
+import { applyImpact } from "../core/ImpactResolver";
 
 // === AUTO-SIM CONFIGURATION ===
 
@@ -176,10 +178,34 @@ export function runAutoSim(
 
     // 2. Advance through off-season phases to trigger yearly boundary & training
     currentWorld = enterPostBasho(currentWorld);
-    currentWorld = advanceDays(currentWorld, 7); 
-    
+    currentWorld = advanceDays(currentWorld, 7);
+
     currentWorld = enterInterim(currentWorld);
-    currentWorld = advanceDays(currentWorld, 42); 
+    currentWorld = advanceDays(currentWorld, 42);
+
+    // 3. After kyushu (last basho of the year), fire the yearly boundary explicitly.
+    // We also reset the calendar to Jan 1 of the new year so the next year's off-seasons
+    // don't naturally cross Dec 31 and double-trigger the yearly boundary.
+    if (bashoName === "kyushu") {
+      const yearBoundaryWorld: WorldState = {
+        ...currentWorld,
+        // Reset to Jan 1 so subsequent off-seasons never cross Dec 31 naturally.
+        calendar: {
+          ...currentWorld.calendar,
+          currentDay: 1,
+          month: 1,
+        },
+        transientContext: {
+          ...currentWorld.transientContext,
+          boundaries: {
+            ...currentWorld.transientContext?.boundaries,
+            yearBoundary: true,
+          },
+        },
+      };
+      const yearImpact = phase06_yearly_boundary(yearBoundaryWorld);
+      currentWorld = applyImpact(yearBoundaryWorld, yearImpact);
+    }
 
     // Preparation for next basho
     bashoName = nextBashoName;

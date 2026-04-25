@@ -131,7 +131,10 @@ export const DynastyService = {
     const builder = createImpactBuilder("triggerSuccession");
     const heya = world.heyas.get(heyaId);
     const currentOyakata = world.oyakata?.get(heya?.oyakataId ?? "");
-    const successorRikishi = world.rikishi.get(successorRikishiId);
+    const successorIsActive = world.rikishi.has(successorRikishiId);
+    const successorRikishi =
+      world.rikishi.get(successorRikishiId) ??
+      world.historicalRikishi?.get(successorRikishiId);
 
     if (!heya || !currentOyakata || !successorRikishi) return builder.build();
 
@@ -187,8 +190,10 @@ export const DynastyService = {
 
     builder.addOyakata(newOyakata as any);
 
-    // 5. Retire the rikishi and assign the new Oyakata to the stable
-    builder.retireRikishi(successorRikishiId, world.year, "Promoted to Oyakata");
+    // 5. Retire the rikishi (only if still active) and assign the new Oyakata to the stable
+    if (successorIsActive) {
+      builder.retireRikishi(successorRikishiId, world.year, "Promoted to Oyakata");
+    }
     builder.updateHeya(heyaId, {
       dynasty: [...(heya.dynasty ?? []), record],
       trainingPhilosophy: evolvedPhilosophy,
