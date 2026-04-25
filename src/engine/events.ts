@@ -169,6 +169,7 @@ export function tickWeekEvents(world: WorldState): number {
 
   let trimmedCount = 0;
   const newLog: EngineEvent[] = [];
+  const prefixesToDelete = new Set<string>();
 
   for (const ev of eventsState.log) {
     const evTotalWeeks = ev.year * 52 + ev.week;
@@ -182,19 +183,29 @@ export function tickWeekEvents(world: WorldState): number {
     } else {
       trimmedCount++;
       const prefix = `${ev.year}|${ev.week}|`;
-      const keysToDelete = Object.keys(eventsState.dedupe).filter((key) => key.startsWith(prefix));
-      const newDedupe: Record<string, true> = {};
-      for (const key of Object.keys(eventsState.dedupe)) {
-        if (!keysToDelete.includes(key)) {
-          newDedupe[key] = eventsState.dedupe[key];
-        }
-      }
-      eventsState.dedupe = newDedupe;
+      prefixesToDelete.add(prefix);
     }
   }
 
   if (trimmedCount > 0) {
     eventsState.log = newLog;
+    if (prefixesToDelete.size > 0) {
+      const prefixes = Array.from(prefixesToDelete);
+      const newDedupe: Record<string, true> = {};
+      for (const key in eventsState.dedupe) {
+        let shouldKeep = true;
+        for (let i = 0; i < prefixes.length; i++) {
+          if (key.startsWith(prefixes[i])) {
+            shouldKeep = false;
+            break;
+          }
+        }
+        if (shouldKeep) {
+          newDedupe[key] = eventsState.dedupe[key];
+        }
+      }
+      eventsState.dedupe = newDedupe;
+    }
   }
   return trimmedCount;
 }
