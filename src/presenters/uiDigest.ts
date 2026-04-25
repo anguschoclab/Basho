@@ -104,6 +104,7 @@ export {
   setScoutingInvestment,
   spendPoliticalCapital,
   getStatusLabel,
+  getStatusColor,
   formatFinePenalty,
   scoutPool,
   scoutCandidate,
