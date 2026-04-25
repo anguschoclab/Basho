@@ -7,11 +7,16 @@
 
 import { WorldState } from "../../types/world";
 import { Rikishi } from "../../types/rikishi";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
+import { createImpactBuilder, ImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
-import { generateFullRikishi } from "../generation/CandidateBuilder";
 import { RNGRegistry } from "../../core/RNGRegistry";
-import { injectRikishiAsCandidate } from "../generation/TalentPoolService";
+import type {
+  GlobalCupMatch,
+  GlobalCupParticipant,
+  GlobalCupState,
+  GlobalCupHistoryEntry,
+  GlobalCupBoutResult,
+} from "../../types/globalCup";
 
 export const GlobalCupService = {
   /**
@@ -186,7 +191,7 @@ export const GlobalCupService = {
     return builder.build();
   },
 
-  simulateMatch(world: WorldState, match: GlobalCupMatch): BoutResult {
+  simulateMatch(world: WorldState, match: GlobalCupMatch): GlobalCupBoutResult {
     const rng = RNGRegistry.getSystemRNG(world, "global_cup", `match_${match.id}`);
     const east = world.rikishi.get(match.eastRikishiId);
     const west = world.rikishi.get(match.westRikishiId);
@@ -199,13 +204,13 @@ export const GlobalCupService = {
     const roll = rng.next() * total;
     
     return {
-      winner: roll < eastPower ? "east" : "west",
+      winner: (roll < eastPower ? "east" : "west") as "east" | "west",
       winningKimarite: "yorikiri",
       duration: 12,
     };
   },
 
-  finalizeTournament(world: WorldState, builder: ImpactBuilder, winnerId: string, winnerName: string) {
+  finalizeTournament(world: WorldState, builder: InstanceType<typeof ImpactBuilder>, winnerId: string, winnerName: string) {
     builder.logEvent("GLOBAL_CUP_FINALE", "narrative", {
       winnerId,
       winnerName,

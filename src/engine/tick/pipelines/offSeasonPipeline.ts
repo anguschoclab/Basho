@@ -27,5 +27,6 @@ export const offSeasonPipeline: PipelinePhase[] = [
   phases.phase01_week_npc_ai,
   phases.phase01_week_recruitment,
   phases.phase01_week_rivalries,
+  phases.phase_global_cup_advance, // Advance Global Cup bracket when tournament is active (Jan off-season)
   phases.phase06_narrative,
 ];

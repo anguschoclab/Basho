@@ -33,15 +33,10 @@ import { TalentPoolService } from "../../systems/generation/TalentPoolService";
 export function phase06_yearly_boundary(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase06_yearly_boundary");
   const boundaries = world.transientContext?.boundaries;
-  // 0.2 Global Cup & Worlds Exhibition (Phase 3)
-  // Option B: Multi-day state machine.
-  // Day 1: Initialize (triggered by yearBoundary)
-  // Day 2-3: Advance (triggered as long as isActive is true)
+  // 0.2 Global Cup — initialize on Jan 1 year boundary.
+  // Advancement runs via phase_global_cup_advance in the off-season pipeline.
   if (boundaries?.yearBoundary && !world.globalCup?.isActive) {
     const cupImpact = GlobalCupService.initializeTournament(world);
-    builder.merge(cupImpact);
-  } else if (world.globalCup?.isActive) {
-    const cupImpact = GlobalCupService.advanceTournament(world);
     builder.merge(cupImpact);
   }
 
@@ -192,16 +187,7 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
     reason: hofNames.length > 0 ? hofNames.join("|") : "None",
   });
 
-  // 8. Global Cup Event - Log if tournament is active
-  if (world.globalCup?.isActive) {
-    builder.logEvent("GLOBAL_CUP", "narrative", {
-      status: world.globalCup.phase,
-      year: world.globalCup.year,
-      participantCount: world.globalCup.participants.length,
-    });
-  }
-
-  // 9. Sync & Increment Authoritative Year (E4/C5)
+  // 8. Sync & Increment Authoritative Year (E4/C5)
   const nextYear = (world.calendar?.year || world.year) + 1;
   builder.updateWorldField("year", nextYear);
   builder.updateWorldField("calendar", { ...world.calendar, year: nextYear });

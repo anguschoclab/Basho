@@ -22,3 +22,4 @@ export * from "./phase02_context";
 export * from "./phase05_monthly_boundary";
 export * from "./phase06_yearly_boundary";
 export * from "./phase06_narrative";
+export * from "./phase_global_cup";

@@ -2,8 +2,6 @@
  * Global Cup Tournament Types
  */
 
-import type { BoutResult } from "./basho";
-
 /** Tournament phase progression */
 export type GlobalCupPhase =
   | "registration"
@@ -11,6 +9,13 @@ export type GlobalCupPhase =
   | "semifinals"
   | "finale"
   | "complete";
+
+/** Simplified bout result for Global Cup matches (not the full engine BoutResult) */
+export interface GlobalCupBoutResult {
+  winner: "east" | "west";
+  winningKimarite: string;
+  duration: number;
+}
 
 /** Individual match in the Global Cup bracket */
 export interface GlobalCupMatch {
@@ -20,7 +25,7 @@ export interface GlobalCupMatch {
   eastRikishiId: string;
   westRikishiId: string;
   winnerRikishiId?: string;
-  result?: BoutResult;
+  result?: GlobalCupBoutResult;
   day: number;
 }
 
