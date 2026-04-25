@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any -- Test file with mock data */
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { phase06_narrative } from "../phase06_narrative";
 import type { WorldState } from "../../../types/world";
 import { mockRikishi } from "../../../__tests__/utils";
+import type { MockHeya } from "../../../../__tests__/types/mockTypes";
 
 describe("Phase 6: Narrative", () => {
   let world: WorldState;
@@ -11,7 +11,7 @@ describe("Phase 6: Narrative", () => {
     vi.clearAllMocks();
     world = {
       playerHeyaId: "heya-1",
-      heyas: new Map([["heya-1", { id: "heya-1", name: "Test Heya", funds: 1000 } as any]]),
+      heyas: new Map<string, MockHeya>([["heya-1", { id: "heya-1", name: "Test Heya", funds: 1000 }]]),
       rikishi: new Map([
         [
           "r1",
@@ -31,6 +31,7 @@ describe("Phase 6: Narrative", () => {
   });
 
   it("returns StateImpact with empty events if deltas are missing", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     world.transientContext!.deltas = undefined as any;
     const impact = phase06_narrative(world);
     expect(impact).toBeDefined();
@@ -45,7 +46,7 @@ describe("Phase 6: Narrative", () => {
     expect(impact.events).toBeDefined();
     expect(impact.events!.length).toBeGreaterThan(0);
     // Event should be logged for injury
-    const injuryEvent = impact.events?.find((e: any) => e.type === "LIFECYCLE_EVENT");
+    const injuryEvent = impact.events?.find((e) => e.type === "LIFECYCLE_EVENT");
     expect(injuryEvent).toBeDefined();
   });
 
@@ -58,7 +59,7 @@ describe("Phase 6: Narrative", () => {
     const impact = phase06_narrative(world);
     expect(impact.events).toBeDefined();
     // Event should be logged for insolvency
-    const insolvencyEvent = impact.events?.find((e: any) => e.type === "FINANCIAL_ALERT");
+    const insolvencyEvent = impact.events?.find((e) => e.type === "FINANCIAL_ALERT");
     expect(insolvencyEvent).toBeDefined();
   });
 
@@ -70,7 +71,7 @@ describe("Phase 6: Narrative", () => {
 
     const impact = phase06_narrative(world);
     // No financial alert event should be logged
-    const financialEvent = impact.events?.find((e: any) => e.type === "FINANCIAL_ALERT");
+    const financialEvent = impact.events?.find((e) => e.type === "FINANCIAL_ALERT");
     expect(financialEvent).toBeUndefined();
   });
 
@@ -87,7 +88,7 @@ describe("Phase 6: Narrative", () => {
     const impact = phase06_narrative(world);
     expect(impact.events).toBeDefined();
     // Event should be logged for training milestone
-    const milestoneEvent = impact.events?.find((e: any) => e.type === "TRAINING_UPDATE");
+    const milestoneEvent = impact.events?.find((e) => e.type === "TRAINING_UPDATE");
     expect(milestoneEvent).toBeDefined();
   });
 });

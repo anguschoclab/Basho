@@ -17,7 +17,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { RefreshCw, Dices, ChevronRight, Database } from "lucide-react";
 
 import { makeDeterministicSeed, safeShortSeed } from "@/utils/engineUtils";
-import { HeyaCard, STATURE_CONFIG } from "@/components/menu/HeyaCard";
+import { HeyaCard } from "@/components/menu/HeyaCard";
+import { STATURE_CONFIG } from "@/components/menu/statureConfig";
 import { SaveSlotManager } from "@/components/menu/SaveSlotManager";
 import { HeyaPreview } from "@/components/menu/HeyaPreview";
 import { RANK_HIERARCHY, projectHeyaRosterWithAge } from "@/presenters/uiDigest";
@@ -30,7 +31,7 @@ export default function MainMenu() {
   const game = useGame();
 
   const { createWorld, state, loadFromSlot, loadFromAutosave, hasAutosave, getSaveSlots } =
-    game as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    game as { createWorld: (seed: string, playerHeyaId?: string) => void; state: { world?: { seed: string; heyas: Map<string, Heya> } }; loadFromSlot: (slot: string) => boolean; loadFromAutosave: () => void; hasAutosave: () => boolean; getSaveSlots: () => unknown[] };
 
   const [seed, setSeed] = useState("");
   const [showSeedInput, setShowSeedInput] = useState(false);
@@ -47,7 +48,7 @@ export default function MainMenu() {
     } else if (state.world?.seed && seed !== state.world.seed) {
       setSeed(state.world.seed);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Intentionally omitting createWorld and seed
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- createWorld is stable from context; seed is managed internally
   }, [state?.world]);
 
   const stables = useMemo(() => {

@@ -2,7 +2,7 @@
 import type { WorldState } from "@/engine/types/world";
 import { autosave as rawAutosave } from "@/engine/saveload";
 import { signalAutosave } from "@/hooks/useAutosaveIndicator";
-import { getAutosaveEnabled } from "@/pages/SettingsPage";
+import { getAutosaveEnabled } from "@/pages/settingsHelpers";
 
 // Module-level state to track autosave progress and prevent overlaps
 let saveInProgress = false;

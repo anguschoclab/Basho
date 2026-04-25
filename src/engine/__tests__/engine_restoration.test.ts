@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { describe, it, expect } from "vitest";
 import { generateInitialWorld } from "../systems/generation/WorldFactory";
 import { WorldState } from "../types/world";
@@ -17,10 +16,10 @@ describe("Engine Restoration Verification", () => {
   it("should initialize the talent pool", () => {
     expect(world1.talentPool).toBeDefined();
     // Talent pool structure is initialized but candidates are added during weekly ticks
-    expect(Object.keys(world1.talentPool!.candidates).length).toBe(0);
+    expect(Object.keys(world1.talentPool?.candidates ?? {}).length).toBe(0);
 
     // Check if pools have hidden candidates
-    expect(world1.talentPool!.pools.high_school.candidatesHidden.length).toBeGreaterThanOrEqual(0);
+    expect(world1.talentPool?.pools.high_school.candidatesHidden.length).toBeGreaterThanOrEqual(0);
   });
 
   it("should be deterministic (same seed, same world)", () => {
