@@ -135,11 +135,14 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
     builder.updateWorldField("staff", nextStaff);
   }
 
-  // 5. Rikishi Avatar Aging
+  // 5. Rikishi Avatar Aging & Physical Aging
   if (world.rikishi) {
     for (const [id, r] of world.rikishi) {
       const age = world.year - r.birthYear;
       const isSekitori = r.division === "makuuchi" || r.division === "juryo";
+
+      // Explicitly update rikishi age property for metrics and checks
+      builder.updateRikishi(id, { age });
 
       if (r.avatarConfig) {
         const updated = updateAvatarForAging(r.avatarConfig, age);

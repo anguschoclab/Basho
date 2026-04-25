@@ -57,6 +57,7 @@ function createBaseInfo(
 
     height,
     weight,
+    age,
 
     behavior: { discipline: 70, mediaSavvy: 50, stress: 0 },
     personalityTraits: [],

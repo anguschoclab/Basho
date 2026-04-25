@@ -58,7 +58,7 @@ export function tickWeekTalentPool(world: WorldState): StateImpact {
   for (const pt of ["high_school", "university", "foreign"] as const) {
     const pool = { ...nextPools[pt] };
     if (pool.candidatesHidden.length > 0) {
-      const count = rng.int(3, 5);
+      const count = rng.int(10, 15);
       for (let i = 0; i < count; i++) {
         const cId = pool.candidatesHidden.shift();
         if (cId) {
@@ -77,9 +77,14 @@ export function tickWeekTalentPool(world: WorldState): StateImpact {
     playerScouting: nextScouting,
   });
 
-  // 5. Periodic pool refresh logic (basho cadence)
-  if (world.calendar && world.calendar.month % 2 !== 0 && world.calendar.currentDay === 1) {
+  // 5. Periodic pool refresh logic (basho cadence) or emergency demographic floor
+  const population = world.rikishi.size;
+  const isEmergency = population < 500;
+  if (isEmergency || (world.calendar && world.calendar.month % 2 !== 0 && world.calendar.currentDay === 1)) {
     builder.merge(refreshAllPools(world));
+    if (isEmergency) {
+      console.log(`[RECRUITMENT] Emergency demographic floor triggered. Population: ${population}. Refreshing pools.`);
+    }
   }
 
   return builder.build();
