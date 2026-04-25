@@ -7,7 +7,7 @@ Current focus appears to be migrating and solidifying daily tick pipelines (e.g.
 📖 Basho Constitution Alignment:
 ✅ Aligned: NPC AI uses `buildPerceptionSnapshot` to prevent cheating (A7.1). Roster overflow management successfully integrates `enforceHardCapRosterOverflow` (C4.3). The hysteresis buffer in `NarrativeService.ts` strictly implements `HYSTERESIS_DELTA = 5` (C5.3).
 
-⚠️ Missing/Deviations: The injury perception logic in `src/engine/descriptorBands.ts` implements `hampered` and `taped_up` but is missing the specific modifiers `favoring_it` and `moving_gingerly` outlined in section C5.4.
+⚠️ Missing/Deviations: The injury perception logic in src/engine/descriptorBands.ts implements sidelined, hampered, and taped_up but is missing the specific modifiers favoring_it and moving_gingerly outlined in section C5.4.
 
 📄 Proposed Documentation Updates:
 docs/architecture.md: Add summary of the Strict Pipeline Architecture, StateImpact builder, and narrative hysteresis implementation.
