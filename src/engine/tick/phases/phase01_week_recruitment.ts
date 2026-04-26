@@ -82,7 +82,7 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
       }
     }
     if (hasItems) {
-      builder.merge(talentpool.fillVacanciesForNPC(world, smallStables));
+      builder.merge(talentpool.fillVacanciesForNPCWithBidding(world, smallStables));
     }
   }
 

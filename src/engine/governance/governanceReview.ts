@@ -19,10 +19,10 @@ import { generateOyakata } from "../oyakataPersonalities";
 import { onRikishiRetired } from "../records";
 import { updateAvatarForAging } from "../avatarGenerator";
 import { recordOyakataHandover } from "../lineage";
+import { LegacyService } from "../systems/legacy/LegacyService";
 import { rngForWorld } from "../rng";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
-import { mergeImpacts } from "../core/ImpactResolver";
 import {
   LOAN_ISSUANCE_THRESHOLD,
   MERGER_THRESHOLD,
@@ -417,6 +417,9 @@ export function runRetirements(world: WorldState): StateImpact {
           }
         }
       }
+
+      // Register bloodline trait if the retiree was accomplished (yokozuna/ozeki/sekiwake)
+      builder.merge(LegacyService.registerLegacyTrait(world, r));
 
       // Merge retirement impact (records, etc.)
       builder.merge(onRikishiRetired(world, id));

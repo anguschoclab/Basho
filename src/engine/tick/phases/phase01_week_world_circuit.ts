@@ -1,26 +1,23 @@
 import type { WorldState } from "../../types/world";
-import type { DailyTickReport } from "../tickDaily";
+import type { StateImpact } from "../../core/StateImpact";
 import { WorldCircuitService } from "../../systems/global/WorldCircuitService";
-import { applyImpact } from "../../core/ImpactResolver";
+import { createImpactBuilder } from "../../core/ImpactBuilder";
+import { mergeImpacts } from "../../core/ImpactResolver";
 
 /**
  * Phase: World Circuit Processing (Weekly)
- * 1. Process style drift for all heyas.
- * 2. Generate invitations if it's the right week (e.g., every 8 weeks).
+ * 1. Process style drift for all heyas (when enableStyleDrift is on).
  */
-export function phase01_week_world_circuit(world: WorldState, report: DailyTickReport): WorldState {
-  let nextWorld = world;
-  report.subsystemsRun.push("world_circuit");
+export function phase01_week_world_circuit(world: WorldState): StateImpact {
+  const builder = createImpactBuilder("phase01_week_world_circuit");
 
-  // 1. Apply Style Drift for all heyas (if enabled)
-  if (world.settings?.enableStyleDrift) {
-    for (const heyaId of world.heyas.keys()) {
-      const driftImpact = WorldCircuitService.applyStyleDrift(nextWorld, heyaId);
-      nextWorld = applyImpact(nextWorld, driftImpact);
-    }
+  // Apply Style Drift for all heyas (if enabled)
+  if (!world.settings?.enableStyleDrift) return builder.build();
+
+  const impacts: StateImpact[] = [builder.build()];
+  for (const heyaId of world.heyas.keys()) {
+    impacts.push(WorldCircuitService.applyStyleDrift(world, heyaId));
   }
 
-  // 2. Yearly Invitations (REMOVED: Now handled by phase06_yearly_boundary for all stables)
-
-  return nextWorld;
+  return mergeImpacts(impacts);
 }

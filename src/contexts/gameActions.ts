@@ -110,6 +110,12 @@ export const upgradeHeya = (heyaId: string, axis: "training" | "recovery" | "nut
   points,
 });
 
+export const buildInfrastructure = (heyaId: string, facilityId: import("@/engine/types/infrastructure").FacilityId): GameAction => ({
+  type: "BUILD_INFRASTRUCTURE",
+  heyaId,
+  facilityId,
+});
+
 export const recruitStaff = (heyaId: string, role: any): GameAction => ({
   type: "RECRUIT_STAFF",
   heyaId,
