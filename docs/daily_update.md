@@ -1,17 +1,17 @@
 📝 Daily Progress & Docs Update
 🏗️ Codebase Status:
-The core engine heavily utilizes a Web Worker (`engine.worker.ts`) and a Strict Pipeline Architecture (`src/engine/tick/`) to process simulation phases. The strict separation of concerns is actively maintained: the engine processes `StateImpact` and uses `buildPerceptionSnapshot` to emit bounded data, ensuring UI layers (`src/presenters/`, `src/pages/`) only consume observable projections without leaking hidden engine truths.
+Recently integrated large parts of the game engine including state modeling (WorldState, HeyaState), tick processing via Web Worker, and various new utility/projection layers. Unwired services like MochikyukinService and InfrastructureService still exist.
 
-Current focus appears to be migrating and solidifying daily tick pipelines (e.g., `phase01_week_npc_ai.ts`, `phase01_daily_welfare.ts`) and implementing Narrative and Welfare services.
+Current focus is understanding the recent codebase changes and analyzing the unwired systems to prepare for the implementation of the missing features like MochikyukinService or properly removing orphaned code.
 
 📖 Basho Constitution Alignment:
-✅ Aligned: NPC AI uses `buildPerceptionSnapshot` to prevent cheating (A7.1). Roster overflow management successfully integrates `enforceHardCapRosterOverflow` (C4.3). The hysteresis buffer in `NarrativeService.ts` strictly implements `HYSTERESIS_DELTA = 5` (C5.3). The injury perception logic in `src/engine/descriptorBands.ts` correctly implements `sidelined`, `hampered`, `favoring_it`, `moving_gingerly`, and `taped_up` (C5.4).
+✅ Aligned: Various core features are wired up such as InjuryService rolling weekly injuries, and EraDriftService processing yearly era drifts.
 
-⚠️ Missing/Deviations: All known deviations related to C5.4 have been addressed.
+⚠️ Missing/Deviations: The `MochikyukinService` for rikishi bonuses is currently unwired. The `WorldCircuitService` lacks resolution mechanics, and `KeshoMawashiFactory` is fully orphaned.
 
 📄 Proposed Documentation Updates:
-docs/architecture.md: Add summary of the Strict Pipeline Architecture, StateImpact builder, and narrative hysteresis implementation.
+docs/architecture.md: Update to reflect current integration status of Web Worker and Strict Pipeline Architecture.
 
-Code Paths Covered: `src/engine/tick/*`, `src/engine/systems/narrative/*`, `src/engine/descriptorBands.ts`, `src/presenters/*`
+Code Paths Covered: `src/engine/systems/economics/MochikyukinService.ts`, `src/engine/systems/global/WorldCircuitService.ts`, `src/engine/systems/keshoMawashi/KeshoMawashiFactory.ts`
 
-Key Knowledge Gaps Addressed: Validated UI projection constraints against engine truths and updated injury perception logic to fully align with C5.4 of the constitution.
+Key Knowledge Gaps Addressed: Identified several critical unwired systems per the unwired-systems-audit-VERIFIED.md report that need attention.
