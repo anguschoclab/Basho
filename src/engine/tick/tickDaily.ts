@@ -82,7 +82,7 @@ export function advanceOneDay(world: WorldState): WorldState {
   };
 
   const daysSinceTick = (nextWorld._daysSinceLastWeeklyTick ?? 0) + 1;
-  const isWeeklyTick = daysSinceTick === 7;
+  const isWeeklyTick = daysSinceTick >= 7;
 
   // 2. Determine which phases to run
   const activePhases: import("./pipelineRunner").PipelinePhase[] = [

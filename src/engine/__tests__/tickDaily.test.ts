@@ -2,6 +2,8 @@ import { describe, it, expect } from "vitest";
 import { advanceOneDay } from "../tick/tickDaily";
 import type { WorldState } from "../types/world";
 
+// Minimal stub for counter testing only. Weekly phases will throw/skip on this empty
+// world — that is expected. These tests verify counter state only, not phase execution.
 function makeMinimalWorld(): WorldState {
   return {
     id: "test",
@@ -60,5 +62,13 @@ describe("weekly tick counter", () => {
       if (world._daysSinceLastWeeklyTick === 0) weeklyFires++;
     }
     expect(weeklyFires).toBe(7);
+  });
+
+  it("recovers and fires within 1 day if counter somehow starts above 7", () => {
+    // If a saved game has a corrupted counter value > 7, the tick should fire immediately
+    let world = { ...makeMinimalWorld(), _daysSinceLastWeeklyTick: 10 };
+    world = advanceOneDay(world);
+    // (10 ?? 0) + 1 = 11, 11 >= 7 → fires, resets to 0
+    expect(world._daysSinceLastWeeklyTick).toBe(0);
   });
 });
