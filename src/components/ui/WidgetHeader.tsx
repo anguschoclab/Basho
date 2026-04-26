@@ -6,6 +6,7 @@
 
 import { cn } from "@/lib/utils";
 import { LucideIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface WidgetHeaderProps {
   title: string;
@@ -35,13 +36,14 @@ export function WidgetHeader({ title, icon: Icon, action, className }: WidgetHea
         <h3 className="text-sm font-display font-bold tracking-tight">{title}</h3>
       </div>
       {action && (
-        <button
+        <Button
+          variant="ghost"
           onClick={action.onClick}
           title={action.tooltip}
-          className="text-[10px] font-bold uppercase tracking-widest text-primary hover:text-primary/80 transition-colors"
+          className="text-[10px] font-bold uppercase tracking-widest text-primary hover:text-primary/80 h-auto p-1"
         >
           {action.label}
-        </button>
+        </Button>
       )}
     </div>
   );
