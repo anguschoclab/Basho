@@ -92,18 +92,22 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
   // 6. Auto-assign mentors to newly recruited rikishi
   // Note: we look at CURRENT world state, but changes will be captured in impacts
   for (const heya of world.heyas.values()) {
-    const heyaRikishi = (heya.rikishiIds ?? []).map((id) => world.rikishi.get(id)).filter(Boolean);
+    // ⚡ Bolt Optimization: Use a single loop instead of chained .map().filter().map()
+    // This avoids intermediate array allocations and redundant iteration
+    const potentialMentors: string[] = [];
+    const juniorsWithoutMentors: Rikishi[] = [];
 
-    const potentialMentors = heyaRikishi
-      .filter(
-        (r): r is Rikishi =>
-          !!r && (r.division === "makuuchi" || r.division === "juryo" || r.experience > 50)
-      )
-      .map((r) => r.id);
-
-    const juniorsWithoutMentors = heyaRikishi.filter(
-      (r): r is Rikishi => !!r && !r.mentorId && r.experience < 30
-    );
+    for (const id of heya.rikishiIds ?? []) {
+      const r = world.rikishi.get(id);
+      if (r) {
+        if (r.division === "makuuchi" || r.division === "juryo" || r.experience > 50) {
+          potentialMentors.push(r.id);
+        }
+        if (!r.mentorId && r.experience < 30) {
+          juniorsWithoutMentors.push(r);
+        }
+      }
+    }
 
     for (const junior of juniorsWithoutMentors) {
       if (!junior) continue;

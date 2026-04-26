@@ -21,3 +21,9 @@
 ## 2026-05-18 - Avoid O(N*M) Dictionary Trimming in Loops
 **Learning:** The original `tickWeekEvents` created massive overhead by fully rebuilding the `eventsState.dedupe` object using `Object.keys().filter()` *inside* a loop for every single pruned event. This (N^2)$ algorithm completely blocked simulation determinism scripts.
 **Action:** Optimized large state object trimming by switching to a two-pass approach. First pass: loop over the log and collect all `prefix`es to prune into a `Set<string>`. Second pass: construct a `newDedupe` object via a single `for...in` loop outside the main event loop, discarding any keys that match the collected prefixes, and assign it back to state immutably.
+## 2024-05-18 - [Array Method Chaining Optimization]
+**Learning:** Chained array methods (like `.map().filter().map()`) in hot paths of the simulation engine (such as tick phases running over the roster) cause performance degradation due to multiple redundant iterations and the creation of intermediate arrays.
+**Action:** Replace chained array methods with a single loop (like `for...of`) when iterating over large collections to eliminate intermediate array allocations and reduce iteration overhead.
+## 2024-05-18 - [Array Method Chaining Optimization]
+**Learning:** Chained array methods (like `.map().filter().map()`) in hot paths of the simulation engine (such as tick phases running over the roster) cause performance degradation due to multiple redundant iterations and the creation of intermediate arrays.
+**Action:** Replace chained array methods with a single loop (like `for...of`) when iterating over large collections to eliminate intermediate array allocations and reduce iteration overhead.
