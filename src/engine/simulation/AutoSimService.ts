@@ -6,8 +6,8 @@ import { simulateEntireBasho } from "./TournamentSimulator";
 import { ChronicleService } from "./ChronicleService";
 import { SimTuningService, type TuningMetrics } from "./SimTuningService";
 import type { ChronicleReport } from "../types/records";
-import { RANK_HIERARCHY, updateBanzuke } from "../banzuke";
-import type { BashoPerformance } from "../types/banzuke";
+import { RANK_HIERARCHY } from "../banzuke";
+import { publishBanzukeUpdate } from "../banzuke/BanzukePublisher";
 import { assertNever } from "../utils/types";
 import { phase06_yearly_boundary } from "../tick/phases/phase06_yearly_boundary";
 import { applyImpact } from "../core/ImpactResolver";
@@ -111,54 +111,32 @@ export function runAutoSim(
 
     const nextBashoName = getNextBasho(bashoName);
 
-    // 1. Process Banzuke Updates Immediately Post-Basho
-    const activeRikishi = Array.from(currentWorld.rikishi.values()).filter(r => !r.isRetired);
-    const currentBanzuke = activeRikishi.map(r => ({
-      rikishiId: r.id,
-      division: r.division,
-      position: { rank: r.rank, rankNumber: r.rankNumber, side: r.side }
-    }));
-
-    const perfById = new Map<string, BashoPerformance>();
+    // 1. Build standings map in the format publishBanzukeUpdate expects
+    const standingsForPublish = new Map<string, { wins: number; losses: number; absences: number }>();
     bashoResult.standings.forEach((stats, id) => {
-      perfById.set(id, {
-        rikishiId: id,
+      standingsForPublish.set(id, {
         wins: stats.wins,
         losses: stats.losses,
-        absences: stats.absences || 0
+        absences: (stats as any).absences || 0,
       });
     });
 
-    const banzukeResult = updateBanzuke(
-      currentBanzuke,
-      perfById,
-      currentWorld,
-      currentWorld.ozekiKadoban || {},
-      currentWorld.heyas
-    );
-
-    const nextRikishiMap = new Map(currentWorld.rikishi);
-    banzukeResult.newBanzuke.forEach(e => {
-      const r = nextRikishiMap.get(e.rikishiId);
-      if (r) {
-        nextRikishiMap.set(e.rikishiId, { 
-          ...r, 
-          division: e.division,
-          position: e.position,
-          rank: e.position.rank,
-          side: e.position.side,
-          rankNumber: e.position.rankNumber || 1,
-          currentBashoWins: 0,
-          currentBashoLosses: 0
-        });
-      }
-    });
-
-    currentWorld = {
+    // 2. Inject standings + history record into world before calling publishBanzukeUpdate
+    const worldWithStandings: WorldState = {
       ...currentWorld,
-      rikishi: nextRikishiMap,
-      currentBashoName: nextBashoName,
-      ozekiKadoban: banzukeResult.updatedOzekiKadoban,
+      cyclePhase: "post_basho",
+      _postBashoDays: 7,
+      currentBasho: currentWorld.currentBasho
+        ? { ...currentWorld.currentBasho, standings: standingsForPublish }
+        : {
+            bashoName: bashoName,
+            year: currentWorld.year,
+            bashoNumber: getBashoNumber(bashoName) as 1 | 2 | 3 | 4 | 5 | 6,
+            day: 15,
+            matches: [],
+            standings: standingsForPublish,
+            isActive: false,
+          },
       history: [
         ...(currentWorld.history || []),
         {
@@ -166,15 +144,22 @@ export function runAutoSim(
           year: currentWorld.year,
           bashoNumber: getBashoNumber(bashoName),
           yusho: bashoResult.yushoWinner.id,
-          junYusho: bashoResult.junYusho,
+          junYusho: bashoResult.junYusho ?? [],
+          ginoSho: (bashoResult as any).ginoSho ?? null,
+          shukunsho: (bashoResult as any).shukunsho ?? null,
+          kantosho: (bashoResult as any).kantosho ?? null,
           prizes: {
             yushoAmount: 10_000_000,
             junYushoAmount: 2_000_000,
             specialPrizes: 2_000_000,
           },
-        } as BashoResult,
+        } as any,
       ],
     };
+
+    // 3. Run publishBanzukeUpdate — handles yokozuna promotion, careerHistory, council warnings
+    const banzukeImpact = publishBanzukeUpdate(worldWithStandings);
+    currentWorld = applyImpact(worldWithStandings, banzukeImpact);
 
     // 2. Advance through off-season phases to trigger yearly boundary & training
     currentWorld = enterPostBasho(currentWorld);

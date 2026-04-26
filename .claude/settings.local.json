@@ -80,7 +80,14 @@
       "Bash(dir \".claude\")",
       "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('scripts',{}\\), indent=2\\)\\)\")",
       "Bash(bun scripts/headless-sim-25yr.ts)",
-      "Bash(bun tsc *)"
+      "Bash(bun tsc *)",
+      "Bash(tee /tmp/sim-output.txt)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(echo \"exit: $?\")",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git stash *)",
+      "Bash(git checkout *)"
     ]
   },
   "outputStyle": "default"

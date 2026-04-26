@@ -22,6 +22,9 @@ export function simulateEntireBasho(
 ): BashoSimResult {
   const basho = initializeBasho(world, bashoName);
 
+  // Set currentBasho on world so the impact resolver can append matches to it
+  world.currentBasho = basho;
+
   const standings = new Map<string, { wins: number; losses: number }>();
   const keyBouts: BoutResult[] = [];
   const injuries: string[] = [];
@@ -49,9 +52,12 @@ export function simulateEntireBasho(
     }
   }
 
+  // After schedule generation, read matches from world.currentBasho (impact resolver put them there)
+  const activeBasho = world.currentBasho ?? basho;
+
   // Simulate all 15 days
   for (let day = 1; day <= 15; day++) {
-    const dayMatches = basho.matches.filter((m) => m.day === day && !m.result);
+    const dayMatches = activeBasho.matches.filter((m) => m.day === day && !m.result);
 
     for (let boutIndex = 0; boutIndex < dayMatches.length; boutIndex++) {
       const match = dayMatches[boutIndex];
@@ -202,7 +208,7 @@ export function simulateEntireBasho(
 
   // 3. Update Global Kimarite Stats
   const globalKimariteStats = { ...(world.globalKimariteStats || {}) };
-  basho.matches.forEach(m => {
+  activeBasho.matches.forEach(m => {
     if (m.result?.kimarite) {
       globalKimariteStats[m.result.kimarite] = (globalKimariteStats[m.result.kimarite] || 0) + 1;
     }
