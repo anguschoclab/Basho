@@ -41,9 +41,8 @@ export function checkRetirement(
   if (rikishi.rank === "yokozuna" && age >= 40) return "Yokozuna Mandatory Retirement";
 
   // 2. Injury Forced Retirement
-  const severity =
-    typeof rikishi.injuryStatus?.severity === "number" ? rikishi.injuryStatus.severity : 0;
-  if (rikishi.injuryStatus?.isInjured && severity > 90) {
+  // Career-ending: serious injury (from weekly health phase) with >20 weeks remaining
+  if (rikishi.injured && rikishi.currentInjury?.severity === "serious" && (rikishi.injuryWeeksRemaining ?? 0) > 20) {
     return "Career-Ending Injury";
   }
 
