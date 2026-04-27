@@ -4,7 +4,7 @@
  * Real-time event feed for dashboard showing Global Cup and other game events.
  */
 
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { Trophy, Bell, TrendingUp, AlertTriangle, Info, ShieldAlert, Zap, Target } from "lucide-react";
 import { useGameStore } from "@/store/gameStore";
 import { WidgetCard } from "@/components/ui/WidgetCard";
@@ -39,6 +39,24 @@ const typeIcons: Record<string, React.ReactNode> = {
 function formatEventTime(event: EngineEvent): string {
   return `Year ${event.year}, Week ${event.week}`;
 }
+
+const EventFeedItem = React.memo(({ event }: { event: EngineEvent }) => {
+  const Icon = typeIcons[event.type] || typeIcons.default;
+  const importanceClass = importanceStyles[event.importance] || importanceStyles.notable;
+
+  return (
+    <div
+      className={`flex gap-3 p-2 rounded hover:bg-slate-800/50 transition-colors ${importanceClass}`}
+    >
+      <div className="mt-0.5 flex-shrink-0">{Icon}</div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-slate-200 truncate">{event.title}</p>
+        <MentionText text={event.summary} className="text-xs text-slate-400 line-clamp-2" />
+        <p className="text-xs text-slate-500 mt-1">{formatEventTime(event)}</p>
+      </div>
+    </div>
+  );
+}, (prev, next) => prev.event.id === next.event.id);
 
 export function EventFeed({ maxEvents = 10, filterTypes, minImportance }: EventFeedProps) {
   const workerWorld = useGameStore((s) => s.workerWorld);
@@ -77,24 +95,9 @@ export function EventFeed({ maxEvents = 10, filterTypes, minImportance }: EventF
         {events.length === 0 ? (
           <p className="text-sm text-slate-500 italic">No recent events</p>
         ) : (
-          events.map((event: EngineEvent) => {
-            const Icon = typeIcons[event.type] || typeIcons.default;
-            const importanceClass = importanceStyles[event.importance] || importanceStyles.notable;
-
-            return (
-              <div
-                key={event.id}
-                className={`flex gap-3 p-2 rounded hover:bg-slate-800/50 transition-colors ${importanceClass}`}
-              >
-                <div className="mt-0.5 flex-shrink-0">{Icon}</div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-slate-200 truncate">{event.title}</p>
-                  <MentionText text={event.summary} className="text-xs text-slate-400 line-clamp-2" />
-                  <p className="text-xs text-slate-500 mt-1">{formatEventTime(event)}</p>
-                </div>
-              </div>
-            );
-          })
+          events.map((event: EngineEvent) => (
+            <EventFeedItem key={event.id} event={event} />
+          ))
         )}
       </div>
     </WidgetCard>
