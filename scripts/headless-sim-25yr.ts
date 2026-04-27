@@ -138,6 +138,7 @@ console.log(`World initialised: ${world.rikishi.size} rikishi, ${world.heyas.siz
 // Simulate year by year for visibility
 let currentWorld = world;
 let totalErrors = 0;
+let weeklyTickVerified = false;
 
 for (let yr = 0; yr < YEARS; yr++) {
   const yearErrors: string[] = [];
@@ -167,6 +168,12 @@ for (let yr = 0; yr < YEARS; yr++) {
   const prev = yearSnapshots.at(-1) ?? null;
   const anomalies = checkAnomalies(snap, prev);
   yearSnapshots.push(snap);
+
+  const maxFunds = Math.max(...Array.from(currentWorld.heyas.values()).map(h => h.funds));
+  if (!weeklyTickVerified && maxFunds > 15_000_000) {
+    weeklyTickVerified = true;
+    console.log(`  ✓ Weekly income confirmed (max heya funds: ¥${(maxFunds / 1e6).toFixed(1)}M)`);
+  }
 
   const flagged = anomalies.length > 0 || yearErrors.length > 0;
   const marker = flagged ? "⚠" : "✓";
@@ -227,5 +234,7 @@ if (yearSnapshots.length > 1) {
   console.log(`\nRikishi drift: ${first.rikishiActive} → ${final.rikishiActive} active over ${YEARS} years`);
   console.log(`Heya drift: ${first.heyaCount} → ${final.heyaCount}`);
 }
+
+console.log(`\nWeekly tick verified: ${weeklyTickVerified ? "✓ YES" : "✗ NO — income never ran"}`);
 
 console.log(`\n${"═".repeat(70)}\n`);

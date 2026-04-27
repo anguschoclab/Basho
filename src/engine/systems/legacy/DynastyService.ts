@@ -101,7 +101,7 @@ export const DynastyService = {
     // 1.5. Drought Fallback: Senior Makushita from current roster
     if (eligible.length === 0) {
       for (const rikishi of world.rikishi.values()) {
-        if (rikishi.heyaId === heyaId && rikishi.division === "makushita" && (rikishi.position.rankNumber || 99) <= 10) {
+        if (rikishi.heyaId === heyaId && rikishi.division === "makushita" && (rikishi.rankNumber || 99) <= 10) {
           eligible.push(rikishi.id);
         }
       }
