@@ -23,7 +23,7 @@ const SponsorContractItem = React.memo(({
   s,
   onRenegotiate
 }: {
-  s: any;
+  s: NonNullable<ReturnType<typeof projectSponsorUIDigest>>["activeSponsors"][number];
   onRenegotiate: (relId: string, name: string, sponsorId: string) => void;
 }) => {
   const tierInfo = TIER_LABELS[s.tier] || {
