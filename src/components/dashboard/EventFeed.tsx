@@ -56,7 +56,7 @@ const EventFeedItem = React.memo(({ event }: { event: EngineEvent }) => {
       </div>
     </div>
   );
-});
+}, (prev, next) => prev.event.id === next.event.id);
 
 export function EventFeed({ maxEvents = 10, filterTypes, minImportance }: EventFeedProps) {
   const workerWorld = useGameStore((s) => s.workerWorld);
