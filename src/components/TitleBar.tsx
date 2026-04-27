@@ -81,7 +81,7 @@ export function TitleBar({ title = "Sumo Manager Pro" }: TitleBarProps) {
           variant="ghost"
           size="icon"
           onClick={handleMaximize}
-          className="w-8 h-8 rounded-none hover:bg-muted text-muted-foreground hover:text-foreground"
+          className="w-8 h-8 rounded-none hover:bg-muted text-muted-foreground hover:text-foreground [&_svg]:size-3"
           aria-label={isMaximized ? "Restore" : "Maximize"}
         >
           <Square size={12} />
