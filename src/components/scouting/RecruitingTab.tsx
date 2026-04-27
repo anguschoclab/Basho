@@ -22,14 +22,11 @@ import { useGameStore } from "@/store/gameStore";
 import { RecruitSigningDialog } from "@/components/game/RecruitSigningDialog";
 import {
   projectRecruitmentUIDigest,
-  scoutPool,
-  scoutCandidate,
-  offerCandidate,
-  describeScoutingLevel,
   resolveRegistryLabel,
 } from "@/presenters/uiDigest";
+import { describeScoutingLevel } from "@/engine/systems/recruitment/ScoutingService";
 import { getHeyaForeignUsage } from "@/engine/utils/citizenshipUtils";
-import type { TalentCandidate } from "@/engine/types/talent";
+import type { CandidateDigestEntry } from "@/presenters/projections/boutProjections";
 import { getStableRikishi } from "@/engine/queries";
 import { CompareModePanel } from "./CompareModePanel";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -48,14 +45,7 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
   const [showCompare, setShowCompare] = useState(false);
 
-  type CandidateDigestEntry = TalentCandidate & {
-    scoutLevel: number;
-    scoutInfo: string;
-    scoutedProgress?: number;
-    scoutingInvestment?: string;
-  };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex candidate type from projectRecruitmentUIDigest
-  const [signingCandidate, setSigningCandidate] = useState<any>(null);
+  const [signingCandidate, setSigningCandidate] = useState<CandidateDigestEntry | null>(null);
 
   const digest = useMemo(() => {
     if (!world) return { candidates: [] };
@@ -102,8 +92,7 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
     });
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex candidate type from projectRecruitmentUIDigest
-  const handleOfferClick = (candidate: any) => {
+  const handleOfferClick = (candidate: CandidateDigestEntry) => {
     setSigningCandidate(candidate);
   };
 
