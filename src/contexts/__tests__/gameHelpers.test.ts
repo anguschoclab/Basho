@@ -2,11 +2,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { autosaveWithSignal } from "../gameHelpers";
-import { getAutosaveEnabled } from "../../pages/SettingsPage";
+import { getAutosaveEnabled } from "../../pages/settingsHelpers";
 import { autosave, saveGame } from "../../engine/saveload";
 
 // Mock dependencies
-vi.mock("../../pages/SettingsPage", () => ({
+vi.mock("../../pages/settingsHelpers", () => ({
   getAutosaveEnabled: vi.fn(),
 }));
 

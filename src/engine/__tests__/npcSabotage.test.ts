@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach } from "vitest";
 import { WorldState } from "../types/world";
 import { Heya } from "../types/heya";
 import { Oyakata } from "../types/oyakata";

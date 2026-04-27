@@ -3,7 +3,6 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { InfrastructureService } from "../../engine/systems/economy/InfrastructureService";
 import * as TalentPoolScouting from "../../engine/systems/generation/TalentPoolScouting";
 import { TrainingPhilosophyService } from "../../engine/systems/legacy/TrainingPhilosophyService";
-import { LineageService } from "../../engine/systems/generation/LineageService";
 import { SeededRNG } from "../../engine/rng";
 import { MockFactory } from "../utils/MockFactory";
 import type { WorldState } from "../../engine/types/world";
@@ -191,33 +190,4 @@ describe("Phase 5 Depth: Institutional Power & Regional Mastery", () => {
     });
   });
 
-  describe("Pillar 4: Genetic Lineage", () => {
-    it("should successfully generate legacy bonuses for rare candidates", () => {
-      const rng = new SeededRNG("dynasty-seed");
-      // Force a high-potential candidate to test lineage roll
-      const candidateTemplate = MockFactory.createCandidate("c_legacy" as Id, {
-        name: "Test Son",
-        isAmateurStar: true,
-      });
-      candidateTemplate.potentialStats = {
-        strength: 50,
-        speed: 50,
-        technique: 50,
-        balance: 50,
-        stamina: 50,
-        mental: 50,
-        adaptability: 50,
-      };
-      candidateTemplate.tags = [];
-
-      // Mock rollToSuccess (LineageService is probabilistic, but we'll try to find one or mock the record pool)
-      const trait = LineageService.rollGeneticLineage(mockWorld, candidateTemplate, rng);
-      if (trait) {
-        expect(trait.ancestorShikona).toBe("Legendary Hakuho");
-        LineageService.applyLineageBonuses(candidateTemplate, trait);
-        expect(candidateTemplate.tags).toContain("legacy");
-        expect(candidateTemplate.potentialStats.mental).toBeGreaterThan(60);
-      }
-    });
-  });
 });

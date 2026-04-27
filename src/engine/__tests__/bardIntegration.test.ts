@@ -20,6 +20,7 @@ describe("Bard Engine Integration", () => {
       week: 2,
       dayIndexGlobal: 1,
       heyas: new Map([["heya-1", { id: "heya-1", name: "Test Heya", reputation: 50 }]]),
+      rikishi: new Map(),
       talentPool: {
         candidates: {
           c1: {
@@ -32,9 +33,9 @@ describe("Bard Engine Integration", () => {
           },
         },
         pools: {
-          high_school: { candidatesVisible: ["c1"] },
-          university: { candidatesVisible: [] },
-          foreign: { candidatesVisible: [] },
+          high_school: { candidatesVisible: ["c1"], candidatesHidden: [] },
+          university: { candidatesVisible: [], candidatesHidden: [] },
+          foreign: { candidatesVisible: [], candidatesHidden: [] },
         },
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Test mock

@@ -93,7 +93,8 @@ export function evaluateRulesExclusive(ctx: StrategyContext, rules: StrategyRule
     const impact = evaluateRule(ctx, rule);
     const hasChanges = (impact.entities && Object.keys(impact.entities).length > 0) || 
                        (impact.worldFields && Object.keys(impact.worldFields).length > 0) ||
-                       (impact.arrayAppends && impact.arrayAppends.length > 0);
+                       (impact.arrayAppends && impact.arrayAppends.length > 0) ||
+                       (impact.events && impact.events.length > 0);
     if (hasChanges) {
       return impact; // Stop after first match
     }
