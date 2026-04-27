@@ -94,6 +94,10 @@ describe("governanceReview", () => {
         funds: MERGER_THRESHOLD - 1000,
         runwayBand: "desperate"
       });
+      // Add rikishi to avoid triggering low-roster merger logic simultaneously
+      world.rikishi.set("r-m1", mockRikishi("r-m1", { heyaId: "heya-poor" }));
+      world.rikishi.set("r-m2", mockRikishi("r-m2", { heyaId: "heya-poor" }));
+      world.rikishi.set("r-m3", mockRikishi("r-m3", { heyaId: "heya-poor" }));
       world.heyas.set("heya-poor", poorHeya);
 
       const targetHeya = makeMockHeya("heya-target", {
