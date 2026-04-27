@@ -9,6 +9,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { useNavigate } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

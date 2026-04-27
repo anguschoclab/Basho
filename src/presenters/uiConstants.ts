@@ -72,6 +72,7 @@ export {
 export {
   spendPoliticalCapital,
   getStatusLabel,
+  getStatusColor,
 } from "../engine/governance/GovernanceService";
 export {
   scoutPool,
