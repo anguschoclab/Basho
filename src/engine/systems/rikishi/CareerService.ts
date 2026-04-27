@@ -33,8 +33,10 @@ export const CareerService = {
     const builder = createImpactBuilder("processRetirements");
 
     for (const rikishi of world.rikishi.values()) {
-      if (this.evaluateRetirement(world, rikishi)) {
-        builder.updateRikishi(rikishi.id, { isRetired: true });
+      if (rikishi.isRetired) continue;
+      const reason = checkRetirement(rikishi, world.year, world.seed);
+      if (reason) {
+        builder.retireRikishi(rikishi.id, world.year, reason);
 
         builder.logEvent(
           "RETIREMENT_ANNOUNCED",
