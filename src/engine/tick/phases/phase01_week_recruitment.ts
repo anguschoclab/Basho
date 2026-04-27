@@ -67,13 +67,16 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
   }
 
   // 4. NPC Opportunistic Recruitment
-  if (
-    world.cyclePhase === "interim" &&
-    Math.floor((42 - (world._interimDaysRemaining ?? 0)) / 7) === 3
-  ) {
+  const TARGET_ROSTER_SIZE = 25;
+  const CRITICAL_ROSTER_THRESHOLD = 15;
+  const interimElapsedWeeks = world.cyclePhase === "interim"
+    ? Math.floor((42 - (world._interimDaysRemaining ?? 0)) / 7)
+    : -1;
+
+  // Primary recruitment window: mid-interim (week 3)
+  if (interimElapsedWeeks === 3) {
     const smallStables: Record<string, number> = {};
     let hasItems = false;
-    const TARGET_ROSTER_SIZE = 25;
     for (const h of world.heyas.values()) {
       const currentCount = (h.rikishiIds ?? []).length;
       if (h.id !== world.playerHeyaId && currentCount < TARGET_ROSTER_SIZE) {
@@ -83,6 +86,23 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
     }
     if (hasItems) {
       builder.merge(talentpool.fillVacanciesForNPCWithBidding(world, smallStables));
+    }
+  }
+
+  // Secondary recruitment window: start of interim (week 0), for critically depleted stables only
+  if (interimElapsedWeeks === 0) {
+    const criticalStables: Record<string, number> = {};
+    let hasCritical = false;
+    for (const h of world.heyas.values()) {
+      const currentCount = (h.rikishiIds ?? []).length;
+      if (h.id !== world.playerHeyaId && currentCount < CRITICAL_ROSTER_THRESHOLD) {
+        // Emergency fill: target up to TARGET_ROSTER_SIZE
+        criticalStables[h.id] = Math.max(1, TARGET_ROSTER_SIZE - currentCount);
+        hasCritical = true;
+      }
+    }
+    if (hasCritical) {
+      builder.merge(talentpool.fillVacanciesForNPCWithBidding(world, criticalStables));
     }
   }
 

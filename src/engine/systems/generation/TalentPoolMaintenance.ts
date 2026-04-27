@@ -58,7 +58,9 @@ export function tickWeekTalentPool(world: WorldState): StateImpact {
   for (const pt of ["high_school", "university", "foreign"] as const) {
     const pool = { ...nextPools[pt] };
     if (pool.candidatesHidden.length > 0) {
-      const count = rng.int(10, 15);
+      // Increased from 10-15 to 20-30 per pool per week to ensure sufficient visible
+      // candidates for the two NPC recruitment windows per inter-basho period.
+      const count = rng.int(20, 30);
       for (let i = 0; i < count; i++) {
         const cId = pool.candidatesHidden.shift();
         if (cId) {
