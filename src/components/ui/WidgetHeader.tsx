@@ -39,7 +39,7 @@ export function WidgetHeader({ title, icon: Icon, action, className }: WidgetHea
         <Button
           variant="ghost"
           onClick={action.onClick}
-          title={action.tooltip}
+          tooltip={action.tooltip}
           className="text-[10px] font-bold uppercase tracking-widest text-primary hover:text-primary/80 h-auto p-1"
         >
           {action.label}
