@@ -162,7 +162,7 @@ export default function BashoPage() {
       navigate({ to: "/recap" });
       return;
     }
-    if (!world?.currentBasho) navigate({ to: "/" });
+    if (!world?.currentBasho) navigate({ to: "/dashboard" });
   }, [world, navigate, state.phase]);
 
   // Auto-show player bout logic reconstruction
@@ -216,7 +216,7 @@ export default function BashoPage() {
   const confirmEndBasho = useCallback(() => {
     setShowEndBashoConfirm(false);
     endBasho();
-    navigate({ to: "/" });
+    navigate({ to: "/recap" });
   }, [endBasho, navigate]);
 
   if (!world || !bashoDigest) return null;

@@ -1,190 +1,152 @@
-import React, { useState } from "react";
-import { useGame } from "../contexts/GameContext";
-import { listBashoSummaries } from "../engine/historyIndex";
-import { selectRetiredRikishi } from "../presenters/selectors";
+import { useState } from "react";
+import { AppLayout } from "@/components/layout/AppLayout";
+import { RECORDS_TABS } from "@/constants/navigation";
+import { useGame } from "@/contexts/GameContext";
+import { selectRetiredRikishi } from "@/presenters/selectors";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { PageHeader } from "@/components/layout/control-center";
+import { Trophy, Building2, ScrollText, Crown } from "lucide-react";
 import type {
   WorldState,
   Rikishi,
   Heya,
-  BashoHistorySummary,
   RecordEntry,
-  HoFInductee,
 } from "@/presenters/uiDigest";
 
 /**
  * HistoryDashboard - The Museum of Sumo
  * =====================================
  * A premium archival UI for exploring the 100+ years of simulation history.
+ * Integrated into the Records section with Kokugikan Noir design system.
  */
-export const HistoryDashboard: React.FC = () => {
+export const HistoryDashboard = () => {
   const { state } = useGame();
   const world = state.world;
-  const [activeTab, setActiveTab] = useState<"records" | "hof" | "stables" | "almanac">("records");
+  const [activeTab, setActiveTab] = useState("records");
 
-  if (!world) return <div className="p-12 text-center text-[#5c4033]">No world loaded.</div>;
+  if (!world) {
+    return (
+      <AppLayout pageTitle="Museum" subNavTabs={RECORDS_TABS} activeSubTab="museum">
+        <Card className="paper py-12 text-center">
+          <CardHeader>
+            <CardTitle className="font-display">Museum Unavailable</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-muted-foreground font-body">
+              No world loaded. Start a game to explore the archives.
+            </p>
+          </CardContent>
+        </Card>
+      </AppLayout>
+    );
+  }
 
   return (
-    <div className="history-museum min-h-screen bg-[#1a1a1a] text-[#d4af37] font-serif p-8">
-      <style>
-        {`
-                .history-museum {
-                    background-image: 
-                        linear-gradient(rgba(26, 26, 26, 0.95), rgba(26, 26, 26, 0.95)),
-                        url('https://www.transparenttextures.com/patterns/dark-leather.png') !important;
-                }
-                .record-card {
-                    background: linear-gradient(145deg, #2a2a2a, #1a1a1a);
-                    box-shadow: 5px 5px 15px #0d0d0d, -5px -5px 15px #272727;
-                }
-                .gold-text {
-                    color: #d4af37;
-                    text-shadow: 0 0 5px rgba(212, 175, 55, 0.3);
-                }
-                `}
-      </style>
+    <AppLayout pageTitle="Museum" subNavTabs={RECORDS_TABS} activeSubTab="museum">
+      <div className="space-y-6">
+        <PageHeader
+          eyebrow="── ARCHIVES ──"
+          title="Museum of Sumo"
+          lede="Preserving the legacy of the Dohyo — records, stables, and the history of the world."
+        />
 
-      <header className="text-center mb-12 border-b border-[#d4af37] pb-8">
-        <h1 className="text-5xl uppercase tracking-widest mb-2 font-bold">Museum of Sumo</h1>
-        <p className="text-[#8b7355] italic text-lg">
-          Preserving the legacy of the Dohyo since Year 0
-        </p>
-      </header>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full max-w-2xl grid-cols-2">
+            <TabsTrigger value="records" className="flex items-center gap-2">
+              <Trophy className="h-4 w-4" />
+              Records
+            </TabsTrigger>
+            <TabsTrigger value="stables" className="flex items-center gap-2">
+              <Building2 className="h-4 w-4" />
+              Stables
+            </TabsTrigger>
+          </TabsList>
 
-      <nav className="flex justify-center gap-8 mb-12">
-        {(["records", "hof", "stables", "almanac"] as const).map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`text-xl uppercase tracking-wider pb-2 border-b-2 transition-all ${
-              activeTab === tab
-                ? "border-[#d4af37] text-white"
-                : "border-transparent text-[#5c4033] hover:text-[#d4af37]"
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </nav>
+          <TabsContent value="records">
+            <RecordsTab world={world} />
+          </TabsContent>
 
-      <main className="max-w-6xl mx-auto">
-        {activeTab === "records" && <RecordsTab world={world} />}
-        {activeTab === "hof" && <HallOfFameTab world={world} />}
-        {activeTab === "stables" && <StablesTab world={world} />}
-        {activeTab === "almanac" && <AlmanacTab world={world} />}
-      </main>
-    </div>
+          <TabsContent value="stables">
+            <StablesTab world={world} />
+          </TabsContent>
+        </Tabs>
+      </div>
+    </AppLayout>
   );
 };
 
-const RecordsTab: React.FC<{ world: WorldState }> = ({ world }) => {
+function LeaderboardCard({
+  title,
+  entries,
+  icon: Icon,
+}: {
+  title: string;
+  entries: RecordEntry[];
+  icon: React.ComponentType<{ className?: string }>;
+}) {
+  return (
+    <Card className="paper h-full">
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center gap-2 text-base font-display">
+          <Icon className="h-5 w-5 text-primary" />
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-1">
+          {entries.length === 0 ? (
+            <p className="text-muted-foreground text-center py-6 text-sm font-body">
+              No records yet recorded...
+            </p>
+          ) : (
+            entries.slice(0, 5).map((entry, idx) => (
+              <div
+                key={`${entry.rikishiId}-${idx}`}
+                className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-secondary/50 transition-colors text-sm"
+              >
+                <span
+                  className={`w-5 text-center font-bold font-mono ${
+                    idx < 3 ? "text-primary" : "text-muted-foreground"
+                  }`}
+                >
+                  {idx + 1}
+                </span>
+                <span className="flex-1 font-display truncate">{entry.shikona}</span>
+                <Badge variant="outline" className="font-mono text-xs tabular-nums">
+                  {entry.value}
+                </Badge>
+              </div>
+            ))
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+const RecordsTab = ({ world }: { world: WorldState }) => {
+  const records = world.records || {
+    allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
+  };
+
   const categories = [
-    { label: "All-Time Wins", data: world.records?.allTime?.careerWins || [] },
-    { label: "Top Division Yusho", data: world.records?.allTime?.yusho || [] },
-    { label: "Consecutive Wins", data: world.records?.allTime?.consecutiveYusho || [] },
-    { label: "Kinboshi Collectors", data: world.records?.allTime?.kinboshi || [] },
+    { label: "All-Time Wins", data: records.allTime.careerWins, icon: Crown },
+    { label: "Top Division Yusho", data: records.allTime.yusho, icon: Trophy },
+    { label: "Consecutive Wins", data: records.allTime.consecutiveYusho, icon: ScrollText },
+    { label: "Kinboshi Collectors", data: records.allTime.kinboshi, icon: Trophy },
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-      {categories.map((cat, i) => (
-        <div key={i} className="record-card p-6 rounded-lg border border-[#3d2b1f]">
-          <h2 className="text-2xl border-b border-[#5c4033] mb-4 pb-2 uppercase tracking-tighter">
-            {cat.label}
-          </h2>
-          <ul className="space-y-4">
-            {cat.data.slice(0, 5).map((entry: RecordEntry, idx: number) => (
-              <li key={idx} className="flex justify-between items-center text-lg">
-                <span className="text-white">
-                  {idx + 1}. {entry.shikona}
-                </span>
-                <span className="gold-text font-bold">{entry.value}</span>
-              </li>
-            ))}
-            {cat.data.length === 0 && (
-              <li className="text-[#5c4033] italic">No records yet recorded...</li>
-            )}
-          </ul>
-        </div>
+    <div className="grid gap-6 md:grid-cols-2">
+      {categories.map((cat) => (
+        <LeaderboardCard key={cat.label} title={cat.label} entries={cat.data || []} icon={cat.icon} />
       ))}
     </div>
   );
 };
 
-const HallOfFameTab: React.FC<{ world: WorldState }> = ({ world }) => {
-  const inductees = world.hallOfFame?.inductees || [];
-  const retired = selectRetiredRikishi(world);
-
-  return (
-    <div className="space-y-16">
-      <section>
-        <h2 className="text-2xl uppercase tracking-widest border-b border-[#d4af37] pb-3 mb-8">
-          Hall of Fame Inductees
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
-          {inductees.map((ind: HoFInductee, i: number) => (
-            <div
-              key={i}
-              className="hof-card relative p-8 border-2 border-[#d4af37] bg-[#111] overflow-hidden group"
-            >
-              <div className="absolute top-0 right-0 p-2 bg-[#d4af37] text-black font-bold uppercase text-xs">
-                {ind.category}
-              </div>
-              <div className="text-center mb-6">
-                <div className="text-4xl font-bold mb-1">{ind.shikona}</div>
-                <div className="text-[#8b7355] tracking-widest uppercase italic">
-                  {world.heyas.get(ind.rikishiId)?.name ?? "—"}
-                </div>
-              </div>
-              <div className="space-y-2 text-sm text-[#5c4033]">
-                <div>
-                  Highest Rank: <span className="text-white">{ind.stats.highestRank}</span>
-                </div>
-                <div>
-                  Career Wins: <span className="text-white">{ind.stats.careerWins}</span>
-                </div>
-                <div>
-                  Yusho: <span className="text-white">{ind.stats.yushoCount}</span>
-                </div>
-              </div>
-            </div>
-          ))}
-          {inductees.length === 0 && (
-            <div className="col-span-full text-center py-16 text-[#5c4033] italic text-2xl">
-              The Hall of Fame is empty. Future legends await...
-            </div>
-          )}
-        </div>
-      </section>
-
-      <section>
-        <h2 className="text-2xl uppercase tracking-widest border-b border-[#5c4033] pb-3 mb-8">
-          Retired Legends
-        </h2>
-        {retired.length === 0 ? (
-          <p className="text-center py-12 text-[#5c4033] italic">No retirements on record yet.</p>
-        ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {retired.slice(0, 40).map((r: Rikishi) => {
-              const heyaName = world.heyas?.get(r.heyaId)?.name || r.heyaId;
-              return (
-                <div
-                  key={r.id}
-                  className="record-card p-4 border border-[#3d2b1f] rounded text-center"
-                >
-                  <div className="text-lg font-bold mb-1">{r.shikona}</div>
-                  <div className="text-xs text-[#8b7355] uppercase tracking-wider mb-2">
-                    {r.rank || "—"}
-                  </div>
-                  <div className="text-xs text-[#5c4033] italic truncate">{heyaName}</div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </section>
-    </div>
-  );
-};
 
 interface LineageTenure {
   generation: number;
@@ -197,88 +159,84 @@ interface LineageTenure {
   };
 }
 
-const StablesTab: React.FC<{ world: WorldState }> = ({ world }) => {
+const StablesTab = ({ world }: { world: WorldState }) => {
   const activeStables = Array.from(world.heyas.values());
-
-  return (
-    <div className="space-y-12">
-      {activeStables.map((heya: Heya) => (
-        <div key={heya.id} className="heya-ancestry-row border-l-4 border-[#d4af37] pl-8 py-4">
-          <h2 className="text-3xl font-bold mb-4">{heya.nameJa || heya.name}</h2>
-          <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
-            {(heya.lineage || []).map((tenure: LineageTenure, idx: number) => (
-              <div
-                key={idx}
-                className="flex-shrink-0 w-64 bg-[#222] p-4 border border-[#3d2b1f] relative"
-              >
-                <div className="absolute -left-2 top-1/2 w-4 h-4 rounded-full bg-[#d4af37]" />
-                <div className="text-[#8b7355] text-xs uppercase mb-1">
-                  Generation {tenure.generation}
-                </div>
-                <div className="text-xl font-bold mb-2">{tenure.name}</div>
-                <div className="text-sm text-[#5c4033] mb-4">
-                  {tenure.startYear} — {tenure.endYear || "Present"}
-                </div>
-                <div className="text-xs space-y-1 text-white border-t border-[#3d2b1f] pt-2">
-                  <div>Sekitori Produced: {tenure.achievements?.sekitoriCount || 0}</div>
-                  <div>Titles Won: {tenure.achievements?.titlesWon || 0}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-const AlmanacTab: React.FC<{ world: WorldState }> = ({ world }) => {
-  const summaries = world.historyIndex ? listBashoSummaries(world.historyIndex).reverse() : [];
+  const retired = selectRetiredRikishi(world);
 
   return (
     <div className="space-y-8">
-      {summaries.slice(0, 20).map((summary: BashoHistorySummary) => (
-        <div
-          key={summary.bashoKey}
-          className="almanac-entry bg-[#111] p-6 border-b border-[#3d2b1f] group hover:bg-[#1a1a1a] transition-all"
-        >
-          <div className="flex justify-between items-end mb-4">
-            <div>
-              <span className="text-4xl font-bold mr-4">{summary.year}</span>
-              <span className="text-[#d4af37] uppercase tracking-widest text-xl">
-                {summary.bashoName}
-              </span>
-            </div>
-            <div className="text-[#8b7355] italic">Volume {summary.year + 1}</div>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="stat">
-              <label className="block text-xs uppercase text-[#5c4033]">Yusho Winner</label>
-              <span className="text-lg text-white font-bold">
-                {summary.yusho ? (world.rikishi.get(summary.yusho)?.shikona ?? "N/A") : "N/A"}
-              </span>
-            </div>
-            <div className="stat">
-              <label className="block text-xs uppercase text-[#5c4033]">Jun-Yusho</label>
-              <span className="text-sm text-white">
-                {(summary.junYusho || []).length} Competitors
-              </span>
-            </div>
-            <div className="stat">
-              <label className="block text-xs uppercase text-[#5c4033]">Prizes Awarded</label>
-              <span className="text-sm text-white">
-                {[summary.ginoSho, summary.kantosho, summary.shukunsho].filter(Boolean).length}{" "}
-                Sansho
-              </span>
-            </div>
-          </div>
+      {/* Stables Ancestry */}
+      <section className="space-y-6">
+        <h2 className="text-xl font-display font-semibold border-b border-border pb-3">
+          Stable Lineages
+        </h2>
+        <div className="space-y-6">
+          {activeStables.map((heya: Heya) => (
+            <Card key={heya.id} className="paper border-l-4 border-l-primary">
+              <CardHeader>
+                <CardTitle className="font-display text-xl">{heya.nameJa || heya.name}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex gap-4 overflow-x-auto pb-4">
+                  {(heya.lineage || []).map((tenure: LineageTenure, idx: number) => (
+                    <div
+                      key={idx}
+                      className="flex-shrink-0 w-56 bg-secondary/50 p-4 border border-border rounded-sm relative"
+                    >
+                      <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-primary" />
+                      <div className="text-muted-foreground text-[10px] uppercase tracking-wider font-mono mb-1">
+                        Generation {tenure.generation}
+                      </div>
+                      <div className="text-lg font-display font-semibold mb-1">{tenure.name}</div>
+                      <div className="text-sm text-muted-foreground font-mono mb-3">
+                        {tenure.startYear} — {tenure.endYear || "Present"}
+                      </div>
+                      <div className="text-xs space-y-1 border-t border-border pt-2 font-mono">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Sekitori:</span>
+                          <span className="text-foreground">{tenure.achievements?.sekitoriCount || 0}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Titles:</span>
+                          <span className="text-foreground">{tenure.achievements?.titlesWon || 0}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-      ))}
-      {summaries.length === 0 && (
-        <div className="text-center py-24 text-[#5c4033] italic text-2xl">
-          The world is young. No history has been written yet.
-        </div>
-      )}
+      </section>
+
+      {/* Retired Legends */}
+      <section className="space-y-6">
+        <h2 className="text-xl font-display font-semibold border-b border-border pb-3">
+          Retired Legends
+        </h2>
+        {retired.length === 0 ? (
+          <Card className="paper py-12 text-center">
+            <p className="text-muted-foreground font-body">No retirements on record yet.</p>
+          </Card>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            {retired.slice(0, 40).map((r: Rikishi) => {
+              const heyaName = world.heyas?.get(r.heyaId)?.name || r.heyaId;
+              return (
+                <Card key={r.id} className="paper p-3 text-center">
+                  <div className="font-display font-semibold text-sm mb-1">{r.shikona}</div>
+                  <div className="text-[10px] text-muted-foreground uppercase tracking-wider font-mono mb-1">
+                    {r.rank || "—"}
+                  </div>
+                  <div className="text-[10px] text-muted-foreground truncate">{heyaName}</div>
+                </Card>
+              );
+            })}
+          </div>
+        )}
+      </section>
     </div>
   );
 };
+

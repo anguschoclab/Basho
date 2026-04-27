@@ -14,9 +14,6 @@
 // - Guards missing rank in RANK_HIERARCHY
 // - Safer prize display (shows yusho prize only when available)
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import React from "react";
 import { Helmet } from "react-helmet";
 import { useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
@@ -81,7 +78,7 @@ export default function HistoryPage() {
   const { world } = state;
 
   useEffect(() => {
-    if (!world) navigate({ to: "/" });
+    if (!world) navigate({ to: "/dashboard" });
   }, [world, navigate]);
   if (!world) return null;
 
@@ -95,7 +92,7 @@ export default function HistoryPage() {
 
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={() => navigate({ to: "/" })}>
+          <Button variant="ghost" onClick={() => navigate({ to: "/dashboard" })}>
             <ArrowLeft className="h-4 w-4 mr-2" /> Back
           </Button>
           <PageHeader
@@ -113,7 +110,7 @@ export default function HistoryPage() {
               <p className="text-muted-foreground mb-4">
                 Complete your first basho to see results here.
               </p>
-              <Button onClick={() => navigate({ to: "/" })}>Return to Dashboard</Button>
+              <Button onClick={() => navigate({ to: "/dashboard" })}>Return to Dashboard</Button>
             </CardContent>
           </Card>
         ) : (
