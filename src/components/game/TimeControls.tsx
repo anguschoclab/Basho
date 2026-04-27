@@ -1,0 +1,177 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { FastForward, Trophy, Calendar, ArrowRight, Repeat, SkipForward } from "lucide-react";
+import { useGame } from "@/contexts/GameContext";
+import { useToast } from "@/hooks/use-toast";
+import { toDurationBand, DURATION_LABELS } from "@/engine/descriptorBands";
+import { HolidayControls } from "./HolidayControls";
+import { AutoSimControls } from "./AutoSimControls";
+import type { AutoSimConfig } from "@/engine/autoSim";
+
+/**
+ * TimeControls
+ * - Drives time through the orchestrator-backed GameContext actions.
+ * - Exposes weekly tick, holiday, and auto-sim controls.
+ */
+export function TimeControls() {
+  const {
+    state,
+    advanceDay,
+    simulateAllBouts,
+    endDay,
+    endBasho,
+    simFullBasho,
+    setPhase,
+    advanceInterim,
+    advanceOneDay,
+    goOnHoliday,
+    runAutoSimAction,
+  } = useGame();
+  const { toast } = useToast();
+  const [isSimulating, setIsSimulating] = useState(false);
+  const [showEndConfirm, setShowEndConfirm] = useState(false);
+
+  const world = state.world;
+  if (!world) return null;
+
+  const inBasho = world.cyclePhase === "active_basho" && !!world.currentBasho;
+  const inInterim = world.cyclePhase === "interim";
+  const playerHeyaId = world.playerHeyaId;
+
+  // Basho now auto-starts via time advancement (pre_basho → active_basho)
+
+  const handleSimDay = () => {
+    simulateAllBouts();
+    endDay();
+    toast({ title: "Day completed", description: "All bouts simulated." });
+  };
+
+  const handleAdvanceDay = () => {
+    advanceDay();
+  };
+
+  const handleEndBasho = () => {
+    setShowEndConfirm(true);
+  };
+
+  const handleSimFullBasho = () => {
+    simFullBasho();
+    toast({ title: "Basho complete!", description: "All 15 days simulated and results recorded." });
+  };
+
+  const confirmEndBasho = () => {
+    setShowEndConfirm(false);
+    endBasho();
+    toast({ title: "Basho concluded", description: "Results logged and banzuke updated." });
+  };
+
+  const handleAdvanceWeek = () => {
+    advanceInterim(1);
+    toast({ title: "Time advanced", description: `${DURATION_LABELS[toDurationBand(7)]} passed.` });
+  };
+
+  const handleAdvanceOneDay = () => {
+    advanceOneDay();
+    toast({ title: "Time advanced", description: `${DURATION_LABELS[toDurationBand(1)]} passed.` });
+  };
+
+  const handleAutoSim = async (config: AutoSimConfig) => {
+    setIsSimulating(true);
+    try {
+      const result = await runAutoSimAction(config);
+      if (!result) throw new Error("No world loaded");
+      return result;
+    } finally {
+      setIsSimulating(false);
+    }
+  };
+
+  return (
+    <>
+      <Card>
+        <CardContent className="p-4 flex flex-wrap gap-2 items-center">
+          {!inBasho ? (
+            <>
+              {inInterim && (
+                <>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={handleAdvanceOneDay}
+                    className="gap-2"
+                  >
+                    <ArrowRight className="h-4 w-4" />
+                    Advance Day
+                  </Button>
+                  <Button variant="outline" onClick={handleAdvanceWeek} className="gap-2">
+                    <Repeat className="h-4 w-4" />
+                    Advance Week
+                  </Button>
+                </>
+              )}
+              <HolidayControls
+                onHoliday={goOnHoliday}
+                playerHeyaId={playerHeyaId}
+                currentPhase={world.cyclePhase}
+              />
+              <AutoSimControls
+                onStartSim={handleAutoSim}
+                isSimulating={isSimulating}
+                playerHeyaId={playerHeyaId}
+              />
+              <Button variant="outline" onClick={() => setPhase("interim")} className="gap-2">
+                <Calendar className="h-4 w-4" />
+                Interim
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button onClick={handleSimDay} className="gap-2">
+                <FastForward className="h-4 w-4" />
+                Simulate Day
+              </Button>
+              <Button variant="secondary" onClick={handleSimFullBasho} className="gap-2">
+                <SkipForward className="h-4 w-4" />
+                Sim Full Basho
+              </Button>
+              <Button variant="outline" onClick={handleAdvanceDay} className="gap-2">
+                <ArrowRight className="h-4 w-4" />
+                Next Day
+              </Button>
+              <Button variant="outline" onClick={handleEndBasho} className="gap-2">
+                <Trophy className="h-4 w-4" />
+                End Basho
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
+
+      <AlertDialog open={showEndConfirm} onOpenChange={setShowEndConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>End Tournament?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will finalize results, update banzuke rankings, and advance to the off-season.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmEndBasho}>End Basho</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+}
