@@ -8,6 +8,7 @@
 
 import type { WorldState } from "../../engine/types/world";
 import type { Rank } from "../../engine/types/banzuke";
+import type { TalentCandidate } from "../../engine/types/talent";
 import { RANK_HIERARCHY } from "../../engine/banzuke";
 import type { BoutPreviewUI } from "../boutPreviewUI";
 import type { UIRikishi } from "../rikishiUI";
@@ -48,13 +49,26 @@ export function buildBoutPreviewUI(boutId: string, world: WorldState): BoutPrevi
   };
 }
 
+/** Extended talent candidate with scouting information */
+export interface CandidateDigestEntry extends TalentCandidate {
+  scoutLevel: number;
+  scoutInfo: { label: string; color: string; narrative: string };
+  scoutedProgress?: number;
+  scoutingInvestment?: string;
+}
+
+/** Recruitment digest returned by projectRecruitmentUIDigest */
+export interface RecruitmentUIDigest {
+  candidates: CandidateDigestEntry[];
+}
+
 /**
  * Project recruitment data for ScoutingPage.
  */
 export function projectRecruitmentUIDigest(
   world: WorldState,
   poolType: "high_school" | "university" | "foreign"
-) {
+): RecruitmentUIDigest {
   const candidates = talentpool.listVisibleCandidates(world, poolType).map((c) => {
     const scoutLevel = talentpool.getCandidateScoutingLevel(world, c.candidateId);
     return {

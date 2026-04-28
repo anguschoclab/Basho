@@ -29,6 +29,9 @@ import { makeBashoKey } from "@/engine/historyIndex";
 import { projectRikishi } from "@/presenters/uiModels";
 import type { EngineEvent } from "@/engine/types/events";
 import type { HoFInductee } from "@/engine/hallOfFame";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
+import type { UIRikishi } from "@/presenters/uiModels";
 import {
   projectPressConferenceData,
   projectGovernanceSummary,
@@ -77,10 +80,8 @@ function groupEventsByNarrative(events: EngineEvent[]) {
   return groups;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- WorldState type mismatch
-function getPrestigeChanges(world: any): Array<{ heya: any; change: string }> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- WorldState type mismatch
-  const changes: Array<{ heya: any; change: string }> = [];
+function getPrestigeChanges(world: WorldState): Array<{ heya: Heya; change: string }> {
+  const changes: Array<{ heya: Heya; change: string }> = [];
   if (!world?.heyas) return changes;
   const prestige_events = (world.events?.log || [])
     .filter(
@@ -106,8 +107,7 @@ export default function RecapPage() {
   const [showYokozunaDelib, setShowYokozunaDelib] = useState(false);
   const [showHoFCeremony, setShowHoFCeremony] = useState<HoFInductee | null>(null);
   const [showBanzukeReveal, setShowBanzukeReveal] = useState(false);
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Rikishi type mismatch
-  const [intaiQueue, setIntaiQueue] = useState<{ rikishi: any; reason: string }[]>([]);
+  const [intaiQueue, setIntaiQueue] = useState<{ rikishi: UIRikishi; reason: string }[]>([]);
   const [currentIntaiIndex, setCurrentIntaiIndex] = useState(0);
 
   const handleContinue = () => {
@@ -145,8 +145,7 @@ export default function RecapPage() {
       (e: EngineEvent) => e.category === "career" && (e.type as string).includes("RETIRE")
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Rikishi type mismatch
-    const playerRetirements: { rikishi: any; reason: string }[] = [];
+    const playerRetirements: { rikishi: UIRikishi; reason: string }[] = [];
     for (const event of retirementEvents) {
       if (event.rikishiId) {
         const rikishi =

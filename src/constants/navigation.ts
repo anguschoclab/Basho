@@ -37,4 +37,5 @@ export const RECORDS_TABS = [
   { id: "history", label: "History", href: "/history" },
   { id: "almanac", label: "Almanac", href: "/almanac" },
   { id: "hall-of-fame", label: "Hall of Fame", href: "/hall-of-fame" },
+  { id: "museum", label: "Museum", href: "/museum" },
 ];

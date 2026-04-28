@@ -48,14 +48,14 @@ import {
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { Division } from "@/engine/types/banzuke";
 import type { BoutTactic } from "@/engine/types/combat";
-import type { BashoName } from "@/engine/types/basho";
+import type { BashoName, BoutResult } from "@/engine/types/basho";
+import type { BoutMatchUI, StandingEntry } from "@/presenters/types/uiDigest";
 
 /** Defines the structure for selected bout. */
 interface SelectedBout {
   east: UIRikishi;
   west: UIRikishi;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  result: any; // BoutResult projection
+  result: BoutResult;
   isPlayerBout: boolean;
 }
 
@@ -153,8 +153,7 @@ export default function BashoPage() {
 
   const nextBoutIndex = useMemo(() => {
     if (!bashoDigest) return -1;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return bashoDigest.matches.findIndex((m: any) => !m.result);
+    return bashoDigest.matches.findIndex((m: BoutMatchUI) => !m.result);
   }, [bashoDigest]);
 
   useEffect(() => {
@@ -162,7 +161,7 @@ export default function BashoPage() {
       navigate({ to: "/recap" });
       return;
     }
-    if (!world?.currentBasho) navigate({ to: "/" });
+    if (!world?.currentBasho) navigate({ to: "/dashboard" });
   }, [world, navigate, state.phase]);
 
   // Auto-show player bout logic reconstruction
@@ -178,8 +177,7 @@ export default function BashoPage() {
       return;
 
     const matchToday = bashoDigest.matches.find(
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Match type is complex
-      (m: any) =>
+      (m: BoutMatchUI) =>
         (m.eastRikishiId === last.winnerRikishiId && m.westRikishiId === last.loserRikishiId) ||
         (m.eastRikishiId === last.loserRikishiId && m.westRikishiId === last.winnerRikishiId)
     );
@@ -216,7 +214,7 @@ export default function BashoPage() {
   const confirmEndBasho = useCallback(() => {
     setShowEndBashoConfirm(false);
     endBasho();
-    navigate({ to: "/" });
+    navigate({ to: "/recap" });
   }, [endBasho, navigate]);
 
   if (!world || !bashoDigest) return null;
@@ -355,8 +353,7 @@ export default function BashoPage() {
                 <Trophy className="h-3.5 w-3.5" /> Standings
               </h3>
               <div className="space-y-1">
-                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                {standings.map((entry: any, idx: number) => {
+                {standings.map((entry: StandingEntry, idx: number) => {
                   const rid = entry?.rikishi?.id as string | undefined;
                   const isPlayer = !!rid && playerRikishiIds.includes(rid);
                   return (
@@ -399,8 +396,7 @@ export default function BashoPage() {
               onEndDay={handleNextDay}
               highlightRikishiId={state.selectedRikishiId || undefined}
               playerTactics={state.boutTactics}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onBoutClick={(match: any) => {
+              onBoutClick={(match: BoutMatchUI) => {
                 if (!match.result || !match.eastRikishi || !match.westRikishi) return;
                 setSelectedBout({
                   east: match.eastRikishi,

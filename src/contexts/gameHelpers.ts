@@ -52,8 +52,7 @@ export function getMatchesForDay(world: WorldState | null) {
     }));
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type Reducer<S = any, A = any> = (state: S, action: A) => S;
+export type Reducer<S = unknown, A = { type: string; payload?: unknown }> = (state: S, action: A) => S;
 
 /** Compose an array of reducers. Each slice is run sequentially on the state. */
 export function combineReducers<S, A>(slices: Array<Reducer<S, A>>): Reducer<S, A> {

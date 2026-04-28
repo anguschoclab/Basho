@@ -56,12 +56,9 @@ export default function TrainingPage() {
       .map((id) => world.rikishi.get(id))
       .filter((r): r is Rikishi => r !== undefined)
       .sort((a, b) => {
-        const aIdx = RANK_HIERARCHY.indexOf(a.rank);
-        const bIdx = RANK_HIERARCHY.indexOf(b.rank);
-        if (aIdx === -1 && bIdx === -1) return 0;
-        if (aIdx === -1) return 1;
-        if (bIdx === -1) return -1;
-        return aIdx - bIdx;
+        const aTier = RANK_HIERARCHY[a.rank]?.tier ?? 999;
+        const bTier = RANK_HIERARCHY[b.rank]?.tier ?? 999;
+        return aTier - bTier;
       });
   }, [world, heya]);
 

@@ -17,6 +17,7 @@ import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { PressConference } from "@/components/game/PressConference";
 import { PageHeader } from "@/components/layout/control-center";
 import { BanzukePyramid } from "@/components/charts/BanzukePyramid";
+import { RikishiCell } from "@/components/banzuke/RikishiCell";
 
 /** banzuke page. */
 export default function BanzukePage() {

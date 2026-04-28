@@ -1,7 +1,5 @@
 // MediaPage.tsx — Media & Press coverage dashboard
 // Surfaces headlines, media heat, and heya pressure from media.ts engine
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -177,8 +175,8 @@ function HeatSparkline({ data }: { data: Array<{ basho: string; heat: number }> 
           <YAxis domain={[0, 100]} hide />
           <Tooltip
             contentStyle={{ fontSize: 10, padding: "2px 6px" }}
-            formatter={(v: any) => [`${Math.round(Number(v))}`, "Heat"]}
-            labelFormatter={(l: any) => String(l).toUpperCase()}
+            formatter={(v: number) => [`${Math.round(v)}`, "Heat"]}
+            labelFormatter={(l: string) => l.toUpperCase()}
           />
           <Line
             type="monotone"
@@ -207,7 +205,7 @@ export default function MediaPage() {
     if (!digest) return [];
     let list = digest.headlines.map((h) => {
       const rikishiNames: Record<string, string> = {};
-      h.rikishiIds.forEach((rid) => {
+      h.rikishiIds.forEach((rid: string) => {
         rikishiNames[rid] = world?.rikishi?.get(rid)?.shikona || "Unknown";
       });
       return { ...h, rikishiNames };

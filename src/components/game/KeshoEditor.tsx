@@ -16,6 +16,7 @@ import { Palette, Sparkles, X, ShieldCheck } from "lucide-react";
 import { useGame } from "@/contexts/GameContext";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { KeshoMawashi, TraditionalMotif } from "@/engine/types/keshoMawashi";
+import type { AvatarConfig } from "@/engine/types/avatar";
 import { cn } from "@/lib/utils";
 
 const MOTIFS: TraditionalMotif[] = [
@@ -130,8 +131,7 @@ export function KeshoEditor({ rikishi, open, onClose }: KeshoEditorProps) {
             <div className="relative z-10 text-center space-y-4">
               {/* Large Preview */}
               <div className="p-8 rounded-full bg-background/50 border border-primary/10 shadow-2xl backdrop-blur-sm">
-                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                <SumoAvatar config={previewAvatarConfig as any} size="xl" expression="determined" />
+                <SumoAvatar config={previewAvatarConfig as AvatarConfig} size="xl" expression="determined" />
               </div>
 
               <div>

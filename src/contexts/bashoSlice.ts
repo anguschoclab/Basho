@@ -93,11 +93,10 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
 
     case "END_BASHO": {
       if (!state.world.currentBasho) return state;
-      const world = cloneWorldForTick(state.world);
-      worldEngine.endBasho(world);
+      let world = cloneWorldForTick(state.world);
+      world = worldEngine.endBasho(world);
       const banzukeImpact = worldEngine.publishBanzukeUpdate(world);
-      const resolvedWorld = resolveImpacts(world, [banzukeImpact]);
-      Object.assign(world, resolvedWorld);
+      world = resolveImpacts(world, [banzukeImpact]);
       return { ...state, world, phase: "basho_recap", currentBoutIndex: 0, lastBoutResult: null };
     }
 

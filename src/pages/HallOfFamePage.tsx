@@ -237,8 +237,7 @@ function StatBox({
 
 // === Category Tab ===
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- HoFInductee type mismatch
-function CategoryTab({ category, inductees }: { category: HoFCategory; inductees: any[] }) {
+function CategoryTab({ category, inductees }: { category: HoFCategory; inductees: UIHofInductee[] }) {
   const label = HOF_CATEGORY_LABELS[category];
 
   const byYear = useMemo(() => {
@@ -289,8 +288,7 @@ function CategoryTab({ category, inductees }: { category: HoFCategory; inductees
 
 // === All-time view ===
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- HoFInductee type mismatch
-function AllInducteesTab({ inductees }: { inductees: any[] }) {
+function AllInducteesTab({ inductees }: { inductees: UIHofInductee[] }) {
   const byYear = useMemo(() => {
     const map = new Map<number, UIHofInductee[]>();
     for (const ind of inductees) {
