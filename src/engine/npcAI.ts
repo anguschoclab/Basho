@@ -437,10 +437,7 @@ export function tickMonthlyNPC(world: WorldState): StateImpact {
 
   // 5. Global Recruitment Resolution (Competitive Bidding)
   if (hasVacancies) {
-    const globalCap = world.heyas.size * (typeof HARD_CAP_ROSTER_SIZE === "number" ? HARD_CAP_ROSTER_SIZE : 30);
-    if (world.rikishi.size < globalCap) {
-      builder.merge(talentpool.fillVacanciesForNPCWithBidding(world, vacanciesByHeyaId));
-    }
+    builder.merge(talentpool.fillVacanciesForNPCWithBidding(world, vacanciesByHeyaId));
   }
 
   return builder.build();
