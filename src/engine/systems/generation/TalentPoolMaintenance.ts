@@ -72,7 +72,8 @@ export function tickWeekTalentPool(world: WorldState): StateImpact {
   }
 
   // 4. Emergency demographic floor: dump all hidden candidates to visible so NPC recruitment can access them
-  const population = world.rikishi.size;
+  // Use active (non-retired) count — world.rikishi.size grows unbounded as retirees accumulate
+  const population = Array.from(world.rikishi.values()).filter(r => !r.isRetired).length;
   const isEmergency = population < 700;
   if (isEmergency) {
     for (const pt of ["high_school", "university", "foreign"] as const) {
@@ -81,7 +82,7 @@ export function tickWeekTalentPool(world: WorldState): StateImpact {
       pool.candidatesHidden = [];
       nextPools[pt] = pool;
     }
-    console.log(`[RECRUITMENT] Emergency: moved all hidden candidates to visible. Population: ${population}`);
+    console.log(`[RECRUITMENT] Emergency: moved all hidden candidates to visible. Active population: ${population}`);
   }
 
   // 5. Update world state via impact (incorporates passive discovery + emergency reveal)
