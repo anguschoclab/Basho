@@ -71,7 +71,20 @@ export function tickWeekTalentPool(world: WorldState): StateImpact {
     nextPools[pt] = pool;
   }
 
-  // 4. Update world state via impact
+  // 4. Emergency demographic floor: dump all hidden candidates to visible so NPC recruitment can access them
+  const population = world.rikishi.size;
+  const isEmergency = population < 700;
+  if (isEmergency) {
+    for (const pt of ["high_school", "university", "foreign"] as const) {
+      const pool = { ...nextPools[pt] };
+      pool.candidatesVisible = [...pool.candidatesVisible, ...pool.candidatesHidden];
+      pool.candidatesHidden = [];
+      nextPools[pt] = pool;
+    }
+    console.log(`[RECRUITMENT] Emergency: moved all hidden candidates to visible. Population: ${population}`);
+  }
+
+  // 5. Update world state via impact (incorporates passive discovery + emergency reveal)
   builder.updateWorldField("talentPool", {
     ...tp,
     candidates: nextCandidates,
@@ -79,14 +92,9 @@ export function tickWeekTalentPool(world: WorldState): StateImpact {
     playerScouting: nextScouting,
   });
 
-  // 5. Periodic pool refresh logic (basho cadence) or emergency demographic floor
-  const population = world.rikishi.size;
-  const isEmergency = population < 700;
-  if (isEmergency || (world.calendar && world.calendar.month % 2 !== 0 && world.calendar.currentDay === 1)) {
+  // 6. Periodic pool refresh logic (basho cadence)
+  if (world.calendar && world.calendar.month % 2 !== 0 && world.calendar.currentDay === 1) {
     builder.merge(refreshAllPools(world));
-    if (isEmergency) {
-      console.log(`[RECRUITMENT] Emergency demographic floor triggered. Population: ${population}. Refreshing pools.`);
-    }
   }
 
   return builder.build();

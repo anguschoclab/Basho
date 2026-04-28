@@ -67,7 +67,7 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
   }
 
   // 4. NPC Opportunistic Recruitment
-  const TARGET_ROSTER_SIZE = 25;
+  const TARGET_ROSTER_SIZE = 30;
   const CRITICAL_ROSTER_THRESHOLD = 15;
   const interimElapsedWeeks = world.cyclePhase === "interim"
     ? Math.floor((42 - (world._interimDaysRemaining ?? 0)) / 7)
@@ -103,6 +103,23 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
     }
     if (hasCritical) {
       builder.merge(talentpool.fillVacanciesForNPCWithBidding(world, criticalStables));
+    }
+  }
+
+  // 4b. Emergency recruitment: if population is critically low, recruit every week
+  const totalActive = Array.from(world.rikishi.values()).filter(r => !r.isRetired).length;
+  if (totalActive < 700) {
+    const urgentVacancies: Record<string, number> = {};
+    let hasUrgentVacancies = false;
+    for (const h of world.heyas.values()) {
+      const currentCount = (h.rikishiIds ?? []).length;
+      if (h.id !== world.playerHeyaId && currentCount < TARGET_ROSTER_SIZE) {
+        urgentVacancies[h.id] = Math.max(1, TARGET_ROSTER_SIZE - currentCount);
+        hasUrgentVacancies = true;
+      }
+    }
+    if (hasUrgentVacancies) {
+      builder.merge(talentpool.fillVacanciesForNPCWithBidding(world, urgentVacancies));
     }
   }
 
