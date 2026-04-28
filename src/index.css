@@ -161,6 +161,25 @@
   }
 }
 
+@keyframes infinite-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-infinite-scroll {
+  animation: infinite-scroll 40s linear infinite;
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spin-slow 120s linear infinite;
+}
+.sumi-e-ink {
+  filter: contrast(1.2) brightness(0.9);
+}
+
 /* ─── Base Styles ────────────────────────────────────────────────────────── */
 @layer base {
   * {

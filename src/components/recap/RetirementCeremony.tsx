@@ -204,23 +204,6 @@ export function RetirementCeremony({ rikishi, onFinish }: RetirementCeremonyProp
           )}
         </AnimatePresence>
       </div>
-
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        .animate-spin-slow {
-          animation: spin-slow 120s linear infinite;
-        }
-        .sumi-e-ink {
-          filter: contrast(1.2) brightness(0.9);
-        }
-      `,
-        }}
-      />
     </div>
   );
 }
