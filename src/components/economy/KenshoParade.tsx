@@ -82,20 +82,6 @@ export function KenshoParade({ banners }: KenshoParadeProps) {
         </span>
         <div className="h-px w-8 bg-primary/20" />
       </div>
-
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-        @keyframes infinite-scroll {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        .animate-infinite-scroll {
-          animation: infinite-scroll 40s linear infinite;
-        }
-      `,
-        }}
-      />
     </div>
   );
 }
