@@ -81,7 +81,7 @@ export function tickWeekTalentPool(world: WorldState): StateImpact {
 
   // 5. Periodic pool refresh logic (basho cadence) or emergency demographic floor
   const population = world.rikishi.size;
-  const isEmergency = population < 500;
+  const isEmergency = population < 700;
   if (isEmergency || (world.calendar && world.calendar.month % 2 !== 0 && world.calendar.currentDay === 1)) {
     builder.merge(refreshAllPools(world));
     if (isEmergency) {
