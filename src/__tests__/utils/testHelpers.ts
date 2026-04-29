@@ -126,32 +126,6 @@ export function createMockRikishi(overrides: Record<string, unknown> = {}) {
 }
 
 /**
- * Create a mock Oyakata with minimal required fields.
- * @param overrides - Optional overrides for the mock
- * @returns Mock Oyakata
- */
-export function createMockOyakata(overrides: Record<string, unknown> = {}) {
-  return {
-    id: "oyakata-1",
-    shikona: "Test Oyakata",
-    realName: "Test Name",
-    heyaId: "heya-1",
-    nationality: "Japan",
-    birthYear: 1970,
-    archetype: "traditionalist",
-    traits: {
-      ambition: 50,
-      tradition: 50,
-      risk: 50,
-      compassion: 50,
-      patience: 50,
-    },
-    mood: "content",
-    ...overrides,
-  };
-}
-
-/**
  * Mock a function that returns a value.
  * @param returnValue - The value to return
  * @returns Mocked function
