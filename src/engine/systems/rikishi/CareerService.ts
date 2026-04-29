@@ -11,30 +11,19 @@ import type { Rikishi } from "../../types/rikishi";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { LegacyService } from "../legacy/LegacyService";
+import { checkRetirement } from "../../lifecycle";
 
 export const CareerService = {
   /**
    * Evaluates if a rikishi should retire.
-   * NPCs retire automatically based on rank drops or age.
-   * Player rikishi can be retired manually, or if they fall below a certain viability.
+   * Delegates to the single retirement authority — lifecycle.ts:checkRetirement
+   * (age 45, yokozuna age 40, council pressure, injury, performance)
    */
   evaluateRetirement(world: WorldState, rikishi: Rikishi): boolean {
     if (rikishi.isRetired) return false;
-
-    const age = rikishi.age || 18;
-    const rank = rikishi.rank;
-    const performance = (rikishi.currentBashoWins ?? 0) - (rikishi.currentBashoLosses ?? 0);
-
-    // Hard retirement for old NPCs
-    if (age >= 38) return true;
-
-    // Rank-based retirement: dropping from Juryo to Makushita after age 30
-    if (age >= 30 && rank === "jonokuchi" && performance < -5) return true;
-
-    // Sekitori who fall into the pits of lower divisions
-    if (age >= 33 && (rank === "makushita" || rank === "sandanme") && performance < -3) return true;
-
-    return false;
+    // Delegate to the single retirement authority — lifecycle.ts:checkRetirement
+    // (age 45, yokozuna age 40, council pressure, injury, performance)
+    return !!checkRetirement(rikishi, world.year, world.seed);
   },
 
   /**
@@ -44,8 +33,10 @@ export const CareerService = {
     const builder = createImpactBuilder("processRetirements");
 
     for (const rikishi of world.rikishi.values()) {
-      if (this.evaluateRetirement(world, rikishi)) {
-        builder.updateRikishi(rikishi.id, { isRetired: true });
+      if (rikishi.isRetired) continue;
+      const reason = checkRetirement(rikishi, world.year, world.seed);
+      if (reason) {
+        builder.retireRikishi(rikishi.id, world.year, reason);
 
         builder.logEvent(
           "RETIREMENT_ANNOUNCED",

@@ -14,8 +14,7 @@ import { projectRikishi } from "../rikishiUI";
  * Project a list of recent headlines for the Media Page.
  */
 export function projectMediaUIDigest(world: WorldState) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const mediaState = (world.mediaState as MediaState) || buildMediaDigest(world as any);
+  const mediaState = world.mediaState || buildMediaDigest(world);
   const headlines = [...(mediaState.headlines || [])].sort(
     (a, b) => b.impact - a.impact || b.week - a.week
   );
@@ -27,8 +26,7 @@ export function projectMediaUIDigest(world: WorldState) {
         id,
         heat: heat as number,
         rikishi: rikishi ? projectRikishi(rikishi, world) : null,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        history: (mediaState.mediaHeatHistory?.[id] as any[]) ?? [],
+        history: mediaState.mediaHeatHistory?.[id] ?? [],
       };
     })
     .filter((x) => x.rikishi)

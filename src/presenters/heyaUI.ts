@@ -3,7 +3,7 @@ import type { Heya } from "../engine/types/heya";
 import { WorldState } from "../engine/types/world";
 import { UIRosterEntry, projectRosterEntry } from "./rikishiUI";
 import { getOyakataForHeya } from "../engine/queries";
-import { getHeyaStyleBias } from "../engine/queries";
+import { getHeyaStyleBias, getHeyaStaff } from "../engine/queries";
 
 export interface UIStaffEntry {
   id: Id;
@@ -44,15 +44,14 @@ export interface UIHeya {
 export function projectHeya(h: Heya, world: WorldState): UIHeya {
   const oyakata = getOyakataForHeya(world, h.id);
   const staff: UIStaffEntry[] = [];
-  for (const s of world.staff.values()) {
-    if (s.heyaId === h.id) {
-      staff.push({
-        id: s.id,
-        name: s.name,
-        role: s.role,
-        specialty: (s as { specialty?: string }).specialty ?? "General",
-      });
-    }
+
+  for (const s of getHeyaStaff(world, h.id)) {
+    staff.push({
+      id: s.id,
+      name: s.name,
+      role: s.role,
+      specialty: (s as { specialty?: string }).specialty ?? "General",
+    });
   }
 
   // ⚡ Bolt Optimization: Use a single reduce pass instead of chained .map().filter().map()

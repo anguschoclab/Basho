@@ -11,6 +11,7 @@ import { RikishiPotentialPanel } from "@/components/rikishi/RikishiPotentialPane
 import { cn } from "@/lib/utils";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { Rikishi } from "@/engine/types";
+import type { UIRivalEntry } from "@/presenters/rikishi/types";
 
 interface RikishiCombatTabProps {
   rikishi: UIRikishi;
@@ -81,8 +82,7 @@ export function RikishiCombatTab({ rikishi, rawRikishi, isOwned = false }: Rikis
         </h3>
         <div className="grid gap-3">
           {rikishi.topRivals.length > 0 ? (
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any -- UIRivalEntry doesn't have required properties
-            rikishi.topRivals.map((rival: any) => (
+            rikishi.topRivals.map((rival: UIRivalEntry) => (
               <div
                 key={rival.opponentId}
                 className="bg-muted/10 border border-border/30 rounded-lg p-3 flex items-center justify-between text-sm group hover:bg-muted/20 transition-all"

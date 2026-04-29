@@ -144,8 +144,7 @@ export function fillVacanciesForNPCWithBidding(
     if (!oyakata) continue;
 
     const recruitmentStrat = getRecruitmentStrategy(oyakata.archetype);
-    const candidatesToBid = allVisibleCandidates.slice(0, vacancyCount);
-    for (const candidate of candidatesToBid) {
+    for (const candidate of allVisibleCandidates) {
       const rivalHeyaId = Object.keys(targetHeyas).find((hid) => hid !== heyaId);
       const bidAmount = recruitmentStrat.calculateMaxBid(
         world,

@@ -203,7 +203,7 @@ function applyWeeklyScoutingDecay(world: WorldState): StateImpact {
   }
 
   const currentKnowledge = world.playerKnowledge || {};
-  (builder as any).updateWorldField('playerKnowledge', {
+  builder.updateWorldField('playerKnowledge', {
     ...currentKnowledge,
     scouting: updatedTable
   });
@@ -270,7 +270,7 @@ export function onBoutResolvedScouting(
     };
 
     const currentKnowledge = world.playerKnowledge || {};
-    (builder as any).updateWorldField('playerKnowledge', {
+    builder.updateWorldField('playerKnowledge', {
       ...currentKnowledge,
       scouting: updatedTable
     });

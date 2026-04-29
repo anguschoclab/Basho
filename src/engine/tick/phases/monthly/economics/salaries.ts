@@ -11,17 +11,19 @@ import type { Rikishi } from "../../../../types/rikishi";
 import type { HeyaUpdates } from "../types";
 import type { ImpactBuilder } from "../../../../core/ImpactBuilder";
 import { RANK_HIERARCHY } from "../../../../banzuke";
-import { getHeyaStaffBonuses } from "../../../../staff";
-import { OYAKATA_SALARY_MONTHLY, FACILITY_UPKEEP } from "../../../../constants/EconomicConstants";
 
+// JSA pays oyakata salaries, facility upkeep, and non-sekitori allowances directly.
+// Heya funds are managed by FinanceCalculator (weekly) which already accounts for all
+// heya-side expenses (facility upkeep, staff, JSA subsidies).
+// This function's only job is to credit sekitori with their monthly JSA salary payments.
 export function processHeyaEconomics(
   world: WorldState,
   heya: Heya,
   rikishiMap: Map<string, Rikishi>,
-  heyaUpdates: HeyaUpdates,
+  _heyaUpdates: HeyaUpdates,
   builder: ImpactBuilder
 ): number {
-  let totalSalaries = 0;
+  let totalJsaSalaries = 0;
   const rikishiIds = heya.rikishiIds ?? [];
 
   for (const rId of rikishiIds) {
@@ -29,45 +31,29 @@ export function processHeyaEconomics(
     if (!r) continue;
 
     const info = RANK_HIERARCHY[r.rank];
-    if (info?.isSekitori) {
-      const baseSalary = info.salary ?? 0;
-      // NOTE: Kinboshi stipend is now paid per-basho in CompetitionService, not monthly
-      const totalRikishiPay = baseSalary;
+    if (!info?.isSekitori) continue;
 
-      const economics = r.economics || {
-        cash: 0,
-        retirementFund: 0,
-        careerKenshoWon: 0,
-        kinboshiCount: 0,
-        totalEarnings: 0,
-        currentBashoEarnings: 0,
-        popularity: 50,
-      };
+    const baseSalary = info.salary ?? 0;
+    const economics = r.economics || {
+      cash: 0,
+      retirementFund: 0,
+      careerKenshoWon: 0,
+      kinboshiCount: 0,
+      totalEarnings: 0,
+      currentBashoEarnings: 0,
+      popularity: 50,
+    };
 
-      // Use ImpactBuilder to update rikishi economics
-      builder.updateRikishi(rId, {
-        economics: {
-          ...economics,
-          cash: economics.cash + totalRikishiPay,
-          totalEarnings: economics.totalEarnings + totalRikishiPay,
-        },
-      });
-      totalSalaries += totalRikishiPay;
-    } else {
-      totalSalaries += 70_000;
-    }
+    builder.updateRikishi(rId, {
+      economics: {
+        ...economics,
+        cash: economics.cash + baseSalary,
+        totalEarnings: economics.totalEarnings + baseSalary,
+      },
+    });
+    totalJsaSalaries += baseSalary;
   }
 
-  const staffBonuses = getHeyaStaffBonuses(world, heya.id);
-  const oyakataSalary = OYAKATA_SALARY_MONTHLY * staffBonuses.administration;
-  const facilityUpkeep =
-    (heya.facilities.training * FACILITY_UPKEEP.training * 4 +
-      heya.facilities.recovery * FACILITY_UPKEEP.recovery * 4 +
-      heya.facilities.nutrition * FACILITY_UPKEEP.nutrition * 4) *
-    staffBonuses.administration;
-  const totalExpenses = totalSalaries + facilityUpkeep + oyakataSalary;
-
-  heyaUpdates.funds = (heya.funds ?? 0) - totalExpenses;
-
-  return totalExpenses;
+  // Do NOT deduct from heya.funds — FinanceCalculator (weekly) owns all heya expenses.
+  return totalJsaSalaries;
 }

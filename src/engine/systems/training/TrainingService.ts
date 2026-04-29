@@ -18,11 +18,18 @@ import type { Rikishi } from "../../types/rikishi";
 import { EntityCollection } from "../../core/EntityCollection";
 import { EntityService } from "../../core/EntityService";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
+import { STAT_GROUP } from "../../constants/DevelopmentCurves";
 import type { StateImpact } from "../../core/StateImpact";
-import { calculateFatigueDelta, calculateGrowthVector, calculateAgeDecay } from "./TrainingMath";
+import {
+  calculateFatigueDelta,
+  calculateGrowthVector,
+  calculateAgeDecay,
+  getEffectiveCeiling,
+} from "./TrainingMath";
 import { getHeyaStaffBonuses } from "../../staff";
 import { DRILL_EFFECTS } from "./TrainingConstants";
 import { InfrastructureService } from "../economy/InfrastructureService";
+import { RNGRegistry } from "../../core/RNGRegistry";
 
 // Re-exports for UI consumption
 export * from "./TrainingConstants";
@@ -81,6 +88,46 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
 
     const updates: Partial<Rikishi> = { fatigue: newFatigue };
 
+    // Phase 5: Emergent Prodigy Burnout Check
+    if (rikishi.injuryStatus?.isEmergentProdigy) {
+      const { crashed, consecutiveWeeks } = applyBurnoutStep(rikishi, profile.intensity, world);
+      if (crashed) {
+        builder.logEvent(
+          "NARRATIVE_CRISIS_TRIGGERED",
+          "narrative",
+          {
+            rikishiId: rikishi.id,
+            heyaId: rikishi.heyaId,
+            shikona: rikishi.shikona || rikishi.name,
+            eventId: "prodigy_burnout",
+            title: "Prodigy Burnout Crash",
+            description: `${rikishi.shikona} has collapsed under the weight of extreme training.`,
+            incident: `After ${consecutiveWeeks} weeks of extreme intensity, the prodigy has suffered a career-altering failure.`,
+          },
+          { importance: "headline", rikishiId: rikishi.id }
+        );
+        // Severe injury & permanent stat penalty
+        updates.injured = true;
+        const currentStatus = rikishi.injuryStatus;
+        updates.injuryStatus = {
+          ...currentStatus,
+          type: "internal",
+          severity: "serious",
+          weeksRemaining: 12,
+          weeksToHeal: 12,
+        };
+        updates.power = Math.max(30, (rikishi.power ?? 50) - 15);
+        updates.stamina = Math.max(30, (rikishi.stamina ?? 50) - 15);
+        // Stats object will be synced in the growth section if not injured, 
+        // but since we just injured them, we should sync here too.
+        updates.stats = {
+          ...(rikishi.stats || {}),
+          strength: Math.floor(updates.power),
+          stamina: Math.floor(updates.stamina),
+        };
+      }
+    }
+
     // 2. Weekly Drill Plan (P2 Phase O)
     // If a manual schedule is provided, we aggregate the 6-day impact.
     // Otherwise, we default to Asageiko (basic conditioning).
@@ -122,8 +169,8 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
       updates.fatigue = Math.max(0, Math.min(100, (updates.fatigue || 0) + drillVector.fatigue));
     }
 
-    // 3. Growth Logic (Skip if injured)
-    if (!rikishi.injured) {
+    // 3. Growth Logic (Skip if injured - either previously or from a fresh burnout)
+    if (!rikishi.injured && !updates.injured) {
       const heya = EntityCollection.getHeya(world, rikishi.heyaId);
       const staffBonuses = getHeyaStaffBonuses(world, rikishi.heyaId);
       const infra = InfrastructureService.getHeyaBonuses(heya);
@@ -161,32 +208,33 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
       const decay = calculateAgeDecay(rikishi, world.year);
 
       // Apply Growth (net of age decay)
+      // We cap at getEffectiveCeiling to ensure age-based decline is enforceable
       updates.power = Math.min(
-        100,
+        getEffectiveCeiling(rikishi, "strength", world),
         Math.max(10, (rikishi.power || 50) + finalGrowth.strength + decay.strength)
       );
       updates.speed = Math.min(
-        100,
+        getEffectiveCeiling(rikishi, "speed", world),
         Math.max(10, (rikishi.speed || 50) + finalGrowth.speed + decay.speed)
       );
       updates.technique = Math.min(
-        100,
+        getEffectiveCeiling(rikishi, "technique", world),
         Math.max(10, (rikishi.technique || 50) + finalGrowth.technique + decay.technique)
       );
       updates.balance = Math.min(
-        100,
+        getEffectiveCeiling(rikishi, "balance", world),
         Math.max(10, (rikishi.balance || 50) + finalGrowth.balance + decay.balance)
       );
       updates.stamina = Math.min(
-        100,
+        getEffectiveCeiling(rikishi, "stamina", world),
         Math.max(10, (rikishi.stamina || 50) + finalGrowth.stamina + decay.stamina)
       );
       updates.adaptability = Math.min(
-        100,
+        getEffectiveCeiling(rikishi, "adaptability", world),
         Math.max(10, (rikishi.adaptability || 50) + finalGrowth.adaptability + decay.adaptability)
       );
       updates.experience = Math.min(
-        100,
+        getEffectiveCeiling(rikishi, "mental", world),
         Math.max(10, (rikishi.experience || 0) + finalGrowth.mental * 0.5 + decay.mental)
       );
 
@@ -222,10 +270,62 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
       }
     }
 
+    // 4. Final Enforcements (Clamping & Stat Floors)
+    (Object.keys(STAT_GROUP) as Array<keyof typeof STAT_GROUP>).forEach((key) => {
+      const ceiling = getEffectiveCeiling({ ...rikishi, ...updates } as Rikishi, key, world);
+      let val = updates[key as keyof Rikishi] as number;
+
+      // Enforce Ceiling
+      val = Math.min(ceiling, val);
+
+      // Enforce Elite Division Floors
+      // This prevents the "Sumo Graveyard" effect where Makuuchi is filled with decayed jobbers.
+      if (rikishi.division === "makuuchi") {
+        val = Math.max(45, val);
+      } else if (rikishi.division === "juryo") {
+        val = Math.max(40, val);
+      }
+
+      updates[key as keyof Rikishi] = val;
+    });
+
     builder.updateRikishi(rikishi.id, updates);
   });
 
   return builder.build();
+}
+
+/**
+ * Phase 5: Burnout Logic
+ * Escalating risk curve for Prodigies at Extreme Intensity.
+ */
+function applyBurnoutStep(
+  r: Rikishi,
+  intensity: string,
+  world: WorldState
+): { crashed: boolean; consecutiveWeeks: number } {
+  if (intensity !== "punishing") {
+    r.consecutiveExtremeWeeks = 0;
+    return { crashed: false, consecutiveWeeks: 0 };
+  }
+
+  const currentWeeks = (r.consecutiveExtremeWeeks || 0) + 1;
+  r.consecutiveExtremeWeeks = currentWeeks;
+
+  // Probability roll: 15% (W1) -> 35% (W2) -> 100% (W3+)
+  let crashProb = 0.15;
+  if (currentWeeks === 2) crashProb = 0.35;
+  if (currentWeeks >= 3) crashProb = 1.0;
+
+  // Use system RNG for deterministic burnout rolls
+  const burnoutRng = RNGRegistry.getSystemRNG(world, "burnout", `burnout-${r.id}-${world.week}`);
+  const roll = burnoutRng.next();
+
+  if (roll < crashProb) {
+    return { crashed: true, consecutiveWeeks: currentWeeks };
+  }
+
+  return { crashed: false, consecutiveWeeks: currentWeeks };
 }
 
 /**

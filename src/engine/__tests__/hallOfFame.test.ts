@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import {
   tryAddInductee,
   createEmptyHallOfFame,
+  processYearEndInduction,
   type HoFInductee,
   type HallOfFameState,
 } from "../hallOfFame";
@@ -77,5 +78,53 @@ describe("hallOfFame.ts - tryAddInductee", () => {
     expect(hof.inductees).toHaveLength(2);
     expect(hof.inducted[`${rikishi.id}::champion`]).toBe(true);
     expect(hof.inducted[`${rikishi.id}::iron_man`]).toBe(true);
+  });
+});
+
+describe("HoF iron man - processYearEndInduction", () => {
+  it("inducts a retired rikishi with 30+ basho career", () => {
+    const world = makeMockWorld({ year: 2030 });
+    const retired = mockRikishi("r1", {
+      shikona: "Ironclad",
+      rank: "makuuchi",
+      isRetired: true,
+      careerWins: 200,
+      careerLosses: 250,
+      careerHistory: Array.from({ length: 35 }, (_, i) => ({
+        bashoName: "hatsu" as const,
+        year: 2025 + Math.floor(i / 6),
+        wins: 8,
+        losses: 7,
+        isYusho: false,
+        isJunYusho: false,
+      })),
+    });
+    world.rikishi.set("r1", retired);
+
+    const inductees = processYearEndInduction(world);
+    expect(inductees.some(i => i.rikishiId === "r1" && i.category === "iron_man")).toBe(true);
+  });
+
+  it("does NOT induct an active rikishi with only 5 basho", () => {
+    const world = makeMockWorld({ year: 2030 });
+    const rookie = mockRikishi("r2", {
+      shikona: "Rookie",
+      rank: "sandanme",
+      isRetired: false,
+      careerWins: 21,
+      careerLosses: 14,
+      careerHistory: Array.from({ length: 5 }, () => ({
+        bashoName: "hatsu" as const,
+        year: 2025,
+        wins: 4,
+        losses: 3,
+        isYusho: false,
+        isJunYusho: false,
+      })),
+    });
+    world.rikishi.set("r2", rookie);
+
+    const inductees = processYearEndInduction(world);
+    expect(inductees.some(i => i.rikishiId === "r2" && i.category === "iron_man")).toBe(false);
   });
 });

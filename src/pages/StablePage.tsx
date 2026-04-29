@@ -22,6 +22,8 @@ import { ChronicleRoom } from "@/components/stable/ChronicleRoom";
 import { GlobalStrategicHub } from "@/components/stable/GlobalStrategicHub";
 import type { FacilityId } from "@/engine/types/infrastructure";
 
+import { KeshoMawashiGallery } from "@/components/stable/KeshoMawashiGallery";
+
 export default function StablePage() {
   const navigate = useNavigate();
   const { id: routeId } = useParams({ strict: false });
@@ -64,9 +66,10 @@ export default function StablePage() {
         />
 
         <Tabs defaultValue="roster" className="space-y-6">
-          <TabsList className="grid w-full max-w-[900px] grid-cols-7 text-[10px] font-black uppercase">
+          <TabsList className="grid w-full max-w-[900px] grid-cols-8 text-[10px] font-black uppercase">
             <TabsTrigger value="roster">Roster</TabsTrigger>
             <TabsTrigger value="performance">Performance</TabsTrigger>
+            <TabsTrigger value="gallery">Gallery</TabsTrigger>
             <TabsTrigger value="infrastructure">Infrastructure</TabsTrigger>
             <TabsTrigger value="sponsorship">Sponsorship</TabsTrigger>
             <TabsTrigger value="institution">Institution</TabsTrigger>
@@ -76,6 +79,10 @@ export default function StablePage() {
 
           <TabsContent value="sponsorship">
             <SponsorshipHub data={sponsorData} />
+          </TabsContent>
+
+          <TabsContent value="gallery">
+            <KeshoMawashiGallery world={world} heyaId={viewingHeyaId} />
           </TabsContent>
 
           <TabsContent value="chronicle">

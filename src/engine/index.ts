@@ -51,11 +51,11 @@ export * from "./persistence/SaveSlotService";
 
 export * from "./storageProvider";
 export * from "./schedule";
-// recordObservation, createScoutedView, getScoutedAttributes, describeScoutingLevel removed (unused re-export)
-export type {
-  ScoutedRikishi,
-  PublicRikishiInfo,
-  ScoutedAttributeTruthSnapshot,
+export {
+  recordObservation,
+  createScoutedView,
+  getScoutedAttributes,
+  describeScoutingLevel,
 } from "./systems/recruitment/ScoutingService";
 export * from "./scoutingStore";
 export * from "./shikona";

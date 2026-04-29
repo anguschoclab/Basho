@@ -88,6 +88,13 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       else if ((rikishi.consecutiveStrongOzeki || 0) >= 3 && (isYusho || wonPrevious)) {
         promoteToYokozuna = true;
       }
+      // Promotion Case 4: Prestige Promotion (If world has 0 Yokozuna, 13+ win Yusho is enough)
+      else if (stats.wins >= 13) {
+        const activeYokozuna = Array.from(world.rikishi.values()).filter(r => r.rank === "yokozuna" && !r.isRetired);
+        if (activeYokozuna.length === 0 && (isYusho || (rikishi.consecutiveStrongOzeki || 0) >= 3)) {
+          promoteToYokozuna = true;
+        }
+      }
 
       // Track consecutive strong performances (12+) for borderline cases
       if (currentWins >= 12) {
@@ -164,8 +171,33 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       }
     }
 
-    // Update rikishi with promotion tracking fields
+    // Update rikishi with promotion tracking fields and append careerHistory
     if (rikishi) {
+      const historyEntry = {
+        id: `${lastBasho.bashoName}-${world.year}-${id}`,
+        bashoId: `${lastBasho.bashoName}-${world.year}`,
+        year: world.year,
+        month: 0,
+        bashoName: lastBasho.bashoName,
+        rank: rikishi.rank,
+        division: rikishi.division,
+        rankNumber: rikishi.rankNumber ?? 1,
+        side: rikishi.side,
+        wins: stats.wins,
+        losses: stats.losses,
+        absences: stats.absences ?? 0,
+        isYusho,
+        isJunYusho,
+        specialPrizes: {
+          shukunsho: history.shukunsho === id,
+          kantosho: history.kantosho === id,
+          ginosho: history.ginoSho === id,
+        },
+        weight: rikishi.weight,
+        momentum: rikishi.momentum,
+      };
+      const updatedHistory = [...(rikishi.careerHistory || []), historyEntry];
+      // Keep last 6 basho only — promotion logic only needs recent history
       builder.updateRikishi(id, {
         consecutiveStrongOzeki,
         consecutiveMakeKoshi,
@@ -173,6 +205,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
         pressureScore,
         councilWarnings,
         stats: statsUpdate,
+        careerHistory: updatedHistory.slice(-6) as any,
       });
     }
 

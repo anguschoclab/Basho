@@ -1,12 +1,16 @@
 import type { WorldState } from "../types/world";
 import type { BashoSimResult, BanzukeUpdateHook, BashoResult } from "../types/basho";
 import { getNextBasho, getBashoNumber } from "../calendar";
-import { advanceDays } from "../tick/tickDaily";
+import { advanceDays, enterPostBasho, enterInterim } from "../tick/tickDaily";
 import { simulateEntireBasho } from "./TournamentSimulator";
 import { ChronicleService } from "./ChronicleService";
+import { SimTuningService, type TuningMetrics } from "./SimTuningService";
 import type { ChronicleReport } from "../types/records";
 import { RANK_HIERARCHY } from "../banzuke";
+import { publishBanzukeUpdate } from "../banzuke/BanzukePublisher";
 import { assertNever } from "../utils/types";
+import { phase06_yearly_boundary } from "../tick/phases/phase06_yearly_boundary";
+import { applyImpact } from "../core/ImpactResolver";
 
 // === AUTO-SIM CONFIGURATION ===
 
@@ -47,6 +51,7 @@ export interface AutoSimResult {
   stoppedBy: StopCondition | "completed";
   chronicle: ChronicleReport;
   finalWorld: WorldState;
+  tuningMetrics: TuningMetrics;
 }
 
 /**
@@ -69,14 +74,16 @@ export function runAutoSim(
 
   const targetBasho = computeTargetBasho(config.duration);
 
+  let currentWorld = world;
   while (bashoSimulated < targetBasho) {
-    const bashoName = world.currentBashoName || "hatsu";
-    const bashoSeed = `${world.seed}-basho-${world.year}-${bashoName}`;
+    let bashoName = currentWorld.currentBashoName || "hatsu";
+    const bashoSeed = `${currentWorld.seed}-basho-${currentWorld.year}-${bashoName}`;
 
-    const bashoResult = simulateEntireBasho(world, bashoName, bashoSeed, {
+    const bashoResult = simulateEntireBasho(currentWorld, bashoName, bashoSeed, {
       banzukeUpdateHook: opts?.banzukeUpdateHook,
     });
 
+    currentWorld = bashoResult.world;
     bashoSimulated++;
     daysSimulated += 15;
 
@@ -90,60 +97,133 @@ export function runAutoSim(
     if (config.verbosity !== "minimal") {
       ChronicleService.addHighlight(
         chronicle,
-        `${titleCase(bashoName)} ${world.year}: ${bashoResult.yushoWinner.shikona} wins (${bashoResult.yushoWinner.wins}-${bashoResult.yushoWinner.losses})`
+        `${titleCase(bashoName)} ${currentWorld.calendar.year}: ${bashoResult.yushoWinner.shikona} wins (${bashoResult.yushoWinner.wins}-${bashoResult.yushoWinner.losses})`
       );
     }
 
     for (const condition of config.stopConditions) {
-      if (checkStopCondition(condition, bashoResult, world, config)) {
+      if (checkStopCondition(condition, bashoResult, currentWorld, config)) {
         stoppedBy = condition;
         break;
       }
     }
     if (stoppedBy !== "completed") break;
 
-    // Advance to next basho
-    const nextBasho = getNextBasho(bashoName);
-    const isNewYear = nextBasho === "hatsu";
+    const nextBashoName = getNextBasho(bashoName);
 
-    // Boundary-aware time skip
-    advanceDays(world, 42); // Canon: 6 weeks inter-basho
+    // 1. Build standings map in the format publishBanzukeUpdate expects
+    const standingsForPublish = new Map<string, { wins: number; losses: number; absences: number }>();
+    bashoResult.standings.forEach((stats, id) => {
+      standingsForPublish.set(id, {
+        wins: stats.wins,
+        losses: stats.losses,
+        absences: (stats as any).absences || 0,
+      });
+    });
 
-    world.currentBashoName = nextBasho;
-    if (isNewYear) world.year++;
+    // 2. Inject standings + history record into world before calling publishBanzukeUpdate
+    const worldWithStandings: WorldState = {
+      ...currentWorld,
+      cyclePhase: "post_basho",
+      _postBashoDays: 7,
+      currentBasho: currentWorld.currentBasho
+        ? { ...currentWorld.currentBasho, standings: standingsForPublish }
+        : {
+            bashoName: bashoName,
+            year: currentWorld.year,
+            bashoNumber: getBashoNumber(bashoName) as 1 | 2 | 3 | 4 | 5 | 6,
+            day: 15,
+            matches: [],
+            standings: standingsForPublish,
+            isActive: false,
+          },
+      history: [
+        ...(currentWorld.history || []),
+        {
+          bashoName: bashoName as any,
+          year: currentWorld.year,
+          bashoNumber: getBashoNumber(bashoName),
+          yusho: bashoResult.yushoWinner.id,
+          junYusho: bashoResult.junYusho ?? [],
+          ginoSho: (bashoResult as any).ginoSho ?? null,
+          shukunsho: (bashoResult as any).shukunsho ?? null,
+          kantosho: (bashoResult as any).kantosho ?? null,
+          prizes: {
+            yushoAmount: 10_000_000,
+            junYushoAmount: 2_000_000,
+            specialPrizes: 2_000_000,
+          },
+        } as any,
+      ],
+    };
 
-    // History tracking
-    if (!world.history) world.history = [];
-    world.history.push({
-      year: bashoResult.year,
-      bashoNumber: getBashoNumber(bashoName),
-      bashoName,
-      yusho: bashoResult.yushoWinner.id,
-      junYusho: bashoResult.junYusho,
-      prizes: {
-        yushoAmount: 10_000_000,
-        junYushoAmount: 2_000_000,
-        specialPrizes: 2_000_000,
-      },
-    } as BashoResult);
+    // 3. Run publishBanzukeUpdate — handles yokozuna promotion, careerHistory, council warnings
+    const banzukeImpact = publishBanzukeUpdate(worldWithStandings);
+    currentWorld = applyImpact(worldWithStandings, banzukeImpact);
+
+    // 2. Advance through off-season phases to trigger yearly boundary & training
+    currentWorld = enterPostBasho(currentWorld);
+    currentWorld = advanceDays(currentWorld, 7);
+
+    currentWorld = enterInterim(currentWorld);
+    currentWorld = advanceDays(currentWorld, 42);
+
+    // 3. After kyushu (last basho of the year), fire the yearly boundary explicitly.
+    // We also reset the calendar to Jan 1 of the new year so the next year's off-seasons
+    // don't naturally cross Dec 31 and double-trigger the yearly boundary.
+    if (bashoName === "kyushu") {
+      const yearBoundaryWorld: WorldState = {
+        ...currentWorld,
+        // Reset to Jan 1 so subsequent off-seasons never cross Dec 31 naturally.
+        calendar: {
+          ...currentWorld.calendar,
+          currentDay: 1,
+          month: 1,
+        },
+        transientContext: {
+          ...currentWorld.transientContext,
+          boundaries: {
+            ...currentWorld.transientContext?.boundaries,
+            yearBoundary: true,
+          },
+        },
+      };
+      const yearImpact = phase06_yearly_boundary(yearBoundaryWorld);
+      currentWorld = applyImpact(yearBoundaryWorld, yearImpact);
+    }
+
+    // Preparation for next basho
+    bashoName = nextBashoName;
 
     if (
       config.duration.type === "untilEvent" &&
-      checkStopCondition(config.duration.eventType, bashoResult, world, config)
+      checkStopCondition(config.duration.eventType, bashoResult, currentWorld, config)
     ) {
       stoppedBy = config.duration.eventType;
       break;
     }
   }
 
+  // Final Metrics Calculation
+  const activeRikishi = Array.from(currentWorld.rikishi.values()).filter(r => !r.isRetired);
+  const successions = (currentWorld.governanceLog || []).filter(l => l.incident === "oyakata_promotion" || l.data?.status === "oyakata_promotion").length;
+  const yokozunaVacancy = activeRikishi.filter(r => r.rank === "yokozuna").length === 0 ? 1 : 0;
+
+  const tuningMetrics = SimTuningService.calculateMetrics(currentWorld, {
+    yokozunaVacancy,
+    uniqueWinners: championCounts.size,
+    successions
+  });
+
   return {
     startYear,
-    endYear: world.year,
+    endYear: currentWorld.year,
     bashoSimulated,
     daysSimulated,
     stoppedBy,
-    chronicle: ChronicleService.finalizeReport(world, chronicle, championCounts, startYear),
-    finalWorld: world,
+    chronicle: ChronicleService.finalizeReport(currentWorld, chronicle, championCounts, startYear),
+    finalWorld: currentWorld,
+    tuningMetrics,
   };
 }
 

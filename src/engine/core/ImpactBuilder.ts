@@ -254,6 +254,34 @@ export class ImpactBuilder {
   }
 
   /**
+   * Add a new oyakata member to the world.
+   */
+  addOyakata(oyakata: Oyakata): ImpactBuilder {
+    if (!this.impact.collections) {
+      this.impact.collections = {};
+    }
+    if (!this.impact.collections.oyakataToAdd) {
+      this.impact.collections.oyakataToAdd = [];
+    }
+    this.impact.collections.oyakataToAdd.push(oyakata);
+    return this;
+  }
+
+  /**
+   * Remove an oyakata from the world.
+   */
+  removeOyakata(id: string): ImpactBuilder {
+    if (!this.impact.collections) {
+      this.impact.collections = {};
+    }
+    if (!this.impact.collections.oyakataToRemove) {
+      this.impact.collections.oyakataToRemove = [];
+    }
+    this.impact.collections.oyakataToRemove.push(id);
+    return this;
+  }
+
+  /**
    * Remove a staff member from the world.
    */
   removeStaff(id: string): ImpactBuilder {
@@ -312,9 +340,15 @@ export class ImpactBuilder {
   }
 
   /**
-   * Move a rikishi from active to historical collection (retirement).
+   * Retire a rikishi: moves from active to historical and sets retirement metadata.
    */
-  retireRikishi(id: string): ImpactBuilder {
+  retireRikishi(id: string, year: number = 2026, reason: string = "Retirement"): ImpactBuilder {
+    this.updateRikishi(id, {
+      isRetired: true,
+      retirementYear: year,
+      retirementReason: reason,
+    });
+
     if (!this.impact.collections) {
       this.impact.collections = {};
     }
@@ -395,6 +429,7 @@ export class ImpactBuilder {
       | "heyas"
       | "transientContext"
       | "settings"
+      | "playerKnowledge"
     >,
   >(field: K, value: WorldState[K]): ImpactBuilder {
     if (!this.impact.worldFields) {
@@ -406,11 +441,11 @@ export class ImpactBuilder {
 
   /**
    * Append items to a world array field.
-   * @param field - The world field array to append to (history, almanacSnapshots, basho.matches, governanceLog)
+   * @param field - The world field array to append to (history, almanacSnapshots, basho.matches, governanceLog, pendingExhibitions)
    * @param items - Items to append
    */
   appendToWorldArray<
-    K extends "history" | "almanacSnapshots" | "basho.matches" | "governanceLog" | "awardLog",
+    K extends "history" | "almanacSnapshots" | "basho.matches" | "governanceLog" | "awardLog" | "pendingExhibitions",
   >(field: K, items: unknown[]): ImpactBuilder {
     if (!this.impact.arrayAppends) {
       this.impact.arrayAppends = [];
@@ -517,7 +552,8 @@ export class ImpactBuilder {
     }
     if (other.collections?.rikishiToHistorical) {
       for (const id of other.collections.rikishiToHistorical) {
-        this.retireRikishi(id);
+        const update = other.entities?.rikishiUpdates?.get(id);
+        this.retireRikishi(id, update?.retirementYear, update?.retirementReason);
       }
     }
     if (other.collections?.rikishiFromHistorical) {
@@ -590,8 +626,13 @@ export function updateRikishiImpact(
 /**
  * Convenience function to create a retirement impact.
  */
-export function retireRikishiImpact(id: string, source: string): StateImpact {
-  return createImpactBuilder(source).retireRikishi(id).build();
+export function retireRikishiImpact(
+  id: string,
+  year: number,
+  reason: string,
+  source: string
+): StateImpact {
+  return createImpactBuilder(source).retireRikishi(id, year, reason).build();
 }
 
 /**

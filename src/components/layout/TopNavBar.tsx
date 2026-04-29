@@ -199,31 +199,39 @@ export function TopNavBar() {
           {/* Thin separator before the Continue button */}
           <div className="w-px h-5 mx-1" style={{ background: "hsl(var(--border))" }} />
 
-          {/* ─ CONTINUE BUTTON — The hero action ─ */}
+          {/* ─ SMART ADVANCE BUTTON — The hero action ─ */}
           {world && (
             <TooltipWrap
               content={
-                inBasho ? "Advance to next day of tournament" : "Advance the simulation one day"
+                inBasho ? "Advance to next day of tournament" : 
+                cyclePhase === "banzuke_reveal" ? "Review the new banzuke rankings" :
+                cyclePhase === "pre_basho" ? "Start the tournament preparations" :
+                "Advance the simulation one day"
               }
               side="left"
             >
               <Button asChild variant="ghost" className="p-0 h-auto hover:bg-transparent">
                 <button
-                  onClick={() => advanceOneDay()}
+                  onClick={() => {
+                    if (cyclePhase === "active_basho") navigate({ to: "/basho" });
+                    else if (cyclePhase === "banzuke_reveal") navigate({ to: "/recap" });
+                    else advanceOneDay();
+                  }}
                   className="relative h-8 px-4 rounded flex items-center gap-2 font-semibold text-[12px] transition-all duration-200 hover:scale-[1.03] active:scale-[0.97] overflow-hidden group"
                   style={{
                     fontFamily: "var(--font-mono)",
                     letterSpacing: "0.08em",
                     background: inBasho
                       ? "linear-gradient(135deg, hsl(var(--east)) 0%, hsl(44 78% 46%) 100%)"
-                      : "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(44 68% 40%) 100%)",
+                      : cyclePhase === "banzuke_reveal"
+                        ? "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--west)) 100%)"
+                        : "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(44 68% 40%) 100%)",
                     color: "hsl(222 32% 5%)",
                     boxShadow: inBasho
                       ? "0 2px 12px hsl(var(--east) / 0.3), inset 0 1px 0 hsl(38 80% 80% / 0.3)"
                       : "0 2px 12px hsl(var(--primary) / 0.35), inset 0 1px 0 hsl(38 80% 80% / 0.3)",
                   }}
                 >
-                  {/* Shimmer sweep on hover */}
                   <span
                     className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                     style={{
@@ -233,7 +241,11 @@ export function TopNavBar() {
                     }}
                   />
                   <span className="relative hidden sm:inline">
-                    {inBasho ? `Day ${bashoDay}` : "Continue"}
+                    {inBasho ? `Day ${bashoDay}` : 
+                     world.globalCup?.isActive ? "Global Cup" :
+                     cyclePhase === "banzuke_reveal" ? "Banzuke" :
+                     cyclePhase === "pre_basho" ? "Start Basho" :
+                     "Continue"}
                   </span>
                   <ChevronRight className="relative h-3.5 w-3.5" />
                 </button>

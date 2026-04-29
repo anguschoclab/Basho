@@ -67,20 +67,59 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
   }
 
   // 4. NPC Opportunistic Recruitment
-  if (
-    world.cyclePhase === "interim" &&
-    Math.floor((42 - (world._interimDaysRemaining ?? 0)) / 7) === 3
-  ) {
+  const TARGET_ROSTER_SIZE = 30;
+  const CRITICAL_ROSTER_THRESHOLD = 15;
+  const interimElapsedWeeks = world.cyclePhase === "interim"
+    ? Math.floor((42 - (world._interimDaysRemaining ?? 0)) / 7)
+    : -1;
+
+  // Primary recruitment window: mid-interim (week 3)
+  if (interimElapsedWeeks === 3) {
     const smallStables: Record<string, number> = {};
     let hasItems = false;
     for (const h of world.heyas.values()) {
-      if (h.id !== world.playerHeyaId && (h.rikishiIds ?? []).length < 6) {
-        smallStables[h.id] = Math.max(1, 6 - (h.rikishiIds ?? []).length);
+      const currentCount = (h.rikishiIds ?? []).length;
+      if (h.id !== world.playerHeyaId && currentCount < TARGET_ROSTER_SIZE) {
+        smallStables[h.id] = Math.max(1, TARGET_ROSTER_SIZE - currentCount);
         hasItems = true;
       }
     }
     if (hasItems) {
-      builder.merge(talentpool.fillVacanciesForNPC(world, smallStables));
+      builder.merge(talentpool.fillVacanciesForNPCWithBidding(world, smallStables));
+    }
+  }
+
+  // Secondary recruitment window: start of interim (week 0), for critically depleted stables only
+  if (interimElapsedWeeks === 0) {
+    const criticalStables: Record<string, number> = {};
+    let hasCritical = false;
+    for (const h of world.heyas.values()) {
+      const currentCount = (h.rikishiIds ?? []).length;
+      if (h.id !== world.playerHeyaId && currentCount < CRITICAL_ROSTER_THRESHOLD) {
+        // Emergency fill: target up to TARGET_ROSTER_SIZE
+        criticalStables[h.id] = Math.max(1, TARGET_ROSTER_SIZE - currentCount);
+        hasCritical = true;
+      }
+    }
+    if (hasCritical) {
+      builder.merge(talentpool.fillVacanciesForNPCWithBidding(world, criticalStables));
+    }
+  }
+
+  // 4b. Emergency recruitment: if population is critically low, recruit every week
+  const totalActive = Array.from(world.rikishi.values()).filter(r => !r.isRetired).length;
+  if (totalActive < 700) {
+    const urgentVacancies: Record<string, number> = {};
+    let hasUrgentVacancies = false;
+    for (const h of world.heyas.values()) {
+      const currentCount = (h.rikishiIds ?? []).length;
+      if (h.id !== world.playerHeyaId && currentCount < TARGET_ROSTER_SIZE) {
+        urgentVacancies[h.id] = Math.max(1, TARGET_ROSTER_SIZE - currentCount);
+        hasUrgentVacancies = true;
+      }
+    }
+    if (hasUrgentVacancies) {
+      builder.merge(talentpool.fillVacanciesForNPCWithBidding(world, urgentVacancies));
     }
   }
 
@@ -90,18 +129,22 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
   // 6. Auto-assign mentors to newly recruited rikishi
   // Note: we look at CURRENT world state, but changes will be captured in impacts
   for (const heya of world.heyas.values()) {
-    const heyaRikishi = (heya.rikishiIds ?? []).map((id) => world.rikishi.get(id)).filter(Boolean);
+    // ⚡ Bolt Optimization: Use a single loop instead of chained .map().filter().map()
+    // This avoids intermediate array allocations and redundant iteration
+    const potentialMentors: string[] = [];
+    const juniorsWithoutMentors: Rikishi[] = [];
 
-    const potentialMentors = heyaRikishi
-      .filter(
-        (r): r is Rikishi =>
-          !!r && (r.division === "makuuchi" || r.division === "juryo" || r.experience > 50)
-      )
-      .map((r) => r.id);
-
-    const juniorsWithoutMentors = heyaRikishi.filter(
-      (r): r is Rikishi => !!r && !r.mentorId && r.experience < 30
-    );
+    for (const id of heya.rikishiIds ?? []) {
+      const r = world.rikishi.get(id);
+      if (r) {
+        if (r.division === "makuuchi" || r.division === "juryo" || r.experience > 50) {
+          potentialMentors.push(r.id);
+        }
+        if (!r.mentorId && r.experience < 30) {
+          juniorsWithoutMentors.push(r);
+        }
+      }
+    }
 
     for (const junior of juniorsWithoutMentors) {
       if (!junior) continue;

@@ -247,11 +247,19 @@ export function updateBanzuke(
   const used = new Set<string>();
 
   for (const slot of fullTemplate) {
-    const idx = scored.findIndex(
+    // 1. Try to find the best candidate who is ELIGIBLE for this tier
+    let idx = scored.findIndex(
       (cand) =>
         !used.has(cand.entry.rikishiId) &&
         RANK_HIERARCHY[slot.position.rank].tier >= cand.eligibleBestTier
     );
+
+    // 2. FALLBACK: If no eligible candidate found, take the absolute next best available candidate
+    // to ensure division quotas are met (as requested by user).
+    if (idx === -1) {
+      idx = scored.findIndex((cand) => !used.has(cand.entry.rikishiId));
+    }
+
     if (idx !== -1) {
       const winner = scored.splice(idx, 1)[0];
       used.add(winner.entry.rikishiId);

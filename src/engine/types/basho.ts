@@ -162,4 +162,5 @@ export interface BashoSimResult {
   injuries: string[];
   promotions: PromotionEvent[];
   demotions: DemotionEvent[];
+  finalWorld: WorldState;
 }

@@ -14,9 +14,6 @@
 // - Guards missing rank in RANK_HIERARCHY
 // - Safer prize display (shows yusho prize only when available)
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
-import React from "react";
 import { Helmet } from "react-helmet";
 import { useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
@@ -35,6 +32,8 @@ import {
   getBashoByNumber,
   getBashoIndex,
 } from "@/presenters/uiDigest";
+import type { Rank } from "@/engine/types/banzuke";
+import type { BashoName } from "@/engine/types/basho";
 
 /** Type representing history record. */
 type HistoryRecord = {
@@ -67,8 +66,9 @@ function safeMillions(yen?: number) {
  *  * @param rank - The Rank.
  *  * @returns The result.
  */
-function safeRankJa(rank: any): string {
-  return (RANK_HIERARCHY as any)?.[rank]?.nameJa ?? String(rank ?? "—");
+function safeRankJa(rank: string | null | undefined): string {
+  const info = rank ? RANK_HIERARCHY[rank as Rank] : undefined;
+  return info?.nameJa ?? String(rank ?? "—");
 }
 
 /** history page. */
@@ -78,7 +78,7 @@ export default function HistoryPage() {
   const { world } = state;
 
   useEffect(() => {
-    if (!world) navigate({ to: "/" });
+    if (!world) navigate({ to: "/dashboard" });
   }, [world, navigate]);
   if (!world) return null;
 
@@ -92,7 +92,7 @@ export default function HistoryPage() {
 
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={() => navigate({ to: "/" })}>
+          <Button variant="ghost" onClick={() => navigate({ to: "/dashboard" })}>
             <ArrowLeft className="h-4 w-4 mr-2" /> Back
           </Button>
           <PageHeader
@@ -110,7 +110,7 @@ export default function HistoryPage() {
               <p className="text-muted-foreground mb-4">
                 Complete your first basho to see results here.
               </p>
-              <Button onClick={() => navigate({ to: "/" })}>Return to Dashboard</Button>
+              <Button onClick={() => navigate({ to: "/dashboard" })}>Return to Dashboard</Button>
             </CardContent>
           </Card>
         ) : (
@@ -118,19 +118,17 @@ export default function HistoryPage() {
             {history.map((basho) => {
               const bashoInfo = basho.bashoNumber
                 ? getBashoByNumber(basho.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6)
-                : (BASHO_CALENDAR as any)?.[basho.bashoName];
+                : BASHO_CALENDAR[basho.bashoName as BashoName];
               const bashoNameJa = bashoInfo?.nameJa ?? basho.bashoName;
               const bashoNameEn = bashoInfo?.nameEn ?? "Tournament";
               const bashoLocation = bashoInfo?.location ?? "—";
-              const bashoIdx = basho.bashoName ? getBashoIndex(basho.bashoName as any) : -1;
+              const bashoIdx = basho.bashoName ? getBashoIndex(basho.bashoName as BashoName) : -1;
 
               const yushoRikishi = basho.yusho ? (getRikishi?.(basho.yusho) ?? null) : null;
               const yushoHeya = yushoRikishi ? world.heyas.get(yushoRikishi.heyaId) : null;
 
-              const junYushoIds = Array.isArray((basho as any).junYusho)
-                ? ((basho as any).junYusho as string[])
-                : [];
-              const prizes = ((basho as any).prizes as HistoryRecord["prizes"]) ?? null;
+              const junYushoIds = Array.isArray(basho.junYusho) ? basho.junYusho : [];
+              const prizes = basho.prizes ?? null;
 
               // Prefer yusho prize as "headline" prize; otherwise show none.
               const yushoMillions = safeMillions(prizes?.yushoAmount);

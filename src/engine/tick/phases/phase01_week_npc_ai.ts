@@ -26,6 +26,7 @@ import {
   collectManagementDecisionEvents,
   collectStrategyShiftEvents,
 } from "./npc_ai";
+import { ensurePersonaForOyakata } from "../../systems/NPCPersonaService";
 
 export function phase01_week_npc_ai(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_npc_ai");
@@ -39,6 +40,8 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
     const oyakata = heya.oyakataId ? world.oyakata.get(heya.oyakataId) : undefined;
 
     if (oyakata) {
+      // Lazily hydrate oyakata persona quirks/flags if not yet assigned
+      ensurePersonaForOyakata(world, oyakata);
       const nextOya = { ...oyakata };
       consolidateOyakataMemoryPure(world, nextOya, perception);
 

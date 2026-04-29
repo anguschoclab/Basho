@@ -11,7 +11,7 @@ import { generateBoutNarrative } from "./boutNarrative";
 import { KIMARITE_REGISTRY } from "../kimarite";
 import { RivalryService } from "../systems/narrative/RivalryService";
 import { RNGRegistry } from "../core/RNGRegistry";
-import { calculateKenshoEnvelopes, assignKenshoBanners } from "../systems/economics/KenshoService";
+import { calculateKenshoEnvelopes, assignKenshoBanners, determineBoutImportance } from "../systems/economics/KenshoService";
 
 import { clamp } from "../utils/math";
 import { decideBoutTacticOverride } from "../strategy/NPCStrategyService";
@@ -218,7 +218,27 @@ export function resolveBout(
 
     // 5. Kensho (Prize Banners)
     const kenshoRng = RNGRegistry.getSystemRNG(world, "kensho", `kensho-${result.boutId}`);
-    const banners = assignKenshoBanners(world, winner, loser, kenshoRng);
+    
+    // Determine importance for banner count
+    const importance = determineBoutImportance(
+      east.rank, 
+      west.rank, 
+      bout.day, 
+      false, // TODO: yusho contention check
+      false  // TODO: playoff check
+    );
+    
+    // Base banner count: random based on importance
+    const baseCountMap = { low: 2, mid: 5, high: 12, peak: 25 };
+    const bannerCount = Math.floor(baseCountMap[importance] * (0.8 + kenshoRng.next() * 0.4));
+
+    const banners = assignKenshoBanners(
+      result.boutId,
+      bannerCount,
+      importance,
+      world.sponsorPool!,
+      kenshoRng
+    );
     (result as BoutResult & { kenshoBanners?: unknown[] }).kenshoBanners = banners;
 
     const awardFact = result.awardFact ?? undefined;

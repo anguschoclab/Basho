@@ -8,9 +8,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Flame } from "lucide-react";
 import { RikishiName, StableName } from "@/components/ClickableName";
-/* eslint-disable no-restricted-imports -- Imports from presenters allowed for formatting utilities */
-import { formatRank } from "@/presenters/uiDigest";
-import { clamp } from "@/presenters/uiDigest";
+import { formatRank, clamp } from "@/presenters/uiDigest";
 import { getHeatBand, H2HBar, HeatGauge } from "./rivalryUtils";
 import { HEAT_BAND_CONFIG, TONE_CONFIG, TRIGGER_LABELS } from "./rivalryConstants";
 import type { RivalryPairState, RivalryTrigger } from "@/engine/rivalries";

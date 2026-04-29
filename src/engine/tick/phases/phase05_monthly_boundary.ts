@@ -25,6 +25,8 @@ import {
   distributeKoenkaiToSekitori,
 } from "../../systems/economics/TravelAllowanceService";
 import { tickMonthlyNPC } from "../../npcAI";
+import { payMochikyukinBonuses } from "../../systems/economics/MochikyukinService";
+import { renewSponsorContract } from "../../systems/economy/SponsorContractService";
 import { processHeyaEconomics, processLoanRepayments } from "./monthly/economics";
 import { processFacilitiesMaintenance, processNpcAutoInvestment } from "./monthly/facilities";
 import { processArchetypeDrift } from "./monthly/training";
@@ -99,11 +101,30 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
   // Distribute kōenkai income portion to sekitori
   const koenkaiDistributionImpact = distributeKoenkaiToSekitori(world);
 
+  // Pay mochikyukin bonuses to sekitori (every 2 months)
+  const mochikyukinPayoutImpact = payMochikyukinBonuses(world, world.calendar.month);
+
+  // Auto-renew sponsor contracts expiring within 8 weeks for high-loyalty sponsors
+  const sponsorRenewalImpacts: StateImpact[] = [];
+  if (world.sponsorPool) {
+    const currentWeek = world.week ?? 0;
+    for (const sponsor of world.sponsorPool.sponsors.values()) {
+      if (!sponsor.active || sponsor.loyalty < 60) continue;
+      for (const rel of sponsor.relationships) {
+        if (rel.endsAtTick !== undefined && rel.endsAtTick - currentWeek <= 8 && rel.endsAtTick > currentWeek) {
+          sponsorRenewalImpacts.push(renewSponsorContract(world, rel.relId, sponsor.sponsorId));
+        }
+      }
+    }
+  }
+
   return mergeImpacts([
     builder.build(),
     npcMonthlyImpact,
     travelImpact,
     tsukebitoImpact,
     koenkaiDistributionImpact,
+    mochikyukinPayoutImpact,
+    ...sponsorRenewalImpacts,
   ]);
 }

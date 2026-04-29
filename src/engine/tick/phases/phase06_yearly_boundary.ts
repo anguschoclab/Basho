@@ -28,10 +28,19 @@ import { runElections } from "../../governance/GovernanceService";
 import { DynastyService } from "../../systems/legacy/DynastyService";
 import { WorldCircuitService } from "../../systems/global/WorldCircuitService";
 import { TrainingPhilosophyService } from "../../systems/legacy/TrainingPhilosophyService";
+import { TalentPoolService } from "../../systems/generation/TalentPoolService";
 
 export function phase06_yearly_boundary(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase06_yearly_boundary");
   const boundaries = world.transientContext?.boundaries;
+  // 0.2 Global Cup — initialize on Jan 1 year boundary.
+  // Advancement runs via phase_global_cup_advance in the off-season pipeline.
+  if (boundaries?.yearBoundary && !world.globalCup?.isActive) {
+    const cupImpact = GlobalCupService.initializeTournament(world);
+    builder.merge(cupImpact);
+  }
+
+  // Only proceed with heavy yearly tasks on the actual Jan 1st boundary
   if (!boundaries?.yearBoundary) return builder.build();
 
   // 0. Era Drift & Meta Evolution (E6)
@@ -41,10 +50,6 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
   // 0.1 Infrastructure Construction Tick (P2)
   const infraImpact = InfrastructureService.processCompletionTick(world);
   builder.merge(infraImpact);
-
-  // 0.2 Global Cup & Worlds Exhibition (Phase 3)
-  const cupImpact = GlobalCupService.processGlobalCup(world);
-  builder.merge(cupImpact);
 
   // 0.3 Phase 5: Legacy & World Circuit
   // Succession checks for all stables
@@ -101,119 +106,7 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
 
   // 2. Talent Pool Refresh
   if (world.talentPool) {
-    const rng = RNGRegistry.getSystemRNG(world, "scouting", `year-${world.year}`);
-    const candidates = { ...world.talentPool.candidates };
-
-    // Age out candidates who weren't recruited (keep for 3 years max)
-    const currentYear = world.year;
-    const idsToDelete: string[] = [];
-    for (const [id, candidate] of Object.entries(candidates)) {
-      const cand = candidate as TalentCandidate;
-      const age = currentYear - cand.birthYear;
-      if (age >= 25 || cand.availabilityState === "withdrawn") {
-        idsToDelete.push(id);
-      }
-    }
-
-    const nextCandidates: Record<string, TalentCandidate> = {};
-    for (const [id, candidate] of Object.entries(candidates)) {
-      if (!idsToDelete.includes(id)) {
-        nextCandidates[id] = candidate as TalentCandidate;
-      }
-    }
-
-    // Generate 5-10 new candidates per year
-    const newCandidateCount = 5 + rng.int(0, 6);
-    const archetypes: CombatArchetype[] = [
-      "oshi",
-      "yotsu",
-      "tsuppari",
-      "giant",
-      "trickster",
-      "hybrid",
-      "speedster",
-      "defensive",
-    ];
-    const styles: Style[] = ["oshi", "yotsu", "hybrid"];
-    const origins = [
-      "Tokyo",
-      "Osaka",
-      "Fukuoka",
-      "Hokkaido",
-      "Aichi",
-      "Mongolia",
-      "Georgia",
-      "USA",
-      "Estonia",
-    ];
-
-    for (let i = 0; i < newCandidateCount; i++) {
-      const candidateId = rng.uuid("CANDIDATE");
-      const archetype = archetypes[rng.int(0, archetypes.length - 1)];
-      const style = styles[rng.int(0, styles.length - 1)];
-      const origin = origins[rng.int(0, origins.length - 1)];
-      const isForeign = !["Tokyo", "Osaka", "Fukuoka", "Hokkaido", "Aichi"].includes(origin);
-
-      const candidate: TalentCandidate = {
-        candidateId,
-        personId: rng.uuid("PERSON"),
-        name: generateRikishiName(`${rng.seed}::${candidateId}`, rng),
-        birthYear: currentYear - (15 + rng.int(0, 5)),
-        originRegion: origin,
-        nationality: isForeign ? origin : "Japan",
-        visibilityBand: rng.next() < 0.3 ? "rumored" : "hidden",
-        reputationSeed: rng.int(0, 1000000),
-        tags: isForeign ? ["foreign", "prospect"] : ["prospect"],
-        combatProfile: {
-          archetype,
-          familyPreferences: {
-            push:
-              archetype === "oshi" || archetype === "tsuppari" || archetype === "giant" ? 0.6 : 0.2,
-            belt: archetype === "yotsu" ? 0.6 : 0.2,
-            trick: archetype === "trickster" ? 0.6 : 0.1,
-            speed: archetype === "speedster" ? 0.6 : 0.1,
-          },
-          preferredGrip: archetype === "yotsu" ? "migi" : "none",
-          preferredGripDepth: archetype === "yotsu" ? "deep" : "standard",
-          statModifiers: {
-            strength: archetype === "oshi" || archetype === "giant" ? 1.2 : 1.0,
-            technique: archetype === "trickster" || archetype === "yotsu" ? 1.2 : 1.0,
-            speed: archetype === "tsuppari" || archetype === "speedster" ? 1.2 : 1.0,
-            height: archetype === "giant" ? 1.15 : 1.0,
-            weight: archetype === "giant" ? 1.2 : 1.0,
-          },
-        },
-        availabilityState: "available",
-        competingSuitors: [],
-        archetype,
-        style,
-        heightPotentialCm: 170 + rng.int(0, 25),
-        weightPotentialKg: 90 + rng.int(0, 80),
-        talentSeed: rng.int(0, 1000000),
-        temperament: {
-          discipline: 40 + rng.int(0, 50),
-          volatility: rng.int(0, 40),
-        },
-        isAmateurStar: rng.next() < 0.15,
-      };
-
-      nextCandidates[candidateId] = candidate;
-
-      if (candidate.isAmateurStar || candidate.visibilityBand === "rumored") {
-        builder.logEvent("RECRUIT_DISCOVERED", "narrative", {
-          rikishiId: candidateId,
-          shikona: candidate.name,
-          origin: candidate.originRegion,
-          archetype: candidate.archetype,
-        });
-      }
-    }
-
-    builder.updateWorldField("talentPool", {
-      ...world.talentPool,
-      candidates: nextCandidates,
-      lastYearlyRefreshYear: currentYear,
-    });
+    builder.merge(TalentPoolService.tickYear(world));
   }
 
   // 3. NPC Yearly Logic
@@ -237,11 +130,14 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
     builder.updateWorldField("staff", nextStaff);
   }
 
-  // 5. Rikishi Avatar Aging
+  // 5. Rikishi Avatar Aging & Physical Aging
   if (world.rikishi) {
     for (const [id, r] of world.rikishi) {
       const age = world.year - r.birthYear;
       const isSekitori = r.division === "makuuchi" || r.division === "juryo";
+
+      // Explicitly update rikishi age property for metrics and checks
+      builder.updateRikishi(id, { age });
 
       if (r.avatarConfig) {
         const updated = updateAvatarForAging(r.avatarConfig, age);
@@ -251,14 +147,20 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
     }
   }
 
-  // 6. Oyakata Avatar Aging
+  // 6. Oyakata Avatar Aging & Tenure
   if (world.oyakata) {
+    const nextOyakata = new Map(world.oyakata);
     for (const [id, o] of world.oyakata) {
+      const updated = { ...o };
+      updated.age += 1;
+      updated.yearsInCharge = (updated.yearsInCharge || 0) + 1;
+      
       if (o.avatarConfig) {
-        const updated = updateAvatarForAging(o.avatarConfig, o.age);
-        builder.updateOyakata(id, { avatarConfig: updated });
+        updated.avatarConfig = updateAvatarForAging(o.avatarConfig, updated.age);
       }
+      nextOyakata.set(id, updated);
     }
+    builder.updateWorldField("oyakata", nextOyakata);
   }
 
   // Phase 5 Depth: Training Philosophy Drift
@@ -285,14 +187,10 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
     reason: hofNames.length > 0 ? hofNames.join("|") : "None",
   });
 
-  // 8. Global Cup Event - Log if tournament is active
-  if (world.globalCup?.isActive) {
-    builder.logEvent("GLOBAL_CUP", "narrative", {
-      status: world.globalCup.phase,
-      year: world.globalCup.year,
-      participantCount: world.globalCup.participants.length,
-    });
-  }
+  // 8. Sync & Increment Authoritative Year (E4/C5)
+  const nextYear = (world.calendar?.year || world.year) + 1;
+  builder.updateWorldField("year", nextYear);
+  builder.updateWorldField("calendar", { ...world.calendar, year: nextYear });
 
   return builder.build();
 }

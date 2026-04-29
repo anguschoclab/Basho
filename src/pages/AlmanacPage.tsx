@@ -184,8 +184,7 @@ export default function AlmanacPage() {
                       </div>
                       <div className="text-right">
                         <Link
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          to={"/basho" as any}
+                          to="/basho"
                           className="text-primary hover:underline text-sm font-semibold"
                         >
                           View Full Results →

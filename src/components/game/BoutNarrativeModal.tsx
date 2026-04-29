@@ -1,7 +1,6 @@
 // BoutNarrativeModal.tsx — Polished bout detail modal with dramatic header,
 // animated phase commentary, and immersive result display
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useMemo } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -15,6 +14,7 @@ import { BoutResultDisplay } from "./BoutResultDisplay";
 import { BoutLog } from "./BoutLog";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
+import type { Rikishi } from "@/engine/types/rikishi";
 import type { PbpLine } from "@/engine/bout/boutNarrative";
 import { RotateCcw, MessageSquareText, BookOpen, Terminal } from "lucide-react";
 import { generateNarrative } from "@/presenters/uiDigest";
@@ -79,13 +79,13 @@ export function BoutNarrativeModal({
   bashoName,
   day,
 }: BoutNarrativeModalProps) {
-  const narrative = generateNarrative(east as any, west as any, result, bashoName, day);
+  const narrative = generateNarrative(east as unknown as Rikishi, west as unknown as Rikishi, result, bashoName, day);
 
   const pbpLines = useMemo<PbpLine[]>(() => {
     try {
       const seed = `${bashoName}-${day}-${east.id}-${west.id}`;
-      generateBoutNarrative(result, east as any, west as any, bashoName, day, seed);
-      return (result as any).pbpLines ?? [];
+      generateBoutNarrative(result, east as unknown as Rikishi, west as unknown as Rikishi, bashoName, day, seed);
+      return result.pbpLines ?? [];
     } catch {
       return [];
     }
@@ -132,8 +132,8 @@ export function BoutNarrativeModal({
           <BoutReplayViewer
             key={replayKey}
             result={result}
-            eastRikishi={east as any}
-            westRikishi={west as any}
+            eastRikishi={east as unknown as Rikishi}
+            westRikishi={west as unknown as Rikishi}
             autoPlay
             className="shadow-sm mx-auto max-w-lg bg-background rounded-md"
           />
@@ -155,8 +155,8 @@ export function BoutNarrativeModal({
             {/* Result card */}
             <BoutResultDisplay
               result={result}
-              eastRikishi={east as any}
-              westRikishi={west as any}
+              eastRikishi={east}
+              westRikishi={west}
               className="border shadow-none"
             />
 
@@ -236,7 +236,7 @@ export function BoutNarrativeModal({
               {/* ── Technical log ── */}
               <TabsContent value="log" className="mt-4">
                 <BoutLog
-                  log={(result as any).log}
+                  log={result.log}
                   className="border rounded-md p-4 bg-background"
                 />
               </TabsContent>

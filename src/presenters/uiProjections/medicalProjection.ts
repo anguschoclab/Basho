@@ -109,10 +109,8 @@ export function projectMedicalUIDigest(world: WorldState) {
     facilityLabel,
     injuredRikishi: injured.map((r) => {
       const injuryStatus = r.injuryStatus;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const weeksRemaining = r.injuryWeeksRemaining ?? (injuryStatus as any)?.weeksRemaining ?? 0;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const weeksTotal = (injuryStatus as any)?.weeksToHeal ?? weeksRemaining + 2;
+      const weeksRemaining = r.injuryWeeksRemaining ?? injuryStatus?.weeksRemaining ?? 0;
+      const weeksTotal = injuryStatus?.weeksToHeal ?? weeksRemaining + 2;
       const recoveryProgress =
         weeksTotal > 0 ? Math.round(((weeksTotal - weeksRemaining) / weeksTotal) * 100) : 0;
       const facilityBonus = Math.round((recoveryFacility - 50) / 10);

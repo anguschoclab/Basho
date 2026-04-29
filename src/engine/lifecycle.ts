@@ -41,9 +41,8 @@ export function checkRetirement(
   if (rikishi.rank === "yokozuna" && age >= 40) return "Yokozuna Mandatory Retirement";
 
   // 2. Injury Forced Retirement
-  const severity =
-    typeof rikishi.injuryStatus?.severity === "number" ? rikishi.injuryStatus.severity : 0;
-  if (rikishi.injuryStatus?.isInjured && severity > 90) {
+  // Career-ending: serious injury (from weekly health phase) with >20 weeks remaining
+  if (rikishi.injured && rikishi.currentInjury?.severity === "serious" && (rikishi.injuryWeeksRemaining ?? 0) > 20) {
     return "Career-Ending Injury";
   }
 
@@ -79,9 +78,19 @@ export function checkRetirement(
     return "Age & Fatigue";
   }
 
-  // 5. Performance Drop (Rank-based)
-  if (rikishi.rank === "jonokuchi" && age > 25) {
-    if (rng.bool(0.3)) return "Lack of Performance";
+  // 5. Performance Drop (Rank & Stat based)
+  const isStagnant = rikishi.rank === "jonokuchi" && age > 25;
+  const isWeak = (rikishi.power ?? 50) < 40 && age > 30;
+  const isCriticallyWeak = (rikishi.power ?? 50) < 30 && age > 25;
+
+  if (isStagnant || isWeak || isCriticallyWeak) {
+    let retireProb = 0.1;
+    if (isWeak) retireProb = 0.25;
+    if (isCriticallyWeak) retireProb = 0.5;
+    
+    if (rng.bool(retireProb)) {
+      return (rikishi.power ?? 50) < 35 ? "Diminishing Physicality" : "Lack of Performance";
+    }
   }
 
   return null;

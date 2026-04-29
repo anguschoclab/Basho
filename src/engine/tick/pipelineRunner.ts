@@ -37,8 +37,10 @@ export function runPipeline(initialWorld: WorldState, phases: PipelinePhase[]): 
   let currentWorld = initialWorld;
 
   for (const phase of phases) {
-    // Take snapshot before phase execution for error recovery
-    const prePhaseSnapshot = structuredClone(currentWorld);
+    // PERFORMANCE OPTIMIZATION: Avoid expensive deep clone (structuredClone) every phase.
+    // In a strict immutable architecture, the reference to currentWorld acts as a 
+    // sufficient snapshot for recovery if phases are pure.
+    const prePhaseSnapshot = currentWorld;
 
     try {
       const result = phase(currentWorld);

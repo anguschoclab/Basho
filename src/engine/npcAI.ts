@@ -13,6 +13,7 @@ import type { OyakataArchetype, OyakataMood } from "./types/oyakata";
 import type { Id } from "./types/common";
 import { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "./types/training";
 import { TrainingService } from "./systems/training/TrainingService";
+import { WorldCircuitService } from "./systems/global/WorldCircuitService";
 import { enforceHardCapRosterOverflow, HARD_CAP_ROSTER_SIZE } from "./overflow";
 import { getOyakataForHeya, getRikishi, getHeya } from "./queries";
 import { getAvailableStables } from "./selectors";
@@ -36,10 +37,12 @@ import {
   spawnTrainingWorker,
   spawnScoutingWorker,
   spawnPersonnelWorker,
+  spawnGlobalWorker,
   rpPerception,
   type TrainingWorkerContext,
   type ScoutingWorkerContext,
   type PersonnelWorkerContext,
+  type GlobalWorkerContext,
 } from "./npcAIWorkers";
 
 /** Decision output for a single NPC heya per week */
@@ -111,6 +114,18 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
   const personnelProposal = spawnPersonnelWorker(personnelCtx);
   reasoning.push(...personnelProposal.reasoning);
 
+  // 4. Global Worker (World Circuit Strategy)
+  const globalCtx: GlobalWorkerContext = {
+    heyaId,
+    ambition: persona.traits.ambition,
+    riskAppetite: persona.riskAppetite,
+    perception,
+    pendingExhibitions: world.pendingExhibitions || [],
+    world,
+  };
+  const globalProposal = spawnGlobalWorker(globalCtx);
+  reasoning.push(...globalProposal.reasoning);
+
   // --- Phase 3: Lead Review (Alignment Check) ---
   // The Oyakata (Lead Agent) reviews worker proposals against memory/mood.
   if (persona.mood === "furious" && trainingProposal.trainingIntensity !== "punishing") {
@@ -121,6 +136,28 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
   }
 
   const builder = createImpactBuilder("makeNPCWeeklyDecision");
+
+  // Handle Global Decisions (Exhibitions)
+  if (globalProposal.acceptedExhibitionId && globalProposal.rikishiId) {
+    const invitation = (world.pendingExhibitions || []).find(
+      (i) => i.id === globalProposal.acceptedExhibitionId
+    );
+    if (invitation) {
+      builder.merge(
+        WorldCircuitService.processExhibitionResult(
+          world,
+          heyaId,
+          globalProposal.rikishiId,
+          invitation
+        )
+      );
+      // Remove invitation from pending
+      const nextPending = (world.pendingExhibitions || []).filter(
+        (i) => i.id !== globalProposal.acceptedExhibitionId
+      );
+      builder.updateWorldField("pendingExhibitions", nextPending);
+    }
+  }
 
   // Apply withdrawal decisions
   for (const withdrawalId of personnelProposal.withdrawalIds) {
@@ -358,40 +395,37 @@ export function tickWeekNPC(world: WorldState): StateImpact {
  */
 export function tickMonthlyNPC(world: WorldState): StateImpact {
   const builder = createImpactBuilder("tickMonthlyNPC");
-
-  if (world.myosekiMarket) {
-    const candidateHeyas = getAvailableStables(world).filter(
-      (h) => h.id !== world.playerHeyaId && world.oyakata.has(h.oyakataId)
-    );
-
-    for (const heya of stableSort(candidateHeyas, (x: Heya) => x.id || String(x))) {
-      const oyakata = world.oyakata.get(heya.oyakataId);
-      if (!oyakata) continue;
-      const financeStrat = getFinanceStrategy(oyakata.archetype);
-      builder.merge(financeStrat.evaluateFinances(world, heya, oyakata));
-
-      const sponsorStrat = getSponsorStrategy(oyakata.archetype);
-      builder.merge(sponsorStrat.evaluateSponsorRecruitment(world, heya, oyakata));
-    }
-  }
-
+  const playerHeyaId = world.playerHeyaId;
   const vacanciesByHeyaId: Record<Id, number> = {};
   let hasVacancies = false;
 
-  const candidateHeyas2 = getAvailableStables(world).filter(
-    (h) => h.id !== world.playerHeyaId && world.oyakata.has(h.oyakataId)
+  const candidateHeyas = getAvailableStables(world).filter(
+    (h) => h.id !== playerHeyaId && h.oyakataId && world.oyakata.has(h.oyakataId)
   );
-  for (const heya of stableSort(candidateHeyas2, (x: Heya) => x.id || String(x))) {
-    const oyakata = world.oyakata.get(heya.oyakataId);
-    if (!oyakata) continue;
 
+  // Use stableSort to ensure determinism across simulation runs
+  const sortedHeyas = stableSort(candidateHeyas, (h) => h.id);
+
+  for (const heya of sortedHeyas) {
+    const oyakata = world.oyakata.get(heya.oyakataId!)!;
+    
+    // 1. Finance & Sponsorship
+    const financeStrat = getFinanceStrategy(oyakata.archetype);
+    builder.merge(financeStrat.evaluateFinances(world, heya, oyakata));
+
+    const sponsorStrat = getSponsorStrategy(oyakata.archetype);
+    builder.merge(sponsorStrat.evaluateSponsorRecruitment(world, heya, oyakata));
+
+    // 2. Lifecycle (Retirements)
     const retirementStrat = getRetirementStrategy(oyakata.archetype);
     builder.merge(retirementStrat.evaluateRetirements(world, heya, oyakata));
 
+    // 3. Recruitment (Vacancies)
     const recruitmentStrat = getRecruitmentStrategy(oyakata.archetype);
     const { impact: recruitmentImpact, count: vacancies } = recruitmentStrat.evaluateVacancies(world, heya, oyakata);
     builder.merge(recruitmentImpact);
 
+    // 4. Governance & Politics
     const governanceStrat = getGovernanceStrategy(oyakata.archetype);
     builder.merge(governanceStrat.evaluateGovernanceDecisions(world, heya, oyakata));
 
@@ -401,13 +435,9 @@ export function tickMonthlyNPC(world: WorldState): StateImpact {
     }
   }
 
+  // 5. Global Recruitment Resolution (Competitive Bidding)
   if (hasVacancies) {
-    const globalCap =
-      world.heyas.size * (typeof HARD_CAP_ROSTER_SIZE === "number" ? HARD_CAP_ROSTER_SIZE : 30);
-    if (world.rikishi.size < globalCap) {
-      // Use competitive bidding system for NPC recruitment
-      builder.merge(talentpool.fillVacanciesForNPCWithBidding(world, vacanciesByHeyaId));
-    }
+    builder.merge(talentpool.fillVacanciesForNPCWithBidding(world, vacanciesByHeyaId));
   }
 
   return builder.build();

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Minus, Square, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface TitleBarProps {
   title?: string;
@@ -67,27 +68,33 @@ export function TitleBar({ title = "Sumo Manager Pro" }: TitleBarProps) {
         className="flex items-center"
         style={{ WebkitAppRegion: "no-drag" } as React.CSSProperties}
       >
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={handleMinimize}
-          className="w-8 h-8 flex items-center justify-center hover:bg-muted text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+          className="w-8 h-8 rounded-none hover:bg-muted text-muted-foreground hover:text-foreground"
           aria-label="Minimize"
         >
           <Minus size={14} />
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={handleMaximize}
-          className="w-8 h-8 flex items-center justify-center hover:bg-muted text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+          className="w-8 h-8 rounded-none hover:bg-muted text-muted-foreground hover:text-foreground [&_svg]:size-3"
           aria-label={isMaximized ? "Restore" : "Maximize"}
         >
           <Square size={12} />
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={handleClose}
-          className="w-8 h-8 flex items-center justify-center hover:bg-destructive text-muted-foreground hover:text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
+          className="w-8 h-8 rounded-none hover:bg-destructive text-muted-foreground hover:text-white"
           aria-label="Close"
         >
           <X size={14} />
-        </button>
+        </Button>
       </div>
     </div>
   );

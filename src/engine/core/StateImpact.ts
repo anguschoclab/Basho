@@ -64,6 +64,10 @@ export interface StateImpact {
     rikishiToHistorical?: string[];
     /** Rikishi IDs to move from historical back to active */
     rikishiFromHistorical?: string[];
+    /** Oyakata to add to the world */
+    oyakataToAdd?: Oyakata[];
+    /** Oyakata IDs to remove from the world (delete) */
+    oyakataToRemove?: string[];
     /** Staff to add to active roster */
     staffToAdd?: Staff[];
     /** Staff IDs to remove from active roster (delete) */

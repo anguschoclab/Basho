@@ -47,21 +47,39 @@ export const TrainingPhilosophyService = {
    * Phase 5 Depth: Ticks the drift at the yearly boundary.
    * Moves 25% of the way toward the targets each year (Full transition in 4 years).
    */
+  /**
+   * Phase 5 Depth: Ticks the drift at the yearly boundary.
+   * Moves 25% of the way toward the targets each year (Full transition in 4 years).
+   * Also normalizes and decays numeric style biases (Phase 5).
+   */
   tickPhilosophyDrift(philosophy: TrainingPhilosophy): TrainingPhilosophy {
-    if (philosophy.transitionProgress === undefined || philosophy.transitionProgress >= 1) {
-      return philosophy;
+    let nextPhil = { ...philosophy };
+
+    // 1. Structural Bias Transition
+    if (philosophy.transitionProgress !== undefined && philosophy.transitionProgress < 1) {
+      const nextProgress = Math.min(1.0, philosophy.transitionProgress + 0.25);
+      nextPhil.transitionProgress = nextProgress;
+
+      if (nextProgress >= 1.0) {
+        nextPhil.focusBias = philosophy.targetFocusBias || philosophy.focusBias;
+        nextPhil.intensityBias = philosophy.targetIntensityBias || philosophy.intensityBias;
+        delete nextPhil.targetFocusBias;
+        delete nextPhil.targetIntensityBias;
+      }
     }
 
-    const nextProgress = Math.min(1.0, philosophy.transitionProgress + 0.25);
-    const nextPhil = { ...philosophy, transitionProgress: nextProgress };
+    // 2. Numeric Style Bias Decay (Cultural Friction)
+    // Biases decay by 15% each year if not reinforced.
+    const DECAY_RATE = 0.85;
+    nextPhil.powerBias = (nextPhil.powerBias || 0) * DECAY_RATE;
+    nextPhil.speedBias = (nextPhil.speedBias || 0) * DECAY_RATE;
+    nextPhil.techniqueBias = (nextPhil.techniqueBias || 0) * DECAY_RATE;
 
-    if (nextProgress >= 1.0) {
-      // Transition complete
-      nextPhil.focusBias = philosophy.targetFocusBias || philosophy.focusBias;
-      nextPhil.intensityBias = philosophy.targetIntensityBias || philosophy.intensityBias;
-      delete nextPhil.targetFocusBias;
-      delete nextPhil.targetIntensityBias;
-    }
+    // Hard cap at +/- 0.3 (30% impact)
+    const CAP = 0.3;
+    nextPhil.powerBias = Math.max(-CAP, Math.min(CAP, nextPhil.powerBias));
+    nextPhil.speedBias = Math.max(-CAP, Math.min(CAP, nextPhil.speedBias));
+    nextPhil.techniqueBias = Math.max(-CAP, Math.min(CAP, nextPhil.techniqueBias));
 
     return nextPhil;
   },

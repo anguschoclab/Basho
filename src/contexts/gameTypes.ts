@@ -66,6 +66,7 @@ export type GameAction =
   | { type: "UPDATE_WORLD"; world: WorldState }
   | { type: "LOAD_WORLD"; world: WorldState }
   | { type: "UPGRADE_HEYA"; heyaId: string; axis: "training" | "recovery" | "nutrition"; points?: number }
+  | { type: "BUILD_INFRASTRUCTURE"; heyaId: string; facilityId: import("@/engine/types/infrastructure").FacilityId }
   | { type: "RECRUIT_STAFF"; heyaId: string; role: any }
   | { type: "TICK_DAY" }
   | { type: "TICK_MULTIPLE_DAYS"; payload: { days: number } }

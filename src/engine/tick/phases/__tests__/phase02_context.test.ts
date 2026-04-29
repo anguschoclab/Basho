@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any -- Test file with mock data */
 import { describe, it, expect, beforeEach } from "vitest";
 import { phase02_context } from "../phase02_context";
 import type { WorldState } from "../../../types/world";
+import type { MockWorldState, MockHeya } from "../../../../__tests__/types/mockTypes";
 
 describe("Phase 2: Context", () => {
   let world: WorldState;
@@ -9,15 +9,16 @@ describe("Phase 2: Context", () => {
   beforeEach(() => {
     world = {
       playerHeyaId: "heya-1",
-      heyas: new Map([
+      heyas: new Map<string, MockHeya>([
         [
           "heya-1",
           {
             id: "heya-1",
+            name: "Test Heya",
             funds: 1000,
             rikishiIds: ["r1", "r2"],
             facilities: { training: 50, recovery: 50, nutrition: 50 },
-          } as any,
+          },
         ],
       ]),
       history: [],
@@ -51,7 +52,7 @@ describe("Phase 2: Context", () => {
   });
 
   it("applies morale boost if a player rikishi won the last basho", () => {
-    world.history = [{ yusho: "r1" } as any];
+    world.history = [{ yusho: "r1" }] as unknown as WorldState["history"];
 
     phase02_context(world);
 
@@ -61,7 +62,10 @@ describe("Phase 2: Context", () => {
   });
 
   it("calculates max and min facilities multipliers correctly", () => {
-    world.heyas.get("heya-1")!.facilities = { training: 100, recovery: 100, nutrition: 100 } as any;
+    const heya = world.heyas.get("heya-1");
+    if (heya) {
+      heya.facilities = { training: 100, recovery: 100, nutrition: 100 };
+    }
     phase02_context(world);
 
     // Max training = 0.85 + 0.35 = 1.2
@@ -69,7 +73,10 @@ describe("Phase 2: Context", () => {
     expect(world.transientContext!.activeModifiers!.trainingMultiplier).toBeCloseTo(1.2);
     expect(world.transientContext!.activeModifiers!.recoveryMultiplier).toBeCloseTo(1.296);
 
-    world.heyas.get("heya-1")!.facilities = { training: 0, recovery: 0, nutrition: 0 } as any;
+    const heya2 = world.heyas.get("heya-1");
+    if (heya2) {
+      heya2.facilities = { training: 0, recovery: 0, nutrition: 0 };
+    }
     phase02_context(world);
 
     // Min training = 0.85
@@ -79,9 +86,9 @@ describe("Phase 2: Context", () => {
   });
 
   it("preserves revenue and expenses from phase01, resets other deltas", () => {
-    (world.transientContext!.deltas as any).statChanges = { r1: [{ stat: "strength", amount: 5 }] };
-
-    (world.transientContext!.deltas as any).injuriesSustained = ["r1"];
+    const deltas = world.transientContext!.deltas as unknown as Record<string, unknown>;
+    deltas.statChanges = { r1: [{ stat: "strength", amount: 5 }] };
+    deltas.injuriesSustained = ["r1"];
 
     phase02_context(world);
 

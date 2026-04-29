@@ -27,7 +27,7 @@ import {
   STAT_CEILING_KEYS,
   type TrainingAttribute,
 } from "./TrainingConstants";
-import { ATTRIBUTE_PEAK, STAT_GROUP } from "../../constants/DevelopmentCurves";
+import { ATTRIBUTE_PEAK, STAT_GROUP, maturityFactor } from "../../constants/DevelopmentCurves";
 
 /**
  * Derives the stat ceiling for a given attribute from talentSeed.
@@ -38,6 +38,40 @@ export function getStatCeiling(talentSeed: number, statKey: keyof RikishiStats):
   const idx = STAT_CEILING_KEYS.indexOf(statKey);
   const offset = idx >= 0 ? ((idx * 7) % 5) - 2 : 0;
   return Math.min(99, Math.max(30, Math.round(baseCeiling + offset)));
+}
+
+/**
+ * Returns the effective stat ceiling, factoring in talentSeed, PA, and age-based maturity.
+ */
+export function getEffectiveCeiling(
+  rikishi: Rikishi,
+  stat: keyof RikishiStats,
+  world?: WorldState
+): number {
+  const talentSeed = rikishi.talentSeed ?? 50;
+  const potential = rikishi.potential;
+  const age = world?.year && rikishi.birthYear ? world.year - rikishi.birthYear : 25;
+
+  let baseCeiling = 0;
+  if (potential?.stats && stat in potential.stats) {
+    const pa = potential.stats[stat] ?? 0;
+    baseCeiling = pa * (potential.ceilingFraction ?? 1.0);
+  } else {
+    baseCeiling = getStatCeiling(talentSeed, stat);
+  }
+
+  const group = STAT_GROUP[stat as keyof typeof STAT_GROUP];
+  if (group) {
+    const mFactor = maturityFactor({
+      age,
+      group,
+      developmentSpeed: potential?.developmentSpeed ?? 1.0,
+      peakAgeOffset: potential?.peakAgeOffset ?? 0,
+    });
+    return Math.round(baseCeiling * mFactor);
+  }
+
+  return Math.round(baseCeiling);
 }
 
 /**
@@ -140,6 +174,15 @@ export function calculateGrowthVector(
   const archetype = rikishi.combatProfile?.archetype as CombatArchetype;
   const affinity = archetype ? ARCHETYPE_AFFINITY[archetype] : null;
 
+  // Phase 5 Depth: Training Philosophy Drift (Style Drift)
+  // Numeric accumulators for cultural influence provide subtle stat gain multipliers
+  const philosophy = heya?.trainingPhilosophy;
+  const styleDriftMults = {
+    strength: 1.0 + (philosophy?.powerBias || 0),
+    speed: 1.0 + (philosophy?.speedBias || 0),
+    technique: 1.0 + (philosophy?.techniqueBias || 0),
+  };
+
   const growth: Record<TrainingAttribute, number> = {
     strength: 0,
     speed: 0,
@@ -152,13 +195,8 @@ export function calculateGrowthVector(
   };
 
   // Use PA (potential) as ceiling when present; fall back to talentSeed for legacy/unrolled rikishi.
-  const potential = rikishi.potential;
   const resolveCeiling = (stat: keyof RikishiStats): number => {
-    if (potential?.stats && stat in potential.stats) {
-      const pa = potential.stats[stat] ?? 0;
-      return Math.round(pa * potential.ceilingFraction);
-    }
-    return getStatCeiling(talentSeed, stat);
+    return getEffectiveCeiling(rikishi, stat, world);
   };
 
   const applyCapped = (stat: keyof RikishiStats, rawMult: number, currentVal: number) => {
@@ -169,9 +207,9 @@ export function calculateGrowthVector(
   };
 
   growth.strength =
-    applyCapped("strength", bias.strength, rikishi.stats?.strength || 50) * nutritionMult;
-  growth.speed = applyCapped("speed", bias.speed, rikishi.stats?.speed || 50);
-  growth.technique = applyCapped("technique", bias.technique, rikishi.stats?.technique || 50);
+    applyCapped("strength", bias.strength, rikishi.stats?.strength || 50) * nutritionMult * styleDriftMults.strength;
+  growth.speed = applyCapped("speed", bias.speed, rikishi.stats?.speed || 50) * styleDriftMults.speed;
+  growth.technique = applyCapped("technique", bias.technique, rikishi.stats?.technique || 50) * styleDriftMults.technique;
   growth.balance = applyCapped("balance", bias.balance, rikishi.stats?.balance || 50);
   growth.stamina = applyCapped("stamina", 0.5, rikishi.stats?.stamina || 50) * nutritionMult;
   growth.mental = applyCapped("mental", 0.2, rikishi.stats?.mental || 50);

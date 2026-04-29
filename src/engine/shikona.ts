@@ -1,6 +1,5 @@
 import { SeededRNG } from "./rng";
 import type { ShikonaGenerationConfig } from "./shikona/types";
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { getHouseStyle } from "./shikona/helpers";
 import { getRankRule } from "./shikona/rankRules";
 import { generateLegacyShikona } from "./shikona/legacy";
@@ -43,7 +42,7 @@ export function generateShikona(
   config: ShikonaGenerationConfig = {}
 ): string {
   const rng = config.rng
-    ? () => config.rng!.next()
+    ? () => config.rng?.next() ?? Math.random()
     : seededRandom(seed + (config.heyaId || "") + (config.nationality || ""));
 
   const house = getHouseStyle(config.heyaId);

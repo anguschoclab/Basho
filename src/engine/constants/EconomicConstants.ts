@@ -98,13 +98,19 @@ export const FACILITY_UPKEEP = {
 /** Staff weekly upkeep per member (¥). */
 export const STAFF_UPKEEP_PER_MEMBER = 6_000;
 
-/** Daily food cost per rikishi by diet regimen (¥). */
+/** Daily food cost per rikishi by diet regimen (¥).
+ * Based on communal chanko-nabe bulk kitchen economics.
+ * (Previously 3×–10× higher which caused immediate systemic insolvency.) */
 export const DIET_COSTS: Record<string, number> = {
-  austerity: 1_000,
-  maintenance: 3_000,
-  heavy_bulk: 6_000,
-  premium: 10_000,
+  austerity: 350,
+  maintenance: 1_000,
+  heavy_bulk: 2_000,
+  premium: 3_500,
 } as const;
+
+/** JSA weekly base grant per stable (¥) — represents broadcast rights distribution,
+ * tournament entry fees, and JSA operational support. Keeps all stables viable. */
+export const JSA_STABLE_WEEKLY_GRANT = 50_000;
 
 /** Loan issuance threshold (¥) - when funds drop below this, bailouts are considered. */
 export const LOAN_ISSUANCE_THRESHOLD = -5_000_000;

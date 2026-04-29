@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type { WorldState } from "./types/world";
 import type { Heya } from "./types/heya";
 import type { Oyakata } from "./types/oyakata";
@@ -7,159 +6,82 @@ import { checkRetirement } from "./lifecycle";
 import type { Rikishi } from "./types/rikishi";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
+import { 
+  StrategyContext, 
+  StrategyRule, 
+  evaluateRulesCumulative, 
+  TraitChecks 
+} from "./strategy/NPCStrategyFramework";
 
 interface RetirementStrategy {
   evaluateRetirements: (world: WorldState, heya: Heya, oyakata: Oyakata) => StateImpact;
 }
 
-function evaluateRetirementsBase(
-  world: WorldState,
-  heya: Heya,
-  checkFn: (r: Rikishi, retireReason: string | undefined) => string | false
-): StateImpact {
-  const builder = createImpactBuilder("evaluateRetirements");
-  const currentRikishiIds = [...(heya.rikishiIds || [])];
-  
-  // Track removals to update heya once
-  const removedIds = new Set<string>();
-
-  for (const rId of currentRikishiIds) {
-    const r = world.rikishi.get(rId);
-    if (!r) continue;
-    const baseReason = getBaseRetireReason(world, r);
-    const finalReason = checkFn(r, baseReason);
-    if (finalReason) {
-      builder.logEvent("LIFECYCLE_EVENT", "career", {
-        rikishiId: r.id,
-        heyaId: heya.id,
-        shikona: r.shikona || r.name || r.id,
-        status: "retirement",
-        reason: finalReason,
-      });
-      builder.deleteRikishi(r.id);
-      removedIds.add(r.id);
+const NATURAL_RETIREMENT_RULE: StrategyRule = {
+  id: "ret_natural",
+  condition: (ctx) => {
+    // Check if ANY rikishi in heya wants to retire naturally
+    return (ctx.heya.rikishiIds ?? []).some(id => {
+      const r = ctx.world.rikishi.get(id);
+      return r && checkRetirement(r, ctx.world.calendar?.year ?? 2026, ctx.world.seed);
+    });
+  },
+  action: (ctx) => {
+    const builder = createImpactBuilder("ret_natural");
+    for (const id of ctx.heya.rikishiIds ?? []) {
+      const r = ctx.world.rikishi.get(id);
+      if (!r) continue;
+      const reason = checkRetirement(r, ctx.world.calendar?.year ?? 2026, ctx.world.seed);
+      if (reason) {
+        builder.retireRikishi(id, ctx.world.calendar?.year ?? 2026, reason);
+      }
     }
-  }
+    return builder.build();
+  },
+  buildEvent: () => ({
+    action: "natural_retirement",
+    reasoning: "Rikishi reaching natural career boundaries due to age or injury.",
+  }),
+};
 
-  if (removedIds.size > 0) {
-    const updatedIds = currentRikishiIds.filter(id => !removedIds.has(id));
-    builder.updateHeya(heya.id, { rikishiIds: updatedIds });
-  }
+const FORCE_RETIRE_STAGNANT_RULE: StrategyRule = {
+  id: "ret_force_stagnant",
+  condition: (ctx) => {
+    if (!TraitChecks.isAmbitious(70)(ctx.oyakata)) return false;
+    // Only force retire if heya is full and we have high ambition
+    return (ctx.heya.rikishiIds?.length ?? 0) >= 15;
+  },
+  action: (ctx) => {
+    const builder = createImpactBuilder("ret_force_stagnant");
+    const candidates = (ctx.heya.rikishiIds ?? [])
+      .map((id) => ctx.world.rikishi.get(id))
+      .filter((r): r is Rikishi => !!r && (ctx.world.calendar?.year ?? 2026) - r.birthYear > 32)
+      .sort((a, b) => (a.power ?? 50) - (b.power ?? 50));
 
-  return builder.build();
-}
-
-function getBaseRetireReason(world: WorldState, r: Rikishi): string | undefined {
-  return checkRetirement(r, world.calendar?.year ?? world.year ?? 2026, world.seed);
-}
+    if (candidates.length > 0) {
+      builder.retireRikishi(
+        candidates[0].id,
+        ctx.world.calendar?.year ?? 2026,
+        "Forced retirement due to stable restructuring"
+      );
+    }
+    return builder.build();
+  },
+  buildEvent: () => ({
+    action: "forced_retirement",
+    reasoning: "Ambitious oyakata clearing roster space for high-potential talent pool recruits.",
+  }),
+  importance: "notable",
+};
 
 export const DefaultRetirementStrategy: RetirementStrategy = {
-  evaluateRetirements(world: WorldState, heya: Heya, _oyakata: Oyakata) {
-    return evaluateRetirementsBase(world, heya, (r, retireReason) => retireReason || false);
+  evaluateRetirements(world: WorldState, heya: Heya, oyakata: Oyakata) {
+    const ctx: StrategyContext = { world, heya, oyakata };
+    const rules = [NATURAL_RETIREMENT_RULE, FORCE_RETIRE_STAGNANT_RULE];
+    return evaluateRulesCumulative(ctx, rules);
   },
 };
 
-export const TraditionalistRetirementStrategy: RetirementStrategy = {
-  evaluateRetirements(world, heya, _oyakata) {
-    return evaluateRetirementsBase(world, heya, (r, retireReason) => {
-      const age = (world.calendar?.year ?? world.year ?? 2026) - r.birthYear;
-      const isOldEnough = age >= 35;
-      if (retireReason || (isOldEnough && r.rank && r.rank.startsWith("maegashira"))) {
-        return retireReason || "Honorable retirement due to age";
-      }
-      return false;
-    });
-  },
-};
-
-export const ScientistRetirementStrategy: RetirementStrategy = {
-  evaluateRetirements(world, heya, _oyakata) {
-    return evaluateRetirementsBase(world, heya, (r, retireReason) => retireReason || false);
-  },
-};
-
-export const GamblerRetirementStrategy: RetirementStrategy = {
-  evaluateRetirements(world, heya, oyakata) {
-    return evaluateRetirementsBase(world, heya, (r, retireReason) => {
-      if (retireReason || (oyakata.traits.risk > 60 && r.stats && (r.stats as any).strength < 30)) {
-        return retireReason || "Cut due to poor performance";
-      }
-      return false;
-    });
-  },
-};
-
-export const NurturerRetirementStrategy: RetirementStrategy = {
-  evaluateRetirements(world, heya, _oyakata) {
-    return evaluateRetirementsBase(world, heya, (r, retireReason) => {
-      const age = (world.calendar?.year ?? world.year ?? 2026) - r.birthYear;
-      const isVeryOld = age >= 40;
-      if (retireReason || isVeryOld) {
-        return retireReason || "Retired after long career with care";
-      }
-      return false;
-    });
-  },
-};
-
-export const TyrantRetirementStrategy: RetirementStrategy = {
-  evaluateRetirements(world, heya, _oyakata) {
-    return evaluateRetirementsBase(world, heya, (r, retireReason) => {
-      const isUnderperforming = r.stats && (r.stats as any).strength < 25;
-      const isLowRank = r.rank && (r.rank.startsWith("maegashira") || r.rank.startsWith("juryo"));
-      if (retireReason || (isUnderperforming && isLowRank)) {
-        return retireReason || "Forced out by tyrant master";
-      }
-      return false;
-    });
-  },
-};
-
-export const StrategistRetirementStrategy: RetirementStrategy = {
-  evaluateRetirements(world, heya, _oyakata) {
-    return evaluateRetirementsBase(world, heya, (r, retireReason) => retireReason || false);
-  },
-};
-
-export const StrictRetirementStrategy: RetirementStrategy = {
-  evaluateRetirements(world, heya, _oyakata) {
-    return evaluateRetirementsBase(world, heya, (r, retireReason) => {
-      if (
-        retireReason ||
-        (r.stats && (r.stats as any).strength < 30 && r.rank && r.rank.startsWith("juryo"))
-      ) {
-        return retireReason || "Cut due to poor performance";
-      }
-      return false;
-    });
-  },
-};
-
-export const IndulgentRetirementStrategy: RetirementStrategy = {
-  evaluateRetirements(world, heya, _oyakata) {
-    return evaluateRetirementsBase(world, heya, (r, retireReason) => retireReason || false);
-  },
-};
-
-export function getRetirementStrategy(archetype: OyakataArchetype): RetirementStrategy {
-  switch (archetype) {
-    case "traditionalist":
-      return TraditionalistRetirementStrategy;
-    case "scientist":
-      return ScientistRetirementStrategy;
-    case "gambler":
-      return GamblerRetirementStrategy;
-    case "nurturer":
-      return NurturerRetirementStrategy;
-    case "tyrant":
-      return TyrantRetirementStrategy;
-    case "strategist":
-      return StrategistRetirementStrategy;
-    case "strict":
-      return StrictRetirementStrategy;
-    case "indulgent":
-      return IndulgentRetirementStrategy;
-    default:
-      return DefaultRetirementStrategy;
-  }
+export function getRetirementStrategy(_archetype: OyakataArchetype): RetirementStrategy {
+  return DefaultRetirementStrategy;
 }

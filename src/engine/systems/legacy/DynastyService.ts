@@ -29,15 +29,18 @@ export const DynastyService = {
   tickSuccessionCheck(world: WorldState): StateImpact {
     const builder = createImpactBuilder("tickSuccessionCheck");
 
-    for (const heya of world.heyas.values()) {
-      const oyakata = world.oyakata?.get(heya.oyakataId);
+    for (const [heyaId, heya] of world.heyas) {
+      const oyakata = world.oyakata?.get(heya.oyakataId || "");
       if (!oyakata) continue;
 
       const age = oyakata.age;
-      // Readiness reaches 100 at age 60
-      const readinessValue = Math.max(0, Math.min(100, (age - 50) * 10));
+      // console.log(`[SuccessionCheck] ${heya.name} Oyakata ${oyakata.name} age: ${age}`);
+      
+      // 1. Soft Readiness (60-65)
+      // Readiness reaches 100 at age 65 (JSA Rules)
+      const readinessValue = Math.max(0, Math.min(100, (age - 55) * 10));
       const readiness: "stable" | "transitioning" | "mandatory" =
-        age >= 60 ? "mandatory" : age >= 55 ? "transitioning" : "stable";
+        age >= 65 ? "mandatory" : age >= 60 ? "transitioning" : "stable";
 
       if (oyakata.successionReadiness !== readiness) {
         builder.updateOyakata(oyakata.id, { successionReadiness: readiness });
@@ -46,44 +49,24 @@ export const DynastyService = {
           "discipline",
           {
             incident: "succession_readiness_update",
-            status: age >= 57 ? "warning" : "info",
-            reason: `${oyakata.name} is ${age} years old. Mandatory retirement at 60.`,
+            status: age >= 62 ? "warning" : "info",
+            reason: `${oyakata.name} is ${age} years old. Mandatory retirement at 65 (JSA).`,
             score: readinessValue,
           },
           { heyaId: heya.id }
         );
       }
 
-      // Forced succession at 60
-      if (age >= 60 && !oyakata.retirementYear) {
-        let successorId = oyakata.successorCandidateId;
-
-        // Phase 5 Depth: NPC Auto-Succession
-        if (!successorId && !heya.isPlayerOwned) {
-          const candidates = this.findEligibleSuccessors(world, heya.id);
-          if (candidates.length > 0) {
-            successorId = candidates[0].id; // Pick the top eligible candidate
-          }
-        }
-
-        if (successorId) {
+      // Forced succession at 65
+      if (age >= 65 && !oyakata.retirementYear) {
+        const eligible = this.findEligibleSuccessors(world, heya.id);
+        if (eligible.length > 0) {
+          const successorId = eligible[0]; // Pick the top eligible candidate
           builder.merge(this.triggerSuccession(world, heya.id, successorId));
         } else {
-          // Identify potential alumni/roster successors for player warning
-          const candidates = this.findEligibleSuccessors(world, heya.id);
-          if (candidates.length > 0 && heya.isPlayerOwned) {
-            builder.logEvent(
-              "GOVERNANCE_RULING",
-              "discipline",
-              {
-                incident: "succession_overdue",
-                status: "critical",
-                reason: `${oyakata.name} has reached 60. A successor must be chosen from alumni or current roster.`,
-                candidateCount: candidates.length,
-              },
-              { heyaId: heya.id, importance: "headline" }
-            );
-          }
+          // Fallback: Generate a generic oyakata if no rikishi is eligible
+          const dummyId = `oyakata_trustee_${heya.id}_${world.year}`;
+          builder.merge(this.triggerSuccessionWithGeneric(world, heya.id, dummyId));
         }
       }
     }
@@ -100,20 +83,35 @@ export const DynastyService = {
   findEligibleSuccessors(world: WorldState, heyaId: string): string[] {
     const eligible: string[] = [];
 
+    // 1. Current roster & alumni
     for (const rikishi of world.rikishi.values()) {
-      // 1. Current roster sekitori (Makuuchi + Juryo)
       const isSekitori = rikishi.division === "makuuchi" || rikishi.division === "juryo";
+      // Elite candidates: Current sekitori or high-performing alumni
       if (rikishi.heyaId === heyaId && isSekitori) {
         eligible.push(rikishi.id);
         continue;
       }
-
-      // 2. Alumni tracking (Phase 5)
+      
       const wasAlumnus = rikishi.heyaHistory?.some((h) => h.heyaId === heyaId);
-      if (wasAlumnus && isSekitori) {
-        // Must be a Sekitori to be eligible for Master status
-        if (rikishi.makuuchiWins > 0 || rikishi.rank === "yokozuna") {
+      if (wasAlumnus && isSekitori && (rikishi.makuuchiWins > 0 || rikishi.rank === "yokozuna")) {
+        eligible.push(rikishi.id);
+      }
+    }
+
+    // 1.5. Drought Fallback: Senior Makushita from current roster
+    if (eligible.length === 0) {
+      for (const rikishi of world.rikishi.values()) {
+        if (rikishi.heyaId === heyaId && rikishi.division === "makushita" && (rikishi.rankNumber || 99) <= 10) {
           eligible.push(rikishi.id);
+        }
+      }
+    }
+
+    // 2. Fallback: Check historical rikishi (retired legends)
+    if (eligible.length === 0 && world.historicalRikishi) {
+      for (const [id, r] of world.historicalRikishi) {
+        if (r.highestRank === "yokozuna" || r.highestRank === "ozeki") {
+          eligible.push(id);
         }
       }
     }
@@ -133,7 +131,10 @@ export const DynastyService = {
     const builder = createImpactBuilder("triggerSuccession");
     const heya = world.heyas.get(heyaId);
     const currentOyakata = world.oyakata?.get(heya?.oyakataId ?? "");
-    const successorRikishi = world.rikishi.get(successorRikishiId);
+    const successorIsActive = world.rikishi.has(successorRikishiId);
+    const successorRikishi =
+      world.rikishi.get(successorRikishiId) ??
+      world.historicalRikishi?.get(successorRikishiId);
 
     if (!heya || !currentOyakata || !successorRikishi) return builder.build();
 
@@ -163,22 +164,93 @@ export const DynastyService = {
     const newEra = record.era;
     const newTier = this.deriveLegacyTier(heya, newEra);
 
+    // 4. Create the new Oyakata entity
+    const newOyakataId = `oyakata_promoted_${successorRikishiId}`;
+    const newOyakata = {
+      id: newOyakataId,
+      heyaId: heyaId,
+      name: `${successorRikishi.shikona} Oyakata`,
+      shikona: successorRikishi.shikona,
+      formerShikona: successorRikishi.shikona,
+      highestRank: successorRikishi.rank,
+      age: world.year - successorRikishi.birthYear,
+      yearsInCharge: 0,
+      archetype: "traditionalist", // Default or derived from rikishi archetype
+      traits: {
+        ambition: 50,
+        patience: 50,
+        risk: 50,
+        tradition: 50,
+        compassion: 50,
+      },
+      successionReadiness: 0,
+      avatarConfig: successorRikishi.avatarConfig,
+      formerRikishiId: successorRikishiId,
+    };
+
+    builder.addOyakata(newOyakata as any);
+
+    // 5. Retire the rikishi (only if still active) and assign the new Oyakata to the stable
+    if (successorIsActive) {
+      builder.retireRikishi(successorRikishiId, world.year, "Promoted to Oyakata");
+    }
     builder.updateHeya(heyaId, {
       dynasty: [...(heya.dynasty ?? []), record],
       trainingPhilosophy: evolvedPhilosophy,
       legacyTier: newTier,
-      oyakataId: successorRikishiId, // Successor becomes the new Oyakata
+      oyakataId: newOyakataId,
     });
 
     builder.logEvent(
       "LIFECYCLE_EVENT",
-      "career",
+      "narrative",
       {
         rikishiId: successorRikishiId,
         shikona: successorRikishi.shikona,
         status: "oyakata_promotion",
-        reason: `${currentOyakata.name} has retired. ${successorRikishi.shikona} takes command.`,
+        reason: `${currentOyakata.name} has reached the JSA retirement age of 65. ${successorRikishi.shikona} takes command.`,
         incident: `A new era begins at ${heya.name}.`,
+      },
+      { heyaId, importance: "headline" }
+    );
+
+    return builder.build();
+  },
+
+  /**
+   * Fallback for when no eligible rikishi exists. JSA appoints a trustee.
+   */
+  triggerSuccessionWithGeneric(world: WorldState, heyaId: string, dummyId: string): StateImpact {
+    const builder = createImpactBuilder("triggerSuccessionWithGeneric");
+    const heya = world.heyas.get(heyaId);
+    const currentOyakata = world.oyakata?.get(heya?.oyakataId ?? "");
+
+    if (!heya || !currentOyakata) return builder.build();
+
+    const name = `JSA Trustee (${currentOyakata.shikona} lineage)`;
+
+    const newOyakata: any = {
+      id: dummyId,
+      heyaId,
+      name,
+      shikona: "Trustee",
+      age: 45,
+      yearsInCharge: 0,
+      archetype: "traditionalist",
+      traits: { ambition: 30, patience: 50, risk: 20, tradition: 80, compassion: 50 },
+      successionReadiness: 0,
+    };
+
+    builder.addOyakata(newOyakata);
+    builder.updateHeya(heyaId, { oyakataId: dummyId });
+    builder.removeOyakata(currentOyakata.id);
+
+    builder.logEvent(
+      "LIFECYCLE_EVENT",
+      "narrative",
+      {
+        status: "oyakata_promotion",
+        reason: `${currentOyakata.name} has retired. JSA has appointed a trustee for ${heya.name}.`,
       },
       { heyaId, importance: "headline" }
     );
@@ -225,6 +297,9 @@ export const DynastyService = {
   generateDynastyReport(world: WorldState, heyaId: string) {
     const heya = world.heyas.get(heyaId);
     if (!heya?.dynasty) return null;
+
+    // Bankrupt stables get a "Scholarship Quota" of at least 1 (A6.2)
+    if (heya.funds < 0) return 1;
 
     return {
       eras: heya.dynasty,

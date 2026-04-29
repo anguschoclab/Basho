@@ -62,6 +62,22 @@ export interface PersonnelWorkerContext {
   welfareDiscipline: number;
   styleProfile?: OyakataStyleProfile;
   world: WorldState;
+  pendingExhibitions?: any[]; // To avoid circular import, use any or imported type
+}
+
+export interface GlobalWorkerContext {
+  heyaId: Id;
+  ambition: number;
+  riskAppetite: number;
+  perception: PerceptionSnapshot;
+  pendingExhibitions: any[];
+  world: WorldState;
+}
+
+export interface GlobalWorkerResult {
+  acceptedExhibitionId?: string;
+  rikishiId?: string;
+  reasoning: string[];
 }
 
 export interface PersonnelWorkerResult {
@@ -205,14 +221,78 @@ export function spawnPersonnelWorker(ctx: PersonnelWorkerContext): PersonnelWork
 }
 
 /**
+ * Worker: Global Sub-Agent (World Circuit)
+ */
+export function spawnGlobalWorker(ctx: GlobalWorkerContext): GlobalWorkerResult {
+  const reasoning: string[] = [];
+  const invitations = ctx.pendingExhibitions.filter((i) => i.heyaId === ctx.heyaId);
+
+  if (invitations.length === 0) {
+    return { reasoning };
+  }
+
+  // Pick the best invitation based on prestige AND style alignment (Style Drift)
+  const sortedInvitations = invitations.sort((a, b) => {
+    let scoreA = a.prestige;
+    let scoreB = b.prestige;
+
+    // Style Drift awareness: prefer regions that match our styleBias
+    if (ctx.styleBias && ctx.styleBias !== "neutral") {
+      if (a.dominantStyle === ctx.styleBias) scoreA += 20;
+      if (b.dominantStyle === ctx.styleBias) scoreB += 20;
+    }
+
+    return scoreB - scoreA;
+  });
+
+  const invitation = sortedInvitations[0];
+
+  // Evaluate if we have a suitable rikishi
+  const candidates = ctx.perception.rikishiPerceptions
+    .map((rp) => getRikishi(ctx.world, rp.rikishiId))
+    .filter((r) => r && !r.isRetired && !r.injured && !r.isKyujo);
+
+  if (candidates.length === 0) {
+    reasoning.push(`[Global Worker] No healthy rikishi available for exhibition.`);
+    return { reasoning };
+  }
+
+  // NPC accepts if ambition is high enough relative to prestige,
+  // or if they have a rikishi who meets the rank requirement.
+  const bestRikishi = candidates.sort((a, b) => (b.power || 0) - (a.power || 0))[0];
+
+  let rankMet = true;
+  if (invitation.requiresRank) {
+    const ranks = ["jonokuchi", "jonidan", "sandanme", "makushita", "juryo", "maegashira", "komusubi", "sekiwake", "ozeki", "yokozuna"];
+    const reqIdx = ranks.indexOf(invitation.requiresRank.toLowerCase());
+    const hasIdx = ranks.indexOf((bestRikishi.rank || "maegashira").toLowerCase());
+    rankMet = hasIdx >= reqIdx;
+  }
+
+  if (rankMet && (ctx.ambition > 40 || invitation.prestige > 50)) {
+    reasoning.push(`[Global Worker] Accepting ${invitation.region} exhibition for ${bestRikishi.shikona} (Style Match: ${invitation.dominantStyle === ctx.styleBias})`);
+    return {
+      acceptedExhibitionId: invitation.id,
+      rikishiId: bestRikishi.id,
+      reasoning,
+    };
+  }
+
+  reasoning.push(`[Global Worker] Declined exhibitions due to lack of suitable candidates or low priority.`);
+  return { reasoning };
+}
+
+/**
  * Helper: Isolated perception view
  */
 export function rpPerception(p: PerceptionSnapshot) {
-  return {
+  // Deep clone or filter to ensure absolute isolation from WorldState
+  return JSON.parse(JSON.stringify({
     rikishiPerceptions: p.rikishiPerceptions,
     welfareRiskBand: p.welfareRiskBand,
     rosterSize: p.rosterSize,
     moraleBand: p.moraleBand,
     rosterStrengthBand: p.rosterStrengthBand,
-  };
+    runwayBand: p.runwayBand,
+  }));
 }
