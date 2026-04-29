@@ -317,7 +317,7 @@ function buildEdgeCrisis(
 ): Extract<CombatPhase, { tag: "edge_crisis" }> {
   const opponentPressure = crisisSide === "east" ? push.westMomentum : push.eastMomentum;
 
-  // Fix Bug 3: Compute initial tawaraToePosition from how far foot is past edge threshold
+  // Compute initial tawaraToePosition from how far foot is past edge threshold
   const footPos = crisisSide === "east" ? push.eastLeadFoot : Math.abs(push.westLeadFoot);
   const overage = Math.max(0, footPos - EDGE_THRESHOLD);
   // Scale overage (0–0.75m) to toePosition (0–1.0)
@@ -356,7 +356,7 @@ function tickEdgeCrisis(
   const prev = st.phase.prev;
   crisis.ticksInCrisis++;
 
-  // Fix Bug 3: Update tawaraToePosition each tick using real opponent pressure
+  // Update tawaraToePosition each tick using real opponent pressure
   const pressureIncrease = crisis.opponentPressureX * 0.02;
   const escapeResistance = crisis.escapeForceAvailable * 0.008;
   crisis.tawaraToePosition = Math.max(
