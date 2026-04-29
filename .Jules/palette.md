@@ -13,3 +13,6 @@
 ## 2026-04-22 - TitleBar Window Controls Focus States
 **Learning:** Custom window control buttons (minimize, maximize, close) using raw HTML `<button>` tags lacked visual focus indicators during keyboard navigation.
 **Action:** For buttons flush with container edges (like TitleBar controls), use focus-visible:ring-inset instead of the standard offset to prevent focus ring clipping, while maintaining focus-visible:ring-2 for consistency.
+## 2026-04-29 - Focus Ring Styling for Raw Buttons
+**Learning:** Adding keyboard focus states to generic or text-link styled `<button>` elements using Tailwind's `focus-visible:` variants with `ring` and `ring-offset` (e.g., `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background`) provides standard, accessible visual feedback that matches Shadcn UI defaults.
+**Action:** When working with raw HTML `<button>` elements that lack standard component wrapper focus styles, explicitly add these `focus-visible` utility classes to ensure accessibility for keyboard users.

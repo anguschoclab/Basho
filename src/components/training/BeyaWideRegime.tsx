@@ -57,6 +57,7 @@ export function BeyaWideRegime({
                 <button
                   onClick={() => onIntensityChange(intensity)}
                   className={cn(
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
                     "dossier-paper p-4 text-left rounded-lg transition-all relative overflow-hidden group w-full",
                     isActive
                       ? "border-primary bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl border-2"
@@ -103,6 +104,7 @@ export function BeyaWideRegime({
                 <button
                   onClick={() => onFocusChange(focus)}
                   className={cn(
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
                     "dossier-paper p-4 text-left rounded-lg transition-all relative overflow-hidden w-full",
                     isActive
                       ? "border-primary bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl border-2"
@@ -141,6 +143,7 @@ export function BeyaWideRegime({
                 <button
                   onClick={() => onRecoveryChange(recovery)}
                   className={cn(
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
                     "dossier-paper p-4 text-left rounded-lg transition-all relative overflow-hidden w-full",
                     isActive
                       ? "border-primary bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl border-2"
