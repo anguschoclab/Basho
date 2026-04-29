@@ -343,5 +343,3 @@ export const SumoAvatar: React.FC<SumoAvatarProps> = ({
     </svg>
   );
 };
-
-export default SumoAvatar;
