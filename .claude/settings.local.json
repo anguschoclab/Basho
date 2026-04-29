@@ -7,7 +7,6 @@
       "Bash(npx vitest:*)",
       "Bash(npm install:*)",
       "Bash(npx tsc:*)",
-      "Bash(node scripts/check-determinism.mjs)",
       "Bash(xargs grep:*)",
       "Bash(node -e \"const d = JSON.stringify\\(require\\('./src/engine/narrative/archive.json'\\), null, 0\\); const keys = []; function traverse\\(obj, path\\) { for \\(const k of Object.keys\\(obj\\)\\) { const val = obj[k]; if \\(Array.isArray\\(val\\)\\) keys.push\\(path ? path+'.'+k : k\\); else if \\(typeof val === 'object'\\) traverse\\(val, path ? path+'.'+k : k\\); } } traverse\\(require\\('./src/engine/narrative/archive.json'\\).domains, ''\\); console.log\\(keys.join\\('\\\\n'\\)\\);\")",
       "Bash(node -e \"const a = require\\('./src/engine/narrative/archive.json'\\); const domains = a.domains; function flatten\\(obj, p=''\\) { const keys=[]; for \\(const k of Object.keys\\(obj\\)\\) { const v = obj[k]; if \\(Array.isArray\\(v\\)\\) keys.push\\(p+k\\); else if \\(v && typeof v === 'object'\\) keys.push\\(...flatten\\(v, p+k+'.'\\)\\); } return keys; } console.log\\(flatten\\(domains\\).join\\('\\\\n'\\)\\);\")",

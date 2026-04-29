@@ -2,11 +2,8 @@
  * simulationDeterminism.test.ts
  * ==============================
  * Headless simulation determinism check.
- *
  * Verifies that the engine produces identical world state checksums when
  * run twice from the same seed, across 50 and 100 day simulations.
- *
- * This test complements the AST-lint in scripts/check-determinism.mjs.
  */
 
 import { describe, it, expect } from "vitest";
