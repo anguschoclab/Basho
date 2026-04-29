@@ -149,6 +149,15 @@ describe("tickDaily", () => {
       const nextWorld = advanceFullInterim(world);
       expect(nextWorld.dayIndexGlobal).toBe(5);
     });
+    it("advances by 1 day if _interimDaysRemaining is not set", () => {
+      const world = makeMockWorld({
+        cyclePhase: "interim",
+        dayIndexGlobal: 0,
+      });
+
+      const nextWorld = advanceFullInterim(world);
+      expect(nextWorld.dayIndexGlobal).toBe(1);
+    });
 
     it("does nothing if not in interim or pre_basho phase", () => {
       const world = makeMockWorld({
