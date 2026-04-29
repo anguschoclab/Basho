@@ -99,14 +99,38 @@ export function checkRetirement(
 // --- REGENERATION (REPLACEMENT) LOGIC ---
 
 const ORIGINS = [
-  { name: "Hokkaido", weightMod: 1.05, strMod: 1.0 },
-  { name: "Tokyo", weightMod: 0.95, techMod: 1.1 },
-  { name: "Aomori", weightMod: 1.0, strMod: 1.05 },
-  { name: "Mongolia", weightMod: 0.9, strMod: 1.2, mentalMod: 1.2 },
-  { name: "Georgia", weightMod: 1.1, strMod: 1.1 },
-  { name: "Brazil", weightMod: 1.0, techMod: 0.9, speedMod: 1.1 },
-  { name: "Nihon University", weightMod: 1.0, techMod: 1.3, isElite: true },
-  { name: "Nippon Sport Science Univ", weightMod: 1.05, stamMod: 1.2, isElite: true },
+  // --- Japanese Hotbeds ---
+  { name: "Hokkaido", weightMod: 1.10, strMod: 1.05, description: "Land of giants and harsh winters." },
+  { name: "Aomori", weightMod: 1.0, strMod: 1.10, description: "Traditional sumo powerhouse." },
+  { name: "Akita", weightMod: 1.0, techMod: 1.05, description: "Technical wrestlers from the north." },
+  { name: "Oita", weightMod: 1.05, speedMod: 1.05, description: "Dynamic and explosive style." },
+  { name: "Tokyo", weightMod: 0.95, techMod: 1.15, description: "Urban perfectionists." },
+  { name: "Osaka", weightMod: 1.05, mentalMod: 1.10, description: "Resilient and street-smart." },
+  { name: "Fukuoka", weightMod: 1.02, strMod: 1.02, description: "Southern strength." },
+  { name: "Kagoshima", weightMod: 1.05, strMod: 1.05, description: "Heavyweight islanders." },
+  
+  // --- International ---
+  { name: "Mongolia", weightMod: 0.9, strMod: 1.25, mentalMod: 1.3, techMod: 1.1, description: "Masters of leverage and spirit." },
+  { name: "Georgia", weightMod: 1.15, strMod: 1.2, description: "Raw power from the Caucasus." },
+  { name: "Egypt", weightMod: 1.1, strMod: 1.15, description: "Sturdy and relentless." },
+  { name: "Brazil", weightMod: 1.0, speedMod: 1.15, techMod: 1.05, description: "Flexible and athletic." },
+  { name: "USA", weightMod: 1.2, strMod: 1.1, speedMod: 0.9, description: "Huge frames and collegiate power." },
+  
+  // --- Academic Elite (Makushita Tsukedashi eligible) ---
+  { name: "Nihon University", weightMod: 1.0, techMod: 1.4, mentalMod: 1.1, isElite: true },
+  { name: "Nippon Sport Science Univ", weightMod: 1.05, stamMod: 1.3, techMod: 1.2, isElite: true },
+  { name: "Kindai University", weightMod: 1.1, strMod: 1.1, techMod: 1.1, isElite: true },
+
+  // --- General Prefectures (Fillers) ---
+  { name: "Chiba", weightMod: 1.0, speedMod: 1.05 },
+  { name: "Saitama", weightMod: 1.05, strMod: 1.0 },
+  { name: "Kanagawa", weightMod: 0.98, techMod: 1.05 },
+  { name: "Hyogo", weightMod: 1.02, mentalMod: 1.05 },
+  { name: "Shizuoka", weightMod: 1.0, balanceMod: 1.1 },
+  { name: "Hiroshima", weightMod: 1.0, mentalMod: 1.1 },
+  { name: "Kyoto", weightMod: 0.9, techMod: 1.2 },
+  { name: "Niigata", weightMod: 1.0, stamMod: 1.1 },
+  { name: "Ishikawa", weightMod: 1.05, strMod: 1.05 },
 ];
 
 const ARCHETYPES: CombatArchetype[] = [
@@ -155,6 +179,9 @@ function _generateRookie(
   if (origin.techMod) stats.technique *= origin.techMod;
   if (origin.speedMod) stats.speed *= origin.speedMod;
   if (origin.weightMod) stats.weight *= origin.weightMod;
+  if (origin.stamMod) stats.stamina *= origin.stamMod;
+  if (origin.mentalMod) stats.mental *= origin.mentalMod;
+  if (origin.balanceMod) stats.balance *= origin.balanceMod;
 
   // Get oyakata's former shikona for legacy patterns if assigned to a heya
   let legacyShikona: string | undefined;
