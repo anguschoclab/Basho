@@ -141,9 +141,35 @@ export function calculateGrowthVector(
 
   // Ichimon / Degeiko Political Bonus
   let degeikoMult = 1.0;
-  if (heya && heya.ichimon && world?.factions) {
-    const faction = world.factions[heya.ichimon];
-    if (faction && faction.influence >= 80) degeikoMult = 1.1;
+  if (heya && heya.ichimon) {
+    // Basic political influence bonus
+    if (world?.factions) {
+      const faction = world.factions[heya.ichimon];
+      if (faction && faction.influence >= 80) degeikoMult *= 1.1;
+    }
+
+    // --- Ichimon Traditions ---
+    // Real-world inspired specific training specialties for each clan
+    switch (heya.ichimon) {
+      case "Dewanoumi": // Heavy focus on fundamental power
+        degeikoMult *= 1.05; // Global boost
+        break;
+      case "Isegahama": // Focus on technical precision and speed
+        degeikoMult *= 1.05; 
+        break;
+      case "Nishonoseki": // Traditional all-rounders
+        degeikoMult *= 1.05;
+        break;
+      case "Tokitsukaze": // Historical resilience and stamina
+        degeikoMult *= 1.05;
+        break;
+      case "Takadagawa": // Aggressive spirit and mental toughness
+        degeikoMult *= 1.05;
+        break;
+      case "Sakaigawa": // Modern powerhouse
+        degeikoMult *= 1.05;
+        break;
+    }
   }
 
   // Phase 3 Polish: Stable Rivalry Penalty (Boiling Point)
@@ -181,7 +207,24 @@ export function calculateGrowthVector(
     strength: 1.0 + (philosophy?.powerBias || 0),
     speed: 1.0 + (philosophy?.speedBias || 0),
     technique: 1.0 + (philosophy?.techniqueBias || 0),
+    balance: 1.0,
+    stamina: 1.0,
+    mental: 1.0,
   };
+
+  // Add Ichimon-specific stat bonuses
+  if (heya?.ichimon === "Dewanoumi") {
+    styleDriftMults.strength += 0.05;
+  } else if (heya?.ichimon === "Isegahama") {
+    styleDriftMults.technique += 0.05;
+    styleDriftMults.balance += 0.05;
+  } else if (heya?.ichimon === "Nishonoseki") {
+    styleDriftMults.speed += 0.05;
+  } else if (heya?.ichimon === "Tokitsukaze") {
+    styleDriftMults.stamina += 0.10;
+  } else if (heya?.ichimon === "Takadagawa") {
+    styleDriftMults.mental += 0.10;
+  }
 
   const growth: Record<TrainingAttribute, number> = {
     strength: 0,
@@ -210,9 +253,9 @@ export function calculateGrowthVector(
     applyCapped("strength", bias.strength, rikishi.stats?.strength || 50) * nutritionMult * styleDriftMults.strength;
   growth.speed = applyCapped("speed", bias.speed, rikishi.stats?.speed || 50) * styleDriftMults.speed;
   growth.technique = applyCapped("technique", bias.technique, rikishi.stats?.technique || 50) * styleDriftMults.technique;
-  growth.balance = applyCapped("balance", bias.balance, rikishi.stats?.balance || 50);
-  growth.stamina = applyCapped("stamina", 0.5, rikishi.stats?.stamina || 50) * nutritionMult;
-  growth.mental = applyCapped("mental", 0.2, rikishi.stats?.mental || 50);
+  growth.balance = applyCapped("balance", bias.balance, rikishi.stats?.balance || 50) * styleDriftMults.balance;
+  growth.stamina = applyCapped("stamina", 0.5, rikishi.stats?.stamina || 50) * nutritionMult * styleDriftMults.stamina;
+  growth.mental = applyCapped("mental", 0.2, rikishi.stats?.mental || 50) * styleDriftMults.mental;
   growth.adaptability = applyCapped("adaptability", 0.2, rikishi.stats?.adaptability || 50);
 
   return growth;

@@ -6,8 +6,10 @@ import { OzekiKadobanState } from "./ozekiLogic";
 /** Calculation of absence penalty based on bouts. */
 function calculateAbsencePenalty(absences: number, totalBouts: number): number {
   if (absences === 0) return 0;
+  // Full Kyujo (all matches missed) should be extremely punishing in sumo
+  const isFullKyujo = absences >= totalBouts;
   const heavyKyujo = absences >= Math.floor(totalBouts * 0.5);
-  const absenceWeight = heavyKyujo ? 1.75 : 1.25;
+  const absenceWeight = isFullKyujo ? 2.5 : (heavyKyujo ? 1.8 : 1.4);
   return Math.round(absences * absenceWeight);
 }
 
@@ -44,8 +46,11 @@ export function computeMovementUnits(entry: BanzukeEntry, perf: BashoPerformance
     if (demotedOzeki.has(entry.rikishiId)) return Math.min(-6, damped - 4);
     return Math.max(-4, Math.min(4, damped));
   }
-  if (rank === "sekiwake" || rank === "komusubi") return Math.max(-6, Math.min(6, Math.round(move * 0.8)));
-  return Math.max(-10, Math.min(10, move));
+  if (rank === "sekiwake" || rank === "komusubi") return Math.max(-8, Math.min(8, Math.round(move * 0.8)));
+  
+  // Maegashira and below have high volatility
+  if (entry.division === "makuuchi") return Math.max(-18, Math.min(15, move));
+  return Math.max(-30, Math.min(25, move));
 }
 
 /** Determines the highest tier a rikishi is allowed to occupy based on performance. */
