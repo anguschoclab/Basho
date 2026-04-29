@@ -11,6 +11,7 @@ import type { Heya } from "./types/heya";
 import type { Oyakata } from "./types/oyakata";
 import type { Division } from "./types/banzuke";
 import type { Style } from "./types/combat";
+import type { Staff } from "./types/staff";
 import type { Id } from "./types/common";
 import { getAvailableStables, getActiveRikishi as getSelectorsActiveRikishi } from "./selectors";
 
@@ -199,4 +200,18 @@ export function getStableRikishi(world: WorldState, heyaId: string): Rikishi[] {
         if (r.heyaId === heyaId) list.push(r);
     }
     return list;
+}
+
+/**
+ * Get all staff associated with a specific heyaId.
+ */
+export function getHeyaStaff(world: WorldState, heyaId: Id): Staff[] {
+  const heya = world.heyas.get(heyaId);
+  const staffIds = heya?.staffIds ?? [];
+  const staffList: Staff[] = [];
+  for (const id of staffIds) {
+    const s = world.staff.get(id);
+    if (s) staffList.push(s);
+  }
+  return staffList;
 }
