@@ -73,7 +73,11 @@ export function tickWeekTalentPool(world: WorldState): StateImpact {
 
   // 4. Emergency demographic floor: dump all hidden candidates to visible so NPC recruitment can access them
   // Use active (non-retired) count — world.rikishi.size grows unbounded as retirees accumulate
-  const population = Array.from(world.rikishi.values()).filter(r => !r.isRetired).length;
+  // ⚡ Bolt Optimization: Use a single for...of loop instead of Array.from().filter().length to avoid O(N) array allocation overhead
+  let population = 0;
+  for (const r of world.rikishi.values()) {
+    if (!r.isRetired) population++;
+  }
   const isEmergency = population < 700;
   if (isEmergency) {
     for (const pt of ["high_school", "university", "foreign"] as const) {
