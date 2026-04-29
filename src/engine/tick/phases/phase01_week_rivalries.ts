@@ -26,8 +26,7 @@ export function phase01_week_rivalries(world: WorldState): StateImpact {
     const nextPairs: Record<string, RivalryPairState> = {};
     const week = world.calendar.currentWeek || 0;
 
-    for (const key in world.rivalriesState.pairs) {
-      const pair = world.rivalriesState.pairs[key];
+    for (const [key, pair] of Object.entries(world.rivalriesState.pairs || {})) {
       const weeksSince = week - (pair.lastMetWeek || 0);
       
       // Skip decay for already cold pairs (optimization)
