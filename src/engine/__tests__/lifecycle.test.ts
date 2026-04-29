@@ -31,13 +31,15 @@ describe("checkRetirement", () => {
   it("should return 'Career-Ending Injury' if injured and severity > 90", () => {
     const rikishi = mockRikishi("r2", {
       birthYear: 2000, // Age 25
-      injuryStatus: {
+      injured: true,
+      injuryWeeksRemaining: 21,
+      currentInjury: {
         type: "knee",
         isInjured: true,
-        severity: 95,
+        severity: "serious",
         location: undefined,
-        weeksRemaining: 5,
-        weeksToHeal: 5,
+        weeksRemaining: 21,
+        weeksToHeal: 21,
       },
     });
     const mockRng = {
