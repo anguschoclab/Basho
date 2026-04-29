@@ -67,7 +67,7 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
   }
 
   // 4. NPC Opportunistic Recruitment
-  const TARGET_ROSTER_SIZE = 20; // Real JSA average ~13, game uses 20 to ensure division coverage
+  const TARGET_ROSTER_SIZE = 25; // Real JSA average ~13; 25 provides a sustainable buffer above WorldFactory's ~19/heya starting point
   const CRITICAL_ROSTER_THRESHOLD = 12;
   const interimElapsedWeeks = world.cyclePhase === "interim"
     ? Math.floor((42 - (world._interimDaysRemaining ?? 0)) / 7)
