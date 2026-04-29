@@ -90,16 +90,16 @@ export const PA_BY_RANK: Record<Rank, { mean: number; stdDev: number }> = {
 /** Age distribution by rank — Gaussian, biased but not hard-gated. */
 export const AGE_BY_RANK: Record<Rank, { mean: number; stdDev: number; min: number; max: number }> =
   {
-    yokozuna: { mean: 29, stdDev: 3.5, min: 20, max: 38 },
-    ozeki: { mean: 27, stdDev: 3.5, min: 20, max: 36 },
-    sekiwake: { mean: 26, stdDev: 3, min: 19, max: 34 },
-    komusubi: { mean: 25, stdDev: 3, min: 19, max: 34 },
-    maegashira: { mean: 26, stdDev: 4, min: 18, max: 36 },
-    juryo: { mean: 24, stdDev: 3.5, min: 17, max: 34 },
-    makushita: { mean: 22, stdDev: 3, min: 16, max: 30 },
-    sandanme: { mean: 20, stdDev: 2.5, min: 15, max: 28 },
-    jonidan: { mean: 18, stdDev: 2, min: 15, max: 26 },
-    jonokuchi: { mean: 17, stdDev: 1.5, min: 15, max: 22 },
+    yokozuna: { mean: 29, stdDev: 3.5, min: 20, max: 34 },
+    ozeki: { mean: 27, stdDev: 3.5, min: 20, max: 32 },
+    sekiwake: { mean: 26, stdDev: 3, min: 19, max: 31 },
+    komusubi: { mean: 25, stdDev: 3, min: 19, max: 30 },
+    maegashira: { mean: 26, stdDev: 4, min: 18, max: 31 },
+    juryo: { mean: 24, stdDev: 3.5, min: 17, max: 29 },
+    makushita: { mean: 22, stdDev: 3, min: 16, max: 27 },
+    sandanme: { mean: 20, stdDev: 2.5, min: 15, max: 25 },
+    jonidan: { mean: 18, stdDev: 2, min: 15, max: 23 },
+    jonokuchi: { mean: 17, stdDev: 1.5, min: 15, max: 21 },
   };
 
 /** Size potential ranges (post-maturity ceiling). */
