@@ -185,21 +185,6 @@ export function createDeferred<T>() {
 }
 
 /**
- * Assert that a value is not null or undefined.
- * @param value - The value to check
- * @param message - Optional error message
- * @throws Error if value is null or undefined
- */
-export function assertNotNull<T>(
-  value: T | null | undefined,
-  message?: string
-): asserts value is T {
-  if (value === null || value === undefined) {
-    throw new Error(message || `Expected value to not be null or undefined, got ${value}`);
-  }
-}
-
-/**
  * Assert that a value is defined (not undefined).
  * @param value - The value to check
  * @param message - Optional error message
