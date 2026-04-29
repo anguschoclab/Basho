@@ -205,13 +205,13 @@ export function getStableRikishi(world: WorldState, heyaId: string): Rikishi[] {
 /**
  * Get all staff associated with a specific heyaId.
  */
-export function getHeyaStaff(world: WorldState, heyaId: string): Staff[] {
-    const heya = world.heyas.get(heyaId);
-    const staffIds = heya?.staffIds ?? [];
-    const roster: Staff[] = [];
-    for (const id of staffIds) {
-      const s = world.staff.get(id);
-      if (s) roster.push(s);
-    }
-    return roster;
+export function getHeyaStaff(world: WorldState, heyaId: Id): Staff[] {
+  const heya = world.heyas.get(heyaId);
+  const staffIds = heya?.staffIds ?? [];
+  const staffList: Staff[] = [];
+  for (const id of staffIds) {
+    const s = world.staff.get(id);
+    if (s) staffList.push(s);
+  }
+  return staffList;
 }
