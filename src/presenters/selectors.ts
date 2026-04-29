@@ -107,7 +107,7 @@ export const selectKadobanRikishi = createSelector((world: WorldState): Rikishi[
   const kadobanMap = world.ozekiKadoban ?? {};
   const entries: Rikishi[] = [];
   if (!world.rikishi) return entries;
-  for (const rid in kadobanMap) {
+  for (const rid of Object.keys(kadobanMap)) {
     const r = world.rikishi.get(rid);
     if (r) entries.push(r);
   }
