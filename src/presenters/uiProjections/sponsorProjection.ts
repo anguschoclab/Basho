@@ -25,6 +25,13 @@ interface SponsorData {
   satisfaction: number;
 }
 
+// Type definitions for our internal cache
+type SponsorAny = { id: string; name: string; displayName?: string; shortName?: string; loyalty: number; category?: string; satisfaction?: number; active: boolean; relationships: RelAny[] };
+type RelAny = { targetId: string; endsAtTick?: number; tier: string; strength: number; relId?: string; id?: string; since: number; role?: string };
+type TargetMap = Map<string, Array<{ sponsor: SponsorAny; rel: RelAny }>>;
+
+const sponsorRelationshipsCache = new WeakMap<Map<unknown, unknown>, TargetMap>();
+
 function buildAndSortActiveSponsors(
   // Using any because sponsorPool structure varies between runtime and type definition
   pool: unknown,
@@ -33,12 +40,29 @@ function buildAndSortActiveSponsors(
 ): SponsorData[] {
   const activeSponsors: SponsorData[] = [];
   const sponsorMap = (pool as { sponsors: Map<unknown, unknown> }).sponsors;
-  for (const sponsor of sponsorMap.values()) {
-    const s = sponsor as { active: boolean; relationships: Array<{ targetId: string; endsAtTick?: number; tier: string; strength: number; relId?: string; id?: string; since: number; role?: string }> };
-    if (!s.active) continue;
-    for (const rel of s.relationships) {
-      if (rel.targetId !== playerHeyaId) continue;
-      activeSponsors.push(buildSponsorData(s, rel, world));
+
+  let relMap = sponsorRelationshipsCache.get(sponsorMap);
+  if (!relMap) {
+    relMap = new Map();
+    for (const sponsor of sponsorMap.values()) {
+      const s = sponsor as SponsorAny;
+      if (!s.active) continue;
+      for (const rel of s.relationships) {
+        let list = relMap.get(rel.targetId);
+        if (!list) {
+          list = [];
+          relMap.set(rel.targetId, list);
+        }
+        list.push({ sponsor: s, rel });
+      }
+    }
+    sponsorRelationshipsCache.set(sponsorMap, relMap);
+  }
+
+  const targetRels = relMap.get(playerHeyaId);
+  if (targetRels) {
+    for (const { sponsor, rel } of targetRels) {
+      activeSponsors.push(buildSponsorData(sponsor, rel, world));
     }
   }
 
