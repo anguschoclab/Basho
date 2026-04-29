@@ -127,12 +127,82 @@ export const PHASE_EFFECTS = {
   twilight: { injurySensitivity: 1.5, growthMult: 0.35 },
 };
 
-export const STAT_CEILING_KEYS: (keyof RikishiStats)[] = [
-  "strength",
-  "speed",
-  "technique",
-  "balance",
-  "stamina",
-  "mental",
-  "adaptability",
-];
+export const STAT_CEILING_KEYS: (keyof RikishiStats)[] = ["mental", "adaptability"];
+
+// 7. DRILL EFFECTS (P2 Phase O)
+// Defines the daily stat deltas for discrete training sessions.
+// Applied 6 days a week in TrainingService.
+export const DRILL_EFFECTS: Record<
+  string, // DrillType
+  Partial<RikishiStats> & { fatigue: number }
+> = {
+  asageiko: {
+    strength: 0.03,
+    speed: 0.03,
+    technique: 0.03,
+    balance: 0.03,
+    stamina: 0.03,
+    fatigue: 1.0,
+  },
+  butsukari: {
+    strength: 0.25,
+    stamina: 0.15,
+    weight: 0.1,
+    fatigue: 4.5,
+  },
+  teppo: {
+    technique: 0.22,
+    strength: 0.06,
+    speed: 0.04,
+    fatigue: 2.5,
+  },
+  "moushi-ai": {
+    strength: 0.08,
+    speed: 0.08,
+    technique: 0.08,
+    balance: 0.08,
+    mental: 0.15,
+    fatigue: 3.8,
+  },
+  shindo: {
+    mental: 0.25,
+    fatigue: -2.0,
+  },
+  none: {
+    fatigue: -1.2,
+  },
+};
+
+export const DRILL_METADATA: Record<string, { label: string; description: string; color: string }> =
+  {
+    asageiko: {
+      label: "Asageiko",
+      description: "Standard morning conditioning. Low risk, balanced maintenance.",
+      color: "slate",
+    },
+    butsukari: {
+      label: "Butsukari",
+      description: "Intense collision drills. Maximizes Power and Stamina. High fatigue.",
+      color: "orange",
+    },
+    teppo: {
+      label: "Teppo",
+      description: "Rhythmic palm strikes. Focuses on Technique and explosive Strength.",
+      color: "blue",
+    },
+    "moushi-ai": {
+      label: "Moushi-ai",
+      description: "Successive sparring. Sharpens overall competence and Mental focus.",
+      color: "purple",
+    },
+    shindo: {
+      label: "Shindo / Meditation",
+      description: "Mental visualization and rest. Boosts Mental stats and reduces fatigue.",
+      color: "emerald",
+    },
+    none: {
+      label: "Rest",
+      description: "Full rest day. Maximum fatigue recovery, no stat gains.",
+      color: "gray",
+    },
+  };

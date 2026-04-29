@@ -5,12 +5,20 @@
  * Extracted from uiDigest.ts to eliminate monolithic structure.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import type { Rikishi } from "../../engine/types/rikishi";
 import { BardEngine } from "../../engine/narrative/BardEngine";
 import { projectRikishi } from "../rikishiUI";
 import type { UIRikishi } from "../rikishiUI";
+import type { SeededRNG } from "../../engine/rng";
+
+/** Minimal world state for rikishi projection */
+interface MinimalWorldForProjection {
+  year: number;
+  heyas: Map<string, { name?: string; isPlayerOwned?: boolean }>;
+  rikishi: Map<string, unknown>;
+  rng?: SeededRNG;
+  seed?: string;
+}
 
 /**
  * Resolve a localized label for a given registry domain and ID.
@@ -26,9 +34,12 @@ export function resolveRegistryLabel(domain: string, id: string, useJa: boolean 
  * Guaranteed to strip hidden numerical stats.
  */
 export function enrichRikishiForUI(rikishi: Rikishi): UIRikishi {
-  return projectRikishi(rikishi, {
-    year: new Date().getFullYear(),
-    heyas: new Map(),
-    rikishi: new Map(),
-  } as any);
+  return projectRikishi(
+    rikishi,
+    {
+      year: new Date().getFullYear(),
+      heyas: new Map(),
+      rikishi: new Map(),
+    } satisfies MinimalWorldForProjection as Parameters<typeof projectRikishi>[1]
+  );
 }

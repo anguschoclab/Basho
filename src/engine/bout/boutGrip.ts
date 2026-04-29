@@ -3,11 +3,7 @@ import type { Rikishi } from "../types/rikishi";
 import type { Side } from "../types/banzuke";
 import type { HandGrip, BeltBattleState } from "../types/combat-spatial";
 import { deriveGripClass } from "./boutSpatial";
-
-function stat(r: Rikishi, key: string, fallback = 50): number {
-  const v = (r as unknown as Record<string, unknown>)[key];
-  return typeof v === "number" && Number.isFinite(v) ? v : fallback;
-}
+import { stat } from "./boutUtils";
 
 export function initBeltBattle(
   rng: SeededRNG,

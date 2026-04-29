@@ -3,11 +3,12 @@
 exports[`BoutResult snapshot > BoutResult shape snapshot 1`] = `
 {
   "boutId": "test-001",
-  "duration": 28,
+  "duration": 18,
+  "excitementScore": 5,
   "isKinboshi": false,
   "kenshoEnvelopes": 0,
-  "kimarite": "oshitaoshi",
-  "kimariteName": "oshitaoshi",
+  "kimarite": "oshidashi",
+  "kimariteName": "oshidashi",
   "log": [],
   "loserRikishiId": "r1",
   "stance": "push-dominant",
@@ -21,11 +22,12 @@ exports[`BoutResult snapshot > BoutResult shape snapshot 1`] = `
 exports[`BoutResult snapshot BoutResult shape snapshot 1`] = `
 {
   "boutId": "test-001",
-  "duration": 28,
+  "duration": 18,
+  "excitementScore": 5,
   "isKinboshi": false,
   "kenshoEnvelopes": 0,
-  "kimarite": "oshitaoshi",
-  "kimariteName": "oshitaoshi",
+  "kimarite": "oshidashi",
+  "kimariteName": "oshidashi",
   "log": [],
   "loserRikishiId": "r1",
   "stance": "push-dominant",

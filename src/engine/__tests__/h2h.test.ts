@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
 import { describe, it, expect } from "vitest";
 import { updateH2H, generateH2HCommentary, getH2HReport } from "../h2h";
-import { mockRikishi } from "./utils";
+import { MockFactory } from "../../test/utils/MockFactory";
 import type { MatchResultLog } from "../types/records";
+import type { BoutResult } from "../types/basho";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -28,10 +28,10 @@ function makeLog(
 // getH2HReport — win counting
 // ---------------------------------------------------------------------------
 
-describe("getH2HReport — win counting", () => {
+describe("h2h.test.ts - win counting", () => {
   it("returns zeroed report when neither has faced the other", () => {
-    const a = mockRikishi("a", { history: [] });
-    const b = mockRikishi("b", { history: [] });
+    const a = MockFactory.createRikishi({ id: "a", history: [] });
+    const b = MockFactory.createRikishi({ id: "b", history: [] });
 
     const report = getH2HReport(a, b);
 
@@ -44,14 +44,16 @@ describe("getH2HReport — win counting", () => {
   });
 
   it("counts wins for A correctly", () => {
-    const a = mockRikishi("a", {
+    const a = MockFactory.createRikishi({
+      id: "a",
       history: [
         makeLog("b", true, { day: 1 }),
         makeLog("b", true, { day: 5 }),
         makeLog("b", false, { day: 9 }),
       ],
     });
-    const b = mockRikishi("b", {
+    const b = MockFactory.createRikishi({
+      id: "b",
       history: [
         makeLog("a", false, { day: 1 }),
         makeLog("a", false, { day: 5 }),
@@ -67,10 +69,12 @@ describe("getH2HReport — win counting", () => {
   });
 
   it("counts wins for B when B dominates", () => {
-    const a = mockRikishi("a", {
+    const a = MockFactory.createRikishi({
+      id: "a",
       history: [makeLog("b", false), makeLog("b", false)],
     });
-    const b = mockRikishi("b", {
+    const b = MockFactory.createRikishi({
+      id: "b",
       history: [makeLog("a", true), makeLog("a", true)],
     });
 
@@ -81,14 +85,16 @@ describe("getH2HReport — win counting", () => {
   });
 
   it("ignores history entries against unrelated opponents", () => {
-    const a = mockRikishi("a", {
+    const a = MockFactory.createRikishi({
+      id: "a",
       history: [
         makeLog("b", true),
         makeLog("c", false), // against someone else
         makeLog("d", true), // against someone else
       ],
     });
-    const b = mockRikishi("b", {
+    const b = MockFactory.createRikishi({
+      id: "b",
       history: [makeLog("a", false)],
     });
 
@@ -104,16 +110,17 @@ describe("getH2HReport — win counting", () => {
 // getH2HReport — recent meetings ordering
 // ---------------------------------------------------------------------------
 
-describe("getH2HReport — recent meetings ordering", () => {
+describe("h2h.test.ts - recent meetings ordering", () => {
   it("returns recent meetings sorted newest-first by year then day", () => {
-    const a = mockRikishi("a", {
+    const a = MockFactory.createRikishi({
+      id: "a",
       history: [
         makeLog("b", true, { year: 2024, day: 1, bashoId: "2024-01" }),
         makeLog("b", false, { year: 2025, day: 15, bashoId: "2025-01" }),
         makeLog("b", true, { year: 2024, day: 9, bashoId: "2024-03" }),
       ],
     });
-    const b = mockRikishi("b", { history: [] });
+    const b = MockFactory.createRikishi({ id: "b", history: [] });
 
     const { recentMeetings } = getH2HReport(a, b);
 
@@ -129,8 +136,8 @@ describe("getH2HReport — recent meetings ordering", () => {
     const history: MatchResultLog[] = Array.from({ length: 10 }, (_, i) =>
       makeLog("b", i % 2 === 0, { year: 2020 + i, day: 1, bashoId: `${2020 + i}-01` })
     );
-    const a = mockRikishi("a", { history });
-    const b = mockRikishi("b", { history: [] });
+    const a = MockFactory.createRikishi({ id: "a", history });
+    const b = MockFactory.createRikishi({ id: "b", history: [] });
 
     const { recentMeetings } = getH2HReport(a, b);
 
@@ -138,13 +145,14 @@ describe("getH2HReport — recent meetings ordering", () => {
   });
 
   it("sets winnerId correctly for each meeting", () => {
-    const a = mockRikishi("a", {
+    const a = MockFactory.createRikishi({
+      id: "a",
       history: [
         makeLog("b", true, { year: 2025, day: 3 }),
         makeLog("b", false, { year: 2025, day: 1 }),
       ],
     });
-    const b = mockRikishi("b", { history: [] });
+    const b = MockFactory.createRikishi({ id: "b", history: [] });
 
     const { recentMeetings } = getH2HReport(a, b);
 
@@ -153,10 +161,11 @@ describe("getH2HReport — recent meetings ordering", () => {
   });
 
   it("records kimarite from MatchResultLog", () => {
-    const a = mockRikishi("a", {
+    const a = MockFactory.createRikishi({
+      id: "a",
       history: [makeLog("b", true, { kimarite: "uwatenage" })],
     });
-    const b = mockRikishi("b", { history: [] });
+    const b = MockFactory.createRikishi({ id: "b", history: [] });
 
     const { recentMeetings } = getH2HReport(a, b);
 
@@ -170,9 +179,9 @@ describe("getH2HReport — recent meetings ordering", () => {
 
 describe("updateH2H", () => {
   it("increments winner.h2h[loser.id].wins and sets lastMatch", () => {
-    const winner = mockRikishi("w");
-    const loser = mockRikishi("l");
-    const result = { boutId: "b-1", kimarite: "yorikiri" } as any;
+    const winner = MockFactory.createRikishi({ id: "w" });
+    const loser = MockFactory.createRikishi({ id: "l" });
+    const result = { boutId: "b-1", kimarite: "yorikiri" } as unknown as BoutResult;
 
     const impact = updateH2H(winner, loser, result, "basho-2025-01", 2025, 7);
     if (impact.entities?.rikishiUpdates) {
@@ -182,33 +191,18 @@ describe("updateH2H", () => {
       if (updateL?.h2h) loser.h2h = { ...loser.h2h, ...updateL.h2h };
     }
 
-    expect(winner.h2h!["l"].wins).toBe(1);
-    expect(winner.h2h!["l"].losses).toBe(0);
-    expect(winner.h2h!["l"].lastMatch?.winnerId).toBe("w");
-    expect(winner.h2h!["l"].lastMatch?.kimarite).toBe("yorikiri");
-  });
-
-  it("increments winner.h2h[loser.id].wins", () => {
-    const winner = mockRikishi("w");
-    const loser = mockRikishi("l");
-    const result = { boutId: "b-1", kimarite: "oshidashi" } as any;
-
-    const impact = updateH2H(winner, loser, result, "basho-2025-01", 2025, 8);
-    if (impact.entities?.rikishiUpdates) {
-      const updateW = impact.entities.rikishiUpdates.get("w");
-      const updateL = impact.entities.rikishiUpdates.get("l");
-      if (updateW?.h2h) winner.h2h = { ...winner.h2h, ...updateW.h2h };
-      if (updateL?.h2h) loser.h2h = { ...loser.h2h, ...updateL.h2h };
-    }
-
-    expect(winner.h2h!["l"].wins).toBe(1);
-    expect(winner.h2h!["l"].losses).toBe(0);
+    const rec = winner.h2h["l"];
+    expect(rec).toBeDefined();
+    expect(rec.wins).toBe(1);
+    expect(rec.losses).toBe(0);
+    expect(rec.lastMatch?.winnerId).toBe("w");
+    expect(rec.lastMatch?.kimarite).toBe("yorikiri");
   });
 
   it("increments loser.h2h[winner.id].losses", () => {
-    const winner = mockRikishi("w");
-    const loser = mockRikishi("l");
-    const result = { boutId: "b-1", kimarite: "yorikiri" } as any;
+    const winner = MockFactory.createRikishi({ id: "w" });
+    const loser = MockFactory.createRikishi({ id: "l" });
+    const result = { boutId: "b-1", kimarite: "yorikiri" } as unknown as BoutResult;
 
     const impact = updateH2H(winner, loser, result, "basho-2025-01", 2025, 8);
     if (impact.entities?.rikishiUpdates) {
@@ -218,14 +212,16 @@ describe("updateH2H", () => {
       if (updateL?.h2h) loser.h2h = { ...loser.h2h, ...updateL.h2h };
     }
 
-    expect(loser.h2h!["w"].losses).toBe(1);
-    expect(loser.h2h!["w"].wins).toBe(0);
+    const rec = loser.h2h["w"];
+    expect(rec).toBeDefined();
+    expect(rec.losses).toBe(1);
+    expect(rec.wins).toBe(0);
   });
 
   it("accumulates on repeated calls", () => {
-    const a = mockRikishi("a");
-    const b = mockRikishi("b");
-    const r = { boutId: "b-1", kimarite: "yorikiri" } as any;
+    const a = MockFactory.createRikishi({ id: "a" });
+    const b = MockFactory.createRikishi({ id: "b" });
+    const r = { boutId: "b-1", kimarite: "yorikiri" } as unknown as BoutResult;
 
     const impact1 = updateH2H(a, b, r, "2025-01", 2025, 1);
     if (impact1.entities?.rikishiUpdates) {
@@ -251,10 +247,10 @@ describe("updateH2H", () => {
       if (updateB?.h2h) b.h2h = { ...b.h2h, ...updateB.h2h };
     }
 
-    expect(a.h2h!["b"].wins).toBe(2);
-    expect(a.h2h!["b"].losses).toBe(1);
-    expect(b.h2h!["a"].wins).toBe(1);
-    expect(b.h2h!["a"].losses).toBe(2);
+    expect(a.h2h["b"].wins).toBe(2);
+    expect(a.h2h["b"].losses).toBe(1);
+    expect(b.h2h["a"].wins).toBe(1);
+    expect(b.h2h["a"].losses).toBe(2);
   });
 });
 
@@ -264,8 +260,8 @@ describe("updateH2H", () => {
 
 describe("generateH2HCommentary", () => {
   it("returns a non-empty string for first meeting", () => {
-    const a = mockRikishi("a", { h2h: {} });
-    const b = mockRikishi("b", { h2h: {} });
+    const a = MockFactory.createRikishi({ id: "a", h2h: {} });
+    const b = MockFactory.createRikishi({ id: "b", h2h: {} });
 
     const text = generateH2HCommentary(a, b);
 
@@ -274,7 +270,8 @@ describe("generateH2HCommentary", () => {
   });
 
   it("returns a non-empty string for established rivalry", () => {
-    const a = mockRikishi("a", {
+    const a = MockFactory.createRikishi({
+      id: "a",
       h2h: {
         b: {
           wins: 8,
@@ -290,7 +287,7 @@ describe("generateH2HCommentary", () => {
         },
       },
     });
-    const b = mockRikishi("b");
+    const b = MockFactory.createRikishi({ id: "b" });
 
     const text = generateH2HCommentary(a, b);
 
@@ -299,12 +296,13 @@ describe("generateH2HCommentary", () => {
   });
 
   it("is deterministic for identical inputs", () => {
-    const a = mockRikishi("a", {
+    const a = MockFactory.createRikishi({
+      id: "a",
       h2h: {
         b: { wins: 5, losses: 5, streak: 0, lastMatch: null },
       },
     });
-    const b = mockRikishi("b");
+    const b = MockFactory.createRikishi({ id: "b" });
 
     expect(generateH2HCommentary(a, b)).toBe(generateH2HCommentary(a, b));
   });

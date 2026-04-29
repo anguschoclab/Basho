@@ -120,3 +120,19 @@ export function buildCombatProfile(archetype: CombatArchetype): CombatProfile {
     ...ARCHETYPE_DEFINITIONS[archetype],
   };
 }
+
+/**
+ * Derive which fighting styles a rikishi is weak against, based on archetype.
+ * Follows the TACTICAL_MATRIX rock-paper-scissors triangle:
+ *   oshi → weak to hybrid  (trick beats push)
+ *   yotsu → weak to oshi   (push beats belt)
+ *   hybrid → weak to yotsu (belt beats trick/speed)
+ */
+export function deriveWeakAgainstStyles(archetype: CombatArchetype): Style[] {
+  const style = archetype === "oshi" || archetype === "tsuppari" ? "oshi"
+    : archetype === "yotsu" || archetype === "giant" ? "yotsu"
+    : "hybrid";
+  if (style === "oshi") return ["hybrid"];
+  if (style === "yotsu") return ["oshi"];
+  return ["yotsu"]; // hybrid
+}

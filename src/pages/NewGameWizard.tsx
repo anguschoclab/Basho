@@ -6,8 +6,6 @@
  * Architecturally cleaned up to use centralized engine utilities.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
@@ -25,12 +23,13 @@ import { OYAKATA_BACKGROUNDS, ICHIMON_FACTIONS } from "@/components/wizard/wizar
 
 export default function NewGameWizard() {
   const navigate = useNavigate();
-  const { createWorld, state } = useGame() as any;
+  const { createWorld, state } = useGame();
 
   useEffect(() => {
     if (!state.world) {
       createWorld(makeDeterministicSeed("world"));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- createWorld is stable from context, only run once when world is missing
   }, [state.world]);
 
   const [step, setStep] = useState(1);

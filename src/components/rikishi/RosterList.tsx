@@ -6,7 +6,6 @@
  */
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { Zap, Activity, Filter, SortAsc, LayoutGrid } from "lucide-react";
@@ -14,6 +13,7 @@ import { cn } from "@/lib/utils";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { KeshoBadge } from "@/components/kesho/KeshoBadge";
+import { RankBadge } from "./RankBadge";
 
 interface RosterListProps {
   rikishiList: UIRikishi[];
@@ -106,10 +106,12 @@ export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
                           <KeshoBadge kesho={r.keshoMawashi} size="sm" />
                         </TooltipWrap>
                       )}
-                      <Badge variant="outline" className="text-xs uppercase">
-                        {r.rankLabel}
-                        {r.rankNumber && r.rankNumber > 0 ? ` #${r.rankNumber}` : ""}
-                      </Badge>
+                      <RankBadge
+                        rank={r.rank}
+                        rankNumber={r.rankNumber}
+                        side={r.side}
+                        variant="roster"
+                      />
                     </div>
                     <div className="font-display font-black text-xl tracking-tight group-hover:text-primary transition-colors">
                       {r.shikona}

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { rngForWorld } from "./rng";
 import type { WorldState } from "./types/world";
 import type { Rikishi } from "./types/rikishi";

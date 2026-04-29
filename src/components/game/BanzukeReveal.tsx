@@ -128,7 +128,7 @@ export function BanzukeReveal({
                       <Star className="text-primary" />
                     </motion.div>
                   )}
-                  {entry.change === "division_change" && <ArrowRight className="text-purple-400" />}
+                  {entry.change === "division_change" && <ArrowRight className="text-primary" />}
                   {entry.change === "none" && <Minus className="opacity-30" />}
                 </div>
 
@@ -143,7 +143,7 @@ export function BanzukeReveal({
                           : entry.change === "new"
                             ? "text-primary"
                             : entry.change === "division_change"
-                              ? "text-purple-400"
+                              ? "text-primary"
                               : ""
                     }`}
                   >

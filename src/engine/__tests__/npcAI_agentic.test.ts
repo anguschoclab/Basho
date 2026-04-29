@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi } from "vitest";
 import { consolidateOyakataMemory, makeNPCWeeklyDecision } from "../npcAI";
 import { resolveImpacts } from "../core/ImpactResolver";
 import * as PersonaService from "../systems/NPCPersonaService";
-import { WorldState } from "../types/world";
-import { Id } from "../types/common";
+import { MockFactory } from "../../test/utils/MockFactory";
+import type { Id } from "../types/common";
 
 vi.mock("../systems/NPCPersonaService", () => ({
   getManagerPersona: vi.fn(),
@@ -28,78 +27,73 @@ const mockPersona = {
 };
 
 describe("NPC AI Agentic Refactor", () => {
-  const mockWorld = {
-    week: 1,
-    year: 1990,
-    heyas: new Map(),
-    oyakata: new Map(),
-    rikishi: new Map(),
-    npcScoutingPriorities: {},
-  } as unknown as WorldState;
-
   const heyaId = "heya-1" as Id;
   const oyakataId = "oyakata-1" as Id;
 
-  const mockHeya = {
-    id: heyaId,
-    name: "Test Heya",
-    oyakataId: oyakataId,
-    rikishiIds: [],
-  };
+  const world = MockFactory.createWorld({
+    week: 1,
+    year: 1990,
+    npcScoutingPriorities: {},
+  });
 
-  const mockOyakata = {
-    id: oyakataId,
+  const heya = MockFactory.createHeya(heyaId, {
+    oyakataId: oyakataId,
+  });
+
+  const oyakata = MockFactory.createOyakata(oyakataId, {
+    heyaId,
     archetype: "traditionalist",
     mood: "content",
-    memory: undefined,
-  };
+  });
 
-  mockWorld.heyas.set(heyaId, mockHeya as any);
-  mockWorld.oyakata.set(oyakataId, mockOyakata as any);
+  world.heyas.set(heyaId, heya);
+  world.oyakata.set(oyakataId, oyakata);
 
   describe("Phase 1: Background Consolidation", () => {
     it("should initialize memory if missing", () => {
-      const impact = consolidateOyakataMemory(mockWorld, heyaId, { moraleBand: "neutral" });
-      const updatedWorld = resolveImpacts(mockWorld, [impact]);
+      const impact = consolidateOyakataMemory(world, heyaId, { moraleBand: "neutral" });
+      const updatedWorld = resolveImpacts(world, [impact]);
       const updatedOyakata = updatedWorld.oyakata.get(oyakataId);
       expect(updatedOyakata?.memory).toBeDefined();
-      expect((updatedOyakata?.memory as any).coreDirectives).toContain(
-        "Prioritize traditionalist values"
-      );
+      expect(updatedOyakata?.memory?.coreDirectives).toContain("Prioritize traditionalist values");
     });
 
     it("should flag skeptical conflicts (e.g. morale drop vs content mood)", () => {
-      mockOyakata.mood = "content";
-      const impact = consolidateOyakataMemory(mockWorld, heyaId, { moraleBand: "mutinous" });
-      const updatedWorld = resolveImpacts(mockWorld, [impact]);
+      oyakata.mood = "content";
+      const impact = consolidateOyakataMemory(world, heyaId, { moraleBand: "mutinous" });
+      const updatedWorld = resolveImpacts(world, [impact]);
       const updatedOyakata = updatedWorld.oyakata.get(oyakataId);
-      const obs = (updatedOyakata?.memory as any).observations.find(
-        (o: any) => o.type === "alignment"
-      );
+      const obs = updatedOyakata?.memory?.observations.find((o) => o.type === "alignment");
       expect(obs).toBeDefined();
-      expect(obs.summary).toContain("Unexpected morale collapse");
+      expect(obs?.summary).toContain("Unexpected morale collapse");
     });
 
     it("should prune noise (limit to 10 observations)", () => {
-      if (!mockOyakata.memory) {
-        (mockOyakata as any).memory = {
-          observations: [],
-          coreDirectives: [],
-          lastConsolidationTick: 0,
-        };
-      }
-      const memory = mockOyakata.memory as any;
+      const workingOyakata = world.oyakata.get(oyakataId);
+      if (!workingOyakata) throw new Error("Oyakata not found");
+      workingOyakata.memory = {
+        observations: [],
+        coreDirectives: [],
+        lastConsolidationTick: 0,
+      };
+
+      const memory = workingOyakata.memory;
       memory.observations = [];
       for (let i = 0; i < 15; i++) {
-        memory.observations.push({ tick: i, type: "test", summary: `obs ${i}`, importance: i });
+        memory.observations.push({
+          tick: i,
+          type: "alignment", // Changed from 'test' to valid type
+          summary: `obs ${i}`,
+          importance: i,
+        });
       }
-      const impact = consolidateOyakataMemory(mockWorld, heyaId, { moraleBand: "neutral" });
-      const updatedWorld = resolveImpacts(mockWorld, [impact]);
+      const impact = consolidateOyakataMemory(world, heyaId, { moraleBand: "neutral" });
+      const updatedWorld = resolveImpacts(world, [impact]);
       const updatedOyakata = updatedWorld.oyakata.get(oyakataId);
-      const updatedMemory = updatedOyakata?.memory as any;
-      expect(updatedMemory.observations.length).toBeLessThanOrEqual(10);
+      const updatedMemory = updatedOyakata?.memory;
+      expect(updatedMemory?.observations.length).toBeLessThanOrEqual(10);
       // Ensure most important remains
-      expect(updatedMemory.observations.some((o: any) => o.importance === 14)).toBe(true);
+      expect(updatedMemory?.observations.some((o) => o.importance === 14)).toBe(true);
     });
   });
 
@@ -112,9 +106,9 @@ describe("NPC AI Agentic Refactor", () => {
           welfareRiskBand: "critical", // This forces the Training Worker to be conservative
         },
         mood: "furious",
-      } as any);
+      });
 
-      const decision = makeNPCWeeklyDecision(mockWorld, heyaId);
+      const decision = makeNPCWeeklyDecision(world, heyaId);
       expect(decision.mood).toBe("furious");
       expect(decision.trainingIntensity).toBe("punishing");
       expect(decision.reasoning.some((r) => r.includes("[Lead Review]"))).toBe(true);

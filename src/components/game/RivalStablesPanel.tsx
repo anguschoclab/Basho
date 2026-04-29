@@ -1,13 +1,15 @@
 // RivalStablesPanel.tsx — Dashboard panel showing NPC stable activity via banded perception
 // All data is derived from PerceptionSnapshot (A7.1) — no raw stats exposed.
+// Now includes real-time rivalry heat tracking from rivalriesState.
 
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { PerceptionSnapshot } from "@/engine/perception";
-import { Swords, Search, Shield, Flame } from "lucide-react";
+import { Swords, Search, Shield, Flame, Thermometer } from "lucide-react";
 import React, { useMemo } from "react";
 import { getCachedPerception } from "@/presenters/uiDigest";
+import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 
 const RivalRow = React.memo(
   ({
@@ -22,6 +24,7 @@ const RivalRow = React.memo(
     stableMediaHeatBand,
     trainingIntensity,
     scoutingPriority,
+    rivalryHeat,
   }: {
     heyaId: string;
     heyaName: string;
@@ -34,6 +37,7 @@ const RivalRow = React.memo(
     stableMediaHeatBand: string;
     trainingIntensity: string;
     scoutingPriority: string;
+    rivalryHeat?: number;
   }) => {
     const intensityInfo = INTENSITY_DISPLAY[trainingIntensity] ?? INTENSITY_DISPLAY.balanced;
     const moraleColor = MORALE_COLOR[moraleBand] ?? "text-muted-foreground";
@@ -94,6 +98,16 @@ const RivalRow = React.memo(
         </div>
 
         <div className="flex items-center gap-1 shrink-0">
+          {rivalryHeat !== undefined && rivalryHeat > 0 && (
+            <TooltipWrap content={`Rivalry heat: ${Math.round(rivalryHeat)}`}>
+              <div className="flex items-center gap-1">
+                <Thermometer
+                  className={`h-3.5 w-3.5 ${rivalryHeat > 50 ? "text-destructive" : rivalryHeat > 25 ? "text-warning" : "text-primary"}`}
+                />
+                <span className="text-[10px] font-medium">{Math.round(rivalryHeat)}</span>
+              </div>
+            </TooltipWrap>
+          )}
           {welfareRiskBand === "critical" && (
             <Badge variant="destructive" className="text-[10px] px-1.5">
               ⚠
@@ -141,7 +155,7 @@ const MORALE_COLOR: Record<string, string> = {
   inspired: "text-primary",
   content: "text-primary/70",
   neutral: "text-muted-foreground",
-  disgruntled: "text-orange-500",
+  disgruntled: "text-warning",
   mutinous: "text-destructive",
 };
 
@@ -150,6 +164,7 @@ interface RivalEntry {
   perception: PerceptionSnapshot;
   trainingIntensity: string;
   scoutingPriority: string;
+  rivalryHeat: number;
 }
 
 /** rival stables panel. */
@@ -185,7 +200,18 @@ export function RivalStablesPanel() {
       else if (perception.rosterStrengthBand === "dominant") scoutingPriority = "passive";
       else scoutingPriority = "active";
 
-      entries.push({ perception, trainingIntensity, scoutingPriority });
+      // Get rivalry heat from rivalriesState if available
+      let rivalryHeat = 0;
+      if (world.rivalriesState?.pairs && world.playerHeyaId) {
+        const keyA = `${world.playerHeyaId}|${heya.id}`;
+        const keyB = `${heya.id}|${world.playerHeyaId}`;
+        const pair = world.rivalriesState.pairs[keyA] || world.rivalriesState.pairs[keyB];
+        if (pair) {
+          rivalryHeat = pair.heat;
+        }
+      }
+
+      entries.push({ perception, trainingIntensity, scoutingPriority, rivalryHeat });
     }
 
     // Sort by prestige band (best first)
@@ -229,6 +255,7 @@ export function RivalStablesPanel() {
                 stableMediaHeatBand={r.perception.stableMediaHeatBand}
                 trainingIntensity={r.trainingIntensity}
                 scoutingPriority={r.scoutingPriority}
+                rivalryHeat={r.rivalryHeat}
               />
             );
           }

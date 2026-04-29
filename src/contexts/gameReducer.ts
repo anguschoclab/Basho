@@ -5,7 +5,10 @@ import { combineReducers } from "./gameHelpers";
 import { buildWeeklyDigest } from "@/presenters/uiDigest";
 
 /** Adapter matching the { seed, playerConfig? } call shape used in this reducer */
-function generateWorld(opts: { seed: string; playerConfig?: { heyaId?: string } }): ReturnType<typeof generateInitialWorld> {
+function generateWorld(opts: {
+  seed: string;
+  playerConfig?: { heyaId?: string };
+}): ReturnType<typeof generateInitialWorld> {
   return generateInitialWorld(opts.seed);
 }
 
@@ -17,8 +20,8 @@ import { bashoSlice } from "./bashoSlice";
 import { mediaSlice } from "./mediaSlice";
 import { advanceOneDay } from "@/engine/tick";
 
-/** 
- * Core generic actions that don't fit cleanly into a domain slice 
+/**
+ * Core generic actions that don't fit cleanly into a domain slice
  * or that create the initial world.
  */
 function coreSlice(state: GameState, action: GameAction): GameState {
@@ -26,9 +29,9 @@ function coreSlice(state: GameState, action: GameAction): GameState {
     case "CREATE_WORLD": {
       const world = generateWorld({ seed: action.seed });
       const playerHeyaId = action.playerHeyaId || null;
-      
+
       const nextWorld = { ...world, playerHeyaId: playerHeyaId || undefined };
-      
+
       if (playerHeyaId) {
         const heya = world.heyas.get(playerHeyaId);
         if (heya) {
@@ -37,7 +40,7 @@ function coreSlice(state: GameState, action: GameAction): GameState {
           nextWorld.heyas.set(playerHeyaId, updatedHeya);
         }
       }
-      
+
       return {
         ...state,
         world: nextWorld,
@@ -53,7 +56,11 @@ function coreSlice(state: GameState, action: GameAction): GameState {
       return { ...state, isAutoPlaying: action.value };
 
     case "UPDATE_WORLD":
-      return { ...state, world: action.world };
+      return {
+        ...state,
+        world: action.world,
+        playerHeyaId: action.world.playerHeyaId || state.playerHeyaId,
+      };
 
     case "LOAD_WORLD":
       return {
@@ -91,7 +98,17 @@ function coreSlice(state: GameState, action: GameAction): GameState {
           ...state.world,
           tutorialState: ts
             ? { ...ts, currentStep: action.step }
-            : { completed: false, currentStep: action.step, flags: { seenStaminaTooltip: false, seenGripTooltip: false, seenMomentumTooltip: false, seenBashoRecordTooltip: false, finishedExhibition: false } },
+            : {
+                completed: false,
+                currentStep: action.step,
+                flags: {
+                  seenStaminaTooltip: false,
+                  seenGripTooltip: false,
+                  seenMomentumTooltip: false,
+                  seenBashoRecordTooltip: false,
+                  finishedExhibition: false,
+                },
+              },
         },
       };
     }
@@ -117,9 +134,17 @@ function coreSlice(state: GameState, action: GameAction): GameState {
         world: {
           ...state.world,
           tutorialState: {
-            ...(state.world.tutorialState ?? { flags: { seenStaminaTooltip: false, seenGripTooltip: false, seenMomentumTooltip: false, seenBashoRecordTooltip: false, finishedExhibition: false } }),
+            ...(state.world.tutorialState ?? {
+              flags: {
+                seenStaminaTooltip: false,
+                seenGripTooltip: false,
+                seenMomentumTooltip: false,
+                seenBashoRecordTooltip: false,
+                finishedExhibition: false,
+              },
+            }),
             completed: true,
-            currentStep: 'DONE' as const,
+            currentStep: "DONE" as const,
           },
         },
       };
@@ -128,11 +153,11 @@ function coreSlice(state: GameState, action: GameAction): GameState {
     case "SET_IMPACTS": {
       const currentWeek = state.world?.week ?? 0;
       const newImpactEntry = { week: currentWeek, impacts: action.impacts };
-      
+
       // Limit impact history to last 52 weeks
       const impactHistory = [...(state.impactHistory || []), newImpactEntry];
       const limitedHistory = impactHistory.slice(-52);
-      
+
       return {
         ...state,
         lastImpacts: action.impacts,

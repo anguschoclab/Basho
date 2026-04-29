@@ -33,7 +33,7 @@ import {
 } from "./boutCanvas";
 
 export interface UseBoutReplayReturn {
-  canvasRef: React.RefObject<HTMLCanvasElement>;
+  canvasRef: React.RefObject<HTMLCanvasElement | null>;
   isPlaying: boolean;
   setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
   speed: number;

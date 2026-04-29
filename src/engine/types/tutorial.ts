@@ -4,9 +4,12 @@
  */
 
 export type TutorialStep =
-  | 'EXHIBITION_INTRO'
-  | 'FIRST_BASHO_STARTED'
-  | 'DONE';
+  | "EXHIBITION_INTRO"
+  | "FIRST_BASHO_STARTED"
+  | "TOUR_BANZUKE"
+  | "TOUR_RIVALRIES"
+  | "TOUR_COMPLETE"
+  | "DONE";
 
 export interface TutorialFlags {
   seenStaminaTooltip: boolean;
@@ -25,7 +28,7 @@ export interface TutorialState {
 export function createDefaultTutorialState(): TutorialState {
   return {
     completed: false,
-    currentStep: 'EXHIBITION_INTRO',
+    currentStep: "EXHIBITION_INTRO",
     flags: {
       seenStaminaTooltip: false,
       seenGripTooltip: false,

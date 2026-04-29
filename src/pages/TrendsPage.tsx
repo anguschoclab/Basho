@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ASSOCIATION_TABS } from "@/constants/navigation";
+import { PageHeader } from "@/components/layout/control-center";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -29,14 +30,13 @@ export default function TrendsPage() {
   if (!world) return null;
 
   return (
-    <AppLayout subNavTabs={ASSOCIATION_TABS} activeSubTab="trends">
+    <AppLayout subNavTabs={ASSOCIATION_TABS} activeSubTab="trends" pageTitle="JSA Trends">
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-display font-bold">JSA Meta Trends</h1>
-          <p className="text-sm text-muted-foreground">
-            Historical analysis of technical biases and institutional drifts.
-          </p>
-        </div>
+        <PageHeader
+          eyebrow="── ASSOCIATION ──"
+          title="JSA Meta Trends"
+          lede="Historical analysis of technical biases and institutional drifts."
+        />
 
         {/* Major Meta Streamgraph */}
         <Card className="paper">

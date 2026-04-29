@@ -13,6 +13,18 @@ export interface ShikonaGenerationConfig {
   preferPrestigious?: boolean;
   rng?: SeededRNG;
   legacyShikona?: string; // Optional oyakata's former shikona for legacy naming patterns
+  /**
+   * Stable-level signature prefix (e.g. "Chiyo", "Koto", "Teru").
+   * When present, the generator uses this prefix with rank-dependent probability
+   * so rikishi in the same heya share naming identity — strongest at junior ranks.
+   */
+  heyaPrefix?: string;
+  /**
+   * Additive probability boost (0–1) for using heyaPrefix — typically driven by
+   * potential/promise. Stables brand their rising stars, so high-PA wrestlers
+   * and prodigies are more likely to carry the signature.
+   */
+  heyaPrefixBoost?: number;
 }
 
 export type RankTier = "rookie" | "developing" | "upper" | "salaried" | "top" | "legend";

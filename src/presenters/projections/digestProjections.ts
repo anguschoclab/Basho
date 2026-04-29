@@ -7,6 +7,7 @@
 
 import type { Id } from "../../engine/types/common";
 import type { WorldState } from "../../engine/types/world";
+import type { RivalryPairState } from "../../engine/rivalries";
 import { queryEvents } from "../../engine/events";
 import { generateH2HCommentary } from "../../engine/h2h";
 import { BardEngine } from "../../engine/narrative/BardEngine";
@@ -226,6 +227,32 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
 
   const eventSections = buildEventSections(world);
   sections.push(...eventSections);
+
+  // Rivalry Highlights for pre-basho phase (C4)
+  if (world.cyclePhase === "pre_basho") {
+    const rivalriesState = world.rivalriesState;
+    if (rivalriesState?.pairs) {
+      const hotPairs = Object.values(rivalriesState.pairs)
+        .filter((p: RivalryPairState) => p.heat >= 40)
+        .sort((a: RivalryPairState, b: RivalryPairState) => b.heat - a.heat)
+        .slice(0, 3);
+
+      if (hotPairs.length > 0) {
+        const rivalryItems: DigestItem[] = hotPairs.map((pair: RivalryPairState) => {
+          const rA = world.rikishi.get(pair.aId);
+          const rB = world.rikishi.get(pair.bId);
+          return {
+            id: `rivalry::${pair.key}`,
+            kind: "narrative",
+            title: `${rA?.shikona} vs ${rB?.shikona}`,
+            detail: `Intense ${pair.tone} building up for the tournament. Heat: ${Math.round(pair.heat)}`,
+            rikishiId: pair.aId,
+          };
+        });
+        sections.push({ id: "rivalries", title: "Rivalry Highlights", items: rivalryItems });
+      }
+    }
+  }
 
   const eventBuckets = selectRecentEvents(world);
   const headline = buildHeadline(

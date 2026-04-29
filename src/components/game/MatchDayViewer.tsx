@@ -1,13 +1,13 @@
 // MatchDayViewer.tsx - Polished match day panel with staggered animations,
 // east/west color coding, and immersive bout cards
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useState } from "react";
 import { BoutCard } from "./BoutCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CircleDot, Swords } from "lucide-react";
 import { compareRanks, buildBoutPreviewUI } from "@/presenters/uiDigest";
+import type { RankPosition } from "@/engine/types/banzuke";
 import { BoutPreMatchOverlay } from "./BoutPreMatchOverlay";
 
 // ── Types ──────────────────────────────────────────────
@@ -80,7 +80,7 @@ export function MatchDayViewer({
         side: b.eastRikishi.side ?? "east",
         rankNumber: b.eastRikishi.rankNumber,
       };
-      return compareRanks(aPos as any, bPos as any);
+      return compareRanks(aPos as unknown as RankPosition, bPos as unknown as RankPosition);
     });
   }, [matches]);
 
@@ -95,7 +95,9 @@ export function MatchDayViewer({
     );
   }
 
-  const completedCount = sortedMatches.reduce((count, m) => count + (m?.result ? 1 : 0), 0);
+  const completedCount = useMemo(() => {
+    return sortedMatches.reduce((count, m) => count + (m?.result ? 1 : 0), 0);
+  }, [sortedMatches]);
 
   return (
     <>
@@ -139,7 +141,7 @@ export function MatchDayViewer({
                 nodes[i] = (
                   <BoutCard
                     key={match.boutId || `${match.eastRikishiId}-${match.westRikishiId}-${i}`}
-                    match={match as any}
+                    match={match}
                     idx={i}
                     onBoutClick={handleBoutClick}
                     onTacticChange={onTacticChange}

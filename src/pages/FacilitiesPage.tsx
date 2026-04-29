@@ -4,12 +4,14 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { OFFICE_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { FacilitiesManagementPanel } from "@/components/game/FacilitiesManagementPanel";
+import { InfrastructurePanel } from "@/components/game/InfrastructurePanel";
 import { investInFacility } from "@/engine/facilities";
 import type { FacilityAxis, UpgradeResult } from "@/engine/facilities";
+import type { FacilityId } from "@/engine/types/infrastructure";
 
 /** facilities page. */
 export default function FacilitiesPage() {
-  const { state, updateWorld } = useGame();
+  const { state, buildInfrastructure, updateWorld } = useGame();
   const world = state.world;
   const heya = useMemo(() => {
     if (!world || !state.playerHeyaId) return null;
@@ -43,6 +45,14 @@ export default function FacilitiesPage() {
     [world, state.playerHeyaId, updateWorld, heya]
   );
 
+  const handleBuildInfrastructure = useCallback(
+    (facilityId: FacilityId) => {
+      if (!state.playerHeyaId) return;
+      buildInfrastructure(state.playerHeyaId, facilityId);
+    },
+    [state.playerHeyaId, buildInfrastructure]
+  );
+
   if (!heya || !world) {
     return (
       <AppLayout>
@@ -61,6 +71,7 @@ export default function FacilitiesPage() {
 
       <div className="space-y-8">
         <FacilitiesManagementPanel heya={heya} isOwner={true} onUpgrade={handleUpgrade} />
+        <InfrastructurePanel heya={heya} onBuild={handleBuildInfrastructure} />
       </div>
     </AppLayout>
   );

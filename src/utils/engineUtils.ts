@@ -40,6 +40,13 @@ export function safeRankSortKey(rank: Rank | string): number {
 }
 
 /**
+ * Formats a full Yen amount with locale separators: ¥1,234,567
+ */
+export function formatYen(amount: number): string {
+  return `¥${amount.toLocaleString()}`;
+}
+
+/**
  * Formats Yen currency in "Man" (10,000s) for readability.
  * @param amount - The raw currency amount
  */

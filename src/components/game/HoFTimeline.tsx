@@ -16,6 +16,28 @@ interface HoFTimelineProps {
  * ho f timeline.
  *  * @param { inductees, rikishiMap } - The component props.
  */
+/** Inline portrait used in the induction timeline. */
+function TimelinePortrait({
+  inductee,
+  rikishi,
+}: {
+  inductee: HoFInductee;
+  rikishi: UIRikishi | undefined;
+}) {
+  const name = rikishi?.shikona ?? inductee.rikishiId;
+  const initial = name.charAt(0).toUpperCase();
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <div className="w-8 h-8 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center text-[11px] font-bold text-primary">
+        {initial}
+      </div>
+      <span className="text-[9px] text-muted-foreground max-w-[60px] truncate text-center">
+        {name}
+      </span>
+    </div>
+  );
+}
+
 export function HoFTimeline({ inductees, rikishiMap }: HoFTimelineProps) {
   const yearGroups = useMemo(() => {
     const map = new Map<number, HoFInductee[]>();

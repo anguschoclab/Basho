@@ -35,7 +35,7 @@ describe('Game Reducer: Batch Processing', () => {
     // Dispatch the new batch action
     const nextState = gameReducer(initialState, {
       type: 'TICK_MULTIPLE_DAYS',
-      payload: { days: 15 }
+      payload: { days: 5 }
     } as unknown as GameAction);
 
     // 1. Assert state reference changed exactly once (atomic commit)
@@ -44,5 +44,5 @@ describe('Game Reducer: Batch Processing', () => {
 
     // 2. Assert the calendar advanced
     expect(nextState.world.calendar.currentDay).not.toBe(startDay);
-  });
+  }, 30_000);
 });

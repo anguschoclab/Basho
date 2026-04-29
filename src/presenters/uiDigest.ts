@@ -14,11 +14,6 @@
 export {
   // Digest projections
   buildWeeklyDigest,
-  labelForWorld,
-  buildInjurySection,
-  buildEventSections,
-  buildHeadline,
-  buildMatchupItems,
   type DigestKind,
   type DigestItem,
   type DigestSection,
@@ -28,7 +23,7 @@ export {
 export {
   // Promotion projections
   getOzekiRunCandidates,
-  getYokozunaCandidates,
+  // getYokozunaCandidates, // removed
   getKadobanDrama,
   type OzekiRunCandidate,
   type YokozunaCandidate,
@@ -62,7 +57,7 @@ export {
 export {
   // Economy projections
   projectLoanStatus,
-  projectMergerWarnings,
+  // projectMergerWarnings, // removed
 } from "./projections";
 
 export {
@@ -77,7 +72,7 @@ export {
   projectGovernanceSummary,
   projectBashoResults,
   projectPressConferenceData,
-  projectPlayerContext,
+  // projectPlayerContext, // removed
 } from "./projections";
 
 // Re-exports from utilities
@@ -85,92 +80,72 @@ export { resolveRegistryLabel, enrichRikishiForUI } from "./utilities/uiUtilitie
 
 // Original re-exports from existing modules (preserved for compatibility)
 export { projectRikishi } from "./rikishiUI";
+export {
+  formatRadarData,
+  formatMetaTrends,
+} from "./uiFormatters";
 export { getHallOfFame } from "../engine/hallOfFame";
-export { formatRadarData, formatMetaTrends } from "./uiFormatters";
 export {
   FATIGUE_LABELS,
-  POTENTIAL_LABELS,
   TRAIT_LABELS,
   SCANDAL_LABELS,
-  PRIZE_LABELS,
   clamp,
-  clampInt,
   formatRank,
   formatStance,
   HOF_CATEGORY_LABELS,
   RANK_NAMES,
   RANK_HIERARCHY,
   compareRanks,
-  getRankTitleJa,
-  isKachiKoshi,
-  isMakeKoshi,
-  createDefaultMediaState,
-  buildPerceptionSnapshot,
-  getCachedPerception,
-  buyMyoseki,
-  leaseMyoseki,
-  clearInjury,
-  toInjuryEvent,
   deleteSave,
-  exportSave,
   importSave,
-  ensureHeyaWelfareState,
-  formatEventTime,
-  formatFinePenalty,
-  formatSaveDate,
-  generateH2HCommentary,
   generateNarrative,
   getArchetypeDescription,
   getKimarite,
-  getOrCreateScouted,
-  getScoutingLevel,
   setScoutingInvestment,
-  warmScoutingForRikishiList,
-  getStatusColor,
-  getStatusLabel,
   spendPoliticalCapital,
+  getStatusLabel,
+  getStatusColor,
+  formatFinePenalty,
   scoutPool,
   scoutCandidate,
   offerCandidate,
-  getCandidateScoutingLevel,
-  KOENKAI_MONTHLY_INCOME,
-  SPONSOR_TIER_INCOME,
   recruitSponsor,
+  getCachedPerception,
+  buildPerceptionSnapshot,
+  formatEventTime,
 } from "./uiConstants";
-export { renewSponsorContract, setHeyaDietAction } from "./uiActions";
+export { setHeyaDietAction } from "./uiActions";
+// renewSponsorContract removed (unused)
 export {
-  projectRikishiWithHeya,
   projectMediaUIDigest,
   projectHOFUIDigest,
   projectSponsorUIDigest,
   projectMedicalUIDigest,
 } from "./uiProjections";
+// projectRikishiWithHeya removed (unused)
 
 // ─────────────────────────────────────────
 // Re-exports of safe engine constants/utilities for UI
 // The UI layer MUST NOT import from @/engine directly.
 // ─────────────────────────────────────────
 export { getMonthlyMaintenanceCost, getUpgradeCostEstimate } from "../engine/facilities";
+// describeAggression, describeAttribute, describeExperience removed (unused)
 export {
-  describeAggression,
-  describeAttribute,
-  describeExperience,
   describeTrainingEffect,
 } from "../engine/narrativeDescriptions";
-export { createDefaultRivalriesState, getRivalry } from "../engine/rivalries";
-export { createScoutedView, describeScoutingLevel, getScoutedAttributes } from "../engine";
+// createDefaultRivalriesState, getRivalry removed (unused)
+// createScoutedView, describeScoutingLevel, getScoutedAttributes removed (unused)
 export {
   FOCUS_BIAS_MATRIX,
   INTENSITY_MULTIPLIERS,
-  PHASE_EFFECTS,
   RECOVERY_MULTIPLIERS,
   createDefaultTrainingState,
   ensureHeyaTrainingState,
   getFocusLabel,
-  getFocusModeLabel,
   getIntensityLabel,
   getRecoveryLabel,
 } from "../engine/systems/training/TrainingService";
+// PHASE_EFFECTS, getFocusModeLabel removed (unused)
 export { getCareerPhase } from "../engine/systems/training/TrainingMath";
 export {
   BASHO_CALENDAR,
@@ -180,17 +155,23 @@ export {
   getSeasonalFlavor,
   isKeyDay,
 } from "../engine/calendar";
-export { DEFAULT_CRITICAL_GATES } from "../engine/holiday";
+// DEFAULT_CRITICAL_GATES removed (unused)
 export {
-  DEFAULT_DIVISION_DAYS,
   getTotalBashodays,
   needsScheduleForDay,
 } from "../engine/scheduleHelpers";
+// DEFAULT_DIVISION_DAYS removed (unused)
 export {
   toFatigueBand,
-  toPotentialBand,
-  toPrizeBand,
-  toRivalryHeatBand,
   toScandalBand,
   toTraitBand,
 } from "../engine/descriptorBands";
+// toPotentialBand, toPrizeBand, toRivalryHeatBand removed (unused)
+
+// Type exports for UI layer (re-exported from engine to comply with no-restricted-imports rule)
+export type { WorldState } from "../engine/types/world";
+export type { Rikishi } from "../engine/types/rikishi";
+export type { Heya } from "../engine/types/heya";
+export type { BashoHistorySummary } from "../engine/historyIndex";
+export type { RecordEntry } from "../engine/types/records";
+export type { HoFInductee } from "../engine/hallOfFame";

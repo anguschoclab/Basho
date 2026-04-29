@@ -27,7 +27,10 @@ export type EngineEventType =
   | "NARRATIVE_STRATEGY_SHIFT"
   | "FACILITY_UPGRADED"
   | "FACILITY_DEGRADED"
-  | "ROSTER_OVERFLOW_RELEASE";
+  | "ROSTER_OVERFLOW_RELEASE"
+  | "PROMOTION_DELIBERATION"
+  | "GLOBAL_CUP"
+  | "NARRATIVE_CRISIS_TRIGGERED";
 
 export type EventPhase = "weekly" | "monthly" | "basho_day" | "basho_wrap" | "manual";
 /** Type representing event category. */
@@ -55,15 +58,27 @@ export type EventImportance = "minor" | "notable" | "major" | "headline";
 
 /** Defines the structure for narrative context (A11 Narrative Contract). */
 export interface NarrativeContext {
+  // Entities for Linking
   shikona?: string;
+  rikishiId?: string;
   rival?: string;
+  rivalId?: string;
   rank?: string;
   heya?: string;
-  winner?: string;
-  loser?: string;
-  kimarite?: string;
-  rikishiId?: string;
   heyaId?: string;
+  stable?: string;
+  stableId?: string;
+  winner?: string;
+  winnerId?: string;
+  loser?: string;
+  loserId?: string;
+  oyakata?: string;
+  oyakataId?: string;
+
+  kimarite?: string;
+  rikishiRivalId?: string; // Legacy support if needed
+  winnerRikishiId?: string; // Legacy support
+  loserRikishiId?: string; // Legacy support
 
   // Economy
   money?: number; // Auto-formatted

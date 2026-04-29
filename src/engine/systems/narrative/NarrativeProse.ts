@@ -2,7 +2,7 @@
  * src/engine/systems/narrative/NarrativeProse.ts
  * ==============================================
  * Data-driven labels and flavor text for Sumo Manager Pro.
- * 
+ *
  * Wired to the Bard Engine for centralized, randomized narrative generation.
  * All functions require a SeededRNG to ensure simulation determinism.
  */
@@ -18,7 +18,7 @@ import type {
   PotentialBand,
   ScandalBand,
   PrizeBand,
-  TraitBand
+  TraitBand,
 } from "./NarrativeBands";
 
 // === Attribute Labels (Short) ===
@@ -27,8 +27,14 @@ export function getStatLabel(rng: SeededRNG, band: StatBand): string {
 }
 
 // === Attribute Prose (Verbose) ===
+const STAT_ALIAS: Record<string, string> = {
+  strength: "power",
+  stamina: "balance",
+};
 export function getStatProse(rng: SeededRNG, attribute: string, band: StatBand): string {
-  return BardEngine.resolve(rng, `rikishi.stats.${attribute.toLowerCase()}.${band}`).text;
+  const key = attribute.toLowerCase();
+  const path = STAT_ALIAS[key] ?? key;
+  return BardEngine.resolve(rng, `rikishi.stats.${path}.${band}`).text;
 }
 
 // === Fatigue Labels ===
@@ -38,7 +44,7 @@ export function getFatigueLabel(rng: SeededRNG, band: FatigueBand): string {
   let path = band as string;
   if (band === "light") path = "tired";
   if (band === "spent") path = "exhausted";
-  
+
   return BardEngine.resolve(rng, `system.descriptors.bands.fatigue.${path}`).text;
 }
 
@@ -48,18 +54,21 @@ export function getMomentumLabel(rng: SeededRNG, band: MomentumBand): string {
 }
 
 // === Potential Labels & Prose ===
-export function getPotentialInfo(rng: SeededRNG, band: PotentialBand): { label: string; description: string } {
+export function getPotentialInfo(
+  rng: SeededRNG,
+  band: PotentialBand
+): { label: string; description: string } {
   // Mapping legacy bands to archive paths
   let path = band as string;
   if (band === "generational") path = "Taiki Bansei";
-  if (band === "star")         path = "Soshitsu Ari";
-  if (band === "solid")        path = "Mikan no Taiki";
-  if (band === "average")      path = "Mikan no Taiki"; 
-  if (band === "limited")      path = "Genkai";
-  
+  if (band === "star") path = "Soshitsu Ari";
+  if (band === "solid") path = "Mikan no Taiki";
+  if (band === "average") path = "Mikan no Taiki";
+  if (band === "limited") path = "Genkai";
+
   const label = BardEngine.resolve(rng, `rikishi.descriptors.potential.${path}.label`).text;
   const description = BardEngine.resolve(rng, `rikishi.descriptors.potential.${path}.tooltip`).text;
-  
+
   return { label, description };
 }
 
@@ -84,20 +93,23 @@ export function getTraitLabel(rng: SeededRNG, band: TraitBand): string {
 }
 
 // === Archetype Info ===
-export function getArchetypeInfo(rng: SeededRNG, archetype: RikishiArchetype): { label: string; description: string } {
+export function getArchetypeInfo(
+  rng: SeededRNG,
+  archetype: RikishiArchetype
+): { label: string; description: string } {
   const label = BardEngine.resolve(rng, `rikishi.archetypes.${archetype}.label`).text;
   const description = BardEngine.resolve(rng, `rikishi.archetypes.${archetype}.description`).text;
-  
+
   return { label, description };
 }
 
 /**
- * Hydrates a raw descriptor band (condition, morale, potential) with 
+ * Hydrates a raw descriptor band (condition, morale, potential) with
  * resolved labels and tooltips.
  */
 export function hydrateDescriptor(
-  rng: SeededRNG, 
-  group: "condition" | "morale" | "potential", 
+  rng: SeededRNG,
+  group: "condition" | "morale" | "potential",
   bandId: string
 ): { label: string; tooltip: string } {
   const label = BardEngine.resolve(rng, `rikishi.descriptors.${group}.${bandId}.label`).text;

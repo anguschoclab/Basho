@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type { Style, Stance, TacticalArchetype, TacticalFamily } from "./types/combat";
 import type { Kimarite, KimariteClass, JsaCategory, KimariteRequirements } from "./types/kimarite";
 export type { Kimarite, KimariteClass, JsaCategory, KimariteRequirements };

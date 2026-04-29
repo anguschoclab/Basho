@@ -4,7 +4,7 @@
  * modifier actually shift the corresponding stats during generation.
  */
 import { describe, it, expect } from "vitest";
-import { generateRikishiStats } from "../CandidateGenerator";
+import { generateRikishiStats } from "../CandidateStats";
 import { buildCombatProfile } from "../../../archetype";
 import { rngFromSeed } from "../../../rng";
 

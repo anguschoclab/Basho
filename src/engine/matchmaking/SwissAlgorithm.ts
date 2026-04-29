@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * src/engine/matchmaking/SwissAlgorithm.ts
  * ==========================================

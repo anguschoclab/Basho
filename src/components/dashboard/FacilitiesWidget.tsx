@@ -5,6 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { Building, Bed, ChefHat, AlertTriangle, Wrench } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
 import { getFacilityLevelColor, getMonthlyMaintenanceCost } from "@/presenters/uiDigest";
+import { formatYen } from "@/utils/engineUtils";
 
 const AXIS_ICONS = {
   training: Building,
@@ -103,7 +104,7 @@ export function FacilitiesWidget() {
       <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-2 border-t border-border/50">
         <span>Monthly upkeep</span>
         <span className={`font-mono ${!canAfford ? "text-destructive font-semibold" : ""}`}>
-          ¥{maintenance.toLocaleString()}
+          {formatYen(maintenance)}
         </span>
       </div>
 

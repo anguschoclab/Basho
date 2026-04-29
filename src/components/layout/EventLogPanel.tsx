@@ -2,19 +2,22 @@ import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
 import type { EngineEvent } from "@/engine/types/events";
 import { formatEventTime } from "@/presenters/uiDigest";
 import { getCategoryMeta, getEventRoute, getLinkLabel } from "./eventLogHelpers";
+import { MentionText } from "../MentionText";
+import { EventDetailDialog } from "../EventDetailDialog";
 
 /** Defines the structure for event log panel props. */
 interface EventLogPanelProps {
   eventLogData: {
     events: EngineEvent[];
-    rikishiMap: Map<string, { id: string; shikona: string }>;
-    heyaMap: Map<string, { id: string; name: string }>;
+    getRikishi: (id: string) => { id: string; shikona: string } | null;
+    getHeya: (id: string) => { id: string; name: string } | undefined;
     playerHeyaId?: string;
   } | null;
   className?: string;
@@ -27,7 +30,7 @@ interface EventLogPanelProps {
 export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
   const navigate = useNavigate();
   const [filter, setFilter] = useState<string>("all");
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<EngineEvent | null>(null);
 
   /** Render inline clickable entity tags for rikishi/stable referenced by an event */
   const renderEntityTags = useCallback(
@@ -39,7 +42,7 @@ export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
       const addRikishi = (id: string) => {
         if (seen.has(id)) return;
         seen.add(id);
-        const r = eventLogData.rikishiMap.get(id);
+        const r = eventLogData.getRikishi(id);
         if (r)
           tags.push(
             <RikishiName
@@ -61,8 +64,8 @@ export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
           // Clear primary tag, show bout-specific layout instead
           tags.length = 0;
           seen.clear();
-          const winner = eventLogData.rikishiMap.get(winnerId);
-          const loser = eventLogData.rikishiMap.get(loserId);
+          const winner = eventLogData.getRikishi(winnerId);
+          const loser = eventLogData.getRikishi(loserId);
           if (winner && loser) {
             tags.push(
               <span key="bout-pair" className="inline-flex items-center gap-1 text-[11px]">
@@ -89,7 +92,7 @@ export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
       }
 
       if (e.heyaId) {
-        const h = eventLogData.heyaMap.get(e.heyaId);
+        const h = eventLogData.getHeya(e.heyaId);
         if (h)
           tags.push(
             <StableName
@@ -139,16 +142,14 @@ export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
 
   const handleEventClick = useCallback(
     (e: EngineEvent) => {
-      const route = getEventRoute(e);
-      if (route) {
-        navigate({ to: route });
-      }
+      setSelectedEvent(e);
     },
-    [navigate]
+    []
   );
 
   const filterOptions = [
     { value: "all", label: "All" },
+    { value: "basho", label: "Basho" },
     { value: "match", label: "Match" },
     { value: "training", label: "Training" },
     { value: "injury", label: "Injury" },
@@ -198,87 +199,56 @@ export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
               {group.events.map((e) => {
                 const meta = getCategoryMeta(e.category);
                 const Icon = meta.icon;
-                const isExpanded = expandedId === e.id;
                 const isPlayerRelevant = e.heyaId === eventLogData?.playerHeyaId;
-                const route = getEventRoute(e);
-                const hasLink = !!route;
-
                 return (
                   <div
                     key={e.id}
-                    className={`w-full text-left p-2 rounded-md transition-colors mb-0.5 group ${
-                      isExpanded ? "bg-muted" : "hover:bg-muted/50"
-                    } ${isPlayerRelevant ? "border-l-2 border-l-primary" : ""}`}
-                  >
-                    <Button
-                      variant="ghost"
-                      onClick={() => setExpandedId(isExpanded ? null : e.id)}
-                      className="w-full h-auto p-0 justify-start whitespace-normal hover:bg-transparent text-left rounded-sm"
-                      aria-expanded={isExpanded}
-                      aria-controls={`event-details-${e.id}`}
-                    >
-                      <div className="flex items-start gap-2 text-left">
-                        <div className={`mt-0.5 shrink-0 ${meta.color}`}>
-                          <Icon className="h-3.5 w-3.5" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between gap-1">
-                            <span className="text-xs font-medium truncate text-foreground">
-                              {e.title}
-                            </span>
-                            <span className="text-[10px] text-muted-foreground shrink-0 font-normal">
-                              {formatEventTime(e)}
-                            </span>
-                          </div>
-                          {!isExpanded && (
-                            <p className="text-[11px] text-muted-foreground truncate mt-0.5 font-normal">
-                              {e.summary}
-                            </p>
-                          )}
-                          {!isExpanded && renderEntityTags(e)}
-                        </div>
-                      </div>
-                    </Button>
-
-                    {isExpanded && (
-                      <div id={`event-details-${e.id}`} className="mt-1 ml-6 space-y-1.5">
-                        <p className="text-[11px] text-muted-foreground">{e.summary}</p>
-                        {renderEntityTags(e)}
-                        <div className="flex items-center gap-1 flex-wrap">
-                          <Badge variant="outline" className="text-[9px] h-4">
-                            {meta.label}
-                          </Badge>
-                          {e.importance !== "minor" && (
-                            <Badge
-                              variant={e.importance === "headline" ? "default" : "secondary"}
-                              className="text-[9px] h-4"
-                            >
-                              {e.importance}
-                            </Badge>
-                          )}
-                          {isPlayerRelevant && (
-                            <Badge className="text-[9px] h-4 bg-primary/20 text-primary">
-                              Your stable
-                            </Badge>
-                          )}
-                        </div>
-
-                        {/* Clickable navigation link */}
-                        {hasLink && (
-                          <Button
-                            variant="link"
-                            onClick={(ev) => {
-                              ev.stopPropagation();
-                              handleEventClick(e);
-                            }}
-                            className="h-auto p-0 inline-flex items-center gap-1 text-[10px] text-primary hover:underline underline-offset-2 transition-colors mt-0.5 rounded-sm"
-                          >
-                            <ExternalLink className="h-2.5 w-2.5" />
-                            {getLinkLabel(e)}
-                          </Button>
-                        )}
-                      </div>
+                    onClick={() => handleEventClick(e)}
+                    className={cn(
+                      "w-full text-left p-2.5 rounded-md transition-all mb-1 cursor-pointer border border-transparent hover:border-zinc-800",
+                      "hover:bg-zinc-900/50 active:bg-zinc-900 group relative",
+                      isPlayerRelevant ? "border-l-primary/50 bg-primary/5" : ""
                     )}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={cn(
+                        "mt-0.5 shrink-0 p-1.5 rounded-lg bg-zinc-900",
+                        meta.color.replace('text-', 'text-opacity-80 ')
+                      )}>
+                        <Icon className="h-4 w-4" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2 mb-0.5">
+                          <span className="text-xs font-bold text-zinc-100 group-hover:text-white transition-colors truncate">
+                            <MentionText text={e.title} />
+                          </span>
+                          <span className="text-[10px] text-zinc-500 shrink-0 font-medium">
+                            {formatEventTime(e)}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-zinc-400 leading-relaxed line-clamp-2">
+                          <MentionText text={e.summary} />
+                        </p>
+                        
+                        {/* Status Badges */}
+                        <div className="flex items-center gap-1.5 mt-2">
+                          {e.importance !== "minor" && (
+                            <div className={cn(
+                              "w-1 h-1 rounded-full",
+                              e.importance === "headline" ? "bg-red-500" : "bg-orange-500"
+                            )} />
+                          )}
+                          <span className="text-[9px] uppercase font-bold text-zinc-600 tracking-wider">
+                            {meta.label}
+                          </span>
+                          {isPlayerRelevant && (
+                            <span className="text-[9px] uppercase font-bold text-primary/70 tracking-wider ml-auto">
+                              Stable
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 );
               })}
@@ -286,6 +256,12 @@ export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
           ))}
         </div>
       </ScrollArea>
+
+      <EventDetailDialog
+        event={selectedEvent}
+        isOpen={!!selectedEvent}
+        onClose={() => setSelectedEvent(null)}
+      />
     </aside>
   );
 }

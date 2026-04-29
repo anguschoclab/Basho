@@ -27,6 +27,8 @@ import {
   TrendingUp,
   Home,
   Calendar,
+  Globe,
+  Crown,
 } from "lucide-react";
 
 export interface MenuItem {
@@ -55,7 +57,7 @@ export function getMenuGroups(
     {
       label: null,
       items: [
-        { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, exactOnly: true },
+        { title: "Control Center", url: "/dashboard", icon: LayoutDashboard, exactOnly: true },
         { title: "Events & Recap", url: "/recap", icon: Newspaper, exactOnly: true },
       ],
     },
@@ -67,6 +69,7 @@ export function getMenuGroups(
         { title: "Training", url: "/stable/training", icon: Dumbbell },
         { title: "Medical", url: "/stable/medical", icon: Heart },
         { title: "Staff", url: "/stable/staff", icon: Briefcase },
+        { title: "Oyakata", url: "/stable/oyakata", icon: Crown },
         { title: "Scouting", url: "/office/scouting", icon: Search, locked: !tutorialCompleted },
       ],
     },
@@ -84,6 +87,8 @@ export function getMenuGroups(
         { title: "Banzuke", url: "/banzuke", icon: ScrollText },
         { title: "Schedule", url: "/schedule", icon: Calendar },
         { title: "Rivalries", url: "/rivalries", icon: Swords },
+        { title: "Global Cup", url: "/global-cup", icon: Trophy },
+        { title: "World Circuit", url: "/world-circuit", icon: Globe },
       ],
     },
     {
@@ -105,7 +110,7 @@ export function getMenuGroups(
       label: "Association",
       items: [
         { title: "Governance", url: "/jsa/governance", icon: ShieldAlert },
-        { title: "Elder Market", url: "/jsa/myoseki", icon: Landmark },
+        { title: "Elder Market", url: "/myoseki", icon: Landmark },
         { title: "Press & Rep", url: "/media", icon: Newspaper },
         { title: "Trends", url: "/jsa/trends", icon: TrendingUp },
       ],
@@ -116,6 +121,7 @@ export function getMenuGroups(
         { title: "Stable History", url: "/history", icon: Archive },
         { title: "Almanac", url: "/almanac", icon: BookOpen },
         { title: "Hall of Fame", url: "/hall-of-fame", icon: Award },
+        { title: "Museum", url: "/museum", icon: Crown },
       ],
     },
   ];

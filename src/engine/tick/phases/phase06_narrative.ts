@@ -18,13 +18,12 @@
 import type { WorldState } from "../../types/world";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
-import { BardEngine } from "../../narrative/BardEngine";
-import { rngFromSeed } from "../../rng";
+import { CrisisService } from "../../systems/narrative/CrisisService";
 
 // ── Phase ─────────────────────────────────────────────────────────────────────
 
 export function phase06_narrative(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('phase06_narrative');
+  const builder = createImpactBuilder("phase06_narrative");
   const deltas = world.transientContext?.deltas;
   if (!deltas) return builder.build();
 
@@ -33,14 +32,14 @@ export function phase06_narrative(world: WorldState): StateImpact {
     const r = world.rikishi.get(rId);
     if (!r) continue;
     builder.logEvent(
-      'LIFECYCLE_EVENT',
-      'welfare',
+      "LIFECYCLE_EVENT",
+      "welfare",
       {
         rikishiId: rId,
         heyaId: r.heyaId,
         shikona: r.shikona,
         status: "injury",
-        score: r.injuryWeeksRemaining
+        score: r.injuryWeeksRemaining,
       },
       { rikishiId: rId, heyaId: r.heyaId }
     );
@@ -52,14 +51,14 @@ export function phase06_narrative(world: WorldState): StateImpact {
     const heya = playerHeyaId ? world.heyas.get(playerHeyaId) : undefined;
     if (heya && heya.funds < 0) {
       builder.logEvent(
-        'FINANCIAL_ALERT',
-        'economy',
+        "FINANCIAL_ALERT",
+        "economy",
         {
           incident: "insolvency",
           money: heya.funds,
-          heyaname: heya.name ?? heya.id
+          heyaname: heya.name ?? heya.id,
         },
-        { heyaId: playerHeyaId! }
+        { heyaId: playerHeyaId }
       );
     }
   }
@@ -70,21 +69,26 @@ export function phase06_narrative(world: WorldState): StateImpact {
     if (bigGains.length === 0) continue;
     const r = world.rikishi.get(rId);
     if (!r) continue;
-    const gainStr = bigGains.map((c) => `+${c.amount.toFixed(1)} ${c.stat}`).join(", ");
-    builder.logEvent(
-      'TRAINING_UPDATE',
-      'training',
-      {
-        rikishiId: rId,
-        heyaId: r.heyaId,
-        shikona: r.shikona,
-        incident: "milestone",
-        status: bigGains[0].stat, // main stat gained
-        score: bigGains[0].amount // main gain amount
-      },
-      { rikishiId: rId, heyaId: r.heyaId }
-    );
+    for (const change of bigGains) {
+      builder.logEvent(
+        "TRAINING_UPDATE",
+        "training",
+        {
+          rikishiId: rId,
+          heyaId: r.heyaId,
+          shikona: r.shikona,
+          incident: "milestone",
+          status: change.stat,
+          score: change.amount,
+        },
+        { rikishiId: rId, heyaId: r.heyaId }
+      );
+    }
   }
+
+  // ── Phase 4: Narrative Crises ─────────────────────────────────────────────
+  const crisisImpact = CrisisService.checkForWeeklyCrisis(world);
+  builder.merge(crisisImpact);
 
   return builder.build();
 }

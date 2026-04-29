@@ -7,9 +7,10 @@ import {
   type SponsorRecruitmentConfig,
   type SponsorFilterOptions,
 } from "./npcSponsorStrategyHelpers";
+import type { StateImpact } from "./core/StateImpact";
 
 interface SponsorStrategy {
-  evaluateSponsorRecruitment: (world: WorldState, heya: Heya, oyakata: Oyakata) => void;
+  evaluateSponsorRecruitment: (world: WorldState, heya: Heya, oyakata: Oyakata) => StateImpact;
 }
 
 export const DefaultSponsorStrategy: SponsorStrategy = {
@@ -55,7 +56,7 @@ export const DefaultSponsorStrategy: SponsorStrategy = {
               : "Standard sponsor recruitment",
     };
 
-    evaluateSponsorRecruitmentCommon(world, heya, oyakata, config);
+    return evaluateSponsorRecruitmentCommon(world, heya, oyakata, config);
   },
 };
 
@@ -74,7 +75,7 @@ export const TraditionalistSponsorStrategy: SponsorStrategy = {
       getReasoning: () => "Traditionalist recruited established sponsor for long-term partnership",
     };
 
-    evaluateSponsorRecruitmentCommon(world, heya, oyakata, config);
+    return evaluateSponsorRecruitmentCommon(world, heya, oyakata, config);
   },
 };
 
@@ -90,7 +91,7 @@ export const ScientistSponsorStrategy: SponsorStrategy = {
       getReasoning: () => "Scientist recruited sponsor for research and training benefits",
     };
 
-    evaluateSponsorRecruitmentCommon(world, heya, oyakata, config);
+    return evaluateSponsorRecruitmentCommon(world, heya, oyakata, config);
   },
 };
 
@@ -114,7 +115,7 @@ export const GamblerSponsorStrategy: SponsorStrategy = {
       getReasoning: () => "Gambler recruited sponsor for high-risk, high-reward relationship",
     };
 
-    evaluateSponsorRecruitmentCommon(world, heya, oyakata, config);
+    return evaluateSponsorRecruitmentCommon(world, heya, oyakata, config);
   },
 };
 
@@ -130,7 +131,7 @@ export const NurturerSponsorStrategy: SponsorStrategy = {
       getReasoning: () => "Nurturer recruited sponsor for rikishi welfare benefits",
     };
 
-    evaluateSponsorRecruitmentCommon(world, heya, oyakata, config);
+    return evaluateSponsorRecruitmentCommon(world, heya, oyakata, config);
   },
 };
 
@@ -146,7 +147,7 @@ export const TyrantSponsorStrategy: SponsorStrategy = {
       getReasoning: () => "Tyrant recruited high-tier sponsor for prestige",
     };
 
-    evaluateSponsorRecruitmentCommon(world, heya, oyakata, config);
+    return evaluateSponsorRecruitmentCommon(world, heya, oyakata, config);
   },
 };
 
@@ -162,7 +163,7 @@ export const StrategistSponsorStrategy: SponsorStrategy = {
       getReasoning: () => "Strategist recruited sponsor for diversified portfolio",
     };
 
-    evaluateSponsorRecruitmentCommon(world, heya, oyakata, config);
+    return evaluateSponsorRecruitmentCommon(world, heya, oyakata, config);
   },
 };
 
@@ -178,7 +179,7 @@ export const StrictSponsorStrategy: SponsorStrategy = {
       getReasoning: () => "Strict recruited reputable sponsor to avoid controversy",
     };
 
-    evaluateSponsorRecruitmentCommon(world, heya, oyakata, config);
+    return evaluateSponsorRecruitmentCommon(world, heya, oyakata, config);
   },
 };
 
@@ -194,7 +195,7 @@ export const IndulgentSponsorStrategy: SponsorStrategy = {
       getReasoning: () => "Indulgent recruited sponsor for friendly relationship",
     };
 
-    evaluateSponsorRecruitmentCommon(world, heya, oyakata, config);
+    return evaluateSponsorRecruitmentCommon(world, heya, oyakata, config);
   },
 };
 

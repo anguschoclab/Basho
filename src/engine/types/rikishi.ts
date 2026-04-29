@@ -98,7 +98,13 @@ export interface Rikishi {
     severity: InjurySeverity;
     location?: InjuryBodyArea;
     weeksRemaining: number;
+    /** Phase 4: Media & Press Persona */
+    behavior?: RikishiBehavior;
+    pressPersona?: "stoic" | "villain" | "celebrity" | "firebrand" | "neutral";
     weeksToHeal?: number;
+    /** Phase 5: Overtraining & Burnout tracking */
+    isEmergentProdigy?: boolean;
+    consecutiveExtremeWeeks?: number; // 0-3: leads to burnout crash
   };
   isKyujo: boolean; // Separate from injured - voluntary withdrawal
   kyujoReason?: "voluntary" | "injury" | "personal";
@@ -108,6 +114,9 @@ export interface Rikishi {
     treatmentWeeks: number;
     submittedDate: number;
   };
+
+  /** Phase 5: Overtraining & Burnout tracking */
+  consecutiveExtremeWeeks?: number;
 
   style: Style;
   trainingFocus?: string;
@@ -149,6 +158,13 @@ export interface Rikishi {
   careerHistory: CareerSnapshot[];
   milestones: Milestone[];
   shikonaHistory?: Array<{ shikona: string; fromYear: number; toYear?: number }>;
+  /** Phase 5: Alumni & Legacy tracking */
+  heyaHistory: Array<{ heyaId: string; joinWeek: number; leaveWeek?: number }>;
+  lineage: {
+    ancestralHeyaId?: string;
+    generationalTier?: number;
+    bloodlineTraitId?: string;
+  };
 
   h2h: Record<string, H2HRecord>;
   history: MatchResultLog[];
@@ -193,6 +209,17 @@ export interface Rikishi {
     profile: "prodigy" | "standard" | "late_bloomer" | "journeyman" | "early_peaker";
   };
 
+  // Archival pruning (Phase 5 Depth)
+  isPruned?: boolean;
+  pruningTier?: 1 | 2 | 3;
+  bashoHistory?: unknown[]; // Legacy basho results
+  pbpLogs?: unknown[]; // Play-by-play logs
+  trainingHistory?: unknown[]; // Training history
+  perceptionHistory?: unknown[]; // Perception history
+  baseStats?: RikishiStats; // Snapshotted base stats
+  currentStats?: RikishiStats; // Snapshotted current stats
+  skills?: unknown; // Skill tree
+
   // Dynamic properties set by subsystems
 
   age?: number;
@@ -204,9 +231,13 @@ export interface Rikishi {
   currentBashoRecord?: { wins: number; losses: number };
 
   // UI hysteresis descriptor (set by tickDaily, consumed by presenters)
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- UI hysteresis descriptor with dynamic properties
-  descriptor?: any;
+  descriptor?: {
+    title?: string;
+    subtitle?: string;
+    color?: string;
+    icon?: string;
+    [key: string]: unknown;
+  };
 
   // Backward-compat alias for injuryStatus (set by RecoveryService)
   injury?: Rikishi["injuryStatus"];
@@ -222,4 +253,8 @@ export interface Rikishi {
 
   // Yokozuna ceremonial rope belt (only for yokozuna rank)
   yokozunaTsuna?: import("./keshoMawashi").YokozunaTsuna;
+
+  // Citizenship & Tenure (J1)
+  joinedHeyaDate?: string; // ISO year string e.g. "2025"
+  citizenshipStatus?: "native" | "foreign" | "naturalized";
 }

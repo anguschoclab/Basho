@@ -32,21 +32,23 @@ export type PipelinePhase = (world: WorldState) => WorldState | StateImpact;
  * On phase failure the unmutated pre-phase snapshot is returned, so the
  * remaining phases still execute against a valid (if stale) world.
  */
-export function runPipeline(
-  initialWorld: WorldState,
-  phases: PipelinePhase[],
-): WorldState {
+export function runPipeline(initialWorld: WorldState, phases: PipelinePhase[]): WorldState {
   const impacts: StateImpact[] = [];
   let currentWorld = initialWorld;
 
   for (const phase of phases) {
+    // PERFORMANCE OPTIMIZATION: Avoid expensive deep clone (structuredClone) every phase.
+    // In a strict immutable architecture, the reference to currentWorld acts as a 
+    // sufficient snapshot for recovery if phases are pure.
+    const prePhaseSnapshot = currentWorld;
+
     try {
       const result = phase(currentWorld);
 
       // Check if phase returned StateImpact (migrated) or WorldState (legacy)
       // StateImpact has metadata, WorldState does not
-      const isStateImpact = result && typeof result === 'object' && 'metadata' in result;
-      
+      const isStateImpact = result && typeof result === "object" && "metadata" in result;
+
       if (isStateImpact) {
         // Phase returned StateImpact - resolve it immediately
         currentWorld = resolveImpacts(currentWorld, [result as StateImpact]);
@@ -59,17 +61,14 @@ export function runPipeline(
       // Safety check: phase must not wipe core entity maps
       if (!currentWorld || !currentWorld.heyas || !currentWorld.rikishi) {
         throw new Error(
-          `[pipelineRunner] Phase "${phase.name || 'anonymous'}" returned invalid WorldState ` +
-            `(heyas or rikishi map missing).`,
+          `[pipelineRunner] Phase "${phase.name || "anonymous"}" returned invalid WorldState ` +
+            `(heyas or rikishi map missing).`
         );
       }
     } catch (error) {
-      console.error(
-        `[PIPELINE FATAL ERROR] in phase: "${phase.name || 'anonymous'}"`,
-        error,
-      );
-      // Return the unmutated state on failure to allow subsequent phases to attempt recovery
-      // Continue to next phase with the current (unmutated) state
+      console.error(`[PIPELINE FATAL ERROR] in phase: "${phase.name || "anonymous"}"`, error);
+      // Restore from snapshot to ensure unmutated state for subsequent phases
+      currentWorld = prePhaseSnapshot;
       continue;
     }
   }

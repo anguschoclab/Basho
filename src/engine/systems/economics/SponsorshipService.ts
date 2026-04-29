@@ -178,14 +178,10 @@ export function recruitSponsor(
     startedAtTick: world.week || 0,
   };
 
-  // Note: koenkai updates are not directly supported by ImpactBuilder yet
-  // For now, we'll update them directly as koenkai is nested state
-  const updatedKoenkai = {
-    ...koenkai,
+  builder.updateKoenkai(heyaId, {
     members: [...koenkai.members, newRel],
     lastChangedTick: world.week || 0,
-  };
-  pool.koenkais.set(heyaId, updatedKoenkai);
+  });
 
   builder.logEvent(
     "RECRUIT_DISCOVERED",
@@ -209,20 +205,25 @@ export function applyAchievementImpact(
   world: WorldState,
   rikishi: Rikishi,
   awardType: "kinboshi" | "ginboshi" | "sansho"
-): void {
-  void world;
-  if (!rikishi.economics) return;
+): StateImpact {
+  const builder = createImpactBuilder("applyAchievementImpact");
+  if (!rikishi.economics) return builder.build();
 
   let popBoost = 0;
   if (awardType === "kinboshi") popBoost = 20;
   else if (awardType === "ginboshi") popBoost = 8;
   else if (awardType === "sansho") popBoost = 12;
 
-  rikishi.economics.popularity = Math.min(100, (rikishi.economics.popularity || 0) + popBoost);
+  const newPopularity = Math.min(100, (rikishi.economics.popularity || 0) + popBoost);
 
-  if (rikishi.economics.popularity >= 80) {
-    // Potential trigger for T3+ national level sponsorship
-  }
+  builder.updateRikishi(rikishi.id, {
+    economics: {
+      ...rikishi.economics,
+      popularity: newPopularity,
+    },
+  });
+
+  return builder.build();
 }
 
 /**

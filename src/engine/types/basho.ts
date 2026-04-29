@@ -47,9 +47,12 @@ export interface BoutResult {
   stance: Stance;
   tachiaiWinner: Side;
   duration: number;
+  /** Composite excitement score for Bout of the Basho ranking. Higher = more dramatic. */
+  excitementScore?: number;
   upset: boolean;
   isKinboshi?: boolean;
   isTitleStakes?: boolean;
+  isYushoRace?: boolean;
   awardFact?: "kinboshi" | "ginboshi" | null;
   kenshoEnvelopes: number;
   kenshoBanners?: import("./sponsors").KenshoBannerSlot[];
@@ -69,9 +72,9 @@ export interface MatchSchedule {
 }
 
 /** Type representing standings table. */
-export type StandingsTable = Record<Id, { wins: number; losses: number }>;
+export type StandingsTable = Record<Id, { wins: number; losses: number; absences?: number }>;
 /** Type representing standings table runtime. */
-export type StandingsTableRuntime = Map<Id, { wins: number; losses: number }>;
+export type StandingsTableRuntime = Map<Id, { wins: number; losses: number; absences?: number }>;
 
 /** Defines the structure for basho state. */
 export interface BashoState {
@@ -83,12 +86,26 @@ export interface BashoState {
   standings: StandingsTableRuntime;
   isActive: boolean;
 
+  /** Per-basho kinboshi tally: rikishi ID → count earned this basho. Reset each tournament. */
+  kinboshiThisBasho?: Record<Id, number>;
+
   // Legacy compat
   id?: string;
   name?: string;
   schedule?: MatchSchedule[][];
   results?: BoutResult[][];
   currentDay?: number;
+}
+
+/** A single award entry persisted to the global award log. */
+export interface AwardLogEntry {
+  bashoName: BashoName;
+  year: number;
+  type: "yusho" | "junYusho" | "ginoSho" | "kantosho" | "shukunsho" | "boutOfTheBasho";
+  winnerId: Id;
+  /** Bout ID for boutOfTheBasho entries; undefined for title/prize awards. */
+  boutId?: string;
+  excitementScore?: number;
 }
 
 /** Defines the structure for basho result. */
@@ -105,6 +122,9 @@ export interface BashoResult {
   ginoSho?: Id;
   kantosho?: Id;
   shukunsho?: Id;
+
+  /** Bout ID of the most exciting bout this basho (highest excitementScore). */
+  boutOfTheBasho?: string;
 
   playoffMatches?: MatchSchedule[];
 
@@ -142,4 +162,5 @@ export interface BashoSimResult {
   injuries: string[];
   promotions: PromotionEvent[];
   demotions: DemotionEvent[];
+  finalWorld: WorldState;
 }

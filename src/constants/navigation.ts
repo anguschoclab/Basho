@@ -1,16 +1,21 @@
-export const HQ_TABS = [
+export const STABLE_TABS = [
   { id: "stable", label: "Overview", href: "/stable" },
   { id: "roster", label: "Roster", href: "/stable/roster" },
+  { id: "infrastructure", label: "Infrastructure", href: "/stable/infrastructure" },
   { id: "training", label: "Training", href: "/stable/training" },
   { id: "staff", label: "Staff", href: "/stable/staff" },
   { id: "medical", label: "Medical", href: "/stable/medical" },
+  { id: "oyakata", label: "Oyakata", href: "/oyakata" },
 ];
+
+export const HQ_TABS = STABLE_TABS;
 
 export const OFFICE_TABS = [
   { id: "economy", label: "Finances", href: "/office/finances" },
   { id: "facilities", label: "Facilities", href: "/office/facilities" },
   { id: "sponsors", label: "Sponsors", href: "/office/sponsors" },
   { id: "scouting", label: "Scouting", href: "/office/scouting" },
+  { id: "prospects", label: "Prospects", href: "/talent-pool" },
 ];
 
 export const ASSOCIATION_TABS = [
@@ -25,10 +30,12 @@ export const TOURNAMENT_TABS = [
   { id: "banzuke", label: "Banzuke", href: "/banzuke" },
   { id: "schedule", label: "Schedule", href: "/schedule" },
   { id: "rivalries", label: "Rivalries", href: "/rivalries" },
+  { id: "global-cup", label: "Global Cup", href: "/global-cup" },
 ];
 
 export const RECORDS_TABS = [
   { id: "history", label: "History", href: "/history" },
   { id: "almanac", label: "Almanac", href: "/almanac" },
   { id: "hall-of-fame", label: "Hall of Fame", href: "/hall-of-fame" },
+  { id: "museum", label: "Museum", href: "/museum" },
 ];

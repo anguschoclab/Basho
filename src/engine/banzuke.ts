@@ -3,7 +3,6 @@
  * This file serves as the main entry point for banzuke updates and ranking logic.
  */
 
-import { stableTieBreak } from "./utils/sort";
 import {
   RANK_HIERARCHY,
   type Division,
@@ -33,7 +32,8 @@ export { RANK_HIERARCHY };
 export { generateSanshoLedgerEntry } from "./economics_awards";
 export { generateKeshoForPromotions } from "./systems/keshoMawashi/KeshoMawashiGenerator";
 
-import { formatRank } from "./banzuke/banzukeHelpers";
+import { formatRank, resolveBanzukeTie, type BanzukeCandidate } from "./banzuke/banzukeHelpers";
+import type { WorldState } from "./types/world";
 import { getOzekiStatus, type OzekiKadobanMap } from "./banzuke/ozekiLogic";
 import { computeMovementUnits, bestTierAllowed } from "./banzuke/promotionLogic";
 import { buildFullSlotTemplate } from "./banzuke/banzukeTemplate";
@@ -61,40 +61,7 @@ function positionKey(e: BanzukeEntry): number {
   return tier * 1000 + num * 2 + side;
 }
 
-/**
- * Convert BanzukeEntry[] to BanzukeSnapshot format for comparison with historical snapshots.
- */
-export function convertBanzukeEntriesToSnapshot(
-  entries: BanzukeEntry[],
-  year: number,
-  bashoNumber: 1 | 2 | 3 | 4 | 5 | 6
-): BanzukeSnapshot {
-  const divisions: Record<Division, DivisionBanzukeSnapshot> = {
-    makuuchi: { division: "makuuchi", slots: [], assignments: [] },
-    juryo: { division: "juryo", slots: [], assignments: [] },
-    makushita: { division: "makushita", slots: [], assignments: [] },
-    sandanme: { division: "sandanme", slots: [], assignments: [] },
-    jonidan: { division: "jonidan", slots: [], assignments: [] },
-    jonokuchi: { division: "jonokuchi", slots: [], assignments: [] },
-  };
-
-  for (const entry of entries) {
-    const division = entry.division;
-    if (!divisions[division]) continue;
-
-    divisions[division].slots.push(entry.position);
-    divisions[division].assignments.push({
-      rikishiId: entry.rikishiId,
-      position: entry.position,
-    });
-  }
-
-  return {
-    year,
-    bashoNumber,
-    divisions,
-  };
-}
+// convertBanzukeEntriesToSnapshot removed (unused)
 
 /**
  * Compare current banzuke snapshot with previous snapshot to detect rank changes.
@@ -198,6 +165,7 @@ function divisionTier(d: Division): number {
 export function updateBanzuke(
   currentBanzuke: BanzukeEntry[],
   perfById: Map<string, BashoPerformance>,
+  world: WorldState,
   previousOzekiKadoban: OzekiKadobanMap = {},
   heyaMap?: Map<string, Heya>
 ): BanzukeUpdateResult {
@@ -227,6 +195,18 @@ export function updateBanzuke(
     jonokuchi: 20,
   });
 
+  // ⚡ Bolt Optimization: Pre-calculate rikishi to heya mapping to avoid O(N*M) nested lookups
+  const rikishiToHeyaMap = new Map<string, Heya>();
+  if (heyaMap) {
+    for (const heya of heyaMap.values()) {
+      if (heya.rikishiIds) {
+        for (const rId of heya.rikishiIds) {
+          rikishiToHeyaMap.set(rId, heya);
+        }
+      }
+    }
+  }
+
   // Assign candidates to slots
   const scored = currentBanzuke
     .map((e) => {
@@ -235,7 +215,7 @@ export function updateBanzuke(
 
       let politicalWeight = 0;
       if (heyaMap && e.rikishiId) {
-        const heya = Array.from(heyaMap.values()).find((h) => h.rikishiIds?.includes(e.rikishiId));
+        const heya = rikishiToHeyaMap.get(e.rikishiId);
         if (heya?.ichimon === "Dewanoumi") politicalWeight = 300;
         else if (heya?.ichimon === "Nishonoseki") politicalWeight = 250;
         else if (heya?.ichimon) politicalWeight = 100;
@@ -250,23 +230,36 @@ export function updateBanzuke(
         eligibleBestTier: bestTierAllowed(e, p, updatedOzekiKadoban[e.rikishiId], demotedOzeki),
       };
     })
-    .sort((a, b) =>
-      a.desiredKey !== b.desiredKey
-        ? a.desiredKey - b.desiredKey
-        : a.oldKey !== b.oldKey
-          ? a.oldKey - b.oldKey
-          : stableTieBreak(a.entry.rikishiId, b.entry.rikishiId)
-    );
+    .sort((a, b) => {
+      // Primary sort: Desired Key (Movement + Political Weight)
+      if (a.desiredKey !== b.desiredKey) {
+        return a.desiredKey - b.desiredKey;
+      }
+
+      // Secondary sort: Tiebreak Hierarchy
+      // Level 1: Previous Slot Closeness (oldKey)
+      // Level 2: H2H
+      // Level 3: SOS Proxy
+      return resolveBanzukeTie(a as BanzukeCandidate, b as BanzukeCandidate, world, perfById);
+    });
 
   const assigned: BanzukeEntry[] = [];
   const used = new Set<string>();
 
   for (const slot of fullTemplate) {
-    const idx = scored.findIndex(
+    // 1. Try to find the best candidate who is ELIGIBLE for this tier
+    let idx = scored.findIndex(
       (cand) =>
         !used.has(cand.entry.rikishiId) &&
         RANK_HIERARCHY[slot.position.rank].tier >= cand.eligibleBestTier
     );
+
+    // 2. FALLBACK: If no eligible candidate found, take the absolute next best available candidate
+    // to ensure division quotas are met (as requested by user).
+    if (idx === -1) {
+      idx = scored.findIndex((cand) => !used.has(cand.entry.rikishiId));
+    }
+
     if (idx !== -1) {
       const winner = scored.splice(idx, 1)[0];
       used.add(winner.entry.rikishiId);

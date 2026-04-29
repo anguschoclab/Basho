@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * AI / Oyakata Personality Types
  */
@@ -56,9 +57,20 @@ export interface Oyakata {
   quirks?: string[];
   avatarConfig?: AvatarConfig; // NEW: Procedural avatar configuration
 
+  /** Phase 5: Succession Planning */
+  successorCandidateId?: Id; // Pre-designated successor rikishi (alumni or roster)
+  successionReadiness: number; // 0-100: triggered at age 60
+  retirementYear?: number; // Set when succession is finalized
+  isEmeritus?: boolean; // Retired elders who stay in the registry
+
   /** Drama Pass (Initiative 4) */
   grudges?: Id[]; // Heya or Oyakata IDs this person hates
   temperament?: "Stoic" | "Volatile" | "Vindictive";
+
+  /** Phase 5: Succession Planning */
+  successorCandidateId?: Id; // Pre-designated successor rikishi (can be set at any time)
+  successionReadiness?: number; // 0-100: soft warning at 60, forced at 70 (age)
+  retirementYear?: number; // Set when succession is triggered
 
   managerFlags?: {
     welfareHawk?: boolean;

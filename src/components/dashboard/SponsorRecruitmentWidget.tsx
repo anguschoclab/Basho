@@ -1,3 +1,4 @@
+import React, { useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -5,7 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { useGame } from "@/contexts/GameContext";
 import { Coins, TrendingUp, Building2 } from "lucide-react";
-import type { Sponsor } from "@/engine/types/sponsors";
+import { formatYen } from "@/utils/engineUtils";
 import { recruitSponsor } from "@/presenters/uiDigest";
 
 const TIER_LABELS: Record<string, { label: string; color: string }> = {
@@ -25,6 +26,64 @@ const RECRUITMENT_COSTS: Record<string, number> = {
   T4: 1_500_000,
   T5: 4_000_000,
 };
+
+const SponsorRow = React.memo(
+  ({
+    sponsorId,
+    displayName,
+    tier,
+    cost,
+    canAfford,
+    prestigeAffinity,
+    category,
+    onRecruit,
+  }: {
+    sponsorId: string;
+    displayName: string;
+    tier: string;
+    cost: number;
+    canAfford: boolean;
+    prestigeAffinity: number;
+    category: string;
+    onRecruit: (id: string) => void;
+  }) => {
+    const tierInfo = TIER_LABELS[tier] || {
+      label: tier,
+      color: "text-muted-foreground",
+    };
+
+    return (
+      <div className="flex items-center justify-between p-3 rounded-lg border bg-card">
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="font-medium">{displayName}</span>
+            <Badge variant="outline" className={tierInfo.color}>
+              {tierInfo.label}
+            </Badge>
+          </div>
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1">
+              <Coins className="h-3 w-3" />{formatYen(cost)}
+            </span>
+            <span className="flex items-center gap-1">
+              <TrendingUp className="h-3 w-3" />
+              Prestige: {prestigeAffinity}
+            </span>
+            <span>{category}</span>
+          </div>
+        </div>
+        <Button
+          size="sm"
+          onClick={() => onRecruit(sponsorId)}
+          disabled={!canAfford}
+          variant={canAfford ? "default" : "secondary"}
+        >
+          {canAfford ? "Recruit" : "Insufficient Funds"}
+        </Button>
+      </div>
+    );
+  }
+);
 
 export function SponsorRecruitmentWidget() {
   const { state, updateWorld } = useGame();
@@ -54,26 +113,36 @@ export function SponsorRecruitmentWidget() {
     })
     .slice(0, 10); // Show top 10 available sponsors
 
-  const handleRecruit = (sponsor: Sponsor) => {
-    const cost = RECRUITMENT_COSTS[sponsor.tier] || 0;
+  const handleRecruit = useCallback(
+    (sponsorId: string) => {
+      if (!world?.sponsorPool || !world.playerHeyaId) return;
+      const heya = world.heyas.get(world.playerHeyaId);
+      if (!heya) return;
 
-    if (heya.funds < cost) {
+      const sponsor = world.sponsorPool.sponsors.get(sponsorId);
+      if (!sponsor) return;
+
+      const cost = RECRUITMENT_COSTS[sponsor.tier] || 0;
+
+      if (heya.funds < cost) {
+        toast({
+          title: "Insufficient funds",
+          description: `You need ${formatYen(cost)} to recruit ${sponsor.displayName}.`,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!world.rng) return;
+      recruitSponsor(world, world.playerHeyaId, sponsor.sponsorId, world.rng);
+      updateWorld({ ...world });
       toast({
-        title: "Insufficient funds",
-        description: `You need ¥${cost.toLocaleString()} to recruit ${sponsor.displayName}.`,
-        variant: "destructive",
+        title: "Sponsor recruited",
+        description: `${sponsor.displayName} has joined your Kōenkai.`,
       });
-      return;
-    }
-
-    if (!world.rng) return;
-    recruitSponsor(world, world.playerHeyaId, sponsor.sponsorId, world.rng);
-    updateWorld({ ...world });
-    toast({
-      title: "Sponsor recruited",
-      description: `${sponsor.displayName} has joined your Kōenkai.`,
-    });
-  };
+    },
+    [world, updateWorld, toast]
+  );
 
   return (
     <Card className="paper">
@@ -96,45 +165,21 @@ export function SponsorRecruitmentWidget() {
           ) : (
             <div className="space-y-3">
               {availableSponsors.map((sponsor) => {
-                const tierInfo = TIER_LABELS[sponsor.tier] || {
-                  label: sponsor.tier,
-                  color: "text-muted-foreground",
-                };
                 const cost = RECRUITMENT_COSTS[sponsor.tier] || 0;
                 const canAfford = heya.funds >= cost;
 
                 return (
-                  <div
+                  <SponsorRow
                     key={sponsor.sponsorId}
-                    className="flex items-center justify-between p-3 rounded-lg border bg-card"
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-medium">{sponsor.displayName}</span>
-                        <Badge variant="outline" className={tierInfo.color}>
-                          {tierInfo.label}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <Coins className="h-3 w-3" />¥{cost.toLocaleString()}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <TrendingUp className="h-3 w-3" />
-                          Prestige: {sponsor.prestigeAffinity}
-                        </span>
-                        <span>{sponsor.category}</span>
-                      </div>
-                    </div>
-                    <Button
-                      size="sm"
-                      onClick={() => handleRecruit(sponsor)}
-                      disabled={!canAfford}
-                      variant={canAfford ? "default" : "secondary"}
-                    >
-                      {canAfford ? "Recruit" : "Insufficient Funds"}
-                    </Button>
-                  </div>
+                    sponsorId={sponsor.sponsorId}
+                    displayName={sponsor.displayName}
+                    tier={sponsor.tier}
+                    cost={cost}
+                    canAfford={canAfford}
+                    prestigeAffinity={sponsor.prestigeAffinity}
+                    category={sponsor.category}
+                    onRecruit={handleRecruit}
+                  />
                 );
               })}
             </div>

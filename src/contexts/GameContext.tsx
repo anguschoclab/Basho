@@ -71,6 +71,7 @@ interface GameContextValue {
   advanceTutorialStep: (step: import("@/engine/types/tutorial").TutorialStep) => void;
   setTutorialFlag: (flag: keyof import("@/engine/types/tutorial").TutorialFlags) => void;
   completeTutorial: () => void;
+  buildInfrastructure: (heyaId: string, facilityId: import("@/engine/types/infrastructure").FacilityId) => void;
 }
 
 const GameContext = createContext<GameContextValue | null>(null);
@@ -125,6 +126,13 @@ export function GameProvider({ children }: { children: ReactNode }) {
   );
   const advanceOneDayAction = useCallback(() => dispatch(actions.advanceOneDay()), []);
   const updateWorld = useCallback((world: WorldState) => dispatch(actions.updateWorld(world)), []);
+
+  const buildInfrastructureAction = useCallback(
+    (heyaId: string, facilityId: import("@/engine/types/infrastructure").FacilityId) => {
+      dispatch(actions.buildInfrastructure(heyaId, facilityId));
+    },
+    []
+  );
 
   const issueRuling = useCallback(
     (rulingId: string, severity: "lenient" | "standard" | "harsh") => {
@@ -278,6 +286,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       advanceTutorialStep: advanceTutorialStepAction,
       setTutorialFlag: setTutorialFlagAction,
       completeTutorial: completeTutorialAction,
+      buildInfrastructure: buildInfrastructureAction,
     }),
     [
       state,
@@ -315,6 +324,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       advanceTutorialStepAction,
       setTutorialFlagAction,
       completeTutorialAction,
+      buildInfrastructureAction,
     ]
   );
 

@@ -31,25 +31,25 @@ describe('EntityService', () => {
 
       expect(result).toEqual({ val: 1 });
       expect(world.trainingState).toBeDefined();
-      expect(world.trainingState!['heya1']).toEqual({ val: 1 });
+      expect((world.trainingState as any).get('heya1')).toEqual({ val: 1 });
     });
 
     it('should create nested state if root state exists but nested does not', () => {
-      const world = { trainingState: {} } as unknown as WorldState;
+      const world = { trainingState: new Map() } as unknown as WorldState;
       const factory = () => ({ val: 1 });
       const result = EntityService.ensureNestedState(world, 'trainingState', 'heya1', factory);
 
       expect(result).toEqual({ val: 1 });
-      expect((world as any).trainingState['heya1']).toEqual({ val: 1 });
+      expect((world as any).trainingState.get('heya1')).toEqual({ val: 1 });
     });
 
     it('should return existing nested state if it exists', () => {
-      const world = { trainingState: { heya1: { val: 2 } } } as unknown as WorldState;
+      const world = { trainingState: new Map([['heya1', { val: 2 }]]) } as unknown as WorldState;
       const factory = () => ({ val: 1 });
       const result = EntityService.ensureNestedState(world, 'trainingState', 'heya1', factory);
 
       expect(result).toEqual({ val: 2 });
-      expect((world as any).trainingState['heya1']).toEqual({ val: 2 });
+      expect((world as any).trainingState.get('heya1')).toEqual({ val: 2 });
     });
   });
 });

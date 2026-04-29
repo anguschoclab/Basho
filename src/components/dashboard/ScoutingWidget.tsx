@@ -71,6 +71,62 @@ const ProspectRow = React.memo(
 );
 
 /** scouting widget. */
+const ProspectList = React.memo(
+  ({
+    topProspects,
+    prospectsLength,
+    world,
+    onViewAll,
+  }: {
+    topProspects: (TalentCandidate & { pool: TalentPoolType })[];
+    prospectsLength: number;
+    world: any;
+    onViewAll: () => void;
+  }) => {
+    return (
+      <>
+        {topProspects.length === 0 ? (
+          <div className="text-center py-4">
+            <Search className="h-5 w-5 text-muted-foreground/20 mx-auto mb-1.5" />
+            <p className="text-xs text-muted-foreground">No prospects scouted yet</p>
+          </div>
+        ) : (
+          (() => {
+            const limit = topProspects.length;
+            const nodes = new Array(limit);
+            for (let i = 0; i < limit; i++) {
+              const c = topProspects[i];
+              const intel = talentpool.getCandidateScoutingLevel(world, c.candidateId);
+              nodes[i] = (
+                <ProspectRow
+                  key={c.candidateId}
+                  candidateId={c.candidateId}
+                  name={c.name}
+                  archetype={c.archetype}
+                  talentSeed={c.talentSeed}
+                  pool={c.pool}
+                  visibilityBand={c.visibilityBand}
+                  intel={intel}
+                />
+              );
+            }
+            return nodes;
+          })()
+        )}
+        {prospectsLength > 6 && (
+          <Button
+            variant="ghost"
+            onClick={onViewAll}
+            className="w-full h-auto py-1 text-[11px] text-primary hover:text-primary/80 hover:bg-transparent rounded-sm"
+          >
+            +{prospectsLength - 6} more prospects →
+          </Button>
+        )}
+      </>
+    );
+  }
+);
+
 export function ScoutingWidget() {
   const { state } = useGame();
   const navigate = useNavigate();
@@ -81,6 +137,10 @@ export function ScoutingWidget() {
     }),
     [navigate]
   );
+
+  const handleViewAll = React.useCallback(() => {
+    navigate({ to: "/talent" });
+  }, [navigate]);
   const world = state.world;
 
   // ⚡ Bolt Performance Optimization: Combine prospects parsing, pool counting, and top prospects derivation
@@ -138,43 +198,12 @@ export function ScoutingWidget() {
 
       {/* Top prospects */}
       <div className="space-y-0.5">
-        {topProspects.length === 0 ? (
-          <div className="text-center py-4">
-            <Search className="h-5 w-5 text-muted-foreground/20 mx-auto mb-1.5" />
-            <p className="text-xs text-muted-foreground">No prospects scouted yet</p>
-          </div>
-        ) : (
-          (() => {
-            const limit = topProspects.length;
-            const nodes = new Array(limit);
-            for (let i = 0; i < limit; i++) {
-              const c = topProspects[i];
-              const intel = talentpool.getCandidateScoutingLevel(world, c.candidateId);
-              nodes[i] = (
-                <ProspectRow
-                  key={c.candidateId}
-                  candidateId={c.candidateId}
-                  name={c.name}
-                  archetype={c.archetype}
-                  talentSeed={c.talentSeed}
-                  pool={c.pool}
-                  visibilityBand={c.visibilityBand}
-                  intel={intel}
-                />
-              );
-            }
-            return nodes;
-          })()
-        )}
-        {prospects.length > 6 && (
-          <Button
-            variant="ghost"
-            onClick={() => navigate({ to: "/talent" })}
-            className="w-full h-auto py-1 text-[11px] text-primary hover:text-primary/80 hover:bg-transparent rounded-sm"
-          >
-            +{prospects.length - 6} more prospects →
-          </Button>
-        )}
+        <ProspectList
+          topProspects={topProspects}
+          prospectsLength={prospects.length}
+          world={world}
+          onViewAll={handleViewAll}
+        />
       </div>
     </BaseWidget>
   );

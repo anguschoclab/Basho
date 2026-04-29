@@ -59,8 +59,15 @@ export function SaveSlotManager({
   };
 
   useEffect(() => {
-    refreshSlots();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const refresh = () => {
+      try {
+        if (typeof getSaveSlots === "function") setSaveSlots(getSaveSlots());
+        else setSaveSlots([]);
+      } catch {
+        setSaveSlots([]);
+      }
+    };
+    refresh();
   }, [getSaveSlots]);
 
   const canContinue = hasAutosave() || saveSlots.length > 0;

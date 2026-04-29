@@ -4,21 +4,20 @@
 import type { WorldState } from "./types/world";
 import type { Oyakata, OyakataArchetype } from "./types/oyakata";
 import type { CombatArchetype, Style, CombatProfile } from "./types/combat";
-import type { Id } from "./types/common";
 import { rngForWorld } from "./rng";
 
 /** Type representing recruitment philosophy. */
-export type RecruitmentPhilosophy = 
-  | "style_purist"      // Only recruits wrestlers matching their preferred style
-  | "meta_chaser"       // Adapts recruitment to whatever style won last yusho
-  | "traditionalist"    // Favors yotsu/belt-wrestling regardless of meta
-  | "innovator"         // Prefers speedsters and tricksters
-  | "size_matters"      // Prioritizes physical stats over technique
-  | "balanced"          // No strong preference
-  | "underdog_hunter";  // Seeks hidden gems and overlooked talent
+export type RecruitmentPhilosophy =
+  | "style_purist" // Only recruits wrestlers matching their preferred style
+  | "meta_chaser" // Adapts recruitment to whatever style won last yusho
+  | "traditionalist" // Favors yotsu/belt-wrestling regardless of meta
+  | "innovator" // Prefers speedsters and tricksters
+  | "size_matters" // Prioritizes physical stats over technique
+  | "balanced" // No strong preference
+  | "underdog_hunter"; // Seeks hidden gems and overlooked talent
 
 /** Defines the structure for oyakata style profile. */
-interface OyakataStyleProfile {
+export interface OyakataStyleProfile {
   philosophy: RecruitmentPhilosophy;
   preferredArchetypes: CombatArchetype[];
   preferredStyle: Style | "any";
@@ -41,7 +40,7 @@ const PHILOSOPHY_BY_ARCHETYPE: Record<OyakataArchetype, RecruitmentPhilosophy[]>
   tyrant: ["size_matters", "style_purist"],
   strategist: ["meta_chaser", "balanced", "innovator"],
   strict: ["style_purist", "traditionalist"],
-  indulgent: ["balanced", "underdog_hunter"]
+  indulgent: ["balanced", "underdog_hunter"],
 };
 
 /**
@@ -49,11 +48,11 @@ const PHILOSOPHY_BY_ARCHETYPE: Record<OyakataArchetype, RecruitmentPhilosophy[]>
  */
 export function getOyakataStyleProfile(world: WorldState, oyakata: Oyakata): OyakataStyleProfile {
   const rng = rngForWorld(world, "oyakataStyle", oyakata.id);
-  
+
   // Pick philosophy from archetype affinities
   const options = PHILOSOPHY_BY_ARCHETYPE[oyakata.archetype] ?? ["balanced"];
   const philosophy = options[rng.int(0, options.length - 1)];
-  
+
   // Determine preferences based on philosophy
   switch (philosophy) {
     case "style_purist": {
@@ -68,10 +67,16 @@ export function getOyakataStyleProfile(world: WorldState, oyakata: Oyakata): Oya
     }
     case "meta_chaser": {
       const meta = world._postBashoMeta;
-      const metaStyle = meta?.metaBias === "oshi" ? "oshi" : meta?.metaBias === "yotsu" ? "yotsu" : "hybrid";
+      const metaStyle =
+        meta?.metaBias === "oshi" ? "oshi" : meta?.metaBias === "yotsu" ? "yotsu" : "hybrid";
       return {
         philosophy,
-        preferredArchetypes: metaStyle === "oshi" ? ["oshi", "speedster"] : metaStyle === "yotsu" ? ["yotsu"] : ["hybrid"],
+        preferredArchetypes:
+          metaStyle === "oshi"
+            ? ["oshi", "speedster"]
+            : metaStyle === "yotsu"
+              ? ["yotsu"]
+              : ["hybrid"],
         preferredStyle: metaStyle as Style,
         statWeights: { power: 0.6, speed: 0.6, technique: 0.6, size: 0.5, potential: 0.8 },
         description: `Adapts recruitment to the current dominant style. Currently favoring ${metaStyle}.`,
@@ -83,7 +88,8 @@ export function getOyakataStyleProfile(world: WorldState, oyakata: Oyakata): Oya
         preferredArchetypes: ["yotsu", "hybrid"],
         preferredStyle: "yotsu",
         statWeights: { power: 0.8, speed: 0.3, technique: 0.7, size: 0.8, potential: 0.5 },
-        description: "Old school. Believes in belt-wrestling, heavy training, and traditional methods.",
+        description:
+          "Old school. Believes in belt-wrestling, heavy training, and traditional methods.",
       };
     case "innovator":
       return {
@@ -107,7 +113,8 @@ export function getOyakataStyleProfile(world: WorldState, oyakata: Oyakata): Oya
         preferredArchetypes: ["trickster", "speedster"],
         preferredStyle: "any",
         statWeights: { power: 0.4, speed: 0.5, technique: 0.5, size: 0.3, potential: 1.0 },
-        description: "Scouts overlooked talent from obscure sources. Values raw potential over polish.",
+        description:
+          "Scouts overlooked talent from obscure sources. Values raw potential over polish.",
       };
     case "balanced":
     default:
@@ -125,12 +132,12 @@ export function getOyakataStyleProfile(world: WorldState, oyakata: Oyakata): Oya
 export function scoreRecruitForOyakata(
   world: WorldState,
   oyakata: Oyakata,
-  candidate: { 
-    archetype: CombatArchetype; 
-    style: Style; 
-    talentSeed: number; 
-    weightPotentialKg: number; 
-    combatProfile?: CombatProfile 
+  candidate: {
+    archetype: CombatArchetype;
+    style: Style;
+    talentSeed: number;
+    weightPotentialKg: number;
+    combatProfile?: CombatProfile;
   }
 ): number {
   const profile = getOyakataStyleProfile(world, oyakata);
@@ -151,29 +158,15 @@ export function scoreRecruitForOyakata(
   if (candidate.combatProfile) {
     const fam = candidate.combatProfile.familyPreferences;
     if (profile.philosophy === "innovator") {
-       score += (fam.trick || 0) * 0.15;
-       score += (fam.speed || 0) * 0.1;
+      score += (fam.trick || 0) * 0.15;
+      score += (fam.speed || 0) * 0.1;
     } else if (profile.philosophy === "traditionalist" || profile.philosophy === "size_matters") {
-       score += (fam.belt || 0) * 0.15;
+      score += (fam.belt || 0) * 0.15;
     } else if (profile.philosophy === "style_purist") {
-       if (profile.preferredStyle === "oshi") score += (fam.push || 0) * 0.15;
-       else if (profile.preferredStyle === "yotsu") score += (fam.belt || 0) * 0.15;
+      if (profile.preferredStyle === "oshi") score += (fam.push || 0) * 0.15;
+      else if (profile.preferredStyle === "yotsu") score += (fam.belt || 0) * 0.15;
     }
   }
 
   return Math.max(0, Math.min(100, Math.round(score)));
-}
-
-/** Get a narrative label for the philosophy */
-function getPhilosophyLabel(philosophy: RecruitmentPhilosophy): string {
-  const labels: Record<RecruitmentPhilosophy, string> = {
-    style_purist: "Style Purist",
-    meta_chaser: "Meta Chaser",
-    traditionalist: "Stubborn Traditionalist",
-    innovator: "Progressive Innovator",
-    size_matters: "Size Obsessed",
-    balanced: "Open-Minded",
-    underdog_hunter: "Diamond Seeker",
-  };
-  return labels[philosophy];
 }

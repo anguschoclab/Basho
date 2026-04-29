@@ -44,7 +44,7 @@ export function computeInjuryPressure(world: WorldState, heya: Heya): { pressure
   const roster = EntityCollection.getHeyaRoster(world, heya.id);
 
   roster.forEach(rikishi => {
-    const status = rikishi.injuryStatus || (rikishi as any).injury;
+    const status = rikishi.injuryStatus;
     const isInjured = rikishi.injured || (status && status.isInjured);
 
     if (isInjured) {

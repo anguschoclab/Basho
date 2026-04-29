@@ -7,6 +7,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle } from "lucide-react";
+import { formatYen } from "@/utils/engineUtils";
 
 interface Loan {
   id: string;
@@ -54,7 +55,7 @@ export function DebtSection({ activeLoans }: DebtSectionProps) {
                   <div className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">
                     Remaining
                   </div>
-                  <div className="text-lg font-bold">¥{loan.remainingBalance.toLocaleString()}</div>
+                  <div className="text-lg font-bold">{formatYen(loan.remainingBalance)}</div>
                 </div>
               </div>
 
@@ -63,7 +64,7 @@ export function DebtSection({ activeLoans }: DebtSectionProps) {
                   <div className="text-[9px] text-muted-foreground uppercase font-bold">
                     Principal
                   </div>
-                  <div className="text-sm font-medium">¥{loan.principal.toLocaleString()}</div>
+                  <div className="text-sm font-medium">{formatYen(loan.principal)}</div>
                 </div>
                 <div>
                   <div className="text-[9px] text-muted-foreground uppercase font-bold">
@@ -76,7 +77,7 @@ export function DebtSection({ activeLoans }: DebtSectionProps) {
                     Monthly
                   </div>
                   <div className="text-sm font-bold text-destructive">
-                    ¥{loan.monthlyPayment.toLocaleString()}
+                    {formatYen(loan.monthlyPayment)}
                   </div>
                 </div>
               </div>

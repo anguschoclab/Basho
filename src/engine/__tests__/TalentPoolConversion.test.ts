@@ -1,14 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect } from "vitest";
-import { makeMockWorld, makeMockHeya } from "./utils";
+import { MockFactory } from "../../test/utils/MockFactory";
 import { phase01_week_recruitment } from "../tick/phases/phase01_week_recruitment";
 import { resolveImpacts } from "../core/ImpactResolver";
 
 describe("TalentPoolConversion", () => {
   it("should convert a signed candidate into a Rikishi during the recruitment phase", () => {
     const heyaId = "test-heya";
-    const heya = makeMockHeya(heyaId);
-    const world = makeMockWorld({
+    const heya = MockFactory.createHeya(heyaId);
+    const world = MockFactory.createWorld({
       heyas: new Map([[heyaId, heya]]),
       rikishi: new Map(),
       week: 1,
@@ -17,8 +16,7 @@ describe("TalentPoolConversion", () => {
     });
 
     const candidateId = "test-candidate";
-    const candidate = {
-      candidateId,
+    const candidate = MockFactory.createCandidate(candidateId, {
       personId: "test-person",
       name: "Future Sekitori",
       birthYear: 2005,
@@ -27,57 +25,16 @@ describe("TalentPoolConversion", () => {
       talentSeed: 500,
       availabilityState: "signed",
       competingSuitors: [{ heyaId, offerType: "standard", interestBand: "high", deadlineWeek: 1 }],
-      combatProfile: {
-        archetype: "oshi",
-        statModifiers: {},
-      },
       archetype: "oshi",
       temperament: { discipline: 80, volatility: 20 },
-    };
+    });
 
-    world.talentPool = {
-      version: "1.0.0",
+    const talentPool = MockFactory.createTalentPool({
       lastYearlyRefreshYear: 2024,
-      candidates: { [candidateId]: candidate as any },
-      pools: {
-        high_school: {
-          poolId: "pool-1",
-          poolType: "high_school",
-          candidatesVisible: [candidateId],
-          candidatesHidden: [],
-          refreshCadence: "basho",
-          populationCap: 20,
-          hiddenReserveCap: 50,
-          lastRefreshWeek: 0,
-          scarcityBand: "normal",
-          qualityBand: "normal",
-        },
-        university: {
-          poolId: "pool-2",
-          poolType: "university",
-          candidatesVisible: [],
-          candidatesHidden: [],
-          refreshCadence: "basho",
-          populationCap: 20,
-          hiddenReserveCap: 50,
-          lastRefreshWeek: 0,
-          scarcityBand: "normal",
-          qualityBand: "normal",
-        },
-        foreign: {
-          poolId: "pool-3",
-          poolType: "foreign",
-          candidatesVisible: [],
-          candidatesHidden: [],
-          refreshCadence: "basho",
-          populationCap: 20,
-          hiddenReserveCap: 50,
-          lastRefreshWeek: 0,
-          scarcityBand: "normal",
-          qualityBand: "normal",
-        },
-      },
-    };
+      candidates: { [candidateId]: candidate },
+    });
+    talentPool.pools.high_school.candidatesVisible = [candidateId];
+    world.talentPool = talentPool;
 
     // Run the recruitment phase
     const impact = phase01_week_recruitment(world);

@@ -5,15 +5,23 @@
  * Extracted from uiDigest.ts to eliminate monolithic structure.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import type { WorldState } from "../../engine/types/world";
+import type { BashoResult, MatchSchedule } from "../../engine/types/basho";
+import type { EventLogData, GovernanceSummary } from "../types/uiDigest";
 import { projectRikishi } from "../rikishiUI";
 
 /**
  * Project event log data with rikishi/heya lookup functions.
  */
-export function projectEventLogData(world: WorldState) {
+export function projectEventLogData(world: WorldState): EventLogData {
+  const rikishiMap = new Map<string, { id: string; shikona: string }>();
+  for (const r of world.rikishi.values()) {
+    rikishiMap.set(r.id, { id: r.id, shikona: r.shikona });
+  }
+  const heyaMap = new Map<string, { id: string; name: string }>();
+  for (const h of world.heyas.values()) {
+    heyaMap.set(h.id, { id: h.id, name: h.name });
+  }
   return {
     events: world.events?.log ?? [],
     getRikishi: (id: string) => {
@@ -21,6 +29,8 @@ export function projectEventLogData(world: WorldState) {
       return r ? projectRikishi(r, world) : null;
     },
     getHeya: (id: string) => world.heyas.get(id),
+    rikishiMap,
+    heyaMap,
     playerHeyaId: world.playerHeyaId,
   };
 }
@@ -28,7 +38,7 @@ export function projectEventLogData(world: WorldState) {
 /**
  * Project governance summary with world stats.
  */
-export function projectGovernanceSummary(world: WorldState) {
+export function projectGovernanceSummary(world: WorldState): GovernanceSummary {
   return {
     governanceLog: world.governanceLog ?? [],
     year: world.year,
@@ -39,7 +49,7 @@ export function projectGovernanceSummary(world: WorldState) {
 /**
  * Project basho results with participant data.
  */
-export function projectBashoResults(world: WorldState, lastBasho: any) {
+export function projectBashoResults(world: WorldState, lastBasho: BashoResult) {
   const getRikishiData = (id: string) => {
     const r = world.rikishi.get(id);
     if (!r) return null;
@@ -54,20 +64,20 @@ export function projectBashoResults(world: WorldState, lastBasho: any) {
 
   const matches = world.currentBasho?.matches || [];
   const kinboshi = matches
-    .filter((m: any) => m.result?.isKinboshi)
-    .map((m: any) => {
-      const winner = world.rikishi.get(m.result.winnerRikishiId);
-      const loser = world.rikishi.get(m.result.loserRikishiId);
+    .filter((m: MatchSchedule) => m.result?.isKinboshi)
+    .map((m: MatchSchedule) => {
+      const winner = world.rikishi.get(m.result?.winnerRikishiId ?? "");
+      const loser = world.rikishi.get(m.result?.loserRikishiId ?? "");
       if (!winner || !loser) return null;
       return { winner: projectRikishi(winner, world), loser: projectRikishi(loser, world) };
     })
-    .filter(Boolean);
+    .filter((m): m is NonNullable<typeof m> => m !== null);
 
   const ginoShoRikishi = lastBasho.ginoSho ? world.rikishi.get(lastBasho.ginoSho) : null;
   const ginoSho = ginoShoRikishi ? projectRikishi(ginoShoRikishi, world) : null;
   const shukunShoRikishi = lastBasho.shukunsho ? world.rikishi.get(lastBasho.shukunsho) : null;
   const shukunSho = shukunShoRikishi ? projectRikishi(shukunShoRikishi, world) : null;
-  const kantoShoRikishi = lastBasho.kantoSho ? world.rikishi.get(lastBasho.kantoSho) : null;
+  const kantoShoRikishi = lastBasho.kantosho ? world.rikishi.get(lastBasho.kantosho) : null;
   const kantoSho = kantoShoRikishi ? projectRikishi(kantoShoRikishi, world) : null;
 
   return {

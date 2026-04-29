@@ -1,5 +1,5 @@
 // App Layout - 3-pane FM-inspired layout with persistent Sidebar, Top Nav, and Right Event Log
-import { ReactNode, useState } from "react";
+import React, { ReactNode, useState } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { TopNavBar } from "./TopNavBar";
 import { AppSidebar } from "./AppSidebar";
@@ -49,10 +49,7 @@ export function AppLayout({ children, pageTitle, subNavTabs, activeSubTab }: App
         {/* Middle and Right Panes: Inset contains TopNav, Content, and EventLog */}
         <SidebarInset className="flex flex-col flex-1 overflow-hidden relative">
           {/* Persistent Header */}
-          <TopNavBar
-            eventLogOpen={eventLogOpen}
-            onToggleEventLog={() => setEventLogOpen((v) => !v)}
-          />
+          <TopNavBar />
 
           <div className="flex flex-1 overflow-hidden">
             {/* Main Content Pane */}

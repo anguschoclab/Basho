@@ -63,8 +63,8 @@ export function onBoutResolvedRivalries(world: WorldState, context: any): StateI
 /**
  * Weekly tick for rivalries (Legacy wrapper).
  */
-export function tickWeekRivalries(world: WorldState): void {
-  RivalryService.applyWeeklyDecay(world);
+export function tickWeekRivalries(world: WorldState): StateImpact {
+  return RivalryService.applyWeeklyDecay(world);
 }
 
 // Re-export type definitions for backward compatibility

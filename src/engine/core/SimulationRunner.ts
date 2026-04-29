@@ -20,7 +20,7 @@ import { onBashoEnded } from "../records";
 import { processSponsorChurn } from "../systems/economics/SponsorshipService";
 import { checkNaturalizations } from "../naturalization";
 import { runArchivalPruning } from "../archival";
-import { runCareerJournalUpdates, runRecruitmentWindow } from "../lifecycle/RegistryService";
+import { runCareerJournalUpdates, openRecruitmentWindow } from "../lifecycle/RegistryService";
 import { runHistoryUpdates } from "../history";
 import { runElections } from "../governance/GovernanceService";
 
@@ -88,7 +88,7 @@ export function runPostBashoResolution(world: WorldState): void {
     >) || {};
 
   // Run recruitment window (now returns StateImpact, but we need to handle its direct mutation)
-  const recruitmentImpact = runRecruitmentWindow(world, vacancies);
+  const recruitmentImpact = openRecruitmentWindow(world, vacancies);
   const recruitmentResolved = resolveImpacts(world, [recruitmentImpact]);
   Object.assign(world, recruitmentResolved);
 }

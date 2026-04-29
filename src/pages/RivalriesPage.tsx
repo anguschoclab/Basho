@@ -1,5 +1,6 @@
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { PageHeader } from "@/components/layout/control-center";
 import { Card, CardContent } from "@/components/ui/card";
 import { TOURNAMENT_TABS } from "@/constants/navigation";
 import { useMemo, useState } from "react";
@@ -11,6 +12,8 @@ import { RivalriesHeader } from "@/components/rivalries/RivalriesHeader";
 import { RivalryCard } from "@/components/rivalries/RivalryCard";
 import { RivalriesEmptyState } from "@/components/rivalries/RivalriesEmptyState";
 import { HeatLegend } from "@/components/rivalries/HeatLegend";
+import { projectRivalriesPage } from "@/presenters/projections/rivalriesProjections";
+import { Badge } from "@/components/ui/badge";
 
 // Page
 /** rivalries page. */
@@ -21,8 +24,7 @@ export default function RivalriesPage() {
 
   const rivalriesState = useMemo<RivalriesState>(() => {
     if (!world) return createDefaultRivalriesState();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- WorldState type mismatch
-    const rs = (world as any).rivalries;
+    const rs = world.rivalriesState;
     return rs && typeof rs === "object" && rs.pairs ? rs : createDefaultRivalriesState();
   }, [world]);
 
@@ -83,10 +85,13 @@ export default function RivalriesPage() {
       { infernoCount: 0, hotCount: 0 }
     );
 
+    const projections = projectRivalriesPage(world);
+
     return {
       playerRivalries: player,
       hotRivalries: hot,
       coolRivalries: cool,
+      stableRivalries: projections.stableRivalries,
       stats: { total: normalized.length, inferno: infernoCount, hot: hotCount },
     };
   }, [rivalriesState, playerRikishiIds, searchQuery, world]);
@@ -112,6 +117,11 @@ export default function RivalriesPage() {
       </Helmet>
 
       <div className="space-y-6 animate-fade-in">
+        <PageHeader
+          eyebrow="── TOURNAMENT ──"
+          title="Rivalries & Feuds"
+          lede="Tension, history, and blood feuds across the dohyo."
+        />
         <RivalriesHeader
           stats={stats}
           searchQuery={searchQuery}
@@ -155,6 +165,37 @@ export default function RivalriesPage() {
                 <div className="grid gap-4 md:grid-cols-2">
                   {hotRivalries.slice(0, 8).map((pair, i) => (
                     <RivalryCard key={pair.key} pair={pair} world={world} index={i} />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {stableRivalries.length > 0 && (
+              <section className="space-y-3">
+                <h2 className="font-display text-lg font-semibold flex items-center gap-2">
+                  <Landmark className="h-4 w-4 text-primary" />
+                  Institutional Feuds
+                  <span className="text-xs text-muted-foreground font-normal">
+                    (Stable vs Stable)
+                  </span>
+                </h2>
+                <div className="grid gap-4 md:grid-cols-3">
+                  {stableRivalries.map((feud) => (
+                    <Card key={`${feud.aId}-${feud.bId}`} className="border-border/40 bg-card/20 overflow-hidden">
+                      <CardContent className="p-3">
+                        <div className="flex justify-between items-center mb-2">
+                          <Badge variant="outline" className="text-[9px] uppercase tracking-tighter">
+                            {feud.tone.replace("_", " ")}
+                          </Badge>
+                          <div className="text-[10px] font-mono text-primary">{feud.heat} HEAT</div>
+                        </div>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="text-xs font-bold truncate max-w-[80px]">{feud.aName}</div>
+                          <div className="text-[10px] text-muted-foreground">vs</div>
+                          <div className="text-xs font-bold truncate max-w-[80px] text-right">{feud.bName}</div>
+                        </div>
+                      </CardContent>
+                    </Card>
                   ))}
                 </div>
               </section>

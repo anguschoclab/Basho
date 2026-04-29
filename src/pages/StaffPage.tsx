@@ -1,5 +1,7 @@
 import { useMemo, useState, useCallback } from "react";
+import { useGameStore } from "@/store/gameStore";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { PageHeader } from "@/components/layout/control-center";
 import { HQ_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,7 +29,6 @@ import {
 import { cn } from "@/lib/utils";
 import { UserPlus, ShieldCheck, Zap, Heart, Award, Briefcase, Trash2 } from "lucide-react";
 import type { Staff, StaffRole } from "@/engine/types/staff";
-import { hireStaff, fireStaff } from "@/engine/staff";
 import { toast } from "sonner";
 
 const ROLE_LABELS: Record<StaffRole, string> = {
@@ -53,23 +54,24 @@ const ROLE_DESCRIPTIONS: Record<StaffRole, string> = {
 };
 
 const BAND_COLORS: Record<string, string> = {
-  monstrous: "text-purple-500",
+  monstrous: "text-primary",
   dominant: "text-primary",
   great: "text-success",
   strong: "text-success",
   serviceable: "text-west",
-  limited: "text-orange-500",
-  feeble: "text-red-500",
+  limited: "text-warning",
+  feeble: "text-destructive",
   respectable: "text-success",
   respected: "text-success",
   renowned: "text-primary",
-  legendary: "text-purple-500",
+  legendary: "text-primary",
   devoted: "text-success",
-  unshakable: "text-purple-500",
+  unshakable: "text-primary",
 };
 
 export default function StaffPage() {
-  const { state, updateWorld } = useGame();
+  const { state } = useGame();
+  const sendCommand = useGameStore((s) => s.sendCommand);
   const [isRecruitOpen, setIsRecruitOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<StaffRole>("assistant_oyakata");
 
@@ -89,15 +91,10 @@ export default function StaffPage() {
       return;
     }
 
-    const impact = hireStaff(world, heya.id, selectedRole);
-    if (impact) {
-      updateWorld(world);
-      setIsRecruitOpen(false);
-      toast.success(`Hired new ${ROLE_LABELS[selectedRole]}`);
-    } else {
-      toast.error("Insufficient funds or recruitment error.");
-    }
-  }, [world, heya, selectedRole, staffList.length, updateWorld]);
+    sendCommand({ type: "HIRE_STAFF", heyaId: heya.id, role: selectedRole });
+    setIsRecruitOpen(false);
+    toast.success(`Hired new ${ROLE_LABELS[selectedRole]}`);
+  }, [heya, selectedRole, staffList.length, sendCommand, world]);
 
   const handleFire = useCallback(
     (staffId: string) => {
@@ -109,13 +106,10 @@ export default function StaffPage() {
         return;
       }
 
-      const success = fireStaff(world, heya.id, staffId);
-      if (success) {
-        updateWorld(world);
-        toast.success("Staff member released.");
-      }
+      sendCommand({ type: "FIRE_STAFF", heyaId: heya.id, staffId });
+      toast.success("Staff member released.");
     },
-    [world, heya, updateWorld]
+    [world, heya, sendCommand]
   );
 
   if (!heya) return null;
@@ -123,14 +117,13 @@ export default function StaffPage() {
   return (
     <AppLayout subNavTabs={HQ_TABS} activeSubTab="staff" pageTitle="Support Staff">
       <div className="space-y-8">
+        <PageHeader
+          eyebrow="── HQ ──"
+          title="Staff Management"
+          lede="Manage the specialists who shape your heya's future."
+        />
         {/* Header Summary */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-display font-bold">Staff Management</h1>
-            <p className="text-sm text-muted-foreground">
-              Manage the specialists who shape your heya's future.
-            </p>
-          </div>
           <div className="flex items-center gap-3">
             <div className="text-right">
               <div className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none mb-1">
@@ -283,8 +276,11 @@ function StaffCard({ staff, onFire }: { staff: Staff; onFire: (id: string) => vo
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
+                className="h-8 w-8 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity focus-visible:opacity-100 focus-visible:ring-2"
                 onClick={() => onFire(staff.id)}
+                aria-label={`Fire ${staff.name}`}
+                tooltip={`Fire ${staff.name}`}
+                tooltipSide="top"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
