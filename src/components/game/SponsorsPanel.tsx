@@ -6,9 +6,7 @@ import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import {
-  HandCoins, Crown, Building2, Users, TrendingDown, Star
-} from "lucide-react";
+import { HandCoins, Crown, Building2, Users, TrendingDown, Star } from "lucide-react";
 import type { Sponsor, SponsorRelationship, SponsorTier, Koenkai } from "@/engine/types/sponsors";
 
 const TIER_LABELS: Record<SponsorTier, { label: string; color: string }> = {
@@ -53,7 +51,12 @@ export function SponsorsPanel() {
 
   const { activeSponsors, koenkai, churned, tierSummary } = useMemo(() => {
     if (!world?.sponsorPool || !playerHeyaId) {
-      return { activeSponsors: [] as SponsorView[], koenkai: null as Koenkai | null, churned: [] as Sponsor[], tierSummary: {} as Record<SponsorTier, number> };
+      return {
+        activeSponsors: [] as SponsorView[],
+        koenkai: null as Koenkai | null,
+        churned: [] as Sponsor[],
+        tierSummary: {} as Record<SponsorTier, number>,
+      };
     }
 
     const pool = world.sponsorPool;
@@ -104,7 +107,9 @@ export function SponsorsPanel() {
     return (
       <Card className="paper">
         <CardContent className="pt-6">
-          <p className="text-sm text-muted-foreground text-center">Sponsor data not yet available.</p>
+          <p className="text-sm text-muted-foreground text-center">
+            Sponsor data not yet available.
+          </p>
         </CardContent>
       </Card>
     );
@@ -127,7 +132,9 @@ export function SponsorsPanel() {
           <CardContent className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Strength</span>
-              <Badge variant="secondary" className="capitalize">{koenkai.strengthBand}</Badge>
+              <Badge variant="secondary" className="capitalize">
+                {koenkai.strengthBand}
+              </Badge>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">Members</span>
@@ -252,7 +259,9 @@ export function SponsorsPanel() {
               <TrendingDown className="h-5 w-5 text-destructive" />
               Recently Departed
             </CardTitle>
-            <CardDescription>Sponsors who ended their relationship with your stable</CardDescription>
+            <CardDescription>
+              Sponsors who ended their relationship with your stable
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
@@ -263,7 +272,9 @@ export function SponsorsPanel() {
                     <div className="flex items-center gap-2.5 min-w-0">
                       <span className="text-destructive/60">{tierIcon(s.tier)}</span>
                       <div className="min-w-0">
-                        <p className="text-sm font-medium truncate text-muted-foreground">{s.displayName}</p>
+                        <p className="text-sm font-medium truncate text-muted-foreground">
+                          {s.displayName}
+                        </p>
                         <p className="text-xs text-muted-foreground/60 capitalize">
                           {s.category.replace(/_/g, " ")} · {cfg.label}
                         </p>

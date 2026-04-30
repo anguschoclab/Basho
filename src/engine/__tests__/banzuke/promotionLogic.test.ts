@@ -18,7 +18,10 @@ import type { BanzukeEntry, BashoPerformance } from "../../types/banzuke";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-function entry(rank: "yokozuna" | "ozeki" | "sekiwake" | "komusubi", rankNumber?: never): BanzukeEntry;
+function entry(
+  rank: "yokozuna" | "ozeki" | "sekiwake" | "komusubi",
+  rankNumber?: never
+): BanzukeEntry;
 function entry(rank: "maegashira" | "juryo", rankNumber: number): BanzukeEntry;
 function entry(rank: string, rankNumber?: number): BanzukeEntry {
   return {
@@ -31,7 +34,11 @@ function entry(rank: string, rankNumber?: number): BanzukeEntry {
   };
 }
 
-function perf(wins: number, losses: number, extras: Partial<BashoPerformance> = {}): BashoPerformance {
+function perf(
+  wins: number,
+  losses: number,
+  extras: Partial<BashoPerformance> = {}
+): BashoPerformance {
   return { rikishiId: "r1", wins, losses, ...extras };
 }
 
@@ -158,7 +165,11 @@ describe("bestTierAllowed", () => {
   });
 
   it("maegashira in top 4 with 10+ wins can reach tier 4", () => {
-    const e: BanzukeEntry = { rikishiId: "r1", position: { rank: "maegashira", rankNumber: 4, side: "east" }, division: "makuuchi" };
+    const e: BanzukeEntry = {
+      rikishiId: "r1",
+      position: { rank: "maegashira", rankNumber: 4, side: "east" },
+      division: "makuuchi",
+    };
     expect(bestTierAllowed(e, perf(10, 5), undefined, NONE)).toBe(4);
   });
 
@@ -167,7 +178,9 @@ describe("bestTierAllowed", () => {
   });
 
   it("maegashira with yusho can reach tier 3", () => {
-    expect(bestTierAllowed(entry("maegashira", 10), perf(14, 1, { yusho: true }), undefined, NONE)).toBe(3);
+    expect(
+      bestTierAllowed(entry("maegashira", 10), perf(14, 1, { yusho: true }), undefined, NONE)
+    ).toBe(3);
   });
 });
 

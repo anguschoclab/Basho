@@ -43,17 +43,13 @@ export function NarrativeCeremonyDialog({
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 font-display">
-            {title}
-          </DialogTitle>
+          <DialogTitle className="flex items-center gap-2 font-display">{title}</DialogTitle>
           {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
         </DialogHeader>
 
         <div className="space-y-4">
           {/* Card */}
-          <div className={cardClassName}>
-            {cardContent}
-          </div>
+          <div className={cardClassName}>{cardContent}</div>
 
           <Separator />
 
@@ -63,17 +59,13 @@ export function NarrativeCeremonyDialog({
           <div className="min-h-[80px] p-4 rounded-lg border bg-card">
             <div className="flex items-start gap-3">
               <Scroll className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
-              <p className="text-sm leading-relaxed italic">
-                {steps[step]}
-              </p>
+              <p className="text-sm leading-relaxed italic">{steps[step]}</p>
             </div>
           </div>
 
           {/* Final step */}
           {step === steps.length - 1 && finalVerdictContent && (
-            <div className={finalVerdictClassName}>
-              {finalVerdictContent}
-            </div>
+            <div className={finalVerdictClassName}>{finalVerdictContent}</div>
           )}
 
           <Button onClick={handleNext} className="w-full">

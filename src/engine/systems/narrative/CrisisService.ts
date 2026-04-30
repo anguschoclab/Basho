@@ -113,7 +113,8 @@ export const CrisisService = {
       {
         id: "scandal_nightlife",
         title: "Nightlife Scandal",
-        description: "A popular rikishi was spotted at a late-night club during a strict training period.",
+        description:
+          "A popular rikishi was spotted at a late-night club during a strict training period.",
         options: [
           {
             id: "suspend",
@@ -138,7 +139,8 @@ export const CrisisService = {
       {
         id: "sponsorship_friction",
         title: "Sponsorship Tension",
-        description: "A major sponsor is unhappy with the stable's recent public image and is threatening to pull funding.",
+        description:
+          "A major sponsor is unhappy with the stable's recent public image and is threatening to pull funding.",
         options: [
           {
             id: "renegotiate",
@@ -161,7 +163,8 @@ export const CrisisService = {
       {
         id: "injury_training",
         title: "Training Mishap",
-        description: "A freak accident during the morning practice has left several rikishi shaken and one potentially injured.",
+        description:
+          "A freak accident during the morning practice has left several rikishi shaken and one potentially injured.",
         options: [
           {
             id: "halt_training",
@@ -184,7 +187,8 @@ export const CrisisService = {
       {
         id: "media_firestorm",
         title: "Media Firestorm",
-        description: "A journalist is preparing an expose on the 'toxic culture' within the modern sumo stables.",
+        description:
+          "A journalist is preparing an expose on the 'toxic culture' within the modern sumo stables.",
         options: [
           {
             id: "exclusive",
@@ -207,7 +211,8 @@ export const CrisisService = {
       {
         id: "governance_audit",
         title: "Compliance Audit",
-        description: "The Sumo Association has announced a surprise audit of stable welfare and financial records.",
+        description:
+          "The Sumo Association has announced a surprise audit of stable welfare and financial records.",
         options: [
           {
             id: "cooperate",

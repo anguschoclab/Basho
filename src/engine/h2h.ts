@@ -29,7 +29,7 @@ export function updateH2H(
   year: number,
   day: number
 ): StateImpact {
-  const builder = createImpactBuilder('updateH2H');
+  const builder = createImpactBuilder("updateH2H");
 
   // Get existing H2H maps or create empty ones
   const winnerH2h = winner.h2h || {};
@@ -63,15 +63,15 @@ export function updateH2H(
   const winnerUpdate = {
     h2h: {
       ...winnerH2h,
-      [loser.id]: winnerRecord
-    }
+      [loser.id]: winnerRecord,
+    },
   };
 
   const loserUpdate = {
     h2h: {
       ...loserH2h,
-      [winner.id]: loserRecord
-    }
+      [winner.id]: loserRecord,
+    },
   };
 
   builder.updateRikishi(winner.id, winnerUpdate);
@@ -107,12 +107,12 @@ function getRandomFromArray(rng: SeededRNG, arr: string[]): string {
  * Generates a rich, context-aware narrative intro based on H2H history.
  */
 export function generateH2HCommentary(r1: Rikishi, r2: Rikishi): string {
-  const recordSeed = `${r1.id}::${r2.id}::${(r1.h2h?.[r2.id]?.wins ?? 0)}::${(r1.h2h?.[r2.id]?.losses ?? 0)}`;
+  const recordSeed = `${r1.id}::${r2.id}::${r1.h2h?.[r2.id]?.wins ?? 0}::${r1.h2h?.[r2.id]?.losses ?? 0}`;
   const rng = rngFromSeed("h2h", "h2h", recordSeed);
-  
+
   // Guard clause if h2h is undefined
   if (!r1.h2h) r1.h2h = {};
-  
+
   const record = r1.h2h[r2.id];
 
   // Case 0: First meeting
@@ -124,31 +124,42 @@ export function generateH2HCommentary(r1: Rikishi, r2: Rikishi): string {
   const p1Name = r1.shikona;
   const p2Name = r2.shikona;
   const last = record.lastMatch;
-  
+
   // Case 1: Lopsided Domination (Win rate > 75% with 4+ matches)
   if (total >= 4 && record.wins / total > 0.75) {
-    return BardEngine.resolve(rng, "h2h.domination", { 
-      P1: p1Name, P2: p2Name, WINS: record.wins.toString(), LOSSES: record.losses.toString(), TOTAL: total.toString() 
+    return BardEngine.resolve(rng, "h2h.domination", {
+      P1: p1Name,
+      P2: p2Name,
+      WINS: record.wins.toString(),
+      LOSSES: record.losses.toString(),
+      TOTAL: total.toString(),
     }).text;
   }
   if (total >= 4 && record.losses / total > 0.75) {
     // Note: domain 'domination' templates handle P2 struggling as well.
-    return BardEngine.resolve(rng, "h2h.domination", { 
-      P1: p2Name, P2: p1Name, WINS: record.losses.toString(), LOSSES: record.wins.toString(), TOTAL: total.toString() 
+    return BardEngine.resolve(rng, "h2h.domination", {
+      P1: p2Name,
+      P2: p1Name,
+      WINS: record.losses.toString(),
+      LOSSES: record.wins.toString(),
+      TOTAL: total.toString(),
     }).text;
   }
 
   // Case 2: Deadlock (Exact tie or off by 1)
   if (Math.abs(record.wins - record.losses) <= 1 && total > 2) {
-    return BardEngine.resolve(rng, "h2h.deadlock", { 
-      WINS: record.wins.toString(), LOSSES: record.losses.toString() 
+    return BardEngine.resolve(rng, "h2h.deadlock", {
+      WINS: record.wins.toString(),
+      LOSSES: record.losses.toString(),
     }).text;
   }
 
   // Case 3: Streak Narrative
   if (Math.abs(record.streak) >= 3) {
-    return BardEngine.resolve(rng, "h2h.streak", { 
-      P1: p1Name, P2: p2Name, STREAK: Math.abs(record.streak).toString() 
+    return BardEngine.resolve(rng, "h2h.streak", {
+      P1: p1Name,
+      P2: p2Name,
+      STREAK: Math.abs(record.streak).toString(),
     }).text;
   }
 
@@ -156,9 +167,12 @@ export function generateH2HCommentary(r1: Rikishi, r2: Rikishi): string {
   if (last) {
     const winnerName = last.winnerId === r1.id ? p1Name : p2Name;
     const loserName = last.winnerId === r1.id ? p2Name : p1Name;
-    
-    return BardEngine.resolve(rng, "h2h.recent", { 
-      DAY: last.day.toString(), WINNER: winnerName, LOSER: loserName, KIMARITE: last.kimarite 
+
+    return BardEngine.resolve(rng, "h2h.recent", {
+      DAY: last.day.toString(),
+      WINNER: winnerName,
+      LOSER: loserName,
+      KIMARITE: last.kimarite,
     }).text;
   }
 
@@ -166,21 +180,20 @@ export function generateH2HCommentary(r1: Rikishi, r2: Rikishi): string {
   return `${p1Name} leads the series ${record.wins} to ${record.losses}.`;
 }
 
-
 /**
  * Build a structured H2H report for two rikishi.
  * Reads from rikishi.history[] (MatchResultLog[]) — the authoritative per-bout source.
  * Returns up to 5 recent meetings sorted newest-first.
  */
 export function getH2HReport(rA: Rikishi, rB: Rikishi): H2HReport {
-  const aHistory = (rA.history ?? []).filter(m => m.opponentId === rB.id);
-  const bHistory = (rB.history ?? []).filter(m => m.opponentId === rA.id);
+  const aHistory = (rA.history ?? []).filter((m) => m.opponentId === rB.id);
+  const bHistory = (rB.history ?? []).filter((m) => m.opponentId === rA.id);
 
-  const aWins = aHistory.filter(m => m.win).length;
-  const bWins = bHistory.filter(m => m.win).length;
+  const aWins = aHistory.filter((m) => m.win).length;
+  const bWins = bHistory.filter((m) => m.win).length;
 
   // Build recent meetings from rA's perspective (covers all shared bouts)
-  const meetings: H2HRecentMeeting[] = aHistory.map(m => ({
+  const meetings: H2HRecentMeeting[] = aHistory.map((m) => ({
     bashoId: m.bashoId,
     year: m.year,
     day: m.day,
@@ -189,7 +202,7 @@ export function getH2HReport(rA: Rikishi, rB: Rikishi): H2HReport {
   }));
 
   // Sort newest first (year desc, then day desc)
-  meetings.sort((a, b) => b.year !== a.year ? b.year - a.year : b.day - a.day);
+  meetings.sort((a, b) => (b.year !== a.year ? b.year - a.year : b.day - a.day));
 
   return {
     aId: rA.id,
@@ -216,14 +229,14 @@ export function determineCPUTactic(cpu: Rikishi, rng: SeededRNG): BoutTactic {
     if (roll < 0.95) return "OSHI_THRUST";
     return "HENKA";
   } else if (isOshi) {
-    if (roll < 0.70) return "OSHI_THRUST";
+    if (roll < 0.7) return "OSHI_THRUST";
     if (roll < 0.85) return "STANDARD";
     if (roll < 0.95) return "YOTSU_BELT";
     return "HENKA";
   } else {
     // Hybrid / Other
-    if (roll < 0.40) return "YOTSU_BELT";
-    if (roll < 0.80) return "OSHI_THRUST";
+    if (roll < 0.4) return "YOTSU_BELT";
+    if (roll < 0.8) return "OSHI_THRUST";
     if (roll < 0.95) return "STANDARD";
     return "HENKA";
   }
@@ -237,12 +250,15 @@ export function determineCPUTactic(cpu: Rikishi, rng: SeededRNG): BoutTactic {
  * HENKA counters YOTSU (Belt)
  * STANDARD provides no modifiers.
  */
-export function resolveTacticalClash(playerTactic: BoutTactic, cpuTactic: BoutTactic): TacticalResult {
+export function resolveTacticalClash(
+  playerTactic: BoutTactic,
+  cpuTactic: BoutTactic
+): TacticalResult {
   const result: TacticalResult = {
     playerTactic,
     cpuTactic,
-    advantage: 'NEUTRAL',
-    winProbabilityShift: 0
+    advantage: "NEUTRAL",
+    winProbabilityShift: 0,
   };
 
   if (playerTactic === cpuTactic || playerTactic === "STANDARD" || cpuTactic === "STANDARD") {

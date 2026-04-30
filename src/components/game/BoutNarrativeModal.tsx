@@ -79,12 +79,25 @@ export function BoutNarrativeModal({
   bashoName,
   day,
 }: BoutNarrativeModalProps) {
-  const narrative = generateNarrative(east as unknown as Rikishi, west as unknown as Rikishi, result, bashoName, day);
+  const narrative = generateNarrative(
+    east as unknown as Rikishi,
+    west as unknown as Rikishi,
+    result,
+    bashoName,
+    day
+  );
 
   const pbpLines = useMemo<PbpLine[]>(() => {
     try {
       const seed = `${bashoName}-${day}-${east.id}-${west.id}`;
-      generateBoutNarrative(result, east as unknown as Rikishi, west as unknown as Rikishi, bashoName, day, seed);
+      generateBoutNarrative(
+        result,
+        east as unknown as Rikishi,
+        west as unknown as Rikishi,
+        bashoName,
+        day,
+        seed
+      );
       return result.pbpLines ?? [];
     } catch {
       return [];
@@ -235,10 +248,7 @@ export function BoutNarrativeModal({
 
               {/* ── Technical log ── */}
               <TabsContent value="log" className="mt-4">
-                <BoutLog
-                  log={result.log}
-                  className="border rounded-md p-4 bg-background"
-                />
+                <BoutLog log={result.log} className="border rounded-md p-4 bg-background" />
               </TabsContent>
             </Tabs>
           </div>

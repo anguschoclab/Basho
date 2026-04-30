@@ -7,14 +7,15 @@ import type { Rikishi } from "../types/rikishi";
  */
 export function isForeign(rikishi: { nationality?: string }): boolean {
   if (!rikishi.nationality) return false;
-  return rikishi.nationality.toLowerCase() !== "japan" && 
-         rikishi.nationality.toLowerCase() !== "jp";
+  return (
+    rikishi.nationality.toLowerCase() !== "japan" && rikishi.nationality.toLowerCase() !== "jp"
+  );
 }
 
 /**
  * Checks if the rikishi is from a university/college background (affects debut rank).
  */
-export function isCollegeRecruit(rikishi: Pick<Rikishi, 'origin'>): boolean {
+export function isCollegeRecruit(rikishi: Pick<Rikishi, "origin">): boolean {
   if (!rikishi.origin) return false;
   const o = rikishi.origin.toLowerCase();
   return o.includes("university") || o.includes("univ") || o.includes("college");

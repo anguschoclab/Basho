@@ -35,7 +35,10 @@ export const MockFactory = {
     } as WorldState;
   },
 
-  createRikishi(idOrOverrides: Id | Partial<Rikishi>, overridesOpt: Partial<Rikishi> = {}): Rikishi {
+  createRikishi(
+    idOrOverrides: Id | Partial<Rikishi>,
+    overridesOpt: Partial<Rikishi> = {}
+  ): Rikishi {
     let id: Id;
     let overrides: Partial<Rikishi>;
 

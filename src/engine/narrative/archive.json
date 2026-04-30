@@ -566,22 +566,8 @@
     }
   },
   "matrix": {
-    "voices": [
-      "neutral",
-      "dramatic",
-      "clinical",
-      "folk",
-      "tabloid"
-    ],
-    "intensity_levels": [
-      "T0",
-      "T1",
-      "T2",
-      "T3",
-      "T4",
-      "T5",
-      "T6"
-    ],
+    "voices": ["neutral", "dramatic", "clinical", "folk", "tabloid"],
+    "intensity_levels": ["T0", "T1", "T2", "T3", "T4", "T5", "T6"],
     "dimensions": {
       "context": [
         "ritual_open",
@@ -600,28 +586,9 @@
         "finish",
         "ceremony_close"
       ],
-      "stance": [
-        "square",
-        "bladed",
-        "twisted",
-        "broken",
-        "unknown"
-      ],
-      "ring_state": [
-        "center",
-        "near_edge",
-        "at_edge",
-        "outside",
-        "unknown"
-      ],
-      "moment": [
-        "setup",
-        "contact",
-        "surge",
-        "stall",
-        "swing",
-        "resolve"
-      ]
+      "stance": ["square", "bladed", "twisted", "broken", "unknown"],
+      "ring_state": ["center", "near_edge", "at_edge", "outside", "unknown"],
+      "moment": ["setup", "contact", "surge", "stall", "swing", "resolve"]
     },
     "entries": [
       {
@@ -630,28 +597,15 @@
         "intensity": "T4",
         "voice": "dramatic",
         "filters": {
-          "stance": [
-            "broken",
-            "twisted",
-            "unknown"
-          ],
-          "ring_state": [
-            "near_edge",
-            "at_edge"
-          ],
-          "moment": [
-            "swing",
-            "resolve"
-          ]
+          "stance": ["broken", "twisted", "unknown"],
+          "ring_state": ["near_edge", "at_edge"],
+          "moment": ["swing", "resolve"]
         },
         "cooldown": {
           "scope": "basho",
           "min_days": 3
         },
-        "phrases": [
-          "Phrase 1 for testing.",
-          "Phrase 2 for testing."
-        ],
+        "phrases": ["Phrase 1 for testing.", "Phrase 2 for testing."],
         "tags": {
           "allowed_metaphor": true,
           "allowed_crowd_beat": true,
@@ -1157,46 +1111,16 @@
     },
     "scouting": {
       "confidence": {
-        "unknown": [
-          "Unknown",
-          "Undiscovered",
-          "No data"
-        ],
-        "low": [
-          "Limited observation",
-          "Rough estimate",
-          "Preliminary data"
-        ],
-        "medium": [
-          "Moderately scouted",
-          "Fair observation",
-          "Grounded estimate"
-        ],
-        "high": [
-          "Well-observed",
-          "In-depth scouting",
-          "Robust data"
-        ],
-        "certain": [
-          "Certain",
-          "Verified",
-          "Fact-checked"
-        ]
+        "unknown": ["Unknown", "Undiscovered", "No data"],
+        "low": ["Limited observation", "Rough estimate", "Preliminary data"],
+        "medium": ["Moderately scouted", "Fair observation", "Grounded estimate"],
+        "high": ["Well-observed", "In-depth scouting", "Robust data"],
+        "certain": ["Certain", "Verified", "Fact-checked"]
       },
       "qualifiers": {
-        "appears": [
-          "appears",
-          "seems to be",
-          "looks like"
-        ],
-        "may_be": [
-          "may be",
-          "could be",
-          "possibly"
-        ],
-        "unknown_narrative": [
-          "Insufficient observation to determine %attr%."
-        ]
+        "appears": ["appears", "seems to be", "looks like"],
+        "may_be": ["may be", "could be", "possibly"],
+        "unknown_narrative": ["Insufficient observation to determine %attr%."]
       }
     },
     "institutional": {
@@ -1408,11 +1332,7 @@
           "A strong training cycle for %SHIKONA% — the work is paying off.",
           "%SHIKONA% continues to improve in key areas."
         ],
-        "title": [
-          "Training Update",
-          "%SHIKONA%: Training Progress",
-          "Weekly Training Report"
-        ],
+        "title": ["Training Update", "%SHIKONA%: Training Progress", "Weekly Training Report"],
         "summary": [
           "%SHIKONA% has completed a successful training cycle.",
           "Steady improvement observed for %SHIKONA% this week.",
@@ -1425,27 +1345,17 @@
         ]
       },
       "economy": {
-        "kensho_title": [
-          "Kensho prize money"
-        ],
-        "kensho_summary": [
-          "%ENVELOPES% envelope(s) awarded (¥%AMOUNT%)."
-        ],
-        "special_prize_title": [
-          "Special Prize Awarded!"
-        ],
+        "kensho_title": ["Kensho prize money"],
+        "kensho_summary": ["%ENVELOPES% envelope(s) awarded (¥%AMOUNT%)."],
+        "special_prize_title": ["Special Prize Awarded!"],
         "special_prize_summary": [
           "Awarded %PRIZETYPE%-shō for outstanding performance (¥%AMOUNT%)."
         ],
-        "insolvency_title": [
-          "Financial Insolvency"
-        ],
+        "insolvency_title": ["Financial Insolvency"],
         "insolvency_summary": [
           "%HEYANAME% has run out of funds! Bankruptcy is an imminent threat."
         ],
-        "deficit_title": [
-          "Operating Deficit"
-        ],
+        "deficit_title": ["Operating Deficit"],
         "deficit_summary": [
           "%HEYANAME% is operating at a ¥%AMOUNT% deficit this month. Reserve funds are depleting.",
           "Financial pressure mounts: %HEYANAME% loses ¥%AMOUNT% after upkeep and salaries.",
@@ -1453,93 +1363,51 @@
         ]
       },
       "lifecycle": {
-        "title": [
-          "Career Milestone",
-          "Sumo Life Cycle Event"
-        ],
-        "summary": [
-          "A significant event in the career of %SHIKONA%."
-        ],
-        "retirement_title": [
-          "%SHIKONA% Retires",
-          "Intai: %SHIKONA%"
-        ],
+        "title": ["Career Milestone", "Sumo Life Cycle Event"],
+        "summary": ["A significant event in the career of %SHIKONA%."],
+        "retirement_title": ["%SHIKONA% Retires", "Intai: %SHIKONA%"],
         "retirement_summary": [
           "After a distinguished career, %SHIKONA% has decided to hang up his mawashi.",
           "%SHIKONA% announces his retirement from professional sumo."
         ],
-        "naturalization_title": [
-          "Naturalization: %SHIKONA%",
-          "%SHIKONA% Obtains Citizenship"
-        ],
+        "naturalization_title": ["Naturalization: %SHIKONA%", "%SHIKONA% Obtains Citizenship"],
         "naturalization_summary": [
           "%SHIKONA% has officially completed the naturalization process, securing his future in the Association.",
           "Legal milestone: %SHIKONA% is now a Japanese citizen."
         ],
-        "merger_title": [
-          "Stable Merger",
-          "Heya Reorganization"
-        ],
-        "merger_summary": [
-          "Administrative shift: %HEYANAME% has completed a merger process."
-        ]
+        "merger_title": ["Stable Merger", "Heya Reorganization"],
+        "merger_summary": ["Administrative shift: %HEYANAME% has completed a merger process."]
       },
       "rivalry": {
-        "formed_title": [
-          "New rivalry emerges"
-        ],
-        "formed_summary": [
-          "%A_NAME% has developed a personal grudge against %B_NAME%."
-        ],
-        "escalated_title": [
-          "Rivalry intensifies (%HEAT%)"
-        ],
+        "formed_title": ["New rivalry emerges"],
+        "formed_summary": ["%A_NAME% has developed a personal grudge against %B_NAME%."],
+        "escalated_title": ["Rivalry intensifies (%HEAT%)"],
         "escalated_summary": [
           "The tension between %A_NAME% and %B_NAME% has reached a %HEAT% heat."
         ]
       },
       "welfare": {
-        "alert_title": [
-          "Welfare Alert"
-        ],
-        "alert_summary": [
-          "%HEYANAME% is under scrutiny for welfare compliance. Status: %STATUS%"
-        ]
+        "alert_title": ["Welfare Alert"],
+        "alert_summary": ["%HEYANAME% is under scrutiny for welfare compliance. Status: %STATUS%"]
       },
       "basho": {
-        "day_title": [
-          "Day %DAY%"
-        ],
-        "day_summary": [
-          "Tournament day %DAY% begins."
-        ],
-        "status_title": [
-          "Basho Status Update",
-          "Tournament News",
-          "Kokugikan Report"
-        ],
+        "day_title": ["Day %DAY%"],
+        "day_summary": ["Tournament day %DAY% begins."],
+        "status_title": ["Basho Status Update", "Tournament News", "Kokugikan Report"],
         "status_summary": [
           "Tournament progress: %DAY% days concluded. Standing: %SHIKONA% (%WINS%-%LOSSES%).",
           "The race for the Cup continues. %SHIKONA% currently holds a %WINS%-%LOSSES% record.",
           "Basho Update: %SHIKONA% is %WINS%-%LOSSES% after a crucial day of action."
         ],
-        "bout_title": [
-          "Bout concluded"
-        ],
-        "bout_summary": [
-          "Winner decided by %KIMARITE%."
-        ],
-        "concluded_title": [
-          "%BASHONAME% Basho Concluded"
-        ],
+        "bout_title": ["Bout concluded"],
+        "bout_summary": ["Winner decided by %KIMARITE%."],
+        "concluded_title": ["%BASHONAME% Basho Concluded"],
         "concluded_summary": [
           "%SHIKONA% wins the tournament with a dominant %WINS%-%LOSSES% record!",
           "The Emperor's Cup goes to %SHIKONA% after a historic performance.",
           "%SHIKONA% stands victorious at the end of the %BASHONAME% basho."
         ],
-        "playoff_title": [
-          "Playoff Champion: %SHIKONA%"
-        ],
+        "playoff_title": ["Playoff Champion: %SHIKONA%"],
         "playoff_summary": [
           "%CONTENDERS% rikishi tied at %WINS% wins. %SHIKONA% wins the Cup via playoff victory.",
           "Drama at the Kokugikan! %SHIKONA% overcomes all rivals in the tie-breaker rounds.",
@@ -1581,72 +1449,28 @@
         ]
       },
       "titles": {
-        "RECRUITMENT_WINDOW_CLOSED": [
-          "Recruitment window closed"
-        ],
-        "RECRUITMENT_BLOCKED_SANCTIONS": [
-          "Recruitment blocked by sanctions"
-        ],
-        "RECRUITMENT_WINDOW_OPEN": [
-          "Recruitment window open"
-        ],
-        "PHASE_TRANSITION": [
-          "Phase transition"
-        ],
-        "BANZUKE_REVEAL": [
-          "Banzuke Hatsu-Dashi"
-        ],
-        "MONTHLY_BOUNDARY": [
-          "Financial cycle complete"
-        ],
-        "MONTHLY_DEFICIT": [
-          "Operating deficit"
-        ],
-        "ARCHETYPE_DRIFT": [
-          "Tactical shift"
-        ],
-        "YEAR_BOUNDARY": [
-          "Year %YEAR% begins"
-        ],
-        "HOF_INDUCTION": [
-          "Hall of Fame: %SHIKONA%"
-        ],
-        "CAREER_WINS_MILESTONE": [
-          "%SHIKONA% reaches %WINS% wins"
-        ],
-        "HOF_ELIGIBLE": [
-          "Hall of Fame eligibility reached"
-        ],
-        "NPC_RECRUITMENT_SUMMARY": [
-          "NPC stables recruit"
-        ],
-        "TALENT_POOL_REINJECTION": [
-          "Wrestler re-enters talent pool"
-        ],
-        "HIGH_TALENT_SIGNED": [
-          "Elite prospect signed"
-        ],
-        "GOVERNANCE_SCANDAL_REPORTED": [
-          "Scandal reported"
-        ],
-        "GOVERNANCE_WARNING": [
-          "JSA Warning"
-        ],
-        "GOVERNANCE_STATUS_CHANGED": [
-          "Governance status change"
-        ],
-        "COMPLIANCE_SANCTIONS_LIFTED": [
-          "Sanctions lifted"
-        ],
-        "JSA_ELECTION": [
-          "JSA Board Election"
-        ],
-        "INJURY_SUSTAINED": [
-          "%SHIKONA% Injured"
-        ],
-        "GOVERNANCE_BAILOUT": [
-          "Ichimon Bailout"
-        ]
+        "RECRUITMENT_WINDOW_CLOSED": ["Recruitment window closed"],
+        "RECRUITMENT_BLOCKED_SANCTIONS": ["Recruitment blocked by sanctions"],
+        "RECRUITMENT_WINDOW_OPEN": ["Recruitment window open"],
+        "PHASE_TRANSITION": ["Phase transition"],
+        "BANZUKE_REVEAL": ["Banzuke Hatsu-Dashi"],
+        "MONTHLY_BOUNDARY": ["Financial cycle complete"],
+        "MONTHLY_DEFICIT": ["Operating deficit"],
+        "ARCHETYPE_DRIFT": ["Tactical shift"],
+        "YEAR_BOUNDARY": ["Year %YEAR% begins"],
+        "HOF_INDUCTION": ["Hall of Fame: %SHIKONA%"],
+        "CAREER_WINS_MILESTONE": ["%SHIKONA% reaches %WINS% wins"],
+        "HOF_ELIGIBLE": ["Hall of Fame eligibility reached"],
+        "NPC_RECRUITMENT_SUMMARY": ["NPC stables recruit"],
+        "TALENT_POOL_REINJECTION": ["Wrestler re-enters talent pool"],
+        "HIGH_TALENT_SIGNED": ["Elite prospect signed"],
+        "GOVERNANCE_SCANDAL_REPORTED": ["Scandal reported"],
+        "GOVERNANCE_WARNING": ["JSA Warning"],
+        "GOVERNANCE_STATUS_CHANGED": ["Governance status change"],
+        "COMPLIANCE_SANCTIONS_LIFTED": ["Sanctions lifted"],
+        "JSA_ELECTION": ["JSA Board Election"],
+        "INJURY_SUSTAINED": ["%SHIKONA% Injured"],
+        "GOVERNANCE_BAILOUT": ["Ichimon Bailout"]
       },
       "governance": {
         "title": [
@@ -1831,9 +1655,7 @@
           "intensive_size": [
             "Mass-building specialized regimen — pushing hard to build world-class physical presence."
           ],
-          "balanced_standard": [
-            "%PHILOSOPHY% cycle — maintaining steady upward trajectory."
-          ],
+          "balanced_standard": ["%PHILOSOPHY% cycle — maintaining steady upward trajectory."],
           "punishing_dominance": [
             "Uncompromising pursuit of dominance — imposing a punishing regimen for elite prospects."
           ],
@@ -1846,80 +1668,36 @@
           "balanced_operational": [
             "Standard operational cycle — maintaining balanced development."
           ],
-          "capped": [
-            "(capped by sanctions to %CAP%)"
-          ]
+          "capped": ["(capped by sanctions to %CAP%)"]
         },
         "focus": {
-          "size_matters": [
-            "Size-obsessed philosophy — power focus to bulk up roster"
-          ],
-          "innovator": [
-            "Innovator philosophy — speed & agility focus"
-          ],
-          "traditionalist": [
-            "Traditional philosophy — balance & fundamentals"
-          ],
-          "traditionalist_yotsu": [
-            "Traditionalist yotsu — emphasizing balance"
-          ],
-          "traditionalist_power": [
-            "Traditionalist approach — power focus"
-          ],
-          "developing": [
-            "Developing roster — building technique fundamentals"
-          ],
-          "oshi_biased": [
-            "Oshi-biased stable — power focus"
-          ],
-          "yotsu_biased": [
-            "Yotsu-biased stable — technique focus"
-          ],
-          "neutral": [
-            "Balanced training focus"
-          ]
+          "size_matters": ["Size-obsessed philosophy — power focus to bulk up roster"],
+          "innovator": ["Innovator philosophy — speed & agility focus"],
+          "traditionalist": ["Traditional philosophy — balance & fundamentals"],
+          "traditionalist_yotsu": ["Traditionalist yotsu — emphasizing balance"],
+          "traditionalist_power": ["Traditionalist approach — power focus"],
+          "developing": ["Developing roster — building technique fundamentals"],
+          "oshi_biased": ["Oshi-biased stable — power focus"],
+          "yotsu_biased": ["Yotsu-biased stable — technique focus"],
+          "neutral": ["Balanced training focus"]
         },
         "recovery": {
-          "critical": [
-            "Critical health situation — maximum recovery"
-          ],
-          "elevated": [
-            "Elevated welfare concern — high recovery"
-          ],
-          "minimal": [
-            "Healthy roster — minimal recovery allocation"
-          ],
-          "standard": [
-            "Standard recovery emphasis"
-          ]
+          "critical": ["Critical health situation — maximum recovery"],
+          "elevated": ["Elevated welfare concern — high recovery"],
+          "minimal": ["Healthy roster — minimal recovery allocation"],
+          "standard": ["Standard recovery emphasis"]
         },
         "scouting": {
-          "suspended": [
-            "Financial crisis — scouting suspended"
-          ],
-          "aggressive": [
-            "Roster needs rebuilding — aggressive scouting"
-          ],
-          "active_sleeper": [
-            "Sleeper Scout personality — active scouting"
-          ],
-          "active_ambitious": [
-            "Ambitious manager seeking talent"
-          ],
-          "passive_dominant": [
-            "Dominant roster — passive scouting"
-          ],
-          "passive_standard": [
-            "Standard scouting activity"
-          ]
+          "suspended": ["Financial crisis — scouting suspended"],
+          "aggressive": ["Roster needs rebuilding — aggressive scouting"],
+          "active_sleeper": ["Sleeper Scout personality — active scouting"],
+          "active_ambitious": ["Ambitious manager seeking talent"],
+          "passive_dominant": ["Dominant roster — passive scouting"],
+          "passive_standard": ["Standard scouting activity"]
         },
         "protect": {
-          "active": [
-            "Protecting %COUNT% wrestler(s) due to health concerns"
-          ],
-          "none": [
-            "No wrestlers require protection"
-          ]
+          "active": ["Protecting %COUNT% wrestler(s) due to health concerns"],
+          "none": ["No wrestlers require protection"]
         }
       }
     },
@@ -2017,100 +1795,44 @@
     },
     "training": {
       "intensity": {
-        "conservative": [
-          "Conservative"
-        ],
-        "balanced": [
-          "Balanced"
-        ],
-        "intensive": [
-          "Intensive"
-        ],
-        "punishing": [
-          "Punishing"
-        ]
+        "conservative": ["Conservative"],
+        "balanced": ["Balanced"],
+        "intensive": ["Intensive"],
+        "punishing": ["Punishing"]
       },
       "focus": {
-        "power": [
-          "Power"
-        ],
-        "speed": [
-          "Speed"
-        ],
-        "technique": [
-          "Technique"
-        ],
-        "balance": [
-          "Balance"
-        ],
-        "neutral": [
-          "Neutral"
-        ]
+        "power": ["Power"],
+        "speed": ["Speed"],
+        "technique": ["Technique"],
+        "balance": ["Balance"],
+        "neutral": ["Neutral"]
       },
       "recovery": {
-        "low": [
-          "Low"
-        ],
-        "normal": [
-          "Normal"
-        ],
-        "high": [
-          "High"
-        ]
+        "low": ["Low"],
+        "normal": ["Normal"],
+        "high": ["High"]
       },
       "mode": {
-        "develop": [
-          "Develop"
-        ],
-        "push": [
-          "Push"
-        ],
-        "protect": [
-          "Protect"
-        ],
-        "rebuild": [
-          "Rebuild"
-        ]
+        "develop": ["Develop"],
+        "push": ["Push"],
+        "protect": ["Protect"],
+        "rebuild": ["Rebuild"]
       }
     },
     "oyakata": {
       "quirks": {
-        "Old-School Stickler": [
-          "Old-School Stickler"
-        ],
-        "Gambler's Instinct": [
-          "Gambler's Instinct"
-        ],
-        "Welfare Hawk": [
-          "Welfare Hawk"
-        ],
-        "Discipline Hawk": [
-          "Discipline Hawk"
-        ],
-        "Media Operator": [
-          "Media Operator"
-        ],
-        "Sleeper Scout": [
-          "Sleeper Scout"
-        ],
-        "Nepotist": [
-          "Nepotist"
-        ],
-        "Weight-Cutter": [
-          "Weight-Cutter"
-        ],
-        "Keiko Romantic": [
-          "Keiko Romantic"
-        ],
-        "Cold Pragmatist": [
-          "Cold Pragmatist"
-        ],
-        "Family First": [
-          "Family First"
-        ],
-        "Numbers Guy": [
-          "Numbers Guy"
-        ]
+        "Old-School Stickler": ["Old-School Stickler"],
+        "Gambler's Instinct": ["Gambler's Instinct"],
+        "Welfare Hawk": ["Welfare Hawk"],
+        "Discipline Hawk": ["Discipline Hawk"],
+        "Media Operator": ["Media Operator"],
+        "Sleeper Scout": ["Sleeper Scout"],
+        "Nepotist": ["Nepotist"],
+        "Weight-Cutter": ["Weight-Cutter"],
+        "Keiko Romantic": ["Keiko Romantic"],
+        "Cold Pragmatist": ["Cold Pragmatist"],
+        "Family First": ["Family First"],
+        "Numbers Guy": ["Numbers Guy"]
       }
     },
     "strategy": {
@@ -2124,46 +1846,16 @@
   },
   "vocabulary": {
     "intensity_1": {
-      "adjectives": [
-        "standard",
-        "routine",
-        "steady",
-        "calculated"
-      ],
-      "verbs": [
-        "moves",
-        "drives",
-        "wins",
-        "finishes"
-      ]
+      "adjectives": ["standard", "routine", "steady", "calculated"],
+      "verbs": ["moves", "drives", "wins", "finishes"]
     },
     "intensity_2": {
-      "adjectives": [
-        "professional",
-        "dominant",
-        "resolute",
-        "technical"
-      ],
-      "verbs": [
-        "executes",
-        "dictates",
-        "neutralizes",
-        "commands"
-      ]
+      "adjectives": ["professional", "dominant", "resolute", "technical"],
+      "verbs": ["executes", "dictates", "neutralizes", "commands"]
     },
     "intensity_3": {
-      "adjectives": [
-        "thunderous",
-        "electric",
-        "unstoppable",
-        "extraordinary"
-      ],
-      "verbs": [
-        "detonates",
-        "decimates",
-        "shatters",
-        "conquers"
-      ]
+      "adjectives": ["thunderous", "electric", "unstoppable", "extraordinary"],
+      "verbs": ["detonates", "decimates", "shatters", "conquers"]
     }
   }
 }

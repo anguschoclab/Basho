@@ -155,7 +155,7 @@ export function calculateGrowthVector(
         degeikoMult *= 1.05; // Global boost
         break;
       case "Isegahama": // Focus on technical precision and speed
-        degeikoMult *= 1.05; 
+        degeikoMult *= 1.05;
         break;
       case "Nishonoseki": // Traditional all-rounders
         degeikoMult *= 1.05;
@@ -221,9 +221,9 @@ export function calculateGrowthVector(
   } else if (heya?.ichimon === "Nishonoseki") {
     styleDriftMults.speed += 0.05;
   } else if (heya?.ichimon === "Tokitsukaze") {
-    styleDriftMults.stamina += 0.10;
+    styleDriftMults.stamina += 0.1;
   } else if (heya?.ichimon === "Takadagawa") {
-    styleDriftMults.mental += 0.10;
+    styleDriftMults.mental += 0.1;
   }
 
   const growth: Record<TrainingAttribute, number> = {
@@ -250,11 +250,20 @@ export function calculateGrowthVector(
   };
 
   growth.strength =
-    applyCapped("strength", bias.strength, rikishi.stats?.strength || 50) * nutritionMult * styleDriftMults.strength;
-  growth.speed = applyCapped("speed", bias.speed, rikishi.stats?.speed || 50) * styleDriftMults.speed;
-  growth.technique = applyCapped("technique", bias.technique, rikishi.stats?.technique || 50) * styleDriftMults.technique;
-  growth.balance = applyCapped("balance", bias.balance, rikishi.stats?.balance || 50) * styleDriftMults.balance;
-  growth.stamina = applyCapped("stamina", 0.5, rikishi.stats?.stamina || 50) * nutritionMult * styleDriftMults.stamina;
+    applyCapped("strength", bias.strength, rikishi.stats?.strength || 50) *
+    nutritionMult *
+    styleDriftMults.strength;
+  growth.speed =
+    applyCapped("speed", bias.speed, rikishi.stats?.speed || 50) * styleDriftMults.speed;
+  growth.technique =
+    applyCapped("technique", bias.technique, rikishi.stats?.technique || 50) *
+    styleDriftMults.technique;
+  growth.balance =
+    applyCapped("balance", bias.balance, rikishi.stats?.balance || 50) * styleDriftMults.balance;
+  growth.stamina =
+    applyCapped("stamina", 0.5, rikishi.stats?.stamina || 50) *
+    nutritionMult *
+    styleDriftMults.stamina;
   growth.mental = applyCapped("mental", 0.2, rikishi.stats?.mental || 50) * styleDriftMults.mental;
   growth.adaptability = applyCapped("adaptability", 0.2, rikishi.stats?.adaptability || 50);
 

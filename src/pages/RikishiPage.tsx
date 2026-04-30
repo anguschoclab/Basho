@@ -131,10 +131,10 @@ export default function RikishiPage() {
         />
 
         <div className="p-8">
-          <RikishiLineage 
-            mentor={mentor} 
-            mentees={mentees} 
-            lineageTree={lineageTree} 
+          <RikishiLineage
+            mentor={mentor}
+            mentees={mentees}
+            lineageTree={lineageTree}
             rikishiId={rikishi.id}
           />
           <RikishiKeshoMawashi rikishi={rikishi} />
@@ -193,7 +193,9 @@ export default function RikishiPage() {
       <div className="mt-10 pt-6 border-t border-destructive/20">
         <div className="flex items-center justify-between p-4 rounded bg-destructive/5 border border-destructive/10">
           <div>
-            <h4 className="font-display font-bold text-destructive uppercase tracking-tight">Administrative Actions</h4>
+            <h4 className="font-display font-bold text-destructive uppercase tracking-tight">
+              Administrative Actions
+            </h4>
             <p className="text-[11px] text-muted-foreground font-body">
               Declare retirement (intai) for this rikishi.
             </p>

@@ -1,9 +1,5 @@
 import type { WorldState } from "../types/world";
-import type { 
-  ChronicleReport, 
-  ChampionEntry, 
-  ChronicleRecordEntry 
-} from "../types/records";
+import type { ChronicleReport, ChampionEntry, ChronicleRecordEntry } from "../types/records";
 import { stableTieBreak } from "../utils/sort";
 
 /**
@@ -20,7 +16,7 @@ export const ChronicleService = {
       greatestRivalries: [],
       eraLabels: [],
       recordsBroken: [],
-      highlights: []
+      highlights: [],
     };
   },
 
@@ -28,20 +24,20 @@ export const ChronicleService = {
    * Build the final chronicle report from simulation data.
    */
   finalizeReport(
-    world: WorldState, 
-    report: ChronicleReport, 
+    world: WorldState,
+    report: ChronicleReport,
     championCounts: Map<string, number>,
     startYear: number
   ): ChronicleReport {
     const championsList: ChampionEntry[] = [];
-    
+
     for (const [id, count] of championCounts.entries()) {
       const rikishi = world.rikishi.get(id);
       championsList.push({
         rikishiId: id,
         shikona: rikishi?.shikona || "Unknown",
         yushoCount: count,
-        bestRank: rikishi?.rank || "unknown"
+        bestRank: rikishi?.rank || "unknown",
       });
     }
 
@@ -73,5 +69,5 @@ export const ChronicleService = {
    */
   addRecord(report: ChronicleReport, record: ChronicleRecordEntry): void {
     report.recordsBroken.push(record);
-  }
+  },
 };

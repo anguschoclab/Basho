@@ -1,7 +1,7 @@
 import { destr } from "destr";
 /**
  * Local Storage Provider
- * 
+ *
  * Manages persistence of UI state (dashboard layouts, widget visibility, etc.)
  */
 
@@ -38,5 +38,5 @@ export const localStorageProvider = {
 
   clear: () => {
     localStorage.clear();
-  }
+  },
 };

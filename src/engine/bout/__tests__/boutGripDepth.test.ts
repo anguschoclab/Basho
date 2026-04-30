@@ -10,10 +10,7 @@ import { SeededRNG } from "../../rng";
 
 const rng = new SeededRNG("grip-depth-test");
 
-function makeRikishiWithDepth(
-  id: string,
-  depth: "standard" | "deep" | "maemitsu"
-) {
+function makeRikishiWithDepth(id: string, depth: "standard" | "deep" | "maemitsu") {
   return mockRikishi(id, {
     combatProfile: {
       archetype: "yotsu",

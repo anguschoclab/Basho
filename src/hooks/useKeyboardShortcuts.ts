@@ -30,10 +30,23 @@ const QUICK_NAV: Record<string, string> = {
  * Use keyboard shortcuts.
  *  * @param { eventLogOpen, onToggleEventLog, onOpenSaveLoad } - The { event log open, on toggle event log, on open save load }.
  */
-export function useKeyboardShortcuts({ eventLogOpen, onToggleEventLog, onOpenSaveLoad }: ShortcutOptions) {
+export function useKeyboardShortcuts({
+  eventLogOpen,
+  onToggleEventLog,
+  onOpenSaveLoad,
+}: ShortcutOptions) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { state, advanceOneDay, advanceDay, simulateBout, simulateAllBouts, endBasho, startBasho, quickSave } = useGame();
+  const {
+    state,
+    advanceOneDay,
+    advanceDay,
+    simulateBout,
+    simulateAllBouts,
+    endBasho,
+    startBasho,
+    quickSave,
+  } = useGame();
   const world = state.world;
 
   const handleKeyDown = useCallback(
@@ -105,7 +118,19 @@ export function useKeyboardShortcuts({ eventLogOpen, onToggleEventLog, onOpenSav
         return;
       }
     },
-    [world, state, location.pathname, navigate, advanceOneDay, advanceDay, simulateBout, simulateAllBouts, onToggleEventLog, onOpenSaveLoad, quickSave]
+    [
+      world,
+      state,
+      location.pathname,
+      navigate,
+      advanceOneDay,
+      advanceDay,
+      simulateBout,
+      simulateAllBouts,
+      onToggleEventLog,
+      onOpenSaveLoad,
+      quickSave,
+    ]
   );
 
   useEffect(() => {

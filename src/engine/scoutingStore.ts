@@ -7,10 +7,7 @@
 import type { WorldState } from "./types/world";
 import type { Id } from "./types/common";
 import type { Rikishi } from "./types/rikishi";
-import {
-  type ScoutedRikishi,
-  ScoutingService
-} from "./systems/recruitment/ScoutingService";
+import { type ScoutedRikishi, ScoutingService } from "./systems/recruitment/ScoutingService";
 import { type ScoutingInvestment } from "./systems/recruitment/RecruitmentConstants";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
@@ -45,7 +42,7 @@ function refreshTruthSnapshot(entry: ScoutedRikishi, truth: Rikishi): ScoutedRik
       rank: truth.rank,
       height: truth.height,
       weight: truth.weight,
-    }
+    },
   };
 }
 
@@ -98,13 +95,16 @@ function getRikishi(world: WorldState, rikishiId: string): Rikishi | null {
   return world.rikishi.get(rikishiId) || null;
 }
 
-
 /**
  * Get or create a ScoutedRikishi entry for a given rikishi.
  * - Owned rikishi are always 100% intel
  * - Non-owned start at baseline observation=0 + investment=none (unless set)
  */
-export function getOrCreateScouted(world: WorldState, rikishiId: Id, baselineObservation: number = 0): ScoutedRikishi {
+export function getOrCreateScouted(
+  world: WorldState,
+  rikishiId: Id,
+  baselineObservation: number = 0
+): ScoutedRikishi {
   const table = ensureScoutingTable(world);
   const existing = table[rikishiId];
   const currentWeek = getWorldWeek(world);
@@ -113,8 +113,10 @@ export function getOrCreateScouted(world: WorldState, rikishiId: Id, baselineObs
   const truth = getRikishi(world, rikishiId);
   if (!truth) {
     if (existing) return existing;
-    console.warn(`Scouting requested for non-existent rikishi: ${rikishiId}. Returning safety placeholder.`);
-    
+    console.warn(
+      `Scouting requested for non-existent rikishi: ${rikishiId}. Returning safety placeholder.`
+    );
+
     return {
       rikishiId,
       publicInfo: {
@@ -122,14 +124,14 @@ export function getOrCreateScouted(world: WorldState, rikishiId: Id, baselineObs
         shikona: "Unknown Wrestler",
         rank: "unknown",
         height: 0,
-        weight: 0
+        weight: 0,
       },
       isOwned: false,
       timesObserved: 0,
       lastObservedWeek: currentWeek,
       scoutingInvestment: "none",
       scoutingLevel: 0,
-      attributes: { power: 0, speed: 0, balance: 0, technique: 0, aggression: 0, experience: 0 }
+      attributes: { power: 0, speed: 0, balance: 0, technique: 0, aggression: 0, experience: 0 },
     };
   }
 
@@ -151,7 +153,11 @@ export function getOrCreateScouted(world: WorldState, rikishiId: Id, baselineObs
  * Set scouting investment for a target.
  * This should typically be driven by UI actions / economy spend.
  */
-export function setScoutingInvestment(world: WorldState, rikishiId: Id, investment: ScoutingInvestment): ScoutedRikishi {
+export function setScoutingInvestment(
+  world: WorldState,
+  rikishiId: Id,
+  investment: ScoutingInvestment
+): ScoutedRikishi {
   const table = ensureScoutingTable(world);
   const entry = getOrCreateScouted(world, rikishiId);
 
@@ -162,7 +168,13 @@ export function setScoutingInvestment(world: WorldState, rikishiId: Id, investme
   const truth = getRikishi(world, rikishiId);
   if (!truth) return entry;
 
-  const rebuilt = ScoutingService.createScoutedView(truth, playerHeyaId, entry.timesObserved, investment, currentWeek);
+  const rebuilt = ScoutingService.createScoutedView(
+    truth,
+    playerHeyaId,
+    entry.timesObserved,
+    investment,
+    currentWeek
+  );
   // Preserve lastObservedWeek if it's newer than currentWeek (shouldn't happen, but safe)
   rebuilt.lastObservedWeek = Math.max(entry.lastObservedWeek, currentWeek);
 
@@ -193,7 +205,7 @@ function observeBout(world: WorldState, eastId: Id, westId: Id): void {
  * Returns StateImpact describing scouting decay instead of mutating directly.
  */
 function applyWeeklyScoutingDecay(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('applyWeeklyScoutingDecay');
+  const builder = createImpactBuilder("applyWeeklyScoutingDecay");
   const table = ensureScoutingTable(world);
   const currentWeek = getWorldWeek(world);
 
@@ -203,9 +215,9 @@ function applyWeeklyScoutingDecay(world: WorldState): StateImpact {
   }
 
   const currentKnowledge = world.playerKnowledge || {};
-  builder.updateWorldField('playerKnowledge', {
+  builder.updateWorldField("playerKnowledge", {
     ...currentKnowledge,
-    scouting: updatedTable
+    scouting: updatedTable,
   });
 
   return builder.build();
@@ -214,14 +226,22 @@ function applyWeeklyScoutingDecay(world: WorldState): StateImpact {
 /**
  * Convenience: get a scouting % level for UI badges.
  */
-export function getScoutingLevel(world: WorldState, rikishiId: Id, baselineObservation: number = 0): number {
+export function getScoutingLevel(
+  world: WorldState,
+  rikishiId: Id,
+  baselineObservation: number = 0
+): number {
   return getOrCreateScouted(world, rikishiId, baselineObservation).scoutingLevel;
 }
 
 /**
  * Convenience: ensure scouting entries exist for a whole list (e.g. banzuke page).
  */
-export function warmScoutingForRikishiList(world: WorldState, rikishiIds: Id[], baselineObservation: number = 0): void {
+export function warmScoutingForRikishiList(
+  world: WorldState,
+  rikishiIds: Id[],
+  baselineObservation: number = 0
+): void {
   for (const id of rikishiIds) getOrCreateScouted(world, id, baselineObservation);
 }
 
@@ -238,7 +258,7 @@ export function onBoutResolvedScouting(
   world: WorldState,
   context: { match: any; result: any; east: any; west: any }
 ): StateImpact {
-  const builder = createImpactBuilder('onBoutResolvedScouting');
+  const builder = createImpactBuilder("onBoutResolvedScouting");
   const playerHeyaId = getPlayerHeyaId(world);
   if (!playerHeyaId) return builder.build();
 
@@ -249,8 +269,7 @@ export function onBoutResolvedScouting(
   // Auto-observe if player's rikishi is involved (always watched)
   const eastRikishi = getRikishi(world, eastId);
   const westRikishi = getRikishi(world, westId);
-  const isPlayerBout =
-    eastRikishi?.heyaId === playerHeyaId || westRikishi?.heyaId === playerHeyaId;
+  const isPlayerBout = eastRikishi?.heyaId === playerHeyaId || westRikishi?.heyaId === playerHeyaId;
 
   if (isPlayerBout) {
     const table = ensureScoutingTable(world);
@@ -266,13 +285,13 @@ export function onBoutResolvedScouting(
     const updatedTable = {
       ...table,
       [eastId]: updatedEast,
-      [westId]: updatedWest
+      [westId]: updatedWest,
     };
 
     const currentKnowledge = world.playerKnowledge || {};
-    builder.updateWorldField('playerKnowledge', {
+    builder.updateWorldField("playerKnowledge", {
       ...currentKnowledge,
-      scouting: updatedTable
+      scouting: updatedTable,
     });
   }
 

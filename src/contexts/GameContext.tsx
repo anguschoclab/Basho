@@ -71,7 +71,10 @@ interface GameContextValue {
   advanceTutorialStep: (step: import("@/engine/types/tutorial").TutorialStep) => void;
   setTutorialFlag: (flag: keyof import("@/engine/types/tutorial").TutorialFlags) => void;
   completeTutorial: () => void;
-  buildInfrastructure: (heyaId: string, facilityId: import("@/engine/types/infrastructure").FacilityId) => void;
+  buildInfrastructure: (
+    heyaId: string,
+    facilityId: import("@/engine/types/infrastructure").FacilityId
+  ) => void;
 }
 
 const GameContext = createContext<GameContextValue | null>(null);

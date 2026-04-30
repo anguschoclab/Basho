@@ -5,7 +5,9 @@ import { generateInitialWorld } from "../systems/generation/WorldFactory";
 describe("yokozuna promotion in AutoSim", () => {
   it("appends careerHistory entry for each sekitori after every basho in AutoSim", () => {
     const world = generateInitialWorld("career-history-test-001");
-    const ozeki = Array.from(world.rikishi.values()).find(r => r.rank === "ozeki" && !r.isRetired);
+    const ozeki = Array.from(world.rikishi.values()).find(
+      (r) => r.rank === "ozeki" && !r.isRetired
+    );
     expect(ozeki).toBeDefined();
 
     const result = runAutoSim(world, {
@@ -42,8 +44,9 @@ describe("yokozuna promotion in AutoSim", () => {
 
     // Either the simulation stopped early due to promotion,
     // or we have an active yokozuna after 12 basho (Case 4 prestige promotion)
-    const activeYokozuna = Array.from(result.finalWorld.rikishi.values())
-      .filter(r => r.rank === "yokozuna" && !r.isRetired);
+    const activeYokozuna = Array.from(result.finalWorld.rikishi.values()).filter(
+      (r) => r.rank === "yokozuna" && !r.isRetired
+    );
     const stoppedByPromotion = result.stoppedBy === "yokozunaPromotion";
     expect(stoppedByPromotion || activeYokozuna.length > 0).toBe(true);
   }, 120000);

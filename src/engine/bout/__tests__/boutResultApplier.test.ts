@@ -60,7 +60,11 @@ describe("boutResultApplier", () => {
         heyas: new Map([
           [
             "test-heya",
-            { id: "test-heya", name: "Test Heya", rikishiIds: ["east", "west"] } as unknown as import("../../types/heya").Heya,
+            {
+              id: "test-heya",
+              name: "Test Heya",
+              rikishiIds: ["east", "west"],
+            } as unknown as import("../../types/heya").Heya,
           ],
         ]),
         calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
@@ -164,7 +168,11 @@ describe("boutResultApplier", () => {
         heyas: new Map([
           [
             "test-heya",
-            { id: "test-heya", name: "Test Heya", rikishiIds: ["east", "west"] } as unknown as import("../../types/heya").Heya,
+            {
+              id: "test-heya",
+              name: "Test Heya",
+              rikishiIds: ["east", "west"],
+            } as unknown as import("../../types/heya").Heya,
           ],
         ]),
         calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
@@ -267,7 +275,11 @@ describe("boutResultApplier", () => {
         heyas: new Map([
           [
             "test-heya",
-            { id: "test-heya", name: "Test Heya", rikishiIds: ["east", "west"] } as unknown as import("../../types/heya").Heya,
+            {
+              id: "test-heya",
+              name: "Test Heya",
+              rikishiIds: ["east", "west"],
+            } as unknown as import("../../types/heya").Heya,
           ],
         ]),
         calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
@@ -370,7 +382,11 @@ describe("boutResultApplier", () => {
         heyas: new Map([
           [
             "test-heya",
-            { id: "test-heya", name: "Test Heya", rikishiIds: ["east", "west"] } as unknown as import("../../types/heya").Heya,
+            {
+              id: "test-heya",
+              name: "Test Heya",
+              rikishiIds: ["east", "west"],
+            } as unknown as import("../../types/heya").Heya,
           ],
         ]),
         calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
@@ -473,7 +489,11 @@ describe("boutResultApplier", () => {
         heyas: new Map([
           [
             "test-heya",
-            { id: "test-heya", name: "Test Heya", rikishiIds: ["east", "west"] } as unknown as import("../../types/heya").Heya,
+            {
+              id: "test-heya",
+              name: "Test Heya",
+              rikishiIds: ["east", "west"],
+            } as unknown as import("../../types/heya").Heya,
           ],
         ]),
         calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
@@ -577,7 +597,11 @@ describe("boutResultApplier", () => {
         heyas: new Map([
           [
             "test-heya",
-            { id: "test-heya", name: "Test Heya", rikishiIds: ["east", "west"] } as unknown as import("../../types/heya").Heya,
+            {
+              id: "test-heya",
+              name: "Test Heya",
+              rikishiIds: ["east", "west"],
+            } as unknown as import("../../types/heya").Heya,
           ],
         ]),
         calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },

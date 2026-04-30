@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { isRecruitmentPlayerRelevant, isMyosekiPlayerRelevant, isGovernancePlayerRelevant, isSponsorPlayerRelevant } from "./npcEventSurfacing";
+import {
+  isRecruitmentPlayerRelevant,
+  isMyosekiPlayerRelevant,
+  isGovernancePlayerRelevant,
+  isSponsorPlayerRelevant,
+} from "./npcEventSurfacing";
 import { generateInitialWorld } from "../systems/generation/WorldFactory";
 
 describe("NPC Activity Surfacing Heuristics", () => {
@@ -21,8 +26,8 @@ describe("NPC Activity Surfacing Heuristics", () => {
       const candidate = { candidateId: "c2" } as any;
       world.talentPool = {
         playerScouting: {
-          "c2": { scoutingLevel: 2 }
-        }
+          c2: { scoutingLevel: 2 },
+        },
       } as any;
       const importance = isRecruitmentPlayerRelevant(world, candidate);
       expect(importance).toBe("major");
@@ -39,7 +44,7 @@ describe("NPC Activity Surfacing Heuristics", () => {
     it("surfaces major for elite tier shares", () => {
       const playerHeya = { id: playerHeyaId, funds: 0, oyakataId: "o1" } as any;
       world.heyas.set(playerHeyaId, playerHeya);
-      
+
       const stock = { prestigeTier: "elite" } as any;
       const importance = isMyosekiPlayerRelevant(world, stock);
       expect(importance).toBe("major");

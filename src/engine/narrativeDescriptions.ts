@@ -1,9 +1,9 @@
 /**
  * File Name: src/engine/narrativeDescriptions.ts
  * Status: REFACTORED / SERVICE-ORIENTED
- * 
+ *
  * This is now a barrel file that delegates to the centralized NarrativeEngine.
- * 
+ *
  * Goal: No monoliths, 100% de-duplication.
  */
 
@@ -45,8 +45,8 @@ export function describeExperience(value: number): string {
  * Public helper for describing fatigue (Backward compatible).
  */
 export function describeFatigue(value: number): string {
-    const band = NarrativeService.getFatigueBand(value);
-    return NarrativeService.getFatigueLabel(DUMMY_RNG, band);
+  const band = NarrativeService.getFatigueBand(value);
+  return NarrativeService.getFatigueLabel(DUMMY_RNG, band);
 }
 
 /**

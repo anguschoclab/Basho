@@ -345,7 +345,10 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
     }
   }
 
-  public async retrieveBanzuke(season: number, bashoNumber: number): Promise<AlmanacSnapshot | null> {
+  public async retrieveBanzuke(
+    season: number,
+    bashoNumber: number
+  ): Promise<AlmanacSnapshot | null> {
     const dir = await this.getDirectoryPath([`season_${season}`, "banzuke"]);
     if (!dir) return null;
 

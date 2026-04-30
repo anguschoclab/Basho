@@ -146,9 +146,7 @@ export function FacilitiesManagementPanel({
                 <Coins className="h-3.5 w-3.5" />
                 Monthly Upkeep
               </div>
-              <span className="font-mono text-foreground">
-                {formatYen(monthlyMaintenance)}
-              </span>
+              <span className="font-mono text-foreground">{formatYen(monthlyMaintenance)}</span>
             </div>
           </div>
         </CardHeader>

@@ -8,7 +8,12 @@ interface MainContentPaneProps {
   activeSubTab?: string;
 }
 
-export function MainContentPane({ children, pageTitle, subNavTabs, activeSubTab }: MainContentPaneProps) {
+export function MainContentPane({
+  children,
+  pageTitle,
+  subNavTabs,
+  activeSubTab,
+}: MainContentPaneProps) {
   return (
     <main
       id="main-content"

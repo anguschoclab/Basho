@@ -22,33 +22,27 @@ const routeMap: Record<NameType, string> = {
 
 /**
  * clickable name.
- *  * @param { 
- *   type, 
- *   id, 
- *   name, 
+ *  * @param {
+ *   type,
+ *   id,
+ *   name,
  *   className,
- *   children 
- * } - The { 
- *   type, 
- *   id, 
- *   name, 
+ *   children
+ * } - The {
+ *   type,
+ *   id,
+ *   name,
  *   class name,
- *   children 
+ *   children
  * }.
  */
-export function ClickableName({ 
-  type, 
-  id, 
-  name, 
-  className,
-  children 
-}: ClickableNameProps) {
+export function ClickableName({ type, id, name, className, children }: ClickableNameProps) {
   const basePath = routeMap[type];
   const to = `${basePath}/${id}`;
-  
+
   return (
-    <Link 
-      to={to} 
+    <Link
+      to={to}
       className={cn(
         "cursor-pointer hover:text-primary hover:underline underline-offset-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-sm",
         className
@@ -65,22 +59,34 @@ export function ClickableName({
  * rikishi name.
  *  * @param { id, name, className, children } - The { id, name, class name, children }.
  */
-export function RikishiName({ id, name, className, children }: Omit<ClickableNameProps, 'type'>) {
-  return <ClickableName type="rikishi" id={id} name={name} className={className}>{children}</ClickableName>;
+export function RikishiName({ id, name, className, children }: Omit<ClickableNameProps, "type">) {
+  return (
+    <ClickableName type="rikishi" id={id} name={name} className={className}>
+      {children}
+    </ClickableName>
+  );
 }
 
 /**
  * stable name.
  *  * @param { id, name, className, children } - The { id, name, class name, children }.
  */
-export function StableName({ id, name, className, children }: Omit<ClickableNameProps, 'type'>) {
-  return <ClickableName type="stable" id={id} name={name} className={className}>{children}</ClickableName>;
+export function StableName({ id, name, className, children }: Omit<ClickableNameProps, "type">) {
+  return (
+    <ClickableName type="stable" id={id} name={name} className={className}>
+      {children}
+    </ClickableName>
+  );
 }
 
 /**
  * oyakata name.
  *  * @param { id, name, className, children } - The { id, name, class name, children }.
  */
-export function OyakataName({ id, name, className, children }: Omit<ClickableNameProps, 'type'>) {
-  return <ClickableName type="oyakata" id={id} name={name} className={className}>{children}</ClickableName>;
+export function OyakataName({ id, name, className, children }: Omit<ClickableNameProps, "type">) {
+  return (
+    <ClickableName type="oyakata" id={id} name={name} className={className}>
+      {children}
+    </ClickableName>
+  );
 }

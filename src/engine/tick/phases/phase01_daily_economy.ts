@@ -11,7 +11,7 @@ import { WelfareService } from "../../systems/welfare/WelfareService";
 import { DIET_COSTS, DEBT_LIMIT } from "../../constants/EconomicConstants";
 
 export function phase01_daily_economy(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('phase01_daily_economy');
+  const builder = createImpactBuilder("phase01_daily_economy");
   let totalDailyFoodCost = 0;
 
   // Only process heyas that have rikishi to deduct food costs

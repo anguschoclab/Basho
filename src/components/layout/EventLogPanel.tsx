@@ -140,12 +140,9 @@ export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
     return groups;
   }, [filteredEvents]);
 
-  const handleEventClick = useCallback(
-    (e: EngineEvent) => {
-      setSelectedEvent(e);
-    },
-    []
-  );
+  const handleEventClick = useCallback((e: EngineEvent) => {
+    setSelectedEvent(e);
+  }, []);
 
   const filterOptions = [
     { value: "all", label: "All" },
@@ -211,10 +208,12 @@ export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
                     )}
                   >
                     <div className="flex items-start gap-3">
-                      <div className={cn(
-                        "mt-0.5 shrink-0 p-1.5 rounded-lg bg-zinc-900",
-                        meta.color.replace('text-', 'text-opacity-80 ')
-                      )}>
+                      <div
+                        className={cn(
+                          "mt-0.5 shrink-0 p-1.5 rounded-lg bg-zinc-900",
+                          meta.color.replace("text-", "text-opacity-80 ")
+                        )}
+                      >
                         <Icon className="h-4 w-4" />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -229,14 +228,16 @@ export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
                         <p className="text-[11px] text-zinc-400 leading-relaxed line-clamp-2">
                           <MentionText text={e.summary} />
                         </p>
-                        
+
                         {/* Status Badges */}
                         <div className="flex items-center gap-1.5 mt-2">
                           {e.importance !== "minor" && (
-                            <div className={cn(
-                              "w-1 h-1 rounded-full",
-                              e.importance === "headline" ? "bg-red-500" : "bg-orange-500"
-                            )} />
+                            <div
+                              className={cn(
+                                "w-1 h-1 rounded-full",
+                                e.importance === "headline" ? "bg-red-500" : "bg-orange-500"
+                              )}
+                            />
                           )}
                           <span className="text-[9px] uppercase font-bold text-zinc-600 tracking-wider">
                             {meta.label}

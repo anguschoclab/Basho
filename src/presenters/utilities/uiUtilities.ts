@@ -34,12 +34,9 @@ export function resolveRegistryLabel(domain: string, id: string, useJa: boolean 
  * Guaranteed to strip hidden numerical stats.
  */
 export function enrichRikishiForUI(rikishi: Rikishi): UIRikishi {
-  return projectRikishi(
-    rikishi,
-    {
-      year: new Date().getFullYear(),
-      heyas: new Map(),
-      rikishi: new Map(),
-    } satisfies MinimalWorldForProjection as Parameters<typeof projectRikishi>[1]
-  );
+  return projectRikishi(rikishi, {
+    year: new Date().getFullYear(),
+    heyas: new Map(),
+    rikishi: new Map(),
+  } satisfies MinimalWorldForProjection as Parameters<typeof projectRikishi>[1]);
 }

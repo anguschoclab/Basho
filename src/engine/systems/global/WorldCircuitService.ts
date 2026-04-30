@@ -218,13 +218,13 @@ export const WorldCircuitService = {
 
     // Small weekly drift towards regional philosophy
     // This could modify the heya's trainingPhilosophy or just log a trend
-    const currentPhilosophy = heya.trainingPhilosophy || { 
+    const currentPhilosophy = heya.trainingPhilosophy || {
       focusBias: "balanced",
       intensityBias: "moderate",
       recruitmentBias: "domestic",
-      powerBias: 0, 
-      techniqueBias: 0, 
-      speedBias: 0 
+      powerBias: 0,
+      techniqueBias: 0,
+      speedBias: 0,
     };
 
     const nextPhilosophy = { ...currentPhilosophy };

@@ -11,14 +11,14 @@ import type { StateImpact } from "./core/StateImpact";
  * Returns StateImpact describing records initialization instead of mutating state directly.
  */
 export function ensureRecordsState(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('ensureRecordsState');
+  const builder = createImpactBuilder("ensureRecordsState");
 
   if (!world.records) {
     const records = {
       allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
-      active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] }
+      active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
     };
-    builder.updateWorldField('records', records);
+    builder.updateWorldField("records", records);
   }
 
   return builder.build();
@@ -28,7 +28,13 @@ export function ensureRecordsState(world: WorldState): StateImpact {
  * Updates a specific leaderboard with a new entry if it qualifies for the Top 10.
  * Uses sorted insertion to maintain order efficiently.
  */
-function updateLeaderboard(list: RecordEntry[], rikishi: Rikishi, value: number, year: number, month: number) {
+function updateLeaderboard(
+  list: RecordEntry[],
+  rikishi: Rikishi,
+  value: number,
+  year: number,
+  month: number
+) {
   if (value <= 0) return;
 
   const len = list.length;
@@ -45,7 +51,7 @@ function updateLeaderboard(list: RecordEntry[], rikishi: Rikishi, value: number,
       break;
     }
   }
-  
+
   if (existingIndex !== -1) {
     if (value <= list[existingIndex].value) {
       return;
@@ -71,12 +77,12 @@ function updateLeaderboard(list: RecordEntry[], rikishi: Rikishi, value: number,
   while (insertAt < len && value <= list[insertAt].value) {
     insertAt++;
   }
-  
+
   const newItem = {
     rikishiId: rikishi.id,
     shikona: rikishi.shikona,
     value,
-    achievedDate: { year, month }
+    achievedDate: { year, month },
   };
 
   if (len < 10) {
@@ -100,13 +106,13 @@ function updateLeaderboard(list: RecordEntry[], rikishi: Rikishi, value: number,
  * Returns StateImpact describing records updates instead of mutating state directly.
  */
 export function onBashoEnded(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('onBashoEnded');
-  
+  const builder = createImpactBuilder("onBashoEnded");
+
   const records = world.records || {
     allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
-    active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] }
+    active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
   };
-  
+
   const year = world.calendar.year;
   const month = world.calendar.month;
 
@@ -117,15 +123,15 @@ export function onBashoEnded(world: WorldState): StateImpact {
       makuuchiWins: [...records.allTime.makuuchiWins],
       yusho: [...records.allTime.yusho],
       consecutiveYusho: [...records.allTime.consecutiveYusho],
-      kinboshi: [...records.allTime.kinboshi]
+      kinboshi: [...records.allTime.kinboshi],
     },
     active: {
       careerWins: [...records.active.careerWins],
       makuuchiWins: [...records.active.makuuchiWins],
       yusho: [...records.active.yusho],
       consecutiveYusho: [...records.active.consecutiveYusho],
-      kinboshi: [...records.active.kinboshi]
-    }
+      kinboshi: [...records.active.kinboshi],
+    },
   };
 
   for (const rikishi of world.rikishi.values()) {
@@ -137,38 +143,86 @@ export function onBashoEnded(world: WorldState): StateImpact {
 
     // 2. Makuuchi Wins
     if (rikishi.division === "makuuchi") {
-      updateLeaderboard(updatedRecords.allTime.makuuchiWins, rikishi, rikishi.makuuchiWins, year, month);
+      updateLeaderboard(
+        updatedRecords.allTime.makuuchiWins,
+        rikishi,
+        rikishi.makuuchiWins,
+        year,
+        month
+      );
       if (!rikishi.isRetired) {
-        updateLeaderboard(updatedRecords.active.makuuchiWins, rikishi, rikishi.makuuchiWins, year, month);
+        updateLeaderboard(
+          updatedRecords.active.makuuchiWins,
+          rikishi,
+          rikishi.makuuchiWins,
+          year,
+          month
+        );
       }
     }
 
     // 3. Yusho
     if (rikishi.careerRecord?.yusho) {
-      updateLeaderboard(updatedRecords.allTime.yusho, rikishi, rikishi.careerRecord.yusho, year, month);
+      updateLeaderboard(
+        updatedRecords.allTime.yusho,
+        rikishi,
+        rikishi.careerRecord.yusho,
+        year,
+        month
+      );
       if (!rikishi.isRetired) {
-        updateLeaderboard(updatedRecords.active.yusho, rikishi, rikishi.careerRecord.yusho, year, month);
+        updateLeaderboard(
+          updatedRecords.active.yusho,
+          rikishi,
+          rikishi.careerRecord.yusho,
+          year,
+          month
+        );
       }
     }
 
     // 4. Consecutive Yusho
     if (rikishi.consecutiveYusho) {
-      updateLeaderboard(updatedRecords.allTime.consecutiveYusho, rikishi, rikishi.consecutiveYusho, year, month);
+      updateLeaderboard(
+        updatedRecords.allTime.consecutiveYusho,
+        rikishi,
+        rikishi.consecutiveYusho,
+        year,
+        month
+      );
       if (!rikishi.isRetired) {
-        updateLeaderboard(updatedRecords.active.consecutiveYusho, rikishi, rikishi.consecutiveYusho, year, month);
+        updateLeaderboard(
+          updatedRecords.active.consecutiveYusho,
+          rikishi,
+          rikishi.consecutiveYusho,
+          year,
+          month
+        );
       }
     }
 
     // 5. Kinboshi
     if (rikishi.economics?.kinboshiCount) {
-      updateLeaderboard(updatedRecords.allTime.kinboshi, rikishi, rikishi.economics.kinboshiCount, year, month);
+      updateLeaderboard(
+        updatedRecords.allTime.kinboshi,
+        rikishi,
+        rikishi.economics.kinboshiCount,
+        year,
+        month
+      );
       if (!rikishi.isRetired) {
-        updateLeaderboard(updatedRecords.active.kinboshi, rikishi, rikishi.economics.kinboshiCount, year, month);
+        updateLeaderboard(
+          updatedRecords.active.kinboshi,
+          rikishi,
+          rikishi.economics.kinboshiCount,
+          year,
+          month
+        );
       }
     }
   }
 
-  builder.updateWorldField('records', updatedRecords);
+  builder.updateWorldField("records", updatedRecords);
 
   return builder.build();
 }
@@ -190,13 +244,13 @@ function removeActiveRecord(list: RecordEntry[], rikishiId: Id) {
  * Returns StateImpact describing record updates instead of mutating state directly.
  */
 export function onRikishiRetired(world: WorldState, rikishiId: Id): StateImpact {
-  const builder = createImpactBuilder('onRikishiRetired');
-  
+  const builder = createImpactBuilder("onRikishiRetired");
+
   const records = world.records || {
     allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
-    active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] }
+    active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
   };
-  
+
   // Create deep copies of active leaderboards to avoid mutating
   const updatedRecords = {
     allTime: {
@@ -204,17 +258,17 @@ export function onRikishiRetired(world: WorldState, rikishiId: Id): StateImpact 
       makuuchiWins: [...records.allTime.makuuchiWins],
       yusho: [...records.allTime.yusho],
       consecutiveYusho: [...records.allTime.consecutiveYusho],
-      kinboshi: [...records.allTime.kinboshi]
+      kinboshi: [...records.allTime.kinboshi],
     },
     active: {
       careerWins: [...records.active.careerWins],
       makuuchiWins: [...records.active.makuuchiWins],
       yusho: [...records.active.yusho],
       consecutiveYusho: [...records.active.consecutiveYusho],
-      kinboshi: [...records.active.kinboshi]
-    }
+      kinboshi: [...records.active.kinboshi],
+    },
   };
-  
+
   // ⚡ Bolt: Use manual shift/pop to remove from active lists to avoid O(N) allocation overhead of .filter()
   removeActiveRecord(updatedRecords.active.careerWins, rikishiId);
   removeActiveRecord(updatedRecords.active.makuuchiWins, rikishiId);
@@ -222,7 +276,7 @@ export function onRikishiRetired(world: WorldState, rikishiId: Id): StateImpact 
   removeActiveRecord(updatedRecords.active.consecutiveYusho, rikishiId);
   removeActiveRecord(updatedRecords.active.kinboshi, rikishiId);
 
-  builder.updateWorldField('records', updatedRecords);
+  builder.updateWorldField("records", updatedRecords);
 
   return builder.build();
 }

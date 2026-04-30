@@ -70,7 +70,7 @@ export function createEmptyHistoryIndex(): HistoryIndex {
     basho: {},
     banzukeByBasho: {},
     rikishi: {},
-    lastSeenBashoForRikishi: {}
+    lastSeenBashoForRikishi: {},
   };
 }
 
@@ -111,7 +111,7 @@ export function buildHistoryIndex(args: {
       kantosho: br.kantosho,
       shukunsho: br.shukunsho,
       hasBanzukeSnapshot: !!br.nextBanzuke,
-      sortKey: sortKeyFor(br.year, br.bashoNumber)
+      sortKey: sortKeyFor(br.year, br.bashoNumber),
     };
 
     idx.basho[bashoKey] = summary;
@@ -145,14 +145,52 @@ export function buildHistoryIndex(args: {
       const { year, bashoNumber, bashoName } = br;
 
       if (br.yusho) {
-        pushRikishiEntry(idx, br.yusho, { bashoKey: bk, year, bashoNumber, bashoName, yusho: true, rikishiId: br.yusho });
+        pushRikishiEntry(idx, br.yusho, {
+          bashoKey: bk,
+          year,
+          bashoNumber,
+          bashoName,
+          yusho: true,
+          rikishiId: br.yusho,
+        });
       }
       for (const rid of br.junYusho || []) {
-        pushRikishiEntry(idx, rid, { bashoKey: bk, year, bashoNumber, bashoName, junYusho: true, rikishiId: rid });
+        pushRikishiEntry(idx, rid, {
+          bashoKey: bk,
+          year,
+          bashoNumber,
+          bashoName,
+          junYusho: true,
+          rikishiId: rid,
+        });
       }
-      if (br.ginoSho) pushRikishiEntry(idx, br.ginoSho, { bashoKey: bk, year, bashoNumber, bashoName, ginoSho: true, rikishiId: br.ginoSho });
-      if (br.kantosho) pushRikishiEntry(idx, br.kantosho, { bashoKey: bk, year, bashoNumber, bashoName, kantosho: true, rikishiId: br.kantosho });
-      if (br.shukunsho) pushRikishiEntry(idx, br.shukunsho, { bashoKey: bk, year, bashoNumber, bashoName, shukunsho: true, rikishiId: br.shukunsho });
+      if (br.ginoSho)
+        pushRikishiEntry(idx, br.ginoSho, {
+          bashoKey: bk,
+          year,
+          bashoNumber,
+          bashoName,
+          ginoSho: true,
+          rikishiId: br.ginoSho,
+        });
+      if (br.kantosho)
+        pushRikishiEntry(idx, br.kantosho, {
+          bashoKey: bk,
+          year,
+          bashoNumber,
+          bashoName,
+          kantosho: true,
+          rikishiId: br.kantosho,
+        });
+      if (br.shukunsho)
+        pushRikishiEntry(idx, br.shukunsho, {
+          bashoKey: bk,
+          year,
+          bashoNumber,
+          bashoName,
+          shukunsho: true,
+          rikishiId: br.shukunsho,
+        });
     }
   }
 
@@ -184,7 +222,11 @@ export function listBashoSummaries(index: HistoryIndex): BashoHistorySummary[] {
   }, []);
 }
 
-export function getBashoSummary(index: HistoryIndex, year: number, bashoNumber: 1 | 2 | 3 | 4 | 5 | 6): BashoHistorySummary | null {
+export function getBashoSummary(
+  index: HistoryIndex,
+  year: number,
+  bashoNumber: 1 | 2 | 3 | 4 | 5 | 6
+): BashoHistorySummary | null {
   const k = makeBashoKey(year, bashoNumber);
   return index.basho[k] || null;
 }
@@ -214,7 +256,7 @@ export function indexBashoResult(world: WorldState, bashoResult: BashoResult): v
     kantosho: bashoResult.kantosho,
     shukunsho: bashoResult.shukunsho,
     hasBanzukeSnapshot: !!bashoResult.nextBanzuke,
-    sortKey: `${bashoResult.year}${String(bashoResult.bashoNumber).padStart(2, "0")}`
+    sortKey: `${bashoResult.year}${String(bashoResult.bashoNumber).padStart(2, "0")}`,
   };
 
   idx.basho[bashoKey] = summary;
@@ -227,37 +269,64 @@ export function indexBashoResult(world: WorldState, bashoResult: BashoResult): v
 
   if (bashoResult.yusho) {
     pushRikishiEntry(idx, bashoResult.yusho, {
-      bashoKey, year: bashoResult.year, bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6,
-      bashoName: bashoResult.bashoName, yusho: true, rikishiId: bashoResult.yusho
+      bashoKey,
+      year: bashoResult.year,
+      bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6,
+      bashoName: bashoResult.bashoName,
+      yusho: true,
+      rikishiId: bashoResult.yusho,
     });
   }
   for (const rid of bashoResult.junYusho || []) {
     pushRikishiEntry(idx, rid, {
-      bashoKey, year: bashoResult.year, bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6,
-      bashoName: bashoResult.bashoName, junYusho: true, rikishiId: rid
+      bashoKey,
+      year: bashoResult.year,
+      bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6,
+      bashoName: bashoResult.bashoName,
+      junYusho: true,
+      rikishiId: rid,
     });
   }
-  if (bashoResult.ginoSho) pushRikishiEntry(idx, bashoResult.ginoSho, {
-    bashoKey, year: bashoResult.year, bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6, bashoName: bashoResult.bashoName, ginoSho: true, rikishiId: bashoResult.ginoSho
-  });
-  if (bashoResult.kantosho) pushRikishiEntry(idx, bashoResult.kantosho, {
-    bashoKey, year: bashoResult.year, bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6, bashoName: bashoResult.bashoName, kantosho: true, rikishiId: bashoResult.kantosho
-  });
-  if (bashoResult.shukunsho) pushRikishiEntry(idx, bashoResult.shukunsho, {
-    bashoKey, year: bashoResult.year, bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6, bashoName: bashoResult.bashoName, shukunsho: true, rikishiId: bashoResult.shukunsho
-  });
+  if (bashoResult.ginoSho)
+    pushRikishiEntry(idx, bashoResult.ginoSho, {
+      bashoKey,
+      year: bashoResult.year,
+      bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6,
+      bashoName: bashoResult.bashoName,
+      ginoSho: true,
+      rikishiId: bashoResult.ginoSho,
+    });
+  if (bashoResult.kantosho)
+    pushRikishiEntry(idx, bashoResult.kantosho, {
+      bashoKey,
+      year: bashoResult.year,
+      bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6,
+      bashoName: bashoResult.bashoName,
+      kantosho: true,
+      rikishiId: bashoResult.kantosho,
+    });
+  if (bashoResult.shukunsho)
+    pushRikishiEntry(idx, bashoResult.shukunsho, {
+      bashoKey,
+      year: bashoResult.year,
+      bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6,
+      bashoName: bashoResult.bashoName,
+      shukunsho: true,
+      rikishiId: bashoResult.shukunsho,
+    });
 
   const bashoState = world.currentBasho;
   const standingsMap = bashoState?.standings;
   if (standingsMap) {
-    const entries = standingsMap instanceof Map
-      ? Array.from(standingsMap.entries())
-      : Object.entries(standingsMap);
+    const entries =
+      standingsMap instanceof Map
+        ? Array.from(standingsMap.entries())
+        : Object.entries(standingsMap);
 
     for (const [rid, stats] of entries) {
       const s = stats as { wins: number; losses: number };
       const historyArr = idx.rikishi[rid];
-      const existing = historyArr ? historyArr.find(e => e.bashoKey === bashoKey) : undefined;
+      const existing = historyArr ? historyArr.find((e) => e.bashoKey === bashoKey) : undefined;
 
       if (existing) {
         existing.wins = s.wins;
@@ -272,10 +341,9 @@ export function indexBashoResult(world: WorldState, bashoResult: BashoResult): v
           rikishiId: rid,
           division: r?.division,
           wins: s.wins,
-          losses: s.losses
+          losses: s.losses,
         });
       }
     }
-
   }
 }

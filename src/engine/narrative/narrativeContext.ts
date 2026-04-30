@@ -23,9 +23,12 @@ export interface NarrativeContext {
   sponsorName: string | null;
 }
 
-export const VENUE_PROFILES: Record<string, { shortName: string; venue: string; crowdStyle: CrowdStyle }> = {
+export const VENUE_PROFILES: Record<
+  string,
+  { shortName: string; venue: string; crowdStyle: CrowdStyle }
+> = {
   Tokyo: { shortName: "Ryōgoku", venue: "Ryōgoku Kokugikan", crowdStyle: "restrained" },
   Osaka: { shortName: "Osaka", venue: "Edion Arena Osaka", crowdStyle: "responsive" },
   Nagoya: { shortName: "Nagoya", venue: "Aichi Prefectural Gymnasium", crowdStyle: "responsive" },
-  Fukuoka: { shortName: "Fukuoka", venue: "Fukuoka Kokusai Center", crowdStyle: "intimate" }
+  Fukuoka: { shortName: "Fukuoka", venue: "Fukuoka Kokusai Center", crowdStyle: "intimate" },
 };

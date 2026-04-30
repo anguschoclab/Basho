@@ -4,20 +4,24 @@ import type { Rikishi } from "../types/rikishi";
 import type { MatchSchedule } from "../types/basho";
 
 describe("determineSpecialPrizes", () => {
-  const createRikishi = (id: string, rank: string): Rikishi => ({
-    id,
-    rank: rank as any,
-    division: "makuuchi",
-  } as Rikishi);
+  const createRikishi = (id: string, rank: string): Rikishi =>
+    ({
+      id,
+      rank: rank as any,
+      division: "makuuchi",
+    }) as Rikishi;
 
-  const createMatch = (winner: string, loser: string, kimarite: string = "yorikiri"): MatchSchedule => ({
-    result: { winnerRikishiId: winner, loserRikishiId: loser, kimarite },
-  } as MatchSchedule);
+  const createMatch = (
+    winner: string,
+    loser: string,
+    kimarite: string = "yorikiri"
+  ): MatchSchedule =>
+    ({
+      result: { winnerRikishiId: winner, loserRikishiId: loser, kimarite },
+    }) as MatchSchedule;
 
   it("returns empty result if no maegashira candidates", () => {
-    const rikishiMap = new Map([
-      ["ozeki1", createRikishi("ozeki1", "ozeki")],
-    ]);
+    const rikishiMap = new Map([["ozeki1", createRikishi("ozeki1", "ozeki")]]);
     const matches = [createMatch("ozeki1", "some_loser")];
     const result = determineSpecialPrizes(matches, rikishiMap, "ozeki1");
     expect(result).toEqual({});
@@ -28,9 +32,7 @@ describe("determineSpecialPrizes", () => {
       ["mae1", createRikishi("mae1", "maegashira")],
       ["yokozuna1", createRikishi("yokozuna1", "yokozuna")],
     ]);
-    const matches: MatchSchedule[] = [
-      createMatch("mae1", "yokozuna1"),
-    ];
+    const matches: MatchSchedule[] = [createMatch("mae1", "yokozuna1")];
     for (let i = 0; i < 7; i++) matches.push(createMatch("mae1", `loser${i}`));
 
     const result = determineSpecialPrizes(matches, rikishiMap, "yokozuna1");
@@ -51,9 +53,7 @@ describe("determineSpecialPrizes", () => {
   });
 
   it("awards ginoSho to maegashira with at least 3 unique kimarites without other prizes", () => {
-    const rikishiMap = new Map([
-      ["mae1", createRikishi("mae1", "maegashira")],
-    ]);
+    const rikishiMap = new Map([["mae1", createRikishi("mae1", "maegashira")]]);
     const matches: MatchSchedule[] = [
       createMatch("mae1", "loser1", "oshidashi"),
       createMatch("mae1", "loser2", "yorikiri"),
@@ -79,13 +79,13 @@ describe("determineSpecialPrizes", () => {
     for (let i = 0; i < 7; i++) matches.push(createMatch("mae_shukun", `loserS${i}`));
 
     // Kanto
-    for(let i = 0; i < 10; i++) matches.push(createMatch("mae_kanto", `loserK${i}`));
+    for (let i = 0; i < 10; i++) matches.push(createMatch("mae_kanto", `loserK${i}`));
 
     // Gino
     matches.push(createMatch("mae_gino", "loserG1", "k1"));
     matches.push(createMatch("mae_gino", "loserG2", "k2"));
     matches.push(createMatch("mae_gino", "loserG3", "k3"));
-    for(let i = 0; i < 5; i++) matches.push(createMatch("mae_gino", `loserG_n${i}`, "k1"));
+    for (let i = 0; i < 5; i++) matches.push(createMatch("mae_gino", `loserG_n${i}`, "k1"));
 
     const result = determineSpecialPrizes(matches, rikishiMap, "yokozuna");
     expect(result.shukunsho).toBe("mae_shukun");

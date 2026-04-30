@@ -2,7 +2,12 @@
 import { rngFromSeed, rngForWorld } from "./rng";
 import type { WorldState } from "./types/world";
 import type { Id, IdMapRuntime } from "./types/common";
-import type { MyosekiStock, MyosekiMarket, MyosekiTransaction, MyosekiStatus } from "./types/myoseki";
+import type {
+  MyosekiStock,
+  MyosekiMarket,
+  MyosekiTransaction,
+  MyosekiStatus,
+} from "./types/myoseki";
 import type { Oyakata } from "./types/oyakata";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
@@ -16,27 +21,111 @@ const LEASE_RATE_PERCENT = 0.05; // 5% of asking price per year, divided weekly/
 
 // Generated names for Myoseki (authentic-sounding or actual names)
 const MYOSEKI_NAMES = [
-  "Tateyama", "Nishonoseki", "Kokonoe", "Takasago", "Dewanoumi",
-  "Tokitsukaze", "Isegahama", "Kasugano", "Tatsunami", "Sakaigawa",
-  "Sadogatake", "Musashigawa", "Oitekaze", "Miyagino", "Hakkaku",
-  "Oguruma", "Michinoku", "Isenoumi", "Takadagawa", "Shikoroyama",
-  "Tagonoura", "Otake", "Tomozuna", "Kise", "Futagoyama",
-  "Asahiyama", "Arashio", "Oshiogawa", "Takekuma", "Chiganoura",
-  "Hanakago", "Kagamiyama", "Kataonami", "Magaki", "Minato",
-  "Minezaki", "Naruto", "Nishikido", "Onogawa", "Onomatsu",
-  "Shikihide", "Tamanoi", "Tatsutagawa", "Azumazeki", "Irumagawa",
-  "Kiriyama", "Asakayama", "Shiranui", "Otowayama", "Urakaze",
-  "Ikazuchi", "Jinmaku", "Oshiogawa", "Tatsunami", "Minato",
-  "Tatsunami", "Kumagatani", "Irumagawa", "Tatsutagawa", "Edagawa",
-  "Kise", "Kasugayama", "Tatsutayama", "Tatsutayama", "Minato",
-  "Fujishima", "Katsunoura", "Oyamazumi", "Hanakago", "Shiratama",
-  "Onomatsu", "Asahiyama", "Tatsutayama", "Izutsu", "Asakayama",
-  "Irumagawa", "Kumagatani", "Kumagatani", "Edagawa", "Minatogawa",
-  "Sanoyama", "Tatsutayama", "Minatogawa", "Kumagatani", "Izutsu",
-  "Kumagatani", "Tatsutayama", "Shikoroyama", "Kise", "Onogawa",
-  "Kumagatani", "Izutsu", "Onogawa", "Shikoroyama", "Kise",
-  "Izutsu", "Onogawa", "Kumagatani", "Edagawa", "Kise",
-  "Shikoroyama", "Izutsu", "Onogawa", "Kumagatani", "Minatogawa"
+  "Tateyama",
+  "Nishonoseki",
+  "Kokonoe",
+  "Takasago",
+  "Dewanoumi",
+  "Tokitsukaze",
+  "Isegahama",
+  "Kasugano",
+  "Tatsunami",
+  "Sakaigawa",
+  "Sadogatake",
+  "Musashigawa",
+  "Oitekaze",
+  "Miyagino",
+  "Hakkaku",
+  "Oguruma",
+  "Michinoku",
+  "Isenoumi",
+  "Takadagawa",
+  "Shikoroyama",
+  "Tagonoura",
+  "Otake",
+  "Tomozuna",
+  "Kise",
+  "Futagoyama",
+  "Asahiyama",
+  "Arashio",
+  "Oshiogawa",
+  "Takekuma",
+  "Chiganoura",
+  "Hanakago",
+  "Kagamiyama",
+  "Kataonami",
+  "Magaki",
+  "Minato",
+  "Minezaki",
+  "Naruto",
+  "Nishikido",
+  "Onogawa",
+  "Onomatsu",
+  "Shikihide",
+  "Tamanoi",
+  "Tatsutagawa",
+  "Azumazeki",
+  "Irumagawa",
+  "Kiriyama",
+  "Asakayama",
+  "Shiranui",
+  "Otowayama",
+  "Urakaze",
+  "Ikazuchi",
+  "Jinmaku",
+  "Oshiogawa",
+  "Tatsunami",
+  "Minato",
+  "Tatsunami",
+  "Kumagatani",
+  "Irumagawa",
+  "Tatsutagawa",
+  "Edagawa",
+  "Kise",
+  "Kasugayama",
+  "Tatsutayama",
+  "Tatsutayama",
+  "Minato",
+  "Fujishima",
+  "Katsunoura",
+  "Oyamazumi",
+  "Hanakago",
+  "Shiratama",
+  "Onomatsu",
+  "Asahiyama",
+  "Tatsutayama",
+  "Izutsu",
+  "Asakayama",
+  "Irumagawa",
+  "Kumagatani",
+  "Kumagatani",
+  "Edagawa",
+  "Minatogawa",
+  "Sanoyama",
+  "Tatsutayama",
+  "Minatogawa",
+  "Kumagatani",
+  "Izutsu",
+  "Kumagatani",
+  "Tatsutayama",
+  "Shikoroyama",
+  "Kise",
+  "Onogawa",
+  "Kumagatani",
+  "Izutsu",
+  "Onogawa",
+  "Shikoroyama",
+  "Kise",
+  "Izutsu",
+  "Onogawa",
+  "Kumagatani",
+  "Edagawa",
+  "Kise",
+  "Shikoroyama",
+  "Izutsu",
+  "Onogawa",
+  "Kumagatani",
+  "Minatogawa",
 ];
 
 // Dedupe and pad just in case
@@ -50,7 +139,10 @@ while (uniqueNames.length < TOTAL_MYOSEKI) {
  * Ensures exactly 105 exist. Assigns them to existing active oyakata first.
  * The rest are held by JSA or retired individuals and marked available.
  */
-export function generateMyosekiMarket(seed: string, oyakataMap: IdMapRuntime<Oyakata>): MyosekiMarket {
+export function generateMyosekiMarket(
+  seed: string,
+  oyakataMap: IdMapRuntime<Oyakata>
+): MyosekiMarket {
   const rng = rngFromSeed(seed, "myoseki", "init");
   const stocks: Record<Id, MyosekiStock> = {};
 
@@ -58,12 +150,12 @@ export function generateMyosekiMarket(seed: string, oyakataMap: IdMapRuntime<Oya
 
   let i = 0;
   // First pass: Assign to every active Oyakata
-  for (const oyakata of stableSort(oyakataMap.values(), x => x.id)) {
+  for (const oyakata of stableSort(oyakataMap.values(), (x) => x.id)) {
     if (i >= TOTAL_MYOSEKI) break;
 
     const name = availableNames[i];
     const prestigeTier = rng.next() > 0.8 ? "elite" : rng.next() > 0.4 ? "respected" : "modest";
-    const id = rng.uuid('MS');
+    const id = rng.uuid("MS");
 
     stocks[id] = {
       id,
@@ -81,9 +173,14 @@ export function generateMyosekiMarket(seed: string, oyakataMap: IdMapRuntime<Oya
     const name = availableNames[i];
     const prestigeTier = rng.next() > 0.8 ? "elite" : rng.next() > 0.4 ? "respected" : "modest";
 
-    const basePrice = prestigeTier === "elite" ? 250_000_000 : prestigeTier === "respected" ? 200_000_000 : 150_000_000;
+    const basePrice =
+      prestigeTier === "elite"
+        ? 250_000_000
+        : prestigeTier === "respected"
+          ? 200_000_000
+          : 150_000_000;
     const askingPrice = basePrice + Math.floor(rng.next() * 50_000_000);
-    const id = rng.uuid('MS');
+    const id = rng.uuid("MS");
 
     stocks[id] = {
       id,
@@ -98,7 +195,7 @@ export function generateMyosekiMarket(seed: string, oyakataMap: IdMapRuntime<Oya
 
   return {
     stocks,
-    history: []
+    history: [],
   };
 }
 
@@ -108,7 +205,7 @@ export function generateMyosekiMarket(seed: string, oyakataMap: IdMapRuntime<Oya
  * Returns StateImpact describing market updates instead of mutating directly.
  */
 export function tickMyosekiMarket(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('tickMyosekiMarket');
+  const builder = createImpactBuilder("tickMyosekiMarket");
   if (!world.myosekiMarket) return builder.build();
 
   const market = world.myosekiMarket;
@@ -117,16 +214,16 @@ export function tickMyosekiMarket(world: WorldState): StateImpact {
   // Only run major logic during specific phases to save CPU? No, run weekly.
   // Build map of oyakataId to heya for faster lookup
   const oyakataHeyaMap = new Map();
-  for (const h of stableSort(world.heyas.values(), x => x.id)) {
+  for (const h of stableSort(world.heyas.values(), (x) => x.id)) {
     if (h.oyakataId) oyakataHeyaMap.set(h.oyakataId, h);
   }
 
   const updatedStocks = { ...market.stocks };
   const heyaUpdates: Record<Id, any> = {};
 
-  for (const stock of stableSort(Object.values(market.stocks), x => x.id)) {
+  for (const stock of stableSort(Object.values(market.stocks), (x) => x.id)) {
     const updatedStock = { ...stock };
-    
+
     // 1. Pay lease fees (if leased)
     if (stock.status === "leased" && stock.leaseFee) {
       const weeklyFee = Math.floor(stock.leaseFee / 52); // Approx weekly
@@ -147,8 +244,11 @@ export function tickMyosekiMarket(world: WorldState): StateImpact {
 
     // 2. Randomly fluctuate available asking prices
     if (stock.status === "available" && rng.next() < 0.1) {
-      const adjustment = (rng.next() * 20_000_000) - 10_000_000;
-      updatedStock.askingPrice = Math.max(BASE_ASKING_PRICE, Math.min(MAX_ASKING_PRICE, (stock.askingPrice || BASE_ASKING_PRICE) + adjustment));
+      const adjustment = rng.next() * 20_000_000 - 10_000_000;
+      updatedStock.askingPrice = Math.max(
+        BASE_ASKING_PRICE,
+        Math.min(MAX_ASKING_PRICE, (stock.askingPrice || BASE_ASKING_PRICE) + adjustment)
+      );
     }
 
     updatedStocks[stock.id] = updatedStock;
@@ -163,7 +263,6 @@ export function tickMyosekiMarket(world: WorldState): StateImpact {
 
   return builder.build();
 }
-
 
 function getAvailableStock(world: WorldState, myosekiId: Id): MyosekiStock | null {
   if (!world.myosekiMarket) return null;
@@ -182,13 +281,13 @@ function getMyosekiTransaction(
 ): MyosekiTransaction {
   const rng = rngForWorld(world, "market", "tx");
   return {
-    id: rng.uuid('MT'),
+    id: rng.uuid("MT"),
     date: `${world.year}-W${world.week}`,
     myosekiId,
     type,
     fromId,
     toId,
-    amount
+    amount,
   };
 }
 
@@ -196,8 +295,13 @@ function getMyosekiTransaction(
  * Buy a Myoseki stock.
  * Returns StateImpact describing myoseki purchase instead of mutating directly.
  */
-export function buyMyoseki(world: WorldState, buyerId: Id, buyerHeyaId: Id, myosekiId: Id): StateImpact {
-  const builder = createImpactBuilder('buyMyoseki');
+export function buyMyoseki(
+  world: WorldState,
+  buyerId: Id,
+  buyerHeyaId: Id,
+  myosekiId: Id
+): StateImpact {
+  const builder = createImpactBuilder("buyMyoseki");
   const stock = getAvailableStock(world, myosekiId);
   if (!stock || !stock.askingPrice) return builder.build();
 
@@ -230,7 +334,9 @@ export function buyMyoseki(world: WorldState, buyerId: Id, buyerHeyaId: Id, myos
     askingPrice: undefined,
   });
 
-  builder.recordMyosekiTransaction(getMyosekiTransaction(world, myosekiId, "sale", "JSA", buyerId, amount));
+  builder.recordMyosekiTransaction(
+    getMyosekiTransaction(world, myosekiId, "sale", "JSA", buyerId, amount)
+  );
 
   return builder.build();
 }
@@ -266,7 +372,9 @@ export function leaseMyoseki(world: WorldState, lesseeId: Id, myosekiId: Id): St
     { importance }
   );
 
-  builder.recordMyosekiTransaction(getMyosekiTransaction(world, myosekiId, "lease", stock.ownerId, lesseeId, leaseFee));
+  builder.recordMyosekiTransaction(
+    getMyosekiTransaction(world, myosekiId, "lease", stock.ownerId, lesseeId, leaseFee)
+  );
 
   return builder.build();
 }

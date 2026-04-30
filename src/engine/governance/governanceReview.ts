@@ -423,7 +423,9 @@ export function runRetirements(world: WorldState): StateImpact {
             );
 
             // Merge handover impact
-            builder.merge(recordOyakataHandover(world, r.heyaId, newOyakataId, availableStock.name));
+            builder.merge(
+              recordOyakataHandover(world, r.heyaId, newOyakataId, availableStock.name)
+            );
           }
         }
       }

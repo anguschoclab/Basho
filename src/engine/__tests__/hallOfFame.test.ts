@@ -102,7 +102,7 @@ describe("HoF iron man - processYearEndInduction", () => {
     world.rikishi.set("r1", retired);
 
     const inductees = processYearEndInduction(world);
-    expect(inductees.some(i => i.rikishiId === "r1" && i.category === "iron_man")).toBe(true);
+    expect(inductees.some((i) => i.rikishiId === "r1" && i.category === "iron_man")).toBe(true);
   });
 
   it("does NOT induct an active rikishi with only 5 basho", () => {
@@ -125,6 +125,6 @@ describe("HoF iron man - processYearEndInduction", () => {
     world.rikishi.set("r2", rookie);
 
     const inductees = processYearEndInduction(world);
-    expect(inductees.some(i => i.rikishiId === "r2" && i.category === "iron_man")).toBe(false);
+    expect(inductees.some((i) => i.rikishiId === "r2" && i.category === "iron_man")).toBe(false);
   });
 });

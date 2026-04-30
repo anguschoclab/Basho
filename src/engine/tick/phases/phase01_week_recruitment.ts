@@ -69,9 +69,8 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
   // 4. NPC Opportunistic Recruitment
   const TARGET_ROSTER_SIZE = 30; // JSA average ~13, real max ~40; 30 gives each heya a healthy pipeline buffer that sustains the roster through demographic waves
   const CRITICAL_ROSTER_THRESHOLD = 12;
-  const interimElapsedWeeks = world.cyclePhase === "interim"
-    ? Math.floor((42 - (world._interimDaysRemaining ?? 0)) / 7)
-    : -1;
+  const interimElapsedWeeks =
+    world.cyclePhase === "interim" ? Math.floor((42 - (world._interimDaysRemaining ?? 0)) / 7) : -1;
 
   // Primary recruitment window: mid-interim (week 3)
   if (interimElapsedWeeks === 3) {

@@ -71,16 +71,17 @@ describe("evaluateRule", () => {
     const rule: StrategyRule = {
       id: "test-rule",
       condition: () => false,
-      action: () => ({} as any),
+      action: () => ({}) as any,
       buildEvent: () => ({ action: "test", reasoning: "test" }),
     };
 
     const ctx = createMockContext();
     const result = evaluateRule(ctx, rule);
-    const hasChanges = (result.entities && Object.keys(result.entities).length > 0) ||
-                       (result.worldFields && Object.keys(result.worldFields).length > 0) ||
-                       (result.arrayAppends && result.arrayAppends.length > 0) ||
-                       (result.events && result.events.length > 0);
+    const hasChanges =
+      (result.entities && Object.keys(result.entities).length > 0) ||
+      (result.worldFields && Object.keys(result.worldFields).length > 0) ||
+      (result.arrayAppends && result.arrayAppends.length > 0) ||
+      (result.events && result.events.length > 0);
     expect(hasChanges).toBeFalsy();
   });
 
@@ -116,8 +117,8 @@ describe("evaluateRule", () => {
 
 describe("evaluateRulesExclusive", () => {
   it("should stop after first executed rule", () => {
-    const action1 = vi.fn(() => ({ events: [{ type: "test" }] } as any));
-    const action2 = vi.fn(() => ({ events: [{ type: "test2" }] } as any));
+    const action1 = vi.fn(() => ({ events: [{ type: "test" }] }) as any);
+    const action2 = vi.fn(() => ({ events: [{ type: "test2" }] }) as any);
 
     const rules: StrategyRule[] = [
       {
@@ -137,14 +138,14 @@ describe("evaluateRulesExclusive", () => {
     const ctx = createMockContext();
     const result = evaluateRulesExclusive(ctx, rules);
 
-    expect(result.events?.some(e => e.type === "test" || e.type === "rule-1")).toBe(true);
+    expect(result.events?.some((e) => e.type === "test" || e.type === "rule-1")).toBe(true);
     expect(action1).toHaveBeenCalledTimes(1);
     expect(action2).not.toHaveBeenCalled();
   });
 
   it("should try subsequent rules if earlier ones fail", () => {
-    const action1 = vi.fn(() => ({ events: [] } as any)); // Action runs but produces no events (fails execution)
-    const action2 = vi.fn(() => ({ events: [{ type: "test2" }] } as any));
+    const action1 = vi.fn(() => ({ events: [] }) as any); // Action runs but produces no events (fails execution)
+    const action2 = vi.fn(() => ({ events: [{ type: "test2" }] }) as any);
 
     const rules: StrategyRule[] = [
       {
@@ -164,7 +165,7 @@ describe("evaluateRulesExclusive", () => {
     const ctx = createMockContext();
     const result = evaluateRulesExclusive(ctx, rules);
 
-    expect(result.events?.some(e => e.type === "test2" || e.type === "rule-2")).toBe(true);
+    expect(result.events?.some((e) => e.type === "test2" || e.type === "rule-2")).toBe(true);
     expect(action1).toHaveBeenCalledTimes(1);
     expect(action2).toHaveBeenCalledTimes(1);
   });
@@ -181,10 +182,11 @@ describe("evaluateRulesExclusive", () => {
 
     const ctx = createMockContext();
     const result = evaluateRulesExclusive(ctx, rules);
-    const hasChanges = (result.entities && Object.keys(result.entities).length > 0) ||
-                       (result.worldFields && Object.keys(result.worldFields).length > 0) ||
-                       (result.arrayAppends && result.arrayAppends.length > 0) ||
-                       (result.events && result.events.length > 0);
+    const hasChanges =
+      (result.entities && Object.keys(result.entities).length > 0) ||
+      (result.worldFields && Object.keys(result.worldFields).length > 0) ||
+      (result.arrayAppends && result.arrayAppends.length > 0) ||
+      (result.events && result.events.length > 0);
     expect(hasChanges).toBeFalsy();
   });
 });
@@ -195,8 +197,8 @@ describe("evaluateRulesExclusive", () => {
 
 describe("evaluateRulesCumulative", () => {
   it("should execute all matching rules", () => {
-    const action1 = vi.fn(() => ({ events: [{ type: "test" }] } as any));
-    const action2 = vi.fn(() => ({ events: [{ type: "test2" }] } as any));
+    const action1 = vi.fn(() => ({ events: [{ type: "test" }] }) as any);
+    const action2 = vi.fn(() => ({ events: [{ type: "test2" }] }) as any);
 
     const rules: StrategyRule[] = [
       {
@@ -216,15 +218,15 @@ describe("evaluateRulesCumulative", () => {
     const ctx = createMockContext();
     const result = evaluateRulesCumulative(ctx, rules);
 
-    expect(result.events?.some(e => e.type === "test" || e.type === "rule-1")).toBe(true);
-    expect(result.events?.some(e => e.type === "test2" || e.type === "rule-2")).toBe(true);
+    expect(result.events?.some((e) => e.type === "test" || e.type === "rule-1")).toBe(true);
+    expect(result.events?.some((e) => e.type === "test2" || e.type === "rule-2")).toBe(true);
     expect(action1).toHaveBeenCalledTimes(1);
     expect(action2).toHaveBeenCalledTimes(1);
   });
 
   it("should count only successful executions", () => {
-    const action1 = vi.fn(() => ({ events: [{ type: "test" }] } as any));
-    const action2 = vi.fn(() => ({ events: [{ type: "test2" }] } as any));
+    const action1 = vi.fn(() => ({ events: [{ type: "test" }] }) as any);
+    const action2 = vi.fn(() => ({ events: [{ type: "test2" }] }) as any);
 
     const rules: StrategyRule[] = [
       {
@@ -244,8 +246,8 @@ describe("evaluateRulesCumulative", () => {
     const ctx = createMockContext();
     const result = evaluateRulesCumulative(ctx, rules);
 
-    expect(result.events?.some(e => e.type === "test" || e.type === "rule-1")).toBe(false);
-    expect(result.events?.some(e => e.type === "test2" || e.type === "rule-2")).toBe(true);
+    expect(result.events?.some((e) => e.type === "test" || e.type === "rule-1")).toBe(false);
+    expect(result.events?.some((e) => e.type === "test2" || e.type === "rule-2")).toBe(true);
   });
 });
 

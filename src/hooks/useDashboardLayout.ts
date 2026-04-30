@@ -31,17 +31,20 @@ export function loadSavedOrder(): WidgetPlacement[] | null {
     if (!raw) return null;
     const parsed = destr(raw);
     if (Array.isArray(parsed)) {
-      const valid = parsed.every((p: any) =>
-        p &&
-        typeof p.id === "string" &&
-        typeof p.order === "number" &&
-        typeof p.column === "number"
+      const valid = parsed.every(
+        (p: any) =>
+          p &&
+          typeof p.id === "string" &&
+          typeof p.order === "number" &&
+          typeof p.column === "number"
       );
       if (valid) {
         return parsed as WidgetPlacement[];
       }
     }
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   return null;
 }
 
@@ -59,14 +62,16 @@ export function useDashboardLayout(defaults: WidgetDef[]) {
   const [placements, setPlacements] = useState<WidgetPlacement[]>(() => {
     const saved = loadSavedOrder();
     if (saved) {
-      const known = new Set(saved.map(s => s.id));
+      const known = new Set(saved.map((s) => s.id));
       const extras = defaults
-        .filter(d => !known.has(d.id))
-        .map(d => ({ id: d.id, column: 0, order: d.order }));
-      const validIds = new Set(defaults.map(d => d.id));
-      return [...saved.filter(s => validIds.has(s.id)), ...extras].sort((a, b) => a.order - b.order);
+        .filter((d) => !known.has(d.id))
+        .map((d) => ({ id: d.id, column: 0, order: d.order }));
+      const validIds = new Set(defaults.map((d) => d.id));
+      return [...saved.filter((s) => validIds.has(s.id)), ...extras].sort(
+        (a, b) => a.order - b.order
+      );
     }
-    return defaults.map(d => ({ id: d.id, column: 0, order: d.order }));
+    return defaults.map((d) => ({ id: d.id, column: 0, order: d.order }));
   });
 
   const dragItem = useRef<string | null>(null);
@@ -92,11 +97,11 @@ export function useDashboardLayout(defaults: WidgetDef[]) {
 
     if (!fromId || !toId || fromId === toId) return;
 
-    setPlacements(prev => {
+    setPlacements((prev) => {
       const next = [...prev].sort((a, b) => a.order - b.order);
-      const fromIdx = next.findIndex(p => p.id === fromId);
-      const toIdx = next.findIndex(p => p.id === toId);
-      
+      const fromIdx = next.findIndex((p) => p.id === fromId);
+      const toIdx = next.findIndex((p) => p.id === toId);
+
       if (fromIdx < 0 || toIdx < 0) return prev;
 
       const [removed] = next.splice(fromIdx, 1);
@@ -110,7 +115,7 @@ export function useDashboardLayout(defaults: WidgetDef[]) {
   }, []);
 
   const resetLayout = useCallback(() => {
-    const fresh = defaults.map(d => ({ id: d.id, column: 0, order: d.order }));
+    const fresh = defaults.map((d) => ({ id: d.id, column: 0, order: d.order }));
     setPlacements(fresh);
     localStorage.removeItem(STORAGE_KEY);
   }, [defaults]);

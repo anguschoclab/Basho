@@ -263,14 +263,27 @@ export function spawnGlobalWorker(ctx: GlobalWorkerContext): GlobalWorkerResult 
 
   let rankMet = true;
   if (invitation.requiresRank) {
-    const ranks = ["jonokuchi", "jonidan", "sandanme", "makushita", "juryo", "maegashira", "komusubi", "sekiwake", "ozeki", "yokozuna"];
+    const ranks = [
+      "jonokuchi",
+      "jonidan",
+      "sandanme",
+      "makushita",
+      "juryo",
+      "maegashira",
+      "komusubi",
+      "sekiwake",
+      "ozeki",
+      "yokozuna",
+    ];
     const reqIdx = ranks.indexOf(invitation.requiresRank.toLowerCase());
     const hasIdx = ranks.indexOf((bestRikishi.rank || "maegashira").toLowerCase());
     rankMet = hasIdx >= reqIdx;
   }
 
   if (rankMet && (ctx.ambition > 40 || invitation.prestige > 50)) {
-    reasoning.push(`[Global Worker] Accepting ${invitation.region} exhibition for ${bestRikishi.shikona} (Style Match: ${invitation.dominantStyle === ctx.styleBias})`);
+    reasoning.push(
+      `[Global Worker] Accepting ${invitation.region} exhibition for ${bestRikishi.shikona} (Style Match: ${invitation.dominantStyle === ctx.styleBias})`
+    );
     return {
       acceptedExhibitionId: invitation.id,
       rikishiId: bestRikishi.id,
@@ -278,7 +291,9 @@ export function spawnGlobalWorker(ctx: GlobalWorkerContext): GlobalWorkerResult 
     };
   }
 
-  reasoning.push(`[Global Worker] Declined exhibitions due to lack of suitable candidates or low priority.`);
+  reasoning.push(
+    `[Global Worker] Declined exhibitions due to lack of suitable candidates or low priority.`
+  );
   return { reasoning };
 }
 
@@ -287,12 +302,14 @@ export function spawnGlobalWorker(ctx: GlobalWorkerContext): GlobalWorkerResult 
  */
 export function rpPerception(p: PerceptionSnapshot) {
   // Deep clone or filter to ensure absolute isolation from WorldState
-  return JSON.parse(JSON.stringify({
-    rikishiPerceptions: p.rikishiPerceptions,
-    welfareRiskBand: p.welfareRiskBand,
-    rosterSize: p.rosterSize,
-    moraleBand: p.moraleBand,
-    rosterStrengthBand: p.rosterStrengthBand,
-    runwayBand: p.runwayBand,
-  }));
+  return JSON.parse(
+    JSON.stringify({
+      rikishiPerceptions: p.rikishiPerceptions,
+      welfareRiskBand: p.welfareRiskBand,
+      rosterSize: p.rosterSize,
+      moraleBand: p.moraleBand,
+      rosterStrengthBand: p.rosterStrengthBand,
+      runwayBand: p.runwayBand,
+    })
+  );
 }

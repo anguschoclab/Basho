@@ -64,14 +64,16 @@ export default function TrainingPage() {
 
   const trainingEffectivenessData = useMemo(
     () =>
-      (Object.entries(INTENSITY_MULTIPLIERS) as Array<[TrainingIntensity, { growth: number; fatigue: number; injuryRisk: number }]>).map(
-        ([intensity, eff]) => ({
-          intensity: intensity.charAt(0).toUpperCase() + intensity.slice(1),
-          growth: Math.round(eff.growth * 100),
-          fatigue: Math.round(eff.fatigue * 100),
-          injuryRisk: Math.round(eff.injuryRisk * 100),
-        })
-      ),
+      (
+        Object.entries(INTENSITY_MULTIPLIERS) as Array<
+          [TrainingIntensity, { growth: number; fatigue: number; injuryRisk: number }]
+        >
+      ).map(([intensity, eff]) => ({
+        intensity: intensity.charAt(0).toUpperCase() + intensity.slice(1),
+        growth: Math.round(eff.growth * 100),
+        fatigue: Math.round(eff.fatigue * 100),
+        injuryRisk: Math.round(eff.injuryRisk * 100),
+      })),
     []
   );
 

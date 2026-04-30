@@ -32,7 +32,14 @@ export default function MainMenu() {
   const game = useGame();
 
   const { createWorld, state, loadFromSlot, loadFromAutosave, hasAutosave, getSaveSlots } =
-    game as { createWorld: (seed: string, playerHeyaId?: string) => void; state: { world?: { seed: string; heyas: Map<string, Heya> } }; loadFromSlot: (slot: string) => boolean; loadFromAutosave: () => void; hasAutosave: () => boolean; getSaveSlots: () => unknown[] };
+    game as {
+      createWorld: (seed: string, playerHeyaId?: string) => void;
+      state: { world?: { seed: string; heyas: Map<string, Heya> } };
+      loadFromSlot: (slot: string) => boolean;
+      loadFromAutosave: () => void;
+      hasAutosave: () => boolean;
+      getSaveSlots: () => unknown[];
+    };
 
   const [seed, setSeed] = useState("");
   const [showSeedInput, setShowSeedInput] = useState(false);

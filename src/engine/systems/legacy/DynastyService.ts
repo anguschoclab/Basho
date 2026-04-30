@@ -35,7 +35,7 @@ export const DynastyService = {
 
       const age = oyakata.age;
       // console.log(`[SuccessionCheck] ${heya.name} Oyakata ${oyakata.name} age: ${age}`);
-      
+
       // 1. Soft Readiness (60-65)
       // Readiness reaches 100 at age 65 (JSA Rules)
       const readinessValue = Math.max(0, Math.min(100, (age - 55) * 10));
@@ -91,7 +91,7 @@ export const DynastyService = {
         eligible.push(rikishi.id);
         continue;
       }
-      
+
       const wasAlumnus = rikishi.heyaHistory?.some((h) => h.heyaId === heyaId);
       if (wasAlumnus && isSekitori && (rikishi.makuuchiWins > 0 || rikishi.rank === "yokozuna")) {
         eligible.push(rikishi.id);
@@ -101,7 +101,11 @@ export const DynastyService = {
     // 1.5. Drought Fallback: Senior Makushita from current roster
     if (eligible.length === 0) {
       for (const rikishi of world.rikishi.values()) {
-        if (rikishi.heyaId === heyaId && rikishi.division === "makushita" && (rikishi.rankNumber || 99) <= 10) {
+        if (
+          rikishi.heyaId === heyaId &&
+          rikishi.division === "makushita" &&
+          (rikishi.rankNumber || 99) <= 10
+        ) {
           eligible.push(rikishi.id);
         }
       }
@@ -133,8 +137,7 @@ export const DynastyService = {
     const currentOyakata = world.oyakata?.get(heya?.oyakataId ?? "");
     const successorIsActive = world.rikishi.has(successorRikishiId);
     const successorRikishi =
-      world.rikishi.get(successorRikishiId) ??
-      world.historicalRikishi?.get(successorRikishiId);
+      world.rikishi.get(successorRikishiId) ?? world.historicalRikishi?.get(successorRikishiId);
 
     if (!heya || !currentOyakata || !successorRikishi) return builder.build();
 

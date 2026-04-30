@@ -103,11 +103,19 @@ describe("SponsorshipService", () => {
       const resolved = resolveImpacts(world, [impact]);
       expect(resolved.rikishi.get("r1")?.economics?.popularity).toBe(30);
 
-      const impact2 = applyAchievementImpact(resolved as WorldState, resolved.rikishi.get("r1"), "ginboshi");
+      const impact2 = applyAchievementImpact(
+        resolved as WorldState,
+        resolved.rikishi.get("r1"),
+        "ginboshi"
+      );
       const resolved2 = resolveImpacts(resolved, [impact2]);
       expect(resolved2.rikishi.get("r1")?.economics?.popularity).toBe(38);
 
-      const impact3 = applyAchievementImpact(resolved2 as WorldState, resolved2.rikishi.get("r1"), "sansho");
+      const impact3 = applyAchievementImpact(
+        resolved2 as WorldState,
+        resolved2.rikishi.get("r1"),
+        "sansho"
+      );
       const resolved3 = resolveImpacts(resolved2, [impact3]);
       expect(resolved3.rikishi.get("r1")?.economics?.popularity).toBe(50);
     });

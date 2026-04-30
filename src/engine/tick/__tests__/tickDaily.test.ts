@@ -53,7 +53,7 @@ describe("tickDaily", () => {
         calendar: { year: 2025, month: 1, currentWeek: 4, currentDay: 31 },
       });
 
-      const runPipelineSpy = vi.spyOn(pipelineRunner, 'runPipeline');
+      const runPipelineSpy = vi.spyOn(pipelineRunner, "runPipeline");
 
       const nextWorld = advanceOneDay(world);
 
@@ -70,10 +70,10 @@ describe("tickDaily", () => {
     it("runs year boundary logic when calendar crosses year", () => {
       const world = makeMockWorld({
         calendar: { year: 2025, month: 12, currentWeek: 52, currentDay: 31 },
-        _daysSinceLastWeeklyTick: 6 // make it a weekly tick
+        _daysSinceLastWeeklyTick: 6, // make it a weekly tick
       });
 
-      const runPipelineSpy = vi.spyOn(pipelineRunner, 'runPipeline');
+      const runPipelineSpy = vi.spyOn(pipelineRunner, "runPipeline");
 
       const nextWorld = advanceOneDay(world);
 

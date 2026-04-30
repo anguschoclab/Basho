@@ -14,7 +14,10 @@ interface Props {
 export function RankChangeIndicator({ delta }: Props) {
   if (delta.type === "new") {
     return (
-      <Badge variant="outline" className="text-[8px] h-4 px-1 border-primary/40 text-primary gap-0.5">
+      <Badge
+        variant="outline"
+        className="text-[8px] h-4 px-1 border-primary/40 text-primary gap-0.5"
+      >
         <ArrowUpRight className="h-2.5 w-2.5" /> NEW
       </Badge>
     );

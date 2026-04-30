@@ -54,7 +54,7 @@ export function tickWeekTalentPool(world: WorldState): StateImpact {
   // 3. Passive Discovery: move 1-2 candidates from hidden to visible pools every week
   const nextPools = { ...tp.pools };
   const rng = RNGRegistry.getSystemRNG(world, "scouting", `discovery_${world.week}`);
-  
+
   for (const pt of ["high_school", "university", "foreign"] as const) {
     const pool = { ...nextPools[pt] };
     if (pool.candidatesHidden.length > 0) {
@@ -86,7 +86,9 @@ export function tickWeekTalentPool(world: WorldState): StateImpact {
       pool.candidatesHidden = [];
       nextPools[pt] = pool;
     }
-    console.log(`[RECRUITMENT] Emergency: moved all hidden candidates to visible. Active population: ${population}`);
+    console.log(
+      `[RECRUITMENT] Emergency: moved all hidden candidates to visible. Active population: ${population}`
+    );
   }
 
   // 5. Update world state via impact (incorporates passive discovery + emergency reveal)

@@ -116,7 +116,9 @@ export function spawnMediaAgent(ctx: MediaAgentContext): MediaAgentResult {
   // Clamp confidence
   confidence = Math.max(0.3, Math.min(0.95, confidence));
 
-  reasoning.push(`[Media Agent] Final response: ${response} (confidence: ${(confidence * 100).toFixed(0)}%)`);
+  reasoning.push(
+    `[Media Agent] Final response: ${response} (confidence: ${(confidence * 100).toFixed(0)}%)`
+  );
 
   return {
     response,

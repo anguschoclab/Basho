@@ -60,7 +60,9 @@ export function spawnRecruitmentAgent(ctx: RecruitmentAgentContext): Recruitment
   let confidence = 50;
 
   reasoning.push(`[Recruitment Agent] Evaluating candidate with talent ${talent}`);
-  reasoning.push(`[Recruitment Agent] Vacancies: ${vacancyCount}, Funds: ¥${funds.toLocaleString()}, Runway: ${runwayBand}`);
+  reasoning.push(
+    `[Recruitment Agent] Vacancies: ${vacancyCount}, Funds: ¥${funds.toLocaleString()}, Runway: ${runwayBand}`
+  );
 
   // Base bid calculation based on talent
   const baseBid = isElite ? 5000000 : isHigh ? 3000000 : 1500000;

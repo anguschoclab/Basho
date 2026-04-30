@@ -11,7 +11,9 @@ describe("Phase 6: Narrative", () => {
     vi.clearAllMocks();
     world = {
       playerHeyaId: "heya-1",
-      heyas: new Map<string, MockHeya>([["heya-1", { id: "heya-1", name: "Test Heya", funds: 1000 }]]),
+      heyas: new Map<string, MockHeya>([
+        ["heya-1", { id: "heya-1", name: "Test Heya", funds: 1000 }],
+      ]),
       rikishi: new Map([
         [
           "r1",

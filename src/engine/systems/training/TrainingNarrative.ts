@@ -2,18 +2,14 @@
  * src/engine/systems/training/TrainingNarrative.ts
  * =================================================
  * UI Narrative and Label helpers for the Training system.
- * 
- * Provides human-readable descriptions and localized (EN/JA) labels 
+ *
+ * Provides human-readable descriptions and localized (EN/JA) labels
  * for Training Intensity, Focus, and Recovery.
- * 
+ *
  * Goal: Clean UI bridge and separation of concerns.
  */
 
-import type { 
-  TrainingIntensity, 
-  TrainingFocus, 
-  RecoveryEmphasis 
-} from "../../types/training";
+import type { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "../../types/training";
 import { BardEngine } from "../../narrative/BardEngine";
 import { SeededRNG } from "../../rng";
 

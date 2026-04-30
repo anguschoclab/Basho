@@ -119,7 +119,9 @@ export function CrisisModal() {
             {crisis.options.map((opt: any) => (
               <Button
                 key={opt.id}
-                variant={opt.id === "harsh" || opt.id.includes("suspend") ? "destructive" : "outline"}
+                variant={
+                  opt.id === "harsh" || opt.id.includes("suspend") ? "destructive" : "outline"
+                }
                 onClick={() => handleResolve(opt.id)}
                 className="w-full font-bold uppercase tracking-tight"
                 tooltip={opt.description}

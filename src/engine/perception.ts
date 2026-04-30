@@ -86,7 +86,7 @@ export interface PerceptionSnapshot {
    * Measures how well the current stable state matches the manager's core directives.
    */
   alignmentScore: number;
-  
+
   styleBias: Style | "neutral";
 }
 
@@ -181,9 +181,16 @@ function bandRivalry(world: WorldState, heyaId: Id): RivalryPerceptionBand {
  */
 function bandRosterStrength(heya: Heya, world: WorldState): RosterStrengthBand {
   const RANK_WEIGHT: Record<string, number> = {
-    yokozuna: 100, ozeki: 85, sekiwake: 70, komusubi: 60,
-    maegashira: 40, juryo: 25, makushita: 15, sandanme: 10,
-    jonidan: 5, jonokuchi: 2
+    yokozuna: 100,
+    ozeki: 85,
+    sekiwake: 70,
+    komusubi: 60,
+    maegashira: 40,
+    juryo: 25,
+    makushita: 15,
+    sandanme: 10,
+    jonidan: 5,
+    jonokuchi: 2,
   };
 
   const roster = getHeyaRoster(world, heya.id);
@@ -289,7 +296,7 @@ export function buildPerceptionSnapshot(world: WorldState, heyaId: Id): Percepti
       moraleBand: "neutral",
       rikishiPerceptions: [],
       alignmentScore: 100,
-      styleBias: "neutral"
+      styleBias: "neutral",
     };
   }
 
@@ -297,18 +304,17 @@ export function buildPerceptionSnapshot(world: WorldState, heyaId: Id): Percepti
 
   // Cache roster to avoid redundant getHeyaRoster calls (called 3-4 times per heya)
   const roster = getHeyaRoster(world, heyaId);
-  
+
   // Build per-rikishi perceptions using cached roster
-  const rikishiPerceptions: RikishiPerception[] = roster
-    .map(r => ({
-      rikishiId: r.id,
-      shikona: r.shikona,
-      rank: r.rank,
-      style: r.style,
-      healthBand: bandHealth(r),
-      mediaHeatBand: bandMediaHeat(getRikishiMediaHeat(world, r.id)),
-      momentum: bandRikishiMomentum(r.momentum ?? 0)
-    }));
+  const rikishiPerceptions: RikishiPerception[] = roster.map((r) => ({
+    rikishiId: r.id,
+    shikona: r.shikona,
+    rank: r.rank,
+    style: r.style,
+    healthBand: bandHealth(r),
+    mediaHeatBand: bandMediaHeat(getRikishiMediaHeat(world, r.id)),
+    momentum: bandRikishiMomentum(r.momentum ?? 0),
+  }));
 
   // Calculate style bias from cached roster to avoid another getHeyaRoster call
   let oshi = 0;
@@ -338,7 +344,7 @@ export function buildPerceptionSnapshot(world: WorldState, heyaId: Id): Percepti
     moraleBand: bandMorale(heya, world),
     rikishiPerceptions,
     alignmentScore: 100, // Default to full alignment, updated by Oyakata memory consolidation
-    styleBias
+    styleBias,
   };
 }
 

@@ -68,13 +68,19 @@ export function InfrastructurePanel({ heya, onBuild }: InfrastructurePanelProps)
                     <p className="text-xs text-muted-foreground mt-0.5">{def.description}</p>
                   </div>
                   {isActive && (
-                    <Badge variant="outline" className="text-xs text-success border-success/40 shrink-0">
+                    <Badge
+                      variant="outline"
+                      className="text-xs text-success border-success/40 shrink-0"
+                    >
                       <CheckCircle2 className="h-3 w-3 mr-1" />
                       Lv {level}
                     </Badge>
                   )}
                   {isBuilding && (
-                    <Badge variant="outline" className="text-xs text-warning border-warning/40 shrink-0">
+                    <Badge
+                      variant="outline"
+                      className="text-xs text-warning border-warning/40 shrink-0"
+                    >
                       <Clock className="h-3 w-3 mr-1" />
                       Building
                     </Badge>
@@ -93,7 +99,9 @@ export function InfrastructurePanel({ heya, onBuild }: InfrastructurePanelProps)
                     <span className="mr-2">{def.bonuses.injuryHealMod} days recovery</span>
                   )}
                   {def.bonuses.mediaMod && (
-                    <span className="mr-2">+{Math.round((def.bonuses.mediaMod - 1) * 100)}% media</span>
+                    <span className="mr-2">
+                      +{Math.round((def.bonuses.mediaMod - 1) * 100)}% media
+                    </span>
                   )}
                 </div>
 

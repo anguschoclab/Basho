@@ -11,19 +11,27 @@
  * Export: buildSwissTorikumi
  */
 
-import { clamp } from '../utils';
-import type { BashoState } from '../types/basho';
-import type { Division } from '../types/banzuke';
-import type { Rikishi } from '../types/rikishi';
-import type { RivalriesState } from '../systems/narrative/RivalryConstants';
-import { getRivalryBoutModifiers } from '../systems/narrative/RivalryHeatService';
-import { scorePairing, type MatchPairing, type MatchmakingRules } from './MatchmakingPhases';
+import { clamp } from "../utils";
+import type { BashoState } from "../types/basho";
+import type { Division } from "../types/banzuke";
+import type { Rikishi } from "../types/rikishi";
+import type { RivalriesState } from "../systems/narrative/RivalryConstants";
+import { getRivalryBoutModifiers } from "../systems/narrative/RivalryHeatService";
+import { scorePairing, type MatchPairing, type MatchmakingRules } from "./MatchmakingPhases";
 
 // ── Banzuke ordinal helpers ────────────────────────────────────────────────────
 
 const SWISS_RANK_ORDINAL: Record<string, number> = {
-  yokozuna: 0, ozeki: 100, sekiwake: 200, komusubi: 300, maegashira: 400,
-  juryo: 500, makushita: 600, sandanme: 700, jonidan: 800, jonokuchi: 900,
+  yokozuna: 0,
+  ozeki: 100,
+  sekiwake: 200,
+  komusubi: 300,
+  maegashira: 400,
+  juryo: 500,
+  makushita: 600,
+  sandanme: 700,
+  jonidan: 800,
+  jonokuchi: 900,
 };
 
 function banzukeOrdinal(r: Rikishi): number {
@@ -47,7 +55,7 @@ function pairKey(aId: string, bId: string): string {
 
 function alreadyPaired(pairings: MatchPairing[], aId: string, bId: string): boolean {
   const key = pairKey(aId, bId);
-  return pairings.some(p => pairKey(p.eastId, p.westId) === key);
+  return pairings.some((p) => pairKey(p.eastId, p.westId) === key);
 }
 
 function buildFacedSet(basho: BashoState): Set<string> {
@@ -107,11 +115,11 @@ function phase1(
   const pairings: MatchPairing[] = [];
 
   const elite = pool
-    .filter(r => r.rank === "yokozuna" || r.rank === "ozeki")
+    .filter((r) => r.rank === "yokozuna" || r.rank === "ozeki")
     .sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
 
   const upperJoi = pool
-    .filter(r => isM1toM4(r))
+    .filter((r) => isM1toM4(r))
     .sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
 
   for (const e of elite) {
@@ -129,7 +137,7 @@ function phase1(
   }
 
   const remaining = [...pool]
-    .filter(r => !paired.has(r.id))
+    .filter((r) => !paired.has(r.id))
     .sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
 
   for (let i = 0; i < remaining.length; i++) {
@@ -155,7 +163,10 @@ function phase1(
         const b = remaining[j];
         if (paired.has(b.id)) continue;
         const forced = scorePairing({
-          basho, a, b, facedPairs: facedSet,
+          basho,
+          a,
+          b,
+          facedPairs: facedSet,
           allowRepeatOverride: true,
         });
         if (forced) {
@@ -198,7 +209,7 @@ function phase2(
     const rec = standings?.get(r.id) ?? { wins: 0, losses: 0 };
     if (rec.wins >= 10 && rec.losses === 0 && !isSanyakuRank(r)) {
       const topSanyaku = pool
-        .filter(s => isSanyakuRank(s) && !paired.has(s.id) && !pulledUp.has(s.id))
+        .filter((s) => isSanyakuRank(s) && !paired.has(s.id) && !pulledUp.has(s.id))
         .sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b))[0];
       if (topSanyaku) {
         const p = tryPair(basho, r, topSanyaku, facedSet, paired, rivalriesState);
@@ -214,15 +225,15 @@ function phase2(
 
   for (const wins of bucketKeys) {
     const bucket = (bucketMap.get(wins) ?? [])
-      .filter(r => !paired.has(r.id))
+      .filter((r) => !paired.has(r.id))
       .sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
 
     let extraFromBelow: Rikishi | undefined;
     if (bucket.length % 2 !== 0) {
-      const lowerWins = bucketKeys.find(k => k < wins);
+      const lowerWins = bucketKeys.find((k) => k < wins);
       if (lowerWins !== undefined) {
         const lowerBucket = (bucketMap.get(lowerWins) ?? [])
-          .filter(r => !paired.has(r.id) && !pulledUp.has(r.id))
+          .filter((r) => !paired.has(r.id) && !pulledUp.has(r.id))
           .sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
         if (lowerBucket.length > 0) {
           extraFromBelow = lowerBucket[0];
@@ -249,11 +260,18 @@ function phase2(
     }
   }
 
-  const unpaired = pool.filter(r => !paired.has(r.id));
+  const unpaired = pool.filter((r) => !paired.has(r.id));
   for (let i = 0; i < unpaired.length - 1; i += 2) {
     const a = unpaired[i];
     const b = unpaired[i + 1];
-    const forced = scorePairing({ basho, a, b, facedPairs: facedSet, allowRepeatOverride: true, rules: { avoidSameHeya: false } });
+    const forced = scorePairing({
+      basho,
+      a,
+      b,
+      facedPairs: facedSet,
+      allowRepeatOverride: true,
+      rules: { avoidSameHeya: false },
+    });
     if (forced) {
       pairings.push({ ...forced, reasons: [...forced.reasons, "forced"] });
     }
@@ -296,12 +314,12 @@ function phase3(
     if (rec.wins > maxWins) maxWins = rec.wins;
   }
 
-  const leaders = pool.filter(r => (standings?.get(r.id)?.wins ?? 0) >= maxWins);
+  const leaders = pool.filter((r) => (standings?.get(r.id)?.wins ?? 0) >= maxWins);
 
   if (leaders.length === 1 && leaders[0].rank === "maegashira") {
     const cinderella = leaders[0];
     const gatekeeper = pool
-      .filter(r => (r.rank === "yokozuna" || r.rank === "ozeki") && !paired.has(r.id))
+      .filter((r) => (r.rank === "yokozuna" || r.rank === "ozeki") && !paired.has(r.id))
       .sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b))[0];
 
     if (gatekeeper) {
@@ -315,7 +333,7 @@ function phase3(
   }
 
   let elites = pool
-    .filter(r => (r.rank === "yokozuna" || r.rank === "ozeki") && !paired.has(r.id))
+    .filter((r) => (r.rank === "yokozuna" || r.rank === "ozeki") && !paired.has(r.id))
     .sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
 
   while (elites.length >= 2) {
@@ -331,7 +349,7 @@ function phase3(
         koreyoriPairings.push({ ...p, reasons: [...p.reasons, "kore_yori_sanyaku"] });
         paired.add(e1.id);
         paired.add(e2.id);
-        elites = elites.filter(r => r.id !== e1.id && r.id !== e2.id);
+        elites = elites.filter((r) => r.id !== e1.id && r.id !== e2.id);
         didPair = true;
         break;
       }
@@ -350,7 +368,7 @@ function phase3(
     };
   }
 
-  const swissPool = pool.filter(r => !paired.has(r.id));
+  const swissPool = pool.filter((r) => !paired.has(r.id));
   const swissPairings = phase2(basho, swissPool, facedSet, rivalriesState);
 
   return [...swissPairings, ...yushoExceptionPairings, ...koreyoriPairings];
@@ -365,7 +383,7 @@ function phase3(
  * Pairings tagged "kore_yori_sanyaku" or "finale" are always at the end.
  */
 function sortChronologically(pairings: MatchPairing[], pool: Rikishi[]): MatchPairing[] {
-  const byId = new Map<string, Rikishi>(pool.map(r => [r.id, r]));
+  const byId = new Map<string, Rikishi>(pool.map((r) => [r.id, r]));
 
   const rankScore = (p: MatchPairing): number => {
     const east = byId.get(p.eastId);
@@ -376,8 +394,8 @@ function sortChronologically(pairings: MatchPairing[], pool: Rikishi[]): MatchPa
   const isElite = (p: MatchPairing) =>
     p.reasons.includes("finale") || p.reasons.includes("kore_yori_sanyaku");
 
-  const regular = pairings.filter(p => !isElite(p)).sort((a, b) => rankScore(b) - rankScore(a));
-  const elite = pairings.filter(p => isElite(p)).sort((a, b) => rankScore(b) - rankScore(a));
+  const regular = pairings.filter((p) => !isElite(p)).sort((a, b) => rankScore(b) - rankScore(a));
+  const elite = pairings.filter((p) => isElite(p)).sort((a, b) => rankScore(b) - rankScore(a));
 
   return [...regular, ...elite];
 }
@@ -404,7 +422,7 @@ export function buildSwissTorikumi(
     rivalriesState?: RivalriesState;
   }
 ): MatchPairing[] {
-  const pool = rikishi.filter(r => {
+  const pool = rikishi.filter((r) => {
     if (r.isRetired || r.injured) return false;
     if (options.division && r.division !== options.division) return false;
     return true;

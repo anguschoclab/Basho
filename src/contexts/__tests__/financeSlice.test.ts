@@ -1,21 +1,24 @@
 import { describe, it, expect } from "vitest";
 import { financeSlice } from "../financeSlice";
 import { GameState, GameAction } from "../gameTypes";
-import { WorldState } from '@/engine/types/world';
-import type { Heya } from '@/engine/types/heya';
+import { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
 
 describe("Finance Slice", () => {
   it("should handle UPGRADE_HEYA action", () => {
     const mockWorld: Partial<WorldState> = {
       seed: "test-seed",
       heyas: new Map([
-        ["heya-1", {
-          id: "heya-1",
-          name: "Test Heya",
-          funds: 10000000,
-          facilities: { training: 10, recovery: 10, nutrition: 10 },
-          facilitiesBand: "minimal"
-        } as unknown as Heya]
+        [
+          "heya-1",
+          {
+            id: "heya-1",
+            name: "Test Heya",
+            funds: 10000000,
+            facilities: { training: 10, recovery: 10, nutrition: 10 },
+            facilitiesBand: "minimal",
+          } as unknown as Heya,
+        ],
       ]),
       rikishi: new Map(),
       oyakata: new Map(),
@@ -29,7 +32,7 @@ describe("Finance Slice", () => {
       type: "UPGRADE_HEYA",
       heyaId: "heya-1",
       axis: "training",
-      points: 10
+      points: 10,
     };
 
     const newState = financeSlice(initialState as GameState, action);
@@ -44,11 +47,14 @@ describe("Finance Slice", () => {
     const mockWorld: Partial<WorldState> = {
       seed: "test-seed",
       heyas: new Map([
-        ["heya-1", {
-          id: "heya-1",
-          funds: 1000000,
-          staffIds: []
-        } as unknown as Heya]
+        [
+          "heya-1",
+          {
+            id: "heya-1",
+            funds: 1000000,
+            staffIds: [],
+          } as unknown as Heya,
+        ],
       ]),
       staff: new Map(),
       rikishi: new Map(),
@@ -62,7 +68,7 @@ describe("Finance Slice", () => {
     const action: GameAction = {
       type: "RECRUIT_STAFF",
       heyaId: "heya-1",
-      role: "scout"
+      role: "scout",
     };
 
     const newState = financeSlice(initialState as GameState, action);

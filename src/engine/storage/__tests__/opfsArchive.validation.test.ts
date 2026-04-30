@@ -16,7 +16,7 @@ describe("OPFS Archive Validation", () => {
     it("returns empty array and warns if retrieved data is not an array", async () => {
       const mockFile = {
         getFile: vi.fn().mockResolvedValue({
-          text: vi.fn().mockResolvedValue("{\"not\":\"an array\"}"),
+          text: vi.fn().mockResolvedValue('{"not":"an array"}'),
         }),
       };
       const mockDir = {
@@ -30,14 +30,16 @@ describe("OPFS Archive Validation", () => {
 
       expect(result).toEqual([]);
       // We check for the warning from our validator
-      const warnCall = warnSpy.mock.calls.find(call => call[0].includes("Invalid Awards: data is not an array"));
+      const warnCall = warnSpy.mock.calls.find((call) =>
+        call[0].includes("Invalid Awards: data is not an array")
+      );
       expect(warnCall).toBeDefined();
     });
 
     it("returns empty array and warns if array contains invalid objects", async () => {
       const mockFile = {
         getFile: vi.fn().mockResolvedValue({
-          text: vi.fn().mockResolvedValue("[{\"invalid\":\"object\"}]"),
+          text: vi.fn().mockResolvedValue('[{"invalid":"object"}]'),
         }),
       };
       const mockDir = {
@@ -50,13 +52,22 @@ describe("OPFS Archive Validation", () => {
       const result = await opfsArchiveService.retrieveAwards(2024);
 
       expect(result).toEqual([]);
-      const warnCall = warnSpy.mock.calls.find(call => call[0].includes("Invalid Awards: array contains invalid BashoResult objects"));
+      const warnCall = warnSpy.mock.calls.find((call) =>
+        call[0].includes("Invalid Awards: array contains invalid BashoResult objects")
+      );
       expect(warnCall).toBeDefined();
     });
 
     it("returns valid data if structure is correct", async () => {
       const validAwards = [
-        { id: "basho-1", year: 2024, bashoNumber: 1, bashoName: "hatsu", yusho: "rikishi-1", prizes: { yushoAmount: 100, junYushoAmount: 50, specialPrizes: 20 } }
+        {
+          id: "basho-1",
+          year: 2024,
+          bashoNumber: 1,
+          bashoName: "hatsu",
+          yusho: "rikishi-1",
+          prizes: { yushoAmount: 100, junYushoAmount: 50, specialPrizes: 20 },
+        },
       ];
       const mockFile = {
         getFile: vi.fn().mockResolvedValue({
@@ -79,7 +90,7 @@ describe("OPFS Archive Validation", () => {
     it("returns null and warns if core properties are missing", async () => {
       const mockFile = {
         getFile: vi.fn().mockResolvedValue({
-          text: vi.fn().mockResolvedValue("{\"year\":2024}"), // missing bashoNumber, name, summary
+          text: vi.fn().mockResolvedValue('{"year":2024}'), // missing bashoNumber, name, summary
         }),
       };
       const mockDir = {
@@ -92,7 +103,9 @@ describe("OPFS Archive Validation", () => {
       const result = await opfsArchiveService.retrieveBanzuke(2024, 1);
 
       expect(result).toBeNull();
-      const warnCall = warnSpy.mock.calls.find(call => call[0].includes("Invalid AlmanacSnapshot: missing or invalid core properties"));
+      const warnCall = warnSpy.mock.calls.find((call) =>
+        call[0].includes("Invalid AlmanacSnapshot: missing or invalid core properties")
+      );
       expect(warnCall).toBeDefined();
     });
 
@@ -104,7 +117,7 @@ describe("OPFS Archive Validation", () => {
         makuuchiSummary: { totalBouts: 100, avgWins: 8, injuryCount: 2 },
         promotions: [],
         demotions: [],
-        retirements: []
+        retirements: [],
       };
       const mockFile = {
         getFile: vi.fn().mockResolvedValue({

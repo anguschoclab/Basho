@@ -20,10 +20,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { useGameStore } from "@/store/gameStore";
 import { RecruitSigningDialog } from "@/components/game/RecruitSigningDialog";
-import {
-  projectRecruitmentUIDigest,
-  resolveRegistryLabel,
-} from "@/presenters/uiDigest";
+import { projectRecruitmentUIDigest, resolveRegistryLabel } from "@/presenters/uiDigest";
 import { describeScoutingLevel } from "@/engine/systems/recruitment/ScoutingService";
 import { getHeyaForeignUsage } from "@/engine/utils/citizenshipUtils";
 import type { CandidateDigestEntry } from "@/presenters/projections/boutProjections";

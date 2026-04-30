@@ -1,7 +1,14 @@
 import type { TacticalFamily } from "./combat";
 
 /** Defines the JSA official categories for kimarite. */
-export type JsaCategory = 'Kihonwaza' | 'Nageite' | 'Kakeite' | 'Sorite' | 'Hinerite' | 'Tokushuwaza' | 'Hiwaza';
+export type JsaCategory =
+  | "Kihonwaza"
+  | "Nageite"
+  | "Kakeite"
+  | "Sorite"
+  | "Hinerite"
+  | "Tokushuwaza"
+  | "Hiwaza";
 
 /** Defines specific positional/physical requirements for a move. */
 export interface KimariteRequirements {
@@ -12,10 +19,10 @@ export interface KimariteRequirements {
   requiresWeightAdvantage?: boolean;
   isDesperation?: boolean;
   requiredGrip?: {
-    rightHand?: 'inside' | 'outside';
-    leftHand?: 'inside' | 'outside';
-    anyHand?: 'inside' | 'outside';
-    depth?: 'maemitsu' | 'deep' | 'standard';
+    rightHand?: "inside" | "outside";
+    leftHand?: "inside" | "outside";
+    anyHand?: "inside" | "outside";
+    depth?: "maemitsu" | "deep" | "standard";
   };
 }
 
@@ -27,7 +34,7 @@ export interface Kimarite {
   baseWeight: number;
   isHighRisk?: boolean;
   requirements?: KimariteRequirements;
-  
+
   statWeights: {
     strength: number;
     weight: number;
@@ -35,12 +42,12 @@ export interface Kimarite {
     technique: number;
     balance: number;
   };
-  
+
   requiresBeltGrip?: boolean;
-  leverageTarget?: 'high_center_of_gravity' | 'momentum';
+  leverageTarget?: "high_center_of_gravity" | "momentum";
 
   rarity?: "common" | "uncommon" | "rare" | "legendary";
-  
+
   name: string;
   nameJa?: string;
   description?: string;

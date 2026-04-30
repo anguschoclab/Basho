@@ -134,17 +134,28 @@ export function StableWidget() {
   );
 }
 
-const StatMini = React.memo(function StatMini({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
-  const color = BAND_COLORS[value.toLowerCase()] || "text-muted-foreground";
-  return (
-    <div className="flex flex-col gap-1 p-2 rounded-md border border-border/40 bg-card/50">
-      <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground uppercase opacity-70">
-        {icon}
-        {label}
+const StatMini = React.memo(
+  function StatMini({
+    icon,
+    label,
+    value,
+  }: {
+    icon: React.ReactNode;
+    label: string;
+    value: string;
+  }) {
+    const color = BAND_COLORS[value.toLowerCase()] || "text-muted-foreground";
+    return (
+      <div className="flex flex-col gap-1 p-2 rounded-md border border-border/40 bg-card/50">
+        <div className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground uppercase opacity-70">
+          {icon}
+          {label}
+        </div>
+        <div className={cn("text-xs font-bold leading-none truncate", color)}>
+          {value.toUpperCase()}
+        </div>
       </div>
-      <div className={cn("text-xs font-bold leading-none truncate", color)}>
-        {value.toUpperCase()}
-      </div>
-    </div>
-  );
-}, (prev, next) => prev.label === next.label && prev.value === next.value);
+    );
+  },
+  (prev, next) => prev.label === next.label && prev.value === next.value
+);

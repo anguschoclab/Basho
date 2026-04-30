@@ -150,7 +150,6 @@ export default function StablePage() {
                 );
               })()}
           </TabsContent>
-
         </Tabs>
       </div>
     </AppLayout>

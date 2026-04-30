@@ -30,7 +30,7 @@ export function determineSpecialPrizes(
     if (!m.result) continue;
     const w = m.result.winnerRikishiId;
     const l = m.result.loserRikishiId;
-    
+
     if (!stats.has(w)) stats.set(w, { wins: 0, opponents: [], kimarites: [] });
     const s = stats.get(w)!;
     s.wins++;
@@ -60,7 +60,7 @@ export function determineSpecialPrizes(
         break;
       }
     }
-    
+
     if (beatYusho || beatYokozuna) {
       const score = (beatYusho ? 10 : 0) + (beatYokozuna ? 5 : 0) + s.wins;
       if (score > bestShukun.score) bestShukun = { id: c.id, score };
@@ -81,7 +81,8 @@ export function determineSpecialPrizes(
     if (c.id === result.shukunsho || c.id === result.kantosho) continue;
     const s = stats.get(c.id)!;
     const uniqueMoves = new Set(s.kimarites).size;
-    if (uniqueMoves > bestGino.score && uniqueMoves >= 3) bestGino = { id: c.id, score: uniqueMoves };
+    if (uniqueMoves > bestGino.score && uniqueMoves >= 3)
+      bestGino = { id: c.id, score: uniqueMoves };
   }
   if (bestGino.id) result.ginoSho = bestGino.id;
 

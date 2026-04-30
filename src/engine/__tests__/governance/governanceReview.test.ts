@@ -4,7 +4,11 @@ import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
 import { resolveImpacts } from "../../core/ImpactResolver";
 import type { WorldState } from "../../types/world";
 import { PRESTIGE_ORDER } from "../../prestige/prestigeSystem";
-import { FACTION_BAILOUT_AMOUNT, LOAN_ISSUANCE_THRESHOLD, MERGER_THRESHOLD } from "../../constants/EconomicConstants";
+import {
+  FACTION_BAILOUT_AMOUNT,
+  LOAN_ISSUANCE_THRESHOLD,
+  MERGER_THRESHOLD,
+} from "../../constants/EconomicConstants";
 
 describe("governanceReview", () => {
   let world: WorldState;
@@ -19,7 +23,7 @@ describe("governanceReview", () => {
       const poorHeya = makeMockHeya("heya-poor", {
         funds: -5000000,
         runwayBand: "desperate",
-        ichimon: "None"
+        ichimon: "None",
       });
       world.rikishi.set("r1", mockRikishi("r1", { heyaId: "heya-poor" }));
       world.rikishi.set("r2", mockRikishi("r2", { heyaId: "heya-poor" }));
@@ -41,7 +45,7 @@ describe("governanceReview", () => {
       const poorHeya = makeMockHeya("heya-poor", {
         funds: LOAN_ISSUANCE_THRESHOLD - 1000,
         runwayBand: "desperate",
-        ichimon: "None"
+        ichimon: "None",
       });
       world.rikishi.set("r4", mockRikishi("r4", { heyaId: "heya-poor" }));
       world.rikishi.set("r5", mockRikishi("r5", { heyaId: "heya-poor" }));
@@ -60,12 +64,12 @@ describe("governanceReview", () => {
       const poorHeya = makeMockHeya("heya-poor", {
         funds: -1000,
         runwayBand: "desperate",
-        ichimon: "Dewanoumi"
+        ichimon: "Dewanoumi",
       });
 
       const richHeya = makeMockHeya("heya-rich", {
         funds: 500000000,
-        ichimon: "Dewanoumi"
+        ichimon: "Dewanoumi",
       });
 
       world.rikishi.set("r7", mockRikishi("r7", { heyaId: "heya-poor" }));
@@ -92,7 +96,7 @@ describe("governanceReview", () => {
     it("should execute insolvency merger for NPC stables with extreme debt", () => {
       const poorHeya = makeMockHeya("heya-poor", {
         funds: MERGER_THRESHOLD - 1000,
-        runwayBand: "desperate"
+        runwayBand: "desperate",
       });
       // Add rikishi to avoid triggering low-roster merger logic simultaneously
       world.rikishi.set("r-m1", mockRikishi("r-m1", { heyaId: "heya-poor" }));
@@ -101,7 +105,7 @@ describe("governanceReview", () => {
       world.heyas.set("heya-poor", poorHeya);
 
       const targetHeya = makeMockHeya("heya-target", {
-        funds: 500000000
+        funds: 500000000,
       });
       world.heyas.set("heya-target", targetHeya);
       world.playerHeyaId = "heya-player"; // Not the player
@@ -114,30 +118,34 @@ describe("governanceReview", () => {
       // Depending on merger logic, either it's closed or has a log event.
       // For safety, just assert that the event was logged or impact is not empty.
       const events = impact.events || [];
-      expect(events.some(e => e.type === "GOVERNANCE_RULING" && e.data.incident === "insolvency_merger")).toBe(true);
+      expect(
+        events.some(
+          (e) => e.type === "GOVERNANCE_RULING" && e.data.incident === "insolvency_merger"
+        )
+      ).toBe(true);
     });
 
     it("should trigger prestige erosion for sanctioned stables", () => {
-       const heya = makeMockHeya("heya-sanctioned", {
-         welfareState: {
-           complianceState: "sanctioned",
-           welfareRisk: "high"
-         },
-         prestigeBand: PRESTIGE_ORDER[2]
-       });
-       world.heyas.set("heya-sanctioned", heya);
+      const heya = makeMockHeya("heya-sanctioned", {
+        welfareState: {
+          complianceState: "sanctioned",
+          welfareRisk: "high",
+        },
+        prestigeBand: PRESTIGE_ORDER[2],
+      });
+      world.heyas.set("heya-sanctioned", heya);
 
-       const impact = runGovernanceReview(world);
-       const newWorld = resolveImpacts(world, [impact]);
+      const impact = runGovernanceReview(world);
+      const newWorld = resolveImpacts(world, [impact]);
 
-       const updatedHeya = newWorld.heyas.get("heya-sanctioned")!;
-       expect(updatedHeya.prestigeBand).toBe(PRESTIGE_ORDER[1]); // Dropped 1 band
+      const updatedHeya = newWorld.heyas.get("heya-sanctioned")!;
+      expect(updatedHeya.prestigeBand).toBe(PRESTIGE_ORDER[1]); // Dropped 1 band
     });
 
     it("should decrease scandal score for good standing stables", () => {
       const heya = makeMockHeya("heya-good", {
         scandalScore: 10,
-        governanceStatus: "good_standing"
+        governanceStatus: "good_standing",
       });
       world.heyas.set("heya-good", heya);
 

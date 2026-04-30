@@ -75,7 +75,14 @@ interface ScheduleOverviewProps {
  * schedule overview.
  */
 function ScheduleOverview({ currentDay }: ScheduleOverviewProps) {
-  const divisions: Division[] = ["makuuchi", "juryo", "makushita", "sandanme", "jonidan", "jonokuchi"];
+  const divisions: Division[] = [
+    "makuuchi",
+    "juryo",
+    "makushita",
+    "sandanme",
+    "jonidan",
+    "jonokuchi",
+  ];
 
   return (
     <div className="space-y-3">

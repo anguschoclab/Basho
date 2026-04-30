@@ -408,7 +408,7 @@ export function tickMonthlyNPC(world: WorldState): StateImpact {
 
   for (const heya of sortedHeyas) {
     const oyakata = world.oyakata.get(heya.oyakataId!)!;
-    
+
     // 1. Finance & Sponsorship
     const financeStrat = getFinanceStrategy(oyakata.archetype);
     builder.merge(financeStrat.evaluateFinances(world, heya, oyakata));
@@ -422,7 +422,11 @@ export function tickMonthlyNPC(world: WorldState): StateImpact {
 
     // 3. Recruitment (Vacancies)
     const recruitmentStrat = getRecruitmentStrategy(oyakata.archetype);
-    const { impact: recruitmentImpact, count: vacancies } = recruitmentStrat.evaluateVacancies(world, heya, oyakata);
+    const { impact: recruitmentImpact, count: vacancies } = recruitmentStrat.evaluateVacancies(
+      world,
+      heya,
+      oyakata
+    );
     builder.merge(recruitmentImpact);
 
     // 4. Governance & Politics

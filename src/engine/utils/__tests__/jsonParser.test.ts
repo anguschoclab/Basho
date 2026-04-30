@@ -24,9 +24,7 @@ describe("parseLLMResponse", () => {
 
   it("throws a descriptive error on completely invalid JSON", () => {
     const input = "not json at all";
-    expect(() => parseLLMResponse(input)).toThrow(
-      /Failed to parse LLM payload/,
-    );
+    expect(() => parseLLMResponse(input)).toThrow(/Failed to parse LLM payload/);
   });
 });
 

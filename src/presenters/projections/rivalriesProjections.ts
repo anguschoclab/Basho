@@ -12,7 +12,14 @@ export interface RivalriesPageData {
   playerRivalries: RivalryPairState[];
   hotRivalries: RivalryPairState[];
   coolRivalries: RivalryPairState[];
-  stableRivalries: Array<{ aId: string; bId: string; heat: number; aName: string; bName: string; tone: string }>;
+  stableRivalries: Array<{
+    aId: string;
+    bId: string;
+    heat: number;
+    aName: string;
+    bName: string;
+    tone: string;
+  }>;
   stats: {
     total: number;
     inferno: number;

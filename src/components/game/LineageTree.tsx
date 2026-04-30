@@ -15,7 +15,7 @@ interface LineageTreeProps {
  */
 export const LineageTree: React.FC<LineageTreeProps> = ({ rikishiId }) => {
   const { state } = useGame();
-  
+
   const lineage = useMemo(() => {
     if (!state.world) return [];
     return getLineageTree(state.world, rikishiId);
@@ -56,13 +56,16 @@ export const LineageTree: React.FC<LineageTreeProps> = ({ rikishiId }) => {
                     <div className="w-0.5 h-8 bg-gradient-to-b from-slate-700 to-transparent" />
                   )}
                 </div>
-                
+
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
                     <p className="font-display font-bold text-slate-100 group-hover:text-amber-400 transition-colors">
                       {node.shikona}
                     </p>
-                    <Badge variant="outline" className="bg-slate-900/50 text-[10px] uppercase font-mono">
+                    <Badge
+                      variant="outline"
+                      className="bg-slate-900/50 text-[10px] uppercase font-mono"
+                    >
                       {node.rank}
                     </Badge>
                   </div>
@@ -71,24 +74,24 @@ export const LineageTree: React.FC<LineageTreeProps> = ({ rikishiId }) => {
                   </p>
                 </div>
               </div>
-              
+
               {index < lineage.length - 1 && (
                 <div className="pl-5">
-                   <ChevronDown className="h-3 w-3 text-slate-700" />
+                  <ChevronDown className="h-3 w-3 text-slate-700" />
                 </div>
               )}
             </React.Fragment>
           ))}
-          
+
           <div className="pt-4 border-t border-slate-800/50 mt-4">
-             <div className="flex items-center gap-4 opacity-50 italic">
-                <div className="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
-                   <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                </div>
-                <div className="flex-1">
-                   <p className="text-xs text-slate-400">Current Rikishi</p>
-                </div>
-             </div>
+            <div className="flex items-center gap-4 opacity-50 italic">
+              <div className="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+                <div className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-slate-400">Current Rikishi</p>
+              </div>
+            </div>
           </div>
         </div>
       </CardContent>

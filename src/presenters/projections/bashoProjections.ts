@@ -111,6 +111,9 @@ export function projectBashoUIDigest(world: WorldState): BashoUIDigest | null {
     totalBouts: matches.length,
     dayProgress,
     isKeyDay: isKeyDay(day),
-    seasonalFlavor: getSeasonalFlavor(BASHO_CALENDAR[basho.bashoName]?.season ?? "autumn", world.seed),
+    seasonalFlavor: getSeasonalFlavor(
+      BASHO_CALENDAR[basho.bashoName]?.season ?? "autumn",
+      world.seed
+    ),
   };
 }

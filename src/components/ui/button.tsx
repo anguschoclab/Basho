@@ -10,10 +10,12 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground border-transparent font-mono uppercase tracking-wider",
+        default:
+          "bg-primary text-primary-foreground border-transparent font-mono uppercase tracking-wider",
         "primary-gradient":
           "bg-gradient-to-br from-primary to-[hsl(44,68%,40%)] text-primary-foreground border-transparent font-mono uppercase tracking-widest shadow-[0_2px_12px_hsl(var(--primary)/0.35)]",
-        destructive: "bg-destructive text-destructive-foreground border-transparent font-mono uppercase tracking-wider",
+        destructive:
+          "bg-destructive text-destructive-foreground border-transparent font-mono uppercase tracking-wider",
         outline: "border-border bg-background hover:bg-muted/50",
         secondary: "bg-secondary text-secondary-foreground border-transparent",
         ghost: "border-transparent hover:bg-muted/50",
@@ -30,12 +32,11 @@ const buttonVariants = cva(
       variant: "default",
       size: "default",
     },
-  },
+  }
 );
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   /** Optional tooltip text or content. */
   tooltip?: React.ReactNode;
@@ -46,13 +47,9 @@ export interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, tooltip, tooltipSide = "top", ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
-    
+
     const button = (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
+      <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
     );
 
     if (tooltip) {
@@ -64,7 +61,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     }
 
     return button;
-  },
+  }
 );
 Button.displayName = "Button";
 

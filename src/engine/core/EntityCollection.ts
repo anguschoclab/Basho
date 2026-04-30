@@ -2,9 +2,9 @@
  * src/engine/core/EntityCollection.ts
  * ===================================
  * Unified entity provider for Sumo Manager Pro.
- * 
+ *
  * Provides centralized, pre-filtered, and sorted access to WorldState entities.
- * USE THIS instead of manual iteration (e.g., Array.from(world.rikishi.values())) 
+ * USE THIS instead of manual iteration (e.g., Array.from(world.rikishi.values()))
  * to eliminate systemic code duplication and O(N log N) overhead from redundant sorts.
  */
 
@@ -35,13 +35,13 @@ export const EntityCollection = {
    */
   getRikishi(world: WorldState, options: EntityQueryOptions = {}): Rikishi[] {
     const all = Array.from(world.rikishi.values());
-    const filtered = all.filter(r => {
+    const filtered = all.filter((r) => {
       const retiredMatch = options.includeRetired ? true : !r.isRetired;
       const heyaMatch = options.heyaId ? r.heyaId === options.heyaId : true;
       return retiredMatch && heyaMatch;
     });
 
-    return stableSort(filtered, r => r.id);
+    return stableSort(filtered, (r) => r.id);
   },
 
   /**
@@ -63,7 +63,7 @@ export const EntityCollection = {
    */
   getHeyas(world: WorldState): Heya[] {
     const all = Array.from(world.heyas.values());
-    return stableSort(all, h => h.id);
+    return stableSort(all, (h) => h.id);
   },
 
   /**
@@ -78,5 +78,5 @@ export const EntityCollection = {
    */
   getRikishiById(world: WorldState, id: string): Rikishi | undefined {
     return world.rikishi.get(id);
-  }
+  },
 };

@@ -3,7 +3,7 @@
  * phase01_week_rivalries.ts
  * =========================
  * Pipeline Phase: Weekly Narrative Maintenance.
- * 
+ *
  * Responsibilities:
  * 1. Decay rivalry heat, closeness, and spite for all pairs.
  * 2. Prune cold and stale rivalries.
@@ -19,8 +19,8 @@ import { clamp } from "../../utils/math";
 import { ensureEventsState } from "../../events";
 
 export function phase01_week_rivalries(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('phase01_week_rivalries');
-  
+  const builder = createImpactBuilder("phase01_week_rivalries");
+
   // 1. Rivalry Decay
   if (world.rivalriesState) {
     const nextPairs: Record<string, RivalryPairState> = {};
@@ -28,7 +28,7 @@ export function phase01_week_rivalries(world: WorldState): StateImpact {
 
     for (const [key, pair] of Object.entries(world.rivalriesState.pairs || {})) {
       const weeksSince = week - (pair.lastMetWeek || 0);
-      
+
       // Skip decay for already cold pairs (optimization)
       const isCold = pair.heat < 5 && pair.meetings < 2 && weeksSince > 30;
       if (isCold) continue;
@@ -48,7 +48,7 @@ export function phase01_week_rivalries(world: WorldState): StateImpact {
     // For now, we'll update them directly as rivalriesState is a nested state
     world.rivalriesState = {
       ...world.rivalriesState,
-      pairs: nextPairs
+      pairs: nextPairs,
     };
   }
 
@@ -125,7 +125,7 @@ export function phase01_week_rivalries(world: WorldState): StateImpact {
     // For now, we'll update them directly as events is a nested state
     world.events = {
       ...eventsState,
-      log: newLog
+      log: newLog,
     };
   }
 

@@ -4,11 +4,11 @@ import type { Oyakata } from "./types/oyakata";
 import type { OyakataArchetype } from "./types/oyakata";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
-import { 
-  StrategyContext, 
-  StrategyRule, 
-  evaluateRulesCumulative, 
-  TraitChecks 
+import {
+  StrategyContext,
+  StrategyRule,
+  evaluateRulesCumulative,
+  TraitChecks,
 } from "./strategy/NPCStrategyFramework";
 import { getAvailableStables } from "./selectors";
 
@@ -39,25 +39,35 @@ const POLITICAL_SABOTAGE_RULE: StrategyRule = {
   id: "gov_sabotage",
   condition: (ctx) => {
     if ((ctx.heya.politicalCapital ?? 0) < 40) return false;
-    if (!TraitChecks.isVindictive()(ctx.oyakata) && !TraitChecks.isAmbitious(70)(ctx.oyakata)) return false;
-    
+    if (!TraitChecks.isVindictive()(ctx.oyakata) && !TraitChecks.isAmbitious(70)(ctx.oyakata))
+      return false;
+
     // Find a rival with high scandal
-    const rivals = getAvailableStables(ctx.world).filter(h => h.id !== ctx.heya.id && (h.scandalScore ?? 0) > 15);
+    const rivals = getAvailableStables(ctx.world).filter(
+      (h) => h.id !== ctx.heya.id && (h.scandalScore ?? 0) > 15
+    );
     return rivals.length > 0;
   },
   action: (ctx) => {
     const builder = createImpactBuilder("gov_sabotage");
-    const rivals = getAvailableStables(ctx.world).filter(h => h.id !== ctx.heya.id && (h.scandalScore ?? 0) > 15);
+    const rivals = getAvailableStables(ctx.world).filter(
+      (h) => h.id !== ctx.heya.id && (h.scandalScore ?? 0) > 15
+    );
     const target = rivals[0]; // Simplification: pick first high-scandal rival
 
     builder.updateHeya(ctx.heya.id, { politicalCapital: (ctx.heya.politicalCapital ?? 0) - 30 });
-    
+
     // Trigger a media event for the rival
-    builder.logEvent("NARRATIVE_CRISIS_TRIGGERED", "narrative", {
-      heyaId: target.id,
-      title: "Leaked Internal Memo",
-      description: `An anonymous source from a rival stable has leaked damaging documents about ${target.name}'s internal conduct.`,
-    }, { importance: "major" });
+    builder.logEvent(
+      "NARRATIVE_CRISIS_TRIGGERED",
+      "narrative",
+      {
+        heyaId: target.id,
+        title: "Leaked Internal Memo",
+        description: `An anonymous source from a rival stable has leaked damaging documents about ${target.name}'s internal conduct.`,
+      },
+      { importance: "major" }
+    );
 
     return builder.build();
   },
@@ -70,7 +80,10 @@ const POLITICAL_SABOTAGE_RULE: StrategyRule = {
 
 const MAINTAIN_STANDING_RULE: StrategyRule = {
   id: "gov_maintain_standing",
-  condition: (ctx) => TraitChecks.isTraditionalist()(ctx.oyakata) && (ctx.heya.scandalScore ?? 0) >= 5 && (ctx.heya.politicalCapital ?? 0) >= 15,
+  condition: (ctx) =>
+    TraitChecks.isTraditionalist()(ctx.oyakata) &&
+    (ctx.heya.scandalScore ?? 0) >= 5 &&
+    (ctx.heya.politicalCapital ?? 0) >= 15,
   action: (ctx) => {
     const builder = createImpactBuilder("gov_maintain_standing");
     builder.updateHeya(ctx.heya.id, {
@@ -81,7 +94,8 @@ const MAINTAIN_STANDING_RULE: StrategyRule = {
   },
   buildEvent: () => ({
     action: "maintain_standing",
-    reasoning: "Traditionalist oyakata preserving the honor of the heya through diplomatic channels.",
+    reasoning:
+      "Traditionalist oyakata preserving the honor of the heya through diplomatic channels.",
   }),
 };
 

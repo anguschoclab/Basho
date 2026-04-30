@@ -3,7 +3,7 @@
  * =====================================
  * Unified barrel for the Narrative Engine.
  * Delegated to specialized sub-services in src/engine/systems/narrative/.
- * 
+ *
  * Goal: No monoliths, high-fidelity modularity.
  */
 

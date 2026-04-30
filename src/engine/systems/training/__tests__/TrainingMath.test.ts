@@ -4,7 +4,7 @@ import {
   diminishingReturnsMult,
   getCareerPhase,
   calculateFatigueDelta,
-  calculateGrowthVector
+  calculateGrowthVector,
 } from "../TrainingMath";
 import { mockRikishi } from "../../../__tests__/utils";
 import type { TrainingProfile, IndividualFocus } from "../../../types/training";
@@ -86,7 +86,11 @@ describe("TrainingMath", () => {
 
   describe("calculateFatigueDelta", () => {
     it("calculates baseline fatigue delta", () => {
-      const profile: TrainingProfile = { intensity: "balanced", focus: "balanced", recovery: "normal" } as any;
+      const profile: TrainingProfile = {
+        intensity: "balanced",
+        focus: "balanced",
+        recovery: "normal",
+      } as any;
       // balanced intensity fatigue mult = 1.0, normal recovery decay mult = 1.0
       // Gain = 10 * 1.0 * 1.0 = 10, Decay = 8 * 1.0 = 8. Delta = 2
       const delta = calculateFatigueDelta(profile, undefined);
@@ -94,7 +98,11 @@ describe("TrainingMath", () => {
     });
 
     it("factors in individual focus mode", () => {
-      const profile: TrainingProfile = { intensity: "balanced", focus: "balanced", recovery: "normal" } as any;
+      const profile: TrainingProfile = {
+        intensity: "balanced",
+        focus: "balanced",
+        recovery: "normal",
+      } as any;
       const focus: IndividualFocus = { targetId: "r1", focusType: "push" } as any;
       // push mode fatigue mult = 1.2
       // Gain = 10 * 1.0 * 1.2 = 12. Decay = 8. Delta = 4
@@ -103,8 +111,16 @@ describe("TrainingMath", () => {
     });
 
     it("handles extreme training intensity and recovery", () => {
-      const exhausting: TrainingProfile = { intensity: "punishing", focus: "balanced", recovery: "low" } as any;
-      const restful: TrainingProfile = { intensity: "conservative", focus: "balanced", recovery: "high" } as any;
+      const exhausting: TrainingProfile = {
+        intensity: "punishing",
+        focus: "balanced",
+        recovery: "low",
+      } as any;
+      const restful: TrainingProfile = {
+        intensity: "conservative",
+        focus: "balanced",
+        recovery: "high",
+      } as any;
 
       const exDelta = calculateFatigueDelta(exhausting, undefined);
       const restDelta = calculateFatigueDelta(restful, undefined);
@@ -118,15 +134,36 @@ describe("TrainingMath", () => {
     it("calculates growth for all stats", () => {
       const rikishi = mockRikishi("r1", {
         talentSeed: 80,
-        stats: { strength: 40, speed: 40, technique: 40, balance: 40, stamina: 40, mental: 40, adaptability: 40, weight: 140 } as any,
-        experience: 40
+        stats: {
+          strength: 40,
+          speed: 40,
+          technique: 40,
+          balance: 40,
+          stamina: 40,
+          mental: 40,
+          adaptability: 40,
+          weight: 140,
+        } as any,
+        experience: 40,
       });
       rikishi.derivedArchetype = "all_rounder" as RikishiArchetype;
 
-      const profile: TrainingProfile = { intensity: "balanced", focus: "power", recovery: "normal" } as any;
-      const heya: Partial<Heya> = { facilities: { training: 50, nutrition: 50, housing: 50, medical: 50 } };
+      const profile: TrainingProfile = {
+        intensity: "balanced",
+        focus: "power",
+        recovery: "normal",
+      } as any;
+      const heya: Partial<Heya> = {
+        facilities: { training: 50, nutrition: 50, housing: 50, medical: 50 },
+      };
 
-      const growth = calculateGrowthVector(profile, undefined, rikishi, heya as Heya, {} as WorldState);
+      const growth = calculateGrowthVector(
+        profile,
+        undefined,
+        rikishi,
+        heya as Heya,
+        {} as WorldState
+      );
 
       expect(growth).toHaveProperty("strength");
       expect(growth).toHaveProperty("speed");
@@ -142,26 +179,59 @@ describe("TrainingMath", () => {
 
     it("applies heya facility bonuses correctly", () => {
       const rikishi = mockRikishi("r1", { experience: 30 });
-      const profile: TrainingProfile = { intensity: "balanced", focus: "power", recovery: "normal" } as any;
+      const profile: TrainingProfile = {
+        intensity: "balanced",
+        focus: "power",
+        recovery: "normal",
+      } as any;
 
-      const poorHeya: Partial<Heya> = { facilities: { training: 0, nutrition: 0, housing: 0, medical: 0 } };
-      const richHeya: Partial<Heya> = { facilities: { training: 100, nutrition: 100, housing: 100, medical: 100 } };
+      const poorHeya: Partial<Heya> = {
+        facilities: { training: 0, nutrition: 0, housing: 0, medical: 0 },
+      };
+      const richHeya: Partial<Heya> = {
+        facilities: { training: 100, nutrition: 100, housing: 100, medical: 100 },
+      };
 
-      const poorGrowth = calculateGrowthVector(profile, undefined, rikishi, poorHeya as Heya, {} as WorldState);
-      const richGrowth = calculateGrowthVector(profile, undefined, rikishi, richHeya as Heya, {} as WorldState);
+      const poorGrowth = calculateGrowthVector(
+        profile,
+        undefined,
+        rikishi,
+        poorHeya as Heya,
+        {} as WorldState
+      );
+      const richGrowth = calculateGrowthVector(
+        profile,
+        undefined,
+        rikishi,
+        richHeya as Heya,
+        {} as WorldState
+      );
 
       expect(richGrowth.strength).toBeGreaterThan(poorGrowth.strength);
     });
 
     it("applies political bonus for dominant factions", () => {
       const rikishi = mockRikishi("r1", { experience: 30 });
-      const profile: TrainingProfile = { intensity: "balanced", focus: "power", recovery: "normal" } as any;
-      const heya: Partial<Heya> = { ichimon: "ichimon_1", facilities: { training: 50, nutrition: 50, housing: 50, medical: 50 } };
+      const profile: TrainingProfile = {
+        intensity: "balanced",
+        focus: "power",
+        recovery: "normal",
+      } as any;
+      const heya: Partial<Heya> = {
+        ichimon: "ichimon_1",
+        facilities: { training: 50, nutrition: 50, housing: 50, medical: 50 },
+      };
 
-      const regularWorld = { factions: { "ichimon_1": { influence: 50 } } } as unknown as WorldState;
-      const domWorld = { factions: { "ichimon_1": { influence: 90 } } } as unknown as WorldState;
+      const regularWorld = { factions: { ichimon_1: { influence: 50 } } } as unknown as WorldState;
+      const domWorld = { factions: { ichimon_1: { influence: 90 } } } as unknown as WorldState;
 
-      const regularGrowth = calculateGrowthVector(profile, undefined, rikishi, heya as Heya, regularWorld);
+      const regularGrowth = calculateGrowthVector(
+        profile,
+        undefined,
+        rikishi,
+        heya as Heya,
+        regularWorld
+      );
       const domGrowth = calculateGrowthVector(profile, undefined, rikishi, heya as Heya, domWorld);
 
       expect(domGrowth.strength).toBeGreaterThan(regularGrowth.strength);

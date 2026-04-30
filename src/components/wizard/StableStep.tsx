@@ -4,8 +4,6 @@
  * Step 3: Acquire stable for new game wizard.
  */
 
-
-
 import { Building, ArrowLeft, Sparkles, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

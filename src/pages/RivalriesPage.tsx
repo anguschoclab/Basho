@@ -181,18 +181,28 @@ export default function RivalriesPage() {
                 </h2>
                 <div className="grid gap-4 md:grid-cols-3">
                   {stableRivalries.map((feud) => (
-                    <Card key={`${feud.aId}-${feud.bId}`} className="border-border/40 bg-card/20 overflow-hidden">
+                    <Card
+                      key={`${feud.aId}-${feud.bId}`}
+                      className="border-border/40 bg-card/20 overflow-hidden"
+                    >
                       <CardContent className="p-3">
                         <div className="flex justify-between items-center mb-2">
-                          <Badge variant="outline" className="text-[9px] uppercase tracking-tighter">
+                          <Badge
+                            variant="outline"
+                            className="text-[9px] uppercase tracking-tighter"
+                          >
                             {feud.tone.replace("_", " ")}
                           </Badge>
                           <div className="text-[10px] font-mono text-primary">{feud.heat} HEAT</div>
                         </div>
                         <div className="flex items-center justify-between gap-2">
-                          <div className="text-xs font-bold truncate max-w-[80px]">{feud.aName}</div>
+                          <div className="text-xs font-bold truncate max-w-[80px]">
+                            {feud.aName}
+                          </div>
                           <div className="text-[10px] text-muted-foreground">vs</div>
-                          <div className="text-xs font-bold truncate max-w-[80px] text-right">{feud.bName}</div>
+                          <div className="text-xs font-bold truncate max-w-[80px] text-right">
+                            {feud.bName}
+                          </div>
                         </div>
                       </CardContent>
                     </Card>

@@ -1,4 +1,4 @@
-import { useOpfsQuotaListener } from '@/hooks/useOpfsQuotaListener';
+import { useOpfsQuotaListener } from "@/hooks/useOpfsQuotaListener";
 
 export function OpfsQuotaListener() {
   useOpfsQuotaListener();

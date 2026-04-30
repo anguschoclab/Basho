@@ -25,6 +25,6 @@ export function getOzekiStatus(
 
   return {
     isKadoban: !prev.isKadoban,
-    consecutiveMakeKoshi: prev.isKadoban ? 2 : 1
+    consecutiveMakeKoshi: prev.isKadoban ? 2 : 1,
   };
 }

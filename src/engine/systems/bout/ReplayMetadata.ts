@@ -5,7 +5,14 @@
 
 import { BoutResult } from "../../types/basho";
 
-export type ReplayPhase = "ritual" | "tachiai" | "clinch" | "momentum" | "finish" | "ceremony" | "complete";
+export type ReplayPhase =
+  | "ritual"
+  | "tachiai"
+  | "clinch"
+  | "momentum"
+  | "finish"
+  | "ceremony"
+  | "complete";
 
 /**
  * Returns the recommended phase durations (in ms) for a given bout result.
@@ -24,7 +31,9 @@ export function getReplayPhaseDurations(result: BoutResult): Record<ReplayPhase,
   const kimarite = (result.kimarite || "").toLowerCase();
 
   // Heavyweight kimarite (throws/slams) take longer to animate
-  const isHeavy = ["uwatenage", "shitanage", "kotenage", "tsuridashi", "ipponzeoi"].includes(kimarite);
+  const isHeavy = ["uwatenage", "shitanage", "kotenage", "tsuridashi", "ipponzeoi"].includes(
+    kimarite
+  );
   if (isHeavy) {
     base.finish = 2800;
     base.momentum = 3200;

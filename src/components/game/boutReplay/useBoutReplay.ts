@@ -49,7 +49,7 @@ export function useBoutReplay(
   eastRikishi: UIRikishi,
   westRikishi: UIRikishi,
   autoPlay: boolean,
-  onComplete?: () => void,
+  onComplete?: () => void
 ): UseBoutReplayReturn {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number | null>(null);
@@ -85,15 +85,19 @@ export function useBoutReplay(
   const lastTimeRef = useRef(0);
   const narIndexRef = useRef(-1);
 
-  useEffect(() => { speedRef.current = speed; }, [speed]);
-  useEffect(() => { isPlayingRef.current = isPlaying; }, [isPlaying]);
+  useEffect(() => {
+    speedRef.current = speed;
+  }, [speed]);
+  useEffect(() => {
+    isPlayingRef.current = isPlaying;
+  }, [isPlaying]);
 
   const winnerSide = result.winnerRikishiId === eastRikishi.id ? "east" : "west";
   const phaseDurations = useMemo(() => getReplayPhaseDurations(result), [result]);
   const rng = useMemo(() => new SeededRNG(result.boutId || "seed"), [result.boutId]);
   const lines = useMemo(
     () => getNarrationLines(result, eastRikishi, westRikishi),
-    [result, eastRikishi, westRikishi],
+    [result, eastRikishi, westRikishi]
   );
 
   const spawnParticles = useCallback(
@@ -107,9 +111,7 @@ export function useBoutReplay(
           salt: `rgba(255,255,255,${0.7 + rng.next() * 0.3})`,
           dust: `hsl(38,55%,${55 + rng.next() * 20}%)`,
           spark: `hsl(50,100%,70%)`,
-          zabuton: ["#7c3aed", "#db2777", "#0891b2", "#059669"][
-            Math.floor(rng.next() * 4)
-          ],
+          zabuton: ["#7c3aed", "#db2777", "#0891b2", "#059669"][Math.floor(rng.next() * 4)],
         };
         np.push({
           id: particleId.current++,
@@ -120,16 +122,18 @@ export function useBoutReplay(
           life: 1,
           maxLife: 0.4 + rng.next() * 0.9,
           size:
-            type === "salt" ? 2 + rng.next() * 3 :
-            type === "zabuton" ? 8 + rng.next() * 8 :
-            3 + rng.next() * 5,
+            type === "salt"
+              ? 2 + rng.next() * 3
+              : type === "zabuton"
+                ? 8 + rng.next() * 8
+                : 3 + rng.next() * 5,
           color: colors[type],
           type,
         });
       }
       particlesRef.current = [...particlesRef.current.slice(-60), ...np];
     },
-    [rng],
+    [rng]
   );
 
   const reset = useCallback(() => {
@@ -154,9 +158,15 @@ export function useBoutReplay(
       if (!isPlayingRef.current) return;
 
       const canvas = canvasRef.current;
-      if (!canvas) { animRef.current = requestAnimationFrame(loop); return; }
+      if (!canvas) {
+        animRef.current = requestAnimationFrame(loop);
+        return;
+      }
       const ctx = canvas.getContext("2d");
-      if (!ctx) { animRef.current = requestAnimationFrame(loop); return; }
+      if (!ctx) {
+        animRef.current = requestAnimationFrame(loop);
+        return;
+      }
 
       const W = canvas.width;
       const H = canvas.height;
@@ -244,10 +254,17 @@ export function useBoutReplay(
       if (phaseRef.current === "ritual" && rng.next() < 0.008 * (delta / 16)) {
         spawnParticles("salt", W * (0.22 + rng.next() * 0.1), H * 0.48, 4);
       }
-      if ((phaseRef.current === "clinch" || phaseRef.current === "momentum") && rng.next() < 0.01 * (delta / 16)) {
+      if (
+        (phaseRef.current === "clinch" || phaseRef.current === "momentum") &&
+        rng.next() < 0.01 * (delta / 16)
+      ) {
         spawnParticles("dust", W * 0.5, H * 0.52, 3);
       }
-      if (phaseRef.current === "tachiai" && progressRef.current < 0.3 && rng.next() < 0.05 * (delta / 16)) {
+      if (
+        phaseRef.current === "tachiai" &&
+        progressRef.current < 0.3 &&
+        rng.next() < 0.05 * (delta / 16)
+      ) {
         spawnParticles("spark", W * 0.5, H * 0.5, 5);
       }
 
@@ -268,14 +285,33 @@ export function useBoutReplay(
         drawUpsetBanner(ctx, W, H, easeOut(progressRef.current), !!result.isKinboshi);
       }
 
-      drawCrowdAtmosphere(ctx, W, H, getCrowdIntensity(phaseRef.current, progressRef.current), phaseRef.current);
+      drawCrowdAtmosphere(
+        ctx,
+        W,
+        H,
+        getCrowdIntensity(phaseRef.current, progressRef.current),
+        phaseRef.current
+      );
 
       animRef.current = requestAnimationFrame(loop);
     };
 
     animRef.current = requestAnimationFrame(loop);
-    return () => { if (animRef.current !== null) cancelAnimationFrame(animRef.current); };
-  }, [isPlaying, phaseDurations, lines, winnerSide, result, eastRikishi, westRikishi, spawnParticles, onComplete, rng]);
+    return () => {
+      if (animRef.current !== null) cancelAnimationFrame(animRef.current);
+    };
+  }, [
+    isPlaying,
+    phaseDurations,
+    lines,
+    winnerSide,
+    result,
+    eastRikishi,
+    westRikishi,
+    spawnParticles,
+    onComplete,
+    rng,
+  ]);
 
   // Static draw when paused
   useEffect(() => {
@@ -284,7 +320,8 @@ export function useBoutReplay(
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    const W = canvas.width, H = canvas.height;
+    const W = canvas.width,
+      H = canvas.height;
     drawDohyo(ctx, W, H, { x: 0, y: 0 });
     drawRikishi(ctx, westRef.current, W, H, "west", westRikishi, { x: 0, y: 0 });
     drawRikishi(ctx, eastRef.current, W, H, "east", eastRikishi, { x: 0, y: 0 });
@@ -293,5 +330,15 @@ export function useBoutReplay(
   const phaseIdx = PHASES.indexOf(uiPhase);
   const overallPct = ((phaseIdx + progressRef.current) / (PHASES.length - 1)) * 100;
 
-  return { canvasRef, isPlaying, setIsPlaying, speed, setSpeed, uiPhase, narration, overallPct, reset };
+  return {
+    canvasRef,
+    isPlaying,
+    setIsPlaying,
+    speed,
+    setSpeed,
+    uiPhase,
+    narration,
+    overallPct,
+    reset,
+  };
 }

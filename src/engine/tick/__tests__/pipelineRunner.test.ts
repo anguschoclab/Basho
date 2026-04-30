@@ -1,11 +1,11 @@
-import { describe, it, expect, vi } from 'vitest';
-import { runPipeline, emptyDeltas, defaultActiveModifiers } from '../pipelineRunner';
-import type { WorldState } from '../../types/world';
+import { describe, it, expect, vi } from "vitest";
+import { runPipeline, emptyDeltas, defaultActiveModifiers } from "../pipelineRunner";
+import type { WorldState } from "../../types/world";
 
-describe('pipelineRunner', () => {
-  it('runs phases in sequence', () => {
+describe("pipelineRunner", () => {
+  it("runs phases in sequence", () => {
     const world = {
-      id: 'world',
+      id: "world",
       heyas: new Map(),
       rikishi: new Map(),
       count: 0,
@@ -21,18 +21,20 @@ describe('pipelineRunner', () => {
     expect(result.count).toBe(2);
   });
 
-  it('rolls back to snapshot on phase error', () => {
+  it("rolls back to snapshot on phase error", () => {
     const world = {
-      id: 'world',
+      id: "world",
       heyas: new Map(),
       rikishi: new Map(),
       count: 0,
     } as any;
 
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     const phase1 = vi.fn((w) => ({ ...w, count: 10 }));
-    const badPhase = vi.fn((w) => { throw new Error('Boom'); });
+    const badPhase = vi.fn((w) => {
+      throw new Error("Boom");
+    });
     const phase3 = vi.fn((w) => ({ ...w, count: w.count + 5 }));
 
     const result = runPipeline(world, [phase1, badPhase, phase3]);
@@ -48,15 +50,15 @@ describe('pipelineRunner', () => {
     consoleErrorSpy.mockRestore();
   });
 
-  it('rolls back to snapshot if phase wipes core entity maps', () => {
+  it("rolls back to snapshot if phase wipes core entity maps", () => {
     const world = {
-      id: 'world',
+      id: "world",
       heyas: new Map(),
       rikishi: new Map(),
       count: 0,
     } as any;
 
-    const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     const phase1 = vi.fn((w) => ({ ...w, count: 10 }));
     const badPhase = vi.fn((w) => ({ ...w, heyas: undefined })); // Wipes heyas

@@ -5,17 +5,17 @@ import { Rikishi, RikishiStats } from "./rikishi";
  */
 
 export type CombatArchetype =
-  | 'oshi'        // Push/thrust dominant
-  | 'yotsu'       // Belt specialist
-  | 'trickster'   // Pulldowns, feints, unconventional
-  | 'speedster'   // Angle-based, quick feet
-  | 'hybrid'      // Balanced push/belt approach
-  | 'giant'       // Mass-dominant
-  | 'tsuppari'    // Rapid open-palm thrusting (no belt contact)
-  | 'defensive';  // Counter-wrestler — absorbs pressure, punishes commitment
+  | "oshi" // Push/thrust dominant
+  | "yotsu" // Belt specialist
+  | "trickster" // Pulldowns, feints, unconventional
+  | "speedster" // Angle-based, quick feet
+  | "hybrid" // Balanced push/belt approach
+  | "giant" // Mass-dominant
+  | "tsuppari" // Rapid open-palm thrusting (no belt contact)
+  | "defensive"; // Counter-wrestler — absorbs pressure, punishes commitment
 
-export type GripPreference = 'migi' | 'hidari' | 'none'; // Right-inside, Left-inside, or no preference
-export type GripDepthPreference = 'maemitsu' | 'deep' | 'standard'; // Front-belt, Deep-back, or Standard
+export type GripPreference = "migi" | "hidari" | "none"; // Right-inside, Left-inside, or no preference
+export type GripDepthPreference = "maemitsu" | "deep" | "standard"; // Front-belt, Deep-back, or Standard
 
 export interface CombatProfile {
   archetype: CombatArchetype;
@@ -31,33 +31,33 @@ export interface CombatProfile {
   // Base stat generation modifiers (mean offsets applied during creation)
   // e.g., A speedster might have { speed: 1.1, weight: 0.9 }
   // Note: 'power' maps to RikishiStats.strength → Rikishi.power in the generation pipeline.
-  statModifiers: Partial<Record<keyof RikishiStats | 'weight' | 'height' | 'power', number>>;
+  statModifiers: Partial<Record<keyof RikishiStats | "weight" | "height" | "power", number>>;
   favoredKimarite?: string[];
 }
 
 // Define the base tactical families
-export type TacticalFamily = 'push' | 'belt' | 'trick' | 'speed';
+export type TacticalFamily = "push" | "belt" | "trick" | "speed";
 
 // Matrix: Define what counters what
 export const TACTICAL_MATRIX: Record<TacticalFamily, TacticalFamily[]> = {
-  'push': ['belt'],     // Pusher keeps grappler away
-  'belt': ['trick', 'speed'], // Grappler crushes tricks once grabbed
-  'trick': ['push'],    // Trickster uses pusher's momentum against them
-  'speed': ['push', 'belt']   // Speedster flanks slow heavy fighters
+  push: ["belt"], // Pusher keeps grappler away
+  belt: ["trick", "speed"], // Grappler crushes tricks once grabbed
+  trick: ["push"], // Trickster uses pusher's momentum against them
+  speed: ["push", "belt"], // Speedster flanks slow heavy fighters
 };
 
-export type HandPosition = 'inside' | 'outside' | 'blocked';
-export type GripDepth = 'maemitsu' | 'deep' | 'standard';
+export type HandPosition = "inside" | "outside" | "blocked";
+export type GripDepth = "maemitsu" | "deep" | "standard";
 
 export interface GrappleState {
-  east: { rightHand: HandPosition; leftHand: HandPosition; depth: GripDepth; };
-  west: { rightHand: HandPosition; leftHand: HandPosition; depth: GripDepth; };
-  gripAdvantage: 'east_strong' | 'west_strong' | 'neutral' | 'moro_zashi_east' | 'moro_zashi_west';
+  east: { rightHand: HandPosition; leftHand: HandPosition; depth: GripDepth };
+  west: { rightHand: HandPosition; leftHand: HandPosition; depth: GripDepth };
+  gripAdvantage: "east_strong" | "west_strong" | "neutral" | "moro_zashi_east" | "moro_zashi_west";
 }
 
 export interface CombatAction {
   family: TacticalFamily;
-  intent: 'attack' | 'defend' | 'counter' | 'reposition';
+  intent: "attack" | "defend" | "counter" | "reposition";
   targetKimariteClass?: KimariteClass; // The move they are attempting
   statWeighting: {
     // Defines which stats matter for THIS specific move (0.0 to 1.0)
@@ -76,12 +76,7 @@ type ActionPreference = Record<TacticalFamily, number>;
 export type Style = "oshi" | "yotsu" | "hybrid";
 
 /** Type representing stance. */
-export type Stance =
-  | "migi-yotsu"
-  | "hidari-yotsu"
-  | "no-grip"
-  | "belt-dominant"
-  | "push-dominant";
+export type Stance = "migi-yotsu" | "hidari-yotsu" | "no-grip" | "belt-dominant" | "push-dominant";
 
 /**
  * @deprecated Use CombatArchetype directly. TacticalArchetype is kept only as
@@ -112,95 +107,95 @@ type KimariteFamily = "OSHI" | "YOTSU" | "THROW" | "TRIP" | "PULLDOWN" | "REVERS
 
 /** Type representing kimarite id. */
 export type KimariteId =
-  | 'yorikiri'
-  | 'oshidashi'
-  | 'oshitaoshi'
-  | 'yoritaoshi'
-  | 'tsukidashi'
-  | 'tsukitaoshi'
-  | 'abisetaoshi'
-  | 'hatakikomi'
-  | 'hikiotoshi'
-  | 'okuridashi'
-  | 'tsuriotoshi'
-  | 'tsuridashi'
-  | 'utchari'
-  | 'okuritaoshi'
-  | 'katasukashi'
-  | 'sokubiotoshi'
-  | 'okurigake'
-  | 'okurihikiotoshi'
-  | 'waridashi'
-  | 'okurinage'
-  | 'tsukaminage'
-  | 'okuritsuridashi'
-  | 'okuritsuriotoshi'
-  | 'yobimodoshi'
-  | 'ushiromotare'
-  | 'uwatenage'
-  | 'sukuinage'
-  | 'shitatenage'
-  | 'kotenage'
-  | 'shitatedashinage'
-  | 'uwatedashinage'
-  | 'kubinage'
-  | 'koshihineri'
-  | 'ipponzeoi'
-  | 'nichonage'
-  | 'yaguranage'
-  | 'kakenage'
-  | 'tsukiotoshi'
-  | 'tottari'
-  | 'shitatehineri'
-  | 'uwatehineri'
-  | 'kotehineri'
-  | 'amiuchi'
-  | 'kainahineri'
-  | 'zubuneri'
-  | 'sakatottari'
-  | 'kubiotoshi'
-  | 'gasshohineri'
-  | 'harimanage'
-  | 'osakate'
-  | 'sabaori'
-  | 'sotokomata_hinerite'
-  | 'tokkurinage'
-  | 'makiotoshi'
-  | 'uchimuso'
-  | 'sotomuso'
-  | 'ashitori'
-  | 'sotogake'
-  | 'uchigake'
-  | 'ketaguri'
-  | 'watashikomi'
-  | 'kekaeshi'
-  | 'kosotogake'
-  | 'komatasukui'
-  | 'chongake'
-  | 'kawarigake'
-  | 'susoharai'
-  | 'kirikaeshi'
-  | 'nimaigeri'
-  | 'omata'
-  | 'susotori'
-  | 'mitokorozeme'
-  | 'kosotogari'
-  | 'tsumatori'
-  | 'izori'
-  | 'kakezori'
-  | 'shumokuzori'
-  | 'sototasukizori'
-  | 'tasukizori'
-  | 'tsutaezori'
-  | 'kimedashi'
-  | 'kimetaoshi'
-  | 'isamiashi'
-  | 'koshikudake'
-  | 'tsukite'
-  | 'tsukihiza'
-  | 'fumidashi'
-  | 'fusensho'
-  | 'hansoku';
+  | "yorikiri"
+  | "oshidashi"
+  | "oshitaoshi"
+  | "yoritaoshi"
+  | "tsukidashi"
+  | "tsukitaoshi"
+  | "abisetaoshi"
+  | "hatakikomi"
+  | "hikiotoshi"
+  | "okuridashi"
+  | "tsuriotoshi"
+  | "tsuridashi"
+  | "utchari"
+  | "okuritaoshi"
+  | "katasukashi"
+  | "sokubiotoshi"
+  | "okurigake"
+  | "okurihikiotoshi"
+  | "waridashi"
+  | "okurinage"
+  | "tsukaminage"
+  | "okuritsuridashi"
+  | "okuritsuriotoshi"
+  | "yobimodoshi"
+  | "ushiromotare"
+  | "uwatenage"
+  | "sukuinage"
+  | "shitatenage"
+  | "kotenage"
+  | "shitatedashinage"
+  | "uwatedashinage"
+  | "kubinage"
+  | "koshihineri"
+  | "ipponzeoi"
+  | "nichonage"
+  | "yaguranage"
+  | "kakenage"
+  | "tsukiotoshi"
+  | "tottari"
+  | "shitatehineri"
+  | "uwatehineri"
+  | "kotehineri"
+  | "amiuchi"
+  | "kainahineri"
+  | "zubuneri"
+  | "sakatottari"
+  | "kubiotoshi"
+  | "gasshohineri"
+  | "harimanage"
+  | "osakate"
+  | "sabaori"
+  | "sotokomata_hinerite"
+  | "tokkurinage"
+  | "makiotoshi"
+  | "uchimuso"
+  | "sotomuso"
+  | "ashitori"
+  | "sotogake"
+  | "uchigake"
+  | "ketaguri"
+  | "watashikomi"
+  | "kekaeshi"
+  | "kosotogake"
+  | "komatasukui"
+  | "chongake"
+  | "kawarigake"
+  | "susoharai"
+  | "kirikaeshi"
+  | "nimaigeri"
+  | "omata"
+  | "susotori"
+  | "mitokorozeme"
+  | "kosotogari"
+  | "tsumatori"
+  | "izori"
+  | "kakezori"
+  | "shumokuzori"
+  | "sototasukizori"
+  | "tasukizori"
+  | "tsutaezori"
+  | "kimedashi"
+  | "kimetaoshi"
+  | "isamiashi"
+  | "koshikudake"
+  | "tsukite"
+  | "tsukihiza"
+  | "fumidashi"
+  | "fusensho"
+  | "hansoku";
 
 /** Type representing kimarite class. */
 export type KimariteClass =
@@ -239,8 +234,16 @@ export const ARCHETYPE_PROFILES: Record<
     volatility: 0.2,
     counterBonus: 0,
     baseRisk: 0.6,
-    familyBias: { OSHI: 1.45, YOTSU: 0.85, THROW: 0.9, TRIP: 0.95, PULLDOWN: 0.8, REVERSAL: 0.9, SPECIAL: 0.75 },
-    actionPreferences: { push: 0.85, belt: 0.05, trick: 0.05, speed: 0.05 }
+    familyBias: {
+      OSHI: 1.45,
+      YOTSU: 0.85,
+      THROW: 0.9,
+      TRIP: 0.95,
+      PULLDOWN: 0.8,
+      REVERSAL: 0.9,
+      SPECIAL: 0.75,
+    },
+    actionPreferences: { push: 0.85, belt: 0.05, trick: 0.05, speed: 0.05 },
   },
   yotsu_specialist: {
     tachiaiBonus: -3,
@@ -249,8 +252,16 @@ export const ARCHETYPE_PROFILES: Record<
     volatility: 0.15,
     counterBonus: 5,
     baseRisk: 0.45,
-    familyBias: { OSHI: 0.85, YOTSU: 1.4, THROW: 1.35, TRIP: 0.95, PULLDOWN: 0.8, REVERSAL: 1.05, SPECIAL: 0.8 },
-    actionPreferences: { belt: 0.80, push: 0.10, trick: 0.05, speed: 0.05 }
+    familyBias: {
+      OSHI: 0.85,
+      YOTSU: 1.4,
+      THROW: 1.35,
+      TRIP: 0.95,
+      PULLDOWN: 0.8,
+      REVERSAL: 1.05,
+      SPECIAL: 0.8,
+    },
+    actionPreferences: { belt: 0.8, push: 0.1, trick: 0.05, speed: 0.05 },
   },
   speedster: {
     tachiaiBonus: 5,
@@ -259,8 +270,16 @@ export const ARCHETYPE_PROFILES: Record<
     volatility: 0.5,
     counterBonus: 8,
     baseRisk: 0.55,
-    familyBias: { OSHI: 0.95, YOTSU: 0.9, THROW: 0.95, TRIP: 1.45, PULLDOWN: 1.0, REVERSAL: 1.1, SPECIAL: 0.9 },
-    actionPreferences: { speed: 0.70, push: 0.10, trick: 0.15, belt: 0.05 }
+    familyBias: {
+      OSHI: 0.95,
+      YOTSU: 0.9,
+      THROW: 0.95,
+      TRIP: 1.45,
+      PULLDOWN: 1.0,
+      REVERSAL: 1.1,
+      SPECIAL: 0.9,
+    },
+    actionPreferences: { speed: 0.7, push: 0.1, trick: 0.15, belt: 0.05 },
   },
   trickster: {
     tachiaiBonus: 0,
@@ -269,8 +288,16 @@ export const ARCHETYPE_PROFILES: Record<
     volatility: 0.6,
     counterBonus: 12,
     baseRisk: 0.65,
-    familyBias: { OSHI: 0.9, YOTSU: 0.85, THROW: 0.9, TRIP: 1.05, PULLDOWN: 1.45, REVERSAL: 1.25, SPECIAL: 1.1 },
-    actionPreferences: { trick: 0.60, speed: 0.40, push: 0.0, belt: 0.0 }
+    familyBias: {
+      OSHI: 0.9,
+      YOTSU: 0.85,
+      THROW: 0.9,
+      TRIP: 1.05,
+      PULLDOWN: 1.45,
+      REVERSAL: 1.25,
+      SPECIAL: 1.1,
+    },
+    actionPreferences: { trick: 0.6, speed: 0.4, push: 0.0, belt: 0.0 },
   },
   all_rounder: {
     tachiaiBonus: 2,
@@ -279,8 +306,16 @@ export const ARCHETYPE_PROFILES: Record<
     volatility: 0.25,
     counterBonus: 3,
     baseRisk: 0.5,
-    familyBias: { OSHI: 1.0, YOTSU: 1.0, THROW: 1.0, TRIP: 1.0, PULLDOWN: 1.0, REVERSAL: 1.0, SPECIAL: 1.0 },
-    actionPreferences: { push: 0.25, belt: 0.25, trick: 0.25, speed: 0.25 }
+    familyBias: {
+      OSHI: 1.0,
+      YOTSU: 1.0,
+      THROW: 1.0,
+      TRIP: 1.0,
+      PULLDOWN: 1.0,
+      REVERSAL: 1.0,
+      SPECIAL: 1.0,
+    },
+    actionPreferences: { push: 0.25, belt: 0.25, trick: 0.25, speed: 0.25 },
   },
   hybrid_oshi_yotsu: {
     tachiaiBonus: 3,
@@ -289,8 +324,16 @@ export const ARCHETYPE_PROFILES: Record<
     volatility: 0.3,
     counterBonus: 5,
     baseRisk: 0.52,
-    familyBias: { OSHI: 1.2, YOTSU: 1.2, THROW: 1.1, TRIP: 0.95, PULLDOWN: 0.85, REVERSAL: 1.05, SPECIAL: 0.9 },
-    actionPreferences: { push: 0.45, belt: 0.45, trick: 0.05, speed: 0.05 }
+    familyBias: {
+      OSHI: 1.2,
+      YOTSU: 1.2,
+      THROW: 1.1,
+      TRIP: 0.95,
+      PULLDOWN: 0.85,
+      REVERSAL: 1.05,
+      SPECIAL: 0.9,
+    },
+    actionPreferences: { push: 0.45, belt: 0.45, trick: 0.05, speed: 0.05 },
   },
   counter_specialist: {
     tachiaiBonus: -2,
@@ -299,35 +342,61 @@ export const ARCHETYPE_PROFILES: Record<
     volatility: 0.35,
     counterBonus: 15,
     baseRisk: 0.48,
-    familyBias: { OSHI: 0.9, YOTSU: 1.0, THROW: 1.1, TRIP: 1.1, PULLDOWN: 0.9, REVERSAL: 1.5, SPECIAL: 1.05 },
-    actionPreferences: { trick: 0.40, belt: 0.30, push: 0.20, speed: 0.10 }
-  }
+    familyBias: {
+      OSHI: 0.9,
+      YOTSU: 1.0,
+      THROW: 1.1,
+      TRIP: 1.1,
+      PULLDOWN: 0.9,
+      REVERSAL: 1.5,
+      SPECIAL: 1.05,
+    },
+    actionPreferences: { trick: 0.4, belt: 0.3, push: 0.2, speed: 0.1 },
+  },
 };
 
 /**
  * Extended profiles for tsuppari and defensive CombatArchetype values.
  * Referenced via ARCHETYPE_MAP in boutCalculations.ts and boutPhysics.ts.
  */
-export const EXTENDED_ARCHETYPE_PROFILES: Partial<Record<CombatArchetype, (typeof ARCHETYPE_PROFILES)[keyof typeof ARCHETYPE_PROFILES]>> = {
+export const EXTENDED_ARCHETYPE_PROFILES: Partial<
+  Record<CombatArchetype, (typeof ARCHETYPE_PROFILES)[keyof typeof ARCHETYPE_PROFILES]>
+> = {
   tsuppari: {
     tachiaiBonus: 7,
     gripPreference: -0.8,
     preferredClasses: ["thrust", "push", "slap_pull"],
     volatility: 0.35,
     counterBonus: 0,
-    baseRisk: 0.70,
-    familyBias: { OSHI: 1.6, YOTSU: 0.5, THROW: 0.7, TRIP: 0.9, PULLDOWN: 0.9, REVERSAL: 0.8, SPECIAL: 0.7 },
-    actionPreferences: { push: 0.90, belt: 0.02, trick: 0.05, speed: 0.03 }
+    baseRisk: 0.7,
+    familyBias: {
+      OSHI: 1.6,
+      YOTSU: 0.5,
+      THROW: 0.7,
+      TRIP: 0.9,
+      PULLDOWN: 0.9,
+      REVERSAL: 0.8,
+      SPECIAL: 0.7,
+    },
+    actionPreferences: { push: 0.9, belt: 0.02, trick: 0.05, speed: 0.03 },
   },
   defensive: {
     tachiaiBonus: -4,
     gripPreference: 0.2,
     preferredClasses: ["slap_pull", "trip", "throw"],
-    volatility: 0.40,
+    volatility: 0.4,
     counterBonus: 18,
     baseRisk: 0.42,
-    familyBias: { OSHI: 0.75, YOTSU: 1.1, THROW: 1.2, TRIP: 1.3, PULLDOWN: 1.5, REVERSAL: 1.6, SPECIAL: 1.1 },
-    actionPreferences: { trick: 0.50, belt: 0.30, push: 0.10, speed: 0.10 }
+    familyBias: {
+      OSHI: 0.75,
+      YOTSU: 1.1,
+      THROW: 1.2,
+      TRIP: 1.3,
+      PULLDOWN: 1.5,
+      REVERSAL: 1.6,
+      SPECIAL: 1.1,
+    },
+    actionPreferences: { trick: 0.5, belt: 0.3, push: 0.1, speed: 0.1 },
   },
 };
 
@@ -344,14 +413,14 @@ export interface TacticalResult {
 
 export interface BoutTickContext {
   // Contextual tags for text decorators
-  attackerFatigueLevel: 'fresh' | 'gasping' | 'exhausted';
-  defenderBalanceLevel: 'planted' | 'wobbling' | 'critical';
+  attackerFatigueLevel: "fresh" | "gasping" | "exhausted";
+  defenderBalanceLevel: "planted" | "wobbling" | "critical";
   isEdgeOfRing: boolean;
-  
+
   // Memory flags
   isRepeatedAction: boolean; // e.g., "He tries the thrust AGAIN!"
   isReversal: boolean; // Power differential flipped from last tick
-  
+
   // Stakes
   isRivalry: boolean;
   isChampionshipBout: boolean;

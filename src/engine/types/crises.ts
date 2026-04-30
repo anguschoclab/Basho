@@ -17,7 +17,9 @@ export interface CrisisOption {
   id: string;
   label: string;
   description?: string;
-  impactGenerator: (world: import("./world").WorldState) => import("../core/StateImpact").StateImpact;
+  impactGenerator: (
+    world: import("./world").WorldState
+  ) => import("../core/StateImpact").StateImpact;
 }
 
 export interface ActiveCrisis {

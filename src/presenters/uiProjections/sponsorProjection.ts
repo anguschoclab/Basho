@@ -26,8 +26,27 @@ interface SponsorData {
 }
 
 // Type definitions for our internal cache
-type SponsorAny = { id: string; name: string; displayName?: string; shortName?: string; loyalty: number; category?: string; satisfaction?: number; active: boolean; relationships: RelAny[] };
-type RelAny = { targetId: string; endsAtTick?: number; tier: string; strength: number; relId?: string; id?: string; since: number; role?: string };
+type SponsorAny = {
+  id: string;
+  name: string;
+  displayName?: string;
+  shortName?: string;
+  loyalty: number;
+  category?: string;
+  satisfaction?: number;
+  active: boolean;
+  relationships: RelAny[];
+};
+type RelAny = {
+  targetId: string;
+  endsAtTick?: number;
+  tier: string;
+  strength: number;
+  relId?: string;
+  id?: string;
+  since: number;
+  role?: string;
+};
 type TargetMap = Map<string, Array<{ sponsor: SponsorAny; rel: RelAny }>>;
 
 const sponsorRelationshipsCache = new WeakMap<Map<unknown, unknown>, TargetMap>();
@@ -84,8 +103,24 @@ function buildAndSortActiveSponsors(
 }
 
 function buildSponsorData(
-  sponsor: { id: string; name: string; displayName?: string; shortName?: string; loyalty: number; category?: string; satisfaction?: number },
-  rel: { endsAtTick?: number; tier: string; strength: number; relId?: string; id?: string; since: number; role?: string },
+  sponsor: {
+    id: string;
+    name: string;
+    displayName?: string;
+    shortName?: string;
+    loyalty: number;
+    category?: string;
+    satisfaction?: number;
+  },
+  rel: {
+    endsAtTick?: number;
+    tier: string;
+    strength: number;
+    relId?: string;
+    id?: string;
+    since: number;
+    role?: string;
+  },
   world: WorldState
 ): SponsorData {
   const weeksRemaining = Math.max(0, Math.floor((rel.endsAtTick - (world.week ?? 0)) / 4));

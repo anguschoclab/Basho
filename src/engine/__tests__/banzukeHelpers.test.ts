@@ -68,9 +68,9 @@ describe("banzukeHelpers", () => {
 
       const world = {
         rikishi: new Map([
-          ["r1", { id: "r1", h2h: { "r2": { wins: 2, losses: 1 } } }],
-          ["r2", { id: "r2", h2h: { "r1": { wins: 1, losses: 2 } } }],
-        ])
+          ["r1", { id: "r1", h2h: { r2: { wins: 2, losses: 1 } } }],
+          ["r2", { id: "r2", h2h: { r1: { wins: 1, losses: 2 } } }],
+        ]),
       } as any as WorldState;
 
       expect(resolveBanzukeTie(a, b, world, new Map())).toBeLessThan(0); // a wins
@@ -85,7 +85,7 @@ describe("banzukeHelpers", () => {
         rikishi: new Map([
           ["r1", { id: "r1", h2h: {} }],
           ["r2", { id: "r2", h2h: {} }],
-        ])
+        ]),
       } as any as WorldState;
 
       const perfs = new Map<string, BashoPerformance>([
@@ -106,7 +106,9 @@ describe("banzukeHelpers", () => {
 
     it("getRankTitleJa formats Japanese strings", () => {
       expect(getRankTitleJa({ rank: "yokozuna", side: "east" })).toBe("東横綱");
-      expect(getRankTitleJa({ rank: "maegashira", side: "west", rankNumber: 5 })).toBe("西前頭5枚目");
+      expect(getRankTitleJa({ rank: "maegashira", side: "west", rankNumber: 5 })).toBe(
+        "西前頭5枚目"
+      );
     });
   });
 

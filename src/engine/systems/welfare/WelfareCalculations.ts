@@ -2,12 +2,12 @@
  * src/engine/systems/welfare/WelfareCalculations.ts
  * =================================================
  * Pure simulation math for Welfare & Compliance.
- * 
+ *
  * Contains deterministic algorithms for:
  * 1. Injury Pressure & Negligence Detection
  * 2. Weekly Welfare Delta (Impact of Diet, Intensity, Recovery)
  * 3. Facility & Governance Synergies
- * 
+ *
  * Goal: Decouple business rules from state management.
  */
 
@@ -29,7 +29,10 @@ export function getSeverityWeight(sev: string | number | undefined): number {
 /**
  * Compute the total injury pressure and detect negligence.
  */
-export function computeInjuryPressure(world: WorldState, heya: Heya): { pressure: number; seriousCount: number; negligenceCount: number } {
+export function computeInjuryPressure(
+  world: WorldState,
+  heya: Heya
+): { pressure: number; seriousCount: number; negligenceCount: number } {
   let pressure = 0;
   let seriousCount = 0;
   let negligenceCount = 0;
@@ -37,18 +40,18 @@ export function computeInjuryPressure(world: WorldState, heya: Heya): { pressure
   const trainingState = world.trainingState?.get(heya.id);
   const intensity = trainingState?.activeProfile.intensity || "balanced";
   const isHarsh = intensity === "punishing" || intensity === "intensive";
-  
+
   const focusMap = new Map();
-  trainingState?.focusSlots.forEach(f => focusMap.set(f.rikishiId, f));
+  trainingState?.focusSlots.forEach((f) => focusMap.set(f.rikishiId, f));
 
   const roster = EntityCollection.getHeyaRoster(world, heya.id);
 
-  roster.forEach(rikishi => {
+  roster.forEach((rikishi) => {
     const status = rikishi.injuryStatus;
     const isInjured = rikishi.injured || (status && status.isInjured);
 
     if (isInjured) {
-      const sev = status?.severity || (status?.severityLabel || undefined);
+      const sev = status?.severity || status?.severityLabel || undefined;
       const w = getSeverityWeight(sev);
       pressure += w;
       if (sev === "serious" || sev === "high" || sev === 3) seriousCount++;
@@ -66,7 +69,11 @@ export function computeInjuryPressure(world: WorldState, heya: Heya): { pressure
 /**
  * Calculate the numerical shift in welfare risk for the week.
  */
-export function calculateWeeklyWelfareDelta(world: WorldState, heya: Heya, state: WelfareState): { delta: number; reasons: string[] } {
+export function calculateWeeklyWelfareDelta(
+  world: WorldState,
+  heya: Heya,
+  state: WelfareState
+): { delta: number; reasons: string[] } {
   const reasons: string[] = [];
   const { pressure, seriousCount, negligenceCount } = computeInjuryPressure(world, heya);
 
@@ -98,19 +105,29 @@ export function calculateWeeklyWelfareDelta(world: WorldState, heya: Heya, state
   const intensity = trainingState?.activeProfile.intensity || "balanced";
   const recovery = trainingState?.activeProfile.recovery || "normal";
 
-  if (intensity === "punishing") { delta += 3; reasons.push("punishing_intensity+3"); }
-  else if (intensity === "intensive") { delta += 1; reasons.push("intensive_intensity+1"); }
+  if (intensity === "punishing") {
+    delta += 3;
+    reasons.push("punishing_intensity+3");
+  } else if (intensity === "intensive") {
+    delta += 1;
+    reasons.push("intensive_intensity+1");
+  }
 
-  if (recovery === "low") { delta += 2; reasons.push("low_recovery+2"); }
-  else if (recovery === "high") { delta -= 2; reasons.push("high_recovery-2"); }
+  if (recovery === "low") {
+    delta += 2;
+    reasons.push("low_recovery+2");
+  } else if (recovery === "high") {
+    delta -= 2;
+    reasons.push("high_recovery-2");
+  }
 
   // Facility Impact
   const recQuality = heya.facilities?.recovery ?? 50;
   const nutQuality = heya.facilities?.nutrition ?? 50;
   const facDelta = Math.round((60 - recQuality) / 25) + Math.round((55 - nutQuality) / 40);
   if (facDelta !== 0) {
-      delta += facDelta;
-      reasons.push(`facilities${facDelta >= 0 ? "+" : ""}${facDelta}`);
+    delta += facDelta;
+    reasons.push(`facilities${facDelta >= 0 ? "+" : ""}${facDelta}`);
   }
 
   // Scandal Synergy
@@ -120,7 +137,8 @@ export function calculateWeeklyWelfareDelta(world: WorldState, heya: Heya, state
   }
 
   // Health Drift (Downward)
-  const isHealthy = pressure === 0 && intensity !== "punishing" && intensity !== "intensive" && recovery !== "low";
+  const isHealthy =
+    pressure === 0 && intensity !== "punishing" && intensity !== "intensive" && recovery !== "low";
   if (isHealthy) {
     delta -= 2;
     reasons.push("healthy_drift-2");

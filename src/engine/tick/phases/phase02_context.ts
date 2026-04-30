@@ -25,15 +25,22 @@ import { clamp } from "../../utils";
 // ── Phase ─────────────────────────────────────────────────────────────────────
 
 export function phase02_context(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('phase02_context');
+  const builder = createImpactBuilder("phase02_context");
   const playerHeyaId = world.playerHeyaId;
   const playerHeya = playerHeyaId ? world.heyas.get(playerHeyaId) : undefined;
 
   const financialPenalty = (playerHeya?.funds ?? 0) < 0;
   const facilityMultipliers = calculateFacilityMultipliers(playerHeya);
   const moraleBoost = checkMoraleBoost(world);
-  const trainingMultiplier = calculateTrainingMultiplier(facilityMultipliers.training, moraleBoost, financialPenalty);
-  const recoveryMultiplier = calculateRecoveryMultiplier(facilityMultipliers.recovery, facilityMultipliers.nutrition);
+  const trainingMultiplier = calculateTrainingMultiplier(
+    facilityMultipliers.training,
+    moraleBoost,
+    financialPenalty
+  );
+  const recoveryMultiplier = calculateRecoveryMultiplier(
+    facilityMultipliers.recovery,
+    facilityMultipliers.nutrition
+  );
 
   const activeModifiers: ActiveModifiers = {
     trainingMultiplier,
@@ -53,12 +60,16 @@ export function phase02_context(world: WorldState): StateImpact {
 
 // --- Helper Functions ---
 
-function calculateFacilityMultipliers(playerHeya: any): { training: number; recovery: number; nutrition: number } {
+function calculateFacilityMultipliers(playerHeya: any): {
+  training: number;
+  recovery: number;
+  nutrition: number;
+} {
   const trainingLevel = clamp(playerHeya?.facilities?.training ?? 50, 0, 100);
   const facilityTrainingMult = 0.85 + (trainingLevel / 100) * 0.35;
 
   const recoveryLevel = clamp(playerHeya?.facilities?.recovery ?? 50, 0, 100);
-  const facilityRecoveryMult = 0.80 + (recoveryLevel / 100) * 0.40;
+  const facilityRecoveryMult = 0.8 + (recoveryLevel / 100) * 0.4;
 
   const nutritionLevel = clamp(playerHeya?.facilities?.nutrition ?? 50, 0, 100);
   const nutritionMult = 0.92 + (nutritionLevel / 100) * 0.16;
@@ -70,7 +81,11 @@ function calculateFacilityMultipliers(playerHeya: any): { training: number; reco
   };
 }
 
-function calculateTrainingMultiplier(facilityTrainingMult: number, moraleBoost: boolean, financialPenalty: boolean): number {
+function calculateTrainingMultiplier(
+  facilityTrainingMult: number,
+  moraleBoost: boolean,
+  financialPenalty: boolean
+): number {
   let trainingMultiplier = facilityTrainingMult;
   if (moraleBoost) trainingMultiplier += 0.15;
   if (financialPenalty) trainingMultiplier *= 0.5;

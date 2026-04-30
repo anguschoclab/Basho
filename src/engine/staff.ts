@@ -1,5 +1,12 @@
 // @ts-nocheck
-import type { Staff, StaffRole, StaffCareerPhase, CompetenceBand, ReputationBand, LoyaltyBand } from "./types/staff";
+import type {
+  Staff,
+  StaffRole,
+  StaffCareerPhase,
+  CompetenceBand,
+  ReputationBand,
+  LoyaltyBand,
+} from "./types/staff";
 import { type SeededRNG, rngFromSeed } from "./rng";
 import type { Id } from "./types/common";
 import type { WorldState } from "./types/world";
@@ -13,7 +20,7 @@ function rollBand(rng: SeededRNG, bands: readonly any[]): any {
 export function generateStaff(seed: string, role: StaffRole, heyaId: Id, sequence: number): Staff {
   const rng = rngFromSeed(seed, "staff", `${heyaId}-${role}-${sequence}`);
 
-  const id = rng.uuid('ST');
+  const id = rng.uuid("ST");
 
   const age = 25 + Math.floor(rng.next() * 40);
 
@@ -22,9 +29,23 @@ export function generateStaff(seed: string, role: StaffRole, heyaId: Id, sequenc
   else if (age > 55) phase = "declining";
   else if (age > 45) phase = "senior";
 
-  const REPUTATION_BANDS: ReputationBand[] = ["unknown", "questionable", "respected", "renowned", "legendary"];
+  const REPUTATION_BANDS: ReputationBand[] = [
+    "unknown",
+    "questionable",
+    "respected",
+    "renowned",
+    "legendary",
+  ];
   const LOYALTY_BANDS: LoyaltyBand[] = ["mercenary", "wavering", "stable", "devoted", "unshakable"];
-  const COMPETENCE_BANDS: CompetenceBand[] = ["feeble", "limited", "serviceable", "strong", "great", "dominant", "monstrous"];
+  const COMPETENCE_BANDS: CompetenceBand[] = [
+    "feeble",
+    "limited",
+    "serviceable",
+    "strong",
+    "great",
+    "dominant",
+    "monstrous",
+  ];
 
   return {
     id,
@@ -37,19 +58,19 @@ export function generateStaff(seed: string, role: StaffRole, heyaId: Id, sequenc
     loyaltyBand: rollBand(rng, LOYALTY_BANDS) as LoyaltyBand,
     competenceBands: {
       primary: rollBand(rng, COMPETENCE_BANDS) as CompetenceBand,
-      secondary: rng.next() > 0.5 ? rollBand(rng, COMPETENCE_BANDS) as CompetenceBand : undefined,
+      secondary: rng.next() > 0.5 ? (rollBand(rng, COMPETENCE_BANDS) as CompetenceBand) : undefined,
     },
     fatigue: Math.floor(rng.next() * 10),
     morale: 70 + Math.floor(rng.next() * 30), // Start with good morale
     scandalExposure: Math.floor(rng.next() * 10),
     yearsAtBeya: Math.max(0, Math.floor(rng.next() * (age - 20))),
     priorAffiliations: [],
-    successorEligible: role === "assistant_oyakata" && age > 40 && rng.next() > 0.5
+    successorEligible: role === "assistant_oyakata" && age > 40 && rng.next() > 0.5,
   };
 }
 
 export function tickStaffWeek(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('tickStaffWeek');
+  const builder = createImpactBuilder("tickStaffWeek");
   if (!world.staff || !world.heyas) return builder.build();
 
   for (const heya of world.heyas.values()) {
@@ -90,7 +111,7 @@ export function tickStaffWeek(world: WorldState): StateImpact {
 }
 
 export function tickStaffYear(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('tickStaffYear');
+  const builder = createImpactBuilder("tickStaffYear");
   if (!world.staff) return builder.build();
 
   for (const staff of world.staff.values()) {
@@ -106,7 +127,7 @@ export function tickStaffYear(world: WorldState): StateImpact {
     builder.updateStaff(staff.id, {
       age: newAge,
       yearsAtBeya: newYearsAtBeya,
-      careerPhase: newCareerPhase
+      careerPhase: newCareerPhase,
     });
   }
 
@@ -119,7 +140,7 @@ export function tickStaffYear(world: WorldState): StateImpact {
  * Returns StateImpact describing staff hire instead of mutating state directly.
  */
 export function hireStaff(world: WorldState, heyaId: Id, role: StaffRole): StateImpact {
-  const builder = createImpactBuilder('hireStaff');
+  const builder = createImpactBuilder("hireStaff");
   const heya = world.heyas.get(heyaId);
   if (!heya) return builder.build();
 
@@ -143,12 +164,12 @@ export function hireStaff(world: WorldState, heyaId: Id, role: StaffRole): State
  * Returns StateImpact describing staff firing instead of mutating state directly.
  */
 export function fireStaff(world: WorldState, heyaId: Id, staffId: string): StateImpact {
-  const builder = createImpactBuilder('fireStaff');
+  const builder = createImpactBuilder("fireStaff");
   const heya = world.heyas.get(heyaId);
   if (!heya) return builder.build();
 
   // Remove from heya list
-  const newStaffIds = (heya.staffIds || []).filter(id => id !== staffId);
+  const newStaffIds = (heya.staffIds || []).filter((id) => id !== staffId);
   builder.updateHeya(heyaId, { staffIds: newStaffIds });
 
   // Remove from world
@@ -157,7 +178,6 @@ export function fireStaff(world: WorldState, heyaId: Id, staffId: string): State
   return builder.build();
 }
 
-
 /**
  * Calculate aggregate staff bonuses for a heya.
  * Rules:
@@ -165,11 +185,11 @@ export function fireStaff(world: WorldState, heyaId: Id, staffId: string): State
  * - Different roles provide different base bonuses.
  */
 export interface StaffBonuses {
-  technique: number;     // e.g. 1.15
-  conditioning: number;  // e.g. 1.10
-  medical: number;       // e.g. 1.20
-  scouting: number;      // e.g. 1.10
-  administration: number;// e.g. 0.90 (cost reduction)
+  technique: number; // e.g. 1.15
+  conditioning: number; // e.g. 1.10
+  medical: number; // e.g. 1.20
+  scouting: number; // e.g. 1.10
+  administration: number; // e.g. 0.90 (cost reduction)
 }
 
 export function getHeyaStaffBonuses(world: WorldState, heyaId: Id): StaffBonuses {
@@ -179,7 +199,7 @@ export function getHeyaStaffBonuses(world: WorldState, heyaId: Id): StaffBonuses
     conditioning: 1.0,
     medical: 1.0,
     scouting: 1.0,
-    administration: 1.0
+    administration: 1.0,
   };
 
   if (!heya || !heya.staffIds || !world.staff) return bonuses;
@@ -187,11 +207,11 @@ export function getHeyaStaffBonuses(world: WorldState, heyaId: Id): StaffBonuses
   const BAND_VALUES: Record<CompetenceBand, number> = {
     feeble: 0.01,
     limited: 0.05,
-    serviceable: 0.10,
+    serviceable: 0.1,
     strong: 0.15,
-    great: 0.20,
-    dominant: 0.30,
-    monstrous: 0.50
+    great: 0.2,
+    dominant: 0.3,
+    monstrous: 0.5,
   };
 
   for (const staffId of heya.staffIds) {
@@ -201,17 +221,17 @@ export function getHeyaStaffBonuses(world: WorldState, heyaId: Id): StaffBonuses
     // Fatigue and Morale Efficiency Mapping
     // High fatigue (>80) drops efficiency significantly.
     // Morale acts as a multiplier to the final bonus.
-    
+
     const fatigueFactor = staff.fatigue > 80 ? 0.4 : staff.fatigue > 50 ? 0.7 : 1.0;
     const moraleFactor = staff.morale > 90 ? 1.15 : staff.morale < 30 ? 0.6 : 1.0;
-    
+
     const efficiency = fatigueFactor * moraleFactor;
 
     const primaryBonus = BAND_VALUES[staff.competenceBands.primary] * efficiency;
-    const secondaryBonus = staff.competenceBands.secondary 
+    const secondaryBonus = staff.competenceBands.secondary
       ? BAND_VALUES[staff.competenceBands.secondary] * 0.4 * efficiency
       : 0;
-    
+
     const totalStaffBonus = primaryBonus + secondaryBonus;
 
     switch (staff.role) {
@@ -229,7 +249,7 @@ export function getHeyaStaffBonuses(world: WorldState, heyaId: Id): StaffBonuses
         break;
       case "administrator":
         // Administration reduces costs, so we subtract from the multiplier
-        bonuses.administration -= (totalStaffBonus * 0.5); 
+        bonuses.administration -= totalStaffBonus * 0.5;
         break;
       case "assistant_oyakata":
         // Generalist: provides small boost to everything

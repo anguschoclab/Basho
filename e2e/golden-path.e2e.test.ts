@@ -25,9 +25,9 @@ test('Golden Path: Boot -> Start Game -> View Stable -> Auto-Sim Tournament -> V
   await page.getByRole('link', { name: /^Overview$/i }).first().click();
   
   // Verify Rikishi Cards are present
-  // Wait for Active Rikishi to be visible
-  await expect(page.getByText(/Active Rikishi/i, { exact: false }).first()).toBeVisible({ timeout: 10000 });
-  const count = await page.locator('.paper.hover\\:border-primary.cursor-pointer').count();
+  // Wait for rikishi cards to be visible in the roster
+  await expect(page.locator('[role="tabpanel"]').first()).toBeVisible({ timeout: 10000 });
+  const count = await page.locator('[role="tabpanel"] .cursor-pointer').count();
   expect(count).toBeGreaterThan(0);
   
   // 4. Auto-Sim Tournament: Navigate to "Basho" and run a simulation

@@ -21,7 +21,11 @@ export function financeSlice(state: GameState, action: GameAction): GameState {
     }
 
     case "BUILD_INFRASTRUCTURE": {
-      const impact = InfrastructureService.startConstruction(state.world, action.heyaId, action.facilityId);
+      const impact = InfrastructureService.startConstruction(
+        state.world,
+        action.heyaId,
+        action.facilityId
+      );
       const updatedWorld = resolveImpacts(state.world, [impact]);
       return {
         ...state,

@@ -8,12 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/layout/control-center";
 import { Trophy, Building2, ScrollText, Crown } from "lucide-react";
-import type {
-  WorldState,
-  Rikishi,
-  Heya,
-  RecordEntry,
-} from "@/presenters/uiDigest";
+import type { WorldState, Rikishi, Heya, RecordEntry } from "@/presenters/uiDigest";
 
 /**
  * HistoryDashboard - The Museum of Sumo
@@ -141,12 +136,16 @@ const RecordsTab = ({ world }: { world: WorldState }) => {
   return (
     <div className="grid gap-6 md:grid-cols-2">
       {categories.map((cat) => (
-        <LeaderboardCard key={cat.label} title={cat.label} entries={cat.data || []} icon={cat.icon} />
+        <LeaderboardCard
+          key={cat.label}
+          title={cat.label}
+          entries={cat.data || []}
+          icon={cat.icon}
+        />
       ))}
     </div>
   );
 };
-
 
 interface LineageTenure {
   generation: number;
@@ -194,11 +193,15 @@ const StablesTab = ({ world }: { world: WorldState }) => {
                       <div className="text-xs space-y-1 border-t border-border pt-2 font-mono">
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Sekitori:</span>
-                          <span className="text-foreground">{tenure.achievements?.sekitoriCount || 0}</span>
+                          <span className="text-foreground">
+                            {tenure.achievements?.sekitoriCount || 0}
+                          </span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Titles:</span>
-                          <span className="text-foreground">{tenure.achievements?.titlesWon || 0}</span>
+                          <span className="text-foreground">
+                            {tenure.achievements?.titlesWon || 0}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -239,4 +242,3 @@ const StablesTab = ({ world }: { world: WorldState }) => {
     </div>
   );
 };
-

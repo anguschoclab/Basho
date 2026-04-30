@@ -67,7 +67,7 @@ export function BoutControls({
               "text-xs px-2 py-0.5 rounded font-mono transition-colors",
               speed === s
                 ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:text-foreground",
+                : "text-muted-foreground hover:text-foreground"
             )}
             aria-label={`Set speed to ${s}x`}
             tooltip={`Set speed to ${s}x`}

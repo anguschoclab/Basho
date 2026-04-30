@@ -17,10 +17,11 @@ const NotFound = () => {
         <h1 className="text-6xl font-bold text-muted-foreground">404</h1>
         <p className="text-xl text-muted-foreground">Page not found</p>
         <p className="text-sm text-muted-foreground">
-          The route <code className="bg-muted px-2 py-1 rounded">{location.pathname}</code> does not exist.
+          The route <code className="bg-muted px-2 py-1 rounded">{location.pathname}</code> does not
+          exist.
         </p>
         <div className="flex gap-4 justify-center">
-          <Button variant="outline" onClick={() => navigate({ to: '..' })}>
+          <Button variant="outline" onClick={() => navigate({ to: ".." })}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Go Back
           </Button>

@@ -12,7 +12,11 @@ export type EngineCommand =
   | { type: "OFFER_CONTRACT"; candidateId: string; heyaId: string }
   | { type: "SCOUT_POOL"; pool: import("../types/talent").TalentPoolType; revealCount: number }
   | { type: "SCOUT_CANDIDATE"; candidateId: string; effort: number }
-  | { type: "RESOLVE_CRISIS"; crisisId: string; choice: "lenient" | "standard" | "harsh" | "cover_up" }
+  | {
+      type: "RESOLVE_CRISIS";
+      crisisId: string;
+      choice: "lenient" | "standard" | "harsh" | "cover_up";
+    }
   | { type: "BUY_MYOSEKI"; myosekiId: string; buyerId: string; buyerHeyaId: string }
   | { type: "LEASE_MYOSEKI"; myosekiId: string; buyerId: string }
   | { type: "RENEW_SPONSOR"; relationshipId: string; sponsorId: string }

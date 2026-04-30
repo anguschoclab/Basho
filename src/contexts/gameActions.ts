@@ -32,7 +32,10 @@ export const simulateBout = (boutIndex: number): GameAction => ({
   boutIndex,
 });
 
-export const setBoutTactic = (boutId: string, tactic: import("@/engine/types/combat").BoutTactic): GameAction => ({
+export const setBoutTactic = (
+  boutId: string,
+  tactic: import("@/engine/types/combat").BoutTactic
+): GameAction => ({
   type: "SET_BOUT_TACTIC",
   boutId,
   tactic,
@@ -103,14 +106,21 @@ export const loadWorld = (world: WorldState): GameAction => ({
   world,
 });
 
-export const upgradeHeya = (heyaId: string, axis: "training" | "recovery" | "nutrition", points?: number): GameAction => ({
+export const upgradeHeya = (
+  heyaId: string,
+  axis: "training" | "recovery" | "nutrition",
+  points?: number
+): GameAction => ({
   type: "UPGRADE_HEYA",
   heyaId,
   axis,
   points,
 });
 
-export const buildInfrastructure = (heyaId: string, facilityId: import("@/engine/types/infrastructure").FacilityId): GameAction => ({
+export const buildInfrastructure = (
+  heyaId: string,
+  facilityId: import("@/engine/types/infrastructure").FacilityId
+): GameAction => ({
   type: "BUILD_INFRASTRUCTURE",
   heyaId,
   facilityId,
@@ -128,18 +138,25 @@ export const handleMediaEvent = (eventId: string, choice: string): GameAction =>
   choice,
 });
 
-export const issueRuling = (rulingId: string, severity: "lenient" | "standard" | "harsh"): GameAction => ({
+export const issueRuling = (
+  rulingId: string,
+  severity: "lenient" | "standard" | "harsh"
+): GameAction => ({
   type: "ISSUE_RULING",
   rulingId,
   severity,
 });
 
-export const advanceTutorialStep = (step: import("@/engine/types/tutorial").TutorialStep): GameAction => ({
+export const advanceTutorialStep = (
+  step: import("@/engine/types/tutorial").TutorialStep
+): GameAction => ({
   type: "ADVANCE_TUTORIAL_STEP",
   step,
 });
 
-export const setTutorialFlag = (flag: keyof import("@/engine/types/tutorial").TutorialFlags): GameAction => ({
+export const setTutorialFlag = (
+  flag: keyof import("@/engine/types/tutorial").TutorialFlags
+): GameAction => ({
   type: "SET_TUTORIAL_FLAG",
   flag,
 });

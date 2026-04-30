@@ -19,11 +19,15 @@ interface YearlyMetaReportProps {
 }
 
 export function YearlyMetaReport({ eraTone, year, familyStats }: YearlyMetaReportProps) {
-  const chartData = useMemo(() => familyStats.map((f) => ({
-    subject: f.family.toUpperCase(),
-    A: f.percentage,
-    fullMark: 100,
-  })), [familyStats]);
+  const chartData = useMemo(
+    () =>
+      familyStats.map((f) => ({
+        subject: f.family.toUpperCase(),
+        A: f.percentage,
+        fullMark: 100,
+      })),
+    [familyStats]
+  );
 
   const toneColors: Record<string, string> = {
     classic: "border-primary bg-primary/5 text-primary",
@@ -126,9 +130,7 @@ export function YearlyMetaReport({ eraTone, year, familyStats }: YearlyMetaRepor
 }
 
 const ImpactRow = React.memo(({ impact }: { impact: any }) => (
-  <div
-    className="flex items-center justify-between p-4 bg-background rounded-xl border group hover:border-primary/40 transition-all"
-  >
+  <div className="flex items-center justify-between p-4 bg-background rounded-xl border group hover:border-primary/40 transition-all">
     <div className="flex items-center gap-4">
       <div
         className={cn(
@@ -140,15 +142,10 @@ const ImpactRow = React.memo(({ impact }: { impact: any }) => (
       </div>
       <div>
         <div className="text-xs font-black uppercase">{impact.label}</div>
-        <div className="text-[10px] text-muted-foreground font-medium">
-          {impact.desc}
-        </div>
+        <div className="text-[10px] text-muted-foreground font-medium">{impact.desc}</div>
       </div>
     </div>
-    <Badge
-      variant={impact.positive ? "default" : "secondary"}
-      className="font-black text-[9px]"
-    >
+    <Badge variant={impact.positive ? "default" : "secondary"} className="font-black text-[9px]">
       {impact.value}
     </Badge>
   </div>

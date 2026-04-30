@@ -10,11 +10,7 @@ import type { WorldState } from "../../types/world";
 
 import { CrisisService } from "../narrative/CrisisService";
 
-export function resolveCrisis(
-  world: WorldState,
-  crisisId: string,
-  choiceId: string
-): StateImpact {
+export function resolveCrisis(world: WorldState, crisisId: string, choiceId: string): StateImpact {
   const builder = createImpactBuilder("resolveCrisis");
   const playerHeyaId = world.playerHeyaId;
   if (!playerHeyaId) return builder.build();
@@ -28,10 +24,10 @@ export function resolveCrisis(
     if (option) {
       // Execute the specific impact generator for this choice
       const impact = option.impactGenerator(world);
-      
+
       // Clear the pending crisis from the world state
       builder.updateWorldField("pendingCrisis", undefined);
-      
+
       return impact;
     }
   }

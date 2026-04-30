@@ -154,7 +154,7 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
       const updated = { ...o };
       updated.age += 1;
       updated.yearsInCharge = (updated.yearsInCharge || 0) + 1;
-      
+
       if (o.avatarConfig) {
         updated.avatarConfig = updateAvatarForAging(o.avatarConfig, updated.age);
       }

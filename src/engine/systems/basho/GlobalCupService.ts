@@ -27,11 +27,17 @@ export const GlobalCupService = {
       .filter((r) => !r.isRetired && !r.injured)
       .sort((a, b) => {
         const rankVal = (r: Rikishi) =>
-          r.rank === "yokozuna" ? 100 : 
-          r.rank === "ozeki" ? 80 : 
-          r.rank === "sekiwake" ? 60 : 
-          r.rank === "komusubi" ? 40 : 
-          r.rankNumber ? 20 - r.rankNumber / 10 : 0;
+          r.rank === "yokozuna"
+            ? 100
+            : r.rank === "ozeki"
+              ? 80
+              : r.rank === "sekiwake"
+                ? 60
+                : r.rank === "komusubi"
+                  ? 40
+                  : r.rankNumber
+                    ? 20 - r.rankNumber / 10
+                    : 0;
         return rankVal(b) - rankVal(a);
       });
 
@@ -47,9 +53,12 @@ export const GlobalCupService = {
 
     const rng = RNGRegistry.getSystemRNG(world, "global_cup", `challengers_${world.year}`);
     const talentPool = world.talentPool;
-    const foreignCandidates = talentPool ? 
-      Object.values(talentPool.candidates).filter(c => c.nationality !== "Japan" && c.availabilityState === "available") : [];
-    
+    const foreignCandidates = talentPool
+      ? Object.values(talentPool.candidates).filter(
+          (c) => c.nationality !== "Japan" && c.availabilityState === "available"
+        )
+      : [];
+
     // Pick or generate challenger 1
     let c1: GlobalCupParticipant;
     if (foreignCandidates.length > 0) {
@@ -108,7 +117,12 @@ export const GlobalCupService = {
 
     const bracket: GlobalCupMatch[] = [];
     // Quarterfinals: 1v8, 2v7, 3v6, 4v5
-    const pairings = [[0, 7], [1, 6], [2, 5], [3, 4]];
+    const pairings = [
+      [0, 7],
+      [1, 6],
+      [2, 5],
+      [3, 4],
+    ];
     pairings.forEach((pair, i) => {
       bracket.push({
         id: `gc_${world.year}_qf_${i}`,
@@ -130,9 +144,14 @@ export const GlobalCupService = {
     };
 
     builder.updateWorldField("globalCup", state);
-    builder.logEvent("GLOBAL_CUP_START", "narrative", {
-      incident: `The Worlds Exhibition ${world.year} has begun! 8 elite wrestlers enter the dohyo.`,
-    }, { importance: "headline" });
+    builder.logEvent(
+      "GLOBAL_CUP_START",
+      "narrative",
+      {
+        incident: `The Worlds Exhibition ${world.year} has begun! 8 elite wrestlers enter the dohyo.`,
+      },
+      { importance: "headline" }
+    );
 
     return builder.build();
   },
@@ -149,9 +168,15 @@ export const GlobalCupService = {
     const currentRound = state.phase;
 
     // 1. Resolve current matches if not already resolved
-    const unresolved = nextBracket.filter(m => m.round === currentRound.slice(0, -1) || (currentRound === "quarterfinals" && m.round === "quarterfinal") || (currentRound === "semifinals" && m.round === "semifinal") || (currentRound === "finale" && m.round === "final"));
-    
-    unresolved.forEach(match => {
+    const unresolved = nextBracket.filter(
+      (m) =>
+        m.round === currentRound.slice(0, -1) ||
+        (currentRound === "quarterfinals" && m.round === "quarterfinal") ||
+        (currentRound === "semifinals" && m.round === "semifinal") ||
+        (currentRound === "finale" && m.round === "final")
+    );
+
+    unresolved.forEach((match) => {
       if (match.winnerRikishiId) return;
       const result = this.simulateMatch(world, match);
       match.winnerRikishiId = result.winner === "east" ? match.eastRikishiId : match.westRikishiId;
@@ -161,31 +186,58 @@ export const GlobalCupService = {
     // 2. Transition phase
     if (currentRound === "quarterfinals") {
       // Build Semifinals
-      const winners = unresolved.map(m => m.winnerRikishiId!);
+      const winners = unresolved.map((m) => m.winnerRikishiId!);
       const semis: GlobalCupMatch[] = [
-        { id: `gc_${world.year}_sf_1`, round: "semifinal", matchNumber: 1, eastRikishiId: winners[0], westRikishiId: winners[3], day: world.dayIndexGlobal },
-        { id: `gc_${world.year}_sf_2`, round: "semifinal", matchNumber: 2, eastRikishiId: winners[1], westRikishiId: winners[2], day: world.dayIndexGlobal },
+        {
+          id: `gc_${world.year}_sf_1`,
+          round: "semifinal",
+          matchNumber: 1,
+          eastRikishiId: winners[0],
+          westRikishiId: winners[3],
+          day: world.dayIndexGlobal,
+        },
+        {
+          id: `gc_${world.year}_sf_2`,
+          round: "semifinal",
+          matchNumber: 2,
+          eastRikishiId: winners[1],
+          westRikishiId: winners[2],
+          day: world.dayIndexGlobal,
+        },
       ];
-      builder.updateWorldField("globalCup", { ...state, phase: "semifinals", bracket: [...nextBracket, ...semis] });
+      builder.updateWorldField("globalCup", {
+        ...state,
+        phase: "semifinals",
+        bracket: [...nextBracket, ...semis],
+      });
     } else if (currentRound === "semifinals") {
       // Build Finale
-      const winners = unresolved.map(m => m.winnerRikishiId!);
-      const finale: GlobalCupMatch = { 
-        id: `gc_${world.year}_f`, 
-        round: "final", 
-        matchNumber: 1, 
-        eastRikishiId: winners[0], 
-        westRikishiId: winners[1], 
-        day: world.dayIndexGlobal 
+      const winners = unresolved.map((m) => m.winnerRikishiId!);
+      const finale: GlobalCupMatch = {
+        id: `gc_${world.year}_f`,
+        round: "final",
+        matchNumber: 1,
+        eastRikishiId: winners[0],
+        westRikishiId: winners[1],
+        day: world.dayIndexGlobal,
       };
-      builder.updateWorldField("globalCup", { ...state, phase: "finale", bracket: [...nextBracket, finale] });
+      builder.updateWorldField("globalCup", {
+        ...state,
+        phase: "finale",
+        bracket: [...nextBracket, finale],
+      });
     } else if (currentRound === "finale") {
       // Complete
       const winnerId = unresolved[0].winnerRikishiId!;
-      const winner = state.participants.find(p => p.rikishiId === winnerId);
-      
+      const winner = state.participants.find((p) => p.rikishiId === winnerId);
+
       this.finalizeTournament(world, builder, winnerId, winner?.shikona || "Unknown");
-      builder.updateWorldField("globalCup", { ...state, phase: "complete", isActive: false, championId: winnerId });
+      builder.updateWorldField("globalCup", {
+        ...state,
+        phase: "complete",
+        isActive: false,
+        championId: winnerId,
+      });
     }
 
     return builder.build();
@@ -202,7 +254,7 @@ export const GlobalCupService = {
     const westPower = west?.power ?? 70;
     const total = eastPower + westPower;
     const roll = rng.next() * total;
-    
+
     return {
       winner: (roll < eastPower ? "east" : "west") as "east" | "west",
       winningKimarite: "yorikiri",
@@ -210,15 +262,31 @@ export const GlobalCupService = {
     };
   },
 
-  finalizeTournament(world: WorldState, builder: InstanceType<typeof ImpactBuilder>, winnerId: string, winnerName: string) {
-    builder.logEvent("GLOBAL_CUP_FINALE", "narrative", {
-      winnerId,
-      winnerName,
-      incident: `The Worlds Exhibition has concluded. ${winnerName} has been crowned the Global Champion of ${world.year}.`,
-    }, { importance: "headline" });
+  finalizeTournament(
+    world: WorldState,
+    builder: InstanceType<typeof ImpactBuilder>,
+    winnerId: string,
+    winnerName: string
+  ) {
+    builder.logEvent(
+      "GLOBAL_CUP_FINALE",
+      "narrative",
+      {
+        winnerId,
+        winnerName,
+        incident: `The Worlds Exhibition has concluded. ${winnerName} has been crowned the Global Champion of ${world.year}.`,
+      },
+      { importance: "headline" }
+    );
 
     // History update
-    const chronicle = world.chronicle || { eraLabels: [], topChampions: [], greatestRivalries: [], recordsBroken: [], globalCups: [] };
+    const chronicle = world.chronicle || {
+      eraLabels: [],
+      topChampions: [],
+      greatestRivalries: [],
+      recordsBroken: [],
+      globalCups: [],
+    };
     const historyEntry: GlobalCupHistoryEntry = {
       year: world.year,
       championId: winnerId,
@@ -231,5 +299,5 @@ export const GlobalCupService = {
       ...chronicle,
       globalCups: [...(chronicle.globalCups || []), historyEntry],
     });
-  }
+  },
 };

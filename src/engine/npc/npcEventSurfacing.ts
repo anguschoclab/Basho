@@ -38,10 +38,7 @@ export function isRecruitmentPlayerRelevant(
 /**
  * Checks if a Myoseki acquisition is relevant to the player.
  */
-export function isMyosekiPlayerRelevant(
-  world: WorldState,
-  stock: MyosekiStock
-): EventImportance {
+export function isMyosekiPlayerRelevant(world: WorldState, stock: MyosekiStock): EventImportance {
   const playerHeyaId = world.playerHeyaId;
   if (!playerHeyaId) return "minor";
 
@@ -68,23 +65,18 @@ export function isMyosekiPlayerRelevant(
 /**
  * Checks if a governance ruling is relevant.
  */
-export function isGovernancePlayerRelevant(
-  heyaId: Id,
-  severity: string
-): EventImportance {
+export function isGovernancePlayerRelevant(heyaId: Id, severity: string): EventImportance {
   // Any major sanction on any heya is notable
   if (severity === "critical") return "headline";
   if (severity === "major") return "major";
-  
+
   return "minor";
 }
 
 /**
  * Checks if a sponsor recruitment is relevant.
  */
-export function isSponsorPlayerRelevant(
-  tier: string
-): EventImportance {
+export function isSponsorPlayerRelevant(tier: string): EventImportance {
   // High tier sponsors are notable
   if (tier === "T5" || tier === "T4") return "notable";
   return "minor";

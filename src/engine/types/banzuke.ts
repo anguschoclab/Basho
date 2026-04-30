@@ -22,7 +22,13 @@ export type Rank =
   | "jonokuchi";
 
 /** Type representing numbered rank. */
-export type NumberedRank = "maegashira" | "juryo" | "makushita" | "sandanme" | "jonidan" | "jonokuchi";
+export type NumberedRank =
+  | "maegashira"
+  | "juryo"
+  | "makushita"
+  | "sandanme"
+  | "jonidan"
+  | "jonokuchi";
 /** Type representing unnumbered rank. */
 export type UnnumberedRank = "yokozuna" | "ozeki" | "sekiwake" | "komusubi";
 
@@ -55,7 +61,11 @@ function isNumberedRank(rank: Rank): rank is NumberedRank {
  *  * @param args - The Args.
  *  * @returns The result.
  */
-export function toRankPosition(args: { rank: Rank; side: Side; rankNumber?: number }): RankPosition {
+export function toRankPosition(args: {
+  rank: Rank;
+  side: Side;
+  rankNumber?: number;
+}): RankPosition {
   const { rank, side, rankNumber } = args;
   if (isNumberedRank(rank)) {
     if (!rankNumber || rankNumber < 1) throw new Error(`Rank ${rank} requires rankNumber >= 1`);
@@ -118,7 +128,7 @@ export const RANK_HIERARCHY: Record<Rank, RankInfo> = {
     salary: 3_000_000,
     isSanyaku: true,
     isSekitori: true,
-    fightsPerBasho: 15
+    fightsPerBasho: 15,
   },
   ozeki: {
     rank: "ozeki",
@@ -128,7 +138,7 @@ export const RANK_HIERARCHY: Record<Rank, RankInfo> = {
     salary: 2_500_000,
     isSanyaku: true,
     isSekitori: true,
-    fightsPerBasho: 15
+    fightsPerBasho: 15,
   },
   sekiwake: {
     rank: "sekiwake",
@@ -138,7 +148,7 @@ export const RANK_HIERARCHY: Record<Rank, RankInfo> = {
     salary: 1_800_000,
     isSanyaku: true,
     isSekitori: true,
-    fightsPerBasho: 15
+    fightsPerBasho: 15,
   },
   komusubi: {
     rank: "komusubi",
@@ -148,7 +158,7 @@ export const RANK_HIERARCHY: Record<Rank, RankInfo> = {
     salary: 1_800_000,
     isSanyaku: true,
     isSekitori: true,
-    fightsPerBasho: 15
+    fightsPerBasho: 15,
   },
   maegashira: {
     rank: "maegashira",
@@ -158,7 +168,7 @@ export const RANK_HIERARCHY: Record<Rank, RankInfo> = {
     salary: 1_400_000,
     isSanyaku: false,
     isSekitori: true,
-    fightsPerBasho: 15
+    fightsPerBasho: 15,
   },
   juryo: {
     rank: "juryo",
@@ -168,7 +178,7 @@ export const RANK_HIERARCHY: Record<Rank, RankInfo> = {
     salary: 1_100_000,
     isSanyaku: false,
     isSekitori: true,
-    fightsPerBasho: 15
+    fightsPerBasho: 15,
   },
   makushita: {
     rank: "makushita",
@@ -178,7 +188,7 @@ export const RANK_HIERARCHY: Record<Rank, RankInfo> = {
     salary: 0,
     isSanyaku: false,
     isSekitori: false,
-    fightsPerBasho: 7
+    fightsPerBasho: 7,
   },
   sandanme: {
     rank: "sandanme",
@@ -188,7 +198,7 @@ export const RANK_HIERARCHY: Record<Rank, RankInfo> = {
     salary: 0,
     isSanyaku: false,
     isSekitori: false,
-    fightsPerBasho: 7
+    fightsPerBasho: 7,
   },
   jonidan: {
     rank: "jonidan",
@@ -198,7 +208,7 @@ export const RANK_HIERARCHY: Record<Rank, RankInfo> = {
     salary: 0,
     isSanyaku: false,
     isSekitori: false,
-    fightsPerBasho: 7
+    fightsPerBasho: 7,
   },
   jonokuchi: {
     rank: "jonokuchi",
@@ -208,8 +218,8 @@ export const RANK_HIERARCHY: Record<Rank, RankInfo> = {
     salary: 0,
     isSanyaku: false,
     isSekitori: false,
-    fightsPerBasho: 7
-  }
+    fightsPerBasho: 7,
+  },
 };
 
 /** Defines the structure for banzuke entry. */

@@ -11,7 +11,11 @@
 import { RivalryService } from "./systems/narrative/RivalryService";
 import { WorldState } from "./types/world";
 import type { Id } from "./types/common";
-import type { RivalriesState, RivalryPairState, RivalryKey } from "./systems/narrative/RivalryConstants";
+import type {
+  RivalriesState,
+  RivalryPairState,
+  RivalryKey,
+} from "./systems/narrative/RivalryConstants";
 import type { StateImpact } from "./core/StateImpact";
 
 // --- AUTHORITATIVE DELEGATION ---
@@ -56,7 +60,7 @@ export function upsertRivalry(state: RivalriesState, pair: RivalryPairState): vo
 export function onBoutResolvedRivalries(world: WorldState, context: any): StateImpact {
   return RivalryService.onBoutResolved(world, {
     result: context.result,
-    day: context.match?.day
+    day: context.match?.day,
   });
 }
 
@@ -68,10 +72,10 @@ export function tickWeekRivalries(world: WorldState): StateImpact {
 }
 
 // Re-export type definitions for backward compatibility
-export type { 
-  RivalriesState, 
-  RivalryPairState, 
-  RivalryKey, 
-  RivalryTone, 
-  RivalryTrigger 
+export type {
+  RivalriesState,
+  RivalryPairState,
+  RivalryKey,
+  RivalryTone,
+  RivalryTrigger,
 } from "./systems/narrative/RivalryConstants";

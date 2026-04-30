@@ -237,7 +237,13 @@ function StatBox({
 
 // === Category Tab ===
 
-function CategoryTab({ category, inductees }: { category: HoFCategory; inductees: UIHofInductee[] }) {
+function CategoryTab({
+  category,
+  inductees,
+}: {
+  category: HoFCategory;
+  inductees: UIHofInductee[];
+}) {
   const label = HOF_CATEGORY_LABELS[category];
 
   const byYear = useMemo(() => {
@@ -342,7 +348,11 @@ export default function HallOfFamePage() {
   const hof = useMemo(() => (world ? projectHOFUIDigest(world) : null), [world]);
 
   const byCategory = useMemo(() => {
-    const map: Record<HoFCategory, UIHofInductee[]> = { champion: [], iron_man: [], technician: [] };
+    const map: Record<HoFCategory, UIHofInductee[]> = {
+      champion: [],
+      iron_man: [],
+      technician: [],
+    };
     if (!hof) return map;
     for (const ind of hof.inductees) {
       map[ind.category as HoFCategory]?.push(ind);

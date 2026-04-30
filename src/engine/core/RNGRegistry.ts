@@ -3,7 +3,7 @@
  * src/engine/core/RNGRegistry.ts
  * ==============================
  * Unified RNG provider for Sumo Manager Pro.
- * 
+ *
  * Centralizes all seeded randomness to ensure:
  * 1. Cross-system determinism (same seed = same simulation).
  * 2. Predictable behavior across Web Workers and UI.
@@ -16,13 +16,13 @@ import type { WorldState } from "../types/world";
 /**
  * Common system keys for RNG seeding.
  */
-export type SystemRNGKey = 
-  | "training" 
-  | "scouting" 
-  | "rivalry" 
-  | "media" 
-  | "governance" 
-  | "economics" 
+export type SystemRNGKey =
+  | "training"
+  | "scouting"
+  | "rivalry"
+  | "media"
+  | "governance"
+  | "economics"
   | "combat"
   | "kensho"
   | "health"
@@ -34,7 +34,7 @@ export type SystemRNGKey =
 export const RNGRegistry = {
   /**
    * Get a seeded RNG for a specific system and cadence.
-   * 
+   *
    * @param world - The current WorldState.
    * @param system - The system key.
    * @param cadence - Optional sub-context (e.g., "week::12" or "rikishi::d8e4").
@@ -57,5 +57,5 @@ export const RNGRegistry = {
    */
   getScoutingRNG(world: WorldState): SeededRNG {
     return this.getSystemRNG(world, "scouting", `week::${world.calendar.currentWeek || 0}`);
-  }
+  },
 };

@@ -13,7 +13,7 @@ export type HealthBadge = "Fresh" | "Worn" | "Struggling" | "Critical" | "Recove
  */
 export function getHealthBadge(rikishi: Rikishi): HealthBadge {
   if (rikishi.injured && rikishi.injuryWeeksRemaining > 0) return "Recovering";
-  
+
   const stamina = rikishi.stamina ?? 50;
   const fatigue = rikishi.fatigue ?? 0;
   const health = stamina - fatigue;
@@ -39,11 +39,17 @@ export function getMediaHeatLabel(heat: number): { label: string; color: string 
  */
 export function getMediaToneColor(tone: MediaTone): string {
   switch (tone) {
-    case "praise": return "#34d399"; // emerald-400
-    case "hype": return "#f472b6"; // pink-400
-    case "concern": return "#fbbf24"; // amber-400
-    case "controversy": return "#f87171"; // red-400
-    case "disrespect": return "#9ca3af"; // gray-400
-    default: return "#94a3b8"; // slate-400
+    case "praise":
+      return "#34d399"; // emerald-400
+    case "hype":
+      return "#f472b6"; // pink-400
+    case "concern":
+      return "#fbbf24"; // amber-400
+    case "controversy":
+      return "#f87171"; // red-400
+    case "disrespect":
+      return "#9ca3af"; // gray-400
+    default:
+      return "#94a3b8"; // slate-400
   }
 }

@@ -99,7 +99,10 @@ export default function TalentPoolPage() {
 
   const onScout = (candidateId: string) => {
     sendCommand({ type: "SCOUT_CANDIDATE", candidateId, effort: 1 });
-    toast({ title: "Scouting initiated", description: "Your scouts are gathering intel on this prospect." });
+    toast({
+      title: "Scouting initiated",
+      description: "Your scouts are gathering intel on this prospect.",
+    });
   };
 
   const onOffer = (candidateId: string) => {

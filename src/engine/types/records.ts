@@ -104,4 +104,3 @@ export interface WorldRecords {
     kinboshi: RecordEntry[];
   };
 }
-

@@ -2,8 +2,21 @@ import type { Division, RankPosition } from "../types/banzuke";
 
 /** Build the full slot template for all divisions. */
 export function buildFullSlotTemplate(
-  sanyaku: { yokozuna: number; ozeki: number; sekiwake: number; komusubi: number; maegashira: number },
-  counts: { makuuchi: number; juryo: number; makushita: number; sandanme: number; jonidan: number; jonokuchi: number }
+  sanyaku: {
+    yokozuna: number;
+    ozeki: number;
+    sekiwake: number;
+    komusubi: number;
+    maegashira: number;
+  },
+  counts: {
+    makuuchi: number;
+    juryo: number;
+    makushita: number;
+    sandanme: number;
+    jonidan: number;
+    jonokuchi: number;
+  }
 ): Array<{ division: Division; position: RankPosition }> {
   const out: Array<{ division: Division; position: RankPosition }> = [];
 

@@ -10,9 +10,20 @@ import { SeededRNG } from "../rng";
 
 export interface NPCPersona {
   archetype: OyakataArchetype | "unknown";
-  traits: { ambition: number; patience: number; risk: number; tradition: number; compassion: number };
+  traits: {
+    ambition: number;
+    patience: number;
+    risk: number;
+    tradition: number;
+    compassion: number;
+  };
   quirks: string[];
-  flags: { welfareHawk: boolean; disciplineHawk: boolean; publicityHawk: boolean; nepotist: boolean };
+  flags: {
+    welfareHawk: boolean;
+    disciplineHawk: boolean;
+    publicityHawk: boolean;
+    nepotist: boolean;
+  };
   styleBias: Style | "neutral";
   welfareDiscipline: number;
   riskAppetite: number;
@@ -32,7 +43,7 @@ const QUIRK_IDS = [
   "Keiko Romantic",
   "Cold Pragmatist",
   "Family First",
-  "Numbers Guy"
+  "Numbers Guy",
 ] as const;
 
 /**
@@ -60,13 +71,16 @@ export function ensurePersonaForOyakata(world: WorldState, oyakata: Oyakata): vo
   const quirkIds = pickUnique(rng, QUIRK_IDS, baseCount);
 
   // Hydrate quirk labels via BardEngine
-  const quirkLabels = quirkIds.map(id => BardEngine.resolve(rng, `oyakata.quirks.${id}`).text);
+  const quirkLabels = quirkIds.map((id) => BardEngine.resolve(rng, `oyakata.quirks.${id}`).text);
 
   const flags = {
     welfareHawk: quirkIds.includes("Welfare Hawk") || oyakata.traits.compassion >= 75,
-    disciplineHawk: quirkIds.includes("Discipline Hawk") || oyakata.archetype === "tyrant" || oyakata.traits.tradition >= 80,
+    disciplineHawk:
+      quirkIds.includes("Discipline Hawk") ||
+      oyakata.archetype === "tyrant" ||
+      oyakata.traits.tradition >= 80,
     publicityHawk: quirkIds.includes("Media Operator") || oyakata.traits.ambition >= 80,
-    nepotist: quirkIds.includes("Nepotist")
+    nepotist: quirkIds.includes("Nepotist"),
   };
 
   oyakata.quirks = quirkLabels;
@@ -91,7 +105,7 @@ export function getManagerPersona(world: WorldState, heyaId: string): NPCPersona
       welfareDiscipline: 0.4,
       riskAppetite: 0.5,
       perception,
-      mood: "content" as OyakataMood
+      mood: "content" as OyakataMood,
     };
   }
 
@@ -102,21 +116,18 @@ export function getManagerPersona(world: WorldState, heyaId: string): NPCPersona
     welfareHawk: Boolean(oyakata.managerFlags?.welfareHawk),
     disciplineHawk: Boolean(oyakata.managerFlags?.disciplineHawk),
     publicityHawk: Boolean(oyakata.managerFlags?.publicityHawk),
-    nepotist: Boolean(oyakata.managerFlags?.nepotist)
+    nepotist: Boolean(oyakata.managerFlags?.nepotist),
   };
 
-  const welfareDiscipline =
-    Math.max(0, Math.min(1,
-      (traits.compassion / 120) +
-      (flags.welfareHawk ? 0.25 : 0) -
-      (traits.risk / 220)
-    ));
+  const welfareDiscipline = Math.max(
+    0,
+    Math.min(1, traits.compassion / 120 + (flags.welfareHawk ? 0.25 : 0) - traits.risk / 220)
+  );
 
-  const riskAppetite =
-    Math.max(0, Math.min(1,
-      (traits.risk / 100) * 0.65 +
-      (traits.ambition / 100) * 0.35
-    ));
+  const riskAppetite = Math.max(
+    0,
+    Math.min(1, (traits.risk / 100) * 0.65 + (traits.ambition / 100) * 0.35)
+  );
 
   return {
     archetype: oyakata.archetype,
@@ -127,6 +138,6 @@ export function getManagerPersona(world: WorldState, heyaId: string): NPCPersona
     welfareDiscipline,
     riskAppetite,
     perception,
-    mood: (oyakata.mood ?? "content") as OyakataMood
+    mood: (oyakata.mood ?? "content") as OyakataMood,
   };
 }

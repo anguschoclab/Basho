@@ -59,12 +59,13 @@ describe("InjuryService", () => {
 
     it("returns an injury if rng rolls lower than chance", () => {
       const rng = {
-        next: vi.fn()
+        next: vi
+          .fn()
           .mockReturnValueOnce(0.0001) // pass chance check
-          .mockReturnValueOnce(0.5)    // severity minor
-          .mockReturnValueOnce(0.5)    // area
-          .mockReturnValueOnce(0.5)    // type
-          .mockReturnValueOnce(0.5)    // weeks
+          .mockReturnValueOnce(0.5) // severity minor
+          .mockReturnValueOnce(0.5) // area
+          .mockReturnValueOnce(0.5) // type
+          .mockReturnValueOnce(0.5), // weeks
       } as unknown as SeededRNG;
 
       const rikishi = mockRikishi("r1");
@@ -75,12 +76,13 @@ describe("InjuryService", () => {
 
     it("returns serious injury correctly", () => {
       const rng = {
-        next: vi.fn()
+        next: vi
+          .fn()
           .mockReturnValueOnce(0.0001) // pass chance check
-          .mockReturnValueOnce(0.96)   // severity serious
-          .mockReturnValueOnce(0.5)    // area
-          .mockReturnValueOnce(0.5)    // type fracture
-          .mockReturnValueOnce(0.9)    // max weeks
+          .mockReturnValueOnce(0.96) // severity serious
+          .mockReturnValueOnce(0.5) // area
+          .mockReturnValueOnce(0.5) // type fracture
+          .mockReturnValueOnce(0.9), // max weeks
       } as unknown as SeededRNG;
 
       const rikishi = mockRikishi("r1");
@@ -108,13 +110,14 @@ describe("InjuryService", () => {
 
       // Force an injury
       vi.spyOn(RNGRegistry, "getSystemRNG").mockReturnValue({
-        next: vi.fn()
+        next: vi
+          .fn()
           .mockReturnValueOnce(0.0001) // chance
-          .mockReturnValueOnce(0.8)    // moderate
+          .mockReturnValueOnce(0.8) // moderate
           .mockReturnValueOnce(0.5)
           .mockReturnValueOnce(0.5)
           .mockReturnValueOnce(0.5),
-        uuid: () => "IJ-123"
+        uuid: () => "IJ-123",
       } as unknown as SeededRNG);
 
       const impact = tickWeekInjury(world);
@@ -151,7 +154,12 @@ describe("InjuryService", () => {
   describe("onBoutResolvedInjury", () => {
     it("returns empty impact if no result", () => {
       const world = makeMockWorld();
-      const impact = onBoutResolvedInjury(world, { match: {}, result: null, east: null, west: null });
+      const impact = onBoutResolvedInjury(world, {
+        match: {},
+        result: null,
+        east: null,
+        west: null,
+      });
       expect(impact.entities?.rikishiUpdates?.size).toBeUndefined();
     });
 
@@ -172,10 +180,11 @@ describe("InjuryService", () => {
       const result = { winner: "west", kimarite: "uwatenage" }; // violent
 
       vi.spyOn(RNGRegistry, "getSystemRNG").mockReturnValue({
-        next: vi.fn()
+        next: vi
+          .fn()
           .mockReturnValueOnce(0.01) // < 0.04 boutInjuryChance
           .mockReturnValueOnce(0.5), // weeks
-        uuid: () => "IJ-123"
+        uuid: () => "IJ-123",
       } as unknown as SeededRNG);
 
       const impact = onBoutResolvedInjury(world, { match: {}, result, east, west });
@@ -210,8 +219,8 @@ describe("InjuryService", () => {
         injured: true,
         currentInjury: {
           severity: "moderate",
-          weeksOut: 3
-        }
+          weeksOut: 3,
+        },
       };
 
       const event = toInjuryEvent(rikishi);
@@ -219,7 +228,7 @@ describe("InjuryService", () => {
         type: "INJURY",
         rikishiId: "r1",
         severity: "moderate",
-        weeksOut: 3
+        weeksOut: 3,
       });
     });
   });

@@ -50,7 +50,7 @@ export function spawnCrisisAgent(ctx: CrisisAgentContext): CrisisAgentResult {
 
   // Analyze crisis type and personality match
   const crisisId = crisis.id;
-  
+
   reasoning.push(`[Crisis Agent] Evaluating ${crisis.title}`);
 
   // Base decision on personality
@@ -170,7 +170,9 @@ export function spawnCrisisAgent(ctx: CrisisAgentContext): CrisisAgentResult {
   }
 
   reasoning.push(`[Crisis Agent] Final choice: ${selectedChoiceId}`);
-  reasoning.push(`[Crisis Agent] Expected impact: reputation ${reputationChange}, political capital ${politicalCapitalChange}, welfare risk ${welfareRiskChange}`);
+  reasoning.push(
+    `[Crisis Agent] Expected impact: reputation ${reputationChange}, political capital ${politicalCapitalChange}, welfare risk ${welfareRiskChange}`
+  );
 
   return {
     selectedChoiceId,

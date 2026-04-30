@@ -75,10 +75,8 @@ export function spawnFinanceAgent(ctx: FinanceAgentContext): FinanceAgentResult 
       const stocks = stableSort(Object.values(world.myosekiMarket.stocks), (x) => x.id);
 
       // Filter and prioritize stocks
-      const affordableStocks = stocks.filter(s =>
-        s.status === "available" &&
-        s.askingPrice &&
-        s.askingPrice < funds * 0.5
+      const affordableStocks = stocks.filter(
+        (s) => s.status === "available" && s.askingPrice && s.askingPrice < funds * 0.5
       );
 
       prioritized = affordableStocks.sort((a, b) => {
@@ -98,7 +96,9 @@ export function spawnFinanceAgent(ctx: FinanceAgentContext): FinanceAgentResult 
       if (prioritized.length > 0) {
         shouldBuyMyoseki = true;
         const selected = prioritized[0];
-        reasoning.push(`[Finance Agent] Targeting myoseki: ${selected.id} (¥${(selected.askingPrice || 0).toLocaleString()})`);
+        reasoning.push(
+          `[Finance Agent] Targeting myoseki: ${selected.id} (¥${(selected.askingPrice || 0).toLocaleString()})`
+        );
       } else {
         reasoning.push("[Finance Agent] No affordable myoseki available");
       }
@@ -128,7 +128,9 @@ export function spawnFinanceAgent(ctx: FinanceAgentContext): FinanceAgentResult 
   if (runwayMonths < 6 || riskLevel === "conservative") {
     shouldBuildReserves = true;
     reserveTarget = monthlyBurn * 6; // 6 months runway target
-    reasoning.push(`[Finance Agent] Building reserves to ${reserveTarget.toLocaleString()} for safety`);
+    reasoning.push(
+      `[Finance Agent] Building reserves to ${reserveTarget.toLocaleString()} for safety`
+    );
   } else {
     reserveTarget = monthlyBurn * 3; // 3 months runway target
     reasoning.push(`[Finance Agent] Maintaining ${reserveTarget.toLocaleString()} reserve target`);

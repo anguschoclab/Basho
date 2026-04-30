@@ -23,7 +23,9 @@ export function useAutosaveIndicator() {
   useEffect(() => {
     const handler = (s: AutosaveStatus) => setStatus(s);
     listeners.add(handler);
-    return () => { listeners.delete(handler); };
+    return () => {
+      listeners.delete(handler);
+    };
   }, []);
 
   return status;

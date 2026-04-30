@@ -76,18 +76,18 @@ export function getHeyaRoster(world: WorldState, heyaId: Id): Rikishi[] {
   const cacheKey = `${heyaId}`;
   const cached = rosterCache.get(cacheKey);
   const currentWeek = world.week ?? 0;
-  
+
   if (cached && cached.week === currentWeek) {
     return cached.roster;
   }
-  
+
   const ids = getHeyaRosterIds(world, heyaId);
   const roster: Rikishi[] = [];
   for (const id of ids) {
     const r = world.rikishi.get(id);
     if (r) roster.push(r);
   }
-  
+
   rosterCache.set(cacheKey, { week: currentWeek, roster });
   return roster;
 }
@@ -125,11 +125,11 @@ export function getHeyaStyleBias(world: WorldState, heyaId: Id): Style | "neutra
   const cacheKey = `${heyaId}`;
   const cached = styleBiasCache.get(cacheKey);
   const currentWeek = world.week ?? 0;
-  
+
   if (cached && cached.week === currentWeek) {
     return cached.bias;
   }
-  
+
   const roster = getHeyaRoster(world, heyaId);
   let oshi = 0;
   let yotsu = 0;
@@ -138,7 +138,7 @@ export function getHeyaStyleBias(world: WorldState, heyaId: Id): Style | "neutra
     if (r.style === "yotsu") yotsu += 1;
   }
   const bias: Style | "neutral" = oshi === yotsu ? "neutral" : oshi > yotsu ? "oshi" : "yotsu";
-  
+
   styleBiasCache.set(cacheKey, { week: currentWeek, bias });
   return bias;
 }
@@ -195,11 +195,11 @@ export function getCurrentBasho(world: WorldState) {
  * Get all rikishi associated with a specific heyaId.
  */
 export function getStableRikishi(world: WorldState, heyaId: string): Rikishi[] {
-    const list: Rikishi[] = [];
-    for (const r of world.rikishi.values()) {
-        if (r.heyaId === heyaId) list.push(r);
-    }
-    return list;
+  const list: Rikishi[] = [];
+  for (const r of world.rikishi.values()) {
+    if (r.heyaId === heyaId) list.push(r);
+  }
+  return list;
 }
 
 /**

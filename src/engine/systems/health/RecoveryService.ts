@@ -34,6 +34,6 @@ export function tickRikishiRecovery(rikishi: Rikishi, recoveryMult: number = 1.0
   if (rikishi.injuryStatus) {
     rikishi.injuryStatus.weeksRemaining = rikishi.injuryWeeksRemaining;
   }
-  
+
   return false;
 }

@@ -1,12 +1,7 @@
 import { useMemo } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ASSOCIATION_TABS } from "@/constants/navigation";
-import {
-  PageHeader,
-  StatCard,
-  ListCard,
-  SectionHeader,
-} from "@/components/layout/control-center";
+import { PageHeader, StatCard, ListCard, SectionHeader } from "@/components/layout/control-center";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -173,9 +168,7 @@ export default function GovernancePage() {
       { label: "Standing", value: getStatusLabel(world, status), tone: statusTone, sub: statusSub },
     ];
 
-    const recordStats: StatItem[] = [
-      { label: "Decisions on File", value: history.length },
-    ];
+    const recordStats: StatItem[] = [{ label: "Decisions on File", value: history.length }];
 
     return {
       status,
@@ -385,21 +378,28 @@ export default function GovernancePage() {
                       icon: Scale,
                     },
                   ].map((favor) => (
-                    <Card key={favor.id} className="relative overflow-hidden group border-border/40 bg-card/30 backdrop-blur-sm">
+                    <Card
+                      key={favor.id}
+                      className="relative overflow-hidden group border-border/40 bg-card/30 backdrop-blur-sm"
+                    >
                       <CardContent className="p-3.5 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="p-2 bg-muted/40 rounded shadow-inner">
                             <favor.icon className="h-4.5 w-4.5 text-primary/80" />
                           </div>
                           <div>
-                            <div className="text-[13px] font-bold text-foreground/90">{favor.label}</div>
+                            <div className="text-[13px] font-bold text-foreground/90">
+                              {favor.label}
+                            </div>
                             <div className="text-[10px] text-muted-foreground/80 leading-tight">
                               {favor.description}
                             </div>
                           </div>
                         </div>
                         <div className="flex items-center gap-4">
-                          <div className="text-[11px] font-mono font-bold text-primary">{favor.cost} CAP</div>
+                          <div className="text-[11px] font-mono font-bold text-primary">
+                            {favor.cost} CAP
+                          </div>
                           <Button
                             variant="outline"
                             size="sm"

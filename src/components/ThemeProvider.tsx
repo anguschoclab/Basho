@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  useMemo,
-  ReactNode,
-} from "react";
+import { createContext, useContext, useEffect, useState, useMemo, ReactNode } from "react";
 
 /** Type representing theme. */
 type Theme = "dark" | "light" | "system";
@@ -55,12 +48,10 @@ export function ThemeProvider({
 
   const value = useMemo(
     () => ({ theme, setTheme, resolvedTheme }),
-    [theme, setTheme, resolvedTheme],
+    [theme, setTheme, resolvedTheme]
   );
 
-  return (
-    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 
 /** Use theme. */

@@ -107,15 +107,27 @@ export function initBeltBattle(
 
   // deep/maemitsu fighters start with superior lever arm geometry regardless of tachiai outcome.
   // Values exceed the tachiai-winner inside-arm bonus (0.29) so deep grippers always lead.
-  const applyDepthLeverArm = (left: typeof eastLeft, right: typeof eastRight, depth: typeof eastGripDepth) => {
+  const applyDepthLeverArm = (
+    left: typeof eastLeft,
+    right: typeof eastRight,
+    depth: typeof eastGripDepth
+  ) => {
     if (depth === "deep") {
       const lever = 0.31;
-      if (left) { left.leverArm = lever; }
-      if (right) { right.leverArm = lever; }
+      if (left) {
+        left.leverArm = lever;
+      }
+      if (right) {
+        right.leverArm = lever;
+      }
     } else if (depth === "maemitsu") {
       const lever = 0.34;
-      if (left) { left.leverArm = lever; }
-      if (right) { right.leverArm = lever; }
+      if (left) {
+        left.leverArm = lever;
+      }
+      if (right) {
+        right.leverArm = lever;
+      }
     }
     // standard stays at whatever the tachiai-winner code set
   };

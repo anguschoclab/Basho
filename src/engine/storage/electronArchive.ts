@@ -202,7 +202,10 @@ export class ElectronArchiveService implements ArchiveService {
     }
   }
 
-  public async retrieveBanzuke(season: number, bashoNumber: number): Promise<AlmanacSnapshot | null> {
+  public async retrieveBanzuke(
+    season: number,
+    bashoNumber: number
+  ): Promise<AlmanacSnapshot | null> {
     if (!this.isElectron) {
       console.warn("ElectronArchiveService not available in web build");
       return null;

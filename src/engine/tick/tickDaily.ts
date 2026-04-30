@@ -75,7 +75,7 @@ import { offSeasonPipeline } from "./pipelines/offSeasonPipeline";
 export function advanceOneDay(world: WorldState): WorldState {
   // 1. Run Preflight to advance calendar and determine boundaries
   let nextWorld = runPipeline(world, [phases.phase00_preflight]);
-  
+
   const boundaries = nextWorld.transientContext?.boundaries || {
     monthBoundary: false,
     yearBoundary: false,

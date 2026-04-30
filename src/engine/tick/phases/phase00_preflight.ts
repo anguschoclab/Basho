@@ -18,12 +18,16 @@ import { emptyDeltas, defaultActiveModifiers } from "../pipelineRunner";
 import { clearQueryCaches } from "../../queries";
 
 export function phase00_preflight(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('phase00_preflight');
+  const builder = createImpactBuilder("phase00_preflight");
 
   // 1. Shallow clone for base properties
   const dayIndexGlobal = (world.dayIndexGlobal ?? 0) + 1;
-  const _interimDaysRemaining = world._interimDaysRemaining != null ? world._interimDaysRemaining - 1 : world._interimDaysRemaining;
-  const _postBashoDays = world._postBashoDays != null ? world._postBashoDays - 1 : world._postBashoDays;
+  const _interimDaysRemaining =
+    world._interimDaysRemaining != null
+      ? world._interimDaysRemaining - 1
+      : world._interimDaysRemaining;
+  const _postBashoDays =
+    world._postBashoDays != null ? world._postBashoDays - 1 : world._postBashoDays;
 
   // 2. Advance calendar (day) - Purely
   const { calendar, monthBoundary, yearBoundary } = advanceCalendarDay(world);
@@ -35,11 +39,11 @@ export function phase00_preflight(world: WorldState): StateImpact {
   }
 
   // Use ImpactBuilder for world field updates
-  builder.updateWorldField('dayIndexGlobal', dayIndexGlobal);
-  builder.updateWorldField('_interimDaysRemaining', _interimDaysRemaining);
-  builder.updateWorldField('_postBashoDays', _postBashoDays);
-  builder.updateWorldField('calendar', calendar);
-  builder.updateWorldField('week', currentWeek);
+  builder.updateWorldField("dayIndexGlobal", dayIndexGlobal);
+  builder.updateWorldField("_interimDaysRemaining", _interimDaysRemaining);
+  builder.updateWorldField("_postBashoDays", _postBashoDays);
+  builder.updateWorldField("calendar", calendar);
+  builder.updateWorldField("week", currentWeek);
 
   // Store boundaries and fresh working context in transient context for the pipeline
   // Note: transientContext updates are not directly supported by ImpactBuilder yet
@@ -60,10 +64,14 @@ export function phase00_preflight(world: WorldState): StateImpact {
   return builder.build();
 }
 
-function advanceCalendarDay(world: WorldState): { calendar: typeof world.calendar; monthBoundary: boolean; yearBoundary: boolean } {
+function advanceCalendarDay(world: WorldState): {
+  calendar: typeof world.calendar;
+  monthBoundary: boolean;
+  yearBoundary: boolean;
+} {
   const cal = { ...world.calendar };
   const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-  
+
   let monthBoundary = false;
   let yearBoundary = false;
 
@@ -84,7 +92,10 @@ function advanceCalendarDay(world: WorldState): { calendar: typeof world.calenda
   return { calendar: cal, monthBoundary, yearBoundary };
 }
 
-function checkPhaseTransition(world: WorldState, builder: ImpactBuilder): { from: CyclePhase; to: CyclePhase } | undefined {
+function checkPhaseTransition(
+  world: WorldState,
+  builder: ImpactBuilder
+): { from: CyclePhase; to: CyclePhase } | undefined {
   const prev = world.cyclePhase;
 
   switch (world.cyclePhase) {
@@ -92,18 +103,18 @@ function checkPhaseTransition(world: WorldState, builder: ImpactBuilder): { from
       if ((world._interimDaysRemaining ?? 0) <= 0) {
         const bashoName = world.currentBashoName || "hatsu";
         const basho = initializeBasho(world, bashoName);
-        
+
         const nextPhase: CyclePhase = "active_basho";
-        builder.updateWorldField('cyclePhase', nextPhase);
-        builder.updateWorldField('currentBasho', basho);
+        builder.updateWorldField("cyclePhase", nextPhase);
+        builder.updateWorldField("currentBasho", basho);
 
         if (world.mediaState) {
           const resetMedia = resetBashoMediaTracking(world.mediaState);
-          builder.updateWorldField('mediaState', resetMedia);
+          builder.updateWorldField("mediaState", resetMedia);
         }
         // Note: EventBus replaced with logEvent - but this is a complex transition
         // For now, we'll skip the event log as it's a low-priority phase transition
-        
+
         logTransition(world, prev, nextPhase, `The ${bashoName} basho begins!`);
         return { from: prev, to: nextPhase };
       }
@@ -112,8 +123,8 @@ function checkPhaseTransition(world: WorldState, builder: ImpactBuilder): { from
     case "post_basho": {
       if ((world._postBashoDays ?? 0) <= 0) {
         const nextPhase: CyclePhase = "interim";
-        builder.updateWorldField('cyclePhase', nextPhase);
-        builder.updateWorldField('_interimDaysRemaining', getInterimWeeks("hatsu", "haru") * 7 - 7);
+        builder.updateWorldField("cyclePhase", nextPhase);
+        builder.updateWorldField("_interimDaysRemaining", getInterimWeeks("hatsu", "haru") * 7 - 7);
         logTransition(world, prev, nextPhase, "The inter-basho period begins.");
         return { from: prev, to: nextPhase };
       }
@@ -122,7 +133,7 @@ function checkPhaseTransition(world: WorldState, builder: ImpactBuilder): { from
     case "interim": {
       if ((world._interimDaysRemaining ?? 0) <= 14) {
         const nextPhase: CyclePhase = "banzuke_reveal";
-        builder.updateWorldField('cyclePhase', nextPhase);
+        builder.updateWorldField("cyclePhase", nextPhase);
         logTransition(world, prev, nextPhase, "The official banzuke has been published.");
         return { from: prev, to: nextPhase };
       }
@@ -131,7 +142,7 @@ function checkPhaseTransition(world: WorldState, builder: ImpactBuilder): { from
     case "banzuke_reveal": {
       if ((world._interimDaysRemaining ?? 0) <= 7) {
         const nextPhase: CyclePhase = "pre_basho";
-        builder.updateWorldField('cyclePhase', nextPhase);
+        builder.updateWorldField("cyclePhase", nextPhase);
         logTransition(world, prev, nextPhase, "Final preparations for the upcoming basho begin.");
         return { from: prev, to: nextPhase };
       }

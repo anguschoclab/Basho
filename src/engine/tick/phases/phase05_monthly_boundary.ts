@@ -111,7 +111,11 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
     for (const sponsor of world.sponsorPool.sponsors.values()) {
       if (!sponsor.active || sponsor.loyalty < 60) continue;
       for (const rel of sponsor.relationships) {
-        if (rel.endsAtTick !== undefined && rel.endsAtTick - currentWeek <= 8 && rel.endsAtTick > currentWeek) {
+        if (
+          rel.endsAtTick !== undefined &&
+          rel.endsAtTick - currentWeek <= 8 &&
+          rel.endsAtTick > currentWeek
+        ) {
           sponsorRenewalImpacts.push(renewSponsorContract(world, rel.relId, sponsor.sponsorId));
         }
       }

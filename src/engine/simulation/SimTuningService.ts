@@ -35,7 +35,7 @@ export interface TuningMetrics {
     avgAge: number;
     oyakataAvgAge: number;
     injuryRate: number; // % of active rikishi injured
-    archetypeWinRates: Record<string, { wins: number, total: number, rate: number }>;
+    archetypeWinRates: Record<string, { wins: number; total: number; rate: number }>;
     wealthGini: number; // Economic inequality (simplified)
     successionRate: number;
   };
@@ -45,8 +45,11 @@ export const SimTuningService = {
   /**
    * Aggregate tuning metrics from the current world state.
    */
-  calculateMetrics(world: WorldState, historyStats?: { yokozunaVacancy: number, uniqueWinners: number, successions: number }): TuningMetrics {
-    const activeRikishi = Array.from(world.rikishi.values()).filter(r => !r.isRetired);
+  calculateMetrics(
+    world: WorldState,
+    historyStats?: { yokozunaVacancy: number; uniqueWinners: number; successions: number }
+  ): TuningMetrics {
+    const activeRikishi = Array.from(world.rikishi.values()).filter((r) => !r.isRetired);
 
     // 1. Stat Averages
     const statAverages = {
@@ -57,7 +60,7 @@ export const SimTuningService = {
     };
 
     if (activeRikishi.length > 0) {
-      activeRikishi.forEach(r => {
+      activeRikishi.forEach((r) => {
         statAverages.power += r.power || 50;
         statAverages.speed += r.speed || 50;
         statAverages.technique += r.technique || 50;
@@ -72,7 +75,7 @@ export const SimTuningService = {
 
     // 2. Age Distribution
     const ageDistribution: Record<number, number> = {};
-    activeRikishi.forEach(r => {
+    activeRikishi.forEach((r) => {
       const age = world.calendar.year - r.birthYear;
       ageDistribution[age] = (ageDistribution[age] || 0) + 1;
     });
@@ -138,7 +141,8 @@ export const SimTuningService = {
     const heldMyoseki = myoseki.filter((m) => m.status === "held" || m.status === "leased").length;
     const myosekiSaturation = myoseki.length > 0 ? (heldMyoseki / myoseki.length) * 100 : 0;
 
-    const promotionRate = retiredRikishi.length > 0 ? (newOyakataFromRikishi / retiredRikishi.length) * 100 : 0;
+    const promotionRate =
+      retiredRikishi.length > 0 ? (newOyakataFromRikishi / retiredRikishi.length) * 100 : 0;
 
     return {
       statAverages,
@@ -159,21 +163,33 @@ export const SimTuningService = {
       uniqueWinnerCount: historyStats?.uniqueWinners ?? 0,
       beyaDominance,
       entropyAudit: {
-        maxStat: Math.max(...activeRikishi.map(r => 
-          Math.max(
-            r.power || 0, 
-            r.speed || 0, 
-            r.stats?.technique || r.technique || 0, 
-            r.stats?.stamina || 0
+        maxStat: Math.max(
+          ...activeRikishi.map((r) =>
+            Math.max(
+              r.power || 0,
+              r.speed || 0,
+              r.stats?.technique || r.technique || 0,
+              r.stats?.stamina || 0
+            )
           )
-        )),
-        avgAge: activeRikishi.length > 0 ? activeRikishi.reduce((sum, r) => sum + (world.calendar.year - r.birthYear), 0) / activeRikishi.length : 0,
-        oyakataAvgAge: world.oyakata ? Array.from(world.oyakata.values()).reduce((sum, o) => sum + (o.age || 45), 0) / world.oyakata.size : 0,
-        injuryRate: activeRikishi.length > 0 ? (activeRikishi.filter(r => r.injured).length / activeRikishi.length) * 100 : 0,
+        ),
+        avgAge:
+          activeRikishi.length > 0
+            ? activeRikishi.reduce((sum, r) => sum + (world.calendar.year - r.birthYear), 0) /
+              activeRikishi.length
+            : 0,
+        oyakataAvgAge: world.oyakata
+          ? Array.from(world.oyakata.values()).reduce((sum, o) => sum + (o.age || 45), 0) /
+            world.oyakata.size
+          : 0,
+        injuryRate:
+          activeRikishi.length > 0
+            ? (activeRikishi.filter((r) => r.injured).length / activeRikishi.length) * 100
+            : 0,
         archetypeWinRates: {},
         wealthGini: 0,
         successionRate: historyStats?.successions || 0,
-      }
+      },
     };
-  }
+  },
 };

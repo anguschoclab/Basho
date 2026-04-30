@@ -138,7 +138,11 @@ export const LegacyService = {
     // Apply Floor Bonuses
     for (const [stat, bonus] of Object.entries(trait.statFloorBonus)) {
       if (stat in boosted) {
-        boosted[stat as keyof RikishiStats] = clampInt((boosted[stat as keyof RikishiStats] || 0) + (bonus || 0), 0, 99);
+        boosted[stat as keyof RikishiStats] = clampInt(
+          (boosted[stat as keyof RikishiStats] || 0) + (bonus || 0),
+          0,
+          99
+        );
       }
     }
 

@@ -118,7 +118,7 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
         };
         updates.power = Math.max(30, (rikishi.power ?? 50) - 15);
         updates.stamina = Math.max(30, (rikishi.stamina ?? 50) - 15);
-        // Stats object will be synced in the growth section if not injured, 
+        // Stats object will be synced in the growth section if not injured,
         // but since we just injured them, we should sync here too.
         updates.stats = {
           ...(rikishi.stats || {}),

@@ -131,7 +131,11 @@ export function KeshoEditor({ rikishi, open, onClose }: KeshoEditorProps) {
             <div className="relative z-10 text-center space-y-4">
               {/* Large Preview */}
               <div className="p-8 rounded-full bg-background/50 border border-primary/10 shadow-2xl backdrop-blur-sm">
-                <SumoAvatar config={previewAvatarConfig as AvatarConfig} size="xl" expression="determined" />
+                <SumoAvatar
+                  config={previewAvatarConfig as AvatarConfig}
+                  size="xl"
+                  expression="determined"
+                />
               </div>
 
               <div>

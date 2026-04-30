@@ -10,7 +10,7 @@
      JetBrains Mono      — Stats, numbers, data (technical precision)
    ═══════════════════════════════════════════════════════════════════════════ */
 
-@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600;800&family=Spectral:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@400;600;800&family=Spectral:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -70,13 +70,13 @@
     --bronze: 25 56% 44%;
 
     /* Typography */
-    --font-display: 'Shippori Mincho B1', 'Noto Serif JP', Georgia, serif;
-    --font-body: 'Spectral', Georgia, serif;
-    --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+    --font-display: "Shippori Mincho B1", "Noto Serif JP", Georgia, serif;
+    --font-body: "Spectral", Georgia, serif;
+    --font-mono: "JetBrains Mono", "Courier New", monospace;
 
     /* Shadows — soft paper */
     --shadow-sm: 0 1px 2px hsl(220 30% 12% / 0.06);
-    --shadow-md: 0 4px 12px -2px hsl(220 30% 12% / 0.10);
+    --shadow-md: 0 4px 12px -2px hsl(220 30% 12% / 0.1);
     --shadow-lg: 0 12px 24px -4px hsl(220 30% 12% / 0.12);
     --shadow-paper: 0 1px 4px hsl(220 30% 12% / 0.08), 0 2px 8px hsl(220 30% 12% / 0.06);
     --shadow-gold: 0 0 20px hsl(var(--gold) / 0.2);
@@ -92,7 +92,7 @@
     --sidebar-ring: 43 62% 38%;
   }
 
-/* ─── Dark Mode (Kokugikan Noir — Primary Experience) ────────────────────── */
+  /* ─── Dark Mode (Kokugikan Noir — Primary Experience) ────────────────────── */
   .dark {
     /* Arena floor — near-black with deep indigo undertone */
     --background: 222 32% 5%;
@@ -162,16 +162,24 @@
 }
 
 @keyframes infinite-scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
 }
 .animate-infinite-scroll {
   animation: infinite-scroll 40s linear infinite;
 }
 
 @keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 .animate-spin-slow {
   animation: spin-slow 120s linear infinite;
@@ -196,19 +204,28 @@
     font-family: var(--font-body);
     font-size: 15px;
     line-height: 1.65;
-    font-feature-settings: "kern" 1, "liga" 1;
+    font-feature-settings:
+      "kern" 1,
+      "liga" 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: var(--font-display);
     @apply font-semibold tracking-tight;
     line-height: 1.2;
   }
 
   /* Monospace for stats and data tables */
-  .font-stats, table td.stat, .stat-number {
+  .font-stats,
+  table td.stat,
+  .stat-number {
     font-family: var(--font-mono);
   }
 
@@ -237,7 +254,6 @@
 
 /* ─── Component Classes ───────────────────────────────────────────────────── */
 @layer components {
-
   /* ── Dohyo (sumo ring) ── */
   .dohyo-ring {
     border-radius: 50%;
@@ -246,7 +262,7 @@
     position: relative;
   }
   .dohyo-ring::after {
-    content: '';
+    content: "";
     position: absolute;
     inset: 8px;
     border-radius: 50%;
@@ -260,25 +276,36 @@
   .side-west {
     border-left: 3px solid hsl(var(--west));
   }
-  .east-accent { border-left: 2px solid hsl(var(--east)); }
-  .west-accent { border-right: 2px solid hsl(var(--west)); }
+  .east-accent {
+    border-left: 2px solid hsl(var(--east));
+  }
+  .west-accent {
+    border-right: 2px solid hsl(var(--west));
+  }
 
   /* ── Rank Badges ── */
   /* Sanyaku - The elite ranks with shimmer effect */
   .rank-yokozuna {
     background: linear-gradient(135deg, hsl(var(--gold)), hsl(44 70% 38%));
     color: hsl(222 32% 5%);
-    box-shadow: 0 0 20px hsl(var(--gold) / 0.3), 0 2px 4px hsl(0 0% 0% / 0.3);
+    box-shadow:
+      0 0 20px hsl(var(--gold) / 0.3),
+      0 2px 4px hsl(0 0% 0% / 0.3);
   }
   .rank-ozeki {
     background: linear-gradient(135deg, hsl(var(--silver)), hsl(220 12% 50%));
     color: hsl(222 32% 5%);
-    box-shadow: 0 0 16px hsl(var(--silver) / 0.25), 0 2px 4px hsl(0 0% 0% / 0.2);
+    box-shadow:
+      0 0 16px hsl(var(--silver) / 0.25),
+      0 2px 4px hsl(0 0% 0% / 0.2);
   }
-  .rank-sekiwake, .rank-komusubi {
+  .rank-sekiwake,
+  .rank-komusubi {
     background: linear-gradient(135deg, hsl(var(--bronze)), hsl(25 48% 36%));
     color: hsl(38 28% 97%);
-    box-shadow: 0 0 12px hsl(var(--bronze) / 0.2), 0 2px 4px hsl(0 0% 0% / 0.2);
+    box-shadow:
+      0 0 12px hsl(var(--bronze) / 0.2),
+      0 2px 4px hsl(0 0% 0% / 0.2);
   }
 
   /* Makuuchi - Professional division with primary accent */
@@ -303,7 +330,9 @@
   }
 
   /* Lower divisions - subtle */
-  .rank-sandanme, .rank-jonidan, .rank-jonokuchi {
+  .rank-sandanme,
+  .rank-jonidan,
+  .rank-jonokuchi {
     background: hsl(var(--muted) / 0.6);
     border: 1px solid hsl(var(--border) / 0.5);
     color: hsl(var(--muted-foreground));
@@ -327,7 +356,9 @@
   .paper {
     @apply bg-card rounded border border-border/60;
     box-shadow: var(--shadow-sm);
-    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+    transition:
+      box-shadow 0.2s ease,
+      border-color 0.2s ease;
   }
   .paper:hover {
     border-color: hsl(var(--border) / 0.9);
@@ -337,11 +368,7 @@
   /* Dossier paper — subtle dot texture */
   .dossier-paper {
     background-color: hsl(var(--card));
-    background-image: radial-gradient(
-      circle,
-      hsl(var(--foreground) / 0.04) 1px,
-      transparent 1px
-    );
+    background-image: radial-gradient(circle, hsl(var(--foreground) / 0.04) 1px, transparent 1px);
     background-size: 18px 18px;
     border: 1px solid hsl(var(--border) / 0.5);
     box-shadow: var(--shadow-paper);
@@ -379,9 +406,15 @@
     box-shadow: 0 0 6px hsl(var(--primary) / 0.7);
     transform: scale(1.25);
   }
-  .phase-dot--pre { background: hsl(var(--west) / 0.6); }
-  .phase-dot--post { background: hsl(var(--success) / 0.6); }
-  .phase-dot--interim { background: hsl(var(--muted-foreground) / 0.3); }
+  .phase-dot--pre {
+    background: hsl(var(--west) / 0.6);
+  }
+  .phase-dot--post {
+    background: hsl(var(--success) / 0.6);
+  }
+  .phase-dot--interim {
+    background: hsl(var(--muted-foreground) / 0.3);
+  }
 
   /* ── Typography Utilities ── */
   .stat-label {
@@ -416,13 +449,16 @@
     gap: 0.75rem;
     color: hsl(var(--gold));
   }
-  .gold-rule::before, .gold-rule::after {
-    content: '';
+  .gold-rule::before,
+  .gold-rule::after {
+    content: "";
     flex: 1;
     height: 1px;
     background: linear-gradient(to right, hsl(var(--gold) / 0.5), transparent);
   }
-  .gold-rule::before { background: linear-gradient(to left, hsl(var(--gold) / 0.5), transparent); }
+  .gold-rule::before {
+    background: linear-gradient(to left, hsl(var(--gold) / 0.5), transparent);
+  }
 
   /* Pro management section header */
   .pro-header {
@@ -464,7 +500,7 @@
     overflow: hidden;
   }
   .bout-card::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     opacity: 0;
@@ -478,10 +514,14 @@
     );
     pointer-events: none;
   }
-  .bout-card:hover::before { opacity: 1; }
+  .bout-card:hover::before {
+    opacity: 1;
+  }
 
   .bout-card--player {
-    box-shadow: 0 0 0 1px hsl(var(--primary) / 0.35), 0 0 16px -4px hsl(var(--primary) / 0.2);
+    box-shadow:
+      0 0 0 1px hsl(var(--primary) / 0.35),
+      0 0 16px -4px hsl(var(--primary) / 0.2);
   }
 
   /* VS divider */
@@ -489,15 +529,20 @@
     @apply relative flex items-center justify-center;
     min-width: 2rem;
   }
-  .vs-divider::before, .vs-divider::after {
-    content: '';
+  .vs-divider::before,
+  .vs-divider::after {
+    content: "";
     position: absolute;
     width: 1px;
     height: 38%;
     background: hsl(var(--border));
   }
-  .vs-divider::before { top: 0; }
-  .vs-divider::after { bottom: 0; }
+  .vs-divider::before {
+    top: 0;
+  }
+  .vs-divider::after {
+    bottom: 0;
+  }
 
   /* Kimarite rare technique badge */
   .kimarite-rare {
@@ -542,16 +587,33 @@
 /* ─── Utilities ───────────────────────────────────────────────────────────── */
 @layer utilities {
   /* Text utilities */
-  .text-balance { text-wrap: balance; }
-  .text-east { color: hsl(var(--east)); }
-  .text-west { color: hsl(var(--west)); }
-  .text-gold { color: hsl(var(--gold)); }
-  .bg-east { background-color: hsl(var(--east)); }
-  .bg-west { background-color: hsl(var(--west)); }
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-east {
+    color: hsl(var(--east));
+  }
+  .text-west {
+    color: hsl(var(--west));
+  }
+  .text-gold {
+    color: hsl(var(--gold));
+  }
+  .bg-east {
+    background-color: hsl(var(--east));
+  }
+  .bg-west {
+    background-color: hsl(var(--west));
+  }
 
   /* No scrollbar */
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 
   /* ── Entrance Animations ── */
   .animate-fade-in {
@@ -568,29 +630,65 @@
   .widget-enter {
     animation: widgetEnter 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
-  .widget-enter:nth-child(1)  { animation-delay: 0ms; }
-  .widget-enter:nth-child(2)  { animation-delay: 55ms; }
-  .widget-enter:nth-child(3)  { animation-delay: 110ms; }
-  .widget-enter:nth-child(4)  { animation-delay: 165ms; }
-  .widget-enter:nth-child(5)  { animation-delay: 220ms; }
-  .widget-enter:nth-child(6)  { animation-delay: 275ms; }
-  .widget-enter:nth-child(7)  { animation-delay: 330ms; }
-  .widget-enter:nth-child(8)  { animation-delay: 385ms; }
+  .widget-enter:nth-child(1) {
+    animation-delay: 0ms;
+  }
+  .widget-enter:nth-child(2) {
+    animation-delay: 55ms;
+  }
+  .widget-enter:nth-child(3) {
+    animation-delay: 110ms;
+  }
+  .widget-enter:nth-child(4) {
+    animation-delay: 165ms;
+  }
+  .widget-enter:nth-child(5) {
+    animation-delay: 220ms;
+  }
+  .widget-enter:nth-child(6) {
+    animation-delay: 275ms;
+  }
+  .widget-enter:nth-child(7) {
+    animation-delay: 330ms;
+  }
+  .widget-enter:nth-child(8) {
+    animation-delay: 385ms;
+  }
 
   /* Staggered bout card entrance */
   .bout-enter {
     animation: boutSlideIn 0.3s ease-out both;
   }
-  .bout-enter:nth-child(1)  { animation-delay: 0ms; }
-  .bout-enter:nth-child(2)  { animation-delay: 35ms; }
-  .bout-enter:nth-child(3)  { animation-delay: 70ms; }
-  .bout-enter:nth-child(4)  { animation-delay: 105ms; }
-  .bout-enter:nth-child(5)  { animation-delay: 140ms; }
-  .bout-enter:nth-child(6)  { animation-delay: 175ms; }
-  .bout-enter:nth-child(7)  { animation-delay: 210ms; }
-  .bout-enter:nth-child(8)  { animation-delay: 245ms; }
-  .bout-enter:nth-child(9)  { animation-delay: 280ms; }
-  .bout-enter:nth-child(10) { animation-delay: 315ms; }
+  .bout-enter:nth-child(1) {
+    animation-delay: 0ms;
+  }
+  .bout-enter:nth-child(2) {
+    animation-delay: 35ms;
+  }
+  .bout-enter:nth-child(3) {
+    animation-delay: 70ms;
+  }
+  .bout-enter:nth-child(4) {
+    animation-delay: 105ms;
+  }
+  .bout-enter:nth-child(5) {
+    animation-delay: 140ms;
+  }
+  .bout-enter:nth-child(6) {
+    animation-delay: 175ms;
+  }
+  .bout-enter:nth-child(7) {
+    animation-delay: 210ms;
+  }
+  .bout-enter:nth-child(8) {
+    animation-delay: 245ms;
+  }
+  .bout-enter:nth-child(9) {
+    animation-delay: 280ms;
+  }
+  .bout-enter:nth-child(10) {
+    animation-delay: 315ms;
+  }
 
   /* Result reveal pop */
   .result-reveal {
@@ -599,85 +697,173 @@
 
   /* ── Keyframes ── */
   @keyframes fadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   @keyframes slideUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   @keyframes scaleIn {
-    from { opacity: 0; transform: scale(0.94); }
-    to   { opacity: 1; transform: scale(1); }
+    from {
+      opacity: 0;
+      transform: scale(0.94);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
 
   @keyframes widgetEnter {
-    from { opacity: 0; transform: translateY(18px) scale(0.97); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
+    from {
+      opacity: 0;
+      transform: translateY(18px) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
   }
 
   @keyframes boutSlideIn {
-    from { opacity: 0; transform: translateX(-10px); }
-    to   { opacity: 1; transform: translateX(0); }
+    from {
+      opacity: 0;
+      transform: translateX(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
   }
 
   @keyframes resultPop {
-    from { opacity: 0; transform: scale(0.75); }
-    to   { opacity: 1; transform: scale(1); }
+    from {
+      opacity: 0;
+      transform: scale(0.75);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
 
   @keyframes shimmer {
-    0%   { background-position: -200% 0; }
-    100% { background-position: 200% 0; }
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
   }
 
   @keyframes rankShimmer {
-    from { background-position: -100% -100%; }
-    to   { background-position: 100% 100%; }
+    from {
+      background-position: -100% -100%;
+    }
+    to {
+      background-position: 100% 100%;
+    }
   }
 
   @keyframes pulse-gold {
-    0%, 100% { box-shadow: 0 0 0 0 hsl(var(--gold) / 0); }
-    50%       { box-shadow: 0 0 0 4px hsl(var(--gold) / 0.2); }
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 hsl(var(--gold) / 0);
+    }
+    50% {
+      box-shadow: 0 0 0 4px hsl(var(--gold) / 0.2);
+    }
   }
 
   @keyframes dohyo-spin {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   /* Avatar animations */
   @keyframes avatar-breathe {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.02); }
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.02);
+    }
   }
 
   @keyframes avatar-glow {
-    0%, 100% { box-shadow: 0 0 5px 2px hsl(var(--primary) / 0.3); }
-    50% { box-shadow: 0 0 15px 5px hsl(var(--primary) / 0.5); }
+    0%,
+    100% {
+      box-shadow: 0 0 5px 2px hsl(var(--primary) / 0.3);
+    }
+    50% {
+      box-shadow: 0 0 15px 5px hsl(var(--primary) / 0.5);
+    }
   }
 
   @keyframes avatar-pulse {
-    0%, 100% { transform: scale(1); filter: brightness(1); }
-    50% { transform: scale(1.05); filter: brightness(1.1); }
+    0%,
+    100% {
+      transform: scale(1);
+      filter: brightness(1);
+    }
+    50% {
+      transform: scale(1.05);
+      filter: brightness(1.1);
+    }
   }
 
   @keyframes avatar-victory {
-    0% { transform: translateY(0) scale(1); }
-    25% { transform: translateY(-5px) scale(1.05); }
-    50% { transform: translateY(-8px) scale(1.08); }
-    75% { transform: translateY(-3px) scale(1.03); }
-    100% { transform: translateY(0) scale(1); }
+    0% {
+      transform: translateY(0) scale(1);
+    }
+    25% {
+      transform: translateY(-5px) scale(1.05);
+    }
+    50% {
+      transform: translateY(-8px) scale(1.08);
+    }
+    75% {
+      transform: translateY(-3px) scale(1.03);
+    }
+    100% {
+      transform: translateY(0) scale(1);
+    }
   }
 
   @keyframes avatar-defeat {
-    0% { transform: translateY(0) scale(1); }
-    25% { transform: translateY(3px) scale(0.98); }
-    50% { transform: translateY(5px) scale(0.95); }
-    75% { transform: translateY(2px) scale(0.97); }
-    100% { transform: translateY(0) scale(1); }
+    0% {
+      transform: translateY(0) scale(1);
+    }
+    25% {
+      transform: translateY(3px) scale(0.98);
+    }
+    50% {
+      transform: translateY(5px) scale(0.95);
+    }
+    75% {
+      transform: translateY(2px) scale(0.97);
+    }
+    100% {
+      transform: translateY(0) scale(1);
+    }
   }
 
   .avatar-animate {

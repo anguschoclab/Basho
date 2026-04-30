@@ -28,7 +28,9 @@ export const SaveSlotService = {
   },
 
   toSlotKey(slotNameOrKey: string): string {
-    return slotNameOrKey.startsWith(SAVE_KEY_PREFIX) ? slotNameOrKey : `${SAVE_KEY_PREFIX}${slotNameOrKey}`;
+    return slotNameOrKey.startsWith(SAVE_KEY_PREFIX)
+      ? slotNameOrKey
+      : `${SAVE_KEY_PREFIX}${slotNameOrKey}`;
   },
 
   getSaveSlotKeys(): string[] {
@@ -58,7 +60,10 @@ export const SaveSlotService = {
 
         const save = parsed as SaveGame;
         const slotName = save.saveSlotName || key.replace(SAVE_KEY_PREFIX, "");
-        const playerHeya = save.world.playerHeyaId && save.world.heyas ? save.world.heyas[String(save.world.playerHeyaId)] : undefined;
+        const playerHeya =
+          save.world.playerHeyaId && save.world.heyas
+            ? save.world.heyas[String(save.world.playerHeyaId)]
+            : undefined;
 
         infos.push({
           key,
@@ -68,9 +73,11 @@ export const SaveSlotService = {
           playerHeyaName: playerHeya?.name,
           savedAt: save.lastSavedAtISO,
           version: save.version,
-          isAutosave: slotName === AUTOSAVE_SLOT_NAME || key === AUTOSAVE_KEY
+          isAutosave: slotName === AUTOSAVE_SLOT_NAME || key === AUTOSAVE_KEY,
         });
-      } catch { continue; }
+      } catch {
+        continue;
+      }
     }
 
     return infos.sort((a, b) => {
@@ -94,7 +101,13 @@ export const SaveSlotService = {
     return Array.from({ length: SAVE_SLOT_COUNT }, (_, i) => `slot_${i + 1}`);
   },
 
-  getAutosaveSlotName(): string { return AUTOSAVE_SLOT_NAME; },
-  getAutosaveKey(): string { return AUTOSAVE_KEY; },
-  getSlotCount(): number { return SAVE_SLOT_COUNT; }
+  getAutosaveSlotName(): string {
+    return AUTOSAVE_SLOT_NAME;
+  },
+  getAutosaveKey(): string {
+    return AUTOSAVE_KEY;
+  },
+  getSlotCount(): number {
+    return SAVE_SLOT_COUNT;
+  },
 };

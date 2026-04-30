@@ -23,32 +23,32 @@ export class SeededRNG {
   public readonly seed: string;
   private rng: seedrandom.PRNG;
   private idCounters: Map<string, number> = new Map();
-  
+
   constructor(seed: string) {
     this.seed = seed;
     this.rng = seedrandom(seed);
   }
-  
+
   /** Returns a float in [0, 1) */
   next(): number {
     return this.rng();
   }
-  
+
   /** Returns an integer in [min, max] inclusive */
   int(min: number, max: number): number {
     return Math.floor(this.next() * (max - min + 1)) + min;
   }
-  
+
   /** Returns true with probability p */
   bool(p: number = 0.5): boolean {
     return this.next() < p;
   }
-  
+
   /** Pick a random element from an array */
   pick<T>(arr: T[]): T {
     return arr[this.int(0, arr.length - 1)];
   }
-  
+
   /** Shuffle an array in place */
   shuffle<T>(arr: T[]): T[] {
     for (let i = arr.length - 1; i > 0; i--) {
@@ -60,7 +60,8 @@ export class SeededRNG {
 
   /** Returns a normally distributed value with mean and standard deviation */
   gaussian(mean: number, stdDev: number): number {
-    let u = 0, v = 0;
+    let u = 0,
+      v = 0;
     while (u === 0) u = this.next();
     while (v === 0) v = this.next();
     const num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
@@ -78,7 +79,7 @@ export class SeededRNG {
 
     // Create a stable hash combining seed, prefix, and the current counter
     const hashSeed = `${this.seed}::${prefix}::${count}`;
-    const hash = simpleHashToIndex(hashSeed, 0xFFFFFFFF).toString(16).padStart(8, '0');
+    const hash = simpleHashToIndex(hashSeed, 0xffffffff).toString(16).padStart(8, "0");
 
     return `${prefix}-${hash.toUpperCase()}`;
   }

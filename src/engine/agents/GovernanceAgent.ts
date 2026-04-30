@@ -52,16 +52,20 @@ export function spawnGovernanceAgent(ctx: GovernanceAgentContext): GovernanceAge
   let rivalTarget: string | undefined;
 
   reasoning.push("[Governance Agent] Evaluating political situation");
-  reasoning.push(`[Governance Agent] Scandal score: ${scandalScore}, Political capital: ${politicalCapital}, Status: ${governanceStatus}`);
+  reasoning.push(
+    `[Governance Agent] Scandal score: ${scandalScore}, Political capital: ${politicalCapital}, Status: ${governanceStatus}`
+  );
 
   // Scandal reduction decision
   if (scandalScore >= 30) {
     shouldReduceScandal = true;
-    
+
     if (governanceStatus === "sanctioned" || governanceStatus === "probation") {
       if (isTraditionalist || isDiplomat) {
         scandalReductionMethod = "cooperate";
-        reasoning.push("[Governance Agent] Traditionalist/diplomat chooses cooperation to reduce scandal");
+        reasoning.push(
+          "[Governance Agent] Traditionalist/diplomat chooses cooperation to reduce scandal"
+        );
       } else if (isMachiavellian) {
         scandalReductionMethod = "deny";
         reasoning.push("[Governance Agent] Machiavellian chooses denial despite sanctions");
@@ -83,7 +87,9 @@ export function spawnGovernanceAgent(ctx: GovernanceAgentContext): GovernanceAge
         reasoning.push("[Governance Agent] Ambitious with capital chooses denial");
       } else {
         scandalReductionMethod = "ignore";
-        reasoning.push("[Governance Agent] Moderate scandal: ignore and let natural decay handle it");
+        reasoning.push(
+          "[Governance Agent] Moderate scandal: ignore and let natural decay handle it"
+        );
       }
     }
   }
@@ -91,7 +97,7 @@ export function spawnGovernanceAgent(ctx: GovernanceAgentContext): GovernanceAge
   // Political favor usage
   if (politicalCapital > 40 && isAmbitious) {
     shouldUsePoliticalFavor = true;
-    
+
     if (governanceStatus === "probation" || governanceStatus === "sanctioned") {
       favorType = "governance_pardon";
       reasoning.push("[Governance Agent] Using governance pardon to address sanctions");
@@ -107,12 +113,12 @@ export function spawnGovernanceAgent(ctx: GovernanceAgentContext): GovernanceAge
   // Rival sabotage
   if (isMachiavellian && politicalCapital > 60 && scandalScore < 20) {
     shouldSabotageRival = true;
-    
+
     // Find a rival heya with high reputation
     const rivalHeyas = Array.from(world.heyas.values())
-      .filter(h => h.id !== heya.id && (h.reputation || 0) > (heya.reputation || 0))
+      .filter((h) => h.id !== heya.id && (h.reputation || 0) > (heya.reputation || 0))
       .sort((a, b) => (b.reputation || 0) - (a.reputation || 0));
-    
+
     if (rivalHeyas.length > 0) {
       rivalTarget = rivalHeyas[0].id;
       reasoning.push(`[Governance Agent] Targeting rival ${rivalHeyas[0].name} for sabotage`);

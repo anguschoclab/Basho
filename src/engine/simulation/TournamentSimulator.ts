@@ -176,7 +176,7 @@ export function simulateEntireBasho(
         currentBashoWins: stats.wins,
         currentBashoLosses: stats.losses,
       };
-      
+
       // Update division-specific records
       if (updated.divisionRecords?.[r.division]) {
         updated.divisionRecords[r.division].wins += stats.wins;
@@ -208,7 +208,7 @@ export function simulateEntireBasho(
 
   // 3. Update Global Kimarite Stats
   const globalKimariteStats = { ...(world.globalKimariteStats || {}) };
-  activeBasho.matches.forEach(m => {
+  activeBasho.matches.forEach((m) => {
     if (m.result?.kimarite) {
       globalKimariteStats[m.result.kimarite] = (globalKimariteStats[m.result.kimarite] || 0) + 1;
     }

@@ -18,8 +18,13 @@ import type { StateImpact } from "./core/StateImpact";
  * - Source stable is removed from the world.
  * Returns StateImpact describing merger changes instead of mutating state.
  */
-export function executeMerger(world: WorldState, sourceHeyaId: Id, targetHeyaId: Id, reason: string): StateImpact {
-  const builder = createImpactBuilder('merger');
+export function executeMerger(
+  world: WorldState,
+  sourceHeyaId: Id,
+  targetHeyaId: Id,
+  reason: string
+): StateImpact {
+  const builder = createImpactBuilder("merger");
   const source = world.heyas.get(sourceHeyaId);
   const target = world.heyas.get(targetHeyaId);
 
@@ -29,23 +34,23 @@ export function executeMerger(world: WorldState, sourceHeyaId: Id, targetHeyaId:
 
   // 1. Transfer rikishi
   const transferredRikishiIds: Id[] = [];
-  for (const rId of getStableRikishi(world, source.id).map(r => r.id)) {
+  for (const rId of getStableRikishi(world, source.id).map((r) => r.id)) {
     const rikishi = world.rikishi.get(rId);
     if (rikishi) {
       builder.updateRikishi(rId, { heyaId: target.id });
       transferredRikishiIds.push(rId);
 
       builder.logEvent(
-        'LIFECYCLE_EVENT',
-        'career',
+        "LIFECYCLE_EVENT",
+        "career",
         {
           rikishiId: rId,
           heyaId: target.id,
           shikona: rikishi.shikona || rikishi.name,
           status: "transferred",
-          reason: target.name
+          reason: target.name,
         },
-        { rikishiId: rId, heyaId: target.id, importance: 'notable' }
+        { rikishiId: rId, heyaId: target.id, importance: "notable" }
       );
     }
   }
@@ -59,12 +64,29 @@ export function executeMerger(world: WorldState, sourceHeyaId: Id, targetHeyaId:
   }
 
   // 3. Combine facilities (diminishing returns)
-  const newTraining = Math.min(100, target.facilities.training + Math.floor(source.facilities.training * 0.2));
-  const newRecovery = Math.min(100, target.facilities.recovery + Math.floor(source.facilities.recovery * 0.2));
-  const newNutrition = Math.min(100, target.facilities.nutrition + Math.floor(source.facilities.nutrition * 0.2));
+  const newTraining = Math.min(
+    100,
+    target.facilities.training + Math.floor(source.facilities.training * 0.2)
+  );
+  const newRecovery = Math.min(
+    100,
+    target.facilities.recovery + Math.floor(source.facilities.recovery * 0.2)
+  );
+  const newNutrition = Math.min(
+    100,
+    target.facilities.nutrition + Math.floor(source.facilities.nutrition * 0.2)
+  );
 
   // Update facilities band on a copy to get the new band
-  const targetCopy = { ...target, facilities: { ...target.facilities, training: newTraining, recovery: newRecovery, nutrition: newNutrition } };
+  const targetCopy = {
+    ...target,
+    facilities: {
+      ...target.facilities,
+      training: newTraining,
+      recovery: newRecovery,
+      nutrition: newNutrition,
+    },
+  };
   updateFacilitiesBand(targetCopy);
 
   builder.updateHeya(target.id, {
@@ -72,22 +94,22 @@ export function executeMerger(world: WorldState, sourceHeyaId: Id, targetHeyaId:
     facilities: {
       training: newTraining,
       recovery: newRecovery,
-      nutrition: newNutrition
+      nutrition: newNutrition,
     },
-    facilitiesBand: targetCopy.facilitiesBand
+    facilitiesBand: targetCopy.facilitiesBand,
   });
 
   // 4. Log the merger
   builder.logEvent(
-    'GOVERNANCE_RULING',
-    'narrative',
+    "GOVERNANCE_RULING",
+    "narrative",
     {
       incident: "stable_merger",
       heyaname: source.name,
       heya: target.name,
-      reason
+      reason,
     },
-    { heyaId: target.id, importance: 'headline' }
+    { heyaId: target.id, importance: "headline" }
   );
 
   // generateGovernanceHeadline still called directly - will migrate in Phase 5
@@ -96,7 +118,7 @@ export function executeMerger(world: WorldState, sourceHeyaId: Id, targetHeyaId:
     heyaId: target.id,
     type: "merger",
     severity: "critical",
-    description: `The Sumo Association has approved the absorption of ${source.name} into ${target.name}.`
+    description: `The Sumo Association has approved the absorption of ${source.name} into ${target.name}.`,
   });
 
   // 5. Remove source stable
@@ -105,15 +127,15 @@ export function executeMerger(world: WorldState, sourceHeyaId: Id, targetHeyaId:
   // Clean up references in world history/almanac if necessary
   const closedHeyas = world.closedHeyas || new Map<Id, ClosedHeyaRecord>();
   const record: ClosedHeyaRecord = {
-      ...source,
-      closedAtYear: world.year,
-      closedAtBasho: world.currentBashoName,
-      mergedInto: target.id,
-      rikishiIds: transferredRikishiIds
+    ...source,
+    closedAtYear: world.year,
+    closedAtBasho: world.currentBashoName,
+    mergedInto: target.id,
+    rikishiIds: transferredRikishiIds,
   };
   closedHeyas.set(source.id, record);
 
-  builder.updateWorldField('closedHeyas', closedHeyas);
+  builder.updateWorldField("closedHeyas", closedHeyas);
 
   return builder.build();
 }
@@ -132,8 +154,11 @@ export function findMergerTarget(world: WorldState, sourceHeyaId: Id): Id | null
   // has room in roster (< 25 rikishi), and prestige >= modest.
   const candidates: import("./types/heya").Heya[] = [];
   for (const h of world.heyas.values()) {
-    if (h.id !== sourceHeyaId && getStableRikishi(world, h.id).length < 25 &&
-      (h.prestigeBand === "elite" || h.prestigeBand === "respected" || h.prestigeBand === "modest")) {
+    if (
+      h.id !== sourceHeyaId &&
+      getStableRikishi(world, h.id).length < 25 &&
+      (h.prestigeBand === "elite" || h.prestigeBand === "respected" || h.prestigeBand === "modest")
+    ) {
       candidates.push(h);
     }
   }

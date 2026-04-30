@@ -43,14 +43,16 @@ export function spawnNarrativeAgent(ctx: NarrativeAgentContext): NarrativeAgentR
   let narrativeTone: "heroic" | "tragic" | "dramatic" | "underdog" | "neutral" = "neutral";
 
   reasoning.push("[Narrative Agent] Evaluating narrative opportunities");
-  reasoning.push(`[Narrative Agent] Top rikishi: ${topRikishi.length}, Recent achievements: ${recentAchievements.length}`);
+  reasoning.push(
+    `[Narrative Agent] Top rikishi: ${topRikishi.length}, Recent achievements: ${recentAchievements.length}`
+  );
   reasoning.push(`[Narrative Agent] Basho phase: ${currentBashoPhase}`);
 
   // Achievement-based narrative triggers
   if (recentAchievements.includes("yusho") && currentBashoPhase === "post_basho") {
     shouldTriggerEvent = true;
     eventType = "championship_celebration";
-    const champion = topRikishi.find(r => r.rank === "yokozuna" || r.rank === "ozeki");
+    const champion = topRikishi.find((r) => r.rank === "yokozuna" || r.rank === "ozeki");
     if (champion) {
       rikishiId = champion.id;
       eventFocus = champion.shikona;
@@ -63,7 +65,7 @@ export function spawnNarrativeAgent(ctx: NarrativeAgentContext): NarrativeAgentR
   if (recentAchievements.includes("yokozuna_promotion")) {
     shouldTriggerEvent = true;
     eventType = "yokozuna_promotion";
-    const ozeki = topRikishi.find(r => r.rank === "ozeki");
+    const ozeki = topRikishi.find((r) => r.rank === "ozeki");
     if (ozeki) {
       rikishiId = ozeki.id;
       eventFocus = ozeki.shikona;
@@ -76,7 +78,7 @@ export function spawnNarrativeAgent(ctx: NarrativeAgentContext): NarrativeAgentR
   if (recentAchievements.includes("retirement")) {
     shouldTriggerEvent = true;
     eventType = "retirement_ceremony";
-    const retiring = topRikishi.find(r => r.isRetired);
+    const retiring = topRikishi.find((r) => r.isRetired);
     if (retiring) {
       rikishiId = retiring.id;
       eventFocus = retiring.shikona;
@@ -89,7 +91,7 @@ export function spawnNarrativeAgent(ctx: NarrativeAgentContext): NarrativeAgentR
   if (recentAchievements.includes("kinboshi") && !isAmbitious) {
     shouldTriggerEvent = true;
     eventType = "underdog_victory";
-    const underdog = topRikishi.find(r => r.rank === "maegashira");
+    const underdog = topRikishi.find((r) => r.rank === "maegashira");
     if (underdog) {
       rikishiId = underdog.id;
       eventFocus = underdog.shikona;
@@ -113,7 +115,7 @@ export function spawnNarrativeAgent(ctx: NarrativeAgentContext): NarrativeAgentR
 
   // Traditionalist focuses on legacy events
   if (isTraditionalist && !shouldTriggerEvent && currentBashoPhase === "post_basho") {
-    const veteran = topRikishi.find(r => r.experience > 100);
+    const veteran = topRikishi.find((r) => r.experience > 100);
     if (veteran) {
       shouldTriggerEvent = true;
       eventType = "legacy_milestone";

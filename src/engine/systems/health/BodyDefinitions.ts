@@ -37,7 +37,7 @@ export const BODY_AREA_LABELS: Record<InjuryBodyArea, string> = {
   ankle: "Ankle",
   neck: "Neck",
   rib: "Ribs",
-  other: "Body"
+  other: "Body",
 };
 
 export const INJURY_TYPE_LABELS: Record<InjuryType, string> = {
@@ -49,23 +49,43 @@ export const INJURY_TYPE_LABELS: Record<InjuryType, string> = {
   fracture: "Fracture",
   nerve: "Nerve Issue",
   unknown: "Injury",
-  none: "None"
+  none: "None",
 };
 
 /**
  * Baseline recovery weeks by severity and area.
  */
-export function getBaseWeeksOut(severity: InjurySeverity, area: InjuryBodyArea, type: InjuryType): { min: number; max: number } {
-  let min = 1, max = 2;
-  if (severity === "moderate") { min = 2; max = 5; }
-  if (severity === "serious") { min = 6; max = 13; }
+export function getBaseWeeksOut(
+  severity: InjurySeverity,
+  area: InjuryBodyArea,
+  type: InjuryType
+): { min: number; max: number } {
+  let min = 1,
+    max = 2;
+  if (severity === "moderate") {
+    min = 2;
+    max = 5;
+  }
+  if (severity === "serious") {
+    min = 6;
+    max = 13;
+  }
 
   // Area adjustments
-  if (area === "knee" || area === "back") { min += 1; max += 2; }
-  
+  if (area === "knee" || area === "back") {
+    min += 1;
+    max += 2;
+  }
+
   // Type adjustments
-  if (type === "fracture") { min += 3; max += 5; }
-  if (type === "tear" || type === "nerve") { min += 2; max += 4; }
+  if (type === "fracture") {
+    min += 3;
+    max += 5;
+  }
+  if (type === "tear" || type === "nerve") {
+    min += 2;
+    max += 4;
+  }
 
   return { min, max };
 }

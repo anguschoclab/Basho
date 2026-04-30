@@ -9,10 +9,7 @@ interface FloatingShortcutsProps {
   setEventLogOpen: (open: boolean) => void;
 }
 
-export function FloatingShortcuts({
-  eventLogOpen,
-  setEventLogOpen,
-}: FloatingShortcutsProps) {
+export function FloatingShortcuts({ eventLogOpen, setEventLogOpen }: FloatingShortcutsProps) {
   return (
     <div className="fixed bottom-4 right-4 z-40 flex items-center gap-2">
       {!eventLogOpen && (
@@ -33,19 +30,11 @@ export function FloatingShortcuts({
         side="left"
         content={
           <div className="space-y-2 w-64">
-            <div className="font-semibold text-xs border-b pb-1.5 mb-2">
-              Keyboard Shortcuts
-            </div>
+            <div className="font-semibold text-xs border-b pb-1.5 mb-2">Keyboard Shortcuts</div>
             {SHORTCUT_REFERENCE.map((s) => (
-              <div
-                key={s.key}
-                className="flex items-center justify-between text-xs"
-              >
+              <div key={s.key} className="flex items-center justify-between text-xs">
                 <span className="text-muted-foreground">{s.action}</span>
-                <Badge
-                  variant="secondary"
-                  className="font-mono text-[10px] px-1.5 py-0 h-4"
-                >
+                <Badge variant="secondary" className="font-mono text-[10px] px-1.5 py-0 h-4">
                   {s.key}
                 </Badge>
               </div>

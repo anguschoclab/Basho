@@ -433,7 +433,9 @@ export function createMockSponsor(overrides: Partial<MockSponsor> = {}): MockSpo
 }
 
 /** Create a mock match schedule with defaults */
-export function createMockMatchSchedule(overrides: Partial<MockMatchSchedule> = {}): MockMatchSchedule {
+export function createMockMatchSchedule(
+  overrides: Partial<MockMatchSchedule> = {}
+): MockMatchSchedule {
   return {
     boutId: "b1",
     day: 1,

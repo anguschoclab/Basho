@@ -15,7 +15,7 @@ import type { StateImpact } from "./core/StateImpact";
  * Returns StateImpact describing naturalization updates instead of mutating state directly.
  */
 export function checkNaturalizations(world: WorldState): StateImpact {
-  const builder = createImpactBuilder('checkNaturalizations');
+  const builder = createImpactBuilder("checkNaturalizations");
 
   // Usually this would be run yearly or post-basho.
   const foreignRikishi: import("./types/rikishi").Rikishi[] = [];
@@ -26,11 +26,11 @@ export function checkNaturalizations(world: WorldState): StateImpact {
   }
 
   // Sort only the foreign rikishi for deterministic tie-break before iteration
-  const sortedForeign = stableSort(foreignRikishi, x => x.id);
+  const sortedForeign = stableSort(foreignRikishi, (x) => x.id);
 
   for (const r of sortedForeign) {
     // Basic criteria: High career wins (e.g., > 300), high rank (Ozeki/Yokozuna), or long career (> 10 years).
-    const birthYear = r.birthYear || (world.year - 18);
+    const birthYear = r.birthYear || world.year - 18;
     const age = world.year - birthYear;
 
     // Check eligibility
@@ -46,22 +46,23 @@ export function checkNaturalizations(world: WorldState): StateImpact {
     const natRng = rngFromSeed(`nat_${r.id}_${world.year}`, "naturalization", "chance");
     const chance = natRng.next() * 100;
 
-    if (chance < 5) { // 5% chance if eligible
+    if (chance < 5) {
+      // 5% chance if eligible
       const originalNationality = r.nationality;
-      
+
       // Queue rikishi update for nationality
       builder.updateRikishi(r.id, { nationality: "Japan" });
 
       // Log event
       builder.logEvent(
-        'LIFECYCLE_EVENT',
-        'career',
+        "LIFECYCLE_EVENT",
+        "career",
         {
           rikishiId: r.id,
           heyaId: r.heyaId,
           shikona: r.shikona || r.name,
           status: "naturalization",
-          reason: originalNationality
+          reason: originalNationality,
         },
         { rikishiId: r.id, heyaId: r.heyaId }
       );
@@ -72,10 +73,10 @@ export function checkNaturalizations(world: WorldState): StateImpact {
         const headlineImpact = generateGovernanceHeadline({
           world,
           heyaId: heya.id,
-          templatePath: 'institutional.governance.naturalization_headline',
-          severity: 'national'
+          templatePath: "institutional.governance.naturalization_headline",
+          severity: "national",
         });
-        
+
         builder.merge(headlineImpact);
       }
     }

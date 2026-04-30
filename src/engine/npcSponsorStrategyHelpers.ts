@@ -84,13 +84,13 @@ export function addSponsorRelationship(
   if (!pool || !pool.sponsors) return builder.build();
   const sponsor = pool.sponsors.get(sponsorId);
   if (!sponsor) return builder.build();
-  
+
   // Create a deep copy of the sponsor pool and sponsor
   const updatedSponsor = {
     ...sponsor,
-    relationships: [...(sponsor.relationships || []), relationship]
+    relationships: [...(sponsor.relationships || []), relationship],
   };
-  
+
   const updatedSponsors = new Map(pool.sponsors);
   updatedSponsors.set(sponsorId, updatedSponsor);
 
@@ -161,20 +161,22 @@ export function evaluateSponsorRecruitmentCommon(
     heya.id,
     config.relationshipStrength
   );
-  
+
   builder.merge(addSponsorRelationship(world, selectedSponsor.sponsorId, relationship));
 
   const reasoning = config.getReasoning
     ? config.getReasoning(oyakata)
     : "Standard sponsor recruitment";
 
-  builder.merge(emitSponsorRecruitmentEvent(
-    heya.id,
-    oyakata.archetype,
-    selectedSponsor.displayName,
-    selectedSponsor.tier,
-    reasoning
-  ));
+  builder.merge(
+    emitSponsorRecruitmentEvent(
+      heya.id,
+      oyakata.archetype,
+      selectedSponsor.displayName,
+      selectedSponsor.tier,
+      reasoning
+    )
+  );
 
   return builder.build();
 }

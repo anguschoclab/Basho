@@ -203,10 +203,13 @@ export function TopNavBar() {
           {world && (
             <TooltipWrap
               content={
-                inBasho ? "Advance to next day of tournament" : 
-                cyclePhase === "banzuke_reveal" ? "Review the new banzuke rankings" :
-                cyclePhase === "pre_basho" ? "Start the tournament preparations" :
-                "Advance the simulation one day"
+                inBasho
+                  ? "Advance to next day of tournament"
+                  : cyclePhase === "banzuke_reveal"
+                    ? "Review the new banzuke rankings"
+                    : cyclePhase === "pre_basho"
+                      ? "Start the tournament preparations"
+                      : "Advance the simulation one day"
               }
               side="left"
             >
@@ -241,11 +244,15 @@ export function TopNavBar() {
                     }}
                   />
                   <span className="relative hidden sm:inline">
-                    {inBasho ? `Day ${bashoDay}` : 
-                     world.globalCup?.isActive ? "Global Cup" :
-                     cyclePhase === "banzuke_reveal" ? "Banzuke" :
-                     cyclePhase === "pre_basho" ? "Start Basho" :
-                     "Continue"}
+                    {inBasho
+                      ? `Day ${bashoDay}`
+                      : world.globalCup?.isActive
+                        ? "Global Cup"
+                        : cyclePhase === "banzuke_reveal"
+                          ? "Banzuke"
+                          : cyclePhase === "pre_basho"
+                            ? "Start Basho"
+                            : "Continue"}
                   </span>
                   <ChevronRight className="relative h-3.5 w-3.5" />
                 </button>

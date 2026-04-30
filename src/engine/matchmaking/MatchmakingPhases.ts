@@ -8,12 +8,12 @@
  *          scorePairing, buildCandidatePairs, buildPlayoffPairs, buildExhibitionPairs
  */
 
-import { clamp } from '../utils';
-import { stableTieBreak } from '../utils/sort';
-import { rngFromSeed } from '../rng';
-import type { BashoState } from '../types/basho';
-import type { Division, Side } from '../types/banzuke';
-import type { Rikishi } from '../types/rikishi';
+import { clamp } from "../utils";
+import { stableTieBreak } from "../utils/sort";
+import { rngFromSeed } from "../rng";
+import type { BashoState } from "../types/basho";
+import type { Division, Side } from "../types/banzuke";
+import type { Rikishi } from "../types/rikishi";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -46,7 +46,7 @@ export const DEFAULT_MATCHMAKING_RULES: MatchmakingRules = {
   preferSimilarRank: true,
   avoidHugeWeightMismatch: true,
   honorExistingSide: true,
-  allowRepeatsWhenForced: true
+  allowRepeatsWhenForced: true,
 };
 
 /** Defines the structure for candidate build options. */
@@ -63,7 +63,10 @@ function getRecord(basho: BashoState, rikishiId: string): { wins: number; losses
   return row ? { wins: row.wins, losses: row.losses } : { wins: 0, losses: 0 };
 }
 
-function recordSimilarity(a: { wins: number; losses: number }, b: { wins: number; losses: number }): number {
+function recordSimilarity(
+  a: { wins: number; losses: number },
+  b: { wins: number; losses: number }
+): number {
   const diff = Math.abs(a.wins - b.wins) + Math.abs(a.losses - b.losses);
   return 1 / (1 + diff * 0.5);
 }
@@ -94,7 +97,11 @@ function haveFacedThisBasho(basho: BashoState, aId: string, bId: string): boolea
   return false;
 }
 
-function assignSides(a: Rikishi, b: Rikishi, honorExistingSide: boolean): { eastId: string; westId: string; bonus: number; reasons: string[] } {
+function assignSides(
+  a: Rikishi,
+  b: Rikishi,
+  honorExistingSide: boolean
+): { eastId: string; westId: string; bonus: number; reasons: string[] } {
   const reasons: string[] = [];
   const aSide = a.side as Side | undefined;
   const bSide = b.side as Side | undefined;
@@ -105,7 +112,7 @@ function assignSides(a: Rikishi, b: Rikishi, honorExistingSide: boolean): { east
       eastId: aSide === "east" ? a.id : b.id,
       westId: aSide === "west" ? a.id : b.id,
       bonus: 0.2,
-      reasons
+      reasons,
     };
   }
 
@@ -154,15 +161,15 @@ export function scorePairing(args: {
 
     const day = basho.day || 1;
     if (day > 7) {
-      score *= (0.2 + 0.8 * s);
+      score *= 0.2 + 0.8 * s;
       if (s > 0.9) reasons.push("strict_record_match");
 
       if (day === 15 && ra.wins >= 11 && rb.wins >= 11 && Math.abs(ra.wins - rb.wins) <= 1) {
-         score *= 2.0;
-         reasons.push("yusho_contenders");
+        score *= 2.0;
+        reasons.push("yusho_contenders");
       }
     } else {
-      score *= (0.6 + 0.4 * s);
+      score *= 0.6 + 0.4 * s;
       if (s > 0.75) reasons.push("similar_records");
     }
   }
@@ -171,26 +178,27 @@ export function scorePairing(args: {
     const s = rankSimilarity(a, b);
     const day = basho.day || 1;
 
-    const isSanyaku = (r: Rikishi) => ["yokozuna", "ozeki", "sekiwake", "komusubi"].includes(r.rank);
+    const isSanyaku = (r: Rikishi) =>
+      ["yokozuna", "ozeki", "sekiwake", "komusubi"].includes(r.rank);
     const aSanyaku = isSanyaku(a);
     const bSanyaku = isSanyaku(b);
 
     if (aSanyaku && bSanyaku) {
       if (day > 7) {
-         score *= 1.5;
-         reasons.push("sanyaku_matchup");
+        score *= 1.5;
+        reasons.push("sanyaku_matchup");
       } else {
-         score *= 0.5;
-         reasons.push("sanyaku_avoided_early");
+        score *= 0.5;
+        reasons.push("sanyaku_avoided_early");
       }
     } else if ((aSanyaku && !bSanyaku) || (!aSanyaku && bSanyaku)) {
       if (day <= 7 && s > 0.5) {
-         score *= 1.2;
-         reasons.push("joi_jin_scheduling");
+        score *= 1.2;
+        reasons.push("joi_jin_scheduling");
       }
     }
 
-    score *= (0.6 + 0.4 * s);
+    score *= 0.6 + 0.4 * s;
     if (s > 0.75 && !reasons.includes("similar_rank")) reasons.push("similar_rank");
   }
 
@@ -219,7 +227,7 @@ export function scorePairing(args: {
     eastId: side.eastId,
     westId: side.westId,
     score: clamp(score, 0, 5),
-    reasons
+    reasons,
   };
 }
 
@@ -231,14 +239,14 @@ function generatePairs(
 ): MatchPairing[] {
   const out: MatchPairing[] = [];
   for (let i = 0; i < pool.length; i++) {
-      for (let j = i + 1; j < pool.length; j++) {
-        const pairing = scoreFn(pool[i], pool[j]);
-        if (pairing) out.push(pairing);
-      }
+    for (let j = i + 1; j < pool.length; j++) {
+      const pairing = scoreFn(pool[i], pool[j]);
+      if (pairing) out.push(pairing);
+    }
   }
   return out.sort((a, b) => {
-      if (b.score !== a.score) return b.score - a.score;
-      return stableTieBreak(a.eastId + "-" + a.westId, b.eastId + "-" + b.westId);
+    if (b.score !== a.score) return b.score - a.score;
+    return stableTieBreak(a.eastId + "-" + a.westId, b.eastId + "-" + b.westId);
   });
 }
 
@@ -247,7 +255,7 @@ export function buildCandidatePairs(
   rikishi: Rikishi[],
   options: CandidateBuildOptions
 ): MatchPairing[] {
-  const pool = rikishi.filter(r => {
+  const pool = rikishi.filter((r) => {
     if (r.isRetired || r.injured) return false;
     if (options.division && r.division !== options.division) return false;
     return true;
@@ -256,9 +264,10 @@ export function buildCandidatePairs(
   const candidates: MatchPairing[] = [];
   const facedPairs = new Set<string>();
   for (const m of basho.matches) {
-    const key = m.eastRikishiId < m.westRikishiId
-      ? `${m.eastRikishiId}-${m.westRikishiId}`
-      : `${m.westRikishiId}-${m.eastRikishiId}`;
+    const key =
+      m.eastRikishiId < m.westRikishiId
+        ? `${m.eastRikishiId}-${m.westRikishiId}`
+        : `${m.westRikishiId}-${m.eastRikishiId}`;
     facedPairs.add(key);
   }
 
@@ -287,10 +296,10 @@ export function buildPlayoffPairs(
     avoidSameHeya: false,
     avoidRepeatOpponents: false,
     preferSimilarRecords: true,
-    ...(options.rules || {})
+    ...(options.rules || {}),
   };
 
-  const pool = rikishi.filter(r => r.division === options.division);
+  const pool = rikishi.filter((r) => r.division === options.division);
   return generatePairs(pool, (a, b) => scorePairing({ basho, a, b, rules }));
 }
 
@@ -300,11 +309,11 @@ export function buildExhibitionPairs(
   options: CandidateBuildOptions
 ): MatchPairing[] {
   const rng = rngFromSeed(options.seed, "matchmaking", "exhibition");
-  const pool = rikishi.filter(r => !r.isRetired && !r.injured);
-   return generatePairs(pool, (a, b) => ({
-       eastId: a.id,
-       westId: b.id,
-       score: rng.next(),
-       reasons: ["exhibition"]
-   }));
+  const pool = rikishi.filter((r) => !r.isRetired && !r.injured);
+  return generatePairs(pool, (a, b) => ({
+    eastId: a.id,
+    westId: b.id,
+    score: rng.next(),
+    reasons: ["exhibition"],
+  }));
 }

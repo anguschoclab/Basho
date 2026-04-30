@@ -16,10 +16,7 @@ import {
   calculateHeatBump,
   calculatePressureBump,
 } from "./MediaImpactService";
-import {
-  generateBoutHeadline,
-  generateStreakHeadline,
-} from "./HeadlineGenerator";
+import { generateBoutHeadline, generateStreakHeadline } from "./HeadlineGenerator";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 

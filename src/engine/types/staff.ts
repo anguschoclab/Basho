@@ -16,12 +16,7 @@ export type StaffRole =
   | "administrator";
 
 /** Type representing a staff's career phase. */
-export type StaffCareerPhase =
-  | "apprentice"
-  | "established"
-  | "senior"
-  | "declining"
-  | "retired";
+export type StaffCareerPhase = "apprentice" | "established" | "senior" | "declining" | "retired";
 
 /** Type representing competence bands (qualitative descriptors). */
 export type CompetenceBand =
@@ -38,19 +33,9 @@ export interface StaffCompetenceBands {
   secondary?: CompetenceBand;
 }
 
-export type ReputationBand =
-  | "unknown"
-  | "questionable"
-  | "respected"
-  | "renowned"
-  | "legendary";
+export type ReputationBand = "unknown" | "questionable" | "respected" | "renowned" | "legendary";
 
-export type LoyaltyBand =
-  | "mercenary"
-  | "wavering"
-  | "stable"
-  | "devoted"
-  | "unshakable";
+export type LoyaltyBand = "mercenary" | "wavering" | "stable" | "devoted" | "unshakable";
 
 export interface Staff {
   id: Id;
@@ -69,4 +54,3 @@ export interface Staff {
   priorAffiliations: Id[];
   successorEligible: boolean;
 }
-

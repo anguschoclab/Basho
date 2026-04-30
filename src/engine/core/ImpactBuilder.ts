@@ -445,7 +445,13 @@ export class ImpactBuilder {
    * @param items - Items to append
    */
   appendToWorldArray<
-    K extends "history" | "almanacSnapshots" | "basho.matches" | "governanceLog" | "awardLog" | "pendingExhibitions",
+    K extends
+      | "history"
+      | "almanacSnapshots"
+      | "basho.matches"
+      | "governanceLog"
+      | "awardLog"
+      | "pendingExhibitions",
   >(field: K, items: unknown[]): ImpactBuilder {
     if (!this.impact.arrayAppends) {
       this.impact.arrayAppends = [];

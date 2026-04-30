@@ -82,7 +82,14 @@ const ARCHETYPE_DEFINITIONS: Record<CombatArchetype, Omit<CombatProfile, "archet
     familyPreferences: { push: 10, belt: 35, trick: 40, speed: 15 },
     preferredGrip: "none",
     preferredGripDepth: "standard",
-    statModifiers: { technique: 1.2, speed: 1.1, power: 0.9, balance: 1.15, weight: 0.95, mental: 1.25 },
+    statModifiers: {
+      technique: 1.2,
+      speed: 1.1,
+      power: 0.9,
+      balance: 1.15,
+      weight: 0.95,
+      mental: 1.25,
+    },
     favoredKimarite: [
       "hatakikomi",
       "hikiotoshi",
@@ -129,9 +136,12 @@ export function buildCombatProfile(archetype: CombatArchetype): CombatProfile {
  *   hybrid → weak to yotsu (belt beats trick/speed)
  */
 export function deriveWeakAgainstStyles(archetype: CombatArchetype): Style[] {
-  const style = archetype === "oshi" || archetype === "tsuppari" ? "oshi"
-    : archetype === "yotsu" || archetype === "giant" ? "yotsu"
-    : "hybrid";
+  const style =
+    archetype === "oshi" || archetype === "tsuppari"
+      ? "oshi"
+      : archetype === "yotsu" || archetype === "giant"
+        ? "yotsu"
+        : "hybrid";
   if (style === "oshi") return ["hybrid"];
   if (style === "yotsu") return ["oshi"];
   return ["yotsu"]; // hybrid

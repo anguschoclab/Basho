@@ -6,12 +6,12 @@ import { stableSort } from "./utils/sort";
 import { buyMyoseki } from "./myosekiMarket";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
-import { 
-  StrategyContext, 
-  StrategyRule, 
-  evaluateRulesExclusive, 
+import {
+  StrategyContext,
+  StrategyRule,
+  evaluateRulesExclusive,
   TraitChecks,
-  calculateTraitAdjustedThreshold 
+  calculateTraitAdjustedThreshold,
 } from "./strategy/NPCStrategyFramework";
 import { getOyakataStyleProfile } from "./oyakataStylePreferences";
 
@@ -41,9 +41,12 @@ const BUY_MYOSEKI_RULE: StrategyRule = {
     const builder = createImpactBuilder("fin_buy_myoseki");
     const stocks = getSortedMyosekiStocks(ctx.world);
     const styleProfile = getOyakataStyleProfile(ctx.world, ctx.oyakata);
-    
+
     // Sort stocks by style alignment
-    const prioritized = stocks.filter(s => s.status === "available" && s.askingPrice && s.askingPrice < ctx.heya.funds * 0.5)
+    const prioritized = stocks
+      .filter(
+        (s) => s.status === "available" && s.askingPrice && s.askingPrice < ctx.heya.funds * 0.5
+      )
       .sort((a, b) => {
         let scoreA = 0;
         let scoreB = 0;

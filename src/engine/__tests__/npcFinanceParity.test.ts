@@ -13,9 +13,19 @@ describe("NPC Finance Style Parity", () => {
     mockWorld = {
       myosekiMarket: {
         stocks: {
-          "stock_power": { id: "stock_power", bonusType: "power", status: "available", askingPrice: 100_000_000 },
-          "stock_speed": { id: "stock_speed", bonusType: "speed", status: "available", askingPrice: 100_000_000 },
-        }
+          stock_power: {
+            id: "stock_power",
+            bonusType: "power",
+            status: "available",
+            askingPrice: 100_000_000,
+          },
+          stock_speed: {
+            id: "stock_speed",
+            bonusType: "speed",
+            status: "available",
+            askingPrice: 100_000_000,
+          },
+        },
       },
       heyas: new Map(),
       oyakata: new Map(),
@@ -40,15 +50,15 @@ describe("NPC Finance Style Parity", () => {
 
   it("should prioritize Myoseki matching the oyakata's style preference", () => {
     const impact = DefaultFinanceStrategy.evaluateFinances(mockWorld, mockHeya, mockOyakata);
-    
+
     // Impact should contain a purchase event
-    // The internal buyMyoseki logs a FINANCIAL_ALERT, 
+    // The internal buyMyoseki logs a FINANCIAL_ALERT,
     // while the strategy wrapper logs a buy_myoseki action.
-    const purchaseEvent = (impact.events || []).find(e => 
-      e.data.action === "buy_myoseki" || e.type === "FINANCIAL_ALERT"
+    const purchaseEvent = (impact.events || []).find(
+      (e) => e.data.action === "buy_myoseki" || e.type === "FINANCIAL_ALERT"
     );
     expect(purchaseEvent).toBeDefined();
-    
+
     // The buyer should have spent money (funds updated)
     const heyaUpdate = impact.entities?.heyaUpdates?.get(mockHeya.id);
     expect(heyaUpdate?.funds).toBeLessThan(mockHeya.funds);
@@ -57,7 +67,7 @@ describe("NPC Finance Style Parity", () => {
   it("should block purchases if runway is insufficient", () => {
     mockHeya.funds = 10_000_000; // Very low funds relative to burn
     const impact = DefaultFinanceStrategy.evaluateFinances(mockWorld, mockHeya, mockOyakata);
-    
+
     expect((impact.events || []).length).toBe(0);
   });
 });

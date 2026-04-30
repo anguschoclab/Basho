@@ -168,11 +168,7 @@ describe("evaluateKimariteAttempt — belt battle", () => {
     // cogOffset: 0.6 → west.balance = max(0, 100 - 0.6*200) = 0 → l.balance <= 0
     const east = mockRikishi("r1", { power: 65 });
     const west = mockRikishi("r2");
-    const st = makeEngineState(
-      {},
-      { cogOffset: 0.6, footSpread: 0.4 },
-      "belt_battle"
-    );
+    const st = makeEngineState({}, { cogOffset: 0.6, footSpread: 0.4 }, "belt_battle");
     const belt = makeBeltState({
       eastGripClass: "morozashi",
       torqueEast: 50,
@@ -190,11 +186,7 @@ describe("evaluateKimariteAttempt — belt battle", () => {
   it("returns uwatenage with uwate grip when defender is falling", () => {
     const east = mockRikishi("r1", { power: 65 });
     const west = mockRikishi("r2");
-    const st = makeEngineState(
-      {},
-      { cogOffset: 0.6, footSpread: 0.4 },
-      "belt_battle"
-    );
+    const st = makeEngineState({}, { cogOffset: 0.6, footSpread: 0.4 }, "belt_battle");
     const belt = makeBeltState({
       eastGripClass: "uwate",
       torqueEast: 50,

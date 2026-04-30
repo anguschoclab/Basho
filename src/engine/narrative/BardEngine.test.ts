@@ -12,7 +12,7 @@ describe("BardEngine Interpolation Tagging", () => {
   it("should wrap rikishi shikona in tags if rikishiId is present", () => {
     const context = {
       shikona: "Asanoyama",
-      rikishiId: "rikishi-1"
+      rikishiId: "rikishi-1",
     };
     const template = "Rikishi {{shikona}} is ready.";
     const result = interpolate(template, context);
@@ -24,7 +24,7 @@ describe("BardEngine Interpolation Tagging", () => {
       winner: "Asanoyama",
       winnerId: "w-1",
       loser: "Terunofuji",
-      loserId: "l-1"
+      loserId: "l-1",
     };
     const template = "{{winner}} def. {{loser}}";
     const result = interpolate(template, context);
@@ -34,7 +34,7 @@ describe("BardEngine Interpolation Tagging", () => {
   it("should handle stables", () => {
     const context = {
       heya: "Kokonoe",
-      heyaId: "h-1"
+      heyaId: "h-1",
     };
     const template = "Welcome to {{heya}}.";
     const result = interpolate(template, context);

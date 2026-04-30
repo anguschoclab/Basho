@@ -17,9 +17,9 @@ export function calculateBoutImpact(args: {
 }): number {
   let impact = 18;
   if (args.upset) impact += 20;
-  
+
   impact += Math.round(args.rivalryTension * 22);
-  
+
   impact += getRankImpact(args.winnerRank);
   impact += getRankImpact(args.loserRank);
 
@@ -28,17 +28,28 @@ export function calculateBoutImpact(args: {
 
 export function getRankImpact(rank?: string): number {
   switch (rank) {
-    case "yokozuna": return 10;
-    case "ozeki": return 8;
-    case "sekiwake": return 6;
-    case "komusubi": return 5;
-    case "maegashira": return 3;
-    case "juryo": return 2;
-    case "makushita": return 0;
-    case "sandanme": return 0;
-    case "jonidan": return 0;
-    case "jonokuchi": return 0;
-    case undefined: return 0;
+    case "yokozuna":
+      return 10;
+    case "ozeki":
+      return 8;
+    case "sekiwake":
+      return 6;
+    case "komusubi":
+      return 5;
+    case "maegashira":
+      return 3;
+    case "juryo":
+      return 2;
+    case "makushita":
+      return 0;
+    case "sandanme":
+      return 0;
+    case "jonidan":
+      return 0;
+    case "jonokuchi":
+      return 0;
+    case undefined:
+      return 0;
     default:
       assertNever(rank as never);
       return 0;

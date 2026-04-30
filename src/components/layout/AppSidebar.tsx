@@ -39,7 +39,13 @@ export function AppSidebar() {
     return location.pathname === prefix || location.pathname.startsWith(prefix + "/");
   }
 
-  const menuGroups = getMenuGroups(tutorialCompleted, inBasho, bashoDay, !!fundsLow, !!fundsCritical);
+  const menuGroups = getMenuGroups(
+    tutorialCompleted,
+    inBasho,
+    bashoDay,
+    !!fundsLow,
+    !!fundsCritical
+  );
 
   return (
     <Sidebar
@@ -111,9 +117,7 @@ export function AppSidebar() {
             {/* Section label with hairline */}
             {group.label && (
               <div className="flex items-center gap-2 px-3 mb-1.5 group-data-[collapsible=icon]:hidden">
-                <span
-                  className="text-[9px] text-[hsl(var(--gold)/0.6)] font-mono uppercase tracking-[0.2em]"
-                >
+                <span className="text-[9px] text-[hsl(var(--gold)/0.6)] font-mono uppercase tracking-[0.2em]">
                   {group.label}
                 </span>
                 <div
@@ -272,9 +276,7 @@ export function AppSidebar() {
                             : "hsl(var(--destructive))",
                   }}
                 />
-                <span
-                  className="text-[9px] uppercase truncate text-[hsl(var(--sidebar-foreground)/0.45)] font-mono tracking-[0.1em]"
-                >
+                <span className="text-[9px] uppercase truncate text-[hsl(var(--sidebar-foreground)/0.45)] font-mono tracking-[0.1em]">
                   {playerHeya.runwayBand}
                 </span>
               </div>

@@ -59,9 +59,10 @@ export function evaluateRule(ctx: StrategyContext, rule: StrategyRule): StateImp
 
   const impact = rule.action(ctx);
   // Check if impact actually did something (rough check via events or updates)
-  const hasChanges = (impact.entities && Object.keys(impact.entities).length > 0) || 
-                     (impact.worldFields && Object.keys(impact.worldFields).length > 0) ||
-                     (impact.arrayAppends && impact.arrayAppends.length > 0);
+  const hasChanges =
+    (impact.entities && Object.keys(impact.entities).length > 0) ||
+    (impact.worldFields && Object.keys(impact.worldFields).length > 0) ||
+    (impact.arrayAppends && impact.arrayAppends.length > 0);
 
   if (hasChanges) {
     const event = rule.buildEvent(ctx);
@@ -76,7 +77,7 @@ export function evaluateRule(ctx: StrategyContext, rule: StrategyRule): StateImp
       },
       {
         heyaId: ctx.heya.id,
-        importance: rule.importance ?? "minor"
+        importance: rule.importance ?? "minor",
       }
     );
     return builder.build();
@@ -91,10 +92,11 @@ export function evaluateRule(ctx: StrategyContext, rule: StrategyRule): StateImp
 export function evaluateRulesExclusive(ctx: StrategyContext, rules: StrategyRule[]): StateImpact {
   for (const rule of rules) {
     const impact = evaluateRule(ctx, rule);
-    const hasChanges = (impact.entities && Object.keys(impact.entities).length > 0) || 
-                       (impact.worldFields && Object.keys(impact.worldFields).length > 0) ||
-                       (impact.arrayAppends && impact.arrayAppends.length > 0) ||
-                       (impact.events && impact.events.length > 0);
+    const hasChanges =
+      (impact.entities && Object.keys(impact.entities).length > 0) ||
+      (impact.worldFields && Object.keys(impact.worldFields).length > 0) ||
+      (impact.arrayAppends && impact.arrayAppends.length > 0) ||
+      (impact.events && impact.events.length > 0);
     if (hasChanges) {
       return impact; // Stop after first match
     }
@@ -148,15 +150,10 @@ export const TraitChecks = {
     (o) =>
       (o.traits.patience ?? 0) > threshold,
 
-  isVindictive:
-    (): TraitCheck =>
-    (o) =>
-      o.temperament === "Vindictive" || (o.traits.ambition > 80 && o.traits.risk > 70),
+  isVindictive: (): TraitCheck => (o) =>
+    o.temperament === "Vindictive" || (o.traits.ambition > 80 && o.traits.risk > 70),
 
-  isGreedy:
-    (): TraitCheck =>
-    (o) =>
-      o.traits.risk < 20 || o.quirks?.includes("Numbers Guy"),
+  isGreedy: (): TraitCheck => (o) => o.traits.risk < 20 || o.quirks?.includes("Numbers Guy"),
 
   hasMood:
     (mood: Oyakata["mood"]): TraitCheck =>

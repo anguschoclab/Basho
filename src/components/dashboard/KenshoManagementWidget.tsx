@@ -197,9 +197,7 @@ export function KenshoManagementWidget() {
                         </Badge>
                       </div>
                       <div className="text-right">
-                        <div className="font-semibold text-gold">
-                          {formatYen(kenshoEarnings)}
-                        </div>
+                        <div className="font-semibold text-gold">{formatYen(kenshoEarnings)}</div>
                         <div className="text-xs text-muted-foreground">
                           {kenshoEarnings > 0
                             ? `${Math.round(kenshoEarnings / 70000)} envelopes`

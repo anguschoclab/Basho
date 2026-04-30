@@ -6,11 +6,11 @@ import { checkRetirement } from "./lifecycle";
 import type { Rikishi } from "./types/rikishi";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
-import { 
-  StrategyContext, 
-  StrategyRule, 
-  evaluateRulesCumulative, 
-  TraitChecks 
+import {
+  StrategyContext,
+  StrategyRule,
+  evaluateRulesCumulative,
+  TraitChecks,
 } from "./strategy/NPCStrategyFramework";
 
 interface RetirementStrategy {
@@ -21,7 +21,7 @@ const NATURAL_RETIREMENT_RULE: StrategyRule = {
   id: "ret_natural",
   condition: (ctx) => {
     // Check if ANY rikishi in heya wants to retire naturally
-    return (ctx.heya.rikishiIds ?? []).some(id => {
+    return (ctx.heya.rikishiIds ?? []).some((id) => {
       const r = ctx.world.rikishi.get(id);
       return r && checkRetirement(r, ctx.world.calendar?.year ?? 2026, ctx.world.seed);
     });

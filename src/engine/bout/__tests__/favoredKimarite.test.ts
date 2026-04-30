@@ -43,7 +43,11 @@ describe("evaluateKimariteAttempt — favoredKimarite boost", () => {
   it("adds +0.08 to successProbability when winner favors the classified technique", () => {
     // Use technique=0 so techBonus=0 → base prob=0.8, boosted=0.88 (no cap interference)
     // style:"oshi" so isPusher condition passes for oshidashi selection
-    const eastWithFavored = mockRikishi("east", { technique: 0, style: "oshi", favoredKimarite: ["oshidashi"] });
+    const eastWithFavored = mockRikishi("east", {
+      technique: 0,
+      style: "oshi",
+      favoredKimarite: ["oshidashi"],
+    });
     const west = mockRikishi("west", { technique: 0 });
 
     // Push battle with east near edge (east at 3.8+, west near 0)
@@ -96,7 +100,10 @@ describe("evaluateKimariteAttempt — favoredKimarite boost", () => {
     expect(boostedAttempt).not.toBeNull();
     expect(boostedAttempt!.technique).toBe("oshidashi");
     expect(boostedAttempt!.successProbability).toBeGreaterThan(baseAttempt!.successProbability);
-    expect(boostedAttempt!.successProbability - baseAttempt!.successProbability).toBeCloseTo(0.08, 5);
+    expect(boostedAttempt!.successProbability - baseAttempt!.successProbability).toBeCloseTo(
+      0.08,
+      5
+    );
   });
 
   it("does NOT boost when winner's favoredKimarite does not include the classified technique", () => {
@@ -119,8 +126,26 @@ describe("evaluateKimariteAttempt — favoredKimarite boost", () => {
     st.phase = { tag: "push_battle", state: push };
 
     const noFavor = mockRikishi("east-no-favor", { style: "oshi" });
-    const base = evaluateKimariteAttempt(noFavor, west, push, null, st, new SeededRNG("noboost"), DIVISION, META);
-    const withWrongFavor = evaluateKimariteAttempt(east, west, push, null, st, new SeededRNG("noboost"), DIVISION, META);
+    const base = evaluateKimariteAttempt(
+      noFavor,
+      west,
+      push,
+      null,
+      st,
+      new SeededRNG("noboost"),
+      DIVISION,
+      META
+    );
+    const withWrongFavor = evaluateKimariteAttempt(
+      east,
+      west,
+      push,
+      null,
+      st,
+      new SeededRNG("noboost"),
+      DIVISION,
+      META
+    );
 
     // Technique and successProbability must be identical — yoritaoshi never fires in push_battle
     expect(withWrongFavor!.technique).toBe(base!.technique);
@@ -138,7 +163,11 @@ describe("evaluateKimariteAttempt — favoredKimarite boost", () => {
     // so instead verify the cap holds with a high techBonus scenario.
     // Use technique=100 → techBonus = 0.2, base edge oshidashi=0.75+0.2=0.95
     // With +0.08 favored → 1.03, should cap at 0.97
-    const eastHighTech = mockRikishi("east-high", { technique: 100, style: "oshi", favoredKimarite: ["oshidashi"] });
+    const eastHighTech = mockRikishi("east-high", {
+      technique: 100,
+      style: "oshi",
+      favoredKimarite: ["oshidashi"],
+    });
     const push: PushBattleState = {
       contestLine: 2.6,
       eastForce: 80,

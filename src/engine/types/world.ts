@@ -242,7 +242,7 @@ export interface WorldState {
 
   boutTactics?: Record<string, string>;
 
-  calendar?: { 
+  calendar?: {
     currentWeek: number;
     year?: number;
     month?: number;

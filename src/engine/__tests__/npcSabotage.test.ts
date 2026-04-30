@@ -47,11 +47,15 @@ describe("NPC Sabotage Logic", () => {
   });
 
   it("should trigger sabotage if oyakata is vindictive and rival has high scandal", () => {
-    const impact = DefaultGovernanceStrategy.evaluateGovernanceDecisions(mockWorld, mockHeya, mockOyakata);
-    
+    const impact = DefaultGovernanceStrategy.evaluateGovernanceDecisions(
+      mockWorld,
+      mockHeya,
+      mockOyakata
+    );
+
     // Check if a NARRATIVE_CRISIS_TRIGGERED event exists for the rival
-    const sabotageEvent = (impact.events || []).find(e => 
-      e.type === "NARRATIVE_CRISIS_TRIGGERED" && e.data.heyaId === rivalHeya.id
+    const sabotageEvent = (impact.events || []).find(
+      (e) => e.type === "NARRATIVE_CRISIS_TRIGGERED" && e.data.heyaId === rivalHeya.id
     );
 
     expect(sabotageEvent).toBeDefined();
@@ -60,9 +64,15 @@ describe("NPC Sabotage Logic", () => {
 
   it("should NOT trigger sabotage if political capital is too low", () => {
     mockHeya.politicalCapital = 10;
-    const impact = DefaultGovernanceStrategy.evaluateGovernanceDecisions(mockWorld, mockHeya, mockOyakata);
-    
-    const sabotageEvent = (impact.events || []).find(e => e.type === "NARRATIVE_CRISIS_TRIGGERED");
+    const impact = DefaultGovernanceStrategy.evaluateGovernanceDecisions(
+      mockWorld,
+      mockHeya,
+      mockOyakata
+    );
+
+    const sabotageEvent = (impact.events || []).find(
+      (e) => e.type === "NARRATIVE_CRISIS_TRIGGERED"
+    );
     expect(sabotageEvent).toBeUndefined();
   });
 });

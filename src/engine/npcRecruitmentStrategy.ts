@@ -5,7 +5,11 @@ import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
 
 interface RecruitmentStrategy {
-  evaluateVacancies: (world: WorldState, heya: Heya, oyakata: Oyakata) => { impact: StateImpact; count: number };
+  evaluateVacancies: (
+    world: WorldState,
+    heya: Heya,
+    oyakata: Oyakata
+  ) => { impact: StateImpact; count: number };
   calculateMaxBid: (
     world: WorldState,
     heya: Heya,
@@ -22,7 +26,7 @@ function calculateRunwayAwareMaxBid(heya: Heya, oyakata: Oyakata, baseMultiplier
   const monthlyBurn = (heya.rikishiIds?.length ?? 0) * 150000;
   const yearlyBurn = monthlyBurn * 12;
   const surplus = Math.max(0, heya.funds - yearlyBurn);
-  
+
   // Ambitious/Risk-Takers use more of their surplus
   let riskMod = 0.2;
   if (oyakata.traits.ambition > 80) riskMod += 0.2;
@@ -32,7 +36,11 @@ function calculateRunwayAwareMaxBid(heya: Heya, oyakata: Oyakata, baseMultiplier
 }
 
 export const DefaultRecruitmentStrategy: RecruitmentStrategy = {
-  evaluateVacancies(_world: WorldState, heya: Heya, oyakata: Oyakata): { impact: StateImpact; count: number } {
+  evaluateVacancies(
+    _world: WorldState,
+    heya: Heya,
+    oyakata: Oyakata
+  ): { impact: StateImpact; count: number } {
     const builder = createImpactBuilder("evaluateVacancies");
     const freezeWeeks = heya.welfareState?.sanctions?.recruitmentFreezeWeeks ?? 0;
     if (freezeWeeks > 0) return { impact: builder.build(), count: 0 };
@@ -49,7 +57,7 @@ export const DefaultRecruitmentStrategy: RecruitmentStrategy = {
 
   calculateMaxBid(_world, heya, oyakata, _candidateId, rivalHeyaId) {
     let maxBid = calculateRunwayAwareMaxBid(heya, oyakata, 1.0);
-    
+
     // Spite Premium
     if (rivalHeyaId && oyakata.temperament === "Vindictive") {
       maxBid *= 1.5;

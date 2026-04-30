@@ -20,7 +20,7 @@ export function RikishiLineage({ mentor, mentees, rikishiId }: RikishiLineagePro
           <h3 className="text-xs font-black uppercase tracking-widest text-slate-500 mb-6 flex items-center gap-2">
             <Users className="h-4 w-4" /> Mentorship
           </h3>
-          
+
           <div className="space-y-6">
             <div>
               <p className="text-[10px] text-slate-500 uppercase mb-2">Primary Mentor</p>
@@ -30,7 +30,11 @@ export function RikishiLineage({ mentor, mentees, rikishiId }: RikishiLineagePro
                     <User className="h-4 w-4 text-slate-400" />
                   </div>
                   <div>
-                    <RikishiName id={mentor.id} name={mentor.shikona} className="font-bold text-sm" />
+                    <RikishiName
+                      id={mentor.id}
+                      name={mentor.shikona}
+                      className="font-bold text-sm"
+                    />
                     <p className="text-[9px] text-muted-foreground uppercase">{mentor.rank}</p>
                   </div>
                 </div>
@@ -40,15 +44,25 @@ export function RikishiLineage({ mentor, mentees, rikishiId }: RikishiLineagePro
             </div>
 
             <div>
-              <p className="text-[10px] text-slate-500 uppercase mb-2">Mentees ({mentees.length})</p>
+              <p className="text-[10px] text-slate-500 uppercase mb-2">
+                Mentees ({mentees.length})
+              </p>
               <div className="space-y-2">
                 {mentees.length > 0 ? (
-                  mentees.map((m) => m && (
-                    <div key={m.id} className="flex items-center justify-between p-2 hover:bg-slate-800/30 rounded-md transition-colors">
-                      <RikishiName id={m.id} name={m.shikona} className="text-xs" />
-                      <Badge variant="outline" className="text-[8px] px-1 py-0">{m.rank}</Badge>
-                    </div>
-                  ))
+                  mentees.map(
+                    (m) =>
+                      m && (
+                        <div
+                          key={m.id}
+                          className="flex items-center justify-between p-2 hover:bg-slate-800/30 rounded-md transition-colors"
+                        >
+                          <RikishiName id={m.id} name={m.shikona} className="text-xs" />
+                          <Badge variant="outline" className="text-[8px] px-1 py-0">
+                            {m.rank}
+                          </Badge>
+                        </div>
+                      )
+                  )
                 ) : (
                   <p className="text-xs text-slate-600 italic">No current mentees.</p>
                 )}

@@ -189,5 +189,4 @@ describe("Phase 5 Depth: Institutional Power & Regional Mastery", () => {
       expect(phil.targetFocusBias).toBeUndefined();
     });
   });
-
 });

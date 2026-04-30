@@ -17,7 +17,6 @@ import { advanceOneDay, type DailyTickReport } from "./tick/tickDaily";
 import { queryEvents } from "./events";
 import { assertNever } from "./utils/types";
 
-
 // ============================================================================
 // TYPES
 // ============================================================================
@@ -55,7 +54,7 @@ export interface HolidayConfig {
 /** Defines the structure for holiday gate triggered. */
 export interface HolidayGateTriggered {
   gate: SafetyGate;
-  message: string;        // Qualitative, no thresholds (A7.1)
+  message: string; // Qualitative, no thresholds (A7.1)
   dayIndex: number;
 }
 
@@ -160,14 +159,16 @@ function checkGate(
     case "scandalSeverity": {
       const recentEvents = queryEvents(world, { limit: 20 });
       const scandal = recentEvents.find(
-        e => e.week >= (world.week ?? 0) - 1 &&
-             (e.type.includes("SCANDAL") || e.category === "discipline") &&
-             (e.importance === "headline" || e.importance === "major")
+        (e) =>
+          e.week >= (world.week ?? 0) - 1 &&
+          (e.type.includes("SCANDAL") || e.category === "discipline") &&
+          (e.importance === "headline" || e.importance === "major")
       );
       if (scandal) {
         return {
           gate,
-          message: "Governance pressure escalating — a significant disciplinary matter has emerged.",
+          message:
+            "Governance pressure escalating — a significant disciplinary matter has emerged.",
           dayIndex: day,
         };
       }
@@ -177,9 +178,8 @@ function checkGate(
     case "sponsorChurn": {
       const recentEvents = queryEvents(world, { limit: 20 });
       const sponsorLoss = recentEvents.filter(
-        e => e.week >= (world.week ?? 0) - 1 &&
-             e.category === "sponsor" &&
-             e.type.includes("LOST")
+        (e) =>
+          e.week >= (world.week ?? 0) - 1 && e.category === "sponsor" && e.type.includes("LOST")
       );
       if (sponsorLoss.length >= 2) {
         return {
@@ -233,8 +233,8 @@ function checkGate(
       }
       return null;
     }
-      default: assertNever(gate);
-
+    default:
+      assertNever(gate);
   }
 
   return null;
@@ -302,8 +302,8 @@ function computeTargetDays(world: WorldState, target: HolidayTarget): number {
 
     case "postBasho":
       return computeTargetDays(world, "endOfBasho") + 7;
-      default: assertNever(target);
-
+    default:
+      assertNever(target);
   }
 }
 
@@ -330,67 +330,66 @@ function buildHolidayDigest(
   // Gather all events from the holiday period using week-based filtering
   const allEvents = world.events?.log ?? [];
   const startWeek = Math.max(0, Math.floor(startDay / 7));
-  const holidayEvents = allEvents.filter(
-    e => e.week >= startWeek
-  );
+  const holidayEvents = allEvents.filter((e) => e.week >= startWeek);
 
   // Stable category
   const stableEvents = holidayEvents.filter(
-    e => e.category === "welfare" || e.category === "training" || e.type.includes("STAFF")
+    (e) => e.category === "welfare" || e.category === "training" || e.type.includes("STAFF")
   );
   if (stableEvents.length) {
     categories.push({
       id: "stable",
       title: "Stable Updates",
-      items: stableEvents.slice(0, 8).map(e => e.title),
+      items: stableEvents.slice(0, 8).map((e) => e.title),
     });
   }
 
   // Banzuke/Basho category
   const bashoEvents = holidayEvents.filter(
-    e => e.category === "basho" || e.type.includes("BASHO") || e.type.includes("YUSHO")
+    (e) => e.category === "basho" || e.type.includes("BASHO") || e.type.includes("YUSHO")
   );
   if (bashoEvents.length) {
     categories.push({
       id: "basho",
       title: "Basho & Banzuke",
-      items: bashoEvents.slice(0, 5).map(e => e.title),
+      items: bashoEvents.slice(0, 5).map((e) => e.title),
     });
   }
 
   // Economy category
   const econEvents = holidayEvents.filter(
-    e => e.category === "economy" || e.category === "sponsor"
+    (e) => e.category === "economy" || e.category === "sponsor"
   );
   if (econEvents.length) {
     categories.push({
       id: "economy",
       title: "Economy",
-      items: econEvents.slice(0, 5).map(e => e.title),
+      items: econEvents.slice(0, 5).map((e) => e.title),
     });
   }
 
   // Governance category
   const govEvents = holidayEvents.filter(
-    e => e.category === "discipline" || e.type.includes("GOVERNANCE") || e.type.includes("SCANDAL")
+    (e) =>
+      e.category === "discipline" || e.type.includes("GOVERNANCE") || e.type.includes("SCANDAL")
   );
   if (govEvents.length) {
     categories.push({
       id: "governance",
       title: "Governance",
-      items: govEvents.slice(0, 5).map(e => e.title),
+      items: govEvents.slice(0, 5).map((e) => e.title),
     });
   }
 
   // Career / History category
   const careerEvents = holidayEvents.filter(
-    e => e.category === "career" || e.type.includes("RETIREMENT") || e.type.includes("DEBUT")
+    (e) => e.category === "career" || e.type.includes("RETIREMENT") || e.type.includes("DEBUT")
   );
   if (careerEvents.length) {
     categories.push({
       id: "history",
       title: "Career & History",
-      items: careerEvents.slice(0, 5).map(e => e.title),
+      items: careerEvents.slice(0, 5).map((e) => e.title),
     });
   }
 
@@ -429,9 +428,11 @@ export function runHoliday(world: WorldState, config: HolidayConfig): HolidayRes
 
   for (let i = 0; i < cap; i++) {
     // Don't advance during active_basho unless target is endOfBasho/postBasho
-    if (world.cyclePhase === "active_basho" &&
-        config.target !== "endOfBasho" &&
-        config.target !== "postBasho") {
+    if (
+      world.cyclePhase === "active_basho" &&
+      config.target !== "endOfBasho" &&
+      config.target !== "postBasho"
+    ) {
       break;
     }
 
@@ -485,7 +486,8 @@ function isTargetReached(
       return world.cyclePhase === "post_basho" || world.cyclePhase === "interim";
     case "postBasho":
       return world.cyclePhase === "interim";
-    default: assertNever(target);
+    default:
+      assertNever(target);
   }
 }
 

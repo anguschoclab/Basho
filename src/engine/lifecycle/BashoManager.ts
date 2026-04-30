@@ -17,7 +17,7 @@ export function getCurrentBasho(world: WorldState): BashoState | undefined {
 /**
  * Start basho — handles the transition from pre-basho/interim to active_basho.
  * Canonically initializes the tournament state and day 1 schedule.
- * 
+ *
  * @param world Current WorldState
  * @param bashoName Optional name if overriding the world's default
  * @returns Updated WorldState
@@ -25,8 +25,7 @@ export function getCurrentBasho(world: WorldState): BashoState | undefined {
 export function startBasho(world: WorldState, bashoName?: BashoName): WorldState {
   if (world.cyclePhase === "active_basho") return world;
 
-  const name: BashoName =
-    bashoName || world.currentBashoName || "hatsu";
+  const name: BashoName = bashoName || world.currentBashoName || "hatsu";
 
   // Initialize new basho state
   const basho = initializeBasho(world, name);
@@ -42,7 +41,7 @@ export function startBasho(world: WorldState, bashoName?: BashoName): WorldState
   EventBus.bashoStatus(world, {
     status: "started",
     incident: name,
-    day: 1
+    day: 1,
   });
   return world;
 }

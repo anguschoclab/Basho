@@ -80,10 +80,7 @@ export { resolveRegistryLabel, enrichRikishiForUI } from "./utilities/uiUtilitie
 
 // Original re-exports from existing modules (preserved for compatibility)
 export { projectRikishi } from "./rikishiUI";
-export {
-  formatRadarData,
-  formatMetaTrends,
-} from "./uiFormatters";
+export { formatRadarData, formatMetaTrends } from "./uiFormatters";
 export { getHallOfFame } from "../engine/hallOfFame";
 export {
   FATIGUE_LABELS,
@@ -130,9 +127,7 @@ export {
 // ─────────────────────────────────────────
 export { getMonthlyMaintenanceCost, getUpgradeCostEstimate } from "../engine/facilities";
 // describeAggression, describeAttribute, describeExperience removed (unused)
-export {
-  describeTrainingEffect,
-} from "../engine/narrativeDescriptions";
+export { describeTrainingEffect } from "../engine/narrativeDescriptions";
 // createDefaultRivalriesState, getRivalry removed (unused)
 // createScoutedView, describeScoutingLevel, getScoutedAttributes removed (unused)
 export {
@@ -156,16 +151,9 @@ export {
   isKeyDay,
 } from "../engine/calendar";
 // DEFAULT_CRITICAL_GATES removed (unused)
-export {
-  getTotalBashodays,
-  needsScheduleForDay,
-} from "../engine/scheduleHelpers";
+export { getTotalBashodays, needsScheduleForDay } from "../engine/scheduleHelpers";
 // DEFAULT_DIVISION_DAYS removed (unused)
-export {
-  toFatigueBand,
-  toScandalBand,
-  toTraitBand,
-} from "../engine/descriptorBands";
+export { toFatigueBand, toScandalBand, toTraitBand } from "../engine/descriptorBands";
 // toPotentialBand, toPrizeBand, toRivalryHeatBand removed (unused)
 
 // Type exports for UI layer (re-exported from engine to comply with no-restricted-imports rule)

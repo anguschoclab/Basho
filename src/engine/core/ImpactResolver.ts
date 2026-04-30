@@ -122,7 +122,7 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
       const nextRikishi = new Map(result.rikishi);
       for (const rikishi of impact.collections.rikishiToAdd) {
         nextRikishi.set(rikishi.id, rikishi);
-        
+
         // Sync Heya Roster
         const heya = nextHeyas.get(rikishi.heyaId) || result.heyas.get(rikishi.heyaId);
         if (heya) {
@@ -143,7 +143,10 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
           // Sync Heya Roster
           const heya = nextHeyas.get(r.heyaId) || result.heyas.get(r.heyaId);
           if (heya) {
-            nextHeyas.set(r.heyaId, { ...heya, rikishiIds: (heya.rikishiIds || []).filter(rid => rid !== id) });
+            nextHeyas.set(r.heyaId, {
+              ...heya,
+              rikishiIds: (heya.rikishiIds || []).filter((rid) => rid !== id),
+            });
             heyasChanged = true;
           }
         }
@@ -164,7 +167,10 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
           // Sync Heya Roster (Remove from active roster)
           const heya = nextHeyas.get(rikishi.heyaId) || result.heyas.get(rikishi.heyaId);
           if (heya) {
-            nextHeyas.set(rikishi.heyaId, { ...heya, rikishiIds: (heya.rikishiIds || []).filter(rid => rid !== id) });
+            nextHeyas.set(rikishi.heyaId, {
+              ...heya,
+              rikishiIds: (heya.rikishiIds || []).filter((rid) => rid !== id),
+            });
             heyasChanged = true;
           }
         }
@@ -465,9 +471,15 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
             existing.items.push(...append.items);
           } else if (existing.field === "awardLog" && append.field === "awardLog") {
             existing.items.push(...append.items);
-          } else if (existing.field === "myosekiMarket.history" && append.field === "myosekiMarket.history") {
+          } else if (
+            existing.field === "myosekiMarket.history" &&
+            append.field === "myosekiMarket.history"
+          ) {
             existing.items.push(...append.items);
-          } else if (existing.field === "pendingExhibitions" && append.field === "pendingExhibitions") {
+          } else if (
+            existing.field === "pendingExhibitions" &&
+            append.field === "pendingExhibitions"
+          ) {
             existing.items.push(...append.items);
           }
         } else {

@@ -13,21 +13,21 @@ import { MentionText } from "./MentionText";
 import { EngineEvent } from "@/engine/types/events";
 import { getEventRoute } from "./layout/eventLogHelpers";
 import { Link } from "@tanstack/react-router";
-import { 
-  Trophy, 
-  Swords, 
-  HeartPulse, 
-  Coins, 
-  GraduationCap, 
-  Scale, 
-  Star, 
-  AlertTriangle, 
-  MessageCircle, 
-  Search, 
+import {
+  Trophy,
+  Swords,
+  HeartPulse,
+  Coins,
+  GraduationCap,
+  Scale,
+  Star,
+  AlertTriangle,
+  MessageCircle,
+  Search,
   Wrench,
   Info,
   ChevronRight,
-  Calendar
+  Calendar,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -40,7 +40,11 @@ interface EventDetailDialogProps {
 const importanceMap = {
   minor: { label: "Minor", variant: "secondary" as const },
   notable: { label: "Notable", variant: "default" as const },
-  major: { label: "Major", variant: "default" as const, className: "bg-orange-500 hover:bg-orange-600" },
+  major: {
+    label: "Major",
+    variant: "default" as const,
+    className: "bg-orange-500 hover:bg-orange-600",
+  },
   headline: { label: "Headline", variant: "destructive" as const },
 };
 
@@ -69,27 +73,34 @@ export function EventDetailDialog({ event, isOpen, onClose }: EventDetailDialogP
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-[500px] overflow-hidden border-none p-0 bg-zinc-950 text-zinc-100 shadow-2xl">
         {/* Header with Category Color Bar */}
-        <div className={cn(
-          "h-1.5 w-full",
-          event.importance === "headline" ? "bg-red-500" : 
-          event.importance === "major" ? "bg-orange-500" : "bg-blue-500"
-        )} />
+        <div
+          className={cn(
+            "h-1.5 w-full",
+            event.importance === "headline"
+              ? "bg-red-500"
+              : event.importance === "major"
+                ? "bg-orange-500"
+                : "bg-blue-500"
+          )}
+        />
 
         <div className="p-6 space-y-6">
           <DialogHeader className="space-y-4">
             <div className="flex items-center justify-between">
-              <Badge 
-                variant={importance.variant} 
+              <Badge
+                variant={importance.variant}
                 className={cn("uppercase tracking-wider px-3 py-1", importance.className)}
               >
                 {importance.label}
               </Badge>
               <div className="flex items-center gap-2 text-zinc-400 text-sm">
                 <Calendar className="h-4 w-4" />
-                <span>Year {event.year}, Week {event.week}</span>
+                <span>
+                  Year {event.year}, Week {event.week}
+                </span>
               </div>
             </div>
-            
+
             <DialogTitle className="text-2xl font-bold tracking-tight text-white leading-tight">
               <MentionText text={event.title} />
             </DialogTitle>
@@ -110,8 +121,8 @@ export function EventDetailDialog({ event, isOpen, onClose }: EventDetailDialogP
           </div>
 
           <DialogFooter className="pt-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={onClose}
               className="border-zinc-800 text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100"
             >

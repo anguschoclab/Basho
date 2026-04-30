@@ -3,7 +3,13 @@
  * Narrative Bands & Misc Shared Types
  */
 
-export type StatureBand = "legendary" | "powerful" | "established" | "rebuilding" | "fragile" | "new";
+export type StatureBand =
+  | "legendary"
+  | "powerful"
+  | "established"
+  | "rebuilding"
+  | "fragile"
+  | "new";
 /** Type representing prestige band. */
 export type PrestigeBand = "elite" | "respected" | "modest" | "struggling" | "unknown";
 /** Type representing facilities band. */

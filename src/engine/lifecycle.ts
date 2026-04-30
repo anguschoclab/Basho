@@ -42,7 +42,11 @@ export function checkRetirement(
 
   // 2. Injury Forced Retirement
   // Career-ending: serious injury (from weekly health phase) with >20 weeks remaining
-  if (rikishi.injured && rikishi.currentInjury?.severity === "serious" && (rikishi.injuryWeeksRemaining ?? 0) > 20) {
+  if (
+    rikishi.injured &&
+    rikishi.currentInjury?.severity === "serious" &&
+    (rikishi.injuryWeeksRemaining ?? 0) > 20
+  ) {
     return "Career-Ending Injury";
   }
 
@@ -87,7 +91,7 @@ export function checkRetirement(
     let retireProb = 0.1;
     if (isWeak) retireProb = 0.25;
     if (isCriticallyWeak) retireProb = 0.5;
-    
+
     if (rng.bool(retireProb)) {
       return (rikishi.power ?? 50) < 35 ? "Diminishing Physicality" : "Lack of Performance";
     }
@@ -100,22 +104,51 @@ export function checkRetirement(
 
 const ORIGINS = [
   // --- Japanese Hotbeds ---
-  { name: "Hokkaido", weightMod: 1.10, strMod: 1.05, description: "Land of giants and harsh winters." },
-  { name: "Aomori", weightMod: 1.0, strMod: 1.10, description: "Traditional sumo powerhouse." },
-  { name: "Akita", weightMod: 1.0, techMod: 1.05, description: "Technical wrestlers from the north." },
+  {
+    name: "Hokkaido",
+    weightMod: 1.1,
+    strMod: 1.05,
+    description: "Land of giants and harsh winters.",
+  },
+  { name: "Aomori", weightMod: 1.0, strMod: 1.1, description: "Traditional sumo powerhouse." },
+  {
+    name: "Akita",
+    weightMod: 1.0,
+    techMod: 1.05,
+    description: "Technical wrestlers from the north.",
+  },
   { name: "Oita", weightMod: 1.05, speedMod: 1.05, description: "Dynamic and explosive style." },
   { name: "Tokyo", weightMod: 0.95, techMod: 1.15, description: "Urban perfectionists." },
-  { name: "Osaka", weightMod: 1.05, mentalMod: 1.10, description: "Resilient and street-smart." },
+  { name: "Osaka", weightMod: 1.05, mentalMod: 1.1, description: "Resilient and street-smart." },
   { name: "Fukuoka", weightMod: 1.02, strMod: 1.02, description: "Southern strength." },
   { name: "Kagoshima", weightMod: 1.05, strMod: 1.05, description: "Heavyweight islanders." },
-  
+
   // --- International ---
-  { name: "Mongolia", weightMod: 0.9, strMod: 1.25, mentalMod: 1.3, techMod: 1.1, description: "Masters of leverage and spirit." },
+  {
+    name: "Mongolia",
+    weightMod: 0.9,
+    strMod: 1.25,
+    mentalMod: 1.3,
+    techMod: 1.1,
+    description: "Masters of leverage and spirit.",
+  },
   { name: "Georgia", weightMod: 1.15, strMod: 1.2, description: "Raw power from the Caucasus." },
   { name: "Egypt", weightMod: 1.1, strMod: 1.15, description: "Sturdy and relentless." },
-  { name: "Brazil", weightMod: 1.0, speedMod: 1.15, techMod: 1.05, description: "Flexible and athletic." },
-  { name: "USA", weightMod: 1.2, strMod: 1.1, speedMod: 0.9, description: "Huge frames and collegiate power." },
-  
+  {
+    name: "Brazil",
+    weightMod: 1.0,
+    speedMod: 1.15,
+    techMod: 1.05,
+    description: "Flexible and athletic.",
+  },
+  {
+    name: "USA",
+    weightMod: 1.2,
+    strMod: 1.1,
+    speedMod: 0.9,
+    description: "Huge frames and collegiate power.",
+  },
+
   // --- Academic Elite (Makushita Tsukedashi eligible) ---
   { name: "Nihon University", weightMod: 1.0, techMod: 1.4, mentalMod: 1.1, isElite: true },
   { name: "Nippon Sport Science Univ", weightMod: 1.05, stamMod: 1.3, techMod: 1.2, isElite: true },
@@ -282,7 +315,8 @@ function _generateRookie(
       stress: 0,
     },
     personalityTraits: [],
-    favoredKimarite: (buildCombatProfile(archetype).favoredKimarite ?? []) as import("./types/rikishi").KimariteId[],
+    favoredKimarite: (buildCombatProfile(archetype).favoredKimarite ??
+      []) as import("./types/rikishi").KimariteId[],
     weakAgainstStyles: deriveWeakAgainstStyles(archetype) as import("./types/rikishi").Style[],
     // Required Rikishi fields for career tracking
     consecutiveYusho: 0,

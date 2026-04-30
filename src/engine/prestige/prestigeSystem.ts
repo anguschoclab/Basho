@@ -1,7 +1,7 @@
 // @ts-nocheck
 /**
  * src/engine/prestige/prestigeSystem.ts
- * 
+ *
  * Handles stable prestige decay, stature band updates, and reputation drift.
  * Based on Constitution A3.4.
  */
@@ -14,7 +14,13 @@ import { EventBus } from "../events";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 
-export const PRESTIGE_ORDER: PrestigeBand[] = ["unknown", "struggling", "modest", "respected", "elite"];
+export const PRESTIGE_ORDER: PrestigeBand[] = [
+  "unknown",
+  "struggling",
+  "modest",
+  "respected",
+  "elite",
+];
 
 /**
  * Get the index of a prestige band in the canonical order.
@@ -30,9 +36,16 @@ export function updateStatureBand(world: WorldState, heya: Heya): void {
   let maxRankWeight = 0;
   let rosterScore = 0;
   const RANK_WEIGHT: Record<string, number> = {
-    yokozuna: 100, ozeki: 80, sekiwake: 60, komusubi: 50,
-    maegashira: 30, juryo: 15, makushita: 8, sandanme: 4,
-    jonidan: 2, jonokuchi: 1
+    yokozuna: 100,
+    ozeki: 80,
+    sekiwake: 60,
+    komusubi: 50,
+    maegashira: 30,
+    juryo: 15,
+    makushita: 8,
+    sandanme: 4,
+    jonidan: 2,
+    jonokuchi: 1,
   };
 
   const roster = getHeyaRoster(world, heya.id);
@@ -59,16 +72,16 @@ export function updateStatureBand(world: WorldState, heya: Heya): void {
  * - Multi-basho stagnation accelerates decay.
  * - Yūshō/sanshō provide upward shifts.
  * - Small stables face extra fragility.
- * 
+ *
  * Returns StateImpact describing prestige changes instead of mutating state.
  */
 export function runPrestigeDecay(world: WorldState): StateImpact {
   const lastBasho = world.history[world.history.length - 1];
   if (!lastBasho) {
-    return createImpactBuilder('prestigeDecay').build();
+    return createImpactBuilder("prestigeDecay").build();
   }
 
-  const builder = createImpactBuilder('prestigeDecay');
+  const builder = createImpactBuilder("prestigeDecay");
 
   for (const heya of world.heyas.values()) {
     let totalWins = 0;
@@ -102,7 +115,7 @@ export function runPrestigeDecay(world: WorldState): StateImpact {
     if (hasYusho) shift += 2;
     else if (hasJunYusho) shift += 1;
     if (sanshoPrizeCount >= 2) shift += 1;
-    else if (sanshoPrizeCount === 1) shift += (winRate >= 0.55 ? 1 : 0);
+    else if (sanshoPrizeCount === 1) shift += winRate >= 0.55 ? 1 : 0;
     if (winRate >= 0.65 && totalBouts >= 10) shift += 1;
 
     // === Prestige decay — passive erosion for average/poor performance ===
@@ -136,17 +149,17 @@ export function runPrestigeDecay(world: WorldState): StateImpact {
       const direction = newIdx > currentIdx ? "rose" : "fell";
       // Queue event in impact instead of calling EventBus directly
       builder.logEvent(
-        'GOVERNANCE_RULING',
-        'narrative',
+        "GOVERNANCE_RULING",
+        "narrative",
         {
           incident: "prestige_shift",
           status: newBand,
           reason: heya.prestigeBand, // previous band
-          score: Math.round(winRate * 100)
+          score: Math.round(winRate * 100),
         },
         {
           heyaId: heya.id,
-          importance: Math.abs(shift) >= 2 ? 'major' : 'notable'
+          importance: Math.abs(shift) >= 2 ? "major" : "notable",
         }
       );
       // Queue heya update for prestigeBand
@@ -158,9 +171,16 @@ export function runPrestigeDecay(world: WorldState): StateImpact {
     let maxRankWeight = 0;
     let rosterScore = 0;
     const RANK_WEIGHT: Record<string, number> = {
-      yokozuna: 100, ozeki: 80, sekiwake: 60, komusubi: 50,
-      maegashira: 30, juryo: 15, makushita: 8, sandanme: 4,
-      jonidan: 2, jonokuchi: 1
+      yokozuna: 100,
+      ozeki: 80,
+      sekiwake: 60,
+      komusubi: 50,
+      maegashira: 30,
+      juryo: 15,
+      makushita: 8,
+      sandanme: 4,
+      jonidan: 2,
+      jonokuchi: 1,
     };
 
     for (const r of roster) {

@@ -17,7 +17,7 @@ import type {
   ScandalBand,
   TraitBand,
   PrizeBand,
-  DescriptorBand
+  DescriptorBand,
 } from "./NarrativeBands";
 import {
   STAT_BANDS,
@@ -29,9 +29,9 @@ import {
   PRIZE_BANDS,
   CONDITION_DESCRIPTOR_BANDS,
   MORALE_DESCRIPTOR_BANDS,
-  POTENTIAL_DESCRIPTOR_BANDS
+  POTENTIAL_DESCRIPTOR_BANDS,
 } from "./NarrativeBands";
-import { 
+import {
   getStatLabel,
   getStatProse,
   getFatigueLabel,
@@ -41,7 +41,7 @@ import {
   getRivalryHeatLabel,
   getScandalLabel,
   getPrizeLabel,
-  getTraitLabel
+  getTraitLabel,
 } from "./NarrativeProse";
 import type { RikishiArchetype } from "../../types/combat";
 
@@ -53,14 +53,14 @@ function toBandWithHysteresis<T extends string>(
   lastBand?: T
 ): T {
   const v = clamp(value, 0, 100);
-  const resolved = ladder.find(b => v >= b.min && v < b.max) ?? ladder[ladder.length - 1];
+  const resolved = ladder.find((b) => v >= b.min && v < b.max) ?? ladder[ladder.length - 1];
 
   if (lastBand && lastBand !== resolved.band) {
-    const prevDef = ladder.find(b => b.band === lastBand);
+    const prevDef = ladder.find((b) => b.band === lastBand);
     if (prevDef) {
-       if (v >= prevDef.max) return resolved.band;
-       if (v <= prevDef.min - HYSTERESIS_DELTA) return resolved.band;
-       return lastBand;
+      if (v >= prevDef.max) return resolved.band;
+      if (v <= prevDef.min - HYSTERESIS_DELTA) return resolved.band;
+      return lastBand;
     }
   }
 
@@ -70,7 +70,11 @@ function toBandWithHysteresis<T extends string>(
 /**
  * Internal helper to resolve DescriptorBand strings from archive.
  */
-function resolveDescriptor(rng: SeededRNG, path: string, entry: { id: string, colorCode: string }): DescriptorBand {
+function resolveDescriptor(
+  rng: SeededRNG,
+  path: string,
+  entry: { id: string; colorCode: string }
+): DescriptorBand {
   const label = BardEngine.resolve(rng, `${path}.${entry.id}.label`).text;
   const tooltip = BardEngine.resolve(rng, `${path}.${entry.id}.tooltip`).text;
   return { id: entry.id, label, tooltip, colorCode: entry.colorCode };
@@ -108,7 +112,8 @@ export const NarrativeService = {
   },
 
   getMomentumBand(momentum: number): MomentumBand {
-    const v = Math.abs(momentum) > 10 ? (clamp(momentum, 0, 100) - 50) / 10 : clamp(momentum, -5, 5);
+    const v =
+      Math.abs(momentum) > 10 ? (clamp(momentum, 0, 100) - 50) / 10 : clamp(momentum, -5, 5);
     if (v >= 3) return "on_fire";
     if (v >= 1) return "rising";
     if (v <= -3) return "in_crisis";
@@ -145,7 +150,7 @@ export const NarrativeService = {
   },
 
   getPrizeBand(amount: number): PrizeBand {
-    const resolved = PRIZE_BANDS.find(b => amount >= b.min && amount < b.max);
+    const resolved = PRIZE_BANDS.find((b) => amount >= b.min && amount < b.max);
     return resolved?.band ?? PRIZE_BANDS[PRIZE_BANDS.length - 1].band;
   },
 
@@ -155,23 +160,32 @@ export const NarrativeService = {
 
   getConditionDescriptor(rng: SeededRNG, value: number): DescriptorBand {
     const v = clamp(value, 0, 1);
-    const entry = CONDITION_DESCRIPTOR_BANDS.find(b => v >= b.min && v < b.max) ?? CONDITION_DESCRIPTOR_BANDS[CONDITION_DESCRIPTOR_BANDS.length - 1];
+    const entry =
+      CONDITION_DESCRIPTOR_BANDS.find((b) => v >= b.min && v < b.max) ??
+      CONDITION_DESCRIPTOR_BANDS[CONDITION_DESCRIPTOR_BANDS.length - 1];
     return resolveDescriptor(rng, "rikishi.descriptors.condition", entry);
   },
 
   getMoraleDescriptor(rng: SeededRNG, value: number): DescriptorBand {
     const v = clamp(value, 0, 1);
-    const entry = MORALE_DESCRIPTOR_BANDS.find(b => v >= b.min && v < b.max) ?? MORALE_DESCRIPTOR_BANDS[MORALE_DESCRIPTOR_BANDS.length - 1];
+    const entry =
+      MORALE_DESCRIPTOR_BANDS.find((b) => v >= b.min && v < b.max) ??
+      MORALE_DESCRIPTOR_BANDS[MORALE_DESCRIPTOR_BANDS.length - 1];
     return resolveDescriptor(rng, "rikishi.descriptors.morale", entry);
   },
 
   getPotentialDescriptor(rng: SeededRNG, talentSeed: number): DescriptorBand {
     const v = clamp(talentSeed, 0, 100);
-    const entry = POTENTIAL_DESCRIPTOR_BANDS.find(b => v >= b.min && v < b.max) ?? POTENTIAL_DESCRIPTOR_BANDS[POTENTIAL_DESCRIPTOR_BANDS.length - 1];
+    const entry =
+      POTENTIAL_DESCRIPTOR_BANDS.find((b) => v >= b.min && v < b.max) ??
+      POTENTIAL_DESCRIPTOR_BANDS[POTENTIAL_DESCRIPTOR_BANDS.length - 1];
     return resolveDescriptor(rng, "rikishi.descriptors.potential", entry);
   },
 
-  getArchetypeInfo(rng: SeededRNG, archetype: RikishiArchetype): { label: string; description: string } {
+  getArchetypeInfo(
+    rng: SeededRNG,
+    archetype: RikishiArchetype
+  ): { label: string; description: string } {
     return getArchetypeInfo(rng, archetype);
-  }
+  },
 };

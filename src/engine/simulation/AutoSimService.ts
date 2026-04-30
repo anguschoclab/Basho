@@ -112,7 +112,10 @@ export function runAutoSim(
     const nextBashoName = getNextBasho(bashoName);
 
     // 1. Build standings map in the format publishBanzukeUpdate expects
-    const standingsForPublish = new Map<string, { wins: number; losses: number; absences: number }>();
+    const standingsForPublish = new Map<
+      string,
+      { wins: number; losses: number; absences: number }
+    >();
     bashoResult.standings.forEach((stats, id) => {
       standingsForPublish.set(id, {
         wins: stats.wins,
@@ -205,14 +208,16 @@ export function runAutoSim(
   }
 
   // Final Metrics Calculation
-  const activeRikishi = Array.from(currentWorld.rikishi.values()).filter(r => !r.isRetired);
-  const successions = (currentWorld.governanceLog || []).filter(l => l.incident === "oyakata_promotion" || l.data?.status === "oyakata_promotion").length;
-  const yokozunaVacancy = activeRikishi.filter(r => r.rank === "yokozuna").length === 0 ? 1 : 0;
+  const activeRikishi = Array.from(currentWorld.rikishi.values()).filter((r) => !r.isRetired);
+  const successions = (currentWorld.governanceLog || []).filter(
+    (l) => l.incident === "oyakata_promotion" || l.data?.status === "oyakata_promotion"
+  ).length;
+  const yokozunaVacancy = activeRikishi.filter((r) => r.rank === "yokozuna").length === 0 ? 1 : 0;
 
   const tuningMetrics = SimTuningService.calculateMetrics(currentWorld, {
     yokozunaVacancy,
     uniqueWinners: championCounts.size,
-    successions
+    successions,
   });
 
   return {

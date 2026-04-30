@@ -21,7 +21,10 @@ export const getRandom = seededPick;
 /**
  * Standardizes 'weighted pick' for logic like injury types or archetypes.
  */
-export function seededWeightedPick<T>(rng: SeededRNG, items: readonly { item: T; weight: number }[]): T {
+export function seededWeightedPick<T>(
+  rng: SeededRNG,
+  items: readonly { item: T; weight: number }[]
+): T {
   const totalWeight = items.reduce((sum, i) => sum + i.weight, 0);
   let r = rng.next() * totalWeight;
   for (const { item, weight } of items) {
@@ -34,8 +37,8 @@ export function seededWeightedPick<T>(rng: SeededRNG, items: readonly { item: T;
 /**
  * Procedural random wrapper for simple uses.
  */
-export function pick<T>(arr: readonly T[], rng: () => number): T { 
-  return arr[Math.floor(rng() * arr.length)]; 
+export function pick<T>(arr: readonly T[], rng: () => number): T {
+  return arr[Math.floor(rng() * arr.length)];
 }
 
 export function weightedPick<T>(items: Array<{ item: T; w: number }>, rng: () => number): T {

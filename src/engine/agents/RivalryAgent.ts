@@ -62,13 +62,15 @@ export function spawnRivalryAgent(ctx: RivalryAgentContext): RivalryAgentResult 
     }
   }
 
-  reasoning.push(`[Rivalry Agent] High heat: ${highHeatRivalries.length}, Medium heat: ${mediumHeatRivalries.length}, Low heat: ${lowHeatRivalries.length}`);
+  reasoning.push(
+    `[Rivalry Agent] High heat: ${highHeatRivalries.length}, Medium heat: ${mediumHeatRivalries.length}, Low heat: ${lowHeatRivalries.length}`
+  );
 
   // Escalation decision
   if (isAmbitious && mediumHeatRivalries.length > 0) {
     escalateRivalry = true;
     rivalryId = mediumHeatRivalries[0];
-    
+
     if (isRiskTaker) {
       escalateStrategy = "aggressive";
       reasoning.push("[Rivalry Agent] Risk-taker chooses aggressive escalation");
