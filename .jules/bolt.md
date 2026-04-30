@@ -30,3 +30,7 @@
 ## 2025-01-24 - Logarithmic partitioning for append-only log pruning
 **Learning:** `eventsState.log.filter` inside `phase01_week_rivalries.ts` iterated over an extremely large and ever-growing array of events to check if each was "recent" or important. By recognizing the array is append-only and strictly sorted by time, we can use binary search (O(log N)) to jump straight to the "stale vs recent" boundary instead of performing O(N) filtering on every single tick.
 **Action:** Replaced O(N) `log.filter` with a binary search to find `firstRecentIndex`. If no stale events require pruning, no new array is allocated (zero allocations). If pruning is needed, only the specific stale section is filtered, and the rest is block-copied. This drops execution time by nearly 90% at scale.
+
+## 2024-05-20 - Avoid Array.from().filter().length when counting active rikishi
+**Learning:** Found an $O(N)$ memory overhead and iteration bottleneck where `Array.from(world.rikishi.values()).filter(r => !r.isRetired).length` was used to count active rikishi during recruitment simulation phases. This pattern creates two unnecessary intermediate arrays (one from `Array.from` and one from `.filter`) before just taking the length.
+**Action:** Replace `Array.from(map.values()).filter(condition).length` with a standard `for...of` loop and a numeric counter variable. This drops the operation's memory complexity from $O(N)$ to $O(1)$ and halves the number of iterations required.
