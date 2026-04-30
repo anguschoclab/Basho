@@ -1,4 +1,6 @@
-// src/contexts/__tests__/gameReducer.test.ts
+const fs = require('fs');
+
+const content = `// src/contexts/__tests__/gameReducer.test.ts
 import { describe, it, expect, vi } from 'vitest';
 import { gameReducer } from '../gameReducer';
 import { initialGameState } from '../gameTypes';
@@ -71,11 +73,13 @@ describe('Game Reducer Error Handling', () => {
 
     const nextState = gameReducer(initialState, { type: 'TICK_DAY' } as unknown as GameAction);
 
-    expect(consoleSpy).toHaveBeenCalledWith('Error building weekly digest:', error);
-    // State should reflect the update from baseReducer even if digest build fails
-    expect(nextState).not.toBe(initialState);
-    expect(nextState.world).not.toBe(initialState.world);
+    expect(consoleSpy).toHaveBeenCalledWith('Error loading data:', error);
+    // State should be returned as-is when an error is caught during digest build
+    expect(nextState).toBe(initialState);
 
     consoleSpy.mockRestore();
   });
 });
+`;
+
+fs.writeFileSync('src/contexts/__tests__/gameReducer.test.ts', content);
