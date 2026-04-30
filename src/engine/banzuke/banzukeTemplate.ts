@@ -19,7 +19,7 @@ export function buildFullSlotTemplate(
 
 function buildMakuuchiTemplate(
   sanyaku: { yokozuna: number; ozeki: number; sekiwake: number; komusubi: number },
-  totalSlots: number
+  totalSlots: number = 42
 ): Array<{ division: Division; position: RankPosition }> {
   const slots: Array<{ division: Division; position: RankPosition }> = [];
 
@@ -36,16 +36,12 @@ function buildMakuuchiTemplate(
   pushNamed("sekiwake", sanyaku.sekiwake);
   pushNamed("komusubi", sanyaku.komusubi);
 
+  // CRITICAL: Fill exactly up to totalSlots (Default 42) with Maegashira
   const remaining = Math.max(0, totalSlots - slots.length);
-  const pairs = Math.floor(remaining / 2);
-
-  for (let n = 1; n <= pairs; n++) {
-    slots.push({ division: "makuuchi", position: { rank: "maegashira", side: "east", rankNumber: n } });
-    slots.push({ division: "makuuchi", position: { rank: "maegashira", side: "west", rankNumber: n } });
-  }
-
-  if (remaining % 2 === 1) {
-    slots.push({ division: "makuuchi", position: { rank: "maegashira", side: "east", rankNumber: pairs + 1 } });
+  for (let i = 0; i < remaining; i++) {
+    const n = Math.floor(i / 2) + 1;
+    const side = i % 2 === 0 ? "east" : "west";
+    slots.push({ division: "makuuchi", position: { rank: "maegashira", side, rankNumber: n } });
   }
 
   return slots;

@@ -1,0 +1,257 @@
+/**
+ * TalentPoolScouting.ts — Read operators and fog-of-war scouting logic.
+ * Covers candidate visibility queries, scouting intel management, and
+ * attribute revelation through the FogOfWar confidence system.
+ */
+
+import { RNGRegistry } from "../../core/RNGRegistry";
+import { WorldState } from "../../types/world";
+import { Id } from "../../types/common";
+import { TalentPoolType, TalentCandidate } from "../../types/talent";
+import { getConfidenceLevel, resolveScoutedAttribute } from "../recruitment/FogOfWarService";
+import { clampInt } from "../../utils/math";
+import { isForeign } from "../../utils/identity";
+import { ensureTalentPoolState } from "./TalentPoolStateService";
+
+// ============================================
+// READ OPERATORS
+// ============================================
+
+/**
+ * Lists candidates currently visible in a specific pool.
+ */
+export function listVisibleCandidates(
+  world: WorldState,
+  poolType: TalentPoolType
+): TalentCandidate[] {
+  const tp = world.talentPool;
+  if (!tp) return [];
+  const pool = tp.pools[poolType];
+  if (!pool) return [];
+
+  const candidates = pool.candidatesVisible.map((id) => tp.candidates[id]).filter(Boolean);
+
+  // Phase 5 Depth: Regional Gating for foreign candidates
+  if (poolType === "foreign" && world.playerHeyaId) {
+    const heya = world.heyas.get(world.playerHeyaId);
+    if (heya) {
+      const presence = heya.regionalPresence || {};
+      return candidates.filter((c) => {
+        const minPresence = 40; // Visibility threshold
+        return (presence[c.originRegion] || 0) >= minPresence;
+      });
+    }
+  }
+
+  return candidates;
+}
+
+/**
+ * Gets the player's scouting level for a specific candidate.
+ */
+export function getCandidateScoutingLevel(world: WorldState, candidateId: Id): number {
+  return world.talentPool?.playerScouting?.[candidateId]?.scoutingLevel ?? 0;
+}
+
+/**
+ * Counts foreign rikishi in a specific stable.
+ */
+export function getForeignCountInHeya(world: WorldState, heyaId: Id): number {
+  let count = 0;
+  for (const r of world.rikishi.values()) {
+    if (r.heyaId === heyaId && (r.nationality ?? "Japan") !== "Japan") {
+      count++;
+    }
+  }
+  // Also count signed candidates not yet on the roster
+  if (world.talentPool) {
+    for (const c of Object.values(world.talentPool.candidates)) {
+      if (
+        c.availabilityState === "signed" &&
+        c.competingSuitors.some((s) => s.heyaId === heyaId) &&
+        (c.nationality ?? "Japan") !== "Japan"
+      ) {
+        count++;
+      }
+    }
+  }
+  return count;
+}
+
+/**
+ * Checks if a rikishi counts as foreign for roster cap purposes.
+ */
+export function countsAsForeignFromRikishi(rikishi: { nationality?: string }): boolean {
+  return isForeign(rikishi);
+}
+
+// ============================================
+// MUTATION OPERATORS — SCOUTING
+// ============================================
+
+/**
+ * Reveals a hidden candidate from the reserve into the visible list.
+ */
+export function scoutPool(
+  world: WorldState,
+  poolType: TalentPoolType,
+  options: { revealCount: number } = { revealCount: 1 }
+): { revealed: Id[]; impact: StateImpact } {
+  const builder = createImpactBuilder("scoutPool");
+  const tp = world.talentPool;
+  if (!tp) return { revealed: [], impact: builder.build() };
+
+  const pool = tp.pools[poolType];
+  if (!pool || pool.candidatesHidden.length === 0) return { revealed: [], impact: builder.build() };
+
+  const rng = RNGRegistry.getSystemRNG(world, "scouting", `reveal_${poolType}_${world.week}`);
+  const count = Math.min(options.revealCount, pool.candidatesHidden.length);
+
+  const nextCandidatesHidden = [...pool.candidatesHidden];
+  const nextCandidatesVisible = [...pool.candidatesVisible];
+  const nextCandidates = { ...tp.candidates };
+  const revealed: Id[] = [];
+
+  for (let i = 0; i < count; i++) {
+    const idx = rng.int(0, nextCandidatesHidden.length - 1);
+    const id = nextCandidatesHidden.splice(idx, 1)[0];
+    nextCandidatesVisible.push(id);
+    revealed.push(id);
+
+    // Set initial visibility band
+    const c = nextCandidates[id];
+    if (c) {
+      nextCandidates[id] = { ...c, visibilityBand: "rumored" };
+    }
+  }
+
+  const nextPools = {
+    ...tp.pools,
+    [poolType]: {
+      ...pool,
+      candidatesHidden: nextCandidatesHidden,
+      candidatesVisible: nextCandidatesVisible,
+    },
+  };
+
+  builder.updateWorldField("talentPool", {
+    ...tp,
+    candidates: nextCandidates,
+    pools: nextPools,
+  });
+
+  return { revealed, impact: builder.build() };
+}
+
+/**
+ * Increases intelligence on a specific candidate.
+ */
+export function scoutCandidate(
+  world: WorldState,
+  candidateId: Id,
+  options: { effort: number } = { effort: 1 }
+): { ok: boolean; scoutingLevel: number; impact: StateImpact } {
+  const builder = createImpactBuilder("scoutCandidate");
+  const tp = world.talentPool;
+  if (!tp) return { ok: false, scoutingLevel: 0, impact: builder.build() };
+
+  const candidate = tp.candidates[candidateId];
+  if (!candidate) return { ok: false, scoutingLevel: 0, impact: builder.build() };
+
+  const nextPlayerScouting = { ...(tp.playerScouting || {}) };
+  if (!nextPlayerScouting[candidateId]) {
+    nextPlayerScouting[candidateId] = {
+      scoutingLevel: 0,
+      lastScoutedWeek: world.week,
+    };
+  }
+
+  const record = { ...nextPlayerScouting[candidateId] };
+  const rng = RNGRegistry.getSystemRNG(world, "scouting", `intel_${candidateId}_${world.week}`);
+
+  const gain = (10 + rng.int(0, 15)) * options.effort;
+  record.scoutingLevel = clampInt(record.scoutingLevel + gain, 0, 100);
+  record.lastScoutedWeek = world.week;
+
+  nextPlayerScouting[candidateId] = record;
+
+  const nextCandidates = { ...tp.candidates };
+  const nextCandidate = { ...candidate };
+
+  // If intel high enough, improve visibility band
+  if (record.scoutingLevel >= 70) nextCandidate.visibilityBand = "public";
+  else if (record.scoutingLevel >= 30 && candidate.visibilityBand === "hidden") {
+    nextCandidate.visibilityBand = "obscure";
+  }
+  nextCandidates[candidateId] = nextCandidate;
+
+  builder.updateWorldField("talentPool", {
+    ...tp,
+    playerScouting: nextPlayerScouting,
+    candidates: nextCandidates,
+  });
+
+  return { ok: true, scoutingLevel: record.scoutingLevel, impact: builder.build() };
+}
+
+/**
+ * Resolves a candidate's attributes into confidence-gated scouted values.
+ * Potential stats are harder to scout than combat stats (potential confidence
+ * is shifted down one tier inside FogOfWarService).
+ */
+export function getScoutedCandidateView(world: WorldState, candidateId: Id) {
+  const tp = ensureTalentPoolState(world);
+  const candidate = tp.candidates[candidateId];
+  if (!candidate) return null;
+
+  let level = tp.playerScouting?.[candidateId]?.scoutingLevel ?? 0;
+
+  // Phase 5 Depth: Academy Advanced Discovery
+  if (world.playerHeyaId && candidate.nationality !== "Japan") {
+    const heya = world.heyas.get(world.playerHeyaId);
+    const presence = heya?.regionalPresence?.[candidate.originRegion] || 0;
+    if (presence >= 80) {
+      // Academy bonus: reveal more intel automatically (+30 effective scouting)
+      level = Math.min(100, level + 30);
+    }
+  }
+
+  const observations = Math.floor(level / 20);
+  const seed = `candidate-${candidateId}-${level}`;
+
+  const resolveCombat = (name: string, value: number) => {
+    const conf = getConfidenceLevel(level, false, observations, "combat");
+    return resolveScoutedAttribute(name, value, conf, `${seed}-${name}`);
+  };
+  const resolvePotential = (name: string, value: number) => {
+    const conf = getConfidenceLevel(level, false, observations, "potential");
+    return resolveScoutedAttribute(name, value, conf, `${seed}-pa-${name}`);
+  };
+
+  return {
+    candidateId,
+    scoutingLevel: level,
+    visibility: candidate.visibilityBand,
+    // Physical size potential — revealed with combat-tier confidence (easier to eyeball)
+    heightPotential: resolveCombat("height potential", candidate.heightPotentialCm),
+    weightPotential: resolveCombat("weight potential", candidate.weightPotentialKg),
+    // Hidden skill potential — gated by potential-tier confidence
+    potentialStats: candidate.potentialStats
+      ? {
+          strength: resolvePotential("strength", candidate.potentialStats.strength),
+          speed: resolvePotential("speed", candidate.potentialStats.speed),
+          technique: resolvePotential("technique", candidate.potentialStats.technique),
+          balance: resolvePotential("balance", candidate.potentialStats.balance),
+          stamina: resolvePotential("stamina", candidate.potentialStats.stamina),
+          mental: resolvePotential("mental", candidate.potentialStats.mental),
+          adaptability: resolvePotential("adaptability", candidate.potentialStats.adaptability),
+        }
+      : undefined,
+    // Development profile only at deep scouting (≥90)
+    developmentProfile: level >= 90 ? candidate.developmentProfile : undefined,
+    // Archetype + style always visible once known
+    archetype: candidate.archetype,
+    style: candidate.style,
+    temperament: candidate.temperament,
+  };
+}

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { generateSyntheticCareer } from "../CandidateGenerator";
+import { generateSyntheticCareer } from "../CandidateCareer";
 import { rngFromSeed } from "../../../rng";
 
 describe("CandidateGenerator", () => {

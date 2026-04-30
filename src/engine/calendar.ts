@@ -12,7 +12,7 @@
 
 import type { BashoName, BashoInfo } from "./types/basho";
 import { simpleHashToIndex } from "./utils/math";
-import { rngForWorld } from "./rng";
+import type { WorldState } from "./types/world";
 
 // === BASHO CALENDAR ===
 //
@@ -270,51 +270,4 @@ export function getBashoNumber(name: BashoName): 1 | 2 | 3 | 4 | 5 | 6 {
 export function isBashoMonth(month: number): boolean {
   return month % 2 !== 0;
 }
-
-// --- PHASE 4: LIFECYCLE & ARCHIVAL ---
-
-export function endBasho(world: import("./types").WorldState) {
-  // Use currentBasho (modern field) instead of legacy basho field
-  const basho = world.currentBasho || (world as any).basho;
-  if (!basho) return;
-
-  const rng = rngForWorld(world, "history", `basho_concluded_${basho.year}_${basho.bashoName}`);
-
-  // Build leaderboard from basho standings if available
-  const leaderboard: Record<string, { wins: number; losses: number; absences?: number }> = {};
-  if (basho.standings) {
-    const standings: Array<[string, any]> =
-      basho.standings instanceof Map
-        ? Array.from(basho.standings.entries())
-        : Object.entries(basho.standings || {});
-    for (const [id, record] of standings) {
-      leaderboard[id] = {
-        wins: record?.wins || 0,
-        losses: record?.losses || 0,
-        absences: record?.absences || 0,
-      };
-    }
-  }
-
-  world.history.push({
-    id: rng.uuid("HI"),
-    type: "BASHO_CONCLUDED",
-    bashoId: basho.id,
-    year: basho.year,
-    month: basho.month ?? world.calendar?.month ?? 1,
-    leaderboard: JSON.parse(JSON.stringify(leaderboard)),
-  } as any);
-
-  for (const [rikishiId, stats] of Object.entries(leaderboard)) {
-    const r = world.rikishi.get(rikishiId);
-    if (r) {
-      r.careerWins = (r.careerWins || 0) + ((stats as any).wins || 0);
-      r.careerLosses = (r.careerLosses || 0) + ((stats as any).losses || 0);
-      r.careerAbsences = (r.careerAbsences || 0) + ((stats as any).absences || 0);
-    }
-  }
-
-  // Clear both legacy and modern fields
-  world.currentBasho = undefined;
-  (world as any).basho = undefined;
-}
+

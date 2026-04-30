@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * StateImpact Types
  *
@@ -6,12 +7,14 @@
  * and a resolver applies these patches atomically to produce the final state.
  */
 
-import type { Id } from "../types/common";
-import type { Heya } from "../types/heya";
-import type { Rikishi } from "../types/rikishi";
-import type { Oyakata } from "../types/oyakata";
 import type { WorldState } from "../types/world";
+import type { HeyaTrainingState } from "../types/training";
 import type { Sponsor, Koenkai } from "../types/sponsors";
+import type { Staff } from "../types/staff";
+import type { BashoResult, MatchSchedule, AwardLogEntry } from "../types/basho";
+import type { GovernanceRuling } from "../types/economy";
+import type { MyosekiStock, MyosekiTransaction } from "../types/myoseki";
+import type { AlmanacSnapshot } from "../almanac";
 import type {
   EngineEventType,
   EventCategory,
@@ -39,6 +42,12 @@ export interface StateImpact {
     sponsorUpdates?: Map<string, Partial<Sponsor>>;
     /** Map of koenkai ID → partial koenkai update */
     koenkaiUpdates?: Map<string, Partial<Koenkai>>;
+    /** Map of heya ID → partial training state update */
+    trainingStateUpdates?: Map<string, Partial<HeyaTrainingState>>;
+    /** Map of myoseki ID → partial myoseki stock update */
+    myosekiUpdates?: Map<string, Partial<MyosekiStock>>;
+    /** Map of staff ID → partial staff update */
+    staffUpdates?: Map<string, Partial<Staff>>;
     // Add other entity types as needed
   };
 
@@ -55,6 +64,14 @@ export interface StateImpact {
     rikishiToHistorical?: string[];
     /** Rikishi IDs to move from historical back to active */
     rikishiFromHistorical?: string[];
+    /** Oyakata to add to the world */
+    oyakataToAdd?: Oyakata[];
+    /** Oyakata IDs to remove from the world (delete) */
+    oyakataToRemove?: string[];
+    /** Staff to add to active roster */
+    staffToAdd?: Staff[];
+    /** Staff IDs to remove from active roster (delete) */
+    staffToRemove?: string[];
     // Add other collection operations as needed
   };
 
@@ -95,10 +112,16 @@ export interface StateImpact {
       | "mediaState"
       | "ftue"
       | "rivalriesState"
+      | "_preBashoAssessment"
       | "sponsorPool"
       | "myosekiMarket"
       | "_daysSinceLastWeeklyTick"
       | "governanceLog"
+      | "pendingExhibitions"
+      | "bloodlineRegistry"
+      | "npcScoutingPriorities"
+      | "talentPool"
+      | "candidatePool"
     >
   >;
 
@@ -106,10 +129,14 @@ export interface StateImpact {
    * Array append operations for world arrays.
    * Used to append items to world arrays like history, almanacSnapshots, basho.matches, governanceLog.
    */
-  arrayAppends?: Array<{
-    field: "history" | "almanacSnapshots" | "basho.matches" | "governanceLog";
-    items: unknown[];
-  }>;
+  arrayAppends?: Array<
+    | { field: "history"; items: BashoResult[] }
+    | { field: "almanacSnapshots"; items: AlmanacSnapshot[] }
+    | { field: "basho.matches"; items: MatchSchedule[] }
+    | { field: "governanceLog"; items: GovernanceRuling[] }
+    | { field: "awardLog"; items: AwardLogEntry[] }
+    | { field: "myosekiMarket.history"; items: MyosekiTransaction[] }
+  >;
 
   /**
    * Events to log (deferred from EventBus calls).

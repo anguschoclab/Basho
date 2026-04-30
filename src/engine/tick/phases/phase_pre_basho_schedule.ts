@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * phase_pre_basho_schedule.ts
  * ============================

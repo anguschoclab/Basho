@@ -66,7 +66,7 @@ export const AvatarStack: React.FC<AvatarStackProps> = ({
       ))}
       {remaining > 0 && (
         <div
-          className="relative flex items-center justify-center rounded-full bg-muted border-2 border-background shadow-md"
+          className="relative flex items-center justify-center rounded bg-muted border-2 border-background shadow-md"
           style={{
             width: baseSize,
             height: baseSize,

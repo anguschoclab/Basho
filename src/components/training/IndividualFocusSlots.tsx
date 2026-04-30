@@ -61,7 +61,7 @@ export function IndividualFocusSlots({
                   className={cn(
                     "h-12 w-12 rounded-full flex items-center justify-center font-display font-black text-lg shadow-inner",
                     rikishi.injured
-                      ? "bg-red-500/10 text-red-500"
+                      ? "bg-destructive/10 text-destructive"
                       : "bg-muted text-muted-foreground"
                   )}
                 >
@@ -79,7 +79,7 @@ export function IndividualFocusSlots({
                       {rikishi.rank}
                     </Badge>
                     {rikishi.injured && (
-                      <Badge className="bg-red-500 text-white text-[8px] h-5 font-black uppercase">
+                      <Badge className="bg-destructive text-destructive-foreground text-[8px] h-5 font-black uppercase">
                         INJURED
                       </Badge>
                     )}
@@ -89,7 +89,7 @@ export function IndividualFocusSlots({
                       <Activity
                         className={cn(
                           "h-3 w-3",
-                          isExhausted ? "text-red-500 animate-pulse" : "text-success"
+                          isExhausted ? "text-destructive animate-pulse" : "text-success"
                         )}
                       />
                       {FATIGUE_LABELS[fb]}
@@ -110,6 +110,7 @@ export function IndividualFocusSlots({
                         onIndividualFocusChange(rikishi.id, isActive ? null : opt.value)
                       }
                       className={cn(
+                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
                         "flex flex-col items-center justify-center h-14 w-20 rounded-lg transition-all gap-1",
                         isActive
                           ? "bg-primary text-white shadow-lg scale-105"

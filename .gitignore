@@ -66,3 +66,6 @@ bench_*.js
 benchmark*.ts
 benchmark*.js
 test-benchmark*.ts
+.claude/worktrees/agent-a33757f3/
+.claude/worktrees/agent-a589fb1e/
+.claude/worktrees/agent-a34849bc/

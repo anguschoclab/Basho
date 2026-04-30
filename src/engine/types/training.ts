@@ -17,6 +17,14 @@ export type FocusMode = "develop" | "push" | "protect" | "rebuild";
 /** Type representing individual focus type. */
 export type IndividualFocusType = FocusMode;
 
+/**
+ * P2 Phase O: Drill-based Weekly Planning
+ */
+export type DrillType = "asageiko" | "butsukari" | "teppo" | "moushi-ai" | "shindo" | "none";
+
+/** Map of day index (1-6, Mon-Sat) to DrillType */
+export type DaySchedule = Record<number, DrillType>;
+
 /** Defines the structure for training profile. */
 export interface TrainingProfile {
   intensity: TrainingIntensity;
@@ -36,4 +44,9 @@ export interface HeyaTrainingState {
   heyaId: Id;
   activeProfile: TrainingProfile;
   focusSlots: IndividualFocus[];
+  /**
+   * P2 Extension: Granular weekly drill plans.
+   * If a rikishi has a plan here, it overrides/augments the passive activeProfile growth.
+   */
+  weeklyPlan?: Record<Id, DaySchedule>;
 }

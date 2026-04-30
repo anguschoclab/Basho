@@ -11,14 +11,14 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Trophy, Medal, Award } from "lucide-react";
-import type { UIRosterEntry } from "@/presenters/rikishiUI";
+import { type UIRosterEntry, projectRosterEntry } from "@/presenters/rikishiUI";
 
 interface YushoContenderProps {
   entry: UIRosterEntry;
   rank: number;
 }
 
-const YushoContender: React.FC<YushoContenderProps> = ({ entry, rank }) => {
+const YushoContender = React.memo(({ entry, rank }: YushoContenderProps) => {
   const navigate = useNavigate();
 
   const medals = [
@@ -79,23 +79,30 @@ const YushoContender: React.FC<YushoContenderProps> = ({ entry, rank }) => {
       <p className="text-sm font-bold text-center truncate w-20">{entry.shikona}</p>
     </div>
   );
-};
+});
 
 export const YushoRaceWidget: React.FC = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { state } = useGame();
   const navigate = useNavigate();
 
-  const topContenders = useMemo(() => {
-    // Get top rikishi sorted by wins from tournament
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const entries: any[] = [];
+  const topContenders = useMemo((): UIRosterEntry[] => {
+    const world = state.world;
+    if (!world?.currentBasho) return [];
+    const standings = world.currentBasho.standings;
 
-    // TODO: Connect to actual tournament state
-    // This is a placeholder implementation
+    const contenders: { r: any; wins: number }[] = [];
+    for (const r of world.rikishi.values()) {
+      if (!r.isRetired && r.division === "makuuchi") {
+        const record = standings.get(r.id);
+        contenders.push({ r, wins: record?.wins ?? r.currentBashoWins ?? 0 });
+      }
+    }
 
-    return entries.slice(0, 5);
-  }, []);
+    return contenders
+      .sort((a, b) => b.wins - a.wins)
+      .slice(0, 5)
+      .map(({ r }) => projectRosterEntry(r, world));
+  }, [state.world]);
 
   if (topContenders.length === 0) {
     return null;

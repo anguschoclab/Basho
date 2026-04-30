@@ -34,6 +34,8 @@ export interface YokozunaCandidate {
   recentJunYushos: number;
   consecutiveYushos: number;
   isStrong: boolean;
+  politicalPressure: number; // 1-100 from mediaHeat
+  supportLevel: "strong" | "adequate" | "insufficient";
   narrative: string;
 }
 
@@ -108,12 +110,15 @@ export function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {
 
     const isStrong = yushos >= 2 || (yushos >= 1 && junYushos >= 1);
 
+    const heat = world.mediaState?.mediaHeat?.[r.id] || 0;
+    const supportLevel = heat >= 75 ? "strong" : heat >= 50 ? "adequate" : "insufficient";
+
     if (yushos >= 1 || junYushos >= 1 || r.heyaId === world.playerHeyaId) {
       const rng = world.rng || new SeededRNG(world.seed || r.id);
       let runKey = "standard";
-      if (yushos >= 2) runKey = "unanimous";
-      else if (yushos === 1 && junYushos === 1) runKey = "borderline";
-      else if (yushos === 1) runKey = "partial";
+      if (yushos >= 2) runKey = heat >= 75 ? "unanimous" : "borderline";
+      else if (yushos === 1 && junYushos === 1) runKey = "partial";
+      else if (yushos === 1) runKey = "testing";
 
       const narrative = BardEngine.resolve(rng, `ui.digest.promotion.yokozuna_run.${runKey}`).text;
 
@@ -123,6 +128,8 @@ export function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {
         recentJunYushos: junYushos,
         consecutiveYushos: yushos,
         isStrong,
+        politicalPressure: heat,
+        supportLevel,
         narrative,
       });
     }
@@ -145,7 +152,7 @@ export function getKadobanDrama(
 
   for (const r of selectKadobanRikishi(world)) {
     const rid = r.id;
-    const status = (kadobanMap as any)[rid];
+    const status = (kadobanMap as Record<string, unknown>)[rid];
     if (!status) continue;
     if (!status.isKadoban && status.consecutiveMakeKoshi < 2) continue;
 

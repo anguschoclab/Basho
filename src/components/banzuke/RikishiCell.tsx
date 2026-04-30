@@ -58,15 +58,26 @@ export function RikishiCell({
         <span className="text-[10px] font-mono text-muted-foreground">{entry.record}</span>
         <span className="text-[11px] text-muted-foreground hidden lg:inline">{heyaName}</span>
         {showChanges && entry.rankDelta && <RankChangeIndicator delta={entry.rankDelta} />}
+        {entry.rank === "ozeki" && entry.consecutiveStrongOzeki >= 1 && (
+          <TooltipWrap
+            content="Promotion Watch: Strong candidate for Yokozuna promotion"
+            side="top"
+          >
+            <span
+              className="text-[14px] ml-auto cursor-help"
+              role="img"
+              aria-label="Promotion Watch"
+            >
+              🏆
+            </span>
+          </TooltipWrap>
+        )}
         {entry.rank === "ozeki" && kadobanMap[entry.id]?.isKadoban && (
           <TooltipWrap
             content="Kadoban: Must achieve a winning record to maintain Ozeki rank"
             side="top"
           >
-            <Badge
-              variant="outline"
-              className="text-[9px] border-warning text-warning ml-auto cursor-help"
-            >
+            <Badge variant="destructive" className="text-[9px] ml-auto cursor-help">
               角番
             </Badge>
           </TooltipWrap>

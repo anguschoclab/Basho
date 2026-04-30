@@ -4,46 +4,85 @@
  * Constants for HeyaPreview component.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+/** Heya configuration for preview display */
+interface HeyaPreviewConfig {
+  label: string;
+  difficulty: string;
+}
 
-export const HEYA_STATS = [
+/** Rikishi preview data with stats */
+interface RikishiPreview {
+  currentBashoWins?: number;
+  currentBashoLosses?: number;
+  careerWins?: number;
+  careerLosses?: number;
+  careerYusho?: number;
+}
+
+/** Heya stat entry with value functions */
+interface HeyaStatEntry {
+  label: string;
+  value: (config: HeyaPreviewConfig, roster: RikishiPreview[], sekitoriCount: number) => string | number;
+  sub: (config: HeyaPreviewConfig, roster: RikishiPreview[]) => string;
+}
+
+/** Rikishi quick stat entry */
+interface RikishiQuickStatEntry {
+  label: string;
+  value: (r: RikishiPreview) => string | number;
+  sub: string;
+}
+
+/** Basic info field definition */
+interface BasicInfoField {
+  label: string;
+  key: string;
+  suffix: string;
+}
+
+/** Attribute field definition */
+interface AttributeField {
+  label: string;
+  key: string;
+}
+
+export const HEYA_STATS: HeyaStatEntry[] = [
   {
     label: "Association Stature",
-    value: (config: any, _roster: any[], _sekitoriCount: number) => config.label,
-    sub: (config: any, _roster: any[]) => config.difficulty,
+    value: (config, _roster, _sekitoriCount) => config.label,
+    sub: (config, _roster) => config.difficulty,
   },
   {
     label: "Professional Roster",
-    value: (_config: any, roster: any[], _sekitoriCount: number) => roster.length,
-    sub: (_config: any, _roster: any[]) => "Active Rikishi",
+    value: (_config, roster, _sekitoriCount) => roster.length,
+    sub: () => "Active Rikishi",
   },
   {
     label: "Sekitori Elite",
-    value: (_config: any, _roster: any[], sekitoriCount: number) => sekitoriCount,
-    sub: (_config: any, _roster: any[]) => "Salaried Ranks",
+    value: (_config, _roster, sekitoriCount) => sekitoriCount,
+    sub: () => "Salaried Ranks",
   },
 ];
 
-export const RIKISHI_QUICK_STATS = [
+export const RIKISHI_QUICK_STATS: RikishiQuickStatEntry[] = [
   {
     label: "Current",
-    value: (r: any) => `${r.currentBashoWins ?? 0}-${r.currentBashoLosses ?? 0}`,
+    value: (r) => `${r.currentBashoWins ?? 0}-${r.currentBashoLosses ?? 0}`,
     sub: "This Basho",
   },
   {
     label: "Career",
-    value: (r: any) => `${r.careerWins ?? 0}-${r.careerLosses ?? 0}`,
+    value: (r) => `${r.careerWins ?? 0}-${r.careerLosses ?? 0}`,
     sub: "Lifetime",
   },
   {
     label: "Titles",
-    value: (r: any) => r.careerYusho ?? 0,
+    value: (r) => r.careerYusho ?? 0,
     sub: "Yūshō",
   },
 ];
 
-export const RIKISHI_BASIC_INFO = [
+export const RIKISHI_BASIC_INFO: BasicInfoField[] = [
   {
     label: "Origin",
     key: "origin",
@@ -66,7 +105,7 @@ export const RIKISHI_BASIC_INFO = [
   },
 ];
 
-export const RIKISHI_ATTRIBUTES = [
+export const RIKISHI_ATTRIBUTES: AttributeField[] = [
   { label: "Power", key: "power" },
   { label: "Speed", key: "speed" },
   { label: "Balance", key: "balance" },

@@ -18,7 +18,7 @@ import { Swords } from "lucide-react";
 import type { BoutPreviewUI } from "@/presenters/boutPreviewUI";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { H2HRecentMeeting } from "@/engine/types/records";
-import { getHeatBand, HEAT_CONFIG } from "./BoutCard";
+import { getHeatBand, HEAT_CONFIG } from "./boutCardTypes";
 
 interface BoutPreMatchOverlayProps {
   preview: BoutPreviewUI;

@@ -16,23 +16,16 @@ export type CrisisType =
 export interface CrisisOption {
   id: string;
   label: string;
-  description: string;
-  cost?: number; // Financial cost to execute
-  prestigeCost?: number; // Reputation/Prestige cost
-  consequences: {
-    resolutionSuccess: boolean;
-    narrativeText: string;
-    // We can expand this with StateImpact payloads later
-  };
+  description?: string;
+  impactGenerator: (world: import("./world").WorldState) => import("../core/StateImpact").StateImpact;
 }
 
 export interface ActiveCrisis {
   id: string;
-  type: CrisisType;
+  type?: CrisisType | string;
   title: string;
   description: string;
-  severity: "low" | "medium" | "high" | "critical";
-  generatedAtWeek: number;
-  deadlineWeek?: number; // if unresolved by this week, auto-fails
+  severity?: "low" | "medium" | "high" | "critical";
+  generatedAtWeek?: number;
   options: CrisisOption[];
 }

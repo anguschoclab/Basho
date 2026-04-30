@@ -1,9 +1,5 @@
 import { SeededRNG } from "../../rng";
-import type { 
-  Sponsor, 
-  SponsorPool, 
-  KenshoBannerSlot 
-} from "../../types/sponsors";
+import type { Sponsor, SponsorPool, KenshoBannerSlot } from "../../types/sponsors";
 import type { WorldState } from "../../types/world";
 import type { Rikishi } from "../../types/rikishi";
 
@@ -14,14 +10,17 @@ const TIER_CAPS: Record<BoutImportanceBucket, { maxT4Plus: number; maxT3: number
   low: { maxT4Plus: 0, maxT3: 1 },
   mid: { maxT4Plus: 1, maxT3: 2 },
   high: { maxT4Plus: 2, maxT3: 4 },
-  peak: { maxT4Plus: 4, maxT3: 6 }
+  peak: { maxT4Plus: 4, maxT3: 6 },
 };
 
 /**
  * Normalize rank for comparison.
  */
 function normalizeRank(rank: string): string {
-  return rank.normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+  return rank
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
 }
 
 /**
@@ -59,9 +58,7 @@ function weightedSampleWithoutReplacement<T>(
   items: Array<{ item: T; w: number }>,
   k: number
 ): T[] {
-  const pool = items
-    .map((x) => ({ item: x.item, w: Math.max(0, x.w) }))
-    .filter((x) => x.w > 0);
+  const pool = items.map((x) => ({ item: x.item, w: Math.max(0, x.w) })).filter((x) => x.w > 0);
 
   const out: T[] = [];
   let picks = Math.max(0, Math.floor(k));
@@ -99,7 +96,9 @@ export function assignKenshoBanners(
   if (count === 0) return [];
 
   const activeSponsors: Sponsor[] = [];
-  for (const s of sponsorPool.sponsors.values()) { if (s.active) activeSponsors.push(s); }
+  for (const s of sponsorPool.sponsors.values()) {
+    if (s.active) activeSponsors.push(s);
+  }
   if (activeSponsors.length === 0) return [];
 
   const caps = TIER_CAPS[importance];
@@ -108,7 +107,11 @@ export function assignKenshoBanners(
   const scored = activeSponsors
     .map((s) => ({
       sponsor: s,
-      score: s.prestigeAffinity * 0.5 + s.loyalty * 0.3 + (s.tier === "T5" ? 20 : 0) + (s.tier === "T4" ? 8 : 0)
+      score:
+        s.prestigeAffinity * 0.5 +
+        s.loyalty * 0.3 +
+        (s.tier === "T5" ? 20 : 0) +
+        (s.tier === "T4" ? 8 : 0),
     }))
     .sort((a, b) => b.score - a.score || a.sponsor.sponsorId.localeCompare(b.sponsor.sponsorId));
 
@@ -116,8 +119,20 @@ export function assignKenshoBanners(
   const t3 = scored.filter((x) => x.sponsor.tier === "T3");
 
   const chosen: Sponsor[] = [];
-  chosen.push(...weightedSampleWithoutReplacement(rng, t4plus.map(x => ({ item: x.sponsor, w: x.score })), Math.min(caps.maxT4Plus, count)));
-  chosen.push(...weightedSampleWithoutReplacement(rng, t3.map(x => ({ item: x.sponsor, w: x.score })), Math.min(caps.maxT3, Math.max(0, count - chosen.length))));
+  chosen.push(
+    ...weightedSampleWithoutReplacement(
+      rng,
+      t4plus.map((x) => ({ item: x.sponsor, w: x.score })),
+      Math.min(caps.maxT4Plus, count)
+    )
+  );
+  chosen.push(
+    ...weightedSampleWithoutReplacement(
+      rng,
+      t3.map((x) => ({ item: x.sponsor, w: x.score })),
+      Math.min(caps.maxT3, Math.max(0, count - chosen.length))
+    )
+  );
 
   if (chosen.length < count) {
     const chosenIds = new Set(chosen.map((s) => s.sponsorId));
@@ -130,16 +145,22 @@ export function assignKenshoBanners(
     chosen.push(...fill);
   }
 
-  return chosen.slice(0, count).map((sponsor, idx) => ({
-    bannerId: `${boutId}_banner_${idx}`,
-    boutId,
-    sponsorId: sponsor.sponsorId,
-    tier: sponsor.tier,
-    displayName: sponsor.displayName,
-    ceremonyStyleTag: (sponsor.tier === "T5" || sponsor.tier === "T4") ? "premium" : (sponsor.visibilityPreference === 0 ? "quiet" : "classic")
-  }));
-}
+  return chosen.slice(0, count).map((sponsor, idx) => {
+    // Determine visual style for the parade
+    let ceremonyStyleTag: "classic" | "premium" | "quiet" = "classic";
+    if (sponsor.tier === "T5" || sponsor.tier === "T4") ceremonyStyleTag = "premium";
+    else if (sponsor.visibilityPreference === 0) ceremonyStyleTag = "quiet";
 
+    return {
+      bannerId: `${boutId}_banner_${idx}`,
+      boutId,
+      sponsorId: sponsor.sponsorId,
+      tier: sponsor.tier,
+      displayName: sponsor.displayName,
+      ceremonyStyleTag,
+    };
+  });
+}
 
 /**
  * Calculates kensho envelopes based on importance and buzz.
@@ -158,15 +179,15 @@ export function calculateKenshoEnvelopes(
   const mediaState = world.mediaState;
   if (mediaState && mediaState.mediaHeat) {
     const heat = mediaState.mediaHeat[rikishi.id] || 0;
-    const buzzMod = (heat / 80); // Up to +1.25x
+    const buzzMod = heat / 80; // Up to +1.25x
     // Fan donations/anonymous envelopes scale with buzz
     count += Math.round(count * buzzMod);
   }
 
   // Minimum guarantees for historic wins even if un-sponsored
-  if (awardFact === 'kinboshi' && count < 15) {
+  if (awardFact === "kinboshi" && count < 15) {
     count = 15 + Math.floor(rng.next() * 5);
-  } else if (awardFact === 'ginboshi' && count < 5) {
+  } else if (awardFact === "ginboshi" && count < 5) {
     count = 5 + Math.floor(rng.next() * 3);
   }
 

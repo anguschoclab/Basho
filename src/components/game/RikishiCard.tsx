@@ -1,18 +1,18 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { UIRikishi } from "../../presenters/uiModels";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Progress } from "../ui/progress";
-import { UserPlus } from "lucide-react";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { Globe } from "lucide-react";
 
 interface RikishiCardProps {
   rikishi: UIRikishi;
 }
 
-export const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi }) => {
-  const getStanceLabel = () => {
+export const RikishiCard: React.FC<RikishiCardProps> = React.memo(({ rikishi }) => {
+  const stanceLabel = useMemo(() => {
     if (rikishi.preferredGrip === "none") return "Oshi-Specialist";
 
     const grip = rikishi.preferredGrip === "migi" ? "Migi-Yotsu" : "Hidari-Yotsu";
@@ -24,7 +24,7 @@ export const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi }) => {
           : "";
 
     return `${grip} ${depth}`.trim();
-  };
+  }, [rikishi.preferredGrip, rikishi.preferredGripDepth]);
 
   return (
     <Card
@@ -68,7 +68,7 @@ export const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi }) => {
             <h4 className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">
               Tactical Stance
             </h4>
-            <p className="text-lg font-display text-primary-foreground">{getStanceLabel()}</p>
+            <p className="text-lg font-display text-primary-foreground">{stanceLabel}</p>
           </div>
 
           <div>
@@ -103,23 +103,44 @@ export const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi }) => {
             </div>
           </div>
 
-          {rikishi.nationality !== "Japan" && (
+          {rikishi.citizenshipStatus !== "native" && (
             <div className="pt-2 border-t border-primary/5 bg-gold/5 -mx-6 px-6 py-3">
               <div className="flex items-center justify-between mb-2">
                 <h4 className="text-[10px] uppercase tracking-widest text-gold font-bold flex items-center gap-1">
-                  <UserPlus className="h-3 w-3" /> Residency Tracker
+                  <Globe className="h-3 w-3" />{" "}
+                  {rikishi.citizenshipStatus === "naturalized"
+                    ? "Citizenship Status"
+                    : "Naturalization Progress"}
                 </h4>
-                <span className="text-[10px] font-mono font-bold text-gold">
-                  {Math.min(100, Math.floor((rikishi.careerHistory.length / 60) * 100))}%
-                </span>
+                {rikishi.citizenshipStatus === "foreign" ? (
+                  <span className="text-[10px] font-mono font-bold text-gold">
+                    {5 - rikishi.yearsToNaturalization}/5 Years
+                  </span>
+                ) : (
+                  <Badge variant="outline" className="text-[10px] border-gold text-gold bg-gold/5">
+                    Naturalized
+                  </Badge>
+                )}
               </div>
-              <Progress
-                value={Math.min(100, (rikishi.careerHistory.length / 60) * 100)}
-                className="h-1 bg-gold/20"
-              />
-              <p className="text-[8px] text-gold/70 mt-1 uppercase font-bold tracking-tighter">
-                Progress towards Japanese Citizenship (10yr target)
-              </p>
+              {rikishi.citizenshipStatus === "foreign" && (
+                <>
+                  <Progress
+                    value={((5 - rikishi.yearsToNaturalization) / 5) * 100}
+                    className="h-1 bg-gold/20"
+                  />
+                  <p className="text-[8px] text-gold/70 mt-1 uppercase font-bold tracking-tighter">
+                    {rikishi.yearsToNaturalization} year
+                    {rikishi.yearsToNaturalization !== 1 ? "s" : ""} until Japanese citizenship
+                    eligibility
+                  </p>
+                </>
+              )}
+              {rikishi.citizenshipStatus === "naturalized" && (
+                <p className="text-[8px] text-gold/70 mt-1 uppercase font-bold tracking-tighter">
+                  This rikishi is a full Japanese citizen and no longer counts against the heya's
+                  foreign quota.
+                </p>
+              )}
             </div>
           )}
 
@@ -184,4 +205,4 @@ export const RikishiCard: React.FC<RikishiCardProps> = ({ rikishi }) => {
       </CardContent>
     </Card>
   );
-};
+});

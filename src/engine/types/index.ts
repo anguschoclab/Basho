@@ -20,3 +20,5 @@ export * from "./talent";
 export * from "./world";
 export * from "./save";
 export * from "./myoseki";
+export * from "./globalCup";
+export * from "./crises";

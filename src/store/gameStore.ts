@@ -14,9 +14,15 @@ interface GameStoreState {
   digest: UIDigest | null;
   /** Last world state received from the worker after AUTO_SIM_DAYS. */
   workerWorld: WorldState | null;
+  /** Monotonic version counter for state synchronization */
+  worldVersion: number;
+  /** Lock flag to prevent concurrent tick commands */
+  pendingTick: boolean;
   isSimulating: boolean;
   progress: { message: string; current: number; total: number } | null;
   error: string | null;
+  showTour: boolean;
+  dismissedTourReason: string | null; // e.g., 'completed', 'skipped'
 
   // Worker reference
   worker: Worker | null;
@@ -36,14 +42,20 @@ interface GameStoreState {
   setProgress: (progress: { message: string; current: number; total: number } | null) => void;
   setError: (error: string | null) => void;
   setOnWorldUpdated: (cb: ((world: WorldState) => void) | null) => void;
+  dismissTour: (reason: string) => void;
+  checkTourTrigger: (world: WorldState) => void;
 }
 
 export const useGameStore = create<GameStoreState>((set, get) => ({
   digest: null,
   workerWorld: null,
+  worldVersion: 0,
+  pendingTick: false,
   isSimulating: false,
   progress: null,
   error: null,
+  showTour: false,
+  dismissedTourReason: null,
   worker: null,
   onWorldUpdated: null,
 
@@ -69,8 +81,13 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
           set({ digest: data.digest });
           break;
         case "WORLD_UPDATED":
-          set({ workerWorld: data.world });
+          set({
+            workerWorld: data.world,
+            worldVersion: data.version ?? get().worldVersion + 1,
+            pendingTick: false,
+          });
           get().onWorldUpdated?.(data.world);
+          get().checkTourTrigger(data.world);
           break;
         case "PROGRESS":
           set({ progress: { message: data.message, current: data.current, total: data.total } });
@@ -85,14 +102,28 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   },
 
   sendCommand: (command: EngineCommand) => {
-    const { worker, initWorker } = get();
+    const { worker, initWorker, pendingTick } = get();
+
+    // Prevent concurrent tick commands
+    if (
+      pendingTick &&
+      (command.type === "TICK_DAY" ||
+        command.type === "AUTO_SIM_DAYS" ||
+        command.type === "TICK_MULTIPLE_DAYS")
+    ) {
+      console.warn("[Store] Tick command dropped - another tick is in progress");
+      return;
+    }
+
     if (!worker) {
       initWorker();
     }
-    
+
     // Some commands imply simulation start
     if (command.type === "AUTO_SIM_DAYS" || command.type === "TICK_MULTIPLE_DAYS") {
-      set({ isSimulating: true, error: null });
+      set({ isSimulating: true, error: null, pendingTick: true });
+    } else if (command.type === "TICK_DAY") {
+      set({ pendingTick: true });
     }
 
     get().worker?.postMessage(command);
@@ -103,4 +134,19 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   setProgress: (progress) => set({ progress }),
   setError: (error) => set({ error }),
   setOnWorldUpdated: (cb) => set({ onWorldUpdated: cb }),
+  dismissTour: (reason: string) => {
+    localStorage.setItem("sumo_tour_dismissed", "true");
+    set({ showTour: false, dismissedTourReason: reason });
+  },
+  checkTourTrigger: (world: WorldState) => {
+    if (localStorage.getItem("sumo_tour_dismissed")) return;
+    if (get().dismissedTourReason) return;
+
+    const step = world.tutorialState?.currentStep;
+    const isInterim = world.cyclePhase === "interim";
+
+    if (isInterim && step === "FIRST_BASHO_STARTED") {
+      set({ showTour: true });
+    }
+  },
 }));

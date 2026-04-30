@@ -121,7 +121,7 @@ export function RikishiCareerTab({
                           )}
                           {snap.specialPrizes.shukunsho && (
                             <TooltipWrap content="Shukun-sho: Outstanding Performance Prize">
-                              <Medal className="h-4 w-4 text-purple-400 cursor-help" />
+                              <Medal className="h-4 w-4 text-primary cursor-help" />
                             </TooltipWrap>
                           )}
                           {snap.specialPrizes.kantosho && (

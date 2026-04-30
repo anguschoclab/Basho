@@ -8,14 +8,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Flame } from "lucide-react";
 import { RikishiName, StableName } from "@/components/ClickableName";
-/* eslint-disable no-restricted-imports */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { formatRank } from "@/presenters/uiDigest";
-import { clamp } from "@/presenters/uiDigest";
+import { formatRank, clamp } from "@/presenters/uiDigest";
 import { getHeatBand, H2HBar, HeatGauge } from "./rivalryUtils";
 import { HEAT_BAND_CONFIG, TONE_CONFIG, TRIGGER_LABELS } from "./rivalryConstants";
 import type { RivalryPairState, RivalryTrigger } from "@/engine/rivalries";
 import type { WorldState } from "@/engine/types/world";
+import { toRankPosition } from "@/engine/types/banzuke";
 
 interface RivalryCardProps {
   pair: RivalryPairState;
@@ -46,17 +44,21 @@ export function RivalryCard({ pair, world, isPlayerRivalry, index }: RivalryCard
   const aWins = pair.aWins || 0;
   const bWins = pair.bWins || 0;
 
-  const rankA = formatRank({
-    rank: rikishiA.rank as any,
-    side: rikishiA.side ?? "east",
-    rankNumber: rikishiA.rankNumber ?? 0,
-  });
+  const rankA = formatRank(
+    toRankPosition({
+      rank: rikishiA.rank,
+      side: rikishiA.side ?? "east",
+      rankNumber: rikishiA.rankNumber,
+    })
+  );
 
-  const rankB = formatRank({
-    rank: rikishiB.rank as any,
-    side: rikishiB.side ?? "east",
-    rankNumber: rikishiB.rankNumber ?? 0,
-  });
+  const rankB = formatRank(
+    toRankPosition({
+      rank: rikishiB.rank,
+      side: rikishiB.side ?? "east",
+      rankNumber: rikishiB.rankNumber,
+    })
+  );
 
   return (
     <Card

@@ -4,6 +4,7 @@ exports[`BoutResult snapshot > BoutResult shape snapshot 1`] = `
 {
   "boutId": "test-001",
   "duration": 28,
+  "excitementScore": 8,
   "isKinboshi": false,
   "kenshoEnvelopes": 0,
   "kimarite": "oshitaoshi",
@@ -22,6 +23,7 @@ exports[`BoutResult snapshot BoutResult shape snapshot 1`] = `
 {
   "boutId": "test-001",
   "duration": 28,
+  "excitementScore": 8,
   "isKinboshi": false,
   "kenshoEnvelopes": 0,
   "kimarite": "oshitaoshi",

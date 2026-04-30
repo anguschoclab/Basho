@@ -1,6 +1,4 @@
 // SettingsPage.tsx — Game settings with autosave toggle, theme, keybinds reference
-
-/* eslint-disable react-refresh/only-export-components */
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useTheme } from "@/components/ThemeProvider";
@@ -9,40 +7,16 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Settings, Keyboard, Palette, Save, Info } from "lucide-react";
+import { Settings, Keyboard, Palette, Save, Info, Dumbbell } from "lucide-react";
 import { SHORTCUT_REFERENCE } from "@/hooks/useKeyboardShortcuts";
+import { useGame } from "../contexts/GameContext";
 import { useState } from "react";
-
-const AUTOSAVE_ENABLED_KEY = "basho_autosave_enabled";
-
-/**
- * Get autosave enabled.
- *  * @returns The result.
- */
-export function getAutosaveEnabled(): boolean {
-  try {
-    const val = localStorage.getItem(AUTOSAVE_ENABLED_KEY);
-    return val !== "false"; // default true
-  } catch {
-    return true;
-  }
-}
-
-/**
- * Set autosave enabled.
- *  * @param enabled - The Enabled.
- */
-function setAutosaveEnabled(enabled: boolean) {
-  try {
-    localStorage.setItem(AUTOSAVE_ENABLED_KEY, String(enabled));
-  } catch {
-    /* silent */
-  }
-}
+import { getAutosaveEnabled, setAutosaveEnabled } from "./settingsHelpers";
 
 /** settings page. */
 export default function SettingsPage() {
   const { setTheme, resolvedTheme } = useTheme();
+  const { state, updateWorld } = useGame();
   const [autosaveOn, setAutosaveOn] = useState(getAutosaveEnabled);
 
   const handleAutosaveToggle = (checked: boolean) => {
@@ -157,6 +131,42 @@ export default function SettingsPage() {
                   </Badge>
                 </div>
               ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Simulation */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Dumbbell className="h-5 w-5" /> Simulation
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="drift-toggle" className="text-sm font-medium">
+                  Style Drift (Phase 5)
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Allow stable training styles to gradually drift based on international influence
+                </p>
+              </div>
+              <Switch
+                id="drift-toggle"
+                checked={!!state.world?.settings?.enableStyleDrift}
+                onCheckedChange={(checked) => {
+                  if (state.world) {
+                    updateWorld({
+                      ...state.world,
+                      settings: {
+                        ...(state.world.settings || {}),
+                        enableStyleDrift: checked,
+                      },
+                    });
+                  }
+                }}
+              />
             </div>
           </CardContent>
         </Card>

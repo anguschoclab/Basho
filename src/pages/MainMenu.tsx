@@ -9,6 +9,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { useNavigate } from "@tanstack/react-router";
+import { cn } from "@/lib/utils";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,10 +18,12 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { RefreshCw, Dices, ChevronRight, Database } from "lucide-react";
 
 import { makeDeterministicSeed, safeShortSeed } from "@/utils/engineUtils";
-import { HeyaCard, STATURE_CONFIG } from "@/components/menu/HeyaCard";
+import { HeyaCard } from "@/components/menu/HeyaCard";
+import { STATURE_CONFIG } from "@/components/menu/statureConfig";
 import { SaveSlotManager } from "@/components/menu/SaveSlotManager";
 import { HeyaPreview } from "@/components/menu/HeyaPreview";
 import { RANK_HIERARCHY, projectHeyaRosterWithAge } from "@/presenters/uiDigest";
+import type { Rank } from "@/engine/types/banzuke";
 import type { Heya } from "@/engine/types/heya";
 import type { StatureBand, StableSelectionMode } from "@/engine/types/narrative";
 
@@ -29,7 +32,7 @@ export default function MainMenu() {
   const game = useGame();
 
   const { createWorld, state, loadFromSlot, loadFromAutosave, hasAutosave, getSaveSlots } =
-    game as any; // eslint-disable-line @typescript-eslint/no-explicit-any
+    game as { createWorld: (seed: string, playerHeyaId?: string) => void; state: { world?: { seed: string; heyas: Map<string, Heya> } }; loadFromSlot: (slot: string) => boolean; loadFromAutosave: () => void; hasAutosave: () => boolean; getSaveSlots: () => unknown[] };
 
   const [seed, setSeed] = useState("");
   const [showSeedInput, setShowSeedInput] = useState(false);
@@ -46,7 +49,7 @@ export default function MainMenu() {
     } else if (state.world?.seed && seed !== state.world.seed) {
       setSeed(state.world.seed);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- Intentionally omitting createWorld and seed
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- createWorld is stable from context; seed is managed internally
   }, [state?.world]);
 
   const stables = useMemo(() => {
@@ -62,8 +65,7 @@ export default function MainMenu() {
       let count = 0;
       for (const rid of (h.rikishiIds ?? []) as string[]) {
         const r = state.world.rikishi.get(rid);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- RANK_HIERARCHY type mismatch
-        if (r && (RANK_HIERARCHY as any)?.[r.rank]?.isSekitori) count += 1;
+        if (r && RANK_HIERARCHY[r.rank as Rank]?.isSekitori) count += 1;
       }
       map.set(h.id, count);
     }
@@ -173,10 +175,12 @@ export default function MainMenu() {
 
   if (!state?.world) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background to-background">
-        <div className="h-16 w-16 bg-primary rounded-full animate-ping opacity-20 mb-6" />
-        <p className="text-sm font-display font-black uppercase tracking-widest opacity-50">
-          Initializing Basho Engine...
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 bg-arena-ground">
+        <div className="h-2 w-48 bg-muted rounded-sm overflow-hidden mb-6">
+          <div className="h-full bg-primary animate-progress-flow" />
+        </div>
+        <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-gold/60">
+          Institutional Interface Initializing...
         </p>
       </div>
     );
@@ -190,27 +194,29 @@ export default function MainMenu() {
 
       <div className="min-h-screen bg-background text-foreground flex flex-col items-center">
         {/* ═══ HERO HEADER ═══ */}
-        <section className="w-full bg-primary relative pt-24 pb-20 px-6 overflow-hidden flex flex-col items-center text-center shadow-[0_10px_40px_-15px_rgba(0,0,0,0.5)]">
-          <div className="absolute top-0 opacity-10 font-display text-[20vw] font-black pointer-events-none uppercase tracking-tighter -mt-20 leading-none">
+        <section className="w-full relative pt-24 pb-20 px-6 overflow-hidden flex flex-col items-center text-center border-b border-gold/10">
+          {/* Background Motif */}
+          <div className="absolute inset-0 bg-arena-ground pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,hsl(var(--primary)/0.15),transparent_70%)] pointer-events-none" />
+
+          <div className="absolute top-0 opacity-5 font-display text-[20vw] font-black pointer-events-none uppercase tracking-tighter -mt-20 leading-none sumi-e-ink">
             SUMO BASHO
           </div>
 
-          <div className="relative z-10 max-w-4xl w-full flex flex-col items-center gap-6">
-            <div className="bg-white/5 border border-white/10 p-4 rounded-lg flex items-center gap-6 shadow-inner animate-in fade-in slide-in-from-top-10 duration-700">
-              <div className="h-20 w-20 bg-white rounded-lg flex items-center justify-center shadow-2xl">
+          <div className="relative z-10 max-w-4xl w-full flex flex-col items-center gap-8">
+            <div className="glass paper p-4 rounded flex items-center gap-6 animate-in fade-in slide-in-from-top-10 duration-700">
+              <div className="h-20 w-20 paper rounded flex items-center justify-center shadow-md border-gold/30">
                 <svg
                   viewBox="0 0 100 100"
-                  className="h-14 w-14 text-primary"
+                  className="h-14 w-14 text-gold"
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  {/* Apron base (kesho mawashi silhouette) */}
                   <path
                     d="M25 45 Q25 85 50 90 Q75 85 75 45 L70 35 L30 35 Z"
                     fill="currentColor"
                     opacity="0.9"
                   />
-                  {/* Shimekomi rope loop at back */}
                   <ellipse
                     cx="50"
                     cy="28"
@@ -220,18 +226,15 @@ export default function MainMenu() {
                     strokeWidth="3"
                     fill="none"
                   />
-                  {/* Main shimekomi belt */}
                   <path d="M30 35 Q50 32 70 35 L72 50 Q50 48 28 50 Z" fill="currentColor" />
-                  {/* The knot */}
                   <circle
                     cx="50"
                     cy="38"
                     r="6"
-                    fill="white"
+                    fill="var(--background)"
                     stroke="currentColor"
                     strokeWidth="2"
                   />
-                  {/* Shide zigzag streamers - left side */}
                   <path
                     d="M35 48 L32 55 L38 58 L35 65 L41 68"
                     stroke="currentColor"
@@ -248,7 +251,6 @@ export default function MainMenu() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
-                  {/* Shide zigzag streamers - right side */}
                   <path
                     d="M58 48 L55 55 L61 58 L58 65 L64 68"
                     stroke="currentColor"
@@ -265,37 +267,21 @@ export default function MainMenu() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
-                  {/* Apron decorative pattern hints */}
-                  <path
-                    d="M35 75 Q50 78 65 75"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    opacity="0.5"
-                    fill="none"
-                  />
-                  <path
-                    d="M38 82 Q50 85 62 82"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    opacity="0.5"
-                    fill="none"
-                  />
                 </svg>
               </div>
-              <div className="text-left py-2 pr-6 border-r border-white/10">
-                <h1 className="text-primary-foreground font-display text-5xl font-black tracking-tighter leading-none mb-1 uppercase">
+              <div className="text-left py-2 pr-6 border-r border-border/40">
+                <h1 className="text-foreground font-display text-5xl font-bold tracking-tighter leading-none mb-1 uppercase sumi-e-ink">
                   BASHO
                 </h1>
-                <p className="text-primary-foreground/60 font-display text-xl leading-none">
+                <p className="text-gold font-display text-xl leading-none opacity-80">
                   相撲経営シミュレーション
                 </p>
               </div>
-              <div className="text-left opacity-80 max-w-[240px]">
-                <p className="text-[10px] text-primary-foreground/70 font-black uppercase tracking-widest mb-1">
-                  Association Status
-                </p>
-                <p className="text-xs text-primary-foreground leading-snug">
-                  Become the Oyakata of your own heya. Recruit, train, and dominate the Kokugikan.
+              <div className="text-left max-w-[240px]">
+                <p className="stat-label text-gold mb-1 tracking-[0.2em]">ASSOCIATION STATUS</p>
+                <p className="text-xs text-muted-foreground leading-snug font-body">
+                  Assume the mantle of Oyakata. Architect your lineage, refine your technique, and
+                  dominate the Kokugikan.
                 </p>
               </div>
             </div>
@@ -311,30 +297,25 @@ export default function MainMenu() {
               hideArchiveButton
             />
           </div>
-
-          {/* Hero Decoration */}
-          <div className="absolute bottom-0 left-0 w-full flex justify-between px-20 translate-y-1/2 opacity-20 pointer-events-none">
-            <div className="h-64 w-64 border-8 border-white/20 rounded-full" />
-            <div className="h-64 w-64 border-8 border-white/20 rounded-full" />
-          </div>
         </section>
 
-        <main className="max-w-6xl w-full px-6 -mt-12 relative z-20 pb-20">
+        <main className="max-w-6xl w-full px-6 -mt-10 relative z-20 pb-24">
           {showSeedInput && (
             <div className="flex justify-center mb-10 -mt-6 animate-in slide-in-from-top-4 duration-300">
-              <div className="bg-muted p-2 rounded-lg border-2 flex items-center gap-2 w-full max-w-md shadow-lg">
+              <div className="paper p-2 rounded flex items-center gap-2 w-full max-w-md shadow-md">
                 <Input
                   placeholder="Enter specific world seed..."
                   value={seed}
                   onChange={(e) => setSeed(e.target.value)}
-                  className="border-0 shadow-none bg-transparent font-mono text-sm h-10"
+                  className="border-0 shadow-none bg-transparent font-mono text-xs h-10"
                 />
                 <Button
                   size="sm"
+                  variant="primary-gradient"
                   onClick={handleSetSeed}
-                  className="font-black uppercase tracking-widest px-6 h-10"
+                  className="px-6 h-10"
                 >
-                  Sync
+                  Sync Seed
                 </Button>
               </div>
             </div>
@@ -346,20 +327,20 @@ export default function MainMenu() {
             onValueChange={(v) => setSelectionMode(v as StableSelectionMode)}
             className="w-full"
           >
-            <div className="flex items-center justify-between gap-4 mb-6">
-              <h2 className="font-display text-2xl font-black uppercase tracking-tight">
+            <div className="flex items-center justify-between gap-4 mb-8">
+              <h2 className="font-display text-3xl font-bold uppercase tracking-tight sumi-e-ink">
                 Select your stable
               </h2>
-              <TabsList className="bg-muted/50 p-1 rounded-full border border-border/50">
+              <TabsList className="bg-transparent h-12 p-0 gap-8">
                 <TabsTrigger
                   value="recommended"
-                  className="rounded-full px-6 font-bold uppercase tracking-widest text-[10px] data-[state=active]:bg-primary data-[state=active]:text-white"
+                  className="bg-transparent px-0 pb-2 rounded-none font-mono font-bold uppercase tracking-[0.15em] text-[11px] data-[state=active]:bg-transparent data-[state=active]:text-gold data-[state=active]:border-b-2 data-[state=active]:border-gold transition-all"
                 >
                   Recommended
                 </TabsTrigger>
                 <TabsTrigger
                   value="take_over"
-                  className="rounded-full px-6 font-bold uppercase tracking-widest text-[10px] data-[state=active]:bg-primary data-[state=active]:text-white"
+                  className="bg-transparent px-0 pb-2 rounded-none font-mono font-bold uppercase tracking-[0.15em] text-[11px] data-[state=active]:bg-transparent data-[state=active]:text-gold data-[state=active]:border-b-2 data-[state=active]:border-gold transition-all"
                 >
                   Professional Directory
                 </TabsTrigger>
@@ -383,7 +364,7 @@ export default function MainMenu() {
             </TabsContent>
 
             <TabsContent value="take_over" className="space-y-8">
-              <ScrollArea className="h-[600px] pr-4">
+              <ScrollArea className="h-[600px] pr-4 no-scrollbar">
                 <div className="space-y-12">
                   {(Object.keys(stablesByStature) as StatureBand[]).map((stature) => {
                     const group = stablesByStature[stature];
@@ -393,14 +374,14 @@ export default function MainMenu() {
 
                     return (
                       <div key={stature} className="space-y-4">
-                        <div className="flex items-center gap-3 border-b-2 border-border/20 pb-2">
-                          <div className={`p-2 rounded-lg ${config.color} border-0`}>
-                            <Icon className="h-5 w-5" />
+                        <div className="flex items-center gap-3 border-b border-border/40 pb-2">
+                          <div className={cn("p-1.5 rounded", config.color)}>
+                            <Icon className="h-4 w-4" />
                           </div>
-                          <h3 className="font-display text-xl font-black uppercase tracking-tight">
-                            {config.label} Stables{" "}
-                            <span className="text-muted-foreground font-bold opacity-30">
-                              — {group.length} Professional Stables
+                          <h3 className="font-display text-xl font-bold uppercase tracking-tight">
+                            {config.label} Stables
+                            <span className="ml-3 text-[10px] font-mono font-bold text-muted-foreground tracking-widest opacity-60">
+                              / {group.length} Professional Stables
                             </span>
                           </h3>
                         </div>
@@ -432,21 +413,20 @@ export default function MainMenu() {
           {/* Footer Sticky Bar */}
           {selectedHeyaId && (
             <div className="fixed bottom-10 left-1/2 -translate-x-1/2 w-full max-w-xl px-6 z-50 animate-in slide-in-from-bottom-10 duration-500">
-              <div className="bg-primary p-2 pl-6 rounded-full shadow-[0_20px_50px_-20px_rgba(0,0,0,0.7)] flex items-center justify-between border border-white/20">
-                <div className="text-primary-foreground min-w-0 pr-4">
-                  <p className="text-[9px] font-black uppercase tracking-[0.2em] opacity-60">
-                    Ready to begin
-                  </p>
-                  <p className="font-display text-xl font-black truncate">
+              <div className="glass paper p-2 pl-6 rounded shadow-xl flex items-center justify-between border-gold/30">
+                <div className="text-foreground min-w-0 pr-4">
+                  <p className="stat-label text-gold tracking-[0.2em] mb-0.5">READY TO BEGIN</p>
+                  <p className="font-display text-xl font-bold truncate sumi-e-ink uppercase">
                     {stables.find((h) => h.id === selectedHeyaId)?.name} Stable
                   </p>
                 </div>
                 <Button
                   size="lg"
-                  className="bg-white text-primary hover:bg-white/90 rounded-full h-14 px-10 gap-3 font-display font-black uppercase tracking-widest shadow-2xl hover:scale-105 transition-transform"
+                  variant="primary-gradient"
+                  className="h-14 px-10 gap-3 text-sm shadow-md"
                   onClick={() => beginWithHeya(selectedHeyaId)}
                 >
-                  Inaugurate <ChevronRight className="h-6 w-6 stroke-[3]" />
+                  Inaugurate <ChevronRight className="h-5 w-5 stroke-[3]" />
                 </Button>
               </div>
             </div>
@@ -463,55 +443,55 @@ export default function MainMenu() {
           }
         />
 
-        <footer className="w-full border-t border-border/20 py-6 px-6 flex flex-col items-center gap-4">
+        <footer className="w-full border-t border-border/20 py-8 px-6 flex flex-col items-center gap-6 bg-arena-ground">
           {/* World Generation Controls */}
-          <div className="flex flex-wrap items-center justify-center gap-4 text-center">
-            <div>
-              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
-                World Seed
+          <div className="flex flex-wrap items-center justify-center gap-8 text-center">
+            <div className="space-y-1">
+              <p className="stat-label text-gold/60">WORLD SEED</p>
+              <p className="font-mono text-xs text-gold tracking-widest uppercase">
+                {safeShortSeed(state.world.seed)}
               </p>
-              <p className="font-mono text-xs text-primary">{safeShortSeed(state.world.seed)}</p>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
-                className="h-7 px-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground"
+                className="h-8 px-3 text-[10px] font-mono font-bold uppercase tracking-widest"
                 onClick={handleRerollWorld}
               >
-                <RefreshCw className="h-3 w-3 mr-1" /> Reroll
+                <RefreshCw className="h-3.5 w-3.5 mr-2" /> Reroll World
               </Button>
               <Button
-                variant="ghost"
+                variant={showSeedInput ? "default" : "outline"}
                 size="sm"
-                className={`h-7 px-2 text-[10px] font-bold uppercase tracking-widest ${showSeedInput ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
+                className="h-8 px-3 text-[10px] font-mono font-bold uppercase tracking-widest"
                 onClick={() => setShowSeedInput(!showSeedInput)}
               >
-                <Dices className="h-3 w-3 mr-1" /> {showSeedInput ? "Close" : "Manual"}
+                <Dices className="h-3.5 w-3.5 mr-2" /> {showSeedInput ? "Hide Seed" : "Manual Seed"}
               </Button>
             </div>
           </div>
 
-          <div className="w-full max-w-md h-px bg-border/30" />
+          <div className="w-full max-w-md h-px bg-gold/10" />
 
           {/* Archive & Copyright */}
           <div className="flex items-center gap-4">
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
-              className="gap-2 text-[10px] font-bold uppercase tracking-widest border-muted-foreground/30 hover:bg-muted/50"
+              className="gap-2 text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-muted-foreground hover:text-gold transition-colors"
               onClick={() => document.getElementById("archive-trigger")?.click()}
             >
-              <Database className="w-3 h-3" />
-              Archive Management
+              <Database className="w-3.5 h-3.5" />
+              Career Archives
             </Button>
           </div>
-          <div className="text-center">
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50">
+          <div className="text-center space-y-2">
+            <p className="text-[10px] font-display font-bold uppercase tracking-[0.4em] text-gold/30">
               Reach the Summit — 頂点を目指せ
             </p>
-            <p className="text-[9px] text-muted-foreground/40 uppercase tracking-widest">
-              © 2026 Sumo Manager Pro
+            <p className="text-[9px] font-mono text-muted-foreground/30 uppercase tracking-widest">
+              © 2026 Sumo Manager Pro · Institutional Grade Simulation
             </p>
           </div>
         </footer>

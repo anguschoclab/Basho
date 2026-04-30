@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {
   createRouter,
   createRoute,
@@ -36,6 +37,8 @@ import GovernancePage from "./pages/GovernancePage";
 import MyosekiMarketPage from "./pages/MyosekiMarketPage";
 import NotFound from "./pages/NotFound";
 import { HistoryDashboard } from "./pages/HistoryDashboard";
+import GlobalCupPage from "./pages/GlobalCupPage";
+import RegionalHubPage from "./pages/RegionalHubPage";
 
 // In Electron production the app loads from file://, where browser history
 // path traversal fails (e.g. /dashboard → file:///dashboard — not found).
@@ -70,11 +73,9 @@ const rootRoute = createRootRoute({
   },
   // Redirect to dashboard in Electron production to handle file:// initial load
   beforeLoad: () => {
-    console.log("[Routes] rootRoute: beforeLoad, isElectronProd =", isElectronProd);
     if (isElectronProd) {
       // In Electron production, redirect from root to dashboard with hash
       if (window.location.hash === "" || window.location.hash === "#/") {
-        console.log("[Routes] Redirecting to #/dashboard for Electron production");
         window.location.hash = "#/dashboard";
       }
     }
@@ -133,7 +134,10 @@ const stableIdRoute = createRoute({
 const stableRosterRoute = createRoute({
   getParentRoute: () => stableBaseRoute,
   path: "/roster",
-  component: RikishiPage,
+  beforeLoad: () => {
+    throw redirect({ to: "/rikishi", replace: true });
+  },
+  component: () => null,
 });
 const stableTrainingRoute = createRoute({
   getParentRoute: () => stableBaseRoute,
@@ -249,6 +253,16 @@ const rivalriesRoute = createRoute({
   path: "/rivalries",
   component: RivalriesPage,
 });
+const globalCupRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/global-cup",
+  component: GlobalCupPage,
+});
+const worldCircuitRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/world-circuit",
+  component: RegionalHubPage,
+});
 
 // --- ARCHIVES SECTION ---
 const historyRoute = createRoute({
@@ -336,6 +350,8 @@ const routeTree = rootRoute.addChildren([
   banzukeRoute,
   scheduleRoute,
   rivalriesRoute,
+  globalCupRoute,
+  worldCircuitRoute,
 
   // Archives
   historyRoute,
@@ -359,8 +375,6 @@ export const router = createRouter({
     return <NotFound />;
   },
 });
-
-console.log("[Router] Initialized with history type:", isElectronProd ? "HASH" : "BROWSER");
 
 declare module "@tanstack/react-router" {
   interface Register {

@@ -1,16 +1,17 @@
 // PerceptionOverview.tsx — Rival stables perception panel for ScoutingPage
 // Stable comparison + rikishi comparison + H2H bout history between stables
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Eye, GitCompareArrows, Swords } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Eye, GitCompareArrows, Swords, Building2, User } from "lucide-react";
 import { useGame } from "@/contexts/GameContext";
 import { buildPerceptionSnapshot } from "@/presenters/uiDigest";
+import type { PerceptionSnapshot } from "@/engine/perception";
 import {
   StableMetricGrid,
   RikishiComparisonGrid,
@@ -26,10 +27,12 @@ export function PerceptionOverview({ playerHeyaId }: { playerHeyaId: string | nu
   const [comparing, setComparing] = useState(false);
   const [compareMode, setCompareMode] = useState<"stables" | "rikishi" | "h2h">("stables");
 
+  type SnapshotEntry = PerceptionSnapshot & { isPlayer: boolean };
+
   const { snapshots, snapMap } = useMemo(() => {
     if (!world) return { snapshots: [], snapMap: new Map() };
-    const results: Array<any> = [];
-    const map = new Map<string, any>();
+    const results: Array<SnapshotEntry> = [];
+    const map = new Map<string, SnapshotEntry>();
     for (const heya of world.heyas.values()) {
       if ((heya.rikishiIds?.length ?? 0) === 0) continue;
       const snap = buildPerceptionSnapshot(world, heya.id);
@@ -104,7 +107,10 @@ export function PerceptionOverview({ playerHeyaId }: { playerHeyaId: string | nu
             </CardTitle>
           </CardHeader>
           <CardContent className="px-4 pb-3">
-            <Tabs value={compareMode} onValueChange={(v) => setCompareMode(v as any)}>
+            <Tabs
+              value={compareMode}
+              onValueChange={(v) => setCompareMode(v as "stables" | "rikishi" | "h2h")}
+            >
               <TabsList className="grid w-full max-w-xs grid-cols-3 mb-3">
                 <TabsTrigger value="stables" className="gap-1 text-xs">
                   <Building2 className="h-3 w-3" /> Stables

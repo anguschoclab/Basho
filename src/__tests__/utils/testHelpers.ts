@@ -126,32 +126,6 @@ export function createMockRikishi(overrides: Record<string, unknown> = {}) {
 }
 
 /**
- * Create a mock Oyakata with minimal required fields.
- * @param overrides - Optional overrides for the mock
- * @returns Mock Oyakata
- */
-export function createMockOyakata(overrides: Record<string, unknown> = {}) {
-  return {
-    id: "oyakata-1",
-    shikona: "Test Oyakata",
-    realName: "Test Name",
-    heyaId: "heya-1",
-    nationality: "Japan",
-    birthYear: 1970,
-    archetype: "traditionalist",
-    traits: {
-      ambition: 50,
-      tradition: 50,
-      risk: 50,
-      compassion: 50,
-      patience: 50,
-    },
-    mood: "content",
-    ...overrides,
-  };
-}
-
-/**
  * Mock a function that returns a value.
  * @param returnValue - The value to return
  * @returns Mocked function
@@ -182,21 +156,6 @@ export function createDeferred<T>() {
   });
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   return { promise, resolve: resolve!, reject: reject! };
-}
-
-/**
- * Assert that a value is not null or undefined.
- * @param value - The value to check
- * @param message - Optional error message
- * @throws Error if value is null or undefined
- */
-export function assertNotNull<T>(
-  value: T | null | undefined,
-  message?: string
-): asserts value is T {
-  if (value === null || value === undefined) {
-    throw new Error(message || `Expected value to not be null or undefined, got ${value}`);
-  }
 }
 
 /**

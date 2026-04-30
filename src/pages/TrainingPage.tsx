@@ -6,11 +6,11 @@
  * FM-style layout for beya-wide training controls and individual development plans.
  */
 
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { useGame } from "@/contexts/GameContext";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { HQ_TABS } from "@/constants/navigation";
+import { STABLE_TABS } from "@/constants/navigation";
 import {
   INTENSITY_MULTIPLIERS,
   FOCUS_BIAS_MATRIX,
@@ -29,10 +29,16 @@ import { TrainingHeader } from "@/components/training/TrainingHeader";
 import { BeyaWideRegime } from "@/components/training/BeyaWideRegime";
 import { TrainingAnalytics } from "@/components/training/TrainingAnalytics";
 import { IndividualFocusSlots } from "@/components/training/IndividualFocusSlots";
+import { WeeklyDrillPlanner } from "@/components/training/WeeklyDrillPlanner";
 import { ReferenceLegend } from "@/components/training/ReferenceLegend";
+import type { DrillType, DaySchedule } from "@/engine/types/training";
+import type { Rikishi } from "@/engine/types/rikishi";
+
+import { useGameStore } from "@/store/gameStore";
 
 export default function TrainingPage() {
-  const { state, updateWorld } = useGame();
+  const { state } = useGame();
+  const sendCommand = useGameStore((s) => s.sendCommand);
   const { world, playerHeyaId } = state;
   const heya = world?.heyas.get(playerHeyaId || "") ?? null;
 
@@ -44,60 +50,51 @@ export default function TrainingPage() {
     return legacy ?? createDefaultTrainingState(playerHeyaId || "");
   });
 
-  const rikishiList = useMemo(() => {
-    if (!heya || !world) return [];
-    const rikishi = (heya.rikishiIds ?? [])
+  const rikishiList = useMemo<Rikishi[]>(() => {
+    if (!world || !heya) return [];
+    return (heya.rikishiIds ?? [])
       .map((id) => world.rikishi.get(id))
-      .filter((r) => r != null) as ReturnType<typeof world.rikishi.get>[];
-    return rikishi.sort((a, b) => {
-      const tierA = RANK_HIERARCHY[a.rank]?.tier ?? 99;
-      const tierB = RANK_HIERARCHY[b.rank]?.tier ?? 99;
-      if (tierA !== tierB) return tierA - tierB;
-      return a.id.localeCompare(b.id);
-    });
-  }, [heya, world]);
+      .filter((r): r is Rikishi => r !== undefined)
+      .sort((a, b) => {
+        const aTier = RANK_HIERARCHY[a.rank]?.tier ?? 999;
+        const bTier = RANK_HIERARCHY[b.rank]?.tier ?? 999;
+        return aTier - bTier;
+      });
+  }, [world, heya]);
 
-  // Prepare training effectiveness data for chart (moved before early return)
-  const trainingEffectivenessData = useMemo(() => {
-    return (Object.keys(INTENSITY_MULTIPLIERS) as TrainingIntensity[]).map((intensity) => {
-      const effect = INTENSITY_MULTIPLIERS[intensity];
-      return {
-        intensity: intensity.charAt(0).toUpperCase() + intensity.slice(1),
-        growth: effect.growth,
-        fatigue: effect.fatigue,
-        injuryRisk: effect.injuryRisk || 0,
-      };
-    });
-  }, []);
+  const trainingEffectivenessData = useMemo(
+    () =>
+      (Object.entries(INTENSITY_MULTIPLIERS) as Array<[TrainingIntensity, { growth: number; fatigue: number; injuryRisk: number }]>).map(
+        ([intensity, eff]) => ({
+          intensity: intensity.charAt(0).toUpperCase() + intensity.slice(1),
+          growth: Math.round(eff.growth * 100),
+          fatigue: Math.round(eff.fatigue * 100),
+          injuryRisk: Math.round(eff.injuryRisk * 100),
+        })
+      ),
+    []
+  );
 
-  // Prepare focus bias data for chart (moved before early return)
-  const focusBiasData = useMemo(() => {
-    return (Object.keys(FOCUS_BIAS_MATRIX) as TrainingFocus[]).map((focus) => {
-      const bias = FOCUS_BIAS_MATRIX[focus];
-      return {
-        focus: focus.charAt(0).toUpperCase() + focus.slice(1),
-        strength: bias.strength || 0,
-        speed: bias.speed || 0,
-        technique: bias.technique || 0,
-        balance: bias.balance || 0,
-      };
-    });
-  }, []);
+  const focusBiasData = useMemo(
+    () =>
+      (Object.entries(FOCUS_BIAS_MATRIX) as Array<[TrainingFocus, Record<string, number>]>).map(
+        ([focus, biases]) => ({
+          focus: focus.charAt(0).toUpperCase() + focus.slice(1),
+          strength: Math.round((biases.strength ?? 1) * 100),
+          speed: Math.round((biases.speed ?? 1) * 100),
+          technique: Math.round((biases.technique ?? 1) * 100),
+          balance: Math.round((biases.balance ?? 1) * 100),
+        })
+      ),
+    []
+  );
 
   if (!world || !playerHeyaId || !heya) return null;
-
-  const persistTrainingState = (next: HeyaTrainingState) => {
-    if (!world.trainingState) world.trainingState = new Map();
-    world.trainingState.set(playerHeyaId, next);
-    const heyaWithTrainingState = heya as Heya & { trainingState?: unknown };
-    if (heyaWithTrainingState.trainingState) delete heyaWithTrainingState.trainingState;
-    updateWorld({ ...world });
-  };
 
   const handleIntensityChange = (intensity: TrainingIntensity) => {
     setTrainingState((prev) => {
       const next = { ...prev, activeProfile: { ...prev.activeProfile, intensity } };
-      persistTrainingState(next);
+      sendCommand({ type: "SET_TRAINING_STATE", heyaId: playerHeyaId, trainingState: next });
       return next;
     });
   };
@@ -105,7 +102,7 @@ export default function TrainingPage() {
   const handleFocusChange = (focus: TrainingFocus) => {
     setTrainingState((prev) => {
       const next = { ...prev, activeProfile: { ...prev.activeProfile, focus } };
-      persistTrainingState(next);
+      sendCommand({ type: "SET_TRAINING_STATE", heyaId: playerHeyaId, trainingState: next });
       return next;
     });
   };
@@ -113,7 +110,7 @@ export default function TrainingPage() {
   const handleRecoveryChange = (recovery: RecoveryEmphasis) => {
     setTrainingState((prev) => {
       const next = { ...prev, activeProfile: { ...prev.activeProfile, recovery } };
-      persistTrainingState(next);
+      sendCommand({ type: "SET_TRAINING_STATE", heyaId: playerHeyaId, trainingState: next });
       return next;
     });
   };
@@ -126,7 +123,41 @@ export default function TrainingPage() {
       const slots = (prev.focusSlots || []).filter((s) => s.rikishiId !== rikishiId);
       if (focusType) slots.push({ rikishiId, focusType });
       const next = { ...prev, focusSlots: slots };
-      persistTrainingState(next);
+      sendCommand({ type: "SET_TRAINING_STATE", heyaId: playerHeyaId, trainingState: next });
+      return next;
+    });
+  };
+
+  const handlePlanUpdate = (rikishiId: string, day: number, drillType: DrillType) => {
+    setTrainingState((prev) => {
+      const plan = { ...(prev.weeklyPlan || {}) };
+      const schedule = { ...(plan[rikishiId] || {}) };
+      schedule[day] = drillType;
+      plan[rikishiId] = schedule as DaySchedule;
+      const next = { ...prev, weeklyPlan: plan };
+      sendCommand({ type: "SET_TRAINING_STATE", heyaId: playerHeyaId, trainingState: next });
+      return next;
+    });
+  };
+
+  const handleBulkUpdate = (rikishiId: string, daySchedule: DaySchedule) => {
+    setTrainingState((prev) => {
+      const plan = { ...(prev.weeklyPlan || {}) };
+      plan[rikishiId] = daySchedule;
+      const next = { ...prev, weeklyPlan: plan };
+      sendCommand({ type: "SET_TRAINING_STATE", heyaId: playerHeyaId, trainingState: next });
+      return next;
+    });
+  };
+
+  const handleMultiBulkUpdate = (rikishiIds: string[], daySchedule: DaySchedule) => {
+    setTrainingState((prev) => {
+      const plan = { ...(prev.weeklyPlan || {}) };
+      rikishiIds.forEach((id) => {
+        plan[id] = daySchedule;
+      });
+      const next = { ...prev, weeklyPlan: plan };
+      sendCommand({ type: "SET_TRAINING_STATE", heyaId: playerHeyaId, trainingState: next });
       return next;
     });
   };
@@ -134,7 +165,7 @@ export default function TrainingPage() {
   const currentIntensity = trainingState.activeProfile.intensity as TrainingIntensity;
 
   return (
-    <AppLayout pageTitle="Training Management" subNavTabs={HQ_TABS} activeSubTab="training">
+    <AppLayout pageTitle="Training Management" subNavTabs={STABLE_TABS} activeSubTab="training">
       <Helmet>
         <title>Training Ground — {heya.name} | Basho</title>
       </Helmet>
@@ -152,6 +183,15 @@ export default function TrainingPage() {
         <TrainingAnalytics
           trainingEffectivenessData={trainingEffectivenessData}
           focusBiasData={focusBiasData}
+        />
+
+        {/* P2 Phase O: Weekly Drill Scheduler */}
+        <WeeklyDrillPlanner
+          rikishiList={rikishiList}
+          weeklyPlan={trainingState.weeklyPlan || {}}
+          onPlanUpdate={handlePlanUpdate}
+          onBulkUpdate={handleBulkUpdate}
+          onMultiBulkUpdate={handleMultiBulkUpdate}
         />
 
         <IndividualFocusSlots

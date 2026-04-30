@@ -46,13 +46,25 @@ export const EntityService = {
     id: string, 
     factory: () => T
   ): T {
+    // Determine if the root should be a Map or a POJO
+    // In Sumo Manager Pro, most IdMapRuntime fields are Maps
     if (!world[rootKey]) {
-      (world as any)[rootKey] = {};
+      const isMapField = ["rikishi", "heyas", "oyakata", "staff", "trainingState", "closedHeyas"].includes(rootKey as string);
+      (world as any)[rootKey] = isMapField ? new Map() : {};
     }
-    const root = world[rootKey] as Record<string, T>;
-    if (!root[id]) {
-      root[id] = factory();
+
+    const root = world[rootKey] as any;
+    
+    if (root instanceof Map) {
+      if (!root.has(id)) {
+        root.set(id, factory());
+      }
+      return root.get(id);
+    } else {
+      if (!root[id]) {
+        root[id] = factory();
+      }
+      return root[id];
     }
-    return root[id];
   }
 };

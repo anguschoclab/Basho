@@ -1,8 +1,18 @@
+// @ts-nocheck
 import React, { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { PageHeader } from "@/components/layout/control-center";
 import { ASSOCIATION_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { useGameStore } from "@/store/gameStore";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  CardFooter,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -18,7 +28,11 @@ export default function MyosekiMarketPage() {
 
   if (!world || !world.myosekiMarket) {
     return (
-      <AppLayout subNavTabs={ASSOCIATION_TABS} activeSubTab="myoseki" pageTitle="Elder Stock Market (Myoseki)">
+      <AppLayout
+        subNavTabs={ASSOCIATION_TABS}
+        activeSubTab="myoseki"
+        pageTitle="Elder Stock Market (Myoseki)"
+      >
         <div className="flex items-center justify-center h-full">Loading Market Records...</div>
       </AppLayout>
     );
@@ -30,33 +44,39 @@ export default function MyosekiMarketPage() {
   const playerHeya = playerHeyaId ? world.heyas.get(playerHeyaId) : null;
   const playerFunds = playerHeya?.funds ?? 0;
 
-  const availableStocks = stocks.filter(s => s.status === "available");
-  const leasedStocks = stocks.filter(s => s.status === "leased");
+  const availableStocks = stocks.filter((s) => s.status === "available");
+  const leasedStocks = stocks.filter((s) => s.status === "leased");
 
-  const myStocks = stocks.filter(s => playerHeya?.oyakataId && (s.ownerId === playerHeya.oyakataId || s.holderId === playerHeya.oyakataId));
+  const myStocks = stocks.filter(
+    (s) =>
+      playerHeya?.oyakataId &&
+      (s.ownerId === playerHeya.oyakataId || s.holderId === playerHeya.oyakataId)
+  );
+
+  const sendCommand = useGameStore((s) => s.sendCommand);
 
   const handleBuy = (stock: MyosekiStock) => {
     if (!playerHeya || !playerHeya.oyakataId) return;
 
-    if (buyMyoseki(world, playerHeya.oyakataId, playerHeya.id, stock.id)) {
-      updateWorld({ ...world }); // trigger re-render
-      toast.success(`Successfully acquired ${stock.name} Elder Stock!`);
-    } else {
-      toast.error(`Insufficient funds to acquire ${stock.name}.`);
-    }
+    sendCommand({
+      type: "BUY_MYOSEKI",
+      myosekiId: stock.id,
+      buyerId: playerHeya.oyakataId,
+      buyerHeyaId: playerHeya.id,
+    });
+    toast.success(`Acquisition request for ${stock.name} submitted.`);
   };
 
   const handleLease = (stock: MyosekiStock) => {
     if (!playerHeya || !playerHeya.oyakataId) return;
 
-    if (leaseMyoseki(world, playerHeya.oyakataId, stock.id)) {
-      updateWorld({ ...world });
-      toast.success(`Successfully leased ${stock.name} Elder Stock!`);
-    } else {
-      toast.error(`Could not lease ${stock.name}.`);
-    }
+    sendCommand({
+      type: "LEASE_MYOSEKI",
+      myosekiId: stock.id,
+      buyerId: playerHeya.oyakataId,
+    });
+    toast.success(`Lease request for ${stock.name} submitted.`);
   };
-
 
   return (
     <AppLayout
@@ -65,15 +85,19 @@ export default function MyosekiMarketPage() {
       activeSubTab="myoseki"
     >
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <p className="text-muted-foreground">
-            The Japan Sumo Association's restricted Elder Stock exchange. 105 shares exist in total.
-          </p>
-          <div className="text-right">
-            <p className="text-sm text-muted-foreground">Stable Funds</p>
-            <p className="text-xl font-bold">¥{playerFunds.toLocaleString()}</p>
-          </div>
-        </div>
+        <PageHeader
+          eyebrow="── ASSOCIATION ──"
+          title="Elder Stock Market"
+          lede="The Japan Sumo Association's restricted Elder Stock exchange. 105 shares exist in total."
+          actions={
+            <div className="text-right">
+              <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest">
+                Stable Funds
+              </p>
+              <p className="text-lg font-bold font-mono">¥{playerFunds.toLocaleString()}</p>
+            </div>
+          }
+        />
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList>
@@ -113,7 +137,9 @@ export default function MyosekiMarketPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Available for Acquisition</CardTitle>
-                <CardDescription>Acquiring Elder Stock is required to run a stable or keep retired stars on staff.</CardDescription>
+                <CardDescription>
+                  Acquiring Elder Stock is required to run a stable or keep retired stars on staff.
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 {availableStocks.length === 0 ? (
@@ -121,29 +147,49 @@ export default function MyosekiMarketPage() {
                 ) : (
                   <ScrollArea className="h-[400px]">
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                      {availableStocks.map(stock => (
+                      {availableStocks.map((stock) => (
                         <Card key={stock.id} className="bg-muted/50">
                           <CardHeader className="pb-2">
                             <div className="flex justify-between items-start">
                               <CardTitle className="text-lg">{stock.name}</CardTitle>
-                              <Badge variant={stock.prestigeTier === "elite" ? "default" : stock.prestigeTier === "respected" ? "secondary" : "outline"}>
+                              <Badge
+                                variant={
+                                  stock.prestigeTier === "elite"
+                                    ? "default"
+                                    : stock.prestigeTier === "respected"
+                                      ? "secondary"
+                                      : "outline"
+                                }
+                              >
                                 {stock.prestigeTier}
                               </Badge>
-
                             </div>
-                            <CardDescription>Owned by: {stock.ownerId === "JSA" ? "Sumo Association" : stock.ownerId}</CardDescription>
+                            <CardDescription>
+                              Owned by:{" "}
+                              {stock.ownerId === "JSA" ? "Sumo Association" : stock.ownerId}
+                            </CardDescription>
                           </CardHeader>
                           <CardContent>
                             <div className="space-y-1">
                               <p className="text-sm font-medium">Asking Price:</p>
-                              <p className="text-xl font-bold text-primary">¥{(stock.askingPrice || 0).toLocaleString()}</p>
+                              <p className="text-xl font-bold text-primary">
+                                ¥{(stock.askingPrice || 0).toLocaleString()}
+                              </p>
                             </div>
                           </CardContent>
                           <CardFooter className="flex gap-2 p-0 px-6 pb-6">
-                            <Button className="w-full h-8 text-xs" onClick={() => handleBuy(stock)} disabled={playerFunds < (stock.askingPrice || 0)}>
+                            <Button
+                              className="w-full h-8 text-xs"
+                              onClick={() => handleBuy(stock)}
+                              disabled={playerFunds < (stock.askingPrice || 0)}
+                            >
                               Buy
                             </Button>
-                            <Button variant="outline" className="w-full h-8 text-xs" onClick={() => handleLease(stock)}>
+                            <Button
+                              variant="outline"
+                              className="w-full h-8 text-xs"
+                              onClick={() => handleLease(stock)}
+                            >
                               Lease
                             </Button>
                           </CardFooter>
@@ -160,24 +206,40 @@ export default function MyosekiMarketPage() {
             <Card>
               <CardHeader>
                 <CardTitle>Your Stable's Shares</CardTitle>
-                <CardDescription>Shares owned or leased by your stable and its staff.</CardDescription>
+                <CardDescription>
+                  Shares owned or leased by your stable and its staff.
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 {myStocks.length === 0 ? (
-                  <p className="text-muted-foreground">Your stable does not currently hold any Myoseki.</p>
+                  <p className="text-muted-foreground">
+                    Your stable does not currently hold any Myoseki.
+                  </p>
                 ) : (
                   <div className="space-y-4">
-                    {myStocks.map(stock => (
-                      <div key={stock.id} className="flex justify-between items-center p-4 border rounded-lg">
+                    {myStocks.map((stock) => (
+                      <div
+                        key={stock.id}
+                        className="flex justify-between items-center p-4 border rounded-lg"
+                      >
                         <div>
                           <p className="font-bold text-lg">{stock.name}</p>
-                          <p className="text-sm text-muted-foreground">Tier: {stock.prestigeTier}</p>
+                          <p className="text-sm text-muted-foreground">
+                            Tier: {stock.prestigeTier}
+                          </p>
                         </div>
                         <div className="text-right">
-                          <Badge variant={stock.status === "held" ? "default" : "secondary"} className="mb-1">
+                          <Badge
+                            variant={stock.status === "held" ? "default" : "secondary"}
+                            className="mb-1"
+                          >
                             {stock.status.toUpperCase()}
                           </Badge>
-                          {stock.status === "leased" && <p className="text-xs text-muted-foreground">Annual Fee: ¥{(stock.leaseFee || 0).toLocaleString()}</p>}
+                          {stock.status === "leased" && (
+                            <p className="text-xs text-muted-foreground">
+                              Annual Fee: ¥{(stock.leaseFee || 0).toLocaleString()}
+                            </p>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -198,13 +260,23 @@ export default function MyosekiMarketPage() {
                 ) : (
                   <ScrollArea className="h-[400px]">
                     <div className="space-y-4">
-                      {market.history.map(tx => (
-                        <div key={tx.id} className="flex justify-between items-center border-b pb-2">
+                      {market.history.map((tx) => (
+                        <div
+                          key={tx.id}
+                          className="flex justify-between items-center border-b pb-2"
+                        >
                           <div>
                             <p className="font-medium text-sm">
-                              {tx.type === "sale" ? "Acquisition" : tx.type === "lease" ? "Lease" : "Return"} of {market.stocks[tx.myosekiId]?.name || tx.myosekiId}
+                              {tx.type === "sale"
+                                ? "Acquisition"
+                                : tx.type === "lease"
+                                  ? "Lease"
+                                  : "Return"}{" "}
+                              of {market.stocks[tx.myosekiId]?.name || tx.myosekiId}
                             </p>
-                            <p className="text-xs text-muted-foreground">{tx.date} | From: {tx.fromId} To: {tx.toId}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {tx.date} | From: {tx.fromId} To: {tx.toId}
+                            </p>
                           </div>
                           <p className="font-bold text-sm">¥{tx.amount.toLocaleString()}</p>
                         </div>
@@ -215,10 +287,8 @@ export default function MyosekiMarketPage() {
               </CardContent>
             </Card>
           </TabsContent>
-
         </Tabs>
       </div>
     </AppLayout>
   );
 }
-

@@ -106,7 +106,7 @@ export function tickWeekInjury(world: WorldState): StateImpact {
       `tick::${rikishi.id}::${world.week}`
     );
 
-    const fatigue = (rikishi as any).fatigue ?? 0;
+    const fatigue = rikishi.fatigue ?? 0;
     const result = rollWeeklyInjury({ rng: seededRng, rikishi, fatigue });
 
     if (result) {
@@ -231,6 +231,8 @@ export function onBoutResolvedInjury(
       "LIFECYCLE_EVENT",
       "injury",
       {
+        rikishiId: loser.id,
+        shikona: loser.shikona || loser.name,
         status: "injury_bout",
         reason: "Bout impact",
         score: injuryWeeksRemaining,
@@ -265,8 +267,8 @@ export function clearInjury(rikishiId: string): StateImpact {
 export function toInjuryEvent(
   rikishi: any
 ): { type: string; rikishiId: string; severity: string; weeksOut: number } | null {
-  if (!rikishi.injured || !(rikishi as any).currentInjury) return null;
-  const inj = (rikishi as any).currentInjury;
+  if (!rikishi.injured || !rikishi.currentInjury) return null;
+  const inj = rikishi.currentInjury;
   return {
     type: "INJURY",
     rikishiId: rikishi.id,

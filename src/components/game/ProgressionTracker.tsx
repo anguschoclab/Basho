@@ -8,7 +8,11 @@ import { Crown, ShieldAlert, TrendingUp, AlertTriangle } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
 import type { UIRikishi } from "@/presenters/uiModels";
 import React from "react";
-import { OzekiRunCandidate, RANK_HIERARCHY, YokozunaCandidate } from "@/presenters/uiDigest";
+import {
+  RANK_HIERARCHY,
+  type OzekiRunCandidate,
+  type YokozunaCandidate,
+} from "@/presenters/uiDigest";
 import type { Rank } from "@/engine/types/banzuke";
 
 const YokozunaRow = React.memo(

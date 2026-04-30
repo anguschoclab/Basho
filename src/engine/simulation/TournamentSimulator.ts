@@ -1,11 +1,10 @@
-import { rngFromSeed } from "../rng";
 import type { WorldState } from "../types/world";
 import type { BashoName, BoutResult, BashoSimResult, BanzukeUpdateHook } from "../types/basho";
 import type { PromotionEvent, DemotionEvent } from "../types/banzuke";
 import { simulateBout } from "../bout/boutResolver";
 import { RANK_HIERARCHY } from "../banzuke";
 import { initializeBasho } from "../systems/generation/WorldFactory";
-import { generateFullBashoSchedule, generateDaySchedule } from "../schedule";
+import { generateFullBashoSchedule, scheduleAllDivisionsDay } from "../schedule";
 import { stableTieBreak } from "../utils/sort";
 import { resolveImpacts } from "../core/ImpactResolver";
 
@@ -21,8 +20,10 @@ export function simulateEntireBasho(
     banzukeUpdateHook?: BanzukeUpdateHook;
   }
 ): BashoSimResult {
-  const rng = rngFromSeed(seed, "autoSim", "root");
   const basho = initializeBasho(world, bashoName);
+
+  // Set currentBasho on world so the impact resolver can append matches to it
+  world.currentBasho = basho;
 
   const standings = new Map<string, { wins: number; losses: number }>();
   const keyBouts: BoutResult[] = [];
@@ -45,15 +46,18 @@ export function simulateEntireBasho(
   } catch {
     for (let day = 1; day <= 15; day++) {
       const daySeed = `${seed}-day${day}`;
-      const { impact } = generateDaySchedule(world, basho, day, daySeed);
+      const { impact } = scheduleAllDivisionsDay({ world, basho, day, seed: daySeed });
       const resolvedWorld = resolveImpacts(world, [impact]);
       Object.assign(world, resolvedWorld);
     }
   }
 
+  // After schedule generation, read matches from world.currentBasho (impact resolver put them there)
+  const activeBasho = world.currentBasho ?? basho;
+
   // Simulate all 15 days
   for (let day = 1; day <= 15; day++) {
-    const dayMatches = basho.matches.filter((m) => m.day === day && !m.result);
+    const dayMatches = activeBasho.matches.filter((m) => m.day === day && !m.result);
 
     for (let boutIndex = 0; boutIndex < dayMatches.length; boutIndex++) {
       const match = dayMatches[boutIndex];
@@ -61,12 +65,12 @@ export function simulateEntireBasho(
       const west = world.rikishi.get(match.westRikishiId);
 
       if (!east || !west) continue;
-      
+
       if (east.injured || west.injured) {
         // Fusen-sho / Fusen-paku (standardization point)
         const winner = east.injured ? west : east;
         const loser = east.injured ? east : west;
-        
+
         winner.currentBashoWins = (winner.currentBashoWins ?? 0) + 1;
         loser.currentBashoLosses = (loser.currentBashoLosses ?? 0) + 1;
 
@@ -74,15 +78,22 @@ export function simulateEntireBasho(
         const loserStanding = standings.get(loser.id);
         if (winnerStanding) winnerStanding.wins++;
         if (loserStanding) loserStanding.losses++;
-        
+
         // Add fake bout result for stats consistency
         match.result = {
+          boutId: match.boutId,
           winner: east.injured ? "west" : "east",
-          kimarite: "fusen", // Special kimarite for default win
-          points: 1,
-          intensity: 0,
-          outcome: "victory"
-        } as any;
+          winnerRikishiId: winner.id,
+          loserRikishiId: loser.id,
+          kimarite: "oshidashi",
+          kimariteName: "Oshidashi",
+          stance: "push-dominant",
+          tachiaiWinner: east.injured ? "west" : "east",
+          duration: 0,
+          upset: false,
+          kenshoEnvelopes: 0,
+          log: [],
+        };
         continue;
       }
 
@@ -125,14 +136,14 @@ export function simulateEntireBasho(
     id: yushoEntry?.id || "",
     shikona: yushoEntry?.rikishi?.shikona || "Unknown",
     wins: yushoEntry?.wins ?? 0,
-    losses: yushoEntry?.losses ?? 0
+    losses: yushoEntry?.losses ?? 0,
   };
 
   const second = sortedStandings[1];
   const junYushoTargetWins = second ? second.wins : -1;
   const junYusho = sortedStandings
     .filter((s) => s.id !== yushoEntry?.id && s.wins === junYushoTargetWins)
-    .map((s) => s.rikishi!.shikona);
+    .map((s) => s.rikishi?.shikona ?? "Unknown");
 
   let promotions: PromotionEvent[] = [];
   let demotions: DemotionEvent[] = [];
@@ -143,11 +154,65 @@ export function simulateEntireBasho(
       bashoName,
       year: world.year,
       standings,
-      seed: `${seed}-banzuke`
+      seed: `${seed}-banzuke`,
     });
     promotions = hookResult.promotions;
     demotions = hookResult.demotions;
   }
+
+  // --- STATE PERSISTENCE ---
+  const nextRikishiMap = new Map(world.rikishi);
+  const nextHeyaMap = new Map(world.heyas);
+
+  // 1. Update all rikishi who participated
+  standings.forEach((stats, id) => {
+    const r = nextRikishiMap.get(id);
+    if (r) {
+      const updated = {
+        ...r,
+        careerWins: (r.careerWins || 0) + stats.wins,
+        careerLosses: (r.careerLosses || 0) + stats.losses,
+        careerAbsences: (r.careerAbsences || 0) + (stats.absences || 0),
+        currentBashoWins: stats.wins,
+        currentBashoLosses: stats.losses,
+      };
+      
+      // Update division-specific records
+      if (updated.divisionRecords?.[r.division]) {
+        updated.divisionRecords[r.division].wins += stats.wins;
+        updated.divisionRecords[r.division].losses += stats.losses;
+      }
+
+      nextRikishiMap.set(id, updated);
+    }
+  });
+
+  // 2. Update Yusho Winner and their stable
+  if (yushoWinner.id) {
+    const winner = nextRikishiMap.get(yushoWinner.id);
+    if (winner) {
+      nextRikishiMap.set(yushoWinner.id, {
+        ...winner,
+        consecutiveYusho: (winner.consecutiveYusho || 0) + 1,
+      });
+
+      const heya = nextHeyaMap.get(winner.heyaId);
+      if (heya) {
+        nextHeyaMap.set(winner.heyaId, {
+          ...heya,
+          historicalYusho: (heya.historicalYusho || 0) + 1,
+        });
+      }
+    }
+  }
+
+  // 3. Update Global Kimarite Stats
+  const globalKimariteStats = { ...(world.globalKimariteStats || {}) };
+  activeBasho.matches.forEach(m => {
+    if (m.result?.kimarite) {
+      globalKimariteStats[m.result.kimarite] = (globalKimariteStats[m.result.kimarite] || 0) + 1;
+    }
+  });
 
   return {
     bashoName,
@@ -158,6 +223,12 @@ export function simulateEntireBasho(
     keyBouts,
     injuries: Array.from(new Set(injuries)),
     promotions,
-    demotions
+    demotions,
+    world: {
+      ...world,
+      rikishi: nextRikishiMap,
+      heyas: nextHeyaMap,
+      globalKimariteStats,
+    },
   };
 }

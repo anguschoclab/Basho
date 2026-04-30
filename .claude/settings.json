@@ -1,0 +1,26 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"C:/Users/amauricia/onedrive - ubisoft/documents/github/sumo-manager-pro\" && bunx tsc --noEmit --incremental 2>&1 | tail -20"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo \"$CLAUDE_TOOL_INPUT\" | grep -q 'Math\\.random' && echo 'BLOCKED: Use seeded RNG (rngForWorld/rngFromSeed), not Math.random()' && exit 1 || exit 0"
+          }
+        ]
+      }
+    ]
+  }
+}

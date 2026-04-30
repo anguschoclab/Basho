@@ -4,7 +4,6 @@
  * Persistence info console for new game wizard.
  */
 
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { formatYenToMan } from "@/utils/engineUtils";
 import { OYAKATA_BACKGROUNDS, ICHIMON_FACTIONS } from "./wizardConstants";
 
@@ -16,7 +15,7 @@ interface WizardFooterProps {
 }
 
 export function WizardFooter({ oyakataName, background, ichimon, world }: WizardFooterProps) {
-  const currentBg = OYAKATA_BACKGROUNDS.find((b) => b.id === background)!;
+  const currentBg = OYAKATA_BACKGROUNDS.find((b) => b.id === background) ?? OYAKATA_BACKGROUNDS[0];
 
   return (
     <footer className="fixed bottom-0 w-full bg-background/80 border-t border-border/40 py-4 px-8 z-30 animate-in slide-in-from-bottom-5 duration-700 delay-500 fill-mode-both">

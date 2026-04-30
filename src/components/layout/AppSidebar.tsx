@@ -39,7 +39,7 @@ export function AppSidebar() {
     return location.pathname === prefix || location.pathname.startsWith(prefix + "/");
   }
 
-  const menuGroups = getMenuGroups(tutorialCompleted, inBasho, bashoDay, fundsLow, fundsCritical);
+  const menuGroups = getMenuGroups(tutorialCompleted, inBasho, bashoDay, !!fundsLow, !!fundsCritical);
 
   return (
     <Sidebar
@@ -112,8 +112,7 @@ export function AppSidebar() {
             {group.label && (
               <div className="flex items-center gap-2 px-3 mb-1.5 group-data-[collapsible=icon]:hidden">
                 <span
-                  className="text-[9px] text-[hsl(var(--gold)/0.6)] uppercase"
-                  style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.2em" }}
+                  className="text-[9px] text-[hsl(var(--gold)/0.6)] font-mono uppercase tracking-[0.2em]"
                 >
                   {group.label}
                 </span>
@@ -261,7 +260,7 @@ export function AppSidebar() {
               </span>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <div
-                  className="w-1.5 h-1.5 rounded-full shrink-0"
+                  className="w-1.5 h-1.5 rounded-sm shrink-0"
                   style={{
                     background:
                       playerHeya.runwayBand === "secure"
@@ -274,8 +273,7 @@ export function AppSidebar() {
                   }}
                 />
                 <span
-                  className="text-[9px] uppercase truncate text-[hsl(var(--sidebar-foreground)/0.45)]"
-                  style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.1em" }}
+                  className="text-[9px] uppercase truncate text-[hsl(var(--sidebar-foreground)/0.45)] font-mono tracking-[0.1em]"
                 >
                   {playerHeya.runwayBand}
                 </span>
@@ -302,11 +300,11 @@ export function AppSidebar() {
               </span>
             </div>
             <div
-              className="w-full rounded-full h-1.5 overflow-hidden"
+              className="w-full rounded-sm h-1.5 overflow-hidden"
               style={{ background: "hsl(var(--sidebar-border))" }}
             >
               <div
-                className="h-full rounded-full transition-all duration-700"
+                className="h-full rounded-sm transition-all duration-700"
                 style={{
                   width: `${((bashoDay ?? 1) / 15) * 100}%`,
                   background: "linear-gradient(to right, hsl(var(--east)), hsl(var(--gold)))",

@@ -4,7 +4,7 @@
  * Renders a visual representation of a rikishi's ceremonial apron.
  */
 
-import React from "react";
+
 import type { KeshoMawashi } from "@/engine/types/keshoMawashi";
 import { cn } from "@/lib/utils";
 import { renderBasePattern } from "./keshoPatterns";

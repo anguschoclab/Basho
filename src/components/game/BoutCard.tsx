@@ -1,15 +1,19 @@
-/* eslint-disable react-refresh/only-export-components */
 import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "@tanstack/react-router";
 import { Star, Swords, Eye, CircleDot } from "lucide-react";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import type { MatchRowData, HEAT_CONFIG } from "./boutCardTypes.tsx";
+import type { MatchRowData } from "./boutCardTypes.tsx";
+import { HEAT_CONFIG } from "./boutCardTypes.tsx";
 import { RikishiSide, H2HCenter, MatchFooter } from "./boutCardComponents";
 
-export { getHeatBand, HEAT_CONFIG, getH2HRecord } from "./boutCardTypes.tsx";
-export type { RivalryHeatBand, MatchLike, MatchRowData } from "./boutCardTypes.tsx";
+const TACTICS_CONFIG = [
+  { id: "STANDARD", label: "Standard", desc: "Balanced" },
+  { id: "YOTSU_BELT", label: "Yotsu (Belt)", desc: "Counters Thrust" },
+  { id: "OSHI_THRUST", label: "Oshi (Thrust)", desc: "Counters Henka" },
+  { id: "HENKA", label: "Henka", desc: "Counters Belt" },
+];
 
 export const BoutCard = React.memo(
   ({
@@ -119,12 +123,7 @@ export const BoutCard = React.memo(
             </div>
 
             <div className="grid grid-cols-2 gap-2">
-              {[
-                { id: "STANDARD", label: "Standard", desc: "Balanced" },
-                { id: "YOTSU_BELT", label: "Yotsu (Belt)", desc: "Counters Thrust" },
-                { id: "OSHI_THRUST", label: "Oshi (Thrust)", desc: "Counters Henka" },
-                { id: "HENKA", label: "Henka", desc: "Counters Belt" },
-              ].map((t) => {
+              {TACTICS_CONFIG.map((t) => {
                 const isSelected = (playerTactics?.[match.boutId || ""] || "STANDARD") === t.id;
                 return (
                   <Button

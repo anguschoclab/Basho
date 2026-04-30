@@ -9,7 +9,9 @@ import type { Heya } from "./types/heya";
 import type { Oyakata } from "./types/oyakata";
 import type { SponsorRelationship, SponsorRole } from "./types/sponsors";
 import { rngForWorld } from "./rng";
-import { EventBus } from "./events";
+import { createImpactBuilder } from "./core/ImpactBuilder";
+import type { StateImpact } from "./core/StateImpact";
+import { isSponsorPlayerRelevant } from "./npc/npcEventSurfacing";
 
 export function calculateRunwayMonths(heya: Heya): number {
   const avgFacility =
@@ -76,36 +78,53 @@ export function addSponsorRelationship(
   world: WorldState,
   sponsorId: string,
   relationship: SponsorRelationship
-): void {
+): StateImpact {
+  const builder = createImpactBuilder("addSponsorRelationship");
   const pool = world.sponsorPool;
-  if (!pool || !pool.sponsors) return;
+  if (!pool || !pool.sponsors) return builder.build();
   const sponsor = pool.sponsors.get(sponsorId);
-  if (!sponsor) return;
-  if (!sponsor.relationships) {
-    sponsor.relationships = [];
-  }
-  sponsor.relationships.push(relationship);
+  if (!sponsor) return builder.build();
+  
+  // Create a deep copy of the sponsor pool and sponsor
+  const updatedSponsor = {
+    ...sponsor,
+    relationships: [...(sponsor.relationships || []), relationship]
+  };
+  
+  const updatedSponsors = new Map(pool.sponsors);
+  updatedSponsors.set(sponsorId, updatedSponsor);
+
+  builder.updateWorldField("sponsorPool", {
+    ...pool,
+    sponsors: updatedSponsors,
+  });
+
+  return builder.build();
 }
 
 export function emitSponsorRecruitmentEvent(
-  world: WorldState,
   heyaId: string,
   oyakataArchetype: string,
   sponsorDisplayName: string,
   sponsorTier: string,
   reasoning: string
-): void {
-  EventBus.managementDecision(
-    world,
-    heyaId,
+): StateImpact {
+  const builder = createImpactBuilder("emitSponsorRecruitmentEvent");
+  const importance = isSponsorPlayerRelevant(sponsorTier);
+
+  builder.logEvent(
+    "NPC_MANAGER_DECISION",
+    "narrative",
     {
       archetype: oyakataArchetype,
+      action: "sponsor_recruited",
       sponsor: sponsorDisplayName,
       tier: sponsorTier,
       reasoning,
     },
-    "minor"
+    { heyaId, importance }
   );
+  return builder.build();
 }
 
 export interface SponsorRecruitmentConfig {
@@ -121,18 +140,19 @@ export function evaluateSponsorRecruitmentCommon(
   heya: Heya,
   oyakata: Oyakata,
   config: SponsorRecruitmentConfig
-): void {
+): StateImpact {
+  const builder = createImpactBuilder("evaluateSponsorRecruitmentCommon");
   const pool = world.sponsorPool;
-  if (!pool || !pool.sponsors) return;
+  if (!pool || !pool.sponsors) return builder.build();
 
   const runwayMonths = calculateRunwayMonths(heya);
-  if (runwayMonths < config.runwayThreshold) return;
+  if (runwayMonths < config.runwayThreshold) return builder.build();
 
   const currentSponsorCount = countSponsors(world, heya.id);
-  if (currentSponsorCount >= config.recruitmentThreshold) return;
+  if (currentSponsorCount >= config.recruitmentThreshold) return builder.build();
 
   const eligibleSponsors = filterEligibleSponsors(world, heya.id, config.filterOptions);
-  if (eligibleSponsors.length === 0) return;
+  if (eligibleSponsors.length === 0) return builder.build();
 
   const selectedSponsor = eligibleSponsors[0];
   const relationship = createSponsorRelationship(
@@ -141,18 +161,20 @@ export function evaluateSponsorRecruitmentCommon(
     heya.id,
     config.relationshipStrength
   );
-  addSponsorRelationship(world, selectedSponsor.sponsorId, relationship);
+  
+  builder.merge(addSponsorRelationship(world, selectedSponsor.sponsorId, relationship));
 
   const reasoning = config.getReasoning
     ? config.getReasoning(oyakata)
     : "Standard sponsor recruitment";
 
-  emitSponsorRecruitmentEvent(
-    world,
+  builder.merge(emitSponsorRecruitmentEvent(
     heya.id,
     oyakata.archetype,
     selectedSponsor.displayName,
     selectedSponsor.tier,
     reasoning
-  );
+  ));
+
+  return builder.build();
 }

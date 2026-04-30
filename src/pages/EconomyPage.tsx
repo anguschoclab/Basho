@@ -1,13 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMemo, useCallback } from "react";
+import { useGameStore } from "@/store/gameStore";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { OFFICE_TABS } from "@/constants/navigation";
+import { PageHeader } from "@/components/layout/control-center";
 import { useGame } from "@/contexts/GameContext";
 import { SponsorsPanel } from "@/components/game/SponsorsPanel";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
 import { projectHeyaData } from "@/presenters/projections/heyaProjections";
-import { issueBailoutLoanIfNeeded } from "@/engine/loans";
 import { calculateHeyaWeeklyFinances } from "@/engine/systems/economy/FinanceCalculator";
 import { toast } from "sonner";
 import { safeRunwayBand, safeKoenkaiBand } from "@/components/economy/economyUtils";
@@ -19,9 +19,24 @@ import { IncomeExpensesCards } from "@/components/economy/IncomeExpensesCards";
 import { SponsorDrawCard } from "@/components/economy/SponsorDrawCard";
 import { EconomyInfoNote } from "@/components/economy/EconomyInfoNote";
 
+/** Loan type matching DebtSection component requirements. */
+interface DebtLoan {
+  id: string;
+  type: string;
+  providerName: string;
+  amount: number;
+  interestRate: number;
+  dueWeek: number;
+  remainingBalance: number;
+  principal: number;
+  monthlyPayment: number;
+  stringsAttached?: string[];
+}
+
 /** economy page. */
 export default function EconomyPage() {
-  const { state, updateWorld } = useGame();
+  const { state } = useGame();
+  const sendCommand = useGameStore((s) => s.sendCommand);
   const world = state.world;
 
   const playerHeya = useMemo(() => {
@@ -44,19 +59,9 @@ export default function EconomyPage() {
       return;
     }
 
-    // Capture loan count before
-    const beforeCount = playerHeya.activeLoans?.length || 0;
-
-    issueBailoutLoanIfNeeded(world, state.playerHeyaId);
-
-    const afterCount = playerHeya.activeLoans?.length || 0;
-    if (afterCount > beforeCount) {
-      toast.success("Emergency bailout approved. Funds have been credited.");
-      updateWorld(world);
-    } else {
-      toast.error("Bailout request denied or already processed.");
-    }
-  }, [world, state.playerHeyaId, playerHeya, updateWorld]);
+    sendCommand({ type: "REQUEST_BAILOUT", heyaId: state.playerHeyaId });
+    toast.success("Emergency bailout requested. Processing...");
+  }, [state.playerHeyaId, playerHeya, sendCommand, world]);
 
   const playerRikishi = useMemo(() => {
     if (!playerHeya || !world) return [];
@@ -78,13 +83,13 @@ export default function EconomyPage() {
     return count;
   }, [playerRikishi]);
 
-  // Top earnes
+  // Top earners
   const topEarners = useMemo(() => {
-    return playerRikishi
-      .filter((r) => r && typeof r === "object")
+    return (playerRikishi as Array<NonNullable<(typeof playerRikishi)[number]>>)
+      .filter((r): r is NonNullable<typeof r> => r && typeof r === "object")
       .sort((a, b) => {
-        const av = Number(a?.economics?.careerKenshoWon ?? 0) || 0;
-        const bv = Number(b?.economics?.careerKenshoWon ?? 0) || 0;
+        const av = Number(a.economics?.careerKenshoWon ?? 0) || 0;
+        const bv = Number(b.economics?.careerKenshoWon ?? 0) || 0;
         return bv - av;
       })
       .slice(0, 5);
@@ -122,6 +127,11 @@ export default function EconomyPage() {
       </Helmet>
 
       <div className="space-y-6">
+        <PageHeader
+          eyebrow="── OFFICE ──"
+          title="Financial Management"
+          lede="Treasury overview, sponsorships, and debt obligations."
+        />
         {/* Financial Health Overview */}
         <div className="grid gap-6 md:grid-cols-3">
           <FinancialHealthOverview
@@ -138,7 +148,7 @@ export default function EconomyPage() {
         {/* Debt & Obligations (FM v2.0) */}
         <DebtSection
           activeLoans={
-            (playerHeya as typeof playerHeya & { activeLoans?: unknown[] }).activeLoans as any[]
+            (playerHeya as typeof playerHeya & { activeLoans?: DebtLoan[] }).activeLoans ?? []
           }
         />
 
@@ -167,7 +177,7 @@ export default function EconomyPage() {
         <IncomeExpensesCards weeklyFinances={weeklyFinances} />
 
         {/* Sponsor Draw */}
-        <SponsorDrawCard topEarners={topEarners as any[]} />
+        <SponsorDrawCard topEarners={topEarners} />
 
         {/* Info Note */}
         <EconomyInfoNote />

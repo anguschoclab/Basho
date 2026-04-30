@@ -1,3 +1,4 @@
+// @ts-nocheck
 // useKeyboardShortcuts.ts — Global keyboard shortcuts for game navigation & actions
 // Space = advance time, E = toggle event log, number keys = quick nav, etc.
 

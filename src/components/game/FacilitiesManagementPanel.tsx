@@ -21,6 +21,7 @@ import {
   getMonthlyMaintenanceCost,
   getUpgradeCostEstimate,
 } from "@/presenters/uiDigest";
+import { formatYen } from "@/utils/engineUtils";
 
 const AXIS_META: Record<
   FacilityAxis,
@@ -146,7 +147,7 @@ export function FacilitiesManagementPanel({
                 Monthly Upkeep
               </div>
               <span className="font-mono text-foreground">
-                ¥{monthlyMaintenance.toLocaleString()}
+                {formatYen(monthlyMaintenance)}
               </span>
             </div>
           </div>
@@ -177,7 +178,7 @@ export function FacilitiesManagementPanel({
           }`}
         >
           {lastResult.success
-            ? `Upgraded ${lastResult.axis} from ${lastResult.oldLevel} → ${lastResult.newLevel} for ¥${lastResult.cost.toLocaleString()}`
+            ? `Upgraded ${lastResult.axis} from ${lastResult.oldLevel} → ${lastResult.newLevel} for ${formatYen(lastResult.cost)}`
             : `Cannot upgrade: ${lastResult.reason}`}
         </div>
       )}
@@ -238,7 +239,7 @@ export function FacilitiesManagementPanel({
                       onClick={() => handleUpgrade(axis, 1)}
                     >
                       <ArrowUp className="h-3 w-3" />
-                      +1 (¥{cost1.toLocaleString()})
+                      +1 ({formatYen(cost1)})
                     </Button>
                     <Button
                       size="sm"
@@ -248,7 +249,7 @@ export function FacilitiesManagementPanel({
                       onClick={() => handleUpgrade(axis, 5)}
                     >
                       <ArrowUp className="h-3 w-3" />
-                      +5 (¥{cost5.toLocaleString()})
+                      +5 ({formatYen(cost5)})
                     </Button>
                   </div>
                 )}

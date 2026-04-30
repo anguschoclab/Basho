@@ -57,6 +57,24 @@ export interface TalentCandidate {
     volatility: number;
   };
   isAmateurStar?: boolean;
+  isEmergentProdigy?: boolean; // Ultra-rare (1.5%) high-potential recruit
+
+  /** Potential Ability per stat (0–100). Hidden; revealed via scouting. */
+  potentialStats?: {
+    strength: number;
+    speed: number;
+    technique: number;
+    balance: number;
+    stamina: number;
+    mental: number;
+    adaptability: number;
+  };
+  /** Hidden development profile — revealed only at deep scouting. */
+  developmentProfile?: "prodigy" | "standard" | "late_bloomer" | "journeyman" | "early_peaker";
+  developmentSpeed?: number;
+  peakAgeOffset?: number;
+  ceilingFraction?: number;
+  bloodlineTrait?: import("./dynasty").BloodlineTrait;
 }
 
 /** Defines the structure for talent pool state. */

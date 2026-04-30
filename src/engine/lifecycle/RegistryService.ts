@@ -1,11 +1,6 @@
-import { EventBus } from "../events";
-import { BardEngine } from "../narrative/BardEngine";
-import { rngFromSeed } from "../rng";
-import { getStableRikishi, getActiveRikishi } from "../queries";
+import { getActiveRikishi } from "../queries";
 import * as talentpool from "../systems/generation/TalentPoolService";
-import { safeCall } from "../utils/safe";
 import type { WorldState } from "../types/world";
-import type { Id } from "../types/common";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 
@@ -15,22 +10,15 @@ import type { StateImpact } from "../core/StateImpact";
  *   2) Mid-interim (week 3) — handled in dailyTick weekly gate
  *
  * NPC stables auto-fill from talent pool.
- * Player gets a recruitment window event with duration tracking.
- * Returns StateImpact describing recruitment window changes instead of mutating state.
- * Note: talentpool.fillVacanciesForNPC still mutates directly and will be migrated in Phase 4.
- *
- * @param world Current WorldState
- * @param vacanciesByHeyaId Map of heya IDs to vacancy counts
  */
-export function runRecruitmentWindow(
+export function openRecruitmentWindow(
   world: WorldState,
   vacanciesByHeyaId: Record<string, number>
 ): StateImpact {
-  const builder = createImpactBuilder("recruitmentWindow");
+  const builder = createImpactBuilder("openRecruitmentWindow");
 
   // NPC stables auto-fill from talent pool
-  // Still mutates directly - will migrate in Phase 4
-  safeCall(() => talentpool.fillVacanciesForNPC(world, vacanciesByHeyaId));
+  builder.merge(talentpool.fillVacanciesForNPC(world, vacanciesByHeyaId));
 
   // Track recruitment window state for player
   const playerHeyaId = world.playerHeyaId;

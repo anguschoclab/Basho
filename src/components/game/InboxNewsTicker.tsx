@@ -4,7 +4,7 @@
  * A persistent, unobtrusive ticker for minor drama and engine updates.
  */
 
-import React from "react";
+
 import { useGame } from "../../contexts/GameContext";
 import { Badge } from "../ui/badge";
 import { cn } from "@/lib/utils";

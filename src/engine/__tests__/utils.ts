@@ -1,31 +1,23 @@
-/**
- * src/engine/__tests__/utils.ts
- * =============================
- * Centralized mock factories for test files.
- * Import from here instead of defining locally per-file.
- */
-
 import type { Rikishi, RikishiStats } from "../types/rikishi";
-import type { TacticalArchetype } from "../types/combat";
+import type { TacticalArchetype, CombatArchetype, Style } from "../types/combat";
 import type { WorldState } from "../types/world";
 import type { BashoState } from "../types/basho";
 import type { Heya } from "../types/heya";
 import type { HeyaBrandIdentity, KeshoMawashi, YokozunaTsuna } from "../types/keshoMawashi";
 import { SeededRNG } from "../rng";
+import type { Id } from "../types/common";
 
 // ── Rikishi ────────────────────────────────────────────────────────────────
 
 export function mockRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikishi {
-  const power = overrides.power ?? (overrides.stats as unknown as RikishiStats)?.strength ?? 50;
-  const speed = overrides.speed ?? (overrides.stats as unknown as RikishiStats)?.speed ?? 50;
-  const balance = overrides.balance ?? (overrides.stats as unknown as RikishiStats)?.balance ?? 50;
-  const technique =
-    overrides.technique ?? (overrides.stats as unknown as RikishiStats)?.technique ?? 50;
-  const aggression =
-    overrides.aggression ?? (overrides.stats as unknown as RikishiStats)?.aggression ?? 50;
-  const mental = overrides.mental ?? (overrides.stats as unknown as RikishiStats)?.mental ?? 50;
-  const experience =
-    overrides.experience ?? (overrides.stats as unknown as RikishiStats)?.experience ?? 50;
+  const statsOverride = overrides.stats;
+  const power = overrides.power ?? statsOverride?.strength ?? 50;
+  const speed = overrides.speed ?? statsOverride?.speed ?? 50;
+  const balance = overrides.balance ?? statsOverride?.balance ?? 50;
+  const technique = overrides.technique ?? statsOverride?.technique ?? 50;
+  const aggression = overrides.aggression ?? statsOverride?.aggression ?? 50;
+  const mental = overrides.mental ?? statsOverride?.mental ?? 50;
+  const experience = overrides.experience ?? statsOverride?.experience ?? 50;
 
   return {
     id,
@@ -40,8 +32,8 @@ export function mockRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikis
     side: "east",
     weight: 140,
     height: 180,
-    style: "oshi",
-    archetype: "all_rounder" as unknown as TacticalArchetype,
+    style: "oshi" as Style,
+    archetype: "all_rounder" as CombatArchetype,
     power,
     speed,
     balance,
@@ -77,20 +69,21 @@ export function mockRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikis
         ginboshiConceded: 0,
         specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
       },
-    } as unknown as RikishiStats,
+      ...statsOverride,
+    } as RikishiStats,
     careerWins: 20,
     careerLosses: 10,
     favoredKimarite: [],
     weakAgainstStyles: [],
     combatProfile: {
-      archetype: "all_rounder",
+      archetype: "all_rounder" as TacticalArchetype,
       familyPreferences: { push: 25, belt: 25, trick: 25, speed: 25 },
       preferredGrip: "none",
       preferredGripDepth: "standard",
       statModifiers: {},
     },
     ...overrides,
-  } as unknown as Rikishi;
+  } as Rikishi;
 }
 
 // ── Heya ───────────────────────────────────────────────────────────────────
@@ -110,7 +103,7 @@ export function makeMockHeya(id: string, overrides: Partial<Heya> = {}): Heya {
     facilities: { training: 50, recovery: 50, nutrition: 50, housing: 50 },
     riskIndicators: { financial: false, welfare: false, governance: false },
     ...overrides,
-  } as unknown as Heya;
+  } as Heya;
 }
 
 // ── WorldState ─────────────────────────────────────────────────────────────
@@ -125,21 +118,24 @@ export function makeMockWorld(overrides: Partial<WorldState> = {}): WorldState {
     oyakata: new Map(),
     events: { version: "1.0.0", log: [], dedupe: {} },
     history: [],
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ftue: {} as any,
-    calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
+    ftue: { onboardingComplete: true },
     year: 2025,
     week: 1,
     dayIndexGlobal: 0,
     id: "world-test",
     seed,
     cyclePhase: "interim",
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    records: {} as any,
+    records: {
+      allTimeWins: { value: 0, rikishiId: "none" as Id, year: 0 },
+      yushoRecord: { value: 0, rikishiId: "none" as Id, year: 0 },
+      kinboshiRecord: { value: 0, rikishiId: "none" as Id, year: 0 },
+    },
     settings: { archiveMode: "standard" },
     rng: new SeededRNG(seed),
+    meta: { tone: "classic", drift: {} },
+    globalKimariteStats: {},
     ...overrides,
-  } as unknown as WorldState;
+  } as WorldState;
 }
 
 // ── BashoState ─────────────────────────────────────────────────────────────
@@ -155,7 +151,7 @@ export function makeMockBasho(overrides: Partial<BashoState> = {}): BashoState {
     standings: new Map(),
     isActive: true,
     ...overrides,
-  } as unknown as BashoState;
+  } as BashoState;
 }
 
 // ── Kesho-Mawashi / Heya Brand Identity ────────────────────────────────────
@@ -172,8 +168,20 @@ export function mockHeyaBrandIdentity(
     primaryColor: rng.pick(["#1a365d", "#744210", "#276749", "#742a2a", "#2d3748"]),
     secondaryColor: rng.pick(["#2c5282", "#975a16", "#2f855a", "#9b2c2c", "#4a5568"]),
     accentColor: rng.pick(["#d69e2e", "#ecc94b", "#f6ad55", "#fc8181", "#90cdf4"]),
-    crestMotif: rng.pick(["sakura", "pine", "waves", "mountain", "rising_sun"]),
-    crestStyle: rng.pick(["circular", "shield", "diamond", "oval", "square"]),
+    crestMotif: rng.pick([
+      "sakura",
+      "pine",
+      "waves",
+      "mountain",
+      "rising_sun",
+    ]) as HeyaBrandIdentity["crestMotif"],
+    crestStyle: rng.pick([
+      "circular",
+      "shield",
+      "diamond",
+      "oval",
+      "square",
+    ]) as HeyaBrandIdentity["crestStyle"],
     traditionLevel: 0.5 + rng.next() * 0.5, // 0.5-1.0
     createdAt: { year: 2025, basho: "hatsu" },
     ...overrides,
@@ -259,18 +267,18 @@ export function mockRikishiWithKesho(
 export function makeMockWorldWithBrands(
   heyaCount: number = 5,
   overrides: Partial<WorldState> = {}
-): WorldState & { heyaBrandIdentities: Map<string, HeyaBrandIdentity> } {
+): WorldState & { heyaBrandIdentities: Map<Id, HeyaBrandIdentity> } {
   const world = makeMockWorld(overrides);
-  const heyaBrandIdentities = new Map<string, HeyaBrandIdentity>();
+  const heyaBrandIdentities = new Map<Id, HeyaBrandIdentity>();
 
   for (let i = 0; i < heyaCount; i++) {
     const { heya, brand } = mockHeyaWithBrand(`heya-${i + 1}`);
-    world.heyas.set(heya.id, heya as unknown as Heya);
+    world.heyas.set(heya.id, heya);
     heyaBrandIdentities.set(brand.id, brand);
   }
 
   return {
     ...world,
     heyaBrandIdentities,
-  } as WorldState & { heyaBrandIdentities: Map<string, HeyaBrandIdentity> };
+  } as WorldState & { heyaBrandIdentities: Map<Id, HeyaBrandIdentity> };
 }

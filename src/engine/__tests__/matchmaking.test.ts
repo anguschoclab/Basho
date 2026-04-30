@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { describe, it, expect } from "vitest";
 import { buildSwissTorikumi, scorePairing } from "../matchmaking/index";
-import { mockRikishi, makeMockBasho } from "./utils";
+import { MockFactory } from "../../test/utils/MockFactory";
 import type { BashoState } from "../types/basho";
-import type { Rikishi } from "../types/rikishi";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -18,33 +16,19 @@ function setStandings(
   }
 }
 
-/**
- * Create a mock Rikishi with flexible rank/rankNumber.
- * Uses mockRikishi from utils.ts with sensible defaults.
- */
-let mockCounter = 0;
-function createRikishi(overrides: Partial<Rikishi> = {}): Rikishi {
-  const id = overrides.id || `r-mock-${(mockCounter++).toString(36)}`;
-  return mockRikishi(id, {
-    rank: "maegashira",
-    rankNumber: 5,
-    ...overrides,
-  });
-}
-
 // ---------------------------------------------------------------------------
 // PHASE 1 — San'yaku Gauntlet (Days 1–7)
 // ---------------------------------------------------------------------------
 
-describe("buildSwissTorikumi — Phase 1 (Days 1–7)", () => {
+describe("matchmaking.test.ts — Phase 1 (Days 1–7)", () => {
   it("pairs elite (yokozuna/ozeki) with upper-joi (M1-M4) on day 1", () => {
-    const yokozuna = createRikishi({ id: "yoko-1", rank: "yokozuna" });
-    const ozeki = createRikishi({ id: "ozeki-1", rank: "ozeki" });
-    const m1 = createRikishi({ id: "m1-1", rank: "maegashira", rankNumber: 1 });
-    const m2 = createRikishi({ id: "m2-1", rank: "maegashira", rankNumber: 2 });
-    const m5 = createRikishi({ id: "m5-1", rank: "maegashira", rankNumber: 5 });
+    const yokozuna = MockFactory.createRikishi({ id: "yoko-1", rank: "yokozuna" });
+    const ozeki = MockFactory.createRikishi({ id: "ozeki-1", rank: "ozeki" });
+    const m1 = MockFactory.createRikishi({ id: "m1-1", rank: "maegashira", rankNumber: 1 });
+    const m2 = MockFactory.createRikishi({ id: "m2-1", rank: "maegashira", rankNumber: 2 });
+    const m5 = MockFactory.createRikishi({ id: "m5-1", rank: "maegashira", rankNumber: 5 });
 
-    const basho = makeMockBasho({ day: 1 });
+    const basho = MockFactory.createBasho({ day: 1 });
     const pairings = buildSwissTorikumi(basho, [yokozuna, ozeki, m1, m2, m5], {
       seed: "test-phase1-gauntlet",
       division: "makuuchi",
@@ -63,12 +47,32 @@ describe("buildSwissTorikumi — Phase 1 (Days 1–7)", () => {
   });
 
   it("enforces heya block even in fallback pairing on day 7", () => {
-    const m1 = createRikishi({ id: "m1-1", rank: "maegashira", rankNumber: 1, heyaId: "heya-a" });
-    const m2 = createRikishi({ id: "m2-1", rank: "maegashira", rankNumber: 2, heyaId: "heya-a" });
-    const m3 = createRikishi({ id: "m3-1", rank: "maegashira", rankNumber: 3, heyaId: "heya-b" });
-    const m4 = createRikishi({ id: "m4-1", rank: "maegashira", rankNumber: 4, heyaId: "heya-b" });
+    const m1 = MockFactory.createRikishi({
+      id: "m1-1",
+      rank: "maegashira",
+      rankNumber: 1,
+      heyaId: "heya-a",
+    });
+    const m2 = MockFactory.createRikishi({
+      id: "m2-1",
+      rank: "maegashira",
+      rankNumber: 2,
+      heyaId: "heya-a",
+    });
+    const m3 = MockFactory.createRikishi({
+      id: "m3-1",
+      rank: "maegashira",
+      rankNumber: 3,
+      heyaId: "heya-b",
+    });
+    const m4 = MockFactory.createRikishi({
+      id: "m4-1",
+      rank: "maegashira",
+      rankNumber: 4,
+      heyaId: "heya-b",
+    });
 
-    const basho = makeMockBasho({ day: 7 });
+    const basho = MockFactory.createBasho({ day: 7 });
     const pairings = buildSwissTorikumi(basho, [m1, m2, m3, m4], {
       seed: "test-heya-block",
       division: "makuuchi",
@@ -83,12 +87,12 @@ describe("buildSwissTorikumi — Phase 1 (Days 1–7)", () => {
   });
 
   it("sorts output chronologically on day 1 (lowest rank first)", () => {
-    const yoko = createRikishi({ id: "yoko", rank: "yokozuna" });
-    const m10 = createRikishi({ id: "m10", rank: "maegashira", rankNumber: 10 });
-    const m11 = createRikishi({ id: "m11", rank: "maegashira", rankNumber: 11 });
-    const m1 = createRikishi({ id: "m1", rank: "maegashira", rankNumber: 1 });
+    const yoko = MockFactory.createRikishi({ id: "yoko", rank: "yokozuna" });
+    const m10 = MockFactory.createRikishi({ id: "m10", rank: "maegashira", rankNumber: 10 });
+    const m11 = MockFactory.createRikishi({ id: "m11", rank: "maegashira", rankNumber: 11 });
+    const m1 = MockFactory.createRikishi({ id: "m1", rank: "maegashira", rankNumber: 1 });
 
-    const basho = makeMockBasho({ day: 1 });
+    const basho = MockFactory.createBasho({ day: 1 });
     const pairings = buildSwissTorikumi(basho, [yoko, m10, m11, m1], {
       seed: "test-chrono-day1",
       division: "makuuchi",
@@ -104,14 +108,14 @@ describe("buildSwissTorikumi — Phase 1 (Days 1–7)", () => {
 // PHASE 2 — Swiss System (Days 8–14)
 // ---------------------------------------------------------------------------
 
-describe("buildSwissTorikumi — Phase 2 (Days 8–14)", () => {
+describe("matchmaking.test.ts — Phase 2 (Days 8–14)", () => {
   it("groups rikishi into win buckets on day 8", () => {
-    const r1 = createRikishi({ id: "r1" });
-    const r2 = createRikishi({ id: "r2" });
-    const r3 = createRikishi({ id: "r3" });
-    const r4 = createRikishi({ id: "r4" });
+    const r1 = MockFactory.createRikishi({ id: "r1" });
+    const r2 = MockFactory.createRikishi({ id: "r2" });
+    const r3 = MockFactory.createRikishi({ id: "r3" });
+    const r4 = MockFactory.createRikishi({ id: "r4" });
 
-    const basho = makeMockBasho({ day: 8 });
+    const basho = MockFactory.createBasho({ day: 8 });
     setStandings(basho, {
       r1: { wins: 7, losses: 0 },
       r2: { wins: 7, losses: 0 },
@@ -133,15 +137,14 @@ describe("buildSwissTorikumi — Phase 2 (Days 8–14)", () => {
         (p.eastId === r1.id && p.westId === r2.id) || (p.eastId === r2.id && p.westId === r1.id)
     );
     expect(r1r2Pair).toBeDefined();
-    expect([r1r2Pair!.eastId, r1r2Pair!.westId].sort()).toEqual([r1.id, r2.id].sort());
   });
 
   it("pulls up highest-ranked from lower bucket on day 10 when bucket is odd", () => {
-    const r1 = createRikishi({ id: "r1", rank: "maegashira", rankNumber: 1 });
-    const r2 = createRikishi({ id: "r2", rank: "maegashira", rankNumber: 2 });
-    const r3 = createRikishi({ id: "r3", rank: "maegashira", rankNumber: 5 });
+    const r1 = MockFactory.createRikishi({ id: "r1", rank: "maegashira", rankNumber: 1 });
+    const r2 = MockFactory.createRikishi({ id: "r2", rank: "maegashira", rankNumber: 2 });
+    const r3 = MockFactory.createRikishi({ id: "r3", rank: "maegashira", rankNumber: 5 });
 
-    const basho = makeMockBasho({ day: 10 });
+    const basho = MockFactory.createBasho({ day: 10 });
     setStandings(basho, {
       r1: { wins: 8, losses: 1 },
       r2: { wins: 8, losses: 1 },
@@ -154,7 +157,7 @@ describe("buildSwissTorikumi — Phase 2 (Days 8–14)", () => {
     });
 
     // r1 (8W) should pair with r2 (8W) — same bucket
-    // r3 (6W) is odd-one-out and should be paired in the result
+    // r3 (6W) is odd-one-out and should be paired in the result if there was a full pool
     expect(pairings.length).toBeGreaterThanOrEqual(1);
   });
 });
@@ -163,13 +166,13 @@ describe("buildSwissTorikumi — Phase 2 (Days 8–14)", () => {
 // PHASE 3 — Day 15 (Senshuraku)
 // ---------------------------------------------------------------------------
 
-describe("buildSwissTorikumi — Phase 3 (Day 15)", () => {
+describe("matchmaking.test.ts — Phase 3 (Day 15)", () => {
   it("pairs Maegashira yusho leader with yokozuna gatekeeper (yusho exception)", () => {
-    const m10 = createRikishi({ id: "m10", rank: "maegashira", rankNumber: 10 });
-    const yoko = createRikishi({ id: "yoko", rank: "yokozuna" });
-    const ozeki = createRikishi({ id: "ozeki", rank: "ozeki" });
+    const m10 = MockFactory.createRikishi({ id: "m10", rank: "maegashira", rankNumber: 10 });
+    const yoko = MockFactory.createRikishi({ id: "yoko", rank: "yokozuna" });
+    const ozeki = MockFactory.createRikishi({ id: "ozeki", rank: "ozeki" });
 
-    const basho = makeMockBasho({ day: 15 });
+    const basho = MockFactory.createBasho({ day: 15 });
     setStandings(basho, {
       m10: { wins: 14, losses: 0 }, // Exactly one leader, Maegashira
       yoko: { wins: 13, losses: 1 },
@@ -192,21 +195,21 @@ describe("buildSwissTorikumi — Phase 3 (Day 15)", () => {
   });
 
   it("does NOT trigger yusho exception if there are multiple leaders", () => {
-    const m10a = createRikishi({
+    const m10a = MockFactory.createRikishi({
       id: "m10a",
       rank: "maegashira",
       rankNumber: 10,
       heyaId: "heya-a",
     });
-    const m10b = createRikishi({
+    const m10b = MockFactory.createRikishi({
       id: "m10b",
       rank: "maegashira",
       rankNumber: 11,
       heyaId: "heya-b",
     });
-    const yoko = createRikishi({ id: "yoko", rank: "yokozuna", heyaId: "heya-c" });
+    const yoko = MockFactory.createRikishi({ id: "yoko", rank: "yokozuna", heyaId: "heya-c" });
 
-    const basho = makeMockBasho({ day: 15 });
+    const basho = MockFactory.createBasho({ day: 15 });
     setStandings(basho, {
       m10a: { wins: 14, losses: 0 },
       m10b: { wins: 14, losses: 0 }, // Two leaders — exception doesn't apply
@@ -224,10 +227,10 @@ describe("buildSwissTorikumi — Phase 3 (Day 15)", () => {
   });
 
   it("does NOT trigger yusho exception if leader is Sekiwake", () => {
-    const sekiwake = createRikishi({ id: "sekiwake", rank: "sekiwake" });
-    const yoko = createRikishi({ id: "yoko", rank: "yokozuna" });
+    const sekiwake = MockFactory.createRikishi({ id: "sekiwake", rank: "sekiwake" });
+    const yoko = MockFactory.createRikishi({ id: "yoko", rank: "yokozuna" });
 
-    const basho = makeMockBasho({ day: 15 });
+    const basho = MockFactory.createBasho({ day: 15 });
     setStandings(basho, {
       sekiwake: { wins: 14, losses: 0 }, // Leader but not Maegashira
       yoko: { wins: 13, losses: 1 },
@@ -243,12 +246,17 @@ describe("buildSwissTorikumi — Phase 3 (Day 15)", () => {
   });
 
   it("forces yokozuna/ozeki (kore yori san'yaku) to pair against each other", () => {
-    const yoko1 = createRikishi({ id: "yoko1", rank: "yokozuna", heyaId: "heya-a" });
-    const yoko2 = createRikishi({ id: "yoko2", rank: "yokozuna", heyaId: "heya-b" });
-    const ozeki = createRikishi({ id: "ozeki", rank: "ozeki", heyaId: "heya-c" });
-    const m5 = createRikishi({ id: "m5", rank: "maegashira", rankNumber: 5, heyaId: "heya-d" });
+    const yoko1 = MockFactory.createRikishi({ id: "yoko1", rank: "yokozuna", heyaId: "heya-a" });
+    const yoko2 = MockFactory.createRikishi({ id: "yoko2", rank: "yokozuna", heyaId: "heya-b" });
+    const ozeki = MockFactory.createRikishi({ id: "ozeki", rank: "ozeki", heyaId: "heya-c" });
+    const m5 = MockFactory.createRikishi({
+      id: "m5",
+      rank: "maegashira",
+      rankNumber: 5,
+      heyaId: "heya-d",
+    });
 
-    const basho = makeMockBasho({ day: 15 });
+    const basho = MockFactory.createBasho({ day: 15 });
     setStandings(basho, {
       yoko1: { wins: 10, losses: 4 },
       yoko2: { wins: 10, losses: 4 },
@@ -272,11 +280,11 @@ describe("buildSwissTorikumi — Phase 3 (Day 15)", () => {
   });
 
   it("tags the most elite pairing as 'finale' on day 15", () => {
-    const yoko1 = createRikishi({ id: "yoko1", rank: "yokozuna", heyaId: "heya-a" });
-    const yoko2 = createRikishi({ id: "yoko2", rank: "yokozuna", heyaId: "heya-b" });
-    const ozeki = createRikishi({ id: "ozeki", rank: "ozeki", heyaId: "heya-c" });
+    const yoko1 = MockFactory.createRikishi({ id: "yoko1", rank: "yokozuna", heyaId: "heya-a" });
+    const yoko2 = MockFactory.createRikishi({ id: "yoko2", rank: "yokozuna", heyaId: "heya-b" });
+    const ozeki = MockFactory.createRikishi({ id: "ozeki", rank: "ozeki", heyaId: "heya-c" });
 
-    const basho = makeMockBasho({ day: 15 });
+    const basho = MockFactory.createBasho({ day: 15 });
     setStandings(basho, {
       yoko1: { wins: 10, losses: 4 },
       yoko2: { wins: 10, losses: 4 },
@@ -295,11 +303,11 @@ describe("buildSwissTorikumi — Phase 3 (Day 15)", () => {
 
   it("unpaired elites fall into swiss pool and can be matched with non-elites", () => {
     // Create a stalemate: two yokozuna from same heya (forced heya block violation)
-    const yoko1 = createRikishi({ id: "yoko1", rank: "yokozuna", heyaId: "same-heya" });
-    const yoko2 = createRikishi({ id: "yoko2", rank: "yokozuna", heyaId: "same-heya" });
-    const m5 = createRikishi({ id: "m5", rank: "maegashira", rankNumber: 5 });
+    const yoko1 = MockFactory.createRikishi({ id: "yoko1", rank: "yokozuna", heyaId: "same-heya" });
+    const yoko2 = MockFactory.createRikishi({ id: "yoko2", rank: "yokozuna", heyaId: "same-heya" });
+    const m5 = MockFactory.createRikishi({ id: "m5", rank: "maegashira", rankNumber: 5 });
 
-    const basho = makeMockBasho({ day: 15 });
+    const basho = MockFactory.createBasho({ day: 15 });
     setStandings(basho, {
       yoko1: { wins: 10, losses: 4 },
       yoko2: { wins: 10, losses: 4 },
@@ -321,14 +329,14 @@ describe("buildSwissTorikumi — Phase 3 (Day 15)", () => {
 // Chronological Sort
 // ---------------------------------------------------------------------------
 
-describe("buildSwissTorikumi — chronological order", () => {
+describe("matchmaking.test.ts — chronological order", () => {
   it("places lower-ranked bouts at the start and elite bouts at the end", () => {
-    const yoko = createRikishi({ id: "yoko", rank: "yokozuna" });
-    const m15 = createRikishi({ id: "m15", rank: "maegashira", rankNumber: 15 });
-    const m14 = createRikishi({ id: "m14", rank: "maegashira", rankNumber: 14 });
-    const m1 = createRikishi({ id: "m1", rank: "maegashira", rankNumber: 1 });
+    const yoko = MockFactory.createRikishi({ id: "yoko", rank: "yokozuna" });
+    const m15 = MockFactory.createRikishi({ id: "m15", rank: "maegashira", rankNumber: 15 });
+    const m14 = MockFactory.createRikishi({ id: "m14", rank: "maegashira", rankNumber: 14 });
+    const m1 = MockFactory.createRikishi({ id: "m1", rank: "maegashira", rankNumber: 1 });
 
-    const basho = makeMockBasho({ day: 8 });
+    const basho = MockFactory.createBasho({ day: 8 });
     setStandings(basho, {
       yoko: { wins: 7, losses: 0 },
       m15: { wins: 4, losses: 3 },
@@ -357,13 +365,13 @@ describe("buildSwissTorikumi — chronological order", () => {
 // Integration: Full 15-day schedule
 // ---------------------------------------------------------------------------
 
-describe("buildSwissTorikumi — full 15-day schedule", () => {
+describe("matchmaking.test.ts — full 15-day schedule", () => {
   it("dispatches to phase1 on day 1", () => {
-    const yoko = createRikishi({ id: "yoko", rank: "yokozuna" });
-    const m1 = createRikishi({ id: "m1", rank: "maegashira", rankNumber: 1 });
-    const m2 = createRikishi({ id: "m2", rank: "maegashira", rankNumber: 2 });
+    const yoko = MockFactory.createRikishi({ id: "yoko", rank: "yokozuna" });
+    const m1 = MockFactory.createRikishi({ id: "m1", rank: "maegashira", rankNumber: 1 });
+    const m2 = MockFactory.createRikishi({ id: "m2", rank: "maegashira", rankNumber: 2 });
 
-    const basho = makeMockBasho({ day: 1 });
+    const basho = MockFactory.createBasho({ day: 1 });
     const pairings = buildSwissTorikumi(basho, [yoko, m1, m2], {
       seed: "test-day1",
       division: "makuuchi",
@@ -373,11 +381,11 @@ describe("buildSwissTorikumi — full 15-day schedule", () => {
   });
 
   it("dispatches to phase2 on day 8", () => {
-    const r1 = createRikishi({ id: "r1" });
-    const r2 = createRikishi({ id: "r2" });
-    const r3 = createRikishi({ id: "r3" });
+    const r1 = MockFactory.createRikishi({ id: "r1" });
+    const r2 = MockFactory.createRikishi({ id: "r2" });
+    const r3 = MockFactory.createRikishi({ id: "r3" });
 
-    const basho = makeMockBasho({ day: 8 });
+    const basho = MockFactory.createBasho({ day: 8 });
     setStandings(basho, {
       r1: { wins: 7, losses: 0 },
       r2: { wins: 6, losses: 1 },
@@ -393,11 +401,11 @@ describe("buildSwissTorikumi — full 15-day schedule", () => {
   });
 
   it("dispatches to phase3 on day 15", () => {
-    const yoko = createRikishi({ id: "yoko", rank: "yokozuna" });
-    const m1 = createRikishi({ id: "m1", rank: "maegashira", rankNumber: 1 });
-    const m2 = createRikishi({ id: "m2", rank: "maegashira", rankNumber: 2 });
+    const yoko = MockFactory.createRikishi({ id: "yoko", rank: "yokozuna" });
+    const m1 = MockFactory.createRikishi({ id: "m1", rank: "maegashira", rankNumber: 1 });
+    const m2 = MockFactory.createRikishi({ id: "m2", rank: "maegashira", rankNumber: 2 });
 
-    const basho = makeMockBasho({ day: 15 });
+    const basho = MockFactory.createBasho({ day: 15 });
     setStandings(basho, {
       yoko: { wins: 12, losses: 2 },
       m1: { wins: 10, losses: 4 },
@@ -419,21 +427,25 @@ describe("buildSwissTorikumi — full 15-day schedule", () => {
 
 describe("scorePairing — kadoban pressure", () => {
   it("boosts score for an ozeki with < 8 wins on day 11", () => {
-    const ozeki = createRikishi({ id: "ozeki-kadoban", rank: "ozeki", heyaId: "heya-a" });
-    const opponent = createRikishi({
+    const ozeki = MockFactory.createRikishi({
+      id: "ozeki-kadoban",
+      rank: "ozeki",
+      heyaId: "heya-a",
+    });
+    const opponent = MockFactory.createRikishi({
       id: "m1",
       rank: "maegashira",
       rankNumber: 1,
       heyaId: "heya-b",
     });
 
-    const bashoKadoban = makeMockBasho({ day: 11 });
+    const bashoKadoban = MockFactory.createBasho({ day: 11 });
     setStandings(bashoKadoban, {
       "ozeki-kadoban": { wins: 5, losses: 5 },
       m1: { wins: 7, losses: 3 },
     });
 
-    const bashoSafe = makeMockBasho({ day: 11 });
+    const bashoSafe = MockFactory.createBasho({ day: 11 });
     setStandings(bashoSafe, {
       "ozeki-kadoban": { wins: 8, losses: 2 }, // already has kachi-koshi
       m1: { wins: 7, losses: 3 },
@@ -444,21 +456,23 @@ describe("scorePairing — kadoban pressure", () => {
 
     expect(pairingKadoban).not.toBeNull();
     expect(pairingSafe).not.toBeNull();
-    // Kadoban situation should produce higher score
-    expect(pairingKadoban!.score).toBeGreaterThan(pairingSafe!.score);
-    expect(pairingKadoban!.reasons).toContain("kadoban_pressure");
+    if (pairingKadoban && pairingSafe) {
+      // Kadoban situation should produce higher score
+      expect(pairingKadoban.score).toBeGreaterThan(pairingSafe.score);
+      expect(pairingKadoban.reasons).toContain("kadoban_pressure");
+    }
   });
 
   it("does not apply kadoban bonus before day 10", () => {
-    const ozeki = createRikishi({ id: "ozeki-early", rank: "ozeki", heyaId: "heya-a" });
-    const m1 = createRikishi({
+    const ozeki = MockFactory.createRikishi({ id: "ozeki-early", rank: "ozeki", heyaId: "heya-a" });
+    const m1 = MockFactory.createRikishi({
       id: "m1-early",
       rank: "maegashira",
       rankNumber: 1,
       heyaId: "heya-b",
     });
 
-    const bashoEarly = makeMockBasho({ day: 7 });
+    const bashoEarly = MockFactory.createBasho({ day: 7 });
     setStandings(bashoEarly, {
       "ozeki-early": { wins: 2, losses: 5 },
       "m1-early": { wins: 4, losses: 3 },
@@ -467,14 +481,21 @@ describe("scorePairing — kadoban pressure", () => {
     const pairing = scorePairing({ basho: bashoEarly, a: ozeki, b: m1 });
 
     expect(pairing).not.toBeNull();
-    expect(pairing!.reasons).not.toContain("kadoban_pressure");
+    if (pairing) {
+      expect(pairing.reasons).not.toContain("kadoban_pressure");
+    }
   });
 
   it("applies kadoban bonus when opponent is the ozeki (not just a)", () => {
-    const m5 = createRikishi({ id: "m5-opp", rank: "maegashira", rankNumber: 5, heyaId: "heya-x" });
-    const ozeki = createRikishi({ id: "ozeki-b", rank: "ozeki", heyaId: "heya-y" });
+    const m5 = MockFactory.createRikishi({
+      id: "m5-opp",
+      rank: "maegashira",
+      rankNumber: 5,
+      heyaId: "heya-x",
+    });
+    const ozeki = MockFactory.createRikishi({ id: "ozeki-b", rank: "ozeki", heyaId: "heya-y" });
 
-    const basho = makeMockBasho({ day: 12 });
+    const basho = MockFactory.createBasho({ day: 12 });
     setStandings(basho, {
       "m5-opp": { wins: 6, losses: 5 },
       "ozeki-b": { wins: 6, losses: 5 },
@@ -483,6 +504,8 @@ describe("scorePairing — kadoban pressure", () => {
     const pairing = scorePairing({ basho, a: m5, b: ozeki });
 
     expect(pairing).not.toBeNull();
-    expect(pairing!.reasons).toContain("kadoban_pressure");
+    if (pairing) {
+      expect(pairing.reasons).toContain("kadoban_pressure");
+    }
   });
 });

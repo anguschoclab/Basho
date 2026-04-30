@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect } from "vitest";
 import { checkStopCondition } from "../simulation/AutoSimService";
 import type { AutoSimConfig, StopCondition } from "../simulation/AutoSimService";
 import type { BashoSimResult } from "../types/basho";
-import { makeMockWorld, mockRikishi, makeMockHeya } from "./utils";
+import { MockFactory } from "../../test/utils/MockFactory";
 import { ChronicleService } from "../simulation/ChronicleService";
 
 describe("checkStopCondition", () => {
@@ -34,7 +33,7 @@ describe("checkStopCondition", () => {
 
   describe("yokozunaPromotion", () => {
     it("returns true when there is a yokozuna promotion", () => {
-      const world = makeMockWorld();
+      const world = MockFactory.createWorld();
       const config = createMockConfig();
       const bashoResult = createMockBashoResult({
         promotions: [{ rikishiId: "r1", from: "ozeki", to: "yokozuna", side: "east" }],
@@ -46,7 +45,7 @@ describe("checkStopCondition", () => {
     });
 
     it("returns false when there is no yokozuna promotion", () => {
-      const world = makeMockWorld();
+      const world = MockFactory.createWorld();
       const config = createMockConfig();
       const bashoResult = createMockBashoResult({
         promotions: [{ rikishiId: "r1", from: "sekiwake", to: "ozeki", side: "east" }],
@@ -60,7 +59,7 @@ describe("checkStopCondition", () => {
 
   describe("ozekiPromotion", () => {
     it("returns true when there is an ozeki promotion", () => {
-      const world = makeMockWorld();
+      const world = MockFactory.createWorld();
       const config = createMockConfig();
       const bashoResult = createMockBashoResult({
         promotions: [{ rikishiId: "r1", from: "sekiwake", to: "ozeki", side: "east" }],
@@ -72,7 +71,7 @@ describe("checkStopCondition", () => {
     });
 
     it("returns false when there is no ozeki promotion", () => {
-      const world = makeMockWorld();
+      const world = MockFactory.createWorld();
       const config = createMockConfig();
       const bashoResult = createMockBashoResult({
         promotions: [{ rikishiId: "r1", from: "komusubi", to: "sekiwake", side: "east" }],
@@ -86,7 +85,7 @@ describe("checkStopCondition", () => {
 
   describe("yusho", () => {
     it("returns true when player's rikishi wins yusho", () => {
-      const world = makeMockWorld();
+      const world = MockFactory.createWorld();
       const config = createMockConfig({
         playerHeyaId: "player-heya",
         observerMode: false,
@@ -99,13 +98,16 @@ describe("checkStopCondition", () => {
           losses: 0,
         },
       });
-      world.rikishi.set("player-rikishi", mockRikishi("player-rikishi", { heyaId: "player-heya" }));
+      world.rikishi.set(
+        "player-rikishi",
+        MockFactory.createRikishi("player-rikishi", { heyaId: "player-heya" })
+      );
 
       expect(checkStopCondition("yusho", bashoResult, world, config, chronicle)).toBe(true);
     });
 
     it("returns false when another heya's rikishi wins yusho", () => {
-      const world = makeMockWorld();
+      const world = MockFactory.createWorld();
       const config = createMockConfig({
         playerHeyaId: "player-heya",
         observerMode: false,
@@ -118,13 +120,16 @@ describe("checkStopCondition", () => {
           losses: 0,
         },
       });
-      world.rikishi.set("other-rikishi", mockRikishi("other-rikishi", { heyaId: "other-heya" }));
+      world.rikishi.set(
+        "other-rikishi",
+        MockFactory.createRikishi("other-rikishi", { heyaId: "other-heya" })
+      );
 
       expect(checkStopCondition("yusho", bashoResult, world, config, chronicle)).toBe(false);
     });
 
     it("returns false in observer mode even if player rikishi wins", () => {
-      const world = makeMockWorld();
+      const world = MockFactory.createWorld();
       const config = createMockConfig({
         playerHeyaId: "player-heya",
         observerMode: true,
@@ -137,7 +142,10 @@ describe("checkStopCondition", () => {
           losses: 0,
         },
       });
-      world.rikishi.set("player-rikishi", mockRikishi("player-rikishi", { heyaId: "player-heya" }));
+      world.rikishi.set(
+        "player-rikishi",
+        MockFactory.createRikishi("player-rikishi", { heyaId: "player-heya" })
+      );
 
       expect(checkStopCondition("yusho", bashoResult, world, config, chronicle)).toBe(false);
     });
@@ -145,7 +153,7 @@ describe("checkStopCondition", () => {
 
   describe("stableInsolvency", () => {
     it("returns true when player heya is desperate", () => {
-      const world = makeMockWorld();
+      const world = MockFactory.createWorld();
       const config = createMockConfig({
         playerHeyaId: "player-heya",
         observerMode: false,
@@ -153,7 +161,7 @@ describe("checkStopCondition", () => {
       const bashoResult = createMockBashoResult();
       world.heyas.set(
         "player-heya",
-        makeMockHeya("player-heya", { runwayBand: "desperate" } as any)
+        MockFactory.createHeya("player-heya", { runwayBand: "desperate" })
       );
 
       expect(checkStopCondition("stableInsolvency", bashoResult, world, config, chronicle)).toBe(
@@ -162,13 +170,13 @@ describe("checkStopCondition", () => {
     });
 
     it("returns false when player heya is not desperate", () => {
-      const world = makeMockWorld();
+      const world = MockFactory.createWorld();
       const config = createMockConfig({
         playerHeyaId: "player-heya",
         observerMode: false,
       });
       const bashoResult = createMockBashoResult();
-      world.heyas.set("player-heya", makeMockHeya("player-heya", { runwayBand: "safe" } as any));
+      world.heyas.set("player-heya", MockFactory.createHeya("player-heya", { runwayBand: "safe" }));
 
       expect(checkStopCondition("stableInsolvency", bashoResult, world, config, chronicle)).toBe(
         false
@@ -176,7 +184,7 @@ describe("checkStopCondition", () => {
     });
 
     it("returns false in observer mode", () => {
-      const world = makeMockWorld();
+      const world = MockFactory.createWorld();
       const config = createMockConfig({
         playerHeyaId: "player-heya",
         observerMode: true,
@@ -184,7 +192,7 @@ describe("checkStopCondition", () => {
       const bashoResult = createMockBashoResult();
       world.heyas.set(
         "player-heya",
-        makeMockHeya("player-heya", { runwayBand: "desperate" } as any)
+        MockFactory.createHeya("player-heya", { runwayBand: "desperate" })
       );
 
       expect(checkStopCondition("stableInsolvency", bashoResult, world, config, chronicle)).toBe(
@@ -195,8 +203,8 @@ describe("checkStopCondition", () => {
 
   describe("scandal", () => {
     it("returns true when there is a major scandal in the current year", () => {
-      const world = makeMockWorld({ year: 2025 });
-      (world as any).scandals = [{ severity: "major", year: 2025 }];
+      const world = MockFactory.createWorld({ year: 2025 });
+      world.scandals = [{ severity: "major", year: 2025 }];
       const config = createMockConfig();
       const bashoResult = createMockBashoResult();
 
@@ -204,8 +212,8 @@ describe("checkStopCondition", () => {
     });
 
     it("returns true when there is a scandal in the event log", () => {
-      const world = makeMockWorld({ year: 2025 });
-      (world as any).eventLog = [{ type: "scandal" }];
+      const world = MockFactory.createWorld({ year: 2025 });
+      world.eventLog = [{ type: "scandal" }];
       const config = createMockConfig();
       const bashoResult = createMockBashoResult();
 
@@ -213,12 +221,12 @@ describe("checkStopCondition", () => {
     });
 
     it("returns false when there are no major scandals in the current year or event log", () => {
-      const world = makeMockWorld({ year: 2025 });
-      (world as any).scandals = [
+      const world = MockFactory.createWorld({ year: 2025 });
+      world.scandals = [
         { severity: "minor", year: 2025 },
         { severity: "major", year: 2024 },
       ];
-      (world as any).eventLog = [{ type: "injury" }];
+      world.eventLog = [{ type: "injury" }];
       const config = createMockConfig();
       const bashoResult = createMockBashoResult();
 
@@ -228,10 +236,13 @@ describe("checkStopCondition", () => {
 
   describe("retirementOfStar", () => {
     it("returns true when a star (tier <= 4) retires", () => {
-      const world = makeMockWorld();
-      (world as any).retirements = [{ rikishiId: "star-rikishi" }];
+      const world = MockFactory.createWorld();
+      world.retirements = [{ rikishiId: "star-rikishi" }];
       // yokozuna is tier 1
-      world.rikishi.set("star-rikishi", mockRikishi("star-rikishi", { rank: "yokozuna" }));
+      world.rikishi.set(
+        "star-rikishi",
+        MockFactory.createRikishi("star-rikishi", { rank: "yokozuna" })
+      );
       const config = createMockConfig();
       const bashoResult = createMockBashoResult();
 
@@ -241,10 +252,13 @@ describe("checkStopCondition", () => {
     });
 
     it("returns false when a non-star retires", () => {
-      const world = makeMockWorld();
-      (world as any).retirements = [{ rikishiId: "normal-rikishi" }];
+      const world = MockFactory.createWorld();
+      world.retirements = [{ rikishiId: "normal-rikishi" }];
       // maegashira is tier 5
-      world.rikishi.set("normal-rikishi", mockRikishi("normal-rikishi", { rank: "maegashira" }));
+      world.rikishi.set(
+        "normal-rikishi",
+        MockFactory.createRikishi("normal-rikishi", { rank: "maegashira" })
+      );
       const config = createMockConfig();
       const bashoResult = createMockBashoResult();
 
@@ -254,8 +268,8 @@ describe("checkStopCondition", () => {
     });
 
     it("returns false when no one retires", () => {
-      const world = makeMockWorld();
-      (world as any).retirements = [];
+      const world = MockFactory.createWorld();
+      world.retirements = [];
       const config = createMockConfig();
       const bashoResult = createMockBashoResult();
 
@@ -267,7 +281,7 @@ describe("checkStopCondition", () => {
 
   describe("default", () => {
     it("returns false for unknown conditions", () => {
-      const world = makeMockWorld();
+      const world = MockFactory.createWorld();
       const config = createMockConfig();
       const bashoResult = createMockBashoResult();
 

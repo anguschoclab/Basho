@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { StableName } from "@/components/ClickableName";
 import { useGame } from "@/contexts/GameContext";
+import { useGameStore } from "@/store/gameStore";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -86,30 +87,19 @@ export default function TalentPoolPage() {
     );
   }
 
+  const sendCommand = useGameStore((s) => s.sendCommand);
+
   const onReveal = () => {
-    const res = talentpool.scoutPool(world, activePool, { revealCount: 1 });
-    updateWorld({ ...world });
-    if (res.revealed.length === 0) {
-      toast({
-        title: "No new leads",
-        description: "Your scouts found nobody new this week (or you lack funds).",
-      });
-      return;
-    }
+    sendCommand({ type: "SCOUT_POOL", pool: activePool, revealCount: 1 });
     toast({
-      title: "New lead discovered",
-      description: `Your scouts surfaced ${res.revealed.length} new prospect${res.revealed.length === 1 ? "" : "s"}.`,
+      title: "Search initiated",
+      description: `Your scouts are looking for new leads in the ${poolLabel(activePool)} pool.`,
     });
   };
 
   const onScout = (candidateId: string) => {
-    const res = talentpool.scoutCandidate(world, candidateId, { effort: 1 });
-    updateWorld({ ...world });
-    if (!res.ok) {
-      toast({ title: "Scouting failed", description: "You may not have enough funds." });
-      return;
-    }
-    toast({ title: "Scouting report updated", description: `Intel level: ${res.scoutingLevel}%` });
+    sendCommand({ type: "SCOUT_CANDIDATE", candidateId, effort: 1 });
+    toast({ title: "Scouting initiated", description: "Your scouts are gathering intel on this prospect." });
   };
 
   const onOffer = (candidateId: string) => {
@@ -117,15 +107,7 @@ export default function TalentPoolPage() {
       toast({ title: "No stable selected", description: "Choose a player stable first." });
       return;
     }
-    const res = talentpool.offerCandidate(world, candidateId, playerHeyaId, "standard", "high");
-    updateWorld({ ...world });
-    if (!res.ok) {
-      toast({
-        title: "Offer blocked",
-        description: (res as { reason?: string }).reason ?? "Unknown reason",
-      });
-      return;
-    }
+    sendCommand({ type: "OFFER_CONTRACT", candidateId, heyaId: playerHeyaId });
     toast({
       title: "Offer submitted",
       description: "The prospect will decide within a few weeks.",

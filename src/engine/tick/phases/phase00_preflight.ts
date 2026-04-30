@@ -7,6 +7,7 @@
 import type { WorldState, CyclePhase } from "../../types/world";
 import { createImpactBuilder, ImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
+import { assertNever } from "../../utils/types";
 import { initializeBasho } from "../../systems/generation/WorldFactory";
 import { resetBashoMediaTracking } from "../../systems/media/MediaService";
 import { getInterimWeeks } from "../../calendar";
@@ -47,8 +48,8 @@ export function phase00_preflight(world: WorldState): StateImpact {
     ...world.transientContext,
     boundaries: { monthBoundary, yearBoundary },
     deltas: emptyDeltas(),
-    modifiers: defaultActiveModifiers()
-  } as any;
+    activeModifiers: defaultActiveModifiers(),
+  };
 
   // 4. Check Phase Transitions
   const transition = checkPhaseTransition(world, builder);
@@ -136,6 +137,12 @@ function checkPhaseTransition(world: WorldState, builder: ImpactBuilder): { from
       }
       break;
     }
+    case "active_basho": {
+      // Logic for active_basho transition if any, usually handled outside or no-op here
+      break;
+    }
+    default:
+      assertNever(world.cyclePhase);
   }
   return undefined;
 }

@@ -7,8 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Shield, HeartPulse, AlertTriangle, Gavel, UserCog } from "lucide-react";
+import { formatYen } from "@/utils/engineUtils";
 import type { Heya } from "@/engine/types/heya";
-import type { OyakataArchetype } from "@/engine/types/oyakata";
+import type { Oyakata, OyakataArchetype, OyakataTraits } from "@/engine/types/oyakata";
 import {
   SCANDAL_LABELS,
   TRAIT_LABELS,
@@ -73,17 +74,9 @@ export function InstitutionPanel({
   oyakataTraits,
 }: {
   heya: Heya;
-  oyakata: {
-    archetype?: string;
-  } | null;
+  oyakata: Oyakata | null | undefined;
   oyakataQuirks: string[];
-  oyakataTraits: {
-    ambition: number;
-    patience: number;
-    risk: number;
-    tradition: number;
-    compassion: number;
-  } | null;
+  oyakataTraits: OyakataTraits | null | undefined;
 }) {
   const welfare = (
     heya as Heya & {
@@ -153,7 +146,7 @@ export function InstitutionPanel({
               Training cap:{" "}
               <span className="font-medium">{String(sanc.trainingIntensityCap).toUpperCase()}</span>
               {sanc.recruitmentFreezeWeeks ? ` · Freeze: ${sanc.recruitmentFreezeWeeks}w` : ""}
-              {sanc.fineYen ? ` · Fine: ¥${Number(sanc.fineYen).toLocaleString()}` : ""}
+              {sanc.fineYen ? ` · Fine: ${formatYen(Number(sanc.fineYen))}` : ""}
             </div>
           )}
         </div>

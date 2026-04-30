@@ -1,7 +1,6 @@
 // BoutResultDisplay.tsx — Polished bout result with dramatic winner reveal
 // Supports kimarite/kimariteId/kimariteName fields across engine revisions
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { cn } from "@/lib/utils";
 import type { BoutResult } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/uiModels";
@@ -70,16 +69,18 @@ export function BoutResultDisplay({
   const winnerSide = result.winner;
 
   const kimariteId =
-    safeString((result as any).kimarite) || safeString((result as any).kimariteId) || "";
+    safeString(result.kimarite) || safeString((result as { kimariteId?: string }).kimariteId) || "";
   const kimariteFromLookup = kimariteId ? getKimarite(kimariteId) : null;
   const kimariteName =
-    safeString((result as any).kimariteName) || safeString(kimariteFromLookup?.name) || "—";
+    safeString((result as { kimariteName?: string }).kimariteName) ||
+    safeString(kimariteFromLookup?.name) ||
+    "—";
   const kimariteNameJa = safeString(kimariteFromLookup?.nameJa);
   const kimariteDescription = safeString(kimariteFromLookup?.description);
-  const rarity = safeString((kimariteFromLookup as any)?.rarity, "").toLowerCase();
-  const duration = safeNumber((result as any).duration, 0);
-  const tachiaiWinner = (result as any).tachiaiWinner as "east" | "west" | undefined;
-  const isUpset = Boolean((result as any).upset);
+  const rarity = safeString((kimariteFromLookup as { rarity?: string })?.rarity, "").toLowerCase();
+  const duration = safeNumber(result.duration, 0);
+  const tachiaiWinner = result.tachiaiWinner;
+  const isUpset = Boolean(result.upset);
 
   return (
     <div className={cn("paper p-0 overflow-hidden text-center", className)}>
@@ -212,9 +213,7 @@ export function BoutResultDisplay({
           <div className="flex flex-col items-center gap-1 p-2 rounded-md bg-muted/30">
             <Shield className="h-3.5 w-3.5 text-muted-foreground" />
             <p className="text-[10px] text-muted-foreground uppercase">Stance</p>
-            <p className="font-medium text-sm text-foreground">
-              {formatStance((result as any).stance)}
-            </p>
+            <p className="font-medium text-sm text-foreground">{formatStance(result.stance)}</p>
           </div>
 
           <div className="flex flex-col items-center gap-1 p-2 rounded-md bg-muted/30">

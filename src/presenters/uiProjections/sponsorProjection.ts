@@ -11,6 +11,8 @@ import { KOENKAI_MONTHLY_INCOME } from "../../engine/systems/economics/Sponsorsh
 interface SponsorData {
   sponsorId: string;
   sponsorName: string;
+  name: string;
+  relId: string;
   tier: string;
   strength: number;
   monthlyIncome: number;
@@ -18,22 +20,49 @@ interface SponsorData {
   isExpiringSoon: boolean;
   loyalty: number;
   since: number;
+  category: string;
+  role: string;
+  satisfaction: number;
 }
 
+// Type definitions for our internal cache
+type SponsorAny = { id: string; name: string; displayName?: string; shortName?: string; loyalty: number; category?: string; satisfaction?: number; active: boolean; relationships: RelAny[] };
+type RelAny = { targetId: string; endsAtTick?: number; tier: string; strength: number; relId?: string; id?: string; since: number; role?: string };
+type TargetMap = Map<string, Array<{ sponsor: SponsorAny; rel: RelAny }>>;
+
+const sponsorRelationshipsCache = new WeakMap<Map<unknown, unknown>, TargetMap>();
+
 function buildAndSortActiveSponsors(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  pool: any,
+  // Using any because sponsorPool structure varies between runtime and type definition
+  pool: unknown,
   playerHeyaId: string,
   world: WorldState
 ): SponsorData[] {
   const activeSponsors: SponsorData[] = [];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  for (const sponsor of pool.sponsors.values() as any[]) {
-    if (!sponsor.active) continue;
-    for (const rel of sponsor.relationships) {
-      if (rel.targetId !== playerHeyaId) continue;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      activeSponsors.push(buildSponsorData(sponsor as any, rel as any, world));
+  const sponsorMap = (pool as { sponsors: Map<unknown, unknown> }).sponsors;
+
+  let relMap = sponsorRelationshipsCache.get(sponsorMap);
+  if (!relMap) {
+    relMap = new Map();
+    for (const sponsor of sponsorMap.values()) {
+      const s = sponsor as SponsorAny;
+      if (!s.active) continue;
+      for (const rel of s.relationships) {
+        let list = relMap.get(rel.targetId);
+        if (!list) {
+          list = [];
+          relMap.set(rel.targetId, list);
+        }
+        list.push({ sponsor: s, rel });
+      }
+    }
+    sponsorRelationshipsCache.set(sponsorMap, relMap);
+  }
+
+  const targetRels = relMap.get(playerHeyaId);
+  if (targetRels) {
+    for (const { sponsor, rel } of targetRels) {
+      activeSponsors.push(buildSponsorData(sponsor, rel, world));
     }
   }
 
@@ -54,8 +83,11 @@ function buildAndSortActiveSponsors(
   return activeSponsors;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function buildSponsorData(sponsor: any, rel: any, world: WorldState): SponsorData {
+function buildSponsorData(
+  sponsor: { id: string; name: string; displayName?: string; shortName?: string; loyalty: number; category?: string; satisfaction?: number },
+  rel: { endsAtTick?: number; tier: string; strength: number; relId?: string; id?: string; since: number; role?: string },
+  world: WorldState
+): SponsorData {
   const weeksRemaining = Math.max(0, Math.floor((rel.endsAtTick - (world.week ?? 0)) / 4));
   const isExpiringSoon = weeksRemaining <= 4;
   const monthlyIncome =
@@ -64,6 +96,8 @@ function buildSponsorData(sponsor: any, rel: any, world: WorldState): SponsorDat
   return {
     sponsorId: sponsor.id,
     sponsorName: sponsor.name,
+    name: sponsor.displayName ?? sponsor.name ?? sponsor.shortName ?? sponsor.id,
+    relId: rel.relId ?? rel.id ?? "",
     tier: rel.tier,
     strength: rel.strength,
     monthlyIncome,
@@ -71,11 +105,13 @@ function buildSponsorData(sponsor: any, rel: any, world: WorldState): SponsorDat
     isExpiringSoon,
     loyalty: sponsor.loyalty,
     since: rel.since,
+    category: sponsor.category ?? "",
+    role: rel.role ?? "",
+    satisfaction: sponsor.satisfaction ?? 0,
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function calculateKoenkaiIncome(heya: any): number {
+function calculateKoenkaiIncome(heya: { koenkaiBand?: string }): number {
   if (!heya.koenkaiBand) return 0;
   const bandMultiplier = {
     none: 0,

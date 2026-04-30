@@ -9,7 +9,20 @@ export type EngineCommand =
   | { type: "TICK_MULTIPLE_DAYS"; days: number }
   | { type: "START_BASHO" }
   | { type: "AUTO_SIM_DAYS"; days: number }
-  | { type: "OFFER_CONTRACT"; rikishiId: string; heyaId: string }
+  | { type: "OFFER_CONTRACT"; candidateId: string; heyaId: string }
+  | { type: "SCOUT_POOL"; pool: import("../types/talent").TalentPoolType; revealCount: number }
+  | { type: "SCOUT_CANDIDATE"; candidateId: string; effort: number }
+  | { type: "RESOLVE_CRISIS"; crisisId: string; choice: "lenient" | "standard" | "harsh" | "cover_up" }
+  | { type: "BUY_MYOSEKI"; myosekiId: string; buyerId: string; buyerHeyaId: string }
+  | { type: "LEASE_MYOSEKI"; myosekiId: string; buyerId: string }
+  | { type: "RENEW_SPONSOR"; relationshipId: string; sponsorId: string }
+  | { type: "REQUEST_BAILOUT"; heyaId: string }
+  | { type: "PREPAY_LOAN"; heyaId: string; loanId: string }
+  | { type: "HIRE_STAFF"; heyaId: string; role: any }
+  | { type: "FIRE_STAFF"; heyaId: string; staffId: string }
+  | { type: "TRIGGER_SUCCESSION"; heyaId: string; successorId: string }
+  | { type: "SET_TRAINING_STATE"; heyaId: string; trainingState: any }
+  | { type: "REQUEST_POLITICAL_FAVOR"; heyaId: string; favorId: string }
   | { type: "GET_DIGEST" };
 
 /** Worker -> UI Events */
@@ -17,7 +30,7 @@ export type EngineEvent =
   | { type: "READY"; worldExists: boolean }
   | { type: "TICK_COMPLETED"; digest: UIDigest }
   | { type: "DIGEST_UPDATED"; digest: UIDigest }
-  | { type: "WORLD_UPDATED"; world: WorldState }
+  | { type: "WORLD_UPDATED"; world: WorldState; version: number }
   | { type: "ERROR"; message: string }
   | { type: "PROGRESS"; message: string; current: number; total: number };
 

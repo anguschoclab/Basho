@@ -26,7 +26,7 @@ export const FOCUS_MODE_OPTIONS: {
     label: "Push",
     description: "Maximum growth, higher risk",
     icon: <Flame className="h-4 w-4" />,
-    color: "bg-orange-500/10 text-orange-500",
+    color: "bg-warning/10 text-warning",
   },
   {
     value: "protect",
@@ -40,6 +40,6 @@ export const FOCUS_MODE_OPTIONS: {
     label: "Rebuild",
     description: "Recovery-focused after injury",
     icon: <Heart className="h-4 w-4" />,
-    color: "bg-red-500/10 text-red-500",
+    color: "bg-destructive/10 text-destructive",
   },
 ];

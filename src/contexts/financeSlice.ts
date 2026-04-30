@@ -1,6 +1,7 @@
 import type { GameState, GameAction } from "./gameTypes";
 import { investInFacility } from "@/engine/facilities";
 import { hireStaff } from "@/engine/staff";
+import { InfrastructureService } from "@/engine/systems/economy/InfrastructureService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 
 /**
@@ -12,6 +13,15 @@ export function financeSlice(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case "UPGRADE_HEYA": {
       const impact = investInFacility(state.world, action.heyaId, action.axis, action.points || 5);
+      const updatedWorld = resolveImpacts(state.world, [impact]);
+      return {
+        ...state,
+        world: updatedWorld,
+      };
+    }
+
+    case "BUILD_INFRASTRUCTURE": {
+      const impact = InfrastructureService.startConstruction(state.world, action.heyaId, action.facilityId);
       const updatedWorld = resolveImpacts(state.world, [impact]);
       return {
         ...state,

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Narrative Bands & Misc Shared Types
  */

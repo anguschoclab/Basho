@@ -95,6 +95,11 @@ export interface SerializedWorldState {
   };
   trainingState?: Record<Id, HeyaTrainingState>;
   candidatePool?: TalentPoolWorldState; // Talent acquisition pool
+
+  /** Global Cup tournament state (Phase 5+) */
+  globalCup?: import("./globalCup").GlobalCupState;
+  /** Chronicle records (Phase 5+) */
+  chronicle?: import("./world").WorldState["chronicle"];
 }
 
 /** Type representing save version. */

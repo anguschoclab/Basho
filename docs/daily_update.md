@@ -1,18 +1,17 @@
 📝 Daily Progress & Docs Update
- 🏗️ Codebase Status:
- Recently, massive additions have been integrated into the core engine systems, specifically expanding the `welfare`, `training`, `recruitment`, and `narrative` modules, alongside fleshing out the daily and weekly pipeline orchestrators in `src/engine/tick/`. A strong separation of concerns is actively maintained, ensuring simulation outputs strictly translate to observable UI descriptors rather than raw numerical values.
+🏗️ Codebase Status:
+The core engine heavily utilizes a Web Worker (`engine.worker.ts`) and a Strict Pipeline Architecture (`src/engine/tick/`) to process simulation phases. The strict separation of concerns is actively maintained: the engine processes `StateImpact` and uses `buildPerceptionSnapshot` to emit bounded data, ensuring UI layers (`src/presenters/`, `src/pages/`) only consume observable projections without leaking hidden engine truths.
 
- [WIP focus]
- The current focus is stabilizing the daily and weekly pipeline orchestrators (e.g., `tickDaily.ts`, `phase*.ts` files) to ensure game loop integrity, appropriately handle institutional operations like NPC AI decision-making and roster overflow (via `overflow.ts`), and manage state transitions for training and welfare mechanics correctly.
+Current focus appears to be migrating and solidifying daily tick pipelines (e.g., `phase01_week_npc_ai.ts`, `phase01_daily_welfare.ts`) and implementing Narrative and Welfare services.
 
- 📖 Basho Constitution Alignment:
- ✅ Aligned: The codebase implements `HYSTERESIS_DELTA = 5` correctly within `src/engine/systems/narrative/NarrativeService.ts`, fully satisfying the hysteresis buffer required by section C5.3 of the Constitution. Additionally, the NPC AI roster overflow logic (`enforceHardCapRosterOverflow` used in `phase01_week_npc_ai.ts`) aligns perfectly with section C4.3.
+📖 Basho Constitution Alignment:
+✅ Aligned: NPC AI uses `buildPerceptionSnapshot` to prevent cheating (A7.1). Roster overflow management successfully integrates `enforceHardCapRosterOverflow` (C4.3). The hysteresis buffer in `NarrativeService.ts` strictly implements `HYSTERESIS_DELTA = 5` (C5.3). The injury perception logic in `src/engine/descriptorBands.ts` correctly implements `sidelined`, `hampered`, `favoring_it`, `moving_gingerly`, and `taped_up` (C5.4).
 
- ⚠️ Missing/Deviations: The narrative presentation utilities do not yet fully implement all specified modifier tags for injury perception required by section C5.4. While `sidelined`, `hampered` and `taped_up` are present in `src/engine/descriptorBands.ts`, `favoring_it` and `moving_gingerly` are completely missing. Furthermore, the `toDescriptorBand` function, which is formally defined as an implementation contract in C5.5, is currently missing from the codebase.
+⚠️ Missing/Deviations: All known deviations related to C5.4 have been addressed.
 
- 📄 Proposed Documentation Updates:
- docs/daily_update.md: Add a new entry summarizing the implementation of the tick pipeline architecture, NPC AI overflow logic constraints, and hysteresis integration.
+📄 Proposed Documentation Updates:
+docs/architecture.md: Add summary of the Strict Pipeline Architecture, StateImpact builder, and narrative hysteresis implementation.
 
- Code Paths Covered: `src/engine/tick/`, `src/engine/overflow.ts`, `src/engine/systems/narrative/NarrativeService.ts`, `src/engine/descriptorBands.ts`
+Code Paths Covered: `src/engine/tick/*`, `src/engine/systems/narrative/*`, `src/engine/descriptorBands.ts`, `src/presenters/*`
 
- Key Knowledge Gaps Addressed: Documents that fundamental pipeline execution ordering and hysteresis protections are established, while explicitly flagging the need to complete the C5.4 injury modifier hooks and the C5.5 implementation contract within the narrative presentation layer.
+Key Knowledge Gaps Addressed: Validated UI projection constraints against engine truths and updated injury perception logic to fully align with C5.4 of the constitution.

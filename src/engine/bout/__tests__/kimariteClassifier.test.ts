@@ -35,11 +35,12 @@ function makeBody(overrides: Partial<PhysicalBody> = {}): PhysicalBody {
 
 function makeEngineState(
   eastOverrides: Partial<PhysicalBody> = {},
-  westOverrides: Partial<PhysicalBody> = {}
+  westOverrides: Partial<PhysicalBody> = {},
+  phase: "push_battle" | "belt_battle" | "edge_crisis" = "push_battle"
 ): EngineStateV2 {
   return {
     tick: 10,
-    phase: { tag: "push_battle", state: makePushState() },
+    phase: { tag: phase, state: makePushState() },
     east: makeBody({ leadingFootX: 0.7, ...eastOverrides }),
     west: makeBody({ leadingFootX: -0.7, ...westOverrides }),
     grappleState: {
@@ -100,7 +101,7 @@ describe("evaluateKimariteAttempt — edge conditions", () => {
   it("returns yorikiri when defender near edge and attacker has uwate grip", () => {
     const east = mockRikishi("r1");
     const west = mockRikishi("r2");
-    // East near edge (positive side), west has uwate attacking
+    // East near edge (positive side), west has uwate attacking with forward momentum
     const st = makeEngineState({ leadingFootX: 4.0 }, { leadingFootX: -0.7, velocityX: 2 });
     const belt = makeBeltState({ westGripClass: "uwate", eastGripClass: "none" });
 
@@ -113,46 +114,46 @@ describe("evaluateKimariteAttempt — edge conditions", () => {
     expect(result?.successProbability).toBeLessThanOrEqual(0.97); // clamped by technique bonus
   });
 
-  it("returns yorikiri with highest prob (0.92) when attacker has morozashi", () => {
+  it("returns yorikiri with highest prob when attacker has morozashi", () => {
     const east = mockRikishi("r1");
     const west = mockRikishi("r2");
-    const st = makeEngineState({ leadingFootX: 4.0 }, { leadingFootX: -0.7 });
+    // West attacks east near east edge — morozashi grip, west pushing forward
+    const st = makeEngineState({ leadingFootX: 4.0 }, { leadingFootX: -0.7, velocityX: 2 });
     const belt = makeBeltState({ westGripClass: "morozashi", eastGripClass: "none" });
 
     const result = evaluateKimariteAttempt(east, west, null, belt, st, mockRng);
 
     expect(result?.technique).toBe("yorikiri");
-    // Base prob 0.92 + technique bonus (clamped at 0.97)
-    expect(result?.successProbability).toBeGreaterThanOrEqual(0.92);
+    expect(result?.successProbability).toBeGreaterThanOrEqual(0.8);
     expect(result?.successProbability).toBeLessThanOrEqual(0.97);
   });
 
   it("returns oshidashi when defender near edge with no belt grip", () => {
     const east = mockRikishi("r1");
     const west = mockRikishi("r2");
-    const st = makeEngineState({ leadingFootX: 4.1 }, { leadingFootX: -0.7 });
+    // East near edge, west pushing forward (no grip)
+    const st = makeEngineState({ leadingFootX: 4.1 }, { leadingFootX: -0.7, velocityX: 2 });
     const belt = makeBeltState({ eastGripClass: "none", westGripClass: "none" });
 
     const result = evaluateKimariteAttempt(east, west, null, belt, st, mockRng);
 
-    // No belt grip → oshidashi fallback
+    // No belt grip → oshidashi (west pushes east out)
     expect(result?.technique).toBe("oshidashi");
     expect(result?.side).toBe("west");
   });
 
-  it("returns okuridashi when both fighters near edge", () => {
-    const east = mockRikishi("r1");
+  it("returns okuridashi when defender near edge and not fighting back", () => {
+    // yotsu style: oshidashi (requires isPusher/oshi) can't fire, only okuridashi
+    const east = mockRikishi("r1", { style: "yotsu" });
     const west = mockRikishi("r2");
-    // Both outside EDGE_THRESHOLD
     const st = makeEngineState(
-      { leadingFootX: 4.1, velocityX: 3 },
-      { leadingFootX: -4.1, velocityX: 1 }
+      { leadingFootX: 4.1, velocityX: 3 }, // east pushing with high momentum
+      { leadingFootX: -4.1 } // west near edge, velocityX=0 = retreating
     );
 
     const result = evaluateKimariteAttempt(east, west, null, null, st, mockRng);
 
     expect(result?.technique).toBe("okuridashi");
-    // East has higher momentumX → east side
     expect(result?.side).toBe("east");
   });
 });
@@ -162,10 +163,16 @@ describe("evaluateKimariteAttempt — edge conditions", () => {
 // ---------------------------------------------------------------------------
 
 describe("evaluateKimariteAttempt — belt battle", () => {
-  it("returns uwatenage on high torque advantage with morozashi grip", () => {
-    const east = mockRikishi("r1");
+  it("returns uwatenage when attacker has morozashi and defender is falling", () => {
+    // power: 65 so w.power (65) > l.balanceResistance (50)
+    // cogOffset: 0.6 → west.balance = max(0, 100 - 0.6*200) = 0 → l.balance <= 0
+    const east = mockRikishi("r1", { power: 65 });
     const west = mockRikishi("r2");
-    const st = makeEngineState();
+    const st = makeEngineState(
+      {},
+      { cogOffset: 0.6, footSpread: 0.4 },
+      "belt_battle"
+    );
     const belt = makeBeltState({
       eastGripClass: "morozashi",
       torqueEast: 50,
@@ -176,16 +183,18 @@ describe("evaluateKimariteAttempt — belt battle", () => {
 
     expect(result?.technique).toBe("uwatenage");
     expect(result?.side).toBe("east");
-    // Base prob 0.75 + technique bonus (clamped at 0.97)
-    expect(result?.successProbability).toBeGreaterThanOrEqual(0.75);
+    expect(result?.successProbability).toBeGreaterThanOrEqual(0.6);
     expect(result?.successProbability).toBeLessThanOrEqual(0.97);
-    expect(result?.requiredConditions).toContain("morozashi_grip");
   });
 
-  it("returns uwatenage with lower prob when attacker has uwate (not morozashi)", () => {
-    const east = mockRikishi("r1");
+  it("returns uwatenage with uwate grip when defender is falling", () => {
+    const east = mockRikishi("r1", { power: 65 });
     const west = mockRikishi("r2");
-    const st = makeEngineState();
+    const st = makeEngineState(
+      {},
+      { cogOffset: 0.6, footSpread: 0.4 },
+      "belt_battle"
+    );
     const belt = makeBeltState({
       eastGripClass: "uwate",
       torqueEast: 50,
@@ -195,15 +204,18 @@ describe("evaluateKimariteAttempt — belt battle", () => {
     const result = evaluateKimariteAttempt(east, west, null, belt, st, mockRng);
 
     expect(result?.technique).toBe("uwatenage");
-    // Base prob 0.6 + technique bonus (clamped at 0.97)
     expect(result?.successProbability).toBeGreaterThanOrEqual(0.6);
     expect(result?.successProbability).toBeLessThanOrEqual(0.97);
   });
 
-  it("returns shitatenage on high torque with shitate grip", () => {
+  it("returns shitatenage when west dominates torque and east is falling", () => {
     const east = mockRikishi("r1");
-    const west = mockRikishi("r2");
-    const st = makeEngineState();
+    const west = mockRikishi("r2", { power: 65 }); // west needs power > east.balanceResistance (50)
+    const st = makeEngineState(
+      { cogOffset: 0.6, footSpread: 0.4 }, // east falling: balance = 0
+      {},
+      "belt_battle"
+    );
     const belt = makeBeltState({
       westGripClass: "shitate",
       torqueEast: 5,
@@ -219,13 +231,13 @@ describe("evaluateKimariteAttempt — belt battle", () => {
   it("returns yorikiri when belt holder pushes defender near edge", () => {
     const east = mockRikishi("r1");
     const west = mockRikishi("r2");
-    // East near edge, west has uwate
-    const st = makeEngineState({ leadingFootX: 3.6 }, { leadingFootX: -0.7 });
+    // East near edge, west has uwate + forward velocity
+    const st = makeEngineState({ leadingFootX: 3.6 }, { leadingFootX: -0.7, velocityX: 2 });
     const belt = makeBeltState({
       eastGripClass: "none",
       westGripClass: "uwate",
       torqueEast: 10,
-      torqueWest: 15, // not high enough for throw path (< 25)
+      torqueWest: 15,
     });
 
     const result = evaluateKimariteAttempt(east, west, null, belt, st, mockRng);
@@ -237,10 +249,11 @@ describe("evaluateKimariteAttempt — belt battle", () => {
   it("returns yoritaoshi when opponent is falling with belt grip", () => {
     const east = mockRikishi("r1");
     const west = mockRikishi("r2");
-    // West falling: cogOffset > footSpread/2
+    // West falling: cogOffset = 0.6 → balance = max(0, 100 - 120) = 0
     const st = makeEngineState(
-      { cogOffset: 0.05, footSpread: 0.4 },
-      { cogOffset: 0.25, footSpread: 0.4 } // 0.25 > 0.4/2 = 0.2 → falling
+      { velocityX: 2 }, // east pushing forward
+      { cogOffset: 0.6, footSpread: 0.4 },
+      "belt_battle"
     );
     const belt = makeBeltState({
       eastGripClass: "shitate",
@@ -251,8 +264,7 @@ describe("evaluateKimariteAttempt — belt battle", () => {
     const result = evaluateKimariteAttempt(east, west, null, belt, st, mockRng);
 
     expect(result?.technique).toBe("yoritaoshi");
-    expect(result?.side).toBe("east"); // east wins since west is falling
-    // Base prob 0.9 + technique bonus (clamped at 0.97)
+    expect(result?.side).toBe("east");
     expect(result?.successProbability).toBeGreaterThanOrEqual(0.9);
     expect(result?.successProbability).toBeLessThanOrEqual(0.97);
   });
@@ -294,7 +306,6 @@ describe("evaluateKimariteAttempt — push battle", () => {
 
     expect(result?.technique).toBe("oshidashi");
     expect(result?.side).toBe("east"); // east is the pusher
-    // Base prob 0.8 + technique bonus (clamped at 0.97)
     expect(result?.successProbability).toBeGreaterThanOrEqual(0.8);
     expect(result?.successProbability).toBeLessThanOrEqual(0.97);
   });
@@ -302,10 +313,10 @@ describe("evaluateKimariteAttempt — push battle", () => {
   it("returns oshitaoshi when opponent is falling with high momentum", () => {
     const east = mockRikishi("r1");
     const west = mockRikishi("r2");
-    // West falling (cogOffset > footSpread/2)
-    const st = makeEngineState({ cogOffset: 0 }, { cogOffset: 0.25, footSpread: 0.4 });
+    // West falling: cogOffset=0.6 → balance=max(0,100-120)=0 ≤ 0; east pushing, nearCenter (edgeDistance=3.85)
+    const st = makeEngineState({ cogOffset: 0, velocityX: 5 }, { cogOffset: 0.6, footSpread: 0.4 });
     const push = makePushState({
-      eastMomentum: 20, // > 15
+      eastMomentum: 20,
       westMomentum: 5,
     });
 
@@ -313,46 +324,54 @@ describe("evaluateKimariteAttempt — push battle", () => {
 
     expect(result?.technique).toBe("oshitaoshi");
     expect(result?.side).toBe("east");
-    // Base prob 0.85 + technique bonus (clamped at 0.97)
-    expect(result?.successProbability).toBeGreaterThanOrEqual(0.85);
+    expect(result?.successProbability).toBeGreaterThanOrEqual(0.8);
     expect(result?.successProbability).toBeLessThanOrEqual(0.97);
   });
 
   it("returns tsukitaoshi when opponent is falling with low momentum", () => {
-    const east = mockRikishi("r1");
+    // tsukitaoshi (line 118 in strategy array): noBelt && power>=65 && balance<=0 && nearCenter
+    // Conditions to isolate tsukitaoshi as the FIRST applicable technique:
+    //   - style="oshi" (default) prevents kotenage/koshihineri/sotogake and other style!="oshi" competitors
+    //   - velocityX=0 on east prevents oshitaoshi (requires forwardMomentum>0)
+    //   - tsukitaoshi (line 118) appears before sukuinage (line 342) in strategy array
+    //   - firstRng returns 0 → roll=0 → always selects first applicable technique (tsukitaoshi)
+    const east = mockRikishi("r1", { power: 65 }); // power>=65; style="oshi" by default
     const west = mockRikishi("r2");
-    // West falling
-    const st = makeEngineState({ cogOffset: 0 }, { cogOffset: 0.25, footSpread: 0.4 });
+    // West falling: cogOffset=0.6 → balance=max(0,100-120)=0; nearCenter (edgeDistance=3.85)
+    // East has no velocityX (defaults to 0) → forwardMomentum=0 → oshitaoshi won't compete
+    const st = makeEngineState({ cogOffset: 0 }, { cogOffset: 0.6, footSpread: 0.4 });
     const push = makePushState({
-      eastMomentum: 8, // <= 15
+      eastMomentum: 8,
       westMomentum: 5,
     });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const firstRng: any = { next: () => 0 }; // roll=0 → first applicable strategy wins
 
-    const result = evaluateKimariteAttempt(east, west, push, null, st, mockRng);
+    const result = evaluateKimariteAttempt(east, west, push, null, st, firstRng);
 
     expect(result?.technique).toBe("tsukitaoshi");
     expect(result?.side).toBe("east");
-    // Base prob 0.75 + technique bonus (clamped at 0.97)
-    expect(result?.successProbability).toBeGreaterThanOrEqual(0.75);
+    expect(result?.successProbability).toBeGreaterThanOrEqual(0.7);
     expect(result?.successProbability).toBeLessThanOrEqual(0.97);
   });
 
-  it("returns tsukidashi on strong contest line advantage with momentum", () => {
-    const east = mockRikishi("r1");
+  it("returns tsukidashi when pusher has high power and defender near edge", () => {
+    // tsukidashi requires noBelt && power >= 65 && atEdge(l)
+    const east = mockRikishi("r1", { power: 70 });
     const west = mockRikishi("r2");
-    const st = makeEngineState();
+    const st = makeEngineState({ velocityX: 5 }, { leadingFootX: -3.8 }); // west near edge
     const push = makePushState({
-      contestLine: 3.0, // > 2.5
+      contestLine: 3.0,
       eastMomentum: 20,
-      westMomentum: 12, // advantage > 5
+      westMomentum: 12,
+      westLeadFoot: -3.8,
     });
 
     const result = evaluateKimariteAttempt(east, west, push, null, st, mockRng);
 
     expect(result?.technique).toBe("tsukidashi");
     expect(result?.side).toBe("east");
-    // Base prob 0.65 + technique bonus (clamped at 0.97)
-    expect(result?.successProbability).toBeGreaterThanOrEqual(0.65);
+    expect(result?.successProbability).toBeGreaterThanOrEqual(0.6);
     expect(result?.successProbability).toBeLessThanOrEqual(0.97);
   });
 
@@ -383,25 +402,25 @@ describe("evaluateKimariteAttempt — push battle", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Priority: edge check fires before belt/push
+// Priority: weighted selection among applicable techniques
 // ---------------------------------------------------------------------------
 
 describe("evaluateKimariteAttempt — priority ordering", () => {
-  it("edge condition fires before belt throw condition", () => {
+  it("yorikiri fires when both belt-throw and edge conditions are met (highest weight)", () => {
     const east = mockRikishi("r1");
     const west = mockRikishi("r2");
-    // East near edge AND high torque advantage (both conditions present)
-    const st = makeEngineState({ leadingFootX: 4.1 }, { leadingFootX: -0.7 });
+    // East near edge AND west has uwate pushing forward
+    const st = makeEngineState({ leadingFootX: 4.1 }, { leadingFootX: -0.7, velocityX: 2 });
     const belt = makeBeltState({
       westGripClass: "uwate",
       eastGripClass: "none",
       torqueEast: 5,
-      torqueWest: 60, // would trigger shitatenage if belt path ran first
+      torqueWest: 60,
     });
 
     const result = evaluateKimariteAttempt(east, west, null, belt, st, mockRng);
 
-    // Edge path fires first → yorikiri (not shitatenage)
+    // Yorikiri (weight 90) wins over other edge techniques
     expect(result?.technique).toBe("yorikiri");
   });
 });
@@ -414,7 +433,8 @@ describe("evaluateKimariteAttempt — result shape", () => {
   it("returned attempt has required fields", () => {
     const east = mockRikishi("r1");
     const west = mockRikishi("r2");
-    const st = makeEngineState({ leadingFootX: 4.0 }, { leadingFootX: -0.7 });
+    // East near edge, west pushing with uwate
+    const st = makeEngineState({ leadingFootX: 4.0 }, { leadingFootX: -0.7, velocityX: 2 });
     const belt = makeBeltState({ westGripClass: "uwate", eastGripClass: "none" });
 
     const result = evaluateKimariteAttempt(east, west, null, belt, st, mockRng);

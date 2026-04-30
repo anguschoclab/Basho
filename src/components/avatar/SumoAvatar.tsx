@@ -68,7 +68,7 @@ export const SumoAvatar: React.FC<SumoAvatarProps> = ({
     return (
       <div
         className={cn(
-          "rounded-full bg-muted flex items-center justify-center font-bold text-muted-foreground shrink-0",
+          "rounded bg-muted flex items-center justify-center font-bold text-muted-foreground shrink-0",
           className
         )}
         style={{
@@ -133,7 +133,7 @@ export const SumoAvatar: React.FC<SumoAvatarProps> = ({
       height={pixelSize}
       viewBox="0 0 100 100"
       className={cn(
-        "rounded-full overflow-hidden shrink-0",
+        "rounded overflow-hidden shrink-0",
         animate && "avatar-animate",
         rankTier && RANK_BORDER_COLORS[rankTier] && `border-2 ${RANK_BORDER_COLORS[rankTier]}`,
         showGlow && "avatar-glow",
@@ -343,5 +343,3 @@ export const SumoAvatar: React.FC<SumoAvatarProps> = ({
     </svg>
   );
 };
-
-export default SumoAvatar;

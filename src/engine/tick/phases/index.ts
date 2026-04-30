@@ -16,8 +16,10 @@ export * from "./phase01_week_governance";
 export * from "./phase01_week_npc_ai";
 export * from "./phase01_week_recruitment";
 export * from "./phase01_week_rivalries";
+export * from "./phase01_week_world_circuit";
 
 export * from "./phase02_context";
 export * from "./phase05_monthly_boundary";
 export * from "./phase06_yearly_boundary";
 export * from "./phase06_narrative";
+export * from "./phase_global_cup";

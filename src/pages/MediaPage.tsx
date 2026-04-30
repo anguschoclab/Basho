@@ -1,8 +1,5 @@
 // MediaPage.tsx — Media & Press coverage dashboard
 // Surfaces headlines, media heat, and heya pressure from media.ts engine
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -12,7 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RikishiName, StableName } from "@/components/ClickableName";
-import { Newspaper, Flame, TrendingUp, Building2, Zap, Filter } from "lucide-react";
+import { Flame, TrendingUp, Building2, Zap, Filter } from "lucide-react";
+import { PageHeader } from "@/components/layout/control-center";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -26,6 +24,7 @@ import { LineChart, Line, ResponsiveContainer, Tooltip, YAxis } from "recharts";
 import { MediaHeadline, MediaBeat } from "@/engine/types/media";
 import { projectMediaUIDigest } from "@/presenters/uiDigest";
 import { getMediaHeatLabel, getMediaToneColor } from "@/presenters/PerceptionPresenter";
+import { EventFeed } from "@/components/dashboard/EventFeed";
 
 /* ── Style maps ── */
 
@@ -47,9 +46,9 @@ const TIER_STYLE: Record<string, { label: string; class: string }> = {
 const TONE_STYLE: Record<string, { label: string; class: string }> = {
   hype: { label: "Hype", class: "bg-gold/20 text-gold" },
   praise: { label: "Praise", class: "bg-success/20 text-success" },
-  concern: { label: "Concern", class: "bg-orange-500/20 text-orange-400" },
-  controversy: { label: "Controversy", class: "bg-red-500/20 text-red-400" },
-  disrespect: { label: "Disrespect", class: "bg-red-500/20 text-red-300" },
+  concern: { label: "Concern", class: "bg-warning/20 text-warning" },
+  controversy: { label: "Controversy", class: "bg-destructive/20 text-destructive" },
+  disrespect: { label: "Disrespect", class: "bg-destructive/20 text-destructive/70" },
   neutral: { label: "Neutral", class: "bg-muted text-muted-foreground" },
 };
 
@@ -176,8 +175,8 @@ function HeatSparkline({ data }: { data: Array<{ basho: string; heat: number }> 
           <YAxis domain={[0, 100]} hide />
           <Tooltip
             contentStyle={{ fontSize: 10, padding: "2px 6px" }}
-            formatter={(v: any) => [`${Math.round(Number(v))}`, "Heat"]}
-            labelFormatter={(l: any) => String(l).toUpperCase()}
+            formatter={(v: number) => [`${Math.round(v)}`, "Heat"]}
+            labelFormatter={(l: string) => l.toUpperCase()}
           />
           <Line
             type="monotone"
@@ -206,7 +205,7 @@ export default function MediaPage() {
     if (!digest) return [];
     let list = digest.headlines.map((h) => {
       const rikishiNames: Record<string, string> = {};
-      h.rikishiIds.forEach((rid) => {
+      h.rikishiIds.forEach((rid: string) => {
         rikishiNames[rid] = world?.rikishi?.get(rid)?.shikona || "Unknown";
       });
       return { ...h, rikishiNames };
@@ -238,14 +237,11 @@ export default function MediaPage() {
         <title>Media & Press — Sumo Manager</title>
       </Helmet>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-display font-bold flex items-center gap-2">
-            <Newspaper className="h-6 w-6" /> Media & Press
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Headlines, coverage, and public perception across the sumo world.
-          </p>
-        </div>
+        <PageHeader
+          eyebrow="── ASSOCIATION ──"
+          title="Media & Press"
+          lede="Headlines, coverage, and public perception across the sumo world."
+        />
 
         {/* Top Headlines */}
         <Card className="paper">
@@ -376,6 +372,9 @@ export default function MediaPage() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Global Event Feed */}
+        <EventFeed maxEvents={20} minImportance="notable" />
       </div>
     </AppLayout>
   );

@@ -12,6 +12,7 @@ import { mergeImpacts } from "../core/ImpactResolver";
 import { rngForWorld } from "../rng";
 import { stableSort } from "../utils/sort";
 import type { ActiveCrisis, CrisisType } from "../types/crises";
+import { isGovernancePlayerRelevant } from "../npc/npcEventSurfacing";
 
 export interface DramaEvent {
   id: string;
@@ -52,6 +53,7 @@ function generateRandomDrama(world: WorldState): StateImpact {
     const rikishis = stableSort(world.rikishi.values(), (x) => x.id);
     const target = rikishis[rng.int(0, rikishis.length - 1)];
     if (target) {
+      const importance = isGovernancePlayerRelevant(target.heyaId, "minor");
       builder.logEvent(
         "GOVERNANCE_RULING",
         "discipline",
@@ -60,7 +62,7 @@ function generateRandomDrama(world: WorldState): StateImpact {
           shikona: target.shikona,
           incident: "curfew_violation",
         },
-        { heyaId: target.heyaId, importance: "notable" }
+        { heyaId: target.heyaId, importance }
       );
     }
   } else if (eventType === 1) {
@@ -70,12 +72,10 @@ function generateRandomDrama(world: WorldState): StateImpact {
     const a = oyakatas[rng.int(0, oyakatas.length - 1)];
     const b = oyakatas[rng.int(0, oyakatas.length - 1)];
     if (a.id !== b.id) {
-      if (!a.grudges) a.grudges = [];
-      if (!a.grudges.includes(b.heyaId)) {
-        const newGrudges = [...a.grudges, b.heyaId];
-        // Note: oyakata updates are not directly supported by ImpactBuilder yet
-        // For now, we'll update them directly as oyakata is a Map, not a standard entity
-        a.grudges = newGrudges;
+      const currentGrudges = a.grudges || [];
+      if (!currentGrudges.includes(b.heyaId)) {
+        const newGrudges = [...currentGrudges, b.heyaId];
+        builder.updateOyakata(a.id, { grudges: newGrudges });
 
         builder.logEvent(
           "RIVALRY_HEAT_SPIKE",

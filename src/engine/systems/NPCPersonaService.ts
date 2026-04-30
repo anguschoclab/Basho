@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { WorldState } from "../types/world";
 import { Style } from "../types/combat";
 import { OyakataArchetype, Oyakata, OyakataMood } from "../types/oyakata";

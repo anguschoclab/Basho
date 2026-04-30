@@ -5,7 +5,7 @@
 import type { Id, IdMapRuntime } from "./common";
 import type { EventsState } from "./events";
 import type { BanzukeSnapshot } from "./banzuke";
-import type { BashoName, BashoState, BashoResult } from "./basho";
+import type { BashoName, BashoResult, AwardLogEntry, BoutResult } from "./basho";
 import type { GovernanceRuling, IchimonName, Faction } from "./economy";
 import type { FTUEState } from "./narrative";
 import type { HeyaTrainingState } from "./training";
@@ -16,6 +16,9 @@ import type { TalentPoolWorldState } from "./talent";
 import type { MyosekiMarket } from "./myoseki";
 import type { WorldRecords } from "./records";
 import type { TutorialState } from "./tutorial";
+import type { ActiveCrisis } from "./crises";
+import type { GlobalCupState, GlobalCupHistoryEntry } from "./globalCup";
+import type { BloodlineRegistry } from "./dynasty";
 
 /** Type representing cycle phase. */
 export type CyclePhase = "pre_basho" | "active_basho" | "post_basho" | "interim" | "banzuke_reveal";
@@ -55,8 +58,8 @@ export interface TransientContext {
   };
   lastReport?: Record<string, unknown>;
   preGeneratedSchedules?: {
-    day1: unknown[];
-    day2: unknown[];
+    day1: string[];
+    day2: string[];
     announcedAtWeek: number;
   };
 }
@@ -73,7 +76,7 @@ export interface RecruitmentWindow {
 /** Defines the structure for post basho meta. */
 export interface PostBashoMeta {
   bashoNumber: number;
-  metaBias: "oshi" | "yotsu" | "neutral";
+  metaBias: "oshi" | "yotsu" | "hybrid" | "neutral";
   yushoStyle: string;
   recognitionEligibleWeek: number;
 }
@@ -107,6 +110,7 @@ import type { SponsorPool } from "./sponsors";
 import type { MediaState } from "./media";
 import type { PerceptionSnapshot } from "../perception";
 import type { RivalriesState } from "../rivalries";
+import type { BashoState } from "./basho";
 
 /** Defines the structure for a closed or merged heya. */
 export interface ClosedHeyaRecord extends Heya {
@@ -128,6 +132,7 @@ export interface WorldState {
   cyclePhase: CyclePhase;
 
   currentBashoName?: BashoName;
+  currentBasho?: BashoState;
   rng?: SeededRNG;
 
   heyas: IdMapRuntime<Heya>;
@@ -136,8 +141,19 @@ export interface WorldState {
   historicalRikishi: IdMapRuntime<Rikishi>;
   oyakata: IdMapRuntime<Oyakata>;
 
-  currentBasho?: BashoState;
   history: BashoResult[];
+  /** Persistent cross-basho award log (yusho, sansho, bout of the basho). */
+  awardLog?: AwardLogEntry[];
+  /**
+   * Global Meta State (Era Drift) (E4)
+   * Tracks the current style tone of the era and individual technique drift.
+   */
+  meta: {
+    tone: "classic" | "explosive" | "technical" | "defensive";
+    drift: Record<string, number>;
+  };
+  /** Cumulative count of techniques used in the world (for drift calculations). */
+  globalKimariteStats: Record<string, number>;
 
   events: EventsState;
   playerKnowledge?: {
@@ -181,9 +197,62 @@ export interface WorldState {
 
   rivalriesState?: RivalriesState;
 
+  stableRelations?: Record<string, { tone: string }>;
+
+  lastBoutResult?: BoutResult;
+
+  /** Crisis waiting to be presented to player (checked on Dashboard load) */
+  pendingCrisis?: ActiveCrisis;
+
+  /** Chronicle/Historical record browser state */
+  chronicle?: {
+    eraLabels: Array<{
+      year: number;
+      basho: string;
+      label: string;
+      description: string;
+    }>;
+    topChampions: Array<{
+      rikishiId: string;
+      shikona: string;
+      totalYusho: number;
+      peakRank: string;
+    }>;
+    greatestRivalries: Array<{
+      rikishiAId: string;
+      rikishiBId: string;
+      shikonaA: string;
+      shikonaB: string;
+      totalBouts: number;
+    }>;
+    recordsBroken: Array<{
+      recordType: string;
+      rikishiId: string;
+      shikona: string;
+      value: number;
+      year: number;
+    }>;
+    globalCups?: GlobalCupHistoryEntry[];
+  };
+
+  /** Global Cup tournament state */
+  globalCup?: GlobalCupState;
+
+  selectedRikishiId?: string;
+
+  boutTactics?: Record<string, string>;
+
+  calendar?: { 
+    currentWeek: number;
+    year?: number;
+    month?: number;
+    week?: number;
+    currentDay?: number;
+  };
+
   _preGeneratedSchedules?: {
-    day1: unknown[];
-    day2: unknown[];
+    day1: string[];
+    day2: string[];
     announcedAtWeek: number;
   };
 
@@ -199,6 +268,7 @@ export interface WorldState {
 
   settings: {
     archiveMode: "aggressive" | "standard" | "preserve_player" | "keep_all";
+    enableStyleDrift?: boolean;
   };
 
   /**
@@ -209,4 +279,31 @@ export interface WorldState {
 
   // Heya brand identities for kesho-mawashi generation
   heyaBrandIdentities?: IdMapRuntime<import("./keshoMawashi").HeyaBrandIdentity>;
+
+  // Player-set custom kesho configs (Phase K)
+  customKeshoConfigs?: Record<string, Partial<import("./keshoMawashi").KeshoMawashi>>;
+
+  /** Pending exhibition tour invitations (WorldCircuitService) */
+  pendingExhibitions?: Array<{
+    id: string;
+    region: string;
+    prestige: number;
+    [key: string]: unknown;
+  }>;
+
+  /** Bloodline trait registry (BloodlineService) */
+  bloodlineRegistry?: BloodlineRegistry;
+
+  planetRating?: number;
+  isInitialSeed?: boolean;
+
+  // Simulation tracking (AutoSimService)
+  scandals?: Array<{ severity: string; year: number }>;
+  retirements?: Array<{ rikishiId: string }>;
+  eventLog?: Array<{ type: string; [key: string]: unknown }>;
+  heyaRivalryPairs?: Record<string, number>;
+  matchmakingOverride?: {
+    type: "avoid_rival";
+    requesterId: string;
+  };
 }

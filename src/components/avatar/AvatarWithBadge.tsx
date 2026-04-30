@@ -80,7 +80,7 @@ export const AvatarWithBadge: React.FC<AvatarWithBadgeProps> = ({
       {badgeConfig && BadgeIcon && (
         <div
           className={cn(
-            "absolute -bottom-1 -right-1 rounded-full flex items-center justify-center border-2 border-background shadow-sm",
+            "absolute -bottom-1 -right-1 rounded-sm flex items-center justify-center border-2 border-background shadow-sm",
             badgeConfig.bg,
             badgeConfig.color
           )}

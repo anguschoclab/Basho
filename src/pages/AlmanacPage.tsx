@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import type { ComponentType } from "react";
 import { Helmet } from "react-helmet";
 import { Link } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -8,7 +9,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { RecordEntry } from "@/engine/types/records";
-import { Medal, Scroll, Star, TrendingUp, Trophy, Users, History, Award } from "lucide-react";
+import type { BashoResult } from "@/engine/types/basho";
+import { Medal, Star, TrendingUp, Trophy, Users, History, Award } from "lucide-react";
+import { PageHeader } from "@/components/layout/control-center";
 
 /** Leaderboard widget for record book displays. */
 function LeaderboardWidget({
@@ -19,7 +22,7 @@ function LeaderboardWidget({
 }: {
   title: string;
   entries: RecordEntry[];
-  icon: any;
+  icon: ComponentType<{ className?: string }>;
   colorClass?: string;
 }) {
   return (
@@ -82,12 +85,12 @@ export default function AlmanacPage() {
           (r.stats?.achievements?.kinboshiEarned ?? 0) +
           (r.stats?.achievements?.ginboshiEarned ?? 0),
         details: `K: ${r.stats?.achievements?.kinboshiEarned ?? 0} | G: ${r.stats?.achievements?.ginboshiEarned ?? 0}`,
-        achievedDate: { year: world.year, month: world.calendar?.month ?? 1 },
+        achievedDate: { year: world.year, month: Math.ceil((world.week ?? 1) / 2) },
       }))
       .filter((entry) => entry.value > 0)
       .sort((a, b) => b.value - a.value)
       .slice(0, 5);
-  }, [world?.rikishi, world?.year, world?.calendar?.month]);
+  }, [world]);
 
   if (!world) {
     return (
@@ -114,12 +117,13 @@ export default function AlmanacPage() {
       </Helmet>
 
       <div className="space-y-6">
+        <PageHeader
+          eyebrow="── RECORDS ──"
+          title="力士名鑑"
+          lede="The living memory of the dohyo — records, dynasties, and statistics."
+        />
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="font-display text-4xl font-bold flex items-center gap-3">
-              <Scroll className="h-10 w-10 text-primary" />
-              力士名鑑
-            </h1>
             <p className="text-muted-foreground">The authoritative history of the Sumo world.</p>
           </div>
           <Badge variant="outline" className="text-lg px-4 py-2 bg-secondary/50">
@@ -152,7 +156,7 @@ export default function AlmanacPage() {
                   </p>
                 </Card>
               ) : (
-                [...world.history].reverse().map((basho: any, idx) => (
+                [...world.history].reverse().map((basho: BashoResult, idx) => (
                   <Card key={idx} className="paper overflow-hidden">
                     <div className="p-4 border-b flex justify-between items-center bg-secondary/20">
                       <div>
@@ -169,7 +173,7 @@ export default function AlmanacPage() {
                           Yūshō Winner
                         </p>
                         <p className="font-display font-bold text-lg">
-                          {basho.yushoShikona || "Reserved"}
+                          {world.rikishi.get(basho.yusho)?.shikona ?? basho.yusho ?? "Reserved"}
                         </p>
                       </div>
                       <div className="space-y-1">
@@ -180,7 +184,7 @@ export default function AlmanacPage() {
                       </div>
                       <div className="text-right">
                         <Link
-                          to={"/basho" as any}
+                          to="/basho"
                           className="text-primary hover:underline text-sm font-semibold"
                         >
                           View Full Results →
@@ -226,7 +230,7 @@ export default function AlmanacPage() {
                 />
                 <LeaderboardWidget
                   title="Giant Slayers"
-                  entries={giantSlayers as any}
+                  entries={giantSlayers}
                   icon={Medal}
                   colorClass="text-gold"
                 />

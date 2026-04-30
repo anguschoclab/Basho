@@ -1,20 +1,15 @@
 /**
  * rivalryUtils.tsx
  *
- * Helper functions for rivalry page.
+ * React components for rivalry display.
  */
 
-/* eslint-disable react-refresh/only-export-components */
+// Re-export getHeatBand from the pure utility file (must be before other imports for react-refresh)
+export { getHeatBand } from "./rivalryUtils.pure";
+
 import { cn } from "@/lib/utils";
 import type { RivalryHeatBand } from "@/engine/rivalries";
 import { HEAT_BAND_CONFIG } from "./rivalryConstants";
-
-export function getHeatBand(heat: number): RivalryHeatBand {
-  if (heat >= 80) return "inferno";
-  if (heat >= 55) return "hot";
-  if (heat >= 25) return "warm";
-  return "cold";
-}
 
 export function H2HBar({
   aWins,

@@ -2,23 +2,23 @@
  * src/engine/systems/narrative/RivalryHeatService.ts
  * =================================================
  * Pure math logic for Rivalry evolution.
- * 
+ *
  * Contains deterministic algorithms for:
  * 1. Heat & Spite Growth
  * 2. Tone Derivation
  * 3. Narrative Labeling
- * 
+ *
  * Goal: Decouple business rules from state management.
  */
 
-import { clamp, clamp01 } from "../../utils/math";
+import { clamp } from "../../utils/math";
 import { type SeededRNG } from "../../rng";
 import type { Id } from "../../types/common";
 import type {
   RivalryPairState,
   RivalriesState,
   RivalryTone,
-  RivalryTrigger
+  RivalryTrigger,
 } from "./RivalryConstants";
 
 /**
@@ -48,7 +48,11 @@ export function deriveTone(pair: RivalryPairState): RivalryTone {
 /**
  * Helper to bump a trigger value.
  */
-export function bumpTrigger(triggers: Record<string, number>, t: RivalryTrigger, amt: number): void {
+export function bumpTrigger(
+  triggers: Record<string, number>,
+  t: RivalryTrigger,
+  amt: number
+): void {
   triggers[t] = (triggers[t] ?? 0) + amt;
 }
 
@@ -66,10 +70,12 @@ export function applyBoutToPairState(
     closeness01: number;
     domination01: number;
     isUpset: boolean;
+    isFinalDay?: boolean;
+    isYushoRace?: boolean;
     week: number;
   }
 ): RivalryPairState {
-  const { rng, isWinForA, isKinboshi, isTitleStakes, week } = args;
+  const { rng, isWinForA, isKinboshi, isTitleStakes, week, isFinalDay, isYushoRace } = args;
 
   let { aWins, bWins, heat, closeness, spite, meetings } = pair;
 
@@ -85,6 +91,7 @@ export function applyBoutToPairState(
   const upsetBonus = args.isUpset ? 12 : 0;
   const titleBonus = isTitleStakes ? 6 : 0;
   const kinboshiBonus = isKinboshi ? 10 : 0;
+  const highStakesBonus = (isFinalDay ? 8 : 0) + (isYushoRace ? 12 : 0);
 
   // Closeness vs Spite
   const closenessGain = Math.round(args.closeness01 * 8);
@@ -93,7 +100,19 @@ export function applyBoutToPairState(
   // Deterministic spice
   const spice = rng.next() < 0.25 ? 1 : 0;
 
-  heat = clamp(heat + base + repeatBonus + closeBonus + upsetBonus + titleBonus + kinboshiBonus + spice, 0, 100);
+  heat = clamp(
+    heat +
+      base +
+      repeatBonus +
+      closeBonus +
+      upsetBonus +
+      titleBonus +
+      kinboshiBonus +
+      highStakesBonus +
+      spice,
+    0,
+    100
+  );
   closeness = clamp(closeness + closenessGain, 0, 100);
   spite = clamp(spite + spiteGain, 0, 100);
 
@@ -113,7 +132,7 @@ export function applyBoutToPairState(
     heat,
     closeness,
     spite,
-    triggers
+    triggers,
   };
 
   const tone = deriveTone(next);
@@ -125,12 +144,10 @@ export function applyBoutToPairState(
  * Returns tension in the 0.0–1.0 range (pair.heat / 100).
  * Returns { tension: 0 } if the pair has never met.
  */
-export function getRivalryBoutModifiers(
-  args: { state: RivalriesState; aId: Id; bId: Id }
-): { tension: number } {
-  const key = args.aId < args.bId
-    ? `${args.aId}|${args.bId}`
-    : `${args.bId}|${args.aId}`;
+export function getRivalryBoutModifiers(args: { state: RivalriesState; aId: Id; bId: Id }): {
+  tension: number;
+} {
+  const key = args.aId < args.bId ? `${args.aId}|${args.bId}` : `${args.bId}|${args.aId}`;
   const pair = args.state.pairs[key];
   if (!pair) return { tension: 0 };
   return { tension: pair.heat / 100 };

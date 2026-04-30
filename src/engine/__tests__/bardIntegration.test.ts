@@ -20,6 +20,7 @@ describe("Bard Engine Integration", () => {
       week: 2,
       dayIndexGlobal: 1,
       heyas: new Map([["heya-1", { id: "heya-1", name: "Test Heya", reputation: 50 }]]),
+      rikishi: new Map(),
       talentPool: {
         candidates: {
           c1: {
@@ -32,23 +33,24 @@ describe("Bard Engine Integration", () => {
           },
         },
         pools: {
-          high_school: { candidatesVisible: ["c1"] },
-          university: { candidatesVisible: [] },
-          foreign: { candidatesVisible: [] },
+          high_school: { candidatesVisible: ["c1"], candidatesHidden: [] },
+          university: { candidatesVisible: [], candidatesHidden: [] },
+          foreign: { candidatesVisible: [], candidatesHidden: [] },
         },
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Test mock
     } as any;
 
-    TalentPoolService.tickWeekTalentPool(world);
+    const impact = TalentPoolService.tickWeekTalentPool(world);
 
-    expect(EventBus.recruitDiscovered).toHaveBeenCalledWith(
-      expect.any(Object),
-      expect.objectContaining({
-        status: "high_talent_signed",
-        rikishiId: "c1",
-      })
+    // tickWeekTalentPool now returns StateImpact with logged events
+    const discoveredEvent = impact.events?.find(
+      (e: { type: string; data?: { status?: string; rikishiId?: string } }) =>
+        e.type === "RECRUIT_DISCOVERED" &&
+        e.data?.status === "high_talent_signed" &&
+        e.data?.rikishiId === "c1"
     );
+    expect(discoveredEvent).toBeDefined();
   });
 
   it("RegistryService logs LIFECYCLE_EVENT with wins_milestone status", () => {

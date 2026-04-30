@@ -8,7 +8,7 @@ import type { WorldState } from "../../types/world";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { WelfareService } from "../../systems/welfare/WelfareService";
-import { DIET_COSTS } from "../../constants/EconomicConstants";
+import { DIET_COSTS, DEBT_LIMIT } from "../../constants/EconomicConstants";
 
 export function phase01_daily_economy(world: WorldState): StateImpact {
   const builder = createImpactBuilder('phase01_daily_economy');
@@ -23,22 +23,22 @@ export function phase01_daily_economy(world: WorldState): StateImpact {
     const diet = welfare.activeDiet || "maintenance";
     const costPerRikishi = DIET_COSTS[diet] ?? 3000;
     const dailyFoodCost = rikishiCount * costPerRikishi;
-    
+    const nextFunds = Math.max(DEBT_LIMIT, heya.funds - dailyFoodCost);
+
     totalDailyFoodCost += dailyFoodCost;
-    builder.updateHeya(id, { funds: heya.funds - dailyFoodCost });
+    builder.updateHeya(id, { funds: nextFunds });
   }
 
-  // Note: transientContext updates are not directly supported by ImpactBuilder yet
-  // For now, we'll update them directly as transientContext is a nested state
-  const deltas = {
-    ...(world.transientContext?.deltas ?? {}),
-    expenses: (world.transientContext?.deltas?.expenses ?? 0) + totalDailyFoodCost
-  };
+  // Update transientContext via builder for pipeline compliance
   if (world.transientContext) {
-    world.transientContext = {
+    const nextTransient = {
       ...world.transientContext,
-      deltas: deltas as any
+      deltas: {
+        ...(world.transientContext.deltas ?? {}),
+        expenses: (world.transientContext.deltas?.expenses ?? 0) + totalDailyFoodCost,
+      },
     };
+    builder.updateWorldField("transientContext", nextTransient);
   }
 
   return builder.build();

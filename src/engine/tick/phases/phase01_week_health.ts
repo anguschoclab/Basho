@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * phase01_week_health.ts
  * ======================

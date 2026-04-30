@@ -3,7 +3,7 @@
  * Displays 4-step walkthrough of key bout mechanics during the exhibition bout.
  */
 
-import React from "react";
+
 import { Button } from "@/components/ui/button";
 import { X, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -78,13 +78,17 @@ export function MentorOverlay({
             <span className="text-xs text-muted-foreground opacity-60">{content.titleJa}</span>
           </div>
         </div>
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={onDismiss}
-          className="text-muted-foreground hover:text-foreground transition-colors mt-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background rounded-sm"
+          className="h-6 w-6 mt-0.5 text-muted-foreground hover:text-foreground"
           aria-label="Dismiss"
+          tooltip="Dismiss"
+          tooltipSide="bottom"
         >
           <X className="h-4 w-4" />
-        </button>
+        </Button>
       </div>
 
       {/* Progress dots */}
