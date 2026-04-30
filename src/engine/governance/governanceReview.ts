@@ -8,6 +8,7 @@
 
 import { stableSort } from "../utils/sort";
 import type { WorldState } from "../types/world";
+import type { Heya } from "../types/heya";
 import * as governance from "./GovernanceService";
 import { generateGovernanceHeadline } from "../systems/media/MediaService";
 import { issueBailoutLoanIfNeeded } from "../loans";
@@ -41,6 +42,17 @@ export function runGovernanceReview(world: WorldState): StateImpact {
   const impacts: StateImpact[] = [];
   const builder = createImpactBuilder("governanceReview");
 
+  // Pre-calculate potential benefactors by ichimon for efficient lookup in loop
+  const benefactorsByIchimon = new Map<string, Heya[]>();
+  for (const h of world.heyas.values()) {
+    if (h.ichimon && h.funds > FACTION_BENEFACTOR_THRESHOLD) {
+      if (!benefactorsByIchimon.has(h.ichimon)) {
+        benefactorsByIchimon.set(h.ichimon, []);
+      }
+      benefactorsByIchimon.get(h.ichimon)!.push(h);
+    }
+  }
+
   for (const heya of stableSort(world.heyas.values(), (x) => x.id)) {
     const welfareState = heya.welfareState;
     const scandalScore = heya.scandalScore ?? 0;
@@ -73,10 +85,8 @@ export function runGovernanceReview(world: WorldState): StateImpact {
       // v1.7 Faction Solidarity (Traditional Bailouts)
       if (heya.ichimon && heya.id !== world.playerHeyaId) {
         // Find a wealthy faction-mate to provide a gift
-        const allies = Array.from(world.heyas.values()).filter(
-          (h) => h.ichimon === heya.ichimon && h.id !== heya.id
-        );
-        const benefactor = allies.find((h) => h.funds > FACTION_BENEFACTOR_THRESHOLD);
+        const potentialBenefactors = benefactorsByIchimon.get(heya.ichimon) || [];
+        const benefactor = potentialBenefactors.find((h) => h.id !== heya.id);
 
         if (benefactor) {
           const giftAmount = FACTION_BAILOUT_AMOUNT;
