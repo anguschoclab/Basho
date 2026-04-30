@@ -7,7 +7,8 @@
 // =======================================================
 
 import type { ArchiveService } from "./opfsArchive";
-import type { BoutResult } from "../types/basho";
+import { type BoutResult, type BashoResult } from "../types/basho";
+import { type AlmanacSnapshot } from "../almanac";
 import { destr } from "destr";
 
 /**
@@ -141,7 +142,7 @@ export class ElectronArchiveService implements ArchiveService {
     }
   }
 
-  public async archiveAwards(season: number, awards: any[]): Promise<void> {
+  public async archiveAwards(season: number, awards: BashoResult[]): Promise<void> {
     if (!this.isElectron) {
       console.warn("ElectronArchiveService not available in web build");
       return;
@@ -159,7 +160,7 @@ export class ElectronArchiveService implements ArchiveService {
     }
   }
 
-  public async retrieveAwards(season: number): Promise<any[]> {
+  public async retrieveAwards(season: number): Promise<BashoResult[]> {
     if (!this.isElectron) {
       console.warn("ElectronArchiveService not available in web build");
       return [];
@@ -170,7 +171,7 @@ export class ElectronArchiveService implements ArchiveService {
       const content = await window.electronCustom!.fs.readFile(filePath);
 
       if (content) {
-        return destr<any[]>(content);
+        return destr<BashoResult[]>(content);
       }
       return [];
     } catch (error) {
@@ -179,7 +180,11 @@ export class ElectronArchiveService implements ArchiveService {
     }
   }
 
-  public async archiveBanzuke(season: number, bashoNumber: number, snapshot: any): Promise<void> {
+  public async archiveBanzuke(
+    season: number,
+    bashoNumber: number,
+    snapshot: AlmanacSnapshot
+  ): Promise<void> {
     if (!this.isElectron) {
       console.warn("ElectronArchiveService not available in web build");
       return;
@@ -197,7 +202,7 @@ export class ElectronArchiveService implements ArchiveService {
     }
   }
 
-  public async retrieveBanzuke(season: number, bashoNumber: number): Promise<any | null> {
+  public async retrieveBanzuke(season: number, bashoNumber: number): Promise<AlmanacSnapshot | null> {
     if (!this.isElectron) {
       console.warn("ElectronArchiveService not available in web build");
       return null;
@@ -208,7 +213,7 @@ export class ElectronArchiveService implements ArchiveService {
       const content = await window.electronCustom!.fs.readFile(filePath);
 
       if (content) {
-        return destr(content);
+        return destr<AlmanacSnapshot>(content);
       }
       return null;
     } catch (error) {
