@@ -1,4 +1,5 @@
 import JSON5 from "json5";
+import { destr } from "destr";
 
 /**
  * Safely parses JSON from LLM outputs, repairing common malformations.
@@ -40,7 +41,7 @@ export function parseLLMResponse<T>(rawText: string): T {
 
 export function safeParse<T extends object>(jsonString: string, fallback: T): T {
   try {
-    const result = JSON.parse(jsonString);
+    const result = destr(jsonString);
     if (result !== null && typeof result === 'object') {
         return result as T;
     }

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { parseLLMResponse } from "../jsonParser";
+import { parseLLMResponse, safeParse } from "../jsonParser";
 
 describe("parseLLMResponse", () => {
   it("parses valid strict JSON", () => {
@@ -27,5 +27,35 @@ describe("parseLLMResponse", () => {
     expect(() => parseLLMResponse(input)).toThrow(
       /Failed to parse LLM payload/,
     );
+  });
+});
+
+describe("safeParse", () => {
+  it("parses valid JSON successfully", () => {
+    const input = '{"hello": "world"}';
+    const fallback = { hello: "fallback" };
+    expect(safeParse(input, fallback)).toEqual({ hello: "world" });
+  });
+
+  it("returns fallback for invalid JSON", () => {
+    const input = "invalid json";
+    const fallback = { hello: "fallback" };
+    expect(safeParse(input, fallback)).toEqual(fallback);
+  });
+
+  it("returns fallback for non-object JSON", () => {
+    const input = "123";
+    const fallback = { hello: "fallback" };
+    expect(safeParse(input, fallback)).toEqual(fallback);
+  });
+
+  it("prevents prototype pollution", () => {
+    const input = '{"__proto__": {"polluted": true}, "hello": "world"}';
+    const fallback = { hello: "fallback" };
+    const result = safeParse(input, fallback);
+    expect(result).toEqual({ hello: "world" });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((result as any).__proto__.polluted).toBeUndefined();
+    expect({}["polluted" as keyof object]).toBeUndefined();
   });
 });
