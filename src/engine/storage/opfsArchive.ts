@@ -1,4 +1,4 @@
-import { type BoutResult } from "../types/basho";
+import { type BoutResult, type BashoResult } from "../types/basho";
 import { OPFSFileSystem } from "./OPFSFileSystem";
 import { warn, error } from "../utils/Logger";
 
@@ -55,6 +55,33 @@ function validateBoutLog(data: unknown): BoutResult | null {
   }
 
   return data as BoutResult;
+}
+
+// Type guard to ensure parsed JSON matches the expected BashoResult structure.
+function validateBashoResult(data: unknown): BashoResult | null {
+  if (!data || typeof data !== "object") {
+    return null;
+  }
+
+  const obj = data as Record<string, unknown>;
+
+  const requiredStringProps = ["id", "bashoName", "yusho"];
+  for (const prop of requiredStringProps) {
+    if (typeof obj[prop] !== "string") {
+      warn(`Invalid BashoResult: missing or invalid string property '${prop}'`, "OPFS Validation");
+      return null;
+    }
+  }
+
+  const requiredNumberProps = ["year", "bashoNumber"];
+  for (const prop of requiredNumberProps) {
+    if (typeof obj[prop] !== "number") {
+      warn(`Invalid BashoResult: missing or invalid number property '${prop}'`, "OPFS Validation");
+      return null;
+    }
+  }
+
+  return data as BashoResult;
 }
 
 /**
@@ -275,7 +302,11 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
       });
       const file = await fileHandle.getFile();
       const contents = await file.text();
-      return JSON.parse(contents);
+      const parsed = JSON.parse(contents);
+      if (Array.isArray(parsed)) {
+        return parsed.map(validateBashoResult).filter((item) => item !== null);
+      }
+      return [];
     } catch {
       return [];
     }
