@@ -210,7 +210,7 @@ export function KeshoEditor({ rikishi, open, onClose }: KeshoEditorProps) {
                           updateField("accentColor", p.accent);
                         }}
                         className={cn(
-                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
+                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
                           "flex flex-col gap-2 min-w-[80px] group transition-all rounded-md"
                         )}
                       >
