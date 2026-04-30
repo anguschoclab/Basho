@@ -182,6 +182,7 @@ export function KeshoEditor({ rikishi, open, onClose }: KeshoEditorProps) {
                         key={m}
                         onClick={() => updateSymbol(m)}
                         className={cn(
+                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                           "px-2 py-3 rounded-lg border text-[10px] uppercase font-bold transition-all truncate",
                           config.mainSymbol?.value === m
                             ? "bg-primary text-primary-foreground border-primary shadow-md"
@@ -208,7 +209,10 @@ export function KeshoEditor({ rikishi, open, onClose }: KeshoEditorProps) {
                           updateField("secondaryColor", p.secondary);
                           updateField("accentColor", p.accent);
                         }}
-                        className="flex flex-col gap-2 min-w-[80px] group transition-all"
+                        className={cn(
+                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
+                          "flex flex-col gap-2 min-w-[80px] group transition-all rounded-md"
+                        )}
                       >
                         <div className="h-10 w-full rounded-md flex overflow-hidden border border-border group-hover:border-primary">
                           <div className="flex-1" style={{ backgroundColor: p.primary }} />
