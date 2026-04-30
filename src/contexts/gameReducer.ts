@@ -190,8 +190,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     try {
       return { ...next, digest: buildWeeklyDigest(next.world) };
     } catch (error) {
-      console.error('Error loading data:', error);
-      return state;
+      console.error('Error building weekly digest:', error);
+      return next;
     }
   }
   return next;
