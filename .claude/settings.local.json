@@ -90,7 +90,10 @@
       "Bash(tee test-output.log)",
       "Bash(git commit *)",
       "WebFetch(domain:sumostats.com)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(timeout 380 tail -f /c/Users/AMAURI~1/AppData/Local/Temp/claude/C--Users-amauricia-onedrive---ubisoft-documents-github-sumo-manager-pro/9808ed10-ecc5-4bda-aa31-709bf015cb8d/tasks/b3qnw7bh5.output)",
+      "Skill(update-config)",
+      "Bash(typescript-language-server *)"
     ]
   },
   "outputStyle": "default"
