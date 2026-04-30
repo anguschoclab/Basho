@@ -75,7 +75,8 @@ function validateBashoResult(data: unknown): BashoResult | null {
 
   const requiredNumberProps = ["year", "bashoNumber"];
   for (const prop of requiredNumberProps) {
-    if (typeof obj[prop] !== "number") {
+    const val = obj[prop];
+    if (typeof val !== "number" || (prop === "bashoNumber" && (val < 1 || val > 6))) {
       warn(`Invalid BashoResult: missing or invalid number property '${prop}'`, "OPFS Validation");
       return null;
     }
