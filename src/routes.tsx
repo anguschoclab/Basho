@@ -70,11 +70,9 @@ const rootRoute = createRootRoute({
   },
   // Redirect to dashboard in Electron production to handle file:// initial load
   beforeLoad: () => {
-    console.log("[Routes] rootRoute: beforeLoad, isElectronProd =", isElectronProd);
     if (isElectronProd) {
       // In Electron production, redirect from root to dashboard with hash
       if (window.location.hash === "" || window.location.hash === "#/") {
-        console.log("[Routes] Redirecting to #/dashboard for Electron production");
         window.location.hash = "#/dashboard";
       }
     }
@@ -359,8 +357,6 @@ export const router = createRouter({
     return <NotFound />;
   },
 });
-
-console.log("[Router] Initialized with history type:", isElectronProd ? "HASH" : "BROWSER");
 
 declare module "@tanstack/react-router" {
   interface Register {
