@@ -1,8 +1,9 @@
 import { type BoutResult, type BashoResult } from "../types/basho";
+import { type AlmanacSnapshot } from "../almanac";
 import { OPFSFileSystem } from "./OPFSFileSystem";
 import { warn, error } from "../utils/Logger";
 
-// Type guard to ensure parsed JSON matches the expected structure.
+// Type guards to ensure parsed JSON matches the expected structure.
 // This prevents injection of arbitrary primitive types or malicious objects.
 function validateBoutLog(data: unknown): BoutResult | null {
   if (!data || typeof data !== "object") {
@@ -57,32 +58,44 @@ function validateBoutLog(data: unknown): BoutResult | null {
   return data as BoutResult;
 }
 
-// Type guard to ensure parsed JSON matches the expected BashoResult structure.
-function validateBashoResult(data: unknown): BashoResult | null {
+function validateAwards(data: unknown): BashoResult[] {
+  if (!Array.isArray(data)) {
+    warn("Invalid Awards: data is not an array", "OPFS Validation");
+    return [];
+  }
+  for (const item of data) {
+    if (!item || typeof item !== "object") return [];
+    const obj = item as Record<string, unknown>;
+    if (
+      typeof obj.id !== "string" ||
+      typeof obj.year !== "number" ||
+      typeof obj.bashoNumber !== "number"
+    ) {
+      warn("Invalid Awards: array contains invalid BashoResult objects", "OPFS Validation");
+      return [];
+    }
+  }
+  return data as BashoResult[];
+}
+
+function validateAlmanacSnapshot(data: unknown): AlmanacSnapshot | null {
   if (!data || typeof data !== "object") {
     return null;
   }
 
   const obj = data as Record<string, unknown>;
-
-  const requiredStringProps = ["id", "bashoName", "yusho"];
-  for (const prop of requiredStringProps) {
-    if (typeof obj[prop] !== "string") {
-      warn(`Invalid BashoResult: missing or invalid string property '${prop}'`, "OPFS Validation");
-      return null;
-    }
+  if (
+    typeof obj.year !== "number" ||
+    typeof obj.bashoNumber !== "number" ||
+    typeof obj.bashoName !== "string" ||
+    !obj.makuuchiSummary ||
+    typeof obj.makuuchiSummary !== "object"
+  ) {
+    warn("Invalid AlmanacSnapshot: missing or invalid core properties", "OPFS Validation");
+    return null;
   }
 
-  const requiredNumberProps = ["year", "bashoNumber"];
-  for (const prop of requiredNumberProps) {
-    const val = obj[prop];
-    if (typeof val !== "number" || (prop === "bashoNumber" && (val < 1 || val > 6))) {
-      warn(`Invalid BashoResult: missing or invalid number property '${prop}'`, "OPFS Validation");
-      return null;
-    }
-  }
-
-  return data as BashoResult;
+  return data as AlmanacSnapshot;
 }
 
 /**
@@ -130,10 +143,10 @@ export interface ArchiveService {
   archiveGazette: (season: number, week: number, markdown: string) => Promise<void>;
   retrieveGazette: (season: number, week: number) => Promise<string | null>;
   getArchivedBoutIdsForSeason: (season: number) => Promise<string[]>;
-  archiveAwards: (season: number, awards: unknown[]) => Promise<void>;
-  retrieveAwards: (season: number) => Promise<unknown[]>;
-  archiveBanzuke: (season: number, bashoNumber: number, snapshot: unknown) => Promise<void>;
-  retrieveBanzuke: (season: number, bashoNumber: number) => Promise<unknown | null>;
+  archiveAwards: (season: number, awards: BashoResult[]) => Promise<void>;
+  retrieveAwards: (season: number) => Promise<BashoResult[]>;
+  archiveBanzuke: (season: number, bashoNumber: number, snapshot: AlmanacSnapshot) => Promise<void>;
+  retrieveBanzuke: (season: number, bashoNumber: number) => Promise<AlmanacSnapshot | null>;
 }
 
 class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
@@ -277,7 +290,7 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
 
   // --- AWARDS ---
 
-  public async archiveAwards(season: number, awards: unknown[]): Promise<void> {
+  public async archiveAwards(season: number, awards: BashoResult[]): Promise<void> {
     const dir = await this.getDirectoryPath([`season_${season}`]);
     if (!dir) return;
 
@@ -293,7 +306,7 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
     }
   }
 
-  public async retrieveAwards(season: number): Promise<unknown[]> {
+  public async retrieveAwards(season: number): Promise<BashoResult[]> {
     const dir = await this.getDirectoryPath([`season_${season}`]);
     if (!dir) return [];
 
@@ -304,10 +317,7 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
       const file = await fileHandle.getFile();
       const contents = await file.text();
       const parsed = JSON.parse(contents);
-      if (Array.isArray(parsed)) {
-        return parsed.map(validateBashoResult).filter((item) => item !== null);
-      }
-      return [];
+      return validateAwards(parsed);
     } catch {
       return [];
     }
@@ -318,7 +328,7 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
   public async archiveBanzuke(
     season: number,
     bashoNumber: number,
-    snapshot: unknown
+    snapshot: AlmanacSnapshot
   ): Promise<void> {
     const dir = await this.getDirectoryPath([`season_${season}`, "banzuke"]);
     if (!dir) return;
@@ -335,7 +345,7 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
     }
   }
 
-  public async retrieveBanzuke(season: number, bashoNumber: number): Promise<unknown | null> {
+  public async retrieveBanzuke(season: number, bashoNumber: number): Promise<AlmanacSnapshot | null> {
     const dir = await this.getDirectoryPath([`season_${season}`, "banzuke"]);
     if (!dir) return null;
 
@@ -345,7 +355,8 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
       });
       const file = await fileHandle.getFile();
       const contents = await file.text();
-      return JSON.parse(contents);
+      const parsed = JSON.parse(contents);
+      return validateAlmanacSnapshot(parsed);
     } catch {
       return null;
     }
