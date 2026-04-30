@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell, ipcMain, dialog, Menu, Tray, nativeImage } from "electron";
+import { app, BrowserWindow, shell, ipcMain, dialog, Menu, Tray, nativeImage, session } from "electron";
 import { join } from "path";
 import { is } from "@electron-toolkit/utils";
 import path from "path";
@@ -41,10 +41,20 @@ async function createWindow(): Promise<void> {
       sandbox: true,
       contextIsolation: true,
       nodeIntegration: false,
+      navigateOnDragDrop: false,
     },
   });
 
   mainWindow.on("ready-to-show", () => mainWindow?.show());
+
+  // Prevent dragging and dropping files from navigating the app
+  mainWindow.webContents.on("will-navigate", (event, navigationUrl) => {
+    const isLocalFile = navigationUrl.startsWith("file://");
+    const isDevServer = process.env["ELECTRON_RENDERER_URL"] && navigationUrl.startsWith(process.env["ELECTRON_RENDERER_URL"]);
+    if (!isLocalFile && !isDevServer) {
+      event.preventDefault();
+    }
+  });
 
   // Open external links in the OS browser, not inside Electron
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
@@ -446,6 +456,15 @@ ipcMain.handle("app:getPath", (event, name: string) => {
 });
 
 app.whenReady().then(async () => {
+  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    callback({
+      responseHeaders: {
+        ...details.responseHeaders,
+        "Content-Security-Policy": ["default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' ws: http: https:;"],
+      },
+    });
+  });
+
   try {
     await createWindow();
     createMenu();
