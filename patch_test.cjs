@@ -1,4 +1,6 @@
-// src/contexts/__tests__/gameReducer.test.ts
+const fs = require('fs');
+
+const content = `// src/contexts/__tests__/gameReducer.test.ts
 import { describe, it, expect, vi } from 'vitest';
 import { gameReducer } from '../gameReducer';
 import { initialGameState } from '../gameTypes';
@@ -78,3 +80,6 @@ describe('Game Reducer Error Handling', () => {
     consoleSpy.mockRestore();
   });
 });
+`;
+
+fs.writeFileSync('src/contexts/__tests__/gameReducer.test.ts', content);

@@ -187,7 +187,12 @@ const baseReducer = combineReducers<GameState, GameAction>([
 export function gameReducer(state: GameState, action: GameAction): GameState {
   const next = baseReducer(state, action);
   if (next.world !== state.world) {
-    return { ...next, digest: buildWeeklyDigest(next.world) };
+    try {
+      return { ...next, digest: buildWeeklyDigest(next.world) };
+    } catch (error) {
+      console.error('Error loading data:', error);
+      return state;
+    }
   }
   return next;
 }
