@@ -317,7 +317,7 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
       });
       const file = await fileHandle.getFile();
       const contents = await file.text();
-      const parsed = destr<unknown>(contents);
+      const parsed = destr<unknown>(contents, { strict: true });
       return validateAwards(parsed);
     } catch {
       return [];
