@@ -47,6 +47,7 @@ export default function MainMenu() {
   const [selectionMode, setSelectionMode] = useState<StableSelectionMode>("recommended");
   const [selectedHeyaId, setSelectedHeyaId] = useState<string | null>(null);
   const [previewHeya, setPreviewHeya] = useState<Heya | null>(null);
+  const [isRestoring, setIsRestoring] = useState(false);
 
   // Sync world seed
   useEffect(() => {
@@ -64,7 +65,12 @@ export default function MainMenu() {
   useEffect(() => {
     if (!state.world && hasAutosave()) {
       loadFromAutosave();
-      navigate({ to: "/dashboard" });
+      // Navigate after state updates
+      setTimeout(() => {
+        if (state.world) {
+          navigate({ to: "/dashboard" });
+        }
+      }, 100);
     }
   }, [state.world, hasAutosave, loadFromAutosave, navigate]);
 
