@@ -11,6 +11,7 @@ import { rollPotential } from "./CandidateStats";
 import { LegacyService } from "../legacy/LegacyService";
 import type { WorldState } from "../../types/world";
 import type { RikishiStats } from "../../types/rikishi";
+import { JAPANESE_PREFECTURES, SUMO_HOTBEDS } from "../../../data/sumo_geography";
 
 /**
  * Generates a single TalentCandidate for the recruitment pools.
@@ -79,11 +80,12 @@ export function generateCandidate(args: {
     paPkg.stats = LegacyService.applyLegacyTrait(paPkg.stats, legacyTrait);
   }
 
-  // Determine origin based on pool
+  // Determine origin based on pool using geography data
+  const FOREIGN_ORIGINS = ["Mongolia", "Georgia", "Russia", "Brazil", "USA", "Kazakhstan"];
   const origin =
     poolType === "foreign"
-      ? seededPick(rng, ["Mongolia", "Georgia", "Russia", "Brazil", "USA"])
-      : seededPick(rng, ["Aomori", "Osaka", "Tokyo", "Fukuoka", "Hokkaido", "Ishikawa"]);
+      ? seededPick(rng, FOREIGN_ORIGINS)
+      : seededPick(rng, [...SUMO_HOTBEDS.filter(h => h !== "Mongolia" && h !== "Georgia" && h !== "Egypt"), ...JAPANESE_PREFECTURES.slice(0, 20)]);
 
   const name = generateShikona(`${rng.seed}::candidate::${id}`, {
     rng,

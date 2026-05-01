@@ -70,3 +70,4 @@ export * from "./systems/generation/WorldFactory";
 export * from "./rng";
 export * from "./lineage";
 export * from "./myosekiMarket";
+export * from "./agents";
