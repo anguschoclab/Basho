@@ -15,8 +15,10 @@ import type {
 
 export const FATIGUE_LABELS: Record<FatigueBand, string> = {
   fresh: "Fresh",
+  alert: "Alert",
   light: "Light",
   tired: "Tired",
+  worn: "Worn",
   exhausted: "Exhausted",
   spent: "Spent",
 };

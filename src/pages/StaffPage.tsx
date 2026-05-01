@@ -30,6 +30,8 @@ import { cn } from "@/lib/utils";
 import { UserPlus, ShieldCheck, Zap, Heart, Award, Briefcase, Trash2 } from "lucide-react";
 import type { Staff, StaffRole } from "@/engine/types/staff";
 import { toast } from "sonner";
+import { toFatigueBand } from "@/engine/descriptorBands";
+import { FATIGUE_LABELS } from "@/presenters/uiConstants";
 
 const ROLE_LABELS: Record<StaffRole, string> = {
   oyakata: "Steward",
@@ -345,8 +347,12 @@ function StaffCard({ staff, onFire }: { staff: Staff; onFire: (id: string) => vo
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
               <span>Fatigue</span>
-              <span className={cn(staff.fatigue > 70 ? "text-destructive" : "text-foreground")}>
-                {staff.fatigue}%
+              <span className={cn(
+                toFatigueBand(staff.fatigue) === "spent" || toFatigueBand(staff.fatigue) === "exhausted" || toFatigueBand(staff.fatigue) === "worn"
+                  ? "text-destructive"
+                  : "text-foreground"
+              )}>
+                {FATIGUE_LABELS[toFatigueBand(staff.fatigue)]}
               </span>
             </div>
             <Progress value={staff.fatigue} className="h-1" />

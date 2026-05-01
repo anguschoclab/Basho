@@ -1,6 +1,8 @@
 // InjuryRiskHeatmap.tsx — Roster-wide injury risk matrix visualization
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
+import { toFatigueBand } from "@/engine/descriptorBands";
+import { FATIGUE_LABELS } from "@/presenters/uiConstants";
 
 interface InjuryRiskHeatmapProps {
   rikishiList: Array<{
@@ -125,7 +127,7 @@ export function InjuryRiskHeatmap({ rikishiList }: InjuryRiskHeatmapProps) {
                       <div
                         className={`rounded px-2 py-1 text-center font-mono text-xs font-medium tabular-nums ${getCellClasses(r.fatigue, r.isInjured)}`}
                       >
-                        {r.fatigue}
+                        {FATIGUE_LABELS[toFatigueBand(r.fatigue)]}
                       </div>
                     </td>
                     <td className="py-1.5 pl-2">

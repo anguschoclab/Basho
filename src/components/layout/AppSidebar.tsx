@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Building2, AlertTriangle, Lock } from "lucide-react";
 import { Link, useLocation } from "@tanstack/react-router";
+import { useRef, useLayoutEffect } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { getMenuGroups } from "./sidebarConfig";
 
@@ -19,6 +20,8 @@ export function AppSidebar() {
   const { state } = useGame();
   const location = useLocation();
   const world = state.world;
+  const contentRef = useRef<HTMLDivElement>(null);
+  const scrollPosRef = useRef<number>(0);
 
   const isLoaded = !!world;
   const tutorialCompleted = world?.tutorialState?.completed ?? false;
@@ -46,6 +49,20 @@ export function AppSidebar() {
     !!fundsLow,
     !!fundsCritical
   );
+
+  // Capture scroll position as user scrolls
+  const handleScroll = () => {
+    if (contentRef.current) {
+      scrollPosRef.current = contentRef.current.scrollTop;
+    }
+  };
+
+  // Restore scroll position after navigation
+  useLayoutEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.scrollTop = scrollPosRef.current;
+    }
+  }, [location.pathname]);
 
   return (
     <Sidebar
@@ -111,7 +128,11 @@ export function AppSidebar() {
       </SidebarHeader>
 
       {/* ─ Navigation ─ */}
-      <SidebarContent className="custom-scrollbar overflow-x-hidden">
+      <SidebarContent
+        ref={contentRef}
+        onScroll={handleScroll}
+        className="custom-scrollbar overflow-x-hidden"
+      >
         {menuGroups.map((group, groupIdx) => (
           <SidebarGroup key={groupIdx} className="py-1 px-0">
             {/* Section label with hairline */}

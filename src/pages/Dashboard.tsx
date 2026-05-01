@@ -14,6 +14,7 @@ import {
 import { projectDashboardUIDigest } from "@/presenters/uiDigest";
 import { projectFinanceSummary } from "@/presenters/projections/financeProjections";
 import { projectTrainingSummary } from "@/presenters/projections/trainingProjections";
+import { FATIGUE_LABELS } from "@/presenters/uiConstants";
 
 import { OnboardingTourDialog } from "@/components/onboarding/OnboardingTourDialog";
 import { CrisisModal } from "@/components/game/CrisisModal";
@@ -235,13 +236,13 @@ export default function Dashboard() {
                 },
                 {
                   label: "Fatigue",
-                  value: `${training?.avgFatigue ?? 0}%`,
+                  value: `${FATIGUE_LABELS[training?.avgFatigueBand ?? "fresh"]} (${training?.avgFatigue ?? 0}%)`,
                   tone: (training?.avgFatigue ?? 0) > 70 ? "warning" : "success",
                 },
               ]}
               progress={[
                 {
-                  label: "Avg Fatigue",
+                  label: `Avg: ${FATIGUE_LABELS[training?.avgFatigueBand ?? "fresh"]}`,
                   value: training?.avgFatigue ?? 0,
                   tone: (training?.avgFatigue ?? 0) > 70 ? "destructive" : "success",
                 },
@@ -385,7 +386,7 @@ export default function Dashboard() {
                     subtitle={rs.fatigueLabel}
                     value={rs.fatigue}
                     tone={rs.fatigue > 70 ? "destructive" : rs.fatigue > 40 ? "warning" : "success"}
-                    showValue
+                    showValue={false}
                   />
                 ))}
               </div>

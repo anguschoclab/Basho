@@ -1310,9 +1310,12 @@
           },
           "fatigue": {
             "fresh": "Fresh",
+            "alert": "Alert",
+            "light": "Light",
             "tired": "Tired",
             "worn": "Worn",
-            "exhausted": "Exhausted"
+            "exhausted": "Exhausted",
+            "spent": "Spent"
           },
           "potential": {
             "transcendent": "Transcendent",

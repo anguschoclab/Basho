@@ -12,6 +12,8 @@ import { getHealthBadge } from "@/presenters/PerceptionPresenter";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CompareModePanel } from "../scouting/CompareModePanel";
+import { toFatigueBand } from "@/engine/descriptorBands";
+import { FATIGUE_LABELS } from "@/presenters/uiConstants";
 
 type RosterEntryWithHealth = UIRosterEntry & { healthBadge: string };
 
@@ -216,10 +218,10 @@ export function RosterWidget() {
     return { a: projectRikishi(coreA, world), b: projectRikishi(coreB, world) };
   }, [selectedIds, world]);
 
-  const { roster, injuredCount, avgFatigue } = useMemo(() => {
-    if (!world?.playerHeyaId) return { roster: [], injuredCount: 0, avgFatigue: 0 };
+  const { roster, injuredCount, avgFatigue, avgFatigueBand } = useMemo(() => {
+    if (!world?.playerHeyaId) return { roster: [], injuredCount: 0, avgFatigue: 0, avgFatigueBand: "fresh" as const };
     const heya = world.heyas.get(world.playerHeyaId);
-    if (!heya) return { roster: [], injuredCount: 0, avgFatigue: 0 };
+    if (!heya) return { roster: [], injuredCount: 0, avgFatigue: 0, avgFatigueBand: "fresh" as const };
 
     // ⚡ Bolt Performance Optimization: Single-pass for loop over rikishiIds
     const entries: RosterEntryWithHealth[] = [];
@@ -239,10 +241,14 @@ export function RosterWidget() {
 
     entries.sort((a, b) => b.momentum - a.momentum);
 
+    const avgFatigueValue = entries.length ? Math.round(totalFatigue / entries.length) : 0;
+    const avgFatigueBand = toFatigueBand(avgFatigueValue);
+
     return {
       roster: entries,
       injuredCount: injuries,
-      avgFatigue: entries.length ? Math.round(totalFatigue / entries.length) : 0,
+      avgFatigue: avgFatigueValue,
+      avgFatigueBand,
     };
   }, [world]);
 
@@ -282,7 +288,7 @@ export function RosterWidget() {
         <div className="flex items-center gap-1 text-muted-foreground ml-auto">
           <AlertTriangle className="h-3 w-3" />
           <span className="text-[10px]">
-            Avg fatigue: <span className="tabular-nums">{avgFatigue}%</span>
+            Avg: {FATIGUE_LABELS[avgFatigueBand]} (<span className="tabular-nums">{avgFatigue}%</span>)
           </span>
         </div>
       </div>

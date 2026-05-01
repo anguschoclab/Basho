@@ -39,13 +39,7 @@ export function getStatProse(rng: SeededRNG, attribute: string, band: StatBand):
 
 // === Fatigue Labels ===
 export function getFatigueLabel(rng: SeededRNG, band: FatigueBand): string {
-  // Map 'light' to 'tired' or similar if missing, but we added 'tired', 'worn', 'exhausted'
-  // Legacy mapping adjustments
-  let path = band as string;
-  if (band === "light") path = "tired";
-  if (band === "spent") path = "exhausted";
-
-  return BardEngine.resolve(rng, `system.descriptors.bands.fatigue.${path}`).text;
+  return BardEngine.resolve(rng, `system.descriptors.bands.fatigue.${band}`).text;
 }
 
 // === Momentum Labels ===

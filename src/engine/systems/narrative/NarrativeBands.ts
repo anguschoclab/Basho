@@ -35,14 +35,16 @@ export const STAT_BANDS: BandDef<StatBand>[] = [
 ];
 
 // === Fatigue Bands (0–100) ===
-export type FatigueBand = "fresh" | "light" | "tired" | "exhausted" | "spent";
+export type FatigueBand = "fresh" | "alert" | "light" | "tired" | "worn" | "exhausted" | "spent";
 
 export const FATIGUE_BANDS: BandDef<FatigueBand>[] = [
-  { band: "fresh", min: 0, max: 15 },
-  { band: "light", min: 15, max: 35 },
-  { band: "tired", min: 35, max: 55 },
-  { band: "exhausted", min: 55, max: 75 },
-  { band: "spent", min: 75, max: Infinity },
+  { band: "fresh", min: 0, max: 10 },
+  { band: "alert", min: 10, max: 25 },
+  { band: "light", min: 25, max: 40 },
+  { band: "tired", min: 40, max: 55 },
+  { band: "worn", min: 55, max: 70 },
+  { band: "exhausted", min: 70, max: 85 },
+  { band: "spent", min: 85, max: Infinity },
 ];
 
 // === Momentum Bands (-5 to +5 or 0–100) ===

@@ -5,7 +5,10 @@
  */
 
 import type { WorldState } from "../../engine/types/world";
+import type { FatigueBand } from "../../engine/systems/narrative/NarrativeBands";
 import { ensureHeyaTrainingState } from "../../presenters/uiDigest";
+import { toFatigueBand } from "../../engine/descriptorBands";
+import { FATIGUE_LABELS } from "../../presenters/uiConstants";
 
 export interface TrainingRikishiStatus {
   id: string;
@@ -24,15 +27,8 @@ export interface TrainingSummary {
   injuryRiskHighCount: number;
   injuredCount: number;
   avgFatigue: number;
+  avgFatigueBand: FatigueBand;
   hasHighRisk: boolean;
-}
-
-function toFatigueLabel(fatigue: number): string {
-  if (fatigue >= 85) return "Spent";
-  if (fatigue >= 65) return "Exhausted";
-  if (fatigue >= 45) return "Tired";
-  if (fatigue >= 25) return "Light";
-  return "Fresh";
 }
 
 function toInjuryRisk(fatigue: number, isInjured: boolean): "low" | "medium" | "high" {
@@ -54,11 +50,12 @@ export function projectTrainingSummary(world: WorldState, heyaId: string): Train
       const r = world.rikishi.get(id);
       if (!r) return null;
       const fatigue = r.fatigue ?? 0;
+      const fatigueBand = toFatigueBand(fatigue);
       return {
         id: r.id,
         shikona: r.shikona ?? r.name ?? id,
         fatigue,
-        fatigueLabel: toFatigueLabel(fatigue),
+        fatigueLabel: FATIGUE_LABELS[fatigueBand],
         injuryRisk: toInjuryRisk(fatigue, !!r.injury),
         isInjured: !!r.injury,
       };
@@ -71,6 +68,7 @@ export function projectTrainingSummary(world: WorldState, heyaId: string): Train
     rosterStatuses.length > 0
       ? Math.round(rosterStatuses.reduce((sum, r) => sum + r.fatigue, 0) / rosterStatuses.length)
       : 0;
+  const avgFatigueBand = toFatigueBand(avgFatigue);
 
   return {
     intensity: profile.intensity,
@@ -80,6 +78,7 @@ export function projectTrainingSummary(world: WorldState, heyaId: string): Train
     injuryRiskHighCount,
     injuredCount,
     avgFatigue,
+    avgFatigueBand,
     hasHighRisk: injuryRiskHighCount > 0 || injuredCount > 0,
   };
 }
