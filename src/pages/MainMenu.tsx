@@ -63,16 +63,19 @@ export default function MainMenu() {
 
   // Auto-restore from autosave if available
   useEffect(() => {
-    if (!state.world && hasAutosave()) {
+    if (!state.world && hasAutosave() && !isRestoring) {
+      setIsRestoring(true);
       loadFromAutosave();
-      // Navigate after state updates
-      setTimeout(() => {
-        if (state.world) {
-          navigate({ to: "/dashboard" });
-        }
-      }, 100);
     }
-  }, [state.world, hasAutosave, loadFromAutosave, navigate]);
+  }, [state.world, hasAutosave, loadFromAutosave, isRestoring]);
+
+  // Navigate to dashboard after autosave loads
+  useEffect(() => {
+    if (isRestoring && state.world) {
+      navigate({ to: "/dashboard" });
+      setIsRestoring(false);
+    }
+  }, [isRestoring, state.world, navigate]);
 
   const stables = useMemo(() => {
     if (!state?.world) return [];
