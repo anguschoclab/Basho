@@ -51,7 +51,7 @@ export default function MainMenu() {
 
   // Sync world seed
   useEffect(() => {
-    if (!state?.world) {
+    if (!state?.world && !hasAutosave()) {
       const worldSeed = makeDeterministicSeed("world");
       setSeed(worldSeed);
       if (typeof createWorld === "function") createWorld(worldSeed);
@@ -59,7 +59,7 @@ export default function MainMenu() {
       setSeed(state.world.seed);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- createWorld is stable from context; seed is managed internally
-  }, [state?.world]);
+  }, [state?.world, hasAutosave]);
 
   // Auto-restore from autosave if available
   useEffect(() => {
