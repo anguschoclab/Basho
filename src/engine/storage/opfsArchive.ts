@@ -2,6 +2,7 @@ import { type BoutResult, type BashoResult } from "../types/basho";
 import { type AlmanacSnapshot } from "../almanac";
 import { OPFSFileSystem } from "./OPFSFileSystem";
 import { warn, error } from "../utils/Logger";
+import { destr } from "destr";
 
 // Type guards to ensure parsed JSON matches the expected structure.
 // This prevents injection of arbitrary primitive types or malicious objects.
@@ -196,7 +197,7 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
       });
       const file = await fileHandle.getFile();
       const contents = await file.text();
-      const parsed = JSON.parse(contents);
+      const parsed = destr<unknown>(contents, { strict: true });
       return validateBoutLog(parsed);
     } catch (e: unknown) {
       if ((e instanceof Error || e instanceof DOMException) && e.name === "NotFoundError")
@@ -316,7 +317,7 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
       });
       const file = await fileHandle.getFile();
       const contents = await file.text();
-      const parsed = JSON.parse(contents);
+      const parsed = destr<unknown>(contents, { strict: true });
       return validateAwards(parsed);
     } catch {
       return [];
@@ -358,7 +359,7 @@ class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
       });
       const file = await fileHandle.getFile();
       const contents = await file.text();
-      const parsed = JSON.parse(contents);
+      const parsed = destr<unknown>(contents, { strict: true });
       return validateAlmanacSnapshot(parsed);
     } catch {
       return null;
