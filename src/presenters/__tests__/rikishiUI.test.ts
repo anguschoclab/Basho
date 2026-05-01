@@ -2,6 +2,8 @@ import { describe, it, expect } from "vitest";
 import { rankScore, projectRosterEntry } from "../rikishiUI";
 import { mockRikishi } from "../../engine/__tests__/utils";
 import type { WorldState } from "../../engine/types/world";
+import { projectRikishi } from "../rikishiUI";
+import { SeededRNG } from "../../engine/rng";
 
 describe("rikishiUI - rankScore", () => {
   it("should calculate correct score for yokozuna 1 east", () => {
@@ -159,5 +161,77 @@ describe("projectRosterEntry", () => {
 
     const entry2 = projectRosterEntry(baseRikishi, worldNoHistory);
     expect(entry2.rankDelta).toBeUndefined();
+  });
+});
+
+describe("projectRikishi - new band calculations", () => {
+  const rng = new SeededRNG("test-seed-42");
+  const baseWorld = {
+    year: 2020,
+    heyas: new Map([["h1", { id: "h1", name: "Test Heya", isPlayerOwned: true }]]),
+    rikishi: new Map(),
+  } as unknown as WorldState;
+
+  it("should calculate age band correctly based on birth year", () => {
+    const rikishi = mockRikishi("r1", {
+      shikona: "Testyama",
+      heyaId: "h1",
+      birthYear: 2000, // 20 years old
+      height: 175,
+      weight: 85,
+    });
+
+    const projected = projectRikishi(rikishi, baseWorld);
+    expect(projected.age).toBe(20);
+    expect(projected.ageBand).toEqual(expect.any(String));
+    expect(projected.ageDescriptor).toEqual(expect.any(String));
+  });
+
+  it("should calculate weight band correctly", () => {
+    const rikishi = mockRikishi("r1", {
+      shikona: "Testyama",
+      heyaId: "h1",
+      birthYear: 2000,
+      height: 175,
+      weight: 120, // Heavy weight
+    });
+
+    const projected = projectRikishi(rikishi, baseWorld);
+    expect(projected.weight).toBe(120);
+    expect(projected.weightBand).toEqual(expect.any(String));
+    expect(projected.weightDescriptor).toEqual(expect.any(String));
+  });
+
+  it("should calculate height band correctly", () => {
+    const rikishi = mockRikishi("r1", {
+      shikona: "Testyama",
+      heyaId: "h1",
+      birthYear: 2000,
+      height: 190, // Tall
+      weight: 85,
+    });
+
+    const projected = projectRikishi(rikishi, baseWorld);
+    expect(projected.height).toBe(190);
+    expect(projected.heightBand).toEqual(expect.any(String));
+    expect(projected.heightDescriptor).toEqual(expect.any(String));
+  });
+
+  it("should include all new descriptor fields in UIRikishi", () => {
+    const rikishi = mockRikishi("r1", {
+      shikona: "Testyama",
+      heyaId: "h1",
+      birthYear: 1995,
+      height: 180,
+      weight: 95,
+    });
+
+    const projected = projectRikishi(rikishi, baseWorld);
+    expect(projected).toHaveProperty("ageBand");
+    expect(projected).toHaveProperty("weightBand");
+    expect(projected).toHaveProperty("heightBand");
+    expect(projected).toHaveProperty("ageDescriptor");
+    expect(projected).toHaveProperty("weightDescriptor");
+    expect(projected).toHaveProperty("heightDescriptor");
   });
 });

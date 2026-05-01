@@ -5,6 +5,7 @@
  */
 
 import type { Rikishi } from "../../../engine/types/rikishi";
+import type { WorldState } from "../../../engine/types/world";
 import { SeededRNG } from "../../../engine/rng";
 import { NarrativeService } from "../../../engine/systems/narrative/NarrativeService";
 import { getCareerPhase } from "../../../engine/systems/training/TrainingMath";
@@ -34,7 +35,8 @@ export function toStatusDTO(r: Rikishi, rng: SeededRNG): RikishiStatusDTO {
 /**
  * Transform stat bands.
  */
-export function toBandsDTO(r: Rikishi, rng: SeededRNG): RikishiBandsDTO {
+export function toBandsDTO(r: Rikishi, rng: SeededRNG, world?: WorldState): RikishiBandsDTO {
+  const age = world ? world.year - r.birthYear : 0;
   return {
     powerBand: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.power ?? 50)),
     techniqueBand: NarrativeService.getStatLabel(
@@ -45,6 +47,9 @@ export function toBandsDTO(r: Rikishi, rng: SeededRNG): RikishiBandsDTO {
     balanceBand: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.balance ?? 50)),
     momentum: r.momentum,
     careerPhase: getCareerPhase(r.experience),
+    ageBand: NarrativeService.getAgeBand(age),
+    weightBand: NarrativeService.getWeightBand(r.weight ?? 0),
+    heightBand: NarrativeService.getHeightBand(r.height ?? 0),
   };
 }
 

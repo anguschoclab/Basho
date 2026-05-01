@@ -1324,6 +1324,56 @@
             "average": "Average",
             "low": "Low",
             "unknown": "Unknown"
+          },
+          "age": {
+            "prodigy": "Prodigy",
+            "young": "Young",
+            "prime": "Prime",
+            "veteran": "Veteran",
+            "aging": "Aging",
+            "elder": "Elder"
+          },
+          "experience": {
+            "novice": "Novice",
+            "developing": "Developing",
+            "seasoned": "Seasoned",
+            "veteran": "Veteran",
+            "master": "Master"
+          },
+          "weight": {
+            "flyweight": "Flyweight",
+            "lightweight": "Lightweight",
+            "middleweight": "Middleweight",
+            "heavyweight": "Heavyweight",
+            "super_heavyweight": "Super Heavyweight"
+          },
+          "height": {
+            "short": "Short",
+            "average": "Average",
+            "tall": "Tall",
+            "giant": "Giant"
+          },
+          "reputation": {
+            "obscure": "Obscure",
+            "known": "Known",
+            "respected": "Respected",
+            "renowned": "Renowned",
+            "legendary": "Legendary"
+          },
+          "injury": {
+            "minimal": "Minimal",
+            "mild": "Mild",
+            "moderate": "Moderate",
+            "severe": "Severe",
+            "critical": "Critical"
+          },
+          "winrate": {
+            "dismal": "Dismal",
+            "poor": "Poor",
+            "mediocre": "Mediocre",
+            "decent": "Decent",
+            "strong": "Strong",
+            "dominant": "Dominant"
           }
         }
       }

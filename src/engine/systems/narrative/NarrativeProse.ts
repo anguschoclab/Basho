@@ -19,6 +19,13 @@ import type {
   ScandalBand,
   PrizeBand,
   TraitBand,
+  AgeBand,
+  ExperienceBand,
+  WeightBand,
+  ReputationBand,
+  InjurySeverityBand,
+  WinRateBand,
+  HeightBand,
 } from "./NarrativeBands";
 
 // === Attribute Labels (Short) ===
@@ -95,6 +102,41 @@ export function getArchetypeInfo(
   const description = BardEngine.resolve(rng, `rikishi.archetypes.${archetype}.description`).text;
 
   return { label, description };
+}
+
+// === Age Labels ===
+export function getAgeLabel(rng: SeededRNG, band: AgeBand): string {
+  return BardEngine.resolve(rng, `system.descriptors.bands.age.${band}`).text;
+}
+
+// === Experience Labels ===
+export function getExperienceLabel(rng: SeededRNG, band: ExperienceBand): string {
+  return BardEngine.resolve(rng, `system.descriptors.bands.experience.${band}`).text;
+}
+
+// === Weight Labels ===
+export function getWeightLabel(rng: SeededRNG, band: WeightBand): string {
+  return BardEngine.resolve(rng, `system.descriptors.bands.weight.${band}`).text;
+}
+
+// === Height Labels ===
+export function getHeightLabel(rng: SeededRNG, band: HeightBand): string {
+  return BardEngine.resolve(rng, `system.descriptors.bands.height.${band}`).text;
+}
+
+// === Reputation Labels ===
+export function getReputationLabel(rng: SeededRNG, band: ReputationBand): string {
+  return BardEngine.resolve(rng, `system.descriptors.bands.reputation.${band}`).text;
+}
+
+// === Injury Severity Labels ===
+export function getInjurySeverityLabel(rng: SeededRNG, band: InjurySeverityBand): string {
+  return BardEngine.resolve(rng, `system.descriptors.bands.injury.${band}`).text;
+}
+
+// === Win Rate Labels ===
+export function getWinRateLabel(rng: SeededRNG, band: WinRateBand): string {
+  return BardEngine.resolve(rng, `system.descriptors.bands.winrate.${band}`).text;
 }
 
 /**

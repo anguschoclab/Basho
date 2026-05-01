@@ -93,13 +93,17 @@ export const RikishiCard: React.FC<RikishiCardProps> = React.memo(({ rikishi }) 
               <h4 className="text-[10px] uppercase tracking-widest text-muted-foreground">
                 Height
               </h4>
-              <p className="font-medium">{rikishi.height} cm</p>
+              <p className="font-medium">
+                {rikishi.height} cm <span className="text-muted-foreground text-xs">({rikishi.heightDescriptor})</span>
+              </p>
             </div>
             <div>
               <h4 className="text-[10px] uppercase tracking-widest text-muted-foreground">
                 Weight
               </h4>
-              <p className="font-medium">{rikishi.weight} kg</p>
+              <p className="font-medium">
+                {rikishi.weight} kg <span className="text-muted-foreground text-xs">({rikishi.weightDescriptor})</span>
+              </p>
             </div>
           </div>
 

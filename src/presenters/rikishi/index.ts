@@ -99,7 +99,7 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishiDTO {
 
     // Status & Stats
     ...toStatusDTO(r, rng),
-    ...toBandsDTO(r, rng),
+    ...toBandsDTO(r, rng, world),
     ...toPerceivedStatsDTO(r, rng),
     ...toDescriptorDTO(r, rng),
 

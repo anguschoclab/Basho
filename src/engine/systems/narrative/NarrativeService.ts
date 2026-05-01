@@ -18,6 +18,13 @@ import type {
   TraitBand,
   PrizeBand,
   DescriptorBand,
+  AgeBand,
+  ExperienceBand,
+  WeightBand,
+  ReputationBand,
+  InjurySeverityBand,
+  WinRateBand,
+  HeightBand,
 } from "./NarrativeBands";
 import {
   STAT_BANDS,
@@ -30,6 +37,13 @@ import {
   CONDITION_DESCRIPTOR_BANDS,
   MORALE_DESCRIPTOR_BANDS,
   POTENTIAL_DESCRIPTOR_BANDS,
+  AGE_BANDS,
+  EXPERIENCE_BANDS,
+  WEIGHT_BANDS,
+  HEIGHT_BANDS,
+  REPUTATION_BANDS,
+  INJURY_SEVERITY_BANDS,
+  WIN_RATE_BANDS,
 } from "./NarrativeBands";
 import {
   getStatLabel,
@@ -42,6 +56,13 @@ import {
   getScandalLabel,
   getPrizeLabel,
   getTraitLabel,
+  getAgeLabel,
+  getExperienceLabel,
+  getWeightLabel,
+  getHeightLabel,
+  getReputationLabel,
+  getInjurySeverityLabel,
+  getWinRateLabel,
 } from "./NarrativeProse";
 import type { RikishiArchetype } from "../../types/combat";
 
@@ -187,5 +208,70 @@ export const NarrativeService = {
     archetype: RikishiArchetype
   ): { label: string; description: string } {
     return getArchetypeInfo(rng, archetype);
+  },
+
+  // === Age Bands ===
+  getAgeBand(age: number, previous?: AgeBand): AgeBand {
+    return toBandWithHysteresis(age, AGE_BANDS, previous);
+  },
+
+  getAgeLabel(rng: SeededRNG, band: AgeBand): string {
+    return getAgeLabel(rng, band);
+  },
+
+  // === Experience Bands ===
+  getExperienceBand(value: number, previous?: ExperienceBand): ExperienceBand {
+    return toBandWithHysteresis(value, EXPERIENCE_BANDS, previous);
+  },
+
+  getExperienceLabel(rng: SeededRNG, band: ExperienceBand): string {
+    return getExperienceLabel(rng, band);
+  },
+
+  // === Weight Bands ===
+  getWeightBand(kg: number, previous?: WeightBand): WeightBand {
+    return toBandWithHysteresis(kg, WEIGHT_BANDS, previous);
+  },
+
+  getWeightLabel(rng: SeededRNG, band: WeightBand): string {
+    return getWeightLabel(rng, band);
+  },
+
+  // === Height Bands ===
+  getHeightBand(cm: number, previous?: HeightBand): HeightBand {
+    return toBandWithHysteresis(cm, HEIGHT_BANDS, previous);
+  },
+
+  getHeightLabel(rng: SeededRNG, band: HeightBand): string {
+    return getHeightLabel(rng, band);
+  },
+
+  // === Reputation Bands ===
+  getReputationBand(value: number, previous?: ReputationBand): ReputationBand {
+    return toBandWithHysteresis(value, REPUTATION_BANDS, previous);
+  },
+
+  getReputationLabel(rng: SeededRNG, band: ReputationBand): string {
+    return getReputationLabel(rng, band);
+  },
+
+  // === Injury Severity Bands ===
+  getInjurySeverityBand(value: number, previous?: InjurySeverityBand): InjurySeverityBand {
+    return toBandWithHysteresis(value, INJURY_SEVERITY_BANDS, previous);
+  },
+
+  getInjurySeverityLabel(rng: SeededRNG, band: InjurySeverityBand): string {
+    return getInjurySeverityLabel(rng, band);
+  },
+
+  // === Win Rate Bands ===
+  getWinRateBand(rate: number, previous?: WinRateBand): WinRateBand {
+    // Convert 0-1 to 0-100 for band lookup
+    const normalizedRate = rate <= 1 ? rate * 100 : rate;
+    return toBandWithHysteresis(normalizedRate, WIN_RATE_BANDS, previous);
+  },
+
+  getWinRateLabel(rng: SeededRNG, band: WinRateBand): string {
+    return getWinRateLabel(rng, band);
   },
 };

@@ -17,6 +17,7 @@ import { RANK_HIERARCHY } from "../engine/types/banzuke";
 import { NarrativeService } from "../engine/systems/narrative/NarrativeService";
 import { BardEngine } from "../engine/narrative/BardEngine";
 import { SeededRNG } from "../engine/rng";
+import type { AgeBand, WeightBand, HeightBand } from "../engine/systems/narrative/NarrativeBands";
 
 /** Career phase type inferred from training engine */
 type TrainingCareerPhase = ReturnType<typeof getCareerPhase>;
@@ -98,6 +99,12 @@ export interface UIRikishi {
   conditionDescriptor: string; // Resolved Label
   moraleDescriptor: string; // Resolved Label
   potentialDescriptor: string; // Resolved Label
+  ageBand: AgeBand;
+  weightBand: WeightBand;
+  heightBand: HeightBand;
+  ageDescriptor: string;
+  weightDescriptor: string;
+  heightDescriptor: string;
   topRivals: UIRivalEntry[];
   personalityTraits: string[];
   favoredKimarite: string[];
@@ -382,6 +389,12 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     conditionDescriptor: NarrativeService.getConditionDescriptor(rng, r.condition ?? 0.5).label,
     moraleDescriptor: NarrativeService.getMoraleDescriptor(rng, r.motivation ?? 0.5).label,
     potentialDescriptor: NarrativeService.getPotentialDescriptor(rng, r.talentSeed ?? 50).label,
+    ageBand: NarrativeService.getAgeBand(age),
+    weightBand: NarrativeService.getWeightBand(r.weight ?? 0),
+    heightBand: NarrativeService.getHeightBand(r.height ?? 0),
+    ageDescriptor: NarrativeService.getAgeLabel(rng, NarrativeService.getAgeBand(age)),
+    weightDescriptor: NarrativeService.getWeightLabel(rng, NarrativeService.getWeightBand(r.weight ?? 0)),
+    heightDescriptor: NarrativeService.getHeightLabel(rng, NarrativeService.getHeightBand(r.height ?? 0)),
     topRivals: calculateTopRivals(r, world),
     personalityTraits: r.personalityTraits ?? [],
     favoredKimariteDetailed,

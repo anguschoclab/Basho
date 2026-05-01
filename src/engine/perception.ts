@@ -13,6 +13,8 @@ import type { Rikishi } from "./types/rikishi";
 import type { Style } from "./types/combat";
 import type { Rank } from "./types/banzuke";
 import type { StatureBand, PrestigeBand, RunwayBand, KoenkaiBandType } from "./types/narrative";
+import type { AgeBand, ExperienceBand, WeightBand, HeightBand } from "./systems/narrative/NarrativeBands";
+import { NarrativeService } from "./systems/narrative/NarrativeService";
 import type { ComplianceState } from "./types/economy";
 import type { RivalriesState } from "./rivalries";
 import { getHeyaRoster, getHeyaStyleBias } from "./queries";
@@ -44,6 +46,10 @@ export interface RikishiPerception {
   mediaHeatBand: MediaHeatBand;
   /** Qualitative momentum descriptor */
   momentum: "rising" | "steady" | "declining";
+  ageBand: AgeBand;
+  experienceBand: ExperienceBand;
+  weightBand: WeightBand;
+  heightBand: HeightBand;
 }
 
 /** The complete banded snapshot a manager (NPC or player) sees for a heya */
@@ -104,6 +110,49 @@ function bandHealth(r: Rikishi): HealthBand {
   if (c >= 50) return "fair";
   if (c >= 30) return "worn";
   return "fragile";
+}
+
+/**
+ * Band age.
+ *  * @param r - The R.
+ *  * @returns The result.
+ */
+function bandAge(r: Rikishi): AgeBand {
+  const age = r.age ?? 25;
+  if (age < 20) return "prodigy";
+  if (age < 25) return "young";
+  if (age < 32) return "prime";
+  if (age < 38) return "veteran";
+  if (age < 43) return "aging";
+  return "elder";
+}
+
+/**
+ * Band experience.
+ *  * @param r - The R.
+ *  * @returns The result.
+ */
+function bandExperience(r: Rikishi): ExperienceBand {
+  const exp = r.experience ?? 0;
+  if (exp < 20) return "novice";
+  if (exp < 40) return "developing";
+  if (exp < 60) return "seasoned";
+  if (exp < 80) return "veteran";
+  return "master";
+}
+
+/**
+ * Band weight.
+ *  * @param r - The R.
+ *  * @returns The result.
+ */
+function bandWeight(r: Rikishi): WeightBand {
+  const kg = r.weight ?? 150;
+  if (kg < 100) return "flyweight";
+  if (kg < 120) return "lightweight";
+  if (kg < 150) return "middleweight";
+  if (kg < 180) return "heavyweight";
+  return "super_heavyweight";
 }
 
 /**
@@ -243,6 +292,48 @@ function bandRikishiMomentum(m: number): "rising" | "steady" | "declining" {
 }
 
 /**
+ * Band rikishi age.
+ *  * @param r - The Rikishi.
+ *  * @param world - The World.
+ *  * @param previous - The previous AgeBand for hysteresis.
+ *  * @returns The result.
+ */
+function bandAge(r: Rikishi, world: WorldState, previous?: AgeBand): AgeBand {
+  const age = world.year - r.birthYear;
+  return NarrativeService.getAgeBand(age, previous);
+}
+
+/**
+ * Band rikishi experience.
+ *  * @param r - The Rikishi.
+ *  * @param previous - The previous ExperienceBand for hysteresis.
+ *  * @returns The result.
+ */
+function bandExperience(r: Rikishi, previous?: ExperienceBand): ExperienceBand {
+  return NarrativeService.getExperienceBand(r.experience ?? 0, previous);
+}
+
+/**
+ * Band rikishi weight.
+ *  * @param r - The Rikishi.
+ *  * @param previous - The previous WeightBand for hysteresis.
+ *  * @returns The result.
+ */
+function bandWeight(r: Rikishi, previous?: WeightBand): WeightBand {
+  return NarrativeService.getWeightBand(r.weight ?? 0, previous);
+}
+
+/**
+ * Band rikishi height.
+ *  * @param r - The Rikishi.
+ *  * @param previous - The previous HeightBand for hysteresis.
+ *  * @returns The result.
+ */
+function bandHeight(r: Rikishi, previous?: HeightBand): HeightBand {
+  return NarrativeService.getHeightBand(r.height ?? 0, previous);
+}
+
+/**
  * Get stable media heat.
  *  * @param world - The World.
  *  * @param heyaId - The Heya id.
@@ -314,6 +405,10 @@ export function buildPerceptionSnapshot(world: WorldState, heyaId: Id): Percepti
     healthBand: bandHealth(r),
     mediaHeatBand: bandMediaHeat(getRikishiMediaHeat(world, r.id)),
     momentum: bandRikishiMomentum(r.momentum ?? 0),
+    ageBand: bandAge(r, world),
+    experienceBand: bandExperience(r),
+    weightBand: bandWeight(r),
+    heightBand: bandHeight(r),
   }));
 
   // Calculate style bias from cached roster to avoid another getHeyaRoster call

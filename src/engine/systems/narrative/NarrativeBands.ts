@@ -166,3 +166,81 @@ export const POTENTIAL_DESCRIPTOR_BANDS: Array<{
   { min: 50, max: 75, id: "Mikan no Taiki", colorCode: "text-slate-400" },
   { min: 0, max: 50, id: "Genkai", colorCode: "text-slate-500" },
 ];
+
+// === Age Bands (years) ===
+export type AgeBand = "prodigy" | "young" | "prime" | "veteran" | "aging" | "elder";
+
+export const AGE_BANDS: BandDef<AgeBand>[] = [
+  { band: "prodigy", min: 15, max: 20 }, // Exceptionally young
+  { band: "young", min: 20, max: 25 }, // Rising star age
+  { band: "prime", min: 25, max: 32 }, // Peak performance years
+  { band: "veteran", min: 32, max: 38 }, // Experienced, still competing
+  { band: "aging", min: 38, max: 43 }, // Late career
+  { band: "elder", min: 43, max: Infinity }, // Near retirement
+];
+
+// === Experience Bands (0-100 scale) ===
+export type ExperienceBand = "novice" | "developing" | "seasoned" | "veteran" | "master";
+
+export const EXPERIENCE_BANDS: BandDef<ExperienceBand>[] = [
+  { band: "novice", min: 0, max: 20 },
+  { band: "developing", min: 20, max: 40 },
+  { band: "seasoned", min: 40, max: 60 },
+  { band: "veteran", min: 60, max: 80 },
+  { band: "master", min: 80, max: Infinity },
+];
+
+// === Weight Bands (kg) ===
+export type WeightBand = "flyweight" | "lightweight" | "middleweight" | "heavyweight" | "super_heavyweight";
+
+export const WEIGHT_BANDS: BandDef<WeightBand>[] = [
+  { band: "flyweight", min: 0, max: 100 }, // < 100kg
+  { band: "lightweight", min: 100, max: 120 }, // 100-120kg
+  { band: "middleweight", min: 120, max: 150 }, // 120-150kg
+  { band: "heavyweight", min: 150, max: 180 }, // 150-180kg
+  { band: "super_heavyweight", min: 180, max: Infinity }, // 180kg+
+];
+
+// === Reputation Bands (0-100) ===
+export type ReputationBand = "obscure" | "known" | "respected" | "renowned" | "legendary";
+
+export const REPUTATION_BANDS: BandDef<ReputationBand>[] = [
+  { band: "obscure", min: 0, max: 20 },
+  { band: "known", min: 20, max: 40 },
+  { band: "respected", min: 40, max: 60 },
+  { band: "renowned", min: 60, max: 80 },
+  { band: "legendary", min: 80, max: Infinity },
+];
+
+// === Injury Severity Bands (0-100) ===
+export type InjurySeverityBand = "minimal" | "mild" | "moderate" | "severe" | "critical";
+
+export const INJURY_SEVERITY_BANDS: BandDef<InjurySeverityBand>[] = [
+  { band: "minimal", min: 0, max: 20 }, // minor
+  { band: "mild", min: 20, max: 40 },
+  { band: "moderate", min: 40, max: 60 }, // moderate
+  { band: "severe", min: 60, max: 80 }, // serious
+  { band: "critical", min: 80, max: Infinity },
+];
+
+// === Win Rate Bands (0-100%) ===
+export type WinRateBand = "dismal" | "poor" | "mediocre" | "decent" | "strong" | "dominant";
+
+export const WIN_RATE_BANDS: BandDef<WinRateBand>[] = [
+  { band: "dismal", min: 0, max: 25 }, // < 25%
+  { band: "poor", min: 25, max: 40 }, // 25-40%
+  { band: "mediocre", min: 40, max: 48 }, // 40-48%
+  { band: "decent", min: 48, max: 55 }, // 48-55%
+  { band: "strong", min: 55, max: 65 }, // 55-65%
+  { band: "dominant", min: 65, max: Infinity }, // 65%+
+];
+
+// === Height Bands (cm) ===
+export type HeightBand = "short" | "average" | "tall" | "giant";
+
+export const HEIGHT_BANDS: BandDef<HeightBand>[] = [
+  { band: "short", min: 0, max: 170 }, // < 170cm
+  { band: "average", min: 170, max: 185 }, // 170-185cm
+  { band: "tall", min: 185, max: 195 }, // 185-195cm
+  { band: "giant", min: 195, max: Infinity }, // 195cm+
+];

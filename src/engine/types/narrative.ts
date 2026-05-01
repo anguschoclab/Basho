@@ -3,6 +3,16 @@
  * Narrative Bands & Misc Shared Types
  */
 
+// Re-export band types from NarrativeBands for convenience
+export type {
+  AgeBand,
+  ExperienceBand,
+  WeightBand,
+  ReputationBand,
+  InjurySeverityBand,
+  WinRateBand,
+} from "../systems/narrative/NarrativeBands";
+
 export type StatureBand =
   | "legendary"
   | "powerful"

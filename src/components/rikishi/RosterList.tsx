@@ -117,7 +117,9 @@ export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
                       {r.shikona}
                     </div>
                     <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">
-                      {r.origin} • {r.age} Years
+                      <TooltipWrap content={`Age: ${r.ageDescriptor}`} side="top">
+                        <span className="cursor-help">{r.origin} • {r.age} Years</span>
+                      </TooltipWrap>
                     </div>
                   </div>
                   <div className="text-right">

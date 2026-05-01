@@ -87,6 +87,76 @@ export function toTraitBand(
 }
 
 /**
+ * Public helper for resolving age (Backward compatible).
+ */
+export function toAgeBand(
+  value: number,
+  prev?: import("./systems/narrative/NarrativeBands").AgeBand
+): import("./systems/narrative/NarrativeBands").AgeBand {
+  return NarrativeService.getAgeBand(value, prev);
+}
+
+/**
+ * Public helper for resolving experience (Backward compatible).
+ */
+export function toExperienceBand(
+  value: number,
+  prev?: import("./systems/narrative/NarrativeBands").ExperienceBand
+): import("./systems/narrative/NarrativeBands").ExperienceBand {
+  return NarrativeService.getExperienceBand(value, prev);
+}
+
+/**
+ * Public helper for resolving weight (Backward compatible).
+ */
+export function toWeightBand(
+  kg: number,
+  prev?: import("./systems/narrative/NarrativeBands").WeightBand
+): import("./systems/narrative/NarrativeBands").WeightBand {
+  return NarrativeService.getWeightBand(kg, prev);
+}
+
+/**
+ * Public helper for resolving height (Backward compatible).
+ */
+export function toHeightBand(
+  cm: number,
+  prev?: import("./systems/narrative/NarrativeBands").HeightBand
+): import("./systems/narrative/NarrativeBands").HeightBand {
+  return NarrativeService.getHeightBand(cm, prev);
+}
+
+/**
+ * Public helper for resolving reputation (Backward compatible).
+ */
+export function toReputationBand(
+  value: number,
+  prev?: import("./systems/narrative/NarrativeBands").ReputationBand
+): import("./systems/narrative/NarrativeBands").ReputationBand {
+  return NarrativeService.getReputationBand(value, prev);
+}
+
+/**
+ * Public helper for resolving injury severity (Backward compatible).
+ */
+export function toInjurySeverityBand(
+  value: number,
+  prev?: import("./systems/narrative/NarrativeBands").InjurySeverityBand
+): import("./systems/narrative/NarrativeBands").InjurySeverityBand {
+  return NarrativeService.getInjurySeverityBand(value, prev);
+}
+
+/**
+ * Public helper for resolving win rate (Backward compatible).
+ */
+export function toWinRateBand(
+  rate: number,
+  prev?: import("./systems/narrative/NarrativeBands").WinRateBand
+): import("./systems/narrative/NarrativeBands").WinRateBand {
+  return NarrativeService.getWinRateBand(rate, prev);
+}
+
+/**
  * Public helper: condition (Iki/Koshi) → Japanese DescriptorBand.
  */
 export function toConditionDescriptor(
@@ -115,6 +185,19 @@ export function toPotentialDescriptor(
 ): import("./systems/narrative/NarrativeBands").DescriptorBand {
   return NarrativeService.getPotentialDescriptor(rng, talentSeed);
 }
+): import("./systems/narrative/NarrativeBands").InjurySeverityBand {
+  return NarrativeService.getInjurySeverityBand(value, prev);
+}
+
+/**
+ * Public helper for resolving win rate to bands (Backward compatible).
+ */
+export function toWinRateBand(
+  rate: number,
+  prev?: import("./systems/narrative/NarrativeBands").WinRateBand
+): import("./systems/narrative/NarrativeBands").WinRateBand {
+  return NarrativeService.getWinRateBand(rate, prev);
+}
 
 /**
  * Unified Rikishi Descriptor (Legacy support).
@@ -128,6 +211,10 @@ export interface RikishiDescriptor {
   fatigueBand: import("./systems/narrative/NarrativeBands").FatigueBand;
   momentumBand: import("./systems/narrative/NarrativeBands").MomentumBand;
   potentialBand?: import("./systems/narrative/NarrativeBands").PotentialBand;
+  ageBand?: import("./systems/narrative/NarrativeBands").AgeBand;
+  experienceBand?: import("./systems/narrative/NarrativeBands").ExperienceBand;
+  weightBand?: import("./systems/narrative/NarrativeBands").WeightBand;
+  heightBand?: import("./systems/narrative/NarrativeBands").HeightBand;
   archetypeLabel?: { label: string; description: string };
   injuryModifiers?: string[];
 }
@@ -145,6 +232,9 @@ export function toRikishiDescriptor(rng: SeededRNG, r: any, prev?: any): Rikishi
     fatigueBand: NarrativeService.getFatigueBand(r.fatigue, prev?.fatigueBand),
     momentumBand: NarrativeService.getMomentumBand(r.momentum),
     potentialBand: NarrativeService.getPotentialBand(r.talentSeed, prev?.potentialBand),
+    ageBand: NarrativeService.getAgeBand(r.age ?? 25, prev?.ageBand),
+    experienceBand: NarrativeService.getExperienceBand(r.experience ?? 0, prev?.experienceBand),
+    weightBand: NarrativeService.getWeightBand(r.weight ?? 150, prev?.weightBand),
     archetypeLabel: undefined, // Simplified legacy field
     injuryModifiers: r.injured ? [getInjuryModifier(r)] : [],
   };

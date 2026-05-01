@@ -134,13 +134,13 @@ export function RikishiProfileHeader({
                     <MapPin className="h-3.5 w-3.5 text-secondary" /> {rikishi.origin}
                   </span>
                   <span className="flex items-center gap-2">
-                    <Calendar className="h-3.5 w-3.5 text-secondary" /> {rikishi.age} Years
+                    <Calendar className="h-3.5 w-3.5 text-secondary" /> {rikishi.age} Years <span className="opacity-60">({rikishi.ageDescriptor})</span>
                   </span>
                   <span className="flex items-center gap-2">
-                    <Ruler className="h-3.5 w-3.5 text-secondary" /> {rikishi.height}cm
+                    <Ruler className="h-3.5 w-3.5 text-secondary" /> {rikishi.height}cm <span className="opacity-60">({rikishi.heightDescriptor})</span>
                   </span>
                   <span className="flex items-center gap-2">
-                    <Scale className="h-3.5 w-3.5 text-secondary" /> {rikishi.weight}kg
+                    <Scale className="h-3.5 w-3.5 text-secondary" /> {rikishi.weight}kg <span className="opacity-60">({rikishi.weightDescriptor})</span>
                   </span>
                 </div>
                 {rikishi.rank === "ozeki" && rikishi.consecutiveStrongOzeki > 0 && (

@@ -12,6 +12,7 @@ import type { RikishiDescriptor, PotentialBand } from "../../engine/descriptorBa
 import type { SalaryBreakdown } from "../../engine/economics_awards";
 import type { AvatarConfig } from "../../engine/types/avatar";
 import type { KeshoMawashi, YokozunaTsuna } from "../../engine/types/keshoMawashi";
+import type { AgeBand, WeightBand, HeightBand } from "../../engine/systems/narrative/NarrativeBands";
 
 // ============================================================================
 // Core DTOs
@@ -69,6 +70,9 @@ export interface RikishiBandsDTO {
   balanceBand: string;
   momentum: number;
   careerPhase: string;
+  ageBand: AgeBand;
+  weightBand: WeightBand;
+  heightBand: HeightBand;
 }
 
 /** Career statistics */
