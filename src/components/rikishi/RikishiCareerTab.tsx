@@ -21,6 +21,8 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
+import { SeededRNG } from "@/engine/rng";
 
 const RANK_LABELS: Record<number, string> = {
   1: "Yokozuna", 2: "Ozeki", 3: "Sekiwake", 4: "Komusubi",
@@ -249,6 +251,14 @@ export function RikishiCareerTab({
                         <div className="text-xs font-black opacity-60">
                           Weight: <span className="text-foreground">{snap.weight}kg</span>
                         </div>
+                        {(() => {
+                          const rng = new SeededRNG(`career-${snap.year}-${snap.bashoName}`);
+                          const weightBand = NarrativeService.getWeightBand(snap.weight);
+                          const weightLabel = NarrativeService.getWeightLabel(rng, weightBand);
+                          return weightLabel ? (
+                            <div className="text-[9px] text-muted-foreground/60">{weightLabel}</div>
+                          ) : null;
+                        })()}
                       </td>
                     </tr>
                   ))}

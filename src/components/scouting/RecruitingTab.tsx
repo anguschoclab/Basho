@@ -253,8 +253,9 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
 
                       <div className="text-xs text-muted-foreground mt-1">
                         {c.nationality ?? "Unknown origin"} •{" "}
-                        {c.age ? `Age ${c.age}` : "Age unknown"} • {c.height ? `${c.height}cm` : ""}{" "}
-                        {c.weight ? `${c.weight}kg` : ""}
+                        {c.age ? `Age ${c.age} ${c.ageDescriptor ? `(${c.ageDescriptor})` : ""}` : "Age unknown"} •{" "}
+                        {c.height ? `${c.height}cm ${c.heightDescriptor ? `(${c.heightDescriptor})` : ""}` : ""}{" "}
+                        {c.weight ? `${c.weight}kg ${c.weightDescriptor ? `(${c.weightDescriptor})` : ""}` : ""}
                       </div>
 
                       {c.scoutLevel >= 35 && (

@@ -57,6 +57,7 @@ export interface UIRikishi {
   style: Style;
   styleName: string;
   archetypeName: string;
+  combatArchetype?: string;
   /** @deprecated retained for legacy display only; prefer archetypeName */
   archetype?: TacticalArchetype;
   /** @deprecated retained for legacy display only; prefer archetypeName */

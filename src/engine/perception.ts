@@ -113,49 +113,6 @@ function bandHealth(r: Rikishi): HealthBand {
 }
 
 /**
- * Band age.
- *  * @param r - The R.
- *  * @returns The result.
- */
-function bandAge(r: Rikishi): AgeBand {
-  const age = r.age ?? 25;
-  if (age < 20) return "prodigy";
-  if (age < 25) return "young";
-  if (age < 32) return "prime";
-  if (age < 38) return "veteran";
-  if (age < 43) return "aging";
-  return "elder";
-}
-
-/**
- * Band experience.
- *  * @param r - The R.
- *  * @returns The result.
- */
-function bandExperience(r: Rikishi): ExperienceBand {
-  const exp = r.experience ?? 0;
-  if (exp < 20) return "novice";
-  if (exp < 40) return "developing";
-  if (exp < 60) return "seasoned";
-  if (exp < 80) return "veteran";
-  return "master";
-}
-
-/**
- * Band weight.
- *  * @param r - The R.
- *  * @returns The result.
- */
-function bandWeight(r: Rikishi): WeightBand {
-  const kg = r.weight ?? 150;
-  if (kg < 100) return "flyweight";
-  if (kg < 120) return "lightweight";
-  if (kg < 150) return "middleweight";
-  if (kg < 180) return "heavyweight";
-  return "super_heavyweight";
-}
-
-/**
  * Band welfare risk.
  *  * @param risk - The Risk.
  *  * @returns The result.

@@ -10,6 +10,8 @@
 
 import type { Rikishi } from "@/engine/types";
 import { TrendingUp } from "lucide-react";
+import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
+import { SeededRNG } from "@/engine/rng";
 
 interface Props {
   rikishi: Rikishi;
@@ -118,6 +120,13 @@ function SizeRow({
   unit: string;
 }) {
   const pct = potential > 0 ? Math.min(100, (current / potential) * 100) : 0;
+  const rng = new SeededRNG("potential-panel");
+  const heightBand = label === "Height" ? NarrativeService.getHeightBand(current) : null;
+  const weightBand = label === "Weight" ? NarrativeService.getWeightBand(current) : null;
+  const heightLabel = heightBand ? NarrativeService.getHeightLabel(rng, heightBand) : null;
+  const weightLabel = weightBand ? NarrativeService.getWeightLabel(rng, weightBand) : null;
+  const descriptor = heightLabel || weightLabel;
+  
   return (
     <div className="space-y-1">
       <div className="flex justify-between text-[11px] font-black uppercase tracking-widest">
@@ -130,6 +139,9 @@ function SizeRow({
           </span>
         </span>
       </div>
+      {descriptor && (
+        <div className="text-[9px] text-muted-foreground/60">{descriptor}</div>
+      )}
       <div className="relative h-2 rounded-full bg-muted overflow-hidden">
         <div className="absolute inset-y-0 left-0 bg-primary/25 w-full" />
         <div className="absolute inset-y-0 left-0 bg-primary" style={{ width: `${pct}%` }} />

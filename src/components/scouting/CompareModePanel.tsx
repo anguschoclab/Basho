@@ -132,6 +132,7 @@ export function CompareModePanel({ rikishiA, rikishiB, onClose }: CompareModePan
                 {renderStatRow("Stamina", rawA.stamina, rawB.stamina)}
                 {renderStatRow("Spirit", rawA.mental, rawB.mental)}
                 {renderStatRow("Weight", rawA.weight, rawB.weight)}
+                {renderStatRow("Height", rawA.height, rawB.height)}
               </div>
             );
           })()}

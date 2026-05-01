@@ -185,19 +185,6 @@ export function toPotentialDescriptor(
 ): import("./systems/narrative/NarrativeBands").DescriptorBand {
   return NarrativeService.getPotentialDescriptor(rng, talentSeed);
 }
-): import("./systems/narrative/NarrativeBands").InjurySeverityBand {
-  return NarrativeService.getInjurySeverityBand(value, prev);
-}
-
-/**
- * Public helper for resolving win rate to bands (Backward compatible).
- */
-export function toWinRateBand(
-  rate: number,
-  prev?: import("./systems/narrative/NarrativeBands").WinRateBand
-): import("./systems/narrative/NarrativeBands").WinRateBand {
-  return NarrativeService.getWinRateBand(rate, prev);
-}
 
 /**
  * Unified Rikishi Descriptor (Legacy support).

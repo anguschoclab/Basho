@@ -165,7 +165,6 @@ describe("projectRosterEntry", () => {
 });
 
 describe("projectRikishi - new band calculations", () => {
-  const rng = new SeededRNG("test-seed-42");
   const baseWorld = {
     year: 2020,
     heyas: new Map([["h1", { id: "h1", name: "Test Heya", isPlayerOwned: true }]]),
