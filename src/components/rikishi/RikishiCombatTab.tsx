@@ -5,6 +5,7 @@
  */
 
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Activity, Shield, Flame } from "lucide-react";
 import { RikishiRadarChart } from "@/components/rikishi/RikishiRadarChart";
 import { RikishiPotentialPanel } from "@/components/rikishi/RikishiPotentialPanel";
@@ -12,6 +13,7 @@ import { cn } from "@/lib/utils";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { Rikishi } from "@/engine/types";
 import type { UIRivalEntry } from "@/presenters/rikishi/types";
+import { getCombatArchetypeDescription } from "@/engine/archetype";
 
 interface RikishiCombatTabProps {
   rikishi: UIRikishi;
@@ -40,9 +42,20 @@ export function RikishiCombatTab({ rikishi, rawRikishi, isOwned = false }: Rikis
           </h3>
           <div className="bg-muted/30 border-2 border-border/50 rounded-lg p-6 space-y-4">
             <div className="flex items-center gap-3">
-              <Badge className="text-[11px] font-black uppercase tracking-widest px-3 h-7 bg-primary/80">
-                {rikishi.archetypeName}
-              </Badge>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge className="text-[11px] font-black uppercase tracking-widest px-3 h-7 bg-primary/80 cursor-help">
+                      {rikishi.archetypeName}
+                    </Badge>
+                  </TooltipTrigger>
+                  {rikishi.combatArchetype && (
+                    <TooltipContent>
+                      <p className="max-w-xs">{getCombatArchetypeDescription(rikishi.combatArchetype as any)}</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
               <Badge
                 variant="outline"
                 className="text-[10px] font-black uppercase tracking-widest h-7"

@@ -3,9 +3,11 @@ import { UIRikishi } from "../../presenters/uiModels";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Progress } from "../ui/progress";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Globe } from "lucide-react";
+import { getCombatArchetypeDescription } from "@/engine/archetype";
 
 interface RikishiCardProps {
   rikishi: UIRikishi;
@@ -57,9 +59,20 @@ export const RikishiCard: React.FC<RikishiCardProps> = React.memo(({ rikishi }) 
               </p>
             </div>
           </div>
-          <Badge variant="outline" className="font-mono">
-            {rikishi.archetypeName}
-          </Badge>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Badge variant="outline" className="font-mono cursor-help">
+                  {rikishi.archetypeName}
+                </Badge>
+              </TooltipTrigger>
+              {rikishi.combatArchetype && (
+                <TooltipContent>
+                  <p className="max-w-xs">{getCombatArchetypeDescription(rikishi.combatArchetype as any)}</p>
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </CardHeader>
       <CardContent>

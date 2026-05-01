@@ -12,6 +12,7 @@ import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { ArrowLeft, Globe, MapPin, Calendar, Ruler, Scale } from "lucide-react";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import type { UIRikishi } from "@/presenters/uiModels";
+import { getCombatArchetypeDescription } from "@/engine/archetype";
 
 interface RikishiProfileHeaderProps {
   rikishi: UIRikishi;
@@ -105,7 +106,16 @@ export function RikishiProfileHeader({
                     {rikishi.shikona}
                   </h1>
                   <p className="text-white/60 font-display text-sm tracking-widest uppercase">
-                    {rikishi.heyaName} • {rikishi.styleName} - {rikishi.archetypeName}
+                    {rikishi.heyaName} • {rikishi.styleName} -{" "}
+                    {rikishi.combatArchetype ? (
+                      <TooltipWrap content={getCombatArchetypeDescription(rikishi.combatArchetype as any)}>
+                        <span className="cursor-help border-b border-dotted border-white/30 hover:border-white/60">
+                          {rikishi.archetypeName}
+                        </span>
+                      </TooltipWrap>
+                    ) : (
+                      <span>{rikishi.archetypeName}</span>
+                    )}
                   </p>
 
                   {/* Phase M: Lineage Indicators */}

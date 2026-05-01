@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import {
   Search,
   Eye,
@@ -28,6 +29,7 @@ import { getStableRikishi } from "@/engine/queries";
 import { CompareModePanel } from "./CompareModePanel";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Layers } from "lucide-react";
+import { getCombatArchetypeDescription } from "@/engine/archetype";
 import { cn } from "@/lib/utils";
 
 export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null }) {
@@ -261,7 +263,14 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
                       {c.scoutLevel >= 35 && (
                         <div className="mt-2 text-xs text-muted-foreground">
                           {c.archetype && (
-                            <span>Style: {resolveRegistryLabel("archetypes", c.archetype)}</span>
+                            <span>
+                              Style:{" "}
+                              <TooltipWrap content={getCombatArchetypeDescription(c.archetype as any)}>
+                                <span className="cursor-help border-b border-dotted border-muted-foreground/30 hover:border-muted-foreground/60">
+                                  {resolveRegistryLabel("archetypes", c.archetype)}
+                                </span>
+                              </TooltipWrap>
+                            </span>
                           )}
                           {c.scoutLevel >= 65 && c.talentSeed && (
                             <span className="ml-3">

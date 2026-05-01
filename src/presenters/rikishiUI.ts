@@ -357,6 +357,7 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     style: r.style,
     styleName,
     archetypeName,
+    combatArchetype: combatArchetype,
     derivedArchetypeName,
     isRetired: r.isRetired ?? false,
     isInjured: r.injured,

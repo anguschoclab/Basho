@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { Search, Globe, GraduationCap, School, Sparkles } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
 import type { PotentialBand } from "@/engine/descriptorBands";
@@ -10,6 +11,7 @@ import { toPotentialBand } from "@/engine/descriptorBands";
 import * as talentpool from "@/engine/systems/generation/TalentPoolService";
 import type { TalentCandidate, TalentPoolType } from "@/engine/types/talent";
 import { POTENTIAL_LABELS } from "@/presenters/uiConstants";
+import { getCombatArchetypeDescription } from "@/engine/archetype";
 
 const POTENTIAL_COLORS: Record<PotentialBand, string> = {
   generational: "text-gold",
@@ -54,9 +56,11 @@ const ProspectRow = React.memo(
         <span className="flex-1 font-medium truncate">
           {canShowName ? name : "Unknown Prospect"}
         </span>
-        <span className="text-[10px] text-muted-foreground capitalize truncate max-w-16">
-          {archetype.replace(/_/g, " ")}
-        </span>
+        <TooltipWrap content={getCombatArchetypeDescription(archetype as any)}>
+          <span className="text-[10px] text-muted-foreground capitalize truncate max-w-16 cursor-help border-b border-dotted border-muted-foreground/30 hover:border-muted-foreground/60">
+            {archetype.replace(/_/g, " ")}
+          </span>
+        </TooltipWrap>
         {(potential === "generational" || potential === "star") && (
           <Sparkles className={`h-3 w-3 shrink-0 ${POTENTIAL_COLORS[potential]}`} />
         )}
@@ -64,7 +68,7 @@ const ProspectRow = React.memo(
           variant={potential === "generational" || potential === "star" ? "default" : "secondary"}
           className="text-[9px] px-1.5 py-0 h-4 shrink-0"
         >
-          {potentialInfo.label.split(" ")[0]}
+          {potentialInfo.split(" ")[0]}
         </Badge>
       </div>
     );
