@@ -10,7 +10,6 @@ import type {
   PotentialBand,
   ScandalBand,
   TraitBand,
-  PrizeBand,
 } from "../engine/systems/narrative/NarrativeBands";
 
 export const FATIGUE_LABELS: Record<FatigueBand, string> = {

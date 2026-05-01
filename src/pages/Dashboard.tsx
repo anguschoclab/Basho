@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
@@ -41,7 +41,7 @@ import { useGameStore } from "@/store/gameStore";
 
 /** Control Center — main dashboard. */
 export default function Dashboard() {
-  const { state, updateWorld, hasAutosave, loadFromAutosave } = useGame();
+  const { state, hasAutosave, loadFromAutosave } = useGame();
   const sendCommand = useGameStore((s) => s.sendCommand);
   const navigate = useNavigate();
   const world = state.world;
@@ -433,7 +433,7 @@ export default function Dashboard() {
       {(() => {
         const ph = world.heyas.get(state.playerHeyaId ?? "");
         const ok = world.oyakata.get(ph?.oyakataId ?? "");
-        if (ok?.successionReadiness !== "mandatory") return null;
+        if ((ok?.successionReadiness ?? 0) < 70) return null;
         return (
           <SuccessionModal
             isOpen={true}
