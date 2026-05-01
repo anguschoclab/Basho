@@ -6,7 +6,7 @@
  */
 
 import { useState } from "react";
-import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -46,6 +46,9 @@ export function HeyaPreview({
   return (
     <Dialog open={!!heya} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col p-0">
+        <DialogHeader className="sr-only">
+          <DialogTitle>Stable Preview</DialogTitle>
+        </DialogHeader>
         <div className="bg-background rounded-lg border-2 border-primary/20 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
           {/* Hero Header */}
           <div className="bg-primary pt-6 pb-4 px-6 relative overflow-hidden text-primary-foreground shrink-0">

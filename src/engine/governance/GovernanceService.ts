@@ -6,7 +6,8 @@
 import { WorldState } from "../types/world";
 import { generateGovernanceHeadline } from "../systems/media/MediaService";
 import type { GovernanceStatus, GovernanceRuling } from "../types/economy";
-import { rngForWorld } from "../rng";
+import { rngForWorld, rngFromSeed } from "../rng";
+import { BardEngine } from "../narrative/BardEngine";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 

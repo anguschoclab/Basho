@@ -67,7 +67,7 @@ export default function RikishiPage() {
   // ── Roster List View ────────────────────────────────
   if (!rikishiId) {
     return (
-      <AppLayout pageTitle="Roster Management" subNavTabs={HQ_TABS} activeSubTab="roster">
+      <AppLayout pageTitle="Roster Management" subNavTabs={STABLE_TABS} activeSubTab="roster">
         <Helmet>
           <title>Roster Management | Basho</title>
         </Helmet>

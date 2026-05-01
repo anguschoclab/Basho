@@ -2,7 +2,7 @@
 // animated phase commentary, and immersive result display
 
 import { useState, useMemo } from "react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -109,6 +109,9 @@ export function BoutNarrativeModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[95vh] p-0 gap-0 overflow-hidden bg-card border-border/50">
+        <DialogHeader className="sr-only">
+          <DialogTitle>Bout Narrative</DialogTitle>
+        </DialogHeader>
         {/* ═══ East / West header bar ═══ */}
         <div className="flex h-1.5">
           <div className={`flex-1 ${result.winner === "east" ? "bg-east" : "bg-east/25"}`} />
