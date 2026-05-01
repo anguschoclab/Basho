@@ -42,7 +42,7 @@ export const EntityCollection = {
 
     for (const r of world.rikishi.values()) {
       if (!includeRetired && r.isRetired) continue;
-      if (heyaId !== undefined && r.heyaId !== heyaId) continue;
+      if (heyaId && r.heyaId !== heyaId) continue;
       filtered.push(r);
     }
 
