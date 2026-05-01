@@ -44,7 +44,7 @@ export function checkRetirement(
   // Career-ending: serious injury (from weekly health phase) with >20 weeks remaining
   if (
     rikishi.injured &&
-    rikishi.currentInjury?.severity === "serious" &&
+    rikishi.injuryStatus?.severity === "serious" &&
     (rikishi.injuryWeeksRemaining ?? 0) > 20
   ) {
     return "Career-Ending Injury";

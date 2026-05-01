@@ -13,3 +13,8 @@ cd "/Users/amauricia/Documents/GitHub/sumo-manager-pro" && bun scripts/bard-orch
 This generates narrative templates for event domains (basho, recruiting, economy, medical, governance, rivalry, lifecycle, welfare, awards, training, management, facility, narrative) and expands archive.json.
 
 **Note**: Requires GEMINI_API_KEY environment variable to be set.
+
+```bash
+export GEMINI_API_KEY=your-api-key-here
+cd "/Users/amauricia/Documents/GitHub/sumo-manager-pro" && bun scripts/bard-orchestrator.ts
+```

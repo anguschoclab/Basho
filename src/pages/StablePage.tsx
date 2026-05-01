@@ -66,15 +66,15 @@ export default function StablePage() {
         />
 
         <Tabs defaultValue="roster" className="space-y-6">
-          <TabsList className="grid w-full max-w-[900px] grid-cols-8 text-[10px] font-black uppercase">
-            <TabsTrigger value="roster">Roster</TabsTrigger>
-            <TabsTrigger value="performance">Performance</TabsTrigger>
-            <TabsTrigger value="gallery">Gallery</TabsTrigger>
-            <TabsTrigger value="infrastructure">Infrastructure</TabsTrigger>
-            <TabsTrigger value="sponsorship">Sponsorship</TabsTrigger>
-            <TabsTrigger value="institution">Institution</TabsTrigger>
-            <TabsTrigger value="global">Global Influence</TabsTrigger>
-            <TabsTrigger value="chronicle">Chronicle</TabsTrigger>
+          <TabsList className="w-full max-w-[900px] flex flex-wrap gap-1 text-[10px] font-black uppercase h-auto">
+            <TabsTrigger value="roster" className="flex-1 min-w-[80px]">Roster</TabsTrigger>
+            <TabsTrigger value="performance" className="flex-1 min-w-[80px]">Performance</TabsTrigger>
+            <TabsTrigger value="gallery" className="flex-1 min-w-[80px]">Gallery</TabsTrigger>
+            <TabsTrigger value="infrastructure" className="flex-1 min-w-[80px]">Infrastructure</TabsTrigger>
+            <TabsTrigger value="sponsorship" className="flex-1 min-w-[80px]">Sponsorship</TabsTrigger>
+            <TabsTrigger value="institution" className="flex-1 min-w-[80px]">Institution</TabsTrigger>
+            <TabsTrigger value="global" className="flex-1 min-w-[80px]">Global</TabsTrigger>
+            <TabsTrigger value="chronicle" className="flex-1 min-w-[80px]">Chronicle</TabsTrigger>
           </TabsList>
 
           <TabsContent value="sponsorship">

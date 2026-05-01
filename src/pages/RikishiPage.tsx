@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * RikishiPage.tsx
  *
@@ -7,7 +6,7 @@
  * Architecturally decomposed to use RosterList for list views.
  */
 
-import React, { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";

@@ -1,7 +1,8 @@
-import React from "react";
+import { useMemo } from "react";
 import { useGame } from "@/contexts/GameContext";
-import { Globe, TrendingUp, Info } from "lucide-react";
+import { Globe, TrendingUp } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { useNavigate } from "@tanstack/react-router";
 import { formatMetaTrends } from "@/presenters/uiDigest";
@@ -10,7 +11,7 @@ export function TrendsWidget() {
   const { state } = useGame();
   const navigate = useNavigate();
   const world = state.world;
-  const headerAction = React.useMemo(
+  const headerAction = useMemo(
     () => ({
       label: "History",
       onClick: () => navigate({ to: "/jsa/trends" }),
@@ -25,13 +26,12 @@ export function TrendsWidget() {
   if (data.length === 0) {
     return (
       <BaseWidget title="JSA Meta Trends" icon={Globe}>
-        <div className="h-40 flex flex-col items-center justify-center text-muted-foreground gap-2">
-          <Info className="h-5 w-5 opacity-20" />
-          <p className="text-[10px] uppercase font-bold tracking-widest">Insufficient Data</p>
-          <p className="text-[9px] max-w-[150px] text-center opacity-70">
-            Complete {6 - data.length} more Basho to surface macro trends.
-          </p>
-        </div>
+        <EmptyState
+          icon={Globe}
+          title="Insufficient Data"
+          description={`Complete ${6 - data.length} more Basho to surface macro trends.`}
+          compact
+        />
       </BaseWidget>
     );
   }

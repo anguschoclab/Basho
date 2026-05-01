@@ -1,9 +1,11 @@
 // App Layout - 3-pane FM-inspired layout with persistent Sidebar, Top Nav, and Right Event Log
-import React, { ReactNode, useState } from "react";
+import { ReactNode, useState } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { TopNavBar } from "./TopNavBar";
 import { AppSidebar } from "./AppSidebar";
 import { EventLogPanel } from "./EventLogPanel";
+import { Breadcrumbs } from "./Breadcrumbs";
+import { MobileEventLog } from "./MobileEventLog";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { openSaveLoadDialog } from "@/components/game/SaveLoadDialog";
 import { MainContentPane } from "./MainContentPane";
@@ -51,6 +53,13 @@ export function AppLayout({ children, pageTitle, subNavTabs, activeSubTab }: App
           {/* Persistent Header */}
           <TopNavBar />
 
+          {/* Breadcrumbs - shown when world is loaded */}
+          {world && (
+            <div className="px-4 py-2 border-b border-border/50 bg-card/30">
+              <Breadcrumbs />
+            </div>
+          )}
+
           <div className="flex flex-1 overflow-hidden">
             {/* Main Content Pane */}
             <MainContentPane
@@ -74,6 +83,9 @@ export function AppLayout({ children, pageTitle, subNavTabs, activeSubTab }: App
 
           {/* Floaties & Hints */}
           <FloatingShortcuts eventLogOpen={eventLogOpen} setEventLogOpen={setEventLogOpen} />
+
+          {/* Mobile Event Log FAB */}
+          <MobileEventLog />
         </SidebarInset>
       </div>
     </SidebarProvider>

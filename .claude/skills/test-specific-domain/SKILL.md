@@ -7,10 +7,27 @@ disable-model-invocation: true
 Run tests for a specific engine domain without running the full test suite:
 
 ```bash
-cd "/Users/amauricia/Documents/GitHub/sumo-manager-pro" && bun test -- --run src/engine/__tests__/{domain}/*.test.ts
+cd "/Users/amauricia/Documents/GitHub/sumo-manager-pro" && bunx vitest run src/engine/__tests__/{domain}/*.test.ts
 ```
 
 Replace `{domain}` with the specific domain you want to test. Examples:
-- `src/engine/__tests__/banzuke/*.test.ts`
-- `src/engine/__tests__/matchmaking.test.ts`
-- `src/engine/__tests__/lifecycle.test.ts`
+
+```bash
+# Banzuke tests (promotion logic, ranking)
+bunx vitest run src/engine/__tests__/banzuke/*.test.ts
+
+# Matchmaking tests
+bunx vitest run src/engine/__tests__/matchmaking.test.ts
+
+# Lifecycle tests (retirement, injuries)
+bunx vitest run src/engine/__tests__/lifecycle.test.ts
+
+# Bout physics tests
+bunx vitest run src/engine/__tests__/bout/*.test.ts
+
+# Economy tests
+bunx vitest run src/engine/__tests__/economy/*.test.ts
+
+# Governance tests
+bunx vitest run src/engine/__tests__/governance/*.test.ts
+```

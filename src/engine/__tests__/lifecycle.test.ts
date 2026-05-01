@@ -3,13 +3,11 @@ import { checkRetirement } from "../lifecycle";
 import { mockRikishi } from "./utils";
 import * as rngModule from "../rng";
 
-vi.mock("../rng", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("../rng")>();
-  return {
-    ...actual,
-    rngFromSeed: vi.fn(),
-  };
-});
+vi.mock("../rng", () => ({
+  rngFromSeed: vi.fn(),
+  rngForWorld: vi.fn(),
+  SeededRNG: vi.fn(),
+}));
 
 describe("checkRetirement", () => {
   beforeEach(() => {
@@ -22,9 +20,7 @@ describe("checkRetirement", () => {
       next: vi.fn().mockReturnValue(0),
       bool: vi.fn().mockReturnValue(false),
     };
-    vi.mocked(rngModule.rngFromSeed).mockReturnValue(
-      mockRng as unknown as ReturnType<typeof rngModule.rngFromSeed>
-    );
+    (rngModule.rngFromSeed as any).mockReturnValue(mockRng);
 
     const result = checkRetirement(rikishi, 2025, "test-seed");
     expect(result).toBe("Mandatory Age Retirement");
@@ -35,22 +31,18 @@ describe("checkRetirement", () => {
       birthYear: 2000, // Age 25
       injured: true,
       injuryWeeksRemaining: 21,
-      currentInjury: {
-        type: "knee",
+      injuryStatus: {
+        type: "fracture",
         isInjured: true,
         severity: "serious",
-        location: undefined,
         weeksRemaining: 21,
-        weeksToHeal: 21,
       },
     });
     const mockRng = {
       next: vi.fn().mockReturnValue(0),
       bool: vi.fn().mockReturnValue(false),
     };
-    vi.mocked(rngModule.rngFromSeed).mockReturnValue(
-      mockRng as unknown as ReturnType<typeof rngModule.rngFromSeed>
-    );
+    (rngModule.rngFromSeed as any).mockReturnValue(mockRng);
 
     const result = checkRetirement(rikishi, 2025, "test-seed");
     expect(result).toBe("Career-Ending Injury");
@@ -63,9 +55,7 @@ describe("checkRetirement", () => {
       next: vi.fn().mockReturnValue(0.2),
       bool: vi.fn().mockReturnValue(false),
     };
-    vi.mocked(rngModule.rngFromSeed).mockReturnValue(
-      mockRng as unknown as ReturnType<typeof rngModule.rngFromSeed>
-    );
+    (rngModule.rngFromSeed as any).mockReturnValue(mockRng);
 
     const result = checkRetirement(rikishi, 2025, "test-seed");
     expect(result).toBe("Age & Fatigue");
@@ -81,9 +71,7 @@ describe("checkRetirement", () => {
       next: vi.fn().mockReturnValue(0.9),
       bool: vi.fn().mockReturnValue(true),
     };
-    vi.mocked(rngModule.rngFromSeed).mockReturnValue(
-      mockRng as unknown as ReturnType<typeof rngModule.rngFromSeed>
-    );
+    (rngModule.rngFromSeed as any).mockReturnValue(mockRng);
 
     const result = checkRetirement(rikishi, 2025, "test-seed");
 
@@ -101,9 +89,7 @@ describe("checkRetirement", () => {
       next: vi.fn().mockReturnValue(0.9),
       bool: vi.fn().mockReturnValue(false),
     };
-    vi.mocked(rngModule.rngFromSeed).mockReturnValue(
-      mockRng as unknown as ReturnType<typeof rngModule.rngFromSeed>
-    );
+    (rngModule.rngFromSeed as any).mockReturnValue(mockRng);
 
     const result = checkRetirement(rikishi, 2025, "test-seed");
     expect(result).toBeNull();
