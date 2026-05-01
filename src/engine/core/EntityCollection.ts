@@ -34,12 +34,17 @@ export const EntityCollection = {
    * Auto-filters retired by default.
    */
   getRikishi(world: WorldState, options: EntityQueryOptions = {}): Rikishi[] {
-    const all = Array.from(world.rikishi.values());
-    const filtered = all.filter((r) => {
-      const retiredMatch = options.includeRetired ? true : !r.isRetired;
-      const heyaMatch = options.heyaId ? r.heyaId === options.heyaId : true;
-      return retiredMatch && heyaMatch;
-    });
+    // ⚡ Bolt Optimization: Use a single for...of loop instead of Array.from().filter()
+    // This avoids intermediate array allocations and redundant iteration
+    const filtered: Rikishi[] = [];
+    const includeRetired = options.includeRetired ?? false;
+    const heyaId = options.heyaId;
+
+    for (const r of world.rikishi.values()) {
+      if (!includeRetired && r.isRetired) continue;
+      if (heyaId && r.heyaId !== heyaId) continue;
+      filtered.push(r);
+    }
 
     return stableSort(filtered, (r) => r.id);
   },
