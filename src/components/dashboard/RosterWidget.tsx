@@ -218,10 +218,10 @@ export function RosterWidget() {
     return { a: projectRikishi(coreA, world), b: projectRikishi(coreB, world) };
   }, [selectedIds, world]);
 
-  const { roster, injuredCount, avgFatigue, avgFatigueBand } = useMemo(() => {
-    if (!world?.playerHeyaId) return { roster: [], injuredCount: 0, avgFatigue: 0, avgFatigueBand: "fresh" as const };
+  const { roster, injuredCount, avgFatigueValue, avgFatigueBand } = useMemo(() => {
+    if (!world?.playerHeyaId) return { roster: [], injuredCount: 0, avgFatigueValue: 0, avgFatigueBand: "fresh" as const };
     const heya = world.heyas.get(world.playerHeyaId);
-    if (!heya) return { roster: [], injuredCount: 0, avgFatigue: 0, avgFatigueBand: "fresh" as const };
+    if (!heya) return { roster: [], injuredCount: 0, avgFatigueValue: 0, avgFatigueBand: "fresh" as const };
 
     // ⚡ Bolt Performance Optimization: Single-pass for loop over rikishiIds
     const entries: RosterEntryWithHealth[] = [];
@@ -230,8 +230,8 @@ export function RosterWidget() {
 
     for (const id of heya.rikishiIds ?? []) {
       const r = world.rikishi.get(id);
-      if (r && !r.isRetired) {
-        const entry = projectRosterEntry(r);
+      if (r) {
+        const entry = projectRosterEntry(r, world);
         const healthBadge = getHealthBadge(r);
         entries.push({ ...entry, healthBadge });
         if (entry.isInjured) injuries++;
@@ -247,7 +247,7 @@ export function RosterWidget() {
     return {
       roster: entries,
       injuredCount: injuries,
-      avgFatigue: avgFatigueValue,
+      avgFatigueValue,
       avgFatigueBand,
     };
   }, [world]);
@@ -288,7 +288,7 @@ export function RosterWidget() {
         <div className="flex items-center gap-1 text-muted-foreground ml-auto">
           <AlertTriangle className="h-3 w-3" />
           <span className="text-[10px]">
-            Avg: {FATIGUE_LABELS[avgFatigueBand]} (<span className="tabular-nums">{avgFatigue}%</span>)
+            Avg: {FATIGUE_LABELS[avgFatigueBand]}
           </span>
         </div>
       </div>
@@ -297,9 +297,9 @@ export function RosterWidget() {
       <div className="h-1 rounded-full bg-muted overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-500 ${
-            avgFatigue > 70 ? "bg-destructive" : avgFatigue > 40 ? "bg-warning" : "bg-primary"
+            avgFatigueValue > 70 ? "bg-destructive" : avgFatigueValue > 40 ? "bg-warning" : "bg-primary"
           }`}
-          style={{ width: `${avgFatigue}%` }}
+          style={{ width: `${avgFatigueValue}%` }}
         />
       </div>
 

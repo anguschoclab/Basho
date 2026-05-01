@@ -8,6 +8,7 @@ import {
   createBrowserHistory,
   redirect,
 } from "@tanstack/react-router";
+import { SaveSlotService } from "./engine/persistence/SaveSlotService";
 import MainMenu from "./pages/MainMenu";
 import NewGameWizard from "./pages/NewGameWizard";
 import Dashboard from "./pages/Dashboard";

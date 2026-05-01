@@ -31,7 +31,7 @@ export default function MainMenu() {
   const navigate = useNavigate();
   const game = useGame();
 
-  const { createWorld, state, loadFromSlot, loadFromAutosave, hasAutosave, getSaveSlots } =
+  const { createWorld, state, loadFromSlot, loadFromAutosave, hasAutosave, getSaveSlots, quickSave } =
     game as {
       createWorld: (seed: string, playerHeyaId?: string) => void;
       state: { world?: { seed: string; heyas: Map<string, Heya> } };
@@ -39,6 +39,7 @@ export default function MainMenu() {
       loadFromAutosave: () => void;
       hasAutosave: () => boolean;
       getSaveSlots: () => unknown[];
+      quickSave: () => boolean;
     };
 
   const [seed, setSeed] = useState("");
@@ -58,6 +59,14 @@ export default function MainMenu() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- createWorld is stable from context; seed is managed internally
   }, [state?.world]);
+
+  // Auto-restore from autosave if available
+  useEffect(() => {
+    if (!state.world && hasAutosave()) {
+      loadFromAutosave();
+      navigate({ to: "/dashboard" });
+    }
+  }, [state.world, hasAutosave, loadFromAutosave, navigate]);
 
   const stables = useMemo(() => {
     if (!state?.world) return [];
@@ -177,6 +186,12 @@ export default function MainMenu() {
   const beginWithHeya = (heyaId: string) => {
     if (!state?.world) return;
     createWorld(state.world.seed, heyaId);
+    // Autosave after world creation completes
+    setTimeout(() => {
+      if (state.world) {
+        quickSave();
+      }
+    }, 100);
     navigate({ to: "/dashboard" });
   };
 

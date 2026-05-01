@@ -23,7 +23,7 @@ import { OYAKATA_BACKGROUNDS, ICHIMON_FACTIONS } from "@/components/wizard/wizar
 
 export default function NewGameWizard() {
   const navigate = useNavigate();
-  const { createWorld, state } = useGame();
+  const { createWorld, state, quickSave } = useGame();
 
   useEffect(() => {
     if (!state.world) {
@@ -46,13 +46,14 @@ export default function NewGameWizard() {
 
   const handleFinish = () => {
     if (!world || !selectedHeyaId) return;
-    createWorld(world.seed, selectedHeyaId, {
-      name: oyakataName || "Player",
-      background,
-      ichimon,
-      heyaId: selectedHeyaId,
-    });
+    createWorld(world.seed, selectedHeyaId);
     setStep(4);
+    // Autosave after world creation completes
+    setTimeout(() => {
+      if (state.world) {
+        quickSave();
+      }
+    }, 100);
   };
 
   const handleExhibitionComplete = () => {

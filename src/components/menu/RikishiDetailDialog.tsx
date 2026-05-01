@@ -196,12 +196,14 @@ export function RikishiDetailDialog({
                       )}
                     </Tooltip>
                   </TooltipProvider>
-                  <Badge
-                    variant="outline"
-                    className="text-[9px] font-black uppercase tracking-widest h-6"
-                  >
-                    {selectedRikishi.styleName || "Balanced"}
-                  </Badge>
+                  {selectedRikishi.styleName !== selectedRikishi.archetypeName && (
+                    <Badge
+                      variant="outline"
+                      className="text-[9px] font-black uppercase tracking-widest h-6"
+                    >
+                      {selectedRikishi.styleName || "Balanced"}
+                    </Badge>
+                  )}
                 </div>
                 <div className="grid grid-cols-2 gap-2 pt-1">
                   <div className="bg-muted/40 rounded-lg p-2 space-y-0.5">
