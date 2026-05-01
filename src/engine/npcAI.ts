@@ -45,6 +45,59 @@ import {
   type GlobalWorkerContext,
 } from "./npcAIWorkers";
 
+// New Agent System Integration
+import {
+  spawnCrisisAgent,
+  spawnFinanceAgent,
+  spawnGovernanceAgent,
+  spawnMediaAgent,
+  spawnRecruitmentAgent,
+  spawnRivalryAgent,
+  spawnNarrativeAgent,
+  type CrisisAgentContext,
+  type FinanceAgentContext,
+  type GovernanceAgentContext,
+  type MediaAgentContext,
+  type RecruitmentAgentContext,
+  type RivalryAgentContext,
+  type NarrativeAgentContext,
+} from "./agents";
+
+/** Agent decision outputs for extended NPC AI */
+export interface AgentDecisions {
+  // Finance Agent
+  finance: {
+    shouldBuyMyoseki: boolean;
+    shouldInvestInFacilities: boolean;
+    shouldBuildReserves: boolean;
+    riskLevel: "conservative" | "moderate" | "aggressive";
+  };
+  // Governance Agent
+  governance: {
+    shouldReduceScandal: boolean;
+    shouldUsePoliticalFavor: boolean;
+    shouldSabotageRival: boolean;
+  };
+  // Recruitment Agent
+  recruitment: {
+    maxBid: number;
+    shouldBid: boolean;
+    bidStrategy: "aggressive" | "moderate" | "conservative";
+  };
+  // Rivalry Agent
+  rivalry: {
+    escalateRivalry: boolean;
+    deescalateRivalry: boolean;
+    targetRivalForMatchmaking: string[];
+  };
+  // Narrative Agent
+  narrative: {
+    shouldTriggerEvent: boolean;
+    eventType?: string;
+    narrativeTone: "heroic" | "tragic" | "dramatic" | "underdog" | "neutral";
+  };
+}
+
 /** Decision output for a single NPC heya per week */
 export interface NPCWeeklyDecision {
   heyaId: Id;
@@ -59,6 +112,7 @@ export interface NPCWeeklyDecision {
   reasoning: string[];
   mood?: OyakataMood;
   impact: StateImpact;
+  agentDecisions?: AgentDecisions;
 }
 
 /**
@@ -126,6 +180,125 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
   const globalProposal = spawnGlobalWorker(globalCtx);
   reasoning.push(...globalProposal.reasoning);
 
+  // --- Phase 2b: New Agent System Integration ---
+  // Spawn specialized agents for complex decision domains
+  let agentDecisions: AgentDecisions | undefined;
+
+  if (oyakata) {
+    // Finance Agent - Financial investment decisions
+    const financeCtx: FinanceAgentContext = {
+      oyakata,
+      world,
+      runwayBand: perception.runwayBand,
+      funds: heya?.funds || 0,
+      monthlyBurn: heya?.monthlyBurnRate || 0,
+    };
+    const financeResult = spawnFinanceAgent(financeCtx);
+    reasoning.push(...financeResult.reasoning);
+
+    // Governance Agent - Political maneuvering
+    const governanceCtx: GovernanceAgentContext = {
+      heya: heya!,
+      oyakata,
+      world,
+      scandalScore: heya?.welfareState?.scandalScore || 0,
+      politicalCapital: heya?.politicalCapital || 0,
+      governanceStatus: heya?.welfareState?.complianceState || "good",
+    };
+    const governanceResult = spawnGovernanceAgent(governanceCtx);
+    reasoning.push(...governanceResult.reasoning);
+
+    // Rivalry Agent - Rivalry management
+    const rivalryCtx: RivalryAgentContext = {
+      oyakata,
+      activeRivalries: world.rivalries || {},
+      currentMood: persona.mood,
+    };
+    const rivalryResult = spawnRivalryAgent(rivalryCtx);
+    reasoning.push(...rivalryResult.reasoning);
+
+    // Narrative Agent - Story generation
+    const topRikishi = Array.from(world.rikishi.values())
+      .filter((r) => r.division === "makuuchi" || r.division === "juryo")
+      .slice(0, 5);
+    const narrativeCtx: NarrativeAgentContext = {
+      oyakata,
+      topRikishi,
+      recentAchievements: world._recentAchievements || [],
+      currentBashoPhase: world.bashoPhase || "interim",
+    };
+    const narrativeResult = spawnNarrativeAgent(narrativeCtx);
+    reasoning.push(...narrativeResult.reasoning);
+
+    // Recruitment Agent - Bidding strategy (if vacancies exist)
+    let recruitmentResult = {
+      maxBid: 0,
+      shouldBid: false,
+      bidStrategy: "conservative" as const,
+      reasoning: ["[Recruitment Agent] No vacancies - skipping recruitment"],
+      confidence: 0,
+    };
+    const rosterSize = heya?.rikishiIds?.length || 0;
+    const vacancies = Math.max(0, 15 - rosterSize); // Assuming 15 is target roster size
+    if (vacancies > 0 && world.talentPool) {
+      const candidateIds = Object.keys(world.talentPool.candidates);
+      if (candidateIds.length > 0) {
+        const recruitmentCtx: RecruitmentAgentContext = {
+          oyakata,
+          world,
+          vacancyCount: vacancies,
+          runwayBand: perception.runwayBand,
+          funds: heya?.funds || 0,
+          rosterSize,
+          candidateId: candidateIds[0], // Prioritize first available candidate
+        };
+        recruitmentResult = spawnRecruitmentAgent(recruitmentCtx);
+        reasoning.push(...recruitmentResult.reasoning);
+      }
+    }
+
+    // Compile agent decisions
+    agentDecisions = {
+      finance: {
+        shouldBuyMyoseki: financeResult.shouldBuyMyoseki,
+        shouldInvestInFacilities: financeResult.shouldInvestInFacilities,
+        shouldBuildReserves: financeResult.shouldBuildReserves,
+        riskLevel: financeResult.riskLevel,
+      },
+      governance: {
+        shouldReduceScandal: governanceResult.shouldReduceScandal,
+        shouldUsePoliticalFavor: governanceResult.shouldUsePoliticalFavor,
+        shouldSabotageRival: governanceResult.shouldSabotageRival,
+      },
+      recruitment: {
+        maxBid: recruitmentResult.maxBid,
+        shouldBid: recruitmentResult.shouldBid,
+        bidStrategy: recruitmentResult.bidStrategy,
+      },
+      rivalry: {
+        escalateRivalry: rivalryResult.escalateRivalry,
+        deescalateRivalry: rivalryResult.deescalateRivalry,
+        targetRivalForMatchmaking: rivalryResult.targetRivalForMatchmaking,
+      },
+      narrative: {
+        shouldTriggerEvent: narrativeResult.shouldTriggerEvent,
+        eventType: narrativeResult.eventType,
+        narrativeTone: narrativeResult.narrativeTone,
+      },
+    };
+
+    // Agent-based overrides (Phase 2c: Agent-Lead Review)
+    if (financeResult.riskLevel === "conservative" && trainingProposal.trainingIntensity === "punishing") {
+      trainingProposal.trainingIntensity = "intense";
+      reasoning.push("[Agent Review] Finance agent overrides: Reducing intensity to 'intense' due to conservative financial stance");
+    }
+
+    if (governanceResult.shouldReduceScandal && governanceResult.scandalReductionMethod === "cooperate") {
+      // Reduce scandal impact by being cooperative
+      reasoning.push("[Agent Review] Governance agent: Cooperative scandal reduction strategy selected");
+    }
+  }
+
   // --- Phase 3: Lead Review (Alignment Check) ---
   // The Oyakata (Lead Agent) reviews worker proposals against memory/mood.
   if (persona.mood === "furious" && trainingProposal.trainingIntensity !== "punishing") {
@@ -176,6 +349,23 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
     }
   }
 
+  // Apply agent-based impacts
+  if (agentDecisions) {
+    // Log agent decisions for debugging/narrative
+    if (agentDecisions.finance.shouldBuyMyoseki) {
+      builder.logEvent("NPC_DECISION", "finance", { heyaId, decision: "buy_myoseki" }, { heyaId });
+    }
+    if (agentDecisions.governance.shouldReduceScandal) {
+      builder.logEvent("NPC_DECISION", "governance", { heyaId, decision: "reduce_scandal" }, { heyaId });
+    }
+    if (agentDecisions.rivalry.escalateRivalry) {
+      builder.logEvent("NPC_DECISION", "rivalry", { heyaId, decision: "escalate_rivalry" }, { heyaId });
+    }
+    if (agentDecisions.narrative.shouldTriggerEvent) {
+      builder.logEvent("NPC_DECISION", "narrative", { heyaId, decision: "trigger_event", eventType: agentDecisions.narrative.eventType }, { heyaId });
+    }
+  }
+
   return {
     heyaId,
     archetype: persona.archetype,
@@ -188,6 +378,105 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
     individualPushes: personnelProposal.individualPushes,
     reasoning,
     mood: persona.mood,
+    impact: builder.build(),
+    agentDecisions,
+  };
+}
+
+/**
+ * Handle crisis response using Crisis Agent.
+ * Called when a crisis event occurs for an NPC heya.
+ */
+export function handleNPCCrisis(
+  world: WorldState,
+  heyaId: Id,
+  crisis: import("./types/crises").ActiveCrisis
+): { choiceId: string; reasoning: string[]; impact: StateImpact } {
+  const builder = createImpactBuilder("handleNPCCrisis");
+  const heya = getHeya(world, heyaId);
+  const oyakata = heya ? getOyakataForHeya(world, heyaId) : undefined;
+
+  if (!oyakata || !heya) {
+    return { choiceId: crisis.options[0]?.id || "default", reasoning: ["No oyakata found"], impact: builder.build() };
+  }
+
+  const crisisCtx: CrisisAgentContext = {
+    crisis,
+    oyakata,
+    heyaId,
+    world,
+    currentMood: oyakata.mood,
+  };
+
+  const crisisResult = spawnCrisisAgent(crisisCtx);
+
+  // Log the crisis response
+  builder.logEvent(
+    "CRISIS_RESPONSE",
+    "crisis",
+    {
+      heyaId,
+      crisisId: crisis.id,
+      choiceId: crisisResult.selectedChoiceId,
+      reputationChange: crisisResult.expectedImpact.reputationChange,
+      politicalCapitalChange: crisisResult.expectedImpact.politicalCapitalChange,
+    },
+    { heyaId }
+  );
+
+  return {
+    choiceId: crisisResult.selectedChoiceId,
+    reasoning: crisisResult.reasoning,
+    impact: builder.build(),
+  };
+}
+
+/**
+ * Handle media event response using Media Agent.
+ * Called when a media event occurs for an NPC heya.
+ */
+export function handleNPCMediaEvent(
+  world: WorldState,
+  heyaId: Id,
+  eventId: string,
+  eventType: string,
+  severity: "minor" | "moderate" | "major"
+): { response: "apologize" | "deny" | "ignore" | "deflect"; reasoning: string[]; impact: StateImpact } {
+  const builder = createImpactBuilder("handleNPCMediaEvent");
+  const heya = getHeya(world, heyaId);
+  const oyakata = heya ? getOyakataForHeya(world, heyaId) : undefined;
+
+  if (!oyakata || !heya) {
+    return { response: "ignore", reasoning: ["No oyakata found"], impact: builder.build() };
+  }
+
+  const mediaCtx: MediaAgentContext = {
+    eventId,
+    eventType,
+    severity,
+    oyakata,
+    heyaId,
+    world,
+  };
+
+  const mediaResult = spawnMediaAgent(mediaCtx);
+
+  // Log the media response
+  builder.logEvent(
+    "MEDIA_RESPONSE",
+    "media",
+    {
+      heyaId,
+      eventId,
+      response: mediaResult.response,
+      confidence: mediaResult.confidence,
+    },
+    { heyaId }
+  );
+
+  return {
+    response: mediaResult.response,
+    reasoning: mediaResult.reasoning,
     impact: builder.build(),
   };
 }
