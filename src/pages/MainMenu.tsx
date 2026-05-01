@@ -47,11 +47,10 @@ export default function MainMenu() {
   const [selectionMode, setSelectionMode] = useState<StableSelectionMode>("recommended");
   const [selectedHeyaId, setSelectedHeyaId] = useState<string | null>(null);
   const [previewHeya, setPreviewHeya] = useState<Heya | null>(null);
-  const [isRestoring, setIsRestoring] = useState(false);
 
   // Sync world seed
   useEffect(() => {
-    if (!state?.world && !hasAutosave()) {
+    if (!state?.world) {
       const worldSeed = makeDeterministicSeed("world");
       setSeed(worldSeed);
       if (typeof createWorld === "function") createWorld(worldSeed);
@@ -59,23 +58,7 @@ export default function MainMenu() {
       setSeed(state.world.seed);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- createWorld is stable from context; seed is managed internally
-  }, [state?.world, hasAutosave]);
-
-  // Auto-restore from autosave if available
-  useEffect(() => {
-    if (!state.world && hasAutosave() && !isRestoring) {
-      setIsRestoring(true);
-      loadFromAutosave();
-    }
-  }, [state.world, hasAutosave, loadFromAutosave, isRestoring]);
-
-  // Navigate to dashboard after autosave loads
-  useEffect(() => {
-    if (isRestoring && state.world) {
-      navigate({ to: "/dashboard" });
-      setIsRestoring(false);
-    }
-  }, [isRestoring, state.world, navigate]);
+  }, [state?.world]);
 
   const stables = useMemo(() => {
     if (!state?.world) return [];
