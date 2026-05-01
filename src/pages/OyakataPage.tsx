@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { PageHeader } from "@/components/layout/control-center";
+import { STABLE_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -9,9 +11,9 @@ import type { Oyakata } from "@/engine/types/oyakata";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { Brain, Heart, Briefcase, Zap, Scale, Users, Crown, Award } from "lucide-react";
 import { YokozunaTsunaDisplay } from "@/components/kesho/keshoComponents";
-import { TRAIT_LABELS, getArchetypeDescription, toTraitBand } from "@/presenters/uiDigest";
+import { TRAIT_LABELS, toTraitBand } from "@/presenters/uiDigest";
 import { menteesOf } from "@/engine/lineage";
-import { RikishiName, OyakataName, StableName } from "@/components/ClickableName";
+import { RikishiName, StableName } from "@/components/ClickableName";
 
 /** oyakata page. */
 export default function OyakataPage() {
@@ -63,36 +65,13 @@ export default function OyakataPage() {
   }
 
   return (
-    <AppLayout>
+    <AppLayout subNavTabs={STABLE_TABS} activeSubTab="oyakata" pageTitle="Oyakata Profile">
       <div className="space-y-6">
-        {/* HEADER */}
-        <div className="flex items-start gap-6">
-          <SumoAvatar
-            config={selectedOyakata.avatarConfig}
-            size="xl"
-            showHairstyle={true}
-            fallback={selectedOyakata.name}
-            className="border-4 border-primary/30 shadow-xl"
-          />
-
-          <div className="flex-1">
-            <div className="flex items-center gap-3">
-              <h1 className="text-4xl font-bold">
-                <OyakataName id={selectedOyakata.id} name={selectedOyakata.name} />
-              </h1>
-              <Badge variant="outline" className="text-lg capitalize">
-                {selectedOyakata.archetype?.replace("_", " ")}
-              </Badge>
-            </div>
-            <p className="text-muted-foreground mt-2">
-              {getArchetypeDescription(selectedOyakata.archetype)}
-            </p>
-            <div className="flex gap-4 mt-4 text-sm text-muted-foreground">
-              <span>Age: {selectedOyakata.age}</span>
-              <span>Years in Charge: {selectedOyakata.yearsInCharge}</span>
-            </div>
-          </div>
-        </div>
+        <PageHeader
+          eyebrow="── MY STABLE ──"
+          title={selectedOyakata.name}
+          lede={`${selectedOyakata.archetype?.replace("_", " ")} · Age ${selectedOyakata.age} · ${selectedOyakata.yearsInCharge} years in charge`}
+        />
 
         {/* TRAITS */}
         <Card>

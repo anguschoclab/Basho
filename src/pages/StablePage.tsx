@@ -71,7 +71,7 @@ export default function StablePage() {
 
       <div className="space-y-8">
         <PageHeader
-          eyebrow="── STABLE ──"
+          eyebrow="── MY STABLE ──"
           title={heya.name}
           lede={`${rikishiList.length} rikishi · ${heya.ichimon ?? "Independent"} Ichimon`}
         />

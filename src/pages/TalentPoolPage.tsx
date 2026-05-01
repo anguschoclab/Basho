@@ -2,6 +2,8 @@ import { useMemo, useState } from "react";
 import { StableName } from "@/components/ClickableName";
 import { useGame } from "@/contexts/GameContext";
 import { useGameStore } from "@/store/gameStore";
+import { AppLayout } from "@/components/layout/AppLayout";
+import { PageHeader } from "@/components/layout/control-center";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -76,14 +78,14 @@ export default function TalentPoolPage() {
 
   if (!world) {
     return (
-      <div className="p-6">
-        <Card>
+      <AppLayout pageTitle="Talent Pools">
+        <Card className="paper">
           <CardHeader>
             <CardTitle>Talent Pools</CardTitle>
             <CardDescription>Load or create a world to view prospects.</CardDescription>
           </CardHeader>
         </Card>
-      </div>
+      </AppLayout>
     );
   }
 
@@ -118,15 +120,23 @@ export default function TalentPoolPage() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Talent Pools</CardTitle>
-          <CardDescription>
-            Persistent recruit pipelines: prospects exist before they enter sumo. Scout to reveal,
-            then make offers.
-          </CardDescription>
-        </CardHeader>
+    <AppLayout pageTitle="Talent Pools">
+      <div className="space-y-6">
+        <PageHeader
+          eyebrow="── OFFICE ──"
+          title="Talent Pools"
+          lede="Persistent recruit pipelines: prospects exist before they enter sumo. Scout to reveal, then make offers."
+        />
+        <Card className="paper">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Search className="h-5 w-5 text-primary" />
+              Recruitment Overview
+            </CardTitle>
+            <CardDescription>
+              Manage your stable's recruitment pipeline and candidate prospects.
+            </CardDescription>
+          </CardHeader>
         <CardContent className="space-y-3">
           {playerHeya && (
             <div className="flex items-center justify-between gap-3">
@@ -289,6 +299,7 @@ export default function TalentPoolPage() {
           </TabsContent>
         ))}
       </Tabs>
-    </div>
+      </div>
+    </AppLayout>
   );
 }

@@ -1,6 +1,7 @@
 import { useMemo, useCallback } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { PageHeader } from "@/components/layout/control-center";
 import { OFFICE_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { FacilitiesManagementPanel } from "@/components/game/FacilitiesManagementPanel";
@@ -72,6 +73,11 @@ export default function FacilitiesPage() {
       </Helmet>
 
       <div className="space-y-8">
+        <PageHeader
+          eyebrow="── OFFICE ──"
+          title="Infrastructure"
+          lede="Facility upgrades, training grounds, and physical plant investments."
+        />
         <FacilityROIChart heya={heya} />
         <FacilitiesManagementPanel heya={heya} isOwner={true} onUpgrade={handleUpgrade} />
         <InfrastructurePanel heya={heya} onBuild={handleBuildInfrastructure} />

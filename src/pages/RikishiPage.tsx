@@ -13,6 +13,7 @@ import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { PageHeader } from "@/components/layout/control-center";
 import { STABLE_TABS } from "@/constants/navigation";
 import { projectRikishi } from "@/presenters/uiModels";
 import { RosterList } from "@/components/rikishi/RosterList";
@@ -71,12 +72,19 @@ export default function RikishiPage() {
         <Helmet>
           <title>Roster Management | Basho</title>
         </Helmet>
-        <RosterList
-          rikishiList={rikishiList}
-          onRikishiClick={(id) =>
-            navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: id } })
-          }
-        />
+        <div className="space-y-6">
+          <PageHeader
+            eyebrow="── MY STABLE ──"
+            title="Roster Management"
+            lede="Manage your stable's wrestlers, view profiles, and track development."
+          />
+          <RosterList
+            rikishiList={rikishiList}
+            onRikishiClick={(id) =>
+              navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: id } })
+            }
+          />
+        </div>
       </AppLayout>
     );
   }

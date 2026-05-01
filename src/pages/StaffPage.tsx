@@ -118,7 +118,7 @@ export default function StaffPage() {
     <AppLayout subNavTabs={STABLE_TABS} activeSubTab="staff" pageTitle="Support Staff">
       <div className="space-y-8">
         <PageHeader
-          eyebrow="── HQ ──"
+          eyebrow="── MY STABLE ──"
           title="Staff Management"
           lede="Manage the specialists who shape your heya's future."
         />
