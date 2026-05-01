@@ -366,7 +366,8 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
     }
   }
 
-  return {
+  // Assemble base decision before post-processing
+  const decision: NPCWeeklyDecision = {
     heyaId,
     archetype: persona.archetype,
     trainingIntensity: trainingProposal.trainingIntensity,
@@ -381,6 +382,140 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
     impact: builder.build(),
     agentDecisions,
   };
+
+  applyInjuryRiskReduction(world, heyaId, decision);
+  applyPromotionAwareness(world, heyaId, decision);
+
+  return decision;
+}
+
+/**
+ * Applies promotion-awareness overrides to an NPC weekly decision.
+ * - Kadoban Ozeki → added to individualProtects (avoid overtraining at demotion risk)
+ * - Active Ozeki → intensity raised to at least "intensive", added to individualPushes (Yokozuna run)
+ * - Sekiwake/Komusubi → added to individualDevelops (Ozeki promotion candidate)
+ * Skips retired or currently injured rikishi.
+ */
+function applyPromotionAwareness(
+  world: WorldState,
+  heyaId: string,
+  decision: NPCWeeklyDecision
+): void {
+  const heya = world.heyas.get(heyaId);
+  if (!heya) return;
+
+  for (const rikishiId of (heya.rikishiIds ?? [])) {
+    const r = world.rikishi.get(rikishiId);
+    if (!r || r.isRetired || r.injured) continue;
+
+    const rank = r.rank?.toLowerCase() ?? "";
+
+    if (rank === "ozeki") {
+      const kadobanEntry = world.ozekiKadoban?.[rikishiId];
+      const isKadoban = kadobanEntry?.isKadoban === true;
+
+      if (isKadoban) {
+        // Kadoban Ozeki — protect them, avoid overtraining at demotion risk
+        if (!decision.individualProtects.includes(rikishiId)) {
+          decision.individualProtects = [...decision.individualProtects, rikishiId];
+          // Remove from push/develop if present — protecting takes priority
+          decision.individualPushes = decision.individualPushes.filter((id) => id !== rikishiId);
+          decision.individualDevelops = decision.individualDevelops.filter((id) => id !== rikishiId);
+          decision.reasoning.push(
+            `[PromotionAwareness] ${r.shikona ?? rikishiId} is Kadoban — added to protect list`
+          );
+        }
+      } else {
+        // Active Ozeki on Yokozuna run — push hard
+        if (
+          decision.trainingIntensity === "conservative" ||
+          decision.trainingIntensity === "balanced"
+        ) {
+          decision.trainingIntensity = "intensive";
+          decision.reasoning.push(
+            `[PromotionAwareness] Ozeki in stable — raised training intensity to 'intensive' for Yokozuna run`
+          );
+        }
+        if (!decision.individualPushes.includes(rikishiId)) {
+          decision.individualPushes = [...decision.individualPushes, rikishiId];
+          decision.reasoning.push(
+            `[PromotionAwareness] ${r.shikona ?? rikishiId} is Ozeki — added to push list for Yokozuna run`
+          );
+        }
+      }
+    }
+
+    // Sekiwake / Komusubi — develop toward Ozeki promotion
+    if (rank === "sekiwake" || rank === "komusubi") {
+      if (!decision.individualDevelops.includes(rikishiId)) {
+        decision.individualDevelops = [...decision.individualDevelops, rikishiId];
+        decision.reasoning.push(
+          `[PromotionAwareness] ${r.shikona ?? rikishiId} is ${r.rank} — added to develop list as Ozeki candidate`
+        );
+      }
+    }
+  }
+}
+
+/**
+ * Scans the heya roster for rikishi with high injury risk (based on condition + fatigue)
+ * and applies protective overrides to the decision:
+ * - Adds high-risk rikishi to individualProtects
+ * - Reduces overall training intensity if the majority of the roster is at risk
+ */
+function applyInjuryRiskReduction(
+  world: WorldState,
+  heyaId: string,
+  decision: NPCWeeklyDecision
+): void {
+  const heya = world.heyas.get(heyaId);
+  if (!heya) return;
+
+  let highRiskCount = 0;
+  const protectIds: Id[] = [];
+
+  for (const rikishiId of (heya.rikishiIds ?? [])) {
+    const r = world.rikishi.get(rikishiId);
+    if (!r || r.isRetired || r.injured) continue;
+
+    const condition = r.condition ?? 100;
+    const fatigue = r.fatigue ?? 0;
+    const riskScore = (100 - condition) * 0.6 + fatigue * 0.4;
+
+    if (riskScore > 60) {
+      highRiskCount++;
+      protectIds.push(rikishiId);
+    }
+  }
+
+  // If majority of roster is high-risk, reduce overall training intensity
+  const rosterSize = (heya.rikishiIds ?? []).length;
+  if (rosterSize > 0 && highRiskCount / rosterSize > 0.4) {
+    const intensity = decision.trainingIntensity;
+    if (intensity === "punishing") {
+      decision.trainingIntensity = "intensive";
+      decision.reasoning.push(
+        `[InjuryRisk] ${highRiskCount}/${rosterSize} rikishi at high risk — reduced intensity from 'punishing' to 'intensive'.`
+      );
+    } else if (intensity === "intensive") {
+      decision.trainingIntensity = "balanced";
+      decision.reasoning.push(
+        `[InjuryRisk] ${highRiskCount}/${rosterSize} rikishi at high risk — reduced intensity from 'intensive' to 'balanced'.`
+      );
+    }
+  }
+
+  // Add protect overrides for high-risk individuals (don't duplicate existing protects)
+  const existingProtects = new Set(decision.individualProtects);
+  for (const id of protectIds) {
+    if (!existingProtects.has(id)) {
+      decision.individualProtects = [...decision.individualProtects, id];
+      existingProtects.add(id);
+      // Remove from pushes/develops if present — protecting takes priority
+      decision.individualPushes = decision.individualPushes.filter((pid) => pid !== id);
+      decision.individualDevelops = decision.individualDevelops.filter((did) => did !== id);
+    }
+  }
 }
 
 /**

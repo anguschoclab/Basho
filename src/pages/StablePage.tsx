@@ -9,9 +9,11 @@ import { InfrastructureService } from "@/engine/systems/economy/InfrastructureSe
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/layout/control-center";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
+import { AlertTriangle } from "lucide-react";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
 import { StableStatsTable } from "@/components/game/StableStatsTable";
 import { projectHeyaData } from "@/presenters/projections/heyaProjections";
@@ -41,7 +43,16 @@ export default function StablePage() {
       .map((r) => projectRikishi(r, world));
   }, [world, heya]);
 
-  if (!world || !heya) return null;
+  if (!world || !heya) {
+    return (
+      <AppLayout pageTitle="Stable Operations" subNavTabs={STABLE_TABS} activeSubTab="stable">
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-muted-foreground">
+          <div className="text-4xl animate-pulse font-display">⋯</div>
+          <p className="text-sm font-display italic uppercase tracking-widest">Loading stable…</p>
+        </div>
+      </AppLayout>
+    );
+  }
 
   const sponsorData = projectSponsorUIDigest(world);
 
@@ -98,36 +109,63 @@ export default function StablePage() {
           </TabsContent>
 
           <TabsContent value="roster" className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {rikishiList.map((r) => (
-                <TooltipWrap
-                  key={r.id}
-                  content={`View detailed statistics and career history for ${r.shikona}`}
-                  side="top"
-                >
-                  <Card
-                    className="paper hover:border-primary transition-colors cursor-pointer"
-                    onClick={() =>
-                      navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } })
-                    }
-                  >
-                    <CardContent className="p-4 flex justify-between items-center">
-                      <div>
-                        <div className="font-bold">{r.shikona}</div>
-                        <div className="text-xs text-muted-foreground uppercase">
-                          {r.rankLabel}
-                          {r.rankNumber && r.rankNumber > 0 ? ` #${r.rankNumber}` : ""}
-                          {r.side ? ` ${r.side === "east" ? "E" : "W"}` : ""}
-                        </div>
-                      </div>
-                      <Badge variant="secondary">
-                        {r.currentBashoWins}-{r.currentBashoLosses}
-                      </Badge>
-                    </CardContent>
-                  </Card>
-                </TooltipWrap>
-              ))}
-            </div>
+            {rikishiList.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 gap-4 border-2 border-dashed rounded-lg text-muted-foreground">
+                <div className="text-5xl font-display animate-pulse">∅</div>
+                <p className="text-sm font-display italic">Your stable has no rikishi yet.</p>
+                <Button variant="outline" onClick={() => navigate({ to: "/talent-pool" })}>
+                  Visit Talent Pool to Recruit
+                </Button>
+              </div>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {rikishiList.map((r) => {
+                  const isHighRisk = !r.isInjured && (r.condition < 40 || r.fatigue > 70);
+                  return (
+                    <TooltipWrap
+                      key={r.id}
+                      content={`View detailed statistics and career history for ${r.shikona}`}
+                      side="top"
+                    >
+                      <Card
+                        className="paper hover:border-primary transition-colors cursor-pointer"
+                        onClick={() =>
+                          navigate({ to: "/rikishi/$rikishiId", params: { rikishiId: r.id } })
+                        }
+                      >
+                        <CardContent className="p-4 flex justify-between items-center">
+                          <div>
+                            <div className="font-bold flex items-center gap-1.5">
+                              {r.shikona}
+                              {r.isInjured && (
+                                <TooltipWrap content={r.injurySummary ?? "Injured"} side="top">
+                                  <Badge variant="destructive" className="text-[9px] px-1.5 h-4 cursor-help">
+                                    INJURED
+                                  </Badge>
+                                </TooltipWrap>
+                              )}
+                              {isHighRisk && (
+                                <TooltipWrap content="High injury risk — low condition or elevated fatigue" side="top">
+                                  <AlertTriangle className="h-3.5 w-3.5 text-amber-500 cursor-help shrink-0" />
+                                </TooltipWrap>
+                              )}
+                            </div>
+                            <div className="text-xs text-muted-foreground uppercase">
+                              {r.rankLabel}
+                              {r.rankNumber && r.rankNumber > 0 ? ` #${r.rankNumber}` : ""}
+                              {r.side ? ` ${r.side === "east" ? "E" : "W"}` : ""}
+                            </div>
+                          </div>
+                          <Badge variant="secondary">
+                            {r.currentBashoWins}-{r.currentBashoLosses}
+                          </Badge>
+                        </CardContent>
+                      </Card>
+                    </TooltipWrap>
+                  );
+                })}
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="performance">

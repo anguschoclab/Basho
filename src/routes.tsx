@@ -159,6 +159,12 @@ const stableOyakataRoute = createRoute({
   path: "/oyakata",
   component: OyakataPage,
 });
+const stableInfrastructureRoute = createRoute({
+  getParentRoute: () => stableBaseRoute,
+  path: "/infrastructure",
+  beforeLoad: () => { throw redirect({ to: "/stable", replace: true }); },
+  component: () => null,
+});
 
 // --- OFFICE SECTION ---
 const officeBaseRoute = createRoute({ getParentRoute: () => rootRoute, path: "/office" });
@@ -325,6 +331,7 @@ const routeTree = rootRoute.addChildren([
     stableMedicalRoute,
     stableStaffRoute,
     stableOyakataRoute,
+    stableInfrastructureRoute,
   ]),
   stableIdRoute,
 

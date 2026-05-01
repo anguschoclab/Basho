@@ -15,3 +15,4 @@ export * from "./TrainingWidget";
 export * from "./TrendsWidget";
 export * from "./GlobalCupWidget";
 export * from "./EventFeed";
+export * from "./PromotionPipelineWidget";

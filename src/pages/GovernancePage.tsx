@@ -120,6 +120,17 @@ export default function GovernancePage() {
       tone: "destructive" as const,
     }));
 
+    const completedMergerEvents = (world.events?.log ?? [])
+      .filter((e) => e.type === "GOVERNANCE_RULING" && e.data?.incident === "stable_merger")
+      .sort((a, b) => b.year - a.year || b.week - a.week)
+      .slice(0, 10);
+    const completedMergerRows = completedMergerEvents.map((e) => ({
+      id: e.id,
+      label: `${e.data.heyaname ?? "Unknown"} → ${e.data.heya ?? "Unknown"}`,
+      sub: `Year ${e.year}, Week ${e.week} · ${String(e.data.reason ?? e.data.incident ?? "merger")}`,
+      tone: "default" as const,
+    }));
+
     const factionList = Object.values(world.factions ?? {}).sort(
       (a, b) => b.influence - a.influence
     );
@@ -177,6 +188,7 @@ export default function GovernancePage() {
       historyRows,
       welfareRows,
       mergerRows,
+      completedMergerRows,
       factionRows,
       factionList,
       reputationStats,
@@ -190,8 +202,11 @@ export default function GovernancePage() {
 
   if (!world || !heya || !derived) {
     return (
-      <AppLayout>
-        <div className="flex items-center justify-center h-full">Loading Council Records...</div>
+      <AppLayout pageTitle="Governance & Compliance" subNavTabs={ASSOCIATION_TABS} activeSubTab="governance">
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-muted-foreground">
+          <div className="text-4xl animate-pulse font-display">⋯</div>
+          <p className="text-sm font-display italic uppercase tracking-widest">Loading…</p>
+        </div>
       </AppLayout>
     );
   }
@@ -275,6 +290,15 @@ export default function GovernancePage() {
                 eyebrow="── MERGER RISK ──"
                 title="Stables in Crisis"
                 rows={derived.mergerRows}
+              />
+            )}
+
+            {derived.completedMergerRows.length > 0 && (
+              <ListCard
+                eyebrow="── MERGERS ──"
+                title="Completed Stable Mergers"
+                rows={derived.completedMergerRows}
+                emptyText="No mergers on record."
               />
             )}
 

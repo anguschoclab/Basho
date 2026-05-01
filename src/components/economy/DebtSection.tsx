@@ -27,7 +27,14 @@ interface DebtSectionProps {
 }
 
 export function DebtSection({ activeLoans }: DebtSectionProps) {
-  if (!activeLoans || activeLoans.length === 0) return null;
+  if (!activeLoans || activeLoans.length === 0) {
+    return (
+      <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-success/8 border border-success/20 text-success">
+        <span className="text-lg">✓</span>
+        <span className="text-sm font-bold">No active debt obligations.</span>
+      </div>
+    );
+  }
 
   return (
     <Card className="border-destructive/20 bg-destructive/5 paper overflow-hidden">
@@ -81,6 +88,31 @@ export function DebtSection({ activeLoans }: DebtSectionProps) {
                   </div>
                 </div>
               </div>
+
+              {/* Payoff progress bar */}
+              {loan.principal > 0 && (
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-[10px] font-bold text-muted-foreground uppercase">
+                    <span>Payoff Progress</span>
+                    <span>{Math.round((1 - loan.remainingBalance / loan.principal) * 100)}% paid</span>
+                  </div>
+                  <div className="w-full h-2 bg-muted/40 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-success rounded-full transition-all duration-500"
+                      style={{ width: `${Math.min(100, (1 - loan.remainingBalance / loan.principal) * 100)}%` }}
+                    />
+                  </div>
+                  {loan.monthlyPayment > 0 && (
+                    <div className="text-[10px] text-muted-foreground">
+                      Est. payoff in{" "}
+                      <span className="font-bold text-foreground">
+                        {Math.ceil(loan.remainingBalance / (loan.monthlyPayment / 4.33))} weeks
+                      </span>
+                      {" "}at current monthly rate
+                    </div>
+                  )}
+                </div>
+              )}
 
               {loan.stringsAttached && loan.stringsAttached.length > 0 && (
                 <div className="space-y-1.5">

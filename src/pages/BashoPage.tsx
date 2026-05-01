@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { BoutNarrativeModal } from "@/components/game/BoutNarrativeModal";
 import { MatchDayViewer } from "@/components/game/MatchDayViewer";
+import { BashoStandingsEvolution } from "@/components/basho/BashoStandingsEvolution";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Play,
@@ -415,6 +416,14 @@ export default function BashoPage() {
             />
           </div>
         </div>
+
+        {/* Standings evolution chart — active basho only */}
+        {world.cyclePhase === "active_basho" && world.currentBasho && (
+          <BashoStandingsEvolution
+            basho={world.currentBasho}
+            rikishiMap={world.rikishi}
+          />
+        )}
       </div>
 
       {/* Modals */}

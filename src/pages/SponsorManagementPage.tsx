@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/layout/control-center";
 import { useGame } from "@/contexts/GameContext";
 import { projectSponsorUIDigest } from "@/presenters/uiDigest";
 import { SponsorContractsPanel } from "@/components/game/SponsorContractsPanel";
+import { SponsorSatisfactionChart } from "@/components/economy/SponsorSatisfactionChart";
 
 /** sponsor management page. */
 export default function SponsorManagementPage() {
@@ -18,12 +19,12 @@ export default function SponsorManagementPage() {
 
   if (!digest) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center text-center gap-3 p-8">
-        <p className="font-display font-bold text-lg">No Active Game</p>
-        <p className="text-sm text-muted-foreground max-w-xs">
-          Start or load a game to manage sponsor relationships.
-        </p>
-      </div>
+      <AppLayout subNavTabs={OFFICE_TABS} activeSubTab="sponsors" pageTitle="Sponsor Relations">
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-muted-foreground">
+          <div className="text-4xl animate-pulse font-display">⋯</div>
+          <p className="text-sm font-display italic uppercase tracking-widest">Loading…</p>
+        </div>
+      </AppLayout>
     );
   }
 
@@ -37,6 +38,15 @@ export default function SponsorManagementPage() {
           eyebrow="── OFFICE ──"
           title="Sponsor Contracts"
           lede="Manage relationships with sponsors and kōenkai members. Renew expiring contracts to maintain income."
+        />
+        <SponsorSatisfactionChart
+          sponsors={digest.activeSponsors.map((s) => ({
+            id: s.sponsorId,
+            name: s.name,
+            satisfaction: s.satisfaction,
+            tier: s.tier,
+            active: true,
+          }))}
         />
         <SponsorContractsPanel digest={digest} />
       </div>

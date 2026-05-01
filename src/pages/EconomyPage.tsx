@@ -18,6 +18,7 @@ import { KoenkaiSekitoriCards } from "@/components/economy/KoenkaiSekitoriCards"
 import { IncomeExpensesCards } from "@/components/economy/IncomeExpensesCards";
 import { SponsorDrawCard } from "@/components/economy/SponsorDrawCard";
 import { EconomyInfoNote } from "@/components/economy/EconomyInfoNote";
+import { FinancialTrendsChart } from "@/components/economy/FinancialTrendsChart";
 
 /** Loan type matching DebtSection component requirements. */
 interface DebtLoan {
@@ -172,6 +173,15 @@ export default function EconomyPage() {
               />
             );
           })()}
+
+        {/* Financial Trends Chart */}
+        {playerHeya?.ledger && (
+          <FinancialTrendsChart
+            ledger={playerHeya.ledger}
+            currentYear={world?.year ?? 0}
+            currentWeek={world?.week ?? 0}
+          />
+        )}
 
         {/* Income Sources and Expenses */}
         <IncomeExpensesCards weeklyFinances={weeklyFinances} />

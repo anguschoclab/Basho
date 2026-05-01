@@ -118,11 +118,15 @@ generateGovernanceHeadline(world, heyaId, severity, reason);
 ```
 
 ## Test Setup
-- **Runner:** `bun test -- --run` (Vitest, jsdom environment)
+- **Runner:** `npx vitest run` (Vitest, jsdom environment). Note: `bun test -- --run` treats `--run` as a filename filter and finds nothing — use `npx vitest run` instead.
 - **Mock factory:** `src/engine/__tests__/utils.ts` → `mockRikishi(id, overrides?)`
 - **trainingState in mocks** must be `new Map([["heyaId", {...}]])` — it's a Map, not a plain object
 - **Coverage thresholds:** lines 60%, branches 50% (v8 provider)
-- **Known pre-existing failures:** none (all 53 files green as of last run, 471 tests passing)
+- **Known pre-existing failures:** 4 files / 5 tests failing (as of May 2026):
+  - `random.test.ts` — `getRandom` removed in recent commit, test not updated
+  - `HistoryPage.test.tsx` — missing `ansi-styles` dep
+  - `promotionLogic.test.ts` (×2) — assertion mismatches in movement unit math
+  - `banzuke/promotionLogic.test.ts` (×1) — clamping threshold assertion
 
 ## Routing (routes.tsx — TanStack Router)
 Key routes: `/` Dashboard, `/stable/roster`, `/basho`, `/banzuke`, `/office/finances`, `/jsa/governance`, `/history`, `/rikishi/$rikishiId`, `/hall-of-fame`
@@ -132,9 +136,8 @@ Key routes: `/` Dashboard, `/stable/roster`, `/basho`, `/banzuke`, `/office/fina
 2. **`economics.ts`** — `processHeyaFinances()` and `tickWeekEconomics()` are dead (replaced by FinanceCalculator). Don't call them.
 3. **`as any` in `descriptorBands.ts`** — `|| ("Average" as any)` and `|| ("Fresh" as any)` — unjustified, should be typed.
 4. **BardEngine token mismatches** — some archive.json governance templates may use `%HEYA_NAME%` but code passes `heya` context key. Audit before adding new templates.
-5. **Merger never auto-triggered** — `executeMerger()` exists in `mergers.ts` but `governanceReview.ts` never calls it. Insolvent NPC stables persist.
-6. **HistoryDashboard** — `src/pages/HistoryDashboard.tsx` is complete (195 lines) but routed at `/history` — verify this is wired in routes.tsx before adding UI links.
-7. **`FogOfWarService.ts`** imports BardEngine from `"../../narrative/BardEngine"` (not `"../narrative/BardEngine"` — systems/narrative is different from engine/narrative).
+5. **HistoryDashboard** — `src/pages/HistoryDashboard.tsx` is complete but routed at `/museum` — confirm before adding UI links.
+6. **`FogOfWarService.ts`** imports BardEngine from `"../../narrative/BardEngine"` (not `"../narrative/BardEngine"` — systems/narrative is different from engine/narrative).
 
 ## Refactoring Plan Status
 Plan file: `.claude/plans/encapsulated-herding-origami.md`
@@ -143,6 +146,14 @@ Plan file: `.claude/plans/encapsulated-herding-origami.md`
 |-------|-------|--------|
 | P0 (bootstrap) | EconomicConstants, FinanceCalculator, remove pbp export | ✅ Done |
 | P1 (critical) | FinanceCalculator integration, BardEngine tokens, dead code, HistoryDashboard route | ⏳ Pending |
-| P1 (type safety) | `as any` casts, naturalization RNG, merger wiring | ⏳ Pending |
+| P1 (type safety) | `as any` casts, naturalization RNG | ⏳ Pending |
 | P1 (tests) | Centralize mocks, banzuke tests, basho lifecycle tests, governance tests, coverage config | ⏳ Pending |
 | P2 (modularization) | matchmaking.ts split, kimariteStrategy split, BoutReplayViewer split, selectors, merger UI | ✅ Done |
+
+## New UI Components Added (May 2026)
+Dashboard widgets: `PromotionPipelineWidget` (rank distribution funnel + Ozeki/Yokozuna/Kadoban lists)
+Economy: `FinancialTrendsChart` (12-week income vs burn), `SponsorSatisfactionChart` (horizontal bars), `FacilityROIChart` (cost vs efficiency per axis), `DebtSection` now has payoff progress bars
+Training: `InjuryRiskHeatmap` (condition/fatigue/risk score grid)
+Basho: `BashoStandingsEvolution` (day-by-day cumulative wins LineChart, active_basho only)
+Banzuke: `YokozunaTrajectory` (Ozeki promotion run cards with yusho track + support bars)
+Rikishi: `RikishiCareerTab` now has a real ComposedChart (rank line + win-rate bars, dual Y-axis)

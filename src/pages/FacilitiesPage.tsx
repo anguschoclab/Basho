@@ -8,6 +8,7 @@ import { InfrastructurePanel } from "@/components/game/InfrastructurePanel";
 import { investInFacility } from "@/engine/facilities";
 import type { FacilityAxis, UpgradeResult } from "@/engine/facilities";
 import type { FacilityId } from "@/engine/types/infrastructure";
+import { FacilityROIChart } from "@/components/economy/FacilityROIChart";
 
 /** facilities page. */
 export default function FacilitiesPage() {
@@ -55,9 +56,10 @@ export default function FacilitiesPage() {
 
   if (!heya || !world) {
     return (
-      <AppLayout>
-        <div className="flex items-center justify-center h-full text-muted-foreground italic">
-          Fetching institutional infrastructure records...
+      <AppLayout subNavTabs={OFFICE_TABS} activeSubTab="facilities" pageTitle="Infrastructure">
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-muted-foreground">
+          <div className="text-4xl animate-pulse font-display">⋯</div>
+          <p className="text-sm font-display italic uppercase tracking-widest">Loading…</p>
         </div>
       </AppLayout>
     );
@@ -70,6 +72,7 @@ export default function FacilitiesPage() {
       </Helmet>
 
       <div className="space-y-8">
+        <FacilityROIChart heya={heya} />
         <FacilitiesManagementPanel heya={heya} isOwner={true} onUpgrade={handleUpgrade} />
         <InfrastructurePanel heya={heya} onBuild={handleBuildInfrastructure} />
       </div>

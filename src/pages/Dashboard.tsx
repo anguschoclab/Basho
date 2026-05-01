@@ -33,6 +33,7 @@ import {
   BanzukeWidget,
   GlobalCupWidget,
   EventFeed,
+  PromotionPipelineWidget,
 } from "@/components/dashboard";
 import { formatYen } from "@/utils/engineUtils";
 import { useGameStore } from "@/store/gameStore";
@@ -412,12 +413,14 @@ export default function Dashboard() {
             <>
               <ScoutingWidget />
               <StableWidget />
+              <PromotionPipelineWidget />
             </>
           )}
           {(phase === "pre_basho" || phase === "post_basho") && (
             <>
               <GlobalCupWidget />
               <TrainingWidget />
+              <PromotionPipelineWidget />
             </>
           )}
           <RosterWidget />

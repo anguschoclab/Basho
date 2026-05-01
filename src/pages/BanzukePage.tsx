@@ -18,6 +18,8 @@ import { PressConference } from "@/components/game/PressConference";
 import { PageHeader } from "@/components/layout/control-center";
 import { BanzukePyramid } from "@/components/charts/BanzukePyramid";
 import { RikishiCell } from "@/components/banzuke/RikishiCell";
+import { YokozunaTrajectory } from "@/components/banzuke/YokozunaTrajectory";
+import { getYokozunaCandidates } from "@/presenters/projections/promotionProjections";
 
 /** banzuke page. */
 export default function BanzukePage() {
@@ -73,6 +75,8 @@ export default function BanzukePage() {
       .filter(([, v]) => v > 0)
       .map(([rank, count]) => ({ rank, count }));
   }, [world]);
+
+  const yokozunaCandidates = useMemo(() => world ? getYokozunaCandidates(world) : [], [world]);
 
   if (!world || !banzukeDigest) return null;
 
@@ -338,6 +342,18 @@ export default function BanzukePage() {
             );
           })}
         </Tabs>
+
+        {/* Yokozuna Promotion Watch */}
+        <section className="space-y-3">
+          <div className="flex items-center gap-3">
+            <h2 className="font-display font-bold uppercase tracking-tight text-sm text-muted-foreground">
+              Yokozuna Promotion Watch
+            </h2>
+            <span className="h-px flex-1 bg-border/40" />
+            <span className="text-[10px] font-mono text-gold/70 uppercase tracking-wider">横綱</span>
+          </div>
+          <YokozunaTrajectory candidates={yokozunaCandidates} />
+        </section>
       </div>
     </AppLayout>
   );
