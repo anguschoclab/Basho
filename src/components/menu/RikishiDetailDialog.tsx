@@ -7,6 +7,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   Dialog,
   DialogContent,
@@ -28,6 +29,7 @@ import {
 } from "lucide-react";
 import { RANK_HIERARCHY } from "@/presenters/uiDigest";
 import type { UIRikishi } from "@/presenters/uiModels";
+import { getCombatArchetypeDescription } from "@/engine/archetype";
 import {
   RIKISHI_QUICK_STATS,
   RIKISHI_BASIC_INFO,
@@ -180,9 +182,20 @@ export function RikishiDetailDialog({
               </h3>
               <div className="bg-muted/20 border-2 border-dashed rounded-lg p-3 space-y-2">
                 <div className="flex items-center gap-2">
-                  <Badge className="text-[10px] font-black uppercase tracking-widest px-2 h-6 bg-primary/80">
-                    {selectedRikishi.archetypeName || "Unknown"}
-                  </Badge>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Badge className="text-[10px] font-black uppercase tracking-widest px-2 h-6 bg-primary/80 cursor-help">
+                          {selectedRikishi.archetypeName || "Unknown"}
+                        </Badge>
+                      </TooltipTrigger>
+                      {selectedRikishi.combatArchetype && (
+                        <TooltipContent>
+                          <p className="max-w-xs">{getCombatArchetypeDescription(selectedRikishi.combatArchetype as any)}</p>
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
+                  </TooltipProvider>
                   <Badge
                     variant="outline"
                     className="text-[9px] font-black uppercase tracking-widest h-6"

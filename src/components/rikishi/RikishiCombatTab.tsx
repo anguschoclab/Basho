@@ -56,12 +56,14 @@ export function RikishiCombatTab({ rikishi, rawRikishi, isOwned = false }: Rikis
                   )}
                 </Tooltip>
               </TooltipProvider>
-              <Badge
-                variant="outline"
-                className="text-[10px] font-black uppercase tracking-widest h-7"
-              >
-                {rikishi.styleName}
-              </Badge>
+              {rikishi.styleName !== rikishi.archetypeName && (
+                <Badge
+                  variant="outline"
+                  className="text-[10px] font-black uppercase tracking-widest h-7"
+                >
+                  {rikishi.styleName}
+                </Badge>
+              )}
             </div>
             <div className="grid grid-cols-2 gap-3 pt-2">
               <div className="bg-muted/40 rounded-lg p-3 space-y-1">
