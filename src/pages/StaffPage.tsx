@@ -2,7 +2,7 @@ import { useMemo, useState, useCallback } from "react";
 import { useGameStore } from "@/store/gameStore";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
-import { HQ_TABS } from "@/constants/navigation";
+import { STABLE_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -115,7 +115,7 @@ export default function StaffPage() {
   if (!heya) return null;
 
   return (
-    <AppLayout subNavTabs={HQ_TABS} activeSubTab="staff" pageTitle="Support Staff">
+    <AppLayout subNavTabs={STABLE_TABS} activeSubTab="staff" pageTitle="Support Staff">
       <div className="space-y-8">
         <PageHeader
           eyebrow="── HQ ──"

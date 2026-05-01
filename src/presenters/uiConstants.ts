@@ -21,7 +21,14 @@ export const FATIGUE_LABELS: Record<FatigueBand, string> = {
   spent: "Spent",
 };
 
-// POTENTIAL_LABELS removed (unused)
+export const POTENTIAL_LABELS: Record<PotentialBand, string> = {
+  generational: "Generational",
+  star: "Star",
+  solid: "Solid",
+  average: "Average",
+  limited: "Limited",
+  unknown: "Unknown",
+};
 
 export const TRAIT_LABELS: Record<TraitBand, string> = {
   negligible: "Negligible",

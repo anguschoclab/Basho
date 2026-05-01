@@ -12,5 +12,6 @@ export * from "./RosterWidget";
 export * from "./ScoutingWidget";
 export * from "./StableWidget";
 export * from "./TrainingWidget";
+export * from "./TrendsWidget";
 export * from "./GlobalCupWidget";
 export * from "./EventFeed";

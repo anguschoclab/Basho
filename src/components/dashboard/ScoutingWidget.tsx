@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Search, Globe, GraduationCap, School, Sparkles } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
 import type { PotentialBand } from "@/engine/descriptorBands";
+import { toPotentialBand } from "@/engine/descriptorBands";
 import * as talentpool from "@/engine/systems/generation/TalentPoolService";
 import type { TalentCandidate, TalentPoolType } from "@/engine/types/talent";
-import { POTENTIAL_LABELS, toPotentialBand } from "@/presenters/uiDigest";
+import { POTENTIAL_LABELS } from "@/presenters/uiConstants";
 
 const POTENTIAL_COLORS: Record<PotentialBand, string> = {
   generational: "text-gold",

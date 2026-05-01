@@ -8,8 +8,6 @@ export const STABLE_TABS = [
   { id: "oyakata", label: "Oyakata", href: "/oyakata" },
 ];
 
-export const HQ_TABS = STABLE_TABS;
-
 export const OFFICE_TABS = [
   { id: "economy", label: "Finances", href: "/office/finances" },
   { id: "facilities", label: "Facilities", href: "/office/facilities" },

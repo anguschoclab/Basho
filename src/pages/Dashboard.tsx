@@ -20,12 +20,21 @@ import { CrisisModal } from "@/components/game/CrisisModal";
 import { SuccessionModal } from "@/components/stable/SuccessionModal";
 
 import { PageHeader, StatCard, ListCard, ProgressRow } from "@/components/layout/control-center";
-import { FinancesWidget } from "@/components/dashboard/FinancesWidget";
-import { BashoWidget } from "@/components/dashboard/BashoWidget";
-import { TrendsWidget } from "@/components/dashboard/TrendsWidget";
-import { CalendarWidget } from "@/components/dashboard/CalendarWidget";
+import {
+  FinancesWidget,
+  BashoWidget,
+  TrendsWidget,
+  CalendarWidget,
+  StableWidget,
+  ScoutingWidget,
+  TrainingWidget,
+  RivalsWidget,
+  RosterWidget,
+  BanzukeWidget,
+  GlobalCupWidget,
+  EventFeed,
+} from "@/components/dashboard";
 import { formatYen } from "@/utils/engineUtils";
-import { EventFeed } from "@/components/dashboard/EventFeed";
 import { useGameStore } from "@/store/gameStore";
 
 /** Control Center — main dashboard. */
@@ -389,6 +398,29 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <FinancesWidget />
           <EventFeed maxEvents={12} minImportance="notable" />
+        </div>
+
+        {/* ── ADDITIONAL WIDGETS GRID ── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          {phase === "active_basho" && (
+            <>
+              <BanzukeWidget />
+              <RivalsWidget />
+            </>
+          )}
+          {phase === "interim" && (
+            <>
+              <ScoutingWidget />
+              <StableWidget />
+            </>
+          )}
+          {(phase === "pre_basho" || phase === "post_basho") && (
+            <>
+              <GlobalCupWidget />
+              <TrainingWidget />
+            </>
+          )}
+          <RosterWidget />
         </div>
       </div>
 

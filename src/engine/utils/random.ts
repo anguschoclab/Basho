@@ -14,11 +14,6 @@ export function seededPick<T>(rng: SeededRNG, arr: readonly T[]): T {
 }
 
 /**
- * Back-compat alias for 'getRandom' used in legacy worldgen and npcAIs.
- */
-export const getRandom = seededPick;
-
-/**
  * Standardizes 'weighted pick' for logic like injury types or archetypes.
  */
 export function seededWeightedPick<T>(

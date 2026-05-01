@@ -13,7 +13,7 @@ import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { HQ_TABS } from "@/constants/navigation";
+import { STABLE_TABS } from "@/constants/navigation";
 import { projectRikishi } from "@/presenters/uiModels";
 import { RosterList } from "@/components/rikishi/RosterList";
 import { getMentor, menteesOf, getLineageTree } from "@/engine/lineage";
@@ -115,7 +115,7 @@ export default function RikishiPage() {
   };
 
   return (
-    <AppLayout pageTitle="Rikishi Profile" subNavTabs={HQ_TABS} activeSubTab="roster">
+    <AppLayout pageTitle="Rikishi Profile" subNavTabs={STABLE_TABS} activeSubTab="roster">
       <Helmet>
         <title>{rikishi.shikona} — Official Association Profile | Basho</title>
       </Helmet>

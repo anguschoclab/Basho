@@ -26,6 +26,72 @@ import type { StateImpact } from "../core/StateImpact";
 // kimariteEvaluator.ts has been deleted.
 
 /**
+ * Check if a bout is in yusho contention.
+ * Returns true if both rikishi are within 2 wins of the basho leader.
+ */
+function isYushoContention(
+  east: Rikishi,
+  west: Rikishi,
+  basho: BashoState
+): boolean {
+  const standings = basho.standings;
+  if (!standings || standings.size === 0) return false;
+
+  // Find the current leader(s) win count
+  let maxWins = 0;
+  for (const record of standings.values()) {
+    if (record.wins > maxWins) {
+      maxWins = record.wins;
+    }
+  }
+
+  // Get east and west win counts
+  const eastRecord = standings.get(east.id);
+  const westRecord = standings.get(west.id);
+  const eastWins = eastRecord?.wins ?? 0;
+  const westWins = westRecord?.wins ?? 0;
+
+  // Both must be within 2 wins of the leader (contention window)
+  const CONTENTION_WINDOW = 2;
+  const eastInContention = maxWins - eastWins <= CONTENTION_WINDOW;
+  const westInContention = maxWins - westWins <= CONTENTION_WINDOW;
+
+  return eastInContention && westInContention;
+}
+
+/**
+ * Check if this bout is a playoff scenario.
+ * Returns true if this is the final day and both rikishi are tied for the lead.
+ */
+function isPlayoffScenario(
+  east: Rikishi,
+  west: Rikishi,
+  basho: BashoState
+): boolean {
+  // Playoffs only happen on day 15 (final day)
+  if (basho.day !== 15) return false;
+
+  const standings = basho.standings;
+  if (!standings || standings.size === 0) return false;
+
+  const eastRecord = standings.get(east.id);
+  const westRecord = standings.get(west.id);
+  const eastWins = eastRecord?.wins ?? 0;
+  const westWins = westRecord?.wins ?? 0;
+
+  // Find leader win count
+  let maxWins = 0;
+  for (const record of standings.values()) {
+    if (record.wins > maxWins) {
+      maxWins = record.wins;
+    }
+  }
+
+  // Both must be tied for the lead on the final day
+  return eastWins === maxWins && westWins === maxWins && eastWins === westWins;
+}
+
+/**
  * Pre-physics fusensho check.
  * If either rikishi is injured/absent, return a walkover result immediately
  * without running the physics simulation.
@@ -223,14 +289,22 @@ export function resolveBout(
     // 5. Kensho (Prize Banners)
     const kenshoRng = RNGRegistry.getSystemRNG(world, "kensho", `kensho-${result.boutId}`);
 
+    // Check for yusho contention and playoff scenarios
+    const yushoContention = isYushoContention(east, west, basho);
+    const playoff = isPlayoffScenario(east, west, basho);
+
     // Determine importance for banner count
     const importance = determineBoutImportance(
       east.rank,
       west.rank,
       bout.day,
-      false, // TODO: yusho contention check
-      false // TODO: playoff check
+      yushoContention,
+      playoff
     );
+
+    // Set bout result flags for narrative and UI
+    result.isYushoRace = yushoContention;
+    result.isTitleStakes = playoff || yushoContention;
 
     // Base banner count: random based on importance
     const baseCountMap = { low: 2, mid: 5, high: 12, peak: 25 };
