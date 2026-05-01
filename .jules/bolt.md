@@ -36,4 +36,4 @@
 **Action:** Replace `Array.from(map.values()).filter(condition).length` with a standard `for...of` loop and a numeric counter variable. This drops the operation's memory complexity from $O(N)$ to $O(1)$ and halves the number of iterations required.
 ## 2025-05-01 - Avoid Array.from().filter() on Maps
 **Learning:** Using `Array.from(map.values()).filter(...)` in central functions like `EntityCollection.getRikishi` creates a massive hidden overhead in state-heavy games. It causes O(N) allocation just to generate the values array, and then another O(N) pass to filter them.
-**Action:** Always replace `Array.from(map.values()).filter(...)` with manual `for...of` iteration that `push()`es directly to a pre-allocated array, skipping the intermediate object instantiation completely.
+**Action:** Always replace `Array.from(map.values()).filter(...)` with manual `for...of` iteration that `push()`es directly to a new array, skipping the intermediate array allocation completely.
