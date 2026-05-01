@@ -88,8 +88,13 @@ const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/",
   // Redirect immediately before any render — avoids the blank-frame useEffect timing race.
-  // MainMenu handles autosave loading internally.
+  // Check for autosave in storage and redirect to dashboard if exists.
+  // Dashboard will handle loading the autosave via its useEffect.
   beforeLoad: async () => {
+    const storage = SaveSlotService.getStorage();
+    if (storage && storage.getItem(SaveSlotService.getAutosaveKey())) {
+      throw redirect({ to: "/dashboard", replace: true });
+    }
     throw redirect({ to: "/main-menu", replace: true });
   },
   component: () => null,
