@@ -191,7 +191,7 @@ export default function TalentPoolPage() {
                   <CardHeader>
                     <CardTitle>No visible prospects</CardTitle>
                     <CardDescription>
-                      Use “Search for leads” to surface candidates from the hidden reserve.
+                      Use "Search for leads" to surface candidates from the hidden reserve.
                     </CardDescription>
                   </CardHeader>
                 </Card>
@@ -221,7 +221,7 @@ export default function TalentPoolPage() {
                         <div className="space-y-2">
                           <div className="flex items-center justify-between text-sm">
                             <div className="text-muted-foreground">Intel</div>
-                            <div className="font-mono">{intel >= 80 ? "Full Intel" : intel >= 50 ? "Good Intel" : intel >= 25 ? "Partial" : "Limited"}</div>
+                            <div className="font-mono">{intel}%</div>
                           </div>
                           <Progress value={intel} />
                         </div>
