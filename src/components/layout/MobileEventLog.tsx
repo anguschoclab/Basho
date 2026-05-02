@@ -27,7 +27,7 @@ export function MobileEventLog({ className }: MobileEventLogProps) {
         <Button
           variant="secondary"
           size="icon"
-          aria-label="Open Event Log"
+          aria-label={eventCount > 0 ? `Open Event Log (${Math.min(eventCount, 99)}${eventCount > 99 ? "+" : ""} unread events)` : "Open Event Log"}
           className={cn(
             "fixed bottom-4 right-4 h-12 w-12 rounded-full shadow-lg z-50",
             "xl:hidden", // Only show on mobile/tablet (hidden on xl desktop)
