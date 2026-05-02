@@ -178,14 +178,16 @@ export default function MainMenu() {
   const beginWithHeya = (heyaId: string) => {
     if (!state?.world) return;
     createWorld(state.world.seed, heyaId);
-    // Autosave after world creation completes
-    setTimeout(() => {
-      if (state.world) {
-        quickSave();
-      }
-    }, 100);
     navigate({ to: "/dashboard" });
   };
+
+  // Autosave when playerHeyaId is set (world is fully initialized)
+  useEffect(() => {
+    const gameState = game as { state?: { playerHeyaId?: string } };
+    if (gameState.state?.playerHeyaId && quickSave) {
+      quickSave();
+    }
+  }, [game, quickSave]);
 
   if (!state?.world) {
     return (

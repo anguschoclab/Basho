@@ -61,6 +61,13 @@ export default function Dashboard() {
     }
   }, [isLoaded, hasAutosave, loadFromAutosave, navigate]);
 
+  // Additional check: if world is loaded but empty, try to load autosave
+  useEffect(() => {
+    if (isLoaded && world && hasAutosave() && world.heyas.size === 0) {
+      loadFromAutosave();
+    }
+  }, [isLoaded, world, hasAutosave, loadFromAutosave]);
+
   useEffect(() => {
     if (!world?.events?.log) return;
     const evt = world.events.log
