@@ -8,7 +8,15 @@ import { destr } from "destr";
 export function parseLLMResponse<T>(rawText: string): T {
   // Attempt 1: Happy path (strict JSON)
   try {
-    return JSON.parse(rawText) as T;
+    const result = destr(rawText);
+    if (result !== null && typeof result === "object") {
+      return result as T;
+    }
+    // If it's not an object (e.g. primitive), we fall back so we can catch it
+    if (typeof result === "string" && result === rawText) {
+       throw new Error("Failed initial strict destr parse");
+    }
+    return result as T;
   } catch (initialError) {
     console.warn("[jsonParser] Initial parse failed, attempting sanitization...");
   }
