@@ -93,7 +93,18 @@
       "WebSearch",
       "Bash(timeout 380 tail -f /c/Users/AMAURI~1/AppData/Local/Temp/claude/C--Users-amauricia-onedrive---ubisoft-documents-github-sumo-manager-pro/9808ed10-ecc5-4bda-aa31-709bf015cb8d/tasks/b3qnw7bh5.output)",
       "Skill(update-config)",
-      "Bash(typescript-language-server *)"
+      "Bash(typescript-language-server *)",
+      "Bash(Start-Sleep -Seconds 4)",
+      "Bash(Invoke-WebRequest -Uri \"http://localhost:5175\" -UseBasicParsing -TimeoutSec 5)",
+      "Bash(Select-Object -ExpandProperty StatusCode)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:5175)",
+      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__navigate_page",
+      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__take_screenshot",
+      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__take_snapshot",
+      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__evaluate_script",
+      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__click",
+      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__wait_for",
+      "mcp__plugin_chrome-devtools-mcp_chrome-devtools__list_console_messages"
     ]
   },
   "outputStyle": "default"

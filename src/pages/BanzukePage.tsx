@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { useMemo, useState } from "react";
+import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
 import { TOURNAMENT_TABS } from "@/constants/navigation";
@@ -113,6 +114,9 @@ export default function BanzukePage() {
 
   return (
     <AppLayout pageTitle="Official Banzuke" subNavTabs={TOURNAMENT_TABS} activeSubTab="banzuke">
+      <Helmet>
+        <title>Official Banzuke — Rankings | Basho</title>
+      </Helmet>
       {/* Media Day Trigger (D1) */}
       {isMediaDay && !showPressConference && (
         <div className="mb-6 bg-gradient-to-r from-gold/10 to-west/10 border border-gold/30 rounded p-6 flex flex-col md:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-500">

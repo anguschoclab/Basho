@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { Helmet } from "react-helmet";
 import { useGame } from "@/contexts/GameContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { TOURNAMENT_TABS } from "@/constants/navigation";
@@ -74,6 +75,7 @@ export default function SchedulePage() {
 
   return (
     <AppLayout subNavTabs={TOURNAMENT_TABS} activeSubTab="schedule" pageTitle="Schedule">
+      <Helmet><title>Schedule | Basho</title></Helmet>
       <div className="space-y-6">
         <PageHeader
           eyebrow="── TOURNAMENT ──"

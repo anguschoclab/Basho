@@ -91,7 +91,7 @@ export default function InjuryRecoveryPage() {
       <div className="space-y-8">
         <PageHeader
           eyebrow="── MY STABLE ──"
-          title="Rehabilitation Center"
+          title="Performance Center"
           lede="Monitor and manage injured wrestlers. Better recovery facilities speed healing."
         />
         <div className="lg:col-span-2 space-y-6">

@@ -15,21 +15,34 @@ import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { KeshoBadge } from "@/components/kesho/KeshoBadge";
 import { RankBadge } from "./RankBadge";
 
+const RANK_ORDER: Record<string, number> = {
+  yokozuna: 0, ozeki: 1, sekiwake: 2, komusubi: 3,
+  maegashira: 4, juryo: 5, makushita: 6, sandanme: 7,
+  jonidan: 8, jonokuchi: 9,
+};
+
 interface RosterListProps {
   rikishiList: UIRikishi[];
   onRikishiClick: (id: string) => void;
 }
 
 export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
+  const sorted = [...rikishiList].sort((a, b) => {
+    const rankA = RANK_ORDER[a.rank?.toLowerCase() ?? ""] ?? 99;
+    const rankB = RANK_ORDER[b.rank?.toLowerCase() ?? ""] ?? 99;
+    if (rankA !== rankB) return rankA - rankB;
+    return (a.rankNumber ?? 0) - (b.rankNumber ?? 0);
+  });
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <div className="flex items-center gap-3 mb-1">
             <div className="h-10 w-2 bg-primary rounded-full" />
-            <h1 className="text-2xl sm:text-4xl font-display font-black tracking-tight">
+            <h2 className="text-2xl sm:text-4xl font-display font-black tracking-tight">
               Stable Roster
-            </h1>
+            </h2>
           </div>
           <p className="text-sm text-muted-foreground font-medium opacity-70">
             Official Association registry for your active professional roster.
@@ -67,7 +80,7 @@ export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {rikishiList.map((r, idx) => (
+        {sorted.map((r, idx) => (
           <TooltipWrap
             key={r.id}
             content={`View detailed Association dossier for ${r.shikona}`}
@@ -129,7 +142,7 @@ export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
                       <span className="opacity-40">{r.currentBashoLosses}</span>
                     </div>
                     <div className="text-[8px] uppercase font-black text-muted-foreground tracking-tighter mt-1">
-                      Today's Record
+                      Basho Record
                     </div>
                   </div>
                 </div>

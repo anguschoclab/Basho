@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
 import { STABLE_TABS } from "@/constants/navigation";
@@ -33,7 +34,7 @@ export default function OyakataPage() {
 
   if (!world || !selectedOyakata) {
     return (
-      <AppLayout>
+      <AppLayout subNavTabs={STABLE_TABS} activeSubTab="oyakata">
         <div className="flex items-center justify-center h-full">Loading Oyakata...</div>
       </AppLayout>
     );
@@ -66,6 +67,7 @@ export default function OyakataPage() {
 
   return (
     <AppLayout subNavTabs={STABLE_TABS} activeSubTab="oyakata" pageTitle="Oyakata Profile">
+      <Helmet><title>Oyakata Profile | Basho</title></Helmet>
       <div className="space-y-6">
         <PageHeader
           eyebrow="── MY STABLE ──"

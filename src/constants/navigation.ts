@@ -4,7 +4,7 @@ export const STABLE_TABS = [
   { id: "training", label: "Training", href: "/stable/training" },
   { id: "staff", label: "Staff", href: "/stable/staff" },
   { id: "medical", label: "Medical", href: "/stable/medical" },
-  { id: "oyakata", label: "Oyakata", href: "/oyakata" },
+  { id: "oyakata", label: "Oyakata", href: "/stable/oyakata" },
 ];
 
 export const OFFICE_TABS = [
@@ -12,7 +12,7 @@ export const OFFICE_TABS = [
   { id: "facilities", label: "Facilities", href: "/office/facilities" },
   { id: "sponsors", label: "Sponsors", href: "/office/sponsors" },
   { id: "scouting", label: "Scout Intel", href: "/office/scouting" },
-  { id: "prospects", label: "Talent Pool", href: "/talent-pool" },
+  { id: "prospects", label: "Talent Pool", href: "/talent" },
 ];
 
 export const ASSOCIATION_TABS = [

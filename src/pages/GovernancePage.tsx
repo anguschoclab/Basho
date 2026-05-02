@@ -3,6 +3,8 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { ASSOCIATION_TABS } from "@/constants/navigation";
 import { PageHeader, StatCard, ListCard, SectionHeader } from "@/components/layout/control-center";
 import { useGame } from "@/contexts/GameContext";
+import { useGameStore } from "@/store/gameStore";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,6 +23,7 @@ import { selectHeyasWithCriticalWelfare, selectMergerCandidates } from "@/presen
 
 export default function GovernancePage() {
   const { state } = useGame();
+  const sendCommand = useGameStore((s) => s.sendCommand);
   const world = state.world;
 
   const heya = useMemo(() => {
@@ -366,7 +369,7 @@ export default function GovernancePage() {
                         if (heya && (heya.politicalCapital ?? 0) >= 100) {
                           spendPoliticalCapital(world, heya.id, 100);
                         } else {
-                          alert("Not enough Political Capital (need 100).");
+                          toast.error("Not enough Political Capital (need 100).");
                         }
                       }}
                       disabled={(heya.politicalCapital ?? 0) < 100}
@@ -431,7 +434,7 @@ export default function GovernancePage() {
                             className="h-7 px-3 text-[9px] uppercase font-black tracking-tighter border-primary/20 hover:border-primary/50 transition-all"
                             disabled={(heya.politicalCapital ?? 0) < favor.cost}
                             onClick={() => {
-                              state.engine.sendCommand({
+                              sendCommand({
                                 type: "REQUEST_POLITICAL_FAVOR",
                                 heyaId: heya.id,
                                 favorId: favor.id,

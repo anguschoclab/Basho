@@ -377,7 +377,7 @@ export function WeeklyDrillPlanner({
           </p>
           <div className="pt-2 flex flex-wrap gap-4">
             <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-black uppercase tracking-widest text-[11px] px-10 h-12 shadow-xl hover:shadow-primary/40 transition-all">
-              LOCK WEEKLY SUBMISSION
+              SUBMIT TRAINING PLAN
             </Button>
             <div className="flex items-center gap-4 border-l border-primary/10 pl-4">
               <div className="flex flex-col">

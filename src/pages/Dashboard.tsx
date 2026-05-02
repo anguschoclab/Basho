@@ -243,7 +243,7 @@ export default function Dashboard() {
                 },
                 {
                   label: "Fatigue",
-                  value: `${FATIGUE_LABELS[training?.avgFatigueBand ?? "fresh"]} (${training?.avgFatigue ?? 0}%)`,
+                  value: FATIGUE_LABELS[training?.avgFatigueBand ?? "fresh"],
                   tone: (training?.avgFatigue ?? 0) > 70 ? "warning" : "success",
                 },
               ]}

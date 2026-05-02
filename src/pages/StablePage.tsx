@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { STABLE_TABS } from "@/constants/navigation";
@@ -35,6 +35,10 @@ export default function StablePage() {
   const viewingHeyaId = routeId || playerHeyaId || "";
   const heya = world?.heyas.get(viewingHeyaId) ?? null;
 
+  useEffect(() => {
+    if (!world) navigate({ to: "/main-menu", replace: true });
+  }, [world, navigate]);
+
   const rikishiList = useMemo(() => {
     if (!world || !heya) return [];
     return (heya.rikishiIds ?? [])
@@ -43,7 +47,7 @@ export default function StablePage() {
       .map((r) => projectRikishi(r, world));
   }, [world, heya]);
 
-  if (!world || !heya) {
+  if (!heya) {
     return (
       <AppLayout pageTitle="Stable Operations" subNavTabs={STABLE_TABS} activeSubTab="stable">
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-muted-foreground">
@@ -78,7 +82,7 @@ export default function StablePage() {
 
         <Tabs defaultValue="roster" className="space-y-6">
           <TabsList className="w-full max-w-[900px] flex flex-wrap gap-1 text-[10px] font-black uppercase h-auto">
-            <TabsTrigger value="roster" className="flex-1 min-w-[80px]">Roster</TabsTrigger>
+            <TabsTrigger value="roster" className="flex-1 min-w-[80px]">Members</TabsTrigger>
             <TabsTrigger value="performance" className="flex-1 min-w-[80px]">Performance</TabsTrigger>
             <TabsTrigger value="gallery" className="flex-1 min-w-[80px]">Gallery</TabsTrigger>
             <TabsTrigger value="infrastructure" className="flex-1 min-w-[80px]">Infrastructure</TabsTrigger>

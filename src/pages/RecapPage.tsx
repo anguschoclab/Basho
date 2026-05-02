@@ -137,6 +137,11 @@ export default function RecapPage() {
 
   const lastBasho = world?.history?.[world.history.length - 1];
 
+  // Redirect to main menu if world is not loaded
+  useEffect(() => {
+    if (!world) navigate({ to: "/main-menu", replace: true });
+  }, [world, navigate]);
+
   // Check for player rikishi retirements and populate intai ceremony queue
   useEffect(() => {
     if (!world || !world.playerHeyaId || !lastBasho) return;
@@ -218,7 +223,7 @@ export default function RecapPage() {
     setShowBanzukeReveal(false);
   };
 
-  if (!world) return null;
+  if (!world) return null; // useEffect above handles redirect
   const events = world.events?.log || [];
   const bashoEvents = getBashoWrapEvents(events, lastBasho?.bashoNumber);
   const groupedEvents = groupEventsByNarrative(bashoEvents);

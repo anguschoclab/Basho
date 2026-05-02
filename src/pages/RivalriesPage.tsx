@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TOURNAMENT_TABS } from "@/constants/navigation";
 import { useMemo, useState } from "react";
 import { useGame } from "@/contexts/GameContext";
-import { Users, Flame, Swords } from "lucide-react";
+import { Users, Flame, Swords, Landmark } from "lucide-react";
 import type { RivalryPairState } from "@/engine/rivalries";
 import { createDefaultRivalriesState, type RivalriesState } from "@/engine/rivalries";
 import { RivalriesHeader } from "@/components/rivalries/RivalriesHeader";
@@ -14,6 +14,8 @@ import { RivalriesEmptyState } from "@/components/rivalries/RivalriesEmptyState"
 import { HeatLegend } from "@/components/rivalries/HeatLegend";
 import { projectRivalriesPage } from "@/presenters/projections/rivalriesProjections";
 import { Badge } from "@/components/ui/badge";
+import { toRivalryHeatBand } from "@/engine/descriptorBands";
+import { RIVALRY_HEAT_LABELS } from "@/presenters/uiConstants";
 
 // Page
 /** rivalries page. */
@@ -34,7 +36,7 @@ export default function RivalriesPage() {
     return new Set(heya?.rikishiIds ?? []);
   }, [world, playerHeyaId]);
 
-  const { playerRivalries, hotRivalries, coolRivalries, stats } = useMemo(() => {
+  const { playerRivalries, hotRivalries, coolRivalries, stableRivalries, stats } = useMemo(() => {
     const rawPairs = Object.values(rivalriesState.pairs);
     const normalized: RivalryPairState[] = rawPairs
       .filter(
@@ -193,7 +195,7 @@ export default function RivalriesPage() {
                           >
                             {feud.tone.replace("_", " ")}
                           </Badge>
-                          <div className="text-[10px] font-mono text-primary">{feud.heat} HEAT</div>
+                          <div className="text-[10px] font-mono text-primary">{RIVALRY_HEAT_LABELS[toRivalryHeatBand(feud.heat)]}</div>
                         </div>
                         <div className="flex items-center justify-between gap-2">
                           <div className="text-xs font-bold truncate max-w-[80px]">
