@@ -31,8 +31,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Layers } from "lucide-react";
 import { getCombatArchetypeDescription } from "@/engine/archetype";
 import { cn } from "@/lib/utils";
-import { toPotentialBand } from "@/engine/descriptorBands";
-import { POTENTIAL_LABELS } from "@/presenters/uiConstants";
 
 export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null }) {
   const { state } = useGame();
@@ -277,7 +275,11 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
                           {c.scoutLevel >= 65 && c.talentSeed && (
                             <span className="ml-3">
                               Potential:{" "}
-                              {POTENTIAL_LABELS[toPotentialBand((c.talentSeed ?? 0) * 100)]}
+                              {c.talentSeed > 0.7
+                                ? "Promising"
+                                : c.talentSeed > 0.4
+                                  ? "Average"
+                                  : "Modest"}
                             </span>
                           )}
                         </div>

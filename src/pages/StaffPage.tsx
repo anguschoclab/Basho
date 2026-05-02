@@ -1,5 +1,4 @@
 import { useMemo, useState, useCallback } from "react";
-import { Helmet } from "react-helmet";
 import { useGameStore } from "@/store/gameStore";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
@@ -31,8 +30,8 @@ import { cn } from "@/lib/utils";
 import { UserPlus, ShieldCheck, Zap, Heart, Award, Briefcase, Trash2 } from "lucide-react";
 import type { Staff, StaffRole } from "@/engine/types/staff";
 import { toast } from "sonner";
-import { toFatigueBand, toScandalBand } from "@/engine/descriptorBands";
-import { FATIGUE_LABELS, SCANDAL_LABELS } from "@/presenters/uiConstants";
+import { toFatigueBand } from "@/engine/descriptorBands";
+import { FATIGUE_LABELS } from "@/presenters/uiConstants";
 
 const ROLE_LABELS: Record<StaffRole, string> = {
   oyakata: "Steward",
@@ -115,20 +114,10 @@ export default function StaffPage() {
     [world, heya, sendCommand]
   );
 
-  if (!heya) {
-    return (
-      <AppLayout pageTitle="Staff & Coaches" subNavTabs={STABLE_TABS} activeSubTab="staff">
-        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-muted-foreground">
-          <div className="text-4xl animate-pulse font-display">⋯</div>
-          <p className="text-sm font-display italic uppercase tracking-widest">Loading staff…</p>
-        </div>
-      </AppLayout>
-    );
-  }
+  if (!heya) return null;
 
   return (
     <AppLayout subNavTabs={STABLE_TABS} activeSubTab="staff" pageTitle="Support Staff">
-      <Helmet><title>Staff — {heya?.name ?? 'Stable'} | Basho</title></Helmet>
       <div className="space-y-8">
         <PageHeader
           eyebrow="── MY STABLE ──"
@@ -372,7 +361,7 @@ function StaffCard({ staff, onFire }: { staff: Staff; onFire: (id: string) => vo
             <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
               <span>Scandal</span>
               <span className={cn(staff.scandalExposure > 50 ? "text-warning" : "text-foreground")}>
-                {SCANDAL_LABELS[toScandalBand(staff.scandalExposure)]}
+                {staff.scandalExposure}%
               </span>
             </div>
             <Progress value={staff.scandalExposure} className="h-1" />

@@ -12,8 +12,6 @@ import type { Rikishi } from "@/engine/types";
 import { TrendingUp } from "lucide-react";
 import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
 import { SeededRNG } from "@/engine/rng";
-import { toStatBand } from "@/engine/descriptorBands";
-import { STAT_LABELS as STAT_BAND_LABELS } from "@/presenters/uiConstants";
 
 interface Props {
   rikishi: Rikishi;
@@ -69,8 +67,8 @@ export function RikishiPotentialPanel({ rikishi, isOwned }: Props) {
               <div className="flex justify-between text-[11px] font-black uppercase tracking-widest">
                 <span className="text-muted-foreground">{label}</span>
                 <span>
-                  <span className="text-foreground">{STAT_BAND_LABELS[toStatBand(currentValue)]}</span>
-                  <span className="text-muted-foreground"> / {STAT_BAND_LABELS[toStatBand(paValue)]}</span>
+                  <span className="text-foreground">{currentValue}</span>
+                  <span className="text-muted-foreground"> / {paValue}</span>
                 </span>
               </div>
               <div className="relative h-2 rounded-full bg-muted overflow-hidden">
@@ -128,7 +126,7 @@ function SizeRow({
   const heightLabel = heightBand ? NarrativeService.getHeightLabel(rng, heightBand) : null;
   const weightLabel = weightBand ? NarrativeService.getWeightLabel(rng, weightBand) : null;
   const descriptor = heightLabel || weightLabel;
-  
+
   return (
     <div className="space-y-1">
       <div className="flex justify-between text-[11px] font-black uppercase tracking-widest">
