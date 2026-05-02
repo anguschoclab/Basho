@@ -30,8 +30,8 @@ import { cn } from "@/lib/utils";
 import { UserPlus, ShieldCheck, Zap, Heart, Award, Briefcase, Trash2 } from "lucide-react";
 import type { Staff, StaffRole } from "@/engine/types/staff";
 import { toast } from "sonner";
-import { toFatigueBand } from "@/engine/descriptorBands";
-import { FATIGUE_LABELS } from "@/presenters/uiConstants";
+import { toFatigueBand, toScandalBand } from "@/engine/descriptorBands";
+import { FATIGUE_LABELS, SCANDAL_LABELS } from "@/presenters/uiConstants";
 
 const ROLE_LABELS: Record<StaffRole, string> = {
   oyakata: "Steward",
@@ -361,7 +361,7 @@ function StaffCard({ staff, onFire }: { staff: Staff; onFire: (id: string) => vo
             <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
               <span>Scandal</span>
               <span className={cn(staff.scandalExposure > 50 ? "text-warning" : "text-foreground")}>
-                {staff.scandalExposure}%
+                {SCANDAL_LABELS[toScandalBand(staff.scandalExposure)]}
               </span>
             </div>
             <Progress value={staff.scandalExposure} className="h-1" />

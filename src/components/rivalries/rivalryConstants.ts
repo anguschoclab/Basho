@@ -10,34 +10,6 @@ export const HEAT_BAND_CONFIG: Record<
   RivalryHeatBand,
   { label: string; color: string; bgColor: string; barColor: string; glowClass: string }
 > = {
-  inferno: {
-    label: "Inferno",
-    color: "text-destructive",
-    bgColor: "bg-destructive/15 border-destructive/30",
-    barColor: "bg-gradient-to-r from-destructive to-accent",
-    glowClass: "shadow-[0_0_12px_hsl(var(--destructive)/0.3)]",
-  },
-  hot: {
-    label: "Hot",
-    color: "text-accent",
-    bgColor: "bg-accent/15 border-accent/30",
-    barColor: "bg-gradient-to-r from-accent to-warning",
-    glowClass: "",
-  },
-  warm: {
-    label: "Warm",
-    color: "text-warning",
-    bgColor: "bg-warning/15 border-warning/30",
-    barColor: "bg-warning",
-    glowClass: "",
-  },
-  cold: {
-    label: "Cold",
-    color: "text-muted-foreground",
-    bgColor: "bg-muted border-border",
-    barColor: "bg-muted-foreground",
-    glowClass: "",
-  },
   dormant: {
     label: "Dormant",
     color: "text-muted-foreground",

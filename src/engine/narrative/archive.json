@@ -1341,17 +1341,18 @@
             "master": "Master"
           },
           "weight": {
-            "flyweight": "Flyweight",
-            "lightweight": "Lightweight",
-            "middleweight": "Middleweight",
-            "heavyweight": "Heavyweight",
-            "super_heavyweight": "Super Heavyweight"
+            "lean": "Lean",
+            "solid": "Solid Build",
+            "powerful": "Powerful",
+            "massive": "Massive",
+            "imposing": "Imposing"
           },
           "height": {
             "short": "Short",
             "average": "Average",
             "tall": "Tall",
-            "giant": "Giant"
+            "giant": "Giant",
+            "towering": "Towering"
           },
           "reputation": {
             "obscure": "Obscure",
@@ -1374,6 +1375,13 @@
             "decent": "Decent",
             "strong": "Strong",
             "dominant": "Dominant"
+          },
+          "rivalry": {
+            "dormant": "Dormant",
+            "simmering": "Simmering",
+            "heated": "Heated",
+            "fierce": "Fierce",
+            "legendary": "Legendary"
           }
         }
       }

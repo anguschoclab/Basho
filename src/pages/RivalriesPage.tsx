@@ -14,6 +14,8 @@ import { RivalriesEmptyState } from "@/components/rivalries/RivalriesEmptyState"
 import { HeatLegend } from "@/components/rivalries/HeatLegend";
 import { projectRivalriesPage } from "@/presenters/projections/rivalriesProjections";
 import { Badge } from "@/components/ui/badge";
+import { toRivalryHeatBand } from "@/engine/descriptorBands";
+import { RIVALRY_HEAT_LABELS } from "@/presenters/uiConstants";
 
 // Page
 /** rivalries page. */
@@ -193,7 +195,7 @@ export default function RivalriesPage() {
                           >
                             {feud.tone.replace("_", " ")}
                           </Badge>
-                          <div className="text-[10px] font-mono text-primary">{feud.heat} HEAT</div>
+                          <div className="text-[10px] font-mono text-primary">{RIVALRY_HEAT_LABELS[toRivalryHeatBand(feud.heat)]}</div>
                         </div>
                         <div className="flex items-center justify-between gap-2">
                           <div className="text-xs font-bold truncate max-w-[80px]">

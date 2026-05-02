@@ -10,7 +10,7 @@ import type { RivalryHeatBand } from "@/engine/rivalries";
 export function HeatLegend() {
   return (
     <div className="flex items-center gap-4 text-[10px] text-muted-foreground border border-border/50 rounded-md px-3 py-2 bg-muted/20 w-fit flex-wrap">
-      {(["inferno", "hot", "warm", "cold"] as RivalryHeatBand[]).map((band) => {
+      {(["legendary", "fierce", "heated", "simmering", "dormant"] as RivalryHeatBand[]).map((band) => {
         const c = HEAT_BAND_CONFIG[band];
         return (
           <span key={band} className="flex items-center gap-1.5">

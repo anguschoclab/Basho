@@ -8,8 +8,9 @@
 import type { RivalryHeatBand } from "@/engine/rivalries";
 
 export function getHeatBand(heat: number): RivalryHeatBand {
-  if (heat >= 80) return "inferno";
-  if (heat >= 55) return "hot";
-  if (heat >= 25) return "warm";
-  return "cold";
+  if (heat >= 85) return "legendary";
+  if (heat >= 65) return "fierce";
+  if (heat >= 40) return "heated";
+  if (heat >= 20) return "simmering";
+  return "dormant";
 }
