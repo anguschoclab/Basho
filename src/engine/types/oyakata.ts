@@ -48,6 +48,7 @@ export interface Oyakata {
   traits: OyakataTraits;
 
   formerShikona?: string;
+  backstoryId?: string;
   highestRank?: string;
   yearsInCharge: number;
   stats?: { scouting: number; training: number; politics: number };
@@ -104,4 +105,14 @@ export interface Oyakata {
     /** Timestamp of last consolidation routine. */
     lastConsolidationTick: number;
   };
+}
+
+/** Configuration provided by the player at new-game wizard — applied to their oyakata on world creation. */
+export interface OyakataCreationConfig {
+  /** Player-chosen toshiyori (elder) name */
+  name: string;
+  /** ID into OYAKATA_BACKSTORIES constant — e.g. "yokozuna_champion" */
+  backstoryId: string;
+  /** Optional ichimon (faction) ID selected in wizard step 2 */
+  ichimon?: string;
 }
