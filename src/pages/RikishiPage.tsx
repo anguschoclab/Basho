@@ -123,7 +123,16 @@ export default function RikishiPage() {
   };
 
   return (
-    <AppLayout pageTitle="Rikishi Profile" subNavTabs={STABLE_TABS} activeSubTab="roster">
+    <AppLayout
+      pageTitle="Rikishi Profile"
+      subNavTabs={STABLE_TABS}
+      activeSubTab="roster"
+      breadcrumbItems={[
+        { label: "Home", href: "/dashboard" },
+        { label: "Rikishi", href: "/rikishi" },
+        { label: rikishi.shikona, href: `/rikishi/${rikishiId}`, isCurrent: true },
+      ]}
+    >
       <Helmet>
         <title>{rikishi.shikona} — Official Association Profile | Basho</title>
       </Helmet>

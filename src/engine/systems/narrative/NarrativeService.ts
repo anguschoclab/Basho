@@ -68,6 +68,12 @@ import type { RikishiArchetype } from "../../types/combat";
 
 const HYSTERESIS_DELTA = 5;
 
+/** For physical measurements (height cm, weight kg) that exceed the 0–100 range. */
+function toPhysicalBand<T extends string>(value: number, ladder: BandDef<T>[]): T {
+  const entry = ladder.find((b) => value >= b.min && value < b.max) ?? ladder[ladder.length - 1];
+  return entry.band;
+}
+
 function toBandWithHysteresis<T extends string>(
   value: number,
   ladder: BandDef<T>[],
@@ -229,8 +235,8 @@ export const NarrativeService = {
   },
 
   // === Weight Bands ===
-  getWeightBand(kg: number, previous?: WeightBand): WeightBand {
-    return toBandWithHysteresis(kg, WEIGHT_BANDS, previous);
+  getWeightBand(kg: number, _previous?: WeightBand): WeightBand {
+    return toPhysicalBand(kg, WEIGHT_BANDS);
   },
 
   getWeightLabel(rng: SeededRNG, band: WeightBand): string {
@@ -238,8 +244,8 @@ export const NarrativeService = {
   },
 
   // === Height Bands ===
-  getHeightBand(cm: number, previous?: HeightBand): HeightBand {
-    return toBandWithHysteresis(cm, HEIGHT_BANDS, previous);
+  getHeightBand(cm: number, _previous?: HeightBand): HeightBand {
+    return toPhysicalBand(cm, HEIGHT_BANDS);
   },
 
   getHeightLabel(rng: SeededRNG, band: HeightBand): string {

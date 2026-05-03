@@ -167,10 +167,8 @@ export default function BashoPage() {
   useEffect(() => {
     if (state.phase === "basho_recap" || state.phase === "basho_results") {
       navigate({ to: "/recap" });
-      return;
     }
-    if (!world?.currentBasho) navigate({ to: "/dashboard" });
-  }, [world, navigate, state.phase]);
+  }, [state.phase, navigate]);
 
   // Auto-show player bout logic reconstruction
   useEffect(() => {
@@ -225,7 +223,27 @@ export default function BashoPage() {
     navigate({ to: "/recap" });
   }, [endBasho, navigate]);
 
-  if (!world || !bashoDigest) return null;
+  if (!world) return null;
+
+  if (!bashoDigest) {
+    return (
+      <AppLayout pageTitle="Current Basho" subNavTabs={TOURNAMENT_TABS} activeSubTab="basho">
+        <Helmet><title>Current Basho | Basho</title></Helmet>
+        <div className="flex flex-col items-center justify-center min-h-[50vh] gap-6 text-center">
+          <Trophy className="h-12 w-12 text-muted-foreground/30" />
+          <div className="space-y-2">
+            <p className="font-display text-xl font-bold uppercase tracking-tight">No Active Tournament</p>
+            <p className="text-sm text-muted-foreground max-w-xs">
+              Advance time on the Control Center to begin the next basho.
+            </p>
+          </div>
+          <Button variant="outline" onClick={() => navigate({ to: "/dashboard" })}>
+            Return to Control Center
+          </Button>
+        </div>
+      </AppLayout>
+    );
+  }
 
   const {
     bashoName,

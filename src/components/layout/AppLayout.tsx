@@ -19,13 +19,14 @@ interface AppLayoutProps {
   pageTitle?: string;
   subNavTabs?: Array<{ id: string; label: string; href?: string }>;
   activeSubTab?: string;
+  breadcrumbItems?: Array<{ label: string; href: string; isCurrent?: boolean }>;
 }
 
 /**
  * app layout.
  * FM-inspired 3-pane layout: Sidebar | Main Content | Event Log
  */
-export function AppLayout({ children, pageTitle, subNavTabs, activeSubTab }: AppLayoutProps) {
+export function AppLayout({ children, pageTitle, subNavTabs, activeSubTab, breadcrumbItems }: AppLayoutProps) {
   const { state } = useGame();
   const world = state.world;
   const [eventLogOpen, setEventLogOpen] = useState(true);
@@ -56,7 +57,7 @@ export function AppLayout({ children, pageTitle, subNavTabs, activeSubTab }: App
           {/* Breadcrumbs - shown when world is loaded */}
           {world && (
             <div className="px-4 py-2 border-b border-border/50 bg-card/30">
-              <Breadcrumbs />
+              <Breadcrumbs items={breadcrumbItems} />
             </div>
           )}
 

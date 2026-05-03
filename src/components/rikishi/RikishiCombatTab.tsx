@@ -46,7 +46,7 @@ export function RikishiCombatTab({ rikishi, rawRikishi, isOwned = false }: Rikis
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Badge className="text-[11px] font-black uppercase tracking-widest px-3 h-7 bg-primary/80 cursor-help">
-                      {rikishi.archetypeName}
+                      {rikishi.styleName}
                     </Badge>
                   </TooltipTrigger>
                   {rikishi.combatArchetype && (
@@ -56,12 +56,12 @@ export function RikishiCombatTab({ rikishi, rawRikishi, isOwned = false }: Rikis
                   )}
                 </Tooltip>
               </TooltipProvider>
-              {rikishi.styleName !== rikishi.archetypeName && (
+              {rikishi.archetypeName.toLowerCase() !== rikishi.styleName.toLowerCase() && (
                 <Badge
                   variant="outline"
                   className="text-[10px] font-black uppercase tracking-widest h-7"
                 >
-                  {rikishi.styleName}
+                  {rikishi.archetypeName}
                 </Badge>
               )}
             </div>

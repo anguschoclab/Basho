@@ -247,13 +247,6 @@ export default function Dashboard() {
                   tone: (training?.avgFatigue ?? 0) > 70 ? "warning" : "success",
                 },
               ]}
-              progress={[
-                {
-                  label: `Avg: ${FATIGUE_LABELS[training?.avgFatigueBand ?? "fresh"]}`,
-                  value: training?.avgFatigue ?? 0,
-                  tone: (training?.avgFatigue ?? 0) > 70 ? "destructive" : "success",
-                },
-              ]}
               actions={
                 <Button
                   size="sm"

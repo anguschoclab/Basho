@@ -6,6 +6,7 @@
 
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { TOURNAMENT_TABS } from "@/constants/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { Trophy, Users, Calendar, MapPin, BarChart3 } from "lucide-react";
 import { PageHeader } from "@/components/layout/control-center";
@@ -47,7 +48,7 @@ export default function GlobalCupPage() {
 
   if (!cup || !cup.isActive) {
     return (
-      <AppLayout pageTitle="Global Cup">
+      <AppLayout pageTitle="Global Cup" subNavTabs={TOURNAMENT_TABS} activeSubTab="global-cup">
         <Helmet>
           <title>Global Cup | Basho</title>
         </Helmet>

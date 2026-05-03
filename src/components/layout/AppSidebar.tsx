@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Building2, AlertTriangle, Lock } from "lucide-react";
 import { Link, useLocation } from "@tanstack/react-router";
-import { useRef, useLayoutEffect } from "react";
+import { useRef, useEffect } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { getMenuGroups } from "./sidebarConfig";
 
@@ -57,11 +57,17 @@ export function AppSidebar() {
     }
   };
 
-  // Restore scroll position after navigation
-  useLayoutEffect(() => {
-    if (contentRef.current) {
-      contentRef.current.scrollTop = scrollPosRef.current;
-    }
+  // Restore scroll position after navigation.
+  // useEffect + rAF: runs after the browser has finished layout for the new
+  // route, preventing the browser's own scroll-to-top from clobbering us.
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+    const savedPos = scrollPosRef.current;
+    const id = requestAnimationFrame(() => {
+      el.scrollTop = savedPos;
+    });
+    return () => cancelAnimationFrame(id);
   }, [location.pathname]);
 
   return (

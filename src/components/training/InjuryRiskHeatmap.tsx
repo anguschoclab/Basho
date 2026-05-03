@@ -24,6 +24,23 @@ function getRiskBand(value: number): RiskBand {
   return "high";
 }
 
+// Condition is 0-100 where 100 = peak health
+function conditionLabel(condition: number): string {
+  if (condition >= 85) return "Peak";
+  if (condition >= 65) return "Good";
+  if (condition >= 40) return "Worn";
+  return "Critical";
+}
+
+// Risk score is 0-100 where 0 = no risk
+function riskLabel(score: number): string {
+  if (score <= 5)  return "None";
+  if (score <= 20) return "Low";
+  if (score <= 45) return "Moderate";
+  if (score <= 70) return "High";
+  return "Critical";
+}
+
 function getCellClasses(value: number, isInjured: boolean): string {
   if (isInjured) {
     return "bg-destructive/20 text-destructive";
@@ -118,9 +135,9 @@ export function InjuryRiskHeatmap({ rikishiList }: InjuryRiskHeatmapProps) {
                     </td>
                     <td className="py-1.5 px-2">
                       <div
-                        className={`rounded px-2 py-1 text-center font-mono text-xs font-medium tabular-nums ${getCellClasses(conditionRisk, r.isInjured)}`}
+                        className={`rounded px-2 py-1 text-center font-mono text-xs font-medium ${getCellClasses(conditionRisk, r.isInjured)}`}
                       >
-                        {r.condition}
+                        {conditionLabel(r.condition)}
                       </div>
                     </td>
                     <td className="py-1.5 px-2">
@@ -132,9 +149,9 @@ export function InjuryRiskHeatmap({ rikishiList }: InjuryRiskHeatmapProps) {
                     </td>
                     <td className="py-1.5 pl-2">
                       <div
-                        className={`rounded px-2 py-1 text-center font-mono text-xs font-medium tabular-nums ${getCellClasses(riskScore, r.isInjured)}`}
+                        className={`rounded px-2 py-1 text-center font-mono text-xs font-medium ${getCellClasses(riskScore, r.isInjured)}`}
                       >
-                        {riskScore}
+                        {r.isInjured ? "Injured" : riskLabel(riskScore)}
                       </div>
                     </td>
                   </tr>
@@ -148,15 +165,15 @@ export function InjuryRiskHeatmap({ rikishiList }: InjuryRiskHeatmapProps) {
         <div className="mt-4 flex flex-wrap gap-4 text-xs text-muted-foreground border-t border-border pt-3">
           <div className="flex items-center gap-1.5">
             <span className="inline-block h-3 w-3 rounded-sm bg-success/30" />
-            <span>Green = Safe (0–30)</span>
+            <span>Safe</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="inline-block h-3 w-3 rounded-sm bg-warning/30" />
-            <span>Amber = Caution (31–60)</span>
+            <span>Caution</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="inline-block h-3 w-3 rounded-sm bg-destructive/30" />
-            <span>Red = High Risk / Injured (61–100)</span>
+            <span>High Risk / Injured</span>
           </div>
         </div>
       </CardContent>

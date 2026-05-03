@@ -46,7 +46,7 @@ export function RikishiProfileHeader({
             {rikishi.rankLabel}
           </div>
 
-          <div className="flex flex-col md:flex-row items-start justify-between gap-8 relative z-10">
+          <div className="flex flex-col lg:flex-row items-start justify-between gap-6 relative z-10">
             <div className="flex items-center gap-6">
               <SumoAvatar
                 config={rikishi.avatarConfig}
@@ -106,15 +106,20 @@ export function RikishiProfileHeader({
                     {rikishi.shikona}
                   </h1>
                   <p className="text-white/60 font-display text-sm tracking-widest uppercase">
-                    {rikishi.heyaName} • {rikishi.styleName} -{" "}
-                    {rikishi.combatArchetype ? (
-                      <TooltipWrap content={getCombatArchetypeDescription(rikishi.combatArchetype as any)}>
-                        <span className="cursor-help border-b border-dotted border-white/30 hover:border-white/60">
-                          {rikishi.archetypeName}
-                        </span>
-                      </TooltipWrap>
-                    ) : (
-                      <span>{rikishi.archetypeName}</span>
+                    {rikishi.heyaName} • {rikishi.styleName}
+                    {rikishi.archetypeName.toLowerCase() !== rikishi.styleName.toLowerCase() && (
+                      <>
+                        {" - "}
+                        {rikishi.combatArchetype ? (
+                          <TooltipWrap content={getCombatArchetypeDescription(rikishi.combatArchetype as any)}>
+                            <span className="cursor-help border-b border-dotted border-white/30 hover:border-white/60">
+                              {rikishi.archetypeName}
+                            </span>
+                          </TooltipWrap>
+                        ) : (
+                          <span>{rikishi.archetypeName}</span>
+                        )}
+                      </>
                     )}
                   </p>
 
@@ -179,7 +184,7 @@ export function RikishiProfileHeader({
               </div>
             </div>
 
-            <div className="flex gap-4 md:gap-8 shrink-0 bg-black/20 p-6 rounded-lg border border-white/10 shadow-inner">
+            <div className="flex gap-4 lg:gap-8 shrink-0 self-stretch lg:self-auto bg-black/20 p-4 lg:p-6 rounded-lg border border-white/10 shadow-inner w-full lg:w-auto justify-around lg:justify-start">
               {[
                 {
                   label: "Current Record",
@@ -226,7 +231,7 @@ export function RikishiProfileHeader({
                       </div>
                     </TooltipWrap>
                   )}
-                  {i < 2 && <div className="w-px h-12 bg-white/10 hidden md:block" />}
+                  {i < 2 && <div className="w-px h-12 bg-white/10 hidden lg:block" />}
                 </React.Fragment>
               ))}
             </div>

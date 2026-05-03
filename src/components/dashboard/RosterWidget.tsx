@@ -4,7 +4,7 @@ import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BaseWidget } from "./BaseWidget";
-import { Users, HeartPulse, AlertTriangle, Star, UserMinus, Layers } from "lucide-react";
+import { Users, HeartPulse, AlertTriangle, Activity, Star, UserMinus, Layers } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
 import { projectRosterEntry, type UIRosterEntry, projectRikishi } from "@/presenters/uiModels";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
@@ -285,8 +285,11 @@ export function RosterWidget() {
           </Button>
         )}
 
-        <div className="flex items-center gap-1 text-muted-foreground ml-auto">
-          <AlertTriangle className="h-3 w-3" />
+        <div className={`flex items-center gap-1 ml-auto ${avgFatigueValue > 70 ? "text-destructive" : avgFatigueValue > 40 ? "text-warning" : "text-muted-foreground"}`}>
+          {avgFatigueValue > 40
+            ? <AlertTriangle className="h-3 w-3" />
+            : <Activity className="h-3 w-3" />
+          }
           <span className="text-[10px]">
             Avg: {FATIGUE_LABELS[avgFatigueBand]}
           </span>
