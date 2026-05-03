@@ -14,7 +14,7 @@ export function parseLLMResponse<T>(rawText: string): T {
     }
     // If it's not an object (e.g. primitive), we fall back so we can catch it
     if (typeof result === "string" && result === rawText) {
-       throw new Error("Failed initial strict destr parse");
+      throw new Error("Failed initial strict destr parse");
     }
     return result as T;
   } catch (initialError) {

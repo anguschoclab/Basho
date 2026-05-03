@@ -13,7 +13,12 @@ import type { Rikishi } from "./types/rikishi";
 import type { Style } from "./types/combat";
 import type { Rank } from "./types/banzuke";
 import type { StatureBand, PrestigeBand, RunwayBand, KoenkaiBandType } from "./types/narrative";
-import type { AgeBand, ExperienceBand, WeightBand, HeightBand } from "./systems/narrative/NarrativeBands";
+import type {
+  AgeBand,
+  ExperienceBand,
+  WeightBand,
+  HeightBand,
+} from "./systems/narrative/NarrativeBands";
 import { NarrativeService } from "./systems/narrative/NarrativeService";
 import type { ComplianceState } from "./types/economy";
 import type { RivalriesState } from "./rivalries";

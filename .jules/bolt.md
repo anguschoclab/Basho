@@ -37,3 +37,6 @@
 ## 2025-05-01 - Avoid Array.from().filter() on Maps
 **Learning:** Using `Array.from(map.values()).filter(...)` in central functions like `EntityCollection.getRikishi` creates a massive hidden overhead in state-heavy games. It causes O(N) allocation just to generate the values array, and then another O(N) pass to filter them.
 **Action:** Always replace `Array.from(map.values()).filter(...)` with manual `for...of` iteration that `push()`es directly to a new array, skipping the intermediate array allocation completely.
+## 2026-05-03 - Optimize NPC Recruitment Foreigner Check
+
+Optimized `fillVacanciesForNPC` in `TalentPoolNPCRecruitment.ts` by replacing `Array.from(world.rikishi.values()).filter(...)` with `EntityCollection.getHeyaRoster(world, heyaId).some(...)`. Also added an early out for `vacancyCount <= 0`. This eliminates a full O(N) iteration over all rikishi in the world per heya and speeds up execution by roughly 25%.

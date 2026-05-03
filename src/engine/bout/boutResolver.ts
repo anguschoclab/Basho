@@ -29,11 +29,7 @@ import type { StateImpact } from "../core/StateImpact";
  * Check if a bout is in yusho contention.
  * Returns true if both rikishi are within 2 wins of the basho leader.
  */
-function isYushoContention(
-  east: Rikishi,
-  west: Rikishi,
-  basho: BashoState
-): boolean {
+function isYushoContention(east: Rikishi, west: Rikishi, basho: BashoState): boolean {
   const standings = basho.standings;
   if (!standings || standings.size === 0) return false;
 
@@ -63,11 +59,7 @@ function isYushoContention(
  * Check if this bout is a playoff scenario.
  * Returns true if this is the final day and both rikishi are tied for the lead.
  */
-function isPlayoffScenario(
-  east: Rikishi,
-  west: Rikishi,
-  basho: BashoState
-): boolean {
+function isPlayoffScenario(east: Rikishi, west: Rikishi, basho: BashoState): boolean {
   // Playoffs only happen on day 15 (final day)
   if (basho.day !== 15) return false;
 

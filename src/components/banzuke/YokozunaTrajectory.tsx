@@ -78,22 +78,28 @@ function TrackBox({ state }: { state: "yusho" | "jun-yusho" | "empty" }) {
 
 function SupportVerdict({ supportLevel }: { supportLevel: YokozunaCandidate["supportLevel"] }) {
   if (supportLevel === "strong") {
-    return (
-      <span className="text-xs font-semibold text-success font-display">Strong case</span>
-    );
+    return <span className="text-xs font-semibold text-success font-display">Strong case</span>;
   }
   if (supportLevel === "adequate") {
     return (
-      <span className="text-xs font-semibold text-yellow-400 font-display">Under consideration</span>
+      <span className="text-xs font-semibold text-yellow-400 font-display">
+        Under consideration
+      </span>
     );
   }
-  return (
-    <span className="text-xs font-semibold text-destructive font-display">Insufficient</span>
-  );
+  return <span className="text-xs font-semibold text-destructive font-display">Insufficient</span>;
 }
 
 function CandidateCard({ candidate }: { candidate: YokozunaCandidate }) {
-  const { rikishi, recentYushos, recentJunYushos, consecutiveYushos, politicalPressure, supportLevel, narrative } = candidate;
+  const {
+    rikishi,
+    recentYushos,
+    recentJunYushos,
+    consecutiveYushos,
+    politicalPressure,
+    supportLevel,
+    narrative,
+  } = candidate;
 
   const track = buildTrack(consecutiveYushos, recentYushos, recentJunYushos);
   const championshipFormPct = Math.min(100, (recentYushos / 2) * 100);
@@ -142,11 +148,7 @@ function CandidateCard({ candidate }: { candidate: YokozunaCandidate }) {
                 {recentYushos}/2 yusho
               </span>
             </div>
-            <Progress
-              value={championshipFormPct}
-              indicatorClassName="bg-gold"
-              className="h-1.5"
-            />
+            <Progress value={championshipFormPct} indicatorClassName="bg-gold" className="h-1.5" />
           </div>
           <div>
             <div className="flex justify-between items-center mb-1">
@@ -163,8 +165,8 @@ function CandidateCard({ candidate }: { candidate: YokozunaCandidate }) {
                 politicalPressure >= 75
                   ? "bg-success"
                   : politicalPressure >= 50
-                  ? "bg-yellow-400"
-                  : "bg-destructive"
+                    ? "bg-yellow-400"
+                    : "bg-destructive"
               }
               className="h-1.5"
             />

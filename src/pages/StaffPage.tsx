@@ -347,11 +347,15 @@ function StaffCard({ staff, onFire }: { staff: Staff; onFire: (id: string) => vo
           <div className="space-y-1.5">
             <div className="flex items-center justify-between text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
               <span>Fatigue</span>
-              <span className={cn(
-                toFatigueBand(staff.fatigue) === "spent" || toFatigueBand(staff.fatigue) === "exhausted" || toFatigueBand(staff.fatigue) === "worn"
-                  ? "text-destructive"
-                  : "text-foreground"
-              )}>
+              <span
+                className={cn(
+                  toFatigueBand(staff.fatigue) === "spent" ||
+                    toFatigueBand(staff.fatigue) === "exhausted" ||
+                    toFatigueBand(staff.fatigue) === "worn"
+                    ? "text-destructive"
+                    : "text-foreground"
+                )}
+              >
                 {FATIGUE_LABELS[toFatigueBand(staff.fatigue)]}
               </span>
             </div>

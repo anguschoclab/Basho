@@ -56,9 +56,7 @@ export function BashoStandingsEvolution({
 
     // 1. Identify top maxLines rikishi by current standings wins (descending)
     const standingsEntries = Array.from(basho.standings.entries());
-    const sorted = standingsEntries
-      .sort((a, b) => b[1].wins - a[1].wins)
-      .slice(0, maxLines);
+    const sorted = standingsEntries.sort((a, b) => b[1].wins - a[1].wins).slice(0, maxLines);
     const topIds = sorted.map(([id]) => id);
 
     // 2. Reconstruct day-by-day cumulative wins from results array

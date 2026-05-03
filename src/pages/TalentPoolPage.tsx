@@ -137,168 +137,176 @@ export default function TalentPoolPage() {
               Manage your stable's recruitment pipeline and candidate prospects.
             </CardDescription>
           </CardHeader>
-        <CardContent className="space-y-3">
-          {playerHeya && (
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <div className="text-sm text-muted-foreground">My Stable</div>
-                <div className="font-semibold">{playerHeya.name}</div>
-              </div>
-              <div className="text-sm text-muted-foreground flex flex-col items-end">
+          <CardContent className="space-y-3">
+            {playerHeya && (
+              <div className="flex items-center justify-between gap-3">
                 <div>
-                  Runway:{" "}
-                  <span className="font-medium capitalize">
-                    {playerHeya.runwayBand ?? "unknown"}
-                  </span>
+                  <div className="text-sm text-muted-foreground">My Stable</div>
+                  <div className="font-semibold">{playerHeya.name}</div>
                 </div>
-                <div className="text-xs">
-                  Foreigners: {foreignCount}/{FOREIGN_RIKISHI_LIMIT_PER_HEYA}
+                <div className="text-sm text-muted-foreground flex flex-col items-end">
+                  <div>
+                    Runway:{" "}
+                    <span className="font-medium capitalize">
+                      {playerHeya.runwayBand ?? "unknown"}
+                    </span>
+                  </div>
+                  <div className="text-xs">
+                    Foreigners: {foreignCount}/{FOREIGN_RIKISHI_LIMIT_PER_HEYA}
+                  </div>
                 </div>
               </div>
+            )}
+            <div className="flex flex-wrap items-center gap-2">
+              <Button variant="secondary" onClick={onReveal}>
+                <Search className="h-4 w-4 mr-2" />
+                Search for leads
+              </Button>
+              <div className="text-xs text-muted-foreground">
+                This reveals hidden candidates into the list. Scouting a candidate increases intel
+                quality.
+              </div>
             </div>
-          )}
-          <div className="flex flex-wrap items-center gap-2">
-            <Button variant="secondary" onClick={onReveal}>
-              <Search className="h-4 w-4 mr-2" />
-              Search for leads
-            </Button>
-            <div className="text-xs text-muted-foreground">
-              This reveals hidden candidates into the list. Scouting a candidate increases intel
-              quality.
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
 
-      <Tabs value={activePool} onValueChange={(v) => setActivePool(v as TalentPoolType)}>
-        <TabsList>
-          {(["high_school", "university", "foreign"] as TalentPoolType[]).map((pt) => {
-            const I = poolIcon(pt);
-            return (
-              <TabsTrigger key={pt} value={pt}>
-                <I className="h-4 w-4 mr-2" />
-                {poolLabel(pt)}
-              </TabsTrigger>
-            );
-          })}
-        </TabsList>
+        <Tabs value={activePool} onValueChange={(v) => setActivePool(v as TalentPoolType)}>
+          <TabsList>
+            {(["high_school", "university", "foreign"] as TalentPoolType[]).map((pt) => {
+              const I = poolIcon(pt);
+              return (
+                <TabsTrigger key={pt} value={pt}>
+                  <I className="h-4 w-4 mr-2" />
+                  {poolLabel(pt)}
+                </TabsTrigger>
+              );
+            })}
+          </TabsList>
 
-        {(["high_school", "university", "foreign"] as TalentPoolType[]).map((pt) => (
-          <TabsContent key={pt} value={pt}>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-              {candidates.length === 0 ? (
-                <Card className="md:col-span-2 lg:col-span-3">
-                  <CardHeader>
-                    <CardTitle>No visible prospects</CardTitle>
-                    <CardDescription>
-                      Use "Search for leads" to surface candidates from the hidden reserve.
-                    </CardDescription>
-                  </CardHeader>
-                </Card>
-              ) : (
-                candidates.map((c) => {
-                  const intel = talentpool.getCandidateScoutingLevel(world, c.candidateId);
-                  const canShowName = c.visibilityBand === "public" || intel >= 65;
-                  const canShowDetails = c.visibilityBand === "public" || intel >= 35;
-                  const title = canShowName ? c.name : "Unknown Prospect";
-                  const sub = visibilityLabel(c.visibilityBand);
+          {(["high_school", "university", "foreign"] as TalentPoolType[]).map((pt) => (
+            <TabsContent key={pt} value={pt}>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+                {candidates.length === 0 ? (
+                  <Card className="md:col-span-2 lg:col-span-3">
+                    <CardHeader>
+                      <CardTitle>No visible prospects</CardTitle>
+                      <CardDescription>
+                        Use "Search for leads" to surface candidates from the hidden reserve.
+                      </CardDescription>
+                    </CardHeader>
+                  </Card>
+                ) : (
+                  candidates.map((c) => {
+                    const intel = talentpool.getCandidateScoutingLevel(world, c.candidateId);
+                    const canShowName = c.visibilityBand === "public" || intel >= 65;
+                    const canShowDetails = c.visibilityBand === "public" || intel >= 35;
+                    const title = canShowName ? c.name : "Unknown Prospect";
+                    const sub = visibilityLabel(c.visibilityBand);
 
-                  return (
-                    <Card key={c.candidateId} className="overflow-hidden">
-                      <CardHeader>
-                        <div className="flex items-start justify-between gap-2">
-                          <div>
-                            <CardTitle className="text-base">{title}</CardTitle>
-                            <CardDescription>{sub}</CardDescription>
-                          </div>
-                          {c.tags.includes("amateur_star") && <Badge>Star</Badge>}
-                          {(c.nationality ?? "Japan") !== "Japan" && (
-                            <Badge variant="secondary">Foreign</Badge>
-                          )}
-                        </div>
-                      </CardHeader>
-                      <CardContent className="space-y-3">
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between text-sm">
-                            <div className="text-muted-foreground">Intel</div>
-                            <div className="font-mono">{intel >= 80 ? "Full Intel" : intel >= 50 ? "Good Intel" : intel >= 25 ? "Partial" : "Limited"}</div>
-                          </div>
-                          <Progress value={intel} />
-                        </div>
-
-                        <Separator />
-
-                        <div className="text-sm space-y-1">
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Age</span>
-                            <span>{world.year - c.birthYear}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Origin</span>
-                            <span>{canShowDetails ? c.originRegion : "—"}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Style</span>
-                            <span>{canShowDetails ? c.style : "—"}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="text-muted-foreground">Archetype</span>
-                            <span>{canShowDetails ? c.archetype.replace(/_/g, " ") : "—"}</span>
-                          </div>
-                        </div>
-
-                        <div className="flex gap-2">
-                          <Button
-                            variant="secondary"
-                            className="flex-1"
-                            onClick={() => onScout(c.candidateId)}
-                          >
-                            <Search className="h-4 w-4 mr-2" />
-                            Scout
-                          </Button>
-                          <Button
-                            className="flex-1"
-                            onClick={() => onOffer(c.candidateId)}
-                            disabled={!playerHeyaId}
-                          >
-                            <UserPlus className="h-4 w-4 mr-2" />
-                            Offer
-                          </Button>
-                        </div>
-
-                        {c.availabilityState === "in_talks" && (
-                          <div className="text-xs text-muted-foreground">
-                            In talks with {c.competingSuitors.length} stable
-                            {c.competingSuitors.length === 1 ? "" : "s"}.
-                            {intel >= 35 && c.competingSuitors.length > 0 && (
-                              <div className="mt-1 space-y-0.5">
-                                {c.competingSuitors.slice(0, 4).map((s) => {
-                                  const h = world.heyas.get(s.heyaId);
-                                  const oy = h ? world.oyakata.get(h.oyakataId) : null;
-                                  return (
-                                    <div key={s.heyaId} className="flex justify-between">
-                                      <span>
-                                        {h ? <StableName id={h.id} name={h.name} /> : s.heyaId}
-                                      </span>
-                                      <span className="opacity-80">
-                                        {oy?.archetype ?? "oyakata"}
-                                      </span>
-                                    </div>
-                                  );
-                                })}
-                              </div>
+                    return (
+                      <Card key={c.candidateId} className="overflow-hidden">
+                        <CardHeader>
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <CardTitle className="text-base">{title}</CardTitle>
+                              <CardDescription>{sub}</CardDescription>
+                            </div>
+                            {c.tags.includes("amateur_star") && <Badge>Star</Badge>}
+                            {(c.nationality ?? "Japan") !== "Japan" && (
+                              <Badge variant="secondary">Foreign</Badge>
                             )}
                           </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  );
-                })
-              )}
-            </div>
-          </TabsContent>
-        ))}
-      </Tabs>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between text-sm">
+                              <div className="text-muted-foreground">Intel</div>
+                              <div className="font-mono">
+                                {intel >= 80
+                                  ? "Full Intel"
+                                  : intel >= 50
+                                    ? "Good Intel"
+                                    : intel >= 25
+                                      ? "Partial"
+                                      : "Limited"}
+                              </div>
+                            </div>
+                            <Progress value={intel} />
+                          </div>
+
+                          <Separator />
+
+                          <div className="text-sm space-y-1">
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Age</span>
+                              <span>{world.year - c.birthYear}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Origin</span>
+                              <span>{canShowDetails ? c.originRegion : "—"}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Style</span>
+                              <span>{canShowDetails ? c.style : "—"}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Archetype</span>
+                              <span>{canShowDetails ? c.archetype.replace(/_/g, " ") : "—"}</span>
+                            </div>
+                          </div>
+
+                          <div className="flex gap-2">
+                            <Button
+                              variant="secondary"
+                              className="flex-1"
+                              onClick={() => onScout(c.candidateId)}
+                            >
+                              <Search className="h-4 w-4 mr-2" />
+                              Scout
+                            </Button>
+                            <Button
+                              className="flex-1"
+                              onClick={() => onOffer(c.candidateId)}
+                              disabled={!playerHeyaId}
+                            >
+                              <UserPlus className="h-4 w-4 mr-2" />
+                              Offer
+                            </Button>
+                          </div>
+
+                          {c.availabilityState === "in_talks" && (
+                            <div className="text-xs text-muted-foreground">
+                              In talks with {c.competingSuitors.length} stable
+                              {c.competingSuitors.length === 1 ? "" : "s"}.
+                              {intel >= 35 && c.competingSuitors.length > 0 && (
+                                <div className="mt-1 space-y-0.5">
+                                  {c.competingSuitors.slice(0, 4).map((s) => {
+                                    const h = world.heyas.get(s.heyaId);
+                                    const oy = h ? world.oyakata.get(h.oyakataId) : null;
+                                    return (
+                                      <div key={s.heyaId} className="flex justify-between">
+                                        <span>
+                                          {h ? <StableName id={h.id} name={h.name} /> : s.heyaId}
+                                        </span>
+                                        <span className="opacity-80">
+                                          {oy?.archetype ?? "oyakata"}
+                                        </span>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    );
+                  })
+                )}
+              </div>
+            </TabsContent>
+          ))}
+        </Tabs>
       </div>
     </AppLayout>
   );

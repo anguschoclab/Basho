@@ -25,7 +25,10 @@ import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
 import { SeededRNG } from "@/engine/rng";
 
 const RANK_LABELS: Record<number, string> = {
-  1: "Yokozuna", 2: "Ozeki", 3: "Sekiwake", 4: "Komusubi",
+  1: "Yokozuna",
+  2: "Ozeki",
+  3: "Sekiwake",
+  4: "Komusubi",
 };
 function rankLabel(value: number): string {
   if (value <= 4) return RANK_LABELS[value] ?? `#${value}`;
@@ -34,7 +37,15 @@ function rankLabel(value: number): string {
   return `Makushita ${value - 36}`;
 }
 
-function CareerTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ name: string; value: number; dataKey: string }>; label?: string }) {
+function CareerTooltip({
+  active,
+  payload,
+  label,
+}: {
+  active?: boolean;
+  payload?: Array<{ name: string; value: number; dataKey: string }>;
+  label?: string;
+}) {
   if (!active || !payload?.length) return null;
   const rankEntry = payload.find((p) => p.dataKey === "rankValue");
   const rateEntry = payload.find((p) => p.dataKey === "winRate");
@@ -42,11 +53,22 @@ function CareerTooltip({ active, payload, label }: { active?: boolean; payload?:
   return (
     <div className="bg-background border border-border rounded-lg p-3 shadow-lg text-xs space-y-1 font-display">
       <div className="font-black uppercase tracking-widest text-[10px] opacity-60">{label}</div>
-      {rankEntry && <div>Rank: <span className="font-bold">{rankLabel(rankEntry.value)}</span></div>}
-      {rateEntry && <div>Win Rate: <span className="font-bold">{Math.round(rateEntry.value * 100)}%</span></div>}
-      {snap && <div className="opacity-60 text-[9px] pt-1">
-        {(snap as { payload?: { wins?: number; losses?: number } }).payload?.wins ?? 0}W – {(snap as { payload?: { wins?: number; losses?: number } }).payload?.losses ?? 0}L
-      </div>}
+      {rankEntry && (
+        <div>
+          Rank: <span className="font-bold">{rankLabel(rankEntry.value)}</span>
+        </div>
+      )}
+      {rateEntry && (
+        <div>
+          Win Rate: <span className="font-bold">{Math.round(rateEntry.value * 100)}%</span>
+        </div>
+      )}
+      {snap && (
+        <div className="opacity-60 text-[9px] pt-1">
+          {(snap as { payload?: { wins?: number; losses?: number } }).payload?.wins ?? 0}W –{" "}
+          {(snap as { payload?: { wins?: number; losses?: number } }).payload?.losses ?? 0}L
+        </div>
+      )}
     </div>
   );
 }
@@ -92,12 +114,25 @@ export function RikishiCareerTab({
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart
                     data={careerProgressionData}
-                    margin={{ top: 10, right: 30, left: 0, bottom: careerProgressionData.length > 6 ? 40 : 10 }}
+                    margin={{
+                      top: 10,
+                      right: 30,
+                      left: 0,
+                      bottom: careerProgressionData.length > 6 ? 40 : 10,
+                    }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      vertical={false}
+                      stroke="hsl(var(--border))"
+                    />
                     <XAxis
                       dataKey="basho"
-                      tick={{ fontSize: 9, fontFamily: "inherit", fill: "hsl(var(--muted-foreground))" }}
+                      tick={{
+                        fontSize: 9,
+                        fontFamily: "inherit",
+                        fill: "hsl(var(--muted-foreground))",
+                      }}
                       tickLine={false}
                       axisLine={false}
                       angle={careerProgressionData.length > 6 ? -35 : 0}
@@ -109,7 +144,11 @@ export function RikishiCareerTab({
                       orientation="left"
                       reversed={true}
                       tickFormatter={(v: number) => `#${v}`}
-                      tick={{ fontSize: 9, fontFamily: "inherit", fill: "hsl(var(--muted-foreground))" }}
+                      tick={{
+                        fontSize: 9,
+                        fontFamily: "inherit",
+                        fill: "hsl(var(--muted-foreground))",
+                      }}
                       tickLine={false}
                       axisLine={false}
                       width={28}
@@ -119,7 +158,11 @@ export function RikishiCareerTab({
                       orientation="right"
                       domain={[0, 1]}
                       tickFormatter={(v: number) => `${Math.round(v * 100)}%`}
-                      tick={{ fontSize: 9, fontFamily: "inherit", fill: "hsl(var(--muted-foreground))" }}
+                      tick={{
+                        fontSize: 9,
+                        fontFamily: "inherit",
+                        fill: "hsl(var(--muted-foreground))",
+                      }}
                       tickLine={false}
                       axisLine={false}
                       width={32}

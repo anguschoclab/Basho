@@ -27,7 +27,11 @@ export function MobileEventLog({ className }: MobileEventLogProps) {
         <Button
           variant="secondary"
           size="icon"
-          aria-label={eventCount > 0 ? `Open Event Log (${Math.min(eventCount, 99)}${eventCount > 99 ? "+" : ""} unread events)` : "Open Event Log"}
+          aria-label={
+            eventCount > 0
+              ? `Open Event Log (${Math.min(eventCount, 99)}${eventCount > 99 ? "+" : ""} unread events)`
+              : "Open Event Log"
+          }
           className={cn(
             "fixed bottom-4 right-4 h-12 w-12 rounded-full shadow-lg z-50",
             "xl:hidden", // Only show on mobile/tablet (hidden on xl desktop)
@@ -43,10 +47,7 @@ export function MobileEventLog({ className }: MobileEventLogProps) {
         </Button>
       </SheetTrigger>
 
-      <SheetContent
-        side="bottom"
-        className="h-[80vh] flex flex-col bg-card"
-      >
+      <SheetContent side="bottom" className="h-[80vh] flex flex-col bg-card">
         <SheetHeader className="flex flex-row items-center justify-between border-b pb-4">
           <SheetTitle className="font-display text-lg">Event Log</SheetTitle>
           <Button

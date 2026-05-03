@@ -82,14 +82,30 @@ export default function StablePage() {
 
         <Tabs defaultValue="roster" className="space-y-6">
           <TabsList className="w-full max-w-[900px] flex flex-wrap gap-1 text-[10px] font-black uppercase h-auto">
-            <TabsTrigger value="roster" className="flex-1 min-w-[80px]">Members</TabsTrigger>
-            <TabsTrigger value="performance" className="flex-1 min-w-[80px]">Performance</TabsTrigger>
-            <TabsTrigger value="gallery" className="flex-1 min-w-[80px]">Gallery</TabsTrigger>
-            <TabsTrigger value="infrastructure" className="flex-1 min-w-[80px]">Infrastructure</TabsTrigger>
-            <TabsTrigger value="sponsorship" className="flex-1 min-w-[80px]">Sponsorship</TabsTrigger>
-            <TabsTrigger value="institution" className="flex-1 min-w-[80px]">Institution</TabsTrigger>
-            <TabsTrigger value="global" className="flex-1 min-w-[80px]">Global</TabsTrigger>
-            <TabsTrigger value="chronicle" className="flex-1 min-w-[80px]">Chronicle</TabsTrigger>
+            <TabsTrigger value="roster" className="flex-1 min-w-[80px]">
+              Members
+            </TabsTrigger>
+            <TabsTrigger value="performance" className="flex-1 min-w-[80px]">
+              Performance
+            </TabsTrigger>
+            <TabsTrigger value="gallery" className="flex-1 min-w-[80px]">
+              Gallery
+            </TabsTrigger>
+            <TabsTrigger value="infrastructure" className="flex-1 min-w-[80px]">
+              Infrastructure
+            </TabsTrigger>
+            <TabsTrigger value="sponsorship" className="flex-1 min-w-[80px]">
+              Sponsorship
+            </TabsTrigger>
+            <TabsTrigger value="institution" className="flex-1 min-w-[80px]">
+              Institution
+            </TabsTrigger>
+            <TabsTrigger value="global" className="flex-1 min-w-[80px]">
+              Global
+            </TabsTrigger>
+            <TabsTrigger value="chronicle" className="flex-1 min-w-[80px]">
+              Chronicle
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="sponsorship">
@@ -143,13 +159,19 @@ export default function StablePage() {
                               {r.shikona}
                               {r.isInjured && (
                                 <TooltipWrap content={r.injurySummary ?? "Injured"} side="top">
-                                  <Badge variant="destructive" className="text-[9px] px-1.5 h-4 cursor-help">
+                                  <Badge
+                                    variant="destructive"
+                                    className="text-[9px] px-1.5 h-4 cursor-help"
+                                  >
                                     INJURED
                                   </Badge>
                                 </TooltipWrap>
                               )}
                               {isHighRisk && (
-                                <TooltipWrap content="High injury risk — low condition or elevated fatigue" side="top">
+                                <TooltipWrap
+                                  content="High injury risk — low condition or elevated fatigue"
+                                  side="top"
+                                >
                                   <AlertTriangle className="h-3.5 w-3.5 text-amber-500 cursor-help shrink-0" />
                                 </TooltipWrap>
                               )}

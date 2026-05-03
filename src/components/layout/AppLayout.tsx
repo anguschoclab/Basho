@@ -26,7 +26,13 @@ interface AppLayoutProps {
  * app layout.
  * FM-inspired 3-pane layout: Sidebar | Main Content | Event Log
  */
-export function AppLayout({ children, pageTitle, subNavTabs, activeSubTab, breadcrumbItems }: AppLayoutProps) {
+export function AppLayout({
+  children,
+  pageTitle,
+  subNavTabs,
+  activeSubTab,
+  breadcrumbItems,
+}: AppLayoutProps) {
   const { state } = useGame();
   const world = state.world;
   const [eventLogOpen, setEventLogOpen] = useState(true);

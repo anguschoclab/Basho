@@ -50,10 +50,7 @@ function SatisfactionTooltip({
       <p className="text-muted-foreground">Tier: {d.tier}</p>
       <p>
         Satisfaction:{" "}
-        <span
-          style={{ color: getSatisfactionColor(d.satisfaction) }}
-          className="font-semibold"
-        >
+        <span style={{ color: getSatisfactionColor(d.satisfaction) }} className="font-semibold">
           {d.satisfaction}
         </span>
       </p>

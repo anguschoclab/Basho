@@ -75,7 +75,9 @@ export default function SchedulePage() {
 
   return (
     <AppLayout subNavTabs={TOURNAMENT_TABS} activeSubTab="schedule" pageTitle="Schedule">
-      <Helmet><title>Schedule | Basho</title></Helmet>
+      <Helmet>
+        <title>Schedule | Basho</title>
+      </Helmet>
       <div className="space-y-6">
         <PageHeader
           eyebrow="── TOURNAMENT ──"

@@ -395,8 +395,14 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     weightBand: NarrativeService.getWeightBand(r.weight ?? 0),
     heightBand: NarrativeService.getHeightBand(r.height ?? 0),
     ageDescriptor: NarrativeService.getAgeLabel(rng, NarrativeService.getAgeBand(age)),
-    weightDescriptor: NarrativeService.getWeightLabel(rng, NarrativeService.getWeightBand(r.weight ?? 0)),
-    heightDescriptor: NarrativeService.getHeightLabel(rng, NarrativeService.getHeightBand(r.height ?? 0)),
+    weightDescriptor: NarrativeService.getWeightLabel(
+      rng,
+      NarrativeService.getWeightBand(r.weight ?? 0)
+    ),
+    heightDescriptor: NarrativeService.getHeightLabel(
+      rng,
+      NarrativeService.getHeightBand(r.height ?? 0)
+    ),
     topRivals: calculateTopRivals(r, world),
     personalityTraits: r.personalityTraits ?? [],
     favoredKimariteDetailed,

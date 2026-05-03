@@ -34,7 +34,7 @@ function conditionLabel(condition: number): string {
 
 // Risk score is 0-100 where 0 = no risk
 function riskLabel(score: number): string {
-  if (score <= 5)  return "None";
+  if (score <= 5) return "None";
   if (score <= 20) return "Low";
   if (score <= 45) return "Moderate";
   if (score <= 70) return "High";
@@ -117,18 +117,14 @@ export function InjuryRiskHeatmap({ rikishiList }: InjuryRiskHeatmapProps) {
                     <td className="py-2 pr-4">
                       <TooltipWrap
                         content={
-                          r.isInjured && r.injurySummary ? (
-                            <span>{r.injurySummary}</span>
-                          ) : null
+                          r.isInjured && r.injurySummary ? <span>{r.injurySummary}</span> : null
                         }
                       >
                         <span className="cursor-default">
                           <span className="font-medium">{r.shikona}</span>
                           <span className="ml-2 text-xs text-muted-foreground">{r.rankLabel}</span>
                           {r.isInjured && (
-                            <span className="ml-2 text-xs font-semibold text-destructive">
-                              INJ
-                            </span>
+                            <span className="ml-2 text-xs font-semibold text-destructive">INJ</span>
                           )}
                         </span>
                       </TooltipWrap>

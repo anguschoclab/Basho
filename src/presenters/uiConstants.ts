@@ -58,77 +58,77 @@ export const SCANDAL_LABELS: Record<ScandalBand, string> = {
 
 export const STAT_LABELS: Record<StatBand, string> = {
   exceptional: "Exceptional",
-  outstanding:  "Outstanding",
-  strong:       "Strong",
-  capable:      "Capable",
-  developing:   "Developing",
-  limited:      "Limited",
-  struggling:   "Struggling",
+  outstanding: "Outstanding",
+  strong: "Strong",
+  capable: "Capable",
+  developing: "Developing",
+  limited: "Limited",
+  struggling: "Struggling",
 };
 
 export const AGE_LABELS: Record<AgeBand, string> = {
   prodigy: "Prodigy",
-  young:   "Young",
-  prime:   "Prime",
+  young: "Young",
+  prime: "Prime",
   veteran: "Veteran",
-  aging:   "Aging",
-  elder:   "Elder",
+  aging: "Aging",
+  elder: "Elder",
 };
 
 export const EXPERIENCE_LABELS: Record<ExperienceBand, string> = {
-  novice:     "Novice",
+  novice: "Novice",
   developing: "Developing",
-  seasoned:   "Seasoned",
-  veteran:    "Veteran",
-  master:     "Master",
+  seasoned: "Seasoned",
+  veteran: "Veteran",
+  master: "Master",
 };
 
 export const REPUTATION_LABELS: Record<ReputationBand, string> = {
-  obscure:   "Obscure",
-  known:     "Known",
+  obscure: "Obscure",
+  known: "Known",
   respected: "Respected",
-  renowned:  "Renowned",
+  renowned: "Renowned",
   legendary: "Legendary",
 };
 
 export const INJURY_LABELS: Record<InjurySeverityBand, string> = {
-  minimal:  "Minimal",
-  mild:     "Mild",
+  minimal: "Minimal",
+  mild: "Mild",
   moderate: "Moderate",
-  severe:   "Severe",
+  severe: "Severe",
   critical: "Critical",
 };
 
 export const WIN_RATE_LABELS: Record<WinRateBand, string> = {
-  dismal:   "Dismal",
-  poor:     "Poor",
+  dismal: "Dismal",
+  poor: "Poor",
   mediocre: "Mediocre",
-  decent:   "Decent",
-  strong:   "Strong",
+  decent: "Decent",
+  strong: "Strong",
   dominant: "Dominant",
 };
 
 export const RIVALRY_HEAT_LABELS: Record<RivalryHeatBand, string> = {
-  dormant:   "Dormant",
+  dormant: "Dormant",
   simmering: "Simmering",
-  heated:    "Heated",
-  fierce:    "Fierce",
+  heated: "Heated",
+  fierce: "Fierce",
   legendary: "Legendary",
 };
 
 export const WEIGHT_LABELS: Record<WeightBand, string> = {
-  lean:     "Lean",
-  solid:    "Solid Build",
+  lean: "Lean",
+  solid: "Solid Build",
   powerful: "Powerful",
-  massive:  "Massive",
+  massive: "Massive",
   imposing: "Imposing",
 };
 
 export const HEIGHT_LABELS: Record<HeightBand, string> = {
-  short:    "Short",
-  average:  "Average",
-  tall:     "Tall",
-  giant:    "Giant",
+  short: "Short",
+  average: "Average",
+  tall: "Tall",
+  giant: "Giant",
   towering: "Towering",
 };
 

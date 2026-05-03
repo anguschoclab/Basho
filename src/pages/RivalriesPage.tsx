@@ -195,7 +195,9 @@ export default function RivalriesPage() {
                           >
                             {feud.tone.replace("_", " ")}
                           </Badge>
-                          <div className="text-[10px] font-mono text-primary">{RIVALRY_HEAT_LABELS[toRivalryHeatBand(feud.heat)]}</div>
+                          <div className="text-[10px] font-mono text-primary">
+                            {RIVALRY_HEAT_LABELS[toRivalryHeatBand(feud.heat)]}
+                          </div>
                         </div>
                         <div className="flex items-center justify-between gap-2">
                           <div className="text-xs font-bold truncate max-w-[80px]">

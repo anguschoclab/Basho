@@ -119,19 +119,24 @@ export function RikishiDetailDialog({
                       : `${(selectedRikishi as UIRikishi & Record<string, unknown>)[info.key] || "--"}${info.suffix}`}
                   </div>
                   {info.key === "height" && selectedRikishi.heightDescriptor && (
-                    <div className="text-[8px] text-muted-foreground/60">{selectedRikishi.heightDescriptor}</div>
+                    <div className="text-[8px] text-muted-foreground/60">
+                      {selectedRikishi.heightDescriptor}
+                    </div>
                   )}
                   {info.key === "weight" && selectedRikishi.weightDescriptor && (
-                    <div className="text-[8px] text-muted-foreground/60">{selectedRikishi.weightDescriptor}</div>
+                    <div className="text-[8px] text-muted-foreground/60">
+                      {selectedRikishi.weightDescriptor}
+                    </div>
                   )}
-                  {info.key === "age" && (() => {
-                    const entry = rosterWithAge.find(
-                      (r) => r.rikishi.id === selectedRikishi.id
-                    );
-                    return entry?.rikishi.ageDescriptor ? (
-                      <div className="text-[8px] text-muted-foreground/60">{entry.rikishi.ageDescriptor}</div>
-                    ) : null;
-                  })()}
+                  {info.key === "age" &&
+                    (() => {
+                      const entry = rosterWithAge.find((r) => r.rikishi.id === selectedRikishi.id);
+                      return entry?.rikishi.ageDescriptor ? (
+                        <div className="text-[8px] text-muted-foreground/60">
+                          {entry.rikishi.ageDescriptor}
+                        </div>
+                      ) : null;
+                    })()}
                 </div>
               ))}
             </div>
@@ -191,7 +196,9 @@ export function RikishiDetailDialog({
                       </TooltipTrigger>
                       {selectedRikishi.combatArchetype && (
                         <TooltipContent>
-                          <p className="max-w-xs">{getCombatArchetypeDescription(selectedRikishi.combatArchetype as any)}</p>
+                          <p className="max-w-xs">
+                            {getCombatArchetypeDescription(selectedRikishi.combatArchetype as any)}
+                          </p>
                         </TooltipContent>
                       )}
                     </Tooltip>
