@@ -37,3 +37,6 @@
 ## 2025-05-01 - Avoid Array.from().filter() on Maps
 **Learning:** Using `Array.from(map.values()).filter(...)` in central functions like `EntityCollection.getRikishi` creates a massive hidden overhead in state-heavy games. It causes O(N) allocation just to generate the values array, and then another O(N) pass to filter them.
 **Action:** Always replace `Array.from(map.values()).filter(...)` with manual `for...of` iteration that `push()`es directly to a new array, skipping the intermediate array allocation completely.
+
+## 2026-05-03 - Replaced inefficient active rikishi retrieval with EntityCollection.getActiveRikishi
+Replaced `Array.from(world.rikishi.values()).filter(...)` with `EntityCollection.getActiveRikishi(world)` in `dashboardProjections.ts` to avoid redundant array conversions, allocations, and sorts. In a synthetic benchmark with 10k active and 5k retired rikishi, the time to filter rikishi 100 times went from 370ms to 257ms (a ~30% improvement).

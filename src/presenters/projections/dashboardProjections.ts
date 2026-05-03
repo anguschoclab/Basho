@@ -18,6 +18,7 @@ import { selectTopRivals } from "../selectors";
 import { getHeyaRoster, getSekitoriInHeya } from "../../engine/queries";
 import { buildPrevRankScores, buildBanzukeRows } from "../banzukeUI";
 import { projectRosterEntry } from "../rikishiUI";
+import { EntityCollection } from "../../engine/core/EntityCollection";
 
 /**
  * Project dashboard data for the main overview.
@@ -72,7 +73,7 @@ export function projectBanzukeUIDigest(world: WorldState): BanzukeUIDigest {
 
   const prevScoreMap = buildPrevRankScores(history);
 
-  const allRikishi = Array.from(world.rikishi.values()).filter((r) => !r.isRetired);
+  const allRikishi = EntityCollection.getActiveRikishi(world);
   const rosterEntries = allRikishi.map((r) => {
     return projectRosterEntry(r, world, prevScoreMap.get(r.id));
   });
