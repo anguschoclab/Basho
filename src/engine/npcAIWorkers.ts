@@ -22,6 +22,7 @@ import {
   type ProtectResult,
 } from "./strategy/NPCStrategyService";
 import { PerceptionSnapshot, RikishiPerception } from "./perception";
+import { destr } from "destr";
 import { OyakataStyleProfile, RecruitmentPhilosophy } from "./oyakataStylePreferences";
 import { OyakataMood } from "./types/oyakata";
 import { Style } from "./types/combat";
@@ -302,7 +303,7 @@ export function spawnGlobalWorker(ctx: GlobalWorkerContext): GlobalWorkerResult 
  */
 export function rpPerception(p: PerceptionSnapshot) {
   // Deep clone or filter to ensure absolute isolation from WorldState
-  return JSON.parse(
+  return destr(
     JSON.stringify({
       rikishiPerceptions: p.rikishiPerceptions,
       welfareRiskBand: p.welfareRiskBand,
