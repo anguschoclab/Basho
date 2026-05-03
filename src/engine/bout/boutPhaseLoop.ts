@@ -187,15 +187,17 @@ function tickPushBattle(
   if (jitteredForceDiff > 0) {
     // East dominant — west retreats toward west's tawara (−4.55)
     push.westLeadFoot -= displacement;
+    push.eastLeadFoot -= displacement;
     st.west.cogOffset += Math.abs(jitteredForceDiff) * 0.003;
     st.west.velocityX = -jitteredForceDiff * 0.1;
-    st.east.velocityX = 0;
+    st.east.velocityX = -jitteredForceDiff * 0.1;
   } else if (jitteredForceDiff < 0) {
     // West dominant — east retreats toward east's tawara (+4.55)
     push.eastLeadFoot += displacement;
+    push.westLeadFoot += displacement;
     st.east.cogOffset += Math.abs(jitteredForceDiff) * 0.003;
     st.east.velocityX = Math.abs(jitteredForceDiff) * 0.1;
-    st.west.velocityX = 0;
+    st.west.velocityX = Math.abs(jitteredForceDiff) * 0.1;
   }
 
   // CR-03: Sync PhysicalBody positions so kimariteClassifier reads current state
