@@ -120,7 +120,7 @@ export class GeminiClient {
     try {
       const text = await this.runWithFallback(prompt, "application/json");
 
-      // Fixed non-greedy bug: Changed /\{.*?\}/s to /\{.*\}/s so it captures nested objects/arrays properly
+      // Extract the outermost JSON object using a greedy match to ensure nested objects are captured properly.
       const jsonMatch = text.match(/\{.*\}/s);
       const rawJson = jsonMatch ? jsonMatch[0] : text;
 
