@@ -11,6 +11,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Helmet } from "react-helmet";
 import { makeDeterministicSeed } from "@/utils/engineUtils";
+import { generateOyakataName } from "@/engine/shikona";
 import type { Heya } from "@/engine/types/heya";
 import { ExhibitionBout } from "@/components/onboarding/ExhibitionBout";
 import { WizardHeader } from "@/components/wizard/WizardHeader";
@@ -19,7 +20,7 @@ import { IdentityStep } from "@/components/wizard/IdentityStep";
 import { FactionStep } from "@/components/wizard/FactionStep";
 import { StableStep } from "@/components/wizard/StableStep";
 import { LoadingState } from "@/components/wizard/LoadingState";
-import { OYAKATA_BACKGROUNDS, ICHIMON_FACTIONS } from "@/components/wizard/wizardConstants";
+import { OYAKATA_BACKSTORIES, ICHIMON_FACTIONS } from "@/components/wizard/wizardConstants";
 
 export default function NewGameWizard() {
   const navigate = useNavigate();
@@ -34,12 +35,17 @@ export default function NewGameWizard() {
 
   const [step, setStep] = useState(1);
   const [oyakataName, setOyakataName] = useState("");
-  const [background, setBackground] = useState(OYAKATA_BACKGROUNDS[0].id);
+  const [background, setBackground] = useState(OYAKATA_BACKSTORIES[0].id);
   const [ichimon, setIchimon] = useState(ICHIMON_FACTIONS[0].id);
   const [selectedHeyaId, setSelectedHeyaId] = useState<string | null>(null);
 
   const world = state.world;
   const stables = useMemo<Heya[]>(() => (!world ? [] : Array.from(world.heyas.values())), [world]);
+
+  const handleRandomName = () => {
+    const seed = `wizard::random::${Date.now()}`;
+    setOyakataName(generateOyakataName(seed));
+  };
 
   const handleNext = () => setStep((s) => s + 1);
   const handlePrev = () => setStep((s) => Math.max(1, s - 1));
@@ -79,6 +85,7 @@ export default function NewGameWizard() {
             background={background}
             onNameChange={setOyakataName}
             onBackgroundChange={setBackground}
+            onRandomName={handleRandomName}
             onNext={handleNext}
           />
         )}

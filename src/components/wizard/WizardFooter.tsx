@@ -5,7 +5,7 @@
  */
 
 import { formatYenToMan } from "@/utils/engineUtils";
-import { OYAKATA_BACKGROUNDS, ICHIMON_FACTIONS } from "./wizardConstants";
+import { OYAKATA_BACKSTORIES, ICHIMON_FACTIONS } from "./wizardConstants";
 
 interface WizardFooterProps {
   oyakataName: string;
@@ -15,7 +15,8 @@ interface WizardFooterProps {
 }
 
 export function WizardFooter({ oyakataName, background, ichimon, world }: WizardFooterProps) {
-  const currentBg = OYAKATA_BACKGROUNDS.find((b) => b.id === background) ?? OYAKATA_BACKGROUNDS[0];
+  const currentBs =
+    OYAKATA_BACKSTORIES.find((b) => b.id === background) ?? OYAKATA_BACKSTORIES[0];
 
   return (
     <footer className="fixed bottom-0 w-full bg-background/80 border-t border-border/40 py-4 px-8 z-30 animate-in slide-in-from-bottom-5 duration-700 delay-500 fill-mode-both">
@@ -35,7 +36,7 @@ export function WizardFooter({ oyakataName, background, ichimon, world }: Wizard
               Endowment
             </p>
             <p className="font-display font-black text-xs uppercase tracking-tighter text-success">
-              {formatYenToMan(currentBg.bonuses.funds)}
+              {formatYenToMan(currentBs.bonuses.funds)}
             </p>
           </div>
           <div className="hidden lg:block w-px h-6 bg-border/40" />
@@ -45,6 +46,15 @@ export function WizardFooter({ oyakataName, background, ichimon, world }: Wizard
             </p>
             <p className="font-display font-black text-xs uppercase tracking-tighter text-primary">
               {ICHIMON_FACTIONS.find((f) => f.id === ichimon)?.name || "NONE"}
+            </p>
+          </div>
+          <div className="hidden xl:block w-px h-6 bg-border/40" />
+          <div className="hidden xl:block">
+            <p className="text-[8px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-0.5">
+              Background
+            </p>
+            <p className="font-display font-black text-xs uppercase tracking-tighter text-gold">
+              {OYAKATA_BACKSTORIES.find((b) => b.id === background)?.label || "NONE"}
             </p>
           </div>
         </div>
