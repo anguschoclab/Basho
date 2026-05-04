@@ -7,7 +7,7 @@
  */
 
 import { useState, useMemo, useEffect } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Helmet } from "react-helmet";
 import { makeDeterministicSeed } from "@/utils/engineUtils";
@@ -25,6 +25,7 @@ import { OYAKATA_BACKSTORIES, ICHIMON_FACTIONS } from "@/components/wizard/wizar
 
 export default function NewGameWizard() {
   const navigate = useNavigate();
+  const { heyaId: preselectedHeyaId } = useSearch({ from: "/new-game" });
   const { createWorld, state, quickSave } = useGame();
 
   useEffect(() => {
@@ -38,10 +39,15 @@ export default function NewGameWizard() {
   const [oyakataName, setOyakataName] = useState("");
   const [background, setBackground] = useState(OYAKATA_BACKSTORIES[0].id);
   const [ichimon, setIchimon] = useState(ICHIMON_FACTIONS[0].id);
-  const [selectedHeyaId, setSelectedHeyaId] = useState<string | null>(null);
+  const [selectedHeyaId, setSelectedHeyaId] = useState<string | null>(
+    preselectedHeyaId ?? null
+  );
 
   const world = state.world;
   const stables = useMemo<Heya[]>(() => (!world ? [] : Array.from(world.heyas.values())), [world]);
+
+  // When a heya is pre-selected, the wizard has 3 steps (skip StableStep)
+  const totalSteps = preselectedHeyaId ? 3 : 4;
 
   const handleRandomName = () => {
     const rng = new SeededRNG(String(Date.now()));
@@ -53,7 +59,12 @@ export default function NewGameWizard() {
 
   const handleFinish = () => {
     if (!world || !selectedHeyaId) return;
-    createWorld(world.seed, selectedHeyaId);
+    const config = {
+      name: oyakataName.trim(),
+      backstoryId: background,
+      ichimon: ichimon || undefined,
+    };
+    createWorld(world.seed, selectedHeyaId, config);
     setStep(4);
     // Autosave after world creation completes
     setTimeout(() => {
@@ -61,6 +72,15 @@ export default function NewGameWizard() {
         quickSave();
       }
     }, 100);
+  };
+
+  // When pre-selected, step 2 skips directly to finish (step 4) instead of going to step 3
+  const handleFactionNext = () => {
+    if (preselectedHeyaId) {
+      handleFinish();
+    } else {
+      handleNext();
+    }
   };
 
   const handleExhibitionComplete = () => {
@@ -77,7 +97,7 @@ export default function NewGameWizard() {
         <title>New Career Setup | Basho</title>
       </Helmet>
 
-      <WizardHeader currentStep={step} />
+      <WizardHeader currentStep={step} totalSteps={totalSteps} />
 
       <main className="max-w-4xl w-full px-6 -mt-8 relative z-20 pb-32">
         {step === 1 && (
@@ -95,12 +115,12 @@ export default function NewGameWizard() {
           <FactionStep
             ichimon={ichimon}
             onIchimonChange={setIchimon}
-            onNext={handleNext}
+            onNext={handleFactionNext}
             onPrev={handlePrev}
           />
         )}
 
-        {step === 3 && (
+        {step === 3 && !preselectedHeyaId && (
           <StableStep
             stables={stables}
             selectedHeyaId={selectedHeyaId}

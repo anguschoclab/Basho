@@ -107,6 +107,9 @@ const mainMenuRoute = createRoute({
 const newGameRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/new-game",
+  validateSearch: (search: Record<string, unknown>) => ({
+    heyaId: typeof search.heyaId === "string" ? search.heyaId : undefined,
+  }),
   component: NewGameWizard,
 });
 const dashboardRoute = createRoute({
