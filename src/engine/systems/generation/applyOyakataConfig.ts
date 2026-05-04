@@ -193,9 +193,9 @@ export function applyOyakataCreationConfig(
     archetype,
     traits,
     stats: {
-      scouting: backstory.bonuses.scouting,
-      training: backstory.bonuses.training,
-      politics: backstory.bonuses.politics,
+      scouting: (oyakata.stats?.scouting ?? 0) + backstory.bonuses.scouting,
+      training: (oyakata.stats?.training ?? 0) + backstory.bonuses.training,
+      politics: (oyakata.stats?.politics ?? 0) + backstory.bonuses.politics,
     },
     quirks: mergedQuirks,
     memory: updatedMemory,

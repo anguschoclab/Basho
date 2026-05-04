@@ -109,5 +109,5 @@ export interface OyakataCreationConfig {
   /** ID into OYAKATA_BACKSTORIES constant — e.g. "yokozuna_champion" */
   backstoryId: string;
   /** Optional ichimon (faction) ID selected in wizard step 2 */
-  ichimon?: string;
+  ichimon?: import("./economy").IchimonName;
 }
