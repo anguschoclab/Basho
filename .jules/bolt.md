@@ -37,3 +37,6 @@
 ## 2025-05-01 - Avoid Array.from().filter() on Maps
 **Learning:** Using `Array.from(map.values()).filter(...)` in central functions like `EntityCollection.getRikishi` creates a massive hidden overhead in state-heavy games. It causes O(N) allocation just to generate the values array, and then another O(N) pass to filter them.
 **Action:** Always replace `Array.from(map.values()).filter(...)` with manual `for...of` iteration that `push()`es directly to a new array, skipping the intermediate array allocation completely.
+## 2024-05-20 - Avoid Array.from().map().filter() overhead in Map iterations
+**Learning:** Chaining array methods like `Array.from(map.values()).map().filter()` inside frequent execution paths (like simulation ticks or engine phases) causes significant performance degradation due to $O(N)$ intermediate array allocations and redundant iterations.
+**Action:** Replace `Array.from(map.values()).map().filter()` chains with a single `for...of` loop over `map.values()` to filter and collect values (or map them directly to a target collection like a `Set`) without allocating intermediate arrays.
