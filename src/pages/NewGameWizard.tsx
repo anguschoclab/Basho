@@ -11,7 +11,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { Helmet } from "react-helmet";
 import { makeDeterministicSeed } from "@/utils/engineUtils";
-import { generateOyakataName } from "@/engine/shikona";
+import { generateToshiyoriName } from "@/engine/shikona/toshiyoriNames";
+import { SeededRNG } from "@/engine/rng";
 import type { Heya } from "@/engine/types/heya";
 import { ExhibitionBout } from "@/components/onboarding/ExhibitionBout";
 import { WizardHeader } from "@/components/wizard/WizardHeader";
@@ -43,8 +44,8 @@ export default function NewGameWizard() {
   const stables = useMemo<Heya[]>(() => (!world ? [] : Array.from(world.heyas.values())), [world]);
 
   const handleRandomName = () => {
-    const seed = `wizard::random::${Date.now()}`;
-    setOyakataName(generateOyakataName(seed));
+    const rng = new SeededRNG(String(Date.now()));
+    setOyakataName(generateToshiyoriName(rng));
   };
 
   const handleNext = () => setStep((s) => s + 1);
