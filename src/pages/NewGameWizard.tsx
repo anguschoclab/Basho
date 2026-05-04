@@ -57,6 +57,13 @@ export default function NewGameWizard() {
   const handleNext = () => setStep((s) => s + 1);
   const handlePrev = () => setStep((s) => Math.max(1, s - 1));
 
+  // Autosave once the world is fully initialized with player heya
+  useEffect(() => {
+    if (state.world?.playerHeyaId && quickSave) {
+      quickSave();
+    }
+  }, [state.world?.playerHeyaId]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const handleFinish = () => {
     if (!world || !selectedHeyaId) return;
     const config = {
@@ -66,12 +73,6 @@ export default function NewGameWizard() {
     };
     createWorld(world.seed, selectedHeyaId, config);
     setStep(4);
-    // Autosave after world creation completes
-    setTimeout(() => {
-      if (state.world) {
-        quickSave();
-      }
-    }, 100);
   };
 
   // When pre-selected, step 2 skips directly to finish (step 4) instead of going to step 3
