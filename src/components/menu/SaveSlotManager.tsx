@@ -89,8 +89,10 @@ export function SaveSlotManager({
   };
 
   const handleDeleteSlot = (slotName: string) => {
-    deleteSave(slotName);
-    refreshSlots();
+    if (window.confirm(`Are you sure you want to delete ${slotName.replace("slot_", "Slot ")}? This action cannot be undone.`)) {
+      deleteSave(slotName);
+      refreshSlots();
+    }
   };
 
   const handleImportSave = async (e: React.ChangeEvent<HTMLInputElement>) => {
