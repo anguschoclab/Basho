@@ -15,7 +15,7 @@ import type {
 } from "../types/uiDigest";
 import { queryEvents } from "../../engine/events";
 import { selectTopRivals } from "../selectors";
-import { getHeyaRoster, getSekitoriInHeya } from "../../engine/queries";
+import { getHeyaRoster, getSekitoriInHeya, getActiveRikishi } from "../../engine/queries";
 import { buildPrevRankScores, buildBanzukeRows } from "../banzukeUI";
 import { projectRosterEntry } from "../rikishiUI";
 
@@ -72,7 +72,9 @@ export function projectBanzukeUIDigest(world: WorldState): BanzukeUIDigest {
 
   const prevScoreMap = buildPrevRankScores(history);
 
-  const allRikishi = Array.from(world.rikishi.values()).filter((r) => !r.isRetired);
+  // ⚡ Bolt Optimization: Replace O(N) Array.from(world.rikishi.values()).filter(...)
+  // with cached getActiveRikishi to eliminate redundant array allocations and iterations
+  const allRikishi = getActiveRikishi(world);
   const rosterEntries = allRikishi.map((r) => {
     return projectRosterEntry(r, world, prevScoreMap.get(r.id));
   });

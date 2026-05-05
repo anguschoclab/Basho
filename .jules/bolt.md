@@ -40,3 +40,6 @@
 ## 2024-05-20 - Avoid Array.from().map().filter() overhead in Map iterations
 **Learning:** Chaining array methods like `Array.from(map.values()).map().filter()` inside frequent execution paths (like simulation ticks or engine phases) causes significant performance degradation due to $O(N)$ intermediate array allocations and redundant iterations.
 **Action:** Replace `Array.from(map.values()).map().filter()` chains with a single `for...of` loop over `map.values()` to filter and collect values (or map them directly to a target collection like a `Set`) without allocating intermediate arrays.
+## 2024-05-20 - Centralize State Selectors to Avoid Redundant Filtering
+**Learning:** Found an $O(N)$ memory overhead and iteration bottleneck where `Array.from(world.rikishi.values()).filter(...)` was used inline in UI projection layers to filter active rikishi. This pattern bypasses the centralized, optimized query methods that already cache or efficiently provide access to the state data.
+**Action:** Replace ad-hoc `Array.from(world.rikishi.values()).filter(...)` iterations with calls to centralized domain selectors like `getActiveRikishi(world)` or `getRikishiByDivision(world, ...)` from `src/engine/queries.ts` to leverage memoization and eliminate redundant intermediate array allocations.
