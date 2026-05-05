@@ -58,7 +58,17 @@ async function createWindow(): Promise<void> {
 
   // Open external links in the OS browser, not inside Electron
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith("https:")) shell.openExternal(url);
+    try {
+      const parsedUrl = new URL(url);
+      // Only allow explicit https URLs to prevent URI scheme exploitation
+      if (parsedUrl.protocol === "https:") {
+        shell.openExternal(url);
+      } else {
+        console.warn(`Blocked attempt to open non-HTTPS URL: ${url}`);
+      }
+    } catch (e) {
+      console.error(`Blocked attempt to open invalid URL: ${url}`, e);
+    }
     return { action: "deny" };
   });
 
