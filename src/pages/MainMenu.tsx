@@ -176,9 +176,7 @@ export default function MainMenu() {
   };
 
   const beginWithHeya = (heyaId: string) => {
-    if (!state?.world) return;
-    createWorld(state.world.seed, heyaId);
-    navigate({ to: "/dashboard" });
+    navigate({ to: "/new-game", search: { heyaId } });
   };
 
   // Autosave when playerHeyaId is set (world is fully initialized)

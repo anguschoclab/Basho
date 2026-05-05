@@ -3,6 +3,7 @@ import type { GameState, GameAction } from "./gameTypes";
 import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
 import { combineReducers } from "./gameHelpers";
 import { buildWeeklyDigest } from "@/presenters/uiDigest";
+import { applyOyakataCreationConfig } from "@/engine/systems/generation/applyOyakataConfig";
 
 /** Adapter matching the { seed, playerConfig? } call shape used in this reducer */
 function generateWorld(opts: {
@@ -30,7 +31,7 @@ function coreSlice(state: GameState, action: GameAction): GameState {
       const world = generateWorld({ seed: action.seed });
       const playerHeyaId = action.playerHeyaId || null;
 
-      const nextWorld = { ...world, playerHeyaId: playerHeyaId || undefined };
+      let nextWorld = { ...world, playerHeyaId: playerHeyaId || undefined };
 
       if (playerHeyaId) {
         const heya = world.heyas.get(playerHeyaId);
@@ -39,12 +40,23 @@ function coreSlice(state: GameState, action: GameAction): GameState {
           nextWorld.heyas = new Map(world.heyas);
           nextWorld.heyas.set(playerHeyaId, updatedHeya);
         }
+
+        // Apply player's oyakata creation config if provided
+        if (action.oyakataConfig) {
+          nextWorld = applyOyakataCreationConfig(nextWorld, playerHeyaId, action.oyakataConfig);
+        }
       }
+
+      // Cache player's oyakata ID for convenience (avoids re-deriving everywhere)
+      const playerOyakataId = playerHeyaId
+        ? (nextWorld.heyas.get(playerHeyaId)?.oyakataId ?? null)
+        : null;
 
       return {
         ...state,
         world: nextWorld,
         playerHeyaId,
+        playerOyakataId,
         phase: playerHeyaId ? "interim" : "menu",
       };
     }
@@ -60,6 +72,9 @@ function coreSlice(state: GameState, action: GameAction): GameState {
         ...state,
         world: action.world,
         playerHeyaId: action.world.playerHeyaId || state.playerHeyaId,
+        playerOyakataId: action.world.playerHeyaId
+          ? (action.world.heyas.get(action.world.playerHeyaId)?.oyakataId ?? state.playerOyakataId)
+          : state.playerOyakataId,
       };
 
     case "LOAD_WORLD":
@@ -67,6 +82,9 @@ function coreSlice(state: GameState, action: GameAction): GameState {
         ...state,
         world: action.world,
         playerHeyaId: action.world.playerHeyaId || null,
+        playerOyakataId: action.world.playerHeyaId
+          ? (action.world.heyas.get(action.world.playerHeyaId)?.oyakataId ?? null)
+          : null,
         phase: action.world.playerHeyaId ? "interim" : "menu",
       };
 

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * AI / Oyakata Personality Types
  */
@@ -48,6 +47,7 @@ export interface Oyakata {
   traits: OyakataTraits;
 
   formerShikona?: string;
+  backstoryId?: string;
   highestRank?: string;
   yearsInCharge: number;
   stats?: { scouting: number; training: number; politics: number };
@@ -57,10 +57,6 @@ export interface Oyakata {
   quirks?: string[];
   avatarConfig?: AvatarConfig; // NEW: Procedural avatar configuration
 
-  /** Phase 5: Succession Planning */
-  successorCandidateId?: Id; // Pre-designated successor rikishi (alumni or roster)
-  successionReadiness: number; // 0-100: triggered at age 60
-  retirementYear?: number; // Set when succession is finalized
   isEmeritus?: boolean; // Retired elders who stay in the registry
 
   /** Drama Pass (Initiative 4) */
@@ -104,4 +100,14 @@ export interface Oyakata {
     /** Timestamp of last consolidation routine. */
     lastConsolidationTick: number;
   };
+}
+
+/** Configuration provided by the player at new-game wizard — applied to their oyakata on world creation. */
+export interface OyakataCreationConfig {
+  /** Player-chosen toshiyori (elder) name */
+  name: string;
+  /** ID into OYAKATA_BACKSTORIES constant — e.g. "yokozuna_champion" */
+  backstoryId: string;
+  /** Optional ichimon (faction) ID selected in wizard step 2 */
+  ichimon?: import("./economy").IchimonName;
 }

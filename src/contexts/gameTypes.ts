@@ -35,6 +35,7 @@ export interface GameState {
   currentBoutIndex: number;
   lastBoutResult: BoutResult | null;
   playerHeyaId: string | null;
+  playerOyakataId: string | null;
   isAutoPlaying: boolean;
   boutTactics: Record<string, import("@/engine/types/combat").BoutTactic>;
   /** Store impacts from last tick for UI visualization and debugging. */
@@ -45,7 +46,7 @@ export interface GameState {
 
 /** Type representing game action. */
 export type GameAction =
-  | { type: "CREATE_WORLD"; seed: string; playerHeyaId?: string }
+  | { type: "CREATE_WORLD"; seed: string; playerHeyaId?: string; oyakataConfig?: import("@/engine/types/oyakata").OyakataCreationConfig }
   | { type: "SET_PLAYER_HEYA"; heyaId: string }
   | { type: "SET_PHASE"; phase: GamePhase }
   | { type: "START_BASHO" }
@@ -96,6 +97,7 @@ export const initialGameState: GameState = {
   currentBoutIndex: 0,
   lastBoutResult: null,
   playerHeyaId: null,
+  playerOyakataId: null,
   isAutoPlaying: false,
   boutTactics: {},
   lastImpacts: [],

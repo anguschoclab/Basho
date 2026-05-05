@@ -3,10 +3,15 @@ import type { WorldState } from "@/engine/types/world";
 import type { HolidayResult } from "@/engine/holiday";
 import type { AutoSimResult } from "@/engine/autoSim";
 
-export const createWorld = (seed: string, playerHeyaId?: string): GameAction => ({
+export const createWorld = (
+  seed: string,
+  playerHeyaId?: string,
+  oyakataConfig?: import("@/engine/types/oyakata").OyakataCreationConfig
+): GameAction => ({
   type: "CREATE_WORLD",
   seed,
   playerHeyaId,
+  oyakataConfig,
 });
 
 export const setPlayerHeya = (heyaId: string): GameAction => ({

@@ -9,9 +9,10 @@ import { cn } from "@/lib/utils";
 
 interface WizardHeaderProps {
   currentStep: number;
+  totalSteps?: number;
 }
 
-export function WizardHeader({ currentStep }: WizardHeaderProps) {
+export function WizardHeader({ currentStep, totalSteps = 4 }: WizardHeaderProps) {
   return (
     <section className="w-full bg-primary pt-16 pb-12 px-6 overflow-hidden flex flex-col items-center text-center shadow-2xl relative">
       <div className="absolute top-0 opacity-5 font-display text-[15vw] font-black pointer-events-none uppercase tracking-tighter leading-none -mt-10">
@@ -26,7 +27,7 @@ export function WizardHeader({ currentStep }: WizardHeaderProps) {
           Begin Your Legacy
         </h1>
         <div className="flex items-center gap-1 justify-center">
-          {[1, 2, 3, 4].map((s) => (
+          {Array.from({ length: totalSteps }, (_, i) => i + 1).map((s) => (
             <div
               key={s}
               className={cn(

@@ -4,46 +4,103 @@
  * Constants for new game wizard.
  */
 
-import { Trophy, Star, DollarSign } from "lucide-react";
+import { Trophy, Star, Users, Heart, Flame, Globe, Landmark } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
-export const OYAKATA_BACKGROUNDS: Array<{
+export interface OyakataBackstory {
   id: string;
   label: string;
   labelJa: string;
-  description: string;
-  bonuses: { prestige: number; funds: number; scouting: number; training: number };
-  icon: React.ElementType;
-  color: string;
-}> = [
+  flavor: string;
+  difficulty: "Easy" | "Normal" | "Hard" | "Very Hard";
+  highestRank: string;
+  icon: LucideIcon;
+  bonuses: {
+    funds: number;
+    prestige: number;
+    scouting: number;
+    training: number;
+    politics: number;
+  };
+}
+
+export const OYAKATA_BACKSTORIES: OyakataBackstory[] = [
   {
-    id: "yokozuna",
-    label: "Former Yokozuna",
+    id: "yokozuna_champion",
+    label: "Champion Inheritor",
     labelJa: "横綱出身",
-    description:
-      "Maximum prestige and institutional respect. Your reputation precedes you, making recruitment of elite talent easier, though expectations are sky-high.",
-    bonuses: { prestige: 2, funds: 5_000_000, scouting: 70, training: 80 },
+    flavor:
+      "You reached sumo's pinnacle. Now you guide the next generation — but expectations are sky-high and rivals watch your every move.",
+    difficulty: "Easy",
+    highestRank: "Yokozuna",
     icon: Trophy,
-    color: "amber",
+    bonuses: { funds: 3_000_000, prestige: 4, scouting: 1, training: 1, politics: 3 },
   },
   {
-    id: "ozeki",
-    label: "Former Ozeki",
+    id: "ozeki_legend",
+    label: "Tournament Legend",
     labelJa: "大関出身",
-    description:
-      "Highly respected with a strong network of supporters (koenkai). A balanced start with decent financial backing and solid training roots.",
-    bonuses: { prestige: 1, funds: 15_000_000, scouting: 60, training: 70 },
+    flavor:
+      "A champion-maker with a proven record. Your koenkai network opens doors, and your tactical mind gives you an edge in the training hall.",
+    difficulty: "Normal",
+    highestRank: "Ozeki",
     icon: Star,
-    color: "blue",
+    bonuses: { funds: 5_000_000, prestige: 3, scouting: 0, training: 2, politics: 1 },
   },
   {
-    id: "maegashira",
-    label: "Former Maegashira",
+    id: "sanyaku_veteran",
+    label: "Sanyaku Veteran",
+    labelJa: "三役出身",
+    flavor:
+      "Years at the top tier sharpened both your technical knowledge and your reading of talent. A solid, balanced foundation.",
+    difficulty: "Normal",
+    highestRank: "Sekiwake",
+    icon: Users,
+    bonuses: { funds: 10_000_000, prestige: 1, scouting: 1, training: 2, politics: 0 },
+  },
+  {
+    id: "maegashira_lifer",
+    label: "Long-Distance Runner",
     labelJa: "幕内出身",
-    description:
-      "A seasoned journeyman with a massive business network. While you lack top-tier prestige, your deep pockets allow for rapid facility expansion.",
-    bonuses: { prestige: 0, funds: 30_000_000, scouting: 50, training: 50 },
-    icon: DollarSign,
-    color: "emerald",
+    flavor:
+      "135 tournaments, never a yusho — but your hands-on mastery of every technique is unmatched. Prestige must be earned the hard way.",
+    difficulty: "Hard",
+    highestRank: "Maegashira",
+    icon: Heart,
+    bonuses: { funds: 15_000_000, prestige: -1, scouting: 0, training: 4, politics: -1 },
+  },
+  {
+    id: "injury_comeback",
+    label: "Comeback King",
+    labelJa: "復活出身",
+    flavor:
+      "Injury cut short a brilliant career. Unfinished business drives you — but the gambler in you never learned patience.",
+    difficulty: "Normal",
+    highestRank: "Ozeki",
+    icon: Flame,
+    bonuses: { funds: 8_000_000, prestige: 2, scouting: 1, training: 1, politics: 1 },
+  },
+  {
+    id: "international_scout",
+    label: "International Scout",
+    labelJa: "国際派出身",
+    flavor:
+      "You built the first Mongolian pipeline. Your continental network is unrivalled — traditionalists distrust you, but results speak.",
+    difficulty: "Hard",
+    highestRank: "Maegashira",
+    icon: Globe,
+    bonuses: { funds: 12_000_000, prestige: 0, scouting: 5, training: 1, politics: -1 },
+  },
+  {
+    id: "council_elder",
+    label: "Council Elder",
+    labelJa: "評議員出身",
+    flavor:
+      "Your power lies in the association, not the ring. Political capital is your currency — but the training hall is unfamiliar ground.",
+    difficulty: "Very Hard",
+    highestRank: "Sekiwake",
+    icon: Landmark,
+    bonuses: { funds: 20_000_000, prestige: -1, scouting: 0, training: -1, politics: 5 },
   },
 ];
 

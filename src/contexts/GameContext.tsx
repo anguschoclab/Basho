@@ -38,7 +38,7 @@ import * as actions from "./gameActions";
 interface GameContextValue {
   state: GameState;
   digest: UIDigest | null;
-  createWorld: (seed: string, playerHeyaId?: string) => void;
+  createWorld: (seed: string, playerHeyaId?: string, oyakataConfig?: import("@/engine/types/oyakata").OyakataCreationConfig) => void;
   setPhase: (phase: GamePhase) => void;
   selectRikishi: (id: string | null) => void;
   selectHeya: (id: string | null) => void;
@@ -88,8 +88,8 @@ const GameContext = createContext<GameContextValue | null>(null);
 export function GameProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(gameReducer, initialGameState);
 
-  const createWorld = useCallback((seed: string, playerHeyaId?: string) => {
-    dispatch(actions.createWorld(seed, playerHeyaId));
+  const createWorld = useCallback((seed: string, playerHeyaId?: string, oyakataConfig?: import("@/engine/types/oyakata").OyakataCreationConfig) => {
+    dispatch(actions.createWorld(seed, playerHeyaId, oyakataConfig));
   }, []);
 
   const setPhase = useCallback((phase: GamePhase) => {
