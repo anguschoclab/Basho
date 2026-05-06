@@ -6,3 +6,8 @@ Replaced `JSON.parse` with `destr` in `safeParse` to mitigate prototype pollutio
 **Vulnerability:** The Electron app's `Content-Security-Policy` included `'unsafe-eval'` in its `script-src` directive. This allowed arbitrary code execution if an attacker could inject a string into an `eval()` or similar function call.
 **Learning:** CSP headers need to be strictly configured, especially in desktop applications where arbitrary code execution can have severe system-level consequences. Even if the current codebase doesn't use `eval()`, third-party libraries might, or an attacker could find a way to inject it.
 **Prevention:** Always follow defense-in-depth principles. Do not include `'unsafe-eval'` in CSP unless absolutely necessary, and if so, document why and ensure all user inputs are strictly sanitized. Regular automated security scanning of CSP headers should be implemented.
+
+## 2026-05-06 - Replaced Insecure startsWith with strict URL validation
+**Vulnerability:** The Electron shell.openExternal was relying on `url.startsWith('https:')` to open links. This is an insecure prefix check that can be trivially bypassed with payloads like `https://.../../cmd.exe` or `https:cmd.exe` leading to possible OS-level command injection via protocol handlers.
+**Learning:** Never validate external URLs via simple string prefixes in Electron's shell navigation handlers. Due to OS-level protocol handler nuances, seemingly valid strings can trigger dangerous executions.
+**Prevention:** Always parse the string into a valid `URL` object and strictly match the `.protocol` property. Wrap the constructor in a `try...catch` to fail securely if the URL is completely malformed.
