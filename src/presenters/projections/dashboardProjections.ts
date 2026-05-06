@@ -73,7 +73,7 @@ export function projectBanzukeUIDigest(world: WorldState): BanzukeUIDigest {
   const prevScoreMap = buildPrevRankScores(history);
 
   // ⚡ Bolt Optimization: Use EntityCollection.getActiveRikishi (via queries) instead of Array.from().filter() to avoid intermediate array allocations
-  const allRikishi = getActiveRikishi(world);
+  const allRikishi = getActiveRikishi(world).filter((r) => !r.isRetired);
   const rosterEntries = allRikishi.map((r) => {
     return projectRosterEntry(r, world, prevScoreMap.get(r.id));
   });
