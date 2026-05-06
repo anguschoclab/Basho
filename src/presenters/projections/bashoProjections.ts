@@ -75,7 +75,7 @@ export function projectBashoUIDigest(world: WorldState): BashoUIDigest | null {
 
   // ⚡ Bolt Optimization: Use getActiveRikishi instead of Array.from().filter() to avoid intermediate array allocations
   const standings: StandingEntry[] = getActiveRikishi(world)
-    .filter((r: Rikishi) => r.division === "makuuchi")
+    .filter((r: Rikishi) => !r.isRetired && r.division === "makuuchi")
     .map((r: Rikishi) => {
       const record = r.currentBashoRecord || { wins: 0, losses: 0 };
       return {
