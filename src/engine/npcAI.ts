@@ -15,6 +15,7 @@ import { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "./types/trai
 import { TrainingService } from "./systems/training/TrainingService";
 import { WorldCircuitService } from "./systems/global/WorldCircuitService";
 import { enforceHardCapRosterOverflow, HARD_CAP_ROSTER_SIZE } from "./overflow";
+import type { Rikishi } from "./types/rikishi";
 import { getOyakataForHeya, getRikishi, getHeya } from "./queries";
 import { getAvailableStables } from "./selectors";
 import { stableSort } from "./utils/sort";
@@ -218,9 +219,16 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
     reasoning.push(...rivalryResult.reasoning);
 
     // Narrative Agent - Story generation
-    const topRikishi = Array.from(world.rikishi.values())
-      .filter((r) => r.division === "makuuchi" || r.division === "juryo")
-      .slice(0, 5);
+    // ⚡ Bolt Optimization: Use a direct loop instead of Array.from().filter().slice()
+    // This avoids intermediate array allocations and O(N) processing of irrelevant elements
+    const topRikishi: Rikishi[] = [];
+    for (const r of world.rikishi.values()) {
+      if (r.division === "makuuchi" || r.division === "juryo") {
+        topRikishi.push(r);
+        if (topRikishi.length >= 5) break;
+      }
+    }
+
     const narrativeCtx: NarrativeAgentContext = {
       oyakata,
       topRikishi,
