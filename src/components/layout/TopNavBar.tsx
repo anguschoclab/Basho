@@ -220,7 +220,7 @@ export function TopNavBar() {
                     else if (cyclePhase === "banzuke_reveal") navigate({ to: "/recap" });
                     else advanceOneDay();
                   }}
-                  className="relative h-8 px-4 rounded flex items-center gap-2 font-semibold text-[12px] transition-all duration-200 hover:scale-[1.03] active:scale-[0.97] overflow-hidden group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
+                  className="relative h-8 px-4 rounded flex items-center gap-2 overflow-hidden group focus-visible:ring-offset-2 ring-offset-background"
                   style={{
                     fontFamily: "var(--font-mono)",
                     letterSpacing: "0.08em",
