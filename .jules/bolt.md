@@ -40,3 +40,7 @@
 ## 2024-05-20 - Avoid Array.from().map().filter() overhead in Map iterations
 **Learning:** Chaining array methods like `Array.from(map.values()).map().filter()` inside frequent execution paths (like simulation ticks or engine phases) causes significant performance degradation due to $O(N)$ intermediate array allocations and redundant iterations.
 **Action:** Replace `Array.from(map.values()).map().filter()` chains with a single `for...of` loop over `map.values()` to filter and collect values (or map them directly to a target collection like a `Set`) without allocating intermediate arrays.
+
+## 2024-05-20 - Avoid Array.from().filter().length > 0
+**Learning:** Found a major performance bottleneck in `TalentPoolNPCRecruitment.ts` where `Array.from(world.rikishi.values()).filter(...).length > 0` was used inside a loop over multiple `heya`s. This forces V8 to allocate an array for all rikishi, then allocate *another* array for the filtered results, just to check existence. In a game with 1,000+ rikishi and ~50 heyas, this creates severe memory churn and iteration overhead.
+**Action:** Replace `Array.from(iterable).filter(...).length > 0` with a standard `for...of` loop and an early `break`. This completely eliminates all array allocations ($O(1)$ space) and exits iteration instantly once a match is found, saving massive CPU cycles in hot loops.
