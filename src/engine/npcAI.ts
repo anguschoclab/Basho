@@ -222,7 +222,7 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
     // ⚡ Bolt Optimization: Use a direct loop instead of Array.from().filter().slice()
     // This avoids intermediate array allocations and O(N) processing of irrelevant elements
     const topRikishi: Rikishi[] = [];
-    for (const r of getActiveRikishi(world)) {
+    for (const r of world.rikishi.values()) {
       if (r.division === "makuuchi" || r.division === "juryo") {
         topRikishi.push(r);
         if (topRikishi.length >= 5) break;
