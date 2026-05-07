@@ -16,7 +16,7 @@ import { TrainingService } from "./systems/training/TrainingService";
 import { WorldCircuitService } from "./systems/global/WorldCircuitService";
 import { enforceHardCapRosterOverflow, HARD_CAP_ROSTER_SIZE } from "./overflow";
 import type { Rikishi } from "./types/rikishi";
-import { getOyakataForHeya, getRikishi, getHeya, getActiveRikishi } from "./queries";
+import { getOyakataForHeya, getRikishi, getHeya } from "./queries";
 import { getAvailableStables } from "./selectors";
 import { stableSort } from "./utils/sort";
 import { createImpactBuilder } from "./core/ImpactBuilder";
