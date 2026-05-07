@@ -58,7 +58,14 @@ async function createWindow(): Promise<void> {
 
   // Open external links in the OS browser, not inside Electron
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith("https:")) shell.openExternal(url);
+    try {
+      const parsedUrl = new URL(url);
+      if (parsedUrl.protocol === "https:") {
+        shell.openExternal(url);
+      }
+    } catch (e) {
+      console.error("Invalid URL passed to openExternal:", url);
+    }
     return { action: "deny" };
   });
 
