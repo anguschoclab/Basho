@@ -5,7 +5,7 @@
  * Extracted from uiDigest.ts to eliminate monolithic structure.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 
 import type { WorldState } from "../../engine/types/world";
 import { BardEngine } from "../../engine/narrative/BardEngine";

@@ -5,7 +5,7 @@ import { TalentPoolService } from "../systems/generation/TalentPoolService";
 
 describe("Global Cup & Talent Pool Parity", () => {
   it("SHOULD pick challengers from the talent pool if available", () => {
-    let world = generateInitialWorld("test-seed-gc");
+    const world = generateInitialWorld("test-seed-gc");
 
     // Inject a specific foreign candidate
     const foreignCandidateId = "cd_mongolian_beast";
