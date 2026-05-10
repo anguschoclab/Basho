@@ -240,15 +240,6 @@ function getInjuryModifier(r: any): string {
 
 export type DurationBand = "brief" | "short" | "moderate" | "long" | "extended";
 
-/** @deprecated Move to BardEngine.resolve for new narrative strings */
-export const DURATION_LABELS: Record<DurationBand, string> = {
-  brief: "A brief moment",
-  short: "A short while",
-  moderate: "Some time",
-  long: "A long time",
-  extended: "An extended period",
-};
-
 export function toDurationBand(days: number): DurationBand {
   if (days <= 1) return "brief";
   if (days <= 7) return "short";

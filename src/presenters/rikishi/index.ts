@@ -128,9 +128,3 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishiDTO {
     ...toH2HDTO(r),
   };
 }
-
-/**
- * Legacy compatibility export.
- * @deprecated Use projectRikishi instead.
- */
-export { projectRikishi as toUIRikishi };

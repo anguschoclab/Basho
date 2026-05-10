@@ -34,11 +34,9 @@ export {
 // ============================================================================
 export {
   evaluateFinanceStrategy,
-  DefaultFinanceStrategy,
-  TraditionalistFinanceStrategy,
 } from "./NPCFinanceCalculator";
 
-export { evaluateGovernanceStrategy, DefaultGovernanceStrategy } from "./NPCGovernanceCalculator";
+export { evaluateGovernanceStrategy } from "./NPCGovernanceCalculator";
 
 // ============================================================================
 // Re-export from legacy locations (for backward compatibility)

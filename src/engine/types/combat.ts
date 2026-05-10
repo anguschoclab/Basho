@@ -71,15 +71,8 @@ export interface CombatAction {
   isHighRisk?: boolean;
 }
 
-type ActionPreference = Record<TacticalFamily, number>;
-
-export type Style = "oshi" | "yotsu" | "hybrid";
-
 /** Type representing stance. */
 export type Stance = "migi-yotsu" | "hidari-yotsu" | "no-grip" | "belt-dominant" | "push-dominant";
-
-/** Type representing kimarite family. */
-type KimariteFamily = "OSHI" | "YOTSU" | "THROW" | "TRIP" | "PULLDOWN" | "REVERSAL" | "SPECIAL";
 
 /** Type representing kimarite id. */
 export type KimariteId =

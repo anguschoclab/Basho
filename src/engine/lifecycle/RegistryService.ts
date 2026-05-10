@@ -81,7 +81,7 @@ export function runCareerJournalUpdates(world: WorldState): StateImpact {
   const builder = createImpactBuilder("careerJournalUpdates");
 
   for (const r of getActiveRikishi(world)) {
-    // DEPRECATED: Career wins/losses are now updated per-bout in boutResultApplier.ts
+    // Note: Career wins/losses are now updated per-bout in boutResultApplier.ts
     // This function now only handles momentum updates and yusho counting
 
     // Update yusho count

@@ -6,7 +6,6 @@ import type { Id, IdMap } from "./common";
 import type { EventsState } from "./events";
 import type { BanzukeSnapshot } from "./banzuke";
 import type { BashoName, MatchSchedule, StandingsTable } from "./basho";
-import type { FTUEState } from "./narrative";
 import type { Oyakata } from "./oyakata";
 import type { Rikishi } from "./rikishi";
 import type { Heya } from "./heya";
@@ -78,8 +77,6 @@ export interface SerializedWorldState {
   rivalriesState?: RivalriesState;
   myosekiMarket?: MyosekiMarket;
 
-  /** @deprecated Legacy field for first basho event suppression. TutorialState handles onboarding steps - different purpose. Retained for save compatibility. */
-  ftue?: FTUEState;
   playerHeyaId?: Id;
 
   currentBanzuke?: BanzukeSnapshot;

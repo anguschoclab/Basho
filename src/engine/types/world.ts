@@ -7,7 +7,6 @@ import type { EventsState } from "./events";
 import type { BanzukeSnapshot } from "./banzuke";
 import type { BashoName, BashoResult, AwardLogEntry, BoutResult } from "./basho";
 import type { GovernanceRuling, IchimonName, Faction } from "./economy";
-import type { FTUEState } from "./narrative";
 import type { HeyaTrainingState } from "./training";
 import type { Oyakata } from "./oyakata";
 import type { Rikishi } from "./rikishi";
@@ -166,8 +165,6 @@ export interface WorldState {
   factions?: Record<IchimonName, Faction>;
 
   almanacSnapshots?: AlmanacSnapshot[];
-  /** @deprecated Legacy field for first basho event suppression. TutorialState handles onboarding steps - different purpose. Retained for save compatibility. */
-  ftue?: FTUEState;
   tutorialState?: TutorialState;
   playerHeyaId?: Id;
 

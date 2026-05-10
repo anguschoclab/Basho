@@ -37,7 +37,7 @@ import {
 } from "lucide-react";
 
 import { DEFAULT_CRITICAL_GATES } from "@/presenters/uiDigest";
-import { toDurationBand, DURATION_LABELS } from "@/engine/descriptorBands";
+import { toDurationBand } from "@/engine/descriptorBands";
 import type {
   HolidayConfig,
   HolidayResult,
@@ -246,7 +246,10 @@ export function HolidayControls({ onHoliday, playerHeyaId, currentPhase }: Holid
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-3 rounded-lg bg-secondary/50 text-center">
                   <div className="text-2xl font-bold">
-                    {DURATION_LABELS[toDurationBand(result.daysAdvanced)]}
+                    {(() => {
+                      const band = toDurationBand(result.daysAdvanced);
+                      return band === "brief" ? "A brief moment" : band === "short" ? "A short while" : band === "moderate" ? "Some time" : band === "long" ? "A long time" : "An extended period";
+                    })()}
                   </div>
                   <div className="text-xs text-muted-foreground">Time Passed</div>
                 </div>

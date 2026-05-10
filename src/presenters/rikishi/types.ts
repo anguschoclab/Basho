@@ -217,5 +217,5 @@ export interface UIRikishiDTO
 // Legacy Compatibility
 // ============================================================================
 
-/** @deprecated Use UIRikishiDTO instead. Maintained for backward compatibility. */
+/** Type alias for UIRikishiDTO for backward compatibility. */
 export type UIRikishi = UIRikishiDTO;
