@@ -34,7 +34,6 @@ export const DynastyService = {
       if (!oyakata) continue;
 
       const age = oyakata.age;
-      // console.log(`[SuccessionCheck] ${heya.name} Oyakata ${oyakata.name} age: ${age}`);
 
       // 1. Soft Readiness (60-65)
       // Readiness reaches 100 at age 65 (JSA Rules)
