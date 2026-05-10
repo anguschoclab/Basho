@@ -79,7 +79,6 @@ describe("projectRosterEntry", () => {
     talentSeed: 90,
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing edge case with invalid archetype
-    derivedArchetype: "Defensive_Stalwart" as any,
   });
 
   it("should map base rikishi properties correctly", () => {

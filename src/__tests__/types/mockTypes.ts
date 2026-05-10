@@ -137,7 +137,6 @@ export interface MockRikishi {
     kenshoEarned?: number;
     koenkaiIds?: string[];
   };
-  derivedArchetype?: string;
   [key: string]: unknown;
 }
 

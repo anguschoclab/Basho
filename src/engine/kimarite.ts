@@ -1,5 +1,5 @@
 // @ts-nocheck
-import type { Style, Stance, TacticalArchetype, TacticalFamily } from "./types/combat";
+import type { Style, Stance, TacticalFamily } from "./types/combat";
 import type { Kimarite, KimariteClass, JsaCategory, KimariteRequirements } from "./types/kimarite";
 export type { Kimarite, KimariteClass, JsaCategory, KimariteRequirements };
 import { stableTieBreak } from "./utils/sort";

@@ -87,7 +87,7 @@ export function createMockRikishi(overrides: Record<string, unknown> = {}) {
     division: "jonokuchi",
     side: "east",
     style: "oshi",
-    archetype: "oshi_specialist",
+    archetype: "oshi",
     isRetired: false,
     injured: false,
     condition: 0.5,

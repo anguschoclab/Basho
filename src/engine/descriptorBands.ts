@@ -9,7 +9,6 @@
  */
 
 import { NarrativeService } from "./systems/narrative/NarrativeService";
-import { RikishiArchetype } from "./types/combat";
 import { SeededRNG } from "./rng";
 
 // --- AUTHORITATIVE DELEGATION ---

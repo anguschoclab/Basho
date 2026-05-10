@@ -1,8 +1,8 @@
 import type { Id } from "../engine/types/common";
-import type { Rikishi, RikishiArchetype } from "../engine/types/rikishi";
+import type { Rikishi } from "../engine/types/rikishi";
 import type { WorldState } from "../engine/types/world";
 import type { Rank, Division, Side } from "../engine/types/banzuke";
-import type { Style, TacticalArchetype } from "../engine/types/combat";
+import type { Style } from "../engine/types/combat";
 import type { AvatarConfig } from "../engine/types/avatar";
 import type { KeshoMawashi, YokozunaTsuna } from "../engine/types/keshoMawashi";
 import {
@@ -57,12 +57,6 @@ export interface UIRikishi {
   style: Style;
   styleName: string;
   archetypeName: string;
-  combatArchetype?: string;
-  /** @deprecated retained for legacy display only; prefer archetypeName */
-  archetype?: TacticalArchetype;
-  /** @deprecated retained for legacy display only; prefer archetypeName */
-  derivedArchetype?: RikishiArchetype;
-  derivedArchetypeName: string;
   isRetired: boolean;
   isInjured: boolean;
   injurySummary: string;
@@ -327,13 +321,9 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
   const styleEntry = BardEngine.getRegistryEntry("styles", r.style);
   const styleName = styleEntry?.label ?? r.style;
 
-  const combatArchetype = r.combatProfile?.archetype ?? r.archetype;
+  const combatArchetype = r.combatProfile?.archetype ?? "hybrid";
   const archEntry = BardEngine.getRegistryEntry("archetypes", combatArchetype);
   const archetypeName = archEntry?.label ?? combatArchetype;
-
-  const derivedArchetype = r.derivedArchetype || "all_rounder";
-  const dArchEntry = BardEngine.getRegistryEntry("archetypes", derivedArchetype);
-  const derivedArchetypeName = dArchEntry?.label ?? derivedArchetype;
 
   const favoredKimariteDetailed = calculateMostFrequentKimarite(r.history ?? []);
 
@@ -357,8 +347,6 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     style: r.style,
     styleName,
     archetypeName,
-    combatArchetype: combatArchetype,
-    derivedArchetypeName,
     isRetired: r.isRetired ?? false,
     isInjured: r.injured,
     injurySummary: calculateInjurySummary(rng, r),
@@ -554,7 +542,7 @@ export function projectRosterEntry(
     archetypeLabel:
       BardEngine.getRegistryEntry(
         "archetypes",
-        r.combatProfile?.archetype ?? r.archetype ?? r.derivedArchetype
+        r.combatProfile?.archetype ?? "hybrid"
       )?.label || "Rikishi",
     rankDelta,
     avatarConfig: r.avatarConfig,

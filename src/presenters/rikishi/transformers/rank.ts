@@ -32,7 +32,7 @@ export function toStyleDTO(r: Rikishi): RikishiStyleDTO {
   const styleEntry = BardEngine.getRegistryEntry("styles", r.style);
   const styleName = styleEntry?.label ?? r.style;
 
-  const combatArchetype = r.combatProfile?.archetype ?? r.archetype;
+  const combatArchetype = r.combatProfile?.archetype ?? "hybrid";
   const archEntry = BardEngine.getRegistryEntry("archetypes", combatArchetype);
   const archetypeName = archEntry?.label ?? combatArchetype;
 

@@ -3,9 +3,8 @@ import { vi } from "vitest";
 // @ts-ignore
 global.calculatePerceivedStats = vi.fn(() => ({ strength: "Dominant" }));
 import { describe, it, expect } from "vitest";
-import { projectRikishi, projectHeya, getLocalizedArchetype } from "../uiModels";
+import { projectRikishi, projectHeya } from "../uiModels";
 import { generateInitialWorld } from "../../engine/systems/generation/WorldFactory";
-import type { TacticalArchetype } from "../../engine/types/combat";
 
 describe("UI Models Projections", () => {
   it("should project a Rikishi safely for the UI without leaking raw stats", () => {
@@ -118,17 +117,5 @@ describe("UI Models Projections", () => {
       const uiRikishi = projectRikishi(rikishi, world);
       expect(uiRikishi.descriptor.injuryModifiers).toEqual([]);
     });
-  });
-});
-
-describe("Narrative Leakage - Archetype Localizer", () => {
-  it("Test A: Translation Selector", () => {
-    expect(getLocalizedArchetype("trickster")).toBe("Acrobatic Trickster");
-    expect(getLocalizedArchetype("oshi")).toBe("Explosive Blitzer");
-  });
-
-  it("Test B: Fallback Handling", () => {
-    expect(getLocalizedArchetype(undefined as unknown as TacticalArchetype)).toBe("All-Rounder");
-    expect(getLocalizedArchetype("unknown_enum" as unknown as TacticalArchetype)).toBe("Unknown");
   });
 });

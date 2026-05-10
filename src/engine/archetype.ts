@@ -1,23 +1,5 @@
-import { RikishiStats } from "./types/rikishi";
-import { CombatArchetype, CombatProfile, Style, RikishiArchetype } from "./types/combat";
+import { CombatArchetype, CombatProfile, Style } from "./types/combat";
 import { SeededRNG } from "./rng";
-
-/**
- * @deprecated Use CombatArchetype directly. deriveArchetype is kept only for backward compatibility with UI labels.
- * Derive a legacy RikishiArchetype from stats and physicals.
- * Retained only for generating derivedArchetype UI labels on existing rikishi.
- */
-export function deriveArchetype(
-  stats: RikishiStats,
-  physicals: { height: number; weight: number },
-  style: Style
-): RikishiArchetype {
-  if (style === "oshi" && stats.speed >= 70) return "Explosive_Blitzer";
-  if (style === "yotsu" && physicals.weight >= 170) return "Immovable_Mountain";
-  if (style === "yotsu" && stats.technique >= 75) return "Defensive_Stalwart";
-  if (stats.speed >= 80 && stats.technique >= 75) return "Acrobatic_Trickster";
-  return "All_Rounder";
-}
 
 const ARCHETYPE_DEFINITIONS: Record<CombatArchetype, Omit<CombatProfile, "archetype">> = {
   trickster: {

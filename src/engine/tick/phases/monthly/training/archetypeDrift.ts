@@ -17,26 +17,28 @@ export function processArchetypeDrift(
 ): boolean {
   const evidence = nextR.archetypeEvidence;
   if (evidence && !Array.isArray(evidence)) {
-    let newArchetype = nextR.tacticalArchetypePrimary;
+    let newArchetype = nextR.combatProfile?.archetype ?? "hybrid";
     if (evidence.push.success >= 5 && evidence.push.success > evidence.grapple.success)
       newArchetype = "oshi";
     else if (evidence.grapple.success >= 5 && evidence.grapple.success > evidence.push.success)
       newArchetype = "yotsu";
 
-    if (newArchetype !== nextR.tacticalArchetypePrimary) {
+    if (newArchetype !== nextR.combatProfile?.archetype) {
       builder.logEvent(
         "TRAINING_UPDATE",
         "training",
         {
           rikishiId: id,
           shikona: nextR.shikona,
-          from: nextR.tacticalArchetypePrimary,
+          from: nextR.combatProfile?.archetype,
           to: newArchetype,
           reason: "monthly_archetype_evaluation",
         },
         { rikishiId: id, importance: "notable" }
       );
-      nextR.tacticalArchetypePrimary = newArchetype;
+      if (nextR.combatProfile) {
+        nextR.combatProfile.archetype = newArchetype;
+      }
     }
     nextR.archetypeEvidence = {
       push: { success: 0, fail: 0 },

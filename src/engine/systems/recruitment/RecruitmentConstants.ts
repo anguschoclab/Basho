@@ -8,7 +8,7 @@
  */
 
 import type { Rank } from "../../types/banzuke";
-import type { Style, TacticalArchetype, CombatArchetype } from "../../types/combat";
+import type { Style } from "../../types/combat";
 
 /** Human-readable rank labels (JA + EN). */
 export interface RankLabel {
@@ -33,23 +33,6 @@ export const STYLE_NAMES: Record<Style, object> = {
   oshi: {},
   yotsu: {},
   hybrid: {},
-};
-
-/** Tactical + Combat archetype labels - NOW IN archive.json */
-export const ARCHETYPE_NAMES: Record<TacticalArchetype | CombatArchetype, object> = {
-  oshi_specialist: {},
-  yotsu_specialist: {},
-  speedster: {},
-  trickster: {},
-  all_rounder: {},
-  hybrid_oshi_yotsu: {},
-  counter_specialist: {},
-  oshi: {},
-  yotsu: {},
-  hybrid: {},
-  giant: {},
-  tsuppari: {},
-  defensive: {},
 };
 
 /** Scouting Confidence Levels */

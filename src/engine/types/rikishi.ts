@@ -10,11 +10,7 @@ import {
   CombatArchetype,
   KimariteId,
   CombatProfile,
-  RikishiArchetype,
-  TacticalArchetype,
 } from "./combat";
-
-export type { RikishiArchetype, TacticalArchetype };
 
 import type { Division, Rank, Side } from "./banzuke";
 import type { H2HRecord, MatchResultLog } from "./records";
@@ -122,13 +118,6 @@ export interface Rikishi {
   trainingFocus?: string;
   combatProfile: CombatProfile;
 
-  /** @deprecated Use combatProfile.archetype. Retained for legacy save compatibility. */
-  archetype?: TacticalArchetype;
-  /** @deprecated Use combatProfile.archetype for label lookups via ARCHETYPE_NAMES. */
-  derivedArchetype?: RikishiArchetype;
-  /** @deprecated Use combatProfile.archetype. */
-  tacticalArchetypePrimary?: CombatArchetype;
-  tacticalArchetypeSecondary?: CombatArchetype;
   archetypeEvidence: ArchetypeEvidence;
 
   division: Division;

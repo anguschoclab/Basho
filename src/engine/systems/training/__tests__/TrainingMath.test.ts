@@ -8,7 +8,6 @@ import {
 } from "../TrainingMath";
 import { mockRikishi } from "../../../__tests__/utils";
 import type { TrainingProfile, IndividualFocus } from "../../../types/training";
-import type { RikishiArchetype } from "../../../types/combat";
 import type { Heya } from "../../../types/heya";
 import type { WorldState } from "../../../types/world";
 
@@ -146,7 +145,6 @@ describe("TrainingMath", () => {
         } as any,
         experience: 40,
       });
-      rikishi.derivedArchetype = "all_rounder" as RikishiArchetype;
 
       const profile: TrainingProfile = {
         intensity: "balanced",

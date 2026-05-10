@@ -11,7 +11,7 @@ import { rngFromSeed } from "./rng";
 import type { Rikishi, RikishiStats } from "./types/rikishi";
 import type { Rank } from "./types/banzuke";
 import { generateShikona } from "./shikona";
-import { CombatArchetype, TacticalArchetype, RikishiArchetype } from "./types/combat";
+import { CombatArchetype } from "./types/combat";
 import { WorldState } from "./types/world";
 import type { InjurySeverity } from "./systems/health/BodyDefinitions";
 import { buildCombatProfile, deriveWeakAgainstStyles } from "./archetype";
@@ -260,7 +260,6 @@ function _generateRookie(
     momentum: 50,
     stamina: stats.stamina,
 
-    tacticalArchetypePrimary: archetype,
     archetypeEvidence: {
       push: { success: 0, fail: 0 },
       grapple: { success: 0, fail: 0 },
@@ -269,8 +268,6 @@ function _generateRookie(
 
     // Style
     style: archetype === "oshi" ? "oshi" : archetype === "yotsu" ? "yotsu" : "hybrid",
-    archetype: archetype as unknown as TacticalArchetype,
-    derivedArchetype: archetype as unknown as RikishiArchetype,
     combatProfile: buildCombatProfile(archetype),
 
     careerWins: 0,

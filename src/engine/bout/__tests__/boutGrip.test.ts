@@ -27,7 +27,7 @@ describe("initBeltBattle", () => {
   it("morozashi when both arms inside", () => {
     const east = mockRikishi("r1", {
       combatProfile: {
-        archetype: "all_rounder",
+        archetype: "hybrid",
         familyPreferences: { push: 25, belt: 25, trick: 25, speed: 25 },
         preferredGrip: "migi",
         preferredGripDepth: "standard",
@@ -36,7 +36,7 @@ describe("initBeltBattle", () => {
     });
     const west = mockRikishi("r2", {
       combatProfile: {
-        archetype: "all_rounder",
+        archetype: "hybrid",
         familyPreferences: { push: 25, belt: 25, trick: 25, speed: 25 },
         preferredGrip: "hidari",
         preferredGripDepth: "standard",

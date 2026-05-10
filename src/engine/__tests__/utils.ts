@@ -1,5 +1,5 @@
 import type { Rikishi, RikishiStats } from "../types/rikishi";
-import type { TacticalArchetype, CombatArchetype, Style } from "../types/combat";
+import type { CombatArchetype, Style } from "../types/combat";
 import type { WorldState } from "../types/world";
 import type { BashoState } from "../types/basho";
 import type { Heya } from "../types/heya";
@@ -33,7 +33,7 @@ export function mockRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikis
     weight: 140,
     height: 180,
     style: "oshi" as Style,
-    archetype: "all_rounder" as CombatArchetype,
+    archetype: "hybrid" as CombatArchetype,
     power,
     speed,
     balance,
@@ -76,7 +76,7 @@ export function mockRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikis
     favoredKimarite: [],
     weakAgainstStyles: [],
     combatProfile: {
-      archetype: "all_rounder" as TacticalArchetype,
+      archetype: "all_rounder" as CombatArchetype,
       familyPreferences: { push: 25, belt: 25, trick: 25, speed: 25 },
       preferredGrip: "none",
       preferredGripDepth: "standard",

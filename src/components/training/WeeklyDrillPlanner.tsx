@@ -114,7 +114,7 @@ export function WeeklyDrillPlanner({
       // If we have selected IDs, only autoset those, otherwise autoset all
       if (selectedIds.size > 0 && !selectedIds.has(rikishi.id)) return;
 
-      const arch = rikishi.archetype ?? rikishi.combatProfile?.archetype ?? "hybrid";
+      const arch = rikishi.combatProfile?.archetype ?? "hybrid";
       const schedule: Record<number, DrillType> = {};
 
       DAYS.forEach((d) => {

@@ -64,7 +64,7 @@ import {
   getInjurySeverityLabel,
   getWinRateLabel,
 } from "./NarrativeProse";
-import type { RikishiArchetype } from "../../types/combat";
+import type { CombatArchetype } from "../../types/combat";
 
 const HYSTERESIS_DELTA = 5;
 
@@ -211,7 +211,7 @@ export const NarrativeService = {
 
   getArchetypeInfo(
     rng: SeededRNG,
-    archetype: RikishiArchetype
+    archetype: CombatArchetype
   ): { label: string; description: string } {
     return getArchetypeInfo(rng, archetype);
   },

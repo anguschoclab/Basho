@@ -9,7 +9,7 @@
 
 import { BardEngine } from "../../narrative/BardEngine";
 import { SeededRNG } from "../../rng";
-import type { RikishiArchetype } from "../../types/combat";
+import type { CombatArchetype } from "../../types/combat";
 import type {
   StatBand,
   FatigueBand,
@@ -96,7 +96,7 @@ export function getTraitLabel(rng: SeededRNG, band: TraitBand): string {
 // === Archetype Info ===
 export function getArchetypeInfo(
   rng: SeededRNG,
-  archetype: RikishiArchetype
+  archetype: CombatArchetype
 ): { label: string; description: string } {
   const label = BardEngine.resolve(rng, `rikishi.archetypes.${archetype}.label`).text;
   const description = BardEngine.resolve(rng, `rikishi.archetypes.${archetype}.description`).text;
