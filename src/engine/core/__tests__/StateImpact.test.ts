@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { isStateImpact, createEmptyImpact } from "../StateImpact";
+import { isStateImpact, createEmptyImpact, resetImpactTimestampCounter } from "../StateImpact";
 import type { StateImpact } from "../StateImpact";
 
 describe("StateImpact", () => {
@@ -87,11 +87,15 @@ describe("StateImpact", () => {
     });
 
     it("generates timestamp when not provided", () => {
-      const before = Date.now();
-      const impact = createEmptyImpact({ source: "test" });
-      const after = Date.now();
-      expect(impact.metadata?.timestamp).toBeGreaterThanOrEqual(before);
-      expect(impact.metadata?.timestamp).toBeLessThanOrEqual(after);
+      resetImpactTimestampCounter();
+      const impact1 = createEmptyImpact({ source: "test" });
+      const impact2 = createEmptyImpact({ source: "test" });
+      expect(impact1.metadata?.timestamp).toBeDefined();
+      expect(impact2.metadata?.timestamp).toBeDefined();
+      expect(typeof impact1.metadata?.timestamp).toBe("number");
+      expect(typeof impact2.metadata?.timestamp).toBe("number");
+      // Check that timestamps increment deterministically
+      expect(impact2.metadata?.timestamp).toBeGreaterThan(impact1.metadata?.timestamp as number);
     });
   });
 
