@@ -23,6 +23,7 @@ import { generateOyakata } from "../../oyakataPersonalities";
 import { generateAvatarConfig } from "../../avatarGenerator";
 import { HEYA_SIGNATURE_PREFIXES, extractPrefixFromShikona } from "../../shikona/heyaPrefixes";
 import { RivalryService } from "../narrative/RivalryService";
+import { resetImpactTimestampCounter } from "../../core/StateImpact";
 
 /**
  * Creates a new Heya and its associated Oyakata.
@@ -283,6 +284,8 @@ export function createRosters(
  * Main orchestrator for world generation.
  */
 export function generateInitialWorld(seed: string): WorldState {
+  // Reset impact timestamp counter for deterministic simulation
+  resetImpactTimestampCounter();
   const worldRng = rngFromSeed(seed, "worldgen", "world");
 
   // 1. Create Stables

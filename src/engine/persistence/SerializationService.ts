@@ -2,17 +2,20 @@
 import { stableTieBreak } from "../utils/sort";
 import { phase02_context } from "../tick/phases/phase02_context";
 import { resolveImpacts } from "../core/ImpactResolver";
-import {
-  WorldState,
-  SerializedWorldState,
-  BashoState,
-  SerializedBashoState,
-  Rikishi,
-  Heya,
-  SerializedSponsorPoolFixed as SerializedSponsorPool,
-} from "../types/index";
-
-import type { SponsorPool } from "../types/sponsors";
+import type { WorldState } from "../types/world";
+import type { BashoState, SerializedBashoState } from "../types/basho";
+import type { SponsorPool, SerializedSponsorPool } from "../types/sponsors";
+import type { SerializedWorldState } from "../types/save";
+import type { Rikishi } from "../types/rikishi";
+import type { Heya } from "../types/heya";
+import type { Oyakata } from "../types/oyakata";
+import type { Staff } from "../types/staff";
+import type { MyosekiStock, MyosekiTransaction } from "../types/myoseki";
+import type { BashoResult, AwardLogEntry } from "../types/basho";
+import type { GovernanceRuling } from "../types/economy";
+import type { LineageEdge } from "../types/training";
+import type { HallOfFameState } from "../almanac";
+import { resetImpactTimestampCounter } from "../core/StateImpact";
 
 /**
  * Serialization Service handles the transformation between runtime Maps
@@ -126,6 +129,8 @@ export const SerializationService = {
    * immediately has valid activeModifiers without requiring a tick.
    */
   deserializeWorld(serialized: SerializedWorldState): WorldState {
+    // Reset impact timestamp counter for deterministic simulation when loading saved world
+    resetImpactTimestampCounter();
     const s = serialized;
 
     // Sanitization Pass
