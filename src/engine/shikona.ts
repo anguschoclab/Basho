@@ -42,7 +42,10 @@ export function generateShikona(
   config: ShikonaGenerationConfig = {}
 ): string {
   const rng = config.rng
-    ? () => config.rng?.next() ?? Math.random()
+    ? (() => {
+        const rngInstance = config.rng!;
+        return () => rngInstance.next();
+      })()
     : seededRandom(seed + (config.heyaId || "") + (config.nationality || ""));
 
   const house = getHouseStyle(config.heyaId);

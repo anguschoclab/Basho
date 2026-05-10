@@ -23,6 +23,27 @@ import type {
 } from "../types/events";
 
 /**
+ * Deterministic timestamp counter for impact metadata.
+ * Ensures timestamps are deterministic across simulation runs.
+ */
+let impactTimestampCounter = 0;
+
+/**
+ * Reset the impact timestamp counter.
+ * Call this when starting a new simulation or loading a saved world.
+ */
+export function resetImpactTimestampCounter(): void {
+  impactTimestampCounter = 0;
+}
+
+/**
+ * Get the next deterministic timestamp.
+ */
+function getNextTimestamp(): number {
+  return ++impactTimestampCounter;
+}
+
+/**
  * A partial state patch describing changes to apply.
  * Simulation passes return StateImpact objects instead of mutating state directly.
  */
@@ -199,7 +220,7 @@ export function createEmptyImpact(metadata?: StateImpact["metadata"]): StateImpa
     metadata: {
       ...metadata,
       source: metadata?.source || "unknown",
-      timestamp: metadata?.timestamp ?? Date.now(),
+      timestamp: metadata?.timestamp ?? getNextTimestamp(),
     },
   };
 }

@@ -20,7 +20,7 @@ import type {
 import type { HeyaTrainingState } from "../types/training";
 import type { MyosekiStock, MyosekiTransaction } from "../types/myoseki";
 import type { Staff } from "../types/staff";
-import { createEmptyImpact } from "./StateImpact";
+import { createEmptyImpact, getNextTimestamp } from "./StateImpact";
 
 /**
  * Deep merge two objects, handling nested structures.
@@ -89,7 +89,7 @@ export class ImpactBuilder {
     this.source = source;
     this.impact = createEmptyImpact({
       source,
-      timestamp: Date.now(),
+      timestamp: getNextTimestamp(),
     });
   }
 
@@ -522,7 +522,7 @@ export class ImpactBuilder {
     if (!this.impact.metadata) {
       this.impact.metadata = {
         source: this.source,
-        timestamp: Date.now(),
+        timestamp: getNextTimestamp(),
       };
     }
     (this.impact.metadata as Record<string, unknown>)[key] = value;

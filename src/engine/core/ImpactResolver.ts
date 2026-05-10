@@ -8,6 +8,7 @@ import type { MyosekiStock, MyosekiTransaction } from "../types/myoseki";
 import type { Staff } from "../types/staff";
 import type { StateImpact } from "./StateImpact";
 import { logEngineEvent } from "../events";
+import { getNextTimestamp } from "./StateImpact";
 
 /**
  * Apply a single StateImpact to a WorldState.
@@ -399,7 +400,7 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
     events: [],
     metadata: {
       source: "merged",
-      timestamp: Date.now(),
+      timestamp: getNextTimestamp(),
     },
   };
 
