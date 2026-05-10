@@ -9,6 +9,7 @@ import { createImpactBuilder } from "../core/ImpactBuilder";
 import { resolveImpacts } from "../core/ImpactResolver";
 import type { StateImpact } from "../core/StateImpact";
 import { checkShikonaChange, recordShikonaChange } from "../history";
+import type { Rikishi } from "../types/rikishi";
 
 function getCurrentBasho(world: WorldState): BashoState | undefined {
   return world.currentBasho;
@@ -38,7 +39,9 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
   const standingEntries = Array.from(standings.entries());
 
   const currentBanzukeList: BanzukeEntry[] = [];
-  for (const r of world.rikishi.values()) {
+  for (const rikishiId of world.activeRikishiIds) {
+    const r = world.rikishi.get(rikishiId);
+    if (!r) continue;
     currentBanzukeList.push({
       rikishiId: r.id,
       division: r.division,
@@ -90,9 +93,9 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       }
       // Promotion Case 4: Prestige Promotion (If world has 0 Yokozuna, 13+ win Yusho is enough)
       else if (stats.wins >= 13) {
-        const activeYokozuna = Array.from(world.rikishi.values()).filter(
-          (r) => r.rank === "yokozuna" && !r.isRetired
-        );
+        const activeYokozuna = Array.from(world.activeRikishiIds)
+          .map((id) => world.rikishi.get(id))
+          .filter((r): r is Rikishi => r !== undefined && r.rank === "yokozuna");
         if (
           activeYokozuna.length === 0 &&
           (isYusho || (rikishi.consecutiveStrongOzeki || 0) >= 3)

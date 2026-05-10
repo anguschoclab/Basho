@@ -93,6 +93,7 @@ export const SerializationService = {
       closedHeyas: this.mapToObject(world.closedHeyas || new Map()),
       rikishi: this.mapToObject(world.rikishi),
       historicalRikishi: this.mapToObject(world.historicalRikishi || new Map()),
+      activeRikishiIds: Array.from(world.activeRikishiIds),
       oyakata: this.mapToObject(world.oyakata),
       staff: this.mapToObject(world.staff || new Map()),
       currentBasho: world.currentBasho ? this.serializeBashoState(world.currentBasho) : undefined,
@@ -152,6 +153,7 @@ export const SerializationService = {
       closedHeyas: this.objectToMap(s.closedHeyas || {}),
       rikishi: this.objectToMap(rikishiObj),
       historicalRikishi: this.objectToMap(s.historicalRikishi || {}),
+      activeRikishiIds: new Set(s.activeRikishiIds || []),
       oyakata: this.objectToMap(s.oyakata || {}),
       staff: this.objectToMap(s.staff || {}),
 

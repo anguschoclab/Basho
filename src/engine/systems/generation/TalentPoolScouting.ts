@@ -58,8 +58,9 @@ export function getCandidateScoutingLevel(world: WorldState, candidateId: Id): n
  */
 export function getForeignCountInHeya(world: WorldState, heyaId: Id): number {
   let count = 0;
-  for (const r of world.rikishi.values()) {
-    if (r.heyaId === heyaId && (r.nationality ?? "Japan") !== "Japan") {
+  for (const rikishiId of world.activeRikishiIds) {
+    const r = world.rikishi.get(rikishiId);
+    if (r && r.heyaId === heyaId && (r.nationality ?? "Japan") !== "Japan") {
       count++;
     }
   }

@@ -139,6 +139,8 @@ export interface WorldState {
 
   rikishi: IdMapRuntime<Rikishi>;
   historicalRikishi: IdMapRuntime<Rikishi>;
+  /** Set of active (non-retired) rikishi IDs for efficient iteration. */
+  activeRikishiIds: Set<string>;
   oyakata: IdMapRuntime<Oyakata>;
 
   history: BashoResult[];

@@ -23,8 +23,9 @@ export const GlobalCupService = {
    * Selection: Top 6 JSA Rikishi (by Rank) + 2 International Challengers.
    */
   selectParticipants(world: WorldState): GlobalCupParticipant[] {
-    const pool = Array.from(world.rikishi.values())
-      .filter((r) => !r.isRetired && !r.injured)
+    const pool = Array.from(world.activeRikishiIds)
+      .map((id) => world.rikishi.get(id))
+      .filter((r): r is Rikishi => r !== undefined && !r.injured)
       .sort((a, b) => {
         const rankVal = (r: Rikishi) =>
           r.rank === "yokozuna"

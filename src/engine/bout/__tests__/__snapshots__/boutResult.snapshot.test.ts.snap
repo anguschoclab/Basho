@@ -3,8 +3,8 @@
 exports[`BoutResult snapshot > BoutResult shape snapshot 1`] = `
 {
   "boutId": "test-001",
-  "duration": 18,
-  "excitementScore": 5,
+  "duration": 20,
+  "excitementScore": 6,
   "isKinboshi": false,
   "kenshoEnvelopes": 0,
   "kimarite": "oshidashi",

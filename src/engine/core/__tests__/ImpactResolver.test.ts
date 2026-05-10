@@ -23,6 +23,7 @@ describe("ImpactResolver", () => {
       heyas: new Map(),
       rikishi: new Map(),
       historicalRikishi: new Map(),
+      activeRikishiIds: new Set(),
       oyakata: new Map(),
       events: { version: "1.0.0", log: [], dedupe: {} },
       history: [],

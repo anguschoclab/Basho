@@ -321,7 +321,9 @@ export function runRetirements(world: WorldState): StateImpact {
   const vacanciesByHeyaId: Record<string, number> = {};
   const rikishiToRetire: string[] = [];
 
-  for (const r of stableSort(world.rikishi.values(), (x) => x.id)) {
+  for (const rikishiId of world.activeRikishiIds) {
+    const r = world.rikishi.get(rikishiId);
+    if (!r) continue;
     const id = r.id;
     const reason = checkRetirement(r, world.year, world.seed);
     if (reason) {

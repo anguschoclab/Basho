@@ -322,6 +322,13 @@ export class ImpactBuilder {
       this.impact.collections.rikishiToAdd = [];
     }
     this.impact.collections.rikishiToAdd.push(rikishi);
+
+    // Track in activeRikishiIds
+    if (!this.impact.collections.activeRikishiIdsToAdd) {
+      this.impact.collections.activeRikishiIdsToAdd = [];
+    }
+    this.impact.collections.activeRikishiIdsToAdd.push(rikishi.id);
+
     return this;
   }
 
@@ -336,6 +343,13 @@ export class ImpactBuilder {
       this.impact.collections.rikishiToRemove = [];
     }
     this.impact.collections.rikishiToRemove.push(id);
+
+    // Remove from activeRikishiIds
+    if (!this.impact.collections.activeRikishiIdsToRemove) {
+      this.impact.collections.activeRikishiIdsToRemove = [];
+    }
+    this.impact.collections.activeRikishiIdsToRemove.push(id);
+
     return this;
   }
 
@@ -356,6 +370,13 @@ export class ImpactBuilder {
       this.impact.collections.rikishiToHistorical = [];
     }
     this.impact.collections.rikishiToHistorical.push(id);
+
+    // Remove from activeRikishiIds
+    if (!this.impact.collections.activeRikishiIdsToRemove) {
+      this.impact.collections.activeRikishiIdsToRemove = [];
+    }
+    this.impact.collections.activeRikishiIdsToRemove.push(id);
+
     return this;
   }
 
@@ -370,6 +391,13 @@ export class ImpactBuilder {
       this.impact.collections.rikishiFromHistorical = [];
     }
     this.impact.collections.rikishiFromHistorical.push(id);
+
+    // Add back to activeRikishiIds
+    if (!this.impact.collections.activeRikishiIdsToAdd) {
+      this.impact.collections.activeRikishiIdsToAdd = [];
+    }
+    this.impact.collections.activeRikishiIdsToAdd.push(id);
+
     return this;
   }
 

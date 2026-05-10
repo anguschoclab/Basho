@@ -28,19 +28,15 @@ function getCache(world: WorldState): SelectorCache {
  * Returns all active (non-retired) rikishi.
  * Uses a single for-of loop and memoizes the result per tick.
  */
-export function getActiveRikishi(world: WorldState): Rikishi[] {
-  const cache = getCache(world);
-  if (cache.activeRikishi) return cache.activeRikishi;
-
-  const result: Rikishi[] = [];
-  for (const r of world.rikishi.values()) {
-    if (!r.isRetired) {
-      result.push(r);
-    }
+export const getActiveRikishi = createSelector(
+  [selectRikishi, selectWorld],
+  (rikishi, world) => {
+    if (!world) return [];
+    return Array.from(world.activeRikishiIds)
+      .map((id) => rikishi.get(id))
+      .filter((r): r is Rikishi => r !== undefined);
   }
-  cache.activeRikishi = result;
-  return result;
-}
+);
 
 /**
  * Returns all eligible opponents for a given rikishi.

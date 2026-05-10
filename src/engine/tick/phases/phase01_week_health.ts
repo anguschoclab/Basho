@@ -40,8 +40,9 @@ interface RikishiWithFatigue extends Rikishi {
 export function phase01_week_health(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_health");
 
-  for (const [id, rikishi] of world.rikishi) {
-    if (rikishi.isRetired) continue;
+  for (const id of world.activeRikishiIds) {
+    const rikishi = world.rikishi.get(id);
+    if (!rikishi) continue;
 
     const r = { ...rikishi };
     let changed = false;

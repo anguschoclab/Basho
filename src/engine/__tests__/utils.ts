@@ -110,9 +110,11 @@ export function makeMockHeya(id: string, overrides: Partial<Heya> = {}): Heya {
 
 export function makeMockWorld(overrides: Partial<WorldState> = {}): WorldState {
   const seed = overrides.seed || "test-seed";
+  const rikishiMap = overrides.rikishi || new Map();
   return {
-    rikishi: new Map(),
+    rikishi: rikishiMap,
     historicalRikishi: new Map(),
+    activeRikishiIds: new Set(Array.from(rikishiMap.keys())),
     heyas: new Map(),
     staff: new Map(),
     oyakata: new Map(),

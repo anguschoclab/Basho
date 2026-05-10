@@ -161,6 +161,7 @@ function tickPushBattle(
 
   // --- Fix Bug 1 & 2: Force-differential physics ---
   // Per-tick jitter breaks ties; only the LOSING fighter retreats and destabilises.
+  // FIXED: Separate deterministic force differential from jitter to prevent tie-breaking.
 
   // Accumulate per-tick exertion — rate governed by stamina
   st.east.boutFatigue += boutFatigueIncrement(stat(east, "stamina"));
@@ -178,27 +179,34 @@ function tickPushBattle(
   const adjustedWestForce = push.westForce * westFatPenalty;
 
   const massAdvantageEast = (st.east.mass - st.west.mass) * 0.05; // ~5 N per 20 kg difference
-  const jitteredForceDiff =
-    adjustedEastForce - adjustedWestForce + massAdvantageEast + jitter(rng, 3);
-  const displacement = Math.abs(jitteredForceDiff) * 0.04; // meters per tick
 
-  push.contestLine += jitteredForceDiff * 0.01;
+  // Calculate deterministic force differential (no jitter) for directional decisions
+  const baseForceDiff = adjustedEastForce - adjustedWestForce + massAdvantageEast;
 
-  if (jitteredForceDiff > 0) {
+  // Apply jitter to contestLine for variation, but use baseForceDiff for directional decisions
+  const jitteredContestLine = baseForceDiff + jitter(rng, 3);
+  push.contestLine += jitteredContestLine * 0.01;
+
+  // Use absolute baseForceDiff for displacement (jitter affects magnitude via contestLine)
+  const displacement = Math.abs(baseForceDiff) * 0.04; // meters per tick
+
+  // Only retreat/destabilize when there's a real force differential
+  if (baseForceDiff > 0) {
     // East dominant — west retreats toward west's tawara (−4.55)
     push.westLeadFoot -= displacement;
     push.eastLeadFoot -= displacement;
-    st.west.cogOffset += Math.abs(jitteredForceDiff) * 0.003;
-    st.west.velocityX = -jitteredForceDiff * 0.1;
-    st.east.velocityX = -jitteredForceDiff * 0.1;
-  } else if (jitteredForceDiff < 0) {
+    st.west.cogOffset += baseForceDiff * 0.003;
+    st.west.velocityX = -baseForceDiff * 0.1;
+    st.east.velocityX = -baseForceDiff * 0.1;
+  } else if (baseForceDiff < 0) {
     // West dominant — east retreats toward east's tawara (+4.55)
     push.eastLeadFoot += displacement;
     push.westLeadFoot += displacement;
-    st.east.cogOffset += Math.abs(jitteredForceDiff) * 0.003;
-    st.east.velocityX = Math.abs(jitteredForceDiff) * 0.1;
-    st.west.velocityX = Math.abs(jitteredForceDiff) * 0.1;
+    st.east.cogOffset += Math.abs(baseForceDiff) * 0.003;
+    st.east.velocityX = Math.abs(baseForceDiff) * 0.1;
+    st.west.velocityX = Math.abs(baseForceDiff) * 0.1;
   }
+  // When baseForceDiff === 0, neither retreats or destabilizes (tie)
 
   // CR-03: Sync PhysicalBody positions so kimariteClassifier reads current state
   st.east.x = push.eastLeadFoot;
@@ -261,9 +269,10 @@ function tickBeltBattle(
   // Apply torque to CoG — only the losing side destabilises
   if (torqueAdvantage > 0) {
     st.west.cogOffset += torqueAdvantage * 0.003;
-  } else {
+  } else if (torqueAdvantage < 0) {
     st.east.cogOffset += Math.abs(torqueAdvantage) * 0.003;
   }
+  // When torqueAdvantage === 0, neither destabilizes (tie)
 
   // Torque translates to positional displacement — only the retreating fighter moves
   const torqueDisplacementEast = Math.max(0, belt.torqueWest - belt.torqueEast) * 0.005;
@@ -278,8 +287,17 @@ function tickBeltBattle(
   st.west.leadingFootX = push.westLeadFoot;
 
   // Set velocityX for classifier (torque-driven movement)
-  st.east.velocityX = torqueAdvantage < 0 ? Math.abs(torqueAdvantage) * 0.05 : 0;
-  st.west.velocityX = torqueAdvantage > 0 ? torqueAdvantage * 0.05 : 0;
+  if (torqueAdvantage > 0) {
+    st.west.velocityX = torqueAdvantage * 0.05;
+    st.east.velocityX = 0;
+  } else if (torqueAdvantage < 0) {
+    st.east.velocityX = Math.abs(torqueAdvantage) * 0.05;
+    st.west.velocityX = 0;
+  } else {
+    // Tie: neither has velocity
+    st.east.velocityX = 0;
+    st.west.velocityX = 0;
+  }
 
   // CI-03: Mid-fight kimarite attempt
   const attempt = evaluateKimariteAttempt(east, west, push, belt, st, rng, division, meta);

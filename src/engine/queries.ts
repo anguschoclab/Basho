@@ -196,8 +196,9 @@ export function getCurrentBasho(world: WorldState) {
  */
 export function getStableRikishi(world: WorldState, heyaId: string): Rikishi[] {
   const list: Rikishi[] = [];
-  for (const r of world.rikishi.values()) {
-    if (r.heyaId === heyaId) list.push(r);
+  for (const rikishiId of world.activeRikishiIds) {
+    const r = world.rikishi.get(rikishiId);
+    if (r && r.heyaId === heyaId) list.push(r);
   }
   return list;
 }

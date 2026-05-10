@@ -118,6 +118,22 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
     const nextHeyas = new Map(result.heyas);
     let heyasChanged = false;
 
+    // Handle activeRikishiIds operations
+    if (impact.collections.activeRikishiIdsToAdd || impact.collections.activeRikishiIdsToRemove) {
+      const nextActiveIds = new Set(result.activeRikishiIds);
+      if (impact.collections.activeRikishiIdsToAdd) {
+        for (const id of impact.collections.activeRikishiIdsToAdd) {
+          nextActiveIds.add(id);
+        }
+      }
+      if (impact.collections.activeRikishiIdsToRemove) {
+        for (const id of impact.collections.activeRikishiIdsToRemove) {
+          nextActiveIds.delete(id);
+        }
+      }
+      result = { ...result, activeRikishiIds: nextActiveIds };
+    }
+
     if (impact.collections.rikishiToAdd) {
       const nextRikishi = new Map(result.rikishi);
       for (const rikishi of impact.collections.rikishiToAdd) {
@@ -368,6 +384,8 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
       rikishiToRemove: [],
       rikishiToHistorical: [],
       rikishiFromHistorical: [],
+      activeRikishiIdsToAdd: [],
+      activeRikishiIdsToRemove: [],
       staffToAdd: [],
       staffToRemove: [],
     },
@@ -440,6 +458,10 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
         m.rikishiToHistorical.push(...c.rikishiToHistorical);
       if (c.rikishiFromHistorical && m?.rikishiFromHistorical)
         m.rikishiFromHistorical.push(...c.rikishiFromHistorical);
+      if (c.activeRikishiIdsToAdd && m?.activeRikishiIdsToAdd)
+        m.activeRikishiIdsToAdd.push(...c.activeRikishiIdsToAdd);
+      if (c.activeRikishiIdsToRemove && m?.activeRikishiIdsToRemove)
+        m.activeRikishiIdsToRemove.push(...c.activeRikishiIdsToRemove);
       if (c.staffToAdd && m?.staffToAdd) m.staffToAdd.push(...c.staffToAdd);
       if (c.staffToRemove && m?.staffToRemove) m.staffToRemove.push(...c.staffToRemove);
     }

@@ -83,7 +83,9 @@ export const DynastyService = {
     const eligible: string[] = [];
 
     // 1. Current roster & alumni
-    for (const rikishi of world.rikishi.values()) {
+    for (const rikishiId of world.activeRikishiIds) {
+      const rikishi = world.rikishi.get(rikishiId);
+      if (!rikishi) continue;
       const isSekitori = rikishi.division === "makuuchi" || rikishi.division === "juryo";
       // Elite candidates: Current sekitori or high-performing alumni
       if (rikishi.heyaId === heyaId && isSekitori) {
@@ -99,7 +101,9 @@ export const DynastyService = {
 
     // 1.5. Drought Fallback: Senior Makushita from current roster
     if (eligible.length === 0) {
-      for (const rikishi of world.rikishi.values()) {
+      for (const rikishiId of world.activeRikishiIds) {
+        const rikishi = world.rikishi.get(rikishiId);
+        if (!rikishi) continue;
         if (
           rikishi.heyaId === heyaId &&
           rikishi.division === "makushita" &&

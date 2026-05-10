@@ -72,8 +72,9 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
 
   // 2. Process Rikishi (Archetype Drift)
   if (isBashoMonth(world.calendar.month)) {
-    for (const [id, r] of world.rikishi) {
-      if (r.isRetired) continue;
+    for (const id of world.activeRikishiIds) {
+      const r = world.rikishi.get(id);
+      if (!r) continue;
       const nextR = { ...r };
       if (processArchetypeDrift(world, nextR, id, builder)) {
         builder.updateRikishi(id, nextR);

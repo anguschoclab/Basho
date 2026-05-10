@@ -97,8 +97,9 @@ function pickType(rng: SeededRNG, severity: InjurySeverity): InjuryType {
 export function tickWeekInjury(world: WorldState): StateImpact {
   const builder = createImpactBuilder("tickWeekInjury");
 
-  for (const rikishi of world.rikishi.values()) {
-    if (rikishi.isRetired || rikishi.injured) continue;
+  for (const rikishiId of world.activeRikishiIds) {
+    const rikishi = world.rikishi.get(rikishiId);
+    if (!rikishi || rikishi.injured) continue;
 
     const seededRng = RNGRegistry.getSystemRNG(
       world,
@@ -154,8 +155,9 @@ import { getHeyaStaffBonuses } from "../../staff";
 export function tickWeekRecovery(world: WorldState): StateImpact {
   const builder = createImpactBuilder("tickWeekRecovery");
 
-  for (const rikishi of world.rikishi.values()) {
-    if (rikishi.isRetired || !rikishi.injured) continue;
+  for (const rikishiId of world.activeRikishiIds) {
+    const rikishi = world.rikishi.get(rikishiId);
+    if (!rikishi || !rikishi.injured) continue;
 
     const staffBonuses = getHeyaStaffBonuses(world, rikishi.heyaId);
     const recovered = tickRikishiRecovery(rikishi, staffBonuses.medical);

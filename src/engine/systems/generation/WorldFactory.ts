@@ -302,6 +302,7 @@ export function generateInitialWorld(seed: string): WorldState {
     heyas: heyaMap,
     rikishi: rikishiMap,
     historicalRikishi: new Map(),
+    activeRikishiIds: new Set(Array.from(rikishiMap.keys())),
     oyakata: oyakataMap,
     staff: new Map(),
     history: [],

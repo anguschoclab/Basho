@@ -134,12 +134,12 @@ export function onBashoEnded(world: WorldState): StateImpact {
     },
   };
 
-  for (const rikishi of world.rikishi.values()) {
+  for (const rikishiId of world.activeRikishiIds) {
+    const rikishi = world.rikishi.get(rikishiId);
+    if (!rikishi) continue;
     // 1. Career Wins
     updateLeaderboard(updatedRecords.allTime.careerWins, rikishi, rikishi.careerWins, year, month);
-    if (!rikishi.isRetired) {
-      updateLeaderboard(updatedRecords.active.careerWins, rikishi, rikishi.careerWins, year, month);
-    }
+    updateLeaderboard(updatedRecords.active.careerWins, rikishi, rikishi.careerWins, year, month);
 
     // 2. Makuuchi Wins
     if (rikishi.division === "makuuchi") {
@@ -150,15 +150,13 @@ export function onBashoEnded(world: WorldState): StateImpact {
         year,
         month
       );
-      if (!rikishi.isRetired) {
-        updateLeaderboard(
-          updatedRecords.active.makuuchiWins,
-          rikishi,
-          rikishi.makuuchiWins,
-          year,
-          month
-        );
-      }
+      updateLeaderboard(
+        updatedRecords.active.makuuchiWins,
+        rikishi,
+        rikishi.makuuchiWins,
+        year,
+        month
+      );
     }
 
     // 3. Yusho
@@ -170,55 +168,49 @@ export function onBashoEnded(world: WorldState): StateImpact {
         year,
         month
       );
-      if (!rikishi.isRetired) {
-        updateLeaderboard(
-          updatedRecords.active.yusho,
-          rikishi,
-          rikishi.careerRecord.yusho,
-          year,
-          month
-        );
-      }
+      updateLeaderboard(
+        updatedRecords.active.yusho,
+        rikishi,
+        rikishi.careerRecord.yusho,
+        year,
+        month
+      );
     }
 
     // 4. Consecutive Yusho
-    if (rikishi.consecutiveYusho) {
+    if (rikishi.careerRecord?.consecutiveYusho) {
       updateLeaderboard(
         updatedRecords.allTime.consecutiveYusho,
         rikishi,
-        rikishi.consecutiveYusho,
+        rikishi.careerRecord.consecutiveYusho,
         year,
         month
       );
-      if (!rikishi.isRetired) {
-        updateLeaderboard(
-          updatedRecords.active.consecutiveYusho,
-          rikishi,
-          rikishi.consecutiveYusho,
-          year,
-          month
-        );
-      }
+      updateLeaderboard(
+        updatedRecords.active.consecutiveYusho,
+        rikishi,
+        rikishi.careerRecord.consecutiveYusho,
+        year,
+        month
+      );
     }
 
     // 5. Kinboshi
-    if (rikishi.economics?.kinboshiCount) {
+    if (rikishi.careerRecord?.kinboshiCount) {
       updateLeaderboard(
         updatedRecords.allTime.kinboshi,
         rikishi,
-        rikishi.economics.kinboshiCount,
+        rikishi.careerRecord.kinboshiCount,
         year,
         month
       );
-      if (!rikishi.isRetired) {
-        updateLeaderboard(
-          updatedRecords.active.kinboshi,
-          rikishi,
-          rikishi.economics.kinboshiCount,
-          year,
-          month
-        );
-      }
+      updateLeaderboard(
+        updatedRecords.active.kinboshi,
+        rikishi,
+        rikishi.careerRecord.kinboshiCount,
+        year,
+        month
+      );
     }
   }
 

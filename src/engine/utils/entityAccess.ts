@@ -81,5 +81,18 @@ export function getHeyaRikishi(world: WorldState, heyaId: Id): Rikishi[] {
  * @returns Array of active (non-retired) Rikishi
  */
 export function getActiveRikishi(world: WorldState): Rikishi[] {
-  return Array.from(world.rikishi.values()).filter((r) => !r.isRetired);
+  return Array.from(world.activeRikishiIds)
+    .map((id) => world.rikishi.get(id))
+    .filter((r): r is Rikishi => r !== undefined);
+}
+
+/**
+ * Get all active Rikishi in the world.
+ * @param world - The WorldState to search
+ * @returns Array of active (non-retired) Rikishi
+ */
+export function getAllActiveRikishi(world: WorldState): Rikishi[] {
+  return Array.from(world.activeRikishiIds)
+    .map((id) => world.rikishi.get(id))
+    .filter((r): r is Rikishi => r !== undefined);
 }

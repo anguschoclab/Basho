@@ -64,6 +64,10 @@ export interface StateImpact {
     rikishiToHistorical?: string[];
     /** Rikishi IDs to move from historical back to active */
     rikishiFromHistorical?: string[];
+    /** Rikishi IDs to add to activeRikishiIds set */
+    activeRikishiIdsToAdd?: string[];
+    /** Rikishi IDs to remove from activeRikishiIds set */
+    activeRikishiIdsToRemove?: string[];
     /** Oyakata to add to the world */
     oyakataToAdd?: Oyakata[];
     /** Oyakata IDs to remove from the world (delete) */

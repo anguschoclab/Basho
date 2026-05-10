@@ -95,7 +95,9 @@ export function recordMilestones(world: WorldState, rikishi: Rikishi) {
 export function runHistoryUpdates(world: WorldState): StateImpact {
   const builder = createImpactBuilder("historyUpdates");
 
-  for (const rikishi of world.rikishi.values()) {
+  for (const rikishiId of world.activeRikishiIds) {
+    const rikishi = world.rikishi.get(rikishiId);
+    if (!rikishi) continue;
     const careerHistory = rikishi.careerHistory || [];
 
     // Generate new snapshot

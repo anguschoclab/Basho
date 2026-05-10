@@ -43,9 +43,9 @@ export function phase_pre_basho_assessment(world: WorldState): StateImpact {
   let totalRikishi = 0;
   let withdrawalsRecommended = 0;
 
-  for (const [rikishiId, rikishi] of world.rikishi) {
-    // Skip inactive rikishi
-    if (rikishi.isRetired || !rikishi.heyaId) continue;
+  for (const rikishiId of world.activeRikishiIds) {
+    const rikishi = world.rikishi.get(rikishiId);
+    if (!rikishi || !rikishi.heyaId) continue;
 
     const assessment = assessRikishi(rikishi);
     rikishiAssessments.set(rikishiId, assessment);

@@ -62,7 +62,9 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
 
   // 0.4 All-Time Records & Legacy (Phase 3)
   // Update records for all active rikishi at year end
-  for (const rikishi of world.rikishi.values()) {
+  for (const rikishiId of world.activeRikishiIds) {
+    const rikishi = world.rikishi.get(rikishiId);
+    if (!rikishi) continue;
     if (rikishi.careerWins > 100 || rikishi.rank === "yokozuna") {
       builder.merge(HistoryService.updateAllTimeRecords(world, rikishi));
     }
@@ -132,7 +134,9 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
 
   // 5. Rikishi Avatar Aging & Physical Aging
   if (world.rikishi) {
-    for (const [id, r] of world.rikishi) {
+    for (const id of world.activeRikishiIds) {
+      const r = world.rikishi.get(id);
+      if (!r) continue; // Skip retired rikishi - they don't need age/avatar updates
       const age = world.year - r.birthYear;
       const isSekitori = r.division === "makuuchi" || r.division === "juryo";
 

@@ -108,8 +108,9 @@ export function payMochikyukinBonuses(world: WorldState, currentMonth: number): 
     return builder.build();
   }
 
-  for (const [rikishiId, rikishi] of world.rikishi) {
-    if (rikishi.isRetired) continue;
+  for (const rikishiId of world.activeRikishiIds) {
+    const rikishi = world.rikishi.get(rikishiId);
+    if (!rikishi) continue;
 
     // Only sekitori receive mochikyukin payouts
     if (rikishi.division !== "makuuchi" && rikishi.division !== "juryo") {

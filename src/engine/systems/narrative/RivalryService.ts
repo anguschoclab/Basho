@@ -217,9 +217,9 @@ export const RivalryService = {
   seedInitialRivalries(world: WorldState): StateImpact {
     const builder = createImpactBuilder("seedInitialRivalries");
     const state = this.ensureRivalriesState(world);
-    const makuuchiJuryo = Array.from(world.rikishi.values()).filter(
-      (r) => !r.isRetired && (r.division === "makuuchi" || r.division === "juryo")
-    );
+    const makuuchiJuryo = Array.from(world.activeRikishiIds)
+      .map((id) => world.rikishi.get(id))
+      .filter((r): r is Rikishi => r !== undefined && (r.division === "makuuchi" || r.division === "juryo"));
 
     const candidates: Array<{ a: Rikishi; b: Rikishi; score: number }> = [];
 

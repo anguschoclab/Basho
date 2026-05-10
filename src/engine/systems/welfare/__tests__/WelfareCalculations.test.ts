@@ -14,14 +14,16 @@ import type { WelfareState } from "../../../types/economy";
 // ---------------------------------------------------------------------------
 
 function makeWorld(overrides: Partial<WorldState> = {}): WorldState {
+  const rikishiMap = overrides.rikishi || new Map();
   return {
-    rikishi: new Map(),
+    rikishi: rikishiMap,
     heyas: new Map(),
     staff: new Map(),
     events: { log: [], pendingEvents: [] } as any,
     history: [],
     oyakata: new Map(),
     historicalRikishi: new Map(),
+    activeRikishiIds: new Set(Array.from(rikishiMap.keys())),
     ftue: {} as any,
     calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
     year: 2025,

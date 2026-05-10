@@ -26,8 +26,9 @@ export function phase01_daily_welfare(world: WorldState): StateImpact {
     );
   }
 
-  for (const [id, r] of world.rikishi) {
-    if (r.isRetired) continue;
+  for (const id of world.activeRikishiIds) {
+    const r = world.rikishi.get(id);
+    if (!r) continue;
 
     const next = { ...r };
 

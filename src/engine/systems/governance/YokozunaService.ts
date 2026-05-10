@@ -80,30 +80,30 @@ export const YokozunaService = {
     const builder = createImpactBuilder("processYDCCouncil");
 
     // Find Ozeki candidates
-    for (const rikishi of world.rikishi.values()) {
-      if (rikishi.rank === "ozeki") {
-        const evaluation = this.evaluateCandidate(world, rikishi);
-        if (evaluation && evaluation.recommendation !== "reject") {
-          builder.logEvent(
-            "YOKOZUNA_DELIBERATION",
-            "governance",
-            {
-              rikishiId: rikishi.id,
-              status: evaluation.recommendation,
-              incident:
-                evaluation.recommendation === "promote"
-                  ? `The YDC recommends ${rikishi.shikona} for promotion to Yokozuna.`
-                  : `The YDC is monitoring ${rikishi.shikona} for potential promotion.`,
-              score: Math.floor(evaluation.sentiment),
-            },
-            { heyaId: rikishi.heyaId, importance: "high" }
-          );
+    for (const rikishiId of world.activeRikishiIds) {
+      const rikishi = world.rikishi.get(rikishiId);
+      if (!rikishi || rikishi.rank !== "ozeki") continue;
+      const evaluation = this.evaluateCandidate(world, rikishi);
+      if (evaluation && evaluation.recommendation !== "reject") {
+        builder.logEvent(
+          "YOKOZUNA_DELIBERATION",
+          "governance",
+          {
+            rikishiId: rikishi.id,
+            status: evaluation.recommendation,
+            incident:
+              evaluation.recommendation === "promote"
+                ? `The YDC recommends ${rikishi.shikona} for promotion to Yokozuna.`
+                : `The YDC is monitoring ${rikishi.shikona} for potential promotion.`,
+            score: Math.floor(evaluation.sentiment),
+          },
+          { heyaId: rikishi.heyaId, importance: "high" }
+        );
 
-          if (evaluation.recommendation === "promote") {
-            // High-stakes promotion trigger
-            // Note: Banzuke update will handle the actual rank flip next cycle
-            builder.addMetadata("yokozuna_recommendation", rikishi.id);
-          }
+        if (evaluation.recommendation === "promote") {
+          // High-stakes promotion trigger
+          // Note: Banzuke update will handle the actual rank flip next cycle
+          builder.addMetadata("yokozuna_recommendation", rikishi.id);
         }
       }
     }

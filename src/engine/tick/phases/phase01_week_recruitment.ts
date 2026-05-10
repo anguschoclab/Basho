@@ -106,11 +106,7 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
   }
 
   // 4b. Emergency recruitment: if population is critically low, recruit every week
-  // ⚡ Bolt Optimization: Use a single for...of loop instead of Array.from().filter().length to avoid O(N) array allocation overhead
-  let totalActive = 0;
-  for (const r of world.rikishi.values()) {
-    if (!r.isRetired) totalActive++;
-  }
+  const totalActive = world.activeRikishiIds.size;
   if (totalActive < 700) {
     const urgentVacancies: Record<string, number> = {};
     let hasUrgentVacancies = false;

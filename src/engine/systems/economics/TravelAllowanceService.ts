@@ -24,8 +24,9 @@ import { calculateKoenkaiIncome } from "../economics/SponsorshipService";
 export function payTravelAllowance(world: WorldState): StateImpact {
   const builder = createImpactBuilder("payTravelAllowance");
 
-  for (const [rikishiId, rikishi] of world.rikishi) {
-    if (rikishi.isRetired) continue;
+  for (const rikishiId of world.activeRikishiIds) {
+    const rikishi = world.rikishi.get(rikishiId);
+    if (!rikishi) continue;
 
     // Only sekitori receive travel allowance
     if (rikishi.division !== "makuuchi" && rikishi.division !== "juryo") {
@@ -72,8 +73,9 @@ export function payTravelAllowance(world: WorldState): StateImpact {
 export function deductTsukebitoCosts(world: WorldState): StateImpact {
   const builder = createImpactBuilder("deductTsukebitoCosts");
 
-  for (const [rikishiId, rikishi] of world.rikishi) {
-    if (rikishi.isRetired) continue;
+  for (const rikishiId of world.activeRikishiIds) {
+    const rikishi = world.rikishi.get(rikishiId);
+    if (!rikishi) continue;
 
     // Only sekitori have tsukebito
     if (rikishi.division !== "makuuchi" && rikishi.division !== "juryo") {

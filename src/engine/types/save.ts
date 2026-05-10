@@ -61,6 +61,8 @@ export interface SerializedWorldState {
   closedHeyas: IdMap<ClosedHeyaRecord>;
   rikishi: IdMap<Rikishi>;
   historicalRikishi: IdMap<Rikishi>;
+  /** Array of active (non-retired) rikishi IDs for efficient iteration. */
+  activeRikishiIds: string[];
   oyakata: IdMap<Oyakata>;
   staff: IdMap<Staff>;
 

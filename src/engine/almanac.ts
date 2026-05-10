@@ -479,8 +479,9 @@ function getRankValue(rank: Rank): number {
  */
 function _generateHeyaRecord(heya: Heya, world: WorldState, rng: () => number): HeyaRecord {
   const rikishiInHeya = [];
-  for (const r of world.rikishi.values()) {
-    if (r.heyaId === heya.id) {
+  for (const rikishiId of world.activeRikishiIds) {
+    const r = world.rikishi.get(rikishiId);
+    if (r && r.heyaId === heya.id) {
       rikishiInHeya.push(r);
     }
   }
@@ -553,7 +554,9 @@ export function buildAlmanacSnapshot(world: WorldState): AlmanacSnapshot | null 
   let totalMakuuchiWins = 0;
   let makuuchiInjuryCount = 0;
 
-  for (const r of world.rikishi.values()) {
+  for (const rikishiId of world.activeRikishiIds) {
+    const r = world.rikishi.get(rikishiId);
+    if (!r) continue;
     if (r.division === "makuuchi") {
       makuuchiRikishiCount++;
       totalMakuuchiWins += r.currentBashoWins ?? 0;
