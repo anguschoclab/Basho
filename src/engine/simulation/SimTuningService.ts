@@ -49,7 +49,9 @@ export const SimTuningService = {
     world: WorldState,
     historyStats?: { yokozunaVacancy: number; uniqueWinners: number; successions: number }
   ): TuningMetrics {
-    const activeRikishi = Array.from(world.rikishi.values()).filter((r) => !r.isRetired);
+    const activeRikishi = Array.from(world.activeRikishiIds)
+      .map((id) => world.rikishi.get(id))
+      .filter((r): r is Rikishi => r !== undefined);
 
     // 1. Stat Averages
     const statAverages = {

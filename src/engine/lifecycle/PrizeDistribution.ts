@@ -110,8 +110,9 @@ export function distributePrizes(
 export function payBashoTeate(world: WorldState): StateImpact {
   const builder = createImpactBuilder("payBashoTeate");
 
-  for (const [id, r] of world.rikishi) {
-    if (r.isRetired) continue;
+  for (const id of world.activeRikishiIds) {
+    const r = world.rikishi.get(id);
+    if (!r) continue;
 
     // Only non-sekitori receive basho teate
     if (r.division === "makuuchi" || r.division === "juryo") continue;

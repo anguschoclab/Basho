@@ -6,6 +6,7 @@
  */
 
 import type { WorldState } from "../types/world";
+import type { Rikishi } from "../types/rikishi";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 import { mergeImpacts } from "../core/ImpactResolver";
@@ -50,7 +51,10 @@ function generateRandomDrama(world: WorldState): StateImpact {
 
   if (eventType === 0) {
     // Scandal
-    const rikishis = stableSort(world.rikishi.values(), (x) => x.id);
+    const activeRikishi = Array.from(world.activeRikishiIds)
+      .map((id) => world.rikishi.get(id))
+      .filter((r): r is Rikishi => r !== undefined);
+    const rikishis = stableSort(activeRikishi, (x) => x.id);
     const target = rikishis[rng.int(0, rikishis.length - 1)];
     if (target) {
       const importance = isGovernancePlayerRelevant(target.heyaId, "minor");

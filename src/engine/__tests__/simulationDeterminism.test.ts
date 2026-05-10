@@ -40,13 +40,16 @@ function worldChecksum(world: ReturnType<typeof generateInitialWorld>): string {
     `historyLen:${world.history?.length ?? 0}`,
   ];
 
-  // Sum of all rikishi power+fatigue as a quick drift detector
+  // Sum of all active rikishi power+fatigue as a quick drift detector
   let powerSum = 0;
   let fatigueSum = 0;
   if (world.rikishi) {
-    for (const r of world.rikishi.values()) {
-      powerSum += r.power ?? 0;
-      fatigueSum += r.fatigue ?? 0;
+    for (const id of world.activeRikishiIds) {
+      const r = world.rikishi.get(id);
+      if (r) {
+        powerSum += r.power ?? 0;
+        fatigueSum += r.fatigue ?? 0;
+      }
     }
   }
   parts.push(`powerSum:${Math.round(powerSum)}`);

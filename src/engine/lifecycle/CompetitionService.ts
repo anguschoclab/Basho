@@ -103,8 +103,9 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
 
   // Accumulate mochikyukin points for sekitori
   const mochikyukinImpact = createImpactBuilder("mochikyukinAccumulation");
-  for (const [id, r] of world.rikishi) {
-    if (r.isRetired) continue;
+  for (const id of world.activeRikishiIds) {
+    const r = world.rikishi.get(id);
+    if (!r) continue;
     if (r.division !== "makuuchi" && r.division !== "juryo") continue;
 
     const bashoWins = r.currentBashoWins ?? 0;

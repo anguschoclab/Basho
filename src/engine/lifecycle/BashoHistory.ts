@@ -7,6 +7,7 @@ import { opfsArchiveService } from "../storage/opfsArchive";
 import { electronArchiveService } from "../storage/electronArchive";
 import { runPostBashoResolution } from "../core/SimulationRunner";
 import type { WorldState } from "../types/world";
+import type { Rikishi } from "../types/rikishi";
 import type { BashoState, BashoResult, MatchSchedule, AwardLogEntry } from "../types/basho";
 import type { Id } from "../types/common";
 import { createImpactBuilder } from "../core/ImpactBuilder";
@@ -266,8 +267,9 @@ export function checkYokozunaPromotions(
 ) {
   if (!world.historyIndex) return;
 
-  const ozekiIds = Array.from(world.rikishi.values())
-    .filter((r) => r.rank === "ozeki" && !r.isRetired)
+  const ozekiIds = Array.from(world.activeRikishiIds)
+    .map((id) => world.rikishi.get(id))
+    .filter((r): r is Rikishi => r !== undefined && r.rank === "ozeki")
     .map((r) => r.id);
 
   for (const rid of ozekiIds) {

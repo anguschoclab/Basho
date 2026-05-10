@@ -6,6 +6,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect } from "vitest";
+import type { Rikishi } from "../types/rikishi";
 import { generateInitialWorld } from "../systems/generation/WorldFactory";
 import { runHistoryUpdates } from "../history";
 import { publishBanzukeUpdate } from "../world";
@@ -52,7 +53,9 @@ describe("Yokozuna Presence Logic Validation", () => {
       publishBanzukeUpdate(currentWorld);
       runHistoryUpdates(currentWorld);
 
-      const rikishi_list = Array.from(currentWorld.rikishi.values());
+      const rikishi_list = Array.from(currentWorld.activeRikishiIds)
+        .map((id) => currentWorld.rikishi.get(id))
+        .filter((r): r is Rikishi => r !== undefined);
       const yokozunas = rikishi_list.filter((r) => r.rank === "yokozuna");
       const healthyYokozunas = yokozunas.filter((r) => !r.injured);
 

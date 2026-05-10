@@ -70,13 +70,14 @@ export function initializeGlobalCup(
  * Select top JSA rikishi by rank and performance
  */
 function selectJSAParticipants(world: WorldState, count: number): Rikishi[] {
-  const allRikishi = Array.from(world.rikishi.values());
+  const activeRikishi = Array.from(world.activeRikishiIds)
+    .map((id) => world.rikishi.get(id))
+    .filter((r): r is Rikishi => r !== undefined && !r.injured);
 
-  // Filter active rikishi and sort by rank prestige
+  // Sort by rank prestige
   const rankOrder = ["Yokozuna", "Ozeki", "Sekiwake", "Komusubi", "M1", "M2", "M3", "M4", "M5"];
 
-  return allRikishi
-    .filter((r) => !r.injured)
+  return activeRikishi
     .sort((a, b) => {
       const rankA = rankOrder.indexOf(a.rank);
       const rankB = rankOrder.indexOf(b.rank);

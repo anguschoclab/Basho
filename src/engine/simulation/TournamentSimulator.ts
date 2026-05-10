@@ -30,7 +30,9 @@ export function simulateEntireBasho(
   const injuries: string[] = [];
 
   // Initialize standings (sekitori only)
-  for (const [id, rikishi] of world.rikishi) {
+  for (const id of world.activeRikishiIds) {
+    const rikishi = world.rikishi.get(id);
+    if (!rikishi) continue;
     if (rikishi.division === "makuuchi" || rikishi.division === "juryo") {
       standings.set(id, { wins: 0, losses: 0 });
       rikishi.currentBashoWins = 0;

@@ -1,4 +1,5 @@
 import type { WorldState } from "../types/world";
+import type { Rikishi } from "../types/rikishi";
 import type { BashoSimResult, BanzukeUpdateHook, BashoResult } from "../types/basho";
 import { getNextBasho, getBashoNumber } from "../calendar";
 import { advanceDays, enterPostBasho, enterInterim } from "../tick/tickDaily";
@@ -208,7 +209,9 @@ export function runAutoSim(
   }
 
   // Final Metrics Calculation
-  const activeRikishi = Array.from(currentWorld.rikishi.values()).filter((r) => !r.isRetired);
+  const activeRikishi = Array.from(currentWorld.activeRikishiIds)
+    .map((id) => currentWorld.rikishi.get(id))
+    .filter((r): r is Rikishi => r !== undefined);
   const successions = (currentWorld.governanceLog || []).filter(
     (l) => l.incident === "oyakata_promotion" || l.data?.status === "oyakata_promotion"
   ).length;
