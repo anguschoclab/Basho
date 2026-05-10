@@ -39,7 +39,7 @@ export function resetImpactTimestampCounter(): void {
 /**
  * Get the next deterministic timestamp.
  */
-function getNextTimestamp(): number {
+export function getNextTimestamp(): number {
   return ++impactTimestampCounter;
 }
 
