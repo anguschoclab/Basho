@@ -203,25 +203,26 @@ function calculateTopRivals(r: Rikishi, world: WorldState): UIRivalEntry[] {
   const h2h = r.h2h ?? {};
   const rivalriesState = world.rivalriesState;
 
-  return Object.entries(h2h)
-    .map(([oppId, rec]) => {
-      const opp = world.rikishi.get(oppId);
-      const hKey = r.id < oppId ? `${r.id}|${oppId}` : `${oppId}|${r.id}`;
-      const rivalry = rivalriesState?.pairs?.[hKey];
+  const result: UIRivalEntry[] = [];
+  for (const oppId in h2h) {
+    const rec = h2h[oppId];
+    const opp = world.rikishi.get(oppId);
+    const hKey = r.id < oppId ? `${r.id}|${oppId}` : `${oppId}|${r.id}`;
+    const rivalry = rivalriesState?.pairs?.[hKey];
 
-      return {
-        opponentId: oppId,
-        opponentShikona: opp?.shikona ?? "Unknown",
-        wins: rec.wins,
-        losses: rec.losses,
-        record: `${rec.wins}-${rec.losses}`,
-        totalBouts: rec.wins + rec.losses,
-        heat: rivalry?.heat ?? 0,
-        tone: rivalry?.tone ?? "respect",
-      };
-    })
-    .sort((a, b) => b.heat - a.heat || b.totalBouts - a.totalBouts)
-    .slice(0, 5);
+    result.push({
+      opponentId: oppId,
+      opponentShikona: opp?.shikona ?? "Unknown",
+      wins: rec.wins,
+      losses: rec.losses,
+      record: `${rec.wins}-${rec.losses}`,
+      totalBouts: rec.wins + rec.losses,
+      heat: rivalry?.heat ?? 0,
+      tone: rivalry?.tone ?? "respect",
+    } as UIRivalEntry);
+  }
+
+  return result.sort((a, b) => b.heat - a.heat || b.totalBouts - a.totalBouts).slice(0, 5);
 }
 
 function calculateSpecialPrizes(r: Rikishi) {
