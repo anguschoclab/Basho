@@ -97,17 +97,17 @@ export function rollPotential(args: {
   const isEastEuropean = ["Georgia", "Russia", "Bulgaria", "Estonia"].includes(nationality ?? "");
   const isAmericas = ["Brazil", "USA", "Hawaii"].includes(nationality ?? "");
 
-  const mods = profile.statModifiers;
-  const powerMod = (mods as Record<string, number | undefined>)["power"] ?? mods["strength"] ?? 1.0;
+  const mods = (profile.statModifiers || {}) as Record<string, number | undefined>;
+  const powerMod = mods["power"] ?? mods["strength"] ?? 1.0;
 
   const paStats: RikishiStats = {
     strength: rollStat(powerMod, isEastEuropean ? 12 : 0),
-    technique: rollStat(mods.technique ?? 1.0, isMongolian ? 10 : isAmericas ? 4 : 0),
-    speed: rollStat(mods.speed ?? 1.0, isMongolian ? 5 : isAmericas ? 8 : 0),
-    stamina: rollStat(mods.stamina ?? 1.0, isEastEuropean ? 8 : 0),
-    mental: rollStat(mods.mental ?? 1.0),
-    adaptability: rollStat(mods.adaptability ?? 1.0, isAmericas ? 4 : 0),
-    balance: rollStat(mods.balance ?? 1.0),
+    technique: rollStat(mods["technique"] ?? 1.0, isMongolian ? 10 : isAmericas ? 4 : 0),
+    speed: rollStat(mods["speed"] ?? 1.0, isMongolian ? 5 : isAmericas ? 8 : 0),
+    stamina: rollStat(mods["stamina"] ?? 1.0, isEastEuropean ? 8 : 0),
+    mental: rollStat(mods["mental"] ?? 1.0),
+    adaptability: rollStat(mods["adaptability"] ?? 1.0, isAmericas ? 4 : 0),
+    balance: rollStat(mods["balance"] ?? 1.0),
     weight: 0, // Size handled separately below
   };
 
@@ -204,22 +204,19 @@ export function generateRikishiStats(args: {
             ? 55
             : 40;
 
-  const mods = profile.statModifiers || {};
+  const mods = (profile.statModifiers || {}) as Record<string, number | undefined>;
   const stdDev = 8;
 
-  const genStat = (key: keyof RikishiStats | "weight" | "height", defaultVal?: number) => {
+  const genStat = (key: string, defaultVal?: number) => {
     const mean = (defaultVal ?? baseMean) * (mods[key] ?? 1.0);
     return clampInt(rng.gaussian(mean, stdDev), 10, 100);
   };
 
-  const weight = clampInt(rng.gaussian(150 * (mods.weight ?? 1.0), 20), 80, 250);
-  const height = clampInt(rng.gaussian(180 * (mods.height ?? 1.0), 8), 160, 210);
+  const weight = clampInt(rng.gaussian(150 * (mods["weight"] ?? 1.0), 20), 80, 250);
+  const height = clampInt(rng.gaussian(180 * (mods["height"] ?? 1.0), 8), 160, 210);
 
   // 'power' key in statModifiers maps to strength in RikishiStats → Rikishi.power
-  const powerMod =
-    (mods as Record<string, number | undefined>)["power"] ??
-    (mods as Record<string, number | undefined>)["strength"] ??
-    1.0;
+  const powerMod = mods["power"] ?? mods["strength"] ?? 1.0;
   const strengthMean = baseMean * powerMod;
 
   return {
