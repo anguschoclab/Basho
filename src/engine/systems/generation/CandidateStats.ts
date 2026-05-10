@@ -112,8 +112,8 @@ export function rollPotential(args: {
   };
 
   // Size potential: Gaussian biased by archetype modifiers, clamped
-  const heightMean = SIZE_POTENTIAL.heightCm.mean * (mods["height"] ?? 1.0);
-  const weightMean = SIZE_POTENTIAL.weightKg.mean * (mods["weight"] ?? 1.0);
+  const heightMean = SIZE_POTENTIAL.heightCm.mean * (mods.height ?? 1.0);
+  const weightMean = SIZE_POTENTIAL.weightKg.mean * (mods.weight ?? 1.0);
   const heightCm = clampInt(
     rng.gaussian(heightMean, SIZE_POTENTIAL.heightCm.stdDev),
     SIZE_POTENTIAL.heightCm.min,
