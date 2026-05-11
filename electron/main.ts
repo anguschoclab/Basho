@@ -61,7 +61,7 @@ async function createWindow(): Promise<void> {
     try {
       const parsedUrl = new URL(url);
       if (parsedUrl.protocol === "https:") {
-        shell.openExternal(url);
+        shell.openExternal(parsedUrl.href).catch((e) => console.error("Failed to open external URL:", e));
       }
     } catch (e) {
       console.error("Invalid URL format attempted to open:", url);
