@@ -154,12 +154,24 @@ function calculateMostFrequentKimarite(
     }
   }
   if (totalWins === 0) return [];
-  return Object.entries(winCounts)
-    .sort((a, b) => b[1] - a[1])
-    .map(([kimarite, count]) => ({
-      kimarite,
-      percentage: Math.round((count / totalWins) * 100),
-    }));
+
+  // ⚡ Bolt Optimization: Use a for...in loop to avoid O(N) array allocation from Object.entries() and .map()
+  const kimarites: string[] = [];
+  for (const k in winCounts) {
+    kimarites.push(k);
+  }
+
+  kimarites.sort((a, b) => winCounts[b] - winCounts[a]);
+
+  const result: { kimarite: string; percentage: number }[] = [];
+  for (const k of kimarites) {
+    result.push({
+      kimarite: k,
+      percentage: Math.round((winCounts[k] / totalWins) * 100),
+    });
+  }
+
+  return result;
 }
 
 function buildFavoredKimariteDisplay(
@@ -384,8 +396,14 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     weightBand: NarrativeService.getWeightBand(r.weight ?? 0),
     heightBand: NarrativeService.getHeightBand(r.height ?? 0),
     ageDescriptor: NarrativeService.getAgeLabel(rng, NarrativeService.getAgeBand(age)),
-    weightDescriptor: NarrativeService.getWeightLabel(rng, NarrativeService.getWeightBand(r.weight ?? 0)),
-    heightDescriptor: NarrativeService.getHeightLabel(rng, NarrativeService.getHeightBand(r.height ?? 0)),
+    weightDescriptor: NarrativeService.getWeightLabel(
+      rng,
+      NarrativeService.getWeightBand(r.weight ?? 0)
+    ),
+    heightDescriptor: NarrativeService.getHeightLabel(
+      rng,
+      NarrativeService.getHeightBand(r.height ?? 0)
+    ),
     topRivals: calculateTopRivals(r, world),
     personalityTraits: r.personalityTraits ?? [],
     favoredKimariteDetailed,
@@ -541,10 +559,8 @@ export function projectRosterEntry(
     momentum: r.momentum,
     potentialBand: toPotentialBand(r.talentSeed ?? 50),
     archetypeLabel:
-      BardEngine.getRegistryEntry(
-        "archetypes",
-        r.combatProfile?.archetype ?? "hybrid"
-      )?.label || "Rikishi",
+      BardEngine.getRegistryEntry("archetypes", r.combatProfile?.archetype ?? "hybrid")?.label ||
+      "Rikishi",
     rankDelta,
     avatarConfig: r.avatarConfig,
     keshoMawashi: world?.customKeshoConfigs?.[r.id]
