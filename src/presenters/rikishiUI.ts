@@ -155,23 +155,13 @@ function calculateMostFrequentKimarite(
   }
   if (totalWins === 0) return [];
 
-  // ⚡ Bolt Optimization: Use a for...in loop to avoid O(N) array allocation from Object.entries() and .map()
-  const kimarites: string[] = [];
-  for (const k in winCounts) {
-    kimarites.push(k);
-  }
-
-  kimarites.sort((a, b) => winCounts[b] - winCounts[a]);
-
-  const result: { kimarite: string; percentage: number }[] = [];
-  for (const k of kimarites) {
-    result.push({
+  // ⚡ Bolt Optimization: Use Object.keys() to avoid O(N) tuple allocations from Object.entries()
+  return Object.keys(winCounts)
+    .sort((a, b) => winCounts[b] - winCounts[a])
+    .map((k) => ({
       kimarite: k,
       percentage: Math.round((winCounts[k] / totalWins) * 100),
-    });
-  }
-
-  return result;
+    }));
 }
 
 function buildFavoredKimariteDisplay(
