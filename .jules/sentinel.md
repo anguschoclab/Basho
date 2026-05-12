@@ -11,3 +11,8 @@ Replaced `JSON.parse` with `destr` in `safeParse` to mitigate prototype pollutio
 **Vulnerability:** The Electron app used `url.startsWith("https:")` to check if a URL should be opened externally. This could be bypassed using URLs that start with "https:" but are actually malicious or invalid when passed to `shell.openExternal`.
 **Learning:** Checking string prefixes for URL validation is fundamentally insecure because strings can easily trick weak patterns (e.g., `https:malicious-app://payload` might pass).
 **Prevention:** Always parse untrusted URLs using the standard `new URL(url)` API and verify the `protocol` property exactly (e.g., `parsedUrl.protocol === "https:"`). Wrap the parsing in a `try...catch` to prevent invalid URLs from crashing the handler.
+
+## 2025-02-27 - Unsafe URL Validation in will-navigate
+**Vulnerability:** The Electron app used `navigationUrl.startsWith("file://")` to check if a local file was being navigated to during the `will-navigate` event. This could be bypassed using URLs that start with "file://" but are actually malicious or invalid.
+**Learning:** Checking string prefixes for URL validation is fundamentally insecure because strings can easily trick weak patterns.
+**Prevention:** Always parse untrusted URLs using the standard `new URL(url)` API and verify the `protocol` property exactly (e.g., `parsedUrl.protocol === "file:"`). Wrap the parsing in a `try...catch` to prevent invalid URLs from crashing the handler or bypassing security checks.
