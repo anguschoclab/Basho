@@ -30,11 +30,12 @@ export function calculateMostFrequentKimarite(
     }
   }
   if (totalWins === 0) return [];
-  return Object.entries(winCounts)
-    .sort((a, b) => b[1] - a[1])
-    .map(([kimarite, count]) => ({
+  // ⚡ Bolt Optimization: Use Object.keys() to avoid O(N) tuple allocations from Object.entries()
+  return Object.keys(winCounts)
+    .sort((a, b) => winCounts[b] - winCounts[a])
+    .map((kimarite) => ({
       kimarite,
-      percentage: Math.round((count / totalWins) * 100),
+      percentage: Math.round((winCounts[kimarite] / totalWins) * 100),
     }));
 }
 
