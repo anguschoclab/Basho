@@ -16,3 +16,6 @@
 ## 2026-04-29 - Focus Ring Styling for Raw Buttons
 **Learning:** Adding keyboard focus states to generic or text-link styled `<button>` elements using Tailwind's `focus-visible:` variants with `ring` and `ring-offset` (e.g., `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background`) provides standard, accessible visual feedback that matches Shadcn UI defaults.
 **Action:** When working with raw HTML `<button>` elements that lack standard component wrapper focus styles, explicitly add these `focus-visible` utility classes to ensure accessibility for keyboard users.
+## 2024-05-18 - Missing ARIA Labels on Component Wrappers vs Native
+**Learning:** For Shadcn UI or custom Button components that wrap an underlying `<button>` and take `size="icon"`, they must be explicitly passed an `aria-label` attribute if they only contain SVG icons (like `RefreshCw`). Otherwise, they are invisible to screen readers, missing a primary accessibility requirement.
+**Action:** Audit and proactively fix `Button size="icon"` elements, specifically checking `.tsx` files inside `src/components/`, adding a clear, concise `aria-label` attribute matching the button's intended behavior or `title`.
