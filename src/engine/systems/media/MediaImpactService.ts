@@ -26,34 +26,22 @@ export function calculateBoutImpact(args: {
   return clampInt(impact, 0, 100);
 }
 
+const RANK_IMPACT_MAP: Record<string, number> = {
+  yokozuna: 10,
+  ozeki: 8,
+  sekiwake: 6,
+  komusubi: 5,
+  maegashira: 3,
+  juryo: 2,
+  makushita: 0,
+  sandanme: 0,
+  jonidan: 0,
+  jonokuchi: 0,
+};
+
 export function getRankImpact(rank?: string): number {
-  switch (rank) {
-    case "yokozuna":
-      return 10;
-    case "ozeki":
-      return 8;
-    case "sekiwake":
-      return 6;
-    case "komusubi":
-      return 5;
-    case "maegashira":
-      return 3;
-    case "juryo":
-      return 2;
-    case "makushita":
-      return 0;
-    case "sandanme":
-      return 0;
-    case "jonidan":
-      return 0;
-    case "jonokuchi":
-      return 0;
-    case undefined:
-      return 0;
-    default:
-      assertNever(rank as never);
-      return 0;
-  }
+  if (!rank) return 0;
+  return RANK_IMPACT_MAP[rank] ?? 0;
 }
 
 export function determineTier(impact: number): HeadlineTier {
@@ -68,26 +56,22 @@ export function calculateHeatBump(impact: number): number {
   return 3;
 }
 
+const PRESSURE_BUMP_MAP: Record<MediaTone, number> = {
+  concern: 8,
+  controversy: 8,
+  disrespect: 6,
+  hype: 2,
+  praise: 2,
+  neutral: 2,
+  feature: 2,
+  narrative: 2,
+  analysis: 2,
+  interview: 2,
+  rumor: 2,
+};
+
 export function calculatePressureBump(tone: MediaTone): number {
-  switch (tone) {
-    case "concern":
-    case "controversy":
-      return 8;
-    case "disrespect":
-      return 6;
-    case "hype":
-    case "praise":
-    case "neutral":
-    case "feature":
-    case "narrative":
-    case "analysis":
-    case "interview":
-    case "rumor":
-      return 2;
-    default:
-      assertNever(tone);
-      return 2;
-  }
+  return PRESSURE_BUMP_MAP[tone] ?? 2;
 }
 
 export function decayHeat(currentHeat: number): number {

@@ -57,223 +57,209 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
   const command = event.data;
 
   try {
-    switch (command.type) {
-      case "START_WORLD":
-        // Initialize a new world state
-        currentWorld = generateWorld({
-          seed: command.seed,
-          playerConfig: { heyaId: command.playerHeyaId },
-        });
+  const COMMAND_HANDLERS: {
+    [T in EngineCommand["type"]]: (cmd: Extract<EngineCommand, { type: T }>) => void | Promise<void>;
+  } = {
+    START_WORLD: (cmd) => {
+      currentWorld = generateWorld({
+        seed: cmd.seed,
+        playerConfig: { heyaId: cmd.playerHeyaId },
+      });
+      emitDigest();
+    },
+    LOAD_WORLD: (cmd) => {
+      currentWorld = migrateWorldState(cmd.world);
+      emitDigest();
+    },
+    TICK_DAY: () => {
+      if (currentWorld) {
+        currentWorld = tickOrchestrator(currentWorld);
         emitDigest();
-        break;
-
-      case "LOAD_WORLD":
-        currentWorld = migrateWorldState(command.world);
-        emitDigest();
-        break;
-
-      case "TICK_DAY":
-        if (currentWorld) {
+      }
+    },
+    AUTO_SIM_DAYS: (cmd) => {
+      if (currentWorld) {
+        for (let i = 0; i < cmd.days; i++) {
           currentWorld = tickOrchestrator(currentWorld);
-          emitDigest();
-        }
-        break;
-
-      case "AUTO_SIM_DAYS":
-        if (currentWorld) {
-          for (let i = 0; i < command.days; i++) {
-            currentWorld = tickOrchestrator(currentWorld);
-            // Optional: Emit progress for long sims
-            if (i % 5 === 0) {
-              self.postMessage({
-                type: "PROGRESS",
-                message: `Simulating day ${i + 1} of ${command.days}...`,
-                current: i + 1,
-                total: command.days,
-              });
-            }
-          }
-          emitDigest();
-          // Return updated world so main thread can sync its own state
-          worldVersion++;
-          self.postMessage({ type: "WORLD_UPDATED", world: currentWorld, version: worldVersion });
-        }
-        break;
-
-      case "OFFER_CONTRACT":
-        if (currentWorld) {
-          const result = talentpool.offerCandidate(
-            currentWorld,
-            command.candidateId,
-            command.heyaId,
-            "standard",
-            "high"
-          );
-          if (result.ok && result.impact) {
-            currentWorld = resolveImpacts(currentWorld, [result.impact]);
-            emitDigest();
-            syncWorld();
-          } else {
-            self.postMessage({ type: "ERROR", message: result.reason || "Offer failed" });
+          if (i % 5 === 0) {
+            self.postMessage({
+              type: "PROGRESS",
+              message: `Simulating day ${i + 1} of ${cmd.days}...`,
+              current: i + 1,
+              total: cmd.days,
+            });
           }
         }
-        break;
-
-      case "SCOUT_POOL":
-        if (currentWorld) {
-          const result = talentpool.scoutPool(currentWorld, command.pool, {
-            revealCount: command.revealCount,
-          });
-          if (result.impact) {
-            currentWorld = resolveImpacts(currentWorld, [result.impact]);
-            emitDigest();
-            syncWorld();
-          }
-        }
-        break;
-
-      case "SCOUT_CANDIDATE":
-        if (currentWorld) {
-          const result = talentpool.scoutCandidate(currentWorld, command.candidateId, {
-            effort: command.effort,
-          });
-          if (result.ok && result.impact) {
-            currentWorld = resolveImpacts(currentWorld, [result.impact]);
-            emitDigest();
-            syncWorld();
-          }
-        }
-        break;
-
-      case "RESOLVE_CRISIS":
-        if (currentWorld) {
-          const impact = governance.resolveCrisis(
-            currentWorld,
-            command.crisisId,
-            command.choice as "harsh" | "cover_up"
-          );
-          currentWorld = resolveImpacts(currentWorld, [impact]);
-          emitDigest();
-          syncWorld();
-        }
-        break;
-
-      case "BUY_MYOSEKI":
-        if (currentWorld) {
-          const impact = myoseki.buyMyoseki(
-            currentWorld,
-            command.buyerId,
-            command.buyerHeyaId,
-            command.myosekiId
-          );
-          currentWorld = resolveImpacts(currentWorld, [impact]);
-          emitDigest();
-          syncWorld();
-        }
-        break;
-
-      case "LEASE_MYOSEKI":
-        if (currentWorld) {
-          const impact = myoseki.leaseMyoseki(currentWorld, command.buyerId, command.myosekiId);
-          currentWorld = resolveImpacts(currentWorld, [impact]);
-          emitDigest();
-          syncWorld();
-        }
-        break;
-
-      case "RENEW_SPONSOR":
-        if (currentWorld) {
-          const impact = sponsorService.renewSponsorContract(
-            currentWorld,
-            command.relationshipId,
-            command.sponsorId
-          );
-          currentWorld = resolveImpacts(currentWorld, [impact]);
-          emitDigest();
-          syncWorld();
-        }
-        break;
-
-      case "REQUEST_BAILOUT":
-        if (currentWorld) {
-          const impact = loans.issueBailoutLoanIfNeeded(currentWorld, command.heyaId);
-          currentWorld = resolveImpacts(currentWorld, [impact]);
-          emitDigest();
-          syncWorld();
-        }
-        break;
-
-      case "PREPAY_LOAN":
-        if (currentWorld) {
-          const impact = loans.prepayLoan(currentWorld, command.heyaId, command.loanId);
-          currentWorld = resolveImpacts(currentWorld, [impact]);
-          emitDigest();
-          syncWorld();
-        }
-        break;
-
-      case "HIRE_STAFF":
-        if (currentWorld) {
-          const impact = staffService.hireStaff(currentWorld, command.heyaId, command.role);
-          currentWorld = resolveImpacts(currentWorld, [impact]);
-          emitDigest();
-          syncWorld();
-        }
-        break;
-
-      case "FIRE_STAFF":
-        if (currentWorld) {
-          const impact = staffService.fireStaff(currentWorld, command.heyaId, command.staffId);
-          currentWorld = resolveImpacts(currentWorld, [impact]);
-          emitDigest();
-          syncWorld();
-        }
-        break;
-
-      case "TRIGGER_SUCCESSION":
-        if (currentWorld) {
-          const impact = legacy.DynastyService.triggerSuccession(
-            currentWorld,
-            command.heyaId,
-            command.successorId
-          );
-          currentWorld = resolveImpacts(currentWorld, [impact]);
-          emitDigest();
-          syncWorld();
-        }
-        break;
-
-      case "SET_TRAINING_STATE":
-        if (currentWorld) {
-          const impact = {
-            entities: {
-              trainingStateUpdates: new Map([[command.heyaId, command.trainingState]]),
-            },
-          };
-          currentWorld = resolveImpacts(currentWorld, [impact]);
-          syncWorld();
-        }
-        break;
-
-      case "REQUEST_POLITICAL_FAVOR":
-        if (currentWorld) {
-          const impact = PoliticalFavorsService.requestFavor(
-            currentWorld,
-            command.heyaId,
-            command.favorId as FavorType
-          );
-          currentWorld = resolveImpacts(currentWorld, [impact]);
-          emitDigest();
-          syncWorld();
-        }
-        break;
-
-      case "GET_DIGEST":
         emitDigest();
-        break;
+        worldVersion++;
+        self.postMessage({ type: "WORLD_UPDATED", world: currentWorld, version: worldVersion });
+      }
+    },
+    OFFER_CONTRACT: (cmd) => {
+      if (currentWorld) {
+        const result = talentpool.offerCandidate(
+          currentWorld,
+          cmd.candidateId,
+          cmd.heyaId,
+          "standard",
+          "high"
+        );
+        if (result.ok && result.impact) {
+          currentWorld = resolveImpacts(currentWorld, [result.impact]);
+          emitDigest();
+          syncWorld();
+        } else {
+          self.postMessage({ type: "ERROR", message: result.reason || "Offer failed" });
+        }
+      }
+    },
+    SCOUT_POOL: (cmd) => {
+      if (currentWorld) {
+        const result = talentpool.scoutPool(currentWorld, cmd.pool, {
+          revealCount: cmd.revealCount,
+        });
+        if (result.impact) {
+          currentWorld = resolveImpacts(currentWorld, [result.impact]);
+          emitDigest();
+          syncWorld();
+        }
+      }
+    },
+    SCOUT_CANDIDATE: (cmd) => {
+      if (currentWorld) {
+        const result = talentpool.scoutCandidate(currentWorld, cmd.candidateId, {
+          effort: cmd.effort,
+        });
+        if (result.ok && result.impact) {
+          currentWorld = resolveImpacts(currentWorld, [result.impact]);
+          emitDigest();
+          syncWorld();
+        }
+      }
+    },
+    RESOLVE_CRISIS: (cmd) => {
+      if (currentWorld) {
+        const impact = governance.resolveCrisis(
+          currentWorld,
+          cmd.crisisId,
+          cmd.choice as "harsh" | "cover_up"
+        );
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        emitDigest();
+        syncWorld();
+      }
+    },
+    BUY_MYOSEKI: (cmd) => {
+      if (currentWorld) {
+        const impact = myoseki.buyMyoseki(
+          currentWorld,
+          cmd.buyerId,
+          cmd.buyerHeyaId,
+          cmd.myosekiId
+        );
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        emitDigest();
+        syncWorld();
+      }
+    },
+    LEASE_MYOSEKI: (cmd) => {
+      if (currentWorld) {
+        const impact = myoseki.leaseMyoseki(currentWorld, cmd.buyerId, cmd.myosekiId);
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        emitDigest();
+        syncWorld();
+      }
+    },
+    RENEW_SPONSOR: (cmd) => {
+      if (currentWorld) {
+        const impact = sponsorService.renewSponsorContract(
+          currentWorld,
+          cmd.relationshipId,
+          cmd.sponsorId
+        );
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        emitDigest();
+        syncWorld();
+      }
+    },
+    REQUEST_BAILOUT: (cmd) => {
+      if (currentWorld) {
+        const impact = loans.issueBailoutLoanIfNeeded(currentWorld, cmd.heyaId);
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        emitDigest();
+        syncWorld();
+      }
+    },
+    PREPAY_LOAN: (cmd) => {
+      if (currentWorld) {
+        const impact = loans.prepayLoan(currentWorld, cmd.heyaId, cmd.loanId);
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        emitDigest();
+        syncWorld();
+      }
+    },
+    HIRE_STAFF: (cmd) => {
+      if (currentWorld) {
+        const impact = staffService.hireStaff(currentWorld, cmd.heyaId, cmd.role);
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        emitDigest();
+        syncWorld();
+      }
+    },
+    FIRE_STAFF: (cmd) => {
+      if (currentWorld) {
+        const impact = staffService.fireStaff(currentWorld, cmd.heyaId, cmd.staffId);
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        emitDigest();
+        syncWorld();
+      }
+    },
+    TRIGGER_SUCCESSION: (cmd) => {
+      if (currentWorld) {
+        const impact = legacy.DynastyService.triggerSuccession(
+          currentWorld,
+          cmd.heyaId,
+          cmd.successorId
+        );
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        emitDigest();
+        syncWorld();
+      }
+    },
+    SET_TRAINING_STATE: (cmd) => {
+      if (currentWorld) {
+        const impact = {
+          entities: {
+            trainingStateUpdates: new Map([[cmd.heyaId, cmd.trainingState]]),
+          },
+        };
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        syncWorld();
+      }
+    },
+    REQUEST_POLITICAL_FAVOR: (cmd) => {
+      if (currentWorld) {
+        const impact = PoliticalFavorsService.requestFavor(
+          currentWorld,
+          cmd.heyaId,
+          cmd.favorId as FavorType
+        );
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        emitDigest();
+        syncWorld();
+      }
+    },
+    GET_DIGEST: () => {
+      emitDigest();
+    },
+  };
 
-      default:
-        console.warn(`[Worker] Unknown command: ${command.type}`);
+  try {
+    const handler = COMMAND_HANDLERS[command.type];
+    if (handler) {
+      await handler(command as any);
+    } else {
+      console.warn(`[Worker] Unknown command: ${command.type}`);
     }
   } catch (err) {
     self.postMessage({

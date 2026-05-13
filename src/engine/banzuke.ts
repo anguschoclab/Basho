@@ -140,23 +140,17 @@ export function compareBanzuke(
 }
 
 /** Helper to determine division tier (lower is better). */
+const DIVISION_TIER_MAP: Record<Division, number> = {
+  makuuchi: 1,
+  juryo: 2,
+  makushita: 3,
+  sandanme: 4,
+  jonidan: 5,
+  jonokuchi: 6,
+};
+
 function divisionTier(d: Division): number {
-  switch (d) {
-    case "makuuchi":
-      return 1;
-    case "juryo":
-      return 2;
-    case "makushita":
-      return 3;
-    case "sandanme":
-      return 4;
-    case "jonidan":
-      return 5;
-    case "jonokuchi":
-      return 6;
-    default:
-      assertNever(d);
-  }
+  return DIVISION_TIER_MAP[d];
 }
 
 /**

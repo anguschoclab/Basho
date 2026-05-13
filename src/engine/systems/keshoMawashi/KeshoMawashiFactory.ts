@@ -259,8 +259,8 @@ function generateColors(
 ): { primary: string; secondary: string; accent: string } {
   const brand = palette.heyaBrand;
 
-  switch (origin) {
-    case "national": {
+  const COLOR_GENERATORS: Record<DesignOrigin, () => { primary: string; secondary: string; accent: string }> = {
+    national: () => {
       const flagColors = NATIONAL_FLAG_PALETTES[palette.rikishiNationality];
       if (flagColors) {
         return {
@@ -269,23 +269,18 @@ function generateColors(
           accent: flagColors.accent,
         };
       }
-      // Fallback to heya brand
       return {
         primary: brand.primaryColor,
         secondary: brand.secondaryColor,
         accent: brand.accentColor,
       };
-    }
-
-    case "heya_legacy":
-      return {
-        primary: brand.primaryColor,
-        secondary: brand.secondaryColor,
-        accent: brand.accentColor,
-      };
-
-    case "traditional": {
-      // Pick a random motif and use its colors
+    },
+    heya_legacy: () => ({
+      primary: brand.primaryColor,
+      secondary: brand.secondaryColor,
+      accent: brand.accentColor,
+    }),
+    traditional: () => {
       const motifs = Object.keys(MOTIF_COLOR_ASSOCIATIONS) as TraditionalMotif[];
       const motif = rng.pick(motifs);
       const motifColors = MOTIF_COLOR_ASSOCIATIONS[motif];
@@ -294,9 +289,8 @@ function generateColors(
         secondary: motifColors.secondary,
         accent: brand.accentColor,
       };
-    }
-
-    case "corporate": {
+    },
+    corporate: () => {
       const industries = Object.keys(CORPORATE_INDUSTRY_PALETTES);
       const industry = rng.pick(industries);
       const corpColors = CORPORATE_INDUSTRY_PALETTES[industry];
@@ -305,15 +299,10 @@ function generateColors(
         secondary: corpColors.secondary,
         accent: corpColors.accent,
       };
-    }
+    },
+  };
 
-    default:
-      return {
-        primary: brand.primaryColor,
-        secondary: brand.secondaryColor,
-        accent: brand.accentColor,
-      };
-  }
+  return (COLOR_GENERATORS[origin] || COLOR_GENERATORS.heya_legacy)();
 }
 
 /** Select base pattern based on tier */
@@ -462,26 +451,22 @@ function generateMainSymbol(
 ): KeshoSymbol {
   const brand = palette.heyaBrand;
 
-  switch (origin) {
-    case "national":
-      return {
-        type: "national_flag",
-        value: palette.rikishiNationality,
-        position: "center",
-        size: "large",
-        prominence: 0.9,
-      };
-
-    case "heya_legacy":
-      return {
-        type: "heya_crest",
-        value: brand.crestMotif,
-        position: "center",
-        size: "large",
-        prominence: 0.85,
-      };
-
-    case "traditional": {
+  const SYMBOL_GENERATORS: Record<DesignOrigin, () => KeshoSymbol> = {
+    national: () => ({
+      type: "national_flag",
+      value: palette.rikishiNationality,
+      position: "center",
+      size: "large",
+      prominence: 0.9,
+    }),
+    heya_legacy: () => ({
+      type: "heya_crest",
+      value: brand.crestMotif,
+      position: "center",
+      size: "large",
+      prominence: 0.85,
+    }),
+    traditional: () => {
       const motifs = Object.keys(MOTIF_COLOR_ASSOCIATIONS) as TraditionalMotif[];
       const motif = rng.pick(motifs);
       return {
@@ -491,9 +476,8 @@ function generateMainSymbol(
         size: "large",
         prominence: 0.8,
       };
-    }
-
-    case "corporate": {
+    },
+    corporate: () => {
       const industries = Object.keys(CORPORATE_INDUSTRY_PALETTES);
       const industry = rng.pick(industries);
       return {
@@ -503,17 +487,10 @@ function generateMainSymbol(
         size: "medium",
         prominence: 0.7,
       };
-    }
+    },
+  };
 
-    default:
-      return {
-        type: "motif",
-        value: "dragon",
-        position: "center",
-        size: "large",
-        prominence: 0.8,
-      };
-  }
+  return (SYMBOL_GENERATORS[origin] || SYMBOL_GENERATORS.traditional)();
 }
 
 /** Generate a secondary symbol */

@@ -249,25 +249,17 @@ export const IndulgentMediaStrategy: MediaStrategy = {
   },
 };
 
+const MEDIA_STRATEGIES: Record<OyakataArchetype, MediaStrategy> = {
+  traditionalist: TraditionalistMediaStrategy,
+  scientist: ScientistMediaStrategy,
+  gambler: GamblerMediaStrategy,
+  nurturer: NurturerMediaStrategy,
+  tyrant: TyrantMediaStrategy,
+  strategist: StrategistMediaStrategy,
+  strict: StrictMediaStrategy,
+  indulgent: IndulgentMediaStrategy,
+};
+
 export function getMediaStrategy(archetype: OyakataArchetype): MediaStrategy {
-  switch (archetype) {
-    case "traditionalist":
-      return TraditionalistMediaStrategy;
-    case "scientist":
-      return ScientistMediaStrategy;
-    case "gambler":
-      return GamblerMediaStrategy;
-    case "nurturer":
-      return NurturerMediaStrategy;
-    case "tyrant":
-      return TyrantMediaStrategy;
-    case "strategist":
-      return StrategistMediaStrategy;
-    case "strict":
-      return StrictMediaStrategy;
-    case "indulgent":
-      return IndulgentMediaStrategy;
-    default:
-      return DefaultMediaStrategy;
-  }
+  return MEDIA_STRATEGIES[archetype] || DefaultMediaStrategy;
 }

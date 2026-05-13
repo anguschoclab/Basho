@@ -154,23 +154,17 @@ export function generateSponsor(
   };
 }
 
+const TIER_TRAIT_RANGES: Record<SponsorTier, { prestigeMin: number; prestigeMax: number; loyaltyMin: number; loyaltyMax: number }> = {
+  T0: { prestigeMin: 10, prestigeMax: 35, loyaltyMin: 10, loyaltyMax: 40 },
+  T1: { prestigeMin: 15, prestigeMax: 45, loyaltyMin: 20, loyaltyMax: 55 },
+  T2: { prestigeMin: 25, prestigeMax: 60, loyaltyMin: 30, loyaltyMax: 70 },
+  T3: { prestigeMin: 40, prestigeMax: 75, loyaltyMin: 40, loyaltyMax: 80 },
+  T4: { prestigeMin: 50, prestigeMax: 90, loyaltyMin: 50, loyaltyMax: 95 },
+  T5: { prestigeMin: 70, prestigeMax: 100, loyaltyMin: 60, loyaltyMax: 100 },
+};
+
 export function getTierTraitRanges(tier: SponsorTier) {
-  switch (tier) {
-    case "T0":
-      return { prestigeMin: 10, prestigeMax: 35, loyaltyMin: 10, loyaltyMax: 40 };
-    case "T1":
-      return { prestigeMin: 15, prestigeMax: 45, loyaltyMin: 20, loyaltyMax: 55 };
-    case "T2":
-      return { prestigeMin: 25, prestigeMax: 60, loyaltyMin: 30, loyaltyMax: 70 };
-    case "T3":
-      return { prestigeMin: 40, prestigeMax: 75, loyaltyMin: 40, loyaltyMax: 80 };
-    case "T4":
-      return { prestigeMin: 50, prestigeMax: 90, loyaltyMin: 50, loyaltyMax: 95 };
-    case "T5":
-      return { prestigeMin: 70, prestigeMax: 100, loyaltyMin: 60, loyaltyMax: 100 };
-    default:
-      assertNever(tier);
-  }
+  return TIER_TRAIT_RANGES[tier];
 }
 
 export function rollTier(rng: SeededRNG, dist: Record<SponsorTier, number>): SponsorTier {

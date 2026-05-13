@@ -150,26 +150,15 @@ export function calculateGrowthVector(
 
     // --- Ichimon Traditions ---
     // Real-world inspired specific training specialties for each clan
-    switch (heya.ichimon) {
-      case "Dewanoumi": // Heavy focus on fundamental power
-        degeikoMult *= 1.05; // Global boost
-        break;
-      case "Isegahama": // Focus on technical precision and speed
-        degeikoMult *= 1.05;
-        break;
-      case "Nishonoseki": // Traditional all-rounders
-        degeikoMult *= 1.05;
-        break;
-      case "Tokitsukaze": // Historical resilience and stamina
-        degeikoMult *= 1.05;
-        break;
-      case "Takadagawa": // Aggressive spirit and mental toughness
-        degeikoMult *= 1.05;
-        break;
-      case "Sakaigawa": // Modern powerhouse
-        degeikoMult *= 1.05;
-        break;
-    }
+    const ICHIMON_GROWTH_BONUSES: Partial<Record<IchimonName, number>> = {
+      Dewanoumi: 1.05,
+      Isegahama: 1.05,
+      Nishonoseki: 1.05,
+      Tokitsukaze: 1.05,
+      Takasago: 1.05, // Fixed name to match IchimonName type
+    };
+    const bonus = ICHIMON_GROWTH_BONUSES[heya.ichimon];
+    if (bonus) degeikoMult *= bonus;
   }
 
   // Phase 3 Polish: Stable Rivalry Penalty (Boiling Point)
@@ -213,17 +202,24 @@ export function calculateGrowthVector(
   };
 
   // Add Ichimon-specific stat bonuses
-  if (heya?.ichimon === "Dewanoumi") {
-    styleDriftMults.strength += 0.05;
-  } else if (heya?.ichimon === "Isegahama") {
-    styleDriftMults.technique += 0.05;
-    styleDriftMults.balance += 0.05;
-  } else if (heya?.ichimon === "Nishonoseki") {
-    styleDriftMults.speed += 0.05;
-  } else if (heya?.ichimon === "Tokitsukaze") {
-    styleDriftMults.stamina += 0.1;
-  } else if (heya?.ichimon === "Takadagawa") {
-    styleDriftMults.mental += 0.1;
+  const ICHIMON_STAT_BONUSES: Record<string, Partial<typeof styleDriftMults>> = {
+    Dewanoumi: { strength: 0.05 },
+    Isegahama: { technique: 0.05, balance: 0.05 },
+    Nishonoseki: { speed: 0.05 },
+    Tokitsukaze: { stamina: 0.1 },
+    Takasago: { mental: 0.1 },
+  };
+
+  const statBonus = heya?.ichimon ? ICHIMON_STAT_BONUSES[heya.ichimon] : undefined;
+  if (statBonus) {
+    Object.assign(styleDriftMults, {
+      strength: styleDriftMults.strength + (statBonus.strength || 0),
+      speed: styleDriftMults.speed + (statBonus.speed || 0),
+      technique: styleDriftMults.technique + (statBonus.technique || 0),
+      balance: styleDriftMults.balance + (statBonus.balance || 0),
+      stamina: styleDriftMults.stamina + (statBonus.stamina || 0),
+      mental: styleDriftMults.mental + (statBonus.mental || 0),
+    });
   }
 
   const growth: Record<TrainingAttribute, number> = {

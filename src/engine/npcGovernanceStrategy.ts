@@ -107,7 +107,17 @@ export const DefaultGovernanceStrategy: GovernanceStrategy = {
   },
 };
 
-export function getGovernanceStrategy(_archetype: OyakataArchetype): GovernanceStrategy {
-  // All archetypes now use the unified rule-based strategy with personality checks
-  return DefaultGovernanceStrategy;
+const GOVERNANCE_STRATEGIES: Record<OyakataArchetype, GovernanceStrategy> = {
+  traditionalist: DefaultGovernanceStrategy,
+  scientist: DefaultGovernanceStrategy,
+  gambler: DefaultGovernanceStrategy,
+  nurturer: DefaultGovernanceStrategy,
+  tyrant: DefaultGovernanceStrategy,
+  strategist: DefaultGovernanceStrategy,
+  strict: DefaultGovernanceStrategy,
+  indulgent: DefaultGovernanceStrategy,
+};
+
+export function getGovernanceStrategy(archetype: OyakataArchetype): GovernanceStrategy {
+  return GOVERNANCE_STRATEGIES[archetype] || DefaultGovernanceStrategy;
 }

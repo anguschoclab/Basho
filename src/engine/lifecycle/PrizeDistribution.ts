@@ -117,21 +117,13 @@ export function payBashoTeate(world: WorldState): StateImpact {
     // Only non-sekitori receive basho teate
     if (r.division === "makuuchi" || r.division === "juryo") continue;
 
-    let teateAmount = 0;
-    switch (r.division) {
-      case "makushita":
-        teateAmount = 175_000;
-        break;
-      case "sandanme":
-        teateAmount = 85_000;
-        break;
-      case "jonidan":
-        teateAmount = 75_000;
-        break;
-      case "jonokuchi":
-        teateAmount = 70_000;
-        break;
-    }
+    const TEATE_AMOUNTS: Partial<Record<string, number>> = {
+      makushita: 175_000,
+      sandanme: 85_000,
+      jonidan: 75_000,
+      jonokuchi: 70_000,
+    };
+    const teateAmount = TEATE_AMOUNTS[r.division] || 0;
 
     if (teateAmount > 0) {
       const economics = r.economics || {

@@ -125,38 +125,36 @@ function checkGate(
   playerHeyaId: string,
   startDay: number
 ): HolidayGateTriggered | null {
-  const day = world.dayIndexGlobal ?? 0;
-
-  switch (gate) {
-    case "topRikishiInjury": {
-      // Check if any top-ranked rikishi in player's stable got injured
+  const GATE_HANDLERS: Record<
+    SafetyGate,
+    (world: WorldState, heya: any, playerHeyaId: string, startDay: number) => HolidayGateTriggered | null
+  > = {
+    topRikishiInjury: (world, heya, _playerHeyaId, _startDay) => {
       for (const rid of heya.rikishiIds ?? []) {
         const r = world.rikishi.get(rid);
         if (!r) continue;
         const tier = getRankTier(r.rank);
         if (tier <= 3 && r.injured) {
           return {
-            gate,
+            gate: "topRikishiInjury",
             message: `Critical injury reported — ${r.shikona ?? r.name ?? rid} is unable to compete.`,
-            dayIndex: day,
+            dayIndex: world.dayIndexGlobal ?? 0,
           };
         }
       }
       return null;
-    }
-
-    case "insolvencyWarning": {
+    },
+    insolvencyWarning: (world, heya) => {
       if (heya.funds != null && heya.funds < 1_000_000) {
         return {
-          gate,
+          gate: "insolvencyWarning",
           message: "Solvency risk rising — stable finances are critically low.",
-          dayIndex: day,
+          dayIndex: world.dayIndexGlobal ?? 0,
         };
       }
       return null;
-    }
-
-    case "scandalSeverity": {
+    },
+    scandalSeverity: (world) => {
       const recentEvents = queryEvents(world, { limit: 20 });
       const scandal = recentEvents.find(
         (e) =>
@@ -166,16 +164,14 @@ function checkGate(
       );
       if (scandal) {
         return {
-          gate,
-          message:
-            "Governance pressure escalating — a significant disciplinary matter has emerged.",
-          dayIndex: day,
+          gate: "scandalSeverity",
+          message: "Governance pressure escalating — a significant disciplinary matter has emerged.",
+          dayIndex: world.dayIndexGlobal ?? 0,
         };
       }
       return null;
-    }
-
-    case "sponsorChurn": {
+    },
+    sponsorChurn: (world) => {
       const recentEvents = queryEvents(world, { limit: 20 });
       const sponsorLoss = recentEvents.filter(
         (e) =>
@@ -183,61 +179,55 @@ function checkGate(
       );
       if (sponsorLoss.length >= 2) {
         return {
-          gate,
+          gate: "sponsorChurn",
           message: "Sponsor confidence wavering — multiple partnerships under review.",
-          dayIndex: day,
+          dayIndex: world.dayIndexGlobal ?? 0,
         };
       }
       return null;
-    }
-
-    case "promotionRun": {
+    },
+    promotionRun: (world, heya) => {
       for (const rid of heya.rikishiIds ?? []) {
         const r = world.rikishi.get(rid);
         if (!r) continue;
-        // Check if wrestler is on a promotion run (high wins in current basho)
         if ((r.currentBashoWins ?? 0) >= 12 && getRankTier(r.rank) <= 4) {
           return {
-            gate,
+            gate: "promotionRun",
             message: `Promotion momentum — ${r.shikona ?? r.name ?? rid} is on a remarkable tournament run.`,
-            dayIndex: day,
+            dayIndex: world.dayIndexGlobal ?? 0,
           };
         }
       }
       return null;
-    }
-
-    case "loanDefault": {
+    },
+    loanDefault: (world, heya) => {
       if (heya.funds != null && heya.funds < 0) {
         return {
-          gate,
+          gate: "loanDefault",
           message: "Financial emergency — stable has entered negative funds territory.",
-          dayIndex: day,
+          dayIndex: world.dayIndexGlobal ?? 0,
         };
       }
       return null;
-    }
-
-    case "rosterOverForeignLimit": {
-      // Constitution governance: max foreign rikishi per stable
+    },
+    rosterOverForeignLimit: (world, heya) => {
       const foreignCount = (heya.rikishiIds ?? []).filter((rid: string) => {
         const r = world.rikishi.get(rid);
         return r && r.nationality !== "japanese";
       }).length;
       if (foreignCount > 1) {
         return {
-          gate,
+          gate: "rosterOverForeignLimit",
           message: "Governance alert — roster exceeds the foreign wrestler quota.",
-          dayIndex: day,
+          dayIndex: world.dayIndexGlobal ?? 0,
         };
       }
       return null;
-    }
-    default:
-      assertNever(gate);
-  }
+    },
+  };
 
-  return null;
+  const handler = GATE_HANDLERS[gate];
+  return handler ? handler(world, heya, playerHeyaId, startDay) : null;
 }
 
 /**
@@ -267,44 +257,34 @@ function getRankTier(rank?: string): number {
  *  * @returns The result.
  */
 function computeTargetDays(world: WorldState, target: HolidayTarget): number {
-  const phase = world.cyclePhase;
-
-  switch (target) {
-    case "nextDay":
-      return 1;
-
-    case "nextWeek":
-      return 7;
-
-    case "nextMonth":
-      return 30;
-
-    case "nextBashoDay1": {
-      // Advance through interim until active_basho
+  const TARGET_DAYS: Record<HolidayTarget, (world: WorldState) => number> = {
+    nextDay: () => 1,
+    nextWeek: () => 7,
+    nextMonth: () => 30,
+    nextBashoDay1: (world) => {
+      const phase = world.cyclePhase;
       if (phase === "active_basho") return 0;
       const interimRemaining = world._interimDaysRemaining ?? 0;
       const preBashoDays = phase === "pre_basho" ? (world._interimDaysRemaining ?? 7) : 0;
-      if (phase === "interim") return interimRemaining + 7; // interim + pre_basho
+      if (phase === "interim") return interimRemaining + 7;
       if (phase === "pre_basho") return preBashoDays;
       if (phase === "post_basho") return (world._postBashoDays ?? 7) + 42 + 7;
-      return 42; // fallback
-    }
-
-    case "endOfBasho": {
+      return 42;
+    },
+    endOfBasho: (world) => {
+      const phase = world.cyclePhase;
       if (phase === "active_basho" && world.currentBasho) {
         const remaining = 15 - (world.currentBasho.day ?? 1);
         return Math.max(0, remaining);
       }
-      // If not in basho, advance to next basho then through it
-      const toBasho = computeTargetDays(world, "nextBashoDay1");
+      const toBasho = TARGET_DAYS.nextBashoDay1(world);
       return toBasho + 15;
-    }
+    },
+    postBasho: (world) => TARGET_DAYS.endOfBasho(world) + 7,
+  };
 
-    case "postBasho":
-      return computeTargetDays(world, "endOfBasho") + 7;
-    default:
-      assertNever(target);
-  }
+  const resolver = TARGET_DAYS[target];
+  return resolver ? resolver(world) : 0;
 }
 
 // ============================================================================
@@ -473,22 +453,20 @@ function isTargetReached(
   startDay: number,
   daysAdvanced: number
 ): boolean {
-  switch (target) {
-    case "nextDay":
-      return daysAdvanced >= 1;
-    case "nextWeek":
-      return daysAdvanced >= 7;
-    case "nextMonth":
-      return daysAdvanced >= 30;
-    case "nextBashoDay1":
-      return world.cyclePhase === "active_basho";
-    case "endOfBasho":
-      return world.cyclePhase === "post_basho" || world.cyclePhase === "interim";
-    case "postBasho":
-      return world.cyclePhase === "interim";
-    default:
-      assertNever(target);
-  }
+  const TARGET_REACHED: Record<
+    HolidayTarget,
+    (world: WorldState, startDay: number, daysAdvanced: number) => boolean
+  > = {
+    nextDay: (_world, _startDay, daysAdvanced) => daysAdvanced >= 1,
+    nextWeek: (_world, _startDay, daysAdvanced) => daysAdvanced >= 7,
+    nextMonth: (_world, _startDay, daysAdvanced) => daysAdvanced >= 30,
+    nextBashoDay1: (world) => world.cyclePhase === "active_basho",
+    endOfBasho: (world) => world.cyclePhase === "post_basho" || world.cyclePhase === "interim",
+    postBasho: (world) => world.cyclePhase === "interim",
+  };
+
+  const checker = TARGET_REACHED[target];
+  return checker ? checker(world, startDay, daysAdvanced) : false;
 }
 
 // ============================================================================

@@ -67,6 +67,17 @@ export const DefaultRecruitmentStrategy: RecruitmentStrategy = {
   },
 };
 
-export function getRecruitmentStrategy(_archetype: OyakataArchetype): RecruitmentStrategy {
-  return DefaultRecruitmentStrategy;
+const RECRUITMENT_STRATEGIES: Record<OyakataArchetype, RecruitmentStrategy> = {
+  traditionalist: DefaultRecruitmentStrategy,
+  scientist: DefaultRecruitmentStrategy,
+  gambler: DefaultRecruitmentStrategy,
+  nurturer: DefaultRecruitmentStrategy,
+  tyrant: DefaultRecruitmentStrategy,
+  strategist: DefaultRecruitmentStrategy,
+  strict: DefaultRecruitmentStrategy,
+  indulgent: DefaultRecruitmentStrategy,
+};
+
+export function getRecruitmentStrategy(archetype: OyakataArchetype): RecruitmentStrategy {
+  return RECRUITMENT_STRATEGIES[archetype] || DefaultRecruitmentStrategy;
 }

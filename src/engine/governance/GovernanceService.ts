@@ -217,21 +217,17 @@ export function runElections(world: WorldState): StateImpact {
 /**
  * Returns a CSS color class for a governance status band.
  */
+const STATUS_COLOR_MAP: Record<string, string> = {
+  clean: "text-green-400",
+  good_standing: "text-green-400",
+  warning: "text-yellow-400",
+  probation: "text-orange-400",
+  sanctioned: "text-red-400",
+  critical: "text-red-400",
+};
+
 export function getStatusColor(status: string): string {
-  switch (status) {
-    case "clean":
-    case "good_standing":
-      return "text-green-400";
-    case "warning":
-      return "text-yellow-400";
-    case "probation":
-      return "text-orange-400";
-    case "sanctioned":
-    case "critical":
-      return "text-red-400";
-    default:
-      return "text-gray-400";
-  }
+  return STATUS_COLOR_MAP[status] || "text-gray-400";
 }
 
 /**

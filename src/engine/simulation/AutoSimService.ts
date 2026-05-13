@@ -243,60 +243,53 @@ export function checkStopCondition(
 ): boolean {
   const hasPlayer = !config.observerMode && !!config.playerHeyaId;
 
-  switch (condition) {
-    case "yokozunaPromotion":
-      return bashoResult.promotions.some((p) => p.to === "yokozuna");
-    case "ozekiPromotion":
-      return bashoResult.promotions.some((p) => p.to === "ozeki");
-    case "yusho":
-      return (
-        hasPlayer && world.rikishi.get(bashoResult.yushoWinner.id)?.heyaId === config.playerHeyaId
-      );
-    case "stableInsolvency":
-      return (
-        hasPlayer &&
-        config.playerHeyaId !== undefined &&
-        world.heyas.get(config.playerHeyaId)?.runwayBand === "desperate"
-      );
-    case "scandal": {
+  const STOP_HANDLERS: Record<
+    StopCondition,
+    (bashoResult: BashoSimResult, world: WorldState, config: AutoSimConfig) => boolean
+  > = {
+    yokozunaPromotion: (bashoResult) => bashoResult.promotions.some((p) => p.to === "yokozuna"),
+    ozekiPromotion: (bashoResult) => bashoResult.promotions.some((p) => p.to === "ozeki"),
+    yusho: (bashoResult, world, config) =>
+      hasPlayer && world.rikishi.get(bashoResult.yushoWinner.id)?.heyaId === config.playerHeyaId,
+    stableInsolvency: (_bashoResult, world, config) =>
+      hasPlayer &&
+      config.playerHeyaId !== undefined &&
+      world.heyas.get(config.playerHeyaId)?.runwayBand === "desperate",
+    scandal: (_bashoResult, world) => {
       const scandals = world.scandals ?? [];
       const eventLogList = world.eventLog ?? [];
       return (
         scandals.some((s) => s.severity === "major" && s.year === world.year) ||
         eventLogList.some((e) => e.type === "scandal")
       );
-    }
-    case "retirementOfStar": {
+    },
+    retirementOfStar: (_bashoResult, world) => {
       const retirements = world.retirements ?? [];
       return retirements.some((r) => {
         const rikishi = world.rikishi.get(r.rikishiId);
         return rikishi && (RANK_HIERARCHY[rikishi.rank]?.tier ?? 999) <= 4;
       });
-    }
+    },
+    majorInjury: () => false, // TODO: Implement if needed
+    never: () => false,
+  };
 
-    default:
-      return false;
-  }
+  const handler = STOP_HANDLERS[condition];
+  return handler ? handler(bashoResult, world, config) : false;
 }
 
 function computeTargetBasho(duration: SimDuration): number {
-  switch (duration.type) {
-    case "days":
-      return Math.max(0, Math.ceil(duration.count / 15));
-    case "weeks":
-      return Math.max(0, Math.ceil(duration.count / 9));
-    case "months":
-      return Math.max(0, Math.ceil(duration.count / 2));
-    case "basho":
-      return Math.max(0, Math.floor(duration.count));
-    case "years":
-      return Math.max(0, Math.floor(duration.count) * 6);
-    case "untilEvent":
-      return 600; // 100-year cap
-    default:
-      assertNever(duration as never);
-      return 0;
-  }
+  const DURATION_RESOLVERS: Record<SimDuration["type"], (d: any) => number> = {
+    days: (d) => Math.max(0, Math.ceil(d.count / 15)),
+    weeks: (d) => Math.max(0, Math.ceil(d.count / 9)),
+    months: (d) => Math.max(0, Math.ceil(d.count / 2)),
+    basho: (d) => Math.max(0, Math.floor(d.count)),
+    years: (d) => Math.max(0, Math.floor(d.count) * 6),
+    untilEvent: () => 600, // 100-year cap
+  };
+
+  const resolver = DURATION_RESOLVERS[duration.type];
+  return resolver ? resolver(duration) : 0;
 }
 
 function titleCase(name: string): string {

@@ -96,8 +96,8 @@ export const WelfareService = {
     const hasNegligence = negligenceCount > 0;
     const week = world.calendar.currentWeek || 0;
 
-    switch (state.complianceState) {
-      case "compliant": {
+    const COMPLIANCE_HANDLERS: Record<ComplianceState, () => void> = {
+      compliant: () => {
         const watchThreshold = hasNegligence ? 30 : 45;
         if (
           state.welfareRisk >= watchThreshold ||
@@ -112,7 +112,6 @@ export const WelfareService = {
             reason: reasons.join("|"),
           });
 
-          // --- MEDIA CONNECTIVITY (Phase 3.3) ---
           generateGovernanceHeadline({
             world,
             heyaId: heya.id,
@@ -126,10 +125,8 @@ export const WelfareService = {
             );
           }
         }
-        break;
-      }
-
-      case "watch": {
+      },
+      watch: () => {
         if (state.welfareRisk >= 65 && state.weeksInState >= 2) {
           this.setComplianceState(state, "investigation");
           state.investigation = {
@@ -144,7 +141,6 @@ export const WelfareService = {
             risk: state.welfareRisk,
           });
 
-          // --- MEDIA CONNECTIVITY (Phase 3.3) ---
           generateGovernanceHeadline({
             world,
             heyaId: heya.id,
@@ -165,10 +161,8 @@ export const WelfareService = {
             risk: state.welfareRisk,
           });
         }
-        break;
-      }
-
-      case "investigation": {
+      },
+      investigation: () => {
         if (!state.investigation) {
           state.investigation = {
             openedWeek: week,
@@ -203,7 +197,6 @@ export const WelfareService = {
             money: fineYen,
           });
 
-          // --- MEDIA CONNECTIVITY (Phase 3.3) ---
           generateGovernanceHeadline({
             world,
             heyaId: heya.id,
@@ -225,10 +218,8 @@ export const WelfareService = {
             risk: state.welfareRisk,
           });
         }
-        break;
-      }
-
-      case "sanctioned": {
+      },
+      sanctioned: () => {
         if (state.sanctions?.recruitmentFreezeWeeks && state.sanctions.recruitmentFreezeWeeks > 0) {
           state.sanctions.recruitmentFreezeWeeks--;
         }
@@ -243,11 +234,11 @@ export const WelfareService = {
             risk: state.welfareRisk,
           });
         }
-        break;
-      }
-      default:
-        assertNever(state.complianceState);
-    }
+      },
+    };
+
+    const handler = COMPLIANCE_HANDLERS[state.complianceState];
+    if (handler) handler();
   },
 
   /**

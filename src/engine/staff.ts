@@ -192,6 +192,29 @@ export interface StaffBonuses {
   administration: number; // e.g. 0.90 (cost reduction)
 }
 
+const BAND_VALUES: Record<CompetenceBand, number> = {
+  feeble: 0.01,
+  limited: 0.05,
+  serviceable: 0.1,
+  strong: 0.15,
+  great: 0.2,
+  dominant: 0.3,
+  monstrous: 0.5,
+};
+
+const ROLE_HANDLERS: Record<StaffRole, (b: StaffBonuses, val: number) => void> = {
+  technique_coach: (b, val) => (b.technique += val),
+  conditioning_coach: (b, val) => (b.conditioning += val),
+  medical_staff: (b, val) => (b.medical += val),
+  scout: (b, val) => (b.scouting += val),
+  administrator: (b, val) => (b.administration -= val * 0.5),
+  assistant_oyakata: (b, val) => {
+    b.technique += val * 0.2;
+    b.conditioning += val * 0.2;
+    b.medical += val * 0.2;
+  },
+};
+
 export function getHeyaStaffBonuses(world: WorldState, heyaId: Id): StaffBonuses {
   const heya = world.heyas.get(heyaId);
   const bonuses: StaffBonuses = {
@@ -204,27 +227,12 @@ export function getHeyaStaffBonuses(world: WorldState, heyaId: Id): StaffBonuses
 
   if (!heya || !heya.staffIds || !world.staff) return bonuses;
 
-  const BAND_VALUES: Record<CompetenceBand, number> = {
-    feeble: 0.01,
-    limited: 0.05,
-    serviceable: 0.1,
-    strong: 0.15,
-    great: 0.2,
-    dominant: 0.3,
-    monstrous: 0.5,
-  };
-
   for (const staffId of heya.staffIds) {
     const staff = world.staff.get(staffId);
     if (!staff || staff.careerPhase === "retired") continue;
 
-    // Fatigue and Morale Efficiency Mapping
-    // High fatigue (>80) drops efficiency significantly.
-    // Morale acts as a multiplier to the final bonus.
-
     const fatigueFactor = staff.fatigue > 80 ? 0.4 : staff.fatigue > 50 ? 0.7 : 1.0;
     const moraleFactor = staff.morale > 90 ? 1.15 : staff.morale < 30 ? 0.6 : 1.0;
-
     const efficiency = fatigueFactor * moraleFactor;
 
     const primaryBonus = BAND_VALUES[staff.competenceBands.primary] * efficiency;
@@ -234,29 +242,9 @@ export function getHeyaStaffBonuses(world: WorldState, heyaId: Id): StaffBonuses
 
     const totalStaffBonus = primaryBonus + secondaryBonus;
 
-    switch (staff.role) {
-      case "technique_coach":
-        bonuses.technique += totalStaffBonus;
-        break;
-      case "conditioning_coach":
-        bonuses.conditioning += totalStaffBonus;
-        break;
-      case "medical_staff":
-        bonuses.medical += totalStaffBonus;
-        break;
-      case "scout":
-        bonuses.scouting += totalStaffBonus;
-        break;
-      case "administrator":
-        // Administration reduces costs, so we subtract from the multiplier
-        bonuses.administration -= totalStaffBonus * 0.5;
-        break;
-      case "assistant_oyakata":
-        // Generalist: provides small boost to everything
-        bonuses.technique += totalStaffBonus * 0.2;
-        bonuses.conditioning += totalStaffBonus * 0.2;
-        bonuses.medical += totalStaffBonus * 0.2;
-        break;
+    const handler = ROLE_HANDLERS[staff.role];
+    if (handler) {
+      handler(bonuses, totalStaffBonus);
     }
   }
 

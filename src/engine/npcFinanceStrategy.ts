@@ -77,6 +77,17 @@ export const DefaultFinanceStrategy: FinanceStrategy = {
   },
 };
 
-export function getFinanceStrategy(_archetype: OyakataArchetype): FinanceStrategy {
-  return DefaultFinanceStrategy;
+const FINANCE_STRATEGIES: Record<OyakataArchetype, FinanceStrategy> = {
+  traditionalist: DefaultFinanceStrategy,
+  scientist: DefaultFinanceStrategy,
+  gambler: DefaultFinanceStrategy,
+  nurturer: DefaultFinanceStrategy,
+  tyrant: DefaultFinanceStrategy,
+  strategist: DefaultFinanceStrategy,
+  strict: DefaultFinanceStrategy,
+  indulgent: DefaultFinanceStrategy,
+};
+
+export function getFinanceStrategy(archetype: OyakataArchetype): FinanceStrategy {
+  return FINANCE_STRATEGIES[archetype] || DefaultFinanceStrategy;
 }

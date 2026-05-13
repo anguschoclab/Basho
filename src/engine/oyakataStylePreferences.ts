@@ -54,23 +54,23 @@ export function getOyakataStyleProfile(world: WorldState, oyakata: Oyakata): Oya
   const philosophy = options[rng.int(0, options.length - 1)];
 
   // Determine preferences based on philosophy
-  switch (philosophy) {
-    case "style_purist": {
+  const PHILOSOPHY_HANDLERS: Record<RecruitmentPhilosophy, () => OyakataStyleProfile> = {
+    style_purist: () => {
       const styleBias = (oyakata.traits?.tradition ?? 50) >= 60 ? "yotsu" : "oshi";
       return {
-        philosophy,
+        philosophy: "style_purist",
         preferredArchetypes: styleBias === "yotsu" ? ["yotsu"] : ["oshi", "tsuppari"],
         preferredStyle: styleBias as Style,
         statWeights: { power: 0.7, speed: 0.4, technique: 0.9, size: 0.5, potential: 0.6 },
         description: `Exclusively recruits ${styleBias} wrestlers. Refuses to train other styles.`,
       };
-    }
-    case "meta_chaser": {
+    },
+    meta_chaser: () => {
       const meta = world._postBashoMeta;
       const metaStyle =
         meta?.metaBias === "oshi" ? "oshi" : meta?.metaBias === "yotsu" ? "yotsu" : "hybrid";
       return {
-        philosophy,
+        philosophy: "meta_chaser",
         preferredArchetypes:
           metaStyle === "oshi"
             ? ["oshi", "speedster"]
@@ -81,51 +81,45 @@ export function getOyakataStyleProfile(world: WorldState, oyakata: Oyakata): Oya
         statWeights: { power: 0.6, speed: 0.6, technique: 0.6, size: 0.5, potential: 0.8 },
         description: `Adapts recruitment to the current dominant style. Currently favoring ${metaStyle}.`,
       };
-    }
-    case "traditionalist":
-      return {
-        philosophy,
-        preferredArchetypes: ["yotsu", "hybrid"],
-        preferredStyle: "yotsu",
-        statWeights: { power: 0.8, speed: 0.3, technique: 0.7, size: 0.8, potential: 0.5 },
-        description:
-          "Old school. Believes in belt-wrestling, heavy training, and traditional methods.",
-      };
-    case "innovator":
-      return {
-        philosophy,
-        preferredArchetypes: ["speedster", "trickster", "defensive"],
-        preferredStyle: "any",
-        statWeights: { power: 0.3, speed: 0.9, technique: 0.8, size: 0.2, potential: 0.9 },
-        description: "Seeks unconventional wrestlers who can outthink and outmaneuver opponents.",
-      };
-    case "size_matters":
-      return {
-        philosophy,
-        preferredArchetypes: ["oshi", "hybrid", "giant"],
-        preferredStyle: "oshi",
-        statWeights: { power: 0.9, speed: 0.2, technique: 0.4, size: 1.0, potential: 0.5 },
-        description: "Recruits the biggest, heaviest prospects. Believes mass wins matches.",
-      };
-    case "underdog_hunter":
-      return {
-        philosophy,
-        preferredArchetypes: ["trickster", "speedster"],
-        preferredStyle: "any",
-        statWeights: { power: 0.4, speed: 0.5, technique: 0.5, size: 0.3, potential: 1.0 },
-        description:
-          "Scouts overlooked talent from obscure sources. Values raw potential over polish.",
-      };
-    case "balanced":
-    default:
-      return {
-        philosophy: "balanced",
-        preferredArchetypes: ["hybrid"],
-        preferredStyle: "any",
-        statWeights: { power: 0.6, speed: 0.6, technique: 0.6, size: 0.5, potential: 0.7 },
-        description: "No strong recruitment bias. Evaluates each prospect on individual merit.",
-      };
-  }
+    },
+    traditionalist: () => ({
+      philosophy: "traditionalist",
+      preferredArchetypes: ["yotsu", "hybrid"],
+      preferredStyle: "yotsu",
+      statWeights: { power: 0.8, speed: 0.3, technique: 0.7, size: 0.8, potential: 0.5 },
+      description: "Old school. Believes in belt-wrestling, heavy training, and traditional methods.",
+    }),
+    innovator: () => ({
+      philosophy: "innovator",
+      preferredArchetypes: ["speedster", "trickster", "defensive"],
+      preferredStyle: "any",
+      statWeights: { power: 0.3, speed: 0.9, technique: 0.8, size: 0.2, potential: 0.9 },
+      description: "Seeks unconventional wrestlers who can outthink and outmaneuver opponents.",
+    }),
+    size_matters: () => ({
+      philosophy: "size_matters",
+      preferredArchetypes: ["oshi", "hybrid", "giant"],
+      preferredStyle: "oshi",
+      statWeights: { power: 0.9, speed: 0.2, technique: 0.4, size: 1.0, potential: 0.5 },
+      description: "Recruits the biggest, heaviest prospects. Believes mass wins matches.",
+    }),
+    underdog_hunter: () => ({
+      philosophy: "underdog_hunter",
+      preferredArchetypes: ["trickster", "speedster"],
+      preferredStyle: "any",
+      statWeights: { power: 0.4, speed: 0.5, technique: 0.5, size: 0.3, potential: 1.0 },
+      description: "Scouts overlooked talent from obscure sources. Values raw potential over polish.",
+    }),
+    balanced: () => ({
+      philosophy: "balanced",
+      preferredArchetypes: ["hybrid"],
+      preferredStyle: "any",
+      statWeights: { power: 0.6, speed: 0.6, technique: 0.6, size: 0.5, potential: 0.7 },
+      description: "No strong recruitment bias. Evaluates each prospect on individual merit.",
+    }),
+  };
+
+  return (PHILOSOPHY_HANDLERS[philosophy] || PHILOSOPHY_HANDLERS.balanced)();
 }
 
 /** Score a candidate for a given oyakata's preferences (0-100) */

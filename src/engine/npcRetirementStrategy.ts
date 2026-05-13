@@ -82,6 +82,17 @@ export const DefaultRetirementStrategy: RetirementStrategy = {
   },
 };
 
-export function getRetirementStrategy(_archetype: OyakataArchetype): RetirementStrategy {
-  return DefaultRetirementStrategy;
+const RETIREMENT_STRATEGIES: Record<OyakataArchetype, RetirementStrategy> = {
+  traditionalist: DefaultRetirementStrategy,
+  scientist: DefaultRetirementStrategy,
+  gambler: DefaultRetirementStrategy,
+  nurturer: DefaultRetirementStrategy,
+  tyrant: DefaultRetirementStrategy,
+  strategist: DefaultRetirementStrategy,
+  strict: DefaultRetirementStrategy,
+  indulgent: DefaultRetirementStrategy,
+};
+
+export function getRetirementStrategy(archetype: OyakataArchetype): RetirementStrategy {
+  return RETIREMENT_STRATEGIES[archetype] || DefaultRetirementStrategy;
 }

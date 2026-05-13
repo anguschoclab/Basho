@@ -199,25 +199,17 @@ export const IndulgentSponsorStrategy: SponsorStrategy = {
   },
 };
 
+const SPONSOR_STRATEGIES: Record<OyakataArchetype, SponsorStrategy> = {
+  traditionalist: TraditionalistSponsorStrategy,
+  scientist: ScientistSponsorStrategy,
+  gambler: GamblerSponsorStrategy,
+  nurturer: NurturerSponsorStrategy,
+  tyrant: TyrantSponsorStrategy,
+  strategist: StrategistSponsorStrategy,
+  strict: StrictSponsorStrategy,
+  indulgent: IndulgentSponsorStrategy,
+};
+
 export function getSponsorStrategy(archetype: OyakataArchetype): SponsorStrategy {
-  switch (archetype) {
-    case "traditionalist":
-      return TraditionalistSponsorStrategy;
-    case "scientist":
-      return ScientistSponsorStrategy;
-    case "gambler":
-      return GamblerSponsorStrategy;
-    case "nurturer":
-      return NurturerSponsorStrategy;
-    case "tyrant":
-      return TyrantSponsorStrategy;
-    case "strategist":
-      return StrategistSponsorStrategy;
-    case "strict":
-      return StrictSponsorStrategy;
-    case "indulgent":
-      return IndulgentSponsorStrategy;
-    default:
-      return DefaultSponsorStrategy;
-  }
+  return SPONSOR_STRATEGIES[archetype] || DefaultSponsorStrategy;
 }
