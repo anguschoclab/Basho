@@ -205,18 +205,13 @@ function determineBoutTone(
 }
 
 function getRankImpact(rank?: string): number {
-  switch (rank) {
-    case "yokozuna":
-      return 10;
-    case "ozeki":
-      return 8;
-    case "sekiwake":
-      return 6;
-    case "komusubi":
-      return 5;
-    default:
-      return 3;
-  }
+  const RANK_IMPACTS: Record<string, number> = {
+    yokozuna: 10,
+    ozeki: 8,
+    sekiwake: 6,
+    komusubi: 5,
+  };
+  return RANK_IMPACTS[rank || ""] || 3;
 }
 
 /**

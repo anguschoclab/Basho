@@ -63,22 +63,24 @@ export const PoliticalFavorsService = {
     });
 
     // Apply specific favor logic
-    switch (favorId) {
-      case "advance_payout":
+    const FAVOR_HANDLERS: Record<FavorType, () => void> = {
+      advance_payout: () => {
         builder.updateHeya(heyaId, { funds: heya.funds + 5_000_000 });
         builder.logEvent("OYAKATA_MOOD_SHIFT", "narrative", { newMood: "content" });
-        break;
-      case "governance_pardon":
+      },
+      governance_pardon: () => {
         builder.updateHeya(heyaId, { scandalScore: Math.max(0, (heya.scandalScore ?? 0) - 10) });
-        break;
-      case "matchmaking_avoid":
-        // Set a transient override for next matchmaking cycle
+      },
+      matchmaking_avoid: () => {
         builder.updateWorldField("matchmakingOverride", {
           type: "avoid_rival",
           requesterId: heyaId,
         });
-        break;
-    }
+      },
+    };
+
+    const handler = FAVOR_HANDLERS[favorId];
+    if (handler) handler();
 
     builder.logEvent(
       "POLITICAL_FAVOR_REDEEMED",

@@ -230,28 +230,31 @@ export const WorldCircuitService = {
     const nextPhilosophy = { ...currentPhilosophy };
     const driftAmount = 0.02 * (maxPresence / 100);
 
-    switch (dominantRegion) {
-      case "Mongolia":
+    const DRIFT_HANDLERS: Record<ExhibitionRegion, () => void> = {
+      Mongolia: () => {
         nextPhilosophy.speedBias = (nextPhilosophy.speedBias || 0) + driftAmount;
         nextPhilosophy.powerBias = (nextPhilosophy.powerBias || 0) - driftAmount * 0.5;
-        break;
-      case "Georgia":
+      },
+      Georgia: () => {
         nextPhilosophy.powerBias = (nextPhilosophy.powerBias || 0) + driftAmount;
         nextPhilosophy.techniqueBias = (nextPhilosophy.techniqueBias || 0) - driftAmount * 0.5;
-        break;
-      case "Europe":
+      },
+      Europe: () => {
         nextPhilosophy.techniqueBias = (nextPhilosophy.techniqueBias || 0) + driftAmount;
         nextPhilosophy.speedBias = (nextPhilosophy.speedBias || 0) - driftAmount * 0.5;
-        break;
-      case "Americas":
+      },
+      Americas: () => {
         nextPhilosophy.powerBias = (nextPhilosophy.powerBias || 0) + driftAmount * 0.7;
         nextPhilosophy.speedBias = (nextPhilosophy.speedBias || 0) - driftAmount * 0.3;
-        break;
-      case "East_Asia":
+      },
+      East_Asia: () => {
         nextPhilosophy.techniqueBias = (nextPhilosophy.techniqueBias || 0) + driftAmount * 0.7;
         nextPhilosophy.powerBias = (nextPhilosophy.powerBias || 0) - driftAmount * 0.3;
-        break;
-    }
+      },
+    };
+
+    const handler = DRIFT_HANDLERS[dominantRegion];
+    if (handler) handler();
 
     builder.updateHeya(heyaId, { trainingPhilosophy: nextPhilosophy });
 
