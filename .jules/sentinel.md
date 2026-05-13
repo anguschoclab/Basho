@@ -11,3 +11,8 @@ Replaced `JSON.parse` with `destr` in `safeParse` to mitigate prototype pollutio
 **Vulnerability:** The Electron app passed `url` string values directly to `shell.openExternal` after only a naive string comparison (`url.startsWith("https:")`). This could be exploited by protocol smuggling or OS-specific parsing quirks.
 **Learning:** Naive string matching on URLs is dangerous. Depending on the operating system handler, malformed strings or edge-case protocol combinations might bypass simple string checks, leading to arbitrary command execution or file access.
 **Prevention:** Always instantiate a `new URL()` object when handling untrusted URLs and strictly verify the `protocol` property before passing it to native handlers like `shell.openExternal()`. Wrap it in a `try...catch` to prevent malformed URL exceptions from crashing the process.
+
+## 2025-02-27 - Unsafe URL Validation in will-navigate
+**Vulnerability:** The Electron app used `navigationUrl.startsWith("file://")` to check if a local file was being navigated to during the `will-navigate` event. This could be bypassed using URLs that start with "file://" but are actually malicious or invalid.
+**Learning:** Checking string prefixes for URL validation is fundamentally insecure because strings can easily trick weak patterns.
+**Prevention:** Always parse untrusted URLs using the standard `new URL(url)` API and verify the `protocol` property exactly (e.g., `parsedUrl.protocol === "file:"`). Wrap the parsing in a `try...catch` to prevent invalid URLs from crashing the handler or bypassing security checks.

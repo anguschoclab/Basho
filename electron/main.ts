@@ -49,9 +49,15 @@ async function createWindow(): Promise<void> {
 
   // Prevent dragging and dropping files from navigating the app
   mainWindow.webContents.on("will-navigate", (event, navigationUrl) => {
-    const isLocalFile = navigationUrl.startsWith("file://");
-    const isDevServer = process.env["ELECTRON_RENDERER_URL"] && navigationUrl.startsWith(process.env["ELECTRON_RENDERER_URL"]);
-    if (!isLocalFile && !isDevServer) {
+    try {
+      const parsedUrl = new URL(navigationUrl);
+      const isLocalFile = parsedUrl.protocol === "file:";
+      const isDevServer = process.env["ELECTRON_RENDERER_URL"] && navigationUrl.startsWith(process.env["ELECTRON_RENDERER_URL"]);
+      if (!isLocalFile && !isDevServer) {
+        event.preventDefault();
+      }
+    } catch {
+      // If URL parsing fails, prevent navigation to be safe
       event.preventDefault();
     }
   });
