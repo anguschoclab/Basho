@@ -159,7 +159,10 @@ export default function StaffPage() {
                   content="Hire a new specialist to improve your stable's performance"
                   side="top"
                 >
-                  <button className="flex flex-col items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 bg-muted/20 hover:bg-muted/30 hover:border-primary/50 transition-all group min-h-[220px]">
+                  <button
+                    aria-label="Recruit Specialist"
+                    className="flex flex-col items-center justify-center p-8 rounded-lg border-2 border-dashed border-border/50 bg-muted/20 hover:bg-muted/30 hover:border-primary/50 transition-all group min-h-[220px]"
+                  >
                     <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform mb-3">
                       <UserPlus className="h-6 w-6 text-primary" />
                     </div>
