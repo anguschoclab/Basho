@@ -36,10 +36,14 @@ export function fillVacanciesForNPC(
     const heya = world.heyas.get(heyaId);
     if (!heya) continue;
 
-    const hasForeigner = Array.from(world.activeRikishiIds)
-      .map((id) => world.rikishi.get(id))
-      .filter((r): r is Rikishi => r !== undefined && r.heyaId === heyaId && r.origin === "foreign")
-      .length > 0;
+    // ⚡ Bolt Optimization: Replace O(N) array allocation and iteration with O(1) space early-exit loop.
+    let hasForeigner = false;
+    for (const r of world.rikishi.values()) {
+      if (r.heyaId === heyaId && r.origin === "foreign" && !r.isRetired) {
+        hasForeigner = true;
+        break;
+      }
+    }
 
     for (let i = 0; i < vacancyCount; i++) {
       const availableCandidates: string[] = [];

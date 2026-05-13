@@ -47,3 +47,7 @@
 ## 2024-05-20 - Centralize State Selectors to Avoid Redundant Filtering
 **Learning:** Found an $O(N)$ memory overhead and iteration bottleneck where `Array.from(world.rikishi.values()).filter(...)` was used inline in UI projection layers to filter active rikishi. This pattern bypasses the centralized, optimized query methods that already cache or efficiently provide access to the state data.
 **Action:** Replace ad-hoc `Array.from(world.rikishi.values()).filter(...)` iterations with calls to centralized domain selectors like `getActiveRikishi(world)` or `getRikishiByDivision(world, ...)` from `src/engine/queries.ts` to leverage memoization and eliminate redundant intermediate array allocations.
+
+## 2024-05-20 - Avoid Array.from().filter().length > 0
+**Learning:** Found a major performance bottleneck in `TalentPoolNPCRecruitment.ts` where `Array.from(world.rikishi.values()).filter(...).length > 0` was used inside a loop over multiple `heya`s. This forces V8 to allocate an array for all rikishi, then allocate *another* array for the filtered results, just to check existence. In a game with 1,000+ rikishi and ~50 heyas, this creates severe memory churn and iteration overhead.
+**Action:** Replace `Array.from(iterable).filter(...).length > 0` with a standard `for...of` loop and an early `break`. This completely eliminates all array allocations ($O(1)$ space) and exits iteration instantly once a match is found, saving massive CPU cycles in hot loops.
