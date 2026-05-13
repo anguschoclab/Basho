@@ -77,7 +77,7 @@ export default function BanzukePage() {
       .map(([rank, count]) => ({ rank, count }));
   }, [world]);
 
-  const yokozunaCandidates = useMemo(() => world ? getYokozunaCandidates(world) : [], [world]);
+  const yokozunaCandidates = useMemo(() => (world ? getYokozunaCandidates(world) : []), [world]);
 
   if (!world || !banzukeDigest) return null;
 
@@ -354,7 +354,9 @@ export default function BanzukePage() {
               Yokozuna Promotion Watch
             </h2>
             <span className="h-px flex-1 bg-border/40" />
-            <span className="text-[10px] font-mono text-gold/70 uppercase tracking-wider">横綱</span>
+            <span className="text-[10px] font-mono text-gold/70 uppercase tracking-wider">
+              横綱
+            </span>
           </div>
           <YokozunaTrajectory candidates={yokozunaCandidates} />
         </section>

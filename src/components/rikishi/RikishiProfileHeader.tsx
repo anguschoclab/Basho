@@ -111,7 +111,9 @@ export function RikishiProfileHeader({
                       <>
                         {" - "}
                         {rikishi.combatArchetype ? (
-                          <TooltipWrap content={getCombatArchetypeDescription(rikishi.combatArchetype as any)}>
+                          <TooltipWrap
+                            content={getCombatArchetypeDescription(rikishi.combatArchetype as any)}
+                          >
                             <span className="cursor-help border-b border-dotted border-white/30 hover:border-white/60">
                               {rikishi.archetypeName}
                             </span>
@@ -149,13 +151,16 @@ export function RikishiProfileHeader({
                     <MapPin className="h-3.5 w-3.5 text-secondary" /> {rikishi.origin}
                   </span>
                   <span className="flex items-center gap-2">
-                    <Calendar className="h-3.5 w-3.5 text-secondary" /> {rikishi.age} Years <span className="opacity-60">({rikishi.ageDescriptor})</span>
+                    <Calendar className="h-3.5 w-3.5 text-secondary" /> {rikishi.age} Years{" "}
+                    <span className="opacity-60">({rikishi.ageDescriptor})</span>
                   </span>
                   <span className="flex items-center gap-2">
-                    <Ruler className="h-3.5 w-3.5 text-secondary" /> {rikishi.height}cm <span className="opacity-60">({rikishi.heightDescriptor})</span>
+                    <Ruler className="h-3.5 w-3.5 text-secondary" /> {rikishi.height}cm{" "}
+                    <span className="opacity-60">({rikishi.heightDescriptor})</span>
                   </span>
                   <span className="flex items-center gap-2">
-                    <Scale className="h-3.5 w-3.5 text-secondary" /> {rikishi.weight}kg <span className="opacity-60">({rikishi.weightDescriptor})</span>
+                    <Scale className="h-3.5 w-3.5 text-secondary" /> {rikishi.weight}kg{" "}
+                    <span className="opacity-60">({rikishi.weightDescriptor})</span>
                   </span>
                 </div>
                 {rikishi.rank === "ozeki" && rikishi.consecutiveStrongOzeki > 0 && (

@@ -16,9 +16,16 @@ import { KeshoBadge } from "@/components/kesho/KeshoBadge";
 import { RankBadge } from "./RankBadge";
 
 const RANK_ORDER: Record<string, number> = {
-  yokozuna: 0, ozeki: 1, sekiwake: 2, komusubi: 3,
-  maegashira: 4, juryo: 5, makushita: 6, sandanme: 7,
-  jonidan: 8, jonokuchi: 9,
+  yokozuna: 0,
+  ozeki: 1,
+  sekiwake: 2,
+  komusubi: 3,
+  maegashira: 4,
+  juryo: 5,
+  makushita: 6,
+  sandanme: 7,
+  jonidan: 8,
+  jonokuchi: 9,
 };
 
 interface RosterListProps {
@@ -131,7 +138,9 @@ export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
                     </div>
                     <div className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">
                       <TooltipWrap content={`Age: ${r.ageDescriptor}`} side="top">
-                        <span className="cursor-help">{r.origin} • {r.age} Years</span>
+                        <span className="cursor-help">
+                          {r.origin} • {r.age} Years
+                        </span>
                       </TooltipWrap>
                     </div>
                   </div>

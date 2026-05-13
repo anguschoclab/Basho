@@ -68,11 +68,11 @@ export type FinancialBand = "secure" | "comfortable" | "tight" | "critical" | "d
 export type PotentialBand = "generational" | "star" | "solid" | "average" | "limited" | "unknown";
 
 export const POTENTIAL_BANDS: BandDef<PotentialBand>[] = [
-  { band: "limited",      min: 0,   max: 35 },
-  { band: "average",      min: 35,  max: 55 },
-  { band: "solid",        min: 55,  max: 72 },
-  { band: "star",         min: 72,  max: 88 },
-  { band: "generational", min: 88,  max: Infinity },
+  { band: "limited", min: 0, max: 35 },
+  { band: "average", min: 35, max: 55 },
+  { band: "solid", min: 55, max: 72 },
+  { band: "star", min: 72, max: 88 },
+  { band: "generational", min: 88, max: Infinity },
 ];
 
 // === Scandal Bands (0–100) ===
@@ -185,10 +185,10 @@ export const EXPERIENCE_BANDS: BandDef<ExperienceBand>[] = [
 export type WeightBand = "lean" | "solid" | "powerful" | "massive" | "imposing";
 
 export const WEIGHT_BANDS: BandDef<WeightBand>[] = [
-  { band: "lean",     min: 0,   max: 100 },  // < 100kg
-  { band: "solid",    min: 100, max: 120 },  // 100–120kg
-  { band: "powerful", min: 120, max: 150 },  // 120–150kg
-  { band: "massive",  min: 150, max: 180 },  // 150–180kg
+  { band: "lean", min: 0, max: 100 }, // < 100kg
+  { band: "solid", min: 100, max: 120 }, // 100–120kg
+  { band: "powerful", min: 120, max: 150 }, // 120–150kg
+  { band: "massive", min: 150, max: 180 }, // 150–180kg
   { band: "imposing", min: 180, max: Infinity }, // 180kg+
 ];
 
@@ -230,9 +230,9 @@ export const WIN_RATE_BANDS: BandDef<WinRateBand>[] = [
 export type HeightBand = "short" | "average" | "tall" | "giant" | "towering";
 
 export const HEIGHT_BANDS: BandDef<HeightBand>[] = [
-  { band: "short",    min: 0,   max: 170 },  // < 170cm
-  { band: "average",  min: 170, max: 182 },  // 170–182cm
-  { band: "tall",     min: 182, max: 192 },  // 182–192cm
-  { band: "giant",    min: 192, max: 200 },  // 192–200cm
+  { band: "short", min: 0, max: 170 }, // < 170cm
+  { band: "average", min: 170, max: 182 }, // 170–182cm
+  { band: "tall", min: 182, max: 192 }, // 182–192cm
+  { band: "giant", min: 192, max: 200 }, // 192–200cm
   { band: "towering", min: 200, max: Infinity }, // 200cm+
 ];

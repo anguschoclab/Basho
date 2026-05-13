@@ -219,9 +219,11 @@ export function RosterWidget() {
   }, [selectedIds, world]);
 
   const { roster, injuredCount, avgFatigueValue, avgFatigueBand } = useMemo(() => {
-    if (!world?.playerHeyaId) return { roster: [], injuredCount: 0, avgFatigueValue: 0, avgFatigueBand: "fresh" as const };
+    if (!world?.playerHeyaId)
+      return { roster: [], injuredCount: 0, avgFatigueValue: 0, avgFatigueBand: "fresh" as const };
     const heya = world.heyas.get(world.playerHeyaId);
-    if (!heya) return { roster: [], injuredCount: 0, avgFatigueValue: 0, avgFatigueBand: "fresh" as const };
+    if (!heya)
+      return { roster: [], injuredCount: 0, avgFatigueValue: 0, avgFatigueBand: "fresh" as const };
 
     // ⚡ Bolt Performance Optimization: Single-pass for loop over rikishiIds
     const entries: RosterEntryWithHealth[] = [];
@@ -285,14 +287,15 @@ export function RosterWidget() {
           </Button>
         )}
 
-        <div className={`flex items-center gap-1 ml-auto ${avgFatigueValue > 70 ? "text-destructive" : avgFatigueValue > 40 ? "text-warning" : "text-muted-foreground"}`}>
-          {avgFatigueValue > 40
-            ? <AlertTriangle className="h-3 w-3" />
-            : <Activity className="h-3 w-3" />
-          }
-          <span className="text-[10px]">
-            Avg: {FATIGUE_LABELS[avgFatigueBand]}
-          </span>
+        <div
+          className={`flex items-center gap-1 ml-auto ${avgFatigueValue > 70 ? "text-destructive" : avgFatigueValue > 40 ? "text-warning" : "text-muted-foreground"}`}
+        >
+          {avgFatigueValue > 40 ? (
+            <AlertTriangle className="h-3 w-3" />
+          ) : (
+            <Activity className="h-3 w-3" />
+          )}
+          <span className="text-[10px]">Avg: {FATIGUE_LABELS[avgFatigueBand]}</span>
         </div>
       </div>
 
@@ -300,7 +303,11 @@ export function RosterWidget() {
       <div className="h-1 rounded-full bg-muted overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-500 ${
-            avgFatigueValue > 70 ? "bg-destructive" : avgFatigueValue > 40 ? "bg-warning" : "bg-primary"
+            avgFatigueValue > 70
+              ? "bg-destructive"
+              : avgFatigueValue > 40
+                ? "bg-warning"
+                : "bg-primary"
           }`}
           style={{ width: `${avgFatigueValue}%` }}
         />

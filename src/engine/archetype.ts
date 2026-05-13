@@ -84,14 +84,21 @@ const ARCHETYPE_DEFINITIONS: Record<CombatArchetype, Omit<CombatProfile, "archet
 };
 
 export const ARCHETYPE_DESCRIPTIONS: Record<CombatArchetype, string> = {
-  trickster: "Technique-heavy fighter who waits for the right moment. Uses tricks and speed over raw power.",
+  trickster:
+    "Technique-heavy fighter who waits for the right moment. Uses tricks and speed over raw power.",
   oshi: "Pushing specialist who charges decisively. High power and aggression, but lower technique and composure.",
-  yotsu: "Grappling specialist who seeks a deep belt grip. Strong and patient fighters who dominate once secured.",
-  speedster: "Fast and technical but physically weaker. Uses speed and footwork to avoid direct confrontation.",
-  giant: "Maximum mass and power. Unshakeable at the edge but poor balance and technique. Relies on brute force.",
-  hybrid: "Balanced across all dimensions. Adaptable fighter capable of both pushing and grappling techniques.",
-  tsuppari: "Rapid open-palm thrusting specialist. High aggression with no belt contact. Tires quickly and overcommits.",
-  defensive: "Counter-wrestler who reads and punishes opponent's aggression. Highest mental composure in edge crises.",
+  yotsu:
+    "Grappling specialist who seeks a deep belt grip. Strong and patient fighters who dominate once secured.",
+  speedster:
+    "Fast and technical but physically weaker. Uses speed and footwork to avoid direct confrontation.",
+  giant:
+    "Maximum mass and power. Unshakeable at the edge but poor balance and technique. Relies on brute force.",
+  hybrid:
+    "Balanced across all dimensions. Adaptable fighter capable of both pushing and grappling techniques.",
+  tsuppari:
+    "Rapid open-palm thrusting specialist. High aggression with no belt contact. Tires quickly and overcommits.",
+  defensive:
+    "Counter-wrestler who reads and punishes opponent's aggression. Highest mental composure in edge crises.",
 };
 
 /**

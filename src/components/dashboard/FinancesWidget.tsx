@@ -126,7 +126,12 @@ export function FinancesWidget() {
                 </linearGradient>
               </defs>
               <XAxis dataKey="name" hide />
-              <ReferenceLine y={0} stroke="hsl(var(--destructive))" strokeDasharray="3 3" strokeOpacity={0.5} />
+              <ReferenceLine
+                y={0}
+                stroke="hsl(var(--destructive))"
+                strokeDasharray="3 3"
+                strokeOpacity={0.5}
+              />
               <Tooltip
                 content={({ active, payload, label }) => {
                   if (!active || !payload?.length) return null;
@@ -180,11 +185,18 @@ export function FinancesWidget() {
             return (
               <div className="p-2 rounded-md bg-muted/30 border border-border/50">
                 <div className="flex items-center gap-1 text-[10px] font-mono font-bold text-muted-foreground tracking-tight">
-                  {isPositive ? <ArrowUpRight className="h-3 w-3 text-success" /> : <ArrowDownRight className="h-3 w-3 text-destructive" />}
+                  {isPositive ? (
+                    <ArrowUpRight className="h-3 w-3 text-success" />
+                  ) : (
+                    <ArrowDownRight className="h-3 w-3 text-destructive" />
+                  )}
                   Net/wk
                 </div>
-                <div className={`text-sm font-bold tabular-nums ${isPositive ? "text-success" : "text-destructive"}`}>
-                  {isPositive ? "+" : ""}{formatYen(net)}
+                <div
+                  className={`text-sm font-bold tabular-nums ${isPositive ? "text-success" : "text-destructive"}`}
+                >
+                  {isPositive ? "+" : ""}
+                  {formatYen(net)}
                 </div>
               </div>
             );

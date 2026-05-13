@@ -6,6 +6,7 @@ import type { Oyakata } from "../../types/oyakata";
 import { TalentPoolType, TalentCandidate } from "../../types/talent";
 import { RNGRegistry } from "../../core/RNGRegistry";
 import { getRecruitmentStrategy } from "../../npcRecruitmentStrategy";
+import { EntityCollection } from "../../core/EntityCollection";
 import { materializeCandidateToRikishiInternal } from "./TalentPoolMaterialization";
 import { isRecruitmentPlayerRelevant } from "../../npc/npcEventSurfacing";
 
@@ -34,7 +35,7 @@ export function fillVacanciesForNPC(
   for (const heyaId of sortedHeyas) {
     const vacancyCount = targetHeyas[heyaId];
     const heya = world.heyas.get(heyaId);
-    if (!heya) continue;
+    if (!heya || vacancyCount <= 0) continue;
 
     // ⚡ Bolt Optimization: Replace O(N) array allocation and iteration with O(1) space early-exit loop.
     let hasForeigner = false;

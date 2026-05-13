@@ -67,7 +67,9 @@ export default function OyakataPage() {
 
   return (
     <AppLayout subNavTabs={STABLE_TABS} activeSubTab="oyakata" pageTitle="Oyakata Profile">
-      <Helmet><title>Oyakata Profile | Basho</title></Helmet>
+      <Helmet>
+        <title>Oyakata Profile | Basho</title>
+      </Helmet>
       <div className="space-y-6">
         <PageHeader
           eyebrow="── MY STABLE ──"

@@ -85,7 +85,10 @@ export function generateCandidate(args: {
   const origin =
     poolType === "foreign"
       ? seededPick(rng, FOREIGN_ORIGINS)
-      : seededPick(rng, [...SUMO_HOTBEDS.filter(h => h !== "Mongolia" && h !== "Georgia" && h !== "Egypt"), ...JAPANESE_PREFECTURES.slice(0, 20)]);
+      : seededPick(rng, [
+          ...SUMO_HOTBEDS.filter((h) => h !== "Mongolia" && h !== "Georgia" && h !== "Egypt"),
+          ...JAPANESE_PREFECTURES.slice(0, 20),
+        ]);
 
   const name = generateShikona(`${rng.seed}::candidate::${id}`, {
     rng,

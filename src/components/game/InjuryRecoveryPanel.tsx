@@ -51,9 +51,7 @@ export function InjuryRecoveryPanel({ digest }: InjuryRecoveryPanelProps) {
               <Heart className="h-4 w-4 text-primary" />
               <span className="text-sm font-medium">Recovery Facilities</span>
             </div>
-            <Badge variant="outline">
-              {facilityLabel}
-            </Badge>
+            <Badge variant="outline">{facilityLabel}</Badge>
           </div>
           <Progress value={facilityLevel} className="h-2" />
           <p className="text-xs text-muted-foreground mt-2">

@@ -20,34 +20,35 @@ import { RankBadge } from "./RankBadge";
 function generateScoutNote(rikishi: UIRikishi, rawRikishi: Rikishi, rng: SeededRNG): string {
   const s = rawRikishi.stats ?? {};
   const ranked = [
-    { label: "physical power",        v: s.strength     ?? 50 },
-    { label: "footwork",              v: s.speed        ?? 50 },
-    { label: "technical precision",   v: s.technique    ?? 50 },
-    { label: "ring endurance",        v: s.stamina      ?? 50 },
-    { label: "lower-body stability",  v: s.balance      ?? 50 },
-    { label: "mental composure",      v: s.mental       ?? 50 },
+    { label: "physical power", v: s.strength ?? 50 },
+    { label: "footwork", v: s.speed ?? 50 },
+    { label: "technical precision", v: s.technique ?? 50 },
+    { label: "ring endurance", v: s.stamina ?? 50 },
+    { label: "lower-body stability", v: s.balance ?? 50 },
+    { label: "mental composure", v: s.mental ?? 50 },
     { label: "tactical adaptability", v: s.adaptability ?? 50 },
   ].sort((a, b) => b.v - a.v);
 
   const top = ranked[0];
   const weak = ranked[ranked.length - 1];
-  const topBand  = NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(top.v));
+  const topBand = NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(top.v));
   const weakBand = NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(weak.v));
 
   const phasePhrases: Record<string, string[]> = {
     prodigy: ["shows rare maturity for his age", "is drawing comparisons to historical greats"],
-    young:   ["is still building tournament instincts", "has room to grow into his body"],
-    prime:   ["is operating at peak efficiency", "brings together experience and athleticism"],
+    young: ["is still building tournament instincts", "has room to grow into his body"],
+    prime: ["is operating at peak efficiency", "brings together experience and athleticism"],
     veteran: ["leans on accumulated ring wisdom", "compensates with technical mastery"],
-    aging:   ["fights on sheer experience and pride", "defies age with cerebral sumo"],
-    elder:   ["competes on institutional prestige and guile", "represents a passing era"],
+    aging: ["fights on sheer experience and pride", "defies age with cerebral sumo"],
+    elder: ["competes on institutional prestige and guile", "represents a passing era"],
   };
   const phaseOpts = phasePhrases[rikishi.ageBand ?? "prime"] ?? phasePhrases["prime"];
   const phase = phaseOpts[rng.int(0, phaseOpts.length - 1)];
 
-  const weakSuffix = weak.v < 50
-    ? ` Critics note his ${weak.label} (${weakBand}) leaves room for opponents to exploit.`
-    : "";
+  const weakSuffix =
+    weak.v < 50
+      ? ` Critics note his ${weak.label} (${weakBand}) leaves room for opponents to exploit.`
+      : "";
 
   const style = (rikishi.style ?? "hybrid").toLowerCase();
 
@@ -105,12 +106,18 @@ function generateBadges(rikishi: UIRikishi, rawRikishi: Rikishi): string[] {
   const s = rawRikishi.stats ?? {};
   const totalBouts = (rikishi.careerWins ?? 0) + (rikishi.careerLosses ?? 0);
   const winPct = totalBouts > 30 ? (rikishi.careerWins ?? 0) / totalBouts : 0;
-  const topStatVal = Math.max(s.strength ?? 0, s.speed ?? 0, s.technique ?? 0, s.stamina ?? 0, s.balance ?? 0);
+  const topStatVal = Math.max(
+    s.strength ?? 0,
+    s.speed ?? 0,
+    s.technique ?? 0,
+    s.stamina ?? 0,
+    s.balance ?? 0
+  );
 
   if (rikishi.potentialBand === "generational") badges.push("Generational Talent");
-  else if (rikishi.potentialBand === "star")    badges.push("High Potential");
+  else if (rikishi.potentialBand === "star") badges.push("High Potential");
 
-  if (rikishi.careerYusho >= 5)     badges.push("Dynasty");
+  if (rikishi.careerYusho >= 5) badges.push("Dynasty");
   else if (rikishi.careerYusho >= 2) badges.push("Multi-Champion");
   else if (rikishi.careerYusho === 1) badges.push("Champion");
 
@@ -118,24 +125,26 @@ function generateBadges(rikishi: UIRikishi, rawRikishi: Rikishi): string[] {
   else if (rikishi.ageBand === "elder") badges.push("Elder Statesman");
   else if (rikishi.ageBand === "veteran" && totalBouts > 200) badges.push("Iron Veteran");
 
-  if ((rikishi.streak ?? 0) >= 5)  badges.push("Hot Streak");
+  if ((rikishi.streak ?? 0) >= 5) badges.push("Hot Streak");
   if ((rikishi.streak ?? 0) <= -5) badges.push("Slump");
 
-  if (winPct >= 0.68)      badges.push("Elite Record");
+  if (winPct >= 0.68) badges.push("Elite Record");
   else if (winPct >= 0.55) badges.push("Winning Form");
 
-  if (topStatVal >= 88)    badges.push("Physical Elite");
+  if (topStatVal >= 88) badges.push("Physical Elite");
   if (rikishi.nationality !== "Japan") badges.push("International");
 
   const traits = rikishi.personalityTraits ?? [];
-  if (traits.some(t => ["tenacious", "resilient", "determined"].includes(t))) badges.push("Iron Will");
-  if (traits.some(t => ["technical", "precise"].includes(t)))                 badges.push("Technician");
-  if (traits.some(t => ["charismatic", "popular", "crowd-pleaser"].includes(t))) badges.push("Fan Favourite");
+  if (traits.some((t) => ["tenacious", "resilient", "determined"].includes(t)))
+    badges.push("Iron Will");
+  if (traits.some((t) => ["technical", "precise"].includes(t))) badges.push("Technician");
+  if (traits.some((t) => ["charismatic", "popular", "crowd-pleaser"].includes(t)))
+    badges.push("Fan Favourite");
 
   // Fallbacks if nothing fired
   if (badges.length === 0) {
     const style = (rikishi.style ?? "hybrid").toLowerCase();
-    if (style === "oshi")  badges.push("Forward Pressure");
+    if (style === "oshi") badges.push("Forward Pressure");
     if (style === "yotsu") badges.push("Belt Specialist");
     if (style === "hybrid") badges.push("Versatile");
   }
@@ -234,16 +243,18 @@ export function RikishiProfileTab({ rikishi, rawRikishi, worldSeed }: RikishiPro
             <div className="h-10 w-10 bg-muted rounded-lg flex items-center justify-center shrink-0">
               <Info className="h-5 w-5 text-muted-foreground" />
             </div>
-            <p className="text-sm italic font-body leading-relaxed">
-              "{note}"
-            </p>
+            <p className="text-sm italic font-body leading-relaxed">"{note}"</p>
           </div>
           {badges.length > 0 && (
             <>
               <div className="h-px bg-border/40" />
               <div className="flex flex-wrap gap-2">
                 {badges.map((b) => (
-                  <Badge key={b} variant="outline" className="text-[9px] font-bold uppercase tracking-widest">
+                  <Badge
+                    key={b}
+                    variant="outline"
+                    className="text-[9px] font-bold uppercase tracking-widest"
+                  >
                     {b}
                   </Badge>
                 ))}

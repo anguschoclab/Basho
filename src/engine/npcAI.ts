@@ -298,14 +298,24 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
     };
 
     // Agent-based overrides (Phase 2c: Agent-Lead Review)
-    if (financeResult.riskLevel === "conservative" && trainingProposal.trainingIntensity === "punishing") {
+    if (
+      financeResult.riskLevel === "conservative" &&
+      trainingProposal.trainingIntensity === "punishing"
+    ) {
       trainingProposal.trainingIntensity = "intense";
-      reasoning.push("[Agent Review] Finance agent overrides: Reducing intensity to 'intense' due to conservative financial stance");
+      reasoning.push(
+        "[Agent Review] Finance agent overrides: Reducing intensity to 'intense' due to conservative financial stance"
+      );
     }
 
-    if (governanceResult.shouldReduceScandal && governanceResult.scandalReductionMethod === "cooperate") {
+    if (
+      governanceResult.shouldReduceScandal &&
+      governanceResult.scandalReductionMethod === "cooperate"
+    ) {
       // Reduce scandal impact by being cooperative
-      reasoning.push("[Agent Review] Governance agent: Cooperative scandal reduction strategy selected");
+      reasoning.push(
+        "[Agent Review] Governance agent: Cooperative scandal reduction strategy selected"
+      );
     }
   }
 
@@ -366,13 +376,28 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
       builder.logEvent("NPC_DECISION", "finance", { heyaId, decision: "buy_myoseki" }, { heyaId });
     }
     if (agentDecisions.governance.shouldReduceScandal) {
-      builder.logEvent("NPC_DECISION", "governance", { heyaId, decision: "reduce_scandal" }, { heyaId });
+      builder.logEvent(
+        "NPC_DECISION",
+        "governance",
+        { heyaId, decision: "reduce_scandal" },
+        { heyaId }
+      );
     }
     if (agentDecisions.rivalry.escalateRivalry) {
-      builder.logEvent("NPC_DECISION", "rivalry", { heyaId, decision: "escalate_rivalry" }, { heyaId });
+      builder.logEvent(
+        "NPC_DECISION",
+        "rivalry",
+        { heyaId, decision: "escalate_rivalry" },
+        { heyaId }
+      );
     }
     if (agentDecisions.narrative.shouldTriggerEvent) {
-      builder.logEvent("NPC_DECISION", "narrative", { heyaId, decision: "trigger_event", eventType: agentDecisions.narrative.eventType }, { heyaId });
+      builder.logEvent(
+        "NPC_DECISION",
+        "narrative",
+        { heyaId, decision: "trigger_event", eventType: agentDecisions.narrative.eventType },
+        { heyaId }
+      );
     }
   }
 
@@ -414,7 +439,7 @@ function applyPromotionAwareness(
   const heya = world.heyas.get(heyaId);
   if (!heya) return;
 
-  for (const rikishiId of (heya.rikishiIds ?? [])) {
+  for (const rikishiId of heya.rikishiIds ?? []) {
     const r = world.rikishi.get(rikishiId);
     if (!r || r.isRetired || r.injured) continue;
 
@@ -430,7 +455,9 @@ function applyPromotionAwareness(
           decision.individualProtects = [...decision.individualProtects, rikishiId];
           // Remove from push/develop if present — protecting takes priority
           decision.individualPushes = decision.individualPushes.filter((id) => id !== rikishiId);
-          decision.individualDevelops = decision.individualDevelops.filter((id) => id !== rikishiId);
+          decision.individualDevelops = decision.individualDevelops.filter(
+            (id) => id !== rikishiId
+          );
           decision.reasoning.push(
             `[PromotionAwareness] ${r.shikona ?? rikishiId} is Kadoban — added to protect list`
           );
@@ -484,7 +511,7 @@ function applyInjuryRiskReduction(
   let highRiskCount = 0;
   const protectIds: Id[] = [];
 
-  for (const rikishiId of (heya.rikishiIds ?? [])) {
+  for (const rikishiId of heya.rikishiIds ?? []) {
     const r = world.rikishi.get(rikishiId);
     if (!r || r.isRetired || r.injured) continue;
 
@@ -542,7 +569,11 @@ export function handleNPCCrisis(
   const oyakata = heya ? getOyakataForHeya(world, heyaId) : undefined;
 
   if (!oyakata || !heya) {
-    return { choiceId: crisis.options[0]?.id || "default", reasoning: ["No oyakata found"], impact: builder.build() };
+    return {
+      choiceId: crisis.options[0]?.id || "default",
+      reasoning: ["No oyakata found"],
+      impact: builder.build(),
+    };
   }
 
   const crisisCtx: CrisisAgentContext = {
@@ -586,7 +617,11 @@ export function handleNPCMediaEvent(
   eventId: string,
   eventType: string,
   severity: "minor" | "moderate" | "major"
-): { response: "apologize" | "deny" | "ignore" | "deflect"; reasoning: string[]; impact: StateImpact } {
+): {
+  response: "apologize" | "deny" | "ignore" | "deflect";
+  reasoning: string[];
+  impact: StateImpact;
+} {
   const builder = createImpactBuilder("handleNPCMediaEvent");
   const heya = getHeya(world, heyaId);
   const oyakata = heya ? getOyakataForHeya(world, heyaId) : undefined;

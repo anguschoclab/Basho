@@ -68,7 +68,9 @@ export const RikishiCard: React.FC<RikishiCardProps> = React.memo(({ rikishi }) 
               </TooltipTrigger>
               {rikishi.combatArchetype && (
                 <TooltipContent>
-                  <p className="max-w-xs">{getCombatArchetypeDescription(rikishi.combatArchetype as any)}</p>
+                  <p className="max-w-xs">
+                    {getCombatArchetypeDescription(rikishi.combatArchetype as any)}
+                  </p>
                 </TooltipContent>
               )}
             </Tooltip>
@@ -107,7 +109,8 @@ export const RikishiCard: React.FC<RikishiCardProps> = React.memo(({ rikishi }) 
                 Height
               </h4>
               <p className="font-medium">
-                {rikishi.height} cm <span className="text-muted-foreground text-xs">({rikishi.heightDescriptor})</span>
+                {rikishi.height} cm{" "}
+                <span className="text-muted-foreground text-xs">({rikishi.heightDescriptor})</span>
               </p>
             </div>
             <div>
@@ -115,7 +118,8 @@ export const RikishiCard: React.FC<RikishiCardProps> = React.memo(({ rikishi }) 
                 Weight
               </h4>
               <p className="font-medium">
-                {rikishi.weight} kg <span className="text-muted-foreground text-xs">({rikishi.weightDescriptor})</span>
+                {rikishi.weight} kg{" "}
+                <span className="text-muted-foreground text-xs">({rikishi.weightDescriptor})</span>
               </p>
             </div>
           </div>

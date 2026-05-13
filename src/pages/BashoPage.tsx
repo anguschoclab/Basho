@@ -228,11 +228,15 @@ export default function BashoPage() {
   if (!bashoDigest) {
     return (
       <AppLayout pageTitle="Current Basho" subNavTabs={TOURNAMENT_TABS} activeSubTab="basho">
-        <Helmet><title>Current Basho | Basho</title></Helmet>
+        <Helmet>
+          <title>Current Basho | Basho</title>
+        </Helmet>
         <div className="flex flex-col items-center justify-center min-h-[50vh] gap-6 text-center">
           <Trophy className="h-12 w-12 text-muted-foreground/30" />
           <div className="space-y-2">
-            <p className="font-display text-xl font-bold uppercase tracking-tight">No Active Tournament</p>
+            <p className="font-display text-xl font-bold uppercase tracking-tight">
+              No Active Tournament
+            </p>
             <p className="text-sm text-muted-foreground max-w-xs">
               Advance time on the Control Center to begin the next basho.
             </p>
@@ -437,10 +441,7 @@ export default function BashoPage() {
 
         {/* Standings evolution chart — active basho only */}
         {world.cyclePhase === "active_basho" && world.currentBasho && (
-          <BashoStandingsEvolution
-            basho={world.currentBasho}
-            rikishiMap={world.rikishi}
-          />
+          <BashoStandingsEvolution basho={world.currentBasho} rikishiMap={world.rikishi} />
         )}
       </div>
 

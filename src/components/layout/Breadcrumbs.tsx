@@ -82,7 +82,11 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
   const isMobile = typeof window !== "undefined" && window.innerWidth < 768;
   const displayCrumbs =
     isMobile && breadcrumbs.length > 3
-      ? [breadcrumbs[0], { label: "...", href: "", isCurrent: false }, breadcrumbs[breadcrumbs.length - 1]]
+      ? [
+          breadcrumbs[0],
+          { label: "...", href: "", isCurrent: false },
+          breadcrumbs[breadcrumbs.length - 1],
+        ]
       : breadcrumbs;
 
   if (breadcrumbs.length <= 1) return null;
@@ -90,10 +94,7 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
   return (
     <nav
       aria-label="Breadcrumb"
-      className={cn(
-        "flex items-center gap-1 text-[11px] text-muted-foreground",
-        className
-      )}
+      className={cn("flex items-center gap-1 text-[11px] text-muted-foreground", className)}
     >
       {displayCrumbs.map((crumb, index) => {
         const isLast = index === displayCrumbs.length - 1;
@@ -101,17 +102,12 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
 
         return (
           <React.Fragment key={index}>
-            {index > 0 && (
-              <ChevronRight className="h-3 w-3 text-muted-foreground/50" />
-            )}
+            {index > 0 && <ChevronRight className="h-3 w-3 text-muted-foreground/50" />}
 
             {isEllipsis ? (
               <span className="px-1 text-muted-foreground/50">...</span>
             ) : isLast ? (
-              <span
-                className="font-medium text-foreground px-1"
-                aria-current="page"
-              >
+              <span className="font-medium text-foreground px-1" aria-current="page">
                 {crumb.label}
               </span>
             ) : (
@@ -120,9 +116,7 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
                 className="hover:text-foreground transition-colors px-1 flex items-center gap-1"
               >
                 {index === 0 && <Home className="h-3 w-3" />}
-                <span className={index === 0 ? "hidden sm:inline" : ""}>
-                  {crumb.label}
-                </span>
+                <span className={index === 0 ? "hidden sm:inline" : ""}>{crumb.label}</span>
               </Link>
             )}
           </React.Fragment>

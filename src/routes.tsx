@@ -171,7 +171,9 @@ const stableOyakataRoute = createRoute({
 const stableInfrastructureRoute = createRoute({
   getParentRoute: () => stableBaseRoute,
   path: "/infrastructure",
-  beforeLoad: () => { throw redirect({ to: "/stable", replace: true }); },
+  beforeLoad: () => {
+    throw redirect({ to: "/stable", replace: true });
+  },
   component: () => null,
 });
 

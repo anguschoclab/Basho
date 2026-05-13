@@ -206,7 +206,11 @@ export default function GovernancePage() {
 
   if (!world || !heya || !derived) {
     return (
-      <AppLayout pageTitle="Governance & Compliance" subNavTabs={ASSOCIATION_TABS} activeSubTab="governance">
+      <AppLayout
+        pageTitle="Governance & Compliance"
+        subNavTabs={ASSOCIATION_TABS}
+        activeSubTab="governance"
+      >
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-muted-foreground">
           <div className="text-4xl animate-pulse font-display">⋯</div>
           <p className="text-sm font-display italic uppercase tracking-widest">Loading…</p>

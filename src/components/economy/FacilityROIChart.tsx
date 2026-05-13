@@ -119,9 +119,7 @@ function CustomTooltip({ active, payload, label }: CustomTooltipProps) {
         <p className="text-muted-foreground">At maximum level (100)</p>
       ) : (
         <>
-          <p className="text-muted-foreground mb-1">
-            Current level: {datum?.currentLevel ?? "—"}
-          </p>
+          <p className="text-muted-foreground mb-1">Current level: {datum?.currentLevel ?? "—"}</p>
           {payload.map((p) => {
             if (p.name === "Cost (¥M)") {
               return (

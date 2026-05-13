@@ -257,9 +257,16 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
 
                       <div className="text-xs text-muted-foreground mt-1">
                         {c.nationality ?? "Unknown origin"} •{" "}
-                        {c.age ? `Age ${c.age} ${c.ageDescriptor ? `(${c.ageDescriptor})` : ""}` : "Age unknown"} •{" "}
-                        {c.height ? `${c.height}cm ${c.heightDescriptor ? `(${c.heightDescriptor})` : ""}` : ""}{" "}
-                        {c.weight ? `${c.weight}kg ${c.weightDescriptor ? `(${c.weightDescriptor})` : ""}` : ""}
+                        {c.age
+                          ? `Age ${c.age} ${c.ageDescriptor ? `(${c.ageDescriptor})` : ""}`
+                          : "Age unknown"}{" "}
+                        •{" "}
+                        {c.height
+                          ? `${c.height}cm ${c.heightDescriptor ? `(${c.heightDescriptor})` : ""}`
+                          : ""}{" "}
+                        {c.weight
+                          ? `${c.weight}kg ${c.weightDescriptor ? `(${c.weightDescriptor})` : ""}`
+                          : ""}
                       </div>
 
                       {c.scoutLevel >= 35 && (
@@ -267,7 +274,9 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
                           {c.archetype && (
                             <span>
                               Style:{" "}
-                              <TooltipWrap content={getCombatArchetypeDescription(c.archetype as any)}>
+                              <TooltipWrap
+                                content={getCombatArchetypeDescription(c.archetype as any)}
+                              >
                                 <span className="cursor-help border-b border-dotted border-muted-foreground/30 hover:border-muted-foreground/60">
                                   {resolveRegistryLabel("archetypes", c.archetype)}
                                 </span>
@@ -277,7 +286,7 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
                           {c.scoutLevel >= 65 && c.talentSeed && (
                             <span className="ml-3">
                               Potential:{" "}
-                                {POTENTIAL_LABELS[toPotentialBand((c.talentSeed ?? 0) * 100)]}
+                              {POTENTIAL_LABELS[toPotentialBand((c.talentSeed ?? 0) * 100)]}
                             </span>
                           )}
                         </div>
