@@ -1,0 +1,3 @@
+## 2024-05-18 - TopNavBar Smart Advance Focus State
+**Learning:** The primary navigation action ("Smart Advance" button) had `focus-visible:ring-offset-2` but lacked the base `focus-visible:ring-2` and `focus-visible:ring-ring` classes, resulting in no visible focus ring during keyboard navigation. This happens easily when combining complex custom styling with utility classes.
+**Action:** When adding focus states to elements using Shadcn/Tailwind utilities, always ensure the complete suite of focus ring classes is present: `focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background`.
