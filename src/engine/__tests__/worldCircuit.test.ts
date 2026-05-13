@@ -49,7 +49,7 @@ describe("World Circuit System Integration", () => {
   });
 
   it("SHOULD unlock Foreign Academy when presence hits threshold", () => {
-    let world = generateInitialWorld("test-seed-3");
+    const world = generateInitialWorld("test-seed-3");
     const heyaId = world.playerHeyaId!;
 
     // Force high presence

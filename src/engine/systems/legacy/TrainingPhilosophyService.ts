@@ -53,7 +53,7 @@ export const TrainingPhilosophyService = {
    * Also normalizes and decays numeric style biases (Phase 5).
    */
   tickPhilosophyDrift(philosophy: TrainingPhilosophy): TrainingPhilosophy {
-    let nextPhil = { ...philosophy };
+    const nextPhil = { ...philosophy };
 
     // 1. Structural Bias Transition
     if (philosophy.transitionProgress !== undefined && philosophy.transitionProgress < 1) {
