@@ -40,3 +40,6 @@
 ## 2024-05-20 - Avoid Array.from().map().filter() overhead in Map iterations
 **Learning:** Chaining array methods like `Array.from(map.values()).map().filter()` inside frequent execution paths (like simulation ticks or engine phases) causes significant performance degradation due to $O(N)$ intermediate array allocations and redundant iterations.
 **Action:** Replace `Array.from(map.values()).map().filter()` chains with a single `for...of` loop over `map.values()` to filter and collect values (or map them directly to a target collection like a `Set`) without allocating intermediate arrays.
+## 2024-05-20 - Avoid Array.from().filter().length when counting active rikishi
+**Learning:** Found an $O(N)$ memory overhead and iteration bottleneck where `Array.from(world.rikishi.values()).filter(r => r.rank === "yokozuna" && !r.isRetired).length === 0` was used to verify active Yokozuna status inside of `BanzukePublisher.ts` loop. This created multiple unnecessary intermediate array allocations, memory garbage, and looped over the entire collection even if an active Yokozuna was found on the first element.
+**Action:** Replace `Array.from(map.values()).filter(condition).length === 0` with a standard `for...of` loop combined with an early `break` flag to achieve $O(1)$ memory usage and an expected $O(1)$ iteration speed to short circuit loop overhead immediately.
