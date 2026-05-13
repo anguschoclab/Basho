@@ -43,3 +43,7 @@
 ## 2024-05-20 - Avoid Array.from().filter().length when counting active rikishi
 **Learning:** Found an $O(N)$ memory overhead and iteration bottleneck where `Array.from(world.rikishi.values()).filter(r => r.rank === "yokozuna" && !r.isRetired).length === 0` was used to verify active Yokozuna status inside of `BanzukePublisher.ts` loop. This created multiple unnecessary intermediate array allocations, memory garbage, and looped over the entire collection even if an active Yokozuna was found on the first element.
 **Action:** Replace `Array.from(map.values()).filter(condition).length === 0` with a standard `for...of` loop combined with an early `break` flag to achieve $O(1)$ memory usage and an expected $O(1)$ iteration speed to short circuit loop overhead immediately.
+
+## 2024-05-20 - Centralize State Selectors to Avoid Redundant Filtering
+**Learning:** Found an $O(N)$ memory overhead and iteration bottleneck where `Array.from(world.rikishi.values()).filter(...)` was used inline in UI projection layers to filter active rikishi. This pattern bypasses the centralized, optimized query methods that already cache or efficiently provide access to the state data.
+**Action:** Replace ad-hoc `Array.from(world.rikishi.values()).filter(...)` iterations with calls to centralized domain selectors like `getActiveRikishi(world)` or `getRikishiByDivision(world, ...)` from `src/engine/queries.ts` to leverage memoization and eliminate redundant intermediate array allocations.

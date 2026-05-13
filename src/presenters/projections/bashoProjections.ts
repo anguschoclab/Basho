@@ -15,7 +15,7 @@ import { getRivalry } from "../../engine/rivalries";
 import { compareRanks } from "../../engine/banzuke";
 import { toRankPosition } from "../../engine/types/banzuke";
 import { isKeyDay, getSeasonalFlavor, BASHO_CALENDAR } from "../../engine/calendar";
-import { getActiveRikishi } from "../../engine/queries";
+import { getRikishiByDivision } from "../../engine/queries";
 
 /**
  * Project tournament live data for BashoPage.
@@ -73,9 +73,9 @@ export function projectBashoUIDigest(world: WorldState): BashoUIDigest | null {
   const completedBouts = matches.filter((m) => m.result).length;
   const dayProgress = matches.length > 0 ? (completedBouts / matches.length) * 100 : 0;
 
-  // ⚡ Bolt Optimization: Use getActiveRikishi instead of Array.from().filter() to avoid intermediate array allocations
-  const standings: StandingEntry[] = getActiveRikishi(world)
-    .filter((r: Rikishi) => !r.isRetired && r.division === "makuuchi")
+  // ⚡ Bolt Optimization: Replace O(N) Array.from(world.rikishi.values()).filter(...)
+  // with cached getRikishiByDivision to eliminate redundant array allocations and iterations
+  const standings: StandingEntry[] = getRikishiByDivision(world, "makuuchi")
     .map((r: Rikishi) => {
       const record = r.currentBashoRecord || { wins: 0, losses: 0 };
       return {
