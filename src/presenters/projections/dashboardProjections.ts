@@ -18,6 +18,7 @@ import { selectTopRivals } from "../selectors";
 import { getHeyaRoster, getSekitoriInHeya, getActiveRikishi } from "../../engine/queries";
 import { buildPrevRankScores, buildBanzukeRows } from "../banzukeUI";
 import { projectRosterEntry } from "../rikishiUI";
+import { EntityCollection } from "../../engine/core/EntityCollection";
 
 /**
  * Project dashboard data for the main overview.
