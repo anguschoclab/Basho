@@ -17,23 +17,17 @@ export function generateCandidate(
   house: HouseStyle,
   rankRule: RankRule
 ): string {
-  const nat = config.nationality
-    ? [
-        config.nationality === "Mongolia"
-          ? ["Teru", "Haku", "Ichi", "Ao", "Ryu", "Dai"]
-          : config.nationality === "Georgia"
-            ? ["Tochi", "Gaga", "Koto", "Koko"]
-            : config.nationality === "Bulgaria"
-              ? ["Ao", "Koto", "Bara"]
-              : config.nationality === "USA"
-                ? ["Musa", "Aka", "Taka", "Dai"]
-                : config.nationality === "Brazil"
-                  ? ["Kai", "Asa", "Sho"]
-                  : config.nationality === "Egypt"
-                    ? ["Oo", "Sada", "Osa"]
-                    : ["Taka", "Waka", "Asa", "Koto", "Tochi", "Haku", "Kai"],
-      ][0]
-    : ["Taka", "Waka", "Asa", "Koto", "Tochi", "Haku", "Kai"];
+  const NATIONALITY_PREFIXES: Record<string, string[]> = {
+    Mongolia: ["Teru", "Haku", "Ichi", "Ao", "Ryu", "Dai"],
+    Georgia: ["Tochi", "Gaga", "Koto", "Koko"],
+    Bulgaria: ["Ao", "Koto", "Bara"],
+    USA: ["Musa", "Aka", "Taka", "Dai"],
+    Brazil: ["Kai", "Asa", "Sho"],
+    Egypt: ["Oo", "Sada", "Osa"],
+    Default: ["Taka", "Waka", "Asa", "Koto", "Tochi", "Haku", "Kai"],
+  };
+
+  const nat = (config.nationality && NATIONALITY_PREFIXES[config.nationality]) || NATIONALITY_PREFIXES.Default;
 
   if (config.preferPrestigious) {
     if (rng() < rankRule.prestigeChance) {
@@ -72,39 +66,39 @@ export function generateCandidate(
   }
   const pattern = items[Math.floor(rng() * items.length)]?.item || "cat+cat";
 
-  switch (pattern) {
-    case "nat+terrain": {
+  const PATTERN_HANDLERS: Record<PatternId, () => string> = {
+    "nat+terrain": () => {
       const prefix = pick(nat, rng);
       const suffix =
         rng() < 0.5 ? pick(SHIKONA_SUFFIXES.mountain, rng) : pick(SHIKONA_SUFFIXES.water, rng);
       return prefix + suffix;
-    }
-    case "power+any": {
+    },
+    "power+any": () => {
       const prefix = pick(SHIKONA_PREFIXES.power, rng);
       const suffix = pickSuffixByCategoryBias(rng, house.suffixCategoryBias);
       return prefix + suffix;
-    }
-    case "nature+noble": {
+    },
+    "nature+noble": () => {
       const prefix = pick(SHIKONA_PREFIXES.nature, rng);
       const suffix = pick(SHIKONA_SUFFIXES.noble, rng);
       return prefix + suffix;
-    }
-    case "tradition+flora": {
+    },
+    "tradition+flora": () => {
       const prefix = pick(SHIKONA_PREFIXES.tradition, rng);
       const suffix = pick(SHIKONA_SUFFIXES.flora, rng);
       return prefix + suffix;
-    }
-    case "regional+ending": {
+    },
+    "regional+ending": () => {
       const prefix = pick(SHIKONA_PREFIXES.regional, rng);
       const suffix = pick(SHIKONA_SUFFIXES.endings, rng);
       return prefix + suffix;
-    }
-    case "cat+cat": {
+    },
+    "cat+cat": () => {
       const prefix = pickPrefixByCategoryBias(rng, house.prefixCategoryBias);
       const suffix = pickSuffixByCategoryBias(rng, house.suffixCategoryBias);
       return prefix + suffix;
-    }
-    case "triple": {
+    },
+    triple: () => {
       if (rng() > rankRule.tripleChance) {
         const prefix = pickPrefixByCategoryBias(rng, house.prefixCategoryBias);
         const suffix = pickSuffixByCategoryBias(rng, house.suffixCategoryBias);
@@ -114,8 +108,9 @@ export function generateCandidate(
       const connector = pickConnectorToken(rng, house);
       const suffix = pickSuffixByCategoryBias(rng, house.suffixCategoryBias);
       return prefix + connector + suffix;
-    }
-    default:
-      assertNever(pattern);
-  }
+    },
+  };
+
+  const handler = PATTERN_HANDLERS[pattern];
+  return handler ? handler() : "";
 }
