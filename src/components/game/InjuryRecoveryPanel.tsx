@@ -11,32 +11,24 @@ import type { projectMedicalUIDigest } from "@/presenters/uiDigest";
  * Get severity color.
  */
 function getSeverityColor(severity: string): string {
-  switch (severity) {
-    case "serious":
-      return "text-destructive";
-    case "moderate":
-      return "text-gold";
-    case "minor":
-      return "text-gold";
-    default:
-      return "text-muted-foreground";
-  }
+  const SEVERITY_COLORS: Record<string, string> = {
+    serious: "text-destructive",
+    moderate: "text-gold",
+    minor: "text-gold",
+  };
+  return SEVERITY_COLORS[severity] || "text-muted-foreground";
 }
 
 /**
  * Get severity badge.
  */
 function getSeverityBadge(severity: string) {
-  switch (severity) {
-    case "serious":
-      return <Badge variant="destructive">Serious</Badge>;
-    case "moderate":
-      return <Badge className="bg-gold/20 text-gold border-gold/30">Moderate</Badge>;
-    case "minor":
-      return <Badge variant="secondary">Minor</Badge>;
-    default:
-      return <Badge variant="outline">Unknown</Badge>;
-  }
+  const SEVERITY_BADGES: Record<string, React.ReactNode> = {
+    serious: <Badge variant="destructive">Serious</Badge>,
+    moderate: <Badge className="bg-gold/20 text-gold border-gold/30">Moderate</Badge>,
+    minor: <Badge variant="secondary">Minor</Badge>,
+  };
+  return SEVERITY_BADGES[severity] || <Badge variant="outline">Unknown</Badge>;
 }
 
 interface InjuryRecoveryPanelProps {

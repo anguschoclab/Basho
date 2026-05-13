@@ -153,16 +153,11 @@ function SizeRow({
 }
 
 function formatProfile(profile: string): string {
-  switch (profile) {
-    case "prodigy":
-      return "Prodigy";
-    case "late_bloomer":
-      return "Late Bloomer";
-    case "journeyman":
-      return "Journeyman";
-    case "early_peaker":
-      return "Early Peaker";
-    default:
-      return "Standard";
-  }
+  const PROFILES: Record<string, string> = {
+    prodigy: "Prodigy",
+    late_bloomer: "Late Bloomer",
+    journeyman: "Journeyman",
+    early_peaker: "Early Peaker",
+  };
+  return PROFILES[profile] || "Standard";
 }

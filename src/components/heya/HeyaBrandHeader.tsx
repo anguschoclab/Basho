@@ -46,43 +46,30 @@ export function HeyaBrandHeader({
   };
 
   const getShapeClass = (style: string) => {
-    switch (style) {
-      case "circular":
-        return "rounded-full";
-      case "square":
-        return "rounded-md";
-      case "diamond":
-        return "rounded-md rotate-45";
-      case "oval":
-        return "rounded-[50%]";
-      case "shield":
-        return "rounded-b-[50%] rounded-t-md";
-      case "hexagonal":
-      case "star":
-      case "octagonal":
-      case "triangular":
-      case "crescent":
-        return "rounded-md";
-      default:
-        return "rounded-full";
-    }
+    const SHAPE_CLASSES: Record<string, string> = {
+      circular: "rounded-full",
+      square: "rounded-md",
+      diamond: "rounded-md rotate-45",
+      oval: "rounded-[50%]",
+      shield: "rounded-b-[50%] rounded-t-md",
+      hexagonal: "rounded-md",
+      star: "rounded-md",
+      octagonal: "rounded-md",
+      triangular: "rounded-md",
+      crescent: "rounded-md",
+    };
+    return SHAPE_CLASSES[style] || "rounded-full";
   };
 
   const getClipPath = (style: string) => {
-    switch (style) {
-      case "hexagonal":
-        return "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)";
-      case "star":
-        return "polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)";
-      case "octagonal":
-        return "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)";
-      case "triangular":
-        return "polygon(50% 0%, 0% 100%, 100% 100%)";
-      case "crescent":
-        return "polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%, 50% 50%, 30% 50%, 30% 0%)";
-      default:
-        return "none";
-    }
+    const CLIP_PATHS: Record<string, string> = {
+      hexagonal: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
+      star: "polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)",
+      octagonal: "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
+      triangular: "polygon(50% 0%, 0% 100%, 100% 100%)",
+      crescent: "polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%, 50% 50%, 30% 50%, 30% 0%)",
+    };
+    return CLIP_PATHS[style] || "none";
   };
 
   const clipPath = getClipPath(brand.crestStyle);
