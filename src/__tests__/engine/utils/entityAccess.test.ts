@@ -120,6 +120,8 @@ describe("entityAccess", () => {
       world.rikishi.set("rikishi-1", activeRikishi);
       world.rikishi.set("rikishi-2", retiredRikishi);
 
+      world.activeRikishiIds = new Set(["rikishi-1"]);
+
       const result = getActiveRikishi(world);
       expect(result).toHaveLength(1);
       expect(result).toContain(activeRikishi);

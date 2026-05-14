@@ -27,6 +27,7 @@ export function createMockWorldState(overrides: Record<string, unknown> = {}) {
     },
     heyas: new Map(),
     rikishi: new Map(),
+    activeRikishiIds: new Set(),
     oyakata: new Map(),
     staff: new Map(),
     sponsors: new Map(),

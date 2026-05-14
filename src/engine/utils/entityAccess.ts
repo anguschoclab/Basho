@@ -81,9 +81,14 @@ export function getHeyaRikishi(world: WorldState, heyaId: Id): Rikishi[] {
  * @returns Array of active (non-retired) Rikishi
  */
 export function getActiveRikishi(world: WorldState): Rikishi[] {
-  return Array.from(world.activeRikishiIds)
-    .map((id) => world.rikishi.get(id))
-    .filter((r): r is Rikishi => r !== undefined);
+  const result: Rikishi[] = [];
+  if (!world.activeRikishiIds) return result;
+
+  for (const id of world.activeRikishiIds) {
+    const r = world.rikishi.get(id);
+    if (r) result.push(r);
+  }
+  return result;
 }
 
 /**
@@ -92,7 +97,12 @@ export function getActiveRikishi(world: WorldState): Rikishi[] {
  * @returns Array of active (non-retired) Rikishi
  */
 export function getAllActiveRikishi(world: WorldState): Rikishi[] {
-  return Array.from(world.activeRikishiIds)
-    .map((id) => world.rikishi.get(id))
-    .filter((r): r is Rikishi => r !== undefined);
+  const result: Rikishi[] = [];
+  if (!world.activeRikishiIds) return result;
+
+  for (const id of world.activeRikishiIds) {
+    const r = world.rikishi.get(id);
+    if (r) result.push(r);
+  }
+  return result;
 }
