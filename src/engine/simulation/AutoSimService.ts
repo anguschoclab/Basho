@@ -57,6 +57,12 @@ export interface AutoSimResult {
 
 /**
  * Main Auto-Sim Coordination Service.
+ * Runs the simulation for a specified duration or until a stop condition is met.
+ *
+ * @param world - The starting world state
+ * @param config - Configuration for the auto-simulation
+ * @param opts - Optional hooks and extra options
+ * @returns The final result of the auto-simulation including metrics and chronicles
  */
 export function runAutoSim(
   world: WorldState,
@@ -235,6 +241,15 @@ export function runAutoSim(
   };
 }
 
+/**
+ * Checks if a specific stop condition has been met.
+ *
+ * @param condition - The stop condition to check
+ * @param bashoResult - The results of the most recent basho simulation
+ * @param world - The current world state
+ * @param config - The active auto-sim configuration
+ * @returns True if the condition is met, false otherwise
+ */
 export function checkStopCondition(
   condition: StopCondition,
   bashoResult: BashoSimResult,
@@ -278,6 +293,12 @@ export function checkStopCondition(
   return handler ? handler(bashoResult, world, config) : false;
 }
 
+/**
+ * Computes the total number of basho to simulate based on the duration config.
+ *
+ * @param duration - The specified simulation duration
+ * @returns The number of basho to simulate
+ */
 function computeTargetBasho(duration: SimDuration): number {
   const DURATION_RESOLVERS: Record<SimDuration["type"], (d: any) => number> = {
     days: (d) => Math.max(0, Math.ceil(d.count / 15)),
@@ -292,6 +313,12 @@ function computeTargetBasho(duration: SimDuration): number {
   return resolver ? resolver(duration) : 0;
 }
 
+/**
+ * Helper to convert a string to title case.
+ *
+ * @param name - The string to convert
+ * @returns The title-cased string
+ */
 function titleCase(name: string): string {
   return name.charAt(0).toUpperCase() + name.slice(1);
 }

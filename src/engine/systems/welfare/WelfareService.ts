@@ -28,7 +28,11 @@ import { generateGovernanceHeadline } from "../media/MediaService";
 import { assertNever } from "../../utils/types";
 
 /**
- * Unified Welfare Service.
+ * Ensures that a heya has a valid welfare state.
+ * If not present, initializes it with default values.
+ *
+ * @param heya - The heya to check/initialize
+ * @returns The current or new WelfareState
  */
 export function ensureHeyaWelfareState(heya: Heya): WelfareState {
   return EntityService.ensureState(heya, "welfareState", () => ({
@@ -44,7 +48,10 @@ export const WelfareService = {
   ensureHeyaWelfareState,
 
   /**
-   * Authoritative Weekly Welfare Tick.
+   * Performs the weekly welfare compliance tick for all heyas in the world.
+   * Calculates risk shifts, orchestrates transitions, and updates indicators.
+   *
+   * @param world - The current world state
    */
   applyWeeklyWelfareTick(world: WorldState): void {
     const stables = EntityCollection.getHeyas(world);
@@ -84,7 +91,13 @@ export const WelfareService = {
   },
 
   /**
-   * Orchestrates transitions through the compliance lifecycle.
+   * Orchestrates transitions through the compliance lifecycle based on risk and injury pressure.
+   * Handles transitions between 'compliant', 'watch', 'investigation', and 'sanctioned' states.
+   *
+   * @param world - The current world state
+   * @param heya - The heya undergoing transition check
+   * @param state - The current welfare state of the heya
+   * @param reasons - List of triggers/reasons for the current risk level
    */
   orchestrateComplianceTransitions(
     world: WorldState,
@@ -242,7 +255,11 @@ export const WelfareService = {
   },
 
   /**
-   * Transition state helper.
+   * Helper to transition a welfare state to a next compliance state.
+   * Resets weeksInState if the state actually changes.
+   *
+   * @param state - The welfare state to update
+   * @param next - The target compliance state
    */
   setComplianceState(state: WelfareState, next: ComplianceState): void {
     if (state.complianceState !== next) {
@@ -252,7 +269,12 @@ export const WelfareService = {
   },
 
   /**
-   * Set active diet for a heya.
+   * Sets the active diet regimen for a specific heya.
+   * Triggers a welfare compliance event.
+   *
+   * @param world - The current world state
+   * @param heyaId - The ID of the heya to update
+   * @param diet - The new diet regimen to apply
    */
   setHeyaDiet(world: WorldState, heyaId: Id, diet: DietRegimen): void {
     const heya = EntityCollection.getHeya(world, heyaId);

@@ -10,39 +10,56 @@ import type { UIDigest } from "../presenters/uiDigest";
 import type { WorldState } from "../engine/types/world";
 import type { EngineCommand, EngineEvent } from "../engine/worker/types";
 
+/**
+ * Represents the state and actions available in the global Game Store.
+ */
 interface GameStoreState {
+  /** The UI-visible summary of the game state. */
   digest: UIDigest | null;
-  /** Last world state received from the worker after AUTO_SIM_DAYS. */
+  /** Last world state received from the worker after long-running simulations. */
   workerWorld: WorldState | null;
-  /** Monotonic version counter for state synchronization */
+  /** Monotonic version counter for state synchronization. */
   worldVersion: number;
-  /** Lock flag to prevent concurrent tick commands */
+  /** Lock flag to prevent concurrent tick commands. */
   pendingTick: boolean;
+  /** Whether the engine is currently busy with a simulation. */
   isSimulating: boolean;
+  /** Current simulation progress details. */
   progress: { message: string; current: number; total: number } | null;
+  /** Error message if a simulation fails. */
   error: string | null;
+  /** Whether to show the onboarding tour. */
   showTour: boolean;
-  dismissedTourReason: string | null; // e.g., 'completed', 'skipped'
+  /** Reason for dismissing the tour (e.g., 'completed', 'skipped'). */
+  dismissedTourReason: string | null;
 
-  // Worker reference
+  /** Reference to the engine background worker. */
   worker: Worker | null;
 
   /**
    * Optional callback invoked when the worker emits WORLD_UPDATED.
-   * Set this from GameContext to keep the main-thread world in sync
-   * after a worker-driven AUTO_SIM_DAYS completes.
+   * Used to sync the main-thread world after worker-driven simulation completes.
    */
   onWorldUpdated: ((world: WorldState) => void) | null;
 
   // Actions
+  /** Initializes the engine background worker. */
   initWorker: () => void;
+  /** Sends a command to the background worker. */
   sendCommand: (command: EngineCommand) => void;
+  /** Sets the UI digest. */
   setDigest: (digest: UIDigest) => void;
+  /** Toggles the simulation state. */
   setSimulating: (isSimulating: boolean) => void;
+  /** Updates simulation progress. */
   setProgress: (progress: { message: string; current: number; total: number } | null) => void;
+  /** Sets the error state. */
   setError: (error: string | null) => void;
+  /** Sets the world updated callback. */
   setOnWorldUpdated: (cb: ((world: WorldState) => void) | null) => void;
+  /** Dismisses the onboarding tour. */
   dismissTour: (reason: string) => void;
+  /** Checks if the onboarding tour should be triggered based on world state. */
   checkTourTrigger: (world: WorldState) => void;
 }
 

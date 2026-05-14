@@ -21,20 +21,14 @@ const routeMap: Record<NameType, string> = {
 };
 
 /**
- * clickable name.
- *  * @param {
- *   type,
- *   id,
- *   name,
- *   className,
- *   children
- * } - The {
- *   type,
- *   id,
- *   name,
- *   class name,
- *   children
- * }.
+ * A reusable component for clickable links to rikishi, stables, and oyakata profiles.
+ * 
+ * @param props - Component properties
+ * @param props.type - The type of entity (rikishi, stable, or oyakata)
+ * @param props.id - The unique identifier for the entity
+ * @param props.name - The display name of the entity
+ * @param props.className - Optional CSS classes for styling
+ * @param props.children - Optional children to render instead of the name
  */
 export function ClickableName({ type, id, name, className, children }: ClickableNameProps) {
   const basePath = routeMap[type];
@@ -55,9 +49,15 @@ export function ClickableName({ type, id, name, className, children }: Clickable
 }
 
 // Convenience components for specific types
+
 /**
- * rikishi name.
- *  * @param { id, name, className, children } - The { id, name, class name, children }.
+ * A convenience component for clickable rikishi names.
+ * 
+ * @param props - Component properties
+ * @param props.id - The unique identifier for the rikishi
+ * @param props.name - The display name of the rikishi
+ * @param props.className - Optional CSS classes for styling
+ * @param props.children - Optional children to render instead of the name
  */
 export function RikishiName({ id, name, className, children }: Omit<ClickableNameProps, "type">) {
   return (
@@ -68,8 +68,13 @@ export function RikishiName({ id, name, className, children }: Omit<ClickableNam
 }
 
 /**
- * stable name.
- *  * @param { id, name, className, children } - The { id, name, class name, children }.
+ * A convenience component for clickable stable names.
+ * 
+ * @param props - Component properties
+ * @param props.id - The unique identifier for the stable
+ * @param props.name - The display name of the stable
+ * @param props.className - Optional CSS classes for styling
+ * @param props.children - Optional children to render instead of the name
  */
 export function StableName({ id, name, className, children }: Omit<ClickableNameProps, "type">) {
   return (
@@ -80,8 +85,13 @@ export function StableName({ id, name, className, children }: Omit<ClickableName
 }
 
 /**
- * oyakata name.
- *  * @param { id, name, className, children } - The { id, name, class name, children }.
+ * A convenience component for clickable oyakata names.
+ * 
+ * @param props - Component properties
+ * @param props.id - The unique identifier for the oyakata
+ * @param props.name - The display name of the oyakata
+ * @param props.className - Optional CSS classes for styling
+ * @param props.children - Optional children to render instead of the name
  */
 export function OyakataName({ id, name, className, children }: Omit<ClickableNameProps, "type">) {
   return (

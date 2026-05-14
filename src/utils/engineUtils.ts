@@ -40,7 +40,9 @@ export function safeRankSortKey(rank: Rank | string): number {
 }
 
 /**
- * Formats a full Yen amount with locale separators: ¥1,234,567
+ * Formats a full Yen amount with locale separators.
+ * @param amount - The raw currency amount
+ * @returns Formatted string (e.g., "¥1,234,567")
  */
 export function formatYen(amount: number): string {
   return `¥${amount.toLocaleString()}`;
@@ -56,10 +58,17 @@ export function formatYenToMan(amount: number): string {
   return `${man.toLocaleString("en-US", { maximumFractionDigits: 1 })}万`;
 }
 
+/**
+ * Minimal interface representing a rikishi for ranking-based sorting.
+ */
 interface RikishiForSort {
+  /** The rikishi's rank. */
   rank: Rank | string;
+  /** The rank number (e.g., Maegashira 1). */
   rankNumber?: number;
+  /** The side of the banzuke (East or West). */
   side?: Side;
+  /** The rikishi's professional name. */
   shikona?: string;
 }
 

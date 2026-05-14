@@ -19,7 +19,16 @@ import * as staffService from "../staff";
 import * as loans from "../loans";
 import { resolveImpacts } from "../core/ImpactResolver";
 
-/** Adapter matching the { seed, playerConfig? } call shape used in this worker */
+/**
+ * Adapter matching the { seed, playerConfig? } call shape used in this worker.
+ * Initializes a new game world.
+ * 
+ * @param {Object} opts - Generation options.
+ * @param {string} opts.seed - The random seed for world generation.
+ * @param {Object} [opts.playerConfig] - Optional player configuration.
+ * @param {string} [opts.playerConfig.heyaId] - Optional starting heya ID for the player.
+ * @returns {WorldState} The newly generated world state.
+ */
 function generateWorld(opts: { seed: string; playerConfig?: { heyaId?: string } }) {
   const world = generateInitialWorld(opts.seed);
   if (opts.playerConfig?.heyaId) world.playerHeyaId = opts.playerConfig.heyaId;
@@ -29,6 +38,9 @@ function generateWorld(opts: { seed: string; playerConfig?: { heyaId?: string } 
 /**
  * Migrates old save format to work with Phase J citizenship rules.
  * Back-computes joinedHeyaDate for existing rikishi if missing.
+ * 
+ * @param {WorldState} world - The world state to migrate.
+ * @returns {WorldState} The migrated world state.
  */
 function migrateWorldState(world: WorldState): WorldState {
   const currentYear = world.year;
@@ -50,8 +62,10 @@ let currentWorld: WorldState | null = null;
 let worldVersion = 0;
 
 /**
- * Handle incoming commands from the UI.
- *  * @param event - The Event.
+ * Main message handler for the Web Worker.
+ * Dispatches commands from the UI thread to their respective engine handlers.
+ * 
+ * @param {MessageEvent<EngineCommand>} event - The message event containing the command.
  */
 self.onmessage = async (event: MessageEvent<EngineCommand>) => {
   const command = event.data;
@@ -270,8 +284,8 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
 };
 
 /**
- * Build and emit the latest UI digest.
- *  * @returns The result.
+ * Builds and emits the latest UI digest to the main thread.
+ * This digest is used to update the UI components with current game data.
  */
 function emitDigest() {
   if (!currentWorld) return;

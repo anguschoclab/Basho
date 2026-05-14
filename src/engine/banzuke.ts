@@ -64,7 +64,13 @@ function positionKey(e: BanzukeEntry): number {
 // convertBanzukeEntriesToSnapshot removed (unused)
 
 /**
- * Compare current banzuke snapshot with previous snapshot to detect rank changes.
+ * Compares a current banzuke snapshot with a previous one to detect rank changes.
+ * Used for generating narrative events and UI badges indicating promotions or demotions.
+ * 
+ * @param currentSnapshot - The most recent banzuke snapshot
+ * @param previousSnapshot - The snapshot from the previous tournament (can be null)
+ * @param rikishiMap - A map of rikishi data for retired checks
+ * @returns An array of detected banzuke changes
  */
 export function compareBanzuke(
   currentSnapshot: BanzukeSnapshot,
@@ -154,7 +160,15 @@ function divisionTier(d: Division): number {
 }
 
 /**
- * Main entrance to update the entire banzuke after a tournament.
+ * Updates the entire banzuke hierarchy based on tournament performance.
+ * This is the core logic for promotions, demotions, and ranking assignments.
+ * 
+ * @param currentBanzuke - The current banzuke entries before updates
+ * @param perfById - A map of rikishi IDs to their basho performance results
+ * @param world - The current world state
+ * @param previousOzekiKadoban - Map of Ozeki kadoban statuses from the previous tournament
+ * @param heyaMap - Optional map of heyas for political weight calculations
+ * @returns A result object containing the new banzuke, movement events, and updated status maps.
  */
 export function updateBanzuke(
   currentBanzuke: BanzukeEntry[],
@@ -327,6 +341,15 @@ function banzukeMovementEvents(
   return events;
 }
 
+/**
+ * Computes the number of slots for each Sanyaku rank (Yokozuna, Ozeki, Sekiwake, Komusubi).
+ * The number of slots can vary based on promotions and demotions.
+ * 
+ * @param current - Current banzuke entries
+ * @param perfById - Performance results for potential promotions
+ * @param demoted - Set of rikishi IDs who were demoted from Ozeki
+ * @returns A count of slots for each rank.
+ */
 function computeVariableSanyakuCounts(
   current: BanzukeEntry[],
   perfById: Map<string, BashoPerformance>,

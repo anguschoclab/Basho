@@ -10,6 +10,17 @@ import type { ShikonaGenerationConfig, HouseStyle, PatternId, RankRule } from ".
 import { SHIKONA_PREFIXES, SHIKONA_SUFFIXES, PRESTIGIOUS_FULL_NAMES } from "./constants";
 import { pickPrefixByCategoryBias, pickSuffixByCategoryBias, pickConnectorToken } from "./helpers";
 
+/**
+ * Generates a candidate shikona (wrestler name) based on nationality, house style, and rank rules.
+ * Uses a weighted pattern-based approach to ensure variety and authenticity.
+ * 
+ * @param {() => number} rng - A random number generator function.
+ * @param {ShikonaGenerationConfig} config - Configuration for the generation (e.g., nationality, preferences).
+ * @param {number} attempt - The current attempt number (used to add extra suffixes for prestigious names).
+ * @param {HouseStyle} house - The house style bias for prefixes and suffixes.
+ * @param {RankRule} rankRule - The rank-specific rules for prestige and pattern bias.
+ * @returns {string} The generated shikona candidate.
+ */
 export function generateCandidate(
   rng: () => number,
   config: ShikonaGenerationConfig,

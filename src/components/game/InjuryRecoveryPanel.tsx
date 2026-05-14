@@ -8,9 +8,12 @@ import { Heart, Activity, AlertTriangle, Clock, Shield, Thermometer } from "luci
 import type { projectMedicalUIDigest } from "@/presenters/uiDigest";
 
 /**
- * Get severity color.
+ * Returns a CSS color class based on the injury severity.
+ * 
+ * @param {string} severity - The severity of the injury (e.g., 'serious', 'moderate', 'minor').
+ * @returns {string} The Tailwind CSS color class.
  */
-function getSeverityColor(severity: string): string {
+export function getSeverityColor(severity: string): string {
   const SEVERITY_COLORS: Record<string, string> = {
     serious: "text-destructive",
     moderate: "text-gold",
@@ -20,9 +23,12 @@ function getSeverityColor(severity: string): string {
 }
 
 /**
- * Get severity badge.
+ * Returns a UI badge component representing the injury severity.
+ * 
+ * @param {string} severity - The severity of the injury.
+ * @returns {React.ReactNode} A Badge component with appropriate styling.
  */
-function getSeverityBadge(severity: string) {
+export function getSeverityBadge(severity: string) {
   const SEVERITY_BADGES: Record<string, React.ReactNode> = {
     serious: <Badge variant="destructive">Serious</Badge>,
     moderate: <Badge className="bg-gold/20 text-gold border-gold/30">Moderate</Badge>,
@@ -36,7 +42,11 @@ interface InjuryRecoveryPanelProps {
 }
 
 /**
- * injury recovery panel.
+ * Renders a panel showing rehabilitation progress and facility status for injured rikishi.
+ * 
+ * @param {InjuryRecoveryPanelProps} props - The component props.
+ * @param {projectMedicalUIDigest} props.digest - The medical digest data for the stable.
+ * @returns {JSX.Element} The injury recovery panel UI.
  */
 export function InjuryRecoveryPanel({ digest }: InjuryRecoveryPanelProps) {
   const { facilityLevel, facilityLabel, injuredRikishi } = digest;

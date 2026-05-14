@@ -19,11 +19,12 @@ import { buildCombatProfile, deriveWeakAgainstStyles } from "./archetype";
 // --- RETIREMENT LOGIC ---
 
 /**
- * Check retirement.
- *  * @param rikishi - The Rikishi.
- *  * @param currentYear - The Current year.
- *  * @param seed - The Seed.
- *  * @returns The result.
+ * Evaluates whether a rikishi should retire based on age, injuries, rank pressure, and performance.
+ * 
+ * @param rikishi - The rikishi to evaluate
+ * @param currentYear - The current simulation year
+ * @param seed - Seed for deterministic random generation
+ * @returns A string describing the retirement reason, or null if the rikishi continues their career.
  */
 export function checkRetirement(
   rikishi: Rikishi,
@@ -175,6 +176,15 @@ const ARCHETYPES: CombatArchetype[] = [
   "giant",
 ];
 
+/**
+ * Internal function to generate a new rookie rikishi.
+ * Determines origin, archetype, stats, and initial rank.
+ * 
+ * @param world - The current world state
+ * @param currentYear - The current simulation year
+ * @param targetRank - The rank to assign (defaults to "jonokuchi")
+ * @returns A fully initialized Rikishi object.
+ */
 function _generateRookie(
   world: WorldState,
   currentYear: number,

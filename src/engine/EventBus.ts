@@ -14,6 +14,13 @@ import { createRngForEvent } from "./eventHelpers";
 import { logEngineEvent } from "./events";
 
 export const EventBus = {
+  /**
+   * Creates a medical report event for a rikishi.
+   * @param world - Current world state
+   * @param ctx - Narrative context containing rikishiId and status
+   * @param importance - Importance level of the event
+   * @returns The logged engine event
+   */
   medicalReportBase: (world: WorldState, ctx: NarrativeContext, importance: EventImportance) => {
     const rng = createRngForEvent(world, `medical-${ctx.rikishiId}-${ctx.status}`);
     const titleRes = BardEngine.resolve(rng, "events.medical.title", ctx);
@@ -33,6 +40,14 @@ export const EventBus = {
     });
   },
 
+  /**
+   * Creates a governance ruling event for a heya.
+   * @param world - Current world state
+   * @param heyaId - ID of the heya involved
+   * @param ctx - Narrative context containing incident details
+   * @param importance - Importance level (defaults to "major")
+   * @returns The logged engine event
+   */
   governanceRuling: (
     world: WorldState,
     heyaId: Id,
@@ -67,6 +82,12 @@ export const EventBus = {
     });
   },
 
+  /**
+   * Creates a training update event.
+   * @param world - Current world state
+   * @param ctx - Narrative context containing training details
+   * @returns The logged engine event
+   */
   trainingUpdate: (world: WorldState, ctx: NarrativeContext) => {
     const rng = createRngForEvent(world, `training-${ctx.rikishiId}`);
     const titleRes = BardEngine.resolve(rng, "events.training.title", ctx);
@@ -86,6 +107,13 @@ export const EventBus = {
     });
   },
 
+  /**
+   * Creates a financial alert event for a heya.
+   * @param world - Current world state
+   * @param heyaId - ID of the heya
+   * @param ctx - Narrative context containing financial incident details
+   * @returns The logged engine event
+   */
   financialAlert: (world: WorldState, heyaId: Id, ctx: NarrativeContext) => {
     const rng = createRngForEvent(world, `finance-${heyaId}-${ctx.incident}`);
     const titleRes = BardEngine.resolve(rng, "events.economy.title", ctx);
@@ -104,6 +132,12 @@ export const EventBus = {
     });
   },
 
+  /**
+   * Creates an award conferral event.
+   * @param world - Current world state
+   * @param ctx - Narrative context containing rikishi and award details
+   * @returns The logged engine event
+   */
   awardConferred: (world: WorldState, ctx: NarrativeContext) => {
     const rng = createRngForEvent(world, `award-${ctx.rikishiId}-${ctx.status}`);
     const titleRes = BardEngine.resolve(rng, "events.awards.title", ctx);
@@ -124,6 +158,12 @@ export const EventBus = {
     });
   },
 
+  /**
+   * Creates a lifecycle event (e.g., retirement) for a rikishi.
+   * @param world - Current world state
+   * @param ctx - Narrative context containing rikishi and status details
+   * @returns The logged engine event
+   */
   lifecycleEvent: (world: WorldState, ctx: NarrativeContext) => {
     const rng = createRngForEvent(world, `lifecycle-${ctx.rikishiId}-${ctx.status}`);
     const titleRes = BardEngine.resolve(rng, "events.lifecycle.title", ctx);
@@ -143,6 +183,12 @@ export const EventBus = {
     });
   },
 
+  /**
+   * Creates a basho status update event (e.g., start, end, day update).
+   * @param world - Current world state
+   * @param ctx - Narrative context containing status and day
+   * @returns The logged engine event
+   */
   bashoStatus: (world: WorldState, ctx: NarrativeContext) => {
     const rng = rngFromSeed(`basho-status-${ctx.status}-${ctx.day}`, "narrative", "event");
     const titleRes = BardEngine.resolve(rng, "events.basho.status_title", ctx);
@@ -164,6 +210,13 @@ export const EventBus = {
     });
   },
 
+  /**
+   * Creates a welfare compliance event.
+   * @param world - Current world state
+   * @param heyaId - ID of the heya
+   * @param ctx - Narrative context containing compliance status
+   * @returns The logged engine event
+   */
   welfareCompliance: (world: WorldState, heyaId: Id, ctx: NarrativeContext) => {
     const rng = createRngForEvent(world, `welfare-${heyaId}-${ctx.status}`);
     const titleRes = BardEngine.resolve(rng, "events.welfare.title", ctx);
@@ -182,6 +235,12 @@ export const EventBus = {
     });
   },
 
+  /**
+   * Creates a bout resolution event.
+   * @param world - Current world state
+   * @param data - Narrative context containing bout results (winner, loser, day, etc.)
+   * @returns The logged engine event
+   */
   boutResolved: (world: WorldState, data: NarrativeContext) => {
     const rng = rngFromSeed(
       `bout-resolved-${data.winnerRikishiId}-${data.loserRikishiId}-${data.day}`,
@@ -216,6 +275,12 @@ export const EventBus = {
     });
   },
 
+  /**
+   * Creates an event when a new recruit is discovered.
+   * @param world - Current world state
+   * @param data - Narrative context containing recruit details
+   * @returns The logged engine event
+   */
   recruitDiscovered: (world: WorldState, data: NarrativeContext) => {
     const rng = createRngForEvent(world, `recruit-${data.rikishiId}`);
     const res = BardEngine.resolve(rng, "events.recruiting.scouting_reports", data);
@@ -234,6 +299,12 @@ export const EventBus = {
     });
   },
 
+  /**
+   * Creates a monthly financial report event.
+   * @param world - Current world state
+   * @param data - Narrative context containing financial summary
+   * @returns The logged engine event
+   */
   monthlyFinanceReport: (world: WorldState, data: NarrativeContext) => {
     const rng = createRngForEvent(world, `finance-tick-${data.heya}`);
     const res = BardEngine.resolve(rng, "events.economy.market_shifts", data);
@@ -253,6 +324,12 @@ export const EventBus = {
     });
   },
 
+  /**
+   * Creates an event for a rivalry heat spike.
+   * @param world - Current world state
+   * @param data - Narrative context containing rivalry details
+   * @returns The logged engine event
+   */
   rivalryHeatSpike: (world: WorldState, data: NarrativeContext) => {
     const rng = createRngForEvent(world, `rivalry-heat-${data.winner}-${data.loser}`);
     const enrichedData = {
@@ -275,6 +352,13 @@ export const EventBus = {
     });
   },
 
+  /**
+   * Creates an event for an oyakata's mood shift.
+   * @param world - Current world state
+   * @param heyaId - ID of the heya
+   * @param data - Narrative context containing mood details
+   * @returns The logged engine event
+   */
   oyakataMoodShift: (world: WorldState, heyaId: Id, data: NarrativeContext) => {
     const rng = createRngForEvent(world, `mood-${heyaId}`);
     const titleRes = BardEngine.resolve(rng, "events.narrative.mood_shift_title", data);
@@ -293,6 +377,14 @@ export const EventBus = {
     });
   },
 
+  /**
+   * Creates an event for a management decision.
+   * @param world - Current world state
+   * @param heyaId - ID of the heya
+   * @param data - Narrative context containing decision details
+   * @param importance - Importance level (defaults to "minor")
+   * @returns The logged engine event
+   */
   managementDecision: (
     world: WorldState,
     heyaId: Id,
@@ -316,6 +408,13 @@ export const EventBus = {
     });
   },
 
+  /**
+   * Creates an event for a narrative strategy shift.
+   * @param world - Current world state
+   * @param heyaId - ID of the heya
+   * @param data - Narrative context containing strategy details
+   * @returns The logged engine event
+   */
   strategyShift: (world: WorldState, heyaId: Id, data: NarrativeContext) => {
     const rng = createRngForEvent(world, `strategy-${heyaId}`);
     const titleRes = BardEngine.resolve(rng, "events.narrative.strategy_shift_title", data);
@@ -334,6 +433,14 @@ export const EventBus = {
     });
   },
 
+  /**
+   * Creates an event for a facility update (upgrade/degrade).
+   * @param world - Current world state
+   * @param heyaId - ID of the heya
+   * @param data - Narrative context containing facility details
+   * @param type - Type of update ("UPGRADED" or "DEGRADED")
+   * @returns The logged engine event
+   */
   facilityUpdate: (
     world: WorldState,
     heyaId: Id,
@@ -358,6 +465,13 @@ export const EventBus = {
     });
   },
 
+  /**
+   * Creates an event for a roster change (e.g., release).
+   * @param world - Current world state
+   * @param heyaId - ID of the heya
+   * @param data - Narrative context containing rikishi details
+   * @returns The logged engine event
+   */
   rosterEvent: (world: WorldState, heyaId: Id, data: NarrativeContext) => {
     const rng = rngFromSeed(`roster-${heyaId}-${data.rikishiId}`, "narrative", "event");
     const titleRes = BardEngine.resolve(rng, "events.management.roster_overflow_title", data);
@@ -377,6 +491,13 @@ export const EventBus = {
     });
   },
 
+  /**
+   * Creates an event for a prestige milestone.
+   * @param world - Current world state
+   * @param heyaId - ID of the heya
+   * @param data - Narrative context containing prestige details
+   * @returns The logged engine event
+   */
   prestigeEvent: (world: WorldState, heyaId: Id, data: NarrativeContext) => {
     const rng = createRngForEvent(world, `prestige-${heyaId}`);
     const titleRes = BardEngine.resolve(rng, "events.narrative.prestige_title", data);
@@ -395,6 +516,13 @@ export const EventBus = {
     });
   },
 
+  /**
+   * Creates an event for a lifecycle action (naturalization or merger).
+   * @param world - Current world state
+   * @param data - Narrative context containing entity details
+   * @param type - Type of action ("naturalization" or "merger")
+   * @returns The logged engine event
+   */
   lifecycleAction: (
     world: WorldState,
     data: NarrativeContext,
@@ -422,6 +550,14 @@ export const EventBus = {
     });
   },
 
+  /**
+   * Creates an event for a financial action (loan or market activity).
+   * @param world - Current world state
+   * @param heyaId - ID of the heya
+   * @param data - Narrative context containing financial details
+   * @param type - Type of action ("loan" or "market")
+   * @returns The logged engine event
+   */
   financialAction: (
     world: WorldState,
     heyaId: Id,

@@ -11,15 +11,23 @@ import type { StateImpact } from "../core/StateImpact";
 import { checkShikonaChange, recordShikonaChange } from "../history";
 import type { Rikishi } from "../types/rikishi";
 
+/**
+ * Helper to retrieve the current basho state from the world.
+ *
+ * @param world - The current world state
+ * @returns The current BashoState or undefined if no basho is active
+ */
 function getCurrentBasho(world: WorldState): BashoState | undefined {
   return world.currentBasho;
 }
 
 /**
- * Publish banzuke update.
- * Returns StateImpact describing banzuke update instead of mutating state directly.
- * @param world - The World.
- * @returns The result.
+ * Publishes the final results of a basho and updates the banzuke for the next one.
+ * Handles promotions (including Yokozuna criteria), career history updates,
+ * and council warnings for underperforming Yokozuna.
+ *
+ * @param world - The current world state
+ * @returns A StateImpact object containing all world and rikishi updates
  */
 export function publishBanzukeUpdate(world: WorldState): StateImpact {
   const builder = createImpactBuilder("publishBanzukeUpdate");

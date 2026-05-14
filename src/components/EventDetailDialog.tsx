@@ -31,9 +31,15 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * Props for the EventDetailDialog component.
+ */
 interface EventDetailDialogProps {
+  /** The engine event to display in the dialog. If null, the dialog won't render content. */
   event: EngineEvent | null;
+  /** Whether the dialog is currently open. */
   isOpen: boolean;
+  /** Callback function to execute when the dialog is closed. */
   onClose: () => void;
 }
 
@@ -63,6 +69,12 @@ const categoryIconMap: Record<string, React.ReactNode> = {
   facility: <Wrench className="h-5 w-5 text-zinc-400" />,
 };
 
+/**
+ * A dialog component that displays detailed information about a simulation event.
+ * Shows the event's title, summary, category icon, and importance badge.
+ * 
+ * @param props - Component properties
+ */
 export function EventDetailDialog({ event, isOpen, onClose }: EventDetailDialogProps) {
   if (!event) return null;
 

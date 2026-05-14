@@ -65,33 +65,37 @@ import {
 } from "./agents";
 
 /** Agent decision outputs for extended NPC AI */
+/**
+ * Agent decision outputs for extended NPC AI.
+ * Each property contains the decisions made by a specialized agent.
+ */
 export interface AgentDecisions {
-  // Finance Agent
+  /** Decisions related to financial management, facilities, and reserves. */
   finance: {
     shouldBuyMyoseki: boolean;
     shouldInvestInFacilities: boolean;
     shouldBuildReserves: boolean;
     riskLevel: "conservative" | "moderate" | "aggressive";
   };
-  // Governance Agent
+  /** Decisions related to political influence, scandals, and rivalries. */
   governance: {
     shouldReduceScandal: boolean;
     shouldUsePoliticalFavor: boolean;
     shouldSabotageRival: boolean;
   };
-  // Recruitment Agent
+  /** Decisions related to recruiting new talent and bidding. */
   recruitment: {
     maxBid: number;
     shouldBid: boolean;
     bidStrategy: "aggressive" | "moderate" | "conservative";
   };
-  // Rivalry Agent
+  /** Decisions related to managing and escalating rivalries. */
   rivalry: {
     escalateRivalry: boolean;
     deescalateRivalry: boolean;
     targetRivalForMatchmaking: string[];
   };
-  // Narrative Agent
+  /** Decisions related to narrative generation and events. */
   narrative: {
     shouldTriggerEvent: boolean;
     eventType?: string;
@@ -118,7 +122,12 @@ export interface NPCWeeklyDecision {
 
 /**
  * Core decision function for a single NPC-managed heya.
- * All inputs are banded (PerceptionSnapshot) — AI does not cheat (A7.1).
+ * Analyzes the heya's state, spawns specialized worker agents for training, scouting, personnel, 
+ * and global strategy, and integrates their proposals into a final weekly decision.
+ * 
+ * @param world - The current world state
+ * @param heyaId - The ID of the heya making the decision
+ * @returns A structured decision object containing training settings, scouting priority, and state impacts.
  */
 export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyDecision {
   const persona = getManagerPersona(world, heyaId);
@@ -559,6 +568,15 @@ function applyInjuryRiskReduction(
  * Handle crisis response using Crisis Agent.
  * Called when a crisis event occurs for an NPC heya.
  */
+/**
+ * Handle crisis response using the specialized Crisis Agent.
+ * Analyzes the crisis context and selects the best option based on the Oyakata's persona and state.
+ * 
+ * @param world - The current world state
+ * @param heyaId - The ID of the heya facing the crisis
+ * @param crisis - The active crisis data
+ * @returns The selected choice ID, reasoning, and the resulting state impact.
+ */
 export function handleNPCCrisis(
   world: WorldState,
   heyaId: Id,
@@ -610,6 +628,17 @@ export function handleNPCCrisis(
 /**
  * Handle media event response using Media Agent.
  * Called when a media event occurs for an NPC heya.
+ */
+/**
+ * Handle media event response using the specialized Media Agent.
+ * Decides how a heya should respond to media scrutiny (e.g., apologize, deny, ignore).
+ * 
+ * @param world - The current world state
+ * @param heyaId - The ID of the heya involved
+ * @param eventId - The ID of the media event
+ * @param eventType - The type/category of the media event
+ * @param severity - The severity of the event (minor, moderate, major)
+ * @returns The chosen response strategy, reasoning, and state impact.
  */
 export function handleNPCMediaEvent(
   world: WorldState,
@@ -733,8 +762,12 @@ export function consolidateOyakataMemory(
 }
 
 /**
- * Writes a decision into the world state (training profile + individual focus slots).
- * Returns StateImpact describing decision application instead of mutating directly.
+ * Applies a finalized NPC decision to the world state.
+ * Translates high-level decisions (like intensity and focus) into specific training state updates.
+ * 
+ * @param world - The current world state
+ * @param decision - The weekly decision to apply
+ * @returns A StateImpact object representing the changes to the training state.
  */
 export function applyNPCDecision(world: WorldState, decision: NPCWeeklyDecision): StateImpact {
   const builder = createImpactBuilder("applyNPCDecision");
@@ -781,8 +814,11 @@ export function applyNPCDecision(world: WorldState, decision: NPCWeeklyDecision)
 }
 
 /**
- * NPC Manager AI weekly decision loop
- * Returns StateImpact describing weekly NPC decisions instead of mutating directly.
+ * The main weekly tick loop for all NPC-managed heyas.
+ * Iterates through available stables and generates/applies decisions for each.
+ * 
+ * @param world - The current world state
+ * @returns A consolidated StateImpact representing all NPC decisions for the week.
  */
 export function tickWeekNPC(world: WorldState): StateImpact {
   const builder = createImpactBuilder("tickWeekNPC");
