@@ -38,9 +38,10 @@ export { getActiveRikishi, getStableRikishi, applyBoutResult, handleMediaEvent }
 
 // Type guard or helper to access current basho
 /**
- * Get current basho.
- *  * @param world - The World.
- *  * @returns The result.
+ * Retrieves the current basho state from the world.
+ * 
+ * @param {WorldState} world - The current world state.
+ * @returns {BashoState | undefined} The current basho state, or undefined if none is active.
  */
 function getCurrentBasho(world: WorldState): BashoState | undefined {
   return world.currentBasho;
@@ -49,7 +50,11 @@ function getCurrentBasho(world: WorldState): BashoState | undefined {
 export const issueGovernanceRuling = governance.issueGovernanceRuling;
 
 /**
- * Start basho.
+ * Initializes and starts a new basho (tournament).
+ * 
+ * @param {WorldState} world - The current world state.
+ * @param {BashoName} [bashoName] - The optional name of the basho to start.
+ * @returns {WorldState} The updated world state with the new basho started.
  */
 export function startBasho(world: WorldState, bashoName?: BashoName): WorldState {
   const updated = bashoManager.startBasho(world, bashoName);
@@ -62,9 +67,11 @@ export function startBasho(world: WorldState, bashoName?: BashoName): WorldState
 }
 
 /**
- * Advance basho day.
- *  * @param world - The World.
- *  * @returns The result.
+ * Advances the current basho by one day.
+ * Handles day increments, schedule validation, and status event logging.
+ * 
+ * @param {WorldState} world - The current world state.
+ * @returns {WorldState} The updated world state after advancing the day.
  */
 export function advanceBashoDay(world: WorldState): WorldState {
   let currentWorld = world;
@@ -105,10 +112,13 @@ export function advanceBashoDay(world: WorldState): WorldState {
 }
 
 /**
- * Simulate bout for today.
- *  * @param world - The World.
- *  * @param unplayedIndex - The Unplayed index.
- *  * @returns The result.
+ * Simulates a specific bout for the current day.
+ * Handles bout resolution, impact calculation, and standings updates.
+ * 
+ * @param {WorldState} world - The current world state.
+ * @param {number} unplayedIndex - The index of the bout to simulate among today's unplayed matches.
+ * @param {import("./types/combat").BoutTactic} [playerTactic] - Optional tactic chosen by the player.
+ * @returns {Object} An object containing the updated world state and the bout result.
  */
 export function simulateBoutForToday(
   world: WorldState,
@@ -182,9 +192,10 @@ export function simulateBoutForToday(
 // applyBoutResult - removed and moved to src/engine/bout/boutResultApplier.ts
 
 /**
- * End basho.
- *  * @param world - The World.
- *  * @returns The result.
+ * Concludes the current basho, finalizing rankings and distributions.
+ * 
+ * @param {WorldState} world - The current world state.
+ * @returns {WorldState} The updated world state after basho conclusion.
  */
 export function endBasho(world: WorldState): WorldState {
   const impact = competition.concludeBashoCompetition(world);
@@ -207,10 +218,12 @@ export function endBasho(world: WorldState): WorldState {
 export { publishBanzukeUpdate } from "./banzuke/BanzukePublisher";
 
 /**
- * Advance interim.
- *  * @param world - The World.
- *  * @param weeks - The Weeks.
- *  * @returns The result.
+ * Advances the world state through the interim period (between tournaments).
+ * Processes multiple weeks of daily ticks.
+ * 
+ * @param {WorldState} world - The current world state.
+ * @param {number} [weeks=1] - The number of weeks to advance.
+ * @returns {WorldState} The updated world state.
  */
 export function advanceInterim(world: WorldState, weeks: number = 1): WorldState {
   if (
@@ -251,6 +264,13 @@ export function advanceDay(world: WorldState): WorldState | null {
 
 // getStableRikishi moved to queries.ts
 
+/**
+ * Retrieves the basho statistics (wins, losses, absences) for a specific rikishi.
+ * 
+ * @param {WorldState} world - The current world state.
+ * @param {Id} rikishiId - The unique ID of the rikishi.
+ * @returns {Object} An object containing wins, losses, and absences.
+ */
 export function getRikishiBashoStats(world: WorldState, rikishiId: Id) {
   const basho = world.currentBasho;
   const standings = basho?.standings;

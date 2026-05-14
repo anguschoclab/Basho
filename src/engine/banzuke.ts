@@ -53,7 +53,13 @@ interface BanzukeUpdateResult {
   };
 }
 
-/** Helper to generate a unique key for a position for sorting. */
+/**
+ * Generates a unique numeric key for a banzuke entry to facilitate sorting.
+ * The key is derived from tier, rank number, and side (East/West).
+ * 
+ * @param {BanzukeEntry} e - The banzuke entry.
+ * @returns {number} A numeric sort key (lower is better).
+ */
 function positionKey(e: BanzukeEntry): number {
   const tier = RANK_HIERARCHY[e.position.rank].tier;
   const num = e.position.rankNumber ?? 0;
@@ -64,13 +70,13 @@ function positionKey(e: BanzukeEntry): number {
 // convertBanzukeEntriesToSnapshot removed (unused)
 
 /**
- * Compares a current banzuke snapshot with a previous one to detect rank changes.
- * Used for generating narrative events and UI badges indicating promotions or demotions.
+ * Compares the current banzuke snapshot with a previous one to detect rank changes (up/down/new).
+ * Returns a list of changes sorted by significance (Sanyaku changes first).
  * 
- * @param currentSnapshot - The most recent banzuke snapshot
- * @param previousSnapshot - The snapshot from the previous tournament (can be null)
- * @param rikishiMap - A map of rikishi data for retired checks
- * @returns An array of detected banzuke changes
+ * @param {BanzukeSnapshot} currentSnapshot - The current banzuke state.
+ * @param {BanzukeSnapshot | null} previousSnapshot - The previous banzuke state.
+ * @param {Map<string, Rikishi>} rikishiMap - Map of rikishi details for retirement checks.
+ * @returns {BanzukeChange[]} Array of detected rank changes.
  */
 export function compareBanzuke(
   currentSnapshot: BanzukeSnapshot,
@@ -160,15 +166,15 @@ function divisionTier(d: Division): number {
 }
 
 /**
- * Updates the entire banzuke hierarchy based on tournament performance.
- * This is the core logic for promotions, demotions, and ranking assignments.
+ * Main entry point for updating the entire banzuke hierarchy after a tournament.
+ * Calculates promotions, demotions, Ozeki status, and assigns rikishi to available slots.
  * 
- * @param currentBanzuke - The current banzuke entries before updates
- * @param perfById - A map of rikishi IDs to their basho performance results
- * @param world - The current world state
- * @param previousOzekiKadoban - Map of Ozeki kadoban statuses from the previous tournament
- * @param heyaMap - Optional map of heyas for political weight calculations
- * @returns A result object containing the new banzuke, movement events, and updated status maps.
+ * @param {BanzukeEntry[]} currentBanzuke - The banzuke as it stood during the tournament.
+ * @param {Map<string, BashoPerformance>} perfById - Map of rikishi performances in the last basho.
+ * @param {WorldState} world - The current global world state.
+ * @param {OzekiKadobanMap} [previousOzekiKadoban={}] - Map of Ozeki kadoban statuses from the previous cycle.
+ * @param {Map<string, Heya>} [heyaMap] - Optional map of heya for political weight calculations.
+ * @returns {BanzukeUpdateResult} The results of the banzuke update including the new roster and events.
  */
 export function updateBanzuke(
   currentBanzuke: BanzukeEntry[],
@@ -284,6 +290,15 @@ export function updateBanzuke(
   return { newBanzuke: assigned, events, updatedOzekiKadoban, sanyakuCounts };
 }
 
+/**
+ * Generates movement events (promotion, demotion, lateral, status) by comparing old and new banzuke assignments.
+ * 
+ * @param {BanzukeEntry[]} old - The previous banzuke roster.
+ * @param {BanzukeEntry[]} assigned - The new banzuke roster.
+ * @param {OzekiKadobanMap} nextOzeki - The new Ozeki kadoban statuses.
+ * @param {OzekiKadobanMap} prevOzeki - The previous Ozeki kadoban statuses.
+ * @returns {MovementEvent[]} List of movement events to be logged.
+ */
 function banzukeMovementEvents(
   old: BanzukeEntry[],
   assigned: BanzukeEntry[],
@@ -342,13 +357,13 @@ function banzukeMovementEvents(
 }
 
 /**
- * Computes the number of slots for each Sanyaku rank (Yokozuna, Ozeki, Sekiwake, Komusubi).
- * The number of slots can vary based on promotions and demotions.
+ * Computes the required counts for Sanyaku slots (Yokozuna, Ozeki, Sekiwake, Komusubi) based on performance.
+ * Ensures a minimum of 2 for Ozeki, Sekiwake, and Komusubi.
  * 
- * @param current - Current banzuke entries
- * @param perfById - Performance results for potential promotions
- * @param demoted - Set of rikishi IDs who were demoted from Ozeki
- * @returns A count of slots for each rank.
+ * @param {BanzukeEntry[]} current - The current banzuke entries.
+ * @param {Map<string, BashoPerformance>} perfById - Map of performances.
+ * @param {Set<string>} demoted - Set of rikishi IDs who were demoted from Ozeki.
+ * @returns {BanzukeUpdateResult["sanyakuCounts"]} The counts for each Sanyaku rank.
  */
 function computeVariableSanyakuCounts(
   current: BanzukeEntry[],

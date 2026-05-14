@@ -13,10 +13,26 @@ import type { WorldState } from "./types/world";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
 
+/**
+ * Helper to roll a random band from a list of bands.
+ *
+ * @param rng - The seeded RNG to use
+ * @param bands - The list of possible bands
+ * @returns A randomly selected band
+ */
 function rollBand(rng: SeededRNG, bands: readonly any[]): any {
   return bands[Math.floor(rng.next() * bands.length)];
 }
 
+/**
+ * Generates a new staff member with randomized attributes based on a seed.
+ *
+ * @param seed - The base seed for world generation
+ * @param role - The role of the staff member
+ * @param heyaId - The ID of the heya they belong to
+ * @param sequence - A sequence number for uniqueness in the RNG key
+ * @returns A new Staff object
+ */
 export function generateStaff(seed: string, role: StaffRole, heyaId: Id, sequence: number): Staff {
   const rng = rngFromSeed(seed, "staff", `${heyaId}-${role}-${sequence}`);
 
@@ -69,6 +85,13 @@ export function generateStaff(seed: string, role: StaffRole, heyaId: Id, sequenc
   };
 }
 
+/**
+ * Weekly tick for all staff members.
+ * Updates fatigue and morale based on rikishi load in each heya.
+ *
+ * @param world - The current world state
+ * @returns A StateImpact object with staff updates
+ */
 export function tickStaffWeek(world: WorldState): StateImpact {
   const builder = createImpactBuilder("tickStaffWeek");
   if (!world.staff || !world.heyas) return builder.build();
@@ -110,6 +133,13 @@ export function tickStaffWeek(world: WorldState): StateImpact {
   return builder.build();
 }
 
+/**
+ * Yearly tick for all staff members.
+ * Increments age and updates career phases (apprentice -> established -> senior -> declining -> retired).
+ *
+ * @param world - The current world state
+ * @returns A StateImpact object with staff updates
+ */
 export function tickStaffYear(world: WorldState): StateImpact {
   const builder = createImpactBuilder("tickStaffYear");
   if (!world.staff) return builder.build();
@@ -135,9 +165,13 @@ export function tickStaffYear(world: WorldState): StateImpact {
 }
 
 /**
- * Hire a new staff member for a heya.
- * Cost: ¥500,000 baseline.
- * Returns StateImpact describing staff hire instead of mutating state directly.
+ * Hires a new staff member for a heya.
+ * Checks for sufficient funds (¥500,000 baseline).
+ *
+ * @param world - The current world state
+ * @param heyaId - The ID of the heya hiring the staff
+ * @param role - The role of the new staff member
+ * @returns A StateImpact object describing the hire
  */
 export function hireStaff(world: WorldState, heyaId: Id, role: StaffRole): StateImpact {
   const builder = createImpactBuilder("hireStaff");
@@ -160,8 +194,13 @@ export function hireStaff(world: WorldState, heyaId: Id, role: StaffRole): State
 }
 
 /**
- * Fire a staff member.
- * Returns StateImpact describing staff firing instead of mutating state directly.
+ * Fires an existing staff member from a heya.
+ * Removes them from both the heya's roster and the world's staff collection.
+ *
+ * @param world - The current world state
+ * @param heyaId - The ID of the heya firing the staff
+ * @param staffId - The ID of the staff member to fire
+ * @returns A StateImpact object describing the firing
  */
 export function fireStaff(world: WorldState, heyaId: Id, staffId: string): StateImpact {
   const builder = createImpactBuilder("fireStaff");
@@ -179,10 +218,12 @@ export function fireStaff(world: WorldState, heyaId: Id, staffId: string): State
 }
 
 /**
- * Calculate aggregate staff bonuses for a heya.
- * Rules:
- * - Bonuses stack: Total = 1 + sum(bonuses)
- * - Different roles provide different base bonuses.
+ * Calculates aggregate staff bonuses for a specific heya.
+ * Staff bonuses stack and are influenced by efficiency (fatigue and morale).
+ *
+ * @param world - The current world state
+ * @param heyaId - The ID of the heya
+ * @returns The calculated StaffBonuses
  */
 export interface StaffBonuses {
   technique: number; // e.g. 1.15
