@@ -15,6 +15,15 @@ interface GlobalStrategicHubProps {
   heyaId: Id;
 }
 
+/**
+ * Renders the global strategic hub for a heya, focusing on international influence, academies, and the Global Cup.
+ * Displays regional presence levels, available foreign candidates, and active academies with their benefits.
+ * 
+ * @param {GlobalStrategicHubProps} props - The component props.
+ * @param {WorldState} props.world - The current global world state.
+ * @param {Id} props.heyaId - The ID of the heya whose strategic hub is being displayed.
+ * @returns {JSX.Element | null} The rendered strategic hub or null if the heya is not found.
+ */
 export function GlobalStrategicHub({ world, heyaId }: GlobalStrategicHubProps) {
   const heya = world.heyas.get(heyaId);
 
