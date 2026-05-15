@@ -23,9 +23,15 @@ export function calculateRunwayMonths(heya: Heya): number {
 export function countSponsors(world: WorldState, heyaId: string): number {
   const pool = world.sponsorPool;
   if (!pool || !pool.sponsors) return 0;
-  return Array.from(pool.sponsors.values()).filter(
-    (s) => s.active && s.relationships?.some((r) => r.targetId === heyaId)
-  ).length;
+
+  // ⚡ Bolt Optimization: Use a single for...of loop instead of Array.from().filter().length
+  let count = 0;
+  for (const s of pool.sponsors.values()) {
+    if (s.active && s.relationships?.some((r) => r.targetId === heyaId)) {
+      count++;
+    }
+  }
+  return count;
 }
 
 export interface SponsorFilterOptions {
@@ -43,15 +49,17 @@ export function filterEligibleSponsors(
 
   const { excludeTiers = [], includeTiers = [] } = options;
 
-  return Array.from(pool.sponsors.values())
-    .filter((s) => {
-      if (!s.active) return false;
-      if (s.relationships?.some((r) => r.targetId === heyaId)) return false;
-      if (excludeTiers.includes(s.tier)) return false;
-      if (includeTiers.length > 0 && !includeTiers.includes(s.tier)) return false;
-      return true;
-    })
-    .sort((a, b) => b.prestigeAffinity - a.prestigeAffinity);
+  // ⚡ Bolt Optimization: Use a single for...of loop instead of Array.from().filter()
+  const eligibleSponsors = [];
+  for (const s of pool.sponsors.values()) {
+    if (!s.active) continue;
+    if (s.relationships?.some((r) => r.targetId === heyaId)) continue;
+    if (excludeTiers.includes(s.tier)) continue;
+    if (includeTiers.length > 0 && !includeTiers.includes(s.tier)) continue;
+    eligibleSponsors.push(s);
+  }
+
+  return eligibleSponsors.sort((a, b) => b.prestigeAffinity - a.prestigeAffinity);
 }
 
 export function createSponsorRelationship(
