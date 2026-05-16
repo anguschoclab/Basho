@@ -58,3 +58,7 @@ Replaced `Array.from(world.rikishi.values()).filter(...)` with `EntityCollection
 
 ## 2026-05-03 - Optimize NPC Recruitment Foreigner Check
 Optimized `fillVacanciesForNPC` in `TalentPoolNPCRecruitment.ts` by replacing `Array.from(world.rikishi.values()).filter(...)` with `EntityCollection.getHeyaRoster(world, heyaId).some(...)`. Also added an early out for `vacancyCount <= 0`. This eliminates a full O(N) iteration over all rikishi in the world per heya and speeds up execution by roughly 25%.
+
+## 2024-05-20 - Avoid Array.from().filter() on sponsor iterations
+**Learning:** Found an $O(N)$ memory overhead and iteration bottleneck where `Array.from(pool.sponsors.values()).filter(...)` was used to count and filter eligible sponsors during the NPC evaluation phase. Creating temporary arrays out of Maps just to filter is a significant drain on memory resources, especially in tight or repetitive simulation loops.
+**Action:** Replaced `Array.from(map.values()).filter(...)` with direct `for...of` loops, pushing matching items into a pre-allocated array (or simply counting them), drastically minimizing unnecessary allocations.
