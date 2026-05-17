@@ -242,7 +242,7 @@ export function KeshoEditor({ rikishi, open, onClose }: KeshoEditorProps) {
                     </Label>
                     <div className="flex items-center gap-3">
                       <input
-                        id="primaryColor"
+                        id={`primaryColor-${rikishi.id}`}
                         type="color"
                         value={config.primaryColor}
                         onChange={(e) => updateField("primaryColor", e.target.value)}
