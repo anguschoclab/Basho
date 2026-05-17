@@ -235,7 +235,7 @@ export function KeshoEditor({ rikishi, open, onClose }: KeshoEditorProps) {
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-3">
                     <Label
-                      htmlFor="primaryColor"
+                      htmlFor={`primaryColor-${rikishi.id}`}
                       className="text-[10px] uppercase font-bold text-muted-foreground"
                     >
                       Main Fabric
