@@ -260,7 +260,7 @@ export function KeshoEditor({ rikishi, open, onClose }: KeshoEditorProps) {
                     </Label>
                     <div className="flex items-center gap-3">
                       <input
-                        id="accentColor"
+                        id={`accentColor-${rikishi.id}`}
                         type="color"
                         value={config.accentColor}
                         onChange={(e) => updateField("accentColor", e.target.value)}
