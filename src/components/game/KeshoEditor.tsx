@@ -234,11 +234,15 @@ export function KeshoEditor({ rikishi, open, onClose }: KeshoEditorProps) {
                 {/* 3. Color Controls */}
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-3">
-                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">
+                    <Label
+                      htmlFor={`primaryColor-${rikishi.id}`}
+                      className="text-[10px] uppercase font-bold text-muted-foreground"
+                    >
                       Main Fabric
                     </Label>
                     <div className="flex items-center gap-3">
                       <input
+                        id={`primaryColor-${rikishi.id}`}
                         type="color"
                         value={config.primaryColor}
                         onChange={(e) => updateField("primaryColor", e.target.value)}
@@ -248,11 +252,15 @@ export function KeshoEditor({ rikishi, open, onClose }: KeshoEditorProps) {
                     </div>
                   </div>
                   <div className="space-y-3">
-                    <Label className="text-[10px] uppercase font-bold text-muted-foreground">
+                    <Label
+                      htmlFor={`accentColor-${rikishi.id}`}
+                      className="text-[10px] uppercase font-bold text-muted-foreground"
+                    >
                       Embroidery
                     </Label>
                     <div className="flex items-center gap-3">
                       <input
+                        id={`accentColor-${rikishi.id}`}
                         type="color"
                         value={config.accentColor}
                         onChange={(e) => updateField("accentColor", e.target.value)}
