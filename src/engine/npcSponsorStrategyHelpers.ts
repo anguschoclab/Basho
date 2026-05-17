@@ -61,7 +61,7 @@ export function filterEligibleSponsors(
     eligibleSponsors.push(s);
   }
 
-  return eligibleSponsors.sort((a, b) => b.prestigeAffinity - a.prestigeAffinity);
+  return eligibleSponsors.sort((a, b) => b.prestigeAffinity - a.prestigeAffinity || a.sponsorId.localeCompare(b.sponsorId));
 }
 
 export function createSponsorRelationship(
