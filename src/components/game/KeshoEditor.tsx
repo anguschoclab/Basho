@@ -253,7 +253,7 @@ export function KeshoEditor({ rikishi, open, onClose }: KeshoEditorProps) {
                   </div>
                   <div className="space-y-3">
                     <Label
-                      htmlFor="accentColor"
+                      htmlFor={`accentColor-${rikishi.id}`}
                       className="text-[10px] uppercase font-bold text-muted-foreground"
                     >
                       Embroidery
