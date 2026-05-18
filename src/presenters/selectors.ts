@@ -169,17 +169,23 @@ export const selectRetiredRikishi = createSelector((world: WorldState): Rikishi[
  * Select heyas with critical welfare risk (welfareRisk >= 55 or non-compliant).
  */
 export const selectHeyasWithCriticalWelfare = createSelector((world: WorldState): Heya[] => {
-  return world.heyas
-    ? Array.from(world.heyas.values()).filter((h) => {
-        const ws = h.welfareState;
-        if (!ws) return false;
-        return (
-          ws.welfareRisk >= 55 ||
-          ws.complianceState === "sanctioned" ||
-          ws.complianceState === "investigation"
-        );
-      })
-    : [];
+  const results: Heya[] = [];
+  if (!world.heyas) return results;
+
+  // ⚡ Bolt Optimization: Use a direct for...of loop instead of Array.from().filter()
+  // to avoid O(N) array allocations
+  for (const h of world.heyas.values()) {
+    const ws = h.welfareState;
+    if (!ws) continue;
+    if (
+      ws.welfareRisk >= 55 ||
+      ws.complianceState === "sanctioned" ||
+      ws.complianceState === "investigation"
+    ) {
+      results.push(h);
+    }
+  }
+  return results;
 });
 
 /**
@@ -187,13 +193,16 @@ export const selectHeyasWithCriticalWelfare = createSelector((world: WorldState)
  * Excludes the player stable.
  */
 export const selectMergerCandidates = createSelector((world: WorldState): Heya[] => {
-  return world.heyas
-    ? Array.from(world.heyas.values())
-        .filter((h) => {
-          if (h.id === world.playerHeyaId) return false;
-          const rosterSize = h.rikishiIds?.length ?? 0;
-          return h.funds < 0 && rosterSize <= 3;
-        })
-        .sort((a, b) => a.funds - b.funds)
-    : []; // worst debt first
+  const results: Heya[] = [];
+  if (!world.heyas) return results;
+
+  // ⚡ Bolt Optimization: Use a direct for...of loop instead of Array.from().filter()
+  for (const h of world.heyas.values()) {
+    if (h.id === world.playerHeyaId) continue;
+    const rosterSize = h.rikishiIds?.length ?? 0;
+    if (h.funds < 0 && rosterSize <= 3) {
+      results.push(h);
+    }
+  }
+  return results.sort((a, b) => a.funds - b.funds); // worst debt first
 });
