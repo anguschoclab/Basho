@@ -15,6 +15,16 @@ import {
   DialogTrigger,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent } from "@/components/ui/card";
@@ -48,6 +58,7 @@ export function SaveSlotManager({
   const [showLoadDialog, setShowLoadDialog] = useState(false);
   const [saveSlots, setSaveSlots] = useState<SaveSlotInfo[]>([]);
   const [isImporting, setIsImporting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   const refreshSlots = () => {
     try {
@@ -89,10 +100,7 @@ export function SaveSlotManager({
   };
 
   const handleDeleteSlot = (slotName: string) => {
-    if (window.confirm(`Are you sure you want to delete ${slotName.replace("slot_", "Slot ")}? This action cannot be undone.`)) {
-      deleteSave(slotName);
-      refreshSlots();
-    }
+    setConfirmDelete(slotName);
   };
 
   const handleImportSave = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -280,6 +288,33 @@ export function SaveSlotManager({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Delete confirmation */}
+      <AlertDialog open={!!confirmDelete} onOpenChange={(o) => !o && setConfirmDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete save?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete {confirmDelete?.replace("slot_", "Slot ")}? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (confirmDelete) {
+                  deleteSave(confirmDelete);
+                  refreshSlots();
+                  setConfirmDelete(null);
+                }
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
