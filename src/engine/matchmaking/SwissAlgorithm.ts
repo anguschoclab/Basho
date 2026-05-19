@@ -18,9 +18,14 @@ import type { Rikishi } from "../types/rikishi";
 import type { RivalriesState } from "../systems/narrative/RivalryConstants";
 import { getRivalryBoutModifiers } from "../systems/narrative/RivalryHeatService";
 import { scorePairing, type MatchPairing, type MatchmakingRules } from "./MatchmakingPhases";
+import { applyDramaBudget } from "./DramaMatchmaker";
 
 // ── Banzuke ordinal helpers ────────────────────────────────────────────────────
 
+/**
+ * Rank ordinal values for Swiss pairing algorithm.
+ * Lower values indicate higher rank (yokozuna is highest).
+ */
 const SWISS_RANK_ORDINAL: Record<string, number> = {
   yokozuna: 0,
   ozeki: 100,
@@ -34,6 +39,13 @@ const SWISS_RANK_ORDINAL: Record<string, number> = {
   jonokuchi: 900,
 };
 
+/**
+ * Calculates the banzuke ordinal for a rikishi.
+ * Used for proximity-based pairing in Phase 1.
+ *
+ * @param {Rikishi} r - The rikishi to calculate ordinal for.
+ * @returns {number} Ordinal value (lower = higher rank).
+ */
 function banzukeOrdinal(r: Rikishi): number {
   const base = SWISS_RANK_ORDINAL[r.rank] ?? 9000;
   const num = typeof r.rankNumber === "number" ? r.rankNumber : 1;
@@ -41,23 +53,56 @@ function banzukeOrdinal(r: Rikishi): number {
   return base + num * 2 + side;
 }
 
+/**
+ * Checks if a rikishi is in san'yaku ranks.
+ *
+ * @param {Rikishi} r - The rikishi to check.
+ * @returns {boolean} True if rank is yokozuna, ozeki, sekiwake, or komusubi.
+ */
 function isSanyakuRank(r: Rikishi): boolean {
   return ["yokozuna", "ozeki", "sekiwake", "komusubi"].includes(r.rank);
 }
 
+/**
+ * Checks if a rikishi is in M1-M4 ranks.
+ *
+ * @param {Rikishi} r - The rikishi to check.
+ * @returns {boolean} True if rank is maegashira and rankNumber <= 4.
+ */
 function isM1toM4(r: Rikishi): boolean {
   return r.rank === "maegashira" && (r.rankNumber ?? 99) <= 4;
 }
 
+/**
+ * Creates a consistent key for a pair of rikishi IDs.
+ *
+ * @param {string} aId - First rikishi ID.
+ * @param {string} bId - Second rikishi ID.
+ * @returns {string} Consistent pair key (smaller ID first).
+ */
 function pairKey(aId: string, bId: string): string {
   return aId < bId ? `${aId}-${bId}` : `${bId}-${aId}`;
 }
 
+/**
+ * Checks if two rikishi have already been paired in the current pairings.
+ *
+ * @param {MatchPairing[]} pairings - Current pairings.
+ * @param {string} aId - First rikishi ID.
+ * @param {string} bId - Second rikishi ID.
+ * @returns {boolean} True if already paired.
+ */
 function alreadyPaired(pairings: MatchPairing[], aId: string, bId: string): boolean {
   const key = pairKey(aId, bId);
   return pairings.some((p) => pairKey(p.eastId, p.westId) === key);
 }
 
+/**
+ * Builds a set of all pairs that have already faced each other in the basho.
+ *
+ * @param {BashoState} basho - Current basho state.
+ * @returns {Set<string>} Set of pair keys for already-faced rikishi.
+ */
 function buildFacedSet(basho: BashoState): Set<string> {
   const set = new Set<string>();
   for (const m of basho.matches) {
@@ -66,7 +111,18 @@ function buildFacedSet(basho: BashoState): Set<string> {
   return set;
 }
 
-/** Try to create a valid pairing; returns null on hard-rule violations. */
+/**
+ * Attempts to create a valid pairing between two rikishi.
+ * Returns null if hard-rule violations prevent pairing.
+ *
+ * @param {BashoState} basho - Current basho state.
+ * @param {Rikishi} a - First rikishi.
+ * @param {Rikishi} b - Second rikishi.
+ * @param {Set<string>} facedSet - Set of already-faced pairs.
+ * @param {Set<string>} pairedIds - Set of already-paired rikishi IDs.
+ * @param {RivalriesState} [rivalriesState] - Optional rivalry state for heat modifiers.
+ * @returns {MatchPairing | null} Valid pairing or null if invalid.
+ */
 function tryPair(
   basho: BashoState,
   a: Rikishi,
@@ -436,5 +492,9 @@ export function buildSwissTorikumi(
   else if (day === 15) raw = phase3(basho, pool, facedSet, options.rivalriesState);
   else raw = phase2(basho, pool, facedSet, options.rivalriesState);
 
-  return sortChronologically(raw, pool);
+  // Apply drama budget post-processing to maximize narrative value
+  const rikishiMap = new Map(rikishi.map((r) => [r.id, r]));
+  const optimizedPairings = applyDramaBudget(raw, rikishiMap, day, basho.standings, facedSet);
+
+  return sortChronologically(optimizedPairings, pool);
 }

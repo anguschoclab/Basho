@@ -6,18 +6,34 @@ import type { Id, IdMapRuntime } from "./common";
 import type { EventsState } from "./events";
 import type { BanzukeSnapshot } from "./banzuke";
 import type { BashoName, BashoResult, AwardLogEntry, BoutResult } from "./basho";
-import type { GovernanceRuling, IchimonName, Faction } from "./economy";
-import type { HeyaTrainingState } from "./training";
-import type { Oyakata } from "./oyakata";
 import type { Rikishi } from "./rikishi";
 import type { Heya } from "./heya";
-import type { TalentPoolWorldState } from "./talent";
-import type { MyosekiMarket } from "./myoseki";
-import type { WorldRecords } from "./records";
-import type { TutorialState } from "./tutorial";
-import type { ActiveCrisis } from "./crises";
+import type { Oyakata } from "./oyakata";
+import type { BashoState } from "./basho";
+import type { Staff } from "./staff";
+import type { HeyaTrainingState, SparringState } from "./training";
+import type { Sponsor, Koenkai } from "./sponsors";
+import type { GovernanceRuling } from "./economy";
+import type { MyosekiStock, MyosekiTransaction } from "./myoseki";
+import type { AlmanacSnapshot } from "../almanac";
+import type {
+  EngineEventType,
+  EventCategory,
+  EventImportance,
+  NarrativeContext,
+} from "./events";
 import type { GlobalCupState, GlobalCupHistoryEntry } from "./globalCup";
 import type { BloodlineRegistry } from "./dynasty";
+import type { LineageEdge } from "../lineage";
+import type { HallOfFameState } from "../hallOfFame";
+import type { HistoryIndex } from "../historyIndex";
+import type { SeededRNG } from "../rng";
+import type { ScoutedRikishi } from "../systems/recruitment/ScoutingService";
+import type { OzekiKadobanMap } from "../banzuke";
+import type { SponsorPool } from "./sponsors";
+import type { MediaState } from "./media";
+import type { PerceptionSnapshot } from "../perception";
+import type { RivalriesState } from "../rivalries";
 
 /** Type representing cycle phase. */
 export type CyclePhase = "pre_basho" | "active_basho" | "post_basho" | "interim" | "banzuke_reveal";
@@ -97,20 +113,6 @@ export interface PreBashoAssessment {
   withdrawalsThisAssessment: number;
 }
 
-import type { LineageEdge } from "../lineage";
-import type { HallOfFameState } from "../hallOfFame";
-import type { HistoryIndex } from "../historyIndex";
-import type { Staff } from "./staff";
-import type { SeededRNG } from "../rng";
-import type { ScoutedRikishi } from "../systems/recruitment/ScoutingService";
-import type { AlmanacSnapshot } from "../almanac";
-import type { OzekiKadobanMap } from "../banzuke";
-import type { SponsorPool } from "./sponsors";
-import type { MediaState } from "./media";
-import type { PerceptionSnapshot } from "../perception";
-import type { RivalriesState } from "../rivalries";
-import type { BashoState } from "./basho";
-
 /** Defines the structure for a closed or merged heya. */
 export interface ClosedHeyaRecord extends Heya {
   closedAtYear: number;
@@ -174,6 +176,12 @@ export interface WorldState {
   ozekiKadoban?: OzekiKadobanMap;
 
   trainingState?: IdMapRuntime<HeyaTrainingState>;
+
+  /**
+   * Map of heya IDs to sparring partnership states.
+   * Tracks intra-heya sparring pairs that provide chemistry-based stat bonuses.
+   */
+  sparringPairs?: IdMapRuntime<SparringState>;
 
   talentPool?: TalentPoolWorldState;
   candidatePool?: TalentPoolWorldState;

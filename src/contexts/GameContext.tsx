@@ -1,5 +1,15 @@
-// Game State Context — slim provider + hook
-// Types, reducer, and helpers split into sibling modules.
+/**
+ * src/contexts/GameContext.tsx
+ * ===========================
+ * Game State Context Provider
+ *
+ * Provides the main game state context with actions for world management,
+ * basho simulation, and UI interactions.
+ *
+ * @see gameReducer for the main reducer logic
+ * @see gameActions for action creators
+ * @see gameTypes for type definitions
+ */
 
 import { createContext, useContext, useReducer, useCallback, useMemo, ReactNode } from "react";
 import type { WorldState } from "@/engine/types/world";
@@ -34,47 +44,94 @@ import * as actions from "./gameActions";
 
 // === CONTEXT VALUE ===
 
-/** Defines the structure for game context value. */
+/**
+ * Defines the structure for game context value.
+ * Contains the current game state and all available actions.
+ */
 interface GameContextValue {
+  /** Current game state. */
   state: GameState;
+  /** Latest UI digest built from world state. */
   digest: UIDigest | null;
+  /** Creates a new world with the given seed. */
   createWorld: (seed: string, playerHeyaId?: string, oyakataConfig?: import("@/engine/types/oyakata").OyakataCreationConfig) => void;
+  /** Sets the current game phase. */
   setPhase: (phase: GamePhase) => void;
+  /** Selects a rikishi as the currently selected rikishi. */
   selectRikishi: (id: string | null) => void;
+  /** Selects a heya as the currently selected heya. */
   selectHeya: (id: string | null) => void;
+  /** Starts a new basho. */
   startBasho: () => void;
+  /** Advances to the next day. */
   advanceDay: () => void;
+  /** Simulates a specific bout. */
   simulateBout: (boutIndex: number) => void;
+  /** Sets the tactic for a specific bout. */
   setBoutTactic: (boutId: string, tactic: import("@/engine/types/combat").BoutTactic) => void;
+  /** Simulates all bouts for the current day. */
   simulateAllBouts: () => void;
+  /** Ends the current day. */
   endDay: () => void;
+  /** Ends the current basho. */
   endBasho: () => void;
+  /** Simulates a full basho (all 15 days). */
   simFullBasho: () => void;
+  /** Ticks multiple days at once. */
   tickMultipleDays: (days: number) => void;
+  /** Advances the interim period by the specified number of weeks. */
   advanceInterim: (weeks?: number) => void;
+  /** Advances by one day. */
   advanceOneDay: () => void;
+  /** Runs a holiday event with the given configuration. */
   goOnHoliday: (config: HolidayConfig) => HolidayResult | null;
+  /** Runs an auto-simulation with the given configuration. */
   runAutoSimAction: (config: AutoSimConfig) => Promise<AutoSimResult | null>;
+  /** Saves the game to the specified slot. */
   saveToSlot: (slotName: string) => boolean;
+  /** Loads the game from the specified slot. */
   loadFromSlot: (slotName: string) => boolean;
+  /** Performs a quick save. */
   quickSave: () => boolean;
+  /** Loads the most recent autosave. */
   loadFromAutosave: () => boolean;
+  /** Checks if an autosave exists. */
   hasAutosave: () => boolean;
+  /** Gets information about all save slots. */
   getSaveSlots: () => SaveSlotInfo[];
+  /** Gets a rikishi by ID. */
   getRikishi: (id: string) => Rikishi | undefined;
+  /** Gets a heya by ID. */
   getHeya: (id: string) => Heya | undefined;
+  /** Gets the matches for the current day. */
   getCurrentDayMatches: () => ReturnType<typeof getMatchesForDay>;
+  /** Gets the current standings. */
   getStandings: () => Array<{ rikishi: Rikishi; wins: number; losses: number }>;
+  /** Updates the world state with a new world. */
   updateWorld: (world: WorldState) => void;
+  /** Issues a governance ruling with the given severity. */
   issueRuling: (rulingId: string, severity: "lenient" | "standard" | "harsh") => void;
+  /** Handles a media event with the given choice. */
   handleMediaEvent: (eventId: string, choice: string) => void;
+  /** Advances the tutorial to the next step. */
   advanceTutorialStep: (step: import("@/engine/types/tutorial").TutorialStep) => void;
+  /** Sets a tutorial flag. */
   setTutorialFlag: (flag: keyof import("@/engine/types/tutorial").TutorialFlags) => void;
+  /** Completes the tutorial. */
   completeTutorial: () => void;
+  /** Builds infrastructure for a heya. */
   buildInfrastructure: (
     heyaId: string,
     facilityId: import("@/engine/types/infrastructure").FacilityId
   ) => void;
+  /** Assigns a mentor to an apprentice rikishi. */
+  assignMentor: (mentorId: string, apprenticeId: string) => void;
+  /** Removes a mentor from an apprentice rikishi. */
+  removeMentor: (apprenticeId: string) => void;
+  /** Runs an auto-simulation with the given configuration. */
+  runAutoSim: (config: AutoSimConfig) => Promise<AutoSimResult | null>;
+  /** Recruits a sponsor for the player's heya. */
+  recruitSponsor: (sponsorId: string) => void;
 }
 
 const GameContext = createContext<GameContextValue | null>(null);
@@ -82,8 +139,11 @@ const GameContext = createContext<GameContextValue | null>(null);
 // === PROVIDER ===
 
 /**
- * game provider.
- *  * @param { children } - The { children }.
+ * Game provider component.
+ * Wraps the application with the game context provider.
+ *
+ * @param {Object} props - Component props
+ * @param {ReactNode} props.children - Child components to wrap
  */
 export function GameProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(gameReducer, initialGameState);
@@ -251,6 +311,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const hasAutosaveCheck = useCallback(() => hasAutosave(), []);
   const getSaveSlots = useCallback(() => getSaveSlotInfos(), []);
 
+  const assignMentorAction = useCallback(
+    (mentorId: string, apprenticeId: string) => {
+      dispatch(actions.assignMentor(mentorId, apprenticeId));
+    },
+    []
+  );
+
+  const removeMentorAction = useCallback((apprenticeId: string) => {
+    dispatch(actions.removeMentor(apprenticeId));
+  }, []);
+
   const value: GameContextValue = useMemo(
     () => ({
       state,
@@ -281,7 +352,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       getStandings,
       updateWorld,
       goOnHoliday,
-      runAutoSimAction,
+      runAutoSim: runAutoSimAction,
       tickMultipleDays,
       issueRuling,
       handleMediaEvent,
@@ -290,6 +361,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
       setTutorialFlag: setTutorialFlagAction,
       completeTutorial: completeTutorialAction,
       buildInfrastructure: buildInfrastructureAction,
+      assignMentor: assignMentorAction,
+      removeMentor: removeMentorAction,
+      runAutoSimAction,
     }),
     [
       state,
@@ -328,6 +402,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       setTutorialFlagAction,
       completeTutorialAction,
       buildInfrastructureAction,
+      assignMentorAction,
+      removeMentorAction,
     ]
   );
 

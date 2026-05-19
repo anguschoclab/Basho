@@ -15,10 +15,12 @@ import { BoutLog } from "./BoutLog";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
 import type { Rikishi } from "@/engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
 import type { PbpLine } from "@/engine/bout/boutNarrative";
 import { RotateCcw, MessageSquareText, BookOpen, Terminal } from "lucide-react";
 import { generateNarrative } from "@/presenters/uiDigest";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
+import { useGame } from "@/contexts/GameContext";
 
 const PHASE_STYLE: Record<string, { label: string; color: string; bg: string }> = {
   tactical: { label: "策略", color: "text-primary", bg: "bg-primary/10 border-primary/20" },
@@ -79,6 +81,9 @@ export function BoutNarrativeModal({
   bashoName,
   day,
 }: BoutNarrativeModalProps) {
+  const { state } = useGame();
+  const world = state?.world;
+
   const narrative = generateNarrative(
     east as unknown as Rikishi,
     west as unknown as Rikishi,
@@ -96,13 +101,14 @@ export function BoutNarrativeModal({
         west as unknown as Rikishi,
         bashoName,
         day,
-        seed
+        seed,
+        world || {} as WorldState
       );
       return result.pbpLines ?? [];
     } catch {
       return [];
     }
-  }, [east, west, result, bashoName, day]);
+  }, [east, west, result, bashoName, day, world]);
 
   const [replayKey, setReplayKey] = useState(0);
 

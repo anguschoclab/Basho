@@ -23,13 +23,14 @@ import { projectSponsorUIDigest } from "@/presenters/uiProjections";
 import { ChronicleRoom } from "@/components/stable/ChronicleRoom";
 import { GlobalStrategicHub } from "@/components/stable/GlobalStrategicHub";
 import type { FacilityId } from "@/engine/types/infrastructure";
-
+import type { Rikishi } from "@/engine/types/rikishi";
 import { KeshoMawashiGallery } from "@/components/stable/KeshoMawashiGallery";
+import { MentorAssignmentPanel } from "@/components/game/MentorAssignmentPanel";
 
 export default function StablePage() {
   const navigate = useNavigate();
   const { id: routeId } = useParams({ strict: false });
-  const { state, updateWorld } = useGame();
+  const { state, updateWorld, assignMentor, removeMentor } = useGame();
   const { world, playerHeyaId } = state;
 
   const viewingHeyaId = routeId || playerHeyaId || "";
@@ -58,7 +59,7 @@ export default function StablePage() {
     );
   }
 
-  const sponsorData = projectSponsorUIDigest(world);
+  const sponsorData = world ? projectSponsorUIDigest(world) : null;
 
   const handleUpgrade = (facilityId: FacilityId) => {
     if (!world) return;
@@ -113,15 +114,15 @@ export default function StablePage() {
           </TabsContent>
 
           <TabsContent value="gallery">
-            <KeshoMawashiGallery world={world} heyaId={viewingHeyaId} />
+            {world && <KeshoMawashiGallery world={world} heyaId={viewingHeyaId} />}
           </TabsContent>
 
           <TabsContent value="chronicle">
-            <ChronicleRoom world={world} heyaId={viewingHeyaId} />
+            {world && <ChronicleRoom world={world} heyaId={viewingHeyaId} />}
           </TabsContent>
 
           <TabsContent value="global">
-            <GlobalStrategicHub world={world} heyaId={viewingHeyaId} />
+            {world && <GlobalStrategicHub world={world} heyaId={viewingHeyaId} />}
           </TabsContent>
 
           <TabsContent value="infrastructure">
@@ -133,8 +134,8 @@ export default function StablePage() {
               <div className="flex flex-col items-center justify-center py-20 gap-4 border-2 border-dashed rounded-lg text-muted-foreground">
                 <div className="text-5xl font-display animate-pulse">∅</div>
                 <p className="text-sm font-display italic">Your stable has no rikishi yet.</p>
-                <Button variant="outline" onClick={() => navigate({ to: "/talent-pool" })}>
-                  Visit Talent Pool to Recruit
+                <Button variant="outline" onClick={() => navigate({ to: "/dashboard" })}>
+                  Visit Dashboard to Recruit
                 </Button>
               </div>
             ) : (
@@ -186,6 +187,18 @@ export default function StablePage() {
                             {r.currentBashoWins}-{r.currentBashoLosses}
                           </Badge>
                         </CardContent>
+                        {world && heya && (
+                          <CardContent className="p-4 pt-0">
+                            <MentorAssignmentPanel
+                              apprenticeId={r.id}
+                              mentorId={r.mentorId}
+                              heyaId={heya.id}
+                              allRikishi={world.rikishi as Map<string, Rikishi>}
+                              onAssignMentor={(mentorId) => assignMentor(mentorId, r.id)}
+                              onRemoveMentor={() => removeMentor(r.id)}
+                            />
+                          </CardContent>
+                        )}
                       </Card>
                     </TooltipWrap>
                   );

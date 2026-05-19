@@ -1,97 +1,155 @@
 /**
+ * src/engine/types/events.ts
+ * ==========================
  * Event Bus System Types (The Keystone System)
+ *
+ * Defines types for the event bus system that powers narrative generation
+ * and game state notifications throughout the engine.
+ *
+ * @see EventBus for event emission and subscription
  */
 
 import type { Id } from "./common";
 
-/** Type representing event scope. */
+/**
+ * Type representing event scope.
+ * Determines which entities can receive or respond to an event.
+ */
 export type EventScope = "world" | "heya" | "rikishi";
-/** Type representing event phase. */
+
+/**
+ * Type representing event phase.
+ * MENTOR_MENTEE_BOUT: Fired when a mentor faces their apprentice in a basho bout.
+ */
 export type EngineEventType =
-  | "BOUT_RESOLVED"
-  | "RECRUIT_DISCOVERED"
-  | "MONTHLY_FINANCE_REPORT"
-  | "MANAGEMENT_DECISION"
-  | "STRATEGY_SHIFT"
-  | "RIVALRY_HEAT_SPIKE"
-  | "MEDICAL_REPORT"
-  | "TRAINING_UPDATE"
-  | "GOVERNANCE_RULING"
-  | "FINANCIAL_ALERT"
-  | "AWARD_CONFERRED"
-  | "LIFECYCLE_EVENT"
-  | "BASHO_STATUS"
-  | "WELFARE_COMPLIANCE"
-  | "OYAKATA_MOOD_SHIFT"
-  | "NPC_MANAGER_DECISION"
-  | "NARRATIVE_STRATEGY_SHIFT"
-  | "FACILITY_UPGRADED"
-  | "FACILITY_DEGRADED"
-  | "ROSTER_OVERFLOW_RELEASE"
-  | "PROMOTION_DELIBERATION"
-  | "GLOBAL_CUP"
-  | "NARRATIVE_CRISIS_TRIGGERED";
+  | "BOUT_RESOLVED"              // A bout has been resolved with a result
+  | "RECRUIT_DISCOVERED"         // A new recruit has been discovered
+  | "MONTHLY_FINANCE_REPORT"     // Monthly financial report generated
+  | "MANAGEMENT_DECISION"        // Player made a management decision
+  | "STRATEGY_SHIFT"             // Training or strategy was shifted
+  | "RIVALRY_HEAT_SPIKE"         // Rivalry heat crossed a threshold
+  | "MEDICAL_REPORT"             // Medical status report generated
+  | "TRAINING_UPDATE"            // Training results update
+  | "GOVERNANCE_RULING"          // A governance ruling was issued
+  | "FINANCIAL_ALERT"            // Financial alert triggered
+  | "AWARD_CONFERRED"            // An award was conferred
+  | "LIFECYCLE_EVENT"            // Career lifecycle event (retirement, promotion, etc.)
+  | "BASHO_STATUS"               // Basho status update
+  | "WELFARE_COMPLIANCE"         // Welfare compliance check
+  | "OYAKATA_MOOD_SHIFT"         // Oyakata mood changed
+  | "NPC_MANAGER_DECISION"       // NPC manager made a decision
+  | "NARRATIVE_STRATEGY_SHIFT"   // Narrative strategy shifted
+  | "FACILITY_UPGRADED"          // Facility was upgraded
+  | "FACILITY_DEGRADED"          // Facility was degraded
+  | "ROSTER_OVERFLOW_RELEASE"    // Rikishi released due to roster overflow
+  | "PROMOTION_DELIBERATION"     // Promotion deliberation occurred
+  | "GLOBAL_CUP"                 // Global Cup event
+  | "NARRATIVE_CRISIS_TRIGGERED"  // Narrative crisis was triggered
+  | "MENTOR_MENTEE_BOUT";        // Mentor faced apprentice in bout
 
+/**
+ * Type representing event phase.
+ * Determines when in the game cycle the event occurs.
+ */
 export type EventPhase = "weekly" | "monthly" | "basho_day" | "basho_wrap" | "manual";
-/** Type representing event category. */
-export type EventCategory =
-  | "training"
-  | "scouting"
-  | "injury"
-  | "economy"
-  | "sponsor"
-  | "media"
-  | "rivalry"
-  | "promotion"
-  | "discipline"
-  | "facility"
-  | "milestone"
-  | "match"
-  | "basho"
-  | "career"
-  | "welfare"
-  | "narrative"
-  | "misc";
 
-/** Type representing event importance. */
+/**
+ * Type representing event category.
+ * Used to group events for filtering and narrative generation.
+ */
+export type EventCategory =
+  | "training"      // Training-related events
+  | "scouting"      // Recruitment and scouting events
+  | "injury"        // Injury and medical events
+  | "economy"       // Financial and economic events
+  | "sponsor"       // Sponsor and kensho events
+  | "media"         // Media and publicity events
+  | "rivalry"       // Rivalry and relationship events
+  | "promotion"     // Promotion and demotion events
+  | "discipline"    // Disciplinary events
+  | "facility"      // Facility management events
+  | "milestone"     // Career milestone events
+  | "match"         // Match and bout events
+  | "basho"         // Basho-wide events
+  | "career"        // Career lifecycle events
+  | "welfare"       // Welfare and compliance events
+  | "narrative"     // Narrative and story events
+  | "misc";         // Miscellaneous events
+
+/**
+ * Type representing event importance.
+ * Determines UI display priority and narrative significance.
+ */
 export type EventImportance = "minor" | "notable" | "major" | "headline";
 
-/** Defines the structure for narrative context (A11 Narrative Contract). */
+/**
+ * Defines the structure for narrative context (A11 Narrative Contract).
+ * Provides a standardized data structure for narrative generation.
+ */
 export interface NarrativeContext {
   // Entities for Linking
+  /** Shikona of the primary rikishi. */
   shikona?: string;
+  /** ID of the primary rikishi. */
   rikishiId?: string;
+  /** Shikona of the rival rikishi. */
   rival?: string;
+  /** ID of the rival rikishi. */
   rivalId?: string;
+  /** Rank of the rikishi. */
   rank?: string;
+  /** Name of the heya. */
   heya?: string;
+  /** ID of the heya. */
   heyaId?: string;
+  /** Alias for heya (stable). */
   stable?: string;
+  /** Alias for heyaId (stableId). */
   stableId?: string;
+  /** Shikona of the winner. */
   winner?: string;
+  /** ID of the winner. */
   winnerId?: string;
+  /** Shikona of the loser. */
   loser?: string;
+  /** ID of the loser. */
   loserId?: string;
+  /** Name of the oyakata. */
   oyakata?: string;
+  /** ID of the oyakata. */
   oyakataId?: string;
 
+  /** Winning technique (kimarite). */
   kimarite?: string;
-  rikishiRivalId?: string; // Legacy support if needed
-  winnerRikishiId?: string; // Legacy support
-  loserRikishiId?: string; // Legacy support
+  /** Legacy support for rikishiRivalId. */
+  rikishiRivalId?: string;
+  /** Legacy support for winnerRikishiId. */
+  winnerRikishiId?: string;
+  /** Legacy support for loserRikishiId. */
+  loserRikishiId?: string;
 
   // Economy
-  money?: number; // Auto-formatted
-  kensho?: number; // Auto-formatted
-  cost?: number; // Auto-formatted
+  /** Money amount (auto-formatted). */
+  money?: number;
+  /** Kensho count (auto-formatted). */
+  kensho?: number;
+  /** Cost amount (auto-formatted). */
+  cost?: number;
+  /** Revenue amount. */
   revenue?: number;
+  /** Profit amount. */
   profit?: number;
 
   // Physics / Stats
-  rate?: number; // Auto-formatted %
-  chance?: number; // Auto-formatted %
+  /** Rate percentage (auto-formatted). */
+  rate?: number;
+  /** Chance percentage (auto-formatted). */
+  chance?: number;
+  /** Score value. */
   score?: number;
+  /** Delta change value. */
   delta?: number;
+  /** Intensity level. */
   intensity?:
     | "high_stakes"
     | "technical"
@@ -107,54 +165,91 @@ export interface NarrativeContext {
     | number;
 
   // Domain Specific
+  /** Severity level of the event. */
   severity?: "minor" | "moderate" | "serious" | "critical";
+  /** Incident description. */
   incident?: string;
+  /** Reason for the event. */
   reason?: string;
+  /** Training regimen or similar. */
   regimen?: string;
+  /** Status description. */
   status?: string;
+  /** Threshold value. */
   threshold?: number;
+  /** Heat level (for rivalries). */
   heat?: number;
+  /** Day number. */
   day?: number;
 
+  /** Index signature for additional custom fields. */
   [key: string]: string | number | boolean | undefined;
 }
 
-/** Defines the structure for engine event. */
+/**
+ * Defines the structure for engine event.
+ * Represents a single event in the event log.
+ */
 export interface EngineEvent {
+  /** Unique identifier for this event. */
   id: Id;
+  /** Type of event. */
   type: EngineEventType;
 
+  /** ID of the causal event if this event was triggered by another. */
   causalEventId?: Id;
 
   // Temporal
+  /** Year when this event occurred. */
   year: number;
+  /** Week when this event occurred. */
   week: number;
+  /** Month when this event occurred. */
   month?: number;
+  /** Basho number (1-6) if during a basho. */
   bashoNumber?: 1 | 2 | 3 | 4 | 5 | 6;
+  /** Day of the basho (1-15) if during a basho. */
   day?: number;
 
+  /** Phase of the game cycle when this event occurred. */
   phase: EventPhase;
+  /** Category of this event. */
   category: EventCategory;
+  /** Importance level of this event. */
   importance: EventImportance;
 
+  /** Scope of this event (world, heya, or rikishi). */
   scope: EventScope;
+  /** Heya ID if scope is heya. */
   heyaId?: Id;
+  /** Rikishi ID if scope is rikishi. */
   rikishiId?: Id;
 
   // Content
+  /** Title of the event. */
   title: string;
+  /** Summary description of the event. */
   summary: string;
 
   // Data Payload
+  /** Narrative context data for this event. */
   data: NarrativeContext;
 
+  /** Truth level (visibility of this information). */
   truthLevel: "public" | "limited" | "private";
+  /** Optional tags for filtering or categorization. */
   tags?: string[];
 }
 
-/** Defines the structure for events state. */
+/**
+ * Defines the structure for events state.
+ * Container for all logged events in the world.
+ */
 export interface EventsState {
+  /** Version identifier for data migration. */
   version: "1.0.0";
+  /** Array of all logged events. */
   log: EngineEvent[];
+  /** Deduplication map to prevent duplicate events. */
   dedupe: Record<string, true>;
 }

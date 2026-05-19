@@ -449,6 +449,7 @@ export class ImpactBuilder {
       | "npcScoutingPriorities"
       | "talentPool"
       | "candidatePool"
+      | "sparringPairs"
       | "records"
       | "hallOfFame"
       | "staff"

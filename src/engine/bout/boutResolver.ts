@@ -192,7 +192,7 @@ export function resolveBout(
   const bashoName = (basho.bashoName ?? basho.name) as BashoName | undefined;
 
   // 2. Generate narrative based on data frames
-  generateBoutNarrative(result, east, west, bashoName, bout.day, `${result.boutId}-pbp`);
+  generateBoutNarrative(result, east, west, bashoName, bout.day, `${result.boutId}-pbp`, world || {} as WorldState);
 
   // 2.5. Achievement Detection (Gold & Silver Stars - v2)
 

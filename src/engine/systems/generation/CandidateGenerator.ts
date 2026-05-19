@@ -12,6 +12,7 @@ import { LegacyService } from "../legacy/LegacyService";
 import type { WorldState } from "../../types/world";
 import type { RikishiStats } from "../../types/rikishi";
 import { JAPANESE_PREFECTURES, SUMO_HOTBEDS } from "../../../data/sumo_geography";
+import { generateScoutingBias } from "../recruitment/FogOfWarService";
 
 /**
  * Generates a single TalentCandidate for the recruitment pools.
@@ -138,5 +139,7 @@ export function generateCandidate(args: {
     peakAgeOffset: paPkg.peakAgeOffset,
     ceilingFraction: paPkg.ceilingFraction,
     bloodlineTrait: legacyTrait,
+    // Generate deterministic scouting bias that skews initial stat readings
+    scoutingBias: generateScoutingBias(id, currentYear),
   };
 }

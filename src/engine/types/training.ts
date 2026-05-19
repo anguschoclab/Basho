@@ -50,3 +50,39 @@ export interface HeyaTrainingState {
    */
   weeklyPlan?: Record<Id, DaySchedule>;
 }
+
+/**
+ * Sparring Partnership Types
+ * ============================
+ * Types for intra-heya sparring partnerships that produce chemistry bonuses.
+ */
+
+export type SparringChemistry = "friction" | "rut" | "neutral";
+
+/** Defines the structure for a sparring pair between two rikishi. */
+export interface SparringPair {
+  /** Canonical pair key: smallerId|largerId */
+  key: string;
+  /** First rikishi ID (smaller ID) */
+  aId: Id;
+  /** Second rikishi ID (larger ID) */
+  bId: Id;
+  /** Current chemistry state */
+  chemistry: SparringChemistry;
+  /** Number of weeks this pair has been sparring together */
+  weeksActive: number;
+  /** Week when this pair was established */
+  establishedWeek: number;
+}
+
+/** Defines the structure for sparring state at the heya level. */
+export interface SparringState {
+  /** Heya ID for this sparring state */
+  heyaId: Id;
+  /** Map of pair keys to SparringPair data */
+  pairs: Record<string, SparringPair>;
+  /** Keiko (cross-heya) exchange partner ID (for future Phase 2) */
+  keikoPartnerId?: Id;
+  /** Number of weeks keiko exchange has been active (for future Phase 2) */
+  keikoWeeksActive?: number;
+}

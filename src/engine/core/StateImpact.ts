@@ -8,7 +8,7 @@
  */
 
 import type { WorldState } from "../types/world";
-import type { HeyaTrainingState } from "../types/training";
+import type { HeyaTrainingState, SparringState } from "../types/training";
 import type { Sponsor, Koenkai } from "../types/sponsors";
 import type { Staff } from "../types/staff";
 import type { BashoResult, MatchSchedule, AwardLogEntry } from "../types/basho";
@@ -147,6 +147,7 @@ export interface StateImpact {
       | "npcScoutingPriorities"
       | "talentPool"
       | "candidatePool"
+      | "sparringPairs"
     >
   >;
 

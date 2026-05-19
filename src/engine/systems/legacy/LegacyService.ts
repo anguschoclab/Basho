@@ -13,6 +13,8 @@ import type { TalentCandidate } from "../../types/talent";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { clampInt } from "../../utils/math";
+import { BardEngine } from "../../narrative/BardEngine";
+import { rngForWorld } from "../../rng";
 
 /** Minimum thresholds for a rikishi to leave a bloodline trait on retirement. */
 const REGISTER_THRESHOLDS = {
@@ -53,6 +55,14 @@ export const LegacyService = {
     };
 
     builder.updateWorldField("bloodlineRegistry", registry);
+    
+    // Generate dynasty narrative headline
+    const rng = rngForWorld(world, "legacy", "registerTrait");
+    const headline = BardEngine.resolve(rng, "dynasty.headline", {
+      TRAIT_LABEL: trait.label,
+      ANCESTOR: trait.ancestorShikona,
+    }).text;
+    
     builder.logEvent(
       "LIFECYCLE_EVENT",
       "career",
@@ -60,7 +70,7 @@ export const LegacyService = {
         rikishiId: rikishi.id,
         shikona: rikishi.shikona,
         status: "bloodline_registered",
-        incident: `A new bloodline has been established: "${trait.label}" — passed down from ${rikishi.shikona}.`,
+        incident: headline,
       },
       { rikishiId: rikishi.id, importance: "notable" }
     );

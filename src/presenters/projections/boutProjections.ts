@@ -55,6 +55,16 @@ export interface CandidateDigestEntry extends TalentCandidate {
   scoutInfo: { label: string; color: string; narrative: string };
   scoutedProgress?: number;
   scoutingInvestment?: string;
+  /**
+   * Whether the candidate's scouting view is still biased by initial misvaluation.
+   * When true, displayed stats may be inaccurate by ±20 points.
+   */
+  hasBias?: boolean;
+  /**
+   * Strength of remaining scouting bias (0.0 = no bias, 1.0 = full bias).
+   * Decays as scouting observations accumulate.
+   */
+  biasStrength?: number;
 }
 
 /** Recruitment digest returned by projectRecruitmentUIDigest */
@@ -71,10 +81,13 @@ export function projectRecruitmentUIDigest(
 ): RecruitmentUIDigest {
   const candidates = talentpool.listVisibleCandidates(world, poolType).map((c) => {
     const scoutLevel = talentpool.getCandidateScoutingLevel(world, c.candidateId);
+    const scoutedView = talentpool.getScoutedCandidateView(world, c.candidateId);
     return {
       ...c,
       scoutLevel,
       scoutInfo: describeScoutingLevel(scoutLevel),
+      hasBias: scoutedView?.hasBias,
+      biasStrength: scoutedView?.biasStrength,
     };
   });
   return { candidates };

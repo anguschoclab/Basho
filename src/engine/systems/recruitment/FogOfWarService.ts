@@ -143,3 +143,84 @@ export function resolveScoutedAttribute(
 
   return { value: label, confidence, narrative: `${confidenceLabel}: ${desc}` };
 }
+
+// ============================================
+// SCOUTING BIAS FUNCTIONS
+// ============================================
+
+/**
+ * Persistent scouting bias that skews initial candidate stat readings.
+ * Bias is generated deterministically per candidate and decays as scouting
+ * observations accumulate, eventually revealing true stat values.
+ */
+export interface ScoutingBias {
+  /**
+   * True stat offsets applied when scouting level is low.
+   * Range ±20 per stat. Uses TalentCandidate stat field names (strength, stamina, mental, adaptability).
+   */
+  statOffsets: {
+    strength: number;
+    speed: number;
+    balance: number;
+    technique: number;
+    stamina: number;
+    mental: number;
+    adaptability: number;
+  };
+  /**
+   * How strongly the bias still applies.
+   * 1.0 = full bias (initial state), 0.0 = no bias (truth known).
+   * Decays as observations accumulate.
+   */
+  decayFactor: number;
+}
+
+const BIAS_MAX = 20;
+const DECAY_OBS_FULL = 20; // at this many observations, bias is fully gone
+
+/**
+ * Generate a seeded per-candidate scouting bias.
+ * Bias is deterministic: same candidateId + year produces same bias.
+ *
+ * @param candidateId - Unique identifier for the candidate
+ * @param year - Current year (used in seed for yearly variation)
+ * @returns ScoutingBias with random stat offsets in ±20 range and full decayFactor
+ */
+export function generateScoutingBias(candidateId: string, year: number): ScoutingBias {
+  const rng = rngFromSeed(`bias_${candidateId}_${year}`, "scouting", "bias");
+  const statKeys = ["strength", "speed", "balance", "technique", "stamina", "mental", "adaptability"] as const;
+  const statOffsets = {} as ScoutingBias["statOffsets"];
+  for (const key of statKeys) {
+    const magnitude = Math.floor(rng.next() * BIAS_MAX);
+    const sign = rng.next() < 0.5 ? -1 : 1;
+    statOffsets[key] = magnitude * sign;
+  }
+  return { statOffsets, decayFactor: 1.0 };
+}
+
+/**
+ * Apply a bias offset to a true value, scaled by decayFactor.
+ * Result is clamped to valid stat range (0-99).
+ *
+ * @param trueValue - The actual stat value
+ * @param offset - The bias offset to apply
+ * @param decayFactor - How strongly bias applies (1.0 = full, 0.0 = none)
+ * @returns Biased stat value clamped to 0-99
+ */
+export function applyBias(trueValue: number, offset: number, decayFactor: number): number {
+  const scaled = Math.round(offset * decayFactor);
+  return clamp(trueValue + scaled, 0, 99);
+}
+
+/**
+ * Reduce decayFactor based on total observations accumulated.
+ * More observations = less bias = closer to truth.
+ *
+ * @param bias - Current scouting bias state
+ * @param totalObservations - Number of observations accumulated
+ * @returns New ScoutingBias with reduced decayFactor
+ */
+export function decayBias(bias: ScoutingBias, totalObservations: number): ScoutingBias {
+  const newDecay = clamp(1 - totalObservations / DECAY_OBS_FULL, 0, 1);
+  return { ...bias, decayFactor: newDecay };
+}

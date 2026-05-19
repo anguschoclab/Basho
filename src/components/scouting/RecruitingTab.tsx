@@ -34,6 +34,45 @@ import { cn } from "@/lib/utils";
 import { toPotentialBand } from "@/engine/descriptorBands";
 import { POTENTIAL_LABELS } from "@/presenters/uiConstants";
 
+/**
+ * Displays scouting confidence as star rating (1-5 stars).
+ * Shows "est." label when scouting view is still biased by initial misvaluation.
+ *
+ * @param scoutLevel - Current scouting level (0-100)
+ * @param hasBias - Whether the candidate's stats are still biased by initial misvaluation
+ */
+function ScoutingConfidenceBadge({
+  scoutLevel,
+  hasBias,
+}: {
+  scoutLevel: number;
+  hasBias: boolean;
+}) {
+  const stars =
+    scoutLevel >= 90
+      ? 5
+      : scoutLevel >= 70
+        ? 4
+        : scoutLevel >= 45
+          ? 3
+          : scoutLevel >= 20
+            ? 2
+            : 1;
+  return (
+    <div className="flex items-center gap-1">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <span
+          key={i}
+          className={i < stars ? "text-yellow-400" : "text-muted-foreground/30"}
+        >
+          ★
+        </span>
+      ))}
+      {hasBias && <span className="text-xs text-amber-500 ml-1">est.</span>}
+    </div>
+  );
+}
+
 export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null }) {
   const { state } = useGame();
   const { sendCommand } = useGameStore();
@@ -296,7 +335,10 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
                     <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2 shrink-0">
                       <div className="flex items-center gap-1">
                         <Search className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-xs text-muted-foreground">{c.scoutInfo}</span>
+                        <ScoutingConfidenceBadge
+                          scoutLevel={c.scoutLevel}
+                          hasBias={c.hasBias ?? false}
+                        />
                       </div>
 
                       <div className="flex gap-1">

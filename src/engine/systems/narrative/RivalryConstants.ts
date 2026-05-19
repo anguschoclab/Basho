@@ -5,33 +5,50 @@
  *
  * Defines tones, triggers, and heat bands for rikishi relationships.
  * Goal: Domain-driven narrative design.
+ *
+ * @see RivalryService for rivalry state management
+ * @see RivalryHeatService for heat calculation logic
  */
 
 import type { Id } from "../../types/common";
 
+/**
+ * Rivalry tone types representing the emotional flavor of a rivalry.
+ * These tones determine narrative generation and event selection.
+ */
 export type RivalryTone =
-  | "respect"
-  | "grudge"
-  | "bad_blood"
-  | "mentor_student"
-  | "unstable"
-  | "public_hype";
-
-export type RivalryTrigger =
-  | "repeat_matches"
-  | "close_finish"
-  | "upset"
-  | "kinboshi"
-  | "title_stakes"
-  | "injury_incident"
-  | "personal_history"
-  | "heya_feud";
+  | "respect"        // Mutual respect between evenly-matched opponents
+  | "grudge"          // Personal animosity from past slights
+  | "bad_blood"       // Deep-seated hatred from repeated conflicts
+  | "mentor_student"  // Teacher-student relationship dynamics
+  | "unstable"        // Volatile relationship with unpredictable outcomes
+  | "public_hype";    // Media-driven rivalry for fan entertainment
 
 /**
- * Pair key must be canonical: smallerId|largerId
+ * Rivalry trigger types representing how a rivalry was initiated.
+ * Each trigger can contribute to the initial heat and tone of a rivalry.
+ */
+export type RivalryTrigger =
+  | "repeat_matches"  // Multiple meetings between the same rikishi
+  | "close_finish"    // Bout ended in a very close decision
+  | "upset"           // Lower-ranked rikishi defeated higher-ranked
+  | "kinboshi"        // Maegashira defeated Yokozuna or Ozeki
+  | "title_stakes"    // Bout had championship implications
+  | "injury_incident" // Bout resulted in or nearly resulted in injury
+  | "personal_history" // Pre-existing relationship from background
+  | "heya_feud"       // Rivalry stemming from stable-to-stable conflict
+  | "sparring";       // Rivalry formed from extended sparring partnership
+
+/**
+ * Canonical pair key for rivalries.
+ * Format: smallerId|largerId to ensure consistent key generation.
  */
 export type RivalryKey = string;
 
+/**
+ * Human-readable labels for rivalry triggers.
+ * Used in UI display and narrative generation.
+ */
 export const RIVALRY_TRIGGER_LABELS: Record<RivalryTrigger, string> = {
   repeat_matches: "Repeat Meetings",
   close_finish: "Down to the Wire",
@@ -41,8 +58,13 @@ export const RIVALRY_TRIGGER_LABELS: Record<RivalryTrigger, string> = {
   injury_incident: "Near Injury",
   personal_history: "Old History",
   heya_feud: "Stable Feud",
+  sparring: "Sparring Partnership",
 };
 
+/**
+ * Human-readable labels for rivalry tones.
+ * Used in UI display and narrative generation.
+ */
 export const RIVALRY_TONE_LABELS: Record<RivalryTone, string> = {
   respect: "Mutual Respect",
   grudge: "Deep Grudge",
@@ -52,6 +74,10 @@ export const RIVALRY_TONE_LABELS: Record<RivalryTone, string> = {
   public_hype: "Public Hype",
 };
 
+/**
+ * Pre-generated derby labels for high-profile rivalries.
+ * Used to add flavor to rivalry narratives.
+ */
 export const DERBY_LABELS = [
   "Tokyo Derby",
   "The 1999 Generation",
@@ -64,28 +90,51 @@ export const DERBY_LABELS = [
   "Stable Hegemony",
 ];
 
-/** Defines the structure for rivalry pair state. */
+/**
+ * Defines the structure for a rivalry pair state.
+ * Tracks the relationship between two rikishi over time.
+ */
 export interface RivalryPairState {
+  /** Canonical pair key: smallerId|largerId */
   key: RivalryKey;
+  /** First rikishi ID (smaller ID) */
   aId: Id;
+  /** Second rikishi ID (larger ID) */
   bId: Id;
+  /** Current heat level (0-100), higher = more intense rivalry */
   heat: number;
+  /** Total number of meetings between the two rikishi */
   meetings: number;
+  /** Week number when they last met */
   lastMetWeek: number;
+  /** Total wins for rikishi A */
   aWins: number;
+  /** Total wins for rikishi B */
   bWins: number;
+  /** Closeness metric (0-100), higher = more competitive matches */
   closeness: number;
+  /** Spite metric (0-100), higher = more animosity */
   spite: number;
+  /** Current emotional tone of the rivalry */
   tone: RivalryTone;
+  /** Map of triggers that contributed to this rivalry with week counts */
   triggers: Partial<Record<RivalryTrigger, number>>;
+  /** Whether both rikishi are in the same heya */
   sameHeya: boolean;
+  /** Optional custom label for this rivalry (overrides generated labels) */
   label?: string;
 }
 
-/** JSON-safe container */
+/**
+ * JSON-safe container for all rivalry state in the world.
+ * Persists across game saves and loads.
+ */
 export interface RivalriesState {
+  /** Version identifier for data migration */
   version: "1.0.0";
+  /** Map of rivalry keys to rivalry pair states */
   pairs: Record<RivalryKey, RivalryPairState>;
+  /** Optional map of heya-level rivalries for stable-to-stable conflicts */
   heyaRivalryPairs?: Record<
     string,
     {

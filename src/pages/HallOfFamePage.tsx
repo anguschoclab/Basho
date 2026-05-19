@@ -429,6 +429,34 @@ export default function HallOfFamePage() {
           />
         )}
 
+        {/* Dynasty Registry */}
+        {world.bloodlineRegistry && Object.keys(world.bloodlineRegistry.traits).length > 0 && (
+          <Card className="border bg-gradient-to-br from-purple/10 via-background to-blue/5 overflow-hidden">
+            <CardContent className="p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <Crown className="h-4 w-4 text-purple" />
+                <h3 className="text-sm font-display font-semibold">Dynasty Registry</h3>
+                <Badge variant="secondary" className="text-[10px]">
+                  {Object.keys(world.bloodlineRegistry.traits).length}
+                </Badge>
+              </div>
+              <div className="space-y-2">
+                {Object.values(world.bloodlineRegistry.traits).map((trait) => (
+                  <div key={trait.traitId} className="flex items-center justify-between p-2 rounded-md bg-background/50">
+                    <div>
+                      <div className="font-medium text-sm">{trait.label}</div>
+                      <div className="text-xs text-muted-foreground">{trait.description}</div>
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      {trait.ancestorShikona} • {trait.registeredYear}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Tabs */}
         <Tabs defaultValue="all">
           <TabsList className="grid w-full max-w-lg grid-cols-4">

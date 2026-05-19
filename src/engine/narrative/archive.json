@@ -756,6 +756,38 @@
             "An upset for the ages! The Maegashira has taken a silver star from the Ozeki!",
             "Institutional shock! %WINNER% overcomes the Ozeki with a stunning performance."
           ]
+        },
+        "drama": {
+          "make_or_break": [
+            "Everything on the line today—both %EAST% and %WEST% sit at 7-7, with kachi-koshi hanging in the balance.",
+            "A make-or-break showdown at the senshuraku! Two rikishi, both 7-7, fighting for their tournament lives.",
+            "The tension is palpable—%EAST% and %WEST% face each other with identical 7-7 records. One win means everything.",
+            "Kachi-koshi or make-koshi? The fate of both %EAST% and %WEST% rests on this critical bout on the final day."
+          ],
+          "yusho_decider": [
+            "The yusho race tightens—%EAST% and %WEST% clash in what could be the decisive bout of the tournament.",
+            "Championship implications! %EAST% versus %WEST%—this matchup could determine who lifts the Emperor's Cup.",
+            "With the title still up for grabs, %EAST% and %WEST% step onto the dohyo knowing the yusho could be decided here.",
+            "A pivotal moment in the basho! %EAST% and %WEST% are both in contention—this bout could reshape the leaderboard."
+          ],
+          "kadoban_survival": [
+            "Kadoban pressure mounts! %EAST% fights for his ozeki rank in this critical matchup.",
+            "The specter of demotion looms—%EAST% must win to preserve his ozeki status.",
+            "Kadoban survival mode activated! %EAST% needs a victory today to avoid the dreaded drop to sekiwake.",
+            "With his ozeki rank on the line, %EAST% enters this bout with everything to lose."
+          ],
+          "kinboshi_hunt": [
+            "A kinboshi opportunity! %EAST% seeks to topple the elite %WEST% and earn a golden star.",
+            "The maegashira aims high—%EAST% challenges %WEST% with hopes of a historic upset.",
+            "Kinboshi in the making! %EAST% faces the formidable %WEST% in pursuit of a giant-killing victory.",
+            "A chance for glory! %EAST% steps up to challenge the elite %WEST% and potentially secure a kinboshi."
+          ],
+          "senshuraku_finale": [
+            "The senshuraku finale! %EAST% and %WEST% close out the tournament with this elite matchup.",
+            "The final bout of the basho—%EAST% versus %WEST% brings the tournament to a dramatic close.",
+            "Senshuraku arrives with this high-stakes clash between %EAST% and %WEST%.",
+            "The curtain falls on the basho with this marquee matchup between %EAST% and %WEST%."
+          ]
         }
       },
       "kimarite": {
@@ -1902,6 +1934,22 @@
         "aggressive": "Aggressive Development",
         "conservative": "Risk Aversion",
         "experimental": "Experimental Training"
+      }
+    },
+    "dynasty": {
+      "headline": {
+        "common": [
+          "A new bloodline has been established: %TRAIT_LABEL% — passed down from %ANCESTOR%.",
+          "The %TRAIT_LABEL% trait enters the registry, honoring %ANCESTOR%.",
+          "%ANCESTOR%'s legacy is immortalized as the %TRAIT_LABEL% bloodline."
+        ]
+      },
+      "bout_opening": {
+        "common": [
+          "%RIKISHI% carries the bloodline of %ANCESTOR%.",
+          "The descendant of %ANCESTOR% steps onto the dohyo.",
+          "%ANCESTOR%'s bloodline flows through %RIKISHI%."
+        ]
       }
     }
   },

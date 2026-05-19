@@ -3,7 +3,9 @@ import { generateNarrative } from "../narrative";
 import { rngFromSeed } from "../rng";
 import type { Rikishi } from "../types/rikishi";
 import type { BoutResult, BashoName } from "../types/basho";
+import type { WorldState } from "../types/world";
 import { BardEngine } from "../narrative/BardEngine";
+import { BloodlineService } from "../systems/legacy/BloodlineService";
 
 export type PbpLine = {
   text: string;
@@ -24,9 +26,45 @@ export function generateBoutNarrative(
   west: Rikishi,
   bashoName: BashoName | undefined,
   day: number,
-  seed: string
+  seed: string,
+  world: WorldState
 ): void {
   const pbpLines: PbpLine[] = [];
+
+  // 0. Dynasty Narrative (before ritual)
+  const eastAncestor = BloodlineService.checkDynastyNarrative(east, world);
+  const westAncestor = BloodlineService.checkDynastyNarrative(west, world);
+  if (eastAncestor || westAncestor) {
+    const dynastyRng = rngFromSeed(seed, "pbp", "dynasty");
+    const rikishiWithDynasty = eastAncestor ? east : west;
+    const ancestor = eastAncestor || westAncestor;
+    if (ancestor) {
+      pbpLines.push({
+        text: BardEngine.resolve(dynastyRng, "dynasty.bout_opening", {
+          RIKISHI: rikishiWithDynasty.shikona,
+          ANCESTOR: ancestor,
+        }).text,
+        id: `${result.boutId}-dynasty`,
+        tags: ["dynasty"],
+      });
+    }
+  }
+
+  // 0.5. Drama-aware opening line (if dramaticContext exists)
+  const match = world.currentBasho?.matches.find((m) => m.boutId === result.boutId);
+  if (match?.dramaticContext && match.dramaticContext.score > 0) {
+    const dramaRng = rngFromSeed(seed, "pbp", "drama");
+    const dramaPath = `combat.drama.${match.dramaticContext.label}` as const;
+    const dramaRes = BardEngine.resolve(dramaRng, dramaPath, {
+      east: east.shikona,
+      west: west.shikona,
+    });
+    pbpLines.push({
+      text: dramaRes.text,
+      id: `${result.boutId}-drama`,
+      tags: ["drama"],
+    });
+  }
 
   // 1. Initial Narrative (Ritual)
   if (result.log.length > 0) {

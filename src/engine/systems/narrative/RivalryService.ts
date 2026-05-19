@@ -276,4 +276,107 @@ export const RivalryService = {
 
     return builder.build();
   },
+
+  /**
+   * Seed a rivalry from extended sparring partnership.
+   *
+   * Called when a sparring pair reaches 12+ weeks of activity.
+   * Uses RNG to determine if a rivalry should be seeded (40% chance).
+   * Initial rivalry heat depends on sparring chemistry (friction = higher heat).
+   *
+   * @param {WorldState} world - The current world state.
+   * @param {string} aId - First rikishi ID.
+   * @param {string} bId - Second rikishi ID.
+   * @param {string} chemistry - Sparring chemistry state ("friction", "rut", "neutral").
+   * @param {number} weeksActive - Number of weeks the pair has been sparring.
+   * @returns {StateImpact} Impact describing rivalry seeding (or empty if no rivalry seeded).
+   *
+   * @example
+   * ```ts
+   * const impact = RivalryService.maybeSeedSparringRivalry(world, "r1", "r2", "friction", 12);
+   * ```
+   */
+  maybeSeedSparringRivalry(
+    world: WorldState,
+    aId: string,
+    bId: string,
+    chemistry: string,
+    weeksActive: number
+  ): StateImpact {
+    const builder = createImpactBuilder("maybeSeedSparringRivalry");
+
+    // Only seed after 12+ weeks of sparring
+    if (weeksActive < 12) return builder.build();
+
+    const state = this.ensureRivalriesState(world);
+    const key = this.makeRivalryKey(aId, bId);
+
+    // Don't seed if rivalry already exists
+    if (state.pairs[key]) return builder.build();
+
+    // 40% chance to seed rivalry
+    const rng = RNGRegistry.getSystemRNG(world, "rivalry", `sparring-${key}-${weeksActive}`);
+    if (rng.next() > 0.4) return builder.build();
+
+    // Get rikishi for event logging
+    const rA = EntityCollection.getRikishiById(world, aId);
+    const rB = EntityCollection.getRikishiById(world, bId);
+    if (!rA || !rB) return builder.build();
+
+    // Calculate initial heat based on chemistry
+    // Friction produces higher heat (40-60), neutral moderate (25-45), rut lower (15-35)
+    let minHeat = 25;
+    let maxHeat = 45;
+    if (chemistry === "friction") {
+      minHeat = 40;
+      maxHeat = 60;
+    } else if (chemistry === "rut") {
+      minHeat = 15;
+      maxHeat = 35;
+    }
+
+    const initialHeat = rng.int(minHeat, maxHeat);
+
+    // Determine tone based on chemistry
+    let tone = "respect";
+    if (chemistry === "friction") {
+      tone = rng.pick(["grudge", "bad_blood", "public_hype"]);
+    } else if (chemistry === "rut") {
+      tone = rng.pick(["respect", "mentor_student"]);
+    } else {
+      tone = rng.pick(["respect", "public_hype", "unstable"]);
+    }
+
+    // Create new rivalry pair
+    const pair = this.createFreshPair(aId, bId, world);
+    pair.heat = initialHeat;
+    pair.tone = tone as any;
+    pair.triggers.sparring = weeksActive;
+
+    // Update rivalry state
+    const updatedPairs = { ...state.pairs };
+    updatedPairs[key] = pair;
+
+    builder.updateWorldField("rivalriesState", {
+      ...state,
+      pairs: updatedPairs,
+    });
+
+    // Log event
+    builder.logEvent(
+      "SPARRING_RIVALRY_SEEDED",
+      "rivalry",
+      {
+        shikona: rA.shikona,
+        rival: rB.shikona,
+        chemistry,
+        weeksActive,
+        heat: initialHeat,
+        tone,
+      },
+      { importance: "notable" }
+    );
+
+    return builder.build();
+  },
 };

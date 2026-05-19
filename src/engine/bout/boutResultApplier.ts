@@ -16,8 +16,9 @@ import type { NarrativeContext } from "../types/events";
 import * as scoutingStore from "../scoutingStore";
 import { updateMediaFromBout, createDefaultMediaState } from "../systems/media/MediaService";
 import { applyAchievementImpact } from "../systems/economics/SponsorshipService";
-import { createImpactBuilder, ImpactBuilder } from "../core/ImpactBuilder";
+import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
+import { checkMentorMenteeBout } from "../systems/training/MentorshipService";
 
 /**
  * Apply the result of a single bout to the world.
@@ -205,6 +206,34 @@ export function applyBoutResult(
     rikishiId: winner.id,
     importance: intensity === "high_stakes" ? "major" : "notable",
   });
+
+  // 7. Check for mentor-mentee bout and seed narrative event
+  const mentorMenteeEvent = checkMentorMenteeBout(east, west);
+  if (mentorMenteeEvent) {
+    const mentor = world.rikishi.get(mentorMenteeEvent.mentorId);
+    const apprentice = world.rikishi.get(mentorMenteeEvent.apprenticeId);
+    if (mentor && apprentice) {
+      const mentorCtx: NarrativeContext = {
+        shikona: apprentice.shikona,
+        rikishiId: apprentice.id,
+        mentor: mentor.shikona,
+        mentorId: mentor.id,
+        apprentice: apprentice.shikona,
+        apprenticeId: apprentice.id,
+        winner: winner.shikona,
+        winnerId: winner.id,
+        loser: loser.shikona,
+        loserId: loser.id,
+        kimarite: result.kimarite,
+        day: match.day,
+        upset: result.upset,
+      };
+      builder.logEvent("MENTOR_MENTEE_BOUT", "training", mentorCtx, {
+        rikishiId: apprentice.id,
+        importance: "notable",
+      });
+    }
+  }
 
   // Store updated standings in metadata for the resolver to apply
   builder.addMetadata("updatedStandings", standings);

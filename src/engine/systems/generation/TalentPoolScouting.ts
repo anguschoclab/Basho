@@ -5,10 +5,12 @@
  */
 
 import { RNGRegistry } from "../../core/RNGRegistry";
+import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { StateImpact } from "../../core/StateImpact";
 import { WorldState } from "../../types/world";
 import { Id } from "../../types/common";
 import { TalentPoolType, TalentCandidate } from "../../types/talent";
-import { getConfidenceLevel, resolveScoutedAttribute } from "../recruitment/FogOfWarService";
+import { getConfidenceLevel, resolveScoutedAttribute, applyBias, decayBias, type ScoutingBias } from "../recruitment/FogOfWarService";
 import { clampInt } from "../../utils/math";
 import { isForeign } from "../../utils/identity";
 import { ensureTalentPoolState } from "./TalentPoolStateService";
@@ -199,6 +201,13 @@ export function scoutCandidate(
  * Resolves a candidate's attributes into confidence-gated scouted values.
  * Potential stats are harder to scout than combat stats (potential confidence
  * is shifted down one tier inside FogOfWarService).
+ *
+ * Applies scouting bias to potential stats when bias decayFactor > 0, making
+ * initial stat readings inaccurate until observations accumulate and bias decays.
+ *
+ * @param world - Current world state
+ * @param candidateId - Candidate identifier to scout
+ * @returns Scouted candidate view with biased potential stats and bias metadata
  */
 export function getScoutedCandidateView(world: WorldState, candidateId: Id) {
   const tp = ensureTalentPoolState(world);
@@ -218,15 +227,22 @@ export function getScoutedCandidateView(world: WorldState, candidateId: Id) {
   }
 
   const observations = Math.floor(level / 20);
+  const bias = candidate.scoutingBias;
+  const decayedBias = bias ? decayBias(bias, observations) : null;
   const seed = `candidate-${candidateId}-${level}`;
 
   const resolveCombat = (name: string, value: number) => {
     const conf = getConfidenceLevel(level, false, observations, "combat");
     return resolveScoutedAttribute(name, value, conf, `${seed}-${name}`);
   };
-  const resolvePotential = (name: string, value: number) => {
+
+  const resolvePotential = (name: string, value: number, statKey: keyof ScoutingBias["statOffsets"]) => {
     const conf = getConfidenceLevel(level, false, observations, "potential");
-    return resolveScoutedAttribute(name, value, conf, `${seed}-pa-${name}`);
+    // Apply bias if decayFactor > 0
+    const biasedValue = (decayedBias && decayedBias.decayFactor > 0)
+      ? applyBias(value, decayedBias.statOffsets[statKey], decayedBias.decayFactor)
+      : value;
+    return resolveScoutedAttribute(name, biasedValue, conf, `${seed}-pa-${name}`);
   };
 
   return {
@@ -239,13 +255,13 @@ export function getScoutedCandidateView(world: WorldState, candidateId: Id) {
     // Hidden skill potential — gated by potential-tier confidence
     potentialStats: candidate.potentialStats
       ? {
-          strength: resolvePotential("strength", candidate.potentialStats.strength),
-          speed: resolvePotential("speed", candidate.potentialStats.speed),
-          technique: resolvePotential("technique", candidate.potentialStats.technique),
-          balance: resolvePotential("balance", candidate.potentialStats.balance),
-          stamina: resolvePotential("stamina", candidate.potentialStats.stamina),
-          mental: resolvePotential("mental", candidate.potentialStats.mental),
-          adaptability: resolvePotential("adaptability", candidate.potentialStats.adaptability),
+          strength: resolvePotential("strength", candidate.potentialStats.strength, "strength"),
+          speed: resolvePotential("speed", candidate.potentialStats.speed, "speed"),
+          technique: resolvePotential("technique", candidate.potentialStats.technique, "technique"),
+          balance: resolvePotential("balance", candidate.potentialStats.balance, "balance"),
+          stamina: resolvePotential("stamina", candidate.potentialStats.stamina, "stamina"),
+          mental: resolvePotential("mental", candidate.potentialStats.mental, "mental"),
+          adaptability: resolvePotential("adaptability", candidate.potentialStats.adaptability, "adaptability"),
         }
       : undefined,
     // Development profile only at deep scouting (≥90)
@@ -254,5 +270,8 @@ export function getScoutedCandidateView(world: WorldState, candidateId: Id) {
     archetype: candidate.archetype,
     style: candidate.style,
     temperament: candidate.temperament,
+    // ADD BIAS METADATA FOR UI
+    hasBias: decayedBias?.decayFactor ?? 0 > 0,
+    biasStrength: decayedBias?.decayFactor ?? 0,
   };
 }
