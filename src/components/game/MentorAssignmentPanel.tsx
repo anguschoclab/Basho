@@ -104,8 +104,8 @@ export function MentorAssignmentPanel({
   const currentMentor = mentorId ? allRikishi.get(mentorId) : undefined;
 
   return (
-    <div className="flex flex-col gap-2 p-3 bg-muted/30 rounded-lg border">
-      <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+    <div className="flex flex-col gap-2 p-3 bg-muted/30 rounded border">
+      <div className="flex items-center gap-2 text-[10px] font-mono font-semibold uppercase tracking-widest text-muted-foreground">
         <GraduationCap className="h-3.5 w-3.5" />
         Mentorship
       </div>

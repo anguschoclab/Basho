@@ -22,8 +22,8 @@ interface Props {
 }
 
 const CHEM_STYLES = {
-  friction: { label: "Friction", className: "text-green-500 border-green-500/30" },
-  rut: { label: "Rut", className: "text-amber-500 border-amber-500/30" },
+  friction: { label: "Friction", className: "text-[hsl(var(--success))] border-[hsl(var(--success)/0.35)]" },
+  rut: { label: "Rut", className: "text-[hsl(var(--warning))] border-[hsl(var(--warning)/0.35)]" },
   neutral: { label: "Neutral", className: "text-muted-foreground" },
 } as const;
 
@@ -60,14 +60,14 @@ export function SparringPanel({ heyaRikishi, pairs, onAddPair, onRemovePair }: P
   return (
     <Card>
       <CardHeader className="pb-3">
-        <CardTitle className="text-sm flex items-center gap-2">
-          <Swords className="h-4 w-4" />
+        <CardTitle className="text-sm font-display font-semibold flex items-center gap-2">
+          <Swords className="h-4 w-4 text-muted-foreground" />
           Sparring Pairs
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         {pairs.length === 0 && (
-          <p className="text-xs text-muted-foreground italic">
+          <p className="text-xs text-muted-foreground italic font-body">
             No sparring pairs assigned. Pair rikishi with different styles for best results.
           </p>
         )}
@@ -85,10 +85,10 @@ export function SparringPanel({ heyaRikishi, pairs, onAddPair, onRemovePair }: P
               <span className="text-sm">
                 {a.shikona} <span className="text-muted-foreground">vs</span> {b.shikona}
               </span>
-              <Badge variant="outline" className={chem.className}>
+              <Badge variant="outline" className={`font-mono text-[9px] tracking-wider ${chem.className}`}>
                 {chem.label}
               </Badge>
-              <span className="text-xs text-muted-foreground">{pair.weeksActive}w</span>
+              <span className="text-xs text-muted-foreground font-mono tabular-nums">{pair.weeksActive}w</span>
               <Button
                 size="sm"
                 variant="ghost"

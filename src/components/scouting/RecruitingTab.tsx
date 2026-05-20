@@ -59,16 +59,17 @@ function ScoutingConfidenceBadge({
             ? 2
             : 1;
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1 font-mono">
       {Array.from({ length: 5 }).map((_, i) => (
         <span
           key={i}
-          className={i < stars ? "text-yellow-400" : "text-muted-foreground/30"}
+          className={i >= stars ? "text-muted-foreground/30" : undefined}
+          style={i < stars ? { color: "hsl(var(--gold))" } : undefined}
         >
           ★
         </span>
       ))}
-      {hasBias && <span className="text-xs text-amber-500 ml-1">est.</span>}
+      {hasBias && <span className="text-xs ml-1" style={{ color: "hsl(var(--warning))" }}>est.</span>}
     </div>
   );
 }
