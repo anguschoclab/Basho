@@ -30,7 +30,17 @@ let impactTimestampCounter = 0;
 
 /**
  * Reset the impact timestamp counter.
- * Call this when starting a new simulation or loading a saved world.
+ * Call this when starting a new simulation or loading a saved world to ensure
+ * timestamps start from zero for deterministic behavior.
+ *
+ * @example
+ * ```ts
+ * resetImpactTimestampCounter();
+ * const impact1 = createEmptyImpact({ source: "test" });
+ * const impact2 = createEmptyImpact({ source: "test" });
+ * // impact1.metadata.timestamp === 1
+ * // impact2.metadata.timestamp === 2
+ * ```
  */
 export function resetImpactTimestampCounter(): void {
   impactTimestampCounter = 0;
@@ -38,6 +48,16 @@ export function resetImpactTimestampCounter(): void {
 
 /**
  * Get the next deterministic timestamp.
+ * Increments the global counter and returns the new value.
+ * Used to order impacts deterministically across simulation runs.
+ *
+ * @returns {number} The next timestamp value.
+ *
+ * @example
+ * ```ts
+ * const ts1 = getNextTimestamp(); // 1
+ * const ts2 = getNextTimestamp(); // 2
+ * ```
  */
 export function getNextTimestamp(): number {
   return ++impactTimestampCounter;
@@ -194,6 +214,19 @@ export interface StateImpact {
 
 /**
  * Type guard to check if an object is a valid StateImpact.
+ * Verifies that the object has at least one of the required impact fields.
+ *
+ * @param {unknown} value - The value to check.
+ * @returns {value is StateImpact} True if the value is a valid StateImpact.
+ *
+ * @example
+ * ```ts
+ * const impact = { entities: { rikishiUpdates: new Map() } };
+ * if (isStateImpact(impact)) {
+ *   // TypeScript knows impact is StateImpact
+ *   console.log(impact.entities);
+ * }
+ * ```
  */
 export function isStateImpact(value: unknown): value is StateImpact {
   if (typeof value !== "object" || value === null) {
@@ -214,7 +247,17 @@ export function isStateImpact(value: unknown): value is StateImpact {
 
 /**
  * Creates an empty StateImpact with optional metadata.
- * Always generates a timestamp for tracking.
+ * Always generates a timestamp for tracking and ordering.
+ *
+ * @param {StateImpact["metadata"]} [metadata] - Optional metadata to include.
+ * @returns {StateImpact} An empty StateImpact with the provided metadata.
+ *
+ * @example
+ * ```ts
+ * const impact = createEmptyImpact({ source: "trainingTick" });
+ * // impact.metadata.source === "trainingTick"
+ * // impact.metadata.timestamp === 1 (or next counter value)
+ * ```
  */
 export function createEmptyImpact(metadata?: StateImpact["metadata"]): StateImpact {
   return {

@@ -36,7 +36,17 @@ export * from "./TrainingConstants";
 export * from "./TrainingNarrative";
 
 /**
- * Factory for default state.
+ * Factory for default training state.
+ * Creates a new HeyaTrainingState with default balanced profile.
+ *
+ * @param {Id} heyaId - The heya ID to create training state for.
+ * @returns {HeyaTrainingState} The default training state.
+ *
+ * @example
+ * ```ts
+ * const defaultState = createDefaultTrainingState(heyaId);
+ * console.log(defaultState.activeProfile.intensity); // "balanced"
+ * ```
  */
 export function createDefaultTrainingState(heyaId: Id): HeyaTrainingState {
   return {
@@ -53,6 +63,17 @@ export function createDefaultTrainingState(heyaId: Id): HeyaTrainingState {
 
 /**
  * Ensure heya training state exists in world.
+ * Hydrates the training state for a heya if it doesn't exist.
+ *
+ * @param {WorldState} world - The current world state.
+ * @param {Id} heyaId - The heya ID to ensure training state for.
+ * @returns {HeyaTrainingState} The existing or newly created training state.
+ *
+ * @example
+ * ```ts
+ * const trainingState = ensureHeyaTrainingState(world, heyaId);
+ * console.log(trainingState.activeProfile);
+ * ```
  */
 export function ensureHeyaTrainingState(world: WorldState, heyaId: Id): HeyaTrainingState {
   return EntityService.ensureNestedState(world, "trainingState" as const, heyaId, () =>
@@ -63,6 +84,24 @@ export function ensureHeyaTrainingState(world: WorldState, heyaId: Id): HeyaTrai
 /**
  * Authoritative Weekly Training Tick.
  * Returns StateImpact describing training updates instead of mutating state directly.
+ *
+ * Algorithm:
+ * 1. For each active rikishi, calculate fatigue delta based on training profile
+ * 2. Apply burnout check for prodigies on extreme intensity
+ * 3. Aggregate weekly drill plan impacts
+ * 4. Calculate growth vector with staff bonuses and infrastructure buffs
+ * 5. Apply age-based decay to stats
+ * 6. Enforce stat ceilings and division floors
+ * 7. Log milestone events for threshold crossings
+ *
+ * @param {WorldState} world - The current world state.
+ * @returns {StateImpact} Impact describing training updates for all rikishi.
+ *
+ * @example
+ * ```ts
+ * const impact = applyWeeklyTraining(world);
+ * const updatedWorld = resolveImpacts(world, [impact]);
+ * ```
  */
 export function applyWeeklyTraining(world: WorldState): StateImpact {
   const builder = createImpactBuilder("applyWeeklyTraining");
@@ -298,6 +337,17 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
 /**
  * Phase 5: Burnout Logic
  * Escalating risk curve for Prodigies at Extreme Intensity.
+ * Tracks consecutive weeks of extreme training and rolls for burnout crash.
+ *
+ * Risk curve:
+ * - Week 1: 15% crash probability
+ * - Week 2: 35% crash probability
+ * - Week 3+: 100% crash probability
+ *
+ * @param {Rikishi} r - The rikishi to check for burnout.
+ * @param {string} intensity - The training intensity level.
+ * @param {WorldState} world - The current world state.
+ * @returns {{ crashed: boolean; consecutiveWeeks: number }} Burnout result with crash status and consecutive weeks.
  */
 function applyBurnoutStep(
   r: Rikishi,
@@ -330,10 +380,18 @@ function applyBurnoutStep(
 
 /**
  * Compatibility object for any legacy callers using TrainingService.*
+ * Provides a namespace for all training-related functions and constants.
  */
 import * as Constants from "./TrainingConstants";
 import * as Narrative from "./TrainingNarrative";
 
+/**
+ * Training Service namespace.
+ * Exports all training-related functions, constants, and narrative helpers.
+ *
+ * @see SparringService for sparring-specific logic
+ * @see MentorshipService for mentorship-specific logic
+ */
 export const TrainingService = {
   ensureHeyaTrainingState,
   applyWeeklyTraining,

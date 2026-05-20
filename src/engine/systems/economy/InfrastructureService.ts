@@ -1,11 +1,18 @@
-// @ts-nocheck
 /**
- * InfrastructureService.ts
- * =======================
- * Manages the construction and activation of discrete stable buildings.
- * (Phase P: Stable Town & Infrastructure)
+ * src/engine/systems/economy/InfrastructureService.ts
+ * =====================================================
+ * Infrastructure Service
+ *
+ * Responsibilities:
+ * - Manage construction and activation of stable buildings
+ * - Process construction queue at basho boundaries
+ * - Aggregate infrastructure bonuses for stables
+ * - Validate construction requirements (regional presence, funds)
+ *
+ * @see FACILITY_REGISTRY for facility definitions
  */
 
+// @ts-nocheck
 import { WorldState } from "../../types/world";
 import { Heya } from "../../types/heya";
 import { Id } from "../../types/common";
@@ -13,9 +20,40 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { FACILITY_REGISTRY, FacilityId } from "../../types/infrastructure";
 
+/**
+ * Infrastructure Service namespace.
+ * Provides construction management and bonus aggregation for stable infrastructure.
+ *
+ * @example
+ * ```ts
+ * const impact = InfrastructureService.startConstruction(world, heyaId, "training_doj");
+ * const bonuses = InfrastructureService.getHeyaBonuses(heya);
+ * ```
+ */
 export const InfrastructureService = {
   /**
    * Initiates a construction project for a stable.
+   * Validates requirements, deducts cost, and adds to construction queue.
+   *
+   * Algorithm:
+   * 1. Validate heya and facility exist
+   * 2. Check if already under construction
+   * 3. Calculate cost (scales with level)
+   * 4. Validate funds
+   * 5. Check regional presence requirements
+   * 6. Calculate completion date
+   * 7. Add to construction queue and deduct funds
+   *
+   * @param {WorldState} world - The current world state.
+   * @param {Id} heyaId - The heya ID to build for.
+   * @param {FacilityId} facilityId - The facility ID to build.
+   * @returns {StateImpact} Impact describing construction start (or empty if failed).
+   *
+   * @example
+   * ```ts
+   * const impact = InfrastructureService.startConstruction(world, heyaId, "training_doj");
+   * const updatedWorld = resolveImpacts(world, [impact]);
+   * ```
    */
   startConstruction(world: WorldState, heyaId: Id, facilityId: FacilityId): StateImpact {
     const builder = createImpactBuilder("startConstruction");
@@ -90,6 +128,23 @@ export const InfrastructureService = {
 
   /**
    * Processes the construction queue at a Basho boundary.
+   * Completes projects whose completion date has been reached.
+   *
+   * Algorithm:
+   * 1. Iterate through all heya
+   * 2. For each heya with construction queue, check each project
+   * 3. If completion year has been reached, activate facility
+   * 4. Remove completed projects from queue
+   * 5. Log completion events
+   *
+   * @param {WorldState} world - The current world state.
+   * @returns {StateImpact} Impact describing completed constructions.
+   *
+   * @example
+   * ```ts
+   * const impact = InfrastructureService.processCompletionTick(world);
+   * const updatedWorld = resolveImpacts(world, [impact]);
+   * ```
    */
   processCompletionTick(world: WorldState): StateImpact {
     const builder = createImpactBuilder("processCompletionTick");
@@ -139,6 +194,17 @@ export const InfrastructureService = {
 
   /**
    * Aggregates all active infrastructure bonuses for a stable.
+   * Combines stat buffs, injury healing mods, media mods, and fatigue floors from all active facilities.
+   *
+   * @param {Heya | undefined} heya - The heya to aggregate bonuses for.
+   * @returns {{ statBuffs: Record<string, number>; injuryHealMod: number; mediaMod: number; fatigueFloor: number }} The aggregated bonuses.
+   *
+   * @example
+   * ```ts
+   * const bonuses = InfrastructureService.getHeyaBonuses(heya);
+   * console.log(bonuses.statBuffs.strength); // Multiplier (e.g., 1.15)
+   * console.log(bonuses.injuryHealMod); // Healing modifier
+   * ```
    */
   getHeyaBonuses(heya: Heya | undefined) {
     const totalBonuses = {

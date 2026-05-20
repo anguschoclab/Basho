@@ -1,9 +1,23 @@
-// @ts-nocheck
 /**
- * WorldFactory.ts — Pipeline for generating high-fidelity world state.
- * Decomposes the monolithic worldgen logic into manageable stages.
+ * src/engine/systems/generation/WorldFactory.ts
+ * =================================================
+ * World Factory
+ *
+ * Responsibilities:
+ * - Generate high-fidelity world state from seed
+ * - Create stables (heya) and oyakata
+ * - Generate initial rikishi rosters with rank distribution
+ * - Initialize factions and sponsor relationships
+ * - Seed initial rivalries for narrative depth
+ * - Initialize basho state
+ *
+ * @see CandidateBuilder for rikishi generation
+ * @see TalentPoolService for candidate pool management
+ * @see SponsorGenerator for sponsor generation
+ * @see RivalryService for rivalry seeding
  */
 
+// @ts-nocheck
 import { SeededRNG, rngFromSeed } from "../../rng";
 import { WorldState } from "../../types/world";
 import { Heya } from "../../types/heya";
@@ -27,6 +41,24 @@ import { resetImpactTimestampCounter } from "../../core/StateImpact";
 
 /**
  * Creates a new Heya and its associated Oyakata.
+ * Generates a complete stable with oyakata, facilities, and initial configuration.
+ *
+ * @param {{ id: string; name: string; rng: SeededRNG; tier: number }} args - Creation parameters.
+ * @param {string} args.id - The heya ID.
+ * @param {string} args.name - The heya name.
+ * @param {SeededRNG} args.rng - The RNG instance for deterministic generation.
+ * @param {number} args.tier - The heya tier (0-1, lower is better).
+ * @returns {{ heya: Heya; oyakata: Oyakata }} The created heya and oyakata.
+ *
+ * @example
+ * ```ts
+ * const { heya, oyakata } = createHeyaWithOyakata({
+ *   id: "heya1",
+ *   name: "Kokonoe",
+ *   rng: worldRng,
+ *   tier: 0.2
+ * });
+ * ```
  */
 export function createHeyaWithOyakata(args: {
   id: string;
@@ -119,6 +151,19 @@ export function createHeyaWithOyakata(args: {
   return { heya, oyakata };
 }
 
+/**
+ * Creates all stables (heya) and their oyakata.
+ * Generates 45 traditional stables with varying tiers based on index.
+ *
+ * @param {SeededRNG} worldRng - The RNG instance for deterministic generation.
+ * @returns {{ heyaMap: Map<string, Heya>; oyakataMap: Map<string, Oyakata> }} Maps of heya and oyakata.
+ *
+ * @example
+ * ```ts
+ * const { heyaMap, oyakataMap } = createStables(worldRng);
+ * console.log(heyaMap.size); // 45
+ * ```
+ */
 export function createStables(worldRng: SeededRNG): {
   heyaMap: Map<string, Heya>;
   oyakataMap: Map<string, Oyakata>;
@@ -187,6 +232,27 @@ export function createStables(worldRng: SeededRNG): {
   return { heyaMap, oyakataMap };
 }
 
+/**
+ * Creates initial rikishi rosters for all stables.
+ * Generates wrestlers across all divisions with weighted tier-based assignment.
+ *
+ * Algorithm:
+ * 1. Sort stables by tier (higher tier = better wrestlers)
+ * 2. Define rank distribution (yokozuna to jonokuchi)
+ * 3. For each rank, assign to eligible stables based on tier weight
+ * 4. Generate rikishi with appropriate stats for their rank
+ *
+ * @param {SeededRNG} worldRng - The RNG instance for deterministic generation.
+ * @param {Map<string, Heya>} heyaMap - Map of heya to assign wrestlers to.
+ * @param {Map<string, Oyakata>} oyakataMap - Map of oyakata for legacy shikona.
+ * @returns {Map<string, Rikishi>} Map of generated rikishi.
+ *
+ * @example
+ * ```ts
+ * const rikishiMap = createRosters(worldRng, heyaMap, oyakataMap);
+ * console.log(rikishiMap.size); // ~860 wrestlers
+ * ```
+ */
 export function createRosters(
   worldRng: SeededRNG,
   heyaMap: Map<string, Heya>,
@@ -282,6 +348,27 @@ export function createRosters(
 
 /**
  * Main orchestrator for world generation.
+ * Creates a complete initial world state from a seed.
+ *
+ * Algorithm:
+ * 1. Reset impact timestamp counter for deterministic simulation
+ * 2. Create stables and oyakata
+ * 3. Generate initial rikishi rosters
+ * 4. Build world state with all components
+ * 5. Generate heya brand identities
+ * 6. Establish koenkai relationships
+ * 7. Initialize talent pools
+ * 8. Seed initial rivalries
+ *
+ * @param {string} seed - The seed for deterministic world generation.
+ * @returns {WorldState} The complete initial world state.
+ *
+ * @example
+ * ```ts
+ * const world = generateInitialWorld("my-sumo-world");
+ * console.log(world.rikishi.size); // ~860 wrestlers
+ * console.log(world.heyas.size); // 45 stables
+ * ```
  */
 export function generateInitialWorld(seed: string): WorldState {
   // Reset impact timestamp counter for deterministic simulation
@@ -363,6 +450,17 @@ export function generateInitialWorld(seed: string): WorldState {
 
 /**
  * Initialize a new Basho state.
+ * Creates a fresh basho state for the given name and year.
+ *
+ * @param {WorldState} world - The current world state.
+ * @param {BashoName} name - The basho name (e.g., "hatsu", "haru").
+ * @returns {BashoState} The initialized basho state.
+ *
+ * @example
+ * ```ts
+ * const basho = initializeBasho(world, "hatsu");
+ * console.log(basho.year, basho.bashoName);
+ * ```
  */
 export function initializeBasho(world: WorldState, name: BashoName): BashoState {
   const rng = rngFromSeed(world.seed, "basho", `${world.year}-${name}`);

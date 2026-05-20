@@ -1,3 +1,22 @@
+/**
+ * src/engine/systems/generation/CandidateGenerator.ts
+ * =================================================
+ * Candidate Generator
+ *
+ * Responsibilities:
+ * - Generate talent candidates for recruitment pools
+ * - Roll combat archetypes and profiles
+ * - Determine development profiles and potential
+ * - Apply emergent prodigy bonuses (1.5% chance)
+ * - Roll genetic lineage traits
+ * - Generate shikona names and origin data
+ * - Create deterministic scouting bias
+ *
+ * @see CandidateStats for potential rolling logic
+ * @see LegacyService for genetic lineage
+ * @see FogOfWarService for scouting bias
+ */
+
 // @ts-nocheck
 import { seededPick } from "../../utils/random";
 import { SeededRNG } from "../../rng";
@@ -16,6 +35,39 @@ import { generateScoutingBias } from "../recruitment/FogOfWarService";
 
 /**
  * Generates a single TalentCandidate for the recruitment pools.
+ * Creates a complete candidate with archetype, stats, development profile,
+ * and personal information.
+ *
+ * Algorithm:
+ * 1. Roll combat archetype and build profile
+ * 2. Determine development profile (standard, late_bloomer, etc.)
+ * 3. Check for emergent prodigy (1.5% chance)
+ * 4. Roll potential stats based on profile
+ * 5. Apply prodigy bonuses if applicable
+ * 6. Roll genetic lineage trait
+ * 7. Determine origin based on pool type
+ * 8. Generate shikona name
+ * 9. Create deterministic scouting bias
+ *
+ * @param {{ id: string; rng: SeededRNG; currentYear: number; poolType: TalentPoolType; world?: WorldState }} args - Generation parameters.
+ * @param {string} args.id - The candidate ID.
+ * @param {SeededRNG} args.rng - The RNG instance for deterministic generation.
+ * @param {number} args.currentYear - The current simulation year.
+ * @param {TalentPoolType} args.poolType - The pool type (domestic, foreign, university).
+ * @param {WorldState} [args.world] - The world state (for lineage rolling).
+ * @returns {TalentCandidate} The generated talent candidate.
+ *
+ * @example
+ * ```ts
+ * const candidate = generateCandidate({
+ *   id: "candidate1",
+ *   rng: RNGRegistry.getSystemRNG(world, "generation", `candidate-${candidateId}`),
+ *   currentYear: world.year,
+ *   poolType: "domestic",
+ *   world
+ * });
+ * console.log(candidate.name, candidate.archetype);
+ * ```
  */
 export function generateCandidate(args: {
   id: string;

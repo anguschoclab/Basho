@@ -26,10 +26,23 @@ import type { BoutResult } from "../../types/basho";
 
 /**
  * Unified Rivalry Service.
+ * Provides stateful orchestration for the Rivalry System including state hydration,
+ * weekly decay, and bout hook orchestration.
+ *
+ * @example
+ * ```ts
+ * const state = RivalryService.ensureRivalriesState(world);
+ * const impact = RivalryService.onBoutResolved(world, { result, day: 5 });
+ * const decayImpact = RivalryService.applyWeeklyDecay(world);
+ * ```
  */
 export const RivalryService = {
   /**
    * Ensure rivalry state exists on world.
+   * Hydrates the rivalries state if it doesn't exist.
+   *
+   * @param {WorldState} world - The current world state.
+   * @returns {RivalriesState} The existing or newly created rivalries state.
    */
   ensureRivalriesState(world: WorldState): RivalriesState {
     return EntityService.ensureState(world, "rivalriesState", () => ({
@@ -40,6 +53,18 @@ export const RivalryService = {
 
   /**
    * Canonical Pair Key Generator.
+   * Creates a consistent key for a rivalry pair regardless of order.
+   *
+   * @param {Id} aId - First rikishi ID.
+   * @param {Id} bId - Second rikishi ID.
+   * @returns {RivalryKey} Canonical rivalry key (smaller ID first).
+   *
+   * @example
+   * ```ts
+   * const key1 = RivalryService.makeRivalryKey("rikishi1", "rikishi2");
+   * const key2 = RivalryService.makeRivalryKey("rikishi2", "rikishi1");
+   * console.log(key1 === key2); // true
+   * ```
    */
   makeRivalryKey(aId: Id, bId: Id): RivalryKey {
     return aId < bId ? `${aId}|${bId}` : `${bId}|${aId}`;
@@ -47,7 +72,27 @@ export const RivalryService = {
 
   /**
    * Authoritative Bout Hook.
+   * Updates rivalry state based on bout results.
    * Returns StateImpact describing rivalry updates instead of mutating state directly.
+   *
+   * Algorithm:
+   * 1. Ensure rivalry state exists
+   * 2. Get or create fresh pair state
+   * 3. Apply bout results to pair state
+   * 4. Detect heat spikes and log events
+   * 5. Update stable (heya-level) rivalries
+   *
+   * @param {WorldState} world - The current world state.
+   * @param {{ result: BoutResult; day?: number }} args - Bout result and optional day number.
+   * @param {BoutResult} args.result - The bout result data.
+   * @param {number} [args.day] - The day number (1-15).
+   * @returns {StateImpact} Impact describing rivalry updates.
+   *
+   * @example
+   * ```ts
+   * const impact = RivalryService.onBoutResolved(world, { result, day: 15 });
+   * const updatedWorld = resolveImpacts(world, [impact]);
+   * ```
    */
   onBoutResolved(world: WorldState, args: { result: BoutResult; day?: number }): StateImpact {
     const { result } = args;
@@ -147,7 +192,22 @@ export const RivalryService = {
 
   /**
    * Weekly Decay Tick.
+   * Applies natural decay to rivalry heat, closeness, and spite over time.
    * Returns StateImpact describing rivalry decay instead of mutating state directly.
+   *
+   * Algorithm:
+   * 1. Calculate decay based on weeks since last meeting
+   * 2. Apply decay to heat, closeness, and spite
+   * 3. Auto-cull stale rivalries (low heat, few meetings, long time since meeting)
+   *
+   * @param {WorldState} world - The current world state.
+   * @returns {StateImpact} Impact describing rivalry decay.
+   *
+   * @example
+   * ```ts
+   * const impact = RivalryService.applyWeeklyDecay(world);
+   * const updatedWorld = resolveImpacts(world, [impact]);
+   * ```
    */
   applyWeeklyDecay(world: WorldState): StateImpact {
     const builder = createImpactBuilder("applyWeeklyDecay");
@@ -184,7 +244,20 @@ export const RivalryService = {
   },
 
   /**
-   * Factory for a fresh pair.
+   * Factory for a fresh rivalry pair.
+   * Creates a new rivalry pair state with default values.
+   *
+   * @param {Id} id1 - First rikishi ID.
+   * @param {Id} id2 - Second rikishi ID.
+   * @param {WorldState} world - The current world state.
+   * @returns {RivalryPairState} A fresh rivalry pair state.
+   *
+   * @example
+   * ```ts
+   * const pair = RivalryService.createFreshPair(rikishi1.id, rikishi2.id, world);
+   * console.log(pair.heat); // 0
+   * console.log(pair.tone); // "respect"
+   * ```
    */
   createFreshPair(id1: Id, id2: Id, world: WorldState): RivalryPairState {
     const [aId, bId] = id1 < id2 ? [id1, id2] : [id2, id1];
@@ -212,6 +285,21 @@ export const RivalryService = {
    * Seed Initial Rivalries (P0-C1).
    * Generates interesting initial grudges based on style clash and rank proximity.
    * Returns StateImpact describing initial rivalries.
+   *
+   * Algorithm:
+   * 1. Get all makuuchi and juryo rikishi
+   * 2. Evaluate pairs based on style clash, nationality, rank proximity, age proximity
+   * 3. Sort by score and seed top 12 pairs with warm heat
+   * 4. Assign random tones to seeded rivalries
+   *
+   * @param {WorldState} world - The current world state.
+   * @returns {StateImpact} Impact describing initial rivalries.
+   *
+   * @example
+   * ```ts
+   * const impact = RivalryService.seedInitialRivalries(world);
+   * const updatedWorld = resolveImpacts(world, [impact]);
+   * ```
    */
   seedInitialRivalries(world: WorldState): StateImpact {
     const builder = createImpactBuilder("seedInitialRivalries");
@@ -278,7 +366,6 @@ export const RivalryService = {
 
   /**
    * Seed a rivalry from extended sparring partnership.
-   *
    * Called when a sparring pair reaches 12+ weeks of activity.
    * Uses RNG to determine if a rivalry should be seeded (40% chance).
    * Initial rivalry heat depends on sparring chemistry (friction = higher heat).
@@ -293,6 +380,7 @@ export const RivalryService = {
    * @example
    * ```ts
    * const impact = RivalryService.maybeSeedSparringRivalry(world, "r1", "r2", "friction", 12);
+   * const updatedWorld = resolveImpacts(world, [impact]);
    * ```
    */
   maybeSeedSparringRivalry(

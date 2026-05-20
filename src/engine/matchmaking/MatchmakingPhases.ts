@@ -124,7 +124,33 @@ function assignSides(
 // ── Public: scorePairing ───────────────────────────────────────────────────────
 
 /**
- * Score a pairing. Returns null if a hard rule is violated (unless allowed by caller).
+ * Score a pairing between two rikishi.
+ * Returns null if a hard rule is violated (unless allowed by caller).
+ *
+ * Algorithm:
+ * 1. Check for same rikishi (reject)
+ * 2. Check for same heya (reject if rule enabled)
+ * 3. Check for repeat opponents (reject if rule enabled)
+ * 4. Score based on record similarity
+ * 5. Score based on rank similarity
+ * 6. Apply sanyaku scheduling logic
+ * 7. Apply kadoban pressure logic
+ * 8. Assign sides and honor existing side preferences
+ *
+ * @param {{ basho: BashoState; a: Rikishi; b: Rikishi; rules?: Partial<MatchmakingRules>; allowRepeatOverride?: boolean; facedPairs?: Set<string> }} args - Scoring parameters.
+ * @param {BashoState} args.basho - Current basho state.
+ * @param {Rikishi} args.a - First rikishi.
+ * @param {Rikishi} args.b - Second rikishi.
+ * @param {Partial<MatchmakingRules>} [args.rules] - Matchmaking rules override.
+ * @param {boolean} [args.allowRepeatOverride] - Allow repeat opponents when forced.
+ * @param {Set<string>} [args.facedPairs] - Set of already-faced pair keys.
+ * @returns {MatchPairing | null} Match pairing with score and reasons, or null if invalid.
+ *
+ * @example
+ * ```ts
+ * const pairing = scorePairing({ basho, a: east, b: west, rules: { avoidSameHeya: true } });
+ * if (pairing) console.log(`Score: ${pairing.score}, Reasons: ${pairing.reasons.join(", ")}`);
+ * ```
  */
 export function scorePairing(args: {
   basho: BashoState;
@@ -250,6 +276,27 @@ function generatePairs(
   });
 }
 
+/**
+ * Build candidate pairs for a division.
+ * Generates all valid pairings for eligible rikishi in a division.
+ *
+ * Algorithm:
+ * 1. Filter pool by eligibility (not retired, not injured, matching division)
+ * 2. Build set of already-faced pairs from basho matches
+ * 3. Score all possible pairings using scorePairing
+ * 4. Sort by score (highest first) with stable tie-break
+ *
+ * @param {BashoState} basho - Current basho state.
+ * @param {Rikishi[]} rikishi - All rikishi to consider.
+ * @param {CandidateBuildOptions} options - Build options (seed, division, rules).
+ * @returns {MatchPairing[]} Sorted list of candidate pairings.
+ *
+ * @example
+ * ```ts
+ * const candidates = buildCandidatePairs(basho, rikishi, { seed: "matchmaking", division: "makuuchi" });
+ * console.log(`Found ${candidates.length} candidate pairings`);
+ * ```
+ */
 export function buildCandidatePairs(
   basho: BashoState,
   rikishi: Rikishi[],
@@ -287,6 +334,27 @@ export function buildCandidatePairs(
   return candidates;
 }
 
+/**
+ * Build playoff pairs for a division.
+ * Generates pairings for playoff scenarios with relaxed rules (no heya/repeat avoidance).
+ *
+ * Algorithm:
+ * 1. Disable same heya and repeat opponent rules
+ * 2. Enable record similarity scoring
+ * 3. Score all possible pairings in the division
+ * 4. Sort by score (highest first) with stable tie-break
+ *
+ * @param {BashoState} basho - Current basho state.
+ * @param {Rikishi[]} rikishi - All rikishi to consider.
+ * @param {CandidateBuildOptions & { rules?: Partial<MatchmakingRules> }} options - Build options with rules override.
+ * @returns {MatchPairing[]} Sorted list of playoff pairings.
+ *
+ * @example
+ * ```ts
+ * const playoffPairs = buildPlayoffPairs(basho, rikishi, { seed: "playoff", division: "makuuchi" });
+ * console.log(`Found ${playoffPairs.length} playoff pairings`);
+ * ```
+ */
 export function buildPlayoffPairs(
   basho: BashoState,
   rikishi: Rikishi[],
@@ -303,6 +371,26 @@ export function buildPlayoffPairs(
   return generatePairs(pool, (a, b) => scorePairing({ basho, a, b, rules }));
 }
 
+/**
+ * Build exhibition pairs for demonstration.
+ * Generates random pairings for exhibition matches using RNG.
+ *
+ * Algorithm:
+ * 1. Filter pool by eligibility (not retired, not injured)
+ * 2. Generate random scores using seeded RNG
+ * 3. Sort by random score with stable tie-break
+ *
+ * @param {BashoState} basho - Current basho state.
+ * @param {Rikishi[]} rikishi - All rikishi to consider.
+ * @param {CandidateBuildOptions} options - Build options (seed for RNG).
+ * @returns {MatchPairing[]} Sorted list of exhibition pairings.
+ *
+ * @example
+ * ```ts
+ * const exhibitionPairs = buildExhibitionPairs(basho, rikishi, { seed: "exhibition" });
+ * console.log(`Found ${exhibitionPairs.length} exhibition pairings`);
+ * ```
+ */
 export function buildExhibitionPairs(
   basho: BashoState,
   rikishi: Rikishi[],

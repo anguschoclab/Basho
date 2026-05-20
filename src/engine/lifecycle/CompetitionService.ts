@@ -27,8 +27,24 @@ import { recordBashoHistory } from "./BashoHistory";
  * Conclude Tournament Competition — handles yusho, prizes, and playoffs.
  * Returns StateImpact describing competition conclusion instead of mutating directly.
  *
- * @param world Current WorldState
- * @returns StateImpact with BashoResult recorded
+ * Algorithm:
+ * 1. Calculate standings to determine yusho candidates
+ * 2. If tie for first, resolve playoffs
+ * 3. Distribute prizes (sansho, kinboshi, etc.)
+ * 4. Record basho history and phase transitions
+ * 5. Pay basho teate to non-sekitori rikishi
+ * 6. Pay kinboshi stipends
+ * 7. Accumulate mochikyukin points for sekitori
+ * 8. Merge all impacts together
+ *
+ * @param {WorldState} world - Current world state.
+ * @returns {StateImpact} Impact describing competition conclusion.
+ *
+ * @example
+ * ```ts
+ * const impact = concludeBashoCompetition(world);
+ * const updatedWorld = resolveImpacts(world, [impact]);
+ * ```
  */
 export function concludeBashoCompetition(world: WorldState): StateImpact {
   const builder = createImpactBuilder("concludeBashoCompetition");

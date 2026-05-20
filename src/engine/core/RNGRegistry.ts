@@ -15,6 +15,7 @@ import type { WorldState } from "../types/world";
 
 /**
  * Common system keys for RNG seeding.
+ * These keys are used to namespace RNG calls for different simulation systems.
  */
 export type SystemRNGKey =
   | "training"
@@ -30,14 +31,24 @@ export type SystemRNGKey =
 
 /**
  * Unified RNG registry.
+ * Provides centralized, deterministic RNG access for all simulation systems.
  */
 export const RNGRegistry = {
   /**
    * Get a seeded RNG for a specific system and cadence.
+   * Combines the world seed with the system key and optional cadence to create
+   * a deterministic RNG instance that produces consistent results across runs.
    *
-   * @param world - The current WorldState.
-   * @param system - The system key.
-   * @param cadence - Optional sub-context (e.g., "week::12" or "rikishi::d8e4").
+   * @param {WorldState} world - The current WorldState.
+   * @param {SystemRNGKey} system - The system key (e.g., "training", "scouting").
+   * @param {string} [cadence] - Optional sub-context (e.g., "week::12" or "rikishi::d8e4").
+   * @returns {SeededRNG} A seeded RNG instance for deterministic random number generation.
+   *
+   * @example
+   * ```ts
+   * const rng = RNGRegistry.getSystemRNG(world, "training", "week::12");
+   * const randomValue = rng.next();
+   * ```
    */
   getSystemRNG(world: WorldState, system: SystemRNGKey, cadence?: string): SeededRNG {
     const seed = world.seed || "sumo-manager-pro";
@@ -47,6 +58,16 @@ export const RNGRegistry = {
 
   /**
    * Shorthand for training RNG.
+   * Automatically uses the current week as the cadence.
+   *
+   * @param {WorldState} world - The current WorldState.
+   * @returns {SeededRNG} A seeded RNG instance for training system.
+   *
+   * @example
+   * ```ts
+   * const trainingRng = RNGRegistry.getTrainingRNG(world);
+   * const growthBonus = trainingRng.next();
+   * ```
    */
   getTrainingRNG(world: WorldState): SeededRNG {
     return this.getSystemRNG(world, "training", `week::${world.calendar.currentWeek || 0}`);
@@ -54,6 +75,16 @@ export const RNGRegistry = {
 
   /**
    * Shorthand for scouting RNG.
+   * Automatically uses the current week as the cadence.
+   *
+   * @param {WorldState} world - The current WorldState.
+   * @returns {SeededRNG} A seeded RNG instance for scouting system.
+   *
+   * @example
+   * ```ts
+   * const scoutingRng = RNGRegistry.getScoutingRNG(world);
+   * const candidateStat = scoutingRng.next();
+   * ```
    */
   getScoutingRNG(world: WorldState): SeededRNG {
     return this.getSystemRNG(world, "scouting", `week::${world.calendar.currentWeek || 0}`);

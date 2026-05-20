@@ -1,14 +1,31 @@
 /**
- * ChronicleService.ts
- * ===================
- * Records history of Global Cup tournaments.
+ * src/engine/systems/ChronicleService.ts
+ * =======================================
+ * Chronicle Service
+ *
+ * Responsibilities:
+ * - Record Global Cup tournament completion history
+ * - Track Global Cup champions and statistics
+ * - Calculate legendary performers based on tournament history
  */
 
 import type { WorldState } from "../types/world";
 import type { GlobalCupHistoryEntry } from "../types/globalCup";
 
 /**
- * Record a Global Cup tournament completion
+ * Record a Global Cup tournament completion.
+ * Creates a history entry with champion details and participant count.
+ *
+ * @param {WorldState} world - The current world state.
+ * @param {NonNullable<WorldState["globalCup"]>} cup - The completed Global Cup tournament data.
+ * @returns {WorldState} Updated world state with the tournament recorded in chronicle.
+ *
+ * @example
+ * ```ts
+ * const updatedWorld = recordGlobalCup(world, globalCup);
+ * const history = getGlobalCupHistory(updatedWorld);
+ * console.log(history[0].championName);
+ * ```
  */
 export function recordGlobalCup(
   world: WorldState,
@@ -48,14 +65,38 @@ export function recordGlobalCup(
 }
 
 /**
- * Get Global Cup history
+ * Get Global Cup history.
+ * Returns the list of all completed Global Cup tournaments.
+ *
+ * @param {WorldState} world - The current world state.
+ * @returns {GlobalCupHistoryEntry[]} Array of Global Cup history entries.
+ *
+ * @example
+ * ```ts
+ * const history = getGlobalCupHistory(world);
+ * history.forEach(entry => {
+ *   console.log(`${entry.year}: ${entry.championName}`);
+ * });
+ * ```
  */
 export function getGlobalCupHistory(world: WorldState): GlobalCupHistoryEntry[] {
   return world.chronicle?.globalCups || [];
 }
 
 /**
- * Get best performers in Global Cup history
+ * Get best performers in Global Cup history.
+ * Calculates statistics for all rikishi who have participated in Global Cup finals,
+ * sorted by number of wins.
+ *
+ * @param {WorldState} world - The current world state.
+ * @returns {Array<{rikishiId: string; shikona: string; wins: number; finalAppearances: number}>} Array of legendary performers sorted by wins.
+ *
+ * @example
+ * ```ts
+ * const legends = getGlobalCupLegends(world);
+ * const topLegend = legends[0];
+ * console.log(`${topLegend.shikona}: ${topLegend.wins} wins`);
+ * ```
  */
 export function getGlobalCupLegends(world: WorldState): Array<{
   rikishiId: string;

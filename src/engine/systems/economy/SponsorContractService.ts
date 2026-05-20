@@ -1,13 +1,34 @@
 /**
- * SponsorContractService.ts
- * =========================
- * Handles sponsor contract renewals and relations using ImpactBuilder.
+ * src/engine/systems/economy/SponsorContractService.ts
+ * ======================================================
+ * Sponsor Contract Service
+ *
+ * Responsibilities:
+ * - Handle sponsor contract renewals
+ * - Update relationship strength and loyalty
+ * - Extend contract end dates
+ * - Log renewal events
  */
 
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import type { WorldState } from "../../types/world";
 
+/**
+ * Renews a sponsor contract.
+ * Extends the contract duration and increases relationship strength and loyalty.
+ *
+ * @param {WorldState} world - The current world state.
+ * @param {string} relationshipId - The relationship ID to renew.
+ * @param {string} sponsorId - The sponsor ID.
+ * @returns {StateImpact} Impact describing contract renewal (or empty if failed).
+ *
+ * @example
+ * ```ts
+ * const impact = renewSponsorContract(world, relationshipId, sponsorId);
+ * const updatedWorld = resolveImpacts(world, [impact]);
+ * ```
+ */
 export function renewSponsorContract(
   world: WorldState,
   relationshipId: string,

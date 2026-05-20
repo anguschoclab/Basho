@@ -39,6 +39,26 @@ export interface HeyaFinanceResult {
 /**
  * Compute weekly income, expenses, and resulting funds for a heya.
  * Pure — never reads or writes world state beyond the provided heya.
+ *
+ * Algorithm:
+ * 1. Calculate income from koenkai, JSA subsidies, sponsor tiers, and base grants
+ * 2. Apply survival floor to ensure minimum income
+ * 3. Calculate expenses from facilities, staff, and recruitment
+ * 4. Apply administration discount from staff bonuses
+ * 5. Apply solvency clamping to prevent debt spirals
+ * 6. Calculate net change and apply debt floor
+ * 7. Compute runway in months
+ *
+ * @param {Heya} heya - The heya to calculate finances for.
+ * @param {WorldState} world - The world state for sponsor and staff data.
+ * @returns {HeyaFinanceResult} The calculated finance result.
+ *
+ * @example
+ * ```ts
+ * const result = calculateHeyaWeeklyFinances(heya, world);
+ * console.log(`Revenue: ${result.revenue}, Expenses: ${result.expenses}`);
+ * console.log(`Runway: ${result.runwayMonths} months`);
+ * ```
  */
 export function calculateHeyaWeeklyFinances(heya: Heya, world: WorldState): HeyaFinanceResult {
   // --- Income ---

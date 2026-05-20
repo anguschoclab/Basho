@@ -1,3 +1,22 @@
+/**
+ * src/engine/bout/boutResolver.ts
+ * ================================
+ * Bout Resolver
+ *
+ * Responsibilities:
+ * - Resolve bout results using spatial physics engine
+ * - Apply rivalry modifiers to rikishi stats
+ * - Detect kinboshi and ginboshi achievements
+ * - Generate bout narrative
+ * - Update rivalry state
+ * - Calculate kensho (prize banners)
+ * - Handle fusensho (walkover) scenarios
+ *
+ * @see boutPhysics for spatial physics engine
+ * @see boutNarrative for narrative generation
+ * @see RivalryService for rivalry updates
+ */
+
 // @ts-nocheck
 import type { BoutContext } from "../bout/boutPhysics";
 import type { Rikishi, RikishiAchievements } from "../types/rikishi";
@@ -28,6 +47,17 @@ import type { StateImpact } from "../core/StateImpact";
 /**
  * Check if a bout is in yusho contention.
  * Returns true if both rikishi are within 2 wins of the basho leader.
+ *
+ * @param {Rikishi} east - East rikishi.
+ * @param {Rikishi} west - West rikishi.
+ * @param {BashoState} basho - Current basho state.
+ * @returns {boolean} True if bout is in yusho contention.
+ *
+ * @example
+ * ```ts
+ * const inContention = isYushoContention(east, west, basho);
+ * if (inContention) console.log("Yusho contention bout!");
+ * ```
  */
 function isYushoContention(east: Rikishi, west: Rikishi, basho: BashoState): boolean {
   const standings = basho.standings;
@@ -58,6 +88,17 @@ function isYushoContention(east: Rikishi, west: Rikishi, basho: BashoState): boo
 /**
  * Check if this bout is a playoff scenario.
  * Returns true if this is the final day and both rikishi are tied for the lead.
+ *
+ * @param {Rikishi} east - East rikishi.
+ * @param {Rikishi} west - West rikishi.
+ * @param {BashoState} basho - Current basho state.
+ * @returns {boolean} True if bout is a playoff scenario.
+ *
+ * @example
+ * ```ts
+ * const isPlayoff = isPlayoffScenario(east, west, basho);
+ * if (isPlayoff) console.log("Playoff bout!");
+ * ```
  */
 function isPlayoffScenario(east: Rikishi, west: Rikishi, basho: BashoState): boolean {
   // Playoffs only happen on day 15 (final day)
@@ -87,6 +128,17 @@ function isPlayoffScenario(east: Rikishi, west: Rikishi, basho: BashoState): boo
  * Pre-physics fusensho check.
  * If either rikishi is injured/absent, return a walkover result immediately
  * without running the physics simulation.
+ *
+ * @param {BoutContext} bout - The bout context.
+ * @param {Rikishi} east - East rikishi.
+ * @param {Rikishi} west - West rikishi.
+ * @returns {BoutResult | null} Walkover result or null if both rikishi are present.
+ *
+ * @example
+ * ```ts
+ * const fusenshoResult = tryFusensho(bout, east, west);
+ * if (fusenshoResult) return { result: fusenshoResult, impact: builder.build() };
+ * ```
  */
 function tryFusensho(bout: BoutContext, east: Rikishi, west: Rikishi): BoutResult | null {
   const eastAbsent = east.injured || east.isRetired;
@@ -117,6 +169,35 @@ function tryFusensho(bout: BoutContext, east: Rikishi, west: Rikishi): BoutResul
   };
 }
 
+/**
+ * Resolve a bout between two rikishi.
+ * Main orchestrator for bout resolution using spatial physics engine.
+ *
+ * Algorithm:
+ * 1. Check for fusensho (walkover) if either rikishi is injured/retired
+ * 2. Apply rivalry modifiers to rikishi stats (aggression, mental)
+ * 3. Determine NPC tactic override for key days
+ * 4. Run B+ spatial physics engine to resolve bout
+ * 5. Generate narrative based on data frames
+ * 6. Detect kinboshi and ginboshi achievements
+ * 7. Apply henka prestige penalty
+ * 8. Update rivalry state
+ * 9. Calculate kensho (prize banners) and envelopes
+ *
+ * @param {BoutContext} bout - The bout context.
+ * @param {Rikishi} east - East rikishi.
+ * @param {Rikishi} west - West rikishi.
+ * @param {BashoState} basho - Current basho state.
+ * @param {import("../types/combat").BoutTactic} [playerTactic] - Player tactic override.
+ * @param {WorldState} [world] - World state for rivalry and kensho data.
+ * @returns {{ result: BoutResult; impact: StateImpact }} Bout result and state impact.
+ *
+ * @example
+ * ```ts
+ * const { result, impact } = resolveBout(bout, east, west, basho, playerTactic, world);
+ * const updatedWorld = resolveImpacts(world, [impact]);
+ * ```
+ */
 export function resolveBout(
   bout: BoutContext,
   east: Rikishi,
@@ -361,6 +442,16 @@ export function resolveBout(
  * - rivalry heat   → boosts aggression (up to +15%)
  * - rivalry spite  → boosts mental (up to +20%)
  * - condition      → scales power/speed/technique/balance/stamina (0.8–1.0×)
+ *
+ * @param {Rikishi} r - The rikishi to modify.
+ * @param {{ heat: number; spite: number }} rivalry - Rivalry heat and spite values.
+ * @returns {Rikishi} Cloned rikishi with bout-only modifiers applied.
+ *
+ * @example
+ * ```ts
+ * const eastBout = applyRivalryToRikishi(east, { heat: 50, spite: 30 });
+ * const westBout = applyRivalryToRikishi(west, { heat: 50, spite: 30 });
+ * ```
  */
 export function applyRivalryToRikishi(
   r: Rikishi,
@@ -381,6 +472,21 @@ export function applyRivalryToRikishi(
   };
 }
 
+/**
+ * Simulate a bout between two rikishi without affecting world state.
+ * Creates a fake basho context and resolves the bout for simulation purposes.
+ *
+ * @param {Rikishi} east - East rikishi.
+ * @param {Rikishi} west - West rikishi.
+ * @param {string} seed - Seed for deterministic simulation.
+ * @returns {BoutResult} The bout result.
+ *
+ * @example
+ * ```ts
+ * const result = simulateBout(east, west, "simulation-seed");
+ * console.log(result.winner, result.kimarite);
+ * ```
+ */
 export function simulateBout(east: Rikishi, west: Rikishi, seed: string): BoutResult {
   const fakeBasho: BashoState = {
     id: "sim",

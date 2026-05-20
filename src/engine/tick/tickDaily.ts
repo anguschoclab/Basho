@@ -71,6 +71,27 @@ import { offSeasonPipeline } from "./pipelines/offSeasonPipeline";
 /**
  * AdvanceOneDay — the authoritative daily tick per Constitution A3.1.
  * Now fully migrated to the Strict Pipeline Architecture.
+ *
+ * Pipeline order:
+ *   0) Preflight: increment day, advance calendar, check phase transitions
+ *   1) Scheduled institutional events (governance, loans, sponsors)
+ *   2) Training & welfare micro-effects (daily)
+ *   3) Basho tournament day (if active_basho) — handled externally via game flow
+ *   4) Post-bout downstream updates
+ *   5) Economy cadence (daily micro)
+ *   6) Weekly tick gate (every 7 days)
+ *   7) Monthly tick gate (on month boundary)
+ *   8) Year tick gate (on year boundary)
+ *   9) UI digest batch
+ *
+ * @param {WorldState} world - The current world state.
+ * @returns {WorldState} The updated world state after one day tick.
+ *
+ * @example
+ * ```ts
+ * const nextWorld = advanceOneDay(world);
+ * console.log(nextWorld.dayIndexGlobal);
+ * ```
  */
 export function advanceOneDay(world: WorldState): WorldState {
   // 1. Run Preflight to advance calendar and determine boundaries
@@ -144,10 +165,18 @@ function buildDailyReport(world: WorldState, isWeekly: boolean): DailyTickReport
 // ====
 
 /**
- * Advance days.
- * @param world - The World.
- * @param days - The Days.
- * @returns The result.
+ * Advance multiple days.
+ * Convenience function to advance the world state by N days.
+ *
+ * @param {WorldState} world - The current world state.
+ * @param {number} days - Number of days to advance (capped at 365).
+ * @returns {WorldState} The updated world state after N day ticks.
+ *
+ * @example
+ * ```ts
+ * const nextWorld = advanceDays(world, 7);
+ * console.log(nextWorld.dayIndexGlobal);
+ * ```
  */
 export function advanceDays(world: WorldState, days: number): WorldState {
   let currentWorld = world;
@@ -159,9 +188,17 @@ export function advanceDays(world: WorldState, days: number): WorldState {
 }
 
 /**
- * Advance full interim.
- * @param world - The World.
- * @returns The result.
+ * Advance full interim period.
+ * Advances through all remaining interim days until phase transition.
+ *
+ * @param {WorldState} world - The current world state.
+ * @returns {WorldState} The updated world state after full interim.
+ *
+ * @example
+ * ```ts
+ * const nextWorld = advanceFullInterim(world);
+ * console.log(nextWorld.cyclePhase); // Should be pre_basho or active_basho
+ * ```
  */
 export function advanceFullInterim(world: WorldState): WorldState {
   if (world.cyclePhase !== "interim" && world.cyclePhase !== "pre_basho") return world;
@@ -174,7 +211,17 @@ export function advanceFullInterim(world: WorldState): WorldState {
 // ====
 
 /**
- * Enter post basho. Returns a new WorldState.
+ * Enter post-basho phase.
+ * Transitions the world state to the post-basho phase with 7 wrap-up days.
+ *
+ * @param {WorldState} world - The current world state.
+ * @returns {WorldState} The updated world state in post_basho phase.
+ *
+ * @example
+ * ```ts
+ * const nextWorld = enterPostBasho(world);
+ * console.log(nextWorld.cyclePhase); // "post_basho"
+ * ```
  */
 export function enterPostBasho(world: WorldState): WorldState {
   return {
@@ -185,7 +232,18 @@ export function enterPostBasho(world: WorldState): WorldState {
 }
 
 /**
- * Enter interim. Returns a new WorldState.
+ * Enter interim phase.
+ * Transitions the world state to the interim phase with 42 days (6 weeks).
+ *
+ * @param {WorldState} world - The current world state.
+ * @returns {WorldState} The updated world state in interim phase.
+ *
+ * @example
+ * ```ts
+ * const nextWorld = enterInterim(world);
+ * console.log(nextWorld.cyclePhase); // "interim"
+ * console.log(nextWorld._interimDaysRemaining); // 42
+ * ```
  */
 export function enterInterim(world: WorldState): WorldState {
   return {

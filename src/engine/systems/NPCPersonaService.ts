@@ -1,15 +1,32 @@
-// @ts-nocheck
+/**
+ * src/engine/systems/NPCPersonaService.ts
+ * ==========================================
+ * NPC Persona Service
+ *
+ * Responsibilities:
+ * - Generate and manage oyakata (stable master) personalities
+ * - Calculate decision-making traits based on archetype and quirks
+ * - Project full persona for AI decision making
+ *
+ * @see Oyakata types for personality structure
+ */
+
 import { WorldState } from "../types/world";
-import { Style } from "../types/combat";
+import { StyleBias } from "../types/training";
 import { OyakataArchetype, Oyakata, OyakataMood } from "../types/oyakata";
 import { rngForWorld } from "../rng";
 import { getHeyaStyleBias, getOyakataForHeya, getHeya } from "../queries";
 import { getCachedPerception, PerceptionSnapshot } from "../perception";
 import { BardEngine } from "../narrative/BardEngine";
-import { SeededRNG } from "../rng";
 
+/**
+ * NPC Persona structure for decision making.
+ * Combines archetype, traits, quirks, and calculated decision factors.
+ */
 export interface NPCPersona {
+  /** The oyakata's archetype (e.g., tyrant, mentor, gambler). */
   archetype: OyakataArchetype | "unknown";
+  /** Core personality traits (0-100 scale). */
   traits: {
     ambition: number;
     patience: number;
@@ -17,17 +34,24 @@ export interface NPCPersona {
     tradition: number;
     compassion: number;
   };
+  /** Personality quirks (narrative flavor text). */
   quirks: string[];
+  /** Behavioral flags derived from traits and quirks. */
   flags: {
     welfareHawk: boolean;
     disciplineHawk: boolean;
     publicityHawk: boolean;
     nepotist: boolean;
   };
-  styleBias: Style | "neutral";
+  /** Preferred combat style bias for rikishi recruitment. */
+  styleBias: StyleBias;
+  /** Calculated welfare vs discipline balance (0-1). */
   welfareDiscipline: number;
+  /** Calculated risk appetite (0-1). */
   riskAppetite: number;
+  /** Current perception snapshot of the heya. */
   perception: PerceptionSnapshot;
+  /** Current mood of the oyakata. */
   mood: OyakataMood;
 }
 
@@ -47,7 +71,13 @@ const QUIRK_IDS = [
 ] as const;
 
 /**
- * Pick unique items from a pool
+ * Pick unique items from a pool using RNG.
+ * Randomly selects the specified number of unique items from the pool.
+ *
+ * @param {{ next: () => number }} rng - The RNG instance.
+ * @param {readonly T[]} items - The pool of items to select from.
+ * @param {number} count - The number of unique items to select.
+ * @returns {T[]} Array of unique selected items.
  */
 function pickUnique<T>(rng: { next: () => number }, items: readonly T[], count: number): T[] {
   const pool = [...items];
@@ -60,7 +90,19 @@ function pickUnique<T>(rng: { next: () => number }, items: readonly T[], count: 
 }
 
 /**
- * Ensure an Oyakata has a defined persona (quirks and flags)
+ * Ensure an Oyakata has a defined persona (quirks and flags).
+ * Generates quirks and behavioral flags if not already present.
+ *
+ * @param {WorldState} world - The current world state.
+ * @param {Oyakata} oyakata - The oyakata to ensure persona for.
+ *
+ * @example
+ * ```ts
+ * const oyakata = world.oyakata.get(oyakataId);
+ * ensurePersonaForOyakata(world, oyakata);
+ * console.log(oyakata.quirks); // Array of personality quirks
+ * console.log(oyakata.managerFlags); // Behavioral flags
+ * ```
  */
 export function ensurePersonaForOyakata(world: WorldState, oyakata: Oyakata): void {
   if (Array.isArray(oyakata.quirks) && oyakata.quirks.length) return;
@@ -88,7 +130,23 @@ export function ensurePersonaForOyakata(world: WorldState, oyakata: Oyakata): vo
 }
 
 /**
- * Project a manager's full persona for decision making
+ * Project a manager's full persona for decision making.
+ * Combines archetype, traits, quirks, and heya context into a decision-making profile.
+ *
+ * @param {WorldState} world - The current world state.
+ * @param {string} heyaId - The heya ID to get persona for.
+ * @returns {NPCPersona} The complete persona profile for decision making.
+ *
+ * @example
+ * ```ts
+ * const persona = getManagerPersona(world, heyaId);
+ * if (persona.flags.welfareHawk) {
+ *   // Manager prioritizes rikishi welfare over training
+ * }
+ * if (persona.riskAppetite > 0.7) {
+ *   // Manager is willing to take risks in recruitment
+ * }
+ * ```
  */
 export function getManagerPersona(world: WorldState, heyaId: string): NPCPersona {
   const heya = getHeya(world, heyaId);

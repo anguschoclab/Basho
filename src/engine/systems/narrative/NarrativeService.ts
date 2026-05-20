@@ -2,6 +2,16 @@
  * src/engine/systems/narrative/NarrativeService.ts
  * ================================================
  * Data-driven Narrative Service for Sumo Manager Pro.
+ *
+ * Responsibilities:
+ * - Map numeric values to narrative bands (stat, fatigue, momentum, etc.)
+ * - Provide narrative labels and prose for UI display
+ * - Apply hysteresis to prevent band thrashing
+ * - Resolve descriptor bands from BardEngine archive
+ *
+ * @see NarrativeBands for band definitions
+ * @see NarrativeProse for label and prose generation
+ * @see BardEngine for narrative archive resolution
  */
 
 import { clamp } from "../../utils/math";
@@ -68,12 +78,28 @@ import type { CombatArchetype } from "../../types/combat";
 
 const HYSTERESIS_DELTA = 5;
 
-/** For physical measurements (height cm, weight kg) that exceed the 0–100 range. */
+/**
+ * For physical measurements (height cm, weight kg) that exceed the 0–100 range.
+ * Maps a numeric value to a band based on a ladder definition.
+ *
+ * @param {number} value - The numeric value to map.
+ * @param {BandDef<T>[]} ladder - The band ladder definition.
+ * @returns {T} The band identifier.
+ */
 function toPhysicalBand<T extends string>(value: number, ladder: BandDef<T>[]): T {
   const entry = ladder.find((b) => value >= b.min && value < b.max) ?? ladder[ladder.length - 1];
   return entry.band;
 }
 
+/**
+ * Maps a numeric value to a band with hysteresis to prevent band thrashing.
+ * Hysteresis ensures that small fluctuations don't cause band changes.
+ *
+ * @param {number} value - The numeric value to map.
+ * @param {BandDef<T>[]} ladder - The band ladder definition.
+ * @param {T} [lastBand] - The previous band value for hysteresis.
+ * @returns {T} The band identifier with hysteresis applied.
+ */
 function toBandWithHysteresis<T extends string>(
   value: number,
   ladder: BandDef<T>[],
@@ -96,6 +122,12 @@ function toBandWithHysteresis<T extends string>(
 
 /**
  * Internal helper to resolve DescriptorBand strings from archive.
+ * Uses BardEngine to fetch label and tooltip text for a descriptor.
+ *
+ * @param {SeededRNG} rng - The RNG instance for deterministic resolution.
+ * @param {string} path - The archive path to resolve.
+ * @param {{ id: string; colorCode: string }} entry - The descriptor entry.
+ * @returns {DescriptorBand} The resolved descriptor band with label and tooltip.
  */
 function resolveDescriptor(
   rng: SeededRNG,
@@ -107,24 +139,71 @@ function resolveDescriptor(
   return { id: entry.id, label, tooltip, colorCode: entry.colorCode };
 }
 
+/**
+ * Narrative Service namespace.
+ * Provides band mapping and narrative label generation for UI display.
+ *
+ * @example
+ * ```ts
+ * const statBand = NarrativeService.getStatBand(85);
+ * const label = NarrativeService.getStatLabel(rng, statBand);
+ * const prose = NarrativeService.describeAttribute(rng, "strength", 85);
+ * ```
+ */
 export const NarrativeService = {
+  /**
+   * Get stat band from numeric value with hysteresis.
+   *
+   * @param {number} value - The stat value (0-100).
+   * @param {StatBand} [previous] - The previous band for hysteresis.
+   * @returns {StatBand} The stat band.
+   */
   getStatBand(value: number, previous?: StatBand): StatBand {
     return toBandWithHysteresis(value, STAT_BANDS, previous);
   },
 
+  /**
+   * Get narrative label for a stat band.
+   *
+   * @param {SeededRNG} rng - The RNG instance.
+   * @param {StatBand} band - The stat band.
+   * @returns {string} The narrative label.
+   */
   getStatLabel(rng: SeededRNG, band: StatBand): string {
     return getStatLabel(rng, band);
   },
 
+  /**
+   * Describe an attribute with narrative prose.
+   *
+   * @param {SeededRNG} rng - The RNG instance.
+   * @param {string} attribute - The attribute name.
+   * @param {number} value - The attribute value.
+   * @returns {string} The narrative prose.
+   */
   describeAttribute(rng: SeededRNG, attribute: string, value: number): string {
     const band = this.getStatBand(value);
     return getStatProse(rng, attribute, band);
   },
 
+  /**
+   * Get fatigue band from numeric value with hysteresis.
+   *
+   * @param {number} value - The fatigue value (0-100).
+   * @param {FatigueBand} [previous] - The previous band for hysteresis.
+   * @returns {FatigueBand} The fatigue band.
+   */
   getFatigueBand(value: number, previous?: FatigueBand): FatigueBand {
     return toBandWithHysteresis(value, FATIGUE_BANDS, previous);
   },
 
+  /**
+   * Get narrative label for a fatigue band.
+   *
+   * @param {SeededRNG} rng - The RNG instance.
+   * @param {FatigueBand} band - The fatigue band.
+   * @returns {string} The narrative label.
+   */
   getFatigueLabel(rng: SeededRNG, band: FatigueBand): string {
     return getFatigueLabel(rng, band);
   },

@@ -1,5 +1,17 @@
 /**
- * InjuryService.ts — Logic for rolling and applying injuries.
+ * src/engine/systems/health/InjuryService.ts
+ * ==========================================
+ * Injury Service
+ *
+ * Responsibilities:
+ * - Calculate weekly injury chances based on fatigue and durability
+ * - Roll for injuries with severity, body area, and type
+ * - Apply weekly injury ticks to all active rikishi
+ * - Handle post-bout injury checks
+ * - Manage injury recovery and clearance
+ *
+ * @see RecoveryService for injury healing logic
+ * @see BodyDefinitions for injury type definitions
  */
 
 import { SeededRNG } from "../../rng";
@@ -14,6 +26,19 @@ import type { StateImpact } from "../../core/StateImpact";
 
 /**
  * Calculates a weekly injury chance for a rikishi.
+ * Based on fatigue level, durability stat, and simulation configuration.
+ *
+ * @param {Rikishi} rikishi - The rikishi to calculate injury chance for.
+ * @param {number} fatigue - The rikishi's current fatigue level (0-100).
+ * @returns {number} The injury chance (0-1).
+ *
+ * @example
+ * ```ts
+ * const rikishi = world.rikishi.get(rikishiId);
+ * const fatigue = rikishi.fatigue || 0;
+ * const chance = calculateWeeklyInjuryChance(rikishi, fatigue);
+ * console.log(`Injury chance: ${(chance * 100).toFixed(1)}%`);
+ * ```
  */
 export function calculateWeeklyInjuryChance(rikishi: Rikishi, fatigue: number): number {
   const base = SIMULATION_CONFIG.injuries.weeklyBaseChance;
@@ -29,6 +54,22 @@ export function calculateWeeklyInjuryChance(rikishi: Rikishi, fatigue: number): 
 
 /**
  * Rolls for a weekly injury. Returns injury details if successful.
+ * Determines severity, body area, injury type, and recovery time.
+ *
+ * @param {{ rng: SeededRNG; rikishi: Rikishi; fatigue: number }} args - The injury roll parameters.
+ * @param {SeededRNG} args.rng - The RNG instance for deterministic rolls.
+ * @param {Rikishi} args.rikishi - The rikishi to roll for.
+ * @param {number} args.fatigue - The rikishi's current fatigue level.
+ * @returns {{ severity: InjurySeverity; area: InjuryBodyArea; type: InjuryType; weeksOut: number } | null} Injury details if injury occurs, null otherwise.
+ *
+ * @example
+ * ```ts
+ * const rng = RNGRegistry.getSystemRNG(world, "health", `tick::${rikishiId}::${week}`);
+ * const injury = rollWeeklyInjury({ rng, rikishi, fatigue: 80 });
+ * if (injury) {
+ *   console.log(`Injury: ${injury.type} on ${injury.area}, ${injury.weeksOut} weeks`);
+ * }
+ * ```
  */
 export function rollWeeklyInjury(args: {
   rng: SeededRNG;
@@ -93,6 +134,22 @@ function pickType(rng: SeededRNG, severity: InjurySeverity): InjuryType {
 /**
  * Weekly injury tick: rolls for injuries for all active, non-retired rikishi.
  * Returns StateImpact describing injury updates instead of mutating state directly.
+ *
+ * Algorithm:
+ * 1. Iterate through all active rikishi
+ * 2. Skip injured or retired rikishi
+ * 3. Roll for injury based on fatigue and durability
+ * 4. If injury occurs, update rikishi with injury details
+ * 5. Log injury event for narrative
+ *
+ * @param {WorldState} world - The current world state.
+ * @returns {StateImpact} Impact describing injury updates.
+ *
+ * @example
+ * ```ts
+ * const impact = tickWeekInjury(world);
+ * const updatedWorld = resolveImpacts(world, [impact]);
+ * ```
  */
 export function tickWeekInjury(world: WorldState): StateImpact {
   const builder = createImpactBuilder("tickWeekInjury");
@@ -151,6 +208,21 @@ import { getHeyaStaffBonuses } from "../../staff";
  * Weekly recovery tick: advanced recovery for all injured rikishi.
  * Staff bonuses (Medical Staff) are applied here.
  * Returns StateImpact describing recovery updates instead of mutating state directly.
+ *
+ * Algorithm:
+ * 1. Iterate through all active rikishi
+ * 2. For injured rikishi, calculate recovery with staff bonuses
+ * 3. If fully recovered, clear injury status
+ * 4. Log recovery event for narrative
+ *
+ * @param {WorldState} world - The current world state.
+ * @returns {StateImpact} Impact describing recovery updates.
+ *
+ * @example
+ * ```ts
+ * const impact = tickWeekRecovery(world);
+ * const updatedWorld = resolveImpacts(world, [impact]);
+ * ```
  */
 export function tickWeekRecovery(world: WorldState): StateImpact {
   const builder = createImpactBuilder("tickWeekRecovery");
@@ -190,6 +262,27 @@ export function tickWeekRecovery(world: WorldState): StateImpact {
 /**
  * Post-bout injury check: applies bout-induced injuries based on result severity.
  * Returns StateImpact describing injury updates instead of mutating state directly.
+ *
+ * Algorithm:
+ * 1. Only applies to makuuchi/juryo bouts with high-intensity outcomes
+ * 2. Determines loser of the bout
+ * 3. Checks for violent kimarite (increases injury chance)
+ * 4. Rolls for bout-induced injury (2-4% chance)
+ * 5. If injury occurs, applies minor injury (1-2 weeks)
+ *
+ * @param {WorldState} world - The current world state.
+ * @param {{ match: any; result: any; east: any; west: any }} ctx - The bout context.
+ * @param {any} ctx.match - The bout match data.
+ * @param {any} ctx.result - The bout result data.
+ * @param {any} ctx.east - The east rikishi data.
+ * @param {any} ctx.west - The west rikishi data.
+ * @returns {StateImpact} Impact describing injury updates.
+ *
+ * @example
+ * ```ts
+ * const impact = onBoutResolvedInjury(world, { match, result, east, west });
+ * const updatedWorld = resolveImpacts(world, [impact]);
+ * ```
  */
 export function onBoutResolvedInjury(
   world: WorldState,
@@ -249,6 +342,15 @@ export function onBoutResolvedInjury(
 /**
  * Clears an active injury from a rikishi (UI action: doctor clearance).
  * Returns StateImpact describing injury clearance instead of mutating state directly.
+ *
+ * @param {string} rikishiId - The ID of the rikishi to clear injury for.
+ * @returns {StateImpact} Impact describing injury clearance.
+ *
+ * @example
+ * ```ts
+ * const impact = clearInjury(rikishiId);
+ * const updatedWorld = resolveImpacts(world, [impact]);
+ * ```
  */
 export function clearInjury(rikishiId: string): StateImpact {
   const builder = createImpactBuilder("clearInjury");
@@ -265,6 +367,18 @@ export function clearInjury(rikishiId: string): StateImpact {
 
 /**
  * Converts a rikishi's current injury state to an engine event object for UI display.
+ * Used to surface injury information in the event log and UI components.
+ *
+ * @param {any} rikishi - The rikishi to convert injury state for.
+ * @returns {{ type: string; rikishiId: string; severity: string; weeksOut: number } | null} Injury event object or null if not injured.
+ *
+ * @example
+ * ```ts
+ * const event = toInjuryEvent(rikishi);
+ * if (event) {
+ *   console.log(`Injury: ${event.severity}, ${event.weeksOut} weeks remaining`);
+ * }
+ * ```
  */
 export function toInjuryEvent(
   rikishi: any

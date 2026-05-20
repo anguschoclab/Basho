@@ -19,10 +19,21 @@ import type { WorldState } from "../types/world";
 export const EntityService = {
   /**
    * Type-safe generic state hydrator.
+   * Ensures a state property exists on the parent object, creating it with the factory if missing.
    *
-   * @param parent - The object containing the state (e.g., WorldState or Heya).
-   * @param key - The property key for the state.
-   * @param factory - A function returning the default state if it doesn't exist.
+   * @param {any} parent - The object containing the state (e.g., WorldState or Heya).
+   * @param {string} key - The property key for the state.
+   * @param {() => T} factory - A function returning the default state if it doesn't exist.
+   * @returns {T} The existing or newly created state.
+   *
+   * @example
+   * ```ts
+   * const trainingState = EntityService.ensureState(world, "trainingState", () => ({
+   *   heyaId: world.playerHeyaId,
+   *   activeProfile: { intensity: "balanced" },
+   *   focusSlots: [],
+   * }));
+   * ```
    */
   ensureState<T>(parent: any, key: string, factory: () => T): T {
     if (!parent[key]) {
@@ -34,11 +45,23 @@ export const EntityService = {
   /**
    * Hydrate a state in a nested record.
    * Useful for per-heya states (world.trainingState[heyaId]).
+   * Automatically determines if the root should be a Map or POJO based on the field name.
    *
-   * @param world - The WorldState.
-   * @param rootKey - The top-level key (e.g., 'trainingState').
-   * @param id - The nested key (e.g., heyaId).
-   * @param factory - The default state factory.
+   * @param {WorldState} world - The WorldState.
+   * @param {keyof WorldState} rootKey - The top-level key (e.g., 'trainingState').
+   * @param {string} id - The nested key (e.g., heyaId).
+   * @param {() => T} factory - The default state factory.
+   * @returns {T} The existing or newly created nested state.
+   *
+   * @example
+   * ```ts
+   * const heyaTrainingState = EntityService.ensureNestedState(
+   *   world,
+   *   "trainingState",
+   *   heyaId,
+   *   () => createDefaultTrainingState(heyaId)
+   * );
+   * ```
    */
   ensureNestedState<T>(
     world: WorldState,
