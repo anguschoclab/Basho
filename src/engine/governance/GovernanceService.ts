@@ -236,7 +236,7 @@ export function getStatusColor(status: string): string {
 export function getStatusLabel(_world: WorldState, status: string): string {
   const rng = rngFromSeed(`gov-label-${status}`, "narrative", "metadata");
   let path = status;
-  if (status === "good_standing") path = "clean";
+  if (status === "good_standing") path = "none";
   if (status === "warning") path = "whispers";
   if (status === "probation") path = "notable";
   if (status === "sanctioned") path = "severe";
