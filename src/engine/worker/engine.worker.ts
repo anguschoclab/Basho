@@ -70,7 +70,6 @@ let worldVersion = 0;
 self.onmessage = async (event: MessageEvent<EngineCommand>) => {
   const command = event.data;
 
-  try {
   const COMMAND_HANDLERS: {
     [T in EngineCommand["type"]]: (cmd: Extract<EngineCommand, { type: T }>) => void | Promise<void>;
   } = {
