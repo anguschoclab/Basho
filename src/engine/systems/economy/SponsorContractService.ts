@@ -62,7 +62,7 @@ export function renewSponsorContract(
     "economy",
     {
       action: "sponsor_renewal",
-      sponsor: sponsor.name,
+      sponsor: sponsor.displayName,
       relationshipId,
     },
     { importance: "notable" }

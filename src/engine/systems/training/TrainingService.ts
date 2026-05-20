@@ -150,7 +150,7 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
         const currentStatus = rikishi.injuryStatus;
         updates.injuryStatus = {
           ...currentStatus,
-          type: "internal",
+          type: "strain",
           severity: "serious",
           weeksRemaining: 12,
           weeksToHeal: 12,
@@ -368,7 +368,7 @@ function applyBurnoutStep(
   if (currentWeeks >= 3) crashProb = 1.0;
 
   // Use system RNG for deterministic burnout rolls
-  const burnoutRng = RNGRegistry.getSystemRNG(world, "burnout", `burnout-${r.id}-${world.week}`);
+  const burnoutRng = RNGRegistry.getSystemRNG(world, "training", `burnout-${r.id}-${world.week}`);
   const roll = burnoutRng.next();
 
   if (roll < crashProb) {

@@ -86,6 +86,10 @@ export interface BoutResult {
   winnerRikishiId: Id;
   /** ID of the losing rikishi. */
   loserRikishiId: Id;
+  /** ID of the winner's heya (for rivalry tracking). */
+  winnerHeyaId?: Id;
+  /** ID of the loser's heya (for rivalry tracking). */
+  loserHeyaId?: Id;
   /** Winning technique (kimarite). */
   kimarite: KimariteId;
   /** Name of the winning technique. */

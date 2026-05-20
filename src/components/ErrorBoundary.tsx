@@ -1,14 +1,53 @@
+/**
+ * src/components/ErrorBoundary.tsx
+ * ===============================
+ * Error Boundary Component
+ *
+ * Responsibilities:
+ * - Catches JavaScript errors in component tree
+ * - Displays error UI with error message
+ * - Provides reload button to recover
+ * - Logs errors to console for debugging
+ *
+ * @example
+ * ```tsx
+ * <ErrorBoundary>
+ *   <App />
+ * </ErrorBoundary>
+ * ```
+ */
+
 import { Component, ErrorInfo, ReactNode } from "react";
 
+/**
+ * Props for ErrorBoundary component.
+ */
 interface Props {
+  /** Child components to wrap with error boundary */
   children: ReactNode;
 }
 
+/**
+ * State for ErrorBoundary component.
+ */
 interface State {
+  /** Whether an error has been caught */
   hasError: boolean;
+  /** The error object if caught */
   error: Error | null;
 }
 
+/**
+ * Error boundary component that catches JavaScript errors in its child component tree.
+ * Displays a user-friendly error UI when an error occurs.
+ *
+ * @example
+ * ```tsx
+ * <ErrorBoundary>
+ *   <YourApp />
+ * </ErrorBoundary>
+ * ```
+ */
 export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,

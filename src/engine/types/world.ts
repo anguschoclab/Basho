@@ -1,5 +1,19 @@
 /**
+ * src/engine/types/world.ts
+ * =========================
  * World State Types
+ *
+ * Responsibilities:
+ * - Define WorldState interface (core simulation state)
+ * - Define cycle phases and transient context
+ * - Define world-level metadata and settings
+ * - Define calendar and time tracking types
+ *
+ * @example
+ * ```ts
+ * import { WorldState, CyclePhase } from "@/engine/types/world";
+ * const world: WorldState = { ... };
+ * ```
  */
 
 import type { Id, IdMapRuntime } from "./common";
@@ -12,16 +26,9 @@ import type { Oyakata } from "./oyakata";
 import type { BashoState } from "./basho";
 import type { Staff } from "./staff";
 import type { HeyaTrainingState, SparringState } from "./training";
-import type { Sponsor, Koenkai } from "./sponsors";
-import type { GovernanceRuling } from "./economy";
-import type { MyosekiStock, MyosekiTransaction } from "./myoseki";
+import type { GovernanceRuling, IchimonName, Faction } from "./economy";
+import type { MyosekiMarket } from "./myoseki";
 import type { AlmanacSnapshot } from "../almanac";
-import type {
-  EngineEventType,
-  EventCategory,
-  EventImportance,
-  NarrativeContext,
-} from "./events";
 import type { GlobalCupState, GlobalCupHistoryEntry } from "./globalCup";
 import type { BloodlineRegistry } from "./dynasty";
 import type { LineageEdge } from "../lineage";
@@ -34,6 +41,10 @@ import type { SponsorPool } from "./sponsors";
 import type { MediaState } from "./media";
 import type { PerceptionSnapshot } from "../perception";
 import type { RivalriesState } from "../rivalries";
+import type { TutorialState } from "./tutorial";
+import type { TalentPoolWorldState } from "./talent";
+import type { ActiveCrisis } from "./crises";
+import type { WorldRecords } from "./records";
 
 /** Type representing cycle phase. */
 export type CyclePhase = "pre_basho" | "active_basho" | "post_basho" | "interim" | "banzuke_reveal";

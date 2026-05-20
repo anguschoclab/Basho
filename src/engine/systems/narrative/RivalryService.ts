@@ -103,7 +103,7 @@ export const RivalryService = {
     const builder = createImpactBuilder("onBoutResolvedRivalries");
     const state = this.ensureRivalriesState(world);
     const key = this.makeRivalryKey(result.winnerRikishiId, result.loserRikishiId);
-    const week = world.calendar.currentWeek || 0;
+    const week = world.calendar?.currentWeek || 0;
 
     const rng = RNGRegistry.getSystemRNG(world, "rivalry", `bout-${key}-${week}`);
     const existing =

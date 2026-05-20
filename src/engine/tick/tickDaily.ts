@@ -63,8 +63,6 @@ export interface DailyTickReport {
  */
 import { runPipeline } from "./pipelineRunner";
 import * as phases from "./phases";
-import { phase05_monthly_boundary } from "./phases/phase05_monthly_boundary";
-import { phase06_yearly_boundary } from "./phases/phase06_yearly_boundary";
 import { bashoPipeline } from "./pipelines/bashoPipeline";
 import { offSeasonPipeline } from "./pipelines/offSeasonPipeline";
 

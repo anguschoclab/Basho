@@ -28,6 +28,7 @@ export type EngineEventType =
   | "MANAGEMENT_DECISION"        // Player made a management decision
   | "STRATEGY_SHIFT"             // Training or strategy was shifted
   | "RIVALRY_HEAT_SPIKE"         // Rivalry heat crossed a threshold
+  | "SPARRING_RIVALRY_SEEDED"    // Rivalry seeded from sparring partnership
   | "MEDICAL_REPORT"             // Medical status report generated
   | "TRAINING_UPDATE"            // Training results update
   | "GOVERNANCE_RULING"          // A governance ruling was issued
