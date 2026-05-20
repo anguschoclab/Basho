@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * LegacyService.ts
  * ================

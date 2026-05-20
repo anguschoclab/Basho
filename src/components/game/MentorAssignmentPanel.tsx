@@ -123,7 +123,7 @@ export function MentorAssignmentPanel({
             size="sm"
             onClick={onRemoveMentor}
             className="h-7 px-2 text-xs hover:bg-destructive/10 hover:text-destructive"
-            tooltip="Remove mentor"
+            title="Remove mentor"
           >
             <UserMinus className="h-3 w-3 mr-1" />
             Remove

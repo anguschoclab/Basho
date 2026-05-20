@@ -108,7 +108,10 @@
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\amauricia\\\\onedrive - ubisoft\\\\documents\\\\github\\\\sumo-manager-pro\\\\src\" -Recurse -Directory)",
       "Bash(Select-Object -ExpandProperty FullName)",
       "Bash(git worktree *)",
-      "Bash(git branch *)"
+      "Bash(git branch *)",
+      "Bash(npx -p typescript tsc --noEmit)",
+      "Bash(./node_modules/.bin/tsc --noEmit)",
+      "Bash(node_modules/.bin/tsc --noEmit)"
     ]
   },
   "outputStyle": "default"

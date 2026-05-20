@@ -119,7 +119,9 @@ export type GameAction =
   | { type: "COMPLETE_TUTORIAL" }
   | { type: "SET_IMPACTS"; impacts: StateImpact[] }
   | { type: "ASSIGN_MENTOR"; mentorId: string; apprenticeId: string }
-  | { type: "REMOVE_MENTOR"; apprenticeId: string };
+  | { type: "REMOVE_MENTOR"; apprenticeId: string }
+  | { type: "ADD_SPARRING_PAIR"; heyaId: string; aId: string; bId: string }
+  | { type: "REMOVE_SPARRING_PAIR"; heyaId: string; aId: string; bId: string };
 
 /**
  * Initial game state.

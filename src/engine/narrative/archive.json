@@ -787,6 +787,11 @@
             "The final bout of the basho—%EAST% versus %WEST% brings the tournament to a dramatic close.",
             "Senshuraku arrives with this high-stakes clash between %EAST% and %WEST%.",
             "The curtain falls on the basho with this marquee matchup between %EAST% and %WEST%."
+          ],
+          "generic": [
+            "A pivotal moment in the basho.",
+            "The crowd holds its breath as %EAST% and %WEST% face off.",
+            "The dohyo is silent before the storm."
           ]
         }
       },
@@ -1949,6 +1954,20 @@
           "%RIKISHI% carries the bloodline of %ANCESTOR%.",
           "The descendant of %ANCESTOR% steps onto the dohyo.",
           "%ANCESTOR%'s bloodline flows through %RIKISHI%."
+        ]
+      },
+      "registered": {
+        "common": [
+          "A new bloodline enters the registry: the legacy of %HEYA% lives on.",
+          "The JSA records a new dynasty: %HEYA%'s heir carries the torch.",
+          "Future generations will carry this heritage forward."
+        ]
+      },
+      "milestone": {
+        "common": [
+          "%ANCESTOR%'s bloodline claims its first yusho in a new era.",
+          "The %ANCESTOR% dynasty extends its reach across divisions.",
+          "Three generations of the %ANCESTOR% line now compete."
         ]
       }
     }

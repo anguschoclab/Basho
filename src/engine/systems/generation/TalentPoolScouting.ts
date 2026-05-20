@@ -271,7 +271,7 @@ export function getScoutedCandidateView(world: WorldState, candidateId: Id) {
     style: candidate.style,
     temperament: candidate.temperament,
     // ADD BIAS METADATA FOR UI
-    hasBias: decayedBias?.decayFactor ?? 0 > 0,
+    hasBias: (decayedBias?.decayFactor ?? 0) > 0,
     biasStrength: decayedBias?.decayFactor ?? 0,
   };
 }

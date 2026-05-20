@@ -31,13 +31,14 @@ import { TrainingAnalytics } from "@/components/training/TrainingAnalytics";
 import { IndividualFocusSlots } from "@/components/training/IndividualFocusSlots";
 import { WeeklyDrillPlanner } from "@/components/training/WeeklyDrillPlanner";
 import { ReferenceLegend } from "@/components/training/ReferenceLegend";
+import { SparringPanel } from "@/components/game/SparringPanel";
 import type { DrillType, DaySchedule } from "@/engine/types/training";
 import type { Rikishi } from "@/engine/types/rikishi";
 
 import { useGameStore } from "@/store/gameStore";
 
 export default function TrainingPage() {
-  const { state } = useGame();
+  const { state, addSparringPair, removeSparringPair } = useGame();
   const sendCommand = useGameStore((s) => s.sendCommand);
   const { world, playerHeyaId } = state;
   const heya = world?.heyas.get(playerHeyaId || "") ?? null;
@@ -194,6 +195,15 @@ export default function TrainingPage() {
           onPlanUpdate={handlePlanUpdate}
           onBulkUpdate={handleBulkUpdate}
           onMultiBulkUpdate={handleMultiBulkUpdate}
+        />
+
+        <SparringPanel
+          heyaRikishi={rikishiList}
+          pairs={Object.values(
+            world.sparringPairs?.get(playerHeyaId)?.pairs ?? {}
+          )}
+          onAddPair={(aId, bId) => addSparringPair(playerHeyaId, aId, bId)}
+          onRemovePair={(aId, bId) => removeSparringPair(playerHeyaId, aId, bId)}
         />
 
         <IndividualFocusSlots

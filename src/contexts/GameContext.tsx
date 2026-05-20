@@ -128,6 +128,10 @@ interface GameContextValue {
   assignMentor: (mentorId: string, apprenticeId: string) => void;
   /** Removes a mentor from an apprentice rikishi. */
   removeMentor: (apprenticeId: string) => void;
+  /** Adds a sparring pair within a heya. */
+  addSparringPair: (heyaId: string, aId: string, bId: string) => void;
+  /** Removes a sparring pair within a heya. */
+  removeSparringPair: (heyaId: string, aId: string, bId: string) => void;
   /** Runs an auto-simulation with the given configuration. */
   runAutoSim: (config: AutoSimConfig) => Promise<AutoSimResult | null>;
   /** Recruits a sponsor for the player's heya. */
@@ -322,6 +326,20 @@ export function GameProvider({ children }: { children: ReactNode }) {
     dispatch(actions.removeMentor(apprenticeId));
   }, []);
 
+  const addSparringPairAction = useCallback(
+    (heyaId: string, aId: string, bId: string) => {
+      dispatch(actions.addSparringPair(heyaId, aId, bId));
+    },
+    []
+  );
+
+  const removeSparringPairAction = useCallback(
+    (heyaId: string, aId: string, bId: string) => {
+      dispatch(actions.removeSparringPair(heyaId, aId, bId));
+    },
+    []
+  );
+
   const value: GameContextValue = useMemo(
     () => ({
       state,
@@ -363,6 +381,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       buildInfrastructure: buildInfrastructureAction,
       assignMentor: assignMentorAction,
       removeMentor: removeMentorAction,
+      addSparringPair: addSparringPairAction,
+      removeSparringPair: removeSparringPairAction,
       runAutoSimAction,
     }),
     [
@@ -404,6 +424,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
       buildInfrastructureAction,
       assignMentorAction,
       removeMentorAction,
+      addSparringPairAction,
+      removeSparringPairAction,
     ]
   );
 

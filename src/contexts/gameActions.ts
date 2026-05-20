@@ -380,3 +380,17 @@ export const removeMentor = (apprenticeId: string): GameAction => ({
   type: "REMOVE_MENTOR",
   apprenticeId,
 });
+
+export const addSparringPair = (heyaId: string, aId: string, bId: string): GameAction => ({
+  type: "ADD_SPARRING_PAIR",
+  heyaId,
+  aId,
+  bId,
+});
+
+export const removeSparringPair = (heyaId: string, aId: string, bId: string): GameAction => ({
+  type: "REMOVE_SPARRING_PAIR",
+  heyaId,
+  aId,
+  bId,
+});

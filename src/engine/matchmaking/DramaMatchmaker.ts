@@ -91,6 +91,17 @@ export function scoreDrama(
     };
   }
 
+  // Ozeki kadoban survival (day 10+ with < 8 wins) — higher priority than yusho
+  const aIsKadoban = a.rank === "ozeki" && day >= 10 && aRecord.wins < 8;
+  const bIsKadoban = b.rank === "ozeki" && day >= 10 && bRecord.wins < 8;
+  if (aIsKadoban || bIsKadoban) {
+    return {
+      label: "kadoban_survival",
+      score: 90,
+      reason: "ozeki_kadoban_pressure",
+    };
+  }
+
   // Yusho decider: both rikishi are yusho contenders (within 2 wins of leader)
   const leaderWins = Math.max(...Array.from(standings.values()).map((r) => r.wins));
   const aIsContender = leaderWins - aRecord.wins <= 2;
@@ -100,17 +111,6 @@ export function scoreDrama(
       label: "yusho_decider",
       score: 85,
       reason: "yusho_contender_matchup",
-    };
-  }
-
-  // Ozeki kadoban survival (day 10+ with < 8 wins)
-  const aIsKadoban = a.rank === "ozeki" && day >= 10 && aRecord.wins < 8;
-  const bIsKadoban = b.rank === "ozeki" && day >= 10 && bRecord.wins < 8;
-  if (aIsKadoban || bIsKadoban) {
-    return {
-      label: "kadoban_survival",
-      score: 90,
-      reason: "ozeki_kadoban_pressure",
     };
   }
 
@@ -258,8 +258,9 @@ export function applyDramaBudget(
     if (!improved) break; // No more improvements possible
   }
 
-  // Add drama labels to reasons for high-drama bouts
+  // Add drama labels to reasons for high-drama bouts (skip if already labeled from swap)
   const finalPairings = bestPairings.map((p) => {
+    if (p.reasons.some((r: string) => r.startsWith("drama_"))) return p;
     const east = rikishiMap.get(p.eastId);
     const west = rikishiMap.get(p.westId);
     if (!east || !west) return p;

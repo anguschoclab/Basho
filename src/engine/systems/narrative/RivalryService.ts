@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * src/engine/systems/narrative/RivalryService.ts
  * ==============================================
@@ -305,6 +304,9 @@ export const RivalryService = {
   ): StateImpact {
     const builder = createImpactBuilder("maybeSeedSparringRivalry");
 
+    // Only friction pairs can seed rivalries
+    if (chemistry !== "friction") return builder.build();
+
     // Only seed after 12+ weeks of sparring
     if (weeksActive < 12) return builder.build();
 
@@ -323,19 +325,7 @@ export const RivalryService = {
     const rB = EntityCollection.getRikishiById(world, bId);
     if (!rA || !rB) return builder.build();
 
-    // Calculate initial heat based on chemistry
-    // Friction produces higher heat (40-60), neutral moderate (25-45), rut lower (15-35)
-    let minHeat = 25;
-    let maxHeat = 45;
-    if (chemistry === "friction") {
-      minHeat = 40;
-      maxHeat = 60;
-    } else if (chemistry === "rut") {
-      minHeat = 15;
-      maxHeat = 35;
-    }
-
-    const initialHeat = rng.int(minHeat, maxHeat);
+    const initialHeat = rng.int(40, 60);
 
     // Determine tone based on chemistry
     let tone = "respect";
