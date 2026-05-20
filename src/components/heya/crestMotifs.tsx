@@ -213,4 +213,3 @@ export function renderCrestMotif(motif: string, color: string): React.ReactNode 
     <circle cx="50" cy="50" r="30" fill="none" stroke={color} strokeWidth="8" />
   );
 }
-}
