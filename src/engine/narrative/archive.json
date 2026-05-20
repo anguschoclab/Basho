@@ -1419,6 +1419,13 @@
             "heated": "Heated",
             "fierce": "Fierce",
             "legendary": "Legendary"
+          },
+          "scandal": {
+            "none": "Clean Record",
+            "whispers": "Whispers",
+            "notable": "Under Review",
+            "severe": "On Probation",
+            "critical": "Critical Scrutiny"
           }
         }
       }

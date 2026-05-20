@@ -111,7 +111,8 @@
       "Bash(git branch *)",
       "Bash(npx -p typescript tsc --noEmit)",
       "Bash(./node_modules/.bin/tsc --noEmit)",
-      "Bash(node_modules/.bin/tsc --noEmit)"
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "Bash(python *)"
     ]
   },
   "outputStyle": "default"
