@@ -44,10 +44,7 @@ test_failures.txt
 *.local
 
 # ─── AI tool session directories (local to each tool, not for collaboration) ───
-.gemini/
-.jules/
-.agent/
-.lovable/
+
 
 # ─── Package manager caches and redundant lock files ───────────────────────────
 bun_cache/
