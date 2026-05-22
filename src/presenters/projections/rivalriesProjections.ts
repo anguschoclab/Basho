@@ -92,23 +92,31 @@ export function projectRivalriesPage(world: WorldState): RivalriesPageData {
     (id) => world.rikishi.get(id)?.shikona ?? id
   );
 
+  // ⚡ Bolt Optimization: Replace Object.entries().map() with a for...in loop
+  // to avoid O(N) array allocations from Map/Tuple conversions and multiple iterations
+  const stableRivalries = [];
+  const pairs = world.heyaRivalryPairs || {};
+  for (const key in pairs) {
+    if (!Object.prototype.hasOwnProperty.call(pairs, key)) continue;
+    const heat = pairs[key];
+    const [aId, bId] = key.split("::");
+    const a = world.heyas.get(aId);
+    const b = world.heyas.get(bId);
+    stableRivalries.push({
+      aId,
+      bId,
+      heat,
+      aName: a?.name ?? aId,
+      bName: b?.name ?? bId,
+      tone: heat >= 80 ? "bad_blood" : heat >= 50 ? "rivalry" : "neutral",
+    });
+  }
+
   return {
     playerRivalries: player,
     hotRivalries: hot,
     coolRivalries: cool,
-    stableRivalries: Object.entries(world.heyaRivalryPairs || {}).map(([key, heat]) => {
-      const [aId, bId] = key.split("::");
-      const a = world.heyas.get(aId);
-      const b = world.heyas.get(bId);
-      return {
-        aId,
-        bId,
-        heat,
-        aName: a?.name ?? aId,
-        bName: b?.name ?? bId,
-        tone: heat >= 80 ? "bad_blood" : heat >= 50 ? "rivalry" : "neutral",
-      };
-    }),
+    stableRivalries,
     stats: { total: normalized.length, inferno: infernoCount, hot: hotCount },
     heatmapData,
     playerRikishiNames,
