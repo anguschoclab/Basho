@@ -15,8 +15,10 @@ export function calculateTopRivals(r: Rikishi, world: WorldState): UIRivalEntry[
   const h2h = r.h2h ?? {};
   const rivalriesState = world.rivalriesState;
 
-  return Object.entries(h2h)
-    .map(([oppId, rec]) => {
+  // ⚡ Bolt Optimization: Use Object.keys() to avoid O(N) tuple allocations from Object.entries()
+  return Object.keys(h2h)
+    .map((oppId) => {
+      const rec = h2h[oppId];
       const opp = world.rikishi.get(oppId);
       const hKey = r.id < oppId ? `${r.id}|${oppId}` : `${oppId}|${r.id}`;
       const rivalry = rivalriesState?.pairs?.[hKey];
