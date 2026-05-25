@@ -345,6 +345,7 @@ export function WeeklyDrillPlanner({
                   size="icon"
                   className="h-8 w-8 text-muted-foreground/40 hover:text-destructive"
                   aria-label={`Reset weekly schedule for ${rikishi.shikona}`}
+                  tooltip={`Reset weekly schedule for ${rikishi.shikona}`}
                   onClick={() => handleFillWeek(rikishi.id, "asageiko")}
                 >
                   <RotateCcw className="h-4 w-4" />
