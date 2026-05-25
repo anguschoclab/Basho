@@ -51,11 +51,19 @@ async function createWindow(): Promise<void> {
   mainWindow.webContents.on("will-navigate", (event, navigationUrl) => {
     try {
       const parsedUrl = new URL(navigationUrl);
-      const isLocalFile = parsedUrl.protocol === "file:";
-      const isDevServer = process.env["ELECTRON_RENDERER_URL"] && navigationUrl.startsWith(process.env["ELECTRON_RENDERER_URL"]);
-      if (!isLocalFile && !isDevServer) {
-        event.preventDefault();
+
+      // In production (file://), hash routing is used, so valid navigations won't trigger will-navigate.
+      // We only allow will-navigate for the dev server origin to support HMR and dev reloads.
+      const devServerUrlStr = process.env["ELECTRON_RENDERER_URL"];
+      if (devServerUrlStr) {
+        const devServerUrl = new URL(devServerUrlStr);
+        if (parsedUrl.origin === devServerUrl.origin) {
+          return; // Allow dev server navigation
+        }
       }
+
+      // Block all other navigations (including all file://) to prevent local file attacks
+      event.preventDefault();
     } catch {
       // If URL parsing fails, prevent navigation to be safe
       event.preventDefault();

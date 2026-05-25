@@ -16,3 +16,8 @@ Replaced `JSON.parse` with `destr` in `safeParse` to mitigate prototype pollutio
 **Vulnerability:** The Electron app used `navigationUrl.startsWith("file://")` to check if a local file was being navigated to during the `will-navigate` event. This could be bypassed using URLs that start with "file://" but are actually malicious or invalid.
 **Learning:** Checking string prefixes for URL validation is fundamentally insecure because strings can easily trick weak patterns.
 **Prevention:** Always parse untrusted URLs using the standard `new URL(url)` API and verify the `protocol` property exactly (e.g., `parsedUrl.protocol === "file:"`). Wrap the parsing in a `try...catch` to prevent invalid URLs from crashing the handler or bypassing security checks.
+
+## 2025-05-08 - Block Unrestricted Local File Navigation
+**Vulnerability:** The Electron app's `will-navigate` event handler permitted navigation to any `file:` protocol URL (`parsedUrl.protocol === "file:"`). This allowed navigation to arbitrary, potentially malicious local HTML files which could then execute within the privileged Electron renderer context and abuse exposed IPC APIs.
+**Learning:** Naively allowing all `file:` navigation undermines Electron sandbox security, as it trusts any local file implicitly. Only explicitly trusted origins (e.g., the dev server) should be permitted during in-page navigation. Production files loaded via `loadFile()` don't inherently require enabling `will-navigate`.
+**Prevention:** Strictly deny all `will-navigate` events by default (`event.preventDefault()`). Only explicitly allow known, safe origins (like the dev server's exact origin, verified via `URL.origin`, not `startsWith`) if necessary.
