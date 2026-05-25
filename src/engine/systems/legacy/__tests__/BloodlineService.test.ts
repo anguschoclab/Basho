@@ -38,7 +38,16 @@ describe("BloodlineService.applyHeritageBonus", () => {
   it("adds technique bonus to rikishi carrying the bloodline trait", () => {
     const r = mockRikishi("r1", {
       technique: 60,
-      stats: { technique: 60, strength: 50, speed: 50, stamina: 50, mental: 50, adaptability: 50, balance: 50, weight: 145 },
+      stats: {
+        technique: 60,
+        strength: 50,
+        speed: 50,
+        stamina: 50,
+        mental: 50,
+        adaptability: 50,
+        balance: 50,
+        weight: 145,
+      },
     });
     r.lineage = { bloodlineTraitId: "bl_legend1" };
     const world = makeWorld(r, mockTrait);
@@ -54,7 +63,16 @@ describe("BloodlineService.applyHeritageBonus", () => {
   it("does not double-apply bonus beyond ceiling", () => {
     const r = mockRikishi("r1", {
       technique: 99,
-      stats: { technique: 99, strength: 50, speed: 50, stamina: 50, mental: 50, adaptability: 50, balance: 50, weight: 145 },
+      stats: {
+        technique: 99,
+        strength: 50,
+        speed: 50,
+        stamina: 50,
+        mental: 50,
+        adaptability: 50,
+        balance: 50,
+        weight: 145,
+      },
     });
     r.lineage = { bloodlineTraitId: "bl_legend1" };
     const world = makeWorld(r, mockTrait);
@@ -71,7 +89,16 @@ describe("BloodlineService.applyHeritageBonus", () => {
   it("skips rikishi with no lineage bloodlineTraitId", () => {
     const r = mockRikishi("r1", {
       technique: 60,
-      stats: { technique: 60, strength: 50, speed: 50, stamina: 50, mental: 50, adaptability: 50, balance: 50, weight: 145 },
+      stats: {
+        technique: 60,
+        strength: 50,
+        speed: 50,
+        stamina: 50,
+        mental: 50,
+        adaptability: 50,
+        balance: 50,
+        weight: 145,
+      },
     });
     r.lineage = {};
     const world = makeWorld(r, mockTrait);

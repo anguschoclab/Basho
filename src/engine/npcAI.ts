@@ -122,9 +122,9 @@ export interface NPCWeeklyDecision {
 
 /**
  * Core decision function for a single NPC-managed heya.
- * Analyzes the heya's state, spawns specialized worker agents for training, scouting, personnel, 
+ * Analyzes the heya's state, spawns specialized worker agents for training, scouting, personnel,
  * and global strategy, and integrates their proposals into a final weekly decision.
- * 
+ *
  * @param world - The current world state
  * @param heyaId - The ID of the heya making the decision
  * @returns A structured decision object containing training settings, scouting priority, and state impacts.
@@ -571,7 +571,7 @@ function applyInjuryRiskReduction(
 /**
  * Handle crisis response using the specialized Crisis Agent.
  * Analyzes the crisis context and selects the best option based on the Oyakata's persona and state.
- * 
+ *
  * @param world - The current world state
  * @param heyaId - The ID of the heya facing the crisis
  * @param crisis - The active crisis data
@@ -632,7 +632,7 @@ export function handleNPCCrisis(
 /**
  * Handle media event response using the specialized Media Agent.
  * Decides how a heya should respond to media scrutiny (e.g., apologize, deny, ignore).
- * 
+ *
  * @param world - The current world state
  * @param heyaId - The ID of the heya involved
  * @param eventId - The ID of the media event
@@ -764,7 +764,7 @@ export function consolidateOyakataMemory(
 /**
  * Applies a finalized NPC decision to the world state.
  * Translates high-level decisions (like intensity and focus) into specific training state updates.
- * 
+ *
  * @param world - The current world state
  * @param decision - The weekly decision to apply
  * @returns A StateImpact object representing the changes to the training state.
@@ -816,7 +816,7 @@ export function applyNPCDecision(world: WorldState, decision: NPCWeeklyDecision)
 /**
  * The main weekly tick loop for all NPC-managed heyas.
  * Iterates through available stables and generates/applies decisions for each.
- * 
+ *
  * @param world - The current world state
  * @returns A consolidated StateImpact representing all NPC decisions for the week.
  */

@@ -5,8 +5,6 @@
  * Extracted from uiDigest.ts to eliminate monolithic structure.
  */
 
-
-
 import type { WorldState } from "../../engine/types/world";
 import { BardEngine } from "../../engine/narrative/BardEngine";
 import { SeededRNG } from "../../engine/rng";

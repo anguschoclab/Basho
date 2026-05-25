@@ -188,7 +188,15 @@ const DECAY_OBS_FULL = 20; // at this many observations, bias is fully gone
  */
 export function generateScoutingBias(candidateId: string, year: number): ScoutingBias {
   const rng = rngFromSeed(`bias_${candidateId}_${year}`, "scouting", "bias");
-  const statKeys = ["strength", "speed", "balance", "technique", "stamina", "mental", "adaptability"] as const;
+  const statKeys = [
+    "strength",
+    "speed",
+    "balance",
+    "technique",
+    "stamina",
+    "mental",
+    "adaptability",
+  ] as const;
   const statOffsets = {} as ScoutingBias["statOffsets"];
   for (const key of statKeys) {
     const magnitude = Math.floor(rng.next() * BIAS_MAX);

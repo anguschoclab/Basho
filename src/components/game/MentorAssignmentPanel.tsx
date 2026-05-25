@@ -13,7 +13,13 @@
 import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { UserMinus, GraduationCap } from "lucide-react";
 import type { Rikishi } from "@/engine/types/rikishi";
 
@@ -140,9 +146,7 @@ export function MentorAssignmentPanel({
             </SelectTrigger>
             <SelectContent>
               {eligibleMentors.length === 0 ? (
-                <div className="p-2 text-xs text-muted-foreground">
-                  No eligible mentors
-                </div>
+                <div className="p-2 text-xs text-muted-foreground">No eligible mentors</div>
               ) : (
                 eligibleMentors.map((mentor) => (
                   <SelectItem key={mentor.id} value={mentor.id} className="text-xs">

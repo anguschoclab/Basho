@@ -22,7 +22,7 @@ import { resolveImpacts } from "../core/ImpactResolver";
 /**
  * Adapter matching the { seed, playerConfig? } call shape used in this worker.
  * Initializes a new game world.
- * 
+ *
  * @param {Object} opts - Generation options.
  * @param {string} opts.seed - The random seed for world generation.
  * @param {Object} [opts.playerConfig] - Optional player configuration.
@@ -38,7 +38,7 @@ function generateWorld(opts: { seed: string; playerConfig?: { heyaId?: string } 
 /**
  * Migrates old save format to work with Phase J citizenship rules.
  * Back-computes joinedHeyaDate for existing rikishi if missing.
- * 
+ *
  * @param {WorldState} world - The world state to migrate.
  * @returns {WorldState} The migrated world state.
  */
@@ -64,14 +64,16 @@ let worldVersion = 0;
 /**
  * Main message handler for the Web Worker.
  * Dispatches commands from the UI thread to their respective engine handlers.
- * 
+ *
  * @param {MessageEvent<EngineCommand>} event - The message event containing the command.
  */
 self.onmessage = async (event: MessageEvent<EngineCommand>) => {
   const command = event.data;
 
   const COMMAND_HANDLERS: {
-    [T in EngineCommand["type"]]: (cmd: Extract<EngineCommand, { type: T }>) => void | Promise<void>;
+    [T in EngineCommand["type"]]: (
+      cmd: Extract<EngineCommand, { type: T }>
+    ) => void | Promise<void>;
   } = {
     START_WORLD: (cmd) => {
       currentWorld = generateWorld({

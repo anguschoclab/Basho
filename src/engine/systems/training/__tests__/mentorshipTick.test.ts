@@ -34,7 +34,10 @@ describe("Mentorship Tick Integration", () => {
     apprentice.mentorId = "mentor1";
 
     const world = makeMockWorld({
-      rikishi: new Map([[mentor.id, mentor], [apprentice.id, apprentice]]),
+      rikishi: new Map([
+        [mentor.id, mentor],
+        [apprentice.id, apprentice],
+      ]),
     });
 
     const impact = applyMentorshipBonuses(world);
@@ -66,7 +69,10 @@ describe("Mentorship Tick Integration", () => {
     apprentice.mentorId = "mentor1";
 
     const world = makeMockWorld({
-      rikishi: new Map([[mentor.id, mentor], [apprentice.id, apprentice]]),
+      rikishi: new Map([
+        [mentor.id, mentor],
+        [apprentice.id, apprentice],
+      ]),
     });
 
     const impact = applyMentorshipBonuses(world);
@@ -118,7 +124,10 @@ describe("Mentorship Tick Integration", () => {
     apprentice.mentorId = "mentor1";
 
     const world = makeMockWorld({
-      rikishi: new Map([[mentor.id, mentor], [apprentice.id, apprentice]]),
+      rikishi: new Map([
+        [mentor.id, mentor],
+        [apprentice.id, apprentice],
+      ]),
     });
 
     const impact = applyMentorshipBonuses(world);
@@ -147,7 +156,10 @@ describe("Mentorship Tick Integration", () => {
     apprentice.mentorId = "mentor1";
 
     const world = makeMockWorld({
-      rikishi: new Map([[mentor.id, mentor], [apprentice.id, apprentice]]),
+      rikishi: new Map([
+        [mentor.id, mentor],
+        [apprentice.id, apprentice],
+      ]),
     });
 
     const impact = applyMentorshipBonuses(world);
@@ -176,7 +188,10 @@ describe("Mentorship Tick Integration", () => {
     apprentice.mentorId = "mentor1";
 
     const world = makeMockWorld({
-      rikishi: new Map([[mentor.id, mentor], [apprentice.id, apprentice]]),
+      rikishi: new Map([
+        [mentor.id, mentor],
+        [apprentice.id, apprentice],
+      ]),
     });
 
     const impact = applyMentorshipBonuses(world);

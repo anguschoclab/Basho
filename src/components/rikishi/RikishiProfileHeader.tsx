@@ -25,7 +25,7 @@ interface RikishiProfileHeaderProps {
 /**
  * Renders the header section of a rikishi's profile, including their name, rank, avatar, and key stats.
  * Displays various badges for health, ownership, nationality, and special statuses like Kadoban.
- * 
+ *
  * @param {RikishiProfileHeaderProps} props - The component props.
  * @param {UIRikishi} props.rikishi - The rikishi data to display.
  * @param {boolean} props.isOwned - Whether the rikishi is owned by the player's heya.

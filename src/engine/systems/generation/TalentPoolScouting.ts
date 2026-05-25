@@ -10,7 +10,13 @@ import type { StateImpact } from "../../core/StateImpact";
 import { WorldState } from "../../types/world";
 import { Id } from "../../types/common";
 import { TalentPoolType, TalentCandidate } from "../../types/talent";
-import { getConfidenceLevel, resolveScoutedAttribute, applyBias, decayBias, type ScoutingBias } from "../recruitment/FogOfWarService";
+import {
+  getConfidenceLevel,
+  resolveScoutedAttribute,
+  applyBias,
+  decayBias,
+  type ScoutingBias,
+} from "../recruitment/FogOfWarService";
 import { clampInt } from "../../utils/math";
 import { isForeign } from "../../utils/identity";
 import { ensureTalentPoolState } from "./TalentPoolStateService";
@@ -236,12 +242,17 @@ export function getScoutedCandidateView(world: WorldState, candidateId: Id) {
     return resolveScoutedAttribute(name, value, conf, `${seed}-${name}`);
   };
 
-  const resolvePotential = (name: string, value: number, statKey: keyof ScoutingBias["statOffsets"]) => {
+  const resolvePotential = (
+    name: string,
+    value: number,
+    statKey: keyof ScoutingBias["statOffsets"]
+  ) => {
     const conf = getConfidenceLevel(level, false, observations, "potential");
     // Apply bias if decayFactor > 0
-    const biasedValue = (decayedBias && decayedBias.decayFactor > 0)
-      ? applyBias(value, decayedBias.statOffsets[statKey], decayedBias.decayFactor)
-      : value;
+    const biasedValue =
+      decayedBias && decayedBias.decayFactor > 0
+        ? applyBias(value, decayedBias.statOffsets[statKey], decayedBias.decayFactor)
+        : value;
     return resolveScoutedAttribute(name, biasedValue, conf, `${seed}-pa-${name}`);
   };
 
@@ -261,7 +272,11 @@ export function getScoutedCandidateView(world: WorldState, candidateId: Id) {
           balance: resolvePotential("balance", candidate.potentialStats.balance, "balance"),
           stamina: resolvePotential("stamina", candidate.potentialStats.stamina, "stamina"),
           mental: resolvePotential("mental", candidate.potentialStats.mental, "mental"),
-          adaptability: resolvePotential("adaptability", candidate.potentialStats.adaptability, "adaptability"),
+          adaptability: resolvePotential(
+            "adaptability",
+            candidate.potentialStats.adaptability,
+            "adaptability"
+          ),
         }
       : undefined,
     // Development profile only at deep scouting (≥90)

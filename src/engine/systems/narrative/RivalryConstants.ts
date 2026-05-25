@@ -17,27 +17,27 @@ import type { Id } from "../../types/common";
  * These tones determine narrative generation and event selection.
  */
 export type RivalryTone =
-  | "respect"        // Mutual respect between evenly-matched opponents
-  | "grudge"          // Personal animosity from past slights
-  | "bad_blood"       // Deep-seated hatred from repeated conflicts
-  | "mentor_student"  // Teacher-student relationship dynamics
-  | "unstable"        // Volatile relationship with unpredictable outcomes
-  | "public_hype";    // Media-driven rivalry for fan entertainment
+  | "respect" // Mutual respect between evenly-matched opponents
+  | "grudge" // Personal animosity from past slights
+  | "bad_blood" // Deep-seated hatred from repeated conflicts
+  | "mentor_student" // Teacher-student relationship dynamics
+  | "unstable" // Volatile relationship with unpredictable outcomes
+  | "public_hype"; // Media-driven rivalry for fan entertainment
 
 /**
  * Rivalry trigger types representing how a rivalry was initiated.
  * Each trigger can contribute to the initial heat and tone of a rivalry.
  */
 export type RivalryTrigger =
-  | "repeat_matches"  // Multiple meetings between the same rikishi
-  | "close_finish"    // Bout ended in a very close decision
-  | "upset"           // Lower-ranked rikishi defeated higher-ranked
-  | "kinboshi"        // Maegashira defeated Yokozuna or Ozeki
-  | "title_stakes"    // Bout had championship implications
+  | "repeat_matches" // Multiple meetings between the same rikishi
+  | "close_finish" // Bout ended in a very close decision
+  | "upset" // Lower-ranked rikishi defeated higher-ranked
+  | "kinboshi" // Maegashira defeated Yokozuna or Ozeki
+  | "title_stakes" // Bout had championship implications
   | "injury_incident" // Bout resulted in or nearly resulted in injury
   | "personal_history" // Pre-existing relationship from background
-  | "heya_feud"       // Rivalry stemming from stable-to-stable conflict
-  | "sparring";       // Rivalry formed from extended sparring partnership
+  | "heya_feud" // Rivalry stemming from stable-to-stable conflict
+  | "sparring"; // Rivalry formed from extended sparring partnership
 
 /**
  * Canonical pair key for rivalries.

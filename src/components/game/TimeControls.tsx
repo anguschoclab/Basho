@@ -79,14 +79,32 @@ export function TimeControls() {
   const handleAdvanceWeek = () => {
     advanceInterim(1);
     const band = toDurationBand(7);
-    const label = band === "brief" ? "A brief moment" : band === "short" ? "A short while" : band === "moderate" ? "Some time" : band === "long" ? "A long time" : "An extended period";
+    const label =
+      band === "brief"
+        ? "A brief moment"
+        : band === "short"
+          ? "A short while"
+          : band === "moderate"
+            ? "Some time"
+            : band === "long"
+              ? "A long time"
+              : "An extended period";
     toast({ title: "Time advanced", description: `${label} passed.` });
   };
 
   const handleAdvanceOneDay = () => {
     advanceOneDay();
     const band = toDurationBand(1);
-    const label = band === "brief" ? "A brief moment" : band === "short" ? "A short while" : band === "moderate" ? "Some time" : band === "long" ? "A long time" : "An extended period";
+    const label =
+      band === "brief"
+        ? "A brief moment"
+        : band === "short"
+          ? "A short while"
+          : band === "moderate"
+            ? "Some time"
+            : band === "long"
+              ? "A long time"
+              : "An extended period";
     toast({ title: "Time advanced", description: `${label} passed.` });
   };
 

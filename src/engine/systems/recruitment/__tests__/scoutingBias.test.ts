@@ -1,9 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-  generateScoutingBias,
-  applyBias,
-  decayBias,
-} from "../FogOfWarService";
+import { generateScoutingBias, applyBias, decayBias } from "../FogOfWarService";
 
 describe("generateScoutingBias", () => {
   it("produces a bias in the ±20 range for each stat", () => {

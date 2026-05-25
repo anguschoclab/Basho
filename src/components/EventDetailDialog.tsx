@@ -72,7 +72,7 @@ const categoryIconMap: Record<string, React.ReactNode> = {
 /**
  * A dialog component that displays detailed information about a simulation event.
  * Shows the event's title, summary, category icon, and importance badge.
- * 
+ *
  * @param props - Component properties
  */
 export function EventDetailDialog({ event, isOpen, onClose }: EventDetailDialogProps) {

@@ -53,7 +53,10 @@ export function triggerPreBashoJournalism(world: WorldState): StateImpact {
   // B. Promotion Race
   const ozekiRikishi = Array.from(world.activeRikishiIds)
     .map((id) => world.rikishi.get(id))
-    .filter((r): r is Rikishi => r !== undefined && r.rank === "ozeki" && (r.consecutiveStrongOzeki ?? 0) >= 1)
+    .filter(
+      (r): r is Rikishi =>
+        r !== undefined && r.rank === "ozeki" && (r.consecutiveStrongOzeki ?? 0) >= 1
+    )
     .sort((a, b) => (b.consecutiveStrongOzeki ?? 0) - (a.consecutiveStrongOzeki ?? 0));
 
   if (ozekiRikishi.length > 0) {

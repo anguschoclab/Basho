@@ -54,7 +54,11 @@ interface GameContextValue {
   /** Latest UI digest built from world state. */
   digest: UIDigest | null;
   /** Creates a new world with the given seed. */
-  createWorld: (seed: string, playerHeyaId?: string, oyakataConfig?: import("@/engine/types/oyakata").OyakataCreationConfig) => void;
+  createWorld: (
+    seed: string,
+    playerHeyaId?: string,
+    oyakataConfig?: import("@/engine/types/oyakata").OyakataCreationConfig
+  ) => void;
   /** Sets the current game phase. */
   setPhase: (phase: GamePhase) => void;
   /** Selects a rikishi as the currently selected rikishi. */
@@ -152,9 +156,16 @@ const GameContext = createContext<GameContextValue | null>(null);
 export function GameProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(gameReducer, initialGameState);
 
-  const createWorld = useCallback((seed: string, playerHeyaId?: string, oyakataConfig?: import("@/engine/types/oyakata").OyakataCreationConfig) => {
-    dispatch(actions.createWorld(seed, playerHeyaId, oyakataConfig));
-  }, []);
+  const createWorld = useCallback(
+    (
+      seed: string,
+      playerHeyaId?: string,
+      oyakataConfig?: import("@/engine/types/oyakata").OyakataCreationConfig
+    ) => {
+      dispatch(actions.createWorld(seed, playerHeyaId, oyakataConfig));
+    },
+    []
+  );
 
   const setPhase = useCallback((phase: GamePhase) => {
     dispatch(actions.setPhase(phase));
@@ -315,30 +326,21 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const hasAutosaveCheck = useCallback(() => hasAutosave(), []);
   const getSaveSlots = useCallback(() => getSaveSlotInfos(), []);
 
-  const assignMentorAction = useCallback(
-    (mentorId: string, apprenticeId: string) => {
-      dispatch(actions.assignMentor(mentorId, apprenticeId));
-    },
-    []
-  );
+  const assignMentorAction = useCallback((mentorId: string, apprenticeId: string) => {
+    dispatch(actions.assignMentor(mentorId, apprenticeId));
+  }, []);
 
   const removeMentorAction = useCallback((apprenticeId: string) => {
     dispatch(actions.removeMentor(apprenticeId));
   }, []);
 
-  const addSparringPairAction = useCallback(
-    (heyaId: string, aId: string, bId: string) => {
-      dispatch(actions.addSparringPair(heyaId, aId, bId));
-    },
-    []
-  );
+  const addSparringPairAction = useCallback((heyaId: string, aId: string, bId: string) => {
+    dispatch(actions.addSparringPair(heyaId, aId, bId));
+  }, []);
 
-  const removeSparringPairAction = useCallback(
-    (heyaId: string, aId: string, bId: string) => {
-      dispatch(actions.removeSparringPair(heyaId, aId, bId));
-    },
-    []
-  );
+  const removeSparringPairAction = useCallback((heyaId: string, aId: string, bId: string) => {
+    dispatch(actions.removeSparringPair(heyaId, aId, bId));
+  }, []);
 
   const value: GameContextValue = useMemo(
     () => ({

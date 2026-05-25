@@ -9,8 +9,20 @@ import { mockRikishi, makeMockBasho } from "../../__tests__/utils";
 describe("force-differential physics — tie scenarios", () => {
   it("push battle with equal forces results in no retreat/destabilization", () => {
     // Create two rikishi with identical stats to ensure force tie
-    const east = mockRikishi("east", { power: 70, speed: 60, weight: 120, stamina: 60, fatigue: 0 });
-    const west = mockRikishi("west", { power: 70, speed: 60, weight: 120, stamina: 60, fatigue: 0 });
+    const east = mockRikishi("east", {
+      power: 70,
+      speed: 60,
+      weight: 120,
+      stamina: 60,
+      fatigue: 0,
+    });
+    const west = mockRikishi("west", {
+      power: 70,
+      speed: 60,
+      weight: 120,
+      stamina: 60,
+      fatigue: 0,
+    });
 
     const bout = { id: "tie-test-001", day: 1, rikishiEastId: "east", rikishiWestId: "west" };
     const basho = makeMockBasho();
@@ -73,7 +85,7 @@ describe("force-differential physics — tie scenarios", () => {
     // Results should be deterministic for same seed (verified in another test)
     // This test just ensures the simulation runs without errors
     expect(results.length).toBe(5);
-    results.forEach(r => {
+    results.forEach((r) => {
       expect(r.winner).toBeDefined();
       expect(r.duration).toBeGreaterThan(0);
     });

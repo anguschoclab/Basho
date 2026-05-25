@@ -22,31 +22,31 @@ export type EventScope = "world" | "heya" | "rikishi";
  * MENTOR_MENTEE_BOUT: Fired when a mentor faces their apprentice in a basho bout.
  */
 export type EngineEventType =
-  | "BOUT_RESOLVED"              // A bout has been resolved with a result
-  | "RECRUIT_DISCOVERED"         // A new recruit has been discovered
-  | "MONTHLY_FINANCE_REPORT"     // Monthly financial report generated
-  | "MANAGEMENT_DECISION"        // Player made a management decision
-  | "STRATEGY_SHIFT"             // Training or strategy was shifted
-  | "RIVALRY_HEAT_SPIKE"         // Rivalry heat crossed a threshold
-  | "SPARRING_RIVALRY_SEEDED"    // Rivalry seeded from sparring partnership
-  | "MEDICAL_REPORT"             // Medical status report generated
-  | "TRAINING_UPDATE"            // Training results update
-  | "GOVERNANCE_RULING"          // A governance ruling was issued
-  | "FINANCIAL_ALERT"            // Financial alert triggered
-  | "AWARD_CONFERRED"            // An award was conferred
-  | "LIFECYCLE_EVENT"            // Career lifecycle event (retirement, promotion, etc.)
-  | "BASHO_STATUS"               // Basho status update
-  | "WELFARE_COMPLIANCE"         // Welfare compliance check
-  | "OYAKATA_MOOD_SHIFT"         // Oyakata mood changed
-  | "NPC_MANAGER_DECISION"       // NPC manager made a decision
-  | "NARRATIVE_STRATEGY_SHIFT"   // Narrative strategy shifted
-  | "FACILITY_UPGRADED"          // Facility was upgraded
-  | "FACILITY_DEGRADED"          // Facility was degraded
-  | "ROSTER_OVERFLOW_RELEASE"    // Rikishi released due to roster overflow
-  | "PROMOTION_DELIBERATION"     // Promotion deliberation occurred
-  | "GLOBAL_CUP"                 // Global Cup event
-  | "NARRATIVE_CRISIS_TRIGGERED"  // Narrative crisis was triggered
-  | "MENTOR_MENTEE_BOUT";        // Mentor faced apprentice in bout
+  | "BOUT_RESOLVED" // A bout has been resolved with a result
+  | "RECRUIT_DISCOVERED" // A new recruit has been discovered
+  | "MONTHLY_FINANCE_REPORT" // Monthly financial report generated
+  | "MANAGEMENT_DECISION" // Player made a management decision
+  | "STRATEGY_SHIFT" // Training or strategy was shifted
+  | "RIVALRY_HEAT_SPIKE" // Rivalry heat crossed a threshold
+  | "SPARRING_RIVALRY_SEEDED" // Rivalry seeded from sparring partnership
+  | "MEDICAL_REPORT" // Medical status report generated
+  | "TRAINING_UPDATE" // Training results update
+  | "GOVERNANCE_RULING" // A governance ruling was issued
+  | "FINANCIAL_ALERT" // Financial alert triggered
+  | "AWARD_CONFERRED" // An award was conferred
+  | "LIFECYCLE_EVENT" // Career lifecycle event (retirement, promotion, etc.)
+  | "BASHO_STATUS" // Basho status update
+  | "WELFARE_COMPLIANCE" // Welfare compliance check
+  | "OYAKATA_MOOD_SHIFT" // Oyakata mood changed
+  | "NPC_MANAGER_DECISION" // NPC manager made a decision
+  | "NARRATIVE_STRATEGY_SHIFT" // Narrative strategy shifted
+  | "FACILITY_UPGRADED" // Facility was upgraded
+  | "FACILITY_DEGRADED" // Facility was degraded
+  | "ROSTER_OVERFLOW_RELEASE" // Rikishi released due to roster overflow
+  | "PROMOTION_DELIBERATION" // Promotion deliberation occurred
+  | "GLOBAL_CUP" // Global Cup event
+  | "NARRATIVE_CRISIS_TRIGGERED" // Narrative crisis was triggered
+  | "MENTOR_MENTEE_BOUT"; // Mentor faced apprentice in bout
 
 /**
  * Type representing event phase.
@@ -59,23 +59,23 @@ export type EventPhase = "weekly" | "monthly" | "basho_day" | "basho_wrap" | "ma
  * Used to group events for filtering and narrative generation.
  */
 export type EventCategory =
-  | "training"      // Training-related events
-  | "scouting"      // Recruitment and scouting events
-  | "injury"        // Injury and medical events
-  | "economy"       // Financial and economic events
-  | "sponsor"       // Sponsor and kensho events
-  | "media"         // Media and publicity events
-  | "rivalry"       // Rivalry and relationship events
-  | "promotion"     // Promotion and demotion events
-  | "discipline"    // Disciplinary events
-  | "facility"      // Facility management events
-  | "milestone"     // Career milestone events
-  | "match"         // Match and bout events
-  | "basho"         // Basho-wide events
-  | "career"        // Career lifecycle events
-  | "welfare"       // Welfare and compliance events
-  | "narrative"     // Narrative and story events
-  | "misc";         // Miscellaneous events
+  | "training" // Training-related events
+  | "scouting" // Recruitment and scouting events
+  | "injury" // Injury and medical events
+  | "economy" // Financial and economic events
+  | "sponsor" // Sponsor and kensho events
+  | "media" // Media and publicity events
+  | "rivalry" // Rivalry and relationship events
+  | "promotion" // Promotion and demotion events
+  | "discipline" // Disciplinary events
+  | "facility" // Facility management events
+  | "milestone" // Career milestone events
+  | "match" // Match and bout events
+  | "basho" // Basho-wide events
+  | "career" // Career lifecycle events
+  | "welfare" // Welfare and compliance events
+  | "narrative" // Narrative and story events
+  | "misc"; // Miscellaneous events
 
 /**
  * Type representing event importance.

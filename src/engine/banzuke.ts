@@ -56,7 +56,7 @@ interface BanzukeUpdateResult {
 /**
  * Generates a unique numeric key for a banzuke entry to facilitate sorting.
  * The key is derived from tier, rank number, and side (East/West).
- * 
+ *
  * @param {BanzukeEntry} e - The banzuke entry.
  * @returns {number} A numeric sort key (lower is better).
  */
@@ -72,7 +72,7 @@ function positionKey(e: BanzukeEntry): number {
 /**
  * Compares the current banzuke snapshot with a previous one to detect rank changes (up/down/new).
  * Returns a list of changes sorted by significance (Sanyaku changes first).
- * 
+ *
  * @param {BanzukeSnapshot} currentSnapshot - The current banzuke state.
  * @param {BanzukeSnapshot | null} previousSnapshot - The previous banzuke state.
  * @param {Map<string, Rikishi>} rikishiMap - Map of rikishi details for retirement checks.
@@ -168,7 +168,7 @@ function divisionTier(d: Division): number {
 /**
  * Main entry point for updating the entire banzuke hierarchy after a tournament.
  * Calculates promotions, demotions, Ozeki status, and assigns rikishi to available slots.
- * 
+ *
  * @param {BanzukeEntry[]} currentBanzuke - The banzuke as it stood during the tournament.
  * @param {Map<string, BashoPerformance>} perfById - Map of rikishi performances in the last basho.
  * @param {WorldState} world - The current global world state.
@@ -292,7 +292,7 @@ export function updateBanzuke(
 
 /**
  * Generates movement events (promotion, demotion, lateral, status) by comparing old and new banzuke assignments.
- * 
+ *
  * @param {BanzukeEntry[]} old - The previous banzuke roster.
  * @param {BanzukeEntry[]} assigned - The new banzuke roster.
  * @param {OzekiKadobanMap} nextOzeki - The new Ozeki kadoban statuses.
@@ -359,7 +359,7 @@ function banzukeMovementEvents(
 /**
  * Computes the required counts for Sanyaku slots (Yokozuna, Ozeki, Sekiwake, Komusubi) based on performance.
  * Ensures a minimum of 2 for Ozeki, Sekiwake, and Komusubi.
- * 
+ *
  * @param {BanzukeEntry[]} current - The current banzuke entries.
  * @param {Map<string, BashoPerformance>} perfById - Map of performances.
  * @param {Set<string>} demoted - Set of rikishi IDs who were demoted from Ozeki.

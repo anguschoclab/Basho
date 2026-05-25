@@ -282,7 +282,11 @@ export function applyMentorshipBonuses(world: WorldState): StateImpact {
  * expect(appUpdate?.mentorId).toBe(mentor.id);
  * ```
  */
-export function assignMentor(world: WorldState, mentorId: string, apprenticeId: string): StateImpact {
+export function assignMentor(
+  world: WorldState,
+  mentorId: string,
+  apprenticeId: string
+): StateImpact {
   const builder = createImpactBuilder("assignMentor");
   const mentor = world.rikishi.get(mentorId);
   const apprentice = world.rikishi.get(apprenticeId);

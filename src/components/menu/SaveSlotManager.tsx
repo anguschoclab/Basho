@@ -295,7 +295,8 @@ export function SaveSlotManager({
           <AlertDialogHeader>
             <AlertDialogTitle>Delete save?</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete {confirmDelete?.replace("slot_", "Slot ")}? This action cannot be undone.
+              Are you sure you want to delete {confirmDelete?.replace("slot_", "Slot ")}? This
+              action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

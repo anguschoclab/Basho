@@ -49,15 +49,7 @@ function ScoutingConfidenceBadge({
   hasBias: boolean;
 }) {
   const stars =
-    scoutLevel >= 90
-      ? 5
-      : scoutLevel >= 70
-        ? 4
-        : scoutLevel >= 45
-          ? 3
-          : scoutLevel >= 20
-            ? 2
-            : 1;
+    scoutLevel >= 90 ? 5 : scoutLevel >= 70 ? 4 : scoutLevel >= 45 ? 3 : scoutLevel >= 20 ? 2 : 1;
   return (
     <div className="flex items-center gap-1 font-mono">
       {Array.from({ length: 5 }).map((_, i) => (
@@ -69,7 +61,11 @@ function ScoutingConfidenceBadge({
           ★
         </span>
       ))}
-      {hasBias && <span className="text-xs ml-1" style={{ color: "hsl(var(--warning))" }}>est.</span>}
+      {hasBias && (
+        <span className="text-xs ml-1" style={{ color: "hsl(var(--warning))" }}>
+          est.
+        </span>
+      )}
     </div>
   );
 }

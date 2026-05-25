@@ -87,7 +87,8 @@ export function getOyakataStyleProfile(world: WorldState, oyakata: Oyakata): Oya
       preferredArchetypes: ["yotsu", "hybrid"],
       preferredStyle: "yotsu",
       statWeights: { power: 0.8, speed: 0.3, technique: 0.7, size: 0.8, potential: 0.5 },
-      description: "Old school. Believes in belt-wrestling, heavy training, and traditional methods.",
+      description:
+        "Old school. Believes in belt-wrestling, heavy training, and traditional methods.",
     }),
     innovator: () => ({
       philosophy: "innovator",
@@ -108,7 +109,8 @@ export function getOyakataStyleProfile(world: WorldState, oyakata: Oyakata): Oya
       preferredArchetypes: ["trickster", "speedster"],
       preferredStyle: "any",
       statWeights: { power: 0.4, speed: 0.5, technique: 0.5, size: 0.3, potential: 1.0 },
-      description: "Scouts overlooked talent from obscure sources. Values raw potential over polish.",
+      description:
+        "Scouts overlooked talent from obscure sources. Values raw potential over polish.",
     }),
     balanced: () => ({
       philosophy: "balanced",

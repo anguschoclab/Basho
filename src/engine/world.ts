@@ -39,7 +39,7 @@ export { getActiveRikishi, getStableRikishi, applyBoutResult, handleMediaEvent }
 // Type guard or helper to access current basho
 /**
  * Retrieves the current basho state from the world.
- * 
+ *
  * @param {WorldState} world - The current world state.
  * @returns {BashoState | undefined} The current basho state, or undefined if none is active.
  */
@@ -51,7 +51,7 @@ export const issueGovernanceRuling = governance.issueGovernanceRuling;
 
 /**
  * Initializes and starts a new basho (tournament).
- * 
+ *
  * @param {WorldState} world - The current world state.
  * @param {BashoName} [bashoName] - The optional name of the basho to start.
  * @returns {WorldState} The updated world state with the new basho started.
@@ -69,7 +69,7 @@ export function startBasho(world: WorldState, bashoName?: BashoName): WorldState
 /**
  * Advances the current basho by one day.
  * Handles day increments, schedule validation, and status event logging.
- * 
+ *
  * @param {WorldState} world - The current world state.
  * @returns {WorldState} The updated world state after advancing the day.
  */
@@ -114,7 +114,7 @@ export function advanceBashoDay(world: WorldState): WorldState {
 /**
  * Simulates a specific bout for the current day.
  * Handles bout resolution, impact calculation, and standings updates.
- * 
+ *
  * @param {WorldState} world - The current world state.
  * @param {number} unplayedIndex - The index of the bout to simulate among today's unplayed matches.
  * @param {import("./types/combat").BoutTactic} [playerTactic] - Optional tactic chosen by the player.
@@ -193,7 +193,7 @@ export function simulateBoutForToday(
 
 /**
  * Concludes the current basho, finalizing rankings and distributions.
- * 
+ *
  * @param {WorldState} world - The current world state.
  * @returns {WorldState} The updated world state after basho conclusion.
  */
@@ -220,7 +220,7 @@ export { publishBanzukeUpdate } from "./banzuke/BanzukePublisher";
 /**
  * Advances the world state through the interim period (between tournaments).
  * Processes multiple weeks of daily ticks.
- * 
+ *
  * @param {WorldState} world - The current world state.
  * @param {number} [weeks=1] - The number of weeks to advance.
  * @returns {WorldState} The updated world state.
@@ -266,7 +266,7 @@ export function advanceDay(world: WorldState): WorldState | null {
 
 /**
  * Retrieves the basho statistics (wins, losses, absences) for a specific rikishi.
- * 
+ *
  * @param {WorldState} world - The current world state.
  * @param {Id} rikishiId - The unique ID of the rikishi.
  * @returns {Object} An object containing wins, losses, and absences.

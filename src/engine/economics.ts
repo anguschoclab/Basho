@@ -31,7 +31,7 @@ import type { StateImpact } from "./core/StateImpact";
 /**
  * Handles insolvency for a heya when its funds fall below the debt limit.
  * Attempts a benefactor bailout at extreme debt; reports a scandal if no benefactor is available.
- * 
+ *
  * @param {Heya} heya - The heya experiencing insolvency.
  * @param {WorldState} world - The current world state.
  */
@@ -63,7 +63,7 @@ export function handleInsolvency(heya: Heya, world: WorldState): void {
  * Settles Kensho (prize money) rewards when a bout is resolved.
  * Implements Constitution §6: ¥70,000 per envelope, with a 50/50 split between rikishi and heya.
  * 30% of the rikishi's share is diverted to their retirement fund.
- * 
+ *
  * @param {WorldState} world - The current world state.
  * @param {Object} context - The context of the resolved bout.
  * @param {MatchSchedule} context.match - The match schedule entry.
@@ -179,7 +179,7 @@ export function onBoutResolvedEconomics(
 /**
  * Executes the post-basho sponsor churn checks according to Constitution Addendum D.
  * Delegates to the `SponsorshipService`.
- * 
+ *
  * @param {WorldState} world - The current world state.
  * @returns {StateImpact} The state impact describing sponsor churn updates.
  */

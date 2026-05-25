@@ -20,7 +20,12 @@ describe("RivalryService.maybeSeedSparringRivalry", () => {
   it("returns empty impact when weeksActive < 12", () => {
     const a = mockRikishi("r1", { heyaId: "h1" });
     const b = mockRikishi("r2", { heyaId: "h1" });
-    const world = makeMockWorld({ rikishi: new Map([[a.id, a], [b.id, b]]) });
+    const world = makeMockWorld({
+      rikishi: new Map([
+        [a.id, a],
+        [b.id, b],
+      ]),
+    });
 
     const impact = RivalryService.maybeSeedSparringRivalry(world, a.id, b.id, "friction", 11);
     const updatedWorld = resolveImpacts(world, [impact]);
@@ -32,7 +37,10 @@ describe("RivalryService.maybeSeedSparringRivalry", () => {
     const a = mockRikishi("r1", { heyaId: "h1" });
     const b = mockRikishi("r2", { heyaId: "h1" });
     const world = makeMockWorld({
-      rikishi: new Map([[a.id, a], [b.id, b]]),
+      rikishi: new Map([
+        [a.id, a],
+        [b.id, b],
+      ]),
       rivalriesState: {
         version: "1.0.0",
         pairs: {
@@ -68,7 +76,10 @@ describe("RivalryService.maybeSeedSparringRivalry", () => {
     const b = mockRikishi("r2", { heyaId: "h1", shikona: "RikishiB" });
     // Use a seed that will produce RNG value <= 0.4 to trigger seeding
     const world = makeMockWorld({
-      rikishi: new Map([[a.id, a], [b.id, b]]),
+      rikishi: new Map([
+        [a.id, a],
+        [b.id, b],
+      ]),
       seed: "sparring-seed-friction",
     });
 
@@ -89,7 +100,10 @@ describe("RivalryService.maybeSeedSparringRivalry", () => {
     const a = mockRikishi("r1", { heyaId: "h1", shikona: "RikishiA" });
     const b = mockRikishi("r2", { heyaId: "h1", shikona: "RikishiB" });
     const world = makeMockWorld({
-      rikishi: new Map([[a.id, a], [b.id, b]]),
+      rikishi: new Map([
+        [a.id, a],
+        [b.id, b],
+      ]),
       seed: "sparring-seed-rut",
     });
 
@@ -108,7 +122,10 @@ describe("RivalryService.maybeSeedSparringRivalry", () => {
     const a = mockRikishi("r1", { heyaId: "h1", shikona: "RikishiA" });
     const b = mockRikishi("r2", { heyaId: "h1", shikona: "RikishiB" });
     const world = makeMockWorld({
-      rikishi: new Map([[a.id, a], [b.id, b]]),
+      rikishi: new Map([
+        [a.id, a],
+        [b.id, b],
+      ]),
       seed: "sparring-seed-neutral",
     });
 
@@ -127,7 +144,10 @@ describe("RivalryService.maybeSeedSparringRivalry", () => {
     const a = mockRikishi("r1", { heyaId: "h1", shikona: "RikishiA" });
     const b = mockRikishi("r2", { heyaId: "h1", shikona: "RikishiB" });
     const world = makeMockWorld({
-      rikishi: new Map([[a.id, a], [b.id, b]]),
+      rikishi: new Map([
+        [a.id, a],
+        [b.id, b],
+      ]),
       seed: "sparring-seed-event",
     });
 
@@ -148,7 +168,10 @@ describe("RivalryService.maybeSeedSparringRivalry", () => {
     const a = mockRikishi("r10", { heyaId: "h1", shikona: "Rikishi10" });
     const b = mockRikishi("r2", { heyaId: "h1", shikona: "Rikishi2" });
     const world = makeMockWorld({
-      rikishi: new Map([[a.id, a], [b.id, b]]),
+      rikishi: new Map([
+        [a.id, a],
+        [b.id, b],
+      ]),
       seed: "sparring-seed-key",
     });
 

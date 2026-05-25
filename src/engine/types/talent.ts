@@ -31,11 +31,11 @@ export type VisibilityBand = "public" | "rumored" | "obscure" | "hidden";
  * Current status of a candidate in the recruitment pipeline.
  */
 export type CandidateAvailabilityState =
-  | "available"    // Available for recruitment
-  | "in_talks"      // In negotiations with a heya
-  | "signed"        // Signed to a heya
-  | "locked"        // Locked (cannot be recruited)
-  | "withdrawn";    // Withdrawn from consideration
+  | "available" // Available for recruitment
+  | "in_talks" // In negotiations with a heya
+  | "signed" // Signed to a heya
+  | "locked" // Locked (cannot be recruited)
+  | "withdrawn"; // Withdrawn from consideration
 
 /**
  * Type representing suitor interest band.

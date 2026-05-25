@@ -49,7 +49,12 @@ describe("applyWeeklySparring", () => {
       technique: 30,
       balance: 25,
     });
-    const world = makeMockWorld({ rikishi: new Map([[a.id, a], [b.id, b]]) });
+    const world = makeMockWorld({
+      rikishi: new Map([
+        [a.id, a],
+        [b.id, b],
+      ]),
+    });
 
     const assignImpact = assignSparringPair(world, "h1", a.id, b.id, 10);
     const world1 = resolveImpacts(world, [assignImpact]);
@@ -81,7 +86,12 @@ describe("applyWeeklySparring", () => {
       technique: 30,
       balance: 25,
     });
-    const world = makeMockWorld({ rikishi: new Map([[a.id, a], [b.id, b]]) });
+    const world = makeMockWorld({
+      rikishi: new Map([
+        [a.id, a],
+        [b.id, b],
+      ]),
+    });
 
     const assignImpact = assignSparringPair(world, "h1", a.id, b.id, 10);
     const world1 = resolveImpacts(world, [assignImpact]);
@@ -112,7 +122,12 @@ describe("applyWeeklySparring", () => {
       technique: 30,
       balance: 25,
     });
-    const world = makeMockWorld({ rikishi: new Map([[a.id, a], [b.id, b]]) });
+    const world = makeMockWorld({
+      rikishi: new Map([
+        [a.id, a],
+        [b.id, b],
+      ]),
+    });
 
     const assignImpact = assignSparringPair(world, "h1", a.id, b.id, 10);
     const world1 = resolveImpacts(world, [assignImpact]);
@@ -143,7 +158,12 @@ describe("applyWeeklySparring", () => {
       technique: 30,
       balance: 25,
     });
-    const world = makeMockWorld({ rikishi: new Map([[a.id, a], [b.id, b]]) });
+    const world = makeMockWorld({
+      rikishi: new Map([
+        [a.id, a],
+        [b.id, b],
+      ]),
+    });
 
     const assignImpact = assignSparringPair(world, "h1", a.id, b.id, 10);
     const world1 = resolveImpacts(world, [assignImpact]);
@@ -202,7 +222,14 @@ describe("applyWeeklySparring", () => {
       technique: 25,
       balance: 20,
     });
-    const world = makeMockWorld({ rikishi: new Map([[a.id, a], [b.id, b], [c.id, c], [d.id, d]]) });
+    const world = makeMockWorld({
+      rikishi: new Map([
+        [a.id, a],
+        [b.id, b],
+        [c.id, c],
+        [d.id, d],
+      ]),
+    });
 
     const assignImpact1 = assignSparringPair(world, "h1", a.id, b.id, 10);
     const world1 = resolveImpacts(world, [assignImpact1]);
@@ -240,7 +267,12 @@ describe("phase01_week_training integration", () => {
       technique: 30,
       balance: 25,
     });
-    const world = makeMockWorld({ rikishi: new Map([[a.id, a], [b.id, b]]) });
+    const world = makeMockWorld({
+      rikishi: new Map([
+        [a.id, a],
+        [b.id, b],
+      ]),
+    });
 
     const assignImpact = assignSparringPair(world, "h1", a.id, b.id, 10);
     const world1 = resolveImpacts(world, [assignImpact]);

@@ -154,7 +154,10 @@ export function generateSponsor(
   };
 }
 
-const TIER_TRAIT_RANGES: Record<SponsorTier, { prestigeMin: number; prestigeMax: number; loyaltyMin: number; loyaltyMax: number }> = {
+const TIER_TRAIT_RANGES: Record<
+  SponsorTier,
+  { prestigeMin: number; prestigeMax: number; loyaltyMin: number; loyaltyMax: number }
+> = {
   T0: { prestigeMin: 10, prestigeMax: 35, loyaltyMin: 10, loyaltyMax: 40 },
   T1: { prestigeMin: 15, prestigeMax: 45, loyaltyMin: 20, loyaltyMax: 55 },
   T2: { prestigeMin: 25, prestigeMax: 60, loyaltyMin: 30, loyaltyMax: 70 },

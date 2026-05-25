@@ -5,12 +5,7 @@ import type { InjuryType, InjurySeverity, InjuryBodyArea } from "../systems/heal
 
 import type { Id } from "./common";
 import type { AvatarConfig } from "./avatar";
-import {
-  Style,
-  CombatArchetype,
-  KimariteId,
-  CombatProfile,
-} from "./combat";
+import { Style, CombatArchetype, KimariteId, CombatProfile } from "./combat";
 
 import type { Division, Rank, Side } from "./banzuke";
 import type { H2HRecord, MatchResultLog } from "./records";

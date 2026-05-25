@@ -259,7 +259,10 @@ function generateColors(
 ): { primary: string; secondary: string; accent: string } {
   const brand = palette.heyaBrand;
 
-  const COLOR_GENERATORS: Record<DesignOrigin, () => { primary: string; secondary: string; accent: string }> = {
+  const COLOR_GENERATORS: Record<
+    DesignOrigin,
+    () => { primary: string; secondary: string; accent: string }
+  > = {
     national: () => {
       const flagColors = NATIONAL_FLAG_PALETTES[palette.rikishiNationality];
       if (flagColors) {

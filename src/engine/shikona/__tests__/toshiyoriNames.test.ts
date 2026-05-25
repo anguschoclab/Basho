@@ -45,26 +45,78 @@ describe("generateToshiyoriName", () => {
   it("produces a name from the known pool or composed parts", () => {
     // Run 50 samples — each must either be from the pool or be a compound of known parts
     const TOSHIYORI_POOL = [
-      "Saganoumi", "Ryogoku", "Azumayama", "Shiranami", "Nishikido",
-      "Kasugaumi", "Otodake", "Tomozuna", "Kumagatani", "Wakamatsu",
-      "Kitazakura", "Minatogawa", "Onomatsu", "Tatsunami", "Musashigawa",
-      "Narutoumi", "Hamanishiki", "Michinoku", "Nakamura", "Asahiyama",
-      "Izutsu", "Kitanoumi", "Kagamiyama", "Isenoumi", "Hatachiyama",
-      "Oitekaze", "Sanoyama", "Fujishima", "Kataonami", "Nishimonai",
+      "Saganoumi",
+      "Ryogoku",
+      "Azumayama",
+      "Shiranami",
+      "Nishikido",
+      "Kasugaumi",
+      "Otodake",
+      "Tomozuna",
+      "Kumagatani",
+      "Wakamatsu",
+      "Kitazakura",
+      "Minatogawa",
+      "Onomatsu",
+      "Tatsunami",
+      "Musashigawa",
+      "Narutoumi",
+      "Hamanishiki",
+      "Michinoku",
+      "Nakamura",
+      "Asahiyama",
+      "Izutsu",
+      "Kitanoumi",
+      "Kagamiyama",
+      "Isenoumi",
+      "Hatachiyama",
+      "Oitekaze",
+      "Sanoyama",
+      "Fujishima",
+      "Kataonami",
+      "Nishimonai",
     ];
     const CLASSICAL = [
-      "Kitanofuji", "Wakachiyo", "Tochinishiki", "Harunoyama",
-      "Narutaki", "Aoiyama", "Irodori", "Masuiyama",
+      "Kitanofuji",
+      "Wakachiyo",
+      "Tochinishiki",
+      "Harunoyama",
+      "Narutaki",
+      "Aoiyama",
+      "Irodori",
+      "Masuiyama",
     ];
-    const GEO_PREFIXES = ["Nishi", "Higashi", "Kita", "Minami", "Aze", "Mino", "Ise", "Tosa", "Kaga", "Bizen"];
-    const NATURE_SUFFIXES = ["noumi", "yama", "nishiki", "hama", "zaka", "gawa", "take", "shima", "ura", "zeki"];
+    const GEO_PREFIXES = [
+      "Nishi",
+      "Higashi",
+      "Kita",
+      "Minami",
+      "Aze",
+      "Mino",
+      "Ise",
+      "Tosa",
+      "Kaga",
+      "Bizen",
+    ];
+    const NATURE_SUFFIXES = [
+      "noumi",
+      "yama",
+      "nishiki",
+      "hama",
+      "zaka",
+      "gawa",
+      "take",
+      "shima",
+      "ura",
+      "zeki",
+    ];
 
     for (let i = 0; i < 50; i++) {
       const rng = new SeededRNG(`pool-check-${i}`);
       const name = generateToshiyoriName(rng);
       const isFromPool = TOSHIYORI_POOL.includes(name) || CLASSICAL.includes(name);
-      const isComposed = GEO_PREFIXES.some((p) =>
-        name.startsWith(p) && NATURE_SUFFIXES.some((s) => name.endsWith(s))
+      const isComposed = GEO_PREFIXES.some(
+        (p) => name.startsWith(p) && NATURE_SUFFIXES.some((s) => name.endsWith(s))
       );
       expect(isFromPool || isComposed).toBe(true);
     }

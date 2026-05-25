@@ -22,7 +22,10 @@ interface Props {
 }
 
 const CHEM_STYLES = {
-  friction: { label: "Friction", className: "text-[hsl(var(--success))] border-[hsl(var(--success)/0.35)]" },
+  friction: {
+    label: "Friction",
+    className: "text-[hsl(var(--success))] border-[hsl(var(--success)/0.35)]",
+  },
   rut: { label: "Rut", className: "text-[hsl(var(--warning))] border-[hsl(var(--warning)/0.35)]" },
   neutral: { label: "Neutral", className: "text-muted-foreground" },
 } as const;
@@ -31,10 +34,7 @@ export function SparringPanel({ heyaRikishi, pairs, onAddPair, onRemovePair }: P
   const [selectedA, setSelectedA] = useState("");
   const [selectedB, setSelectedB] = useState("");
 
-  const pairedIds = useMemo(
-    () => new Set(pairs.flatMap((p) => [p.aId, p.bId])),
-    [pairs]
-  );
+  const pairedIds = useMemo(() => new Set(pairs.flatMap((p) => [p.aId, p.bId])), [pairs]);
 
   const availableRikishi = useMemo(
     () => heyaRikishi.filter((r) => !pairedIds.has(r.id) && !r.injured && !r.isRetired),
@@ -85,10 +85,15 @@ export function SparringPanel({ heyaRikishi, pairs, onAddPair, onRemovePair }: P
               <span className="text-sm">
                 {a.shikona} <span className="text-muted-foreground">vs</span> {b.shikona}
               </span>
-              <Badge variant="outline" className={`font-mono text-[9px] tracking-wider ${chem.className}`}>
+              <Badge
+                variant="outline"
+                className={`font-mono text-[9px] tracking-wider ${chem.className}`}
+              >
                 {chem.label}
               </Badge>
-              <span className="text-xs text-muted-foreground font-mono tabular-nums">{pair.weeksActive}w</span>
+              <span className="text-xs text-muted-foreground font-mono tabular-nums">
+                {pair.weeksActive}w
+              </span>
               <Button
                 size="sm"
                 variant="ghost"

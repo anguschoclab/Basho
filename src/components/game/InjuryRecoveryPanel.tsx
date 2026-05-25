@@ -9,7 +9,7 @@ import type { projectMedicalUIDigest } from "@/presenters/uiDigest";
 
 /**
  * Returns a CSS color class based on the injury severity.
- * 
+ *
  * @param {string} severity - The severity of the injury (e.g., 'serious', 'moderate', 'minor').
  * @returns {string} The Tailwind CSS color class.
  */
@@ -24,7 +24,7 @@ export function getSeverityColor(severity: string): string {
 
 /**
  * Returns a UI badge component representing the injury severity.
- * 
+ *
  * @param {string} severity - The severity of the injury.
  * @returns {React.ReactNode} A Badge component with appropriate styling.
  */
@@ -43,7 +43,7 @@ interface InjuryRecoveryPanelProps {
 
 /**
  * Renders a panel showing rehabilitation progress and facility status for injured rikishi.
- * 
+ *
  * @param {InjuryRecoveryPanelProps} props - The component props.
  * @param {projectMedicalUIDigest} props.digest - The medical digest data for the stable.
  * @returns {JSX.Element} The injury recovery panel UI.

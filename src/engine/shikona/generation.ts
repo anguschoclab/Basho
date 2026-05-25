@@ -13,7 +13,7 @@ import { pickPrefixByCategoryBias, pickSuffixByCategoryBias, pickConnectorToken 
 /**
  * Generates a candidate shikona (wrestler name) based on nationality, house style, and rank rules.
  * Uses a weighted pattern-based approach to ensure variety and authenticity.
- * 
+ *
  * @param {() => number} rng - A random number generator function.
  * @param {ShikonaGenerationConfig} config - Configuration for the generation (e.g., nationality, preferences).
  * @param {number} attempt - The current attempt number (used to add extra suffixes for prestigious names).
@@ -38,7 +38,9 @@ export function generateCandidate(
     Default: ["Taka", "Waka", "Asa", "Koto", "Tochi", "Haku", "Kai"],
   };
 
-  const nat = (config.nationality && NATIONALITY_PREFIXES[config.nationality]) || NATIONALITY_PREFIXES.Default;
+  const nat =
+    (config.nationality && NATIONALITY_PREFIXES[config.nationality]) ||
+    NATIONALITY_PREFIXES.Default;
 
   if (config.preferPrestigious) {
     if (rng() < rankRule.prestigeChance) {

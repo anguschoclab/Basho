@@ -22,7 +22,7 @@ const routeMap: Record<NameType, string> = {
 
 /**
  * A reusable component for clickable links to rikishi, stables, and oyakata profiles.
- * 
+ *
  * @param props - Component properties
  * @param props.type - The type of entity (rikishi, stable, or oyakata)
  * @param props.id - The unique identifier for the entity
@@ -52,7 +52,7 @@ export function ClickableName({ type, id, name, className, children }: Clickable
 
 /**
  * A convenience component for clickable rikishi names.
- * 
+ *
  * @param props - Component properties
  * @param props.id - The unique identifier for the rikishi
  * @param props.name - The display name of the rikishi
@@ -69,7 +69,7 @@ export function RikishiName({ id, name, className, children }: Omit<ClickableNam
 
 /**
  * A convenience component for clickable stable names.
- * 
+ *
  * @param props - Component properties
  * @param props.id - The unique identifier for the stable
  * @param props.name - The display name of the stable
@@ -86,7 +86,7 @@ export function StableName({ id, name, className, children }: Omit<ClickableName
 
 /**
  * A convenience component for clickable oyakata names.
- * 
+ *
  * @param props - Component properties
  * @param props.id - The unique identifier for the oyakata
  * @param props.name - The display name of the oyakata

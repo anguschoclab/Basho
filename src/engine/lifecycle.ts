@@ -21,7 +21,7 @@ import { buildCombatProfile, deriveWeakAgainstStyles } from "./archetype";
 /**
  * Evaluates whether a rikishi should retire based on age, injuries, rank pressure, and performance.
  * Implements mandatory retirement at age 45 and Yokozuna-specific retirement rules.
- * 
+ *
  * @param {Rikishi} rikishi - The rikishi to evaluate.
  * @param {number} currentYear - The current simulation year.
  * @param {string} seed - Seed for deterministic random generation.
@@ -181,7 +181,7 @@ const ARCHETYPES: CombatArchetype[] = [
  * Internal function to generate a new rookie rikishi.
  * Determines origin, archetype, stats, and initial rank.
  * Academic elite (university) recruits start at a higher rank (Makushita Tsukedashi).
- * 
+ *
  * @param {WorldState} world - The current world state.
  * @param {number} currentYear - The current simulation year.
  * @param {Rank} [targetRank="jonokuchi"] - The rank to assign (defaults to "jonokuchi").

@@ -28,7 +28,9 @@ export function renderCrestMotif(motif: string, color: string): React.ReactNode 
       />
     ),
     circle: () => <circle cx="50" cy="50" r="30" fill="none" stroke={color} strokeWidth="8" />,
-    diamond: () => <path d="M50 15 L85 50 L50 85 L15 50 Z" fill="none" stroke={color} strokeWidth="8" />,
+    diamond: () => (
+      <path d="M50 15 L85 50 L50 85 L15 50 Z" fill="none" stroke={color} strokeWidth="8" />
+    ),
     star: () => (
       <path
         d="M50 10 L60 40 L95 40 L65 60 L75 90 L50 70 L25 90 L35 60 L5 40 L40 40 Z"

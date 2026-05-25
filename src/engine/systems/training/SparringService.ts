@@ -446,7 +446,9 @@ export function applyWeeklySparring(world: WorldState): StateImpact {
         }
         if (rivalryImpact.events) {
           for (const event of rivalryImpact.events) {
-            builder.logEvent(event.type, event.category, event.data, { importance: event.importance });
+            builder.logEvent(event.type, event.category, event.data, {
+              importance: event.importance,
+            });
           }
         }
       }

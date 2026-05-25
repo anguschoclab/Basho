@@ -24,7 +24,10 @@ describe("Mentor Assignment", () => {
     const apprentice = mockRikishi("app1", { rank: "jonokuchi", heyaId: "heya1" });
 
     const world = makeMockWorld({
-      rikishi: new Map([[mentor.id, mentor], [apprentice.id, apprentice]]),
+      rikishi: new Map([
+        [mentor.id, mentor],
+        [apprentice.id, apprentice],
+      ]),
     });
 
     const impact = assignMentor(world, mentor.id, apprentice.id);
@@ -47,7 +50,10 @@ describe("Mentor Assignment", () => {
     const apprentice = mockRikishi("app1", { rank: "jonokuchi", heyaId: "heya1" });
 
     const world = makeMockWorld({
-      rikishi: new Map([[mentor.id, mentor], [apprentice.id, apprentice]]),
+      rikishi: new Map([
+        [mentor.id, mentor],
+        [apprentice.id, apprentice],
+      ]),
     });
 
     const impact = assignMentor(world, mentor.id, apprentice.id);
@@ -65,7 +71,10 @@ describe("Mentor Assignment", () => {
     const apprentice = mockRikishi("app1", { rank: "jonokuchi", heyaId: "heya2" });
 
     const world = makeMockWorld({
-      rikishi: new Map([[mentor.id, mentor], [apprentice.id, apprentice]]),
+      rikishi: new Map([
+        [mentor.id, mentor],
+        [apprentice.id, apprentice],
+      ]),
     });
 
     const impact = assignMentor(world, mentor.id, apprentice.id);
@@ -82,7 +91,10 @@ describe("Mentor Assignment", () => {
     const apprentice = mockRikishi("app1", { rank: "jonokuchi", heyaId: "heya1" });
 
     const world = makeMockWorld({
-      rikishi: new Map([[mentor.id, mentor], [apprentice.id, apprentice]]),
+      rikishi: new Map([
+        [mentor.id, mentor],
+        [apprentice.id, apprentice],
+      ]),
     });
 
     const impact = assignMentor(world, mentor.id, apprentice.id);
@@ -99,7 +111,10 @@ describe("Mentor Assignment", () => {
     const apprentice = mockRikishi("app1", { rank: "jonokuchi", heyaId: "heya1", isRetired: true });
 
     const world = makeMockWorld({
-      rikishi: new Map([[mentor.id, mentor], [apprentice.id, apprentice]]),
+      rikishi: new Map([
+        [mentor.id, mentor],
+        [apprentice.id, apprentice],
+      ]),
     });
 
     const impact = assignMentor(world, mentor.id, apprentice.id);
@@ -116,7 +131,10 @@ describe("Mentor Assignment", () => {
     const apprentice = mockRikishi("app1", { rank: "jonokuchi", heyaId: "heya1" });
 
     const world = makeMockWorld({
-      rikishi: new Map([[mentor.id, mentor], [apprentice.id, apprentice]]),
+      rikishi: new Map([
+        [mentor.id, mentor],
+        [apprentice.id, apprentice],
+      ]),
     });
 
     const impact = assignMentor(world, mentor.id, apprentice.id);
@@ -154,7 +172,10 @@ describe("Mentor Removal", () => {
     apprentice.mentorId = "mentor1";
 
     const world = makeMockWorld({
-      rikishi: new Map([[mentor.id, mentor], [apprentice.id, apprentice]]),
+      rikishi: new Map([
+        [mentor.id, mentor],
+        [apprentice.id, apprentice],
+      ]),
     });
 
     const impact = removeMentor(world, apprentice.id);
@@ -213,7 +234,11 @@ describe("Mentor Removal", () => {
     app2.mentorId = "mentor1";
 
     const world = makeMockWorld({
-      rikishi: new Map([[mentor.id, mentor], [app1.id, app1], [app2.id, app2]]),
+      rikishi: new Map([
+        [mentor.id, mentor],
+        [app1.id, app1],
+        [app2.id, app2],
+      ]),
     });
 
     const impact = removeMentor(world, app1.id);

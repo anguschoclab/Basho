@@ -199,9 +199,7 @@ export default function TrainingPage() {
 
         <SparringPanel
           heyaRikishi={rikishiList}
-          pairs={Object.values(
-            world.sparringPairs?.get(playerHeyaId)?.pairs ?? {}
-          )}
+          pairs={Object.values(world.sparringPairs?.get(playerHeyaId)?.pairs ?? {})}
           onAddPair={(aId, bId) => addSparringPair(playerHeyaId, aId, bId)}
           onRemovePair={(aId, bId) => removeSparringPair(playerHeyaId, aId, bId)}
         />

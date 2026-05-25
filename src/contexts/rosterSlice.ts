@@ -38,14 +38,21 @@ export function rosterSlice(state: GameState, action: GameAction): GameState {
     case "ADD_SPARRING_PAIR": {
       if (!state.world) return state;
       const addPairImpact = assignSparringPair(
-        state.world, action.heyaId, action.aId, action.bId, state.world.week
+        state.world,
+        action.heyaId,
+        action.aId,
+        action.bId,
+        state.world.week
       );
       return { ...state, world: resolveImpacts(state.world, [addPairImpact]) };
     }
     case "REMOVE_SPARRING_PAIR": {
       if (!state.world) return state;
       const removePairImpact = removeSparringPair(
-        state.world, action.heyaId, action.aId, action.bId
+        state.world,
+        action.heyaId,
+        action.aId,
+        action.bId
       );
       return { ...state, world: resolveImpacts(state.world, [removePairImpact]) };
     }

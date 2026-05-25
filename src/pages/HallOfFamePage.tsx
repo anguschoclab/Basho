@@ -442,10 +442,15 @@ export default function HallOfFamePage() {
               </div>
               <div className="space-y-2">
                 {Object.values(world.bloodlineRegistry.traits).map((trait) => (
-                  <div key={trait.traitId} className="flex items-center justify-between p-2 rounded bg-background/50">
+                  <div
+                    key={trait.traitId}
+                    className="flex items-center justify-between p-2 rounded bg-background/50"
+                  >
                     <div>
                       <div className="font-display font-medium text-sm">{trait.label}</div>
-                      <div className="text-xs text-muted-foreground font-body">{trait.description}</div>
+                      <div className="text-xs text-muted-foreground font-body">
+                        {trait.description}
+                      </div>
                     </div>
                     <div className="text-xs text-muted-foreground font-mono tabular-nums">
                       {trait.ancestorShikona} · {trait.registeredYear}

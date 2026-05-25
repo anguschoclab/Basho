@@ -32,9 +32,7 @@ export {
 // ============================================================================
 // Domain Calculators (pure calculation logic)
 // ============================================================================
-export {
-  evaluateFinanceStrategy,
-} from "./NPCFinanceCalculator";
+export { evaluateFinanceStrategy } from "./NPCFinanceCalculator";
 
 export { evaluateGovernanceStrategy } from "./NPCGovernanceCalculator";
 

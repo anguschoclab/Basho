@@ -39,9 +39,7 @@ export default function NewGameWizard() {
   const [oyakataName, setOyakataName] = useState("");
   const [background, setBackground] = useState(OYAKATA_BACKSTORIES[0].id);
   const [ichimon, setIchimon] = useState(ICHIMON_FACTIONS[0].id);
-  const [selectedHeyaId, setSelectedHeyaId] = useState<string | null>(
-    preselectedHeyaId ?? null
-  );
+  const [selectedHeyaId, setSelectedHeyaId] = useState<string | null>(preselectedHeyaId ?? null);
 
   const world = state.world;
   const stables = useMemo<Heya[]>(() => (!world ? [] : Array.from(world.heyas.values())), [world]);

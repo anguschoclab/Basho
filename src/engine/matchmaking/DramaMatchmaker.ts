@@ -83,7 +83,13 @@ export function scoreDrama(
   const bRecord = standings.get(b.id) ?? { wins: 0, losses: 0 };
 
   // Day 15: 7-7 kachi-koshi showdown (highest drama)
-  if (day === 15 && aRecord.wins === 7 && aRecord.losses === 7 && bRecord.wins === 7 && bRecord.losses === 7) {
+  if (
+    day === 15 &&
+    aRecord.wins === 7 &&
+    aRecord.losses === 7 &&
+    bRecord.wins === 7 &&
+    bRecord.losses === 7
+  ) {
     return {
       label: "make_or_break",
       score: 100,
@@ -231,16 +237,36 @@ export function applyDramaBudget(
         const drama2 = scoreDrama(east2, west2, day, standings);
 
         // Calculate new total score
-        const oldDrama1 = scoreDrama(rikishiMap.get(p1.eastId)!, rikishiMap.get(p1.westId)!, day, standings);
-        const oldDrama2 = scoreDrama(rikishiMap.get(p2.eastId)!, rikishiMap.get(p2.westId)!, day, standings);
+        const oldDrama1 = scoreDrama(
+          rikishiMap.get(p1.eastId)!,
+          rikishiMap.get(p1.westId)!,
+          day,
+          standings
+        );
+        const oldDrama2 = scoreDrama(
+          rikishiMap.get(p2.eastId)!,
+          rikishiMap.get(p2.westId)!,
+          day,
+          standings
+        );
 
-        const scoreChange = (drama1?.score ?? 0) + (drama2?.score ?? 0) - (oldDrama1?.score ?? 0) - (oldDrama2?.score ?? 0);
+        const scoreChange =
+          (drama1?.score ?? 0) +
+          (drama2?.score ?? 0) -
+          (oldDrama1?.score ?? 0) -
+          (oldDrama2?.score ?? 0);
 
         if (scoreChange > 0) {
           // Apply the swap
           const newPairings = [...bestPairings];
-          newPairings[i] = { ...swapped1, reasons: [...swapped1.reasons, ...(drama1 ? [`drama_${drama1.label}`] : [])] };
-          newPairings[j] = { ...swapped2, reasons: [...swapped2.reasons, ...(drama2 ? [`drama_${drama2.label}`] : [])] };
+          newPairings[i] = {
+            ...swapped1,
+            reasons: [...swapped1.reasons, ...(drama1 ? [`drama_${drama1.label}`] : [])],
+          };
+          newPairings[j] = {
+            ...swapped2,
+            reasons: [...swapped2.reasons, ...(drama2 ? [`drama_${drama2.label}`] : [])],
+          };
 
           // Update best if this is better
           const newScore = bestScore + scoreChange;

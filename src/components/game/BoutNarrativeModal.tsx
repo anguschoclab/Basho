@@ -102,7 +102,7 @@ export function BoutNarrativeModal({
         bashoName,
         day,
         seed,
-        world || {} as WorldState
+        world || ({} as WorldState)
       );
       return result.pbpLines ?? [];
     } catch {

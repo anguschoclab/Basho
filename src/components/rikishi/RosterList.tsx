@@ -37,7 +37,7 @@ interface RosterListProps {
  * Renders a list of rikishi in the stable's roster.
  * Displays each rikishi in a card format with their avatar, rank, current basho record, and perceived stats.
  * Supports sorting by rank and clicking on a rikishi to view their detailed profile.
- * 
+ *
  * @param {RosterListProps} props - The component props.
  * @param {UIRikishi[]} props.rikishiList - The list of rikishi to display in the roster.
  * @param {(id: string) => void} props.onRikishiClick - Callback function invoked when a rikishi card is clicked.

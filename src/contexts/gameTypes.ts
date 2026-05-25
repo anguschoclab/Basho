@@ -24,21 +24,21 @@ import type { StateImpact } from "@/engine/core/StateImpact";
  * Phases represent the current screen or mode in the game UI.
  */
 export type GamePhase =
-  | "menu"           // Main menu
-  | "worldgen"       // World generation screen
-  | "interim"        // Interim period (between basho)
-  | "basho"          // Basho overview
-  | "day_preview"    // Preview of upcoming day
-  | "bout"           // Individual bout view
-  | "day_results"    // Results of completed day
-  | "basho_results"  // Final basho results
-  | "basho_recap"    // Basho recap/narrative
-  | "stable"         // Stable management screen
-  | "banzuke"        // Banzuke rankings
-  | "rikishi"        // Individual rikishi details
-  | "economy"        // Economy management
-  | "governance"     // Governance/rulings
-  | "history";       // Historical records
+  | "menu" // Main menu
+  | "worldgen" // World generation screen
+  | "interim" // Interim period (between basho)
+  | "basho" // Basho overview
+  | "day_preview" // Preview of upcoming day
+  | "bout" // Individual bout view
+  | "day_results" // Results of completed day
+  | "basho_results" // Final basho results
+  | "basho_recap" // Basho recap/narrative
+  | "stable" // Stable management screen
+  | "banzuke" // Banzuke rankings
+  | "rikishi" // Individual rikishi details
+  | "economy" // Economy management
+  | "governance" // Governance/rulings
+  | "history"; // Historical records
 
 /**
  * Defines the structure for game state.
@@ -78,7 +78,12 @@ export interface GameState {
  * Union type of all possible actions that can be dispatched to the game reducer.
  */
 export type GameAction =
-  | { type: "CREATE_WORLD"; seed: string; playerHeyaId?: string; oyakataConfig?: import("@/engine/types/oyakata").OyakataCreationConfig }
+  | {
+      type: "CREATE_WORLD";
+      seed: string;
+      playerHeyaId?: string;
+      oyakataConfig?: import("@/engine/types/oyakata").OyakataCreationConfig;
+    }
   | { type: "SET_PLAYER_HEYA"; heyaId: string }
   | { type: "SET_PHASE"; phase: GamePhase }
   | { type: "START_BASHO" }

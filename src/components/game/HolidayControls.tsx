@@ -248,7 +248,15 @@ export function HolidayControls({ onHoliday, playerHeyaId, currentPhase }: Holid
                   <div className="text-2xl font-bold">
                     {(() => {
                       const band = toDurationBand(result.daysAdvanced);
-                      return band === "brief" ? "A brief moment" : band === "short" ? "A short while" : band === "moderate" ? "Some time" : band === "long" ? "A long time" : "An extended period";
+                      return band === "brief"
+                        ? "A brief moment"
+                        : band === "short"
+                          ? "A short while"
+                          : band === "moderate"
+                            ? "Some time"
+                            : band === "long"
+                              ? "A long time"
+                              : "An extended period";
                     })()}
                   </div>
                   <div className="text-xs text-muted-foreground">Time Passed</div>

@@ -11,7 +11,7 @@ import type { Id } from "../types/common";
 /**
  * Distributes special prizes (Sansho) and tournament bonuses at the end of a basho.
  * Updates rikishi achievements and economic state, and logs financial events.
- * 
+ *
  * @param {WorldState} world - The current world state.
  * @param {BashoState} basho - The state of the completed basho.
  * @param {Id} yusho - The ID of the rikishi who won the tournament championship.
@@ -115,7 +115,7 @@ export function distributePrizes(
 /**
  * Pay basho teate (tournament allowance) to non-sekitori rikishi.
  * Paid by JSA directly to rikishi economics.
- * 
+ *
  * @param {WorldState} world - The current world state.
  * @returns {StateImpact} The state impact containing the allowance payments.
  */
@@ -163,7 +163,7 @@ export function payBashoTeate(world: WorldState): StateImpact {
 /**
  * Pay kinboshi stipends to rikishi who earned kinboshi this basho.
  * Uses per-basho kinboshi count tracked in basho.kinboshiThisBasho.
- * 
+ *
  * @param {WorldState} world - The current world state.
  * @returns {StateImpact} The state impact containing the stipend payments.
  */

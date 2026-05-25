@@ -38,7 +38,11 @@ describe("DramaMatchmaker", () => {
     });
 
     it("scores ozeki kadoban survival as 90", () => {
-      const ozeki = mockRikishi("ozeki", { rank: "ozeki", currentBashoWins: 6, currentBashoLosses: 5 });
+      const ozeki = mockRikishi("ozeki", {
+        rank: "ozeki",
+        currentBashoWins: 6,
+        currentBashoLosses: 5,
+      });
       const opponent = mockRikishi("opp", { currentBashoWins: 8, currentBashoLosses: 3 });
       const standings = new Map([
         ["ozeki", { wins: 6, losses: 5 }],
@@ -53,8 +57,16 @@ describe("DramaMatchmaker", () => {
     });
 
     it("does not apply kadoban bonus before day 10", () => {
-      const ozeki = mockRikishi("ozeki", { rank: "ozeki", currentBashoWins: 2, currentBashoLosses: 5 });
-      const opponent = mockRikishi("opp", { rank: "sekiwake", currentBashoWins: 4, currentBashoLosses: 3 });
+      const ozeki = mockRikishi("ozeki", {
+        rank: "ozeki",
+        currentBashoWins: 2,
+        currentBashoLosses: 5,
+      });
+      const opponent = mockRikishi("opp", {
+        rank: "sekiwake",
+        currentBashoWins: 4,
+        currentBashoLosses: 3,
+      });
       const standings = new Map([
         ["ozeki", { wins: 2, losses: 5 }],
         ["opp", { wins: 4, losses: 3 }],
@@ -174,7 +186,9 @@ describe("DramaMatchmaker", () => {
       const result = applyDramaBudget(pairings, rikishiMap, 15, standings, facedSet);
 
       // Verify no rematch was created
-      const allPairs = result.map((p) => (p.eastId < p.westId ? `${p.eastId}-${p.westId}` : `${p.westId}-${p.eastId}`));
+      const allPairs = result.map((p) =>
+        p.eastId < p.westId ? `${p.eastId}-${p.westId}` : `${p.westId}-${p.eastId}`
+      );
       expect(allPairs).not.toContain("a-b");
     });
 

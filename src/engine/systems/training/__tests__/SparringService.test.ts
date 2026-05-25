@@ -188,7 +188,12 @@ describe("SparringService", () => {
     it("assigns sparring pair when eligible", () => {
       const a = mockRikishi("r1", { heyaId: "h1", injured: false, isRetired: false });
       const b = mockRikishi("r2", { heyaId: "h1", injured: false, isRetired: false });
-      const world = makeMockWorld({ rikishi: new Map([[a.id, a], [b.id, b]]) });
+      const world = makeMockWorld({
+        rikishi: new Map([
+          [a.id, a],
+          [b.id, b],
+        ]),
+      });
 
       const impact = assignSparringPair(world, "h1", a.id, b.id, 10);
       const updatedWorld = resolveImpacts(world, [impact]);
@@ -201,7 +206,12 @@ describe("SparringService", () => {
     it("does not assign when rikishi are in different heyas", () => {
       const a = mockRikishi("r1", { heyaId: "h1", injured: false });
       const b = mockRikishi("r2", { heyaId: "h2", injured: false });
-      const world = makeMockWorld({ rikishi: new Map([[a.id, a], [b.id, b]]) });
+      const world = makeMockWorld({
+        rikishi: new Map([
+          [a.id, a],
+          [b.id, b],
+        ]),
+      });
 
       const impact = assignSparringPair(world, "h1", a.id, b.id, 10);
       const updatedWorld = resolveImpacts(world, [impact]);
@@ -213,7 +223,12 @@ describe("SparringService", () => {
     it("does not assign when first rikishi is injured", () => {
       const a = mockRikishi("r1", { heyaId: "h1", injured: true });
       const b = mockRikishi("r2", { heyaId: "h1", injured: false });
-      const world = makeMockWorld({ rikishi: new Map([[a.id, a], [b.id, b]]) });
+      const world = makeMockWorld({
+        rikishi: new Map([
+          [a.id, a],
+          [b.id, b],
+        ]),
+      });
 
       const impact = assignSparringPair(world, "h1", a.id, b.id, 10);
       const updatedWorld = resolveImpacts(world, [impact]);
@@ -224,7 +239,12 @@ describe("SparringService", () => {
     it("does not assign duplicate pair", () => {
       const a = mockRikishi("r1", { heyaId: "h1", injured: false });
       const b = mockRikishi("r2", { heyaId: "h1", injured: false });
-      const world = makeMockWorld({ rikishi: new Map([[a.id, a], [b.id, b]]) });
+      const world = makeMockWorld({
+        rikishi: new Map([
+          [a.id, a],
+          [b.id, b],
+        ]),
+      });
 
       const impact1 = assignSparringPair(world, "h1", a.id, b.id, 10);
       const world1 = resolveImpacts(world, [impact1]);
@@ -246,7 +266,12 @@ describe("SparringService", () => {
         injured: false,
         combatProfile: makeCombatProfile("yotsu"),
       });
-      const world = makeMockWorld({ rikishi: new Map([[a.id, a], [b.id, b]]) });
+      const world = makeMockWorld({
+        rikishi: new Map([
+          [a.id, a],
+          [b.id, b],
+        ]),
+      });
 
       const impact = assignSparringPair(world, "h1", a.id, b.id, 10);
       const updatedWorld = resolveImpacts(world, [impact]);
@@ -258,7 +283,12 @@ describe("SparringService", () => {
     it("sets establishedWeek correctly", () => {
       const a = mockRikishi("r1", { heyaId: "h1", injured: false });
       const b = mockRikishi("r2", { heyaId: "h1", injured: false });
-      const world = makeMockWorld({ rikishi: new Map([[a.id, a], [b.id, b]]) });
+      const world = makeMockWorld({
+        rikishi: new Map([
+          [a.id, a],
+          [b.id, b],
+        ]),
+      });
 
       const impact = assignSparringPair(world, "h1", a.id, b.id, 25);
       const updatedWorld = resolveImpacts(world, [impact]);
@@ -270,7 +300,12 @@ describe("SparringService", () => {
     it("initializes weeksActive to 0", () => {
       const a = mockRikishi("r1", { heyaId: "h1", injured: false });
       const b = mockRikishi("r2", { heyaId: "h1", injured: false });
-      const world = makeMockWorld({ rikishi: new Map([[a.id, a], [b.id, b]]) });
+      const world = makeMockWorld({
+        rikishi: new Map([
+          [a.id, a],
+          [b.id, b],
+        ]),
+      });
 
       const impact = assignSparringPair(world, "h1", a.id, b.id, 10);
       const updatedWorld = resolveImpacts(world, [impact]);
@@ -284,7 +319,12 @@ describe("SparringService", () => {
     it("removes existing sparring pair", () => {
       const a = mockRikishi("r1", { heyaId: "h1", injured: false });
       const b = mockRikishi("r2", { heyaId: "h1", injured: false });
-      const world = makeMockWorld({ rikishi: new Map([[a.id, a], [b.id, b]]) });
+      const world = makeMockWorld({
+        rikishi: new Map([
+          [a.id, a],
+          [b.id, b],
+        ]),
+      });
 
       const assignImpact = assignSparringPair(world, "h1", a.id, b.id, 10);
       const world1 = resolveImpacts(world, [assignImpact]);
@@ -298,7 +338,12 @@ describe("SparringService", () => {
     it("removes heya from sparringPairs when no pairs remain", () => {
       const a = mockRikishi("r1", { heyaId: "h1", injured: false });
       const b = mockRikishi("r2", { heyaId: "h1", injured: false });
-      const world = makeMockWorld({ rikishi: new Map([[a.id, a], [b.id, b]]) });
+      const world = makeMockWorld({
+        rikishi: new Map([
+          [a.id, a],
+          [b.id, b],
+        ]),
+      });
 
       const assignImpact = assignSparringPair(world, "h1", a.id, b.id, 10);
       const world1 = resolveImpacts(world, [assignImpact]);
@@ -312,7 +357,12 @@ describe("SparringService", () => {
     it("does nothing when pair does not exist", () => {
       const a = mockRikishi("r1", { heyaId: "h1", injured: false });
       const b = mockRikishi("r2", { heyaId: "h1", injured: false });
-      const world = makeMockWorld({ rikishi: new Map([[a.id, a], [b.id, b]]) });
+      const world = makeMockWorld({
+        rikishi: new Map([
+          [a.id, a],
+          [b.id, b],
+        ]),
+      });
 
       const impact = removeSparringPair(world, "h1", a.id, b.id);
       const updatedWorld = resolveImpacts(world, [impact]);
@@ -323,7 +373,12 @@ describe("SparringService", () => {
     it("does nothing when heya has no sparring state", () => {
       const a = mockRikishi("r1", { heyaId: "h1", injured: false });
       const b = mockRikishi("r2", { heyaId: "h1", injured: false });
-      const world = makeMockWorld({ rikishi: new Map([[a.id, a], [b.id, b]]) });
+      const world = makeMockWorld({
+        rikishi: new Map([
+          [a.id, a],
+          [b.id, b],
+        ]),
+      });
 
       const impact = removeSparringPair(world, "h1", a.id, b.id);
       const updatedWorld = resolveImpacts(world, [impact]);
@@ -336,7 +391,13 @@ describe("SparringService", () => {
       const a = mockRikishi("r1", { heyaId: "h1", injured: false });
       const b = mockRikishi("r2", { heyaId: "h1", injured: false });
       const c = mockRikishi("r3", { heyaId: "h1", injured: false });
-      const world = makeMockWorld({ rikishi: new Map([[a.id, a], [b.id, b], [c.id, c]]) });
+      const world = makeMockWorld({
+        rikishi: new Map([
+          [a.id, a],
+          [b.id, b],
+          [c.id, c],
+        ]),
+      });
 
       const assignImpact1 = assignSparringPair(world, "h1", a.id, b.id, 10);
       const world1 = resolveImpacts(world, [assignImpact1]);

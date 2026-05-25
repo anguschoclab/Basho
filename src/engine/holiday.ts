@@ -127,7 +127,12 @@ function checkGate(
 ): HolidayGateTriggered | null {
   const GATE_HANDLERS: Record<
     SafetyGate,
-    (world: WorldState, heya: any, playerHeyaId: string, startDay: number) => HolidayGateTriggered | null
+    (
+      world: WorldState,
+      heya: any,
+      playerHeyaId: string,
+      startDay: number
+    ) => HolidayGateTriggered | null
   > = {
     topRikishiInjury: (world, heya, _playerHeyaId, _startDay) => {
       for (const rid of heya.rikishiIds ?? []) {
@@ -165,7 +170,8 @@ function checkGate(
       if (scandal) {
         return {
           gate: "scandalSeverity",
-          message: "Governance pressure escalating — a significant disciplinary matter has emerged.",
+          message:
+            "Governance pressure escalating — a significant disciplinary matter has emerged.",
           dayIndex: world.dayIndexGlobal ?? 0,
         };
       }
