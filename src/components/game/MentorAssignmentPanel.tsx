@@ -87,21 +87,24 @@ export function MentorAssignmentPanel({
    * Mentors must be sekitori, in the same heya, and not injured/retired.
    */
   const eligibleMentors = useMemo(() => {
-    return Array.from(allRikishi.values()).filter((r) => {
+    const results = [];
+    // ⚡ Bolt Optimization: Replace Array.from().filter() with direct for...of loop
+    for (const r of allRikishi.values()) {
       // Must be sekitori
-      if (!MENTOR_MIN_RANKS.has(r.rank)) return false;
+      if (!MENTOR_MIN_RANKS.has(r.rank)) continue;
 
       // Must be in same heya
-      if (r.heyaId !== heyaId) return false;
+      if (r.heyaId !== heyaId) continue;
 
       // Cannot be the apprentice
-      if (r.id === apprenticeId) return false;
+      if (r.id === apprenticeId) continue;
 
       // Must be active (not injured or retired)
-      if (r.injured || r.isRetired === true) return false;
+      if (r.injured || r.isRetired === true) continue;
 
-      return true;
-    });
+      results.push(r);
+    }
+    return results;
   }, [allRikishi, heyaId, apprenticeId]);
 
   /**

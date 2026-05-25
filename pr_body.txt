@@ -1,0 +1,4 @@
+💡 What: Replaced inefficient `Array.from(map.values()).filter(...)` patterns with direct `for...of` loops across the `ExhibitionBout`, `MentorAssignmentPanel`, and `collectionOperations` components. In `ExhibitionBout`, an early `break` was added to exit iteration instantly once the required 2 items are found.
+🎯 Why: `Array.from(map.values()).filter(...)` allocates two intermediate arrays and iterates over the entire collection in memory. This is highly inefficient in hot UI loops or large state Maps.
+📊 Impact: Eliminates O(N) intermediate array allocations and redundant iterations, turning a worst-case O(N) filtering operation into an expected O(1) loop in `ExhibitionBout`, significantly reducing memory garbage collection overhead.
+🔬 Measurement: Verify using the Studio Boss app's onboarding workflow and exhibition bouts, monitoring heap size snapshots to confirm fewer array allocations.
