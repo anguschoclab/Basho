@@ -96,7 +96,9 @@ export function projectRivalriesPage(world: WorldState): RivalriesPageData {
     playerRivalries: player,
     hotRivalries: hot,
     coolRivalries: cool,
-    stableRivalries: Object.entries(world.heyaRivalryPairs || {}).map(([key, heat]) => {
+    // ⚡ Bolt Optimization: Use Object.keys() to avoid O(N) tuple allocations from Object.entries()
+    stableRivalries: Object.keys(world.heyaRivalryPairs || {}).map((key) => {
+      const heat = (world.heyaRivalryPairs || {})[key];
       const [aId, bId] = key.split("::");
       const a = world.heyas.get(aId);
       const b = world.heyas.get(bId);
