@@ -2,6 +2,9 @@
  * Time-related constants for the game engine.
  */
 
+/** Number of days in a week */
+export const DAYS_PER_WEEK = 7;
+
 /** Number of weeks in a year */
 export const WEEKS_PER_YEAR = 52;
 

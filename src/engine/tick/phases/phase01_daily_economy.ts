@@ -9,6 +9,7 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { WelfareService } from "../../systems/welfare/WelfareService";
 import { DIET_COSTS, DEBT_LIMIT } from "../../../constants/engine/economic";
+import { DIET_COST_STANDARD } from "../../../constants/engine/economyExtended";
 
 export function phase01_daily_economy(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_daily_economy");
@@ -21,7 +22,7 @@ export function phase01_daily_economy(world: WorldState): StateImpact {
 
     const welfare = WelfareService.ensureHeyaWelfareState(heya);
     const diet = welfare.activeDiet || "maintenance";
-    const costPerRikishi = DIET_COSTS[diet] ?? 3000;
+    const costPerRikishi = DIET_COSTS[diet] ?? DIET_COST_STANDARD;
     const dailyFoodCost = rikishiCount * costPerRikishi;
     const nextFunds = Math.max(DEBT_LIMIT, heya.funds - dailyFoodCost);
 

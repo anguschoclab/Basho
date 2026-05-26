@@ -23,6 +23,17 @@ import { InjurySeverity, InjuryBodyArea, InjuryType, getBaseWeeksOut } from "./B
 import { RNGRegistry } from "../../core/RNGRegistry";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
+import {
+  INJURY_FATIGUE_DIVISOR,
+  DEFAULT_DURABILITY,
+  DURABILITY_MULTIPLIER_BASE,
+  DURABILITY_DIVISOR,
+  DURABILITY_MULTIPLIER_MIN,
+  MAX_WEEKS_OUT,
+  MIN_WEEKS_OUT,
+  POST_BOUT_INJURY_WEEKS_MAX,
+  POST_BOUT_INJURY_WEEKS_MIN,
+} from "../../../constants/engine/condition";
 
 /**
  * Calculates a weekly injury chance for a rikishi.
@@ -42,11 +53,11 @@ import type { StateImpact } from "../../core/StateImpact";
  */
 export function calculateWeeklyInjuryChance(rikishi: Rikishi, fatigue: number): number {
   const base = SIMULATION_CONFIG.injuries.weeklyBaseChance;
-  const fatigueMult = 1 + clamp(fatigue, 0, 100) / 200;
+  const fatigueMult = 1 + clamp(fatigue, 0, 100) / INJURY_FATIGUE_DIVISOR;
 
-  // Durability: using 'durability' property if it exists, default 60
-  const durability = typeof rikishi.durability === "number" ? rikishi.durability : 60;
-  const durabilityMult = clamp(1.35 - durability / 100, 0.6, 1.35);
+  // Durability: using 'durability' property if it exists, default
+  const durability = typeof rikishi.durability === "number" ? rikishi.durability : DEFAULT_DURABILITY;
+  const durabilityMult = clamp(DURABILITY_MULTIPLIER_BASE - durability / DURABILITY_DIVISOR, DURABILITY_MULTIPLIER_MIN, DURABILITY_MULTIPLIER_BASE);
 
   const chance = base * fatigueMult * durabilityMult;
   return clamp(chance, 0, SIMULATION_CONFIG.injuries.maxWeeklyChance);
@@ -88,7 +99,7 @@ export function rollWeeklyInjury(args: {
   const area = pickArea(rng);
   const type = pickType(rng, severity);
   const { min, max } = getBaseWeeksOut(severity, area, type);
-  const weeksOut = clampInt(min + Math.floor(rng.next() * (max - min + 1)), 1, 26);
+  const weeksOut = clampInt(min + Math.floor(rng.next() * (max - min + 1)), MIN_WEEKS_OUT, MAX_WEEKS_OUT);
 
   return { severity, area, type, weeksOut };
 }
@@ -306,7 +317,7 @@ export function onBoutResolvedInjury(
   const roll = rngSeed.next();
 
   if (roll < boutInjuryChance) {
-    const injuryWeeksRemaining = 1 + Math.floor(rngSeed.next() * 2); // 1-2 weeks
+    const injuryWeeksRemaining = POST_BOUT_INJURY_WEEKS_MIN + Math.floor(rngSeed.next() * (POST_BOUT_INJURY_WEEKS_MAX - POST_BOUT_INJURY_WEEKS_MIN + 1));
 
     builder.updateRikishi(loser.id, {
       injured: true,

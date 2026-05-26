@@ -27,7 +27,7 @@ import {
   getEffectiveCeiling,
 } from "./TrainingMath";
 import { getHeyaStaffBonuses } from "../../staff";
-import { DRILL_EFFECTS } from "../../../constants/engine/training";
+import { DRILL_EFFECTS, EXPERIENCE_GROWTH_MULTIPLIER, CRASH_PROBABILITY_THRESHOLD_WEEKS, MAX_CRASH_PROBABILITY } from "../../../constants/engine/training";
 import { InfrastructureService } from "../economy/InfrastructureService";
 import { RNGRegistry } from "../../core/RNGRegistry";
 
@@ -274,7 +274,7 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
       );
       updates.experience = Math.min(
         getEffectiveCeiling(rikishi, "mental", world),
-        Math.max(10, (rikishi.experience || 0) + finalGrowth.mental * 0.5 + decay.mental)
+        Math.max(10, (rikishi.experience || 0) + finalGrowth.mental * EXPERIENCE_GROWTH_MULTIPLIER + decay.mental)
       );
 
       // Sync flattened UI stats
@@ -365,7 +365,7 @@ function applyBurnoutStep(
   // Probability roll: 15% (W1) -> 35% (W2) -> 100% (W3+)
   let crashProb = 0.15;
   if (currentWeeks === 2) crashProb = 0.35;
-  if (currentWeeks >= 3) crashProb = 1.0;
+  if (currentWeeks >= CRASH_PROBABILITY_THRESHOLD_WEEKS) crashProb = MAX_CRASH_PROBABILITY;
 
   // Use system RNG for deterministic burnout rolls
   const burnoutRng = RNGRegistry.getSystemRNG(world, "training", `burnout-${r.id}-${world.week}`);

@@ -16,6 +16,12 @@ import { BardEngine } from "../../narrative/BardEngine";
 import * as schedule from "../../schedule";
 import { emptyDeltas, defaultActiveModifiers } from "../pipelineRunner";
 import { clearQueryCaches } from "../../queries";
+import {
+  DAYS_IN_MONTH,
+  DEFAULT_MAX_DAY,
+  MAX_MONTH,
+  INTERIM_WARNING_THRESHOLD,
+} from "../../../constants/engine/calendarExtended";
 
 export function phase00_preflight(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase00_preflight");
@@ -70,19 +76,18 @@ function advanceCalendarDay(world: WorldState): {
   yearBoundary: boolean;
 } {
   const cal = { ...world.calendar };
-  const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
   let monthBoundary = false;
   let yearBoundary = false;
 
   cal.currentDay = (cal.currentDay ?? 1) + 1;
-  const maxDay = DAYS_IN_MONTH[(cal.month - 1) % 12] || 30;
+  const maxDay = DAYS_IN_MONTH[(cal.month - 1) % MAX_MONTH] || DEFAULT_MAX_DAY;
 
   if (cal.currentDay > maxDay) {
     cal.currentDay = 1;
     cal.month += 1;
     monthBoundary = true;
-    if (cal.month > 12) {
+    if (cal.month > MAX_MONTH) {
       cal.month = 1;
       cal.year += 1;
       yearBoundary = true;
@@ -131,7 +136,7 @@ function checkPhaseTransition(
       break;
     }
     case "interim": {
-      if ((world._interimDaysRemaining ?? 0) <= 14) {
+      if ((world._interimDaysRemaining ?? 0) <= INTERIM_WARNING_THRESHOLD) {
         const nextPhase: CyclePhase = "banzuke_reveal";
         builder.updateWorldField("cyclePhase", nextPhase);
         logTransition(world, prev, nextPhase, "The official banzuke has been published.");

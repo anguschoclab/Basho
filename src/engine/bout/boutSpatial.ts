@@ -14,13 +14,37 @@ import type {
   EngineStateV2,
 } from "../types/combat-spatial";
 import { stat } from "./boutUtils";
+import {
+  MASS_BASE_OFFSET,
+  MASS_WEIGHT_MULTIPLIER,
+  DEFAULT_WEIGHT_STAT,
+  DEFAULT_HEIGHT_STAT,
+  HEIGHT_TO_METERS,
+  COG_HEIGHT_FRACTION,
+  BASE_FOOT_SPREAD,
+  FOOT_SPREAD_BALANCE_VARIATION,
+  TOE_POSITION_EDGE_THRESHOLD,
+  EDGE_DISTANCE_AT_TOE,
+  FORCE_POWER_MULTIPLIER,
+  FORCE_WEIGHT_MULTIPLIER,
+  MIN_FORCE_AFTER_FATIGUE,
+  FATIGUE_PENALTY_PER_POINT,
+  MIN_ABSOLUTE_FORCE,
+  GRIP_JITTER_RANGE,
+  ARM_REACH_DEEP_THRESHOLD,
+  MOMENTUM_THRESHOLD_OSHITAOSHI,
+  TORQUE_THRESHOLD_HIGH,
+  TORQUE_THRESHOLD_MODERATE,
+  VELOCITY_EDGE_EXIT_THRESHOLD,
+  TSUKIDASHI_PROBABILITY_THRESHOLD,
+} from "../../constants/engine/physics";
 
 export function initPhysicalBody(rikishi: Rikishi, side: Side): PhysicalBody {
   const x = side === "east" ? SHIKIRISEN_OFFSET : -SHIKIRISEN_OFFSET;
   const facingAngle = side === "east" ? Math.PI : 0;
-  const mass = 80 + stat(rikishi, "weight", 120) * 1.2;
-  const cogHeight = stat(rikishi, "height", 180) * 0.01 * 0.54;
-  const footSpread = 0.35 + (stat(rikishi, "balance") / 100) * 0.15;
+  const mass = MASS_BASE_OFFSET + stat(rikishi, "weight", DEFAULT_WEIGHT_STAT) * MASS_WEIGHT_MULTIPLIER;
+  const cogHeight = stat(rikishi, "height", DEFAULT_HEIGHT_STAT) * HEIGHT_TO_METERS * COG_HEIGHT_FRACTION;
+  const footSpread = BASE_FOOT_SPREAD + (stat(rikishi, "balance") / 100) * FOOT_SPREAD_BALANCE_VARIATION;
 
   return {
     x,
@@ -50,7 +74,7 @@ export function isOutOfRing(body: PhysicalBody): boolean {
 
 export function tawaraBounceResistance(toePos: number): number {
   if (toePos < 0) return 0;
-  if (toePos < 0.5) return 15.0;
+  if (toePos < TOE_POSITION_EDGE_THRESHOLD) return EDGE_DISTANCE_AT_TOE;
   if (toePos < 1.0) return 8.0;
   return 0;
 }
@@ -67,11 +91,11 @@ export function computePushForce(
   const w = action.statWeighting;
 
   // Base force from power + weight contribution; stanceWidth affects CoG stability, not raw force
-  let force = power * (w.strength || 0.5) + weight * (w.weight || 0.3);
+  let force = power * (w.strength || FORCE_POWER_MULTIPLIER) + weight * (w.weight || FORCE_WEIGHT_MULTIPLIER);
   // Fatigue penalty: -0.4% per fatigue point (same curve as old engine)
-  force *= Math.max(0.6, 1 - fatigue * 0.004);
+  force *= Math.max(MIN_FORCE_AFTER_FATIGUE, 1 - fatigue * FATIGUE_PENALTY_PER_POINT);
 
-  return Math.max(1, force);
+  return Math.max(MIN_ABSOLUTE_FORCE, force);
 }
 
 export function computePushAngle(
@@ -83,7 +107,7 @@ export function computePushAngle(
   const dx = opponentBody.x - myBody.x;
   const dz = opponentBody.z - myBody.z;
   const baseAngle = Math.atan2(dz, dx);
-  const jitter = (rng.next() - 0.5) * 0.1;
+  const jitter = (rng.next() - 0.5) * GRIP_JITTER_RANGE;
   return baseAngle + jitter;
 }
 
@@ -95,7 +119,7 @@ export function deriveGripClass(left: HandGrip | null, right: HandGrip | null): 
   // One arm inside: deep reach = uwate (dominant inside), shallow = shitate (weaker inside)
   if (insideCount === 1) {
     const insideGrip = left?.isInside ? left : right;
-    return (insideGrip?.armReach ?? 0) > 0.12 ? "uwate" : "shitate";
+    return (insideGrip?.armReach ?? 0) > ARM_REACH_DEEP_THRESHOLD ? "uwate" : "shitate";
   }
   if (left || right) return "outside";
   return "none";
@@ -107,7 +131,7 @@ export function classifyFallKimarite(
   fallenSide: Side
 ): KimariteId {
   const momentum = fallenSide === "east" ? push.eastMomentum : push.westMomentum;
-  if (momentum > 15) return "oshitaoshi";
+  if (momentum > MOMENTUM_THRESHOLD_OSHITAOSHI) return "oshitaoshi";
   return "tsukitaoshi";
 }
 
@@ -120,18 +144,18 @@ export function classifyBeltFallKimarite(
   const winnerTorque = winnerSide === "east" ? belt.torqueEast : belt.torqueWest;
   const winnerGrip = fallenSide === "east" ? belt.westGripClass : belt.eastGripClass;
 
-  if (winnerTorque > 20) {
+  if (winnerTorque > TORQUE_THRESHOLD_HIGH) {
     // High-torque throw: uwate (outside arm over) or shitate (inside arm under)
     return winnerGrip === "uwate" || winnerGrip === "morozashi" ? "uwatenage" : "shitatenage";
   }
 
   // E2: kotenage (arm-lock throw) when winner has shitate grip and moderate torque
-  if (winnerGrip === "shitate" && winnerTorque > 10 && winnerTorque <= 20) {
+  if (winnerGrip === "shitate" && winnerTorque > TORQUE_THRESHOLD_MODERATE && winnerTorque <= TORQUE_THRESHOLD_HIGH) {
     return "kotenage";
   }
 
   // E2: sukuinage (underarm throw) when winner has uwate grip and moderate torque
-  if (winnerGrip === "uwate" && winnerTorque > 10 && winnerTorque <= 20) {
+  if (winnerGrip === "uwate" && winnerTorque > TORQUE_THRESHOLD_MODERATE && winnerTorque <= TORQUE_THRESHOLD_HIGH) {
     return "sukuinage";
   }
 
@@ -151,7 +175,7 @@ export function classifyEdgeExitKimarite(
   const defenderBody = defenderSide === "east" ? st.east : st.west;
 
   // E1: okuridashi when defender has positive momentum while exiting (overruns edge)
-  if (Math.abs(defenderBody.velocityX) > 0.5) {
+  if (Math.abs(defenderBody.velocityX) > VELOCITY_EDGE_EXIT_THRESHOLD) {
     return "okuridashi";
   }
 
@@ -162,5 +186,5 @@ export function classifyEdgeExitKimarite(
 
   // Push-driven edge exit: clean push-out or thrust variant
   if (crisis.ticksInCrisis <= 2) return "oshidashi";
-  return rng.next() < 0.25 ? "tsukidashi" : "oshidashi";
+  return rng.next() < TSUKIDASHI_PROBABILITY_THRESHOLD ? "tsukidashi" : "oshidashi";
 }

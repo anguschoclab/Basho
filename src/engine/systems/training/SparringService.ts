@@ -22,6 +22,14 @@ import { clamp } from "../../utils/math";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { RivalryService } from "../narrative/RivalryService";
+import {
+  SPARRING_MAX_BLEED,
+  SPARRING_BLEED_THRESHOLD,
+  SPARRING_BLEED_SCALE,
+  SPARRING_CHEMISTRY_FRICTION_MULTIPLIER,
+  SPARRING_CHEMISTRY_RUT_MULTIPLIER,
+  SPARRING_CHEMISTRY_NEUTRAL_MULTIPLIER,
+} from "../../../constants/engine/sparring";
 
 /**
  * Archetype categories for chemistry calculation.
@@ -34,19 +42,19 @@ const HYBRID_ARCHETYPES = new Set<CombatArchetype>(["hybrid"]);
  * Maximum stat points that can bleed from sparring per week.
  * This cap prevents excessive stat inflation from sparring.
  */
-const MAX_BLEED = 2;
+const MAX_BLEED = SPARRING_MAX_BLEED;
 
 /**
  * Minimum stat gap between rikishi required for bleed to occur.
  * If the gap is below this threshold, the rikishi are too close in skill.
  */
-const BLEED_THRESHOLD = 8;
+const BLEED_THRESHOLD = SPARRING_BLEED_THRESHOLD;
 
 /**
  * Fraction of the stat gap that transfers each week.
  * A 5% transfer rate means a 40-point gap yields 2 points per week (before capping).
  */
-const BLEED_SCALE = 0.05;
+const BLEED_SCALE = SPARRING_BLEED_SCALE;
 
 /**
  * Chemistry bonus multipliers for growth deltas.
@@ -55,9 +63,9 @@ const BLEED_SCALE = 0.05;
  * Neutral: Mixed hybrid or similar categories
  */
 const CHEMISTRY_MULTIPLIERS: Record<SparringChemistry, number> = {
-  friction: 1.2,
-  rut: 0.8,
-  neutral: 1.0,
+  friction: SPARRING_CHEMISTRY_FRICTION_MULTIPLIER,
+  rut: SPARRING_CHEMISTRY_RUT_MULTIPLIER,
+  neutral: SPARRING_CHEMISTRY_NEUTRAL_MULTIPLIER,
 };
 
 /**

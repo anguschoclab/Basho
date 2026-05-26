@@ -18,6 +18,16 @@ import {
   MIN_MENTAL_STAT,
   DEFAULT_MENTAL_STAT,
 } from "../../../constants/engine/health";
+import {
+  MIN_WEIGHT,
+  WEIGHT_LOSS_STARVATION,
+  MENTAL_LOSS_STARVATION,
+  WEIGHT_GAIN_HIGH_CALORIE,
+  MENTAL_LOSS_POOR,
+  WEIGHT_GAIN_MODERATE,
+  MENTAL_GAIN_GOOD,
+  FATIGUE_RECOVERY_GOOD,
+} from "../../../constants/engine/condition";
 
 export function phase01_daily_welfare(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_daily_welfare");
@@ -44,27 +54,27 @@ export function phase01_daily_welfare(world: WorldState): StateImpact {
     // 2. Diet Effects
     const diet = heyaDietCache.get(next.heyaId);
     if (diet === "austerity") {
-      next.weight = Math.max(70, next.weight - 0.05);
+      next.weight = Math.max(MIN_WEIGHT, next.weight - WEIGHT_LOSS_STARVATION);
       if (next.stats) {
         next.stats = {
           ...next.stats,
-          mental: Math.max(MIN_MENTAL_STAT, (next.stats.mental || DEFAULT_MENTAL_STAT) - 0.5),
+          mental: Math.max(MIN_MENTAL_STAT, (next.stats.mental || DEFAULT_MENTAL_STAT) - MENTAL_LOSS_STARVATION),
         };
       }
     } else if (diet === "heavy_bulk") {
-      next.weight += 0.1;
+      next.weight += WEIGHT_GAIN_HIGH_CALORIE;
       if (next.stats) {
         next.stats = {
           ...next.stats,
-          mental: Math.max(MIN_MENTAL_STAT, (next.stats.mental || DEFAULT_MENTAL_STAT) - 0.2),
+          mental: Math.max(MIN_MENTAL_STAT, (next.stats.mental || DEFAULT_MENTAL_STAT) - MENTAL_LOSS_POOR),
         };
       }
     } else if (diet === "premium") {
-      next.weight += 0.08;
+      next.weight += WEIGHT_GAIN_MODERATE;
       if (next.stats) {
         next.stats = {
           ...next.stats,
-          mental: Math.min(MAX_MENTAL_STAT, (next.stats.mental || DEFAULT_MENTAL_STAT) + 0.5),
+          mental: Math.min(MAX_MENTAL_STAT, (next.stats.mental || DEFAULT_MENTAL_STAT) + MENTAL_GAIN_GOOD),
         };
       }
       if (!next.injured && (next.fatigue ?? 0) > 0) {
@@ -74,7 +84,7 @@ export function phase01_daily_welfare(world: WorldState): StateImpact {
 
     // 3. Base Daily Fatigue Recovery
     if (!next.injured && (next.fatigue ?? 0) > 0) {
-      next.fatigue = Math.max(0, (next.fatigue ?? 0) - 0.3);
+      next.fatigue = Math.max(0, (next.fatigue ?? 0) - FATIGUE_RECOVERY_GOOD);
     }
 
     // 4. Condition decay (during basho) / recovery (during off-season)

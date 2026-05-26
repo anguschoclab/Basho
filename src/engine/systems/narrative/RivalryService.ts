@@ -27,6 +27,15 @@ import { applyBoutToPairState, deriveTone } from "./RivalryHeatService";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import type { BoutResult } from "../../types/basho";
+import {
+  BOUT_DURATION_CLOSENESS_DIVISOR,
+  BOUT_DURATION_DOMINATION_DIVISOR,
+  HEAT_SPIKE_THRESHOLDS,
+  CLOSENESS_DECAY_RATE,
+  SPITE_DECAY_RATE,
+  TOP_RIVALRY_PAIRS_TO_SEED,
+  NATIONALITY_RIVALRY_BONUS,
+} from "../../../constants/engine/narrative";
 
 /**
  * Unified Rivalry Service.
@@ -120,18 +129,18 @@ export const RivalryService = {
       isLossForA: result.loserRikishiId === existing.aId,
       isKinboshi: !!result.isKinboshi,
       isTitleStakes: !!result.isTitleStakes,
-      closeness01: result.duration ? Math.min(1.0, result.duration / 12) : 0.5,
-      domination01: result.duration ? Math.max(0.0, 1.0 - result.duration / 10) : 0.2,
+      closeness01: result.duration ? Math.min(1.0, result.duration / BOUT_DURATION_CLOSENESS_DIVISOR) : 0.5,
+      domination01: result.duration ? Math.max(0.0, 1.0 - result.duration / BOUT_DURATION_DOMINATION_DIVISOR) : 0.2,
       isUpset: !!result.upset,
       isFinalDay: args.day === 15,
       isYushoRace: !!result.isYushoRace,
       week,
     });
 
-    // Detection for heat spikes (crosses thresholds 25, 50, 75)
+    // Detection for heat spikes (crosses thresholds)
     const oldHeat = existing.heat;
     const newHeat = next.heat;
-    const thresholds = [25, 50, 75];
+    const thresholds = HEAT_SPIKE_THRESHOLDS;
     const thresholdCrossed = thresholds.find((t) => oldHeat <= t && newHeat > t);
 
     if (thresholdCrossed) {
@@ -228,8 +237,8 @@ export const RivalryService = {
       const updatedPair = {
         ...pair,
         heat: clamp(pair.heat - decay, 0, 100),
-        closeness: clamp(pair.closeness - 0.25, 0, 100),
-        spite: clamp(pair.spite - 0.35, 0, 100),
+        closeness: clamp(pair.closeness - CLOSENESS_DECAY_RATE, 0, 100),
+        spite: clamp(pair.spite - SPITE_DECAY_RATE, 0, 100),
         tone: deriveTone(pair),
       };
 
@@ -330,7 +339,7 @@ export const RivalryService = {
         if (a.style !== b.style) score += 10;
 
         // Origin or Nationality clash
-        if (a.nationality !== b.nationality) score += 5;
+        if (a.nationality !== b.nationality) score += NATIONALITY_RIVALRY_BONUS;
 
         // Rank proximity (same division, close rank numbers)
         if (a.division === b.division) {
@@ -350,8 +359,8 @@ export const RivalryService = {
     // Sort descending by score
     candidates.sort((c1, c2) => c2.score - c1.score);
 
-    // Seed top 12 pairs
-    const toSeed = candidates.slice(0, 12);
+    // Seed top pairs
+    const toSeed = candidates.slice(0, TOP_RIVALRY_PAIRS_TO_SEED);
     const rng = RNGRegistry.getSystemRNG(world, "rivalry", `init`);
 
     const nextPairs = { ...state.pairs };

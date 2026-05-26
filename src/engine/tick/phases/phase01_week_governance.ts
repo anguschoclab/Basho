@@ -22,10 +22,18 @@ import {
   DEFAULT_POLITICAL_CAPITAL,
   ELECTION_POLITICAL_CAPITAL_GAIN,
 } from "../../../constants/engine/governance";
+import {
+  ELECTION_WEEK,
+  ELECTION_YEAR_INTERVAL,
+  SCANDAL_SCORE_ALERT_THRESHOLD,
+  SCANDAL_SCORE_HIGH_THRESHOLD,
+  SCANDAL_SCORE_MEDIUM_THRESHOLD,
+  SCANDAL_SCORE_LOW_THRESHOLD,
+} from "../../../constants/engine/governanceExtended";
 
 export function phase01_week_governance(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_governance");
-  const isElectionWeek = world.week === 52 && world.year % 2 === 0;
+  const isElectionWeek = world.week === ELECTION_WEEK && world.year % ELECTION_YEAR_INTERVAL === 0;
 
   // 0. Council & Career Transitions (Q1 / Q3)
   // Only evaluate these in the post-basho wrap-up phase or yearly boundary
@@ -48,7 +56,7 @@ export function phase01_week_governance(world: WorldState): StateImpact {
     }
 
     // 2. Alert if crossing critical threshold (player only)
-    if (heya.scandalScore != null && heya.scandalScore >= 30 && heya.id === world.playerHeyaId) {
+    if (heya.scandalScore != null && heya.scandalScore >= SCANDAL_SCORE_ALERT_THRESHOLD && heya.id === world.playerHeyaId) {
       builder.logEvent(
         "GOVERNANCE_RULING",
         "discipline",
@@ -64,11 +72,11 @@ export function phase01_week_governance(world: WorldState): StateImpact {
     // 3. Status Transition Logic
     const score = heya.scandalScore ?? 0;
     const newStatus: GovernanceStatus =
-      score >= 60
+      score >= SCANDAL_SCORE_HIGH_THRESHOLD
         ? "sanctioned"
-        : score >= 30
+        : score >= SCANDAL_SCORE_MEDIUM_THRESHOLD
           ? "probation"
-          : score >= 15
+          : score >= SCANDAL_SCORE_LOW_THRESHOLD
             ? "warning"
             : "good_standing";
 

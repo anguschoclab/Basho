@@ -1,5 +1,14 @@
 import { CombatArchetype, CombatProfile, Style } from "./types/combat";
 import { SeededRNG } from "./rng";
+import {
+  ARCHETYPE_OSHI_THRESHOLD,
+  ARCHETYPE_YOTSU_THRESHOLD,
+  ARCHETYPE_TRICKSTER_THRESHOLD,
+  ARCHETYPE_SPEEDSTER_THRESHOLD,
+  ARCHETYPE_TSUPPARI_THRESHOLD,
+  ARCHETYPE_DEFENSIVE_THRESHOLD,
+  ARCHETYPE_GIANT_THRESHOLD,
+} from "../constants/engine/archetype";
 
 const ARCHETYPE_DEFINITIONS: Record<CombatArchetype, Omit<CombatProfile, "archetype">> = {
   trickster: {
@@ -115,14 +124,14 @@ export function getCombatArchetypeDescription(archetype: CombatArchetype): strin
  */
 export function rollArchetype(rng: SeededRNG): CombatArchetype {
   const roll = rng.next();
-  if (roll < 0.3) return "oshi";
-  if (roll < 0.57) return "yotsu";
-  if (roll < 0.65) return "trickster";
-  if (roll < 0.73) return "speedster";
-  if (roll < 0.8) return "tsuppari"; // 7%
-  if (roll < 0.86) return "defensive"; // 6%
-  if (roll < 0.92) return "giant"; // 6%
-  return "hybrid"; // 8%
+  if (roll < ARCHETYPE_OSHI_THRESHOLD) return "oshi";
+  if (roll < ARCHETYPE_YOTSU_THRESHOLD) return "yotsu";
+  if (roll < ARCHETYPE_TRICKSTER_THRESHOLD) return "trickster";
+  if (roll < ARCHETYPE_SPEEDSTER_THRESHOLD) return "speedster";
+  if (roll < ARCHETYPE_TSUPPARI_THRESHOLD) return "tsuppari";
+  if (roll < ARCHETYPE_DEFENSIVE_THRESHOLD) return "defensive";
+  if (roll < ARCHETYPE_GIANT_THRESHOLD) return "giant";
+  return "hybrid";
 }
 
 /**

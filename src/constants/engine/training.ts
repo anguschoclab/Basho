@@ -206,3 +206,21 @@ export const DRILL_METADATA: Record<string, { label: string; description: string
       color: "gray",
     },
   };
+
+/** Experience growth multiplier */
+export const EXPERIENCE_GROWTH_MULTIPLIER = 0.5;
+
+/** Crash probability threshold weeks */
+export const CRASH_PROBABILITY_THRESHOLD_WEEKS = 3;
+
+/** Maximum crash probability */
+export const MAX_CRASH_PROBABILITY = 1.0;
+
+/** Maximum technique bleed from mentor to apprentice per week */
+export const MENTORSHIP_MAX_BLEED = 3;
+
+/** Minimum technique gap for mentorship bleed */
+export const MENTORSHIP_BLEED_THRESHOLD = 10;
+
+/** Fraction of technique gap that transfers per week */
+export const MENTORSHIP_BLEED_SCALE = 0.06;

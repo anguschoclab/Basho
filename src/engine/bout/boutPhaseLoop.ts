@@ -35,8 +35,18 @@ import {
   edgeCrisisRecoveryChance,
   type BoutContext,
 } from "./boutUtils";
+import {
+  MAX_BOUT_TICKS,
+  BELT_THRESHOLD_MAX,
+  BELT_BIAS_DIVISOR,
+  MASS_ADVANTAGE_MULTIPLIER,
+  CONTEST_LINE_JITTER_MULTIPLIER,
+  DISPLACEMENT_PER_FORCE,
+  MIN_FORCE_AFTER_FATIGUE,
+  FATIGUE_PENALTY_PER_POINT,
+  TORQUE_VELOCITY_MULTIPLIER,
+} from "../../constants/engine/physics";
 
-const MAX_TICKS = 120;
 
 // ---------------------------------------------------------------------------
 // Initialisation
@@ -122,7 +132,7 @@ function resolveTachiaiV2(
   // Decide push vs belt battle (biased by combatProfile)
   const eastBeltBias = east.combatProfile?.familyPreferences?.belt ?? 25;
   const westBeltBias = west.combatProfile?.familyPreferences?.belt ?? 25;
-  const beltThreshold = Math.min(0.7, (eastBeltBias + westBeltBias) / 200);
+  const beltThreshold = Math.min(BELT_THRESHOLD_MAX, (eastBeltBias + westBeltBias) / BELT_BIAS_DIVISOR);
   const useBelt = rng.next() < beltThreshold;
 
   const initialPush: PushBattleState = {
@@ -172,23 +182,23 @@ function tickPushBattle(
   const westEffFatigue = stat(west, "fatigue") + st.west.boutFatigue * 0.4;
 
   // Penalty: max 40% reduction (capped at fatigue ~100)
-  const eastFatPenalty = Math.max(0.6, 1 - eastEffFatigue * 0.004);
-  const westFatPenalty = Math.max(0.6, 1 - westEffFatigue * 0.004);
+  const eastFatPenalty = Math.max(MIN_FORCE_AFTER_FATIGUE, 1 - eastEffFatigue * FATIGUE_PENALTY_PER_POINT);
+  const westFatPenalty = Math.max(MIN_FORCE_AFTER_FATIGUE, 1 - westEffFatigue * FATIGUE_PENALTY_PER_POINT);
 
   const adjustedEastForce = push.eastForce * eastFatPenalty;
   const adjustedWestForce = push.westForce * westFatPenalty;
 
-  const massAdvantageEast = (st.east.mass - st.west.mass) * 0.05; // ~5 N per 20 kg difference
+  const massAdvantageEast = (st.east.mass - st.west.mass) * MASS_ADVANTAGE_MULTIPLIER; // ~5 N per 20 kg difference
 
   // Calculate deterministic force differential (no jitter) for directional decisions
   const baseForceDiff = adjustedEastForce - adjustedWestForce + massAdvantageEast;
 
   // Apply jitter to contestLine for variation, but use baseForceDiff for directional decisions
   const jitteredContestLine = baseForceDiff + jitter(rng, 3);
-  push.contestLine += jitteredContestLine * 0.01;
+  push.contestLine += jitteredContestLine * CONTEST_LINE_JITTER_MULTIPLIER;
 
   // Use absolute baseForceDiff for displacement (jitter affects magnitude via contestLine)
-  const displacement = Math.abs(baseForceDiff) * 0.04; // meters per tick
+  const displacement = Math.abs(baseForceDiff) * DISPLACEMENT_PER_FORCE; // meters per tick
 
   // Only retreat/destabilize when there's a real force differential
   if (baseForceDiff > 0) {
@@ -288,10 +298,10 @@ function tickBeltBattle(
 
   // Set velocityX for classifier (torque-driven movement)
   if (torqueAdvantage > 0) {
-    st.west.velocityX = torqueAdvantage * 0.05;
+    st.west.velocityX = torqueAdvantage * TORQUE_VELOCITY_MULTIPLIER;
     st.east.velocityX = 0;
   } else if (torqueAdvantage < 0) {
-    st.east.velocityX = Math.abs(torqueAdvantage) * 0.05;
+    st.east.velocityX = Math.abs(torqueAdvantage) * TORQUE_VELOCITY_MULTIPLIER;
     st.west.velocityX = 0;
   } else {
     // Tie: neither has velocity
@@ -474,7 +484,7 @@ function runPhaseLoop(
     return { winner: st.phase.winner, kimarite: st.phase.technique };
   }
 
-  for (let i = 0; i < MAX_TICKS; i++) {
+  for (let i = 0; i < MAX_BOUT_TICKS; i++) {
     st.tick++;
 
     const pushResult = tickPushBattle(rng, east, west, st, division, meta);
@@ -556,7 +566,7 @@ function buildBoutResultV2(
   // Each tawara escape adds 20 (dramatic near-defeats). Cap at 100.
   const excitementScore = Math.min(
     100,
-    Math.round((st.tick / MAX_TICKS) * 70 + edgeCrisisEscapes * 20)
+    Math.round((st.tick / MAX_BOUT_TICKS) * 70 + edgeCrisisEscapes * 20)
   );
 
   const resolvedStance =

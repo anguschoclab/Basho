@@ -38,6 +38,21 @@ import { generateAvatarConfig } from "../../avatarGenerator";
 import { HEYA_SIGNATURE_PREFIXES, extractPrefixFromShikona } from "../../shikona/heyaPrefixes";
 import { RivalryService } from "../narrative/RivalryService";
 import { resetImpactTimestampCounter } from "../../core/StateImpact";
+import {
+  OYAKATA_BASE_AGE,
+  OYAKATA_AGE_RANGE,
+  HEYA_REPUTATION_BASE,
+  HEYA_REPUTATION_TIER_MULTIPLIER,
+  HEYA_PRESTIGE_BASE,
+  HEYA_PRESTIGE_TIER_MULTIPLIER,
+  HEYA_FUNDS_ELITE,
+  HEYA_FUNDS_STANDARD,
+  HEYA_WELFARE_RISK_DEFAULT,
+  HEYA_FACILITIES_DEFAULT,
+  HEYA_POLITICAL_CAPITAL_DEFAULT,
+  YOKOZUNA_COUNT_MIN,
+  YOKOZUNA_COUNT_MAX,
+} from "../../../constants/engine/generation";
 
 /**
  * Creates a new Heya and its associated Oyakata.
@@ -77,7 +92,7 @@ export function createHeyaWithOyakata(args: {
     "tyrant",
     "strategist",
   ]) as OyakataArchetype;
-  const age = 45 + rng.int(0, 20);
+  const age = OYAKATA_BASE_AGE + rng.int(0, OYAKATA_AGE_RANGE);
 
   const oyakata = generateOyakata(
     oyakataId,
@@ -127,22 +142,22 @@ export function createHeyaWithOyakata(args: {
     facilitiesBand: "adequate",
     koenkaiBand: "moderate",
     runwayBand: "secure",
-    reputation: 80 - tier * 50,
-    prestige: 50 - tier * 30,
-    funds: tier < 0.2 ? 40_000_000 : 15_000_000,
+    reputation: HEYA_REPUTATION_BASE - tier * HEYA_REPUTATION_TIER_MULTIPLIER,
+    prestige: HEYA_PRESTIGE_BASE - tier * HEYA_PRESTIGE_TIER_MULTIPLIER,
+    funds: tier < 0.2 ? HEYA_FUNDS_ELITE : HEYA_FUNDS_STANDARD,
     scandalScore: 0,
     governanceStatus: "good_standing",
     welfareState: {
-      welfareRisk: 10,
+      welfareRisk: HEYA_WELFARE_RISK_DEFAULT,
       activeDiet: "maintenance",
       complianceState: "compliant",
       weeksInState: 0,
       lastReviewedWeek: 0,
     },
-    facilities: { training: 50, recovery: 50, nutrition: 50 },
+    facilities: { training: HEYA_FACILITIES_DEFAULT, recovery: HEYA_FACILITIES_DEFAULT, nutrition: HEYA_FACILITIES_DEFAULT },
     riskIndicators: { financial: false, governance: false, rivalry: false },
     ichimon: seededPick(rng, ["Dewanoumi", "Nishonoseki", "Takasago", "Tokitsukaze", "Isegahama"]),
-    politicalCapital: 100,
+    politicalCapital: HEYA_POLITICAL_CAPITAL_DEFAULT,
     location: "Tokyo",
     lineage: [],
     historicalYusho: 0,
@@ -276,7 +291,7 @@ export function createRosters(
 
   // 2. Initial Roster Generation (Rank Distribution)
   // Yokozuna count is variable (0-2) to allow for initial gaps, matching real sumo patterns
-  const yokozunaCount = worldRng.int(0, 2);
+  const yokozunaCount = worldRng.int(YOKOZUNA_COUNT_MIN, YOKOZUNA_COUNT_MAX);
   const rankConfigs: { rank: Rank; division: Division; count: number; tierWeight: number }[] = [
     { rank: "yokozuna", division: "makuuchi", count: yokozunaCount, tierWeight: 5 },
     { rank: "ozeki", division: "makuuchi", count: 2, tierWeight: 5 },

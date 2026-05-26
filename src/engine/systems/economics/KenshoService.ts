@@ -2,15 +2,35 @@ import { SeededRNG } from "../../rng";
 import type { Sponsor, SponsorPool, KenshoBannerSlot } from "../../types/sponsors";
 import type { WorldState } from "../../types/world";
 import type { Rikishi } from "../../types/rikishi";
+import {
+  KENSHO_LOW_MAX_T4_PLUS,
+  KENSHO_LOW_MAX_T3,
+  KENSHO_MID_MAX_T4_PLUS,
+  KENSHO_MID_MAX_T3,
+  KENSHO_HIGH_MAX_T4_PLUS,
+  KENSHO_HIGH_MAX_T3,
+  KENSHO_PEAK_MAX_T4_PLUS,
+  KENSHO_PEAK_MAX_T3,
+  FINAL_BASHO_DAY,
+  PRESTIGE_AFFINITY_T4_WEIGHT,
+  LOYALTY_T4_WEIGHT,
+  T5_TIER_BONUS,
+  T4_TIER_BONUS,
+  PRESTIGE_AFFINITY_T3_WEIGHT,
+  LOYALTY_T3_WEIGHT,
+  MEDIA_HEAT_DIVISOR,
+  MIN_KINBOSHI_BANNER_COUNT,
+  ADDITIONAL_KINBOSHI_BANNER_MAX,
+} from "../../../constants/engine/economyExtended";
 
 /** Type representing bout importance bucket. */
 export type BoutImportanceBucket = "low" | "mid" | "high" | "peak";
 
 const TIER_CAPS: Record<BoutImportanceBucket, { maxT4Plus: number; maxT3: number }> = {
-  low: { maxT4Plus: 0, maxT3: 1 },
-  mid: { maxT4Plus: 1, maxT3: 2 },
-  high: { maxT4Plus: 2, maxT3: 4 },
-  peak: { maxT4Plus: 4, maxT3: 6 },
+  low: { maxT4Plus: KENSHO_LOW_MAX_T4_PLUS, maxT3: KENSHO_LOW_MAX_T3 },
+  mid: { maxT4Plus: KENSHO_MID_MAX_T4_PLUS, maxT3: KENSHO_MID_MAX_T3 },
+  high: { maxT4Plus: KENSHO_HIGH_MAX_T4_PLUS, maxT3: KENSHO_HIGH_MAX_T3 },
+  peak: { maxT4Plus: KENSHO_PEAK_MAX_T4_PLUS, maxT3: KENSHO_PEAK_MAX_T3 },
 };
 
 /**
@@ -41,7 +61,7 @@ export function determineBoutImportance(
   const topRanks = ["yokozuna", "ozeki", "sekiwake", "komusubi"];
   const isTopRank = topRanks.includes(e) || topRanks.includes(w);
 
-  if (isYushoContention || (day === 15 && isTopRank)) return "peak";
+  if (isYushoContention || (day === FINAL_BASHO_DAY && isTopRank)) return "peak";
   if (isTopRank) return "high";
 
   const isMidRank = e === "maegashira" || w === "maegashira";
@@ -108,10 +128,10 @@ export function assignKenshoBanners(
     .map((s) => ({
       sponsor: s,
       score:
-        s.prestigeAffinity * 0.5 +
-        s.loyalty * 0.3 +
-        (s.tier === "T5" ? 20 : 0) +
-        (s.tier === "T4" ? 8 : 0),
+        s.prestigeAffinity * PRESTIGE_AFFINITY_T4_WEIGHT +
+        s.loyalty * LOYALTY_T4_WEIGHT +
+        (s.tier === "T5" ? T5_TIER_BONUS : 0) +
+        (s.tier === "T4" ? T4_TIER_BONUS : 0),
     }))
     .sort((a, b) => b.score - a.score || a.sponsor.sponsorId.localeCompare(b.sponsor.sponsorId));
 
@@ -139,7 +159,7 @@ export function assignKenshoBanners(
     const remaining = scored
       .map((x) => x.sponsor)
       .filter((s) => !chosenIds.has(s.sponsorId))
-      .map((s) => ({ item: s, w: 1 + (s.prestigeAffinity * 0.4 + s.loyalty * 0.2) }));
+      .map((s) => ({ item: s, w: 1 + (s.prestigeAffinity * PRESTIGE_AFFINITY_T3_WEIGHT + s.loyalty * LOYALTY_T3_WEIGHT) }));
 
     const fill = weightedSampleWithoutReplacement(rng, remaining, count - chosen.length);
     chosen.push(...fill);
@@ -179,14 +199,14 @@ export function calculateKenshoEnvelopes(
   const mediaState = world.mediaState;
   if (mediaState && mediaState.mediaHeat) {
     const heat = mediaState.mediaHeat[rikishi.id] || 0;
-    const buzzMod = heat / 80; // Up to +1.25x
+    const buzzMod = heat / MEDIA_HEAT_DIVISOR;
     // Fan donations/anonymous envelopes scale with buzz
     count += Math.round(count * buzzMod);
   }
 
   // Minimum guarantees for historic wins even if un-sponsored
-  if (awardFact === "kinboshi" && count < 15) {
-    count = 15 + Math.floor(rng.next() * 5);
+  if (awardFact === "kinboshi" && count < MIN_KINBOSHI_BANNER_COUNT) {
+    count = MIN_KINBOSHI_BANNER_COUNT + Math.floor(rng.next() * ADDITIONAL_KINBOSHI_BANNER_MAX);
   } else if (awardFact === "ginboshi" && count < 5) {
     count = 5 + Math.floor(rng.next() * 3);
   }
