@@ -22,6 +22,27 @@ import {
   type ScoutingAttributeType,
   INVESTMENT_BONUS,
 } from "../../../constants/engine/recruitment";
+import {
+  MAX_SCOUTING_LEVEL,
+  PASSIVE_SCOUTING_MAX_BASE,
+  PASSIVE_SCOUTING_MULTIPLIER,
+  FOG_OF_WAR_CERTAIN_THRESHOLD,
+  FOG_OF_WAR_HIGH_THRESHOLD,
+  FOG_OF_WAR_MEDIUM_THRESHOLD,
+  FOG_OF_WAR_LOW_THRESHOLD,
+  STYLE_HIGH_OBSERVATIONS,
+  STYLE_MEDIUM_OBSERVATIONS,
+  POTENTIAL_HIGH_THRESHOLD,
+  POTENTIAL_MEDIUM_THRESHOLD,
+  POTENTIAL_LOW_THRESHOLD,
+  FOG_OF_WAR_ERROR_RANGE_LOW,
+  FOG_OF_WAR_ERROR_RANGE_MEDIUM,
+  HIGH_ERROR_PERCENTAGE,
+  FOG_OF_WAR_PROBABILITY_THRESHOLD,
+  SCOUTING_BIAS_MAX,
+  SCOUTING_BIAS_DECAY_OBSERVATIONS,
+  FULL_BIAS_FACTOR,
+} from "../../../constants/engine/recruitmentExtended";
 
 /**
  * Calculate numerical scouting level (0-100).
@@ -31,19 +52,19 @@ export function calculateScoutingLevel(
   observations: number,
   investment: ScoutingInvestment
 ): number {
-  if (isOwned) return 100;
-  const passiveBase = Math.min(30, Math.max(0, observations) * 2);
-  return clampInt(passiveBase + (INVESTMENT_BONUS[investment] || 0), 0, 100);
+  if (isOwned) return MAX_SCOUTING_LEVEL;
+  const passiveBase = Math.min(PASSIVE_SCOUTING_MAX_BASE, Math.max(0, observations) * PASSIVE_SCOUTING_MULTIPLIER);
+  return clampInt(passiveBase + (INVESTMENT_BONUS[investment] || 0), 0, MAX_SCOUTING_LEVEL);
 }
 
 /**
  * Determine qualitative confidence from numerical level.
  */
 export function getConfidenceFromLevel(level: number): ConfidenceLevel {
-  if (level >= 95) return "certain";
-  if (level >= 70) return "high";
-  if (level >= 40) return "medium";
-  if (level >= 15) return "low";
+  if (level >= FOG_OF_WAR_CERTAIN_THRESHOLD) return "certain";
+  if (level >= FOG_OF_WAR_HIGH_THRESHOLD) return "high";
+  if (level >= FOG_OF_WAR_MEDIUM_THRESHOLD) return "medium";
+  if (level >= FOG_OF_WAR_LOW_THRESHOLD) return "low";
   return "unknown";
 }
 
@@ -61,16 +82,16 @@ export function getConfidenceLevel(
   if (attributeType === "hidden") return "unknown";
 
   if (attributeType === "style") {
-    if (observations >= 3) return "high";
-    if (observations >= 1) return "medium";
+    if (observations >= STYLE_HIGH_OBSERVATIONS) return "high";
+    if (observations >= STYLE_MEDIUM_OBSERVATIONS) return "medium";
     return "low";
   }
 
   if (attributeType === "potential") {
     // Potential is harder to scout than current ability — shift confidence down one tier.
-    if (level >= 95) return "high";
-    if (level >= 75) return "medium";
-    if (level >= 50) return "low";
+    if (level >= POTENTIAL_HIGH_THRESHOLD) return "high";
+    if (level >= POTENTIAL_MEDIUM_THRESHOLD) return "medium";
+    if (level >= POTENTIAL_LOW_THRESHOLD) return "low";
     return "unknown";
   }
 
@@ -90,14 +111,14 @@ export function getEstimatedValue(
   if (confidence === "unknown") return (range.min + range.max) / 2;
 
   const maxErrorPct: Record<Exclude<ConfidenceLevel, "certain" | "unknown">, number> = {
-    low: 35,
-    medium: 20,
-    high: 9,
+    low: FOG_OF_WAR_ERROR_RANGE_LOW,
+    medium: FOG_OF_WAR_ERROR_RANGE_MEDIUM,
+    high: HIGH_ERROR_PERCENTAGE,
   };
 
   const rng = rngFromSeed(seed, "scouting", "estimation");
   const rand = rng.next();
-  const sign = rng.next() < 0.5 ? -1 : 1;
+  const sign = rng.next() < FOG_OF_WAR_PROBABILITY_THRESHOLD ? -1 : 1;
   const magPct = rand * maxErrorPct[confidence];
 
   const span = range.max - range.min;
@@ -175,8 +196,8 @@ export interface ScoutingBias {
   decayFactor: number;
 }
 
-const BIAS_MAX = 20;
-const DECAY_OBS_FULL = 20; // at this many observations, bias is fully gone
+const BIAS_MAX = SCOUTING_BIAS_MAX;
+const DECAY_OBS_FULL = SCOUTING_BIAS_DECAY_OBSERVATIONS; // at this many observations, bias is fully gone
 
 /**
  * Generate a seeded per-candidate scouting bias.
@@ -200,10 +221,10 @@ export function generateScoutingBias(candidateId: string, year: number): Scoutin
   const statOffsets = {} as ScoutingBias["statOffsets"];
   for (const key of statKeys) {
     const magnitude = Math.floor(rng.next() * BIAS_MAX);
-    const sign = rng.next() < 0.5 ? -1 : 1;
+    const sign = rng.next() < FOG_OF_WAR_PROBABILITY_THRESHOLD ? -1 : 1;
     statOffsets[key] = magnitude * sign;
   }
-  return { statOffsets, decayFactor: 1.0 };
+  return { statOffsets, decayFactor: FULL_BIAS_FACTOR };
 }
 
 /**

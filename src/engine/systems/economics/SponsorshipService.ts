@@ -9,22 +9,43 @@ import type {
 } from "../../types/sponsors";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
+import {
+  KOENKAI_INCOME_NONE,
+  KOENKAI_INCOME_WEAK,
+  KOENKAI_INCOME_MODERATE,
+  KOENKAI_INCOME_STRONG,
+  KOENKAI_INCOME_POWERFUL,
+  SPONSOR_TIER_INCOME_T0,
+  SPONSOR_TIER_INCOME_T1,
+  SPONSOR_TIER_INCOME_T2,
+  SPONSOR_TIER_INCOME_T3,
+  SPONSOR_TIER_INCOME_T4,
+  SPONSOR_TIER_INCOME_T5,
+  KOENKAI_POWERFUL_THRESHOLD,
+  KOENKAI_STRONG_THRESHOLD,
+  KOENKAI_MODERATE_THRESHOLD,
+  KOENKAI_WEAK_THRESHOLD,
+  KOENKAI_MEMBER_COUNT_BASE,
+  KOENKAI_MEMBER_COUNT_MAX,
+  KOENKAI_PILLAR_STRENGTH,
+  KOENKAI_MEMBER_STRENGTH,
+} from "../../../constants/engine/economyExtended";
 
 export const KOENKAI_MONTHLY_INCOME: Record<KoenkaiBandType, number> = {
-  none: 0,
-  weak: 500_000,
-  moderate: 1_500_000,
-  strong: 3_500_000,
-  powerful: 7_000_000,
+  none: KOENKAI_INCOME_NONE,
+  weak: KOENKAI_INCOME_WEAK,
+  moderate: KOENKAI_INCOME_MODERATE,
+  strong: KOENKAI_INCOME_STRONG,
+  powerful: KOENKAI_INCOME_POWERFUL,
 };
 
 export const SPONSOR_TIER_INCOME: Record<import("../../types/sponsors").SponsorTier, number> = {
-  T0: 100_000,
-  T1: 300_000,
-  T2: 750_000,
-  T3: 1_500_000,
-  T4: 3_000_000,
-  T5: 8_000_000,
+  T0: SPONSOR_TIER_INCOME_T0,
+  T1: SPONSOR_TIER_INCOME_T1,
+  T2: SPONSOR_TIER_INCOME_T2,
+  T3: SPONSOR_TIER_INCOME_T3,
+  T4: SPONSOR_TIER_INCOME_T4,
+  T5: SPONSOR_TIER_INCOME_T5,
 };
 
 /**
@@ -35,10 +56,10 @@ export function recalculateKoenkaiBand(koenkai: Koenkai): KoenkaiBandType {
   const memberCount = koenkai.members.length;
 
   // Band thresholds based on member count
-  if (memberCount >= 20) return "powerful";
-  if (memberCount >= 15) return "strong";
-  if (memberCount >= 10) return "moderate";
-  if (memberCount >= 5) return "weak";
+  if (memberCount >= KOENKAI_POWERFUL_THRESHOLD) return "powerful";
+  if (memberCount >= KOENKAI_STRONG_THRESHOLD) return "strong";
+  if (memberCount >= KOENKAI_MODERATE_THRESHOLD) return "moderate";
+  if (memberCount >= KOENKAI_WEAK_THRESHOLD) return "weak";
   return "none";
 }
 
@@ -53,7 +74,7 @@ export function createKoenkai(
   currentTick: number
 ): Koenkai {
   const koenkaiId = rng.uuid("KN");
-  const memberCount = 3 + Math.floor(rng.next() * 5);
+  const memberCount = KOENKAI_MEMBER_COUNT_BASE + Math.floor(rng.next() * KOENKAI_MEMBER_COUNT_MAX);
 
   const eligibleSponsors = Array.from(sponsorPool.sponsors.values())
     .filter((s) => s.active && (s.tier === "T1" || s.tier === "T2" || s.tier === "T3"))
@@ -70,7 +91,7 @@ export function createKoenkai(
       targetType: "heya",
       targetId: heyaId,
       role: isPillar ? "koenkai_pillar" : "koenkai_member",
-      strength: isPillar ? 4 : 2,
+      strength: isPillar ? KOENKAI_PILLAR_STRENGTH : KOENKAI_MEMBER_STRENGTH,
       startedAtTick: currentTick,
     };
   });
@@ -202,7 +223,7 @@ export function recruitSponsor(
  * Update Rikishi popularity and sponsor triggers based on achievements.
  */
 export function applyAchievementImpact(
-  world: WorldState,
+  _world: WorldState,
   rikishi: Rikishi,
   awardType: "kinboshi" | "ginboshi" | "sansho"
 ): StateImpact {

@@ -21,6 +21,11 @@ import { clamp } from "../../utils/math";
 import { EntityCollection } from "../../core/EntityCollection";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
+import {
+  MENTORSHIP_MAX_BLEED,
+  MENTORSHIP_BLEED_THRESHOLD,
+  MENTORSHIP_BLEED_SCALE,
+} from "../../../constants/engine/training";
 
 /**
  * Minimum ranks required for a rikishi to be eligible as a mentor.
@@ -39,19 +44,19 @@ const MENTOR_MIN_RANKS = new Set([
  * Maximum technique points that can bleed from mentor to apprentice per week.
  * This cap prevents excessive stat inflation from mentorship.
  */
-const MAX_BLEED = 3;
+const MAX_BLEED = MENTORSHIP_MAX_BLEED;
 
 /**
  * Minimum technique gap between mentor and apprentice required for bleed to occur.
  * If the gap is below this threshold, the apprentice is too close to the mentor's level.
  */
-const BLEED_THRESHOLD = 10;
+const BLEED_THRESHOLD = MENTORSHIP_BLEED_THRESHOLD;
 
 /**
  * Fraction of the technique gap that transfers to the apprentice each week.
  * A 6% transfer rate means a 50-point gap yields 3 points per week (before capping).
  */
-const BLEED_SCALE = 0.06;
+const BLEED_SCALE = MENTORSHIP_BLEED_SCALE;
 
 /**
  * Mentorship service providing pure mentor-assignment logic and growth-bonus calculation.

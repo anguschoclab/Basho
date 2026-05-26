@@ -15,6 +15,11 @@ import {
   TSUKEBITO_COSTS_MONTHLY,
   KOENKAI_INCOME_SPLIT,
 } from "../../../constants/engine/economic";
+import {
+  MONTHLY_DIVISOR,
+  TRAVEL_ALLOWANCE_CASH_SPLIT,
+  TRAVEL_ALLOWANCE_RETIREMENT_SPLIT,
+} from "../../../constants/engine/economyExtended";
 import { calculateKoenkaiIncome } from "../economics/SponsorshipService";
 
 /**
@@ -35,7 +40,7 @@ export function payTravelAllowance(world: WorldState): StateImpact {
 
     const yearlyAllowance =
       TRAVEL_ALLOWANCE_YEARLY[rikishi.rank as keyof typeof TRAVEL_ALLOWANCE_YEARLY] || 0;
-    const monthlyAllowance = yearlyAllowance / 12;
+    const monthlyAllowance = yearlyAllowance / MONTHLY_DIVISOR;
 
     if (monthlyAllowance <= 0) continue;
 
@@ -50,8 +55,8 @@ export function payTravelAllowance(world: WorldState): StateImpact {
     };
 
     // Split allowance: 70% cash, 30% retirement fund (JSA model)
-    const cashAllowance = monthlyAllowance * 0.7;
-    const retirementAllowance = monthlyAllowance * 0.3;
+    const cashAllowance = monthlyAllowance * TRAVEL_ALLOWANCE_CASH_SPLIT;
+    const retirementAllowance = monthlyAllowance * TRAVEL_ALLOWANCE_RETIREMENT_SPLIT;
 
     builder.updateRikishi(rikishiId, {
       economics: {

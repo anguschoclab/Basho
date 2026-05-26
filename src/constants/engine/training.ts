@@ -224,3 +224,39 @@ export const MENTORSHIP_BLEED_THRESHOLD = 10;
 
 /** Fraction of technique gap that transfers per week */
 export const MENTORSHIP_BLEED_SCALE = 0.06;
+
+/** Stat ceiling base value */
+export const STAT_CEILING_BASE = 45;
+
+/** Stat ceiling range */
+export const STAT_CEILING_RANGE = 54;
+
+/** Maximum stat ceiling */
+export const MAX_STAT_CEILING = 99;
+
+/** Minimum stat ceiling */
+export const MIN_STAT_CEILING = 30;
+
+/** Stat ceiling offset multiplier */
+export const STAT_CEILING_OFFSET_MULTIPLIER = 7;
+
+/** Stat ceiling offset divisor */
+export const STAT_CEILING_OFFSET_DIVISOR = 5;
+
+/** Stat ceiling offset subtract */
+export const STAT_CEILING_OFFSET_SUBTRACT = 2;
+
+/** Rookie experience threshold */
+export const ROOKIE_EXPERIENCE_THRESHOLD = 30;
+
+/** Prime experience threshold */
+export const PRIME_EXPERIENCE_THRESHOLD = 70;
+
+/** Veteran experience threshold */
+export const VETERAN_EXPERIENCE_THRESHOLD = 90;
+
+/** Base growth value */
+export const BASE_GROWTH = 0.5;
+
+/** Degeiko penalty multiplier */
+export const DEGEIKO_PENALTY_MULTIPLIER = 0.5;

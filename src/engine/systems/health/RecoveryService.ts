@@ -6,6 +6,11 @@
 import { WorldState } from "../../types/world";
 import { Rikishi } from "../../types/rikishi";
 import { clampInt } from "../../utils/math";
+import {
+  RECOVERY_MULTIPLIER_DOUBLE_WEEK_THRESHOLD,
+  DOUBLE_WEEK_REDUCTION,
+  SINGLE_WEEK_REDUCTION,
+} from "../../../constants/engine/condition";
 
 /**
  * Ticks recovery for a single rikishi.
@@ -20,7 +25,7 @@ export function tickRikishiRecovery(rikishi: Rikishi, recoveryMult: number = 1.0
 
   // base recovery = 1 week per week
   // recoveryMult >= 1.2 yields 2 weeks (from original logic)
-  const weeksReduced = recoveryMult >= 1.2 ? 2 : 1;
+  const weeksReduced = recoveryMult >= RECOVERY_MULTIPLIER_DOUBLE_WEEK_THRESHOLD ? DOUBLE_WEEK_REDUCTION : SINGLE_WEEK_REDUCTION;
   rikishi.injuryWeeksRemaining = Math.max(0, rikishi.injuryWeeksRemaining - weeksReduced);
 
   if (rikishi.injuryWeeksRemaining <= 0) {

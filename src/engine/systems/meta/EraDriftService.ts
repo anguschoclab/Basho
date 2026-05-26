@@ -10,6 +10,15 @@ import { WorldState } from "../../types/world";
 import { KIMARITE_REGISTRY } from "../../kimarite";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
+import {
+  ERA_DRIFT_MIN_MOVES,
+  DOMINANCE_RATIO_THRESHOLD,
+  DEFAULT_DRIFT_VALUE,
+  DOMINANT_FAMILY_DRIFT_GROWTH,
+  NON_DOMINANT_FAMILY_DRIFT_DECAY,
+  MIN_DRIFT_CLAMP,
+  MAX_DRIFT_CLAMP,
+} from "../../../constants/engine/calendarExtended";
 
 export type EraTone = "classic" | "explosive" | "technical" | "defensive";
 
@@ -38,7 +47,7 @@ export function processYearlyEraDrift(world: WorldState): StateImpact {
     }
   }
 
-  if (totalMoves < 100) return builder.build(); // Not enough data yet
+  if (totalMoves < ERA_DRIFT_MIN_MOVES) return builder.build(); // Not enough data yet
 
   // 2. Identify Dominance
   const dominantFamily = Object.entries(familyTotals).sort((a, b) => b[1] - a[1])[0][0];
@@ -47,29 +56,29 @@ export function processYearlyEraDrift(world: WorldState): StateImpact {
 
   // 3. Update Tone (Hysteresis-friendly)
   let newTone: EraTone = world.meta?.tone || "classic";
-  if (dominanceRatio > 0.35) {
+  if (dominanceRatio > DOMINANCE_RATIO_THRESHOLD) {
     if (dominantFamily === "push") newTone = "explosive";
     if (dominantFamily === "belt") newTone = "classic";
     if (dominantFamily === "speed") newTone = "technical";
     if (dominantFamily === "trick") newTone = "defensive";
   }
 
-  // 4. Update Individual Drift Weights (Recalculate towards 1.0)
+  // 4. Update Individual Drift Weights (Recalculate towards DEFAULT_DRIFT_VALUE)
   const currentDrift = { ...(world.meta?.drift || {}) };
   const updatedDrift: Record<string, number> = {};
 
   for (const k of KIMARITE_REGISTRY) {
-    let d = currentDrift[k.id] || 1.0;
+    let d = currentDrift[k.id] || DEFAULT_DRIFT_VALUE;
 
     // Bias towards dominant styles
     if (k.tacticalFamily === dominantFamily) {
-      d *= 1.02; // Slow growth
+      d *= DOMINANT_FAMILY_DRIFT_GROWTH; // Slow growth
     } else {
-      d *= 0.98; // Natural decay back to baseline
+      d *= NON_DOMINANT_FAMILY_DRIFT_DECAY; // Natural decay back to baseline
     }
 
-    // Clamp between 0.5 and 2.0
-    updatedDrift[k.id] = Math.max(0.5, Math.min(2.0, d));
+    // Clamp between MIN_DRIFT_CLAMP and MAX_DRIFT_CLAMP
+    updatedDrift[k.id] = Math.max(MIN_DRIFT_CLAMP, Math.min(MAX_DRIFT_CLAMP, d));
   }
 
   // 5. Update World State via Builder

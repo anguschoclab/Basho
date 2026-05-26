@@ -112,3 +112,6 @@ export const BOLD_STATEMENT_IMPACT = { rep: -10, heat: 25 };
 
 /** Low tier impact bonus */
 export const LOW_TIER_BONUS = 3;
+
+/** Rivalry tension threshold for beat determination */
+export const RIVALRY_TENSION_BEAT_THRESHOLD = 0.1;

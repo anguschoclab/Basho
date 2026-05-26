@@ -25,6 +25,18 @@ import {
   INDIVIDUAL_FOCUS_MODES,
   PHASE_EFFECTS,
   STAT_CEILING_KEYS,
+  STAT_CEILING_BASE,
+  STAT_CEILING_RANGE,
+  MAX_STAT_CEILING,
+  MIN_STAT_CEILING,
+  STAT_CEILING_OFFSET_MULTIPLIER,
+  STAT_CEILING_OFFSET_DIVISOR,
+  STAT_CEILING_OFFSET_SUBTRACT,
+  ROOKIE_EXPERIENCE_THRESHOLD,
+  PRIME_EXPERIENCE_THRESHOLD,
+  VETERAN_EXPERIENCE_THRESHOLD,
+  BASE_GROWTH,
+  DEGEIKO_PENALTY_MULTIPLIER,
   type TrainingAttribute,
 } from "../../../constants/engine/training";
 import { ATTRIBUTE_PEAK, STAT_GROUP, maturityFactor } from "../../../constants/engine/development";
@@ -34,10 +46,10 @@ import { ATTRIBUTE_PEAK, STAT_GROUP, maturityFactor } from "../../../constants/e
  * talentSeed 0-100 maps to a ceiling of ~45-99.
  */
 export function getStatCeiling(talentSeed: number, statKey: keyof RikishiStats): number {
-  const baseCeiling = 45 + (talentSeed / 100) * 54;
+  const baseCeiling = STAT_CEILING_BASE + (talentSeed / 100) * STAT_CEILING_RANGE;
   const idx = STAT_CEILING_KEYS.indexOf(statKey);
-  const offset = idx >= 0 ? ((idx * 7) % 5) - 2 : 0;
-  return Math.min(99, Math.max(30, Math.round(baseCeiling + offset)));
+  const offset = idx >= 0 ? ((idx * STAT_CEILING_OFFSET_MULTIPLIER) % STAT_CEILING_OFFSET_DIVISOR) - STAT_CEILING_OFFSET_SUBTRACT : 0;
+  return Math.min(MAX_STAT_CEILING, Math.max(MIN_STAT_CEILING, Math.round(baseCeiling + offset)));
 }
 
 /**
@@ -87,9 +99,9 @@ export function diminishingReturnsMult(currentStat: number, ceiling: number): nu
  * Determine career phase based on experience.
  */
 export function getCareerPhase(experience: number): keyof typeof PHASE_EFFECTS {
-  if (experience < 30) return "rookie";
-  if (experience < 70) return "prime";
-  if (experience < 90) return "veteran";
+  if (experience < ROOKIE_EXPERIENCE_THRESHOLD) return "rookie";
+  if (experience < PRIME_EXPERIENCE_THRESHOLD) return "prime";
+  if (experience < VETERAN_EXPERIENCE_THRESHOLD) return "veteran";
   return "twilight";
 }
 
@@ -137,9 +149,7 @@ export function calculateGrowthVector(
   const nutritionFacility = heya?.facilities?.nutrition ?? 50;
   const nutritionMult = 0.92 + (Math.min(100, Math.max(0, nutritionFacility)) / 100) * 0.16;
 
-  const BASE_GROWTH = 0.5;
-
-  // Ichimon / Degeiko Political Bonus
+  const BASE_GROWTH_VALUE = BASE_GROWTH;
   let degeikoMult = 1.0;
   if (heya && heya.ichimon) {
     // Basic political influence bonus
@@ -166,7 +176,7 @@ export function calculateGrowthVector(
   if (world?.stableRelations && heya) {
     for (const [key, record] of Object.entries(world.stableRelations)) {
       if (key.includes(heya.id) && record.tone === "bad_blood") {
-        degeikoMult *= 0.5; // -50% joint training penalty for feud instability
+        degeikoMult *= DEGEIKO_PENALTY_MULTIPLIER;
         break;
       }
     }
@@ -183,7 +193,7 @@ export function calculateGrowthVector(
     facilityGrowthMult *
     degeikoMult *
     adaptabilityMult *
-    BASE_GROWTH;
+    BASE_GROWTH_VALUE;
 
   const talentSeed = rikishi.talentSeed ?? 50;
   const archetype = rikishi.combatProfile?.archetype as CombatArchetype;

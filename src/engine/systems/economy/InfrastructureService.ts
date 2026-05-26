@@ -19,6 +19,10 @@ import { Id } from "../../types/common";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { FACILITY_REGISTRY, FacilityId } from "../../types/infrastructure";
+import {
+  CONSTRUCTION_COST_LEVEL_MULTIPLIER,
+  CONSTRUCTION_BUILD_TIME_THRESHOLD,
+} from "../../../constants/engine/economyExtended";
 
 /**
  * Infrastructure Service namespace.
@@ -71,7 +75,7 @@ export const InfrastructureService = {
     const nextLevel = currentLevel + 1;
 
     // Calculate cost (scales with level)
-    const cost = def.baseCost * (1 + (nextLevel - 1) * 0.8);
+    const cost = def.baseCost * (1 + (nextLevel - 1) * CONSTRUCTION_COST_LEVEL_MULTIPLIER);
     if (heya.funds < cost) return builder.build();
 
     // Phase 5 Depth: Regional Presence check
@@ -97,7 +101,7 @@ export const InfrastructureService = {
     // Determine completion date (relative to current world state)
     // We'll use a simple "next basho" or "N basho from now" logic
     // For now, let's assume world.currentBashoName exists
-    const completionYear = world.year + (def.buildTimeBasho > 3 ? 1 : 0);
+    const completionYear = world.year + (def.buildTimeBasho > CONSTRUCTION_BUILD_TIME_THRESHOLD ? 1 : 0);
 
     const queueEntry = {
       facilityId,

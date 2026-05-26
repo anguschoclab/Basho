@@ -118,3 +118,24 @@ export const COMPLIANCE_STATE_NEGLECT_THRESHOLD = 55;
 
 /** Compliance state risk threshold */
 export const COMPLIANCE_STATE_RISK_THRESHOLD = 55;
+
+/** Default welfare risk */
+export const DEFAULT_WELFARE_RISK = 10;
+
+/** Welfare risk indicator threshold */
+export const WELFARE_RISK_INDICATOR_THRESHOLD = 55;
+
+/** Risk shift threshold for logging */
+export const RISK_SHIFT_THRESHOLD = 8;
+
+/** Investigation progress gain */
+export const INVESTIGATION_PROGRESS_GAIN = 15;
+
+/** Sanction progress gain */
+export const SANCTION_PROGRESS_GAIN = 30;
+
+/** Compliance progress gain */
+export const COMPLIANCE_PROGRESS_GAIN = 50;
+
+/** Sanction risk threshold */
+export const SANCTION_RISK_THRESHOLD = 50;

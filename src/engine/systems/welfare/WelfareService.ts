@@ -26,6 +26,15 @@ import { rngFromSeed } from "../../rng";
 import { calculateWeeklyWelfareDelta, computeInjuryPressure } from "./WelfareCalculations";
 import { generateGovernanceHeadline } from "../media/MediaService";
 import { assertNever } from "../../utils/types";
+import {
+  DEFAULT_WELFARE_RISK,
+  WELFARE_RISK_INDICATOR_THRESHOLD,
+  RISK_SHIFT_THRESHOLD,
+  INVESTIGATION_PROGRESS_GAIN,
+  SANCTION_PROGRESS_GAIN,
+  COMPLIANCE_PROGRESS_GAIN,
+  SANCTION_RISK_THRESHOLD,
+} from "../../../constants/engine/welfareTransitions";
 
 /**
  * Ensures that a heya has a valid welfare state.
@@ -36,7 +45,7 @@ import { assertNever } from "../../utils/types";
  */
 export function ensureHeyaWelfareState(heya: Heya): WelfareState {
   return EntityService.ensureState(heya, "welfareState", () => ({
-    welfareRisk: 10,
+    welfareRisk: DEFAULT_WELFARE_RISK,
     complianceState: "compliant",
     weeksInState: 0,
     lastReviewedWeek: 0,
@@ -74,11 +83,11 @@ export const WelfareService = {
       if (!heya.riskIndicators)
         heya.riskIndicators = { financial: false, governance: false, rivalry: false };
       heya.riskIndicators!.welfare =
-        state.complianceState !== "compliant" || state.welfareRisk >= 55;
+        state.complianceState !== "compliant" || state.welfareRisk >= WELFARE_RISK_INDICATOR_THRESHOLD;
 
       // 4. Material Shift logging
       const riskUp = state.welfareRisk - beforeRisk;
-      if (Math.abs(riskUp) >= 8) {
+      if (Math.abs(riskUp) >= RISK_SHIFT_THRESHOLD) {
         EventBus.welfareCompliance(world, heya.id, {
           heyaname: heya.name,
           status: "risk_shift",
@@ -134,7 +143,7 @@ export const WelfareService = {
           if (world.mediaState) {
             world.mediaState.heyaPressure[heya.id] = Math.min(
               100,
-              (world.mediaState.heyaPressure[heya.id] ?? 0) + 15
+              (world.mediaState.heyaPressure[heya.id] ?? 0) + INVESTIGATION_PROGRESS_GAIN
             );
           }
         }
@@ -163,7 +172,7 @@ export const WelfareService = {
           if (world.mediaState) {
             world.mediaState.heyaPressure[heya.id] = Math.min(
               100,
-              (world.mediaState.heyaPressure[heya.id] ?? 0) + 30
+              (world.mediaState.heyaPressure[heya.id] ?? 0) + SANCTION_PROGRESS_GAIN
             );
           }
         } else if (state.welfareRisk <= 25 && state.weeksInState >= 3) {
@@ -219,10 +228,10 @@ export const WelfareService = {
           if (world.mediaState) {
             world.mediaState.heyaPressure[heya.id] = Math.min(
               100,
-              (world.mediaState.heyaPressure[heya.id] ?? 0) + 50
+              (world.mediaState.heyaPressure[heya.id] ?? 0) + COMPLIANCE_PROGRESS_GAIN
             );
           }
-        } else if (state.investigation!.progress >= 100 && state.welfareRisk <= 50) {
+        } else if (state.investigation!.progress >= 100 && state.welfareRisk <= SANCTION_RISK_THRESHOLD) {
           this.setComplianceState(state, "watch");
           state.investigation = undefined;
           EventBus.welfareCompliance(world, heya.id, {

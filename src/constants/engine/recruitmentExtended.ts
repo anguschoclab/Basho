@@ -73,3 +73,27 @@ export const OBSERVATION_COUNT_LIMIT = 10;
 
 /** Memory importance value */
 export const MEMORY_IMPORTANCE = 10;
+
+/** Max scouting level */
+export const MAX_SCOUTING_LEVEL = 100;
+
+/** Style high observations threshold */
+export const STYLE_HIGH_OBSERVATIONS = 3;
+
+/** Style medium observations threshold */
+export const STYLE_MEDIUM_OBSERVATIONS = 1;
+
+/** Potential high threshold */
+export const POTENTIAL_HIGH_THRESHOLD = 95;
+
+/** Potential medium threshold */
+export const POTENTIAL_MEDIUM_THRESHOLD = 75;
+
+/** Potential low threshold */
+export const POTENTIAL_LOW_THRESHOLD = 50;
+
+/** High error percentage */
+export const HIGH_ERROR_PERCENTAGE = 9;
+
+/** Full bias factor */
+export const FULL_BIAS_FACTOR = 1.0;

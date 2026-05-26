@@ -76,3 +76,12 @@ export const POST_BOUT_INJURY_WEEKS_MAX = 2;
 
 /** Post-bout injury weeks min */
 export const POST_BOUT_INJURY_WEEKS_MIN = 1;
+
+/** Recovery multiplier threshold for double week reduction */
+export const RECOVERY_MULTIPLIER_DOUBLE_WEEK_THRESHOLD = 1.2;
+
+/** Double week reduction value */
+export const DOUBLE_WEEK_REDUCTION = 2;
+
+/** Single week reduction value */
+export const SINGLE_WEEK_REDUCTION = 1;
