@@ -15,7 +15,7 @@ import { clamp } from "../utils";
 import type { BashoState } from "../types/basho";
 import type { Division } from "../types/banzuke";
 import type { Rikishi } from "../types/rikishi";
-import type { RivalriesState } from "../systems/narrative/RivalryConstants";
+import type { RivalriesState } from "../../constants/engine/rivalry";
 import { getRivalryBoutModifiers } from "../systems/narrative/RivalryHeatService";
 import { scorePairing, type MatchPairing, type MatchmakingRules } from "./MatchmakingPhases";
 import { applyDramaBudget } from "./DramaMatchmaker";

@@ -7,14 +7,14 @@
  * Goal: Single source of truth for simulation math.
  */
 
-import type { RikishiStats } from "../../types/rikishi";
+import type { RikishiStats } from "../../engine/types/rikishi";
 import type {
   TrainingIntensity,
   TrainingFocus,
   RecoveryEmphasis,
   IndividualFocusType,
-} from "../../types/training";
-import type { CombatArchetype } from "../../types/combat";
+} from "../../engine/types/training";
+import type { CombatArchetype } from "../../engine/types/combat";
 
 // 1. INTENSITY EFFECTS
 export const INTENSITY_MULTIPLIERS: Record<

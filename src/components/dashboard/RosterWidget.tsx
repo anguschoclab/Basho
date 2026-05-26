@@ -13,7 +13,8 @@ import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CompareModePanel } from "../scouting/CompareModePanel";
 import { toFatigueBand } from "@/engine/descriptorBands";
-import { FATIGUE_LABELS } from "@/presenters/uiConstants";
+import { ROSTER_WIDGET_MAX_ITEMS } from "../../constants/ui/display";
+import { FATIGUE_LABELS } from "@/constants/ui/labels";
 
 type RosterEntryWithHealth = UIRosterEntry & { healthBadge: string };
 
@@ -121,7 +122,7 @@ const RosterList = React.memo(
     return (
       <>
         {(() => {
-          const limit = Math.min(8, roster.length);
+          const limit = Math.min(ROSTER_WIDGET_MAX_ITEMS, roster.length);
           const nodes = new Array(limit);
           for (let i = 0; i < limit; i++) {
             const entry = roster[i];

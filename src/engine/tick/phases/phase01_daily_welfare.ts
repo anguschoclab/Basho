@@ -13,6 +13,11 @@ import { toRikishiDescriptor } from "../../descriptorBands";
 import { clamp } from "../../utils";
 import { rngFromSeed } from "../../rng";
 import { tickCondition } from "../conditionTick";
+import {
+  MAX_MENTAL_STAT,
+  MIN_MENTAL_STAT,
+  DEFAULT_MENTAL_STAT,
+} from "../../../constants/engine/health";
 
 export function phase01_daily_welfare(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_daily_welfare");
@@ -41,17 +46,26 @@ export function phase01_daily_welfare(world: WorldState): StateImpact {
     if (diet === "austerity") {
       next.weight = Math.max(70, next.weight - 0.05);
       if (next.stats) {
-        next.stats = { ...next.stats, mental: Math.max(1, (next.stats.mental || 50) - 0.5) };
+        next.stats = {
+          ...next.stats,
+          mental: Math.max(MIN_MENTAL_STAT, (next.stats.mental || DEFAULT_MENTAL_STAT) - 0.5),
+        };
       }
     } else if (diet === "heavy_bulk") {
       next.weight += 0.1;
       if (next.stats) {
-        next.stats = { ...next.stats, mental: Math.max(1, (next.stats.mental || 50) - 0.2) };
+        next.stats = {
+          ...next.stats,
+          mental: Math.max(MIN_MENTAL_STAT, (next.stats.mental || DEFAULT_MENTAL_STAT) - 0.2),
+        };
       }
     } else if (diet === "premium") {
       next.weight += 0.08;
       if (next.stats) {
-        next.stats = { ...next.stats, mental: Math.min(100, (next.stats.mental || 50) + 0.5) };
+        next.stats = {
+          ...next.stats,
+          mental: Math.min(MAX_MENTAL_STAT, (next.stats.mental || DEFAULT_MENTAL_STAT) + 0.5),
+        };
       }
       if (!next.injured && (next.fatigue ?? 0) > 0) {
         next.fatigue = Math.max(0, (next.fatigue ?? 0) - 1); // Premium recovery

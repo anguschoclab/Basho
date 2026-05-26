@@ -18,7 +18,11 @@ import { RNGRegistry } from "../../core/RNGRegistry";
 import { EntityService } from "../../core/EntityService";
 import type { Rikishi } from "../../types/rikishi";
 import { clamp } from "../../utils/math";
-import { type RivalriesState, type RivalryPairState, type RivalryKey } from "./RivalryConstants";
+import {
+  type RivalriesState,
+  type RivalryPairState,
+  type RivalryKey,
+} from "../../../constants/engine/rivalry";
 import { applyBoutToPairState, deriveTone } from "./RivalryHeatService";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";

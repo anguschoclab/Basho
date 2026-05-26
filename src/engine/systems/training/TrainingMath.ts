@@ -26,8 +26,8 @@ import {
   PHASE_EFFECTS,
   STAT_CEILING_KEYS,
   type TrainingAttribute,
-} from "./TrainingConstants";
-import { ATTRIBUTE_PEAK, STAT_GROUP, maturityFactor } from "../../constants/DevelopmentCurves";
+} from "../../../constants/engine/training";
+import { ATTRIBUTE_PEAK, STAT_GROUP, maturityFactor } from "../../../constants/engine/development";
 
 /**
  * Derives the stat ceiling for a given attribute from talentSeed.

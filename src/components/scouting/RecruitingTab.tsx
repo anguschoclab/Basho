@@ -32,7 +32,7 @@ import { Layers } from "lucide-react";
 import { getCombatArchetypeDescription } from "@/engine/archetype";
 import { cn } from "@/lib/utils";
 import { toPotentialBand } from "@/engine/descriptorBands";
-import { POTENTIAL_LABELS } from "@/presenters/uiConstants";
+import { POTENTIAL_LABELS } from "@/constants/ui/labels";
 
 /**
  * Displays scouting confidence as star rating (1-5 stars).

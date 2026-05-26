@@ -9,6 +9,17 @@ import { Division } from "../../types/banzuke";
 import { rngForWorld, SeededRNG } from "../../rng";
 import { getRivalryBoutModifiers, RivalriesState } from "../../rivalries";
 import { clampInt } from "../../utils/math";
+import {
+  MAX_MEDIA_HEAT,
+  MAX_HEYA_PRESSURE,
+  MEDIA_HEAT_HISTORY_SIZE,
+  MAX_HEADLINES,
+  RANK_IMPACTS,
+  STREAK_MILESTONES,
+  HIGH_RANK_TONE_PROBABILITY,
+  DEFAULT_TONE_PROBABILITY,
+  HIGH_RANK_IMPACT_THRESHOLD,
+} from "../../../constants/engine/media";
 
 import {
   calculateBoutImpact,
@@ -155,13 +166,13 @@ function applyHeadlineEffects(
   const nextHeat = { ...state.mediaHeat };
   const heatBump = calculateHeatBump(headline.impact);
   for (const id of headline.rikishiIds) {
-    nextHeat[id] = clampInt((nextHeat[id] ?? 0) + heatBump, 0, 100);
+    nextHeat[id] = clampInt((nextHeat[id] ?? 0) + heatBump, 0, MAX_MEDIA_HEAT);
   }
 
   const nextPressure = { ...state.heyaPressure };
   const pressBump = calculatePressureBump(headline.tone);
   for (const heyaId of headline.heyaIds) {
-    nextPressure[heyaId] = clampInt((nextPressure[heyaId] ?? 0) + pressBump, 0, 100);
+    nextPressure[heyaId] = clampInt((nextPressure[heyaId] ?? 0) + pressBump, 0, MAX_HEYA_PRESSURE);
   }
 
   // Update history for each rikishi involved
@@ -170,14 +181,14 @@ function applyHeadlineEffects(
   for (const id of headline.rikishiIds) {
     const history = [...(nextHistory[id] || [])];
     history.push({ basho: bashoName, heat: nextHeat[id] });
-    nextHistory[id] = history.slice(-10); // Keep last 10 snapshots
+    nextHistory[id] = history.slice(-MEDIA_HEAT_HISTORY_SIZE);
   }
 
   return {
     ...state,
     mediaHeat: nextHeat,
     heyaPressure: nextPressure,
-    headlines: [...state.headlines, headline].slice(-250), // Maintain cap
+    headlines: [...state.headlines, headline].slice(-MAX_HEADLINES),
     mediaHeatHistory: nextHistory,
   };
 }
@@ -198,20 +209,20 @@ function determineBoutTone(
   if (rivalryTension > 0.1) {
     return roll < 0.5 ? "hype" : "praise";
   }
-  if (getRankImpact(winnerRank) >= 8) {
-    return roll < 0.6 ? "praise" : "neutral";
+  if (getRankImpact(winnerRank) >= HIGH_RANK_IMPACT_THRESHOLD) {
+    return roll < HIGH_RANK_TONE_PROBABILITY ? "praise" : "neutral";
   }
-  return roll < 0.2 ? "praise" : "neutral";
+  return roll < DEFAULT_TONE_PROBABILITY ? "praise" : "neutral";
 }
 
 function getRankImpact(rank?: string): number {
-  const RANK_IMPACTS: Record<string, number> = {
-    yokozuna: 10,
-    ozeki: 8,
-    sekiwake: 6,
-    komusubi: 5,
+  const impacts: Record<string, number> = {
+    yokozuna: RANK_IMPACTS.YOKOZUNA,
+    ozeki: RANK_IMPACTS.OZEKI,
+    sekiwake: RANK_IMPACTS.SEKIWAKE,
+    komusubi: RANK_IMPACTS.KOMUSUBI,
   };
-  return RANK_IMPACTS[rank || ""] || 3;
+  return impacts[rank || ""] || RANK_IMPACTS.DEFAULT;
 }
 
 /**
@@ -233,7 +244,7 @@ function processStreak(
   nextStreaks[loserId] = 0;
 
   const streak = nextStreaks[winnerId];
-  const milestones = [5, 8, 10, 12, 15];
+  const milestones = STREAK_MILESTONES;
   const firedList = nextFired[winnerId] ?? [];
   const nextMilestone = milestones.find((m) => streak >= m && !firedList.includes(m));
 

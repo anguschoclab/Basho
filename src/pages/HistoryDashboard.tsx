@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { RECORDS_TABS } from "@/constants/navigation";
+import { RECORDS_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { selectRetiredRikishi } from "@/presenters/selectors";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

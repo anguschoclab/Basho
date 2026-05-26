@@ -24,7 +24,7 @@ import {
   MOCHIKYUKIN_POINTS_YUSHO,
   MOCHIKYUKIN_POINTS_KINBOSHI,
   MOCHIKYUKIN_POINTS_JUN_YUSHO,
-} from "../../constants/EconomicConstants";
+} from "../../../constants/engine/economic";
 
 /**
  * Accumulate mochikyukin points for a rikishi based on basho results.

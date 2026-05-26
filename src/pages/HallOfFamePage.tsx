@@ -4,7 +4,7 @@
 import { useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { RECORDS_TABS } from "@/constants/navigation";
+import { RECORDS_TABS } from "@/constants/ui/navigation";
 import { PageHeader } from "@/components/layout/control-center";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent } from "@/components/ui/card";

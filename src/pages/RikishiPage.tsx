@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
-import { STABLE_TABS } from "@/constants/navigation";
+import { STABLE_TABS } from "@/constants/ui/navigation";
 import { projectRikishi } from "@/presenters/uiModels";
 import { RosterList } from "@/components/rikishi/RosterList";
 import { getMentor, menteesOf, getLineageTree } from "@/engine/lineage";

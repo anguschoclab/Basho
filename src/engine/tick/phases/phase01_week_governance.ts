@@ -17,6 +17,11 @@ import type { StateImpact } from "../../core/StateImpact";
 import { generateGovernanceHeadline, evaluateScandals } from "../../systems/media/MediaService";
 import { YokozunaService } from "../../systems/governance/YokozunaService";
 import { CareerService } from "../../systems/rikishi/CareerService";
+import {
+  MAX_POLITICAL_CAPITAL,
+  DEFAULT_POLITICAL_CAPITAL,
+  ELECTION_POLITICAL_CAPITAL_GAIN,
+} from "../../../constants/engine/governance";
 
 export function phase01_week_governance(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_governance");
@@ -110,7 +115,10 @@ export function phase01_week_governance(world: WorldState): StateImpact {
     // 4. Bi-annual JSA Elections
     if (isElectionWeek && heya.ichimon) {
       if (heya.politicalCapital !== undefined) {
-        updates.politicalCapital = Math.min(100, (heya.politicalCapital ?? 50) + 5);
+        updates.politicalCapital = Math.min(
+          MAX_POLITICAL_CAPITAL,
+          (heya.politicalCapital ?? DEFAULT_POLITICAL_CAPITAL) + ELECTION_POLITICAL_CAPITAL_GAIN
+        );
         changed = true;
       }
     }

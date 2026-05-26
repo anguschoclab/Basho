@@ -13,10 +13,22 @@
 import type { WorldState } from "../../types/world";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
-import { type RivalryPairState } from "../../systems/narrative/RivalryConstants";
+import { type RivalryPairState } from "../../../constants/engine/rivalry";
 import { deriveTone } from "../../systems/narrative/RivalryHeatService";
 import { clamp } from "../../utils/math";
 import { ensureEventsState } from "../../events";
+import {
+  WEEKS_PER_YEAR,
+  MAX_EVENT_AGE_WEEKS,
+  RIVALRY_DECAY_THRESHOLDS,
+  RIVALRY_DECAY_RATES,
+  RIVALRY_PRUNING,
+} from "../../../constants/engine/time";
+import {
+  MAX_RIVALRY_HEAT,
+  MAX_RIVALRY_CLOSENESS,
+  MAX_RIVALRY_SPITE,
+} from "../../../constants/engine/bout";
 
 export function phase01_week_rivalries(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_rivalries");
@@ -30,15 +42,27 @@ export function phase01_week_rivalries(world: WorldState): StateImpact {
       const weeksSince = week - (pair.lastMetWeek || 0);
 
       // Skip decay for already cold pairs (optimization)
-      const isCold = pair.heat < 5 && pair.meetings < 2 && weeksSince > 30;
+      const isCold =
+        pair.heat < RIVALRY_PRUNING.MIN_HEAT &&
+        pair.meetings < RIVALRY_PRUNING.MIN_MEETINGS &&
+        weeksSince > RIVALRY_DECAY_THRESHOLDS.LONG_TERM;
       if (isCold) continue;
 
       const nextPair = { ...pair };
-      const decay = weeksSince <= 4 ? 0.5 : weeksSince <= 12 ? 1.0 : 1.5;
+      const decay =
+        weeksSince <= RIVALRY_DECAY_THRESHOLDS.SHORT_TERM
+          ? RIVALRY_DECAY_RATES.HEAT.SHORT
+          : weeksSince <= RIVALRY_DECAY_THRESHOLDS.MEDIUM_TERM
+            ? RIVALRY_DECAY_RATES.HEAT.MEDIUM
+            : RIVALRY_DECAY_RATES.HEAT.LONG;
 
-      nextPair.heat = clamp(nextPair.heat - decay, 0, 100);
-      nextPair.closeness = clamp(nextPair.closeness - 0.25, 0, 100);
-      nextPair.spite = clamp(nextPair.spite - 0.35, 0, 100);
+      nextPair.heat = clamp(nextPair.heat - decay, 0, MAX_RIVALRY_HEAT);
+      nextPair.closeness = clamp(
+        nextPair.closeness - RIVALRY_DECAY_RATES.CLOSENESS,
+        0,
+        MAX_RIVALRY_CLOSENESS
+      );
+      nextPair.spite = clamp(nextPair.spite - RIVALRY_DECAY_RATES.SPITE, 0, MAX_RIVALRY_SPITE);
       nextPair.tone = deriveTone(nextPair);
 
       nextPairs[key] = nextPair;
@@ -55,12 +79,11 @@ export function phase01_week_rivalries(world: WorldState): StateImpact {
   // 2. Event Log Trimming
   if (world.events) {
     const eventsState = { ...world.events };
-    const currentYear = world.calendar?.year ?? world.year ?? 2025;
+    const currentYear = world.calendar?.year ?? world.year ?? DEFAULT_START_YEAR;
     const currentWeek = world.calendar?.currentWeek ?? world.week ?? 0;
-    const MAX_AGE_WEEKS = 52;
-    const currentTotalWeeks = currentYear * 52 + currentWeek;
+    const currentTotalWeeks = currentYear * WEEKS_PER_YEAR + currentWeek;
 
-    const targetWeeks = currentTotalWeeks - MAX_AGE_WEEKS;
+    const targetWeeks = currentTotalWeeks - MAX_EVENT_AGE_WEEKS;
     const log = eventsState.log;
 
     // Find first recent event
@@ -71,7 +94,7 @@ export function phase01_week_rivalries(world: WorldState): StateImpact {
     while (left <= right) {
       const mid = (left + right) >> 1;
       const ev = log[mid];
-      const evTotalWeeks = ev.year * 52 + ev.week;
+      const evTotalWeeks = ev.year * WEEKS_PER_YEAR + ev.week;
 
       if (evTotalWeeks >= targetWeeks) {
         firstRecentIndex = mid;

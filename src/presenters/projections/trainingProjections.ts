@@ -8,7 +8,7 @@ import type { WorldState } from "../../engine/types/world";
 import type { FatigueBand } from "../../engine/systems/narrative/NarrativeBands";
 import { ensureHeyaTrainingState } from "../../presenters/uiDigest";
 import { toFatigueBand } from "../../engine/descriptorBands";
-import { FATIGUE_LABELS } from "../../presenters/uiConstants";
+import { FATIGUE_LABELS } from "../../constants/ui/labels";
 
 export interface TrainingRikishiStatus {
   id: string;

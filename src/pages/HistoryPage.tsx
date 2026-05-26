@@ -19,7 +19,7 @@ import { useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { RECORDS_TABS } from "@/constants/navigation";
+import { RECORDS_TABS } from "@/constants/ui/navigation";
 import { PageHeader } from "@/components/layout/control-center";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

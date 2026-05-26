@@ -1,11 +1,6 @@
 /**
- * wizardConstants.ts
- *
  * Constants for new game wizard.
  */
-
-import { Trophy, Star, Users, Heart, Flame, Globe, Landmark } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 
 export interface OyakataBackstory {
   id: string;
@@ -14,7 +9,7 @@ export interface OyakataBackstory {
   flavor: string;
   difficulty: "Easy" | "Normal" | "Hard" | "Very Hard";
   highestRank: string;
-  icon: LucideIcon;
+  iconName: string; // Icon identifier for component to map to actual icon
   bonuses: {
     funds: number;
     prestige: number;
@@ -33,7 +28,7 @@ export const OYAKATA_BACKSTORIES: OyakataBackstory[] = [
       "You reached sumo's pinnacle. Now you guide the next generation — but expectations are sky-high and rivals watch your every move.",
     difficulty: "Easy",
     highestRank: "Yokozuna",
-    icon: Trophy,
+    iconName: "Trophy",
     bonuses: { funds: 3_000_000, prestige: 4, scouting: 1, training: 1, politics: 3 },
   },
   {
@@ -44,7 +39,7 @@ export const OYAKATA_BACKSTORIES: OyakataBackstory[] = [
       "A champion-maker with a proven record. Your koenkai network opens doors, and your tactical mind gives you an edge in the training hall.",
     difficulty: "Normal",
     highestRank: "Ozeki",
-    icon: Star,
+    iconName: "Star",
     bonuses: { funds: 5_000_000, prestige: 3, scouting: 0, training: 2, politics: 1 },
   },
   {
@@ -55,7 +50,7 @@ export const OYAKATA_BACKSTORIES: OyakataBackstory[] = [
       "Years at the top tier sharpened both your technical knowledge and your reading of talent. A solid, balanced foundation.",
     difficulty: "Normal",
     highestRank: "Sekiwake",
-    icon: Users,
+    iconName: "Users",
     bonuses: { funds: 10_000_000, prestige: 1, scouting: 1, training: 2, politics: 0 },
   },
   {
@@ -66,7 +61,7 @@ export const OYAKATA_BACKSTORIES: OyakataBackstory[] = [
       "135 tournaments, never a yusho — but your hands-on mastery of every technique is unmatched. Prestige must be earned the hard way.",
     difficulty: "Hard",
     highestRank: "Maegashira",
-    icon: Heart,
+    iconName: "Heart",
     bonuses: { funds: 15_000_000, prestige: -1, scouting: 0, training: 4, politics: -1 },
   },
   {
@@ -77,7 +72,7 @@ export const OYAKATA_BACKSTORIES: OyakataBackstory[] = [
       "Injury cut short a brilliant career. Unfinished business drives you — but the gambler in you never learned patience.",
     difficulty: "Normal",
     highestRank: "Ozeki",
-    icon: Flame,
+    iconName: "Flame",
     bonuses: { funds: 8_000_000, prestige: 2, scouting: 1, training: 1, politics: 1 },
   },
   {
@@ -88,7 +83,7 @@ export const OYAKATA_BACKSTORIES: OyakataBackstory[] = [
       "You built the first Mongolian pipeline. Your continental network is unrivalled — traditionalists distrust you, but results speak.",
     difficulty: "Hard",
     highestRank: "Maegashira",
-    icon: Globe,
+    iconName: "Globe",
     bonuses: { funds: 12_000_000, prestige: 0, scouting: 5, training: 1, politics: -1 },
   },
   {
@@ -99,7 +94,7 @@ export const OYAKATA_BACKSTORIES: OyakataBackstory[] = [
       "Your power lies in the association, not the ring. Political capital is your currency — but the training hall is unfamiliar ground.",
     difficulty: "Very Hard",
     highestRank: "Sekiwake",
-    icon: Landmark,
+    iconName: "Landmark",
     bonuses: { funds: 20_000_000, prestige: -1, scouting: 0, training: -1, politics: 5 },
   },
 ];

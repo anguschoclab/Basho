@@ -7,8 +7,7 @@
  * Goal: Domain-driven design.
  */
 
-import type { Rank } from "../../types/banzuke";
-import type { Style } from "../../types/combat";
+import type { Rank } from "../../engine/types/banzuke";
 
 /** Human-readable rank labels (JA + EN). */
 export interface RankLabel {
@@ -28,13 +27,6 @@ export const RANK_NAMES: Record<Rank, RankLabel> = {
   jonokuchi: { ja: "序ノ口", en: "Jonokuchi" },
 };
 
-/** High-level style labels - NOW IN archive.json */
-export const STYLE_NAMES: Record<Style, object> = {
-  oshi: {},
-  yotsu: {},
-  hybrid: {},
-};
-
 /** Scouting Confidence Levels */
 export type ConfidenceLevel = "unknown" | "low" | "medium" | "high" | "certain";
 
@@ -50,3 +42,8 @@ export const INVESTMENT_BONUS: Record<ScoutingInvestment, number> = {
   standard: 40,
   deep: 60,
 };
+
+// Talent Pool Constants (merged from TalentPoolConstants.ts)
+export const FOREIGN_RIKISHI_LIMIT_PER_HEYA = 1;
+export const BASE_SCOUT_COST = 50000;
+export const REVEAL_COST = 100000;

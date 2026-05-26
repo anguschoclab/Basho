@@ -3,7 +3,7 @@
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { Helmet } from "react-helmet";
-import { TOURNAMENT_TABS } from "@/constants/navigation";
+import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
 import { AppLayout } from "@/components/layout/AppLayout";

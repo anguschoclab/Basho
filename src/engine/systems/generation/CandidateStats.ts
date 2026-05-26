@@ -16,7 +16,7 @@ import {
   DEVELOPMENT_PROFILE_WEIGHTS,
   maturityFactor,
   type DevelopmentProfile,
-} from "../../constants/DevelopmentCurves";
+} from "../../../constants/engine/development";
 
 export interface GeneratedStats extends RikishiStats {
   height: number;

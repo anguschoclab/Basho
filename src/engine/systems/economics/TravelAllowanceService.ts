@@ -14,7 +14,7 @@ import {
   TRAVEL_ALLOWANCE_YEARLY,
   TSUKEBITO_COSTS_MONTHLY,
   KOENKAI_INCOME_SPLIT,
-} from "../../constants/EconomicConstants";
+} from "../../../constants/engine/economic";
 import { calculateKoenkaiIncome } from "../economics/SponsorshipService";
 
 /**

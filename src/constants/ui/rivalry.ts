@@ -1,10 +1,8 @@
 /**
- * rivalryConstants.ts
- *
  * Constants for rivalry page.
  */
 
-import type { RivalryHeatBand, RivalryTone, RivalryTrigger } from "@/engine/rivalries";
+import type { RivalryHeatBand, RivalryTone, RivalryTrigger } from "../../engine/rivalries";
 
 export const HEAT_BAND_CONFIG: Record<
   RivalryHeatBand,
@@ -47,47 +45,39 @@ export const HEAT_BAND_CONFIG: Record<
   },
 };
 
-export const TONE_CONFIG: Record<
-  RivalryTone,
-  { label: string; description: string; icon: React.ElementType; ja: string }
-> = {
-  respect: {
-    label: "Mutual Respect",
-    description: "A rivalry built on admiration and competitive fire.",
-    icon: () => null, // Will be replaced with actual icon in component
-    ja: "敬意",
-  },
-  grudge: {
-    label: "Grudge",
-    description: "Bad blood simmers beneath the surface.",
-    icon: () => null,
-    ja: "恨み",
-  },
-  bad_blood: {
-    label: "Bad Blood",
-    description: "Open hostility — every bout is personal.",
-    icon: () => null,
-    ja: "因縁",
-  },
-  mentor_student: {
-    label: "Mentor vs Student",
-    description: "The student seeks to surpass the master.",
-    icon: () => null,
-    ja: "師弟",
-  },
-  unstable: {
-    label: "Volatile",
-    description: "Unpredictable clashes with explosive outcomes.",
-    icon: () => null,
-    ja: "不安定",
-  },
-  public_hype: {
-    label: "Fan Favorite",
-    description: "The crowd lives for this matchup.",
-    icon: () => null,
-    ja: "人気",
-  },
-};
+export const TONE_CONFIG: Record<RivalryTone, { label: string; description: string; ja: string }> =
+  {
+    respect: {
+      label: "Mutual Respect",
+      description: "A rivalry built on admiration and competitive fire.",
+      ja: "敬意",
+    },
+    grudge: {
+      label: "Grudge",
+      description: "Bad blood simmers beneath the surface.",
+      ja: "恨み",
+    },
+    bad_blood: {
+      label: "Bad Blood",
+      description: "Open hostility — every bout is personal.",
+      ja: "因縁",
+    },
+    mentor_student: {
+      label: "Mentor vs Student",
+      description: "The student seeks to surpass the master.",
+      ja: "師弟",
+    },
+    unstable: {
+      label: "Volatile",
+      description: "Unpredictable clashes with explosive outcomes.",
+      ja: "不安定",
+    },
+    public_hype: {
+      label: "Fan Favorite",
+      description: "The crowd lives for this matchup.",
+      ja: "人気",
+    },
+  };
 
 export const TRIGGER_LABELS: Record<RivalryTrigger, string> = {
   repeat_matches: "Frequent bouts",
@@ -98,4 +88,5 @@ export const TRIGGER_LABELS: Record<RivalryTrigger, string> = {
   injury_incident: "Injury incident",
   personal_history: "Personal history",
   heya_feud: "Stable feud",
+  sparring: "Sparring partnership",
 };

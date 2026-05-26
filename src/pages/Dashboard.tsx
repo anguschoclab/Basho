@@ -14,7 +14,7 @@ import {
 import { projectDashboardUIDigest } from "@/presenters/uiDigest";
 import { projectFinanceSummary } from "@/presenters/projections/financeProjections";
 import { projectTrainingSummary } from "@/presenters/projections/trainingProjections";
-import { FATIGUE_LABELS } from "@/presenters/uiConstants";
+import { FATIGUE_LABELS } from "@/constants/ui/labels";
 
 import { OnboardingTourDialog } from "@/components/onboarding/OnboardingTourDialog";
 import { CrisisModal } from "@/components/game/CrisisModal";

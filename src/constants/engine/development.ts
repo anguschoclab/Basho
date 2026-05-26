@@ -6,7 +6,7 @@
  * the engine reads them as data.
  */
 
-import type { Rank } from "../types/banzuke";
+import type { Rank } from "../../engine/types/banzuke";
 
 export type DevelopmentProfile =
   | "prodigy"

@@ -2,7 +2,7 @@ import { useMemo, useState, useCallback } from "react";
 import { useGameStore } from "@/store/gameStore";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
-import { STABLE_TABS } from "@/constants/navigation";
+import { STABLE_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -31,7 +31,7 @@ import { UserPlus, ShieldCheck, Zap, Heart, Award, Briefcase, Trash2 } from "luc
 import type { Staff, StaffRole } from "@/engine/types/staff";
 import { toast } from "sonner";
 import { toFatigueBand, toScandalBand } from "@/engine/descriptorBands";
-import { FATIGUE_LABELS, SCANDAL_LABELS } from "@/presenters/uiConstants";
+import { FATIGUE_LABELS, SCANDAL_LABELS } from "@/constants/ui/labels";
 
 const ROLE_LABELS: Record<StaffRole, string> = {
   oyakata: "Steward",

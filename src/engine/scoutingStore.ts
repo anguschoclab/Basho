@@ -8,7 +8,7 @@ import type { WorldState } from "./types/world";
 import type { Id } from "./types/common";
 import type { Rikishi } from "./types/rikishi";
 import { type ScoutedRikishi, ScoutingService } from "./systems/recruitment/ScoutingService";
-import { type ScoutingInvestment } from "./systems/recruitment/RecruitmentConstants";
+import { type ScoutingInvestment } from "../constants/engine/recruitment";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
 

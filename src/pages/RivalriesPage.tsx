@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
 import { Card, CardContent } from "@/components/ui/card";
-import { TOURNAMENT_TABS } from "@/constants/navigation";
+import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { useMemo, useState } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { Users, Flame, Swords } from "lucide-react";
@@ -15,7 +15,7 @@ import { HeatLegend } from "@/components/rivalries/HeatLegend";
 import { projectRivalriesPage } from "@/presenters/projections/rivalriesProjections";
 import { Badge } from "@/components/ui/badge";
 import { toRivalryHeatBand } from "@/engine/descriptorBands";
-import { RIVALRY_HEAT_LABELS } from "@/presenters/uiConstants";
+import { RIVALRY_HEAT_LABELS } from "@/constants/ui/labels";
 
 // Page
 /** rivalries page. */

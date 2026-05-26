@@ -6,7 +6,7 @@
 
 import { ClipboardCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { FOCUS_MODE_OPTIONS } from "./trainingConstants";
+import { FOCUS_MODE_OPTIONS } from "@/constants/ui/training";
 
 export function ReferenceLegend() {
   return (

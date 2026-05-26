@@ -22,7 +22,7 @@ import {
   DEBT_LIMIT,
   BENEFACTOR_BAILOUT_AMOUNT,
   KENSHO_AMOUNT_PER_ENVELOPE,
-} from "./constants/EconomicConstants";
+} from "../constants/engine/economic";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
 

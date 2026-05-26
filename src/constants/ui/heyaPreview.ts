@@ -1,17 +1,15 @@
 /**
- * heyaPreviewConstants.ts
- *
  * Constants for HeyaPreview component.
  */
 
 /** Heya configuration for preview display */
-interface HeyaPreviewConfig {
+export interface HeyaPreviewConfig {
   label: string;
   difficulty: string;
 }
 
 /** Rikishi preview data with stats */
-interface RikishiPreview {
+export interface RikishiPreview {
   currentBashoWins?: number;
   currentBashoLosses?: number;
   careerWins?: number;
@@ -20,7 +18,7 @@ interface RikishiPreview {
 }
 
 /** Heya stat entry with value functions */
-interface HeyaStatEntry {
+export interface HeyaStatEntry {
   label: string;
   value: (
     config: HeyaPreviewConfig,
@@ -31,21 +29,21 @@ interface HeyaStatEntry {
 }
 
 /** Rikishi quick stat entry */
-interface RikishiQuickStatEntry {
+export interface RikishiQuickStatEntry {
   label: string;
   value: (r: RikishiPreview) => string | number;
   sub: string;
 }
 
 /** Basic info field definition */
-interface BasicInfoField {
+export interface BasicInfoField {
   label: string;
   key: string;
   suffix: string;
 }
 
 /** Attribute field definition */
-interface AttributeField {
+export interface AttributeField {
   label: string;
   key: string;
 }

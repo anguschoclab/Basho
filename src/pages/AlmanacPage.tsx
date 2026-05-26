@@ -3,7 +3,7 @@ import type { ComponentType } from "react";
 import { Helmet } from "react-helmet";
 import { Link } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { RECORDS_TABS } from "@/constants/navigation";
+import { RECORDS_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

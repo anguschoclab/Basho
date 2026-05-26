@@ -10,7 +10,7 @@
  * @see RivalryHeatService for heat calculation logic
  */
 
-import type { Id } from "../../types/common";
+import type { Id } from "../../engine/types/common";
 
 /**
  * Rivalry tone types representing the emotional flavor of a rivalry.

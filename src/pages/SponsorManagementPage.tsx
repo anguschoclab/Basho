@@ -2,7 +2,7 @@
 import { useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { OFFICE_TABS } from "@/constants/navigation";
+import { OFFICE_TABS } from "@/constants/ui/navigation";
 import { PageHeader } from "@/components/layout/control-center";
 import { useGame } from "@/contexts/GameContext";
 import { projectSponsorUIDigest } from "@/presenters/uiDigest";

@@ -2,7 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { toFatigueBand } from "@/engine/descriptorBands";
-import { FATIGUE_LABELS } from "@/presenters/uiConstants";
+import { FATIGUE_LABELS } from "@/constants/ui/labels";
 
 interface InjuryRiskHeatmapProps {
   rikishiList: Array<{

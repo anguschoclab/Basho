@@ -18,7 +18,7 @@ import type { Rikishi } from "../../types/rikishi";
 import { EntityCollection } from "../../core/EntityCollection";
 import { EntityService } from "../../core/EntityService";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { STAT_GROUP } from "../../constants/DevelopmentCurves";
+import { STAT_GROUP } from "../../../constants/engine/development";
 import type { StateImpact } from "../../core/StateImpact";
 import {
   calculateFatigueDelta,
@@ -27,7 +27,7 @@ import {
   getEffectiveCeiling,
 } from "./TrainingMath";
 import { getHeyaStaffBonuses } from "../../staff";
-import { DRILL_EFFECTS } from "./TrainingConstants";
+import { DRILL_EFFECTS } from "../../../constants/engine/training";
 import { InfrastructureService } from "../economy/InfrastructureService";
 import { RNGRegistry } from "../../core/RNGRegistry";
 
@@ -382,7 +382,7 @@ function applyBurnoutStep(
  * Compatibility object for any legacy callers using TrainingService.*
  * Provides a namespace for all training-related functions and constants.
  */
-import * as Constants from "./TrainingConstants";
+import * as Constants from "../../../constants/engine/training";
 import * as Narrative from "./TrainingNarrative";
 
 /**

@@ -1,11 +1,8 @@
 /**
- * economyConstants.ts
- *
  * Constants for economy page narrative descriptions.
  */
 
-import type { RunwayBand, KoenkaiBandType } from "@/engine/types/narrative";
-import { Shield, TrendingUp, Wallet, TrendingDown, AlertTriangle } from "lucide-react";
+import type { RunwayBand, KoenkaiBandType } from "../../engine/types/narrative";
 
 export const RUNWAY_CONFIG: Record<
   RunwayBand,
@@ -13,7 +10,6 @@ export const RUNWAY_CONFIG: Record<
     label: string;
     description: string;
     color: string;
-    icon: typeof Shield;
     progressValue: number;
   }
 > = {
@@ -21,35 +17,30 @@ export const RUNWAY_CONFIG: Record<
     label: "Secure Finances",
     description: "Comfortable reserves with room to invest in the future.",
     color: "text-success",
-    icon: Shield,
     progressValue: 100,
   },
   comfortable: {
     label: "Comfortable",
     description: "Finances are stable. You can weather minor setbacks without concern.",
     color: "text-green-400",
-    icon: TrendingUp,
     progressValue: 75,
   },
   tight: {
     label: "Tight Budget",
     description: "Careful management required. Unexpected expenses could cause problems.",
     color: "text-gold",
-    icon: Wallet,
     progressValue: 50,
   },
   critical: {
     label: "Critical",
     description: "Pressure is mounting. Consider reducing costs or strengthening income streams.",
     color: "text-orange-400",
-    icon: TrendingDown,
     progressValue: 25,
   },
   desperate: {
     label: "Desperate",
     description: "Immediate intervention required. The heya's survival is at stake.",
     color: "text-red-400",
-    icon: AlertTriangle,
     progressValue: 10,
   },
 };

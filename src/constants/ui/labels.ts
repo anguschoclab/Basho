@@ -1,8 +1,5 @@
 /**
- * uiConstants.ts
- *
  * Label mappings and constants for UI presentation.
- * Extracted from uiDigest.ts to separate concerns.
  */
 
 import type {
@@ -19,7 +16,7 @@ import type {
   RivalryHeatBand,
   WeightBand,
   HeightBand,
-} from "../engine/systems/narrative/NarrativeBands";
+} from "../../engine/systems/narrative/NarrativeBands";
 
 export const FATIGUE_LABELS: Record<FatigueBand, string> = {
   fresh: "Fresh",
@@ -131,35 +128,3 @@ export const HEIGHT_LABELS: Record<HeightBand, string> = {
   giant: "Giant",
   towering: "Towering",
 };
-
-// PRIZE_LABELS removed (unused)
-
-// Re-exports from engine utilities for backward compatibility
-export { HOF_CATEGORY_LABELS } from "../engine/hallOfFame";
-export { RANK_NAMES } from "../engine/systems/recruitment/RecruitmentConstants";
-export { RANK_HIERARCHY, compareRanks, formatRank } from "../engine/banzuke";
-// createDefaultMediaState removed (unused)
-export { buildPerceptionSnapshot, getCachedPerception } from "../engine/perception";
-export { buyMyoseki, leaseMyoseki } from "../engine/myosekiMarket";
-export { clamp } from "../engine/utils";
-// clearInjury, toInjuryEvent removed (unused)
-export { deleteSave, importSave } from "../engine/saveload";
-// ensureHeyaWelfareState removed (unused)
-export { formatEventTime, formatFinePenalty, formatStance } from "../engine/utils/formatters";
-// generateH2HCommentary removed (unused)
-export { generateNarrative } from "../engine/narrative";
-export { getArchetypeDescription } from "../engine/oyakataPersonalities";
-export { getKimarite } from "../engine/kimarite";
-export { setScoutingInvestment } from "../engine/scoutingStore";
-export {
-  spendPoliticalCapital,
-  getStatusLabel,
-  getStatusColor,
-} from "../engine/governance/GovernanceService";
-export {
-  scoutPool,
-  scoutCandidate,
-  offerCandidate,
-} from "../engine/systems/generation/TalentPoolService";
-// KOENKAI_MONTHLY_INCOME, SPONSOR_TIER_INCOME removed (unused)
-export { recruitSponsor } from "../engine/systems/economics/SponsorshipService";

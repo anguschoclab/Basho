@@ -27,6 +27,11 @@ import {
   handleInvestigationTransition,
   handleSanctionedTransition,
 } from "./welfare";
+import {
+  WELFARE_RISK_THRESHOLD,
+  WELFARE_RISK_SHIFT_LOG_THRESHOLD,
+  MAX_MEDIA_PRESSURE,
+} from "../../../constants/engine/welfare";
 
 interface HeyaRiskIndicators {
   financial: boolean;
@@ -53,7 +58,7 @@ export function phase01_week_welfare(world: WorldState): StateImpact {
 
     // 1. Calculate Risk Shift
     const { delta, reasons } = calculateWeeklyWelfareDelta(world, heya, nextState);
-    nextState.welfareRisk = clamp(Math.round(nextState.welfareRisk + delta), 0, 100);
+    nextState.welfareRisk = clamp(Math.round(nextState.welfareRisk + delta), 0, MAX_WELFARE_RISK);
     nextState.weeksInState++;
     nextState.lastReviewedWeek = week;
 
@@ -63,14 +68,16 @@ export function phase01_week_welfare(world: WorldState): StateImpact {
     // 3. Risk indicator Update
     heyaUpdates.riskIndicators = {
       ...heya.riskIndicators,
-      welfare: nextState.complianceState !== "compliant" || nextState.welfareRisk >= 55,
+      welfare:
+        nextState.complianceState !== "compliant" ||
+        nextState.welfareRisk >= WELFARE_RISK_THRESHOLD,
     } as HeyaRiskIndicators;
 
     heyaUpdates.welfareState = nextState;
 
     // 4. Material Shift logging
     const riskUp = nextState.welfareRisk - beforeRisk;
-    if (Math.abs(riskUp) >= 8) {
+    if (Math.abs(riskUp) >= WELFARE_RISK_SHIFT_LOG_THRESHOLD) {
       builder.logEvent(
         "WELFARE_COMPLIANCE",
         "discipline",
@@ -99,7 +106,7 @@ export function phase01_week_welfare(world: WorldState): StateImpact {
     if (nextMediaState) {
       for (const [heyaId, delta] of Object.entries(mediaPressureChanges)) {
         nextMediaState.heyaPressure[heyaId] = Math.min(
-          100,
+          MAX_MEDIA_PRESSURE,
           (nextMediaState.heyaPressure[heyaId] ?? 0) + delta
         );
       }

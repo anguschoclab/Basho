@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { useGame } from "@/contexts/GameContext";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { TOURNAMENT_TABS } from "@/constants/navigation";
+import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {

@@ -21,7 +21,7 @@ import {
   type ScoutingInvestment,
   type ScoutingAttributeType,
   INVESTMENT_BONUS,
-} from "./RecruitmentConstants";
+} from "../../../constants/engine/recruitment";
 
 /**
  * Calculate numerical scouting level (0-100).

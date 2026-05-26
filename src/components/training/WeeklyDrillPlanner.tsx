@@ -34,7 +34,7 @@ import { RikishiName } from "@/components/ClickableName";
 import { FATIGUE_LABELS, toFatigueBand } from "@/presenters/uiDigest";
 import type { DrillType } from "@/engine/types/training";
 import type { Rikishi } from "@/engine/types";
-import { DRILL_METADATA } from "@/engine/systems/training/TrainingConstants";
+import { DRILL_METADATA } from "@/constants/engine/training";
 
 interface WeeklyDrillPlannerProps {
   rikishiList: Rikishi[];

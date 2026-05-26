@@ -16,7 +16,6 @@
 
 import type { WorldState } from "../../types/world";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { mergeImpacts } from "../../core/ImpactResolver";
 import type { StateImpact } from "../../core/StateImpact";
 import { isBashoMonth } from "../../calendar";
 import {
@@ -31,6 +30,13 @@ import { processHeyaEconomics, processLoanRepayments } from "./monthly/economics
 import { processFacilitiesMaintenance, processNpcAutoInvestment } from "./monthly/facilities";
 import { processArchetypeDrift } from "./monthly/training";
 import type { HeyaUpdates } from "./monthly/types";
+import {
+  RUNWAY_THRESHOLDS,
+  RUNWAY_BANDS,
+  SPONSOR_RENEWAL_WINDOW_WEEKS,
+  SPONSOR_MIN_LOYALTY_FOR_RENEWAL,
+} from "../../../constants/engine/economy";
+import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
 
 export function phase05_monthly_boundary(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase05_monthly_boundary");
@@ -57,15 +63,15 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
     const burn = Math.max(1, totalExpenses + maintenance);
     const runway = (heyaUpdates.funds ?? heya.funds ?? 0) / burn;
     heyaUpdates.runwayBand =
-      runway >= 12
-        ? "secure"
-        : runway >= 6
-          ? "comfortable"
-          : runway >= 3
-            ? "tight"
-            : runway >= 1
-              ? "critical"
-              : "desperate";
+      runway >= RUNWAY_THRESHOLDS.SECURE
+        ? RUNWAY_BANDS.SECURE
+        : runway >= RUNWAY_THRESHOLDS.COMFORTABLE
+          ? RUNWAY_BANDS.COMFORTABLE
+          : runway >= RUNWAY_THRESHOLDS.TIGHT
+            ? RUNWAY_BANDS.TIGHT
+            : runway >= RUNWAY_THRESHOLDS.CRITICAL
+              ? RUNWAY_BANDS.CRITICAL
+              : RUNWAY_BANDS.DESPERATE;
 
     builder.updateHeya(id, heyaUpdates);
   }
@@ -105,16 +111,16 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
   // Pay mochikyukin bonuses to sekitori (every 2 months)
   const mochikyukinPayoutImpact = payMochikyukinBonuses(world, world.calendar.month);
 
-  // Auto-renew sponsor contracts expiring within 8 weeks for high-loyalty sponsors
+  // Auto-renew sponsor contracts expiring within window for high-loyalty sponsors
   const sponsorRenewalImpacts: StateImpact[] = [];
   if (world.sponsorPool) {
     const currentWeek = world.week ?? 0;
     for (const sponsor of world.sponsorPool.sponsors.values()) {
-      if (!sponsor.active || sponsor.loyalty < 60) continue;
+      if (!sponsor.active || sponsor.loyalty < SPONSOR_MIN_LOYALTY_FOR_RENEWAL) continue;
       for (const rel of sponsor.relationships) {
         if (
           rel.endsAtTick !== undefined &&
-          rel.endsAtTick - currentWeek <= 8 &&
+          rel.endsAtTick - currentWeek <= SPONSOR_RENEWAL_WINDOW_WEEKS &&
           rel.endsAtTick > currentWeek
         ) {
           sponsorRenewalImpacts.push(renewSponsorContract(world, rel.relId, sponsor.sponsorId));

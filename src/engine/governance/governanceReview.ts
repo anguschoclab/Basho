@@ -29,7 +29,7 @@ import {
   MERGER_THRESHOLD,
   FACTION_BAILOUT_AMOUNT,
   FACTION_BENEFACTOR_THRESHOLD,
-} from "../constants/EconomicConstants";
+} from "../../constants/engine/economic";
 
 /**
  * Post-basho governance: institutional sanctions, council reactions,

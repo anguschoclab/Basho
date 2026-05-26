@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
-import { ASSOCIATION_TABS } from "@/constants/navigation";
+import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { useGameStore } from "@/store/gameStore";
 import {

@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { BaseWidget } from "./BaseWidget";
 import { buildWeeklyDigest, type DigestItem } from "@/presenters/projections/digestProjections";
+import { DIGEST_WIDGET_MAX_ITEMS, DIGEST_SECTIONS_MAX_ITEMS } from "../../constants/ui/display";
 import {
   AlertTriangle,
   TrendingUp,
@@ -61,7 +62,7 @@ const DigestSectionView = React.memo(({ title, items }: { title: string; items: 
       </div>
       <div className="space-y-1">
         {(() => {
-          const limit = Math.min(4, items.length);
+          const limit = Math.min(DIGEST_WIDGET_MAX_ITEMS, items.length);
           const nodes = new Array(limit);
           for (let i = 0; i < limit; i++) {
             const item = items[i];
@@ -76,8 +77,10 @@ const DigestSectionView = React.memo(({ title, items }: { title: string; items: 
           }
           return nodes;
         })()}
-        {items.length > 4 && (
-          <p className="text-[10px] text-muted-foreground pl-5">+{items.length - 4} more</p>
+        {items.length > DIGEST_WIDGET_MAX_ITEMS && (
+          <p className="text-[10px] text-muted-foreground pl-5">
+            +{items.length - DIGEST_WIDGET_MAX_ITEMS} more
+          </p>
         )}
       </div>
     </div>
@@ -120,7 +123,7 @@ export function DigestWidget() {
         <ScrollArea className="max-h-[260px]">
           <div className="space-y-3">
             {(() => {
-              const limit = Math.min(5, digest.sections.length);
+              const limit = Math.min(DIGEST_SECTIONS_MAX_ITEMS, digest.sections.length);
               const nodes = new Array(limit);
               for (let i = 0; i < limit; i++) {
                 const section = digest.sections[i];

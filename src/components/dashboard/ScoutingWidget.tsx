@@ -10,7 +10,7 @@ import type { PotentialBand } from "@/engine/descriptorBands";
 import { toPotentialBand } from "@/engine/descriptorBands";
 import * as talentpool from "@/engine/systems/generation/TalentPoolService";
 import type { TalentCandidate, TalentPoolType } from "@/engine/types/talent";
-import { POTENTIAL_LABELS } from "@/presenters/uiConstants";
+import { POTENTIAL_LABELS } from "@/constants/ui/labels";
 import { getCombatArchetypeDescription } from "@/engine/archetype";
 
 const POTENTIAL_COLORS: Record<PotentialBand, string> = {

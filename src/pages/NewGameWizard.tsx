@@ -21,7 +21,7 @@ import { IdentityStep } from "@/components/wizard/IdentityStep";
 import { FactionStep } from "@/components/wizard/FactionStep";
 import { StableStep } from "@/components/wizard/StableStep";
 import { LoadingState } from "@/components/wizard/LoadingState";
-import { OYAKATA_BACKSTORIES, ICHIMON_FACTIONS } from "@/components/wizard/wizardConstants";
+import { OYAKATA_BACKSTORIES, ICHIMON_FACTIONS } from "@/constants/ui/wizard";
 
 export default function NewGameWizard() {
   const navigate = useNavigate();

@@ -21,6 +21,20 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { emptyDeltas } from "../pipelineRunner";
 import { clamp } from "../../utils";
+import {
+  TRAINING_MULTIPLIERS,
+  RECOVERY_MULTIPLIERS,
+  NUTRITION_MULTIPLIERS,
+  MORALE_BOOST_MULTIPLIER,
+  FINANCIAL_PENALTY_MULTIPLIER,
+  TRAINING_MULTIPLIER_BOUNDS,
+  RECOVERY_MULTIPLIER_BOUNDS,
+} from "../../../constants/engine/multipliers";
+import {
+  MAX_STAT_VALUE,
+  MIN_STAT_VALUE,
+  DEFAULT_FACILITY_LEVEL,
+} from "../../../constants/engine/rikishi";
 
 // ── Phase ─────────────────────────────────────────────────────────────────────
 
@@ -65,14 +79,29 @@ function calculateFacilityMultipliers(playerHeya: any): {
   recovery: number;
   nutrition: number;
 } {
-  const trainingLevel = clamp(playerHeya?.facilities?.training ?? 50, 0, 100);
-  const facilityTrainingMult = 0.85 + (trainingLevel / 100) * 0.35;
+  const trainingLevel = clamp(
+    playerHeya?.facilities?.training ?? DEFAULT_FACILITY_LEVEL,
+    MIN_STAT_VALUE,
+    MAX_STAT_VALUE
+  );
+  const facilityTrainingMult =
+    TRAINING_MULTIPLIERS.BASE + (trainingLevel / MAX_STAT_VALUE) * TRAINING_MULTIPLIERS.RANGE;
 
-  const recoveryLevel = clamp(playerHeya?.facilities?.recovery ?? 50, 0, 100);
-  const facilityRecoveryMult = 0.8 + (recoveryLevel / 100) * 0.4;
+  const recoveryLevel = clamp(
+    playerHeya?.facilities?.recovery ?? DEFAULT_FACILITY_LEVEL,
+    MIN_STAT_VALUE,
+    MAX_STAT_VALUE
+  );
+  const facilityRecoveryMult =
+    RECOVERY_MULTIPLIERS.BASE + (recoveryLevel / MAX_STAT_VALUE) * RECOVERY_MULTIPLIERS.RANGE;
 
-  const nutritionLevel = clamp(playerHeya?.facilities?.nutrition ?? 50, 0, 100);
-  const nutritionMult = 0.92 + (nutritionLevel / 100) * 0.16;
+  const nutritionLevel = clamp(
+    playerHeya?.facilities?.nutrition ?? DEFAULT_FACILITY_LEVEL,
+    MIN_STAT_VALUE,
+    MAX_STAT_VALUE
+  );
+  const nutritionMult =
+    NUTRITION_MULTIPLIERS.BASE + (nutritionLevel / MAX_STAT_VALUE) * NUTRITION_MULTIPLIERS.RANGE;
 
   return {
     training: facilityTrainingMult,
@@ -87,13 +116,17 @@ function calculateTrainingMultiplier(
   financialPenalty: boolean
 ): number {
   let trainingMultiplier = facilityTrainingMult;
-  if (moraleBoost) trainingMultiplier += 0.15;
-  if (financialPenalty) trainingMultiplier *= 0.5;
-  return clamp(trainingMultiplier, 0.1, 2.0);
+  if (moraleBoost) trainingMultiplier += MORALE_BOOST_MULTIPLIER;
+  if (financialPenalty) trainingMultiplier *= FINANCIAL_PENALTY_MULTIPLIER;
+  return clamp(trainingMultiplier, TRAINING_MULTIPLIER_BOUNDS.MIN, TRAINING_MULTIPLIER_BOUNDS.MAX);
 }
 
 function calculateRecoveryMultiplier(facilityRecoveryMult: number, nutritionMult: number): number {
-  return clamp(facilityRecoveryMult * nutritionMult, 0.5, 2.0);
+  return clamp(
+    facilityRecoveryMult * nutritionMult,
+    RECOVERY_MULTIPLIER_BOUNDS.MIN,
+    RECOVERY_MULTIPLIER_BOUNDS.MAX
+  );
 }
 
 function preserveRevenueExpenses(world: WorldState) {

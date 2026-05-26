@@ -129,7 +129,7 @@ export function RikishiCombatTab({ rikishi, rawRikishi, isOwned = false }: Rikis
                     <div
                       className={cn(
                         "h-full transition-all duration-1000",
-                        rival.heat >= 75
+                        rival.heat >= RIVALRY_HEAT_HIGH_THRESHOLD
                           ? "bg-west"
                           : rival.heat >= 40
                             ? "bg-gold"

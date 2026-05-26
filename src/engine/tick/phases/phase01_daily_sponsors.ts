@@ -11,6 +11,11 @@ import type { WorldState } from "../../types/world";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { RNGRegistry } from "../../core/RNGRegistry";
+import {
+  MAX_SPONSOR_SATISFACTION,
+  MIN_SPONSOR_SATISFACTION,
+  DEFAULT_SPONSOR_SATISFACTION,
+} from "../../../constants/engine/sponsors";
 
 export function phase01_daily_sponsors(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_daily_sponsors");
@@ -36,7 +41,13 @@ export function phase01_daily_sponsors(world: WorldState): StateImpact {
     // For now, let's just use the jitter to simulate an organic pulse
     const nextSponsor = {
       ...sponsor,
-      satisfaction: Math.min(100, Math.max(0, (sponsor.satisfaction ?? 50) + jitter)),
+      satisfaction: Math.min(
+        MAX_SPONSOR_SATISFACTION,
+        Math.max(
+          MIN_SPONSOR_SATISFACTION,
+          (sponsor.satisfaction ?? DEFAULT_SPONSOR_SATISFACTION) + jitter
+        )
+      ),
     };
     nextSponsors.set(id, nextSponsor);
   }

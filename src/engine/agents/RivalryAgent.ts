@@ -6,7 +6,7 @@
  */
 
 import type { Oyakata } from "../types/oyakata";
-import type { RivalryPairState } from "../systems/narrative/RivalryConstants";
+import type { RivalryPairState } from "../../constants/engine/rivalry";
 
 export interface RivalryAgentContext {
   oyakata: Oyakata;

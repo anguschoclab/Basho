@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { Activity, Users } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
 import { FATIGUE_LABELS, toFatigueBand, getCareerPhase } from "@/presenters/uiDigest";
-import { FOCUS_MODE_OPTIONS } from "./trainingConstants";
+import { FOCUS_MODE_OPTIONS } from "@/constants/ui/training";
 import type { IndividualFocusType } from "@/engine/types/training";
 import type { Rikishi } from "@/engine/types";
 

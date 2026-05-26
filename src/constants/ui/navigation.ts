@@ -1,3 +1,7 @@
+/**
+ * Navigation tab constants for the application.
+ */
+
 export const STABLE_TABS = [
   { id: "stable", label: "Overview", href: "/stable" },
   { id: "roster", label: "Roster", href: "/stable/roster" },

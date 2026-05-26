@@ -2,7 +2,7 @@
 import { useCallback, useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { STABLE_TABS } from "@/constants/navigation";
+import { STABLE_TABS } from "@/constants/ui/navigation";
 import { PageHeader } from "@/components/layout/control-center";
 import { useGame } from "@/contexts/GameContext";
 import { InjuryRecoveryPanel } from "@/components/game/InjuryRecoveryPanel";

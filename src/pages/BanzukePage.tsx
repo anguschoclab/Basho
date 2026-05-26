@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
-import { TOURNAMENT_TABS } from "@/constants/navigation";
+import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Division } from "@/engine/types/banzuke";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

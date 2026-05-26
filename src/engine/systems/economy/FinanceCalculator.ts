@@ -20,7 +20,7 @@ import {
   JSA_PER_WRESTLER_SUBSIDY_MONTHLY,
   JSA_STABLE_WEEKLY_GRANT,
   KOENKAI_INCOME_SPLIT,
-} from "../../constants/EconomicConstants";
+} from "../../../constants/engine/economic";
 
 export interface HeyaFinanceResult {
   /** Effective weekly income after survival floor. */

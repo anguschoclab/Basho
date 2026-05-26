@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Utensils, Shield, AlertTriangle, Heart, Activity, CheckCircle } from "lucide-react";
 import type { DietRegimen } from "@/engine/types/economy";
 import type { projectMedicalUIDigest } from "@/presenters/uiDigest";
+import { MAX_RISK_PERCENTAGE, RISK_PERCENTAGE_MULTIPLIER } from "../../constants/ui/dashboard";
 
 const COMPLIANCE_DISPLAY: Record<
   string,
@@ -103,7 +104,10 @@ export function WelfarePanel({ digest, onSetDiet }: WelfarePanelProps) {
   const rosterDisplay = ROSTER_DISPLAY[perception.rosterStrengthBand] ?? ROSTER_DISPLAY.competitive;
 
   // Visual welfare risk as percentage (0 = safe, 100 = critical)
-  const riskPct = Math.min(100, (welfare.welfareRisk / 100) * 100);
+  const riskPct = Math.min(
+    MAX_RISK_PERCENTAGE,
+    (welfare.welfareRisk / RISK_PERCENTAGE_MULTIPLIER) * RISK_PERCENTAGE_MULTIPLIER
+  );
 
   return (
     <div className="space-y-4">

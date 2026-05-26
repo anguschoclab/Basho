@@ -17,7 +17,7 @@ import {
   getConfidenceLevel,
   resolveScoutedAttribute,
 } from "./FogOfWarService";
-import { type ScoutingInvestment } from "./RecruitmentConstants";
+import { type ScoutingInvestment } from "../../../constants/engine/recruitment";
 
 /** Defines the structure for public rikishi info. */
 export interface PublicRikishiInfo {

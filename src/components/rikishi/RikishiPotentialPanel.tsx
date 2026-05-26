@@ -13,7 +13,7 @@ import { TrendingUp } from "lucide-react";
 import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
 import { SeededRNG } from "@/engine/rng";
 import { toStatBand } from "@/engine/descriptorBands";
-import { STAT_LABELS as STAT_BAND_LABELS } from "@/presenters/uiConstants";
+import { STAT_LABELS as STAT_BAND_LABELS } from "@/constants/ui/labels";
 
 interface Props {
   rikishi: Rikishi;

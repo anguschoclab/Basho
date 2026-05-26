@@ -11,11 +11,7 @@
 import { RivalryService } from "./systems/narrative/RivalryService";
 import { WorldState } from "./types/world";
 import type { Id } from "./types/common";
-import type {
-  RivalriesState,
-  RivalryPairState,
-  RivalryKey,
-} from "./systems/narrative/RivalryConstants";
+import type { RivalriesState, RivalryPairState, RivalryKey } from "../constants/engine/rivalry";
 import type { StateImpact } from "./core/StateImpact";
 
 // --- AUTHORITATIVE DELEGATION ---
@@ -78,4 +74,4 @@ export type {
   RivalryKey,
   RivalryTone,
   RivalryTrigger,
-} from "./systems/narrative/RivalryConstants";
+} from "../constants/engine/rivalry";

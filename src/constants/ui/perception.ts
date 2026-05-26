@@ -1,6 +1,4 @@
 /**
- * perceptionConstants.ts
- *
  * Constants for perception overview color mappings.
  */
 

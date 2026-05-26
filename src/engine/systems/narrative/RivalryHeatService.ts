@@ -19,7 +19,7 @@ import type {
   RivalriesState,
   RivalryTone,
   RivalryTrigger,
-} from "./RivalryConstants";
+} from "../../../constants/engine/rivalry";
 
 /**
  * Determine the narrative tone from current state.

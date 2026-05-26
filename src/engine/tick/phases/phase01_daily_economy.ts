@@ -8,7 +8,7 @@ import type { WorldState } from "../../types/world";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { WelfareService } from "../../systems/welfare/WelfareService";
-import { DIET_COSTS, DEBT_LIMIT } from "../../constants/EconomicConstants";
+import { DIET_COSTS, DEBT_LIMIT } from "../../../constants/engine/economic";
 
 export function phase01_daily_economy(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_daily_economy");
