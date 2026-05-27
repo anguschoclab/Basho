@@ -463,6 +463,25 @@ ipcMain.handle("fs:deleteFile", async (event, filePath: string) => {
 
 // IPC Handler for getting app data path
 ipcMain.handle("app:getPath", (event, name: string) => {
+  const allowedPaths = [
+    "home",
+    "appData",
+    "userData",
+    "temp",
+    "desktop",
+    "documents",
+    "downloads",
+    "music",
+    "pictures",
+    "videos",
+  ];
+
+  if (!allowedPaths.includes(name)) {
+    console.error(`Blocked attempt to get restricted path via IPC: ${name}`);
+    // Fallback to userData if an invalid path is requested
+    return app.getPath("userData");
+  }
+
   return app.getPath(
     name as
       | "home"
