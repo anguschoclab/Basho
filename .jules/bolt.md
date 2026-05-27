@@ -68,3 +68,6 @@ Optimized `fillVacanciesForNPC` in `TalentPoolNPCRecruitment.ts` by replacing `A
 ## 2026-05-23 - Avoid O(N) tuple allocations from Object.entries().map()
 **Learning:** Using `Object.entries().map()` to iterate over dictionaries in hot UI projections allocates an array of `[key, value]` tuples in memory before iterating. When maps grow large (like `h2h` history or `heyaRivalryPairs`), this creates unnecessary memory overhead and garbage collection churn.
 **Action:** Replace `Object.entries(map).map(([key, value]) => ...)` with `Object.keys(map).map(key => { const value = map[key]; ... })` to eliminate tuple allocations entirely, or use a `for...in` loop when filtering is also required.
+## 2026-05-27 - Avoid Object.entries() tuple allocations
+**Learning:** Using `Object.entries().map()` allocating arrays of tuples from Objects was found in the `GlobalCupStats.tsx` UI rendering path. As stated in memory, this generates unnecessary memory overhead.
+**Action:** Replaced `Object.entries().map(([key, value]) => ...)` with `Object.keys().map(key => { const value = obj[key]; ... })` to mitigate intermediate array allocations.

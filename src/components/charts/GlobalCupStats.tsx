@@ -44,7 +44,8 @@ export function ParticipantNationalityChart({ projection }: GlobalCupStatsProps)
       counts[p.nationality] = (counts[p.nationality] || 0) + 1;
     });
 
-    return Object.entries(counts).map(([name, value]) => ({ name, value }));
+    // ⚡ Bolt Optimization: Use Object.keys() to avoid O(N) tuple allocations from Object.entries()
+    return Object.keys(counts).map((name) => ({ name, value: counts[name] }));
   }, [projection]);
 
   if (data.length === 0) return null;
@@ -99,12 +100,16 @@ export function BracketProgressChart({ projection }: GlobalCupStatsProps) {
       }
     });
 
-    return Object.entries(rounds).map(([round, stats]) => ({
-      round: round.charAt(0).toUpperCase() + round.slice(1),
-      total: stats.total,
-      complete: stats.complete,
-      pending: stats.total - stats.complete,
-    }));
+    // ⚡ Bolt Optimization: Use Object.keys() to avoid O(N) tuple allocations from Object.entries()
+    return Object.keys(rounds).map((round) => {
+      const stats = rounds[round];
+      return {
+        round: round.charAt(0).toUpperCase() + round.slice(1),
+        total: stats.total,
+        complete: stats.complete,
+        pending: stats.total - stats.complete,
+      };
+    });
   }, [projection]);
 
   if (data.length === 0) return null;
