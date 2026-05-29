@@ -68,3 +68,6 @@ Optimized `fillVacanciesForNPC` in `TalentPoolNPCRecruitment.ts` by replacing `A
 ## 2026-05-23 - Avoid O(N) tuple allocations from Object.entries().map()
 **Learning:** Using `Object.entries().map()` to iterate over dictionaries in hot UI projections allocates an array of `[key, value]` tuples in memory before iterating. When maps grow large (like `h2h` history or `heyaRivalryPairs`), this creates unnecessary memory overhead and garbage collection churn.
 **Action:** Replace `Object.entries(map).map(([key, value]) => ...)` with `Object.keys(map).map(key => { const value = map[key]; ... })` to eliminate tuple allocations entirely, or use a `for...in` loop when filtering is also required.
+## 2025-05-29 - [Avoid intermediate array allocation in useMemo]
+**Learning:** Using chained array methods like `Array.from(map.values()).filter(...)` inside React hooks like `useMemo` introduces O(N) memory overhead for intermediate array allocations on every recalculation.
+**Action:** Replace `Array.from().filter()` with a single `for...of` loop over Map values to filter and push results directly to an array, improving efficiency and reducing memory churn.
