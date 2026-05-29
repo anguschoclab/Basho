@@ -463,19 +463,23 @@ ipcMain.handle("fs:deleteFile", async (event, filePath: string) => {
 
 // IPC Handler for getting app data path
 ipcMain.handle("app:getPath", (event, name: string) => {
-  return app.getPath(
-    name as
-      | "home"
-      | "appData"
-      | "userData"
-      | "temp"
-      | "desktop"
-      | "documents"
-      | "downloads"
-      | "music"
-      | "pictures"
-      | "videos"
-  );
+  const allowedPaths = [
+    "home",
+    "appData",
+    "userData",
+    "temp",
+    "desktop",
+    "documents",
+    "downloads",
+    "music",
+    "pictures",
+    "videos",
+  ];
+  if (!allowedPaths.includes(name)) {
+    console.error(`Blocked attempt to access unapproved path: ${name}`);
+    throw new Error(`Access to path '${name}' is not allowed`);
+  }
+  return app.getPath(name as Parameters<typeof app.getPath>[0]);
 });
 
 app.whenReady().then(async () => {
