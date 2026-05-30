@@ -1,0 +1,6 @@
+1. **Fix `MentorAssignmentPanel.tsx`**:
+   - Replace `Array.from(allRikishi.values()).filter` with a `for...of` loop to eliminate `O(N)` intermediate array allocation.
+2. **Fix `ExhibitionBout.tsx`**:
+   - Replace `Array.from(world.rikishi.values()).filter` with `EntityCollection.getActiveRikishi(world)` and a `for...of` loop with early exit (or just push).
+3. **Fix `collectionOperations.ts`**:
+   - Change `filterEntities` to use a `for...of` loop rather than `Array.from(map.values()).filter()`.
