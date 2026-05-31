@@ -109,7 +109,12 @@ export function scoreDrama(
   }
 
   // Yusho decider: both rikishi are yusho contenders (within 2 wins of leader)
-  const leaderWins = Math.max(...Array.from(standings.values()).map((r) => r.wins));
+  // ⚡ Bolt Optimization: Use a direct for...of loop instead of Math.max(...Array.from().map()) to avoid O(N) allocations
+  let leaderWins = 0;
+  for (const record of standings.values()) {
+    if (record.wins > leaderWins) leaderWins = record.wins;
+  }
+
   const aIsContender = leaderWins - aRecord.wins <= 2;
   const bIsContender = leaderWins - bRecord.wins <= 2;
   if (aIsContender && bIsContender && leaderWins >= 10) {
