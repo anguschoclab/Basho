@@ -74,6 +74,8 @@ export function TitleBar({ title = "Sumo Manager Pro" }: TitleBarProps) {
           onClick={handleMinimize}
           className="w-8 h-8 rounded-none hover:bg-muted text-muted-foreground hover:text-foreground"
           aria-label="Minimize"
+          tooltip="Minimize"
+          tooltipSide="bottom"
         >
           <Minus size={14} />
         </Button>
@@ -83,6 +85,8 @@ export function TitleBar({ title = "Sumo Manager Pro" }: TitleBarProps) {
           onClick={handleMaximize}
           className="w-8 h-8 rounded-none hover:bg-muted text-muted-foreground hover:text-foreground [&_svg]:size-3"
           aria-label={isMaximized ? "Restore" : "Maximize"}
+          tooltip={isMaximized ? "Restore" : "Maximize"}
+          tooltipSide="bottom"
         >
           <Square size={12} />
         </Button>
@@ -92,6 +96,8 @@ export function TitleBar({ title = "Sumo Manager Pro" }: TitleBarProps) {
           onClick={handleClose}
           className="w-8 h-8 rounded-none hover:bg-destructive text-muted-foreground hover:text-white"
           aria-label="Close"
+          tooltip="Close"
+          tooltipSide="bottom"
         >
           <X size={14} />
         </Button>
