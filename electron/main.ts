@@ -461,21 +461,29 @@ ipcMain.handle("fs:deleteFile", async (event, filePath: string) => {
   }
 });
 
+// Allowed paths for runtime validation
+const ALLOWED_PATHS = [
+  "home",
+  "appData",
+  "userData",
+  "temp",
+  "desktop",
+  "documents",
+  "downloads",
+  "music",
+  "pictures",
+  "videos"
+] as const;
+
+type AllowedPath = typeof ALLOWED_PATHS[number];
+
 // IPC Handler for getting app data path
 ipcMain.handle("app:getPath", (event, name: string) => {
-  return app.getPath(
-    name as
-      | "home"
-      | "appData"
-      | "userData"
-      | "temp"
-      | "desktop"
-      | "documents"
-      | "downloads"
-      | "music"
-      | "pictures"
-      | "videos"
-  );
+  if (!ALLOWED_PATHS.includes(name as any)) {
+    console.error(`Blocked attempt to get unauthorized path: ${name}`);
+    throw new Error(`Unauthorized path requested: ${name}`);
+  }
+  return app.getPath(name as AllowedPath);
 });
 
 app.whenReady().then(async () => {
