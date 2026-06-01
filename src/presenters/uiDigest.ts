@@ -82,35 +82,30 @@ export { resolveRegistryLabel, enrichRikishiForUI } from "./utilities/uiUtilitie
 export { projectRikishi } from "./rikishiUI";
 export { formatRadarData, formatMetaTrends } from "./uiFormatters";
 export { getHallOfFame } from "../engine/hallOfFame";
+// Re-exports re-pointed to current source modules (uiConstants barrel removed)
+export { FATIGUE_LABELS, TRAIT_LABELS, SCANDAL_LABELS } from "../constants/ui/labels";
+export { RANK_NAMES } from "../constants/engine/recruitment";
+export { clamp } from "../engine/utils";
+export { formatRank, RANK_HIERARCHY, compareRanks } from "../engine/banzuke";
+export { formatStance, formatFinePenalty, formatEventTime } from "../engine/utils/formatters";
+export { HOF_CATEGORY_LABELS } from "../engine/hallOfFame";
+export { deleteSave, importSave } from "../engine/saveload";
+export { generateNarrative } from "../engine/narrative";
+export { getArchetypeDescription } from "../engine/oyakataPersonalities";
+export { getKimarite } from "../engine/kimarite";
+export { setScoutingInvestment } from "../engine/scoutingStore";
 export {
-  FATIGUE_LABELS,
-  TRAIT_LABELS,
-  SCANDAL_LABELS,
-  clamp,
-  formatRank,
-  formatStance,
-  HOF_CATEGORY_LABELS,
-  RANK_NAMES,
-  RANK_HIERARCHY,
-  compareRanks,
-  deleteSave,
-  importSave,
-  generateNarrative,
-  getArchetypeDescription,
-  getKimarite,
-  setScoutingInvestment,
   spendPoliticalCapital,
   getStatusLabel,
   getStatusColor,
-  formatFinePenalty,
+} from "../engine/governance/GovernanceService";
+export {
   scoutPool,
   scoutCandidate,
   offerCandidate,
-  recruitSponsor,
-  getCachedPerception,
-  buildPerceptionSnapshot,
-  formatEventTime,
-} from "./uiConstants";
+} from "../engine/systems/generation/TalentPoolService";
+export { recruitSponsor } from "../engine/systems/economics/SponsorshipService";
+export { getCachedPerception, buildPerceptionSnapshot } from "../engine/perception";
 export { setHeyaDietAction } from "./uiActions";
 // renewSponsorContract removed (unused)
 export {

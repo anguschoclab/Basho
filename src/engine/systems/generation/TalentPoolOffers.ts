@@ -8,7 +8,7 @@ import { rngFromSeed } from "../../rng";
 import { BardEngine } from "../../narrative/BardEngine";
 import { ensureTalentPoolState } from "./TalentPoolStateService";
 import { getForeignCountInHeya } from "./TalentPoolScouting";
-import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "./TalentPoolConstants";
+import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "../../../constants/engine/recruitment";
 
 /**
  * Submits an offer to a candidate from the player's stable.

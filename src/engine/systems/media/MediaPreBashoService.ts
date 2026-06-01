@@ -4,7 +4,7 @@
 // private helper generateInterviewPrompt.
 
 import type { WorldState } from "../../types/world";
-import type { RivalryPairState } from "../../constants/engine/rivalry";
+import type { RivalryPairState } from "../../../constants/engine/rivalry";
 import { MediaHeadline } from "../../types/media";
 import { rngForWorld, SeededRNG } from "../../rng";
 import { generatePreBashoHeadline } from "./HeadlineGenerator";

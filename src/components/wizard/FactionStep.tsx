@@ -7,7 +7,7 @@
 import { Building2, ArrowRight, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ICHIMON_FACTIONS } from "./wizardConstants";
+import { ICHIMON_FACTIONS } from "../../constants/ui/wizard";
 
 interface FactionStepProps {
   ichimon: string;

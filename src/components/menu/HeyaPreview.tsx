@@ -23,7 +23,7 @@ import { RANK_HIERARCHY } from "@/presenters/uiDigest";
 import { sortRikishiByRank } from "@/utils/engineUtils";
 import { StableName } from "@/components/ClickableName";
 import type { UIRikishi } from "@/presenters/uiModels";
-import { HEYA_STATS } from "./heyaPreviewConstants";
+import { HEYA_STATS } from "../../constants/ui/heyaPreview";
 import { RikishiDetailDialog } from "./RikishiDetailDialog";
 
 interface HeyaPreviewProps {

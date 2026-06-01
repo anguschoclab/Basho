@@ -8,7 +8,7 @@ import {
   FACTION_BAILOUT_AMOUNT,
   LOAN_ISSUANCE_THRESHOLD,
   MERGER_THRESHOLD,
-} from "../../constants/EconomicConstants";
+} from "../../../constants/engine/economic";
 
 describe("governanceReview", () => {
   let world: WorldState;

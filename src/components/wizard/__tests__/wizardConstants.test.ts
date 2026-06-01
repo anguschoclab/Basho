@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { OYAKATA_BACKSTORIES } from "../wizardConstants";
+import { OYAKATA_BACKSTORIES } from "../../../constants/ui/wizard";
 
 describe("OYAKATA_BACKSTORIES", () => {
   it("has exactly 7 entries", () => {
@@ -13,7 +13,7 @@ describe("OYAKATA_BACKSTORIES", () => {
       expect(b.flavor).toBeTruthy();
       expect(b.highestRank).toBeTruthy();
       expect(typeof b.bonuses.funds).toBe("number");
-      expect(b.icon).toBeDefined();
+      expect(b.iconName).toBeTruthy();
     });
   });
 

@@ -231,6 +231,126 @@ describe("checkStopCondition", () => {
     );
   });
 
+  it("should return true for majorInjury when player's rikishi is seriously injured this basho", () => {
+    const world = makeMockWorld() as any;
+    const rikishi = mockRikishi("star-1", {
+      shikona: "Injured One",
+      heyaId: "player-heya",
+      injured: true,
+      injuryStatus: { type: "tear", severity: "serious", weeksRemaining: 4 },
+    });
+    world.rikishi.set(rikishi.id, rikishi);
+
+    const config = createMockConfig({ playerHeyaId: "player-heya" });
+    const chronicle = createMockChronicle();
+    const bashoResult = createMockBashoResult({ injuries: ["Injured One"] });
+
+    expect(checkStopCondition("majorInjury", bashoResult, world, config, chronicle)).toBe(true);
+  });
+
+  it("should return true for majorInjury on a long layoff even if not 'serious'", () => {
+    const world = makeMockWorld() as any;
+    const rikishi = mockRikishi("star-1", {
+      shikona: "Long Layoff",
+      heyaId: "player-heya",
+      injured: true,
+      injuryStatus: { type: "strain", severity: "moderate", weeksRemaining: 8 },
+    });
+    world.rikishi.set(rikishi.id, rikishi);
+
+    const config = createMockConfig({ playerHeyaId: "player-heya" });
+    const chronicle = createMockChronicle();
+    const bashoResult = createMockBashoResult({ injuries: ["Long Layoff"] });
+
+    expect(checkStopCondition("majorInjury", bashoResult, world, config, chronicle)).toBe(true);
+  });
+
+  it("should return false for majorInjury on a minor short injury", () => {
+    const world = makeMockWorld() as any;
+    const rikishi = mockRikishi("star-1", {
+      shikona: "Minor Knock",
+      heyaId: "player-heya",
+      injured: true,
+      injuryStatus: { type: "contusion", severity: "minor", weeksRemaining: 2 },
+    });
+    world.rikishi.set(rikishi.id, rikishi);
+
+    const config = createMockConfig({ playerHeyaId: "player-heya" });
+    const chronicle = createMockChronicle();
+    const bashoResult = createMockBashoResult({ injuries: ["Minor Knock"] });
+
+    expect(checkStopCondition("majorInjury", bashoResult, world, config, chronicle)).toBe(false);
+  });
+
+  it("should return false for majorInjury when the injured rikishi belongs to another heya", () => {
+    const world = makeMockWorld() as any;
+    const rikishi = mockRikishi("other-1", {
+      shikona: "Rival Wrestler",
+      heyaId: "other-heya",
+      injured: true,
+      injuryStatus: { type: "tear", severity: "serious", weeksRemaining: 6 },
+    });
+    world.rikishi.set(rikishi.id, rikishi);
+
+    const config = createMockConfig({ playerHeyaId: "player-heya" });
+    const chronicle = createMockChronicle();
+    const bashoResult = createMockBashoResult({ injuries: ["Rival Wrestler"] });
+
+    expect(checkStopCondition("majorInjury", bashoResult, world, config, chronicle)).toBe(false);
+  });
+
+  it("should return true for majorInjury in observer mode when a star is seriously injured", () => {
+    const world = makeMockWorld() as any;
+    const rikishi = mockRikishi("star-1", {
+      shikona: "Star Ozeki",
+      rank: "ozeki", // tier <= 4
+      injured: true,
+      injuryStatus: { type: "fracture", severity: "serious", weeksRemaining: 5 },
+    });
+    world.rikishi.set(rikishi.id, rikishi);
+
+    const config = createMockConfig({ observerMode: true, playerHeyaId: undefined });
+    const chronicle = createMockChronicle();
+    const bashoResult = createMockBashoResult({ injuries: ["Star Ozeki"] });
+
+    expect(checkStopCondition("majorInjury", bashoResult, world, config, chronicle)).toBe(true);
+  });
+
+  it("should return false for majorInjury in observer mode when a non-star is injured", () => {
+    const world = makeMockWorld() as any;
+    const rikishi = mockRikishi("juryo-1", {
+      shikona: "Juryo Hopeful",
+      rank: "juryo", // tier > 4
+      injured: true,
+      injuryStatus: { type: "fracture", severity: "serious", weeksRemaining: 5 },
+    });
+    world.rikishi.set(rikishi.id, rikishi);
+
+    const config = createMockConfig({ observerMode: true, playerHeyaId: undefined });
+    const chronicle = createMockChronicle();
+    const bashoResult = createMockBashoResult({ injuries: ["Juryo Hopeful"] });
+
+    expect(checkStopCondition("majorInjury", bashoResult, world, config, chronicle)).toBe(false);
+  });
+
+  it("should return false for majorInjury when a serious injury was not sustained this basho", () => {
+    const world = makeMockWorld() as any;
+    const rikishi = mockRikishi("star-1", {
+      shikona: "Carried Over",
+      heyaId: "player-heya",
+      injured: true,
+      injuryStatus: { type: "tear", severity: "serious", weeksRemaining: 6 },
+    });
+    world.rikishi.set(rikishi.id, rikishi);
+
+    const config = createMockConfig({ playerHeyaId: "player-heya" });
+    const chronicle = createMockChronicle();
+    // Not present in bashoResult.injuries -> injury predates this basho.
+    const bashoResult = createMockBashoResult({ injuries: [] });
+
+    expect(checkStopCondition("majorInjury", bashoResult, world, config, chronicle)).toBe(false);
+  });
+
   it("should return false for unknown conditions", () => {
     const world = makeMockWorld();
     const config = createMockConfig();

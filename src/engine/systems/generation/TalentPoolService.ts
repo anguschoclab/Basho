@@ -10,7 +10,11 @@
 
 export * from "./TalentPoolStateService";
 export * from "./TalentPoolScouting";
-export * from "./TalentPoolConstants";
+export {
+  FOREIGN_RIKISHI_LIMIT_PER_HEYA,
+  BASE_SCOUT_COST,
+  REVEAL_COST,
+} from "../../../constants/engine/recruitment";
 export * from "./TalentPoolOffers";
 export * from "./TalentPoolMaintenance";
 export * from "./TalentPoolNPCRecruitment";

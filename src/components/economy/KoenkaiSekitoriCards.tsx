@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Users, Award } from "lucide-react";
 import type { KoenkaiBandType } from "@/engine/types/narrative";
-import { KOENKAI_CONFIG } from "./economyConstants";
+import { KOENKAI_CONFIG } from "../../constants/ui/economy";
 
 interface KoenkaiSekitoriCardsProps {
   koenkaiBand: KoenkaiBandType;

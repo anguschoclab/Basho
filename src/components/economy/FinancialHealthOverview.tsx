@@ -10,7 +10,7 @@ import { AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatYen } from "@/utils/engineUtils";
 import type { RunwayBand } from "@/engine/types/narrative";
-import { RUNWAY_CONFIG } from "./economyConstants";
+import { RUNWAY_CONFIG } from "../../constants/ui/economy";
 
 interface FinancialHealthOverviewProps {
   funds: number;

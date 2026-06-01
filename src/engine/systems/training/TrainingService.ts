@@ -32,7 +32,7 @@ import { InfrastructureService } from "../economy/InfrastructureService";
 import { RNGRegistry } from "../../core/RNGRegistry";
 
 // Re-exports for UI consumption
-export * from "./TrainingConstants";
+export * from "../../../constants/engine/training";
 export * from "./TrainingNarrative";
 
 /**

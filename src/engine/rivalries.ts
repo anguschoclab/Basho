@@ -15,7 +15,7 @@ import type { RivalriesState, RivalryPairState, RivalryKey } from "../constants/
 import type { StateImpact } from "./core/StateImpact";
 
 // --- AUTHORITATIVE DELEGATION ---
-export * from "./systems/narrative/RivalryConstants";
+export * from "../constants/engine/rivalry";
 export * from "./systems/narrative/RivalryHeatService";
 export * from "./systems/narrative/RivalryService";
 export type { RivalryHeatBand } from "./systems/narrative/NarrativeBands";

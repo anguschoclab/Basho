@@ -9,7 +9,7 @@ export { getHeatBand } from "./rivalryUtils.pure";
 
 import { cn } from "@/lib/utils";
 import type { RivalryHeatBand } from "@/engine/rivalries";
-import { HEAT_BAND_CONFIG } from "./rivalryConstants";
+import { HEAT_BAND_CONFIG } from "../../constants/ui/rivalry";
 
 export function H2HBar({
   aWins,

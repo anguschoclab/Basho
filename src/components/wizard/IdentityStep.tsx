@@ -5,14 +5,37 @@
  * Features a 7-card backstory grid with difficulty badges and bonus chips.
  */
 
-import { CircleUser, ArrowRight, RefreshCw } from "lucide-react";
+import {
+  CircleUser,
+  ArrowRight,
+  RefreshCw,
+  Trophy,
+  Star,
+  Users,
+  Heart,
+  Flame,
+  Globe,
+  Landmark,
+  type LucideIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { formatYenToMan } from "@/utils/engineUtils";
-import { OYAKATA_BACKSTORIES } from "./wizardConstants";
+import { OYAKATA_BACKSTORIES } from "../../constants/ui/wizard";
+
+/** Maps the pure-data `iconName` identifiers from the constants layer to lucide icon components. */
+const BACKSTORY_ICONS: Record<string, LucideIcon> = {
+  Trophy,
+  Star,
+  Users,
+  Heart,
+  Flame,
+  Globe,
+  Landmark,
+};
 
 interface IdentityStepProps {
   oyakataName: string;
@@ -110,7 +133,7 @@ export function IdentityStep({
             <Label className="pro-header">Professional History &amp; Background</Label>
             <div className="grid gap-4 md:grid-cols-2 max-h-[520px] overflow-y-auto pr-1">
               {OYAKATA_BACKSTORIES.map((bs) => {
-                const Icon = bs.icon;
+                const Icon = BACKSTORY_ICONS[bs.iconName] ?? CircleUser;
                 const isSelected = background === bs.id;
                 return (
                   <div

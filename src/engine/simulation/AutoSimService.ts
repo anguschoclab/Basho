@@ -15,6 +15,9 @@ import { applyImpact } from "../core/ImpactResolver";
 
 // === AUTO-SIM CONFIGURATION ===
 
+/** Recovery weeks at/above which an injury counts as "major" for auto-sim stop conditions. */
+const MAJOR_INJURY_WEEKS_THRESHOLD = 8;
+
 export type StopCondition =
   | "yokozunaPromotion"
   | "ozekiPromotion"
@@ -285,7 +288,23 @@ export function checkStopCondition(
         return rikishi && (RANK_HIERARCHY[rikishi.rank]?.tier ?? 999) <= 4;
       });
     },
-    majorInjury: () => false, // TODO: Implement if needed
+    majorInjury: (bashoResult, world, config) => {
+      const isMajorInjury = (r: Rikishi): boolean => {
+        if (!r.injured) return false;
+        const weeks = r.injuryStatus?.weeksRemaining ?? r.injuryWeeksRemaining ?? 0;
+        return r.injuryStatus?.severity === "serious" || weeks >= MAJOR_INJURY_WEEKS_THRESHOLD;
+      };
+      const inScope = (r: Rikishi): boolean =>
+        hasPlayer
+          ? r.heyaId === config.playerHeyaId
+          : (RANK_HIERARCHY[r.rank]?.tier ?? 999) <= 4;
+
+      // bashoResult.injuries holds shikona of rikishi injured during this basho.
+      const injuredThisBasho = new Set(bashoResult.injuries);
+      return Array.from(world.rikishi.values()).some(
+        (r) => injuredThisBasho.has(r.shikona) && inScope(r) && isMajorInjury(r)
+      );
+    },
     never: () => false,
   };
 

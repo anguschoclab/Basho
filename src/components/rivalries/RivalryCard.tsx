@@ -10,7 +10,7 @@ import { Flame } from "lucide-react";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { formatRank, clamp } from "@/presenters/uiDigest";
 import { getHeatBand, H2HBar, HeatGauge } from "./rivalryUtils";
-import { HEAT_BAND_CONFIG, TONE_CONFIG, TRIGGER_LABELS } from "./rivalryConstants";
+import { HEAT_BAND_CONFIG, TONE_CONFIG, TRIGGER_LABELS } from "../../constants/ui/rivalry";
 import type { RivalryPairState, RivalryTrigger } from "@/engine/rivalries";
 import type { WorldState } from "@/engine/types/world";
 import { toRankPosition } from "@/engine/types/banzuke";

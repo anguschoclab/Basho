@@ -34,7 +34,7 @@ import {
   RIKISHI_QUICK_STATS,
   RIKISHI_BASIC_INFO,
   RIKISHI_ATTRIBUTES,
-} from "./heyaPreviewConstants";
+} from "../../constants/ui/heyaPreview";
 
 interface RikishiDetailDialogProps {
   selectedRikishi: UIRikishi | null;
