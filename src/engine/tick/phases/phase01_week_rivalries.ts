@@ -29,6 +29,7 @@ import {
   MAX_RIVALRY_CLOSENESS,
   MAX_RIVALRY_SPITE,
 } from "../../../constants/engine/bout";
+import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
 
 export function phase01_week_rivalries(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_rivalries");

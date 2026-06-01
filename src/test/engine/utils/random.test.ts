@@ -1,7 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
   seededPick,
-  getRandom,
   seededWeightedPick,
   pick,
   weightedPick,
@@ -35,13 +34,12 @@ class MockRNG extends SeededRNG {
 }
 
 describe("Random Utilities", () => {
-  describe("seededPick & getRandom", () => {
+  describe("seededPick", () => {
     it("should pick an item based on the rng int", () => {
       const rng = new MockRNG();
       rng.setInt(1);
       const arr = ["a", "b", "c"];
       expect(seededPick(rng, arr)).toBe("b");
-      expect(getRandom(rng, arr)).toBe("b");
     });
 
     it("should throw an error if the array is empty", () => {

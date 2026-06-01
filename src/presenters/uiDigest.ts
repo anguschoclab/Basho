@@ -85,7 +85,7 @@ export { getHallOfFame } from "../engine/hallOfFame";
 // Re-exports re-pointed to current source modules (uiConstants barrel removed)
 export { FATIGUE_LABELS, TRAIT_LABELS, SCANDAL_LABELS } from "../constants/ui/labels";
 export { RANK_NAMES } from "../constants/engine/recruitment";
-export { clamp } from "../engine/utils";
+export { clamp, clampInt } from "../engine/utils";
 export { formatRank, RANK_HIERARCHY, compareRanks } from "../engine/banzuke";
 export { formatStance, formatFinePenalty, formatEventTime } from "../engine/utils/formatters";
 export { HOF_CATEGORY_LABELS } from "../engine/hallOfFame";
@@ -145,7 +145,7 @@ export {
   getSeasonalFlavor,
   isKeyDay,
 } from "../engine/calendar";
-// DEFAULT_CRITICAL_GATES removed (unused)
+export { DEFAULT_CRITICAL_GATES } from "../engine/holiday";
 export { getTotalBashodays, needsScheduleForDay } from "../engine/scheduleHelpers";
 // DEFAULT_DIVISION_DAYS removed (unused)
 export { toFatigueBand, toScandalBand, toTraitBand } from "../engine/descriptorBands";

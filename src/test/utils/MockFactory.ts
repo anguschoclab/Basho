@@ -11,6 +11,25 @@ import type { BashoState } from "../../engine/types/basho";
  */
 export const MockFactory = {
   createWorld(overrides: Partial<WorldState> = {}): WorldState {
+    // The engine derives the active roster from `activeRikishiIds`; keep it defined and in
+    // sync with the rikishi map (excluding retired), including post-construction `.set(...)`.
+    const rikishi = overrides.rikishi ?? new Map<Id, Rikishi>();
+    const activeRikishiIds =
+      overrides.activeRikishiIds ??
+      new Set(
+        Array.from(rikishi.entries())
+          .filter(([, r]) => !(r as Rikishi | undefined)?.isRetired)
+          .map(([k]) => k)
+      );
+    if (!(rikishi as { __activeSyncPatched?: boolean }).__activeSyncPatched) {
+      const baseSet = rikishi.set.bind(rikishi);
+      rikishi.set = (k: Id, v: Rikishi) => {
+        if (v && !v.isRetired) activeRikishiIds.add(k);
+        else activeRikishiIds.delete(k);
+        return baseSet(k, v);
+      };
+      (rikishi as { __activeSyncPatched?: boolean }).__activeSyncPatched = true;
+    }
     return {
       id: "world_default",
       seed: "test-seed",
@@ -18,7 +37,8 @@ export const MockFactory = {
       week: 1,
       dayIndexGlobal: 0,
       cyclePhase: "pre_basho",
-      rikishi: new Map(),
+      rikishi,
+      activeRikishiIds,
       heyas: new Map(),
       oyakata: new Map(),
       staff: new Map(),

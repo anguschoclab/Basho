@@ -41,6 +41,7 @@ describe("Yokozuna Promotion Logic", () => {
     return {
       year: 2025,
       rikishi,
+      activeRikishiIds: new Set([mockRikishiId]),
       historyIndex,
       mediaState,
       currentBasho: {

@@ -22,3 +22,9 @@ export const RUNWAY_BANDS = {
   CRITICAL: "critical",
   DESPERATE: "desperate",
 } as const;
+
+/** Weeks-before-expiry window in which a sponsor contract is eligible for auto-renewal */
+export const SPONSOR_RENEWAL_WINDOW_WEEKS = 8;
+
+/** Minimum sponsor loyalty required to auto-renew an expiring contract */
+export const SPONSOR_MIN_LOYALTY_FOR_RENEWAL = 60;

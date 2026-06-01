@@ -7,6 +7,7 @@ describe("RegistryService", () => {
   describe("runCareerJournalUpdates", () => {
     it("should NOT update careerWins/careerLosses (deprecated behavior)", () => {
       const world: Partial<WorldState> = {
+        activeRikishiIds: new Set(["rikishi-1"]),
         rikishi: new Map([
           [
             "rikishi-1",
@@ -54,6 +55,7 @@ describe("RegistryService", () => {
 
     it("should update careerRecord helper with current career values", () => {
       const world: Partial<WorldState> = {
+        activeRikishiIds: new Set(["rikishi-1"]),
         rikishi: new Map([
           [
             "rikishi-1",
@@ -101,6 +103,7 @@ describe("RegistryService", () => {
 
     it("should update yusho count when rikishi won yusho", () => {
       const world: Partial<WorldState> = {
+        activeRikishiIds: new Set(["rikishi-1"]),
         rikishi: new Map([
           [
             "rikishi-1",
@@ -146,6 +149,7 @@ describe("RegistryService", () => {
 
     it("should NOT update yusho count when rikishi did not win yusho", () => {
       const world: Partial<WorldState> = {
+        activeRikishiIds: new Set(["rikishi-1"]),
         rikishi: new Map([
           [
             "rikishi-1",
@@ -191,6 +195,7 @@ describe("RegistryService", () => {
 
     it("should update momentum based on basho performance", () => {
       const world: Partial<WorldState> = {
+        activeRikishiIds: new Set(["rikishi-1"]),
         rikishi: new Map([
           [
             "rikishi-1",
@@ -237,6 +242,7 @@ describe("RegistryService", () => {
 
     it("should decrease momentum for poor performance", () => {
       const world: Partial<WorldState> = {
+        activeRikishiIds: new Set(["rikishi-1"]),
         rikishi: new Map([
           [
             "rikishi-1",

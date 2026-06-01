@@ -111,10 +111,29 @@ export function makeMockHeya(id: string, overrides: Partial<Heya> = {}): Heya {
 export function makeMockWorld(overrides: Partial<WorldState> = {}): WorldState {
   const seed = overrides.seed || "test-seed";
   const rikishiMap = overrides.rikishi || new Map();
+  // The engine derives the active roster from `activeRikishiIds` (a perf optimization),
+  // so keep it in sync — including for rikishi added via `world.rikishi.set(...)` after
+  // construction. Retired rikishi are excluded, matching production's "active = not retired".
+  const activeRikishiIds =
+    overrides.activeRikishiIds ||
+    new Set(
+      Array.from(rikishiMap.entries())
+        .filter(([, r]) => !(r as Rikishi | undefined)?.isRetired)
+        .map(([k]) => k)
+    );
+  if (!(rikishiMap as { __activeSyncPatched?: boolean }).__activeSyncPatched) {
+    const baseSet = rikishiMap.set.bind(rikishiMap);
+    rikishiMap.set = (k: string, v: Rikishi) => {
+      if (v && !v.isRetired) activeRikishiIds.add(k);
+      else activeRikishiIds.delete(k);
+      return baseSet(k, v);
+    };
+    (rikishiMap as { __activeSyncPatched?: boolean }).__activeSyncPatched = true;
+  }
   return {
     rikishi: rikishiMap,
     historicalRikishi: new Map(),
-    activeRikishiIds: new Set(Array.from(rikishiMap.keys())),
+    activeRikishiIds,
     heyas: new Map(),
     staff: new Map(),
     oyakata: new Map(),

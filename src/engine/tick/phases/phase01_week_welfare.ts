@@ -31,6 +31,7 @@ import {
   WELFARE_RISK_THRESHOLD,
   WELFARE_RISK_SHIFT_LOG_THRESHOLD,
   MAX_MEDIA_PRESSURE,
+  MAX_WELFARE_RISK,
 } from "../../../constants/engine/welfare";
 
 interface HeyaRiskIndicators {

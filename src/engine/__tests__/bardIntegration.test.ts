@@ -21,6 +21,7 @@ describe("Bard Engine Integration", () => {
       dayIndexGlobal: 1,
       heyas: new Map([["heya-1", { id: "heya-1", name: "Test Heya", reputation: 50 }]]),
       rikishi: new Map(),
+      activeRikishiIds: new Set(),
       talentPool: {
         candidates: {
           c1: {
@@ -60,6 +61,7 @@ describe("Bard Engine Integration", () => {
       rikishi: new Map([
         ["r1", { id: "r1", shikona: "Wrestler 1", careerWins: 100, currentBashoWins: 1 }],
       ]),
+      activeRikishiIds: new Set(["r1"]),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Test mock
     } as any;
 

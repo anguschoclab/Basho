@@ -17,6 +17,7 @@
 import type { WorldState } from "../../types/world";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
+import { mergeImpacts } from "../../core/ImpactResolver";
 import { isBashoMonth } from "../../calendar";
 import {
   payTravelAllowance,

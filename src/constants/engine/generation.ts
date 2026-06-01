@@ -46,3 +46,46 @@ export const PRODIGY_PA_CEILING_FRACTION = 1.0;
 
 /** Height potential mean multiplier */
 export const HEIGHT_POTENTIAL_MEAN_MULTIPLIER = 1.0;
+
+// ─────────────────────────────────────────
+// Oyakata + heya seeding (consumed by WorldFactory)
+// ─────────────────────────────────────────
+
+/** Base age for a generated oyakata */
+export const OYAKATA_BASE_AGE = 45;
+
+/** Random age spread added on top of the base oyakata age */
+export const OYAKATA_AGE_RANGE = 20;
+
+/** Base heya reputation before tier scaling */
+export const HEYA_REPUTATION_BASE = 80;
+
+/** Reputation reduction per generation tier */
+export const HEYA_REPUTATION_TIER_MULTIPLIER = 50;
+
+/** Base heya prestige before tier scaling */
+export const HEYA_PRESTIGE_BASE = 50;
+
+/** Prestige reduction per generation tier */
+export const HEYA_PRESTIGE_TIER_MULTIPLIER = 30;
+
+/** Starting funds for elite (top-tier) heyas */
+export const HEYA_FUNDS_ELITE = 40_000_000;
+
+/** Starting funds for standard heyas */
+export const HEYA_FUNDS_STANDARD = 15_000_000;
+
+/** Default welfare risk for a freshly generated heya */
+export const HEYA_WELFARE_RISK_DEFAULT = 10;
+
+/** Default starting level for each heya facility (training/recovery/nutrition) */
+export const HEYA_FACILITIES_DEFAULT = 50;
+
+/** Default political capital for a freshly generated heya */
+export const HEYA_POLITICAL_CAPITAL_DEFAULT = 100;
+
+/** Minimum number of yokozuna seeded at world generation */
+export const YOKOZUNA_COUNT_MIN = 0;
+
+/** Maximum number of yokozuna seeded at world generation */
+export const YOKOZUNA_COUNT_MAX = 2;
