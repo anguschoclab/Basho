@@ -58,7 +58,14 @@ export function mapIdsToOyakata(world: WorldState, ids: Id[]): Oyakata[] {
  * @returns Array of entities matching the predicate
  */
 export function filterEntities<T>(entityMap: Map<Id, T>, predicate: (entity: T) => boolean): T[] {
-  return Array.from(entityMap.values()).filter(predicate);
+  const results: T[] = [];
+  // ⚡ Bolt Optimization: Use direct for...of loop to prevent O(N) intermediate array allocation
+  for (const entity of entityMap.values()) {
+    if (predicate(entity)) {
+      results.push(entity);
+    }
+  }
+  return results;
 }
 
 /**

@@ -75,3 +75,7 @@ Optimized `fillVacanciesForNPC` in `TalentPoolNPCRecruitment.ts` by replacing `A
 ## 2026-05-27 - Avoid Object.entries() tuple allocations
 **Learning:** Using `Object.entries().map()` allocating arrays of tuples from Objects was found in the `GlobalCupStats.tsx` UI rendering path. As stated in memory, this generates unnecessary memory overhead.
 **Action:** Replaced `Object.entries().map(([key, value]) => ...)` with `Object.keys().map(key => { const value = obj[key]; ... })` to mitigate intermediate array allocations.
+
+## 2025-05-18 - Early exit loops in array filtering
+**Learning:** In code like `Array.from(world.rikishi.values()).filter(...)`, it iterates over the entire map of values and allocates intermediate arrays even when only a fixed number of items are needed (e.g. `if (candidates.length < 2)`).
+**Action:** Replace `Array.from().filter()` with a `for...of` loop and an early `break` statement when a specific limit is reached. This turns an $O(N)$ allocation and mapping into a constant time $O(1)$ loop with no intermediate allocations.
