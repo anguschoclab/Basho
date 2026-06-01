@@ -71,3 +71,7 @@ Optimized `fillVacanciesForNPC` in `TalentPoolNPCRecruitment.ts` by replacing `A
 ## 2024-05-26 - Avoid Object.entries() in high-frequency tick phases
 **Learning:** Found an $O(N)$ memory overhead and GC pressure bottleneck in `phase01_week_rivalries.ts` where `Object.entries(world.rivalriesState.pairs || {})` was used during the engine's core tick phase. Given that `rivalriesState.pairs` can contain thousands of rivalry mappings, using `Object.entries()` allocates a massive array of tuples `[key, pair]` every single in-game week, causing severe memory churn and slowing down the game simulation.
 **Action:** Replace `Object.entries(map)` with a standard `for...in` loop accompanied by `Object.prototype.hasOwnProperty.call(map, key)` guard. This avoids O(N) tuple allocations during hot paths, saving substantial CPU cycles and reducing garbage collection pressure.
+
+## 2026-05-27 - Avoid Object.entries() tuple allocations
+**Learning:** Using `Object.entries().map()` allocating arrays of tuples from Objects was found in the `GlobalCupStats.tsx` UI rendering path. As stated in memory, this generates unnecessary memory overhead.
+**Action:** Replaced `Object.entries().map(([key, value]) => ...)` with `Object.keys().map(key => { const value = obj[key]; ... })` to mitigate intermediate array allocations.
