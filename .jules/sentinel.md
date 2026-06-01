@@ -22,7 +22,17 @@ Replaced `JSON.parse` with `destr` in `safeParse` to mitigate prototype pollutio
 **Learning:** Naively allowing all `file:` navigation undermines Electron sandbox security, as it trusts any local file implicitly. Only explicitly trusted origins (e.g., the dev server) should be permitted during in-page navigation. Production files loaded via `loadFile()` don't inherently require enabling `will-navigate`.
 **Prevention:** Strictly deny all `will-navigate` events by default (`event.preventDefault()`). Only explicitly allow known, safe origins (like the dev server's exact origin, verified via `URL.origin`, not `startsWith`) if necessary.
 
+## 2025-05-09 - Missing Runtime Validation on IPC Handlers
+**Vulnerability:** The Electron app's `app:getPath` IPC handler used TypeScript type assertions (`as 'home' | 'userData' | ...`) to implicitly restrict the `name` argument from the renderer. However, since TypeScript is stripped during compilation, any string could be passed from the renderer at runtime. This meant a compromised renderer process could request arbitrary paths (e.g., `exe`, `module`, `crashDumps`) that might expose sensitive system directories or facilitate further exploits.
+**Learning:** Type assertions are compile-time only and provide zero runtime security. When dealing with boundary interfaces like IPC where untrusted data enters a privileged context (the main process), runtime validation is mandatory.
+**Prevention:** Never rely on TypeScript assertions (`as Type`) for input validation on IPC boundaries. Always implement strict runtime validation, such as explicit allowlists (e.g., `const ALLOWED_PATHS = [...] as const` and `ALLOWED_PATHS.includes()`), to verify arguments before passing them to privileged Electron or Node.js APIs.
+
 ## 2025-05-27 - Validate IPC Arguments at Runtime
 **Vulnerability:** The `app:getPath` IPC handler relied purely on a TypeScript type assertion (`name as "home" | "appData" | ...`) to limit which paths could be requested from the main process. Since type checking is stripped at runtime, any string could be passed via IPC from the renderer, potentially allowing an attacker to request sensitive paths like `exe` or `module`.
 **Learning:** TypeScript type boundaries do not exist at runtime in JavaScript. IPC handlers are security boundaries between the less trusted renderer process and the privileged main process. Any data crossing this boundary must be rigorously validated at runtime.
 **Prevention:** Always implement strict runtime validation (such as explicit allowlists) for any arguments passed over IPC before using them in privileged main process APIs. Never rely solely on TypeScript type assertions for security.
+
+## 2025-05-29 - Unsafe IPC Type Assertions
+**Vulnerability:** The Electron app's `app:getPath` IPC handler relied on TypeScript type assertions (e.g. `name as 'home' | 'appData' ...`) for input validation. Because TypeScript types are stripped at runtime, this provided no actual protection against a compromised renderer sending arbitrary strings. An attacker could potentially request unintended application paths.
+**Learning:** Type assertions in IPC handlers provide a false sense of security. Any data coming from the renderer must be considered untrusted and strictly validated at runtime.
+**Prevention:** Always implement explicit runtime validation (such as allowlists) for arguments passed over IPC before using them in privileged main process APIs. Never rely solely on TypeScript types for security boundaries.
