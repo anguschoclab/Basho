@@ -96,7 +96,7 @@ function buildAndSortActiveSponsors(
 
   activeSponsors.sort((a, b) => {
     const tierDiff = (tierOrder[a.tier] ?? 0) - (tierOrder[b.tier] ?? 0);
-    if (tierDiff !== 0) return -tierDiff;
+    if (tierDiff !== 0) return tierDiff;
     return b.strength - a.strength;
   });
 

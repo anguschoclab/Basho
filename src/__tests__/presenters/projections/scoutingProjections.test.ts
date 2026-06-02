@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { clearQueryCaches } from "../../../engine/queries";
 import { projectScoutingSummary } from "../../../presenters/projections/scoutingProjections";
 import { createMockWorldState, createMockHeya } from "../../utils/testHelpers";
 
@@ -21,6 +22,11 @@ function makeSnap(overrides: Partial<any> = {}): any {
 
 beforeEach(() => {
   vi.mocked(buildPerceptionSnapshot).mockReturnValue(makeSnap());
+  clearQueryCaches();
+});
+
+afterEach(() => {
+  clearQueryCaches();
 });
 
 describe("projectScoutingSummary", () => {

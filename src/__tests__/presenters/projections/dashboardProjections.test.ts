@@ -6,7 +6,8 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import { clearQueryCaches } from "../../../engine/queries";
 import {
   projectDashboardUIDigest,
   projectBanzukeUIDigest,
@@ -14,6 +15,8 @@ import {
 import { createMockWorldState, createMockHeya, createMockRikishi } from "../../utils/testHelpers";
 
 describe("dashboardProjections", () => {
+  beforeEach(() => clearQueryCaches());
+  afterEach(() => clearQueryCaches());
   describe("projectDashboardUIDigest", () => {
     it("should return null when player heya not set", () => {
       const world = createMockWorldState({ playerHeyaId: undefined }) as any;
