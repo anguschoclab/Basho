@@ -17,11 +17,11 @@ import { tickRikishiRecovery } from "../../systems/health/RecoveryService";
 import { RNGRegistry } from "../../core/RNGRegistry";
 import { getHeyaStaffBonuses } from "../../staff";
 import type {
-import { getRikishi } from "../../queries";
   InjurySeverity,
   InjuryBodyArea,
   InjuryType,
 } from "../../systems/health/BodyDefinitions";
+import { getRikishi } from "../../queries";
 
 interface CurrentInjury {
   id: string;
