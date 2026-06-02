@@ -26,7 +26,8 @@ export type SystemRNGKey =
   | "combat"
   | "kensho"
   | "health"
-  | "lifecycle";
+  | "lifecycle"
+  | "global_cup";
 
 /**
  * Unified RNG registry.
@@ -69,7 +70,7 @@ export const RNGRegistry = {
    * ```
    */
   getTrainingRNG(world: WorldState): SeededRNG {
-    return this.getSystemRNG(world, "training", `week::${world.calendar.currentWeek || 0}`);
+    return this.getSystemRNG(world, "training", `week::${world.calendar?.currentWeek || 0}`);
   },
 
   /**
@@ -86,6 +87,6 @@ export const RNGRegistry = {
    * ```
    */
   getScoutingRNG(world: WorldState): SeededRNG {
-    return this.getSystemRNG(world, "scouting", `week::${world.calendar.currentWeek || 0}`);
+    return this.getSystemRNG(world, "scouting", `week::${world.calendar?.currentWeek || 0}`);
   },
 };

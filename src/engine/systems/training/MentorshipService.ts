@@ -26,6 +26,7 @@ import {
   MENTORSHIP_BLEED_THRESHOLD,
   MENTORSHIP_BLEED_SCALE,
 } from "../../../constants/engine/training";
+import { getRikishi } from "../../queries";
 
 /**
  * Minimum ranks required for a rikishi to be eligible as a mentor.

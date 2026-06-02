@@ -7,7 +7,7 @@
  */
 
 import type { WorldState } from "../types/world";
-import type { HeyaTrainingState, SparringState } from "../types/training";
+import type { HeyaTrainingState } from "../types/training";
 import type { Sponsor, Koenkai } from "../types/sponsors";
 import type { Staff } from "../types/staff";
 import type { BashoResult, MatchSchedule, AwardLogEntry } from "../types/basho";
@@ -20,6 +20,10 @@ import type {
   EventImportance,
   NarrativeContext,
 } from "../types/events";
+import type { Id } from "../types/common";
+import type { Heya } from "../types/heya";
+import type { Rikishi } from "../types/rikishi";
+import type { Oyakata } from "../types/oyakata";
 
 /**
  * Deterministic timestamp counter for impact metadata.
@@ -167,6 +171,8 @@ export interface StateImpact {
       | "talentPool"
       | "candidatePool"
       | "sparringPairs"
+      | "globalCup"
+      | "chronicle"
     >
   >;
 
@@ -181,6 +187,7 @@ export interface StateImpact {
     | { field: "governanceLog"; items: GovernanceRuling[] }
     | { field: "awardLog"; items: AwardLogEntry[] }
     | { field: "myosekiMarket.history"; items: MyosekiTransaction[] }
+    | { field: "pendingExhibitions"; items: unknown[] }
   >;
 
   /**

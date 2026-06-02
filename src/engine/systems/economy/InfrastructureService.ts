@@ -22,6 +22,7 @@ import {
   CONSTRUCTION_COST_LEVEL_MULTIPLIER,
   CONSTRUCTION_BUILD_TIME_THRESHOLD,
 } from "../../../constants/engine/economyExtended";
+import { getHeya } from "../../queries";
 
 /**
  * Infrastructure Service namespace.

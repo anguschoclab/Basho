@@ -19,6 +19,7 @@ import type {
 import type { HeyaTrainingState } from "../types/training";
 import type { MyosekiStock, MyosekiTransaction } from "../types/myoseki";
 import type { Staff } from "../types/staff";
+import type { StateImpact } from "./StateImpact";
 import { createEmptyImpact, getNextTimestamp } from "./StateImpact";
 
 /**
@@ -355,11 +356,9 @@ export class ImpactBuilder {
   /**
    * Retire a rikishi: moves from active to historical and sets retirement metadata.
    */
-  retireRikishi(id: string, year: number = 2026, reason: string = "Retirement"): ImpactBuilder {
+  retireRikishi(id: string): ImpactBuilder {
     this.updateRikishi(id, {
       isRetired: true,
-      retirementYear: year,
-      retirementReason: reason,
     });
 
     if (!this.impact.collections) {
@@ -458,6 +457,8 @@ export class ImpactBuilder {
       | "transientContext"
       | "settings"
       | "playerKnowledge"
+      | "globalCup"
+      | "chronicle"
     >,
   >(field: K, value: WorldState[K]): ImpactBuilder {
     if (!this.impact.worldFields) {
@@ -479,12 +480,13 @@ export class ImpactBuilder {
       | "basho.matches"
       | "governanceLog"
       | "awardLog"
+      | "myosekiMarket.history"
       | "pendingExhibitions",
   >(field: K, items: unknown[]): ImpactBuilder {
     if (!this.impact.arrayAppends) {
       this.impact.arrayAppends = [];
     }
-    this.impact.arrayAppends.push({ field, items });
+    this.impact.arrayAppends.push({ field, items } as never);
     return this;
   }
 
@@ -586,8 +588,7 @@ export class ImpactBuilder {
     }
     if (other.collections?.rikishiToHistorical) {
       for (const id of other.collections.rikishiToHistorical) {
-        const update = other.entities?.rikishiUpdates?.get(id);
-        this.retireRikishi(id, update?.retirementYear, update?.retirementReason);
+        this.retireRikishi(id);
       }
     }
     if (other.collections?.rikishiFromHistorical) {
@@ -662,11 +663,9 @@ export function updateRikishiImpact(
  */
 export function retireRikishiImpact(
   id: string,
-  year: number,
-  reason: string,
   source: string
 ): StateImpact {
-  return createImpactBuilder(source).retireRikishi(id, year, reason).build();
+  return createImpactBuilder(source).retireRikishi(id).build();
 }
 
 /**
@@ -727,6 +726,8 @@ export function updateWorldFieldImpact<
     | "heyas"
     | "transientContext"
     | "settings"
+    | "globalCup"
+    | "chronicle"
   >,
 >(field: K, value: WorldState[K], source: string): StateImpact {
   return createImpactBuilder(source).updateWorldField(field, value).build();

@@ -16,6 +16,7 @@ import {
   upgradeKeshoMawashi,
   generateYokozunaTsuna,
 } from "./KeshoMawashiFactory";
+import { getRikishi } from "../../queries";
 
 /** Generate kesho-mawashi for all promotions detected in banzuke update */
 export function generateKeshoForPromotions(

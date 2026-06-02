@@ -30,6 +30,7 @@ import {
   SPARRING_CHEMISTRY_RUT_MULTIPLIER,
   SPARRING_CHEMISTRY_NEUTRAL_MULTIPLIER,
 } from "../../../constants/engine/sparring";
+import { getRikishi } from "../../queries";
 
 /**
  * Archetype categories for chemistry calculation.

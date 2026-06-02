@@ -45,6 +45,14 @@ export type EngineEventType =
   | "ROSTER_OVERFLOW_RELEASE" // Rikishi released due to roster overflow
   | "PROMOTION_DELIBERATION" // Promotion deliberation occurred
   | "GLOBAL_CUP" // Global Cup event
+  | "GLOBAL_CUP_START" // Global Cup tournament started
+  | "GLOBAL_CUP_FINALE" // Global Cup tournament concluded
+  | "CONSTRUCTION_STARTED" // Infrastructure construction started
+  | "CONSTRUCTION_COMPLETED" // Infrastructure construction completed
+  | "KESHO_CREATED" // Kesho mawashi created
+  | "KESHO_UPGRADED" // Kesho mawashi upgraded
+  | "YOKOZUNA_TSUNA_CREATED" // Yokozuna tsuna created
+  | "KESHO_MAWASHI_CREATED" // Kesho mawashi created
   | "NARRATIVE_CRISIS_TRIGGERED" // Narrative crisis was triggered
   | "MENTOR_MENTEE_BOUT"; // Mentor faced apprentice in bout
 

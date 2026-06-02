@@ -11,13 +11,13 @@ import { createImpactBuilder, ImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { RNGRegistry } from "../../core/RNGRegistry";
 import type {
-import { getRikishi } from "../../queries";
   GlobalCupMatch,
   GlobalCupParticipant,
   GlobalCupState,
   GlobalCupHistoryEntry,
   GlobalCupBoutResult,
 } from "../../types/globalCup";
+import { getRikishi } from "../../queries";
 
 export const GlobalCupService = {
   /**
@@ -48,7 +48,7 @@ export const GlobalCupService = {
 
     const jsaElites: GlobalCupParticipant[] = pool.slice(0, 6).map((r, i) => ({
       rikishiId: r.id,
-      shikona: r.shikona || r.name,
+      shikona: r.shikona || r.name || "Unknown",
       rank: r.rank || "Maegashira",
       heyaId: r.heyaId,
       nationality: r.nationality || "Japan",
@@ -56,7 +56,7 @@ export const GlobalCupService = {
       seed: i + 1,
     }));
 
-    const rng = RNGRegistry.getSystemRNG(world, "global_cup", `challengers_${world.year}`);
+    RNGRegistry.getSystemRNG(world, "global_cup", `challengers_${world.year}`);
     const talentPool = world.talentPool;
     const foreignCandidates = talentPool
       ? Object.values(talentPool.candidates).filter(
