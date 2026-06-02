@@ -134,6 +134,27 @@ describe("ElectronArchiveService", () => {
       expect(mocks.fs.writeFile).not.toHaveBeenCalled();
       warnSpy.mockRestore();
     });
+
+    it("logs error when ensureDir fails", async () => {
+      mocks.fs.mkdir.mockRejectedValue(new Error("EACCES: permission denied"));
+      const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+      await service.archiveBoutLog(2024, "bout-1", mockBoutResult);
+
+      expect(errorSpy).toHaveBeenCalled();
+      expect(mocks.fs.writeFile).not.toHaveBeenCalled();
+      errorSpy.mockRestore();
+    });
+
+    it("logs error when writeFile fails", async () => {
+      mocks.fs.writeFile.mockRejectedValue(new Error("ENOSPC: no space left"));
+      const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+      await service.archiveBoutLog(2024, "bout-1", mockBoutResult);
+
+      expect(errorSpy).toHaveBeenCalled();
+      errorSpy.mockRestore();
+    });
   });
 
   describe("retrieveBoutLog", () => {
@@ -193,6 +214,27 @@ describe("ElectronArchiveService", () => {
 
       expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build");
       warnSpy.mockRestore();
+    });
+
+    it("logs error when ensureDir fails", async () => {
+      mocks.fs.mkdir.mockRejectedValue(new Error("EACCES: permission denied"));
+      const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+      await service.archiveGazette(2024, 1, "# Test");
+
+      expect(errorSpy).toHaveBeenCalled();
+      expect(mocks.fs.writeFile).not.toHaveBeenCalled();
+      errorSpy.mockRestore();
+    });
+
+    it("logs error when writeFile fails", async () => {
+      mocks.fs.writeFile.mockRejectedValue(new Error("ENOSPC: no space left"));
+      const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+      await service.archiveGazette(2024, 1, "# Test");
+
+      expect(errorSpy).toHaveBeenCalled();
+      errorSpy.mockRestore();
     });
   });
 
@@ -282,6 +324,27 @@ describe("ElectronArchiveService", () => {
       expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build");
       warnSpy.mockRestore();
     });
+
+    it("logs error when ensureDir fails", async () => {
+      mocks.fs.mkdir.mockRejectedValue(new Error("EACCES: permission denied"));
+      const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+      await service.archiveAwards(2024, mockAwards);
+
+      expect(errorSpy).toHaveBeenCalled();
+      expect(mocks.fs.writeFile).not.toHaveBeenCalled();
+      errorSpy.mockRestore();
+    });
+
+    it("logs error when writeFile fails", async () => {
+      mocks.fs.writeFile.mockRejectedValue(new Error("ENOSPC: no space left"));
+      const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+      await service.archiveAwards(2024, mockAwards);
+
+      expect(errorSpy).toHaveBeenCalled();
+      errorSpy.mockRestore();
+    });
   });
 
   describe("retrieveAwards", () => {
@@ -340,6 +403,27 @@ describe("ElectronArchiveService", () => {
 
       expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build");
       warnSpy.mockRestore();
+    });
+
+    it("logs error when ensureDir fails", async () => {
+      mocks.fs.mkdir.mockRejectedValue(new Error("EACCES: permission denied"));
+      const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+      await service.archiveBanzuke(2024, 1, mockSnapshot);
+
+      expect(errorSpy).toHaveBeenCalled();
+      expect(mocks.fs.writeFile).not.toHaveBeenCalled();
+      errorSpy.mockRestore();
+    });
+
+    it("logs error when writeFile fails", async () => {
+      mocks.fs.writeFile.mockRejectedValue(new Error("ENOSPC: no space left"));
+      const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+      await service.archiveBanzuke(2024, 1, mockSnapshot);
+
+      expect(errorSpy).toHaveBeenCalled();
+      errorSpy.mockRestore();
     });
   });
 

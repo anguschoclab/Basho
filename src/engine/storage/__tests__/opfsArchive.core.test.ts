@@ -401,6 +401,14 @@ describe("OPFSArchiveService core functionality", () => {
       await service.archiveBanzuke(2024, 1, { year: 2024, bashoNumber: 1, bashoName: "hatsu", makuuchiSummary: { totalBouts: 0, avgWins: 0, injuryCount: 0 }, promotions: [], demotions: [], retirements: [] });
       expect(handleQuotaSpy).toHaveBeenCalledWith(quotaError);
     });
+
+    it("returns early when getDirectoryPath returns null", async () => {
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(null);
+
+      await service.archiveBanzuke(2024, 1, { year: 2024, bashoNumber: 1, bashoName: "hatsu", makuuchiSummary: { totalBouts: 0, avgWins: 0, injuryCount: 0 }, promotions: [], demotions: [], retirements: [] });
+
+      expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024", "banzuke"]);
+    });
   });
 
   describe("retrieveBanzuke", () => {
@@ -432,6 +440,14 @@ describe("OPFSArchiveService core functionality", () => {
 
       const result = await service.retrieveBanzuke(2024, 99);
       expect(result).toBeNull();
+    });
+
+    it("returns null when getDirectoryPath returns null", async () => {
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(null);
+
+      const result = await service.retrieveBanzuke(2024, 1);
+      expect(result).toBeNull();
+      expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024", "banzuke"]);
     });
   });
 
