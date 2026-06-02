@@ -21,7 +21,7 @@ import type {
 import { NarrativeService } from "./systems/narrative/NarrativeService";
 import type { ComplianceState } from "./types/economy";
 import type { RivalriesState } from "./rivalries";
-import { getHeyaRoster, getHeyaStyleBias } from "./queries";
+import { getHeyaRoster, getHeyaStyleBias, getHeya } from "./queries";
 
 // === Band types for perception ===
 
@@ -160,7 +160,7 @@ function bandMediaHeat(heat: number): MediaHeatBand {
  *  * @returns The result.
  */
 function bandRivalry(world: WorldState, heyaId: Id): RivalryPerceptionBand {
-  const heya = world.heyas.get(heyaId);
+  const heya = getHeya(world, heyaId);
   if (!heya) return "dormant";
 
   const rivalriesState: RivalriesState | undefined = world.rivalriesState;
@@ -327,7 +327,7 @@ function getRikishiMediaHeat(world: WorldState, rikishiId: Id): number {
  * Constitution A7.1: "AI uses the same information layers as the player."
  */
 export function buildPerceptionSnapshot(world: WorldState, heyaId: Id): PerceptionSnapshot {
-  const heya = world.heyas.get(heyaId);
+  const heya = getHeya(world, heyaId);
   if (!heya) {
     return {
       heyaId,

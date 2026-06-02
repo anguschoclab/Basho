@@ -11,6 +11,7 @@ import type { Id } from "./types/common";
 import type { WorldState } from "./types/world";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
+import { getHeya } from "./queries";
 
 /**
  * Helper to roll a random band from a list of bands.
@@ -174,7 +175,7 @@ export function tickStaffYear(world: WorldState): StateImpact {
  */
 export function hireStaff(world: WorldState, heyaId: Id, role: StaffRole): StateImpact {
   const builder = createImpactBuilder("hireStaff");
-  const heya = world.heyas.get(heyaId);
+  const heya = getHeya(world, heyaId);
   if (!heya) return builder.build();
 
   const HIRE_COST = 500_000;
@@ -203,7 +204,7 @@ export function hireStaff(world: WorldState, heyaId: Id, role: StaffRole): State
  */
 export function fireStaff(world: WorldState, heyaId: Id, staffId: string): StateImpact {
   const builder = createImpactBuilder("fireStaff");
-  const heya = world.heyas.get(heyaId);
+  const heya = getHeya(world, heyaId);
   if (!heya) return builder.build();
 
   // Remove from heya list
@@ -256,7 +257,7 @@ const ROLE_HANDLERS: Record<StaffRole, (b: StaffBonuses, val: number) => void> =
 };
 
 export function getHeyaStaffBonuses(world: WorldState, heyaId: Id): StaffBonuses {
-  const heya = world.heyas.get(heyaId);
+  const heya = getHeya(world, heyaId);
   const bonuses: StaffBonuses = {
     technique: 1.0,
     conditioning: 1.0,

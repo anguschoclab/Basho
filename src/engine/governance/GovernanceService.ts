@@ -9,6 +9,7 @@ import { rngForWorld, rngFromSeed } from "../rng";
 import { BardEngine } from "../narrative/BardEngine";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
+import { getHeya } from "../queries";
 
 /**
  * Reports a scandal and applies immediate score impacts and headlines.
@@ -21,7 +22,7 @@ export function reportScandal(
   reason: string
 ): StateImpact {
   const builder = createImpactBuilder("reportScandal");
-  const heya = world.heyas.get(heyaId);
+  const heya = getHeya(world, heyaId);
   if (!heya) return builder.build();
 
   const impactMap = { minor: 5, major: 15, critical: 30 };
@@ -185,7 +186,7 @@ export function runElections(world: WorldState): StateImpact {
       governanceStatus: "good_standing", // Board members are elevated to good standing
       politicalCapital: Math.min(
         100,
-        (world.heyas.get(candidate.heyaId)?.politicalCapital ?? 0) + 20
+        (getHeya(world, candidate.heyaId)?.politicalCapital ?? 0) + 20
       ),
     });
 
@@ -252,7 +253,7 @@ export function spendPoliticalCapital(
   amount: number
 ): StateImpact {
   const builder = createImpactBuilder("spendPoliticalCapital");
-  const heya = world.heyas.get(heyaId);
+  const heya = getHeya(world, heyaId);
   if (!heya) return builder.build();
   const current = heya.politicalCapital ?? 50;
   if (current < amount) return builder.build();
@@ -277,7 +278,7 @@ export function issueGovernanceRuling(
     const ruling = world.governanceLog[rulingIndex];
     if (!ruling) return builder.build();
 
-    const heya = world.heyas.get(ruling.heyaId);
+    const heya = getHeya(world, ruling.heyaId);
 
     if (heya) {
       const severityMultiplier = severity === "lenient" ? 0.5 : severity === "harsh" ? 1.5 : 1.0;

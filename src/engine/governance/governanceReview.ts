@@ -12,7 +12,7 @@ import type { Heya } from "../types/heya";
 import * as governance from "./GovernanceService";
 import { generateGovernanceHeadline } from "../systems/media/MediaService";
 import { issueBailoutLoanIfNeeded } from "../loans";
-import { getStableRikishi, getActiveRikishi } from "../queries";
+import { getStableRikishi, getActiveRikishi, getRikishi } from "../queries";
 import { PRESTIGE_ORDER, bandIndex } from "../prestige/prestigeSystem";
 import { findMergerTarget, executeMerger } from "../mergers";
 import { checkRetirement } from "../lifecycle";
@@ -296,7 +296,7 @@ export function runAIMetaDrift(world: WorldState): StateImpact {
   builder.updateWorldField("_postBashoMeta", {
     bashoNumber: lastBasho.bashoNumber,
     metaBias,
-    yushoStyle: world.rikishi.get(lastBasho.yusho)?.style ?? "hybrid",
+    yushoStyle: getRikishi(world, lastBasho.yusho)?.style ?? "hybrid",
     recognitionEligibleWeek: world.week + 2, // 2-week recognition delay baseline
   });
 
@@ -322,7 +322,7 @@ export function runRetirements(world: WorldState): StateImpact {
   const rikishiToRetire: string[] = [];
 
   for (const rikishiId of world.activeRikishiIds) {
-    const r = world.rikishi.get(rikishiId);
+    const r = getRikishi(world, rikishiId);
     if (!r) continue;
     const id = r.id;
     const reason = checkRetirement(r, world.year, world.seed);

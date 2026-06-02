@@ -11,6 +11,7 @@ import type { Rank } from "../../types/banzuke";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { RNGRegistry } from "../../core/RNGRegistry";
+import { getHeya } from "../../queries";
 
 export type ExhibitionRegion = "Mongolia" | "Georgia" | "Europe" | "Americas" | "East_Asia";
 
@@ -40,7 +41,7 @@ export const WorldCircuitService = {
 
   generateYearlyInvitations(world: WorldState, heyaId: string): StateImpact {
     const builder = createImpactBuilder("generateYearlyInvitations");
-    const heya = world.heyas.get(heyaId);
+    const heya = getHeya(world, heyaId);
     if (!heya) return builder.build();
 
     const rng = RNGRegistry.getSystemRNG(world, "scouting", `exhibitions_${world.year}_${heyaId}`);
@@ -95,7 +96,7 @@ export const WorldCircuitService = {
     invitation: ExhibitionInvitation
   ): StateImpact {
     const builder = createImpactBuilder("processExhibitionResult");
-    const heya = world.heyas.get(heyaId);
+    const heya = getHeya(world, heyaId);
     const rikishi = world.rikishi.get(rikishiId);
     if (!heya || !rikishi) return builder.build();
 
@@ -187,7 +188,7 @@ export const WorldCircuitService = {
   },
 
   hasForeignAcademy(world: WorldState, heyaId: string, region: ExhibitionRegion): boolean {
-    const heya = world.heyas.get(heyaId);
+    const heya = getHeya(world, heyaId);
     if (!heya) return false;
     return this.getRegionVisibility(heya, region) === "academy";
   },
@@ -198,7 +199,7 @@ export const WorldCircuitService = {
    */
   applyStyleDrift(world: WorldState, heyaId: string): StateImpact {
     const builder = createImpactBuilder("applyStyleDrift");
-    const heya = world.heyas.get(heyaId);
+    const heya = getHeya(world, heyaId);
     if (!heya || !heya.regionalPresence) return builder.build();
 
     const regions = Object.keys(heya.regionalPresence) as ExhibitionRegion[];

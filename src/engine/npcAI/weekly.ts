@@ -133,7 +133,7 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
 
     const topRikishi: Rikishi[] = [];
     for (const rikishiId of world.activeRikishiIds) {
-      const r = world.rikishi.get(rikishiId);
+      const r = getRikishi(world, rikishiId);
       if (!r) continue;
       if (r.division === "makuuchi" || r.division === "juryo") {
         topRikishi.push(r);
@@ -327,11 +327,11 @@ function applyPromotionAwareness(
   heyaId: string,
   decision: NPCWeeklyDecision
 ): void {
-  const heya = world.heyas.get(heyaId);
+  const heya = getHeya(world, heyaId);
   if (!heya) return;
 
   for (const rikishiId of heya.rikishiIds ?? []) {
-    const r = world.rikishi.get(rikishiId);
+    const r = getRikishi(world, rikishiId);
     if (!r || r.isRetired || r.injured) continue;
 
     const rank = r.rank?.toLowerCase() ?? "";
@@ -384,14 +384,14 @@ function applyInjuryRiskReduction(
   heyaId: string,
   decision: NPCWeeklyDecision
 ): void {
-  const heya = world.heyas.get(heyaId);
+  const heya = getHeya(world, heyaId);
   if (!heya) return;
 
   let highRiskCount = 0;
   const protectIds: Id[] = [];
 
   for (const rikishiId of heya.rikishiIds ?? []) {
-    const r = world.rikishi.get(rikishiId);
+    const r = getRikishi(world, rikishiId);
     if (!r || r.isRetired || r.injured) continue;
 
     const condition = r.condition ?? 100;

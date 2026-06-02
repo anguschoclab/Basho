@@ -1,5 +1,5 @@
 import type { Id } from "./types/common";
-import { getStableRikishi } from "./queries";
+import { getStableRikishi, getHeya, getRikishi } from "./queries";
 import type { WorldState, ClosedHeyaRecord } from "./types/world";
 import { EventBus } from "./events";
 import { generateGovernanceHeadline } from "./systems/media/MediaService";
@@ -24,8 +24,8 @@ export function executeMerger(
   reason: string
 ): StateImpact {
   const builder = createImpactBuilder("merger");
-  const source = world.heyas.get(sourceHeyaId);
-  const target = world.heyas.get(targetHeyaId);
+  const source = getHeya(world, sourceHeyaId);
+  const target = getHeya(world, targetHeyaId);
 
   if (!source || !target) {
     return builder.build();
@@ -34,7 +34,7 @@ export function executeMerger(
   // 1. Transfer rikishi
   const transferredRikishiIds: Id[] = [];
   for (const rId of getStableRikishi(world, source.id).map((r) => r.id)) {
-    const rikishi = world.rikishi.get(rId);
+    const rikishi = getRikishi(world, rId);
     if (rikishi) {
       builder.updateRikishi(rId, { heyaId: target.id });
       transferredRikishiIds.push(rId);
@@ -144,7 +144,7 @@ export function executeMerger(
  * Deterministic selection based on prestige, roster size, and random seed.
  */
 export function findMergerTarget(world: WorldState, sourceHeyaId: Id): Id | null {
-  const source = world.heyas.get(sourceHeyaId);
+  const source = getHeya(world, sourceHeyaId);
   if (!source) return null;
 
   const rng = rngForWorld(world, "merger", `merger_${sourceHeyaId}_${world.year}_${world.week}`);

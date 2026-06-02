@@ -10,6 +10,7 @@ import { selectBenefactor } from "./systems/economics/SponsorshipService";
 import { LOAN_ISSUANCE_THRESHOLD, FACTION_BAILOUT_AMOUNT } from "../constants/engine/economic";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
+import { getHeya } from "./queries";
 
 export interface LoanTerms {
   loanType: LoanType;
@@ -107,7 +108,7 @@ export function createLoanObject(
  */
 export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: Id): StateImpact {
   const builder = createImpactBuilder("bailoutLoan");
-  const heya = world.heyas.get(heyaId);
+  const heya = getHeya(world, heyaId);
   if (!heya) {
     return builder.build();
   }
@@ -236,7 +237,7 @@ export function processMonthlyLoanRepayments(world: WorldState): StateImpact {
  */
 export function prepayLoan(world: WorldState, heyaId: Id, loanId: string): StateImpact {
   const builder = createImpactBuilder("prepayLoan");
-  const heya = world.heyas.get(heyaId);
+  const heya = getHeya(world, heyaId);
   if (!heya) {
     return builder.build();
   }

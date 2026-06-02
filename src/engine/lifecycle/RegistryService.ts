@@ -1,4 +1,4 @@
-import { getActiveRikishi } from "../queries";
+import { getActiveRikishi, getHeya } from "../queries";
 import * as talentpool from "../systems/generation/TalentPoolService";
 import type { WorldState } from "../types/world";
 import { createImpactBuilder } from "../core/ImpactBuilder";
@@ -22,7 +22,7 @@ export function openRecruitmentWindow(
 
   // Track recruitment window state for player
   const playerHeyaId = world.playerHeyaId;
-  const playerHeya = playerHeyaId ? world.heyas.get(playerHeyaId) : null;
+  const playerHeya = playerHeyaId ? getHeya(world, playerHeyaId) : null;
   const playerVacancies = playerHeyaId ? (vacanciesByHeyaId[playerHeyaId] ?? 0) : 0;
 
   if (playerHeya) {

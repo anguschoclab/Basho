@@ -9,6 +9,7 @@ import { getRecruitmentStrategy } from "../../npcRecruitmentStrategy";
 import { EntityCollection } from "../../core/EntityCollection";
 import { materializeCandidateToRikishiInternal } from "./TalentPoolMaterialization";
 import { isRecruitmentPlayerRelevant } from "../../npc/npcEventSurfacing";
+import { getHeya } from "../../queries";
 
 /**
  * Automates recruitment for NPC stables.
@@ -24,8 +25,8 @@ export function fillVacanciesForNPC(
   const rng = RNGRegistry.getSystemRNG(world, "scouting", `npc_fill_${world.week}`);
 
   const sortedHeyas = Object.keys(targetHeyas).sort((a, b) => {
-    const heyaA = world.heyas.get(a);
-    const heyaB = world.heyas.get(b);
+    const heyaA = getHeya(world, a);
+    const heyaB = getHeya(world, b);
     return (heyaB?.reputation || 0) - (heyaA?.reputation || 0);
   });
 
@@ -34,7 +35,7 @@ export function fillVacanciesForNPC(
 
   for (const heyaId of sortedHeyas) {
     const vacancyCount = targetHeyas[heyaId];
-    const heya = world.heyas.get(heyaId);
+    const heya = getHeya(world, heyaId);
     if (!heya || vacancyCount <= 0) continue;
 
     // ⚡ Bolt Optimization: Replace O(N) array allocation and iteration with O(1) space early-exit loop.
@@ -143,7 +144,7 @@ export function fillVacanciesForNPCWithBidding(
   const bids: Array<{ heyaId: Id; candidateId: Id; bidAmount: number; oyakata: Oyakata }> = [];
 
   for (const [heyaId, vacancyCount] of Object.entries(targetHeyas)) {
-    const heya = world.heyas.get(heyaId);
+    const heya = getHeya(world, heyaId);
     if (!heya) continue;
     const oyakata = world.oyakata.get(heya.oyakataId);
     if (!oyakata) continue;
