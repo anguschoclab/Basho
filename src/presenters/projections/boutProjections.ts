@@ -205,13 +205,17 @@ function calculateHeyaMatchups(
   let winsB = 0;
   const matchups: H2HMatchupData[] = [];
 
+  // ⚡ Bolt Optimization: Build a Set from rikishiBIds once (O(M)), then iterate only the
+  // actual H2H entries on each rA (O(K) where K << M). Avoids the O(N×M) full-roster scan.
+  const bIdSet = new Set(rikishiBIds);
+
   for (const rAId of rikishiAIds) {
     const rA = world.rikishi.get(rAId);
     if (!rA?.h2h) continue;
 
-    for (const rBId of rikishiBIds) {
-      const record = rA.h2h[rBId];
-      if (!record || (record.wins === 0 && record.losses === 0)) continue;
+    for (const [rBId, record] of Object.entries(rA.h2h)) {
+      if (!bIdSet.has(rBId)) continue;
+      if (record.wins === 0 && record.losses === 0) continue;
 
       const rB = world.rikishi.get(rBId);
       if (!rB) continue;

@@ -7,8 +7,8 @@
  * Movement ceilings by rank:
  *   yokozuna  → ±2
  *   ozeki     → 0.65× damped, ±4 (demoted: min(-6, damped-4))
- *   sekiwake/komusubi → 0.8× damped, ±6
- *   maegashira/juryo  → raw, ±10
+ *   sekiwake/komusubi → 0.8× damped, ±8
+ *   maegashira (makuuchi) → raw, -18..+15  (lower divisions: -30..+25)
  */
 
 import { describe, it, expect } from "vitest";
@@ -59,9 +59,14 @@ describe("computeMovementUnits — maegashira (threshold = 8)", () => {
     expect(computeMovementUnits(entry("maegashira", 5), perf(0, 15), NONE)).toBe(-8);
   });
 
-  it("clamps to +10 maximum", () => {
-    const move = computeMovementUnits(entry("maegashira", 5), perf(15, 0, { yusho: true }), NONE);
-    expect(move).toBeLessThanOrEqual(10);
+  it("clamps to +15 maximum (makuuchi)", () => {
+    // raw = 15 - 8 + yusho(5) + kinboshi(3) + specialPrizes(3) = 18 -> clamped to +15
+    const move = computeMovementUnits(
+      entry("maegashira", 5),
+      perf(15, 0, { yusho: true, kinboshi: 3, specialPrizes: 3 }),
+      NONE
+    );
+    expect(move).toBe(15);
   });
 
   it("clamps to -10 minimum", () => {
@@ -110,15 +115,16 @@ describe("computeMovementUnits — ozeki (0.65× damped, ±4)", () => {
   });
 });
 
-describe("computeMovementUnits — sekiwake/komusubi (0.8× damped, ±6)", () => {
+describe("computeMovementUnits — sekiwake/komusubi (0.8× damped, ±8)", () => {
   it("damps movement by 0.8 for sekiwake: 10 wins → +2", () => {
     // base = 10-8 = 2, scaled = round(2 * 0.8) = round(1.6) = 2
     expect(computeMovementUnits(entry("sekiwake"), perf(10, 5), NONE)).toBe(2);
   });
 
-  it("clamps sekiwake positive movement to +6", () => {
+  it("clamps sekiwake positive movement to +8", () => {
+    // raw scaled = round((15 - 8 + yusho(5)) * 0.8) = round(9.6) = 10 -> clamped to +8
     const move = computeMovementUnits(entry("sekiwake"), perf(15, 0, { yusho: true }), NONE);
-    expect(move).toBeLessThanOrEqual(6);
+    expect(move).toBe(8);
   });
 
   it("clamps sekiwake negative movement to -6", () => {

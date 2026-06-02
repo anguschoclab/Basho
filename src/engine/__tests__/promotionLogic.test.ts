@@ -46,8 +46,8 @@ describe("promotionLogic.test.ts", () => {
         absences: 15,
         boutIds: [],
       }; // 15 absences (>= 7) = heavy kyujo (1.75) -> round to 26
-      // base move: 0 - 8 = -8. penalty = 26. move = -34 -> min clamped to -10
-      expect(computeMovementUnits(entry, perf2, new Set())).toBe(-10);
+      // base move: 0 - 8 = -8. penalty = 26. move = -34 -> clamped to -30 (lower-division floor)
+      expect(computeMovementUnits(entry, perf2, new Set())).toBe(-30);
     });
 
     it("adds performance bonuses (yusho, kinboshi)", () => {
@@ -63,8 +63,8 @@ describe("promotionLogic.test.ts", () => {
       };
       // req = 8, wins = 14. delta = +6.
       // bonus = yusho(5) + kinboshi(2) = 7.
-      // move = 13. clamped to 10
-      expect(computeMovementUnits(entry, perf, new Set())).toBe(10);
+      // move = 13 (within the +25 ceiling, so not clamped)
+      expect(computeMovementUnits(entry, perf, new Set())).toBe(13);
     });
 
     it("handles yokozuna clamping", () => {

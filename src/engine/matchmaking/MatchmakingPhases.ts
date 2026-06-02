@@ -367,8 +367,20 @@ export function buildPlayoffPairs(
     ...(options.rules || {}),
   };
 
+  // ⚡ Bolt Optimization: Pre-build facedPairs Set so scorePairing uses O(1) Set.has()
+  // instead of falling back to haveFacedThisBasho which is O(matches) per call.
+  // Without this, generatePairs triggers O(N²×matches) scans across the pool.
+  const facedPairs = new Set<string>();
+  for (const m of basho.matches) {
+    const key =
+      m.eastRikishiId < m.westRikishiId
+        ? `${m.eastRikishiId}-${m.westRikishiId}`
+        : `${m.westRikishiId}-${m.eastRikishiId}`;
+    facedPairs.add(key);
+  }
+
   const pool = rikishi.filter((r) => r.division === options.division);
-  return generatePairs(pool, (a, b) => scorePairing({ basho, a, b, rules }));
+  return generatePairs(pool, (a, b) => scorePairing({ basho, a, b, rules, facedPairs }));
 }
 
 /**
