@@ -2,12 +2,22 @@ import { Globe, Trophy, Building2, MapPin, ArrowRight } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
 import { useGame } from "@/contexts/GameContext";
+import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { WidgetCard } from "@/components/ui/WidgetCard";
 import { WidgetHeader } from "@/components/ui/WidgetHeader";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+
+interface PendingExhibition {
+  id: string;
+  region: string;
+  prestige?: number;
+  expiresAtWeek?: number;
+  requiresRank?: string;
+  [key: string]: unknown;
+}
 
 export default function RegionalHubPage() {
   const { state } = useGame();
@@ -16,13 +26,13 @@ export default function RegionalHubPage() {
   const playerHeya = playerHeyaId ? world?.heyas.get(playerHeyaId) : null;
 
   const regionalPresence = playerHeya?.regionalPresence || {};
-  const pendingExhibitions = world?.pendingExhibitions || [];
+  const pendingExhibitions = (world?.pendingExhibitions || []) as PendingExhibition[];
 
   const regions = ["Mongolia", "Georgia", "Europe", "Americas", "East_Asia"];
 
   if (!world) {
     return (
-      <AppLayout pageTitle="World Circuit">
+      <AppLayout pageTitle="World Circuit" subNavTabs={TOURNAMENT_TABS} activeSubTab="world-circuit">
         <div className="flex items-center justify-center h-96 text-muted-foreground">
           No world loaded. Start a game to access the World Circuit.
         </div>
@@ -31,7 +41,7 @@ export default function RegionalHubPage() {
   }
 
   return (
-    <AppLayout pageTitle="World Circuit">
+    <AppLayout pageTitle="World Circuit" subNavTabs={TOURNAMENT_TABS} activeSubTab="world-circuit">
       <div className="space-y-6">
         <PageHeader
           eyebrow="── INTERNATIONAL ──"
@@ -97,6 +107,8 @@ export default function RegionalHubPage() {
                         <Button
                           variant="ghost"
                           size="sm"
+                          disabled
+                          title="Academy management coming soon"
                           className="w-full mt-4 text-[10px] uppercase font-bold text-primary hover:text-primary/80 hover:bg-primary/5 font-mono"
                         >
                           Manage Academy <ArrowRight className="w-3 h-3 ml-1" />
@@ -137,7 +149,7 @@ export default function RegionalHubPage() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {pendingExhibitions.map((inv: any) => (
+                    {pendingExhibitions.map((inv) => (
                       <div
                         key={inv.id}
                         className="p-3 rounded border border-border bg-secondary/60 hover:bg-secondary transition-colors"
@@ -159,7 +171,12 @@ export default function RegionalHubPage() {
                         <p className="text-[10px] text-muted-foreground mb-3 font-mono">
                           Req: {inv.requiresRank || "Any"}
                         </p>
-                        <Button size="sm" className="w-full text-[10px] font-bold h-7 font-mono">
+                        <Button
+                          size="sm"
+                          disabled
+                          title="Exhibition acceptance coming soon"
+                          className="w-full text-[10px] font-bold h-7 font-mono"
+                        >
                           ACCEPT INVITATION
                         </Button>
                       </div>

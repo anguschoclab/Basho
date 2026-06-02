@@ -289,6 +289,13 @@ export interface WorldState {
     enableStyleDrift?: boolean;
   };
 
+  /** First-Time User Experience tracking */
+  ftue?: {
+    isActive: boolean;
+    bashoCompleted: number;
+    suppressedEvents: string[];
+  };
+
   /**
    * Ephemeral computed context for the current tick. Never written to save files.
    * Populated by phase02_context at the start of each pipeline run.

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from "vitest";
 import { clearQueryCaches } from "../../../engine/queries";
 import { projectScoutingSummary } from "../../../presenters/projections/scoutingProjections";
 import { createMockWorldState, createMockHeya } from "../../utils/testHelpers";
@@ -9,6 +9,8 @@ vi.mock("../../../presenters/uiDigest", () => ({
 }));
 
 import { buildPerceptionSnapshot } from "../../../presenters/uiDigest";
+
+const mockBuildPerceptionSnapshot = buildPerceptionSnapshot as Mock;
 
 function makeSnap(overrides: Partial<any> = {}): any {
   return {
@@ -21,7 +23,7 @@ function makeSnap(overrides: Partial<any> = {}): any {
 }
 
 beforeEach(() => {
-  vi.mocked(buildPerceptionSnapshot).mockReturnValue(makeSnap());
+  mockBuildPerceptionSnapshot.mockReturnValue(makeSnap());
   clearQueryCaches();
 });
 
@@ -41,7 +43,7 @@ describe("projectScoutingSummary", () => {
     const world = createMockWorldState({ heyas: new Map([["h1", heya]]) });
     const result = projectScoutingSummary(world as any);
     expect(result.opponentSnaps).toHaveLength(0);
-    expect(vi.mocked(buildPerceptionSnapshot)).not.toHaveBeenCalled();
+    expect(mockBuildPerceptionSnapshot).not.toHaveBeenCalled();
   });
 
   it("includes heya with non-empty rikishiIds and calls buildPerceptionSnapshot", () => {
@@ -49,7 +51,7 @@ describe("projectScoutingSummary", () => {
     const world = createMockWorldState({ heyas: new Map([["h1", heya]]) });
     const result = projectScoutingSummary(world as any);
     expect(result.opponentSnaps).toHaveLength(1);
-    expect(vi.mocked(buildPerceptionSnapshot)).toHaveBeenCalledWith(world, "h1");
+    expect(mockBuildPerceptionSnapshot).toHaveBeenCalledWith(world, "h1");
   });
 
   it("marks player heya with isPlayer: true", () => {
@@ -73,7 +75,7 @@ describe("projectScoutingSummary", () => {
   });
 
   it("player heya is always first in sorted output regardless of rosterStrengthBand", () => {
-    vi.mocked(buildPerceptionSnapshot)
+    mockBuildPerceptionSnapshot
       .mockReturnValueOnce(makeSnap({ rosterStrengthBand: "weak" }))
       .mockReturnValueOnce(makeSnap({ rosterStrengthBand: "dominant" }));
 
@@ -96,7 +98,7 @@ describe("projectScoutingSummary", () => {
     bands.forEach((b, i) => {
       const h = createMockHeya({ id: `h${i}`, rikishiIds: ["r"] });
       heyaMap.set(`h${i}`, h);
-      vi.mocked(buildPerceptionSnapshot).mockReturnValueOnce(makeSnap({ rosterStrengthBand: b }));
+      mockBuildPerceptionSnapshot.mockReturnValueOnce(makeSnap({ rosterStrengthBand: b }));
     });
     const world = createMockWorldState({ playerHeyaId: "no-player", heyas: heyaMap });
     const result = projectScoutingSummary(world as any);
@@ -105,7 +107,7 @@ describe("projectScoutingSummary", () => {
   });
 
   it("counts dominantCount and weakCount correctly", () => {
-    vi.mocked(buildPerceptionSnapshot)
+    mockBuildPerceptionSnapshot
       .mockReturnValueOnce(makeSnap({ rosterStrengthBand: "dominant" }))
       .mockReturnValueOnce(makeSnap({ rosterStrengthBand: "dominant" }))
       .mockReturnValueOnce(makeSnap({ rosterStrengthBand: "weak" }));
@@ -135,7 +137,7 @@ describe("projectScoutingSummary", () => {
   });
 
   it("maps mediaHeatBand from snap.stableMediaHeatBand", () => {
-    vi.mocked(buildPerceptionSnapshot).mockReturnValue(makeSnap({ stableMediaHeatBand: "blazing" }));
+    mockBuildPerceptionSnapshot.mockReturnValue(makeSnap({ stableMediaHeatBand: "blazing" }));
     const heya = createMockHeya({ id: "h1", rikishiIds: ["r1"] });
     const world = createMockWorldState({ heyas: new Map([["h1", heya]]) });
     const result = projectScoutingSummary(world as any);

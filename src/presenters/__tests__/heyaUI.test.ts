@@ -4,7 +4,7 @@
  * Tests for heyaUI presenter functions.
  */
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { projectHeya } from "../heyaUI";
 import { makeMockHeya, mockRikishi, makeMockWorld } from "../../engine/__tests__/utils";
 import type { Staff } from "../../engine/types/staff";
@@ -22,6 +22,10 @@ vi.mock("../../engine/queries", () => ({
 
 import { getOyakataForHeya, getHeyaStaff, getHeyaStyleBias } from "../../engine/queries";
 
+const mockGetOyakataForHeya = getOyakataForHeya as Mock;
+const mockGetHeyaStaff = getHeyaStaff as Mock;
+const mockGetHeyaStyleBias = getHeyaStyleBias as Mock;
+
 describe("heyaUI - projectHeya", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -36,9 +40,9 @@ describe("heyaUI - projectHeya", () => {
       });
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -56,9 +60,9 @@ describe("heyaUI - projectHeya", () => {
       });
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -75,9 +79,9 @@ describe("heyaUI - projectHeya", () => {
       });
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -91,9 +95,9 @@ describe("heyaUI - projectHeya", () => {
       });
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -117,9 +121,9 @@ describe("heyaUI - projectHeya", () => {
         yearsInCharge: 10,
       };
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(mockOyakata);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(mockOyakata);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -131,9 +135,9 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1", { oyakataId: "oyakata-1" });
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -167,9 +171,9 @@ describe("heyaUI - projectHeya", () => {
         },
       ];
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue(mockStaff);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue(mockStaff);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -205,9 +209,9 @@ describe("heyaUI - projectHeya", () => {
         } as any,
       ];
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue(mockStaff);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue(mockStaff);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -238,9 +242,9 @@ describe("heyaUI - projectHeya", () => {
         },
       ];
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue(mockStaff);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue(mockStaff);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -251,9 +255,9 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1");
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -274,9 +278,9 @@ describe("heyaUI - projectHeya", () => {
         ]),
       });
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -294,9 +298,9 @@ describe("heyaUI - projectHeya", () => {
         rikishi: new Map([["r1", rikishi1]]),
       });
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -308,9 +312,9 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1", { rikishiIds: [] });
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -322,9 +326,9 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1", { rikishiIds: undefined });
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -338,9 +342,9 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1", { prestige: 15 });
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -351,9 +355,9 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1", { prestige: 35 });
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -364,9 +368,9 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1", { prestige: 65 });
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -377,9 +381,9 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1", { prestige: 85 });
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -390,9 +394,9 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1", { prestige: 80 });
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -405,9 +409,9 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1");
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("oshi" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("oshi" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -419,9 +423,9 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1");
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -436,9 +440,9 @@ describe("heyaUI - projectHeya", () => {
         npcScoutingPriorities: { h1: "aggressive" },
       });
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -451,9 +455,9 @@ describe("heyaUI - projectHeya", () => {
         npcScoutingPriorities: {},
       });
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -466,9 +470,9 @@ describe("heyaUI - projectHeya", () => {
         npcScoutingPriorities: undefined,
       });
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -489,9 +493,9 @@ describe("heyaUI - projectHeya", () => {
         ]),
       });
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -502,9 +506,9 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1");
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -517,9 +521,9 @@ describe("heyaUI - projectHeya", () => {
         npcScoutingPriorities: { h1: "active" },
       });
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -539,9 +543,9 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1", { rikishiIds });
       const world = makeMockWorld({ rikishi: rikishiMap });
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -561,9 +565,9 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1", { rikishiIds });
       const world = makeMockWorld({ rikishi: rikishiMap });
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -576,9 +580,9 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1");
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -589,9 +593,9 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1");
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -602,9 +606,9 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1");
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -615,9 +619,9 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1");
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -628,9 +632,9 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1");
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -643,9 +647,9 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1", { rikishiIds: [] });
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -658,9 +662,9 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1", { staffIds: [] });
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -676,9 +680,9 @@ describe("heyaUI - projectHeya", () => {
       });
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -692,9 +696,9 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1");
       const world = makeMockWorld({ npcScoutingPriorities: undefined });
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 
@@ -705,9 +709,9 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1", { funds: undefined });
       const world = makeMockWorld();
 
-      vi.mocked(getOyakataForHeya).mockReturnValue(undefined);
-      vi.mocked(getHeyaStaff).mockReturnValue([]);
-      vi.mocked(getHeyaStyleBias).mockReturnValue("neutral" as Style);
+      mockGetOyakataForHeya.mockReturnValue(undefined);
+      mockGetHeyaStaff.mockReturnValue([]);
+      mockGetHeyaStyleBias.mockReturnValue("neutral" as Style);
 
       const result = projectHeya(heya, world);
 

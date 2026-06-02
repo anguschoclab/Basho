@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { projectFinanceSummary } from "../../../presenters/projections/financeProjections";
 import { createMockWorldState, createMockHeya } from "../../utils/testHelpers";
 
@@ -8,6 +8,8 @@ vi.mock("../../../engine/systems/economy/FinanceCalculator", () => ({
 }));
 
 import { calculateHeyaWeeklyFinances } from "../../../engine/systems/economy/FinanceCalculator";
+
+const mockCalculateHeyaWeeklyFinances = calculateHeyaWeeklyFinances as Mock;
 
 function mockFin(overrides: Partial<any> = {}) {
   return {
@@ -21,7 +23,7 @@ function mockFin(overrides: Partial<any> = {}) {
 }
 
 beforeEach(() => {
-  vi.mocked(calculateHeyaWeeklyFinances).mockReturnValue(mockFin());
+  mockCalculateHeyaWeeklyFinances.mockReturnValue(mockFin());
 });
 
 describe("projectFinanceSummary", () => {
@@ -49,7 +51,7 @@ describe("projectFinanceSummary", () => {
     ];
     for (const [months, expected] of cases) {
       it(`runwayMonths=${months} → "${expected}"`, () => {
-        vi.mocked(calculateHeyaWeeklyFinances).mockReturnValue(mockFin({ runwayMonths: months }));
+        mockCalculateHeyaWeeklyFinances.mockReturnValue(mockFin({ runwayMonths: months }));
         const heya = createMockHeya({ id: "h1", funds: 1_000_000 });
         const world = createMockWorldState({
           playerHeyaId: "h1",
@@ -70,7 +72,7 @@ describe("projectFinanceSummary", () => {
   });
 
   it("isInsolventRisk is true when runwayBand is desperate", () => {
-    vi.mocked(calculateHeyaWeeklyFinances).mockReturnValue(mockFin({ runwayMonths: 0 }));
+    mockCalculateHeyaWeeklyFinances.mockReturnValue(mockFin({ runwayMonths: 0 }));
     const heya = createMockHeya({ id: "h1", funds: 1 });
     const world = createMockWorldState({
       playerHeyaId: "h1",
@@ -80,7 +82,7 @@ describe("projectFinanceSummary", () => {
   });
 
   it("isInsolventRisk is false when funds > 0 and runway is not desperate", () => {
-    vi.mocked(calculateHeyaWeeklyFinances).mockReturnValue(mockFin({ runwayMonths: 5 }));
+    mockCalculateHeyaWeeklyFinances.mockReturnValue(mockFin({ runwayMonths: 5 }));
     const heya = createMockHeya({ id: "h1", funds: 500_000 });
     const world = createMockWorldState({
       playerHeyaId: "h1",
@@ -90,7 +92,7 @@ describe("projectFinanceSummary", () => {
   });
 
   it("koenkaiIncome is a koenkai-only weekly figure (not full revenue)", () => {
-    vi.mocked(calculateHeyaWeeklyFinances).mockReturnValue(
+    mockCalculateHeyaWeeklyFinances.mockReturnValue(
       mockFin({ revenue: 5_000_000 })
     );
     const heya = createMockHeya({ id: "h1", funds: 1_000_000, koenkaiBand: "none" });
@@ -196,7 +198,7 @@ describe("projectFinanceSummary", () => {
   });
 
   it("weeklyRevenue and weeklyExpenses come from mock fin", () => {
-    vi.mocked(calculateHeyaWeeklyFinances).mockReturnValue(
+    mockCalculateHeyaWeeklyFinances.mockReturnValue(
       mockFin({ revenue: 2_000_000, expenses: 800_000 })
     );
     const heya = createMockHeya({ id: "h1", funds: 1_000_000 });

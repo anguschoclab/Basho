@@ -17,7 +17,6 @@
  * @see RivalryService for rivalry seeding
  */
 
-// @ts-nocheck
 import { SeededRNG, rngFromSeed } from "../../rng";
 import { WorldState } from "../../types/world";
 import { Heya } from "../../types/heya";

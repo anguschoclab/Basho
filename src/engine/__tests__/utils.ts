@@ -1,5 +1,7 @@
 import type { Rikishi, RikishiStats } from "../types/rikishi";
-import type { CombatArchetype, Style } from "../types/combat";
+import type { CombatArchetype } from "../types/combat";
+
+type Style = "oshi" | "yotsu" | "hybrid";
 import type { WorldState } from "../types/world";
 import type { BashoState } from "../types/basho";
 import type { Heya } from "../types/heya";
@@ -15,9 +17,9 @@ export function mockRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikis
   const speed = overrides.speed ?? statsOverride?.speed ?? 50;
   const balance = overrides.balance ?? statsOverride?.balance ?? 50;
   const technique = overrides.technique ?? statsOverride?.technique ?? 50;
-  const aggression = overrides.aggression ?? statsOverride?.aggression ?? 50;
+  const aggression = overrides.aggression ?? 50;
   const mental = overrides.mental ?? statsOverride?.mental ?? 50;
-  const experience = overrides.experience ?? statsOverride?.experience ?? 50;
+  const experience = overrides.experience ?? 50;
 
   return {
     id,
@@ -139,7 +141,7 @@ export function makeMockWorld(overrides: Partial<WorldState> = {}): WorldState {
     oyakata: new Map(),
     events: { version: "1.0.0", log: [], dedupe: {} },
     history: [],
-    ftue: { onboardingComplete: true },
+    ftue: { isActive: false, bashoCompleted: 0, suppressedEvents: [] },
     year: 2025,
     week: 1,
     dayIndexGlobal: 0,
@@ -147,9 +149,8 @@ export function makeMockWorld(overrides: Partial<WorldState> = {}): WorldState {
     seed,
     cyclePhase: "interim",
     records: {
-      allTimeWins: { value: 0, rikishiId: "none" as Id, year: 0 },
-      yushoRecord: { value: 0, rikishiId: "none" as Id, year: 0 },
-      kinboshiRecord: { value: 0, rikishiId: "none" as Id, year: 0 },
+      allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
+      active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
     },
     settings: { archiveMode: "standard" },
     rng: new SeededRNG(seed),

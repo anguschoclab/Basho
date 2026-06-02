@@ -43,6 +43,11 @@ export const MockFactory = {
       oyakata: new Map(),
       staff: new Map(),
       history: [],
+      ftue: { isActive: false, bashoCompleted: 0, suppressedEvents: [] },
+      records: {
+        allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
+        active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
+      },
       calendar: { year: 2026, currentWeek: 1 },
       mediaState: {
         heyaPressure: {},
