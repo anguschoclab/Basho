@@ -150,7 +150,7 @@ export interface ArchiveService {
   retrieveBanzuke: (season: number, bashoNumber: number) => Promise<AlmanacSnapshot | null>;
 }
 
-class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
+export class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
   // --- BOUTS ---
 
   public async archiveBoutLog(season: number, boutId: string, logData: unknown): Promise<void> {
