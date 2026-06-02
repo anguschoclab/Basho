@@ -77,17 +77,26 @@ export default function AlmanacPage() {
   // Compute giant slayers data before any early returns
   const giantSlayers = useMemo(() => {
     if (!world) return [];
-    return Array.from(world.rikishi.values())
-      .map((r) => ({
-        rikishiId: r.id,
-        shikona: r.shikona,
-        value:
-          (r.stats?.achievements?.kinboshiEarned ?? 0) +
-          (r.stats?.achievements?.ginboshiEarned ?? 0),
-        details: `K: ${r.stats?.achievements?.kinboshiEarned ?? 0} | G: ${r.stats?.achievements?.ginboshiEarned ?? 0}`,
-        achievedDate: { year: world.year, month: Math.ceil((world.week ?? 1) / 2) },
-      }))
-      .filter((entry) => entry.value > 0)
+    const results: ReturnType<typeof Array.from<{
+      rikishiId: string;
+      shikona: string;
+      value: number;
+      details: string;
+      achievedDate: { year: number; month: number };
+    }>> = [];
+    for (const r of world.rikishi.values()) {
+      const value = (r.stats?.achievements?.kinboshiEarned ?? 0) + (r.stats?.achievements?.ginboshiEarned ?? 0);
+      if (value > 0) {
+        results.push({
+          rikishiId: r.id,
+          shikona: r.shikona,
+          value,
+          details: `K: ${r.stats?.achievements?.kinboshiEarned ?? 0} | G: ${r.stats?.achievements?.ginboshiEarned ?? 0}`,
+          achievedDate: { year: world.year, month: Math.ceil((world.week ?? 1) / 2) },
+        });
+      }
+    }
+    return results
       .sort((a, b) => b.value - a.value)
       .slice(0, 5);
   }, [world]);
