@@ -372,6 +372,7 @@ ipcMain.handle("notification:show", async (event, options: { title: string; body
 const allowedBaseDir = app.getPath("userData");
 
 function validatePath(filePath: string): boolean {
+  if (typeof filePath !== "string") return false;
   const resolvedPath = path.resolve(filePath);
   const resolvedBase = path.resolve(allowedBaseDir);
   return resolvedPath.startsWith(resolvedBase + path.sep) || resolvedPath === resolvedBase;
