@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { SeededRNG, rngFromSeed } from "../../rng";
 import { assertNever } from "../../utils/types";
 import type {

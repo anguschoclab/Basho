@@ -1,4 +1,3 @@
-// @ts-nocheck
 // perception.ts
 // =======================================================
 // PerceptionSnapshot — Canon A7.1

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * combat-spatial.ts
  * ===================

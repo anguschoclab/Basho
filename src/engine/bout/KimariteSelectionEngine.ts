@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type { Rikishi } from "../types/rikishi";
 import type { Division } from "../types/banzuke";
 import type { SpatialBoutContext, KimariteAttempt, EngineStateV2 } from "../types/combat-spatial";

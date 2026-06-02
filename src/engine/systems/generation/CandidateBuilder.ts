@@ -1,4 +1,3 @@
-// @ts-nocheck
 // CandidateBuilder.ts
 // Rikishi assembly: builds complete Rikishi objects from stats, career records,
 // and candidate data. Includes base-info, combat-stats, and career-history helpers.

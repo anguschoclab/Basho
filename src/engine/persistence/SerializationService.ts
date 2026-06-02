@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { stableTieBreak } from "../utils/sort";
 import { phase02_context } from "../tick/phases/phase02_context";
 import { resolveImpacts } from "../core/ImpactResolver";

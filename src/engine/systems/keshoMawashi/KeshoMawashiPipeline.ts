@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Kesho-Mawashi Pipeline
  *

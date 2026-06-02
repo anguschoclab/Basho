@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * GovernanceService.ts — Core logic for reporting scandals and managing institutional status.
  */

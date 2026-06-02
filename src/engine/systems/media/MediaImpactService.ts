@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * MediaImpactService.ts — Pure logic for calculating media heat, pressure, and impact.
  */

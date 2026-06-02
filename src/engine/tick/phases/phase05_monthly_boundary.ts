@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * phase05_monthly_boundary.ts
  * ===========================

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * uiDigest.ts — UI Projection Return Types
  *

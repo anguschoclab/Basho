@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { rngFromSeed, SeededRNG } from "./rng";
 import type { BoutResult, BoutLogEntry, BashoName } from "./types/basho";
 import type { Rikishi } from "./types/rikishi";

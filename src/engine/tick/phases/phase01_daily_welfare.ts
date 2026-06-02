@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * phase01_daily_welfare.ts
  * ========================

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * File Name: src/engine/world.ts
  * Notes:

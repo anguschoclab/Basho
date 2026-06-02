@@ -1,4 +1,3 @@
-// @ts-nocheck
 // MediaEventService.ts — Event-driven media operations.
 // Handles handleMediaEvent, evaluateScandals, generateGovernanceHeadline,
 // and processMediaDecision.

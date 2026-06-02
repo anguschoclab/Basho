@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type { WorldState } from "../types/world";
 import type { Heya } from "../types/heya";
 import type { Rikishi } from "../types/rikishi";

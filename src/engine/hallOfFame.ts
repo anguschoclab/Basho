@@ -1,4 +1,3 @@
-// @ts-nocheck
 // hallOfFame.ts
 // =======================================================
 // Hall of Fame — Deterministic year-end induction pipeline

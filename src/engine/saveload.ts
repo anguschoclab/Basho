@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { SerializationService } from "./persistence/SerializationService";
 import { SaveSlotService, type SaveSlotInfo } from "./persistence/SaveSlotService";
 import { runArchivalPruning } from "./archival";

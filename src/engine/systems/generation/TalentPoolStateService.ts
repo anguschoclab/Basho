@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * TalentPoolStateService.ts — Pool state initialization and lifecycle.
  * Handles ensureTalentPoolState, pool refresh, yearly aging, and

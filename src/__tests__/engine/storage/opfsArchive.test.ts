@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { opfsArchiveService, ArchiveConflictError } from "../../../engine/storage/opfsArchive";
 import { resetMockFileSystem, MockFileSystemDirectoryHandle } from "../../../test/setup";

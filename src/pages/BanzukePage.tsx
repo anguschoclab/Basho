@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";

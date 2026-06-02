@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type { Rikishi } from "../types/rikishi";
 import { SeededRNG } from "../rng";
 import type { Division } from "../types/banzuke";

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import type { Id } from "./types/common";
 import { getStableRikishi } from "./queries";
 import type { WorldState, ClosedHeyaRecord } from "./types/world";

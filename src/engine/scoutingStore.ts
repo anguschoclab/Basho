@@ -1,4 +1,3 @@
-// @ts-nocheck
 // scoutingStore.ts
 // Player Knowledge Store — persistent scouting memory across screens/bouts.
 // Keeps fog-of-war meaningful by persisting observations, investment, and decay.

@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Division / Rank / Banzuke Types
  */

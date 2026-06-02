@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * src/engine/bout/KimariteStrategyData.ts
  * =========================================

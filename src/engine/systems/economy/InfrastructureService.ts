@@ -12,7 +12,6 @@
  * @see FACILITY_REGISTRY for facility definitions
  */
 
-// @ts-nocheck
 import { WorldState } from "../../types/world";
 import { Heya } from "../../types/heya";
 import { Id } from "../../types/common";
