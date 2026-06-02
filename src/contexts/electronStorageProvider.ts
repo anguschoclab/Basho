@@ -63,7 +63,8 @@ export class ElectronStorageProvider implements IStorageProvider {
 
   getItem(key: string): string | null {
     const value = this.storage.get(key);
-    return value as string | null;
+    if (value == null) return null;
+    return value as string;
   }
 
   setItem(key: string, value: string): void {

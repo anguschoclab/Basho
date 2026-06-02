@@ -170,3 +170,102 @@ export function assertDefined<T>(value: T | undefined, message?: string): assert
     throw new Error(message || `Expected value to be defined, got undefined`);
   }
 }
+
+/**
+ * Mock the Electron API on the global window object for tests.
+ * Sets window.__ELECTRON__ = true and stubs all electronCustom methods.
+ * @param opts - Optional overrides for mock return values
+ * @returns Mocked API objects for assertions
+ */
+export function mockElectronAPI(opts?: {
+  appPath?: string;
+  storageKeys?: Record<string, unknown>;
+}) {
+  const fsMock = {
+    writeFile: vi.fn().mockResolvedValue(true),
+    readFile: vi.fn().mockResolvedValue(null),
+    exists: vi.fn().mockResolvedValue(false),
+    mkdir: vi.fn().mockResolvedValue(true),
+    readDir: vi.fn().mockResolvedValue([]),
+    deleteFile: vi.fn().mockResolvedValue(true),
+  };
+
+  const appPathMock = {
+    getPath: vi.fn().mockResolvedValue(opts?.appPath ?? "/fake/userData"),
+  };
+
+  const storageMock = {
+    get: vi.fn().mockReturnValue(null),
+    set: vi.fn().mockReturnValue(undefined),
+    delete: vi.fn().mockReturnValue(undefined),
+    clear: vi.fn().mockReturnValue(undefined),
+    keys: vi.fn().mockResolvedValue(opts?.storageKeys ?? {}),
+    size: vi.fn().mockReturnValue(0),
+  };
+
+  const windowMock = {
+    minimize: vi.fn().mockReturnValue(undefined),
+    maximize: vi.fn().mockReturnValue(undefined),
+    isMaximized: vi.fn().mockResolvedValue(false),
+    close: vi.fn().mockReturnValue(undefined),
+    hide: vi.fn().mockReturnValue(undefined),
+    show: vi.fn().mockReturnValue(undefined),
+  };
+
+  const dialogMock = {
+    showSaveDialog: vi.fn().mockResolvedValue({ canceled: false, filePath: "" }),
+    showOpenDialog: vi.fn().mockResolvedValue({ canceled: false, filePaths: [] }),
+  };
+
+  const appMock = {
+    getVersion: vi.fn().mockReturnValue("1.0.0"),
+    getPlatform: vi.fn().mockReturnValue("darwin"),
+  };
+
+  const notificationMock = {
+    show: vi.fn().mockResolvedValue(undefined),
+  };
+
+  const electronCustom = {
+    fs: fsMock,
+    appPath: appPathMock,
+    storage: storageMock,
+    window: windowMock,
+    dialog: dialogMock,
+    app: appMock,
+    notification: notificationMock,
+    onMenuEvent: vi.fn().mockReturnValue(vi.fn()),
+  };
+
+  Object.defineProperty(global, "window", {
+    value: {
+      __ELECTRON__: true,
+      electronCustom,
+    },
+    writable: true,
+    configurable: true,
+  });
+
+  return {
+    fs: fsMock,
+    appPath: appPathMock,
+    storage: storageMock,
+    window: windowMock,
+    dialog: dialogMock,
+    app: appMock,
+    notification: notificationMock,
+    electronCustom,
+  };
+}
+
+/**
+ * Clear the Electron mock from the global window object.
+ * Call this in afterEach to prevent test pollution.
+ */
+export function clearElectronMock() {
+  Object.defineProperty(global, "window", {
+    value: undefined,
+    writable: true,
+    configurable: true,
+  });
+}
