@@ -2,8 +2,8 @@
  * ImpactResolver Unit Tests
  */
 
-import { describe, it, expect, beforeEach } from "vitest";
-import { resolveImpacts, mergeImpacts } from "../ImpactResolver";
+import { describe, it, expect, beforeEach, vi } from "vitest";
+import * as ImpactResolver from "../ImpactResolver";
 import type { WorldState } from "../../types/world";
 import type { StateImpact } from "../StateImpact";
 import type { Heya } from "../../types/heya";
@@ -36,7 +36,7 @@ describe("ImpactResolver", () => {
 
   describe("resolveImpacts", () => {
     it("returns world unchanged when impacts array is empty", () => {
-      const result = resolveImpacts(world, []);
+      const result = ImpactResolver.resolveImpacts(world, []);
       expect(result).toBe(world);
     });
 
@@ -64,7 +64,7 @@ describe("ImpactResolver", () => {
         metadata: { source: "test" },
       };
 
-      const result = resolveImpacts(world, [impact]);
+      const result = ImpactResolver.resolveImpacts(world, [impact]);
       expect(result.heyas.get("heya-1")?.funds).toBe(2000);
       expect(result.heyas.get("heya-1")?.reputation).toBe(75);
       expect(result.heyas.get("heya-1")?.name).toBe("Test Heya"); // Unchanged
@@ -81,7 +81,7 @@ describe("ImpactResolver", () => {
         metadata: { source: "test" },
       };
 
-      const result = resolveImpacts(world, [impact]);
+      const result = ImpactResolver.resolveImpacts(world, [impact]);
       expect(result.rikishi.get("r1")?.power).toBe(60);
       expect(result.rikishi.get("r1")?.speed).toBe(55);
       expect(result.rikishi.get("r1")?.shikona).toBe("Test"); // Unchanged
@@ -98,7 +98,7 @@ describe("ImpactResolver", () => {
         metadata: { source: "test" },
       };
 
-      const result = resolveImpacts(world, [impact]);
+      const result = ImpactResolver.resolveImpacts(world, [impact]);
       expect(result.rikishi.has("r1")).toBe(false);
       expect(result.historicalRikishi.has("r1")).toBe(true);
       expect(result.historicalRikishi.get("r1")?.shikona).toBe("Test");
@@ -115,7 +115,7 @@ describe("ImpactResolver", () => {
         metadata: { source: "test" },
       };
 
-      const result = resolveImpacts(world, [impact]);
+      const result = ImpactResolver.resolveImpacts(world, [impact]);
       expect(result.historicalRikishi.has("r1")).toBe(false);
       expect(result.rikishi.has("r1")).toBe(true);
       expect(result.rikishi.get("r1")?.shikona).toBe("Test");
@@ -131,7 +131,7 @@ describe("ImpactResolver", () => {
         metadata: { source: "test" },
       };
 
-      const result = resolveImpacts(world, [impact]);
+      const result = ImpactResolver.resolveImpacts(world, [impact]);
       expect(result.year).toBe(2026);
       expect(result.week).toBe(2);
       expect(result.cyclePhase).toBe("active_basho");
@@ -166,12 +166,12 @@ describe("ImpactResolver", () => {
         metadata: { source: "impact2" },
       };
 
-      const result = resolveImpacts(world, [impact1, impact2]);
+      const result = ImpactResolver.resolveImpacts(world, [impact1, impact2]);
       expect(result.week).toBe(2);
       expect(result.heyas.get("heya-1")?.funds).toBe(2000);
     });
 
-    it("handles errors gracefully by returning pre-error state", () => {
+    it("handles errors gracefully by logging and continuing with subsequent impacts", () => {
       const heya: Heya = {
         id: "heya-1",
         name: "Test Heya",
@@ -195,24 +195,55 @@ describe("ImpactResolver", () => {
         metadata: { source: "impact1" },
       };
 
-      // This impact will cause an error (trying to update non-existent entity)
       const impact2: StateImpact = {
         entities: {
-          heyaUpdates: new Map([["non-existent", { funds: 3000 } as any]]),
+          heyaUpdates: new Map([["heya-1", { reputation: 75 }]]),
         },
-        metadata: { source: "impact2" },
+        metadata: { source: "failing-impact" },
       };
 
-      // Suppress console.error for this test
-      const consoleSpy = console.error;
-      console.error = () => {};
+      const impact3: StateImpact = {
+        entities: {
+          heyaUpdates: new Map([["heya-1", { reputation: 80 }]]),
+        },
+        metadata: { source: "impact3" },
+      };
 
-      const result = resolveImpacts(world, [impact1, impact2]);
+      // Mock applyImpact to throw on the second call (impact2)
+      const originalApplyImpact = ImpactResolver.applyImpact;
+      const applyImpactSpy = vi.spyOn(ImpactResolver, "applyImpact").mockImplementation(
+        (currentWorld: WorldState, impact: StateImpact) => {
+          if (impact.metadata?.source === "failing-impact") {
+            throw new Error("Simulated applyImpact error");
+          }
+          // Call original implementation for other impacts
+          return originalApplyImpact(currentWorld, impact);
+        }
+      );
 
-      console.error = consoleSpy;
+      // Mock console.error to verify it's called
+      const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
-      // Should have applied impact1 but stopped before impact2
+      const result = ImpactResolver.resolveImpacts(world, [impact1, impact2, impact3]);
+
+      // Verify console.error was called with the error and source
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        `[IMPACT RESOLVER ERROR] in impact from "failing-impact":`,
+        expect.any(Error)
+      );
+
+      // Verify impact1 was applied (funds changed from 1000 to 2000)
       expect(result.heyas.get("heya-1")?.funds).toBe(2000);
+
+      // Verify impact2 was NOT applied (reputation is 80 from impact3, not 75 from impact2)
+      expect(result.heyas.get("heya-1")?.reputation).toBe(80);
+
+      // Verify impact3 WAS applied (reputation changed from 50 to 80)
+      expect(result.heyas.get("heya-1")?.reputation).not.toBe(75);
+
+      // Restore mocks
+      applyImpactSpy.mockRestore();
+      consoleErrorSpy.mockRestore();
     });
   });
 
@@ -232,7 +263,7 @@ describe("ImpactResolver", () => {
         metadata: { source: "impact2" },
       };
 
-      const merged = mergeImpacts([impact1, impact2]);
+      const merged = ImpactResolver.mergeImpacts([impact1, impact2]);
       expect(merged.entities?.heyaUpdates?.get("h1")).toEqual({ funds: 1000, reputation: 75 });
     });
 
@@ -251,7 +282,7 @@ describe("ImpactResolver", () => {
         metadata: { source: "impact2" },
       };
 
-      const merged = mergeImpacts([impact1, impact2]);
+      const merged = ImpactResolver.mergeImpacts([impact1, impact2]);
       expect(merged.collections?.rikishiToHistorical).toEqual(["r1", "r2"]);
     });
 
@@ -266,7 +297,7 @@ describe("ImpactResolver", () => {
         metadata: { source: "impact2" },
       };
 
-      const merged = mergeImpacts([impact1, impact2]);
+      const merged = ImpactResolver.mergeImpacts([impact1, impact2]);
       expect(merged.worldFields?.week).toBe(3);
     });
 
@@ -281,12 +312,12 @@ describe("ImpactResolver", () => {
         metadata: { source: "impact2" },
       };
 
-      const merged = mergeImpacts([impact1, impact2]);
+      const merged = ImpactResolver.mergeImpacts([impact1, impact2]);
       expect(merged.events?.length).toBe(2);
     });
 
     it("returns empty merged impact when input is empty", () => {
-      const merged = mergeImpacts([]);
+      const merged = ImpactResolver.mergeImpacts([]);
       expect(merged.entities?.heyaUpdates?.size).toBe(0);
       expect(merged.collections?.rikishiToAdd?.length).toBe(0);
       expect(merged.events?.length).toBe(0);

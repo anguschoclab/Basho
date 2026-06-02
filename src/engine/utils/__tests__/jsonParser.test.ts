@@ -26,6 +26,44 @@ describe("parseLLMResponse", () => {
     const input = "not json at all";
     expect(() => parseLLMResponse(input)).toThrow(/Failed to parse LLM payload/);
   });
+
+  it("throws descriptive error when JSON5 fails after sanitization", () => {
+    const input = '```json\n{unclosed: "bracket",\n```';
+    expect(() => parseLLMResponse(input)).toThrow(/Failed to parse LLM payload/);
+  });
+
+  it("parses JSON with single-line comments", () => {
+    const input = '{hello: "world", // comment\n count: 4}';
+    expect(parseLLMResponse(input)).toEqual({ hello: "world", count: 4 });
+  });
+
+  it("parses JSON with multi-line comments", () => {
+    const input = '{/* comment */\n hello: "world", count: 5}';
+    expect(parseLLMResponse(input)).toEqual({ hello: "world", count: 5 });
+  });
+
+  it("parses arrays with markdown blocks", () => {
+    const input = '```json\n["item1", "item2"]\n```';
+    expect(parseLLMResponse<string[]>(input)).toEqual(["item1", "item2"]);
+  });
+
+  it("prevents prototype pollution in parseLLMResponse", () => {
+    const input = '{"__proto__": {"polluted": true}, "hello": "world"}';
+    const result = parseLLMResponse(input);
+    expect(result).toEqual({ hello: "world" });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    expect((result as any).__proto__.polluted).toBeUndefined();
+  });
+
+  it("includes specific guidance in error message", () => {
+    const input = '```json\n{invalid\n```';
+    expect(() => parseLLMResponse(input)).toThrow(/generationConfig\.responseMimeType/);
+  });
+
+  it("parses nested objects with JSON5 features", () => {
+    const input = '{outer: {inner: "value", // comment\n},}';
+    expect(parseLLMResponse(input)).toEqual({ outer: { inner: "value" } });
+  });
 });
 
 describe("safeParse", () => {

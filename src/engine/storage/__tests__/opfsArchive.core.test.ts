@@ -83,6 +83,15 @@ describe("OPFSArchiveService core functionality", () => {
       await service.archiveBoutLog(2024, "b1", {});
       expect(handleQuotaSpy).toHaveBeenCalledWith(quotaError);
     });
+
+    it("returns early when getDirectoryPath returns null", async () => {
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(null);
+
+      await service.archiveBoutLog(2024, "b1", {});
+
+      // Should complete without error and not attempt any file operations
+      expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024", "bouts"]);
+    });
   });
 
   describe("retrieveBoutLog", () => {
@@ -146,6 +155,14 @@ describe("OPFSArchiveService core functionality", () => {
 
       const result = await service.retrieveBoutLog(2024, "b1");
       expect(result).toBeNull();
+    });
+
+    it("returns null when getDirectoryPath returns null", async () => {
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(null);
+
+      const result = await service.retrieveBoutLog(2024, "b1");
+      expect(result).toBeNull();
+      expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024", "bouts"]);
     });
   });
 
@@ -216,6 +233,14 @@ describe("OPFSArchiveService core functionality", () => {
       await service.archiveGazette(2024, 1, "test");
       expect(handleQuotaSpy).toHaveBeenCalledWith(quotaError);
     });
+
+    it("returns early when getDirectoryPath returns null", async () => {
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(null);
+
+      await service.archiveGazette(2024, 1, "# Test");
+
+      expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024", "gazettes"]);
+    });
   });
 
   describe("retrieveGazette", () => {
@@ -260,6 +285,14 @@ describe("OPFSArchiveService core functionality", () => {
       expect(consoleErrorSpy).toHaveBeenCalled();
       consoleErrorSpy.mockRestore();
     });
+
+    it("returns null when getDirectoryPath returns null", async () => {
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(null);
+
+      const result = await service.retrieveGazette(2024, 1);
+      expect(result).toBeNull();
+      expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024", "gazettes"]);
+    });
   });
 
   describe("archiveAwards", () => {
@@ -289,6 +322,14 @@ describe("OPFSArchiveService core functionality", () => {
 
       await service.archiveAwards(2024, []);
       expect(handleQuotaSpy).toHaveBeenCalledWith(quotaError);
+    });
+
+    it("returns early when getDirectoryPath returns null", async () => {
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(null);
+
+      await service.archiveAwards(2024, []);
+
+      expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024"]);
     });
   });
 
@@ -321,6 +362,14 @@ describe("OPFSArchiveService core functionality", () => {
 
       const result = await service.retrieveAwards(2024);
       expect(result).toEqual([]);
+    });
+
+    it("returns empty array when getDirectoryPath returns null", async () => {
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(null);
+
+      const result = await service.retrieveAwards(2024);
+      expect(result).toEqual([]);
+      expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024"]);
     });
   });
 
