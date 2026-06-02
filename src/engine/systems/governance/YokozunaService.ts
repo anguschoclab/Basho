@@ -10,6 +10,7 @@ import type { Rikishi } from "../../types/rikishi";
 import type { BashoPerformance } from "../../types/banzuke";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
+import { getRikishi } from "../../queries";
 
 export interface YDCCandidate {
   rikishiId: string;
@@ -80,7 +81,7 @@ export const YokozunaService = {
 
     // Find Ozeki candidates
     for (const rikishiId of world.activeRikishiIds) {
-      const rikishi = world.rikishi.get(rikishiId);
+      const rikishi = getRikishi(world, rikishiId);
       if (!rikishi || rikishi.rank !== "ozeki") continue;
       const evaluation = this.evaluateCandidate(world, rikishi);
       if (evaluation && evaluation.recommendation !== "reject") {

@@ -8,6 +8,7 @@
 import { WorldState } from "../../types/world";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
+import { getHeya } from "../../queries";
 
 export type FavorType = "matchmaking_avoid" | "advance_payout" | "governance_pardon";
 
@@ -45,7 +46,7 @@ export const PoliticalFavorsService = {
    */
   requestFavor(world: WorldState, heyaId: string, favorId: FavorType): StateImpact {
     const builder = createImpactBuilder("requestFavor");
-    const heya = world.heyas.get(heyaId);
+    const heya = getHeya(world, heyaId);
     if (!heya) return builder.build();
 
     const favor = POLITICAL_FAVORS.find((f) => f.id === favorId);

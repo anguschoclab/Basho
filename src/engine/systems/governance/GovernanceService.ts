@@ -9,6 +9,7 @@ import type { StateImpact } from "../../core/StateImpact";
 import type { WorldState } from "../../types/world";
 
 import { CrisisService } from "../narrative/CrisisService";
+import { getHeya } from "../../queries";
 
 export function resolveCrisis(world: WorldState, crisisId: string, choiceId: string): StateImpact {
   const builder = createImpactBuilder("resolveCrisis");
@@ -33,7 +34,7 @@ export function resolveCrisis(world: WorldState, crisisId: string, choiceId: str
   }
 
   // Fallback/Legacy logic (if needed for old save files)
-  const heya = world.heyas.get(playerHeyaId);
+  const heya = getHeya(world, playerHeyaId);
   if (!heya) return builder.build();
 
   if (choiceId === "harsh") {

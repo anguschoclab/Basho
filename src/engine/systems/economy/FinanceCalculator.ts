@@ -13,6 +13,7 @@ import type { Heya } from "../../types/heya";
 import { calculateKoenkaiIncome, SPONSOR_TIER_INCOME } from "../economics/SponsorshipService";
 import { getHeyaStaffBonuses } from "../../staff";
 import {
+import { getRikishi } from "../../queries";
   RECRUITMENT_BUDGET_WEEKLY,
   KOENKAI_SURVIVAL_FLOOR,
   FACILITY_UPKEEP,
@@ -68,7 +69,7 @@ export function calculateHeyaWeeklyFinances(heya: Heya, world: WorldState): Heya
   // JSA per-wrestler subsidy (primary stable income from JSA)
   let monthlyJsaSubsidy = 0;
   for (const rId of heya.rikishiIds ?? []) {
-    const r = world.rikishi.get(rId);
+    const r = getRikishi(world, rId);
     if (!r) continue;
     const subsidy =
       JSA_PER_WRESTLER_SUBSIDY_MONTHLY[

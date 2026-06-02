@@ -37,6 +37,7 @@ import {
   SPONSOR_MIN_LOYALTY_FOR_RENEWAL,
 } from "../../../constants/engine/economy";
 import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
+import { getRikishi } from "../../queries";
 
 export function phase05_monthly_boundary(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase05_monthly_boundary");
@@ -79,7 +80,7 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
   // 2. Process Rikishi (Archetype Drift)
   if (isBashoMonth(world.calendar.month)) {
     for (const id of world.activeRikishiIds) {
-      const r = world.rikishi.get(id);
+      const r = getRikishi(world, id);
       if (!r) continue;
       const nextR = { ...r };
       if (processArchetypeDrift(world, nextR, id, builder)) {

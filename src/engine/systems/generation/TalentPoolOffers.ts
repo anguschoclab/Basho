@@ -9,6 +9,7 @@ import { BardEngine } from "../../narrative/BardEngine";
 import { ensureTalentPoolState } from "./TalentPoolStateService";
 import { getForeignCountInHeya } from "./TalentPoolScouting";
 import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "../../../constants/engine/recruitment";
+import { getHeya } from "../../queries";
 
 /**
  * Submits an offer to a candidate from the player's stable.
@@ -117,7 +118,7 @@ export function resolveCandidateSuitor(
 
   // High-talent signing: fire fame event and give reputation boost
   if (candidate.talentSeed >= 80) {
-    const heya = world.heyas.get(winner.heyaId);
+    const heya = getHeya(world, winner.heyaId);
     if (heya) {
       winnerHeyaUpdate = {
         reputation: Math.min(100, (heya.reputation ?? 50) + 5),

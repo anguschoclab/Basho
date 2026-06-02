@@ -6,6 +6,7 @@ import { rngFromSeed } from "./rng";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import { resolveImpacts } from "./core/ImpactResolver";
 import type { StateImpact } from "./core/StateImpact";
+import { getHeya, getRikishi } from "./queries";
 
 /**
  * Checks if any foreign-born rikishi are eligible for and receive Japanese citizenship.
@@ -19,7 +20,7 @@ export function checkNaturalizations(world: WorldState): StateImpact {
   // Usually this would be run yearly or post-basho.
   const foreignRikishi: import("./types/rikishi").Rikishi[] = [];
   for (const rikishiId of world.activeRikishiIds) {
-    const r = world.rikishi.get(rikishiId);
+    const r = getRikishi(world, rikishiId);
     if (r && r.nationality !== "Japan") {
       foreignRikishi.push(r);
     }
@@ -67,7 +68,7 @@ export function checkNaturalizations(world: WorldState): StateImpact {
         { rikishiId: r.id, heyaId: r.heyaId }
       );
 
-      const heya = world.heyas.get(r.heyaId);
+      const heya = getHeya(world, r.heyaId);
       if (heya) {
         // Generate governance headline and merge its impact
         const headlineImpact = generateGovernanceHeadline({

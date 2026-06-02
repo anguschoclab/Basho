@@ -18,6 +18,7 @@ import {
   DEFAULT_MENTAL_STAT,
 } from "../../../constants/engine/health";
 import {
+import { getRikishi } from "../../queries";
   MIN_WEIGHT,
   WEIGHT_LOSS_STARVATION,
   MENTAL_LOSS_STARVATION,
@@ -41,7 +42,7 @@ export function phase01_daily_welfare(world: WorldState): StateImpact {
   }
 
   for (const id of world.activeRikishiIds) {
-    const r = world.rikishi.get(id);
+    const r = getRikishi(world, id);
     if (!r) continue;
 
     const next = { ...r };

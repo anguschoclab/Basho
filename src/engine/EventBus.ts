@@ -12,6 +12,7 @@ import { BardEngine } from "./narrative/BardEngine";
 import { rngFromSeed } from "./rng";
 import { createRngForEvent } from "./eventHelpers";
 import { logEngineEvent } from "./events";
+import { getHeya } from "./queries";
 
 export const EventBus = {
   /**
@@ -54,7 +55,7 @@ export const EventBus = {
     ctx: NarrativeContext,
     importance: EventImportance = "major"
   ) => {
-    const heya = world.heyas.get(heyaId);
+    const heya = getHeya(world, heyaId);
     const oyakata = heya?.oyakataId ? world.oyakata.get(heya.oyakataId) : null;
     const enrichedCtx: NarrativeContext = {
       heya: heya?.name,

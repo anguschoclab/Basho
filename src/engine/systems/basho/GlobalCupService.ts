@@ -11,6 +11,7 @@ import { createImpactBuilder, ImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { RNGRegistry } from "../../core/RNGRegistry";
 import type {
+import { getRikishi } from "../../queries";
   GlobalCupMatch,
   GlobalCupParticipant,
   GlobalCupState,
@@ -26,7 +27,7 @@ export const GlobalCupService = {
     // ⚡ Bolt Optimization: Use direct iteration instead of Array.from().map().filter().sort()
     const pool: Rikishi[] = [];
     for (const id of world.activeRikishiIds) {
-      const r = world.rikishi.get(id);
+      const r = getRikishi(world, id);
       if (r && !r.injured) pool.push(r);
     }
     pool.sort((a, b) => {
@@ -249,8 +250,8 @@ export const GlobalCupService = {
 
   simulateMatch(world: WorldState, match: GlobalCupMatch): GlobalCupBoutResult {
     const rng = RNGRegistry.getSystemRNG(world, "global_cup", `match_${match.id}`);
-    const east = world.rikishi.get(match.eastRikishiId);
-    const west = world.rikishi.get(match.westRikishiId);
+    const east = getRikishi(world, match.eastRikishiId);
+    const west = getRikishi(world, match.westRikishiId);
 
     // Simplistic simulation for Global Cup (Option B)
     // In production, this would call the full bout resolver.

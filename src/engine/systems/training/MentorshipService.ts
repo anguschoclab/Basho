@@ -22,6 +22,7 @@ import { EntityCollection } from "../../core/EntityCollection";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import {
+import { getRikishi } from "../../queries";
   MENTORSHIP_MAX_BLEED,
   MENTORSHIP_BLEED_THRESHOLD,
   MENTORSHIP_BLEED_SCALE,
@@ -63,8 +64,8 @@ const BLEED_SCALE = MENTORSHIP_BLEED_SCALE;
  *
  * @example
  * ```ts
- * const mentor = world.rikishi.get("mentor1");
- * const apprentice = world.rikishi.get("app1");
+ * const mentor = getRikishi(world, "mentor1");
+ * const apprentice = getRikishi(world, "app1");
  *
  * if (MentorshipService.canMentor(mentor, apprentice)) {
  *   const bleed = MentorshipService.calculateTechniqueBleed(mentor, apprentice);
@@ -241,7 +242,7 @@ export function applyMentorshipBonuses(world: WorldState): StateImpact {
     // Skip apprentices without mentors
     if (!apprentice.mentorId) continue;
 
-    const mentor = world.rikishi.get(apprentice.mentorId);
+    const mentor = getRikishi(world, apprentice.mentorId);
     if (!mentor) continue;
 
     // Validate mentorship is still valid
@@ -293,8 +294,8 @@ export function assignMentor(
   apprenticeId: string
 ): StateImpact {
   const builder = createImpactBuilder("assignMentor");
-  const mentor = world.rikishi.get(mentorId);
-  const apprentice = world.rikishi.get(apprenticeId);
+  const mentor = getRikishi(world, mentorId);
+  const apprentice = getRikishi(world, apprenticeId);
 
   // Validate both rikishi exist
   if (!mentor || !apprentice) return builder.build();
@@ -339,12 +340,12 @@ export function assignMentor(
  */
 export function removeMentor(world: WorldState, apprenticeId: string): StateImpact {
   const builder = createImpactBuilder("removeMentor");
-  const apprentice = world.rikishi.get(apprenticeId);
+  const apprentice = getRikishi(world, apprenticeId);
 
   // Skip if apprentice has no mentor
   if (!apprentice?.mentorId) return builder.build();
 
-  const mentor = world.rikishi.get(apprentice.mentorId);
+  const mentor = getRikishi(world, apprentice.mentorId);
 
   // Clear mentorId on apprentice
   builder.updateRikishi(apprenticeId, { mentorId: undefined });

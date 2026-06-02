@@ -32,6 +32,7 @@ import {
 } from "../../types/keshoMawashi";
 import { rngFromSeed } from "../../rng";
 import type { SeededRNG } from "../../rng";
+import { getHeya, getRikishi } from "../../queries";
 
 /** Generate a new kesho-mawashi for a rikishi */
 export function generateKeshoMawashi(
@@ -95,7 +96,7 @@ export function generateKeshoMawashi(
   const sponsorInfo = origin === "corporate" ? generateSponsorInfo(palette, rng) : undefined;
 
   // Get legacy connections
-  const heya = world.heyas.get(rikishi.heyaId);
+  const heya = getHeya(world, rikishi.heyaId);
   const oyakata = heya ? world.oyakata.get(heya.oyakataId) : undefined;
 
   return {
@@ -135,7 +136,7 @@ export function upgradeKeshoMawashi(
   const newGoldDensity = calculateGoldDensity(newTier, rng);
 
   // May add tertiary symbol for higher tiers
-  const rikishi = world.rikishi.get(mawashi.rikishiId);
+  const rikishi = getRikishi(world, mawashi.rikishiId);
   const newTertiary =
     newTier === "sanyaku" || newTier === "yokozuna"
       ? mawashi.tertiarySymbol ||
@@ -182,7 +183,7 @@ export function generateYokozunaTsuna(world: WorldState, rikishi: Rikishi): Yoko
 
 /** Build the design palette for generation */
 export function buildDesignPalette(world: WorldState, rikishi: Rikishi): MawashiDesignPalette {
-  const heya = world.heyas.get(rikishi.heyaId);
+  const heya = getHeya(world, rikishi.heyaId);
   const oyakata = heya ? world.oyakata.get(heya.oyakataId) : undefined;
 
   // Get heya brand from world state or create default

@@ -10,6 +10,7 @@ import type { Id } from "../types/common";
 import type { EventImportance } from "../types/events";
 import type { TalentCandidate } from "../types/talent";
 import type { MyosekiStock } from "../types/myoseki";
+import { getHeya } from "../queries";
 
 /**
  * Checks if a recruitment decision is relevant to the player.
@@ -42,7 +43,7 @@ export function isMyosekiPlayerRelevant(world: WorldState, stock: MyosekiStock):
   const playerHeyaId = world.playerHeyaId;
   if (!playerHeyaId) return "minor";
 
-  const playerHeya = world.heyas.get(playerHeyaId);
+  const playerHeya = getHeya(world, playerHeyaId);
   if (!playerHeya) return "minor";
 
   // 1. Elite tier Myoseki

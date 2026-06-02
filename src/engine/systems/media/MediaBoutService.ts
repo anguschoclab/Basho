@@ -37,6 +37,7 @@ import {
 import { generateBoutHeadline, generateStreakHeadline } from "./HeadlineGenerator";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
+import { getRikishi } from "../../queries";
 
 /**
  * Main entry point for updating media state from a bout.
@@ -60,8 +61,8 @@ export function updateMediaFromBout(args: {
     `bout::week${week}::day${day ?? 0}::${result.winnerRikishiId}::${result.loserRikishiId}`
   );
 
-  const winner = world.rikishi.get(result.winnerRikishiId);
-  const loser = world.rikishi.get(result.loserRikishiId);
+  const winner = getRikishi(world, result.winnerRikishiId);
+  const loser = getRikishi(world, result.loserRikishiId);
 
   // 1. Calculate Impact
   let rivalryTension = 0;
@@ -260,7 +261,7 @@ function processStreak(
   }
 
   nextFired[winnerId] = [...firedList, nextMilestone];
-  const rikishi = world.rikishi.get(winnerId);
+  const rikishi = getRikishi(world, winnerId);
   const { title, subtitle } = generateStreakHeadline({
     rng,
     shikona: rikishi?.shikona ?? "Unknown",

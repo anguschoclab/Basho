@@ -10,6 +10,7 @@ import { resolveImpacts } from "../core/ImpactResolver";
 import type { StateImpact } from "../core/StateImpact";
 import { checkShikonaChange, recordShikonaChange } from "../history";
 import type { Rikishi } from "../types/rikishi";
+import { getRikishi } from "../queries";
 
 /**
  * Helper to retrieve the current basho state from the world.
@@ -48,7 +49,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
 
   const currentBanzukeList: BanzukeEntry[] = [];
   for (const rikishiId of world.activeRikishiIds) {
-    const r = world.rikishi.get(rikishiId);
+    const r = getRikishi(world, rikishiId);
     if (!r) continue;
     currentBanzukeList.push({
       rikishiId: r.id,
@@ -63,7 +64,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
     const history = world.history[world.history.length - 1];
     const isYusho = history.yusho === id;
     const isJunYusho = history.junYusho.includes(id);
-    const rikishi = world.rikishi.get(id);
+    const rikishi = getRikishi(world, id);
 
     let prizePoints = 0;
     if (history.ginoSho === id) prizePoints += 1;
@@ -257,7 +258,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
   builder.updateWorldField("ozekiKadoban", result.updatedOzekiKadoban);
 
   for (const newEntry of result.newBanzuke) {
-    const rikishi = world.rikishi.get(newEntry.rikishiId);
+    const rikishi = getRikishi(world, newEntry.rikishiId);
     if (rikishi) {
       const oldRank = rikishi.rank;
       const oldShikona = rikishi.shikona;

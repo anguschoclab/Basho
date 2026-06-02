@@ -23,6 +23,7 @@ import type { FacilitiesBand } from "./types/narrative";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
 import { calculateHeyaWeeklyFinances } from "./systems/economy/FinanceCalculator";
+import { getHeya } from "./queries";
 
 // === CONSTANTS ===
 
@@ -98,7 +99,7 @@ export function investInFacility(
   points: number = 5
 ): StateImpact {
   const builder = createImpactBuilder("investInFacility");
-  const heya = world.heyas.get(heyaId);
+  const heya = getHeya(world, heyaId);
   if (!heya) return builder.build();
 
   const oldLevel = heya.facilities[axis];

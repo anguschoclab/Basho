@@ -11,6 +11,7 @@
 
 import type { WorldState } from "../types/world";
 import type { GlobalCupHistoryEntry } from "../types/globalCup";
+import { getHeya, getRikishi } from "../queries";
 
 /**
  * Record a Global Cup tournament completion.
@@ -31,8 +32,8 @@ export function recordGlobalCup(
   world: WorldState,
   cup: NonNullable<WorldState["globalCup"]>
 ): WorldState {
-  const champion = cup.championId ? world.rikishi.get(cup.championId) : null;
-  const championHeya = champion?.heyaId ? world.heyas.get(champion.heyaId) : null;
+  const champion = cup.championId ? getRikishi(world, cup.championId) : null;
+  const championHeya = champion?.heyaId ? getHeya(world, champion.heyaId) : null;
 
   const historyEntry: GlobalCupHistoryEntry = {
     year: cup.year,

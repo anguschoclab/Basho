@@ -8,6 +8,7 @@ import { stableTieBreak } from "./utils/sort";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
 import { EntityCollection } from "./core/EntityCollection";
+import { getRikishi } from "./queries";
 
 // Hard cap constants
 /** h a r d_ c a p_ r o s t e r_ s i z e. */
@@ -28,7 +29,7 @@ export function enforceHardCapRosterOverflow(world: WorldState): StateImpact {
 
     const overflowCount = heya.rikishiIds.length - HARD_CAP_ROSTER_SIZE;
     const candidatesForRelease = heya.rikishiIds
-      .map((rId) => world.rikishi.get(rId))
+      .map((rId) => getRikishi(world, rId))
       .filter((r): r is Rikishi => r !== undefined);
 
     // Score rikishi for retention (lower score = more likely to be released)

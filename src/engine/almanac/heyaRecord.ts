@@ -1,11 +1,12 @@
 import type { WorldState } from "../types/world";
 import type { Heya } from "../types/heya";
 import type { HeyaRecord } from "./types";
+import { getRikishi } from "../queries";
 
 export function generateHeyaRecord(heya: Heya, world: WorldState, rng: () => number): HeyaRecord {
   const rikishiInHeya = [];
   for (const rikishiId of world.activeRikishiIds) {
-    const r = world.rikishi.get(rikishiId);
+    const r = getRikishi(world, rikishiId);
     if (r && r.heyaId === heya.id) {
       rikishiInHeya.push(r);
     }

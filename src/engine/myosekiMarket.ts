@@ -12,6 +12,7 @@ import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
 import { stableSort } from "./utils/sort";
 import { isMyosekiPlayerRelevant } from "./npc/npcEventSurfacing";
+import { getHeya } from "./queries";
 
 const TOTAL_MYOSEKI = 105;
 const BASE_ASKING_PRICE = 150_000_000;
@@ -304,7 +305,7 @@ export function buyMyoseki(
   const stock = getAvailableStock(world, myosekiId);
   if (!stock || !stock.askingPrice) return builder.build();
 
-  const heya = world.heyas.get(buyerHeyaId);
+  const heya = getHeya(world, buyerHeyaId);
   if (!heya || heya.funds < stock.askingPrice) return builder.build();
 
   const newFunds = heya.funds - stock.askingPrice;

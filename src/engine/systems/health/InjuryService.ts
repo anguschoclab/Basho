@@ -45,7 +45,7 @@ import {
  *
  * @example
  * ```ts
- * const rikishi = world.rikishi.get(rikishiId);
+ * const rikishi = getRikishi(world, rikishiId);
  * const fatigue = rikishi.fatigue || 0;
  * const chance = calculateWeeklyInjuryChance(rikishi, fatigue);
  * console.log(`Injury chance: ${(chance * 100).toFixed(1)}%`);
@@ -166,7 +166,7 @@ export function tickWeekInjury(world: WorldState): StateImpact {
   const builder = createImpactBuilder("tickWeekInjury");
 
   for (const rikishiId of world.activeRikishiIds) {
-    const rikishi = world.rikishi.get(rikishiId);
+    const rikishi = getRikishi(world, rikishiId);
     if (!rikishi || rikishi.injured) continue;
 
     const seededRng = RNGRegistry.getSystemRNG(
@@ -214,6 +214,7 @@ export function tickWeekInjury(world: WorldState): StateImpact {
 
 import { tickRikishiRecovery } from "./RecoveryService";
 import { getHeyaStaffBonuses } from "../../staff";
+import { getRikishi } from "../../queries";
 
 /**
  * Weekly recovery tick: advanced recovery for all injured rikishi.
@@ -239,7 +240,7 @@ export function tickWeekRecovery(world: WorldState): StateImpact {
   const builder = createImpactBuilder("tickWeekRecovery");
 
   for (const rikishiId of world.activeRikishiIds) {
-    const rikishi = world.rikishi.get(rikishiId);
+    const rikishi = getRikishi(world, rikishiId);
     if (!rikishi || !rikishi.injured) continue;
 
     const staffBonuses = getHeyaStaffBonuses(world, rikishi.heyaId);

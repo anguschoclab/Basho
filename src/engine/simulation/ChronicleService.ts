@@ -1,6 +1,7 @@
 import type { WorldState } from "../types/world";
 import type { ChronicleReport, ChampionEntry, ChronicleRecordEntry } from "../types/records";
 import { stableTieBreak } from "../utils/sort";
+import { getRikishi } from "../queries";
 
 /**
  * Chronicle Service handles historical data aggregation and era detection.
@@ -32,7 +33,7 @@ export const ChronicleService = {
     const championsList: ChampionEntry[] = [];
 
     for (const [id, count] of championCounts.entries()) {
-      const rikishi = world.rikishi.get(id);
+      const rikishi = getRikishi(world, id);
       championsList.push({
         rikishiId: id,
         shikona: rikishi?.shikona || "Unknown",

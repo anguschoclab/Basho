@@ -11,6 +11,7 @@ import type { Rikishi } from "../../../../types/rikishi";
 import type { HeyaUpdates } from "../types";
 import type { ImpactBuilder } from "../../../../core/ImpactBuilder";
 import { RANK_HIERARCHY } from "../../../../banzuke";
+import { getRikishi } from "../../../../queries";
 
 // JSA pays oyakata salaries, facility upkeep, and non-sekitori allowances directly.
 // Heya funds are managed by FinanceCalculator (weekly) which already accounts for all
@@ -27,7 +28,7 @@ export function processHeyaEconomics(
   const rikishiIds = heya.rikishiIds ?? [];
 
   for (const rId of rikishiIds) {
-    const r = rikishiMap.get(rId) || world.rikishi.get(rId);
+    const r = rikishiMap.get(rId) || getRikishi(world, rId);
     if (!r) continue;
 
     const info = RANK_HIERARCHY[r.rank];

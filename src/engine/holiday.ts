@@ -15,6 +15,7 @@ import type { WorldState, CyclePhase } from "./types/world";
 import { advanceOneDay, type DailyTickReport } from "./tick/tickDaily";
 import { queryEvents } from "./events";
 import { assertNever } from "./utils/types";
+import { getHeya, getRikishi } from "./queries";
 
 // ============================================================================
 // TYPES
@@ -98,7 +99,7 @@ function evaluateGates(
   startDay: number
 ): HolidayGateTriggered | null {
   if (!playerHeyaId) return null;
-  const heya = world.heyas.get(playerHeyaId);
+  const heya = getHeya(world, playerHeyaId);
   if (!heya) return null;
 
   for (const gate of gates) {
@@ -135,7 +136,7 @@ function checkGate(
   > = {
     topRikishiInjury: (world, heya, _playerHeyaId, _startDay) => {
       for (const rid of heya.rikishiIds ?? []) {
-        const r = world.rikishi.get(rid);
+        const r = getRikishi(world, rid);
         if (!r) continue;
         const tier = getRankTier(r.rank);
         if (tier <= 3 && r.injured) {
@@ -193,7 +194,7 @@ function checkGate(
     },
     promotionRun: (world, heya) => {
       for (const rid of heya.rikishiIds ?? []) {
-        const r = world.rikishi.get(rid);
+        const r = getRikishi(world, rid);
         if (!r) continue;
         if ((r.currentBashoWins ?? 0) >= 12 && getRankTier(r.rank) <= 4) {
           return {
@@ -217,7 +218,7 @@ function checkGate(
     },
     rosterOverForeignLimit: (world, heya) => {
       const foreignCount = (heya.rikishiIds ?? []).filter((rid: string) => {
-        const r = world.rikishi.get(rid);
+        const r = getRikishi(world, rid);
         return r && r.nationality !== "japanese";
       }).length;
       if (foreignCount > 1) {

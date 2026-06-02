@@ -4,6 +4,7 @@ import type { WorldState } from "./types/world";
 import type { Rikishi } from "./types/rikishi";
 import type { Id } from "./types/common";
 import { getRivalry, makeRivalryKey } from "./rivalries";
+import { getHeya, getRikishi } from "./queries";
 
 export interface LineageEdge {
   mentorId: Id;
@@ -28,8 +29,8 @@ export function assignMentor(
 ): { ok: boolean; reason?: string; impact?: StateImpact } {
   if (menteeId === mentorId) return { ok: false, reason: "Cannot mentor self." };
 
-  const mentee = world.rikishi.get(menteeId);
-  const mentor = world.rikishi.get(mentorId);
+  const mentee = getRikishi(world, menteeId);
+  const mentor = getRikishi(world, mentorId);
   if (!mentee || !mentor) return { ok: false, reason: "Invalid mentor or mentee." };
 
   const builder = createImpactBuilder("assignMentor");
@@ -41,7 +42,7 @@ export function assignMentor(
     currentLineage = currentLineage.filter((e) => e.menteeId !== menteeId);
 
     // Remove mentee from previous mentor's list
-    const prevMentor = world.rikishi.get(mentee.mentorId);
+    const prevMentor = getRikishi(world, mentee.mentorId);
     if (prevMentor && prevMentor.menteeIds) {
       builder.updateRikishi(mentee.mentorId, {
         menteeIds: prevMentor.menteeIds.filter((id) => id !== menteeId),
@@ -110,13 +111,13 @@ export function assignMentor(
 
 export function getMentor(world: WorldState, r: Rikishi): Rikishi | undefined {
   if (!r.mentorId) return undefined;
-  return world.rikishi.get(r.mentorId);
+  return getRikishi(world, r.mentorId);
 }
 
 export function menteesOf(world: WorldState, r: Rikishi): Rikishi[] {
   const ids = r.menteeIds || [];
   return ids.reduce<Rikishi[]>((acc, id) => {
-    const mentee = world.rikishi.get(id);
+    const mentee = getRikishi(world, id);
     if (mentee) acc.push(mentee);
     return acc;
   }, []);
@@ -133,7 +134,7 @@ export function recordOyakataHandover(
   newOyakataName: string
 ): StateImpact {
   const builder = createImpactBuilder("recordOyakataHandover");
-  const heya = world.heyas.get(heyaId);
+  const heya = getHeya(world, heyaId);
   if (!heya) return builder.build();
 
   const nextLineage = [...(heya.lineage || [])];
@@ -184,7 +185,7 @@ function calculateTenureAchievements(world: WorldState, heya: Heya): OyakataAchi
   let winners = 0;
 
   for (const rid of rikishiIds) {
-    const r = world.rikishi.get(rid);
+    const r = getRikishi(world, rid);
     if (!r) continue;
 
     const rank = r.rank.toLowerCase();
@@ -218,13 +219,13 @@ export function getLineageTree(
   rikishiId: Id,
   depth: number = 0
 ): LineageTreeNode[] {
-  const r = world.rikishi.get(rikishiId);
+  const r = getRikishi(world, rikishiId);
   if (!r || depth > 5) return [];
 
   const mentorId = r.mentorId;
   if (!mentorId) return [];
 
-  const mentor = world.rikishi.get(mentorId);
+  const mentor = getRikishi(world, mentorId);
   if (!mentor) return [];
 
   return [

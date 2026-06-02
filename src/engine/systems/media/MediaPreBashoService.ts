@@ -9,6 +9,7 @@ import { rngForWorld, SeededRNG } from "../../rng";
 import { generatePreBashoHeadline } from "./HeadlineGenerator";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
+import { getHeya, getRikishi } from "../../queries";
 
 /**
  * Trigger pre-basho journalism hype.
@@ -28,8 +29,8 @@ export function triggerPreBashoJournalism(world: WorldState): StateImpact {
     )[0];
 
     if (hotPair && hotPair.heat > 30) {
-      const rA = world.rikishi.get(hotPair.aId);
-      const rB = world.rikishi.get(hotPair.bId);
+      const rA = getRikishi(world, hotPair.aId);
+      const rB = getRikishi(world, hotPair.bId);
       const { title, subtitle } = generatePreBashoHeadline({
         rng,
         kind: "rivalryWatch",
@@ -53,7 +54,7 @@ export function triggerPreBashoJournalism(world: WorldState): StateImpact {
   // ⚡ Bolt Optimization: Use direct iteration instead of Array.from().map().filter().sort()
   const ozekiRikishi: Rikishi[] = [];
   for (const id of world.activeRikishiIds) {
-    const r = world.rikishi.get(id);
+    const r = getRikishi(world, id);
     if (r && r.rank === "ozeki" && (r.consecutiveStrongOzeki ?? 0) >= 1) {
       ozekiRikishi.push(r);
     }
@@ -175,7 +176,7 @@ export function buildMediaDigest(world: WorldState): {
 
   const hotRikishi = Object.entries(mediaState.mediaHeat)
     .map(([id, heat]) => {
-      const r = world.rikishi.get(id);
+      const r = getRikishi(world, id);
       return { id, name: r?.shikona ?? r?.name ?? id, heat: heat as number };
     })
     .sort((a, b) => b.heat - a.heat)
@@ -183,7 +184,7 @@ export function buildMediaDigest(world: WorldState): {
 
   const hotHeya = Object.entries(mediaState.heyaPressure)
     .map(([id, pressure]) => {
-      const h = world.heyas.get(id);
+      const h = getHeya(world, id);
       return { id, name: h?.name ?? id, pressure: pressure as number };
     })
     .sort((a, b) => b.pressure - a.pressure)

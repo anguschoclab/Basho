@@ -14,6 +14,7 @@ import type {
 import { OYAKATA_ARCHETYPES } from "@/engine/oyakataPersonalities";
 import { generateToshiyoriName } from "@/engine/shikona/toshiyoriNames";
 import { SeededRNG } from "@/engine/rng";
+import { getHeya } from "../../queries";
 
 // ---------------------------------------------------------------------------
 // Backstory data — defined here (NOT imported from the UI wizard layer).
@@ -178,7 +179,7 @@ export function applyOyakataCreationConfig(
   config: OyakataCreationConfig
 ): WorldState {
   // 1. Resolve heya
-  const heya = world.heyas.get(playerHeyaId);
+  const heya = getHeya(world, playerHeyaId);
   if (!heya) {
     console.warn(`[applyOyakataCreationConfig] Heya not found: ${playerHeyaId}`);
     return world;

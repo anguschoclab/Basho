@@ -18,6 +18,7 @@ import type { WorldState } from "./types/world";
 import type { BashoResult } from "./types/basho";
 import type { Id } from "./types/common";
 import type { Rank } from "./types/banzuke";
+import { getRikishi } from "./queries";
 
 // === TYPES ===
 
@@ -122,7 +123,7 @@ function processChampions(
 
   for (const [rid, count] of yushoCounts) {
     if (count < CHAMPION_YUSHO_MIN) continue;
-    const r = world.rikishi.get(rid);
+    const r = getRikishi(world, rid);
     if (!r) continue;
     tryAddInductee(world, hof, newInductees, rid, r, "champion", { yushoCount: count });
   }
@@ -158,7 +159,7 @@ function processTechnicians(
 
   for (const [rid, count] of ginoCountsStats) {
     if (count < TECHNICIAN_GINO_MIN) continue;
-    const r = world.rikishi.get(rid);
+    const r = getRikishi(world, rid);
     if (!r) continue;
     tryAddInductee(world, hof, newInductees, rid, r, "technician", { ginoShoCount: count });
   }

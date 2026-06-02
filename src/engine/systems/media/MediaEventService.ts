@@ -9,6 +9,7 @@ import { rngForWorld } from "../../rng";
 import { BardEngine } from "../../narrative/BardEngine";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
+import { getHeya } from "../../queries";
 
 /**
  * Generates a headline for a governance or welfare event using the BardEngine.
@@ -25,7 +26,7 @@ export function generateGovernanceHeadline(args: {
 
   if (!world.mediaState || !world.mediaState.headlines) return builder.build();
 
-  const heya = world.heyas.get(heyaId);
+  const heya = getHeya(world, heyaId);
   const context = {
     heyaname: heya?.name ?? "Heya",
     heya: heya?.name ?? "Heya",
@@ -164,14 +165,14 @@ export function processMediaDecision(
   if (!heyaId) return builder.build();
 
   if (impact.rep) {
-    const heya = world.heyas.get(heyaId);
+    const heya = getHeya(world, heyaId);
     builder.updateHeya(heyaId, {
       reputation: Math.max(0, Math.min(100, (heya?.reputation ?? 50) + impact.rep)),
     });
   }
 
   if (impact.politicalCapital) {
-    const heya = world.heyas.get(heyaId);
+    const heya = getHeya(world, heyaId);
     builder.updateHeya(heyaId, {
       politicalCapital: Math.max(
         0,

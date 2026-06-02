@@ -17,6 +17,7 @@ import { tickRikishiRecovery } from "../../systems/health/RecoveryService";
 import { RNGRegistry } from "../../core/RNGRegistry";
 import { getHeyaStaffBonuses } from "../../staff";
 import type {
+import { getRikishi } from "../../queries";
   InjurySeverity,
   InjuryBodyArea,
   InjuryType,
@@ -40,7 +41,7 @@ export function phase01_week_health(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_health");
 
   for (const id of world.activeRikishiIds) {
-    const rikishi = world.rikishi.get(id);
+    const rikishi = getRikishi(world, id);
     if (!rikishi) continue;
 
     const r = { ...rikishi };

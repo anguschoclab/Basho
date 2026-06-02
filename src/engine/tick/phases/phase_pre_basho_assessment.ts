@@ -12,6 +12,7 @@ import type { StateImpact } from "../../core/StateImpact";
 import type { PreBashoAssessment } from "../../types/world";
 import { triggerPreBashoJournalism } from "../../systems/media/MediaService";
 import { mergeImpacts } from "../../core/ImpactResolver";
+import { getRikishi } from "../../queries";
 
 /**
  * Run pre-basho health assessment for all rikishi.
@@ -43,7 +44,7 @@ export function phase_pre_basho_assessment(world: WorldState): StateImpact {
   let withdrawalsRecommended = 0;
 
   for (const rikishiId of world.activeRikishiIds) {
-    const rikishi = world.rikishi.get(rikishiId);
+    const rikishi = getRikishi(world, rikishiId);
     if (!rikishi || !rikishi.heyaId) continue;
 
     const assessment = assessRikishi(rikishi);

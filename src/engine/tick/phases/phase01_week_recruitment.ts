@@ -20,6 +20,7 @@ import {
   TOTAL_ACTIVE_THRESHOLD,
 } from "../../../constants/engine/recruitmentExtended";
 import { DAYS_PER_WEEK } from "../../../constants/engine/time";
+import { getHeya, getRikishi } from "../../queries";
 
 export function phase01_week_recruitment(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_recruitment");
@@ -50,7 +51,7 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
   if (world.cyclePhase === "interim") {
     const elapsedWeeks = Math.floor((INTERIM_DURATION_DAYS - (world._interimDaysRemaining ?? 0)) / DAYS_PER_WEEK);
     if (elapsedWeeks === PRIMARY_RECRUITMENT_WINDOW_WEEK && !world._recruitmentWindow?.isOpen) {
-      const playerHeya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
+      const playerHeya = world.playerHeyaId ? getHeya(world, world.playerHeyaId) : null;
 
       if (playerHeya && playerHeya.welfareState?.complianceState !== "sanctioned") {
         builder.updateWorldField("_recruitmentWindow", {
@@ -142,7 +143,7 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
     const juniorsWithoutMentors: Rikishi[] = [];
 
     for (const id of heya.rikishiIds ?? []) {
-      const r = world.rikishi.get(id);
+      const r = getRikishi(world, id);
       if (r) {
         if (r.division === "makuuchi" || r.division === "juryo" || r.experience > 50) {
           potentialMentors.push(r.id);

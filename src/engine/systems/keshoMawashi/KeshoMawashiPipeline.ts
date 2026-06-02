@@ -12,6 +12,7 @@ import type { KeshoTier } from "../../types/keshoMawashi";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import {
+import { getRikishi } from "../../queries";
   generateKeshoMawashi,
   upgradeKeshoMawashi,
   generateYokozunaTsuna,
@@ -27,7 +28,7 @@ export function generateKeshoForPromotions(
   for (const event of events) {
     if (event.kind !== "promotion") continue;
 
-    const rikishi = world.rikishi.get(event.rikishiId);
+    const rikishi = getRikishi(world, event.rikishiId);
     if (!rikishi) continue;
 
     // Check if this is a makushita -> juryo promotion (first sekitori rank)

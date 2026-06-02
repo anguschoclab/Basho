@@ -28,6 +28,7 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import type { BoutResult } from "../../types/basho";
 import {
+import { getRikishi } from "../../queries";
   BOUT_DURATION_CLOSENESS_DIVISOR,
   BOUT_DURATION_DOMINATION_DIVISOR,
   HEAT_SPIKE_THRESHOLDS,
@@ -320,7 +321,7 @@ export const RivalryService = {
     // ⚡ Bolt Optimization: Use direct iteration instead of Array.from().map().filter()
     const makuuchiJuryo: Rikishi[] = [];
     for (const id of world.activeRikishiIds) {
-      const r = world.rikishi.get(id);
+      const r = getRikishi(world, id);
       if (r && (r.division === "makuuchi" || r.division === "juryo")) {
         makuuchiJuryo.push(r);
       }

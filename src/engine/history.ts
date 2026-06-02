@@ -5,6 +5,7 @@ import { generateShikona } from "./shikona";
 import type { CareerSnapshot } from "./types/history";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
+import { getHeya, getRikishi } from "./queries";
 
 /**
  * Generates a career snapshot for a Rikishi based on their current state and the last basho's results.
@@ -95,7 +96,7 @@ export function runHistoryUpdates(world: WorldState): StateImpact {
   const builder = createImpactBuilder("historyUpdates");
 
   for (const rikishiId of world.activeRikishiIds) {
-    const rikishi = world.rikishi.get(rikishiId);
+    const rikishi = getRikishi(world, rikishiId);
     if (!rikishi) continue;
     const careerHistory = rikishi.careerHistory || [];
 
@@ -174,7 +175,7 @@ export function checkShikonaChange(
   }
 
   // Get oyakata's former shikona for legacy patterns
-  const heya = world.heyas.get(rikishi.heyaId);
+  const heya = getHeya(world, rikishi.heyaId);
   if (!heya) return null;
 
   const oyakata = world.oyakata.get(heya.oyakataId);
@@ -224,7 +225,7 @@ export function recordShikonaChange(
   oldShikona: string,
   newShikona: string
 ): void {
-  const rikishi = world.rikishi.get(rikishiId);
+  const rikishi = getRikishi(world, rikishiId);
   if (!rikishi) return;
 
   if (!rikishi.milestones) rikishi.milestones = [];

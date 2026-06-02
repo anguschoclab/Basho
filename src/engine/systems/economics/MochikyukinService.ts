@@ -19,6 +19,7 @@ import type { StateImpact } from "../../core/StateImpact";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { Id } from "../../types/common";
 import {
+import { getRikishi } from "../../queries";
   MOCHIKYUKIN_POINT_VALUE,
   MOCHIKYUKIN_POINTS_KACHI_KOSHI,
   MOCHIKYUKIN_POINTS_YUSHO,
@@ -41,7 +42,7 @@ export function accumulateMochikyukinPoints(
   }
 ): StateImpact {
   const builder = createImpactBuilder("accumulateMochikyukinPoints");
-  const rikishi = world.rikishi.get(rikishiId);
+  const rikishi = getRikishi(world, rikishiId);
 
   if (!rikishi) return builder.build();
 
@@ -109,7 +110,7 @@ export function payMochikyukinBonuses(world: WorldState, currentMonth: number): 
   }
 
   for (const rikishiId of world.activeRikishiIds) {
-    const rikishi = world.rikishi.get(rikishiId);
+    const rikishi = getRikishi(world, rikishiId);
     if (!rikishi) continue;
 
     // Only sekitori receive mochikyukin payouts

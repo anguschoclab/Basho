@@ -6,6 +6,7 @@ import {
   type BashoPerformance,
 } from "../types/banzuke";
 import type { WorldState } from "../types/world";
+import { getRikishi } from "../queries";
 
 /**
  * Interface representing a candidate in the banzuke assignment sort.
@@ -58,8 +59,8 @@ export function resolveBanzukeTie(
   // If no world/data, fallback immediately
   if (!world) return a.entry.rikishiId.localeCompare(b.entry.rikishiId);
 
-  const rikishia = world.rikishi.get(a.entry.rikishiId);
-  const rikishib = world.rikishi.get(b.entry.rikishiId);
+  const rikishia = getRikishi(world, a.entry.rikishiId);
+  const rikishib = getRikishi(world, b.entry.rikishiId);
 
   // Level 2: Head-to-Head
   if (rikishia && rikishib) {

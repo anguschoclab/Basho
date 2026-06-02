@@ -21,6 +21,7 @@ import {
   TRAVEL_ALLOWANCE_RETIREMENT_SPLIT,
 } from "../../../constants/engine/economyExtended";
 import { calculateKoenkaiIncome } from "../economics/SponsorshipService";
+import { getRikishi } from "../../queries";
 
 /**
  * Pay travel/jungyo allowance to sekitori.
@@ -30,7 +31,7 @@ export function payTravelAllowance(world: WorldState): StateImpact {
   const builder = createImpactBuilder("payTravelAllowance");
 
   for (const rikishiId of world.activeRikishiIds) {
-    const rikishi = world.rikishi.get(rikishiId);
+    const rikishi = getRikishi(world, rikishiId);
     if (!rikishi) continue;
 
     // Only sekitori receive travel allowance
@@ -79,7 +80,7 @@ export function deductTsukebitoCosts(world: WorldState): StateImpact {
   const builder = createImpactBuilder("deductTsukebitoCosts");
 
   for (const rikishiId of world.activeRikishiIds) {
-    const rikishi = world.rikishi.get(rikishiId);
+    const rikishi = getRikishi(world, rikishiId);
     if (!rikishi) continue;
 
     // Only sekitori have tsukebito
@@ -130,7 +131,7 @@ export function distributeKoenkaiToSekitori(world: WorldState): StateImpact {
     // Count sekitori in this heya
     const sekitoriCount =
       heya.rikishiIds?.filter((rId) => {
-        const r = world.rikishi.get(rId);
+        const r = getRikishi(world, rId);
         return r && !r.isRetired && (r.division === "makuuchi" || r.division === "juryo");
       }).length || 0;
 
@@ -140,7 +141,7 @@ export function distributeKoenkaiToSekitori(world: WorldState): StateImpact {
     const perSekitori = sekitoriPortion / sekitoriCount;
 
     for (const rId of heya.rikishiIds || []) {
-      const r = world.rikishi.get(rId);
+      const r = getRikishi(world, rId);
       if (!r || r.isRetired) continue;
       if (r.division !== "makuuchi" && r.division !== "juryo") continue;
 

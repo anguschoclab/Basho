@@ -35,13 +35,14 @@ import {
   MIN_STAT_VALUE,
   DEFAULT_FACILITY_LEVEL,
 } from "../../../constants/engine/rikishi";
+import { getHeya } from "../../queries";
 
 // ── Phase ─────────────────────────────────────────────────────────────────────
 
 export function phase02_context(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase02_context");
   const playerHeyaId = world.playerHeyaId;
-  const playerHeya = playerHeyaId ? world.heyas.get(playerHeyaId) : undefined;
+  const playerHeya = playerHeyaId ? getHeya(world, playerHeyaId) : undefined;
 
   const financialPenalty = (playerHeya?.funds ?? 0) < 0;
   const facilityMultipliers = calculateFacilityMultipliers(playerHeya);
@@ -147,7 +148,7 @@ function checkMoraleBoost(world: WorldState): boolean {
   if (!lastBasho) return false;
 
   // Get player rikishi IDs
-  const playerHeya = world.heyas.get(world.playerHeyaId);
+  const playerHeya = getHeya(world, world.playerHeyaId);
   const playerRikishiIds = new Set(playerHeya?.rikishiIds ?? []);
 
   return playerRikishiIds.has(lastBasho.yusho ?? "");

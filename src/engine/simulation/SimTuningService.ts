@@ -2,6 +2,7 @@ import type { WorldState } from "../types/world";
 import type { Rikishi } from "../types/rikishi";
 import type { Oyakata } from "../types/oyakata";
 import { EntityCollection } from "../core/EntityCollection";
+import { getRikishi } from "../queries";
 
 export interface TuningMetrics {
   statAverages: {
@@ -53,7 +54,7 @@ export const SimTuningService = {
     // ⚡ Bolt Optimization: Use direct iteration instead of Array.from().map().filter()
     const activeRikishi: Rikishi[] = [];
     for (const id of world.activeRikishiIds) {
-      const r = world.rikishi.get(id);
+      const r = getRikishi(world, id);
       if (r) activeRikishi.push(r);
     }
 

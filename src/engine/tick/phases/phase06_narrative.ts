@@ -19,6 +19,7 @@ import type { WorldState } from "../../types/world";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { CrisisService } from "../../systems/narrative/CrisisService";
+import { getHeya, getRikishi } from "../../queries";
 
 // ── Phase ─────────────────────────────────────────────────────────────────────
 
@@ -29,7 +30,7 @@ export function phase06_narrative(world: WorldState): StateImpact {
 
   // ── Injury headlines ──────────────────────────────────────────────────────
   for (const rId of deltas.injuriesSustained) {
-    const r = world.rikishi.get(rId);
+    const r = getRikishi(world, rId);
     if (!r) continue;
     builder.logEvent(
       "LIFECYCLE_EVENT",
@@ -48,7 +49,7 @@ export function phase06_narrative(world: WorldState): StateImpact {
   // ── Financial crisis ──────────────────────────────────────────────────────
   if (deltas.expenses > deltas.revenue) {
     const playerHeyaId = world.playerHeyaId;
-    const heya = playerHeyaId ? world.heyas.get(playerHeyaId) : undefined;
+    const heya = playerHeyaId ? getHeya(world, playerHeyaId) : undefined;
     if (heya && heya.funds < 0) {
       builder.logEvent(
         "FINANCIAL_ALERT",
@@ -67,7 +68,7 @@ export function phase06_narrative(world: WorldState): StateImpact {
   for (const [rId, changes] of Object.entries(deltas.statChanges)) {
     const bigGains = changes.filter((c) => c.amount >= 1.0);
     if (bigGains.length === 0) continue;
-    const r = world.rikishi.get(rId);
+    const r = getRikishi(world, rId);
     if (!r) continue;
     for (const change of bigGains) {
       builder.logEvent(

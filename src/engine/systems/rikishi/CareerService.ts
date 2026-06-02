@@ -11,6 +11,7 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { LegacyService } from "../legacy/LegacyService";
 import { checkRetirement } from "../../lifecycle";
+import { getRikishi } from "../../queries";
 
 export const CareerService = {
   /**
@@ -32,7 +33,7 @@ export const CareerService = {
     const builder = createImpactBuilder("processRetirements");
 
     for (const rikishiId of world.activeRikishiIds) {
-      const rikishi = world.rikishi.get(rikishiId);
+      const rikishi = getRikishi(world, rikishiId);
       if (!rikishi) continue;
       const reason = checkRetirement(rikishi, world.year, world.seed);
       if (reason) {

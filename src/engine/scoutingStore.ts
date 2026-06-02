@@ -10,6 +10,7 @@ import { type ScoutedRikishi, ScoutingService } from "./systems/recruitment/Scou
 import { type ScoutingInvestment } from "../constants/engine/recruitment";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
+import { getRikishi } from "./queries";
 
 // Local implementations for missing scouting functions
 /**
@@ -91,7 +92,7 @@ function getPlayerHeyaId(world: WorldState): string | null {
  *  * @returns The result.
  */
 function getRikishi(world: WorldState, rikishiId: string): Rikishi | null {
-  return world.rikishi.get(rikishiId) || null;
+  return getRikishi(world, rikishiId) || null;
 }
 
 /**

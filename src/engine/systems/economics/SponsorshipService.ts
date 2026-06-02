@@ -142,6 +142,7 @@ export function selectBenefactor(
 
 import type { WorldState } from "../../types/world";
 import { Id } from "../../types/common";
+import { getHeya, getRikishi } from "../../queries";
 
 /**
  * Recruit a new sponsor for a heya.
@@ -157,7 +158,7 @@ export function recruitSponsor(
   const pool = world.sponsorPool;
   if (!pool) return builder.build();
 
-  const heya = world.heyas.get(heyaId);
+  const heya = getHeya(world, heyaId);
   if (!heya) return builder.build();
 
   const sponsor = pool.sponsors.get(sponsorId);
@@ -253,7 +254,7 @@ export function applyAchievementImpact(
 export function computeStarPower(heya: import("../../types/heya").Heya, world: WorldState): number {
   let starPower = 0;
   for (const rId of heya.rikishiIds ?? []) {
-    const r = world.rikishi.get(rId);
+    const r = getRikishi(world, rId);
     if (!r) continue;
     if (r.rank === "yokozuna") starPower += 30;
     else if (r.rank === "ozeki") starPower += 20;
@@ -278,14 +279,14 @@ export function processSponsorChurn(world: WorldState): StateImpact {
     const membersToRemove: string[] = [];
 
     // Calculate satisfaction for this heya
-    const heya = world.heyas.get(koenkai.heyaId);
+    const heya = getHeya(world, koenkai.heyaId);
     const prestigeScore = heya ? (heya.reputation || 0) * 0.5 : 0;
 
     // Calculate star power from rikishi
     let starPower = 0;
     if (heya?.rikishiIds) {
       for (const rikishiId of heya.rikishiIds) {
-        const rikishi = world.rikishi.get(rikishiId);
+        const rikishi = getRikishi(world, rikishiId);
         if (rikishi) {
           const rankValue =
             rikishi.rank === "yokozuna"
@@ -349,7 +350,7 @@ export function processSponsorChurn(world: WorldState): StateImpact {
       }
 
       // Update heya koenkai band reference
-      const heya = world.heyas.get(koenkai.heyaId);
+      const heya = getHeya(world, koenkai.heyaId);
       if (heya) {
         builder.updateHeya(heya.id, { koenkaiBand: newBand });
       }

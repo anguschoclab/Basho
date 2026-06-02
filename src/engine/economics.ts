@@ -25,6 +25,7 @@ import {
 } from "../constants/engine/economic";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
+import { getHeya } from "./queries";
 
 // === INSOLVENCY HANDLER ===
 
@@ -83,7 +84,7 @@ export function onBoutResolvedEconomics(
   if (east.division !== "makuuchi") return builder.build();
 
   const winner = result.winner === "east" ? east : west;
-  const winnerHeya = world.heyas.get(winner.heyaId);
+  const winnerHeya = getHeya(world, winner.heyaId);
 
   if (!winnerHeya) return builder.build();
 

@@ -19,6 +19,7 @@ import { applyAchievementImpact } from "../systems/economics/SponsorshipService"
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 import { checkMentorMenteeBout } from "../systems/training/MentorshipService";
+import { getRikishi } from "../queries";
 
 /**
  * Apply the result of a single bout to the world.
@@ -39,8 +40,8 @@ export function applyBoutResult(
     return builder.build();
   }
 
-  const east = world.rikishi.get(match.eastRikishiId);
-  const west = world.rikishi.get(match.westRikishiId);
+  const east = getRikishi(world, match.eastRikishiId);
+  const west = getRikishi(world, match.westRikishiId);
   if (!east || !west) {
     return builder.build();
   }
@@ -210,8 +211,8 @@ export function applyBoutResult(
   // 7. Check for mentor-mentee bout and seed narrative event
   const mentorMenteeEvent = checkMentorMenteeBout(east, west);
   if (mentorMenteeEvent) {
-    const mentor = world.rikishi.get(mentorMenteeEvent.mentorId);
-    const apprentice = world.rikishi.get(mentorMenteeEvent.apprenticeId);
+    const mentor = getRikishi(world, mentorMenteeEvent.mentorId);
+    const apprentice = getRikishi(world, mentorMenteeEvent.apprenticeId);
     if (mentor && apprentice) {
       const mentorCtx: NarrativeContext = {
         shikona: apprentice.shikona,

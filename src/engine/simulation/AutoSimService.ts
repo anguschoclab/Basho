@@ -11,6 +11,7 @@ import { RANK_HIERARCHY } from "../banzuke";
 import { publishBanzukeUpdate } from "../banzuke/BanzukePublisher";
 import { phase06_yearly_boundary } from "../tick/phases/phase06_yearly_boundary";
 import { applyImpact } from "../core/ImpactResolver";
+import { getHeya, getRikishi } from "../queries";
 
 // === AUTO-SIM CONFIGURATION ===
 
@@ -269,11 +270,11 @@ export function checkStopCondition(
     yokozunaPromotion: (bashoResult) => bashoResult.promotions.some((p) => p.to === "yokozuna"),
     ozekiPromotion: (bashoResult) => bashoResult.promotions.some((p) => p.to === "ozeki"),
     yusho: (bashoResult, world, config) =>
-      hasPlayer && world.rikishi.get(bashoResult.yushoWinner.id)?.heyaId === config.playerHeyaId,
+      hasPlayer && getRikishi(world, bashoResult.yushoWinner.id)?.heyaId === config.playerHeyaId,
     stableInsolvency: (_bashoResult, world, config) =>
       hasPlayer &&
       config.playerHeyaId !== undefined &&
-      world.heyas.get(config.playerHeyaId)?.runwayBand === "desperate",
+      getHeya(world, config.playerHeyaId)?.runwayBand === "desperate",
     scandal: (_bashoResult, world) => {
       const scandals = world.scandals ?? [];
       const eventLogList = world.eventLog ?? [];
@@ -285,7 +286,7 @@ export function checkStopCondition(
     retirementOfStar: (_bashoResult, world) => {
       const retirements = world.retirements ?? [];
       return retirements.some((r) => {
-        const rikishi = world.rikishi.get(r.rikishiId);
+        const rikishi = getRikishi(world, r.rikishiId);
         return rikishi && (RANK_HIERARCHY[rikishi.rank]?.tier ?? 999) <= 4;
       });
     },

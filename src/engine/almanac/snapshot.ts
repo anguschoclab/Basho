@@ -1,5 +1,6 @@
 import type { WorldState } from "../types/world";
 import type { AlmanacSnapshot } from "./types";
+import { getRikishi } from "../queries";
 
 export function buildAlmanacSnapshot(world: WorldState): AlmanacSnapshot | null {
   if (!world.currentBasho) return null;
@@ -11,7 +12,7 @@ export function buildAlmanacSnapshot(world: WorldState): AlmanacSnapshot | null 
   let makuuchiInjuryCount = 0;
 
   for (const rikishiId of world.activeRikishiIds) {
-    const r = world.rikishi.get(rikishiId);
+    const r = getRikishi(world, rikishiId);
     if (!r) continue;
     if (r.division === "makuuchi") {
       makuuchiRikishiCount++;

@@ -4,6 +4,7 @@ import type { WorldState } from "../types/world";
 import type { BashoState, MatchSchedule } from "../types/basho";
 import type { Id } from "../types/common";
 import { rngForWorld } from "../rng";
+import { getRikishi } from "../queries";
 
 /**
  * Run a single-elimination playoff among tied yūshō candidates.
@@ -31,8 +32,8 @@ export function resolvePlayoffs(
     const bye = round.length % 2 === 1 ? round[round.length - 1] : null;
 
     for (const [eastId, westId] of bouts) {
-      const east = world.rikishi.get(eastId);
-      const west = world.rikishi.get(westId);
+      const east = getRikishi(world, eastId);
+      const west = getRikishi(world, westId);
       if (!east || !west) {
         next.push(eastId);
         continue;

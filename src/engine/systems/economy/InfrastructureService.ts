@@ -19,6 +19,7 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { FACILITY_REGISTRY, FacilityId } from "../../types/infrastructure";
 import {
+import { getHeya } from "../../queries";
   CONSTRUCTION_COST_LEVEL_MULTIPLIER,
   CONSTRUCTION_BUILD_TIME_THRESHOLD,
 } from "../../../constants/engine/economyExtended";
@@ -60,7 +61,7 @@ export const InfrastructureService = {
    */
   startConstruction(world: WorldState, heyaId: Id, facilityId: FacilityId): StateImpact {
     const builder = createImpactBuilder("startConstruction");
-    const heya = world.heyas.get(heyaId);
+    const heya = getHeya(world, heyaId);
     if (!heya) return builder.build();
 
     const def = FACILITY_REGISTRY[facilityId];

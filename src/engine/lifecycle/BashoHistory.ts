@@ -15,6 +15,7 @@ import type { StateImpact } from "../core/StateImpact";
 import { SIMULATION_CONFIG } from "../core/SimulationConfig";
 import type { SpecialPrizesResult } from "../banzuke/specialPrizes";
 import { historyCache } from "../historyCache";
+import { getRikishi } from "../queries";
 
 export function recordBashoHistory(
   world: WorldState,
@@ -30,7 +31,7 @@ export function recordBashoHistory(
   const rng = rngForWorld(world, "history", `basho_result_${world.year}_${basho.bashoName}`);
 
   // Credit yusho prize to rikishi economics (JSA model: paid directly to rikishi)
-  const yushoRikishi = world.rikishi.get(yusho);
+  const yushoRikishi = getRikishi(world, yusho);
   if (yushoRikishi) {
     const yushoEconomics = yushoRikishi.economics || {
       cash: 0,
@@ -58,7 +59,7 @@ export function recordBashoHistory(
   // Credit jun-yusho prizes to rikishi economics
   const junYushoIds = topCandidates.filter((id) => id !== yusho);
   for (const junYushoId of junYushoIds) {
-    const junRikishi = world.rikishi.get(junYushoId);
+    const junRikishi = getRikishi(world, junYushoId);
     if (junRikishi) {
       const junEconomics = junRikishi.economics || {
         cash: 0,
@@ -200,7 +201,7 @@ export function recordBashoHistory(
   });
 
   runPostBashoResolution(world);
-  const yushoRikishiForLog = world.rikishi.get(yusho);
+  const yushoRikishiForLog = getRikishi(world, yusho);
   builder.logEvent(
     "BASHO_STATUS",
     "basho",
@@ -268,7 +269,7 @@ export function checkYokozunaPromotions(
   if (!world.historyIndex) return;
 
   const ozekiIds = Array.from(world.activeRikishiIds)
-    .map((id) => world.rikishi.get(id))
+    .map((id) => getRikishi(world, id))
     .filter((r): r is Rikishi => r !== undefined && r.rank === "ozeki")
     .map((r) => r.id);
 
@@ -287,7 +288,7 @@ export function checkYokozunaPromotions(
 
     if (isStatEligible) {
       const isStrongSupport = heat >= 75;
-      const rikishi = world.rikishi.get(rid);
+      const rikishi = getRikishi(world, rid);
 
       builder.logEvent(
         "PROMOTION_DELIBERATION",

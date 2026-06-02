@@ -7,6 +7,7 @@
 
 import type { WorldState } from "../types/world";
 import type { Oyakata } from "../types/oyakata";
+import { getHeya } from "../queries";
 
 export interface RecruitmentAgentContext {
   oyakata: Oyakata;
@@ -109,9 +110,9 @@ export function spawnRecruitmentAgent(ctx: RecruitmentAgentContext): Recruitment
 
   // Rival competition adjustment
   if (rivalHeyaId) {
-    const rivalHeya = world.heyas.get(rivalHeyaId);
+    const rivalHeya = getHeya(world, rivalHeyaId);
     const rivalReputation = rivalHeya?.reputation || 50;
-    const playerHeya = world.heyas.get(oyakata.heyaId);
+    const playerHeya = getHeya(world, oyakata.heyaId);
     const playerReputation = playerHeya?.reputation || 50;
 
     if (rivalReputation > playerReputation) {

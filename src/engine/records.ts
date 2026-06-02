@@ -4,6 +4,7 @@ import type { Id } from "./types/common";
 import type { Rikishi } from "./types/rikishi";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
+import { getRikishi } from "./queries";
 
 /**
  * Ensures the records state is initialized.
@@ -134,7 +135,7 @@ export function onBashoEnded(world: WorldState): StateImpact {
   };
 
   for (const rikishiId of world.activeRikishiIds) {
-    const rikishi = world.rikishi.get(rikishiId);
+    const rikishi = getRikishi(world, rikishiId);
     if (!rikishi) continue;
     // 1. Career Wins
     updateLeaderboard(updatedRecords.allTime.careerWins, rikishi, rikishi.careerWins, year, month);

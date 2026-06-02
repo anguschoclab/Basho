@@ -11,7 +11,7 @@ import type { Rank } from "../../types/banzuke";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { RNGRegistry } from "../../core/RNGRegistry";
-import { getHeya } from "../../queries";
+import { getHeya, getRikishi} from "../../queries";
 
 export type ExhibitionRegion = "Mongolia" | "Georgia" | "Europe" | "Americas" | "East_Asia";
 
@@ -97,7 +97,7 @@ export const WorldCircuitService = {
   ): StateImpact {
     const builder = createImpactBuilder("processExhibitionResult");
     const heya = getHeya(world, heyaId);
-    const rikishi = world.rikishi.get(rikishiId);
+    const rikishi = getRikishi(world, rikishiId);
     if (!heya || !rikishi) return builder.build();
 
     const rng = RNGRegistry.getSystemRNG(

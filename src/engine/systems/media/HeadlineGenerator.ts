@@ -7,6 +7,7 @@ import { SeededRNG } from "../../rng";
 import { WorldState } from "../../types/world";
 import { HeadlineTier } from "../../types/media";
 import { BardEngine } from "../../narrative/BardEngine";
+import { getRikishi } from "../../queries";
 
 export function generateBoutHeadline(args: {
   rng: SeededRNG;
@@ -19,8 +20,8 @@ export function generateBoutHeadline(args: {
 }): { title: string; subtitle?: string } {
   const { rng, world, winnerId, loserId, kimariteName, upset, tier } = args;
 
-  const winner = world.rikishi.get(winnerId)?.shikona ?? "Unknown";
-  const loser = world.rikishi.get(loserId)?.shikona ?? "Unknown";
+  const winner = getRikishi(world, winnerId)?.shikona ?? "Unknown";
+  const loser = getRikishi(world, loserId)?.shikona ?? "Unknown";
   const ctx = { winner, loser, kimarite: kimariteName };
 
   let titlePath: string;

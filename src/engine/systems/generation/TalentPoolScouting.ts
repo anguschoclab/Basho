@@ -20,6 +20,7 @@ import {
 import { clampInt } from "../../utils/math";
 import { isForeign } from "../../utils/identity";
 import { ensureTalentPoolState } from "./TalentPoolStateService";
+import { getHeya, getRikishi } from "../../queries";
 
 // ============================================
 // READ OPERATORS
@@ -41,7 +42,7 @@ export function listVisibleCandidates(
 
   // Phase 5 Depth: Regional Gating for foreign candidates
   if (poolType === "foreign" && world.playerHeyaId) {
-    const heya = world.heyas.get(world.playerHeyaId);
+    const heya = getHeya(world, world.playerHeyaId);
     if (heya) {
       const presence = heya.regionalPresence || {};
       return candidates.filter((c) => {
@@ -67,7 +68,7 @@ export function getCandidateScoutingLevel(world: WorldState, candidateId: Id): n
 export function getForeignCountInHeya(world: WorldState, heyaId: Id): number {
   let count = 0;
   for (const rikishiId of world.activeRikishiIds) {
-    const r = world.rikishi.get(rikishiId);
+    const r = getRikishi(world, rikishiId);
     if (r && r.heyaId === heyaId && (r.nationality ?? "Japan") !== "Japan") {
       count++;
     }
@@ -224,7 +225,7 @@ export function getScoutedCandidateView(world: WorldState, candidateId: Id) {
 
   // Phase 5 Depth: Academy Advanced Discovery
   if (world.playerHeyaId && candidate.nationality !== "Japan") {
-    const heya = world.heyas.get(world.playerHeyaId);
+    const heya = getHeya(world, world.playerHeyaId);
     const presence = heya?.regionalPresence?.[candidate.originRegion] || 0;
     if (presence >= 80) {
       // Academy bonus: reveal more intel automatically (+30 effective scouting)

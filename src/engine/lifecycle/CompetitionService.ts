@@ -22,6 +22,7 @@ import { calculateStandings } from "./PlayoffResolver";
 import { resolvePlayoffs } from "./PlayoffResolver";
 import { distributePrizes, payBashoTeate, payKinboshiStipends } from "./PrizeDistribution";
 import { recordBashoHistory } from "./BashoHistory";
+import { getRikishi } from "../queries";
 
 /**
  * Conclude Tournament Competition — handles yusho, prizes, and playoffs.
@@ -63,7 +64,7 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
     yusho = playoffResult.winner;
     playoffMatches.push(...playoffResult.matches);
 
-    const champ = world.rikishi.get(yusho);
+    const champ = getRikishi(world, yusho);
     builder.logEvent(
       "BOUT_RESOLVED",
       "narrative",
@@ -120,7 +121,7 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
   // Accumulate mochikyukin points for sekitori
   const mochikyukinImpact = createImpactBuilder("mochikyukinAccumulation");
   for (const id of world.activeRikishiIds) {
-    const r = world.rikishi.get(id);
+    const r = getRikishi(world, id);
     if (!r) continue;
     if (r.division !== "makuuchi" && r.division !== "juryo") continue;
 

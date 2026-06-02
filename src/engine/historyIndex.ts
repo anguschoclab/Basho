@@ -8,6 +8,7 @@ import type { Id } from "./types/common";
 import type { WorldState } from "./types/world";
 import type { Division, RankPosition, BanzukeSnapshot } from "./types/banzuke";
 import type { BashoName, BashoResult } from "./types/basho";
+import { getRikishi } from "./queries";
 
 /** Canon key for a basho (unique) */
 export type BashoKey = `${number}-${1 | 2 | 3 | 4 | 5 | 6}`;
@@ -332,7 +333,7 @@ export function indexBashoResult(world: WorldState, bashoResult: BashoResult): v
         existing.wins = s.wins;
         existing.losses = s.losses;
       } else {
-        const r = world.rikishi.get(rid);
+        const r = getRikishi(world, rid);
         pushRikishiEntry(idx, rid, {
           bashoKey,
           year: bashoResult.year,

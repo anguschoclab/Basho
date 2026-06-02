@@ -23,6 +23,7 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { RivalryService } from "../narrative/RivalryService";
 import {
+import { getRikishi } from "../../queries";
   SPARRING_MAX_BLEED,
   SPARRING_BLEED_THRESHOLD,
   SPARRING_BLEED_SCALE,
@@ -73,8 +74,8 @@ const CHEMISTRY_MULTIPLIERS: Record<SparringChemistry, number> = {
  *
  * @example
  * ```ts
- * const a = world.rikishi.get("rikishi1");
- * const b = world.rikishi.get("rikishi2");
+ * const a = getRikishi(world, "rikishi1");
+ * const b = getRikishi(world, "rikishi2");
  *
  * if (SparringService.canSpar(a, b)) {
  *   const chemistry = SparringService.calculateChemistry(a, b);
@@ -273,8 +274,8 @@ export function assignSparringPair(
   currentWeek: number
 ): StateImpact {
   const builder = createImpactBuilder("assignSparringPair");
-  const a = world.rikishi.get(aId);
-  const b = world.rikishi.get(bId);
+  const a = getRikishi(world, aId);
+  const b = getRikishi(world, bId);
 
   // Validate both rikishi exist
   if (!a || !b) return builder.build();
@@ -401,8 +402,8 @@ export function applyWeeklySparring(world: WorldState): StateImpact {
     const updatedPairs: Record<string, SparringPair> = { ...sparringState.pairs };
 
     for (const [pairKey, pair] of Object.entries(sparringState.pairs)) {
-      const a = world.rikishi.get(pair.aId);
-      const b = world.rikishi.get(pair.bId);
+      const a = getRikishi(world, pair.aId);
+      const b = getRikishi(world, pair.bId);
 
       if (!a || !b) continue;
 

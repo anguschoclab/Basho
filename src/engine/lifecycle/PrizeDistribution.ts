@@ -7,6 +7,7 @@ import type { StateImpact } from "../core/StateImpact";
 import { applyAchievementImpact } from "../systems/economics/SponsorshipService";
 import { SIMULATION_CONFIG } from "../core/SimulationConfig";
 import type { Id } from "../types/common";
+import { getRikishi } from "../queries";
 
 /**
  * Distributes special prizes (Sansho) and tournament bonuses at the end of a basho.
@@ -35,7 +36,7 @@ export function distributePrizes(
   for (const [key, type] of Object.entries(awardTypes)) {
     const rikishiId = (prizes as Record<string, string | undefined>)[key];
     if (rikishiId) {
-      const r = world.rikishi.get(rikishiId);
+      const r = getRikishi(world, rikishiId);
       if (r) {
         const currentAchievements = r.stats?.achievements || {
           kinboshiEarned: 0,
@@ -123,7 +124,7 @@ export function payBashoTeate(world: WorldState): StateImpact {
   const builder = createImpactBuilder("payBashoTeate");
 
   for (const id of world.activeRikishiIds) {
-    const r = world.rikishi.get(id);
+    const r = getRikishi(world, id);
     if (!r) continue;
 
     // Only non-sekitori receive basho teate
@@ -176,7 +177,7 @@ export function payKinboshiStipends(world: WorldState): StateImpact {
 
   for (const [rikishiId, count] of Object.entries(kinboshiMap)) {
     if (count <= 0) continue;
-    const r = world.rikishi.get(rikishiId);
+    const r = getRikishi(world, rikishiId);
     if (!r || r.isRetired) continue;
 
     const stipend = count * SIMULATION_CONFIG.prizes.kinboshiStipend;

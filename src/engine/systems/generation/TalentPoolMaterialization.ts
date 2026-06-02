@@ -5,6 +5,7 @@ import type { Id } from "../../types/common";
 import { TalentPoolType, TalentCandidate, TalentPoolState } from "../../types/talent";
 import { convertCandidateToRikishi } from "./CandidateBuilder";
 import { RNGRegistry } from "../../core/RNGRegistry";
+import { getHeya } from "../../queries";
 
 /**
  * Internal helper for materialization that tracks state updates during a loop.
@@ -28,7 +29,7 @@ export function materializeCandidateToRikishiInternal(
   const rikishi = convertCandidateToRikishi({ candidate, rng, currentYear: world.year, heyaId });
 
   builder.updateRikishi(rikishi.id, rikishi);
-  const heya = world.heyas.get(heyaId);
+  const heya = getHeya(world, heyaId);
   if (heya) {
     builder.updateHeya(heyaId, { rikishiIds: [...(heya.rikishiIds || []), rikishi.id] });
   }

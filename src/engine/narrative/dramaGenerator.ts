@@ -14,6 +14,7 @@ import { rngForWorld } from "../rng";
 import { stableSort } from "../utils/sort";
 import type { ActiveCrisis, CrisisType } from "../types/crises";
 import { isGovernancePlayerRelevant } from "../npc/npcEventSurfacing";
+import { getRikishi } from "../queries";
 
 export interface DramaEvent {
   id: string;
@@ -52,7 +53,7 @@ function generateRandomDrama(world: WorldState): StateImpact {
   if (eventType === 0) {
     // Scandal
     const activeRikishi = Array.from(world.activeRikishiIds)
-      .map((id) => world.rikishi.get(id))
+      .map((id) => getRikishi(world, id))
       .filter((r): r is Rikishi => r !== undefined);
     const rikishis = stableSort(activeRikishi, (x) => x.id);
     const target = rikishis[rng.int(0, rikishis.length - 1)];

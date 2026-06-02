@@ -7,6 +7,7 @@ import { initializeBasho } from "../systems/generation/WorldFactory";
 import { generateFullBashoSchedule, scheduleAllDivisionsDay } from "../schedule";
 import { stableTieBreak } from "../utils/sort";
 import { resolveImpacts } from "../core/ImpactResolver";
+import { getRikishi } from "../queries";
 
 /**
  * High-speed Tournament Simulation.
@@ -31,7 +32,7 @@ export function simulateEntireBasho(
 
   // Initialize standings (sekitori only)
   for (const id of world.activeRikishiIds) {
-    const rikishi = world.rikishi.get(id);
+    const rikishi = getRikishi(world, id);
     if (!rikishi) continue;
     if (rikishi.division === "makuuchi" || rikishi.division === "juryo") {
       standings.set(id, { wins: 0, losses: 0 });
@@ -63,8 +64,8 @@ export function simulateEntireBasho(
 
     for (let boutIndex = 0; boutIndex < dayMatches.length; boutIndex++) {
       const match = dayMatches[boutIndex];
-      const east = world.rikishi.get(match.eastRikishiId);
-      const west = world.rikishi.get(match.westRikishiId);
+      const east = getRikishi(world, match.eastRikishiId);
+      const west = getRikishi(world, match.westRikishiId);
 
       if (!east || !west) continue;
 
@@ -130,7 +131,7 @@ export function simulateEntireBasho(
 
   // Determine yusho winner with canonical tie-breaking
   const sortedStandings = Array.from(standings.entries())
-    .map(([id, stats]) => ({ id, rikishi: world.rikishi.get(id), ...stats }))
+    .map(([id, stats]) => ({ id, rikishi: getRikishi(world, id), ...stats }))
     .sort((a, b) => b.wins - a.wins || a.losses - b.losses || stableTieBreak(a.id, b.id));
 
   const yushoEntry = sortedStandings[0];

@@ -15,6 +15,7 @@ import type { DynastyRecord } from "../../types/dynasty";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { TrainingPhilosophyService } from "./TrainingPhilosophyService";
+import { getHeya, getRikishi } from "../../queries";
 
 export const DynastyService = {
   // ──────────────────────────────────────────────────────────────────────────
@@ -83,7 +84,7 @@ export const DynastyService = {
 
     // 1. Current roster & alumni
     for (const rikishiId of world.activeRikishiIds) {
-      const rikishi = world.rikishi.get(rikishiId);
+      const rikishi = getRikishi(world, rikishiId);
       if (!rikishi) continue;
       const isSekitori = rikishi.division === "makuuchi" || rikishi.division === "juryo";
       // Elite candidates: Current sekitori or high-performing alumni
@@ -101,7 +102,7 @@ export const DynastyService = {
     // 1.5. Drought Fallback: Senior Makushita from current roster
     if (eligible.length === 0) {
       for (const rikishiId of world.activeRikishiIds) {
-        const rikishi = world.rikishi.get(rikishiId);
+        const rikishi = getRikishi(world, rikishiId);
         if (!rikishi) continue;
         if (
           rikishi.heyaId === heyaId &&
@@ -135,11 +136,11 @@ export const DynastyService = {
    */
   triggerSuccession(world: WorldState, heyaId: string, successorRikishiId: string): StateImpact {
     const builder = createImpactBuilder("triggerSuccession");
-    const heya = world.heyas.get(heyaId);
+    const heya = getHeya(world, heyaId);
     const currentOyakata = world.oyakata?.get(heya?.oyakataId ?? "");
     const successorIsActive = world.rikishi.has(successorRikishiId);
     const successorRikishi =
-      world.rikishi.get(successorRikishiId) ?? world.historicalRikishi?.get(successorRikishiId);
+      getRikishi(world, successorRikishiId) ?? world.historicalRikishi?.get(successorRikishiId);
 
     if (!heya || !currentOyakata || !successorRikishi) return builder.build();
 
@@ -227,7 +228,7 @@ export const DynastyService = {
    */
   triggerSuccessionWithGeneric(world: WorldState, heyaId: string, dummyId: string): StateImpact {
     const builder = createImpactBuilder("triggerSuccessionWithGeneric");
-    const heya = world.heyas.get(heyaId);
+    const heya = getHeya(world, heyaId);
     const currentOyakata = world.oyakata?.get(heya?.oyakataId ?? "");
 
     if (!heya || !currentOyakata) return builder.build();
@@ -300,7 +301,7 @@ export const DynastyService = {
   // ──────────────────────────────────────────────────────────────────────────
 
   generateDynastyReport(world: WorldState, heyaId: string) {
-    const heya = world.heyas.get(heyaId);
+    const heya = getHeya(world, heyaId);
     if (!heya?.dynasty) return null;
 
     // Bankrupt stables get a "Scholarship Quota" of at least 1 (A6.2)

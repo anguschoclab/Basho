@@ -12,6 +12,7 @@ import type { WorldState } from "../types/world";
 import type { Rikishi } from "../types/rikishi";
 import type { Heya } from "../types/heya";
 import { stableSort } from "../utils/sort";
+import { getHeya, getRikishi } from "../queries";
 
 /**
  * Options for entity retrieval.
@@ -75,13 +76,13 @@ export const EntityCollection = {
    * Get a specific heya by ID.
    */
   getHeya(world: WorldState, heyaId: string): Heya | undefined {
-    return world.heyas.get(heyaId);
+    return getHeya(world, heyaId);
   },
 
   /**
    * Get a specific rikishi by ID.
    */
   getRikishiById(world: WorldState, id: string): Rikishi | undefined {
-    return world.rikishi.get(id);
+    return getRikishi(world, id);
   },
 };
