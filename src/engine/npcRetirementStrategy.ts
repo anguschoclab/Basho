@@ -12,6 +12,7 @@ import {
   evaluateRulesCumulative,
   TraitChecks,
 } from "./strategy/NPCStrategyFramework";
+import { getRikishi } from "./queries";
 
 interface RetirementStrategy {
   evaluateRetirements: (world: WorldState, heya: Heya, oyakata: Oyakata) => StateImpact;
@@ -22,14 +23,14 @@ const NATURAL_RETIREMENT_RULE: StrategyRule = {
   condition: (ctx) => {
     // Check if ANY rikishi in heya wants to retire naturally
     return (ctx.heya.rikishiIds ?? []).some((id) => {
-      const r = ctx.world.rikishi.get(id);
+      const r = getRikishi(ctx.world, id);
       return r && checkRetirement(r, ctx.world.calendar?.year ?? 2026, ctx.world.seed);
     });
   },
   action: (ctx) => {
     const builder = createImpactBuilder("ret_natural");
     for (const id of ctx.heya.rikishiIds ?? []) {
-      const r = ctx.world.rikishi.get(id);
+      const r = getRikishi(ctx.world, id);
       if (!r) continue;
       const reason = checkRetirement(r, ctx.world.calendar?.year ?? 2026, ctx.world.seed);
       if (reason) {
@@ -54,7 +55,7 @@ const FORCE_RETIRE_STAGNANT_RULE: StrategyRule = {
   action: (ctx) => {
     const builder = createImpactBuilder("ret_force_stagnant");
     const candidates = (ctx.heya.rikishiIds ?? [])
-      .map((id) => ctx.world.rikishi.get(id))
+      .map((id) => getRikishi(ctx.world, id))
       .filter((r): r is Rikishi => !!r && (ctx.world.calendar?.year ?? 2026) - r.birthYear > 32)
       .sort((a, b) => (a.power ?? 50) - (b.power ?? 50));
 

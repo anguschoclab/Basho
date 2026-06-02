@@ -10,7 +10,7 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { RNGRegistry } from "../../core/RNGRegistry";
 
-import { ActiveCrisis, CrisisOption } from "../../types/crises";
+import { ActiveCrisis } from "../../types/crises";
 
 export const CrisisService = {
   /**
@@ -68,7 +68,7 @@ export const CrisisService = {
           {
             id: "quarantine",
             label: "Quarantine & Rest",
-            impactGenerator: (world) => {
+            impactGenerator: (_world: WorldState) => {
               const b = createImpactBuilder("stomach_flu_quarantine");
               // Penalty to training for everyone, but prevents spread
               return b.build();
@@ -77,7 +77,7 @@ export const CrisisService = {
           {
             id: "push_through",
             label: "Push Through",
-            impactGenerator: (world) => {
+            impactGenerator: (_world: WorldState) => {
               const b = createImpactBuilder("stomach_flu_push");
               // Risk of severe injury or performance drop
               return b.build();
@@ -94,7 +94,7 @@ export const CrisisService = {
           {
             id: "accept",
             label: "Accept the Challenge",
-            impactGenerator: (world) => {
+            impactGenerator: (_world: WorldState) => {
               const b = createImpactBuilder("dojo_duel_accept");
               b.logEvent("OYAKATA_MOOD_SHIFT", "narrative", { newMood: "furious" });
               return b.build();
@@ -103,7 +103,7 @@ export const CrisisService = {
           {
             id: "decline",
             label: "Ignore the Distraction",
-            impactGenerator: (world) => {
+            impactGenerator: (_world: WorldState) => {
               const b = createImpactBuilder("dojo_duel_decline");
               return b.build();
             },
@@ -119,7 +119,7 @@ export const CrisisService = {
           {
             id: "suspend",
             label: "Issue Suspension",
-            impactGenerator: (world) => {
+            impactGenerator: (_world: WorldState) => {
               const b = createImpactBuilder("scandal_suspend");
               b.logEvent("GOVERNANCE_RULING", "discipline", { status: "suspended" });
               return b.build();
@@ -128,7 +128,7 @@ export const CrisisService = {
           {
             id: "defend",
             label: "Publicly Defend",
-            impactGenerator: (world) => {
+            impactGenerator: (_world: WorldState) => {
               const b = createImpactBuilder("scandal_defend");
               b.logEvent("OYAKATA_MOOD_SHIFT", "narrative", { newMood: "stubborn" });
               return b.build();
@@ -145,7 +145,7 @@ export const CrisisService = {
           {
             id: "renegotiate",
             label: "Renegotiate Terms",
-            impactGenerator: (world) => {
+            impactGenerator: (_world: WorldState) => {
               const b = createImpactBuilder("sponsor_renegotiate");
               return b.build();
             },
@@ -153,7 +153,7 @@ export const CrisisService = {
           {
             id: "call_bluff",
             label: "Call Their Bluff",
-            impactGenerator: (world) => {
+            impactGenerator: (_world: WorldState) => {
               const b = createImpactBuilder("sponsor_bluff");
               return b.build();
             },
@@ -169,7 +169,7 @@ export const CrisisService = {
           {
             id: "halt_training",
             label: "Halt Training",
-            impactGenerator: (world) => {
+            impactGenerator: (_world: WorldState) => {
               const b = createImpactBuilder("training_halt");
               return b.build();
             },
@@ -177,7 +177,7 @@ export const CrisisService = {
           {
             id: "continue",
             label: "Continue with Caution",
-            impactGenerator: (world) => {
+            impactGenerator: (_world: WorldState) => {
               const b = createImpactBuilder("training_continue");
               return b.build();
             },
@@ -193,7 +193,7 @@ export const CrisisService = {
           {
             id: "exclusive",
             label: "Offer Exclusive Interview",
-            impactGenerator: (world) => {
+            impactGenerator: (_world: WorldState) => {
               const b = createImpactBuilder("media_exclusive");
               return b.build();
             },
@@ -201,7 +201,7 @@ export const CrisisService = {
           {
             id: "no_comment",
             label: "No Comment",
-            impactGenerator: (world) => {
+            impactGenerator: (_world: WorldState) => {
               const b = createImpactBuilder("media_no_comment");
               return b.build();
             },
@@ -217,7 +217,7 @@ export const CrisisService = {
           {
             id: "cooperate",
             label: "Full Cooperation",
-            impactGenerator: (world) => {
+            impactGenerator: (_world: WorldState) => {
               const b = createImpactBuilder("audit_cooperate");
               return b.build();
             },
@@ -225,7 +225,7 @@ export const CrisisService = {
           {
             id: "stonewall",
             label: "Stonewall",
-            impactGenerator: (world) => {
+            impactGenerator: (_world: WorldState) => {
               const b = createImpactBuilder("audit_stonewall");
               return b.build();
             },

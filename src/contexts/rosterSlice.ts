@@ -21,20 +21,22 @@ export function rosterSlice(state: GameState, action: GameAction): GameState {
         selectedRikishiId: action.id,
         phase: action.id ? "rikishi" : state.phase,
       };
-    case "ASSIGN_MENTOR":
+    case "ASSIGN_MENTOR": {
       if (!state.world) return state;
       const assignImpact = assignMentor(state.world, action.mentorId, action.apprenticeId);
       return {
         ...state,
         world: resolveImpacts(state.world, [assignImpact]),
       };
-    case "REMOVE_MENTOR":
+    }
+    case "REMOVE_MENTOR": {
       if (!state.world) return state;
       const removeImpact = removeMentor(state.world, action.apprenticeId);
       return {
         ...state,
         world: resolveImpacts(state.world, [removeImpact]),
       };
+    }
     case "ADD_SPARRING_PAIR": {
       if (!state.world) return state;
       const addPairImpact = assignSparringPair(

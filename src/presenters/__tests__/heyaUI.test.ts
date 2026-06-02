@@ -187,7 +187,7 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1");
       const world = makeMockWorld();
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing specialty field that's not in Staff type
+       
       const mockStaff: Staff[] = [
         {
           id: "staff-1",

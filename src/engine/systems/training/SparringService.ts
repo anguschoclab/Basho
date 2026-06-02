@@ -357,9 +357,9 @@ export function removeSparringPair(
   const pairKey = SparringService.makePairKey(aId, bId);
   if (!currentSparringState.pairs[pairKey]) return builder.build();
 
-  // Remove the pair
-  const updatedSparringState = { ...currentSparringState };
-  delete updatedSparringState.pairs[pairKey];
+  // Remove the pair via object reconstruction (no dynamic delete)
+  const { [pairKey]: _removed, ...remainingPairs } = currentSparringState.pairs;
+  const updatedSparringState = { ...currentSparringState, pairs: remainingPairs };
 
   // If no pairs left, remove the heya from sparringPairs entirely
   const updatedSparringPairs = new Map(world.sparringPairs || []);

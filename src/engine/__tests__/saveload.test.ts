@@ -20,7 +20,7 @@ vi.mock("../persistence/SerializationService", () => ({
 
 // Mock storage helper
 function createMockStorage(throwOnSet = false, throwOnGet = false): IStorageProvider {
-  const store: Record<string, string> = {};
+  let store: Record<string, string> = {};
   return {
     getItem: (key: string) => {
       if (throwOnGet) throw new Error("Storage read failed");
@@ -30,7 +30,7 @@ function createMockStorage(throwOnSet = false, throwOnGet = false): IStorageProv
       if (throwOnSet) throw new Error("Storage write failed");
       store[key] = value;
     },
-    removeItem: (key: string) => delete store[key],
+    removeItem: (key: string) => { store = Object.fromEntries(Object.entries(store).filter(([k]) => k !== key)); },
     key: (index: number) => Object.keys(store)[index] || null,
     get length() {
       return Object.keys(store).length;

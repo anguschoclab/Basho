@@ -13,20 +13,15 @@
 import type { WorldState } from "./types/world";
 import type { BashoName, BoutResult, BashoState } from "./types/basho";
 import type { Id } from "./types/common";
-import { toRankPosition, type Side } from "./types/index";
-import type { BashoPerformance, BanzukeEntry } from "./banzuke";
-import { getNextBasho } from "./calendar";
+import type { Side } from "./types/index";
 import { resolveBout } from "./bout/boutResolver";
-import { advanceOneDay, enterInterim } from "./tick/tickDaily";
+import { advanceOneDay } from "./tick/tickDaily";
 import * as governance from "./governance/GovernanceService";
 import { resetBashoMediaTracking, handleMediaEvent } from "./systems/media/MediaService";
-import { updateBanzuke, generateKeshoForPromotions } from "./banzuke";
 import { applyBoutResult } from "./bout/boutResultApplier";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import { resolveImpacts } from "./core/ImpactResolver";
-import type { StateImpact } from "./core/StateImpact";
 import { getActiveRikishi, getStableRikishi } from "./queries";
-import { checkShikonaChange, recordShikonaChange } from "./history";
 
 // New Lifecycle Services
 import * as bashoManager from "./lifecycle/BashoManager";

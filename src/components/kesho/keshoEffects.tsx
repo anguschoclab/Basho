@@ -96,7 +96,7 @@ export function renderFringe(density: number, color: string): React.ReactNode {
       {[...Array(fringeCount)].map((_, i) => {
         const x = 25 + i * (150 / fringeCount);
         const swayOffset = Math.sin((i / fringeCount) * Math.PI * 2) * 5;
-        // eslint-disable-next-line @typescript-eslint/naming-convention
+         
         const length = 20 + Math.random() * 15;
         const delay = i * 0.05;
 
@@ -109,7 +109,7 @@ export function renderFringe(density: number, color: string): React.ReactNode {
               y2={220 + length}
               stroke={color}
               strokeWidth="1.5"
-              // eslint-disable-next-line @typescript-eslint/naming-convention
+               
               opacity={0.6 + Math.random() * 0.4}
               className="animate-sway"
               style={{ animationDelay: `${delay}s` }}

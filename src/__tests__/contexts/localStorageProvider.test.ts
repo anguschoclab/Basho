@@ -22,7 +22,7 @@ const localStorageMock = (() => {
       store[key] = value;
     },
     removeItem: (key: string) => {
-      delete store[key];
+      store = Object.fromEntries(Object.entries(store).filter(([k]) => k !== key));
     },
     clear: () => {
       store = {};

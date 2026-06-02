@@ -78,7 +78,7 @@ describe("projectRosterEntry", () => {
     momentum: 5,
     talentSeed: 90,
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing edge case with invalid archetype
+     
   });
 
   it("should map base rikishi properties correctly", () => {
