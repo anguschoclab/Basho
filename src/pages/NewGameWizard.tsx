@@ -22,6 +22,7 @@ import { FactionStep } from "@/components/wizard/FactionStep";
 import { StableStep } from "@/components/wizard/StableStep";
 import { LoadingState } from "@/components/wizard/LoadingState";
 import { OYAKATA_BACKSTORIES, ICHIMON_FACTIONS } from "@/constants/ui/wizard";
+import { EntityCollection } from "@/engine/core/EntityCollection";
 
 export default function NewGameWizard() {
   const navigate = useNavigate();
@@ -42,7 +43,7 @@ export default function NewGameWizard() {
   const [selectedHeyaId, setSelectedHeyaId] = useState<string | null>(preselectedHeyaId ?? null);
 
   const world = state.world;
-  const stables = useMemo<Heya[]>(() => (!world ? [] : Array.from(world.heyas.values())), [world]);
+  const stables = useMemo<Heya[]>(() => (!world ? [] : EntityCollection.getHeyas(world)), [world]);
 
   // When a heya is pre-selected, the wizard has 3 steps (skip StableStep)
   const totalSteps = preselectedHeyaId ? 3 : 4;

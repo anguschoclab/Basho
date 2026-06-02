@@ -1,5 +1,6 @@
 import type { WorldState } from "../types/world";
 import type { Rikishi } from "../types/rikishi";
+import type { Oyakata } from "../types/oyakata";
 import { EntityCollection } from "../core/EntityCollection";
 
 export interface TuningMetrics {
@@ -49,9 +50,12 @@ export const SimTuningService = {
     world: WorldState,
     historyStats?: { yokozunaVacancy: number; uniqueWinners: number; successions: number }
   ): TuningMetrics {
-    const activeRikishi = Array.from(world.activeRikishiIds)
-      .map((id) => world.rikishi.get(id))
-      .filter((r): r is Rikishi => r !== undefined);
+    // ⚡ Bolt Optimization: Use direct iteration instead of Array.from().map().filter()
+    const activeRikishi: Rikishi[] = [];
+    for (const id of world.activeRikishiIds) {
+      const r = world.rikishi.get(id);
+      if (r) activeRikishi.push(r);
+    }
 
     // 1. Stat Averages
     const statAverages = {
@@ -77,21 +81,27 @@ export const SimTuningService = {
 
     // 2. Age Distribution
     const ageDistribution: Record<number, number> = {};
+    const calYear = world.calendar?.year ?? world.year;
     activeRikishi.forEach((r) => {
-      const age = world.calendar.year - r.birthYear;
+      const age = calYear - r.birthYear;
       ageDistribution[age] = (ageDistribution[age] || 0) + 1;
     });
 
     // 3. Retirement Ages (Check Historical Collection)
-    const allRikishi = [
-      ...Array.from(world.rikishi.values()),
-      ...(world.historicalRikishi ? Array.from(world.historicalRikishi.values()) : []),
-    ];
-    const retiredRikishi = allRikishi.filter((r) => r.isRetired);
+    // ⚡ Bolt Optimization: Use direct iteration instead of Array.from() allocations
+    const allRikishi: Rikishi[] = [];
+    for (const r of world.rikishi.values()) allRikishi.push(r);
+    if (world.historicalRikishi) {
+      for (const r of world.historicalRikishi.values()) allRikishi.push(r);
+    }
+    const retiredRikishi: Rikishi[] = [];
+    for (const r of allRikishi) {
+      if (r.isRetired) retiredRikishi.push(r);
+    }
 
     const retirementAges = retiredRikishi
-      .filter((r) => r.retirementYear)
-      .map((r) => r.retirementYear! - r.birthYear);
+      .filter((r) => (r as any).retirementYear)
+      .map((r) => (r as any).retirementYear - r.birthYear);
 
     const averageRetirementAge =
       retirementAges.length > 0
@@ -99,9 +109,15 @@ export const SimTuningService = {
         : 0;
 
     // 4. Stable Wealth & Dominance
-    const heyas = Array.from(world.heyas.values());
-    const funds = heyas.map((h) => h.funds || 0);
-    const bankruptCount = heyas.filter((h) => (h.funds || 0) <= 0).length;
+    // ⚡ Bolt Optimization: Use EntityCollection instead of Array.from()
+    const heyas = EntityCollection.getHeyas(world);
+    const funds: number[] = [];
+    let bankruptCount = 0;
+    for (const h of heyas) {
+      const f = h.funds || 0;
+      funds.push(f);
+      if (f <= 0) bankruptCount++;
+    }
 
     const stableWealth = {
       mean: funds.length > 0 ? funds.reduce((a, b) => a + b, 0) / funds.length : 0,
@@ -136,8 +152,13 @@ export const SimTuningService = {
       .slice(0, 10);
 
     // 8. Oyakata Metrics
-    const oyakata = Array.from(world.oyakata.values());
-    const newOyakataFromRikishi = oyakata.filter((o) => o.formerRikishiId).length;
+    // ⚡ Bolt Optimization: Use direct iteration instead of Array.from()
+    const oyakata: Oyakata[] = [];
+    for (const o of world.oyakata.values()) oyakata.push(o);
+    let newOyakataFromRikishi = 0;
+    for (const o of oyakata) {
+      if ((o as any).formerRikishiId) newOyakataFromRikishi++;
+    }
 
     const myoseki = world.myosekiMarket ? Object.values(world.myosekiMarket.stocks) : [];
     const heldMyoseki = myoseki.filter((m) => m.status === "held" || m.status === "leased").length;
@@ -177,13 +198,15 @@ export const SimTuningService = {
         ),
         avgAge:
           activeRikishi.length > 0
-            ? activeRikishi.reduce((sum, r) => sum + (world.calendar.year - r.birthYear), 0) /
+            ? activeRikishi.reduce((sum, r) => sum + ((world.calendar?.year ?? world.year) - r.birthYear), 0) /
               activeRikishi.length
             : 0,
-        oyakataAvgAge: world.oyakata
-          ? Array.from(world.oyakata.values()).reduce((sum, o) => sum + (o.age || 45), 0) /
-            world.oyakata.size
-          : 0,
+        oyakataAvgAge: (() => {
+          if (!world.oyakata || world.oyakata.size === 0) return 0;
+          let sum = 0;
+          for (const o of world.oyakata.values()) sum += o.age || 45;
+          return sum / world.oyakata.size;
+        })(),
         injuryRate:
           activeRikishi.length > 0
             ? (activeRikishi.filter((r) => r.injured).length / activeRikishi.length) * 100

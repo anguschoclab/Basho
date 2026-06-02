@@ -5,6 +5,7 @@
  */
 
 import type { WorldState } from "../../engine/types/world";
+import { EntityCollection } from "../../engine/core/EntityCollection";
 import { buildPerceptionSnapshot } from "../uiDigest";
 
 export interface ScoutingOpponentSnap {
@@ -28,7 +29,7 @@ export function projectScoutingSummary(world: WorldState): ScoutingSummary {
   const snaps: ScoutingOpponentSnap[] = [];
   const playerHeyaId = world.playerHeyaId;
 
-  for (const heya of world.heyas.values()) {
+  for (const heya of EntityCollection.getHeyas(world)) {
     if ((heya.rikishiIds?.length ?? 0) === 0) continue;
     const snap = buildPerceptionSnapshot(world, heya.id);
     snaps.push({

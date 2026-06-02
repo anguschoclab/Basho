@@ -51,13 +51,15 @@ export function triggerPreBashoJournalism(world: WorldState): StateImpact {
   }
 
   // B. Promotion Race
-  const ozekiRikishi = Array.from(world.activeRikishiIds)
-    .map((id) => world.rikishi.get(id))
-    .filter(
-      (r): r is Rikishi =>
-        r !== undefined && r.rank === "ozeki" && (r.consecutiveStrongOzeki ?? 0) >= 1
-    )
-    .sort((a, b) => (b.consecutiveStrongOzeki ?? 0) - (a.consecutiveStrongOzeki ?? 0));
+  // ⚡ Bolt Optimization: Use direct iteration instead of Array.from().map().filter().sort()
+  const ozekiRikishi: Rikishi[] = [];
+  for (const id of world.activeRikishiIds) {
+    const r = world.rikishi.get(id);
+    if (r && r.rank === "ozeki" && (r.consecutiveStrongOzeki ?? 0) >= 1) {
+      ozekiRikishi.push(r);
+    }
+  }
+  ozekiRikishi.sort((a, b) => (b.consecutiveStrongOzeki ?? 0) - (a.consecutiveStrongOzeki ?? 0));
 
   if (ozekiRikishi.length > 0) {
     const r = ozekiRikishi[0];

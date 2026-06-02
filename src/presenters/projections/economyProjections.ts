@@ -6,6 +6,7 @@
  */
 
 import type { WorldState } from "../../engine/types/world";
+import { EntityCollection } from "../../engine/core/EntityCollection";
 
 /**
  * Project the current loan status for a heya.
@@ -49,7 +50,7 @@ export function projectMergerWarnings(world: WorldState) {
     governanceStatus: string;
   }> = [];
 
-  for (const h of world.heyas.values()) {
+  for (const h of EntityCollection.getHeyas(world)) {
     const isInDebt = h.funds < 0;
     const rosterSize = h.rikishiIds?.length ?? 0;
     if (isInDebt && rosterSize <= 3) {

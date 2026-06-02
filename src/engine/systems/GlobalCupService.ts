@@ -70,9 +70,12 @@ export function initializeGlobalCup(
  * Select top JSA rikishi by rank and performance
  */
 function selectJSAParticipants(world: WorldState, count: number): Rikishi[] {
-  const activeRikishi = Array.from(world.activeRikishiIds)
-    .map((id) => world.rikishi.get(id))
-    .filter((r): r is Rikishi => r !== undefined && !r.injured);
+  // ⚡ Bolt Optimization: Use direct iteration instead of Array.from().map().filter()
+  const activeRikishi: Rikishi[] = [];
+  for (const id of world.activeRikishiIds) {
+    const r = world.rikishi.get(id);
+    if (r && !r.injured) activeRikishi.push(r);
+  }
 
   // Sort by rank prestige
   const rankOrder = ["Yokozuna", "Ozeki", "Sekiwake", "Komusubi", "M1", "M2", "M3", "M4", "M5"];

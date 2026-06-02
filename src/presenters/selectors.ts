@@ -32,7 +32,11 @@ function createSelector<T>(fn: (world: WorldState) => T) {
  * Memoized selector for all Rikishi as an array.
  */
 const selectAllRikishi = createSelector((world: WorldState): Rikishi[] => {
-  return world.rikishi ? Array.from(world.rikishi.values()) : [];
+  if (!world.rikishi) return [];
+  // ⚡ Bolt Optimization: Use direct iteration instead of Array.from()
+  const result: Rikishi[] = [];
+  for (const r of world.rikishi.values()) result.push(r);
+  return result;
 });
 
 /**
@@ -162,7 +166,11 @@ export const selectTopRivals = createSelector((world: WorldState) => {
  * Select all retired rikishi (from historicalRikishi).
  */
 export const selectRetiredRikishi = createSelector((world: WorldState): Rikishi[] => {
-  return world.historicalRikishi ? Array.from(world.historicalRikishi.values()) : [];
+  if (!world.historicalRikishi) return [];
+  // ⚡ Bolt Optimization: Use direct iteration instead of Array.from()
+  const result: Rikishi[] = [];
+  for (const r of world.historicalRikishi.values()) result.push(r);
+  return result;
 });
 
 /**

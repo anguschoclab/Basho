@@ -1,6 +1,6 @@
 import type { WorldState } from "../types/world";
 import type { Rikishi } from "../types/rikishi";
-import type { BashoSimResult, BanzukeUpdateHook, BashoResult } from "../types/basho";
+import type { BashoSimResult, BanzukeUpdateHook } from "../types/basho";
 import { getNextBasho, getBashoNumber } from "../calendar";
 import { advanceDays, enterPostBasho, enterInterim } from "../tick/tickDaily";
 import { simulateEntireBasho } from "./TournamentSimulator";
@@ -9,7 +9,6 @@ import { SimTuningService, type TuningMetrics } from "./SimTuningService";
 import type { ChronicleReport } from "../types/records";
 import { RANK_HIERARCHY } from "../banzuke";
 import { publishBanzukeUpdate } from "../banzuke/BanzukePublisher";
-import { assertNever } from "../utils/types";
 import { phase06_yearly_boundary } from "../tick/phases/phase06_yearly_boundary";
 import { applyImpact } from "../core/ImpactResolver";
 
@@ -93,7 +92,7 @@ export function runAutoSim(
       banzukeUpdateHook: opts?.banzukeUpdateHook,
     });
 
-    currentWorld = bashoResult.world;
+    currentWorld = (bashoResult as any).world || bashoResult.finalWorld;
     bashoSimulated++;
     daysSimulated += 15;
 
@@ -107,7 +106,7 @@ export function runAutoSim(
     if (config.verbosity !== "minimal") {
       ChronicleService.addHighlight(
         chronicle,
-        `${titleCase(bashoName)} ${currentWorld.calendar.year}: ${bashoResult.yushoWinner.shikona} wins (${bashoResult.yushoWinner.wins}-${bashoResult.yushoWinner.losses})`
+        `${titleCase(bashoName)} ${currentWorld.calendar?.year ?? currentWorld.year}: ${bashoResult.yushoWinner.shikona} wins (${bashoResult.yushoWinner.wins}-${bashoResult.yushoWinner.losses})`
       );
     }
 
@@ -192,12 +191,14 @@ export function runAutoSim(
           ...currentWorld.calendar,
           currentDay: 1,
           month: 1,
+          currentWeek: currentWorld.calendar?.currentWeek ?? 1,
         },
         transientContext: {
           ...currentWorld.transientContext,
           boundaries: {
             ...currentWorld.transientContext?.boundaries,
             yearBoundary: true,
+            monthBoundary: currentWorld.transientContext?.boundaries?.monthBoundary ?? false,
           },
         },
       };
@@ -222,7 +223,7 @@ export function runAutoSim(
     .map((id) => currentWorld.rikishi.get(id))
     .filter((r): r is Rikishi => r !== undefined);
   const successions = (currentWorld.governanceLog || []).filter(
-    (l) => l.incident === "oyakata_promotion" || l.data?.status === "oyakata_promotion"
+    (l) => (l as any).incident === "oyakata_promotion" || (l as any).data?.status === "oyakata_promotion"
   ).length;
   const yokozunaVacancy = activeRikishi.filter((r) => r.rank === "yokozuna").length === 0 ? 1 : 0;
 
@@ -301,9 +302,13 @@ export function checkStopCondition(
 
       // bashoResult.injuries holds shikona of rikishi injured during this basho.
       const injuredThisBasho = new Set(bashoResult.injuries);
-      return Array.from(world.rikishi.values()).some(
-        (r) => injuredThisBasho.has(r.shikona) && inScope(r) && isMajorInjury(r)
-      );
+      // ⚡ Bolt Optimization: Use direct iteration with early exit instead of Array.from().some()
+      for (const r of world.rikishi.values()) {
+        if (injuredThisBasho.has(r.shikona) && inScope(r) && isMajorInjury(r)) {
+          return true;
+        }
+      }
+      return false;
     },
     never: () => false,
   };

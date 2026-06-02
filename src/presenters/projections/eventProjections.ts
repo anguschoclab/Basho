@@ -9,17 +9,18 @@ import type { WorldState } from "../../engine/types/world";
 import type { BashoResult, MatchSchedule } from "../../engine/types/basho";
 import type { EventLogData, GovernanceSummary } from "../types/uiDigest";
 import { projectRikishi } from "../rikishiUI";
+import { EntityCollection } from "../../engine/core/EntityCollection";
 
 /**
  * Project event log data with rikishi/heya lookup functions.
  */
 export function projectEventLogData(world: WorldState): EventLogData {
   const rikishiMap = new Map<string, { id: string; shikona: string }>();
-  for (const r of world.rikishi.values()) {
+  for (const r of EntityCollection.getRikishi(world, { includeRetired: true })) {
     rikishiMap.set(r.id, { id: r.id, shikona: r.shikona });
   }
   const heyaMap = new Map<string, { id: string; name: string }>();
-  for (const h of world.heyas.values()) {
+  for (const h of EntityCollection.getHeyas(world)) {
     heyaMap.set(h.id, { id: h.id, name: h.name });
   }
   return {

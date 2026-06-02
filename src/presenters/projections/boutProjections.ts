@@ -22,6 +22,7 @@ import {
   getScoutingLevel,
 } from "../../engine/scoutingStore";
 import { describeScoutingLevel, getScoutedAttributes } from "../../engine";
+import { EntityCollection } from "../../engine/core/EntityCollection";
 
 /**
  * Build a BoutPreviewUI for the NHK-style pre-bout overlay.
@@ -118,8 +119,7 @@ export function projectOpponentScoutingUIDigest(
   > = [];
   const seed = world.seed || "default";
 
-  for (const r of world.rikishi.values()) {
-    if (r.isRetired) continue;
+  for (const r of EntityCollection.getActiveRikishi(world)) {
     if (r.heyaId === playerHeyaId) continue;
     if (filterDivision && r.division !== filterDivision) continue;
 

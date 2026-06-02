@@ -15,7 +15,7 @@ import type {
 } from "../types/uiDigest";
 import { queryEvents } from "../../engine/events";
 import { selectTopRivals } from "../selectors";
-import { getHeyaRoster, getSekitoriInHeya, getActiveRikishi } from "../../engine/queries";
+import { getSekitoriInHeya } from "../../engine/queries";
 import { buildPrevRankScores, buildBanzukeRows } from "../banzukeUI";
 import { projectRosterEntry } from "../rikishiUI";
 import { EntityCollection } from "../../engine/core/EntityCollection";
@@ -53,7 +53,7 @@ export function projectDashboardUIDigest(world: WorldState): DashboardUIDigest |
     stats: {
       rosterSize: (heya.rikishiIds || []).length,
       sekitoriCount: getSekitoriInHeya(world, playerHeyaId),
-      injuredCount: getHeyaRoster(world, playerHeyaId).filter((r) => r.injured).length,
+      injuredCount: EntityCollection.getHeyaRoster(world, playerHeyaId).filter((r) => r.injured).length,
     },
     recentEvents,
     topRivals,
@@ -73,9 +73,7 @@ export function projectBanzukeUIDigest(world: WorldState): BanzukeUIDigest {
 
   const prevScoreMap = buildPrevRankScores(history);
 
-  // ⚡ Bolt Optimization: Replace O(N) Array.from(world.rikishi.values()).filter(...)
-  // with cached getActiveRikishi to eliminate redundant array allocations and iterations
-  const allRikishi = getActiveRikishi(world);
+  const allRikishi = EntityCollection.getActiveRikishi(world);
   const rosterEntries = allRikishi.map((r) => {
     return projectRosterEntry(r, world, prevScoreMap.get(r.id));
   });
@@ -88,7 +86,7 @@ export function projectBanzukeUIDigest(world: WorldState): BanzukeUIDigest {
   });
 
   const heyaNameMap = new Map<string, string>();
-  for (const h of world.heyas.values()) {
+  for (const h of EntityCollection.getHeyas(world)) {
     heyaNameMap.set(h.id, h.name);
   }
 

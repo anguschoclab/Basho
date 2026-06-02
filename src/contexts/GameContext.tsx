@@ -281,14 +281,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const getStandings = useCallback(() => {
     if (!state.world?.currentBasho) return [];
     const standings = state.world.currentBasho.standings;
-    return Array.from(state.world.rikishi.values())
-      .filter((r) => r.division === "makuuchi")
-      .map((r) => ({
-        rikishi: r,
-        wins: standings.get(r.id)?.wins || 0,
-        losses: standings.get(r.id)?.losses || 0,
-      }))
-      .sort((a, b) => b.wins - a.wins || a.losses - b.losses);
+    const results: Array<{ rikishi: Rikishi; wins: number; losses: number }> = [];
+    for (const r of state.world.rikishi.values()) {
+      if (r.division === "makuuchi") {
+        results.push({
+          rikishi: r,
+          wins: standings.get(r.id)?.wins || 0,
+          losses: standings.get(r.id)?.losses || 0,
+        });
+      }
+    }
+    return results.sort((a, b) => b.wins - a.wins || a.losses - b.losses);
   }, [state.world]);
 
   const saveToSlot = useCallback(

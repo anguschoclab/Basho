@@ -4,9 +4,10 @@ import {
   countsAsForeignFromRikishi,
   reinjectToTalentPool,
 } from "./systems/generation/TalentPoolService";
-import { stableTieBreak, stableSort } from "./utils/sort";
+import { stableTieBreak } from "./utils/sort";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
+import { EntityCollection } from "./core/EntityCollection";
 
 // Hard cap constants
 /** h a r d_ c a p_ r o s t e r_ s i z e. */
@@ -20,7 +21,9 @@ export const HARD_CAP_ROSTER_SIZE = 30;
 export function enforceHardCapRosterOverflow(world: WorldState): StateImpact {
   const builder = createImpactBuilder("enforceHardCapRosterOverflow");
 
-  for (const heya of stableSort(Array.from(world.heyas.values()), (x) => x.id)) {
+  // ⚡ Bolt Optimization: Use EntityCollection.getHeyas() instead of Array.from().sort()
+  // EntityCollection already returns heyas sorted by ID
+  for (const heya of EntityCollection.getHeyas(world)) {
     if (!heya.rikishiIds || heya.rikishiIds.length <= HARD_CAP_ROSTER_SIZE) continue;
 
     const overflowCount = heya.rikishiIds.length - HARD_CAP_ROSTER_SIZE;

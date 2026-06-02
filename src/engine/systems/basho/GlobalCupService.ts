@@ -23,24 +23,27 @@ export const GlobalCupService = {
    * Selection: Top 6 JSA Rikishi (by Rank) + 2 International Challengers.
    */
   selectParticipants(world: WorldState): GlobalCupParticipant[] {
-    const pool = Array.from(world.activeRikishiIds)
-      .map((id) => world.rikishi.get(id))
-      .filter((r): r is Rikishi => r !== undefined && !r.injured)
-      .sort((a, b) => {
-        const rankVal = (r: Rikishi) =>
-          r.rank === "yokozuna"
-            ? 100
-            : r.rank === "ozeki"
-              ? 80
-              : r.rank === "sekiwake"
-                ? 60
-                : r.rank === "komusubi"
-                  ? 40
-                  : r.rankNumber
-                    ? 20 - r.rankNumber / 10
-                    : 0;
-        return rankVal(b) - rankVal(a);
-      });
+    // ⚡ Bolt Optimization: Use direct iteration instead of Array.from().map().filter().sort()
+    const pool: Rikishi[] = [];
+    for (const id of world.activeRikishiIds) {
+      const r = world.rikishi.get(id);
+      if (r && !r.injured) pool.push(r);
+    }
+    pool.sort((a, b) => {
+      const rankVal = (r: Rikishi) =>
+        r.rank === "yokozuna"
+          ? 100
+          : r.rank === "ozeki"
+            ? 80
+            : r.rank === "sekiwake"
+              ? 60
+              : r.rank === "komusubi"
+                ? 40
+                : r.rankNumber
+                  ? 20 - r.rankNumber / 10
+                  : 0;
+      return rankVal(b) - rankVal(a);
+    });
 
     const jsaElites: GlobalCupParticipant[] = pool.slice(0, 6).map((r, i) => ({
       rikishiId: r.id,
