@@ -278,15 +278,27 @@ function createMenu(): void {
 
 // IPC Handlers for storage operations
 ipcMain.handle("storage:get", (event, key: string) => {
+  if (typeof key !== "string") {
+    console.error("Invalid IPC argument: storage key must be a string.");
+    return null;
+  }
   return store.get(key);
 });
 
 ipcMain.handle("storage:set", (event, key: string, value: unknown) => {
+  if (typeof key !== "string") {
+    console.error("Invalid IPC argument: storage key must be a string.");
+    return false;
+  }
   store.set(key, value);
   return true;
 });
 
 ipcMain.handle("storage:delete", (event, key: string) => {
+  if (typeof key !== "string") {
+    console.error("Invalid IPC argument: storage key must be a string.");
+    return false;
+  }
   store.delete(key);
   return true;
 });
@@ -337,13 +349,15 @@ ipcMain.handle("window:close", () => {
 // IPC Handlers for file dialogs
 ipcMain.handle("dialog:showSaveDialog", async (event, options?: Electron.SaveDialogOptions) => {
   if (!mainWindow) return { canceled: true, filePath: "" };
-  const result = await dialog.showSaveDialog(mainWindow, options || {});
+  const safeOptions = options && typeof options === "object" ? options : {};
+  const result = await dialog.showSaveDialog(mainWindow, safeOptions);
   return result;
 });
 
 ipcMain.handle("dialog:showOpenDialog", async (event, options?: Electron.OpenDialogOptions) => {
   if (!mainWindow) return { canceled: true, filePaths: [] };
-  const result = await dialog.showOpenDialog(mainWindow, options || {});
+  const safeOptions = options && typeof options === "object" ? options : {};
+  const result = await dialog.showOpenDialog(mainWindow, safeOptions);
   return result;
 });
 
@@ -358,6 +372,10 @@ ipcMain.handle("app:getPlatform", () => {
 
 // IPC Handlers for native notifications
 ipcMain.handle("notification:show", async (event, options: { title: string; body: string }) => {
+  if (!options || typeof options !== "object" || typeof options.title !== "string" || typeof options.body !== "string") {
+    console.error("Invalid IPC argument: notification options must be an object with string title and body.");
+    return false;
+  }
   const { Notification } = await import("electron");
   if (Notification.isSupported()) {
     new Notification({
@@ -382,6 +400,10 @@ function validatePath(filePath: string): boolean {
 ipcMain.handle("fs:writeFile", async (event, filePath: string, content: string) => {
   if (!validatePath(filePath)) {
     console.error("Path validation failed - not in allowed directory:", filePath);
+    return false;
+  }
+  if (typeof content !== "string") {
+    console.error("Invalid IPC argument: content must be a string.");
     return false;
   }
   try {
