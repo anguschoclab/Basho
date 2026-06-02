@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
-import { Scale, Landmark, Globe, Trophy, ShieldAlert, Coins, Users2 } from "lucide-react";
+import { Scale, Landmark, Globe, Trophy, ShieldAlert, Coins } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { StatItem, ProgressItem } from "@/components/layout/control-center";
 import {

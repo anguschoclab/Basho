@@ -2,18 +2,13 @@ import { stableTieBreak } from "../utils/sort";
 import { phase02_context } from "../tick/phases/phase02_context";
 import { resolveImpacts } from "../core/ImpactResolver";
 import type { WorldState } from "../types/world";
-import type { BashoState, SerializedBashoState } from "../types/basho";
-import type { SponsorPool, SerializedSponsorPool } from "../types/sponsors";
+import type { BashoState } from "../types/basho";
+import type { SerializedBashoState } from "../types/save";
+import type { SponsorPool } from "../types/sponsors";
+import type { SerializedSponsorPoolFixed } from "../types/save";
 import type { SerializedWorldState } from "../types/save";
 import type { Rikishi } from "../types/rikishi";
 import type { Heya } from "../types/heya";
-import type { Oyakata } from "../types/oyakata";
-import type { Staff } from "../types/staff";
-import type { MyosekiStock, MyosekiTransaction } from "../types/myoseki";
-import type { BashoResult, AwardLogEntry } from "../types/basho";
-import type { GovernanceRuling } from "../types/economy";
-import type { LineageEdge } from "../types/training";
-import type { HallOfFameState } from "../almanac";
 import { resetImpactTimestampCounter } from "../core/StateImpact";
 
 /**
@@ -107,7 +102,6 @@ export const SerializationService = {
       events: world.events,
       rivalriesState: world.rivalriesState,
       myosekiMarket: world.myosekiMarket,
-      ftue: world.ftue,
       playerHeyaId: world.playerHeyaId,
       currentBanzuke: world.currentBanzuke,
       dayIndexGlobal: world.dayIndexGlobal,
@@ -183,6 +177,11 @@ export const SerializationService = {
       myosekiMarket: s.myosekiMarket,
 
       ftue: serialized.ftue,
+      meta: {
+        tone: "classic" as const,
+        drift: {},
+      },
+      globalKimariteStats: {},
       playerHeyaId: serialized.playerHeyaId,
       currentBanzuke: serialized.currentBanzuke,
       talentPool: s.talentPool,
@@ -205,7 +204,7 @@ export const SerializationService = {
     }
   },
 
-  serializeSponsorPool(pool?: SponsorPool): SerializedSponsorPool | undefined {
+  serializeSponsorPool(pool?: SponsorPool): SerializedSponsorPoolFixed | undefined {
     if (!pool) return undefined;
     return {
       sponsors: this.mapToObject(pool.sponsors || new Map()),
@@ -213,7 +212,7 @@ export const SerializationService = {
     };
   },
 
-  deserializeSponsorPool(data?: SerializedSponsorPool): SponsorPool | undefined {
+  deserializeSponsorPool(data?: SerializedSponsorPoolFixed): SponsorPool | undefined {
     if (!data) return undefined;
     return {
       sponsors: this.objectToMap(data.sponsors || {}),

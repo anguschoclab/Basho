@@ -36,7 +36,6 @@ import {
   SPONSOR_RENEWAL_WINDOW_WEEKS,
   SPONSOR_MIN_LOYALTY_FOR_RENEWAL,
 } from "../../../constants/engine/economy";
-import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
 import { getRikishi } from "../../queries";
 
 export function phase05_monthly_boundary(world: WorldState): StateImpact {

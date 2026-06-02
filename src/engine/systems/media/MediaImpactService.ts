@@ -2,11 +2,8 @@
  * MediaImpactService.ts — Pure logic for calculating media heat, pressure, and impact.
  */
 
-import { Rikishi } from "../../types/rikishi";
-import { MediaHeadline, MediaTone, MediaBeat, HeadlineTier } from "../../types/media";
-import { SIMULATION_CONFIG } from "../../core/SimulationConfig";
+import { MediaTone, HeadlineTier } from "../../types/media";
 import { clampInt } from "../../utils/math";
-import { assertNever } from "../../utils/types";
 import {
   BASE_MEDIA_IMPACT,
   UPSET_IMPACT_BONUS,

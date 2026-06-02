@@ -16,15 +16,11 @@ import type { Heya } from "../../types/heya";
 import type { WelfareState, ComplianceState, DietRegimen } from "../../types/economy";
 import type { Id } from "../../types/common";
 import { EntityCollection } from "../../core/EntityCollection";
-import { RNGRegistry } from "../../core/RNGRegistry";
 import { EntityService } from "../../core/EntityService";
 import { clamp } from "../../utils/math";
 import { EventBus } from "../../events";
-import { BardEngine } from "../../narrative/BardEngine";
-import { rngFromSeed } from "../../rng";
 import { calculateWeeklyWelfareDelta, computeInjuryPressure } from "./WelfareCalculations";
 import { generateGovernanceHeadline } from "../media/MediaService";
-import { assertNever } from "../../utils/types";
 import {
   DEFAULT_WELFARE_RISK,
   WELFARE_RISK_INDICATOR_THRESHOLD,
@@ -81,7 +77,7 @@ export const WelfareService = {
       // 3. Risk indicator Update
       if (!heya.riskIndicators)
         heya.riskIndicators = { financial: false, governance: false, rivalry: false };
-      heya.riskIndicators!.welfare =
+      heya.riskIndicators.welfare =
         state.complianceState !== "compliant" || state.welfareRisk >= WELFARE_RISK_INDICATOR_THRESHOLD;
 
       // 4. Material Shift logging
@@ -230,7 +226,7 @@ export const WelfareService = {
               (world.mediaState.heyaPressure[heya.id] ?? 0) + COMPLIANCE_PROGRESS_GAIN
             );
           }
-        } else if (state.investigation!.progress >= 100 && state.welfareRisk <= SANCTION_RISK_THRESHOLD) {
+        } else if (state.investigation && state.investigation.progress >= 100 && state.welfareRisk <= SANCTION_RISK_THRESHOLD) {
           this.setComplianceState(state, "watch");
           state.investigation = undefined;
           EventBus.welfareCompliance(world, heya.id, {

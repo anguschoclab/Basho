@@ -5,7 +5,6 @@
  */
 
 import { pick } from "../utils";
-import { assertNever } from "../utils/types";
 import type { ShikonaGenerationConfig, HouseStyle, PatternId, RankRule } from "./types";
 import { SHIKONA_PREFIXES, SHIKONA_SUFFIXES, PRESTIGIOUS_FULL_NAMES } from "./constants";
 import { pickPrefixByCategoryBias, pickSuffixByCategoryBias, pickConnectorToken } from "./helpers";

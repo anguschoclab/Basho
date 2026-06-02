@@ -8,7 +8,6 @@
 import type { WorldState } from "../types/world";
 import type { Heya } from "../types/heya";
 import type { Oyakata } from "../types/oyakata";
-import { EventBus } from "../events";
 
 import type { StateImpact } from "../core/StateImpact";
 import { createImpactBuilder } from "../core/ImpactBuilder";

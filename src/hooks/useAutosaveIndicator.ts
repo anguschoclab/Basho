@@ -1,5 +1,5 @@
 // useAutosaveIndicator.ts — Listens for autosave events and exposes a transient status
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 
 /** Type representing autosave status. */
 type AutosaveStatus = "idle" | "saving" | "done";

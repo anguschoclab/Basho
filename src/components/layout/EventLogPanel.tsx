@@ -1,14 +1,11 @@
 import { useState, useMemo, useCallback } from "react";
-import { useNavigate } from "@tanstack/react-router";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { Button } from "@/components/ui/button";
-import { ExternalLink } from "lucide-react";
 import type { EngineEvent } from "@/engine/types/events";
 import { formatEventTime } from "@/presenters/uiDigest";
-import { getCategoryMeta, getEventRoute, getLinkLabel } from "./eventLogHelpers";
+import { getCategoryMeta } from "./eventLogHelpers";
 import { MentionText } from "../MentionText";
 import { EventDetailDialog } from "../EventDetailDialog";
 
@@ -28,7 +25,6 @@ interface EventLogPanelProps {
  *  * @param { eventLogData, className } - The component props.
  */
 export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
-  const navigate = useNavigate();
   const [filter, setFilter] = useState<string>("all");
   const [selectedEvent, setSelectedEvent] = useState<EngineEvent | null>(null);
 

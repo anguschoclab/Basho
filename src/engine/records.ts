@@ -1,5 +1,5 @@
 import type { WorldState } from "./types/world";
-import type { RecordEntry, WorldRecords } from "./types/records";
+import type { RecordEntry } from "./types/records";
 import type { Id } from "./types/common";
 import type { Rikishi } from "./types/rikishi";
 import { createImpactBuilder } from "./core/ImpactBuilder";
@@ -113,8 +113,8 @@ export function onBashoEnded(world: WorldState): StateImpact {
     active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
   };
 
-  const year = world.calendar.year;
-  const month = world.calendar.month;
+  const year = world.calendar?.year ?? world.year;
+  const month = world.calendar?.month ?? 1;
 
   // Create deep copies of leaderboards to avoid mutating
   const updatedRecords = {
@@ -178,36 +178,36 @@ export function onBashoEnded(world: WorldState): StateImpact {
     }
 
     // 4. Consecutive Yusho
-    if (rikishi.careerRecord?.consecutiveYusho) {
+    if (rikishi.consecutiveYusho) {
       updateLeaderboard(
         updatedRecords.allTime.consecutiveYusho,
         rikishi,
-        rikishi.careerRecord.consecutiveYusho,
+        rikishi.consecutiveYusho,
         year,
         month
       );
       updateLeaderboard(
         updatedRecords.active.consecutiveYusho,
         rikishi,
-        rikishi.careerRecord.consecutiveYusho,
+        rikishi.consecutiveYusho,
         year,
         month
       );
     }
 
     // 5. Kinboshi
-    if (rikishi.careerRecord?.kinboshiCount) {
+    if (rikishi.stats?.achievements?.kinboshiEarned) {
       updateLeaderboard(
         updatedRecords.allTime.kinboshi,
         rikishi,
-        rikishi.careerRecord.kinboshiCount,
+        rikishi.stats.achievements.kinboshiEarned,
         year,
         month
       );
       updateLeaderboard(
         updatedRecords.active.kinboshi,
         rikishi,
-        rikishi.careerRecord.kinboshiCount,
+        rikishi.stats.achievements.kinboshiEarned,
         year,
         month
       );

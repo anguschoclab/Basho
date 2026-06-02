@@ -15,7 +15,6 @@ import type { StateImpact } from "../../core/StateImpact";
 import { type RivalryPairState } from "../../../constants/engine/rivalry";
 import { deriveTone } from "../../systems/narrative/RivalryHeatService";
 import { clamp } from "../../utils/math";
-import { ensureEventsState } from "../../events";
 import {
   WEEKS_PER_YEAR,
   MAX_EVENT_AGE_WEEKS,

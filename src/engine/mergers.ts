@@ -1,7 +1,6 @@
 import type { Id } from "./types/common";
 import { getStableRikishi, getHeya, getRikishi } from "./queries";
 import type { WorldState, ClosedHeyaRecord } from "./types/world";
-import { EventBus } from "./events";
 import { generateGovernanceHeadline } from "./systems/media/MediaService";
 import { updateFacilitiesBand } from "./facilities";
 import { rngForWorld } from "./rng";
@@ -115,9 +114,8 @@ export function executeMerger(
   generateGovernanceHeadline({
     world,
     heyaId: target.id,
-    type: "merger",
-    severity: "critical",
-    description: `The Sumo Association has approved the absorption of ${source.name} into ${target.name}.`,
+    templatePath: "institutional.merger.approved",
+    severity: "main_event",
   });
 
   // 5. Remove source stable

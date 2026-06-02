@@ -19,7 +19,6 @@ import {
   HeartPulse,
   Coins,
   GraduationCap,
-  Scale,
   Star,
   AlertTriangle,
   MessageCircle,
@@ -43,15 +42,21 @@ interface EventDetailDialogProps {
   onClose: () => void;
 }
 
-const importanceMap = {
-  minor: { label: "Minor", variant: "secondary" as const },
-  notable: { label: "Notable", variant: "default" as const },
+type ImportanceEntry = {
+  label: string;
+  variant: "secondary" | "default" | "destructive";
+  className: string;
+};
+
+const importanceMap: Record<string, ImportanceEntry> = {
+  minor: { label: "Minor", variant: "secondary", className: "" },
+  notable: { label: "Notable", variant: "default", className: "" },
   major: {
     label: "Major",
-    variant: "default" as const,
+    variant: "default",
     className: "bg-orange-500 hover:bg-orange-600",
   },
-  headline: { label: "Headline", variant: "destructive" as const },
+  headline: { label: "Headline", variant: "destructive", className: "" },
 };
 
 const categoryIconMap: Record<string, React.ReactNode> = {
@@ -101,7 +106,7 @@ export function EventDetailDialog({ event, isOpen, onClose }: EventDetailDialogP
             <div className="flex items-center justify-between">
               <Badge
                 variant={importance.variant}
-                className={cn("uppercase tracking-wider px-3 py-1", importance.className)}
+                className={cn("uppercase tracking-wider px-3 py-1", importance.className || "")}
               >
                 {importance.label}
               </Badge>

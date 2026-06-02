@@ -9,7 +9,6 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { WelfareService } from "../../systems/welfare/WelfareService";
 import { toRikishiDescriptor } from "../../descriptorBands";
-import { clamp } from "../../utils";
 import { rngFromSeed } from "../../rng";
 import { tickCondition } from "../conditionTick";
 import {
