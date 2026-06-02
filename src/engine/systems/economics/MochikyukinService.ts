@@ -19,7 +19,6 @@ import type { StateImpact } from "../../core/StateImpact";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { Id } from "../../types/common";
 import {
-import { getRikishi } from "../../queries";
   MOCHIKYUKIN_POINT_VALUE,
   MOCHIKYUKIN_POINTS_KACHI_KOSHI,
   MOCHIKYUKIN_POINTS_YUSHO,

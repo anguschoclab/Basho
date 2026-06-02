@@ -28,7 +28,6 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import type { BoutResult } from "../../types/basho";
 import {
-import { getRikishi } from "../../queries";
   BOUT_DURATION_CLOSENESS_DIVISOR,
   BOUT_DURATION_DOMINATION_DIVISOR,
   HEAT_SPIKE_THRESHOLDS,
@@ -37,6 +36,7 @@ import { getRikishi } from "../../queries";
   TOP_RIVALRY_PAIRS_TO_SEED,
   NATIONALITY_RIVALRY_BONUS,
 } from "../../../constants/engine/narrative";
+import { getRikishi } from "../../queries";
 
 /**
  * Unified Rivalry Service.

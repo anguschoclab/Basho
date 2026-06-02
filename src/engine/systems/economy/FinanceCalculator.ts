@@ -13,7 +13,6 @@ import type { Heya } from "../../types/heya";
 import { calculateKoenkaiIncome, SPONSOR_TIER_INCOME } from "../economics/SponsorshipService";
 import { getHeyaStaffBonuses } from "../../staff";
 import {
-import { getRikishi } from "../../queries";
   RECRUITMENT_BUDGET_WEEKLY,
   KOENKAI_SURVIVAL_FLOOR,
   FACILITY_UPKEEP,

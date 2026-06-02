@@ -19,7 +19,6 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { FACILITY_REGISTRY, FacilityId } from "../../types/infrastructure";
 import {
-import { getHeya } from "../../queries";
   CONSTRUCTION_COST_LEVEL_MULTIPLIER,
   CONSTRUCTION_BUILD_TIME_THRESHOLD,
 } from "../../../constants/engine/economyExtended";

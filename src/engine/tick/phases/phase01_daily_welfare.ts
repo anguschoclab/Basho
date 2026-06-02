@@ -18,7 +18,6 @@ import {
   DEFAULT_MENTAL_STAT,
 } from "../../../constants/engine/health";
 import {
-import { getRikishi } from "../../queries";
   MIN_WEIGHT,
   WEIGHT_LOSS_STARVATION,
   MENTAL_LOSS_STARVATION,
@@ -28,6 +27,7 @@ import { getRikishi } from "../../queries";
   MENTAL_GAIN_GOOD,
   FATIGUE_RECOVERY_GOOD,
 } from "../../../constants/engine/condition";
+import { getRikishi } from "../../queries";
 
 export function phase01_daily_welfare(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_daily_welfare");

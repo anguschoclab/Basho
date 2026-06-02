@@ -23,7 +23,6 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { RivalryService } from "../narrative/RivalryService";
 import {
-import { getRikishi } from "../../queries";
   SPARRING_MAX_BLEED,
   SPARRING_BLEED_THRESHOLD,
   SPARRING_BLEED_SCALE,

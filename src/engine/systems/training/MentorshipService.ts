@@ -22,7 +22,6 @@ import { EntityCollection } from "../../core/EntityCollection";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import {
-import { getRikishi } from "../../queries";
   MENTORSHIP_MAX_BLEED,
   MENTORSHIP_BLEED_THRESHOLD,
   MENTORSHIP_BLEED_SCALE,

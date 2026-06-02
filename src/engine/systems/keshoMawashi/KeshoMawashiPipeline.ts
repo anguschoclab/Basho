@@ -12,7 +12,6 @@ import type { KeshoTier } from "../../types/keshoMawashi";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import {
-import { getRikishi } from "../../queries";
   generateKeshoMawashi,
   upgradeKeshoMawashi,
   generateYokozunaTsuna,
