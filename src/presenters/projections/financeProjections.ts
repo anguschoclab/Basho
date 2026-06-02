@@ -7,6 +7,8 @@
 
 import type { WorldState } from "../../engine/types/world";
 import { calculateHeyaWeeklyFinances } from "../../engine/systems/economy/FinanceCalculator";
+import { calculateKoenkaiIncome } from "../../engine/systems/economics/SponsorshipService";
+import { KOENKAI_INCOME_SPLIT } from "../../constants/engine/economic";
 import { formatYen } from "../../utils/engineUtils";
 
 export type RunwayBand = "secure" | "comfortable" | "tight" | "critical" | "desperate";
@@ -48,14 +50,19 @@ export function projectFinanceSummary(world: WorldState): FinanceSummary | null 
   const fin = calculateHeyaWeeklyFinances(heya, world);
   const runwayBand = toRunwayBand(fin.runwayMonths);
 
-  const loanAmount = ((heya as unknown as Record<string, unknown>).loanBalance as number) ?? 0;
-  const loanDueWeek = ((heya as unknown as Record<string, unknown>).loanDueWeek as number) ?? 0;
-  const isOverdue = loanAmount > 0 && loanDueWeek > 0 && world.week > loanDueWeek;
+  const loans = heya.activeLoans ?? [];
+  const loanAmount = loans.reduce((s, l) => s + l.remainingBalance, 0);
+  const currentMonth = Math.ceil((world.week ?? 1) / 4);
+  const isOverdue = loans.some(
+    (l) => l.remainingBalance > 0 && currentMonth > l.issuedAtMonth + 12
+  );
 
   const koenkai = world.sponsorPool?.koenkais?.get(heya.koenkaiId ?? "");
   const sponsorCount = koenkai?.members?.length ?? 0;
 
-  const koenkaiIncome = fin.revenue;
+  const koenkaiIncome = Math.floor(
+    (calculateKoenkaiIncome(heya.koenkaiBand ?? "none") * KOENKAI_INCOME_SPLIT.heyaPortion) / 4
+  );
 
   return {
     balance: heya.funds,

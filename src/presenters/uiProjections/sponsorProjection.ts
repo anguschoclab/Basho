@@ -6,7 +6,7 @@
  */
 
 import type { WorldState } from "../../engine/types/world";
-import { KOENKAI_MONTHLY_INCOME } from "../../engine/systems/economics/SponsorshipService";
+import { SPONSOR_TIER_INCOME } from "../../engine/systems/economics/SponsorshipService";
 
 interface SponsorData {
   sponsorId: string;
@@ -32,6 +32,7 @@ type SponsorAny = {
   displayName?: string;
   shortName?: string;
   loyalty: number;
+  tier: string;
   category?: string;
   satisfaction?: number;
   active: boolean;
@@ -109,6 +110,7 @@ function buildSponsorData(
     displayName?: string;
     shortName?: string;
     loyalty: number;
+    tier: string;
     category?: string;
     satisfaction?: number;
   },
@@ -123,17 +125,17 @@ function buildSponsorData(
   },
   world: WorldState
 ): SponsorData {
-  const weeksRemaining = Math.max(0, Math.floor((rel.endsAtTick - (world.week ?? 0)) / 4));
+  const weeksRemaining = Math.max(0, Math.floor(((rel.endsAtTick ?? 0) - (world.week ?? 0)) / 4));
   const isExpiringSoon = weeksRemaining <= 4;
   const monthlyIncome =
-    KOENKAI_MONTHLY_INCOME[rel.tier as keyof typeof KOENKAI_MONTHLY_INCOME] || 0;
+    SPONSOR_TIER_INCOME[sponsor.tier as keyof typeof SPONSOR_TIER_INCOME] || 0;
 
   return {
     sponsorId: sponsor.id,
     sponsorName: sponsor.name,
     name: sponsor.displayName ?? sponsor.name ?? sponsor.shortName ?? sponsor.id,
     relId: rel.relId ?? rel.id ?? "",
-    tier: rel.tier,
+    tier: sponsor.tier,
     strength: rel.strength,
     monthlyIncome,
     weeksRemaining,
@@ -153,7 +155,7 @@ function calculateKoenkaiIncome(heya: { koenkaiBand?: string }): number {
     weak: 0.5,
     moderate: 1,
     strong: 2,
-    dominant: 4,
+    powerful: 4,
   };
   return Math.floor(
     200000 * (bandMultiplier[heya.koenkaiBand as keyof typeof bandMultiplier] || 0)
