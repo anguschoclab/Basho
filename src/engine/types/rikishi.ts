@@ -80,6 +80,8 @@ export interface Rikishi {
   fatigue: number;
 
   isRetired?: boolean;
+  retirementYear?: number;
+  retirementReason?: string;
 
   injured: boolean;
   injuryWeeksRemaining: number;

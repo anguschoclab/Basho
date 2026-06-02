@@ -101,8 +101,8 @@ export const SimTuningService = {
     }
 
     const retirementAges = retiredRikishi
-      .filter((r) => (r as any).retirementYear)
-      .map((r) => (r as any).retirementYear - r.birthYear);
+      .filter((r) => r.retirementYear)
+      .map((r) => r.retirementYear! - r.birthYear);
 
     const averageRetirementAge =
       retirementAges.length > 0
