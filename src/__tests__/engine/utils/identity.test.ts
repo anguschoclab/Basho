@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { isForeign, isCollegeRecruit } from "../../../../src/engine/utils/identity";
+import { isForeign, isCollegeRecruit } from "../../../engine/utils/identity";
 
 describe("Identity Utilities", () => {
   describe("isForeign", () => {

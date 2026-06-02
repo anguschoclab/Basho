@@ -4,8 +4,8 @@ import {
   seededWeightedPick,
   pick,
   weightedPick,
-} from "../../../../src/engine/utils/random";
-import { SeededRNG } from "../../../../src/engine/rng";
+} from "../../../engine/utils/random";
+import { SeededRNG } from "../../../engine/rng";
 
 // Mock SeededRNG for deterministic testing
 class MockRNG extends SeededRNG {

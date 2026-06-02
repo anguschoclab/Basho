@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { capitalize, formatCurrency, formatShikona } from "../../../../src/engine/utils/string";
+import { capitalize, formatCurrency, formatShikona } from "../../../engine/utils/string";
 
 describe("String Utilities", () => {
   describe("capitalize", () => {

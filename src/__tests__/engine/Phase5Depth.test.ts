@@ -4,7 +4,7 @@ import { InfrastructureService } from "../../engine/systems/economy/Infrastructu
 import * as TalentPoolScouting from "../../engine/systems/generation/TalentPoolScouting";
 import { TrainingPhilosophyService } from "../../engine/systems/legacy/TrainingPhilosophyService";
 import { SeededRNG } from "../../engine/rng";
-import { MockFactory } from "../utils/MockFactory";
+import { MockFactory } from "../../test/utils/MockFactory";
 import type { WorldState } from "../../engine/types/world";
 import type { Heya } from "../../engine/types/heya";
 

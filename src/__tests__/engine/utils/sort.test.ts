@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { stableSort, stableTieBreak } from "../../../../src/engine/utils/sort";
+import { stableSort, stableTieBreak } from "../../../engine/utils/sort";
 
 describe("Sort Utilities", () => {
   describe("stableSort", () => {

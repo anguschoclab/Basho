@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { opfsArchiveService, ArchiveConflictError } from "../../../engine/storage/opfsArchive";
-import { resetMockFileSystem, MockFileSystemDirectoryHandle } from "../../setup";
+import { resetMockFileSystem, MockFileSystemDirectoryHandle } from "../../../test/setup";
 
 describe("Stable Lords: OPFS Archival System", () => {
   beforeEach(() => {
@@ -118,7 +118,7 @@ describe("Stable Lords: OPFS Archival System", () => {
       const file = await fileHandle.getFile();
       const content = await file.text();
 
-      expect(content).toBe(markdown); // Exact string, not '"# Weekly Recap\\n..."'
+      expect(content).toBe(markdown); // Exact string, not '"# Weekly Recap\n..."'
 
       const retrieved = await opfsArchiveService.retrieveGazette(1, 4);
       expect(retrieved).toBe(markdown);

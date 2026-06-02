@@ -6,7 +6,7 @@ import {
   localClampInt,
   simpleHashToIndex,
   formatCurrency,
-} from "../../../../src/engine/utils/math";
+} from "../../../engine/utils/math";
 
 describe("Math Utilities", () => {
   describe("clamp", () => {

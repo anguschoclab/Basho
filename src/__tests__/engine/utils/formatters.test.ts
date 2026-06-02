@@ -4,8 +4,8 @@ import {
   formatSaveDate,
   formatEventTime,
   formatFinePenalty,
-} from "../../../../src/engine/utils/formatters";
-import type { EngineEvent } from "../../../../src/engine/types/events";
+} from "../../../engine/utils/formatters";
+import type { EngineEvent } from "../../../engine/types/events";
 
 describe("Formatter Utilities", () => {
   describe("formatStance", () => {

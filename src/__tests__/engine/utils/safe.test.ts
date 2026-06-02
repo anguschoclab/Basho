@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { safeCall } from "../../../../src/engine/utils/safe";
+import { safeCall } from "../../../engine/utils/safe";
 
 describe("Safe Utilities", () => {
   describe("safeCall", () => {
