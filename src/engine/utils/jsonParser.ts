@@ -1,4 +1,3 @@
-import JSON5 from "json5";
 import { destr } from "destr";
 
 /**
@@ -31,9 +30,9 @@ export function parseLLMResponse<T>(rawText: string): T {
     cleanedText = match[1].trim();
   }
 
-  // Attempt 3: Use JSON5 to handle unquoted keys, trailing commas, comments, etc.
+  // Attempt 3: Use strict JSON.parse for final validation
   try {
-    return JSON5.parse(cleanedText) as T;
+    return JSON.parse(cleanedText) as T;
   } catch (finalError) {
     console.error("[jsonParser] Critical Parse Failure on output:", cleanedText);
     throw new Error(

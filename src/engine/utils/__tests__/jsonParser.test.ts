@@ -12,34 +12,14 @@ describe("parseLLMResponse", () => {
     expect(parseLLMResponse(input)).toEqual({ hello: "world" });
   });
 
-  it("parses JSON with unquoted keys", () => {
-    const input = '{hello: "world", count: 2}';
-    expect(parseLLMResponse(input)).toEqual({ hello: "world", count: 2 });
-  });
-
-  it("parses JSON with trailing commas", () => {
-    const input = '{"hello": "world", "count": 3,}';
-    expect(parseLLMResponse(input)).toEqual({ hello: "world", count: 3 });
-  });
-
   it("throws a descriptive error on completely invalid JSON", () => {
     const input = "not json at all";
     expect(() => parseLLMResponse(input)).toThrow(/Failed to parse LLM payload/);
   });
 
-  it("throws descriptive error when JSON5 fails after sanitization", () => {
-    const input = '```json\n{unclosed: "bracket",\n```';
+  it("throws descriptive error when JSON fails after sanitization", () => {
+    const input = '```json\n{unclosed: "bracket"\n```';
     expect(() => parseLLMResponse(input)).toThrow(/Failed to parse LLM payload/);
-  });
-
-  it("parses JSON with single-line comments", () => {
-    const input = '{hello: "world", // comment\n count: 4}';
-    expect(parseLLMResponse(input)).toEqual({ hello: "world", count: 4 });
-  });
-
-  it("parses JSON with multi-line comments", () => {
-    const input = '{/* comment */\n hello: "world", count: 5}';
-    expect(parseLLMResponse(input)).toEqual({ hello: "world", count: 5 });
   });
 
   it("parses arrays with markdown blocks", () => {
@@ -60,8 +40,8 @@ describe("parseLLMResponse", () => {
     expect(() => parseLLMResponse(input)).toThrow(/generationConfig\.responseMimeType/);
   });
 
-  it("parses nested objects with JSON5 features", () => {
-    const input = '{outer: {inner: "value", // comment\n},}';
+  it("parses nested objects with strict JSON", () => {
+    const input = '{"outer": {"inner": "value"}}';
     expect(parseLLMResponse(input)).toEqual({ outer: { inner: "value" } });
   });
 });

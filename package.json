@@ -108,7 +108,6 @@
     "destr": "^2.0.5",
     "electron-store": "^8.2.0",
     "framer-motion": "^12.38.0",
-    "json5": "^2.2.3",
     "lucide-react": "^0.462.0",
     "next-themes": "^0.3.0",
     "react": "^18.3.1",
