@@ -171,7 +171,7 @@ describe("TrainingMath", () => {
       expect(growth).toHaveProperty("mental");
       expect(growth).toHaveProperty("adaptability");
 
-      expect(growth.strength).toBeGreaterThan(0);
+      expect(growth.power).toBeGreaterThan(0);
       expect(growth.stamina).toBeGreaterThan(0);
     });
 
@@ -205,7 +205,7 @@ describe("TrainingMath", () => {
         {} as WorldState
       );
 
-      expect(richGrowth.strength).toBeGreaterThan(poorGrowth.strength);
+      expect(richGrowth.power).toBeGreaterThan(poorGrowth.power);
     });
 
     it("applies political bonus for dominant factions", () => {
@@ -232,7 +232,7 @@ describe("TrainingMath", () => {
       );
       const domGrowth = calculateGrowthVector(profile, undefined, rikishi, heya as Heya, domWorld);
 
-      expect(domGrowth.strength).toBeGreaterThan(regularGrowth.strength);
+      expect(domGrowth.power).toBeGreaterThan(regularGrowth.power);
     });
   });
 });

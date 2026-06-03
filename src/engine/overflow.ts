@@ -37,11 +37,11 @@ export function enforceHardCapRosterOverflow(world: WorldState): StateImpact {
       let score = 0;
 
       // 1. Potential: Use talentSeed (0-100) or approximate from stats
-      const potential = r.talentSeed ?? (r.power + r.speed + r.technique) / 3;
+      const potential = r.talentSeed ?? (r.stats.power + r.stats.speed + r.stats.technique) / 3;
       score += potential;
 
       // 2. Loyalty / Experience proxy: higher experience = higher loyalty/retention
-      score += (r.experience ?? 0) * 0.5;
+      score += (r.stats.experience ?? 0) * 0.5;
 
       // 3. Injury trajectory: severely injured are more likely to be released
       if (r.injured) {

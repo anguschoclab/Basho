@@ -209,16 +209,16 @@ export interface RikishiDescriptor {
  */
 export function toRikishiDescriptor(rng: SeededRNG, r: any, prev?: any): RikishiDescriptor {
   return {
-    powerBand: NarrativeService.getStatBand(r.power, prev?.powerBand),
-    speedBand: NarrativeService.getStatBand(r.speed, prev?.speedBand),
-    balanceBand: NarrativeService.getStatBand(r.balance, prev?.balanceBand),
-    techniqueBand: NarrativeService.getStatBand(r.technique, prev?.techniqueBand),
+    powerBand: NarrativeService.getStatBand(r.stats.power, prev?.powerBand),
+    speedBand: NarrativeService.getStatBand(r.stats.speed, prev?.speedBand),
+    balanceBand: NarrativeService.getStatBand(r.stats.balance, prev?.balanceBand),
+    techniqueBand: NarrativeService.getStatBand(r.stats.technique, prev?.techniqueBand),
     conditionBand: "peak", // Simplified legacy field
     fatigueBand: NarrativeService.getFatigueBand(r.fatigue, prev?.fatigueBand),
     momentumBand: NarrativeService.getMomentumBand(r.momentum),
     potentialBand: NarrativeService.getPotentialBand(r.talentSeed, prev?.potentialBand),
     ageBand: NarrativeService.getAgeBand(r.age ?? 25, prev?.ageBand),
-    experienceBand: NarrativeService.getExperienceBand(r.experience ?? 0, prev?.experienceBand),
+    experienceBand: NarrativeService.getExperienceBand(r.stats.experience ?? 0, prev?.experienceBand),
     weightBand: NarrativeService.getWeightBand(r.weight ?? 150, prev?.weightBand),
     archetypeLabel: undefined, // Simplified legacy field
     injuryModifiers: r.injured ? [getInjuryModifier(r)] : [],

@@ -85,8 +85,8 @@ export function checkRetirement(
 
   // 5. Performance Drop (Rank & Stat based)
   const isStagnant = rikishi.rank === "jonokuchi" && age > 28;
-  const isWeak = (rikishi.power ?? 50) < 40 && age > 38;
-  const isCriticallyWeak = (rikishi.power ?? 50) < 30 && age > 30;
+  const isWeak = (rikishi.stats.power ?? 50) < 40 && age > 38;
+  const isCriticallyWeak = (rikishi.stats.power ?? 50) < 30 && age > 30;
 
   if (isStagnant || isWeak || isCriticallyWeak) {
     let retireProb = 0.1;
@@ -94,7 +94,7 @@ export function checkRetirement(
     if (isCriticallyWeak) retireProb = 0.5;
 
     if (rng.bool(retireProb)) {
-      return (rikishi.power ?? 50) < 35 ? "Diminishing Physicality" : "Lack of Performance";
+      return (rikishi.stats.power ?? 50) < 35 ? "Diminishing Physicality" : "Lack of Performance";
     }
   }
 
@@ -219,7 +219,7 @@ function _generateRookie(
   };
 
   // Apply Origin Modifiers
-  if (origin.strMod) stats.strength *= origin.strMod;
+  if (origin.strMod) stats.power *= origin.strMod;
   if (origin.techMod) stats.technique *= origin.techMod;
   if (origin.speedMod) stats.speed *= origin.speedMod;
   if (origin.weightMod) stats.weight *= origin.weightMod;
@@ -256,7 +256,7 @@ function _generateRookie(
 
     // Stats (flattened accessors + stats obj)
     stats: stats,
-    power: stats.strength,
+    power: stats.power,
     speed: stats.speed,
     balance: stats.balance,
     technique: stats.technique,

@@ -68,10 +68,10 @@ export const SimTuningService = {
 
     if (activeRikishi.length > 0) {
       activeRikishi.forEach((r) => {
-        statAverages.power += r.power || 50;
-        statAverages.speed += r.speed || 50;
-        statAverages.technique += r.technique || 50;
-        statAverages.stamina += r.stamina || 50;
+        statAverages.power += r.stats.power || 50;
+        statAverages.speed += r.stats.speed || 50;
+        statAverages.technique += r.stats.technique || 50;
+        statAverages.stamina += r.stats.stamina || 50;
       });
 
       statAverages.power /= activeRikishi.length;
@@ -190,9 +190,9 @@ export const SimTuningService = {
         maxStat: Math.max(
           ...activeRikishi.map((r) =>
             Math.max(
-              r.power || 0,
-              r.speed || 0,
-              r.stats?.technique || r.technique || 0,
+              r.stats.power || 0,
+              r.stats.speed || 0,
+              r.stats?.technique || r.stats.technique || 0,
               r.stats?.stamina || 0
             )
           )

@@ -363,9 +363,9 @@ export function runRetirements(world: WorldState): StateImpact {
               age,
               undefined,
               {
-                aggression: r.aggression,
-                experience: r.experience,
-                adaptability: r.adaptability,
+                aggression: r.stats.aggression,
+                experience: r.stats.experience,
+                adaptability: r.stats.adaptability,
                 momentum: r.momentum,
               },
               r.rank,

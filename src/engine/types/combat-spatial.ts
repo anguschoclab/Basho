@@ -163,7 +163,7 @@ export interface EngineStateV2 {
  * has been deleted as of Phase 8.
  */
 export interface EngineSnapshot {
-  stance: import("./basho").Stance;
+  stance: import("./combat").Stance;
   grappleState: GrappleState;
   /** East rikishi balance (0–100, derived from cogOffset) */
   balanceEast: number;

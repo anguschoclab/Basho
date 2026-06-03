@@ -469,13 +469,13 @@ export function applyRivalryToRikishi(
   const condMult = conditionMultiplier(r.condition ?? 100);
   return {
     ...r,
-    aggression: clamp((r.aggression || 50) * (1 + heat01 * 0.15), 0, 100),
-    mental: clamp((r.mental || 50) * (1 + spite01 * 0.2), 0, 100),
-    power: clamp((r.power || 50) * condMult, 0, 100),
-    speed: clamp((r.speed || 50) * condMult, 0, 100),
-    technique: clamp((r.technique || 50) * condMult, 0, 100),
-    balance: clamp((r.balance || 50) * condMult, 0, 100),
-    stamina: clamp((r.stamina || 50) * condMult, 0, 100),
+    aggression: clamp((r.stats.aggression || 50) * (1 + heat01 * 0.15), 0, 100),
+    mental: clamp((r.stats.mental || 50) * (1 + spite01 * 0.2), 0, 100),
+    power: clamp((r.stats.power || 50) * condMult, 0, 100),
+    speed: clamp((r.stats.speed || 50) * condMult, 0, 100),
+    technique: clamp((r.stats.technique || 50) * condMult, 0, 100),
+    balance: clamp((r.stats.balance || 50) * condMult, 0, 100),
+    stamina: clamp((r.stats.stamina || 50) * condMult, 0, 100),
   };
 }
 

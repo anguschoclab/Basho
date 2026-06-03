@@ -13,7 +13,7 @@ import type { Id } from "../types/common";
 
 export function mockRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikishi {
   const statsOverride = overrides.stats;
-  const power = overrides.power ?? statsOverride?.strength ?? 50;
+  const power = overrides.power ?? statsOverride?.power ?? 50;
   const speed = overrides.speed ?? statsOverride?.speed ?? 50;
   const balance = overrides.balance ?? statsOverride?.balance ?? 50;
   const technique = overrides.technique ?? statsOverride?.technique ?? 50;

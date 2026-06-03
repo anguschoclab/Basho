@@ -1,46 +1,10 @@
 import type { Rikishi } from "../types/rikishi";
 import type { Division } from "../types/banzuke";
 import type { SpatialBoutContext, KimariteAttempt, EngineStateV2 } from "../types/combat-spatial";
-import type { FinalBoutState } from "../types/kimariteStrategy";
 import type { KimariteId } from "../types/combat";
-import { KIMARITE_STRATEGIES_V2 } from "./kimariteStrategy";
+import { KIMARITE_STRATEGIES, getKimarite } from "../kimarite";
 import { SeededRNG } from "../rng";
 
-/**
- * Maps spatial context and rikishi stats to the FinalBoutState required by the registry.
- */
-function mapToFinalBoutState(
-  r: Rikishi,
-  side: "east" | "west",
-  ctx: SpatialBoutContext
-): FinalBoutState {
-  const isEast = side === "east";
-  const momentumX = isEast ? ctx.eastMomentumX : ctx.westMomentumX;
-  const cogOffset = isEast ? ctx.eastCoGOffset : ctx.westCoGOffset;
-  const grip = isEast ? ctx.eastGrip : ctx.westGrip;
-  const leadFoot = isEast ? ctx.eastLeadFoot : ctx.westLeadFoot;
-
-  // Normalize stats (0-100 expected)
-  const strength = r.stats?.strength ?? r.power ?? 50;
-  const balanceStat = r.stats?.balance ?? r.balance ?? 50;
-
-  return {
-    grip: grip === "outside" || grip === "none" ? "none" : grip,
-    // Use r.style (set at generation from archetype) rather than re-deriving from combatProfile
-    style: r.style === "oshi" ? "oshi" : "yotsu",
-    power: strength,
-    balanceResistance: balanceStat,
-    forwardMomentum: Math.max(0, momentumX),
-    offensiveOutput: 1, // Assume attacking if this is called, unless hi_waza checks override
-    balance: Math.max(0, 100 - Math.abs(cogOffset) * 200), // Approximate balance from CoG offset
-    stamina: (r.stats?.stamina ?? r.stamina ?? 1.0) / 100, // Normalize to 0-1 range
-    edgeDistance: Math.max(0, 4.55 - Math.abs(leadFoot)), // 4.55m is RING_RADIUS
-    cogOffset,
-    momentumX,
-    gripClass: grip,
-    leadFootX: leadFoot,
-  };
-}
 
 /**
  * The KimariteSelectionEngine handles the logic for choosing which technique
@@ -68,11 +32,11 @@ export const KimariteSelectionEngine = {
     for (const side of sides) {
       const attacker = side === "east" ? east : west;
       const defender = side === "east" ? west : east;
-      const attackerState = mapToFinalBoutState(attacker, side, ctx);
-      const defenderState = mapToFinalBoutState(defender, side === "east" ? "west" : "east", ctx);
+      const wSide = side;
+      const lSide = side === "east" ? "west" : "east";
 
       // 2. Filter strategies by phase and condition
-      const applicable = KIMARITE_STRATEGIES_V2.filter((s) => {
+      const applicable = KIMARITE_STRATEGIES.filter((s) => {
         // Filter by phase
         if (
           s.appliesTo &&
@@ -82,7 +46,7 @@ export const KimariteSelectionEngine = {
 
         // Filter by condition
         try {
-          return s.condition(attackerState, defenderState, ctx);
+          return s.condition(attacker, defender, ctx, st, wSide, lSide);
         } catch {
           return false;
         }
@@ -109,10 +73,13 @@ export const KimariteSelectionEngine = {
         weight *= drift;
 
         // Era Tone Category Bonuses (P2 Extension)
-        if (effectiveMeta.tone === "explosive" && s.tacticalFamily === "push") weight *= 1.15;
-        if (effectiveMeta.tone === "classic" && s.tacticalFamily === "belt") weight *= 1.15;
-        if (effectiveMeta.tone === "technical" && s.tacticalFamily === "speed") weight *= 1.15;
-        if (effectiveMeta.tone === "defensive" && s.tacticalFamily === "trick") weight *= 1.15;
+        const registryEntry = getKimarite(s.id);
+        const tacticalFamily = registryEntry?.tacticalFamily;
+
+        if (effectiveMeta.tone === "explosive" && tacticalFamily === "push") weight *= 1.15;
+        if (effectiveMeta.tone === "classic" && tacticalFamily === "belt") weight *= 1.15;
+        if (effectiveMeta.tone === "technical" && tacticalFamily === "speed") weight *= 1.15;
+        if (effectiveMeta.tone === "defensive" && tacticalFamily === "trick") weight *= 1.15;
 
         // Rikishi Specialization (Favored Moves)
         if (attacker.favoredKimarite?.includes(s.id)) {
@@ -137,7 +104,7 @@ export const KimariteSelectionEngine = {
 
       // 5. Execution Success Probability (E2 Deep Dive)
       // Execution = f(Technique, Difficulty, Division)
-      const attackerTech = attacker.stats?.technique ?? attacker.technique ?? 50;
+      const attackerTech = attacker.stats?.technique ?? attacker.stats.technique ?? 50;
       const difficulty = selected.difficulty || 5;
 
       // Base probability: tech (0-100) vs difficulty (1-10) scaled to 10-100

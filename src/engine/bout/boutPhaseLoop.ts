@@ -163,7 +163,8 @@ function tickPushBattle(
   west: Rikishi,
   st: EngineStateV2,
   division: import("../types/banzuke").Division,
-  meta: { tone: string; drift: Record<string, number> }
+  meta: { tone: string; drift: Record<string, number> },
+  boutLog: import("../types/basho").BoutLogEntry[]
 ): { winner?: Side; kimarite?: import("../types/combat").KimariteId } | undefined {
   if (st.phase.tag !== "push_battle") return undefined;
 
@@ -199,6 +200,17 @@ function tickPushBattle(
 
   // Use absolute baseForceDiff for displacement (jitter affects magnitude via contestLine)
   const displacement = Math.abs(baseForceDiff) * DISPLACEMENT_PER_FORCE; // meters per tick
+
+  // Narrative logging
+  if (st.tick % 5 === 0) {
+    if (baseForceDiff > 10) {
+      boutLog.push({ phase: "engagement", clock: st.tick * 2, description: `East drives forward with superior pushing power.` });
+    } else if (baseForceDiff < -10) {
+      boutLog.push({ phase: "engagement", clock: st.tick * 2, description: `West maintains dominant forward pressure.` });
+    } else {
+      boutLog.push({ phase: "engagement", clock: st.tick * 2, description: `A stalemate in the pushing battle.` });
+    }
+  }
 
   // Only retreat/destabilize when there's a real force differential
   if (baseForceDiff > 0) {
@@ -257,7 +269,8 @@ function tickBeltBattle(
   west: Rikishi,
   st: EngineStateV2,
   division: import("../types/banzuke").Division,
-  meta: { tone: string; drift: Record<string, number> }
+  meta: { tone: string; drift: Record<string, number> },
+  boutLog: import("../types/basho").BoutLogEntry[]
 ): { winner?: Side; kimarite?: import("../types/combat").KimariteId } | undefined {
   if (st.phase.tag !== "belt_battle") return undefined;
 
@@ -487,12 +500,12 @@ function runPhaseLoop(
   for (let i = 0; i < MAX_BOUT_TICKS; i++) {
     st.tick++;
 
-    const pushResult = tickPushBattle(rng, east, west, st, division, meta);
+    const pushResult = tickPushBattle(rng, east, west, st, division, meta, boutLog);
     if (pushResult?.winner && pushResult?.kimarite) {
       return { winner: pushResult.winner, kimarite: pushResult.kimarite };
     }
 
-    const beltResult = tickBeltBattle(rng, east, west, st, division, meta);
+    const beltResult = tickBeltBattle(rng, east, west, st, division, meta, boutLog);
     if (beltResult?.winner && beltResult?.kimarite) {
       return { winner: beltResult.winner, kimarite: beltResult.kimarite };
     }

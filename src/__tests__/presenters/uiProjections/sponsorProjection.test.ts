@@ -217,11 +217,11 @@ describe("projectSponsorUIDigest", () => {
 
   it("strength field = heya.koenkaiBand ?? none", () => {
     const world = makeWorld({ koenkaiBand: "moderate" });
-    expect(projectSponsorUIDigest(world as any)?.strength).toBe("moderate");
+    expect(projectSponsorUIDigest(world as any)?.power).toBe("moderate");
   });
 
   it("strength defaults to none when koenkaiBand absent", () => {
     const world = makeWorld({ koenkaiBand: undefined });
-    expect(projectSponsorUIDigest(world as any)?.strength).toBe("none");
+    expect(projectSponsorUIDigest(world as any)?.power).toBe("none");
   });
 });

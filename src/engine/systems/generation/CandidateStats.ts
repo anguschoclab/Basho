@@ -171,7 +171,7 @@ export function deriveCurrentAbility(args: {
   });
 
   return {
-    strength: deriveStat(pa.strength, "strength"),
+    strength: deriveStat(pa.power, "strength"),
     technique: deriveStat(pa.technique, "technique"),
     speed: deriveStat(pa.speed, "speed"),
     stamina: deriveStat(pa.stamina, "stamina"),

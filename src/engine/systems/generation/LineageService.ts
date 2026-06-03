@@ -74,8 +74,8 @@ export const LineageService = {
 
     // Add floor bonuses to current potential
     const p = candidate.potentialStats;
-    if (trait.statFloorBonus.strength)
-      p.strength = clampInt((p.strength || 0) + trait.statFloorBonus.strength, 0, 99);
+    if (trait.statFloorBonus.power)
+      p.power = clampInt((p.power || 0) + trait.statFloorBonus.power, 0, 99);
     if (trait.statFloorBonus.technique)
       p.technique = clampInt((p.technique || 0) + trait.statFloorBonus.technique, 0, 99);
     if (trait.statFloorBonus.mental)

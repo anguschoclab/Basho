@@ -26,7 +26,7 @@ describe("calculateGrowthVector — adaptability multiplier", () => {
     const gBase = calculateGrowthVector(baseProfile, undefined, rBase);
 
     // Every non-zero stat should grow faster for high adaptability
-    expect(gHigh.strength).toBeGreaterThan(gBase.strength);
+    expect(gHigh.power).toBeGreaterThan(gBase.power);
     expect(gHigh.technique).toBeGreaterThan(gBase.technique);
     expect(gHigh.speed).toBeGreaterThan(gBase.speed);
   });
@@ -38,7 +38,7 @@ describe("calculateGrowthVector — adaptability multiplier", () => {
     const gLow = calculateGrowthVector(baseProfile, undefined, rLow);
     const gBase = calculateGrowthVector(baseProfile, undefined, rBase);
 
-    expect(gLow.strength).toBeLessThan(gBase.strength);
+    expect(gLow.power).toBeLessThan(gBase.power);
     expect(gLow.technique).toBeLessThan(gBase.technique);
   });
 
@@ -52,7 +52,7 @@ describe("calculateGrowthVector — adaptability multiplier", () => {
     const gBase = calculateGrowthVector(baseProfile, undefined, rBase);
 
     // ratio should be close to 0.8 / 1.0 = 0.8
-    const ratio = gLow.strength / gBase.strength;
+    const ratio = gLow.power / gBase.power;
     expect(ratio).toBeCloseTo(0.8, 1);
   });
 
@@ -64,7 +64,7 @@ describe("calculateGrowthVector — adaptability multiplier", () => {
     const gBase = calculateGrowthVector(baseProfile, undefined, rBase);
 
     // ratio should be close to 1.2 / 1.0 = 1.2
-    const ratio = gHigh.strength / gBase.strength;
+    const ratio = gHigh.power / gBase.power;
     expect(ratio).toBeCloseTo(1.2, 1);
   });
 });

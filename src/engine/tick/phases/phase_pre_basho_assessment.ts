@@ -122,7 +122,7 @@ function assessRikishi(rikishi: Rikishi): {
   healthScore -= (100 - (rikishi.condition || 100)) * 0.3;
 
   // Subtract for low stamina
-  healthScore -= (100 - (rikishi.stamina || 100)) * 0.2;
+  healthScore -= (100 - (rikishi.stats.stamina || 100)) * 0.2;
 
   // Clamp health score to 0-100
   healthScore = Math.max(0, Math.min(100, healthScore));

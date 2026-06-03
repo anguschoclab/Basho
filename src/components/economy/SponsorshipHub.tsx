@@ -77,7 +77,7 @@ export function SponsorshipHub({ data }: SponsorshipHubProps) {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-display font-black text-success uppercase">
-              {data.strength} <span className="text-[10px] font-normal">{data.koenkaiName}</span>
+              {data.power} <span className="text-[10px] font-normal">{data.koenkaiName}</span>
             </div>
             <p className="text-[9px] uppercase font-bold text-muted-foreground/60 mt-1">
               Provides constant {formatYen(data.koenkaiIncome)} monthly
@@ -175,13 +175,13 @@ export function SponsorshipHub({ data }: SponsorshipHubProps) {
                           key={v}
                           className={cn(
                             "h-3 w-3 rounded-full border border-background",
-                            v <= sponsor.strength ? "bg-primary" : "bg-muted"
+                            v <= sponsor.power ? "bg-primary" : "bg-muted"
                           )}
                         />
                       ))}
                     </div>
                     <span className="text-[8px] font-black uppercase opacity-40">
-                      Strength: {sponsor.strength}/5
+                      Strength: {sponsor.power}/5
                     </span>
                   </div>
                   <Button

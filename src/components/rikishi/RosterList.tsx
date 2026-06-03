@@ -174,7 +174,7 @@ export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
                       </div>
                     </TooltipWrap>
                     <div className="font-display font-black text-sm">
-                      {r.perceivedStats?.strength || "??"}
+                      {r.perceivedStats?.power || "??"}
                     </div>
                   </div>
                   <div className="space-y-1 pl-1">
@@ -198,7 +198,7 @@ export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
                 <div
                   className="h-full bg-primary opacity-20"
                   style={{
-                    width: `${((Number(r.perceivedStats?.strength) || 0) + (Number(r.perceivedStats?.speed) || 0)) / 2}%`,
+                    width: `${((Number(r.perceivedStats?.power) || 0) + (Number(r.perceivedStats?.speed) || 0)) / 2}%`,
                   }}
                 />
               </div>

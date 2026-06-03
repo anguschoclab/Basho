@@ -115,7 +115,7 @@ export function spawnNarrativeAgent(ctx: NarrativeAgentContext): NarrativeAgentR
 
   // Traditionalist focuses on legacy events
   if (isTraditionalist && !shouldTriggerEvent && currentBashoPhase === "post_basho") {
-    const veteran = topRikishi.find((r) => r.experience > 100);
+    const veteran = topRikishi.find((r) => r.stats.experience > 100);
     if (veteran) {
       shouldTriggerEvent = true;
       eventType = "legacy_milestone";

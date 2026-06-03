@@ -40,10 +40,10 @@ describe("UI Digest: Rikishi Perception Boundary", () => {
     const uiRikishi = enrichRikishiForUI(rawEngineRikishi);
 
     expect((uiRikishi as Record<string, unknown>).stats).toBeUndefined();
-    expect((uiRikishi as Record<string, unknown>).strength).toBeUndefined();
+    expect((uiRikishi as Record<string, unknown>).power).toBeUndefined();
 
     expect(uiRikishi.perceivedStats).toBeDefined();
-    expect(typeof uiRikishi.perceivedStats.strength).toBe("string");
+    expect(typeof uiRikishi.perceivedStats.power).toBe("string");
   });
 
   it("MUST expose public biographical data correctly", () => {

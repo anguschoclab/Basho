@@ -108,7 +108,7 @@ export const WorldCircuitService = {
 
     // Simulate result: rikishi's combined stats vs. generated regional champion
     const rikishiPower =
-      ((rikishi.technique || 50) + (rikishi.speed || 50) + (rikishi.mental || 50)) / 3;
+      ((rikishi.stats.technique || 50) + (rikishi.stats.speed || 50) + (rikishi.stats.mental || 50)) / 3;
     const regionalChampion = 50 + invitation.prestige / 2; // prestige 50 → opponent CA ~75
     const win = rng.next() < rikishiPower / (rikishiPower + regionalChampion);
 

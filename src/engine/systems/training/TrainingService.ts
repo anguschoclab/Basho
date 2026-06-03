@@ -155,8 +155,8 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
           weeksRemaining: 12,
           weeksToHeal: 12,
         };
-        updates.power = Math.max(30, (rikishi.power ?? 50) - 15);
-        updates.stamina = Math.max(30, (rikishi.stamina ?? 50) - 15);
+        updates.power = Math.max(30, (rikishi.stats.power ?? 50) - 15);
+        updates.stamina = Math.max(30, (rikishi.stats.stamina ?? 50) - 15);
         // Stats object will be synced in the growth section if not injured,
         // but since we just injured them, we should sync here too.
         updates.stats = {
@@ -192,7 +192,7 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
 
     Object.values(weeklyPlan).forEach((drillType) => {
       const effects = DRILL_EFFECTS[drillType] || DRILL_EFFECTS.none;
-      drillVector.strength += effects.strength || 0;
+      drillVector.power += effects.power || 0;
       drillVector.speed += effects.speed || 0;
       drillVector.technique += effects.technique || 0;
       drillVector.balance += effects.balance || 0;
@@ -218,9 +218,9 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
       // Apply staff bonuses + Drill Vector + Infrastructure Buffs
       const finalGrowth = {
         strength:
-          (growth.strength + drillVector.strength) *
+          (growth.power + drillVector.power) *
           staffBonuses.conditioning *
-          infra.statBuffs.strength,
+          infra.statBuffs.power,
         speed:
           (growth.speed + drillVector.speed) * staffBonuses.conditioning * infra.statBuffs.speed,
         technique:
@@ -241,7 +241,7 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
       };
 
       // Pre-snapshot for milestone checks
-      const prevPower = rikishi.power || 50;
+      const prevPower = rikishi.stats.power || 50;
 
       // Age-based decline (past peak, per attribute group)
       const decay = calculateAgeDecay(rikishi, world.year);
@@ -250,31 +250,31 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
       // We cap at getEffectiveCeiling to ensure age-based decline is enforceable
       updates.power = Math.min(
         getEffectiveCeiling(rikishi, "strength", world),
-        Math.max(10, (rikishi.power || 50) + finalGrowth.strength + decay.strength)
+        Math.max(10, (rikishi.stats.power || 50) + finalGrowth.power + decay.power)
       );
       updates.speed = Math.min(
         getEffectiveCeiling(rikishi, "speed", world),
-        Math.max(10, (rikishi.speed || 50) + finalGrowth.speed + decay.speed)
+        Math.max(10, (rikishi.stats.speed || 50) + finalGrowth.speed + decay.speed)
       );
       updates.technique = Math.min(
         getEffectiveCeiling(rikishi, "technique", world),
-        Math.max(10, (rikishi.technique || 50) + finalGrowth.technique + decay.technique)
+        Math.max(10, (rikishi.stats.technique || 50) + finalGrowth.technique + decay.technique)
       );
       updates.balance = Math.min(
         getEffectiveCeiling(rikishi, "balance", world),
-        Math.max(10, (rikishi.balance || 50) + finalGrowth.balance + decay.balance)
+        Math.max(10, (rikishi.stats.balance || 50) + finalGrowth.balance + decay.balance)
       );
       updates.stamina = Math.min(
         getEffectiveCeiling(rikishi, "stamina", world),
-        Math.max(10, (rikishi.stamina || 50) + finalGrowth.stamina + decay.stamina)
+        Math.max(10, (rikishi.stats.stamina || 50) + finalGrowth.stamina + decay.stamina)
       );
       updates.adaptability = Math.min(
         getEffectiveCeiling(rikishi, "adaptability", world),
-        Math.max(10, (rikishi.adaptability || 50) + finalGrowth.adaptability + decay.adaptability)
+        Math.max(10, (rikishi.stats.adaptability || 50) + finalGrowth.adaptability + decay.adaptability)
       );
       updates.experience = Math.min(
         getEffectiveCeiling(rikishi, "mental", world),
-        Math.max(10, (rikishi.experience || 0) + finalGrowth.mental * EXPERIENCE_GROWTH_MULTIPLIER + decay.mental)
+        Math.max(10, (rikishi.stats.experience || 0) + finalGrowth.mental * EXPERIENCE_GROWTH_MULTIPLIER + decay.mental)
       );
 
       // Sync flattened UI stats

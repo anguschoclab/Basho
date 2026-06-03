@@ -145,10 +145,10 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
     for (const id of heya.rikishiIds ?? []) {
       const r = getRikishi(world, id);
       if (r) {
-        if (r.division === "makuuchi" || r.division === "juryo" || r.experience > 50) {
+        if (r.division === "makuuchi" || r.division === "juryo" || r.stats.experience > 50) {
           potentialMentors.push(r.id);
         }
-        if (!r.mentorId && r.experience < 30) {
+        if (!r.mentorId && r.stats.experience < 30) {
           juniorsWithoutMentors.push(r);
         }
       }

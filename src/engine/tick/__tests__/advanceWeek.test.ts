@@ -167,7 +167,7 @@ describe("TrainingService.applyWeeklyTraining — healthy rikishi growth", () =>
       trainingState: makeTrainingState("h1", "intensive", "normal") as any,
     });
 
-    const powerBefore = rikishi.power;
+    const powerBefore = rikishi.stats.power;
     const impact = TrainingService.applyWeeklyTraining(world);
     const updatedWorld = resolveImpacts(world, [impact]);
     const updated = updatedWorld.rikishi.get("r1")!;

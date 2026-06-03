@@ -206,7 +206,7 @@ export const InfrastructureService = {
    * @example
    * ```ts
    * const bonuses = InfrastructureService.getHeyaBonuses(heya);
-   * console.log(bonuses.statBuffs.strength); // Multiplier (e.g., 1.15)
+   * console.log(bonuses.statBuffs.power); // Multiplier (e.g., 1.15)
    * console.log(bonuses.injuryHealMod); // Healing modifier
    * ```
    */

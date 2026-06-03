@@ -112,16 +112,16 @@ export const ScoutingService = {
       scoutingInvestment: investment,
       scoutingLevel: level,
       attributes: {
-        power: rikishi.power || 50,
-        speed: rikishi.speed || 50,
-        balance: rikishi.balance || 50,
-        technique: rikishi.technique || 50,
-        aggression: rikishi.aggression || 50,
-        experience: rikishi.experience || 50,
+        power: rikishi.stats.power || 50,
+        speed: rikishi.stats.speed || 50,
+        balance: rikishi.stats.balance || 50,
+        technique: rikishi.stats.technique || 50,
+        aggression: rikishi.stats.aggression || 50,
+        experience: rikishi.stats.experience || 50,
       },
       potential: rikishi.potential
         ? {
-            power: rikishi.potential.stats.strength,
+            power: rikishi.potential.stats.power,
             speed: rikishi.potential.stats.speed,
             balance: rikishi.potential.stats.balance,
             technique: rikishi.potential.stats.technique,

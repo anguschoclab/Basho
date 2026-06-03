@@ -267,7 +267,7 @@ export function getScoutedCandidateView(world: WorldState, candidateId: Id) {
     // Hidden skill potential — gated by potential-tier confidence
     potentialStats: candidate.potentialStats
       ? {
-          strength: resolvePotential("strength", candidate.potentialStats.strength, "strength"),
+          strength: resolvePotential("strength", candidate.potentialStats.power, "strength"),
           speed: resolvePotential("speed", candidate.potentialStats.speed, "speed"),
           technique: resolvePotential("technique", candidate.potentialStats.technique, "technique"),
           balance: resolvePotential("balance", candidate.potentialStats.balance, "balance"),

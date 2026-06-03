@@ -13,7 +13,7 @@ describe("generateScoutingBias", () => {
   it("produces deterministic output for the same seed", () => {
     const a = generateScoutingBias("candidate-abc", 2025);
     const b = generateScoutingBias("candidate-abc", 2025);
-    expect(a.statOffsets.strength).toBe(b.statOffsets.strength);
+    expect(a.statOffsets.power).toBe(b.statOffsets.power);
     expect(a.statOffsets.speed).toBe(b.statOffsets.speed);
   });
 

@@ -90,7 +90,7 @@ function createCombatStats(
     stats: rikishiStats,
 
     // Flattened accessors for performance/legacy compatibility
-    power: rikishiStats.strength,
+    power: rikishiStats.power,
     speed: rikishiStats.speed,
     balance: rikishiStats.balance,
     technique: rikishiStats.technique,
@@ -221,7 +221,7 @@ export function generateFullRikishi(args: {
   // Promising wrestlers are branded with the heya prefix more often.
   // Boost scales with average PA (normalized to 0–0.35) and prodigy profile.
   const paAvg =
-    (potentialPkg.stats.strength +
+    (potentialPkg.stats.power +
       potentialPkg.stats.technique +
       potentialPkg.stats.speed +
       potentialPkg.stats.stamina +

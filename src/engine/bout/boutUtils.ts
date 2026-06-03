@@ -61,7 +61,9 @@ export function computeTachiaiPower(
  * condition=100 → 1.0 (full strength), condition=0 → 0.8 (severely impaired).
  */
 export function conditionMultiplier(condition: number): number {
-  return 0.8 + Math.max(0, Math.min(100, condition)) * 0.002;
+  const c = Math.max(0, Math.min(100, condition)) / 100;
+  // Non-linear curve mapping: 100 -> 1.0, 50 -> ~0.92, 25 -> ~0.82, 0 -> 0.7
+  return 0.7 + 0.58 * c - 0.28 * c * c;
 }
 
 /**

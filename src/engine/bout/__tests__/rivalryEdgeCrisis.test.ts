@@ -46,7 +46,7 @@ describe("applyRivalryToRikishi — spite boosts mental for edge crisis", () => 
     const r = mockRikishi("r", { mental: 50, aggression: 50 });
     const boosted = applyRivalryToRikishi(r, { heat: 100, spite: 100 });
 
-    expect(boosted.mental).toBeGreaterThan(r.mental);
+    expect(boosted.mental).toBeGreaterThan(r.stats.mental);
     // spite=100 → spite01=1.0 → mental *= (1 + 1.0*0.2) = 1.2 → 60
     expect(boosted.mental).toBeCloseTo(60, 1);
   });
@@ -55,13 +55,13 @@ describe("applyRivalryToRikishi — spite boosts mental for edge crisis", () => 
     const r = mockRikishi("r", { mental: 50, aggression: 50 });
     const boosted = applyRivalryToRikishi(r, { heat: 50, spite: 0 });
 
-    expect(boosted.mental).toBe(r.mental);
+    expect(boosted.mental).toBe(r.stats.mental);
   });
 
   it("still boosts aggression via heat (existing behavior)", () => {
     const r = mockRikishi("r", { mental: 50, aggression: 50 });
     const boosted = applyRivalryToRikishi(r, { heat: 100, spite: 0 });
 
-    expect(boosted.aggression).toBeGreaterThan(r.aggression);
+    expect(boosted.aggression).toBeGreaterThan(r.stats.aggression);
   });
 });

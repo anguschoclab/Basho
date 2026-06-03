@@ -271,7 +271,7 @@ function bandAge(r: Rikishi, world: WorldState, previous?: AgeBand): AgeBand {
  *  * @returns The result.
  */
 function bandExperience(r: Rikishi, previous?: ExperienceBand): ExperienceBand {
-  return NarrativeService.getExperienceBand(r.experience ?? 0, previous);
+  return NarrativeService.getExperienceBand(r.stats.experience ?? 0, previous);
 }
 
 /**

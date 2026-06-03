@@ -95,7 +95,7 @@ export function IndividualFocusSlots({
                       {FATIGUE_LABELS[fb]}
                     </span>
                     <span className="h-1 w-1 bg-border/40 rounded-full" />
-                    <span>{getCareerPhase(rikishi.experience)} Phase</span>
+                    <span>{getCareerPhase(rikishi.stats.experience)} Phase</span>
                   </div>
                 </div>
               </div>

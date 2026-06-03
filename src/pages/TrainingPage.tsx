@@ -83,7 +83,7 @@ export default function TrainingPage() {
       (Object.entries(FOCUS_BIAS_MATRIX) as Array<[TrainingFocus, Record<string, number>]>).map(
         ([focus, biases]) => ({
           focus: focus.charAt(0).toUpperCase() + focus.slice(1),
-          strength: Math.round((biases.strength ?? 1) * 100),
+          strength: Math.round((biases.power ?? 1) * 100),
           speed: Math.round((biases.speed ?? 1) * 100),
           technique: Math.round((biases.technique ?? 1) * 100),
           balance: Math.round((biases.balance ?? 1) * 100),

@@ -195,23 +195,23 @@ export function evolveGripGeometry(
     if (belt.eastDepth === "standard") {
       belt.eastDepth = "deep";
       // Update lever arms for deeper grip
-      if (belt.eastLeft) belt.eastLeft.leverArm = 0.29;
-      if (belt.eastRight) belt.eastRight.leverArm = 0.29;
+      if (belt.eastLeft) belt.eastLeft.leverArm = 0.31;
+      if (belt.eastRight) belt.eastRight.leverArm = 0.31;
     } else if (belt.eastDepth === "deep") {
       belt.eastDepth = "maemitsu";
       // Update lever arms for maemitsu grip
-      if (belt.eastLeft) belt.eastLeft.leverArm = 0.33;
-      if (belt.eastRight) belt.eastRight.leverArm = 0.33;
+      if (belt.eastLeft) belt.eastLeft.leverArm = 0.34;
+      if (belt.eastRight) belt.eastRight.leverArm = 0.34;
     }
   } else if (techniqueMargin < -15) {
     if (belt.westDepth === "standard") {
       belt.westDepth = "deep";
-      if (belt.westLeft) belt.westLeft.leverArm = 0.29;
-      if (belt.westRight) belt.westRight.leverArm = 0.29;
+      if (belt.westLeft) belt.westLeft.leverArm = 0.31;
+      if (belt.westRight) belt.westRight.leverArm = 0.31;
     } else if (belt.westDepth === "deep") {
       belt.westDepth = "maemitsu";
-      if (belt.westLeft) belt.westLeft.leverArm = 0.33;
-      if (belt.westRight) belt.westRight.leverArm = 0.33;
+      if (belt.westLeft) belt.westLeft.leverArm = 0.34;
+      if (belt.westRight) belt.westRight.leverArm = 0.34;
     }
   }
 

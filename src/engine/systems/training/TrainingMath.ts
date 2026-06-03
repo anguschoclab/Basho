@@ -138,7 +138,7 @@ export function calculateGrowthVector(
   const focusModeMult = focus ? INDIVIDUAL_FOCUS_MODES[focus.focusType].growth : 1.0;
   const bias = FOCUS_BIAS_MATRIX[profile.focus];
 
-  const phase = getCareerPhase(rikishi.experience);
+  const phase = getCareerPhase(rikishi.stats.experience);
   const phaseMult = PHASE_EFFECTS[phase].growthMult;
 
   // Stability check for heya facilities
@@ -183,7 +183,7 @@ export function calculateGrowthVector(
 
   // Adaptability multiplier: faster learners absorb training more efficiently
   // range: adaptability=0 → 0.8x, adaptability=50 → 1.0x, adaptability=100 → 1.2x
-  const adaptabilityMult = 0.8 + (rikishi.adaptability ?? 50) * 0.004;
+  const adaptabilityMult = 0.8 + (rikishi.stats.adaptability ?? 50) * 0.004;
 
   const totalMult =
     intensityMult *
@@ -222,7 +222,7 @@ export function calculateGrowthVector(
   const statBonus = heya?.ichimon ? ICHIMON_STAT_BONUSES[heya.ichimon] : undefined;
   if (statBonus) {
     Object.assign(styleDriftMults, {
-      strength: styleDriftMults.strength + (statBonus.strength || 0),
+      strength: styleDriftMults.power + (statBonus.power || 0),
       speed: styleDriftMults.speed + (statBonus.speed || 0),
       technique: styleDriftMults.technique + (statBonus.technique || 0),
       balance: styleDriftMults.balance + (statBonus.balance || 0),
@@ -254,10 +254,10 @@ export function calculateGrowthVector(
     return totalMult * rawMult * drMult * affinityMult;
   };
 
-  growth.strength =
-    applyCapped("strength", bias.strength, rikishi.stats?.strength || 50) *
+  growth.power =
+    applyCapped("strength", bias.power, rikishi.stats?.power || 50) *
     nutritionMult *
-    styleDriftMults.strength;
+    styleDriftMults.power;
   growth.speed =
     applyCapped("speed", bias.speed, rikishi.stats?.speed || 50) * styleDriftMults.speed;
   growth.technique =

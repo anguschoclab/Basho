@@ -164,8 +164,8 @@ describe("evaluateKimariteAttempt — edge conditions", () => {
 
 describe("evaluateKimariteAttempt — belt battle", () => {
   it("returns uwatenage when attacker has morozashi and defender is falling", () => {
-    // power: 65 so w.power (65) > l.balanceResistance (50)
-    // cogOffset: 0.6 → west.balance = max(0, 100 - 0.6*200) = 0 → l.balance <= 0
+    // power: 65 so w.stats.power (65) > l.balanceResistance (50)
+    // cogOffset: 0.6 → west.stats.balance = max(0, 100 - 0.6*200) = 0 → l.stats.balance <= 0
     const east = mockRikishi("r1", { power: 65 });
     const west = mockRikishi("r2");
     const st = makeEngineState({}, { cogOffset: 0.6, footSpread: 0.4 }, "belt_battle");

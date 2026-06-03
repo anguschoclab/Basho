@@ -177,7 +177,7 @@ export function generateCandidate(args: {
     isEmergentProdigy,
 
     potentialStats: {
-      strength: paPkg.stats.strength,
+      strength: paPkg.stats.power,
       speed: paPkg.stats.speed,
       technique: paPkg.stats.technique,
       balance: paPkg.stats.balance,

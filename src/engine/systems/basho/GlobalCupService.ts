@@ -255,8 +255,8 @@ export const GlobalCupService = {
 
     // Simplistic simulation for Global Cup (Option B)
     // In production, this would call the full bout resolver.
-    const eastPower = east?.power ?? 70;
-    const westPower = west?.power ?? 70;
+    const eastPower = east?.stats?.power ?? 70;
+    const westPower = west?.stats?.power ?? 70;
     const total = eastPower + westPower;
     const roll = rng.next() * total;
 

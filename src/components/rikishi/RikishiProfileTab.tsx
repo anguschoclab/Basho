@@ -20,7 +20,7 @@ import { RankBadge } from "./RankBadge";
 function generateScoutNote(rikishi: UIRikishi, rawRikishi: Rikishi, rng: SeededRNG): string {
   const s = rawRikishi.stats ?? {};
   const ranked = [
-    { label: "physical power", v: s.strength ?? 50 },
+    { label: "physical power", v: s.power ?? 50 },
     { label: "footwork", v: s.speed ?? 50 },
     { label: "technical precision", v: s.technique ?? 50 },
     { label: "ring endurance", v: s.stamina ?? 50 },
@@ -107,7 +107,7 @@ function generateBadges(rikishi: UIRikishi, rawRikishi: Rikishi): string[] {
   const totalBouts = (rikishi.careerWins ?? 0) + (rikishi.careerLosses ?? 0);
   const winPct = totalBouts > 30 ? (rikishi.careerWins ?? 0) / totalBouts : 0;
   const topStatVal = Math.max(
-    s.strength ?? 0,
+    s.power ?? 0,
     s.speed ?? 0,
     s.technique ?? 0,
     s.stamina ?? 0,
@@ -174,8 +174,8 @@ export function RikishiProfileTab({ rikishi, rawRikishi, worldSeed }: RikishiPro
             {
               label: "Forcefulness",
               key: "strength",
-              val: rikishi.perceivedStats.strength,
-              raw: rawRikishi.stats?.strength ?? 50,
+              val: rikishi.perceivedStats.power,
+              raw: rawRikishi.stats?.power ?? 50,
               color: "bg-gold",
               icon: <Zap className="h-3.5 w-3.5" />,
             },

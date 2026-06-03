@@ -30,7 +30,7 @@ export interface CombatProfile {
   preferredGripDepth: GripDepthPreference;
   // Base stat generation modifiers (mean offsets applied during creation)
   // e.g., A speedster might have { speed: 1.1, weight: 0.9 }
-  // Note: 'power' maps to RikishiStats.strength → Rikishi.power in the generation pipeline.
+  // Note: 'power' maps to RikishiStats.power → Rikishi.power in the generation pipeline.
   statModifiers: Partial<Record<keyof RikishiStats | "weight" | "height" | "power", number>>;
   favoredKimarite?: string[];
 }
@@ -216,3 +216,4 @@ export interface TickResolutionEvent {
   powerDifferential: number;
   context: BoutTickContext; // The new payload
 }
+export type Style = "oshi" | "yotsu" | "hybrid";

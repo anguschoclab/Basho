@@ -47,7 +47,7 @@ function worldChecksum(world: ReturnType<typeof generateInitialWorld>): string {
     for (const id of world.activeRikishiIds) {
       const r = world.rikishi.get(id);
       if (r) {
-        powerSum += r.power ?? 0;
+        powerSum += r.stats.power ?? 0;
         fatigueSum += r.fatigue ?? 0;
       }
     }

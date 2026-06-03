@@ -38,7 +38,7 @@ export interface RikishiAchievements {
 
 /** Defines the structure for rikishi stats. */
 export interface RikishiStats {
-  strength: number;
+  power: number;
   technique: number;
   speed: number;
   weight: number;
@@ -46,6 +46,8 @@ export interface RikishiStats {
   mental: number;
   adaptability: number;
   balance: number;
+  aggression: number;
+  experience: number;
   specialPrizes?: RikishiAchievements["specialPrizes"];
   achievements?: RikishiAchievements; // Career milestone record, not a trainable stat
 }
@@ -65,18 +67,7 @@ export interface Rikishi {
   height: number;
   weight: number;
 
-  power: number;
-  speed: number;
-  balance: number;
-  technique: number;
-  aggression: number;
-  /** Mental composure — governs edge-crisis recovery. Same source stat as aggression but distinct semantic. */
-  mental: number;
-  experience: number;
-  adaptability: number;
-
   momentum: number;
-  stamina: number;
   fatigue: number;
 
   isRetired?: boolean;

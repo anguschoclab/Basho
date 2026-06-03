@@ -14,7 +14,7 @@ describe("UI Models Projections", () => {
     if (!rikishi) throw new Error("No rikishi found");
 
     // Mutate to set a specific raw value
-    rikishi.power = 85;
+    rikishi.stats.power = 85;
 
     const uiRikishi = projectRikishi(rikishi, world);
 

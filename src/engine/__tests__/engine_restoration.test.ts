@@ -32,7 +32,7 @@ describe("Engine Restoration Verification", () => {
     const r1 = Array.from(world1.rikishi.values())[0];
     const r2 = Array.from(world2.rikishi.values())[0];
     expect(r1.name).toBe(r2.name);
-    expect(r1.stats.strength).toBe(r2.stats.strength);
+    expect(r1.stats.power).toBe(r2.stats.power);
   });
 
   it("should assign at least some rikishi to every stable (balance check)", () => {

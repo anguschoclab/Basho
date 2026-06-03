@@ -68,7 +68,7 @@ const SponsorContractItem = React.memo(
 
             <div className="flex flex-col items-end gap-2 shrink-0">
               <div className="flex items-center gap-1">
-                {Array.from({ length: s.strength }, (_, i) => (
+                {Array.from({ length: s.power }, (_, i) => (
                   <Star key={i} className="h-3 w-3 text-gold" fill="currentColor" />
                 ))}
               </div>
@@ -134,7 +134,7 @@ export function SponsorContractsPanel({
         <Card>
           <CardContent className="p-3 text-center">
             <p className="text-xs text-muted-foreground">Kōenkai</p>
-            <p className="text-2xl font-bold capitalize">{digest.strength}</p>
+            <p className="text-2xl font-bold capitalize">{digest.power}</p>
           </CardContent>
         </Card>
         <Card className={digest.expiringCount > 0 ? "border-gold/30" : ""}>
