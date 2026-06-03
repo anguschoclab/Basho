@@ -85,8 +85,8 @@ export function checkRetirement(
 
   // 5. Performance Drop (Rank & Stat based)
   const isStagnant = rikishi.rank === "jonokuchi" && age > 28;
-  const isWeak = (rikishi.stats.power ?? 50) < 40 && age > 38;
-  const isCriticallyWeak = (rikishi.stats.power ?? 50) < 30 && age > 30;
+  const isWeak = (rikishi.stats?.power ?? 50) < 40 && age > 38;
+  const isCriticallyWeak = (rikishi.stats?.power ?? 50) < 30 && age > 30;
 
   if (isStagnant || isWeak || isCriticallyWeak) {
     let retireProb = 0.1;
@@ -94,7 +94,7 @@ export function checkRetirement(
     if (isCriticallyWeak) retireProb = 0.5;
 
     if (rng.bool(retireProb)) {
-      return (rikishi.stats.power ?? 50) < 35 ? "Diminishing Physicality" : "Lack of Performance";
+      return (rikishi.stats?.power ?? 50) < 35 ? "Diminishing Physicality" : "Lack of Performance";
     }
   }
 

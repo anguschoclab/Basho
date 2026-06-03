@@ -67,6 +67,10 @@ export function isBodyFalling(body: PhysicalBody): boolean {
   return Math.abs(body.cogOffset) > maxOffset;
 }
 
+export function isOutOfRing(body: PhysicalBody): boolean {
+  const dist = Math.sqrt(body.x * body.x + body.z * body.z);
+  return dist > TAWARA_RADIUS;
+}
 
 export function tawaraBounceResistance(toePos: number): number {
   if (toePos < 0) return 0;
@@ -87,7 +91,7 @@ export function computePushForce(
   const w = action.statWeighting;
 
   // Base force from power + weight contribution; stanceWidth affects CoG stability, not raw force
-  let force = power * (w.stats.power || FORCE_POWER_MULTIPLIER) + weight * (w.weight || FORCE_WEIGHT_MULTIPLIER);
+  let force = power * (w.strength || FORCE_POWER_MULTIPLIER) + weight * (w.weight || FORCE_WEIGHT_MULTIPLIER);
   // Fatigue penalty: -0.4% per fatigue point (same curve as old engine)
   force *= Math.max(MIN_FORCE_AFTER_FATIGUE, 1 - fatigue * FATIGUE_PENALTY_PER_POINT);
 

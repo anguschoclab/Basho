@@ -65,7 +65,7 @@ export function getEffectiveCeiling(
 
   let baseCeiling = 0;
   if (potential?.stats && stat in potential.stats) {
-    const pa = potential.stats[stat] ?? 0;
+    const pa = (potential.stats[stat] as number) ?? 0;
     baseCeiling = pa * (potential.ceilingFraction ?? 1.0);
   } else {
     baseCeiling = getStatCeiling(talentSeed, stat);
@@ -202,7 +202,7 @@ export function calculateGrowthVector(
   // Numeric accumulators for cultural influence provide subtle stat gain multipliers
   const philosophy = heya?.trainingPhilosophy;
   const styleDriftMults = {
-    strength: 1.0 + (philosophy?.powerBias || 0),
+    power: 1.0 + (philosophy?.powerBias || 0),
     speed: 1.0 + (philosophy?.speedBias || 0),
     technique: 1.0 + (philosophy?.techniqueBias || 0),
     balance: 1.0,
@@ -212,7 +212,7 @@ export function calculateGrowthVector(
 
   // Add Ichimon-specific stat bonuses
   const ICHIMON_STAT_BONUSES: Record<string, Partial<typeof styleDriftMults>> = {
-    Dewanoumi: { strength: 0.05 },
+    Dewanoumi: { power: 0.05 },
     Isegahama: { technique: 0.05, balance: 0.05 },
     Nishonoseki: { speed: 0.05 },
     Tokitsukaze: { stamina: 0.1 },
@@ -222,7 +222,7 @@ export function calculateGrowthVector(
   const statBonus = heya?.ichimon ? ICHIMON_STAT_BONUSES[heya.ichimon] : undefined;
   if (statBonus) {
     Object.assign(styleDriftMults, {
-      strength: styleDriftMults.power + (statBonus.power || 0),
+      power: styleDriftMults.power + (statBonus.power || 0),
       speed: styleDriftMults.speed + (statBonus.speed || 0),
       technique: styleDriftMults.technique + (statBonus.technique || 0),
       balance: styleDriftMults.balance + (statBonus.balance || 0),
@@ -232,7 +232,7 @@ export function calculateGrowthVector(
   }
 
   const growth: Record<TrainingAttribute, number> = {
-    strength: 0,
+    power: 0,
     speed: 0,
     technique: 0,
     balance: 0,
@@ -255,7 +255,7 @@ export function calculateGrowthVector(
   };
 
   growth.power =
-    applyCapped("strength", bias.power, rikishi.stats?.power || 50) *
+    applyCapped("power", bias.power, rikishi.stats?.power || 50) *
     nutritionMult *
     styleDriftMults.power;
   growth.speed =
@@ -336,10 +336,11 @@ export function calculateAgeDecay(
     const effectivePeak = cfg.peakAge + peakOffset;
     if (age <= effectivePeak) return;
     // Convert annual decline into weekly delta applied to the current stat value.
-    const rikishiVal = rikishi[key as keyof Rikishi];
+    const lookupKey = key === "strength" ? "power" : key;
+    const rikishiVal = rikishi[lookupKey as keyof Rikishi];
     const current =
       (typeof rikishiVal === "number" ? rikishiVal : undefined) ??
-      rikishi.stats?.[key as keyof RikishiStats] ??
+      (rikishi.stats?.[lookupKey as keyof RikishiStats] as number) ??
       50;
     const yearly = current * cfg.declinePerYear;
     out[key] = -yearly / 52;

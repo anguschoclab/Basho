@@ -42,7 +42,7 @@ export type TrainingAttribute = Exclude<keyof RikishiStats, "achievements" | "sp
 
 export const FOCUS_BIAS_MATRIX: Record<TrainingFocus, Record<TrainingAttribute, number>> = {
   power: {
-    strength: 1.3,
+    power: 1.3,
     speed: 0.85,
     technique: 0.95,
     balance: 0.95,
@@ -52,7 +52,7 @@ export const FOCUS_BIAS_MATRIX: Record<TrainingFocus, Record<TrainingAttribute, 
     adaptability: 1.0,
   },
   speed: {
-    strength: 0.85,
+    power: 0.85,
     speed: 1.3,
     technique: 0.95,
     balance: 0.95,
@@ -62,7 +62,7 @@ export const FOCUS_BIAS_MATRIX: Record<TrainingFocus, Record<TrainingAttribute, 
     adaptability: 1.0,
   },
   technique: {
-    strength: 0.9,
+    power: 0.9,
     speed: 0.9,
     technique: 1.35,
     balance: 1.1,
@@ -72,7 +72,7 @@ export const FOCUS_BIAS_MATRIX: Record<TrainingFocus, Record<TrainingAttribute, 
     adaptability: 1.0,
   },
   balance: {
-    strength: 0.9,
+    power: 0.9,
     speed: 0.95,
     technique: 1.1,
     balance: 1.35,
@@ -82,7 +82,7 @@ export const FOCUS_BIAS_MATRIX: Record<TrainingFocus, Record<TrainingAttribute, 
     adaptability: 1.0,
   },
   neutral: {
-    strength: 1.0,
+    power: 1.0,
     speed: 1.0,
     technique: 1.0,
     balance: 1.0,
@@ -99,11 +99,11 @@ export const ARCHETYPE_AFFINITY: Record<
   Partial<Record<keyof RikishiStats, number>>
 > = {
   oshi: { speed: 1.25, mental: 1.15, technique: 0.9, balance: 0.9, stamina: 0.85 },
-  yotsu: { weight: 1.3, balance: 1.2, strength: 1.15, technique: 0.85, speed: 0.7 },
-  trickster: { speed: 1.2, technique: 1.2, adaptability: 1.2, strength: 0.8, weight: 0.75 },
+  yotsu: { weight: 1.3, balance: 1.2, power: 1.15, technique: 0.85, speed: 0.7 },
+  trickster: { speed: 1.2, technique: 1.2, adaptability: 1.2, power: 0.8, weight: 0.75 },
   speedster: { speed: 1.3, stamina: 1.15, adaptability: 1.1, balance: 1.0, mental: 1.1 },
-  hybrid: { strength: 1.05, speed: 1.05, technique: 1.05, balance: 1.05, stamina: 1.05 },
-  giant: { weight: 1.35, strength: 1.2, balance: 1.15, speed: 0.65, stamina: 1.1 },
+  hybrid: { power: 1.05, speed: 1.05, technique: 1.05, balance: 1.05, stamina: 1.05 },
+  giant: { weight: 1.35, power: 1.2, balance: 1.15, speed: 0.65, stamina: 1.1 },
   tsuppari: { speed: 1.2, mental: 1.1, technique: 0.85, stamina: 0.9, balance: 0.85 },
   defensive: { technique: 1.25, balance: 1.2, stamina: 1.1, speed: 0.9, mental: 1.1 },
 };
@@ -137,7 +137,7 @@ export const DRILL_EFFECTS: Record<
   Partial<RikishiStats> & { fatigue: number }
 > = {
   asageiko: {
-    strength: 0.03,
+    power: 0.03,
     speed: 0.03,
     technique: 0.03,
     balance: 0.03,
@@ -145,19 +145,19 @@ export const DRILL_EFFECTS: Record<
     fatigue: 1.0,
   },
   butsukari: {
-    strength: 0.25,
+    power: 0.25,
     stamina: 0.15,
     weight: 0.1,
     fatigue: 4.5,
   },
   teppo: {
     technique: 0.22,
-    strength: 0.06,
+    power: 0.06,
     speed: 0.04,
     fatigue: 2.5,
   },
   "moushi-ai": {
-    strength: 0.08,
+    power: 0.08,
     speed: 0.08,
     technique: 0.08,
     balance: 0.08,

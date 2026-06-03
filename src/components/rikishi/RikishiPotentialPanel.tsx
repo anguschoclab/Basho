@@ -21,7 +21,7 @@ interface Props {
 }
 
 const STAT_LABELS: Array<[keyof NonNullable<Rikishi["potential"]>["stats"], string]> = [
-  ["strength", "Strength"],
+  ["power", "Strength"],
   ["speed", "Speed"],
   ["stamina", "Stamina"],
   ["technique", "Technique"],
@@ -31,7 +31,7 @@ const STAT_LABELS: Array<[keyof NonNullable<Rikishi["potential"]>["stats"], stri
 ];
 
 const CURRENT_KEY: Record<string, keyof Rikishi> = {
-  strength: "power",
+  power: "power",
   speed: "speed",
   stamina: "stamina",
   technique: "technique",
