@@ -12,14 +12,16 @@ import type { Id } from "../types/common";
 // ── Rikishi ────────────────────────────────────────────────────────────────
 
 export function mockRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikishi {
-  const statsOverride = overrides.stats;
-  const power = overrides.power ?? statsOverride?.power ?? 50;
-  const speed = overrides.speed ?? statsOverride?.speed ?? 50;
-  const balance = overrides.balance ?? statsOverride?.balance ?? 50;
-  const technique = overrides.technique ?? statsOverride?.technique ?? 50;
-  const aggression = overrides.aggression ?? 50;
-  const mental = overrides.mental ?? statsOverride?.mental ?? 50;
-  const experience = overrides.experience ?? 50;
+  const { stats: statsOverride, ...flatOverrides } = overrides;
+  const power = flatOverrides.power ?? statsOverride?.power ?? 50;
+  const speed = flatOverrides.speed ?? statsOverride?.speed ?? 50;
+  const balance = flatOverrides.balance ?? statsOverride?.balance ?? 50;
+  const technique = flatOverrides.technique ?? statsOverride?.technique ?? 50;
+  const aggression = flatOverrides.aggression ?? 50;
+  const mental = flatOverrides.mental ?? statsOverride?.mental ?? 50;
+  const experience = flatOverrides.experience ?? 50;
+  const stamina = flatOverrides.stamina ?? statsOverride?.stamina ?? 100;
+  const adaptability = flatOverrides.adaptability ?? statsOverride?.adaptability ?? 50;
 
   return {
     id,
@@ -44,26 +46,28 @@ export function mockRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikis
     mental,
     experience,
     momentum: 0,
-    stamina: 100,
+    stamina,
     fatigue: 0,
     injured: false,
     injuryWeeksRemaining: 0,
     birthYear: 1995,
-    adaptability: 50,
+    adaptability,
     h2h: {},
     history: [],
     personalityTraits: [],
     condition: 90,
     motivation: 50,
     stats: {
-      strength: power,
+      power,
       speed,
       technique,
       balance,
       weight: 140,
-      stamina: 100,
-      mental: 50,
-      adaptability: 50,
+      stamina,
+      mental,
+      adaptability,
+      experience,
+      aggression,
       achievements: {
         kinboshiEarned: 0,
         ginboshiEarned: 0,
@@ -84,7 +88,7 @@ export function mockRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikis
       preferredGripDepth: "standard",
       statModifiers: {},
     },
-    ...overrides,
+    ...flatOverrides,
   } as Rikishi;
 }
 

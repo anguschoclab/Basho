@@ -56,14 +56,9 @@ export function computeTachiaiPower(
   return stat(r, "power") * 0.5 + stat(r, "speed") * 0.3 + stat(r, "aggression") * 0.2;
 }
 
-/**
- * Maps a rikishi's condition (0–100) to a combat effectiveness multiplier (0.8–1.0).
- * condition=100 → 1.0 (full strength), condition=0 → 0.8 (severely impaired).
- */
 export function conditionMultiplier(condition: number): number {
   const c = Math.max(0, Math.min(100, condition)) / 100;
-  // Non-linear curve mapping: 100 -> 1.0, 50 -> ~0.92, 25 -> ~0.82, 0 -> 0.7
-  return 0.7 + 0.58 * c - 0.28 * c * c;
+  return 0.8 + 0.2 * c;
 }
 
 /**

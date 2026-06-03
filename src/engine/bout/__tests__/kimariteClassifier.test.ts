@@ -147,7 +147,7 @@ describe("evaluateKimariteAttempt — edge conditions", () => {
     const east = mockRikishi("r1", { style: "yotsu" });
     const west = mockRikishi("r2");
     const st = makeEngineState(
-      { leadingFootX: 4.1, velocityX: 3 }, // east pushing with high momentum
+      { leadingFootX: 4.1, velocityX: -3 }, // east pushing with high momentum
       { leadingFootX: -4.1 } // west near edge, velocityX=0 = retreating
     );
 
@@ -243,7 +243,7 @@ describe("evaluateKimariteAttempt — belt battle", () => {
     const west = mockRikishi("r2");
     // West falling: cogOffset = 0.6 → balance = max(0, 100 - 120) = 0
     const st = makeEngineState(
-      { velocityX: 2 }, // east pushing forward
+      { velocityX: -2 }, // east pushing forward
       { cogOffset: 0.6, footSpread: 0.4 },
       "belt_battle"
     );
@@ -286,7 +286,7 @@ describe("evaluateKimariteAttempt — push battle", () => {
   it("returns oshidashi when pusher has momentum advantage and defender near edge", () => {
     const east = mockRikishi("r1");
     const west = mockRikishi("r2");
-    const st = makeEngineState({ leadingFootX: 0.7, velocityX: 5 }, { leadingFootX: -3.6 });
+    const st = makeEngineState({ leadingFootX: 0.7, velocityX: -5 }, { leadingFootX: -3.6 });
     const push = makePushState({
       eastLeadFoot: 0.7,
       westLeadFoot: -3.6,
@@ -306,7 +306,7 @@ describe("evaluateKimariteAttempt — push battle", () => {
     const east = mockRikishi("r1");
     const west = mockRikishi("r2");
     // West falling: cogOffset=0.6 → balance=max(0,100-120)=0 ≤ 0; east pushing, nearCenter (edgeDistance=3.85)
-    const st = makeEngineState({ cogOffset: 0, velocityX: 5 }, { cogOffset: 0.6, footSpread: 0.4 });
+    const st = makeEngineState({ cogOffset: 0, velocityX: -5 }, { cogOffset: 0.6, footSpread: 0.4 });
     const push = makePushState({
       eastMomentum: 20,
       westMomentum: 5,
@@ -351,7 +351,7 @@ describe("evaluateKimariteAttempt — push battle", () => {
     // tsukidashi requires noBelt && power >= 65 && atEdge(l)
     const east = mockRikishi("r1", { power: 70 });
     const west = mockRikishi("r2");
-    const st = makeEngineState({ velocityX: 5 }, { leadingFootX: -3.8 }); // west near edge
+    const st = makeEngineState({ velocityX: -5 }, { leadingFootX: -3.8 }); // west near edge
     const push = makePushState({
       contestLine: 3.0,
       eastMomentum: 20,

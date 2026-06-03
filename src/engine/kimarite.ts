@@ -419,12 +419,32 @@ const noBelt = (ctx: SpatialBoutContext, side: "east"|"west") => (side === "east
 const isPusher = (r: Rikishi) => r.style === "oshi";
 const forwardMomentum = (ctx: SpatialBoutContext, side: "east"|"west") => {
   const m = side === "east" ? ctx.eastMomentumX : ctx.westMomentumX;
-  return side === "east" ? Math.max(0, m) : Math.max(0, -m); // wait, forward is positive for east, negative for west
+  return side === "east" ? Math.max(0, -m) : Math.max(0, m);
 };
 const overCommitting = (ctx: SpatialBoutContext, side: "east"|"west") => forwardMomentum(ctx, side) > 0;
 const balance = (ctx: SpatialBoutContext, side: "east"|"west") => Math.max(0, 100 - Math.abs(side === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset) * 200);
 const desperation = (ctx: SpatialBoutContext, side: "east"|"west") => balance(ctx, side) < 20;
 const offensiveOutput = (st: EngineStateV2) => 1; // Always 1 in selection engine unless modified
+
+const getDepth = (st: EngineStateV2, side: "east" | "west") => {
+  if (st.phase.tag === "belt_battle") {
+    return side === "east" ? st.phase.state.eastDepth : st.phase.state.westDepth;
+  }
+  if (st.phase.tag === "edge_crisis" && st.phase.savedBelt) {
+    return side === "east" ? st.phase.savedBelt.eastDepth : st.phase.savedBelt.westDepth;
+  }
+  return undefined;
+};
+
+const getTorque = (st: EngineStateV2, side: "east" | "west") => {
+  if (st.phase.tag === "belt_battle") {
+    return side === "east" ? st.phase.state.torqueEast : st.phase.state.torqueWest;
+  }
+  if (st.phase.tag === "edge_crisis" && st.phase.savedBelt) {
+    return side === "east" ? st.phase.savedBelt.torqueEast : st.phase.savedBelt.torqueWest;
+  }
+  return 0;
+};
 
 
 // ─── KIMARITE_STRATEGIES ─────────────────────────────────────────────────────
@@ -449,7 +469,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
       forwardMomentum(ctx, wSide) > 0 &&
       balance(ctx, lSide) > 0 &&
       (Math.abs(wSide === "east" ? ctx.eastLeadFoot : ctx.westLeadFoot) === undefined || Math.abs(wSide === "east" ? ctx.eastLeadFoot : ctx.westLeadFoot) < 4.0) &&
-      ((wSide === "east" ? ctx.eastGrip : ctx.westGrip) === undefined || (wSide === "east" ? ctx.eastGrip : ctx.westGrip) === "deep" || (wSide === "east" ? ctx.eastGrip : ctx.westGrip) === "maemitsu"),
+      (getDepth(st, wSide) === undefined || getDepth(st, wSide) === "deep" || getDepth(st, wSide) === "maemitsu" || getDepth(st, wSide) === "standard"),
   },
   {
     id: "oshidashi",
@@ -598,7 +618,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "tokushu",
     weight: 30,
     difficulty: 9,
-    condition: (w, l, ctx) => ctx.edgeDistance <= 4 && w.stats.stamina < 0.25 && balance(ctx, lSide) <= 0,
+    condition: (w, l, ctx, st, wSide, lSide) => edgeDistance(ctx, wSide) <= 0.5 && w.stats.stamina < 25 && balance(ctx, lSide) <= 0,
   },
   {
     id: "okuritaoshi",
@@ -731,10 +751,10 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     difficulty: 6,
     condition: (w, l, ctx, st, wSide, lSide) =>
       ((wSide === "east" ? ctx.eastGrip : ctx.westGrip) === "uwate" || (wSide === "east" ? ctx.eastGrip : ctx.westGrip) === "morozashi") &&
-      w.stats.power > l.balanceResistance &&
+      w.stats.power > l.stats.balance &&
       balance(ctx, lSide) <= 0 &&
       nearCenter(ctx, lSide) &&
-      (w.torque === undefined || w.torque > 20),
+      getTorque(st, wSide) > 20,
   },
   {
     id: "sukuinage",
@@ -755,7 +775,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     difficulty: 6,
     condition: (w, l, ctx, st, wSide, lSide) =>
       ((wSide === "east" ? ctx.eastGrip : ctx.westGrip) === "shitate" || (wSide === "east" ? ctx.eastGrip : ctx.westGrip) === "morozashi") &&
-      w.stats.power > l.balanceResistance &&
+      w.stats.power > l.stats.balance &&
       balance(ctx, lSide) <= 0 &&
       nearCenter(ctx, lSide),
   },

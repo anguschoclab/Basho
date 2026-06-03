@@ -15,25 +15,25 @@ describe("TrainingMath", () => {
   describe("getStatCeiling", () => {
     it("calculates ceilings at different talent seeds", () => {
       // 0 talent
-      const zeroCeil = getStatCeiling(0, "strength");
+      const zeroCeil = getStatCeiling(0, "power");
       expect(zeroCeil).toBeGreaterThanOrEqual(30);
       expect(zeroCeil).toBeLessThanOrEqual(99);
 
       // 100 talent
-      const maxCeil = getStatCeiling(100, "strength");
+      const maxCeil = getStatCeiling(100, "power");
       expect(maxCeil).toBeGreaterThanOrEqual(95);
 
       // 50 talent
-      const midCeil = getStatCeiling(50, "strength");
+      const midCeil = getStatCeiling(50, "power");
       expect(midCeil).toBeGreaterThanOrEqual(60);
       expect(midCeil).toBeLessThan(90);
     });
 
     it("applies offsets based on stat keys", () => {
-      const strengthCeil = getStatCeiling(50, "strength");
+      const powerCeil = getStatCeiling(50, "power");
       const speedCeil = getStatCeiling(50, "speed");
       // They might be different depending on offset
-      expect(typeof strengthCeil).toBe("number");
+      expect(typeof powerCeil).toBe("number");
       expect(typeof speedCeil).toBe("number");
     });
   });
@@ -134,7 +134,7 @@ describe("TrainingMath", () => {
       const rikishi = mockRikishi("r1", {
         talentSeed: 80,
         stats: {
-          strength: 40,
+          power: 40,
           speed: 40,
           technique: 40,
           balance: 40,
@@ -163,7 +163,7 @@ describe("TrainingMath", () => {
         {} as WorldState
       );
 
-      expect(growth).toHaveProperty("strength");
+      expect(growth).toHaveProperty("power");
       expect(growth).toHaveProperty("speed");
       expect(growth).toHaveProperty("technique");
       expect(growth).toHaveProperty("balance");

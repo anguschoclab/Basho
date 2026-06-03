@@ -21,7 +21,7 @@ function makeEngineState(eastLeadFoot: number, westLeadFoot: number): EngineStat
   const westBody = initPhysicalBody(west, "west");
   eastBody.leadingFootX = eastLeadFoot;
   eastBody.x = eastLeadFoot;
-  eastBody.velocityX = 5; // east is pushing forward — required for forwardMomentum > 0
+  eastBody.velocityX = -5; // east is pushing forward — required for forwardMomentum > 0
   westBody.leadingFootX = westLeadFoot;
   westBody.x = westLeadFoot;
 

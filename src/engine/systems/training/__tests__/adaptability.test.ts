@@ -45,8 +45,8 @@ describe("calculateGrowthVector — adaptability multiplier", () => {
   it("adaptability=50 applies multiplier of 1.0 (neutral)", () => {
     // adaptability=50 → 0.8 + 50*0.004 = 1.0 — same as no multiplier
     // Verify by checking adaptability=0 gives exactly 0.8x relative to base
-    const rLow = mockRikishi("adapt-0", { adaptability: 0, stats: { strength: 50 } as any });
-    const rBase = mockRikishi("adapt-50", { adaptability: 50, stats: { strength: 50 } as any });
+    const rLow = mockRikishi("adapt-0", { adaptability: 0, stats: { power: 50 } as any });
+    const rBase = mockRikishi("adapt-50", { adaptability: 50, stats: { power: 50 } as any });
 
     const gLow = calculateGrowthVector(baseProfile, undefined, rLow);
     const gBase = calculateGrowthVector(baseProfile, undefined, rBase);
@@ -57,8 +57,8 @@ describe("calculateGrowthVector — adaptability multiplier", () => {
   });
 
   it("adaptability=100 applies multiplier of 1.2", () => {
-    const rHigh = mockRikishi("adapt-100", { adaptability: 100, stats: { strength: 50 } as any });
-    const rBase = mockRikishi("adapt-50", { adaptability: 50, stats: { strength: 50 } as any });
+    const rHigh = mockRikishi("adapt-100", { adaptability: 100, stats: { power: 50 } as any });
+    const rBase = mockRikishi("adapt-50", { adaptability: 50, stats: { power: 50 } as any });
 
     const gHigh = calculateGrowthVector(baseProfile, undefined, rHigh);
     const gBase = calculateGrowthVector(baseProfile, undefined, rBase);
