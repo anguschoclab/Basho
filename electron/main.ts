@@ -1,4 +1,14 @@
-import { app, BrowserWindow, shell, ipcMain, dialog, Menu, Tray, nativeImage, session } from "electron";
+import {
+  app,
+  BrowserWindow,
+  shell,
+  ipcMain,
+  dialog,
+  Menu,
+  Tray,
+  nativeImage,
+  session,
+} from "electron";
 import { join } from "path";
 import { is } from "@electron-toolkit/utils";
 import path from "path";
@@ -75,7 +85,9 @@ async function createWindow(): Promise<void> {
     try {
       const parsedUrl = new URL(url);
       if (parsedUrl.protocol === "https:") {
-        shell.openExternal(parsedUrl.href).catch((e) => console.error("Failed to open external URL:", e));
+        shell
+          .openExternal(parsedUrl.href)
+          .catch((e) => console.error("Failed to open external URL:", e));
       } else {
         console.warn(`Blocked attempt to open non-HTTPS URL: ${url}`);
       }
@@ -278,15 +290,18 @@ function createMenu(): void {
 
 // IPC Handlers for storage operations
 ipcMain.handle("storage:get", (event, key: string) => {
+  if (typeof key !== "string") throw new TypeError("Invalid key type");
   return store.get(key);
 });
 
 ipcMain.handle("storage:set", (event, key: string, value: unknown) => {
+  if (typeof key !== "string") throw new TypeError("Invalid key type");
   store.set(key, value);
   return true;
 });
 
 ipcMain.handle("storage:delete", (event, key: string) => {
+  if (typeof key !== "string") throw new TypeError("Invalid key type");
   store.delete(key);
   return true;
 });
@@ -380,6 +395,10 @@ function validatePath(filePath: string): boolean {
 
 // IPC Handlers for file system operations
 ipcMain.handle("fs:writeFile", async (event, filePath: string, content: string) => {
+  if (typeof filePath !== "string" || typeof content !== "string") {
+    console.error("Path and content must be strings");
+    return false;
+  }
   if (!validatePath(filePath)) {
     console.error("Path validation failed - not in allowed directory:", filePath);
     return false;
@@ -394,6 +413,10 @@ ipcMain.handle("fs:writeFile", async (event, filePath: string, content: string) 
 });
 
 ipcMain.handle("fs:readFile", async (event, filePath: string) => {
+  if (typeof filePath !== "string") {
+    console.error("Path must be a string");
+    return null;
+  }
   if (!validatePath(filePath)) {
     console.error("Path validation failed - not in allowed directory:", filePath);
     return null;
@@ -408,6 +431,10 @@ ipcMain.handle("fs:readFile", async (event, filePath: string) => {
 });
 
 ipcMain.handle("fs:exists", async (event, filePath: string) => {
+  if (typeof filePath !== "string") {
+    console.error("Path must be a string");
+    return false;
+  }
   if (!validatePath(filePath)) {
     console.error("Path validation failed - not in allowed directory:", filePath);
     return false;
@@ -421,6 +448,10 @@ ipcMain.handle("fs:exists", async (event, filePath: string) => {
 });
 
 ipcMain.handle("fs:mkdir", async (event, dirPath: string, recursive: boolean = true) => {
+  if (typeof dirPath !== "string" || (recursive !== undefined && typeof recursive !== "boolean")) {
+    console.error("Invalid arguments for mkdir");
+    return false;
+  }
   if (!validatePath(dirPath)) {
     console.error("Path validation failed - not in allowed directory:", dirPath);
     return false;
@@ -435,6 +466,10 @@ ipcMain.handle("fs:mkdir", async (event, dirPath: string, recursive: boolean = t
 });
 
 ipcMain.handle("fs:readDir", async (event, dirPath: string) => {
+  if (typeof dirPath !== "string") {
+    console.error("Path must be a string");
+    return [];
+  }
   if (!validatePath(dirPath)) {
     console.error("Path validation failed - not in allowed directory:", dirPath);
     return [];
@@ -449,6 +484,10 @@ ipcMain.handle("fs:readDir", async (event, dirPath: string) => {
 });
 
 ipcMain.handle("fs:deleteFile", async (event, filePath: string) => {
+  if (typeof filePath !== "string") {
+    console.error("Path must be a string");
+    return false;
+  }
   if (!validatePath(filePath)) {
     console.error("Path validation failed - not in allowed directory:", filePath);
     return false;
@@ -476,10 +515,13 @@ const ALLOWED_PATHS = [
   "videos",
 ] as const;
 
-type AllowedPath = typeof ALLOWED_PATHS[number];
+type AllowedPath = (typeof ALLOWED_PATHS)[number];
 
 // IPC Handler for getting app data path
 ipcMain.handle("app:getPath", (event, name: string) => {
+  if (typeof name !== "string") {
+    throw new TypeError("Path name must be a string");
+  }
   if (!ALLOWED_PATHS.includes(name as AllowedPath)) {
     console.error(`Blocked attempt to get unauthorized path via IPC: ${name}`);
     throw new Error(`Unauthorized path requested: ${name}`);
@@ -493,7 +535,9 @@ app.whenReady().then(async () => {
     callback({
       responseHeaders: {
         ...details.responseHeaders,
-        "Content-Security-Policy": ["default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' ws: http: https:;"],
+        "Content-Security-Policy": [
+          "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' ws: http: https:;",
+        ],
       },
     });
   });
