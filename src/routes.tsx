@@ -54,6 +54,10 @@ const isElectronProd =
 // Root route
 const rootRoute = createRootRoute({
   component: () => <Outlet />,
+  notFoundComponent: () => {
+    console.warn("[Routes] 404: Not Found Component Triggered");
+    return <NotFound />;
+  },
   errorComponent: ({ error }) => {
     console.error("Root Route Error caught by TanStack Router:", error);
     return (
@@ -387,10 +391,6 @@ const routeTree = rootRoute.addChildren([
 export const router = createRouter({
   routeTree,
   history: isElectronProd ? createHashHistory() : createBrowserHistory(),
-  notFoundComponent: () => {
-    console.warn("[Routes] 404: Not Found Component Triggered");
-    return <NotFound />;
-  },
 });
 
 declare module "@tanstack/react-router" {

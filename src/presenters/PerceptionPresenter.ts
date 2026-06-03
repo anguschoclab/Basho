@@ -14,7 +14,7 @@ export type HealthBadge = "Fresh" | "Worn" | "Struggling" | "Critical" | "Recove
 export function getHealthBadge(rikishi: Rikishi): HealthBadge {
   if (rikishi.injured && rikishi.injuryWeeksRemaining > 0) return "Recovering";
 
-  const stamina = rikishi.stats.stamina ?? 50;
+  const stamina = rikishi.stamina ?? 50;
   const fatigue = rikishi.fatigue ?? 0;
   const health = stamina - fatigue;
 

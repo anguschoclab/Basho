@@ -52,14 +52,14 @@ function getBashoWrapEvents(events: EngineEvent[], bashoNumber?: number): Engine
 }
 
 function groupEventsByNarrative(events: EngineEvent[]) {
-  const groups: Record<string, EngineEvent[]> = {
-    yusho: [],
-    promotions: [],
-    retirements: [],
-    injuries: [],
-    governance: [],
-    sponsors: [],
-    other: [],
+  const groups = {
+    yusho: [] as EngineEvent[],
+    promotions: [] as EngineEvent[],
+    retirements: [] as EngineEvent[],
+    injuries: [] as EngineEvent[],
+    governance: [] as EngineEvent[],
+    sponsors: [] as EngineEvent[],
+    other: [] as EngineEvent[],
   };
   for (const e of events) {
     if (e.type.includes("YUSHO") || e.type.includes("CHAMPIONSHIP")) groups.yusho.push(e);
@@ -313,7 +313,7 @@ export default function RecapPage() {
             groupedEvents={groupedEvents}
             prestigeChanges={prestigeChanges}
             narrativeSummaryData={{
-              governanceLog: projectGovernanceSummary(world).governanceLog,
+              governanceLog: projectGovernanceSummary(world).governanceLog as any,
               year: projectGovernanceSummary(world).year,
               activeHeyasCount: projectGovernanceSummary(world).heyasCount,
             }}
@@ -332,7 +332,7 @@ export default function RecapPage() {
         {showYokozunaDelib && (
           <YokozunaDeliberation
             open={showYokozunaDelib}
-            rikishi={Array.from(world.rikishi.values())[0]}
+            rikishi={projectRikishi(Array.from(world.rikishi.values())[0], world)}
             heyaName={world.heyas.get(world.playerHeyaId || "")?.name || "Unknown Stable"}
             isPlayerRikishi={true}
             verdict="deferred"
@@ -344,12 +344,11 @@ export default function RecapPage() {
         {showHoFCeremony && (
           <HoFInductionCeremony
             inductee={showHoFCeremony}
-            heyaName={
-              world.heyas.get(showHoFCeremony.rikishiId)?.heyaId
-                ? world.heyas.get(world.rikishi.get(showHoFCeremony.rikishiId)?.heyaId || "")
-                    ?.name || "Unknown Stable"
-                : "Independent"
-            }
+            heyaName={(() => {
+              const r = world.rikishi.get(showHoFCeremony.rikishiId) || world.historicalRikishi?.get(showHoFCeremony.rikishiId);
+              const h = r ? world.heyas.get(r.heyaId) : null;
+              return h?.name || "Independent";
+            })()}
             isPlayerRikishi={
               world.rikishi.get(showHoFCeremony.rikishiId)?.heyaId === world.playerHeyaId
             }

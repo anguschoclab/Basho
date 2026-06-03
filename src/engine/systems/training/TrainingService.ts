@@ -155,14 +155,14 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
           weeksRemaining: 12,
           weeksToHeal: 12,
         };
-        updates.power = Math.max(30, (rikishi.stats.power ?? 50) - 15);
-        updates.stamina = Math.max(30, (rikishi.stats.stamina ?? 50) - 15);
+        const crashPower = Math.max(30, (rikishi.stats.power ?? 50) - 15);
+        const crashStamina = Math.max(30, (rikishi.stats.stamina ?? 50) - 15);
         // Stats object will be synced in the growth section if not injured,
         // but since we just injured them, we should sync here too.
         updates.stats = {
           ...(rikishi.stats || {}),
-          strength: Math.floor(updates.power),
-          stamina: Math.floor(updates.stamina),
+          power: Math.floor(crashPower),
+          stamina: Math.floor(crashStamina),
         };
       }
     }
@@ -248,50 +248,61 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
 
       // Apply Growth (net of age decay)
       // We cap at getEffectiveCeiling to ensure age-based decline is enforceable
-      updates.power = Math.min(
-        getEffectiveCeiling(rikishi, "strength", world),
-        Math.max(10, (rikishi.stats.power || 50) + finalGrowth.power + decay.power)
+      const newStats = { ...(rikishi.stats || {}) } as RikishiStats;
+
+      newStats.power = Math.min(
+        getEffectiveCeiling(rikishi, "power", world),
+        Math.max(10, (rikishi.stats.power || 50) + finalGrowth.strength + decay.power)
       );
-      updates.speed = Math.min(
+      newStats.speed = Math.min(
         getEffectiveCeiling(rikishi, "speed", world),
         Math.max(10, (rikishi.stats.speed || 50) + finalGrowth.speed + decay.speed)
       );
-      updates.technique = Math.min(
+      newStats.technique = Math.min(
         getEffectiveCeiling(rikishi, "technique", world),
         Math.max(10, (rikishi.stats.technique || 50) + finalGrowth.technique + decay.technique)
       );
-      updates.balance = Math.min(
+      newStats.balance = Math.min(
         getEffectiveCeiling(rikishi, "balance", world),
         Math.max(10, (rikishi.stats.balance || 50) + finalGrowth.balance + decay.balance)
       );
-      updates.stamina = Math.min(
+      newStats.stamina = Math.min(
         getEffectiveCeiling(rikishi, "stamina", world),
         Math.max(10, (rikishi.stats.stamina || 50) + finalGrowth.stamina + decay.stamina)
       );
-      updates.adaptability = Math.min(
+      newStats.adaptability = Math.min(
         getEffectiveCeiling(rikishi, "adaptability", world),
         Math.max(10, (rikishi.stats.adaptability || 50) + finalGrowth.adaptability + decay.adaptability)
       );
-      updates.experience = Math.min(
+      newStats.mental = Math.min(
         getEffectiveCeiling(rikishi, "mental", world),
-        Math.max(10, (rikishi.stats.experience || 0) + finalGrowth.mental * EXPERIENCE_GROWTH_MULTIPLIER + decay.mental)
+        Math.max(10, (rikishi.stats.mental || 50) + finalGrowth.mental * EXPERIENCE_GROWTH_MULTIPLIER + decay.mental)
       );
 
-      // Sync flattened UI stats
-      updates.stats = {
-        ...(rikishi.stats || {}),
-        strength: Math.floor(updates.power),
-        speed: Math.floor(updates.speed),
-        technique: Math.floor(updates.technique),
-        balance: Math.floor(updates.balance),
-        stamina: Math.floor(updates.stamina),
-        adaptability: Math.floor(updates.adaptability),
-        mental: Math.floor(updates.experience),
-        weight: rikishi.stats?.weight ?? 145,
-      };
+      // 4. Final Enforcements (Clamping & Stat Floors)
+      (Object.keys(STAT_GROUP) as Array<keyof typeof STAT_GROUP>).forEach((key) => {
+        const statsKey = key;
+        const ceiling = getEffectiveCeiling({ ...rikishi, stats: newStats } as Rikishi, statsKey, world);
+        let val = newStats[statsKey];
+
+        // Enforce Ceiling
+        val = Math.min(ceiling, val);
+
+        // Enforce Elite Division Floors
+        // This prevents the "Sumo Graveyard" effect where Makuuchi is filled with decayed jobbers.
+        if (rikishi.division === "makuuchi") {
+          val = Math.max(45, val);
+        } else if (rikishi.division === "juryo") {
+          val = Math.max(40, val);
+        }
+
+        newStats[statsKey] = Math.floor(val);
+      });
+
+      updates.stats = newStats;
 
       // Milestone Events (Threshold crossing)
-      const currentPower = Math.floor(updates.power);
+      const currentPower = newStats.power;
       if (Math.floor(currentPower / 10) > Math.floor(prevPower / 10)) {
         builder.logEvent(
           "TRAINING_UPDATE",
@@ -308,25 +319,6 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
         );
       }
     }
-
-    // 4. Final Enforcements (Clamping & Stat Floors)
-    (Object.keys(STAT_GROUP) as Array<keyof typeof STAT_GROUP>).forEach((key) => {
-      const ceiling = getEffectiveCeiling({ ...rikishi, ...updates } as Rikishi, key, world);
-      let val = updates[key as keyof Rikishi] as number;
-
-      // Enforce Ceiling
-      val = Math.min(ceiling, val);
-
-      // Enforce Elite Division Floors
-      // This prevents the "Sumo Graveyard" effect where Makuuchi is filled with decayed jobbers.
-      if (rikishi.division === "makuuchi") {
-        val = Math.max(45, val);
-      } else if (rikishi.division === "juryo") {
-        val = Math.max(40, val);
-      }
-
-      updates[key as keyof Rikishi] = val;
-    });
 
     builder.updateRikishi(rikishi.id, updates);
   });

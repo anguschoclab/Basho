@@ -51,7 +51,7 @@ export function computeInjuryPressure(
     const isInjured = rikishi.injured || (status && status.isInjured);
 
     if (isInjured) {
-      const sev = status?.severity || status?.severityLabel || undefined;
+      const sev = status?.severity || undefined;
       const w = getSeverityWeight(sev);
       pressure += w;
       if (sev === "serious" || sev === "high" || sev === 3) seriousCount++;

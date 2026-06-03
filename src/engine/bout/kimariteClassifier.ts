@@ -25,8 +25,8 @@ export function evaluateKimariteAttempt(
   belt: BeltBattleState | null,
   st: EngineStateV2,
   rng: SeededRNG,
-  division: Division,
-  meta: { tone: string; drift: Record<string, number> }
+  division?: Division,
+  meta?: { tone: string; drift: Record<string, number> }
 ): KimariteAttempt | null {
   // Build spatial context
   const torqueDiff = belt ? belt.torqueEast - belt.torqueWest : 0;
@@ -46,7 +46,17 @@ export function evaluateKimariteAttempt(
       Math.abs(st.west.leadingFootX) > EDGE_THRESHOLD,
   };
 
+  const stClone: EngineStateV2 = {
+    ...st,
+    phase:
+      st.phase.tag === "belt_battle" && belt
+        ? { ...st.phase, state: belt }
+        : st.phase.tag === "push_battle" && push
+          ? { ...st.phase, state: push }
+          : st.phase,
+  };
+
   // Delegate all selection logic to the registry-driven engine
   // This replaces the old hardcoded 'classifyEdgeKimarite', 'classifyBeltKimarite', etc.
-  return KimariteSelectionEngine.evaluate(east, west, st, ctx, division, meta, rng);
+  return KimariteSelectionEngine.evaluate(east, west, stClone, ctx, division, meta, rng);
 }

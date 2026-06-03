@@ -27,7 +27,7 @@ interface SponsorData {
   sponsorId: string;
   sponsorName: string;
   tier: string;
-  strength: number;
+  power: number;
   monthlyIncome: number;
   weeksRemaining: number;
   isExpiringSoon: boolean;
@@ -38,7 +38,7 @@ interface SponsorData {
 interface SponsorshipHubProps {
   data: {
     koenkaiName: string;
-    strength: string;
+    power: string;
     activeSponsors: SponsorData[];
     totalMonthlyIncome: number;
     expiringCount: number;

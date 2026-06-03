@@ -6,14 +6,19 @@
  */
 
 import type { WorldState } from "../../engine/types/world";
-import { buildMediaDigest } from "../../engine/systems/media/MediaService";
+import type { MediaState } from "../../engine/types/media";
 import { projectRikishi } from "../rikishiUI";
 
 /**
  * Project a list of recent headlines for the Media Page.
  */
 export function projectMediaUIDigest(world: WorldState) {
-  const mediaState = world.mediaState || buildMediaDigest(world);
+  const mediaState = (world.mediaState || {
+    headlines: [],
+    mediaHeat: {},
+    heyaPressure: {},
+    mediaHeatHistory: {},
+  }) as MediaState;
   const headlines = [...(mediaState.headlines || [])].sort(
     (a, b) => b.impact - a.impact || b.week - a.week
   );

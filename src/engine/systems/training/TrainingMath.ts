@@ -71,7 +71,7 @@ export function getEffectiveCeiling(
     baseCeiling = getStatCeiling(talentSeed, stat);
   }
 
-  const group = STAT_GROUP[stat as keyof typeof STAT_GROUP];
+  const group = stat in STAT_GROUP ? STAT_GROUP[stat as keyof typeof STAT_GROUP] : undefined;
   if (group) {
     const mFactor = maturityFactor({
       age,
@@ -316,7 +316,7 @@ export function calculateAgeDecay(
   currentYear: number
 ): Record<keyof typeof STAT_GROUP, number> {
   const zero = {
-    strength: 0,
+    power: 0,
     speed: 0,
     stamina: 0,
     technique: 0,
@@ -336,12 +336,7 @@ export function calculateAgeDecay(
     const effectivePeak = cfg.peakAge + peakOffset;
     if (age <= effectivePeak) return;
     // Convert annual decline into weekly delta applied to the current stat value.
-    const lookupKey = key === "strength" ? "power" : key;
-    const rikishiVal = rikishi[lookupKey as keyof Rikishi];
-    const current =
-      (typeof rikishiVal === "number" ? rikishiVal : undefined) ??
-      (rikishi.stats?.[lookupKey as keyof RikishiStats] as number) ??
-      50;
+    const current = (rikishi.stats?.[key] as number) ?? 50;
     const yearly = current * cfg.declinePerYear;
     out[key] = -yearly / 52;
   });

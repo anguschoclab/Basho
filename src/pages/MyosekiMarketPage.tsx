@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
 import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
@@ -18,10 +18,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import type { MyosekiStock } from "@/engine/types/myoseki";
-import { buyMyoseki, leaseMyoseki } from "@/presenters/uiDigest";
 
 export default function MyosekiMarketPage() {
-  const { state, updateWorld } = useGame();
+  const { state } = useGame();
   const world = state.world;
   const [activeTab, setActiveTab] = useState("market");
 

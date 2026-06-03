@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file global mock
 // @ts-ignore
-global.calculatePerceivedStats = vi.fn(() => ({ strength: "Dominant" }));
+global.calculatePerceivedStats = vi.fn(() => ({ power: "Dominant" }));
 vi.mock("../../engine/events", () => ({
   queryEvents: vi.fn(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Test mock
@@ -23,12 +23,12 @@ import type { WorldState } from "../../engine/types/world";
 
 // Mock calculatePerceivedStats properly
 vi.mock("../rikishiUI", () => ({
-  calculatePerceivedStats: vi.fn().mockReturnValue({ strength: "Dominant" }),
+  calculatePerceivedStats: vi.fn().mockReturnValue({ power: "Dominant" }),
   toRikishiDescriptor: vi.fn().mockReturnValue("Veteran"),
   projectRikishi: vi.fn((r: { id: string; shikona: string }) => ({
     id: r.id,
     shikona: r.shikona,
-    perceivedStats: { strength: "Dominant" },
+    perceivedStats: { power: "Dominant" },
   })),
 }));
 
@@ -57,12 +57,18 @@ describe("UI Digest: Rikishi Perception Boundary", () => {
   describe("formatRadarData (v2.0 Visuals)", () => {
     it("should map rikishi attributes to radar points with C5 labels", () => {
       const mockRikishi: Partial<Rikishi> = {
-        power: 90,
-        speed: 70,
-        technique: 50,
-        balance: 60,
-        stamina: 80,
-        aggression: 85,
+        id: "r1",
+        stats: {
+          power: 90,
+          speed: 70,
+          technique: 50,
+          balance: 60,
+          stamina: 80,
+          aggression: 85,
+          experience: 50,
+        },
+        momentum: 50,
+        condition: 50,
       };
 
       const result = formatRadarData(mockRikishi as Rikishi);

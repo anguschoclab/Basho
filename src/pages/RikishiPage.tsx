@@ -58,7 +58,7 @@ export default function RikishiPage() {
   const history = rikishi?.careerHistory;
 
   // Prepare data using custom hooks
-  const careerProgressionData = useCareerProgressionData(history);
+  const careerProgressionData = useCareerProgressionData(history as CareerSnapshot[] | undefined);
 
   useEffect(() => {
     if (!world) navigate({ to: "/main-menu", replace: true });

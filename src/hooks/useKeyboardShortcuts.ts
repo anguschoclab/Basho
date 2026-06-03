@@ -30,7 +30,6 @@ const QUICK_NAV: Record<string, string> = {
  *  * @param { eventLogOpen, onToggleEventLog, onOpenSaveLoad } - The { event log open, on toggle event log, on open save load }.
  */
 export function useKeyboardShortcuts({
-  eventLogOpen,
   onToggleEventLog,
   onOpenSaveLoad,
 }: ShortcutOptions) {
@@ -42,8 +41,6 @@ export function useKeyboardShortcuts({
     advanceDay,
     simulateBout,
     simulateAllBouts,
-    endBasho,
-    startBasho,
     quickSave,
   } = useGame();
   const world = state.world;

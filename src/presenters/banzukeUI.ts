@@ -34,7 +34,7 @@ export function buildPrevRankScores(
         {
           assignments: Array<{
             rikishiId: string;
-            position: { rank: string; rankNumber: number; side: string };
+            position: { rank: string; rankNumber?: number; side: string };
           }>;
         }
       >;

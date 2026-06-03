@@ -124,8 +124,8 @@ export interface BanzukeUIDigest {
   year: number;
   basho: string | undefined;
   divisions: BanzukeDivisionData[];
-  kadobanMap: Record<Id, number>;
-  heyaNameMap: Map<Id, string>;
+  kadobanMap: Record<string, any>;
+  heyaNameMap: Map<string, string>;
   hasPrevBasho: boolean;
 }
 
@@ -157,10 +157,12 @@ export interface DashboardUIDigest {
   stats: DashboardHeyaStats;
   recentEvents: EngineEvent[];
   topRivals: Array<{
-    id: Id;
+    id: string;
     name: string;
     prestige: string;
-    rosterSize: number;
+    roster: string;
+    morale: string;
+    heat: string;
   }>;
   finances: FinancialStatus;
   currentWeek: number;

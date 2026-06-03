@@ -68,7 +68,7 @@ export default function NewGameWizard() {
     const config = {
       name: oyakataName.trim(),
       backstoryId: background,
-      ichimon: ichimon || undefined,
+      ichimon: (ichimon || undefined) as any,
     };
     createWorld(world.seed, selectedHeyaId, config);
     setStep(4);

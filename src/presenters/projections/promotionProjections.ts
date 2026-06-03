@@ -150,7 +150,7 @@ export function getKadobanDrama(
 
   for (const r of selectKadobanRikishi(world)) {
     const rid = r.id;
-    const status = (kadobanMap as Record<string, unknown>)[rid];
+    const status = (kadobanMap as Record<string, any>)[rid];
     if (!status) continue;
     if (!status.isKadoban && status.consecutiveMakeKoshi < 2) continue;
 

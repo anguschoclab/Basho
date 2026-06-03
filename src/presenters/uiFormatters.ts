@@ -27,17 +27,17 @@ export function formatRadarData(rikishi: Rikishi) {
   return [
     {
       subject: BardEngine.resolve(rng, "ui.labels.stats.power").text,
-      A: mapValue(rikishi.stats.power || 50),
+      A: mapValue(rikishi.stats?.power || 50),
       fullMark: 5,
     },
     {
       subject: BardEngine.resolve(rng, "ui.labels.stats.speed").text,
-      A: mapValue(rikishi.stats.speed || 50),
+      A: mapValue(rikishi.stats?.speed || 50),
       fullMark: 5,
     },
     {
       subject: BardEngine.resolve(rng, "ui.labels.stats.technique").text,
-      A: mapValue(rikishi.stats.technique || 50),
+      A: mapValue(rikishi.stats?.technique || 50),
       fullMark: 5,
     },
     {

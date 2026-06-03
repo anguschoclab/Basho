@@ -101,7 +101,7 @@ export function rollPotential(args: {
   const powerMod = mods["power"] ?? mods["strength"] ?? 1.0;
 
   const paStats: RikishiStats = {
-    strength: rollStat(powerMod, isEastEuropean ? 12 : 0),
+    power: rollStat(powerMod, isEastEuropean ? 12 : 0),
     technique: rollStat(mods["technique"] ?? 1.0, isMongolian ? 10 : isAmericas ? 4 : 0),
     speed: rollStat(mods["speed"] ?? 1.0, isMongolian ? 5 : isAmericas ? 8 : 0),
     stamina: rollStat(mods["stamina"] ?? 1.0, isEastEuropean ? 8 : 0),
@@ -171,7 +171,7 @@ export function deriveCurrentAbility(args: {
   });
 
   return {
-    strength: deriveStat(pa.power, "strength"),
+    power: deriveStat(pa.power, "power"),
     technique: deriveStat(pa.technique, "technique"),
     speed: deriveStat(pa.speed, "speed"),
     stamina: deriveStat(pa.stamina, "stamina"),
@@ -215,12 +215,12 @@ export function generateRikishiStats(args: {
   const weight = clampInt(rng.gaussian(150 * (mods["weight"] ?? 1.0), 20), 80, 250);
   const height = clampInt(rng.gaussian(180 * (mods["height"] ?? 1.0), 8), 160, 210);
 
-  // 'power' key in statModifiers maps to strength in RikishiStats → Rikishi.power
+  // 'power' key in statModifiers maps to power in RikishiStats → Rikishi.power
   const powerMod = mods["power"] ?? mods["strength"] ?? 1.0;
-  const strengthMean = baseMean * powerMod;
+  const powerMean = baseMean * powerMod;
 
   return {
-    strength: clampInt(rng.gaussian(strengthMean, stdDev), 10, 100),
+    power: clampInt(rng.gaussian(powerMean, stdDev), 10, 100),
     technique: genStat("technique"),
     speed: genStat("speed"),
     stamina: genStat("stamina"),

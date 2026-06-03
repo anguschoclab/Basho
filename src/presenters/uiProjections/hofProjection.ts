@@ -6,6 +6,7 @@
  */
 
 import type { WorldState } from "../../engine/types/world";
+import type { Rikishi } from "../../engine/types/rikishi";
 import { getHallOfFame } from "../../engine/hallOfFame";
 import type { HoFInductee } from "../../engine/hallOfFame";
 import type { UIRikishi } from "../uiModels";

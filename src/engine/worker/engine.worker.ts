@@ -70,11 +70,11 @@ let worldVersion = 0;
 self.onmessage = async (event: MessageEvent<EngineCommand>) => {
   const command = event.data;
 
-  const COMMAND_HANDLERS: {
+  const COMMAND_HANDLERS: Partial<{
     [T in EngineCommand["type"]]: (
       cmd: Extract<EngineCommand, { type: T }>
     ) => void | Promise<void>;
-  } = {
+  }> = {
     START_WORLD: (cmd) => {
       currentWorld = generateWorld({
         seed: cmd.seed,

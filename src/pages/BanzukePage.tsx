@@ -23,7 +23,7 @@ import { getYokozunaCandidates } from "@/presenters/projections/promotionProject
 
 /** banzuke page. */
 export default function BanzukePage() {
-  const { state } = useGame();
+  const { state, updateWorld } = useGame();
   const world = state.world;
   const [showChanges, setShowChanges] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -96,7 +96,7 @@ export default function BanzukePage() {
         };
         const updatedHeyas = new Map(world.heyas);
         updatedHeyas.set(world.playerHeyaId, updatedHeya);
-        state.updateWorld({ ...world, heyas: updatedHeyas });
+        updateWorld({ ...world, heyas: updatedHeyas });
       }
     }
   };

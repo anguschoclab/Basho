@@ -14,7 +14,7 @@ interface SponsorData {
   name: string;
   relId: string;
   tier: string;
-  strength: number;
+  power: number;
   monthlyIncome: number;
   weeksRemaining: number;
   isExpiringSoon: boolean;
@@ -97,7 +97,7 @@ function buildAndSortActiveSponsors(
   activeSponsors.sort((a, b) => {
     const tierDiff = (tierOrder[a.tier] ?? 0) - (tierOrder[b.tier] ?? 0);
     if (tierDiff !== 0) return tierDiff;
-    return b.strength - a.strength;
+    return b.power - a.power;
   });
 
   return activeSponsors;
@@ -136,7 +136,7 @@ function buildSponsorData(
     name: sponsor.displayName ?? sponsor.name ?? sponsor.shortName ?? sponsor.id,
     relId: rel.relId ?? rel.id ?? "",
     tier: sponsor.tier,
-    strength: rel.strength,
+    power: rel.strength,
     monthlyIncome,
     weeksRemaining,
     isExpiringSoon,
@@ -180,7 +180,7 @@ export function projectSponsorUIDigest(world: WorldState) {
 
   return {
     koenkaiName: `${heya.name} Supporters Association`,
-    strength: koenkaiStrength,
+    power: koenkaiStrength,
     activeSponsors,
     totalMonthlyIncome: activeSponsors.reduce((sum, s) => sum + s.monthlyIncome, 0) + koenkaiIncome,
     expiringCount: activeSponsors.filter((s) => s.isExpiringSoon).length,

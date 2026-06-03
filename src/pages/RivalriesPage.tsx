@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { useMemo, useState } from "react";
 import { useGame } from "@/contexts/GameContext";
-import { Users, Flame, Swords } from "lucide-react";
+import { Users, Flame, Swords, Landmark } from "lucide-react";
 import type { RivalryPairState } from "@/engine/rivalries";
 import { createDefaultRivalriesState, type RivalriesState } from "@/engine/rivalries";
 import { RivalriesHeader } from "@/components/rivalries/RivalriesHeader";
@@ -36,7 +36,16 @@ export default function RivalriesPage() {
     return new Set(heya?.rikishiIds ?? []);
   }, [world, playerHeyaId]);
 
-  const { playerRivalries, hotRivalries, coolRivalries, stats } = useMemo(() => {
+  const { playerRivalries, hotRivalries, coolRivalries, stableRivalries, stats } = useMemo(() => {
+    if (!world) {
+      return {
+        playerRivalries: [],
+        hotRivalries: [],
+        coolRivalries: [],
+        stableRivalries: [],
+        stats: { total: 0, inferno: 0, hot: 0 },
+      };
+    }
     const rawPairs = Object.values(rivalriesState.pairs);
     const normalized: RivalryPairState[] = rawPairs
       .filter(
@@ -182,7 +191,7 @@ export default function RivalriesPage() {
                   </span>
                 </h2>
                 <div className="grid gap-4 md:grid-cols-3">
-                  {stableRivalries.map((feud) => (
+                  {stableRivalries.map((feud: any) => (
                     <Card
                       key={`${feud.aId}-${feud.bId}`}
                       className="border-border/40 bg-card/20 overflow-hidden"

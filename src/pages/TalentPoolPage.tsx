@@ -60,7 +60,7 @@ function visibilityLabel(v: VisibilityBand) {
 
 /** talent pool page. */
 export default function TalentPoolPage() {
-  const { state, updateWorld } = useGame();
+  const { state } = useGame();
   const world = state.world;
   const [activePool, setActivePool] = useState<TalentPoolType>("high_school");
 
