@@ -32,6 +32,12 @@ export function MobileEventLog({ className }: MobileEventLogProps) {
               ? `Open Event Log (${Math.min(eventCount, 99)}${eventCount > 99 ? "+" : ""} unread events)`
               : "Open Event Log"
           }
+          tooltip={
+            eventCount > 0
+              ? `Open Event Log (${Math.min(eventCount, 99)}${eventCount > 99 ? "+" : ""} unread events)`
+              : "Open Event Log"
+          }
+          tooltipSide="left"
           className={cn(
             "fixed bottom-4 right-4 h-12 w-12 rounded-full shadow-lg z-50",
             "xl:hidden", // Only show on mobile/tablet (hidden on xl desktop)
@@ -54,6 +60,8 @@ export function MobileEventLog({ className }: MobileEventLogProps) {
             variant="ghost"
             size="icon"
             aria-label="Close Event Log"
+            tooltip="Close Event Log"
+            tooltipSide="bottom"
             onClick={() => setOpen(false)}
             className="h-8 w-8"
           >
