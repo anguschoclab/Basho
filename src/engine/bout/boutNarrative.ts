@@ -87,6 +87,10 @@ export function generateBoutNarrative(
     const tickSeed = `${seed}-tick-${(entry.data?.tick as number) || 0}-${idx}`;
     const rng = rngFromSeed(tickSeed, "pbp", "tick");
 
+    if (entry.description) {
+      pbpLines.push({ text: entry.description, id: `${result.boutId}-desc-${idx}`, phase: entry.phase });
+    }
+
     if (
       (entry.phase === "engagement" || entry.phase === "tachiai") &&
       entry.data?.tickResolutionEvent

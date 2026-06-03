@@ -185,7 +185,7 @@ export function ExhibitionBout({ onComplete }: ExhibitionBoutProps) {
               i === revealedCount - 1 ? "text-foreground font-medium" : "text-muted-foreground"
             )}
           >
-            {typeof line === "string" ? line : JSON.stringify(line)}
+            {typeof line === "string" ? line : line.text}
           </div>
         ))}
         {revealedCount === 0 && (
