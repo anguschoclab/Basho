@@ -14,7 +14,7 @@
 import type { WorldState } from "../../types/world";
 import type { Id } from "../../types/common";
 import type { HeyaTrainingState } from "../../types/training";
-import type { Rikishi } from "../../types/rikishi";
+import type { Rikishi, RikishiStats } from "../../types/rikishi";
 import { EntityCollection } from "../../core/EntityCollection";
 import { EntityService } from "../../core/EntityService";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
@@ -180,7 +180,7 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
     };
 
     const drillVector = {
-      strength: 0,
+      power: 0,
       speed: 0,
       technique: 0,
       balance: 0,
@@ -220,7 +220,7 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
         strength:
           (growth.power + drillVector.power) *
           staffBonuses.conditioning *
-          infra.statBuffs.power,
+          infra.statBuffs.strength,
         speed:
           (growth.speed + drillVector.speed) * staffBonuses.conditioning * infra.statBuffs.speed,
         technique:

@@ -141,7 +141,7 @@ export const MentorshipService = {
    * ```
    */
   calculateTechniqueBleed(mentor: Rikishi, apprentice: Rikishi): number {
-    const gap = mentor.technique - apprentice.technique;
+    const gap = mentor.stats.technique - apprentice.stats.technique;
 
     // No bleed if gap is too small
     if (gap < BLEED_THRESHOLD) return 0;
@@ -178,7 +178,7 @@ export const MentorshipService = {
   calculateAdaptabilityPenalty(mentor: Rikishi, apprentice: Rikishi): number {
     if (!this.canMentor(mentor, apprentice)) return 0;
 
-    const gap = mentor.technique - apprentice.technique;
+    const gap = mentor.stats.technique - apprentice.stats.technique;
     if (gap < BLEED_THRESHOLD) return 0;
 
     return -1;
@@ -257,8 +257,11 @@ export function applyMentorshipBonuses(world: WorldState): StateImpact {
 
     // Queue rikishi update with clamped values
     builder.updateRikishi(apprentice.id, {
-      technique: clamp(apprentice.technique + techniqueBleed, 0, 99),
-      adaptability: clamp(apprentice.adaptability + adaptabilityPenalty, 0, 99),
+      stats: {
+        ...apprentice.stats,
+        technique: clamp(apprentice.stats.technique + techniqueBleed, 0, 99),
+        adaptability: clamp(apprentice.stats.adaptability + adaptabilityPenalty, 0, 99),
+      },
     });
   }
 

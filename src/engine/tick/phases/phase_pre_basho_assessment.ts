@@ -27,7 +27,7 @@ export function phase_pre_basho_assessment(world: WorldState): StateImpact {
   }
 
   // Only run once per pre_basho phase (check if already assessed)
-  if (world._preBashoAssessment?.assessedAtWeek === world.calendar.currentWeek) {
+  if (world._preBashoAssessment?.assessedAtWeek === world.calendar?.currentWeek) {
     return builder.build();
   }
 
@@ -66,7 +66,7 @@ export function phase_pre_basho_assessment(world: WorldState): StateImpact {
             injury: rikishi.injuryStatus?.type || "unknown",
             severity: rikishi.injuryStatus?.severity || "moderate",
             treatmentWeeks: rikishi.injuryWeeksRemaining || 4,
-            submittedDate: world.calendar.currentWeek,
+            submittedDate: world.calendar?.currentWeek ?? 0,
           },
         });
       }
@@ -76,7 +76,7 @@ export function phase_pre_basho_assessment(world: WorldState): StateImpact {
   const overallHealthScore = totalRikishi > 0 ? totalHealthScore / totalRikishi : 100;
 
   const assessment: PreBashoAssessment = {
-    assessedAtWeek: world.calendar.currentWeek,
+    assessedAtWeek: world.calendar?.currentWeek ?? 0,
     rikishiAssessments,
     overallHealthScore,
     withdrawalsThisAssessment: withdrawalsRecommended,

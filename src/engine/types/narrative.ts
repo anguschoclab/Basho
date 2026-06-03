@@ -27,19 +27,14 @@ export type FacilitiesBand = "world_class" | "excellent" | "adequate" | "basic" 
 /** Type representing koenkai band type. */
 export type KoenkaiBandType = "none" | "weak" | "moderate" | "strong" | "powerful";
 /** Type representing koenkai band. */
-type KoenkaiBand = KoenkaiBandType;
+export type KoenkaiBand = KoenkaiBandType;
 /** Type representing runway band. */
 export type RunwayBand = "secure" | "comfortable" | "tight" | "critical" | "desperate";
 
-// Scouting convenience unions
-/** Type representing confidence level. */
-type ConfidenceLevel = "unknown" | "low" | "medium" | "high" | "certain";
-/** Type representing scouting investment. */
-type ScoutingInvestment = "none" | "light" | "standard" | "deep";
+export type ConfidenceLevel = "unknown" | "low" | "medium" | "high" | "certain";
+export type ScoutingInvestment = "none" | "light" | "standard" | "deep";
 
-// Leverage types
-/** Type representing leverage class. */
-type LeverageClass = "CompactAnchor" | "LongLever" | "TopHeavy" | "MobileLight" | "Standard";
+export type LeverageClass = "CompactAnchor" | "LongLever" | "TopHeavy" | "MobileLight" | "Standard";
 
 // FTUE
 /** Defines the structure for f t u e state. */

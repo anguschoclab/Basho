@@ -80,7 +80,7 @@ export function phase_pre_basho_schedule(world: WorldState): StateImpact {
   builder.addMetadata("preGeneratedSchedules", {
     day1: day1Schedules,
     day2: day2Schedules,
-    announcedAtWeek: world.calendar.currentWeek,
+    announcedAtWeek: world.calendar?.currentWeek ?? 0,
   });
 
   return builder.build();

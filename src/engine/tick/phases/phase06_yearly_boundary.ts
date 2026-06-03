@@ -191,7 +191,11 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
   // 8. Sync & Increment Authoritative Year (E4/C5)
   const nextYear = (world.calendar?.year || world.year) + 1;
   builder.updateWorldField("year", nextYear);
-  builder.updateWorldField("calendar", { ...world.calendar, year: nextYear });
+  builder.updateWorldField("calendar", {
+    ...world.calendar,
+    currentWeek: world.calendar?.currentWeek ?? 1,
+    year: nextYear,
+  });
 
   return builder.build();
 }

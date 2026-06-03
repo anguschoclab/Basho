@@ -48,7 +48,7 @@ export function runPipeline(initialWorld: WorldState, phases: PipelinePhase[]): 
       // Check if phase returned StateImpact (migrated) or WorldState (legacy)
       // StateImpact has metadata, WorldState does not
       const isStateImpact =
-        result && typeof result === "object" && Object.hasOwn(result, "metadata");
+        result && typeof result === "object" && "metadata" in result;
 
       if (isStateImpact) {
         // Phase returned StateImpact - resolve it immediately

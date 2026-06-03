@@ -77,7 +77,7 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
   }
 
   // 2. Process Rikishi (Archetype Drift)
-  if (isBashoMonth(world.calendar.month)) {
+  if (isBashoMonth(world.calendar?.month ?? 1)) {
     for (const id of world.activeRikishiIds) {
       const r = getRikishi(world, id);
       if (!r) continue;
@@ -91,8 +91,8 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
   builder.logEvent("BASHO_STATUS", "narrative", {
     status: "meta_shift",
     incident: "monthly_boundary",
-    day: world.calendar.month,
-    score: world.calendar.year,
+    day: world.calendar?.month ?? 1,
+    score: world.calendar?.year ?? 2026,
   });
 
   // NPC Monthly Strategy: finance decisions, sponsor recruitment, governance,
@@ -109,7 +109,7 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
   const koenkaiDistributionImpact = distributeKoenkaiToSekitori(world);
 
   // Pay mochikyukin bonuses to sekitori (every 2 months)
-  const mochikyukinPayoutImpact = payMochikyukinBonuses(world, world.calendar.month);
+  const mochikyukinPayoutImpact = payMochikyukinBonuses(world, world.calendar?.month ?? 1);
 
   // Auto-renew sponsor contracts expiring within window for high-loyalty sponsors
   const sponsorRenewalImpacts: StateImpact[] = [];

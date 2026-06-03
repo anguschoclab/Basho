@@ -33,7 +33,6 @@ interface CurrentInjury {
 }
 
 interface RikishiWithFatigue extends Rikishi {
-  fatigue?: number;
   currentInjury?: CurrentInjury;
 }
 

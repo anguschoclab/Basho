@@ -35,8 +35,10 @@ export function phase01_daily_economy(world: WorldState): StateImpact {
     const nextTransient = {
       ...world.transientContext,
       deltas: {
-        ...(world.transientContext.deltas ?? {}),
+        revenue: world.transientContext.deltas?.revenue ?? 0,
         expenses: (world.transientContext.deltas?.expenses ?? 0) + totalDailyFoodCost,
+        statChanges: world.transientContext.deltas?.statChanges ?? {},
+        injuriesSustained: world.transientContext.deltas?.injuriesSustained ?? [],
       },
     };
     builder.updateWorldField("transientContext", nextTransient);

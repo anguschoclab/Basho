@@ -115,7 +115,7 @@ export function handleInvestigationTransition(
 ): void {
   if (!state.investigation) {
     state.investigation = {
-      openedWeek: world.calendar.currentWeek || 0,
+      openedWeek: world.calendar?.currentWeek || 0,
       severity: "low",
       triggers: [],
       progress: 0,

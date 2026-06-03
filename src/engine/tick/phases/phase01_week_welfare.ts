@@ -42,7 +42,7 @@ interface HeyaRiskIndicators {
 
 export function phase01_week_welfare(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_welfare");
-  const week = world.calendar.currentWeek || 0;
+  const week = world.calendar?.currentWeek || 0;
 
   // Collect media pressure changes to apply after loop
   const mediaPressureChanges: Record<string, number> = {};
@@ -128,7 +128,7 @@ function orchestrateTransitionsPure(
 ): void {
   const { seriousCount, negligenceCount } = computeInjuryPressure(world, heya);
   const hasNegligence = negligenceCount > 0;
-  const week = world.calendar.currentWeek || 0;
+  const week = world.calendar?.currentWeek || 0;
 
   switch (state.complianceState) {
     case "compliant":

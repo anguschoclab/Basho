@@ -11,9 +11,6 @@ import { assertNever } from "../../utils/types";
 import { initializeBasho } from "../../systems/generation/WorldFactory";
 import { resetBashoMediaTracking } from "../../systems/media/MediaService";
 import { getInterimWeeks } from "../../calendar";
-import { rngFromSeed } from "../../rng";
-import { BardEngine } from "../../narrative/BardEngine";
-import * as schedule from "../../schedule";
 import { emptyDeltas, defaultActiveModifiers } from "../pipelineRunner";
 import { clearQueryCaches } from "../../queries";
 import {
@@ -39,7 +36,7 @@ export function phase00_preflight(world: WorldState): StateImpact {
   const { calendar, monthBoundary, yearBoundary } = advanceCalendarDay(world);
 
   // Clear memoization caches when week changes
-  const currentWeek = calendar.currentWeek ?? world.week;
+  const currentWeek = calendar.currentWeek;
   if (currentWeek !== world.week) {
     clearQueryCaches();
   }
@@ -71,16 +68,22 @@ export function phase00_preflight(world: WorldState): StateImpact {
 }
 
 function advanceCalendarDay(world: WorldState): {
-  calendar: typeof world.calendar;
+  calendar: { currentWeek: number; year: number; month: number; week: number; currentDay: number };
   monthBoundary: boolean;
   yearBoundary: boolean;
 } {
-  const cal = { ...world.calendar };
+  const cal = {
+    currentWeek: world.calendar?.currentWeek ?? 1,
+    year: world.calendar?.year ?? 2026,
+    month: world.calendar?.month ?? 1,
+    week: world.calendar?.week ?? 1,
+    currentDay: world.calendar?.currentDay ?? 1,
+  };
 
   let monthBoundary = false;
   let yearBoundary = false;
 
-  cal.currentDay = (cal.currentDay ?? 1) + 1;
+  cal.currentDay = cal.currentDay + 1;
   const maxDay = DAYS_IN_MONTH[(cal.month - 1) % MAX_MONTH] || DEFAULT_MAX_DAY;
 
   if (cal.currentDay > maxDay) {
@@ -163,7 +166,7 @@ function checkPhaseTransition(
   return undefined;
 }
 
-function logTransition(world: WorldState, from: CyclePhase, to: CyclePhase, summary: string) {
+function logTransition(_world: WorldState, from: CyclePhase, to: CyclePhase, summary: string) {
   // Note: EventBus replaced - transition logging skipped for now
   // This is a low-priority event that can be added later
   console.log(`[PhaseTransition] ${from} -> ${to}: ${summary}`);

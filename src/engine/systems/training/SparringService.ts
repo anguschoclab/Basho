@@ -203,7 +203,7 @@ export const SparringService = {
     let totalGap = 0;
 
     for (const stat of stats) {
-      const gap = (a[stat] ?? 50) - (b[stat] ?? 50);
+      const gap = (a.stats[stat] ?? 50) - (b.stats[stat] ?? 50);
       totalGap += Math.abs(gap);
     }
 
@@ -416,21 +416,21 @@ export function applyWeeklySparring(world: WorldState): StateImpact {
       if (growthDelta === 0) continue;
 
       // Determine which rikishi is weaker (lower average stats)
-      const aAvg = (a.power + a.speed + a.balance + a.technique) / 4;
-      const bAvg = (b.power + b.speed + b.balance + b.technique) / 4;
+      const aAvg = (a.stats.power + a.stats.speed + a.stats.balance + a.stats.technique) / 4;
+      const bAvg = (b.stats.power + b.stats.speed + b.stats.balance + b.stats.technique) / 4;
       const weaker = aAvg < bAvg ? a : b;
 
       // Apply growth delta to weaker rikishi's stats
       // Distribute delta proportionally across stats
       const stats = ["power", "speed", "balance", "technique"] as const;
-      const weakerStats = weaker;
+      const nextStats = { ...weaker.stats };
 
       for (const stat of stats) {
-        const current = weakerStats[stat] ?? 50;
+        const current = nextStats[stat] ?? 50;
         const bonus = Math.ceil(growthDelta / stats.length);
-        const clamped = clamp(current + bonus, 0, 99);
-        builder.updateRikishi(weaker.id, { [stat]: clamped });
+        nextStats[stat] = clamp(current + bonus, 0, 99);
       }
+      builder.updateRikishi(weaker.id, { stats: nextStats });
 
       // Increment weeksActive
       const newWeeksActive = pair.weeksActive + 1;

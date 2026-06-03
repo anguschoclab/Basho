@@ -94,7 +94,7 @@ export interface BanzukeSnapshot {
 }
 
 /** Defines the structure for rikishi basho performance. */
-interface RikishiBashoPerformance {
+export interface RikishiBashoPerformance {
   rikishiId: Id;
   division: Division;
   priorRank: RankPosition;

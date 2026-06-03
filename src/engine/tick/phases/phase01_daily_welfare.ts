@@ -5,6 +5,7 @@
  */
 
 import type { WorldState } from "../../types/world";
+import type { Rikishi } from "../../types/rikishi";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { WelfareService } from "../../systems/welfare/WelfareService";
@@ -48,7 +49,7 @@ export function phase01_daily_welfare(world: WorldState): StateImpact {
 
     // 1. Sync Descriptor
     const rikishiRng = rngFromSeed(`desc-${world.dayIndexGlobal}-${id}`, "narrative", "rikishi");
-    next.descriptor = toRikishiDescriptor(rikishiRng, next, next.descriptor);
+    next.descriptor = toRikishiDescriptor(rikishiRng, next, next.descriptor) as unknown as Rikishi["descriptor"];
 
     // 2. Diet Effects
     const diet = heyaDietCache.get(next.heyaId);

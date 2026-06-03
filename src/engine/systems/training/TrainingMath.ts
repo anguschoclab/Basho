@@ -14,6 +14,7 @@
 import type { Rikishi, RikishiStats } from "../../types/rikishi";
 import type { Heya } from "../../types/heya";
 import type { WorldState, ActiveModifiers } from "../../types/world";
+import type { IchimonName } from "../../types/economy";
 import type { TrainingProfile, IndividualFocus } from "../../types/training";
 import type { CombatArchetype } from "../../types/combat";
 import {
@@ -194,7 +195,6 @@ export function calculateGrowthVector(
     adaptabilityMult *
     BASE_GROWTH_VALUE;
 
-  const talentSeed = rikishi.talentSeed ?? 50;
   const archetype = rikishi.combatProfile?.archetype as CombatArchetype;
   const affinity = archetype ? ARCHETYPE_AFFINITY[archetype] : null;
 
@@ -240,6 +240,8 @@ export function calculateGrowthVector(
     stamina: 0,
     mental: 0,
     adaptability: 0,
+    aggression: 0,
+    experience: 0,
   };
 
   // Use PA (potential) as ceiling when present; fall back to talentSeed for legacy/unrolled rikishi.

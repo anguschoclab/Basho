@@ -104,7 +104,7 @@ export const ScoutingService = {
         currentBashoWins: rikishi.currentBashoWins || 0,
         currentBashoLosses: rikishi.currentBashoLosses || 0,
         style: rikishi.style,
-        archetype: rikishi.archetype,
+        archetype: rikishi.combatProfile?.archetype,
       },
       isOwned,
       timesObserved: observations,

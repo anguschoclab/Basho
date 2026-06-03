@@ -54,7 +54,7 @@ export function computeInjuryPressure(
       const sev = status?.severity || undefined;
       const w = getSeverityWeight(sev);
       pressure += w;
-      if (sev === "serious" || sev === "high" || sev === 3) seriousCount++;
+      if (sev === "serious") seriousCount++;
 
       // Negligence Check (§A7)
       const focus = focusMap.get(rikishi.id);
