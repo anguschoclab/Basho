@@ -1,5 +1,4 @@
 import { useState, useCallback, useRef } from "react";
-import { destr } from "destr";
 
 const STORAGE_KEY = "dashboard-widget-order";
 
@@ -29,7 +28,7 @@ export function loadSavedOrder(): WidgetPlacement[] | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
-    const parsed = destr(raw);
+    const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) {
       const valid = parsed.every(
         (p: any) =>
