@@ -33,6 +33,7 @@ import { IntaiCeremony } from "@/components/game/IntaiCeremony";
 import { Trash2 } from "lucide-react";
 import { retireRikishiImpact } from "@/engine/core/ImpactBuilder";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { EntityCollection } from "@/engine/core/EntityCollection";
 
 export default function RikishiPage() {
   const { rikishiId } = useParams({ strict: false });
@@ -47,8 +48,7 @@ export default function RikishiPage() {
   const rikishiList = useMemo(() => {
     if (!world || rikishiId) return [];
     if (!effectiveHeyaId) return [];
-    return Array.from(world.rikishi.values())
-      .filter((r) => r.heyaId === effectiveHeyaId)
+    return EntityCollection.getHeyaRoster(world, effectiveHeyaId)
       .map((r) => projectRikishi(r, world));
   }, [world, effectiveHeyaId, rikishiId]);
 

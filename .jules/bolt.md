@@ -79,3 +79,9 @@ Optimized `fillVacanciesForNPC` in `TalentPoolNPCRecruitment.ts` by replacing `A
 ## 2025-05-18 - Early exit loops in array filtering
 **Learning:** In code like `Array.from(world.rikishi.values()).filter(...)`, it iterates over the entire map of values and allocates intermediate arrays even when only a fixed number of items are needed (e.g. `if (candidates.length < 2)`).
 **Action:** Replace `Array.from().filter()` with a `for...of` loop and an early `break` statement when a specific limit is reached. This turns an $O(N)$ allocation and mapping into a constant time $O(1)$ loop with no intermediate allocations.
+## 2026-05-27 - Avoid Array.from().filter() inline in React Components
+**Learning:** Found an $O(N)$ memory overhead and iteration bottleneck where `Array.from(world.rikishi.values()).filter(...)` was used inline in `useMemo` hooks inside React components (like `RikishiPage.tsx` and `RecapPage.tsx`). This forces V8 to allocate an array for all rikishi, then allocate *another* array for the filtered results, all on the UI thread during re-renders.
+**Action:** Replace inline `Array.from(world.rikishi.values()).filter(...)` in React components with centralized domain selectors like `EntityCollection.getHeyaRoster(world, heyaId)` or `EntityCollection.getActiveRikishi(world)`. This leverages the efficient, single-pass filtering loops inside `EntityCollection` and eliminates redundant array allocations during UI updates.
+## 2026-05-27 - Get first Map value in O(1) time
+**Learning:** Using `Array.from(map.values())[0]` or similar constructs forces V8 to allocate an array of all map values, which scales at $O(N)$ with the size of the Map, just to get the first element.
+**Action:** Replace `Array.from(map.values())[0]` with `map.values().next().value`. This leverages the map's native iterator to get the first element in constant $O(1)$ time and space, completely avoiding any array allocations.

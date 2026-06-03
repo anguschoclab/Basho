@@ -36,6 +36,7 @@ import {
   projectGovernanceSummary,
   projectBashoResults,
 } from "@/presenters/uiDigest";
+import { EntityCollection } from "@/engine/core/EntityCollection";
 
 // Helper utilities for the Recap Page logic
 function getBashoWrapEvents(events: EngineEvent[], bashoNumber?: number): EngineEvent[] {
@@ -332,7 +333,7 @@ export default function RecapPage() {
         {showYokozunaDelib && (
           <YokozunaDeliberation
             open={showYokozunaDelib}
-            rikishi={projectRikishi(Array.from(world.rikishi.values())[0], world)}
+            rikishi={projectRikishi(world.rikishi.values().next().value, world)}
             heyaName={world.heyas.get(world.playerHeyaId || "")?.name || "Unknown Stable"}
             isPlayerRikishi={true}
             verdict="deferred"
