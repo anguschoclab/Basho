@@ -35,33 +35,20 @@ import {
   edgeCrisisRecoveryChance,
   type BoutContext,
 } from "./boutUtils";
-import {
-  MAX_BOUT_TICKS,
-  BELT_THRESHOLD_MAX,
-  BELT_BIAS_DIVISOR,
-  MASS_ADVANTAGE_MULTIPLIER,
-  CONTEST_LINE_JITTER_MULTIPLIER,
-  DISPLACEMENT_PER_FORCE,
-  MIN_FORCE_AFTER_FATIGUE,
-  FATIGUE_PENALTY_PER_POINT,
-  TORQUE_VELOCITY_MULTIPLIER,
-} from "../../constants/engine/physics";
 
+const MAX_TICKS = 120;
 
 // ---------------------------------------------------------------------------
 // Initialisation
 // ---------------------------------------------------------------------------
 
 function initEngineStateV2(bout: BoutContext, east: Rikishi, west: Rikishi): EngineStateV2 {
-  // Seed initial boutFatigue from tournament day — fighters arrive progressively
-  // more worn down as the basho advances. Day 1 = fresh (0); Day 15 = ~11% extra
-  // force penalty for an average-stamina fighter before the bout even starts.
-  const tournamentFatigue = (bout.day - 1) * 5;
+  void bout; // id/day used in seed; kept for signature clarity
   return {
     tick: 0,
     phase: { tag: "approach" },
-    east: { ...initPhysicalBody(east, "east"), boutFatigue: tournamentFatigue },
-    west: { ...initPhysicalBody(west, "west"), boutFatigue: tournamentFatigue },
+    east: initPhysicalBody(east, "east"),
+    west: initPhysicalBody(west, "west"),
     tachiaiWinner: "east", // placeholder; set in resolveTachiaiV2
     grappleState: {
       east: { rightHand: "outside", leftHand: "outside", depth: "standard" },
@@ -84,8 +71,7 @@ function resolveTachiaiV2(
   bout: BoutContext,
   east: Rikishi,
   west: Rikishi,
-  st: EngineStateV2,
-  boutLog: import("../types/basho").BoutLogEntry[]
+  st: EngineStateV2
 ): void {
   st.phase = { tag: "tachiai", impactVelocity: 8.0, contactAngle: 0 };
 
@@ -98,14 +84,6 @@ function resolveTachiaiV2(
     tachiaiPowerWithMatchupPenalty(west, east) + h2hConfidence(west, east.id) + jitter(rng, 8);
   const tachiaiWinner: Side = eastPower >= westPower ? "east" : "west";
   st.tachiaiWinner = tachiaiWinner;
-
-  boutLog.push({
-    phase: "tachiai",
-    clock: 0,
-    description: tachiaiWinner === "east"
-      ? `East explodes off the line, taking the initial advantage at the tachiai.`
-      : `West fires off the mark, seizing the early momentum.`
-  });
 
   // CR-02: Henka resolution — must check before phase loop
   const henkaSide: Side | null =
@@ -141,7 +119,7 @@ function resolveTachiaiV2(
   // Decide push vs belt battle (biased by combatProfile)
   const eastBeltBias = east.combatProfile?.familyPreferences?.belt ?? 25;
   const westBeltBias = west.combatProfile?.familyPreferences?.belt ?? 25;
-  const beltThreshold = Math.min(BELT_THRESHOLD_MAX, (eastBeltBias + westBeltBias) / BELT_BIAS_DIVISOR);
+  const beltThreshold = Math.min(0.7, (eastBeltBias + westBeltBias) / 200);
   const useBelt = rng.next() < beltThreshold;
 
   const initialPush: PushBattleState = {
@@ -172,8 +150,7 @@ function tickPushBattle(
   west: Rikishi,
   st: EngineStateV2,
   division: import("../types/banzuke").Division,
-  meta: { tone: string; drift: Record<string, number> },
-  boutLog: import("../types/basho").BoutLogEntry[]
+  meta: { tone: string; drift: Record<string, number> }
 ): { winner?: Side; kimarite?: import("../types/combat").KimariteId } | undefined {
   if (st.phase.tag !== "push_battle") return undefined;
 
@@ -181,7 +158,6 @@ function tickPushBattle(
 
   // --- Fix Bug 1 & 2: Force-differential physics ---
   // Per-tick jitter breaks ties; only the LOSING fighter retreats and destabilises.
-  // FIXED: Separate deterministic force differential from jitter to prevent tie-breaking.
 
   // Accumulate per-tick exertion — rate governed by stamina
   st.east.boutFatigue += boutFatigueIncrement(stat(east, "stamina"));
@@ -192,52 +168,32 @@ function tickPushBattle(
   const westEffFatigue = stat(west, "fatigue") + st.west.boutFatigue * 0.4;
 
   // Penalty: max 40% reduction (capped at fatigue ~100)
-  const eastFatPenalty = Math.max(MIN_FORCE_AFTER_FATIGUE, 1 - eastEffFatigue * FATIGUE_PENALTY_PER_POINT);
-  const westFatPenalty = Math.max(MIN_FORCE_AFTER_FATIGUE, 1 - westEffFatigue * FATIGUE_PENALTY_PER_POINT);
+  const eastFatPenalty = Math.max(0.6, 1 - eastEffFatigue * 0.004);
+  const westFatPenalty = Math.max(0.6, 1 - westEffFatigue * 0.004);
 
   const adjustedEastForce = push.eastForce * eastFatPenalty;
   const adjustedWestForce = push.westForce * westFatPenalty;
 
-  const massAdvantageEast = (st.east.mass - st.west.mass) * MASS_ADVANTAGE_MULTIPLIER; // ~5 N per 20 kg difference
+  const massAdvantageEast = (st.east.mass - st.west.mass) * 0.05; // ~5 N per 20 kg difference
+  const jitteredForceDiff =
+    adjustedEastForce - adjustedWestForce + massAdvantageEast + jitter(rng, 3);
+  const displacement = Math.abs(jitteredForceDiff) * 0.04; // meters per tick
 
-  // Calculate deterministic force differential (no jitter) for directional decisions
-  const baseForceDiff = adjustedEastForce - adjustedWestForce + massAdvantageEast;
+  push.contestLine += jitteredForceDiff * 0.01;
 
-  // Apply jitter to contestLine for variation, but use baseForceDiff for directional decisions
-  const jitteredContestLine = baseForceDiff + jitter(rng, 3);
-  push.contestLine += jitteredContestLine * CONTEST_LINE_JITTER_MULTIPLIER;
-
-  // Use absolute baseForceDiff for displacement (jitter affects magnitude via contestLine)
-  const displacement = Math.abs(baseForceDiff) * DISPLACEMENT_PER_FORCE; // meters per tick
-
-  // Narrative logging
-  if (st.tick % 5 === 0) {
-    if (baseForceDiff > 10) {
-      boutLog.push({ phase: "engagement", clock: st.tick * 2, description: `East drives forward with superior pushing power.` });
-    } else if (baseForceDiff < -10) {
-      boutLog.push({ phase: "engagement", clock: st.tick * 2, description: `West maintains dominant forward pressure.` });
-    } else {
-      boutLog.push({ phase: "engagement", clock: st.tick * 2, description: `A stalemate in the pushing battle.` });
-    }
-  }
-
-  // Only retreat/destabilize when there's a real force differential
-  if (baseForceDiff > 0) {
+  if (jitteredForceDiff > 0) {
     // East dominant — west retreats toward west's tawara (−4.55)
     push.westLeadFoot -= displacement;
-    push.eastLeadFoot -= displacement;
-    st.west.cogOffset += baseForceDiff * 0.003;
-    st.west.velocityX = -baseForceDiff * 0.1;
-    st.east.velocityX = -baseForceDiff * 0.1;
-  } else if (baseForceDiff < 0) {
+    st.west.cogOffset += Math.abs(jitteredForceDiff) * 0.003;
+    st.east.velocityX = jitteredForceDiff * 0.1;
+    st.west.velocityX = 0;
+  } else if (jitteredForceDiff < 0) {
     // West dominant — east retreats toward east's tawara (+4.55)
     push.eastLeadFoot += displacement;
-    push.westLeadFoot += displacement;
-    st.east.cogOffset += Math.abs(baseForceDiff) * 0.003;
-    st.east.velocityX = Math.abs(baseForceDiff) * 0.1;
-    st.west.velocityX = Math.abs(baseForceDiff) * 0.1;
+    st.east.cogOffset += Math.abs(jitteredForceDiff) * 0.003;
+    st.west.velocityX = Math.abs(jitteredForceDiff) * 0.1;
+    st.east.velocityX = 0;
   }
-  // When baseForceDiff === 0, neither retreats or destabilizes (tie)
 
   // CR-03: Sync PhysicalBody positions so kimariteClassifier reads current state
   st.east.x = push.eastLeadFoot;
@@ -250,11 +206,6 @@ function tickPushBattle(
   if (attempt) {
     const succeeded = rng.next() < attempt.successProbability;
     if (succeeded) {
-      boutLog.push({
-        phase: "finish",
-        clock: st.tick * 2,
-        description: `A sudden opening! ${attempt.side === "east" ? "East" : "West"} executes ${attempt.technique}!`
-      });
       return { winner: attempt.side, kimarite: attempt.technique };
     }
   }
@@ -283,8 +234,7 @@ function tickBeltBattle(
   west: Rikishi,
   st: EngineStateV2,
   division: import("../types/banzuke").Division,
-  meta: { tone: string; drift: Record<string, number> },
-  boutLog: import("../types/basho").BoutLogEntry[]
+  meta: { tone: string; drift: Record<string, number> }
 ): { winner?: Side; kimarite?: import("../types/combat").KimariteId } | undefined {
   if (st.phase.tag !== "belt_battle") return undefined;
 
@@ -306,10 +256,9 @@ function tickBeltBattle(
   // Apply torque to CoG — only the losing side destabilises
   if (torqueAdvantage > 0) {
     st.west.cogOffset += torqueAdvantage * 0.003;
-  } else if (torqueAdvantage < 0) {
+  } else {
     st.east.cogOffset += Math.abs(torqueAdvantage) * 0.003;
   }
-  // When torqueAdvantage === 0, neither destabilizes (tie)
 
   // Torque translates to positional displacement — only the retreating fighter moves
   const torqueDisplacementEast = Math.max(0, belt.torqueWest - belt.torqueEast) * 0.005;
@@ -324,17 +273,8 @@ function tickBeltBattle(
   st.west.leadingFootX = push.westLeadFoot;
 
   // Set velocityX for classifier (torque-driven movement)
-  if (torqueAdvantage > 0) {
-    st.west.velocityX = torqueAdvantage * TORQUE_VELOCITY_MULTIPLIER;
-    st.east.velocityX = 0;
-  } else if (torqueAdvantage < 0) {
-    st.east.velocityX = Math.abs(torqueAdvantage) * TORQUE_VELOCITY_MULTIPLIER;
-    st.west.velocityX = 0;
-  } else {
-    // Tie: neither has velocity
-    st.east.velocityX = 0;
-    st.west.velocityX = 0;
-  }
+  st.east.velocityX = torqueAdvantage < 0 ? Math.abs(torqueAdvantage) * 0.05 : 0;
+  st.west.velocityX = torqueAdvantage > 0 ? torqueAdvantage * 0.05 : 0;
 
   // CI-03: Mid-fight kimarite attempt
   const attempt = evaluateKimariteAttempt(east, west, push, belt, st, rng, division, meta);
@@ -374,7 +314,7 @@ function buildEdgeCrisis(
 ): Extract<CombatPhase, { tag: "edge_crisis" }> {
   const opponentPressure = crisisSide === "east" ? push.westMomentum : push.eastMomentum;
 
-  // Compute initial tawaraToePosition from how far foot is past edge threshold
+  // Fix Bug 3: Compute initial tawaraToePosition from how far foot is past edge threshold
   const footPos = crisisSide === "east" ? push.eastLeadFoot : Math.abs(push.westLeadFoot);
   const overage = Math.max(0, footPos - EDGE_THRESHOLD);
   // Scale overage (0–0.75m) to toePosition (0–1.0)
@@ -413,7 +353,7 @@ function tickEdgeCrisis(
   const prev = st.phase.prev;
   crisis.ticksInCrisis++;
 
-  // Update tawaraToePosition each tick using real opponent pressure
+  // Fix Bug 3: Update tawaraToePosition each tick using real opponent pressure
   const pressureIncrease = crisis.opponentPressureX * 0.02;
   const escapeResistance = crisis.escapeForceAvailable * 0.008;
   crisis.tawaraToePosition = Math.max(
@@ -511,15 +451,15 @@ function runPhaseLoop(
     return { winner: st.phase.winner, kimarite: st.phase.technique };
   }
 
-  for (let i = 0; i < MAX_BOUT_TICKS; i++) {
+  for (let i = 0; i < MAX_TICKS; i++) {
     st.tick++;
 
-    const pushResult = tickPushBattle(rng, east, west, st, division, meta, boutLog);
+    const pushResult = tickPushBattle(rng, east, west, st, division, meta);
     if (pushResult?.winner && pushResult?.kimarite) {
       return { winner: pushResult.winner, kimarite: pushResult.kimarite };
     }
 
-    const beltResult = tickBeltBattle(rng, east, west, st, division, meta, boutLog);
+    const beltResult = tickBeltBattle(rng, east, west, st, division, meta);
     if (beltResult?.winner && beltResult?.kimarite) {
       return { winner: beltResult.winner, kimarite: beltResult.kimarite };
     }
@@ -542,25 +482,17 @@ function runPhaseLoop(
   const kimarite: KimariteId = hadBelt ? "yorikiri" : "oshidashi";
 
   // CI-05: Rare hi_waza reversals (isamiashi, tsukite)
-  // "Winner" loses due to their own mistake. Probability scales inversely with the
-  // loser's composure stats — a high-mental, high-balance fighter rarely steps out
-  // accidentally; a green recruit at the tawara is much more prone to it.
+  // Very rare (1.5% each) post-resolution reversals where "winner" loses due to own mistake
   const loser: Side = winner === "east" ? "west" : "east";
   const loserInstability = winner === "east" ? westInstability : eastInstability;
-  const loserRikishi = loser === "east" ? east : west;
 
-  // isamiashi: steps out while overcommitting — mental + balance reduce chance
-  // Range: ~0.75% (elite stats) to ~1.35% (low stats)
-  const isamiashiChance =
-    0.015 * (1 - (stat(loserRikishi, "mental") + stat(loserRikishi, "balance")) / 400);
-  if (loserInstability > 0.9 && rng.next() < isamiashiChance) {
+  // isamiashi: false start - only if loser was very unstable (near falling)
+  if (loserInstability > 0.9 && rng.next() < 0.015) {
     return { winner: loser, kimarite: "isamiashi" };
   }
 
-  // tsukite: thrust hand touches down — technique + mental reduce chance
-  const tsukiteChance =
-    0.015 * (1 - (stat(loserRikishi, "technique") + stat(loserRikishi, "mental")) / 400);
-  if (!hadBelt && rng.next() < tsukiteChance) {
+  // tsukite: missed thrust - only if bout was push-dominant (no belt)
+  if (!hadBelt && rng.next() < 0.015) {
     return { winner: loser, kimarite: "tsukite" };
   }
 
@@ -589,12 +521,7 @@ function buildBoutResultV2(
   const edgeCrisisEscapes = boutLog.filter(
     (e) => e.phase === "edge_crisis" && (e.data as Record<string, unknown>)?.escaped === true
   ).length;
-  // Duration contributes up to 70 points (full 120-tick marathon = 70).
-  // Each tawara escape adds 20 (dramatic near-defeats). Cap at 100.
-  const excitementScore = Math.min(
-    100,
-    Math.round((st.tick / MAX_BOUT_TICKS) * 70 + edgeCrisisEscapes * 20)
-  );
+  const excitementScore = Math.min(100, Math.round(st.tick / 3 + edgeCrisisEscapes * 20));
 
   const resolvedStance =
     st.phase.tag === "belt_battle" ||
@@ -725,11 +652,12 @@ export function resolveBoutPhysicsImpl(
   const rng = rngFromSeed(seed, "bout", "root");
 
   const st = initEngineStateV2(bout, east, west);
-  const boutLog: import("../types/basho").BoutLogEntry[] = [];
-  resolveTachiaiV2(rng, bout, east, west, st, boutLog);
+  resolveTachiaiV2(rng, bout, east, west, st);
 
   const effectiveMeta = meta || { tone: "classic", drift: {} };
   const division = east.division || west.division || "makushita";
+
+  const boutLog: BoutLogEntry[] = [];
   const { winner, kimarite } = runPhaseLoop(rng, east, west, st, boutLog, division, effectiveMeta);
 
   const result = buildBoutResultV2(bout, east, west, st, winner, kimarite, boutLog);
