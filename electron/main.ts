@@ -356,7 +356,7 @@ ipcMain.handle("dialog:showSaveDialog", async (event, options?: Electron.SaveDia
 
 ipcMain.handle("dialog:showOpenDialog", async (event, options?: Electron.OpenDialogOptions) => {
   if (!mainWindow) return { canceled: true, filePaths: [] };
-  const safeOptions = options && typeof options === "object" ? options : {};
+  const safeOptions = options && typeof options === "object" && !Array.isArray(options) ? options : {};
   const result = await dialog.showOpenDialog(mainWindow, safeOptions);
   return result;
 });
