@@ -1,7 +1,6 @@
 import { SeededRNG } from "../rng";
 import type { Rikishi } from "../types/rikishi";
 import type { Side } from "../types/banzuke";
-import type { CombatAction } from "../types/combat";
 import type { KimariteId } from "../types/combat";
 import { TAWARA_RADIUS, SHIKIRISEN_OFFSET } from "../types/combat-spatial";
 import type {
@@ -79,37 +78,7 @@ export function tawaraBounceResistance(toePos: number): number {
   return 0;
 }
 
-export function computePushForce(
-  rikishi: Rikishi,
-  action: CombatAction,
-  _stanceWidth: number,
-  fatigue: number
-): number {
-  // Rikishi.power is the primary strength stat (not "strength")
-  const power = stat(rikishi, "power");
-  const weight = stat(rikishi, "weight");
-  const w = action.statWeighting;
 
-  // Base force from power + weight contribution; stanceWidth affects CoG stability, not raw force
-  let force = power * (w.strength || FORCE_POWER_MULTIPLIER) + weight * (w.weight || FORCE_WEIGHT_MULTIPLIER);
-  // Fatigue penalty: -0.4% per fatigue point (same curve as old engine)
-  force *= Math.max(MIN_FORCE_AFTER_FATIGUE, 1 - fatigue * FATIGUE_PENALTY_PER_POINT);
-
-  return Math.max(MIN_ABSOLUTE_FORCE, force);
-}
-
-export function computePushAngle(
-  _action: CombatAction,
-  myBody: PhysicalBody,
-  opponentBody: PhysicalBody,
-  rng: SeededRNG
-): number {
-  const dx = opponentBody.x - myBody.x;
-  const dz = opponentBody.z - myBody.z;
-  const baseAngle = Math.atan2(dz, dx);
-  const jitter = (rng.next() - 0.5) * GRIP_JITTER_RANGE;
-  return baseAngle + jitter;
-}
 
 export function deriveGripClass(left: HandGrip | null, right: HandGrip | null): GripClass {
   const insideCount = (left?.isInside ? 1 : 0) + (right?.isInside ? 1 : 0);

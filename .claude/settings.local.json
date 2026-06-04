@@ -112,7 +112,10 @@
       "Bash(npx -p typescript tsc --noEmit)",
       "Bash(./node_modules/.bin/tsc --noEmit)",
       "Bash(node_modules/.bin/tsc --noEmit)",
-      "Bash(python *)"
+      "Bash(python *)",
+      "Bash(echo \"--- exit $? ---\")",
+      "Bash(sed -n '25,55p' src/engine/types/combat-spatial.ts)",
+      "Bash(git ls-tree *)"
     ]
   },
   "outputStyle": "default"

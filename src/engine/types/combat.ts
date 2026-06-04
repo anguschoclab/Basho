@@ -55,21 +55,7 @@ export interface GrappleState {
   gripAdvantage: "east_strong" | "west_strong" | "neutral" | "moro_zashi_east" | "moro_zashi_west";
 }
 
-export interface CombatAction {
-  family: TacticalFamily;
-  intent: "attack" | "defend" | "counter" | "reposition";
-  targetKimariteClass?: KimariteClass; // The move they are attempting
-  statWeighting: {
-    // Defines which stats matter for THIS specific move (0.0 to 1.0)
-    strength: number;
-    weight: number;
-    technique: number;
-    speed: number;
-    balance: number;
-  };
-  moveId?: string;
-  isHighRisk?: boolean;
-}
+
 
 /** Type representing stance. */
 export type Stance = "migi-yotsu" | "hidari-yotsu" | "no-grip" | "belt-dominant" | "push-dominant";
@@ -208,12 +194,4 @@ export interface BoutTickContext {
   isChampionshipBout: boolean;
 }
 
-export interface TickResolutionEvent {
-  tickNumber: number;
-  attacker: Rikishi;
-  defender: Rikishi;
-  action: CombatAction;
-  powerDifferential: number;
-  context: BoutTickContext; // The new payload
-}
 export type Style = "oshi" | "yotsu" | "hybrid";
