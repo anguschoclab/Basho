@@ -448,7 +448,7 @@ ipcMain.handle("fs:exists", async (event, filePath: string) => {
 });
 
 ipcMain.handle("fs:mkdir", async (event, dirPath: string, recursive: boolean = true) => {
-  if (typeof dirPath !== "string" || (recursive !== undefined && typeof recursive !== "boolean")) {
+  if (typeof dirPath !== "string" || typeof recursive !== "boolean") {
     console.error("Invalid arguments for mkdir");
     return false;
   }
