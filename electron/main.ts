@@ -349,7 +349,7 @@ ipcMain.handle("window:close", () => {
 // IPC Handlers for file dialogs
 ipcMain.handle("dialog:showSaveDialog", async (event, options?: Electron.SaveDialogOptions) => {
   if (!mainWindow) return { canceled: true, filePath: "" };
-  const safeOptions = options && typeof options === "object" ? options : {};
+  const safeOptions = options && typeof options === "object" && !Array.isArray(options) ? options : {};
   const result = await dialog.showSaveDialog(mainWindow, safeOptions);
   return result;
 });
