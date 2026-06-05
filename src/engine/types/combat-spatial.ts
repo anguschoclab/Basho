@@ -79,7 +79,7 @@ export interface BeltBattleState {
   westDepth: GripDepthV2;
   torqueEast: number;
   torqueWest: number;
-a  /** Per-tick angular authority from grip torque (rad/tick) */
+  /** Per-tick angular authority from grip torque (rad/tick) */
   eastAngularAuthority: number;
   westAngularAuthority: number;
 }
