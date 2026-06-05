@@ -14,7 +14,7 @@ describe("boutSpatial", () => {
       const rikishi = mockRikishi("r1");
       const body = initPhysicalBody(rikishi, "east");
       expect(body.x).toBeGreaterThan(0);
-      expect(body.facingAngle).toBeCloseTo(Math.PI);
+      expect(body.facingAngle).toBeCloseTo(0);
     });
 
     it("initializes west body at negative x", () => {

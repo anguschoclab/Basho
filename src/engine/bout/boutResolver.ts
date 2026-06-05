@@ -22,6 +22,7 @@ import type { Rikishi, RikishiAchievements } from "../types/rikishi";
 import type { BashoState, BoutResult, BashoName } from "../types/basho";
 import type { WorldState } from "../types/world";
 import type { Side } from "../types/banzuke";
+import type { EngineSnapshot } from "../types/combat-spatial";
 // We import the B+ spatial physics runner
 import { resolveBoutPhysics, conditionMultiplier } from "./boutPhysics";
 // We import the pure narrative translator
@@ -204,7 +205,7 @@ export function resolveBout(
   basho: BashoState,
   playerTactic?: import("../types/combat").BoutTactic,
   world?: WorldState
-): { result: BoutResult; impact: StateImpact } {
+): { result: BoutResult; impact: StateImpact; engineSnapshot?: EngineSnapshot } {
   const builder = createImpactBuilder("resolveBout");
 
   // 0. Fusensho — injured/retired rikishi cannot fight; opponent wins by walkover
@@ -254,7 +255,7 @@ export function resolveBout(
 
   // 1. Run B+ spatial physics engine
   const meta = world?.meta;
-  const { result } = resolveBoutPhysics(
+  const { result, engineSnapshot } = resolveBoutPhysics(
     ctxFinal,
     eastBout as Rikishi,
     westBout as Rikishi,
@@ -441,7 +442,7 @@ export function resolveBout(
     }
   }
 
-  return { result, impact: builder.build() };
+  return { result, impact: builder.build(), engineSnapshot };
 }
 
 /**
@@ -494,7 +495,7 @@ export function applyRivalryToRikishi(
  * console.log(result.winner, result.kimarite);
  * ```
  */
-export function simulateBout(east: Rikishi, west: Rikishi, seed: string): BoutResult {
+export function simulateBout(east: Rikishi, west: Rikishi, seed: string): { result: BoutResult; engineSnapshot?: EngineSnapshot } {
   const fakeBasho: BashoState = {
     id: "sim",
     year: 2025,
@@ -511,6 +512,6 @@ export function simulateBout(east: Rikishi, west: Rikishi, seed: string): BoutRe
     rikishiEastId: east.id,
     rikishiWestId: west.id,
   };
-  const { result } = resolveBout(bout, east, west, fakeBasho);
-  return result;
+  const { result, engineSnapshot } = resolveBout(bout, east, west, fakeBasho);
+  return { result, engineSnapshot };
 }

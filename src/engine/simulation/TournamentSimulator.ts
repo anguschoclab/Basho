@@ -101,7 +101,7 @@ export function simulateEntireBasho(
       }
 
       const boutSeed = `${seed}-d${day}-b${boutIndex}`;
-      const result = simulateBout(east, west, boutSeed);
+      const { result } = simulateBout(east, west, boutSeed);
       match.result = result;
 
       const winner = result.winner === "east" ? east : west;

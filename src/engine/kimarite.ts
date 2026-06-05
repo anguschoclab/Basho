@@ -774,7 +774,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
       w.stats.power > l.stats.balance &&
       balance(ctx, lSide) <= 0 &&
       nearCenter(ctx, lSide) &&
-      getTorque(st, wSide) > 20,
+      (getTorque(st, wSide) > 20 || rotating(ctx, wSide)),
   },
   {
     id: "sukuinage",
@@ -783,7 +783,11 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "nage",
     weight: 65,
     difficulty: 5,
-    condition: (w, l, ctx, st, wSide, lSide) => noBelt(ctx, wSide) && w.stats.power >= 55 && balance(ctx, lSide) <= 0 && nearCenter(ctx, lSide),
+    condition: (w, l, ctx, st, wSide, lSide) =>
+      noBelt(ctx, wSide) &&
+      w.stats.power >= 55 &&
+      balance(ctx, lSide) <= 0 &&
+      (nearCenter(ctx, lSide) || lateralThresholdCrossed(ctx)),
   },
   {
     id: "shitatenage",
@@ -896,7 +900,11 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     weight: 75,
     appliesTo: ["push_battle"],
     difficulty: 4,
-    condition: (w, l, ctx, st, wSide, lSide) => overCommitting(ctx, lSide) && noBelt(ctx, wSide) && balance(ctx, lSide) <= 0 && nearCenter(ctx, lSide),
+    condition: (w, l, ctx, st, wSide, lSide) =>
+      noBelt(ctx, wSide) &&
+      balance(ctx, lSide) <= 0 &&
+      nearCenter(ctx, lSide) &&
+      (overCommitting(ctx, lSide) || offAxis(ctx)),
   },
   {
     id: "tottari",

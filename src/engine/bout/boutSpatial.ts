@@ -40,7 +40,7 @@ import {
 
 export function initPhysicalBody(rikishi: Rikishi, side: Side): PhysicalBody {
   const x = side === "east" ? SHIKIRISEN_OFFSET : -SHIKIRISEN_OFFSET;
-  const facingAngle = side === "east" ? Math.PI : 0;
+  const facingAngle = 0; // 1.75D: neutral facing; rotation comes from torque, not initial bias
   const mass = MASS_BASE_OFFSET + stat(rikishi, "weight", DEFAULT_WEIGHT_STAT) * MASS_WEIGHT_MULTIPLIER;
   const cogHeight = stat(rikishi, "height", DEFAULT_HEIGHT_STAT) * HEIGHT_TO_METERS * COG_HEIGHT_FRACTION;
   const footSpread = BASE_FOOT_SPREAD + (stat(rikishi, "balance") / 100) * FOOT_SPREAD_BALANCE_VARIATION;

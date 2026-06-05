@@ -172,7 +172,7 @@ describe("simulateBout", () => {
     const east = mockRikishi("r-east", { power: 70 });
     const west = mockRikishi("r-west", { power: 65 });
 
-    const result = simulateBout(east, west, "test-seed");
+    const { result } = simulateBout(east, west, "test-seed");
 
     expect(["east", "west"]).toContain(result.winner);
     // kimarite must be a non-empty string from the known set
