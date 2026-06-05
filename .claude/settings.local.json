@@ -115,7 +115,9 @@
       "Bash(python *)",
       "Bash(echo \"--- exit $? ---\")",
       "Bash(sed -n '25,55p' src/engine/types/combat-spatial.ts)",
-      "Bash(git ls-tree *)"
+      "Bash(git ls-tree *)",
+      "Bash(grep -rln 'BoutLogEntry\\\\|\\\\.log\\\\b\\\\|boutLog' src/components src/pages src/presenters)",
+      "Bash(ls src/components/game/boutReplay/)"
     ]
   },
   "outputStyle": "default"

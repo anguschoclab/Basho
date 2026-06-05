@@ -200,3 +200,86 @@ export const DEFAULT_DOMINATION = 0.2;
 /** Duration threshold for kinboshi bonus */
 export const KINBOSHI_DURATION_THRESHOLD = 15;
 
+// --- Bout geometry / edge (extracted from boutPhaseLoop.ts) ---
+
+/** Destabilization per force differential (m/N) */
+export const COG_OFFSET_PER_FORCE = 0.003;
+
+/** Positional displacement from torque (m/N) */
+export const TORQUE_DISPLACEMENT_MULTIPLIER = 0.005;
+
+/** Escape resistance from available force (1/N) */
+export const ESCAPE_RESISTANCE_MULTIPLIER = 0.008;
+
+/** Maps overage to toePosition (m) */
+export const TOE_OVERAGE_SCALE = 0.75;
+
+/** Toe past this = forced out (dimensionless) */
+export const TOE_POSITION_FORCED_OUT = 1.5;
+
+/** ToePosition clamp upper bound (dimensionless) */
+export const TOE_POSITION_MAX = 2.0;
+
+/** |torqueAdvantage| to trigger edge crisis from belt (N) */
+export const TORQUE_EDGE_CRISIS_THRESHOLD = 30;
+
+/** avgFoot > this = "rear" (m) */
+export const POSITION_REAR_THRESHOLD = 3.5;
+
+/** avgFoot > this = "lateral" (m) */
+export const POSITION_LATERAL_THRESHOLD = 2.0;
+
+/** Restored momentum multiplier after escape (dimensionless) */
+export const EDGE_ESCAPE_MOMENTUM_RETENTION = 0.4;
+
+/** Base chance for isamiashi/tsukite reversals (dimensionless) */
+export const POST_RESOLUTION_REVERSAL_CHANCE = 0.015;
+
+// --- Lever arms (extracted from boutGrip.ts) ---
+
+/** Initial lever arm (m) */
+export const LEVER_ARM_BASE = 0.24;
+
+/** Tachiai winner inside arm (m) */
+export const LEVER_ARM_TACHIAI_WIN = 0.29;
+
+/** Tachiai winner partial inside arm (m) */
+export const LEVER_ARM_TACHIAI_PARTIAL = 0.27;
+
+/** Deep grip lever arm (m) */
+export const LEVER_ARM_DEEP = 0.31;
+
+/** Maemitsu grip lever arm (m) */
+export const LEVER_ARM_MAEMITSU = 0.34;
+
+// --- 1.75D Lateral & Angular DOF (TUNABLE) ---
+
+/** Clamp for z displacement (m) */
+export const LATERAL_MAX_OFFSET = 0.6;
+
+/** Per-tick z restoration toward 0 (dimensionless/tick) */
+export const LATERAL_RESTORING_DECAY = 0.85;
+
+/** Speed → lateral impulse (m/s per stat point) */
+export const LATERAL_IMPULSE_SPEED_SCALE = 0.15;
+
+/** x-force multiplier when engagement is glancing (dimensionless) */
+export const OFF_AXIS_FORCE_FALLOFF = 0.7;
+
+/** Above this = glancing blow (rad) */
+export const ENGAGEMENT_ANGLE_GLANCING_THRESHOLD = 0.3;
+
+/** Torque → angular velocity (rad/N) */
+export const ANGULAR_TORQUE_SCALE = 0.002;
+
+/** Per-tick angular clamp (rad/tick) */
+export const ANGULAR_MAX_VELOCITY = 0.05;
+
+/** Per-tick facingAngle restoration (dimensionless/tick) */
+export const ANGULAR_RESTORING_DECAY = 0.9;
+
+/** escapeAngle > this classifies as utchari (rad) */
+export const UTCHARI_PIVOT_THRESHOLD = 0.4;
+
+/** Engagement log entry every N ticks */
+export const NARRATIVE_TICK_CADENCE = 5;

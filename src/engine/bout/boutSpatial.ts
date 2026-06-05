@@ -136,12 +136,27 @@ export function classifyEdgeExitKimarite(
   st: EngineStateV2,
   rng: SeededRNG
 ): KimariteId {
-  // This is called when the fighter FAILS to escape (rng failed recoveryProbability).
-  // Classify by which phase drove them to the edge and how long they resisted.
+  // Called when the fighter FAILS to escape.
+  // 1.75D: classify using escapeAngle, opponentPressureZ, and lateral offset.
   const fromBelt = st.phase.tag === "edge_crisis" && st.phase.prev === "belt_battle";
   const crisisSide = crisis.side;
   const defenderSide = crisisSide === "east" ? "west" : "east";
   const defenderBody = defenderSide === "east" ? st.east : st.west;
+
+  // 1.75D: utchari — defender pivoted at edge with high escapeAngle but still lost
+  if (crisis.escapeAngle > 0.3 && crisis.ticksInCrisis >= 3) {
+    return "utchari";
+  }
+
+  // 1.75D: okuridashi when defender has lateral momentum (off-axis overrun)
+  if (Math.abs(crisis.opponentPressureZ) > 0.5 && Math.abs(defenderBody.velocityX) > VELOCITY_EDGE_EXIT_THRESHOLD) {
+    return "okuridashi";
+  }
+
+  // 1.75D: okuritaoshi when belt-driven with lateral component
+  if (fromBelt && Math.abs(crisis.opponentPressureZ) > 0.3) {
+    return "okuritaoshi";
+  }
 
   // E1: okuridashi when defender has positive momentum while exiting (overruns edge)
   if (Math.abs(defenderBody.velocityX) > VELOCITY_EDGE_EXIT_THRESHOLD) {

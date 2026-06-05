@@ -79,6 +79,9 @@ export interface BeltBattleState {
   westDepth: GripDepthV2;
   torqueEast: number;
   torqueWest: number;
+a  /** Per-tick angular authority from grip torque (rad/tick) */
+  eastAngularAuthority: number;
+  westAngularAuthority: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -94,6 +97,12 @@ export interface PushBattleState {
   westLeadFoot: number;
   eastMomentum: number;
   westMomentum: number;
+  /** Lateral (z) displacement from center line */
+  eastLateral: number;
+  westLateral: number;
+  /** Lateral momentum (velocityZ * mass) */
+  eastLateralMomentum: number;
+  westLateralMomentum: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -207,6 +216,12 @@ export interface SpatialBoutContext {
   torqueDiff: number;
   /** True when either fighter's lead foot is near the tawara boundary */
   atEdge: boolean;
+  /** Lateral offset difference: positive = east is further north */
+  lateralOffsetDiff: number;
+  /** Absolute engagement angle between fighters (rad) */
+  engagementAngle: number;
+  /** Angular advantage: positive = east has more rotation authority */
+  angularAdvantage: number;
 }
 
 // ---------------------------------------------------------------------------

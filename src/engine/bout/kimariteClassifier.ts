@@ -44,6 +44,9 @@ export function evaluateKimariteAttempt(
     atEdge:
       Math.abs(st.east.leadingFootX) > EDGE_THRESHOLD ||
       Math.abs(st.west.leadingFootX) > EDGE_THRESHOLD,
+    lateralOffsetDiff: push ? push.eastLateral - push.westLateral : 0,
+    engagementAngle: Math.abs(st.east.facingAngle - st.west.facingAngle),
+    angularAdvantage: belt ? belt.eastAngularAuthority - belt.westAngularAuthority : 0,
   };
 
   const stClone: EngineStateV2 = {

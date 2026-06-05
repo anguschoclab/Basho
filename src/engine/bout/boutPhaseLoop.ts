@@ -8,6 +8,35 @@ import type { BoutResult, BashoState, BoutLogEntry } from "../types/basho";
 import type { Side } from "../types/banzuke";
 import type { KimariteId, GrappleState, HandPosition } from "../types/combat";
 import { EDGE_THRESHOLD } from "../types/combat-spatial";
+import {
+  COG_OFFSET_PER_FORCE,
+  TORQUE_DISPLACEMENT_MULTIPLIER,
+  ESCAPE_RESISTANCE_MULTIPLIER,
+  TOE_OVERAGE_SCALE,
+  TOE_POSITION_FORCED_OUT,
+  TOE_POSITION_MAX,
+  TORQUE_EDGE_CRISIS_THRESHOLD,
+  POSITION_REAR_THRESHOLD,
+  POSITION_LATERAL_THRESHOLD,
+  EDGE_ESCAPE_MOMENTUM_RETENTION,
+  POST_RESOLUTION_REVERSAL_CHANCE,
+  LATERAL_MAX_OFFSET,
+  LATERAL_RESTORING_DECAY,
+  LATERAL_IMPULSE_SPEED_SCALE,
+  OFF_AXIS_FORCE_FALLOFF,
+  ENGAGEMENT_ANGLE_GLANCING_THRESHOLD,
+  ANGULAR_TORQUE_SCALE,
+  ANGULAR_MAX_VELOCITY,
+  ANGULAR_RESTORING_DECAY,
+  UTCHARI_PIVOT_THRESHOLD,
+  NARRATIVE_TICK_CADENCE,
+  MIN_FORCE_AFTER_FATIGUE,
+  FATIGUE_PENALTY_PER_POINT,
+  MASS_ADVANTAGE_MULTIPLIER,
+  DISPLACEMENT_PER_FORCE,
+  CONTEST_LINE_JITTER_MULTIPLIER,
+  CRISIS_PRESSURE_MULTIPLIER,
+} from "../../constants/engine/physics";
 import type {
   CombatPhase,
   EngineStateV2,
@@ -32,7 +61,6 @@ import {
   tachiaiPowerWithMatchupPenalty,
   h2hConfidence,
   boutFatigueIncrement,
-  edgeCrisisRecoveryChance,
   type BoutContext,
 } from "./boutUtils";
 
@@ -130,6 +158,10 @@ function resolveTachiaiV2(
     westLeadFoot: st.west.x,
     eastMomentum: eastPower,
     westMomentum: westPower,
+    eastLateral: 0,
+    westLateral: 0,
+    eastLateralMomentum: 0,
+    westLateralMomentum: 0,
   };
 
   if (useBelt) {
@@ -149,6 +181,7 @@ function tickPushBattle(
   east: Rikishi,
   west: Rikishi,
   st: EngineStateV2,
+  boutLog: BoutLogEntry[],
   division: import("../types/banzuke").Division,
   meta: { tone: string; drift: Record<string, number> }
 ): { winner?: Side; kimarite?: import("../types/combat").KimariteId } | undefined {
@@ -156,7 +189,7 @@ function tickPushBattle(
 
   const push = st.phase.state;
 
-  // --- Fix Bug 1 & 2: Force-differential physics ---
+  // --- Force-differential physics ---
   // Per-tick jitter breaks ties; only the LOSING fighter retreats and destabilises.
 
   // Accumulate per-tick exertion — rate governed by stamina
@@ -168,40 +201,84 @@ function tickPushBattle(
   const westEffFatigue = stat(west, "fatigue") + st.west.boutFatigue * 0.4;
 
   // Penalty: max 40% reduction (capped at fatigue ~100)
-  const eastFatPenalty = Math.max(0.6, 1 - eastEffFatigue * 0.004);
-  const westFatPenalty = Math.max(0.6, 1 - westEffFatigue * 0.004);
+  const eastFatPenalty = Math.max(MIN_FORCE_AFTER_FATIGUE, 1 - eastEffFatigue * FATIGUE_PENALTY_PER_POINT);
+  const westFatPenalty = Math.max(MIN_FORCE_AFTER_FATIGUE, 1 - westEffFatigue * FATIGUE_PENALTY_PER_POINT);
 
   const adjustedEastForce = push.eastForce * eastFatPenalty;
   const adjustedWestForce = push.westForce * westFatPenalty;
 
-  const massAdvantageEast = (st.east.mass - st.west.mass) * 0.05; // ~5 N per 20 kg difference
+  const massAdvantageEast = (st.east.mass - st.west.mass) * MASS_ADVANTAGE_MULTIPLIER;
   const jitteredForceDiff =
     adjustedEastForce - adjustedWestForce + massAdvantageEast + jitter(rng, 3);
-  const displacement = Math.abs(jitteredForceDiff) * 0.04; // meters per tick
+  const displacement = Math.abs(jitteredForceDiff) * DISPLACEMENT_PER_FORCE;
 
-  push.contestLine += jitteredForceDiff * 0.01;
+  push.contestLine += jitteredForceDiff * CONTEST_LINE_JITTER_MULTIPLIER;
+
+  // --- 1.75D Lateral integration ---
+  // Defender gets lateral impulse scaled by speed when pushed off-center
+  const lateralOffsetDiff = push.eastLateral - push.westLateral;
+  const isGlancing = Math.abs(lateralOffsetDiff) > ENGAGEMENT_ANGLE_GLANCING_THRESHOLD;
+  const forceFalloff = isGlancing ? OFF_AXIS_FORCE_FALLOFF : 1.0;
 
   if (jitteredForceDiff > 0) {
-    // East dominant — west retreats toward west's tawara (−4.55)
-    push.westLeadFoot -= displacement;
-    st.west.cogOffset += Math.abs(jitteredForceDiff) * 0.003;
+    // East dominant — west retreats toward west's tawara
+    push.westLeadFoot -= displacement * forceFalloff;
+    st.west.cogOffset += Math.abs(jitteredForceDiff) * COG_OFFSET_PER_FORCE;
     st.east.velocityX = jitteredForceDiff * 0.1;
     st.west.velocityX = 0;
+    // Lateral impulse for defender (west)
+    push.westLateralMomentum += stat(west, "speed") * LATERAL_IMPULSE_SPEED_SCALE * 0.5;
   } else if (jitteredForceDiff < 0) {
-    // West dominant — east retreats toward east's tawara (+4.55)
-    push.eastLeadFoot += displacement;
-    st.east.cogOffset += Math.abs(jitteredForceDiff) * 0.003;
+    // West dominant — east retreats toward east's tawara
+    push.eastLeadFoot += displacement * forceFalloff;
+    st.east.cogOffset += Math.abs(jitteredForceDiff) * COG_OFFSET_PER_FORCE;
     st.west.velocityX = Math.abs(jitteredForceDiff) * 0.1;
     st.east.velocityX = 0;
+    // Lateral impulse for defender (east)
+    push.eastLateralMomentum += stat(east, "speed") * LATERAL_IMPULSE_SPEED_SCALE * 0.5;
   }
 
-  // CR-03: Sync PhysicalBody positions so kimariteClassifier reads current state
+  // Integrate lateral position
+  push.eastLateral += push.eastLateralMomentum;
+  push.westLateral += push.westLateralMomentum;
+
+  // Clamp lateral offset
+  push.eastLateral = Math.max(-LATERAL_MAX_OFFSET, Math.min(LATERAL_MAX_OFFSET, push.eastLateral));
+  push.westLateral = Math.max(-LATERAL_MAX_OFFSET, Math.min(LATERAL_MAX_OFFSET, push.westLateral));
+
+  // Apply restoring decay
+  push.eastLateral *= LATERAL_RESTORING_DECAY;
+  push.westLateral *= LATERAL_RESTORING_DECAY;
+  push.eastLateralMomentum *= LATERAL_RESTORING_DECAY;
+  push.westLateralMomentum *= LATERAL_RESTORING_DECAY;
+
+  // Sync PhysicalBody
   st.east.x = push.eastLeadFoot;
   st.west.x = push.westLeadFoot;
+  st.east.z = push.eastLateral;
+  st.west.z = push.westLateral;
   st.east.leadingFootX = push.eastLeadFoot;
   st.west.leadingFootX = push.westLeadFoot;
+  st.east.velocityZ = push.eastLateralMomentum;
+  st.west.velocityZ = push.westLateralMomentum;
 
-  // CI-03: Mid-fight kimarite attempt — emergent classification
+  // Narrative cadence
+  if (st.tick % NARRATIVE_TICK_CADENCE === 0) {
+    boutLog.push({
+      phase: "engagement",
+      clock: st.tick * 2,
+      data: {
+        tick: st.tick,
+        forceDiff: jitteredForceDiff,
+        lateralOffsetDiff,
+        engagementAngle: Math.abs(lateralOffsetDiff),
+        eastLateral: push.eastLateral,
+        westLateral: push.westLateral,
+      },
+    });
+  }
+
+  // Mid-fight kimarite attempt
   const attempt = evaluateKimariteAttempt(east, west, push, null, st, rng, division, meta);
   if (attempt) {
     const succeeded = rng.next() < attempt.successProbability;
@@ -218,11 +295,11 @@ function tickPushBattle(
     return { winner: "east", kimarite: classifyFallKimarite(push, st, "west") };
   }
 
-  // CR-04: Boundary check using EDGE_THRESHOLD with signed comparisons
+  // Boundary check
   if (push.eastLeadFoot >= EDGE_THRESHOLD) {
-    st.phase = buildEdgeCrisis("east", push, undefined, "push_battle");
+    st.phase = buildEdgeCrisis("east", push, undefined, "push_battle", st);
   } else if (push.westLeadFoot <= -EDGE_THRESHOLD) {
-    st.phase = buildEdgeCrisis("west", push, undefined, "push_battle");
+    st.phase = buildEdgeCrisis("west", push, undefined, "push_battle", st);
   }
 
   return undefined;
@@ -233,6 +310,7 @@ function tickBeltBattle(
   east: Rikishi,
   west: Rikishi,
   st: EngineStateV2,
+  boutLog: BoutLogEntry[],
   division: import("../types/banzuke").Division,
   meta: { tone: string; drift: Record<string, number> }
 ): { winner?: Side; kimarite?: import("../types/combat").KimariteId } | undefined {
@@ -246,37 +324,99 @@ function tickBeltBattle(
   st.west.boutFatigue += boutFatigueIncrement(stat(west, "stamina"));
 
   // Evolve grip geometry (arm reach, depth, grip strength decay)
-  // Pass additional in-bout fatigue to grip decay
   const eastBoutFatigue = st.east.boutFatigue * 0.4;
   const westBoutFatigue = st.west.boutFatigue * 0.4;
   evolveGripGeometry(rng, east, west, belt, eastBoutFatigue, westBoutFatigue);
 
   const torqueAdvantage = belt.torqueEast - belt.torqueWest;
 
-  // Apply torque to CoG — only the losing side destabilises
+  // --- 1.75D Grip → Rotation ---
+  // Angular velocity from torque advantage, clamped per tick
+  const deltaAngle = Math.max(-ANGULAR_MAX_VELOCITY, Math.min(ANGULAR_MAX_VELOCITY, torqueAdvantage * ANGULAR_TORQUE_SCALE));
+
   if (torqueAdvantage > 0) {
-    st.west.cogOffset += torqueAdvantage * 0.003;
+    // East has torque advantage → west rotates (loses angle)
+    st.west.facingAngle -= deltaAngle;
+    belt.eastAngularAuthority = deltaAngle;
+    belt.westAngularAuthority = 0;
+  } else if (torqueAdvantage < 0) {
+    // West has torque advantage → east rotates
+    st.east.facingAngle += deltaAngle;
+    belt.westAngularAuthority = -deltaAngle;
+    belt.eastAngularAuthority = 0;
   } else {
-    st.east.cogOffset += Math.abs(torqueAdvantage) * 0.003;
+    belt.eastAngularAuthority = 0;
+    belt.westAngularAuthority = 0;
   }
 
-  // Torque translates to positional displacement — only the retreating fighter moves
-  const torqueDisplacementEast = Math.max(0, belt.torqueWest - belt.torqueEast) * 0.005;
-  const torqueDisplacementWest = Math.max(0, belt.torqueEast - belt.torqueWest) * 0.005;
-  push.eastLeadFoot += torqueDisplacementEast; // east retreats when west has more torque
-  push.westLeadFoot -= torqueDisplacementWest; // west retreats when east has more torque
+  // Apply angular restoring decay toward 0 (neutral facing)
+  st.east.facingAngle *= ANGULAR_RESTORING_DECAY;
+  st.west.facingAngle *= ANGULAR_RESTORING_DECAY;
 
-  // CR-03: Sync PhysicalBody
+  // Residual torque after rotation goes to linear displacement
+  const residualTorqueEast = Math.max(0, belt.torqueWest - belt.torqueEast) * TORQUE_DISPLACEMENT_MULTIPLIER;
+  const residualTorqueWest = Math.max(0, belt.torqueEast - belt.torqueWest) * TORQUE_DISPLACEMENT_MULTIPLIER;
+
+  // Apply residual torque to CoG — only the losing side destabilises
+  if (torqueAdvantage > 0) {
+    st.west.cogOffset += Math.abs(torqueAdvantage) * COG_OFFSET_PER_FORCE;
+  } else if (torqueAdvantage < 0) {
+    st.east.cogOffset += Math.abs(torqueAdvantage) * COG_OFFSET_PER_FORCE;
+  }
+
+  // Positional displacement from residual torque
+  push.eastLeadFoot += residualTorqueEast;
+  push.westLeadFoot -= residualTorqueWest;
+
+  // --- 1.75D Lateral integration ---
+  // Lateral drift from angular displacement (rotation pushes fighters off-center)
+  const eastAnglePush = st.east.facingAngle * 0.3;
+  const westAnglePush = st.west.facingAngle * 0.3;
+  push.eastLateralMomentum += eastAnglePush;
+  push.westLateralMomentum += westAnglePush;
+
+  push.eastLateral += push.eastLateralMomentum;
+  push.westLateral += push.westLateralMomentum;
+
+  push.eastLateral = Math.max(-LATERAL_MAX_OFFSET, Math.min(LATERAL_MAX_OFFSET, push.eastLateral));
+  push.westLateral = Math.max(-LATERAL_MAX_OFFSET, Math.min(LATERAL_MAX_OFFSET, push.westLateral));
+
+  push.eastLateral *= LATERAL_RESTORING_DECAY;
+  push.westLateral *= LATERAL_RESTORING_DECAY;
+  push.eastLateralMomentum *= LATERAL_RESTORING_DECAY;
+  push.westLateralMomentum *= LATERAL_RESTORING_DECAY;
+
+  // Sync PhysicalBody
   st.east.x = push.eastLeadFoot;
   st.west.x = push.westLeadFoot;
+  st.east.z = push.eastLateral;
+  st.west.z = push.westLateral;
   st.east.leadingFootX = push.eastLeadFoot;
   st.west.leadingFootX = push.westLeadFoot;
-
-  // Set velocityX for classifier (torque-driven movement)
   st.east.velocityX = torqueAdvantage < 0 ? Math.abs(torqueAdvantage) * 0.05 : 0;
   st.west.velocityX = torqueAdvantage > 0 ? torqueAdvantage * 0.05 : 0;
+  st.east.velocityZ = push.eastLateralMomentum;
+  st.west.velocityZ = push.westLateralMomentum;
 
-  // CI-03: Mid-fight kimarite attempt
+  // Narrative cadence
+  if (st.tick % NARRATIVE_TICK_CADENCE === 0) {
+    boutLog.push({
+      phase: "engagement",
+      clock: st.tick * 2,
+      data: {
+        tick: st.tick,
+        torqueAdvantage,
+        eastAngularAuthority: belt.eastAngularAuthority,
+        westAngularAuthority: belt.westAngularAuthority,
+        eastFacingAngle: st.east.facingAngle,
+        westFacingAngle: st.west.facingAngle,
+        eastLateral: push.eastLateral,
+        westLateral: push.westLateral,
+      },
+    });
+  }
+
+  // Mid-fight kimarite attempt
   const attempt = evaluateKimariteAttempt(east, west, push, belt, st, rng, division, meta);
   if (attempt) {
     const succeeded = rng.next() < attempt.successProbability;
@@ -293,14 +433,14 @@ function tickBeltBattle(
     return { winner: "east", kimarite: classifyBeltFallKimarite(belt, st, "west") };
   }
 
-  // CR-05A: Edge crisis — the LOSING side (less torque) goes into crisis
-  if (Math.abs(torqueAdvantage) > 30) {
+  // Edge crisis — the LOSING side (less torque) goes into crisis
+  if (Math.abs(torqueAdvantage) > TORQUE_EDGE_CRISIS_THRESHOLD) {
     const crisisSide: Side = torqueAdvantage > 0 ? "west" : "east";
-    st.phase = buildEdgeCrisis(crisisSide, push, belt, "belt_battle");
+    st.phase = buildEdgeCrisis(crisisSide, push, belt, "belt_battle", st);
   } else if (push.eastLeadFoot >= EDGE_THRESHOLD) {
-    st.phase = buildEdgeCrisis("east", push, belt, "belt_battle");
+    st.phase = buildEdgeCrisis("east", push, belt, "belt_battle", st);
   } else if (push.westLeadFoot <= -EDGE_THRESHOLD) {
-    st.phase = buildEdgeCrisis("west", push, belt, "belt_battle");
+    st.phase = buildEdgeCrisis("west", push, belt, "belt_battle", st);
   }
 
   return undefined;
@@ -310,15 +450,22 @@ function buildEdgeCrisis(
   crisisSide: Side,
   push: PushBattleState,
   belt: BeltBattleState | undefined,
-  prev: "push_battle" | "belt_battle"
+  prev: "push_battle" | "belt_battle",
+  st: EngineStateV2
 ): Extract<CombatPhase, { tag: "edge_crisis" }> {
   const opponentPressure = crisisSide === "east" ? push.westMomentum : push.eastMomentum;
 
-  // Fix Bug 3: Compute initial tawaraToePosition from how far foot is past edge threshold
+  // Compute initial tawaraToePosition from how far foot is past edge threshold
   const footPos = crisisSide === "east" ? push.eastLeadFoot : Math.abs(push.westLeadFoot);
   const overage = Math.max(0, footPos - EDGE_THRESHOLD);
-  // Scale overage (0–0.75m) to toePosition (0–1.0)
-  const initialToePos = Math.min(1.0, overage / 0.75);
+  const initialToePos = Math.min(1.0, overage / TOE_OVERAGE_SCALE);
+
+  // 1.75D: escapeAngle derived from defender's facingAngle (rotation = pivoting at edge)
+  const defender = crisisSide === "east" ? st.east : st.west;
+  const escapeAngle = Math.abs(defender.facingAngle);
+
+  // 1.75D: opponentPressureZ from attacker's lateral momentum
+  const opponentPressureZ = crisisSide === "east" ? push.westLateralMomentum : push.eastLateralMomentum;
 
   return {
     tag: "edge_crisis",
@@ -328,10 +475,10 @@ function buildEdgeCrisis(
       recoveryProbability: 0.3,
       tawaraToePosition: initialToePos,
       tawaraBounceForce: tawaraBounceResistance(initialToePos),
-      escapeAngle: 0,
+      escapeAngle,
       escapeForceAvailable: crisisSide === "east" ? push.eastForce : push.westForce,
       opponentPressureX: opponentPressure,
-      opponentPressureZ: 0,
+      opponentPressureZ,
       escaped: false,
     },
     prev,
@@ -342,8 +489,8 @@ function buildEdgeCrisis(
 
 function tickEdgeCrisis(
   rng: SeededRNG,
-  east: Rikishi,
-  west: Rikishi,
+  _east: Rikishi,
+  _west: Rikishi,
   st: EngineStateV2,
   boutLog: BoutLogEntry[]
 ): { winner?: Side; kimarite?: KimariteId; escaped?: true } | undefined {
@@ -353,20 +500,19 @@ function tickEdgeCrisis(
   const prev = st.phase.prev;
   crisis.ticksInCrisis++;
 
-  // Fix Bug 3: Update tawaraToePosition each tick using real opponent pressure
-  const pressureIncrease = crisis.opponentPressureX * 0.02;
-  const escapeResistance = crisis.escapeForceAvailable * 0.008;
+  // Update tawaraToePosition each tick using real opponent pressure (X + Z)
+  const pressureIncrease = crisis.opponentPressureX * CRISIS_PRESSURE_MULTIPLIER + Math.abs(crisis.opponentPressureZ) * 0.01;
+  const escapeResistance = crisis.escapeForceAvailable * ESCAPE_RESISTANCE_MULTIPLIER;
   crisis.tawaraToePosition = Math.max(
     0,
-    Math.min(2.0, crisis.tawaraToePosition + pressureIncrease - escapeResistance)
+    Math.min(TOE_POSITION_MAX, crisis.tawaraToePosition + pressureIncrease - escapeResistance)
   );
 
-  // Wire up tawaraBounceResistance from boutSpatial.ts
   const bounceForce = tawaraBounceResistance(crisis.tawaraToePosition);
   crisis.tawaraBounceForce = bounceForce;
 
-  // When fully past tawara (toe > 1.5), no more recovery possible
-  if (crisis.tawaraToePosition >= 1.5) {
+  // When fully past tawara, no more recovery possible
+  if (crisis.tawaraToePosition >= TOE_POSITION_FORCED_OUT) {
     const kimarite = classifyEdgeExitKimarite(crisis, st, rng);
     const winner: Side = crisis.side === "east" ? "west" : "east";
     boutLog.push({
@@ -375,24 +521,23 @@ function tickEdgeCrisis(
         side: crisis.side,
         escaped: false,
         tawaraToePosition: crisis.tawaraToePosition,
+        escapeAngle: crisis.escapeAngle,
+        opponentPressureZ: crisis.opponentPressureZ,
         forced: true,
       },
     });
     return { winner, kimarite };
   }
 
-  // Recovery: mental composure (dominant) + balance (secondary) + tawara bounce
-  const defenderRikishi = crisis.side === "east" ? east : west;
-  const bounceBonus = bounceForce / 100; // 0.15 at heel contact, 0.08 at toe
-  const tickDecay = Math.max(0.1, 1 - crisis.ticksInCrisis * 0.05);
-  const recoveryChance = edgeCrisisRecoveryChance(
-    defenderRikishi,
-    crisis.recoveryProbability,
-    bounceBonus,
-    tickDecay
-  );
+  // 1.75D: Physics-driven escape — angular authority projected along escapeAngle vs opponent pressure
+  const defender = crisis.side === "east" ? st.east : st.west;
+  const angularEscapePower = Math.abs(defender.facingAngle) * 50; // rough projection scaling
+  const totalPressure = crisis.opponentPressureX + Math.abs(crisis.opponentPressureZ);
+  const canEscape = angularEscapePower >= totalPressure;
 
-  const didEscape = rng.next() < recoveryChance;
+  // Seeded jitter as tie-breaker when close
+  const escapeMargin = angularEscapePower - totalPressure;
+  const didEscape = canEscape && (escapeMargin > 2 || rng.next() < 0.5 + escapeMargin * 0.05);
 
   // Log this crisis tick for narrative
   boutLog.push({
@@ -400,28 +545,38 @@ function tickEdgeCrisis(
     data: {
       side: crisis.side,
       escaped: didEscape,
-      recoveryProbability: recoveryChance,
       tawaraToePosition: crisis.tawaraToePosition,
+      escapeAngle: crisis.escapeAngle,
+      opponentPressureZ: crisis.opponentPressureZ,
+      tawaraBounceForce: bounceForce,
       ticksInCrisis: crisis.ticksInCrisis,
     },
   });
 
   if (didEscape) {
-    // CI-04: Tawara drama — fighter escapes. Restore previous phase with absorbed momentum.
+    // Tawara drama — fighter escapes. Restore previous phase with absorbed momentum.
     if (prev === "belt_battle" && st.phase.savedBelt && st.phase.savedPush) {
       const restoredPush: PushBattleState = {
         ...st.phase.savedPush,
-        eastMomentum: st.phase.savedPush.eastMomentum * 0.4,
-        westMomentum: st.phase.savedPush.westMomentum * 0.4,
+        eastMomentum: st.phase.savedPush.eastMomentum * EDGE_ESCAPE_MOMENTUM_RETENTION,
+        westMomentum: st.phase.savedPush.westMomentum * EDGE_ESCAPE_MOMENTUM_RETENTION,
       };
       st.phase = { tag: "belt_battle", state: st.phase.savedBelt, push: restoredPush };
     } else if (st.phase.savedPush) {
       const restoredPush: PushBattleState = {
         ...st.phase.savedPush,
-        eastMomentum: st.phase.savedPush.eastMomentum * 0.4,
-        westMomentum: st.phase.savedPush.westMomentum * 0.4,
+        eastMomentum: st.phase.savedPush.eastMomentum * EDGE_ESCAPE_MOMENTUM_RETENTION,
+        westMomentum: st.phase.savedPush.westMomentum * EDGE_ESCAPE_MOMENTUM_RETENTION,
       };
       st.phase = { tag: "push_battle", state: restoredPush };
+    }
+
+    // High-angle pivot at edge = utchari classification on escape
+    if (crisis.escapeAngle > UTCHARI_PIVOT_THRESHOLD) {
+      boutLog.push({
+        phase: "edge_crisis",
+        data: { event: "utchari_pivot", side: crisis.side, escapeAngle: crisis.escapeAngle },
+      });
     }
 
     return { escaped: true };
@@ -454,12 +609,12 @@ function runPhaseLoop(
   for (let i = 0; i < MAX_TICKS; i++) {
     st.tick++;
 
-    const pushResult = tickPushBattle(rng, east, west, st, division, meta);
+    const pushResult = tickPushBattle(rng, east, west, st, boutLog, division, meta);
     if (pushResult?.winner && pushResult?.kimarite) {
       return { winner: pushResult.winner, kimarite: pushResult.kimarite };
     }
 
-    const beltResult = tickBeltBattle(rng, east, west, st, division, meta);
+    const beltResult = tickBeltBattle(rng, east, west, st, boutLog, division, meta);
     if (beltResult?.winner && beltResult?.kimarite) {
       return { winner: beltResult.winner, kimarite: beltResult.kimarite };
     }
@@ -487,12 +642,12 @@ function runPhaseLoop(
   const loserInstability = winner === "east" ? westInstability : eastInstability;
 
   // isamiashi: false start - only if loser was very unstable (near falling)
-  if (loserInstability > 0.9 && rng.next() < 0.015) {
+  if (loserInstability > 0.9 && rng.next() < POST_RESOLUTION_REVERSAL_CHANCE) {
     return { winner: loser, kimarite: "isamiashi" };
   }
 
   // tsukite: missed thrust - only if bout was push-dominant (no belt)
-  if (!hadBelt && rng.next() < 0.015) {
+  if (!hadBelt && rng.next() < POST_RESOLUTION_REVERSAL_CHANCE) {
     return { winner: loser, kimarite: "tsukite" };
   }
 
@@ -574,7 +729,7 @@ function buildEngineSnapshotV2(st: EngineStateV2, winner: Side): EngineSnapshot 
   // Derive position from average foot position
   const avgFoot = (Math.abs(st.east.leadingFootX) + Math.abs(st.west.leadingFootX)) / 2;
   const position: "front" | "lateral" | "rear" =
-    avgFoot > 3.5 ? "rear" : avgFoot > 2.0 ? "lateral" : "front";
+    avgFoot > POSITION_REAR_THRESHOLD ? "rear" : avgFoot > POSITION_LATERAL_THRESHOLD ? "lateral" : "front";
 
   // Derive advantage from CoG stability differential
   const advantage: "none" | "east" | "west" =

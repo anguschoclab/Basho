@@ -2,6 +2,15 @@ import { SeededRNG } from "../rng";
 import type { Rikishi } from "../types/rikishi";
 import type { Side } from "../types/banzuke";
 import type { HandGrip, BeltBattleState } from "../types/combat-spatial";
+import {
+  LEVER_ARM_BASE,
+  LEVER_ARM_TACHIAI_WIN,
+  LEVER_ARM_TACHIAI_PARTIAL,
+  LEVER_ARM_DEEP,
+  LEVER_ARM_MAEMITSU,
+  DEFAULT_ARM_REACH,
+  ARM_REACH_DEEP_THRESHOLD,
+} from "../../constants/engine/physics";
 import { deriveGripClass } from "./boutSpatial";
 import { stat } from "./boutUtils";
 
@@ -18,33 +27,33 @@ export function initBeltBattle(
   const rngVariation = () => 0.95 + rng.next() * 0.1;
 
   const eastLeft: HandGrip = {
-    armReach: 0.08,
+    armReach: DEFAULT_ARM_REACH,
     isInside: false,
-    leverArm: 0.24,
+    leverArm: LEVER_ARM_BASE,
     gripStrength: rngVariation(),
     isBlocked: false,
   };
 
   const eastRight: HandGrip = {
-    armReach: 0.08,
+    armReach: DEFAULT_ARM_REACH,
     isInside: false,
-    leverArm: 0.24,
+    leverArm: LEVER_ARM_BASE,
     gripStrength: rngVariation(),
     isBlocked: false,
   };
 
   const westLeft: HandGrip = {
-    armReach: 0.08,
+    armReach: DEFAULT_ARM_REACH,
     isInside: false,
-    leverArm: 0.24,
+    leverArm: LEVER_ARM_BASE,
     gripStrength: rngVariation(),
     isBlocked: false,
   };
 
   const westRight: HandGrip = {
-    armReach: 0.08,
+    armReach: DEFAULT_ARM_REACH,
     isInside: false,
-    leverArm: 0.24,
+    leverArm: LEVER_ARM_BASE,
     gripStrength: rngVariation(),
     isBlocked: false,
   };
@@ -54,46 +63,46 @@ export function initBeltBattle(
   // reaches across to grip west's left side (inside arm for east = right hand).
   if (tachiaiWinner === "east") {
     if (preferredGripEast === "migi") {
-      eastRight.armReach = 0.12;
+      eastRight.armReach = ARM_REACH_DEEP_THRESHOLD;
       eastRight.isInside = true;
-      eastRight.leverArm = 0.29;
+      eastRight.leverArm = LEVER_ARM_TACHIAI_WIN;
     } else if (preferredGripEast === "hidari") {
-      eastLeft.armReach = 0.12;
+      eastLeft.armReach = ARM_REACH_DEEP_THRESHOLD;
       eastLeft.isInside = true;
-      eastLeft.leverArm = 0.29;
+      eastLeft.leverArm = LEVER_ARM_TACHIAI_WIN;
     } else {
       // No preference — tachiai momentum gives one random inside arm
       const useRight = rng.next() < 0.5;
       if (useRight) {
         eastRight.armReach = 0.1;
         eastRight.isInside = true;
-        eastRight.leverArm = 0.27;
+        eastRight.leverArm = LEVER_ARM_TACHIAI_PARTIAL;
       } else {
         eastLeft.armReach = 0.1;
         eastLeft.isInside = true;
-        eastLeft.leverArm = 0.27;
+        eastLeft.leverArm = LEVER_ARM_TACHIAI_PARTIAL;
       }
     }
   } else {
     if (preferredGripWest === "migi") {
-      westRight.armReach = 0.12;
+      westRight.armReach = ARM_REACH_DEEP_THRESHOLD;
       westRight.isInside = true;
-      westRight.leverArm = 0.29;
+      westRight.leverArm = LEVER_ARM_TACHIAI_WIN;
     } else if (preferredGripWest === "hidari") {
-      westLeft.armReach = 0.12;
+      westLeft.armReach = ARM_REACH_DEEP_THRESHOLD;
       westLeft.isInside = true;
-      westLeft.leverArm = 0.29;
+      westLeft.leverArm = LEVER_ARM_TACHIAI_WIN;
     } else {
       // No preference — tachiai momentum gives one random inside arm
       const useRight = rng.next() < 0.5;
       if (useRight) {
         westRight.armReach = 0.1;
         westRight.isInside = true;
-        westRight.leverArm = 0.27;
+        westRight.leverArm = LEVER_ARM_TACHIAI_PARTIAL;
       } else {
         westLeft.armReach = 0.1;
         westLeft.isInside = true;
-        westLeft.leverArm = 0.27;
+        westLeft.leverArm = LEVER_ARM_TACHIAI_PARTIAL;
       }
     }
   }
@@ -113,7 +122,7 @@ export function initBeltBattle(
     depth: typeof eastGripDepth
   ) => {
     if (depth === "deep") {
-      const lever = 0.31;
+      const lever = LEVER_ARM_DEEP;
       if (left) {
         left.leverArm = lever;
       }
@@ -121,7 +130,7 @@ export function initBeltBattle(
         right.leverArm = lever;
       }
     } else if (depth === "maemitsu") {
-      const lever = 0.34;
+      const lever = LEVER_ARM_MAEMITSU;
       if (left) {
         left.leverArm = lever;
       }
@@ -151,6 +160,8 @@ export function initBeltBattle(
     westDepth: westGripDepth,
     torqueEast,
     torqueWest,
+    eastAngularAuthority: 0,
+    westAngularAuthority: 0,
   };
 }
 
@@ -195,23 +206,23 @@ export function evolveGripGeometry(
     if (belt.eastDepth === "standard") {
       belt.eastDepth = "deep";
       // Update lever arms for deeper grip
-      if (belt.eastLeft) belt.eastLeft.leverArm = 0.31;
-      if (belt.eastRight) belt.eastRight.leverArm = 0.31;
+      if (belt.eastLeft) belt.eastLeft.leverArm = LEVER_ARM_DEEP;
+      if (belt.eastRight) belt.eastRight.leverArm = LEVER_ARM_DEEP;
     } else if (belt.eastDepth === "deep") {
       belt.eastDepth = "maemitsu";
       // Update lever arms for maemitsu grip
-      if (belt.eastLeft) belt.eastLeft.leverArm = 0.34;
-      if (belt.eastRight) belt.eastRight.leverArm = 0.34;
+      if (belt.eastLeft) belt.eastLeft.leverArm = LEVER_ARM_MAEMITSU;
+      if (belt.eastRight) belt.eastRight.leverArm = LEVER_ARM_MAEMITSU;
     }
   } else if (techniqueMargin < -15) {
     if (belt.westDepth === "standard") {
       belt.westDepth = "deep";
-      if (belt.westLeft) belt.westLeft.leverArm = 0.31;
-      if (belt.westRight) belt.westRight.leverArm = 0.31;
+      if (belt.westLeft) belt.westLeft.leverArm = LEVER_ARM_DEEP;
+      if (belt.westRight) belt.westRight.leverArm = LEVER_ARM_DEEP;
     } else if (belt.westDepth === "deep") {
       belt.westDepth = "maemitsu";
-      if (belt.westLeft) belt.westLeft.leverArm = 0.34;
-      if (belt.westRight) belt.westRight.leverArm = 0.34;
+      if (belt.westLeft) belt.westLeft.leverArm = LEVER_ARM_MAEMITSU;
+      if (belt.westRight) belt.westRight.leverArm = LEVER_ARM_MAEMITSU;
     }
   }
 

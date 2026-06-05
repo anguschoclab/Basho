@@ -426,6 +426,26 @@ const balance = (ctx: SpatialBoutContext, side: "east"|"west") => Math.max(0, 10
 const desperation = (ctx: SpatialBoutContext, side: "east"|"west") => balance(ctx, side) < 20;
 const offensiveOutput = (st: EngineStateV2) => 1; // Always 1 in selection engine unless modified
 
+// --- 1.75D Lateral & Angular Predicates ---
+
+/** Engagement is off-axis when lateral offset exceeds glancing threshold */
+const offAxis = (ctx: SpatialBoutContext) => Math.abs(ctx.lateralOffsetDiff) > 0.2;
+
+/** Fighter is rotating (has angular authority this tick) */
+const rotating = (ctx: SpatialBoutContext, side: "east" | "west") => {
+  return side === "east"
+    ? ctx.angularAdvantage > 0.005
+    : ctx.angularAdvantage < -0.005;
+};
+
+/** Fighter is at the edge with a pivot angle (utchari candidate) */
+const atEdgePivot = (ctx: SpatialBoutContext, side: "east" | "west") => {
+  return atEdge(ctx, side) && ctx.engagementAngle > 0.3;
+};
+
+/** Lateral threshold crossed (significant off-axis displacement) */
+const lateralThresholdCrossed = (ctx: SpatialBoutContext) => Math.abs(ctx.lateralOffsetDiff) > 0.4;
+
 const getDepth = (st: EngineStateV2, side: "east" | "west") => {
   if (st.phase.tag === "belt_battle") {
     return side === "east" ? st.phase.state.eastDepth : st.phase.state.westDepth;

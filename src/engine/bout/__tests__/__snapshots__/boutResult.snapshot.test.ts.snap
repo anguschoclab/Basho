@@ -1,39 +1,45 @@
-// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
 
-exports[`BoutResult snapshot > BoutResult shape snapshot 1`] = `
+exports[`BoutResult snapshot BoutResult shape snapshot 1`] = `
 {
   "boutId": "test-001",
-  "duration": 20,
-  "excitementScore": 6,
+  "duration": 24,
+  "excitementScore": 4,
   "isKinboshi": false,
   "kenshoEnvelopes": 0,
   "kimarite": "oshidashi",
   "kimariteName": "oshidashi",
-  "log": [],
+  "log": [
+    {
+      "clock": 10,
+      "data": {
+        "eastLateral": 0.51,
+        "engagementAngle": 0.51,
+        "forceDiff": -6.502907118354688,
+        "lateralOffsetDiff": 0.51,
+        "tick": 5,
+        "westLateral": 0,
+      },
+      "phase": "engagement",
+    },
+    {
+      "clock": 20,
+      "data": {
+        "eastLateral": 0.51,
+        "engagementAngle": 0.51,
+        "forceDiff": -5.084859558715607,
+        "lateralOffsetDiff": 0.51,
+        "tick": 10,
+        "westLateral": 0,
+      },
+      "phase": "engagement",
+    },
+  ],
   "loserRikishiId": "r1",
   "stance": "push-dominant",
   "tachiaiWinner": "west",
   "upset": false,
   "winner": "west",
   "winnerRikishiId": "r2",
-}
-`;
-
-exports[`BoutResult snapshot BoutResult shape snapshot 1`] = `
-{
-  "boutId": "test-001",
-  "duration": 240,
-  "excitementScore": 70,
-  "isKinboshi": false,
-  "kenshoEnvelopes": 0,
-  "kimarite": "oshidashi",
-  "kimariteName": "oshidashi",
-  "log": [],
-  "loserRikishiId": "r2",
-  "stance": "push-dominant",
-  "tachiaiWinner": "east",
-  "upset": false,
-  "winner": "east",
-  "winnerRikishiId": "r1",
 }
 `;
