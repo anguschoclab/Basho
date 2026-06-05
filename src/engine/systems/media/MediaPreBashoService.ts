@@ -174,21 +174,25 @@ export function buildMediaDigest(world: WorldState): {
     .sort((a, b) => (b.impact as number) - (a.impact as number))
     .slice(0, 5);
 
-  const hotRikishi = Object.entries(mediaState.mediaHeat)
-    .map(([id, heat]) => {
-      const r = getRikishi(world, id);
-      return { id, name: r?.shikona ?? r?.name ?? id, heat: heat as number };
-    })
-    .sort((a, b) => b.heat - a.heat)
-    .slice(0, 5);
+  // ⚡ Bolt Optimization: Use direct iteration instead of Object.entries().map().filter().sort()
+  const hotRikishiRaw = [];
+  for (const id in mediaState.mediaHeat) {
+    if (!Object.prototype.hasOwnProperty.call(mediaState.mediaHeat, id)) continue;
+    const heat = mediaState.mediaHeat[id] as number;
+    const r = getRikishi(world, id);
+    hotRikishiRaw.push({ id, name: r?.shikona ?? r?.name ?? id, heat });
+  }
+  const hotRikishi = hotRikishiRaw.sort((a, b) => b.heat - a.heat).slice(0, 5);
 
-  const hotHeya = Object.entries(mediaState.heyaPressure)
-    .map(([id, pressure]) => {
-      const h = getHeya(world, id);
-      return { id, name: h?.name ?? id, pressure: pressure as number };
-    })
-    .sort((a, b) => b.pressure - a.pressure)
-    .slice(0, 5);
+  // ⚡ Bolt Optimization: Use direct iteration instead of Object.entries().map().filter().sort()
+  const hotHeyaRaw = [];
+  for (const id in mediaState.heyaPressure) {
+    if (!Object.prototype.hasOwnProperty.call(mediaState.heyaPressure, id)) continue;
+    const pressure = mediaState.heyaPressure[id] as number;
+    const h = getHeya(world, id);
+    hotHeyaRaw.push({ id, name: h?.name ?? id, pressure });
+  }
+  const hotHeya = hotHeyaRaw.sort((a, b) => b.pressure - a.pressure).slice(0, 5);
 
   const weeklyGazette = topHeadlines.map((h) => h.title).filter(Boolean);
 
