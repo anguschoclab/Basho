@@ -45,3 +45,8 @@ Replaced `JSON.parse` with `destr` in `safeParse` to mitigate prototype pollutio
 **Vulnerability:** Electron IPC handlers (`fs:*`, `storage:*`, `app:getPath`) passed unvalidated arguments directly to native Node APIs (`fs.readFile`, `path.resolve`, `electron-store`).
 **Learning:** Because TypeScript types are stripped at runtime, a malicious renderer (e.g., via XSS) could pass unexpected types (like objects or arrays instead of strings) over IPC. When passed to strict APIs (like `app.getPath`), this throws synchronous, unhandled exceptions that crash the entire main process (Denial of Service).
 **Prevention:** Always implement explicit runtime type checking (e.g., `typeof arg === "string"`) for any arguments passed over IPC before invoking strict Node.js functions or electron APIs.
+
+## 2025-06-05 - Fix Unvalidated IPC Payload Denial of Service
+**Vulnerability:** Electron main process IPC handlers for operations like `dialog:showSaveDialog` and `notification:show` lacked runtime type validation. Because TypeScript types are stripped at runtime, passing unexpected types (like objects where strings are expected) would trigger unhandled exceptions in native modules, resulting in a main process crash (Denial of Service).
+**Learning:** In Electron, strict TypeScript signatures alone do not guarantee payload type safety at runtime. All IPC inputs must be explicitly checked using standard Javascript (e.g. `typeof === 'string'`) before being passed to underlying OS-level or strict Node APIs.
+**Prevention:** Always implement rigorous runtime type guards and bounds-checking inside the `ipcMain.handle` callback itself before executing sensitive native functionalities.

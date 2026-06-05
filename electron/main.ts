@@ -351,12 +351,20 @@ ipcMain.handle("window:close", () => {
 
 // IPC Handlers for file dialogs
 ipcMain.handle("dialog:showSaveDialog", async (event, options?: Electron.SaveDialogOptions) => {
+  if (options !== undefined && typeof options !== "object") {
+    console.error("Invalid options for showSaveDialog");
+    return { canceled: true, filePath: "" };
+  }
   if (!mainWindow) return { canceled: true, filePath: "" };
   const result = await dialog.showSaveDialog(mainWindow, options || {});
   return result;
 });
 
 ipcMain.handle("dialog:showOpenDialog", async (event, options?: Electron.OpenDialogOptions) => {
+  if (options !== undefined && typeof options !== "object") {
+    console.error("Invalid options for showOpenDialog");
+    return { canceled: true, filePaths: [] };
+  }
   if (!mainWindow) return { canceled: true, filePaths: [] };
   const result = await dialog.showOpenDialog(mainWindow, options || {});
   return result;
@@ -373,6 +381,10 @@ ipcMain.handle("app:getPlatform", () => {
 
 // IPC Handlers for native notifications
 ipcMain.handle("notification:show", async (event, options: { title: string; body: string }) => {
+  if (typeof options !== "object" || options === null || typeof options.title !== "string" || typeof options.body !== "string") {
+    console.error("Invalid options for notification:show");
+    return false;
+  }
   const { Notification } = await import("electron");
   if (Notification.isSupported()) {
     new Notification({
