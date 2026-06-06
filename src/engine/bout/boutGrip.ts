@@ -10,6 +10,7 @@ import {
   LEVER_ARM_MAEMITSU,
   DEFAULT_ARM_REACH,
   ARM_REACH_DEEP_THRESHOLD,
+  GRIP_JITTER_RANGE,
 } from "../../constants/engine/physics";
 import { deriveGripClass } from "./boutSpatial";
 import { stat } from "./boutUtils";
@@ -23,8 +24,9 @@ export function initBeltBattle(
   const preferredGripEast = east.combatProfile?.preferredGrip ?? "none";
   const preferredGripWest = west.combatProfile?.preferredGrip ?? "none";
 
-  // Small random variation in initial grip strength
-  const rngVariation = () => 0.95 + rng.next() * 0.1;
+  // Small random variation in initial grip strength, centered on 1.0
+  // across a band of width GRIP_JITTER_RANGE (i.e. [0.95, 1.05] for 0.1).
+  const rngVariation = () => 1 - GRIP_JITTER_RANGE / 2 + rng.next() * GRIP_JITTER_RANGE;
 
   const eastLeft: HandGrip = {
     armReach: DEFAULT_ARM_REACH,

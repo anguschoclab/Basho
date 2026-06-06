@@ -99,7 +99,8 @@ function resolveTachiaiV2(
   bout: BoutContext,
   east: Rikishi,
   west: Rikishi,
-  st: EngineStateV2
+  st: EngineStateV2,
+  boutLog: BoutLogEntry[]
 ): void {
   st.phase = { tag: "tachiai", impactVelocity: 8.0, contactAngle: 0 };
 
@@ -112,6 +113,15 @@ function resolveTachiaiV2(
     tachiaiPowerWithMatchupPenalty(west, east) + h2hConfidence(west, east.id) + jitter(rng, 8);
   const tachiaiWinner: Side = eastPower >= westPower ? "east" : "west";
   st.tachiaiWinner = tachiaiWinner;
+
+  // Narrative: the opening clash is always worth a line. Intensity scales with
+  // how decisive the initial collision was.
+  const tachiaiMargin = Math.abs(eastPower - westPower);
+  boutLog.push({
+    phase: "tachiai",
+    clock: 0,
+    data: { tachiaiWinner, margin: tachiaiMargin },
+  });
 
   // CR-02: Henka resolution — must check before phase loop
   const henkaSide: Side | null =
@@ -134,6 +144,13 @@ function resolveTachiaiV2(
     const defenseScore = stat(opponent, "balance") + jitter(rng, 8);
 
     if (henkaScore > defenseScore) {
+      // Spatial henka: the trickster sidesteps and the opponent's own charge
+      // carries them down. Log it so the narrative can call the trick.
+      boutLog.push({
+        phase: "tachiai",
+        clock: 0,
+        data: { event: "henka_success", attackerSide: henkaSide },
+      });
       st.phase = {
         tag: "resolved",
         winner: henkaSide,
@@ -268,7 +285,18 @@ function tickPushBattle(
       phase: "engagement",
       clock: st.tick * 2,
       data: {
+        // A glancing exchange (large lateral offset) reads as a speed/evasion
+        // beat rather than a straight oshi push, so route it to the speed family
+        // and credit the fighter who slipped off-axis (the defender).
         tick: st.tick,
+        family: isGlancing ? "speed" : "push",
+        attackerSide: isGlancing
+          ? jitteredForceDiff >= 0
+            ? "west"
+            : "east"
+          : jitteredForceDiff >= 0
+            ? "east"
+            : "west",
         forceDiff: jitteredForceDiff,
         lateralOffsetDiff,
         engagementAngle: Math.abs(lateralOffsetDiff),
@@ -405,6 +433,8 @@ function tickBeltBattle(
       clock: st.tick * 2,
       data: {
         tick: st.tick,
+        family: "belt",
+        attackerSide: torqueAdvantage >= 0 ? "east" : "west",
         torqueAdvantage,
         eastAngularAuthority: belt.eastAngularAuthority,
         westAngularAuthority: belt.westAngularAuthority,
@@ -807,12 +837,12 @@ export function resolveBoutPhysicsImpl(
   const rng = rngFromSeed(seed, "bout", "root");
 
   const st = initEngineStateV2(bout, east, west);
-  resolveTachiaiV2(rng, bout, east, west, st);
+  const boutLog: BoutLogEntry[] = [];
+  resolveTachiaiV2(rng, bout, east, west, st, boutLog);
 
   const effectiveMeta = meta || { tone: "classic", drift: {} };
   const division = east.division || west.division || "makushita";
 
-  const boutLog: BoutLogEntry[] = [];
   const { winner, kimarite } = runPhaseLoop(rng, east, west, st, boutLog, division, effectiveMeta);
 
   const result = buildBoutResultV2(bout, east, west, st, winner, kimarite, boutLog);

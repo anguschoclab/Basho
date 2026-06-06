@@ -243,6 +243,15 @@ export const BardEngine = {
   },
 
   /**
+   * Returns true if the archive has at least one option at the given path/intensity.
+   * Lets callers probe for a template (e.g. a specific kimarite) and fall back
+   * gracefully instead of triggering a "No options found" warning via resolve().
+   */
+  has(path: ResolutionPath, intensity = 2): boolean {
+    return getOptions(path, intensity).length > 0;
+  },
+
+  /**
    * Retrieves a raw registry entry (metadata object) from the archive.
    * Useful for the UI/Presenters to get 'label', 'labelJa', and 'description'.
    */

@@ -5,6 +5,13 @@
 import type { Rikishi } from "../types/rikishi";
 import type { Side } from "../types/banzuke";
 import { SeededRNG } from "../rng";
+import {
+  FORCE_POWER_MULTIPLIER,
+  FORCE_SPEED_MULTIPLIER,
+  FORCE_AGGRESSION_MULTIPLIER,
+  AGGRESSION_SPEED_MULTIPLIER,
+  AGGRESSION_CONTRIBUTION_MULTIPLIER,
+} from "../../constants/engine/physics";
 
 // ---------------------------------------------------------------------------
 // Shared interface (defined here to avoid circular imports)
@@ -50,10 +57,17 @@ export function computeTachiaiPower(
 ): number {
   if (options?.henkaVulnerabilityMode) {
     // High aggression = overcommits = easier to sidestep
-    return stat(r, "speed") * 1.5 + stat(r, "aggression") * 0.5;
+    return (
+      stat(r, "speed") * AGGRESSION_SPEED_MULTIPLIER +
+      stat(r, "aggression") * AGGRESSION_CONTRIBUTION_MULTIPLIER
+    );
   }
   // Tachiai power: power 50%, speed 30%, aggression 20%
-  return stat(r, "power") * 0.5 + stat(r, "speed") * 0.3 + stat(r, "aggression") * 0.2;
+  return (
+    stat(r, "power") * FORCE_POWER_MULTIPLIER +
+    stat(r, "speed") * FORCE_SPEED_MULTIPLIER +
+    stat(r, "aggression") * FORCE_AGGRESSION_MULTIPLIER
+  );
 }
 
 export function conditionMultiplier(condition: number): number {

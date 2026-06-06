@@ -1,4 +1,3 @@
-import { TickResolutionEvent } from "../types/combat";
 import { generateNarrative } from "../narrative";
 import { rngFromSeed } from "../rng";
 import type { Rikishi } from "../types/rikishi";
@@ -91,38 +90,61 @@ export function generateBoutNarrative(
       pbpLines.push({ text: entry.description, id: `${result.boutId}-desc-${idx}`, phase: entry.phase });
     }
 
-    if (
-      (entry.phase === "engagement" || entry.phase === "tachiai") &&
-      entry.data?.tickResolutionEvent
-    ) {
-      const event = entry.data.tickResolutionEvent as TickResolutionEvent;
-      // Using powerDifferential as a proxy for intensity if momentum is not explicit
-      const intensity = BardEngine.calculateIntensity(event.powerDifferential ?? 0.5);
+    // 1.75D engagement narrative: tickPushBattle/tickBeltBattle emit "engagement"
+    // entries every NARRATIVE_TICK_CADENCE ticks, tagged with the combat family
+    // (push|belt), the attacking side, and the force/torque differential. Map the
+    // differential magnitude to a narrative intensity and resolve the matching
+    // combat.phases.engagement.<family> template.
+    if (entry.phase === "engagement" && typeof entry.data?.family === "string") {
+      const family = entry.data.family as "push" | "belt" | "speed" | "trick";
+      const attacker = entry.data.attackerSide === "west" ? west : east;
+      const defender = entry.data.attackerSide === "west" ? east : west;
+      const differential =
+        family === "belt"
+          ? Math.abs((entry.data.torqueAdvantage as number) ?? 0)
+          : Math.abs((entry.data.forceDiff as number) ?? 0);
+      // Force/torque differentials run roughly 0–40 on the stat scale; map onto 1–3.
+      const intensity = BardEngine.calculateIntensity(differential, [0, 40]);
 
-      const path =
-        entry.phase === "tachiai"
-          ? "combat.phases.tachiai"
-          : `combat.phases.engagement.${event.action.family}`;
-
-      const res = BardEngine.resolve(rng, path, {
-        attacker: event.attacker.shikona,
-        defender: event.defender.shikona,
-        winner: event.attacker.shikona, // For tachiai win
+      const res = BardEngine.resolve(rng, `combat.engagement.${family}`, {
+        attacker: attacker.shikona,
+        defender: defender.shikona,
         intensity,
-        ...event.context,
       });
-
-      pbpLines.push({ text: res.text, id: `${result.boutId}-${idx}` });
+      if (res.text) {
+        pbpLines.push({ text: res.text, id: `${result.boutId}-eng-${idx}`, phase: "engagement" });
+      }
     }
 
-    if (entry.phase === "tachiai" && entry.data?.event === "henka_success") {
-      pbpLines.push({
-        text: BardEngine.resolve(rng, "combat.phases.tachiai.henka", {
-          attacker: east.shikona,
-          defender: west.shikona,
-        }).text,
-        id: `${result.boutId}-henka`,
-      });
+    if (entry.phase === "tachiai") {
+      if (entry.data?.event === "henka_success") {
+        // Henka is a sidestep trick — narrate it from the trick engagement family.
+        const attacker = entry.data.attackerSide === "west" ? west : east;
+        const defender = entry.data.attackerSide === "west" ? east : west;
+        const res = BardEngine.resolve(rng, "combat.engagement.trick", {
+          attacker: attacker.shikona,
+          defender: defender.shikona,
+          intensity: 3,
+        });
+        if (res.text) {
+          pbpLines.push({ text: res.text, id: `${result.boutId}-henka`, phase: "tachiai" });
+        }
+      } else {
+        // The opening clash. Intensity scales with how decisive it was.
+        const margin = (entry.data?.margin as number) ?? 0;
+        const winnerSide = entry.data?.tachiaiWinner === "west" ? west : east;
+        const loserSide = entry.data?.tachiaiWinner === "west" ? east : west;
+        const res = BardEngine.resolve(rng, "combat.phases.tachiai", {
+          east: east.shikona,
+          west: west.shikona,
+          attacker: winnerSide.shikona,
+          defender: loserSide.shikona,
+          intensity: BardEngine.calculateIntensity(margin, [0, 30]),
+        });
+        if (res.text) {
+          pbpLines.push({ text: res.text, id: `${result.boutId}-tachiai-${idx}`, phase: "tachiai" });
+        }
+      }
     }
 
     // Edge crisis handling for B+ spatial system
@@ -173,6 +195,27 @@ export function generateBoutNarrative(
       }
     }
   });
+
+  // 2b. Finishing technique — narrate the decisive kimarite (including the
+  // emergent 1.75D techniques such as utchari/tsukiotoshi/okuridashi) from its
+  // per-technique template, falling back to the generic finish line.
+  if (result.kimarite) {
+    const finishRng = rngFromSeed(seed, "pbp", "finish");
+    const winnerName = result.winner === "east" ? east.shikona : west.shikona;
+    const loserName = result.winner === "east" ? west.shikona : east.shikona;
+    const techPath = `combat.kimarite.${result.kimarite}`;
+    const path = BardEngine.has(techPath) ? techPath : "combat.phases.finish";
+    const res = BardEngine.resolve(finishRng, path, {
+      winner: winnerName,
+      loser: loserName,
+      kimarite: result.kimariteName ?? result.kimarite,
+      east: east.shikona,
+      west: west.shikona,
+    });
+    if (res.text) {
+      pbpLines.push({ text: res.text, id: `${result.boutId}-finish`, phase: "finish" });
+    }
+  }
 
   // 3. Special Awards
   if (result.awardFact === "kinboshi" || result.awardFact === "ginboshi") {

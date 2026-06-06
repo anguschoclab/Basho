@@ -20,11 +20,18 @@ export const HEIGHT_TO_METERS = 0.01;
 /** CoG height as fraction of height */
 export const COG_HEIGHT_FRACTION = 0.54;
 
-/** Base force power contribution multiplier */
+/** Tachiai/force: power stat contribution multiplier */
 export const FORCE_POWER_MULTIPLIER = 0.5;
 
-/** Base force weight contribution multiplier */
-export const FORCE_WEIGHT_MULTIPLIER = 0.3;
+/**
+ * Tachiai/force: speed stat contribution multiplier.
+ * (Renamed from FORCE_WEIGHT_MULTIPLIER — the live force formula uses the speed
+ * stat here, not weight; the old name was inherited from a deleted engine.)
+ */
+export const FORCE_SPEED_MULTIPLIER = 0.3;
+
+/** Tachiai/force: aggression stat contribution multiplier */
+export const FORCE_AGGRESSION_MULTIPLIER = 0.2;
 
 /** Fatigue penalty per fatigue point */
 export const FATIGUE_PENALTY_PER_POINT = 0.004;
