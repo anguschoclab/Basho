@@ -23,7 +23,7 @@ import { emptyDeltas } from "../pipelineRunner";
 import { clamp } from "../../utils";
 import {
   TRAINING_MULTIPLIERS,
-  RECOVERY_MULTIPLIERS,
+  FACILITY_RECOVERY_MULTIPLIERS,
   NUTRITION_MULTIPLIERS,
   MORALE_BOOST_MULTIPLIER,
   FINANCIAL_PENALTY_MULTIPLIER,
@@ -94,7 +94,7 @@ function calculateFacilityMultipliers(playerHeya: any): {
     MAX_STAT_VALUE
   );
   const facilityRecoveryMult =
-    RECOVERY_MULTIPLIERS.BASE + (recoveryLevel / MAX_STAT_VALUE) * RECOVERY_MULTIPLIERS.RANGE;
+    FACILITY_RECOVERY_MULTIPLIERS.BASE + (recoveryLevel / MAX_STAT_VALUE) * FACILITY_RECOVERY_MULTIPLIERS.RANGE;
 
   const nutritionLevel = clamp(
     playerHeya?.facilities?.nutrition ?? DEFAULT_FACILITY_LEVEL,

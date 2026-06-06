@@ -461,6 +461,7 @@ export class ImpactBuilder {
       | "playerKnowledge"
       | "globalCup"
       | "chronicle"
+      | "globalKimariteStats"
     >,
   >(field: K, value: WorldState[K]): ImpactBuilder {
     if (!this.impact.worldFields) {

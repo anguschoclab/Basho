@@ -14,8 +14,5 @@ export const DEFAULT_START_WEEK = 0;
 /** Number of months in a year */
 export const MONTHS_PER_YEAR = 12;
 
-/** Number of days in a week */
-export const DAYS_PER_WEEK = 7;
-
 /** Number of weeks in a month (approximate) */
 export const WEEKS_PER_MONTH = 4;

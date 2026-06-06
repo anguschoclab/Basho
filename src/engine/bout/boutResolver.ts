@@ -437,7 +437,7 @@ export function resolveBout(
           | "sponsorPool"
           | "myosekiMarket"
           | "_daysSinceLastWeeklyTick",
-        value
+        value as never
       );
     }
   }
@@ -477,7 +477,7 @@ export function applyRivalryToRikishi(
     technique: clamp((r.stats.technique || 50) * condMult, 0, 100),
     balance: clamp((r.stats.balance || 50) * condMult, 0, 100),
     stamina: clamp((r.stats.stamina || 50) * condMult, 0, 100),
-  };
+  } as Rikishi;
 }
 
 /**

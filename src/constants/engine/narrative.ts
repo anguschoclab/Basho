@@ -5,12 +5,6 @@
 /** Stat change threshold for training milestone */
 export const STAT_CHANGE_MILESTONE_THRESHOLD = 1.0;
 
-/** Basho total days */
-export const BASHO_TOTAL_DAYS = 15;
-
-/** Kinboshi duration threshold */
-export const KINBOSHI_DURATION_THRESHOLD = 15;
-
 /** Momentum shifts threshold for narrative bonus */
 export const MOMENTUM_SHIFTS_NARRATIVE_THRESHOLD = 3;
 

@@ -17,12 +17,6 @@ export const SPONSOR_JITTER_PERCENTAGE = 0.5;
 /** Staff hiring baseline cost (yen) */
 export const STAFF_HIRING_BASELINE = 500_000;
 
-/** Sponsor loyalty increase per action */
-export const SPONSOR_LOYALTY_INCREASE = 3;
-
-/** Sponsor contract duration (weeks) */
-export const SPONSOR_CONTRACT_DURATION_WEEKS = 52;
-
 /** Market price drift divisor */
 export const MARKET_PRICE_DRIFT_DIVISOR = 10000;
 

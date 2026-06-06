@@ -1,9 +1,8 @@
 import type { Rikishi } from "./types/rikishi";
 import type { SpatialBoutContext, EngineStateV2 } from "./types/combat-spatial";
-import type { Style, Stance, TacticalFamily } from "./types/combat";
+import type { TacticalFamily } from "./types/combat";
 import type { Kimarite, KimariteClass, JsaCategory, KimariteRequirements } from "./types/kimarite";
 export type { Kimarite, KimariteClass, JsaCategory, KimariteRequirements };
-import { stableTieBreak } from "./utils/sort";
 
 // --- Domain Models & Defaults ---
 
@@ -424,7 +423,7 @@ const forwardMomentum = (ctx: SpatialBoutContext, side: "east"|"west") => {
 const overCommitting = (ctx: SpatialBoutContext, side: "east"|"west") => forwardMomentum(ctx, side) > 0;
 const balance = (ctx: SpatialBoutContext, side: "east"|"west") => Math.max(0, 100 - Math.abs(side === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset) * 200);
 const desperation = (ctx: SpatialBoutContext, side: "east"|"west") => balance(ctx, side) < 20;
-const offensiveOutput = (st: EngineStateV2) => 1; // Always 1 in selection engine unless modified
+const offensiveOutput = (_st: EngineStateV2) => 1; // Always 1 in selection engine unless modified
 
 // --- 1.75D Lateral & Angular Predicates ---
 
@@ -436,11 +435,6 @@ const rotating = (ctx: SpatialBoutContext, side: "east" | "west") => {
   return side === "east"
     ? ctx.angularAdvantage > 0.005
     : ctx.angularAdvantage < -0.005;
-};
-
-/** Fighter is at the edge with a pivot angle (utchari candidate) */
-const atEdgePivot = (ctx: SpatialBoutContext, side: "east" | "west") => {
-  return atEdge(ctx, side) && ctx.engagementAngle > 0.3;
 };
 
 /** Lateral threshold crossed (significant off-axis displacement) */

@@ -11,7 +11,7 @@ export const TRAINING_MULTIPLIERS = {
 } as const;
 
 /** Facility-based recovery multipliers */
-export const RECOVERY_MULTIPLIERS = {
+export const FACILITY_RECOVERY_MULTIPLIERS = {
   /** Base recovery multiplier */
   BASE: 0.8,
   /** Maximum additional multiplier from facility level */
