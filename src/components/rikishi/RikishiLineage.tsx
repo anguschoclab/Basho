@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Users, User, ArrowRight } from "lucide-react";
+import { Users, User } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { LineageTree } from "@/components/game/LineageTree";

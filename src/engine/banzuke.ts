@@ -37,7 +37,6 @@ import type { WorldState } from "./types/world";
 import { getOzekiStatus, type OzekiKadobanMap } from "./banzuke/ozekiLogic";
 import { computeMovementUnits, bestTierAllowed } from "./banzuke/promotionLogic";
 import { buildFullSlotTemplate } from "./banzuke/banzukeTemplate";
-import { assertNever } from "./utils/types";
 
 /** Defines the structure for banzuke update result. */
 interface BanzukeUpdateResult {

@@ -1,16 +1,10 @@
 import type { WorldState } from "../types/world";
-import type { OyakataArchetype, OyakataMood } from "../types/oyakata";
 import type { Rikishi } from "../types/rikishi";
-import type { Heya } from "../types/heya";
 import type { Id } from "../types/common";
 import { getOyakataStyleProfile } from "../oyakataStylePreferences";
-import { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "../types/training";
-import { TrainingService } from "../systems/training/TrainingService";
 import { WorldCircuitService } from "../systems/global/WorldCircuitService";
 import { getOyakataForHeya, getRikishi, getHeya } from "../queries";
 import { createImpactBuilder } from "../core/ImpactBuilder";
-import type { StateImpact } from "../core/StateImpact";
-import type { PerceptionSnapshot } from "../perception";
 import { getManagerPersona } from "../systems/NPCPersonaService";
 
 import {
@@ -26,17 +20,13 @@ import {
 } from "../npcAIWorkers";
 
 import {
-  spawnCrisisAgent,
   spawnFinanceAgent,
   spawnGovernanceAgent,
-  spawnMediaAgent,
   spawnRecruitmentAgent,
   spawnRivalryAgent,
   spawnNarrativeAgent,
-  type CrisisAgentContext,
   type FinanceAgentContext,
   type GovernanceAgentContext,
-  type MediaAgentContext,
   type RecruitmentAgentContext,
   type RivalryAgentContext,
   type NarrativeAgentContext,

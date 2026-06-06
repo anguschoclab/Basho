@@ -12,7 +12,6 @@
 
 import type { BashoName, BashoInfo } from "./types/basho";
 import { simpleHashToIndex } from "./utils/math";
-import type { WorldState } from "./types/world";
 
 // === BASHO CALENDAR ===
 //

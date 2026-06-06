@@ -118,7 +118,7 @@ export function isKachiKoshi(wins: number, _losses: number, rank: Rank): boolean
 }
 
 /** Check if performance is make-koshi. */
-export function isMakeKoshi(wins: number, losses: number, rank: Rank, absences = 0): boolean {
+export function isMakeKoshi(_wins: number, losses: number, rank: Rank, absences = 0): boolean {
   const requiredLosses = kachiKoshiThreshold(rank);
   return losses + absences >= requiredLosses;
 }

@@ -67,7 +67,7 @@ export function computeMovementUnits(
 export function bestTierAllowed(
   entry: BanzukeEntry,
   perf: BashoPerformance | undefined,
-  ozekiState: OzekiKadobanState | undefined,
+  _ozekiState: OzekiKadobanState | undefined,
   demotedOzeki: Set<string>
 ): number {
   const rank = entry.position.rank;

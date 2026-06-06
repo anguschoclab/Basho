@@ -17,8 +17,7 @@ import {
   DialogFooter,
 } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { TooltipWrap } from "../ui/tooltip-wrap";
-import { AlertCircle, ShieldAlert } from "lucide-react";
+import { ShieldAlert } from "lucide-react";
 
 export function CrisisModal() {
   const digest = useGameStore((state) => state.digest);
@@ -95,7 +94,7 @@ export function CrisisModal() {
     sendCommand({
       type: "RESOLVE_CRISIS",
       crisisId: crisis.id,
-      choice: choiceId,
+      choice: choiceId as "standard" | "lenient" | "harsh" | "cover_up",
     });
     setIsOpen(false);
   };

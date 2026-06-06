@@ -3,7 +3,7 @@ import type { Heya } from "../types/heya";
 import type { Rikishi } from "../types/rikishi";
 import type { Oyakata } from "../types/oyakata";
 import type { HeyaTrainingState } from "../types/training";
-import type { MyosekiStock, MyosekiTransaction } from "../types/myoseki";
+import type { MyosekiStock } from "../types/myoseki";
 import type { Staff } from "../types/staff";
 import type { StateImpact } from "./StateImpact";
 import { logEngineEvent } from "../events";
@@ -52,7 +52,7 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
       const nextSponsors = new Map(result.sponsorPool.sponsors);
       for (const [id, update] of impact.entities.sponsorUpdates) {
         const existing = nextSponsors.get(id);
-        nextSponsors.set(id, existing ? { ...existing, ...update } : update);
+        nextSponsors.set(id, (existing ? { ...existing, ...update } : update) as import("../types/sponsors").Sponsor);
       }
       result = {
         ...result,
@@ -67,7 +67,7 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
       const nextKoenkais = new Map(result.sponsorPool.koenkais);
       for (const [id, update] of impact.entities.koenkaiUpdates) {
         const existing = nextKoenkais.get(id);
-        nextKoenkais.set(id, existing ? { ...existing, ...update } : update);
+        nextKoenkais.set(id, (existing ? { ...existing, ...update } : update) as import("../types/sponsors").Koenkai);
       }
       result = {
         ...result,
@@ -318,7 +318,7 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
       } else if (append.field === "pendingExhibitions") {
         result = {
           ...result,
-          pendingExhibitions: [...(result.pendingExhibitions || []), ...append.items],
+          pendingExhibitions: [...(result.pendingExhibitions || []), ...(append.items as Array<{ id: string; region: string; prestige: number }>)],
         };
       }
     }

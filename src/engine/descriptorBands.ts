@@ -207,7 +207,7 @@ export interface RikishiDescriptor {
 /**
  * To rikishi descriptor (Legacy support).
  */
-export function toRikishiDescriptor(rng: SeededRNG, r: any, prev?: any): RikishiDescriptor {
+export function toRikishiDescriptor(_rng: SeededRNG, r: any, prev?: any): RikishiDescriptor {
   return {
     powerBand: NarrativeService.getStatBand(r.stats.power, prev?.powerBand),
     speedBand: NarrativeService.getStatBand(r.stats.speed, prev?.speedBand),

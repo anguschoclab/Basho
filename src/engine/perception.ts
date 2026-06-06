@@ -21,7 +21,7 @@ import type {
 import { NarrativeService } from "./systems/narrative/NarrativeService";
 import type { ComplianceState } from "./types/economy";
 import type { RivalriesState } from "./rivalries";
-import { getHeyaRoster, getHeyaStyleBias, getHeya } from "./queries";
+import { getHeyaRoster, getHeya } from "./queries";
 
 // === Band types for perception ===
 

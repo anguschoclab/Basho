@@ -9,7 +9,6 @@ import type { WorldState } from "../types/world";
 import type { Heya } from "../types/heya";
 import type { PrestigeBand } from "../types/narrative";
 import { getHeyaRoster } from "../queries";
-import { EventBus } from "../events";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 

@@ -12,9 +12,8 @@
  */
 
 import type { WorldState, CyclePhase } from "./types/world";
-import { advanceOneDay, type DailyTickReport } from "./tick/tickDaily";
+import { advanceOneDay } from "./tick/tickDaily";
 import { queryEvents } from "./events";
-import { assertNever } from "./utils/types";
 import { getHeya, getRikishi } from "./queries";
 
 // ============================================================================
@@ -64,7 +63,7 @@ export interface HolidayResult {
   gateTriggered: HolidayGateTriggered | null;
   phaseOnExit: CyclePhase;
   digest: HolidayDigest;
-  reports: DailyTickReport[];
+  reports: WorldState[];
 }
 
 /** Defines the structure for holiday digest. */
@@ -405,7 +404,7 @@ function buildHolidayDigest(
 export function runHoliday(world: WorldState, config: HolidayConfig): HolidayResult {
   const startDay = world.dayIndexGlobal ?? 0;
   const maxDays = computeTargetDays(world, config.target);
-  const reports: DailyTickReport[] = [];
+  const reports: WorldState[] = [];
   let gateTriggered: HolidayGateTriggered | null = null;
   let daysAdvanced = 0;
 

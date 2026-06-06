@@ -3,7 +3,7 @@ import { SaveSlotService, type SaveSlotInfo } from "./persistence/SaveSlotServic
 import { runArchivalPruning } from "./archival";
 import { destr } from "destr";
 import { error } from "./utils/Logger";
-import type { WorldState, SaveGame, SaveVersion } from "./types/index";
+import type { WorldState, SaveGame } from "./types/index";
 import { CURRENT_SAVE_VERSION } from "./types/index";
 
 export type { SaveSlotInfo };
@@ -11,7 +11,7 @@ export type { SaveSlotInfo };
 /**
  * Save game.
  */
-export function saveGame(world: WorldState, slotName: string, timestampISO?: string): boolean {
+export function saveGame(world: WorldState, slotName: string, _timestampISO?: string): boolean {
   const storage = SaveSlotService.getStorage();
   if (!storage) return false;
 
@@ -25,7 +25,7 @@ export function saveGame(world: WorldState, slotName: string, timestampISO?: str
       ? (existingParsed as SaveGame)
       : undefined;
 
-    const save = createSaveGame(world, slotName, existing, timestampISO);
+    const save = createSaveGame(world, slotName, existing, _timestampISO);
     storage.setItem(key, JSON.stringify(save));
     return true;
   } catch (e) {

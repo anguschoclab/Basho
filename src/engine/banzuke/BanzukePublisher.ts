@@ -9,7 +9,6 @@ import { createImpactBuilder } from "../core/ImpactBuilder";
 import { resolveImpacts } from "../core/ImpactResolver";
 import type { StateImpact } from "../core/StateImpact";
 import { checkShikonaChange, recordShikonaChange } from "../history";
-import type { Rikishi } from "../types/rikishi";
 import { getRikishi } from "../queries";
 
 /**
@@ -223,7 +222,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
         consecutiveKyujo,
         pressureScore,
         councilWarnings,
-        stats: statsUpdate,
+        stats: statsUpdate as import("../types/rikishi").RikishiStats,
         careerHistory: updatedHistory.slice(-6) as any,
       });
     }

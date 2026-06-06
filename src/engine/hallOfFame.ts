@@ -226,7 +226,7 @@ export function getInducteesByCategory(world: WorldState, category: HoFCategory)
 /**
  * Main entry point called at end of each basho.
  */
-export function onBashoEnded(world: WorldState) {}
+export function onBashoEnded(_world: WorldState) {}
 
 /**
  * Is inducted.
