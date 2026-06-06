@@ -32,6 +32,7 @@ import {
   UTCHARI_PIVOT_THRESHOLD,
   NARRATIVE_TICK_CADENCE,
   MIN_FORCE_AFTER_FATIGUE,
+  MIN_ABSOLUTE_FORCE,
   FATIGUE_PENALTY_PER_POINT,
   MASS_ADVANTAGE_MULTIPLIER,
   DISPLACEMENT_PER_FORCE,
@@ -168,14 +169,21 @@ function resolveTachiaiV2(
   const beltThreshold = Math.min(0.7, (eastBeltBias + westBeltBias) / 200);
   const useBelt = rng.next() < beltThreshold;
 
+  // Force/momentum never drop below MIN_ABSOLUTE_FORCE, so a degenerate
+  // (near-zero stat) rikishi still has nonzero force — keeps escapeForceAvailable
+  // and the force-differential math well-defined. Inert for normal stats
+  // (eastPower/westPower are an order of magnitude above the floor).
+  const eastForce = Math.max(MIN_ABSOLUTE_FORCE, eastPower);
+  const westForce = Math.max(MIN_ABSOLUTE_FORCE, westPower);
+
   const initialPush: PushBattleState = {
     contestLine: 0,
-    eastForce: eastPower,
-    westForce: westPower,
+    eastForce,
+    westForce,
     eastLeadFoot: st.east.x,
     westLeadFoot: st.west.x,
-    eastMomentum: eastPower,
-    westMomentum: westPower,
+    eastMomentum: eastForce,
+    westMomentum: westForce,
     eastLateral: 0,
     westLateral: 0,
     eastLateralMomentum: 0,
