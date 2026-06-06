@@ -23,6 +23,7 @@ import {
   LATERAL_MAX_OFFSET,
   LATERAL_RESTORING_DECAY,
   LATERAL_IMPULSE_SPEED_SCALE,
+  LATERAL_ANGULAR_DRIFT_SCALE,
   OFF_AXIS_FORCE_FALLOFF,
   ENGAGEMENT_ANGLE_GLANCING_THRESHOLD,
   ANGULAR_TORQUE_SCALE,
@@ -232,7 +233,11 @@ function tickPushBattle(
   push.contestLine += jitteredForceDiff * CONTEST_LINE_JITTER_MULTIPLIER;
 
   // --- 1.75D Lateral integration ---
-  // Defender gets lateral impulse scaled by speed when pushed off-center
+  // The defender can slip off-axis only when the attacker OVER-COMMITS (drives
+  // with a large force differential). The slip is scaled by the defender's speed,
+  // normalized to the 0–1 stat scale so it lives on the metre-scale lateral axis.
+  // A balanced push (small force diff) produces no slip — fighters stay on the
+  // contest line and the exchange reads as straight oshi-zumo.
   const lateralOffsetDiff = push.eastLateral - push.westLateral;
   const isGlancing = Math.abs(lateralOffsetDiff) > ENGAGEMENT_ANGLE_GLANCING_THRESHOLD;
   const forceFalloff = isGlancing ? OFF_AXIS_FORCE_FALLOFF : 1.0;
@@ -243,16 +248,17 @@ function tickPushBattle(
     st.west.cogOffset += Math.abs(jitteredForceDiff) * COG_OFFSET_PER_FORCE;
     st.east.velocityX = jitteredForceDiff * 0.1;
     st.west.velocityX = 0;
-    // Lateral impulse for defender (west)
-    push.westLateralMomentum += stat(west, "speed") * LATERAL_IMPULSE_SPEED_SCALE * 0.5;
+    // Defender (west) drifts off the contest line, scaled by speed. Small per tick:
+    // only a genuinely fast fighter accumulates enough over a sustained bout to
+    // turn the exchange glancing; slow fighters stay square.
+    push.westLateralMomentum += (stat(west, "speed") / 100) * LATERAL_IMPULSE_SPEED_SCALE;
   } else if (jitteredForceDiff < 0) {
     // West dominant — east retreats toward east's tawara
     push.eastLeadFoot += displacement * forceFalloff;
     st.east.cogOffset += Math.abs(jitteredForceDiff) * COG_OFFSET_PER_FORCE;
     st.west.velocityX = Math.abs(jitteredForceDiff) * 0.1;
     st.east.velocityX = 0;
-    // Lateral impulse for defender (east)
-    push.eastLateralMomentum += stat(east, "speed") * LATERAL_IMPULSE_SPEED_SCALE * 0.5;
+    push.eastLateralMomentum += (stat(east, "speed") / 100) * LATERAL_IMPULSE_SPEED_SCALE;
   }
 
   // Integrate lateral position
@@ -398,8 +404,8 @@ function tickBeltBattle(
 
   // --- 1.75D Lateral integration ---
   // Lateral drift from angular displacement (rotation pushes fighters off-center)
-  const eastAnglePush = st.east.facingAngle * 0.3;
-  const westAnglePush = st.west.facingAngle * 0.3;
+  const eastAnglePush = st.east.facingAngle * LATERAL_ANGULAR_DRIFT_SCALE;
+  const westAnglePush = st.west.facingAngle * LATERAL_ANGULAR_DRIFT_SCALE;
   push.eastLateralMomentum += eastAnglePush;
   push.westLateralMomentum += westAnglePush;
 

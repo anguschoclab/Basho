@@ -137,6 +137,7 @@ export function generateBoutNarrative(
         const res = BardEngine.resolve(rng, "combat.phases.tachiai", {
           east: east.shikona,
           west: west.shikona,
+          winner: winnerSide.shikona,
           attacker: winnerSide.shikona,
           defender: loserSide.shikona,
           intensity: BardEngine.calculateIntensity(margin, [0, 30]),

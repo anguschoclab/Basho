@@ -1,6 +1,6 @@
-// Bun Snapshot v1, https://bun.sh/docs/test/snapshots
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`BoutResult snapshot BoutResult shape snapshot 1`] = `
+exports[`BoutResult snapshot > BoutResult shape snapshot 1`] = `
 {
   "boutId": "test-001",
   "duration": 24,
@@ -11,10 +11,20 @@ exports[`BoutResult snapshot BoutResult shape snapshot 1`] = `
   "kimariteName": "oshidashi",
   "log": [
     {
+      "clock": 0,
+      "data": {
+        "margin": 5.091436603477604,
+        "tachiaiWinner": "west",
+      },
+      "phase": "tachiai",
+    },
+    {
       "clock": 10,
       "data": {
+        "attackerSide": "east",
         "eastLateral": 0.51,
         "engagementAngle": 0.51,
+        "family": "speed",
         "forceDiff": -6.502907118354688,
         "lateralOffsetDiff": 0.51,
         "tick": 5,
@@ -25,8 +35,10 @@ exports[`BoutResult snapshot BoutResult shape snapshot 1`] = `
     {
       "clock": 20,
       "data": {
+        "attackerSide": "east",
         "eastLateral": 0.51,
         "engagementAngle": 0.51,
+        "family": "speed",
         "forceDiff": -5.084859558715607,
         "lateralOffsetDiff": 0.51,
         "tick": 10,

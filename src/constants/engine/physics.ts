@@ -264,11 +264,25 @@ export const LEVER_ARM_MAEMITSU = 0.34;
 /** Clamp for z displacement (m) */
 export const LATERAL_MAX_OFFSET = 0.6;
 
-/** Per-tick z restoration toward 0 (dimensionless/tick) */
-export const LATERAL_RESTORING_DECAY = 0.85;
+/**
+ * Per-tick z restoration toward 0 (dimensionless/tick).
+ * The lateral integrator is two-stage (velocity then position), so steady-state
+ * gain ≈ (d/(1-d))² — keep this well below 1 so a lateral nudge stays bounded and
+ * self-centers in a few ticks instead of pegging the clamp every tick.
+ */
+export const LATERAL_RESTORING_DECAY = 0.6;
 
-/** Speed → lateral impulse (m/s per stat point) */
-export const LATERAL_IMPULSE_SPEED_SCALE = 0.15;
+/**
+ * Lateral drift per tick for the retreating fighter = (defenderSpeed / 100) * this.
+ * Normalized to the 0–1 stat scale so it lives on the same metre scale as
+ * LATERAL_MAX_OFFSET. Sized (with LATERAL_RESTORING_DECAY) so only a fast fighter
+ * accumulates past ENGAGEMENT_ANGLE_GLANCING_THRESHOLD over a sustained bout —
+ * average/slow fighters stay square and the exchange reads as straight oshi.
+ */
+export const LATERAL_IMPULSE_SPEED_SCALE = 0.18;
+
+/** Belt rotation → lateral drift: facingAngle * this feeds lateral momentum. */
+export const LATERAL_ANGULAR_DRIFT_SCALE = 0.12;
 
 /** x-force multiplier when engagement is glancing (dimensionless) */
 export const OFF_AXIS_FORCE_FALLOFF = 0.7;
