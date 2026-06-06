@@ -1,5 +1,6 @@
 // InjuryRecoveryPage.tsx — Dedicated health & welfare management screen
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useEffect } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { STABLE_TABS } from "@/constants/ui/navigation";
@@ -16,7 +17,12 @@ import { getHeyaRoster } from "@/engine/queries";
 
 /** injury recovery page. */
 export default function InjuryRecoveryPage() {
+  const navigate = useNavigate();
   const { state, updateWorld } = useGame();
+
+  useEffect(() => {
+    if (!state.world) navigate({ to: "/main-menu", replace: true });
+  }, [state.world, navigate]);
   const digest = useMemo(
     () => (state.world ? projectMedicalUIDigest(state.world) : null),
     [state.world]
@@ -72,14 +78,7 @@ export default function InjuryRecoveryPage() {
   );
 
   if (!digest) {
-    return (
-      <AppLayout pageTitle="Performance Center" subNavTabs={STABLE_TABS} activeSubTab="medical">
-        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-muted-foreground">
-          <div className="text-4xl animate-pulse font-display">⋯</div>
-          <p className="text-sm font-display italic uppercase tracking-widest">Loading…</p>
-        </div>
-      </AppLayout>
-    );
+    return null;
   }
 
   return (
