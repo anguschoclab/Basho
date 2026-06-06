@@ -273,13 +273,19 @@ export const LATERAL_MAX_OFFSET = 0.6;
 export const LATERAL_RESTORING_DECAY = 0.6;
 
 /**
- * Lateral drift per tick for the retreating fighter = (defenderSpeed / 100) * this.
- * Normalized to the 0–1 stat scale so it lives on the same metre scale as
- * LATERAL_MAX_OFFSET. Sized (with LATERAL_RESTORING_DECAY) so only a fast fighter
- * accumulates past ENGAGEMENT_ANGLE_GLANCING_THRESHOLD over a sustained bout —
- * average/slow fighters stay square and the exchange reads as straight oshi.
+ * Per-tick probability the retreating fighter attempts a lateral slip =
+ * (defenderSpeed / 100) * this. Discrete (stochastic, seeded) rather than a
+ * steady drift so even a sustained one-sided fast duel flickers between square
+ * pushing and glancing instead of saturating to permanent off-axis.
  */
-export const LATERAL_IMPULSE_SPEED_SCALE = 0.18;
+export const LATERAL_SLIP_CHANCE = 0.35;
+
+/**
+ * Lateral momentum added on a successful slip (m). Sized (with
+ * LATERAL_RESTORING_DECAY) so one slip briefly pushes past
+ * ENGAGEMENT_ANGLE_GLANCING_THRESHOLD then decays over a couple of ticks.
+ */
+export const LATERAL_SLIP_IMPULSE = 0.5;
 
 /** Belt rotation → lateral drift: facingAngle * this feeds lateral momentum. */
 export const LATERAL_ANGULAR_DRIFT_SCALE = 0.12;

@@ -497,7 +497,11 @@ export function applyRivalryToRikishi(
  */
 export function simulateBout(east: Rikishi, west: Rikishi, seed: string): { result: BoutResult; engineSnapshot?: EngineSnapshot } {
   const fakeBasho: BashoState = {
-    id: "sim",
+    // Fold the caller's seed into the basho id so it actually reaches the physics
+    // RNG (resolveBoutPhysics seeds from basho.id + day + rikishi ids). Without
+    // this the `seed` arg only set bout.id and every call with the same two
+    // rikishi produced an identical bout.
+    id: `sim-${seed}`,
     year: 2025,
     day: 1,
     bashoName: "hatsu",

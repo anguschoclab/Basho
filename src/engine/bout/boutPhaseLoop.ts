@@ -22,7 +22,8 @@ import {
   POST_RESOLUTION_REVERSAL_CHANCE,
   LATERAL_MAX_OFFSET,
   LATERAL_RESTORING_DECAY,
-  LATERAL_IMPULSE_SPEED_SCALE,
+  LATERAL_SLIP_CHANCE,
+  LATERAL_SLIP_IMPULSE,
   LATERAL_ANGULAR_DRIFT_SCALE,
   OFF_AXIS_FORCE_FALLOFF,
   ENGAGEMENT_ANGLE_GLANCING_THRESHOLD,
@@ -256,17 +257,21 @@ function tickPushBattle(
     st.west.cogOffset += Math.abs(jitteredForceDiff) * COG_OFFSET_PER_FORCE;
     st.east.velocityX = jitteredForceDiff * 0.1;
     st.west.velocityX = 0;
-    // Defender (west) drifts off the contest line, scaled by speed. Small per tick:
-    // only a genuinely fast fighter accumulates enough over a sustained bout to
-    // turn the exchange glancing; slow fighters stay square.
-    push.westLateralMomentum += (stat(west, "speed") / 100) * LATERAL_IMPULSE_SPEED_SCALE;
+    // Defender (west) may attempt a discrete lateral slip — likelier the faster
+    // it is. Stochastic (seeded) so even a sustained duel flickers between square
+    // pushing and glancing rather than saturating off-axis.
+    if (rng.next() < (stat(west, "speed") / 100) * LATERAL_SLIP_CHANCE) {
+      push.westLateralMomentum += LATERAL_SLIP_IMPULSE;
+    }
   } else if (jitteredForceDiff < 0) {
     // West dominant — east retreats toward east's tawara
     push.eastLeadFoot += displacement * forceFalloff;
     st.east.cogOffset += Math.abs(jitteredForceDiff) * COG_OFFSET_PER_FORCE;
     st.west.velocityX = Math.abs(jitteredForceDiff) * 0.1;
     st.east.velocityX = 0;
-    push.eastLateralMomentum += (stat(east, "speed") / 100) * LATERAL_IMPULSE_SPEED_SCALE;
+    if (rng.next() < (stat(east, "speed") / 100) * LATERAL_SLIP_CHANCE) {
+      push.eastLateralMomentum += LATERAL_SLIP_IMPULSE;
+    }
   }
 
   // Integrate lateral position

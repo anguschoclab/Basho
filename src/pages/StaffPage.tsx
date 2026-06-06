@@ -1,4 +1,5 @@
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { useGameStore } from "@/store/gameStore";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
@@ -72,12 +73,18 @@ const BAND_COLORS: Record<string, string> = {
 };
 
 export default function StaffPage() {
+  const navigate = useNavigate();
   const { state } = useGame();
   const sendCommand = useGameStore((s) => s.sendCommand);
   const [isRecruitOpen, setIsRecruitOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<StaffRole>("assistant_oyakata");
 
   const world = state.world;
+
+  useEffect(() => {
+    if (!world) navigate({ to: "/main-menu", replace: true });
+  }, [world, navigate]);
+
   const heya = world?.heyas.get(state.playerHeyaId || "");
 
   const staffList = useMemo(() => {
