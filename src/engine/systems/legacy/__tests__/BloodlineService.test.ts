@@ -40,13 +40,15 @@ describe("BloodlineService.applyHeritageBonus", () => {
       technique: 60,
       stats: {
         technique: 60,
-        strength: 50,
+        power: 50,
         speed: 50,
         stamina: 50,
         mental: 50,
         adaptability: 50,
         balance: 50,
         weight: 145,
+        aggression: 50,
+        experience: 50,
       },
     });
     r.lineage = { bloodlineTraitId: "bl_legend1" };
@@ -56,7 +58,7 @@ describe("BloodlineService.applyHeritageBonus", () => {
     const updates = impact.entities?.rikishiUpdates;
     if (updates instanceof Map) {
       const upd = updates.get(r.id);
-      expect(upd?.technique).toBeGreaterThan(60);
+      expect(upd?.stats?.technique).toBeGreaterThan(60);
     }
   });
 
@@ -65,13 +67,15 @@ describe("BloodlineService.applyHeritageBonus", () => {
       technique: 99,
       stats: {
         technique: 99,
-        strength: 50,
+        power: 50,
         speed: 50,
         stamina: 50,
         mental: 50,
         adaptability: 50,
         balance: 50,
         weight: 145,
+        aggression: 50,
+        experience: 50,
       },
     });
     r.lineage = { bloodlineTraitId: "bl_legend1" };
@@ -82,7 +86,7 @@ describe("BloodlineService.applyHeritageBonus", () => {
     if (updates instanceof Map) {
       const upd = updates.get(r.id);
       // technique is already maxed — no update expected for this stat
-      expect(upd?.technique ?? 99).toBeLessThanOrEqual(99);
+      expect(upd?.stats?.technique ?? 99).toBeLessThanOrEqual(99);
     }
   });
 
@@ -91,13 +95,15 @@ describe("BloodlineService.applyHeritageBonus", () => {
       technique: 60,
       stats: {
         technique: 60,
-        strength: 50,
+        power: 50,
         speed: 50,
         stamina: 50,
         mental: 50,
         adaptability: 50,
         balance: 50,
         weight: 145,
+        aggression: 50,
+        experience: 50,
       },
     });
     r.lineage = {};

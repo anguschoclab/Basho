@@ -13,35 +13,35 @@ describe("PerceptionPresenter", () => {
       const rikishi = {
         injured: true,
         injuryWeeksRemaining: 0,
-        stamina: 100,
+        stats: { stamina: 100 },
         fatigue: 0,
       } as Rikishi;
       expect(getHealthBadge(rikishi)).toBe("Fresh");
     });
 
     it("returns 'Fresh' if health >= 80", () => {
-      const rikishi = { stamina: 80, fatigue: 0 } as Rikishi;
+      const rikishi = { stats: { stamina: 80 }, fatigue: 0 } as Rikishi;
       expect(getHealthBadge(rikishi)).toBe("Fresh");
     });
 
     it("returns 'Worn' if health >= 50 and < 80", () => {
-      const rikishi = { stamina: 100, fatigue: 30 } as Rikishi;
+      const rikishi = { stats: { stamina: 100 }, fatigue: 30 } as Rikishi;
       expect(getHealthBadge(rikishi)).toBe("Worn");
 
-      const edge = { stamina: 50, fatigue: 0 } as Rikishi;
+      const edge = { stats: { stamina: 50 }, fatigue: 0 } as Rikishi;
       expect(getHealthBadge(edge)).toBe("Worn");
     });
 
     it("returns 'Struggling' if health >= 20 and < 50", () => {
-      const rikishi = { stamina: 100, fatigue: 60 } as Rikishi;
+      const rikishi = { stats: { stamina: 100 }, fatigue: 60 } as Rikishi;
       expect(getHealthBadge(rikishi)).toBe("Struggling");
 
-      const edge = { stamina: 20, fatigue: 0 } as Rikishi;
+      const edge = { stats: { stamina: 20 }, fatigue: 0 } as Rikishi;
       expect(getHealthBadge(edge)).toBe("Struggling");
     });
 
     it("returns 'Critical' if health < 20", () => {
-      const rikishi = { stamina: 100, fatigue: 90 } as Rikishi;
+      const rikishi = { stats: { stamina: 100 }, fatigue: 90 } as Rikishi;
       expect(getHealthBadge(rikishi)).toBe("Critical");
     });
 

@@ -13,7 +13,7 @@ describe("Player Agency Integration", () => {
   const rikishiList = EntityCollection.getActiveRikishi(world);
 
   // Use a rikishi with high technique for the Henka test to ensure it's effective
-  const east = { ...rikishiList[0], technique: 90 };
+  const east = { ...rikishiList[0], stats: { ...rikishiList[0].stats, technique: 90 } };
   const west = rikishiList[1];
 
   // Ensure the world has the updated rikishi so resolver finds it if it does lookups
@@ -100,7 +100,7 @@ describe("Player Agency Integration", () => {
       const eastHigh = worldHighAfter.rikishi.get(east.id)!;
 
       // Assert that high intensity resulted in more power growth (or at least different fatigue)
-      expect(eastHigh.power).toBeGreaterThanOrEqual(eastLow.power); // growth might be same depending on RNG/ceiling
+      expect(eastHigh.stats.power).toBeGreaterThanOrEqual(eastLow.stats.power); // growth might be same depending on RNG/ceiling
       expect(eastHigh.fatigue).toBeGreaterThan(eastLow.fatigue);
     });
   });

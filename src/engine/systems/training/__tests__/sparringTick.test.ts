@@ -63,8 +63,8 @@ describe("applyWeeklySparring", () => {
     const world2 = resolveImpacts(world1, [sparringImpact]);
 
     const updatedB = world2.rikishi.get("r2");
-    expect(updatedB?.power).toBeGreaterThan(40);
-    expect(updatedB?.speed).toBeGreaterThan(35);
+    expect(updatedB?.stats?.power).toBeGreaterThan(40);
+    expect(updatedB?.stats?.speed).toBeGreaterThan(35);
   });
 
   it("increments weeksActive for sparring pairs", () => {
@@ -136,7 +136,7 @@ describe("applyWeeklySparring", () => {
     const world2 = resolveImpacts(world1, [sparringImpact]);
 
     const updatedB = world2.rikishi.get("r2");
-    expect(updatedB?.power).toBe(40); // No change
+    expect(updatedB?.stats?.power).toBe(40); // No change
   });
 
   it("skips retired rikishi", () => {
@@ -172,7 +172,7 @@ describe("applyWeeklySparring", () => {
     const world2 = resolveImpacts(world1, [sparringImpact]);
 
     const updatedB = world2.rikishi.get("r2");
-    expect(updatedB?.power).toBe(40); // No change
+    expect(updatedB?.stats?.power).toBe(40); // No change
   });
 
   it("returns empty impact when no sparring pairs exist", () => {
@@ -242,8 +242,8 @@ describe("applyWeeklySparring", () => {
 
     const updatedB = world3.rikishi.get("r2");
     const updatedD = world3.rikishi.get("r4");
-    expect(updatedB?.power).toBeGreaterThan(40);
-    expect(updatedD?.power).toBeGreaterThan(35);
+    expect(updatedB?.stats?.power).toBeGreaterThan(40);
+    expect(updatedD?.stats?.power).toBeGreaterThan(35);
   });
 });
 
@@ -282,7 +282,7 @@ describe("phase01_week_training integration", () => {
 
     // Sparring should have applied bonuses
     const updatedB = world2.rikishi.get("r2");
-    expect(updatedB?.power).toBeGreaterThan(40);
+    expect(updatedB?.stats?.power).toBeGreaterThan(40);
 
     // Sparring state should be updated
     const pair = world2.sparringPairs?.get("h1")?.pairs["r1|r2"];

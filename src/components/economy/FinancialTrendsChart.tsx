@@ -56,7 +56,6 @@ function buildWeeklyBuckets(
   // Initialize 12 buckets ending at currentWeek (inclusive).
   for (let i = 11; i >= 0; i--) {
     const absWeek = currentAbsWeek - i;
-    const _yr = Math.floor(absWeek / WEEKS_PER_YEAR);
     const wk = absWeek % WEEKS_PER_YEAR;
     buckets[absWeek] = {
       label: `W${wk === 0 ? WEEKS_PER_YEAR : wk}`,

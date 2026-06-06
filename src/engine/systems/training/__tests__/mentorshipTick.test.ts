@@ -44,8 +44,8 @@ describe("Mentorship Tick Integration", () => {
     const appUpdate = impact.entities?.rikishiUpdates?.get(apprentice.id);
 
     expect(appUpdate).toBeDefined();
-    expect(appUpdate?.technique).toBeGreaterThan(40);
-    expect(appUpdate?.technique).toBeLessThanOrEqual(43); // max 3 points
+    expect(appUpdate?.stats?.technique).toBeGreaterThan(40);
+    expect(appUpdate?.stats?.technique).toBeLessThanOrEqual(43); // max 3 points
   });
 
   /**
@@ -79,7 +79,7 @@ describe("Mentorship Tick Integration", () => {
     const appUpdate = impact.entities?.rikishiUpdates?.get(apprentice.id);
 
     expect(appUpdate).toBeDefined();
-    expect(appUpdate?.adaptability).toBe(49); // -1 penalty
+    expect(appUpdate?.stats?.adaptability).toBe(49); // -1 penalty
   });
 
   /**

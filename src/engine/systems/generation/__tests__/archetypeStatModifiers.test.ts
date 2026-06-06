@@ -10,7 +10,7 @@ import { rngFromSeed } from "../../../rng";
 
 // Run N trials and return the mean of the stat
 function meanStat(
-  statKey: "strength" | "stamina" | "mental",
+  statKey: "power" | "stamina" | "mental",
   profileArchetype: Parameters<typeof buildCombatProfile>[0],
   n = 80
 ): number {
@@ -25,7 +25,7 @@ function meanStat(
 }
 
 function meanStatBaseline(
-  statKey: "strength" | "stamina" | "mental",
+  statKey: "power" | "stamina" | "mental",
   modifier: number,
   n = 80
 ): number {
@@ -48,29 +48,29 @@ function meanStatBaseline(
   return total / n;
 }
 
-describe("Archetype statModifiers — power key (renamed from strength)", () => {
-  it("oshi archetype power modifier boosts generated strength stat", () => {
-    // oshi has power: 1.1 (renamed from strength: 1.1)
-    // After fix: statModifiers.power should apply to the strength generation
-    const oshiMean = meanStat("strength", "oshi");
+describe("Archetype statModifiers — power key", () => {
+  it("oshi archetype power modifier boosts generated power stat", () => {
+    // oshi has power: 1.1
+    // After fix: statModifiers.power should apply to the power generation
+    const oshiMean = meanStat("power", "oshi");
     // hybrid has no power modifier (1.0) — use as baseline
-    const hybridMean = meanStat("strength", "hybrid");
-    // oshi should generate ~10% higher strength than hybrid on average
+    const hybridMean = meanStat("power", "hybrid");
+    // oshi should generate ~10% higher power than hybrid on average
     expect(oshiMean).toBeGreaterThan(hybridMean);
   });
 
-  it("giant archetype power modifier produces higher strength than speedster", () => {
-    // giant has power: 1.2 (renamed from strength: 1.2)
-    // speedster has power: 0.8 (renamed from strength: 0.8)
-    const giantMean = meanStat("strength", "giant");
-    const speedsterMean = meanStat("strength", "speedster");
+  it("giant archetype power modifier produces higher power than speedster", () => {
+    // giant has power: 1.2
+    // speedster has power: 0.8
+    const giantMean = meanStat("power", "giant");
+    const speedsterMean = meanStat("power", "speedster");
     expect(giantMean).toBeGreaterThan(speedsterMean);
   });
 
-  it("explicit power modifier 1.4 yields higher strength than modifier 0.7", () => {
+  it("explicit power modifier 1.4 yields higher power than modifier 0.7", () => {
     // Direct test: give a profile power: 1.4 and verify it shifts the mean up vs 0.7
-    const highMean = meanStatBaseline("strength", 1.4);
-    const lowMean = meanStatBaseline("strength", 0.7);
+    const highMean = meanStatBaseline("power", 1.4);
+    const lowMean = meanStatBaseline("power", 0.7);
     expect(highMean).toBeGreaterThan(lowMean);
   });
 });

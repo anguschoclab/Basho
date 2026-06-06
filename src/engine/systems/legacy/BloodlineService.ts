@@ -86,20 +86,20 @@ export const BloodlineService = {
       const trait = registry.traits[traitId];
       if (!trait) continue;
 
-      const updates: Partial<Rikishi> = {};
+      const nextStats = { ...rikishi.stats };
       let changed = false;
 
       for (const [stat, floor] of Object.entries(trait.statFloorBonus)) {
         if (floor === undefined) continue;
-        const current = (rikishi as any)[stat] ?? 0;
+        const current = (nextStats as any)[stat] ?? 0;
         if (current < floor) {
-          (updates as any)[stat] = clampInt(current + WEEKLY_HERITAGE_BONUS, 0, 99);
+          (nextStats as any)[stat] = clampInt(current + WEEKLY_HERITAGE_BONUS, 0, 99);
           changed = true;
         }
       }
 
       if (changed) {
-        builder.updateRikishi(rikishi.id, updates);
+        builder.updateRikishi(rikishi.id, { stats: nextStats });
       }
     }
 

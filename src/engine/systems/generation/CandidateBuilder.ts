@@ -6,7 +6,7 @@ import { SeededRNG } from "../../rng";
 import { RikishiStats, Rikishi } from "../../types/rikishi";
 import { Rank, Division, Side } from "../../types/banzuke";
 import { CombatProfile, Style, CombatArchetype } from "../../types/combat";
-import { clamp, clampInt } from "../../utils/math";
+import { clamp } from "../../utils/math";
 import { generateShikona } from "../../shikona";
 import { rollArchetype, buildCombatProfile, deriveWeakAgainstStyles } from "../../archetype";
 import type { InjurySeverity } from "../../systems/health/BodyDefinitions";
@@ -18,8 +18,6 @@ import {
   rollPotential,
   deriveCurrentAbility,
   generateRikishiStats,
-  type GeneratedStats,
-  type PotentialPackage,
 } from "./CandidateStats";
 import { generateSyntheticCareer, type DivisionRecords } from "./CandidateCareer";
 
@@ -89,15 +87,6 @@ function createCombatStats(
   return {
     stats: rikishiStats,
 
-    // Flattened accessors for performance/legacy compatibility
-    power: rikishiStats.power,
-    speed: rikishiStats.speed,
-    balance: rikishiStats.balance,
-    technique: rikishiStats.technique,
-    aggression: rikishiStats.mental,
-    mental: rikishiStats.mental, // composure under pressure (edge crisis recovery)
-    stamina: rikishiStats.stamina,
-    adaptability: rikishiStats.adaptability,
     experience: division === "makuuchi" ? 40 : 10,
 
     momentum: 50,
@@ -289,7 +278,7 @@ export function generateFullRikishi(args: {
       ceilingFraction: potentialPkg.ceilingFraction,
       profile: potentialPkg.profile,
     },
-  } as Rikishi;
+  } as unknown as Rikishi;
 }
 
 /**
@@ -353,9 +342,17 @@ export function convertCandidateToRikishi(args: {
     potential: candidate.potentialStats
       ? {
           stats: {
-            ...candidate.potentialStats,
+            power: candidate.potentialStats!.strength,
+            speed: candidate.potentialStats!.speed,
+            technique: candidate.potentialStats!.technique,
+            balance: candidate.potentialStats!.balance,
+            stamina: candidate.potentialStats!.stamina,
+            mental: candidate.potentialStats!.mental,
+            adaptability: candidate.potentialStats!.adaptability,
             weight: candidate.weightPotentialKg,
             achievements: rikishiStats.achievements,
+            aggression: 50,
+            experience: 0,
           } as RikishiStats,
           heightCm: candidate.heightPotentialCm,
           weightKg: candidate.weightPotentialKg,
@@ -365,7 +362,7 @@ export function convertCandidateToRikishi(args: {
           profile: candidate.developmentProfile ?? "standard",
         }
       : undefined,
-  } as Rikishi;
+  } as unknown as Rikishi;
 
   return rikishi;
 }

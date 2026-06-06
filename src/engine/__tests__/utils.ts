@@ -11,7 +11,22 @@ import type { Id } from "../types/common";
 
 // ── Rikishi ────────────────────────────────────────────────────────────────
 
-export function mockRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikishi {
+type FlatStatOverrides = {
+  power?: number;
+  speed?: number;
+  balance?: number;
+  technique?: number;
+  aggression?: number;
+  mental?: number;
+  experience?: number;
+  stamina?: number;
+  adaptability?: number;
+};
+
+export function mockRikishi(
+  id: string,
+  overrides: Partial<Rikishi> & FlatStatOverrides = {}
+): Rikishi {
   const { stats: statsOverride, ...flatOverrides } = overrides;
   const power = flatOverrides.power ?? statsOverride?.power ?? 50;
   const speed = flatOverrides.speed ?? statsOverride?.speed ?? 50;
@@ -38,20 +53,11 @@ export function mockRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikis
     height: 180,
     style: "oshi" as Style,
     archetype: "hybrid" as CombatArchetype,
-    power,
-    speed,
-    balance,
-    technique,
-    aggression,
-    mental,
-    experience,
     momentum: 0,
-    stamina,
     fatigue: 0,
     injured: false,
     injuryWeeksRemaining: 0,
     birthYear: 1995,
-    adaptability,
     h2h: {},
     history: [],
     personalityTraits: [],

@@ -8,7 +8,7 @@ import { TrainingService } from "../../systems/training/TrainingService";
 import { resolveImpacts } from "../../core/ImpactResolver";
 import { mockRikishi } from "../../__tests__/utils";
 import type { WorldState } from "../../types/world";
-import type { BeyaTrainingState, IndividualFocus } from "../../types/training";
+import type { HeyaTrainingState, IndividualFocus } from "../../types/training";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -44,7 +44,7 @@ function makeTrainingState(
   intensity: string,
   recovery: string,
   focusSlots: IndividualFocus[] = []
-): Record<string, BeyaTrainingState> {
+): Record<string, HeyaTrainingState> {
   return {
     [heyaId]: {
       heyaId,
@@ -59,7 +59,7 @@ function makeTrainingState(
       },
       focusSlots,
       weeklyHistory: [],
-    } as unknown as BeyaTrainingState,
+    } as unknown as HeyaTrainingState,
   };
 }
 
@@ -173,7 +173,7 @@ describe("TrainingService.applyWeeklyTraining — healthy rikishi growth", () =>
     const updated = updatedWorld.rikishi.get("r1")!;
 
     // Power should NOT change for injured rikishi
-    expect(updated.power).toBe(powerBefore);
+    expect(updated.stats.power).toBe(powerBefore);
   });
 
   it("keeps fatigue within [0, 100] bounds", () => {

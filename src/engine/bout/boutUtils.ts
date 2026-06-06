@@ -31,9 +31,13 @@ export interface BoutContext {
 // Private helpers (used only within this module)
 // ---------------------------------------------------------------------------
 
-/** Safe stat read — Rikishi has flat top-level stat fields (power, speed, etc.) */
+/** Safe stat read — prefers canonical rikishi.stats, falls back to top-level for bout copies */
 export function stat(r: Rikishi, key: string, fallback = 50): number {
-  const v = (r as unknown as Record<string, unknown>)[key];
+  const statsObj = r.stats as unknown as Record<string, unknown> | undefined;
+  let v = statsObj?.[key];
+  if (typeof v !== "number" || !Number.isFinite(v)) {
+    v = (r as unknown as Record<string, unknown>)[key];
+  }
   return typeof v === "number" && Number.isFinite(v) ? v : fallback;
 }
 
