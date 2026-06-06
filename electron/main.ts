@@ -352,12 +352,20 @@ ipcMain.handle("window:close", () => {
 // IPC Handlers for file dialogs
 ipcMain.handle("dialog:showSaveDialog", async (event, options?: Electron.SaveDialogOptions) => {
   if (!mainWindow) return { canceled: true, filePath: "" };
+  if (options !== undefined && (typeof options !== "object" || options === null || Array.isArray(options))) {
+    console.error("Invalid options passed to dialog:showSaveDialog");
+    return { canceled: true, filePath: "" };
+  }
   const result = await dialog.showSaveDialog(mainWindow, options || {});
   return result;
 });
 
 ipcMain.handle("dialog:showOpenDialog", async (event, options?: Electron.OpenDialogOptions) => {
   if (!mainWindow) return { canceled: true, filePaths: [] };
+  if (options !== undefined && (typeof options !== "object" || options === null || Array.isArray(options))) {
+    console.error("Invalid options passed to dialog:showOpenDialog");
+    return { canceled: true, filePaths: [] };
+  }
   const result = await dialog.showOpenDialog(mainWindow, options || {});
   return result;
 });
@@ -373,6 +381,14 @@ ipcMain.handle("app:getPlatform", () => {
 
 // IPC Handlers for native notifications
 ipcMain.handle("notification:show", async (event, options: { title: string; body: string }) => {
+  if (!options || typeof options !== "object" || Array.isArray(options)) {
+    console.error("Invalid options passed to notification:show");
+    return false;
+  }
+  if (typeof options.title !== "string" || typeof options.body !== "string") {
+    console.error("Invalid title or body passed to notification:show");
+    return false;
+  }
   const { Notification } = await import("electron");
   if (Notification.isSupported()) {
     new Notification({
