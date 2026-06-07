@@ -353,7 +353,8 @@ ipcMain.handle("window:close", () => {
 ipcMain.handle("dialog:showSaveDialog", async (event, options?: Electron.SaveDialogOptions) => {
   if (
     options !== undefined &&
-    (typeof options !== "object" || options === null || Array.isArray(options))
+    options !== null &&
+    (typeof options !== "object" || Array.isArray(options))
   ) {
     throw new TypeError("Invalid options type for save dialog");
   }
