@@ -187,16 +187,17 @@ export const SimTuningService = {
       uniqueWinnerCount: historyStats?.uniqueWinners ?? 0,
       beyaDominance,
       entropyAudit: {
-        maxStat: Math.max(
-          ...activeRikishi.map((r) =>
-            Math.max(
-              r.stats.power || 0,
-              r.stats.speed || 0,
-              r.stats?.technique || r.stats.technique || 0,
-              r.stats?.stamina || 0
-            )
-          )
-        ),
+        // ⚡ Bolt Optimization: Use a direct for...of loop instead of Math.max(...Array.from().map()) to avoid O(N) allocations and spread operator
+        maxStat: (() => {
+          let max = 0;
+          for (const r of activeRikishi) {
+            if ((r.stats.power || 0) > max) max = r.stats.power || 0;
+            if ((r.stats.speed || 0) > max) max = r.stats.speed || 0;
+            if ((r.stats.technique || 0) > max) max = r.stats.technique || 0;
+            if ((r.stats.stamina || 0) > max) max = r.stats.stamina || 0;
+          }
+          return max;
+        })(),
         avgAge:
           activeRikishi.length > 0
             ? activeRikishi.reduce((sum, r) => sum + ((world.calendar?.year ?? world.year) - r.birthYear), 0) /
