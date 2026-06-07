@@ -10,6 +10,7 @@ import { generatePreBashoHeadline } from "./HeadlineGenerator";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { getHeya, getRikishi } from "../../queries";
+import type { Rikishi } from "../../types/rikishi";
 
 /**
  * Trigger pre-basho journalism hype.

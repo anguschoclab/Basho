@@ -30,12 +30,11 @@ import { processHeyaEconomics, processLoanRepayments } from "./monthly/economics
 import { processFacilitiesMaintenance, processNpcAutoInvestment } from "./monthly/facilities";
 import { processArchetypeDrift } from "./monthly/training";
 import type { HeyaUpdates } from "./monthly/types";
+import { RUNWAY_THRESHOLDS, RUNWAY_BANDS } from "../../../constants/engine/economy";
 import {
-  RUNWAY_THRESHOLDS,
-  RUNWAY_BANDS,
   SPONSOR_RENEWAL_WINDOW_WEEKS,
   SPONSOR_MIN_LOYALTY_FOR_RENEWAL,
-} from "../../../constants/engine/economy";
+} from "../../../constants/engine/time";
 import { getRikishi } from "../../queries";
 
 export function phase05_monthly_boundary(world: WorldState): StateImpact {

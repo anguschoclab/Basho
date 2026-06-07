@@ -10,6 +10,7 @@ import { ensureTalentPoolState } from "./TalentPoolStateService";
 import { getForeignCountInHeya } from "./TalentPoolScouting";
 import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "../../../constants/engine/recruitment";
 import { getHeya } from "../../queries";
+import { EventBus } from "../../events";
 
 /**
  * Submits an offer to a candidate from the player's stable.
