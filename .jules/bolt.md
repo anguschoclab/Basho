@@ -82,3 +82,7 @@ Optimized `fillVacanciesForNPC` in `TalentPoolNPCRecruitment.ts` by replacing `A
 ## 2026-05-27 - Centralize array filtration in useMemo hooks
 **Learning:** React component re-renders that calculate UI states via `useMemo` can suffer massive performance penalties if they create unnecessary intermediate arrays. In `RikishiPage.tsx`, `Array.from(world.rikishi.values()).filter(...)` caused O(N) array allocation overhead during every evaluation, iterating over every single rikishi in the world state.
 **Action:** Replace `Array.from(map.values()).filter(...)` with targeted EntityCollection queries like `EntityCollection.getHeyaRoster(world, heyaId)` inside UI components. This pushes the filtering down to a more optimized, centralized location and avoids allocating an unnecessary intermediate array mapping the entire game world state before filtering.
+
+## 2024-05-18 - Replacing Object Iteration Arrays with Direct Iterators
+**Learning:** Chaining `Array.from(map.values()).filter(...)` causes an unnecessary O(N) array allocation of the entire values list before filtering it down.
+**Action:** Replace `Array.from().filter()` with a direct `for...of` loop over `map.values()` to eliminate intermediate memory allocations during UI rendering and tick loops.

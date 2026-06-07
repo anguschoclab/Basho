@@ -102,8 +102,15 @@ export function SponsorRecruitmentWidget() {
   const existingSponsorIds = new Set(koenkai?.members.map((m) => m.sponsorId) || []);
 
   // Filter available sponsors (active, not already recruited)
-  const availableSponsors = Array.from(world.sponsorPool.sponsors.values())
-    .filter((s) => s.active && !existingSponsorIds.has(s.sponsorId))
+  // ⚡ Bolt Optimization: Use direct iteration instead of Array.from(world.sponsorPool.sponsors.values()).filter(...)
+  const rawSponsors = [];
+  for (const s of world.sponsorPool.sponsors.values()) {
+    if (s.active && !existingSponsorIds.has(s.sponsorId)) {
+      rawSponsors.push(s);
+    }
+  }
+
+  const availableSponsors = rawSponsors
     .sort((a, b) => {
       // Sort by tier (higher tiers first)
       const tierOrder = { T5: 0, T4: 1, T3: 2, T2: 3, T1: 4, T0: 5 };
