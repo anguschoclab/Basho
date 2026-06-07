@@ -8,11 +8,38 @@ import { RANK_HIERARCHY } from "./banzuke";
 import { NarrativeContext, VoiceStyle, VENUE_PROFILES } from "./narrative/narrativeContext";
 
 import { BardEngine } from "./narrative/BardEngine";
+import {
+  INTENSITY_DRAMATIC,
+  INTENSITY_UNDERSTATED,
+  INTENSITY_FORMAL,
+  KENSHO_CHANCE_TIER_1,
+  KENSHO_CHANCE_TIER_2,
+  KENSHO_CHANCE_TIER_3,
+  KENSHO_CHANCE_TIER_4,
+  KENSHO_CHANCE_TIER_5,
+  KENSHO_COUNT_TIER_1_BASE,
+  KENSHO_COUNT_TIER_1_RANGE,
+  KENSHO_COUNT_TIER_2_BASE,
+  KENSHO_COUNT_TIER_2_RANGE,
+  KENSHO_COUNT_TIER_3_BASE,
+  KENSHO_COUNT_TIER_3_RANGE,
+  KENSHO_COUNT_TIER_4_BASE,
+  KENSHO_COUNT_TIER_4_RANGE,
+  KENSHO_COUNT_TIER_5_BASE,
+  KENSHO_COUNT_TIER_5_RANGE,
+  KENSHO_DAY_THRESHOLD,
+  KENSHO_LATE_DAY_CHANCE_BONUS,
+  KENSHO_LATE_DAY_COUNT_MULTIPLIER,
+  RITUAL_SALT_CHANCE_UNDERSTATED,
+  HIGH_STAKES_TIER_THRESHOLD,
+  VOICE_DRAMATIC_DAY_THRESHOLD,
+  VOICE_UNDERSTATED_DAY_THRESHOLD,
+} from "../constants/engine/generation";
 
 function getIntensity(voiceStyle: VoiceStyle): number {
-  if (voiceStyle === "dramatic") return 3;
-  if (voiceStyle === "understated") return 1;
-  return 2;
+  if (voiceStyle === "dramatic") return INTENSITY_DRAMATIC;
+  if (voiceStyle === "understated") return INTENSITY_UNDERSTATED;
+  return INTENSITY_FORMAL;
 }
 
 function estimateKensho(
@@ -26,25 +53,25 @@ function estimateKensho(
     baseCount = 0;
 
   if (highestTier <= 1) {
-    baseChance = 0.95;
-    baseCount = 15 + Math.floor(rng.next() * 20);
+    baseChance = KENSHO_CHANCE_TIER_1;
+    baseCount = KENSHO_COUNT_TIER_1_BASE + Math.floor(rng.next() * KENSHO_COUNT_TIER_1_RANGE);
   } else if (highestTier <= 2) {
-    baseChance = 0.85;
-    baseCount = 8 + Math.floor(rng.next() * 12);
+    baseChance = KENSHO_CHANCE_TIER_2;
+    baseCount = KENSHO_COUNT_TIER_2_BASE + Math.floor(rng.next() * KENSHO_COUNT_TIER_2_RANGE);
   } else if (highestTier <= 4) {
-    baseChance = 0.7;
-    baseCount = 4 + Math.floor(rng.next() * 8);
+    baseChance = KENSHO_CHANCE_TIER_3;
+    baseCount = KENSHO_COUNT_TIER_3_BASE + Math.floor(rng.next() * KENSHO_COUNT_TIER_3_RANGE);
   } else if (highestTier <= 5) {
-    baseChance = 0.5;
-    baseCount = 2 + Math.floor(rng.next() * 4);
+    baseChance = KENSHO_CHANCE_TIER_4;
+    baseCount = KENSHO_COUNT_TIER_4_BASE + Math.floor(rng.next() * KENSHO_COUNT_TIER_4_RANGE);
   } else {
-    baseChance = 0.15;
-    baseCount = 1 + Math.floor(rng.next() * 2);
+    baseChance = KENSHO_CHANCE_TIER_5;
+    baseCount = KENSHO_COUNT_TIER_5_BASE + Math.floor(rng.next() * KENSHO_COUNT_TIER_5_RANGE);
   }
 
-  if (day >= 13) {
-    baseChance = Math.min(1, baseChance + 0.2);
-    baseCount = Math.floor(baseCount * 1.3);
+  if (day >= KENSHO_DAY_THRESHOLD) {
+    baseChance = Math.min(1, baseChance + KENSHO_LATE_DAY_CHANCE_BONUS);
+    baseCount = Math.floor(baseCount * KENSHO_LATE_DAY_COUNT_MULTIPLIER);
   }
 
   const hasKensho = rng.next() < baseChance;
@@ -85,7 +112,7 @@ function generateRingEntrance(ctx: NarrativeContext): string[] {
 function generateRitualElements(ctx: NarrativeContext): string[] {
   const intensity = getIntensity(ctx.voiceStyle as VoiceStyle);
   const lines: string[] = [];
-  if (ctx.voiceStyle !== "understated" || (ctx.rng as SeededRNG).next() < 0.5) {
+  if (ctx.voiceStyle !== "understated" || (ctx.rng as SeededRNG).next() < RITUAL_SALT_CHANCE_UNDERSTATED) {
     lines.push(
       BardEngine.resolve(ctx.rng as SeededRNG, "combat.phases.ritual.salt", {
         ...ctx,
@@ -179,11 +206,11 @@ export function generateNarrative(
   const location = bashoInfo?.location ?? "Tokyo";
   const venueProfile = VENUE_PROFILES[location] ?? VENUE_PROFILES["Tokyo"];
   const isHighStakes =
-    RANK_HIERARCHY[east.rank].tier <= 2 ||
-    RANK_HIERARCHY[west.rank].tier <= 2 ||
-    day >= 13 ||
+    RANK_HIERARCHY[east.rank].tier <= HIGH_STAKES_TIER_THRESHOLD ||
+    RANK_HIERARCHY[west.rank].tier <= HIGH_STAKES_TIER_THRESHOLD ||
+    day >= KENSHO_DAY_THRESHOLD ||
     !!result.upset;
-  const voiceStyle = day >= 13 || isHighStakes ? "dramatic" : day <= 5 ? "understated" : "formal";
+  const voiceStyle = day >= VOICE_DRAMATIC_DAY_THRESHOLD || isHighStakes ? "dramatic" : day <= VOICE_UNDERSTATED_DAY_THRESHOLD ? "understated" : "formal";
   const boutSeed = `${bashoName}-${day}-${east.id}-${west.id}-${result.kimarite}`;
   const rng = rngFromSeed(boutSeed, "narrative", "bout");
   const kensho =

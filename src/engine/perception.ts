@@ -22,6 +22,37 @@ import { NarrativeService } from "./systems/narrative/NarrativeService";
 import type { ComplianceState } from "./types/economy";
 import type { RivalriesState } from "./rivalries";
 import { getHeyaRoster, getHeya } from "./queries";
+import {
+  CONDITION_PEAK_THRESHOLD,
+  CONDITION_GOOD_THRESHOLD,
+  CONDITION_FAIR_THRESHOLD,
+  CONDITION_WORN_THRESHOLD,
+  RISK_SAFE_THRESHOLD,
+  RISK_CAUTIOUS_THRESHOLD,
+  RISK_ELEVATED_THRESHOLD,
+  SCANDAL_MODERATE_THRESHOLD,
+  SCANDAL_MILD_THRESHOLD,
+  HEAT_BLAZING_THRESHOLD,
+  HEAT_HOT_THRESHOLD,
+  HEAT_WARM_THRESHOLD,
+  STRENGTH_DOMINANT_THRESHOLD,
+  STRENGTH_OZEKI_THRESHOLD,
+  STRENGTH_SEKIWAKE_THRESHOLD,
+  STRENGTH_MAEGASHIRA_THRESHOLD,
+  STRENGTH_JURYO_THRESHOLD,
+  STRENGTH_MAKUSHITA_THRESHOLD,
+  STRENGTH_SANDANME_THRESHOLD,
+  AVG_STRENGTH_DOMINANT_THRESHOLD,
+  AVG_STRENGTH_STRONG_THRESHOLD,
+  AVG_STRENGTH_COMPETITIVE_THRESHOLD,
+  AVG_STRENGTH_DEVELOPING_THRESHOLD,
+  MORALE_SCORE_WEIGHT,
+  MOMENTUM_NORMALIZER,
+  MORALE_INSPIRED_THRESHOLD,
+  MORALE_CONTENT_THRESHOLD,
+  MORALE_NEUTRAL_THRESHOLD,
+  MORALE_DISGRUNTLED_THRESHOLD,
+} from "../constants/engine/perception";
 
 // === Band types for perception ===
 
@@ -109,10 +140,10 @@ export interface PerceptionSnapshot {
  */
 function bandHealth(r: Rikishi): HealthBand {
   const c = r.condition ?? 100;
-  if (c >= 90) return "peak";
-  if (c >= 70) return "good";
-  if (c >= 50) return "fair";
-  if (c >= 30) return "worn";
+  if (c >= CONDITION_PEAK_THRESHOLD) return "peak";
+  if (c >= CONDITION_GOOD_THRESHOLD) return "good";
+  if (c >= CONDITION_FAIR_THRESHOLD) return "fair";
+  if (c >= CONDITION_WORN_THRESHOLD) return "worn";
   return "fragile";
 }
 
@@ -122,9 +153,9 @@ function bandHealth(r: Rikishi): HealthBand {
  *  * @returns The result.
  */
 function bandWelfareRisk(risk: number): WelfareRiskBand {
-  if (risk <= 20) return "safe";
-  if (risk <= 44) return "cautious";
-  if (risk <= 69) return "elevated";
+  if (risk <= RISK_SAFE_THRESHOLD) return "safe";
+  if (risk <= RISK_CAUTIOUS_THRESHOLD) return "cautious";
+  if (risk <= RISK_ELEVATED_THRESHOLD) return "elevated";
   return "critical";
 }
 
@@ -136,8 +167,8 @@ function bandWelfareRisk(risk: number): WelfareRiskBand {
  */
 function bandGovernancePressure(scandalScore: number, status: string): GovernancePressureBand {
   if (status === "sanctioned") return "severe";
-  if (status === "probation" || scandalScore >= 60) return "moderate";
-  if (status === "warning" || scandalScore >= 30) return "mild";
+  if (status === "probation" || scandalScore >= SCANDAL_MODERATE_THRESHOLD) return "moderate";
+  if (status === "warning" || scandalScore >= SCANDAL_MILD_THRESHOLD) return "mild";
   return "none";
 }
 
@@ -147,9 +178,9 @@ function bandGovernancePressure(scandalScore: number, status: string): Governanc
  *  * @returns The result.
  */
 function bandMediaHeat(heat: number): MediaHeatBand {
-  if (heat >= 75) return "blazing";
-  if (heat >= 50) return "hot";
-  if (heat >= 25) return "warm";
+  if (heat >= HEAT_BLAZING_THRESHOLD) return "blazing";
+  if (heat >= HEAT_HOT_THRESHOLD) return "hot";
+  if (heat >= HEAT_WARM_THRESHOLD) return "warm";
   return "cold";
 }
 
@@ -177,9 +208,9 @@ function bandRivalry(world: WorldState, heyaId: Id): RivalryPerceptionBand {
     }
   }
 
-  if (maxHeat >= 75) return "fierce";
-  if (maxHeat >= 50) return "heated";
-  if (maxHeat >= 25) return "simmering";
+  if (maxHeat >= HEAT_BLAZING_THRESHOLD) return "fierce";
+  if (maxHeat >= HEAT_HOT_THRESHOLD) return "heated";
+  if (maxHeat >= HEAT_WARM_THRESHOLD) return "simmering";
   return "dormant";
 }
 
@@ -191,14 +222,14 @@ function bandRivalry(world: WorldState, heyaId: Id): RivalryPerceptionBand {
  */
 function bandRosterStrength(heya: Heya, world: WorldState): RosterStrengthBand {
   const RANK_WEIGHT: Record<string, number> = {
-    yokozuna: 100,
-    ozeki: 85,
-    sekiwake: 70,
-    komusubi: 60,
-    maegashira: 40,
-    juryo: 25,
-    makushita: 15,
-    sandanme: 10,
+    yokozuna: STRENGTH_DOMINANT_THRESHOLD,
+    ozeki: STRENGTH_OZEKI_THRESHOLD,
+    sekiwake: STRENGTH_SEKIWAKE_THRESHOLD,
+    komusubi: STRENGTH_MAEGASHIRA_THRESHOLD,
+    maegashira: STRENGTH_MAEGASHIRA_THRESHOLD,
+    juryo: STRENGTH_JURYO_THRESHOLD,
+    makushita: STRENGTH_MAKUSHITA_THRESHOLD,
+    sandanme: STRENGTH_SANDANME_THRESHOLD,
     jonidan: 5,
     jonokuchi: 2,
   };
@@ -210,10 +241,10 @@ function bandRosterStrength(heya: Heya, world: WorldState): RosterStrengthBand {
   }
 
   const avg = roster.length > 0 ? total / roster.length : 0;
-  if (avg >= 60) return "dominant";
-  if (avg >= 40) return "strong";
-  if (avg >= 25) return "competitive";
-  if (avg >= 12) return "developing";
+  if (avg >= AVG_STRENGTH_DOMINANT_THRESHOLD) return "dominant";
+  if (avg >= AVG_STRENGTH_STRONG_THRESHOLD) return "strong";
+  if (avg >= AVG_STRENGTH_COMPETITIVE_THRESHOLD) return "competitive";
+  if (avg >= AVG_STRENGTH_DEVELOPING_THRESHOLD) return "developing";
   return "weak";
 }
 
@@ -233,11 +264,11 @@ function bandMorale(heya: Heya, world: WorldState): MoraleBand {
   }
   const avgMomentum = roster.length > 0 ? momentumSum / roster.length : 0;
 
-  const score = (100 - welfareRisk) * 0.6 + (avgMomentum + 5) * 4; // normalize momentum (-5..5) to 0..40
-  if (score >= 85) return "inspired";
-  if (score >= 65) return "content";
-  if (score >= 45) return "neutral";
-  if (score >= 25) return "disgruntled";
+  const score = (100 - welfareRisk) * MORALE_SCORE_WEIGHT + (avgMomentum + 5) * MOMENTUM_NORMALIZER; // normalize momentum (-5..5) to 0..40
+  if (score >= MORALE_INSPIRED_THRESHOLD) return "inspired";
+  if (score >= MORALE_CONTENT_THRESHOLD) return "content";
+  if (score >= MORALE_NEUTRAL_THRESHOLD) return "neutral";
+  if (score >= MORALE_DISGRUNTLED_THRESHOLD) return "disgruntled";
   return "mutinous";
 }
 

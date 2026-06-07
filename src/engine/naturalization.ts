@@ -7,6 +7,12 @@ import { createImpactBuilder } from "./core/ImpactBuilder";
 import { resolveImpacts } from "./core/ImpactResolver";
 import type { StateImpact } from "./core/StateImpact";
 import { getHeya, getRikishi } from "./queries";
+import {
+  NATURALIZATION_CAREER_WINS_THRESHOLD,
+  NATURALIZATION_YOKOZUNA_AGE_THRESHOLD,
+  NATURALIZATION_OZEKI_CAREER_WINS_THRESHOLD,
+  NATURALIZATION_CHANCE_PERCENTAGE,
+} from "../constants/engine/generation";
 
 /**
  * Checks if any foreign-born rikishi are eligible for and receive Japanese citizenship.
@@ -36,9 +42,9 @@ export function checkNaturalizations(world: WorldState): StateImpact {
 
     // Check eligibility
     let isEligible = false;
-    if ((r.careerWins || 0) >= 400) isEligible = true;
-    if (r.rank === "yokozuna" && age >= 28) isEligible = true;
-    if (r.rank === "ozeki" && (r.careerWins || 0) >= 350) isEligible = true;
+    if ((r.careerWins || 0) >= NATURALIZATION_CAREER_WINS_THRESHOLD) isEligible = true;
+    if (r.rank === "yokozuna" && age >= NATURALIZATION_YOKOZUNA_AGE_THRESHOLD) isEligible = true;
+    if (r.rank === "ozeki" && (r.careerWins || 0) >= NATURALIZATION_OZEKI_CAREER_WINS_THRESHOLD) isEligible = true;
 
     // Needs high momentum or just time for narrative significance
     if (!isEligible) continue;
@@ -47,7 +53,7 @@ export function checkNaturalizations(world: WorldState): StateImpact {
     const natRng = rngFromSeed(`nat_${r.id}_${world.year}`, "naturalization", "chance");
     const chance = natRng.next() * 100;
 
-    if (chance < 5) {
+    if (chance < NATURALIZATION_CHANCE_PERCENTAGE) {
       // 5% chance if eligible
       const originalNationality = r.nationality;
 

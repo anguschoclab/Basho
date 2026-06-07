@@ -134,14 +134,48 @@ export const LEGENDARY_SANYAKU_CHANCE = 0.95;
 export const POWERFUL_OZEKI_CHANCE = 0.55;
 export const POWERFUL_SANYAKU_CHANCE = 0.85;
 
-// Trait variance
-export const TRAIT_VARIANCE_RANGE = 0.2;
-export const TRAIT_VARIANCE_HALF_RANGE = 10;
-export const TRAIT_BLEND_RATIO = 0.5;
-export const TRAIT_BLEND_VARIANCE_RANGE = 5;
-
 // Discipline hawk thresholds
 export const DISCIPLINE_HAWK_TRADITION_THRESHOLD = 80;
 
 // Max years in charge
 export const MAX_YEARS_IN_CHARGE = 20;
+
+// Trait variance
+export const TRAIT_VARIANCE_RANGE = 20;
+export const TRAIT_VARIANCE_HALF_RANGE = 10;
+export const TRAIT_BLEND_VARIANCE_RANGE = 10;
+export const TRAIT_BLEND_VARIANCE_HALF_RANGE = 5;
+
+// Rank generation thresholds (legendary heya)
+export const LEGENDARY_YOKOZUNA_THRESHOLD = 0.4;
+export const LEGENDARY_OZEKI_THRESHOLD = 0.75;
+export const LEGENDARY_SANYAKU_THRESHOLD = 0.95;
+
+// Rank generation thresholds (powerful heya)
+export const POWERFUL_YOKOZUNA_THRESHOLD = 0.2;
+export const POWERFUL_OZEKI_THRESHOLD = 0.55;
+export const POWERFUL_SANYAKU_THRESHOLD = 0.85;
+
+// Rank generation thresholds (established heya)
+export const ESTABLISHED_YOKOZUNA_THRESHOLD = 0.05;
+export const ESTABLISHED_OZEKI_THRESHOLD = 0.2;
+export const ESTABLISHED_SANYAKU_THRESHOLD = 0.6;
+export const ESTABLISHED_MAEGASHIRA_THRESHOLD = 0.9;
+
+// Quirk count
+export const QUIRK_COUNT_HIGH = 3;
+export const QUIRK_COUNT_BASE = 2;
+
+// Tick constants
+export const WEEKLY_TICK_THRESHOLD = 7;
+export const MAX_DAYS_ADVANCE = 365;
+export const POST_BASHO_DAYS = 7;
+export const INTERIM_DAYS = 42;
+
+// NPC weekly decision constants
+export const TOP_RIKISHI_COUNT = 5;
+export const MAX_ROSTER_SIZE = 15;
+export const RISK_CONDITION_WEIGHT = 0.6;
+export const RISK_FATIGUE_WEIGHT = 0.4;
+export const HIGH_RISK_THRESHOLD = 60;
+export const HIGH_RISK_RATIO_THRESHOLD = 0.4;

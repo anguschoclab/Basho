@@ -3,6 +3,21 @@ import * as talentpool from "../systems/generation/TalentPoolService";
 import type { WorldState } from "../types/world";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
+import {
+  RECRUITMENT_WINDOW_WEEKS,
+  MOMENTUM_MAX,
+  MOMENTUM_MIN,
+  WIN_RATE_HIGH_MOMENTUM_THRESHOLD,
+  MOMENTUM_HIGH_GAIN,
+  WIN_RATE_MEDIUM_MOMENTUM_THRESHOLD,
+  MOMENTUM_MEDIUM_GAIN,
+  WIN_RATE_HIGH_MOMENTUM_LOSS_THRESHOLD,
+  MOMENTUM_HIGH_LOSS,
+  WIN_RATE_MEDIUM_MOMENTUM_LOSS_THRESHOLD,
+  MOMENTUM_MEDIUM_LOSS,
+  HOF_CAREER_WINS_THRESHOLD,
+  CAREER_WIN_MILESTONES,
+} from "../../constants/engine/generation";
 
 /**
  * Recruitment window — per Constitution, recruitment occurs at:
@@ -29,7 +44,7 @@ export function openRecruitmentWindow(
     // Queue world field update for _recruitmentWindow
     builder.updateWorldField("_recruitmentWindow", {
       openedAtWeek: world.week,
-      closesAtWeek: world.week + 4, // 4-week window per Constitution
+      closesAtWeek: world.week + RECRUITMENT_WINDOW_WEEKS, // 4-week window per Constitution
       vacancies: playerVacancies,
       isOpen: true,
       phase: "post_basho",
@@ -93,10 +108,10 @@ export function runCareerJournalUpdates(world: WorldState): StateImpact {
     let newMomentum = r.momentum ?? 0;
     if (bw + bl > 0) {
       const winRate = bw / (bw + bl);
-      if (winRate >= 0.7) newMomentum = Math.min(5, newMomentum + 2);
-      else if (winRate >= 0.55) newMomentum = Math.min(5, newMomentum + 1);
-      else if (winRate < 0.35) newMomentum = Math.max(-5, newMomentum - 2);
-      else if (winRate < 0.45) newMomentum = Math.max(-5, newMomentum - 1);
+      if (winRate >= WIN_RATE_HIGH_MOMENTUM_THRESHOLD) newMomentum = Math.min(MOMENTUM_MAX, newMomentum + MOMENTUM_HIGH_GAIN);
+      else if (winRate >= WIN_RATE_MEDIUM_MOMENTUM_THRESHOLD) newMomentum = Math.min(MOMENTUM_MAX, newMomentum + MOMENTUM_MEDIUM_GAIN);
+      else if (winRate < WIN_RATE_HIGH_MOMENTUM_LOSS_THRESHOLD) newMomentum = Math.max(MOMENTUM_MIN, newMomentum - MOMENTUM_HIGH_LOSS);
+      else if (winRate < WIN_RATE_MEDIUM_MOMENTUM_LOSS_THRESHOLD) newMomentum = Math.max(MOMENTUM_MIN, newMomentum - MOMENTUM_MEDIUM_LOSS);
     }
 
     // Queue rikishi update (only momentum and yusho, not career totals)
@@ -110,7 +125,7 @@ export function runCareerJournalUpdates(world: WorldState): StateImpact {
     });
 
     // HoF eligibility flag (yokozuna with 500+ wins)
-    if (r.rank === "yokozuna" && (r.careerWins ?? 0) >= 500) {
+    if (r.rank === "yokozuna" && (r.careerWins ?? 0) >= HOF_CAREER_WINS_THRESHOLD) {
       builder.logEvent(
         "LIFECYCLE_EVENT",
         "career",
@@ -126,8 +141,7 @@ export function runCareerJournalUpdates(world: WorldState): StateImpact {
     }
 
     // Milestone events
-    const milestones = [100, 200, 300, 500];
-    if (milestones.includes(r.careerWins ?? 0)) {
+    if (CAREER_WIN_MILESTONES.includes(r.careerWins ?? 0)) {
       builder.logEvent(
         "LIFECYCLE_EVENT",
         "career",

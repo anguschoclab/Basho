@@ -40,6 +40,22 @@ import { clamp } from "../utils/math";
 import { decideBoutTacticOverride } from "../strategy/NPCStrategyService";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
+import {
+  CONTENTION_WINDOW,
+  FINAL_DAY,
+  HENKA_MOMENTUM_PENALTY,
+  KENSHO_BASE_COUNT_LOW,
+  KENSHO_BASE_COUNT_MID,
+  KENSHO_BASE_COUNT_HIGH,
+  KENSHO_BASE_COUNT_PEAK,
+  KENSHO_RNG_MIN,
+  KENSHO_RNG_RANGE,
+  RIVALRY_HEAT_AGGRESSION_MULTIPLIER,
+  RIVALRY_SPITE_MENTAL_MULTIPLIER,
+  DEFAULT_YEAR,
+  DEFAULT_DAY,
+  DEFAULT_BASHO_NUMBER,
+} from "../../constants/engine/physics";
 
 // Phase 8 complete: kimariteClassifier.ts owns all kimarite selection.
 // kimariteEvaluator.ts has been deleted.
@@ -78,7 +94,6 @@ function isYushoContention(east: Rikishi, west: Rikishi, basho: BashoState): boo
   const westWins = westRecord?.wins ?? 0;
 
   // Both must be within 2 wins of the leader (contention window)
-  const CONTENTION_WINDOW = 2;
   const eastInContention = maxWins - eastWins <= CONTENTION_WINDOW;
   const westInContention = maxWins - westWins <= CONTENTION_WINDOW;
 
@@ -102,7 +117,7 @@ function isYushoContention(east: Rikishi, west: Rikishi, basho: BashoState): boo
  */
 function isPlayoffScenario(east: Rikishi, west: Rikishi, basho: BashoState): boolean {
   // Playoffs only happen on day 15 (final day)
-  if (basho.day !== 15) return false;
+  if (basho.day !== FINAL_DAY) return false;
 
   const standings = basho.standings;
   if (!standings || standings.size === 0) return false;
@@ -348,7 +363,7 @@ export function resolveBout(
 
   if (playerHenkaWon || cpuHenkaWon) {
     builder.updateRikishi(winner.id, {
-      momentum: clamp((winner.momentum ?? 50) - 15, 0, 100),
+      momentum: clamp((winner.momentum ?? 50) - HENKA_MOMENTUM_PENALTY, 0, 100),
     });
   }
 
@@ -388,8 +403,8 @@ export function resolveBout(
     result.isTitleStakes = playoff || yushoContention;
 
     // Base banner count: random based on importance
-    const baseCountMap = { low: 2, mid: 5, high: 12, peak: 25 };
-    const bannerCount = Math.floor(baseCountMap[importance] * (0.8 + kenshoRng.next() * 0.4));
+    const baseCountMap = { low: KENSHO_BASE_COUNT_LOW, mid: KENSHO_BASE_COUNT_MID, high: KENSHO_BASE_COUNT_HIGH, peak: KENSHO_BASE_COUNT_PEAK };
+    const bannerCount = Math.floor(baseCountMap[importance] * (KENSHO_RNG_MIN + kenshoRng.next() * KENSHO_RNG_RANGE));
 
     const banners = assignKenshoBanners(
       result.boutId,
@@ -470,8 +485,8 @@ export function applyRivalryToRikishi(
   const condMult = conditionMultiplier(r.condition ?? 100);
   return {
     ...r,
-    aggression: clamp((r.stats.aggression || 50) * (1 + heat01 * 0.15), 0, 100),
-    mental: clamp((r.stats.mental || 50) * (1 + spite01 * 0.2), 0, 100),
+    aggression: clamp((r.stats.aggression || 50) * (1 + heat01 * RIVALRY_HEAT_AGGRESSION_MULTIPLIER), 0, 100),
+    mental: clamp((r.stats.mental || 50) * (1 + spite01 * RIVALRY_SPITE_MENTAL_MULTIPLIER), 0, 100),
     power: clamp((r.stats.power || 50) * condMult, 0, 100),
     speed: clamp((r.stats.speed || 50) * condMult, 0, 100),
     technique: clamp((r.stats.technique || 50) * condMult, 0, 100),
@@ -502,17 +517,17 @@ export function simulateBout(east: Rikishi, west: Rikishi, seed: string): { resu
     // this the `seed` arg only set bout.id and every call with the same two
     // rikishi produced an identical bout.
     id: `sim-${seed}`,
-    year: 2025,
-    day: 1,
+    year: DEFAULT_YEAR,
+    day: DEFAULT_DAY,
     bashoName: "hatsu",
-    bashoNumber: 1,
+    bashoNumber: DEFAULT_BASHO_NUMBER,
     matches: [],
     standings: new Map(),
     isActive: false,
   };
   const bout: BoutContext = {
     id: `sim-${seed}`,
-    day: 1,
+    day: DEFAULT_DAY,
     rikishiEastId: east.id,
     rikishiWestId: west.id,
   };

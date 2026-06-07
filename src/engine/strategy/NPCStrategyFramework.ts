@@ -11,6 +11,15 @@ import type { Oyakata } from "../types/oyakata";
 
 import type { StateImpact } from "../core/StateImpact";
 import { createImpactBuilder } from "../core/ImpactBuilder";
+import {
+  THRESHOLD_BOOST_HIGH,
+  THRESHOLD_BOOST_MODERATE,
+  THRESHOLD_BOOST_LOW,
+  DEFAULT_TRAIT_VALUE,
+  TRAIT_MULTIPLIER_DIVISOR,
+  ADJUST_SCORE_DEFAULT_MIN,
+  ADJUST_SCORE_DEFAULT_MAX,
+} from "../../constants/engine/npcStrategy";
 
 /** Base context for all strategy evaluations */
 export interface StrategyContext {
@@ -167,11 +176,11 @@ export const TraitChecks = {
 export function calculateMoodAdjustedThreshold(baseThreshold: number, oyakata: Oyakata): number {
   switch (oyakata.mood) {
     case "anxious":
-      return baseThreshold * 1.5;
+      return baseThreshold * THRESHOLD_BOOST_HIGH;
     case "obsessed":
-      return baseThreshold * 0.8;
+      return baseThreshold * THRESHOLD_BOOST_MODERATE;
     case "furious":
-      return baseThreshold * 0.7;
+      return baseThreshold * THRESHOLD_BOOST_LOW;
     default:
       return baseThreshold;
   }
@@ -183,8 +192,8 @@ export function calculateTraitAdjustedThreshold(
   trait: keyof Oyakata["traits"],
   traitMultiplier: number
 ): number {
-  const traitValue = oyakata.traits[trait] ?? 50;
-  const adjustment = ((traitValue - 50) / 50) * traitMultiplier;
+  const traitValue = oyakata.traits[trait] ?? DEFAULT_TRAIT_VALUE;
+  const adjustment = ((traitValue - DEFAULT_TRAIT_VALUE) / TRAIT_MULTIPLIER_DIVISOR) * traitMultiplier;
   return baseThreshold * (1 + adjustment);
 }
 
@@ -212,6 +221,6 @@ export function trySpendResource(
 /**
  * Adjust a numeric score within bounds.
  */
-export function adjustScore(current: number, delta: number, min = 0, max = 100): number {
+export function adjustScore(current: number, delta: number, min = ADJUST_SCORE_DEFAULT_MIN, max = ADJUST_SCORE_DEFAULT_MAX): number {
   return Math.max(min, Math.min(max, current + delta));
 }

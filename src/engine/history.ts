@@ -6,6 +6,15 @@ import type { CareerSnapshot } from "./types/history";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
 import { getHeya, getRikishi } from "./queries";
+import {
+  CAREER_WIN_MILESTONE_THRESHOLDS,
+  SHIKONA_CHANGE_BASE_PROBABILITY,
+  SHIKONA_CHANGE_PROBABILITY_TRADITIONALIST,
+  SHIKONA_CHANGE_PROBABILITY_TYRANT,
+  SHIKONA_CHANGE_PROBABILITY_NURTURER,
+  SHIKONA_CHANGE_PROBABILITY_SCIENTIST,
+  SHIKONA_CHANGE_SANYAKU_BONUS,
+} from "../constants/engine/generation";
 
 /**
  * Generates a career snapshot for a Rikishi based on their current state and the last basho's results.
@@ -77,7 +86,7 @@ export function recordMilestones(world: WorldState, rikishi: Rikishi) {
 
   // 2. Career wins milestones (100, 500, etc.)
   const wins = rikishi.careerWins || 0;
-  if ([100, 500, 700, 1000].includes(wins)) {
+  if (CAREER_WIN_MILESTONE_THRESHOLDS.includes(wins)) {
     rikishi.milestones.push({
       id: rng.uuid("ML"),
       type: "stats_record",
@@ -127,7 +136,7 @@ export function runHistoryUpdates(world: WorldState): StateImpact {
 
     // 2. Career wins milestones (100, 500, etc.)
     const wins = rikishi.careerWins || 0;
-    if ([100, 500, 700, 1000].includes(wins)) {
+    if (CAREER_WIN_MILESTONE_THRESHOLDS.includes(wins)) {
       updatedMilestones.push({
         id: rng.uuid("ML"),
         type: "stats_record",
@@ -185,15 +194,15 @@ export function checkShikonaChange(
   // Traditionalist oyakata: higher probability of legacy shikona
   // Scientist/Nurturer: lower probability
   const archetype = oyakata.archetype;
-  let baseProbability = 0.3; // 30% base chance
+  let baseProbability = SHIKONA_CHANGE_BASE_PROBABILITY; // 30% base chance
 
-  if (archetype === "traditionalist") baseProbability = 0.5;
-  if (archetype === "tyrant") baseProbability = 0.4;
-  if (archetype === "nurturer") baseProbability = 0.25;
-  if (archetype === "scientist") baseProbability = 0.2;
+  if (archetype === "traditionalist") baseProbability = SHIKONA_CHANGE_PROBABILITY_TRADITIONALIST;
+  if (archetype === "tyrant") baseProbability = SHIKONA_CHANGE_PROBABILITY_TYRANT;
+  if (archetype === "nurturer") baseProbability = SHIKONA_CHANGE_PROBABILITY_NURTURER;
+  if (archetype === "scientist") baseProbability = SHIKONA_CHANGE_PROBABILITY_SCIENTIST;
 
   // Increase probability for sanyaku promotion
-  if (promotedToSanyaku) baseProbability += 0.2;
+  if (promotedToSanyaku) baseProbability += SHIKONA_CHANGE_SANYAKU_BONUS;
 
   const rng = rngForWorld(world, "history", `shikona_change_${rikishi.id}_${world.year}`);
 
