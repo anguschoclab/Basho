@@ -351,12 +351,24 @@ ipcMain.handle("window:close", () => {
 
 // IPC Handlers for file dialogs
 ipcMain.handle("dialog:showSaveDialog", async (event, options?: Electron.SaveDialogOptions) => {
+  if (
+    options !== undefined &&
+    (typeof options !== "object" || options === null || Array.isArray(options))
+  ) {
+    throw new TypeError("Invalid options type for save dialog");
+  }
   if (!mainWindow) return { canceled: true, filePath: "" };
   const result = await dialog.showSaveDialog(mainWindow, options || {});
   return result;
 });
 
 ipcMain.handle("dialog:showOpenDialog", async (event, options?: Electron.OpenDialogOptions) => {
+  if (
+    options !== undefined &&
+    (typeof options !== "object" || options === null || Array.isArray(options))
+  ) {
+    throw new TypeError("Invalid options type for open dialog");
+  }
   if (!mainWindow) return { canceled: true, filePaths: [] };
   const result = await dialog.showOpenDialog(mainWindow, options || {});
   return result;
@@ -373,6 +385,12 @@ ipcMain.handle("app:getPlatform", () => {
 
 // IPC Handlers for native notifications
 ipcMain.handle("notification:show", async (event, options: { title: string; body: string }) => {
+  if (typeof options !== "object" || options === null || Array.isArray(options)) {
+    throw new TypeError("Invalid options type for notification");
+  }
+  if (typeof options.title !== "string" || typeof options.body !== "string") {
+    throw new TypeError("Invalid notification properties");
+  }
   const { Notification } = await import("electron");
   if (Notification.isSupported()) {
     new Notification({
