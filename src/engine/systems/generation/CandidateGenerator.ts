@@ -31,6 +31,25 @@ import type { WorldState } from "../../types/world";
 import type { RikishiStats } from "../../types/rikishi";
 import { JAPANESE_PREFECTURES, SUMO_HOTBEDS } from "../../../data/sumo_geography";
 import { generateScoutingBias } from "../recruitment/FogOfWarService";
+import {
+  EMERGENT_PRODIGY_CHANCE,
+  PRODIGY_STAT_BONUS,
+  STAT_MIN,
+  STAT_MAX,
+  PRODIGY_PA_CEILING_FRACTION,
+  PRODIGY_DEVELOPMENT_SPEED_MULTIPLIER,
+  DEBUT_AGE_BASE,
+  UNIVERSITY_BIRTH_YEAR_RANGE,
+  OTHER_BIRTH_YEAR_RANGE,
+  REPUTATION_SEED_MIN,
+  REPUTATION_SEED_MAX,
+  TALENT_SEED_MIN,
+  TALENT_SEED_MAX,
+  TEMPERAMENT_MIN,
+  TEMPERAMENT_MAX,
+  AMATEUR_STAR_TAG_CHANCE,
+  JAPANESE_PREFECTURES_COUNT,
+} from "../../../constants/engine/generation";
 
 /**
  * Generates a single TalentCandidate for the recruitment pools.
@@ -94,7 +113,7 @@ export function generateCandidate(args: {
   })();
 
   // Phase 5: Emergent Prodigy (1.5% chance)
-  const isEmergentProdigy = rng.next() < 0.015;
+  const isEmergentProdigy = rng.next() < EMERGENT_PRODIGY_CHANCE;
   const devProfileForRoll = isEmergentProdigy ? "prodigy" : developmentProfile;
 
   const paPkg = rollPotential({
@@ -117,10 +136,10 @@ export function generateCandidate(args: {
       "balance",
     ];
     for (const key of keys) {
-      stats[key] = clampInt((stats[key] || 0) + 12, 40, 99);
+      stats[key] = clampInt((stats[key] || 0) + PRODIGY_STAT_BONUS, STAT_MIN, STAT_MAX);
     }
-    paPkg.ceilingFraction = 1.0; // Prodigies always reach their full PA
-    paPkg.developmentSpeed *= 1.25; // Faster growth
+    paPkg.ceilingFraction = PRODIGY_PA_CEILING_FRACTION; // Prodigies always reach their full PA
+    paPkg.developmentSpeed *= PRODIGY_DEVELOPMENT_SPEED_MULTIPLIER; // Faster growth
   }
 
   // Phase 5 Depth: Genetic Lineage
@@ -139,7 +158,7 @@ export function generateCandidate(args: {
       ? seededPick(rng, FOREIGN_ORIGINS)
       : seededPick(rng, [
           ...SUMO_HOTBEDS.filter((h) => h !== "Mongolia" && h !== "Georgia" && h !== "Egypt"),
-          ...JAPANESE_PREFECTURES.slice(0, 20),
+          ...JAPANESE_PREFECTURES.slice(0, JAPANESE_PREFECTURES_COUNT),
         ]);
 
   const name = generateShikona(`${rng.seed}::candidate::${id}`, {
@@ -155,7 +174,7 @@ export function generateCandidate(args: {
     personId: rng.uuid("PS"),
     name,
     nationality: poolType === "foreign" ? origin : "Japan",
-    birthYear: currentYear - (15 + rng.int(0, poolType === "university" ? 7 : 3)),
+    birthYear: currentYear - (DEBUT_AGE_BASE + rng.int(0, poolType === "university" ? UNIVERSITY_BIRTH_YEAR_RANGE : OTHER_BIRTH_YEAR_RANGE)),
     originRegion: origin,
 
     visibilityBand: "hidden",
@@ -166,14 +185,14 @@ export function generateCandidate(args: {
     style: archetype === "oshi" ? "oshi" : archetype === "yotsu" ? "yotsu" : "hybrid",
     combatProfile: profile,
 
-    reputationSeed: rng.int(0, 100),
+    reputationSeed: rng.int(REPUTATION_SEED_MIN, REPUTATION_SEED_MAX),
     heightPotentialCm: paPkg.heightCm,
     weightPotentialKg: paPkg.weightKg,
-    talentSeed: rng.int(0, 100),
-    temperament: { discipline: rng.int(0, 100), volatility: rng.int(0, 100) },
+    talentSeed: rng.int(TALENT_SEED_MIN, TALENT_SEED_MAX),
+    temperament: { discipline: rng.int(TEMPERAMENT_MIN, TEMPERAMENT_MAX), volatility: rng.int(TEMPERAMENT_MIN, TEMPERAMENT_MAX) },
 
     competingSuitors: [],
-    tags: isEmergentProdigy ? ["prodigy"] : rng.next() > 0.8 ? ["amateur_star"] : [],
+    tags: isEmergentProdigy ? ["prodigy"] : rng.next() > AMATEUR_STAR_TAG_CHANCE ? ["amateur_star"] : [],
     isEmergentProdigy,
 
     potentialStats: {

@@ -14,6 +14,15 @@ import {
   calculateTraitAdjustedThreshold,
 } from "./strategy/NPCStrategyFramework";
 import { getOyakataStyleProfile } from "./oyakataStylePreferences";
+import {
+  AMBITIOUS_TRAIT_THRESHOLD,
+  RISK_TAKER_TRAIT_THRESHOLD,
+  MONTHLY_BURN_PER_RIKISHI,
+  RUNWAY_MONTHS_RISK_TAKER_STRATEGY,
+  RUNWAY_MONTHS_STANDARD_STRATEGY,
+  MYOSEKI_MAX_FUNDS_RATIO,
+  STYLE_ALIGNMENT_SCORE,
+} from "../constants/engine/economy";
 
 interface FinanceStrategy {
   evaluateFinances: (world: WorldState, heya: Heya, oyakata: Oyakata) => StateImpact;
@@ -28,12 +37,12 @@ const BUY_MYOSEKI_RULE: StrategyRule = {
   id: "fin_buy_myoseki",
   condition: (ctx) => {
     if (!ctx.world.myosekiMarket) return false;
-    if (!TraitChecks.isAmbitious(40)(ctx.oyakata)) return false;
+    if (!TraitChecks.isAmbitious(AMBITIOUS_TRAIT_THRESHOLD)(ctx.oyakata)) return false;
 
     // Runway Check: Don't buy if it puts us under 12 months of runway
-    const monthlyBurn = (ctx.heya.rikishiIds?.length ?? 0) * 150000;
+    const monthlyBurn = (ctx.heya.rikishiIds?.length ?? 0) * MONTHLY_BURN_PER_RIKISHI;
     const runway = ctx.heya.funds / (monthlyBurn || 1);
-    const minRunway = TraitChecks.isRiskTaker(70)(ctx.oyakata) ? 6 : 12;
+    const minRunway = TraitChecks.isRiskTaker(RISK_TAKER_TRAIT_THRESHOLD)(ctx.oyakata) ? RUNWAY_MONTHS_RISK_TAKER_STRATEGY : RUNWAY_MONTHS_STANDARD_STRATEGY;
 
     return runway > minRunway;
   },
@@ -45,13 +54,13 @@ const BUY_MYOSEKI_RULE: StrategyRule = {
     // Sort stocks by style alignment
     const prioritized = stocks
       .filter(
-        (s) => s.status === "available" && s.askingPrice && s.askingPrice < ctx.heya.funds * 0.5
+        (s) => s.status === "available" && s.askingPrice && s.askingPrice < ctx.heya.funds * MYOSEKI_MAX_FUNDS_RATIO
       )
       .sort((a, b) => {
         let scoreA = 0;
         let scoreB = 0;
-        if (styleProfile.preferredStyle === a.bonusType) scoreA += 50;
-        if (styleProfile.preferredStyle === b.bonusType) scoreB += 50;
+        if (styleProfile.preferredStyle === a.bonusType) scoreA += STYLE_ALIGNMENT_SCORE;
+        if (styleProfile.preferredStyle === b.bonusType) scoreB += STYLE_ALIGNMENT_SCORE;
         return scoreB - scoreA;
       });
 

@@ -310,3 +310,142 @@ export const UTCHARI_PIVOT_THRESHOLD = 0.4;
 
 /** Engagement log entry every N ticks */
 export const NARRATIVE_TICK_CADENCE = 5;
+
+// --- Condition multiplier (from boutUtils.ts) ---
+export const CONDITION_MULTIPLIER_FLOOR = 0.8;
+export const CONDITION_MULTIPLIER_RANGE = 0.2;
+
+// --- H2H confidence (from boutUtils.ts) ---
+export const H2H_NEUTRAL_RECORD = 0.5;
+export const H2H_CONFIDENCE_SCALE = 8;
+
+// --- Style weakness penalty (from boutUtils.ts) ---
+export const STYLE_WEAKNESS_PENALTY = 0.92;
+
+// --- Edge crisis recovery (from boutUtils.ts) ---
+export const EDGE_CRISIS_MENTAL_FACTOR = 0.005;
+export const EDGE_CRISIS_BALANCE_FACTOR = 0.002;
+
+// --- Stamina fatigue (from boutUtils.ts) ---
+export const STAMINA_FATIGUE_MULTIPLIER = 0.02;
+export const STAMINA_FATIGUE_FLOOR = 0.5;
+
+// --- Tawara bounce resistance (from boutSpatial.ts) ---
+export const TAWARA_BOUNCE_RESISTANCE_HEEL = 8.0;
+
+// --- Utchari thresholds (from boutSpatial.ts) ---
+export const UTCHARI_ESCAPE_ANGLE_THRESHOLD = 0.3;
+export const UTCHARI_MIN_TICKS_IN_CRISIS = 3;
+
+// --- Okuridashi/Okuritaoshi thresholds (from boutSpatial.ts) ---
+export const OKURIDASHI_PRESSURE_Z_THRESHOLD = 0.5;
+export const OKURITAOSHI_PRESSURE_Z_THRESHOLD = 0.3;
+
+// --- Grip constants (from boutGrip.ts) ---
+export const INITIAL_ARM_REACH = 0.1;
+export const GRIP_RANDOM_CHANCE = 0.5;
+export const MAX_ARM_REACH = 0.15;
+export const ARM_REACH_INCREMENT = 0.005;
+export const GRIP_RNG_FACTOR_MIN = 0.9;
+export const GRIP_RNG_FACTOR_RANGE = 0.2;
+export const GRIP_DEEPEN_MARGIN = 12;
+export const GRIP_DEEPEN_TECHNIQUE_MARGIN = 15;
+
+// --- Bout resolution constants (from boutResolver.ts) ---
+export const CONTENTION_WINDOW = 2;
+export const FINAL_DAY = 15;
+export const HENKA_MOMENTUM_PENALTY = 15;
+export const KENSHO_BASE_COUNT_LOW = 2;
+export const KENSHO_BASE_COUNT_MID = 5;
+export const KENSHO_BASE_COUNT_HIGH = 12;
+export const KENSHO_BASE_COUNT_PEAK = 25;
+export const KENSHO_RNG_MIN = 0.8;
+export const KENSHO_RNG_RANGE = 0.4;
+export const RIVALRY_HEAT_AGGRESSION_MULTIPLIER = 0.15;
+export const RIVALRY_SPITE_MENTAL_MULTIPLIER = 0.2;
+export const DEFAULT_YEAR = 2025;
+export const DEFAULT_DAY = 1;
+export const DEFAULT_BASHO_NUMBER = 1;
+
+// ─────────────────────────────────────────
+// Bout phase loop constants
+// ─────────────────────────────────────────
+
+/** Tachiai impact velocity */
+export const TACHIAI_IMPACT_VELOCITY = 8.0;
+
+/** Jitter magnitude for tachiai power calculation */
+export const TACHIAI_JITTER_MAGNITUDE = 8;
+
+/** Henka jitter magnitude */
+export const HENKA_JITTER_MAGNITUDE = 8;
+
+/** In-bout fatigue multiplier for effective fatigue */
+export const BOUT_FATIGUE_MULTIPLIER = 0.4;
+
+/** Force differential jitter magnitude */
+export const FORCE_DIFF_JITTER_MAGNITUDE = 3;
+
+/** Velocity scaling factor for dominant fighter */
+export const DOMINANT_VELOCITY_SCALE = 0.1;
+
+/** Clock multiplier (ticks to seconds) */
+export const CLOCK_MULTIPLIER = 2;
+
+/** Belt battle velocity scaling factor */
+export const BELT_BATTLE_VELOCITY_SCALE = 0.05;
+
+/** Edge crisis recovery probability */
+export const EDGE_CRISIS_RECOVERY_PROBABILITY = 0.3;
+
+/** Tawara toe position max (normalized) */
+export const TOE_POSITION_NORMALIZED_MAX = 1.0;
+
+/** Opponent pressure Z multiplier */
+export const OPPONENT_PRESSURE_Z_MULTIPLIER = 0.01;
+
+/** Angular escape power scaling */
+export const ANGULAR_ESCAPE_POWER_SCALE = 50;
+
+/** Escape margin threshold */
+export const ESCAPE_MARGIN_THRESHOLD = 2;
+
+/** Escape base probability */
+export const ESCAPE_BASE_PROBABILITY = 0.5;
+
+/** Escape margin probability multiplier */
+export const ESCAPE_MARGIN_PROBABILITY_MULTIPLIER = 0.05;
+
+/** Instability threshold for isamiashi */
+export const ISAMIASHI_INSTABILITY_THRESHOLD = 0.9;
+
+/** Duration minimum (seconds) */
+export const DURATION_MIN_SECONDS = 1;
+
+/** Excitement score tick divisor */
+export const EXCITEMENT_TICK_DIVISOR = 3;
+
+/** Edge crisis escape excitement points */
+export const EDGE_CRISIS_ESCAPE_EXCITEMENT_POINTS = 20;
+
+/** Advantage threshold differential */
+export const ADVANTAGE_THRESHOLD_DIFFERENTIAL = 0.05;
+
+/** Balance calculation multiplier */
+export const BALANCE_CALCULATION_MULTIPLIER = 10;
+
+// ─────────────────────────────────────────
+// Bout resolver constants
+// ─────────────────────────────────────────
+
+/** Rivalry heat/spite normalization divisor (convert 0-100 to 0-1) */
+export const RIVALRY_NORMALIZATION_DIVISOR = 100;
+
+/** Default stat value when stat is undefined */
+export const DEFAULT_STAT_VALUE = 50;
+
+/** Stat clamp minimum */
+export const STAT_CLAMP_MIN = 0;
+
+/** Stat clamp maximum */
+export const STAT_CLAMP_MAX = 100;

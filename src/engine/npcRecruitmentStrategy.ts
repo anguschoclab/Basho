@@ -3,6 +3,22 @@ import type { Heya } from "./types/heya";
 import type { Oyakata, OyakataArchetype } from "./types/oyakata";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
+import {
+  MONTHLY_BURN_PER_RIKISHI,
+  MONTHS_PER_YEAR,
+  RECRUITMENT_BASE_RISK_MODIFIER,
+  RECRUITMENT_AMBITION_THRESHOLD_RISK,
+  RECRUITMENT_RISK_THRESHOLD_RISK,
+  RECRUITMENT_RISK_TAKER_BONUS,
+  RECRUITMENT_BASE_TARGET_SIZE,
+  RECRUITMENT_AMBITION_THRESHOLD_SIZE,
+  RECRUITMENT_AMBITIOUS_SIZE_BONUS,
+  RECRUITMENT_TRADITION_THRESHOLD_SIZE,
+  RECRUITMENT_TRADITIONALIST_SIZE_BONUS,
+  RECRUITMENT_BASE_MULTIPLIER,
+  RECRUITMENT_SPITE_PREMIUM_MULTIPLIER,
+  RECRUITMENT_MIN_BID,
+} from "../constants/engine/economy";
 
 interface RecruitmentStrategy {
   evaluateVacancies: (
@@ -23,14 +39,14 @@ interface RecruitmentStrategy {
  * Calculates a sustainable max bid based on yearly runway.
  */
 function calculateRunwayAwareMaxBid(heya: Heya, oyakata: Oyakata, baseMultiplier: number): number {
-  const monthlyBurn = (heya.rikishiIds?.length ?? 0) * 150000;
-  const yearlyBurn = monthlyBurn * 12;
+  const monthlyBurn = (heya.rikishiIds?.length ?? 0) * MONTHLY_BURN_PER_RIKISHI;
+  const yearlyBurn = monthlyBurn * MONTHS_PER_YEAR;
   const surplus = Math.max(0, heya.funds - yearlyBurn);
 
   // Ambitious/Risk-Takers use more of their surplus
-  let riskMod = 0.2;
-  if (oyakata.traits.ambition > 80) riskMod += 0.2;
-  if (oyakata.traits.risk > 70) riskMod += 0.3;
+  let riskMod = RECRUITMENT_BASE_RISK_MODIFIER;
+  if (oyakata.traits.ambition > RECRUITMENT_AMBITION_THRESHOLD_RISK) riskMod += RECRUITMENT_RISK_TAKER_BONUS;
+  if (oyakata.traits.risk > RECRUITMENT_RISK_THRESHOLD_RISK) riskMod += RECRUITMENT_RISK_TAKER_BONUS;
 
   return surplus * riskMod * baseMultiplier;
 }
@@ -45,9 +61,9 @@ export const DefaultRecruitmentStrategy: RecruitmentStrategy = {
     const freezeWeeks = heya.welfareState?.sanctions?.recruitmentFreezeWeeks ?? 0;
     if (freezeWeeks > 0) return { impact: builder.build(), count: 0 };
 
-    let targetSize = 10;
-    if (oyakata.traits.ambition > 75) targetSize += 5;
-    if (oyakata.traits.tradition > 70) targetSize += 2;
+    let targetSize = RECRUITMENT_BASE_TARGET_SIZE;
+    if (oyakata.traits.ambition > RECRUITMENT_AMBITION_THRESHOLD_SIZE) targetSize += RECRUITMENT_AMBITIOUS_SIZE_BONUS;
+    if (oyakata.traits.tradition > RECRUITMENT_TRADITION_THRESHOLD_SIZE) targetSize += RECRUITMENT_TRADITIONALIST_SIZE_BONUS;
 
     const currentSize = heya.rikishiIds?.length ?? 0;
     const count = Math.max(0, targetSize - currentSize);
@@ -56,14 +72,14 @@ export const DefaultRecruitmentStrategy: RecruitmentStrategy = {
   },
 
   calculateMaxBid(_world, heya, oyakata, _candidateId, rivalHeyaId) {
-    let maxBid = calculateRunwayAwareMaxBid(heya, oyakata, 1.0);
+    let maxBid = calculateRunwayAwareMaxBid(heya, oyakata, RECRUITMENT_BASE_MULTIPLIER);
 
     // Spite Premium
     if (rivalHeyaId && oyakata.temperament === "Vindictive") {
-      maxBid *= 1.5;
+      maxBid *= RECRUITMENT_SPITE_PREMIUM_MULTIPLIER;
     }
 
-    return Math.max(5000000, maxBid); // Minimum bid of 5m
+    return Math.max(RECRUITMENT_MIN_BID, maxBid); // Minimum bid of 5m
   },
 };
 

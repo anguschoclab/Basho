@@ -7,6 +7,13 @@ import { rngForWorld } from "./rng";
 import { stableTieBreak } from "./utils/sort";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
+import {
+  TRANSFER_RATIO_STANDARD,
+  TRANSFER_RATIO_SCANDAL,
+  ROSTER_CAPACITY_STANDARD,
+  ROSTER_CAPACITY_MERGER,
+  FACILITY_MERGER_RATIO,
+} from "../constants/engine/roster";
 
 /**
  * Execute a stable merger.
@@ -57,22 +64,22 @@ export function executeMerger(
   // If source had debt, it might not transfer fully, but positive funds transfer partially
   let newTargetFunds = target.funds;
   if (source.funds > 0) {
-    const transferRatio = source.scandalScore > 50 ? 0.2 : 0.5; // Scandal reduces favorable outcomes
+    const transferRatio = source.scandalScore > 50 ? TRANSFER_RATIO_SCANDAL : TRANSFER_RATIO_STANDARD; // Scandal reduces favorable outcomes
     newTargetFunds += Math.floor(source.funds * transferRatio);
   }
 
   // 3. Combine facilities (diminishing returns)
   const newTraining = Math.min(
     100,
-    target.facilities.training + Math.floor(source.facilities.training * 0.2)
+    target.facilities.training + Math.floor(source.facilities.training * FACILITY_MERGER_RATIO)
   );
   const newRecovery = Math.min(
     100,
-    target.facilities.recovery + Math.floor(source.facilities.recovery * 0.2)
+    target.facilities.recovery + Math.floor(source.facilities.recovery * FACILITY_MERGER_RATIO)
   );
   const newNutrition = Math.min(
     100,
-    target.facilities.nutrition + Math.floor(source.facilities.nutrition * 0.2)
+    target.facilities.nutrition + Math.floor(source.facilities.nutrition * FACILITY_MERGER_RATIO)
   );
 
   // Update facilities band on a copy to get the new band
@@ -153,7 +160,7 @@ export function findMergerTarget(world: WorldState, sourceHeyaId: Id): Id | null
   for (const h of world.heyas.values()) {
     if (
       h.id !== sourceHeyaId &&
-      getStableRikishi(world, h.id).length < 25 &&
+      getStableRikishi(world, h.id).length < ROSTER_CAPACITY_STANDARD &&
       (h.prestigeBand === "elite" || h.prestigeBand === "respected" || h.prestigeBand === "modest")
     ) {
       candidates.push(h);
@@ -164,7 +171,7 @@ export function findMergerTarget(world: WorldState, sourceHeyaId: Id): Id | null
     // Fallback: any stable with room
     const fallback: import("./types/heya").Heya[] = [];
     for (const h of world.heyas.values()) {
-      if (h.id !== sourceHeyaId && getStableRikishi(world, h.id).length < 30) fallback.push(h);
+      if (h.id !== sourceHeyaId && getStableRikishi(world, h.id).length < ROSTER_CAPACITY_MERGER) fallback.push(h);
     }
     if (fallback.length === 0) return null;
     return fallback[rng.int(0, fallback.length - 1)].id;

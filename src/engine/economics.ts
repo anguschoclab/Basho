@@ -22,6 +22,11 @@ import {
   DEBT_LIMIT,
   BENEFACTOR_BAILOUT_AMOUNT,
   KENSHO_AMOUNT_PER_ENVELOPE,
+  KENSHO_RIKISHI_SHARE_RATIO,
+  KENSHO_RETIREMENT_DIVERSION_RATIO,
+  KINBOSHI_MARKETABILITY_BOOST,
+  GINBOSHI_MARKETABILITY_BOOST,
+  MARKETABILITY_POPULARITY_MULTIPLIER,
 } from "../constants/engine/economic";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
@@ -118,18 +123,18 @@ export function onBoutResolvedEconomics(
 
   // Marketability shift for kinboshi/ginboshi
   const marketabilityScale =
-    result.awardFact === "kinboshi" ? 5 : result.awardFact === "ginboshi" ? 2 : 0;
+    result.awardFact === "kinboshi" ? KINBOSHI_MARKETABILITY_BOOST : result.awardFact === "ginboshi" ? GINBOSHI_MARKETABILITY_BOOST : 0;
   const existingMarketability = winner.marketability ?? 50;
 
   if (kenshoCount > 0) {
     const total = kenshoCount * KENSHO_AMOUNT_PER_ENVELOPE;
 
     // Constitution: 50/50 split rikishi/heya
-    const rikishiGross = total * 0.5;
-    const stableShare = total * 0.5;
+    const rikishiGross = total * KENSHO_RIKISHI_SHARE_RATIO;
+    const stableShare = total * KENSHO_RIKISHI_SHARE_RATIO;
 
     // Constitution: 30% of rikishi share → retirement fund
-    const retirementDiversion = rikishiGross * 0.3;
+    const retirementDiversion = rikishiGross * KENSHO_RETIREMENT_DIVERSION_RATIO;
     const rikishiNet = rikishiGross - retirementDiversion;
 
     const updatedEconomics = {
@@ -139,7 +144,7 @@ export function onBoutResolvedEconomics(
       currentBashoEarnings: existingEconomics.currentBashoEarnings + rikishiNet,
       careerKenshoWon: existingEconomics.careerKenshoWon + kenshoCount,
       totalEarnings: existingEconomics.totalEarnings + rikishiNet,
-      popularity: Math.min(100, existingEconomics.popularity + marketabilityScale * 2),
+      popularity: Math.min(100, existingEconomics.popularity + marketabilityScale * MARKETABILITY_POPULARITY_MULTIPLIER),
     };
 
     builder.updateRikishi(winner.id, {
@@ -166,7 +171,7 @@ export function onBoutResolvedEconomics(
     builder.updateRikishi(winner.id, {
       economics: {
         ...existingEconomics,
-        popularity: Math.min(100, existingEconomics.popularity + marketabilityScale * 2),
+        popularity: Math.min(100, existingEconomics.popularity + marketabilityScale * MARKETABILITY_POPULARITY_MULTIPLIER),
       },
       marketability: existingMarketability + marketabilityScale,
     });

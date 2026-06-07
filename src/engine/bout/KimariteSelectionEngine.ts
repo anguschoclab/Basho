@@ -4,6 +4,21 @@ import type { SpatialBoutContext, KimariteAttempt, EngineStateV2 } from "../type
 import type { KimariteId } from "../types/combat";
 import { KIMARITE_STRATEGIES, getKimarite } from "../kimarite";
 import { SeededRNG } from "../rng";
+import {
+  KIMARITE_NAGE_HINERI_BOOST,
+  KIMARITE_KIHON_PENALTY,
+  KIMARITE_KIHON_DEFENSE_BOOST,
+  KIMARITE_OFF_AXIS_PENALTY,
+  KIMARITE_TONE_MATCH_BOOST,
+  KIMARITE_FAVORITE_BOOST,
+  KIMARITE_SUCCESS_MIN,
+  KIMARITE_SUCCESS_MAX,
+  KIMARITE_SUCCESS_BASE_SCALE,
+  KIMARITE_MAKUUCHI_BOOST,
+  KIMARITE_LOWER_DIVISION_PENALTY,
+  KIMARITE_FAVORITE_SUCCESS_BOOST,
+  KIMARITE_SUCCESS_HARD_MIN,
+} from "../../constants/engine/kimarite";
 
 
 /**
@@ -60,12 +75,12 @@ export const KimariteSelectionEngine = {
 
         // Division Biases (E2)
         if (division === "makuuchi") {
-          if (s.category === "nage" || s.category === "hineri") weight *= 1.3;
-          if (s.category === "kihon") weight *= 0.8;
+          if (s.category === "nage" || s.category === "hineri") weight *= KIMARITE_NAGE_HINERI_BOOST;
+          if (s.category === "kihon") weight *= KIMARITE_KIHON_PENALTY;
         } else if (division === "jonokuchi" || division === "jonidan") {
-          if (s.category === "kihon") weight *= 1.5;
+          if (s.category === "kihon") weight *= KIMARITE_KIHON_DEFENSE_BOOST;
           if (s.category === "nage" || s.category === "hineri" || s.category === "sori")
-            weight *= 0.4;
+            weight *= KIMARITE_OFF_AXIS_PENALTY;
         }
 
         // Meta Drift (E5)
@@ -76,14 +91,14 @@ export const KimariteSelectionEngine = {
         const registryEntry = getKimarite(s.id);
         const tacticalFamily = registryEntry?.tacticalFamily;
 
-        if (effectiveMeta.tone === "explosive" && tacticalFamily === "push") weight *= 1.15;
-        if (effectiveMeta.tone === "classic" && tacticalFamily === "belt") weight *= 1.15;
-        if (effectiveMeta.tone === "technical" && tacticalFamily === "speed") weight *= 1.15;
-        if (effectiveMeta.tone === "defensive" && tacticalFamily === "trick") weight *= 1.15;
+        if (effectiveMeta.tone === "explosive" && tacticalFamily === "push") weight *= KIMARITE_TONE_MATCH_BOOST;
+        if (effectiveMeta.tone === "classic" && tacticalFamily === "belt") weight *= KIMARITE_TONE_MATCH_BOOST;
+        if (effectiveMeta.tone === "technical" && tacticalFamily === "speed") weight *= KIMARITE_TONE_MATCH_BOOST;
+        if (effectiveMeta.tone === "defensive" && tacticalFamily === "trick") weight *= KIMARITE_TONE_MATCH_BOOST;
 
         // Rikishi Specialization (Favored Moves)
         if (attacker.favoredKimarite?.includes(s.id)) {
-          weight *= 1.5;
+          weight *= KIMARITE_FAVORITE_BOOST;
         }
 
         return { strategy: s, weight };
@@ -108,21 +123,21 @@ export const KimariteSelectionEngine = {
       const difficulty = selected.difficulty || 5;
 
       // Base probability: tech (0-100) vs difficulty (1-10) scaled to 10-100
-      let successProb = Math.max(0.1, Math.min(0.97, (attackerTech / (difficulty * 10)) * 0.8));
+      let successProb = Math.max(KIMARITE_SUCCESS_MIN, Math.min(KIMARITE_SUCCESS_MAX, (attackerTech / (difficulty * 10)) * KIMARITE_SUCCESS_BASE_SCALE));
 
       // Division execution scaling
-      if (division === "makuuchi") successProb += 0.1;
-      if (division === "jonidan" || division === "jonokuchi") successProb -= 0.15;
+      if (division === "makuuchi") successProb += KIMARITE_MAKUUCHI_BOOST;
+      if (division === "jonidan" || division === "jonokuchi") successProb -= KIMARITE_LOWER_DIVISION_PENALTY;
 
       // Favored kimarite execution boost: +0.08 when the attacker specialises in this technique
       if (attacker.favoredKimarite?.includes(selected.id)) {
-        successProb += 0.08;
+        successProb += KIMARITE_FAVORITE_SUCCESS_BOOST;
       }
 
       results.push({
         technique: selected.id as KimariteId,
         side: side,
-        successProbability: Math.max(0.05, Math.min(0.97, successProb)),
+        successProbability: Math.max(KIMARITE_SUCCESS_HARD_MIN, Math.min(KIMARITE_SUCCESS_MAX, successProb)),
         requiredConditions: ["registry_match", `difficulty_${difficulty}`],
       });
     }

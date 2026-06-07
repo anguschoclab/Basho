@@ -10,6 +10,19 @@ import { TraitChecks, calculateMoodAdjustedThreshold } from "./NPCStrategyFramew
 import { evaluateRulesExclusive } from "./NPCStrategyFramework";
 import { buyMyoseki } from "../myosekiMarket";
 import { stableSort } from "../utils/sort";
+import {
+  TRAIT_HOARDER_AMBITION_THRESHOLD,
+  TRAIT_TRADITION_THRESHOLD,
+  TRAIT_PATIENCE_THRESHOLD,
+} from "../../constants/engine/npcStrategy";
+import {
+  MYOSEKI_THRESHOLD_HOARDER,
+  MYOSEKI_THRESHOLD_DEFAULT,
+  MYOSEKI_THRESHOLD_TRADITIONALIST,
+  MYOSEKI_THRESHOLD_PATIENT,
+  MYOSEKI_BUFFER_AMOUNT,
+  MYOSEKI_BUFFER_TRADITIONALIST,
+} from "../../constants/engine/economic";
 
 // ============================================================================
 // Finance Strategy Rules
@@ -20,9 +33,9 @@ const defaultMyosekiRule: StrategyRule = {
   condition: (ctx) => {
     const { world, heya, oyakata } = ctx;
     if (!world.myosekiMarket) return false;
-    if (!TraitChecks.isAmbitious(50)(oyakata)) return false;
+    if (!TraitChecks.isAmbitious(TRAIT_HOARDER_AMBITION_THRESHOLD)(oyakata)) return false;
 
-    const baseThreshold = TraitChecks.isHoarder(30)(oyakata) ? 500_000_000 : 300_000_000;
+    const baseThreshold = TraitChecks.isHoarder(30)(oyakata) ? MYOSEKI_THRESHOLD_HOARDER : MYOSEKI_THRESHOLD_DEFAULT;
     const threshold = calculateMoodAdjustedThreshold(baseThreshold, oyakata);
 
     return (heya.funds ?? 0) > threshold;
@@ -36,7 +49,7 @@ const defaultMyosekiRule: StrategyRule = {
       (x) => (x as { id?: string }).id || String(x)
     );
 
-    const buffer = TraitChecks.isHoarder(30)(oyakata) ? 100_000_000 : 100_000_000;
+    const buffer = TraitChecks.isHoarder(30)(oyakata) ? MYOSEKI_BUFFER_AMOUNT : MYOSEKI_BUFFER_AMOUNT;
 
     for (const stock of stocks) {
       const s = stock as {
@@ -68,12 +81,12 @@ const traditionalistMyosekiRule: StrategyRule = {
   condition: (ctx) => {
     const { world, heya, oyakata } = ctx;
     if (!world.myosekiMarket) return false;
-    if (!TraitChecks.isTraditionalist(60)(oyakata)) return false;
-    if ((oyakata.traits.tradition ?? 0) <= 60) return false;
+    if (!TraitChecks.isTraditionalist(TRAIT_TRADITION_THRESHOLD)(oyakata)) return false;
+    if ((oyakata.traits.tradition ?? 0) <= TRAIT_TRADITION_THRESHOLD) return false;
 
-    let threshold = 600_000_000;
-    if (TraitChecks.isPatient(70)(oyakata)) {
-      threshold = 700_000_000;
+    let threshold = MYOSEKI_THRESHOLD_TRADITIONALIST;
+    if (TraitChecks.isPatient(TRAIT_PATIENCE_THRESHOLD)(oyakata)) {
+      threshold = MYOSEKI_THRESHOLD_PATIENT;
     }
 
     return (heya.funds ?? 0) > threshold;
@@ -97,7 +110,7 @@ const traditionalistMyosekiRule: StrategyRule = {
         s.status === "available" &&
         s.askingPrice &&
         s.id &&
-        s.askingPrice < (heya.funds ?? 0) - 200_000_000
+        s.askingPrice < (heya.funds ?? 0) - MYOSEKI_BUFFER_TRADITIONALIST
       ) {
         buyMyoseki(world, oyakata.id, heya.id, s.id);
         return true;

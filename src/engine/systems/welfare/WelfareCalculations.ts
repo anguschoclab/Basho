@@ -16,14 +16,36 @@ import type { WorldState } from "../../types/world";
 import type { Heya } from "../../types/heya";
 import type { WelfareState } from "../../types/economy";
 import { EntityCollection } from "../../core/EntityCollection";
+import {
+  INJURY_PRESSURE_SERIOUS,
+  INJURY_PRESSURE_MODERATE,
+  INJURY_PRESSURE_MINOR,
+  WELFARE_PRESSURE_DIVISOR,
+  WELFARE_DELTA_MAX,
+  WELFARE_SERIOUS_INJURY_BONUS,
+  WELFARE_AUSTERITY_DIET_BONUS,
+  WELFARE_PREMIUM_DIET_REDUCTION,
+  WELFARE_NEGLIGENCE_PENALTY_MULTIPLIER,
+  WELFARE_PUNISHING_INTENSITY_BONUS,
+  WELFARE_INTENSIVE_INTENSITY_BONUS,
+  WELFARE_LOW_RECOVERY_BONUS,
+  WELFARE_HIGH_RECOVERY_REDUCTION,
+  FACILITY_RECOVERY_QUALITY_BASE,
+  FACILITY_RECOVERY_DIVISOR,
+  FACILITY_NUTRITION_QUALITY_BASE,
+  FACILITY_NUTRITION_DIVISOR,
+  SCANDAL_WELFARE_THRESHOLD,
+  WELFARE_SCANDAL_SYNERGY_BONUS,
+  WELFARE_HEALTHY_DRIFT_REDUCTION,
+} from "../../../constants/engine/welfare";
 
 /**
  * Weights injury severity for welfare pressure.
  */
 export function getSeverityWeight(sev: string | number | undefined): number {
-  if (sev === "serious" || sev === "high" || sev === 3) return 8;
-  if (sev === "moderate" || sev === "medium" || sev === 2) return 4;
-  return 2;
+  if (sev === "serious" || sev === "high" || sev === 3) return INJURY_PRESSURE_SERIOUS;
+  if (sev === "moderate" || sev === "medium" || sev === 2) return INJURY_PRESSURE_MODERATE;
+  return INJURY_PRESSURE_MINOR;
 }
 
 /**
@@ -77,23 +99,23 @@ export function calculateWeeklyWelfareDelta(
   const reasons: string[] = [];
   const { pressure, seriousCount, negligenceCount } = computeInjuryPressure(world, heya);
 
-  let delta = clamp(Math.round(pressure / 3), 0, 12);
+  let delta = clamp(Math.round(pressure / WELFARE_PRESSURE_DIVISOR), 0, WELFARE_DELTA_MAX);
   if (seriousCount > 0) {
-    delta += 2;
+    delta += WELFARE_SERIOUS_INJURY_BONUS;
     reasons.push("serious_injuries+2");
   }
 
   const diet = state.activeDiet || "maintenance";
   if (diet === "austerity") {
-    delta += 2;
+    delta += WELFARE_AUSTERITY_DIET_BONUS;
     reasons.push("austerity_diet+2");
   } else if (diet === "premium") {
-    delta -= 1;
+    delta -= WELFARE_PREMIUM_DIET_REDUCTION;
     reasons.push("premium_diet-1");
   }
 
   if (negligenceCount > 0) {
-    const penalty = negligenceCount * 3;
+    const penalty = negligenceCount * WELFARE_NEGLIGENCE_PENALTY_MULTIPLIER;
     delta += penalty;
     reasons.push(`negligence+${penalty}`);
   } else if (pressure > 0) {
@@ -106,33 +128,33 @@ export function calculateWeeklyWelfareDelta(
   const recovery = trainingState?.activeProfile.recovery || "normal";
 
   if (intensity === "punishing") {
-    delta += 3;
+    delta += WELFARE_PUNISHING_INTENSITY_BONUS;
     reasons.push("punishing_intensity+3");
   } else if (intensity === "intensive") {
-    delta += 1;
+    delta += WELFARE_INTENSIVE_INTENSITY_BONUS;
     reasons.push("intensive_intensity+1");
   }
 
   if (recovery === "low") {
-    delta += 2;
+    delta += WELFARE_LOW_RECOVERY_BONUS;
     reasons.push("low_recovery+2");
   } else if (recovery === "high") {
-    delta -= 2;
+    delta -= WELFARE_HIGH_RECOVERY_REDUCTION;
     reasons.push("high_recovery-2");
   }
 
   // Facility Impact
   const recQuality = heya.facilities?.recovery ?? 50;
   const nutQuality = heya.facilities?.nutrition ?? 50;
-  const facDelta = Math.round((60 - recQuality) / 25) + Math.round((55 - nutQuality) / 40);
+  const facDelta = Math.round((FACILITY_RECOVERY_QUALITY_BASE - recQuality) / FACILITY_RECOVERY_DIVISOR) + Math.round((FACILITY_NUTRITION_QUALITY_BASE - nutQuality) / FACILITY_NUTRITION_DIVISOR);
   if (facDelta !== 0) {
     delta += facDelta;
     reasons.push(`facilities${facDelta >= 0 ? "+" : ""}${facDelta}`);
   }
 
   // Scandal Synergy
-  if ((heya.scandalScore || 0) >= 50) {
-    delta += 2;
+  if ((heya.scandalScore || 0) >= SCANDAL_WELFARE_THRESHOLD) {
+    delta += WELFARE_SCANDAL_SYNERGY_BONUS;
     reasons.push("scandal_synergy+2");
   }
 
@@ -140,7 +162,7 @@ export function calculateWeeklyWelfareDelta(
   const isHealthy =
     pressure === 0 && intensity !== "punishing" && intensity !== "intensive" && recovery !== "low";
   if (isHealthy) {
-    delta -= 2;
+    delta -= WELFARE_HEALTHY_DRIFT_REDUCTION;
     reasons.push("healthy_drift-2");
   }
 

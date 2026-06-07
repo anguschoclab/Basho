@@ -34,3 +34,26 @@ export const DEFAULT_TONE_PROBABILITY = 0.2;
 
 /** Minimum rank impact for high-rank tone probability */
 export const HIGH_RANK_IMPACT_THRESHOLD = 8;
+
+// Streak impact calculations
+export const STREAK_IMPACT_BASE = 35;
+export const STREAK_IMPACT_MULTIPLIER = 4;
+export const STREAK_MAIN_EVENT_THRESHOLD = 10;
+
+// Headline generation chances
+export const MAIN_EVENT_HEADLINE_CHANCE = 0.4;
+export const STREAK_HEADLINE_THRESHOLD = 10;
+export const STREAK_SECONDARY_THRESHOLD = 8;
+
+// Media pre-basho thresholds
+export const HOT_PAIR_HEAT_THRESHOLD = 30;
+export const CONSECUTIVE_STRONG_OZEKI_THRESHOLD = 1;
+export const HEADLINES_HISTORY_MAX = 50;
+
+// Media impact values
+export const MEDIA_IMPACT_HIGH = 5;
+export const MEDIA_IMPACT_MEDIUM = 3;
+export const MEDIA_IMPACT_LOW = 1;
+
+// Media response slice count
+export const MEDIA_RESPONSE_SLICE_COUNT = 5;

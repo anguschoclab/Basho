@@ -8,6 +8,7 @@ import type { WorldState } from "../../types/world";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { RNGRegistry } from "../../core/RNGRegistry";
+import { MARKET_DRIFT_RANGE, STOCK_PRICE_ROUNDING, RNG_MIDPOINT } from "../../../constants/engine/economy";
 
 export function phase01_monthly_market(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_monthly_market");
@@ -28,10 +29,10 @@ export function phase01_monthly_market(world: WorldState): StateImpact {
   for (const stock of Object.values(market.stocks)) {
     if (stock.status === "available" && stock.askingPrice) {
       // Monthly jitter: +/- 3% price shift
-      const drift = 1 + (rng.next() - 0.5) * 0.06;
+      const drift = 1 + (rng.next() - RNG_MIDPOINT) * MARKET_DRIFT_RANGE;
       const updatedStock = {
         ...stock,
-        askingPrice: Math.round((stock.askingPrice * drift) / 10000) * 10000,
+        askingPrice: Math.round((stock.askingPrice * drift) / STOCK_PRICE_ROUNDING) * STOCK_PRICE_ROUNDING,
       };
       updatedStocks[stock.id] = updatedStock;
     }

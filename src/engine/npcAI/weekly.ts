@@ -6,6 +6,14 @@ import { WorldCircuitService } from "../systems/global/WorldCircuitService";
 import { getOyakataForHeya, getRikishi, getHeya } from "../queries";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import { getManagerPersona } from "../systems/NPCPersonaService";
+import {
+  TOP_RIKISHI_COUNT,
+  MAX_ROSTER_SIZE,
+  RISK_CONDITION_WEIGHT,
+  RISK_FATIGUE_WEIGHT,
+  HIGH_RISK_THRESHOLD,
+  HIGH_RISK_RATIO_THRESHOLD,
+} from "../../constants/engine/npcStrategy";
 
 import {
   spawnTrainingWorker,
@@ -127,7 +135,7 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
       if (!r) continue;
       if (r.division === "makuuchi" || r.division === "juryo") {
         topRikishi.push(r);
-        if (topRikishi.length >= 5) break;
+        if (topRikishi.length >= TOP_RIKISHI_COUNT) break;
       }
     }
 
@@ -148,7 +156,7 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
       confidence: 0,
     };
     const rosterSize = heya?.rikishiIds?.length || 0;
-    const vacancies = Math.max(0, 15 - rosterSize);
+    const vacancies = Math.max(0, MAX_ROSTER_SIZE - rosterSize);
     if (vacancies > 0 && world.talentPool) {
       const candidateIds = Object.keys(world.talentPool.candidates);
       if (candidateIds.length > 0) {
@@ -386,16 +394,16 @@ function applyInjuryRiskReduction(
 
     const condition = r.condition ?? 100;
     const fatigue = r.fatigue ?? 0;
-    const riskScore = (100 - condition) * 0.6 + fatigue * 0.4;
+    const riskScore = (100 - condition) * RISK_CONDITION_WEIGHT + fatigue * RISK_FATIGUE_WEIGHT;
 
-    if (riskScore > 60) {
+    if (riskScore > HIGH_RISK_THRESHOLD) {
       highRiskCount++;
       protectIds.push(rikishiId);
     }
   }
 
   const rosterSize = (heya.rikishiIds ?? []).length;
-  if (rosterSize > 0 && highRiskCount / rosterSize > 0.4) {
+  if (rosterSize > 0 && highRiskCount / rosterSize > HIGH_RISK_RATIO_THRESHOLD) {
     const intensity = decision.trainingIntensity;
     if (intensity === "punishing") {
       decision.trainingIntensity = "intensive";

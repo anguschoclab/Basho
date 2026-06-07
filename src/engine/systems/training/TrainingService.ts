@@ -152,11 +152,11 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
           ...currentStatus,
           type: "strain",
           severity: "serious",
-          weeksRemaining: 12,
-          weeksToHeal: 12,
+          weeksRemaining: BURNOUT_INJURY_WEEKS,
+          weeksToHeal: BURNOUT_INJURY_WEEKS,
         };
-        const crashPower = Math.max(30, (rikishi.stats.power ?? 50) - 15);
-        const crashStamina = Math.max(30, (rikishi.stats.stamina ?? 50) - 15);
+        const crashPower = Math.max(CRASH_STAT_FLOOR, (rikishi.stats.power ?? 50) - CRASH_STAT_PENALTY);
+        const crashStamina = Math.max(CRASH_STAT_FLOOR, (rikishi.stats.stamina ?? 50) - CRASH_STAT_PENALTY);
         // Stats object will be synced in the growth section if not injured,
         // but since we just injured them, we should sync here too.
         updates.stats = {
@@ -252,31 +252,31 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
 
       newStats.power = Math.min(
         getEffectiveCeiling(rikishi, "power", world),
-        Math.max(10, (rikishi.stats.power || 50) + finalGrowth.strength + decay.power)
+        Math.max(STAT_FLOOR, (rikishi.stats.power || 50) + finalGrowth.strength + decay.power)
       );
       newStats.speed = Math.min(
         getEffectiveCeiling(rikishi, "speed", world),
-        Math.max(10, (rikishi.stats.speed || 50) + finalGrowth.speed + decay.speed)
+        Math.max(STAT_FLOOR, (rikishi.stats.speed || 50) + finalGrowth.speed + decay.speed)
       );
       newStats.technique = Math.min(
         getEffectiveCeiling(rikishi, "technique", world),
-        Math.max(10, (rikishi.stats.technique || 50) + finalGrowth.technique + decay.technique)
+        Math.max(STAT_FLOOR, (rikishi.stats.technique || 50) + finalGrowth.technique + decay.technique)
       );
       newStats.balance = Math.min(
         getEffectiveCeiling(rikishi, "balance", world),
-        Math.max(10, (rikishi.stats.balance || 50) + finalGrowth.balance + decay.balance)
+        Math.max(STAT_FLOOR, (rikishi.stats.balance || 50) + finalGrowth.balance + decay.balance)
       );
       newStats.stamina = Math.min(
         getEffectiveCeiling(rikishi, "stamina", world),
-        Math.max(10, (rikishi.stats.stamina || 50) + finalGrowth.stamina + decay.stamina)
+        Math.max(STAT_FLOOR, (rikishi.stats.stamina || 50) + finalGrowth.stamina + decay.stamina)
       );
       newStats.adaptability = Math.min(
         getEffectiveCeiling(rikishi, "adaptability", world),
-        Math.max(10, (rikishi.stats.adaptability || 50) + finalGrowth.adaptability + decay.adaptability)
+        Math.max(STAT_FLOOR, (rikishi.stats.adaptability || 50) + finalGrowth.adaptability + decay.adaptability)
       );
       newStats.mental = Math.min(
         getEffectiveCeiling(rikishi, "mental", world),
-        Math.max(10, (rikishi.stats.mental || 50) + finalGrowth.mental * EXPERIENCE_GROWTH_MULTIPLIER + decay.mental)
+        Math.max(STAT_FLOOR, (rikishi.stats.mental || 50) + finalGrowth.mental * EXPERIENCE_GROWTH_MULTIPLIER + decay.mental)
       );
 
       // 4. Final Enforcements (Clamping & Stat Floors)
@@ -291,9 +291,9 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
         // Enforce Elite Division Floors
         // This prevents the "Sumo Graveyard" effect where Makuuchi is filled with decayed jobbers.
         if (rikishi.division === "makuuchi") {
-          val = Math.max(45, val);
+          val = Math.max(DIVISION_FLOOR_MAKUUCHI, val);
         } else if (rikishi.division === "juryo") {
-          val = Math.max(40, val);
+          val = Math.max(DIVISION_FLOOR_JURYO, val);
         }
 
         newStats[statsKey] = Math.floor(val);
@@ -303,7 +303,7 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
 
       // Milestone Events (Threshold crossing)
       const currentPower = newStats.power;
-      if (Math.floor(currentPower / 10) > Math.floor(prevPower / 10)) {
+      if (Math.floor(currentPower / TRAINING_MILESTONE_THRESHOLD) > Math.floor(prevPower / TRAINING_MILESTONE_THRESHOLD)) {
         builder.logEvent(
           "TRAINING_UPDATE",
           "training",
@@ -355,8 +355,8 @@ function applyBurnoutStep(
   r.consecutiveExtremeWeeks = currentWeeks;
 
   // Probability roll: 15% (W1) -> 35% (W2) -> 100% (W3+)
-  let crashProb = 0.15;
-  if (currentWeeks === 2) crashProb = 0.35;
+  let crashProb = BURNOUT_PROB_WEEK_1;
+  if (currentWeeks === 2) crashProb = BURNOUT_PROB_WEEK_2;
   if (currentWeeks >= CRASH_PROBABILITY_THRESHOLD_WEEKS) crashProb = MAX_CRASH_PROBABILITY;
 
   // Use system RNG for deterministic burnout rolls
@@ -375,6 +375,17 @@ function applyBurnoutStep(
  * Provides a namespace for all training-related functions and constants.
  */
 import * as Constants from "../../../constants/engine/training";
+import {
+  BURNOUT_INJURY_WEEKS,
+  CRASH_STAT_FLOOR,
+  CRASH_STAT_PENALTY,
+  STAT_FLOOR,
+  DIVISION_FLOOR_MAKUUCHI,
+  DIVISION_FLOOR_JURYO,
+  TRAINING_MILESTONE_THRESHOLD,
+  BURNOUT_PROB_WEEK_1,
+  BURNOUT_PROB_WEEK_2,
+} from "../../../constants/engine/training";
 import * as Narrative from "./TrainingNarrative";
 
 /**

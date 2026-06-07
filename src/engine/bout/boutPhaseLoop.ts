@@ -39,6 +39,30 @@ import {
   DISPLACEMENT_PER_FORCE,
   CONTEST_LINE_JITTER_MULTIPLIER,
   CRISIS_PRESSURE_MULTIPLIER,
+  BELT_THRESHOLD_MAX,
+  BELT_BIAS_DIVISOR,
+  MAX_BOUT_TICKS,
+  TACHIAI_IMPACT_VELOCITY,
+  TACHIAI_JITTER_MAGNITUDE,
+  HENKA_JITTER_MAGNITUDE,
+  BOUT_FATIGUE_MULTIPLIER,
+  FORCE_DIFF_JITTER_MAGNITUDE,
+  DOMINANT_VELOCITY_SCALE,
+  CLOCK_MULTIPLIER,
+  BELT_BATTLE_VELOCITY_SCALE,
+  EDGE_CRISIS_RECOVERY_PROBABILITY,
+  TOE_POSITION_NORMALIZED_MAX,
+  OPPONENT_PRESSURE_Z_MULTIPLIER,
+  ANGULAR_ESCAPE_POWER_SCALE,
+  ESCAPE_MARGIN_THRESHOLD,
+  ESCAPE_BASE_PROBABILITY,
+  ESCAPE_MARGIN_PROBABILITY_MULTIPLIER,
+  ISAMIASHI_INSTABILITY_THRESHOLD,
+  DURATION_MIN_SECONDS,
+  EXCITEMENT_TICK_DIVISOR,
+  EDGE_CRISIS_ESCAPE_EXCITEMENT_POINTS,
+  ADVANTAGE_THRESHOLD_DIFFERENTIAL,
+  BALANCE_CALCULATION_MULTIPLIER,
 } from "../../constants/engine/physics";
 import type {
   CombatPhase,
@@ -67,7 +91,7 @@ import {
   type BoutContext,
 } from "./boutUtils";
 
-const MAX_TICKS = 120;
+const MAX_TICKS = MAX_BOUT_TICKS;
 
 // ---------------------------------------------------------------------------
 // Initialisation
@@ -105,15 +129,15 @@ function resolveTachiaiV2(
   st: EngineStateV2,
   boutLog: BoutLogEntry[]
 ): void {
-  st.phase = { tag: "tachiai", impactVelocity: 8.0, contactAngle: 0 };
+  st.phase = { tag: "tachiai", impactVelocity: TACHIAI_IMPACT_VELOCITY, contactAngle: 0 };
 
   // Tachiai power: power 50%, speed 30%, aggression 20% + jitter
   // Apply 8% penalty when opponent's style is in the rikishi's weakAgainstStyles list
   // Add h2h confidence bonus: (wins/total - 0.5)*8 when >= 3 prior meetings
   const eastPower =
-    tachiaiPowerWithMatchupPenalty(east, west) + h2hConfidence(east, west.id) + jitter(rng, 8);
+    tachiaiPowerWithMatchupPenalty(east, west) + h2hConfidence(east, west.id) + jitter(rng, TACHIAI_JITTER_MAGNITUDE);
   const westPower =
-    tachiaiPowerWithMatchupPenalty(west, east) + h2hConfidence(west, east.id) + jitter(rng, 8);
+    tachiaiPowerWithMatchupPenalty(west, east) + h2hConfidence(west, east.id) + jitter(rng, TACHIAI_JITTER_MAGNITUDE);
   const tachiaiWinner: Side = eastPower >= westPower ? "east" : "west";
   st.tachiaiWinner = tachiaiWinner;
 
@@ -143,8 +167,8 @@ function resolveTachiaiV2(
     const henkaScore =
       stat(trickster, "technique") +
       computeTachiaiPower(opponent, { henkaVulnerabilityMode: true }) +
-      jitter(rng, 8);
-    const defenseScore = stat(opponent, "balance") + jitter(rng, 8);
+      jitter(rng, HENKA_JITTER_MAGNITUDE);
+    const defenseScore = stat(opponent, "balance") + jitter(rng, HENKA_JITTER_MAGNITUDE);
 
     if (henkaScore > defenseScore) {
       // Spatial henka: the trickster sidesteps and the opponent's own charge
@@ -167,7 +191,7 @@ function resolveTachiaiV2(
   // Decide push vs belt battle (biased by combatProfile)
   const eastBeltBias = east.combatProfile?.familyPreferences?.belt ?? 25;
   const westBeltBias = west.combatProfile?.familyPreferences?.belt ?? 25;
-  const beltThreshold = Math.min(0.7, (eastBeltBias + westBeltBias) / 200);
+  const beltThreshold = Math.min(BELT_THRESHOLD_MAX, (eastBeltBias + westBeltBias) / BELT_BIAS_DIVISOR);
   const useBelt = rng.next() < beltThreshold;
 
   // Force/momentum never drop below MIN_ABSOLUTE_FORCE, so a degenerate
@@ -224,8 +248,8 @@ function tickPushBattle(
   st.west.boutFatigue += boutFatigueIncrement(stat(west, "stamina"));
 
   // Effective fatigue = pre-bout fatigue + in-bout accumulation
-  const eastEffFatigue = stat(east, "fatigue") + st.east.boutFatigue * 0.4;
-  const westEffFatigue = stat(west, "fatigue") + st.west.boutFatigue * 0.4;
+  const eastEffFatigue = stat(east, "fatigue") + st.east.boutFatigue * BOUT_FATIGUE_MULTIPLIER;
+  const westEffFatigue = stat(west, "fatigue") + st.west.boutFatigue * BOUT_FATIGUE_MULTIPLIER;
 
   // Penalty: max 40% reduction (capped at fatigue ~100)
   const eastFatPenalty = Math.max(MIN_FORCE_AFTER_FATIGUE, 1 - eastEffFatigue * FATIGUE_PENALTY_PER_POINT);
@@ -236,7 +260,7 @@ function tickPushBattle(
 
   const massAdvantageEast = (st.east.mass - st.west.mass) * MASS_ADVANTAGE_MULTIPLIER;
   const jitteredForceDiff =
-    adjustedEastForce - adjustedWestForce + massAdvantageEast + jitter(rng, 3);
+    adjustedEastForce - adjustedWestForce + massAdvantageEast + jitter(rng, FORCE_DIFF_JITTER_MAGNITUDE);
   const displacement = Math.abs(jitteredForceDiff) * DISPLACEMENT_PER_FORCE;
 
   push.contestLine += jitteredForceDiff * CONTEST_LINE_JITTER_MULTIPLIER;
@@ -255,7 +279,7 @@ function tickPushBattle(
     // East dominant — west retreats toward west's tawara
     push.westLeadFoot -= displacement * forceFalloff;
     st.west.cogOffset += Math.abs(jitteredForceDiff) * COG_OFFSET_PER_FORCE;
-    st.east.velocityX = jitteredForceDiff * 0.1;
+    st.east.velocityX = jitteredForceDiff * DOMINANT_VELOCITY_SCALE;
     st.west.velocityX = 0;
     // Defender (west) may attempt a discrete lateral slip — likelier the faster
     // it is. Stochastic (seeded) so even a sustained duel flickers between square
@@ -267,7 +291,7 @@ function tickPushBattle(
     // West dominant — east retreats toward east's tawara
     push.eastLeadFoot += displacement * forceFalloff;
     st.east.cogOffset += Math.abs(jitteredForceDiff) * COG_OFFSET_PER_FORCE;
-    st.west.velocityX = Math.abs(jitteredForceDiff) * 0.1;
+    st.west.velocityX = Math.abs(jitteredForceDiff) * DOMINANT_VELOCITY_SCALE;
     st.east.velocityX = 0;
     if (rng.next() < (stat(east, "speed") / 100) * LATERAL_SLIP_CHANCE) {
       push.eastLateralMomentum += LATERAL_SLIP_IMPULSE;
@@ -302,7 +326,7 @@ function tickPushBattle(
   if (st.tick % NARRATIVE_TICK_CADENCE === 0) {
     boutLog.push({
       phase: "engagement",
-      clock: st.tick * 2,
+      clock: st.tick * CLOCK_MULTIPLIER,
       data: {
         // A glancing exchange (large lateral offset) reads as a speed/evasion
         // beat rather than a straight oshi push, so route it to the speed family
@@ -371,8 +395,8 @@ function tickBeltBattle(
   st.west.boutFatigue += boutFatigueIncrement(stat(west, "stamina"));
 
   // Evolve grip geometry (arm reach, depth, grip strength decay)
-  const eastBoutFatigue = st.east.boutFatigue * 0.4;
-  const westBoutFatigue = st.west.boutFatigue * 0.4;
+  const eastBoutFatigue = st.east.boutFatigue * BOUT_FATIGUE_MULTIPLIER;
+  const westBoutFatigue = st.west.boutFatigue * BOUT_FATIGUE_MULTIPLIER;
   evolveGripGeometry(rng, east, west, belt, eastBoutFatigue, westBoutFatigue);
 
   const torqueAdvantage = belt.torqueEast - belt.torqueWest;
@@ -440,8 +464,8 @@ function tickBeltBattle(
   st.west.z = push.westLateral;
   st.east.leadingFootX = push.eastLeadFoot;
   st.west.leadingFootX = push.westLeadFoot;
-  st.east.velocityX = torqueAdvantage < 0 ? Math.abs(torqueAdvantage) * 0.05 : 0;
-  st.west.velocityX = torqueAdvantage > 0 ? torqueAdvantage * 0.05 : 0;
+  st.east.velocityX = torqueAdvantage < 0 ? Math.abs(torqueAdvantage) * BELT_BATTLE_VELOCITY_SCALE : 0;
+  st.west.velocityX = torqueAdvantage > 0 ? torqueAdvantage * BELT_BATTLE_VELOCITY_SCALE : 0;
   st.east.velocityZ = push.eastLateralMomentum;
   st.west.velocityZ = push.westLateralMomentum;
 
@@ -449,7 +473,7 @@ function tickBeltBattle(
   if (st.tick % NARRATIVE_TICK_CADENCE === 0) {
     boutLog.push({
       phase: "engagement",
-      clock: st.tick * 2,
+      clock: st.tick * CLOCK_MULTIPLIER,
       data: {
         tick: st.tick,
         family: "belt",
@@ -507,7 +531,7 @@ function buildEdgeCrisis(
   // Compute initial tawaraToePosition from how far foot is past edge threshold
   const footPos = crisisSide === "east" ? push.eastLeadFoot : Math.abs(push.westLeadFoot);
   const overage = Math.max(0, footPos - EDGE_THRESHOLD);
-  const initialToePos = Math.min(1.0, overage / TOE_OVERAGE_SCALE);
+  const initialToePos = Math.min(TOE_POSITION_NORMALIZED_MAX, overage / TOE_OVERAGE_SCALE);
 
   // 1.75D: escapeAngle derived from defender's facingAngle (rotation = pivoting at edge)
   const defender = crisisSide === "east" ? st.east : st.west;
@@ -521,7 +545,7 @@ function buildEdgeCrisis(
     crisis: {
       side: crisisSide,
       ticksInCrisis: 0,
-      recoveryProbability: 0.3,
+      recoveryProbability: EDGE_CRISIS_RECOVERY_PROBABILITY,
       tawaraToePosition: initialToePos,
       tawaraBounceForce: tawaraBounceResistance(initialToePos),
       escapeAngle,
@@ -550,7 +574,7 @@ function tickEdgeCrisis(
   crisis.ticksInCrisis++;
 
   // Update tawaraToePosition each tick using real opponent pressure (X + Z)
-  const pressureIncrease = crisis.opponentPressureX * CRISIS_PRESSURE_MULTIPLIER + Math.abs(crisis.opponentPressureZ) * 0.01;
+  const pressureIncrease = crisis.opponentPressureX * CRISIS_PRESSURE_MULTIPLIER + Math.abs(crisis.opponentPressureZ) * OPPONENT_PRESSURE_Z_MULTIPLIER;
   const escapeResistance = crisis.escapeForceAvailable * ESCAPE_RESISTANCE_MULTIPLIER;
   crisis.tawaraToePosition = Math.max(
     0,
@@ -580,13 +604,13 @@ function tickEdgeCrisis(
 
   // 1.75D: Physics-driven escape — angular authority projected along escapeAngle vs opponent pressure
   const defender = crisis.side === "east" ? st.east : st.west;
-  const angularEscapePower = Math.abs(defender.facingAngle) * 50; // rough projection scaling
+  const angularEscapePower = Math.abs(defender.facingAngle) * ANGULAR_ESCAPE_POWER_SCALE; // rough projection scaling
   const totalPressure = crisis.opponentPressureX + Math.abs(crisis.opponentPressureZ);
   const canEscape = angularEscapePower >= totalPressure;
 
   // Seeded jitter as tie-breaker when close
   const escapeMargin = angularEscapePower - totalPressure;
-  const didEscape = canEscape && (escapeMargin > 2 || rng.next() < 0.5 + escapeMargin * 0.05);
+  const didEscape = canEscape && (escapeMargin > ESCAPE_MARGIN_THRESHOLD || rng.next() < ESCAPE_BASE_PROBABILITY + escapeMargin * ESCAPE_MARGIN_PROBABILITY_MULTIPLIER);
 
   // Log this crisis tick for narrative
   boutLog.push({
@@ -691,7 +715,7 @@ function runPhaseLoop(
   const loserInstability = winner === "east" ? westInstability : eastInstability;
 
   // isamiashi: false start - only if loser was very unstable (near falling)
-  if (loserInstability > 0.9 && rng.next() < POST_RESOLUTION_REVERSAL_CHANCE) {
+  if (loserInstability > ISAMIASHI_INSTABILITY_THRESHOLD && rng.next() < POST_RESOLUTION_REVERSAL_CHANCE) {
     return { winner: loser, kimarite: "isamiashi" };
   }
 
@@ -716,7 +740,7 @@ function buildBoutResultV2(
   kimarite: KimariteId,
   boutLog: BoutLogEntry[]
 ): BoutResult {
-  const duration = Math.max(1, st.tick * 2);
+  const duration = Math.max(DURATION_MIN_SECONDS, st.tick * CLOCK_MULTIPLIER);
 
   // Compute composite excitement score:
   //   - Bout length: up to 40 points (120 ticks max → ~40)
@@ -725,7 +749,7 @@ function buildBoutResultV2(
   const edgeCrisisEscapes = boutLog.filter(
     (e) => e.phase === "edge_crisis" && (e.data as Record<string, unknown>)?.escaped === true
   ).length;
-  const excitementScore = Math.min(100, Math.round(st.tick / 3 + edgeCrisisEscapes * 20));
+  const excitementScore = Math.min(100, Math.round(st.tick / EXCITEMENT_TICK_DIVISOR + edgeCrisisEscapes * EDGE_CRISIS_ESCAPE_EXCITEMENT_POINTS));
 
   const resolvedStance =
     st.phase.tag === "belt_battle" ||
@@ -782,23 +806,23 @@ function buildEngineSnapshotV2(st: EngineStateV2, winner: Side): EngineSnapshot 
 
   // Derive advantage from CoG stability differential
   const advantage: "none" | "east" | "west" =
-    st.east.cogOffset < st.west.cogOffset - 0.05
+    st.east.cogOffset < st.west.cogOffset - ADVANTAGE_THRESHOLD_DIFFERENTIAL
       ? "east"
-      : st.west.cogOffset < st.east.cogOffset - 0.05
+      : st.west.cogOffset < st.east.cogOffset - ADVANTAGE_THRESHOLD_DIFFERENTIAL
         ? "west"
         : "none";
 
   return {
     stance: resolvedStance,
     grappleState,
-    balanceEast: Math.max(0, Math.min(100, 100 - Math.abs(st.east.cogOffset) * 10)),
-    balanceWest: Math.max(0, Math.min(100, 100 - Math.abs(st.west.cogOffset) * 10)),
+    balanceEast: Math.max(0, Math.min(100, 100 - Math.abs(st.east.cogOffset) * BALANCE_CALCULATION_MULTIPLIER)),
+    balanceWest: Math.max(0, Math.min(100, 100 - Math.abs(st.west.cogOffset) * BALANCE_CALCULATION_MULTIPLIER)),
     position,
     advantage,
     winnerConsecutiveAdvantage: st.tick,
     loserLastActionFamily: undefined,
     finalLoserBalanceDrain:
-      winner === "east" ? Math.abs(st.west.cogOffset) * 10 : Math.abs(st.east.cogOffset) * 10,
+      winner === "east" ? Math.abs(st.west.cogOffset) * BALANCE_CALCULATION_MULTIPLIER : Math.abs(st.east.cogOffset) * BALANCE_CALCULATION_MULTIPLIER,
   };
 }
 

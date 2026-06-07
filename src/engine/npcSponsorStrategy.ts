@@ -8,6 +8,34 @@ import {
   type SponsorFilterOptions,
 } from "./npcSponsorStrategyHelpers";
 import type { StateImpact } from "./core/StateImpact";
+import {
+  TRAIT_AMBITION_HIGH_THRESHOLD,
+  TRAIT_RISK_HIGH_THRESHOLD,
+  TRAIT_PATIENCE_THRESHOLD,
+  RUNWAY_THRESHOLD_DEFAULT,
+  RUNWAY_THRESHOLD_PUBLICITY_HAWK,
+  RUNWAY_THRESHOLD_GAMBLER,
+  RUNWAY_THRESHOLD_TRADITIONALIST,
+  RUNWAY_THRESHOLD_NEPOSTIST,
+  RELATIONSHIP_STRENGTH_DEFAULT,
+  RELATIONSHIP_STRENGTH_PUBLICITY_HAWK,
+  RELATIONSHIP_STRENGTH_RISK_TAKER,
+  RELATIONSHIP_STRENGTH_TRADITIONALIST,
+  RELATIONSHIP_STRENGTH_NEPOSTIST,
+  RELATIONSHIP_STRENGTH_NURTURER,
+  RELATIONSHIP_STRENGTH_TYRANT,
+  RELATIONSHIP_STRENGTH_SCIENTIST,
+  RECRUITMENT_THRESHOLD_CONSERVATIVE,
+  RECRUITMENT_THRESHOLD_RISK_TAKER,
+  RECRUITMENT_THRESHOLD_TRADITIONALIST,
+  RECRUITMENT_THRESHOLD_NEPOSTIST,
+  RECRUITMENT_THRESHOLD_NURTURER,
+  RECRUITMENT_THRESHOLD_TYRANT,
+  RECRUITMENT_THRESHOLD_SCIENTIST,
+} from "../constants/engine/npcStrategy";
+import {
+  RUNWAY_THRESHOLD_SCIENTIST,
+} from "../constants/engine/economic";
 
 interface SponsorStrategy {
   evaluateSponsorRecruitment: (world: WorldState, heya: Heya, oyakata: Oyakata) => StateImpact;
@@ -15,14 +43,14 @@ interface SponsorStrategy {
 
 export const DefaultSponsorStrategy: SponsorStrategy = {
   evaluateSponsorRecruitment(world: WorldState, heya: Heya, oyakata: Oyakata) {
-    const isAmbitious = oyakata.traits.ambition > 60;
+    const isAmbitious = oyakata.traits.ambition > TRAIT_AMBITION_HIGH_THRESHOLD;
     const isPublicityHawk = oyakata.managerFlags?.publicityHawk;
     const isNepotist = oyakata.managerFlags?.nepotist;
-    const isRiskTaker = oyakata.traits.risk > 50;
+    const isRiskTaker = oyakata.traits.risk > TRAIT_RISK_HIGH_THRESHOLD;
 
-    let recruitmentThreshold = isAmbitious && isPublicityHawk ? 3 : isAmbitious ? 2 : 1;
-    if (oyakata.traits.patience > 70) {
-      recruitmentThreshold = Math.max(1, recruitmentThreshold - 1);
+    let recruitmentThreshold = isAmbitious && isPublicityHawk ? RECRUITMENT_THRESHOLD_CONSERVATIVE : isAmbitious ? RECRUITMENT_THRESHOLD_CONSERVATIVE - 1 : RECRUITMENT_THRESHOLD_CONSERVATIVE - 2;
+    if (oyakata.traits.patience > TRAIT_PATIENCE_THRESHOLD) {
+      recruitmentThreshold = Math.max(RECRUITMENT_THRESHOLD_CONSERVATIVE - 2, recruitmentThreshold - 1);
     }
 
     if (oyakata.mood === "anxious") {
@@ -42,9 +70,9 @@ export const DefaultSponsorStrategy: SponsorStrategy = {
     }
 
     const config: SponsorRecruitmentConfig = {
-      runwayThreshold: 6,
+      runwayThreshold: RUNWAY_THRESHOLD_DEFAULT,
       recruitmentThreshold,
-      relationshipStrength: 3,
+      relationshipStrength: RELATIONSHIP_STRENGTH_DEFAULT,
       filterOptions,
       getReasoning: () =>
         isPublicityHawk
@@ -63,12 +91,12 @@ export const DefaultSponsorStrategy: SponsorStrategy = {
 export const TraditionalistSponsorStrategy: SponsorStrategy = {
   evaluateSponsorRecruitment(world, heya, oyakata) {
     const isPublicityHawk = oyakata.managerFlags?.publicityHawk;
-    const recruitmentThreshold = isPublicityHawk ? 2 : 1;
+    const recruitmentThreshold = isPublicityHawk ? RECRUITMENT_THRESHOLD_TRADITIONALIST + 1 : RECRUITMENT_THRESHOLD_TRADITIONALIST;
 
     const config: SponsorRecruitmentConfig = {
-      runwayThreshold: 9,
+      runwayThreshold: RUNWAY_THRESHOLD_PUBLICITY_HAWK,
       recruitmentThreshold,
-      relationshipStrength: 4,
+      relationshipStrength: RELATIONSHIP_STRENGTH_PUBLICITY_HAWK,
       filterOptions: {
         excludeTiers: ["T0", "T5"],
       },
@@ -82,9 +110,9 @@ export const TraditionalistSponsorStrategy: SponsorStrategy = {
 export const ScientistSponsorStrategy: SponsorStrategy = {
   evaluateSponsorRecruitment(world, heya, oyakata) {
     const config: SponsorRecruitmentConfig = {
-      runwayThreshold: 6,
-      recruitmentThreshold: 2,
-      relationshipStrength: 3,
+      runwayThreshold: RUNWAY_THRESHOLD_DEFAULT,
+      recruitmentThreshold: RECRUITMENT_THRESHOLD_SCIENTIST,
+      relationshipStrength: RELATIONSHIP_STRENGTH_SCIENTIST,
       filterOptions: {
         excludeTiers: ["T0"],
       },
@@ -97,18 +125,18 @@ export const ScientistSponsorStrategy: SponsorStrategy = {
 
 export const GamblerSponsorStrategy: SponsorStrategy = {
   evaluateSponsorRecruitment(world, heya, oyakata) {
-    const isRiskTaker = oyakata.traits.risk > 60;
-    const recruitmentThreshold = isRiskTaker ? 4 : 2;
+    const isRiskTaker = oyakata.traits.risk > TRAIT_RISK_HIGH_THRESHOLD;
+    const recruitmentThreshold = isRiskTaker ? RECRUITMENT_THRESHOLD_RISK_TAKER : RECRUITMENT_THRESHOLD_SCIENTIST;
 
-    let runwayThreshold = 3;
+    let runwayThreshold = RUNWAY_THRESHOLD_DEFAULT;
     if (oyakata.quirks?.includes("Gambler's Instinct")) {
-      runwayThreshold = 2;
+      runwayThreshold = RUNWAY_THRESHOLD_GAMBLER;
     }
 
     const config: SponsorRecruitmentConfig = {
       runwayThreshold,
       recruitmentThreshold,
-      relationshipStrength: 2,
+      relationshipStrength: RELATIONSHIP_STRENGTH_RISK_TAKER,
       filterOptions: {
         excludeTiers: ["T0"],
       },
@@ -122,9 +150,9 @@ export const GamblerSponsorStrategy: SponsorStrategy = {
 export const NurturerSponsorStrategy: SponsorStrategy = {
   evaluateSponsorRecruitment(world, heya, oyakata) {
     const config: SponsorRecruitmentConfig = {
-      runwayThreshold: 8,
-      recruitmentThreshold: 1,
-      relationshipStrength: 5,
+      runwayThreshold: RUNWAY_THRESHOLD_TRADITIONALIST,
+      recruitmentThreshold: RECRUITMENT_THRESHOLD_TRADITIONALIST,
+      relationshipStrength: RELATIONSHIP_STRENGTH_TRADITIONALIST,
       filterOptions: {
         excludeTiers: ["T0", "T5"],
       },
@@ -138,9 +166,9 @@ export const NurturerSponsorStrategy: SponsorStrategy = {
 export const TyrantSponsorStrategy: SponsorStrategy = {
   evaluateSponsorRecruitment(world, heya, oyakata) {
     const config: SponsorRecruitmentConfig = {
-      runwayThreshold: 12,
-      recruitmentThreshold: 3,
-      relationshipStrength: 3,
+      runwayThreshold: RUNWAY_THRESHOLD_NEPOSTIST,
+      recruitmentThreshold: RECRUITMENT_THRESHOLD_NEPOSTIST,
+      relationshipStrength: RELATIONSHIP_STRENGTH_NEPOSTIST,
       filterOptions: {
         includeTiers: ["T5", "T4"],
       },
@@ -154,9 +182,9 @@ export const TyrantSponsorStrategy: SponsorStrategy = {
 export const StrategistSponsorStrategy: SponsorStrategy = {
   evaluateSponsorRecruitment(world, heya, oyakata) {
     const config: SponsorRecruitmentConfig = {
-      runwayThreshold: 6,
-      recruitmentThreshold: 3,
-      relationshipStrength: 3,
+      runwayThreshold: RUNWAY_THRESHOLD_DEFAULT,
+      recruitmentThreshold: RECRUITMENT_THRESHOLD_NEPOSTIST,
+      relationshipStrength: RELATIONSHIP_STRENGTH_NEPOSTIST,
       filterOptions: {
         excludeTiers: ["T0"],
       },
@@ -170,9 +198,9 @@ export const StrategistSponsorStrategy: SponsorStrategy = {
 export const StrictSponsorStrategy: SponsorStrategy = {
   evaluateSponsorRecruitment(world, heya, oyakata) {
     const config: SponsorRecruitmentConfig = {
-      runwayThreshold: 8,
-      recruitmentThreshold: 2,
-      relationshipStrength: 4,
+      runwayThreshold: RUNWAY_THRESHOLD_TRADITIONALIST,
+      recruitmentThreshold: RECRUITMENT_THRESHOLD_SCIENTIST,
+      relationshipStrength: RELATIONSHIP_STRENGTH_SCIENTIST,
       filterOptions: {
         excludeTiers: ["T0", "T5"],
       },
@@ -186,9 +214,9 @@ export const StrictSponsorStrategy: SponsorStrategy = {
 export const IndulgentSponsorStrategy: SponsorStrategy = {
   evaluateSponsorRecruitment(world, heya, oyakata) {
     const config: SponsorRecruitmentConfig = {
-      runwayThreshold: 5,
-      recruitmentThreshold: 2,
-      relationshipStrength: 4,
+      runwayThreshold: RUNWAY_THRESHOLD_GAMBLER + 3,
+      recruitmentThreshold: RECRUITMENT_THRESHOLD_SCIENTIST,
+      relationshipStrength: RELATIONSHIP_STRENGTH_SCIENTIST,
       filterOptions: {
         excludeTiers: ["T0"],
       },

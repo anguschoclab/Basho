@@ -85,3 +85,7 @@ Optimized `fillVacanciesForNPC` in `TalentPoolNPCRecruitment.ts` by replacing `A
 ## 2024-10-24 - [Avoid Spread Operator + Map inside Math.max]
 **Learning:** Using `Math.max(...Array.map())` creates an intermediate array containing the mapped objects in memory, representing O(N) allocation, while passing the values with the spread operator could trigger stack overflows for very large arrays.
 **Action:** Replace `Math.max(...Array.map())` with a direct `for...of` loop or equivalent to pre-calculate maximum values efficiently in a single pass without any additional memory overhead, as demonstrated in `src/engine/simulation/SimTuningService.ts`.
+
+## 2024-05-18 - Replacing Object Iteration Arrays with Direct Iterators
+**Learning:** Chaining `Array.from(map.values()).filter(...)` causes an unnecessary O(N) array allocation of the entire values list before filtering it down.
+**Action:** Replace `Array.from().filter()` with a direct `for...of` loop over `map.values()` to eliminate intermediate memory allocations during UI rendering and tick loops.

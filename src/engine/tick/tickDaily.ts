@@ -23,6 +23,12 @@
  */
 
 import type { WorldState, CyclePhase } from "../types/world";
+import {
+  WEEKLY_TICK_THRESHOLD,
+  MAX_DAYS_ADVANCE,
+  POST_BASHO_DAYS,
+  INTERIM_DAYS,
+} from "../../constants/engine/npcStrategy";
 
 // ====
 // TYPES
@@ -101,7 +107,7 @@ export function advanceOneDay(world: WorldState): WorldState {
   };
 
   const daysSinceTick = (nextWorld._daysSinceLastWeeklyTick ?? 0) + 1;
-  const isWeeklyTick = daysSinceTick >= 7;
+  const isWeeklyTick = daysSinceTick >= WEEKLY_TICK_THRESHOLD;
 
   // 2. Determine which phases to run
   const activePhases: import("./pipelineRunner").PipelinePhase[] = [
@@ -178,7 +184,7 @@ function buildDailyReport(world: WorldState, isWeekly: boolean): DailyTickReport
  */
 export function advanceDays(world: WorldState, days: number): WorldState {
   let currentWorld = world;
-  const n = Math.max(1, Math.min(days, 365));
+  const n = Math.max(1, Math.min(days, MAX_DAYS_ADVANCE));
   for (let i = 0; i < n; i++) {
     currentWorld = advanceOneDay(currentWorld);
   }
@@ -225,7 +231,7 @@ export function enterPostBasho(world: WorldState): WorldState {
   return {
     ...world,
     cyclePhase: "post_basho",
-    _postBashoDays: 7,
+    _postBashoDays: POST_BASHO_DAYS,
   };
 }
 
@@ -247,6 +253,6 @@ export function enterInterim(world: WorldState): WorldState {
   return {
     ...world,
     cyclePhase: "interim",
-    _interimDaysRemaining: 42, // Standard 6-week interim
+    _interimDaysRemaining: INTERIM_DAYS, // Standard 6-week interim
   };
 }

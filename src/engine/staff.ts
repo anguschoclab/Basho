@@ -12,6 +12,47 @@ import type { WorldState } from "./types/world";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
 import { getHeya } from "./queries";
+import {
+  STAFF_BASE_AGE,
+  STAFF_AGE_RANGE,
+  STAFF_APPRENTICE_AGE_THRESHOLD,
+  STAFF_SENIOR_AGE_THRESHOLD,
+  STAFF_DECLINING_AGE_THRESHOLD,
+  STAFF_RETIREMENT_AGE_THRESHOLD,
+  STAFF_SECONDARY_COMPETENCE_CHANCE,
+  STAFF_FATIGUE_RANGE,
+  STAFF_BASE_MORALE,
+  STAFF_MORALE_RANGE,
+  STAFF_SCANDAL_EXPOSURE_RANGE,
+  STAFF_SUCCESSOR_AGE_THRESHOLD,
+  STAFF_SUCCESSOR_CHANCE,
+  STAFF_CAPACITY_PER_STAFF,
+  STAFF_FATIGUE_GAIN_MULTIPLIER,
+  STAFF_OVERLOAD_THRESHOLD,
+  STAFF_OVERLOAD_MORALE_PENALTY,
+  STAFF_NORMAL_MORALE_PENALTY,
+  STAFF_FATIGUE_RECOVERY,
+  STAFF_LOW_FATIGUE_THRESHOLD,
+  STAFF_MORALE_RECOVERY,
+  STAFF_HIGH_MORALE_THRESHOLD,
+  STAFF_MORALE_DECAY,
+  STAFF_HIGH_FATIGUE_THRESHOLD,
+  STAFF_MEDIUM_FATIGUE_THRESHOLD,
+  STAFF_HIGH_MORALE_BONUS_THRESHOLD,
+  STAFF_LOW_MORALE_PENALTY_THRESHOLD,
+  STAFF_HIGH_FATIGUE_FACTOR,
+  STAFF_MEDIUM_FATIGUE_FACTOR,
+  STAFF_SECONDARY_COMPETENCE_MULTIPLIER,
+  STAFF_ADMINISTRATOR_DISCOUNT_MULTIPLIER,
+  STAFF_ASSISTANT_OYAKATA_BONUS_MULTIPLIER,
+  STAFF_MIN_ADMINISTRATION_DISCOUNT,
+  STAFF_HIRE_COST,
+  STAFF_MORALE_HIGH_MULTIPLIER,
+  STAFF_MORALE_LOW_MULTIPLIER,
+  STAFF_NAME_RANDOM_RANGE,
+  STAFF_MIN_AGE_FOR_YEARS_CALC,
+  STAFF_BASE_BONUS_VALUE,
+} from "../constants/engine/economy";
 
 /**
  * Helper to roll a random band from a list of bands.
@@ -38,12 +79,12 @@ export function generateStaff(seed: string, role: StaffRole, heyaId: Id, sequenc
 
   const id = rng.uuid("ST");
 
-  const age = 25 + Math.floor(rng.next() * 40);
+  const age = STAFF_BASE_AGE + Math.floor(rng.next() * STAFF_AGE_RANGE);
 
   let phase: StaffCareerPhase = "established";
-  if (age < 30) phase = "apprentice";
-  else if (age > 55) phase = "declining";
-  else if (age > 45) phase = "senior";
+  if (age < STAFF_APPRENTICE_AGE_THRESHOLD) phase = "apprentice";
+  else if (age > STAFF_DECLINING_AGE_THRESHOLD) phase = "declining";
+  else if (age > STAFF_SENIOR_AGE_THRESHOLD) phase = "senior";
 
   const REPUTATION_BANDS: ReputationBand[] = [
     "unknown",
@@ -66,7 +107,7 @@ export function generateStaff(seed: string, role: StaffRole, heyaId: Id, sequenc
   return {
     id,
     heyaId,
-    name: `Staff Member ${Math.floor(rng.next() * 1000)}`,
+    name: `Staff Member ${Math.floor(rng.next() * STAFF_NAME_RANDOM_RANGE)}`,
     role,
     age,
     careerPhase: phase,
@@ -74,14 +115,14 @@ export function generateStaff(seed: string, role: StaffRole, heyaId: Id, sequenc
     loyaltyBand: rollBand(rng, LOYALTY_BANDS) as LoyaltyBand,
     competenceBands: {
       primary: rollBand(rng, COMPETENCE_BANDS) as CompetenceBand,
-      secondary: rng.next() > 0.5 ? (rollBand(rng, COMPETENCE_BANDS) as CompetenceBand) : undefined,
+      secondary: rng.next() > STAFF_SECONDARY_COMPETENCE_CHANCE ? (rollBand(rng, COMPETENCE_BANDS) as CompetenceBand) : undefined,
     },
-    fatigue: Math.floor(rng.next() * 10),
-    morale: 70 + Math.floor(rng.next() * 30), // Start with good morale
-    scandalExposure: Math.floor(rng.next() * 10),
-    yearsAtBeya: Math.max(0, Math.floor(rng.next() * (age - 20))),
+    fatigue: Math.floor(rng.next() * STAFF_FATIGUE_RANGE),
+    morale: STAFF_BASE_MORALE + Math.floor(rng.next() * STAFF_MORALE_RANGE), // Start with good morale
+    scandalExposure: Math.floor(rng.next() * STAFF_SCANDAL_EXPOSURE_RANGE),
+    yearsAtBeya: Math.max(0, Math.floor(rng.next() * (age - STAFF_MIN_AGE_FOR_YEARS_CALC))),
     priorAffiliations: [],
-    successorEligible: role === "assistant_oyakata" && age > 40 && rng.next() > 0.5,
+    successorEligible: role === "assistant_oyakata" && age > STAFF_SUCCESSOR_AGE_THRESHOLD && rng.next() > STAFF_SUCCESSOR_CHANCE,
   };
 }
 
@@ -101,7 +142,7 @@ export function tickStaffWeek(world: WorldState): StateImpact {
     const staffIds = heya.staffIds || [];
     const staffCount = staffIds.length;
 
-    const capacity = Math.max(1, staffCount * 4);
+    const capacity = Math.max(1, staffCount * STAFF_CAPACITY_PER_STAFF);
     const overload = rikishiCount > capacity;
     const loadFactor = rikishiCount / capacity;
 
@@ -112,19 +153,19 @@ export function tickStaffWeek(world: WorldState): StateImpact {
       let newFatigue, newMorale;
 
       if (overload) {
-        const fatigueGain = Math.ceil(loadFactor * 2);
+        const fatigueGain = Math.ceil(loadFactor * STAFF_FATIGUE_GAIN_MULTIPLIER);
         newFatigue = Math.min(100, staff.fatigue + fatigueGain);
-        newMorale = Math.max(0, staff.morale - (loadFactor > 1.5 ? 2 : 1));
+        newMorale = Math.max(0, staff.morale - (loadFactor > STAFF_OVERLOAD_THRESHOLD ? STAFF_OVERLOAD_MORALE_PENALTY : STAFF_NORMAL_MORALE_PENALTY));
       } else {
-        newFatigue = Math.max(0, staff.fatigue - 5);
-        if (staff.fatigue < 20) {
-          newMorale = Math.min(100, staff.morale + 1);
+        newFatigue = Math.max(0, staff.fatigue - STAFF_FATIGUE_RECOVERY);
+        if (staff.fatigue < STAFF_LOW_FATIGUE_THRESHOLD) {
+          newMorale = Math.min(100, staff.morale + STAFF_MORALE_RECOVERY);
         } else {
           newMorale = staff.morale;
         }
       }
 
-      if (newMorale > 70 && !overload) newMorale -= 0.1;
+      if (newMorale > STAFF_HIGH_MORALE_THRESHOLD && !overload) newMorale -= STAFF_MORALE_DECAY;
 
       builder.updateStaff(sId, { fatigue: newFatigue, morale: newMorale });
     }
@@ -149,10 +190,10 @@ export function tickStaffYear(world: WorldState): StateImpact {
     const newYearsAtBeya = staff.yearsAtBeya + 1;
 
     let newCareerPhase = staff.careerPhase;
-    if (staff.careerPhase === "apprentice" && newAge >= 30) newCareerPhase = "established";
-    else if (staff.careerPhase === "established" && newAge >= 45) newCareerPhase = "senior";
-    else if (staff.careerPhase === "senior" && newAge >= 55) newCareerPhase = "declining";
-    else if (staff.careerPhase === "declining" && newAge >= 65) newCareerPhase = "retired";
+    if (staff.careerPhase === "apprentice" && newAge >= STAFF_APPRENTICE_AGE_THRESHOLD) newCareerPhase = "established";
+    else if (staff.careerPhase === "established" && newAge >= STAFF_SENIOR_AGE_THRESHOLD) newCareerPhase = "senior";
+    else if (staff.careerPhase === "senior" && newAge >= STAFF_DECLINING_AGE_THRESHOLD) newCareerPhase = "declining";
+    else if (staff.careerPhase === "declining" && newAge >= STAFF_RETIREMENT_AGE_THRESHOLD) newCareerPhase = "retired";
 
     builder.updateStaff(staff.id, {
       age: newAge,
@@ -178,7 +219,7 @@ export function hireStaff(world: WorldState, heyaId: Id, role: StaffRole): State
   const heya = getHeya(world, heyaId);
   if (!heya) return builder.build();
 
-  const HIRE_COST = 500_000;
+  const HIRE_COST = STAFF_HIRE_COST;
   if (heya.funds < HIRE_COST) return builder.build();
 
   const newFunds = heya.funds - HIRE_COST;
@@ -248,22 +289,22 @@ const ROLE_HANDLERS: Record<StaffRole, (b: StaffBonuses, val: number) => void> =
   conditioning_coach: (b, val) => (b.conditioning += val),
   medical_staff: (b, val) => (b.medical += val),
   scout: (b, val) => (b.scouting += val),
-  administrator: (b, val) => (b.administration -= val * 0.5),
+  administrator: (b, val) => (b.administration -= val * STAFF_ADMINISTRATOR_DISCOUNT_MULTIPLIER),
   assistant_oyakata: (b, val) => {
-    b.technique += val * 0.2;
-    b.conditioning += val * 0.2;
-    b.medical += val * 0.2;
+    b.technique += val * STAFF_ASSISTANT_OYAKATA_BONUS_MULTIPLIER;
+    b.conditioning += val * STAFF_ASSISTANT_OYAKATA_BONUS_MULTIPLIER;
+    b.medical += val * STAFF_ASSISTANT_OYAKATA_BONUS_MULTIPLIER;
   },
 };
 
 export function getHeyaStaffBonuses(world: WorldState, heyaId: Id): StaffBonuses {
   const heya = getHeya(world, heyaId);
   const bonuses: StaffBonuses = {
-    technique: 1.0,
-    conditioning: 1.0,
-    medical: 1.0,
-    scouting: 1.0,
-    administration: 1.0,
+    technique: STAFF_BASE_BONUS_VALUE,
+    conditioning: STAFF_BASE_BONUS_VALUE,
+    medical: STAFF_BASE_BONUS_VALUE,
+    scouting: STAFF_BASE_BONUS_VALUE,
+    administration: STAFF_BASE_BONUS_VALUE,
   };
 
   if (!heya || !heya.staffIds || !world.staff) return bonuses;
@@ -272,13 +313,13 @@ export function getHeyaStaffBonuses(world: WorldState, heyaId: Id): StaffBonuses
     const staff = world.staff.get(staffId);
     if (!staff || staff.careerPhase === "retired") continue;
 
-    const fatigueFactor = staff.fatigue > 80 ? 0.4 : staff.fatigue > 50 ? 0.7 : 1.0;
-    const moraleFactor = staff.morale > 90 ? 1.15 : staff.morale < 30 ? 0.6 : 1.0;
+    const fatigueFactor = staff.fatigue > STAFF_HIGH_FATIGUE_THRESHOLD ? STAFF_HIGH_FATIGUE_FACTOR : staff.fatigue > STAFF_MEDIUM_FATIGUE_THRESHOLD ? STAFF_MEDIUM_FATIGUE_FACTOR : 1.0;
+    const moraleFactor = staff.morale > STAFF_HIGH_MORALE_BONUS_THRESHOLD ? STAFF_MORALE_HIGH_MULTIPLIER : staff.morale < STAFF_LOW_MORALE_PENALTY_THRESHOLD ? STAFF_MORALE_LOW_MULTIPLIER : 1.0;
     const efficiency = fatigueFactor * moraleFactor;
 
     const primaryBonus = BAND_VALUES[staff.competenceBands.primary] * efficiency;
     const secondaryBonus = staff.competenceBands.secondary
-      ? BAND_VALUES[staff.competenceBands.secondary] * 0.4 * efficiency
+      ? BAND_VALUES[staff.competenceBands.secondary] * STAFF_SECONDARY_COMPETENCE_MULTIPLIER * efficiency
       : 0;
 
     const totalStaffBonus = primaryBonus + secondaryBonus;
@@ -290,7 +331,7 @@ export function getHeyaStaffBonuses(world: WorldState, heyaId: Id): StaffBonuses
   }
 
   // Clamping
-  bonuses.administration = Math.max(0.7, bonuses.administration); // Max 30% discount
+  bonuses.administration = Math.max(STAFF_MIN_ADMINISTRATION_DISCOUNT, bonuses.administration); // Max 30% discount
 
   return bonuses;
 }

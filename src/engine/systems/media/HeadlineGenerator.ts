@@ -8,6 +8,11 @@ import { WorldState } from "../../types/world";
 import { HeadlineTier } from "../../types/media";
 import { BardEngine } from "../../narrative/BardEngine";
 import { getRikishi } from "../../queries";
+import {
+  MAIN_EVENT_HEADLINE_CHANCE,
+  STREAK_HEADLINE_THRESHOLD,
+  STREAK_SECONDARY_THRESHOLD,
+} from "../../../constants/engine/media";
 
 export function generateBoutHeadline(args: {
   rng: SeededRNG;
@@ -27,7 +32,7 @@ export function generateBoutHeadline(args: {
   let titlePath: string;
   if (upset) {
     titlePath = "media.bout.upset";
-  } else if (tier === "main_event" && rng.next() < 0.4) {
+  } else if (tier === "main_event" && rng.next() < MAIN_EVENT_HEADLINE_CHANCE) {
     titlePath = "media.bout.mainEvent";
   } else {
     titlePath = "media.bout.standard";
@@ -55,10 +60,10 @@ export function generateStreakHeadline(args: { rng: SeededRNG; shikona: string; 
   let titlePath: string;
   let subKey: string;
 
-  if (streak >= 10) {
+  if (streak >= STREAK_HEADLINE_THRESHOLD) {
     titlePath = "media.streaks.legendary";
     subKey = "legendary";
-  } else if (streak >= 8) {
+  } else if (streak >= STREAK_SECONDARY_THRESHOLD) {
     titlePath = "media.streaks.hot";
     subKey = "hot";
   } else {

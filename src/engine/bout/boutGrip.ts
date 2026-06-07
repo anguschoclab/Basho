@@ -11,6 +11,14 @@ import {
   DEFAULT_ARM_REACH,
   ARM_REACH_DEEP_THRESHOLD,
   GRIP_JITTER_RANGE,
+  INITIAL_ARM_REACH,
+  GRIP_RANDOM_CHANCE,
+  GRIP_RNG_FACTOR_MIN,
+  GRIP_RNG_FACTOR_RANGE,
+  MAX_ARM_REACH,
+  ARM_REACH_INCREMENT,
+  GRIP_DEEPEN_MARGIN,
+  GRIP_DEEPEN_TECHNIQUE_MARGIN,
 } from "../../constants/engine/physics";
 import { deriveGripClass } from "./boutSpatial";
 import { stat } from "./boutUtils";
@@ -74,13 +82,13 @@ export function initBeltBattle(
       eastLeft.leverArm = LEVER_ARM_TACHIAI_WIN;
     } else {
       // No preference — tachiai momentum gives one random inside arm
-      const useRight = rng.next() < 0.5;
+      const useRight = rng.next() < GRIP_RANDOM_CHANCE;
       if (useRight) {
-        eastRight.armReach = 0.1;
+        eastRight.armReach = INITIAL_ARM_REACH;
         eastRight.isInside = true;
         eastRight.leverArm = LEVER_ARM_TACHIAI_PARTIAL;
       } else {
-        eastLeft.armReach = 0.1;
+        eastLeft.armReach = INITIAL_ARM_REACH;
         eastLeft.isInside = true;
         eastLeft.leverArm = LEVER_ARM_TACHIAI_PARTIAL;
       }
@@ -96,13 +104,13 @@ export function initBeltBattle(
       westLeft.leverArm = LEVER_ARM_TACHIAI_WIN;
     } else {
       // No preference — tachiai momentum gives one random inside arm
-      const useRight = rng.next() < 0.5;
+      const useRight = rng.next() < GRIP_RANDOM_CHANCE;
       if (useRight) {
-        westRight.armReach = 0.1;
+        westRight.armReach = INITIAL_ARM_REACH;
         westRight.isInside = true;
         westRight.leverArm = LEVER_ARM_TACHIAI_PARTIAL;
       } else {
-        westLeft.armReach = 0.1;
+        westLeft.armReach = INITIAL_ARM_REACH;
         westLeft.isInside = true;
         westLeft.leverArm = LEVER_ARM_TACHIAI_PARTIAL;
       }
@@ -183,28 +191,28 @@ export function evolveGripGeometry(
   const techniqueMargin = eastTechnique - westTechnique;
 
   // Random factor in grip evolution
-  const rngFactor = 0.9 + rng.next() * 0.2;
+  const rngFactor = GRIP_RNG_FACTOR_MIN + rng.next() * GRIP_RNG_FACTOR_RANGE;
 
   // Arm reach increases when technique margin > 12
-  if (techniqueMargin > 12) {
+  if (techniqueMargin > GRIP_DEEPEN_MARGIN) {
     if (belt.eastLeft && !belt.eastLeft.isBlocked) {
-      belt.eastLeft.armReach = Math.min(0.15, belt.eastLeft.armReach + 0.005 * rngFactor);
+      belt.eastLeft.armReach = Math.min(MAX_ARM_REACH, belt.eastLeft.armReach + ARM_REACH_INCREMENT * rngFactor);
     }
     if (belt.eastRight && !belt.eastRight.isBlocked) {
-      belt.eastRight.armReach = Math.min(0.15, belt.eastRight.armReach + 0.005 * rngFactor);
+      belt.eastRight.armReach = Math.min(MAX_ARM_REACH, belt.eastRight.armReach + ARM_REACH_INCREMENT * rngFactor);
     }
-  } else if (techniqueMargin < -12) {
+  } else if (techniqueMargin < -GRIP_DEEPEN_MARGIN) {
     if (belt.westLeft && !belt.westLeft.isBlocked) {
-      belt.westLeft.armReach = Math.min(0.15, belt.westLeft.armReach + 0.005 * rngFactor);
+      belt.westLeft.armReach = Math.min(MAX_ARM_REACH, belt.westLeft.armReach + ARM_REACH_INCREMENT * rngFactor);
     }
     if (belt.westRight && !belt.westRight.isBlocked) {
-      belt.westRight.armReach = Math.min(0.15, belt.westRight.armReach + 0.005 * rngFactor);
+      belt.westRight.armReach = Math.min(MAX_ARM_REACH, belt.westRight.armReach + ARM_REACH_INCREMENT * rngFactor);
     }
   }
 
   // Grip depth evolution based on technique margin
   // When technique margin > 15, winner can deepen grip
-  if (techniqueMargin > 15) {
+  if (techniqueMargin > GRIP_DEEPEN_TECHNIQUE_MARGIN) {
     if (belt.eastDepth === "standard") {
       belt.eastDepth = "deep";
       // Update lever arms for deeper grip
@@ -216,7 +224,7 @@ export function evolveGripGeometry(
       if (belt.eastLeft) belt.eastLeft.leverArm = LEVER_ARM_MAEMITSU;
       if (belt.eastRight) belt.eastRight.leverArm = LEVER_ARM_MAEMITSU;
     }
-  } else if (techniqueMargin < -15) {
+  } else if (techniqueMargin < -GRIP_DEEPEN_TECHNIQUE_MARGIN) {
     if (belt.westDepth === "standard") {
       belt.westDepth = "deep";
       if (belt.westLeft) belt.westLeft.leverArm = LEVER_ARM_DEEP;

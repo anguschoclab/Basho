@@ -5,6 +5,37 @@
 import { SeededRNG } from "../../rng";
 import { Rank, Division } from "../../types/banzuke";
 import { clamp } from "../../utils/math";
+import {
+  DEBUT_AGE_BASE,
+  DEBUT_AGE_RANGE,
+  FOREIGN_MAX_YEARS_BASE,
+  FOREIGN_MAX_YEARS_RANGE,
+  BASHO_PER_YEAR,
+  DIVISION_WIN_RATE_MAKUUCHI,
+  DIVISION_WIN_RATE_JURYO,
+  DIVISION_WIN_RATE_MAKUSHITA,
+  DIVISION_WIN_RATE_SANDANME,
+  DIVISION_WIN_RATE_JONIDAN,
+  DIVISION_WIN_RATE_JONOKUCHI,
+  RANK_MODIFIER_YOKOZUNA,
+  RANK_MODIFIER_OZEKI,
+  RANK_MODIFIER_SEKIWAKE,
+  RANK_MODIFIER_KOMUSUBI,
+  RANK_MODIFIER_MAEGASHIRA,
+  BASHO_PER_PROMOTION_BASE,
+  BASHO_PER_PROMOTION_MIN,
+  BOUTS_PER_BASHO_TOP,
+  BOUTS_PER_BASHO_LOWER,
+  WIN_RATE_RANDOMNESS,
+  WIN_RATE_MIN,
+  WIN_RATE_MAX,
+  YUSHO_CHANCE_BASE,
+  YUSHO_CHANCE_YOKOZUNA,
+  YUSHO_CHANCE_OZEKI,
+  YUSHO_CHANCE_SEKIWAKE,
+  YUSHO_CHANCE_KOMUSUBI,
+  YUSHO_CHANCE_MAEGASHIRA,
+} from "../../../constants/engine/generation";
 
 export interface DivisionRecords {
   makuuchi: { wins: number; losses: number };
@@ -44,35 +75,35 @@ function simulateCareerProgression(args: {
   } = args;
 
   const age = currentYear - birthYear;
-  const debutAge = 15 + rng.int(0, 5);
+  const debutAge = DEBUT_AGE_BASE + rng.int(0, DEBUT_AGE_RANGE);
   let yearsActive = Math.max(1, age - debutAge);
 
   // Limit career length for foreign wrestlers (realistic pattern)
   if (nationality && nationality !== "Japan") {
     // Foreign wrestlers typically have shorter careers (8-12 years vs 15-20 for Japanese)
-    const maxForeignYears = 8 + rng.int(0, 5);
+    const maxForeignYears = FOREIGN_MAX_YEARS_BASE + rng.int(0, FOREIGN_MAX_YEARS_RANGE);
     yearsActive = Math.min(yearsActive, maxForeignYears);
   }
 
-  const bashoCount = yearsActive * 6;
+  const bashoCount = yearsActive * BASHO_PER_YEAR;
 
   // Win rates by division (more realistic than single rate)
   const divisionWinRates: Record<Division, number> = {
-    makuuchi: 0.5,
-    juryo: 0.52,
-    makushita: 0.48,
-    sandanme: 0.45,
-    jonidan: 0.42,
-    jonokuchi: 0.4,
+    makuuchi: DIVISION_WIN_RATE_MAKUUCHI,
+    juryo: DIVISION_WIN_RATE_JURYO,
+    makushita: DIVISION_WIN_RATE_MAKUSHITA,
+    sandanme: DIVISION_WIN_RATE_SANDANME,
+    jonidan: DIVISION_WIN_RATE_JONIDAN,
+    jonokuchi: DIVISION_WIN_RATE_JONOKUCHI,
   };
 
   // Win rate modifiers by rank within division
   const rankModifiers: Record<Rank, number> = {
-    yokozuna: 0.15,
-    ozeki: 0.1,
-    sekiwake: 0.05,
-    komusubi: 0.02,
-    maegashira: 0.0,
+    yokozuna: RANK_MODIFIER_YOKOZUNA,
+    ozeki: RANK_MODIFIER_OZEKI,
+    sekiwake: RANK_MODIFIER_SEKIWAKE,
+    komusubi: RANK_MODIFIER_KOMUSUBI,
+    maegashira: RANK_MODIFIER_MAEGASHIRA,
     juryo: 0.0,
     makushita: 0.0,
     sandanme: 0.0,
@@ -110,13 +141,13 @@ function simulateCareerProgression(args: {
   for (let basho = 0; basho < bashoCount; basho++) {
     // Gradually progress through divisions — faster for prodigies, slower for late bloomers.
     // Base cadence: one division per 6 basho (1 yr); scaled by developmentSpeed.
-    const bashoPerPromotion = Math.max(2, Math.round(6 / developmentSpeed));
+    const bashoPerPromotion = Math.max(BASHO_PER_PROMOTION_MIN, Math.round(BASHO_PER_PROMOTION_BASE / developmentSpeed));
     if (currentDivIndex < targetIndex && basho > 0 && basho % bashoPerPromotion === 0) {
       currentDivIndex = Math.min(currentDivIndex + 1, targetIndex);
     }
 
     const currentDiv = divisions[currentDivIndex];
-    const boutsPerBasho = ["makuuchi", "juryo"].includes(currentDiv) ? 15 : 7;
+    const boutsPerBasho = ["makuuchi", "juryo"].includes(currentDiv) ? BOUTS_PER_BASHO_TOP : BOUTS_PER_BASHO_LOWER;
 
     // Calculate win rate for this division/rank
     let winRate = divisionWinRates[currentDiv];
@@ -125,7 +156,7 @@ function simulateCareerProgression(args: {
     }
 
     // Add randomness
-    winRate = clamp(winRate + (rng.next() - 0.5) * 0.1, 0.25, 0.85);
+    winRate = clamp(winRate + (rng.next() - 0.5) * WIN_RATE_RANDOMNESS, WIN_RATE_MIN, WIN_RATE_MAX);
 
     // Simulate bouts
     const wins = Math.round(boutsPerBasho * winRate);
@@ -139,12 +170,12 @@ function simulateCareerProgression(args: {
 
     // Yusho only possible in makuuchi
     if (currentDiv === "makuuchi") {
-      let yushoChance = 0.001; // Base chance
-      if (targetRank === "yokozuna") yushoChance = 0.1;
-      else if (targetRank === "ozeki") yushoChance = 0.04;
-      else if (targetRank === "sekiwake") yushoChance = 0.02;
-      else if (targetRank === "komusubi") yushoChance = 0.01;
-      else if (targetRank === "maegashira") yushoChance = 0.002;
+      let yushoChance = YUSHO_CHANCE_BASE; // Base chance
+      if (targetRank === "yokozuna") yushoChance = YUSHO_CHANCE_YOKOZUNA;
+      else if (targetRank === "ozeki") yushoChance = YUSHO_CHANCE_OZEKI;
+      else if (targetRank === "sekiwake") yushoChance = YUSHO_CHANCE_SEKIWAKE;
+      else if (targetRank === "komusubi") yushoChance = YUSHO_CHANCE_KOMUSUBI;
+      else if (targetRank === "maegashira") yushoChance = YUSHO_CHANCE_MAEGASHIRA;
 
       if (rng.next() < yushoChance) yushoCount++;
     }

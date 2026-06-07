@@ -10,6 +10,16 @@ import { generatePreBashoHeadline } from "./HeadlineGenerator";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { getHeya, getRikishi } from "../../queries";
+import type { Rikishi } from "../../types/rikishi";
+import {
+  HOT_PAIR_HEAT_THRESHOLD,
+  CONSECUTIVE_STRONG_OZEKI_THRESHOLD,
+  HEADLINES_HISTORY_MAX,
+  MEDIA_IMPACT_HIGH,
+  MEDIA_IMPACT_MEDIUM,
+  MEDIA_IMPACT_LOW,
+  MEDIA_RESPONSE_SLICE_COUNT,
+} from "../../../constants/engine/media";
 
 /**
  * Trigger pre-basho journalism hype.
@@ -28,7 +38,7 @@ export function triggerPreBashoJournalism(world: WorldState): StateImpact {
       (a: RivalryPairState, b: RivalryPairState) => b.heat - a.heat
     )[0];
 
-    if (hotPair && hotPair.heat > 30) {
+    if (hotPair && hotPair.heat > HOT_PAIR_HEAT_THRESHOLD) {
       const rA = getRikishi(world, hotPair.aId);
       const rB = getRikishi(world, hotPair.bId);
       const { title, subtitle } = generatePreBashoHeadline({
@@ -55,7 +65,7 @@ export function triggerPreBashoJournalism(world: WorldState): StateImpact {
   const ozekiRikishi: Rikishi[] = [];
   for (const id of world.activeRikishiIds) {
     const r = getRikishi(world, id);
-    if (r && r.rank === "ozeki" && (r.consecutiveStrongOzeki ?? 0) >= 1) {
+    if (r && r.rank === "ozeki" && (r.consecutiveStrongOzeki ?? 0) >= CONSECUTIVE_STRONG_OZEKI_THRESHOLD) {
       ozekiRikishi.push(r);
     }
   }
@@ -85,7 +95,7 @@ export function triggerPreBashoJournalism(world: WorldState): StateImpact {
   const currentHeadlines = world.mediaState?.headlines || [];
   builder.updateWorldField("mediaState", {
     ...world.mediaState,
-    headlines: [...currentHeadlines, ...headlines].slice(-50),
+    headlines: [...currentHeadlines, ...headlines].slice(-HEADLINES_HISTORY_MAX),
   });
 
   // D. Emit Management Decision Event for UI Overlay (D1)
@@ -123,11 +133,11 @@ function generateInterviewPrompt(world: WorldState, rng: SeededRNG) {
       question:
         "Your top rikishi is entering this tournament as a heavy favorite. How is the stable handling the pressure?",
       choices: [
-        { id: "modest", text: "We focus on one bout at a time.", impact: { rep: 5, heat: -10 } },
+        { id: "modest", text: "We focus on one bout at a time.", impact: { rep: MEDIA_IMPACT_HIGH, heat: -10 } },
         {
           id: "confident",
           text: "He's better than ever. The title is ours.",
-          impact: { rep: -10, heat: 25 },
+          impact: { rep: -10, heat: MEDIA_IMPACT_HIGH * 5 },
         },
         {
           id: "deflect",
@@ -143,12 +153,12 @@ function generateInterviewPrompt(world: WorldState, rng: SeededRNG) {
         {
           id: "deny",
           text: "We have nothing but respect for our brothers.",
-          impact: { rep: 5, politicalCapital: 5 },
+          impact: { rep: MEDIA_IMPACT_HIGH, politicalCapital: MEDIA_IMPACT_HIGH },
         },
         {
           id: "challenge",
           text: "Success naturally breeds envy.",
-          impact: { rep: -15, heat: 30, politicalCapital: -10 },
+          impact: { rep: -15, heat: MEDIA_IMPACT_HIGH * 6, politicalCapital: -10 },
         },
       ],
     },
@@ -172,7 +182,7 @@ export function buildMediaDigest(world: WorldState): {
 
   const topHeadlines = [...mediaState.headlines]
     .sort((a, b) => (b.impact as number) - (a.impact as number))
-    .slice(0, 5);
+    .slice(0, MEDIA_RESPONSE_SLICE_COUNT);
 
   const hotRikishi = Object.entries(mediaState.mediaHeat)
     .map(([id, heat]) => {
@@ -180,7 +190,7 @@ export function buildMediaDigest(world: WorldState): {
       return { id, name: r?.shikona ?? r?.name ?? id, heat: heat as number };
     })
     .sort((a, b) => b.heat - a.heat)
-    .slice(0, 5);
+    .slice(0, MEDIA_RESPONSE_SLICE_COUNT);
 
   const hotHeya = Object.entries(mediaState.heyaPressure)
     .map(([id, pressure]) => {
@@ -188,7 +198,7 @@ export function buildMediaDigest(world: WorldState): {
       return { id, name: h?.name ?? id, pressure: pressure as number };
     })
     .sort((a, b) => b.pressure - a.pressure)
-    .slice(0, 5);
+    .slice(0, MEDIA_RESPONSE_SLICE_COUNT);
 
   const weeklyGazette = topHeadlines.map((h) => h.title).filter(Boolean);
 

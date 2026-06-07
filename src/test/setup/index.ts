@@ -81,17 +81,28 @@ export class MockFileSystemDirectoryHandle {
 // Global setup injection
 const rootDir = new MockFileSystemDirectoryHandle("root");
 
-Object.defineProperty(globalThis, "navigator", {
-  value: {
-    storage: {
-      getDirectory: async () => rootDir,
+// Install the OPFS-capable navigator mock. Re-applied by resetMockFileSystem()
+// so storage tests are self-sufficient per test: the global afterEach restores
+// the pristine jsdom navigator between tests, and each storage test's beforeEach
+// (which calls resetMockFileSystem) re-installs this mock. Includes userAgent so
+// the mock is harmless if it ever leaks into a React-rendering test.
+function installMockNavigator() {
+  Object.defineProperty(globalThis, "navigator", {
+    value: {
+      storage: {
+        getDirectory: async () => rootDir,
+      },
+      userAgent: "node.js",
     },
-  },
-  writable: true,
-  configurable: true,
-});
+    writable: true,
+    configurable: true,
+  });
+}
+
+installMockNavigator();
 
 // Reset the file system before each test to prevent state leakage
 export const resetMockFileSystem = () => {
   rootDir.children.clear();
+  installMockNavigator();
 };

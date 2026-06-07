@@ -270,3 +270,20 @@ export const BASE_GROWTH = 0.5;
 
 /** Degeiko penalty multiplier */
 export const DEGEIKO_PENALTY_MULTIPLIER = 0.5;
+
+// Burnout probabilities
+export const BURNOUT_PROB_WEEK_1 = 0.15;
+export const BURNOUT_PROB_WEEK_2 = 0.35;
+
+// Burnout injury consequences
+export const BURNOUT_INJURY_WEEKS = 12;
+export const CRASH_STAT_FLOOR = 30;
+export const CRASH_STAT_PENALTY = 15;
+
+// Stat floors
+export const STAT_FLOOR = 10;
+export const DIVISION_FLOOR_MAKUUCHI = 45;
+export const DIVISION_FLOOR_JURYO = 40;
+
+// Training milestones
+export const TRAINING_MILESTONE_THRESHOLD = 10;

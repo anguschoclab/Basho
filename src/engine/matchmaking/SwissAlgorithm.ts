@@ -18,6 +18,34 @@ import type { RivalriesState } from "../../constants/engine/rivalry";
 import { getRivalryBoutModifiers } from "../systems/narrative/RivalryHeatService";
 import { scorePairing, type MatchPairing, type MatchmakingRules } from "./MatchmakingPhases";
 import { applyDramaBudget } from "./DramaMatchmaker";
+import {
+  SWISS_RANK_YOKOZUNA,
+  SWISS_RANK_OZEKI,
+  SWISS_RANK_SEKIWAKE,
+  SWISS_RANK_KOMUSUBI,
+  SWISS_RANK_MAEGASHIRA,
+  SWISS_RANK_JURYO,
+  SWISS_RANK_MAKUSHITA,
+  SWISS_RANK_SANDANME,
+  SWISS_RANK_JONIDAN,
+  SWISS_RANK_JONOKUCHI,
+  SWISS_RANK_DEFAULT,
+  M1_TO_M4_THRESHOLD,
+  PROXIMITY_OFFSET_MAX,
+  HOT_STREAK_WINS_THRESHOLD,
+  RIVALRY_TENSION_THRESHOLD,
+  RIVALRY_HEAT_BONUS,
+  SWISS_PHASE1_END_DAY,
+  SWISS_PHASE3_DAY,
+  RANK_NUMBER_MULTIPLIER,
+  SIDE_EAST_OFFSET,
+  SIDE_WEST_OFFSET,
+  PROXIMITY_OFFSET_START,
+  SCORE_CLAMP_MIN,
+  SCORE_CLAMP_MAX,
+  UNPAIRED_INCREMENT,
+  FINALE_INDEX,
+} from "../../constants/engine/matchmaking";
 
 // ── Banzuke ordinal helpers ────────────────────────────────────────────────────
 
@@ -26,16 +54,16 @@ import { applyDramaBudget } from "./DramaMatchmaker";
  * Lower values indicate higher rank (yokozuna is highest).
  */
 const SWISS_RANK_ORDINAL: Record<string, number> = {
-  yokozuna: 0,
-  ozeki: 100,
-  sekiwake: 200,
-  komusubi: 300,
-  maegashira: 400,
-  juryo: 500,
-  makushita: 600,
-  sandanme: 700,
-  jonidan: 800,
-  jonokuchi: 900,
+  yokozuna: SWISS_RANK_YOKOZUNA,
+  ozeki: SWISS_RANK_OZEKI,
+  sekiwake: SWISS_RANK_SEKIWAKE,
+  komusubi: SWISS_RANK_KOMUSUBI,
+  maegashira: SWISS_RANK_MAEGASHIRA,
+  juryo: SWISS_RANK_JURYO,
+  makushita: SWISS_RANK_MAKUSHITA,
+  sandanme: SWISS_RANK_SANDANME,
+  jonidan: SWISS_RANK_JONIDAN,
+  jonokuchi: SWISS_RANK_JONOKUCHI,
 };
 
 /**
@@ -46,10 +74,10 @@ const SWISS_RANK_ORDINAL: Record<string, number> = {
  * @returns {number} Ordinal value (lower = higher rank).
  */
 function banzukeOrdinal(r: Rikishi): number {
-  const base = SWISS_RANK_ORDINAL[r.rank] ?? 9000;
+  const base = SWISS_RANK_ORDINAL[r.rank] ?? SWISS_RANK_DEFAULT;
   const num = typeof r.rankNumber === "number" ? r.rankNumber : 1;
-  const side = r.side === "east" ? 0 : 1;
-  return base + num * 2 + side;
+  const side = r.side === "east" ? SIDE_EAST_OFFSET : SIDE_WEST_OFFSET;
+  return base + num * RANK_NUMBER_MULTIPLIER + side;
 }
 
 /**
@@ -69,7 +97,7 @@ function isSanyakuRank(r: Rikishi): boolean {
  * @returns {boolean} True if rank is maegashira and rankNumber <= 4.
  */
 function isM1toM4(r: Rikishi): boolean {
-  return r.rank === "maegashira" && (r.rankNumber ?? 99) <= 4;
+  return r.rank === "maegashira" && (r.rankNumber ?? 99) <= M1_TO_M4_THRESHOLD;
 }
 
 /**
@@ -135,8 +163,8 @@ function tryPair(
   if (!p) return null;
   if (rivalriesState) {
     const mod = getRivalryBoutModifiers({ state: rivalriesState, aId: a.id, bId: b.id });
-    if (mod.tension >= 0.5) {
-      return { ...p, score: clamp(p.score + 0.3, 0, 5), reasons: [...p.reasons, "rivalry_heat"] };
+    if (mod.tension >= RIVALRY_TENSION_THRESHOLD) {
+      return { ...p, score: clamp(p.score + RIVALRY_HEAT_BONUS, SCORE_CLAMP_MIN, SCORE_CLAMP_MAX), reasons: [...p.reasons, "rivalry_heat"] };
     }
   }
   return p;
@@ -200,7 +228,7 @@ function phase1(
     if (paired.has(a.id)) continue;
 
     let matched = false;
-    for (let offset = 1; offset <= 3 && i + offset < remaining.length; offset++) {
+    for (let offset = PROXIMITY_OFFSET_START; offset <= PROXIMITY_OFFSET_MAX && i + offset < remaining.length; offset++) {
       const b = remaining[i + offset];
       if (paired.has(b.id)) continue;
       const p = tryPair(basho, a, b, facedSet, paired, rivalriesState);
@@ -262,7 +290,7 @@ function phase2(
 
   for (const r of pool) {
     const rec = standings?.get(r.id) ?? { wins: 0, losses: 0 };
-    if (rec.wins >= 10 && rec.losses === 0 && !isSanyakuRank(r)) {
+    if (rec.wins >= HOT_STREAK_WINS_THRESHOLD && rec.losses === 0 && !isSanyakuRank(r)) {
       const topSanyaku = pool
         .filter((s) => isSanyakuRank(s) && !paired.has(s.id) && !pulledUp.has(s.id))
         .sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b))[0];
@@ -316,7 +344,7 @@ function phase2(
   }
 
   const unpaired = pool.filter((r) => !paired.has(r.id));
-  for (let i = 0; i < unpaired.length - 1; i += 2) {
+  for (let i = 0; i < unpaired.length - 1; i += UNPAIRED_INCREMENT) {
     const a = unpaired[i];
     const b = unpaired[i + 1];
     const forced = scorePairing({
@@ -416,7 +444,7 @@ function phase3(
   }
 
   if (koreyoriPairings.length > 0) {
-    const finaleIdx = 0;
+    const finaleIdx = FINALE_INDEX;
     koreyoriPairings[finaleIdx] = {
       ...koreyoriPairings[finaleIdx],
       reasons: [...koreyoriPairings[finaleIdx].reasons, "finale"],
@@ -487,8 +515,8 @@ export function buildSwissTorikumi(
   const day = basho.day ?? 1;
 
   let raw: MatchPairing[];
-  if (day <= 7) raw = phase1(basho, pool, facedSet, options.rivalriesState);
-  else if (day === 15) raw = phase3(basho, pool, facedSet, options.rivalriesState);
+  if (day <= SWISS_PHASE1_END_DAY) raw = phase1(basho, pool, facedSet, options.rivalriesState);
+  else if (day === SWISS_PHASE3_DAY) raw = phase3(basho, pool, facedSet, options.rivalriesState);
   else raw = phase2(basho, pool, facedSet, options.rivalriesState);
 
   // Apply drama budget post-processing to maximize narrative value

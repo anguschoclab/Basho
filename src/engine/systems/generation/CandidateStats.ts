@@ -17,6 +17,43 @@ import {
   maturityFactor,
   type DevelopmentProfile,
 } from "../../../constants/engine/development";
+import {
+  PRODIGY_EARLY_PEAKER_CHANCE,
+  JOURNEYMAN_LATE_BLOOMER_CHANCE,
+  FAT_TAIL_SAMPLING_CHANCE,
+  FAT_TAIL_STD_DEV_MULTIPLIER,
+  STAT_MIN,
+  STAT_MAX,
+  CA_STAT_MIN,
+  CA_STAT_MAX,
+  REGIONAL_BONUS_EAST_EUROPEAN_POWER,
+  REGIONAL_BONUS_EAST_EUROPEAN_STAMINA,
+  REGIONAL_BONUS_MONGOLIAN_TECHNIQUE,
+  REGIONAL_BONUS_MONGOLIAN_SPEED,
+  REGIONAL_BONUS_AMERICAS_TECHNIQUE,
+  REGIONAL_BONUS_AMERICAS_SPEED,
+  REGIONAL_BONUS_AMERICAS_ADAPTABILITY,
+  CA_NOISE_MEAN,
+  CA_NOISE_STD_DEV,
+  WEIGHT_MIN,
+  WEIGHT_MAX,
+  HEIGHT_MIN,
+  HEIGHT_MAX,
+  BASE_MEAN_YOKOZUNA,
+  BASE_MEAN_OZEKI,
+  BASE_MEAN_SEKIWAKE_KOMUSUBI,
+  BASE_MEAN_MAEGASHIRA,
+  BASE_MEAN_LOWER_DIVISIONS,
+  STAT_GEN_STD_DEV,
+  WEIGHT_BASE_MEAN,
+  WEIGHT_GEN_STD_DEV,
+  WEIGHT_GEN_MIN,
+  WEIGHT_GEN_MAX,
+  HEIGHT_BASE_MEAN,
+  HEIGHT_GEN_STD_DEV,
+  HEIGHT_GEN_MIN,
+  HEIGHT_GEN_MAX,
+} from "../../../constants/engine/generation";
 
 export interface GeneratedStats extends RikishiStats {
   height: number;
@@ -54,11 +91,11 @@ export function rollDevelopmentProfile(
   const ageIsLate = age > ageCfg.mean + ageCfg.stdDev;
 
   if (ageIsPrecocious && (rank === "yokozuna" || rank === "ozeki" || rank === "sekiwake")) {
-    return rng.next() < 0.5 ? "prodigy" : "early_peaker";
+    return rng.next() < PRODIGY_EARLY_PEAKER_CHANCE ? "prodigy" : "early_peaker";
   }
   if (ageIsLate && (rank === "makushita" || rank === "sandanme" || rank === "jonidan")) {
     // An old rikishi stuck low is usually a journeyman or late bloomer still waiting
-    return rng.next() < 0.7 ? "journeyman" : "late_bloomer";
+    return rng.next() < JOURNEYMAN_LATE_BLOOMER_CHANCE ? "journeyman" : "late_bloomer";
   }
 
   const roll = rng.next();
@@ -85,11 +122,11 @@ export function rollPotential(args: {
   const paCfg = PA_BY_RANK[rank];
 
   // Fat-tail sampling: 15% of rolls use wider σ (creates sleeper talents / busts)
-  const effectiveStdDev = rng.next() < 0.15 ? paCfg.stdDev * 2 : paCfg.stdDev;
+  const effectiveStdDev = rng.next() < FAT_TAIL_SAMPLING_CHANCE ? paCfg.stdDev * FAT_TAIL_STD_DEV_MULTIPLIER : paCfg.stdDev;
 
   const rollStat = (mod: number = 1.0, regionalBonus: number = 0): number => {
     const mean = paCfg.mean * mod + regionalBonus;
-    return clampInt(rng.gaussian(mean, effectiveStdDev), 25, 99);
+    return clampInt(rng.gaussian(mean, effectiveStdDev), STAT_MIN, STAT_MAX);
   };
 
   // Define Regional Biases (Phase 3)
@@ -101,12 +138,12 @@ export function rollPotential(args: {
   const powerMod = mods["power"] ?? mods["strength"] ?? 1.0;
 
   const paStats: RikishiStats = {
-    power: rollStat(powerMod, isEastEuropean ? 12 : 0),
-    technique: rollStat(mods["technique"] ?? 1.0, isMongolian ? 10 : isAmericas ? 4 : 0),
-    speed: rollStat(mods["speed"] ?? 1.0, isMongolian ? 5 : isAmericas ? 8 : 0),
-    stamina: rollStat(mods["stamina"] ?? 1.0, isEastEuropean ? 8 : 0),
+    power: rollStat(powerMod, isEastEuropean ? REGIONAL_BONUS_EAST_EUROPEAN_POWER : 0),
+    technique: rollStat(mods["technique"] ?? 1.0, isMongolian ? REGIONAL_BONUS_MONGOLIAN_TECHNIQUE : isAmericas ? REGIONAL_BONUS_AMERICAS_TECHNIQUE : 0),
+    speed: rollStat(mods["speed"] ?? 1.0, isMongolian ? REGIONAL_BONUS_MONGOLIAN_SPEED : isAmericas ? REGIONAL_BONUS_AMERICAS_SPEED : 0),
+    stamina: rollStat(mods["stamina"] ?? 1.0, isEastEuropean ? REGIONAL_BONUS_EAST_EUROPEAN_STAMINA : 0),
     mental: rollStat(mods["mental"] ?? 1.0),
-    adaptability: rollStat(mods["adaptability"] ?? 1.0, isAmericas ? 4 : 0),
+    adaptability: rollStat(mods["adaptability"] ?? 1.0, isAmericas ? REGIONAL_BONUS_AMERICAS_ADAPTABILITY : 0),
     balance: rollStat(mods["balance"] ?? 1.0),
     weight: 0, // Size handled separately below
   };
@@ -153,8 +190,8 @@ export function deriveCurrentAbility(args: {
     const m = maturityFactor({ age, group, developmentSpeed, peakAgeOffset });
     const target = paValue * ceilingFraction * m;
     // Small noise so CA doesn't read as deterministic from PA
-    const noisy = target + rng.gaussian(0, 2);
-    return clampInt(noisy, 10, 100);
+    const noisy = target + rng.gaussian(CA_NOISE_MEAN, CA_NOISE_STD_DEV);
+    return clampInt(noisy, CA_STAT_MIN, CA_STAT_MAX);
   };
 
   const heightM = maturityFactor({
@@ -178,8 +215,8 @@ export function deriveCurrentAbility(args: {
     mental: deriveStat(pa.mental, "mental"),
     adaptability: deriveStat(pa.adaptability, "adaptability"),
     balance: deriveStat(pa.balance, "balance"),
-    weight: clampInt(potential.weightKg * weightM, 70, 250),
-    height: clampInt(potential.heightCm * heightM, 150, 210),
+    weight: clampInt(potential.weightKg * weightM, WEIGHT_MIN, WEIGHT_MAX),
+    height: clampInt(potential.heightCm * heightM, HEIGHT_MIN, HEIGHT_MAX),
   };
 }
 
@@ -195,25 +232,25 @@ export function generateRikishiStats(args: {
 
   const baseMean =
     rank === "yokozuna"
-      ? 85
+      ? BASE_MEAN_YOKOZUNA
       : rank === "ozeki"
-        ? 75
+        ? BASE_MEAN_OZEKI
         : rank === "sekiwake" || rank === "komusubi"
-          ? 65
+          ? BASE_MEAN_SEKIWAKE_KOMUSUBI
           : rank === "maegashira"
-            ? 55
-            : 40;
+            ? BASE_MEAN_MAEGASHIRA
+            : BASE_MEAN_LOWER_DIVISIONS;
 
   const mods = (profile.statModifiers || {}) as Record<string, number | undefined>;
-  const stdDev = 8;
+  const stdDev = STAT_GEN_STD_DEV;
 
   const genStat = (key: string, defaultVal?: number) => {
     const mean = (defaultVal ?? baseMean) * (mods[key] ?? 1.0);
     return clampInt(rng.gaussian(mean, stdDev), 10, 100);
   };
 
-  const weight = clampInt(rng.gaussian(150 * (mods["weight"] ?? 1.0), 20), 80, 250);
-  const height = clampInt(rng.gaussian(180 * (mods["height"] ?? 1.0), 8), 160, 210);
+  const weight = clampInt(rng.gaussian(WEIGHT_BASE_MEAN * (mods["weight"] ?? 1.0), WEIGHT_GEN_STD_DEV), WEIGHT_GEN_MIN, WEIGHT_GEN_MAX);
+  const height = clampInt(rng.gaussian(HEIGHT_BASE_MEAN * (mods["height"] ?? 1.0), HEIGHT_GEN_STD_DEV), HEIGHT_GEN_MIN, HEIGHT_GEN_MAX);
 
   // 'power' key in statModifiers maps to power in RikishiStats → Rikishi.power
   const powerMod = mods["power"] ?? mods["strength"] ?? 1.0;

@@ -15,6 +15,24 @@ import type { BoutTactic, TacticalResult } from "./types/combat";
 import { BardEngine } from "./narrative/BardEngine";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
+import {
+  H2H_DOMINATION_MIN_MATCHES,
+  H2H_DOMINATION_WIN_RATE_THRESHOLD,
+  H2H_DEADLOCK_DIFF_THRESHOLD,
+  H2H_DEADLOCK_MIN_MATCHES,
+  H2H_STREAK_THRESHOLD,
+  H2H_MAX_RECENT_MEETINGS,
+  TACTIC_YOTSU_BELT_THRESHOLD,
+  TACTIC_YOTSU_STANDARD_THRESHOLD,
+  TACTIC_YOTSU_OSHI_THRESHOLD,
+  TACTIC_OSHI_THRUST_THRESHOLD,
+  TACTIC_OSHI_STANDARD_THRESHOLD,
+  TACTIC_OSHI_YOTSU_THRESHOLD,
+  TACTIC_HYBRID_YOTSU_THRESHOLD,
+  TACTIC_HYBRID_OSHI_THRESHOLD,
+  TACTIC_HYBRID_STANDARD_THRESHOLD,
+  TACTICAL_ADVANTAGE_SHIFT,
+} from "../constants/engine/generation";
 
 /**
  * Updates the Head-to-Head records for two rikishi after a bout.
@@ -115,7 +133,7 @@ export function generateH2HCommentary(r1: Rikishi, r2: Rikishi): string {
   const last = record.lastMatch;
 
   // Case 1: Lopsided Domination (Win rate > 75% with 4+ matches)
-  if (total >= 4 && record.wins / total > 0.75) {
+  if (total >= H2H_DOMINATION_MIN_MATCHES && record.wins / total > H2H_DOMINATION_WIN_RATE_THRESHOLD) {
     return BardEngine.resolve(rng, "h2h.domination", {
       P1: p1Name,
       P2: p2Name,
@@ -124,7 +142,7 @@ export function generateH2HCommentary(r1: Rikishi, r2: Rikishi): string {
       TOTAL: total.toString(),
     }).text;
   }
-  if (total >= 4 && record.losses / total > 0.75) {
+  if (total >= H2H_DOMINATION_MIN_MATCHES && record.losses / total > H2H_DOMINATION_WIN_RATE_THRESHOLD) {
     // Note: domain 'domination' templates handle P2 struggling as well.
     return BardEngine.resolve(rng, "h2h.domination", {
       P1: p2Name,
@@ -136,7 +154,7 @@ export function generateH2HCommentary(r1: Rikishi, r2: Rikishi): string {
   }
 
   // Case 2: Deadlock (Exact tie or off by 1)
-  if (Math.abs(record.wins - record.losses) <= 1 && total > 2) {
+  if (Math.abs(record.wins - record.losses) <= H2H_DEADLOCK_DIFF_THRESHOLD && total > H2H_DEADLOCK_MIN_MATCHES) {
     return BardEngine.resolve(rng, "h2h.deadlock", {
       WINS: record.wins.toString(),
       LOSSES: record.losses.toString(),
@@ -144,7 +162,7 @@ export function generateH2HCommentary(r1: Rikishi, r2: Rikishi): string {
   }
 
   // Case 3: Streak Narrative
-  if (Math.abs(record.streak) >= 3) {
+  if (Math.abs(record.streak) >= H2H_STREAK_THRESHOLD) {
     return BardEngine.resolve(rng, "h2h.streak", {
       P1: p1Name,
       P2: p2Name,
@@ -199,7 +217,7 @@ export function getH2HReport(rA: Rikishi, rB: Rikishi): H2HReport {
     bId: rB.id,
     bWins,
     totalMeetings: aWins + bWins,
-    recentMeetings: meetings.slice(0, 5),
+    recentMeetings: meetings.slice(0, H2H_MAX_RECENT_MEETINGS),
   };
 }
 
@@ -213,20 +231,20 @@ export function determineCPUTactic(cpu: Rikishi, rng: SeededRNG): BoutTactic {
   const roll = rng.next();
 
   if (isYotsu) {
-    if (roll < 0.65) return "YOTSU_BELT";
-    if (roll < 0.85) return "STANDARD";
-    if (roll < 0.95) return "OSHI_THRUST";
+    if (roll < TACTIC_YOTSU_BELT_THRESHOLD) return "YOTSU_BELT";
+    if (roll < TACTIC_YOTSU_STANDARD_THRESHOLD) return "STANDARD";
+    if (roll < TACTIC_YOTSU_OSHI_THRESHOLD) return "OSHI_THRUST";
     return "HENKA";
   } else if (isOshi) {
-    if (roll < 0.7) return "OSHI_THRUST";
-    if (roll < 0.85) return "STANDARD";
-    if (roll < 0.95) return "YOTSU_BELT";
+    if (roll < TACTIC_OSHI_THRUST_THRESHOLD) return "OSHI_THRUST";
+    if (roll < TACTIC_OSHI_STANDARD_THRESHOLD) return "STANDARD";
+    if (roll < TACTIC_OSHI_YOTSU_THRESHOLD) return "YOTSU_BELT";
     return "HENKA";
   } else {
     // Hybrid / Other
-    if (roll < 0.4) return "YOTSU_BELT";
-    if (roll < 0.8) return "OSHI_THRUST";
-    if (roll < 0.95) return "STANDARD";
+    if (roll < TACTIC_HYBRID_YOTSU_THRESHOLD) return "YOTSU_BELT";
+    if (roll < TACTIC_HYBRID_OSHI_THRESHOLD) return "OSHI_THRUST";
+    if (roll < TACTIC_HYBRID_STANDARD_THRESHOLD) return "STANDARD";
     return "HENKA";
   }
 }
@@ -260,10 +278,10 @@ export function resolveTacticalClash(
     (playerTactic === "HENKA" && cpuTactic === "YOTSU_BELT")
   ) {
     result.advantage = "PLAYER";
-    result.winProbabilityShift = 0.15; // 15% boost
+    result.winProbabilityShift = TACTICAL_ADVANTAGE_SHIFT; // 15% boost
   } else {
     result.advantage = "CPU";
-    result.winProbabilityShift = -0.15; // 15% penalty
+    result.winProbabilityShift = -TACTICAL_ADVANTAGE_SHIFT; // 15% penalty
   }
 
   return result;

@@ -11,6 +11,24 @@ import type { Oyakata } from "../types/oyakata";
 
 import type { StateImpact } from "../core/StateImpact";
 import { createImpactBuilder } from "../core/ImpactBuilder";
+import {
+  THRESHOLD_BOOST_HIGH,
+  THRESHOLD_BOOST_MODERATE,
+  THRESHOLD_BOOST_LOW,
+  DEFAULT_TRAIT_VALUE,
+  TRAIT_MULTIPLIER_DIVISOR,
+  ADJUST_SCORE_DEFAULT_MIN,
+  ADJUST_SCORE_DEFAULT_MAX,
+  TRAIT_AMBITION_THRESHOLD,
+  TRAIT_RISK_LOW_THRESHOLD,
+  TRAIT_TRADITION_THRESHOLD,
+  TRAIT_RISK_HIGH_THRESHOLD,
+  TRAIT_COMPASSION_THRESHOLD,
+  TRAIT_PATIENCE_THRESHOLD,
+  TRAIT_GREEDY_RISK_THRESHOLD,
+  TRAIT_VINDICTIVE_AMBITION_THRESHOLD,
+  TRAIT_VINDICTIVE_RISK_THRESHOLD,
+} from "../../constants/engine/npcStrategy";
 
 /** Base context for all strategy evaluations */
 export interface StrategyContext {
@@ -120,39 +138,39 @@ export function evaluateRulesCumulative(ctx: StrategyContext, rules: StrategyRul
 
 export const TraitChecks = {
   isAmbitious:
-    (threshold = 50): TraitCheck =>
+    (threshold = TRAIT_AMBITION_THRESHOLD): TraitCheck =>
     (o) =>
       (o.traits.ambition ?? 0) > threshold,
 
   isHoarder:
-    (threshold = 30): TraitCheck =>
+    (threshold = TRAIT_RISK_LOW_THRESHOLD): TraitCheck =>
     (o) =>
       (o.traits.risk ?? 50) < threshold,
 
   isTraditionalist:
-    (threshold = 70): TraitCheck =>
+    (threshold = TRAIT_TRADITION_THRESHOLD): TraitCheck =>
     (o) =>
       (o.traits.tradition ?? 0) > threshold,
 
   isRiskTaker:
-    (threshold = 60): TraitCheck =>
+    (threshold = TRAIT_RISK_HIGH_THRESHOLD): TraitCheck =>
     (o) =>
       (o.traits.risk ?? 50) > threshold,
 
   isCompassionate:
-    (threshold = 70): TraitCheck =>
+    (threshold = TRAIT_COMPASSION_THRESHOLD): TraitCheck =>
     (o) =>
       (o.traits.compassion ?? 0) > threshold,
 
   isPatient:
-    (threshold = 70): TraitCheck =>
+    (threshold = TRAIT_PATIENCE_THRESHOLD): TraitCheck =>
     (o) =>
       (o.traits.patience ?? 0) > threshold,
 
   isVindictive: (): TraitCheck => (o) =>
-    o.temperament === "Vindictive" || (o.traits.ambition > 80 && o.traits.risk > 70),
+    o.temperament === "Vindictive" || (o.traits.ambition > TRAIT_VINDICTIVE_AMBITION_THRESHOLD && o.traits.risk > TRAIT_VINDICTIVE_RISK_THRESHOLD),
 
-  isGreedy: (): TraitCheck => (o) => o.traits.risk < 20 || o.quirks?.includes("Numbers Guy"),
+  isGreedy: (): TraitCheck => (o) => o.traits.risk < TRAIT_GREEDY_RISK_THRESHOLD || (o.quirks?.includes("Numbers Guy") ?? false),
 
   hasMood:
     (mood: Oyakata["mood"]): TraitCheck =>
@@ -167,11 +185,11 @@ export const TraitChecks = {
 export function calculateMoodAdjustedThreshold(baseThreshold: number, oyakata: Oyakata): number {
   switch (oyakata.mood) {
     case "anxious":
-      return baseThreshold * 1.5;
+      return baseThreshold * THRESHOLD_BOOST_HIGH;
     case "obsessed":
-      return baseThreshold * 0.8;
+      return baseThreshold * THRESHOLD_BOOST_MODERATE;
     case "furious":
-      return baseThreshold * 0.7;
+      return baseThreshold * THRESHOLD_BOOST_LOW;
     default:
       return baseThreshold;
   }
@@ -183,8 +201,8 @@ export function calculateTraitAdjustedThreshold(
   trait: keyof Oyakata["traits"],
   traitMultiplier: number
 ): number {
-  const traitValue = oyakata.traits[trait] ?? 50;
-  const adjustment = ((traitValue - 50) / 50) * traitMultiplier;
+  const traitValue = oyakata.traits[trait] ?? DEFAULT_TRAIT_VALUE;
+  const adjustment = ((traitValue - DEFAULT_TRAIT_VALUE) / TRAIT_MULTIPLIER_DIVISOR) * traitMultiplier;
   return baseThreshold * (1 + adjustment);
 }
 
@@ -212,6 +230,6 @@ export function trySpendResource(
 /**
  * Adjust a numeric score within bounds.
  */
-export function adjustScore(current: number, delta: number, min = 0, max = 100): number {
+export function adjustScore(current: number, delta: number, min = ADJUST_SCORE_DEFAULT_MIN, max = ADJUST_SCORE_DEFAULT_MAX): number {
   return Math.max(min, Math.min(max, current + delta));
 }

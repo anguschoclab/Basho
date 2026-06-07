@@ -19,6 +19,9 @@ import {
   HIGH_RANK_TONE_PROBABILITY,
   DEFAULT_TONE_PROBABILITY,
   HIGH_RANK_IMPACT_THRESHOLD,
+  STREAK_IMPACT_BASE,
+  STREAK_IMPACT_MULTIPLIER,
+  STREAK_MAIN_EVENT_THRESHOLD,
 } from "../../../constants/engine/media";
 import {
   RIVALRY_TENSION_BEAT_THRESHOLD,
@@ -272,14 +275,14 @@ function processStreak(
     id: rng.uuid("MH"),
     week: world.week,
     bashoName,
-    tier: streak >= 10 ? "main_event" : "national",
+    tier: streak >= STREAK_MAIN_EVENT_THRESHOLD ? "main_event" : "national",
     beat: "streak",
-    tone: streak >= 10 ? "hype" : "praise",
+    tone: streak >= STREAK_MAIN_EVENT_THRESHOLD ? "hype" : "praise",
     rikishiIds: [winnerId],
     heyaIds: rikishi?.heyaId ? [rikishi.heyaId] : [],
     title,
     subtitle,
-    impact: 35 + streak * 4,
+    impact: STREAK_IMPACT_BASE + streak * STREAK_IMPACT_MULTIPLIER,
     tags: ["basho", "streak", `streak_${streak}`],
   };
 

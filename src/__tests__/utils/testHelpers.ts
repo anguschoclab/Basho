@@ -237,14 +237,16 @@ export function mockElectronAPI(opts?: {
     onMenuEvent: vi.fn().mockReturnValue(vi.fn()),
   };
 
-  Object.defineProperty(global, "window", {
-    value: {
-      __ELECTRON__: true,
-      electronCustom,
-    },
-    writable: true,
-    configurable: true,
-  });
+  // Augment the existing (jsdom) window instead of replacing it wholesale.
+  // Replacing the whole object dropped jsdom globals like window.history /
+  // window.location, which then leaked into later test files under a shared
+  // process (e.g. routes.tsx's createBrowserHistory crashing on window.history).
+  if (!(global as typeof globalThis).window) {
+    Object.defineProperty(global, "window", { value: {}, writable: true, configurable: true });
+  }
+  const win = (global as typeof globalThis).window as unknown as Record<string, unknown>;
+  win.__ELECTRON__ = true;
+  win.electronCustom = electronCustom;
 
   return {
     fs: fsMock,
@@ -263,9 +265,11 @@ export function mockElectronAPI(opts?: {
  * Call this in afterEach to prevent test pollution.
  */
 export function clearElectronMock() {
-  Object.defineProperty(global, "window", {
-    value: undefined,
-    writable: true,
-    configurable: true,
-  });
+  // Remove only the Electron-specific props so the underlying jsdom window
+  // (history, location, …) is preserved for subsequent test files.
+  const win = (global as typeof globalThis).window as unknown as Record<string, unknown> | undefined;
+  if (win) {
+    delete win.__ELECTRON__;
+    delete win.electronCustom;
+  }
 }

@@ -192,7 +192,7 @@ export interface NarrativeContext {
   day?: number;
 
   /** Index signature for additional custom fields. */
-  [key: string]: string | number | boolean | undefined;
+  [key: string]: string | number | boolean | object | null | undefined;
 }
 
 /**

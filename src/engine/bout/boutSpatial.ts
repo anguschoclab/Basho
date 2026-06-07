@@ -30,6 +30,11 @@ import {
   TORQUE_THRESHOLD_MODERATE,
   VELOCITY_EDGE_EXIT_THRESHOLD,
   TSUKIDASHI_PROBABILITY_THRESHOLD,
+  TAWARA_BOUNCE_RESISTANCE_HEEL,
+  UTCHARI_ESCAPE_ANGLE_THRESHOLD,
+  UTCHARI_MIN_TICKS_IN_CRISIS,
+  OKURIDASHI_PRESSURE_Z_THRESHOLD,
+  OKURITAOSHI_PRESSURE_Z_THRESHOLD,
 } from "../../constants/engine/physics";
 
 export function initPhysicalBody(rikishi: Rikishi, side: Side): PhysicalBody {
@@ -68,7 +73,7 @@ export function isOutOfRing(body: PhysicalBody): boolean {
 export function tawaraBounceResistance(toePos: number): number {
   if (toePos < 0) return 0;
   if (toePos < TOE_POSITION_EDGE_THRESHOLD) return EDGE_DISTANCE_AT_TOE;
-  if (toePos < 1.0) return 8.0;
+  if (toePos < 1.0) return TAWARA_BOUNCE_RESISTANCE_HEEL;
   return 0;
 }
 
@@ -138,17 +143,17 @@ export function classifyEdgeExitKimarite(
   const defenderBody = defenderSide === "east" ? st.east : st.west;
 
   // 1.75D: utchari — defender pivoted at edge with high escapeAngle but still lost
-  if (crisis.escapeAngle > 0.3 && crisis.ticksInCrisis >= 3) {
+  if (crisis.escapeAngle > UTCHARI_ESCAPE_ANGLE_THRESHOLD && crisis.ticksInCrisis >= UTCHARI_MIN_TICKS_IN_CRISIS) {
     return "utchari";
   }
 
   // 1.75D: okuridashi when defender has lateral momentum (off-axis overrun)
-  if (Math.abs(crisis.opponentPressureZ) > 0.5 && Math.abs(defenderBody.velocityX) > VELOCITY_EDGE_EXIT_THRESHOLD) {
+  if (Math.abs(crisis.opponentPressureZ) > OKURIDASHI_PRESSURE_Z_THRESHOLD && Math.abs(defenderBody.velocityX) > VELOCITY_EDGE_EXIT_THRESHOLD) {
     return "okuridashi";
   }
 
   // 1.75D: okuritaoshi when belt-driven with lateral component
-  if (fromBelt && Math.abs(crisis.opponentPressureZ) > 0.3) {
+  if (fromBelt && Math.abs(crisis.opponentPressureZ) > OKURITAOSHI_PRESSURE_Z_THRESHOLD) {
     return "okuritaoshi";
   }
 

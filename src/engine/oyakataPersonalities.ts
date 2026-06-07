@@ -4,6 +4,31 @@
 
 import { rngFromSeed, SeededRNG } from "./rng";
 import type { Oyakata, OyakataArchetype, OyakataTraits, OyakataMood } from "./types/oyakata";
+import {
+  TRAIT_VARIANCE_RANGE,
+  TRAIT_VARIANCE_HALF_RANGE,
+  TRAIT_BLEND_VARIANCE_RANGE,
+  TRAIT_BLEND_VARIANCE_HALF_RANGE,
+  LEGENDARY_YOKOZUNA_THRESHOLD,
+  LEGENDARY_OZEKI_THRESHOLD,
+  LEGENDARY_SANYAKU_THRESHOLD,
+  POWERFUL_YOKOZUNA_THRESHOLD,
+  POWERFUL_OZEKI_THRESHOLD,
+  POWERFUL_SANYAKU_THRESHOLD,
+  ESTABLISHED_YOKOZUNA_THRESHOLD,
+  ESTABLISHED_OZEKI_THRESHOLD,
+  ESTABLISHED_SANYAKU_THRESHOLD,
+  ESTABLISHED_MAEGASHIRA_THRESHOLD,
+  QUIRK_COUNT_HIGH,
+  QUIRK_COUNT_BASE,
+  MAX_YEARS_IN_CHARGE,
+  WELFARE_HAWK_COMPASSION_THRESHOLD,
+  DISCIPLINE_HAWK_TRADITION_THRESHOLD,
+  PUBLICITY_HAWK_AMBITION_THRESHOLD,
+  SAN_YAKU_BOOL_CHANCE,
+  ADAPTABILITY_TRADITION_INVERSE,
+  DEFAULT_HEYA_TIER,
+} from "../constants/engine/npcStrategy";
 
 /** o y a k a t a_ a r c h e t y p e s. */
 export const OYAKATA_ARCHETYPES: Record<OyakataArchetype, OyakataTraits> = {
@@ -128,25 +153,25 @@ function generateRankByTier(rng: SeededRNG, tier: number): string {
 
   // Legendary heya (tier < 0.2): 40% yokozuna, 35% ozeki, 20% sekiwake/komusubi, 5% maegashira
   if (tier < 0.2) {
-    if (roll < 0.4) return "Yokozuna";
-    if (roll < 0.75) return "Ozeki";
-    if (roll < 0.95) return rng.bool(0.5) ? "Sekiwake" : "Komusubi";
+    if (roll < LEGENDARY_YOKOZUNA_THRESHOLD) return "Yokozuna";
+    if (roll < LEGENDARY_OZEKI_THRESHOLD) return "Ozeki";
+    if (roll < LEGENDARY_SANYAKU_THRESHOLD) return rng.bool(SAN_YAKU_BOOL_CHANCE) ? "Sekiwake" : "Komusubi";
     return "Maegashira";
   }
 
   // Powerful heya (tier < 0.5): 20% yokozuna, 35% ozeki, 30% sekiwake/komusubi, 15% maegashira
   if (tier < 0.5) {
-    if (roll < 0.2) return "Yokozuna";
-    if (roll < 0.55) return "Ozeki";
-    if (roll < 0.85) return rng.bool(0.5) ? "Sekiwake" : "Komusubi";
+    if (roll < POWERFUL_YOKOZUNA_THRESHOLD) return "Yokozuna";
+    if (roll < POWERFUL_OZEKI_THRESHOLD) return "Ozeki";
+    if (roll < POWERFUL_SANYAKU_THRESHOLD) return rng.bool(SAN_YAKU_BOOL_CHANCE) ? "Sekiwake" : "Komusubi";
     return "Maegashira";
   }
 
   // Established heya (tier >= 0.5): 5% yokozuna, 15% ozeki, 40% sekiwake/komusubi, 30% maegashira, 10% juryo
-  if (roll < 0.05) return "Yokozuna";
-  if (roll < 0.2) return "Ozeki";
-  if (roll < 0.6) return rng.bool(0.5) ? "Sekiwake" : "Komusubi";
-  if (roll < 0.9) return "Maegashira";
+  if (roll < ESTABLISHED_YOKOZUNA_THRESHOLD) return "Yokozuna";
+  if (roll < ESTABLISHED_OZEKI_THRESHOLD) return "Ozeki";
+  if (roll < ESTABLISHED_SANYAKU_THRESHOLD) return rng.bool(SAN_YAKU_BOOL_CHANCE) ? "Sekiwake" : "Komusubi";
+  if (roll < ESTABLISHED_MAEGASHIRA_THRESHOLD) return "Maegashira";
   return "Juryo";
 }
 
@@ -187,12 +212,12 @@ export function generateOyakata(
   const baseTraits = OYAKATA_ARCHETYPES[type];
 
   // Apply small random variance to traits (+/- 10)
-  const vary = (val: number) => Math.max(0, Math.min(100, val + (rng.next() * 20 - 10)));
+  const vary = (val: number) => Math.max(0, Math.min(100, val + (rng.next() * TRAIT_VARIANCE_RANGE - TRAIT_VARIANCE_HALF_RANGE)));
 
   // If rikishi traits are provided, blend them with archetype traits (50/50 blend)
   const blend = (base: number, rikishi?: number) => {
     if (rikishi === undefined) return vary(base);
-    return Math.max(0, Math.min(100, (base + rikishi) / 2 + (rng.next() * 10 - 5)));
+    return Math.max(0, Math.min(100, (base + rikishi) / 2 + (rng.next() * TRAIT_BLEND_VARIANCE_RANGE - TRAIT_BLEND_VARIANCE_HALF_RANGE)));
   };
 
   // Map rikishi traits to oyakata traits
@@ -206,21 +231,21 @@ export function generateOyakata(
     risk: blend(baseTraits.risk, rikishiTraits?.aggression),
     tradition: blend(
       baseTraits.tradition,
-      rikishiTraits?.adaptability !== undefined ? 100 - rikishiTraits.adaptability : undefined
+      rikishiTraits?.adaptability !== undefined ? ADAPTABILITY_TRADITION_INVERSE - rikishiTraits.adaptability : undefined
     ),
     compassion: vary(baseTraits.compassion), // No direct rikishi mapping, keep random
   };
 
   // Generate quirks (same logic as ensurePersonaForOyakata)
-  const baseCount = type === "tyrant" || type === "gambler" ? 3 : 2;
+  const baseCount = type === "tyrant" || type === "gambler" ? QUIRK_COUNT_HIGH : QUIRK_COUNT_BASE;
   const quirkIds = pickUnique(rng, QUIRK_IDS, baseCount);
 
   // Generate manager flags based on quirks and traits
   const flags = {
-    welfareHawk: quirkIds.includes("Welfare Hawk") || traits.compassion >= 75,
+    welfareHawk: quirkIds.includes("Welfare Hawk") || traits.compassion >= WELFARE_HAWK_COMPASSION_THRESHOLD,
     disciplineHawk:
-      quirkIds.includes("Discipline Hawk") || type === "tyrant" || traits.tradition >= 80,
-    publicityHawk: quirkIds.includes("Media Operator") || traits.ambition >= 80,
+      quirkIds.includes("Discipline Hawk") || type === "tyrant" || traits.tradition >= DISCIPLINE_HAWK_TRADITION_THRESHOLD,
+    publicityHawk: quirkIds.includes("Media Operator") || traits.ambition >= PUBLICITY_HAWK_AMBITION_THRESHOLD,
     nepotist: quirkIds.includes("Nepotist"),
   };
 
@@ -235,7 +260,7 @@ export function generateOyakata(
   };
 
   // Determine highest rank: use provided formerRank, or generate based on tier
-  const highestRank = formerRank || generateRankByTier(rng, heyaTier ?? 0.5);
+  const highestRank = formerRank || generateRankByTier(rng, heyaTier ?? DEFAULT_HEYA_TIER);
 
   // Determine former shikona: use provided formerShikona, or generate randomly
   const finalFormerShikona = formerShikona || generateRandomShikona(id);
@@ -254,7 +279,7 @@ export function generateOyakata(
     memory,
     formerShikona: finalFormerShikona,
     highestRank,
-    yearsInCharge: rng.int(1, 20),
+    yearsInCharge: rng.int(1, MAX_YEARS_IN_CHARGE),
   };
 }
 
