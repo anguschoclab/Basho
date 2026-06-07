@@ -310,3 +310,43 @@ export const UTCHARI_PIVOT_THRESHOLD = 0.4;
 
 /** Engagement log entry every N ticks */
 export const NARRATIVE_TICK_CADENCE = 5;
+
+// --- Condition multiplier (from boutUtils.ts) ---
+export const CONDITION_MULTIPLIER_FLOOR = 0.8;
+export const CONDITION_MULTIPLIER_RANGE = 0.2;
+
+// --- H2H confidence (from boutUtils.ts) ---
+export const H2H_NEUTRAL_RECORD = 0.5;
+export const H2H_CONFIDENCE_SCALE = 8;
+
+// --- Style weakness penalty (from boutUtils.ts) ---
+export const STYLE_WEAKNESS_PENALTY = 0.92;
+
+// --- Edge crisis recovery (from boutUtils.ts) ---
+export const EDGE_CRISIS_MENTAL_FACTOR = 0.005;
+export const EDGE_CRISIS_BALANCE_FACTOR = 0.002;
+
+// --- Stamina fatigue (from boutUtils.ts) ---
+export const STAMINA_FATIGUE_MULTIPLIER = 0.02;
+export const STAMINA_FATIGUE_FLOOR = 0.5;
+
+// --- Tawara bounce resistance (from boutSpatial.ts) ---
+export const TAWARA_BOUNCE_RESISTANCE_HEEL = 8.0;
+
+// --- Utchari thresholds (from boutSpatial.ts) ---
+export const UTCHARI_ESCAPE_ANGLE_THRESHOLD = 0.3;
+export const UTCHARI_MIN_TICKS_IN_CRISIS = 3;
+
+// --- Okuridashi/Okuritaoshi thresholds (from boutSpatial.ts) ---
+export const OKURIDASHI_PRESSURE_Z_THRESHOLD = 0.5;
+export const OKURITAOSHI_PRESSURE_Z_THRESHOLD = 0.3;
+
+// --- Grip constants (from boutGrip.ts) ---
+export const INITIAL_ARM_REACH = 0.1;
+export const GRIP_RANDOM_CHANCE = 0.5;
+export const MAX_ARM_REACH = 0.15;
+export const ARM_REACH_INCREMENT = 0.005;
+export const GRIP_RNG_FACTOR_MIN = 0.9;
+export const GRIP_RNG_FACTOR_RANGE = 0.2;
+export const GRIP_DEEPEN_MARGIN = 12;
+export const GRIP_DEEPEN_TECHNIQUE_MARGIN = 15;

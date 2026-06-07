@@ -3,6 +3,37 @@ import type { Rikishi } from "../types/rikishi";
 import type { BashoName } from "../types/basho";
 import type { Division, Rank } from "../types/banzuke";
 import type { BashoPerformance, RikishiCareerRecord } from "./types";
+import {
+  CAREER_BASHO_BASE,
+  CAREER_BASHO_RANK_MULTIPLIER,
+  CAREER_BASHO_RNG_RANGE,
+  BOUTS_PER_BASHO_SEKITORI,
+  BOUTS_PER_BASHO_LOWER_DIVISION,
+  YUSHO_THRESHOLD_15_DAY,
+  YUSHO_THRESHOLD_7_DAY,
+  CLIMBING_WIN_RATE_BASE,
+  CLIMBING_WIN_RATE_RNG_RANGE,
+  BASE_WIN_RATE,
+  DECLINING_WIN_RATE_BASE,
+  DECLINING_WIN_RATE_RNG_RANGE,
+  WIN_RATE_VARIANCE_MULTIPLIER,
+  GINO_SHO_CHANCE,
+  ABSENCE_CHANCE,
+  ABSENCE_RANGE,
+  ABSENCE_MIN,
+  AT_TARGET_WIN_RATE_BASE,
+  AT_TARGET_WIN_RATE_RNG_RANGE,
+  YUSHO_CHANCE,
+  JUN_YUSHO_CHANCE,
+  KANTOSHO_CHANCE,
+  SHUKUNSHO_CHANCE,
+  KINBOSHI_CHANCE,
+  RANK_PROGRESSION_DOUBLE_PROMOTE_MARGIN,
+  RANK_PROGRESSION_PROMOTE_MARGIN,
+  RANK_PROGRESSION_NUMBER_MARGIN,
+  RANK_PROGRESSION_DOUBLE_DEMOTE_MARGIN,
+  RANK_PROGRESSION_DEMOTE_MARGIN,
+} from "../../constants/engine/career";
 
 export function generateCareerRecord(
   rikishi: Rikishi,
@@ -11,7 +42,7 @@ export function generateCareerRecord(
 ): RikishiCareerRecord {
   const rankMult = getRankCareerMultiplier(rikishi.rank);
 
-  const careerBasho = Math.floor(6 + rankMult * 12 + rng() * 10);
+  const careerBasho = Math.floor(CAREER_BASHO_BASE + rankMult * CAREER_BASHO_RANK_MULTIPLIER + rng() * CAREER_BASHO_RNG_RANGE);
   const debutYear = world.year - Math.floor(careerBasho / 6);
   const debutBashoIndex = Math.floor(rng() * 6);
   const bashoNames: BashoName[] = ["hatsu", "haru", "natsu", "nagoya", "aki", "kyushu"];
@@ -54,7 +85,7 @@ export function generateCareerRecord(
       rng
     );
 
-    const abs = rng() < 0.06 ? Math.floor(1 + rng() * 2) : 0;
+    const abs = rng() < ABSENCE_CHANCE ? Math.floor(ABSENCE_MIN + rng() * ABSENCE_RANGE) : 0;
 
     const record: BashoPerformance = {
       year,
@@ -166,31 +197,31 @@ function simulateBashoPerformance(
   shukunsho: boolean;
   kinboshi: number;
 } {
-  const boutCount = currentDivision === "makuuchi" || currentDivision === "juryo" ? 15 : 7;
+  const boutCount = currentDivision === "makuuchi" || currentDivision === "juryo" ? BOUTS_PER_BASHO_SEKITORI : BOUTS_PER_BASHO_LOWER_DIVISION;
   const targetMult = getRankCareerMultiplier(targetRank);
   const currentMult = getRankCareerMultiplier(currentRank);
 
   const isClimbing = targetMult > currentMult;
   const atTarget = targetRank === currentRank;
 
-  let baseWinRate = 0.5;
-  if (isClimbing) baseWinRate = 0.58 + rng() * 0.12;
-  else if (atTarget) baseWinRate = 0.47 + rng() * 0.1;
-  else baseWinRate = 0.38 + rng() * 0.15;
+  let baseWinRate = BASE_WIN_RATE;
+  if (isClimbing) baseWinRate = CLIMBING_WIN_RATE_BASE + rng() * CLIMBING_WIN_RATE_RNG_RANGE;
+  else if (atTarget) baseWinRate = AT_TARGET_WIN_RATE_BASE + rng() * AT_TARGET_WIN_RATE_RNG_RANGE;
+  else baseWinRate = DECLINING_WIN_RATE_BASE + rng() * DECLINING_WIN_RATE_RNG_RANGE;
 
-  const winsRaw = Math.round(boutCount * baseWinRate + (rng() - 0.5) * 3);
+  const winsRaw = Math.round(boutCount * baseWinRate + (rng() - 0.5) * WIN_RATE_VARIANCE_MULTIPLIER);
   const wins = Math.max(0, Math.min(boutCount, winsRaw));
   const losses = boutCount - wins;
 
-  const yushoThreshold = boutCount === 15 ? 13 : 6;
-  const yusho = atTarget && wins >= yushoThreshold && rng() < 0.08;
-  const junYusho = atTarget && wins >= yushoThreshold - 1 && !yusho && rng() < 0.1;
+  const yushoThreshold = boutCount === BOUTS_PER_BASHO_SEKITORI ? YUSHO_THRESHOLD_15_DAY : YUSHO_THRESHOLD_7_DAY;
+  const yusho = atTarget && wins >= yushoThreshold && rng() < YUSHO_CHANCE;
+  const junYusho = atTarget && wins >= yushoThreshold - 1 && !yusho && rng() < JUN_YUSHO_CHANCE;
 
-  const ginoSho = currentDivision === "makuuchi" && wins >= 11 && rng() < 0.015;
-  const kantosho = currentDivision === "makuuchi" && wins >= 11 && rng() < 0.02;
-  const shukunsho = currentDivision === "makuuchi" && wins >= 11 && rng() < 0.01;
+  const ginoSho = currentDivision === "makuuchi" && wins >= 11 && rng() < GINO_SHO_CHANCE;
+  const kantosho = currentDivision === "makuuchi" && wins >= 11 && rng() < KANTOSHO_CHANCE;
+  const shukunsho = currentDivision === "makuuchi" && wins >= 11 && rng() < SHUKUNSHO_CHANCE;
 
-  const kinboshi = currentRank === "maegashira" && wins >= 9 && rng() < 0.08 ? 1 : 0;
+  const kinboshi = currentRank === "maegashira" && wins >= 9 && rng() < KINBOSHI_CHANCE ? 1 : 0;
 
   return { wins, losses, yusho, junYusho, ginoSho, kantosho, shukunsho, kinboshi };
 }
@@ -236,16 +267,16 @@ function simulateRankProgression(
   let newRankNumber = rankNumber;
 
   if (isKachiKoshi) {
-    if (margin >= 5 && rankIndex < rankOrder.length - 1)
+    if (margin >= RANK_PROGRESSION_DOUBLE_PROMOTE_MARGIN && rankIndex < rankOrder.length - 1)
       rankIndex = Math.min(rankIndex + 2, rankOrder.length - 1);
-    else if (margin >= 2 && rankIndex < rankOrder.length - 1) rankIndex++;
+    else if (margin >= RANK_PROGRESSION_PROMOTE_MARGIN && rankIndex < rankOrder.length - 1) rankIndex++;
 
-    if (newRankNumber !== undefined && margin >= 3)
+    if (newRankNumber !== undefined && margin >= RANK_PROGRESSION_NUMBER_MARGIN)
       newRankNumber = Math.max(1, newRankNumber - Math.floor(margin / 2));
   } else {
     const absMargin = Math.abs(margin);
-    if (absMargin >= 5 && rankIndex > 0) rankIndex = Math.max(0, rankIndex - 2);
-    else if (absMargin >= 2 && rankIndex > 0) rankIndex--;
+    if (absMargin >= RANK_PROGRESSION_DOUBLE_DEMOTE_MARGIN && rankIndex > 0) rankIndex = Math.max(0, rankIndex - 2);
+    else if (absMargin >= RANK_PROGRESSION_DEMOTE_MARGIN && rankIndex > 0) rankIndex--;
 
     if (newRankNumber !== undefined) newRankNumber = newRankNumber + Math.floor(absMargin / 2);
   }

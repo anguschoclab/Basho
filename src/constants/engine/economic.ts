@@ -132,3 +132,12 @@ export const FACTION_BENEFACTOR_THRESHOLD = 60_000_000;
 export function clampFundsToDebtLimit(funds: number): number {
   return Math.max(funds, DEBT_LIMIT);
 }
+
+// Kensho split ratios
+export const KENSHO_RIKISHI_SHARE_RATIO = 0.5;
+export const KENSHO_RETIREMENT_DIVERSION_RATIO = 0.3;
+
+// Marketability boosts
+export const KINBOSHI_MARKETABILITY_BOOST = 5;
+export const GINBOSHI_MARKETABILITY_BOOST = 2;
+export const MARKETABILITY_POPULARITY_MULTIPLIER = 2;

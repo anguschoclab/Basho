@@ -6,6 +6,19 @@ import { Style, BoutTactic } from "../types/combat";
 import { Id } from "../types/common";
 import { BardEngine } from "../narrative/BardEngine";
 import { SeededRNG } from "../rng";
+import {
+  WELFARE_DISCIPLINE_ELEVATED_THRESHOLD,
+  FRAGILE_RATIO_CRITICAL_THRESHOLD,
+  FRAGILE_RATIO_ELEVATED_THRESHOLD,
+  FRAGILE_RATIO_SAFE_THRESHOLD,
+  RISK_APPETITE_HIGH_THRESHOLD,
+  RISK_APPETITE_MODERATE_THRESHOLD,
+  BASHO_FINAL_DAY,
+  KOSHI_PRECIPICE_LOSSES,
+  KACHIKOSHI_PRECIPICE_WINS,
+  ROSTER_SIZE_WEAK_THRESHOLD,
+  WELFARE_DISCIPLINE_BALANCED_THRESHOLD,
+} from "../../constants/engine/npcStrategy";
 
 /** Observation interface for scouting decisions. */
 export interface OyakataScoutingObservation {
@@ -81,10 +94,10 @@ export function decideTrainingIntensity(
   if (perception.welfareRiskBand === "critical") {
     intensity = "conservative";
     reason = BardEngine.resolve(rng, "npc.strategy.intensity.conservative_risk").text;
-  } else if (perception.welfareRiskBand === "elevated" && welfareDiscipline > 0.5) {
+  } else if (perception.welfareRiskBand === "elevated" && welfareDiscipline > WELFARE_DISCIPLINE_ELEVATED_THRESHOLD) {
     intensity = "conservative";
     reason = BardEngine.resolve(rng, "npc.strategy.intensity.conservative_longevity").text;
-  } else if (fragileRatio >= 0.4) {
+  } else if (fragileRatio >= FRAGILE_RATIO_CRITICAL_THRESHOLD) {
     intensity = "conservative";
     reason = BardEngine.resolve(rng, "npc.strategy.intensity.conservative_stabilizing", {
       COUNT: fragileCount,
@@ -111,11 +124,11 @@ export function decideTrainingIntensity(
     reason = BardEngine.resolve(rng, "npc.strategy.intensity.balanced_standard", {
       philosophy: philLabel,
     }).text;
-  } else if (riskAppetite > 0.85 && perception.welfareRiskBand === "safe") {
+  } else if (riskAppetite > RISK_APPETITE_HIGH_THRESHOLD && perception.welfareRiskBand === "safe") {
     intensity = "punishing";
     reason = BardEngine.resolve(rng, "npc.strategy.intensity.punishing_dominance").text;
   } else if (
-    riskAppetite > 0.7 &&
+    riskAppetite > RISK_APPETITE_MODERATE_THRESHOLD &&
     (perception.rosterStrengthBand === "dominant" || perception.rosterStrengthBand === "strong")
   ) {
     intensity = "intensive";
@@ -215,19 +228,19 @@ export function decideRecovery(
   );
   const fragileRatio = perception.rosterSize > 0 ? fragileCount / perception.rosterSize : 0;
 
-  if (perception.welfareRiskBand === "critical" || fragileRatio >= 0.5) {
+  if (perception.welfareRiskBand === "critical" || fragileRatio >= FRAGILE_RATIO_CRITICAL_THRESHOLD) {
     return {
       recovery: "high",
       reason: BardEngine.resolve(rng, "npc.strategy.recovery.critical").text,
     };
   }
-  if (perception.welfareRiskBand === "elevated" || fragileRatio >= 0.3 || welfareDiscipline > 0.7) {
+  if (perception.welfareRiskBand === "elevated" || fragileRatio >= FRAGILE_RATIO_ELEVATED_THRESHOLD || welfareDiscipline > WELFARE_DISCIPLINE_BALANCED_THRESHOLD) {
     return {
       recovery: "high",
       reason: BardEngine.resolve(rng, "npc.strategy.recovery.elevated").text,
     };
   }
-  if (fragileRatio <= 0.1 && perception.welfareRiskBand === "safe") {
+  if (fragileRatio <= FRAGILE_RATIO_SAFE_THRESHOLD && perception.welfareRiskBand === "safe") {
     return {
       recovery: "low",
       reason: BardEngine.resolve(rng, "npc.strategy.recovery.minimal").text,
@@ -250,9 +263,9 @@ export function decideBoutTacticOverride(
   rivalryHeat: number,
   bashoDay: number
 ): BoutTactic | undefined {
-  const isFinalDay = bashoDay === 15;
-  const isMakeKoshiPrecipice = record.losses === 7; // 8th loss would mean losing record
-  const isKachiKoshiPrecipice = record.wins === 7; // 8th win would mean winning record
+  const isFinalDay = bashoDay === BASHO_FINAL_DAY;
+  const isMakeKoshiPrecipice = record.losses === KOSHI_PRECIPICE_LOSSES; // 8th loss would mean losing record
+  const isKachiKoshiPrecipice = record.wins === KACHIKOSHI_PRECIPICE_WINS; // 8th win would mean winning record
 
   if (isFinalDay && isMakeKoshiPrecipice) return "OSHI_THRUST"; // desperation aggression
   if (isFinalDay && rivalryHeat > 70) return "OSHI_THRUST"; // heated rivalry climax
@@ -277,7 +290,7 @@ export function decideScoutingPriority(
     };
   }
 
-  if (observation.rosterSize < 8 || observation.rosterStrengthBand === "weak") {
+  if (observation.rosterSize < ROSTER_SIZE_WEAK_THRESHOLD || observation.rosterStrengthBand === "weak") {
     return {
       priority: "aggressive",
       reason: BardEngine.resolve(rng, "npc.strategy.scouting.aggressive").text,
@@ -328,7 +341,7 @@ export function identifyProtects(
       protectIds.push(rp.rikishiId);
     } else if (rp.healthBand === "worn" && HIGH_RANKS.has(rp.rank)) {
       protectIds.push(rp.rikishiId);
-    } else if (rp.healthBand === "worn" && welfareDiscipline > 0.6) {
+    } else if (rp.healthBand === "worn" && welfareDiscipline > WELFARE_DISCIPLINE_BALANCED_THRESHOLD) {
       protectIds.push(rp.rikishiId);
     }
   }

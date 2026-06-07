@@ -12,6 +12,12 @@
 
 import type { BashoName, BashoInfo } from "./types/basho";
 import { simpleHashToIndex } from "./utils/math";
+import {
+  INTERIM_WEEKS,
+  DEFAULT_YEAR,
+  KEY_DAYS,
+  DAYS_TO_SECOND_SUNDAY,
+} from "../constants/engine/calendar";
 
 // === BASHO CALENDAR ===
 //
@@ -133,7 +139,7 @@ export function getBashoIndex(name: BashoName): number {
  * (Tournament is 15 days; between basho phase is modeled as 6 weeks.)
  */
 export function getInterimWeeks(_from: BashoName, _to: BashoName): number {
-  return 6;
+  return INTERIM_WEEKS;
 }
 
 /**
@@ -141,9 +147,9 @@ export function getInterimWeeks(_from: BashoName, _to: BashoName): number {
  * Rule: basho starts on the 2nd Sunday of its month by default (real-world style).
  * If you want to override a specific basho, set startDay in BASHO_CALENDAR[basho].startDay.
  */
-export function getBashoInfo(name: BashoName, year?: number): BashoInfo {
+export function getBashoInfo(name: BashoName, _year?: number): BashoInfo {
   const base = BASHO_CALENDAR[name];
-  const computedStartDay = base.startDay ?? getSecondSunday(year ?? 2026, base.month);
+  const computedStartDay = base.startDay ?? getSecondSunday(DEFAULT_YEAR, base.month);
   return {
     ...(base as Omit<BashoInfo, "startDay">),
     startDay: computedStartDay,
@@ -216,7 +222,7 @@ export function getDayName(day: number): { dayNum: string; dayJa: string } {
  *  * @returns The result.
  */
 export function isKeyDay(day: number): boolean {
-  return day === 1 || day === 7 || day === 8 || day === 14 || day === 15;
+  return KEY_DAYS.includes(day);
 }
 
 // === Helpers ===
@@ -245,7 +251,7 @@ function getSecondSunday(year: number, month1to12: number): number {
   const firstDow = firstDay.getDay(); // 0=Sun
   const daysUntilSunday = (7 - firstDow) % 7;
   const firstSundayDate = 1 + daysUntilSunday;
-  const secondSundayDate = firstSundayDate + 7;
+  const secondSundayDate = firstSundayDate + DAYS_TO_SECOND_SUNDAY;
   return secondSundayDate;
 }
 

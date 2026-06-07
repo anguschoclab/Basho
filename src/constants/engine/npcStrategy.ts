@@ -100,3 +100,48 @@ export const RISK_MULTIPLIER = 0.65;
 
 /** Ambition multiplier for risk appetite */
 export const AMBITION_MULTIPLIER = 0.35;
+
+// Threshold boost multipliers
+export const THRESHOLD_BOOST_HIGH = 1.5;
+export const THRESHOLD_BOOST_MODERATE = 0.8;
+export const THRESHOLD_BOOST_LOW = 0.7;
+
+// Default trait values
+export const DEFAULT_TRAIT_VALUE = 50;
+export const TRAIT_MULTIPLIER_DIVISOR = 50;
+
+// Adjust score defaults
+export const ADJUST_SCORE_DEFAULT_MIN = 0;
+export const ADJUST_SCORE_DEFAULT_MAX = 100;
+
+// Basho final day
+export const BASHO_FINAL_DAY = 15;
+
+// Kachikoshi/Makekoshi precipice
+export const KOSHI_PRECIPICE_LOSSES = 7;
+export const KACHIKOSHI_PRECIPICE_WINS = 7;
+
+// Roster thresholds
+export const ROSTER_SIZE_WEAK_THRESHOLD = 8;
+
+// Risk appetite high thresholds
+export const RISK_APPETITE_HIGH_THRESHOLD = 0.85;
+export const RISK_APPETITE_MODERATE_THRESHOLD = 0.7;
+
+// Oyakata personality chances
+export const LEGENDARY_YOKOZUNA_CHANCE = 0.75;
+export const LEGENDARY_SANYAKU_CHANCE = 0.95;
+export const POWERFUL_OZEKI_CHANCE = 0.55;
+export const POWERFUL_SANYAKU_CHANCE = 0.85;
+
+// Trait variance
+export const TRAIT_VARIANCE_RANGE = 0.2;
+export const TRAIT_VARIANCE_HALF_RANGE = 10;
+export const TRAIT_BLEND_RATIO = 0.5;
+export const TRAIT_BLEND_VARIANCE_RANGE = 5;
+
+// Discipline hawk thresholds
+export const DISCIPLINE_HAWK_TRADITION_THRESHOLD = 80;
+
+// Max years in charge
+export const MAX_YEARS_IN_CHARGE = 20;

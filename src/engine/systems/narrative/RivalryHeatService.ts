@@ -56,6 +56,7 @@ import {
   KINBOSHI_TRIGGER_BONUS,
   TITLE_STAKES_TRIGGER_BONUS,
 } from "../../../constants/engine/narrative";
+import { RIVALRY_HEAT_SPICE_CHANCE } from "../../../constants/engine/rivalry";
 
 /**
  * Determine the narrative tone from current state.
@@ -134,7 +135,7 @@ export function applyBoutToPairState(
   const spiteGain = Math.round(args.domination01 * SPITE_GAIN_MULTIPLIER) + (args.isUpset ? SPITE_UPSET_BONUS : 0);
 
   // Deterministic spice
-  const spice = rng.next() < 0.25 ? 1 : 0;
+  const spice = rng.next() < RIVALRY_HEAT_SPICE_CHANCE ? 1 : 0;
 
   heat = clamp(
     heat +

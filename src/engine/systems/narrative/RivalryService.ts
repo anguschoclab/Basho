@@ -36,6 +36,21 @@ import {
   TOP_RIVALRY_PAIRS_TO_SEED,
   NATIONALITY_RIVALRY_BONUS,
 } from "../../../constants/engine/narrative";
+import {
+  BASHO_FINAL_DAY,
+  RIVALRY_DECAY_WEEKS_SHORT,
+  RIVALRY_DECAY_WEEKS_MEDIUM,
+  RIVALRY_DECAY_WEEKS_LONG,
+  RIVALRY_DECAY_RATE_SHORT,
+  RIVALRY_DECAY_RATE_MEDIUM,
+  RIVALRY_DECAY_RATE_LONG,
+  RIVALRY_HEAT_MIN,
+  RIVALRY_MEETINGS_MIN,
+  RANK_DIFF_BONUS_BASE,
+  RANK_DIFF_BONUS_MULTIPLIER,
+  RANK_DIFF_MAX,
+  RIVALRY_RNG_THRESHOLD,
+} from "../../../constants/engine/rivalry";
 import { getRikishi } from "../../queries";
 
 /**
@@ -133,7 +148,7 @@ export const RivalryService = {
       closeness01: result.duration ? Math.min(1.0, result.duration / BOUT_DURATION_CLOSENESS_DIVISOR) : 0.5,
       domination01: result.duration ? Math.max(0.0, 1.0 - result.duration / BOUT_DURATION_DOMINATION_DIVISOR) : 0.2,
       isUpset: !!result.upset,
-      isFinalDay: args.day === 15,
+      isFinalDay: args.day === BASHO_FINAL_DAY,
       isYushoRace: !!result.isYushoRace,
       week,
     });
@@ -233,7 +248,7 @@ export const RivalryService = {
     for (const key in state.pairs) {
       const pair = state.pairs[key];
       const weeksSince = week - pair.lastMetWeek;
-      const decay = weeksSince <= 4 ? 0.5 : weeksSince <= 12 ? 1.0 : 1.5;
+      const decay = weeksSince <= RIVALRY_DECAY_WEEKS_SHORT ? RIVALRY_DECAY_RATE_SHORT : weeksSince <= RIVALRY_DECAY_WEEKS_MEDIUM ? RIVALRY_DECAY_RATE_MEDIUM : RIVALRY_DECAY_RATE_LONG;
 
       const updatedPair = {
         ...pair,
@@ -244,7 +259,7 @@ export const RivalryService = {
       };
 
       // Auto-cull
-      if (!(updatedPair.heat < 5 && updatedPair.meetings < 2 && weeksSince > 30)) {
+      if (!(updatedPair.heat < RIVALRY_HEAT_MIN && updatedPair.meetings < RIVALRY_MEETINGS_MIN && weeksSince > RIVALRY_DECAY_WEEKS_LONG)) {
         finalPairs[key] = updatedPair;
       }
     }
@@ -348,7 +363,7 @@ export const RivalryService = {
         if (a.division === b.division) {
           score += 5;
           const rankDiff = Math.abs((a.rankNumber ?? 1) - (b.rankNumber ?? 1));
-          if (rankDiff <= 4) score += 15 - rankDiff * 2;
+          if (rankDiff <= RANK_DIFF_MAX) score += RANK_DIFF_BONUS_BASE - rankDiff * RANK_DIFF_BONUS_MULTIPLIER;
         }
 
         // Age proximity
@@ -425,7 +440,7 @@ export const RivalryService = {
 
     // 40% chance to seed rivalry
     const rng = RNGRegistry.getSystemRNG(world, "rivalry", `sparring-${key}-${weeksActive}`);
-    if (rng.next() > 0.4) return builder.build();
+    if (rng.next() > RIVALRY_RNG_THRESHOLD) return builder.build();
 
     // Get rikishi for event logging
     const rA = EntityCollection.getRikishiById(world, aId);

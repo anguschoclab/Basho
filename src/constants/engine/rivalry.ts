@@ -148,3 +148,68 @@ export interface RivalriesState {
     }
   >;
 }
+
+// H2H win probability boost
+export const H2H_WIN_PROBABILITY_BOOST = 0.15;
+
+// Rivalry decay
+export const RIVALRY_DECAY_WEEKS_SHORT = 4;
+export const RIVALRY_DECAY_WEEKS_MEDIUM = 12;
+export const RIVALRY_DECAY_RATE_SHORT = 0.5;
+export const RIVALRY_DECAY_RATE_MEDIUM = 1.0;
+export const RIVALRY_DECAY_RATE_LONG = 1.5;
+
+// Sparring rivalry
+export const SPARRING_RIVALRY_WEEKS_THRESHOLD = 12;
+export const TOP_SPARRING_PAIRS_COUNT = 12;
+
+// Narrative
+export const NARRATIVE_BASE_COUNT_MIN = 8;
+export const NARRATIVE_BASE_COUNT_RANGE = 12;
+export const NARRATIVE_DRAMATIC_DAY_THRESHOLD = 13;
+
+// Narrative bands
+export const BAND_EXCELLENT_MIN = 0.85;
+export const BAND_GOOD_MIN = 0.6;
+export const BAND_FAIR_MIN = 0.35;
+
+// Taiki bands
+export const TAIKI_BAND_EXCELLENT_MIN = 90;
+export const TAIKI_BAND_GOOD_MIN = 75;
+export const TAIKI_BAND_FAIR_MIN = 50;
+
+// Height bands
+export const HEIGHT_GIANT_MIN = 192;
+export const HEIGHT_TOWERING_MIN = 200;
+
+// Rivalry heat spice chance
+export const RIVALRY_HEAT_SPICE_CHANCE = 0.25;
+
+// Bard engine threshold
+export const BARD_ENGINE_NORMALIZED_THRESHOLD = 0.66;
+
+// Bout duration divisors
+export const BOUT_DURATION_CLOSENESS_DIVISOR = 30;
+export const BOUT_DURATION_DOMINATION_DIVISOR = 15;
+
+// Final day
+export const BASHO_FINAL_DAY = 15;
+
+// Rivalry decay long weeks
+export const RIVALRY_DECAY_WEEKS_LONG = 30;
+
+// Rivalry heat thresholds
+export const RIVALRY_HEAT_MIN = 5;
+export const RIVALRY_MEETINGS_MIN = 2;
+
+// Rank difference bonus
+export const RANK_DIFF_BONUS_BASE = 15;
+export const RANK_DIFF_BONUS_MULTIPLIER = 2;
+export const RANK_DIFF_MAX = 4;
+
+// Drama generator constants
+export const DRAMA_HEAT_DEFAULT = 15;
+export const DRAMA_PRESTIGE_COST = 15;
+
+// RNG threshold
+export const RIVALRY_RNG_THRESHOLD = 0.4;

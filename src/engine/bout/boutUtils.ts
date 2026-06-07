@@ -11,6 +11,15 @@ import {
   FORCE_AGGRESSION_MULTIPLIER,
   AGGRESSION_SPEED_MULTIPLIER,
   AGGRESSION_CONTRIBUTION_MULTIPLIER,
+  CONDITION_MULTIPLIER_FLOOR,
+  CONDITION_MULTIPLIER_RANGE,
+  H2H_NEUTRAL_RECORD,
+  H2H_CONFIDENCE_SCALE,
+  STYLE_WEAKNESS_PENALTY,
+  EDGE_CRISIS_MENTAL_FACTOR,
+  EDGE_CRISIS_BALANCE_FACTOR,
+  STAMINA_FATIGUE_MULTIPLIER,
+  STAMINA_FATIGUE_FLOOR,
 } from "../../constants/engine/physics";
 
 // ---------------------------------------------------------------------------
@@ -76,7 +85,7 @@ export function computeTachiaiPower(
 
 export function conditionMultiplier(condition: number): number {
   const c = Math.max(0, Math.min(100, condition)) / 100;
-  return 0.8 + 0.2 * c;
+  return CONDITION_MULTIPLIER_FLOOR + CONDITION_MULTIPLIER_RANGE * c;
 }
 
 /**
@@ -95,7 +104,7 @@ export function h2hConfidence(r: Rikishi, opponentId: string): number {
   if (!h2h) return 0;
   const total = h2h.wins + h2h.losses;
   if (total < 3) return 0;
-  return (h2h.wins / total - 0.5) * 8;
+  return (h2h.wins / total - H2H_NEUTRAL_RECORD) * H2H_CONFIDENCE_SCALE;
 }
 
 /**
@@ -111,7 +120,7 @@ export function tachiaiPowerWithMatchupPenalty(r: Rikishi, opponent: Rikishi): n
   const weaknesses: string[] =
     ((r as unknown as Record<string, unknown>).weakAgainstStyles as string[]) ?? [];
   if (opponentStyle && weaknesses.includes(opponentStyle)) {
-    return base * 0.92;
+    return base * STYLE_WEAKNESS_PENALTY;
   }
   return base;
 }
@@ -124,7 +133,7 @@ export function tachiaiPowerWithMatchupPenalty(r: Rikishi, opponent: Rikishi): n
  *   stamina=25  → 2.0/tick (double, capped)
  */
 export function boutFatigueIncrement(stamina: number): number {
-  return 1 / Math.max(0.5, stamina * 0.02);
+  return 1 / Math.max(STAMINA_FATIGUE_FLOOR, stamina * STAMINA_FATIGUE_MULTIPLIER);
 }
 
 /**
@@ -137,7 +146,7 @@ export function edgeCrisisRecoveryChance(
   bounceBonus: number,
   tickDecay: number
 ): number {
-  const mentalFactor = stat(defender, "mental") * 0.005; // 0–0.5 (dominant)
-  const balanceFactor = stat(defender, "balance") * 0.002; // 0–0.2 (secondary)
+  const mentalFactor = stat(defender, "mental") * EDGE_CRISIS_MENTAL_FACTOR; // 0–0.5 (dominant)
+  const balanceFactor = stat(defender, "balance") * EDGE_CRISIS_BALANCE_FACTOR; // 0–0.2 (secondary)
   return (baseProbability + mentalFactor + balanceFactor + bounceBonus) * tickDecay;
 }

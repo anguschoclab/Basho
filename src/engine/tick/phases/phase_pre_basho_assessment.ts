@@ -13,6 +13,19 @@ import type { PreBashoAssessment } from "../../types/world";
 import { triggerPreBashoJournalism } from "../../systems/media/MediaService";
 import { mergeImpacts } from "../../core/ImpactResolver";
 import { getRikishi } from "../../queries";
+import {
+  ASSESSMENT_DAYS_MIN,
+  ASSESSMENT_DAYS_MAX,
+  INJURY_SERIOUS_PENALTY,
+  INJURY_MINOR_PENALTY,
+  FATIGUE_HEALTH_PENALTY,
+  CONDITION_HEALTH_PENALTY,
+  STAMINA_HEALTH_PENALTY,
+  HEALTH_CRITICAL_THRESHOLD,
+  HEALTH_WARNING_THRESHOLD,
+  HEALTH_CAUTION_THRESHOLD,
+  HEALTH_MINOR_THRESHOLD,
+} from "../../../constants/engine/healthAssessment";
 
 /**
  * Run pre-basho health assessment for all rikishi.
@@ -33,7 +46,7 @@ export function phase_pre_basho_assessment(world: WorldState): StateImpact {
 
   // Run assessment in the middle of pre_basho phase (interimDaysRemaining around 7-14)
   const daysRemaining = world._interimDaysRemaining ?? 0;
-  if (daysRemaining < 7 || daysRemaining > 14) {
+  if (daysRemaining < ASSESSMENT_DAYS_MIN || daysRemaining > ASSESSMENT_DAYS_MAX) {
     return builder.build();
   }
 
@@ -107,39 +120,39 @@ function assessRikishi(rikishi: Rikishi): {
 
   // Subtract for injury
   if (rikishi.injured) {
-    healthScore -= 30;
+    healthScore -= INJURY_SERIOUS_PENALTY;
     if (rikishi.injuryStatus?.severity === "serious") {
-      healthScore -= 30;
+      healthScore -= INJURY_SERIOUS_PENALTY;
     } else if (rikishi.injuryStatus?.severity === "moderate") {
-      healthScore -= 15;
+      healthScore -= INJURY_MINOR_PENALTY;
     }
   }
 
   // Subtract for fatigue
-  healthScore -= rikishi.fatigue * 0.5;
+  healthScore -= rikishi.fatigue * FATIGUE_HEALTH_PENALTY;
 
   // Subtract for low condition
-  healthScore -= (100 - (rikishi.condition || 100)) * 0.3;
+  healthScore -= (100 - (rikishi.condition || 100)) * CONDITION_HEALTH_PENALTY;
 
   // Subtract for low stamina
-  healthScore -= (100 - (rikishi.stats.stamina || 100)) * 0.2;
+  healthScore -= (100 - (rikishi.stats.stamina || 100)) * STAMINA_HEALTH_PENALTY;
 
   // Clamp health score to 0-100
   healthScore = Math.max(0, Math.min(100, healthScore));
 
   // Determine injury risk
   let injuryRisk: "low" | "medium" | "high" = "low";
-  if (healthScore < 40) {
+  if (healthScore < HEALTH_CRITICAL_THRESHOLD) {
     injuryRisk = "high";
-  } else if (healthScore < 60) {
+  } else if (healthScore < HEALTH_WARNING_THRESHOLD) {
     injuryRisk = "medium";
   }
 
   // Determine recommended focus
   let recommendedFocus: "protect" | "rebuild" | "normal" = "normal";
-  if (rikishi.injured || healthScore < 50) {
+  if (rikishi.injured || healthScore < HEALTH_CAUTION_THRESHOLD) {
     recommendedFocus = "protect";
-  } else if (healthScore < 70) {
+  } else if (healthScore < HEALTH_MINOR_THRESHOLD) {
     recommendedFocus = "rebuild";
   }
 
