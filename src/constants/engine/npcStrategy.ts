@@ -56,6 +56,15 @@ export const TRAIT_COMPASSION_THRESHOLD = 70;
 /** Patience trait threshold */
 export const TRAIT_PATIENCE_THRESHOLD = 70;
 
+/** Greedy risk threshold (very low) */
+export const TRAIT_GREEDY_RISK_THRESHOLD = 20;
+
+/** Vindictive ambition threshold */
+export const TRAIT_VINDICTIVE_AMBITION_THRESHOLD = 80;
+
+/** Vindictive risk threshold */
+export const TRAIT_VINDICTIVE_RISK_THRESHOLD = 70;
+
 /** Base financial threshold (yen) */
 export const BASE_FINANCIAL_THRESHOLD = 600_000_000;
 
@@ -179,3 +188,8 @@ export const RISK_CONDITION_WEIGHT = 0.6;
 export const RISK_FATIGUE_WEIGHT = 0.4;
 export const HIGH_RISK_THRESHOLD = 60;
 export const HIGH_RISK_RATIO_THRESHOLD = 0.4;
+
+// Oyakata personality constants
+export const SAN_YAKU_BOOL_CHANCE = 0.5;
+export const ADAPTABILITY_TRADITION_INVERSE = 100;
+export const DEFAULT_HEYA_TIER = 0.5;

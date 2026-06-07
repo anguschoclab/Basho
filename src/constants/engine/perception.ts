@@ -48,3 +48,17 @@ export const MORALE_INSPIRED_THRESHOLD = 85;
 export const MORALE_CONTENT_THRESHOLD = 65;
 export const MORALE_NEUTRAL_THRESHOLD = 45;
 export const MORALE_DISGRUNTLED_THRESHOLD = 25;
+
+// Rank weight fallback
+export const RANK_WEIGHT_FALLBACK = 5;
+
+// Lower division rank weights
+export const RANK_WEIGHT_JONIDAN = 5;
+export const RANK_WEIGHT_JONOKUCHI = 2;
+
+// Momentum thresholds
+export const MOMENTUM_RISING_THRESHOLD = 2;
+export const MOMENTUM_DECLINING_THRESHOLD = -2;
+
+// Momentum normalization offset
+export const MOMENTUM_NORMALIZATION_OFFSET = 5;

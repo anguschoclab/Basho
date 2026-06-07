@@ -39,3 +39,13 @@ export const PROXIMITY_OFFSET_MAX = 3;
 export const HOT_STREAK_WINS_THRESHOLD = 10;
 export const RIVALRY_TENSION_THRESHOLD = 0.5;
 export const RIVALRY_HEAT_BONUS = 0.3;
+
+// Swiss algorithm magic numbers
+export const RANK_NUMBER_MULTIPLIER = 2;
+export const SIDE_EAST_OFFSET = 0;
+export const SIDE_WEST_OFFSET = 1;
+export const PROXIMITY_OFFSET_START = 1;
+export const SCORE_CLAMP_MIN = 0;
+export const SCORE_CLAMP_MAX = 5;
+export const UNPAIRED_INCREMENT = 2;
+export const FINALE_INDEX = 0;

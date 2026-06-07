@@ -433,3 +433,19 @@ export const ADVANTAGE_THRESHOLD_DIFFERENTIAL = 0.05;
 
 /** Balance calculation multiplier */
 export const BALANCE_CALCULATION_MULTIPLIER = 10;
+
+// ─────────────────────────────────────────
+// Bout resolver constants
+// ─────────────────────────────────────────
+
+/** Rivalry heat/spite normalization divisor (convert 0-100 to 0-1) */
+export const RIVALRY_NORMALIZATION_DIVISOR = 100;
+
+/** Default stat value when stat is undefined */
+export const DEFAULT_STAT_VALUE = 50;
+
+/** Stat clamp minimum */
+export const STAT_CLAMP_MIN = 0;
+
+/** Stat clamp maximum */
+export const STAT_CLAMP_MAX = 100;

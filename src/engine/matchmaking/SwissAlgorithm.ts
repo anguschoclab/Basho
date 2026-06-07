@@ -37,6 +37,14 @@ import {
   RIVALRY_HEAT_BONUS,
   SWISS_PHASE1_END_DAY,
   SWISS_PHASE3_DAY,
+  RANK_NUMBER_MULTIPLIER,
+  SIDE_EAST_OFFSET,
+  SIDE_WEST_OFFSET,
+  PROXIMITY_OFFSET_START,
+  SCORE_CLAMP_MIN,
+  SCORE_CLAMP_MAX,
+  UNPAIRED_INCREMENT,
+  FINALE_INDEX,
 } from "../../constants/engine/matchmaking";
 
 // ── Banzuke ordinal helpers ────────────────────────────────────────────────────
@@ -68,8 +76,8 @@ const SWISS_RANK_ORDINAL: Record<string, number> = {
 function banzukeOrdinal(r: Rikishi): number {
   const base = SWISS_RANK_ORDINAL[r.rank] ?? SWISS_RANK_DEFAULT;
   const num = typeof r.rankNumber === "number" ? r.rankNumber : 1;
-  const side = r.side === "east" ? 0 : 1;
-  return base + num * 2 + side;
+  const side = r.side === "east" ? SIDE_EAST_OFFSET : SIDE_WEST_OFFSET;
+  return base + num * RANK_NUMBER_MULTIPLIER + side;
 }
 
 /**
@@ -156,7 +164,7 @@ function tryPair(
   if (rivalriesState) {
     const mod = getRivalryBoutModifiers({ state: rivalriesState, aId: a.id, bId: b.id });
     if (mod.tension >= RIVALRY_TENSION_THRESHOLD) {
-      return { ...p, score: clamp(p.score + RIVALRY_HEAT_BONUS, 0, 5), reasons: [...p.reasons, "rivalry_heat"] };
+      return { ...p, score: clamp(p.score + RIVALRY_HEAT_BONUS, SCORE_CLAMP_MIN, SCORE_CLAMP_MAX), reasons: [...p.reasons, "rivalry_heat"] };
     }
   }
   return p;
@@ -220,7 +228,7 @@ function phase1(
     if (paired.has(a.id)) continue;
 
     let matched = false;
-    for (let offset = 1; offset <= PROXIMITY_OFFSET_MAX && i + offset < remaining.length; offset++) {
+    for (let offset = PROXIMITY_OFFSET_START; offset <= PROXIMITY_OFFSET_MAX && i + offset < remaining.length; offset++) {
       const b = remaining[i + offset];
       if (paired.has(b.id)) continue;
       const p = tryPair(basho, a, b, facedSet, paired, rivalriesState);
@@ -336,7 +344,7 @@ function phase2(
   }
 
   const unpaired = pool.filter((r) => !paired.has(r.id));
-  for (let i = 0; i < unpaired.length - 1; i += 2) {
+  for (let i = 0; i < unpaired.length - 1; i += UNPAIRED_INCREMENT) {
     const a = unpaired[i];
     const b = unpaired[i + 1];
     const forced = scorePairing({
@@ -436,7 +444,7 @@ function phase3(
   }
 
   if (koreyoriPairings.length > 0) {
-    const finaleIdx = 0;
+    const finaleIdx = FINALE_INDEX;
     koreyoriPairings[finaleIdx] = {
       ...koreyoriPairings[finaleIdx],
       reasons: [...koreyoriPairings[finaleIdx].reasons, "finale"],

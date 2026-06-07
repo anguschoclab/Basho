@@ -19,6 +19,15 @@ import {
   TRAIT_MULTIPLIER_DIVISOR,
   ADJUST_SCORE_DEFAULT_MIN,
   ADJUST_SCORE_DEFAULT_MAX,
+  TRAIT_AMBITION_THRESHOLD,
+  TRAIT_RISK_LOW_THRESHOLD,
+  TRAIT_TRADITION_THRESHOLD,
+  TRAIT_RISK_HIGH_THRESHOLD,
+  TRAIT_COMPASSION_THRESHOLD,
+  TRAIT_PATIENCE_THRESHOLD,
+  TRAIT_GREEDY_RISK_THRESHOLD,
+  TRAIT_VINDICTIVE_AMBITION_THRESHOLD,
+  TRAIT_VINDICTIVE_RISK_THRESHOLD,
 } from "../../constants/engine/npcStrategy";
 
 /** Base context for all strategy evaluations */
@@ -129,39 +138,39 @@ export function evaluateRulesCumulative(ctx: StrategyContext, rules: StrategyRul
 
 export const TraitChecks = {
   isAmbitious:
-    (threshold = 50): TraitCheck =>
+    (threshold = TRAIT_AMBITION_THRESHOLD): TraitCheck =>
     (o) =>
       (o.traits.ambition ?? 0) > threshold,
 
   isHoarder:
-    (threshold = 30): TraitCheck =>
+    (threshold = TRAIT_RISK_LOW_THRESHOLD): TraitCheck =>
     (o) =>
       (o.traits.risk ?? 50) < threshold,
 
   isTraditionalist:
-    (threshold = 70): TraitCheck =>
+    (threshold = TRAIT_TRADITION_THRESHOLD): TraitCheck =>
     (o) =>
       (o.traits.tradition ?? 0) > threshold,
 
   isRiskTaker:
-    (threshold = 60): TraitCheck =>
+    (threshold = TRAIT_RISK_HIGH_THRESHOLD): TraitCheck =>
     (o) =>
       (o.traits.risk ?? 50) > threshold,
 
   isCompassionate:
-    (threshold = 70): TraitCheck =>
+    (threshold = TRAIT_COMPASSION_THRESHOLD): TraitCheck =>
     (o) =>
       (o.traits.compassion ?? 0) > threshold,
 
   isPatient:
-    (threshold = 70): TraitCheck =>
+    (threshold = TRAIT_PATIENCE_THRESHOLD): TraitCheck =>
     (o) =>
       (o.traits.patience ?? 0) > threshold,
 
   isVindictive: (): TraitCheck => (o) =>
-    o.temperament === "Vindictive" || (o.traits.ambition > 80 && o.traits.risk > 70),
+    o.temperament === "Vindictive" || (o.traits.ambition > TRAIT_VINDICTIVE_AMBITION_THRESHOLD && o.traits.risk > TRAIT_VINDICTIVE_RISK_THRESHOLD),
 
-  isGreedy: (): TraitCheck => (o) => o.traits.risk < 20 || o.quirks?.includes("Numbers Guy"),
+  isGreedy: (): TraitCheck => (o) => o.traits.risk < TRAIT_GREEDY_RISK_THRESHOLD || (o.quirks?.includes("Numbers Guy") ?? false),
 
   hasMood:
     (mood: Oyakata["mood"]): TraitCheck =>

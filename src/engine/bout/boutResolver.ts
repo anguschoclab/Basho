@@ -55,6 +55,10 @@ import {
   DEFAULT_YEAR,
   DEFAULT_DAY,
   DEFAULT_BASHO_NUMBER,
+  RIVALRY_NORMALIZATION_DIVISOR,
+  DEFAULT_STAT_VALUE,
+  STAT_CLAMP_MIN,
+  STAT_CLAMP_MAX,
 } from "../../constants/engine/physics";
 
 // Phase 8 complete: kimariteClassifier.ts owns all kimarite selection.
@@ -480,18 +484,18 @@ export function applyRivalryToRikishi(
   r: Rikishi,
   rivalry: { heat: number; spite: number }
 ): Rikishi {
-  const heat01 = rivalry.heat / 100;
-  const spite01 = rivalry.spite / 100;
+  const heat01 = rivalry.heat / RIVALRY_NORMALIZATION_DIVISOR;
+  const spite01 = rivalry.spite / RIVALRY_NORMALIZATION_DIVISOR;
   const condMult = conditionMultiplier(r.condition ?? 100);
   return {
     ...r,
-    aggression: clamp((r.stats.aggression || 50) * (1 + heat01 * RIVALRY_HEAT_AGGRESSION_MULTIPLIER), 0, 100),
-    mental: clamp((r.stats.mental || 50) * (1 + spite01 * RIVALRY_SPITE_MENTAL_MULTIPLIER), 0, 100),
-    power: clamp((r.stats.power || 50) * condMult, 0, 100),
-    speed: clamp((r.stats.speed || 50) * condMult, 0, 100),
-    technique: clamp((r.stats.technique || 50) * condMult, 0, 100),
-    balance: clamp((r.stats.balance || 50) * condMult, 0, 100),
-    stamina: clamp((r.stats.stamina || 50) * condMult, 0, 100),
+    aggression: clamp((r.stats.aggression || DEFAULT_STAT_VALUE) * (1 + heat01 * RIVALRY_HEAT_AGGRESSION_MULTIPLIER), STAT_CLAMP_MIN, STAT_CLAMP_MAX),
+    mental: clamp((r.stats.mental || DEFAULT_STAT_VALUE) * (1 + spite01 * RIVALRY_SPITE_MENTAL_MULTIPLIER), STAT_CLAMP_MIN, STAT_CLAMP_MAX),
+    power: clamp((r.stats.power || DEFAULT_STAT_VALUE) * condMult, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
+    speed: clamp((r.stats.speed || DEFAULT_STAT_VALUE) * condMult, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
+    technique: clamp((r.stats.technique || DEFAULT_STAT_VALUE) * condMult, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
+    balance: clamp((r.stats.balance || DEFAULT_STAT_VALUE) * condMult, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
+    stamina: clamp((r.stats.stamina || DEFAULT_STAT_VALUE) * condMult, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
   } as Rikishi;
 }
 

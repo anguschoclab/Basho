@@ -49,6 +49,9 @@ import {
   STAFF_HIRE_COST,
   STAFF_MORALE_HIGH_MULTIPLIER,
   STAFF_MORALE_LOW_MULTIPLIER,
+  STAFF_NAME_RANDOM_RANGE,
+  STAFF_MIN_AGE_FOR_YEARS_CALC,
+  STAFF_BASE_BONUS_VALUE,
 } from "../constants/engine/economy";
 
 /**
@@ -104,7 +107,7 @@ export function generateStaff(seed: string, role: StaffRole, heyaId: Id, sequenc
   return {
     id,
     heyaId,
-    name: `Staff Member ${Math.floor(rng.next() * 1000)}`,
+    name: `Staff Member ${Math.floor(rng.next() * STAFF_NAME_RANDOM_RANGE)}`,
     role,
     age,
     careerPhase: phase,
@@ -117,7 +120,7 @@ export function generateStaff(seed: string, role: StaffRole, heyaId: Id, sequenc
     fatigue: Math.floor(rng.next() * STAFF_FATIGUE_RANGE),
     morale: STAFF_BASE_MORALE + Math.floor(rng.next() * STAFF_MORALE_RANGE), // Start with good morale
     scandalExposure: Math.floor(rng.next() * STAFF_SCANDAL_EXPOSURE_RANGE),
-    yearsAtBeya: Math.max(0, Math.floor(rng.next() * (age - 20))),
+    yearsAtBeya: Math.max(0, Math.floor(rng.next() * (age - STAFF_MIN_AGE_FOR_YEARS_CALC))),
     priorAffiliations: [],
     successorEligible: role === "assistant_oyakata" && age > STAFF_SUCCESSOR_AGE_THRESHOLD && rng.next() > STAFF_SUCCESSOR_CHANCE,
   };
@@ -297,11 +300,11 @@ const ROLE_HANDLERS: Record<StaffRole, (b: StaffBonuses, val: number) => void> =
 export function getHeyaStaffBonuses(world: WorldState, heyaId: Id): StaffBonuses {
   const heya = getHeya(world, heyaId);
   const bonuses: StaffBonuses = {
-    technique: 1.0,
-    conditioning: 1.0,
-    medical: 1.0,
-    scouting: 1.0,
-    administration: 1.0,
+    technique: STAFF_BASE_BONUS_VALUE,
+    conditioning: STAFF_BASE_BONUS_VALUE,
+    medical: STAFF_BASE_BONUS_VALUE,
+    scouting: STAFF_BASE_BONUS_VALUE,
+    administration: STAFF_BASE_BONUS_VALUE,
   };
 
   if (!heya || !heya.staffIds || !world.staff) return bonuses;

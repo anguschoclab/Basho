@@ -822,7 +822,7 @@ function buildEngineSnapshotV2(st: EngineStateV2, winner: Side): EngineSnapshot 
     winnerConsecutiveAdvantage: st.tick,
     loserLastActionFamily: undefined,
     finalLoserBalanceDrain:
-      winner === "east" ? Math.abs(st.west.cogOffset) * 10 : Math.abs(st.east.cogOffset) * 10,
+      winner === "east" ? Math.abs(st.west.cogOffset) * BALANCE_CALCULATION_MULTIPLIER : Math.abs(st.east.cogOffset) * BALANCE_CALCULATION_MULTIPLIER,
   };
 }
 

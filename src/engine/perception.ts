@@ -52,6 +52,12 @@ import {
   MORALE_CONTENT_THRESHOLD,
   MORALE_NEUTRAL_THRESHOLD,
   MORALE_DISGRUNTLED_THRESHOLD,
+  RANK_WEIGHT_FALLBACK,
+  RANK_WEIGHT_JONIDAN,
+  RANK_WEIGHT_JONOKUCHI,
+  MOMENTUM_RISING_THRESHOLD,
+  MOMENTUM_DECLINING_THRESHOLD,
+  MOMENTUM_NORMALIZATION_OFFSET,
 } from "../constants/engine/perception";
 
 // === Band types for perception ===
@@ -230,14 +236,14 @@ function bandRosterStrength(heya: Heya, world: WorldState): RosterStrengthBand {
     juryo: STRENGTH_JURYO_THRESHOLD,
     makushita: STRENGTH_MAKUSHITA_THRESHOLD,
     sandanme: STRENGTH_SANDANME_THRESHOLD,
-    jonidan: 5,
-    jonokuchi: 2,
+    jonidan: RANK_WEIGHT_JONIDAN,
+    jonokuchi: RANK_WEIGHT_JONOKUCHI,
   };
 
   const roster = getHeyaRoster(world, heya.id);
   let total = 0;
   for (const r of roster) {
-    total += RANK_WEIGHT[r.rank] ?? 5;
+    total += RANK_WEIGHT[r.rank] ?? RANK_WEIGHT_FALLBACK;
   }
 
   const avg = roster.length > 0 ? total / roster.length : 0;
@@ -264,7 +270,7 @@ function bandMorale(heya: Heya, world: WorldState): MoraleBand {
   }
   const avgMomentum = roster.length > 0 ? momentumSum / roster.length : 0;
 
-  const score = (100 - welfareRisk) * MORALE_SCORE_WEIGHT + (avgMomentum + 5) * MOMENTUM_NORMALIZER; // normalize momentum (-5..5) to 0..40
+  const score = (100 - welfareRisk) * MORALE_SCORE_WEIGHT + (avgMomentum + MOMENTUM_NORMALIZATION_OFFSET) * MOMENTUM_NORMALIZER; // normalize momentum (-5..5) to 0..40
   if (score >= MORALE_INSPIRED_THRESHOLD) return "inspired";
   if (score >= MORALE_CONTENT_THRESHOLD) return "content";
   if (score >= MORALE_NEUTRAL_THRESHOLD) return "neutral";
@@ -278,8 +284,8 @@ function bandMorale(heya: Heya, world: WorldState): MoraleBand {
  *  * @returns The result.
  */
 function bandRikishiMomentum(m: number): "rising" | "steady" | "declining" {
-  if (m >= 2) return "rising";
-  if (m <= -2) return "declining";
+  if (m >= MOMENTUM_RISING_THRESHOLD) return "rising";
+  if (m <= MOMENTUM_DECLINING_THRESHOLD) return "declining";
   return "steady";
 }
 
