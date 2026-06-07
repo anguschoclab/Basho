@@ -366,7 +366,8 @@ ipcMain.handle("dialog:showSaveDialog", async (event, options?: Electron.SaveDia
 ipcMain.handle("dialog:showOpenDialog", async (event, options?: Electron.OpenDialogOptions) => {
   if (
     options !== undefined &&
-    (typeof options !== "object" || options === null || Array.isArray(options))
+    options !== null &&
+    (typeof options !== "object" || Array.isArray(options))
   ) {
     throw new TypeError("Invalid options type for open dialog");
   }
