@@ -50,6 +50,20 @@ import {
   RANK_DIFF_BONUS_MULTIPLIER,
   RANK_DIFF_MAX,
   RIVALRY_RNG_THRESHOLD,
+  RIVALRY_CLOSENESS_DEFAULT,
+  RIVALRY_DOMINATION_DEFAULT,
+  STYLE_CLASH_BONUS,
+  SAME_DIVISION_BONUS,
+  AGE_PROXIMITY_BONUS_BASE,
+  AGE_PROXIMITY_MULTIPLIER,
+  AGE_PROXIMITY_MAX_DIFF,
+  RIVALRY_INITIAL_HEAT_MIN,
+  RIVALRY_INITIAL_HEAT_MAX,
+  SPARRING_RIVALRY_WEEKS_THRESHOLD,
+  SPARRING_INITIAL_HEAT_MIN,
+  SPARRING_INITIAL_HEAT_MAX,
+  HEYA_HEAT_GAIN_TITLE_STAKES,
+  HEYA_HEAT_GAIN_NORMAL,
 } from "../../../constants/engine/rivalry";
 import { getRikishi } from "../../queries";
 
@@ -145,8 +159,8 @@ export const RivalryService = {
       isLossForA: result.loserRikishiId === existing.aId,
       isKinboshi: !!result.isKinboshi,
       isTitleStakes: !!result.isTitleStakes,
-      closeness01: result.duration ? Math.min(1.0, result.duration / BOUT_DURATION_CLOSENESS_DIVISOR) : 0.5,
-      domination01: result.duration ? Math.max(0.0, 1.0 - result.duration / BOUT_DURATION_DOMINATION_DIVISOR) : 0.2,
+      closeness01: result.duration ? Math.min(1.0, result.duration / BOUT_DURATION_CLOSENESS_DIVISOR) : RIVALRY_CLOSENESS_DEFAULT,
+      domination01: result.duration ? Math.max(0.0, 1.0 - result.duration / BOUT_DURATION_DOMINATION_DIVISOR) : RIVALRY_DOMINATION_DEFAULT,
       isUpset: !!result.upset,
       isFinalDay: args.day === BASHO_FINAL_DAY,
       isYushoRace: !!result.isYushoRace,
@@ -201,7 +215,7 @@ export const RivalryService = {
         bWins: 0,
       };
 
-      const hHeatGain = result.isTitleStakes ? 8 : 3;
+      const hHeatGain = result.isTitleStakes ? HEYA_HEAT_GAIN_TITLE_STAKES : HEYA_HEAT_GAIN_NORMAL;
       updatedHeyaPairs[hKey] = {
         ...existingH,
         heat: Math.min(100, existingH.heat + hHeatGain),
@@ -354,21 +368,21 @@ export const RivalryService = {
 
         let score = 0;
         // Style clash: Push vs Belt is classic
-        if (a.style !== b.style) score += 10;
+        if (a.style !== b.style) score += STYLE_CLASH_BONUS;
 
         // Origin or Nationality clash
         if (a.nationality !== b.nationality) score += NATIONALITY_RIVALRY_BONUS;
 
         // Rank proximity (same division, close rank numbers)
         if (a.division === b.division) {
-          score += 5;
+          score += SAME_DIVISION_BONUS;
           const rankDiff = Math.abs((a.rankNumber ?? 1) - (b.rankNumber ?? 1));
           if (rankDiff <= RANK_DIFF_MAX) score += RANK_DIFF_BONUS_BASE - rankDiff * RANK_DIFF_BONUS_MULTIPLIER;
         }
 
         // Age proximity
         const ageDiff = Math.abs(a.birthYear - b.birthYear);
-        if (ageDiff <= 2) score += 10 - ageDiff * 3;
+        if (ageDiff <= AGE_PROXIMITY_MAX_DIFF) score += AGE_PROXIMITY_BONUS_BASE - ageDiff * AGE_PROXIMITY_MULTIPLIER;
 
         candidates.push({ a, b, score });
       }
@@ -385,7 +399,7 @@ export const RivalryService = {
     for (const { a, b } of toSeed) {
       const key = this.makeRivalryKey(a.id, b.id);
       const pair = this.createFreshPair(a.id, b.id, world);
-      pair.heat = rng.int(20, 45); // Warm heat
+      pair.heat = rng.int(RIVALRY_INITIAL_HEAT_MIN, RIVALRY_INITIAL_HEAT_MAX); // Warm heat
       pair.tone = rng.pick(["grudge", "bad_blood", "public_hype", "respect"]);
       nextPairs[key] = pair;
     }
@@ -430,7 +444,7 @@ export const RivalryService = {
     if (chemistry !== "friction") return builder.build();
 
     // Only seed after 12+ weeks of sparring
-    if (weeksActive < 12) return builder.build();
+    if (weeksActive < SPARRING_RIVALRY_WEEKS_THRESHOLD) return builder.build();
 
     const state = this.ensureRivalriesState(world);
     const key = this.makeRivalryKey(aId, bId);
@@ -447,7 +461,7 @@ export const RivalryService = {
     const rB = EntityCollection.getRikishiById(world, bId);
     if (!rA || !rB) return builder.build();
 
-    const initialHeat = rng.int(40, 60);
+    const initialHeat = rng.int(SPARRING_INITIAL_HEAT_MIN, SPARRING_INITIAL_HEAT_MAX);
 
     // Determine tone based on chemistry
     let tone = "respect";

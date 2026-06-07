@@ -487,3 +487,42 @@ export const HEIGHT_BAND_SHORT_MAX = 170;
 export const HEIGHT_BAND_AVERAGE_MAX = 182;
 export const HEIGHT_BAND_TALL_MAX = 192;
 export const HEIGHT_BAND_GIANT_MAX = 200;
+
+// Prodigy constants
+export const PRODIGY_BIRTH_YEAR_MIN = 2000;
+export const PRODIGY_BIRTH_YEAR_MAX = 2010;
+export const PRODIGY_STAT_CEILING_MIN = 85;
+export const PRODIGY_STAT_CEILING_MAX = 99;
+export const PRODIGY_STAT_FLOOR_MIN = 60;
+export const PRODIGY_STAT_FLOOR_MAX = 75;
+
+// Talent seed range
+export const TALENT_SEED_MIN = 0;
+export const TALENT_SEED_MAX = 100;
+
+// Temperament range
+export const TEMPERAMENT_MIN = 0;
+export const TEMPERAMENT_MAX = 100;
+
+// Amateur star tag chance
+export const AMATEUR_STAR_TAG_CHANCE = 0.8;
+
+// Japanese prefectures count
+export const JAPANESE_PREFECTURES_COUNT = 20;
+
+// Emergent prodigy chance
+export const EMERGENT_PRODIGY_CHANCE = 0.015;
+
+// Prodigy stat bonus
+export const PRODIGY_STAT_BONUS = 12;
+
+// Prodigy development speed multiplier
+export const PRODIGY_DEVELOPMENT_SPEED_MULTIPLIER = 1.25;
+
+// Birth year ranges
+export const UNIVERSITY_BIRTH_YEAR_RANGE = 7;
+export const OTHER_BIRTH_YEAR_RANGE = 3;
+
+// Reputation seed range
+export const REPUTATION_SEED_MIN = 0;
+export const REPUTATION_SEED_MAX = 100;

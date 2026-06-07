@@ -141,3 +141,29 @@ export const KENSHO_RETIREMENT_DIVERSION_RATIO = 0.3;
 export const KINBOSHI_MARKETABILITY_BOOST = 5;
 export const GINBOSHI_MARKETABILITY_BOOST = 2;
 export const MARKETABILITY_POPULARITY_MULTIPLIER = 2;
+
+// Myoseki thresholds (yen)
+export const MYOSEKI_THRESHOLD_HOARDER = 500_000_000;
+export const MYOSEKI_THRESHOLD_DEFAULT = 300_000_000;
+export const MYOSEKI_THRESHOLD_TRADITIONALIST = 600_000_000;
+export const MYOSEKI_THRESHOLD_PATIENT = 700_000_000;
+
+// Myoseki buffers (yen)
+export const MYOSEKI_BUFFER_AMOUNT = 100_000_000;
+export const MYOSEKI_BUFFER_TRADITIONALIST = 200_000_000;
+
+// Maintenance subsidy (yen)
+export const MAINTENANCE_SUBSIDY_AMOUNT = 500_000;
+
+// Infinite runway sentinel
+export const RUNWAY_INFINITE_SENTINEL = 999;
+
+// Runway thresholds (months)
+export const RUNWAY_THRESHOLD_DEFAULT = 6;
+export const RUNWAY_THRESHOLD_PUBLICITY_HAWK = 9;
+export const RUNWAY_THRESHOLD_GAMBLER = 2;
+export const RUNWAY_THRESHOLD_TRADITIONALIST = 8;
+export const RUNWAY_THRESHOLD_NEPOSTIST = 12;
+export const RUNWAY_THRESHOLD_NURTURER = 6;
+export const RUNWAY_THRESHOLD_TYRANT = 8;
+export const RUNWAY_THRESHOLD_SCIENTIST = 5;

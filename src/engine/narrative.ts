@@ -183,7 +183,7 @@ function generateFinish(ctx: NarrativeContext, entry: BoutLogEntry): string[] {
   const winnerSide = (entry.data?.winner as "east" | "west") ?? (ctx.result as BoutResult).winner;
   const winnerName =
     winnerSide === "east" ? (ctx.east as Rikishi).shikona : (ctx.west as Rikishi).shikona;
-  const kimarite: string = entry.data?.kimariteName || (ctx.result as BoutResult).kimariteName || (ctx.result as BoutResult).kimarite || "";
+  const kimarite = String(entry.data?.kimariteName || (ctx.result as BoutResult).kimariteName || (ctx.result as BoutResult).kimarite || "");
 
   const result = BardEngine.resolve(ctx.rng as SeededRNG, "combat.phases.finish.common", {
     ...ctx,

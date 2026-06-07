@@ -21,6 +21,8 @@ import {
   MEDIA_HEAT_DIVISOR,
   MIN_KINBOSHI_BANNER_COUNT,
   ADDITIONAL_KINBOSHI_BANNER_MAX,
+  MIN_GINBOSHI_BANNER_COUNT,
+  ADDITIONAL_GINBOSHI_BANNER_MAX,
 } from "../../../constants/engine/economyExtended";
 
 /** Type representing bout importance bucket. */
@@ -207,8 +209,8 @@ export function calculateKenshoEnvelopes(
   // Minimum guarantees for historic wins even if un-sponsored
   if (awardFact === "kinboshi" && count < MIN_KINBOSHI_BANNER_COUNT) {
     count = MIN_KINBOSHI_BANNER_COUNT + Math.floor(rng.next() * ADDITIONAL_KINBOSHI_BANNER_MAX);
-  } else if (awardFact === "ginboshi" && count < 5) {
-    count = 5 + Math.floor(rng.next() * 3);
+  } else if (awardFact === "ginboshi" && count < MIN_GINBOSHI_BANNER_COUNT) {
+    count = MIN_GINBOSHI_BANNER_COUNT + Math.floor(rng.next() * ADDITIONAL_GINBOSHI_BANNER_MAX);
   }
 
   return count;

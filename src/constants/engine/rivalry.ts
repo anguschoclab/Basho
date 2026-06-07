@@ -213,3 +213,26 @@ export const DRAMA_PRESTIGE_COST = 15;
 
 // RNG threshold
 export const RIVALRY_RNG_THRESHOLD = 0.4;
+
+// Rivalry initialization defaults
+export const RIVALRY_CLOSENESS_DEFAULT = 0.5;
+export const RIVALRY_DOMINATION_DEFAULT = 0.2;
+
+// Rivalry seeding bonuses
+export const STYLE_CLASH_BONUS = 10;
+export const SAME_DIVISION_BONUS = 5;
+export const AGE_PROXIMITY_BONUS_BASE = 10;
+export const AGE_PROXIMITY_MULTIPLIER = 3;
+export const AGE_PROXIMITY_MAX_DIFF = 2;
+
+// Rivalry initial heat range
+export const RIVALRY_INITIAL_HEAT_MIN = 20;
+export const RIVALRY_INITIAL_HEAT_MAX = 45;
+
+// Sparring rivalry initial heat range
+export const SPARRING_INITIAL_HEAT_MIN = 40;
+export const SPARRING_INITIAL_HEAT_MAX = 60;
+
+// Heya heat gain from bouts
+export const HEYA_HEAT_GAIN_TITLE_STAKES = 8;
+export const HEYA_HEAT_GAIN_NORMAL = 3;

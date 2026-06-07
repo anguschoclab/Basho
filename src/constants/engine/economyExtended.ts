@@ -77,6 +77,12 @@ export const MIN_KINBOSHI_BANNER_COUNT = 15;
 /** Additional kinboshi banner max */
 export const ADDITIONAL_KINBOSHI_BANNER_MAX = 5;
 
+/** Minimum ginboshi banner count */
+export const MIN_GINBOSHI_BANNER_COUNT = 5;
+
+/** Additional ginboshi banner max */
+export const ADDITIONAL_GINBOSHI_BANNER_MAX = 3;
+
 /** Koenkai monthly income - none */
 export const KOENKAI_INCOME_NONE = 0;
 

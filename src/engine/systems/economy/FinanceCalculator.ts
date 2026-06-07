@@ -21,6 +21,9 @@ import {
   JSA_PER_WRESTLER_SUBSIDY_MONTHLY,
   JSA_STABLE_WEEKLY_GRANT,
   KOENKAI_INCOME_SPLIT,
+  MAINTENANCE_SUBSIDY_AMOUNT,
+  DEBT_LIMIT,
+  RUNWAY_INFINITE_SENTINEL,
 } from "../../../constants/engine/economic";
 
 export interface HeyaFinanceResult {
@@ -96,7 +99,7 @@ export function calculateHeyaWeeklyFinances(heya: Heya, world: WorldState): Heya
   const jsaBaseGrant = JSA_STABLE_WEEKLY_GRANT;
 
   // JSA Maintenance Subsidy (Safety Net for insolvent stables)
-  const maintenanceSubsidy = heya.funds < 0 ? 500_000 : 0;
+  const maintenanceSubsidy = heya.funds < 0 ? MAINTENANCE_SUBSIDY_AMOUNT : 0;
 
   const effectiveIncome = Math.max(
     weeklyKoenkai + weeklyJsaSubsidy + weeklySponsorTierIncome + jsaBaseGrant + maintenanceSubsidy,
@@ -124,7 +127,7 @@ export function calculateHeyaWeeklyFinances(heya: Heya, world: WorldState): Heya
 
   // Food is charged daily by phase01_daily_economy — do not double-count here.
   const baseBurn = facilityUpkeep + staffUpkeep;
-  const recruitmentCost = heya.funds <= -20_000_000 ? 0 : RECRUITMENT_BUDGET_WEEKLY;
+  const recruitmentCost = heya.funds <= DEBT_LIMIT ? 0 : RECRUITMENT_BUDGET_WEEKLY;
   const totalBurn = baseBurn + recruitmentCost;
 
   // Solvency clamping: pause overhead at the survival floor
@@ -140,12 +143,12 @@ export function calculateHeyaWeeklyFinances(heya: Heya, world: WorldState): Heya
 
   // Strict Debt Floor (Inlined to prevent import failures)
   // DEBT_LIMIT = -20,000,000 as per EconomicConstants.ts
-  if (nextFunds < -20_000_000) {
-    nextFunds = -20_000_000;
+  if (nextFunds < DEBT_LIMIT) {
+    nextFunds = DEBT_LIMIT;
   }
 
   const monthlyBurn = totalBurn * 4;
-  const runwayMonths = monthlyBurn > 0 ? heya.funds / monthlyBurn : 999;
+  const runwayMonths = monthlyBurn > 0 ? heya.funds / monthlyBurn : RUNWAY_INFINITE_SENTINEL;
 
   return {
     revenue: effectiveIncome,
