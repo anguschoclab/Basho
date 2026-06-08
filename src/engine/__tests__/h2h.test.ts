@@ -1,8 +1,12 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { updateH2H, generateH2HCommentary, getH2HReport } from "../h2h";
 import { MockFactory } from "../../test/utils/MockFactory";
 import type { MatchResultLog } from "../types/records";
 import type { BoutResult } from "../types/basho";
+import type { H2HRecord } from "../types/records";
+import { applyImpact } from "../core/ImpactResolver";
+import { makeMockWorld } from "./utils";
+import { resetImpactTimestampCounter } from "../core/StateImpact";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -251,6 +255,215 @@ describe("updateH2H", () => {
     expect(a.h2h["b"].losses).toBe(1);
     expect(b.h2h["a"].wins).toBe(1);
     expect(b.h2h["a"].losses).toBe(2);
+  });
+
+  beforeEach(() => {
+    resetImpactTimestampCounter();
+  });
+
+  // Streak logic
+  it("continues a positive winning streak for the winner", () => {
+    const winner = MockFactory.createRikishi({
+      id: "w",
+      h2h: {
+        l: { wins: 2, losses: 0, streak: 2, lastMatch: null },
+      },
+    });
+    const loser = MockFactory.createRikishi({
+      id: "l",
+      h2h: {
+        w: { wins: 0, losses: 2, streak: -2, lastMatch: null },
+      },
+    });
+    const result = { boutId: "b-1", kimarite: "yorikiri" } as unknown as BoutResult;
+
+    const impact = updateH2H(winner, loser, result, "basho-2025-01", 2025, 7);
+    const updateW = impact.entities?.rikishiUpdates?.get("w");
+    const updateL = impact.entities?.rikishiUpdates?.get("l");
+
+    expect(updateW?.h2h?.["l"]?.wins).toBe(3);
+    expect(updateW?.h2h?.["l"]?.streak).toBe(3);
+    expect(updateL?.h2h?.["w"]?.losses).toBe(3);
+    expect(updateL?.h2h?.["w"]?.streak).toBe(-3);
+  });
+
+  it("resets a negative streak to 1 when the winner wins", () => {
+    const winner = MockFactory.createRikishi({
+      id: "w",
+      h2h: {
+        l: { wins: 0, losses: 3, streak: -3, lastMatch: null },
+      },
+    });
+    const loser = MockFactory.createRikishi({ id: "l" });
+    const result = { boutId: "b-1", kimarite: "yorikiri" } as unknown as BoutResult;
+
+    const impact = updateH2H(winner, loser, result, "basho-2025-01", 2025, 7);
+    const updateW = impact.entities?.rikishiUpdates?.get("w");
+
+    expect(updateW?.h2h?.["l"]?.wins).toBe(1);
+    expect(updateW?.h2h?.["l"]?.streak).toBe(1);
+  });
+
+  it("resets a positive streak to -1 when the loser loses", () => {
+    const winner = MockFactory.createRikishi({ id: "w" });
+    const loser = MockFactory.createRikishi({
+      id: "l",
+      h2h: {
+        w: { wins: 4, losses: 0, streak: 4, lastMatch: null },
+      },
+    });
+    const result = { boutId: "b-1", kimarite: "yorikiri" } as unknown as BoutResult;
+
+    const impact = updateH2H(winner, loser, result, "basho-2025-01", 2025, 7);
+    const updateL = impact.entities?.rikishiUpdates?.get("l");
+
+    expect(updateL?.h2h?.["w"]?.losses).toBe(1);
+    expect(updateL?.h2h?.["w"]?.streak).toBe(-1);
+  });
+
+  it("starts streak at 1 / -1 from a zero baseline", () => {
+    const winner = MockFactory.createRikishi({
+      id: "w",
+      h2h: {
+        l: { wins: 0, losses: 0, streak: 0, lastMatch: null },
+      },
+    });
+    const loser = MockFactory.createRikishi({
+      id: "l",
+      h2h: {
+        w: { wins: 0, losses: 0, streak: 0, lastMatch: null },
+      },
+    });
+    const result = { boutId: "b-1", kimarite: "yorikiri" } as unknown as BoutResult;
+
+    const impact = updateH2H(winner, loser, result, "basho-2025-01", 2025, 7);
+    const updateW = impact.entities?.rikishiUpdates?.get("w");
+    const updateL = impact.entities?.rikishiUpdates?.get("l");
+
+    expect(updateW?.h2h?.["l"]?.streak).toBe(1);
+    expect(updateL?.h2h?.["w"]?.streak).toBe(-1);
+  });
+
+  // Record preservation & metadata
+  it("preserves unrelated h2h entries for both rikishi", () => {
+    const winner = MockFactory.createRikishi({
+      id: "w",
+      h2h: {
+        other: { wins: 5, losses: 2, streak: 1, lastMatch: null },
+      },
+    });
+    const loser = MockFactory.createRikishi({
+      id: "l",
+      h2h: {
+        another: { wins: 3, losses: 1, streak: 2, lastMatch: null },
+      },
+    });
+    const result = { boutId: "b-1", kimarite: "yorikiri" } as unknown as BoutResult;
+
+    const impact = updateH2H(winner, loser, result, "basho-2025-01", 2025, 7);
+    const updateW = impact.entities?.rikishiUpdates?.get("w");
+    const updateL = impact.entities?.rikishiUpdates?.get("l");
+
+    expect(updateW?.h2h?.["other"]).toBeDefined();
+    expect(updateW?.h2h?.["other"]?.wins).toBe(5);
+    expect(updateL?.h2h?.["another"]).toBeDefined();
+    expect(updateL?.h2h?.["another"]?.wins).toBe(3);
+  });
+
+  it("populates lastMatch with bashoId, year, and day", () => {
+    const winner = MockFactory.createRikishi({ id: "w" });
+    const loser = MockFactory.createRikishi({ id: "l" });
+    const result = { boutId: "b-1", kimarite: "oshidashi" } as unknown as BoutResult;
+
+    const impact = updateH2H(winner, loser, result, "natsu-2025", 2025, 12);
+    const updateW = impact.entities?.rikishiUpdates?.get("w");
+
+    expect(updateW?.h2h?.["l"]?.lastMatch).toEqual({
+      winnerId: "w",
+      kimarite: "oshidashi",
+      bashoId: "natsu-2025",
+      year: 2025,
+      day: 12,
+    });
+  });
+
+  // Impact contract & resolver
+  it("returns a StateImpact with exactly two rikishiUpdates entries and no side-effects", () => {
+    const winner = MockFactory.createRikishi({ id: "w" });
+    const loser = MockFactory.createRikishi({ id: "l" });
+    const result = { boutId: "b-1", kimarite: "yorikiri" } as unknown as BoutResult;
+
+    const impact = updateH2H(winner, loser, result, "basho-2025-01", 2025, 7);
+
+    expect(impact.metadata?.source).toBe("updateH2H");
+    expect(impact.entities?.rikishiUpdates?.size).toBe(2);
+    expect(impact.events).toBeUndefined();
+    expect(impact.collections).toBeUndefined();
+    expect(impact.deletedEntities).toBeUndefined();
+    expect(impact.arrayAppends).toBeUndefined();
+  });
+
+  it("correctly resolves via applyImpact", () => {
+    const winner = MockFactory.createRikishi({ id: "w" });
+    const loser = MockFactory.createRikishi({ id: "l" });
+    const world = makeMockWorld({
+      rikishi: new Map([
+        ["w", winner],
+        ["l", loser],
+      ]),
+    });
+    const result = { boutId: "b-1", kimarite: "tsukiotoshi" } as unknown as BoutResult;
+
+    const impact = updateH2H(winner, loser, result, "aki-2025", 2025, 9);
+    const updatedWorld = applyImpact(world, impact);
+
+    const resolvedWinner = updatedWorld.rikishi.get("w");
+    const resolvedLoser = updatedWorld.rikishi.get("l");
+
+    expect(resolvedWinner?.h2h?.["l"]?.wins).toBe(1);
+    expect(resolvedWinner?.h2h?.["l"]?.streak).toBe(1);
+    expect(resolvedWinner?.h2h?.["l"]?.lastMatch?.kimarite).toBe("tsukiotoshi");
+    expect(resolvedLoser?.h2h?.["w"]?.losses).toBe(1);
+    expect(resolvedLoser?.h2h?.["w"]?.streak).toBe(-1);
+  });
+
+  // Edge cases
+  it("handles rikishi with undefined h2h maps", () => {
+    const winner = MockFactory.createRikishi({ id: "w", h2h: undefined as unknown as Record<string, H2HRecord> });
+    const loser = MockFactory.createRikishi({ id: "l", h2h: undefined as unknown as Record<string, H2HRecord> });
+    const result = { boutId: "b-1", kimarite: "yorikiri" } as unknown as BoutResult;
+
+    const impact = updateH2H(winner, loser, result, "basho-2025-01", 2025, 7);
+    const updateW = impact.entities?.rikishiUpdates?.get("w");
+    const updateL = impact.entities?.rikishiUpdates?.get("l");
+
+    expect(updateW?.h2h?.["l"]?.wins).toBe(1);
+    expect(updateL?.h2h?.["w"]?.losses).toBe(1);
+  });
+
+  it("handles an existing empty opponent record (all zeros)", () => {
+    const winner = MockFactory.createRikishi({
+      id: "w",
+      h2h: {
+        l: { wins: 0, losses: 0, streak: 0, lastMatch: null },
+      },
+    });
+    const loser = MockFactory.createRikishi({
+      id: "l",
+      h2h: {
+        w: { wins: 0, losses: 0, streak: 0, lastMatch: null },
+      },
+    });
+    const result = { boutId: "b-1", kimarite: "yorikiri" } as unknown as BoutResult;
+
+    const impact = updateH2H(winner, loser, result, "basho-2025-01", 2025, 7);
+    const updateW = impact.entities?.rikishiUpdates?.get("w");
+    const updateL = impact.entities?.rikishiUpdates?.get("l");
+
+    expect(updateW?.h2h?.["l"]?.wins).toBe(1);
+    expect(updateW?.h2h?.["l"]?.streak).toBe(1);
+    expect(updateL?.h2h?.["w"]?.losses).toBe(1);
+    expect(updateL?.h2h?.["w"]?.streak).toBe(-1);
   });
 });
 
