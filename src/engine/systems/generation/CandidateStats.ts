@@ -135,7 +135,7 @@ export function rollPotential(args: {
   const isAmericas = ["Brazil", "USA", "Hawaii"].includes(nationality ?? "");
 
   const mods = (profile.statModifiers || {}) as Record<string, number | undefined>;
-  const powerMod = mods["power"] ?? mods["strength"] ?? 1.0;
+  const powerMod = mods["power"] ?? 1.0;
 
   const paStats: RikishiStats = {
     power: rollStat(powerMod, isEastEuropean ? REGIONAL_BONUS_EAST_EUROPEAN_POWER : 0),
@@ -253,7 +253,7 @@ export function generateRikishiStats(args: {
   const height = clampInt(rng.gaussian(HEIGHT_BASE_MEAN * (mods["height"] ?? 1.0), HEIGHT_GEN_STD_DEV), HEIGHT_GEN_MIN, HEIGHT_GEN_MAX);
 
   // 'power' key in statModifiers maps to power in RikishiStats → Rikishi.power
-  const powerMod = mods["power"] ?? mods["strength"] ?? 1.0;
+  const powerMod = mods["power"] ?? 1.0;
   const powerMean = baseMean * powerMod;
 
   return {

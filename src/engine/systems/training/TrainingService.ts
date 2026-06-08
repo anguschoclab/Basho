@@ -217,10 +217,10 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
 
       // Apply staff bonuses + Drill Vector + Infrastructure Buffs
       const finalGrowth = {
-        strength:
+        power:
           (growth.power + drillVector.power) *
           staffBonuses.conditioning *
-          infra.statBuffs.strength,
+          infra.statBuffs.power,
         speed:
           (growth.speed + drillVector.speed) * staffBonuses.conditioning * infra.statBuffs.speed,
         technique:
@@ -252,7 +252,7 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
 
       newStats.power = Math.min(
         getEffectiveCeiling(rikishi, "power", world),
-        Math.max(STAT_FLOOR, (rikishi.stats.power || 50) + finalGrowth.strength + decay.power)
+        Math.max(STAT_FLOOR, (rikishi.stats.power || 50) + finalGrowth.power + decay.power)
       );
       newStats.speed = Math.min(
         getEffectiveCeiling(rikishi, "speed", world),

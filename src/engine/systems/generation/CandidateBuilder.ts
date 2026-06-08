@@ -342,7 +342,7 @@ export function convertCandidateToRikishi(args: {
     potential: candidate.potentialStats
       ? {
           stats: {
-            power: candidate.potentialStats!.strength,
+            power: candidate.potentialStats!.power,
             speed: candidate.potentialStats!.speed,
             technique: candidate.potentialStats!.technique,
             balance: candidate.potentialStats!.balance,

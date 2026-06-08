@@ -213,7 +213,7 @@ export const InfrastructureService = {
   getHeyaBonuses(heya: Heya | undefined) {
     const totalBonuses = {
       statBuffs: {
-        strength: 1,
+        power: 1,
         speed: 1,
         technique: 1,
         balance: 1,

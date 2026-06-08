@@ -6,6 +6,7 @@
  */
 
 import type { WorldState } from "../../engine/types/world";
+import type { OzekiKadobanState } from "../../engine/banzuke/ozekiLogic";
 import { BardEngine } from "../../engine/narrative/BardEngine";
 import { SeededRNG } from "../../engine/rng";
 import {
@@ -150,7 +151,7 @@ export function getKadobanDrama(
 
   for (const r of selectKadobanRikishi(world)) {
     const rid = r.id;
-    const status = (kadobanMap as Record<string, any>)[rid];
+    const status = kadobanMap[rid] as OzekiKadobanState | undefined;
     if (!status) continue;
     if (!status.isKadoban && status.consecutiveMakeKoshi < 2) continue;
 

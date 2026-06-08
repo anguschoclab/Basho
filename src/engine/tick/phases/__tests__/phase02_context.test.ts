@@ -87,7 +87,7 @@ describe("Phase 2: Context", () => {
 
   it("preserves revenue and expenses from phase01, resets other deltas", () => {
     const deltas = world.transientContext!.deltas as unknown as Record<string, unknown>;
-    deltas.statChanges = { r1: [{ stat: "strength", amount: 5 }] };
+    deltas.statChanges = { r1: [{ stat: "power", amount: 5 }] };
     deltas.injuriesSustained = ["r1"];
 
     phase02_context(world);

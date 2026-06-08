@@ -173,7 +173,7 @@ export function RikishiProfileTab({ rikishi, rawRikishi, worldSeed }: RikishiPro
           {[
             {
               label: "Forcefulness",
-              key: "strength",
+              key: "power",
               val: rikishi.perceivedStats.power,
               raw: rawRikishi.stats?.power ?? 50,
               color: "bg-gold",

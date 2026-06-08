@@ -58,7 +58,7 @@ export function toBandsDTO(r: Rikishi, rng: SeededRNG, world?: WorldState): Riki
  */
 export function toPerceivedStatsDTO(r: Rikishi, rng: SeededRNG): RikishiPerceivedStatsDTO {
   return {
-    strength: NarrativeService.getStatLabel(
+    power: NarrativeService.getStatLabel(
       rng,
       NarrativeService.getStatBand(r.stats?.power ?? 50)
     ),

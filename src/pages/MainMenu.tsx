@@ -15,13 +15,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { RefreshCw, Dices, ChevronRight, Database } from "lucide-react";
 
-import { makeDeterministicSeed, safeShortSeed } from "@/utils/engineUtils";
+import { makeDeterministicSeed } from "@/utils/engineUtils";
 import { HeyaCard } from "@/components/menu/HeyaCard";
 import { STATURE_CONFIG } from "@/components/menu/statureConfig";
 import { SaveSlotManager } from "@/components/menu/SaveSlotManager";
 import { HeyaPreview } from "@/components/menu/HeyaPreview";
+import { MainMenuSelectedFooter } from "@/components/menu/MainMenuSelectedFooter";
+import { MainMenuFooter } from "@/components/menu/MainMenuFooter";
 import { RANK_HIERARCHY, projectHeyaRosterWithAge } from "@/presenters/uiDigest";
 import type { Rank } from "@/engine/types/banzuke";
 import type { Heya } from "@/engine/types/heya";
@@ -423,27 +424,11 @@ export default function MainMenu() {
             </TabsContent>
           </Tabs>
 
-          {/* Footer Sticky Bar */}
-          {selectedHeyaId && (
-            <div className="fixed bottom-10 left-1/2 -translate-x-1/2 w-full max-w-xl px-6 z-50 animate-in slide-in-from-bottom-10 duration-500">
-              <div className="glass paper p-2 pl-6 rounded shadow-xl flex items-center justify-between border-gold/30">
-                <div className="text-foreground min-w-0 pr-4">
-                  <p className="stat-label text-gold tracking-[0.2em] mb-0.5">READY TO BEGIN</p>
-                  <p className="font-display text-xl font-bold truncate sumi-e-ink uppercase">
-                    {stables.find((h) => h.id === selectedHeyaId)?.name} Stable
-                  </p>
-                </div>
-                <Button
-                  size="lg"
-                  variant="primary-gradient"
-                  className="h-14 px-10 gap-3 text-sm shadow-md"
-                  onClick={() => beginWithHeya(selectedHeyaId)}
-                >
-                  Inaugurate <ChevronRight className="h-5 w-5 stroke-[3]" />
-                </Button>
-              </div>
-            </div>
-          )}
+          <MainMenuSelectedFooter
+            selectedHeyaId={selectedHeyaId}
+            stables={stables}
+            onBegin={beginWithHeya}
+          />
         </main>
 
         <HeyaPreview
@@ -456,58 +441,13 @@ export default function MainMenu() {
           }
         />
 
-        <footer className="w-full border-t border-border/20 py-8 px-6 flex flex-col items-center gap-6 bg-arena-ground">
-          {/* World Generation Controls */}
-          <div className="flex flex-wrap items-center justify-center gap-8 text-center">
-            <div className="space-y-1">
-              <p className="stat-label text-gold/60">WORLD SEED</p>
-              <p className="font-mono text-xs text-gold tracking-widest uppercase">
-                {safeShortSeed(state.world.seed)}
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-8 px-3 text-[10px] font-mono font-bold uppercase tracking-widest"
-                onClick={handleRerollWorld}
-              >
-                <RefreshCw className="h-3.5 w-3.5 mr-2" /> Reroll World
-              </Button>
-              <Button
-                variant={showSeedInput ? "default" : "outline"}
-                size="sm"
-                className="h-8 px-3 text-[10px] font-mono font-bold uppercase tracking-widest"
-                onClick={() => setShowSeedInput(!showSeedInput)}
-              >
-                <Dices className="h-3.5 w-3.5 mr-2" /> {showSeedInput ? "Hide Seed" : "Manual Seed"}
-              </Button>
-            </div>
-          </div>
-
-          <div className="w-full max-w-md h-px bg-gold/10" />
-
-          {/* Archive & Copyright */}
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="gap-2 text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-muted-foreground hover:text-gold transition-colors"
-              onClick={() => document.getElementById("archive-trigger")?.click()}
-            >
-              <Database className="w-3.5 h-3.5" />
-              Career Archives
-            </Button>
-          </div>
-          <div className="text-center space-y-2">
-            <p className="text-[10px] font-display font-bold uppercase tracking-[0.4em] text-gold/30">
-              Reach the Summit — 頂点を目指せ
-            </p>
-            <p className="text-[9px] font-mono text-muted-foreground/30 uppercase tracking-widest">
-              © 2026 Sumo Manager Pro · Institutional Grade Simulation
-            </p>
-          </div>
-        </footer>
+        <MainMenuFooter
+          seed={seed}
+          worldSeed={state.world?.seed}
+          showSeedInput={showSeedInput}
+          onToggleSeedInput={() => setShowSeedInput(!showSeedInput)}
+          onReroll={handleRerollWorld}
+        />
       </div>
     </>
   );

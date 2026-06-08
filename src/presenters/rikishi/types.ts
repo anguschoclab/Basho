@@ -96,7 +96,7 @@ export interface RikishiCareerDTO {
 
 /** Perceived stat labels (UI display) */
 export interface RikishiPerceivedStatsDTO {
-  strength: string;
+  power: string;
   technique: string;
   speed: string;
   stamina: string;

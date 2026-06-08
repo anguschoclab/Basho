@@ -179,7 +179,7 @@ export interface ScoutingBias {
    * Range ±20 per stat. Uses TalentCandidate stat field names (strength, stamina, mental, adaptability).
    */
   statOffsets: {
-    strength: number;
+    power: number;
     speed: number;
     balance: number;
     technique: number;
@@ -209,7 +209,7 @@ const DECAY_OBS_FULL = SCOUTING_BIAS_DECAY_OBSERVATIONS; // at this many observa
 export function generateScoutingBias(candidateId: string, year: number): ScoutingBias {
   const rng = rngFromSeed(`bias_${candidateId}_${year}`, "scouting", "bias");
   const statKeys = [
-    "strength",
+    "power",
     "speed",
     "balance",
     "technique",

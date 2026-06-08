@@ -127,7 +127,7 @@ export function generateCandidate(args: {
   if (isEmergentProdigy) {
     const stats = paPkg.stats;
     const keys: Array<keyof RikishiStats> = [
-      "strength",
+      "power",
       "speed",
       "technique",
       "stamina",
@@ -196,7 +196,7 @@ export function generateCandidate(args: {
     isEmergentProdigy,
 
     potentialStats: {
-      strength: paPkg.stats.power,
+      power: paPkg.stats.power,
       speed: paPkg.stats.speed,
       technique: paPkg.stats.technique,
       balance: paPkg.stats.balance,

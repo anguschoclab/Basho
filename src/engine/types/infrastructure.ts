@@ -54,7 +54,7 @@ export const FACILITY_REGISTRY: Record<FacilityId, FacilityDefinition> = {
     buildTimeBasho: 1,
     maintenanceCost: 450_000,
     bonuses: {
-      statBuffs: { strength: 1.15, stamina: 1.05 },
+      statBuffs: { power: 1.15, stamina: 1.05 },
     },
   },
   medical_suite: {
@@ -124,7 +124,7 @@ export const FACILITY_REGISTRY: Record<FacilityId, FacilityDefinition> = {
     buildTimeBasho: 3,
     maintenanceCost: 2_000_000,
     requirements: { regionalPresence: { Mongolia: 80 } },
-    bonuses: { statBuffs: { strength: 1.1, technique: 1.1 } },
+    bonuses: { statBuffs: { power: 1.1, technique: 1.1 } },
   },
   academy_georgia: {
     id: "academy_georgia",
@@ -134,7 +134,7 @@ export const FACILITY_REGISTRY: Record<FacilityId, FacilityDefinition> = {
     buildTimeBasho: 3,
     maintenanceCost: 1_800_000,
     requirements: { regionalPresence: { Georgia: 80 } },
-    bonuses: { statBuffs: { strength: 1.2 } },
+    bonuses: { statBuffs: { power: 1.2 } },
   },
   academy_europe: {
     id: "academy_europe",

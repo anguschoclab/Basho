@@ -119,7 +119,7 @@ export interface TalentCandidate {
    * Hidden; revealed via scouting.
    */
   potentialStats?: {
-    strength: number;
+    power: number;
     speed: number;
     technique: number;
     balance: number;

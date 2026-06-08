@@ -130,7 +130,7 @@ export const LegacyService = {
       ancestorShikona: legend.shikona,
       registeredYear: world.year,
       statFloorBonus: {
-        strength: isYushoWinner ? 8 : 4,
+        power: isYushoWinner ? 8 : 4,
         technique: rng.next() > 0.5 ? 6 : 0,
         mental: 10,
       },
@@ -166,7 +166,7 @@ export const LegacyService = {
 
   findPeakStat(stats: RikishiStats): keyof RikishiStats {
     const keys: Array<keyof RikishiStats> = [
-      "strength",
+      "power",
       "technique",
       "speed",
       "stamina",

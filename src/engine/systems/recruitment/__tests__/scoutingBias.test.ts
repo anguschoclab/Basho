@@ -31,7 +31,7 @@ describe("generateScoutingBias", () => {
 
   it("includes all required stat fields", () => {
     const bias = generateScoutingBias("candidate-xyz", 2025);
-    expect(bias.statOffsets).toHaveProperty("strength");
+    expect(bias.statOffsets).toHaveProperty("power");
     expect(bias.statOffsets).toHaveProperty("speed");
     expect(bias.statOffsets).toHaveProperty("balance");
     expect(bias.statOffsets).toHaveProperty("technique");

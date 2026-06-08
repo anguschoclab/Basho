@@ -35,7 +35,7 @@ vi.mock("../rikishiUI", () => ({
 describe("UI Digest: Rikishi Perception Boundary", () => {
   it("MUST NOT leak raw numerical stats into the UI model", () => {
     const rawEngineRikishi = generateMockRikishi("r_1", {
-      stats: { strength: 85, technique: 40 } as unknown as RikishiStats,
+      stats: { power: 85, technique: 40 } as unknown as RikishiStats,
     });
     const uiRikishi = enrichRikishiForUI(rawEngineRikishi);
 

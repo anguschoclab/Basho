@@ -56,7 +56,7 @@ export const LineageService = {
       ancestorShikona: legend.shikona,
       registeredYear: world.year,
       statFloorBonus: {
-        strength: isYushoWinner ? 10 : 5,
+        power: isYushoWinner ? 10 : 5,
         technique: rng.next() > 0.5 ? 8 : 0,
         mental: 12, // Legacy recruits are always mentally tough
       },
@@ -84,7 +84,7 @@ export const LineageService = {
     // Apply ceiling bonus to primary stat based on archetype
     const primaryStat: keyof import("../../types/rikishi").RikishiStats =
       candidate.archetype === "oshi"
-        ? "strength"
+        ? "power"
         : candidate.archetype === "yotsu"
           ? "technique"
           : "stamina";

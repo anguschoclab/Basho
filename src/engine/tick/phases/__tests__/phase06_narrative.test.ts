@@ -81,10 +81,10 @@ describe("Phase 6: Narrative", () => {
     if (!world.transientContext?.deltas) return;
     world.transientContext.deltas.statChanges = {
       r1: [
-        { stat: "strength", amount: 1.5 },
+        { stat: "power", amount: 1.5 },
         { stat: "speed", amount: 0.5 },
       ], // 1 milestone
-      r2: [{ stat: "strength", amount: 0.9 }], // No milestone
+      r2: [{ stat: "power", amount: 0.9 }], // No milestone
     };
 
     const impact = phase06_narrative(world);
