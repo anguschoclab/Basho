@@ -95,3 +95,6 @@ Optimized `fillVacanciesForNPC` in `TalentPoolNPCRecruitment.ts` by replacing `A
 ## 2026-05-27 - Get first Map value in O(1) time
 **Learning:** Using `Array.from(map.values())[0]` or similar constructs forces V8 to allocate an array of all map values, which scales at $O(N)$ with the size of the Map, just to get the first element.
 **Action:** Replace `Array.from(map.values())[0]` with `map.values().next().value`. This leverages the map's native iterator to get the first element in constant $O(1)$ time and space, completely avoiding any array allocations.
+## 2024-07-26 - Optimize full array iteration in UI components
+Learning: When a React component needs to filter entities belonging to a specific subset (e.g., a heya roster), iterating over the entire global collection (e.g., `allRikishi.values()`) causes unnecessary O(N) iteration overhead on every render, which scales poorly as the game world grows.
+Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop derived from `getHeyaRoster`, reducing the iteration scope significantly and eliminating unnecessary array allocations.

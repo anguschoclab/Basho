@@ -31,10 +31,8 @@ export interface MentorAssignmentPanelProps {
   apprenticeId: string;
   /** The current mentor ID (undefined if no mentor). */
   mentorId: string | undefined;
-  /** The heya ID for filtering eligible mentors. */
-  heyaId: string;
-  /** Map of all rikishi in the world for mentor selection. */
-  allRikishi: Map<string, Rikishi>;
+  /** Array of rikishi in the apprentice's heya for mentor selection. */
+  roster: Rikishi[];
   /** Callback when a mentor is assigned. */
   onAssignMentor: (mentorId: string) => void;
   /** Callback when a mentor is removed. */
@@ -77,24 +75,20 @@ const MENTOR_MIN_RANKS = new Set([
 export function MentorAssignmentPanel({
   apprenticeId,
   mentorId,
-  heyaId,
-  allRikishi,
+  roster,
   onAssignMentor,
   onRemoveMentor,
 }: MentorAssignmentPanelProps): JSX.Element {
   /**
-   * Filter eligible mentors from all rikishi.
+   * Filter eligible mentors from the heya roster.
    * Mentors must be sekitori, in the same heya, and not injured/retired.
    */
   const eligibleMentors = useMemo(() => {
     const results = [];
-    // ⚡ Bolt Optimization: Replace Array.from().filter() with direct for...of loop
-    for (const r of allRikishi.values()) {
+    // ⚡ Bolt Optimization: Replace Array.from().filter() with direct for...of loop over cached roster
+    for (const r of roster) {
       // Must be sekitori
       if (!MENTOR_MIN_RANKS.has(r.rank)) continue;
-
-      // Must be in same heya
-      if (r.heyaId !== heyaId) continue;
 
       // Cannot be the apprentice
       if (r.id === apprenticeId) continue;
@@ -105,12 +99,12 @@ export function MentorAssignmentPanel({
       results.push(r);
     }
     return results;
-  }, [allRikishi, heyaId, apprenticeId]);
+  }, [roster, apprenticeId]);
 
   /**
    * Get the current mentor rikishi object.
    */
-  const currentMentor = mentorId ? allRikishi.get(mentorId) : undefined;
+  const currentMentor = mentorId ? roster.find((r) => r.id === mentorId) : undefined;
 
   return (
     <div className="flex flex-col gap-2 p-3 bg-muted/30 rounded border">
