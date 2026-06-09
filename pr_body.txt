@@ -1,7 +1,0 @@
-💡 What: Replaced inline `Array.from(world.rikishi.values()).filter(...)` mapping within React `useMemo` hooks (`RikishiPage.tsx` and `RecapPage.tsx`) with the centralized `EntityCollection` domain selectors (e.g. `getHeyaRoster`) and standard JS map iterators.
-
-🎯 Why: The original implementation in `RikishiPage.tsx` was creating two huge intermediate arrays (one for `.values()` and another for `.filter()`) on the main UI thread during re-renders. Furthermore, `RecapPage.tsx` was extracting an array of all map values just to access the first item (`[0]`).
-
-📊 Impact: Reduces memory overhead, garbage collection frequency, and iteration count from $O(N)$ space / time complexity to $O(1)$ intermediate allocations, keeping the UI components snappy.
-
-🔬 Measurement: Check the memory profiler during navigation for fewer `Array` allocations during `RikishiPage` mounts.
