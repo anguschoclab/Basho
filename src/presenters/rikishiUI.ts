@@ -287,8 +287,11 @@ function calculateStreak(history: HistoryEntry[]): { streak: number; label: stri
 
 function calculateAvgRank(history: HistoryEntry[]): string {
   if (history.length === 0) return "-";
-  const scores = history.map((h) => rankScore(h.rank ?? "M", h.rankNumber, h.side));
-  const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+  let totalScore = 0;
+  for (let i = 0; i < history.length; i++) {
+    totalScore += rankScore(history[i].rank ?? "M", history[i].rankNumber, history[i].side);
+  }
+  const avg = totalScore / history.length;
 
   // Convert avg score back to a readable rank (Maegashira level is common)
   const tier = Math.floor(avg / 1000);
