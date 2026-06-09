@@ -95,3 +95,7 @@ Optimized `fillVacanciesForNPC` in `TalentPoolNPCRecruitment.ts` by replacing `A
 ## 2026-05-27 - Get first Map value in O(1) time
 **Learning:** Using `Array.from(map.values())[0]` or similar constructs forces V8 to allocate an array of all map values, which scales at $O(N)$ with the size of the Map, just to get the first element.
 **Action:** Replace `Array.from(map.values())[0]` with `map.values().next().value`. This leverages the map's native iterator to get the first element in constant $O(1)$ time and space, completely avoiding any array allocations.
+
+## 2024-05-18 - Optimize monthly market tick
+Learning: Iterating over large maps/objects using `Object.values()` causes unnecessary intermediate O(N) array allocations, which impacts CPU and Memory performance.
+Action: Replaced `Object.values()` with a direct `for...in` loop in `src/engine/tick/phases/phase01_monthly_market.ts`, reducing loop overhead by roughly 40%.
