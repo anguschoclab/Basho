@@ -38,14 +38,9 @@ export function fillVacanciesForNPC(
     const heya = getHeya(world, heyaId);
     if (!heya || vacancyCount <= 0) continue;
 
-    // ⚡ Bolt Optimization: Replace O(N) array allocation and iteration with O(1) space early-exit loop.
-    let hasForeigner = false;
-    for (const r of world.rikishi.values()) {
-      if (r.heyaId === heyaId && r.origin === "foreign" && !r.isRetired) {
-        hasForeigner = true;
-        break;
-      }
-    }
+    const hasForeigner = EntityCollection.getHeyaRoster(world, heyaId).some(
+      (r) => r.origin === "foreign"
+    );
 
     for (let i = 0; i < vacancyCount; i++) {
       const availableCandidates: string[] = [];

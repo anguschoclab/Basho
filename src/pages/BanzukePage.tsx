@@ -19,6 +19,7 @@ import { PageHeader } from "@/components/layout/control-center";
 import { BanzukePyramid } from "@/components/charts/BanzukePyramid";
 import { RikishiCell } from "@/components/banzuke/RikishiCell";
 import { YokozunaTrajectory } from "@/components/banzuke/YokozunaTrajectory";
+import { EntityCollection } from "@/engine/core/EntityCollection";
 import { getYokozunaCandidates } from "@/presenters/projections/promotionProjections";
 
 /** banzuke page. */
@@ -58,8 +59,7 @@ export default function BanzukePage() {
       Juryo: 0,
       Makushita: 0,
     };
-    for (const r of world.rikishi.values()) {
-      if (r.isRetired) continue;
+    for (const r of EntityCollection.getActiveRikishi(world)) {
       const rank = r.rank?.toLowerCase() ?? "";
       const num = r.rankNumber ?? 0;
       if (rank === "yokozuna") counts.Yokozuna++;

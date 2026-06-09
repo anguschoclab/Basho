@@ -25,6 +25,7 @@ import { PlayoffBracket } from "@/components/game/PlayoffBracket";
 import { BanzukeReveal } from "@/components/game/BanzukeReveal";
 import { compareBanzuke, formatRankPosition, RANK_HIERARCHY } from "@/engine/banzuke";
 import { makeBashoKey } from "@/engine/historyIndex";
+import { EntityCollection } from "@/engine/core/EntityCollection";
 import { projectRikishi } from "@/presenters/uiModels";
 import type { EngineEvent } from "@/engine/types/events";
 import type { HoFInductee } from "@/engine/hallOfFame";
@@ -332,7 +333,7 @@ export default function RecapPage() {
         {showYokozunaDelib && (
           <YokozunaDeliberation
             open={showYokozunaDelib}
-            rikishi={projectRikishi(Array.from(world.rikishi.values())[0], world)}
+            rikishi={projectRikishi(EntityCollection.getActiveRikishi(world)[0], world)}
             heyaName={world.heyas.get(world.playerHeyaId || "")?.name || "Unknown Stable"}
             isPlayerRikishi={true}
             verdict="deferred"

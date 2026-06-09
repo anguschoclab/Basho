@@ -11,6 +11,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Trophy, Medal, Award } from "lucide-react";
+import { EntityCollection } from "@/engine/core/EntityCollection";
 import { type UIRosterEntry, projectRosterEntry } from "@/presenters/rikishiUI";
 
 interface YushoContenderProps {
@@ -91,8 +92,8 @@ export const YushoRaceWidget: React.FC = () => {
     const standings = world.currentBasho.standings;
 
     const contenders: { r: any; wins: number }[] = [];
-    for (const r of world.rikishi.values()) {
-      if (!r.isRetired && r.division === "makuuchi") {
+    for (const r of EntityCollection.getActiveRikishi(world)) {
+      if (r.division === "makuuchi") {
         const record = standings.get(r.id);
         contenders.push({ r, wins: record?.wins ?? r.currentBashoWins ?? 0 });
       }

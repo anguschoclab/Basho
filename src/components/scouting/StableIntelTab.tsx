@@ -6,6 +6,7 @@ import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronRight } from "lucide-react";
+import { EntityCollection } from "@/engine/core/EntityCollection";
 import { projectRikishi, RANK_HIERARCHY, RANK_NAMES } from "@/presenters/uiDigest";
 
 export function StableIntelTab({ playerHeyaId }: { playerHeyaId: string | null }) {
@@ -15,11 +16,9 @@ export function StableIntelTab({ playerHeyaId }: { playerHeyaId: string | null }
 
   const roster = useMemo(() => {
     if (!world || !playerHeyaId) return [];
-    const list: ReturnType<typeof projectRikishi>[] = [];
-    for (const r of world.rikishi.values()) {
-      if (r.heyaId !== playerHeyaId || r.isRetired) continue;
-      list.push(projectRikishi(r, world));
-    }
+    const list = EntityCollection.getHeyaRoster(world, playerHeyaId).map((r) =>
+      projectRikishi(r, world)
+    );
     list.sort((a, b) => {
       const ta = (RANK_HIERARCHY as Record<string, { tier: number }>)?.[a.rank]?.tier ?? 99;
       const tb = (RANK_HIERARCHY as Record<string, { tier: number }>)?.[b.rank]?.tier ?? 99;

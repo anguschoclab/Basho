@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, AlertTriangle, Trophy, ChevronUp } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
+import { EntityCollection } from "@/engine/core/EntityCollection";
 import { BarChart, Bar, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import {
   getOzekiRunCandidates,
@@ -143,8 +144,7 @@ export function PromotionPipelineWidget() {
     if (!world) return [];
     const counts: Record<string, number> = {};
     for (const tier of RANK_TIERS) counts[tier.key] = 0;
-    for (const rikishi of world.rikishi.values()) {
-      if (rikishi.isRetired) continue;
+    for (const rikishi of EntityCollection.getActiveRikishi(world)) {
       const r = rikishi.rank as string;
       if (r in counts) counts[r]++;
     }
