@@ -10,6 +10,18 @@ import { mockRikishi, makeMockWorld } from "./utils";
 import type { WorldState } from "../types/world";
 import type { Rikishi } from "../types/rikishi";
 
+describe("hallOfFame.ts - createEmptyHallOfFame", () => {
+  it("should return the correct default Hall of Fame state", () => {
+    const hof = createEmptyHallOfFame();
+    expect(hof).toEqual({
+      version: "1.0.0",
+      inductees: [],
+      inducted: {},
+      lastProcessedYear: 0,
+    });
+  });
+});
+
 describe("hallOfFame.ts - tryAddInductee", () => {
   let world: WorldState;
   let hof: HallOfFameState;
