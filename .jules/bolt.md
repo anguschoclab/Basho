@@ -89,3 +89,6 @@ Optimized `fillVacanciesForNPC` in `TalentPoolNPCRecruitment.ts` by replacing `A
 ## 2024-05-18 - Replacing Object Iteration Arrays with Direct Iterators
 **Learning:** Chaining `Array.from(map.values()).filter(...)` causes an unnecessary O(N) array allocation of the entire values list before filtering it down.
 **Action:** Replace `Array.from().filter()` with a direct `for...of` loop over `map.values()` to eliminate intermediate memory allocations during UI rendering and tick loops.
+## 2024-05-18 - Avoid Object.entries() chained with map() for generating top-N lists
+**Learning:** Using `Object.entries(obj).map(...).sort(...).slice(...)` creates multiple O(N) array allocations (one tuple array from `Object.entries()`, another full-size array from `map()`) which strains memory overhead when processing data-heavy state objects in the engine.
+**Action:** Replace these pipelines with traditional `for...in` loops to populate a raw flat array, followed by `sort().slice()`. This bypasses intermediate tuple and array instantiation and measurably speeds up projection and view creation tasks.
