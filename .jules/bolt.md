@@ -95,3 +95,6 @@ Optimized `fillVacanciesForNPC` in `TalentPoolNPCRecruitment.ts` by replacing `A
 ## 2026-05-27 - Get first Map value in O(1) time
 **Learning:** Using `Array.from(map.values())[0]` or similar constructs forces V8 to allocate an array of all map values, which scales at $O(N)$ with the size of the Map, just to get the first element.
 **Action:** Replace `Array.from(map.values())[0]` with `map.values().next().value`. This leverages the map's native iterator to get the first element in constant $O(1)$ time and space, completely avoiding any array allocations.
+## 2025-02-18 - Optimize entity counting avoiding active rikishi filter
+**Learning:** Found an $O(N \log N)$ iteration bottleneck in `PromotionPipelineWidget.tsx` where `EntityCollection.getActiveRikishi(world)` was used just to count rikishi in rank tiers. `getActiveRikishi` filters out retired rikishi and then performs a sort on the array, which is completely unnecessary when just counting the quantity of elements in a bucket.
+**Action:** Replace `EntityCollection.getActiveRikishi(world)` loops when counting with a direct `for...of` loop over `world.rikishi.values()` and check `if (rikishi.isRetired) continue;` to achieve optimal $O(N)$ iteration, bypass sorting overhead, and avoid the memory overhead of intermediate array instantiation.

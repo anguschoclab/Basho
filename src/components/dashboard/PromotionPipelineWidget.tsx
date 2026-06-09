@@ -144,7 +144,8 @@ export function PromotionPipelineWidget() {
     if (!world) return [];
     const counts: Record<string, number> = {};
     for (const tier of RANK_TIERS) counts[tier.key] = 0;
-    for (const rikishi of EntityCollection.getActiveRikishi(world)) {
+    for (const rikishi of world.rikishi.values()) {
+      if (rikishi.isRetired) continue;
       const r = rikishi.rank as string;
       if (r in counts) counts[r]++;
     }
