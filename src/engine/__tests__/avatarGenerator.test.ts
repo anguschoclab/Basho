@@ -5,6 +5,7 @@
 
 import { describe, it, expect } from "vitest";
 import {
+  generateDefaultAvatarConfig,
   generateAvatarConfig,
   updateAvatarForAging,
   updateHairstyleForPromotion,
@@ -421,4 +422,59 @@ describe("Avatar Generator", () => {
       expect(updated.hairstyle).toBe("retired");
     });
   });
+  describe("generateDefaultAvatarConfig", () => {
+    it("should generate proper avatar for a makuuchi sekitori", () => {
+      const config = generateDefaultAvatarConfig({
+        id: "makuuchi-test",
+        nationality: "Japan",
+        birthYear: 2000,
+        division: "makuuchi"
+      });
+
+      // 2025 - 2000 = 25 years old
+      expect(config.ageStage).toBe("prime");
+      expect(config.hairstyle).toBe("oichomage");
+    });
+
+    it("should generate proper avatar for a juryo sekitori", () => {
+      const config = generateDefaultAvatarConfig({
+        id: "juryo-test",
+        nationality: "Mongolia",
+        birthYear: 2003,
+        division: "juryo"
+      });
+
+      // 2025 - 2003 = 22 years old
+      expect(config.ageStage).toBe("young");
+      expect(config.hairstyle).toBe("oichomage");
+    });
+
+    it("should generate proper avatar for a makushita non-sekitori", () => {
+      const config = generateDefaultAvatarConfig({
+        id: "makushita-test",
+        nationality: "Japan",
+        birthYear: 2007,
+        division: "makushita"
+      });
+
+      // 2025 - 2007 = 18 years old
+      expect(config.ageStage).toBe("teen");
+      expect(config.hairstyle).toBe("chonmage");
+    });
+
+    it("should generate proper avatar for a retired rikishi", () => {
+      const config = generateDefaultAvatarConfig({
+        id: "retired-test",
+        nationality: "Japan",
+        birthYear: 1985,
+        division: "juryo",
+        isRetired: true
+      });
+
+      // 2025 - 1985 = 40 years old
+      expect(config.ageStage).toBe("veteran");
+      expect(config.hairstyle).toBe("retired");
+    });
+  });
+
 });
