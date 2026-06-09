@@ -65,6 +65,37 @@ describe("OPFSArchiveService core functionality", () => {
       await expect(service.archiveBoutLog(2024, "b1", {})).rejects.toThrow("UnknownError");
     });
 
+    it("bubbles up DOMException errors from file existence check", async () => {
+      const mockDir = {
+        getFileHandle: vi.fn().mockImplementation(async (_name: string, opts?: { create?: boolean }) => {
+          if (opts?.create === false) {
+            throw new DOMException("Security error", "SecurityError");
+          }
+          return { createWritable: vi.fn().mockResolvedValue({ write: vi.fn(), close: vi.fn() }) };
+        }),
+      };
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+
+      await expect(service.archiveBoutLog(2024, "b1", {})).rejects.toThrow(DOMException);
+    });
+
+    it("ignores non-Error/non-DOMException throws from file existence check (fallback behavior)", async () => {
+      const writable = { write: vi.fn().mockResolvedValue(undefined), close: vi.fn().mockResolvedValue(undefined) };
+      const mockDir = {
+        getFileHandle: vi.fn().mockImplementation(async (_name: string, opts?: { create?: boolean }) => {
+          if (opts?.create === false) {
+            throw "Some arbitrary primitive error string";
+          }
+          return { createWritable: vi.fn().mockResolvedValue(writable) };
+        }),
+      };
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+
+      // Should fall through the catch block and write the file
+      await service.archiveBoutLog(2024, "b1", {});
+      expect(writable.write).toHaveBeenCalled();
+    });
+
     it("handles quota errors gracefully via handleQuotaError", async () => {
       const quotaError = new DOMException("Quota exceeded", "QuotaExceededError");
       const mockDir = {
