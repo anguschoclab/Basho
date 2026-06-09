@@ -92,3 +92,6 @@ Optimized `fillVacanciesForNPC` in `TalentPoolNPCRecruitment.ts` by replacing `A
 ## 2024-05-18 - Avoid Object.entries() chained with map() for generating top-N lists
 **Learning:** Using `Object.entries(obj).map(...).sort(...).slice(...)` creates multiple O(N) array allocations (one tuple array from `Object.entries()`, another full-size array from `map()`) which strains memory overhead when processing data-heavy state objects in the engine.
 **Action:** Replace these pipelines with traditional `for...in` loops to populate a raw flat array, followed by `sort().slice()`. This bypasses intermediate tuple and array instantiation and measurably speeds up projection and view creation tasks.
+## 2026-05-27 - Get first Map value in O(1) time
+**Learning:** Using `Array.from(map.values())[0]` or similar constructs forces V8 to allocate an array of all map values, which scales at $O(N)$ with the size of the Map, just to get the first element.
+**Action:** Replace `Array.from(map.values())[0]` with `map.values().next().value`. This leverages the map's native iterator to get the first element in constant $O(1)$ time and space, completely avoiding any array allocations.
