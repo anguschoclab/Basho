@@ -95,3 +95,7 @@ Optimized `fillVacanciesForNPC` in `TalentPoolNPCRecruitment.ts` by replacing `A
 ## 2026-05-27 - Get first Map value in O(1) time
 **Learning:** Using `Array.from(map.values())[0]` or similar constructs forces V8 to allocate an array of all map values, which scales at $O(N)$ with the size of the Map, just to get the first element.
 **Action:** Replace `Array.from(map.values())[0]` with `map.values().next().value`. This leverages the map's native iterator to get the first element in constant $O(1)$ time and space, completely avoiding any array allocations.
+
+## $(date +%Y-%m-%d) - Optimize Banzuke Iteration
+**Learning:** Using `Object.values()` on large objects within loops creates unnecessary array allocations that impact performance and memory.
+**Action:** Replaced `Object.values(banzuke.divisions || {})` with a `for...in` loop in `src/presenters/banzukeUI.ts`.

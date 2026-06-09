@@ -45,7 +45,10 @@ export function buildPrevRankScores(
   for (let i = history.length - 1; i >= 0; i--) {
     const banzuke = history[i].nextBanzuke;
     if (!banzuke) continue;
-    for (const div of Object.values(banzuke.divisions || {})) {
+    const divisions = banzuke.divisions || {};
+    for (const key in divisions) {
+      if (!Object.prototype.hasOwnProperty.call(divisions, key)) continue;
+      const div = divisions[key];
       for (const assignment of div.assignments) {
         const pos = assignment.position;
         map.set(assignment.rikishiId, rankScore(pos.rank, pos.rankNumber, pos.side));
