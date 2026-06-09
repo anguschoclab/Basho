@@ -5,3 +5,7 @@
 ## 2025-02-18 - TitleBar Window Controls Need Tooltips
 **Learning:** Custom window controls (Minimize, Maximize, Close) in Electron apps often rely on icon-only buttons (`variant="ghost" size="icon"`). While `aria-label` provides screen reader accessibility, mouse users lack visual feedback for these ambiguous icons. Since the codebase's custom `Button` natively supports tooltips via the `tooltip` and `tooltipSide` props, it's crucial to utilize them on all custom window controls.
 **Action:** When implementing or reviewing custom window control bars (like `TitleBar.tsx`), always verify that icon-only `Button` elements include both `aria-label` (for screen readers) and `tooltip` (for mouse users), ensuring consistent UX across interaction modalities.
+
+## 2026-06-06 - TooltipWrap is redundant for the Custom Button Component
+**Learning:** The project's custom `<Button>` component (`src/components/ui/button.tsx`) natively supports tooltips via the `tooltip` and `tooltipSide` props. Many components were incorrectly importing and wrapping `Button` inside an explicit `<TooltipWrap>`, which adds unnecessary boilerplate. Other standard components like `<SidebarTrigger>` do not support these props and still require wrapping, but standard `<Button>`s shouldn't be wrapped manually.
+**Action:** Always verify if a component supports built-in tooltip props (like `tooltip` and `tooltipSide` on `<Button>`) before manually wrapping it in `<TooltipWrap>` to maintain clean JSX structures and avoid redundancy.
