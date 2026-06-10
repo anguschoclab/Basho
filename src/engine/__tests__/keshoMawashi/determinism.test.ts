@@ -4,7 +4,7 @@
  * Verifies that the same seed produces identical results.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 import { describe, it, expect } from "vitest";
 import { generateHeyaBrandIdentities } from "../../systems/keshoMawashi/HeyaBrandGenerator";
 import { generateKeshoMawashi } from "../../systems/keshoMawashi/KeshoMawashiGenerator";

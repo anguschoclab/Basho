@@ -4,7 +4,7 @@ import { describe, it, expect, vi } from "vitest";
 global.calculatePerceivedStats = vi.fn(() => ({ power: "Dominant" }));
 vi.mock("../../engine/events", () => ({
   queryEvents: vi.fn(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Test mock
+     
     (world: any) => world.events?.log?.map((e: any) => ({ ...e, type: e.type || "GENERIC" })) || []
   ),
 }));

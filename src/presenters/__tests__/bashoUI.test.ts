@@ -207,7 +207,7 @@ describe("Basho UI Presenters", () => {
         mockRikishi("w_3", {
           shikona: "Rikishi B",
           rank: "juryo",
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing edge case with invalid rankNumber
+           
           rankNumber: 0 as any,
         })
       );

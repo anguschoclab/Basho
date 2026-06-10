@@ -29,8 +29,6 @@ import { EntityCollection } from "@/engine/core/EntityCollection";
 import { projectRikishi } from "@/presenters/uiModels";
 import type { EngineEvent } from "@/engine/types/events";
 import type { HoFInductee } from "@/engine/hallOfFame";
-import type { WorldState } from "@/engine/types/world";
-import type { Heya } from "@/engine/types/heya";
 import type { UIRikishi } from "@/presenters/uiModels";
 import {
   projectPressConferenceData,
@@ -80,8 +78,8 @@ function groupEventsByNarrative(events: EngineEvent[]) {
   return groups;
 }
 
-function getPrestigeChanges(world: WorldState): Array<{ heya: Heya; change: string }> {
-  const changes: Array<{ heya: Heya; change: string }> = [];
+function getPrestigeChanges(world: { heyas: Map<string, { name: string; prestigeBand: string; reputation: number }>; events?: { log: EngineEvent[] } }): Array<{ heya: { name: string; prestigeBand: string; reputation: number }; change: string }> {
+  const changes: Array<{ heya: { name: string; prestigeBand: string; reputation: number }; change: string }> = [];
   if (!world?.heyas) return changes;
   const prestige_events = (world.events?.log || [])
     .filter(
@@ -314,7 +312,7 @@ export default function RecapPage() {
             groupedEvents={groupedEvents}
             prestigeChanges={prestigeChanges}
             narrativeSummaryData={{
-              governanceLog: projectGovernanceSummary(world).governanceLog as any,
+              governanceLog: projectGovernanceSummary(world).governanceLog,
               year: projectGovernanceSummary(world).year,
               activeHeyasCount: projectGovernanceSummary(world).heyasCount,
             }}

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 import { describe, it, expect, beforeEach } from "vitest";
 import { handleMediaEvent } from "../../systems/media/MediaService";
 import { resolveImpacts } from "../../core/ImpactResolver";

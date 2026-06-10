@@ -85,7 +85,7 @@ describe("PerceptionPresenter", () => {
     });
 
     it("returns default color for unknown or unhandled tones", () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing edge case with invalid input
+       
       expect(getMediaToneColor("unknown" as any)).toBe("#94a3b8");
     });
   });

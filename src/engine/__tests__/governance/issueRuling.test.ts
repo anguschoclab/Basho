@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any */
+ 
 import { describe, it, expect, beforeEach } from "vitest";
 import { issueGovernanceRuling } from "../../governance/GovernanceService";
 import { resolveImpacts } from "../../core/ImpactResolver";

@@ -23,6 +23,7 @@ export default function MyosekiMarketPage() {
   const { state } = useGame();
   const world = state.world;
   const [activeTab, setActiveTab] = useState("market");
+  const sendCommand = useGameStore((s) => s.sendCommand);
 
   if (!world || !world.myosekiMarket) {
     return (
@@ -50,8 +51,6 @@ export default function MyosekiMarketPage() {
       playerHeya?.oyakataId &&
       (s.ownerId === playerHeya.oyakataId || s.holderId === playerHeya.oyakataId)
   );
-
-  const sendCommand = useGameStore((s) => s.sendCommand);
 
   const handleBuy = (stock: MyosekiStock) => {
     if (!playerHeya || !playerHeya.oyakataId) return;

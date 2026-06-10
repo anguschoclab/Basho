@@ -31,7 +31,7 @@ describe("parseLLMResponse", () => {
     const input = '{"__proto__": {"polluted": true}, "hello": "world"}';
     const result = parseLLMResponse(input);
     expect(result).toEqual({ hello: "world" });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     expect((result as any).__proto__.polluted).toBeUndefined();
   });
 
@@ -70,7 +70,7 @@ describe("safeParse", () => {
     const fallback = { hello: "fallback" };
     const result = safeParse(input, fallback);
     expect(result).toEqual({ hello: "world" });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     expect((result as any).__proto__.polluted).toBeUndefined();
     expect({}["polluted" as keyof object]).toBeUndefined();
   });

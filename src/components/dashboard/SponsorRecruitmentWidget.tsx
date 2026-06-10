@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -121,8 +121,7 @@ export function SponsorRecruitmentWidget() {
     })
     .slice(0, 10); // Show top 10 available sponsors
 
-  const handleRecruit = useCallback(
-    (sponsorId: string) => {
+  function handleRecruit(sponsorId: string) {
       if (!world?.sponsorPool || !world.playerHeyaId) return;
       const heya = world.heyas.get(world.playerHeyaId);
       if (!heya) return;
@@ -148,9 +147,7 @@ export function SponsorRecruitmentWidget() {
         title: "Sponsor recruited",
         description: `${sponsor.displayName} has joined your Kōenkai.`,
       });
-    },
-    [world, updateWorld, toast]
-  );
+    }
 
   return (
     <Card className="paper">

@@ -3,7 +3,6 @@ import { rankScore, projectRosterEntry } from "../rikishiUI";
 import { mockRikishi } from "../../engine/__tests__/utils";
 import type { WorldState } from "../../engine/types/world";
 import { projectRikishi } from "../rikishiUI";
-import { SeededRNG } from "../../engine/rng";
 
 describe("rikishiUI - rankScore", () => {
   it("should calculate correct score for yokozuna 1 east", () => {
@@ -103,7 +102,7 @@ describe("projectRosterEntry", () => {
 
   it("should resolve heya ownership correctly when world state is provided", () => {
     const world = {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing with partial world object
+       
       heyas: new Map([["h1", { id: "h1", isPlayerOwned: true } as any]]),
     } as unknown as WorldState;
 
@@ -116,7 +115,7 @@ describe("projectRosterEntry", () => {
     expect(entryWithoutWorld.isPlayerOwned).toBe(false);
 
     const worldWithDifferentHeya = {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Test mock
+       
       heyas: new Map([["h2", { id: "h2", isPlayerOwned: true } as any]]),
     } as unknown as WorldState;
     const entryNotFound = projectRosterEntry(baseRikishi, worldWithDifferentHeya);

@@ -1305,7 +1305,7 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
       offensiveOutput(st) === 0 &&
       balance(ctx, lSide) <= 0 &&
       l.stats.stamina < 0.1 &&
-      ((st.phase.tag === "edge_crisis") === undefined || (st.phase.tag === "edge_crisis") === true),
+      st.phase.tag === "edge_crisis",
   },
   {
     id: "tsukite",

@@ -12,12 +12,15 @@ import { formatRank, clamp } from "@/presenters/uiDigest";
 import { getHeatBand, H2HBar, HeatGauge } from "./rivalryUtils";
 import { HEAT_BAND_CONFIG, TONE_CONFIG, TRIGGER_LABELS } from "../../constants/ui/rivalry";
 import type { RivalryPairState, RivalryTrigger } from "@/engine/rivalries";
-import type { WorldState } from "@/engine/types/world";
 import { toRankPosition } from "@/engine/types/banzuke";
 
 interface RivalryCardProps {
   pair: RivalryPairState;
-  world: WorldState;
+  world: {
+    rikishi: Map<string, { id: string; heyaId: string; shikona: string; rank: string; side?: string; rankNumber: number }>;
+    heyas: Map<string, { id: string; name: string }>;
+    playerHeyaId?: string;
+  };
   isPlayerRivalry?: boolean;
   index: number;
 }

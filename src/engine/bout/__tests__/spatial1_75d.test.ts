@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { describe, it, expect } from "vitest";
 import { resolveBoutPhysics } from "../boutPhysics";
 import { mockRikishi, makeMockBasho } from "../../__tests__/utils";

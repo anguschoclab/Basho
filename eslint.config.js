@@ -41,6 +41,7 @@ export default tseslint.config(
              * - no-empty
              */
 
+            "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_", caughtErrorsIgnorePattern: "^_" }],
             "react-hooks/rules-of-hooks": "error",
             "react-hooks/exhaustive-deps": "warn",
             "no-case-declarations": "error",
@@ -73,6 +74,16 @@ export default tseslint.config(
                     ]
                 }
             ]
+        }
+    },
+    {
+        /* TEST FILES: allow any and non-null assertions for test mocks */
+        files: ["**/*.test.{ts,tsx}", "**/__tests__/**"],
+        rules: {
+            "@typescript-eslint/no-explicit-any": "off",
+            "@typescript-eslint/no-non-null-assertion": "off",
+            "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
+            "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
         }
     },
     {

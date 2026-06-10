@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any -- Test mock data */
+ 
 import { describe, it, expect } from "vitest";
 import { concludeBashoCompetition } from "../CompetitionService";
 import { WorldState } from "../../types/world";

@@ -222,7 +222,7 @@ describe("OPFSArchiveService core functionality", () => {
     });
 
     it("handles async iterator errors gracefully", async () => {
-      async function* values() {
+      async function values() {
         throw new Error("Iterator broken");
       }
       const mockDir = {

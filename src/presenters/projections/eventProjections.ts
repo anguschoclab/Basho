@@ -6,7 +6,7 @@
  */
 
 import type { WorldState } from "../../engine/types/world";
-import type { BashoResult, MatchSchedule } from "../../engine/types/basho";
+import type { BashoResult } from "../../engine/types/basho";
 import type { EventLogData, GovernanceSummary } from "../types/uiDigest";
 import { projectRikishi } from "../rikishiUI";
 import { EntityCollection } from "../../engine/core/EntityCollection";

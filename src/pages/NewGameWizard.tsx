@@ -68,7 +68,7 @@ export default function NewGameWizard() {
     const config = {
       name: oyakataName.trim(),
       backstoryId: background,
-      ichimon: (ichimon || undefined) as any,
+      ichimon: (ichimon || undefined) as import("@/engine/types/economy").IchimonName | undefined,
     };
     createWorld(world.seed, selectedHeyaId, config);
     setStep(4);

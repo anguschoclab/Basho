@@ -12,7 +12,7 @@ import { RivalriesHeader } from "@/components/rivalries/RivalriesHeader";
 import { RivalryCard } from "@/components/rivalries/RivalryCard";
 import { RivalriesEmptyState } from "@/components/rivalries/RivalriesEmptyState";
 import { HeatLegend } from "@/components/rivalries/HeatLegend";
-import { projectRivalriesPage } from "@/presenters/projections/rivalriesProjections";
+import { projectRivalriesPage, type RivalriesPageData } from "@/presenters/projections/rivalriesProjections";
 import { Badge } from "@/components/ui/badge";
 import { toRivalryHeatBand } from "@/engine/descriptorBands";
 import { RIVALRY_HEAT_LABELS } from "@/constants/ui/labels";
@@ -191,7 +191,7 @@ export default function RivalriesPage() {
                   </span>
                 </h2>
                 <div className="grid gap-4 md:grid-cols-3">
-                  {stableRivalries.map((feud: any) => (
+                  {stableRivalries.map((feud: RivalriesPageData["stableRivalries"][number]) => (
                     <Card
                       key={`${feud.aId}-${feud.bId}`}
                       className="border-border/40 bg-card/20 overflow-hidden"

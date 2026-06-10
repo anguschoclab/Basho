@@ -2,7 +2,7 @@
  * Integration tests for kesho-mawashi system
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 import { describe, it, expect } from "vitest";
 import { generateKeshoForPromotions } from "../../systems/keshoMawashi/KeshoMawashiGenerator";
 import { resolveImpacts } from "../../core/ImpactResolver";

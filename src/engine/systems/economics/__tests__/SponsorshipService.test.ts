@@ -96,7 +96,7 @@ describe("SponsorshipService", () => {
     it("applies popularity boost based on award type", () => {
       const rikishi = mockRikishi("r1", {
         economics: { popularity: 10, kenshoPerBout: 0, kenshoEarned: 0, koenkaiIds: [] },
-      } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+      } as any);  
       const world = { rikishi: new Map([["r1", rikishi]]) } as any;
 
       const impact = applyAchievementImpact(world as WorldState, rikishi, "kinboshi");
@@ -123,7 +123,7 @@ describe("SponsorshipService", () => {
     it("caps popularity at 100", () => {
       const rikishi = mockRikishi("r1", {
         economics: { popularity: 90, kenshoPerBout: 0, kenshoEarned: 0, koenkaiIds: [] },
-      } as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+      } as any);  
       const world = { rikishi: new Map([["r1", rikishi]]) } as any;
       const impact = applyAchievementImpact(world as WorldState, rikishi, "kinboshi");
       const resolved = resolveImpacts(world, [impact]);

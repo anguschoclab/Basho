@@ -99,19 +99,15 @@ export function StableOverviewPanel() {
 
   if (!perception) return null;
 
-  const { morale, welfare, media, rivalry, roster, governance, fragileCount } = useMemo(() => {
-    return {
-      morale: BAND_CONFIG.morale[perception.moraleBand],
-      welfare: BAND_CONFIG.welfare[perception.welfareRiskBand],
-      media: BAND_CONFIG.media[perception.stableMediaHeatBand],
-      rivalry: BAND_CONFIG.rivalry[perception.rivalryPressureBand],
-      roster: BAND_CONFIG.roster[perception.rosterStrengthBand],
-      governance: BAND_CONFIG.governance[perception.governancePressureBand],
-      fragileCount: perception.rikishiPerceptions.filter(
-        (r) => r.healthBand === "fragile" || r.healthBand === "worn"
-      ).length,
-    };
-  }, [perception]);
+  const morale = BAND_CONFIG.morale[perception.moraleBand];
+  const welfare = BAND_CONFIG.welfare[perception.welfareRiskBand];
+  const media = BAND_CONFIG.media[perception.stableMediaHeatBand];
+  const rivalry = BAND_CONFIG.rivalry[perception.rivalryPressureBand];
+  const roster = BAND_CONFIG.roster[perception.rosterStrengthBand];
+  const governance = BAND_CONFIG.governance[perception.governancePressureBand];
+  const fragileCount = perception.rikishiPerceptions.filter(
+    (r) => r.healthBand === "fragile" || r.healthBand === "worn"
+  ).length;
 
   return (
     <Card>

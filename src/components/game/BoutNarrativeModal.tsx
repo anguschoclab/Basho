@@ -15,7 +15,6 @@ import { BoutLog } from "./BoutLog";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
 import type { Rikishi } from "@/engine/types/rikishi";
-import type { WorldState } from "@/engine/types/world";
 import type { PbpLine } from "@/engine/bout/boutNarrative";
 import { RotateCcw, MessageSquareText, BookOpen, Terminal } from "lucide-react";
 import { generateNarrative } from "@/presenters/uiDigest";
@@ -102,7 +101,7 @@ export function BoutNarrativeModal({
         bashoName,
         day,
         seed,
-        world || ({} as WorldState)
+        world || ({} as unknown as Parameters<typeof generateBoutNarrative>[6])
       );
       return result.pbpLines ?? [];
     } catch {

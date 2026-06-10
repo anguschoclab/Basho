@@ -23,7 +23,6 @@ import { projectSponsorUIDigest } from "@/presenters/uiProjections";
 import { ChronicleRoom } from "@/components/stable/ChronicleRoom";
 import { GlobalStrategicHub } from "@/components/stable/GlobalStrategicHub";
 import type { FacilityId } from "@/engine/types/infrastructure";
-import type { Rikishi } from "@/engine/types/rikishi";
 import { KeshoMawashiGallery } from "@/components/stable/KeshoMawashiGallery";
 import { MentorAssignmentPanel } from "@/components/game/MentorAssignmentPanel";
 import { getHeyaRoster } from "@/engine/queries";

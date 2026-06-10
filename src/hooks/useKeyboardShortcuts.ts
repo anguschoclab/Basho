@@ -96,7 +96,7 @@ export function useKeyboardShortcuts({
       // ── Number keys 1-9: Quick navigation ──
       if (!ctrl && !e.shiftKey && !e.altKey && QUICK_NAV[e.key]) {
         e.preventDefault();
-        navigate({ to: QUICK_NAV[e.key] as any });
+        navigate({ to: QUICK_NAV[e.key] as string });
         return;
       }
 

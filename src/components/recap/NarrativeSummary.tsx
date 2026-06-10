@@ -19,6 +19,7 @@ import {
   History,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { GovernanceRuling } from "@/engine/types/economy";
 
 interface NarrativeSummaryProps {
   groupedEvents: {
@@ -31,7 +32,7 @@ interface NarrativeSummaryProps {
     change: string;
   }[];
   narrativeSummaryData: {
-    governanceLog: { date?: string; summary?: string; message?: string }[];
+    governanceLog: GovernanceRuling[];
     year: number;
     activeHeyasCount: number;
   };
@@ -282,14 +283,14 @@ export function NarrativeSummary({
                     {narrativeSummaryData.governanceLog
                       .slice(-5)
                       .map(
-                        (log: { date?: string; summary?: string; message?: string }, i: number) => (
+                        (log: GovernanceRuling, i: number) => (
                           <div key={i} className="relative">
                             <div className="absolute -left-[22px] top-1 h-2 w-2 rounded-full bg-border" />
                             <div className="text-[10px] font-bold text-muted-foreground mb-1">
                               {log.date || "Association Record"}
                             </div>
                             <p className="text-xs font-display italic leading-snug">
-                              {log.summary || log.message}
+                              {log.reason}
                             </p>
                           </div>
                         )

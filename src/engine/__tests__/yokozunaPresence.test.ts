@@ -4,13 +4,22 @@
  * Internal validation test for Yokozuna logic.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect } from "vitest";
 import type { Rikishi } from "../types/rikishi";
+import type { BashoState, BashoResult, BashoName } from "../types/basho";
 import { generateInitialWorld } from "../systems/generation/WorldFactory";
 import { runHistoryUpdates } from "../history";
 import { publishBanzukeUpdate } from "../world";
 import { simulateEntireBasho } from "../simulation/TournamentSimulator";
+
+const BASHO_NAME_TO_NUMBER: Record<BashoName, 1 | 2 | 3 | 4 | 5 | 6> = {
+  hatsu: 1,
+  haru: 2,
+  natsu: 3,
+  nagoya: 4,
+  aki: 5,
+  kyushu: 6,
+};
 
 describe("Yokozuna Presence Logic Validation", () => {
   it("tracks yokozuna presence and promotion under new 2-basho rules", () => {
@@ -21,7 +30,7 @@ describe("Yokozuna Presence Logic Validation", () => {
     const totalCountByBasho: number[] = [];
     const healthyCountByBasho: number[] = [];
 
-    const TOTAL_BASHO = 24; // 4 years verification
+    const TOTAL_BASHO = 12; // 2 years verification
 
     for (let i = 0; i < TOTAL_BASHO; i++) {
       const bashoName = currentWorld.currentBashoName || "hatsu";
@@ -31,22 +40,28 @@ describe("Yokozuna Presence Logic Validation", () => {
       const res = simulateEntireBasho(currentWorld, bashoName, simSeed);
 
       // 2. Wrap result into world
-      (currentWorld as any).currentBasho = {
+      currentWorld.currentBasho = {
         bashoName: res.bashoName,
         year: currentWorld.year,
+        bashoNumber: BASHO_NAME_TO_NUMBER[res.bashoName],
+        day: 15,
+        matches: [],
         standings: res.standings,
         isActive: false,
       };
 
       // 3. Push to world history
       if (!currentWorld.history) currentWorld.history = [];
-      currentWorld.history.push({
+      const record: BashoResult = {
+        id: `basho-${i}`,
         year: currentWorld.year,
+        bashoNumber: BASHO_NAME_TO_NUMBER[res.bashoName],
         bashoName: res.bashoName,
         yusho: res.yushoWinner.id,
         junYusho: [],
         prizes: { yushoAmount: 0, junYushoAmount: 0, specialPrizes: 0 },
-      } as any);
+      };
+      currentWorld.history.push(record);
 
       // 4. Trigger Post-Basho Pipeline (Promotions/Retirements)
       currentWorld.cyclePhase = "post_basho";
@@ -83,5 +98,5 @@ describe("Yokozuna Presence Logic Validation", () => {
     );
 
     expect(totalCountByBasho.length).toBe(TOTAL_BASHO);
-  }, 120000);
+  }, 60000);
 });

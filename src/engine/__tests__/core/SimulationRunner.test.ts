@@ -86,11 +86,11 @@ import type { StateImpact } from "../../core/StateImpact";
 beforeEach(() => {
   vi.clearAllMocks();
   // Spy on real resolveImpacts instead of mocking it
-  /* eslint-disable @typescript-eslint/no-unused-vars */
+   
   vi.spyOn(ImpactResolver, "resolveImpacts").mockImplementation(
     (world: WorldState, _impacts: StateImpact[]) => ({ ...world })
   );
-  /* eslint-enable @typescript-eslint/no-unused-vars */
+   
 });
 
 afterEach(() => {
@@ -101,9 +101,9 @@ afterEach(() => {
 
 function makeWorld(month = 1) {
   return makeMockWorld({
-    /* eslint-disable @typescript-eslint/no-explicit-any */
+     
     calendar: { currentWeek: 1, month } as any,
-    /* eslint-enable @typescript-eslint/no-explicit-any */
+     
   });
 }
 

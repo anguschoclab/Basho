@@ -10,7 +10,7 @@
  *                                      30-59 = probation, 60+ = sanctioned
  */
 
-/* eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any */
+ 
 import { describe, it, expect } from "vitest";
 import { reportScandal, tickWeekGovernance } from "../../governance/GovernanceService";
 import { resolveImpacts } from "../../core/ImpactResolver";

@@ -63,6 +63,7 @@ export default function TalentPoolPage() {
   const { state } = useGame();
   const world = state.world;
   const [activePool, setActivePool] = useState<TalentPoolType>("high_school");
+  const sendCommand = useGameStore((s) => s.sendCommand);
 
   const playerHeyaId = world?.playerHeyaId;
   const playerHeya = world && playerHeyaId ? world.heyas.get(playerHeyaId) : null;
@@ -88,8 +89,6 @@ export default function TalentPoolPage() {
       </AppLayout>
     );
   }
-
-  const sendCommand = useGameStore((s) => s.sendCommand);
 
   const onReveal = () => {
     sendCommand({ type: "SCOUT_POOL", pool: activePool, revealCount: 1 });

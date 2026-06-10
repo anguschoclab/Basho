@@ -12,7 +12,7 @@ export const STORAGE_KEYS = {
 };
 
 export const localStorageProvider = {
-  save: (key: string, data: any) => {
+  save: (key: string, data: unknown) => {
     try {
       const serializedData = JSON.stringify(data);
       localStorage.setItem(key, serializedData);

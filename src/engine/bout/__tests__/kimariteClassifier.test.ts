@@ -8,7 +8,7 @@ import type {
   PhysicalBody,
 } from "../../types/combat-spatial";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+ 
 const mockRng: any = { next: () => 0.5 };
 
 // ---------------------------------------------------------------------------
@@ -336,7 +336,7 @@ describe("evaluateKimariteAttempt — push battle", () => {
       eastMomentum: 8,
       westMomentum: 5,
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const firstRng: any = { next: () => 0 }; // roll=0 → first applicable strategy wins
 
     const result = evaluateKimariteAttempt(east, west, push, null, st, firstRng);

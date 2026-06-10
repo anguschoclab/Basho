@@ -7,7 +7,7 @@ import { EventBus } from "../events";
 
 describe("Bard Engine Integration", () => {
   beforeEach(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Test mock
+     
     vi.spyOn(EventBus, "recruitDiscovered").mockImplementation(() => ({}) as any);
   });
 
@@ -39,7 +39,7 @@ describe("Bard Engine Integration", () => {
           foreign: { candidatesVisible: [], candidatesHidden: [] },
         },
       },
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Test mock
+       
     } as any;
 
     const impact = TalentPoolService.tickWeekTalentPool(world);
@@ -62,7 +62,7 @@ describe("Bard Engine Integration", () => {
         ["r1", { id: "r1", shikona: "Wrestler 1", careerWins: 100, currentBashoWins: 1 }],
       ]),
       activeRikishiIds: new Set(["r1"]),
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Test mock
+       
     } as any;
 
     const impact = RegistryService.runCareerJournalUpdates(world);
@@ -83,7 +83,7 @@ describe("Bard Engine Integration", () => {
       rikishiPerceptions: [],
       rosterSize: 0,
       fatigueRatio: 0,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Test mock
+       
     } as any;
     const rng = new SeededRNG("test");
 

@@ -13,6 +13,8 @@ import type { Oyakata, OyakataTraits } from "../../engine/types/oyakata";
 import type { HoFInductee } from "../../engine/hallOfFame";
 import type { Division } from "../../engine/types/banzuke";
 import type { EngineEvent } from "../../engine/types/events";
+import type { GovernanceRuling } from "../../engine/types/economy";
+import type { OzekiKadobanMap } from "../../engine/banzuke/ozekiLogic";
 import type { UIRankRow } from "../banzukeUI";
 
 // ── Heat Band Types ───────────────────────────────────────────────────────────
@@ -108,7 +110,7 @@ export interface EventLogData {
 
 /** Governance summary for display */
 export interface GovernanceSummary {
-  governanceLog: unknown[];
+  governanceLog: GovernanceRuling[];
   year: number;
   heyasCount: number;
 }
@@ -124,7 +126,7 @@ export interface BanzukeUIDigest {
   year: number;
   basho: string | undefined;
   divisions: BanzukeDivisionData[];
-  kadobanMap: Record<string, any>;
+  kadobanMap: OzekiKadobanMap;
   heyaNameMap: Map<string, string>;
   hasPrevBasho: boolean;
 }

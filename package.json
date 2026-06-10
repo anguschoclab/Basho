@@ -23,6 +23,7 @@
     "test": "vitest run --no-cache",
     "test:watch": "vitest --no-cache",
     "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
     "simulate": "bun src/engine/simulation/run.ts",
     "electron:dev": "vite build && electron .",
     "electron:build": "vite build && electron-builder --mac",

@@ -31,11 +31,11 @@ export function loadSavedOrder(): WidgetPlacement[] | null {
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) {
       const valid = parsed.every(
-        (p: any) =>
+        (p: unknown) =>
           p &&
-          typeof p.id === "string" &&
-          typeof p.order === "number" &&
-          typeof p.column === "number"
+          typeof (p as Record<string, unknown>).id === "string" &&
+          typeof (p as Record<string, unknown>).order === "number" &&
+          typeof (p as Record<string, unknown>).column === "number"
       );
       if (valid) {
         return parsed as WidgetPlacement[];

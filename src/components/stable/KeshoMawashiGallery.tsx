@@ -2,13 +2,12 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { KeshoMawashiDisplay } from "@/components/kesho/KeshoMawashiDisplay";
 import { RikishiName } from "@/components/ClickableName";
-import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { Badge } from "@/components/ui/badge";
 import { Palette, Award, ShieldCheck } from "lucide-react";
 
 interface KeshoMawashiGalleryProps {
-  world: WorldState;
+  world: { heyas: Map<string, { rikishiIds?: string[] }>; rikishi: Map<string, Rikishi> };
   heyaId: string;
 }
 

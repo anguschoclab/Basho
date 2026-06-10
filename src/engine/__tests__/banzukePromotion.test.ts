@@ -52,5 +52,5 @@ describe("yokozuna promotion in AutoSim", () => {
     );
     const stoppedByPromotion = result.stoppedBy === "yokozunaPromotion";
     expect(stoppedByPromotion || activeYokozuna.length > 0).toBe(true);
-  }, 120000);
+  }, 60000);
 });

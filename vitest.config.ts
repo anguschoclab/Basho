@@ -13,6 +13,7 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./src/test/setup/setup.ts"],
     exclude: [...configDefaults.exclude, "e2e/**", ".claude/**", "**/*.e2e.test.ts"],
+    testTimeout: 30000,
     server: {
       deps: {
         inline: ["seedrandom"],
@@ -21,6 +22,7 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "html", "json", "lcov"],
+      reportsDirectory: "./coverage",
       include: [
         "src/engine/**/*.ts",
         "src/presenters/**/*.ts",

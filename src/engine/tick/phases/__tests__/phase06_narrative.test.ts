@@ -33,7 +33,7 @@ describe("Phase 6: Narrative", () => {
   });
 
   it("returns StateImpact with empty events if deltas are missing", () => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     world.transientContext!.deltas = undefined as any;
     const impact = phase06_narrative(world);
     expect(impact).toBeDefined();
