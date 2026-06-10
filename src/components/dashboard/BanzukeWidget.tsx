@@ -8,7 +8,8 @@ import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { projectRosterEntry } from "@/presenters/uiModels";
 import { BaseWidget } from "./BaseWidget";
 import { RankInline } from "@/components/rikishi/RankBadge";
-import { EntityCollection } from "@/engine/core/EntityCollection";
+import { getActiveRikishi } from "@/engine/selectors";
+
 import type { AvatarConfig } from "@/engine/types/avatar";
 
 const RANK_ORDER: Record<string, number> = {
@@ -128,7 +129,7 @@ export function BanzukeWidget() {
     if (!world) return [];
 
     // ⚡ Bolt Performance Optimization: Collect all active rikishi
-    const activeRikishi = EntityCollection.getActiveRikishi(world);
+    const activeRikishi = getActiveRikishi(world);
 
     // Sort, slice, and project in a minimal pipeline
     activeRikishi.sort((a, b) => {
