@@ -1,5 +1,4 @@
  
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { autosaveWithSignal } from "../gameHelpers";
 import { getAutosaveEnabled } from "../../pages/settingsHelpers";
