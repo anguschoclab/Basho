@@ -135,4 +135,179 @@ describe("OPFS Archive Validation", () => {
       expect(result).toEqual(validSnapshot);
     });
   });
+
+  describe("retrieveBoutLog validation", () => {
+    it("returns null if retrieved data is not an object", async () => {
+      const mockFile = {
+        getFile: vi.fn().mockResolvedValue({
+          text: vi.fn().mockResolvedValue('"not an object"'),
+        }),
+      };
+      const mockDir = {
+        getFileHandle: vi.fn().mockResolvedValue(mockFile),
+      };
+
+      vi.spyOn(opfsArchiveService as any, "getDirectoryPath").mockResolvedValue(mockDir);
+
+      const result = await opfsArchiveService.retrieveBoutLog(2024, "bout-1");
+      expect(result).toBeNull();
+    });
+
+    it("returns null and warns if a required string property is missing or invalid", async () => {
+      const mockFile = {
+        getFile: vi.fn().mockResolvedValue({
+          text: vi.fn().mockResolvedValue('{"boutId": 123}'), // boutId should be string
+        }),
+      };
+      const mockDir = {
+        getFileHandle: vi.fn().mockResolvedValue(mockFile),
+      };
+
+      vi.spyOn(opfsArchiveService as any, "getDirectoryPath").mockResolvedValue(mockDir);
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      const result = await opfsArchiveService.retrieveBoutLog(2024, "bout-1");
+
+      expect(result).toBeNull();
+      const warnCall = warnSpy.mock.calls.find((call) =>
+        call[0].includes("Invalid BoutResult: missing or invalid string property 'boutId'")
+      );
+      expect(warnCall).toBeDefined();
+    });
+
+    it("returns null and warns if duration property is missing or invalid", async () => {
+      const invalidBout = {
+        boutId: "bout-1",
+        winner: "east",
+        winnerRikishiId: "r1",
+        loserRikishiId: "r2",
+        kimarite: "yorikiri",
+        kimariteName: "Yorikiri",
+        stance: "migi-yotsu",
+        tachiaiWinner: "east",
+        upset: false,
+        duration: "long", // should be number
+      };
+      const mockFile = {
+        getFile: vi.fn().mockResolvedValue({
+          text: vi.fn().mockResolvedValue(JSON.stringify(invalidBout)),
+        }),
+      };
+      const mockDir = {
+        getFileHandle: vi.fn().mockResolvedValue(mockFile),
+      };
+
+      vi.spyOn(opfsArchiveService as any, "getDirectoryPath").mockResolvedValue(mockDir);
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      const result = await opfsArchiveService.retrieveBoutLog(2024, "bout-1");
+
+      expect(result).toBeNull();
+      const warnCall = warnSpy.mock.calls.find((call) =>
+        call[0].includes("Invalid BoutResult: missing or invalid number property 'duration'")
+      );
+      expect(warnCall).toBeDefined();
+    });
+
+    it("returns null and warns if upset property is missing or invalid", async () => {
+      const invalidBout = {
+        boutId: "bout-1",
+        winner: "east",
+        winnerRikishiId: "r1",
+        loserRikishiId: "r2",
+        kimarite: "yorikiri",
+        kimariteName: "Yorikiri",
+        stance: "migi-yotsu",
+        tachiaiWinner: "east",
+        duration: 10,
+        // upset is missing
+      };
+      const mockFile = {
+        getFile: vi.fn().mockResolvedValue({
+          text: vi.fn().mockResolvedValue(JSON.stringify(invalidBout)),
+        }),
+      };
+      const mockDir = {
+        getFileHandle: vi.fn().mockResolvedValue(mockFile),
+      };
+
+      vi.spyOn(opfsArchiveService as any, "getDirectoryPath").mockResolvedValue(mockDir);
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      const result = await opfsArchiveService.retrieveBoutLog(2024, "bout-1");
+
+      expect(result).toBeNull();
+      const warnCall = warnSpy.mock.calls.find((call) =>
+        call[0].includes("Invalid BoutResult: missing or invalid boolean property 'upset'")
+      );
+      expect(warnCall).toBeDefined();
+    });
+
+    it("returns null and warns if optional array properties are invalid", async () => {
+      const invalidBout = {
+        boutId: "bout-1",
+        winner: "east",
+        winnerRikishiId: "r1",
+        loserRikishiId: "r2",
+        kimarite: "yorikiri",
+        kimariteName: "Yorikiri",
+        stance: "migi-yotsu",
+        tachiaiWinner: "east",
+        duration: 10,
+        upset: false,
+        narrative: "not an array", // invalid
+      };
+      const mockFile = {
+        getFile: vi.fn().mockResolvedValue({
+          text: vi.fn().mockResolvedValue(JSON.stringify(invalidBout)),
+        }),
+      };
+      const mockDir = {
+        getFileHandle: vi.fn().mockResolvedValue(mockFile),
+      };
+
+      vi.spyOn(opfsArchiveService as any, "getDirectoryPath").mockResolvedValue(mockDir);
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      const result = await opfsArchiveService.retrieveBoutLog(2024, "bout-1");
+
+      expect(result).toBeNull();
+      const warnCall = warnSpy.mock.calls.find((call) =>
+        call[0].includes("Invalid BoutResult: narrative must be an array of strings")
+      );
+      expect(warnCall).toBeDefined();
+    });
+
+    it("returns valid BoutResult data if the structure is correct", async () => {
+      const validBout = {
+        boutId: "bout-1",
+        winner: "east",
+        winnerRikishiId: "r1",
+        loserRikishiId: "r2",
+        kimarite: "yorikiri",
+        kimariteName: "Yorikiri",
+        stance: "migi-yotsu",
+        tachiaiWinner: "east",
+        duration: 10,
+        upset: false,
+        narrative: ["good", "bout"],
+        pbpLines: ["line 1"],
+        pbp: [],
+      };
+      const mockFile = {
+        getFile: vi.fn().mockResolvedValue({
+          text: vi.fn().mockResolvedValue(JSON.stringify(validBout)),
+        }),
+      };
+      const mockDir = {
+        getFileHandle: vi.fn().mockResolvedValue(mockFile),
+      };
+
+      vi.spyOn(opfsArchiveService as any, "getDirectoryPath").mockResolvedValue(mockDir);
+
+      const result = await opfsArchiveService.retrieveBoutLog(2024, "bout-1");
+
+      expect(result).toEqual(validBout);
+    });
+  });
 });
