@@ -86,16 +86,6 @@ function getPlayerHeyaId(world: WorldState): string | null {
 }
 
 /**
- * Get rikishi.
- *  * @param world - The World.
- *  * @param rikishiId - The Rikishi id.
- *  * @returns The result.
- */
-function getRikishi(world: WorldState, rikishiId: string): Rikishi | null {
-  return getRikishi(world, rikishiId) || null;
-}
-
-/**
  * Get or create a ScoutedRikishi entry for a given rikishi.
  * - Owned rikishi are always 100% intel
  * - Non-owned start at baseline observation=0 + investment=none (unless set)
@@ -144,7 +134,7 @@ export function getOrCreateScouted(
   const isOwned = truth.heyaId === playerHeyaId;
   const obs = isOwned ? 100 : Math.max(0, baselineObservation);
 
-  const created = ScoutingService.createScoutedView(truth, playerHeyaId, obs, "none", currentWeek);
+  const created = ScoutingService.createScoutedView(currentWeek, truth, playerHeyaId, obs, "none");
   table[rikishiId] = created;
   return created;
 }
@@ -169,11 +159,11 @@ export function setScoutingInvestment(
   if (!truth) return entry;
 
   const rebuilt = ScoutingService.createScoutedView(
+    currentWeek,
     truth,
     playerHeyaId,
     entry.timesObserved,
-    investment,
-    currentWeek
+    investment
   );
   // Preserve lastObservedWeek if it's newer than currentWeek (shouldn't happen, but safe)
   rebuilt.lastObservedWeek = Math.max(entry.lastObservedWeek, currentWeek);

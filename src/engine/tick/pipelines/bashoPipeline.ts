@@ -23,6 +23,8 @@ import * as phases from "../phases";
 
 export const bashoPipeline: PipelinePhase[] = [
   phases.phase01_week_economy, // Weekly finances (income/upkeep) apply during basho weeks
+  phases.phase01_week_staff, // Staff fatigue/morale still ticks during basho
+  phases.phase01_week_scouting, // Scouting decay still ticks during basho
   phases.phase02_context, // Recompute ActiveModifiers (financialPenalty may still hit during basho)
   phases.phase01_week_governance,
   phases.phase01_week_npc_ai,

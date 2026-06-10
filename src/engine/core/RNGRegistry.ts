@@ -27,7 +27,8 @@ export type SystemRNGKey =
   | "kensho"
   | "health"
   | "lifecycle"
-  | "global_cup";
+  | "global_cup"
+  | "narrative";
 
 /**
  * Unified RNG registry.

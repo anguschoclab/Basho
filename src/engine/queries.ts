@@ -169,6 +169,7 @@ export function getNPCHeyas(world: WorldState): Heya[] {
 /**
  * Get all active rikishi as an array.
  * "Active" = present in world.rikishi (the map is the canonical set).
+ * NOTE: Also available from selectors.ts for cached access.
  */
 export function getActiveRikishi(world: WorldState): Rikishi[] {
   return getSelectorsActiveRikishi(world);

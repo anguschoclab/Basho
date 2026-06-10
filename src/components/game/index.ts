@@ -1,5 +1,6 @@
 export * from "./AutoSimControls";
 export * from "./BoutLog";
+export * from "./RikishiCard";
 export * from "./BoutNarrativeModal";
 export * from "./BoutReplayViewer";
 export * from "./BoutResultDisplay";

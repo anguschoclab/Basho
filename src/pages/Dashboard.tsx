@@ -35,7 +35,13 @@ import {
   GlobalCupWidget,
   EventFeed,
   PromotionPipelineWidget,
+  InstitutionWidget,
+  KenshoManagementWidget,
+  SponsorRecruitmentWidget,
+  YushoRaceWidget,
+  PreBashoAssessment,
 } from "@/components/dashboard";
+import { SkeletonCard } from "@/components/ui/SkeletonCard";
 import { formatYen } from "@/utils/engineUtils";
 import { useGameStore } from "@/store/gameStore";
 
@@ -172,8 +178,13 @@ export default function Dashboard() {
 
   if (!isLoaded || !world) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-muted-foreground animate-pulse">
-        Institutional interface initializing…
+      <div className="min-h-screen p-6 space-y-6 animate-pulse">
+        <SkeletonCard hasHeader rows={3} />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <SkeletonCard rows={4} />
+          <SkeletonCard rows={2} />
+          <SkeletonCard rows={3} />
+        </div>
       </div>
     );
   }
@@ -225,6 +236,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* ── COL 1: STABLE OVERVIEW ── */}
           <div className="space-y-4">
+            <InstitutionWidget />
             <StatCard
               eyebrow="── MY STABLE ──"
               title="Roster Status"
@@ -408,6 +420,8 @@ export default function Dashboard() {
             <>
               <BanzukeWidget />
               <RivalsWidget />
+              <YushoRaceWidget />
+              <KenshoManagementWidget />
             </>
           )}
           {phase === "interim" && (
@@ -415,9 +429,18 @@ export default function Dashboard() {
               <ScoutingWidget />
               <StableWidget />
               <PromotionPipelineWidget />
+              <SponsorRecruitmentWidget />
             </>
           )}
-          {(phase === "pre_basho" || phase === "post_basho") && (
+          {phase === "pre_basho" && (
+            <>
+              <GlobalCupWidget />
+              <TrainingWidget />
+              <PromotionPipelineWidget />
+              <PreBashoAssessment />
+            </>
+          )}
+          {phase === "post_basho" && (
             <>
               <GlobalCupWidget />
               <TrainingWidget />

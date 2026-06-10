@@ -64,7 +64,7 @@ export const CrisisService = {
         title: "Stomach Flu Outbreak",
         description:
           "A nasty virus is sweeping through the stables. Several rikishi are showing symptoms.",
-        choices: [
+        options: [
           {
             id: "quarantine",
             label: "Quarantine & Rest",

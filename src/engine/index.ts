@@ -14,6 +14,8 @@ export { getBashoNumber, isBashoMonth, getBashoInfo } from "./calendar";
 export * from "./tick/tickDaily";
 export * from "./descriptorBands";
 export * from "./economics";
+export * from "./EventBus";
+export * from "./eventHelpers";
 export * from "./events";
 export * from "./facilities";
 export * from "./governance/governanceReview";
@@ -45,12 +47,22 @@ export * from "./perception";
 export { getCurrentBasho } from "./queries";
 export * from "./queries";
 export * from "./rivalries";
+export {
+  getEligibleOpponents,
+  getAvailableStables,
+  getStableFinances,
+  selectRetiredRikishi,
+  selectHeyasWithCriticalWelfare,
+  selectMergerCandidates,
+} from "./selectors";
 export * from "./saveload";
 export * from "./persistence/SerializationService";
 export * from "./persistence/SaveSlotService";
 
 export * from "./storageProvider";
 export * from "./schedule";
+export * from "./scheduleHelpers";
+export * from "./staff";
 export {
   recordObservation,
   createScoutedView,
@@ -62,6 +74,7 @@ export * from "./shikona";
 export type { KoenkaiBandType, Sponsor, SponsorPool } from "./types/sponsors";
 export * from "./systems/generation/CandidateGenerator";
 export * from "./systems/training/TrainingService";
+export * from "./records";
 export type { RecordEntry } from "./types/records";
 export * from "./types/index";
 export * from "./systems/welfare/WelfareService";
