@@ -23,7 +23,7 @@ export {
 export {
   // Promotion projections
   getOzekiRunCandidates,
-  // getYokozunaCandidates, // removed
+  getYokozunaCandidates,
   getKadobanDrama,
   type OzekiRunCandidate,
   type YokozunaCandidate,
@@ -57,7 +57,7 @@ export {
 export {
   // Economy projections
   projectLoanStatus,
-  // projectMergerWarnings, // removed
+  projectMergerWarnings,
 } from "./projections";
 
 export {
@@ -72,7 +72,7 @@ export {
   projectGovernanceSummary,
   projectBashoResults,
   projectPressConferenceData,
-  // projectPlayerContext, // removed
+  projectPlayerContext,
 } from "./projections";
 
 // Re-exports from utilities
@@ -107,24 +107,28 @@ export {
 export { recruitSponsor } from "../engine/systems/economics/SponsorshipService";
 export { getCachedPerception, buildPerceptionSnapshot } from "../engine/perception";
 export { setHeyaDietAction } from "./uiActions";
-// renewSponsorContract removed (unused)
+export { renewSponsorContract } from "../engine/systems/economy/SponsorContractService";
 export {
+  projectRikishiWithHeya,
   projectMediaUIDigest,
   projectHOFUIDigest,
   projectSponsorUIDigest,
   projectMedicalUIDigest,
 } from "./uiProjections";
-// projectRikishiWithHeya removed (unused)
 
 // ─────────────────────────────────────────
 // Re-exports of safe engine constants/utilities for UI
 // The UI layer MUST NOT import from @/engine directly.
 // ─────────────────────────────────────────
 export { getMonthlyMaintenanceCost, getUpgradeCostEstimate } from "../engine/facilities";
-// describeAggression, describeAttribute, describeExperience removed (unused)
-export { describeTrainingEffect } from "../engine/narrativeDescriptions";
-// createDefaultRivalriesState, getRivalry removed (unused)
-// createScoutedView, describeScoutingLevel, getScoutedAttributes removed (unused)
+export {
+  describeAggression,
+  describeAttribute,
+  describeExperience,
+  describeTrainingEffect,
+} from "../engine/narrativeDescriptions";
+export { createDefaultRivalriesState, getRivalry } from "../engine/rivalries";
+export { createScoutedView, describeScoutingLevel, getScoutedAttributes } from "../engine/systems/recruitment/ScoutingService";
 export {
   FOCUS_BIAS_MATRIX,
   INTENSITY_MULTIPLIERS,
@@ -135,7 +139,8 @@ export {
   getIntensityLabel,
   getRecoveryLabel,
 } from "../engine/systems/training/TrainingService";
-// PHASE_EFFECTS, getFocusModeLabel removed (unused)
+export { PHASE_EFFECTS } from "../engine/systems/training/TrainingService";
+export { getFocusModeLabel } from "../engine/systems/training/TrainingNarrative";
 export { getCareerPhase } from "../engine/systems/training/TrainingMath";
 export {
   BASHO_CALENDAR,
@@ -146,10 +151,15 @@ export {
   isKeyDay,
 } from "../engine/calendar";
 export { DEFAULT_CRITICAL_GATES } from "../engine/holiday";
-export { getTotalBashodays, needsScheduleForDay } from "../engine/scheduleHelpers";
-// DEFAULT_DIVISION_DAYS removed (unused)
-export { toFatigueBand, toScandalBand, toTraitBand } from "../engine/descriptorBands";
-// toPotentialBand, toPrizeBand, toRivalryHeatBand removed (unused)
+export { getTotalBashodays, needsScheduleForDay, DEFAULT_DIVISION_DAYS } from "../engine/scheduleHelpers";
+export {
+  toFatigueBand,
+  toScandalBand,
+  toTraitBand,
+  toPotentialBand,
+  toPrizeBand,
+  toRivalryHeatBand,
+} from "../engine/descriptorBands";
 
 // Type exports for UI layer (re-exported from engine to comply with no-restricted-imports rule)
 export type { WorldState } from "../engine/types/world";

@@ -187,8 +187,6 @@ export function injectRikishiAsCandidate(world: WorldState, rikishi: Rikishi): S
 // INTERNAL POOL REFRESH HELPERS
 // ============================================
 
-// 196: Unused fillHiddenCandidates removed
-
 export function refreshAllPools(world: WorldState): StateImpact {
   const builder = createImpactBuilder("refreshAllPools");
   const tp = ensureTalentPoolState(world);

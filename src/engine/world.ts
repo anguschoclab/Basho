@@ -249,14 +249,7 @@ export function advanceDay(world: WorldState): WorldState | null {
   return advanceOneDay(world);
 }
 
-// redundant safeCall removed
 // --- CANONICAL SELECTORS ---
-
-// getPlayerOyakata removed (unused)
-
-// getPlayerStable removed (unused)
-
-// getStableRikishi moved to queries.ts
 
 /**
  * Retrieves the basho statistics (wins, losses, absences) for a specific rikishi.

@@ -10,7 +10,7 @@ export type { BashoPerformance } from "./banzuke";
 export * from "./banzuke";
 export * from "./bout/boutResolver";
 export * from "./bout/boutResultApplier";
-// getBashoNumber, isBashoMonth, getBashoInfo removed (unused re-export)
+export { getBashoNumber, isBashoMonth, getBashoInfo } from "./calendar";
 export * from "./tick/tickDaily";
 export * from "./descriptorBands";
 export * from "./economics";
@@ -65,7 +65,7 @@ export * from "./systems/training/TrainingService";
 export type { RecordEntry } from "./types/records";
 export * from "./types/index";
 export * from "./systems/welfare/WelfareService";
-// advanceBashoDay, simulateBoutForToday removed (unused re-export)
+export { advanceBashoDay, simulateBoutForToday } from "./world";
 export * from "./systems/generation/WorldFactory";
 export * from "./rng";
 export * from "./lineage";

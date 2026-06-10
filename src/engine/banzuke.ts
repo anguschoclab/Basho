@@ -65,8 +65,6 @@ function positionKey(e: BanzukeEntry): number {
   return tier * 1000 + num * 2 + side;
 }
 
-// convertBanzukeEntriesToSnapshot removed (unused)
-
 /**
  * Compares the current banzuke snapshot with a previous one to detect rank changes (up/down/new).
  * Returns a list of changes sorted by significance (Sanyaku changes first).
