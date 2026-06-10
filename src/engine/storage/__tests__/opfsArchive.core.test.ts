@@ -65,6 +65,20 @@ describe("OPFSArchiveService core functionality", () => {
       await expect(service.archiveBoutLog(2024, "b1", {})).rejects.toThrow("UnknownError");
     });
 
+    it("bubbles up unexpected DOMExceptions from file existence check", async () => {
+      const mockDir = {
+        getFileHandle: vi.fn().mockImplementation(async (_name: string, opts?: { create?: boolean }) => {
+          if (opts?.create === false) {
+            throw new DOMException("Security Error", "SecurityError");
+          }
+          return { createWritable: vi.fn().mockResolvedValue({ write: vi.fn(), close: vi.fn() }) };
+        }),
+      };
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+
+      await expect(service.archiveBoutLog(2024, "b1", {})).rejects.toThrow(DOMException);
+    });
+
     it("handles quota errors gracefully via handleQuotaError", async () => {
       const quotaError = new DOMException("Quota exceeded", "QuotaExceededError");
       const mockDir = {
