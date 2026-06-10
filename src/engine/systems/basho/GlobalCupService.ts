@@ -188,10 +188,12 @@ export const GlobalCupService = {
       match.result = result;
     });
 
+    const getWinner = (m: typeof unresolved[number]) => m.winnerRikishiId || "";
+
     // 2. Transition phase
     if (currentRound === "quarterfinals") {
       // Build Semifinals
-      const winners = unresolved.map((m) => m.winnerRikishiId!);
+      const winners = unresolved.map(getWinner);
       const semis: GlobalCupMatch[] = [
         {
           id: `gc_${world.year}_sf_1`,
@@ -217,7 +219,7 @@ export const GlobalCupService = {
       });
     } else if (currentRound === "semifinals") {
       // Build Finale
-      const winners = unresolved.map((m) => m.winnerRikishiId!);
+      const winners = unresolved.map(getWinner);
       const finale: GlobalCupMatch = {
         id: `gc_${world.year}_f`,
         round: "final",
@@ -233,7 +235,7 @@ export const GlobalCupService = {
       });
     } else if (currentRound === "finale") {
       // Complete
-      const winnerId = unresolved[0].winnerRikishiId!;
+      const winnerId = getWinner(unresolved[0]);
       const winner = state.participants.find((p) => p.rikishiId === winnerId);
 
       this.finalizeTournament(world, builder, winnerId, winner?.shikona || "Unknown");

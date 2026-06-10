@@ -342,13 +342,13 @@ export function convertCandidateToRikishi(args: {
     potential: candidate.potentialStats
       ? {
           stats: {
-            power: candidate.potentialStats!.power,
-            speed: candidate.potentialStats!.speed,
-            technique: candidate.potentialStats!.technique,
-            balance: candidate.potentialStats!.balance,
-            stamina: candidate.potentialStats!.stamina,
-            mental: candidate.potentialStats!.mental,
-            adaptability: candidate.potentialStats!.adaptability,
+            power: candidate.potentialStats.power,
+            speed: candidate.potentialStats.speed,
+            technique: candidate.potentialStats.technique,
+            balance: candidate.potentialStats.balance,
+            stamina: candidate.potentialStats.stamina,
+            mental: candidate.potentialStats.mental,
+            adaptability: candidate.potentialStats.adaptability,
             weight: candidate.weightPotentialKg,
             achievements: rikishiStats.achievements,
             aggression: 50,
