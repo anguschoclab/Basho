@@ -26,6 +26,7 @@ import type { FacilityId } from "@/engine/types/infrastructure";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { KeshoMawashiGallery } from "@/components/stable/KeshoMawashiGallery";
 import { MentorAssignmentPanel } from "@/components/game/MentorAssignmentPanel";
+import { getHeyaRoster } from "@/engine/queries";
 
 export default function StablePage() {
   const navigate = useNavigate();
@@ -40,13 +41,15 @@ export default function StablePage() {
     if (!world) navigate({ to: "/main-menu", replace: true });
   }, [world, navigate]);
 
+  const rawRoster = useMemo(() => {
+    if (!world || !heya) return [];
+    return getHeyaRoster(world, heya.id);
+  }, [world, heya]);
+
   const rikishiList = useMemo(() => {
     if (!world || !heya) return [];
-    return (heya.rikishiIds ?? [])
-      .map((id) => world.rikishi.get(id))
-      .filter((r): r is NonNullable<typeof r> => Boolean(r))
-      .map((r) => projectRikishi(r, world));
-  }, [world, heya]);
+    return rawRoster.map((r) => projectRikishi(r, world));
+  }, [world, heya, rawRoster]);
 
   if (!heya) {
     return (
@@ -192,8 +195,7 @@ export default function StablePage() {
                             <MentorAssignmentPanel
                               apprenticeId={r.id}
                               mentorId={r.mentorId}
-                              heyaId={heya.id}
-                              allRikishi={world.rikishi as Map<string, Rikishi>}
+                              roster={rawRoster}
                               onAssignMentor={(mentorId) => assignMentor(mentorId, r.id)}
                               onRemoveMentor={() => removeMentor(r.id)}
                             />
