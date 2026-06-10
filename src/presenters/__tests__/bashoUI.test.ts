@@ -119,6 +119,12 @@ describe("Basho UI Presenters", () => {
       expect(result.westRank).toBe("??");
       expect(result.westRankShort).toBe("??");
       expect(result.westRecord).toBe("0-0");
+
+      expect(result.winner).toBeUndefined();
+      expect(result.kimarite).toBeUndefined();
+      expect(result.duration).toBeUndefined();
+      expect(result.isUpset).toBe(false);
+      expect(result.isKinboshi).toBe(false);
     });
 
     it("maps complete bout information correctly", () => {
@@ -178,42 +184,42 @@ describe("Basho UI Presenters", () => {
       expect(result.isUpset).toBe(true);
       expect(result.isKinboshi).toBe(false);
     });
-  });
 
-  it("handles rank but no rankNumber", () => {
-    const match: Partial<MatchSchedule> = {
-      boutId: "b_3",
-      day: 6,
-      eastRikishiId: "e_3",
-      westRikishiId: "w_3",
-    };
+    it("handles rank but no rankNumber", () => {
+      const match: Partial<MatchSchedule> = {
+        boutId: "b_3",
+        day: 6,
+        eastRikishiId: "e_3",
+        westRikishiId: "w_3",
+      };
 
-    const mockMap = new Map<string, Rikishi>();
-    mockMap.set(
-      "e_3",
-      mockRikishi("e_3", {
-        shikona: "Rikishi A",
-        rank: "maegashira",
-        rankNumber: undefined,
-      })
-    );
-    mockMap.set(
-      "w_3",
-      mockRikishi("w_3", {
-        shikona: "Rikishi B",
-        rank: "juryo",
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing edge case with invalid rankNumber
-        rankNumber: 0 as any,
-      })
-    );
+      const mockMap = new Map<string, Rikishi>();
+      mockMap.set(
+        "e_3",
+        mockRikishi("e_3", {
+          shikona: "Rikishi A",
+          rank: "maegashira",
+          rankNumber: undefined,
+        })
+      );
+      mockMap.set(
+        "w_3",
+        mockRikishi("w_3", {
+          shikona: "Rikishi B",
+          rank: "juryo",
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Testing edge case with invalid rankNumber
+          rankNumber: 0 as any,
+        })
+      );
 
-    const world: Partial<WorldState> = {
-      rikishi: mockMap as unknown as IdMapRuntime<Rikishi>,
-    };
+      const world: Partial<WorldState> = {
+        rikishi: mockMap as unknown as IdMapRuntime<Rikishi>,
+      };
 
-    const result = projectBoutRow(match as MatchSchedule, world as WorldState);
+      const result = projectBoutRow(match as MatchSchedule, world as WorldState);
 
-    expect(result.eastRankShort).toBe("M");
-    expect(result.westRankShort).toBe("J");
+      expect(result.eastRankShort).toBe("M");
+      expect(result.westRankShort).toBe("J");
+    });
   });
 });
