@@ -57,25 +57,33 @@ export function projectBashoResults(world: WorldState, lastBasho: BashoResult) {
     const h = r.heyaId ? world.heyas.get(r.heyaId) : null;
     return {
       rikishi: projectRikishi(r, world),
-      heyaName: h?.name ?? "Unknown Stable"
+      heyaName: h?.name ?? "Unknown Stable",
     };
   };
 
   const champion = lastBasho.yusho ? getRikishiData(lastBasho.yusho) : null;
   const isPlayerChampion = champion?.rikishi?.heyaId === world.playerHeyaId;
 
-  const junYusho = (lastBasho.junYusho ?? []).map(getRikishiData).filter((x): x is NonNullable<typeof x> => x !== null);
+  const junYusho = (lastBasho.junYusho ?? [])
+    .map(getRikishiData)
+    .filter((x): x is NonNullable<typeof x> => x !== null);
 
   const matches = world.currentBasho?.matches || [];
-  const kinboshi = matches
-    .filter((m: MatchSchedule) => m.result?.isKinboshi)
-    .map((m: MatchSchedule) => {
-      const winner = world.rikishi.get(m.result?.winnerRikishiId ?? "");
-      const loser = world.rikishi.get(m.result?.loserRikishiId ?? "");
-      if (!winner || !loser) return null;
-      return { winner: projectRikishi(winner, world), loser: projectRikishi(loser, world) };
-    })
-    .filter((m): m is NonNullable<typeof m> => m !== null);
+  // ⚡ Bolt Optimization: Replaced chained .filter().map().filter() with a single loop
+  // and direct push to avoid intermediate array allocations and improve performance.
+  const kinboshi = [];
+  for (const m of matches) {
+    if (m.result?.isKinboshi) {
+      const winner = world.rikishi.get(m.result.winnerRikishiId ?? "");
+      const loser = world.rikishi.get(m.result.loserRikishiId ?? "");
+      if (winner && loser) {
+        kinboshi.push({
+          winner: projectRikishi(winner, world),
+          loser: projectRikishi(loser, world),
+        });
+      }
+    }
+  }
 
   const ginoShoRikishi = lastBasho.ginoSho ? world.rikishi.get(lastBasho.ginoSho) : null;
   const ginoSho = ginoShoRikishi ? projectRikishi(ginoShoRikishi, world) : null;
