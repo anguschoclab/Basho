@@ -31,8 +31,11 @@ export function determineSpecialPrizes(
     const w = m.result.winnerRikishiId;
     const l = m.result.loserRikishiId;
 
-    if (!stats.has(w)) stats.set(w, { wins: 0, opponents: [], kimarites: [] });
-    const s = stats.get(w)!;
+    let s = stats.get(w);
+    if (!s) {
+      s = { wins: 0, opponents: [], kimarites: [] };
+      stats.set(w, s);
+    }
     s.wins++;
     s.opponents.push(l);
     s.kimarites.push(m.result.kimarite);
@@ -51,7 +54,8 @@ export function determineSpecialPrizes(
 
   let bestShukun = { id: "", score: -1 };
   for (const c of candidates) {
-    const s = stats.get(c.id)!;
+    const s = stats.get(c.id);
+    if (!s) continue;
     const beatYusho = s.opponents.includes(yushoId);
     let beatYokozuna = false;
     for (const oppId of s.opponents) {
@@ -71,15 +75,16 @@ export function determineSpecialPrizes(
   let bestKanto = { id: "", score: -1 };
   for (const c of candidates) {
     if (c.id === result.shukunsho) continue;
-    const s = stats.get(c.id)!;
-    if (s.wins >= 10 && s.wins > bestKanto.score) bestKanto = { id: c.id, score: s.wins };
+    const s = stats.get(c.id);
+    if (s && s.wins >= 10 && s.wins > bestKanto.score) bestKanto = { id: c.id, score: s.wins };
   }
   if (bestKanto.id) result.kantosho = bestKanto.id;
 
   let bestGino = { id: "", score: -1 };
   for (const c of candidates) {
     if (c.id === result.shukunsho || c.id === result.kantosho) continue;
-    const s = stats.get(c.id)!;
+    const s = stats.get(c.id);
+    if (!s) continue;
     const uniqueMoves = new Set(s.kimarites).size;
     if (uniqueMoves > bestGino.score && uniqueMoves >= 3)
       bestGino = { id: c.id, score: uniqueMoves };

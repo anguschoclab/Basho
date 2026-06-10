@@ -242,18 +242,13 @@ export function applyDramaBudget(
         const drama2 = scoreDrama(east2, west2, day, standings);
 
         // Calculate new total score
-        const oldDrama1 = scoreDrama(
-          rikishiMap.get(p1.eastId)!,
-          rikishiMap.get(p1.westId)!,
-          day,
-          standings
-        );
-        const oldDrama2 = scoreDrama(
-          rikishiMap.get(p2.eastId)!,
-          rikishiMap.get(p2.westId)!,
-          day,
-          standings
-        );
+        const p1East = rikishiMap.get(p1.eastId);
+        const p1West = rikishiMap.get(p1.westId);
+        const p2East = rikishiMap.get(p2.eastId);
+        const p2West = rikishiMap.get(p2.westId);
+        if (!p1East || !p1West || !p2East || !p2West) continue;
+        const oldDrama1 = scoreDrama(p1East, p1West, day, standings);
+        const oldDrama2 = scoreDrama(p2East, p2West, day, standings);
 
         const scoreChange =
           (drama1?.score ?? 0) +

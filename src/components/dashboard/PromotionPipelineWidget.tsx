@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, AlertTriangle, Trophy, ChevronUp } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
-import { EntityCollection } from "@/engine/core/EntityCollection";
 import { BarChart, Bar, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import {
   getOzekiRunCandidates,

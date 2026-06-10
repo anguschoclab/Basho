@@ -138,7 +138,7 @@ export function fillVacanciesForNPCWithBidding(
 
   const bids: Array<{ heyaId: Id; candidateId: Id; bidAmount: number; oyakata: Oyakata }> = [];
 
-  for (const [heyaId, vacancyCount] of Object.entries(targetHeyas)) {
+  for (const [heyaId, _vacancyCount] of Object.entries(targetHeyas)) {
     const heya = getHeya(world, heyaId);
     if (!heya) continue;
     const oyakata = world.oyakata.get(heya.oyakataId);

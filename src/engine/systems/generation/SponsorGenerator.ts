@@ -1,5 +1,4 @@
 import { SeededRNG, rngFromSeed } from "../../rng";
-import { assertNever } from "../../utils/types";
 import type {
   Sponsor,
   SponsorTier,
@@ -116,7 +115,7 @@ export function generateSponsor(
   rng: SeededRNG,
   tier: SponsorTier,
   createdAtTick: number,
-  existingIds: Set<string>
+  _existingIds: Set<string>
 ): Sponsor {
   const { displayName, shortName } = generateSponsorNameV2(rng, tier);
 

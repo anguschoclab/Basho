@@ -79,14 +79,6 @@ function rankSimilarity(a: Rikishi, b: Rikishi): number {
   return 1 / (1 + diff * 0.35);
 }
 
-function weightMismatchScore(a: Rikishi, b: Rikishi): number {
-  const wa = typeof a.weight === "number" ? a.weight : 0;
-  const wb = typeof b.weight === "number" ? b.weight : 0;
-  if (wa <= 0 || wb <= 0) return 1;
-  const diff = Math.abs(wa - wb);
-  return 1 / (1 + diff / 40);
-}
-
 function haveFacedThisBasho(basho: BashoState, aId: string, bId: string): boolean {
   for (const m of basho.matches) {
     const e = m.eastRikishiId;
@@ -403,7 +395,7 @@ export function buildPlayoffPairs(
  * ```
  */
 export function buildExhibitionPairs(
-  basho: BashoState,
+  _basho: BashoState,
   rikishi: Rikishi[],
   options: CandidateBuildOptions
 ): MatchPairing[] {

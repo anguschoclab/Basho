@@ -13,14 +13,14 @@ import type { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "../../t
 import { BardEngine } from "../../narrative/BardEngine";
 import { SeededRNG } from "../../rng";
 
-function seededRng(world?: any): SeededRNG {
+function seededRng(world?: { rng?: SeededRNG }): SeededRNG {
   return (world && world.rng) || new SeededRNG("training_narrative");
 }
 
 /**
  * Get intensity label.
  */
-export function getIntensityLabel(intensity: TrainingIntensity, world?: any): string {
+export function getIntensityLabel(intensity: TrainingIntensity, world?: { rng?: SeededRNG }): string {
   const rng = seededRng(world);
   return BardEngine.resolve(rng, `training.intensity.${intensity}`).text;
 }
@@ -28,7 +28,7 @@ export function getIntensityLabel(intensity: TrainingIntensity, world?: any): st
 /**
  * Get focus label.
  */
-export function getFocusLabel(focus: TrainingFocus, world?: any): string {
+export function getFocusLabel(focus: TrainingFocus, world?: { rng?: SeededRNG }): string {
   const rng = seededRng(world);
   return BardEngine.resolve(rng, `training.focus.${focus}`).text;
 }
@@ -36,7 +36,7 @@ export function getFocusLabel(focus: TrainingFocus, world?: any): string {
 /**
  * Get recovery label.
  */
-export function getRecoveryLabel(recovery: RecoveryEmphasis, world?: any): string {
+export function getRecoveryLabel(recovery: RecoveryEmphasis, world?: { rng?: SeededRNG }): string {
   const rng = seededRng(world);
   return BardEngine.resolve(rng, `training.recovery.${recovery}`).text;
 }
@@ -44,7 +44,7 @@ export function getRecoveryLabel(recovery: RecoveryEmphasis, world?: any): strin
 /**
  * Get focus mode label (individual slots).
  */
-export function getFocusModeLabel(mode: string, world?: any): string {
+export function getFocusModeLabel(mode: string, world?: { rng?: SeededRNG }): string {
   const rng = seededRng(world);
   return BardEngine.resolve(rng, `training.mode.${mode}`).text;
 }

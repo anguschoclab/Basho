@@ -11,7 +11,6 @@ import {
   type BashoPerformance,
   type MovementEvent,
   type BanzukeSnapshot,
-  type DivisionBanzukeSnapshot,
 } from "./types/banzuke";
 export type { BanzukeEntry, BashoPerformance };
 import type { Rikishi } from "./types/rikishi";

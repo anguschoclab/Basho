@@ -183,23 +183,6 @@ export function setScoutingInvestment(
 }
 
 /**
- * Record that the player watched a bout involving these rikishi.
- * Call this when:
- * - a bout is simulated AND the player watched it
- * - OR the bout is a player bout (auto-observed)
- */
-function observeBout(world: WorldState, eastId: Id, westId: Id): void {
-  const table = ensureScoutingTable(world);
-  const currentWeek = getWorldWeek(world);
-
-  const east = getOrCreateScouted(world, eastId);
-  const west = getOrCreateScouted(world, westId);
-
-  table[eastId] = ScoutingService.recordObservation(east, currentWeek);
-  table[westId] = ScoutingService.recordObservation(west, currentWeek);
-}
-
-/**
  * Apply scouting decay across all stored entries.
  * Call once per week tick (between basho weeks, training weeks, etc.).
  * Returns StateImpact describing scouting decay instead of mutating directly.

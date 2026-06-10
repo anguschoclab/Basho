@@ -111,7 +111,7 @@ export function getSaveSlotInfos(): SaveSlotInfo[] {
   return SaveSlotService.getSaveSlotInfos();
 }
 
-export function quickSave(world: WorldState, timestampISO?: string): boolean {
+export function quickSave(world: WorldState, _timestampISO?: string): boolean {
   const infos = getSaveSlotInfos().filter((s) => /^slot_\d+$/.test(s.slotName));
   const existing = new Set(infos.map((s) => s.slotName));
 

@@ -1,10 +1,8 @@
-import type { Id } from "./types/common";
 import type { WorldState } from "./types/world";
 import { generateGovernanceHeadline } from "./systems/media/MediaService";
 import { stableSort } from "./utils/sort";
 import { rngFromSeed } from "./rng";
 import { createImpactBuilder } from "./core/ImpactBuilder";
-import { resolveImpacts } from "./core/ImpactResolver";
 import type { StateImpact } from "./core/StateImpact";
 import { getHeya, getRikishi } from "./queries";
 import {

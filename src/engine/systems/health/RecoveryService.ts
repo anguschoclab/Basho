@@ -2,9 +2,7 @@
  * RecoveryService.ts — Logic for weekly recovery ticks.
  */
 
-import { WorldState } from "../../types/world";
 import { Rikishi } from "../../types/rikishi";
-import { clampInt } from "../../utils/math";
 import {
   RECOVERY_MULTIPLIER_DOUBLE_WEEK_THRESHOLD,
   DOUBLE_WEEK_REDUCTION,

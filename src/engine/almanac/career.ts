@@ -66,7 +66,6 @@ export function generateCareerRecord(
 
   let currentWinStreak = 0;
   let longestWinStreak = 0;
-  let currentLossStreak = 0;
 
   for (let i = 0; i < careerBasho; i++) {
     const bashoIndex = (debutBashoIndex + i) % 6;
@@ -120,10 +119,8 @@ export function generateCareerRecord(
 
     if (performance.wins > performance.losses) {
       currentWinStreak += performance.wins - performance.losses;
-      currentLossStreak = 0;
       longestWinStreak = Math.max(longestWinStreak, currentWinStreak);
     } else {
-      currentLossStreak += performance.losses - performance.wins;
       currentWinStreak = 0;
     }
 

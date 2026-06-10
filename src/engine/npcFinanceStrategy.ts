@@ -11,7 +11,6 @@ import {
   StrategyRule,
   evaluateRulesExclusive,
   TraitChecks,
-  calculateTraitAdjustedThreshold,
 } from "./strategy/NPCStrategyFramework";
 import { getOyakataStyleProfile } from "./oyakataStylePreferences";
 import {
@@ -71,7 +70,7 @@ const BUY_MYOSEKI_RULE: StrategyRule = {
 
     return builder.build();
   },
-  buildEvent: (ctx) => ({
+  buildEvent: (_ctx) => ({
     action: "buy_myoseki",
     reasoning: "Strategic investment in stable prestige and training capability.",
   }),

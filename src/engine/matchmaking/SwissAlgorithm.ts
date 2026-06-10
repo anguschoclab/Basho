@@ -112,19 +112,6 @@ function pairKey(aId: string, bId: string): string {
 }
 
 /**
- * Checks if two rikishi have already been paired in the current pairings.
- *
- * @param {MatchPairing[]} pairings - Current pairings.
- * @param {string} aId - First rikishi ID.
- * @param {string} bId - Second rikishi ID.
- * @returns {boolean} True if already paired.
- */
-function alreadyPaired(pairings: MatchPairing[], aId: string, bId: string): boolean {
-  const key = pairKey(aId, bId);
-  return pairings.some((p) => pairKey(p.eastId, p.westId) === key);
-}
-
-/**
  * Builds a set of all pairs that have already faced each other in the basho.
  *
  * @param {BashoState} basho - Current basho state.

@@ -84,6 +84,10 @@ export function MatchDayViewer({
     });
   }, [matches]);
 
+  const completedCount = useMemo(() => {
+    return sortedMatches.reduce((count, m) => count + (m?.result ? 1 : 0), 0);
+  }, [sortedMatches]);
+
   if (sortedMatches.length === 0) {
     return (
       <Card className="paper">
@@ -94,10 +98,6 @@ export function MatchDayViewer({
       </Card>
     );
   }
-
-  const completedCount = useMemo(() => {
-    return sortedMatches.reduce((count, m) => count + (m?.result ? 1 : 0), 0);
-  }, [sortedMatches]);
 
   return (
     <>

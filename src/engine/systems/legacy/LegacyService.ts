@@ -13,6 +13,7 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { clampInt } from "../../utils/math";
 import { BardEngine } from "../../narrative/BardEngine";
+import type { SeededRNG } from "../../rng";
 import { rngForWorld } from "../../rng";
 
 /** Minimum thresholds for a rikishi to leave a bloodline trait on retirement. */
@@ -83,7 +84,7 @@ export const LegacyService = {
   rollLegacyAncestry(
     world: WorldState,
     candidate: Partial<TalentCandidate>,
-    rng: any
+    rng: SeededRNG
   ): BloodlineTrait | null {
     // 1. Check for Emergent Bloodline (from in-game retirees) - 5% chance
     const emergentTrait = this.rollEmergentBloodline(world, rng);
@@ -93,7 +94,7 @@ export const LegacyService = {
     return this.rollAncestralLegend(world, candidate, rng);
   },
 
-  rollEmergentBloodline(world: WorldState, rng: any): BloodlineTrait | null {
+  rollEmergentBloodline(world: WorldState, rng: SeededRNG): BloodlineTrait | null {
     const registry = world.bloodlineRegistry;
     if (!registry || Object.keys(registry.traits).length === 0) return null;
 
@@ -107,7 +108,7 @@ export const LegacyService = {
   rollAncestralLegend(
     world: WorldState,
     candidate: Partial<TalentCandidate>,
-    rng: any
+    rng: SeededRNG
   ): BloodlineTrait | null {
     const roll = rng.next();
     if (roll > 0.02) return null; // 2% chance

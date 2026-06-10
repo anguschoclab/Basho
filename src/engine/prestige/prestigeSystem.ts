@@ -144,7 +144,6 @@ export function runPrestigeDecay(world: WorldState): StateImpact {
     const newBand = PRESTIGE_ORDER[newIdx];
 
     if (newBand !== heya.prestigeBand) {
-      const direction = newIdx > currentIdx ? "rose" : "fell";
       // Queue event in impact instead of calling EventBus directly
       builder.logEvent(
         "GOVERNANCE_RULING",

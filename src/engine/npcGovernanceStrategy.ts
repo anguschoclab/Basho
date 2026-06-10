@@ -71,7 +71,7 @@ const POLITICAL_SABOTAGE_RULE: StrategyRule = {
 
     return builder.build();
   },
-  buildEvent: (ctx) => ({
+  buildEvent: (_ctx) => ({
     action: "political_sabotage",
     reasoning: `Leveraging political capital to expose the scandals of rivals and diminish their standing.`,
   }),

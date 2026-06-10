@@ -29,7 +29,7 @@ export const DynastyService = {
   tickSuccessionCheck(world: WorldState): StateImpact {
     const builder = createImpactBuilder("tickSuccessionCheck");
 
-    for (const [heyaId, heya] of world.heyas) {
+    for (const [_heyaId, heya] of world.heyas) {
       const oyakata = world.oyakata?.get(heya.oyakataId || "");
       if (!oyakata) continue;
 

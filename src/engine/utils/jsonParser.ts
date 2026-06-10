@@ -16,7 +16,7 @@ export function parseLLMResponse<T>(rawText: string): T {
       throw new Error("Failed initial strict destr parse");
     }
     return result as T;
-  } catch (initialError) {
+  } catch (_initialError) {
     console.warn("[jsonParser] Initial parse failed, attempting sanitization...");
   }
 
@@ -48,7 +48,7 @@ export function safeParse<T extends object>(jsonString: string, fallback: T): T 
       return result as T;
     }
     return fallback;
-  } catch (e) {
+  } catch (_e) {
     return fallback;
   }
 }

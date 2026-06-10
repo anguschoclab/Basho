@@ -5,7 +5,6 @@ import type {
   MyosekiStock,
   MyosekiMarket,
   MyosekiTransaction,
-  MyosekiStatus,
 } from "./types/myoseki";
 import type { Oyakata } from "./types/oyakata";
 import { createImpactBuilder } from "./core/ImpactBuilder";
