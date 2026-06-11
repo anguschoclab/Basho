@@ -114,14 +114,24 @@ export function spawnGovernanceAgent(ctx: GovernanceAgentContext): GovernanceAge
   if (isMachiavellian && politicalCapital > 60 && scandalScore < 20) {
     shouldSabotageRival = true;
 
-    // Find a rival heya with high reputation
-    const rivalHeyas = Array.from(world.heyas.values())
-      .filter((h) => h.id !== heya.id && (h.reputation || 0) > (heya.reputation || 0))
-      .sort((a, b) => (b.reputation || 0) - (a.reputation || 0));
+    // ⚡ Bolt Optimization: Replaced Array.from().filter().sort() with a single pass O(N) loop
+    // to find the highest reputation rival heya without array allocations or sorting overhead.
+    let bestRival: Heya | null = null;
+    let maxReputation = heya.reputation || 0;
 
-    if (rivalHeyas.length > 0) {
-      rivalTarget = rivalHeyas[0].id;
-      reasoning.push(`[Governance Agent] Targeting rival ${rivalHeyas[0].name} for sabotage`);
+    for (const h of world.heyas.values()) {
+      if (h.id !== heya.id) {
+        const hRep = h.reputation || 0;
+        if (hRep > maxReputation) {
+          maxReputation = hRep;
+          bestRival = h;
+        }
+      }
+    }
+
+    if (bestRival) {
+      rivalTarget = bestRival.id;
+      reasoning.push(`[Governance Agent] Targeting rival ${bestRival.name} for sabotage`);
     } else {
       shouldSabotageRival = false;
       reasoning.push("[Governance Agent] No suitable rival target found");

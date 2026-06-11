@@ -126,3 +126,6 @@ Action: Replaced `Object.values()` with a direct `for...in` loop in `src/engine/
 ## 2024-07-26 - Optimize full array iteration in UI components
 Learning: When a React component needs to filter entities belonging to a specific subset (e.g., a heya roster), iterating over the entire global collection (e.g., `allRikishi.values()`) causes unnecessary O(N) iteration overhead on every render, which scales poorly as the game world grows.
 Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop derived from `getHeyaRoster`, reducing the iteration scope significantly and eliminating unnecessary array allocations.
+## 2024-05-18 - Optimize maximum value finding without Array.from().sort()
+**Learning:** In `GovernanceAgent.ts`, `Array.from(world.heyas.values()).filter(...).sort(...)` was used merely to find a single element with the highest reputation. This chained approach incurs an O(N) array allocation overhead from `Array.from()`, intermediate tuple allocations from `filter()`, and an unnecessary O(N log N) `sort()` execution when only the max element is needed.
+**Action:** Replace `Array.from(map.values()).filter(...).sort(...)` with a direct `for...of` loop that keeps track of the maximum value in a single O(N) pass, completely eliminating memory allocation overhead and sorting time.
