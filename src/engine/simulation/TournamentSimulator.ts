@@ -23,16 +23,21 @@ export function simulateEntireBasho(
 ): BashoSimResult {
   const basho = initializeBasho(world, bashoName);
 
-  // Set currentBasho on world so the impact resolver can append matches to it
-  world.currentBasho = basho;
+  // Work on a shallow clone to avoid mutating the caller's world
+  const workingWorld: WorldState = {
+    ...world,
+    rikishi: new Map(world.rikishi),
+    heyas: new Map(world.heyas),
+    currentBasho: basho,
+  };
 
-  const standings = new Map<string, { wins: number; losses: number }>();
+  const standings = new Map<string, { wins: number; losses: number; absences?: number }>();
   const keyBouts: BoutResult[] = [];
   const injuries: string[] = [];
 
   // Initialize standings (sekitori only)
-  for (const id of world.activeRikishiIds) {
-    const rikishi = getRikishi(world, id);
+  for (const id of workingWorld.activeRikishiIds) {
+    const rikishi = getRikishi(workingWorld, id);
     if (!rikishi) continue;
     if (rikishi.division === "makuuchi" || rikishi.division === "juryo") {
       standings.set(id, { wins: 0, losses: 0 });
@@ -43,20 +48,20 @@ export function simulateEntireBasho(
 
   // Pre-generate all 15 days of schedules at once for efficiency
   try {
-    const scheduleImpact = generateFullBashoSchedule({ world, basho, seed });
-    const resolvedWorld = resolveImpacts(world, [scheduleImpact]);
-    Object.assign(world, resolvedWorld);
+    const scheduleImpact = generateFullBashoSchedule({ world: workingWorld, basho, seed });
+    const resolvedWorld = resolveImpacts(workingWorld, [scheduleImpact]);
+    Object.assign(workingWorld, resolvedWorld);
   } catch {
     for (let day = 1; day <= 15; day++) {
       const daySeed = `${seed}-day${day}`;
-      const { impact } = scheduleAllDivisionsDay({ world, basho, day, seed: daySeed });
-      const resolvedWorld = resolveImpacts(world, [impact]);
-      Object.assign(world, resolvedWorld);
+      const { impact } = scheduleAllDivisionsDay({ world: workingWorld, basho, day, seed: daySeed });
+      const resolvedWorld = resolveImpacts(workingWorld, [impact]);
+      Object.assign(workingWorld, resolvedWorld);
     }
   }
 
-  // After schedule generation, read matches from world.currentBasho (impact resolver put them there)
-  const activeBasho = world.currentBasho ?? basho;
+  // After schedule generation, read matches from workingWorld.currentBasho (impact resolver put them there)
+  const activeBasho = workingWorld.currentBasho ?? basho;
 
   // Simulate all 15 days
   for (let day = 1; day <= 15; day++) {
@@ -64,8 +69,8 @@ export function simulateEntireBasho(
 
     for (let boutIndex = 0; boutIndex < dayMatches.length; boutIndex++) {
       const match = dayMatches[boutIndex];
-      const east = getRikishi(world, match.eastRikishiId);
-      const west = getRikishi(world, match.westRikishiId);
+      const east = getRikishi(workingWorld, match.eastRikishiId);
+      const west = getRikishi(workingWorld, match.westRikishiId);
 
       if (!east || !west) continue;
 
@@ -131,7 +136,7 @@ export function simulateEntireBasho(
 
   // Determine yusho winner with canonical tie-breaking
   const sortedStandings = Array.from(standings.entries())
-    .map(([id, stats]) => ({ id, rikishi: getRikishi(world, id), ...stats }))
+    .map(([id, stats]) => ({ id, rikishi: getRikishi(workingWorld, id), ...stats }))
     .sort((a, b) => b.wins - a.wins || a.losses - b.losses || stableTieBreak(a.id, b.id));
 
   const yushoEntry = sortedStandings[0];
@@ -153,9 +158,9 @@ export function simulateEntireBasho(
 
   if (opts?.banzukeUpdateHook) {
     const hookResult = opts.banzukeUpdateHook({
-      world,
+      world: workingWorld,
       bashoName,
-      year: world.year,
+      year: workingWorld.year,
       standings,
       seed: `${seed}-banzuke`,
     });
@@ -164,8 +169,8 @@ export function simulateEntireBasho(
   }
 
   // --- STATE PERSISTENCE ---
-  const nextRikishiMap = new Map(world.rikishi);
-  const nextHeyaMap = new Map(world.heyas);
+  const nextRikishiMap = new Map(workingWorld.rikishi);
+  const nextHeyaMap = new Map(workingWorld.heyas);
 
   // 1. Update all rikishi who participated
   standings.forEach((stats, id) => {
@@ -210,7 +215,7 @@ export function simulateEntireBasho(
   }
 
   // 3. Update Global Kimarite Stats
-  const globalKimariteStats = { ...(world.globalKimariteStats || {}) };
+  const globalKimariteStats = { ...(workingWorld.globalKimariteStats || {}) };
   activeBasho.matches.forEach((m) => {
     if (m.result?.kimarite) {
       globalKimariteStats[m.result.kimarite] = (globalKimariteStats[m.result.kimarite] || 0) + 1;
@@ -227,8 +232,8 @@ export function simulateEntireBasho(
     injuries: Array.from(new Set(injuries)),
     promotions,
     demotions,
-    world: {
-      ...world,
+    finalWorld: {
+      ...workingWorld,
       rikishi: nextRikishiMap,
       heyas: nextHeyaMap,
       globalKimariteStats,

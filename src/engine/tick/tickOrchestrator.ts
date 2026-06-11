@@ -5,7 +5,7 @@
  */
 
 import type { WorldState } from "../types/world";
-import { advanceOneDay } from "./tickDaily";
+import { advanceOneDay, advanceDaysFast } from "./tickDaily";
 
 /**
  * Deep-clones a WorldState so tick mutations don't affect the original state.
@@ -28,4 +28,17 @@ export function cloneWorldForTick(world: WorldState): WorldState {
 export function tickOrchestrator(world: WorldState): WorldState {
   const next = cloneWorldForTick(world);
   return advanceOneDay(next);
+}
+
+/**
+ * Advances the world state by multiple days using fast-forward (skips daily micro-phases).
+ * Used by the web worker for bulk advances without UI blocking.
+ *
+ * @param {WorldState} world - The current world state.
+ * @param {number} days - Number of days to advance.
+ * @returns {WorldState} The new world state after advancing N days.
+ */
+export function advanceDaysFastOrchestrator(world: WorldState, days: number): WorldState {
+  const next = cloneWorldForTick(world);
+  return advanceDaysFast(next, days);
 }

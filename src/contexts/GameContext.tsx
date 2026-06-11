@@ -41,6 +41,7 @@ import { recruitSponsor } from "@/presenters/uiDigest";
 export type { GamePhase, GameState } from "./gameTypes";
 
 import * as actions from "./gameActions";
+import { useGameStore } from "@/store/gameStore";
 
 // === CONTEXT VALUE ===
 
@@ -155,6 +156,17 @@ const GameContext = createContext<GameContextValue | null>(null);
  */
 export function GameProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(gameReducer, initialGameState);
+  const sendCommand = useGameStore((s) => s.sendCommand);
+  const initWorker = useGameStore((s) => s.initWorker);
+  const setOnWorldUpdated = useGameStore((s) => s.setOnWorldUpdated);
+
+  // Initialize worker once on mount and wire world-update sync
+  useMemo(() => {
+    initWorker();
+    setOnWorldUpdated((world: WorldState) => {
+      dispatch(actions.updateWorld(world));
+    });
+  }, [initWorker, setOnWorldUpdated]);
 
   const createWorld = useCallback(
     (
@@ -180,7 +192,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const startBasho = useCallback(() => dispatch(actions.startBasho()), []);
-  const advanceDay = useCallback(() => dispatch(actions.advanceDay()), []);
+  const advanceDay = useCallback(() => sendCommand({ type: "TICK_DAY" }), [sendCommand]);
   const simulateBoutAction = useCallback(
     (index: number) => dispatch(actions.simulateBout(index)),
     []
@@ -195,14 +207,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const endBasho = useCallback(() => dispatch(actions.endBasho()), []);
   const simFullBasho = useCallback(() => dispatch(actions.simFullBasho()), []);
   const tickMultipleDays = useCallback(
-    (days: number) => dispatch(actions.tickMultipleDays(days)),
-    []
+    (days: number) => sendCommand({ type: "TICK_MULTIPLE_DAYS", days }),
+    [sendCommand]
   );
   const advanceInterim = useCallback(
-    (weeks: number = 1) => dispatch(actions.advanceInterim(weeks)),
-    []
+    (weeks: number = 1) => sendCommand({ type: "TICK_MULTIPLE_DAYS", days: weeks * 7 }),
+    [sendCommand]
   );
-  const advanceOneDayAction = useCallback(() => dispatch(actions.advanceOneDay()), []);
+  const advanceOneDayAction = useCallback(() => sendCommand({ type: "TICK_DAY" }), [sendCommand]);
   const updateWorld = useCallback((world: WorldState) => dispatch(actions.updateWorld(world)), []);
 
   const buildInfrastructureAction = useCallback(

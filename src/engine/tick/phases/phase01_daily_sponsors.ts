@@ -52,12 +52,10 @@ export function phase01_daily_sponsors(world: WorldState): StateImpact {
     nextSponsors.set(id, nextSponsor);
   }
 
-  // Note: sponsorPool updates are not directly supported by ImpactBuilder yet
-  // For now, we'll update them directly as sponsorPool is a nested state
-  world.sponsorPool = {
+  builder.updateWorldField("sponsorPool", {
     ...pool,
     sponsors: nextSponsors,
-  };
+  });
 
   return builder.build();
 }

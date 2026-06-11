@@ -33,7 +33,6 @@ export type PipelinePhase = (world: WorldState) => WorldState | StateImpact;
  * remaining phases still execute against a valid (if stale) world.
  */
 export function runPipeline(initialWorld: WorldState, phases: PipelinePhase[]): WorldState {
-  const impacts: StateImpact[] = [];
   let currentWorld = initialWorld;
 
   for (const phase of phases) {
@@ -51,7 +50,8 @@ export function runPipeline(initialWorld: WorldState, phases: PipelinePhase[]): 
         result && typeof result === "object" && "metadata" in result;
 
       if (isStateImpact) {
-        // Phase returned StateImpact - resolve it immediately
+        // Phase returned StateImpact - resolve immediately so subsequent phases
+        // see the updated state (sequential correctness is required)
         currentWorld = resolveImpacts(currentWorld, [result as StateImpact]);
       } else {
         // Phase returned WorldState (legacy)
@@ -72,11 +72,6 @@ export function runPipeline(initialWorld: WorldState, phases: PipelinePhase[]): 
       currentWorld = prePhaseSnapshot;
       continue;
     }
-  }
-
-  // Resolve any remaining impacts at the end
-  if (impacts.length > 0) {
-    currentWorld = resolveImpacts(currentWorld, impacts);
   }
 
   return currentWorld;

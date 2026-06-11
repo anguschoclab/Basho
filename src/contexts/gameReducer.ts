@@ -19,7 +19,6 @@ import { rosterSlice } from "./rosterSlice";
 import { financeSlice } from "./financeSlice";
 import { bashoSlice } from "./bashoSlice";
 import { mediaSlice } from "./mediaSlice";
-import { advanceOneDay } from "@/engine/tick";
 
 /**
  * Core generic actions that don't fit cleanly into a domain slice
@@ -87,25 +86,6 @@ function coreSlice(state: GameState, action: GameAction): GameState {
           : null,
         phase: action.world.playerHeyaId ? "interim" : "menu",
       };
-
-    case "TICK_DAY":
-      if (!state.world) return state;
-      return {
-        ...state,
-        world: advanceOneDay(state.world),
-      };
-
-    case "TICK_MULTIPLE_DAYS": {
-      if (!state.world) return state;
-      let currentWorld = state.world;
-      for (let i = 0; i < action.payload.days; i++) {
-        currentWorld = advanceOneDay(currentWorld);
-      }
-      return {
-        ...state,
-        world: currentWorld,
-      };
-    }
 
     case "ADVANCE_TUTORIAL_STEP": {
       if (!state.world) return state;
@@ -198,18 +178,28 @@ const baseReducer = combineReducers<GameState, GameAction>([
   mediaSlice,
 ]);
 
+const BULK_ACTIONS = new Set<GameAction["type"]>([
+  "TICK_MULTIPLE_DAYS",
+  "ADVANCE_INTERIM",
+  "RUN_AUTO_SIM",
+]);
+
 /**
  * Combined Game Reducer — rebuilds UIDigest whenever the world changes.
- * This ensures InboxNewsTicker and other digest consumers always see fresh data.
+ * For bulk actions, skips digest rebuild and sets digestStale so the UI
+ * can show a loading state until the worker completes.
  */
 export function gameReducer(state: GameState, action: GameAction): GameState {
   const next = baseReducer(state, action);
   if (next.world !== state.world) {
+    if (BULK_ACTIONS.has(action.type)) {
+      return { ...next, digestStale: true };
+    }
     try {
-      return { ...next, digest: buildWeeklyDigest(next.world) };
+      return { ...next, digest: buildWeeklyDigest(next.world), digestStale: false };
     } catch (error) {
       console.error("Error building weekly digest:", error);
-      return next;
+      return { ...next, digestStale: false };
     }
   }
   return next;

@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { phase02_context } from "../phase02_context";
+import { applyImpact } from "../../../core/ImpactResolver";
 import type { WorldState } from "../../../types/world";
 import type { MockWorldState, MockHeya } from "../../../../__tests__/types/mockTypes";
 
@@ -29,7 +30,7 @@ describe("Phase 2: Context", () => {
   });
 
   it("calculates baseline multipliers with default 50 level facilities", () => {
-    phase02_context(world);
+    world = applyImpact(world, phase02_context(world));
 
     // Default 50 training => 0.85 + (50/100)*0.35 = 1.025
     // Default 50 recovery => 0.80 + (50/100)*0.40 = 1.00
@@ -44,7 +45,7 @@ describe("Phase 2: Context", () => {
   it("applies financial penalty if funds < 0", () => {
     world.heyas.get("heya-1")!.funds = -100;
 
-    phase02_context(world);
+    world = applyImpact(world, phase02_context(world));
 
     expect(world.transientContext!.activeModifiers!.financialPenalty).toBe(true);
     // Training multiplier halved
@@ -54,7 +55,7 @@ describe("Phase 2: Context", () => {
   it("applies morale boost if a player rikishi won the last basho", () => {
     world.history = [{ yusho: "r1" }] as unknown as WorldState["history"];
 
-    phase02_context(world);
+    world = applyImpact(world, phase02_context(world));
 
     expect(world.transientContext!.activeModifiers!.moraleBoost).toBe(true);
     // +0.15 added before halving
@@ -66,7 +67,7 @@ describe("Phase 2: Context", () => {
     if (heya) {
       heya.facilities = { training: 100, recovery: 100, nutrition: 100 };
     }
-    phase02_context(world);
+    world = applyImpact(world, phase02_context(world));
 
     // Max training = 0.85 + 0.35 = 1.2
     // Max recovery = 1.2 * 1.08 = 1.296
@@ -77,7 +78,7 @@ describe("Phase 2: Context", () => {
     if (heya2) {
       heya2.facilities = { training: 0, recovery: 0, nutrition: 0 };
     }
-    phase02_context(world);
+    world = applyImpact(world, phase02_context(world));
 
     // Min training = 0.85
     // Min recovery = 0.8 * 0.92 = 0.736
@@ -90,7 +91,7 @@ describe("Phase 2: Context", () => {
     deltas.statChanges = { r1: [{ stat: "power", amount: 5 }] };
     deltas.injuriesSustained = ["r1"];
 
-    phase02_context(world);
+    world = applyImpact(world, phase02_context(world));
 
     expect(world.transientContext!.deltas!.revenue).toBe(500);
     expect(world.transientContext!.deltas!.expenses).toBe(200);

@@ -97,7 +97,10 @@ import { offSeasonPipeline } from "./pipelines/offSeasonPipeline";
  * console.log(nextWorld.dayIndexGlobal);
  * ```
  */
-export function advanceOneDay(world: WorldState): WorldState {
+export function advanceOneDay(
+  world: WorldState,
+  opts?: { skipDailyMicroPhases?: boolean }
+): WorldState {
   // 1. Run Preflight to advance calendar and determine boundaries
   let nextWorld = runPipeline(world, [phases.phase00_preflight]);
 
@@ -110,13 +113,17 @@ export function advanceOneDay(world: WorldState): WorldState {
   const isWeeklyTick = daysSinceTick >= WEEKLY_TICK_THRESHOLD;
 
   // 2. Determine which phases to run
-  const activePhases: import("./pipelineRunner").PipelinePhase[] = [
-    phases.phase01_daily_economy,
-    phases.phase01_daily_welfare,
-    phases.phase01_daily_sponsors,
-    phases.phase01_daily_drama,
-    phases.phase01_monthly_market,
-  ];
+  const activePhases: import("./pipelineRunner").PipelinePhase[] = [];
+
+  if (!opts?.skipDailyMicroPhases) {
+    activePhases.push(
+      phases.phase01_daily_economy,
+      phases.phase01_daily_welfare,
+      phases.phase01_daily_sponsors,
+      phases.phase01_daily_drama,
+      phases.phase01_monthly_market
+    );
+  }
 
   if (isWeeklyTick) {
     if (nextWorld.cyclePhase === "active_basho") {
@@ -142,9 +149,12 @@ export function advanceOneDay(world: WorldState): WorldState {
   };
 
   // 6. Finalize report in transient context
-  nextWorld.transientContext = {
-    ...nextWorld.transientContext,
-    lastReport: buildDailyReport(nextWorld, isWeeklyTick),
+  nextWorld = {
+    ...nextWorld,
+    transientContext: {
+      ...nextWorld.transientContext,
+      lastReport: buildDailyReport(nextWorld, isWeeklyTick),
+    },
   };
 
   return nextWorld;
@@ -192,22 +202,22 @@ export function advanceDays(world: WorldState, days: number): WorldState {
 }
 
 /**
- * Advance full interim period.
- * Advances through all remaining interim days until phase transition.
+ * Advance multiple days, skipping daily micro-phases for performance.
+ * Used for bulk advances (interim, auto-sim) where per-day micro-effects
+ * are not material. Still runs preflight, weekly/monthly/yearly gates,
+ * calendar advancement, and RNG deterministically.
  *
  * @param {WorldState} world - The current world state.
- * @returns {WorldState} The updated world state after full interim.
- *
- * @example
- * ```ts
- * const nextWorld = advanceFullInterim(world);
- * console.log(nextWorld.cyclePhase); // Should be pre_basho or active_basho
- * ```
+ * @param {number} days - Number of days to advance (capped at 365).
+ * @returns {WorldState} The updated world state after N day ticks.
  */
-export function advanceFullInterim(world: WorldState): WorldState {
-  if (world.cyclePhase !== "interim" && world.cyclePhase !== "pre_basho") return world;
-  // This would advance until phase transition, but for simplicity we advance by remaining days
-  return advanceDays(world, world._interimDaysRemaining ?? 0);
+export function advanceDaysFast(world: WorldState, days: number): WorldState {
+  let currentWorld = world;
+  const n = Math.max(1, Math.min(days, MAX_DAYS_ADVANCE));
+  for (let i = 0; i < n; i++) {
+    currentWorld = advanceOneDay(currentWorld, { skipDailyMicroPhases: true });
+  }
+  return currentWorld;
 }
 
 // ====

@@ -49,14 +49,12 @@ export function phase00_preflight(world: WorldState): StateImpact {
   builder.updateWorldField("week", currentWeek);
 
   // Store boundaries and fresh working context in transient context for the pipeline
-  // Note: transientContext updates are not directly supported by ImpactBuilder yet
-  // For now, we'll update them directly as transientContext is a nested state
-  world.transientContext = {
+  builder.updateWorldField("transientContext", {
     ...world.transientContext,
     boundaries: { monthBoundary, yearBoundary },
     deltas: emptyDeltas(),
     activeModifiers: defaultActiveModifiers(),
-  };
+  });
 
   // 4. Check Phase Transitions
   const transition = checkPhaseTransition(world, builder);

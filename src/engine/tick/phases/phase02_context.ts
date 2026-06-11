@@ -66,9 +66,7 @@ export function phase02_context(world: WorldState): StateImpact {
 
   const deltas = preserveRevenueExpenses(world);
 
-  // Note: transientContext updates are not directly supported by ImpactBuilder yet
-  // For now, we'll update them directly as transientContext is a nested state
-  world.transientContext = { activeModifiers, deltas };
+  builder.updateWorldField("transientContext", { activeModifiers, deltas });
 
   return builder.build();
 }

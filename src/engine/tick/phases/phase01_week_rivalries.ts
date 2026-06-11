@@ -72,12 +72,10 @@ export function phase01_week_rivalries(world: WorldState): StateImpact {
       nextPairs[key] = nextPair;
     }
 
-    // Note: rivalriesState updates are not directly supported by ImpactBuilder yet
-    // For now, we'll update them directly as rivalriesState is a nested state
-    world.rivalriesState = {
+    builder.updateWorldField("rivalriesState", {
       ...world.rivalriesState,
       pairs: nextPairs,
-    };
+    });
   }
 
   // 2. Event Log Trimming
@@ -148,12 +146,10 @@ export function phase01_week_rivalries(world: WorldState): StateImpact {
 
     // Note: Dedupe cleanup is harder without mutation, so we'll just return the log for now
     // or we can recreate the dedupe set.
-    // Note: events updates are not directly supported by ImpactBuilder yet
-    // For now, we'll update them directly as events is a nested state
-    world.events = {
+    builder.updateWorldField("events", {
       ...eventsState,
       log: newLog,
-    };
+    });
   }
 
   return builder.build();

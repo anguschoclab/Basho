@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import {
   advanceOneDay,
   advanceDays,
-  advanceFullInterim,
+  advanceDaysFast,
   enterPostBasho,
   enterInterim,
 } from "../tickDaily";
@@ -125,48 +125,46 @@ describe("tickDaily", () => {
     });
   });
 
-  describe("advanceFullInterim", () => {
-    it("advances by _interimDaysRemaining if in interim phase", () => {
-      const world = makeMockWorld({
-        cyclePhase: "interim",
-        _interimDaysRemaining: 10,
-        dayIndexGlobal: 0,
-        calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
-      });
-
-      const nextWorld = advanceFullInterim(world);
-      expect(nextWorld.dayIndexGlobal).toBe(10);
-    });
-
-    it("advances by _interimDaysRemaining if in pre_basho phase", () => {
-      const world = makeMockWorld({
-        cyclePhase: "pre_basho",
-        _interimDaysRemaining: 5,
-        dayIndexGlobal: 0,
-        calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
-      });
-
-      const nextWorld = advanceFullInterim(world);
+  describe("advanceDaysFast", () => {
+    it("advances the world state by the specified number of days", () => {
+      const world = makeMockWorld({ dayIndexGlobal: 0 });
+      const nextWorld = advanceDaysFast(world, 5);
       expect(nextWorld.dayIndexGlobal).toBe(5);
     });
-    it("advances by 1 day if _interimDaysRemaining is not set", () => {
-      const world = makeMockWorld({
-        cyclePhase: "interim",
-        dayIndexGlobal: 0,
-      });
 
-      const nextWorld = advanceFullInterim(world);
+    it("clamps days to at least 1", () => {
+      const world = makeMockWorld({ dayIndexGlobal: 0 });
+      const nextWorld = advanceDaysFast(world, 0);
       expect(nextWorld.dayIndexGlobal).toBe(1);
     });
 
-    it("does nothing if not in interim or pre_basho phase", () => {
+    it("clamps days to at most 365", () => {
+      const world = makeMockWorld({ dayIndexGlobal: 0 });
+      const nextWorld = advanceDaysFast(world, 400);
+      expect(nextWorld.dayIndexGlobal).toBe(365);
+    });
+
+    it("is deterministic: produces same end-state as individual advanceOneDay calls", () => {
       const world = makeMockWorld({
-        cyclePhase: "active_basho",
+        cyclePhase: "interim",
         dayIndexGlobal: 0,
+        calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
       });
 
-      const nextWorld = advanceFullInterim(world);
-      expect(nextWorld.dayIndexGlobal).toBe(0);
+      // Slow path: 7 individual advanceOneDay calls
+      let slowWorld = world;
+      for (let i = 0; i < 7; i++) {
+        slowWorld = advanceOneDay(slowWorld);
+      }
+
+      // Fast path: advanceDaysFast(7)
+      const fastWorld = advanceDaysFast(world, 7);
+
+      // Compare deterministic fields (ignore ephemeral transientContext)
+      expect(fastWorld.dayIndexGlobal).toBe(slowWorld.dayIndexGlobal);
+      expect(fastWorld.calendar).toEqual(slowWorld.calendar);
+      expect(fastWorld.week).toBe(slowWorld.week);
+      expect(fastWorld.cyclePhase).toBe(slowWorld.cyclePhase);
     });
   });
 

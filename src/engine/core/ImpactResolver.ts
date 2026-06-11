@@ -18,7 +18,7 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
 
   // Apply entity updates
   if (impact.entities) {
-    if (impact.entities.heyaUpdates) {
+    if (impact.entities.heyaUpdates && impact.entities.heyaUpdates.size > 0) {
       const nextHeyas = new Map(result.heyas);
       for (const [id, update] of impact.entities.heyaUpdates) {
         const existing = nextHeyas.get(id);
@@ -28,7 +28,7 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
       result = { ...result, heyas: nextHeyas };
     }
 
-    if (impact.entities.rikishiUpdates) {
+    if (impact.entities.rikishiUpdates && impact.entities.rikishiUpdates.size > 0) {
       const nextRikishi = new Map(result.rikishi);
       for (const [id, update] of impact.entities.rikishiUpdates) {
         const existing = nextRikishi.get(id);
@@ -38,7 +38,7 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
       result = { ...result, rikishi: nextRikishi };
     }
 
-    if (impact.entities.oyakataUpdates) {
+    if (impact.entities.oyakataUpdates && impact.entities.oyakataUpdates.size > 0) {
       const nextOyakata = new Map(result.oyakata);
       for (const [id, update] of impact.entities.oyakataUpdates) {
         const existing = nextOyakata.get(id);
@@ -48,7 +48,7 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
       result = { ...result, oyakata: nextOyakata };
     }
 
-    if (impact.entities.sponsorUpdates && result.sponsorPool) {
+    if (impact.entities.sponsorUpdates && impact.entities.sponsorUpdates.size > 0 && result.sponsorPool) {
       const nextSponsors = new Map(result.sponsorPool.sponsors);
       for (const [id, update] of impact.entities.sponsorUpdates) {
         const existing = nextSponsors.get(id);
@@ -63,7 +63,7 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
       };
     }
 
-    if (impact.entities.koenkaiUpdates && result.sponsorPool) {
+    if (impact.entities.koenkaiUpdates && impact.entities.koenkaiUpdates.size > 0 && result.sponsorPool) {
       const nextKoenkais = new Map(result.sponsorPool.koenkais);
       for (const [id, update] of impact.entities.koenkaiUpdates) {
         const existing = nextKoenkais.get(id);
@@ -77,7 +77,7 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
         },
       };
     }
-    if (impact.entities.trainingStateUpdates) {
+    if (impact.entities.trainingStateUpdates && impact.entities.trainingStateUpdates.size > 0) {
       const nextTraining = new Map(result.trainingState);
       for (const [id, update] of impact.entities.trainingStateUpdates) {
         const existing = nextTraining.get(id);
@@ -87,7 +87,7 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
       result = { ...result, trainingState: nextTraining };
     }
 
-    if (impact.entities.myosekiUpdates && result.myosekiMarket) {
+    if (impact.entities.myosekiUpdates && impact.entities.myosekiUpdates.size > 0 && result.myosekiMarket) {
       const nextStocks = { ...result.myosekiMarket.stocks };
       for (const [id, update] of impact.entities.myosekiUpdates) {
         const existing = nextStocks[id];
@@ -102,7 +102,7 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
       };
     }
 
-    if (impact.entities.staffUpdates && result.staff) {
+    if (impact.entities.staffUpdates && impact.entities.staffUpdates.size > 0 && result.staff) {
       const nextStaff = new Map(result.staff);
       for (const [id, update] of impact.entities.staffUpdates) {
         const existing = nextStaff.get(id);

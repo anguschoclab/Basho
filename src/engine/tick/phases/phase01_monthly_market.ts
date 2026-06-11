@@ -45,9 +45,7 @@ export function phase01_monthly_market(world: WorldState): StateImpact {
     }
   }
 
-  // Note: myosekiMarket updates are not directly supported by ImpactBuilder yet
-  // For now, we'll update them directly as myosekiMarket is a nested state
-  world.myosekiMarket = { ...market, stocks: updatedStocks };
+  builder.updateWorldField("myosekiMarket", { ...market, stocks: updatedStocks });
 
   return builder.build();
 }

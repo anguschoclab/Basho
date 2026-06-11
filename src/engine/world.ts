@@ -15,7 +15,7 @@ import type { BashoName, BoutResult, BashoState } from "./types/basho";
 import type { Id } from "./types/common";
 import type { Side } from "./types/index";
 import { resolveBout } from "./bout/boutResolver";
-import { advanceOneDay } from "./tick/tickDaily";
+import { advanceOneDay, advanceDaysFast } from "./tick/tickDaily";
 import * as governance from "./governance/GovernanceService";
 import { resetBashoMediaTracking, handleMediaEvent } from "./systems/media/MediaService";
 import { applyBoutResult } from "./bout/boutResultApplier";
@@ -229,25 +229,17 @@ export function advanceInterim(world: WorldState, weeks: number = 1): WorldState
   )
     return world;
 
-  // Convert weeks to days and run through the daily tick pipeline
   const days = Math.max(1, Math.trunc(weeks)) * 7;
-  let currentWorld = world;
-
-  for (let i = 0; i < days; i++) {
-    currentWorld = advanceOneDay(currentWorld);
-    // Stop if we've transitioned into active_basho (UI should handle this)
-    if ((currentWorld.cyclePhase as string) === "active_basho") break;
-  }
+  let currentWorld = advanceDaysFast(world, days);
 
   return currentWorld;
 }
 
 /**
- * Advance a single day in the interim period.
- * Used by UI for granular day-by-day control.
+ * Advance a single day.
+ * Delegates to the canonical advanceOneDay tick pipeline.
  */
-export function advanceDay(world: WorldState): WorldState | null {
-  if (world.cyclePhase === "active_basho") return null;
+export function advanceDay(world: WorldState): WorldState {
   return advanceOneDay(world);
 }
 

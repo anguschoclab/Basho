@@ -13,7 +13,7 @@ vi.mock("../../presenters/uiDigest", () => ({
 const mockBuildWeeklyDigest = buildWeeklyDigest as Mock;
 
 describe("Game Reducer Purity", () => {
-  it("MUST NOT mutate the previous state object on TICK_DAY", () => {
+  it("MUST NOT mutate the previous state object on CREATE_WORLD", () => {
     const initialState = {
       ...initialGameState,
       world: generateInitialWorld("test-purity"),
@@ -21,33 +21,34 @@ describe("Game Reducer Purity", () => {
 
     mockBuildWeeklyDigest.mockReturnValue({} as any);
 
-    const nextState = gameReducer(initialState, { type: "TICK_DAY" } as unknown as GameAction);
+    const nextState = gameReducer(
+      initialState,
+      { type: "CREATE_WORLD", seed: "test-purity-new", playerHeyaId: undefined } as unknown as GameAction
+    );
 
     expect(nextState).not.toBe(initialState);
     expect(nextState.world).not.toBe(initialState.world);
-    expect(nextState.world.dayIndexGlobal).toBe(initialState.world.dayIndexGlobal + 1);
   });
 });
 
-describe("Game Reducer: Batch Processing", () => {
-  it("MUST process multiple days atomically without intermediate states", () => {
+describe("Game Reducer: Bulk Actions", () => {
+  it("MUST set digestStale for bulk actions instead of rebuilding digest", () => {
     const initialState = {
       ...initialGameState,
       world: generateInitialWorld("test-batch"),
     };
 
-    const startDay = initialState.world.calendar!.currentDay;
-
     mockBuildWeeklyDigest.mockReturnValue({} as any);
 
     const nextState = gameReducer(initialState, {
-      type: "TICK_MULTIPLE_DAYS",
-      payload: { days: 5 }
+      type: "ADVANCE_INTERIM",
+      weeks: 2,
     } as unknown as GameAction);
 
     expect(nextState).not.toBe(initialState);
     expect(nextState.world).not.toBe(initialState.world);
-    expect(nextState.world.calendar!.currentDay).not.toBe(startDay);
+    expect(nextState.digestStale).toBe(true);
+    expect(nextState.digest).toBeNull();
   }, 30000);
 });
 
@@ -64,7 +65,10 @@ describe("Game Reducer Error Handling", () => {
       throw error;
     });
 
-    const nextState = gameReducer(initialState, { type: "TICK_DAY" } as unknown as GameAction);
+    const nextState = gameReducer(
+      initialState,
+      { type: "CREATE_WORLD", seed: "test-error", playerHeyaId: undefined } as unknown as GameAction
+    );
 
     expect(consoleSpy).toHaveBeenCalledWith("Error building weekly digest:", error);
     expect(nextState).not.toBe(initialState);

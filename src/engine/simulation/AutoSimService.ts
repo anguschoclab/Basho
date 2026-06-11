@@ -93,7 +93,7 @@ export function runAutoSim(
       banzukeUpdateHook: opts?.banzukeUpdateHook,
     });
 
-    currentWorld = (bashoResult as any).world || bashoResult.finalWorld;
+    currentWorld = bashoResult.finalWorld;
     bashoSimulated++;
     daysSimulated += 15;
 

@@ -71,6 +71,8 @@ export interface GameState {
   lastImpacts?: StateImpact[];
   /** Historical impact tracking for debugging and analysis. Limited to last 52 weeks. */
   impactHistory?: Array<{ week: number; impacts: StateImpact[] }>;
+  /** True when the digest is stale and needs rebuild (set during bulk advances). */
+  digestStale?: boolean;
 }
 
 /**
@@ -146,4 +148,5 @@ export const initialGameState: GameState = {
   boutTactics: {},
   lastImpacts: [],
   impactHistory: [],
+  digestStale: false,
 };

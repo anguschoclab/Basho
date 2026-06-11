@@ -7,6 +7,7 @@
 export {
   advanceOneDay,
   advanceDays,
+  advanceDaysFast,
   enterPostBasho,
   enterInterim,
   type DailyTickReport,

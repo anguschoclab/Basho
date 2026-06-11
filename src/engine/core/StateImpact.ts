@@ -173,6 +173,8 @@ export interface StateImpact {
       | "sparringPairs"
       | "globalCup"
       | "chronicle"
+      | "transientContext"
+      | "events"
     >
   >;
 

@@ -110,8 +110,7 @@ export function phase01_week_welfare(world: WorldState): StateImpact {
           (nextMediaState.heyaPressure[heyaId] ?? 0) + delta
         );
       }
-      // Note: mediaState updates are not directly supported by ImpactBuilder yet
-      world.mediaState = nextMediaState;
+      builder.updateWorldField("mediaState", nextMediaState);
     }
   }
 

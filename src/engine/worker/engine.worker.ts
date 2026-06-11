@@ -6,7 +6,7 @@
  */
 
 import type { WorldState } from "../types/world";
-import { tickOrchestrator } from "../tick/tickOrchestrator";
+import { tickOrchestrator, advanceDaysFastOrchestrator } from "../tick/tickOrchestrator";
 import { buildWeeklyDigest } from "../../presenters/uiDigest";
 import { generateInitialWorld } from "../systems/generation/WorldFactory";
 import * as talentpool from "../systems/generation/TalentPoolService";
@@ -60,6 +60,7 @@ import type { EngineCommand } from "./types";
 
 let currentWorld: WorldState | null = null;
 let worldVersion = 0;
+let simPaused = false;
 
 /**
  * Main message handler for the Web Worker.
@@ -92,9 +93,54 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
         emitDigest();
       }
     },
-    AUTO_SIM_DAYS: (cmd) => {
+    TICK_MULTIPLE_DAYS: async (cmd) => {
+      if (currentWorld) {
+        const days = cmd.days;
+        const useFast = days >= 7;
+        const chunk = useFast ? 7 : 1;
+
+        for (let i = 0; i < days; i += chunk) {
+          if (simPaused) {
+            // Yield control and resume on next iteration when RESUME_SIM clears the flag
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            i -= chunk; // retry same chunk
+            continue;
+          }
+
+          const remaining = days - i;
+          const step = Math.min(chunk, remaining);
+
+          if (useFast) {
+            currentWorld = advanceDaysFastOrchestrator(currentWorld, step);
+          } else {
+            for (let j = 0; j < step; j++) {
+              currentWorld = tickOrchestrator(currentWorld);
+            }
+          }
+
+          if (i % 7 === 0 || i + step >= days) {
+            self.postMessage({
+              type: "PROGRESS",
+              message: `Advancing day ${i + step} of ${days}...`,
+              current: i + step,
+              total: days,
+            });
+          }
+        }
+
+        emitDigest();
+        worldVersion++;
+        self.postMessage({ type: "WORLD_UPDATED", world: currentWorld, version: worldVersion });
+      }
+    },
+    AUTO_SIM_DAYS: async (cmd) => {
       if (currentWorld) {
         for (let i = 0; i < cmd.days; i++) {
+          if (simPaused) {
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            i--; // retry same day
+            continue;
+          }
           currentWorld = tickOrchestrator(currentWorld);
           if (i % 5 === 0) {
             self.postMessage({
@@ -263,6 +309,14 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
         emitDigest();
         syncWorld();
       }
+    },
+    PAUSE_SIM: () => {
+      simPaused = true;
+      self.postMessage({ type: "PROGRESS", message: "Simulation paused", current: 0, total: 0 });
+    },
+    RESUME_SIM: () => {
+      simPaused = false;
+      self.postMessage({ type: "PROGRESS", message: "Simulation resumed", current: 0, total: 0 });
     },
     GET_DIGEST: () => {
       emitDigest();

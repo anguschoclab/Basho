@@ -25,7 +25,7 @@ export function timeSlice(state: GameState, action: GameAction): GameState {
     case "ADVANCE_ONE_DAY": {
       if (!state.world) return state;
       const world = cloneWorldForTick(state.world);
-      const nextWorld = worldEngine.advanceDay(world) ?? world;
+      const nextWorld = worldEngine.advanceDay(world);
       const dayPhase = nextWorld.cyclePhase === "active_basho" ? "day_preview" : "interim";
       return { ...state, world: nextWorld, phase: dayPhase };
     }
