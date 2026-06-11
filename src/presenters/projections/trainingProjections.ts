@@ -45,29 +45,40 @@ export function projectTrainingSummary(world: WorldState, heyaId: string): Train
   const ts = ensureHeyaTrainingState(world, heyaId);
   const profile = ts.activeProfile;
 
-  const rosterStatuses: TrainingRikishiStatus[] = (heya.rikishiIds ?? [])
-    .map((id) => {
+  // ⚡ Bolt Optimization: Replaced chained .map().filter() and subsequent iterations
+  // with a single loop to avoid multiple O(N) array allocations and redundant iterations.
+  const rosterStatuses: TrainingRikishiStatus[] = [];
+  let injuryRiskHighCount = 0;
+  let injuredCount = 0;
+  let totalFatigue = 0;
+
+  if (heya.rikishiIds) {
+    for (const id of heya.rikishiIds) {
       const r = world.rikishi.get(id);
-      if (!r) return null;
+      if (!r) continue;
+
       const fatigue = r.fatigue ?? 0;
       const fatigueBand = toFatigueBand(fatigue);
-      return {
+      const isInjured = !!r.injury;
+      const injuryRisk = toInjuryRisk(fatigue, isInjured);
+
+      rosterStatuses.push({
         id: r.id,
         shikona: r.shikona ?? r.name ?? id,
         fatigue,
         fatigueLabel: FATIGUE_LABELS[fatigueBand],
-        injuryRisk: toInjuryRisk(fatigue, !!r.injury),
-        isInjured: !!r.injury,
-      };
-    })
-    .filter((x): x is TrainingRikishiStatus => x !== null);
+        injuryRisk,
+        isInjured,
+      });
 
-  const injuryRiskHighCount = rosterStatuses.filter((r) => r.injuryRisk === "high").length;
-  const injuredCount = rosterStatuses.filter((r) => r.isInjured).length;
+      if (injuryRisk === "high") injuryRiskHighCount++;
+      if (isInjured) injuredCount++;
+      totalFatigue += fatigue;
+    }
+  }
+
   const avgFatigue =
-    rosterStatuses.length > 0
-      ? Math.round(rosterStatuses.reduce((sum, r) => sum + r.fatigue, 0) / rosterStatuses.length)
-      : 0;
+    rosterStatuses.length > 0 ? Math.round(totalFatigue / rosterStatuses.length) : 0;
   const avgFatigueBand = toFatigueBand(avgFatigue);
 
   return {
