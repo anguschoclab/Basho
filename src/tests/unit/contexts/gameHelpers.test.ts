@@ -1,15 +1,15 @@
  
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
-import { autosaveWithSignal } from "../gameHelpers";
-import { getAutosaveEnabled } from "../../pages/settingsHelpers";
-import { autosave, saveGame } from "../../engine/saveload";
+import { autosaveWithSignal } from "@/contexts/gameHelpers";
+import { getAutosaveEnabled } from "@/pages/settingsHelpers";
+import { autosave, saveGame } from "@/engine/saveload";
 
 // Mock dependencies
-vi.mock("../../pages/settingsHelpers", () => ({
+vi.mock("@/pages/settingsHelpers", () => ({
   getAutosaveEnabled: vi.fn(),
 }));
 
-vi.mock("../../engine/saveload", () => ({
+vi.mock("@/engine/saveload", () => ({
   saveGame: vi.fn(),
   autosave: vi.fn(() => true),
 }));

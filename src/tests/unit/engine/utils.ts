@@ -6,7 +6,7 @@ import type { WorldState } from "../types/world";
 import type { BashoState } from "../types/basho";
 import type { Heya } from "../types/heya";
 import type { HeyaBrandIdentity, KeshoMawashi, YokozunaTsuna } from "../types/keshoMawashi";
-import { SeededRNG } from "../rng";
+import { SeededRNG } from "@/engine/rng";
 import type { Id } from "../types/common";
 
 // ── Rikishi ────────────────────────────────────────────────────────────────

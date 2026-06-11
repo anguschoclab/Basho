@@ -1,9 +1,9 @@
-import { generateNarrative } from "../narrative";
+import { generateNarrative } from "@/engine/narrative";
 import { rngFromSeed } from "../rng";
 import type { Rikishi } from "../types/rikishi";
 import type { BoutResult, BashoName } from "../types/basho";
 import type { WorldState } from "../types/world";
-import { BardEngine } from "../narrative/BardEngine";
+import { BardEngine } from "../bard/BardEngine";
 import { BloodlineService } from "../systems/legacy/BloodlineService";
 
 export type PbpLine = {

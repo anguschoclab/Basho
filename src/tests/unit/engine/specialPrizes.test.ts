@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { determineSpecialPrizes } from "../banzuke/specialPrizes";
-import type { Rikishi } from "../types/rikishi";
-import type { MatchSchedule } from "../types/basho";
+import { determineSpecialPrizes } from "@/engine/banzuke/specialPrizes";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { MatchSchedule } from "@/engine/types/basho";
 
 describe("determineSpecialPrizes", () => {
   const createRikishi = (id: string, rank: string): Rikishi =>

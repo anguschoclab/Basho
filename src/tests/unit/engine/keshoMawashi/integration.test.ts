@@ -4,12 +4,12 @@
 
  
 import { describe, it, expect } from "vitest";
-import { generateKeshoForPromotions } from "../../systems/keshoMawashi/KeshoMawashiGenerator";
-import { resolveImpacts } from "../../core/ImpactResolver";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
+import { generateKeshoForPromotions } from "@/engine/systems/keshoMawashi/KeshoMawashiGenerator";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { makeMockWorldWithBrands, mockRikishi } from "../utils";
-import type { MovementEvent } from "../../types/banzuke";
-import type { KeshoMawashi } from "../../types/keshoMawashi";
+import type { MovementEvent } from "@/engine/types/banzuke";
+import type { KeshoMawashi } from "@/engine/types/keshoMawashi";
 
 describe("Kesho-Mawashi Integration", () => {
   describe("End-to-end promotion flow", () => {

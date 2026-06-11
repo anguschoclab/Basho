@@ -3,7 +3,7 @@
  * faces an opponent whose style is in their weakness list.
  */
 import { describe, it, expect } from "vitest";
-import { computeTachiaiPower, tachiaiPowerWithMatchupPenalty } from "../boutPhysics";
+import { computeTachiaiPower, tachiaiPowerWithMatchupPenalty } from "@/engine/bout/boutPhysics";
 import { mockRikishi } from "../utils";
 
 describe("tachiaiPowerWithMatchupPenalty — weakAgainstStyles", () => {

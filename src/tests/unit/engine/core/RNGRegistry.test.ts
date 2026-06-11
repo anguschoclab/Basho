@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { RNGRegistry } from "../RNGRegistry";
-import type { WorldState } from "../../types/world";
+import { RNGRegistry } from "@/engine/core/RNGRegistry";
+import type { WorldState } from "@/engine/types/world";
 
 describe("RNGRegistry", () => {
   const mockWorld: WorldState = {

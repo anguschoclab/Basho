@@ -10,7 +10,7 @@ import type { WorldState } from "../../engine/types/world";
 import type { RivalryPairState } from "../../engine/rivalries";
 import { queryEvents } from "../../engine/events";
 import { generateH2HCommentary } from "../../engine/h2h";
-import { BardEngine } from "../../engine/narrative/BardEngine";
+import { BardEngine } from "../../engine/bard/BardEngine";
 import { SeededRNG } from "../../engine/rng";
 import { selectInjuredRikishi, selectRecentEvents } from "../selectors";
 

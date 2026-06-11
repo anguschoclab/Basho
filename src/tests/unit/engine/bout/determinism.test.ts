@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { resolveBoutPhysics, type BoutContext } from "../boutPhysics";
+import { resolveBoutPhysics, type BoutContext } from "@/engine/bout/boutPhysics";
 import { mockRikishi, makeMockBasho } from "../utils";
 
 describe("determinism", () => {

@@ -6,30 +6,30 @@
  * Also processes rikishi retirements and Oyakata candidate conversion.
  */
 
-import { stableSort } from "../utils/sort";
-import type { WorldState } from "../types/world";
-import type { Heya } from "../types/heya";
-import * as governance from "./GovernanceService";
-import { generateGovernanceHeadline } from "../systems/media/MediaService";
-import { issueBailoutLoanIfNeeded } from "../loans";
-import { getStableRikishi, getActiveRikishi, getRikishi } from "../queries";
-import { PRESTIGE_ORDER, bandIndex } from "../prestige/prestigeSystem";
-import { findMergerTarget, executeMerger } from "../mergers";
-import { checkRetirement } from "../lifecycle";
-import { generateOyakata } from "../oyakataPersonalities";
-import { onRikishiRetired } from "../records";
-import { updateAvatarForAging } from "../avatarGenerator";
-import { recordOyakataHandover } from "../lineage";
-import { LegacyService } from "../systems/legacy/LegacyService";
-import { rngForWorld } from "../rng";
-import { createImpactBuilder } from "../core/ImpactBuilder";
-import type { StateImpact } from "../core/StateImpact";
+import { stableSort } from "../../utils/sort";
+import type { WorldState } from "../../types/world";
+import type { Heya } from "../../types/heya";
+import * as governance from "./ScandalService";
+import { generateGovernanceHeadline } from "../media/MediaService";
+import { issueBailoutLoanIfNeeded } from "../../loans";
+import { getStableRikishi, getActiveRikishi, getRikishi } from "../../queries";
+import { PRESTIGE_ORDER, bandIndex } from "../../prestige/prestigeSystem";
+import { findMergerTarget, executeMerger } from "../../mergers";
+import { checkRetirement } from "../../lifecycle";
+import { generateOyakata } from "../../oyakataPersonalities";
+import { onRikishiRetired } from "../../records";
+import { updateAvatarForAging } from "../../avatarGenerator";
+import { recordOyakataHandover } from "../../lineage";
+import { LegacyService } from "../legacy/LegacyService";
+import { rngForWorld } from "../../rng";
+import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { StateImpact } from "../../core/StateImpact";
 import {
   LOAN_ISSUANCE_THRESHOLD,
   MERGER_THRESHOLD,
   FACTION_BAILOUT_AMOUNT,
   FACTION_BENEFACTOR_THRESHOLD,
-} from "../../constants/engine/economic";
+} from "../../../constants/engine/economic";
 
 /**
  * Post-basho governance: institutional sanctions, council reactions,

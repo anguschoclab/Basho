@@ -6,7 +6,7 @@
  */
 
 import { SeededRNG } from "../engine/rng";
-import { BardEngine } from "../engine/narrative/BardEngine";
+import { BardEngine } from "../engine/bard/BardEngine";
 import type { Rikishi } from "../engine/types/rikishi";
 import type { WorldState } from "../engine/types/world";
 

@@ -5,10 +5,10 @@ import {
   advanceDaysFast,
   enterPostBasho,
   enterInterim,
-} from "../tickDaily";
+} from "@/engine/tick/tickDaily";
 import { makeMockWorld } from "../utils";
-import type { WorldState } from "../../types/world";
-import * as pipelineRunner from "../pipelineRunner";
+import type { WorldState } from "@/engine/types/world";
+import * as pipelineRunner from "@/engine/tick/pipelineRunner";
 
 describe("tickDaily", () => {
   describe("advanceOneDay", () => {

@@ -7,7 +7,7 @@
  * All functions require a SeededRNG to ensure simulation determinism.
  */
 
-import { BardEngine } from "../../narrative/BardEngine";
+import { BardEngine } from "../../bard/BardEngine";
 import { SeededRNG } from "../../rng";
 import type { CombatArchetype } from "../../types/combat";
 import type {

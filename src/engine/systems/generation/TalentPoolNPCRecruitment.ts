@@ -8,7 +8,7 @@ import { RNGRegistry } from "../../core/RNGRegistry";
 import { getRecruitmentStrategy } from "../../npcRecruitmentStrategy";
 import { EntityCollection } from "../../core/EntityCollection";
 import { materializeCandidateToRikishiInternal } from "./TalentPoolMaterialization";
-import { isRecruitmentPlayerRelevant } from "../../npc/npcEventSurfacing";
+import { isRecruitmentPlayerRelevant } from "../../npcAI/eventSurfacing";
 import { getHeya } from "../../queries";
 
 /**

@@ -9,9 +9,9 @@ import {
   isKachiKoshi,
   isMakeKoshi,
   type BanzukeCandidate,
-} from "../banzuke/banzukeHelpers";
-import type { RankPosition, BashoPerformance, BanzukeEntry } from "../types/banzuke";
-import type { WorldState } from "../types/world";
+} from "@/engine/banzuke/banzukeHelpers";
+import type { RankPosition, BashoPerformance, BanzukeEntry } from "@/engine/types/banzuke";
+import type { WorldState } from "@/engine/types/world";
 
 describe("banzukeHelpers", () => {
   describe("compareRanks", () => {

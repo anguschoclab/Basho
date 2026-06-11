@@ -1,13 +1,13 @@
 import { describe, it, expect } from "vitest";
-import { MockFactory } from "../../test/utils/MockFactory";
+import { MockFactory } from "../../helpers/utils/MockFactory";
 import {
   fillVacanciesForNPC,
   materializeCandidateToRikishi,
   finalizeSignedCandidates,
-} from "../systems/generation/TalentPoolService";
-import { resolveImpacts } from "../core/ImpactResolver";
-import type { CandidateAvailabilityState, TalentPoolWorldState } from "../types/talent";
-import type { Id } from "../types/common";
+} from "@/engine/systems/generation/TalentPoolService";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import type { CandidateAvailabilityState, TalentPoolWorldState } from "@/engine/types/talent";
+import type { Id } from "@/engine/types/common";
 
 // ── Talent Pool setup helper ───────────────────────────────────────────────
 

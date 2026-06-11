@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { generateInitialWorld } from "../systems/generation/WorldFactory";
-import { GlobalCupService } from "../systems/economy/GlobalCupService";
-import { TalentPoolService } from "../systems/generation/TalentPoolService";
+import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { GlobalCupService } from "@/engine/systems/economy/GlobalCupService";
+import { TalentPoolService } from "@/engine/systems/generation/TalentPoolService";
 
 describe("Global Cup & Talent Pool Parity", () => {
   it("SHOULD pick challengers from the talent pool if available", () => {

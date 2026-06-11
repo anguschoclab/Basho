@@ -5,10 +5,10 @@ import {
   processYearEndInduction,
   type HoFInductee,
   type HallOfFameState,
-} from "../hallOfFame";
+} from "@/engine/hallOfFame";
 import { mockRikishi, makeMockWorld } from "./utils";
-import type { WorldState } from "../types/world";
-import type { Rikishi } from "../types/rikishi";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
 
 describe("hallOfFame.ts - createEmptyHallOfFame", () => {
   it("should return the correct default Hall of Fame state", () => {

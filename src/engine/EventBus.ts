@@ -8,7 +8,7 @@
 import type { WorldState } from "./types/world";
 import type { EventImportance, NarrativeContext } from "./types/events";
 import type { Id } from "./types/common";
-import { BardEngine } from "./narrative/BardEngine";
+import { BardEngine } from "./bard/BardEngine";
 import { rngFromSeed } from "./rng";
 import { createRngForEvent } from "./eventHelpers";
 import { logEngineEvent } from "./events";

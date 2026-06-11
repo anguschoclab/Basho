@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StableName } from "@/components/ClickableName";
-import { HeyaBrandBadge } from "@/components/heya/HeyaBrandBadge";
+import { HeyaBrandBadge } from "@/components/stable/HeyaBrandBadge";
 import type { Heya } from "@/engine/types/heya";
 import type { HeyaBrandIdentity } from "@/engine/types/keshoMawashi";
 import { STATURE_CONFIG } from "./statureConfig";

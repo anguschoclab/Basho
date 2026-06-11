@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { advanceOneDay } from "../tick/tickDaily";
-import type { WorldState } from "../types/world";
+import { advanceOneDay } from "@/engine/tick/tickDaily";
+import type { WorldState } from "@/engine/types/world";
 
 // Minimal stub for counter testing only. Weekly phases will throw/skip on this empty
 // world — that is expected. These tests verify counter state only, not phase execution.

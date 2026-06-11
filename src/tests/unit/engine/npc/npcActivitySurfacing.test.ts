@@ -4,8 +4,8 @@ import {
   isMyosekiPlayerRelevant,
   isGovernancePlayerRelevant,
   isSponsorPlayerRelevant,
-} from "./npcEventSurfacing";
-import { generateInitialWorld } from "../systems/generation/WorldFactory";
+} from "@/engine/npcAI/eventSurfacing";
+import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
 
 describe("NPC Activity Surfacing Heuristics", () => {
   const world = generateInitialWorld("test-seed");

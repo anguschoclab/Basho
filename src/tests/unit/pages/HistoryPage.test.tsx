@@ -6,7 +6,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import React from "react";
-import HistoryPage from "../HistoryPage";
+import HistoryPage from "@/pages/HistoryPage";
 import * as GameContext from "@/contexts/GameContext";
 
 // Mock dependencies

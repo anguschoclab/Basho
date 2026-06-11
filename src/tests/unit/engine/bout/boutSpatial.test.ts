@@ -4,9 +4,9 @@ import {
   isBodyFalling,
   isOutOfRing,
   tawaraBounceResistance,
-} from "../boutSpatial";
+} from "@/engine/bout/boutSpatial";
 import { mockRikishi } from "../utils";
-import { TAWARA_RADIUS } from "../../types/combat-spatial";
+import { TAWARA_RADIUS } from "@/engine/types/combat-spatial";
 
 describe("boutSpatial", () => {
   describe("initPhysicalBody", () => {

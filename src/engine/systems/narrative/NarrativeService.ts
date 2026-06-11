@@ -16,7 +16,7 @@
 
 import { clamp } from "../../utils/math";
 import { SeededRNG } from "../../rng";
-import { BardEngine } from "../../narrative/BardEngine";
+import { BardEngine } from "../../bard/BardEngine";
 import type {
   BandDef,
   StatBand,

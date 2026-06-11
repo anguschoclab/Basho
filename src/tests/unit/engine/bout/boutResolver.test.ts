@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { resolveBout, simulateBout } from "../boutResolver";
+import { resolveBout, simulateBout } from "@/engine/bout/boutResolver";
 import { mockRikishi, makeMockBasho } from "../utils";
-import type { BoutContext } from "../boutPhysics";
+import type { BoutContext } from "@/engine/bout/boutPhysics";
 
 // ---------------------------------------------------------------------------
 // Helpers

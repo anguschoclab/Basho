@@ -11,7 +11,7 @@ import { WelfarePanel } from "@/components/game/WelfarePanel";
 import { projectMedicalUIDigest, setHeyaDietAction } from "@/presenters/uiDigest";
 import { InjuryRiskHeatmap } from "@/components/training/InjuryRiskHeatmap";
 import type { DietRegimen } from "@/engine/types/economy";
-import { BardEngine } from "@/engine/narrative/BardEngine";
+import { BardEngine } from "@/engine/bard/BardEngine";
 import { SeededRNG } from "@/engine/rng";
 import { getHeyaRoster } from "@/engine/queries";
 

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { buildSwissTorikumi, scorePairing } from "../matchmaking/index";
-import { MockFactory } from "../../test/utils/MockFactory";
-import type { BashoState } from "../types/basho";
+import { buildSwissTorikumi, scorePairing } from "@/engine/matchmaking";
+import { MockFactory } from "../../helpers/utils/MockFactory";
+import type { BashoState } from "@/engine/types/basho";
 
 // ---------------------------------------------------------------------------
 // Helpers

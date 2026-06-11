@@ -5,7 +5,7 @@ import {
   describeExperience,
   describeFatigue,
   describeTrainingEffect
-} from "../narrativeDescriptions";
+} from "@/engine/narrativeDescriptions";
 
 describe("narrativeDescriptions", () => {
   describe("describeAttribute", () => {

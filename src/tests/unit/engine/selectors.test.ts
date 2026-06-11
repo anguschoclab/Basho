@@ -7,9 +7,9 @@ import {
   selectRetiredRikishi,
   selectHeyasWithCriticalWelfare,
   selectMergerCandidates
-} from "../selectors";
+} from "@/engine/selectors";
 import { makeMockWorld, mockRikishi, makeMockHeya } from "./utils";
-import type { Rikishi } from "../types/rikishi";
+import type { Rikishi } from "@/engine/types/rikishi";
 
 describe("selectors", () => {
   describe("getActiveRikishi", () => {

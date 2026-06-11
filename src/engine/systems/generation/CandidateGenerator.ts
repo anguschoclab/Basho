@@ -29,7 +29,7 @@ import { rollPotential } from "./CandidateStats";
 import { LegacyService } from "../legacy/LegacyService";
 import type { WorldState } from "../../types/world";
 import type { RikishiStats } from "../../types/rikishi";
-import { JAPANESE_PREFECTURES, SUMO_HOTBEDS } from "../../../data/sumo_geography";
+import { JAPANESE_PREFECTURES, SUMO_HOTBEDS } from "../../data/sumo_geography";
 import { generateScoutingBias } from "../recruitment/FogOfWarService";
 import {
   EMERGENT_PRODIGY_CHANCE,

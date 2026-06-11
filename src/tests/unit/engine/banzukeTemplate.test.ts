@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { buildFullSlotTemplate } from "../banzuke/banzukeTemplate";
+import { buildFullSlotTemplate } from "@/engine/banzuke/banzukeTemplate";
 
 describe("buildFullSlotTemplate", () => {
   it("builds a standard template", () => {

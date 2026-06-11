@@ -13,7 +13,7 @@ import {
   getStorageProvider,
   resetStorageProvider,
 } from "@/engine/storageProvider";
-import { mockElectronAPI, clearElectronMock } from "@/test/utils/electronMocks";
+import { mockElectronAPI, clearElectronMock } from "@/tests/helpers/utils/electronMocks";
 
 // Mock localStorage for web-fallback tests
 const localStorageMock = (() => {

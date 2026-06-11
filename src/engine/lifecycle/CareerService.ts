@@ -5,13 +5,13 @@
  * (Phase Q: Promotion Politics & Ceremony)
  */
 
-import { WorldState } from "../../types/world";
-import type { Rikishi } from "../../types/rikishi";
-import { createImpactBuilder } from "../../core/ImpactBuilder";
-import { StateImpact } from "../../core/StateImpact";
-import { LegacyService } from "../legacy/LegacyService";
-import { checkRetirement } from "../../lifecycle";
-import { getRikishi } from "../../queries";
+import { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { StateImpact } from "@/engine/core/StateImpact";
+import { LegacyService } from "@/engine/systems/legacy/LegacyService";
+import { checkRetirement } from "@/engine/lifecycle";
+import { getRikishi } from "@/engine/queries";
 
 export const CareerService = {
   /**

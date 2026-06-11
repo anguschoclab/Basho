@@ -12,7 +12,7 @@ import { Rikishi } from "./types/rikishi";
 import { H2HRecord, H2HReport, H2HRecentMeeting } from "./types/records";
 import { BoutResult } from "./types/basho";
 import type { BoutTactic, TacticalResult } from "./types/combat";
-import { BardEngine } from "./narrative/BardEngine";
+import { BardEngine } from "./bard/BardEngine";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
 import {

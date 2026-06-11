@@ -4,8 +4,8 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { runPipeline, type PipelinePhase } from "../../tick/pipelineRunner";
-import type { WorldState } from "../../types/world";
+import { runPipeline, type PipelinePhase } from "@/engine/tick/pipelineRunner";
+import type { WorldState } from "@/engine/types/world";
 
 function createMockWorld(dayIndex: number): WorldState {
   return {

@@ -5,9 +5,9 @@ import type { Stance } from "./types/combat";
 import { BASHO_CALENDAR } from "./calendar";
 import { RANK_HIERARCHY } from "./banzuke";
 
-import { NarrativeContext, VoiceStyle, VENUE_PROFILES } from "./narrative/narrativeContext";
+import { NarrativeContext, VoiceStyle, VENUE_PROFILES } from "./bard/narrativeContext";
 
-import { BardEngine } from "./narrative/BardEngine";
+import { BardEngine } from "./bard/BardEngine";
 import {
   INTENSITY_DRAMATIC,
   INTENSITY_UNDERSTATED,

@@ -1,12 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { resolveBout } from "../boutResolver";
-import { applyBoutResult } from "../boutResultApplier";
-import { applyImpact } from "../../core/ImpactResolver";
+import { resolveBout } from "@/engine/bout/boutResolver";
+import { applyBoutResult } from "@/engine/bout/boutResultApplier";
+import { applyImpact } from "@/engine/core/ImpactResolver";
 import { mockRikishi, makeMockBasho, makeMockWorld } from "../utils";
 import type { BoutContext } from "../boutUtils";
-import type { MatchSchedule, BoutResult } from "../../types/basho";
-import type { WorldState } from "../../types/world";
-import type { Heya } from "../../types/heya";
+import type { MatchSchedule, BoutResult } from "@/engine/types/basho";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
 
 function makeBoutContext(overrides: Partial<BoutContext> = {}): BoutContext {
   return {

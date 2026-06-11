@@ -25,7 +25,7 @@ Object.defineProperty(global, "localStorage", {
  */
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
-import { loadSavedOrder } from "../useDashboardLayout";
+import { loadSavedOrder } from "@/hooks/useDashboardLayout";
 
 describe("useDashboardLayout: loadSavedOrder", () => {
   beforeEach(() => {

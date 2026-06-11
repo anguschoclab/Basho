@@ -28,7 +28,7 @@ import {
 import { HoFTimeline } from "@/components/game/HoFTimeline";
 import type { HoFCategory } from "@/engine/hallOfFame";
 import { HOF_CATEGORY_LABELS, projectHOFUIDigest } from "@/presenters/uiDigest";
-import type { UIHofInductee } from "@/presenters/uiProjections/hofProjection";
+import type { UIHofInductee } from "@/presenters/projections/hofProjection";
 import type { UIRikishi } from "@/presenters/uiModels";
 
 const CATEGORY_ICONS: Record<HoFCategory, React.ElementType> = {

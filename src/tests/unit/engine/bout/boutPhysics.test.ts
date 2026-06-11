@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { resolveBoutPhysics } from "../boutPhysics";
+import { resolveBoutPhysics } from "@/engine/bout/boutPhysics";
 import { mockRikishi, makeMockBasho } from "../utils";
 
 describe("boutPhysics", () => {

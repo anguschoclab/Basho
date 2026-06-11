@@ -1,14 +1,14 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { runGovernanceReview } from "../../systems/governance/governanceReview";
+import { runGovernanceReview } from "@/engine/systems/governance/governanceReview";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
-import { resolveImpacts } from "../../core/ImpactResolver";
-import type { WorldState } from "../../types/world";
-import { PRESTIGE_ORDER } from "../../prestige/prestigeSystem";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import type { WorldState } from "@/engine/types/world";
+import { PRESTIGE_ORDER } from "@/engine/prestige/prestigeSystem";
 import {
   FACTION_BAILOUT_AMOUNT,
   LOAN_ISSUANCE_THRESHOLD,
   MERGER_THRESHOLD,
-} from "../../../constants/engine/economic";
+} from "@/constants/engine/economic";
 
 describe("governanceReview", () => {
   let world: WorldState;

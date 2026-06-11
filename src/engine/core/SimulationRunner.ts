@@ -22,7 +22,7 @@ import { checkNaturalizations } from "../naturalization";
 import { runArchivalPruning } from "../archival";
 import { runCareerJournalUpdates, openRecruitmentWindow } from "../lifecycle/RegistryService";
 import { runHistoryUpdates } from "../history";
-import { runElections } from "./systems/governance/ScandalService";
+import { runElections } from "../systems/governance/ScandalService";
 
 /**
  * Authoritative post-basho pipeline.

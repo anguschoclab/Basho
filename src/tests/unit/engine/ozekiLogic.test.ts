@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
-import { getOzekiStatus } from "../banzuke/ozekiLogic";
-import * as banzukeHelpers from "../banzuke/banzukeHelpers";
+import { getOzekiStatus } from "@/engine/banzuke/ozekiLogic";
+import * as banzukeHelpers from "@/engine/banzuke/banzukeHelpers";
 
-vi.mock("../banzuke/banzukeHelpers", () => ({
+vi.mock("@/engine/banzuke/banzukeHelpers", () => ({
   isMakeKoshi: vi.fn(),
 }));
 

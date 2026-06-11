@@ -1,12 +1,12 @@
 // src/contexts/__tests__/gameReducer.test.ts
 import { describe, it, expect, vi, type Mock } from "vitest";
-import { gameReducer } from "../gameReducer";
-import { initialGameState } from "../gameTypes";
-import type { GameAction } from "../gameTypes";
-import { generateInitialWorld } from "../../engine/systems/generation/WorldFactory";
-import { buildWeeklyDigest } from "../../presenters/uiDigest";
+import { gameReducer } from "@/contexts/gameReducer";
+import { initialGameState } from "@/contexts/gameTypes";
+import type { GameAction } from "@/contexts/gameTypes";
+import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { buildWeeklyDigest } from "@/presenters/uiDigest";
 
-vi.mock("../../presenters/uiDigest", () => ({
+vi.mock("@/presenters/uiDigest", () => ({
   buildWeeklyDigest: vi.fn(),
 }));
 

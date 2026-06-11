@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { SIMULATION_CONFIG } from "../SimulationConfig";
+import { SIMULATION_CONFIG } from "@/engine/core/SimulationConfig";
 
 describe("SimulationConfig", () => {
   describe("SIMULATION_CONFIG", () => {

@@ -12,9 +12,9 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { computeMovementUnits, bestTierAllowed } from "../../banzuke/promotionLogic";
-import { getOzekiStatus } from "../../banzuke/ozekiLogic";
-import type { BanzukeEntry, BashoPerformance } from "../../types/banzuke";
+import { computeMovementUnits, bestTierAllowed } from "@/engine/banzuke/promotionLogic";
+import { getOzekiStatus } from "@/engine/banzuke/ozekiLogic";
+import type { BanzukeEntry, BashoPerformance } from "@/engine/types/banzuke";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 

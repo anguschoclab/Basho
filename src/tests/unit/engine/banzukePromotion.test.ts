@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { runAutoSim } from "../simulation/AutoSimService";
-import { generateInitialWorld } from "../systems/generation/WorldFactory";
+import { runAutoSim } from "@/engine/simulation/AutoSimService";
+import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
 
 describe("yokozuna promotion in AutoSim", () => {
   it("appends careerHistory entry for each sekitori after every basho in AutoSim", () => {

@@ -9,7 +9,7 @@ import {
   generateKeshoForPromotions,
   generateYokozunaTsuna,
   upgradeKeshoMawashi,
-} from "../../systems/keshoMawashi/KeshoMawashiGenerator";
+} from "@/engine/systems/keshoMawashi/KeshoMawashiGenerator";
 import { makeMockWorldWithBrands, mockRikishi } from "../utils";
 import { samplePromotionJuryo, samplePromotionMakuuchi, samplePromotionYokozuna } from "./fixtures";
 

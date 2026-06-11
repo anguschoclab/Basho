@@ -3,10 +3,10 @@ import {
   determineBoutImportance,
   assignKenshoBanners,
   calculateKenshoEnvelopes,
-} from "../KenshoService";
-import { rngFromSeed, SeededRNG } from "../../../rng";
-import type { SponsorPool, Sponsor } from "../../../types/sponsors";
-import type { WorldState } from "../../../types/world";
+} from "@/engine/systems/economy/KenshoService";
+import { rngFromSeed, SeededRNG } from "@/engine/rng";
+import type { SponsorPool, Sponsor } from "@/engine/types/sponsors";
+import type { WorldState } from "@/engine/types/world";
 import { mockRikishi } from "../../utils";
 
 describe("KenshoService", () => {

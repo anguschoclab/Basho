@@ -50,7 +50,7 @@ import type { UIRikishi } from "@/presenters/uiModels";
 import type { Division } from "@/engine/types/banzuke";
 import type { BoutTactic } from "@/engine/types/combat";
 import type { BashoName, BoutResult } from "@/engine/types/basho";
-import type { BoutMatchUI, StandingEntry } from "@/presenters/types/uiDigest";
+import type { BoutMatchUI, StandingEntry } from "@/presenters/uiDigestTypes";
 
 /** Defines the structure for selected bout. */
 interface SelectedBout {

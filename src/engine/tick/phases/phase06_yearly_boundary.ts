@@ -20,7 +20,7 @@ import { processYearlyEraDrift } from "../../systems/meta/EraDriftService";
 import { InfrastructureService } from "../../systems/economy/InfrastructureService";
 import { GlobalCupService } from "../../systems/economy/GlobalCupService";
 import { HistoryService } from "../../systems/meta/HistoryService";
-import { runElections } from "./systems/governance/ScandalService";
+import { runElections } from "../../systems/governance/ScandalService";
 import { DynastyService } from "../../systems/legacy/DynastyService";
 import { WorldCircuitService } from "../../systems/worldCircuit/WorldCircuitService";
 import { TrainingPhilosophyService } from "../../systems/legacy/TrainingPhilosophyService";

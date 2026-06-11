@@ -6,7 +6,7 @@
 
 import type { Rikishi } from "../../../engine/types/rikishi";
 import { SeededRNG } from "../../../engine/rng";
-import { BardEngine } from "../../../engine/narrative/BardEngine";
+import { BardEngine } from "../../../engine/bard/BardEngine";
 import type { RikishiKimariteDTO } from "../types";
 
 interface MatchHistoryEntry {

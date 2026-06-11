@@ -3,8 +3,8 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { isStateImpact, createEmptyImpact, resetImpactTimestampCounter } from "../StateImpact";
-import type { StateImpact } from "../StateImpact";
+import { isStateImpact, createEmptyImpact, resetImpactTimestampCounter } from "@/engine/core/StateImpact";
+import type { StateImpact } from "@/engine/core/StateImpact";
 
 describe("StateImpact", () => {
   describe("isStateImpact", () => {

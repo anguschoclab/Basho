@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { getHeyaStaffBonuses } from "../staff";
-import { MockFactory } from "../../test/utils/MockFactory";
+import { getHeyaStaffBonuses } from "@/engine/staff";
+import { MockFactory } from "../../helpers/utils/MockFactory";
 
 describe("Staff System Integration", () => {
   it("should calculate aggregate stacking bonuses for multiple staff", () => {

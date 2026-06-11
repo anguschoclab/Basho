@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file global mock
 // @ts-ignore
 global.calculatePerceivedStats = vi.fn(() => ({ power: "Dominant" }));
-vi.mock("../../engine/events", () => ({
+vi.mock("@/engine/events", () => ({
   queryEvents: vi.fn(
      
     (world: any) => world.events?.log?.map((e: any) => ({ ...e, type: e.type || "GENERIC" })) || []
@@ -16,13 +16,13 @@ import {
   getOzekiRunCandidates,
   buildWeeklyDigest,
   getKadobanDrama,
-} from "../uiDigest";
+} from "@/presenters/uiDigest";
 import { mockRikishi as generateMockRikishi } from "../engine/utils";
 import type { RikishiStats, Rikishi } from "../../engine/types/rikishi";
 import type { WorldState } from "../../engine/types/world";
 
 // Mock calculatePerceivedStats properly
-vi.mock("../rikishiUI", () => ({
+vi.mock("@/presenters/rikishiUI", () => ({
   calculatePerceivedStats: vi.fn().mockReturnValue({ power: "Dominant" }),
   toRikishiDescriptor: vi.fn().mockReturnValue("Veteran"),
   projectRikishi: vi.fn((r: { id: string; shikona: string }) => ({

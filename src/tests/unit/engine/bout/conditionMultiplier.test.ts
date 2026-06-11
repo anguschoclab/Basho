@@ -6,7 +6,7 @@
  * 4. condition recovers daily during interim
  */
 import { describe, it, expect } from "vitest";
-import { conditionMultiplier } from "../boutPhysics";
+import { conditionMultiplier } from "@/engine/bout/boutPhysics";
 
 describe("conditionMultiplier", () => {
   it("returns 1.0 when condition is 100 (peak)", () => {
@@ -27,7 +27,7 @@ describe("conditionMultiplier", () => {
   });
 });
 
-import { tickCondition } from "../../tick/conditionTick";
+import { tickCondition } from "@/engine/tick/conditionTick";
 import { mockRikishi } from "../utils";
 
 describe("tickCondition — basho decay", () => {

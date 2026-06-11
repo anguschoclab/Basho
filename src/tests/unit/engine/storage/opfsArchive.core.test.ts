@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { ArchiveConflictError, OPFSArchiveService } from "../opfsArchive";
+import { ArchiveConflictError, OPFSArchiveService } from "@/engine/storage/opfsArchive";
 
 describe("OPFSArchiveService core functionality", () => {
   let service: OPFSArchiveService;

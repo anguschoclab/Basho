@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { runPipeline, emptyDeltas, defaultActiveModifiers } from "../pipelineRunner";
-import type { WorldState } from "../../types/world";
+import { runPipeline, emptyDeltas, defaultActiveModifiers } from "@/engine/tick/pipelineRunner";
+import type { WorldState } from "@/engine/types/world";
 
 describe("pipelineRunner", () => {
   it("runs phases in sequence", () => {

@@ -4,9 +4,9 @@
  * Requires total >= 3 bouts; below that returns 0.
  */
 import { describe, it, expect } from "vitest";
-import { h2hConfidence } from "../boutPhysics";
+import { h2hConfidence } from "@/engine/bout/boutPhysics";
 import { mockRikishi } from "../utils";
-import type { H2HRecord } from "../../types/records";
+import type { H2HRecord } from "@/engine/types/records";
 
 function makeRikishiWithH2H(id: string, opponentId: string, record: H2HRecord) {
   return mockRikishi(id, { h2h: { [opponentId]: record } });

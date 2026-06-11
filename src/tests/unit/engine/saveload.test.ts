@@ -1,17 +1,17 @@
  
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { saveGame, loadGame } from "../saveload";
-import { setStorageProvider, resetStorageProvider, type IStorageProvider } from "../storageProvider";
-import { makeMockWorld } from "utils";
-import { runArchivalPruning } from "../archival";
-import { SerializationService } from "../persistence/SerializationService";
+import { saveGame, loadGame } from "@/engine/saveload";
+import { setStorageProvider, resetStorageProvider, type IStorageProvider } from "@/engine/storageProvider";
+import { makeMockWorld } from "./utils";
+import { runArchivalPruning } from "@/engine/archival";
+import { SerializationService } from "@/engine/persistence/SerializationService";
 
 // Mock dependencies
-vi.mock("../archival", () => ({
+vi.mock("@/engine/archival", () => ({
   runArchivalPruning: vi.fn(() => ({ metadata: { source: "archival", timestamp: 0 } })),
 }));
 
-vi.mock("../persistence/SerializationService", () => ({
+vi.mock("@/engine/persistence/SerializationService", () => ({
   SerializationService: {
     serializeWorld: vi.fn((world) => world),
     deserializeWorld: vi.fn((serialized) => serialized),

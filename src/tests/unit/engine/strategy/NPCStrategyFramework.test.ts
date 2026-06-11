@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi } from "vitest";
-import type { StrategyContext, StrategyRule } from "../NPCStrategyFramework";
+import type { StrategyContext, StrategyRule } from "@/engine/strategy/NPCStrategyFramework";
 import {
   evaluateRule,
   evaluateRulesExclusive,
@@ -14,9 +14,9 @@ import {
   calculateMoodAdjustedThreshold,
   trySpendResource,
   adjustScore,
-} from "../NPCStrategyFramework";
-import type { Heya } from "../../types/heya";
-import type { Oyakata } from "../../types/oyakata";
+} from "@/engine/strategy/NPCStrategyFramework";
+import type { Heya } from "@/engine/types/heya";
+import type { Oyakata } from "@/engine/types/oyakata";
 
 // ============================================================================
 // Test Fixtures

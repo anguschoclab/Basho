@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { financeSlice } from "../financeSlice";
-import { GameState, GameAction } from "../gameTypes";
+import { financeSlice } from "@/contexts/financeSlice";
+import { GameState, GameAction } from "@/contexts/gameTypes";
 import { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 

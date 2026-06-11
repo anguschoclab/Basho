@@ -11,7 +11,7 @@ import type { SponsorRelationship, SponsorRole } from "./types/sponsors";
 import { rngForWorld } from "./rng";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
-import { isSponsorPlayerRelevant } from "./npc/npcEventSurfacing";
+import { isSponsorPlayerRelevant } from "./npcAI/eventSurfacing";
 
 export function calculateRunwayMonths(heya: Heya): number {
   const avgFacility =

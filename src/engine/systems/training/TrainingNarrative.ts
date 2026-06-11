@@ -10,7 +10,7 @@
  */
 
 import type { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "../../types/training";
-import { BardEngine } from "../../narrative/BardEngine";
+import { BardEngine } from "../../bard/BardEngine";
 import { SeededRNG } from "../../rng";
 
 function seededRng(world?: { rng?: SeededRNG }): SeededRNG {

@@ -1,12 +1,12 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { updateH2H, generateH2HCommentary, getH2HReport } from "../h2h";
-import { MockFactory } from "../../test/utils/MockFactory";
-import type { MatchResultLog } from "../types/records";
-import type { BoutResult } from "../types/basho";
-import type { H2HRecord } from "../types/records";
-import { applyImpact } from "../core/ImpactResolver";
+import { updateH2H, generateH2HCommentary, getH2HReport } from "@/engine/h2h";
+import { MockFactory } from "../../helpers/utils/MockFactory";
+import type { MatchResultLog } from "@/engine/types/records";
+import type { BoutResult } from "@/engine/types/basho";
+import type { H2HRecord } from "@/engine/types/records";
+import { applyImpact } from "@/engine/core/ImpactResolver";
 import { makeMockWorld } from "./utils";
-import { resetImpactTimestampCounter } from "../core/StateImpact";
+import { resetImpactTimestampCounter } from "@/engine/core/StateImpact";
 
 // ---------------------------------------------------------------------------
 // Helpers

@@ -4,12 +4,12 @@
  * plus a 1.5× selection weight boost to make the technique more likely to be chosen.
  */
 import { describe, it, expect } from "vitest";
-import { evaluateKimariteAttempt } from "../kimariteClassifier";
+import { evaluateKimariteAttempt } from "@/engine/bout/kimariteClassifier";
 import { mockRikishi } from "../utils";
-import { SeededRNG } from "../../rng";
-import type { PushBattleState, EngineStateV2 } from "../../types/combat-spatial";
-import type { Division } from "../../types/banzuke";
-import { initPhysicalBody } from "../boutSpatial";
+import { SeededRNG } from "@/engine/rng";
+import type { PushBattleState, EngineStateV2 } from "@/engine/types/combat-spatial";
+import type { Division } from "@/engine/types/banzuke";
+import { initPhysicalBody } from "@/engine/bout/boutSpatial";
 
 const DIVISION: Division = "makuuchi";
 const META = { tone: "classic", drift: {} };

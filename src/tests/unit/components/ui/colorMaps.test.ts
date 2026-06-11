@@ -10,7 +10,7 @@ import {
   BAND_COLORS,
   getHeatBandColor,
   getHeatBandLabel,
-} from "../../../components/ui/colorMaps";
+} from "@/components/ui/colorMaps";
 
 describe("colorMaps", () => {
   describe("STATUS_COLORS", () => {

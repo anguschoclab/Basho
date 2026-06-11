@@ -3,7 +3,7 @@
  * Verifies that when forces/torques are equal, neither fighter retreats or destabilizes.
  */
 import { describe, it, expect } from "vitest";
-import { resolveBoutPhysics } from "../boutPhysics";
+import { resolveBoutPhysics } from "@/engine/bout/boutPhysics";
 import { mockRikishi, makeMockBasho } from "../utils";
 
 describe("force-differential physics — tie scenarios", () => {

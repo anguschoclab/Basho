@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { opfsArchiveService, ArchiveConflictError } from "../../../engine/storage/opfsArchive";
-import { resetMockFileSystem, MockFileSystemDirectoryHandle } from "../../../test/setup";
+import { opfsArchiveService, ArchiveConflictError } from "@/engine/storage/opfsArchive";
+import { resetMockFileSystem, MockFileSystemDirectoryHandle } from "@/tests/setup";
 
 describe("Stable Lords: OPFS Archival System", () => {
   beforeEach(() => {

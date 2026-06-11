@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { resolveBanzukeTie, type BanzukeCandidate } from "../banzukeHelpers";
-import type { WorldState } from "../../types/world";
-import type { BashoPerformance } from "../../types/banzuke";
-import type { Rikishi } from "../../types/rikishi";
+import { resolveBanzukeTie, type BanzukeCandidate } from "@/engine/banzuke/banzukeHelpers";
+import type { WorldState } from "@/engine/types/world";
+import type { BashoPerformance } from "@/engine/types/banzuke";
+import type { Rikishi } from "@/engine/types/rikishi";
 
 describe("resolveBanzukeTie", () => {
   const mockBashoPerfA: BashoPerformance = {

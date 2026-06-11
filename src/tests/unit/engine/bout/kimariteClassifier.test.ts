@@ -1,12 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { evaluateKimariteAttempt } from "../kimariteClassifier";
+import { evaluateKimariteAttempt } from "@/engine/bout/kimariteClassifier";
 import { mockRikishi } from "../utils";
 import type {
   EngineStateV2,
   PushBattleState,
   BeltBattleState,
   PhysicalBody,
-} from "../../types/combat-spatial";
+} from "@/engine/types/combat-spatial";
 
  
 const mockRng: any = { next: () => 0.5 };

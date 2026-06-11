@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getHealthBadge, getMediaHeatLabel, getMediaToneColor } from "../PerceptionPresenter";
+import { getHealthBadge, getMediaHeatLabel, getMediaToneColor } from "@/presenters/PerceptionPresenter";
 import { Rikishi } from "../../engine/types/rikishi";
 
 describe("PerceptionPresenter", () => {

@@ -1,9 +1,9 @@
  
 import { describe, it, expect } from "vitest";
-import { scheduleDivisionDay } from "../schedule";
-import { getTotalBashodays, needsScheduleForDay } from "../scheduleHelpers";
+import { scheduleDivisionDay } from "@/engine/schedule";
+import { getTotalBashodays, needsScheduleForDay } from "@/engine/scheduleHelpers";
 import { mockRikishi, makeMockBasho, makeMockWorld } from "./utils";
-import type { BashoState } from "../types/basho";
+import type { BashoState } from "@/engine/types/basho";
 
 // ---------------------------------------------------------------------------
 // Helpers

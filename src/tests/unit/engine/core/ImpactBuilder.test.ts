@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { ImpactBuilder, createImpactBuilder, updateRikishiImpact, retireRikishiImpact } from "../ImpactBuilder";
+import { ImpactBuilder, createImpactBuilder, updateRikishiImpact, retireRikishiImpact } from "@/engine/core/ImpactBuilder";
 
 describe("ImpactBuilder", () => {
   describe("constructor and build", () => {

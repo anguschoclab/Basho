@@ -1,7 +1,7 @@
  
 import { describe, it, expect } from "vitest";
-import { concludeBashoCompetition } from "../CompetitionService";
-import { WorldState } from "../../types/world";
+import { concludeBashoCompetition } from "@/engine/lifecycle/CompetitionService";
+import { WorldState } from "@/engine/types/world";
 
 describe("Yokozuna Promotion Logic", () => {
   const mockRikishiId = "ozeki-1";

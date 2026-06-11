@@ -15,7 +15,7 @@ import type {
   EngineEventType,
 } from "./types/events";
 import type { Id } from "./types/common";
-import { BardEngine } from "./narrative/BardEngine";
+import { BardEngine } from "./bard/BardEngine";
 import { logEngineEvent } from "./events";
 
 export interface EventFactoryConfig {

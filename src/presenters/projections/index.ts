@@ -21,3 +21,8 @@ export * from "./governanceProjections";
 export * from "./rivalriesProjections";
 export * from "./historyProjections";
 export * from "./scoutingProjections";
+export * from "./rikishiProjection";
+export * from "./mediaProjection";
+export * from "./hofProjection";
+export * from "./sponsorProjection";
+export * from "./medicalProjection";

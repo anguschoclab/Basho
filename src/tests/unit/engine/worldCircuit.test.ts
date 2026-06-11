@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { generateInitialWorld } from "../systems/generation/WorldFactory";
-import { WorldCircuitService } from "../systems/worldCircuit/WorldCircuitService";
-import { phase06_yearly_boundary } from "../tick/phases/phase06_yearly_boundary";
-import { tickWeekNPC } from "../npcAI";
-import { resolveImpacts } from "../core/ImpactResolver";
-import { EntityCollection } from "../core/EntityCollection";
+import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { WorldCircuitService } from "@/engine/systems/worldCircuit/WorldCircuitService";
+import { phase06_yearly_boundary } from "@/engine/tick/phases/phase06_yearly_boundary";
+import { tickWeekNPC } from "@/engine/npcAI";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { EntityCollection } from "@/engine/core/EntityCollection";
 
 describe("World Circuit System Integration", () => {
   it("SHOULD generate invitations at the yearly boundary for all stables", () => {

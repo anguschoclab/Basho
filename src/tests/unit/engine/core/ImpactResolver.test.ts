@@ -3,10 +3,10 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import * as ImpactResolver from "../ImpactResolver";
-import type { WorldState } from "../../types/world";
-import type { StateImpact } from "../StateImpact";
-import type { Heya } from "../../types/heya";
+import * as ImpactResolver from "@/engine/core/ImpactResolver";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import type { Heya } from "@/engine/types/heya";
 import { mockRikishi } from "../utils";
 
 describe("ImpactResolver", () => {

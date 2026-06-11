@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { computeMovementUnits, bestTierAllowed } from "../banzuke/promotionLogic";
-import type { BanzukeEntry, BashoPerformance, Rank } from "../types/banzuke";
+import { computeMovementUnits, bestTierAllowed } from "@/engine/banzuke/promotionLogic";
+import type { BanzukeEntry, BashoPerformance, Rank } from "@/engine/types/banzuke";
 
 describe("promotionLogic.test.ts", () => {
   const createEntry = (id: string, rank: Rank, rankNumber?: number): BanzukeEntry => ({

@@ -5,10 +5,10 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { ElectronArchiveService } from "../../../engine/storage/electronArchive";
-import { mockElectronAPI, clearElectronMock } from "@/test/utils/electronMocks";
-import type { BoutResult, BashoResult } from "../../../engine/types/basho";
-import type { AlmanacSnapshot } from "../../../engine/almanac";
+import { ElectronArchiveService } from "@/engine/storage/electronArchive";
+import { mockElectronAPI, clearElectronMock } from "@/tests/helpers/utils/electronMocks";
+import type { BoutResult, BashoResult } from "@/engine/types/basho";
+import type { AlmanacSnapshot } from "@/engine/almanac";
 
 describe("ElectronArchiveService", () => {
   let service: ElectronArchiveService;

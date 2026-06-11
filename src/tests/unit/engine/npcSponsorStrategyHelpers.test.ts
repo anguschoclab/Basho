@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { countSponsors } from "../npcSponsorStrategyHelpers";
+import { countSponsors } from "@/engine/npcSponsorStrategyHelpers";
 import { makeMockWorld } from "./utils";
-import type { Sponsor, SponsorPool } from "../types/sponsors";
+import type { Sponsor, SponsorPool } from "@/engine/types/sponsors";
 
 describe("countSponsors", () => {
   it("should return 0 if sponsorPool is missing", () => {

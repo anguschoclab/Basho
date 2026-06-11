@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
-import { gameReducer } from "../gameReducer";
-import { initialGameState } from "../gameTypes";
-import type { GameAction } from "../gameTypes";
+import { gameReducer } from "@/contexts/gameReducer";
+import { initialGameState } from "@/contexts/gameTypes";
+import type { GameAction } from "@/contexts/gameTypes";
 import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
 import * as uiDigestModule from "@/presenters/uiDigest";
 

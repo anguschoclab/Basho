@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { runCareerJournalUpdates } from "../RegistryService";
-import { WorldState } from "../../types/world";
-import { BashoResult } from "../../types/basho";
+import { runCareerJournalUpdates } from "@/engine/lifecycle/RegistryService";
+import { WorldState } from "@/engine/types/world";
+import { BashoResult } from "@/engine/types/basho";
 
 describe("RegistryService", () => {
   describe("runCareerJournalUpdates", () => {

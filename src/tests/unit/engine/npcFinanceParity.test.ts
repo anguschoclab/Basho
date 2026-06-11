@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { WorldState } from "../types/world";
-import { Heya } from "../types/heya";
-import { Oyakata } from "../types/oyakata";
-import { DefaultFinanceStrategy } from "../npcFinanceStrategy";
+import { WorldState } from "@/engine/types/world";
+import { Heya } from "@/engine/types/heya";
+import { Oyakata } from "@/engine/types/oyakata";
+import { DefaultFinanceStrategy } from "@/engine/npcFinanceStrategy";
 
 describe("NPC Finance Style Parity", () => {
   let mockWorld: WorldState;

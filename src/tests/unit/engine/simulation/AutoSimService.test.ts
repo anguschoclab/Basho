@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { checkStopCondition, type AutoSimConfig } from "../AutoSimService";
+import { checkStopCondition, type AutoSimConfig } from "@/engine/simulation/AutoSimService";
 import { makeMockWorld, mockRikishi, makeMockBasho, makeMockHeya } from "../utils";
-import type { BashoSimResult } from "../../types/basho";
-import type { ChronicleReport } from "../../types/records";
+import type { BashoSimResult } from "@/engine/types/basho";
+import type { ChronicleReport } from "@/engine/types/records";
 
 describe("checkStopCondition", () => {
   const createMockConfig = (overrides?: Partial<AutoSimConfig>): AutoSimConfig => ({

@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { phase06_narrative } from "../phase06_narrative";
-import type { WorldState } from "../../../types/world";
+import { phase06_narrative } from "@/engine/tick/phases/phase06_narrative";
+import type { WorldState } from "@/engine/types/world";
 import { mockRikishi } from "../../utils";
-import type { MockHeya } from "../../../../__tests__/types/mockTypes";
+import type { Heya } from "@/engine/types/heya";
 
 describe("Phase 6: Narrative", () => {
   let world: WorldState;
@@ -11,7 +11,7 @@ describe("Phase 6: Narrative", () => {
     vi.clearAllMocks();
     world = {
       playerHeyaId: "heya-1",
-      heyas: new Map<string, MockHeya>([
+      heyas: new Map<string, any>([
         ["heya-1", { id: "heya-1", name: "Test Heya", funds: 1000 }],
       ]),
       rikishi: new Map([

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { formatYenToMan } from "../engineUtils";
+import { formatYenToMan } from "@/utils/engineUtils";
 
 describe("engineUtils", () => {
   describe("formatYenToMan", () => {

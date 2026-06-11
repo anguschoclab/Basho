@@ -5,7 +5,7 @@
  * Extracted from uiDigest.ts to eliminate monolithic structure.
  */
 
-import { BardEngine } from "../../engine/narrative/BardEngine";
+import { BardEngine } from "../../engine/bard/BardEngine";
 import { SeededRNG } from "../../engine/rng";
 
 /**

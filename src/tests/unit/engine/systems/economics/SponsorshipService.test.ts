@@ -6,13 +6,13 @@ import {
   applyAchievementImpact,
   computeStarPower,
   processSponsorChurn,
-} from "../SponsorshipService";
-import type { WorldState } from "../../../types/world";
-import type { Sponsor, SponsorPool, Koenkai } from "../../../types/sponsors";
-import type { Heya } from "../../../types/heya";
+} from "@/engine/systems/economy/SponsorshipService";
+import type { WorldState } from "@/engine/types/world";
+import type { Sponsor, SponsorPool, Koenkai } from "@/engine/types/sponsors";
+import type { Heya } from "@/engine/types/heya";
 import { mockRikishi } from "../../utils";
-import { resolveImpacts } from "../../../core/ImpactResolver";
-import { rngFromSeed } from "../../../rng";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { rngFromSeed } from "@/engine/rng";
 
 describe("SponsorshipService", () => {
   beforeEach(() => {

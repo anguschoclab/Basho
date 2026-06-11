@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { BardEngine, interpolate } from "./BardEngine";
-import { SeededRNG } from "../rng";
+import { BardEngine, interpolate } from "@/engine/bard/BardEngine";
+import { SeededRNG } from "@/engine/rng";
 
 describe("BardEngine Interpolation Tagging", () => {
   beforeEach(() => {

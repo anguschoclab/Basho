@@ -12,7 +12,7 @@ import type { TalentCandidate } from "../../types/talent";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { clampInt } from "../../utils/math";
-import { BardEngine } from "../../narrative/BardEngine";
+import { BardEngine } from "../../bard/BardEngine";
 import type { SeededRNG } from "../../rng";
 import { rngForWorld } from "../../rng";
 

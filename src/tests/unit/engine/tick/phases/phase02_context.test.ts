@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { phase02_context } from "../phase02_context";
-import { applyImpact } from "../../../core/ImpactResolver";
-import type { WorldState } from "../../../types/world";
-import type { MockWorldState, MockHeya } from "../../../../__tests__/types/mockTypes";
+import { phase02_context } from "@/engine/tick/phases/phase02_context";
+import { applyImpact } from "@/engine/core/ImpactResolver";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
 
 describe("Phase 2: Context", () => {
   let world: WorldState;
@@ -10,7 +10,7 @@ describe("Phase 2: Context", () => {
   beforeEach(() => {
     world = {
       playerHeyaId: "heya-1",
-      heyas: new Map<string, MockHeya>([
+      heyas: new Map<string, any>([
         [
           "heya-1",
           {

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { OPFSFileSystem } from "../OPFSFileSystem";
+import { OPFSFileSystem } from "@/engine/storage/OPFSFileSystem";
 
 describe("OPFSFileSystem", () => {
   let fs: OPFSFileSystem;

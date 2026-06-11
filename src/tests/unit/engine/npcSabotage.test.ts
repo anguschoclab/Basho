@@ -1,9 +1,9 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { WorldState } from "../types/world";
-import { Heya } from "../types/heya";
-import { Oyakata } from "../types/oyakata";
-import { DefaultGovernanceStrategy } from "../npcGovernanceStrategy";
-import { createImpactBuilder } from "../core/ImpactBuilder";
+import { WorldState } from "@/engine/types/world";
+import { Heya } from "@/engine/types/heya";
+import { Oyakata } from "@/engine/types/oyakata";
+import { DefaultGovernanceStrategy } from "@/engine/npcGovernanceStrategy";
+import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 
 describe("NPC Sabotage Logic", () => {
   let mockWorld: WorldState;

@@ -1,12 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { generateInitialWorld } from "../systems/generation/WorldFactory";
-import { resolveBout } from "../bout/boutResolver";
-import { EntityCollection } from "../core/EntityCollection";
-import { phase01_week_training } from "../tick/phases/phase01_week_training";
-import { resolveImpacts } from "../core/ImpactResolver";
-import { ensureHeyaTrainingState } from "../systems/training/TrainingService";
-import type { BoutContext } from "../bout/boutPhysics";
-import type { BashoState } from "../types/basho";
+import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { resolveBout } from "@/engine/bout/boutResolver";
+import { EntityCollection } from "@/engine/core/EntityCollection";
+import { phase01_week_training } from "@/engine/tick/phases/phase01_week_training";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { ensureHeyaTrainingState } from "@/engine/systems/training/TrainingService";
+import type { BoutContext } from "@/engine/bout/boutPhysics";
+import type { BashoState } from "@/engine/types/basho";
 
 describe("Player Agency Integration", () => {
   const world = generateInitialWorld("agency-test-seed");

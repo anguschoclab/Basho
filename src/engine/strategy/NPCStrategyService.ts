@@ -4,7 +4,7 @@ import { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "../types/tra
 import { RecruitmentPhilosophy } from "../oyakataStylePreferences";
 import { Style, BoutTactic } from "../types/combat";
 import { Id } from "../types/common";
-import { BardEngine } from "../narrative/BardEngine";
+import { BardEngine } from "../bard/BardEngine";
 import { SeededRNG } from "../rng";
 import {
   WELFARE_DISCIPLINE_ELEVATED_THRESHOLD,

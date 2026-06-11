@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { EntityCollection } from "../EntityCollection";
+import { EntityCollection } from "@/engine/core/EntityCollection";
 import { mockRikishi } from "../utils";
-import type { WorldState } from "../../types/world";
+import type { WorldState } from "@/engine/types/world";
 
 describe("EntityCollection", () => {
   const activeRikishi = mockRikishi("r1", { heyaId: "h1", isRetired: false } as any);

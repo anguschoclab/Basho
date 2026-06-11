@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { advanceOneDay } from "../tickDaily";
-import { runPipeline } from "../pipelineRunner";
-import * as phases from "../phases";
+import { advanceOneDay } from "@/engine/tick/tickDaily";
+import { runPipeline } from "@/engine/tick/pipelineRunner";
+import * as phases from "@/engine/tick/phases";
 import { makeMockWorld } from "../utils";
-import type { WorldState } from "../../types/world";
+import type { WorldState } from "@/engine/types/world";
 
 /**
  * Deep-freeze an object recursively to detect mutations in development.

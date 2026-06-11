@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { MockFactory } from "../../test/utils/MockFactory";
-import { phase01_week_recruitment } from "../tick/phases/phase01_week_recruitment";
-import { resolveImpacts } from "../core/ImpactResolver";
+import { MockFactory } from "../../helpers/utils/MockFactory";
+import { phase01_week_recruitment } from "@/engine/tick/phases/phase01_week_recruitment";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
 
 describe("TalentPoolConversion", () => {
   it("should convert a signed candidate into a Rikishi during the recruitment phase", () => {

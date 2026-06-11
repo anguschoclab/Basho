@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { generateInitialWorld } from "../systems/generation/WorldFactory";
-import { WorldState } from "../types/world";
+import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { WorldState } from "@/engine/types/world";
 
 describe("Engine Restoration Verification", () => {
   const seed = "test-seed-123";

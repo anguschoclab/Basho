@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { publishBanzukeUpdate } from "../BanzukePublisher";
+import { publishBanzukeUpdate } from "@/engine/banzuke/BanzukePublisher";
 import { makeMockWorld, makeMockBasho, mockRikishi } from "../utils";
-import { resolveImpacts } from "../../core/ImpactResolver";
-import type { WorldState } from "../../types/world";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import type { WorldState } from "@/engine/types/world";
 
 describe("BanzukePublisher", () => {
   let world: WorldState;

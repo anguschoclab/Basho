@@ -4,11 +4,11 @@
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
-import { TrainingService } from "../../systems/training/TrainingService";
-import { resolveImpacts } from "../../core/ImpactResolver";
+import { TrainingService } from "@/engine/systems/training/TrainingService";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { mockRikishi } from "../utils";
-import type { WorldState } from "../../types/world";
-import type { HeyaTrainingState, IndividualFocus } from "../../types/training";
+import type { WorldState } from "@/engine/types/world";
+import type { HeyaTrainingState, IndividualFocus } from "@/engine/types/training";
 
 // ---------------------------------------------------------------------------
 // Helpers

@@ -17,7 +17,7 @@ import { OyakataArchetype, Oyakata, OyakataMood } from "../types/oyakata";
 import { rngForWorld } from "../rng";
 import { getHeyaStyleBias, getOyakataForHeya, getHeya } from "../queries";
 import { getCachedPerception, PerceptionSnapshot } from "../perception";
-import { BardEngine } from "../narrative/BardEngine";
+import { BardEngine } from "../bard/BardEngine";
 
 /**
  * NPC Persona structure for decision making.

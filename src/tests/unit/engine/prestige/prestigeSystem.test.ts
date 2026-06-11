@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { bandIndex, updateStatureBand, runPrestigeDecay } from "../prestigeSystem";
-import type { WorldState } from "../../types/world";
-import type { Heya } from "../../types/heya";
+import { bandIndex, updateStatureBand, runPrestigeDecay } from "@/engine/prestige/prestigeSystem";
+import type { WorldState } from "@/engine/types/world";
+import type { Heya } from "@/engine/types/heya";
 import { mockRikishi } from "../utils";
-import { clearQueryCaches } from "../../queries";
-import { resolveImpacts } from "../../core/ImpactResolver";
+import { clearQueryCaches } from "@/engine/queries";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
 
 describe("Prestige System", () => {
   let world: WorldState;

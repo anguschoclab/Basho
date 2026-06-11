@@ -1,23 +1,23 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { bashoSlice } from "../bashoSlice";
-import type { GameState, GameAction } from "../gameTypes";
-import * as gameHelpers from "../gameHelpers";
-import * as worldEngine from "../../engine/world";
+import { bashoSlice } from "@/contexts/bashoSlice";
+import type { GameState, GameAction } from "@/contexts/gameTypes";
+import * as gameHelpers from "@/contexts/gameHelpers";
+import * as worldEngine from "@/engine/world";
 import * as tickOrchestrator from "../../engine/tick/tickOrchestrator";
 
 // Mock dependencies
-vi.mock("../gameHelpers", () => ({
+vi.mock("@/contexts/gameHelpers", () => ({
   autosaveWithSignal: vi.fn(),
 }));
 
-vi.mock("../../engine/world", () => ({
+vi.mock("@/engine/world", () => ({
   advanceBashoDay: vi.fn(),
   simulateBoutForToday: vi.fn().mockReturnValue({
     result: { winnerId: "w1", loserId: "l1", kimarite: "yorikiri" },
   }),
 }));
 
-vi.mock("../../engine/tick/tickOrchestrator", () => ({
+vi.mock("@/engine/tick/tickOrchestrator", () => ({
   cloneWorldForTick: vi.fn((world) => ({ ...world })),
 }));
 

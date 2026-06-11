@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { spawnNarrativeAgent, type NarrativeAgentContext } from "../NarrativeAgent";
-import { MockFactory } from "../../../test/utils/MockFactory";
-import type { Rikishi } from "../../types/rikishi";
+import { spawnNarrativeAgent, type NarrativeAgentContext } from "@/engine/agents/NarrativeAgent";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
+import type { Rikishi } from "@/engine/types/rikishi";
 
 describe("NarrativeAgent", () => {
   it("should trigger championship celebration for yusho in post_basho", () => {

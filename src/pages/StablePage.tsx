@@ -19,7 +19,7 @@ import { StableStatsTable } from "@/components/game/StableStatsTable";
 import { projectHeyaData } from "@/presenters/projections/heyaProjections";
 import { InfrastructureDashboard } from "@/components/stable/InfrastructureDashboard";
 import { SponsorshipHub } from "@/components/economy/SponsorshipHub";
-import { projectSponsorUIDigest } from "@/presenters/uiProjections";
+import { projectSponsorUIDigest } from "@/presenters/projections";
 import { ChronicleRoom } from "@/components/stable/ChronicleRoom";
 import { GlobalStrategicHub } from "@/components/stable/GlobalStrategicHub";
 import type { FacilityId } from "@/engine/types/infrastructure";

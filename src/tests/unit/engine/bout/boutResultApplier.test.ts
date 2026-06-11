@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { applyBoutResult } from "../boutResultApplier";
-import { WorldState } from "../../types/world";
-import { BashoName, BoutResult } from "../../types/basho";
-import { Rikishi } from "../../types/rikishi";
-import { MatchSchedule } from "../../types/basho";
+import { WorldState } from "@/engine/types/world";
+import { BashoName, BoutResult } from "@/engine/types/basho";
+import { Rikishi } from "@/engine/types/rikishi";
+import { MatchSchedule } from "@/engine/types/basho";
 
 describe("boutResultApplier", () => {
   describe("Per-Bout Career Record Updates", () => {
@@ -64,7 +64,7 @@ describe("boutResultApplier", () => {
               id: "test-heya",
               name: "Test Heya",
               rikishiIds: ["east", "west"],
-            } as unknown as import("../../types/heya").Heya,
+            } as unknown as import("@/engine/types/heya".Heya,
           ],
         ]),
         calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
@@ -172,7 +172,7 @@ describe("boutResultApplier", () => {
               id: "test-heya",
               name: "Test Heya",
               rikishiIds: ["east", "west"],
-            } as unknown as import("../../types/heya").Heya,
+            } as unknown as import("@/engine/types/heya".Heya,
           ],
         ]),
         calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
@@ -279,7 +279,7 @@ describe("boutResultApplier", () => {
               id: "test-heya",
               name: "Test Heya",
               rikishiIds: ["east", "west"],
-            } as unknown as import("../../types/heya").Heya,
+            } as unknown as import("@/engine/types/heya".Heya,
           ],
         ]),
         calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
@@ -386,7 +386,7 @@ describe("boutResultApplier", () => {
               id: "test-heya",
               name: "Test Heya",
               rikishiIds: ["east", "west"],
-            } as unknown as import("../../types/heya").Heya,
+            } as unknown as import("@/engine/types/heya".Heya,
           ],
         ]),
         calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
@@ -493,7 +493,7 @@ describe("boutResultApplier", () => {
               id: "test-heya",
               name: "Test Heya",
               rikishiIds: ["east", "west"],
-            } as unknown as import("../../types/heya").Heya,
+            } as unknown as import("@/engine/types/heya".Heya,
           ],
         ]),
         calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
@@ -601,7 +601,7 @@ describe("boutResultApplier", () => {
               id: "test-heya",
               name: "Test Heya",
               rikishiIds: ["east", "west"],
-            } as unknown as import("../../types/heya").Heya,
+            } as unknown as import("@/engine/types/heya".Heya,
           ],
         ]),
         calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },

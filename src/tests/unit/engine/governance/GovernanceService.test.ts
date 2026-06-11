@@ -12,10 +12,10 @@
 
  
 import { describe, it, expect } from "vitest";
-import { reportScandal, tickWeekGovernance } from "./systems/governance/ScandalService";
-import { resolveImpacts } from "../../core/ImpactResolver";
+import { reportScandal, tickWeekGovernance } from "@/engine/systems/governance/ScandalService";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockWorld, makeMockHeya } from "../utils";
-import type { WorldState } from "../../types/world";
+import type { WorldState } from "@/engine/types/world";
 
 // ── Setup ──────────────────────────────────────────────────────────────────
 

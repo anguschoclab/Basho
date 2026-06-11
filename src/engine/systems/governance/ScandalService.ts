@@ -2,14 +2,14 @@
  * GovernanceService.ts — Core logic for reporting scandals and managing institutional status.
  */
 
-import { WorldState } from "../types/world";
-import { generateGovernanceHeadline } from "../systems/media/MediaService";
-import type { GovernanceStatus, GovernanceRuling } from "../types/economy";
-import { rngForWorld, rngFromSeed } from "../rng";
-import { BardEngine } from "../narrative/BardEngine";
-import { createImpactBuilder } from "../core/ImpactBuilder";
-import type { StateImpact } from "../core/StateImpact";
-import { getHeya } from "../queries";
+import { WorldState } from "../../types/world";
+import { generateGovernanceHeadline } from "../media/MediaService";
+import type { GovernanceStatus, GovernanceRuling } from "../../types/economy";
+import { rngForWorld, rngFromSeed } from "../../rng";
+import { BardEngine } from "../../bard/BardEngine";
+import { createImpactBuilder } from "../../core/ImpactBuilder";
+import type { StateImpact } from "../../core/StateImpact";
+import { getHeya } from "../../queries";
 
 /**
  * Reports a scandal and applies immediate score impacts and headlines.

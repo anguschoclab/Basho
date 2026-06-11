@@ -6,7 +6,7 @@ import type { WorldState } from "../../types/world";
 import { MediaHeadline, HeadlineTier } from "../../types/media";
 import type { GovernanceRuling } from "../../types/economy";
 import { rngForWorld } from "../../rng";
-import { BardEngine } from "../../narrative/BardEngine";
+import { BardEngine } from "../../bard/BardEngine";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { getHeya } from "../../queries";

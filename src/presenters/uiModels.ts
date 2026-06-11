@@ -11,4 +11,4 @@ export * from "./heyaUI";
 export * from "./bashoUI";
 export * from "./banzukeUI";
 export * from "./boutPreviewUI";
-export * from "./types/uiDigest";
+export * from "./uiDigestTypes";

@@ -6,7 +6,7 @@
 import { SeededRNG } from "../../rng";
 import { WorldState } from "../../types/world";
 import { HeadlineTier } from "../../types/media";
-import { BardEngine } from "../../narrative/BardEngine";
+import { BardEngine } from "../../bard/BardEngine";
 import { getRikishi } from "../../queries";
 import {
   MAIN_EVENT_HEADLINE_CHANCE,

@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { checkStopCondition } from "../simulation/AutoSimService";
-import type { AutoSimConfig, StopCondition } from "../simulation/AutoSimService";
-import type { BashoSimResult } from "../types/basho";
-import { MockFactory } from "../../test/utils/MockFactory";
-import { ChronicleService } from "../simulation/ChronicleService";
+import { checkStopCondition } from "@/engine/simulation/AutoSimService";
+import type { AutoSimConfig, StopCondition } from "@/engine/simulation/AutoSimService";
+import type { BashoSimResult } from "@/engine/types/basho";
+import { MockFactory } from "../../helpers/utils/MockFactory";
+import { ChronicleService } from "@/engine/simulation/ChronicleService";
 
 describe("checkStopCondition", () => {
   const chronicle = ChronicleService.createEmptyReport();

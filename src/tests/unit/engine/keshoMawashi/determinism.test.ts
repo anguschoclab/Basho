@@ -6,8 +6,8 @@
 
  
 import { describe, it, expect } from "vitest";
-import { generateHeyaBrandIdentities } from "../../systems/keshoMawashi/HeyaBrandGenerator";
-import { generateKeshoMawashi } from "../../systems/keshoMawashi/KeshoMawashiGenerator";
+import { generateHeyaBrandIdentities } from "@/engine/systems/keshoMawashi/HeyaBrandGenerator";
+import { generateKeshoMawashi } from "@/engine/systems/keshoMawashi/KeshoMawashiGenerator";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
 
 describe("Kesho-Mawashi Determinism", () => {

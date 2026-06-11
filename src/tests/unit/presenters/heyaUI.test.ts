@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
-import { projectHeya } from "../heyaUI";
+import { projectHeya } from "@/presenters/heyaUI";
 import { makeMockHeya, mockRikishi, makeMockWorld } from "../engine/utils";
 import type { Staff } from "../../engine/types/staff";
 import type { Oyakata } from "../../engine/types/oyakata";
@@ -14,13 +14,13 @@ import type { Oyakata } from "../../engine/types/oyakata";
 type Style = "oshi" | "yotsu" | "hybrid";
 
 // Mock query functions
-vi.mock("../../engine/queries", () => ({
+vi.mock("@/engine/queries", () => ({
   getOyakataForHeya: vi.fn(),
   getHeyaStaff: vi.fn(),
   getHeyaStyleBias: vi.fn(),
 }));
 
-import { getOyakataForHeya, getHeyaStaff, getHeyaStyleBias } from "../../engine/queries";
+import { getOyakataForHeya, getHeyaStaff, getHeyaStyleBias } from "@/engine/queries";
 
 const mockGetOyakataForHeya = getOyakataForHeya as Mock;
 const mockGetHeyaStaff = getHeyaStaff as Mock;

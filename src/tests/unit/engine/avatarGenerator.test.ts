@@ -9,8 +9,8 @@ import {
   generateAvatarConfig,
   updateAvatarForAging,
   updateHairstyleForPromotion,
-} from "../avatarGenerator";
-import { NATIONALITY_SKIN_TONES, HAIR_COLORS } from "../types/avatar";
+} from "@/engine/avatarGenerator";
+import { NATIONALITY_SKIN_TONES, HAIR_COLORS } from "@/engine/types/avatar";
 
 describe("Avatar Generator", () => {
   describe("generateAvatarConfig", () => {

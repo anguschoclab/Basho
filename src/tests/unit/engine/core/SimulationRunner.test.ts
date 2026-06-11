@@ -13,11 +13,11 @@ import { makeMockWorld } from "../utils";
 
 // ── Module mocks (vi.mock is hoisted before all imports) ──────────────────
 
-vi.mock("../../prestige/prestigeSystem", () => ({
+vi.mock("@/engine/prestige/prestigeSystem", () => ({
   runPrestigeDecay: vi.fn(() => ({ metadata: { source: "prestige", timestamp: 0 } })),
 }));
 
-vi.mock("../../systems/governance/governanceReview", () => ({
+vi.mock("@/engine/systems/governance/governanceReview", () => ({
   runGovernanceReview: vi.fn(() => ({ metadata: { source: "governance", timestamp: 0 } })),
   runAIMetaDrift: vi.fn(() => ({ metadata: { source: "aiMeta", timestamp: 0 } })),
   runRetirements: vi.fn(() => ({
@@ -25,36 +25,36 @@ vi.mock("../../systems/governance/governanceReview", () => ({
   })),
 }));
 
-vi.mock("../../records", () => ({
+vi.mock("@/engine/records", () => ({
   onBashoEnded: vi.fn(() => ({ metadata: { source: "records", timestamp: 0 } })),
 }));
 
-vi.mock("../../systems/economy/SponsorshipService", () => ({
+vi.mock("@/engine/systems/economy/SponsorshipService", () => ({
   processSponsorChurn: vi.fn(() => ({ metadata: { source: "sponsors", timestamp: 0 } })),
 }));
 
-vi.mock("../../naturalization", () => ({
+vi.mock("@/engine/naturalization", () => ({
   checkNaturalizations: vi.fn(() => ({ metadata: { source: "naturalization", timestamp: 0 } })),
 }));
 
-vi.mock("../../archival", () => ({
+vi.mock("@/engine/archival", () => ({
   runArchivalPruning: vi.fn(() => ({ metadata: { source: "archival", timestamp: 0 } })),
 }));
 
-vi.mock("../../lifecycle/RegistryService", () => ({
+vi.mock("@/engine/lifecycle/RegistryService", () => ({
   runCareerJournalUpdates: vi.fn(() => ({ metadata: { source: "careerJournal", timestamp: 0 } })),
   openRecruitmentWindow: vi.fn(() => ({ metadata: { source: "recruitment", timestamp: 0 } })),
 }));
 
-vi.mock("../../history", () => ({
+vi.mock("@/engine/history", () => ({
   runHistoryUpdates: vi.fn(() => ({ metadata: { source: "history", timestamp: 0 } })),
 }));
 
-vi.mock("./systems/governance/ScandalService", () => ({
+vi.mock("@/engine/systems/governance/ScandalService", () => ({
   runElections: vi.fn(() => ({ metadata: { source: "elections", timestamp: 0 } })),
 }));
 
-vi.mock("../../systems/media/MediaService", () => ({
+vi.mock("@/engine/systems/media/MediaService", () => ({
   processWeeklyMediaBoundary: vi.fn(() => ({ metadata: { source: "media", timestamp: 0 } })),
   snapshotMediaHeatForBasho: vi.fn((s: unknown) => s),
 }));
@@ -62,26 +62,26 @@ vi.mock("../../systems/media/MediaService", () => ({
 // NOTE: ImpactResolver is NOT mocked here to avoid polluting other test files
 // We'll spy on it in beforeEach instead
 
-vi.mock("../../systems/generation/TalentPoolService", () => ({
+vi.mock("@/engine/systems/generation/TalentPoolService", () => ({
   fillVacanciesForNPC: vi.fn(),
   finalizeSignedCandidates: vi.fn(),
 }));
 
 // ── Import module under test AFTER mocks ──────────────────────────────────
 
-import { runPostBashoResolution } from "../../core/SimulationRunner";
-import { runPrestigeDecay } from "../../prestige/prestigeSystem";
+import { runPostBashoResolution } from "@/engine/core/SimulationRunner";
+import { runPrestigeDecay } from "@/engine/prestige/prestigeSystem";
 import {
   runGovernanceReview,
   runRetirements,
   runAIMetaDrift,
-} from "../../systems/governance/governanceReview";
-import { onBashoEnded } from "../../records";
-import * as ImpactResolver from "../../core/ImpactResolver";
-import { openRecruitmentWindow } from "../../lifecycle/RegistryService";
-import { runArchivalPruning } from "../../archival";
-import type { WorldState } from "../../types/world";
-import type { StateImpact } from "../../core/StateImpact";
+} from "@/engine/systems/governance/governanceReview";
+import { onBashoEnded } from "@/engine/records";
+import * as ImpactResolver from "@/engine/core/ImpactResolver";
+import { openRecruitmentWindow } from "@/engine/lifecycle/RegistryService";
+import { runArchivalPruning } from "@/engine/archival";
+import type { WorldState } from "@/engine/types/world";
+import type { StateImpact } from "@/engine/core/StateImpact";
 
 beforeEach(() => {
   vi.clearAllMocks();

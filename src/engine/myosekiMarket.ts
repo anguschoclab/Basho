@@ -10,7 +10,7 @@ import type { Oyakata } from "./types/oyakata";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
 import { stableSort } from "./utils/sort";
-import { isMyosekiPlayerRelevant } from "./npc/npcEventSurfacing";
+import { isMyosekiPlayerRelevant } from "./npcAI/eventSurfacing";
 import { getHeya } from "./queries";
 
 const TOTAL_MYOSEKI = 105;

@@ -5,10 +5,10 @@ import {
   queryEvents,
   EventBus,
   tickWeekEvents,
-} from "../events";
-import { MockFactory } from "../../test/utils/MockFactory";
-import type { EngineEventType, EventsState } from "../types/events";
-import type { WorldState } from "../types/world";
+} from "@/engine/events";
+import { MockFactory } from "../../helpers/utils/MockFactory";
+import type { EngineEventType, EventsState } from "@/engine/types/events";
+import type { WorldState } from "@/engine/types/world";
 
 describe("events.test.ts - Core Bus", () => {
   describe("ensureEventsState", () => {

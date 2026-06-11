@@ -4,9 +4,9 @@
  * depth head-start rather than always beginning at "standard".
  */
 import { describe, it, expect } from "vitest";
-import { initBeltBattle } from "../boutGrip";
+import { initBeltBattle } from "@/engine/bout/boutGrip";
 import { mockRikishi } from "../utils";
-import { SeededRNG } from "../../rng";
+import { SeededRNG } from "@/engine/rng";
 
 const rng = new SeededRNG("grip-depth-test");
 

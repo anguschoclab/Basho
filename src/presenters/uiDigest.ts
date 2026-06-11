@@ -76,7 +76,7 @@ export {
 } from "./projections";
 
 // Re-exports from utilities
-export { resolveRegistryLabel, enrichRikishiForUI } from "./utilities/uiUtilities";
+export { resolveRegistryLabel, enrichRikishiForUI } from "./uiUtilities";
 
 // Original re-exports from existing modules (preserved for compatibility)
 export { projectRikishi } from "./rikishiUI";
@@ -114,7 +114,7 @@ export {
   projectHOFUIDigest,
   projectSponsorUIDigest,
   projectMedicalUIDigest,
-} from "./uiProjections";
+} from "./projections";
 
 // ─────────────────────────────────────────
 // Re-exports of safe engine constants/utilities for UI

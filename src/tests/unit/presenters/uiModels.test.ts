@@ -3,8 +3,8 @@ import { vi } from "vitest";
 // @ts-ignore
 global.calculatePerceivedStats = vi.fn(() => ({ power: "Dominant" }));
 import { describe, it, expect } from "vitest";
-import { projectRikishi, projectHeya } from "../uiModels";
-import { generateInitialWorld } from "../../engine/systems/generation/WorldFactory";
+import { projectRikishi, projectHeya } from "@/presenters/uiModels";
+import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
 
 describe("UI Models Projections", () => {
   it("should project a Rikishi safely for the UI without leaking raw stats", () => {

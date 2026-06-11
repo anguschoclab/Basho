@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { MockFactory } from "../../test/utils/MockFactory";
-import type { EngineCommand, EngineEvent } from "../worker/types";
+import { MockFactory } from "../../helpers/utils/MockFactory";
+import type { EngineCommand, EngineEvent } from "@/engine/worker/types";
 import type { UIDigest } from "../../presenters/uiDigest";
 
 // Mock the self object for Web Worker environment before importing the worker
@@ -18,18 +18,18 @@ mockGlobal.postMessage = mockPostMessage;
 mockGlobal.onmessage = null;
 
 // Mock other dependencies
-vi.mock("../../presenters/uiDigest", () => ({
+vi.mock("@/presenters/uiDigest", () => ({
   buildWeeklyDigest: vi.fn((world) => ({
     mockDigest: true,
     worldSeed: world?.seed,
   })),
 }));
 
-vi.mock("../systems/generation/WorldFactory", () => ({
+vi.mock("@/engine/systems/generation/WorldFactory", () => ({
   generateInitialWorld: vi.fn((seed) => MockFactory.createWorld({ seed })),
 }));
 
-vi.mock("../tick/tickOrchestrator", () => ({
+vi.mock("@/engine/tick/tickOrchestrator", () => ({
   tickOrchestrator: vi.fn((world) => ({ ...world, ticked: true })),
   cloneWorldForTick: vi.fn((world) => world),
 }));
@@ -189,7 +189,7 @@ describe("engine.worker", () => {
 
   it("should handle generic errors", async () => {
     // We mock the generateInitialWorld to throw an error for this specific test
-    const { generateInitialWorld } = await import("../systems/generation/WorldFactory");
+    const { generateInitialWorld } = await import("@/engine/systems/generation/WorldFactory";
     (generateInitialWorld as vi.Mock).mockImplementationOnce(() => {
       throw new Error("Test error message");
     });
@@ -206,7 +206,7 @@ describe("engine.worker", () => {
   });
 
   it("should handle error without message property gracefully", async () => {
-    const { generateInitialWorld } = await import("../systems/generation/WorldFactory");
+    const { generateInitialWorld } = await import("@/engine/systems/generation/WorldFactory";
     (generateInitialWorld as vi.Mock).mockImplementationOnce(() => {
       throw "String error instead of Error object";
     });

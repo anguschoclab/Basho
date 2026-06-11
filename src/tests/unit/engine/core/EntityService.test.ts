@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { EntityService } from "../EntityService";
-import type { WorldState } from "../../types/world";
+import { EntityService } from "@/engine/core/EntityService";
+import type { WorldState } from "@/engine/types/world";
 
 describe("EntityService", () => {
   describe("ensureState", () => {

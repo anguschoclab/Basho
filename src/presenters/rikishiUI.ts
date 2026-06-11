@@ -15,7 +15,7 @@ import { getCareerPhase } from "../engine/systems/training/TrainingMath";
 import { getSalaryBreakdown, type SalaryBreakdown } from "../engine/economics_awards";
 import { RANK_HIERARCHY } from "../engine/types/banzuke";
 import { NarrativeService } from "../engine/systems/narrative/NarrativeService";
-import { BardEngine } from "../engine/narrative/BardEngine";
+import { BardEngine } from "../engine/bard/BardEngine";
 import { SeededRNG } from "../engine/rng";
 import type { AgeBand, WeightBand, HeightBand } from "../engine/systems/narrative/NarrativeBands";
 

@@ -1,11 +1,11 @@
 import { describe, it, expect, vi } from "vitest";
-import { consolidateOyakataMemory, makeNPCWeeklyDecision } from "../npcAI";
-import { resolveImpacts } from "../core/ImpactResolver";
-import * as PersonaService from "../systems/NPCPersonaService";
-import { MockFactory } from "../../test/utils/MockFactory";
-import type { Id } from "../types/common";
+import { consolidateOyakataMemory, makeNPCWeeklyDecision } from "@/engine/npcAI";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import * as PersonaService from "@/engine/systems/NPCPersonaService";
+import { MockFactory } from "../../helpers/utils/MockFactory";
+import type { Id } from "@/engine/types/common";
 
-vi.mock("../systems/NPCPersonaService", () => ({
+vi.mock("@/engine/systems/NPCPersonaService", () => ({
   getManagerPersona: vi.fn(),
 }));
 

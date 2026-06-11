@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { getOyakataStyleProfile, scoreRecruitForOyakata } from "../oyakataStylePreferences";
-import { MockFactory } from "../../test/utils/MockFactory";
-import type { CombatArchetype, Style } from "../types/combat";
+import { getOyakataStyleProfile, scoreRecruitForOyakata } from "@/engine/oyakataStylePreferences";
+import { MockFactory } from "../../helpers/utils/MockFactory";
+import type { CombatArchetype, Style } from "@/engine/types/combat";
 
 describe("getOyakataStyleProfile — innovator includes defensive", () => {
   it("innovator philosophy lists defensive as a preferred archetype", () => {

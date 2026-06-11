@@ -10,7 +10,7 @@ import {
   computeTachiaiPower,
   boutFatigueIncrement,
   edgeCrisisRecoveryChance,
-} from "../boutPhysics";
+} from "@/engine/bout/boutPhysics";
 import { mockRikishi } from "../utils";
 
 // ---------------------------------------------------------------------------

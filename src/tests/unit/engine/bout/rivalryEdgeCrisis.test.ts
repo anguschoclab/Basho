@@ -4,7 +4,7 @@
  * This test verifies the additional spite→mental pathway for edge crisis.
  */
 import { describe, it, expect } from "vitest";
-import { edgeCrisisRecoveryChance } from "../boutPhysics";
+import { edgeCrisisRecoveryChance } from "@/engine/bout/boutPhysics";
 import { mockRikishi } from "../utils";
 
 describe("edgeCrisisRecoveryChance — rivalry spite mental boost", () => {
@@ -39,7 +39,7 @@ describe("edgeCrisisRecoveryChance — rivalry spite mental boost", () => {
  * Integration: boutResolver applies rivalry spite to mental before calling boutPhysics.
  * This is tested via the module exports, not full bout simulation.
  */
-import { applyRivalryToRikishi } from "../../bout/boutResolver";
+import { applyRivalryToRikishi } from "@/engine/bout/boutResolver";
 
 describe("applyRivalryToRikishi — spite boosts mental for edge crisis", () => {
   it("boosts mental by up to 20% when spite is at max (100)", () => {

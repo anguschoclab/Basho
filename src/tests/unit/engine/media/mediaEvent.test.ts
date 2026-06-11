@@ -1,8 +1,8 @@
  
 import { describe, it, expect, beforeEach } from "vitest";
-import { handleMediaEvent } from "../../systems/media/MediaService";
-import { resolveImpacts } from "../../core/ImpactResolver";
-import type { WorldState } from "../../types/world";
+import { handleMediaEvent } from "@/engine/systems/media/MediaService";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import type { WorldState } from "@/engine/types/world";
 
 describe("handleMediaEvent", () => {
   let mockWorld: WorldState;
