@@ -4,7 +4,7 @@ import {
   assignKenshoBanners,
   calculateKenshoEnvelopes,
 } from "@/engine/systems/economy/KenshoService";
-import { rngFromSeed, SeededRNG } from "@/engine/rng";
+import { rngFromSeed } from "@/engine/rng";
 import type { SponsorPool, Sponsor } from "@/engine/types/sponsors";
 import type { WorldState } from "@/engine/types/world";
 import { mockRikishi } from "../../utils";

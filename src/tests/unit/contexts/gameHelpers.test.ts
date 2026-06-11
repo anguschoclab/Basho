@@ -21,7 +21,6 @@ const mockAutosave = autosave as Mock;
 describe("gameHelpers", () => {
   describe("autosaveWithSignal", () => {
     const mockWorld = { version: 1 } as any;
-    const mockSaveData = { world: mockWorld };
 
     beforeEach(() => {
       vi.clearAllMocks();

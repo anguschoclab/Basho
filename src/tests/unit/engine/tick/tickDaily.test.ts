@@ -7,7 +7,6 @@ import {
   enterInterim,
 } from "@/engine/tick/tickDaily";
 import { makeMockWorld } from "../utils";
-import type { WorldState } from "@/engine/types/world";
 import * as pipelineRunner from "@/engine/tick/pipelineRunner";
 
 describe("tickDaily", () => {
@@ -21,9 +20,9 @@ describe("tickDaily", () => {
       const nextWorld = advanceOneDay(world);
 
       expect(nextWorld.dayIndexGlobal).toBe(11);
-      expect(nextWorld.calendar.currentDay).toBe(2);
-      expect(nextWorld.calendar.month).toBe(1);
-      expect(nextWorld.calendar.year).toBe(2025);
+      expect(nextWorld.calendar!.currentDay).toBe(2);
+      expect(nextWorld.calendar!.month).toBe(1);
+      expect(nextWorld.calendar!.year).toBe(2025);
     });
 
     it("resets _daysSinceLastWeeklyTick on weekly tick (7 days)", () => {
@@ -57,8 +56,8 @@ describe("tickDaily", () => {
 
       const nextWorld = advanceOneDay(world);
 
-      expect(nextWorld.calendar.currentDay).toBe(1);
-      expect(nextWorld.calendar.month).toBe(2);
+      expect(nextWorld.calendar!.currentDay).toBe(1);
+      expect(nextWorld.calendar!.month).toBe(2);
       expect(nextWorld.transientContext?.boundaries?.monthBoundary).toBe(true);
 
       // Should have run month boundary pipeline
@@ -77,9 +76,9 @@ describe("tickDaily", () => {
 
       const nextWorld = advanceOneDay(world);
 
-      expect(nextWorld.calendar.currentDay).toBe(1);
-      expect(nextWorld.calendar.month).toBe(1);
-      expect(nextWorld.calendar.year).toBe(2026);
+      expect(nextWorld.calendar!.currentDay).toBe(1);
+      expect(nextWorld.calendar!.month).toBe(1);
+      expect(nextWorld.calendar!.year).toBe(2026);
 
       // Year boundary logic depends on if phase6 runs. For this test, verifying calendar is enough.
 
@@ -162,7 +161,7 @@ describe("tickDaily", () => {
 
       // Compare deterministic fields (ignore ephemeral transientContext)
       expect(fastWorld.dayIndexGlobal).toBe(slowWorld.dayIndexGlobal);
-      expect(fastWorld.calendar).toEqual(slowWorld.calendar);
+      expect(fastWorld.calendar!).toEqual(slowWorld.calendar!);
       expect(fastWorld.week).toBe(slowWorld.week);
       expect(fastWorld.cyclePhase).toBe(slowWorld.cyclePhase);
     });

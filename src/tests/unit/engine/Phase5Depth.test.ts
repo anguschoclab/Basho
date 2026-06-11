@@ -2,10 +2,10 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { InfrastructureService } from "@/engine/systems/economy/InfrastructureService";
 import * as TalentPoolScouting from "@/engine/systems/generation/TalentPoolScouting";
 import { TrainingPhilosophyService } from "@/engine/systems/legacy/TrainingPhilosophyService";
-import { SeededRNG } from "@/engine/rng";
 import { MockFactory } from "../../helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
+import type { Id } from "@/engine/types/common";
 
 describe("Phase 5 Depth: Institutional Power & Regional Mastery", () => {
   let mockWorld: WorldState;
@@ -91,22 +91,32 @@ describe("Phase 5 Depth: Institutional Power & Regional Mastery", () => {
     // Mock records separately if needed, but WorldState now has proper structures
     mockWorld.history = [
       {
+        id: "basho-2025-kyushu",
         year: 2025,
         bashoNumber: 6,
         bashoName: "kyushu",
         yusho: "legend_1" as Id,
-        junYusho: "rival_1" as Id,
+        junYusho: ["rival_1" as Id],
         prizes: { yushoAmount: 0, junYushoAmount: 0, specialPrizes: 0 },
         nextBanzuke: {
+          year: 2025,
+          bashoNumber: 6,
           divisions: {
             makuuchi: {
+              division: "makuuchi",
+              slots: [],
               assignments: [
                 {
                   rikishiId: "legend_1" as Id,
-                  position: { rank: "yokozuna", rankNumber: 1, side: "east" },
+                  position: { rank: "yokozuna", side: "east" },
                 },
               ],
             },
+            juryo: { division: "juryo", slots: [], assignments: [] },
+            makushita: { division: "makushita", slots: [], assignments: [] },
+            sandanme: { division: "sandanme", slots: [], assignments: [] },
+            jonidan: { division: "jonidan", slots: [], assignments: [] },
+            jonokuchi: { division: "jonokuchi", slots: [], assignments: [] },
           },
         },
       },

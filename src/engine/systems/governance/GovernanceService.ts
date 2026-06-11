@@ -8,7 +8,7 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import type { WorldState } from "../../types/world";
 
-import { CrisisService } from "../bard/CrisisService";
+import { CrisisService } from "../narrative/CrisisService";
 import { getHeya } from "../../queries";
 
 export function resolveCrisis(world: WorldState, crisisId: string, choiceId: string): StateImpact {

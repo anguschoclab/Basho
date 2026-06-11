@@ -1,7 +1,7 @@
 // src/engine/systems/legacy/__tests__/BloodlineService.test.ts
 import { describe, it, expect } from "vitest";
 import { BloodlineService } from "@/engine/systems/legacy/BloodlineService";
-import { mockRikishi, makeMockWorld } from "../../utils";
+import { mockRikishi } from "../../utils";
 import type { BloodlineTrait } from "@/engine/types/dynasty";
 import type { WorldState } from "@/engine/types/world";
 

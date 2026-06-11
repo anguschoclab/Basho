@@ -2,7 +2,6 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { phase02_context } from "@/engine/tick/phases/phase02_context";
 import { applyImpact } from "@/engine/core/ImpactResolver";
 import type { WorldState } from "@/engine/types/world";
-import type { Heya } from "@/engine/types/heya";
 
 describe("Phase 2: Context", () => {
   let world: WorldState;

@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { MockFactory } from "../../helpers/utils/MockFactory";
 import type { EngineCommand, EngineEvent } from "@/engine/worker/types";
-import type { UIDigest } from "../../presenters/uiDigest";
+import type { UIDigest } from "@/presenters/uiDigest";
 
 // Mock the self object for Web Worker environment before importing the worker
 const mockPostMessage = vi.fn();
@@ -35,7 +35,7 @@ vi.mock("@/engine/tick/tickOrchestrator", () => ({
 }));
 
 // Import the worker script which will attach to globalThis.self.onmessage
-await import("../worker/engine.worker.js"); // Using .js for ESM compatibility in tests if needed, or .ts
+await import("@/engine/worker/engine.worker");
 
 describe("engine.worker", () => {
   beforeEach(() => {
@@ -178,10 +178,9 @@ describe("engine.worker", () => {
   it("should handle invalid commands by logging a warning", async () => {
     const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
-    // @ts-expect-error - testing invalid command
     await triggerMessage({
       type: "INVALID_COMMAND",
-    });
+    } as unknown as EngineCommand);
 
     expect(consoleWarnSpy).toHaveBeenCalledWith("[Worker] Unknown command: INVALID_COMMAND");
     consoleWarnSpy.mockRestore();
@@ -189,8 +188,8 @@ describe("engine.worker", () => {
 
   it("should handle generic errors", async () => {
     // We mock the generateInitialWorld to throw an error for this specific test
-    const { generateInitialWorld } = await import("@/engine/systems/generation/WorldFactory";
-    (generateInitialWorld as vi.Mock).mockImplementationOnce(() => {
+    const { generateInitialWorld } = await import("@/engine/systems/generation/WorldFactory");
+    (generateInitialWorld as Mock).mockImplementationOnce(() => {
       throw new Error("Test error message");
     });
 
@@ -206,8 +205,8 @@ describe("engine.worker", () => {
   });
 
   it("should handle error without message property gracefully", async () => {
-    const { generateInitialWorld } = await import("@/engine/systems/generation/WorldFactory";
-    (generateInitialWorld as vi.Mock).mockImplementationOnce(() => {
+    const { generateInitialWorld } = await import("@/engine/systems/generation/WorldFactory");
+    (generateInitialWorld as Mock).mockImplementationOnce(() => {
       throw "String error instead of Error object";
     });
 

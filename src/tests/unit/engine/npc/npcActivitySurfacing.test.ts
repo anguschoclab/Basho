@@ -51,7 +51,7 @@ describe("NPC Activity Surfacing Heuristics", () => {
     });
 
     it("surfaces notable for affordable shares with high ambition", () => {
-      const playerHeya = world.heyas.get(playerHeyaId);
+      const playerHeya = world.heyas.get(playerHeyaId)!;
       playerHeya.funds = 1000000;
       playerHeya.oyakataId = "o1";
       const oyakata = { id: "o1", name: "Test Oyakata", age: 50, traits: { ambition: 80 } };

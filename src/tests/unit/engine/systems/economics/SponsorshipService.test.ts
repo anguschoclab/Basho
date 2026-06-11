@@ -105,7 +105,7 @@ describe("SponsorshipService", () => {
 
       const impact2 = applyAchievementImpact(
         resolved as WorldState,
-        resolved.rikishi.get("r1"),
+        resolved.rikishi.get("r1")!,
         "ginboshi"
       );
       const resolved2 = resolveImpacts(resolved, [impact2]);
@@ -113,7 +113,7 @@ describe("SponsorshipService", () => {
 
       const impact3 = applyAchievementImpact(
         resolved2 as WorldState,
-        resolved2.rikishi.get("r1"),
+        resolved2.rikishi.get("r1")!,
         "sansho"
       );
       const resolved3 = resolveImpacts(resolved2, [impact3]);
@@ -287,10 +287,11 @@ describe("SponsorshipService", () => {
       const resolvedWorld = resolveImpacts(world, [result]);
       Object.assign(world, resolvedWorld);
 
-      expect(result.metadata?.churned?.length).toBe(2);
-      expect(result.metadata?.churned).toContain("Local");
-      expect(result.metadata?.churned).toContain("Corp");
-      expect(result.metadata?.retained).toBe(0);
+      const metadata = result.metadata as { churned?: string[]; retained?: number } | undefined;
+      expect(metadata?.churned?.length).toBe(2);
+      expect(metadata?.churned).toContain("Local");
+      expect(metadata?.churned).toContain("Corp");
+      expect(metadata?.retained).toBe(0);
       expect(resolvedWorld.sponsorPool?.sponsors.get("s_local")?.active).toBe(false);
 
       const updatedKoenkai = resolvedWorld.sponsorPool?.koenkais.get("koenkai_h1");
@@ -322,9 +323,10 @@ describe("SponsorshipService", () => {
       const resolvedWorld = resolveImpacts(world, [result]);
       Object.assign(world, resolvedWorld);
 
-      expect(result.metadata?.churned?.length).toBe(1);
-      expect(result.metadata?.churned).toContain("Other");
-      expect(result.metadata?.retained).toBe(2);
+      const metadata2 = result.metadata as { churned?: string[]; retained?: number } | undefined;
+      expect(metadata2?.churned?.length).toBe(1);
+      expect(metadata2?.churned).toContain("Other");
+      expect(metadata2?.retained).toBe(2);
       expect(resolvedWorld.sponsorPool?.sponsors.get("s_other")?.active).toBe(false);
       expect(resolvedWorld.sponsorPool?.sponsors.get("s_local")?.active).toBe(true);
 

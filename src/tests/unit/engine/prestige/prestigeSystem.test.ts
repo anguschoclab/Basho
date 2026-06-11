@@ -306,7 +306,7 @@ describe("Prestige System", () => {
           currentBashoLosses: 7,
         });
         world.rikishi.set(r.id, r);
-        heya.rikishiIds.push(r.id);
+        heya.rikishiIds!.push(r.id);
       }
 
       world.history = [

@@ -11,14 +11,16 @@ import { resetImpactTimestampCounter } from "../../engine/core/StateImpact";
 // on globalThis so it survives vitest's per-file re-evaluation of this setup,
 // taken while globals are still clean) and restore them both at setup eval —
 // which runs before the test file's own imports — and after every test.
-const BROWSER_GLOBALS = ["window", "navigator", "history"] as const;
+const BROWSER_GLOBALS = ["window", "document", "navigator", "history", "localStorage"] as const;
 
 const g = globalThis as unknown as Record<string, unknown>;
 if (!g.__PRISTINE_BROWSER_GLOBALS__) {
   g.__PRISTINE_BROWSER_GLOBALS__ = {
     window: g.window,
+    document: g.document,
     navigator: g.navigator,
     history: g.history,
+    localStorage: g.localStorage,
   };
 }
 const PRISTINE = g.__PRISTINE_BROWSER_GLOBALS__ as Record<string, unknown>;

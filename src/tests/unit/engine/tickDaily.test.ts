@@ -66,7 +66,7 @@ describe("weekly tick counter", () => {
 
   it("recovers and fires within 1 day if counter somehow starts above 7", () => {
     // If a saved game has a corrupted counter value > 7, the tick should fire immediately
-    let world = { ...makeMinimalWorld(), _daysSinceLastWeeklyTick: 10 };
+    let world: WorldState = { ...makeMinimalWorld(), _daysSinceLastWeeklyTick: 10 };
     world = advanceOneDay(world);
     // (10 ?? 0) + 1 = 11, 11 >= 7 → fires, resets to 0
     expect(world._daysSinceLastWeeklyTick).toBe(0);
