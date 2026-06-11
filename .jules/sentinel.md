@@ -63,3 +63,8 @@ th## 2025-06-04 - Denial of Service5-0**Vulnerability:** Electron IPC handlers (
 **Vulnerability:** Electron IPC handlers (`notification:show`, `dialog:showSaveDialog`, `dialog:showOpenDialog`) passed unvalidated `options` objects directly to native Node.js and Electron APIs. Because TypeScript types are stripped at runtime, a malicious renderer process could send strings, numbers, arrays, or null where an object was expected, causing synchronous unhandled exceptions that crash the main process (Denial of Service).
 **Learning:** Object payloads coming over IPC boundaries must be strictly validated. Checking `typeof options === 'object'` is not enough because `null` and arrays are also 'objects' in JavaScript, which can still break strict native APIs.
 **Prevention:** Always implement explicit runtime type checking (e.g., verifying it's a non-null, non-array object and validating its expected properties) for any arguments passed over IPC before invoking strict native APIs like `Notification` or `dialog`.
+
+## 2024-06-11 - Content Security Policy (CSP) Data Exfiltration Risk
+**Vulnerability:** The Content Security Policy for the Electron app (`electron/main.ts`) allowed external `http:` and `https:` connections (`connect-src 'self' ws: http: https:;`).
+**Learning:** This overly permissive CSP undermines the principle of least privilege. In an offline-first deterministic simulation app, external HTTP requests are not required. Allowing them exposes the app to potential data exfiltration via XSS or other vulnerabilities.
+**Prevention:** Always restrict `connect-src` in the CSP to strictly necessary origins (e.g., `'self'` and specific WebSockets for HMR) and avoid generic `http:` or `https:` allowances in offline Electron applications.
