@@ -6,7 +6,7 @@
  */
 
 import type { WorldState } from "../../engine/types/world";
-import { SPONSOR_TIER_INCOME } from "../../engine/systems/economics/SponsorshipService";
+import { SPONSOR_TIER_INCOME } from "../../engine/systems/economy/SponsorshipService";
 
 interface SponsorData {
   sponsorId: string;

@@ -13,11 +13,11 @@ import type { BoutResult, MatchSchedule } from "./types/basho";
 import type { Rikishi } from "./types/rikishi";
 import { reportScandal } from "./governance/GovernanceService";
 import { EventBus } from "./events";
-import { calculateKenshoEnvelopes } from "./systems/economics/KenshoService";
+import { calculateKenshoEnvelopes } from "./systems/economy/KenshoService";
 import {
   processSponsorChurn as runSponsorChurnService,
   selectBenefactor,
-} from "./systems/economics/SponsorshipService";
+} from "./systems/economy/SponsorshipService";
 import {
   DEBT_LIMIT,
   BENEFACTOR_BAILOUT_AMOUNT,

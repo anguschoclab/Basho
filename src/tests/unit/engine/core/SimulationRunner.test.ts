@@ -29,7 +29,7 @@ vi.mock("../../records", () => ({
   onBashoEnded: vi.fn(() => ({ metadata: { source: "records", timestamp: 0 } })),
 }));
 
-vi.mock("../../systems/economics/SponsorshipService", () => ({
+vi.mock("../../systems/economy/SponsorshipService", () => ({
   processSponsorChurn: vi.fn(() => ({ metadata: { source: "sponsors", timestamp: 0 } })),
 }));
 

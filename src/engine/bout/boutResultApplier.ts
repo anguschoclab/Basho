@@ -15,7 +15,7 @@ import * as economics from "../economics";
 import type { NarrativeContext } from "../types/events";
 import * as scoutingStore from "../scoutingStore";
 import { updateMediaFromBout, createDefaultMediaState } from "../systems/media/MediaService";
-import { applyAchievementImpact } from "../systems/economics/SponsorshipService";
+import { applyAchievementImpact } from "../systems/economy/SponsorshipService";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 import { checkMentorMenteeBout } from "../systems/training/MentorshipService";

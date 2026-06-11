@@ -17,7 +17,7 @@ import {
   runRetirements,
 } from "../governance/governanceReview";
 import { onBashoEnded } from "../records";
-import { processSponsorChurn } from "../systems/economics/SponsorshipService";
+import { processSponsorChurn } from "../systems/economy/SponsorshipService";
 import { checkNaturalizations } from "../naturalization";
 import { runArchivalPruning } from "../archival";
 import { runCareerJournalUpdates, openRecruitmentWindow } from "../lifecycle/RegistryService";

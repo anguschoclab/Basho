@@ -104,7 +104,7 @@ export {
   scoutCandidate,
   offerCandidate,
 } from "../engine/systems/generation/TalentPoolService";
-export { recruitSponsor } from "../engine/systems/economics/SponsorshipService";
+export { recruitSponsor } from "../engine/systems/economy/SponsorshipService";
 export { getCachedPerception, buildPerceptionSnapshot } from "../engine/perception";
 export { setHeyaDietAction } from "./uiActions";
 export { renewSponsorContract } from "../engine/systems/economy/SponsorContractService";

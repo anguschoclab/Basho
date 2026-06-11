@@ -7,7 +7,7 @@
 
 import type { WorldState } from "../../engine/types/world";
 import { calculateHeyaWeeklyFinances } from "../../engine/systems/economy/FinanceCalculator";
-import { calculateKoenkaiIncome } from "../../engine/systems/economics/SponsorshipService";
+import { calculateKoenkaiIncome } from "../../engine/systems/economy/SponsorshipService";
 import { KOENKAI_INCOME_SPLIT } from "../../constants/engine/economic";
 import { formatYen } from "../../utils/engineUtils";
 

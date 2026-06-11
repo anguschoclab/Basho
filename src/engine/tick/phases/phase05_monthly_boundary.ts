@@ -22,9 +22,9 @@ import {
   payTravelAllowance,
   deductTsukebitoCosts,
   distributeKoenkaiToSekitori,
-} from "../../systems/economics/TravelAllowanceService";
+} from "../../systems/economy/TravelAllowanceService";
 import { tickMonthlyNPC } from "../../npcAI";
-import { payMochikyukinBonuses } from "../../systems/economics/MochikyukinService";
+import { payMochikyukinBonuses } from "../../systems/economy/MochikyukinService";
 import { renewSponsorContract } from "../../systems/economy/SponsorContractService";
 import { processHeyaEconomics, processLoanRepayments } from "./monthly/economics";
 import { processFacilitiesMaintenance, processNpcAutoInvestment } from "./monthly/facilities";

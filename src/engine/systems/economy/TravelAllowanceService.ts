@@ -20,7 +20,7 @@ import {
   TRAVEL_ALLOWANCE_CASH_SPLIT,
   TRAVEL_ALLOWANCE_RETIREMENT_SPLIT,
 } from "../../../constants/engine/economyExtended";
-import { calculateKoenkaiIncome } from "../economics/SponsorshipService";
+import { calculateKoenkaiIncome } from "./SponsorshipService";
 import { getRikishi } from "../../queries";
 
 /**

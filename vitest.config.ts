@@ -11,7 +11,7 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
-    setupFiles: ["./src/test/setup/setup.ts"],
+    setupFiles: ["./src/tests/setup/setup.ts"],
     exclude: [...configDefaults.exclude, "e2e/**", ".claude/**", "**/*.e2e.test.ts"],
     testTimeout: 30000,
     server: {
@@ -30,11 +30,12 @@ export default defineConfig({
         "src/contexts/**/*.ts",
       ],
       exclude: [
-        "src/engine/**/__tests__/**",
-        "src/engine/**/*.test.ts",
-        "src/components/**/__tests__/**",
+        "src/tests/**",
         "src/**/*.test.ts",
         "src/**/*.test.tsx",
+        "e2e/**",
+        ".claude/**",
+        "**/*.e2e.test.ts",
       ],
       thresholds: {
         lines: 70,

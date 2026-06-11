@@ -15,7 +15,7 @@ export { recordBashoHistory, checkYokozunaPromotions } from "./BashoHistory";
 
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import { mergeImpacts } from "../core/ImpactResolver";
-import { accumulateMochikyukinPoints } from "../systems/economics/MochikyukinService";
+import { accumulateMochikyukinPoints } from "../systems/economy/MochikyukinService";
 import type { WorldState } from "../types/world";
 import type { StateImpact } from "../core/StateImpact";
 import { calculateStandings } from "./PlayoffResolver";

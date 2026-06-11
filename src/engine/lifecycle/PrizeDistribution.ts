@@ -4,7 +4,7 @@ import type { WorldState } from "../types/world";
 import type { BashoState } from "../types/basho";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
-import { applyAchievementImpact } from "../systems/economics/SponsorshipService";
+import { applyAchievementImpact } from "../systems/economy/SponsorshipService";
 import { SIMULATION_CONFIG } from "../core/SimulationConfig";
 import type { Id } from "../types/common";
 import { getRikishi } from "../queries";

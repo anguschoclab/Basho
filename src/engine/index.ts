@@ -31,8 +31,8 @@ export * from "./lifecycle";
 export * from "./lifecycle/BashoManager";
 export * from "./lifecycle/CompetitionService";
 export * from "./lifecycle/RegistryService";
-export * from "./systems/economics/KenshoService";
-export * from "./systems/economics/SponsorshipService";
+export * from "./systems/economy/KenshoService";
+export * from "./systems/economy/SponsorshipService";
 export * from "./systems/generation/SponsorGenerator";
 
 export * from "./matchmaking/index";

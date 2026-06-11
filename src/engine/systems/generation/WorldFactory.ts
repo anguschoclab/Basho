@@ -28,7 +28,7 @@ import { generateFullRikishi } from "./CandidateBuilder";
 import { Division, Rank, Side } from "../../types/banzuke";
 import * as talentpool from "./TalentPoolService";
 import { generateInitialSponsorPool } from "./SponsorGenerator";
-import { createKoenkai } from "../economics/SponsorshipService";
+import { createKoenkai } from "../economy/SponsorshipService";
 import { generateHeyaBrandIdentities } from "../keshoMawashi/HeyaBrandGenerator";
 import type { BashoName, BashoState } from "../../types/basho";
 import type { Faction, IchimonName } from "../../types/economy";

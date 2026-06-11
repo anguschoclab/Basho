@@ -11,7 +11,7 @@
 import type { WorldState } from "../../types/world";
 import type { Heya } from "../../types/heya";
 import { getRikishi } from "../../queries";
-import { calculateKoenkaiIncome, SPONSOR_TIER_INCOME } from "../economics/SponsorshipService";
+import { calculateKoenkaiIncome, SPONSOR_TIER_INCOME } from "./SponsorshipService";
 import { getHeyaStaffBonuses } from "../../staff";
 import {
   RECRUITMENT_BUDGET_WEEKLY,

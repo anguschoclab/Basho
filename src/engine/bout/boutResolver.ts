@@ -34,7 +34,7 @@ import {
   calculateKenshoEnvelopes,
   assignKenshoBanners,
   determineBoutImportance,
-} from "../systems/economics/KenshoService";
+} from "../systems/economy/KenshoService";
 
 import { clamp } from "../utils/math";
 import { decideBoutTacticOverride } from "../strategy/NPCStrategyService";

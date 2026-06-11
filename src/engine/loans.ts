@@ -6,7 +6,7 @@ import { generateGovernanceHeadline } from "./systems/media/MediaService";
 import { rngForWorld } from "./rng";
 import type { SeededRNG } from "./rng";
 import { stableSort } from "./utils/sort";
-import { selectBenefactor } from "./systems/economics/SponsorshipService";
+import { selectBenefactor } from "./systems/economy/SponsorshipService";
 import { LOAN_ISSUANCE_THRESHOLD, FACTION_BAILOUT_AMOUNT } from "../constants/engine/economic";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
