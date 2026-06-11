@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { advanceOneDay } from "../tickDaily";
 import { runPipeline } from "../pipelineRunner";
 import * as phases from "../phases";
-import { makeMockWorld } from "../../__tests__/utils";
+import { makeMockWorld } from "../utils";
 import type { WorldState } from "../../types/world";
 
 /**

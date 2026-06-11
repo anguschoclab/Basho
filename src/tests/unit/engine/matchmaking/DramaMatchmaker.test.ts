@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { scoreDrama, applyDramaBudget, type DramaContext } from "../DramaMatchmaker";
-import { mockRikishi } from "../../__tests__/utils";
+import { mockRikishi } from "../utils";
 import type { MatchPairing } from "../MatchmakingPhases";
 
 describe("DramaMatchmaker", () => {

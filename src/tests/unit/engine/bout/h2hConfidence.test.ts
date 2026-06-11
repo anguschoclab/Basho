@@ -5,7 +5,7 @@
  */
 import { describe, it, expect } from "vitest";
 import { h2hConfidence } from "../boutPhysics";
-import { mockRikishi } from "../../__tests__/utils";
+import { mockRikishi } from "../utils";
 import type { H2HRecord } from "../../types/records";
 
 function makeRikishiWithH2H(id: string, opponentId: string, record: H2HRecord) {

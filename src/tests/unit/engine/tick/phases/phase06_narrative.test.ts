@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { phase06_narrative } from "../phase06_narrative";
 import type { WorldState } from "../../../types/world";
-import { mockRikishi } from "../../../__tests__/utils";
+import { mockRikishi } from "../../utils";
 import type { MockHeya } from "../../../../__tests__/types/mockTypes";
 
 describe("Phase 6: Narrative", () => {

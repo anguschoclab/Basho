@@ -14,7 +14,7 @@ import * as myoseki from "../myosekiMarket";
 import * as sponsorService from "../systems/economy/SponsorContractService";
 import * as legacy from "../systems/legacy/DynastyService";
 import * as governance from "../systems/governance/GovernanceService";
-import { PoliticalFavorsService, type FavorType } from "../systems/politics/PoliticalFavorsService";
+import { PoliticalFavorsService, type FavorType } from "../systems/governance/PoliticalFavorsService";
 import * as staffService from "../staff";
 import * as loans from "../loans";
 import { resolveImpacts } from "../core/ImpactResolver";

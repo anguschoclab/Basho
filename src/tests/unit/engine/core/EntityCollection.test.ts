@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { EntityCollection } from "../EntityCollection";
-import { mockRikishi } from "../../__tests__/utils";
+import { mockRikishi } from "../utils";
 import type { WorldState } from "../../types/world";
 
 describe("EntityCollection", () => {

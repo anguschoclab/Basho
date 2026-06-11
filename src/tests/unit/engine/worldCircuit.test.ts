@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { generateInitialWorld } from "../systems/generation/WorldFactory";
-import { WorldCircuitService } from "../systems/global/WorldCircuitService";
+import { WorldCircuitService } from "../systems/worldCircuit/WorldCircuitService";
 import { phase06_yearly_boundary } from "../tick/phases/phase06_yearly_boundary";
 import { tickWeekNPC } from "../npcAI";
 import { resolveImpacts } from "../core/ImpactResolver";

@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { generateInitialWorld } from "../systems/generation/WorldFactory";
-import { GlobalCupService } from "../systems/basho/GlobalCupService";
+import { GlobalCupService } from "../systems/economy/GlobalCupService";
 import { TalentPoolService } from "../systems/generation/TalentPoolService";
 
 describe("Global Cup & Talent Pool Parity", () => {

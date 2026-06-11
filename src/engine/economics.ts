@@ -11,7 +11,7 @@ import type { WorldState } from "./types/world";
 import type { Heya } from "./types/heya";
 import type { BoutResult, MatchSchedule } from "./types/basho";
 import type { Rikishi } from "./types/rikishi";
-import { reportScandal } from "./governance/GovernanceService";
+import { reportScandal } from "./systems/governance/ScandalService";
 import { EventBus } from "./events";
 import { calculateKenshoEnvelopes } from "./systems/economy/KenshoService";
 import {

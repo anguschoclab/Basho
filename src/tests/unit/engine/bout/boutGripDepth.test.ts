@@ -5,7 +5,7 @@
  */
 import { describe, it, expect } from "vitest";
 import { initBeltBattle } from "../boutGrip";
-import { mockRikishi } from "../../__tests__/utils";
+import { mockRikishi } from "../utils";
 import { SeededRNG } from "../../rng";
 
 const rng = new SeededRNG("grip-depth-test");

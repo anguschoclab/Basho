@@ -1,6 +1,6 @@
  
 import { describe, it, expect, beforeEach } from "vitest";
-import { issueGovernanceRuling } from "../../governance/GovernanceService";
+import { issueGovernanceRuling } from "./systems/governance/ScandalService";
 import { resolveImpacts } from "../../core/ImpactResolver";
 import type { WorldState } from "../../types/world";
 

@@ -9,7 +9,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import type { BoutResult } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/uiModels";
-import { getReplayPhaseDurations } from "@/engine/systems/bout/ReplayMetadata";
+import { getReplayPhaseDurations } from "@/engine/bout/ReplayMetadata";
 import { SeededRNG } from "@/engine/rng";
 import {
   PHASES,

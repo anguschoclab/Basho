@@ -6,7 +6,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { TrainingService } from "../../systems/training/TrainingService";
 import { resolveImpacts } from "../../core/ImpactResolver";
-import { mockRikishi } from "../../__tests__/utils";
+import { mockRikishi } from "../utils";
 import type { WorldState } from "../../types/world";
 import type { HeyaTrainingState, IndividualFocus } from "../../types/training";
 

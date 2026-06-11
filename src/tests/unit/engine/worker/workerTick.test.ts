@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { advanceOneDay, advanceDaysFast } from "../../tick/tickDaily";
-import { makeMockWorld } from "../../__tests__/utils";
-import type { WorldState } from "../../types/world";
+import { advanceOneDay, advanceDaysFast } from "@/engine/tick/tickDaily";
+import { makeMockWorld } from "../utils";
+import type { WorldState } from "@/engine/types/world";
 
 /**
  * Simulates a worker round-trip for TICK_MULTIPLE_DAYS by running the

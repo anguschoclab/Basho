@@ -4,7 +4,7 @@
  */
 import { describe, it, expect } from "vitest";
 import { computeTachiaiPower, tachiaiPowerWithMatchupPenalty } from "../boutPhysics";
-import { mockRikishi } from "../../__tests__/utils";
+import { mockRikishi } from "../utils";
 
 describe("tachiaiPowerWithMatchupPenalty — weakAgainstStyles", () => {
   it("reduces tachiai power by 8% when facing a style in weakAgainstStyles", () => {

@@ -5,7 +5,7 @@ import {
   isOutOfRing,
   tawaraBounceResistance,
 } from "../boutSpatial";
-import { mockRikishi } from "../../__tests__/utils";
+import { mockRikishi } from "../utils";
 import { TAWARA_RADIUS } from "../../types/combat-spatial";
 
 describe("boutSpatial", () => {

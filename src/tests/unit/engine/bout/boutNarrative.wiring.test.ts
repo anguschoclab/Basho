@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { resolveBout } from "../boutResolver";
 import { applyBoutResult } from "../boutResultApplier";
 import { applyImpact } from "../../core/ImpactResolver";
-import { mockRikishi, makeMockBasho, makeMockWorld } from "../../__tests__/utils";
+import { mockRikishi, makeMockBasho, makeMockWorld } from "../utils";
 import type { BoutContext } from "../boutUtils";
 import type { MatchSchedule, BoutResult } from "../../types/basho";
 import type { WorldState } from "../../types/world";

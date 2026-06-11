@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { resolveBout, simulateBout } from "../boutResolver";
-import { mockRikishi, makeMockBasho } from "../../__tests__/utils";
+import { mockRikishi, makeMockBasho } from "../utils";
 import type { BoutContext } from "../boutPhysics";
 
 // ---------------------------------------------------------------------------

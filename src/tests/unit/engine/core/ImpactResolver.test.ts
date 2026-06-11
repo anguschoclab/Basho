@@ -7,7 +7,7 @@ import * as ImpactResolver from "../ImpactResolver";
 import type { WorldState } from "../../types/world";
 import type { StateImpact } from "../StateImpact";
 import type { Heya } from "../../types/heya";
-import { mockRikishi } from "../../__tests__/utils";
+import { mockRikishi } from "../utils";
 
 describe("ImpactResolver", () => {
   let world: WorldState;

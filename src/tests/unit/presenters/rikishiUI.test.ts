@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { rankScore, projectRosterEntry } from "../rikishiUI";
-import { mockRikishi } from "../../engine/__tests__/utils";
+import { mockRikishi } from "../engine/utils";
 import type { WorldState } from "../../engine/types/world";
 import { projectRikishi } from "../rikishiUI";
 

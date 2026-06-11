@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { runGovernanceReview } from "../../governance/governanceReview";
+import { runGovernanceReview } from "../../systems/governance/governanceReview";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
 import { resolveImpacts } from "../../core/ImpactResolver";
 import type { WorldState } from "../../types/world";

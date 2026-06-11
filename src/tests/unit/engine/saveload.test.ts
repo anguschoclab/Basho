@@ -2,7 +2,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { saveGame, loadGame } from "../saveload";
 import { setStorageProvider, resetStorageProvider, type IStorageProvider } from "../storageProvider";
-import { makeMockWorld } from "../__tests__/utils";
+import { makeMockWorld } from "utils";
 import { runArchivalPruning } from "../archival";
 import { SerializationService } from "../persistence/SerializationService";
 

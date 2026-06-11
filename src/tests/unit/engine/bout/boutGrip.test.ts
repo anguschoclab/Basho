@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { initBeltBattle, evolveGripGeometry, calculateTorque, computeNetTorque } from "../boutGrip";
-import { mockRikishi } from "../../__tests__/utils";
+import { mockRikishi } from "../utils";
 import { SeededRNG } from "../../rng";
 
 describe("initBeltBattle", () => {

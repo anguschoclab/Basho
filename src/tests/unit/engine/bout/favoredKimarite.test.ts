@@ -5,7 +5,7 @@
  */
 import { describe, it, expect } from "vitest";
 import { evaluateKimariteAttempt } from "../kimariteClassifier";
-import { mockRikishi } from "../../__tests__/utils";
+import { mockRikishi } from "../utils";
 import { SeededRNG } from "../../rng";
 import type { PushBattleState, EngineStateV2 } from "../../types/combat-spatial";
 import type { Division } from "../../types/banzuke";

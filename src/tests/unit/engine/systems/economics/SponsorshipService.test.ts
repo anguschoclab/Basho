@@ -10,7 +10,7 @@ import {
 import type { WorldState } from "../../../types/world";
 import type { Sponsor, SponsorPool, Koenkai } from "../../../types/sponsors";
 import type { Heya } from "../../../types/heya";
-import { mockRikishi } from "../../../__tests__/utils";
+import { mockRikishi } from "../../utils";
 import { resolveImpacts } from "../../../core/ImpactResolver";
 import { rngFromSeed } from "../../../rng";
 

@@ -1,7 +1,7 @@
  
 import { describe, it, expect } from "vitest";
 import { resolveBoutPhysics } from "../boutPhysics";
-import { mockRikishi, makeMockBasho } from "../../__tests__/utils";
+import { mockRikishi, makeMockBasho } from "../utils";
 
 describe("1.75D spatial engine", () => {
   it("is deterministic (non-divergence)", () => {

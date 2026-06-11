@@ -11,7 +11,7 @@ import {
   boutFatigueIncrement,
   edgeCrisisRecoveryChance,
 } from "../boutPhysics";
-import { mockRikishi } from "../../__tests__/utils";
+import { mockRikishi } from "../utils";
 
 // ---------------------------------------------------------------------------
 // Task 2: aggression in tachiai

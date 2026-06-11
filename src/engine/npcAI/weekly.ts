@@ -2,7 +2,7 @@ import type { WorldState } from "../types/world";
 import type { Rikishi } from "../types/rikishi";
 import type { Id } from "../types/common";
 import { getOyakataStyleProfile } from "../oyakataStylePreferences";
-import { WorldCircuitService } from "../systems/global/WorldCircuitService";
+import { WorldCircuitService } from "../systems/worldCircuit/WorldCircuitService";
 import { getOyakataForHeya, getRikishi, getHeya } from "../queries";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import { getManagerPersona } from "../systems/NPCPersonaService";

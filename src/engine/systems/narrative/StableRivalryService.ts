@@ -9,7 +9,7 @@ import { WorldState } from "../../types/world";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { clamp } from "../../utils/math";
-import { reportScandal } from "../../governance/GovernanceService";
+import { reportScandal } from "./systems/governance/ScandalService";
 
 export type StableRelationTone = "respect" | "neutral" | "tense" | "rivalry" | "bad_blood";
 

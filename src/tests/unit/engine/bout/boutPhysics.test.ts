@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { resolveBoutPhysics } from "../boutPhysics";
-import { mockRikishi, makeMockBasho } from "../../__tests__/utils";
+import { mockRikishi, makeMockBasho } from "../utils";
 
 describe("boutPhysics", () => {
   describe("resolveBoutPhysics", () => {

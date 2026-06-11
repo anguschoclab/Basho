@@ -16,7 +16,7 @@ import { mergeImpacts } from "../../core/ImpactResolver";
 import type { StateImpact } from "../../core/StateImpact";
 import { generateGovernanceHeadline, evaluateScandals } from "../../systems/media/MediaService";
 import { YokozunaService } from "../../systems/governance/YokozunaService";
-import { CareerService } from "../../systems/rikishi/CareerService";
+import { CareerService } from "../../lifecycle/CareerService";
 import {
   MAX_POLITICAL_CAPITAL,
   DEFAULT_POLITICAL_CAPITAL,

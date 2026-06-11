@@ -17,7 +17,7 @@ vi.mock("../../prestige/prestigeSystem", () => ({
   runPrestigeDecay: vi.fn(() => ({ metadata: { source: "prestige", timestamp: 0 } })),
 }));
 
-vi.mock("../../governance/governanceReview", () => ({
+vi.mock("../../systems/governance/governanceReview", () => ({
   runGovernanceReview: vi.fn(() => ({ metadata: { source: "governance", timestamp: 0 } })),
   runAIMetaDrift: vi.fn(() => ({ metadata: { source: "aiMeta", timestamp: 0 } })),
   runRetirements: vi.fn(() => ({
@@ -50,7 +50,7 @@ vi.mock("../../history", () => ({
   runHistoryUpdates: vi.fn(() => ({ metadata: { source: "history", timestamp: 0 } })),
 }));
 
-vi.mock("../../governance/GovernanceService", () => ({
+vi.mock("./systems/governance/ScandalService", () => ({
   runElections: vi.fn(() => ({ metadata: { source: "elections", timestamp: 0 } })),
 }));
 
@@ -75,7 +75,7 @@ import {
   runGovernanceReview,
   runRetirements,
   runAIMetaDrift,
-} from "../../governance/governanceReview";
+} from "../../systems/governance/governanceReview";
 import { onBashoEnded } from "../../records";
 import * as ImpactResolver from "../../core/ImpactResolver";
 import { openRecruitmentWindow } from "../../lifecycle/RegistryService";

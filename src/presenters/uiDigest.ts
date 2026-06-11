@@ -98,7 +98,7 @@ export {
   spendPoliticalCapital,
   getStatusLabel,
   getStatusColor,
-} from "../engine/governance/GovernanceService";
+} from "../engine/systems/governance/ScandalService";
 export {
   scoutPool,
   scoutCandidate,

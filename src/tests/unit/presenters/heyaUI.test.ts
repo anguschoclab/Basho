@@ -6,7 +6,7 @@
 
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { projectHeya } from "../heyaUI";
-import { makeMockHeya, mockRikishi, makeMockWorld } from "../../engine/__tests__/utils";
+import { makeMockHeya, mockRikishi, makeMockWorld } from "../engine/utils";
 import type { Staff } from "../../engine/types/staff";
 import type { Oyakata } from "../../engine/types/oyakata";
 

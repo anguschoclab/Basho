@@ -16,7 +16,7 @@ import type { Id } from "./types/common";
 import type { Side } from "./types/index";
 import { resolveBout } from "./bout/boutResolver";
 import { advanceOneDay, advanceDaysFast } from "./tick/tickDaily";
-import * as governance from "./governance/GovernanceService";
+import * as governance from "./systems/governance/ScandalService";
 import { resetBashoMediaTracking, handleMediaEvent } from "./systems/media/MediaService";
 import { applyBoutResult } from "./bout/boutResultApplier";
 import { createImpactBuilder } from "./core/ImpactBuilder";

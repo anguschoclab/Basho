@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { evaluateKimariteAttempt } from "../kimariteClassifier";
-import { mockRikishi } from "../../__tests__/utils";
+import { mockRikishi } from "../utils";
 import type {
   EngineStateV2,
   PushBattleState,

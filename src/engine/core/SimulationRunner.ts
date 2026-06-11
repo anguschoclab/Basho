@@ -15,14 +15,14 @@ import {
   runGovernanceReview,
   runAIMetaDrift,
   runRetirements,
-} from "../governance/governanceReview";
+} from "../systems/governance/governanceReview";
 import { onBashoEnded } from "../records";
 import { processSponsorChurn } from "../systems/economy/SponsorshipService";
 import { checkNaturalizations } from "../naturalization";
 import { runArchivalPruning } from "../archival";
 import { runCareerJournalUpdates, openRecruitmentWindow } from "../lifecycle/RegistryService";
 import { runHistoryUpdates } from "../history";
-import { runElections } from "../governance/GovernanceService";
+import { runElections } from "./systems/governance/ScandalService";
 
 /**
  * Authoritative post-basho pipeline.

@@ -7,7 +7,7 @@ import {
 } from "../selectors";
 import type { WorldState } from "../../engine/types/world";
 import type { Rikishi } from "../../engine/types/rikishi";
-import { mockRikishi } from "../../engine/__tests__/utils";
+import { mockRikishi } from "../engine/utils";
 
 describe("selectKadobanRikishi", () => {
   it("should return an empty array if world.ozekiKadoban is undefined", () => {

@@ -1,6 +1,6 @@
 import type { WorldState } from "../../types/world";
 import type { StateImpact } from "../../core/StateImpact";
-import { WorldCircuitService } from "../../systems/global/WorldCircuitService";
+import { WorldCircuitService } from "../../systems/worldCircuit/WorldCircuitService";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { mergeImpacts } from "../../core/ImpactResolver";
 

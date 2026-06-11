@@ -5,7 +5,7 @@
  */
 import { describe, it, expect } from "vitest";
 import { edgeCrisisRecoveryChance } from "../boutPhysics";
-import { mockRikishi } from "../../__tests__/utils";
+import { mockRikishi } from "../utils";
 
 describe("edgeCrisisRecoveryChance — rivalry spite mental boost", () => {
   it("higher mental score produces higher recovery chance (baseline verification)", () => {

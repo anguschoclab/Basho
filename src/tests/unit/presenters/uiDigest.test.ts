@@ -17,7 +17,7 @@ import {
   buildWeeklyDigest,
   getKadobanDrama,
 } from "../uiDigest";
-import { mockRikishi as generateMockRikishi } from "../../engine/__tests__/utils";
+import { mockRikishi as generateMockRikishi } from "../engine/utils";
 import type { RikishiStats, Rikishi } from "../../engine/types/rikishi";
 import type { WorldState } from "../../engine/types/world";
 

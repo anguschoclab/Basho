@@ -18,7 +18,7 @@ export * from "./EventBus";
 export * from "./eventHelpers";
 export * from "./events";
 export * from "./facilities";
-export * from "./governance/governanceReview";
+export * from "./systems/governance/governanceReview";
 export * from "./h2h";
 export * from "./hallOfFame";
 export * from "./historyCache";
