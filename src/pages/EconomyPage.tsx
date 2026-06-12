@@ -67,9 +67,17 @@ export default function EconomyPage() {
   const playerRikishi = useMemo(() => {
     if (!playerHeya || !world) return [];
     const ids: string[] = Array.isArray(playerHeya.rikishiIds) ? playerHeya.rikishiIds : [];
-    return ids.map((id) => world.rikishi.get(id)).filter(Boolean) as Array<
-      NonNullable<ReturnType<typeof world.rikishi.get>>
-    >;
+
+    // ⚡ Bolt Optimization: Use a single for...of loop instead of .map().filter()
+    // This eliminates intermediate array allocations.
+    const result: NonNullable<ReturnType<typeof world.rikishi.get>>[] = [];
+    for (const id of ids) {
+      const rikishi = world.rikishi.get(id);
+      if (rikishi) {
+        result.push(rikishi);
+      }
+    }
+    return result;
   }, [playerHeya, world]);
 
   // Sekitori count
