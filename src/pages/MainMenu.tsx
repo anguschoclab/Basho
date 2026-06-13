@@ -123,6 +123,7 @@ export default function MainMenu() {
       "powerful",
       "legendary",
     ];
+    const pickedIds = new Set(picks.map((p) => p.id));
     let bandIdx = 0;
     while (picks.length < 6 && bandIdx < remainingBands.length * 3) {
       const band = remainingBands[bandIdx % remainingBands.length];
@@ -130,8 +131,9 @@ export default function MainMenu() {
       const pickCount = picks.filter((p) => p.statureBand === band).length;
       if (bandStables[pickCount]) {
         const next = bandStables[pickCount];
-        if (!picks.find((p) => p.id === next.id)) {
+        if (!pickedIds.has(next.id)) {
           picks.push(next);
+          pickedIds.add(next.id);
         }
       }
       bandIdx++;
@@ -143,7 +145,10 @@ export default function MainMenu() {
     );
     for (const h of allSorted) {
       if (picks.length >= 6) break;
-      if (!picks.find((p) => p.id === h.id)) picks.push(h);
+      if (!pickedIds.has(h.id)) {
+        picks.push(h);
+        pickedIds.add(h.id);
+      }
     }
 
     return picks.slice(0, 6);

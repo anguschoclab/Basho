@@ -85,7 +85,9 @@ export function MatchDayViewer({
   }, [matches]);
 
   const completedCount = useMemo(() => {
-    return sortedMatches.reduce((count, m) => count + (m?.result ? 1 : 0), 0);
+    let count = 0;
+    for (const m of sortedMatches) if (m?.result) count++;
+    return count;
   }, [sortedMatches]);
 
   if (sortedMatches.length === 0) {

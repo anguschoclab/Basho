@@ -55,9 +55,11 @@ export default function RegionalHubPage() {
               Global Presence
             </p>
             <p className="text-2xl font-black text-primary font-mono">
-              {(
-                (Object.values(regionalPresence) as number[]).reduce((a, b) => a + b, 0) / 5
-              ).toFixed(1)}
+              {(() => {
+                let sum = 0;
+                for (const v of Object.values(regionalPresence) as number[]) sum += v;
+                return (sum / 5).toFixed(1);
+              })()}
               %
             </p>
           </WidgetCard>

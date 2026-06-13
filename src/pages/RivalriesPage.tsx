@@ -86,15 +86,13 @@ export default function RivalriesPage() {
     hot.sort(byHeat);
     cool.sort(byHeat);
 
-    const { infernoCount, hotCount } = normalized.reduce(
-      (acc, p) => {
-        const heat = p.heat ?? 0;
-        if (heat >= 80) acc.infernoCount++;
-        else if (heat >= 55) acc.hotCount++;
-        return acc;
-      },
-      { infernoCount: 0, hotCount: 0 }
-    );
+    let infernoCount = 0;
+    let hotCount = 0;
+    for (const p of normalized) {
+      const heat = p.heat ?? 0;
+      if (heat >= 80) infernoCount++;
+      else if (heat >= 55) hotCount++;
+    }
 
     const projections = projectRivalriesPage(world);
 

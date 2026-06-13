@@ -5,6 +5,7 @@
  * (Phase P: Stable Town & Infrastructure)
  */
 
+import { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { formatYen } from "@/utils/engineUtils";
 import {
@@ -33,6 +34,11 @@ interface InfrastructureDashboardProps {
 export function InfrastructureDashboard({ heya, onUpgrade }: InfrastructureDashboardProps) {
   const infra = heya.infrastructure || {};
   const queue = heya.constructionQueue || [];
+
+  const projectByFacilityId = useMemo(
+    () => new Map(queue.map((q) => [q.facilityId, q])),
+    [queue]
+  );
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -86,7 +92,7 @@ export function InfrastructureDashboard({ heya, onUpgrade }: InfrastructureDashb
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {Object.values(FACILITY_REGISTRY).map((facility) => {
           const state = infra[facility.id];
-          const project = queue.find((q) => q.facilityId === facility.id);
+          const project = projectByFacilityId.get(facility.id);
           const level = state?.level || 0;
           const isActive = state?.status === "active";
           const isBuilding = !!project;

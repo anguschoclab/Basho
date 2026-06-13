@@ -293,14 +293,15 @@ function phase2(
     }
   }
 
-  for (const wins of bucketKeys) {
+  for (let i = 0; i < bucketKeys.length; i++) {
+    const wins = bucketKeys[i];
     const bucket = (bucketMap.get(wins) ?? [])
       .filter((r) => !paired.has(r.id))
       .sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
 
     let extraFromBelow: Rikishi | undefined;
     if (bucket.length % 2 !== 0) {
-      const lowerWins = bucketKeys.find((k) => k < wins);
+      const lowerWins = bucketKeys[i + 1];
       if (lowerWins !== undefined) {
         const lowerBucket = (bucketMap.get(lowerWins) ?? [])
           .filter((r) => !paired.has(r.id) && !pulledUp.has(r.id))

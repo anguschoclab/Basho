@@ -95,7 +95,9 @@ export function DigestWidget() {
   // Compute total items before early return
   const totalItems = useMemo(() => {
     if (!digest) return 0;
-    return digest.sections.reduce((s, sec) => s + sec.items.length, 0);
+    let total = 0;
+    for (const sec of digest.sections) total += sec.items.length;
+    return total;
   }, [digest]);
 
   if (!digest) return null;

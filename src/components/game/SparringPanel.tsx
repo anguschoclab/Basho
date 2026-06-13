@@ -36,6 +36,11 @@ export function SparringPanel({ heyaRikishi, pairs, onAddPair, onRemovePair }: P
 
   const pairedIds = useMemo(() => new Set(pairs.flatMap((p) => [p.aId, p.bId])), [pairs]);
 
+  const rikishiById = useMemo(
+    () => new Map(heyaRikishi.map((r) => [r.id, r])),
+    [heyaRikishi]
+  );
+
   const availableRikishi = useMemo(
     () => heyaRikishi.filter((r) => !pairedIds.has(r.id) && !r.injured && !r.isRetired),
     [heyaRikishi, pairedIds]
@@ -43,11 +48,11 @@ export function SparringPanel({ heyaRikishi, pairs, onAddPair, onRemovePair }: P
 
   const previewChemistry = useMemo(() => {
     if (!selectedA || !selectedB) return null;
-    const a = heyaRikishi.find((r) => r.id === selectedA);
-    const b = heyaRikishi.find((r) => r.id === selectedB);
+    const a = rikishiById.get(selectedA);
+    const b = rikishiById.get(selectedB);
     if (!a || !b) return null;
     return SparringService.calculateChemistry(a, b);
-  }, [selectedA, selectedB, heyaRikishi]);
+  }, [selectedA, selectedB, rikishiById]);
 
   const handleAdd = () => {
     if (selectedA && selectedB) {
@@ -73,8 +78,8 @@ export function SparringPanel({ heyaRikishi, pairs, onAddPair, onRemovePair }: P
         )}
 
         {pairs.map((pair) => {
-          const a = heyaRikishi.find((r) => r.id === pair.aId);
-          const b = heyaRikishi.find((r) => r.id === pair.bId);
+          const a = rikishiById.get(pair.aId);
+          const b = rikishiById.get(pair.bId);
           if (!a || !b) return null;
           const chem = CHEM_STYLES[pair.chemistry];
           return (
@@ -114,13 +119,13 @@ export function SparringPanel({ heyaRikishi, pairs, onAddPair, onRemovePair }: P
                 <SelectValue placeholder="Rikishi A" />
               </SelectTrigger>
               <SelectContent>
-                {availableRikishi
-                  .filter((r) => r.id !== selectedB)
-                  .map((r) => (
+                {availableRikishi.map((r) =>
+                  r.id === selectedB ? null : (
                     <SelectItem key={r.id} value={r.id}>
                       {r.shikona}
                     </SelectItem>
-                  ))}
+                  )
+                )}
               </SelectContent>
             </Select>
             <span className="text-muted-foreground text-xs">vs</span>
@@ -129,13 +134,13 @@ export function SparringPanel({ heyaRikishi, pairs, onAddPair, onRemovePair }: P
                 <SelectValue placeholder="Rikishi B" />
               </SelectTrigger>
               <SelectContent>
-                {availableRikishi
-                  .filter((r) => r.id !== selectedA)
-                  .map((r) => (
+                {availableRikishi.map((r) =>
+                  r.id === selectedA ? null : (
                     <SelectItem key={r.id} value={r.id}>
                       {r.shikona}
                     </SelectItem>
-                  ))}
+                  )
+                )}
               </SelectContent>
             </Select>
             {previewChemistry && (

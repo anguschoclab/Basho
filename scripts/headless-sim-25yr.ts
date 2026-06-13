@@ -49,12 +49,27 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
   const ozeki = active.filter((r) => r.rank === "ozeki");
   const makuuchi = active.filter((r) => r.division === "makuuchi");
 
-  const fundsArr = heyas.map((h) => h.funds ?? 0);
-  const totalFunds = fundsArr.reduce((a, b) => a + b, 0);
+  let totalFunds = 0;
+  for (const h of heyas) totalFunds += h.funds ?? 0;
   const insolvant = heyas.filter((h) => (h.funds ?? 0) < 0).map((h) => h.name);
 
-  const ages = active.filter((r) => r.birthYear).map((r) => world.year - r.birthYear);
-  const avgAge = ages.length ? ages.reduce((a, b) => a + b, 0) / ages.length : 0;
+  let ageSum = 0;
+  let ageCount = 0;
+  for (const r of active) {
+    if (r.birthYear) {
+      ageSum += world.year - r.birthYear;
+      ageCount++;
+    }
+  }
+  const avgAge = ageCount ? ageSum / ageCount : 0;
+
+  let minFunds = 0;
+  let maxFunds = 0;
+  for (let i = 0; i < heyas.length; i++) {
+    const f = heyas[i].funds ?? 0;
+    if (i === 0) { minFunds = f; maxFunds = f; }
+    else { if (f < minFunds) minFunds = f; if (f > maxFunds) maxFunds = f; }
+  }
 
   const chronicle = (world as any).chronicle;
   const globalCups: any[] = chronicle?.globalCups ?? [];
@@ -74,8 +89,8 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
     globalCupComplete: globalCups.length > 0,
     globalCupChampion: latestCup?.championName ?? null,
     avgFunds: heyas.length ? Math.round(totalFunds / heyas.length) : 0,
-    minFunds: fundsArr.length ? Math.min(...fundsArr) : 0,
-    maxFunds: fundsArr.length ? Math.max(...fundsArr) : 0,
+    minFunds,
+    maxFunds,
     avgAge: Math.round(avgAge * 10) / 10,
     injuredCount: active.filter((r) => r.injured).length,
     retiredTotal: allRikishi.filter((r) => r.isRetired).length,

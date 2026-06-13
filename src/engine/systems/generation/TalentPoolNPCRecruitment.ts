@@ -137,6 +137,7 @@ export function fillVacanciesForNPCWithBidding(
   }
 
   const bids: Array<{ heyaId: Id; candidateId: Id; bidAmount: number; oyakata: Oyakata }> = [];
+  const targetHeyaIds = Object.keys(targetHeyas);
 
   for (const [heyaId, _vacancyCount] of Object.entries(targetHeyas)) {
     const heya = getHeya(world, heyaId);
@@ -145,8 +146,8 @@ export function fillVacanciesForNPCWithBidding(
     if (!oyakata) continue;
 
     const recruitmentStrat = getRecruitmentStrategy(oyakata.archetype);
+    const rivalHeyaId = targetHeyaIds.find((hid) => hid !== heyaId);
     for (const candidate of allVisibleCandidates) {
-      const rivalHeyaId = Object.keys(targetHeyas).find((hid) => hid !== heyaId);
       const bidAmount = recruitmentStrat.calculateMaxBid(
         world,
         heya,

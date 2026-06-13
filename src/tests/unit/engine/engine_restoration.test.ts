@@ -40,7 +40,9 @@ describe("Engine Restoration Verification", () => {
     const counts = stables.map((h) => h.rikishiIds?.length || 0);
     const min = Math.min(...counts);
     const max = Math.max(...counts);
-    const avg = counts.reduce((a, b) => a + b, 0) / counts.length;
+    let sum = 0;
+    for (const c of counts) sum += c;
+    const avg = sum / counts.length;
 
     expect(min).toBeGreaterThanOrEqual(1); // No empty stables
     expect(max).toBeLessThan(40); // No extreme concentration

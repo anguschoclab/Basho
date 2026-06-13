@@ -159,14 +159,18 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
     );
   };
 
+  const candidateById = useMemo(
+    () => new Map(digest.candidates.map((c) => [c.candidateId, c])),
+    [digest.candidates]
+  );
+
   const comparisonPair = useMemo(() => {
     if (selectedCandidates.length < 2) return null;
-    const candidates = selectedCandidates
-      .map((id) => digest.candidates.find((c: CandidateDigestEntry) => c.candidateId === id))
-      .filter((c): c is CandidateDigestEntry => c !== undefined);
-    if (candidates.length < 2) return null;
-    return { a: candidates[0], b: candidates[1] };
-  }, [selectedCandidates, digest.candidates]);
+    const a = candidateById.get(selectedCandidates[0]);
+    const b = candidateById.get(selectedCandidates[1]);
+    if (!a || !b) return null;
+    return { a, b };
+  }, [selectedCandidates, candidateById]);
 
   const playerHeya = playerHeyaId ? world?.heyas?.get(playerHeyaId) : null;
 

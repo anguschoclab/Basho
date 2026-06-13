@@ -165,8 +165,17 @@ export function RikishiComparisonGrid({
     snapB.rikishiPerceptions[0]?.rikishiId ?? null
   );
 
-  const rA = snapA.rikishiPerceptions.find((r) => r.rikishiId === selectedA);
-  const rB = snapB.rikishiPerceptions.find((r) => r.rikishiId === selectedB);
+  const perceptionAById = useMemo(
+    () => new Map(snapA.rikishiPerceptions.map((r) => [r.rikishiId, r])),
+    [snapA.rikishiPerceptions]
+  );
+  const perceptionBById = useMemo(
+    () => new Map(snapB.rikishiPerceptions.map((r) => [r.rikishiId, r])),
+    [snapB.rikishiPerceptions]
+  );
+
+  const rA = selectedA ? perceptionAById.get(selectedA) : undefined;
+  const rB = selectedB ? perceptionBById.get(selectedB) : undefined;
 
   return (
     <div className="space-y-3">
