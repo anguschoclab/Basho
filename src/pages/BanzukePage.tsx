@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
@@ -19,8 +19,17 @@ import { PageHeader } from "@/components/layout/control-center";
 import { BanzukePyramid } from "@/components/charts/BanzukePyramid";
 import { RikishiCell } from "@/components/banzuke/RikishiCell";
 import { YokozunaTrajectory } from "@/components/banzuke/YokozunaTrajectory";
-import { EntityCollection } from "@/engine/core/EntityCollection";
 import { getYokozunaCandidates } from "@/presenters/projections/promotionProjections";
+import type { UIRankRow } from "@/presenters/banzukeUI";
+
+const DIVISION_KEYS: Division[] = [
+  "makuuchi",
+  "juryo",
+  "makushita",
+  "sandanme",
+  "jonidan",
+  "jonokuchi",
+];
 
 /** banzuke page. */
 export default function BanzukePage() {
@@ -48,7 +57,7 @@ export default function BanzukePage() {
   }, [world]);
 
   const pyramidData = useMemo(() => {
-    if (!world) return [];
+    if (!banzukeDigest) return [];
     const counts: Record<string, number> = {
       Yokozuna: 0,
       Ozeki: 0,
@@ -56,27 +65,51 @@ export default function BanzukePage() {
       Komusubi: 0,
       "Maegashira 1-8": 0,
       "Maegashira 9-15": 0,
-      Juryo: 0,
-      Makushita: 0,
+      Juryo: banzukeDigest.divisionCounts["juryo"] ?? 0,
+      Makushita: banzukeDigest.divisionCounts["makushita"] ?? 0,
     };
-    for (const r of EntityCollection.getActiveRikishi(world)) {
-      const rank = r.rank?.toLowerCase() ?? "";
-      const num = r.rankNumber ?? 0;
-      if (rank === "yokozuna") counts.Yokozuna++;
-      else if (rank === "ozeki") counts.Ozeki++;
-      else if (rank === "sekiwake") counts.Sekiwake++;
-      else if (rank === "komusubi") counts.Komusubi++;
-      else if (rank === "maegashira" && num <= 8) counts["Maegashira 1-8"]++;
-      else if (rank === "maegashira" && num > 8) counts["Maegashira 9-15"]++;
-      else if (rank === "juryo") counts.Juryo++;
-      else if (rank === "makushita") counts.Makushita++;
+    const makuuchi = banzukeDigest.divisionMap.get("makuuchi");
+    if (makuuchi) {
+      for (const row of makuuchi.rows) {
+        const sample = row.east ?? row.west;
+        if (!sample) continue;
+        const rank = sample.rank;
+        const num = sample.rankNumber ?? 0;
+        const inc = (row.east ? 1 : 0) + (row.west ? 1 : 0);
+        if (rank === "yokozuna") counts.Yokozuna += inc;
+        else if (rank === "ozeki") counts.Ozeki += inc;
+        else if (rank === "sekiwake") counts.Sekiwake += inc;
+        else if (rank === "komusubi") counts.Komusubi += inc;
+        else if (rank === "maegashira" && num <= 8) counts["Maegashira 1-8"] += inc;
+        else if (rank === "maegashira" && num > 8) counts["Maegashira 9-15"] += inc;
+      }
     }
     return Object.entries(counts)
       .filter(([, v]) => v > 0)
       .map(([rank, count]) => ({ rank, count }));
-  }, [world]);
+  }, [banzukeDigest]);
 
   const yokozunaCandidates = useMemo(() => (world ? getYokozunaCandidates(world) : []), [world]);
+
+  const normalizedSearchQuery = useMemo(() => searchQuery.toLowerCase().trim(), [searchQuery]);
+
+  const filteredRowsByDivision = useMemo(() => {
+    if (!banzukeDigest) return new Map<string, UIRankRow[]>();
+    const map = new Map<string, UIRankRow[]>();
+    for (const div of DIVISION_KEYS) {
+      const divData = banzukeDigest.divisionMap.get(div);
+      let rows = divData?.rows ?? [];
+      if (normalizedSearchQuery) {
+        rows = rows.filter(
+          (r: UIRankRow) =>
+            r.east?.shikona?.toLowerCase().includes(normalizedSearchQuery) ||
+            r.west?.shikona?.toLowerCase().includes(normalizedSearchQuery)
+        );
+      }
+      map.set(div, rows);
+    }
+    return map;
+  }, [banzukeDigest, normalizedSearchQuery]);
 
   if (!world || !banzukeDigest) return null;
 
@@ -101,15 +134,7 @@ export default function BanzukePage() {
     }
   };
 
-  const { divisions: banzukeData, kadobanMap, heyaNameMap, hasPrevBasho } = banzukeDigest;
-  const divisionKeys: Division[] = [
-    "makuuchi",
-    "juryo",
-    "makushita",
-    "sandanme",
-    "jonidan",
-    "jonokuchi",
-  ];
+  const { kadobanMap, heyaNameMap, hasPrevBasho } = banzukeDigest;
 
   return (
     <AppLayout pageTitle="Official Banzuke" subNavTabs={TOURNAMENT_TABS} activeSubTab="banzuke">
@@ -153,7 +178,7 @@ export default function BanzukePage() {
         <PageHeader
           eyebrow="── TOURNAMENT · BANZUKE ──"
           title="Official Rankings"
-          lede={`${world.year} ${world.currentBashoName ?? "Upcoming"} · ${banzukeData.reduce((s, d) => s + (d.rows?.length ?? 0), 0)} wrestlers listed`}
+          lede={`${world.year} ${world.currentBashoName ?? "Upcoming"} · ${banzukeDigest.totalWrestlerCount} wrestlers listed`}
         />
 
         {/* Pyramid + controls row */}
@@ -235,115 +260,30 @@ export default function BanzukePage() {
         {/* Division tabs */}
         <Tabs defaultValue="makuuchi" className="w-full">
           <TabsList className="bg-muted/50">
-            {divisionKeys.map((d) => {
-              const divData = banzukeData.find((b) => b.division === d);
-              const divCount =
-                divData?.rows.reduce(
-                  (acc: number, r) => acc + (r.east ? 1 : 0) + (r.west ? 1 : 0),
-                  0
-                ) || 0;
-              return (
-                <TooltipWrap key={d} content={`View ${d} division rankings`} side="bottom">
-                  <TabsTrigger value={d} className="capitalize font-display text-xs gap-1">
-                    {d}
-                    <span className="text-[10px] text-muted-foreground font-mono">
-                      ({divCount})
-                    </span>
-                  </TabsTrigger>
-                </TooltipWrap>
-              );
-            })}
+            {DIVISION_KEYS.map((d) => (
+              <TooltipWrap key={d} content={`View ${d} division rankings`} side="bottom">
+                <TabsTrigger value={d} className="capitalize font-display text-xs gap-1">
+                  {d}
+                  <span className="text-[10px] text-muted-foreground font-mono">
+                    ({banzukeDigest.divisionCounts[d] ?? 0})
+                  </span>
+                </TabsTrigger>
+              </TooltipWrap>
+            ))}
           </TabsList>
 
-          {divisionKeys.map((div) => {
-            const divData = banzukeData.find((b) => b.division === div);
-            let rows = divData?.rows || [];
-            if (searchQuery) {
-              const q = searchQuery.toLowerCase();
-              rows = rows.filter(
-                (r) =>
-                  r.east?.shikona?.toLowerCase().includes(q) ||
-                  r.west?.shikona?.toLowerCase().includes(q)
-              );
-            }
-
-            return (
-              <TabsContent key={div} value={div}>
-                <Card className="overflow-hidden">
-                  <CardContent className="p-0">
-                    <ScrollArea className="h-[600px]">
-                      <table className="w-full text-sm">
-                        <thead className="bg-muted/50 sticky top-0 z-10">
-                          <tr className="border-b">
-                            <th className="p-3 font-display font-medium text-right w-[280px]">
-                              <span className="text-east text-[10px] uppercase tracking-widest">
-                                East 東
-                              </span>
-                            </th>
-                            <th className="p-3 font-display font-medium text-center w-[120px] text-muted-foreground text-[10px] uppercase tracking-widest">
-                              Rank
-                            </th>
-                            <th className="p-3 font-display font-medium w-[280px]">
-                              <span className="text-west text-[10px] uppercase tracking-widest">
-                                West 西
-                              </span>
-                            </th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {rows.map((row, i) => (
-                            <tr
-                              key={row.rankKey}
-                              className={`border-b hover:bg-muted/50 transition-colors bout-enter ${row.rankTierClass}`}
-                              style={{ animationDelay: `${Math.min(i * 30, 300)}ms` }}
-                            >
-                              <RikishiCell
-                                entry={row.east}
-                                kadobanMap={kadobanMap}
-                                heyaName={row.east ? heyaNameMap.get(row.east.id) : undefined}
-                                showChanges={showChanges && hasPrevBasho}
-                                searchQuery={searchQuery}
-                                side="east"
-                              />
-                              <td className="p-3 text-center">
-                                <div className="font-display text-muted-foreground text-xs font-medium">
-                                  {row.rankLabel}
-                                </div>
-                                <div className="text-[9px] text-muted-foreground/60 leading-tight mt-0.5 font-display">
-                                  {row.rankTitleJa}
-                                  {row.isSanyaku && <span className="ml-1 text-gold/70">三役</span>}
-                                </div>
-                              </td>
-                              <RikishiCell
-                                entry={row.west}
-                                kadobanMap={kadobanMap}
-                                heyaName={row.west ? heyaNameMap.get(row.west.id) : undefined}
-                                showChanges={showChanges && hasPrevBasho}
-                                searchQuery={searchQuery}
-                                side="west"
-                              />
-                            </tr>
-                          ))}
-                          {rows.length === 0 && (
-                            <tr>
-                              <td
-                                colSpan={3}
-                                className="p-8 text-center text-muted-foreground font-display"
-                              >
-                                {searchQuery
-                                  ? "No wrestlers match your search"
-                                  : "No wrestlers in this division"}
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
-                    </ScrollArea>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            );
-          })}
+          {DIVISION_KEYS.map((div) => (
+            <TabsContent key={div} value={div}>
+              <DivisionTable
+                div={div}
+                rows={filteredRowsByDivision.get(div) ?? []}
+                kadobanMap={kadobanMap}
+                heyaNameMap={heyaNameMap}
+                showChanges={showChanges && hasPrevBasho}
+                searchQuery={searchQuery}
+              />
+            </TabsContent>
+          ))}
         </Tabs>
 
         {/* Yokozuna Promotion Watch */}
@@ -363,3 +303,95 @@ export default function BanzukePage() {
     </AppLayout>
   );
 }
+
+interface DivisionTableProps {
+  div: string;
+  rows: UIRankRow[];
+  kadobanMap: Record<string, { isKadoban: boolean }>;
+  heyaNameMap: Map<string, string>;
+  showChanges: boolean;
+  searchQuery: string;
+}
+
+const DivisionTable = memo(function DivisionTable({
+  rows,
+  kadobanMap,
+  heyaNameMap,
+  showChanges,
+  searchQuery,
+}: DivisionTableProps) {
+  return (
+    <Card className="overflow-hidden">
+      <CardContent className="p-0">
+        <ScrollArea className="h-[600px]">
+          <table className="w-full text-sm">
+            <thead className="bg-muted/50 sticky top-0 z-10">
+              <tr className="border-b">
+                <th className="p-3 font-display font-medium text-right w-[280px]">
+                  <span className="text-east text-[10px] uppercase tracking-widest">
+                    East 東
+                  </span>
+                </th>
+                <th className="p-3 font-display font-medium text-center w-[120px] text-muted-foreground text-[10px] uppercase tracking-widest">
+                  Rank
+                </th>
+                <th className="p-3 font-display font-medium w-[280px]">
+                  <span className="text-west text-[10px] uppercase tracking-widest">
+                    West 西
+                  </span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, i) => (
+                <tr
+                  key={row.rankKey}
+                  className={`border-b hover:bg-muted/50 transition-colors bout-enter ${row.rankTierClass}`}
+                  style={{ animationDelay: `${Math.min(i * 30, 300)}ms` }}
+                >
+                  <RikishiCell
+                    entry={row.east}
+                    kadobanMap={kadobanMap}
+                    heyaName={row.east ? heyaNameMap.get(row.east.id) : undefined}
+                    showChanges={showChanges}
+                    searchQuery={searchQuery}
+                    side="east"
+                  />
+                  <td className="p-3 text-center">
+                    <div className="font-display text-muted-foreground text-xs font-medium">
+                      {row.rankLabel}
+                    </div>
+                    <div className="text-[9px] text-muted-foreground/60 leading-tight mt-0.5 font-display">
+                      {row.rankTitleJa}
+                      {row.isSanyaku && <span className="ml-1 text-gold/70">三役</span>}
+                    </div>
+                  </td>
+                  <RikishiCell
+                    entry={row.west}
+                    kadobanMap={kadobanMap}
+                    heyaName={row.west ? heyaNameMap.get(row.west.id) : undefined}
+                    showChanges={showChanges}
+                    searchQuery={searchQuery}
+                    side="west"
+                  />
+                </tr>
+              ))}
+              {rows.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={3}
+                    className="p-8 text-center text-muted-foreground font-display"
+                  >
+                    {searchQuery
+                      ? "No wrestlers match your search"
+                      : "No wrestlers in this division"}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </ScrollArea>
+      </CardContent>
+    </Card>
+  );
+});

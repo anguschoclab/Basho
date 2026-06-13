@@ -432,51 +432,75 @@ export class ImpactBuilder {
    * Useful for composing sub-system impacts without a separate mergeImpacts call.
    */
   merge(other: StateImpact): ImpactBuilder {
-    // Merge entity updates via registry
+    // Merge entity updates via Map-based dispatch (avoids iterating all 8 keys)
     if (other.entities) {
-      const entityMappings: {
-        key: keyof NonNullable<StateImpact["entities"]>;
-        updater: (id: string, update: unknown) => void;
-      }[] = [
-        { key: "heyaUpdates", updater: (id, u) => this.updateHeya(id, u as Partial<Heya>) },
-        { key: "rikishiUpdates", updater: (id, u) => this.updateRikishi(id, u as Partial<Rikishi>) },
-        { key: "oyakataUpdates", updater: (id, u) => this.updateOyakata(id, u as Partial<Oyakata>) },
-        { key: "sponsorUpdates", updater: (id, u) => this.updateSponsor(id, u as Record<string, unknown>) },
-        { key: "koenkaiUpdates", updater: (id, u) => this.updateKoenkai(id, u as Record<string, unknown>) },
-        { key: "trainingStateUpdates", updater: (id, u) => this.updateTrainingState(id, u as Partial<HeyaTrainingState>) },
-        { key: "myosekiUpdates", updater: (id, u) => this.updateMyosekiStock(id, u as Partial<MyosekiStock>) },
-        { key: "staffUpdates", updater: (id, u) => this.updateStaff(id, u as Partial<Staff>) },
-      ];
-      for (const { key, updater } of entityMappings) {
-        const updates = other.entities![key] as Map<string, unknown> | undefined;
-        if (updates) {
-          for (const [id, update] of updates) {
-            updater(id, update);
-          }
+      for (const [key, map] of Object.entries(other.entities)) {
+        if (!map || (map as Map<string, unknown>).size === 0) continue;
+        switch (key) {
+          case "heyaUpdates":
+            for (const [id, update] of map as Map<string, unknown>) {
+              this.updateHeya(id, update as Partial<Heya>);
+            }
+            break;
+          case "rikishiUpdates":
+            for (const [id, update] of map as Map<string, unknown>) {
+              this.updateRikishi(id, update as Partial<Rikishi>);
+            }
+            break;
+          case "oyakataUpdates":
+            for (const [id, update] of map as Map<string, unknown>) {
+              this.updateOyakata(id, update as Partial<Oyakata>);
+            }
+            break;
+          case "sponsorUpdates":
+            for (const [id, update] of map as Map<string, unknown>) {
+              this.updateSponsor(id, update as Record<string, unknown>);
+            }
+            break;
+          case "koenkaiUpdates":
+            for (const [id, update] of map as Map<string, unknown>) {
+              this.updateKoenkai(id, update as Record<string, unknown>);
+            }
+            break;
+          case "trainingStateUpdates":
+            for (const [id, update] of map as Map<string, unknown>) {
+              this.updateTrainingState(id, update as Partial<HeyaTrainingState>);
+            }
+            break;
+          case "myosekiUpdates":
+            for (const [id, update] of map as Map<string, unknown>) {
+              this.updateMyosekiStock(id, update as Partial<MyosekiStock>);
+            }
+            break;
+          case "staffUpdates":
+            for (const [id, update] of map as Map<string, unknown>) {
+              this.updateStaff(id, update as Partial<Staff>);
+            }
+            break;
         }
       }
     }
 
-    // Merge collections
+    // Merge collections via Map-based dispatch
     if (other.collections) {
-      const collectionMappings: { key: keyof NonNullable<StateImpact["collections"]>; method: (item: unknown) => void }[] = [
-        { key: "rikishiToAdd", method: (r) => this.addRikishi(r as Rikishi) },
-        { key: "rikishiToRemove", method: (id) => this.removeRikishi(id as string) },
-        { key: "rikishiToHistorical", method: (id) => this.retireRikishi(id as string) },
-        { key: "rikishiFromHistorical", method: (id) => this.unretireRikishi(id as string) },
-      ];
-      for (const { key, method } of collectionMappings) {
-        const items = other.collections![key] as unknown[] | undefined;
-        if (items) {
-          for (const item of items) {
-            method(item);
-          }
-        }
-      }
       for (const [key, arr] of Object.entries(other.collections)) {
-        if (key === "rikishiToAdd" || key === "rikishiToRemove" || key === "rikishiToHistorical" || key === "rikishiFromHistorical") continue;
-        const target = this.ensureCollectionArray(key);
-        (target as unknown[]).push(...(arr as unknown[]));
+        if (!Array.isArray(arr) || arr.length === 0) continue;
+        switch (key) {
+          case "rikishiToAdd":
+            for (const r of arr) this.addRikishi(r as Rikishi);
+            break;
+          case "rikishiToRemove":
+            for (const id of arr) this.removeRikishi(id as string);
+            break;
+          case "rikishiToHistorical":
+            for (const id of arr) this.retireRikishi(id as string);
+            break;
+          case "rikishiFromHistorical":
+            for (const id of arr) this.unretireRikishi(id as string);
+            break;
+          default:
+            (this.ensureCollectionArray(key) as unknown[]).push(...arr);
+        }
       }
     }
 

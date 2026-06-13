@@ -332,6 +332,7 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
   const archetypeName = archEntry?.label ?? combatArchetype;
 
   const favoredKimariteDetailed = calculateMostFrequentKimarite(r.history ?? []);
+  const streakInfo = calculateStreak(r.history ?? []);
 
   return {
     id: r.id,
@@ -375,8 +376,8 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     careerLosses: r.careerLosses,
     careerRecord: `${r.careerWins}-${r.careerLosses}`,
     careerYusho: r.careerRecord?.yusho ?? 0,
-    streak: calculateStreak(r.history ?? []).streak,
-    streakLabel: calculateStreak(r.history ?? []).label,
+    streak: streakInfo.streak,
+    streakLabel: streakInfo.label,
     winPercentage: r.careerWins / Math.max(1, r.careerWins + r.careerLosses),
     avgRankLabel: calculateAvgRank(r.careerHistory ?? []),
     perceivedStats: calculatePerceivedStats(rng, r),

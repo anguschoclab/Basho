@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { RikishiName } from "@/components/ClickableName";
 import { RankChangeIndicator } from "./RankChangeIndicator";
@@ -15,7 +16,7 @@ interface Props {
   side: "east" | "west";
 }
 
-export function RikishiCell({
+export const RikishiCell = memo(function RikishiCell({
   entry,
   kadobanMap,
   heyaName,
@@ -102,4 +103,4 @@ export function RikishiCell({
       </div>
     </td>
   );
-}
+});

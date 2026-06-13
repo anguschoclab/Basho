@@ -129,6 +129,12 @@ export interface BanzukeUIDigest {
   kadobanMap: OzekiKadobanMap;
   heyaNameMap: Map<string, string>;
   hasPrevBasho: boolean;
+  /** Precomputed total wrestler count across all divisions */
+  totalWrestlerCount: number;
+  /** Precomputed wrestler count per division key */
+  divisionCounts: Record<string, number>;
+  /** O(1) lookup map from division key to division data */
+  divisionMap: Map<string, BanzukeDivisionData>;
 }
 
 // ── Dashboard UI Types ───────────────────────────────────────────────────────

@@ -101,6 +101,17 @@ export function projectBanzukeUIDigest(world: WorldState): BanzukeUIDigest {
     heyaNameMap.set(h.id, h.name);
   }
 
+  // Precompute counts and O(1) lookup map
+  let totalWrestlerCount = 0;
+  const divisionCounts: Record<string, number> = {};
+  const divisionMap = new Map<string, BanzukeDivisionData>();
+  for (const dd of dividerData) {
+    const count = dd.rows.reduce((acc: number, r: { east?: unknown; west?: unknown }) => acc + (r.east ? 1 : 0) + (r.west ? 1 : 0), 0);
+    divisionCounts[dd.division] = count;
+    totalWrestlerCount += count;
+    divisionMap.set(dd.division, dd);
+  }
+
   return {
     year: world.year,
     basho: world.currentBashoName,
@@ -108,5 +119,8 @@ export function projectBanzukeUIDigest(world: WorldState): BanzukeUIDigest {
     kadobanMap: world.ozekiKadoban || {},
     heyaNameMap,
     hasPrevBasho: prevScoreMap.size > 0,
+    totalWrestlerCount,
+    divisionCounts,
+    divisionMap,
   };
 }

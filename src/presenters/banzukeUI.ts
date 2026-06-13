@@ -81,13 +81,12 @@ function rankRowClass(rank: string): string {
  */
 export function buildBanzukeRows(
   entries: UIRosterEntry[],
-  division: string,
+  _division: string,
   searchQuery: string
 ): UIRankRow[] {
-  const divEntries = entries.filter((e) => e.division === division);
   const groups = new Map<string, { east: UIRosterEntry | null; west: UIRosterEntry | null }>();
 
-  for (const e of divEntries) {
+  for (const e of entries) {
     const key = `${e.rank}_${e.rankNumber ?? 1}`;
     if (!groups.has(key)) groups.set(key, { east: null, west: null });
     const g = groups.get(key);

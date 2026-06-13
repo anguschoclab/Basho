@@ -71,15 +71,26 @@ function applyEntityUpdates(
 
 function applyArrayAppends(world: WorldState, appends: StateImpact["arrayAppends"]): WorldState {
   if (!appends || appends.length === 0) return world;
-  let result = world;
 
+  // Batch items by field to avoid intermediate array allocations
+  const fieldItems = new Map<string, unknown[]>();
   for (const append of appends) {
-    switch (append.field) {
+    const existing = fieldItems.get(append.field);
+    if (existing) {
+      existing.push(...append.items);
+    } else {
+      fieldItems.set(append.field, [...append.items]);
+    }
+  }
+
+  let result = world;
+  for (const [field, items] of fieldItems) {
+    switch (field) {
       case "history":
-        result = { ...result, history: [...(result.history || []), ...append.items] };
+        result = { ...result, history: [...(result.history || []), ...(items as never[])] };
         break;
       case "almanacSnapshots":
-        result = { ...result, almanacSnapshots: [...(result.almanacSnapshots || []), ...append.items] };
+        result = { ...result, almanacSnapshots: [...(result.almanacSnapshots || []), ...(items as never[])] };
         break;
       case "basho.matches":
         if (result.currentBasho) {
@@ -87,16 +98,16 @@ function applyArrayAppends(world: WorldState, appends: StateImpact["arrayAppends
             ...result,
             currentBasho: {
               ...result.currentBasho,
-              matches: [...(result.currentBasho.matches || []), ...append.items],
+              matches: [...(result.currentBasho.matches || []), ...(items as never[])],
             },
           };
         }
         break;
       case "governanceLog":
-        result = { ...result, governanceLog: [...(result.governanceLog || []), ...append.items] };
+        result = { ...result, governanceLog: [...(result.governanceLog || []), ...(items as never[])] };
         break;
       case "awardLog":
-        result = { ...result, awardLog: [...(result.awardLog || []), ...append.items] };
+        result = { ...result, awardLog: [...(result.awardLog || []), ...(items as never[])] };
         break;
       case "myosekiMarket.history":
         if (result.myosekiMarket) {
@@ -104,7 +115,7 @@ function applyArrayAppends(world: WorldState, appends: StateImpact["arrayAppends
             ...result,
             myosekiMarket: {
               ...result.myosekiMarket,
-              history: [...append.items, ...(result.myosekiMarket.history || [])],
+              history: [...(items as never[]), ...(result.myosekiMarket.history || [])],
             },
           };
         }
@@ -114,7 +125,7 @@ function applyArrayAppends(world: WorldState, appends: StateImpact["arrayAppends
           ...result,
           pendingExhibitions: [
             ...(result.pendingExhibitions || []),
-            ...(append.items as Array<{ id: string; region: string; prestige: number }>),
+            ...(items as never[]),
           ],
         };
         break;
@@ -130,15 +141,26 @@ function applyArrayAppends(world: WorldState, appends: StateImpact["arrayAppends
  * Pure: no side effects.
  */
 export function applyImpact(world: WorldState, impact: StateImpact): WorldState {
-  let result = { ...world };
+  return _applyImpact({ ...world }, impact);
+}
 
+/**
+ * Internal: apply impact to an existing mutable accumulator.
+ * Used by resolveImpacts to avoid redundant WorldState copies.
+ */
+function _applyImpact(result: WorldState, impact: StateImpact): WorldState {
   // Apply entity updates
   result = applyEntityUpdates(result, impact.entities);
 
   // Apply collection operations
   if (impact.collections) {
-    const nextHeyas = new Map(result.heyas);
+    let nextHeyas: Map<string, import("../types/heya").Heya> | undefined;
     let heyasChanged = false;
+
+    const ensureHeyas = (): Map<string, import("../types/heya").Heya> => {
+      if (!nextHeyas) nextHeyas = new Map(result.heyas);
+      return nextHeyas;
+    };
 
     // Handle activeRikishiIds operations
     if (impact.collections.activeRikishiIdsToAdd || impact.collections.activeRikishiIdsToRemove) {
@@ -162,11 +184,11 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
         nextRikishi.set(rikishi.id, rikishi);
 
         // Sync Heya Roster
-        const heya = nextHeyas.get(rikishi.heyaId) || result.heyas.get(rikishi.heyaId);
+        const heya = nextHeyas?.get(rikishi.heyaId) || result.heyas.get(rikishi.heyaId);
         if (heya) {
           const ids = new Set(heya.rikishiIds || []);
           ids.add(rikishi.id);
-          nextHeyas.set(rikishi.heyaId, { ...heya, rikishiIds: Array.from(ids) });
+          ensureHeyas().set(rikishi.heyaId, { ...heya, rikishiIds: Array.from(ids) });
           heyasChanged = true;
         }
       }
@@ -179,9 +201,9 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
         const r = nextRikishi.get(id);
         if (r) {
           // Sync Heya Roster
-          const heya = nextHeyas.get(r.heyaId) || result.heyas.get(r.heyaId);
+          const heya = nextHeyas?.get(r.heyaId) || result.heyas.get(r.heyaId);
           if (heya) {
-            nextHeyas.set(r.heyaId, {
+            ensureHeyas().set(r.heyaId, {
               ...heya,
               rikishiIds: (heya.rikishiIds || []).filter((rid) => rid !== id),
             });
@@ -203,9 +225,9 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
           nextHistorical.set(id, rikishi);
 
           // Sync Heya Roster (Remove from active roster)
-          const heya = nextHeyas.get(rikishi.heyaId) || result.heyas.get(rikishi.heyaId);
+          const heya = nextHeyas?.get(rikishi.heyaId) || result.heyas.get(rikishi.heyaId);
           if (heya) {
-            nextHeyas.set(rikishi.heyaId, {
+            ensureHeyas().set(rikishi.heyaId, {
               ...heya,
               rikishiIds: (heya.rikishiIds || []).filter((rid) => rid !== id),
             });
@@ -216,7 +238,7 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
       result = { ...result, rikishi: nextRikishi, historicalRikishi: nextHistorical };
     }
 
-    if (heyasChanged) {
+    if (heyasChanged && nextHeyas) {
       result = { ...result, heyas: nextHeyas };
     }
 
@@ -309,20 +331,23 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
 
 /**
  * Resolves an array of StateImpact objects against a base WorldState.
+ * Uses a single mutable accumulator to avoid redundant WorldState copies.
  */
 export function resolveImpacts(world: WorldState, impacts: StateImpact[]): WorldState {
   if (impacts.length === 0) {
     return world;
   }
 
-  return impacts.reduce((currentWorld, impact) => {
+  let result = { ...world };
+
+  for (const impact of impacts) {
     try {
-      const nextWorld = applyImpact(currentWorld, impact);
+      result = _applyImpact(result, impact);
 
       // Log events (side effect isolated to coordinator)
       if (impact.events && impact.events.length > 0) {
         for (const eventDef of impact.events) {
-          logEngineEvent(nextWorld, {
+          logEngineEvent(result, {
             type: eventDef.type,
             category: eventDef.category,
             heyaId: eventDef.heyaId,
@@ -334,112 +359,105 @@ export function resolveImpacts(world: WorldState, impacts: StateImpact[]): World
           });
         }
       }
-
-      return nextWorld;
     } catch (error) {
       console.error(
         `[IMPACT RESOLVER ERROR] in impact from "${impact.metadata?.source || "unknown"}":`,
         error
       );
-      return currentWorld;
     }
-  }, world);
+  }
+
+  return result;
 }
 
 /**
  * Merges multiple StateImpact objects into a single impact.
+ * Uses lazy sub-map creation and Map-based array append merging.
  */
 export function mergeImpacts(impacts: StateImpact[]): StateImpact {
   const merged: StateImpact = {
-    entities: {
-      heyaUpdates: new Map(),
-      rikishiUpdates: new Map(),
-      oyakataUpdates: new Map(),
-      sponsorUpdates: new Map(),
-      koenkaiUpdates: new Map(),
-      trainingStateUpdates: new Map(),
-      myosekiUpdates: new Map(),
-      staffUpdates: new Map(),
-    },
-    collections: {
-      rikishiToAdd: [],
-      rikishiToRemove: [],
-      rikishiToHistorical: [],
-      rikishiFromHistorical: [],
-      activeRikishiIdsToAdd: [],
-      activeRikishiIdsToRemove: [],
-      staffToAdd: [],
-      staffToRemove: [],
-    },
-    deletedEntities: {
-      heyaIds: [],
-      oyakataIds: [],
-      rikishiIds: [],
-    },
-    worldFields: {},
-    arrayAppends: [],
-    events: [],
     metadata: {
       source: "merged",
       timestamp: getNextTimestamp(),
     },
   };
 
+  // Accumulate array appends by field to avoid O(n²) .find()
+  const appendMap = new Map<string, unknown[]>();
+
   for (const impact of impacts) {
-    // Merge entity updates generically
-    if (impact.entities && merged.entities) {
+    // Merge entity updates with lazy sub-map creation
+    if (impact.entities) {
+      if (!merged.entities) merged.entities = {};
       for (const field of ENTITY_UPDATE_CONFIGS.map((c) => c.impactField)) {
         const sourceMap = (impact.entities as Record<string, Map<string, unknown> | undefined>)[field];
-        const targetMap = (merged.entities as Record<string, Map<string, unknown> | undefined>)[field];
-        if (sourceMap && targetMap) {
-          for (const [id, update] of sourceMap) {
-            const existing = targetMap.get(id);
-            targetMap.set(id, existing ? { ...existing, ...(update as Record<string, unknown>) } : update);
-          }
+        if (!sourceMap || sourceMap.size === 0) continue;
+        let targetMap = (merged.entities as Record<string, Map<string, unknown> | undefined>)[field];
+        if (!targetMap) {
+          targetMap = new Map();
+          (merged.entities as Record<string, Map<string, unknown>>)[field] = targetMap;
+        }
+        for (const [id, update] of sourceMap) {
+          const existing = targetMap.get(id);
+          targetMap.set(id, existing ? { ...existing, ...(update as Record<string, unknown>) } : update);
         }
       }
     }
 
-    // Merge collections generically
-    if (impact.collections && merged.collections) {
+    // Merge collections with lazy array creation
+    if (impact.collections) {
+      if (!merged.collections) merged.collections = {};
       for (const [key, arr] of Object.entries(impact.collections)) {
-        const target = (merged.collections as Record<string, unknown[]>)[key];
-        if (target && Array.isArray(arr)) {
-          target.push(...arr);
+        if (!Array.isArray(arr) || arr.length === 0) continue;
+        let target = (merged.collections as Record<string, unknown[]>)[key];
+        if (!target) {
+          target = [];
+          (merged.collections as Record<string, unknown[]>)[key] = target;
         }
+        target.push(...arr);
       }
     }
 
-    // Merge deletions generically
-    if (impact.deletedEntities && merged.deletedEntities) {
+    // Merge deletions with lazy array creation
+    if (impact.deletedEntities) {
+      if (!merged.deletedEntities) merged.deletedEntities = {};
       for (const [key, ids] of Object.entries(impact.deletedEntities)) {
-        const target = (merged.deletedEntities as Record<string, string[]>)[key];
-        if (target && Array.isArray(ids)) {
-          target.push(...ids);
+        if (!Array.isArray(ids) || ids.length === 0) continue;
+        let target = (merged.deletedEntities as Record<string, string[]>)[key];
+        if (!target) {
+          target = [];
+          (merged.deletedEntities as Record<string, string[]>)[key] = target;
         }
+        target.push(...ids);
       }
     }
 
     if (impact.worldFields) {
-      merged.worldFields = { ...merged.worldFields, ...impact.worldFields };
+      merged.worldFields = { ...(merged.worldFields || {}), ...impact.worldFields };
     }
 
-    // Merge array appends
+    // Accumulate array appends by field
     if (impact.arrayAppends) {
       for (const append of impact.arrayAppends) {
-        const existing = merged.arrayAppends?.find((a) => a.field === append.field);
+        const existing = appendMap.get(append.field);
         if (existing) {
-          (existing.items as unknown[]).push(...append.items);
+          existing.push(...append.items);
         } else {
-          if (!merged.arrayAppends) merged.arrayAppends = [];
-          merged.arrayAppends.push({ ...append, items: [...append.items] } as never);
+          appendMap.set(append.field, [...append.items]);
         }
       }
     }
 
-    if (impact.events && merged.events) {
+    // Merge events
+    if (impact.events && impact.events.length > 0) {
+      if (!merged.events) merged.events = [];
       merged.events.push(...impact.events);
     }
+  }
+
+  // Convert accumulated array appends back to array format
+  if (appendMap.size > 0) {
+    merged.arrayAppends = Array.from(appendMap.entries()).map(([field, items]) => ({ field, items } as never));
   }
 
   return merged;

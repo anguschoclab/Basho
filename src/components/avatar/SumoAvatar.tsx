@@ -3,7 +3,7 @@
  * Procedural SVG avatar component for sumo wrestlers, oyakata, and staff.
  */
 
-import React from "react";
+import { memo } from "react";
 import type { AvatarConfig } from "@/engine/types/avatar";
 import { cn } from "@/lib/utils";
 
@@ -50,7 +50,7 @@ const lightenColor = (hex: string, percent: number): string => {
   return "#" + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
 };
 
-export const SumoAvatar: React.FC<SumoAvatarProps> = ({
+export const SumoAvatar = memo(function SumoAvatar({
   config,
   size = "md",
   className,
@@ -60,7 +60,7 @@ export const SumoAvatar: React.FC<SumoAvatarProps> = ({
   fallback,
   rankTier,
   showGlow,
-}) => {
+}: SumoAvatarProps) {
   const pixelSize = SIZE_MAP[size];
 
   // Fallback to initials if no config
@@ -342,4 +342,4 @@ export const SumoAvatar: React.FC<SumoAvatarProps> = ({
       )}
     </svg>
   );
-};
+});

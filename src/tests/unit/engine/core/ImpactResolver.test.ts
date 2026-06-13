@@ -2,7 +2,7 @@
  * ImpactResolver Unit Tests
  */
 
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import * as ImpactResolver from "@/engine/core/ImpactResolver";
 import type { WorldState } from "@/engine/types/world";
 import type { StateImpact } from "@/engine/core/StateImpact";
@@ -71,19 +71,19 @@ describe("ImpactResolver", () => {
     });
 
     it("applies rikishi entity updates", () => {
-      const rikishi = mockRikishi("r1", { shikona: "Test", power: 50 });
+      const rikishi = mockRikishi("r1", { shikona: "Test", power: 50 } as never);
       world.rikishi.set(rikishi.id, rikishi);
 
       const impact: StateImpact = {
         entities: {
-          rikishiUpdates: new Map([["r1", { power: 60, speed: 55 }]]),
+          rikishiUpdates: new Map([["r1", { power: 60, speed: 55 } as never]]),
         },
         metadata: { source: "test" },
       };
 
       const result = ImpactResolver.resolveImpacts(world, [impact]);
-      expect(result.rikishi.get("r1")?.power).toBe(60);
-      expect(result.rikishi.get("r1")?.speed).toBe(55);
+      expect((result.rikishi.get("r1") as { power?: number }).power).toBe(60);
+      expect((result.rikishi.get("r1") as { speed?: number }).speed).toBe(55);
       expect(result.rikishi.get("r1")?.shikona).toBe("Test"); // Unchanged
     });
 
@@ -244,9 +244,11 @@ describe("ImpactResolver", () => {
 
     it("returns empty merged impact when input is empty", () => {
       const merged = ImpactResolver.mergeImpacts([]);
-      expect(merged.entities?.heyaUpdates?.size).toBe(0);
-      expect(merged.collections?.rikishiToAdd?.length).toBe(0);
-      expect(merged.events?.length).toBe(0);
+      // With lazy initialization, empty containers are absent rather than empty
+      expect(merged.entities).toBeUndefined();
+      expect(merged.collections).toBeUndefined();
+      expect(merged.events).toBeUndefined();
+      expect(merged.metadata?.source).toBe("merged");
     });
   });
 });
