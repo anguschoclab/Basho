@@ -6,11 +6,11 @@ import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 import { TrainingService } from "../systems/training/TrainingService";
 import { getManagerPersona } from "../systems/NPCPersonaService";
-import { getFinanceStrategy } from "../npcFinanceStrategy";
+import { evaluateFinanceStrategy } from "../strategy/NPCFinanceCalculator";
 import { getRecruitmentStrategy } from "../npcRecruitmentStrategy";
 import { getRetirementStrategy } from "../npcRetirementStrategy";
 import { getSponsorStrategy } from "../npcSponsorStrategy";
-import { getGovernanceStrategy } from "../npcGovernanceStrategy";
+import { evaluateGovernanceStrategy } from "../strategy/NPCGovernanceCalculator";
 import * as talentpool from "../systems/generation/TalentPoolService";
 import { enforceHardCapRosterOverflow } from "../overflow";
 
@@ -141,8 +141,7 @@ export function tickMonthlyNPC(world: WorldState): StateImpact {
   for (const heya of sortedHeyas) {
     const oyakata = world.oyakata.get(heya.oyakataId!)!;
 
-    const financeStrat = getFinanceStrategy(oyakata.archetype);
-    builder.merge(financeStrat.evaluateFinances(world, heya, oyakata));
+    builder.merge(evaluateFinanceStrategy({ world, heya, oyakata }));
 
     const sponsorStrat = getSponsorStrategy(oyakata.archetype);
     builder.merge(sponsorStrat.evaluateSponsorRecruitment(world, heya, oyakata));
@@ -158,8 +157,7 @@ export function tickMonthlyNPC(world: WorldState): StateImpact {
     );
     builder.merge(recruitmentImpact);
 
-    const governanceStrat = getGovernanceStrategy(oyakata.archetype);
-    builder.merge(governanceStrat.evaluateGovernanceDecisions(world, heya, oyakata));
+    builder.merge(evaluateGovernanceStrategy({ world, heya, oyakata }));
 
     if (vacancies > 0) {
       vacanciesByHeyaId[heya.id] = vacancies;

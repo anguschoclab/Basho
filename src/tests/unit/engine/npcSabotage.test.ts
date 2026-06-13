@@ -2,8 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { WorldState } from "@/engine/types/world";
 import { Heya } from "@/engine/types/heya";
 import { Oyakata } from "@/engine/types/oyakata";
-import { DefaultGovernanceStrategy } from "@/engine/npcGovernanceStrategy";
-import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
+import { evaluateGovernanceStrategy } from "@/engine/strategy/NPCGovernanceCalculator";
 
 describe("NPC Sabotage Logic", () => {
   let mockWorld: WorldState;
@@ -47,11 +46,11 @@ describe("NPC Sabotage Logic", () => {
   });
 
   it("should trigger sabotage if oyakata is vindictive and rival has high scandal", () => {
-    const impact = DefaultGovernanceStrategy.evaluateGovernanceDecisions(
-      mockWorld,
-      mockHeya,
-      mockOyakata
-    );
+    const impact = evaluateGovernanceStrategy({
+      world: mockWorld,
+      heya: mockHeya,
+      oyakata: mockOyakata,
+    });
 
     // Check if a NARRATIVE_CRISIS_TRIGGERED event exists for the rival
     const sabotageEvent = (impact.events || []).find(
@@ -64,11 +63,11 @@ describe("NPC Sabotage Logic", () => {
 
   it("should NOT trigger sabotage if political capital is too low", () => {
     mockHeya.politicalCapital = 10;
-    const impact = DefaultGovernanceStrategy.evaluateGovernanceDecisions(
-      mockWorld,
-      mockHeya,
-      mockOyakata
-    );
+    const impact = evaluateGovernanceStrategy({
+      world: mockWorld,
+      heya: mockHeya,
+      oyakata: mockOyakata,
+    });
 
     const sabotageEvent = (impact.events || []).find(
       (e) => e.type === "NARRATIVE_CRISIS_TRIGGERED"

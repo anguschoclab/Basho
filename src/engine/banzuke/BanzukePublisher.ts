@@ -6,7 +6,6 @@ import { getNextBasho } from "../calendar";
 import { enterInterim } from "../tick/tickDaily";
 import { updateBanzuke, generateKeshoForPromotions } from "../banzuke";
 import { createImpactBuilder } from "../core/ImpactBuilder";
-import { resolveImpacts } from "../core/ImpactResolver";
 import type { StateImpact } from "../core/StateImpact";
 import { checkShikonaChange, recordShikonaChange } from "../history";
 import { getRikishi } from "../queries";
@@ -109,7 +108,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
             break;
           }
         }
-        if (!hasActiveYokozuna && (isYusho || (rikishi.consecutiveStrongOzeki || 0) >= 3)) {
+        if (!hasActiveYokozuna && isYusho) {
           promoteToYokozuna = true;
         }
       }
@@ -223,7 +222,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
         pressureScore,
         councilWarnings,
         stats: statsUpdate as import("../types/rikishi").RikishiStats,
-        careerHistory: updatedHistory.slice(-6) as any,
+        careerHistory: updatedHistory.slice(-6),
       });
     }
 
@@ -250,8 +249,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
 
   // Generate kesho-mawashi for promoted rikishi and apply impacts
   const keshoImpacts = generateKeshoForPromotions(world, result.events);
-  const worldWithKesho = resolveImpacts(world, [keshoImpacts]);
-  Object.assign(world, worldWithKesho);
+  builder.merge(keshoImpacts);
 
   // Update ozekiKadoban world field
   builder.updateWorldField("ozekiKadoban", result.updatedOzekiKadoban);
@@ -290,15 +288,12 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
   }
 
   const next = getNextBasho(lastBasho.bashoName);
-  const nextYear = next === "hatsu" ? world.year + 1 : world.year;
 
-  builder.updateWorldField("year", nextYear);
   builder.updateWorldField("currentBashoName", next);
   builder.updateWorldField("currentBasho", undefined);
 
   const interimWorld = enterInterim({
     ...world,
-    year: nextYear,
     currentBashoName: next,
     currentBasho: undefined,
   });

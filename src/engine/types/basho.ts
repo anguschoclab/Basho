@@ -255,4 +255,7 @@ export interface BashoSimResult {
   promotions: PromotionEvent[];
   demotions: DemotionEvent[];
   finalWorld: WorldState;
+  ginoSho?: Id;
+  shukunsho?: Id;
+  kantosho?: Id;
 }

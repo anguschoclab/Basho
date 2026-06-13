@@ -37,6 +37,7 @@ import { getRikishi } from "../../queries";
  * Based on actual CombatArchetype enum values from the codebase.
  */
 const PUSH_ARCHETYPES = new Set<CombatArchetype>(["oshi", "tsuppari", "giant"]);
+const TECH_ARCHETYPES = new Set<CombatArchetype>(["yotsu", "speedster", "trickster"]);
 const HYBRID_ARCHETYPES = new Set<CombatArchetype>(["hybrid"]);
 
 /**
@@ -156,6 +157,8 @@ export const SparringService = {
 
     const aIsPush = PUSH_ARCHETYPES.has(archA);
     const bIsPush = PUSH_ARCHETYPES.has(archB);
+    const aIsTech = TECH_ARCHETYPES.has(archA);
+    const bIsTech = TECH_ARCHETYPES.has(archB);
     const aIsHybrid = HYBRID_ARCHETYPES.has(archA);
     const bIsHybrid = HYBRID_ARCHETYPES.has(archB);
 
@@ -163,7 +166,7 @@ export const SparringService = {
     if (aIsHybrid || bIsHybrid) return "friction";
 
     // Different categories → friction (competitive growth)
-    if (aIsPush !== bIsPush) return "friction";
+    if ((aIsPush && bIsTech) || (aIsTech && bIsPush)) return "friction";
 
     // Same category → neutral
     return "neutral";
@@ -405,10 +408,16 @@ export function applyWeeklySparring(world: WorldState): StateImpact {
       const a = getRikishi(world, pair.aId);
       const b = getRikishi(world, pair.bId);
 
-      if (!a || !b) continue;
+      if (!a || !b) {
+        delete updatedPairs[pairKey];
+        continue;
+      }
 
       // Skip if either rikishi is injured or retired
-      if (a.injured || a.isRetired || b.injured || b.isRetired) continue;
+      if (a.injured || a.isRetired || b.injured || b.isRetired) {
+        delete updatedPairs[pairKey];
+        continue;
+      }
 
       // Calculate growth delta
       const growthDelta = SparringService.calculateGrowthDelta(a, b, pair.chemistry);
@@ -454,11 +463,15 @@ export function applyWeeklySparring(world: WorldState): StateImpact {
       }
     }
 
-    // Update sparring state with incremented weeksActive
-    updatedSparringPairs.set(heyaId, {
-      ...sparringState,
-      pairs: updatedPairs,
-    });
+    // Update sparring state with incremented weeksActive, or remove if empty
+    if (Object.keys(updatedPairs).length === 0) {
+      updatedSparringPairs.delete(heyaId);
+    } else {
+      updatedSparringPairs.set(heyaId, {
+        ...sparringState,
+        pairs: updatedPairs,
+      });
+    }
   }
 
   builder.updateWorldField("sparringPairs", updatedSparringPairs);

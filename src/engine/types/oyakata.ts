@@ -47,6 +47,7 @@ export interface Oyakata {
   traits: OyakataTraits;
 
   formerShikona?: string;
+  formerRikishiId?: string;
   backstoryId?: string;
   highestRank?: string;
   yearsInCharge: number;

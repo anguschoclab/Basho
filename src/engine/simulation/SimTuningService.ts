@@ -163,7 +163,7 @@ export const SimTuningService = {
     for (const o of world.oyakata.values()) oyakata.push(o);
     let newOyakataFromRikishi = 0;
     for (const o of oyakata) {
-      if ((o as any).formerRikishiId) newOyakataFromRikishi++;
+      if (o.formerRikishiId) newOyakataFromRikishi++;
     }
 
     const myoseki = world.myosekiMarket ? Object.values(world.myosekiMarket.stocks) : [];
@@ -226,9 +226,42 @@ export const SimTuningService = {
           }
           return (injured / activeRikishi.length) * 100;
         })(),
-        archetypeWinRates: {},
-        wealthGini: 0,
-        successionRate: historyStats?.successions || 0,
+        archetypeWinRates: (() => {
+          const archetypeTotals: Record<string, { wins: number; total: number }> = {};
+          for (const r of activeRikishi) {
+            const arch = r.combatProfile?.archetype || "unknown";
+            if (!archetypeTotals[arch]) archetypeTotals[arch] = { wins: 0, total: 0 };
+            archetypeTotals[arch].wins += r.careerWins || 0;
+            archetypeTotals[arch].total += (r.careerWins || 0) + (r.careerLosses || 0);
+          }
+          const rates: Record<string, { wins: number; total: number; rate: number }> = {};
+          for (const [arch, totals] of Object.entries(archetypeTotals)) {
+            rates[arch] = {
+              wins: totals.wins,
+              total: totals.total,
+              rate: totals.total > 0 ? totals.wins / totals.total : 0,
+            };
+          }
+          return rates;
+        })(),
+        wealthGini: (() => {
+          const funds = Array.from(world.heyas.values()).map((h) => h.funds ?? 0).sort((a, b) => a - b);
+          if (funds.length === 0) return 0;
+          const n = funds.length;
+          const mean = funds.reduce((a, b) => a + b, 0) / n;
+          if (mean === 0) return 0;
+          const absDiffSum = funds.reduce((sum, fi) => sum + funds.reduce((inner, fj) => inner + Math.abs(fi - fj), 0), 0);
+          return absDiffSum / (2 * n * n * mean);
+        })(),
+        successionRate: (() => {
+          const totalOyakata = world.oyakata.size;
+          if (totalOyakata === 0) return 0;
+          let fromRikishi = 0;
+          for (const o of world.oyakata.values()) {
+            if (o.formerRikishiId) fromRikishi++;
+          }
+          return (fromRikishi / totalOyakata) * 100;
+        })(),
       },
     };
   },

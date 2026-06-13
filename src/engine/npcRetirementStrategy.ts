@@ -57,7 +57,7 @@ const FORCE_RETIRE_STAGNANT_RULE: StrategyRule = {
     const candidates = (ctx.heya.rikishiIds ?? [])
       .map((id) => getRikishi(ctx.world, id))
       .filter((r): r is Rikishi => !!r && (ctx.world.calendar?.year ?? 2026) - r.birthYear > 32)
-      .sort((a, b) => (a.power ?? 50) - (b.power ?? 50));
+      .sort((a, b) => (a.stats.power ?? 50) - (b.stats.power ?? 50));
 
     if (candidates.length > 0) {
       builder.retireRikishi(

@@ -10,6 +10,7 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import * as schedule from "../../schedule";
 import type { Division } from "../../types/banzuke";
+import type { MatchSchedule } from "../../types/basho";
 
 /**
  * Generate Day 1-2 schedules during pre-basho phase.
@@ -50,8 +51,8 @@ export function phase_pre_basho_schedule(world: WorldState): StateImpact {
   ];
 
   // Generate Day 1 and Day 2 schedules
-  const day1Schedules: any[] = [];
-  const day2Schedules: any[] = [];
+  const day1Schedules: MatchSchedule[] = [];
+  const day2Schedules: MatchSchedule[] = [];
 
   for (const division of divisions) {
     // Generate Day 1 schedule

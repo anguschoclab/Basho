@@ -5,158 +5,101 @@
  * Uses NPCStrategyFramework to eliminate duplication.
  */
 
-import type { StrategyContext, StrategyRule } from "./NPCStrategyFramework";
+import type { StateImpact } from "../core/StateImpact";
+import { createImpactBuilder } from "../core/ImpactBuilder";
+import type { OyakataArchetype } from "../types/oyakata";
 import {
+  StrategyContext,
+  StrategyRule,
+  evaluateRulesCumulative,
   TraitChecks,
-  trySpendResource,
-  adjustScore,
-  evaluateRulesExclusive,
 } from "./NPCStrategyFramework";
-import {
-  SCANDAL_THRESHOLD_REDUCE,
-  POLITICAL_CAPITAL_THRESHOLD_REDUCE,
-  TRAIT_THRESHOLD_AMBITIOUS,
-  TRAIT_THRESHOLD_COMPASSIONATE,
-  POLITICAL_SPEND_REDUCE,
-  SCANDAL_REDUCTION_REDUCE,
-  SCANDAL_THRESHOLD_MAINTAIN,
-  POLITICAL_CAPITAL_THRESHOLD_MAINTAIN,
-  TRAIT_THRESHOLD_TRADITIONALIST,
-  POLITICAL_SPEND_MAINTAIN,
-  SCANDAL_REDUCTION_MAINTAIN,
-  POLITICAL_CAPITAL_HOARD_THRESHOLD,
-  TRAIT_THRESHOLD_RISK_TAKER,
-  SCANDAL_THRESHOLD_MAINTENANCE,
-  POLITICAL_CAPITAL_THRESHOLD_MAINTENANCE,
-  POLITICAL_SPEND_MAINTENANCE,
-  SCANDAL_REDUCTION_MAINTENANCE,
-} from "../../constants/engine/governance";
+import { getAvailableStables } from "../selectors";
 
-// ============================================================================
-// Governance Strategy Rules
-// ============================================================================
-
-const reduceScandalAmbitiousRule: StrategyRule = {
-  id: "reduce_scandal_ambitious",
-  condition: (ctx) => {
-    const { heya, oyakata } = ctx;
-    const scandalScore = heya.scandalScore ?? 0;
-    const politicalCapital = heya.politicalCapital ?? 50;
-
-    return (
-      scandalScore >= SCANDAL_THRESHOLD_REDUCE &&
-      politicalCapital >= POLITICAL_CAPITAL_THRESHOLD_REDUCE &&
-      (TraitChecks.isAmbitious(TRAIT_THRESHOLD_AMBITIOUS)(oyakata) || TraitChecks.isCompassionate(TRAIT_THRESHOLD_COMPASSIONATE)(oyakata))
-    );
-  },
+const REDUCE_SCANDAL_RULE: StrategyRule = {
+  id: "gov_reduce_scandal",
+  condition: (ctx) => (ctx.heya.scandalScore ?? 0) >= 20 && (ctx.heya.politicalCapital ?? 0) >= 20,
   action: (ctx) => {
-    const { heya } = ctx;
-    const politicalCapital = heya.politicalCapital ?? 0;
-    const scandalScore = heya.scandalScore ?? 0;
-    const spendAmount = Math.min(POLITICAL_SPEND_REDUCE, politicalCapital);
-
-    if (!trySpendResource(heya, "politicalCapital", spendAmount)) {
-      return false;
-    }
-
-    heya.scandalScore = adjustScore(scandalScore, -SCANDAL_REDUCTION_REDUCE, 0, 100);
-    return true;
+    const builder = createImpactBuilder("gov_reduce_scandal");
+    const reduction = ctx.oyakata.archetype === "scientist" ? 8 : 5;
+    builder.updateHeya(ctx.heya.id, {
+      politicalCapital: (ctx.heya.politicalCapital ?? 0) - 20,
+      scandalScore: Math.max(0, (ctx.heya.scandalScore ?? 0) - reduction),
+    });
+    return builder.build();
   },
-  buildEvent: (ctx) => ({
+  buildEvent: () => ({
     action: "reduce_scandal",
-    spent: Math.min(POLITICAL_SPEND_REDUCE, ctx.heya.politicalCapital ?? 0),
-    reasoning: TraitChecks.isAmbitious(TRAIT_THRESHOLD_AMBITIOUS)(ctx.oyakata)
-      ? "Ambitious oyakata spent political capital to protect reputation"
-      : "Compassionate oyakata spent political capital to protect heya members",
+    reasoning: "Spending political capital to suppress growing stable scandals.",
   }),
-  importance: "minor",
+  importance: "notable",
 };
 
-const maintainStandingTraditionalistRule: StrategyRule = {
-  id: "maintain_standing_traditionalist",
+const POLITICAL_SABOTAGE_RULE: StrategyRule = {
+  id: "gov_sabotage",
   condition: (ctx) => {
-    const { heya, oyakata } = ctx;
-    const scandalScore = heya.scandalScore ?? 0;
-    const politicalCapital = heya.politicalCapital ?? 50;
+    if ((ctx.heya.politicalCapital ?? 0) < 40) return false;
+    if (!TraitChecks.isVindictive()(ctx.oyakata) && !TraitChecks.isAmbitious(70)(ctx.oyakata))
+      return false;
 
-    return (
-      TraitChecks.isTraditionalist(TRAIT_THRESHOLD_TRADITIONALIST)(oyakata) && scandalScore >= SCANDAL_THRESHOLD_MAINTAIN && politicalCapital >= POLITICAL_CAPITAL_THRESHOLD_MAINTAIN
+    const rivals = getAvailableStables(ctx.world).filter(
+      (h) => h.id !== ctx.heya.id && (h.scandalScore ?? 0) > 15
     );
+    return rivals.length > 0;
   },
   action: (ctx) => {
-    const { heya } = ctx;
-    const politicalCapital = heya.politicalCapital ?? 0;
-    const scandalScore = heya.scandalScore ?? 0;
-    const spendAmount = Math.min(POLITICAL_SPEND_MAINTAIN, politicalCapital);
+    const builder = createImpactBuilder("gov_sabotage");
+    const rivals = getAvailableStables(ctx.world).filter(
+      (h) => h.id !== ctx.heya.id && (h.scandalScore ?? 0) > 15
+    );
+    const target = rivals[0];
 
-    if (!trySpendResource(heya, "politicalCapital", spendAmount)) {
-      return false;
-    }
+    builder.updateHeya(ctx.heya.id, { politicalCapital: (ctx.heya.politicalCapital ?? 0) - 30 });
 
-    heya.scandalScore = adjustScore(scandalScore, -SCANDAL_REDUCTION_MAINTAIN, 0, 100);
-    return true;
+    builder.logEvent(
+      "NARRATIVE_CRISIS_TRIGGERED",
+      "narrative",
+      {
+        heyaId: target.id,
+        title: "Leaked Internal Memo",
+        description: `An anonymous source from a rival stable has leaked damaging documents about ${target.name}'s internal conduct.`,
+      },
+      { importance: "major" }
+    );
+
+    return builder.build();
   },
-  buildEvent: (ctx) => ({
+  buildEvent: () => ({
+    action: "political_sabotage",
+    reasoning: "Leveraging political capital to expose the scandals of rivals and diminish their standing.",
+  }),
+  importance: "major",
+};
+
+const MAINTAIN_STANDING_RULE: StrategyRule = {
+  id: "gov_maintain_standing",
+  condition: (ctx) =>
+    TraitChecks.isTraditionalist()(ctx.oyakata) &&
+    (ctx.heya.scandalScore ?? 0) >= 5 &&
+    (ctx.heya.politicalCapital ?? 0) >= 15,
+  action: (ctx) => {
+    const builder = createImpactBuilder("gov_maintain_standing");
+    builder.updateHeya(ctx.heya.id, {
+      politicalCapital: (ctx.heya.politicalCapital ?? 0) - 10,
+      scandalScore: Math.max(0, (ctx.heya.scandalScore ?? 0) - 3),
+    });
+    return builder.build();
+  },
+  buildEvent: () => ({
     action: "maintain_standing",
-    spent: Math.min(POLITICAL_SPEND_MAINTAIN, ctx.heya.politicalCapital ?? 0),
-    reasoning: "Traditionalist oyakata spent political capital to maintain good standing",
+    reasoning: "Traditionalist oyakata preserving the honor of the heya through diplomatic channels.",
   }),
-  importance: "minor",
 };
 
-const riskTakerHoardRule: StrategyRule = {
-  id: "risk_taker_hoard",
-  condition: (ctx) => {
-    const { heya, oyakata } = ctx;
-    const politicalCapital = heya.politicalCapital ?? 0;
-
-    return TraitChecks.isRiskTaker(TRAIT_THRESHOLD_RISK_TAKER)(oyakata) && politicalCapital < POLITICAL_CAPITAL_HOARD_THRESHOLD;
-  },
-  action: () => {
-    // Risk-takers hoard capital for future opportunities - no action, just exit
-    return false;
-  },
-  buildEvent: () => ({
-    action: "hoard_capital",
-    reasoning: "Risk-taker hoarding political capital for future opportunities",
-  }),
-  importance: "minor",
-};
-
-const maintenanceSpendRule: StrategyRule = {
-  id: "maintenance_spend",
-  condition: (ctx) => {
-    const { heya } = ctx;
-    const scandalScore = heya.scandalScore ?? 0;
-    const politicalCapital = heya.politicalCapital ?? 0;
-
-    return scandalScore >= SCANDAL_THRESHOLD_MAINTENANCE && politicalCapital >= POLITICAL_CAPITAL_THRESHOLD_MAINTENANCE;
-  },
-  action: (ctx) => {
-    const { heya } = ctx;
-    const scandalScore = heya.scandalScore ?? 0;
-
-    if (!trySpendResource(heya, "politicalCapital", POLITICAL_SPEND_MAINTENANCE)) {
-      return false;
-    }
-
-    heya.scandalScore = adjustScore(scandalScore, -SCANDAL_REDUCTION_MAINTENANCE, 0, 100);
-    return true;
-  },
-  buildEvent: () => ({
-    action: "maintenance_spend",
-    spent: POLITICAL_SPEND_MAINTENANCE,
-    reasoning: "Standard political capital maintenance",
-  }),
-  importance: "minor",
-};
-
-// Ordered by priority (specific strategies first, default last)
 const governanceRules: StrategyRule[] = [
-  riskTakerHoardRule, // Exit early for risk-takers
-  reduceScandalAmbitiousRule,
-  maintainStandingTraditionalistRule,
-  maintenanceSpendRule, // Default fallback
+  REDUCE_SCANDAL_RULE,
+  POLITICAL_SABOTAGE_RULE,
+  MAINTAIN_STANDING_RULE,
 ];
 
 // ============================================================================
@@ -165,22 +108,25 @@ const governanceRules: StrategyRule[] = [
 
 /**
  * Evaluate governance decisions for an NPC heya.
- * Returns true if any governance action was taken.
+ * Returns a StateImpact describing any actions taken.
  */
-export function evaluateGovernanceStrategy(ctx: StrategyContext): boolean {
-  return evaluateRulesExclusive(ctx, governanceRules);
+export function evaluateGovernanceStrategy(ctx: StrategyContext): StateImpact {
+  return evaluateRulesCumulative(ctx, governanceRules);
 }
 
-/**
- * Legacy compatibility: interface-based strategy object.
- * @deprecated Use evaluateGovernanceStrategy with StrategyContext instead.
- */
-export const DefaultGovernanceStrategy = {
-  evaluateGovernanceDecisions(
-    world: StrategyContext["world"],
-    heya: StrategyContext["heya"],
-    oyakata: StrategyContext["oyakata"]
-  ): void {
-    evaluateGovernanceStrategy({ world, heya, oyakata });
-  },
+const GOVERNANCE_STRATEGIES: Record<OyakataArchetype, (ctx: StrategyContext) => StateImpact> = {
+  traditionalist: evaluateGovernanceStrategy,
+  scientist: evaluateGovernanceStrategy,
+  gambler: evaluateGovernanceStrategy,
+  nurturer: evaluateGovernanceStrategy,
+  tyrant: evaluateGovernanceStrategy,
+  strategist: evaluateGovernanceStrategy,
+  strict: evaluateGovernanceStrategy,
+  indulgent: evaluateGovernanceStrategy,
 };
+
+export function getGovernanceStrategy(
+  archetype: OyakataArchetype
+): (ctx: StrategyContext) => StateImpact {
+  return GOVERNANCE_STRATEGIES[archetype] || evaluateGovernanceStrategy;
+}

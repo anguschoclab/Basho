@@ -32,6 +32,7 @@ import { createKoenkai } from "../economy/SponsorshipService";
 import { generateHeyaBrandIdentities } from "../keshoMawashi/HeyaBrandGenerator";
 import type { BashoName, BashoState } from "../../types/basho";
 import type { Faction, IchimonName } from "../../types/economy";
+import { getBashoNumber } from "../../calendar";
 import { generateOyakata } from "../../oyakataPersonalities";
 import { generateAvatarConfig } from "../../avatarGenerator";
 import { HEYA_SIGNATURE_PREFIXES, extractPrefixFromShikona } from "../../shikona/heyaPrefixes";
@@ -401,6 +402,8 @@ export function generateInitialWorld(seed: string): WorldState {
     year: 2025,
     week: 1,
     dayIndexGlobal: 0,
+    // Start in interim: preflight transitions interim → banzuke_reveal → pre_basho → active_basho.
+    // currentBashoName points at the upcoming basho (hatsu) so transitions flow correctly.
     cyclePhase: "interim",
     currentBashoName: "hatsu",
     heyas: heyaMap,
@@ -481,7 +484,7 @@ export function initializeBasho(world: WorldState, name: BashoName): BashoState 
   return {
     id: rng.uuid("BS"),
     year: world.year,
-    bashoNumber: 1,
+    bashoNumber: getBashoNumber(name),
     bashoName: name,
     day: 1,
     currentDay: 1,

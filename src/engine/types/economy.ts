@@ -70,6 +70,10 @@ export interface GovernanceRuling {
   playerResponse?: string;
   /** Severity chosen by player when issuing a ruling */
   playerSeverity?: "lenient" | "standard" | "harsh";
+  /** Event classification for filtering */
+  incident?: string;
+  /** Additional structured data for this ruling */
+  data?: Record<string, unknown>;
 }
 
 /** Type representing loan type. */

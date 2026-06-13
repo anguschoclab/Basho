@@ -74,6 +74,8 @@ export function phase01_week_training(world: WorldState): StateImpact {
     },
     worldFields: {
       ...trainingImpact.worldFields,
+      ...heritageImpact.worldFields,
+      ...mentorshipImpact.worldFields,
       ...sparringImpact.worldFields,
     },
     events: [

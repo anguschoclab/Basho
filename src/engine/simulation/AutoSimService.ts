@@ -3,6 +3,7 @@ import type { Rikishi } from "../types/rikishi";
 import type { BashoSimResult, BanzukeUpdateHook } from "../types/basho";
 import { getNextBasho, getBashoNumber } from "../calendar";
 import { advanceDays, enterPostBasho, enterInterim } from "../tick/tickDaily";
+import { INTERIM_DURATION_DAYS } from "../../constants/engine/recruitmentExtended";
 import { simulateEntireBasho } from "./TournamentSimulator";
 import { ChronicleService } from "./ChronicleService";
 import { SimTuningService, type TuningMetrics } from "./SimTuningService";
@@ -95,7 +96,8 @@ export function runAutoSim(
 
     currentWorld = bashoResult.finalWorld;
     bashoSimulated++;
-    daysSimulated += 15;
+    // Full cycle: 15 basho days + 7 post-basho + 42 interim days
+    daysSimulated += 15 + 7 + INTERIM_DURATION_DAYS;
 
     if (bashoResult.yushoWinner.id) {
       championCounts.set(
@@ -130,7 +132,7 @@ export function runAutoSim(
       standingsForPublish.set(id, {
         wins: stats.wins,
         losses: stats.losses,
-        absences: (stats as any).absences || 0,
+        absences: stats.absences ?? 0,
       });
     });
 
@@ -153,20 +155,21 @@ export function runAutoSim(
       history: [
         ...(currentWorld.history || []),
         {
-          bashoName: bashoName as any,
+          id: `${bashoName}-${currentWorld.year}`,
+          bashoName,
           year: currentWorld.year,
           bashoNumber: getBashoNumber(bashoName),
           yusho: bashoResult.yushoWinner.id,
           junYusho: bashoResult.junYusho ?? [],
-          ginoSho: (bashoResult as any).ginoSho ?? null,
-          shukunsho: (bashoResult as any).shukunsho ?? null,
-          kantosho: (bashoResult as any).kantosho ?? null,
+          ginoSho: bashoResult.ginoSho,
+          shukunsho: bashoResult.shukunsho,
+          kantosho: bashoResult.kantosho,
           prizes: {
             yushoAmount: 10_000_000,
             junYushoAmount: 2_000_000,
             specialPrizes: 2_000_000,
           },
-        } as any,
+        },
       ],
     };
 
@@ -224,7 +227,7 @@ export function runAutoSim(
     .map((id) => currentWorld.rikishi.get(id))
     .filter((r): r is Rikishi => r !== undefined);
   const successions = (currentWorld.governanceLog || []).filter(
-    (l) => (l as any).incident === "oyakata_promotion" || (l as any).data?.status === "oyakata_promotion"
+    (l) => l.incident === "oyakata_promotion" || l.data?.status === "oyakata_promotion"
   ).length;
   const yokozunaVacancy = activeRikishi.filter((r) => r.rank === "yokozuna").length === 0 ? 1 : 0;
 

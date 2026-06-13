@@ -80,7 +80,7 @@ function processRecovery(world: WorldState, r: Rikishi, builder: ImpactBuilder):
     );
   }
 
-  return true;
+  return recovered;
 }
 
 function processInjuryRoll(

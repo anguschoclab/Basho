@@ -28,6 +28,9 @@ export interface MyosekiStock {
 
   /** If available for sale, the asking price in yen. */
   askingPrice?: number;
+
+  /** Optional training style bonus associated with this stock. */
+  bonusType?: string;
 }
 
 /** Defines the structure for myoseki transaction. */

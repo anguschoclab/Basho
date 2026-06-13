@@ -5,128 +5,82 @@
  * Uses NPCStrategyFramework to eliminate duplication.
  */
 
-import type { StrategyContext, StrategyRule } from "./NPCStrategyFramework";
-import { TraitChecks, calculateMoodAdjustedThreshold } from "./NPCStrategyFramework";
-import { evaluateRulesExclusive } from "./NPCStrategyFramework";
+import type { StateImpact } from "../core/StateImpact";
+import { createImpactBuilder } from "../core/ImpactBuilder";
 import { buyMyoseki } from "../myosekiMarket";
 import { stableSort } from "../utils/sort";
+import type { OyakataArchetype } from "../types/oyakata";
 import {
-  TRAIT_HOARDER_AMBITION_THRESHOLD,
-  TRAIT_TRADITION_THRESHOLD,
-  TRAIT_PATIENCE_THRESHOLD,
-} from "../../constants/engine/npcStrategy";
+  StrategyContext,
+  StrategyRule,
+  evaluateRulesExclusive,
+  TraitChecks,
+} from "./NPCStrategyFramework";
+import { getOyakataStyleProfile } from "../oyakataStylePreferences";
 import {
-  MYOSEKI_THRESHOLD_HOARDER,
-  MYOSEKI_THRESHOLD_DEFAULT,
-  MYOSEKI_THRESHOLD_TRADITIONALIST,
-  MYOSEKI_THRESHOLD_PATIENT,
-  MYOSEKI_BUFFER_AMOUNT,
-  MYOSEKI_BUFFER_TRADITIONALIST,
-} from "../../constants/engine/economic";
+  AMBITIOUS_TRAIT_THRESHOLD,
+  RISK_TAKER_TRAIT_THRESHOLD,
+  MONTHLY_BURN_PER_RIKISHI,
+  RUNWAY_MONTHS_RISK_TAKER_STRATEGY,
+  RUNWAY_MONTHS_STANDARD_STRATEGY,
+  MYOSEKI_MAX_FUNDS_RATIO,
+  STYLE_ALIGNMENT_SCORE,
+} from "../../constants/engine/economy";
 
-// ============================================================================
-// Finance Strategy Rules
-// ============================================================================
+function getSortedMyosekiStocks(world: StrategyContext["world"]) {
+  if (!world.myosekiMarket) return [];
+  return stableSort(Object.values(world.myosekiMarket.stocks), (x) => x.id);
+}
 
-const defaultMyosekiRule: StrategyRule = {
-  id: "default_myoseki_purchase",
+const BUY_MYOSEKI_RULE: StrategyRule = {
+  id: "fin_buy_myoseki",
   condition: (ctx) => {
-    const { world, heya, oyakata } = ctx;
-    if (!world.myosekiMarket) return false;
-    if (!TraitChecks.isAmbitious(TRAIT_HOARDER_AMBITION_THRESHOLD)(oyakata)) return false;
+    if (!ctx.world.myosekiMarket) return false;
+    if (!TraitChecks.isAmbitious(AMBITIOUS_TRAIT_THRESHOLD)(ctx.oyakata)) return false;
 
-    const baseThreshold = TraitChecks.isHoarder(30)(oyakata) ? MYOSEKI_THRESHOLD_HOARDER : MYOSEKI_THRESHOLD_DEFAULT;
-    const threshold = calculateMoodAdjustedThreshold(baseThreshold, oyakata);
+    const monthlyBurn = (ctx.heya.rikishiIds?.length ?? 0) * MONTHLY_BURN_PER_RIKISHI;
+    const runway = ctx.heya.funds / (monthlyBurn || 1);
+    const minRunway = TraitChecks.isRiskTaker(RISK_TAKER_TRAIT_THRESHOLD)(ctx.oyakata)
+      ? RUNWAY_MONTHS_RISK_TAKER_STRATEGY
+      : RUNWAY_MONTHS_STANDARD_STRATEGY;
 
-    return (heya.funds ?? 0) > threshold;
+    return runway > minRunway;
   },
   action: (ctx) => {
-    const { world, heya, oyakata } = ctx;
-    if (!world.myosekiMarket) return false;
+    const builder = createImpactBuilder("fin_buy_myoseki");
+    const stocks = getSortedMyosekiStocks(ctx.world);
+    const styleProfile = getOyakataStyleProfile(ctx.world, ctx.oyakata);
 
-    const stocks = stableSort(
-      Object.values(world.myosekiMarket.stocks),
-      (x) => (x as { id?: string }).id || String(x)
-    );
+    const prioritized = stocks
+      .filter(
+        (s) =>
+          s.status === "available" &&
+          s.askingPrice &&
+          s.askingPrice < ctx.heya.funds * MYOSEKI_MAX_FUNDS_RATIO
+      )
+      .sort((a, b) => {
+        let scoreA = 0;
+        let scoreB = 0;
+        if (styleProfile.preferredStyle === a.bonusType) scoreA += STYLE_ALIGNMENT_SCORE;
+        if (styleProfile.preferredStyle === b.bonusType) scoreB += STYLE_ALIGNMENT_SCORE;
+        return scoreB - scoreA;
+      });
 
-    const buffer = TraitChecks.isHoarder(30)(oyakata) ? MYOSEKI_BUFFER_AMOUNT : MYOSEKI_BUFFER_AMOUNT;
-
-    for (const stock of stocks) {
-      const s = stock as {
-        status?: string;
-        askingPrice?: number;
-        id?: string;
-      };
-      if (
-        s.status === "available" &&
-        s.askingPrice &&
-        s.id &&
-        s.askingPrice < (heya.funds ?? 0) - buffer
-      ) {
-        buyMyoseki(world, oyakata.id, heya.id, s.id);
-        return true;
-      }
+    if (prioritized.length > 0) {
+      const stock = prioritized[0];
+      builder.merge(buyMyoseki(ctx.world, ctx.oyakata.id, ctx.heya.id, stock.id));
     }
-    return false;
+
+    return builder.build();
   },
   buildEvent: () => ({
     action: "buy_myoseki",
-    reasoning: "Default oyakata purchased myoseki",
+    reasoning: "Strategic investment in stable prestige and training capability.",
   }),
-  importance: "minor",
+  importance: "notable",
 };
 
-const traditionalistMyosekiRule: StrategyRule = {
-  id: "traditionalist_myoseki_purchase",
-  condition: (ctx) => {
-    const { world, heya, oyakata } = ctx;
-    if (!world.myosekiMarket) return false;
-    if (!TraitChecks.isTraditionalist(TRAIT_TRADITION_THRESHOLD)(oyakata)) return false;
-    if ((oyakata.traits.tradition ?? 0) <= TRAIT_TRADITION_THRESHOLD) return false;
-
-    let threshold = MYOSEKI_THRESHOLD_TRADITIONALIST;
-    if (TraitChecks.isPatient(TRAIT_PATIENCE_THRESHOLD)(oyakata)) {
-      threshold = MYOSEKI_THRESHOLD_PATIENT;
-    }
-
-    return (heya.funds ?? 0) > threshold;
-  },
-  action: (ctx) => {
-    const { world, heya, oyakata } = ctx;
-    if (!world.myosekiMarket) return false;
-
-    const stocks = stableSort(
-      Object.values(world.myosekiMarket.stocks),
-      (x) => (x as { id?: string }).id || String(x)
-    );
-
-    for (const stock of stocks) {
-      const s = stock as {
-        status?: string;
-        askingPrice?: number;
-        id?: string;
-      };
-      if (
-        s.status === "available" &&
-        s.askingPrice &&
-        s.id &&
-        s.askingPrice < (heya.funds ?? 0) - MYOSEKI_BUFFER_TRADITIONALIST
-      ) {
-        buyMyoseki(world, oyakata.id, heya.id, s.id);
-        return true;
-      }
-    }
-    return false;
-  },
-  buildEvent: () => ({
-    action: "buy_myoseki",
-    reasoning: "Traditionalist purchased myoseki for tradition",
-  }),
-  importance: "minor",
-};
-
-// Ordered by priority (more specific first)
-const financeRules: StrategyRule[] = [traditionalistMyosekiRule, defaultMyosekiRule];
+const financeRules: StrategyRule[] = [BUY_MYOSEKI_RULE];
 
 // ============================================================================
 // Public API
@@ -134,36 +88,25 @@ const financeRules: StrategyRule[] = [traditionalistMyosekiRule, defaultMyosekiR
 
 /**
  * Evaluate finance decisions for an NPC heya.
- * Returns true if any finance action was taken.
+ * Returns a StateImpact describing any actions taken.
  */
-export function evaluateFinanceStrategy(ctx: StrategyContext): boolean {
+export function evaluateFinanceStrategy(ctx: StrategyContext): StateImpact {
   return evaluateRulesExclusive(ctx, financeRules);
 }
 
-/**
- * Legacy compatibility: interface-based strategy object.
- * @deprecated Use evaluateFinanceStrategy with StrategyContext instead.
- */
-export const DefaultFinanceStrategy = {
-  evaluateFinances(
-    world: StrategyContext["world"],
-    heya: StrategyContext["heya"],
-    oyakata: StrategyContext["oyakata"]
-  ): void {
-    evaluateFinanceStrategy({ world, heya, oyakata });
-  },
+const FINANCE_STRATEGIES: Record<OyakataArchetype, (ctx: StrategyContext) => StateImpact> = {
+  traditionalist: evaluateFinanceStrategy,
+  scientist: evaluateFinanceStrategy,
+  gambler: evaluateFinanceStrategy,
+  nurturer: evaluateFinanceStrategy,
+  tyrant: evaluateFinanceStrategy,
+  strategist: evaluateFinanceStrategy,
+  strict: evaluateFinanceStrategy,
+  indulgent: evaluateFinanceStrategy,
 };
 
-/**
- * @deprecated Use evaluateFinanceStrategy with StrategyContext instead.
- */
-export const TraditionalistFinanceStrategy = {
-  evaluateFinances(
-    world: StrategyContext["world"],
-    heya: StrategyContext["heya"],
-    oyakata: StrategyContext["oyakata"]
-  ): void {
-    // Traditionalist rule is now included in the default ruleset with priority
-    evaluateFinanceStrategy({ world, heya, oyakata });
-  },
-};
+export function getFinanceStrategy(
+  archetype: OyakataArchetype
+): (ctx: StrategyContext) => StateImpact {
+  return FINANCE_STRATEGIES[archetype] || evaluateFinanceStrategy;
+}

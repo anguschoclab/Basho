@@ -48,7 +48,7 @@ describe("fillVacanciesForNPC", () => {
   it("returns an empty impact when no talent pool exists", () => {
     const world = MockFactory.createWorld();
     const impact = fillVacanciesForNPC(world, { "npc-heya": 1 });
-    expect(impact.entities?.rikishiUpdates?.size ?? 0).toBe(0);
+    expect(impact.collections?.rikishiToAdd?.length ?? 0).toBe(0);
   });
 
   it("returns an empty impact when no candidates are visible", () => {
@@ -63,7 +63,7 @@ describe("fillVacanciesForNPC", () => {
     }
 
     const impact = fillVacanciesForNPC(world, { [heyaId]: 1 });
-    expect(impact.entities?.rikishiUpdates?.size ?? 0).toBe(0);
+    expect(impact.collections?.rikishiToAdd?.length ?? 0).toBe(0);
   });
 
   it("produces an impact that materializes a candidate into a new rikishi for an NPC heya", () => {
@@ -83,8 +83,8 @@ describe("fillVacanciesForNPC", () => {
 
     const impact = fillVacanciesForNPC(world, { [heyaId]: 3 });
 
-    // Impact should describe a new rikishi update (creation)
-    expect(impact.entities?.rikishiUpdates?.size).toBeGreaterThan(0);
+    // Impact should describe a new rikishi addition
+    expect(impact.collections?.rikishiToAdd?.length ?? 0).toBeGreaterThan(0);
 
     const nextWorld = resolveImpacts(world, [impact]);
     expect(nextWorld.rikishi.size).toBeGreaterThan(0);
@@ -139,8 +139,8 @@ describe("materializeCandidateToRikishi", () => {
 
     const impact = materializeCandidateToRikishi(world, "cand-1" as Id, heyaId);
 
-    expect(impact.entities?.rikishiUpdates).toBeDefined();
-    expect(impact.entities?.rikishiUpdates?.size).toBe(1);
+    expect(impact.collections?.rikishiToAdd).toBeDefined();
+    expect(impact.collections?.rikishiToAdd?.length).toBe(1);
   });
 
   it("links the new rikishi to the correct heya in the impact", () => {
@@ -203,7 +203,7 @@ describe("finalizeSignedCandidates", () => {
     const impact = finalizeSignedCandidates(world);
 
     // Verify rikishi creation in impact
-    expect(impact.entities?.rikishiUpdates?.size).toBeGreaterThan(0);
+    expect(impact.collections?.rikishiToAdd?.length ?? 0).toBeGreaterThan(0);
 
     const nextWorld = resolveImpacts(world, [impact]);
     expect(nextWorld.rikishi.size).toBeGreaterThan(0);
@@ -217,6 +217,6 @@ describe("finalizeSignedCandidates", () => {
     });
 
     const impact = finalizeSignedCandidates(world);
-    expect(impact.entities?.rikishiUpdates?.size ?? 0).toBe(0);
+    expect(impact.collections?.rikishiToAdd?.length ?? 0).toBe(0);
   });
 });

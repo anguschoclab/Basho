@@ -14,6 +14,7 @@ import { CombatArchetype } from "./types/combat";
 import { WorldState } from "./types/world";
 import type { InjurySeverity } from "./systems/health/BodyDefinitions";
 import { buildCombatProfile, deriveWeakAgainstStyles } from "./archetype";
+import { rollAgeForRank } from "./systems/generation/CandidateStats";
 
 // --- RETIREMENT LOGIC ---
 
@@ -186,7 +187,7 @@ const ARCHETYPES: CombatArchetype[] = [
  * @param {Rank} [targetRank="jonokuchi"] - The rank to assign (defaults to "jonokuchi").
  * @returns {Rikishi} A fully initialized Rikishi object.
  */
-function _generateRookie(
+export function _generateRookie(
   world: WorldState,
   currentYear: number,
   targetRank: Rank = "jonokuchi"
@@ -200,7 +201,7 @@ function _generateRookie(
   const archetype = ARCHETYPES[rng.int(0, ARCHETYPES.length - 1)];
 
   const isElite = origin.isElite || false;
-  const age = isElite ? 22 : 15 + rng.int(0, 2);
+  const age = rollAgeForRank(rng, isElite ? "makushita" : targetRank);
 
   const baseStat = isElite ? 40 : 20;
   const variance = 15;
@@ -208,7 +209,7 @@ function _generateRookie(
   // Raw Stats
   const baseWeight = 100 + rng.next() * 60;
   const stats: RikishiStats = {
-    strength: baseStat + rng.next() * variance,
+    power: baseStat + rng.next() * variance,
     technique: baseStat + rng.next() * variance,
     speed: baseStat + rng.next() * variance,
     weight: baseWeight,
@@ -216,6 +217,8 @@ function _generateRookie(
     mental: baseStat + rng.next() * variance,
     adaptability: baseStat + rng.next() * variance,
     balance: baseStat + rng.next() * variance,
+    aggression: baseStat + rng.next() * variance,
+    experience: isElite ? 20 : 0,
   };
 
   // Apply Origin Modifiers
@@ -254,22 +257,14 @@ function _generateRookie(
     division: isElite ? "makushita" : "jonokuchi",
     side: "east",
 
-    // Stats (flattened accessors + stats obj)
+    // Stats (canonical stats obj)
     stats: stats,
-    power: stats.power,
-    speed: stats.speed,
-    balance: stats.balance,
-    technique: stats.technique,
-    aggression: stats.mental,
-    experience: isElite ? 20 : 0,
-    adaptability: stats.adaptability,
     fatigue: 0,
 
     height: 175 + rng.next() * 20,
     weight: stats.weight,
 
     momentum: 50,
-    stamina: stats.stamina,
 
     archetypeEvidence: {
       push: { success: 0, fail: 0 },
@@ -330,5 +325,7 @@ function _generateRookie(
     consecutiveYusho: 0,
     careerHistory: [],
     milestones: [],
+    heyaHistory: [],
+    lineage: {},
   };
 }

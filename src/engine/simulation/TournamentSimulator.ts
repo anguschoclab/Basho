@@ -24,7 +24,7 @@ export function simulateEntireBasho(
   const basho = initializeBasho(world, bashoName);
 
   // Work on a shallow clone to avoid mutating the caller's world
-  const workingWorld: WorldState = {
+  let workingWorld: WorldState = {
     ...world,
     rikishi: new Map(world.rikishi),
     heyas: new Map(world.heyas),
@@ -41,22 +41,20 @@ export function simulateEntireBasho(
     if (!rikishi) continue;
     if (rikishi.division === "makuuchi" || rikishi.division === "juryo") {
       standings.set(id, { wins: 0, losses: 0 });
-      rikishi.currentBashoWins = 0;
-      rikishi.currentBashoLosses = 0;
+      const nextRikishi = { ...rikishi, currentBashoWins: 0, currentBashoLosses: 0 };
+      workingWorld.rikishi.set(id, nextRikishi);
     }
   }
 
   // Pre-generate all 15 days of schedules at once for efficiency
   try {
     const scheduleImpact = generateFullBashoSchedule({ world: workingWorld, basho, seed });
-    const resolvedWorld = resolveImpacts(workingWorld, [scheduleImpact]);
-    Object.assign(workingWorld, resolvedWorld);
+    workingWorld = resolveImpacts(workingWorld, [scheduleImpact]);
   } catch {
     for (let day = 1; day <= 15; day++) {
       const daySeed = `${seed}-day${day}`;
       const { impact } = scheduleAllDivisionsDay({ world: workingWorld, basho, day, seed: daySeed });
-      const resolvedWorld = resolveImpacts(workingWorld, [impact]);
-      Object.assign(workingWorld, resolvedWorld);
+      workingWorld = resolveImpacts(workingWorld, [impact]);
     }
   }
 

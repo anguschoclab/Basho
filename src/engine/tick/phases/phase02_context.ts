@@ -17,6 +17,7 @@
  */
 
 import type { WorldState, ActiveModifiers } from "../../types/world";
+import type { Heya } from "../../types/heya";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { emptyDeltas } from "../pipelineRunner";
@@ -73,7 +74,7 @@ export function phase02_context(world: WorldState): StateImpact {
 
 // --- Helper Functions ---
 
-function calculateFacilityMultipliers(playerHeya: any): {
+function calculateFacilityMultipliers(playerHeya: Heya | undefined): {
   training: number;
   recovery: number;
   nutrition: number;

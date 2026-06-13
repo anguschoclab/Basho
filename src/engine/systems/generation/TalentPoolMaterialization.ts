@@ -28,7 +28,7 @@ export function materializeCandidateToRikishiInternal(
   const rng = RNGRegistry.getSystemRNG(world, "scouting", `materialize_${candidateId}`);
   const rikishi = convertCandidateToRikishi({ candidate, rng, currentYear: world.year, heyaId });
 
-  builder.updateRikishi(rikishi.id, rikishi);
+  builder.addRikishi(rikishi);
   const heya = getHeya(world, heyaId);
   if (heya) {
     builder.updateHeya(heyaId, { rikishiIds: [...(heya.rikishiIds || []), rikishi.id] });

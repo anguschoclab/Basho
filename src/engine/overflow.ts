@@ -73,10 +73,10 @@ export function enforceHardCapRosterOverflow(world: WorldState): StateImpact {
     const toRelease = scoredCandidates.slice(0, overflowCount);
 
     for (const { rikishi } of toRelease) {
-      // Remove from stable
+      // Remove from stable and active roster
       const nextRikishiIds = (heya.rikishiIds ?? []).filter((id) => id !== rikishi.id);
       builder.updateHeya(heya.id, { rikishiIds: nextRikishiIds });
-      builder.updateRikishi(rikishi.id, { heyaId: "" });
+      builder.removeRikishi(rikishi.id);
 
       // Re-inject into the talent pool as a free agent
       // Note: reinjectToTalentPool should return an impact

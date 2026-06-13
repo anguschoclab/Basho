@@ -18,10 +18,18 @@ import { getAvailableStables, getActiveRikishi as getSelectorsActiveRikishi } fr
 // ─── Single-Entity Lookups ──────────────────────────────
 
 /**
- * Get a rikishi by ID.
- * @returns The Rikishi, or undefined if not found.
+ * Get an active rikishi by ID.
+ * @returns The Rikishi, or undefined if not found in active collection.
  */
 export function getRikishi(world: WorldState, id: Id): Rikishi | undefined {
+  return world.rikishi.get(id);
+}
+
+/**
+ * Get a rikishi by ID from either active or historical collection.
+ * @returns The Rikishi, or undefined if not found.
+ */
+export function getRikishiAnywhere(world: WorldState, id: Id): Rikishi | undefined {
   return world.rikishi.get(id) || world.historicalRikishi?.get(id);
 }
 
