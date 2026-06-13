@@ -193,16 +193,21 @@ export function fillVacanciesForNPCWithBidding(
     };
     currentCandidates[bid.candidateId] = updatedCandidate;
 
-    const materializeImpact = materializeCandidateToRikishiInternal(
-      world,
-      bid.candidateId,
-      bid.heyaId,
-      currentCandidates,
-      currentPools
-    );
-    builder.merge(materializeImpact.impact);
-    currentCandidates = materializeImpact.nextCandidates;
-    currentPools = materializeImpact.nextPools;
+    try {
+      const materializeImpact = materializeCandidateToRikishiInternal(
+        world,
+        bid.candidateId,
+        bid.heyaId,
+        currentCandidates,
+        currentPools
+      );
+      builder.merge(materializeImpact.impact);
+      currentCandidates = materializeImpact.nextCandidates;
+      currentPools = materializeImpact.nextPools;
+    } catch (err) {
+      console.error(`[RECRUIT ERROR] Failed to materialize candidate ${bid.candidateId}: ${err instanceof Error ? err.message : String(err)}`);
+      continue;
+    }
 
     const importance = isRecruitmentPlayerRelevant(world, candidate);
 

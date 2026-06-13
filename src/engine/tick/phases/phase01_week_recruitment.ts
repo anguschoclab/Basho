@@ -15,8 +15,6 @@ import {
   CRITICAL_ROSTER_THRESHOLD,
   INTERIM_DURATION_DAYS,
   RECRUITMENT_WINDOW_CLOSES_WEEKS,
-  PRIMARY_RECRUITMENT_WINDOW_WEEK,
-  SECONDARY_RECRUITMENT_WINDOW_WEEK,
   TOTAL_ACTIVE_THRESHOLD,
 } from "../../../constants/engine/recruitmentExtended";
 import { DAYS_PER_WEEK } from "../../../constants/engine/time";
@@ -25,10 +23,7 @@ import { getHeya, getRikishi } from "../../queries";
 export function phase01_week_recruitment(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_recruitment");
 
-  // 1. Talent Pool Weekly Tick (Intel Decay, Suitor resolution)
-  builder.merge(talentpool.tickWeekTalentPool(world));
-
-  // 2. Window Closing
+  // 1. Window Closing
   const rw = world._recruitmentWindow;
   if (rw?.isOpen && world.week >= rw.closesAtWeek) {
     builder.updateWorldField("_recruitmentWindow", { ...rw, isOpen: false });
@@ -50,7 +45,7 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
   // 3. Mid-Interim Openings
   if (world.cyclePhase === "interim") {
     const elapsedWeeks = Math.floor((INTERIM_DURATION_DAYS - (world._interimDaysRemaining ?? 0)) / DAYS_PER_WEEK);
-    if (elapsedWeeks === PRIMARY_RECRUITMENT_WINDOW_WEEK && !world._recruitmentWindow?.isOpen) {
+    if (elapsedWeeks === 3 && !world._recruitmentWindow?.isOpen) {
       const playerHeya = world.playerHeyaId ? getHeya(world, world.playerHeyaId) : null;
 
       if (playerHeya && playerHeya.welfareState?.complianceState !== "sanctioned") {
@@ -77,12 +72,11 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
     }
   }
 
-  // 4. NPC Opportunistic Recruitment
-  const interimElapsedWeeks =
-    world.cyclePhase === "interim" ? Math.floor((INTERIM_DURATION_DAYS - (world._interimDaysRemaining ?? 0)) / DAYS_PER_WEEK) : -1;
+  // 4. NPC Opportunistic Recruitment — every week during interim
+  const isInterim = world.cyclePhase === "interim";
 
-  // Primary recruitment window: mid-interim (week 3)
-  if (interimElapsedWeeks === PRIMARY_RECRUITMENT_WINDOW_WEEK) {
+  if (isInterim) {
+    // Primary: all stables below target roster size
     const smallStables: Record<string, number> = {};
     let hasItems = false;
     for (const h of world.heyas.values()) {
@@ -97,14 +91,13 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
     }
   }
 
-  // Secondary recruitment window: start of interim (week 0), for critically depleted stables only
-  if (interimElapsedWeeks === SECONDARY_RECRUITMENT_WINDOW_WEEK) {
+  // Secondary: critically depleted stables get an extra fill attempt
+  if (isInterim) {
     const criticalStables: Record<string, number> = {};
     let hasCritical = false;
     for (const h of world.heyas.values()) {
       const currentCount = (h.rikishiIds ?? []).length;
       if (h.id !== world.playerHeyaId && currentCount < CRITICAL_ROSTER_THRESHOLD) {
-        // Emergency fill: target up to TARGET_ROSTER_SIZE
         criticalStables[h.id] = Math.max(1, TARGET_ROSTER_SIZE - currentCount);
         hasCritical = true;
       }

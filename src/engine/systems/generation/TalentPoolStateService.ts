@@ -12,6 +12,7 @@ import type { Id } from "../../types/common";
 import type { Rikishi } from "../../types/rikishi";
 import { TalentPoolType, TalentCandidate, TalentPoolWorldState } from "../../types/talent";
 import { generateCandidate } from "./CandidateGenerator";
+import { deriveStyle } from "./CandidateBuilder";
 import { buildCombatProfile } from "../../archetype";
 
 /**
@@ -159,7 +160,7 @@ export function injectRikishiAsCandidate(world: WorldState, rikishi: Rikishi): S
     availabilityState: "available",
     competingSuitors: [],
     archetype: rikishi.combatProfile?.archetype ?? "hybrid",
-    style: rikishi.combatProfile?.style ?? "hybrid",
+    style: deriveStyle(rikishi.combatProfile?.archetype ?? "hybrid"),
     heightPotentialCm: rikishi.height ?? 190,
     weightPotentialKg: rikishi.weight ?? 150,
     talentSeed: rikishi.talentSeed ?? 95,
@@ -286,8 +287,8 @@ export function tickYear(world: WorldState): StateImpact {
       ) as Record<Id, TalentCandidate>;
     }
 
-    // 2. Inject fresh prospects for the new year — fill to full cap
-    const targetFill = pool.hiddenReserveCap;
+    // 2. Inject fresh prospects for the new year — fill to population cap
+    const targetFill = pool.populationCap;
     const currentTotal = pool.candidatesVisible.length + pool.candidatesHidden.length;
     const toGenerate = Math.max(0, targetFill - currentTotal);
 

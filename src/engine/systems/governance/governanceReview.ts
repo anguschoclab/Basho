@@ -408,8 +408,8 @@ export function runRetirements(world: WorldState): StateImpact {
               history: nextHistory,
             });
 
-            // Queue Oyakata update
-            builder.updateOyakata(newOyakataId, newOyakata);
+            // Queue Oyakata add (newly generated, not an update)
+            builder.addOyakata(newOyakata);
 
             builder.logEvent(
               "LIFECYCLE_EVENT",

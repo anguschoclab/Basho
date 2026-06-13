@@ -9,7 +9,7 @@ export const TARGET_ROSTER_SIZE = 30;
 export const CRITICAL_ROSTER_THRESHOLD = 12;
 
 /** Total active rikishi threshold for emergency recruitment */
-export const TOTAL_ACTIVE_THRESHOLD = 700;
+export const TOTAL_ACTIVE_THRESHOLD = 800;
 
 /** Interim duration in days */
 export const INTERIM_DURATION_DAYS = 42;

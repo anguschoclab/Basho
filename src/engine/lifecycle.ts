@@ -35,6 +35,23 @@ export function checkRetirement(
   const rng = rngFromSeed(seed, "lifecycle", `retirement::${rikishi.id}`);
   const age = currentYear - rikishi.birthYear;
 
+  // Defensive: block impossible young retirements
+  if (age < 28) {
+    // Check injury retirement — the only plausible path for young rikishi
+    const hasCareerEndingInjury =
+      rikishi.injured &&
+      rikishi.injuryStatus?.severity === "serious" &&
+      (rikishi.injuryWeeksRemaining ?? 0) > 20;
+
+    if (hasCareerEndingInjury) {
+      return "Career-Ending Injury";
+    }
+
+    // Block all non-injury retirements for rikishi under 28
+    console.error(`[DEBUG checkRetirement] BLOCKED retirement for ${rikishi.shikona || rikishi.id}: age=${age}, birthYear=${rikishi.birthYear}, currentYear=${currentYear}, rank=${rikishi.rank}`);
+    return null;
+  }
+
   // 1. Mandatory Retirement
   if (age >= 45) return "Mandatory Age Retirement";
 

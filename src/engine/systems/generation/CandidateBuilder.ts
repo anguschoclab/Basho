@@ -72,7 +72,7 @@ function createBaseInfo(
   };
 }
 
-function deriveStyle(archetype: CombatArchetype): Style {
+export function deriveStyle(archetype: CombatArchetype): Style {
   if (archetype === "oshi" || archetype === "tsuppari") return "oshi";
   if (archetype === "yotsu" || archetype === "giant") return "yotsu";
   return "hybrid";

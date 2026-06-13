@@ -149,19 +149,20 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
   }
 
   // 6. Oyakata Avatar Aging & Tenure
+  // Use updateOyakata per entity so we don't overwrite collections.oyakataToAdd
+  // from DynastyService.tickSuccessionCheck via updateWorldField.
   if (world.oyakata) {
-    const nextOyakata = new Map(world.oyakata);
     for (const [id, o] of world.oyakata) {
-      const updated = { ...o };
-      updated.age += 1;
-      updated.yearsInCharge = (updated.yearsInCharge || 0) + 1;
+      const updated: Partial<typeof o> = {
+        age: o.age + 1,
+        yearsInCharge: (o.yearsInCharge || 0) + 1,
+      };
 
       if (o.avatarConfig) {
-        updated.avatarConfig = updateAvatarForAging(o.avatarConfig, updated.age);
+        updated.avatarConfig = updateAvatarForAging(o.avatarConfig, updated.age!);
       }
-      nextOyakata.set(id, updated);
+      builder.updateOyakata(id, updated);
     }
-    builder.updateWorldField("oyakata", nextOyakata);
   }
 
   // Phase 5 Depth: Training Philosophy Drift

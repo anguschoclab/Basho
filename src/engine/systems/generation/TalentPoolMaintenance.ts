@@ -95,8 +95,13 @@ export function tickWeekTalentPool(world: WorldState): StateImpact {
     playerScouting: nextScouting,
   });
 
-  // 6. Periodic pool refresh logic (basho cadence)
-  if (world.calendar && world.calendar.month % 2 !== 0 && world.calendar.currentDay === 1) {
+  // 6. Periodic pool refresh logic — every 2 weeks to keep candidates available
+  // The old condition (month odd && day === 1) never fired because weekly ticks
+  // always land on days 7, 14, 21, 28, 5, 12, … never on day 1.
+  // world.week also never changes (phase00_preflight doesn't update it).
+  // Use dayIndexGlobal which increments every day and is a multiple of 7 on weekly ticks.
+  const dayIndex = world.dayIndexGlobal ?? 0;
+  if (dayIndex > 0 && dayIndex % 14 === 0) {
     builder.merge(refreshAllPools(world));
   }
 
