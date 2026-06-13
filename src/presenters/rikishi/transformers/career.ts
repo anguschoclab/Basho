@@ -36,8 +36,11 @@ export function calculateStreak(history: HistoryEntry[]): { streak: number; labe
  */
 export function calculateAvgRank(history: HistoryEntry[]): string {
   if (history.length === 0) return "-";
-  const scores = history.map((h) => rankScore(h.rank ?? "M", h.rankNumber, h.side));
-  const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+  let sum = 0;
+  for (const h of history) {
+    sum += rankScore(h.rank ?? "M", h.rankNumber, h.side);
+  }
+  const avg = sum / history.length;
 
   // Convert avg score back to a readable rank (Maegashira level is common)
   const tier = Math.floor(avg / 1000);

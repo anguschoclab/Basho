@@ -193,17 +193,14 @@ export function applyDramaBudget(
   facedSet: Set<string>
 ): MatchPairing[] {
   // Score all pairings for drama
-  const scoredPairings = pairings.map((p) => {
+  let initialScore = 0;
+  for (const p of pairings) {
     const east = rikishiMap.get(p.eastId);
     const west = rikishiMap.get(p.westId);
-    if (!east || !west) return { pairing: p, drama: null };
-
+    if (!east || !west) continue;
     const drama = scoreDrama(east, west, day, standings);
-    return { pairing: p, drama };
-  });
-
-  // Calculate initial total drama score
-  const initialScore = scoredPairings.reduce((sum, { drama }) => sum + (drama?.score ?? 0), 0);
+    initialScore += drama?.score ?? 0;
+  }
 
   // Attempt up to 3 swaps to increase drama
   let bestPairings = [...pairings];

@@ -116,15 +116,17 @@ export const SimTuningService = {
     // ⚡ Bolt Optimization: Use EntityCollection instead of Array.from()
     const heyas = EntityCollection.getHeyas(world);
     const funds: number[] = [];
+    let fundSum = 0;
     let bankruptCount = 0;
     for (const h of heyas) {
       const f = h.funds || 0;
       funds.push(f);
+      fundSum += f;
       if (f <= 0) bankruptCount++;
     }
 
     const stableWealth = {
-      mean: funds.length > 0 ? funds.reduce((a, b) => a + b, 0) / funds.length : 0,
+      mean: funds.length > 0 ? fundSum / funds.length : 0,
       min: funds.length > 0 ? Math.min(...funds) : 0,
       max: funds.length > 0 ? Math.max(...funds) : 0,
       bankruptCount,
@@ -203,8 +205,12 @@ export const SimTuningService = {
         })(),
         avgAge:
           activeRikishi.length > 0
-            ? activeRikishi.reduce((sum, r) => sum + ((world.calendar?.year ?? world.year) - r.birthYear), 0) /
-              activeRikishi.length
+            ? (() => {
+                let sum = 0;
+                const year = world.calendar?.year ?? world.year;
+                for (const r of activeRikishi) sum += year - r.birthYear;
+                return sum / activeRikishi.length;
+              })()
             : 0,
         oyakataAvgAge: (() => {
           if (!world.oyakata || world.oyakata.size === 0) return 0;

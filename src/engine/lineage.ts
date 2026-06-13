@@ -70,7 +70,7 @@ export function assignMentor(
     sinceYear: world.year,
     sinceWeek: world.week,
   });
-  builder.updateWorldField("lineage", currentLineage);
+  builder.updateWorldField("lineage" as any, currentLineage);
 
   // 2. Rivalry seeding
   if (world.rivalriesState) {
@@ -118,11 +118,12 @@ export function getMentor(world: WorldState, r: Rikishi): Rikishi | undefined {
 
 export function menteesOf(world: WorldState, r: Rikishi): Rikishi[] {
   const ids = r.menteeIds || [];
-  return ids.reduce<Rikishi[]>((acc, id) => {
+  const out: Rikishi[] = [];
+  for (const id of ids) {
     const mentee = getRikishi(world, id);
-    if (mentee) acc.push(mentee);
-    return acc;
-  }, []);
+    if (mentee) out.push(mentee);
+  }
+  return out;
 }
 
 /**

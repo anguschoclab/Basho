@@ -34,10 +34,9 @@ export function processNpcAutoInvestment(
     if (runway > NPC_INVESTMENT_RUNWAY_THRESHOLD) {
       const facilities = heya.facilities;
       const axes: FacilityAxis[] = ["training", "recovery", "nutrition"];
-      const weakestAxis = axes.reduce(
-        (min, axis) => (facilities[axis] < facilities[min] ? axis : min),
-        axes[0]
-      );
+      let weakestAxis: FacilityAxis = axes[0];
+      if (facilities[axes[1]] < facilities[weakestAxis]) weakestAxis = axes[1];
+      if (facilities[axes[2]] < facilities[weakestAxis]) weakestAxis = axes[2];
 
       const currentLevel = facilities[weakestAxis];
 

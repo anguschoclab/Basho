@@ -20,7 +20,8 @@ export function seededWeightedPick<T>(
   rng: SeededRNG,
   items: readonly { item: T; weight: number }[]
 ): T {
-  const totalWeight = items.reduce((sum, i) => sum + i.weight, 0);
+  let totalWeight = 0;
+  for (const i of items) totalWeight += i.weight;
   let r = rng.next() * totalWeight;
   for (const { item, weight } of items) {
     if (r < weight) return item;
@@ -37,7 +38,8 @@ export function pick<T>(arr: readonly T[], rng: () => number): T {
 }
 
 export function weightedPick<T>(items: Array<{ item: T; w: number }>, rng: () => number): T {
-  const total = items.reduce((s, x) => s + Math.max(0, x.w), 0);
+  let total = 0;
+  for (const x of items) total += Math.max(0, x.w);
   if (total <= 0) return items[0].item;
   let r = rng() * total;
   for (const x of items) {

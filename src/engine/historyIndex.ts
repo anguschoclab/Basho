@@ -216,11 +216,12 @@ function pushRikishiEntry(idx: HistoryIndex, rikishiId: Id, entry: RikishiHistor
 }
 
 export function listBashoSummaries(index: HistoryIndex): BashoHistorySummary[] {
-  return index.bashoKeys.reduce<BashoHistorySummary[]>((acc, k) => {
+  const out: BashoHistorySummary[] = [];
+  for (const k of index.bashoKeys) {
     const b = index.basho[k];
-    if (b) acc.push(b);
-    return acc;
-  }, []);
+    if (b) out.push(b);
+  }
+  return out;
 }
 
 export function getBashoSummary(

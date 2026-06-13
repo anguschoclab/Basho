@@ -11,7 +11,7 @@ import type {
   FinancialStatus,
   BanzukeUIDigest,
   BanzukeDivisionData,
-} from "../types/uiDigest";
+} from "../uiDigestTypes";
 import { queryEvents } from "../../engine/events";
 import { selectTopRivals } from "../selectors";
 import { getSekitoriInHeya } from "../../engine/queries";
@@ -112,7 +112,11 @@ export function projectBanzukeUIDigest(world: WorldState): BanzukeUIDigest {
   const divisionCounts: Record<string, number> = {};
   const divisionMap = new Map<string, BanzukeDivisionData>();
   for (const dd of dividerData) {
-    const count = dd.rows.reduce((acc: number, r: { east?: unknown; west?: unknown }) => acc + (r.east ? 1 : 0) + (r.west ? 1 : 0), 0);
+    let count = 0;
+    for (const r of dd.rows) {
+      if (r.east) count++;
+      if (r.west) count++;
+    }
     divisionCounts[dd.division] = count;
     totalWrestlerCount += count;
     divisionMap.set(dd.division, dd);

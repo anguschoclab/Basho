@@ -85,8 +85,10 @@ function weightedSampleWithoutReplacement<T>(
   const out: T[] = [];
   let picks = Math.max(0, Math.floor(k));
 
+  let total = 0;
+  for (const x of pool) total += x.w;
+
   while (picks > 0 && pool.length > 0) {
-    const total = pool.reduce((s, x) => s + x.w, 0);
     let r = rng.next() * total;
 
     let idx = 0;
@@ -97,6 +99,7 @@ function weightedSampleWithoutReplacement<T>(
     const chosen = pool[Math.min(idx, pool.length - 1)];
     out.push(chosen.item);
 
+    total -= chosen.w;
     pool.splice(Math.min(idx, pool.length - 1), 1);
     picks--;
   }

@@ -191,7 +191,10 @@ export function tickMonthlyFacilities(world: WorldState): StateImpact {
 function applyMonthlyDecayOrMaintenance(_world: WorldState, heya: Heya): StateImpact {
   const builder = createImpactBuilder("applyMonthlyDecayOrMaintenance");
   const axes: FacilityAxis[] = ["training", "recovery", "nutrition"];
-  const totalMaintenance = axes.reduce((sum, a) => sum + maintenanceCost(heya.facilities[a]), 0);
+  let totalMaintenance = 0;
+  for (const a of axes) {
+    totalMaintenance += maintenanceCost(heya.facilities[a]);
+  }
 
   if (heya.funds >= totalMaintenance) {
     // Pay maintenance — no decay

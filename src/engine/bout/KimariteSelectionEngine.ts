@@ -70,6 +70,7 @@ export const KimariteSelectionEngine = {
       if (applicable.length === 0) continue;
 
       // 3. Apply weights (Base * Division * Meta * Specialization)
+      let totalWeight = 0;
       const weighted = applicable.map((s) => {
         let weight = s.weight;
 
@@ -97,15 +98,15 @@ export const KimariteSelectionEngine = {
         if (effectiveMeta.tone === "defensive" && tacticalFamily === "trick") weight *= KIMARITE_TONE_MATCH_BOOST;
 
         // Rikishi Specialization (Favored Moves)
-        if (attacker.favoredKimarite?.includes(s.id)) {
+        if (attacker.favoredKimarite?.includes(s.id as KimariteId)) {
           weight *= KIMARITE_FAVORITE_BOOST;
         }
 
+        totalWeight += weight;
         return { strategy: s, weight };
       });
 
       // 4. Weighted Random Selection
-      const totalWeight = weighted.reduce((sum, w) => sum + w.weight, 0);
       let roll = rng.next() * totalWeight;
       let selected = weighted[0].strategy;
 
@@ -130,7 +131,7 @@ export const KimariteSelectionEngine = {
       if (division === "jonidan" || division === "jonokuchi") successProb -= KIMARITE_LOWER_DIVISION_PENALTY;
 
       // Favored kimarite execution boost: +0.08 when the attacker specialises in this technique
-      if (attacker.favoredKimarite?.includes(selected.id)) {
+      if (attacker.favoredKimarite?.includes(selected.id as KimariteId)) {
         successProb += KIMARITE_FAVORITE_SUCCESS_BOOST;
       }
 
