@@ -37,24 +37,36 @@ export function projectHOFUIDigest(world: WorldState): { inductees: UIHofInducte
     const rikishi = world.rikishi.get(ind.rikishiId);
     const heya = rikishi ? world.heyas.get(rikishi.heyaId) : null;
 
-    // Greatest fights projection
-    const greatestFights =
-      (rikishi as Rikishi)?.history
-        ?.filter((m) => m.win)
-        .slice(-10)
-        .map((m) => ({
-          bashoName: m.bashoId ?? "",
-          kimarite: m.kimarite,
-          opponentName: world.rikishi.get(m.opponentId)?.shikona ?? "Unknown",
-          isWin: m.win,
-        }))
-        .reverse()
-        .slice(0, 5) ?? [];
+    // Greatest fights projection — single-pass build of last 5 wins
+    const greatestFights: Array<{
+      bashoName: string;
+      kimarite: string;
+      opponentName: string;
+      isWin: boolean;
+    }> = [];
+    const history = (rikishi as Rikishi)?.history;
+    if (history) {
+      for (let i = history.length - 1; i >= 0 && greatestFights.length < 5; i--) {
+        const m = history[i];
+        if (m.win) {
+          greatestFights.push({
+            bashoName: m.bashoId ?? "",
+            kimarite: m.kimarite,
+            opponentName: world.rikishi.get(m.opponentId)?.shikona ?? "Unknown",
+            isWin: m.win,
+          });
+        }
+      }
+      greatestFights.reverse();
+    }
 
-    // Yusho list projection
-    const yushoList = world.history
-      .filter((br) => br.yusho === ind.rikishiId)
-      .map((br) => ({ year: br.year, bashoName: br.bashoName }));
+    // Yusho list projection — single-pass collect
+    const yushoList: Array<{ year: number; bashoName: string }> = [];
+    for (const br of world.history) {
+      if (br.yusho === ind.rikishiId) {
+        yushoList.push({ year: br.year, bashoName: br.bashoName });
+      }
+    }
 
     return {
       ...ind,

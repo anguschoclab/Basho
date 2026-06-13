@@ -17,24 +17,35 @@ export function projectLoanStatus(world: WorldState, heyaId: string) {
   if (!heya || !heya.activeLoans?.length) return null;
 
   const loans = heya.activeLoans;
-  const totalBalance = loans.reduce((sum, l) => sum + l.remainingBalance, 0);
-  const totalMonthlyPayment = loans.reduce((sum, l) => sum + l.monthlyPayment, 0);
-  const overdueLoans = loans.filter((l) => l.remainingBalance > l.principal);
-
-  return {
-    loanCount: loans.length,
-    totalBalance,
-    totalMonthlyPayment,
-    isOverdue: overdueLoans.length > 0,
-    overdueCount: overdueLoans.length,
-    loans: loans.map((l) => ({
+  let totalBalance = 0;
+  let totalMonthlyPayment = 0;
+  let isOverdue = false;
+  let overdueCount = 0;
+  const loanList = [];
+  for (const l of loans) {
+    totalBalance += l.remainingBalance;
+    totalMonthlyPayment += l.monthlyPayment;
+    if (l.remainingBalance > l.principal) {
+      isOverdue = true;
+      overdueCount++;
+    }
+    loanList.push({
       id: l.id,
       type: l.type,
       providerName: l.providerName,
       remainingBalance: l.remainingBalance,
       monthlyPayment: l.monthlyPayment,
       interestRate: l.interestRate,
-    })),
+    });
+  }
+
+  return {
+    loanCount: loans.length,
+    totalBalance,
+    totalMonthlyPayment,
+    isOverdue,
+    overdueCount,
+    loans: loanList,
   };
 }
 

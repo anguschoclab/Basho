@@ -36,14 +36,14 @@ export function projectHeyaRosterWithAge(
   const heya = world.heyas.get(heyaId);
   if (!heya) return [];
 
-  return (heya.rikishiIds ?? [])
-    .map((id: string) => {
-      const r = world.rikishi.get(id);
-      if (!r) return null;
-      return {
-        rikishi: projectRikishi(r, world),
-        age: r.birthYear && world.year ? world.year - r.birthYear : 0,
-      };
-    })
-    .filter(Boolean) as Array<{ rikishi: UIRikishi; age: number }>;
+  const result: Array<{ rikishi: UIRikishi; age: number }> = [];
+  for (const id of heya.rikishiIds ?? []) {
+    const r = world.rikishi.get(id);
+    if (!r) continue;
+    result.push({
+      rikishi: projectRikishi(r, world),
+      age: r.birthYear && world.year ? world.year - r.birthYear : 0,
+    });
+  }
+  return result;
 }

@@ -51,11 +51,15 @@ export function projectFinanceSummary(world: WorldState): FinanceSummary | null 
   const runwayBand = toRunwayBand(fin.runwayMonths);
 
   const loans = heya.activeLoans ?? [];
-  const loanAmount = loans.reduce((s, l) => s + l.remainingBalance, 0);
   const currentMonth = Math.ceil((world.week ?? 1) / 4);
-  const isOverdue = loans.some(
-    (l) => l.remainingBalance > 0 && currentMonth > l.issuedAtMonth + 12
-  );
+  let loanAmount = 0;
+  let isOverdue = false;
+  for (const l of loans) {
+    loanAmount += l.remainingBalance;
+    if (!isOverdue && l.remainingBalance > 0 && currentMonth > l.issuedAtMonth + 12) {
+      isOverdue = true;
+    }
+  }
 
   const koenkai = world.sponsorPool?.koenkais?.get(heya.koenkaiId ?? "");
   const sponsorCount = koenkai?.members?.length ?? 0;

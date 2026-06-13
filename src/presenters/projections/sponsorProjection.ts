@@ -178,12 +178,19 @@ export function projectSponsorUIDigest(world: WorldState) {
   const koenkaiIncome = calculateKoenkaiIncome(heya);
   const koenkaiStrength = heya.koenkaiBand ?? "none";
 
+  let totalMonthlyIncome = koenkaiIncome;
+  let expiringCount = 0;
+  for (const s of activeSponsors) {
+    totalMonthlyIncome += s.monthlyIncome;
+    if (s.isExpiringSoon) expiringCount++;
+  }
+
   return {
     koenkaiName: `${heya.name} Supporters Association`,
     power: koenkaiStrength,
     activeSponsors,
-    totalMonthlyIncome: activeSponsors.reduce((sum, s) => sum + s.monthlyIncome, 0) + koenkaiIncome,
-    expiringCount: activeSponsors.filter((s) => s.isExpiringSoon).length,
+    totalMonthlyIncome,
+    expiringCount,
     koenkaiIncome,
   };
 }

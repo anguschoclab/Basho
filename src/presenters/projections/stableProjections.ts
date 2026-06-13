@@ -31,16 +31,14 @@ export function projectStableSummary(world: WorldState, heyaId: string): StableS
 
   const perception = getCachedPerception(world, heyaId);
 
-  const roster = heya.rikishiIds ?? [];
-  const sekitoriCount = roster.filter((id) => {
+  let sekitoriCount = 0;
+  let injuredCount = 0;
+  for (const id of heya.rikishiIds ?? []) {
     const r = world.rikishi.get(id);
-    return r && (r.division === "makuuchi" || r.division === "juryo");
-  }).length;
-
-  const injuredCount = roster.filter((id) => {
-    const r = world.rikishi.get(id);
-    return r?.injury != null;
-  }).length;
+    if (!r) continue;
+    if (r.division === "makuuchi" || r.division === "juryo") sekitoriCount++;
+    if (r.injury != null) injuredCount++;
+  }
 
   const activeStaffCount = heya.staffIds?.length ?? 0;
   const scandalScore = ((heya as unknown as Record<string, unknown>).scandalScore as number) ?? 0;
@@ -49,7 +47,7 @@ export function projectStableSummary(world: WorldState, heyaId: string): StableS
 
   return {
     heyaName: heya.name,
-    rosterSize: roster.length,
+    rosterSize: heya.rikishiIds?.length ?? 0,
     sekitoriCount,
     injuredCount,
     activeStaffCount,

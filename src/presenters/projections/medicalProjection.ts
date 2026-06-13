@@ -31,7 +31,6 @@ export function projectMedicalUIDigest(world: WorldState) {
   if (!heya) return null;
 
   const roster = getHeyaRoster(world, playerHeyaId);
-  const injured = roster.filter((r) => r.injured);
   const rng = world.rng || new SeededRNG(world.seed || "medical_digest");
 
   const recoveryFacility = heya.facilities?.recovery ?? 50;
@@ -107,31 +106,43 @@ export function projectMedicalUIDigest(world: WorldState) {
     heyaName: heya.name,
     facilityLevel: recoveryFacility,
     facilityLabel,
-    injuredRikishi: injured.map((r) => {
-      const injuryStatus = r.injuryStatus;
-      const weeksRemaining = r.injuryWeeksRemaining ?? injuryStatus?.weeksRemaining ?? 0;
-      const weeksTotal = injuryStatus?.weeksToHeal ?? weeksRemaining + 2;
-      const recoveryProgress =
-        weeksTotal > 0 ? Math.round(((weeksTotal - weeksRemaining) / weeksTotal) * 100) : 0;
-      const facilityBonus = Math.round((recoveryFacility - 50) / 10);
+    injuredRikishi: (() => {
+      const result: Array<{
+        id: string;
+        shikona: string;
+        severity: string;
+        location: string;
+        weeksRemaining: number;
+        weeksTotal: number;
+        recoveryProgress: number;
+        facilityBonus: number;
+      }> = [];
+      for (const r of roster) {
+        if (!r.injured) continue;
+        const injuryStatus = r.injuryStatus;
+        const weeksRemaining = r.injuryWeeksRemaining ?? injuryStatus?.weeksRemaining ?? 0;
+        const weeksTotal = injuryStatus?.weeksToHeal ?? weeksRemaining + 2;
+        const recoveryProgress =
+          weeksTotal > 0 ? Math.round(((weeksTotal - weeksRemaining) / weeksTotal) * 100) : 0;
+        const facilityBonus = Math.round((recoveryFacility - 50) / 10);
 
-      return {
-        id: r.id,
-        shikona: r.shikona,
-
-        severity:
-          typeof (injuryStatus as unknown as Record<string, unknown>)?.severity === "string"
-            ? ((injuryStatus as unknown as Record<string, unknown>).severity as string)
-            : "unknown",
-
-        location:
-          ((injuryStatus as unknown as Record<string, unknown>)?.location as string) || "unknown",
-        weeksRemaining,
-        weeksTotal,
-        recoveryProgress: Math.min(100, Math.max(0, recoveryProgress)),
-        facilityBonus,
-      };
-    }),
+        result.push({
+          id: r.id,
+          shikona: r.shikona,
+          severity:
+            typeof (injuryStatus as unknown as Record<string, unknown>)?.severity === "string"
+              ? ((injuryStatus as unknown as Record<string, unknown>).severity as string)
+              : "unknown",
+          location:
+            ((injuryStatus as unknown as Record<string, unknown>)?.location as string) || "unknown",
+          weeksRemaining,
+          weeksTotal,
+          recoveryProgress: Math.min(100, Math.max(0, recoveryProgress)),
+          facilityBonus,
+        });
+      }
+      return result;
+    })(),
     welfare: {
       welfareRisk: heya.welfareState?.welfareRisk ?? 0,
 

@@ -52,7 +52,13 @@ export function projectDashboardUIDigest(world: WorldState): DashboardUIDigest |
     stats: {
       rosterSize: (heya.rikishiIds || []).length,
       sekitoriCount: getSekitoriInHeya(world, playerHeyaId),
-      injuredCount: EntityCollection.getHeyaRoster(world, playerHeyaId).filter((r) => r.injured).length,
+      injuredCount: (() => {
+        let count = 0;
+        for (const r of EntityCollection.getHeyaRoster(world, playerHeyaId)) {
+          if (r.injured) count++;
+        }
+        return count;
+      })(),
     },
     recentEvents,
     topRivals,

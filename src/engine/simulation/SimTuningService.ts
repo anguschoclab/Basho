@@ -100,14 +100,17 @@ export const SimTuningService = {
       if (r.isRetired) retiredRikishi.push(r);
     }
 
-    const retirementAges = retiredRikishi
-      .filter((r) => r.retirementYear)
-      .map((r) => r.retirementYear! - r.birthYear);
-
+    const retirementAges: number[] = [];
+    let retirementAgeSum = 0;
+    for (const r of retiredRikishi) {
+      if (r.retirementYear) {
+        const age = r.retirementYear - r.birthYear;
+        retirementAges.push(age);
+        retirementAgeSum += age;
+      }
+    }
     const averageRetirementAge =
-      retirementAges.length > 0
-        ? retirementAges.reduce((a, b) => a + b, 0) / retirementAges.length
-        : 0;
+      retirementAges.length > 0 ? retirementAgeSum / retirementAges.length : 0;
 
     // 4. Stable Wealth & Dominance
     // ⚡ Bolt Optimization: Use EntityCollection instead of Array.from()
@@ -209,10 +212,14 @@ export const SimTuningService = {
           for (const o of world.oyakata.values()) sum += o.age || 45;
           return sum / world.oyakata.size;
         })(),
-        injuryRate:
-          activeRikishi.length > 0
-            ? (activeRikishi.filter((r) => r.injured).length / activeRikishi.length) * 100
-            : 0,
+        injuryRate: (() => {
+          if (activeRikishi.length === 0) return 0;
+          let injured = 0;
+          for (const r of activeRikishi) {
+            if (r.injured) injured++;
+          }
+          return (injured / activeRikishi.length) * 100;
+        })(),
         archetypeWinRates: {},
         wealthGini: 0,
         successionRate: historyStats?.successions || 0,

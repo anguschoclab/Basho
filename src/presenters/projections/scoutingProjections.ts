@@ -28,6 +28,8 @@ export interface ScoutingSummary {
 export function projectScoutingSummary(world: WorldState): ScoutingSummary {
   const snaps: ScoutingOpponentSnap[] = [];
   const playerHeyaId = world.playerHeyaId;
+  let dominantCount = 0;
+  let weakCount = 0;
 
   for (const heya of EntityCollection.getHeyas(world)) {
     if ((heya.rikishiIds?.length ?? 0) === 0) continue;
@@ -41,6 +43,8 @@ export function projectScoutingSummary(world: WorldState): ScoutingSummary {
       welfareRiskBand: snap.welfareRiskBand,
       isPlayer: heya.id === playerHeyaId,
     });
+    if (snap.rosterStrengthBand === "dominant") dominantCount++;
+    if (snap.rosterStrengthBand === "weak") weakCount++;
   }
 
   snaps.sort((a, b) => {
@@ -52,7 +56,7 @@ export function projectScoutingSummary(world: WorldState): ScoutingSummary {
   return {
     opponentSnaps: snaps,
     totalHeyas: snaps.length,
-    dominantCount: snaps.filter((s) => s.rosterStrengthBand === "dominant").length,
-    weakCount: snaps.filter((s) => s.rosterStrengthBand === "weak").length,
+    dominantCount,
+    weakCount,
   };
 }

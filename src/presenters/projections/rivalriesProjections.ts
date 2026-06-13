@@ -57,11 +57,17 @@ export function projectRivalriesPage(world: WorldState): RivalriesPageData {
   const player: RivalryPairState[] = [];
   const hot: RivalryPairState[] = [];
   const cool: RivalryPairState[] = [];
+  let infernoCount = 0;
+  let hotCount = 0;
 
   for (const pair of normalized) {
+    const h = pair.heat ?? 0;
+    if (h >= 80) infernoCount++;
+    else if (h >= 55) hotCount++;
+
     const isPlayer = playerRikishiIds.has(pair.aId) || playerRikishiIds.has(pair.bId);
     if (isPlayer) player.push(pair);
-    else if ((pair.heat ?? 0) >= 55) hot.push(pair);
+    else if (h >= 55) hot.push(pair);
     else cool.push(pair);
   }
 
@@ -69,14 +75,6 @@ export function projectRivalriesPage(world: WorldState): RivalriesPageData {
   player.sort(byHeat);
   hot.sort(byHeat);
   cool.sort(byHeat);
-
-  let infernoCount = 0;
-  let hotCount = 0;
-  for (const p of normalized) {
-    const heat = p.heat ?? 0;
-    if (heat >= 80) infernoCount++;
-    else if (heat >= 55) hotCount++;
-  }
 
   const heatmapData = player.map((pair) => {
     const a = world.rikishi.get(pair.aId);

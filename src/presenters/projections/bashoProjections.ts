@@ -6,7 +6,6 @@
  */
 
 import type { WorldState } from "../../engine/types/world";
-import type { MatchSchedule } from "../../engine/types/basho";
 import type { Rikishi } from "../../engine/types/rikishi";
 import type { BashoUIDigest, BoutMatchUI, HeatBand, StandingEntry } from "../types/uiDigest";
 import { projectRikishi } from "../rikishiUI";
@@ -34,43 +33,43 @@ export function projectBashoUIDigest(world: WorldState): BashoUIDigest | null {
   }
 
   const day = basho.day;
-  const matches = (basho.matches || [])
-    .filter((m: MatchSchedule) => m.day === day)
-    .map((match: MatchSchedule) => {
-      const east = world.rikishi.get(match.eastRikishiId);
-      const west = world.rikishi.get(match.westRikishiId);
-      if (!east || !west) return null;
+  const matches: BoutMatchUI[] = [];
+  let completedBouts = 0;
+  for (const match of basho.matches || []) {
+    if (match.day !== day) continue;
+    const east = world.rikishi.get(match.eastRikishiId);
+    const west = world.rikishi.get(match.westRikishiId);
+    if (!east || !west) continue;
 
-      const uiEast = projectRikishi(east, world);
-      const uiWest = projectRikishi(west, world);
+    const uiEast = projectRikishi(east, world);
+    const uiWest = projectRikishi(west, world);
 
-      const record = uiEast.h2h?.[uiWest.id] || { wins: 0, losses: 0 };
-      const h2h = { wins: record.wins, losses: record.losses };
+    const record = uiEast.h2h?.[uiWest.id] || { wins: 0, losses: 0 };
+    const h2h = { wins: record.wins, losses: record.losses };
 
-      const rivalriesState = world.rivalriesState;
-      const rivalry =
-        (rivalriesState ? getRivalry(rivalriesState, east.id, west.id) : null) ?? null;
-      const heat = rivalry?.heat ?? 0;
-      let heatBand: HeatBand = "cold";
-      if (heat >= 75) heatBand = "inferno";
-      else if (heat >= 50) heatBand = "hot";
-      else if (heat >= 25) heatBand = "warm";
+    const rivalriesState = world.rivalriesState;
+    const rivalry =
+      (rivalriesState ? getRivalry(rivalriesState, east.id, west.id) : null) ?? null;
+    const heat = rivalry?.heat ?? 0;
+    let heatBand: HeatBand = "cold";
+    if (heat >= 75) heatBand = "inferno";
+    else if (heat >= 50) heatBand = "hot";
+    else if (heat >= 25) heatBand = "warm";
 
-      return {
-        ...match,
-        eastRikishi: uiEast,
-        westRikishi: uiWest,
-        isPlayerBout:
-          playerRikishiIds.has(match.eastRikishiId) || playerRikishiIds.has(match.westRikishiId),
-        h2h,
-        rivalry,
-        heatBand,
-        h2hCommentary: generateH2HCommentary(east, west),
-      };
-    })
-    .filter((m) => m !== null) as BoutMatchUI[];
+    matches.push({
+      ...match,
+      eastRikishi: uiEast,
+      westRikishi: uiWest,
+      isPlayerBout:
+        playerRikishiIds.has(match.eastRikishiId) || playerRikishiIds.has(match.westRikishiId),
+      h2h,
+      rivalry,
+      heatBand,
+      h2hCommentary: generateH2HCommentary(east, west),
+    });
+    if (match.result) completedBouts++;
+  }
 
-  const completedBouts = matches.filter((m) => m.result).length;
   const dayProgress = matches.length > 0 ? (completedBouts / matches.length) * 100 : 0;
 
   // ⚡ Bolt Optimization: Replace O(N) Array.from(world.rikishi.values()).filter(...)

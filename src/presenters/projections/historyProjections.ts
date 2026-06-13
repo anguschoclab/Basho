@@ -44,8 +44,12 @@ export function projectHistoryAggregate(world: WorldState, heyaId: string): Hist
       | undefined;
 
     if (playerResults && playerResults.length > 0) {
-      const totalWins = playerResults.reduce((s, r) => s + r.wins, 0);
-      const totalLosses = playerResults.reduce((s, r) => s + r.losses, 0);
+      let totalWins = 0;
+      let totalLosses = 0;
+      for (const r of playerResults) {
+        totalWins += r.wins;
+        totalLosses += r.losses;
+      }
       const winRate = totalWins + totalLosses > 0 ? totalWins / (totalWins + totalLosses) : 0;
       if (winRate > bestWinRate) bestWinRate = winRate;
       if (totalWins > totalLosses) {
