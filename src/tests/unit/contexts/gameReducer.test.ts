@@ -1,16 +1,9 @@
 // src/contexts/__tests__/gameReducer.test.ts
-import { describe, it, expect, vi, type Mock } from "vitest";
+import { describe, it, expect } from "vitest";
 import { gameReducer } from "@/contexts/gameReducer";
 import { initialGameState } from "@/contexts/gameTypes";
 import type { GameAction } from "@/contexts/gameTypes";
 import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
-import { buildWeeklyDigest } from "@/presenters/uiDigest";
-
-vi.mock("@/presenters/uiDigest", () => ({
-  buildWeeklyDigest: vi.fn(),
-}));
-
-const mockBuildWeeklyDigest = buildWeeklyDigest as Mock;
 
 describe("Game Reducer Purity", () => {
   it("MUST NOT mutate the previous state object on CREATE_WORLD", () => {
@@ -18,8 +11,6 @@ describe("Game Reducer Purity", () => {
       ...initialGameState,
       world: generateInitialWorld("test-purity"),
     };
-
-    mockBuildWeeklyDigest.mockReturnValue({} as any);
 
     const nextState = gameReducer(
       initialState,
@@ -31,14 +22,12 @@ describe("Game Reducer Purity", () => {
   });
 });
 
-describe("Game Reducer: Bulk Actions", () => {
-  it("MUST set digestStale for bulk actions instead of rebuilding digest", () => {
+describe("Game Reducer: World Change Flag", () => {
+  it("MUST set digestStale when world changes", () => {
     const initialState = {
       ...initialGameState,
-      world: generateInitialWorld("test-batch"),
+      world: generateInitialWorld("test-stale"),
     };
-
-    mockBuildWeeklyDigest.mockReturnValue({} as any);
 
     const nextState = gameReducer(initialState, {
       type: "ADVANCE_INTERIM",
@@ -50,31 +39,20 @@ describe("Game Reducer: Bulk Actions", () => {
     expect(nextState.digestStale).toBe(true);
     expect(nextState.digest).toBeNull();
   }, 30000);
-});
 
-describe("Game Reducer Error Handling", () => {
-  it("MUST catch errors from buildWeeklyDigest and return next state without digest", () => {
+  it("MUST NOT set digestStale when world does not change", () => {
     const initialState = {
       ...initialGameState,
-      world: generateInitialWorld("test-error"),
+      world: generateInitialWorld("test-nochange"),
     };
 
-    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-    const error = new Error("Digest failed");
-    mockBuildWeeklyDigest.mockImplementation(() => {
-      throw error;
-    });
+    const nextState = gameReducer(initialState, {
+      type: "SET_PHASE",
+      phase: "menu",
+    } as unknown as GameAction);
 
-    const nextState = gameReducer(
-      initialState,
-      { type: "CREATE_WORLD", seed: "test-error", playerHeyaId: undefined } as unknown as GameAction
-    );
-
-    expect(consoleSpy).toHaveBeenCalledWith("Error building weekly digest:", error);
     expect(nextState).not.toBe(initialState);
-    expect(nextState.world).not.toBe(initialState.world);
-    expect(nextState.digest).toBeNull();
-
-    consoleSpy.mockRestore();
+    expect(nextState.world).toBe(initialState.world);
+    expect(nextState.digestStale).toBe(false);
   });
 });

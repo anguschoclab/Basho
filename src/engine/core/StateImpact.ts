@@ -26,13 +26,19 @@ import type { Rikishi } from "../types/rikishi";
 import type { Oyakata } from "../types/oyakata";
 
 /**
- * Deterministic timestamp counter for impact metadata.
- * Ensures timestamps are deterministic across simulation runs.
+ * Create a fresh deterministic timestamp generator.
+ * Each call returns a new closure with its own counter.
  */
-let impactTimestampCounter = 0;
+function createTimestampGenerator(): () => number {
+  let counter = 0;
+  return () => ++counter;
+}
+
+/** Tick-scoped timestamp generator. Reset at simulation boundaries. */
+let _timestampGen = createTimestampGenerator();
 
 /**
- * Reset the impact timestamp counter.
+ * Reset the impact timestamp generator.
  * Call this when starting a new simulation or loading a saved world to ensure
  * timestamps start from zero for deterministic behavior.
  *
@@ -46,12 +52,11 @@ let impactTimestampCounter = 0;
  * ```
  */
 export function resetImpactTimestampCounter(): void {
-  impactTimestampCounter = 0;
+  _timestampGen = createTimestampGenerator();
 }
 
 /**
  * Get the next deterministic timestamp.
- * Increments the global counter and returns the new value.
  * Used to order impacts deterministically across simulation runs.
  *
  * @returns {number} The next timestamp value.
@@ -63,7 +68,7 @@ export function resetImpactTimestampCounter(): void {
  * ```
  */
 export function getNextTimestamp(): number {
-  return ++impactTimestampCounter;
+  return _timestampGen();
 }
 
 /**

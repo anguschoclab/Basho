@@ -189,6 +189,72 @@ function tryFusensho(bout: BoutContext, east: Rikishi, west: Rikishi): BoutResul
 }
 
 /**
+ * Detect kinboshi/ginboshi achievements.
+ * Pure: returns updated achievements and kinboshi delta without mutating state.
+ */
+function detectKinboshi(
+  result: BoutResult,
+  winner: Rikishi,
+  loser: Rikishi
+): {
+  winnerAchievements: RikishiAchievements;
+  loserAchievements: RikishiAchievements;
+  kinboshiDelta: boolean;
+} {
+  const defaultAchievements = (): RikishiAchievements => ({
+    kinboshiEarned: 0,
+    ginboshiEarned: 0,
+    kinboshiConceded: 0,
+    ginboshiConceded: 0,
+    specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
+    mochikyukinPoints: 0,
+  });
+
+  const winnerAchievements = winner.stats.achievements || defaultAchievements();
+  const loserAchievements = loser.stats.achievements || defaultAchievements();
+  let kinboshiDelta = false;
+
+  if (winner.rank === "maegashira" && loser.rank === "yokozuna" && result.kimarite !== "fusensho") {
+    winnerAchievements.kinboshiEarned++;
+    loserAchievements.kinboshiConceded++;
+    kinboshiDelta = true;
+  } else if (winner.rank === "maegashira" && loser.rank === "ozeki" && result.kimarite !== "fusensho") {
+    winnerAchievements.ginboshiEarned++;
+    loserAchievements.ginboshiConceded++;
+  }
+
+  return { winnerAchievements, loserAchievements, kinboshiDelta };
+}
+
+/**
+ * Compute henka prestige penalty for the winner.
+ * Pure: returns partial rikishi update or null.
+ */
+function computeHenkaPenalty(
+  bout: BoutContext,
+  result: BoutResult,
+  winner: Rikishi,
+  cpuTacticOverride: import("../types/combat").BoutTactic | undefined
+): Partial<Rikishi> | null {
+  const playerHenkaWon =
+    bout.playerTactic === "HENKA" &&
+    result.winner === bout.playerSide &&
+    result.kimarite !== "fusensho";
+
+  const cpuHenkaWon =
+    cpuTacticOverride === "HENKA" &&
+    result.kimarite !== "fusensho" &&
+    ((bout.playerSide === "east" && result.winner === "west") ||
+      (bout.playerSide === "west" && result.winner === "east") ||
+      !bout.playerSide);
+
+  if (playerHenkaWon || cpuHenkaWon) {
+    return { momentum: clamp((winner.momentum ?? 50) - HENKA_MOMENTUM_PENALTY, STAT_CLAMP_MIN, STAT_CLAMP_MAX) };
+  }
+  return null;
+}
+
+/**
  * Resolve a bout between two rikishi.
  * Main orchestrator for bout resolution using spatial physics engine.
  *
@@ -303,42 +369,10 @@ export function resolveBout(
   );
 
   // 2.5. Achievement Detection (Gold & Silver Stars - v2)
-
-  // Initialize achievements if missing
-  const defaultAchievements = (): RikishiAchievements => ({
-    kinboshiEarned: 0,
-    ginboshiEarned: 0,
-    kinboshiConceded: 0,
-    ginboshiConceded: 0,
-    specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
-    mochikyukinPoints: 0,
-  });
-
-  const winnerAchievements = winner.stats.achievements || defaultAchievements();
-  const loserAchievements = loser.stats.achievements || defaultAchievements();
-
-  // Rule: Kinboshi (Gold Star) - Maegashira defeats Yokozuna (excluding Fusensho)
-  if (winner.rank === "maegashira" && loser.rank === "yokozuna" && result.kimarite !== "fusensho") {
+  const { winnerAchievements, loserAchievements, kinboshiDelta } = detectKinboshi(result, winner, loser);
+  result.isKinboshi = !!kinboshiDelta;
+  if (kinboshiDelta) {
     result.awardFact = "kinboshi";
-    result.isKinboshi = true;
-    winnerAchievements.kinboshiEarned++;
-    loserAchievements.kinboshiConceded++;
-    // Track kinboshi earned this basho for per-basho stipend calculation
-    if (basho.kinboshiThisBasho) {
-      basho.kinboshiThisBasho[winner.id] = (basho.kinboshiThisBasho[winner.id] ?? 0) + 1;
-    } else {
-      basho.kinboshiThisBasho = { [winner.id]: 1 };
-    }
-  }
-  // Rule: Ginboshi (Silver Star) - Maegashira defeats Ozeki (excluding Fusensho)
-  else if (
-    winner.rank === "maegashira" &&
-    loser.rank === "ozeki" &&
-    result.kimarite !== "fusensho"
-  ) {
-    result.awardFact = "ginboshi";
-    winnerAchievements.ginboshiEarned++;
-    loserAchievements.ginboshiConceded++;
   }
 
   // Update achievements via StateImpact
@@ -349,26 +383,16 @@ export function resolveBout(
     stats: { ...loser.stats, achievements: loserAchievements },
   });
 
+  // Track kinboshi earned this basho for per-basho stipend calculation
+  if (kinboshiDelta && basho.kinboshiThisBasho !== undefined) {
+    const nextKinboshi = { ...basho.kinboshiThisBasho, [winner.id]: (basho.kinboshiThisBasho[winner.id] ?? 0) + 1 };
+    builder.updateWorldField("currentBasho", { ...basho, kinboshiThisBasho: nextKinboshi } as never);
+  }
+
   // 3. Henka prestige penalty
-  // Using henka wins the bout but costs momentum — crowd disapproval and
-  // psychological debt from a dishonorable tachiai carry into the next bout.
-  // CI-05: Simplified logic using resolved cpuTacticOverride (not re-read from bout).
-  const playerHenkaWon =
-    bout.playerTactic === "HENKA" &&
-    result.winner === bout.playerSide &&
-    result.kimarite !== "fusensho";
-
-  const cpuHenkaWon =
-    cpuTacticOverride === "HENKA" &&
-    result.kimarite !== "fusensho" &&
-    ((bout.playerSide === "east" && result.winner === "west") ||
-      (bout.playerSide === "west" && result.winner === "east") ||
-      !bout.playerSide);
-
-  if (playerHenkaWon || cpuHenkaWon) {
-    builder.updateRikishi(winner.id, {
-      momentum: clamp((winner.momentum ?? 50) - HENKA_MOMENTUM_PENALTY, 0, 100),
-    });
+  const henkaPenalty = computeHenkaPenalty(bout, result, winner, cpuTacticOverride);
+  if (henkaPenalty) {
+    builder.updateRikishi(winner.id, henkaPenalty);
   }
 
   // 4. Update Rivalry State
@@ -424,42 +448,7 @@ export function resolveBout(
   }
 
   // Merge rivalry impact into main builder
-  if (rivalryImpact.entities?.rikishiUpdates) {
-    for (const [id, update] of rivalryImpact.entities.rikishiUpdates) {
-      builder.updateRikishi(id, update);
-    }
-  }
-  if (rivalryImpact.worldFields) {
-    for (const [field, value] of Object.entries(rivalryImpact.worldFields)) {
-      builder.updateWorldField(
-        field as unknown as
-          | "history"
-          | "year"
-          | "week"
-          | "dayIndexGlobal"
-          | "cyclePhase"
-          | "_postBashoMeta"
-          | "_recruitmentWindow"
-          | "closedHeyas"
-          | "currentBasho"
-          | "currentBashoName"
-          | "ozekiKadoban"
-          | "_interimDaysRemaining"
-          | "_postBashoDays"
-          | "calendar"
-          | "history"
-          | "almanacSnapshots"
-          | "mediaState"
-          | "ftue"
-          | "rivalriesState"
-          | "_preBashoAssessment"
-          | "sponsorPool"
-          | "myosekiMarket"
-          | "_daysSinceLastWeeklyTick",
-        value as never
-      );
-    }
-  }
+  builder.merge(rivalryImpact);
 
   return { result, impact: builder.build(), engineSnapshot };
 }

@@ -1,9 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { resolveBout } from "@/engine/bout/boutResolver";
 import { applyBoutResult } from "@/engine/bout/boutResultApplier";
-import { applyImpact } from "@/engine/core/ImpactResolver";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { mockRikishi, makeMockBasho, makeMockWorld } from "../utils";
-import type { BoutContext } from "../boutUtils";
+import type { BoutContext } from "@/engine/bout/boutUtils";
 import type { MatchSchedule, BoutResult } from "@/engine/types/basho";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
@@ -172,7 +172,7 @@ describe("boutNarrative.wiring — narrative system is wired to the bout engine"
       const result = makeMinimalBoutResult();
 
       const impact = applyBoutResult(world, match, result);
-      const updatedWorld = applyImpact(world, impact);
+      const updatedWorld = resolveImpacts(world, [impact]);
 
       const log = updatedWorld.events.log;
       const boutEvents = log.filter((e) => e.type === "BOUT_RESOLVED");

@@ -93,128 +93,115 @@ export class ImpactBuilder {
     });
   }
 
+  // ── Private helpers ─────────────────────────────────────────────────────────
+
+  private ensureEntityMap<T>(field: string): Map<string, T> {
+    if (!this.impact.entities) {
+      this.impact.entities = {};
+    }
+    const entities = this.impact.entities as Record<string, unknown>;
+    if (!entities[field]) {
+      entities[field] = new Map<string, T>();
+    }
+    return entities[field] as Map<string, T>;
+  }
+
+  private ensureCollectionArray(field: string): unknown[] {
+    if (!this.impact.collections) {
+      this.impact.collections = {};
+    }
+    const collections = this.impact.collections as Record<string, unknown>;
+    if (!collections[field]) {
+      collections[field] = [];
+    }
+    return collections[field] as unknown[];
+  }
+
+  private ensureDeletedArray(field: string): string[] {
+    if (!this.impact.deletedEntities) {
+      this.impact.deletedEntities = { heyaIds: [], oyakataIds: [], rikishiIds: [] };
+    }
+    const deletions = this.impact.deletedEntities as Record<string, unknown>;
+    if (!deletions[field]) {
+      deletions[field] = [];
+    }
+    return deletions[field] as string[];
+  }
+
+  private setEntityUpdate<T>(field: string, id: string, update: Partial<T>, useDeepMerge = false): ImpactBuilder {
+    const map = this.ensureEntityMap<Partial<T>>(field);
+    const existing = map.get(id);
+    const merged = existing
+      ? useDeepMerge
+        ? (deepMerge(existing as Record<string, unknown>, update as Record<string, unknown>) as T)
+        : ({ ...existing, ...update })
+      : update;
+    map.set(id, merged as Partial<T>);
+    return this;
+  }
+
+  private setNestedEntityUpdate<T extends Record<string, unknown>>(field: string, id: string, fieldPath: string, value: unknown): ImpactBuilder {
+    const map = this.ensureEntityMap<T>(field);
+    const existing = map.get(id) || ({} as T);
+    const updated = setNestedField(existing, fieldPath, value);
+    map.set(id, updated as T);
+    return this;
+  }
+
   /**
    * Add a partial heya update to the impact.
    */
   updateHeya(id: string, update: Partial<Heya>): ImpactBuilder {
-    if (!this.impact.entities) {
-      this.impact.entities = {};
-    }
-    if (!this.impact.entities.heyaUpdates) {
-      this.impact.entities.heyaUpdates = new Map();
-    }
-    const existing = this.impact.entities.heyaUpdates.get(id);
-    this.impact.entities.heyaUpdates.set(id, existing ? { ...existing, ...update } : update);
-    return this;
+    return this.setEntityUpdate("heyaUpdates", id, update);
   }
 
   /**
    * Add a partial rikishi update to the impact.
    */
   updateRikishi(id: string, update: Partial<Rikishi>): ImpactBuilder {
-    if (!this.impact.entities) {
-      this.impact.entities = {};
-    }
-    if (!this.impact.entities.rikishiUpdates) {
-      this.impact.entities.rikishiUpdates = new Map();
-    }
-    const existing = this.impact.entities.rikishiUpdates.get(id);
-    this.impact.entities.rikishiUpdates.set(id, existing ? deepMerge(existing, update) : update);
-    return this;
+    return this.setEntityUpdate("rikishiUpdates", id, update, true);
   }
 
   /**
    * Update a nested field in a rikishi (e.g., h2h[opponentId]).
    */
   updateRikishiNestedField(id: string, fieldPath: string, value: unknown): ImpactBuilder {
-    if (!this.impact.entities) {
-      this.impact.entities = {};
-    }
-    if (!this.impact.entities.rikishiUpdates) {
-      this.impact.entities.rikishiUpdates = new Map();
-    }
-    const existing = this.impact.entities.rikishiUpdates.get(id) || {};
-    const updated = setNestedField(existing, fieldPath, value);
-    this.impact.entities.rikishiUpdates.set(id, updated);
-    return this;
+    return this.setNestedEntityUpdate("rikishiUpdates", id, fieldPath, value);
   }
 
   /**
    * Add a partial oyakata update to the impact.
    */
   updateOyakata(id: string, update: Partial<Oyakata>): ImpactBuilder {
-    if (!this.impact.entities) {
-      this.impact.entities = {};
-    }
-    if (!this.impact.entities.oyakataUpdates) {
-      this.impact.entities.oyakataUpdates = new Map();
-    }
-    const existing = this.impact.entities.oyakataUpdates.get(id);
-    this.impact.entities.oyakataUpdates.set(id, existing ? { ...existing, ...update } : update);
-    return this;
+    return this.setEntityUpdate("oyakataUpdates", id, update);
   }
 
   /**
    * Add a partial sponsor update to the impact.
    */
   updateSponsor(id: string, update: Record<string, unknown>): ImpactBuilder {
-    if (!this.impact.entities) {
-      this.impact.entities = {};
-    }
-    if (!this.impact.entities.sponsorUpdates) {
-      this.impact.entities.sponsorUpdates = new Map();
-    }
-    const existing = this.impact.entities.sponsorUpdates.get(id);
-    this.impact.entities.sponsorUpdates.set(id, existing ? { ...existing, ...update } : update);
-    return this;
+    return this.setEntityUpdate("sponsorUpdates", id, update);
   }
 
   /**
    * Add a partial koenkai update to the impact.
    */
   updateKoenkai(id: string, update: Record<string, unknown>): ImpactBuilder {
-    if (!this.impact.entities) {
-      this.impact.entities = {};
-    }
-    if (!this.impact.entities.koenkaiUpdates) {
-      this.impact.entities.koenkaiUpdates = new Map();
-    }
-    const existing = this.impact.entities.koenkaiUpdates.get(id);
-    this.impact.entities.koenkaiUpdates.set(id, existing ? { ...existing, ...update } : update);
-    return this;
+    return this.setEntityUpdate("koenkaiUpdates", id, update);
   }
 
   /**
    * Add a partial training state update to the impact.
    */
   updateTrainingState(id: string, update: Partial<HeyaTrainingState>): ImpactBuilder {
-    if (!this.impact.entities) {
-      this.impact.entities = {};
-    }
-    if (!this.impact.entities.trainingStateUpdates) {
-      this.impact.entities.trainingStateUpdates = new Map();
-    }
-    const existing = this.impact.entities.trainingStateUpdates.get(id);
-    this.impact.entities.trainingStateUpdates.set(
-      id,
-      existing ? deepMerge(existing, update) : update
-    );
-    return this;
+    return this.setEntityUpdate("trainingStateUpdates", id, update, true);
   }
 
   /**
    * Add a partial myoseki stock update to the impact.
    */
   updateMyosekiStock(id: string, update: Partial<MyosekiStock>): ImpactBuilder {
-    if (!this.impact.entities) {
-      this.impact.entities = {};
-    }
-    if (!this.impact.entities.myosekiUpdates) {
-      this.impact.entities.myosekiUpdates = new Map();
-    }
-    const existing = this.impact.entities.myosekiUpdates.get(id);
-    this.impact.entities.myosekiUpdates.set(id, existing ? { ...existing, ...update } : update);
-    return this;
+    return this.setEntityUpdate("myosekiUpdates", id, update);
   }
 
   /**
@@ -228,28 +215,14 @@ export class ImpactBuilder {
    * Add a partial staff update to the impact.
    */
   updateStaff(id: string, update: Partial<Staff>): ImpactBuilder {
-    if (!this.impact.entities) {
-      this.impact.entities = {};
-    }
-    if (!this.impact.entities.staffUpdates) {
-      this.impact.entities.staffUpdates = new Map();
-    }
-    const existing = this.impact.entities.staffUpdates.get(id);
-    this.impact.entities.staffUpdates.set(id, existing ? { ...existing, ...update } : update);
-    return this;
+    return this.setEntityUpdate("staffUpdates", id, update);
   }
 
   /**
    * Add a new staff member to the world.
    */
   addStaff(staff: Staff): ImpactBuilder {
-    if (!this.impact.collections) {
-      this.impact.collections = {};
-    }
-    if (!this.impact.collections.staffToAdd) {
-      this.impact.collections.staffToAdd = [];
-    }
-    this.impact.collections.staffToAdd.push(staff);
+    (this.ensureCollectionArray("staffToAdd") as Staff[]).push(staff);
     return this;
   }
 
@@ -257,13 +230,7 @@ export class ImpactBuilder {
    * Add a new oyakata member to the world.
    */
   addOyakata(oyakata: Oyakata): ImpactBuilder {
-    if (!this.impact.collections) {
-      this.impact.collections = {};
-    }
-    if (!this.impact.collections.oyakataToAdd) {
-      this.impact.collections.oyakataToAdd = [];
-    }
-    this.impact.collections.oyakataToAdd.push(oyakata);
+    (this.ensureCollectionArray("oyakataToAdd") as Oyakata[]).push(oyakata);
     return this;
   }
 
@@ -271,13 +238,7 @@ export class ImpactBuilder {
    * Remove an oyakata from the world.
    */
   removeOyakata(id: string): ImpactBuilder {
-    if (!this.impact.collections) {
-      this.impact.collections = {};
-    }
-    if (!this.impact.collections.oyakataToRemove) {
-      this.impact.collections.oyakataToRemove = [];
-    }
-    this.impact.collections.oyakataToRemove.push(id);
+    (this.ensureCollectionArray("oyakataToRemove") as string[]).push(id);
     return this;
   }
 
@@ -285,13 +246,7 @@ export class ImpactBuilder {
    * Remove a staff member from the world.
    */
   removeStaff(id: string): ImpactBuilder {
-    if (!this.impact.collections) {
-      this.impact.collections = {};
-    }
-    if (!this.impact.collections.staffToRemove) {
-      this.impact.collections.staffToRemove = [];
-    }
-    this.impact.collections.staffToRemove.push(id);
+    (this.ensureCollectionArray("staffToRemove") as string[]).push(id);
     return this;
   }
 
@@ -299,36 +254,15 @@ export class ImpactBuilder {
    * Update a nested field in a training state.
    */
   updateTrainingStateNestedField(id: string, fieldPath: string, value: unknown): ImpactBuilder {
-    if (!this.impact.entities) {
-      this.impact.entities = {};
-    }
-    if (!this.impact.entities.trainingStateUpdates) {
-      this.impact.entities.trainingStateUpdates = new Map();
-    }
-    const existing = this.impact.entities.trainingStateUpdates.get(id) || {};
-    const updated = setNestedField(existing, fieldPath, value);
-    this.impact.entities.trainingStateUpdates.set(id, updated);
-    return this;
+    return this.setNestedEntityUpdate("trainingStateUpdates", id, fieldPath, value);
   }
 
   /**
    * Add a rikishi to the active roster.
    */
   addRikishi(rikishi: Rikishi): ImpactBuilder {
-    if (!this.impact.collections) {
-      this.impact.collections = {};
-    }
-    if (!this.impact.collections.rikishiToAdd) {
-      this.impact.collections.rikishiToAdd = [];
-    }
-    this.impact.collections.rikishiToAdd.push(rikishi);
-
-    // Track in activeRikishiIds
-    if (!this.impact.collections.activeRikishiIdsToAdd) {
-      this.impact.collections.activeRikishiIdsToAdd = [];
-    }
-    this.impact.collections.activeRikishiIdsToAdd.push(rikishi.id);
-
+    (this.ensureCollectionArray("rikishiToAdd") as Rikishi[]).push(rikishi);
+    (this.ensureCollectionArray("activeRikishiIdsToAdd") as string[]).push(rikishi.id);
     return this;
   }
 
@@ -336,20 +270,8 @@ export class ImpactBuilder {
    * Remove a rikishi from the active roster.
    */
   removeRikishi(id: string): ImpactBuilder {
-    if (!this.impact.collections) {
-      this.impact.collections = {};
-    }
-    if (!this.impact.collections.rikishiToRemove) {
-      this.impact.collections.rikishiToRemove = [];
-    }
-    this.impact.collections.rikishiToRemove.push(id);
-
-    // Remove from activeRikishiIds
-    if (!this.impact.collections.activeRikishiIdsToRemove) {
-      this.impact.collections.activeRikishiIdsToRemove = [];
-    }
-    this.impact.collections.activeRikishiIdsToRemove.push(id);
-
+    (this.ensureCollectionArray("rikishiToRemove") as string[]).push(id);
+    (this.ensureCollectionArray("activeRikishiIdsToRemove") as string[]).push(id);
     return this;
   }
 
@@ -362,21 +284,8 @@ export class ImpactBuilder {
       retirementYear: year,
       retirementReason: reason,
     });
-
-    if (!this.impact.collections) {
-      this.impact.collections = {};
-    }
-    if (!this.impact.collections.rikishiToHistorical) {
-      this.impact.collections.rikishiToHistorical = [];
-    }
-    this.impact.collections.rikishiToHistorical.push(id);
-
-    // Remove from activeRikishiIds
-    if (!this.impact.collections.activeRikishiIdsToRemove) {
-      this.impact.collections.activeRikishiIdsToRemove = [];
-    }
-    this.impact.collections.activeRikishiIdsToRemove.push(id);
-
+    (this.ensureCollectionArray("rikishiToHistorical") as string[]).push(id);
+    (this.ensureCollectionArray("activeRikishiIdsToRemove") as string[]).push(id);
     return this;
   }
 
@@ -384,20 +293,8 @@ export class ImpactBuilder {
    * Move a rikishi from historical back to active collection.
    */
   unretireRikishi(id: string): ImpactBuilder {
-    if (!this.impact.collections) {
-      this.impact.collections = {};
-    }
-    if (!this.impact.collections.rikishiFromHistorical) {
-      this.impact.collections.rikishiFromHistorical = [];
-    }
-    this.impact.collections.rikishiFromHistorical.push(id);
-
-    // Add back to activeRikishiIds
-    if (!this.impact.collections.activeRikishiIdsToAdd) {
-      this.impact.collections.activeRikishiIdsToAdd = [];
-    }
-    this.impact.collections.activeRikishiIdsToAdd.push(id);
-
+    (this.ensureCollectionArray("rikishiFromHistorical") as string[]).push(id);
+    (this.ensureCollectionArray("activeRikishiIdsToAdd") as string[]).push(id);
     return this;
   }
 
@@ -405,13 +302,7 @@ export class ImpactBuilder {
    * Delete a heya from the world.
    */
   deleteHeya(id: string): ImpactBuilder {
-    if (!this.impact.deletedEntities) {
-      this.impact.deletedEntities = { heyaIds: [], oyakataIds: [], rikishiIds: [] };
-    }
-    if (!this.impact.deletedEntities.heyaIds) {
-      this.impact.deletedEntities.heyaIds = [];
-    }
-    this.impact.deletedEntities.heyaIds.push(id);
+    this.ensureDeletedArray("heyaIds").push(id);
     return this;
   }
 
@@ -541,75 +432,70 @@ export class ImpactBuilder {
    * Useful for composing sub-system impacts without a separate mergeImpacts call.
    */
   merge(other: StateImpact): ImpactBuilder {
-    if (other.entities?.heyaUpdates) {
-      for (const [id, update] of other.entities.heyaUpdates) {
-        this.updateHeya(id, update as Partial<Heya>);
+    // Merge entity updates via registry
+    if (other.entities) {
+      const entityMappings: {
+        key: keyof NonNullable<StateImpact["entities"]>;
+        updater: (id: string, update: unknown) => void;
+      }[] = [
+        { key: "heyaUpdates", updater: (id, u) => this.updateHeya(id, u as Partial<Heya>) },
+        { key: "rikishiUpdates", updater: (id, u) => this.updateRikishi(id, u as Partial<Rikishi>) },
+        { key: "oyakataUpdates", updater: (id, u) => this.updateOyakata(id, u as Partial<Oyakata>) },
+        { key: "sponsorUpdates", updater: (id, u) => this.updateSponsor(id, u as Record<string, unknown>) },
+        { key: "koenkaiUpdates", updater: (id, u) => this.updateKoenkai(id, u as Record<string, unknown>) },
+        { key: "trainingStateUpdates", updater: (id, u) => this.updateTrainingState(id, u as Partial<HeyaTrainingState>) },
+        { key: "myosekiUpdates", updater: (id, u) => this.updateMyosekiStock(id, u as Partial<MyosekiStock>) },
+        { key: "staffUpdates", updater: (id, u) => this.updateStaff(id, u as Partial<Staff>) },
+      ];
+      for (const { key, updater } of entityMappings) {
+        const updates = other.entities![key] as Map<string, unknown> | undefined;
+        if (updates) {
+          for (const [id, update] of updates) {
+            updater(id, update);
+          }
+        }
       }
     }
-    if (other.entities?.rikishiUpdates) {
-      for (const [id, update] of other.entities.rikishiUpdates) {
-        this.updateRikishi(id, update as Partial<Rikishi>);
+
+    // Merge collections
+    if (other.collections) {
+      const collectionMappings: { key: keyof NonNullable<StateImpact["collections"]>; method: (item: unknown) => void }[] = [
+        { key: "rikishiToAdd", method: (r) => this.addRikishi(r as Rikishi) },
+        { key: "rikishiToRemove", method: (id) => this.removeRikishi(id as string) },
+        { key: "rikishiToHistorical", method: (id) => this.retireRikishi(id as string) },
+        { key: "rikishiFromHistorical", method: (id) => this.unretireRikishi(id as string) },
+      ];
+      for (const { key, method } of collectionMappings) {
+        const items = other.collections![key] as unknown[] | undefined;
+        if (items) {
+          for (const item of items) {
+            method(item);
+          }
+        }
+      }
+      for (const [key, arr] of Object.entries(other.collections)) {
+        if (key === "rikishiToAdd" || key === "rikishiToRemove" || key === "rikishiToHistorical" || key === "rikishiFromHistorical") continue;
+        const target = this.ensureCollectionArray(key);
+        (target as unknown[]).push(...(arr as unknown[]));
       }
     }
-    if (other.entities?.oyakataUpdates) {
-      for (const [id, update] of other.entities.oyakataUpdates) {
-        this.updateOyakata(id, update as Partial<Oyakata>);
+
+    // Merge deletions
+    if (other.deletedEntities) {
+      for (const [key, ids] of Object.entries(other.deletedEntities)) {
+        if (Array.isArray(ids) && ids.length > 0) {
+          this.ensureDeletedArray(key).push(...ids);
+        }
       }
     }
-    if (other.entities?.sponsorUpdates) {
-      for (const [id, update] of other.entities.sponsorUpdates) {
-        this.updateSponsor(id, update as Record<string, unknown>);
-      }
-    }
-    if (other.entities?.koenkaiUpdates) {
-      for (const [id, update] of other.entities.koenkaiUpdates) {
-        this.updateKoenkai(id, update as Record<string, unknown>);
-      }
-    }
-    if (other.entities?.trainingStateUpdates) {
-      for (const [id, update] of other.entities.trainingStateUpdates) {
-        this.updateTrainingState(id, update as Partial<HeyaTrainingState>);
-      }
-    }
-    if (other.entities?.myosekiUpdates) {
-      for (const [id, update] of other.entities.myosekiUpdates) {
-        this.updateMyosekiStock(id, update as Partial<MyosekiStock>);
-      }
-    }
-    if (other.entities?.staffUpdates) {
-      for (const [id, update] of other.entities.staffUpdates) {
-        this.updateStaff(id, update as Partial<Staff>);
-      }
-    }
-    if (other.collections?.rikishiToAdd) {
-      for (const r of other.collections.rikishiToAdd) {
-        this.addRikishi(r);
-      }
-    }
-    if (other.collections?.rikishiToRemove) {
-      for (const id of other.collections.rikishiToRemove) {
-        this.removeRikishi(id);
-      }
-    }
-    if (other.collections?.rikishiToHistorical) {
-      for (const id of other.collections.rikishiToHistorical) {
-        this.retireRikishi(id);
-      }
-    }
-    if (other.collections?.rikishiFromHistorical) {
-      for (const id of other.collections.rikishiFromHistorical) {
-        this.unretireRikishi(id);
-      }
-    }
-    if (other.deletedEntities?.heyaIds) {
-      for (const id of other.deletedEntities.heyaIds) {
-        this.deleteHeya(id);
-      }
-    }
+
+    // Merge world fields
     if (other.worldFields) {
       if (!this.impact.worldFields) this.impact.worldFields = {};
       Object.assign(this.impact.worldFields, other.worldFields);
     }
+
+    // Merge array appends
     if (other.arrayAppends) {
       for (const append of other.arrayAppends) {
         this.appendToWorldArray(
@@ -618,6 +504,8 @@ export class ImpactBuilder {
         );
       }
     }
+
+    // Merge events
     if (other.events) {
       for (const ev of other.events) {
         this.logEvent(ev.type, ev.category, ev.data, {

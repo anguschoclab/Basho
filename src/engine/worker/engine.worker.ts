@@ -44,16 +44,29 @@ function generateWorld(opts: { seed: string; playerConfig?: { heyaId?: string } 
  */
 function migrateWorldState(world: WorldState): WorldState {
   const currentYear = world.year;
-  world.rikishi?.forEach((r) => {
+  let rikishiChanged = false;
+  const nextRikishi = new Map(world.rikishi);
+
+  for (const [id, r] of nextRikishi) {
+    let nextR = r;
     if (!r.joinedHeyaDate) {
-      r.joinedHeyaDate = String(currentYear - 5);
+      nextR = { ...nextR, joinedHeyaDate: String(currentYear - 5) };
+      rikishiChanged = true;
     }
     if (!r.citizenshipStatus) {
-      r.citizenshipStatus =
-        r.nationality === "Japan" || r.nationality === "Japanese" ? "native" : "foreign";
+      nextR = {
+        ...nextR,
+        citizenshipStatus:
+          r.nationality === "Japan" || r.nationality === "Japanese" ? "native" : "foreign",
+      };
+      rikishiChanged = true;
     }
-  });
-  return world;
+    if (nextR !== r) {
+      nextRikishi.set(id, nextR);
+    }
+  }
+
+  return rikishiChanged ? { ...world, rikishi: nextRikishi } : world;
 }
 
 import type { EngineCommand } from "./types";

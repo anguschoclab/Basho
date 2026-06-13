@@ -1,117 +1,139 @@
 import type { WorldState } from "../types/world";
-import type { Heya } from "../types/heya";
-import type { Rikishi } from "../types/rikishi";
-import type { Oyakata } from "../types/oyakata";
-import type { HeyaTrainingState } from "../types/training";
-import type { MyosekiStock } from "../types/myoseki";
-import type { Staff } from "../types/staff";
 import type { StateImpact } from "./StateImpact";
 import { logEngineEvent } from "../events";
 import { getNextTimestamp } from "./StateImpact";
 
 /**
+ * Registry of entity update configurations for generic application.
+ */
+interface EntityUpdateConfig {
+  impactField: string;
+  worldField: keyof WorldState;
+  nestedField?: string;
+  isRecord?: boolean;
+  condition?: (world: WorldState) => boolean;
+}
+
+const ENTITY_UPDATE_CONFIGS: EntityUpdateConfig[] = [
+  { impactField: "heyaUpdates", worldField: "heyas" },
+  { impactField: "rikishiUpdates", worldField: "rikishi" },
+  { impactField: "oyakataUpdates", worldField: "oyakata" },
+  { impactField: "trainingStateUpdates", worldField: "trainingState" },
+  { impactField: "staffUpdates", worldField: "staff", condition: (w) => !!w.staff },
+  { impactField: "sponsorUpdates", worldField: "sponsorPool", nestedField: "sponsors", condition: (w) => !!w.sponsorPool },
+  { impactField: "koenkaiUpdates", worldField: "sponsorPool", nestedField: "koenkais", condition: (w) => !!w.sponsorPool },
+  { impactField: "myosekiUpdates", worldField: "myosekiMarket", nestedField: "stocks", isRecord: true, condition: (w) => !!w.myosekiMarket },
+];
+
+function applyEntityUpdates(
+  world: WorldState,
+  entities: StateImpact["entities"]
+): WorldState {
+  if (!entities) return world;
+  let result = world;
+  const entityMap = entities as Record<string, Map<string, unknown> | undefined>;
+
+  for (const config of ENTITY_UPDATE_CONFIGS) {
+    const updates = entityMap[config.impactField];
+    if (!updates || updates.size === 0) continue;
+    if (config.condition && !config.condition(result)) continue;
+
+    if (config.isRecord) {
+      const parent = result[config.worldField] as Record<string, unknown> | undefined;
+      if (!parent || !config.nestedField) continue;
+      const nextNested = { ...(parent[config.nestedField] as Record<string, unknown>) };
+      for (const [id, update] of updates) {
+        const existing = nextNested[id];
+        nextNested[id] = existing ? { ...existing, ...(update as Record<string, unknown>) } : update;
+      }
+      result = { ...result, [config.worldField]: { ...parent, [config.nestedField]: nextNested } };
+    } else if (config.nestedField) {
+      const parent = result[config.worldField] as Record<string, unknown> | undefined;
+      if (!parent) continue;
+      const nextMap = new Map((parent[config.nestedField] as Map<string, unknown>) || new Map());
+      for (const [id, update] of updates) {
+        const existing = nextMap.get(id);
+        nextMap.set(id, existing ? { ...existing, ...(update as Record<string, unknown>) } : update);
+      }
+      result = { ...result, [config.worldField]: { ...parent, [config.nestedField]: nextMap } };
+    } else {
+      const nextMap = new Map((result[config.worldField] as Map<string, unknown>) || new Map());
+      for (const [id, update] of updates) {
+        const existing = nextMap.get(id);
+        nextMap.set(id, existing ? { ...existing, ...(update as Record<string, unknown>) } : update);
+      }
+      result = { ...result, [config.worldField]: nextMap };
+    }
+  }
+
+  return result;
+}
+
+function applyArrayAppends(world: WorldState, appends: StateImpact["arrayAppends"]): WorldState {
+  if (!appends || appends.length === 0) return world;
+  let result = world;
+
+  for (const append of appends) {
+    switch (append.field) {
+      case "history":
+        result = { ...result, history: [...(result.history || []), ...append.items] };
+        break;
+      case "almanacSnapshots":
+        result = { ...result, almanacSnapshots: [...(result.almanacSnapshots || []), ...append.items] };
+        break;
+      case "basho.matches":
+        if (result.currentBasho) {
+          result = {
+            ...result,
+            currentBasho: {
+              ...result.currentBasho,
+              matches: [...(result.currentBasho.matches || []), ...append.items],
+            },
+          };
+        }
+        break;
+      case "governanceLog":
+        result = { ...result, governanceLog: [...(result.governanceLog || []), ...append.items] };
+        break;
+      case "awardLog":
+        result = { ...result, awardLog: [...(result.awardLog || []), ...append.items] };
+        break;
+      case "myosekiMarket.history":
+        if (result.myosekiMarket) {
+          result = {
+            ...result,
+            myosekiMarket: {
+              ...result.myosekiMarket,
+              history: [...append.items, ...(result.myosekiMarket.history || [])],
+            },
+          };
+        }
+        break;
+      case "pendingExhibitions":
+        result = {
+          ...result,
+          pendingExhibitions: [
+            ...(result.pendingExhibitions || []),
+            ...(append.items as Array<{ id: string; region: string; prestige: number }>),
+          ],
+        };
+        break;
+    }
+  }
+
+  return result;
+}
+
+/**
  * Apply a single StateImpact to a WorldState.
  * Returns a new WorldState with the impact applied.
+ * Pure: no side effects.
  */
 export function applyImpact(world: WorldState, impact: StateImpact): WorldState {
   let result = { ...world };
 
   // Apply entity updates
-  if (impact.entities) {
-    if (impact.entities.heyaUpdates && impact.entities.heyaUpdates.size > 0) {
-      const nextHeyas = new Map(result.heyas);
-      for (const [id, update] of impact.entities.heyaUpdates) {
-        const existing = nextHeyas.get(id);
-        const next = existing ? { ...existing, ...update } : (update as Heya);
-        nextHeyas.set(id, next as Heya);
-      }
-      result = { ...result, heyas: nextHeyas };
-    }
-
-    if (impact.entities.rikishiUpdates && impact.entities.rikishiUpdates.size > 0) {
-      const nextRikishi = new Map(result.rikishi);
-      for (const [id, update] of impact.entities.rikishiUpdates) {
-        const existing = nextRikishi.get(id);
-        const next = existing ? { ...existing, ...update } : (update as Rikishi);
-        nextRikishi.set(id, next as Rikishi);
-      }
-      result = { ...result, rikishi: nextRikishi };
-    }
-
-    if (impact.entities.oyakataUpdates && impact.entities.oyakataUpdates.size > 0) {
-      const nextOyakata = new Map(result.oyakata);
-      for (const [id, update] of impact.entities.oyakataUpdates) {
-        const existing = nextOyakata.get(id);
-        const next = existing ? { ...existing, ...update } : (update as Oyakata);
-        nextOyakata.set(id, next as Oyakata);
-      }
-      result = { ...result, oyakata: nextOyakata };
-    }
-
-    if (impact.entities.sponsorUpdates && impact.entities.sponsorUpdates.size > 0 && result.sponsorPool) {
-      const nextSponsors = new Map(result.sponsorPool.sponsors);
-      for (const [id, update] of impact.entities.sponsorUpdates) {
-        const existing = nextSponsors.get(id);
-        nextSponsors.set(id, (existing ? { ...existing, ...update } : update) as import("../types/sponsors").Sponsor);
-      }
-      result = {
-        ...result,
-        sponsorPool: {
-          ...result.sponsorPool,
-          sponsors: nextSponsors,
-        },
-      };
-    }
-
-    if (impact.entities.koenkaiUpdates && impact.entities.koenkaiUpdates.size > 0 && result.sponsorPool) {
-      const nextKoenkais = new Map(result.sponsorPool.koenkais);
-      for (const [id, update] of impact.entities.koenkaiUpdates) {
-        const existing = nextKoenkais.get(id);
-        nextKoenkais.set(id, (existing ? { ...existing, ...update } : update) as import("../types/sponsors").Koenkai);
-      }
-      result = {
-        ...result,
-        sponsorPool: {
-          ...result.sponsorPool,
-          koenkais: nextKoenkais,
-        },
-      };
-    }
-    if (impact.entities.trainingStateUpdates && impact.entities.trainingStateUpdates.size > 0) {
-      const nextTraining = new Map(result.trainingState);
-      for (const [id, update] of impact.entities.trainingStateUpdates) {
-        const existing = nextTraining.get(id);
-        const next = existing ? { ...existing, ...update } : (update as HeyaTrainingState);
-        nextTraining.set(id, next as HeyaTrainingState);
-      }
-      result = { ...result, trainingState: nextTraining };
-    }
-
-    if (impact.entities.myosekiUpdates && impact.entities.myosekiUpdates.size > 0 && result.myosekiMarket) {
-      const nextStocks = { ...result.myosekiMarket.stocks };
-      for (const [id, update] of impact.entities.myosekiUpdates) {
-        const existing = nextStocks[id];
-        nextStocks[id] = existing ? { ...existing, ...update } : (update as MyosekiStock);
-      }
-      result = {
-        ...result,
-        myosekiMarket: {
-          ...result.myosekiMarket,
-          stocks: nextStocks,
-        },
-      };
-    }
-
-    if (impact.entities.staffUpdates && impact.entities.staffUpdates.size > 0 && result.staff) {
-      const nextStaff = new Map(result.staff);
-      for (const [id, update] of impact.entities.staffUpdates) {
-        const existing = nextStaff.get(id);
-        const next = existing ? { ...existing, ...update } : (update as Staff);
-        nextStaff.set(id, next as Staff);
-      }
-      result = { ...result, staff: nextStaff };
-    }
-  }
+  result = applyEntityUpdates(result, impact.entities);
 
   // Apply collection operations
   if (impact.collections) {
@@ -280,65 +302,7 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
   }
 
   // Apply array appends
-  if (impact.arrayAppends && impact.arrayAppends.length > 0) {
-    for (const append of impact.arrayAppends) {
-      if (append.field === "history") {
-        result = { ...result, history: [...(result.history || []), ...append.items] };
-      } else if (append.field === "almanacSnapshots") {
-        result = {
-          ...result,
-          almanacSnapshots: [...(result.almanacSnapshots || []), ...append.items],
-        };
-      } else if (append.field === "basho.matches" && result.currentBasho) {
-        result = {
-          ...result,
-          currentBasho: {
-            ...result.currentBasho,
-            matches: [...(result.currentBasho.matches || []), ...append.items],
-          },
-        };
-      } else if (append.field === "governanceLog") {
-        result = {
-          ...result,
-          governanceLog: [...(result.governanceLog || []), ...append.items],
-        };
-      } else if (append.field === "awardLog") {
-        result = {
-          ...result,
-          awardLog: [...(result.awardLog || []), ...append.items],
-        };
-      } else if (append.field === "myosekiMarket.history" && result.myosekiMarket) {
-        result = {
-          ...result,
-          myosekiMarket: {
-            ...result.myosekiMarket,
-            history: [...append.items, ...(result.myosekiMarket.history || [])],
-          },
-        };
-      } else if (append.field === "pendingExhibitions") {
-        result = {
-          ...result,
-          pendingExhibitions: [...(result.pendingExhibitions || []), ...(append.items as Array<{ id: string; region: string; prestige: number }>)],
-        };
-      }
-    }
-  }
-
-  // Log events
-  if (impact.events && impact.events.length > 0) {
-    for (const eventDef of impact.events) {
-      logEngineEvent(result, {
-        type: eventDef.type,
-        category: eventDef.category,
-        heyaId: eventDef.heyaId,
-        rikishiId: eventDef.rikishiId,
-        data: eventDef.data,
-        importance: eventDef.importance || "notable",
-        title: "",
-        summary: "",
-      });
-    }
-  }
+  result = applyArrayAppends(result, impact.arrayAppends);
 
   return result;
 }
@@ -353,7 +317,25 @@ export function resolveImpacts(world: WorldState, impacts: StateImpact[]): World
 
   return impacts.reduce((currentWorld, impact) => {
     try {
-      return applyImpact(currentWorld, impact);
+      const nextWorld = applyImpact(currentWorld, impact);
+
+      // Log events (side effect isolated to coordinator)
+      if (impact.events && impact.events.length > 0) {
+        for (const eventDef of impact.events) {
+          logEngineEvent(nextWorld, {
+            type: eventDef.type,
+            category: eventDef.category,
+            heyaId: eventDef.heyaId,
+            rikishiId: eventDef.rikishiId,
+            data: eventDef.data,
+            importance: eventDef.importance || "notable",
+            title: "",
+            summary: "",
+          });
+        }
+      }
+
+      return nextWorld;
     } catch (error) {
       console.error(
         `[IMPACT RESOLVER ERROR] in impact from "${impact.metadata?.source || "unknown"}":`,
@@ -404,114 +386,53 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
   };
 
   for (const impact of impacts) {
-    if (impact.entities) {
-      const e = impact.entities;
-      const m = merged.entities;
-      if (e.heyaUpdates && m?.heyaUpdates) {
-        for (const [id, update] of e.heyaUpdates) {
-          m.heyaUpdates.set(id, { ...(m.heyaUpdates.get(id) || {}), ...update });
-        }
-      }
-      if (e.rikishiUpdates && m?.rikishiUpdates) {
-        for (const [id, update] of e.rikishiUpdates) {
-          m.rikishiUpdates.set(id, { ...(m.rikishiUpdates.get(id) || {}), ...update });
-        }
-      }
-      if (e.oyakataUpdates && m?.oyakataUpdates) {
-        for (const [id, update] of e.oyakataUpdates) {
-          m.oyakataUpdates.set(id, { ...(m.oyakataUpdates.get(id) || {}), ...update });
-        }
-      }
-      if (e.sponsorUpdates && m?.sponsorUpdates) {
-        for (const [id, update] of e.sponsorUpdates) {
-          m.sponsorUpdates.set(id, { ...(m.sponsorUpdates.get(id) || {}), ...update });
-        }
-      }
-      if (e.koenkaiUpdates && m?.koenkaiUpdates) {
-        for (const [id, update] of e.koenkaiUpdates) {
-          m.koenkaiUpdates.set(id, { ...(m.koenkaiUpdates.get(id) || {}), ...update });
-        }
-      }
-      if (e.trainingStateUpdates && m?.trainingStateUpdates) {
-        for (const [id, update] of e.trainingStateUpdates) {
-          m.trainingStateUpdates.set(id, { ...(m.trainingStateUpdates.get(id) || {}), ...update });
-        }
-      }
-      if (e.myosekiUpdates && m?.myosekiUpdates) {
-        for (const [id, update] of e.myosekiUpdates) {
-          m.myosekiUpdates.set(id, { ...(m.myosekiUpdates.get(id) || {}), ...update });
-        }
-      }
-      if (e.staffUpdates && m?.staffUpdates) {
-        for (const [id, update] of e.staffUpdates) {
-          m.staffUpdates.set(id, { ...(m.staffUpdates.get(id) || {}), ...update });
+    // Merge entity updates generically
+    if (impact.entities && merged.entities) {
+      for (const field of ENTITY_UPDATE_CONFIGS.map((c) => c.impactField)) {
+        const sourceMap = (impact.entities as Record<string, Map<string, unknown> | undefined>)[field];
+        const targetMap = (merged.entities as Record<string, Map<string, unknown> | undefined>)[field];
+        if (sourceMap && targetMap) {
+          for (const [id, update] of sourceMap) {
+            const existing = targetMap.get(id);
+            targetMap.set(id, existing ? { ...existing, ...(update as Record<string, unknown>) } : update);
+          }
         }
       }
     }
 
-    if (impact.collections) {
-      const c = impact.collections;
-      const m = merged.collections;
-      if (c.rikishiToAdd && m?.rikishiToAdd) m.rikishiToAdd.push(...c.rikishiToAdd);
-      if (c.rikishiToRemove && m?.rikishiToRemove) m.rikishiToRemove.push(...c.rikishiToRemove);
-      if (c.rikishiToHistorical && m?.rikishiToHistorical)
-        m.rikishiToHistorical.push(...c.rikishiToHistorical);
-      if (c.rikishiFromHistorical && m?.rikishiFromHistorical)
-        m.rikishiFromHistorical.push(...c.rikishiFromHistorical);
-      if (c.activeRikishiIdsToAdd && m?.activeRikishiIdsToAdd)
-        m.activeRikishiIdsToAdd.push(...c.activeRikishiIdsToAdd);
-      if (c.activeRikishiIdsToRemove && m?.activeRikishiIdsToRemove)
-        m.activeRikishiIdsToRemove.push(...c.activeRikishiIdsToRemove);
-      if (c.staffToAdd && m?.staffToAdd) m.staffToAdd.push(...c.staffToAdd);
-      if (c.staffToRemove && m?.staffToRemove) m.staffToRemove.push(...c.staffToRemove);
+    // Merge collections generically
+    if (impact.collections && merged.collections) {
+      for (const [key, arr] of Object.entries(impact.collections)) {
+        const target = (merged.collections as Record<string, unknown[]>)[key];
+        if (target && Array.isArray(arr)) {
+          target.push(...arr);
+        }
+      }
     }
 
-    if (impact.deletedEntities) {
-      const d = impact.deletedEntities;
-      const m = merged.deletedEntities;
-      if (d.heyaIds && m?.heyaIds) m.heyaIds.push(...d.heyaIds);
-      if (d.oyakataIds && m?.oyakataIds) m.oyakataIds.push(...d.oyakataIds);
-      if (d.rikishiIds && m?.rikishiIds) m.rikishiIds.push(...d.rikishiIds);
+    // Merge deletions generically
+    if (impact.deletedEntities && merged.deletedEntities) {
+      for (const [key, ids] of Object.entries(impact.deletedEntities)) {
+        const target = (merged.deletedEntities as Record<string, string[]>)[key];
+        if (target && Array.isArray(ids)) {
+          target.push(...ids);
+        }
+      }
     }
 
     if (impact.worldFields) {
       merged.worldFields = { ...merged.worldFields, ...impact.worldFields };
     }
 
+    // Merge array appends
     if (impact.arrayAppends) {
       for (const append of impact.arrayAppends) {
         const existing = merged.arrayAppends?.find((a) => a.field === append.field);
         if (existing) {
-          // Narrow types to satisfy TypeScript that items are compatible
-          if (existing.field === "history" && append.field === "history") {
-            existing.items.push(...append.items);
-          } else if (existing.field === "almanacSnapshots" && append.field === "almanacSnapshots") {
-            existing.items.push(...append.items);
-          } else if (existing.field === "basho.matches" && append.field === "basho.matches") {
-            existing.items.push(...append.items);
-          } else if (existing.field === "governanceLog" && append.field === "governanceLog") {
-            existing.items.push(...append.items);
-          } else if (existing.field === "awardLog" && append.field === "awardLog") {
-            existing.items.push(...append.items);
-          } else if (
-            existing.field === "myosekiMarket.history" &&
-            append.field === "myosekiMarket.history"
-          ) {
-            existing.items.push(...append.items);
-          } else if (
-            existing.field === "pendingExhibitions" &&
-            append.field === "pendingExhibitions"
-          ) {
-            existing.items.push(...append.items);
-          }
+          (existing.items as unknown[]).push(...append.items);
         } else {
           if (!merged.arrayAppends) merged.arrayAppends = [];
-          // Copy to avoid mutation of source impact
-          const newAppend = { ...append, items: [...append.items] } as Exclude<
-            StateImpact["arrayAppends"],
-            undefined
-          >[number];
-          merged.arrayAppends.push(newAppend);
+          merged.arrayAppends.push({ ...append, items: [...append.items] } as never);
         }
       }
     }

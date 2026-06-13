@@ -450,16 +450,7 @@ export function applyWeeklySparring(world: WorldState): StateImpact {
         );
 
         // Merge rivalry impact into builder
-        if (rivalryImpact.worldFields) {
-          builder.updateWorldField("rivalriesState", rivalryImpact.worldFields.rivalriesState);
-        }
-        if (rivalryImpact.events) {
-          for (const event of rivalryImpact.events) {
-            builder.logEvent(event.type, event.category, event.data, {
-              importance: event.importance,
-            });
-          }
-        }
+        builder.merge(rivalryImpact);
       }
     }
 

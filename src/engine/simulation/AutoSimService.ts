@@ -10,7 +10,7 @@ import type { ChronicleReport } from "../types/records";
 import { RANK_HIERARCHY } from "../banzuke";
 import { publishBanzukeUpdate } from "../banzuke/BanzukePublisher";
 import { phase06_yearly_boundary } from "../tick/phases/phase06_yearly_boundary";
-import { applyImpact } from "../core/ImpactResolver";
+import { resolveImpacts } from "../core/ImpactResolver";
 import { getHeya, getRikishi } from "../queries";
 
 // === AUTO-SIM CONFIGURATION ===
@@ -172,7 +172,7 @@ export function runAutoSim(
 
     // 3. Run publishBanzukeUpdate — handles yokozuna promotion, careerHistory, council warnings
     const banzukeImpact = publishBanzukeUpdate(worldWithStandings);
-    currentWorld = applyImpact(worldWithStandings, banzukeImpact);
+    currentWorld = resolveImpacts(worldWithStandings, [banzukeImpact]);
 
     // 2. Advance through off-season phases to trigger yearly boundary & training
     currentWorld = enterPostBasho(currentWorld);
@@ -204,7 +204,7 @@ export function runAutoSim(
         },
       };
       const yearImpact = phase06_yearly_boundary(yearBoundaryWorld);
-      currentWorld = applyImpact(yearBoundaryWorld, yearImpact);
+      currentWorld = resolveImpacts(yearBoundaryWorld, [yearImpact]);
     }
 
     // Preparation for next basho

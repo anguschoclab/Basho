@@ -68,6 +68,15 @@ import {
 import { getRikishi } from "../../queries";
 
 /**
+ * Flat lookup for rivalry decay rate based on weeks since last meeting.
+ */
+function getDecayRate(weeksSince: number): number {
+  if (weeksSince <= RIVALRY_DECAY_WEEKS_SHORT) return RIVALRY_DECAY_RATE_SHORT;
+  if (weeksSince <= RIVALRY_DECAY_WEEKS_MEDIUM) return RIVALRY_DECAY_RATE_MEDIUM;
+  return RIVALRY_DECAY_RATE_LONG;
+}
+
+/**
  * Unified Rivalry Service.
  * Provides stateful orchestration for the Rivalry System including state hydration,
  * weekly decay, and bout hook orchestration.
@@ -205,11 +214,12 @@ export const RivalryService = {
     const updatedHeyaPairs = { ...(state.heyaRivalryPairs || {}) };
 
     if (heyaAId && heyaBId && heyaAId !== heyaBId) {
-      const hKey = heyaAId < heyaBId ? `${heyaAId}|${heyaBId}` : `${heyaBId}|${heyaAId}`;
+      const hKey = this.makeRivalryKey(heyaAId, heyaBId);
+      const [sortedA, sortedB] = heyaAId < heyaBId ? [heyaAId, heyaBId] : [heyaBId, heyaAId];
       const existingH = updatedHeyaPairs[hKey] || {
         id: hKey,
-        heyaAId: heyaAId < heyaBId ? heyaAId : heyaBId,
-        heyaBId: heyaAId < heyaBId ? heyaBId : heyaAId,
+        heyaAId: sortedA,
+        heyaBId: sortedB,
         heat: 0,
         aWins: 0,
         bWins: 0,
@@ -262,7 +272,7 @@ export const RivalryService = {
     for (const key in state.pairs) {
       const pair = state.pairs[key];
       const weeksSince = week - pair.lastMetWeek;
-      const decay = weeksSince <= RIVALRY_DECAY_WEEKS_SHORT ? RIVALRY_DECAY_RATE_SHORT : weeksSince <= RIVALRY_DECAY_WEEKS_MEDIUM ? RIVALRY_DECAY_RATE_MEDIUM : RIVALRY_DECAY_RATE_LONG;
+      const decay = getDecayRate(weeksSince);
 
       const updatedPair = {
         ...pair,

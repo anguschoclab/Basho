@@ -1,8 +1,8 @@
 // Game Reducer — pure state transitions using Slice Pattern
 import type { GameState, GameAction } from "./gameTypes";
+import type { WorldState } from "@/engine/types/world";
 import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
 import { combineReducers } from "./gameHelpers";
-import { buildWeeklyDigest } from "@/presenters/uiDigest";
 import { applyOyakataCreationConfig } from "@/engine/systems/generation/applyOyakataConfig";
 
 /** Adapter matching the { seed, playerConfig? } call shape used in this reducer */
@@ -30,7 +30,7 @@ function coreSlice(state: GameState, action: GameAction): GameState {
       const world = generateWorld({ seed: action.seed });
       const playerHeyaId = action.playerHeyaId || null;
 
-      let nextWorld = { ...world, playerHeyaId: playerHeyaId || undefined };
+      let nextWorld: WorldState = { ...world, playerHeyaId: playerHeyaId || undefined };
 
       if (playerHeyaId) {
         const heya = world.heyas.get(playerHeyaId);
@@ -178,29 +178,14 @@ const baseReducer = combineReducers<GameState, GameAction>([
   mediaSlice,
 ]);
 
-const BULK_ACTIONS = new Set<GameAction["type"]>([
-  "TICK_MULTIPLE_DAYS",
-  "ADVANCE_INTERIM",
-  "RUN_AUTO_SIM",
-]);
-
 /**
- * Combined Game Reducer — rebuilds UIDigest whenever the world changes.
- * For bulk actions, skips digest rebuild and sets digestStale so the UI
- * can show a loading state until the worker completes.
+ * Combined Game Reducer — pure state transitions only.
+ * Digest building is the responsibility of the UI layer (GameContext selector).
  */
 export function gameReducer(state: GameState, action: GameAction): GameState {
   const next = baseReducer(state, action);
   if (next.world !== state.world) {
-    if (BULK_ACTIONS.has(action.type)) {
-      return { ...next, digestStale: true };
-    }
-    try {
-      return { ...next, digest: buildWeeklyDigest(next.world), digestStale: false };
-    } catch (error) {
-      console.error("Error building weekly digest:", error);
-      return { ...next, digestStale: false };
-    }
+    return { ...next, digestStale: true };
   }
   return next;
 }

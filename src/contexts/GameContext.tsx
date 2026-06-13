@@ -35,7 +35,7 @@ import type { UIDigest } from "@/presenters/uiDigest";
 import { initialGameState } from "./gameTypes";
 import { gameReducer } from "./gameReducer";
 import { autosaveWithSignal, getMatchesForDay } from "./gameHelpers";
-import { recruitSponsor } from "@/presenters/uiDigest";
+import { recruitSponsor, buildWeeklyDigest } from "@/presenters/uiDigest";
 
 // Re-export types so existing imports from GameContext still work
 export type { GamePhase, GameState } from "./gameTypes";
@@ -159,6 +159,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const sendCommand = useGameStore((s) => s.sendCommand);
   const initWorker = useGameStore((s) => s.initWorker);
   const setOnWorldUpdated = useGameStore((s) => s.setOnWorldUpdated);
+
+  // Build digest outside the reducer (selector pattern) — pure, memoized
+  const digest = useMemo(() => {
+    if (!state.world) return null;
+    try {
+      return buildWeeklyDigest(state.world);
+    } catch (error) {
+      console.error("Error building weekly digest:", error);
+      return null;
+    }
+  }, [state.world]);
 
   // Initialize worker once on mount and wire world-update sync
   useMemo(() => {
@@ -360,7 +371,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const value: GameContextValue = useMemo(
     () => ({
       state,
-      digest: state.digest,
+      digest,
       createWorld,
       setPhase,
       selectRikishi,
@@ -404,6 +415,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     }),
     [
       state,
+      digest,
       createWorld,
       setPhase,
       selectRikishi,
