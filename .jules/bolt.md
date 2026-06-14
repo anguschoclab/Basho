@@ -129,3 +129,7 @@ Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop 
 ## 2024-05-18 - Optimize maximum value finding without Array.from().sort()
 **Learning:** In `GovernanceAgent.ts`, `Array.from(world.heyas.values()).filter(...).sort(...)` was used merely to find a single element with the highest reputation. This chained approach incurs an O(N) array allocation overhead from `Array.from()`, intermediate tuple allocations from `filter()`, and an unnecessary O(N log N) `sort()` execution when only the max element is needed.
 **Action:** Replace `Array.from(map.values()).filter(...).sort(...)` with a direct `for...of` loop that keeps track of the maximum value in a single O(N) pass, completely eliminating memory allocation overhead and sorting time.
+
+## 2024-05-19 - [O(N^2) to O(N) Gini Coefficient Calculation Optimization]
+**Learning:** Nested array `.reduce()` loops calculating absolute differences in Gini coefficient logic lead to severe O(N^2) time complexity. Using `.map().sort()` also introduces unnecessary intermediate array allocations.
+**Action:** Replace nested loops for sum of absolute differences with O(N) mathematical calculation `funds[i] * (2 * i - n + 1)` on a sorted array, and avoid `.map()` allocation by extracting values and sum directly via a single `for...of` loop.
