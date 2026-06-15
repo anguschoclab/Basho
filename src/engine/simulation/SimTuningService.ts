@@ -248,10 +248,15 @@ export const SimTuningService = {
           const funds = Array.from(world.heyas.values()).map((h) => h.funds ?? 0).sort((a, b) => a - b);
           if (funds.length === 0) return 0;
           const n = funds.length;
-          const mean = funds.reduce((a, b) => a + b, 0) / n;
+          let sum = 0;
+          for (let i = 0; i < n; i++) sum += funds[i];
+          const mean = sum / n;
           if (mean === 0) return 0;
-          const absDiffSum = funds.reduce((sum, fi) => sum + funds.reduce((inner, fj) => inner + Math.abs(fi - fj), 0), 0);
-          return absDiffSum / (2 * n * n * mean);
+          let absDiffSum = 0;
+          for (let i = 0; i < n; i++) {
+            absDiffSum += funds[i] * (2 * i - n + 1);
+          }
+          return (2 * absDiffSum) / (2 * n * n * mean); // 2 * absDiffSum because the formula gives sum for j>i, we want all pairs which is double
         })(),
         successionRate: (() => {
           const totalOyakata = world.oyakata.size;
