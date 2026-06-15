@@ -9,3 +9,6 @@
 ## 2026-06-06 - TooltipWrap is redundant for the Custom Button Component
 **Learning:** The project's custom `<Button>` component (`src/components/ui/button.tsx`) natively supports tooltips via the `tooltip` and `tooltipSide` props. Many components were incorrectly importing and wrapping `Button` inside an explicit `<TooltipWrap>`, which adds unnecessary boilerplate. Other standard components like `<SidebarTrigger>` do not support these props and still require wrapping, but standard `<Button>`s shouldn't be wrapped manually.
 **Action:** Always verify if a component supports built-in tooltip props (like `tooltip` and `tooltipSide` on `<Button>`) before manually wrapping it in `<TooltipWrap>` to maintain clean JSX structures and avoid redundancy.
+## 2024-05-18 - Missing tooltips on custom UI buttons
+**Learning:** Native `title` attributes on custom `button` wrappers bypass the project's standard tooltip implementation, resulting in double-tooltips or inaccessible tooltips depending on the screen reader.
+**Action:** Replace `title` attributes with the project's `TooltipWrap` component on custom button implementations.
