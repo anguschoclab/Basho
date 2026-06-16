@@ -23,6 +23,50 @@ import { getHeya, getRikishi } from "../../queries";
 export function phase01_week_recruitment(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_recruitment");
 
+  // Consume transientContext flags from loop decisions
+  const tc = world.transientContext as Record<string, unknown> | undefined;
+  const recruitmentIntent = tc?.recruitmentIntent as "scout_youth" | "recruit_veteran" | undefined;
+
+  // Handle recruitmentIntent from loop decision (recruit_or_develop)
+  if (recruitmentIntent && world.playerHeyaId) {
+    if (recruitmentIntent === "scout_youth") {
+      // Trigger high-potential youth recruitment event
+      builder.logEvent(
+        "RECRUIT_DISCOVERED",
+        "narrative",
+        {
+          rikishiId: world.playerHeyaId,
+          heyaId: world.playerHeyaId,
+          status: "youth_scouting_triggered",
+          day: world.week,
+          incident: "loop_decision_scout_youth",
+        },
+        { heyaId: world.playerHeyaId }
+      );
+    } else if (recruitmentIntent === "recruit_veteran") {
+      // Trigger veteran recruitment event
+      builder.logEvent(
+        "RECRUIT_DISCOVERED",
+        "narrative",
+        {
+          rikishiId: world.playerHeyaId,
+          heyaId: world.playerHeyaId,
+          status: "veteran_recruitment_triggered",
+          day: world.week,
+          incident: "loop_decision_recruit_veteran",
+        },
+        { heyaId: world.playerHeyaId }
+      );
+    }
+
+    // Clear the consumed flag
+    const nextTc = { ...(world.transientContext as Record<string, unknown> | undefined) };
+    if (nextTc) {
+      delete nextTc.recruitmentIntent;
+      builder.updateWorldField("transientContext", nextTc as never);
+    }
+  }
+
   // 1. Window Closing
   const rw = world._recruitmentWindow;
   if (rw?.isOpen && world.week >= rw.closesAtWeek) {

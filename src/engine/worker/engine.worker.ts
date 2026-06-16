@@ -19,6 +19,7 @@ import * as staffService from "../staff";
 import * as loans from "../loans";
 import { resolveImpacts } from "../core/ImpactResolver";
 import { resolveLoopDecision } from "../loop/LoopDecisionEngine";
+import { shouldHaltAdvance } from "../loop/shouldHaltAdvance";
 
 /**
  * Adapter matching the { seed, playerConfig? } call shape used in this worker.
@@ -132,6 +133,16 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
             }
           }
 
+          if (shouldHaltAdvance(currentWorld)) {
+            self.postMessage({
+              type: "PROGRESS",
+              message: `Paused for a decision on day ${i + step} of ${days}.`,
+              current: i + step,
+              total: days,
+            });
+            break;
+          }
+
           if (i % 7 === 0 || i + step >= days) {
             self.postMessage({
               type: "PROGRESS",
@@ -156,6 +167,7 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
             continue;
           }
           currentWorld = tickOrchestrator(currentWorld);
+          if (shouldHaltAdvance(currentWorld)) break;
           if (i % 5 === 0) {
             self.postMessage({
               type: "PROGRESS",

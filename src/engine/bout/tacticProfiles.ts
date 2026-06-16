@@ -48,7 +48,7 @@ export const TACTIC_PROFILES: Record<BoutTactic, TacticProfile> = {
     label: "Yotsu (Belt)",
     desc: "Counters Thrust — favors belt kimarite",
     kimariteWeightBias: { belt: 1.3, push: 0.8 },
-    tachiaiPowerModifier: 2,
+    tachiaiPowerModifier: 1, // was 2 — bounded swing
     fatigueCost: 2,
     injuryRiskMultiplier: 1.0,
     momentumOnWin: 1,
@@ -59,7 +59,7 @@ export const TACTIC_PROFILES: Record<BoutTactic, TacticProfile> = {
     label: "Oshi (Thrust)",
     desc: "Counters Henka — favors push kimarite",
     kimariteWeightBias: { push: 1.3, belt: 0.8 },
-    tachiaiPowerModifier: 4,
+    tachiaiPowerModifier: 2, // was 4 — bounded swing
     fatigueCost: 3,
     injuryRiskMultiplier: 1.1,
     momentumOnWin: 2,
@@ -81,7 +81,7 @@ export const TACTIC_PROFILES: Record<BoutTactic, TacticProfile> = {
     label: "Defensive Pull",
     desc: "Absorb pressure, punish overcommit — lower win chance, lower risk",
     kimariteWeightBias: { trick: 1.2, speed: 1.1 },
-    tachiaiPowerModifier: -6,
+    tachiaiPowerModifier: -3, // was -6 — bounded swing
     fatigueCost: 1,
     injuryRiskMultiplier: 0.7,
     momentumOnWin: 0,
@@ -92,7 +92,7 @@ export const TACTIC_PROFILES: Record<BoutTactic, TacticProfile> = {
     label: "All Out",
     desc: "Maximum aggression — higher win chance, higher fatigue and injury risk",
     kimariteWeightBias: { push: 1.4 },
-    tachiaiPowerModifier: 10,
+    tachiaiPowerModifier: 3, // was 10 — bounded swing
     fatigueCost: 8,
     injuryRiskMultiplier: 1.5,
     momentumOnWin: 4,

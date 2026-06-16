@@ -189,3 +189,81 @@ describe("resolveLoopDecision", () => {
     expect(Object.keys(impact.worldFields ?? {})).toHaveLength(0);
   });
 });
+
+describe("evaluatePendingDecisions — determinism", () => {
+  it("produces identical decision IDs across two runs of the same world", () => {
+    const make = () => {
+      const heya = makeHeya("h1", ["r1"]);
+      const rikishi = makeRikishi("r1", "makushita", "TestRikishi");
+      return makeWorld({
+        cyclePhase: "interim",
+        playerHeyaId: "h1",
+        seed: "seed-xyz",
+        heyas: new Map([["h1", heya]]),
+        rikishi: new Map([["r1", rikishi]]),
+      });
+    };
+    const a = evaluatePendingDecisions(make());
+    const b = evaluatePendingDecisions(make());
+    const idsA = (a.worldFields?.pendingDecisions as Array<{ id: string }>).map((d) => d.id);
+    const idsB = (b.worldFields?.pendingDecisions as Array<{ id: string }>).map((d) => d.id);
+    expect(idsA).toEqual(idsB);
+  });
+
+  it("ozeki petition outcome is deterministic for a fixed world+decision", () => {
+    const buildWorld = () => {
+      const heya = makeHeya("h1", ["r1"]);
+      const sekiwake = makeRikishi("r1", "sekiwake", "Petitioner");
+      const world = makeWorld({
+        cyclePhase: "post_basho",
+        playerHeyaId: "h1",
+        seed: "seed-ozeki",
+        heyas: new Map([["h1", heya]]),
+        rikishi: new Map([["r1", sekiwake]]),
+        pendingDecisions: [
+          { id: "ozeki-r1-fixed", type: "ozeki_promotion", description: "x", deadlineWeek: 3, required: true, options: [] },
+        ],
+      });
+      return world;
+    };
+    const a = resolveLoopDecision(buildWorld(), "ozeki-r1-fixed", "petition");
+    const b = resolveLoopDecision(buildWorld(), "ozeki-r1-fixed", "petition");
+    // Same seed + same decision id => same rikishi update (promotion or mental penalty)
+    const ua = a.entities?.rikishiUpdates instanceof Map ? a.entities.rikishiUpdates.get("r1") : undefined;
+    const ub = b.entities?.rikishiUpdates instanceof Map ? b.entities.rikishiUpdates.get("r1") : undefined;
+    expect(JSON.stringify(ua)).toEqual(JSON.stringify(ub));
+  });
+});
+
+describe("resolveLoopDecision — effects are not no-ops", () => {
+  function worldWithDecision(type: string, optionId: string) {
+    return {
+      world: makeWorld({
+        seed: "s",
+        playerHeyaId: "h1",
+        heyas: new Map([["h1", makeHeya("h1", ["r1"])]]),
+        rikishi: new Map([["r1", makeRikishi("r1", "makushita", "X")]]),
+        pendingDecisions: [
+          { id: `${type}-1`, type, description: "x", deadlineWeek: 2, required: false,
+            options: [{ id: optionId, label: optionId, impact: "x" }] },
+        ],
+      }),
+      decisionId: `${type}-1`,
+      optionId,
+    };
+  }
+
+  it("training_regime power_focus writes a deterministic training buff", () => {
+    const { world, decisionId } = worldWithDecision("training_regime", "power_focus");
+    const impact = resolveLoopDecision(world, decisionId, "power_focus");
+    const tc = impact.worldFields?.transientContext as Record<string, unknown>;
+    expect(tc?.trainingRegime).toBe("power_focus");
+  });
+
+  it("removes the resolved decision from pendingDecisions", () => {
+    const { world, decisionId } = worldWithDecision("training_regime", "balanced");
+    const impact = resolveLoopDecision(world, decisionId, "balanced");
+    const remaining = impact.worldFields?.pendingDecisions as Array<unknown>;
+    expect(remaining).toEqual([]);
+  });
+});

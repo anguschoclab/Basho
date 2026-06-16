@@ -6,6 +6,7 @@
 import type { WorldState } from "../types/world";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
+import { rngFromSeed } from "../rng";
 
 export interface LoopDecision {
   id: string;
@@ -16,8 +17,9 @@ export interface LoopDecision {
   required: boolean;
 }
 
-function makeId(prefix: string, seed: string): string {
-  return `${prefix}-${seed}-${Date.now()}`;
+// Deterministic ID: a decision of a given type/seed within a (year, week) is unique.
+function makeId(prefix: string, seed: string, world: WorldState): string {
+  return `${prefix}-${seed}-y${world.year ?? 0}-w${world.week ?? 0}`;
 }
 
 /**
@@ -45,7 +47,7 @@ export function evaluatePendingDecisions(world: WorldState): StateImpact {
 
     if (sekitoriCount === 0 && !existing.some((d) => d.type === "recruit_or_develop")) {
       const decision: LoopDecision = {
-        id: makeId("recruit", world.seed),
+        id: makeId("recruit", world.seed, world),
         type: "recruit_or_develop",
         description:
           "Your stable has no sekitori. Choose a path to rebuild:",
@@ -90,7 +92,7 @@ export function evaluatePendingDecisions(world: WorldState): StateImpact {
         !existing.some((d) => d.type === "ozeki_promotion" && d.description.includes(r.shikona ?? ""))
       ) {
         const decision: LoopDecision = {
-          id: makeId("ozeki", r.id),
+          id: makeId(`ozeki-${r.id}`, world.seed, world),
           type: "ozeki_promotion",
           description: `${r.shikona ?? "Your rikishi"} has ${totalWins} wins over the last 3 basho and is eligible for ozeki promotion. Do you petition the JSA?`,
           deadlineWeek: currentWeek + 2,
@@ -121,7 +123,7 @@ export function evaluatePendingDecisions(world: WorldState): StateImpact {
     !existing.some((d) => d.type === "training_regime")
   ) {
     const decision: LoopDecision = {
-      id: makeId("train", world.seed),
+      id: makeId("train", world.seed, world),
       type: "training_regime",
       description: `Year ${currentYear}: Review your stable's training regime.`,
       deadlineWeek: currentWeek + 2,
@@ -198,6 +200,14 @@ export function resolveLoopDecision(
   }
 
   // Apply option-specific effects (simplified)
+  if (decision.type === "training_regime") {
+    // Deterministic regime flag consumed by phase01_week_training.
+    builder.updateWorldField("transientContext", {
+      ...world.transientContext,
+      trainingRegime: optionId, // "power_focus" | "technique_focus" | "balanced"
+    } as never);
+  }
+
   if (decision.type === "recruit_or_develop") {
     if (optionId === "train_current") {
       // Apply +5% growth buff to all player rikishi (stored in transientContext)
@@ -205,13 +215,19 @@ export function resolveLoopDecision(
         ...world.transientContext,
         trainingGrowthBuff: 1.05,
       } as never);
+    } else if (optionId === "scout_youth" || optionId === "recruit_veteran") {
+      // Flag a recruitment intent the recruitment phase can act on next tick.
+      builder.updateWorldField("transientContext", {
+        ...world.transientContext,
+        recruitmentIntent: optionId,
+      } as never);
     }
-    // scout_youth and recruit_veteran would trigger recruitment events elsewhere
   }
 
   if (decision.type === "ozeki_promotion" && optionId === "petition") {
     // 80% success chance
-    const success = Math.random() < 0.8;
+    const rng = rngFromSeed(`loop_ozeki_${world.seed}_${decisionId}`, "loop", "petition");
+    const success = rng.next() < 0.8;
     if (success) {
       // Find the rikishi and promote
       const heya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : undefined;
