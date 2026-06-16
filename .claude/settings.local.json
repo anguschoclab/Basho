@@ -118,7 +118,8 @@
       "Bash(git ls-tree *)",
       "Bash(grep -rln 'BoutLogEntry\\\\|\\\\.log\\\\b\\\\|boutLog' src/components src/pages src/presenters)",
       "Bash(ls src/components/game/boutReplay/)",
-      "Bash(cd \"/Users/amauricia/Documents/GitHub/sumo-manager-pro\" && rm -f src/tests/unit/engine/bout/_tacticEmpirical*.tmp.test.ts && echo \"temp tests removed\" && git status --short)"
+      "Bash(cd \"/Users/amauricia/Documents/GitHub/sumo-manager-pro\" && rm -f src/tests/unit/engine/bout/_tacticEmpirical*.tmp.test.ts && echo \"temp tests removed\" && git status --short)",
+      "Bash(echo \"exit=$? \\(1=clean\\)\")"
     ]
   },
   "outputStyle": "default"
