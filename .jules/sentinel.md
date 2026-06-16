@@ -60,3 +60,7 @@ Replaced `JSON.parse` with `destr` in `safeParse` to mitigate prototype pollutio
 **Vulnerability:** The Content Security Policy for the Electron app (`electron/main.ts`) allowed external `http:` and `https:` connections (`connect-src 'self' ws: http: https:;`).
 **Learning:** This overly permissive CSP undermines the principle of least privilege. In an offline-first deterministic simulation app, external HTTP requests are not required. Allowing them exposes the app to potential data exfiltration via XSS or other vulnerabilities.
 **Prevention:** Always restrict `connect-src` in the CSP to strictly necessary origins (e.g., `'self'` and specific WebSockets for HMR) and avoid generic `http:` or `https:` allowances in offline Electron applications.
+## 2025-02-27 - [Path Restriction Vulnerability]
+**Vulnerability:** IPC File System handlers (`fs:writeFile`, `fs:readFile`, `fs:deleteFile`, etc.) validated paths against the entire `userData` directory, allowing read/write access to sensitive files like `config.json` (from `electron-store`) and potentially Chromium data (LocalStorage, Cookies) via path traversal.
+**Learning:** `path.resolve` handles path normalization but doesn't prevent access to sensitive peer directories if the `allowedBaseDir` is too broad. Validating against the parent `userData` directory implicitly trusted all content within it.
+**Prevention:** Scope path validation to the most restrictive subdirectory needed (e.g., `path.join(app.getPath("userData"), "archives")`) rather than granting blanket access to the parent data directory.

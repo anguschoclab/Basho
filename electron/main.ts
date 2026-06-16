@@ -403,8 +403,8 @@ ipcMain.handle("notification:show", async (event, options: { title: string; body
   return true;
 });
 
-// Path validation - restrict file system operations to app data directory only
-const allowedBaseDir = app.getPath("userData");
+// Path validation - restrict file system operations to the archives directory only
+const allowedBaseDir = path.join(app.getPath("userData"), "archives");
 
 function validatePath(filePath: string): boolean {
   if (typeof filePath !== "string") return false;
