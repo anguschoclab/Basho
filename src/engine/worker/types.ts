@@ -29,7 +29,8 @@ export type EngineCommand =
   | { type: "REQUEST_POLITICAL_FAVOR"; heyaId: string; favorId: string }
   | { type: "PAUSE_SIM" }
   | { type: "RESUME_SIM" }
-  | { type: "GET_DIGEST" };
+  | { type: "GET_DIGEST" }
+  | { type: "RESOLVE_LOOP_DECISION"; decisionId: string; optionId: string };
 
 /** Worker -> UI Events */
 export type EngineEvent =

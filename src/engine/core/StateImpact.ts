@@ -180,6 +180,8 @@ export interface StateImpact {
       | "chronicle"
       | "transientContext"
       | "events"
+      | "pendingDecisions"
+      | "pendingCrisis"
     >
   >;
 

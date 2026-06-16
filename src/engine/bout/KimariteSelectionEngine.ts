@@ -3,6 +3,7 @@ import type { Division } from "../types/banzuke";
 import type { SpatialBoutContext, KimariteAttempt, EngineStateV2 } from "../types/combat-spatial";
 import type { KimariteId } from "../types/combat";
 import { KIMARITE_STRATEGIES, getKimarite } from "../kimarite";
+import { getTacticProfile } from "./tacticProfiles";
 import { SeededRNG } from "../rng";
 import {
   KIMARITE_NAGE_HINERI_BOOST,
@@ -36,7 +37,8 @@ export const KimariteSelectionEngine = {
     ctx: SpatialBoutContext,
     division: Division | undefined,
     meta: { tone: string; drift: Record<string, number> } | undefined,
-    rng: SeededRNG
+    rng: SeededRNG,
+    playerTactic?: import("../types/combat").BoutTactic
   ): KimariteAttempt | null {
     const effectiveMeta = meta ?? { tone: "classic", drift: {} };
     // 1. Determine attacker and defender candidates
@@ -96,6 +98,12 @@ export const KimariteSelectionEngine = {
         if (effectiveMeta.tone === "classic" && tacticalFamily === "belt") weight *= KIMARITE_TONE_MATCH_BOOST;
         if (effectiveMeta.tone === "technical" && tacticalFamily === "speed") weight *= KIMARITE_TONE_MATCH_BOOST;
         if (effectiveMeta.tone === "defensive" && tacticalFamily === "trick") weight *= KIMARITE_TONE_MATCH_BOOST;
+
+        // Tactic-driven kimarite family bias
+        if (playerTactic && tacticalFamily) {
+          const bias = getTacticProfile(playerTactic).kimariteWeightBias[tacticalFamily];
+          if (bias) weight *= bias;
+        }
 
         // Rikishi Specialization (Favored Moves)
         if (attacker.favoredKimarite?.includes(s.id as KimariteId)) {

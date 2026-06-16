@@ -129,7 +129,7 @@ export function PromotionPipelineWidget() {
   const headerAction = useMemo(
     () => ({
       label: "Banzuke",
-      onClick: () => navigate({ to: "/banzuke" }),
+      onClick: () => navigate({ to: "/basho/banzuke" }),
       tooltip: "View the full banzuke and promotion standings",
     }),
     [navigate]
@@ -271,7 +271,7 @@ export function PromotionPipelineWidget() {
           variant="ghost"
           size="sm"
           className="w-full text-[10px] h-6 text-muted-foreground hover:text-foreground mt-1"
-          onClick={() => navigate({ to: "/banzuke" })}
+          onClick={() => navigate({ to: "/basho/banzuke" })}
         >
           Full Banzuke →
         </Button>

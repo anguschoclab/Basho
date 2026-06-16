@@ -80,9 +80,10 @@ export const advanceDay = (): GameAction => ({
  * @param {number} boutIndex - The index of the bout to simulate.
  * @returns {GameAction} SIMULATE_BOUT action.
  */
-export const simulateBout = (boutIndex: number): GameAction => ({
+export const simulateBout = (boutIndex: number, boutId?: string): GameAction => ({
   type: "SIMULATE_BOUT",
   boutIndex,
+  boutId,
 });
 
 /**

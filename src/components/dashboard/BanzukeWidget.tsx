@@ -119,7 +119,7 @@ export function BanzukeWidget() {
   const headerAction = useMemo(
     () => ({
       label: "Full Rankings",
-      onClick: () => navigate({ to: "/banzuke" }),
+      onClick: () => navigate({ to: "/basho/banzuke" }),
     }),
     [navigate]
   );

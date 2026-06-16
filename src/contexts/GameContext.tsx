@@ -71,7 +71,7 @@ interface GameContextValue {
   /** Advances to the next day. */
   advanceDay: () => void;
   /** Simulates a specific bout. */
-  simulateBout: (boutIndex: number) => void;
+  simulateBout: (boutIndex: number, boutId?: string) => void;
   /** Sets the tactic for a specific bout. */
   setBoutTactic: (boutId: string, tactic: import("@/engine/types/combat").BoutTactic) => void;
   /** Simulates all bouts for the current day. */
@@ -205,7 +205,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const startBasho = useCallback(() => dispatch(actions.startBasho()), []);
   const advanceDay = useCallback(() => sendCommand({ type: "TICK_DAY" }), [sendCommand]);
   const simulateBoutAction = useCallback(
-    (index: number) => dispatch(actions.simulateBout(index)),
+    (index: number, boutId?: string) => dispatch(actions.simulateBout(index, boutId)),
     []
   );
   const setBoutTacticAction = useCallback(

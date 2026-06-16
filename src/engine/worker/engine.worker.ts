@@ -18,6 +18,7 @@ import { PoliticalFavorsService, type FavorType } from "../systems/governance/Po
 import * as staffService from "../staff";
 import * as loans from "../loans";
 import { resolveImpacts } from "../core/ImpactResolver";
+import { resolveLoopDecision } from "../loop/LoopDecisionEngine";
 
 /**
  * Adapter matching the { seed, playerConfig? } call shape used in this worker.
@@ -218,6 +219,14 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
           cmd.crisisId,
           cmd.choice as "harsh" | "cover_up"
         );
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        emitDigest();
+        syncWorld();
+      }
+    },
+    RESOLVE_LOOP_DECISION: (cmd) => {
+      if (currentWorld) {
+        const impact = resolveLoopDecision(currentWorld, cmd.decisionId, cmd.optionId);
         currentWorld = resolveImpacts(currentWorld, [impact]);
         emitDigest();
         syncWorld();

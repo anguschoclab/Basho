@@ -40,6 +40,7 @@ import { clamp } from "../utils/math";
 import { decideBoutTacticOverride } from "../strategy/NPCStrategyService";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
+import { getTacticProfile } from "./tacticProfiles";
 import {
   CONTENTION_WINDOW,
   FINAL_DAY,
@@ -227,31 +228,102 @@ function detectKinboshi(
 }
 
 /**
- * Compute henka prestige penalty for the winner.
- * Pure: returns partial rikishi update or null.
+ * Compute tactic aftermath: fatigue, momentum, and injury multiplier.
+ * Returns updates for player/cpu rikishi and the injury risk multiplier.
  */
-function computeHenkaPenalty(
+function computeTacticAftermath(
   bout: BoutContext,
   result: BoutResult,
   winner: Rikishi,
+  loser: Rikishi,
   cpuTacticOverride: import("../types/combat").BoutTactic | undefined
-): Partial<Rikishi> | null {
+): {
+  playerUpdate: Partial<Rikishi>;
+  cpuUpdate: Partial<Rikishi>;
+  injuryMultiplier: number;
+} {
+  let injuryMultiplier = 1.0;
+  let playerUpdate: Partial<Rikishi> = {};
+  let cpuUpdate: Partial<Rikishi> = {};
+
+  const playerIsWinner = result.winner === bout.playerSide;
+  const playerRikishi = playerIsWinner ? winner : loser;
+
+  // Player tactic effects
+  if (bout.playerTactic && bout.playerSide && result.kimarite !== "fusensho") {
+    const profile = getTacticProfile(bout.playerTactic);
+
+    // Fatigue cost applied to player rikishi
+    if (profile.fatigueCost > 0) {
+      const currentFatigue = playerRikishi.fatigue ?? 0;
+      playerUpdate = {
+        ...playerUpdate,
+        fatigue: clamp(currentFatigue + profile.fatigueCost, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
+      };
+    }
+
+    // Momentum delta based on win/loss
+    const momentumDelta = playerIsWinner ? profile.momentumOnWin : profile.momentumOnLoss;
+    if (momentumDelta !== 0) {
+      const currentMomentum = playerRikishi.momentum ?? 50;
+      playerUpdate = {
+        ...playerUpdate,
+        momentum: clamp(currentMomentum + momentumDelta, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
+      };
+    }
+
+    // Injury multiplier from player tactic (applies if player lost)
+    if (!playerIsWinner) {
+      injuryMultiplier = Math.max(injuryMultiplier, profile.injuryRiskMultiplier);
+    }
+  }
+
+  // CPU tactic effects
+  if (cpuTacticOverride && result.kimarite !== "fusensho") {
+    const profile = getTacticProfile(cpuTacticOverride);
+    const cpuIsWinner =
+      (bout.playerSide === "east" && result.winner === "west") ||
+      (bout.playerSide === "west" && result.winner === "east") ||
+      !bout.playerSide;
+    const cpuRikishi = cpuIsWinner ? winner : loser;
+
+    if (profile.fatigueCost > 0) {
+      const currentFatigue = cpuRikishi.fatigue ?? 0;
+      cpuUpdate = {
+        ...cpuUpdate,
+        fatigue: clamp(currentFatigue + profile.fatigueCost, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
+      };
+    }
+
+    const momentumDelta = cpuIsWinner ? profile.momentumOnWin : profile.momentumOnLoss;
+    if (momentumDelta !== 0) {
+      const currentMomentum = cpuRikishi.momentum ?? 50;
+      cpuUpdate = {
+        ...cpuUpdate,
+        momentum: clamp(currentMomentum + momentumDelta, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
+      };
+    }
+
+    if (!cpuIsWinner) {
+      injuryMultiplier = Math.max(injuryMultiplier, profile.injuryRiskMultiplier);
+    }
+  }
+
+  // Legacy henka prestige penalty (momentum loss on win) — folded into profile.momentumOnWin
+  // Keep explicit check for HENKA won to ensure backward-compatible penalty
   const playerHenkaWon =
     bout.playerTactic === "HENKA" &&
     result.winner === bout.playerSide &&
     result.kimarite !== "fusensho";
-
-  const cpuHenkaWon =
-    cpuTacticOverride === "HENKA" &&
-    result.kimarite !== "fusensho" &&
-    ((bout.playerSide === "east" && result.winner === "west") ||
-      (bout.playerSide === "west" && result.winner === "east") ||
-      !bout.playerSide);
-
-  if (playerHenkaWon || cpuHenkaWon) {
-    return { momentum: clamp((winner.momentum ?? 50) - HENKA_MOMENTUM_PENALTY, STAT_CLAMP_MIN, STAT_CLAMP_MAX) };
+  if (playerHenkaWon && (!playerUpdate?.momentum)) {
+    const currentMomentum = playerRikishi.momentum ?? 50;
+    playerUpdate = {
+      ...playerUpdate,
+      momentum: clamp(currentMomentum - HENKA_MOMENTUM_PENALTY, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
+    };
   }
-  return null;
+
+  return { playerUpdate, cpuUpdate, injuryMultiplier };
 }
 
 /**
@@ -389,11 +461,24 @@ export function resolveBout(
     builder.updateWorldField("currentBasho", { ...basho, kinboshiThisBasho: nextKinboshi } as never);
   }
 
-  // 3. Henka prestige penalty
-  const henkaPenalty = computeHenkaPenalty(bout, result, winner, cpuTacticOverride);
-  if (henkaPenalty) {
-    builder.updateRikishi(winner.id, henkaPenalty);
+  // 3. Tactic aftermath (fatigue, momentum, injury multiplier)
+  const { playerUpdate, cpuUpdate, injuryMultiplier } = computeTacticAftermath(
+    bout,
+    result,
+    winner,
+    loser,
+    cpuTacticOverride
+  );
+  if (Object.keys(playerUpdate).length > 0) {
+    const playerRikishiId = bout.playerSide === "east" ? east.id : west.id;
+    builder.updateRikishi(playerRikishiId, playerUpdate);
   }
+  if (Object.keys(cpuUpdate).length > 0) {
+    const cpuRikishiId =
+      bout.playerSide === "east" ? west.id : bout.playerSide === "west" ? east.id : undefined;
+    if (cpuRikishiId) builder.updateRikishi(cpuRikishiId, cpuUpdate);
+  }
+  result.tacticInjuryRiskMultiplier = injuryMultiplier;
 
   // 4. Update Rivalry State
   let rivalryImpact = createImpactBuilder("rivalry").build();

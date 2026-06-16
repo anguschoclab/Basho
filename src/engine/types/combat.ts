@@ -169,7 +169,7 @@ export type KimariteClass =
   | "forfeit";
 
 /** Type representing bout tactic. */
-export type BoutTactic = "STANDARD" | "YOTSU_BELT" | "OSHI_THRUST" | "HENKA";
+export type BoutTactic = "STANDARD" | "YOTSU_BELT" | "OSHI_THRUST" | "HENKA" | "DEFENSIVE_PULL" | "ALL_OUT";
 
 /** Defines the structure for tactical result. */
 export interface TacticalResult {

@@ -256,7 +256,7 @@ export default function RecapPage() {
             <Button
               variant="outline"
               className="h-12 px-6 font-black uppercase tracking-widest border-2"
-              onClick={() => navigate({ to: "/banzuke" })}
+              onClick={() => navigate({ to: "/basho/banzuke" })}
             >
               Banzuke <ArrowRight className="h-4 w-4 ml-1" />
             </Button>

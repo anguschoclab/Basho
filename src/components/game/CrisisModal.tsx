@@ -91,11 +91,29 @@ export function CrisisModal() {
 
   const handleResolve = (choiceId: string) => {
     if (!crisis.id) return;
-    sendCommand({
-      type: "RESOLVE_CRISIS",
-      crisisId: crisis.id,
-      choice: choiceId as "standard" | "lenient" | "harsh" | "cover_up",
-    });
+    if (crisis.type === "loop_decision" || crisis.type === "pending_crisis") {
+      // pendingCrisis may be a loop_decision; check the world state
+      const isLoop = world?.pendingCrisis?.type === "loop_decision";
+      if (isLoop) {
+        sendCommand({
+          type: "RESOLVE_LOOP_DECISION",
+          decisionId: crisis.id,
+          optionId: choiceId,
+        });
+      } else {
+        sendCommand({
+          type: "RESOLVE_CRISIS",
+          crisisId: crisis.id,
+          choice: choiceId as "standard" | "lenient" | "harsh" | "cover_up",
+        });
+      }
+    } else {
+      sendCommand({
+        type: "RESOLVE_CRISIS",
+        crisisId: crisis.id,
+        choice: choiceId as "standard" | "lenient" | "harsh" | "cover_up",
+      });
+    }
     setIsOpen(false);
   };
 

@@ -161,7 +161,15 @@ export function applyBoutResult(
   builder.merge(updateH2H(winner, loser, result, bashoId, year, match.day));
 
   // 4. Notify Secondary Systems
-  builder.merge(injuries.onBoutResolvedInjury(world, { match, result, east, west }));
+  builder.merge(
+    injuries.onBoutResolvedInjury(world, {
+      match,
+      result,
+      east,
+      west,
+      injuryRiskMultiplier: result.tacticInjuryRiskMultiplier,
+    })
+  );
   builder.merge(rivalries.onBoutResolvedRivalries(world, { match, result, east, west }));
   builder.merge(economics.onBoutResolvedEconomics(world, { match, result, east, west }));
   builder.merge(scoutingStore.onBoutResolvedScouting(world, { match, result, east, west }));

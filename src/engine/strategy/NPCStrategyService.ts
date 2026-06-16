@@ -267,9 +267,11 @@ export function decideBoutTacticOverride(
   const isMakeKoshiPrecipice = record.losses === KOSHI_PRECIPICE_LOSSES; // 8th loss would mean losing record
   const isKachiKoshiPrecipice = record.wins === KACHIKOSHI_PRECIPICE_WINS; // 8th win would mean winning record
 
-  if (isFinalDay && isMakeKoshiPrecipice) return "OSHI_THRUST"; // desperation aggression
-  if (isFinalDay && rivalryHeat > 70) return "OSHI_THRUST"; // heated rivalry climax
+  if (isFinalDay && isMakeKoshiPrecipice) return "ALL_OUT"; // maximum desperation aggression
+  if (isFinalDay && rivalryHeat > 70) return "ALL_OUT"; // heated rivalry climax
   if (isFinalDay && isKachiKoshiPrecipice) return "STANDARD"; // no override needed for kachi
+  if (rivalryHeat > 50 && record.wins < 5) return "OSHI_THRUST"; // behind in basho, moderate rivalry
+  if (record.losses >= 6 && record.wins >= 6) return "DEFENSIVE_PULL"; // balanced record, play safe
   return undefined;
 }
 

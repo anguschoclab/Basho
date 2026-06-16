@@ -90,7 +90,7 @@ export type GameAction =
   | { type: "SET_PHASE"; phase: GamePhase }
   | { type: "START_BASHO" }
   | { type: "ADVANCE_DAY" }
-  | { type: "SIMULATE_BOUT"; boutIndex: number }
+  | { type: "SIMULATE_BOUT"; boutIndex: number; boutId?: string }
   | { type: "SIMULATE_ALL_BOUTS" }
   | { type: "END_DAY" }
   | { type: "END_BASHO" }

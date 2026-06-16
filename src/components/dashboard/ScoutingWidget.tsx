@@ -138,13 +138,13 @@ export function ScoutingWidget() {
   const headerAction = useMemo(
     () => ({
       label: "Full Board",
-      onClick: () => navigate({ to: "/talent" }),
+      onClick: () => navigate({ to: "/jsa/talent" }),
     }),
     [navigate]
   );
 
   const handleViewAll = React.useCallback(() => {
-    navigate({ to: "/talent" });
+    navigate({ to: "/jsa/talent" });
   }, [navigate]);
   const world = state.world;
 

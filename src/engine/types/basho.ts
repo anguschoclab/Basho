@@ -116,6 +116,8 @@ export interface BoutResult {
   kenshoEnvelopes: number;
   /** Kensho banner slots for this bout. */
   kenshoBanners?: import("./sponsors").KenshoBannerSlot[];
+  /** Injury risk multiplier from tactics (applied to loser's post-bout injury roll). */
+  tacticInjuryRiskMultiplier?: number;
   /** Log of key events during the bout. */
   log: BoutLogEntry[];
   /** Narrative lines generated for this bout. */

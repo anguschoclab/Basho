@@ -200,8 +200,11 @@ export default function BashoPage() {
   }, [bashoDigest, lastBoutKey, selectedBout, state.lastBoutResult]);
 
   const handleSimulateNext = useCallback(() => {
-    if (nextBoutIndex >= 0) simulateBout(nextBoutIndex);
-  }, [nextBoutIndex, simulateBout]);
+    if (nextBoutIndex >= 0) {
+      const match = bashoDigest?.matches[nextBoutIndex];
+      simulateBout(nextBoutIndex, match?.boutId);
+    }
+  }, [nextBoutIndex, simulateBout, bashoDigest]);
 
   const handleSimulateAll = useCallback(() => {
     simulateAllBouts();
@@ -281,6 +284,14 @@ export default function BashoPage() {
           lede={`${dayInfo?.dayJa ?? `Day ${day}`} · ${bashoInfo?.location ?? "—"} · ${completedBouts}/${matches.length} bouts complete${seasonalFlavor ? ` · ${seasonalFlavor}` : ""}`}
           actions={
             <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="ghost"
+                className="text-xs"
+                onClick={() => navigate({ to: "/dashboard" })}
+              >
+                ← Dashboard
+              </Button>
               <Badge variant="outline" className="font-mono text-sm px-3 py-1">
                 Day {day}/{getTotalBashodays("makuuchi")}
               </Badge>

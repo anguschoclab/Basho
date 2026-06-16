@@ -4,7 +4,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/GameContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, ChevronRight, Coins, Dumbbell, Users } from "lucide-react";
+import { Coins, Dumbbell, Users } from "lucide-react";
 import { ProgressionTracker } from "@/components/game/ProgressionTracker";
 import {
   getOzekiRunCandidates,
@@ -14,6 +14,7 @@ import {
 import { projectDashboardUIDigest } from "@/presenters/uiDigest";
 import { projectFinanceSummary } from "@/presenters/projections/financeProjections";
 import { projectTrainingSummary } from "@/presenters/projections/trainingProjections";
+import { buildActionQueue } from "@/presenters/projections/actionQueue";
 import { FATIGUE_LABELS } from "@/constants/ui/labels";
 
 import { OnboardingTourDialog } from "@/components/onboarding/OnboardingTourDialog";
@@ -40,6 +41,7 @@ import {
   SponsorRecruitmentWidget,
   YushoRaceWidget,
   PreBashoAssessment,
+  ActionQueueWidget,
 } from "@/components/dashboard";
 import { SkeletonCard } from "@/components/ui/SkeletonCard";
 import { formatYen } from "@/utils/engineUtils";
@@ -101,17 +103,10 @@ export default function Dashboard() {
     [world, playerHeya]
   );
 
-  const alerts = useMemo(() => {
-    const out: { text: string; link: string }[] = [];
-    if (finance?.runwayBand === "critical" || finance?.runwayBand === "desperate")
-      out.push({ text: "Funds critical — insolvency risk", link: "/office/finances" });
-    if (training && training.injuryRiskHighCount > 2)
-      out.push({
-        text: `${training.injuryRiskHighCount} wrestlers at high injury risk`,
-        link: "/stable/medical",
-      });
-    return out;
-  }, [finance, training]);
+  const queue = useMemo(() => {
+    if (!world) return [];
+    return buildActionQueue(world, playerHeya, training, finance);
+  }, [world, playerHeya, training, finance]);
 
   const rosterData = useMemo(() => {
     let sekitoriCount = 0;
@@ -207,22 +202,8 @@ export default function Dashboard() {
           }
         />
 
-        {/* ── CRITICAL ALERTS ── */}
-        {alerts.length > 0 && (
-          <div className="flex flex-col gap-2">
-            {alerts.map((a, i) => (
-              <button
-                key={i}
-                onClick={() => navigate({ to: a.link as Parameters<typeof navigate>[0]["to"] })}
-                className="flex items-center gap-3 px-4 py-2.5 rounded border border-destructive/30 bg-destructive/8 hover:bg-destructive/15 transition-colors text-left group"
-              >
-                <AlertTriangle className="h-3.5 w-3.5 text-destructive shrink-0" />
-                <span className="text-xs font-bold text-destructive flex-1">{a.text}</span>
-                <ChevronRight className="h-3.5 w-3.5 text-destructive/50 group-hover:text-destructive transition-colors" />
-              </button>
-            ))}
-          </div>
-        )}
+        {/* ── ACTION QUEUE ── */}
+        {queue.length > 0 && <ActionQueueWidget items={queue} />}
 
         {/* ── PROMOTION ARCS ── */}
         <ProgressionTracker

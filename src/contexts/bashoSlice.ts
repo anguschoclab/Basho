@@ -53,7 +53,15 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
     case "SIMULATE_BOUT": {
       if (!state.world.currentBasho) return state;
       const world = cloneWorldForTick(state.world);
-      const { result } = worldEngine.simulateBoutForToday(world, action.boutIndex);
+      const basho = world.currentBasho!;
+      const todays = basho.matches.filter((m) => m.day === basho.day && !m.result);
+      let unplayedIndex = action.boutIndex;
+      if (action.boutId) {
+        const idx = todays.findIndex((m) => m.boutId === action.boutId);
+        if (idx >= 0) unplayedIndex = idx;
+      }
+      const playerTactic = action.boutId ? state.boutTactics[action.boutId] : undefined;
+      const { result } = worldEngine.simulateBoutForToday(world, unplayedIndex, playerTactic);
       return {
         ...state,
         world,
@@ -76,7 +84,12 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
       const world = cloneWorldForTick(state.world);
       let lastResult: BoutResult | null = state.lastBoutResult;
       for (let i = 0; i < 64; i++) {
-        const { result } = worldEngine.simulateBoutForToday(world, 0);
+        const basho = world.currentBasho;
+        if (!basho) break;
+        const todays = (basho.matches ?? []).filter((m) => m.day === basho.day && !m.result);
+        const match = todays[0];
+        const playerTactic = match?.boutId ? state.boutTactics[match.boutId] : undefined;
+        const { result } = worldEngine.simulateBoutForToday(world, 0, playerTactic);
         if (!result) break;
         lastResult = result;
       }
@@ -105,10 +118,13 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
       const world = cloneWorldForTick(state.world);
       const currentDay = world.currentBasho?.day ?? 1;
       for (let d = currentDay; d <= 15; d++) {
-        // Unroll to prevent excessive inner loop evaluations and memory leaks
-        // Bout processing handles its own queue safely up to 64
         for (let i = 0; i < 64; i++) {
-          const { result } = worldEngine.simulateBoutForToday(world, 0);
+          const basho = world.currentBasho;
+          if (!basho) break;
+          const todays = (basho.matches ?? []).filter((m) => m.day === basho.day && !m.result);
+          const match = todays[0];
+          const playerTactic = match?.boutId ? state.boutTactics[match.boutId] : undefined;
+          const { result } = worldEngine.simulateBoutForToday(world, 0, playerTactic);
           if (!result) break;
         }
         if (d < 15) worldEngine.advanceBashoDay(world);

@@ -182,30 +182,33 @@ const stableInfrastructureRoute = createRoute({
 
 // --- OFFICE SECTION ---
 const officeBaseRoute = createRoute({ getParentRoute: () => rootRoute, path: "/office" });
-const officeFinanceRoute = createRoute({
+const economyRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/economy",
-  component: EconomyPage,
-}); // Keep for legacy compat
+  beforeLoad: () => { throw redirect({ to: "/office/finances", replace: true }); },
+  component: () => null,
+});
 const officeFinancesNestedRoute = createRoute({
   getParentRoute: () => officeBaseRoute,
   path: "/finances",
   component: EconomyPage,
 });
-const officeScoutingRoute = createRoute({
+const scoutingRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/scouting",
-  component: ScoutingPage,
+  beforeLoad: () => { throw redirect({ to: "/office/scouting", replace: true }); },
+  component: () => null,
 });
 const officeScoutingNestedRoute = createRoute({
   getParentRoute: () => officeBaseRoute,
   path: "/scouting",
   component: ScoutingPage,
 });
-const officeSponsorsRoute = createRoute({
+const sponsorsRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/sponsors",
-  component: SponsorManagementPage,
+  beforeLoad: () => { throw redirect({ to: "/office/sponsors", replace: true }); },
+  component: () => null,
 });
 const officeSponsorsNestedRoute = createRoute({
   getParentRoute: () => officeBaseRoute,
@@ -220,10 +223,11 @@ const officeFacilitiesRoute = createRoute({
 
 // --- ASSOCIATION (JSA) SECTION ---
 const jsaBaseRoute = createRoute({ getParentRoute: () => rootRoute, path: "/jsa" });
-const jsaGovernanceRoute = createRoute({
+const governanceRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/governance",
-  component: GovernancePage,
+  beforeLoad: () => { throw redirect({ to: "/jsa/governance", replace: true }); },
+  component: () => null,
 });
 const jsaGovernanceNestedRoute = createRoute({
   getParentRoute: () => jsaBaseRoute,
@@ -235,10 +239,11 @@ const jsaTrendsRoute = createRoute({
   path: "/trends",
   component: TrendsPage,
 });
-const jsaTalentRoute = createRoute({
+const talentRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/talent",
-  component: TalentPoolPage,
+  beforeLoad: () => { throw redirect({ to: "/jsa/talent", replace: true }); },
+  component: () => null,
 });
 const jsaTalentNestedRoute = createRoute({
   getParentRoute: () => jsaBaseRoute,
@@ -251,25 +256,26 @@ const jsaMyosekiRoute = createRoute({
   component: MyosekiMarketPage,
 });
 
-// --- TOURNAMENT SECTION ---
+// --- TOURNAMENT SECTION (nested under /basho/*) ---
 
-const bashoRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/basho",
+const bashoBaseRoute = createRoute({ getParentRoute: () => rootRoute, path: "/basho" });
+const bashoIndexRoute = createRoute({
+  getParentRoute: () => bashoBaseRoute,
+  path: "/",
   component: BashoPage,
 });
-const banzukeRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/banzuke",
-  component: BanzukePage,
-});
-const scheduleRoute = createRoute({
-  getParentRoute: () => rootRoute,
+const bashoScheduleRoute = createRoute({
+  getParentRoute: () => bashoBaseRoute,
   path: "/schedule",
   component: SchedulePage,
 });
-const rivalriesRoute = createRoute({
-  getParentRoute: () => rootRoute,
+const bashoBanzukeRoute = createRoute({
+  getParentRoute: () => bashoBaseRoute,
+  path: "/banzuke",
+  component: BanzukePage,
+});
+const bashoRivalriesRoute = createRoute({
+  getParentRoute: () => bashoBaseRoute,
   path: "/rivalries",
   component: RivalriesPage,
 });
@@ -284,31 +290,84 @@ const worldCircuitRoute = createRoute({
   component: RegionalHubPage,
 });
 
-// --- ARCHIVES SECTION ---
-const historyRoute = createRoute({
+// Redirect old top-level tournament routes to nested routes
+const banzukeRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
+  path: "/banzuke",
+  beforeLoad: () => { throw redirect({ to: "/basho/banzuke", replace: true }); },
+  component: () => null,
+});
+const scheduleRedirectRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/schedule",
+  beforeLoad: () => { throw redirect({ to: "/basho/schedule", replace: true }); },
+  component: () => null,
+});
+const rivalriesRedirectRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/rivalries",
+  beforeLoad: () => { throw redirect({ to: "/basho/rivalries", replace: true }); },
+  component: () => null,
+});
+
+// --- ARCHIVES SECTION (nested under /records/*) ---
+const recordsBaseRoute = createRoute({ getParentRoute: () => rootRoute, path: "/records" });
+const recordsIndexRoute = createRoute({
+  getParentRoute: () => recordsBaseRoute,
+  path: "/",
+  beforeLoad: () => { throw redirect({ to: "/records/history", replace: true }); },
+  component: () => null,
+});
+const recordsHistoryRoute = createRoute({
+  getParentRoute: () => recordsBaseRoute,
   path: "/history",
   component: HistoryPage,
 });
-const museumRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/museum",
-  component: HistoryDashboard,
-});
-const almanacRoute = createRoute({
-  getParentRoute: () => rootRoute,
+const recordsAlmanacRoute = createRoute({
+  getParentRoute: () => recordsBaseRoute,
   path: "/almanac",
   component: AlmanacPage,
+});
+const recordsHallOfFameRoute = createRoute({
+  getParentRoute: () => recordsBaseRoute,
+  path: "/hall-of-fame",
+  component: HallOfFamePage,
+});
+const recordsMuseumRoute = createRoute({
+  getParentRoute: () => recordsBaseRoute,
+  path: "/museum",
+  component: HistoryDashboard,
 });
 const mediaRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/media",
   component: MediaPage,
 });
-const hallOfFameRoute = createRoute({
+
+// Redirect old top-level archive routes to nested routes
+const historyRedirectRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/history",
+  beforeLoad: () => { throw redirect({ to: "/records/history", replace: true }); },
+  component: () => null,
+});
+const almanacRedirectRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/almanac",
+  beforeLoad: () => { throw redirect({ to: "/records/almanac", replace: true }); },
+  component: () => null,
+});
+const hallOfFameRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/hall-of-fame",
-  component: HallOfFamePage,
+  beforeLoad: () => { throw redirect({ to: "/records/hall-of-fame", replace: true }); },
+  component: () => null,
+});
+const museumRedirectRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/museum",
+  beforeLoad: () => { throw redirect({ to: "/records/museum", replace: true }); },
+  component: () => null,
 });
 
 // Rikishi specific (Deep Dive)
@@ -356,30 +415,42 @@ const routeTree = rootRoute.addChildren([
     officeSponsorsNestedRoute,
     officeFacilitiesRoute,
   ]),
-  officeFinanceRoute,
-  officeScoutingRoute,
-  officeSponsorsRoute,
+  economyRedirectRoute,
+  scoutingRedirectRoute,
+  sponsorsRedirectRoute,
 
   // Association
   jsaBaseRoute.addChildren([jsaGovernanceNestedRoute, jsaTrendsRoute, jsaTalentNestedRoute]),
-  jsaGovernanceRoute,
-  jsaTalentRoute,
+  governanceRedirectRoute,
+  talentRedirectRoute,
   jsaMyosekiRoute,
 
-  // Tournament (legacy top-level for now)
-  bashoRoute,
-  banzukeRoute,
-  scheduleRoute,
-  rivalriesRoute,
+  // Tournament (nested under /basho)
+  bashoBaseRoute.addChildren([
+    bashoIndexRoute,
+    bashoScheduleRoute,
+    bashoBanzukeRoute,
+    bashoRivalriesRoute,
+  ]),
+  banzukeRedirectRoute,
+  scheduleRedirectRoute,
+  rivalriesRedirectRoute,
   globalCupRoute,
   worldCircuitRoute,
 
-  // Archives
-  historyRoute,
-  museumRoute,
-  almanacRoute,
+  // Archives (nested under /records)
+  recordsBaseRoute.addChildren([
+    recordsIndexRoute,
+    recordsHistoryRoute,
+    recordsAlmanacRoute,
+    recordsHallOfFameRoute,
+    recordsMuseumRoute,
+  ]),
+  historyRedirectRoute,
+  almanacRedirectRoute,
+  hallOfFameRedirectRoute,
+  museumRedirectRoute,
   mediaRoute,
-  hallOfFameRoute,
 
   // Rikishi
   rikishiRoute,

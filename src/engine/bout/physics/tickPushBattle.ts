@@ -37,7 +37,8 @@ export function tickPushBattle(
   st: EngineStateV2,
   boutLog: BoutLogEntry[],
   division: Division,
-  meta: { tone: string; drift: Record<string, number> }
+  meta: { tone: string; drift: Record<string, number> },
+  playerTactic?: import("../../types/combat").BoutTactic
 ): { winner?: Side; kimarite?: KimariteId } | undefined {
   if (st.phase.tag !== "push_battle") return undefined;
 
@@ -153,7 +154,7 @@ export function tickPushBattle(
   }
 
   // Mid-fight kimarite attempt
-  const attempt = evaluateKimariteAttempt(east, west, push, null, st, rng, division, meta);
+  const attempt = evaluateKimariteAttempt(east, west, push, null, st, rng, division, meta, playerTactic);
   if (attempt) {
     const succeeded = rng.next() < attempt.successProbability;
     if (succeeded) {

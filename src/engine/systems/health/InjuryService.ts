@@ -298,9 +298,9 @@ export function tickWeekRecovery(world: WorldState): StateImpact {
  */
 export function onBoutResolvedInjury(
   world: WorldState,
-  ctx: { match: any; result: any; east: any; west: any }
+  ctx: { match: any; result: any; east: any; west: any; injuryRiskMultiplier?: number }
 ): StateImpact {
-  const { result, east, west } = ctx;
+  const { result, east, west, injuryRiskMultiplier } = ctx;
   const builder = createImpactBuilder("onBoutResolvedInjury");
 
   if (!result) return builder.build();
@@ -313,7 +313,8 @@ export function onBoutResolvedInjury(
   const violentKimarite = ["uwatenage", "shitatenage", "oshitaoshi", "tsukiotoshi", "hatakikomi"];
   const isViolentFinish = violentKimarite.includes(result.kimarite ?? "");
 
-  const boutInjuryChance = isViolentFinish ? 0.04 : 0.02; // 2-4% per bout
+  const baseBoutInjuryChance = isViolentFinish ? 0.04 : 0.02; // 2-4% per bout
+  const boutInjuryChance = baseBoutInjuryChance * (injuryRiskMultiplier ?? 1.0);
   const rngSeed = RNGRegistry.getSystemRNG(world, "health", `bout::${loser.id}::${world.week}`);
   const roll = rngSeed.next();
 

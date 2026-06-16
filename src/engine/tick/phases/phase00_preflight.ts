@@ -19,6 +19,7 @@ import {
   MAX_MONTH,
   INTERIM_WARNING_THRESHOLD,
 } from "../../../constants/engine/calendarExtended";
+import { evaluatePendingDecisions } from "../../loop/LoopDecisionEngine";
 
 export function phase00_preflight(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase00_preflight");
@@ -61,6 +62,13 @@ export function phase00_preflight(world: WorldState): StateImpact {
   if (transition) {
     // Transition logs are handled inside checkPhaseTransition for now to keep it consolidated
   }
+
+  // 5. Evaluate pending loop decisions (Plan 3)
+  const decisionImpact = evaluatePendingDecisions(world);
+  builder.merge(decisionImpact);
+
+  // 6. Clear caches for the new day
+  clearQueryCaches();
 
   return builder.build();
 }

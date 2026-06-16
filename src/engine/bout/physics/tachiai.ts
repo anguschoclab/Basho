@@ -20,6 +20,7 @@ import {
   h2hConfidence,
   type BoutContext,
 } from "../boutUtils";
+import { getTacticProfile } from "../tacticProfiles";
 
 /**
  * Resolves the initial clash. May early-terminate the bout (henka) by setting
@@ -38,10 +39,21 @@ export function resolveTachiaiV2(
   // Tachiai power: power 50%, speed 30%, aggression 20% + jitter
   // Apply 8% penalty when opponent's style is in the rikishi's weakAgainstStyles list
   // Add h2h confidence bonus: (wins/total - 0.5)*8 when >= 3 prior meetings
-  const eastPower =
+  let eastPower =
     tachiaiPowerWithMatchupPenalty(east, west) + h2hConfidence(east, west.id) + jitter(rng, TACHIAI_JITTER_MAGNITUDE);
-  const westPower =
+  let westPower =
     tachiaiPowerWithMatchupPenalty(west, east) + h2hConfidence(west, east.id) + jitter(rng, TACHIAI_JITTER_MAGNITUDE);
+
+  // Apply tactic-driven tachiai power modifier to the player-side rikishi
+  if (bout.playerTactic && bout.playerSide) {
+    const mod = getTacticProfile(bout.playerTactic).tachiaiPowerModifier;
+    if (bout.playerSide === "east") {
+      eastPower += mod;
+    } else {
+      westPower += mod;
+    }
+  }
+
   const tachiaiWinner: Side = eastPower >= westPower ? "east" : "west";
   st.tachiaiWinner = tachiaiWinner;
 

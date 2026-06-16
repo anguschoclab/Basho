@@ -22,3 +22,4 @@ export * from "./SponsorRecruitmentWidget";
 export * from "./YearlyMetaReport";
 export * from "./YushoRaceWidget";
 export * from "./PreBashoAssessment";
+export * from "./ActionQueueWidget";

@@ -2,18 +2,22 @@ import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "@tanstack/react-router";
-import { Star, Swords, Eye, CircleDot } from "lucide-react";
+import { Star, Swords, Eye, CircleDot, Flame, Shield, Zap } from "lucide-react";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import type { MatchRowData } from "./boutCardTypes.tsx";
 import { HEAT_CONFIG } from "./boutCardTypes.tsx";
 import { RikishiSide, H2HCenter, MatchFooter } from "./boutCardComponents";
+import { TACTIC_PROFILES, type TacticProfile } from "@/engine/bout/tacticProfiles";
+import type { BoutTactic } from "@/engine/types/combat";
 
-const TACTICS_CONFIG = [
-  { id: "STANDARD", label: "Standard", desc: "Balanced" },
-  { id: "YOTSU_BELT", label: "Yotsu (Belt)", desc: "Counters Thrust" },
-  { id: "OSHI_THRUST", label: "Oshi (Thrust)", desc: "Counters Henka" },
-  { id: "HENKA", label: "Henka", desc: "Counters Belt" },
-];
+function getTacticRiskIcon(profile: TacticProfile) {
+  if (profile.injuryRiskMultiplier >= 1.3) return <Flame className="h-3 w-3 text-rose-500" />;
+  if (profile.injuryRiskMultiplier <= 0.8) return <Shield className="h-3 w-3 text-emerald-500" />;
+  return <Zap className="h-3 w-3 text-amber-500" />;
+}
+
+const TACTIC_ENTRIES = Object.values(TACTIC_PROFILES) as TacticProfile[];
+const DEFAULT_TACTIC: BoutTactic = "STANDARD";
 
 export const BoutCard = React.memo(
   ({
@@ -123,8 +127,8 @@ export const BoutCard = React.memo(
             </div>
 
             <div className="grid grid-cols-2 gap-2">
-              {TACTICS_CONFIG.map((t) => {
-                const isSelected = (playerTactics?.[match.boutId || ""] || "STANDARD") === t.id;
+              {TACTIC_ENTRIES.map((t) => {
+                const isSelected = (playerTactics?.[match.boutId || ""] || DEFAULT_TACTIC) === t.id;
                 return (
                   <Button
                     variant={isSelected ? "secondary" : "outline"}
@@ -132,8 +136,16 @@ export const BoutCard = React.memo(
                     onClick={() => match.boutId && onTacticChange?.(match.boutId, t.id)}
                     className={`h-auto p-2 justify-start flex-col items-start ${isSelected ? "bg-primary/10 border-primary ring-1 ring-primary" : ""}`}
                   >
-                    <span className="font-semibold text-xs">{t.label}</span>
+                    <div className="flex items-center gap-1.5 w-full">
+                      <span className="font-semibold text-xs">{t.label}</span>
+                      {getTacticRiskIcon(t)}
+                    </div>
                     <span className="text-[10px] text-muted-foreground font-normal">{t.desc}</span>
+                    <span className="text-[9px] text-muted-foreground/60 mt-0.5">
+                      {t.tachiaiPowerModifier > 0 && `+${t.tachiaiPowerModifier} power `}
+                      {t.tachiaiPowerModifier < 0 && `${t.tachiaiPowerModifier} power `}
+                      {t.fatigueCost > 0 && `| ${t.fatigueCost} fatigue`}
+                    </span>
                   </Button>
                 );
               })}

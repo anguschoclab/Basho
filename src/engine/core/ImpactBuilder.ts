@@ -354,6 +354,7 @@ export class ImpactBuilder {
       | "chronicle"
       | "globalKimariteStats"
       | "pendingCrisis"
+      | "pendingDecisions"
       | "events"
     >,
   >(field: K, value: WorldState[K]): ImpactBuilder {

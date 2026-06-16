@@ -222,6 +222,16 @@ export interface WorldState {
   /** Crisis waiting to be presented to player (checked on Dashboard load) */
   pendingCrisis?: ActiveCrisis;
 
+  /** Player loop decisions that block progress until resolved */
+  pendingDecisions?: Array<{
+    id: string;
+    type: string;
+    description: string;
+    deadlineWeek: number;
+    options: Array<{ id: string; label: string; impact: string }>;
+    required: boolean;
+  }>;
+
   /** Chronicle/Historical record browser state */
   chronicle?: {
     eraLabels: Array<{

@@ -104,6 +104,11 @@ export function advanceOneDay(
   // 1. Run Preflight to advance calendar and determine boundaries
   let nextWorld = runPipeline(world, [phases.phase00_preflight]);
 
+  // Plan 3: Halt pipeline if a blocking crisis/loop decision was set during preflight
+  if (nextWorld.pendingCrisis) {
+    return nextWorld;
+  }
+
   const boundaries = nextWorld.transientContext?.boundaries || {
     monthBoundary: false,
     yearBoundary: false,
