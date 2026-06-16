@@ -80,10 +80,18 @@ export function getScoutInfo(level: number): { label: string; color: string; nar
     return { label: "Professional", color: "text-blue-500", narrative: "Deep scouting report." };
   }
   if (level >= 45) {
-    return { label: "Detailed", color: "text-amber-500", narrative: "Solid amount of observations." };
+    return {
+      label: "Detailed",
+      color: "text-amber-500",
+      narrative: "Solid amount of observations.",
+    };
   }
   if (level >= 20) {
-    return { label: "Observation", color: "text-orange-500", narrative: "A few basic matches observed." };
+    return {
+      label: "Observation",
+      color: "text-orange-500",
+      narrative: "A few basic matches observed.",
+    };
   }
   return { label: "Snapshot", color: "text-gray-500", narrative: "Initial estimate only." };
 }
@@ -228,7 +236,9 @@ function calculateHeyaMatchups(
     const rA = world.rikishi.get(rAId);
     if (!rA?.h2h) continue;
 
-    for (const [rBId, record] of Object.entries(rA.h2h)) {
+    for (const rBId in rA.h2h) {
+      if (!Object.prototype.hasOwnProperty.call(rA.h2h, rBId)) continue;
+      const record = rA.h2h[rBId];
       if (!bIdSet.has(rBId)) continue;
       if (record.wins === 0 && record.losses === 0) continue;
 
