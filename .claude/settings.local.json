@@ -117,7 +117,8 @@
       "Bash(sed -n '25,55p' src/engine/types/combat-spatial.ts)",
       "Bash(git ls-tree *)",
       "Bash(grep -rln 'BoutLogEntry\\\\|\\\\.log\\\\b\\\\|boutLog' src/components src/pages src/presenters)",
-      "Bash(ls src/components/game/boutReplay/)"
+      "Bash(ls src/components/game/boutReplay/)",
+      "Bash(cd \"/Users/amauricia/Documents/GitHub/sumo-manager-pro\" && rm -f src/tests/unit/engine/bout/_tacticEmpirical*.tmp.test.ts && echo \"temp tests removed\" && git status --short)"
     ]
   },
   "outputStyle": "default"
