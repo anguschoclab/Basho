@@ -27,8 +27,7 @@ export const offSeasonPipeline: PipelinePhase[] = [
   phases.phase02_context, // Derive ActiveModifiers from post-training state
   phases.phase01_week_governance,
   phases.phase01_week_npc_ai,
-  phases.phase01_week_talent_pool, // Reveal candidates before recruitment
-  phases.phase01_week_recruitment,
+  phases.phase01_week_talent_pool, // Reveal candidates
   phases.phase01_week_rivalries,
   phases.phase01_week_world_circuit, // Apply style drift from overseas exhibition influence
   phases.phase_global_cup_advance, // Advance Global Cup bracket when tournament is active (Jan off-season)

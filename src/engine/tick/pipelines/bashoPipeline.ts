@@ -28,7 +28,6 @@ export const bashoPipeline: PipelinePhase[] = [
   phases.phase02_context, // Recompute ActiveModifiers (financialPenalty may still hit during basho)
   phases.phase01_week_governance,
   phases.phase01_week_npc_ai,
-  phases.phase01_week_recruitment,
   phases.phase01_week_rivalries,
   phases.phase06_narrative,
 ];

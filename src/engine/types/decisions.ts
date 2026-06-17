@@ -10,12 +10,10 @@ export interface LoopDecisionOption {
 }
 
 export type LoopDecisionType =
-  | "recruit_or_develop"
-  | "ozeki_promotion"
-  | "training_regime"
+  | "pre_basho_readiness"
   | "insolvency_response"
-  | "welfare_diet"
-  | "weekly_training";
+  | "weekly_training_emphasis"
+  | "welfare_diet";
 
 export interface LoopDecision {
   id: string;

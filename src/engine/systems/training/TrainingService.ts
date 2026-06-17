@@ -107,11 +107,6 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
   const builder = createImpactBuilder("applyWeeklyTraining");
   const activeRikishi = EntityCollection.getActiveRikishi(world);
 
-  // Consume transientContext flags from loop decisions
-  const tc = world.transientContext as Record<string, unknown> | undefined;
-  const trainingRegime = tc?.trainingRegime as "power_focus" | "technique_focus" | "balanced" | undefined;
-  const trainingGrowthBuff = tc?.trainingGrowthBuff as number | undefined;
-
   activeRikishi.forEach((rikishi) => {
     const beyaState = ensureHeyaTrainingState(world, rikishi.heyaId);
     const profile = beyaState.activeProfile;
@@ -245,34 +240,6 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
           (growth.mental + drillVector.mental) * staffBonuses.technique * infra.statBuffs.mental,
       };
 
-      // Apply trainingGrowthBuff from loop decision (recruit_or_develop: train_current)
-      if (trainingGrowthBuff) {
-        finalGrowth.power *= trainingGrowthBuff;
-        finalGrowth.speed *= trainingGrowthBuff;
-        finalGrowth.technique *= trainingGrowthBuff;
-        finalGrowth.balance *= trainingGrowthBuff;
-        finalGrowth.stamina *= trainingGrowthBuff;
-        finalGrowth.adaptability *= trainingGrowthBuff;
-        finalGrowth.mental *= trainingGrowthBuff;
-      }
-
-      // Apply trainingRegime from loop decision (training_regime)
-      if (trainingRegime === "power_focus") {
-        finalGrowth.power *= 1.05;
-        // +3% injury risk - handled by modifying injury risk in injury logic
-      } else if (trainingRegime === "technique_focus") {
-        finalGrowth.technique *= 1.05;
-        finalGrowth.speed *= 0.98; // -2% speed growth
-      } else if (trainingRegime === "balanced") {
-        finalGrowth.power *= 1.02;
-        finalGrowth.speed *= 1.02;
-        finalGrowth.technique *= 1.02;
-        finalGrowth.balance *= 1.02;
-        finalGrowth.stamina *= 1.02;
-        finalGrowth.adaptability *= 1.02;
-        finalGrowth.mental *= 1.02;
-      }
-
       // Pre-snapshot for milestone checks
       const prevPower = rikishi.stats.power || 50;
 
@@ -355,16 +322,6 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
 
     builder.updateRikishi(rikishi.id, updates);
   });
-
-  // Clear consumed transientContext flags
-  if (trainingRegime || trainingGrowthBuff) {
-    const nextTc = { ...(world.transientContext as Record<string, unknown> | undefined) };
-    if (nextTc) {
-      delete nextTc.trainingRegime;
-      delete nextTc.trainingGrowthBuff;
-      builder.updateWorldField("transientContext", nextTc as never);
-    }
-  }
 
   return builder.build();
 }
