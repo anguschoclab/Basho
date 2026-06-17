@@ -281,10 +281,10 @@ export function tickYear(world: WorldState): StateImpact {
     // Remove from nextCandidates
     const removedIds = [...visible.idsToRemove, ...hidden.idsToRemove];
     if (removedIds.length > 0) {
-      const removedSet = new Set(removedIds as string[]);
-      nextCandidates = Object.fromEntries(
-        Object.entries(nextCandidates).filter(([id]) => !removedSet.has(id))
-      ) as Record<Id, TalentCandidate>;
+      // ⚡ Bolt Optimization: Replace O(N) Object.fromEntries(Object.entries()) with direct O(1) property deletion
+      for (const id of removedIds) {
+        delete nextCandidates[id];
+      }
     }
 
     // 2. Inject fresh prospects for the new year — fill to population cap

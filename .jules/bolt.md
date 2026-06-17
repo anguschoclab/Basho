@@ -129,3 +129,7 @@ Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop 
 ## 2024-05-18 - Optimize maximum value finding without Array.from().sort()
 **Learning:** In `GovernanceAgent.ts`, `Array.from(world.heyas.values()).filter(...).sort(...)` was used merely to find a single element with the highest reputation. This chained approach incurs an O(N) array allocation overhead from `Array.from()`, intermediate tuple allocations from `filter()`, and an unnecessary O(N log N) `sort()` execution when only the max element is needed.
 **Action:** Replace `Array.from(map.values()).filter(...).sort(...)` with a direct `for...of` loop that keeps track of the maximum value in a single O(N) pass, completely eliminating memory allocation overhead and sorting time.
+
+## 2025-05-24 - O(N) Object Deletion Optimization
+**Learning:** Using `Object.fromEntries(Object.entries(obj).filter(...))` to remove a subset of keys from a large dictionary creates significant O(N) array allocation overhead, scaling linearly with the size of the *entire* object rather than the number of removed items.
+**Action:** For bulk property removals on large dictionaries (like talent pools or entity caches), always prefer a direct loop with the `delete` operator over an array of `removedIds`. This changes the time complexity from O(N) relative to the object size to O(M) relative to the items removed.
