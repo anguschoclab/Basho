@@ -37,7 +37,7 @@ function makeRikishi(id: string, rank: string, shikona: string): Rikishi {
   } as unknown as Rikishi;
 }
 
-describe("evaluatePendingDecisions", () => {
+describe("evaluatePendingDecisions — approved taxonomy", () => {
   it("returns empty impact when no decisions are pending", () => {
     const world = makeWorld();
     const impact = evaluatePendingDecisions(world);
@@ -45,91 +45,57 @@ describe("evaluatePendingDecisions", () => {
     expect(impact.worldFields?.pendingCrisis).toBeUndefined();
   });
 
-  it("creates recruit_or_develop decision when stable has no sekitori in interim", () => {
+  it("pre_basho readiness is BLOCKING when a rikishi is fatigued", () => {
     const heya = makeHeya("h1", ["r1"]);
-    const rikishi = makeRikishi("r1", "makushita", "TestRikishi");
+    const r = makeRikishi("r1", "makushita", "Tired");
+    (r as unknown as { fatigue: number }).fatigue = 75;
     const world = makeWorld({
-      cyclePhase: "interim",
-      playerHeyaId: "h1",
-      heyas: new Map([["h1", heya]]),
-      rikishi: new Map([["r1", rikishi]]),
+      cyclePhase: "pre_basho", playerHeyaId: "h1",
+      heyas: new Map([["h1", heya]]), rikishi: new Map([["r1", r]]),
     });
-
     const impact = evaluatePendingDecisions(world);
-    const decisions = impact.worldFields?.pendingDecisions as Array<{ type: string }>;
-    expect(decisions).toBeDefined();
-    expect(decisions.length).toBe(1);
-    expect(decisions[0].type).toBe("recruit_or_develop");
+    const decisions = impact.worldFields?.pendingDecisions as Array<{ type: string; required: boolean }>;
+    const d = decisions.find((x) => x.type === "pre_basho_readiness");
+    expect(d).toBeDefined();
+    expect(d!.required).toBe(true);
+    expect(impact.worldFields?.pendingCrisis).toBeDefined();
   });
 
-  it("does not create recruit_or_develop when sekitori exist", () => {
-    const heya = makeHeya("h1", ["r1"]);
-    const rikishi = makeRikishi("r1", "maegashira", "TestRikishi");
+  it("insolvency is BLOCKING when runway is desperate", () => {
+    const heya = { ...makeHeya("h1", []), runwayBand: "desperate" } as unknown as ReturnType<typeof makeHeya>;
     const world = makeWorld({
-      cyclePhase: "interim",
-      playerHeyaId: "h1",
+      cyclePhase: "interim", playerHeyaId: "h1", week: 2,
       heyas: new Map([["h1", heya]]),
-      rikishi: new Map([["r1", rikishi]]),
     });
-
     const impact = evaluatePendingDecisions(world);
-    expect(impact.worldFields?.pendingDecisions).toBeUndefined();
+    const decisions = impact.worldFields?.pendingDecisions as Array<{ type: string; required: boolean }>;
+    expect(decisions.find((x) => x.type === "insolvency_response")?.required).toBe(true);
   });
 
-  it("does not duplicate existing decisions", () => {
+  it("weekly training emphasis is a QUEUE decision in interim", () => {
     const heya = makeHeya("h1", ["r1"]);
-    const rikishi = makeRikishi("r1", "makushita", "TestRikishi");
-    const existingDecision = {
-      id: "d1",
-      type: "recruit_or_develop",
-      description: "test",
-      deadlineWeek: 10,
-      options: [],
-      required: false,
-    };
     const world = makeWorld({
-      cyclePhase: "interim",
-      playerHeyaId: "h1",
+      cyclePhase: "interim", playerHeyaId: "h1",
       heyas: new Map([["h1", heya]]),
-      rikishi: new Map([["r1", rikishi]]),
-      pendingDecisions: [existingDecision],
-    } as Partial<WorldState>);
-
-    const impact = evaluatePendingDecisions(world);
-    const decisions = impact.worldFields?.pendingDecisions as Array<{ type: string }>;
-    expect(decisions).toBeUndefined();
-  });
-
-  it("creates training_regime decision in pre_basho at week multiple of 12", () => {
-    const world = makeWorld({
-      cyclePhase: "pre_basho",
-      week: 12,
+      rikishi: new Map([["r1", makeRikishi("r1", "makushita", "X")]]),
+      trainingState: new Map([["h1", { heyaId: "h1", activeProfile: { intensity: "balanced", focus: "neutral", styleBias: "neutral", recovery: "normal" }, focusSlots: [] }]]),
     });
-
     const impact = evaluatePendingDecisions(world);
-    const decisions = impact.worldFields?.pendingDecisions as Array<{ type: string }>;
-    expect(decisions).toBeDefined();
-    expect(decisions.length).toBe(1);
-    expect(decisions[0].type).toBe("training_regime");
+    const decisions = impact.worldFields?.pendingDecisions as Array<{ type: string; required: boolean }>;
+    const d = decisions.find((x) => x.type === "weekly_training_emphasis");
+    expect(d).toBeDefined();
+    expect(d!.required).toBe(false);
   });
 
-  it("sets pendingCrisis for blocking (required) decisions", () => {
-    const heya = makeHeya("h1", ["r1"]);
-    const rikishi = { ...makeRikishi("r1", "sekiwake", "TestRikishi"), currentBashoWins: 12 };
+  it("welfare diet is a QUEUE decision when welfareRisk > 60", () => {
+    const heya = { ...makeHeya("h1", []), welfareState: { welfareRisk: 75, activeDiet: "maintenance", complianceState: "watch", weeksInState: 0 } } as unknown as ReturnType<typeof makeHeya>;
     const world = makeWorld({
-      cyclePhase: "post_basho",
-      playerHeyaId: "h1",
+      cyclePhase: "interim", playerHeyaId: "h1", week: 3,
       heyas: new Map([["h1", heya]]),
-      rikishi: new Map([["r1", rikishi]]),
-      transientContext: {
-        bashoHistory: [{ r1: { wins: 12, losses: 3 } }, { r1: { wins: 12, losses: 3 } }, { r1: { wins: 12, losses: 3 } }],
-      } as unknown as WorldState["transientContext"],
-    } as Partial<WorldState>);
-
+    });
     const impact = evaluatePendingDecisions(world);
-    const crisis = impact.worldFields?.pendingCrisis as { type: string } | undefined;
-    expect(crisis).toBeDefined();
-    expect(crisis?.type).toBe("loop_decision");
+    const decisions = impact.worldFields?.pendingDecisions as Array<{ type: string; required: boolean }>;
+    expect(decisions.find((x) => x.type === "welfare_diet")?.required).toBe(false);
   });
 });
 
@@ -137,7 +103,7 @@ describe("resolveLoopDecision", () => {
   it("removes the resolved decision from pendingDecisions", () => {
     const decision = {
       id: "d1",
-      type: "recruit_or_develop",
+      type: "weekly_training_emphasis",
       description: "test",
       deadlineWeek: 10,
       options: [{ id: "opt1", label: "Option 1", impact: "none" }],
@@ -153,10 +119,10 @@ describe("resolveLoopDecision", () => {
   it("clears pendingCrisis when the blocking decision is resolved", () => {
     const decision = {
       id: "d1",
-      type: "ozeki_promotion",
+      type: "pre_basho_readiness",
       description: "test",
       deadlineWeek: 10,
-      options: [{ id: "petition", label: "Petition", impact: "promote" }],
+      options: [{ id: "rest", label: "Rest", impact: "recover" }],
       required: true,
     };
     const world = makeWorld({
@@ -164,23 +130,8 @@ describe("resolveLoopDecision", () => {
       pendingCrisis: { id: "d1", type: "loop_decision", title: "test", description: "test", options: [] },
     } as Partial<WorldState>);
 
-    const impact = resolveLoopDecision(world, "d1", "petition");
+    const impact = resolveLoopDecision(world, "d1", "rest");
     expect(impact.worldFields?.pendingCrisis).toBeUndefined();
-  });
-
-  it("applies training growth buff for train_current option", () => {
-    const decision = {
-      id: "d1",
-      type: "recruit_or_develop",
-      description: "test",
-      deadlineWeek: 10,
-      options: [{ id: "train_current", label: "Train", impact: "+5%" }],
-      required: false,
-    };
-    const world = makeWorld({ pendingDecisions: [decision] });
-
-    const impact = resolveLoopDecision(world, "d1", "train_current");
-    expect(impact.worldFields?.transientContext).toBeDefined();
   });
 
   it("does nothing for unknown decision id", () => {
@@ -201,6 +152,7 @@ describe("evaluatePendingDecisions — determinism", () => {
         seed: "seed-xyz",
         heyas: new Map([["h1", heya]]),
         rikishi: new Map([["r1", rikishi]]),
+        trainingState: new Map([["h1", { heyaId: "h1", activeProfile: { intensity: "balanced", focus: "neutral", styleBias: "neutral", recovery: "normal" }, focusSlots: [] }]]),
       });
     };
     const a = evaluatePendingDecisions(make());
@@ -209,61 +161,5 @@ describe("evaluatePendingDecisions — determinism", () => {
     const idsB = (b.worldFields?.pendingDecisions as Array<{ id: string }>).map((d) => d.id);
     expect(idsA).toEqual(idsB);
   });
-
-  it("ozeki petition outcome is deterministic for a fixed world+decision", () => {
-    const buildWorld = () => {
-      const heya = makeHeya("h1", ["r1"]);
-      const sekiwake = makeRikishi("r1", "sekiwake", "Petitioner");
-      const world = makeWorld({
-        cyclePhase: "post_basho",
-        playerHeyaId: "h1",
-        seed: "seed-ozeki",
-        heyas: new Map([["h1", heya]]),
-        rikishi: new Map([["r1", sekiwake]]),
-        pendingDecisions: [
-          { id: "ozeki-r1-fixed", type: "ozeki_promotion", description: "x", deadlineWeek: 3, required: true, options: [] },
-        ],
-      });
-      return world;
-    };
-    const a = resolveLoopDecision(buildWorld(), "ozeki-r1-fixed", "petition");
-    const b = resolveLoopDecision(buildWorld(), "ozeki-r1-fixed", "petition");
-    // Same seed + same decision id => same rikishi update (promotion or mental penalty)
-    const ua = a.entities?.rikishiUpdates instanceof Map ? a.entities.rikishiUpdates.get("r1") : undefined;
-    const ub = b.entities?.rikishiUpdates instanceof Map ? b.entities.rikishiUpdates.get("r1") : undefined;
-    expect(JSON.stringify(ua)).toEqual(JSON.stringify(ub));
-  });
 });
 
-describe("resolveLoopDecision — effects are not no-ops", () => {
-  function worldWithDecision(type: string, optionId: string) {
-    return {
-      world: makeWorld({
-        seed: "s",
-        playerHeyaId: "h1",
-        heyas: new Map([["h1", makeHeya("h1", ["r1"])]]),
-        rikishi: new Map([["r1", makeRikishi("r1", "makushita", "X")]]),
-        pendingDecisions: [
-          { id: `${type}-1`, type, description: "x", deadlineWeek: 2, required: false,
-            options: [{ id: optionId, label: optionId, impact: "x" }] },
-        ],
-      }),
-      decisionId: `${type}-1`,
-      optionId,
-    };
-  }
-
-  it("training_regime power_focus writes a deterministic training buff", () => {
-    const { world, decisionId } = worldWithDecision("training_regime", "power_focus");
-    const impact = resolveLoopDecision(world, decisionId, "power_focus");
-    const tc = impact.worldFields?.transientContext as Record<string, unknown>;
-    expect(tc?.trainingRegime).toBe("power_focus");
-  });
-
-  it("removes the resolved decision from pendingDecisions", () => {
-    const { world, decisionId } = worldWithDecision("training_regime", "balanced");
-    const impact = resolveLoopDecision(world, decisionId, "balanced");
-    const remaining = impact.worldFields?.pendingDecisions as Array<unknown>;
-    expect(remaining).toEqual([]);
-  });
-});

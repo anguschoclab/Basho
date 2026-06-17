@@ -29,124 +29,79 @@ function makeId(prefix: string, seed: string, world: WorldState): string {
 export function evaluatePendingDecisions(world: WorldState): StateImpact {
   const builder = createImpactBuilder("evaluatePendingDecisions");
   const currentWeek = world.week ?? 1;
-  const currentYear = world.year ?? 1;
   const playerHeyaId = world.playerHeyaId;
   const playerHeya = playerHeyaId ? world.heyas.get(playerHeyaId) : undefined;
 
   const existing = world.pendingDecisions ?? [];
   const newDecisions: LoopDecision[] = [];
 
-  // Decision 1: Recruit or Develop (interim phase, no sekitori)
-  if (world.cyclePhase === "interim" && playerHeya) {
-    const sekitoriCount = (playerHeya.rikishiIds ?? []).filter((id) => {
+  // Decision 1: Pre-basho readiness (BLOCKING)
+  if (world.cyclePhase === "pre_basho" && playerHeya) {
+    const atRisk = (playerHeya.rikishiIds ?? []).filter((id) => {
       const r = world.rikishi.get(id);
-      if (!r) return false;
-      const rank = r.rank ?? "";
-      return rank === "yokozuna" || rank === "ozeki" || rank === "sekiwake" || rank === "komusubi" || rank === "maegashira";
-    }).length;
-
-    if (sekitoriCount === 0 && !existing.some((d) => d.type === "recruit_or_develop")) {
-      const decision: LoopDecision = {
-        id: makeId("recruit", world.seed, world),
-        type: "recruit_or_develop",
-        description:
-          "Your stable has no sekitori. Choose a path to rebuild:",
-        deadlineWeek: currentWeek + 4,
-        required: false,
+      return !!r && (((r.fatigue ?? 0) > 60) || r.injured === true);
+    });
+    if (atRisk.length > 0 && !existing.some((d) => d.type === "pre_basho_readiness")) {
+      newDecisions.push({
+        id: makeId("prebasho", world.seed, world),
+        type: "pre_basho_readiness",
+        description: `${atRisk.length} wrestler(s) enter the basho fatigued or injured. Rest them or push for rank?`,
+        deadlineWeek: currentWeek + 1,
+        required: true,
         options: [
-          {
-            id: "scout_youth",
-            label: "Scout Youth Talent",
-            impact: "Unlocks a high-potential recruit event next week.",
-          },
-          {
-            id: "train_current",
-            label: "Focus on Current Roster",
-            impact: "+5% stat growth for all current rikishi this interim.",
-          },
-          {
-            id: "recruit_veteran",
-            label: "Recruit Veteran",
-            impact: "Adds a 28-year-old journeyman with juryo experience.",
-          },
+          { id: "rest", label: "Rest At-Risk Wrestlers", impact: "Lower injury risk; some lost conditioning (-momentum)." },
+          { id: "push", label: "Push For Rank", impact: "Keep conditioning; accept the injury risk." },
         ],
-      };
-      newDecisions.push(decision);
+      });
     }
   }
 
-  // Decision 2: Ozeki Promotion (post-basho, player rikishi at 33+ wins over 3 basho)
-  if (world.cyclePhase === "post_basho" && playerHeya) {
-    for (const rikishiId of playerHeya.rikishiIds ?? []) {
-      const r = world.rikishi.get(rikishiId);
-      if (!r || r.rank !== "sekiwake") continue;
-
-      // Count wins over last 3 basho from rikishi per-basho records (stored in transientContext)
-      const tc = world.transientContext as Record<string, unknown> | undefined;
-      const bashoHistory = (tc?.bashoHistory as Record<string, { wins: number; losses: number }>[]) ?? [];
-      const recentBasho = bashoHistory.slice(-3);
-      const totalWins = recentBasho.reduce((sum, record) => sum + (record[rikishiId]?.wins ?? 0), 0);
-
-      if (
-        totalWins >= 33 &&
-        !existing.some((d) => d.type === "ozeki_promotion" && d.description.includes(r.shikona ?? ""))
-      ) {
-        const decision: LoopDecision = {
-          id: makeId(`ozeki-${r.id}`, world.seed, world),
-          type: "ozeki_promotion",
-          description: `${r.shikona ?? "Your rikishi"} has ${totalWins} wins over the last 3 basho and is eligible for ozeki promotion. Do you petition the JSA?`,
-          deadlineWeek: currentWeek + 2,
-          required: true,
-          options: [
-            {
-              id: "petition",
-              label: "Petition for Promotion",
-              impact: "High chance of ozeki promotion; if denied, -5 mental.",
-            },
-            {
-              id: "wait",
-              label: "Wait Another Basho",
-              impact: "No change; eligibility preserved.",
-            },
-          ],
-        };
-        newDecisions.push(decision);
-        break; // Only one ozeki decision at a time
-      }
-    }
+  // Decision 2: Insolvency response (BLOCKING)
+  if (playerHeya && (playerHeya.runwayBand === "critical" || playerHeya.runwayBand === "desperate")
+      && !existing.some((d) => d.type === "insolvency_response")) {
+    newDecisions.push({
+      id: makeId("insolvency", world.seed, world),
+      type: "insolvency_response",
+      description: `Stable finances are ${playerHeya.runwayBand}. Choose a response:`,
+      deadlineWeek: currentWeek + 1,
+      required: true,
+      options: [
+        { id: "loan", label: "Take Emergency Loan", impact: "Cash now; monthly debt repayments." },
+        { id: "austerity", label: "Austerity Diet", impact: "Cut costs; raises welfare risk." },
+      ],
+    });
   }
 
-  // Decision 3: Training Regime Shift (annual, pre-basho)
-  if (
-    world.cyclePhase === "pre_basho" &&
-    currentWeek % 12 === 0 && // roughly annual
-    !existing.some((d) => d.type === "training_regime")
-  ) {
-    const decision: LoopDecision = {
-      id: makeId("train", world.seed, world),
-      type: "training_regime",
-      description: `Year ${currentYear}: Review your stable's training regime.`,
-      deadlineWeek: currentWeek + 2,
+  // Decision 3: Weekly training emphasis (QUEUE)
+  if (world.cyclePhase === "interim" && playerHeya && world.trainingState?.get(playerHeya.id)
+      && !existing.some((d) => d.type === "weekly_training_emphasis")) {
+    newDecisions.push({
+      id: makeId("training", world.seed, world),
+      type: "weekly_training_emphasis",
+      description: "Set this week's training emphasis:",
+      deadlineWeek: currentWeek + 1,
       required: false,
       options: [
-        {
-          id: "power_focus",
-          label: "Power Focus",
-          impact: "+5% power growth, +3% injury risk for 12 weeks.",
-        },
-        {
-          id: "technique_focus",
-          label: "Technique Focus",
-          impact: "+5% technique growth, -2% speed growth for 12 weeks.",
-        },
-        {
-          id: "balanced",
-          label: "Balanced Regime",
-          impact: "+2% all stats, no side effects.",
-        },
+        { id: "intensive", label: "Intensive", impact: "Faster gains; more fatigue and injury risk." },
+        { id: "conservative", label: "Conservative", impact: "Slower gains; safer." },
       ],
-    };
-    newDecisions.push(decision);
+    });
+  }
+
+  // Decision 4: Welfare diet (QUEUE)
+  if (playerHeya && (playerHeya.welfareState?.welfareRisk ?? 0) > 60
+      && !existing.some((d) => d.type === "welfare_diet")) {
+    newDecisions.push({
+      id: makeId("welfare", world.seed, world),
+      type: "welfare_diet",
+      description: `Welfare risk is high (${playerHeya.welfareState?.welfareRisk}). Adjust the diet?`,
+      deadlineWeek: currentWeek + 1,
+      required: false,
+      options: [
+        { id: "premium", label: "Premium Diet", impact: "Lowers welfare risk; higher cost." },
+        { id: "maintenance", label: "Maintenance Diet", impact: "Cheaper; risk persists." },
+      ],
+    });
   }
 
   // Append new decisions to existing
