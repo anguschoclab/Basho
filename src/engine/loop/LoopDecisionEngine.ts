@@ -6,7 +6,7 @@
 import type { WorldState } from "../types/world";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
-import { rngFromSeed } from "../rng";
+import { issueBailoutLoanIfNeeded } from "../loans";
 
 export interface LoopDecision {
   id: string;
@@ -154,62 +154,38 @@ export function resolveLoopDecision(
     builder.updateWorldField("pendingCrisis", undefined as never);
   }
 
-  // Apply option-specific effects (simplified)
-  if (decision.type === "training_regime") {
-    // Deterministic regime flag consumed by phase01_week_training.
-    builder.updateWorldField("transientContext", {
-      ...world.transientContext,
-      trainingRegime: optionId, // "power_focus" | "technique_focus" | "balanced"
+  const heya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : undefined;
+
+  if (decision.type === "pre_basho_readiness" && optionId === "rest" && heya) {
+    for (const id of heya.rikishiIds ?? []) {
+      const r = world.rikishi.get(id);
+      if (!r || !(((r.fatigue ?? 0) > 60) || r.injured)) continue;
+      builder.updateRikishi(id, {
+        fatigue: Math.max(0, (r.fatigue ?? 0) - 20),
+        momentum: Math.max(0, (r.momentum ?? 50) - 5),
+      });
+    }
+    // "push" intentionally has no effect — the player accepts the risk.
+  }
+
+  if (decision.type === "insolvency_response" && heya) {
+    if (optionId === "loan") {
+      builder.merge(issueBailoutLoanIfNeeded(world, heya.id));
+    } else if (optionId === "austerity") {
+      builder.updateHeya(heya.id, {
+        welfareState: { ...heya.welfareState, activeDiet: "austerity" },
+      } as never);
+    }
+  }
+
+  if (decision.type === "weekly_training_emphasis" && heya && (optionId === "intensive" || optionId === "conservative")) {
+    builder.updateTrainingStateNestedField(heya.id, "activeProfile.intensity", optionId);
+  }
+
+  if (decision.type === "welfare_diet" && heya && (optionId === "premium" || optionId === "maintenance")) {
+    builder.updateHeya(heya.id, {
+      welfareState: { ...heya.welfareState, activeDiet: optionId },
     } as never);
-  }
-
-  if (decision.type === "recruit_or_develop") {
-    if (optionId === "train_current") {
-      // Apply +5% growth buff to all player rikishi (stored in transientContext)
-      builder.updateWorldField("transientContext", {
-        ...world.transientContext,
-        trainingGrowthBuff: 1.05,
-      } as never);
-    } else if (optionId === "scout_youth" || optionId === "recruit_veteran") {
-      // Flag a recruitment intent the recruitment phase can act on next tick.
-      builder.updateWorldField("transientContext", {
-        ...world.transientContext,
-        recruitmentIntent: optionId,
-      } as never);
-    }
-  }
-
-  if (decision.type === "ozeki_promotion" && optionId === "petition") {
-    // 80% success chance
-    const rng = rngFromSeed(`loop_ozeki_${world.seed}_${decisionId}`, "loop", "petition");
-    const success = rng.next() < 0.8;
-    if (success) {
-      // Find the rikishi and promote
-      const heya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : undefined;
-      if (heya) {
-        for (const rid of heya.rikishiIds ?? []) {
-          const r = world.rikishi.get(rid);
-          if (r && r.rank === "sekiwake") {
-            builder.updateRikishi(rid, { rank: "ozeki" as never });
-            break;
-          }
-        }
-      }
-    } else {
-      // Denied: -5 mental to the candidate
-      const heya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : undefined;
-      if (heya) {
-        for (const rid of heya.rikishiIds ?? []) {
-          const r = world.rikishi.get(rid);
-          if (r && r.rank === "sekiwake") {
-            builder.updateRikishi(rid, {
-              stats: { ...r.stats, mental: Math.max(0, r.stats.mental - 5) },
-            });
-            break;
-          }
-        }
-      }
-    }
   }
 
   return builder.build();

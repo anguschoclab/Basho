@@ -163,3 +163,47 @@ describe("evaluatePendingDecisions — determinism", () => {
   });
 });
 
+describe("resolveLoopDecision — approved effects", () => {
+  function withDecision(type: string, optId: string, extra: Record<string, unknown> = {}) {
+    return makeWorld({
+      seed: "s", playerHeyaId: "h1",
+      heyas: new Map([["h1", makeHeya("h1", ["r1"])]]),
+      rikishi: new Map([["r1", makeRikishi("r1", "makushita", "X")]]),
+      pendingDecisions: [{ id: `${type}-1`, type, description: "x", deadlineWeek: 2, required: type.includes("pre_basho") || type.includes("insolvency"),
+        options: [{ id: optId, label: optId, impact: "x" }] }],
+      ...extra,
+    });
+  }
+
+  it("pre_basho rest reduces fatigue for at-risk rikishi", () => {
+    const r = makeRikishi("r1", "makushita", "X");
+    (r as unknown as { fatigue: number }).fatigue = 80;
+    const world = withDecision("pre_basho_readiness", "rest", { rikishi: new Map([["r1", r]]) });
+    const impact = resolveLoopDecision(world, "pre_basho_readiness-1", "rest");
+    const upd = impact.entities?.rikishiUpdates instanceof Map ? impact.entities.rikishiUpdates.get("r1") : undefined;
+    expect((upd as { fatigue: number }).fatigue).toBe(60); // 80 - 20
+  });
+
+  it("insolvency austerity sets activeDiet to austerity", () => {
+    const world = withDecision("insolvency_response", "austerity");
+    const impact = resolveLoopDecision(world, "insolvency_response-1", "austerity");
+    const upd = impact.entities?.heyaUpdates instanceof Map ? impact.entities.heyaUpdates.get("h1") : undefined;
+    expect((upd as { welfareState: { activeDiet: string } }).welfareState.activeDiet).toBe("austerity");
+  });
+
+  it("weekly_training_emphasis intensive sets training intensity", () => {
+    const world = withDecision("weekly_training_emphasis", "intensive", {
+      trainingState: new Map([["h1", { heyaId: "h1", activeProfile: { intensity: "balanced", focus: "neutral", styleBias: "neutral", recovery: "normal" }, focusSlots: [] }]]),
+    });
+    const impact = resolveLoopDecision(world, "weekly_training_emphasis-1", "intensive");
+    const upd = impact.entities?.trainingStateUpdates instanceof Map ? impact.entities.trainingStateUpdates.get("h1") : undefined;
+    expect(JSON.stringify(upd)).toContain("intensive");
+  });
+
+  it("removes the decision after resolution", () => {
+    const world = withDecision("welfare_diet", "premium");
+    const impact = resolveLoopDecision(world, "welfare_diet-1", "premium");
+    expect(impact.worldFields?.pendingDecisions).toEqual([]);
+  });
+});
+
