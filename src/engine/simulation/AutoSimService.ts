@@ -85,7 +85,10 @@ export function runAutoSim(
 
   const targetBasho = computeTargetBasho(config.duration);
 
-  let currentWorld = world;
+  // Mark this as an autonomous run so player-facing loop decisions are suppressed
+  // and the within-tick crisis halt is disabled (otherwise the sim freezes waiting
+  // for an interactive choice that never comes).
+  let currentWorld: WorldState = { ...world, _autonomousSim: true };
   while (bashoSimulated < targetBasho) {
     let bashoName = currentWorld.currentBashoName || "hatsu";
     const bashoSeed = `${currentWorld.seed}-basho-${currentWorld.year}-${bashoName}`;

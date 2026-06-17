@@ -28,6 +28,10 @@ function makeId(prefix: string, seed: string, world: WorldState): string {
  */
 export function evaluatePendingDecisions(world: WorldState): StateImpact {
   const builder = createImpactBuilder("evaluatePendingDecisions");
+  // Autonomous runs (AutoSim, holiday) have no interactive player to resolve
+  // decisions — generating them would only set a pendingCrisis that never clears
+  // and freezes the tick pipeline. Skip entirely.
+  if (world._autonomousSim) return builder.build();
   const currentWeek = world.week ?? 1;
   const playerHeyaId = world.playerHeyaId;
   const playerHeya = playerHeyaId ? world.heyas.get(playerHeyaId) : undefined;
@@ -204,6 +208,7 @@ const QUEUE_DEFAULTS: Record<string, string> = {
  */
 export function applyExpiredQueueDefaults(world: WorldState): StateImpact {
   const builder = createImpactBuilder("applyExpiredQueueDefaults");
+  if (world._autonomousSim) return builder.build();
   const decisions = world.pendingDecisions ?? [];
   const currentWeek = world.week ?? 1;
   const heya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : undefined;

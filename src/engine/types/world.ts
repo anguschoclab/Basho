@@ -209,6 +209,14 @@ export interface WorldState {
   _postBashoDays?: number;
   _daysSinceLastWeeklyTick?: number;
 
+  /**
+   * Transient flag marking an autonomous run (AutoSim, holiday fast-forward).
+   * When set, player-facing loop decisions are not generated and the within-tick
+   * crisis halt is disabled, so the simulation never freezes waiting for an
+   * interactive choice that nobody will make.
+   */
+  _autonomousSim?: boolean;
+
   _recruitmentWindow?: RecruitmentWindow;
 
   _postBashoMeta?: PostBashoMeta;

@@ -104,8 +104,10 @@ export function advanceOneDay(
   // 1. Run Preflight to advance calendar and determine boundaries
   let nextWorld = runPipeline(world, [phases.phase00_preflight]);
 
-  // Plan 3: Halt pipeline if a blocking crisis/loop decision was set during preflight
-  if (nextWorld.pendingCrisis) {
+  // Plan 3: Halt pipeline if a blocking crisis/loop decision was set during preflight.
+  // Skip in autonomous runs (AutoSim, holiday) — there is no interactive player to
+  // resolve it, so halting would freeze the whole world indefinitely.
+  if (nextWorld.pendingCrisis && !nextWorld._autonomousSim) {
     return nextWorld;
   }
 

@@ -37,6 +37,33 @@ function makeRikishi(id: string, rank: string, shikona: string): Rikishi {
   } as unknown as Rikishi;
 }
 
+describe("autonomous sim suppression", () => {
+  it("evaluatePendingDecisions produces nothing when _autonomousSim is set", () => {
+    const heya = makeHeya("h1", ["r1"]);
+    const r = makeRikishi("r1", "makushita", "Tired");
+    (r as unknown as { fatigue: number }).fatigue = 90;
+    const world = makeWorld({
+      cyclePhase: "pre_basho", playerHeyaId: "h1", _autonomousSim: true,
+      heyas: new Map([["h1", heya]]), rikishi: new Map([["r1", r]]),
+    });
+    const impact = evaluatePendingDecisions(world);
+    expect(impact.worldFields?.pendingDecisions).toBeUndefined();
+    expect(impact.worldFields?.pendingCrisis).toBeUndefined();
+  });
+
+  it("applyExpiredQueueDefaults is a no-op when _autonomousSim is set", () => {
+    const world = makeWorld({
+      playerHeyaId: "h1", week: 9, _autonomousSim: true,
+      heyas: new Map([["h1", makeHeya("h1", [])]]),
+      pendingDecisions: [
+        { id: "wt-1", type: "weekly_training_emphasis", description: "x", deadlineWeek: 3, required: false, options: [] },
+      ],
+    });
+    const impact = applyExpiredQueueDefaults(world);
+    expect(impact.worldFields?.pendingDecisions).toBeUndefined();
+  });
+});
+
 describe("evaluatePendingDecisions — approved taxonomy", () => {
   it("returns empty impact when no decisions are pending", () => {
     const world = makeWorld();
