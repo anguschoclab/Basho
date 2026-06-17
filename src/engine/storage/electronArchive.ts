@@ -43,6 +43,8 @@ export class ElectronArchiveService implements ArchiveService {
     try {
       const api = this.getElectronAPI();
       const appDataPath = await api.appPath.getPath("userData");
+      // Note: This paths strictly aligns with the allowedBaseDir path
+      // validation logic in the main process (electron/main.ts)
       this.baseDir = `${appDataPath}/archives`;
 
       // Create base directory
