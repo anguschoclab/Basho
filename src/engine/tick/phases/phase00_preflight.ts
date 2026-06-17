@@ -19,7 +19,7 @@ import {
   MAX_MONTH,
   INTERIM_WARNING_THRESHOLD,
 } from "../../../constants/engine/calendarExtended";
-import { evaluatePendingDecisions } from "../../loop/LoopDecisionEngine";
+import { evaluatePendingDecisions, applyExpiredQueueDefaults } from "../../loop/LoopDecisionEngine";
 
 export function phase00_preflight(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase00_preflight");
@@ -67,7 +67,11 @@ export function phase00_preflight(world: WorldState): StateImpact {
   const decisionImpact = evaluatePendingDecisions(world);
   builder.merge(decisionImpact);
 
-  // 6. Clear caches for the new day
+  // 6. Auto-apply defaults for expired queue decisions
+  const defaultsImpact = applyExpiredQueueDefaults(world);
+  builder.merge(defaultsImpact);
+
+  // 7. Clear caches for the new day
   clearQueryCaches();
 
   return builder.build();

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { evaluatePendingDecisions, resolveLoopDecision } from "../LoopDecisionEngine";
+import { evaluatePendingDecisions, resolveLoopDecision, applyExpiredQueueDefaults } from "../LoopDecisionEngine";
 import type { WorldState } from "../../types/world";
 import type { Heya } from "../../types/heya";
 import type { Rikishi } from "../../types/rikishi";
@@ -204,6 +204,34 @@ describe("resolveLoopDecision — approved effects", () => {
     const world = withDecision("welfare_diet", "premium");
     const impact = resolveLoopDecision(world, "welfare_diet-1", "premium");
     expect(impact.worldFields?.pendingDecisions).toEqual([]);
+  });
+});
+
+describe("applyExpiredQueueDefaults", () => {
+  it("applies the default and removes a queue decision past its deadline", () => {
+    const world = makeWorld({
+      seed: "s", playerHeyaId: "h1", week: 5,
+      heyas: new Map([["h1", makeHeya("h1", [])]]),
+      trainingState: new Map([["h1", { heyaId: "h1", activeProfile: { intensity: "intensive", focus: "neutral", styleBias: "neutral", recovery: "normal" }, focusSlots: [] }]]),
+      pendingDecisions: [
+        { id: "wt-1", type: "weekly_training_emphasis", description: "x", deadlineWeek: 3, required: false, options: [] },
+      ],
+    });
+    const impact = applyExpiredQueueDefaults(world);
+    // default intensity is "balanced"
+    const upd = impact.entities?.trainingStateUpdates instanceof Map ? impact.entities.trainingStateUpdates.get("h1") : undefined;
+    expect(JSON.stringify(upd)).toContain("balanced");
+    expect(impact.worldFields?.pendingDecisions).toEqual([]);
+  });
+
+  it("does not touch a queue decision still within its deadline", () => {
+    const world = makeWorld({
+      seed: "s", playerHeyaId: "h1", week: 2,
+      heyas: new Map([["h1", makeHeya("h1", [])]]),
+      pendingDecisions: [{ id: "wt-1", type: "weekly_training_emphasis", description: "x", deadlineWeek: 3, required: false, options: [] }],
+    });
+    const impact = applyExpiredQueueDefaults(world);
+    expect(impact.worldFields?.pendingDecisions).toBeUndefined();
   });
 });
 

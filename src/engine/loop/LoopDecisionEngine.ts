@@ -190,3 +190,38 @@ export function resolveLoopDecision(
 
   return builder.build();
 }
+
+/** Default option per queue decision type when the player ignores it. */
+const QUEUE_DEFAULTS: Record<string, string> = {
+  weekly_training_emphasis: "balanced",
+  welfare_diet: "maintenance",
+};
+
+/**
+ * Apply sensible defaults to non-required (queue) decisions whose deadline has
+ * passed, then drop them. Keeps blocking decisions untouched (they must be
+ * resolved by the player). Deterministic — pure function of world state.
+ */
+export function applyExpiredQueueDefaults(world: WorldState): StateImpact {
+  const builder = createImpactBuilder("applyExpiredQueueDefaults");
+  const decisions = world.pendingDecisions ?? [];
+  const currentWeek = world.week ?? 1;
+  const heya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : undefined;
+
+  const expired = decisions.filter((d) => !d.required && currentWeek > d.deadlineWeek);
+  if (expired.length === 0) return builder.build();
+
+  for (const d of expired) {
+    const def = QUEUE_DEFAULTS[d.type];
+    if (!def || !heya) continue;
+    if (d.type === "weekly_training_emphasis") {
+      builder.updateTrainingStateNestedField(heya.id, "activeProfile.intensity", def);
+    } else if (d.type === "welfare_diet") {
+      builder.updateHeya(heya.id, { welfareState: { ...heya.welfareState, activeDiet: def } } as never);
+    }
+  }
+
+  const remaining = decisions.filter((d) => !(expired.includes(d)));
+  builder.updateWorldField("pendingDecisions", remaining);
+  return builder.build();
+}
