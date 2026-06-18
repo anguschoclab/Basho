@@ -9,3 +9,6 @@
 ## 2026-06-06 - TooltipWrap is redundant for the Custom Button Component
 **Learning:** The project's custom `<Button>` component (`src/components/ui/button.tsx`) natively supports tooltips via the `tooltip` and `tooltipSide` props. Many components were incorrectly importing and wrapping `Button` inside an explicit `<TooltipWrap>`, which adds unnecessary boilerplate. Other standard components like `<SidebarTrigger>` do not support these props and still require wrapping, but standard `<Button>`s shouldn't be wrapped manually.
 **Action:** Always verify if a component supports built-in tooltip props (like `tooltip` and `tooltipSide` on `<Button>`) before manually wrapping it in `<TooltipWrap>` to maintain clean JSX structures and avoid redundancy.
+## 2025-02-27 - Icon-Only Button Tooltips
+**Learning:** The project's custom `Button` component (`src/components/ui/button.tsx`) natively supports `tooltip` and `tooltipSide` props. It automatically wraps the button in a `TooltipWrap` (Radix UI) when the `tooltip` prop is provided.
+**Action:** Use these props directly instead of manually wrapping icon-only buttons in `Tooltip` components to ensure adequate visual affordance for desktop/mouse users alongside `aria-label` for screen readers.
