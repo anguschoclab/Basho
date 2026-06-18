@@ -67,7 +67,8 @@ function BookmarkItem({
           variant="ghost"
           className="h-7 w-7 shrink-0"
           onClick={onRemove}
-          title="Remove bookmark"
+          aria-label="Remove bookmark"
+          tooltip="Remove bookmark"
         >
           <BookmarkX className="h-3.5 w-3.5 text-muted-foreground" />
         </Button>
