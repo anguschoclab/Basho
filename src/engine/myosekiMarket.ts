@@ -1,11 +1,7 @@
 import { rngFromSeed, rngForWorld } from "./rng";
 import type { WorldState } from "./types/world";
 import type { Id, IdMapRuntime } from "./types/common";
-import type {
-  MyosekiStock,
-  MyosekiMarket,
-  MyosekiTransaction,
-} from "./types/myoseki";
+import type { MyosekiStock, MyosekiMarket, MyosekiTransaction } from "./types/myoseki";
 import type { Oyakata } from "./types/oyakata";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
@@ -254,7 +250,9 @@ export function tickMyosekiMarket(world: WorldState): StateImpact {
   }
 
   // Apply heya updates
-  for (const [heyaId, update] of Object.entries(heyaUpdates)) {
+  for (const heyaId in heyaUpdates) {
+    if (!Object.prototype.hasOwnProperty.call(heyaUpdates, heyaId)) continue;
+    const update = heyaUpdates[heyaId];
     builder.updateHeya(heyaId, update);
   }
 

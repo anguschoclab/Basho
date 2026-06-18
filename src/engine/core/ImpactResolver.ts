@@ -20,15 +20,28 @@ const ENTITY_UPDATE_CONFIGS: EntityUpdateConfig[] = [
   { impactField: "oyakataUpdates", worldField: "oyakata" },
   { impactField: "trainingStateUpdates", worldField: "trainingState" },
   { impactField: "staffUpdates", worldField: "staff", condition: (w) => !!w.staff },
-  { impactField: "sponsorUpdates", worldField: "sponsorPool", nestedField: "sponsors", condition: (w) => !!w.sponsorPool },
-  { impactField: "koenkaiUpdates", worldField: "sponsorPool", nestedField: "koenkais", condition: (w) => !!w.sponsorPool },
-  { impactField: "myosekiUpdates", worldField: "myosekiMarket", nestedField: "stocks", isRecord: true, condition: (w) => !!w.myosekiMarket },
+  {
+    impactField: "sponsorUpdates",
+    worldField: "sponsorPool",
+    nestedField: "sponsors",
+    condition: (w) => !!w.sponsorPool,
+  },
+  {
+    impactField: "koenkaiUpdates",
+    worldField: "sponsorPool",
+    nestedField: "koenkais",
+    condition: (w) => !!w.sponsorPool,
+  },
+  {
+    impactField: "myosekiUpdates",
+    worldField: "myosekiMarket",
+    nestedField: "stocks",
+    isRecord: true,
+    condition: (w) => !!w.myosekiMarket,
+  },
 ];
 
-function applyEntityUpdates(
-  world: WorldState,
-  entities: StateImpact["entities"]
-): WorldState {
+function applyEntityUpdates(world: WorldState, entities: StateImpact["entities"]): WorldState {
   if (!entities) return world;
   let result = world;
   const entityMap = entities as Record<string, Map<string, unknown> | undefined>;
@@ -44,7 +57,9 @@ function applyEntityUpdates(
       const nextNested = { ...(parent[config.nestedField] as Record<string, unknown>) };
       for (const [id, update] of updates) {
         const existing = nextNested[id];
-        nextNested[id] = existing ? { ...existing, ...(update as Record<string, unknown>) } : update;
+        nextNested[id] = existing
+          ? { ...existing, ...(update as Record<string, unknown>) }
+          : update;
       }
       result = { ...result, [config.worldField]: { ...parent, [config.nestedField]: nextNested } };
     } else if (config.nestedField) {
@@ -53,14 +68,20 @@ function applyEntityUpdates(
       const nextMap = new Map((parent[config.nestedField] as Map<string, unknown>) || new Map());
       for (const [id, update] of updates) {
         const existing = nextMap.get(id);
-        nextMap.set(id, existing ? { ...existing, ...(update as Record<string, unknown>) } : update);
+        nextMap.set(
+          id,
+          existing ? { ...existing, ...(update as Record<string, unknown>) } : update
+        );
       }
       result = { ...result, [config.worldField]: { ...parent, [config.nestedField]: nextMap } };
     } else {
       const nextMap = new Map((result[config.worldField] as Map<string, unknown>) || new Map());
       for (const [id, update] of updates) {
         const existing = nextMap.get(id);
-        nextMap.set(id, existing ? { ...existing, ...(update as Record<string, unknown>) } : update);
+        nextMap.set(
+          id,
+          existing ? { ...existing, ...(update as Record<string, unknown>) } : update
+        );
       }
       result = { ...result, [config.worldField]: nextMap };
     }
@@ -90,7 +111,10 @@ function applyArrayAppends(world: WorldState, appends: StateImpact["arrayAppends
         result = { ...result, history: [...(result.history || []), ...(items as never[])] };
         break;
       case "almanacSnapshots":
-        result = { ...result, almanacSnapshots: [...(result.almanacSnapshots || []), ...(items as never[])] };
+        result = {
+          ...result,
+          almanacSnapshots: [...(result.almanacSnapshots || []), ...(items as never[])],
+        };
         break;
       case "basho.matches":
         if (result.currentBasho) {
@@ -104,7 +128,10 @@ function applyArrayAppends(world: WorldState, appends: StateImpact["arrayAppends
         }
         break;
       case "governanceLog":
-        result = { ...result, governanceLog: [...(result.governanceLog || []), ...(items as never[])] };
+        result = {
+          ...result,
+          governanceLog: [...(result.governanceLog || []), ...(items as never[])],
+        };
         break;
       case "awardLog":
         result = { ...result, awardLog: [...(result.awardLog || []), ...(items as never[])] };
@@ -123,10 +150,7 @@ function applyArrayAppends(world: WorldState, appends: StateImpact["arrayAppends
       case "pendingExhibitions":
         result = {
           ...result,
-          pendingExhibitions: [
-            ...(result.pendingExhibitions || []),
-            ...(items as never[]),
-          ],
+          pendingExhibitions: [...(result.pendingExhibitions || []), ...(items as never[])],
         };
         break;
     }
@@ -390,16 +414,23 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
     if (impact.entities) {
       if (!merged.entities) merged.entities = {};
       for (const field of ENTITY_UPDATE_CONFIGS.map((c) => c.impactField)) {
-        const sourceMap = (impact.entities as Record<string, Map<string, unknown> | undefined>)[field];
+        const sourceMap = (impact.entities as Record<string, Map<string, unknown> | undefined>)[
+          field
+        ];
         if (!sourceMap || sourceMap.size === 0) continue;
-        let targetMap = (merged.entities as Record<string, Map<string, unknown> | undefined>)[field];
+        let targetMap = (merged.entities as Record<string, Map<string, unknown> | undefined>)[
+          field
+        ];
         if (!targetMap) {
           targetMap = new Map();
           (merged.entities as Record<string, Map<string, unknown>>)[field] = targetMap;
         }
         for (const [id, update] of sourceMap) {
           const existing = targetMap.get(id);
-          targetMap.set(id, existing ? { ...existing, ...(update as Record<string, unknown>) } : update);
+          targetMap.set(
+            id,
+            existing ? { ...existing, ...(update as Record<string, unknown>) } : update
+          );
         }
       }
     }
@@ -407,7 +438,9 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
     // Merge collections with lazy array creation
     if (impact.collections) {
       if (!merged.collections) merged.collections = {};
-      for (const [key, arr] of Object.entries(impact.collections)) {
+      for (const key in impact.collections) {
+        if (!Object.prototype.hasOwnProperty.call(impact.collections, key)) continue;
+        const arr = impact.collections[key];
         if (!Array.isArray(arr) || arr.length === 0) continue;
         let target = (merged.collections as Record<string, unknown[]>)[key];
         if (!target) {
@@ -421,7 +454,9 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
     // Merge deletions with lazy array creation
     if (impact.deletedEntities) {
       if (!merged.deletedEntities) merged.deletedEntities = {};
-      for (const [key, ids] of Object.entries(impact.deletedEntities)) {
+      for (const key in impact.deletedEntities) {
+        if (!Object.prototype.hasOwnProperty.call(impact.deletedEntities, key)) continue;
+        const ids = impact.deletedEntities[key];
         if (!Array.isArray(ids) || ids.length === 0) continue;
         let target = (merged.deletedEntities as Record<string, string[]>)[key];
         if (!target) {
@@ -457,7 +492,9 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
 
   // Convert accumulated array appends back to array format
   if (appendMap.size > 0) {
-    merged.arrayAppends = Array.from(appendMap.entries()).map(([field, items]) => ({ field, items } as never));
+    merged.arrayAppends = Array.from(appendMap.entries()).map(
+      ([field, items]) => ({ field, items }) as never
+    );
   }
 
   return merged;

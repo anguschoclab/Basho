@@ -52,7 +52,9 @@ export function spawnRivalryAgent(ctx: RivalryAgentContext): RivalryAgentResult 
   const mediumHeatRivalries: string[] = [];
   const lowHeatRivalries: string[] = [];
 
-  for (const [key, pair] of Object.entries(activeRivalries)) {
+  for (const key in activeRivalries) {
+    if (!Object.prototype.hasOwnProperty.call(activeRivalries, key)) continue;
+    const pair = activeRivalries[key];
     if (pair.heat >= 70) {
       highHeatRivalries.push(key);
     } else if (pair.heat >= 40) {
