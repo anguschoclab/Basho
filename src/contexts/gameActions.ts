@@ -395,3 +395,31 @@ export const removeSparringPair = (heyaId: string, aId: string, bId: string): Ga
   aId,
   bId,
 });
+
+export const bookmarkEntity = (
+  entityType: string,
+  entityId: string,
+  note?: string
+): GameAction => ({
+  type: "BOOKMARK_ENTITY",
+  entityType,
+  entityId,
+  note,
+});
+
+export const unbookmarkEntity = (entityType: string, entityId: string): GameAction => ({
+  type: "UNBOOKMARK_ENTITY",
+  entityType,
+  entityId,
+});
+
+export const updateBookmarkNote = (
+  entityType: string,
+  entityId: string,
+  note: string
+): GameAction => ({
+  type: "UPDATE_BOOKMARK_NOTE",
+  entityType,
+  entityId,
+  note,
+});

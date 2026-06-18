@@ -137,6 +137,14 @@ interface GameContextValue {
   addSparringPair: (heyaId: string, aId: string, bId: string) => void;
   /** Removes a sparring pair within a heya. */
   removeSparringPair: (heyaId: string, aId: string, bId: string) => void;
+  /** Bookmarks an entity with an optional note. */
+  bookmarkEntity: (entityType: string, entityId: string, note?: string) => void;
+  /** Removes a bookmark from an entity. */
+  unbookmarkEntity: (entityType: string, entityId: string) => void;
+  /** Updates the note on an existing bookmark. */
+  updateBookmarkNote: (entityType: string, entityId: string, note: string) => void;
+  /** Checks if an entity is bookmarked. */
+  isBookmarked: (entityType: string, entityId: string) => boolean;
   /** Runs an auto-simulation with the given configuration. */
   runAutoSim: (config: AutoSimConfig) => Promise<AutoSimResult | null>;
   /** Recruits a sponsor for the player's heya. */
@@ -368,6 +376,35 @@ export function GameProvider({ children }: { children: ReactNode }) {
     dispatch(actions.removeSparringPair(heyaId, aId, bId));
   }, []);
 
+  const bookmarkEntityAction = useCallback(
+    (entityType: string, entityId: string, note?: string) => {
+      dispatch(actions.bookmarkEntity(entityType, entityId, note));
+    },
+    []
+  );
+
+  const unbookmarkEntityAction = useCallback(
+    (entityType: string, entityId: string) => {
+      dispatch(actions.unbookmarkEntity(entityType, entityId));
+    },
+    []
+  );
+
+  const updateBookmarkNoteAction = useCallback(
+    (entityType: string, entityId: string, note: string) => {
+      dispatch(actions.updateBookmarkNote(entityType, entityId, note));
+    },
+    []
+  );
+
+  const isBookmarkedCheck = useCallback(
+    (entityType: string, entityId: string) => {
+      const bookmarks = state.world?.playerKnowledge?.bookmarks ?? [];
+      return bookmarks.some((b) => b.entityType === entityType && b.entityId === entityId);
+    },
+    [state.world]
+  );
+
   const value: GameContextValue = useMemo(
     () => ({
       state,
@@ -411,6 +448,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
       removeMentor: removeMentorAction,
       addSparringPair: addSparringPairAction,
       removeSparringPair: removeSparringPairAction,
+      bookmarkEntity: bookmarkEntityAction,
+      unbookmarkEntity: unbookmarkEntityAction,
+      updateBookmarkNote: updateBookmarkNoteAction,
+      isBookmarked: isBookmarkedCheck,
       runAutoSimAction,
     }),
     [
@@ -455,6 +496,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
       removeMentorAction,
       addSparringPairAction,
       removeSparringPairAction,
+      bookmarkEntityAction,
+      unbookmarkEntityAction,
+      updateBookmarkNoteAction,
+      isBookmarkedCheck,
     ]
   );
 

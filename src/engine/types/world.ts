@@ -131,6 +131,13 @@ export interface ClosedHeyaRecord extends Heya {
   mergedInto?: Id;
 }
 
+export interface BookmarkEntry {
+  entityType: string;
+  entityId: string;
+  note?: string;
+  createdAt: number;
+}
+
 export interface WorldState {
   hallOfFame?: HallOfFameState;
   historyIndex?: HistoryIndex;
@@ -172,6 +179,7 @@ export interface WorldState {
   events: EventsState;
   playerKnowledge?: {
     scouting?: Record<string, ScoutedRikishi>;
+    bookmarks?: BookmarkEntry[];
   };
 
   governanceLog?: GovernanceRuling[];

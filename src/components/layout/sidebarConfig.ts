@@ -29,6 +29,7 @@ import {
   Calendar,
   Globe,
   Crown,
+  Bookmark,
 } from "lucide-react";
 
 export interface MenuItem {
@@ -71,6 +72,7 @@ export function getMenuGroups(
         { title: "Staff", url: "/stable/staff", icon: Briefcase },
         { title: "Oyakata", url: "/stable/oyakata", icon: Crown },
         { title: "Scouting", url: "/office/scouting", icon: Search, locked: !tutorialCompleted },
+        { title: "Bookmarks", url: "/bookmarks", icon: Bookmark },
       ],
     },
     {

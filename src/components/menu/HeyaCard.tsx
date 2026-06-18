@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { StableName } from "@/components/ClickableName";
 import { HeyaBrandBadge } from "@/components/stable/HeyaBrandBadge";
+import { BookmarkButton } from "@/components/bookmark/BookmarkButton";
 import type { Heya } from "@/engine/types/heya";
 import type { HeyaBrandIdentity } from "@/engine/types/keshoMawashi";
 import { STATURE_CONFIG } from "./statureConfig";
@@ -83,10 +84,13 @@ export function HeyaCard({
               )}
             </div>
           </div>
-          <Badge className={`${config.color} border shrink-0 font-bold`}>
-            <Icon className="w-3 h-3 mr-1" />
-            {config.label}
-          </Badge>
+          <div className="flex items-center gap-2 shrink-0">
+            <BookmarkButton entityType="heya" entityId={heya.id} />
+            <Badge className={`${config.color} border shrink-0 font-bold`}>
+              <Icon className="w-3 h-3 mr-1" />
+              {config.label}
+            </Badge>
+          </div>
         </div>
       </CardHeader>
 

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "@tanstack/react-router";
 import { Star, Swords, Eye, CircleDot, Flame, Shield, Zap } from "lucide-react";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { BookmarkButton } from "@/components/bookmark/BookmarkButton";
 import type { MatchRowData } from "./boutCardTypes.tsx";
 import { HEAT_CONFIG } from "./boutCardTypes.tsx";
 import { RikishiSide, H2HCenter, MatchFooter } from "./boutCardComponents";
@@ -86,6 +87,8 @@ export const BoutCard = React.memo(
           />
 
           <div className="shrink-0 ml-1 flex items-center gap-1.5">
+            <BookmarkButton entityType="rikishi" entityId={match.east.id} size="sm" />
+            <BookmarkButton entityType="rikishi" entityId={match.west.id} size="sm" />
             {hasResult ? (
               <div className="result-reveal flex items-center gap-1.5">
                 <Badge

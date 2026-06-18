@@ -28,6 +28,7 @@ import AlmanacPage from "./pages/AlmanacPage";
 import MediaPage from "./pages/MediaPage";
 import HallOfFamePage from "./pages/HallOfFamePage";
 import InjuryRecoveryPage from "./pages/InjuryRecoveryPage";
+import BookmarksPage from "./pages/BookmarksPage";
 import SponsorManagementPage from "./pages/SponsorManagementPage";
 import SettingsPage from "./pages/SettingsPage";
 import StaffPage from "./pages/StaffPage";
@@ -129,6 +130,11 @@ const recapRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/recap",
   component: RecapPage,
+});
+const bookmarksRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/bookmarks",
+  component: BookmarksPage,
 });
 
 // --- STABLE SECTION ---
@@ -395,6 +401,7 @@ const routeTree = rootRoute.addChildren([
   dashboardRoute,
   settingsRoute,
   recapRoute,
+  bookmarksRoute,
 
   // Stable
   stableBaseRoute.addChildren([

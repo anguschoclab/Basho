@@ -8,6 +8,7 @@ import { RikishiName, StableName } from "@/components/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Globe } from "lucide-react";
 import { getCombatArchetypeDescription } from "@/engine/archetype";
+import { BookmarkButton } from "@/components/bookmark/BookmarkButton";
 
 interface RikishiCardProps {
   rikishi: UIRikishi;
@@ -59,22 +60,25 @@ export const RikishiCard: React.FC<RikishiCardProps> = React.memo(({ rikishi }) 
               </p>
             </div>
           </div>
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Badge variant="outline" className="font-mono cursor-help">
-                  {rikishi.archetypeName}
-                </Badge>
-              </TooltipTrigger>
-              {rikishi.combatArchetype && (
-                <TooltipContent>
-                  <p className="max-w-xs">
-                    {getCombatArchetypeDescription(rikishi.combatArchetype as any)}
-                  </p>
-                </TooltipContent>
-              )}
-            </Tooltip>
-          </TooltipProvider>
+          <div className="flex items-center gap-2">
+            <BookmarkButton entityType="rikishi" entityId={rikishi.id} />
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge variant="outline" className="font-mono cursor-help">
+                    {rikishi.archetypeName}
+                  </Badge>
+                </TooltipTrigger>
+                {rikishi.combatArchetype && (
+                  <TooltipContent>
+                    <p className="max-w-xs">
+                      {getCombatArchetypeDescription(rikishi.combatArchetype as any)}
+                    </p>
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </TooltipProvider>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
