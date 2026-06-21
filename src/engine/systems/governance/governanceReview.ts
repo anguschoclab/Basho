@@ -17,6 +17,7 @@ import { PRESTIGE_ORDER, bandIndex } from "../../prestige/prestigeSystem";
 import { findMergerTarget, executeMerger } from "../../mergers";
 import { checkRetirement } from "../../lifecycle";
 import { generateOyakata } from "../../oyakataPersonalities";
+import { foundStable } from "../generation/WorldFactory";
 import { onRikishiRetired } from "../../records";
 import { updateAvatarForAging } from "../../avatarGenerator";
 import { recordOyakataHandover } from "../../lineage";
@@ -29,6 +30,8 @@ import {
   MERGER_THRESHOLD,
   FACTION_BAILOUT_AMOUNT,
   FACTION_BENEFACTOR_THRESHOLD,
+  FOUNDING_CHANCE,
+  HEYA_COUNT_CAP,
 } from "../../../constants/engine/economic";
 
 /**
@@ -428,6 +431,30 @@ export function runRetirements(world: WorldState): StateImpact {
             builder.merge(
               recordOyakataHandover(world, r.heyaId, newOyakataId, availableStock.name)
             );
+
+            // Stable founding: RNG-gated chance for the new oyakata to found a new heya
+            // instead of staying in their original stable. Only if under the heya cap.
+            if (world.heyas.size < HEYA_COUNT_CAP && rng.bool(FOUNDING_CHANCE)) {
+              const { heya: newHeya } = foundStable(
+                world,
+                newOyakataId,
+                `${r.shikona ?? r.name ?? id}-beya`,
+                rng
+              );
+              builder.addHeya(newHeya);
+              builder.logEvent(
+                "LIFECYCLE_EVENT",
+                "career",
+                {
+                  rikishiId: id,
+                  heyaId: newHeya.id,
+                  shikona: r.shikona ?? r.name ?? id,
+                  status: "stable_founded",
+                  heyaName: newHeya.name,
+                },
+                { heyaId: newHeya.id, rikishiId: id, importance: "headline" }
+              );
+            }
           }
         }
       }

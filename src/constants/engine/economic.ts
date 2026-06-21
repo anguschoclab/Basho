@@ -150,6 +150,12 @@ export const MERGER_THRESHOLD = -15_000_000;
 /** Seed funds for a newly founded stable (¥). */
 export const FOUNDING_SEED_FUNDS = 30_000_000;
 
+/** Maximum number of stables allowed in the world. */
+export const HEYA_COUNT_CAP = 50;
+
+/** Probability that an accomplished retiree with available myoseki founds a new stable. */
+export const FOUNDING_CHANCE = 0.35;
+
 /** Faction bailout amount (¥) - gift from wealthy faction-mates. */
 export const FACTION_BAILOUT_AMOUNT = 10_000_000;
 
