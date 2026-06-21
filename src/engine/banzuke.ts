@@ -196,13 +196,27 @@ export function updateBanzuke(
   }
 
   const sanyakuCounts = computeVariableSanyakuCounts(currentBanzuke, perfById, demotedOzeki);
+
+  // Dynamic division capacity: scale lower divisions to the active field so no
+  // rikishi is frozen out of the banzuke. Makuuchi (42) and juryo (28) are fixed
+  // (sekitori tiers); the remaining population is distributed across makushita,
+  // sandanme, jonidan, and jonokuchi (the overflow safety net).
+  const fieldSize = currentBanzuke.length;
+  const elite = 42 + 28; // makuuchi + juryo fixed
+  const lowerPopulation = Math.max(0, fieldSize - elite);
+  const HEADROOM = 8;
+  const makushita = Math.max(60, Math.ceil(lowerPopulation * 0.18) + HEADROOM);
+  const sandanme = Math.max(60, Math.ceil(lowerPopulation * 0.24) + HEADROOM);
+  const jonidan = Math.max(60, Math.ceil(lowerPopulation * 0.28) + HEADROOM);
+  const jonokuchi =
+    Math.max(40, lowerPopulation - (makushita + sandanme + jonidan)) + HEADROOM;
   const fullTemplate = buildFullSlotTemplate(sanyakuCounts, {
     makuuchi: 42,
     juryo: 28,
-    makushita: 60,
-    sandanme: 50,
-    jonidan: 40,
-    jonokuchi: 20,
+    makushita,
+    sandanme,
+    jonidan,
+    jonokuchi,
   });
 
   // ⚡ Bolt Optimization: Pre-calculate rikishi to heya mapping to avoid O(N*M) nested lookups
