@@ -32,6 +32,7 @@ import {
   FACTION_BENEFACTOR_THRESHOLD,
   FOUNDING_CHANCE,
   HEYA_COUNT_CAP,
+  HEYA_FLOOR,
   CHRONIC_UNDERPERFORMANCE_BASHO,
   PRESTIGE_COLLAPSE_BAND,
   NON_FINANCIAL_MERGER_MAX_ROSTER,
@@ -119,7 +120,8 @@ export function runGovernanceReview(world: WorldState): StateImpact {
         }
       }
       // === Insolvency-triggered merger for NPC stables with no rescue available ===
-      if (heya.funds < MERGER_THRESHOLD && heya.id !== world.playerHeyaId) {
+      // Blocked when at or below HEYA_FLOOR to prevent runaway collapse.
+      if (heya.funds < MERGER_THRESHOLD && heya.id !== world.playerHeyaId && world.heyas.size > HEYA_FLOOR) {
         const targetId = findMergerTarget(world, heya.id);
         if (targetId) {
           builder.logEvent(
@@ -144,8 +146,10 @@ export function runGovernanceReview(world: WorldState): StateImpact {
     // === Non-financial merger: chronic underperformance + prestige collapse ===
     // Small stables with prolonged underperformance and collapsed prestige
     // are forced to merge even if financially solvent.
+    // Blocked when at or below HEYA_FLOOR to prevent runaway collapse.
     if (
       heya.id !== world.playerHeyaId &&
+      world.heyas.size > HEYA_FLOOR &&
       (heya.consecutiveUnderperformanceBasho ?? 0) >= CHRONIC_UNDERPERFORMANCE_BASHO &&
       heya.prestigeBand === PRESTIGE_COLLAPSE_BAND &&
       getStableRikishi(world, heya.id).length <= NON_FINANCIAL_MERGER_MAX_ROSTER &&
@@ -239,7 +243,8 @@ export function runGovernanceReview(world: WorldState): StateImpact {
         );
 
         // If roster is 0 or 1, mark for eventual closure (NPC only)
-        if (rosterSize <= 1) {
+        // Blocked when at or below HEYA_FLOOR to prevent runaway collapse.
+        if (rosterSize <= 1 && world.heyas.size > HEYA_FLOOR) {
           builder.logEvent(
             "GOVERNANCE_RULING",
             "narrative",
