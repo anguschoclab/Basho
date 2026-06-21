@@ -86,11 +86,10 @@ import type { StateImpact } from "@/engine/core/StateImpact";
 beforeEach(() => {
   vi.clearAllMocks();
   // Spy on real resolveImpacts instead of mocking it
-   
+
   vi.spyOn(ImpactResolver, "resolveImpacts").mockImplementation(
     (world: WorldState, _impacts: StateImpact[]) => ({ ...world })
   );
-   
 });
 
 afterEach(() => {
@@ -101,9 +100,7 @@ afterEach(() => {
 
 function makeWorld(month = 1) {
   return makeMockWorld({
-     
     calendar: { currentWeek: 1, month } as any,
-     
   });
 }
 

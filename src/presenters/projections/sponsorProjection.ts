@@ -127,8 +127,7 @@ function buildSponsorData(
 ): SponsorData {
   const weeksRemaining = Math.max(0, Math.floor(((rel.endsAtTick ?? 0) - (world.week ?? 0)) / 4));
   const isExpiringSoon = weeksRemaining <= 4;
-  const monthlyIncome =
-    SPONSOR_TIER_INCOME[sponsor.tier as keyof typeof SPONSOR_TIER_INCOME] || 0;
+  const monthlyIncome = SPONSOR_TIER_INCOME[sponsor.tier as keyof typeof SPONSOR_TIER_INCOME] || 0;
 
   return {
     sponsorId: sponsor.id,

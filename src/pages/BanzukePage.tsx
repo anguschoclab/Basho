@@ -328,17 +328,13 @@ const DivisionTable = memo(function DivisionTable({
             <thead className="bg-muted/50 sticky top-0 z-10">
               <tr className="border-b">
                 <th className="p-3 font-display font-medium text-right w-[280px]">
-                  <span className="text-east text-[10px] uppercase tracking-widest">
-                    East 東
-                  </span>
+                  <span className="text-east text-[10px] uppercase tracking-widest">East 東</span>
                 </th>
                 <th className="p-3 font-display font-medium text-center w-[120px] text-muted-foreground text-[10px] uppercase tracking-widest">
                   Rank
                 </th>
                 <th className="p-3 font-display font-medium w-[280px]">
-                  <span className="text-west text-[10px] uppercase tracking-widest">
-                    West 西
-                  </span>
+                  <span className="text-west text-[10px] uppercase tracking-widest">West 西</span>
                 </th>
               </tr>
             </thead>
@@ -378,10 +374,7 @@ const DivisionTable = memo(function DivisionTable({
               ))}
               {rows.length === 0 && (
                 <tr>
-                  <td
-                    colSpan={3}
-                    className="p-8 text-center text-muted-foreground font-display"
-                  >
+                  <td colSpan={3} className="p-8 text-center text-muted-foreground font-display">
                     {searchQuery
                       ? "No wrestlers match your search"
                       : "No wrestlers in this division"}

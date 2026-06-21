@@ -9,11 +9,19 @@ describe("shouldHaltAdvance", () => {
     expect(shouldHaltAdvance(base)).toBe(false);
   });
   it("halts when a pendingCrisis exists", () => {
-    const w = { ...base, pendingCrisis: { id: "c1", type: "loop_decision", title: "x", description: "x", options: [] } } as unknown as WorldState;
+    const w = {
+      ...base,
+      pendingCrisis: { id: "c1", type: "loop_decision", title: "x", description: "x", options: [] },
+    } as unknown as WorldState;
     expect(shouldHaltAdvance(w)).toBe(true);
   });
   it("halts when a required pendingDecision exists even without a crisis", () => {
-    const w = { ...base, pendingDecisions: [{ id: "d1", type: "x", description: "x", deadlineWeek: 1, required: true, options: [] }] } as unknown as WorldState;
+    const w = {
+      ...base,
+      pendingDecisions: [
+        { id: "d1", type: "x", description: "x", deadlineWeek: 1, required: true, options: [] },
+      ],
+    } as unknown as WorldState;
     expect(shouldHaltAdvance(w)).toBe(true);
   });
 });

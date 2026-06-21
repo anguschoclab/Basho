@@ -9,10 +9,30 @@ import type { BoutTactic } from "@/engine/types/combat";
 function eastWinRate(tactic: BoutTactic, n = 300): number {
   let wins = 0;
   for (let day = 1; day <= n; day++) {
-    const east = mockRikishi("r-east", { power: 60, speed: 60, balance: 60, technique: 60, momentum: 50, fatigue: 0 });
-    const west = mockRikishi("r-west", { power: 60, speed: 60, balance: 60, technique: 60, momentum: 50, fatigue: 0 });
+    const east = mockRikishi("r-east", {
+      power: 60,
+      speed: 60,
+      balance: 60,
+      technique: 60,
+      momentum: 50,
+      fatigue: 0,
+    });
+    const west = mockRikishi("r-west", {
+      power: 60,
+      speed: 60,
+      balance: 60,
+      technique: 60,
+      momentum: 50,
+      fatigue: 0,
+    });
     const basho = makeMockBasho();
-    const ctx: BoutContext = { id: `b-${day}`, day, rikishiEastId: east.id, rikishiWestId: west.id, playerSide: "east" };
+    const ctx: BoutContext = {
+      id: `b-${day}`,
+      day,
+      rikishiEastId: east.id,
+      rikishiWestId: west.id,
+      playerSide: "east",
+    };
     const { result } = resolveBout(ctx, east, west, basho, tactic);
     if (result.winner === "east") wins++;
   }
@@ -33,7 +53,13 @@ describe("tactic win-rate (end-to-end)", () => {
       const east = mockRikishi("r-east", { power: 60, speed: 60, balance: 60 });
       const west = mockRikishi("r-west", { power: 60, speed: 60, balance: 60 });
       const basho = makeMockBasho();
-      const ctx: BoutContext = { id: "b-1", day: 7, rikishiEastId: east.id, rikishiWestId: west.id, playerSide: "east" };
+      const ctx: BoutContext = {
+        id: "b-1",
+        day: 7,
+        rikishiEastId: east.id,
+        rikishiWestId: west.id,
+        playerSide: "east",
+      };
       return resolveBout(ctx, east, west, basho, "ALL_OUT").result.winner;
     };
     expect(mk()).toBe(mk());

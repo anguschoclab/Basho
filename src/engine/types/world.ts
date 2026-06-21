@@ -225,6 +225,9 @@ export interface WorldState {
    */
   _autonomousSim?: boolean;
 
+  /** Delegation policy used to auto-resolve loop decisions during autonomous runs. */
+  _autonomousPolicy?: "conservative" | "balanced" | "aggressive";
+
   _recruitmentWindow?: RecruitmentWindow;
 
   _postBashoMeta?: PostBashoMeta;

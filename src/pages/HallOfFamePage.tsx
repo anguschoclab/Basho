@@ -421,7 +421,9 @@ export default function HallOfFamePage() {
             rikishiMap={
               new Map(
                 (hof?.inductees ?? [])
-                  .map((ind) => [ind.rikishiId, world.rikishi.get(ind.rikishiId)] as [string, unknown])
+                  .map(
+                    (ind) => [ind.rikishiId, world.rikishi.get(ind.rikishiId)] as [string, unknown]
+                  )
                   .filter((pair) => !!pair[1])
               ) as unknown as Map<string, import("@/presenters/uiModels").UIRikishi>
             }

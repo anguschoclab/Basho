@@ -42,7 +42,9 @@ export function generateCareerRecord(
 ): RikishiCareerRecord {
   const rankMult = getRankCareerMultiplier(rikishi.rank);
 
-  const careerBasho = Math.floor(CAREER_BASHO_BASE + rankMult * CAREER_BASHO_RANK_MULTIPLIER + rng() * CAREER_BASHO_RNG_RANGE);
+  const careerBasho = Math.floor(
+    CAREER_BASHO_BASE + rankMult * CAREER_BASHO_RANK_MULTIPLIER + rng() * CAREER_BASHO_RNG_RANGE
+  );
   const debutYear = world.year - Math.floor(careerBasho / 6);
   const debutBashoIndex = Math.floor(rng() * 6);
   const bashoNames: BashoName[] = ["hatsu", "haru", "natsu", "nagoya", "aki", "kyushu"];
@@ -194,7 +196,10 @@ function simulateBashoPerformance(
   shukunsho: boolean;
   kinboshi: number;
 } {
-  const boutCount = currentDivision === "makuuchi" || currentDivision === "juryo" ? BOUTS_PER_BASHO_SEKITORI : BOUTS_PER_BASHO_LOWER_DIVISION;
+  const boutCount =
+    currentDivision === "makuuchi" || currentDivision === "juryo"
+      ? BOUTS_PER_BASHO_SEKITORI
+      : BOUTS_PER_BASHO_LOWER_DIVISION;
   const targetMult = getRankCareerMultiplier(targetRank);
   const currentMult = getRankCareerMultiplier(currentRank);
 
@@ -206,11 +211,14 @@ function simulateBashoPerformance(
   else if (atTarget) baseWinRate = AT_TARGET_WIN_RATE_BASE + rng() * AT_TARGET_WIN_RATE_RNG_RANGE;
   else baseWinRate = DECLINING_WIN_RATE_BASE + rng() * DECLINING_WIN_RATE_RNG_RANGE;
 
-  const winsRaw = Math.round(boutCount * baseWinRate + (rng() - 0.5) * WIN_RATE_VARIANCE_MULTIPLIER);
+  const winsRaw = Math.round(
+    boutCount * baseWinRate + (rng() - 0.5) * WIN_RATE_VARIANCE_MULTIPLIER
+  );
   const wins = Math.max(0, Math.min(boutCount, winsRaw));
   const losses = boutCount - wins;
 
-  const yushoThreshold = boutCount === BOUTS_PER_BASHO_SEKITORI ? YUSHO_THRESHOLD_15_DAY : YUSHO_THRESHOLD_7_DAY;
+  const yushoThreshold =
+    boutCount === BOUTS_PER_BASHO_SEKITORI ? YUSHO_THRESHOLD_15_DAY : YUSHO_THRESHOLD_7_DAY;
   const yusho = atTarget && wins >= yushoThreshold && rng() < YUSHO_CHANCE;
   const junYusho = atTarget && wins >= yushoThreshold - 1 && !yusho && rng() < JUN_YUSHO_CHANCE;
 
@@ -266,13 +274,15 @@ function simulateRankProgression(
   if (isKachiKoshi) {
     if (margin >= RANK_PROGRESSION_DOUBLE_PROMOTE_MARGIN && rankIndex < rankOrder.length - 1)
       rankIndex = Math.min(rankIndex + 2, rankOrder.length - 1);
-    else if (margin >= RANK_PROGRESSION_PROMOTE_MARGIN && rankIndex < rankOrder.length - 1) rankIndex++;
+    else if (margin >= RANK_PROGRESSION_PROMOTE_MARGIN && rankIndex < rankOrder.length - 1)
+      rankIndex++;
 
     if (newRankNumber !== undefined && margin >= RANK_PROGRESSION_NUMBER_MARGIN)
       newRankNumber = Math.max(1, newRankNumber - Math.floor(margin / 2));
   } else {
     const absMargin = Math.abs(margin);
-    if (absMargin >= RANK_PROGRESSION_DOUBLE_DEMOTE_MARGIN && rankIndex > 0) rankIndex = Math.max(0, rankIndex - 2);
+    if (absMargin >= RANK_PROGRESSION_DOUBLE_DEMOTE_MARGIN && rankIndex > 0)
+      rankIndex = Math.max(0, rankIndex - 2);
     else if (absMargin >= RANK_PROGRESSION_DEMOTE_MARGIN && rankIndex > 0) rankIndex--;
 
     if (newRankNumber !== undefined) newRankNumber = newRankNumber + Math.floor(absMargin / 2);

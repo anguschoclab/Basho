@@ -270,7 +270,9 @@ function bandMorale(heya: Heya, world: WorldState): MoraleBand {
   }
   const avgMomentum = roster.length > 0 ? momentumSum / roster.length : 0;
 
-  const score = (100 - welfareRisk) * MORALE_SCORE_WEIGHT + (avgMomentum + MOMENTUM_NORMALIZATION_OFFSET) * MOMENTUM_NORMALIZER; // normalize momentum (-5..5) to 0..40
+  const score =
+    (100 - welfareRisk) * MORALE_SCORE_WEIGHT +
+    (avgMomentum + MOMENTUM_NORMALIZATION_OFFSET) * MOMENTUM_NORMALIZER; // normalize momentum (-5..5) to 0..40
   if (score >= MORALE_INSPIRED_THRESHOLD) return "inspired";
   if (score >= MORALE_CONTENT_THRESHOLD) return "content";
   if (score >= MORALE_NEUTRAL_THRESHOLD) return "neutral";

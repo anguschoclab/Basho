@@ -49,7 +49,12 @@ export const SimTuningService = {
    */
   calculateMetrics(
     world: WorldState,
-    historyStats?: { yokozunaVacancy: number; uniqueWinners: number; successions: number }
+    historyStats?: {
+      yokozunaVacancy: number;
+      uniqueWinners: number;
+      successions: number;
+      cumulativeKimarite?: Record<string, number>;
+    }
   ): TuningMetrics {
     // ⚡ Bolt Optimization: Use direct iteration instead of Array.from().map().filter()
     const activeRikishi: Rikishi[] = [];
@@ -105,6 +110,7 @@ export const SimTuningService = {
     for (const r of retiredRikishi) {
       if (r.retirementYear) {
         const age = r.retirementYear - r.birthYear;
+        if (age < 15 || age > 70) continue;
         retirementAges.push(age);
         retirementAgeSum += age;
       }
@@ -151,7 +157,7 @@ export const SimTuningService = {
     });
 
     // 7. Top Kimarite
-    const kimariteStats = world.globalKimariteStats || {};
+    const kimariteStats = historyStats?.cumulativeKimarite ?? world.globalKimariteStats ?? {};
     const topKimarite = Object.entries(kimariteStats)
       .map(([id, count]) => ({ id, count }))
       .sort((a, b) => b.count - a.count)

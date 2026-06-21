@@ -64,7 +64,8 @@ export function executeMerger(
   // If source had debt, it might not transfer fully, but positive funds transfer partially
   let newTargetFunds = target.funds;
   if (source.funds > 0) {
-    const transferRatio = source.scandalScore > 50 ? TRANSFER_RATIO_SCANDAL : TRANSFER_RATIO_STANDARD; // Scandal reduces favorable outcomes
+    const transferRatio =
+      source.scandalScore > 50 ? TRANSFER_RATIO_SCANDAL : TRANSFER_RATIO_STANDARD; // Scandal reduces favorable outcomes
     newTargetFunds += Math.floor(source.funds * transferRatio);
   }
 
@@ -171,7 +172,8 @@ export function findMergerTarget(world: WorldState, sourceHeyaId: Id): Id | null
     // Fallback: any stable with room
     const fallback: import("./types/heya").Heya[] = [];
     for (const h of world.heyas.values()) {
-      if (h.id !== sourceHeyaId && getStableRikishi(world, h.id).length < ROSTER_CAPACITY_MERGER) fallback.push(h);
+      if (h.id !== sourceHeyaId && getStableRikishi(world, h.id).length < ROSTER_CAPACITY_MERGER)
+        fallback.push(h);
     }
     if (fallback.length === 0) return null;
     return fallback[rng.int(0, fallback.length - 1)].id;

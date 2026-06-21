@@ -218,7 +218,10 @@ export function toRikishiDescriptor(_rng: SeededRNG, r: any, prev?: any): Rikish
     momentumBand: NarrativeService.getMomentumBand(r.momentum),
     potentialBand: NarrativeService.getPotentialBand(r.talentSeed, prev?.potentialBand),
     ageBand: NarrativeService.getAgeBand(r.age ?? 25, prev?.ageBand),
-    experienceBand: NarrativeService.getExperienceBand(r.stats.experience ?? 0, prev?.experienceBand),
+    experienceBand: NarrativeService.getExperienceBand(
+      r.stats.experience ?? 0,
+      prev?.experienceBand
+    ),
     weightBand: NarrativeService.getWeightBand(r.weight ?? 150, prev?.weightBand),
     archetypeLabel: undefined, // Simplified legacy field
     injuryModifiers: r.injured ? [getInjuryModifier(r)] : [],

@@ -73,7 +73,10 @@ function runPhaseLoop(
   const loserInstability = winner === "east" ? westInstability : eastInstability;
 
   // isamiashi: false start - only if loser was very unstable (near falling)
-  if (loserInstability > ISAMIASHI_INSTABILITY_THRESHOLD && rng.next() < POST_RESOLUTION_REVERSAL_CHANCE) {
+  if (
+    loserInstability > ISAMIASHI_INSTABILITY_THRESHOLD &&
+    rng.next() < POST_RESOLUTION_REVERSAL_CHANCE
+  ) {
     return { winner: loser, kimarite: "isamiashi" };
   }
 
@@ -103,7 +106,16 @@ export function resolveBoutPhysicsImpl(
   const effectiveMeta = meta || { tone: "classic", drift: {} };
   const division = east.division || west.division || "makushita";
 
-  const { winner, kimarite } = runPhaseLoop(rng, east, west, st, boutLog, division, effectiveMeta, bout.playerTactic);
+  const { winner, kimarite } = runPhaseLoop(
+    rng,
+    east,
+    west,
+    st,
+    boutLog,
+    division,
+    effectiveMeta,
+    bout.playerTactic
+  );
 
   const result = buildBoutResultV2(bout, east, west, st, winner, kimarite, boutLog);
   const engineSnapshot = buildEngineSnapshotV2(st, winner);

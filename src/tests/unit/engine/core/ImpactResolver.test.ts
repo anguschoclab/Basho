@@ -170,7 +170,6 @@ describe("ImpactResolver", () => {
       expect(result.week).toBe(2);
       expect(result.heyas.get("heya-1")?.funds).toBe(2000);
     });
-
   });
 
   describe("mergeImpacts", () => {

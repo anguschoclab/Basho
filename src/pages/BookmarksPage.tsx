@@ -141,9 +141,7 @@ export default function BookmarksPage() {
                       <BookmarkItem
                         key={`${bookmark.entityType}-${bookmark.entityId}`}
                         bookmark={bookmark}
-                        onRemove={() =>
-                          unbookmarkEntity(bookmark.entityType, bookmark.entityId)
-                        }
+                        onRemove={() => unbookmarkEntity(bookmark.entityType, bookmark.entityId)}
                         onUpdateNote={(note) =>
                           updateBookmarkNote(bookmark.entityType, bookmark.entityId, note)
                         }

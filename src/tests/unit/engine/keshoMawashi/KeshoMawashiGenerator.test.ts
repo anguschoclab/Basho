@@ -2,7 +2,6 @@
  * Tests for KeshoMawashiGenerator
  */
 
- 
 import { describe, it, expect } from "vitest";
 import {
   generateKeshoMawashi,

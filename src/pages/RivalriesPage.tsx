@@ -12,7 +12,10 @@ import { RivalriesHeader } from "@/components/rivalries/RivalriesHeader";
 import { RivalryCard } from "@/components/rivalries/RivalryCard";
 import { RivalriesEmptyState } from "@/components/rivalries/RivalriesEmptyState";
 import { HeatLegend } from "@/components/rivalries/HeatLegend";
-import { projectRivalriesPage, type RivalriesPageData } from "@/presenters/projections/rivalriesProjections";
+import {
+  projectRivalriesPage,
+  type RivalriesPageData,
+} from "@/presenters/projections/rivalriesProjections";
 import { Badge } from "@/components/ui/badge";
 import { toRivalryHeatBand } from "@/engine/descriptorBands";
 import { RIVALRY_HEAT_LABELS } from "@/constants/ui/labels";

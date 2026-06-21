@@ -32,7 +32,11 @@ export default function RegionalHubPage() {
 
   if (!world) {
     return (
-      <AppLayout pageTitle="World Circuit" subNavTabs={TOURNAMENT_TABS} activeSubTab="world-circuit">
+      <AppLayout
+        pageTitle="World Circuit"
+        subNavTabs={TOURNAMENT_TABS}
+        activeSubTab="world-circuit"
+      >
         <div className="flex items-center justify-center h-96 text-muted-foreground">
           No world loaded. Start a game to access the World Circuit.
         </div>

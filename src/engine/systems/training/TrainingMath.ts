@@ -48,7 +48,11 @@ import { ATTRIBUTE_PEAK, STAT_GROUP, maturityFactor } from "../../../constants/e
 export function getStatCeiling(talentSeed: number, statKey: keyof RikishiStats): number {
   const baseCeiling = STAT_CEILING_BASE + (talentSeed / 100) * STAT_CEILING_RANGE;
   const idx = STAT_CEILING_KEYS.indexOf(statKey);
-  const offset = idx >= 0 ? ((idx * STAT_CEILING_OFFSET_MULTIPLIER) % STAT_CEILING_OFFSET_DIVISOR) - STAT_CEILING_OFFSET_SUBTRACT : 0;
+  const offset =
+    idx >= 0
+      ? ((idx * STAT_CEILING_OFFSET_MULTIPLIER) % STAT_CEILING_OFFSET_DIVISOR) -
+        STAT_CEILING_OFFSET_SUBTRACT
+      : 0;
   return Math.min(MAX_STAT_CEILING, Math.max(MIN_STAT_CEILING, Math.round(baseCeiling + offset)));
 }
 

@@ -428,7 +428,7 @@ describe("Avatar Generator", () => {
         id: "makuuchi-test",
         nationality: "Japan",
         birthYear: 2000,
-        division: "makuuchi"
+        division: "makuuchi",
       });
 
       // 2025 - 2000 = 25 years old
@@ -441,7 +441,7 @@ describe("Avatar Generator", () => {
         id: "juryo-test",
         nationality: "Mongolia",
         birthYear: 2003,
-        division: "juryo"
+        division: "juryo",
       });
 
       // 2025 - 2003 = 22 years old
@@ -454,7 +454,7 @@ describe("Avatar Generator", () => {
         id: "makushita-test",
         nationality: "Japan",
         birthYear: 2007,
-        division: "makushita"
+        division: "makushita",
       });
 
       // 2025 - 2007 = 18 years old
@@ -468,7 +468,7 @@ describe("Avatar Generator", () => {
         nationality: "Japan",
         birthYear: 1985,
         division: "juryo",
-        isRetired: true
+        isRetired: true,
       });
 
       // 2025 - 1985 = 40 years old
@@ -476,5 +476,4 @@ describe("Avatar Generator", () => {
       expect(config.hairstyle).toBe("retired");
     });
   });
-
 });

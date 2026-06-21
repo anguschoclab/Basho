@@ -115,14 +115,20 @@ export function generateStaff(seed: string, role: StaffRole, heyaId: Id, sequenc
     loyaltyBand: rollBand(rng, LOYALTY_BANDS) as LoyaltyBand,
     competenceBands: {
       primary: rollBand(rng, COMPETENCE_BANDS) as CompetenceBand,
-      secondary: rng.next() > STAFF_SECONDARY_COMPETENCE_CHANCE ? (rollBand(rng, COMPETENCE_BANDS) as CompetenceBand) : undefined,
+      secondary:
+        rng.next() > STAFF_SECONDARY_COMPETENCE_CHANCE
+          ? (rollBand(rng, COMPETENCE_BANDS) as CompetenceBand)
+          : undefined,
     },
     fatigue: Math.floor(rng.next() * STAFF_FATIGUE_RANGE),
     morale: STAFF_BASE_MORALE + Math.floor(rng.next() * STAFF_MORALE_RANGE), // Start with good morale
     scandalExposure: Math.floor(rng.next() * STAFF_SCANDAL_EXPOSURE_RANGE),
     yearsAtBeya: Math.max(0, Math.floor(rng.next() * (age - STAFF_MIN_AGE_FOR_YEARS_CALC))),
     priorAffiliations: [],
-    successorEligible: role === "assistant_oyakata" && age > STAFF_SUCCESSOR_AGE_THRESHOLD && rng.next() > STAFF_SUCCESSOR_CHANCE,
+    successorEligible:
+      role === "assistant_oyakata" &&
+      age > STAFF_SUCCESSOR_AGE_THRESHOLD &&
+      rng.next() > STAFF_SUCCESSOR_CHANCE,
   };
 }
 
@@ -155,7 +161,13 @@ export function tickStaffWeek(world: WorldState): StateImpact {
       if (overload) {
         const fatigueGain = Math.ceil(loadFactor * STAFF_FATIGUE_GAIN_MULTIPLIER);
         newFatigue = Math.min(100, staff.fatigue + fatigueGain);
-        newMorale = Math.max(0, staff.morale - (loadFactor > STAFF_OVERLOAD_THRESHOLD ? STAFF_OVERLOAD_MORALE_PENALTY : STAFF_NORMAL_MORALE_PENALTY));
+        newMorale = Math.max(
+          0,
+          staff.morale -
+            (loadFactor > STAFF_OVERLOAD_THRESHOLD
+              ? STAFF_OVERLOAD_MORALE_PENALTY
+              : STAFF_NORMAL_MORALE_PENALTY)
+        );
       } else {
         newFatigue = Math.max(0, staff.fatigue - STAFF_FATIGUE_RECOVERY);
         if (staff.fatigue < STAFF_LOW_FATIGUE_THRESHOLD) {
@@ -190,10 +202,14 @@ export function tickStaffYear(world: WorldState): StateImpact {
     const newYearsAtBeya = staff.yearsAtBeya + 1;
 
     let newCareerPhase = staff.careerPhase;
-    if (staff.careerPhase === "apprentice" && newAge >= STAFF_APPRENTICE_AGE_THRESHOLD) newCareerPhase = "established";
-    else if (staff.careerPhase === "established" && newAge >= STAFF_SENIOR_AGE_THRESHOLD) newCareerPhase = "senior";
-    else if (staff.careerPhase === "senior" && newAge >= STAFF_DECLINING_AGE_THRESHOLD) newCareerPhase = "declining";
-    else if (staff.careerPhase === "declining" && newAge >= STAFF_RETIREMENT_AGE_THRESHOLD) newCareerPhase = "retired";
+    if (staff.careerPhase === "apprentice" && newAge >= STAFF_APPRENTICE_AGE_THRESHOLD)
+      newCareerPhase = "established";
+    else if (staff.careerPhase === "established" && newAge >= STAFF_SENIOR_AGE_THRESHOLD)
+      newCareerPhase = "senior";
+    else if (staff.careerPhase === "senior" && newAge >= STAFF_DECLINING_AGE_THRESHOLD)
+      newCareerPhase = "declining";
+    else if (staff.careerPhase === "declining" && newAge >= STAFF_RETIREMENT_AGE_THRESHOLD)
+      newCareerPhase = "retired";
 
     builder.updateStaff(staff.id, {
       age: newAge,
@@ -313,13 +329,25 @@ export function getHeyaStaffBonuses(world: WorldState, heyaId: Id): StaffBonuses
     const staff = world.staff.get(staffId);
     if (!staff || staff.careerPhase === "retired") continue;
 
-    const fatigueFactor = staff.fatigue > STAFF_HIGH_FATIGUE_THRESHOLD ? STAFF_HIGH_FATIGUE_FACTOR : staff.fatigue > STAFF_MEDIUM_FATIGUE_THRESHOLD ? STAFF_MEDIUM_FATIGUE_FACTOR : 1.0;
-    const moraleFactor = staff.morale > STAFF_HIGH_MORALE_BONUS_THRESHOLD ? STAFF_MORALE_HIGH_MULTIPLIER : staff.morale < STAFF_LOW_MORALE_PENALTY_THRESHOLD ? STAFF_MORALE_LOW_MULTIPLIER : 1.0;
+    const fatigueFactor =
+      staff.fatigue > STAFF_HIGH_FATIGUE_THRESHOLD
+        ? STAFF_HIGH_FATIGUE_FACTOR
+        : staff.fatigue > STAFF_MEDIUM_FATIGUE_THRESHOLD
+          ? STAFF_MEDIUM_FATIGUE_FACTOR
+          : 1.0;
+    const moraleFactor =
+      staff.morale > STAFF_HIGH_MORALE_BONUS_THRESHOLD
+        ? STAFF_MORALE_HIGH_MULTIPLIER
+        : staff.morale < STAFF_LOW_MORALE_PENALTY_THRESHOLD
+          ? STAFF_MORALE_LOW_MULTIPLIER
+          : 1.0;
     const efficiency = fatigueFactor * moraleFactor;
 
     const primaryBonus = BAND_VALUES[staff.competenceBands.primary] * efficiency;
     const secondaryBonus = staff.competenceBands.secondary
-      ? BAND_VALUES[staff.competenceBands.secondary] * STAFF_SECONDARY_COMPETENCE_MULTIPLIER * efficiency
+      ? BAND_VALUES[staff.competenceBands.secondary] *
+        STAFF_SECONDARY_COMPETENCE_MULTIPLIER *
+        efficiency
       : 0;
 
     const totalStaffBonus = primaryBonus + secondaryBonus;

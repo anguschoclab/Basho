@@ -17,10 +17,7 @@ function makeKey(entityType: string, entityId: string): string {
   return `${entityType}#${entityId}`;
 }
 
-function buildUpdatedKnowledge(
-  world: WorldState,
-  bookmarks: BookmarkEntry[]
-): StateImpact {
+function buildUpdatedKnowledge(world: WorldState, bookmarks: BookmarkEntry[]): StateImpact {
   const builder = createImpactBuilder("BookmarkService");
   const currentKnowledge = world.playerKnowledge || {};
   builder.updateWorldField("playerKnowledge", {
@@ -38,9 +35,7 @@ export function addBookmark(
 ): StateImpact {
   const bookmarks = getBookmarks(world);
   const key = makeKey(entityType, entityId);
-  const existing = bookmarks.find(
-    (b) => makeKey(b.entityType, b.entityId) === key
-  );
+  const existing = bookmarks.find((b) => makeKey(b.entityType, b.entityId) === key);
   if (existing) {
     // Idempotent: update note if provided
     if (note !== undefined && note !== existing.note) {
@@ -67,9 +62,7 @@ export function removeBookmark(
 ): StateImpact {
   const bookmarks = getBookmarks(world);
   const key = makeKey(entityType, entityId);
-  const filtered = bookmarks.filter(
-    (b) => makeKey(b.entityType, b.entityId) !== key
-  );
+  const filtered = bookmarks.filter((b) => makeKey(b.entityType, b.entityId) !== key);
   return buildUpdatedKnowledge(world, filtered);
 }
 
@@ -87,20 +80,13 @@ export function updateBookmarkNote(
   return buildUpdatedKnowledge(world, updated);
 }
 
-export function isBookmarked(
-  world: WorldState,
-  entityType: string,
-  entityId: string
-): boolean {
+export function isBookmarked(world: WorldState, entityType: string, entityId: string): boolean {
   const bookmarks = getBookmarks(world);
   const key = makeKey(entityType, entityId);
   return bookmarks.some((b) => makeKey(b.entityType, b.entityId) === key);
 }
 
-export function getBookmarksByType(
-  world: WorldState,
-  entityType: string
-): BookmarkEntry[] {
+export function getBookmarksByType(world: WorldState, entityType: string): BookmarkEntry[] {
   return getBookmarks(world).filter((b) => b.entityType === entityType);
 }
 

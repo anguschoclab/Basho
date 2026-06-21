@@ -128,7 +128,11 @@ export {
   describeTrainingEffect,
 } from "../engine/narrativeDescriptions";
 export { createDefaultRivalriesState, getRivalry } from "../engine/rivalries";
-export { createScoutedView, describeScoutingLevel, getScoutedAttributes } from "../engine/systems/recruitment/ScoutingService";
+export {
+  createScoutedView,
+  describeScoutingLevel,
+  getScoutedAttributes,
+} from "../engine/systems/recruitment/ScoutingService";
 export {
   FOCUS_BIAS_MATRIX,
   INTENSITY_MULTIPLIERS,
@@ -151,7 +155,11 @@ export {
   isKeyDay,
 } from "../engine/calendar";
 export { DEFAULT_CRITICAL_GATES } from "../engine/holiday";
-export { getTotalBashodays, needsScheduleForDay, DEFAULT_DIVISION_DAYS } from "../engine/scheduleHelpers";
+export {
+  getTotalBashodays,
+  needsScheduleForDay,
+  DEFAULT_DIVISION_DAYS,
+} from "../engine/scheduleHelpers";
 export {
   toFatigueBand,
   toScandalBand,

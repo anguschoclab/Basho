@@ -4,7 +4,7 @@ import {
   describeAggression,
   describeExperience,
   describeFatigue,
-  describeTrainingEffect
+  describeTrainingEffect,
 } from "@/engine/narrativeDescriptions";
 
 describe("narrativeDescriptions", () => {

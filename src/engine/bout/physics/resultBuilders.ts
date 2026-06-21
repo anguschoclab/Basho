@@ -33,7 +33,12 @@ export function buildBoutResultV2(
   const edgeCrisisEscapes = boutLog.filter(
     (e) => e.phase === "edge_crisis" && (e.data as Record<string, unknown>)?.escaped === true
   ).length;
-  const excitementScore = Math.min(100, Math.round(st.tick / EXCITEMENT_TICK_DIVISOR + edgeCrisisEscapes * EDGE_CRISIS_ESCAPE_EXCITEMENT_POINTS));
+  const excitementScore = Math.min(
+    100,
+    Math.round(
+      st.tick / EXCITEMENT_TICK_DIVISOR + edgeCrisisEscapes * EDGE_CRISIS_ESCAPE_EXCITEMENT_POINTS
+    )
+  );
 
   const resolvedStance =
     st.phase.tag === "belt_battle" ||
@@ -86,7 +91,11 @@ export function buildEngineSnapshotV2(st: EngineStateV2, winner: Side): EngineSn
   // Derive position from average foot position
   const avgFoot = (Math.abs(st.east.leadingFootX) + Math.abs(st.west.leadingFootX)) / 2;
   const position: "front" | "lateral" | "rear" =
-    avgFoot > POSITION_REAR_THRESHOLD ? "rear" : avgFoot > POSITION_LATERAL_THRESHOLD ? "lateral" : "front";
+    avgFoot > POSITION_REAR_THRESHOLD
+      ? "rear"
+      : avgFoot > POSITION_LATERAL_THRESHOLD
+        ? "lateral"
+        : "front";
 
   // Derive advantage from CoG stability differential
   const advantage: "none" | "east" | "west" =
@@ -99,14 +108,22 @@ export function buildEngineSnapshotV2(st: EngineStateV2, winner: Side): EngineSn
   return {
     stance: resolvedStance,
     grappleState,
-    balanceEast: Math.max(0, Math.min(100, 100 - Math.abs(st.east.cogOffset) * BALANCE_CALCULATION_MULTIPLIER)),
-    balanceWest: Math.max(0, Math.min(100, 100 - Math.abs(st.west.cogOffset) * BALANCE_CALCULATION_MULTIPLIER)),
+    balanceEast: Math.max(
+      0,
+      Math.min(100, 100 - Math.abs(st.east.cogOffset) * BALANCE_CALCULATION_MULTIPLIER)
+    ),
+    balanceWest: Math.max(
+      0,
+      Math.min(100, 100 - Math.abs(st.west.cogOffset) * BALANCE_CALCULATION_MULTIPLIER)
+    ),
     position,
     advantage,
     winnerConsecutiveAdvantage: st.tick,
     loserLastActionFamily: undefined,
     finalLoserBalanceDrain:
-      winner === "east" ? Math.abs(st.west.cogOffset) * BALANCE_CALCULATION_MULTIPLIER : Math.abs(st.east.cogOffset) * BALANCE_CALCULATION_MULTIPLIER,
+      winner === "east"
+        ? Math.abs(st.west.cogOffset) * BALANCE_CALCULATION_MULTIPLIER
+        : Math.abs(st.east.cogOffset) * BALANCE_CALCULATION_MULTIPLIER,
   };
 }
 

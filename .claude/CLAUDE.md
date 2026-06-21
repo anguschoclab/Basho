@@ -72,7 +72,12 @@ src/
 ## State Management
 - **`GameContext`** (contexts/GameContext.tsx) — single React context with `useReducer`
 - **`GameState`** shape: `{ phase, world, digest, … }`
-- **Slices:** `coreSlice`, `timeSlice`, `bashoSlice`, `heyaSlice`, `financeSlice`, `rosterSlice`, `mediaSlice`
+- **Slices:** `coreSlice`, `timeSlice`, `bashoSlice`, `heyaSlice`, `financeSlice`, `rosterSlice`, `bookmarkSlice`
+
+### Command path convention
+- **Engine mutations go through the Web Worker** (`src/engine/worker/engine.worker.ts` `COMMAND_HANDLERS` + `src/engine/worker/types.ts`), dispatched from the UI via `useGameStore((s) => s.sendCommand)`.
+- **The reducer (`src/contexts/*Slice.ts`) is only for:** transient UI state (`selectRikishi`, `selectHeya`, `setPhase`) and the synchronous bout-simulation/time-advance path that drives match animation (`bashoSlice`, `timeSlice`).
+- Do NOT add new engine-mutating actions to the reducer slices — they will not be reachable from the canonical command path. (This is the bug class that left `ISSUE_RULING`/`UPGRADE_HEYA` dead for months.)
 - **`gameReducer`** combines slices + calls engine functions
 
 ## RNG — Critical Convention

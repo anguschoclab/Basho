@@ -123,7 +123,11 @@ export function onBoutResolvedEconomics(
 
   // Marketability shift for kinboshi/ginboshi
   const marketabilityScale =
-    result.awardFact === "kinboshi" ? KINBOSHI_MARKETABILITY_BOOST : result.awardFact === "ginboshi" ? GINBOSHI_MARKETABILITY_BOOST : 0;
+    result.awardFact === "kinboshi"
+      ? KINBOSHI_MARKETABILITY_BOOST
+      : result.awardFact === "ginboshi"
+        ? GINBOSHI_MARKETABILITY_BOOST
+        : 0;
   const existingMarketability = winner.marketability ?? 50;
 
   if (kenshoCount > 0) {
@@ -144,7 +148,10 @@ export function onBoutResolvedEconomics(
       currentBashoEarnings: existingEconomics.currentBashoEarnings + rikishiNet,
       careerKenshoWon: existingEconomics.careerKenshoWon + kenshoCount,
       totalEarnings: existingEconomics.totalEarnings + rikishiNet,
-      popularity: Math.min(100, existingEconomics.popularity + marketabilityScale * MARKETABILITY_POPULARITY_MULTIPLIER),
+      popularity: Math.min(
+        100,
+        existingEconomics.popularity + marketabilityScale * MARKETABILITY_POPULARITY_MULTIPLIER
+      ),
     };
 
     builder.updateRikishi(winner.id, {
@@ -171,7 +178,10 @@ export function onBoutResolvedEconomics(
     builder.updateRikishi(winner.id, {
       economics: {
         ...existingEconomics,
-        popularity: Math.min(100, existingEconomics.popularity + marketabilityScale * MARKETABILITY_POPULARITY_MULTIPLIER),
+        popularity: Math.min(
+          100,
+          existingEconomics.popularity + marketabilityScale * MARKETABILITY_POPULARITY_MULTIPLIER
+        ),
       },
       marketability: existingMarketability + marketabilityScale,
     });

@@ -27,7 +27,12 @@ import {
   getEffectiveCeiling,
 } from "./TrainingMath";
 import { getHeyaStaffBonuses } from "../../staff";
-import { DRILL_EFFECTS, EXPERIENCE_GROWTH_MULTIPLIER, CRASH_PROBABILITY_THRESHOLD_WEEKS, MAX_CRASH_PROBABILITY } from "../../../constants/engine/training";
+import {
+  DRILL_EFFECTS,
+  EXPERIENCE_GROWTH_MULTIPLIER,
+  CRASH_PROBABILITY_THRESHOLD_WEEKS,
+  MAX_CRASH_PROBABILITY,
+} from "../../../constants/engine/training";
 import { InfrastructureService } from "../economy/InfrastructureService";
 import { RNGRegistry } from "../../core/RNGRegistry";
 
@@ -155,8 +160,14 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
           weeksRemaining: BURNOUT_INJURY_WEEKS,
           weeksToHeal: BURNOUT_INJURY_WEEKS,
         };
-        const crashPower = Math.max(CRASH_STAT_FLOOR, (rikishi.stats.power ?? 50) - CRASH_STAT_PENALTY);
-        const crashStamina = Math.max(CRASH_STAT_FLOOR, (rikishi.stats.stamina ?? 50) - CRASH_STAT_PENALTY);
+        const crashPower = Math.max(
+          CRASH_STAT_FLOOR,
+          (rikishi.stats.power ?? 50) - CRASH_STAT_PENALTY
+        );
+        const crashStamina = Math.max(
+          CRASH_STAT_FLOOR,
+          (rikishi.stats.stamina ?? 50) - CRASH_STAT_PENALTY
+        );
         // Stats object will be synced in the growth section if not injured,
         // but since we just injured them, we should sync here too.
         updates.stats = {
@@ -218,9 +229,7 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
       // Apply staff bonuses + Drill Vector + Infrastructure Buffs
       let finalGrowth = {
         power:
-          (growth.power + drillVector.power) *
-          staffBonuses.conditioning *
-          infra.statBuffs.power,
+          (growth.power + drillVector.power) * staffBonuses.conditioning * infra.statBuffs.power,
         speed:
           (growth.speed + drillVector.speed) * staffBonuses.conditioning * infra.statBuffs.speed,
         technique:
@@ -260,7 +269,10 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
       );
       newStats.technique = Math.min(
         getEffectiveCeiling(rikishi, "technique", world),
-        Math.max(STAT_FLOOR, (rikishi.stats.technique || 50) + finalGrowth.technique + decay.technique)
+        Math.max(
+          STAT_FLOOR,
+          (rikishi.stats.technique || 50) + finalGrowth.technique + decay.technique
+        )
       );
       newStats.balance = Math.min(
         getEffectiveCeiling(rikishi, "balance", world),
@@ -272,17 +284,29 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
       );
       newStats.adaptability = Math.min(
         getEffectiveCeiling(rikishi, "adaptability", world),
-        Math.max(STAT_FLOOR, (rikishi.stats.adaptability || 50) + finalGrowth.adaptability + decay.adaptability)
+        Math.max(
+          STAT_FLOOR,
+          (rikishi.stats.adaptability || 50) + finalGrowth.adaptability + decay.adaptability
+        )
       );
       newStats.mental = Math.min(
         getEffectiveCeiling(rikishi, "mental", world),
-        Math.max(STAT_FLOOR, (rikishi.stats.mental || 50) + finalGrowth.mental * EXPERIENCE_GROWTH_MULTIPLIER + decay.mental)
+        Math.max(
+          STAT_FLOOR,
+          (rikishi.stats.mental || 50) +
+            finalGrowth.mental * EXPERIENCE_GROWTH_MULTIPLIER +
+            decay.mental
+        )
       );
 
       // 4. Final Enforcements (Clamping & Stat Floors)
       (Object.keys(STAT_GROUP) as Array<keyof typeof STAT_GROUP>).forEach((key) => {
         const statsKey = key;
-        const ceiling = getEffectiveCeiling({ ...rikishi, stats: newStats } as Rikishi, statsKey, world);
+        const ceiling = getEffectiveCeiling(
+          { ...rikishi, stats: newStats } as Rikishi,
+          statsKey,
+          world
+        );
         let val = newStats[statsKey];
 
         // Enforce Ceiling
@@ -303,7 +327,10 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
 
       // Milestone Events (Threshold crossing)
       const currentPower = newStats.power;
-      if (Math.floor(currentPower / TRAINING_MILESTONE_THRESHOLD) > Math.floor(prevPower / TRAINING_MILESTONE_THRESHOLD)) {
+      if (
+        Math.floor(currentPower / TRAINING_MILESTONE_THRESHOLD) >
+        Math.floor(prevPower / TRAINING_MILESTONE_THRESHOLD)
+      ) {
         builder.logEvent(
           "TRAINING_UPDATE",
           "training",

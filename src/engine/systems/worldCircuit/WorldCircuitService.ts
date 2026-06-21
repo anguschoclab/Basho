@@ -11,7 +11,7 @@ import type { Rank } from "../../types/banzuke";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { RNGRegistry } from "../../core/RNGRegistry";
-import { getHeya, getRikishi} from "../../queries";
+import { getHeya, getRikishi } from "../../queries";
 
 export type ExhibitionRegion = "Mongolia" | "Georgia" | "Europe" | "Americas" | "East_Asia";
 
@@ -108,7 +108,10 @@ export const WorldCircuitService = {
 
     // Simulate result: rikishi's combined stats vs. generated regional champion
     const rikishiPower =
-      ((rikishi.stats.technique || 50) + (rikishi.stats.speed || 50) + (rikishi.stats.mental || 50)) / 3;
+      ((rikishi.stats.technique || 50) +
+        (rikishi.stats.speed || 50) +
+        (rikishi.stats.mental || 50)) /
+      3;
     const regionalChampion = 50 + invitation.prestige / 2; // prestige 50 → opponent CA ~75
     const win = rng.next() < rikishiPower / (rikishiPower + regionalChampion);
 

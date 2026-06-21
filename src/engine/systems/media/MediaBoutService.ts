@@ -87,7 +87,11 @@ export function updateMediaFromBout(args: {
 
   const tier = determineTier(impact);
   const tone = determineBoutTone(result, rivalryTension, winner?.rank, loser?.rank, rng.next());
-  const beat: MediaBeat = result.upset ? "upset" : rivalryTension > RIVALRY_TENSION_BEAT_THRESHOLD ? "rivalry" : "daily_bout";
+  const beat: MediaBeat = result.upset
+    ? "upset"
+    : rivalryTension > RIVALRY_TENSION_BEAT_THRESHOLD
+      ? "rivalry"
+      : "daily_bout";
 
   // 2. Generate Headline Text
   const { title, subtitle } = generateBoutHeadline({
@@ -215,7 +219,10 @@ function determineBoutTone(
   roll: number
 ): MediaTone {
   if (result.upset) {
-    return roll < CONTROVERSY_PROBABILITY_THRESHOLD && getRankImpact(loserRank) >= CONTROVERSY_RANK_IMPACT_THRESHOLD ? "controversy" : "hype";
+    return roll < CONTROVERSY_PROBABILITY_THRESHOLD &&
+      getRankImpact(loserRank) >= CONTROVERSY_RANK_IMPACT_THRESHOLD
+      ? "controversy"
+      : "hype";
   }
   if (rivalryTension > RIVALRY_TENSION_HYPE_THRESHOLD) {
     return roll < HYPE_PROBABILITY_THRESHOLD ? "hype" : "praise";

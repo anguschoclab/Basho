@@ -55,7 +55,10 @@ export function tickBeltBattle(
 
   // --- 1.75D Grip → Rotation ---
   // Angular velocity from torque advantage, clamped per tick
-  const deltaAngle = Math.max(-ANGULAR_MAX_VELOCITY, Math.min(ANGULAR_MAX_VELOCITY, torqueAdvantage * ANGULAR_TORQUE_SCALE));
+  const deltaAngle = Math.max(
+    -ANGULAR_MAX_VELOCITY,
+    Math.min(ANGULAR_MAX_VELOCITY, torqueAdvantage * ANGULAR_TORQUE_SCALE)
+  );
 
   if (torqueAdvantage > 0) {
     // East has torque advantage → west rotates (loses angle)
@@ -77,8 +80,10 @@ export function tickBeltBattle(
   st.west.facingAngle *= ANGULAR_RESTORING_DECAY;
 
   // Residual torque after rotation goes to linear displacement
-  const residualTorqueEast = Math.max(0, belt.torqueWest - belt.torqueEast) * TORQUE_DISPLACEMENT_MULTIPLIER;
-  const residualTorqueWest = Math.max(0, belt.torqueEast - belt.torqueWest) * TORQUE_DISPLACEMENT_MULTIPLIER;
+  const residualTorqueEast =
+    Math.max(0, belt.torqueWest - belt.torqueEast) * TORQUE_DISPLACEMENT_MULTIPLIER;
+  const residualTorqueWest =
+    Math.max(0, belt.torqueEast - belt.torqueWest) * TORQUE_DISPLACEMENT_MULTIPLIER;
 
   // Apply residual torque to CoG — only the losing side destabilises
   if (torqueAdvantage > 0) {
@@ -116,7 +121,8 @@ export function tickBeltBattle(
   st.west.z = push.westLateral;
   st.east.leadingFootX = push.eastLeadFoot;
   st.west.leadingFootX = push.westLeadFoot;
-  st.east.velocityX = torqueAdvantage < 0 ? Math.abs(torqueAdvantage) * BELT_BATTLE_VELOCITY_SCALE : 0;
+  st.east.velocityX =
+    torqueAdvantage < 0 ? Math.abs(torqueAdvantage) * BELT_BATTLE_VELOCITY_SCALE : 0;
   st.west.velocityX = torqueAdvantage > 0 ? torqueAdvantage * BELT_BATTLE_VELOCITY_SCALE : 0;
   st.east.velocityZ = push.eastLateralMomentum;
   st.west.velocityZ = push.westLateralMomentum;
@@ -142,7 +148,17 @@ export function tickBeltBattle(
   }
 
   // Mid-fight kimarite attempt
-  const attempt = evaluateKimariteAttempt(east, west, push, belt, st, rng, division, meta, playerTactic);
+  const attempt = evaluateKimariteAttempt(
+    east,
+    west,
+    push,
+    belt,
+    st,
+    rng,
+    division,
+    meta,
+    playerTactic
+  );
   if (attempt) {
     const succeeded = rng.next() < attempt.successProbability;
     if (succeeded) {

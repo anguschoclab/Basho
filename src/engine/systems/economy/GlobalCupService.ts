@@ -188,7 +188,7 @@ export const GlobalCupService = {
       match.result = result;
     });
 
-    const getWinner = (m: typeof unresolved[number]) => m.winnerRikishiId || "";
+    const getWinner = (m: (typeof unresolved)[number]) => m.winnerRikishiId || "";
 
     // 2. Transition phase
     if (currentRound === "quarterfinals") {

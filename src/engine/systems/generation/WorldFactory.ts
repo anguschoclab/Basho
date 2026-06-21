@@ -154,7 +154,11 @@ export function createHeyaWithOyakata(args: {
       weeksInState: 0,
       lastReviewedWeek: 0,
     },
-    facilities: { training: HEYA_FACILITIES_DEFAULT, recovery: HEYA_FACILITIES_DEFAULT, nutrition: HEYA_FACILITIES_DEFAULT },
+    facilities: {
+      training: HEYA_FACILITIES_DEFAULT,
+      recovery: HEYA_FACILITIES_DEFAULT,
+      nutrition: HEYA_FACILITIES_DEFAULT,
+    },
     riskIndicators: { financial: false, governance: false, rivalry: false },
     ichimon: seededPick(rng, ["Dewanoumi", "Nishonoseki", "Takasago", "Tokitsukaze", "Isegahama"]),
     politicalCapital: HEYA_POLITICAL_CAPITAL_DEFAULT,

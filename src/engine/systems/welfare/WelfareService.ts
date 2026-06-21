@@ -78,7 +78,8 @@ export const WelfareService = {
       if (!heya.riskIndicators)
         heya.riskIndicators = { financial: false, governance: false, rivalry: false };
       heya.riskIndicators.welfare =
-        state.complianceState !== "compliant" || state.welfareRisk >= WELFARE_RISK_INDICATOR_THRESHOLD;
+        state.complianceState !== "compliant" ||
+        state.welfareRisk >= WELFARE_RISK_INDICATOR_THRESHOLD;
 
       // 4. Material Shift logging
       const riskUp = state.welfareRisk - beforeRisk;
@@ -226,7 +227,11 @@ export const WelfareService = {
               (world.mediaState.heyaPressure[heya.id] ?? 0) + COMPLIANCE_PROGRESS_GAIN
             );
           }
-        } else if (state.investigation && state.investigation.progress >= 100 && state.welfareRisk <= SANCTION_RISK_THRESHOLD) {
+        } else if (
+          state.investigation &&
+          state.investigation.progress >= 100 &&
+          state.welfareRisk <= SANCTION_RISK_THRESHOLD
+        ) {
           this.setComplianceState(state, "watch");
           state.investigation = undefined;
           EventBus.welfareCompliance(world, heya.id, {

@@ -17,23 +17,14 @@ export function bookmarkSlice(state: GameState, action: GameAction): GameState {
 
   switch (action.type) {
     case "BOOKMARK_ENTITY": {
-      const impact = addBookmark(
-        state.world,
-        action.entityType,
-        action.entityId,
-        action.note
-      );
+      const impact = addBookmark(state.world, action.entityType, action.entityId, action.note);
       return {
         ...state,
         world: resolveImpacts(state.world, [impact]),
       };
     }
     case "UNBOOKMARK_ENTITY": {
-      const impact = removeBookmark(
-        state.world,
-        action.entityType,
-        action.entityId
-      );
+      const impact = removeBookmark(state.world, action.entityType, action.entityId);
       return {
         ...state,
         world: resolveImpacts(state.world, [impact]),

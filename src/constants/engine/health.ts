@@ -37,3 +37,6 @@ export const BODY_PART_ARMS_RANGE = [45, 60];
 export const BODY_PART_CHEST_RANGE = [60, 75];
 export const BODY_PART_LEGS_RANGE = [75, 90];
 export const BODY_PART_OTHER_RANGE = [90, 100];
+
+/** Yen charged per week of injury removed via paid treatment. */
+export const TREATMENT_COST_PER_WEEK = 500_000;

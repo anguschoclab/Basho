@@ -378,8 +378,8 @@ export function resolveImpacts(world: WorldState, impacts: StateImpact[]): World
             rikishiId: eventDef.rikishiId,
             data: eventDef.data,
             importance: eventDef.importance || "notable",
-            title: "",
-            summary: "",
+            title: (eventDef.data as { title?: string }).title ?? "",
+            summary: (eventDef.data as { summary?: string }).summary ?? "",
           });
         }
       }

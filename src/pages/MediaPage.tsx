@@ -5,6 +5,7 @@ import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/GameContext";
+import { useGameStore } from "@/store/gameStore";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -193,6 +194,7 @@ function HeatSparkline({ data }: { data: Array<{ basho: string; heat: number }> 
 
 export default function MediaPage() {
   const { state } = useGame();
+  const sendCommand = useGameStore((s) => s.sendCommand);
   const world = state.world;
   const [beatFilter, setBeatFilter] = useState<Set<MediaBeat>>(new Set());
 
@@ -221,6 +223,14 @@ export default function MediaPage() {
   const hotRikishi = digest?.hotRikishi ?? [];
   const pressuredHeya = digest?.pressuredHeya ?? [];
 
+  const unresolvedMedia = useMemo(
+    () =>
+      (world?.governanceLog ?? []).filter(
+        (r) => r.heyaId === world?.playerHeyaId && !r.playerChoice
+      ),
+    [world]
+  );
+
   if (!world) {
     return (
       <AppLayout subNavTabs={ASSOCIATION_TABS} activeSubTab="media" pageTitle="Media">
@@ -242,6 +252,30 @@ export default function MediaPage() {
           title="Media & Press"
           lede="Headlines, coverage, and public perception across the sumo world."
         />
+
+        {unresolvedMedia.length > 0 && (
+          <div className="space-y-3">
+            {unresolvedMedia.map((e) => (
+              <div key={e.id} className="rounded border border-border p-3 bg-card/50">
+                <div className="text-sm font-medium">{e.reason}</div>
+                <div className="mt-2 flex gap-2">
+                  {["no_comment", "deny", "apologize"].map((choice) => (
+                    <Button
+                      key={choice}
+                      size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        sendCommand({ type: "HANDLE_MEDIA_EVENT", eventId: e.id, choice })
+                      }
+                    >
+                      {choice.replace("_", " ")}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* Top Headlines */}
         <Card className="paper">

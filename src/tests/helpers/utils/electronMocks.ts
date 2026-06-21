@@ -41,7 +41,9 @@ export function mockElectronAPI(opts?: {
 }
 
 export function clearElectronMock() {
-  const win = (global as typeof globalThis).window as unknown as Record<string, unknown> | undefined;
+  const win = (global as typeof globalThis).window as unknown as
+    | Record<string, unknown>
+    | undefined;
   if (win) {
     delete win.__ELECTRON__;
     delete win.electronCustom;

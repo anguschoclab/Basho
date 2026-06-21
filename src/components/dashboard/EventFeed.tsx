@@ -14,6 +14,7 @@ import {
   ShieldAlert,
   Zap,
   Target,
+  CheckCircle2,
 } from "lucide-react";
 import { useGameStore } from "@/store/gameStore";
 import { WidgetCard } from "@/components/ui/WidgetCard";
@@ -42,6 +43,8 @@ const typeIcons: Record<string, React.ReactNode> = {
   GOVERNANCE_RULING: <ShieldAlert className="w-4 h-4 text-amber-500" />,
   RIVALRY_HEAT_SPIKE: <Zap className="w-4 h-4 text-orange-500" />,
   STRATEGY_SHIFT: <TrendingUp className="w-4 h-4 text-emerald-400" />,
+  DECISION_RESOLVED: <CheckCircle2 className="w-4 h-4 text-emerald-400" />,
+  DECISION_AUTO_RESOLVED: <CheckCircle2 className="w-4 h-4 text-emerald-400" />,
   default: <Info className="w-4 h-4 text-muted-foreground" />,
 };
 

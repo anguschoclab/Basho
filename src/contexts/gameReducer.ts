@@ -18,7 +18,6 @@ import { heyaSlice } from "./heyaSlice";
 import { rosterSlice } from "./rosterSlice";
 import { financeSlice } from "./financeSlice";
 import { bashoSlice } from "./bashoSlice";
-import { mediaSlice } from "./mediaSlice";
 import { bookmarkSlice } from "./bookmarkSlice";
 
 /**
@@ -176,7 +175,6 @@ const baseReducer = combineReducers<GameState, GameAction>([
   rosterSlice,
   financeSlice,
   bashoSlice,
-  mediaSlice,
   bookmarkSlice,
 ]);
 

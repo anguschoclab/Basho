@@ -78,8 +78,14 @@ function groupEventsByNarrative(events: EngineEvent[]) {
   return groups;
 }
 
-function getPrestigeChanges(world: { heyas: Map<string, { name: string; prestigeBand: string; reputation: number }>; events?: { log: EngineEvent[] } }): Array<{ heya: { name: string; prestigeBand: string; reputation: number }; change: string }> {
-  const changes: Array<{ heya: { name: string; prestigeBand: string; reputation: number }; change: string }> = [];
+function getPrestigeChanges(world: {
+  heyas: Map<string, { name: string; prestigeBand: string; reputation: number }>;
+  events?: { log: EngineEvent[] };
+}): Array<{ heya: { name: string; prestigeBand: string; reputation: number }; change: string }> {
+  const changes: Array<{
+    heya: { name: string; prestigeBand: string; reputation: number };
+    change: string;
+  }> = [];
   if (!world?.heyas) return changes;
   const prestige_events = (world.events?.log || [])
     .filter(
@@ -344,7 +350,9 @@ export default function RecapPage() {
           <HoFInductionCeremony
             inductee={showHoFCeremony}
             heyaName={(() => {
-              const r = world.rikishi.get(showHoFCeremony.rikishiId) || world.historicalRikishi?.get(showHoFCeremony.rikishiId);
+              const r =
+                world.rikishi.get(showHoFCeremony.rikishiId) ||
+                world.historicalRikishi?.get(showHoFCeremony.rikishiId);
               const h = r ? world.heyas.get(r.heyaId) : null;
               return h?.name || "Independent";
             })()}

@@ -191,7 +191,9 @@ const officeBaseRoute = createRoute({ getParentRoute: () => rootRoute, path: "/o
 const economyRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/economy",
-  beforeLoad: () => { throw redirect({ to: "/office/finances", replace: true }); },
+  beforeLoad: () => {
+    throw redirect({ to: "/office/finances", replace: true });
+  },
   component: () => null,
 });
 const officeFinancesNestedRoute = createRoute({
@@ -202,7 +204,9 @@ const officeFinancesNestedRoute = createRoute({
 const scoutingRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/scouting",
-  beforeLoad: () => { throw redirect({ to: "/office/scouting", replace: true }); },
+  beforeLoad: () => {
+    throw redirect({ to: "/office/scouting", replace: true });
+  },
   component: () => null,
 });
 const officeScoutingNestedRoute = createRoute({
@@ -213,7 +217,9 @@ const officeScoutingNestedRoute = createRoute({
 const sponsorsRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/sponsors",
-  beforeLoad: () => { throw redirect({ to: "/office/sponsors", replace: true }); },
+  beforeLoad: () => {
+    throw redirect({ to: "/office/sponsors", replace: true });
+  },
   component: () => null,
 });
 const officeSponsorsNestedRoute = createRoute({
@@ -232,7 +238,9 @@ const jsaBaseRoute = createRoute({ getParentRoute: () => rootRoute, path: "/jsa"
 const governanceRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/governance",
-  beforeLoad: () => { throw redirect({ to: "/jsa/governance", replace: true }); },
+  beforeLoad: () => {
+    throw redirect({ to: "/jsa/governance", replace: true });
+  },
   component: () => null,
 });
 const jsaGovernanceNestedRoute = createRoute({
@@ -248,7 +256,9 @@ const jsaTrendsRoute = createRoute({
 const talentRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/talent",
-  beforeLoad: () => { throw redirect({ to: "/jsa/talent", replace: true }); },
+  beforeLoad: () => {
+    throw redirect({ to: "/jsa/talent", replace: true });
+  },
   component: () => null,
 });
 const jsaTalentNestedRoute = createRoute({
@@ -300,19 +310,25 @@ const worldCircuitRoute = createRoute({
 const banzukeRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/banzuke",
-  beforeLoad: () => { throw redirect({ to: "/basho/banzuke", replace: true }); },
+  beforeLoad: () => {
+    throw redirect({ to: "/basho/banzuke", replace: true });
+  },
   component: () => null,
 });
 const scheduleRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/schedule",
-  beforeLoad: () => { throw redirect({ to: "/basho/schedule", replace: true }); },
+  beforeLoad: () => {
+    throw redirect({ to: "/basho/schedule", replace: true });
+  },
   component: () => null,
 });
 const rivalriesRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/rivalries",
-  beforeLoad: () => { throw redirect({ to: "/basho/rivalries", replace: true }); },
+  beforeLoad: () => {
+    throw redirect({ to: "/basho/rivalries", replace: true });
+  },
   component: () => null,
 });
 
@@ -321,7 +337,9 @@ const recordsBaseRoute = createRoute({ getParentRoute: () => rootRoute, path: "/
 const recordsIndexRoute = createRoute({
   getParentRoute: () => recordsBaseRoute,
   path: "/",
-  beforeLoad: () => { throw redirect({ to: "/records/history", replace: true }); },
+  beforeLoad: () => {
+    throw redirect({ to: "/records/history", replace: true });
+  },
   component: () => null,
 });
 const recordsHistoryRoute = createRoute({
@@ -354,25 +372,33 @@ const mediaRoute = createRoute({
 const historyRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/history",
-  beforeLoad: () => { throw redirect({ to: "/records/history", replace: true }); },
+  beforeLoad: () => {
+    throw redirect({ to: "/records/history", replace: true });
+  },
   component: () => null,
 });
 const almanacRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/almanac",
-  beforeLoad: () => { throw redirect({ to: "/records/almanac", replace: true }); },
+  beforeLoad: () => {
+    throw redirect({ to: "/records/almanac", replace: true });
+  },
   component: () => null,
 });
 const hallOfFameRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/hall-of-fame",
-  beforeLoad: () => { throw redirect({ to: "/records/hall-of-fame", replace: true }); },
+  beforeLoad: () => {
+    throw redirect({ to: "/records/hall-of-fame", replace: true });
+  },
   component: () => null,
 });
 const museumRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/museum",
-  beforeLoad: () => { throw redirect({ to: "/records/museum", replace: true }); },
+  beforeLoad: () => {
+    throw redirect({ to: "/records/museum", replace: true });
+  },
   component: () => null,
 });
 

@@ -40,9 +40,13 @@ export function resolveTachiaiV2(
   // Apply 8% penalty when opponent's style is in the rikishi's weakAgainstStyles list
   // Add h2h confidence bonus: (wins/total - 0.5)*8 when >= 3 prior meetings
   let eastPower =
-    tachiaiPowerWithMatchupPenalty(east, west) + h2hConfidence(east, west.id) + jitter(rng, TACHIAI_JITTER_MAGNITUDE);
+    tachiaiPowerWithMatchupPenalty(east, west) +
+    h2hConfidence(east, west.id) +
+    jitter(rng, TACHIAI_JITTER_MAGNITUDE);
   let westPower =
-    tachiaiPowerWithMatchupPenalty(west, east) + h2hConfidence(west, east.id) + jitter(rng, TACHIAI_JITTER_MAGNITUDE);
+    tachiaiPowerWithMatchupPenalty(west, east) +
+    h2hConfidence(west, east.id) +
+    jitter(rng, TACHIAI_JITTER_MAGNITUDE);
 
   // Apply tactic-driven tachiai power modifier to the player-side rikishi
   if (bout.playerTactic && bout.playerSide) {
@@ -107,7 +111,10 @@ export function resolveTachiaiV2(
   // Decide push vs belt battle (biased by combatProfile)
   const eastBeltBias = east.combatProfile?.familyPreferences?.belt ?? 25;
   const westBeltBias = west.combatProfile?.familyPreferences?.belt ?? 25;
-  const beltThreshold = Math.min(BELT_THRESHOLD_MAX, (eastBeltBias + westBeltBias) / BELT_BIAS_DIVISOR);
+  const beltThreshold = Math.min(
+    BELT_THRESHOLD_MAX,
+    (eastBeltBias + westBeltBias) / BELT_BIAS_DIVISOR
+  );
   const useBelt = rng.next() < beltThreshold;
 
   // Force/momentum never drop below MIN_ABSOLUTE_FORCE, so a degenerate

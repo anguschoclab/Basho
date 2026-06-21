@@ -7,7 +7,6 @@ import { EventBus } from "@/engine/events";
 
 describe("Bard Engine Integration", () => {
   beforeEach(() => {
-     
     vi.spyOn(EventBus, "recruitDiscovered").mockImplementation(() => ({}) as any);
   });
 
@@ -39,7 +38,6 @@ describe("Bard Engine Integration", () => {
           foreign: { candidatesVisible: [], candidatesHidden: [] },
         },
       },
-       
     } as any;
 
     const impact = TalentPoolService.tickWeekTalentPool(world);
@@ -62,7 +60,6 @@ describe("Bard Engine Integration", () => {
         ["r1", { id: "r1", shikona: "Wrestler 1", careerWins: 100, currentBashoWins: 1 }],
       ]),
       activeRikishiIds: new Set(["r1"]),
-       
     } as any;
 
     const impact = RegistryService.runCareerJournalUpdates(world);
@@ -83,7 +80,6 @@ describe("Bard Engine Integration", () => {
       rikishiPerceptions: [],
       rosterSize: 0,
       fatigueRatio: 0,
-       
     } as any;
     const rng = new SeededRNG("test");
 

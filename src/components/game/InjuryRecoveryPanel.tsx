@@ -5,6 +5,8 @@ import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RikishiName } from "@/components/ClickableName";
 import { Heart, Activity, AlertTriangle, Clock, Shield, Thermometer } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useGameStore } from "@/store/gameStore";
 import type { projectMedicalUIDigest } from "@/presenters/uiDigest";
 
 /**
@@ -50,6 +52,7 @@ interface InjuryRecoveryPanelProps {
  */
 export function InjuryRecoveryPanel({ digest }: InjuryRecoveryPanelProps) {
   const { facilityLevel, facilityLabel, injuredRikishi } = digest;
+  const sendCommand = useGameStore((s) => s.sendCommand);
 
   return (
     <div className="space-y-4">
@@ -145,6 +148,29 @@ export function InjuryRecoveryPanel({ digest }: InjuryRecoveryPanelProps) {
                             Poor facilities slowing recovery
                           </p>
                         )}
+
+                        <div className="mt-2 flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() =>
+                              sendCommand({ type: "TREAT_INJURY", rikishiId: info.id, weeks: 1 })
+                            }
+                          >
+                            Treat 1wk (¥500k)
+                          </Button>
+                          {!info.isKyujo && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() =>
+                                sendCommand({ type: "WITHDRAW_RIKISHI", rikishiId: info.id })
+                              }
+                            >
+                              Withdraw
+                            </Button>
+                          )}
+                        </div>
                       </div>
 
                       <div

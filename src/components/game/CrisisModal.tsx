@@ -18,6 +18,8 @@ import {
 } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { ShieldAlert } from "lucide-react";
+import { toast } from "sonner";
+import { decisionToastMessage } from "./decisionFeedback";
 
 export function CrisisModal() {
   const digest = useGameStore((state) => state.digest);
@@ -89,7 +91,7 @@ export function CrisisModal() {
 
   if (!crisis || !isOpen) return null;
 
-  const handleResolve = (choiceId: string) => {
+  const handleResolve = (choiceId: string, choiceLabel?: string) => {
     if (!crisis.id) return;
     if (crisis.type === "loop_decision" || crisis.type === "pending_crisis") {
       // pendingCrisis may be a loop_decision; check the world state
@@ -100,6 +102,7 @@ export function CrisisModal() {
           decisionId: crisis.id,
           optionId: choiceId,
         });
+        if (choiceLabel) toast.success(decisionToastMessage(choiceLabel));
       } else {
         sendCommand({
           type: "RESOLVE_CRISIS",
@@ -139,7 +142,7 @@ export function CrisisModal() {
                 variant={
                   opt.id === "harsh" || opt.id.includes("suspend") ? "destructive" : "outline"
                 }
-                onClick={() => handleResolve(opt.id)}
+                onClick={() => handleResolve(opt.id, opt.label)}
                 className="w-full font-bold uppercase tracking-tight"
                 tooltip={opt.description}
                 tooltipSide="right"

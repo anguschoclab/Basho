@@ -44,7 +44,9 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
 
   // 3. Mid-Interim Openings
   if (world.cyclePhase === "interim") {
-    const elapsedWeeks = Math.floor((INTERIM_DURATION_DAYS - (world._interimDaysRemaining ?? 0)) / DAYS_PER_WEEK);
+    const elapsedWeeks = Math.floor(
+      (INTERIM_DURATION_DAYS - (world._interimDaysRemaining ?? 0)) / DAYS_PER_WEEK
+    );
     if (elapsedWeeks === 3 && !world._recruitmentWindow?.isOpen) {
       const playerHeya = world.playerHeyaId ? getHeya(world, world.playerHeyaId) : null;
 

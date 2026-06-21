@@ -1,4 +1,3 @@
- 
 import { describe, it, expect, beforeEach } from "vitest";
 import { handleMediaEvent } from "@/engine/systems/media/MediaService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";

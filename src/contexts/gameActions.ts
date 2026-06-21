@@ -247,25 +247,6 @@ export const loadWorld = (world: WorldState): GameAction => ({
 });
 
 /**
- * Upgrades a heya facility by the specified axis.
- *
- * @param {string} heyaId - The heya ID.
- * @param {"training" | "recovery" | "nutrition"} axis - The facility axis to upgrade.
- * @param {number} [points] - Optional number of points to spend.
- * @returns {GameAction} UPGRADE_HEYA action.
- */
-export const upgradeHeya = (
-  heyaId: string,
-  axis: "training" | "recovery" | "nutrition",
-  points?: number
-): GameAction => ({
-  type: "UPGRADE_HEYA",
-  heyaId,
-  axis,
-  points,
-});
-
-/**
  * Builds infrastructure for a heya.
  *
  * @param {string} heyaId - The heya ID.
@@ -279,48 +260,6 @@ export const buildInfrastructure = (
   type: "BUILD_INFRASTRUCTURE",
   heyaId,
   facilityId,
-});
-
-/**
- * Recruits staff for a heya.
- *
- * @param {string} heyaId - The heya ID.
- * @param {any} role - The staff role to recruit.
- * @returns {GameAction} RECRUIT_STAFF action.
- */
-export const recruitStaff = (heyaId: string, role: any): GameAction => ({
-  type: "RECRUIT_STAFF",
-  heyaId,
-  role,
-});
-
-/**
- * Handles a media event with the given choice.
- *
- * @param {string} eventId - The media event ID.
- * @param {string} choice - The choice made.
- * @returns {GameAction} HANDLE_MEDIA_EVENT action.
- */
-export const handleMediaEvent = (eventId: string, choice: string): GameAction => ({
-  type: "HANDLE_MEDIA_EVENT",
-  eventId,
-  choice,
-});
-
-/**
- * Issues a governance ruling with the given severity.
- *
- * @param {string} rulingId - The ruling ID.
- * @param {"lenient" | "standard" | "harsh"} severity - The ruling severity.
- * @returns {GameAction} ISSUE_RULING action.
- */
-export const issueRuling = (
-  rulingId: string,
-  severity: "lenient" | "standard" | "harsh"
-): GameAction => ({
-  type: "ISSUE_RULING",
-  rulingId,
-  severity,
 });
 
 /**

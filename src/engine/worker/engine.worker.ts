@@ -14,12 +14,18 @@ import * as myoseki from "../myosekiMarket";
 import * as sponsorService from "../systems/economy/SponsorContractService";
 import * as legacy from "../systems/legacy/DynastyService";
 import * as governance from "../systems/governance/GovernanceService";
-import { PoliticalFavorsService, type FavorType } from "../systems/governance/PoliticalFavorsService";
+import {
+  PoliticalFavorsService,
+  type FavorType,
+} from "../systems/governance/PoliticalFavorsService";
 import * as staffService from "../staff";
 import * as loans from "../loans";
 import { resolveImpacts } from "../core/ImpactResolver";
 import { resolveLoopDecision } from "../loop/LoopDecisionEngine";
 import { shouldHaltAdvance } from "../loop/shouldHaltAdvance";
+import { issueGovernanceRuling } from "../systems/governance/ScandalService";
+import { handleMediaEvent } from "../systems/media/MediaEventService";
+import { withdrawRikishi, treatInjury } from "../systems/health/HealthActions";
 
 /**
  * Adapter matching the { seed, playerConfig? } call shape used in this worker.
@@ -240,6 +246,38 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
       if (currentWorld) {
         const impact = resolveLoopDecision(currentWorld, cmd.decisionId, cmd.optionId);
         currentWorld = resolveImpacts(currentWorld, [impact]);
+        emitDigest();
+        syncWorld();
+      }
+    },
+    ISSUE_RULING: (cmd) => {
+      if (currentWorld) {
+        const impact = issueGovernanceRuling(currentWorld, cmd.rulingId, cmd.severity);
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        emitDigest();
+        syncWorld();
+      }
+    },
+    HANDLE_MEDIA_EVENT: (cmd) => {
+      if (currentWorld) {
+        const impact = handleMediaEvent(currentWorld, cmd.eventId, cmd.choice);
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        emitDigest();
+        syncWorld();
+      }
+    },
+    WITHDRAW_RIKISHI: (cmd) => {
+      if (currentWorld) {
+        currentWorld = resolveImpacts(currentWorld, [withdrawRikishi(currentWorld, cmd.rikishiId)]);
+        emitDigest();
+        syncWorld();
+      }
+    },
+    TREAT_INJURY: (cmd) => {
+      if (currentWorld) {
+        currentWorld = resolveImpacts(currentWorld, [
+          treatInjury(currentWorld, cmd.rikishiId, cmd.weeks),
+        ]);
         emitDigest();
         syncWorld();
       }

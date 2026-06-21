@@ -20,7 +20,10 @@ function seededRng(world?: { rng?: SeededRNG }): SeededRNG {
 /**
  * Get intensity label.
  */
-export function getIntensityLabel(intensity: TrainingIntensity, world?: { rng?: SeededRNG }): string {
+export function getIntensityLabel(
+  intensity: TrainingIntensity,
+  world?: { rng?: SeededRNG }
+): string {
   const rng = seededRng(world);
   return BardEngine.resolve(rng, `training.intensity.${intensity}`).text;
 }

@@ -5,14 +5,8 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import {
-  LocalStorageProvider,
-  registerLocalStorage,
-} from "@/contexts/localStorageProvider";
-import {
-  getStorageProvider,
-  resetStorageProvider,
-} from "@/engine/storageProvider";
+import { LocalStorageProvider, registerLocalStorage } from "@/contexts/localStorageProvider";
+import { getStorageProvider, resetStorageProvider } from "@/engine/storageProvider";
 
 const localStorageMock = (() => {
   let store: Record<string, string> = {};

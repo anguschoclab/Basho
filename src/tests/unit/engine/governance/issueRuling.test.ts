@@ -1,4 +1,3 @@
- 
 import { describe, it, expect, beforeEach } from "vitest";
 import { issueGovernanceRuling } from "@/engine/systems/governance/ScandalService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";

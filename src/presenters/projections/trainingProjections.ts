@@ -71,8 +71,7 @@ export function projectTrainingSummary(world: WorldState, heyaId: string): Train
     if (isInjured) injuredCount++;
   }
 
-  const avgFatigue =
-    rosterStatuses.length > 0 ? Math.round(fatigueSum / rosterStatuses.length) : 0;
+  const avgFatigue = rosterStatuses.length > 0 ? Math.round(fatigueSum / rosterStatuses.length) : 0;
   const avgFatigueBand = toFatigueBand(avgFatigue);
 
   return {

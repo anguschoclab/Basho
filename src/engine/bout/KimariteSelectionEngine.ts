@@ -21,7 +21,6 @@ import {
   KIMARITE_SUCCESS_HARD_MIN,
 } from "../../constants/engine/kimarite";
 
-
 /**
  * The KimariteSelectionEngine handles the logic for choosing which technique
  * is attempted and whether it successfully executes.
@@ -78,7 +77,8 @@ export const KimariteSelectionEngine = {
 
         // Division Biases (E2)
         if (division === "makuuchi") {
-          if (s.category === "nage" || s.category === "hineri") weight *= KIMARITE_NAGE_HINERI_BOOST;
+          if (s.category === "nage" || s.category === "hineri")
+            weight *= KIMARITE_NAGE_HINERI_BOOST;
           if (s.category === "kihon") weight *= KIMARITE_KIHON_PENALTY;
         } else if (division === "jonokuchi" || division === "jonidan") {
           if (s.category === "kihon") weight *= KIMARITE_KIHON_DEFENSE_BOOST;
@@ -94,10 +94,14 @@ export const KimariteSelectionEngine = {
         const registryEntry = getKimarite(s.id);
         const tacticalFamily = registryEntry?.tacticalFamily;
 
-        if (effectiveMeta.tone === "explosive" && tacticalFamily === "push") weight *= KIMARITE_TONE_MATCH_BOOST;
-        if (effectiveMeta.tone === "classic" && tacticalFamily === "belt") weight *= KIMARITE_TONE_MATCH_BOOST;
-        if (effectiveMeta.tone === "technical" && tacticalFamily === "speed") weight *= KIMARITE_TONE_MATCH_BOOST;
-        if (effectiveMeta.tone === "defensive" && tacticalFamily === "trick") weight *= KIMARITE_TONE_MATCH_BOOST;
+        if (effectiveMeta.tone === "explosive" && tacticalFamily === "push")
+          weight *= KIMARITE_TONE_MATCH_BOOST;
+        if (effectiveMeta.tone === "classic" && tacticalFamily === "belt")
+          weight *= KIMARITE_TONE_MATCH_BOOST;
+        if (effectiveMeta.tone === "technical" && tacticalFamily === "speed")
+          weight *= KIMARITE_TONE_MATCH_BOOST;
+        if (effectiveMeta.tone === "defensive" && tacticalFamily === "trick")
+          weight *= KIMARITE_TONE_MATCH_BOOST;
 
         // Tactic-driven kimarite family bias
         if (playerTactic && tacticalFamily) {
@@ -132,11 +136,18 @@ export const KimariteSelectionEngine = {
       const difficulty = selected.difficulty || 5;
 
       // Base probability: tech (0-100) vs difficulty (1-10) scaled to 10-100
-      let successProb = Math.max(KIMARITE_SUCCESS_MIN, Math.min(KIMARITE_SUCCESS_MAX, (attackerTech / (difficulty * 10)) * KIMARITE_SUCCESS_BASE_SCALE));
+      let successProb = Math.max(
+        KIMARITE_SUCCESS_MIN,
+        Math.min(
+          KIMARITE_SUCCESS_MAX,
+          (attackerTech / (difficulty * 10)) * KIMARITE_SUCCESS_BASE_SCALE
+        )
+      );
 
       // Division execution scaling
       if (division === "makuuchi") successProb += KIMARITE_MAKUUCHI_BOOST;
-      if (division === "jonidan" || division === "jonokuchi") successProb -= KIMARITE_LOWER_DIVISION_PENALTY;
+      if (division === "jonidan" || division === "jonokuchi")
+        successProb -= KIMARITE_LOWER_DIVISION_PENALTY;
 
       // Favored kimarite execution boost: +0.08 when the attacker specialises in this technique
       if (attacker.favoredKimarite?.includes(selected.id as KimariteId)) {
@@ -146,7 +157,10 @@ export const KimariteSelectionEngine = {
       results.push({
         technique: selected.id as KimariteId,
         side: side,
-        successProbability: Math.max(KIMARITE_SUCCESS_HARD_MIN, Math.min(KIMARITE_SUCCESS_MAX, successProb)),
+        successProbability: Math.max(
+          KIMARITE_SUCCESS_HARD_MIN,
+          Math.min(KIMARITE_SUCCESS_MAX, successProb)
+        ),
         requiredConditions: ["registry_match", `difficulty_${difficulty}`],
       });
     }

@@ -196,17 +196,29 @@ export function evolveGripGeometry(
   // Arm reach increases when technique margin > 12
   if (techniqueMargin > GRIP_DEEPEN_MARGIN) {
     if (belt.eastLeft && !belt.eastLeft.isBlocked) {
-      belt.eastLeft.armReach = Math.min(MAX_ARM_REACH, belt.eastLeft.armReach + ARM_REACH_INCREMENT * rngFactor);
+      belt.eastLeft.armReach = Math.min(
+        MAX_ARM_REACH,
+        belt.eastLeft.armReach + ARM_REACH_INCREMENT * rngFactor
+      );
     }
     if (belt.eastRight && !belt.eastRight.isBlocked) {
-      belt.eastRight.armReach = Math.min(MAX_ARM_REACH, belt.eastRight.armReach + ARM_REACH_INCREMENT * rngFactor);
+      belt.eastRight.armReach = Math.min(
+        MAX_ARM_REACH,
+        belt.eastRight.armReach + ARM_REACH_INCREMENT * rngFactor
+      );
     }
   } else if (techniqueMargin < -GRIP_DEEPEN_MARGIN) {
     if (belt.westLeft && !belt.westLeft.isBlocked) {
-      belt.westLeft.armReach = Math.min(MAX_ARM_REACH, belt.westLeft.armReach + ARM_REACH_INCREMENT * rngFactor);
+      belt.westLeft.armReach = Math.min(
+        MAX_ARM_REACH,
+        belt.westLeft.armReach + ARM_REACH_INCREMENT * rngFactor
+      );
     }
     if (belt.westRight && !belt.westRight.isBlocked) {
-      belt.westRight.armReach = Math.min(MAX_ARM_REACH, belt.westRight.armReach + ARM_REACH_INCREMENT * rngFactor);
+      belt.westRight.armReach = Math.min(
+        MAX_ARM_REACH,
+        belt.westRight.armReach + ARM_REACH_INCREMENT * rngFactor
+      );
     }
   }
 

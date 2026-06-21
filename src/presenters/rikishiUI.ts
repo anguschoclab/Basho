@@ -360,13 +360,22 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     condition: r.condition,
     motivation: r.motivation,
     fatigue: r.fatigue,
-    powerBand: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.stats.power ?? 50)),
+    powerBand: NarrativeService.getStatLabel(
+      rng,
+      NarrativeService.getStatBand(r.stats.power ?? 50)
+    ),
     techniqueBand: NarrativeService.getStatLabel(
       rng,
       NarrativeService.getStatBand(r.stats.technique ?? 50)
     ),
-    speedBand: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.stats.speed ?? 50)),
-    balanceBand: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.stats.balance ?? 50)),
+    speedBand: NarrativeService.getStatLabel(
+      rng,
+      NarrativeService.getStatBand(r.stats.speed ?? 50)
+    ),
+    balanceBand: NarrativeService.getStatLabel(
+      rng,
+      NarrativeService.getStatBand(r.stats.balance ?? 50)
+    ),
     momentum: r.momentum,
     careerPhase: getCareerPhase(r.stats.experience),
     currentBashoWins: r.currentBashoWins ?? 0,
@@ -543,13 +552,22 @@ export function projectRosterEntry(
     isInjured: r.injured,
     condition: r.condition,
     fatigue: r.fatigue,
-    powerBand: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.stats.power ?? 50)),
+    powerBand: NarrativeService.getStatLabel(
+      rng,
+      NarrativeService.getStatBand(r.stats.power ?? 50)
+    ),
     techniqueBand: NarrativeService.getStatLabel(
       rng,
       NarrativeService.getStatBand(r.stats.technique ?? 50)
     ),
-    speedBand: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.stats.speed ?? 50)),
-    balanceBand: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.stats.balance ?? 50)),
+    speedBand: NarrativeService.getStatLabel(
+      rng,
+      NarrativeService.getStatBand(r.stats.speed ?? 50)
+    ),
+    balanceBand: NarrativeService.getStatLabel(
+      rng,
+      NarrativeService.getStatBand(r.stats.balance ?? 50)
+    ),
     momentum: r.momentum,
     potentialBand: toPotentialBand(r.talentSeed ?? 50),
     archetypeLabel:

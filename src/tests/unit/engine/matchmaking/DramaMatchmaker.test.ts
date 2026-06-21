@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { scoreDrama, applyDramaBudget, type DramaContext } from "@/engine/matchmaking/DramaMatchmaker";
+import {
+  scoreDrama,
+  applyDramaBudget,
+  type DramaContext,
+} from "@/engine/matchmaking/DramaMatchmaker";
 import { mockRikishi } from "../utils";
 import type { MatchPairing } from "@/engine/matchmaking/MatchmakingPhases";
 

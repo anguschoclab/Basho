@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import type { ActionItem, ActionSeverity } from "@/presenters/projections/actionQueue";
 import { useGameStore } from "@/store/gameStore";
+import { toast } from "sonner";
+import { decisionToastMessage } from "@/components/game/decisionFeedback";
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   coins: <Coins className="h-4 w-4" />,
@@ -29,7 +31,14 @@ const ICON_MAP: Record<string, React.ReactNode> = {
 
 const SEVERITY_CONFIG: Record<
   ActionSeverity,
-  { icon: React.ReactNode; badge: string; border: string; bg: string; hoverBg: string; text: string }
+  {
+    icon: React.ReactNode;
+    badge: string;
+    border: string;
+    bg: string;
+    hoverBg: string;
+    text: string;
+  }
 > = {
   critical: {
     icon: <AlertTriangle className="h-4 w-4 text-destructive" />,
@@ -66,10 +75,7 @@ export function ActionQueueWidget({ items }: ActionQueueWidgetProps) {
   const sendCommand = useGameStore((s) => s.sendCommand);
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
 
-  const visibleItems = useMemo(
-    () => items.map((item, i) => ({ item, index: i })),
-    [items]
-  );
+  const visibleItems = useMemo(() => items.map((item, i) => ({ item, index: i })), [items]);
 
   const handleNavigate = (item: ActionItem) => {
     if (item.kind === "navigate") {
@@ -77,13 +83,14 @@ export function ActionQueueWidget({ items }: ActionQueueWidgetProps) {
     }
   };
 
-  const handleResolve = (item: ActionItem, optionId: string) => {
+  const handleResolve = (item: ActionItem, optionId: string, optionLabel: string) => {
     if (item.kind === "resolve") {
       sendCommand({
         type: "RESOLVE_LOOP_DECISION",
         decisionId: item.decisionId,
         optionId,
       });
+      toast.success(decisionToastMessage(optionLabel));
     }
   };
 
@@ -129,9 +136,13 @@ export function ActionQueueWidget({ items }: ActionQueueWidgetProps) {
                 onClick={() => handleNavigate(item)}
                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded border text-left transition-colors group ${sev.border} ${sev.bg} ${sev.hoverBg}`}
               >
-                <div className="shrink-0">{item.icon ? ICON_MAP[item.icon] ?? sev.icon : sev.icon}</div>
+                <div className="shrink-0">
+                  {item.icon ? (ICON_MAP[item.icon] ?? sev.icon) : sev.icon}
+                </div>
                 <span className={`text-xs font-semibold flex-1 ${sev.text}`}>{item.title}</span>
-                <ChevronRight className={`h-3.5 w-3.5 opacity-50 group-hover:opacity-100 transition-opacity ${sev.text}`} />
+                <ChevronRight
+                  className={`h-3.5 w-3.5 opacity-50 group-hover:opacity-100 transition-opacity ${sev.text}`}
+                />
               </button>
             );
           }
@@ -158,7 +169,7 @@ export function ActionQueueWidget({ items }: ActionQueueWidgetProps) {
                         key={opt.id}
                         size="sm"
                         variant="outline"
-                        onClick={() => handleResolve(item, opt.id)}
+                        onClick={() => handleResolve(item, opt.id, opt.label)}
                         className="justify-start text-xs h-auto py-1.5"
                       >
                         <span className="font-semibold">{opt.label}</span>

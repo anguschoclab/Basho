@@ -219,7 +219,11 @@ function detectKinboshi(
     winnerAchievements.kinboshiEarned++;
     loserAchievements.kinboshiConceded++;
     kinboshiDelta = true;
-  } else if (winner.rank === "maegashira" && loser.rank === "ozeki" && result.kimarite !== "fusensho") {
+  } else if (
+    winner.rank === "maegashira" &&
+    loser.rank === "ozeki" &&
+    result.kimarite !== "fusensho"
+  ) {
     winnerAchievements.ginboshiEarned++;
     loserAchievements.ginboshiConceded++;
   }
@@ -315,7 +319,7 @@ function computeTacticAftermath(
     bout.playerTactic === "HENKA" &&
     result.winner === bout.playerSide &&
     result.kimarite !== "fusensho";
-  if (playerHenkaWon && (!playerUpdate?.momentum)) {
+  if (playerHenkaWon && !playerUpdate?.momentum) {
     const currentMomentum = playerRikishi.momentum ?? 50;
     playerUpdate = {
       ...playerUpdate,
@@ -441,7 +445,11 @@ export function resolveBout(
   );
 
   // 2.5. Achievement Detection (Gold & Silver Stars - v2)
-  const { winnerAchievements, loserAchievements, kinboshiDelta } = detectKinboshi(result, winner, loser);
+  const { winnerAchievements, loserAchievements, kinboshiDelta } = detectKinboshi(
+    result,
+    winner,
+    loser
+  );
   result.isKinboshi = !!kinboshiDelta;
   if (kinboshiDelta) {
     result.awardFact = "kinboshi";
@@ -457,8 +465,14 @@ export function resolveBout(
 
   // Track kinboshi earned this basho for per-basho stipend calculation
   if (kinboshiDelta && basho.kinboshiThisBasho !== undefined) {
-    const nextKinboshi = { ...basho.kinboshiThisBasho, [winner.id]: (basho.kinboshiThisBasho[winner.id] ?? 0) + 1 };
-    builder.updateWorldField("currentBasho", { ...basho, kinboshiThisBasho: nextKinboshi } as never);
+    const nextKinboshi = {
+      ...basho.kinboshiThisBasho,
+      [winner.id]: (basho.kinboshiThisBasho[winner.id] ?? 0) + 1,
+    };
+    builder.updateWorldField("currentBasho", {
+      ...basho,
+      kinboshiThisBasho: nextKinboshi,
+    } as never);
   }
 
   // 3. Tactic aftermath (fatigue, momentum, injury multiplier)
@@ -516,8 +530,15 @@ export function resolveBout(
     result.isTitleStakes = playoff || yushoContention;
 
     // Base banner count: random based on importance
-    const baseCountMap = { low: KENSHO_BASE_COUNT_LOW, mid: KENSHO_BASE_COUNT_MID, high: KENSHO_BASE_COUNT_HIGH, peak: KENSHO_BASE_COUNT_PEAK };
-    const bannerCount = Math.floor(baseCountMap[importance] * (KENSHO_RNG_MIN + kenshoRng.next() * KENSHO_RNG_RANGE));
+    const baseCountMap = {
+      low: KENSHO_BASE_COUNT_LOW,
+      mid: KENSHO_BASE_COUNT_MID,
+      high: KENSHO_BASE_COUNT_HIGH,
+      peak: KENSHO_BASE_COUNT_PEAK,
+    };
+    const bannerCount = Math.floor(
+      baseCountMap[importance] * (KENSHO_RNG_MIN + kenshoRng.next() * KENSHO_RNG_RANGE)
+    );
 
     const banners = assignKenshoBanners(
       result.boutId,
@@ -563,13 +584,34 @@ export function applyRivalryToRikishi(
   const condMult = conditionMultiplier(r.condition ?? 100);
   return {
     ...r,
-    aggression: clamp((r.stats.aggression || DEFAULT_STAT_VALUE) * (1 + heat01 * RIVALRY_HEAT_AGGRESSION_MULTIPLIER), STAT_CLAMP_MIN, STAT_CLAMP_MAX),
-    mental: clamp((r.stats.mental || DEFAULT_STAT_VALUE) * (1 + spite01 * RIVALRY_SPITE_MENTAL_MULTIPLIER), STAT_CLAMP_MIN, STAT_CLAMP_MAX),
+    aggression: clamp(
+      (r.stats.aggression || DEFAULT_STAT_VALUE) *
+        (1 + heat01 * RIVALRY_HEAT_AGGRESSION_MULTIPLIER),
+      STAT_CLAMP_MIN,
+      STAT_CLAMP_MAX
+    ),
+    mental: clamp(
+      (r.stats.mental || DEFAULT_STAT_VALUE) * (1 + spite01 * RIVALRY_SPITE_MENTAL_MULTIPLIER),
+      STAT_CLAMP_MIN,
+      STAT_CLAMP_MAX
+    ),
     power: clamp((r.stats.power || DEFAULT_STAT_VALUE) * condMult, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
     speed: clamp((r.stats.speed || DEFAULT_STAT_VALUE) * condMult, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
-    technique: clamp((r.stats.technique || DEFAULT_STAT_VALUE) * condMult, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
-    balance: clamp((r.stats.balance || DEFAULT_STAT_VALUE) * condMult, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
-    stamina: clamp((r.stats.stamina || DEFAULT_STAT_VALUE) * condMult, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
+    technique: clamp(
+      (r.stats.technique || DEFAULT_STAT_VALUE) * condMult,
+      STAT_CLAMP_MIN,
+      STAT_CLAMP_MAX
+    ),
+    balance: clamp(
+      (r.stats.balance || DEFAULT_STAT_VALUE) * condMult,
+      STAT_CLAMP_MIN,
+      STAT_CLAMP_MAX
+    ),
+    stamina: clamp(
+      (r.stats.stamina || DEFAULT_STAT_VALUE) * condMult,
+      STAT_CLAMP_MIN,
+      STAT_CLAMP_MAX
+    ),
   } as Rikishi;
 }
 
@@ -588,7 +630,11 @@ export function applyRivalryToRikishi(
  * console.log(result.winner, result.kimarite);
  * ```
  */
-export function simulateBout(east: Rikishi, west: Rikishi, seed: string): { result: BoutResult; engineSnapshot?: EngineSnapshot } {
+export function simulateBout(
+  east: Rikishi,
+  west: Rikishi,
+  seed: string
+): { result: BoutResult; engineSnapshot?: EngineSnapshot } {
   const fakeBasho: BashoState = {
     // Fold the caller's seed into the basho id so it actually reaches the physics
     // RNG (resolveBoutPhysics seeds from basho.id + day + rikishi ids). Without

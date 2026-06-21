@@ -10,7 +10,13 @@ interface Props {
   onReroll: () => void;
 }
 
-export function MainMenuFooter({ seed, worldSeed, showSeedInput, onToggleSeedInput, onReroll }: Props) {
+export function MainMenuFooter({
+  seed,
+  worldSeed,
+  showSeedInput,
+  onToggleSeedInput,
+  onReroll,
+}: Props) {
   const displaySeed = worldSeed || seed;
 
   return (

@@ -19,7 +19,11 @@ import {
   MAX_MONTH,
   INTERIM_WARNING_THRESHOLD,
 } from "../../../constants/engine/calendarExtended";
-import { evaluatePendingDecisions, applyExpiredQueueDefaults } from "../../loop/LoopDecisionEngine";
+import {
+  evaluatePendingDecisions,
+  applyExpiredQueueDefaults,
+  autonomouslyResolveDecisions,
+} from "../../loop/LoopDecisionEngine";
 
 export function phase00_preflight(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase00_preflight");
@@ -63,13 +67,13 @@ export function phase00_preflight(world: WorldState): StateImpact {
     // Transition logs are handled inside checkPhaseTransition for now to keep it consolidated
   }
 
-  // 5. Evaluate pending loop decisions (Plan 3)
-  const decisionImpact = evaluatePendingDecisions(world);
-  builder.merge(decisionImpact);
-
-  // 6. Auto-apply defaults for expired queue decisions
-  const defaultsImpact = applyExpiredQueueDefaults(world);
-  builder.merge(defaultsImpact);
+  // 5/6. Loop decisions: auto-resolve in autonomous runs, otherwise surface for the player.
+  if (world._autonomousSim) {
+    builder.merge(autonomouslyResolveDecisions(world, world._autonomousPolicy ?? "balanced"));
+  } else {
+    builder.merge(evaluatePendingDecisions(world));
+    builder.merge(applyExpiredQueueDefaults(world));
+  }
 
   // 7. Clear caches for the new day
   clearQueryCaches();

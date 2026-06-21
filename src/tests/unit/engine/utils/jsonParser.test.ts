@@ -31,12 +31,12 @@ describe("parseLLMResponse", () => {
     const input = '{"__proto__": {"polluted": true}, "hello": "world"}';
     const result = parseLLMResponse(input);
     expect(result).toEqual({ hello: "world" });
-     
+
     expect((result as any).__proto__.polluted).toBeUndefined();
   });
 
   it("includes specific guidance in error message", () => {
-    const input = '```json\n{invalid\n```';
+    const input = "```json\n{invalid\n```";
     expect(() => parseLLMResponse(input)).toThrow(/generationConfig\.responseMimeType/);
   });
 
@@ -70,7 +70,7 @@ describe("safeParse", () => {
     const fallback = { hello: "fallback" };
     const result = safeParse(input, fallback);
     expect(result).toEqual({ hello: "world" });
-     
+
     expect((result as any).__proto__.polluted).toBeUndefined();
     expect({}["polluted" as keyof object]).toBeUndefined();
   });

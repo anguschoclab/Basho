@@ -56,8 +56,13 @@ export function calculateWeeklyInjuryChance(rikishi: Rikishi, fatigue: number): 
   const fatigueMult = 1 + clamp(fatigue, 0, 100) / INJURY_FATIGUE_DIVISOR;
 
   // Durability: using 'durability' property if it exists, default
-  const durability = typeof rikishi.durability === "number" ? rikishi.durability : DEFAULT_DURABILITY;
-  const durabilityMult = clamp(DURABILITY_MULTIPLIER_BASE - durability / DURABILITY_DIVISOR, DURABILITY_MULTIPLIER_MIN, DURABILITY_MULTIPLIER_BASE);
+  const durability =
+    typeof rikishi.durability === "number" ? rikishi.durability : DEFAULT_DURABILITY;
+  const durabilityMult = clamp(
+    DURABILITY_MULTIPLIER_BASE - durability / DURABILITY_DIVISOR,
+    DURABILITY_MULTIPLIER_MIN,
+    DURABILITY_MULTIPLIER_BASE
+  );
 
   const chance = base * fatigueMult * durabilityMult;
   return clamp(chance, 0, SIMULATION_CONFIG.injuries.maxWeeklyChance);
@@ -99,7 +104,11 @@ export function rollWeeklyInjury(args: {
   const area = pickArea(rng);
   const type = pickType(rng, severity);
   const { min, max } = getBaseWeeksOut(severity, area, type);
-  const weeksOut = clampInt(min + Math.floor(rng.next() * (max - min + 1)), MIN_WEEKS_OUT, MAX_WEEKS_OUT);
+  const weeksOut = clampInt(
+    min + Math.floor(rng.next() * (max - min + 1)),
+    MIN_WEEKS_OUT,
+    MAX_WEEKS_OUT
+  );
 
   return { severity, area, type, weeksOut };
 }
@@ -319,7 +328,9 @@ export function onBoutResolvedInjury(
   const roll = rngSeed.next();
 
   if (roll < boutInjuryChance) {
-    const injuryWeeksRemaining = POST_BOUT_INJURY_WEEKS_MIN + Math.floor(rngSeed.next() * (POST_BOUT_INJURY_WEEKS_MAX - POST_BOUT_INJURY_WEEKS_MIN + 1));
+    const injuryWeeksRemaining =
+      POST_BOUT_INJURY_WEEKS_MIN +
+      Math.floor(rngSeed.next() * (POST_BOUT_INJURY_WEEKS_MAX - POST_BOUT_INJURY_WEEKS_MIN + 1));
 
     builder.updateRikishi(loser.id, {
       injured: true,

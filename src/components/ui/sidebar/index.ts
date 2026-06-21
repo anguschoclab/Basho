@@ -1,10 +1,5 @@
 export { useSidebar, SidebarProvider } from "./provider";
-export {
-  Sidebar,
-  SidebarTrigger,
-  SidebarRail,
-  SidebarInset,
-} from "./core";
+export { Sidebar, SidebarTrigger, SidebarRail, SidebarInset } from "./core";
 export {
   SidebarInput,
   SidebarHeader,
@@ -12,12 +7,7 @@ export {
   SidebarSeparator,
   SidebarContent,
 } from "./primitives";
-export {
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarGroupAction,
-  SidebarGroupContent,
-} from "./group";
+export { SidebarGroup, SidebarGroupLabel, SidebarGroupAction, SidebarGroupContent } from "./group";
 export {
   SidebarMenu,
   SidebarMenuItem,

@@ -77,15 +77,18 @@ export default function AlmanacPage() {
   // Compute giant slayers data before any early returns
   const giantSlayers = useMemo(() => {
     if (!world) return [];
-    const results: ReturnType<typeof Array.from<{
-      rikishiId: string;
-      shikona: string;
-      value: number;
-      details: string;
-      achievedDate: { year: number; month: number };
-    }>> = [];
+    const results: ReturnType<
+      typeof Array.from<{
+        rikishiId: string;
+        shikona: string;
+        value: number;
+        details: string;
+        achievedDate: { year: number; month: number };
+      }>
+    > = [];
     for (const r of world.rikishi.values()) {
-      const value = (r.stats?.achievements?.kinboshiEarned ?? 0) + (r.stats?.achievements?.ginboshiEarned ?? 0);
+      const value =
+        (r.stats?.achievements?.kinboshiEarned ?? 0) + (r.stats?.achievements?.ginboshiEarned ?? 0);
       if (value > 0) {
         results.push({
           rikishiId: r.id,
@@ -96,9 +99,7 @@ export default function AlmanacPage() {
         });
       }
     }
-    return results
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 5);
+    return results.sort((a, b) => b.value - a.value).slice(0, 5);
   }, [world]);
 
   if (!world) {

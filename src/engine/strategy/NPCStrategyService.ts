@@ -94,7 +94,10 @@ export function decideTrainingIntensity(
   if (perception.welfareRiskBand === "critical") {
     intensity = "conservative";
     reason = BardEngine.resolve(rng, "npc.strategy.intensity.conservative_risk").text;
-  } else if (perception.welfareRiskBand === "elevated" && welfareDiscipline > WELFARE_DISCIPLINE_ELEVATED_THRESHOLD) {
+  } else if (
+    perception.welfareRiskBand === "elevated" &&
+    welfareDiscipline > WELFARE_DISCIPLINE_ELEVATED_THRESHOLD
+  ) {
     intensity = "conservative";
     reason = BardEngine.resolve(rng, "npc.strategy.intensity.conservative_longevity").text;
   } else if (fragileRatio >= FRAGILE_RATIO_CRITICAL_THRESHOLD) {
@@ -228,13 +231,20 @@ export function decideRecovery(
   }
   const fragileRatio = perception.rosterSize > 0 ? fragileCount / perception.rosterSize : 0;
 
-  if (perception.welfareRiskBand === "critical" || fragileRatio >= FRAGILE_RATIO_CRITICAL_THRESHOLD) {
+  if (
+    perception.welfareRiskBand === "critical" ||
+    fragileRatio >= FRAGILE_RATIO_CRITICAL_THRESHOLD
+  ) {
     return {
       recovery: "high",
       reason: BardEngine.resolve(rng, "npc.strategy.recovery.critical").text,
     };
   }
-  if (perception.welfareRiskBand === "elevated" || fragileRatio >= FRAGILE_RATIO_ELEVATED_THRESHOLD || welfareDiscipline > WELFARE_DISCIPLINE_BALANCED_THRESHOLD) {
+  if (
+    perception.welfareRiskBand === "elevated" ||
+    fragileRatio >= FRAGILE_RATIO_ELEVATED_THRESHOLD ||
+    welfareDiscipline > WELFARE_DISCIPLINE_BALANCED_THRESHOLD
+  ) {
     return {
       recovery: "high",
       reason: BardEngine.resolve(rng, "npc.strategy.recovery.elevated").text,
@@ -292,7 +302,10 @@ export function decideScoutingPriority(
     };
   }
 
-  if (observation.rosterSize < ROSTER_SIZE_WEAK_THRESHOLD || observation.rosterStrengthBand === "weak") {
+  if (
+    observation.rosterSize < ROSTER_SIZE_WEAK_THRESHOLD ||
+    observation.rosterStrengthBand === "weak"
+  ) {
     return {
       priority: "aggressive",
       reason: BardEngine.resolve(rng, "npc.strategy.scouting.aggressive").text,
@@ -343,7 +356,10 @@ export function identifyProtects(
       protectIds.push(rp.rikishiId);
     } else if (rp.healthBand === "worn" && HIGH_RANKS.has(rp.rank)) {
       protectIds.push(rp.rikishiId);
-    } else if (rp.healthBand === "worn" && welfareDiscipline > WELFARE_DISCIPLINE_BALANCED_THRESHOLD) {
+    } else if (
+      rp.healthBand === "worn" &&
+      welfareDiscipline > WELFARE_DISCIPLINE_BALANCED_THRESHOLD
+    ) {
       protectIds.push(rp.rikishiId);
     }
   }

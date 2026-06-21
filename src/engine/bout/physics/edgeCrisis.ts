@@ -20,7 +20,12 @@ import {
   EDGE_CRISIS_RECOVERY_PROBABILITY,
 } from "../../../constants/engine/physics";
 import { EDGE_THRESHOLD } from "../../types/combat-spatial";
-import type { CombatPhase, EngineStateV2, PushBattleState, BeltBattleState } from "../../types/combat-spatial";
+import type {
+  CombatPhase,
+  EngineStateV2,
+  PushBattleState,
+  BeltBattleState,
+} from "../../types/combat-spatial";
 import { tawaraBounceResistance, classifyEdgeExitKimarite } from "../boutSpatial";
 
 export function buildEdgeCrisis(
@@ -42,7 +47,8 @@ export function buildEdgeCrisis(
   const escapeAngle = Math.abs(defender.facingAngle);
 
   // 1.75D: opponentPressureZ from attacker's lateral momentum
-  const opponentPressureZ = crisisSide === "east" ? push.westLateralMomentum : push.eastLateralMomentum;
+  const opponentPressureZ =
+    crisisSide === "east" ? push.westLateralMomentum : push.eastLateralMomentum;
 
   return {
     tag: "edge_crisis",
@@ -78,7 +84,9 @@ export function tickEdgeCrisis(
   crisis.ticksInCrisis++;
 
   // Update tawaraToePosition each tick using real opponent pressure (X + Z)
-  const pressureIncrease = crisis.opponentPressureX * CRISIS_PRESSURE_MULTIPLIER + Math.abs(crisis.opponentPressureZ) * OPPONENT_PRESSURE_Z_MULTIPLIER;
+  const pressureIncrease =
+    crisis.opponentPressureX * CRISIS_PRESSURE_MULTIPLIER +
+    Math.abs(crisis.opponentPressureZ) * OPPONENT_PRESSURE_Z_MULTIPLIER;
   const escapeResistance = crisis.escapeForceAvailable * ESCAPE_RESISTANCE_MULTIPLIER;
   crisis.tawaraToePosition = Math.max(
     0,
@@ -114,7 +122,10 @@ export function tickEdgeCrisis(
 
   // Seeded jitter as tie-breaker when close
   const escapeMargin = angularEscapePower - totalPressure;
-  const didEscape = canEscape && (escapeMargin > ESCAPE_MARGIN_THRESHOLD || rng.next() < ESCAPE_BASE_PROBABILITY + escapeMargin * ESCAPE_MARGIN_PROBABILITY_MULTIPLIER);
+  const didEscape =
+    canEscape &&
+    (escapeMargin > ESCAPE_MARGIN_THRESHOLD ||
+      rng.next() < ESCAPE_BASE_PROBABILITY + escapeMargin * ESCAPE_MARGIN_PROBABILITY_MULTIPLIER);
 
   // Log this crisis tick for narrative
   boutLog.push({

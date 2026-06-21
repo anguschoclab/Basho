@@ -9,10 +9,7 @@ import {
   ElectronStorageProvider,
   registerElectronStorage,
 } from "@/contexts/electronStorageProvider";
-import {
-  getStorageProvider,
-  resetStorageProvider,
-} from "@/engine/storageProvider";
+import { getStorageProvider, resetStorageProvider } from "@/engine/storageProvider";
 import { mockElectronAPI, clearElectronMock } from "@/tests/helpers/utils/electronMocks";
 
 // Mock localStorage for web-fallback tests

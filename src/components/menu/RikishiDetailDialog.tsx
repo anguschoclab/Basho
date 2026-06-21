@@ -49,9 +49,7 @@ export function RikishiDetailDialog({
 }: RikishiDetailDialogProps) {
   if (!selectedRikishi) return null;
 
-  const selectedEntry = rosterWithAge.find(
-    (r) => r.rikishi.id === selectedRikishi.id
-  );
+  const selectedEntry = rosterWithAge.find((r) => r.rikishi.id === selectedRikishi.id);
 
   const rankInfo = RANK_HIERARCHY[selectedRikishi.rank as keyof typeof RANK_HIERARCHY];
   const isSekitori = !!rankInfo?.isSekitori;
@@ -114,7 +112,9 @@ export function RikishiDetailDialog({
                   </div>
                   <div className="font-display font-bold text-sm">
                     {info.key === "age"
-                      ? (selectedEntry ? `${selectedEntry.age} Cycles` : "-- Cycles")
+                      ? selectedEntry
+                        ? `${selectedEntry.age} Cycles`
+                        : "-- Cycles"
                       : `${(selectedRikishi as UIRikishi & Record<string, unknown>)[info.key] || "--"}${info.suffix}`}
                   </div>
                   {info.key === "height" && selectedRikishi.heightDescriptor && (

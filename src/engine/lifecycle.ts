@@ -48,7 +48,6 @@ export function checkRetirement(
     }
 
     // Block all non-injury retirements for rikishi under 28
-    console.error(`[DEBUG checkRetirement] BLOCKED retirement for ${rikishi.shikona || rikishi.id}: age=${age}, birthYear=${rikishi.birthYear}, currentYear=${currentYear}, rank=${rikishi.rank}`);
     return null;
   }
 
@@ -94,7 +93,7 @@ export function checkRetirement(
   }
 
   // 4. Natural Aging Curve (Probability increases with age)
-  const baseRetireChance = Math.max(0, (age - 34) * 0.05);
+  const baseRetireChance = Math.max(0, (age - 34) * 0.1);
   const roll = rng.next();
 
   if (roll < baseRetireChance) {

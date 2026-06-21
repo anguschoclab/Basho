@@ -108,10 +108,14 @@ export function runCareerJournalUpdates(world: WorldState): StateImpact {
     let newMomentum = r.momentum ?? 0;
     if (bw + bl > 0) {
       const winRate = bw / (bw + bl);
-      if (winRate >= WIN_RATE_HIGH_MOMENTUM_THRESHOLD) newMomentum = Math.min(MOMENTUM_MAX, newMomentum + MOMENTUM_HIGH_GAIN);
-      else if (winRate >= WIN_RATE_MEDIUM_MOMENTUM_THRESHOLD) newMomentum = Math.min(MOMENTUM_MAX, newMomentum + MOMENTUM_MEDIUM_GAIN);
-      else if (winRate < WIN_RATE_HIGH_MOMENTUM_LOSS_THRESHOLD) newMomentum = Math.max(MOMENTUM_MIN, newMomentum - MOMENTUM_HIGH_LOSS);
-      else if (winRate < WIN_RATE_MEDIUM_MOMENTUM_LOSS_THRESHOLD) newMomentum = Math.max(MOMENTUM_MIN, newMomentum - MOMENTUM_MEDIUM_LOSS);
+      if (winRate >= WIN_RATE_HIGH_MOMENTUM_THRESHOLD)
+        newMomentum = Math.min(MOMENTUM_MAX, newMomentum + MOMENTUM_HIGH_GAIN);
+      else if (winRate >= WIN_RATE_MEDIUM_MOMENTUM_THRESHOLD)
+        newMomentum = Math.min(MOMENTUM_MAX, newMomentum + MOMENTUM_MEDIUM_GAIN);
+      else if (winRate < WIN_RATE_HIGH_MOMENTUM_LOSS_THRESHOLD)
+        newMomentum = Math.max(MOMENTUM_MIN, newMomentum - MOMENTUM_HIGH_LOSS);
+      else if (winRate < WIN_RATE_MEDIUM_MOMENTUM_LOSS_THRESHOLD)
+        newMomentum = Math.max(MOMENTUM_MIN, newMomentum - MOMENTUM_MEDIUM_LOSS);
     }
 
     // Queue rikishi update (only momentum and yusho, not career totals)

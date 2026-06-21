@@ -55,8 +55,6 @@ export interface GrappleState {
   gripAdvantage: "east_strong" | "west_strong" | "neutral" | "moro_zashi_east" | "moro_zashi_west";
 }
 
-
-
 /** Type representing stance. */
 export type Stance = "migi-yotsu" | "hidari-yotsu" | "no-grip" | "belt-dominant" | "push-dominant";
 
@@ -169,7 +167,13 @@ export type KimariteClass =
   | "forfeit";
 
 /** Type representing bout tactic. */
-export type BoutTactic = "STANDARD" | "YOTSU_BELT" | "OSHI_THRUST" | "HENKA" | "DEFENSIVE_PULL" | "ALL_OUT";
+export type BoutTactic =
+  | "STANDARD"
+  | "YOTSU_BELT"
+  | "OSHI_THRUST"
+  | "HENKA"
+  | "DEFENSIVE_PULL"
+  | "ALL_OUT";
 
 /** Defines the structure for tactical result. */
 export interface TacticalResult {

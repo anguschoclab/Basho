@@ -91,7 +91,12 @@ export function calculatePressureBump(tone: MediaTone): number {
 }
 
 export function decayHeat(currentHeat: number): number {
-  const decay = currentHeat >= HIGH_HEAT_THRESHOLD ? HIGH_HEAT_DECAY_RATE : currentHeat >= MEDIUM_HEAT_THRESHOLD ? MEDIUM_HEAT_DECAY_RATE : LOW_HEAT_DECAY_RATE;
+  const decay =
+    currentHeat >= HIGH_HEAT_THRESHOLD
+      ? HIGH_HEAT_DECAY_RATE
+      : currentHeat >= MEDIUM_HEAT_THRESHOLD
+        ? MEDIUM_HEAT_DECAY_RATE
+        : LOW_HEAT_DECAY_RATE;
   return clampInt(currentHeat - decay, 0, MAX_HEAT);
 }
 

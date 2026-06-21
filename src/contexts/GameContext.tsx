@@ -114,10 +114,6 @@ interface GameContextValue {
   getStandings: () => Array<{ rikishi: Rikishi; wins: number; losses: number }>;
   /** Updates the world state with a new world. */
   updateWorld: (world: WorldState) => void;
-  /** Issues a governance ruling with the given severity. */
-  issueRuling: (rulingId: string, severity: "lenient" | "standard" | "harsh") => void;
-  /** Handles a media event with the given choice. */
-  handleMediaEvent: (eventId: string, choice: string) => void;
   /** Advances the tutorial to the next step. */
   advanceTutorialStep: (step: import("@/engine/types/tutorial").TutorialStep) => void;
   /** Sets a tutorial flag. */
@@ -241,21 +237,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       dispatch(actions.buildInfrastructure(heyaId, facilityId));
     },
     []
-  );
-
-  const issueRuling = useCallback(
-    (rulingId: string, severity: "lenient" | "standard" | "harsh") => {
-      dispatch(actions.issueRuling(rulingId, severity));
-    },
-    []
-  );
-
-  const handleMediaEvent = useCallback(
-    (eventId: string, choice: string) => {
-      if (!state.world) return;
-      dispatch(actions.handleMediaEvent(eventId, choice));
-    },
-    [state.world]
   );
 
   const recruitSponsorAction = useCallback(
@@ -383,12 +364,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
     []
   );
 
-  const unbookmarkEntityAction = useCallback(
-    (entityType: string, entityId: string) => {
-      dispatch(actions.unbookmarkEntity(entityType, entityId));
-    },
-    []
-  );
+  const unbookmarkEntityAction = useCallback((entityType: string, entityId: string) => {
+    dispatch(actions.unbookmarkEntity(entityType, entityId));
+  }, []);
 
   const updateBookmarkNoteAction = useCallback(
     (entityType: string, entityId: string, note: string) => {
@@ -437,8 +415,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       goOnHoliday,
       runAutoSim: runAutoSimAction,
       tickMultipleDays,
-      issueRuling,
-      handleMediaEvent,
       recruitSponsor: recruitSponsorAction,
       advanceTutorialStep: advanceTutorialStepAction,
       setTutorialFlag: setTutorialFlagAction,
@@ -485,8 +461,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       goOnHoliday,
       runAutoSimAction,
       tickMultipleDays,
-      issueRuling,
-      handleMediaEvent,
       recruitSponsorAction,
       advanceTutorialStepAction,
       setTutorialFlagAction,

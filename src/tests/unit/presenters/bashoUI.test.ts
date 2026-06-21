@@ -207,7 +207,7 @@ describe("Basho UI Presenters", () => {
         mockRikishi("w_3", {
           shikona: "Rikishi B",
           rank: "juryo",
-           
+
           rankNumber: 0 as any,
         })
       );

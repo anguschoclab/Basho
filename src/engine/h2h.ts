@@ -133,7 +133,10 @@ export function generateH2HCommentary(r1: Rikishi, r2: Rikishi): string {
   const last = record.lastMatch;
 
   // Case 1: Lopsided Domination (Win rate > 75% with 4+ matches)
-  if (total >= H2H_DOMINATION_MIN_MATCHES && record.wins / total > H2H_DOMINATION_WIN_RATE_THRESHOLD) {
+  if (
+    total >= H2H_DOMINATION_MIN_MATCHES &&
+    record.wins / total > H2H_DOMINATION_WIN_RATE_THRESHOLD
+  ) {
     return BardEngine.resolve(rng, "h2h.domination", {
       P1: p1Name,
       P2: p2Name,
@@ -142,7 +145,10 @@ export function generateH2HCommentary(r1: Rikishi, r2: Rikishi): string {
       TOTAL: total.toString(),
     }).text;
   }
-  if (total >= H2H_DOMINATION_MIN_MATCHES && record.losses / total > H2H_DOMINATION_WIN_RATE_THRESHOLD) {
+  if (
+    total >= H2H_DOMINATION_MIN_MATCHES &&
+    record.losses / total > H2H_DOMINATION_WIN_RATE_THRESHOLD
+  ) {
     // Note: domain 'domination' templates handle P2 struggling as well.
     return BardEngine.resolve(rng, "h2h.domination", {
       P1: p2Name,
@@ -154,7 +160,10 @@ export function generateH2HCommentary(r1: Rikishi, r2: Rikishi): string {
   }
 
   // Case 2: Deadlock (Exact tie or off by 1)
-  if (Math.abs(record.wins - record.losses) <= H2H_DEADLOCK_DIFF_THRESHOLD && total > H2H_DEADLOCK_MIN_MATCHES) {
+  if (
+    Math.abs(record.wins - record.losses) <= H2H_DEADLOCK_DIFF_THRESHOLD &&
+    total > H2H_DEADLOCK_MIN_MATCHES
+  ) {
     return BardEngine.resolve(rng, "h2h.deadlock", {
       WINS: record.wins.toString(),
       LOSSES: record.losses.toString(),

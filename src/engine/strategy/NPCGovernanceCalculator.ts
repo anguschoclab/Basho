@@ -71,7 +71,8 @@ const POLITICAL_SABOTAGE_RULE: StrategyRule = {
   },
   buildEvent: () => ({
     action: "political_sabotage",
-    reasoning: "Leveraging political capital to expose the scandals of rivals and diminish their standing.",
+    reasoning:
+      "Leveraging political capital to expose the scandals of rivals and diminish their standing.",
   }),
   importance: "major",
 };
@@ -92,7 +93,8 @@ const MAINTAIN_STANDING_RULE: StrategyRule = {
   },
   buildEvent: () => ({
     action: "maintain_standing",
-    reasoning: "Traditionalist oyakata preserving the honor of the heya through diplomatic channels.",
+    reasoning:
+      "Traditionalist oyakata preserving the honor of the heya through diplomatic channels.",
   }),
 };
 
