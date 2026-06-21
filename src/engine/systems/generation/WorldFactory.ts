@@ -303,10 +303,10 @@ export function createRosters(
     { rank: "komusubi", division: "makuuchi", count: 2, tierWeight: 4 },
     { rank: "maegashira", division: "makuuchi", count: 34, tierWeight: 3 },
     { rank: "juryo", division: "juryo", count: 28, tierWeight: 2 },
-    { rank: "makushita", division: "makushita", count: 150, tierWeight: 1 },
-    { rank: "sandanme", division: "sandanme", count: 250, tierWeight: 0 },
-    { rank: "jonidan", division: "jonidan", count: 250, tierWeight: 0 },
-    { rank: "jonokuchi", division: "jonokuchi", count: 150, tierWeight: 0 },
+    { rank: "makushita", division: "makushita", count: 120, tierWeight: 1 },
+    { rank: "sandanme", division: "sandanme", count: 110, tierWeight: 0 },
+    { rank: "jonidan", division: "jonidan", count: 90, tierWeight: 0 },
+    { rank: "jonokuchi", division: "jonokuchi", count: 50, tierWeight: 0 },
   ];
 
   rankConfigs.forEach((config) => {
