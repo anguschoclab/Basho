@@ -440,7 +440,7 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
       if (!merged.collections) merged.collections = {};
       for (const key in impact.collections) {
         if (!Object.prototype.hasOwnProperty.call(impact.collections, key)) continue;
-        const arr = impact.collections[key];
+        const arr = (impact.collections as Record<string, unknown[]>)[key];
         if (!Array.isArray(arr) || arr.length === 0) continue;
         let target = (merged.collections as Record<string, unknown[]>)[key];
         if (!target) {
@@ -456,7 +456,7 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
       if (!merged.deletedEntities) merged.deletedEntities = {};
       for (const key in impact.deletedEntities) {
         if (!Object.prototype.hasOwnProperty.call(impact.deletedEntities, key)) continue;
-        const ids = impact.deletedEntities[key];
+        const ids = (impact.deletedEntities as Record<string, string[]>)[key];
         if (!Array.isArray(ids) || ids.length === 0) continue;
         let target = (merged.deletedEntities as Record<string, string[]>)[key];
         if (!target) {
