@@ -34,6 +34,7 @@ export function tickWeekTalentPool(world: WorldState): StateImpact {
   for (const id in nextCandidates) {
     if (!Object.prototype.hasOwnProperty.call(nextCandidates, id)) continue;
     const candidate = nextCandidates[id];
+    if (!candidate) continue;
     if (candidate.availabilityState !== "in_talks") continue;
     if (!candidate.competingSuitors.length) continue;
 
