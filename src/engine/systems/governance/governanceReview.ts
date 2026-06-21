@@ -32,6 +32,9 @@ import {
   FACTION_BENEFACTOR_THRESHOLD,
   FOUNDING_CHANCE,
   HEYA_COUNT_CAP,
+  CHRONIC_UNDERPERFORMANCE_BASHO,
+  PRESTIGE_COLLAPSE_BAND,
+  NON_FINANCIAL_MERGER_MAX_ROSTER,
 } from "../../../constants/engine/economic";
 
 /**
@@ -136,6 +139,32 @@ export function runGovernanceReview(world: WorldState): StateImpact {
     } else if (heya.funds > 0 && heya.runwayBand !== "desperate") {
       // Queue heya update to clear financial risk indicator
       builder.updateHeya(heya.id, { riskIndicators: { ...heya.riskIndicators, financial: false } });
+    }
+
+    // === Non-financial merger: chronic underperformance + prestige collapse ===
+    // Small stables with prolonged underperformance and collapsed prestige
+    // are forced to merge even if financially solvent.
+    if (
+      heya.id !== world.playerHeyaId &&
+      (heya.consecutiveUnderperformanceBasho ?? 0) >= CHRONIC_UNDERPERFORMANCE_BASHO &&
+      heya.prestigeBand === PRESTIGE_COLLAPSE_BAND &&
+      getStableRikishi(world, heya.id).length <= NON_FINANCIAL_MERGER_MAX_ROSTER &&
+      heya.funds >= MERGER_THRESHOLD
+    ) {
+      const targetId = findMergerTarget(world, heya.id);
+      if (targetId) {
+        builder.logEvent(
+          "GOVERNANCE_RULING",
+          "narrative",
+          {
+            incident: "non_financial_merger",
+            reason: "chronic_underperformance",
+            prestigeBand: heya.prestigeBand,
+          },
+          { heyaId: heya.id, importance: "headline" }
+        );
+        builder.merge(executeMerger(world, heya.id, targetId, "chronic_underperformance"));
+      }
     }
 
     // === Welfare review escalation ===

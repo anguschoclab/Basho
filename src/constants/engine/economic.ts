@@ -104,7 +104,7 @@ export const STAFF_UPKEEP_PER_MEMBER = 6_000;
  * solvency guard. Intentional sink so net can go negative for thin-income stables.
  * Tuned to exceed the maintenance subsidy (¥500k/wk) so insolvent stables keep sinking.
  */
-export const FIXED_OPERATING_OVERHEAD_WEEKLY = 550_000;
+export const FIXED_OPERATING_OVERHEAD_WEEKLY = 750_000;
 
 /**
  * Monthly operating overhead per sekitori, scaled by rank (¥).
@@ -113,12 +113,12 @@ export const FIXED_OPERATING_OVERHEAD_WEEKLY = 550_000;
  * compounding funds without bound.
  */
 export const SEKITORI_OVERHEAD_MONTHLY = {
-  yokozuna: 3_000_000,
-  ozeki: 2_000_000,
-  sekiwake: 1_400_000,
-  komusubi: 1_100_000,
-  maegashira: 800_000,
-  juryo: 500_000,
+  yokozuna: 5_000_000,
+  ozeki: 3_500_000,
+  sekiwake: 2_500_000,
+  komusubi: 2_000_000,
+  maegashira: 1_500_000,
+  juryo: 800_000,
 } as const;
 
 /**
@@ -126,7 +126,7 @@ export const SEKITORI_OVERHEAD_MONTHLY = {
  * Covers chanko provisions, tsukebito duties, and ring time for lower-division
  * wrestlers. Intentional roster-scaled sink.
  */
-export const NON_SEKITORI_OVERHEAD_MONTHLY = 80_000;
+export const NON_SEKITORI_OVERHEAD_MONTHLY = 100_000;
 
 /** Daily food cost per rikishi by diet regimen (¥).
  * Based on communal chanko-nabe bulk kitchen economics.
@@ -156,6 +156,15 @@ export const HEYA_COUNT_CAP = 50;
 
 /** Probability that an accomplished retiree with available myoseki founds a new stable. */
 export const FOUNDING_CHANCE = 0.35;
+
+/** Basho of consecutive make-koshi / underperformance before non-financial merger is considered. */
+export const CHRONIC_UNDERPERFORMANCE_BASHO = 6;
+
+/** Prestige band that qualifies as "collapsed" for non-financial merger. */
+export const PRESTIGE_COLLAPSE_BAND = "struggling";
+
+/** Maximum roster size for a non-financial merger trigger (small + failing). */
+export const NON_FINANCIAL_MERGER_MAX_ROSTER = 5;
 
 /** Faction bailout amount (¥) - gift from wealthy faction-mates. */
 export const FACTION_BAILOUT_AMOUNT = 10_000_000;
