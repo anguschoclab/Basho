@@ -12,19 +12,31 @@ import type { HeyaUpdates } from "../types";
 import type { ImpactBuilder } from "../../../../core/ImpactBuilder";
 import { RANK_HIERARCHY } from "../../../../banzuke";
 import { getRikishi } from "../../../../queries";
+import {
+  SEKITORI_OVERHEAD_MONTHLY,
+  NON_SEKITORI_OVERHEAD_MONTHLY,
+} from "../../../../../constants/engine/economic";
 
-// JSA pays oyakata salaries, facility upkeep, and non-sekitori allowances directly.
-// Heya funds are managed by FinanceCalculator (weekly) which already accounts for all
-// heya-side expenses (facility upkeep, staff, JSA subsidies).
-// This function's only job is to credit sekitori with their monthly JSA salary payments.
+/**
+ * Process monthly heya economics:
+ * 1. Credit sekitori with their JSA salary payments (to the rikishi, not from heya).
+ * 2. Deduct rank-scaled operating overhead from heya.funds — this is the heya-side
+ *    cost of fielding a roster (training resources, tsukebito coordination, ring time,
+ *    travel logistics) that scales with roster strength and is NOT covered by the JSA
+ *    salary credit. This is the structural sink that prevents NPC funds from compounding
+ *    without bound.
+ *
+ * Returns total monthly burn (salaries + overhead) so phase05 can compute runway.
+ */
 export function processHeyaEconomics(
   world: WorldState,
   heya: Heya,
   rikishiMap: Map<string, Rikishi>,
-  _heyaUpdates: HeyaUpdates,
+  heyaUpdates: HeyaUpdates,
   builder: ImpactBuilder
 ): number {
   let totalJsaSalaries = 0;
+  let totalHeyaOverhead = 0;
   const rikishiIds = heya.rikishiIds ?? [];
 
   for (const rId of rikishiIds) {
@@ -32,29 +44,41 @@ export function processHeyaEconomics(
     if (!r) continue;
 
     const info = RANK_HIERARCHY[r.rank];
-    if (!info?.isSekitori) continue;
+    if (!info) continue;
 
-    const baseSalary = info.salary ?? 0;
-    const economics = r.economics || {
-      cash: 0,
-      retirementFund: 0,
-      careerKenshoWon: 0,
-      kinboshiCount: 0,
-      totalEarnings: 0,
-      currentBashoEarnings: 0,
-      popularity: 50,
-    };
+    if (info.isSekitori) {
+      // Credit salary to the rikishi (paid by JSA, not deducted from heya)
+      const baseSalary = info.salary ?? 0;
+      const economics = r.economics || {
+        cash: 0,
+        retirementFund: 0,
+        careerKenshoWon: 0,
+        kinboshiCount: 0,
+        totalEarnings: 0,
+        currentBashoEarnings: 0,
+        popularity: 50,
+      };
 
-    builder.updateRikishi(rId, {
-      economics: {
-        ...economics,
-        cash: economics.cash + baseSalary,
-        totalEarnings: economics.totalEarnings + baseSalary,
-      },
-    });
-    totalJsaSalaries += baseSalary;
+      builder.updateRikishi(rId, {
+        economics: {
+          ...economics,
+          cash: economics.cash + baseSalary,
+          totalEarnings: economics.totalEarnings + baseSalary,
+        },
+      });
+      totalJsaSalaries += baseSalary;
+
+      // Rank-scaled heya overhead for sekitori
+      totalHeyaOverhead += SEKITORI_OVERHEAD_MONTHLY[r.rank as keyof typeof SEKITORI_OVERHEAD_MONTHLY] ?? 0;
+    } else {
+      // Flat overhead for non-sekitori
+      totalHeyaOverhead += NON_SEKITORI_OVERHEAD_MONTHLY;
+    }
   }
 
-  // Do NOT deduct from heya.funds — FinanceCalculator (weekly) owns all heya expenses.
-  return totalJsaSalaries;
+  // Deduct operating overhead from heya funds — this is a genuine heya expense
+  // that scales with roster strength, creating financial pressure on weak stables.
+  heyaUpdates.funds = (heyaUpdates.funds ?? heya.funds ?? 0) - totalHeyaOverhead;
+
+  return totalJsaSalaries + totalHeyaOverhead;
 }
