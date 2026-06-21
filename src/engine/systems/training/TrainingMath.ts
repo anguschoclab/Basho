@@ -91,12 +91,13 @@ export function getEffectiveCeiling(
 }
 
 /**
- * cubic diminishing returns for smooth capping.
+ * Quadratic diminishing returns for smooth capping.
+ * Softer than cubic so mid-career growth remains meaningful.
  */
 export function diminishingReturnsMult(currentStat: number, ceiling: number): number {
   if (ceiling <= 0) return 0;
   const ratio = Math.min(currentStat / ceiling, 1);
-  return Math.max(0, 1 - ratio * ratio * ratio);
+  return Math.max(0, 1 - ratio * ratio);
 }
 
 /**

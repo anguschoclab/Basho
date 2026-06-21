@@ -266,7 +266,7 @@ export const PRIME_EXPERIENCE_THRESHOLD = 70;
 export const VETERAN_EXPERIENCE_THRESHOLD = 90;
 
 /** Base growth value */
-export const BASE_GROWTH = 0.5;
+export const BASE_GROWTH = 1.1;
 
 /** Degeiko penalty multiplier */
 export const DEGEIKO_PENALTY_MULTIPLIER = 0.5;
