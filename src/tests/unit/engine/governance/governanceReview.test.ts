@@ -106,9 +106,26 @@ describe("governanceReview", () => {
 
       const targetHeya = makeMockHeya("heya-target", {
         funds: 500000000,
+        rikishiIds: ["rt1", "rt2", "rt3"],
       });
+      world.rikishi.set("rt1", mockRikishi("rt1", { heyaId: "heya-target" }));
+      world.rikishi.set("rt2", mockRikishi("rt2", { heyaId: "heya-target" }));
+      world.rikishi.set("rt3", mockRikishi("rt3", { heyaId: "heya-target" }));
       world.heyas.set("heya-target", targetHeya);
       world.playerHeyaId = "heya-player"; // Not the player
+
+      // Add enough heyas to exceed HEYA_FLOOR so merger is not blocked
+      world.heyas.set("heya-player", makeMockHeya("heya-player", { rikishiIds: ["rp1", "rp2", "rp3"] }));
+      world.rikishi.set("rp1", mockRikishi("rp1", { heyaId: "heya-player" }));
+      world.rikishi.set("rp2", mockRikishi("rp2", { heyaId: "heya-player" }));
+      world.rikishi.set("rp3", mockRikishi("rp3", { heyaId: "heya-player" }));
+      for (let i = 0; i < 8; i++) {
+        const id = `heya-fill-${i}`;
+        world.heyas.set(id, makeMockHeya(id, { rikishiIds: [`rf${i}1`, `rf${i}2`, `rf${i}3`] }));
+        world.rikishi.set(`rf${i}1`, mockRikishi(`rf${i}1`, { heyaId: id }));
+        world.rikishi.set(`rf${i}2`, mockRikishi(`rf${i}2`, { heyaId: id }));
+        world.rikishi.set(`rf${i}3`, mockRikishi(`rf${i}3`, { heyaId: id }));
+      }
 
       const impact = runGovernanceReview(world);
       const newWorld = resolveImpacts(world, [impact]);

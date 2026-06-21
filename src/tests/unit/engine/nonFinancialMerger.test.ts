@@ -46,6 +46,15 @@ describe("non-financial merger — chronic underperformance + prestige collapse"
     world.rikishi.set("rp2", mockRikishi("rp2", { heyaId: "heya-player" }));
     world.rikishi.set("rp3", mockRikishi("rp3", { heyaId: "heya-player" }));
 
+    // Add filler heyas to exceed HEYA_FLOOR so merger is not blocked
+    for (let i = 0; i < 8; i++) {
+      const id = `heya-fill-${i}`;
+      world.heyas.set(id, makeMockHeya(id, { rikishiIds: [`rf${i}1`, `rf${i}2`, `rf${i}3`] }));
+      world.rikishi.set(`rf${i}1`, mockRikishi(`rf${i}1`, { heyaId: id }));
+      world.rikishi.set(`rf${i}2`, mockRikishi(`rf${i}2`, { heyaId: id }));
+      world.rikishi.set(`rf${i}3`, mockRikishi(`rf${i}3`, { heyaId: id }));
+    }
+
     const initialHeyaCount = world.heyas.size;
     const impact = runGovernanceReview(world);
     const newWorld = resolveImpacts(world, [impact]);
