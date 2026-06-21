@@ -85,7 +85,7 @@ describe("Insolvency pressure and wealth stratification", () => {
     expect(minFunds).toBeLessThanOrEqual(LOAN_ISSUANCE_THRESHOLD);
   });
 
-  it("strong heya with powerful koenkai stays solvent", () => {
+  it("strong heya with powerful koenkai and T4/T5 sponsors stays solvent", () => {
     // Strong heya: powerful koenkai, high-tier sponsors, sekitori roster
     const rikishi = [
       mockRikishi("s-r1", { rank: "yokozuna", division: "makuuchi", heyaId: "heya-strong" }),
@@ -99,13 +99,62 @@ describe("Insolvency pressure and wealth stratification", () => {
       funds: 50_000_000,
       rikishiIds: rikishi.map((r) => r.id),
       koenkaiBand: "powerful",
+      koenkaiId: "koenkai-heya-strong",
       facilities: { training: 70, recovery: 70, nutrition: 70, housing: 50 },
       staffIds: [],
     });
 
+    // Set up sponsor pool with T4/T5 sponsors for the strong heya
+    const sponsors = new Map();
+    const koenkaiMembers: import("@/engine/types/sponsors").SponsorRelationship[] = [];
+    for (let i = 0; i < 5; i++) {
+      const sid = `sponsor-${i}`;
+      const tier = i < 2 ? "T5" : "T4";
+      sponsors.set(sid, {
+        sponsorId: sid,
+        displayName: `Sponsor ${i}`,
+        tier,
+        active: true,
+        prestigeAffinity: 80,
+        loyalty: 90,
+        scandalTolerance: 50,
+        riskAppetite: 60,
+        visibilityPreference: 1,
+        satisfaction: 80,
+        createdAtTick: 0,
+        lastSeenTick: 0,
+        relationships: [],
+        category: "national_brand",
+        originRegionId: "r1",
+        industryTag: "tech",
+        toneTag: "modern",
+      } as any);
+      koenkaiMembers.push({
+        relId: `rel-${i}`,
+        sponsorId: sid,
+        targetType: "heya",
+        targetId: "heya-strong",
+        role: i === 0 ? "koenkai_pillar" : "koenkai_member",
+        strength: 4,
+        startedAtTick: 0,
+      } as any);
+    }
+
+    const koenkais = new Map([
+      ["koenkai-heya-strong", {
+        koenkaiId: "koenkai-heya-strong",
+        heyaId: "heya-strong",
+        strengthBand: "powerful",
+        members: koenkaiMembers,
+        createdAtTick: 0,
+        lastChangedTick: 0,
+      } as any],
+    ]);
+
     const world = makeMockWorld({
       heyas: new Map([["heya-strong", strongHeya]]),
       rikishi: rikishiMap,
+      sponsorPool: { sponsors, koenkais } as any,
     });
 
     const trajectory = simulateMonths(strongHeya, world, 12);

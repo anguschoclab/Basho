@@ -154,6 +154,9 @@ export const FOUNDING_SEED_FUNDS = 30_000_000;
 /** Maximum number of stables allowed in the world. */
 export const HEYA_COUNT_CAP = 50;
 
+/** Minimum number of stables to preserve — mergers are blocked below this count. */
+export const HEYA_FLOOR = 10;
+
 /** Probability that an accomplished retiree with available myoseki founds a new stable. */
 export const FOUNDING_CHANCE = 0.35;
 
