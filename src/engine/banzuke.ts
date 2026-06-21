@@ -375,7 +375,7 @@ function banzukeMovementEvents(
  * @param {Set<string>} demoted - Set of rikishi IDs who were demoted from Ozeki.
  * @returns {BanzukeUpdateResult["sanyakuCounts"]} The counts for each Sanyaku rank.
  */
-function computeVariableSanyakuCounts(
+export function computeVariableSanyakuCounts(
   current: BanzukeEntry[],
   perfById: Map<string, BashoPerformance>,
   demoted: Set<string>
@@ -389,10 +389,13 @@ function computeVariableSanyakuCounts(
   );
   let oCount = Math.max(
     2,
-    m.filter((e) => e.position.rank === "ozeki" && !demoted.has(e.rikishiId)).length +
-      m.filter(
-        (e) => e.position.rank === "sekiwake" && (perfById.get(e.rikishiId)?.wins ?? 0) >= 11
-      ).length
+    Math.min(
+      4,
+      m.filter((e) => e.position.rank === "ozeki" && !demoted.has(e.rikishiId)).length +
+        m.filter(
+          (e) => e.position.rank === "sekiwake" && (perfById.get(e.rikishiId)?.wins ?? 0) >= 11
+        ).length
+    )
   );
   let sCount = Math.max(
     2,
