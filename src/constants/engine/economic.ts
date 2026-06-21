@@ -147,6 +147,9 @@ export const LOAN_ISSUANCE_THRESHOLD = -5_000_000;
 /** Merger threshold (¥) - when funds drop below this, NPC stables are forced to merge. */
 export const MERGER_THRESHOLD = -15_000_000;
 
+/** Seed funds for a newly founded stable (¥). */
+export const FOUNDING_SEED_FUNDS = 30_000_000;
+
 /** Faction bailout amount (¥) - gift from wealthy faction-mates. */
 export const FACTION_BAILOUT_AMOUNT = 10_000_000;
 

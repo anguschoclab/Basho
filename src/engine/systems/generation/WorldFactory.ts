@@ -53,6 +53,7 @@ import {
   YOKOZUNA_COUNT_MIN,
   YOKOZUNA_COUNT_MAX,
 } from "../../../constants/engine/generation";
+import { FOUNDING_SEED_FUNDS } from "../../../constants/engine/economic";
 
 /**
  * Creates a new Heya and its associated Oyakata.
@@ -168,6 +169,32 @@ export function createHeyaWithOyakata(args: {
   };
 
   return { heya, oyakata };
+}
+
+/**
+ * Found a new stable (heya) for a newly-converted oyakata.
+ * Reuses createHeyaWithOyakata but overrides funds, stature, prestige, and roster.
+ *
+ * @param world - The current world state (used for seed context).
+ * @param oyakataId - The ID of the oyakata who will lead this stable.
+ * @param name - The name for the new stable.
+ * @param rng - A deterministic RNG (typically rngForWorld(world, "found", label)).
+ * @returns {{ heya: Heya }} The newly founded heya (not yet inserted into the world).
+ */
+export function foundStable(
+  world: WorldState,
+  oyakataId: string,
+  name: string,
+  rng: SeededRNG
+): { heya: Heya } {
+  const id = rng.uuid("HY");
+  const { heya } = createHeyaWithOyakata({ id, name, rng, tier: 0.9 });
+  heya.oyakataId = oyakataId;
+  heya.funds = FOUNDING_SEED_FUNDS;
+  heya.statureBand = "new";
+  heya.prestigeBand = "modest";
+  heya.rikishiIds = [];
+  return { heya };
 }
 
 /**
