@@ -3,6 +3,7 @@ import { computeReplacementGap, allocateVacancies } from "@/engine/systems/gener
 import { makeMockWorld, makeMockHeya } from "../utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
+import { TARGET_ROSTER_SIZE, TOTAL_ACTIVE_THRESHOLD } from "@/constants/engine/recruitmentExtended";
 
 describe("computeReplacementGap", () => {
   it("returns target - active when active is below target", () => {
@@ -146,5 +147,16 @@ describe("allocateVacancies", () => {
     );
     const vacancies = allocateVacancies(world, 10);
     expect(Object.keys(vacancies).length).toBe(0);
+  });
+});
+
+describe("roster constants equilibrium invariant", () => {
+  it("TARGET_ROSTER_SIZE >= ceil(1084 / 45) ≈ 25", () => {
+    expect(TARGET_ROSTER_SIZE).toBeGreaterThanOrEqual(Math.ceil(1084 / 45));
+  });
+
+  it("TOTAL_ACTIVE_THRESHOLD is in (600, 1084)", () => {
+    expect(TOTAL_ACTIVE_THRESHOLD).toBeGreaterThan(600);
+    expect(TOTAL_ACTIVE_THRESHOLD).toBeLessThan(1084);
   });
 });
