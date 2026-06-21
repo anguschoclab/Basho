@@ -11,14 +11,12 @@ import * as talentpool from "../../systems/generation/TalentPoolService";
 import { assignMentor } from "../../lineage";
 import { rngFromSeed } from "../../rng";
 import {
-  TARGET_ROSTER_SIZE,
-  CRITICAL_ROSTER_THRESHOLD,
   INTERIM_DURATION_DAYS,
   RECRUITMENT_WINDOW_CLOSES_WEEKS,
-  TOTAL_ACTIVE_THRESHOLD,
 } from "../../../constants/engine/recruitmentExtended";
 import { DAYS_PER_WEEK } from "../../../constants/engine/time";
 import { getHeya, getRikishi } from "../../queries";
+import { computeReplacementGap, allocateVacancies } from "../../systems/generation/RecruitmentController";
 
 export function phase01_week_recruitment(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_recruitment");
@@ -74,55 +72,16 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
     }
   }
 
-  // 4. NPC Opportunistic Recruitment — every week during interim
-  const isInterim = world.cyclePhase === "interim";
-
-  if (isInterim) {
-    // Primary: all stables below target roster size
-    const smallStables: Record<string, number> = {};
-    let hasItems = false;
-    for (const h of world.heyas.values()) {
-      const currentCount = (h.rikishiIds ?? []).length;
-      if (h.id !== world.playerHeyaId && currentCount < TARGET_ROSTER_SIZE) {
-        smallStables[h.id] = Math.max(1, TARGET_ROSTER_SIZE - currentCount);
-        hasItems = true;
-      }
-    }
-    if (hasItems) {
-      builder.merge(talentpool.fillVacanciesForNPCWithBidding(world, smallStables));
-    }
-  }
-
-  // Secondary: critically depleted stables get an extra fill attempt
-  if (isInterim) {
-    const criticalStables: Record<string, number> = {};
-    let hasCritical = false;
-    for (const h of world.heyas.values()) {
-      const currentCount = (h.rikishiIds ?? []).length;
-      if (h.id !== world.playerHeyaId && currentCount < CRITICAL_ROSTER_THRESHOLD) {
-        criticalStables[h.id] = Math.max(1, TARGET_ROSTER_SIZE - currentCount);
-        hasCritical = true;
-      }
-    }
-    if (hasCritical) {
-      builder.merge(talentpool.fillVacanciesForNPCWithBidding(world, criticalStables));
-    }
-  }
-
-  // 4b. Emergency recruitment: if population is critically low, recruit every week
-  const totalActive = world.activeRikishiIds.size;
-  if (totalActive < TOTAL_ACTIVE_THRESHOLD) {
-    const urgentVacancies: Record<string, number> = {};
-    let hasUrgentVacancies = false;
-    for (const h of world.heyas.values()) {
-      const currentCount = (h.rikishiIds ?? []).length;
-      if (h.id !== world.playerHeyaId && currentCount < TARGET_ROSTER_SIZE) {
-        urgentVacancies[h.id] = Math.max(1, TARGET_ROSTER_SIZE - currentCount);
-        hasUrgentVacancies = true;
-      }
-    }
-    if (hasUrgentVacancies) {
-      builder.merge(talentpool.fillVacanciesForNPCWithBidding(world, urgentVacancies));
+  // 4. NPC Replacement Recruitment — runs EVERY weekly tick via gap controller.
+  // The controller computes a global replacement target from active population vs
+  // the equilibrium target captured at worldgen (_populationTarget), then allocates
+  // vacancies across eligible NPC stables by depletion. This runs outside interim
+  // and above the old 800 emergency floor, closing the erosion band (1084→763).
+  const gap = computeReplacementGap(world);
+  if (gap > 0) {
+    const vacancies = allocateVacancies(world, gap);
+    if (Object.keys(vacancies).length > 0) {
+      builder.merge(talentpool.fillVacanciesForNPCWithBidding(world, vacancies));
     }
   }
 
