@@ -52,3 +52,9 @@ export const YOKOZUNA_SENTIMENT_MAKEKOSHI_PENALTY = 15;
 
 /** Yokozuna sentiment penalty for consecutive makekoshi */
 export const YOKOZUNA_SENTIMENT_CONSECUTIVE_MAKEKOSHI_PENALTY = 25;
+
+/** Basho of yokozuna vacancy before prestige promotion relaxes criteria. */
+export const YOKOZUNA_VACANCY_STREAK_THRESHOLD = 4;
+
+/** Wins required for prestige promotion during extended vacancy (reduced from 13). */
+export const YOKOZUNA_VACANCY_PRESTIGE_WINS = 12;

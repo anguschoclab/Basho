@@ -152,6 +152,8 @@ export interface WorldState {
 
   currentBashoName?: BashoName;
   currentBasho?: BashoState;
+  /** Consecutive basho with no active yokozuna — used for prestige promotion. */
+  yokozunaVacancyStreak?: number;
   rng?: SeededRNG;
 
   heyas: IdMapRuntime<Heya>;

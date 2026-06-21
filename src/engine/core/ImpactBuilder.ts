@@ -373,6 +373,7 @@ export class ImpactBuilder {
       | "globalKimariteStats"
       | "pendingCrisis"
       | "pendingDecisions"
+      | "yokozunaVacancyStreak"
       | "events"
     >,
   >(field: K, value: WorldState[K]): ImpactBuilder {
@@ -687,6 +688,7 @@ export function updateWorldFieldImpact<
     | "settings"
     | "globalCup"
     | "chronicle"
+    | "yokozunaVacancyStreak"
   >,
 >(field: K, value: WorldState[K], source: string): StateImpact {
   return createImpactBuilder(source).updateWorldField(field, value).build();
