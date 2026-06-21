@@ -280,8 +280,14 @@ export function updateBanzuke(
 
     // 2. FALLBACK: If no eligible candidate found, take the absolute next best available candidate
     // to ensure division quotas are met (as requested by user).
+    // Guard: a demoted ozeki must never be re-seated in an ozeki slot via fallback.
     if (idx === -1) {
-      idx = scored.findIndex((cand) => !used.has(cand.entry.rikishiId));
+      const isOzekiSlot = slot.position.rank === "ozeki";
+      idx = scored.findIndex(
+        (cand) =>
+          !used.has(cand.entry.rikishiId) &&
+          !(isOzekiSlot && demotedOzeki.has(cand.entry.rikishiId))
+      );
     }
 
     if (idx !== -1) {

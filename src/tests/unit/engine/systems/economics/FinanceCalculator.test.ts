@@ -45,12 +45,13 @@ describe("FinanceCalculator — fixed operating overhead", () => {
     const result = calculateHeyaWeeklyFinances(expensiveHeya, w);
 
     // facilityUpkeep = 30*1000 + 30*1000 + 30*2000 = 120,000
-    // fixed overhead = 250,000; baseBurn = 370,000
+    // fixed overhead = FIXED_OPERATING_OVERHEAD_WEEKLY; baseBurn = 120,000 + fixed
     // income ~ 50,000 (JSA grant only)
-    // effectiveBurn must be >= baseBurn (370,000), NOT clamped to income (50,000)
-    expect(result.expenses).toBeGreaterThanOrEqual(370_000);
+    // effectiveBurn must be >= baseBurn, NOT clamped to income (50,000)
+    const expectedBaseBurn = 120_000 + FIXED_OPERATING_OVERHEAD_WEEKLY;
+    expect(result.expenses).toBeGreaterThanOrEqual(expectedBaseBurn);
     expect(result.nextFunds).toBeLessThan(expensiveHeya.funds);
-    const expectedLoss = 370_000 - 50_000;
+    const expectedLoss = expectedBaseBurn - 50_000;
     expect(expensiveHeya.funds - result.nextFunds).toBe(expectedLoss);
   });
 
@@ -64,7 +65,9 @@ describe("FinanceCalculator — fixed operating overhead", () => {
     });
     const w = makeMockWorld({ heyas: new Map([["heya-poor", poorHeya]]) });
     const result = calculateHeyaWeeklyFinances(poorHeya, w);
-    // baseBurn = 370,000; income = 50,000; recruitment is discretionary — should NOT be charged
-    expect(result.expenses).toBe(370_000);
+    // baseBurn = 120,000 + FIXED_OPERATING_OVERHEAD_WEEKLY; income = 50,000
+    // recruitment is discretionary — should NOT be charged
+    const expectedBaseBurn = 120_000 + FIXED_OPERATING_OVERHEAD_WEEKLY;
+    expect(result.expenses).toBe(expectedBaseBurn);
   });
 });
