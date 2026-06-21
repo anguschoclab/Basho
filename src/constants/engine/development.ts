@@ -79,12 +79,12 @@ export const PA_BY_RANK: Record<Rank, { mean: number; stdDev: number }> = {
   ozeki: { mean: 82, stdDev: 6 },
   sekiwake: { mean: 76, stdDev: 7 },
   komusubi: { mean: 72, stdDev: 7 },
-  maegashira: { mean: 62, stdDev: 9 },
-  juryo: { mean: 54, stdDev: 9 },
-  makushita: { mean: 46, stdDev: 10 },
-  sandanme: { mean: 40, stdDev: 10 },
-  jonidan: { mean: 35, stdDev: 10 },
-  jonokuchi: { mean: 32, stdDev: 10 },
+  maegashira: { mean: 64, stdDev: 9 },
+  juryo: { mean: 58, stdDev: 9 },
+  makushita: { mean: 54, stdDev: 10 },
+  sandanme: { mean: 50, stdDev: 10 },
+  jonidan: { mean: 46, stdDev: 11 },
+  jonokuchi: { mean: 44, stdDev: 12 },
 };
 
 /** Age distribution by rank — Gaussian, biased but not hard-gated. */
