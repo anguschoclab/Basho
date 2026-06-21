@@ -4,6 +4,7 @@ import type { WorldState } from "../../types/world";
 import { ensureTalentPoolState, refreshAllPools } from "./TalentPoolStateService";
 import { resolveCandidateSuitor } from "./TalentPoolOffers";
 import { RNGRegistry } from "../../core/RNGRegistry";
+import { computeReplacementGap } from "./RecruitmentController";
 
 /**
  * Weekly maintenance for the talent pool.
@@ -51,17 +52,22 @@ export function tickWeekTalentPool(world: WorldState): StateImpact {
     }
   }
 
-  // 3. Passive Discovery: move 1-2 candidates from hidden to visible pools every week
+  // 3. Passive Discovery: reveal candidates from hidden to visible pools every week.
+  // Gap-aware: when the active population is below the equilibrium target, reveal
+  // enough per pool to cover the weekly replacement gap (ceil(gap / 3) per pool × 3
+  // pools ≥ gap). Falls back to the baseline 20-30 when at/above target.
   const nextPools = { ...tp.pools };
   const rng = RNGRegistry.getSystemRNG(world, "scouting", `discovery_${world.week}`);
+  const gap = computeReplacementGap(world);
+  const perPoolFloor = gap > 0 ? Math.ceil(gap / 3) : 0;
 
   for (const pt of ["high_school", "university", "foreign"] as const) {
     const pool = { ...nextPools[pt] };
     if (pool.candidatesHidden.length > 0) {
-      // Increased from 10-15 to 20-30 per pool per week to ensure sufficient visible
-      // candidates for the two NPC recruitment windows per inter-basho period.
-      const count = rng.int(20, 30);
-      for (let i = 0; i < count; i++) {
+      const baseline = rng.int(20, 30);
+      const count = Math.max(baseline, perPoolFloor);
+      const bounded = Math.min(count, pool.candidatesHidden.length);
+      for (let i = 0; i < bounded; i++) {
         const cId = pool.candidatesHidden.shift();
         if (cId) {
           pool.candidatesVisible.push(cId);
