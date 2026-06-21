@@ -24,6 +24,7 @@ import {
   MAINTENANCE_SUBSIDY_AMOUNT,
   DEBT_LIMIT,
   RUNWAY_INFINITE_SENTINEL,
+  FIXED_OPERATING_OVERHEAD_WEEKLY,
 } from "../../../constants/engine/economic";
 
 export interface HeyaFinanceResult {
@@ -126,16 +127,20 @@ export function calculateHeyaWeeklyFinances(heya: Heya, world: WorldState): Heya
   const staffUpkeep = staffUpkeepRaw * staffBonuses.administration;
 
   // Food is charged daily by phase01_daily_economy — do not double-count here.
-  const baseBurn = facilityUpkeep + staffUpkeep;
+  // Fixed operating overhead is an unavoidable heya expense (NOT subject to admin discount)
+  // and is exempt from the solvency clamp — net can go negative for thin-income stables.
+  const baseBurn = facilityUpkeep + staffUpkeep + FIXED_OPERATING_OVERHEAD_WEEKLY;
   const recruitmentCost = heya.funds <= DEBT_LIMIT ? 0 : RECRUITMENT_BUDGET_WEEKLY;
   const totalBurn = baseBurn + recruitmentCost;
 
-  // Solvency clamping: pause overhead at the survival floor
+  // Solvency clamping: only the DISCRETIONARY recruitment cost is clamped away when
+  // income is insufficient. baseBurn (facilities + staff + fixed overhead) is always
+  // paid in full, even when net goes negative — this is what allows weak stables to
+  // sink toward LOAN_ISSUANCE_THRESHOLD / MERGER_THRESHOLD.
   let effectiveBurn = totalBurn;
   if (effectiveIncome < totalBurn) {
-    // If income is below total burn, cap burn at income to prevent debt spirals
-    // But never reduce below baseBurn (essential operations only)
-    effectiveBurn = Math.max(baseBurn, Math.min(effectiveIncome, totalBurn));
+    // Income can't cover everything — skip discretionary recruitment, pay baseBurn only.
+    effectiveBurn = baseBurn;
   }
 
   const net = effectiveIncome - effectiveBurn;
