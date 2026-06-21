@@ -1,0 +1,3 @@
+## 2024-06-20 - Icon-Only Button Accessibility and Affordance
+**Learning:** The project's custom `Button` component (`src/components/ui/button.tsx`) natively supports `tooltip` and `tooltipSide` props which wrap the component in a Radix tooltip. Additionally, `size="icon"` buttons should always include an `aria-label` for screen reader accessibility alongside the `tooltip` for visual affordance. Using the native `title` attribute is insufficient.
+**Action:** Always verify that `variant="ghost" size="icon"` buttons (and similar icon buttons) use the built-in `tooltip` prop instead of native `title` attributes or manual TooltipWraps, and ensure a corresponding `aria-label` is present.
