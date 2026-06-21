@@ -232,6 +232,13 @@ export interface WorldState {
 
   _postBashoMeta?: PostBashoMeta;
 
+  /**
+   * Equilibrium active-rikishi population captured at world generation.
+   * Read-only coupling point for the replacement-rate controller (RecruitmentController)
+   * and the lifecycle plan. Falls back to 0 (no replacement) when unset.
+   */
+  _populationTarget?: number;
+
   rivalriesState?: RivalriesState;
 
   stableRelations?: Record<string, { tone: string }>;

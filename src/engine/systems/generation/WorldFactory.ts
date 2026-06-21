@@ -460,6 +460,11 @@ export function generateInitialWorld(seed: string): WorldState {
     }
   }
 
+  // Capture equilibrium active population target for the replacement-rate controller.
+  // Done after rosters + activeRikishiIds are finalized but before any post-gen ticks
+  // that might retire rikishi, so the target reflects the intended starting census.
+  world._populationTarget = world.activeRikishiIds.size;
+
   // Initialize and populate talent pools
   talentpool.tickWeekTalentPool(world);
 
