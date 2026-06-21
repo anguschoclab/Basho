@@ -508,7 +508,9 @@ export class ImpactBuilder {
             for (const id of arr) this.removeRikishi(id as string);
             break;
           case "rikishiToHistorical":
-            for (const id of arr) this.retireRikishi(id as string);
+            (this.ensureCollectionArray("rikishiToHistorical") as string[]).push(
+              ...(arr as string[])
+            );
             break;
           case "rikishiFromHistorical":
             for (const id of arr) this.unretireRikishi(id as string);

@@ -118,12 +118,6 @@ export function runAutoSim(
     }
     prevKimariteStats = { ...bashoKimarite };
 
-    // Count yokozuna vacancy per basho
-    const hasYokozuna = Array.from(currentWorld.rikishi.values()).some(
-      (r) => r.rank === "yokozuna" && !r.isRetired
-    );
-    if (!hasYokozuna) yokozunaVacantBashoCount++;
-
     if (bashoResult.yushoWinner.id) {
       championCounts.set(
         bashoResult.yushoWinner.id,
@@ -201,6 +195,12 @@ export function runAutoSim(
     // 3. Run publishBanzukeUpdate — handles yokozuna promotion, careerHistory, council warnings
     const banzukeImpact = publishBanzukeUpdate(worldWithStandings);
     currentWorld = resolveImpacts(worldWithStandings, [banzukeImpact]);
+
+    // Count yokozuna vacancy per basho (after banzuke update so freshly-promoted yokozuna aren't falsely counted vacant)
+    const hasYokozuna = Array.from(currentWorld.rikishi.values()).some(
+      (r) => r.rank === "yokozuna" && !r.isRetired
+    );
+    if (!hasYokozuna) yokozunaVacantBashoCount++;
 
     // 2. Advance through off-season phases to trigger yearly boundary & training
     currentWorld = enterPostBasho(currentWorld);

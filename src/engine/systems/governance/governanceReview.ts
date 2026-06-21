@@ -442,7 +442,9 @@ export function runRetirements(world: WorldState): StateImpact {
 
   // Queue collection operation to move rikishi to historical
   for (const id of rikishiToRetire) {
-    builder.retireRikishi(id);
+    const r = getRikishi(world, id);
+    const reason = r ? checkRetirement(r, world.year, world.seed) : "Retirement";
+    builder.retireRikishi(id, world.year, reason ?? "Retirement");
   }
 
   // Add vacancy count to metadata
