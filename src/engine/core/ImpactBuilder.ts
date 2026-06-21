@@ -245,6 +245,14 @@ export class ImpactBuilder {
   }
 
   /**
+   * Add a new heya to the world (stable founding).
+   */
+  addHeya(heya: Heya): ImpactBuilder {
+    (this.ensureCollectionArray("heyaToAdd") as Heya[]).push(heya);
+    return this;
+  }
+
+  /**
    * Remove an oyakata from the world.
    */
   removeOyakata(id: string): ImpactBuilder {

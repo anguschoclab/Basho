@@ -125,6 +125,8 @@ export interface StateImpact {
     staffToAdd?: Staff[];
     /** Staff IDs to remove from active roster (delete) */
     staffToRemove?: string[];
+    /** Heyas to add to the world (stable founding) */
+    heyaToAdd?: Heya[];
     // Add other collection operations as needed
   };
 

@@ -262,6 +262,14 @@ function _applyImpact(result: WorldState, impact: StateImpact): WorldState {
       result = { ...result, rikishi: nextRikishi, historicalRikishi: nextHistorical };
     }
 
+    if (impact.collections.heyaToAdd) {
+      const nextHeyas = ensureHeyas();
+      for (const h of impact.collections.heyaToAdd) {
+        nextHeyas.set(h.id, h);
+      }
+      heyasChanged = true;
+    }
+
     if (heyasChanged && nextHeyas) {
       result = { ...result, heyas: nextHeyas };
     }
