@@ -102,8 +102,9 @@ export const STAFF_UPKEEP_PER_MEMBER = 6_000;
  * Fixed weekly operating overhead (¥) — unavoidable heya administrative cost
  * (utilities, groundskeeping, association dues) that is NOT clamped away by the
  * solvency guard. Intentional sink so net can go negative for thin-income stables.
+ * Tuned to exceed the maintenance subsidy (¥500k/wk) so insolvent stables keep sinking.
  */
-export const FIXED_OPERATING_OVERHEAD_WEEKLY = 250_000;
+export const FIXED_OPERATING_OVERHEAD_WEEKLY = 550_000;
 
 /**
  * Monthly operating overhead per sekitori, scaled by rank (¥).
@@ -112,12 +113,12 @@ export const FIXED_OPERATING_OVERHEAD_WEEKLY = 250_000;
  * compounding funds without bound.
  */
 export const SEKITORI_OVERHEAD_MONTHLY = {
-  yokozuna: 1_500_000,
-  ozeki: 1_000_000,
-  sekiwake: 700_000,
-  komusubi: 550_000,
-  maegashira: 400_000,
-  juryo: 250_000,
+  yokozuna: 3_000_000,
+  ozeki: 2_000_000,
+  sekiwake: 1_400_000,
+  komusubi: 1_100_000,
+  maegashira: 800_000,
+  juryo: 500_000,
 } as const;
 
 /**
@@ -125,7 +126,7 @@ export const SEKITORI_OVERHEAD_MONTHLY = {
  * Covers chanko provisions, tsukebito duties, and ring time for lower-division
  * wrestlers. Intentional roster-scaled sink.
  */
-export const NON_SEKITORI_OVERHEAD_MONTHLY = 40_000;
+export const NON_SEKITORI_OVERHEAD_MONTHLY = 80_000;
 
 /** Daily food cost per rikishi by diet regimen (¥).
  * Based on communal chanko-nabe bulk kitchen economics.
