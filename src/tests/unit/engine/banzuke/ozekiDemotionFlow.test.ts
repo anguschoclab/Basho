@@ -60,7 +60,7 @@ describe("ozeki demotion flow — demoted ozeki not re-seated in ozeki slot", ()
       );
     }
 
-    const result = updateBanzuke(entries, perfById, world);
+    const result = updateBanzuke(entries, perfById, world, world.ozekiKadoban);
 
     // Find where o2 was placed
     const o2Entry = result.newBanzuke.find((e) => e.rikishiId === "o2");
