@@ -32,6 +32,7 @@ import { createKoenkai } from "../economy/SponsorshipService";
 import { generateHeyaBrandIdentities } from "../keshoMawashi/HeyaBrandGenerator";
 import type { BashoName, BashoState } from "../../types/basho";
 import type { Faction, IchimonName } from "../../types/economy";
+import { TARGET_ROSTER_SIZE } from "../../../constants/engine/recruitmentExtended";
 import { getBashoNumber } from "../../calendar";
 import { generateOyakata } from "../../oyakataPersonalities";
 import { generateAvatarConfig } from "../../avatarGenerator";
@@ -487,13 +488,19 @@ export function generateInitialWorld(seed: string): WorldState {
     }
   }
 
-  // Capture equilibrium active population target for the replacement-rate controller.
-  // Done after rosters + activeRikishiIds are finalized but before any post-gen ticks
-  // that might retire rikishi, so the target reflects the intended starting census.
-  world._populationTarget = world.activeRikishiIds.size;
-
   // Initialize and populate talent pools
   talentpool.tickWeekTalentPool(world);
+
+  // Capture equilibrium active population target for the replacement-rate controller.
+  // The initial roster is intentionally small (~440); recruitment fills stables to
+  // TARGET_ROSTER_SIZE over the first year. The target is the total NPC stable capacity
+  // so the gap controller maintains the population at the intended equilibrium.
+  let targetPop = 0;
+  for (const heya of world.heyas.values()) {
+    if (heya.id === world.playerHeyaId) continue;
+    targetPop += TARGET_ROSTER_SIZE;
+  }
+  world._populationTarget = targetPop;
 
   // Seed initial rivalries for narrative depth (P0-C1)
   RivalryService.seedInitialRivalries(world);

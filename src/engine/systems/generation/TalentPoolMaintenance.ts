@@ -12,7 +12,19 @@ import { computeReplacementGap } from "./RecruitmentController";
  */
 export function tickWeekTalentPool(world: WorldState): StateImpact {
   const builder = createImpactBuilder("tickWeekTalentPool");
-  const tp = ensureTalentPoolState(world);
+
+  // 0. Periodic pool refresh — every 2 weeks, BEFORE discovery so the hidden
+  //    pool is replenished before we reveal candidates. Must run before
+  //    discovery so discovery sees the refreshed hidden pool.
+  const dayIndex = world.dayIndexGlobal ?? 0;
+  let tp = ensureTalentPoolState(world);
+  if (dayIndex > 0 && dayIndex % 14 === 0) {
+    const refreshImpact = refreshAllPools(world);
+    const refreshedTp = refreshImpact.worldFields?.talentPool;
+    if (refreshedTp) {
+      tp = refreshedTp as typeof tp;
+    }
+  }
 
   const nextCandidates = { ...tp.candidates };
   const nextScouting = { ...(tp.playerScouting || {}) };
@@ -100,23 +112,13 @@ export function tickWeekTalentPool(world: WorldState): StateImpact {
     );
   }
 
-  // 5. Update world state via impact (incorporates passive discovery + emergency reveal)
+  // 5. Update world state via impact (incorporates refresh + passive discovery + emergency reveal)
   builder.updateWorldField("talentPool", {
     ...tp,
     candidates: nextCandidates,
     pools: nextPools,
     playerScouting: nextScouting,
   });
-
-  // 6. Periodic pool refresh logic — every 2 weeks to keep candidates available
-  // The old condition (month odd && day === 1) never fired because weekly ticks
-  // always land on days 7, 14, 21, 28, 5, 12, … never on day 1.
-  // world.week also never changes (phase00_preflight doesn't update it).
-  // Use dayIndexGlobal which increments every day and is a multiple of 7 on weekly ticks.
-  const dayIndex = world.dayIndexGlobal ?? 0;
-  if (dayIndex > 0 && dayIndex % 14 === 0) {
-    builder.merge(refreshAllPools(world));
-  }
 
   return builder.build();
 }
