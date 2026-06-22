@@ -134,7 +134,9 @@
       "Bash(cat spec-reviewer-prompt.md)",
       "Bash(cat code-quality-reviewer-prompt.md)",
       "Bash(git -C /Users/amauricia/Documents/GitHub/sumo-manager-pro branch --show-current)",
-      "Bash(git -C /Users/amauricia/Documents/GitHub/sumo-manager-pro rev-parse HEAD)"
+      "Bash(git -C /Users/amauricia/Documents/GitHub/sumo-manager-pro rev-parse HEAD)",
+      "Bash(cat vitest.config.ts)",
+      "Bash(cat vitest.config.js)"
     ]
   },
   "outputStyle": "default"
