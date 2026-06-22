@@ -81,9 +81,19 @@ export function createDefaultTrainingState(heyaId: Id): HeyaTrainingState {
  * ```
  */
 export function ensureHeyaTrainingState(world: WorldState, heyaId: Id): HeyaTrainingState {
-  return EntityService.ensureNestedState(world, "trainingState" as const, heyaId, () =>
+  const state = EntityService.ensureNestedState(world, "trainingState" as const, heyaId, () =>
     createDefaultTrainingState(heyaId)
   );
+  // Backfill any missing fields. Nested-field updates (e.g. a loop decision writing
+  // `activeProfile.intensity`) can persist a PARTIAL trainingState onto a heya that had
+  // none, leaving `activeProfile` without `focus`/`styleBias`/`recovery` — which then
+  // crashed the training tick at INTENSITY_MULTIPLIERS[profile.intensity]. Merge over
+  // defaults so every consumer always sees a complete profile.
+  const defaults = createDefaultTrainingState(heyaId);
+  state.heyaId = state.heyaId ?? heyaId;
+  state.activeProfile = { ...defaults.activeProfile, ...(state.activeProfile ?? {}) };
+  state.focusSlots = state.focusSlots ?? [];
+  return state;
 }
 
 /**

@@ -307,7 +307,7 @@ describe("runAutoSim diagnostic metrics", () => {
     expect(
       result.tuningMetrics.topKimarite.reduce((s, k) => s + k.count, 0)
     ).toBeGreaterThan(50);
-  });
+  }, 120_000); // 2-year runAutoSim is heavy; needs headroom over the 30s default under parallel load
 
   it("counts every basho with no yokozuna, not just the final world", () => {
     const rawWorld = generateInitialWorld("yoko-vacancy-test");

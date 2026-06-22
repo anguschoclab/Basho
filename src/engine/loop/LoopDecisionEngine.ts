@@ -157,6 +157,32 @@ export function evaluatePendingDecisions(world: WorldState): StateImpact {
   return builder.build();
 }
 
+/**
+ * Write a COMPLETE training profile with the given intensity, preserving the heya's
+ * other profile fields. Writing only the nested `activeProfile.intensity` would persist
+ * a partial profile (missing focus/styleBias/recovery) onto a heya with no prior
+ * trainingState, which crashed the training tick.
+ */
+function setTrainingIntensity(
+  builder: ImpactBuilder,
+  world: WorldState,
+  heyaId: string,
+  intensity: string
+): void {
+  const current = world.trainingState?.get(heyaId);
+  const cp = current?.activeProfile;
+  builder.updateTrainingState(heyaId, {
+    heyaId,
+    activeProfile: {
+      intensity: intensity as never,
+      focus: (cp?.focus ?? "neutral") as never,
+      styleBias: (cp?.styleBias ?? "neutral") as never,
+      recovery: (cp?.recovery ?? "normal") as never,
+    },
+    focusSlots: current?.focusSlots ?? [],
+  } as never);
+}
+
 /** Apply a decision option's real engine effect to the builder. Shared by the
  *  interactive (resolveLoopDecision) and autonomous (auto-resolve) paths. */
 export function applyDecisionEffect(
@@ -189,7 +215,7 @@ export function applyDecisionEffect(
     decisionType === "weekly_training_emphasis" &&
     (optionId === "intensive" || optionId === "conservative")
   ) {
-    builder.updateTrainingStateNestedField(heya.id, "activeProfile.intensity", optionId);
+    setTrainingIntensity(builder, world, heya.id, optionId);
   }
   if (decisionType === "welfare_diet" && (optionId === "premium" || optionId === "maintenance")) {
     builder.updateHeya(heya.id, {
@@ -345,7 +371,7 @@ export function applyExpiredQueueDefaults(world: WorldState): StateImpact {
     const def = QUEUE_DEFAULTS[d.type];
     if (!def || !heya) continue;
     if (d.type === "weekly_training_emphasis") {
-      builder.updateTrainingStateNestedField(heya.id, "activeProfile.intensity", def);
+      setTrainingIntensity(builder, world, heya.id, def);
     } else if (d.type === "welfare_diet") {
       builder.updateHeya(heya.id, {
         welfareState: { ...heya.welfareState, activeDiet: def },
