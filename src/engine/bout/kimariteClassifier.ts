@@ -26,7 +26,8 @@ export function evaluateKimariteAttempt(
   st: EngineStateV2,
   rng: SeededRNG,
   division?: Division,
-  meta?: { tone: string; drift: Record<string, number> }
+  meta?: { tone: string; drift: Record<string, number> },
+  playerTactic?: import("../types/combat").BoutTactic
 ): KimariteAttempt | null {
   // Build spatial context
   const torqueDiff = belt ? belt.torqueEast - belt.torqueWest : 0;
@@ -61,5 +62,14 @@ export function evaluateKimariteAttempt(
 
   // Delegate all selection logic to the registry-driven engine
   // This replaces the old hardcoded 'classifyEdgeKimarite', 'classifyBeltKimarite', etc.
-  return KimariteSelectionEngine.evaluate(east, west, stClone, ctx, division, meta, rng);
+  return KimariteSelectionEngine.evaluate(
+    east,
+    west,
+    stClone,
+    ctx,
+    division,
+    meta,
+    rng,
+    playerTactic
+  );
 }

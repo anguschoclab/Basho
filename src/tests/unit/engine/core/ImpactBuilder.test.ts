@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { ImpactBuilder, createImpactBuilder, updateRikishiImpact, retireRikishiImpact } from "@/engine/core/ImpactBuilder";
+import {
+  ImpactBuilder,
+  createImpactBuilder,
+  updateRikishiImpact,
+  retireRikishiImpact,
+} from "@/engine/core/ImpactBuilder";
 
 describe("ImpactBuilder", () => {
   describe("constructor and build", () => {
@@ -80,7 +85,9 @@ describe("ImpactBuilder", () => {
 
     it("should merge multiple updates for the same rikishi", () => {
       const builder = new ImpactBuilder("test_source");
-      builder.updateRikishi("r1", { power: 85 } as any).updateRikishi("r1", { technique: 90 } as any);
+      builder
+        .updateRikishi("r1", { power: 85 } as any)
+        .updateRikishi("r1", { technique: 90 } as any);
 
       const impact = builder.build();
       expect(impact.entities?.rikishiUpdates?.get("r1")).toEqual({ power: 85, technique: 90 });
@@ -143,7 +150,9 @@ describe("ImpactBuilder", () => {
 
     it("should accumulate multiple events", () => {
       const builder = new ImpactBuilder("test_source");
-      builder.logEvent("EVENT_1" as any, "test" as any, {}).logEvent("EVENT_2" as any, "test" as any, {});
+      builder
+        .logEvent("EVENT_1" as any, "test" as any, {})
+        .logEvent("EVENT_2" as any, "test" as any, {});
 
       const impact = builder.build();
       expect(impact.events?.length).toBe(2);
@@ -407,7 +416,9 @@ describe("ImpactBuilder", () => {
 
     it("should accumulate multiple array appends", () => {
       const builder = new ImpactBuilder("test_source");
-      builder.appendToWorldArray("history", [{ basho: "hatsu" } as any]).appendToWorldArray("history", [{ basho: "haru" } as any]);
+      builder
+        .appendToWorldArray("history", [{ basho: "hatsu" } as any])
+        .appendToWorldArray("history", [{ basho: "haru" } as any]);
 
       const impact = builder.build();
       expect(impact.arrayAppends).toHaveLength(2);

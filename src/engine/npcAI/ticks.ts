@@ -83,7 +83,12 @@ export function tickWeekNPC(world: WorldState): StateImpact {
 
     if (oyakata && newMood && newMood !== oldMood) {
       builder.updateOyakata(oyakata.id, { mood: newMood });
-      builder.logEvent("OYAKATA_MOOD_SHIFT", "narrative", { oldMood, newMood }, { heyaId: heya.id });
+      builder.logEvent(
+        "OYAKATA_MOOD_SHIFT",
+        "narrative",
+        { oldMood, newMood },
+        { heyaId: heya.id }
+      );
     }
 
     scoutingMap[heya.id] = decision.scoutingPriority;

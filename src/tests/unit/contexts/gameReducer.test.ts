@@ -12,10 +12,11 @@ describe("Game Reducer Purity", () => {
       world: generateInitialWorld("test-purity"),
     };
 
-    const nextState = gameReducer(
-      initialState,
-      { type: "CREATE_WORLD", seed: "test-purity-new", playerHeyaId: undefined } as unknown as GameAction
-    );
+    const nextState = gameReducer(initialState, {
+      type: "CREATE_WORLD",
+      seed: "test-purity-new",
+      playerHeyaId: undefined,
+    } as unknown as GameAction);
 
     expect(nextState).not.toBe(initialState);
     expect(nextState.world).not.toBe(initialState.world);

@@ -122,7 +122,7 @@ describe("resolveBout — henka momentum penalty", () => {
     if (result.winner === "east") {
       // Momentum must have been penalised from 70
       expect(east.momentum).toBeLessThan(70);
-      expect(east.momentum).toBeLessThanOrEqual(55); // 70 - 15
+      expect(east.momentum).toBeLessThanOrEqual(67); // 70 - 3 (HENKA profile momentumOnWin)
     } else {
       // If west wins, no penalty applied to east (they didn't use henka successfully)
       // Test still valid — structure is verified

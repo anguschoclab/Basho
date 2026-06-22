@@ -397,8 +397,6 @@ export function getKimariteForFamily(family: TacticalFamily): Kimarite[] {
  *   kinjite  — foul (not selected by evaluator; pre-processed separately)
  */
 
-
-
 export interface KimariteStrategy {
   id: string;
   name: string;
@@ -407,22 +405,37 @@ export interface KimariteStrategy {
   weight: number;
   difficulty?: number;
   appliesTo?: ("push_battle" | "belt_battle" | "edge_crisis")[];
-  condition: (w: Rikishi, l: Rikishi, ctx: SpatialBoutContext, st: EngineStateV2, wSide: "east"|"west", lSide: "east"|"west") => boolean;
+  condition: (
+    w: Rikishi,
+    l: Rikishi,
+    ctx: SpatialBoutContext,
+    st: EngineStateV2,
+    wSide: "east" | "west",
+    lSide: "east" | "west"
+  ) => boolean;
 }
 
-const edgeDistance = (ctx: SpatialBoutContext, side: "east"|"west") => Math.max(0, 4.55 - Math.abs(side === "east" ? ctx.eastLeadFoot : ctx.westLeadFoot));
-const atEdge = (ctx: SpatialBoutContext, side: "east"|"west") => edgeDistance(ctx, side) <= 2.0;
-const nearCenter = (ctx: SpatialBoutContext, side: "east"|"west") => edgeDistance(ctx, side) > 2.0;
-const hasBelt = (ctx: SpatialBoutContext, side: "east"|"west") => (side === "east" ? ctx.eastGrip : ctx.westGrip) !== "none" && (side === "east" ? ctx.eastGrip : ctx.westGrip) !== "outside";
-const noBelt = (ctx: SpatialBoutContext, side: "east"|"west") => (side === "east" ? ctx.eastGrip : ctx.westGrip) === "none" || (side === "east" ? ctx.eastGrip : ctx.westGrip) === "outside";
+const edgeDistance = (ctx: SpatialBoutContext, side: "east" | "west") =>
+  Math.max(0, 4.55 - Math.abs(side === "east" ? ctx.eastLeadFoot : ctx.westLeadFoot));
+const atEdge = (ctx: SpatialBoutContext, side: "east" | "west") => edgeDistance(ctx, side) <= 2.0;
+const nearCenter = (ctx: SpatialBoutContext, side: "east" | "west") =>
+  edgeDistance(ctx, side) > 2.0;
+const hasBelt = (ctx: SpatialBoutContext, side: "east" | "west") =>
+  (side === "east" ? ctx.eastGrip : ctx.westGrip) !== "none" &&
+  (side === "east" ? ctx.eastGrip : ctx.westGrip) !== "outside";
+const noBelt = (ctx: SpatialBoutContext, side: "east" | "west") =>
+  (side === "east" ? ctx.eastGrip : ctx.westGrip) === "none" ||
+  (side === "east" ? ctx.eastGrip : ctx.westGrip) === "outside";
 const isPusher = (r: Rikishi) => r.style === "oshi";
-const forwardMomentum = (ctx: SpatialBoutContext, side: "east"|"west") => {
+const forwardMomentum = (ctx: SpatialBoutContext, side: "east" | "west") => {
   const m = side === "east" ? ctx.eastMomentumX : ctx.westMomentumX;
   return side === "east" ? Math.max(0, -m) : Math.max(0, m);
 };
-const overCommitting = (ctx: SpatialBoutContext, side: "east"|"west") => forwardMomentum(ctx, side) > 0;
-const balance = (ctx: SpatialBoutContext, side: "east"|"west") => Math.max(0, 100 - Math.abs(side === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset) * 200);
-const desperation = (ctx: SpatialBoutContext, side: "east"|"west") => balance(ctx, side) < 20;
+const overCommitting = (ctx: SpatialBoutContext, side: "east" | "west") =>
+  forwardMomentum(ctx, side) > 0;
+const balance = (ctx: SpatialBoutContext, side: "east" | "west") =>
+  Math.max(0, 100 - Math.abs(side === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset) * 200);
+const desperation = (ctx: SpatialBoutContext, side: "east" | "west") => balance(ctx, side) < 20;
 const offensiveOutput = (_st: EngineStateV2) => 1; // Always 1 in selection engine unless modified
 
 // --- 1.75D Lateral & Angular Predicates ---
@@ -432,9 +445,7 @@ const offAxis = (ctx: SpatialBoutContext) => Math.abs(ctx.lateralOffsetDiff) > 0
 
 /** Fighter is rotating (has angular authority this tick) */
 const rotating = (ctx: SpatialBoutContext, side: "east" | "west") => {
-  return side === "east"
-    ? ctx.angularAdvantage > 0.005
-    : ctx.angularAdvantage < -0.005;
+  return side === "east" ? ctx.angularAdvantage > 0.005 : ctx.angularAdvantage < -0.005;
 };
 
 /** Lateral threshold crossed (significant off-axis displacement) */
@@ -460,9 +471,7 @@ const getTorque = (st: EngineStateV2, side: "east" | "west") => {
   return 0;
 };
 
-
 // ─── KIMARITE_STRATEGIES ─────────────────────────────────────────────────────
-
 
 export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
   // =========================================================================
@@ -482,8 +491,12 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
       atEdge(ctx, lSide) &&
       forwardMomentum(ctx, wSide) > 0 &&
       balance(ctx, lSide) > 0 &&
-      (Math.abs(wSide === "east" ? ctx.eastLeadFoot : ctx.westLeadFoot) === undefined || Math.abs(wSide === "east" ? ctx.eastLeadFoot : ctx.westLeadFoot) < 4.0) &&
-      (getDepth(st, wSide) === undefined || getDepth(st, wSide) === "deep" || getDepth(st, wSide) === "maemitsu" || getDepth(st, wSide) === "standard"),
+      (Math.abs(wSide === "east" ? ctx.eastLeadFoot : ctx.westLeadFoot) === undefined ||
+        Math.abs(wSide === "east" ? ctx.eastLeadFoot : ctx.westLeadFoot) < 4.0) &&
+      (getDepth(st, wSide) === undefined ||
+        getDepth(st, wSide) === "deep" ||
+        getDepth(st, wSide) === "maemitsu" ||
+        getDepth(st, wSide) === "standard"),
   },
   {
     id: "oshidashi",
@@ -499,7 +512,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
       atEdge(ctx, lSide) &&
       forwardMomentum(ctx, wSide) > 0 &&
       balance(ctx, lSide) > 0 &&
-      (Math.abs(wSide === "east" ? ctx.eastLeadFoot : ctx.westLeadFoot) === undefined || Math.abs(wSide === "east" ? ctx.eastLeadFoot : ctx.westLeadFoot) < 3.5),
+      (Math.abs(wSide === "east" ? ctx.eastLeadFoot : ctx.westLeadFoot) === undefined ||
+        Math.abs(wSide === "east" ? ctx.eastLeadFoot : ctx.westLeadFoot) < 3.5),
   },
   {
     id: "oshitaoshi",
@@ -515,7 +529,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
       forwardMomentum(ctx, wSide) > 0 &&
       balance(ctx, lSide) <= 0 &&
       nearCenter(ctx, lSide) &&
-      ((lSide === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset) === undefined || Math.abs((lSide === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset)) > 0.1),
+      ((lSide === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset) === undefined ||
+        Math.abs(lSide === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset) > 0.1),
   },
   {
     id: "yoritaoshi",
@@ -530,7 +545,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
       forwardMomentum(ctx, wSide) > 0 &&
       balance(ctx, lSide) <= 0 &&
       nearCenter(ctx, lSide) &&
-      ((lSide === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset) === undefined || Math.abs((lSide === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset)) > 0.15),
+      ((lSide === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset) === undefined ||
+        Math.abs(lSide === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset) > 0.15),
   },
   {
     id: "tsukidashi",
@@ -544,7 +560,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
       w.stats.power >= 65 &&
       atEdge(ctx, lSide) &&
       balance(ctx, lSide) > 0 &&
-      (Math.abs(wSide === "east" ? ctx.eastLeadFoot : ctx.westLeadFoot) === undefined || Math.abs(wSide === "east" ? ctx.eastLeadFoot : ctx.westLeadFoot) < 3.8),
+      (Math.abs(wSide === "east" ? ctx.eastLeadFoot : ctx.westLeadFoot) === undefined ||
+        Math.abs(wSide === "east" ? ctx.eastLeadFoot : ctx.westLeadFoot) < 3.8),
   },
   {
     id: "tsukitaoshi",
@@ -558,7 +575,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
       w.stats.power >= 65 &&
       balance(ctx, lSide) <= 0 &&
       nearCenter(ctx, lSide) &&
-      ((lSide === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset) === undefined || Math.abs((lSide === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset)) > 0.12),
+      ((lSide === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset) === undefined ||
+        Math.abs(lSide === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset) > 0.12),
   },
   {
     id: "abisetaoshi",
@@ -567,7 +585,11 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "kihon",
     weight: 50,
     difficulty: 3,
-    condition: (w, _l, ctx, _st, wSide, lSide) => hasBelt(ctx, wSide) && w.stats.power >= 70 && balance(ctx, lSide) <= 0 && forwardMomentum(ctx, wSide) > 0,
+    condition: (w, _l, ctx, _st, wSide, lSide) =>
+      hasBelt(ctx, wSide) &&
+      w.stats.power >= 70 &&
+      balance(ctx, lSide) <= 0 &&
+      forwardMomentum(ctx, wSide) > 0,
   },
 
   // =========================================================================
@@ -581,7 +603,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "tokushu",
     weight: 80,
     difficulty: 4,
-    condition: (_w, _l, ctx, st, _wSide, lSide) => overCommitting(ctx, lSide) && offensiveOutput(st) === 0 && balance(ctx, lSide) <= 0,
+    condition: (_w, _l, ctx, st, _wSide, lSide) =>
+      overCommitting(ctx, lSide) && offensiveOutput(st) === 0 && balance(ctx, lSide) <= 0,
   },
   {
     id: "hikiotoshi",
@@ -594,7 +617,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
       overCommitting(ctx, lSide) &&
       noBelt(ctx, wSide) &&
       balance(ctx, lSide) <= 0 &&
-      ((lSide === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset) === undefined || Math.abs((lSide === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset)) > 0.2),
+      ((lSide === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset) === undefined ||
+        Math.abs(lSide === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset) > 0.2),
   },
   {
     id: "okuridashi",
@@ -604,7 +628,10 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     weight: 58,
     difficulty: 4,
     condition: (_w, _l, ctx, _st, wSide, lSide) =>
-      atEdge(ctx, lSide) && balance(ctx, lSide) > 0 && forwardMomentum(ctx, wSide) > 0 && forwardMomentum(ctx, lSide) <= 0,
+      atEdge(ctx, lSide) &&
+      balance(ctx, lSide) > 0 &&
+      forwardMomentum(ctx, wSide) > 0 &&
+      forwardMomentum(ctx, lSide) <= 0,
   },
   {
     id: "tsuriotoshi",
@@ -614,7 +641,11 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     weight: 40,
     difficulty: 8,
     condition: (w, l, ctx, _st, wSide, lSide) =>
-      hasBelt(ctx, wSide) && w.stats.power >= 75 && l.stats.power < 60 && nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0,
+      hasBelt(ctx, wSide) &&
+      w.stats.power >= 75 &&
+      l.stats.power < 60 &&
+      nearCenter(ctx, lSide) &&
+      balance(ctx, lSide) <= 0,
   },
   {
     id: "tsuridashi",
@@ -623,7 +654,12 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "tokushu",
     weight: 38,
     difficulty: 7,
-    condition: (w, l, ctx, _st, wSide, lSide) => hasBelt(ctx, wSide) && w.stats.power >= 75 && l.stats.power < 60 && atEdge(ctx, lSide) && balance(ctx, lSide) > 0,
+    condition: (w, l, ctx, _st, wSide, lSide) =>
+      hasBelt(ctx, wSide) &&
+      w.stats.power >= 75 &&
+      l.stats.power < 60 &&
+      atEdge(ctx, lSide) &&
+      balance(ctx, lSide) > 0,
   },
   {
     id: "utchari",
@@ -632,7 +668,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "tokushu",
     weight: 30,
     difficulty: 9,
-    condition: (w, _l, ctx, _st, wSide, lSide) => edgeDistance(ctx, wSide) <= 0.5 && w.stats.stamina < 25 && balance(ctx, lSide) <= 0,
+    condition: (w, _l, ctx, _st, wSide, lSide) =>
+      edgeDistance(ctx, wSide) <= 0.5 && w.stats.stamina < 25 && balance(ctx, lSide) <= 0,
   },
   {
     id: "okuritaoshi",
@@ -641,7 +678,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "tokushu",
     weight: 35,
     difficulty: 5,
-    condition: (_w, _l, ctx, _st, _wSide, lSide) => atEdge(ctx, lSide) && balance(ctx, lSide) <= 0 && forwardMomentum(ctx, lSide) <= 0,
+    condition: (_w, _l, ctx, _st, _wSide, lSide) =>
+      atEdge(ctx, lSide) && balance(ctx, lSide) <= 0 && forwardMomentum(ctx, lSide) <= 0,
   },
   {
     id: "katasukashi",
@@ -650,7 +688,11 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "tokushu",
     weight: 28,
     difficulty: 6,
-    condition: (w, _l, ctx, _st, _wSide, lSide) => overCommitting(ctx, lSide) && w.style !== "oshi" && balance(ctx, lSide) <= 0 && nearCenter(ctx, lSide),
+    condition: (w, _l, ctx, _st, _wSide, lSide) =>
+      overCommitting(ctx, lSide) &&
+      w.style !== "oshi" &&
+      balance(ctx, lSide) <= 0 &&
+      nearCenter(ctx, lSide),
   },
   {
     id: "sokubiotoshi",
@@ -658,7 +700,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "素首落とし",
     category: "tokushu",
     weight: 20,
-    condition: (w, l, ctx, _st, _wSide, lSide) => overCommitting(ctx, lSide) && balance(ctx, lSide) <= 0 && w.stats.power < l.stats.power,
+    condition: (w, l, ctx, _st, _wSide, lSide) =>
+      overCommitting(ctx, lSide) && balance(ctx, lSide) <= 0 && w.stats.power < l.stats.power,
   },
   {
     id: "okurigake",
@@ -667,7 +710,10 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "tokushu",
     weight: 15,
     condition: (w, _l, ctx, _st, _wSide, lSide) =>
-      atEdge(ctx, lSide) && balance(ctx, lSide) <= 0 && forwardMomentum(ctx, lSide) <= 0 && w.style === "yotsu",
+      atEdge(ctx, lSide) &&
+      balance(ctx, lSide) <= 0 &&
+      forwardMomentum(ctx, lSide) <= 0 &&
+      w.style === "yotsu",
   },
   {
     id: "okurihikiotoshi",
@@ -675,7 +721,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "送り引き落とし",
     category: "tokushu",
     weight: 15,
-    condition: (_w, _l, ctx, _st, wSide, lSide) => atEdge(ctx, lSide) && balance(ctx, lSide) <= 0 && noBelt(ctx, wSide),
+    condition: (_w, _l, ctx, _st, wSide, lSide) =>
+      atEdge(ctx, lSide) && balance(ctx, lSide) <= 0 && noBelt(ctx, wSide),
   },
   {
     id: "waridashi",
@@ -683,7 +730,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "割り出し",
     category: "tokushu",
     weight: 18,
-    condition: (w, _l, ctx, _st, _wSide, lSide) => isPusher(w) && atEdge(ctx, lSide) && balance(ctx, lSide) > 0 && w.stats.power >= 60,
+    condition: (w, _l, ctx, _st, _wSide, lSide) =>
+      isPusher(w) && atEdge(ctx, lSide) && balance(ctx, lSide) > 0 && w.stats.power >= 60,
   },
   {
     id: "okurinage",
@@ -691,7 +739,11 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "送り投げ",
     category: "tokushu",
     weight: 12,
-    condition: (_w, _l, ctx, _st, wSide, lSide) => nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0 && forwardMomentum(ctx, lSide) <= 0 && hasBelt(ctx, wSide),
+    condition: (_w, _l, ctx, _st, wSide, lSide) =>
+      nearCenter(ctx, lSide) &&
+      balance(ctx, lSide) <= 0 &&
+      forwardMomentum(ctx, lSide) <= 0 &&
+      hasBelt(ctx, wSide),
   },
   {
     id: "tsukaminage",
@@ -700,7 +752,11 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "tokushu",
     weight: 10,
     difficulty: 8,
-    condition: (w, _l, ctx, _st, wSide, lSide) => hasBelt(ctx, wSide) && nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0 && w.stats.power >= 70,
+    condition: (w, _l, ctx, _st, wSide, lSide) =>
+      hasBelt(ctx, wSide) &&
+      nearCenter(ctx, lSide) &&
+      balance(ctx, lSide) <= 0 &&
+      w.stats.power >= 70,
   },
   {
     id: "okuritsuridashi",
@@ -708,7 +764,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "送り吊り出し",
     category: "tokushu",
     weight: 8,
-    condition: (w, _l, ctx, _st, wSide, lSide) => hasBelt(ctx, wSide) && atEdge(ctx, lSide) && balance(ctx, lSide) > 0 && w.stats.power >= 80,
+    condition: (w, _l, ctx, _st, wSide, lSide) =>
+      hasBelt(ctx, wSide) && atEdge(ctx, lSide) && balance(ctx, lSide) > 0 && w.stats.power >= 80,
   },
   {
     id: "okuritsuriotoshi",
@@ -716,7 +773,11 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "送り吊り落とし",
     category: "tokushu",
     weight: 6,
-    condition: (w, _l, ctx, _st, wSide, lSide) => hasBelt(ctx, wSide) && nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0 && w.stats.power >= 80,
+    condition: (w, _l, ctx, _st, wSide, lSide) =>
+      hasBelt(ctx, wSide) &&
+      nearCenter(ctx, lSide) &&
+      balance(ctx, lSide) <= 0 &&
+      w.stats.power >= 80,
   },
   {
     id: "yobimodoshi",
@@ -724,7 +785,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "呼び戻し",
     category: "tokushu",
     weight: 5,
-    condition: (_w, _l, ctx, _st, wSide, lSide) => hasBelt(ctx, wSide) && overCommitting(ctx, lSide) && balance(ctx, lSide) <= 0,
+    condition: (_w, _l, ctx, _st, wSide, lSide) =>
+      hasBelt(ctx, wSide) && overCommitting(ctx, lSide) && balance(ctx, lSide) <= 0,
   },
   {
     id: "ushiromotare",
@@ -732,7 +794,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "後ろもたれ",
     category: "tokushu",
     weight: 4,
-    condition: (_w, _l, ctx, _st, _wSide, lSide) => atEdge(ctx, lSide) && balance(ctx, lSide) > 0 && forwardMomentum(ctx, lSide) < 0,
+    condition: (_w, _l, ctx, _st, _wSide, lSide) =>
+      atEdge(ctx, lSide) && balance(ctx, lSide) > 0 && forwardMomentum(ctx, lSide) < 0,
   },
   {
     id: "kimedashi",
@@ -740,7 +803,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "極め出し",
     category: "tokushu",
     weight: 14,
-    condition: (w, _l, ctx, _st, wSide, lSide) => hasBelt(ctx, wSide) && atEdge(ctx, lSide) && balance(ctx, lSide) > 0 && w.stats.power >= 65,
+    condition: (w, _l, ctx, _st, wSide, lSide) =>
+      hasBelt(ctx, wSide) && atEdge(ctx, lSide) && balance(ctx, lSide) > 0 && w.stats.power >= 65,
   },
   {
     id: "kimetaoshi",
@@ -748,7 +812,11 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "極め倒し",
     category: "tokushu",
     weight: 12,
-    condition: (w, _l, ctx, _st, wSide, lSide) => hasBelt(ctx, wSide) && nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0 && w.stats.power >= 65,
+    condition: (w, _l, ctx, _st, wSide, lSide) =>
+      hasBelt(ctx, wSide) &&
+      nearCenter(ctx, lSide) &&
+      balance(ctx, lSide) <= 0 &&
+      w.stats.power >= 65,
   },
 
   // =========================================================================
@@ -764,7 +832,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     appliesTo: ["belt_battle"],
     difficulty: 6,
     condition: (w, l, ctx, st, wSide, lSide) =>
-      ((wSide === "east" ? ctx.eastGrip : ctx.westGrip) === "uwate" || (wSide === "east" ? ctx.eastGrip : ctx.westGrip) === "morozashi") &&
+      ((wSide === "east" ? ctx.eastGrip : ctx.westGrip) === "uwate" ||
+        (wSide === "east" ? ctx.eastGrip : ctx.westGrip) === "morozashi") &&
       w.stats.power > l.stats.balance &&
       balance(ctx, lSide) <= 0 &&
       nearCenter(ctx, lSide) &&
@@ -792,7 +861,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     appliesTo: ["belt_battle"],
     difficulty: 6,
     condition: (w, l, ctx, _st, wSide, lSide) =>
-      ((wSide === "east" ? ctx.eastGrip : ctx.westGrip) === "shitate" || (wSide === "east" ? ctx.eastGrip : ctx.westGrip) === "morozashi") &&
+      ((wSide === "east" ? ctx.eastGrip : ctx.westGrip) === "shitate" ||
+        (wSide === "east" ? ctx.eastGrip : ctx.westGrip) === "morozashi") &&
       w.stats.power > l.stats.balance &&
       balance(ctx, lSide) <= 0 &&
       nearCenter(ctx, lSide),
@@ -810,7 +880,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
       balance(ctx, lSide) <= 0 &&
       nearCenter(ctx, lSide) &&
       w.style !== "oshi" &&
-      ((lSide === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset) === undefined || Math.abs((lSide === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset)) > 0.18),
+      ((lSide === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset) === undefined ||
+        Math.abs(lSide === "east" ? ctx.eastCoGOffset : ctx.westCoGOffset) > 0.18),
   },
   {
     id: "shitatedashinage",
@@ -819,7 +890,10 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "nage",
     weight: 42,
     difficulty: 6,
-    condition: (_w, _l, ctx, _st, wSide, lSide) => (wSide === "east" ? ctx.eastGrip : ctx.westGrip) === "shitate" && overCommitting(ctx, lSide) && balance(ctx, lSide) <= 0,
+    condition: (_w, _l, ctx, _st, wSide, lSide) =>
+      (wSide === "east" ? ctx.eastGrip : ctx.westGrip) === "shitate" &&
+      overCommitting(ctx, lSide) &&
+      balance(ctx, lSide) <= 0,
   },
   {
     id: "uwatedashinage",
@@ -828,7 +902,10 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "nage",
     weight: 38,
     difficulty: 6,
-    condition: (_w, _l, ctx, _st, wSide, lSide) => (wSide === "east" ? ctx.eastGrip : ctx.westGrip) === "uwate" && overCommitting(ctx, lSide) && balance(ctx, lSide) <= 0,
+    condition: (_w, _l, ctx, _st, wSide, lSide) =>
+      (wSide === "east" ? ctx.eastGrip : ctx.westGrip) === "uwate" &&
+      overCommitting(ctx, lSide) &&
+      balance(ctx, lSide) <= 0,
   },
   {
     id: "kubinage",
@@ -837,7 +914,11 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "nage",
     weight: 20,
     difficulty: 8,
-    condition: (w, _l, ctx, _st, wSide, lSide) => noBelt(ctx, wSide) && nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0 && w.stats.power >= 70,
+    condition: (w, _l, ctx, _st, wSide, lSide) =>
+      noBelt(ctx, wSide) &&
+      nearCenter(ctx, lSide) &&
+      balance(ctx, lSide) <= 0 &&
+      w.stats.power >= 70,
   },
   {
     id: "koshihineri",
@@ -846,7 +927,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "nage",
     weight: 10,
     difficulty: 7,
-    condition: (w, _l, ctx, _st, _wSide, lSide) => w.style === "yotsu" && nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0,
+    condition: (w, _l, ctx, _st, _wSide, lSide) =>
+      w.style === "yotsu" && nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0,
   },
   {
     id: "ipponzeoi",
@@ -855,7 +937,11 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "nage",
     weight: 6,
     difficulty: 9,
-    condition: (w, _l, ctx, _st, _wSide, lSide) => overCommitting(ctx, lSide) && w.style !== "oshi" && nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0,
+    condition: (w, _l, ctx, _st, _wSide, lSide) =>
+      overCommitting(ctx, lSide) &&
+      w.style !== "oshi" &&
+      nearCenter(ctx, lSide) &&
+      balance(ctx, lSide) <= 0,
   },
   {
     id: "nichonage",
@@ -863,7 +949,11 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "二丁投げ",
     category: "nage",
     weight: 5,
-    condition: (w, _l, ctx, _st, wSide, lSide) => nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0 && hasBelt(ctx, wSide) && w.style === "yotsu",
+    condition: (w, _l, ctx, _st, wSide, lSide) =>
+      nearCenter(ctx, lSide) &&
+      balance(ctx, lSide) <= 0 &&
+      hasBelt(ctx, wSide) &&
+      w.style === "yotsu",
   },
   {
     id: "yaguranage",
@@ -871,7 +961,11 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "櫓投げ",
     category: "nage",
     weight: 5,
-    condition: (w, _l, ctx, _st, wSide, lSide) => hasBelt(ctx, wSide) && nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0 && w.stats.power >= 65,
+    condition: (w, _l, ctx, _st, wSide, lSide) =>
+      hasBelt(ctx, wSide) &&
+      nearCenter(ctx, lSide) &&
+      balance(ctx, lSide) <= 0 &&
+      w.stats.power >= 65,
   },
   {
     id: "kakenage",
@@ -879,7 +973,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "掛け投げ",
     category: "nage",
     weight: 5,
-    condition: (w, _l, ctx, _st, _wSide, lSide) => nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0 && w.style === "yotsu",
+    condition: (w, _l, ctx, _st, _wSide, lSide) =>
+      nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0 && w.style === "yotsu",
   },
 
   // =========================================================================
@@ -908,7 +1003,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     weight: 22,
     appliesTo: ["belt_battle"],
     difficulty: 7,
-    condition: (w, _l, ctx, _st, _wSide, lSide) => nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0 && w.style !== "oshi",
+    condition: (w, _l, ctx, _st, _wSide, lSide) =>
+      nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0 && w.style !== "oshi",
   },
   {
     id: "shitatehineri",
@@ -918,7 +1014,10 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     weight: 25,
     difficulty: 7,
     condition: (_w, _l, ctx, _st, wSide, lSide) =>
-      (wSide === "east" ? ctx.eastGrip : ctx.westGrip) === "shitate" && overCommitting(ctx, lSide) && balance(ctx, lSide) <= 0 && nearCenter(ctx, lSide),
+      (wSide === "east" ? ctx.eastGrip : ctx.westGrip) === "shitate" &&
+      overCommitting(ctx, lSide) &&
+      balance(ctx, lSide) <= 0 &&
+      nearCenter(ctx, lSide),
   },
   {
     id: "uwatehineri",
@@ -927,7 +1026,11 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "hineri",
     weight: 22,
     difficulty: 7,
-    condition: (_w, _l, ctx, _st, wSide, lSide) => (wSide === "east" ? ctx.eastGrip : ctx.westGrip) === "uwate" && overCommitting(ctx, lSide) && balance(ctx, lSide) <= 0 && nearCenter(ctx, lSide),
+    condition: (_w, _l, ctx, _st, wSide, lSide) =>
+      (wSide === "east" ? ctx.eastGrip : ctx.westGrip) === "uwate" &&
+      overCommitting(ctx, lSide) &&
+      balance(ctx, lSide) <= 0 &&
+      nearCenter(ctx, lSide),
   },
   {
     id: "kotehineri",
@@ -936,7 +1039,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "hineri",
     weight: 18,
     difficulty: 5,
-    condition: (_w, _l, ctx, _st, _wSide, lSide) => overCommitting(ctx, lSide) && balance(ctx, lSide) <= 0 && nearCenter(ctx, lSide),
+    condition: (_w, _l, ctx, _st, _wSide, lSide) =>
+      overCommitting(ctx, lSide) && balance(ctx, lSide) <= 0 && nearCenter(ctx, lSide),
   },
   {
     id: "amiuchi",
@@ -945,7 +1049,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "hineri",
     weight: 12,
     difficulty: 8,
-    condition: (w, _l, ctx, _st, _wSide, lSide) => nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0 && w.style === "yotsu",
+    condition: (w, _l, ctx, _st, _wSide, lSide) =>
+      nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0 && w.style === "yotsu",
   },
   {
     id: "kainahineri",
@@ -954,7 +1059,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "hineri",
     weight: 12,
     difficulty: 6,
-    condition: (w, _l, ctx, _st, _wSide, lSide) => nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0 && w.style !== "oshi",
+    condition: (w, _l, ctx, _st, _wSide, lSide) =>
+      nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0 && w.style !== "oshi",
   },
   {
     id: "zubuneri",
@@ -963,7 +1069,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "hineri",
     weight: 6,
     difficulty: 8,
-    condition: (_w, _l, ctx, _st, _wSide, lSide) => nearCenter(ctx, lSide) && overCommitting(ctx, lSide) && balance(ctx, lSide) <= 0,
+    condition: (_w, _l, ctx, _st, _wSide, lSide) =>
+      nearCenter(ctx, lSide) && overCommitting(ctx, lSide) && balance(ctx, lSide) <= 0,
   },
   {
     id: "sakatottari",
@@ -971,7 +1078,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "逆取ったり",
     category: "hineri",
     weight: 6,
-    condition: (_w, _l, ctx, _st, _wSide, lSide) => overCommitting(ctx, lSide) && nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0,
+    condition: (_w, _l, ctx, _st, _wSide, lSide) =>
+      overCommitting(ctx, lSide) && nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0,
   },
   {
     id: "kubiotoshi",
@@ -979,7 +1087,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "首落とし",
     category: "hineri",
     weight: 6,
-    condition: (_w, _l, ctx, _st, _wSide, lSide) => overCommitting(ctx, lSide) && nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0,
+    condition: (_w, _l, ctx, _st, _wSide, lSide) =>
+      overCommitting(ctx, lSide) && nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0,
   },
   {
     id: "gasshohineri",
@@ -987,7 +1096,11 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "合掌捻り",
     category: "hineri",
     weight: 4,
-    condition: (_w, _l, ctx, _st, wSide, lSide) => hasBelt(ctx, wSide) && overCommitting(ctx, lSide) && nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0,
+    condition: (_w, _l, ctx, _st, wSide, lSide) =>
+      hasBelt(ctx, wSide) &&
+      overCommitting(ctx, lSide) &&
+      nearCenter(ctx, lSide) &&
+      balance(ctx, lSide) <= 0,
   },
   {
     id: "harimanage",
@@ -996,7 +1109,11 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "hineri",
     weight: 4,
     difficulty: 9,
-    condition: (w, _l, ctx, _st, wSide, lSide) => hasBelt(ctx, wSide) && balance(ctx, lSide) <= 0 && w.style === "yotsu" && nearCenter(ctx, lSide),
+    condition: (w, _l, ctx, _st, wSide, lSide) =>
+      hasBelt(ctx, wSide) &&
+      balance(ctx, lSide) <= 0 &&
+      w.style === "yotsu" &&
+      nearCenter(ctx, lSide),
   },
   {
     id: "osakate",
@@ -1004,7 +1121,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "大逆手",
     category: "hineri",
     weight: 2,
-    condition: (w, _l, ctx, _st, _wSide, lSide) => balance(ctx, lSide) <= 0 && w.style === "yotsu" && nearCenter(ctx, lSide),
+    condition: (w, _l, ctx, _st, _wSide, lSide) =>
+      balance(ctx, lSide) <= 0 && w.style === "yotsu" && nearCenter(ctx, lSide),
   },
   {
     id: "sabaori",
@@ -1012,7 +1130,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "鯖折り",
     category: "hineri",
     weight: 2,
-    condition: (_w, _l, ctx, _st, wSide, lSide) => hasBelt(ctx, wSide) && balance(ctx, lSide) <= 0 && overCommitting(ctx, lSide),
+    condition: (_w, _l, ctx, _st, wSide, lSide) =>
+      hasBelt(ctx, wSide) && balance(ctx, lSide) <= 0 && overCommitting(ctx, lSide),
   },
   {
     id: "sotokomata_hinerite",
@@ -1020,7 +1139,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "外小股",
     category: "hineri",
     weight: 2,
-    condition: (w, _l, ctx, _st, _wSide, lSide) => balance(ctx, lSide) <= 0 && nearCenter(ctx, lSide) && w.style !== "oshi",
+    condition: (w, _l, ctx, _st, _wSide, lSide) =>
+      balance(ctx, lSide) <= 0 && nearCenter(ctx, lSide) && w.style !== "oshi",
   },
   {
     id: "tokkurinage",
@@ -1028,7 +1148,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "徳利投げ",
     category: "hineri",
     weight: 2,
-    condition: (_w, _l, ctx, _st, _wSide, lSide) => overCommitting(ctx, lSide) && nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0,
+    condition: (_w, _l, ctx, _st, _wSide, lSide) =>
+      overCommitting(ctx, lSide) && nearCenter(ctx, lSide) && balance(ctx, lSide) <= 0,
   },
   {
     id: "makiotoshi",
@@ -1036,7 +1157,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "巻き落とし",
     category: "hineri",
     weight: 2,
-    condition: (_w, _l, ctx, _st, _wSide, lSide) => overCommitting(ctx, lSide) && balance(ctx, lSide) <= 0,
+    condition: (_w, _l, ctx, _st, _wSide, lSide) =>
+      overCommitting(ctx, lSide) && balance(ctx, lSide) <= 0,
   },
   {
     id: "uchimuso",
@@ -1044,7 +1166,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "内無双",
     category: "hineri",
     weight: 2,
-    condition: (w, _l, ctx, _st, _wSide, lSide) => balance(ctx, lSide) <= 0 && w.style === "yotsu" && nearCenter(ctx, lSide),
+    condition: (w, _l, ctx, _st, _wSide, lSide) =>
+      balance(ctx, lSide) <= 0 && w.style === "yotsu" && nearCenter(ctx, lSide),
   },
   {
     id: "sotomuso",
@@ -1052,7 +1175,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "外無双",
     category: "hineri",
     weight: 2,
-    condition: (w, _l, ctx, _st, _wSide, lSide) => balance(ctx, lSide) <= 0 && w.style === "yotsu" && nearCenter(ctx, lSide),
+    condition: (w, _l, ctx, _st, _wSide, lSide) =>
+      balance(ctx, lSide) <= 0 && w.style === "yotsu" && nearCenter(ctx, lSide),
   },
 
   // =========================================================================
@@ -1066,7 +1190,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "kake",
     weight: 30,
     difficulty: 5,
-    condition: (_w, l, ctx, _st, _wSide, lSide) => balance(ctx, lSide) < 40 && l.stats.stamina < 0.5 && nearCenter(ctx, lSide),
+    condition: (_w, l, ctx, _st, _wSide, lSide) =>
+      balance(ctx, lSide) < 40 && l.stats.stamina < 0.5 && nearCenter(ctx, lSide),
   },
   {
     id: "sotogake",
@@ -1075,7 +1200,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "kake",
     weight: 28,
     difficulty: 5,
-    condition: (w, _l, ctx, _st, _wSide, lSide) => w.style !== "oshi" && balance(ctx, lSide) < 35 && nearCenter(ctx, lSide),
+    condition: (w, _l, ctx, _st, _wSide, lSide) =>
+      w.style !== "oshi" && balance(ctx, lSide) < 35 && nearCenter(ctx, lSide),
   },
   {
     id: "uchigake",
@@ -1084,7 +1210,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "kake",
     weight: 24,
     difficulty: 5,
-    condition: (w, _l, ctx, _st, _wSide, lSide) => w.style !== "oshi" && balance(ctx, lSide) < 35 && nearCenter(ctx, lSide),
+    condition: (w, _l, ctx, _st, _wSide, lSide) =>
+      w.style !== "oshi" && balance(ctx, lSide) < 35 && nearCenter(ctx, lSide),
   },
   {
     id: "ketaguri",
@@ -1093,7 +1220,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "kake",
     weight: 18,
     difficulty: 6,
-    condition: (w, _l, ctx, _st, _wSide, lSide) => overCommitting(ctx, lSide) && balance(ctx, lSide) < 30 && w.style !== "oshi",
+    condition: (w, _l, ctx, _st, _wSide, lSide) =>
+      overCommitting(ctx, lSide) && balance(ctx, lSide) < 30 && w.style !== "oshi",
   },
   {
     id: "watashikomi",
@@ -1102,7 +1230,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "kake",
     weight: 14,
     difficulty: 4,
-    condition: (_w, _l, ctx, _st, wSide, lSide) => balance(ctx, lSide) < 30 && hasBelt(ctx, wSide) && nearCenter(ctx, lSide),
+    condition: (_w, _l, ctx, _st, wSide, lSide) =>
+      balance(ctx, lSide) < 30 && hasBelt(ctx, wSide) && nearCenter(ctx, lSide),
   },
   {
     id: "kekaeshi",
@@ -1111,7 +1240,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "kake",
     weight: 12,
     difficulty: 7,
-    condition: (_w, _l, ctx, _st, _wSide, lSide) => overCommitting(ctx, lSide) && balance(ctx, lSide) < 30,
+    condition: (_w, _l, ctx, _st, _wSide, lSide) =>
+      overCommitting(ctx, lSide) && balance(ctx, lSide) < 30,
   },
   {
     id: "kosotogake",
@@ -1120,7 +1250,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "kake",
     weight: 10,
     difficulty: 6,
-    condition: (w, _l, ctx, _st, _wSide, lSide) => balance(ctx, lSide) < 30 && nearCenter(ctx, lSide) && w.style !== "oshi",
+    condition: (w, _l, ctx, _st, _wSide, lSide) =>
+      balance(ctx, lSide) < 30 && nearCenter(ctx, lSide) && w.style !== "oshi",
   },
   {
     id: "komatasukui",
@@ -1128,7 +1259,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "小股掬い",
     category: "kake",
     weight: 7,
-    condition: (_w, _l, ctx, _st, _wSide, lSide) => balance(ctx, lSide) < 25 && nearCenter(ctx, lSide),
+    condition: (_w, _l, ctx, _st, _wSide, lSide) =>
+      balance(ctx, lSide) < 25 && nearCenter(ctx, lSide),
   },
   {
     id: "chongake",
@@ -1136,7 +1268,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "ちょん掛け",
     category: "kake",
     weight: 5,
-    condition: (w, _l, ctx, _st, _wSide, lSide) => balance(ctx, lSide) < 20 && nearCenter(ctx, lSide) && w.style !== "oshi",
+    condition: (w, _l, ctx, _st, _wSide, lSide) =>
+      balance(ctx, lSide) < 20 && nearCenter(ctx, lSide) && w.style !== "oshi",
   },
   {
     id: "kawarigake",
@@ -1144,7 +1277,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "河津掛け",
     category: "kake",
     weight: 4,
-    condition: (w, _l, ctx, _st, _wSide, lSide) => balance(ctx, lSide) < 20 && nearCenter(ctx, lSide) && w.style === "yotsu",
+    condition: (w, _l, ctx, _st, _wSide, lSide) =>
+      balance(ctx, lSide) < 20 && nearCenter(ctx, lSide) && w.style === "yotsu",
   },
   {
     id: "susoharai",
@@ -1160,7 +1294,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "切り返し",
     category: "kake",
     weight: 3,
-    condition: (_w, _l, ctx, _st, _wSide, lSide) => balance(ctx, lSide) < 20 && overCommitting(ctx, lSide),
+    condition: (_w, _l, ctx, _st, _wSide, lSide) =>
+      balance(ctx, lSide) < 20 && overCommitting(ctx, lSide),
   },
   {
     id: "nimaigeri",
@@ -1177,7 +1312,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     japaneseName: "大股",
     category: "kake",
     weight: 3,
-    condition: (_w, _l, ctx, _st, _wSide, lSide) => balance(ctx, lSide) < 20 && nearCenter(ctx, lSide),
+    condition: (_w, _l, ctx, _st, _wSide, lSide) =>
+      balance(ctx, lSide) < 20 && nearCenter(ctx, lSide),
   },
   {
     id: "susotori",
@@ -1196,7 +1332,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     weight: 2,
     difficulty: 10,
     // Triple-point attack — requires large stat differential
-    condition: (w, l, ctx, _st, _wSide, lSide) => w.stats.power >= 75 && l.stats.power < 40 && balance(ctx, lSide) < 20,
+    condition: (w, l, ctx, _st, _wSide, lSide) =>
+      w.stats.power >= 75 && l.stats.power < 40 && balance(ctx, lSide) < 20,
   },
   {
     id: "kosotogari",
@@ -1205,7 +1342,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "kake",
     weight: 2,
     difficulty: 6,
-    condition: (w, _l, ctx, _st, _wSide, lSide) => balance(ctx, lSide) < 20 && nearCenter(ctx, lSide) && w.style !== "oshi",
+    condition: (w, _l, ctx, _st, _wSide, lSide) =>
+      balance(ctx, lSide) < 20 && nearCenter(ctx, lSide) && w.style !== "oshi",
   },
   {
     id: "tsumatori",
@@ -1229,7 +1367,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "sori",
     weight: 5,
     difficulty: 9,
-    condition: (_w, _l, ctx, _st, wSide, lSide) => desperation(ctx, wSide) && overCommitting(ctx, lSide) && edgeDistance(ctx, lSide) <= 5,
+    condition: (_w, _l, ctx, _st, wSide, lSide) =>
+      desperation(ctx, wSide) && overCommitting(ctx, lSide) && edgeDistance(ctx, lSide) <= 5,
   },
   {
     id: "kakezori",
@@ -1238,7 +1377,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "sori",
     weight: 5,
     difficulty: 9,
-    condition: (_w, _l, ctx, _st, wSide, lSide) => desperation(ctx, wSide) && overCommitting(ctx, lSide) && edgeDistance(ctx, lSide) <= 5,
+    condition: (_w, _l, ctx, _st, wSide, lSide) =>
+      desperation(ctx, wSide) && overCommitting(ctx, lSide) && edgeDistance(ctx, lSide) <= 5,
   },
   {
     id: "shumokuzori",
@@ -1247,7 +1387,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "sori",
     weight: 4,
     difficulty: 10,
-    condition: (_w, _l, ctx, _st, wSide, lSide) => desperation(ctx, wSide) && overCommitting(ctx, lSide) && forwardMomentum(ctx, lSide) > 4,
+    condition: (_w, _l, ctx, _st, wSide, lSide) =>
+      desperation(ctx, wSide) && overCommitting(ctx, lSide) && forwardMomentum(ctx, lSide) > 4,
   },
   {
     id: "sototasukizori",
@@ -1256,7 +1397,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "sori",
     weight: 4,
     difficulty: 10,
-    condition: (_w, _l, ctx, _st, wSide, lSide) => desperation(ctx, wSide) && overCommitting(ctx, lSide) && forwardMomentum(ctx, lSide) > 4,
+    condition: (_w, _l, ctx, _st, wSide, lSide) =>
+      desperation(ctx, wSide) && overCommitting(ctx, lSide) && forwardMomentum(ctx, lSide) > 4,
   },
   {
     id: "tasukizori",
@@ -1265,7 +1407,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "sori",
     weight: 4,
     difficulty: 10,
-    condition: (_w, _l, ctx, _st, wSide, lSide) => desperation(ctx, wSide) && overCommitting(ctx, lSide) && forwardMomentum(ctx, lSide) > 4,
+    condition: (_w, _l, ctx, _st, wSide, lSide) =>
+      desperation(ctx, wSide) && overCommitting(ctx, lSide) && forwardMomentum(ctx, lSide) > 4,
   },
   {
     id: "tsutaezori",
@@ -1274,7 +1417,11 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     category: "sori",
     weight: 4,
     difficulty: 10,
-    condition: (_w, _l, ctx, _st, wSide, lSide) => desperation(ctx, wSide) && overCommitting(ctx, lSide) && hasBelt(ctx, lSide) && edgeDistance(ctx, lSide) <= 5,
+    condition: (_w, _l, ctx, _st, wSide, lSide) =>
+      desperation(ctx, wSide) &&
+      overCommitting(ctx, lSide) &&
+      hasBelt(ctx, lSide) &&
+      edgeDistance(ctx, lSide) <= 5,
   },
 
   // =========================================================================
@@ -1291,7 +1438,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     weight: 3,
     difficulty: 1,
     // Both fighters near edge simultaneously — winner also steps out but loser touches first
-    condition: (_w, _l, ctx, st, _wSide, lSide) => offensiveOutput(st) === 0 && balance(ctx, lSide) <= 0 && edgeDistance(ctx, lSide) <= 3,
+    condition: (_w, _l, ctx, st, _wSide, lSide) =>
+      offensiveOutput(st) === 0 && balance(ctx, lSide) <= 0 && edgeDistance(ctx, lSide) <= 3,
   },
   {
     id: "koshikudake",
@@ -1315,7 +1463,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     weight: 2,
     difficulty: 2,
     // Loser touches down with hand, no direct attack
-    condition: (_w, _l, ctx, st, _wSide, lSide) => offensiveOutput(st) === 0 && balance(ctx, lSide) <= 0,
+    condition: (_w, _l, ctx, st, _wSide, lSide) =>
+      offensiveOutput(st) === 0 && balance(ctx, lSide) <= 0,
   },
   {
     id: "tsukihiza",
@@ -1325,7 +1474,8 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     weight: 2,
     difficulty: 2,
     // Loser touches down with knee
-    condition: (_w, l, ctx, st, _wSide, lSide) => offensiveOutput(st) === 0 && balance(ctx, lSide) <= 0 && l.stats.stamina < 0.2,
+    condition: (_w, l, ctx, st, _wSide, lSide) =>
+      offensiveOutput(st) === 0 && balance(ctx, lSide) <= 0 && l.stats.stamina < 0.2,
   },
   {
     id: "fumidashi",
@@ -1336,6 +1486,9 @@ export const KIMARITE_STRATEGIES: KimariteStrategy[] = [
     difficulty: 2,
     // Loser steps out under their own momentum
     condition: (_w, _l, ctx, st, _wSide, lSide) =>
-      offensiveOutput(st) === 0 && balance(ctx, lSide) > 0 && edgeDistance(ctx, lSide) <= 2 && overCommitting(ctx, lSide),
+      offensiveOutput(st) === 0 &&
+      balance(ctx, lSide) > 0 &&
+      edgeDistance(ctx, lSide) <= 2 &&
+      overCommitting(ctx, lSide),
   },
 ];

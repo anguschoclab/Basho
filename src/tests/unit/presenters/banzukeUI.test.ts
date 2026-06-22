@@ -161,7 +161,7 @@ describe("banzukeUI", () => {
         {
           id: "1",
           division: "makuuchi",
-          rank: "unknown_rank" as any,  
+          rank: "unknown_rank" as any,
           rankNumber: undefined,
           side: "east",
         },
@@ -193,7 +193,7 @@ describe("banzukeUI", () => {
           },
         },
       ];
-       
+
       const map = buildPrevRankScores(history as any[]);
       expect(map.size).toBe(1);
       expect(map.get("r_m1")).toBe(5002);
@@ -230,7 +230,7 @@ describe("banzukeUI", () => {
           },
         },
       ];
-       
+
       const map = buildPrevRankScores(history as any[]);
       expect(map.size).toBe(1);
       expect(map.has("newer")).toBe(true);
@@ -243,7 +243,7 @@ describe("banzukeUI", () => {
 
     it("should return an empty map if no history entries have nextBanzuke", () => {
       const history = [{}, { otherData: true }];
-       
+
       const map = buildPrevRankScores(history as any[]);
       expect(map.size).toBe(0);
     });
@@ -291,7 +291,6 @@ describe("banzukeUI", () => {
         },
       ];
 
-       
       const map = buildPrevRankScores(history as any[]);
 
       expect(map.size).toBe(3);

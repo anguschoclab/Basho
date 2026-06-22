@@ -429,8 +429,14 @@ describe("updateH2H", () => {
 
   // Edge cases
   it("handles rikishi with undefined h2h maps", () => {
-    const winner = MockFactory.createRikishi({ id: "w", h2h: undefined as unknown as Record<string, H2HRecord> });
-    const loser = MockFactory.createRikishi({ id: "l", h2h: undefined as unknown as Record<string, H2HRecord> });
+    const winner = MockFactory.createRikishi({
+      id: "w",
+      h2h: undefined as unknown as Record<string, H2HRecord>,
+    });
+    const loser = MockFactory.createRikishi({
+      id: "l",
+      h2h: undefined as unknown as Record<string, H2HRecord>,
+    });
     const result = { boutId: "b-1", kimarite: "yorikiri" } as unknown as BoutResult;
 
     const impact = updateH2H(winner, loser, result, "basho-2025-01", 2025, 7);

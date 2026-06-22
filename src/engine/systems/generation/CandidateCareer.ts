@@ -141,13 +141,18 @@ function simulateCareerProgression(args: {
   for (let basho = 0; basho < bashoCount; basho++) {
     // Gradually progress through divisions — faster for prodigies, slower for late bloomers.
     // Base cadence: one division per 6 basho (1 yr); scaled by developmentSpeed.
-    const bashoPerPromotion = Math.max(BASHO_PER_PROMOTION_MIN, Math.round(BASHO_PER_PROMOTION_BASE / developmentSpeed));
+    const bashoPerPromotion = Math.max(
+      BASHO_PER_PROMOTION_MIN,
+      Math.round(BASHO_PER_PROMOTION_BASE / developmentSpeed)
+    );
     if (currentDivIndex < targetIndex && basho > 0 && basho % bashoPerPromotion === 0) {
       currentDivIndex = Math.min(currentDivIndex + 1, targetIndex);
     }
 
     const currentDiv = divisions[currentDivIndex];
-    const boutsPerBasho = ["makuuchi", "juryo"].includes(currentDiv) ? BOUTS_PER_BASHO_TOP : BOUTS_PER_BASHO_LOWER;
+    const boutsPerBasho = ["makuuchi", "juryo"].includes(currentDiv)
+      ? BOUTS_PER_BASHO_TOP
+      : BOUTS_PER_BASHO_LOWER;
 
     // Calculate win rate for this division/rank
     let winRate = divisionWinRates[currentDiv];

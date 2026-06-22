@@ -49,7 +49,11 @@ export function phase01_daily_welfare(world: WorldState): StateImpact {
 
     // 1. Sync Descriptor
     const rikishiRng = rngFromSeed(`desc-${world.dayIndexGlobal}-${id}`, "narrative", "rikishi");
-    next.descriptor = toRikishiDescriptor(rikishiRng, next, next.descriptor) as unknown as Rikishi["descriptor"];
+    next.descriptor = toRikishiDescriptor(
+      rikishiRng,
+      next,
+      next.descriptor
+    ) as unknown as Rikishi["descriptor"];
 
     // 2. Diet Effects
     const diet = heyaDietCache.get(next.heyaId);
@@ -58,7 +62,10 @@ export function phase01_daily_welfare(world: WorldState): StateImpact {
       if (next.stats) {
         next.stats = {
           ...next.stats,
-          mental: Math.max(MIN_MENTAL_STAT, (next.stats.mental || DEFAULT_MENTAL_STAT) - MENTAL_LOSS_STARVATION),
+          mental: Math.max(
+            MIN_MENTAL_STAT,
+            (next.stats.mental || DEFAULT_MENTAL_STAT) - MENTAL_LOSS_STARVATION
+          ),
         };
       }
     } else if (diet === "heavy_bulk") {
@@ -66,7 +73,10 @@ export function phase01_daily_welfare(world: WorldState): StateImpact {
       if (next.stats) {
         next.stats = {
           ...next.stats,
-          mental: Math.max(MIN_MENTAL_STAT, (next.stats.mental || DEFAULT_MENTAL_STAT) - MENTAL_LOSS_POOR),
+          mental: Math.max(
+            MIN_MENTAL_STAT,
+            (next.stats.mental || DEFAULT_MENTAL_STAT) - MENTAL_LOSS_POOR
+          ),
         };
       }
     } else if (diet === "premium") {
@@ -74,7 +84,10 @@ export function phase01_daily_welfare(world: WorldState): StateImpact {
       if (next.stats) {
         next.stats = {
           ...next.stats,
-          mental: Math.min(MAX_MENTAL_STAT, (next.stats.mental || DEFAULT_MENTAL_STAT) + MENTAL_GAIN_GOOD),
+          mental: Math.min(
+            MAX_MENTAL_STAT,
+            (next.stats.mental || DEFAULT_MENTAL_STAT) + MENTAL_GAIN_GOOD
+          ),
         };
       }
       if (!next.injured && (next.fatigue ?? 0) > 0) {

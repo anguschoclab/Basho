@@ -205,7 +205,9 @@ export function fillVacanciesForNPCWithBidding(
       currentCandidates = materializeImpact.nextCandidates;
       currentPools = materializeImpact.nextPools;
     } catch (err) {
-      console.error(`[RECRUIT ERROR] Failed to materialize candidate ${bid.candidateId}: ${err instanceof Error ? err.message : String(err)}`);
+      console.error(
+        `[RECRUIT ERROR] Failed to materialize candidate ${bid.candidateId}: ${err instanceof Error ? err.message : String(err)}`
+      );
       continue;
     }
 

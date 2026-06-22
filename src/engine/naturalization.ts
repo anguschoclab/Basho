@@ -42,7 +42,8 @@ export function checkNaturalizations(world: WorldState): StateImpact {
     let isEligible = false;
     if ((r.careerWins || 0) >= NATURALIZATION_CAREER_WINS_THRESHOLD) isEligible = true;
     if (r.rank === "yokozuna" && age >= NATURALIZATION_YOKOZUNA_AGE_THRESHOLD) isEligible = true;
-    if (r.rank === "ozeki" && (r.careerWins || 0) >= NATURALIZATION_OZEKI_CAREER_WINS_THRESHOLD) isEligible = true;
+    if (r.rank === "ozeki" && (r.careerWins || 0) >= NATURALIZATION_OZEKI_CAREER_WINS_THRESHOLD)
+      isEligible = true;
 
     // Needs high momentum or just time for narrative significance
     if (!isEligible) continue;

@@ -48,8 +48,7 @@ export function projectBashoUIDigest(world: WorldState): BashoUIDigest | null {
     const h2h = { wins: record.wins, losses: record.losses };
 
     const rivalriesState = world.rivalriesState;
-    const rivalry =
-      (rivalriesState ? getRivalry(rivalriesState, east.id, west.id) : null) ?? null;
+    const rivalry = (rivalriesState ? getRivalry(rivalriesState, east.id, west.id) : null) ?? null;
     const heat = rivalry?.heat ?? 0;
     let heatBand: HeatBand = "cold";
     if (heat >= 75) heatBand = "inferno";

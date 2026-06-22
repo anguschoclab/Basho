@@ -1,12 +1,7 @@
 // Sidebar barrel — implementation decomposed into sidebar/ directory.
 
 export { useSidebar, SidebarProvider } from "./sidebar/provider";
-export {
-  Sidebar,
-  SidebarTrigger,
-  SidebarRail,
-  SidebarInset,
-} from "./sidebar/core";
+export { Sidebar, SidebarTrigger, SidebarRail, SidebarInset } from "./sidebar/core";
 export {
   SidebarInput,
   SidebarHeader,

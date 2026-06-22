@@ -56,7 +56,11 @@ export function phase01_week_governance(world: WorldState): StateImpact {
     }
 
     // 2. Alert if crossing critical threshold (player only)
-    if (heya.scandalScore != null && heya.scandalScore >= SCANDAL_SCORE_ALERT_THRESHOLD && heya.id === world.playerHeyaId) {
+    if (
+      heya.scandalScore != null &&
+      heya.scandalScore >= SCANDAL_SCORE_ALERT_THRESHOLD &&
+      heya.id === world.playerHeyaId
+    ) {
       builder.logEvent(
         "GOVERNANCE_RULING",
         "discipline",

@@ -164,7 +164,10 @@ export function assignKenshoBanners(
     const remaining = scored
       .map((x) => x.sponsor)
       .filter((s) => !chosenIds.has(s.sponsorId))
-      .map((s) => ({ item: s, w: 1 + (s.prestigeAffinity * PRESTIGE_AFFINITY_T3_WEIGHT + s.loyalty * LOYALTY_T3_WEIGHT) }));
+      .map((s) => ({
+        item: s,
+        w: 1 + (s.prestigeAffinity * PRESTIGE_AFFINITY_T3_WEIGHT + s.loyalty * LOYALTY_T3_WEIGHT),
+      }));
 
     const fill = weightedSampleWithoutReplacement(rng, remaining, count - chosen.length);
     chosen.push(...fill);

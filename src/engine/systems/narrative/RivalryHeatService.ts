@@ -66,7 +66,12 @@ export function deriveTone(pair: RivalryPairState): RivalryTone {
   const spite01 = pair.spite / RIVALRY_STATE_DIVISOR;
   const close01 = pair.closeness / RIVALRY_STATE_DIVISOR;
 
-  if (pair.sameHeya && pair.heat < SAME_HEYA_RESPECT_HEAT_THRESHOLD && pair.spite < SAME_HEYA_RESPECT_SPITE_THRESHOLD) return "respect";
+  if (
+    pair.sameHeya &&
+    pair.heat < SAME_HEYA_RESPECT_HEAT_THRESHOLD &&
+    pair.spite < SAME_HEYA_RESPECT_SPITE_THRESHOLD
+  )
+    return "respect";
 
   if (spite01 > BAD_BLOOD_SPITE_THRESHOLD && heat01 > BAD_BLOOD_HEAT_THRESHOLD) return "bad_blood";
   if (spite01 > GRUDGE_SPITE_THRESHOLD && heat01 > GRUDGE_HEAT_THRESHOLD) return "grudge";
@@ -74,10 +79,20 @@ export function deriveTone(pair: RivalryPairState): RivalryTone {
   if (close01 > RESPECT_CLOSENESS_THRESHOLD && heat01 > RESPECT_HEAT_THRESHOLD) return "respect";
 
   // volatile if both closeness and spite are meaningful
-  if (close01 > UNSTABLE_CLOSENESS_THRESHOLD && spite01 > UNSTABLE_SPITE_THRESHOLD && heat01 > UNSTABLE_HEAT_THRESHOLD) return "unstable";
+  if (
+    close01 > UNSTABLE_CLOSENESS_THRESHOLD &&
+    spite01 > UNSTABLE_SPITE_THRESHOLD &&
+    heat01 > UNSTABLE_HEAT_THRESHOLD
+  )
+    return "unstable";
 
   // public hype is medium heat, lots of repeats, low spite
-  if (pair.meetings >= PUBLIC_HYPE_MEETINGS_THRESHOLD && pair.heat >= PUBLIC_HYPE_HEAT_THRESHOLD && pair.spite < PUBLIC_HYPE_SPITE_THRESHOLD) return "public_hype";
+  if (
+    pair.meetings >= PUBLIC_HYPE_MEETINGS_THRESHOLD &&
+    pair.heat >= PUBLIC_HYPE_HEAT_THRESHOLD &&
+    pair.spite < PUBLIC_HYPE_SPITE_THRESHOLD
+  )
+    return "public_hype";
 
   return "respect";
 }
@@ -128,11 +143,13 @@ export function applyBoutToPairState(
   const upsetBonus = args.isUpset ? HEAT_UPSET_BONUS : 0;
   const titleBonus = isTitleStakes ? HEAT_TITLE_BONUS : 0;
   const kinboshiBonus = isKinboshi ? HEAT_KINBOSHI_BONUS : 0;
-  const highStakesBonus = (isFinalDay ? HEAT_FINAL_DAY_BONUS : 0) + (isYushoRace ? HEAT_YUSHO_RACE_BONUS : 0);
+  const highStakesBonus =
+    (isFinalDay ? HEAT_FINAL_DAY_BONUS : 0) + (isYushoRace ? HEAT_YUSHO_RACE_BONUS : 0);
 
   // Closeness vs Spite
   const closenessGain = Math.round(args.closeness01 * CLOSENESS_GAIN_MULTIPLIER);
-  const spiteGain = Math.round(args.domination01 * SPITE_GAIN_MULTIPLIER) + (args.isUpset ? SPITE_UPSET_BONUS : 0);
+  const spiteGain =
+    Math.round(args.domination01 * SPITE_GAIN_MULTIPLIER) + (args.isUpset ? SPITE_UPSET_BONUS : 0);
 
   // Deterministic spice
   const spice = rng.next() < RIVALRY_HEAT_SPICE_CHANCE ? 1 : 0;
@@ -154,8 +171,13 @@ export function applyBoutToPairState(
   spite = clamp(spite + spiteGain, 0, RIVALRY_STATE_DIVISOR);
 
   const triggers = { ...pair.triggers };
-  bumpTrigger(triggers, "repeat_matches", TRIGGER_REPEAT_BASE + repeatBonus / TRIGGER_REPEAT_DIVISOR);
-  if (args.closeness01 > CLOSE_FINISH_THRESHOLD) bumpTrigger(triggers, "close_finish", CLOSE_FINISH_TRIGGER_BONUS);
+  bumpTrigger(
+    triggers,
+    "repeat_matches",
+    TRIGGER_REPEAT_BASE + repeatBonus / TRIGGER_REPEAT_DIVISOR
+  );
+  if (args.closeness01 > CLOSE_FINISH_THRESHOLD)
+    bumpTrigger(triggers, "close_finish", CLOSE_FINISH_TRIGGER_BONUS);
   if (args.isUpset) bumpTrigger(triggers, "upset", UPSET_TRIGGER_BONUS);
   if (isKinboshi) bumpTrigger(triggers, "kinboshi", KINBOSHI_TRIGGER_BONUS);
   if (isTitleStakes) bumpTrigger(triggers, "title_stakes", TITLE_STAKES_TRIGGER_BONUS);

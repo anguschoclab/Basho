@@ -282,19 +282,15 @@ export function NarrativeSummary({
                   <div className="space-y-3 pl-4 border-l-2 border-border/40">
                     {narrativeSummaryData.governanceLog
                       .slice(-5)
-                      .map(
-                        (log: GovernanceRuling, i: number) => (
-                          <div key={i} className="relative">
-                            <div className="absolute -left-[22px] top-1 h-2 w-2 rounded-full bg-border" />
-                            <div className="text-[10px] font-bold text-muted-foreground mb-1">
-                              {log.date || "Association Record"}
-                            </div>
-                            <p className="text-xs font-display italic leading-snug">
-                              {log.reason}
-                            </p>
+                      .map((log: GovernanceRuling, i: number) => (
+                        <div key={i} className="relative">
+                          <div className="absolute -left-[22px] top-1 h-2 w-2 rounded-full bg-border" />
+                          <div className="text-[10px] font-bold text-muted-foreground mb-1">
+                            {log.date || "Association Record"}
                           </div>
-                        )
-                      )}
+                          <p className="text-xs font-display italic leading-snug">{log.reason}</p>
+                        </div>
+                      ))}
                   </div>
                 </div>
               )}

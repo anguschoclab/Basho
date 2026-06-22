@@ -131,6 +131,13 @@ export interface ClosedHeyaRecord extends Heya {
   mergedInto?: Id;
 }
 
+export interface BookmarkEntry {
+  entityType: string;
+  entityId: string;
+  note?: string;
+  createdAt: number;
+}
+
 export interface WorldState {
   hallOfFame?: HallOfFameState;
   historyIndex?: HistoryIndex;
@@ -145,6 +152,8 @@ export interface WorldState {
 
   currentBashoName?: BashoName;
   currentBasho?: BashoState;
+  /** Consecutive basho with no active yokozuna — used for prestige promotion. */
+  yokozunaVacancyStreak?: number;
   rng?: SeededRNG;
 
   heyas: IdMapRuntime<Heya>;
@@ -172,6 +181,7 @@ export interface WorldState {
   events: EventsState;
   playerKnowledge?: {
     scouting?: Record<string, ScoutedRikishi>;
+    bookmarks?: BookmarkEntry[];
   };
 
   governanceLog?: GovernanceRuling[];
@@ -209,9 +219,27 @@ export interface WorldState {
   _postBashoDays?: number;
   _daysSinceLastWeeklyTick?: number;
 
+  /**
+   * Transient flag marking an autonomous run (AutoSim, holiday fast-forward).
+   * When set, player-facing loop decisions are not generated and the within-tick
+   * crisis halt is disabled, so the simulation never freezes waiting for an
+   * interactive choice that nobody will make.
+   */
+  _autonomousSim?: boolean;
+
+  /** Delegation policy used to auto-resolve loop decisions during autonomous runs. */
+  _autonomousPolicy?: "conservative" | "balanced" | "aggressive";
+
   _recruitmentWindow?: RecruitmentWindow;
 
   _postBashoMeta?: PostBashoMeta;
+
+  /**
+   * Equilibrium active-rikishi population captured at world generation.
+   * Read-only coupling point for the replacement-rate controller (RecruitmentController)
+   * and the lifecycle plan. Falls back to 0 (no replacement) when unset.
+   */
+  _populationTarget?: number;
 
   rivalriesState?: RivalriesState;
 
@@ -221,6 +249,16 @@ export interface WorldState {
 
   /** Crisis waiting to be presented to player (checked on Dashboard load) */
   pendingCrisis?: ActiveCrisis;
+
+  /** Player loop decisions that block progress until resolved */
+  pendingDecisions?: Array<{
+    id: string;
+    type: string;
+    description: string;
+    deadlineWeek: number;
+    options: Array<{ id: string; label: string; impact: string }>;
+    required: boolean;
+  }>;
 
   /** Chronicle/Historical record browser state */
   chronicle?: {

@@ -2,7 +2,6 @@
  * Integration tests for kesho-mawashi system
  */
 
- 
 import { describe, it, expect } from "vitest";
 import { generateKeshoForPromotions } from "@/engine/systems/keshoMawashi/KeshoMawashiGenerator";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";

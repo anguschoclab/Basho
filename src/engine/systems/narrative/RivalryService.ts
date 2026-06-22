@@ -168,8 +168,12 @@ export const RivalryService = {
       isLossForA: result.loserRikishiId === existing.aId,
       isKinboshi: !!result.isKinboshi,
       isTitleStakes: !!result.isTitleStakes,
-      closeness01: result.duration ? Math.min(1.0, result.duration / BOUT_DURATION_CLOSENESS_DIVISOR) : RIVALRY_CLOSENESS_DEFAULT,
-      domination01: result.duration ? Math.max(0.0, 1.0 - result.duration / BOUT_DURATION_DOMINATION_DIVISOR) : RIVALRY_DOMINATION_DEFAULT,
+      closeness01: result.duration
+        ? Math.min(1.0, result.duration / BOUT_DURATION_CLOSENESS_DIVISOR)
+        : RIVALRY_CLOSENESS_DEFAULT,
+      domination01: result.duration
+        ? Math.max(0.0, 1.0 - result.duration / BOUT_DURATION_DOMINATION_DIVISOR)
+        : RIVALRY_DOMINATION_DEFAULT,
       isUpset: !!result.upset,
       isFinalDay: args.day === BASHO_FINAL_DAY,
       isYushoRace: !!result.isYushoRace,
@@ -283,7 +287,13 @@ export const RivalryService = {
       };
 
       // Auto-cull
-      if (!(updatedPair.heat < RIVALRY_HEAT_MIN && updatedPair.meetings < RIVALRY_MEETINGS_MIN && weeksSince > RIVALRY_DECAY_WEEKS_LONG)) {
+      if (
+        !(
+          updatedPair.heat < RIVALRY_HEAT_MIN &&
+          updatedPair.meetings < RIVALRY_MEETINGS_MIN &&
+          weeksSince > RIVALRY_DECAY_WEEKS_LONG
+        )
+      ) {
         finalPairs[key] = updatedPair;
       }
     }
@@ -387,12 +397,14 @@ export const RivalryService = {
         if (a.division === b.division) {
           score += SAME_DIVISION_BONUS;
           const rankDiff = Math.abs((a.rankNumber ?? 1) - (b.rankNumber ?? 1));
-          if (rankDiff <= RANK_DIFF_MAX) score += RANK_DIFF_BONUS_BASE - rankDiff * RANK_DIFF_BONUS_MULTIPLIER;
+          if (rankDiff <= RANK_DIFF_MAX)
+            score += RANK_DIFF_BONUS_BASE - rankDiff * RANK_DIFF_BONUS_MULTIPLIER;
         }
 
         // Age proximity
         const ageDiff = Math.abs(a.birthYear - b.birthYear);
-        if (ageDiff <= AGE_PROXIMITY_MAX_DIFF) score += AGE_PROXIMITY_BONUS_BASE - ageDiff * AGE_PROXIMITY_MULTIPLIER;
+        if (ageDiff <= AGE_PROXIMITY_MAX_DIFF)
+          score += AGE_PROXIMITY_BONUS_BASE - ageDiff * AGE_PROXIMITY_MULTIPLIER;
 
         candidates.push({ a, b, score });
       }

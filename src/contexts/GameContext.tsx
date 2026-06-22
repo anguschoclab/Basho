@@ -71,7 +71,7 @@ interface GameContextValue {
   /** Advances to the next day. */
   advanceDay: () => void;
   /** Simulates a specific bout. */
-  simulateBout: (boutIndex: number) => void;
+  simulateBout: (boutIndex: number, boutId?: string) => void;
   /** Sets the tactic for a specific bout. */
   setBoutTactic: (boutId: string, tactic: import("@/engine/types/combat").BoutTactic) => void;
   /** Simulates all bouts for the current day. */
@@ -114,10 +114,6 @@ interface GameContextValue {
   getStandings: () => Array<{ rikishi: Rikishi; wins: number; losses: number }>;
   /** Updates the world state with a new world. */
   updateWorld: (world: WorldState) => void;
-  /** Issues a governance ruling with the given severity. */
-  issueRuling: (rulingId: string, severity: "lenient" | "standard" | "harsh") => void;
-  /** Handles a media event with the given choice. */
-  handleMediaEvent: (eventId: string, choice: string) => void;
   /** Advances the tutorial to the next step. */
   advanceTutorialStep: (step: import("@/engine/types/tutorial").TutorialStep) => void;
   /** Sets a tutorial flag. */
@@ -137,6 +133,14 @@ interface GameContextValue {
   addSparringPair: (heyaId: string, aId: string, bId: string) => void;
   /** Removes a sparring pair within a heya. */
   removeSparringPair: (heyaId: string, aId: string, bId: string) => void;
+  /** Bookmarks an entity with an optional note. */
+  bookmarkEntity: (entityType: string, entityId: string, note?: string) => void;
+  /** Removes a bookmark from an entity. */
+  unbookmarkEntity: (entityType: string, entityId: string) => void;
+  /** Updates the note on an existing bookmark. */
+  updateBookmarkNote: (entityType: string, entityId: string, note: string) => void;
+  /** Checks if an entity is bookmarked. */
+  isBookmarked: (entityType: string, entityId: string) => boolean;
   /** Runs an auto-simulation with the given configuration. */
   runAutoSim: (config: AutoSimConfig) => Promise<AutoSimResult | null>;
   /** Recruits a sponsor for the player's heya. */
@@ -205,7 +209,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const startBasho = useCallback(() => dispatch(actions.startBasho()), []);
   const advanceDay = useCallback(() => sendCommand({ type: "TICK_DAY" }), [sendCommand]);
   const simulateBoutAction = useCallback(
-    (index: number) => dispatch(actions.simulateBout(index)),
+    (index: number, boutId?: string) => dispatch(actions.simulateBout(index, boutId)),
     []
   );
   const setBoutTacticAction = useCallback(
@@ -248,6 +252,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     },
     [sendCommand]
   );
+
 
   const recruitSponsorAction = useCallback(
     (sponsorId: string) => {
@@ -367,6 +372,32 @@ export function GameProvider({ children }: { children: ReactNode }) {
     dispatch(actions.removeSparringPair(heyaId, aId, bId));
   }, []);
 
+  const bookmarkEntityAction = useCallback(
+    (entityType: string, entityId: string, note?: string) => {
+      dispatch(actions.bookmarkEntity(entityType, entityId, note));
+    },
+    []
+  );
+
+  const unbookmarkEntityAction = useCallback((entityType: string, entityId: string) => {
+    dispatch(actions.unbookmarkEntity(entityType, entityId));
+  }, []);
+
+  const updateBookmarkNoteAction = useCallback(
+    (entityType: string, entityId: string, note: string) => {
+      dispatch(actions.updateBookmarkNote(entityType, entityId, note));
+    },
+    []
+  );
+
+  const isBookmarkedCheck = useCallback(
+    (entityType: string, entityId: string) => {
+      const bookmarks = state.world?.playerKnowledge?.bookmarks ?? [];
+      return bookmarks.some((b) => b.entityType === entityType && b.entityId === entityId);
+    },
+    [state.world]
+  );
+
   const value: GameContextValue = useMemo(
     () => ({
       state,
@@ -399,8 +430,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       goOnHoliday,
       runAutoSim: runAutoSimAction,
       tickMultipleDays,
-      issueRuling,
-      handleMediaEvent,
       recruitSponsor: recruitSponsorAction,
       advanceTutorialStep: advanceTutorialStepAction,
       setTutorialFlag: setTutorialFlagAction,
@@ -410,6 +439,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
       removeMentor: removeMentorAction,
       addSparringPair: addSparringPairAction,
       removeSparringPair: removeSparringPairAction,
+      bookmarkEntity: bookmarkEntityAction,
+      unbookmarkEntity: unbookmarkEntityAction,
+      updateBookmarkNote: updateBookmarkNoteAction,
+      isBookmarked: isBookmarkedCheck,
       runAutoSimAction,
     }),
     [
@@ -443,8 +476,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       goOnHoliday,
       runAutoSimAction,
       tickMultipleDays,
-      issueRuling,
-      handleMediaEvent,
       recruitSponsorAction,
       advanceTutorialStepAction,
       setTutorialFlagAction,
@@ -454,6 +485,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
       removeMentorAction,
       addSparringPairAction,
       removeSparringPairAction,
+      bookmarkEntityAction,
+      unbookmarkEntityAction,
+      updateBookmarkNoteAction,
+      isBookmarkedCheck,
     ]
   );
 

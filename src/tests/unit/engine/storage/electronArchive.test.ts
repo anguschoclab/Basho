@@ -270,9 +270,7 @@ describe("ElectronArchiveService", () => {
 
       const result = await service.getArchivedBoutIdsForSeason(2024);
 
-      expect(mocks.fs.readDir).toHaveBeenCalledWith(
-        expect.stringContaining("season_2024/bouts")
-      );
+      expect(mocks.fs.readDir).toHaveBeenCalledWith(expect.stringContaining("season_2024/bouts"));
       expect(result).toEqual(["bout-1", "bout-2"]);
     });
 

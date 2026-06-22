@@ -101,7 +101,8 @@ export const InfrastructureService = {
     // Determine completion date (relative to current world state)
     // We'll use a simple "next basho" or "N basho from now" logic
     // For now, let's assume world.currentBashoName exists
-    const completionYear = world.year + (def.buildTimeBasho > CONSTRUCTION_BUILD_TIME_THRESHOLD ? 1 : 0);
+    const completionYear =
+      world.year + (def.buildTimeBasho > CONSTRUCTION_BUILD_TIME_THRESHOLD ? 1 : 0);
 
     const queueEntry = {
       facilityId,

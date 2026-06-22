@@ -94,6 +94,7 @@ export function finalizeSignedCandidates(world: WorldState): StateImpact {
 
   let currentCandidates = { ...tp.candidates };
   let currentPools = { ...tp.pools };
+  let changed = false;
 
   for (const [id, candidate] of Object.entries(tp.candidates)) {
     if (candidate.availabilityState === "signed" && candidate.competingSuitors.length > 0) {
@@ -110,15 +111,21 @@ export function finalizeSignedCandidates(world: WorldState): StateImpact {
         builder.merge(resolution.impact);
         currentCandidates = resolution.nextCandidates;
         currentPools = resolution.nextPools;
+        changed = true;
       }
     }
   }
 
-  builder.updateWorldField("talentPool", {
-    ...tp,
-    candidates: currentCandidates,
-    pools: currentPools,
-  });
+  // Only emit talentPool update if we actually materialized someone.
+  // Otherwise this overwrites upstream talent pool changes (e.g. from
+  // fillVacanciesForNPCWithBidding) via Object.assign in the impact merge.
+  if (changed) {
+    builder.updateWorldField("talentPool", {
+      ...tp,
+      candidates: currentCandidates,
+      pools: currentPools,
+    });
+  }
 
   return builder.build();
 }

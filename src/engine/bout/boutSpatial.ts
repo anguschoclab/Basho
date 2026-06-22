@@ -40,9 +40,12 @@ import {
 export function initPhysicalBody(rikishi: Rikishi, side: Side): PhysicalBody {
   const x = side === "east" ? SHIKIRISEN_OFFSET : -SHIKIRISEN_OFFSET;
   const facingAngle = 0; // 1.75D: neutral facing; rotation comes from torque, not initial bias
-  const mass = MASS_BASE_OFFSET + stat(rikishi, "weight", DEFAULT_WEIGHT_STAT) * MASS_WEIGHT_MULTIPLIER;
-  const cogHeight = stat(rikishi, "height", DEFAULT_HEIGHT_STAT) * HEIGHT_TO_METERS * COG_HEIGHT_FRACTION;
-  const footSpread = BASE_FOOT_SPREAD + (stat(rikishi, "balance") / 100) * FOOT_SPREAD_BALANCE_VARIATION;
+  const mass =
+    MASS_BASE_OFFSET + stat(rikishi, "weight", DEFAULT_WEIGHT_STAT) * MASS_WEIGHT_MULTIPLIER;
+  const cogHeight =
+    stat(rikishi, "height", DEFAULT_HEIGHT_STAT) * HEIGHT_TO_METERS * COG_HEIGHT_FRACTION;
+  const footSpread =
+    BASE_FOOT_SPREAD + (stat(rikishi, "balance") / 100) * FOOT_SPREAD_BALANCE_VARIATION;
 
   return {
     x,
@@ -76,8 +79,6 @@ export function tawaraBounceResistance(toePos: number): number {
   if (toePos < 1.0) return TAWARA_BOUNCE_RESISTANCE_HEEL;
   return 0;
 }
-
-
 
 export function deriveGripClass(left: HandGrip | null, right: HandGrip | null): GripClass {
   const insideCount = (left?.isInside ? 1 : 0) + (right?.isInside ? 1 : 0);
@@ -118,12 +119,20 @@ export function classifyBeltFallKimarite(
   }
 
   // E2: kotenage (arm-lock throw) when winner has shitate grip and moderate torque
-  if (winnerGrip === "shitate" && winnerTorque > TORQUE_THRESHOLD_MODERATE && winnerTorque <= TORQUE_THRESHOLD_HIGH) {
+  if (
+    winnerGrip === "shitate" &&
+    winnerTorque > TORQUE_THRESHOLD_MODERATE &&
+    winnerTorque <= TORQUE_THRESHOLD_HIGH
+  ) {
     return "kotenage";
   }
 
   // E2: sukuinage (underarm throw) when winner has uwate grip and moderate torque
-  if (winnerGrip === "uwate" && winnerTorque > TORQUE_THRESHOLD_MODERATE && winnerTorque <= TORQUE_THRESHOLD_HIGH) {
+  if (
+    winnerGrip === "uwate" &&
+    winnerTorque > TORQUE_THRESHOLD_MODERATE &&
+    winnerTorque <= TORQUE_THRESHOLD_HIGH
+  ) {
     return "sukuinage";
   }
 
@@ -143,12 +152,18 @@ export function classifyEdgeExitKimarite(
   const defenderBody = defenderSide === "east" ? st.east : st.west;
 
   // 1.75D: utchari — defender pivoted at edge with high escapeAngle but still lost
-  if (crisis.escapeAngle > UTCHARI_ESCAPE_ANGLE_THRESHOLD && crisis.ticksInCrisis >= UTCHARI_MIN_TICKS_IN_CRISIS) {
+  if (
+    crisis.escapeAngle > UTCHARI_ESCAPE_ANGLE_THRESHOLD &&
+    crisis.ticksInCrisis >= UTCHARI_MIN_TICKS_IN_CRISIS
+  ) {
     return "utchari";
   }
 
   // 1.75D: okuridashi when defender has lateral momentum (off-axis overrun)
-  if (Math.abs(crisis.opponentPressureZ) > OKURIDASHI_PRESSURE_Z_THRESHOLD && Math.abs(defenderBody.velocityX) > VELOCITY_EDGE_EXIT_THRESHOLD) {
+  if (
+    Math.abs(crisis.opponentPressureZ) > OKURIDASHI_PRESSURE_Z_THRESHOLD &&
+    Math.abs(defenderBody.velocityX) > VELOCITY_EDGE_EXIT_THRESHOLD
+  ) {
     return "okuridashi";
   }
 

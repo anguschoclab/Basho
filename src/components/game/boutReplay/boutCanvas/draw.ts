@@ -2,7 +2,12 @@ import type { UIRikishi } from "@/presenters/uiModels";
 import type { RikishiState, Particle, ReplayPhase } from "./types";
 import { clamp } from "./math";
 
-export function drawDohyo(ctx: CanvasRenderingContext2D, W: number, H: number, shake: { x: number; y: number }) {
+export function drawDohyo(
+  ctx: CanvasRenderingContext2D,
+  W: number,
+  H: number,
+  shake: { x: number; y: number }
+) {
   const cx = W / 2 + shake.x;
   const cy = H / 2 + shake.y;
   const R = Math.min(W, H) * 0.41;
@@ -112,9 +117,13 @@ export function drawRikishi(
   const mawashi = isEast ? "#1d4ed8" : "#b91c1c";
   const mawashiAccent = isEast ? "#93c5fd" : "#fca5a5";
 
-  let bdy = 0, bdx = 0;
+  let bdy = 0,
+    bdx = 0;
   let legSpread = S * 0.42;
-  let lArmAng = 0, rArmAng = 0, lLegAng = 0, rLegAng = 0;
+  let lArmAng = 0,
+    rArmAng = 0,
+    lLegAng = 0,
+    rLegAng = 0;
 
   switch (state.bodyPhase) {
     case "bowing":
@@ -342,7 +351,8 @@ export function drawImpactFlash(
   intensity: number
 ) {
   if (intensity <= 0) return;
-  const cx = W / 2, cy = H / 2;
+  const cx = W / 2,
+    cy = H / 2;
   const radius = (1 - intensity) * Math.min(W, H) * 0.5;
   ctx.strokeStyle = `rgba(255, 200, 80, ${intensity * 0.8})`;
   ctx.lineWidth = 6 * intensity;
@@ -365,7 +375,8 @@ export function drawCrowdAtmosphere(
   intensity: number,
   phase: ReplayPhase
 ) {
-  const barH = 6, y = H - barH;
+  const barH = 6,
+    y = H - barH;
   ctx.fillStyle = "rgba(0,0,0,0.3)";
   ctx.fillRect(0, y, W, barH);
   const barColor =
@@ -399,8 +410,10 @@ export function drawKimariteBanner(
   if (opacity <= 0) return;
   ctx.save();
   ctx.globalAlpha = clamp(opacity, 0, 1);
-  const bannerW = Math.min(W * 0.6, 320), bannerH = 44;
-  const bx = (W - bannerW) / 2, by = H * 0.12;
+  const bannerW = Math.min(W * 0.6, 320),
+    bannerH = 44;
+  const bx = (W - bannerW) / 2,
+    by = H * 0.12;
   ctx.fillStyle = "rgba(0,0,0,0.4)";
   ctx.beginPath();
   ctx.roundRect(bx + 3, by + 3, bannerW, bannerH, 6);

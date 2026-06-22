@@ -38,13 +38,22 @@ export function toStatusDTO(r: Rikishi, rng: SeededRNG): RikishiStatusDTO {
 export function toBandsDTO(r: Rikishi, rng: SeededRNG, world?: WorldState): RikishiBandsDTO {
   const age = world ? world.year - r.birthYear : 0;
   return {
-    powerBand: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.stats.power ?? 50)),
+    powerBand: NarrativeService.getStatLabel(
+      rng,
+      NarrativeService.getStatBand(r.stats.power ?? 50)
+    ),
     techniqueBand: NarrativeService.getStatLabel(
       rng,
       NarrativeService.getStatBand(r.stats.technique ?? 50)
     ),
-    speedBand: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.stats.speed ?? 50)),
-    balanceBand: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.stats.balance ?? 50)),
+    speedBand: NarrativeService.getStatLabel(
+      rng,
+      NarrativeService.getStatBand(r.stats.speed ?? 50)
+    ),
+    balanceBand: NarrativeService.getStatLabel(
+      rng,
+      NarrativeService.getStatBand(r.stats.balance ?? 50)
+    ),
     momentum: r.momentum,
     careerPhase: getCareerPhase(r.stats.experience),
     ageBand: NarrativeService.getAgeBand(age),
@@ -58,10 +67,7 @@ export function toBandsDTO(r: Rikishi, rng: SeededRNG, world?: WorldState): Riki
  */
 export function toPerceivedStatsDTO(r: Rikishi, rng: SeededRNG): RikishiPerceivedStatsDTO {
   return {
-    power: NarrativeService.getStatLabel(
-      rng,
-      NarrativeService.getStatBand(r.stats?.power ?? 50)
-    ),
+    power: NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(r.stats?.power ?? 50)),
     technique: NarrativeService.getStatLabel(
       rng,
       NarrativeService.getStatBand(r.stats?.technique ?? 50)

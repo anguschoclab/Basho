@@ -313,12 +313,16 @@ function StaffCard({ staff, onFire }: { staff: Staff; onFire: (id: string) => vo
                   <AlertDialogHeader>
                     <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      This will permanently remove {staff.name} from your stable. You cannot undo this action.
+                      This will permanently remove {staff.name} from your stable. You cannot undo
+                      this action.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => onFire(staff.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                    <AlertDialogAction
+                      onClick={() => onFire(staff.id)}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
                       Fire {staff.name}
                     </AlertDialogAction>
                   </AlertDialogFooter>

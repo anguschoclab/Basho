@@ -30,7 +30,8 @@ function runPhaseLoop(
   st: EngineStateV2,
   boutLog: BoutLogEntry[],
   division: import("../types/banzuke").Division,
-  meta: { tone: string; drift: Record<string, number> }
+  meta: { tone: string; drift: Record<string, number> },
+  playerTactic?: import("../types/combat").BoutTactic
 ): { winner: Side; kimarite: KimariteId } {
   // CR-02: Henka may have resolved the bout at tachiai
   if (st.phase.tag === "resolved") {
@@ -40,18 +41,17 @@ function runPhaseLoop(
   for (let i = 0; i < MAX_TICKS; i++) {
     st.tick++;
 
-    const pushResult = tickPushBattle(rng, east, west, st, boutLog, division, meta);
+    const pushResult = tickPushBattle(rng, east, west, st, boutLog, division, meta, playerTactic);
     if (pushResult?.winner && pushResult?.kimarite) {
       return { winner: pushResult.winner, kimarite: pushResult.kimarite };
     }
 
-    const beltResult = tickBeltBattle(rng, east, west, st, boutLog, division, meta);
+    const beltResult = tickBeltBattle(rng, east, west, st, boutLog, division, meta, playerTactic);
     if (beltResult?.winner && beltResult?.kimarite) {
       return { winner: beltResult.winner, kimarite: beltResult.kimarite };
     }
 
     const crisisResult = tickEdgeCrisis(rng, east, west, st, boutLog);
-    // ...
     if (crisisResult?.winner && crisisResult?.kimarite) {
       return { winner: crisisResult.winner, kimarite: crisisResult.kimarite };
     }
@@ -73,7 +73,10 @@ function runPhaseLoop(
   const loserInstability = winner === "east" ? westInstability : eastInstability;
 
   // isamiashi: false start - only if loser was very unstable (near falling)
-  if (loserInstability > ISAMIASHI_INSTABILITY_THRESHOLD && rng.next() < POST_RESOLUTION_REVERSAL_CHANCE) {
+  if (
+    loserInstability > ISAMIASHI_INSTABILITY_THRESHOLD &&
+    rng.next() < POST_RESOLUTION_REVERSAL_CHANCE
+  ) {
     return { winner: loser, kimarite: "isamiashi" };
   }
 
@@ -103,7 +106,16 @@ export function resolveBoutPhysicsImpl(
   const effectiveMeta = meta || { tone: "classic", drift: {} };
   const division = east.division || west.division || "makushita";
 
-  const { winner, kimarite } = runPhaseLoop(rng, east, west, st, boutLog, division, effectiveMeta);
+  const { winner, kimarite } = runPhaseLoop(
+    rng,
+    east,
+    west,
+    st,
+    boutLog,
+    division,
+    effectiveMeta,
+    bout.playerTactic
+  );
 
   const result = buildBoutResultV2(bout, east, west, st, winner, kimarite, boutLog);
   const engineSnapshot = buildEngineSnapshotV2(st, winner);

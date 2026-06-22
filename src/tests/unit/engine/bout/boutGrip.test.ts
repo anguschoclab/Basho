@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { initBeltBattle, evolveGripGeometry, calculateTorque, computeNetTorque } from "@/engine/bout/boutGrip";
+import {
+  initBeltBattle,
+  evolveGripGeometry,
+  calculateTorque,
+  computeNetTorque,
+} from "@/engine/bout/boutGrip";
 import { mockRikishi } from "../utils";
 import { SeededRNG } from "@/engine/rng";
 

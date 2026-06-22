@@ -1,6 +1,9 @@
 import { describe, it, expect } from "vitest";
 import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
-import { applyOyakataCreationConfig, PLAYER_BACKSTORIES } from "@/engine/systems/generation/applyOyakataConfig";
+import {
+  applyOyakataCreationConfig,
+  PLAYER_BACKSTORIES,
+} from "@/engine/systems/generation/applyOyakataConfig";
 
 describe("applyOyakataCreationConfig", () => {
   const world = generateInitialWorld("test-seed-apply");

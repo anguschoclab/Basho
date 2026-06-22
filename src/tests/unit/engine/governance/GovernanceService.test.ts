@@ -10,7 +10,6 @@
  *                                      30-59 = probation, 60+ = sanctioned
  */
 
- 
 import { describe, it, expect } from "vitest";
 import { reportScandal, tickWeekGovernance } from "@/engine/systems/governance/ScandalService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";

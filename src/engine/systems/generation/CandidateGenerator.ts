@@ -174,7 +174,13 @@ export function generateCandidate(args: {
     personId: rng.uuid("PS"),
     name,
     nationality: poolType === "foreign" ? origin : "Japan",
-    birthYear: currentYear - (DEBUT_AGE_BASE + rng.int(0, poolType === "university" ? UNIVERSITY_BIRTH_YEAR_RANGE : OTHER_BIRTH_YEAR_RANGE)),
+    birthYear:
+      currentYear -
+      (DEBUT_AGE_BASE +
+        rng.int(
+          0,
+          poolType === "university" ? UNIVERSITY_BIRTH_YEAR_RANGE : OTHER_BIRTH_YEAR_RANGE
+        )),
     originRegion: origin,
 
     visibilityBand: "hidden",
@@ -189,10 +195,17 @@ export function generateCandidate(args: {
     heightPotentialCm: paPkg.heightCm,
     weightPotentialKg: paPkg.weightKg,
     talentSeed: rng.int(TALENT_SEED_MIN, TALENT_SEED_MAX),
-    temperament: { discipline: rng.int(TEMPERAMENT_MIN, TEMPERAMENT_MAX), volatility: rng.int(TEMPERAMENT_MIN, TEMPERAMENT_MAX) },
+    temperament: {
+      discipline: rng.int(TEMPERAMENT_MIN, TEMPERAMENT_MAX),
+      volatility: rng.int(TEMPERAMENT_MIN, TEMPERAMENT_MAX),
+    },
 
     competingSuitors: [],
-    tags: isEmergentProdigy ? ["prodigy"] : rng.next() > AMATEUR_STAR_TAG_CHANCE ? ["amateur_star"] : [],
+    tags: isEmergentProdigy
+      ? ["prodigy"]
+      : rng.next() > AMATEUR_STAR_TAG_CHANCE
+        ? ["amateur_star"]
+        : [],
     isEmergentProdigy,
 
     potentialStats: {

@@ -49,7 +49,11 @@ describe("NPC Finance Style Parity", () => {
   });
 
   it("should prioritize Myoseki matching the oyakata's style preference", () => {
-    const impact = evaluateFinanceStrategy({ world: mockWorld, heya: mockHeya, oyakata: mockOyakata });
+    const impact = evaluateFinanceStrategy({
+      world: mockWorld,
+      heya: mockHeya,
+      oyakata: mockOyakata,
+    });
 
     // Impact should contain a purchase event
     // The internal buyMyoseki logs a FINANCIAL_ALERT,
@@ -66,7 +70,11 @@ describe("NPC Finance Style Parity", () => {
 
   it("should block purchases if runway is insufficient", () => {
     mockHeya.funds = 10_000_000; // Very low funds relative to burn
-    const impact = evaluateFinanceStrategy({ world: mockWorld, heya: mockHeya, oyakata: mockOyakata });
+    const impact = evaluateFinanceStrategy({
+      world: mockWorld,
+      heya: mockHeya,
+      oyakata: mockOyakata,
+    });
 
     expect((impact.events || []).length).toBe(0);
   });

@@ -116,6 +116,7 @@ export function projectMedicalUIDigest(world: WorldState) {
         weeksTotal: number;
         recoveryProgress: number;
         facilityBonus: number;
+        isKyujo: boolean;
       }> = [];
       for (const r of roster) {
         if (!r.injured) continue;
@@ -139,6 +140,7 @@ export function projectMedicalUIDigest(world: WorldState) {
           weeksTotal,
           recoveryProgress: Math.min(100, Math.max(0, recoveryProgress)),
           facilityBonus,
+          isKyujo: r.isKyujo ?? false,
         });
       }
       return result;

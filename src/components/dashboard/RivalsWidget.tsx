@@ -70,7 +70,7 @@ export function RivalsWidget() {
   const headerAction = useMemo(
     () => ({
       label: "All",
-      onClick: () => navigate({ to: "/rivalries" }),
+      onClick: () => navigate({ to: "/basho/rivalries" }),
       tooltip: "Analyze rival stables and their relative prestige",
     }),
     [navigate]

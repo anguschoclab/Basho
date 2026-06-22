@@ -1,7 +1,10 @@
- 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { saveGame, loadGame } from "@/engine/saveload";
-import { setStorageProvider, resetStorageProvider, type IStorageProvider } from "@/engine/storageProvider";
+import {
+  setStorageProvider,
+  resetStorageProvider,
+  type IStorageProvider,
+} from "@/engine/storageProvider";
 import { makeMockWorld } from "./utils";
 import { runArchivalPruning } from "@/engine/archival";
 import { SerializationService } from "@/engine/persistence/SerializationService";
@@ -30,7 +33,9 @@ function createMockStorage(throwOnSet = false, throwOnGet = false): IStorageProv
       if (throwOnSet) throw new Error("Storage write failed");
       store[key] = value;
     },
-    removeItem: (key: string) => { store = Object.fromEntries(Object.entries(store).filter(([k]) => k !== key)); },
+    removeItem: (key: string) => {
+      store = Object.fromEntries(Object.entries(store).filter(([k]) => k !== key));
+    },
     key: (index: number) => Object.keys(store)[index] || null,
     get length() {
       return Object.keys(store).length;
@@ -183,10 +188,7 @@ describe("saveload - loadGame error paths", () => {
     const result = loadGame("slot_1");
 
     expect(result).toBe(null);
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      "Failed to load game:",
-      expect.any(Error)
-    );
+    expect(consoleErrorSpy).toHaveBeenCalledWith("Failed to load game:", expect.any(Error));
 
     consoleErrorSpy.mockRestore();
   });
@@ -229,10 +231,7 @@ describe("saveload - loadGame error paths", () => {
     const result = loadGame("slot_1");
 
     expect(result).toBe(null);
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      "Failed to load game:",
-      expect.any(Error)
-    );
+    expect(consoleErrorSpy).toHaveBeenCalledWith("Failed to load game:", expect.any(Error));
 
     consoleErrorSpy.mockRestore();
   });

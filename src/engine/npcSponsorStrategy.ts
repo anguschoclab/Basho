@@ -43,9 +43,17 @@ export const DefaultSponsorStrategy: SponsorStrategy = {
     const isNepotist = oyakata.managerFlags?.nepotist;
     const isRiskTaker = oyakata.traits.risk > TRAIT_RISK_HIGH_THRESHOLD;
 
-    let recruitmentThreshold = isAmbitious && isPublicityHawk ? RECRUITMENT_THRESHOLD_CONSERVATIVE : isAmbitious ? RECRUITMENT_THRESHOLD_CONSERVATIVE - 1 : RECRUITMENT_THRESHOLD_CONSERVATIVE - 2;
+    let recruitmentThreshold =
+      isAmbitious && isPublicityHawk
+        ? RECRUITMENT_THRESHOLD_CONSERVATIVE
+        : isAmbitious
+          ? RECRUITMENT_THRESHOLD_CONSERVATIVE - 1
+          : RECRUITMENT_THRESHOLD_CONSERVATIVE - 2;
     if (oyakata.traits.patience > TRAIT_PATIENCE_THRESHOLD) {
-      recruitmentThreshold = Math.max(RECRUITMENT_THRESHOLD_CONSERVATIVE - 2, recruitmentThreshold - 1);
+      recruitmentThreshold = Math.max(
+        RECRUITMENT_THRESHOLD_CONSERVATIVE - 2,
+        recruitmentThreshold - 1
+      );
     }
 
     if (oyakata.mood === "anxious") {
@@ -86,7 +94,9 @@ export const DefaultSponsorStrategy: SponsorStrategy = {
 export const TraditionalistSponsorStrategy: SponsorStrategy = {
   evaluateSponsorRecruitment(world, heya, oyakata) {
     const isPublicityHawk = oyakata.managerFlags?.publicityHawk;
-    const recruitmentThreshold = isPublicityHawk ? RECRUITMENT_THRESHOLD_TRADITIONALIST + 1 : RECRUITMENT_THRESHOLD_TRADITIONALIST;
+    const recruitmentThreshold = isPublicityHawk
+      ? RECRUITMENT_THRESHOLD_TRADITIONALIST + 1
+      : RECRUITMENT_THRESHOLD_TRADITIONALIST;
 
     const config: SponsorRecruitmentConfig = {
       runwayThreshold: RUNWAY_THRESHOLD_PUBLICITY_HAWK,
@@ -121,7 +131,9 @@ export const ScientistSponsorStrategy: SponsorStrategy = {
 export const GamblerSponsorStrategy: SponsorStrategy = {
   evaluateSponsorRecruitment(world, heya, oyakata) {
     const isRiskTaker = oyakata.traits.risk > TRAIT_RISK_HIGH_THRESHOLD;
-    const recruitmentThreshold = isRiskTaker ? RECRUITMENT_THRESHOLD_RISK_TAKER : RECRUITMENT_THRESHOLD_SCIENTIST;
+    const recruitmentThreshold = isRiskTaker
+      ? RECRUITMENT_THRESHOLD_RISK_TAKER
+      : RECRUITMENT_THRESHOLD_SCIENTIST;
 
     let runwayThreshold = RUNWAY_THRESHOLD_DEFAULT;
     if (oyakata.quirks?.includes("Gambler's Instinct")) {

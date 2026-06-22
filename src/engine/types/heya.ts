@@ -112,4 +112,7 @@ export interface Heya {
   trainingPhilosophy?: TrainingPhilosophy;
   legacyTier?: "emerging" | "established" | "dynasty" | "legend";
   regionalPresence?: Record<string, number>;
+
+  /** Consecutive basho of underperformance (no sekitori kachi-koshi). Used for non-financial merger. */
+  consecutiveUnderperformanceBasho?: number;
 }

@@ -7,10 +7,10 @@ describe("Engine Restoration Verification", () => {
   let world1: WorldState;
   let world2: WorldState;
 
-  it("should generate a world with ~700 rikishi", () => {
+  it("should generate a world with ~440 rikishi", () => {
     world1 = generateInitialWorld(seed);
-    expect(world1.rikishi.size).toBeGreaterThan(600);
-    expect(world1.rikishi.size).toBeLessThan(900);
+    expect(world1.rikishi.size).toBeGreaterThan(300);
+    expect(world1.rikishi.size).toBeLessThan(650);
   });
 
   it("should initialize the talent pool", () => {
@@ -46,7 +46,7 @@ describe("Engine Restoration Verification", () => {
 
     expect(min).toBeGreaterThanOrEqual(1); // No empty stables
     expect(max).toBeLessThan(40); // No extreme concentration
-    expect(avg).toBeGreaterThan(12); // Total ~700 / 45 = 15.5
+    expect(avg).toBeGreaterThan(7); // Total ~440 / 45 = 9.8
   });
 
   it("should have correct counts for premier ranks", () => {

@@ -93,7 +93,8 @@ function calculateFacilityMultipliers(playerHeya: Heya | undefined): {
     MAX_STAT_VALUE
   );
   const facilityRecoveryMult =
-    FACILITY_RECOVERY_MULTIPLIERS.BASE + (recoveryLevel / MAX_STAT_VALUE) * FACILITY_RECOVERY_MULTIPLIERS.RANGE;
+    FACILITY_RECOVERY_MULTIPLIERS.BASE +
+    (recoveryLevel / MAX_STAT_VALUE) * FACILITY_RECOVERY_MULTIPLIERS.RANGE;
 
   const nutritionLevel = clamp(
     playerHeya?.facilities?.nutrition ?? DEFAULT_FACILITY_LEVEL,

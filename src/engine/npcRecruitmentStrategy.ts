@@ -45,8 +45,10 @@ function calculateRunwayAwareMaxBid(heya: Heya, oyakata: Oyakata, baseMultiplier
 
   // Ambitious/Risk-Takers use more of their surplus
   let riskMod = RECRUITMENT_BASE_RISK_MODIFIER;
-  if (oyakata.traits.ambition > RECRUITMENT_AMBITION_THRESHOLD_RISK) riskMod += RECRUITMENT_RISK_TAKER_BONUS;
-  if (oyakata.traits.risk > RECRUITMENT_RISK_THRESHOLD_RISK) riskMod += RECRUITMENT_RISK_TAKER_BONUS;
+  if (oyakata.traits.ambition > RECRUITMENT_AMBITION_THRESHOLD_RISK)
+    riskMod += RECRUITMENT_RISK_TAKER_BONUS;
+  if (oyakata.traits.risk > RECRUITMENT_RISK_THRESHOLD_RISK)
+    riskMod += RECRUITMENT_RISK_TAKER_BONUS;
 
   return surplus * riskMod * baseMultiplier;
 }
@@ -62,8 +64,10 @@ export const DefaultRecruitmentStrategy: RecruitmentStrategy = {
     if (freezeWeeks > 0) return { impact: builder.build(), count: 0 };
 
     let targetSize = RECRUITMENT_BASE_TARGET_SIZE;
-    if (oyakata.traits.ambition > RECRUITMENT_AMBITION_THRESHOLD_SIZE) targetSize += RECRUITMENT_AMBITIOUS_SIZE_BONUS;
-    if (oyakata.traits.tradition > RECRUITMENT_TRADITION_THRESHOLD_SIZE) targetSize += RECRUITMENT_TRADITIONALIST_SIZE_BONUS;
+    if (oyakata.traits.ambition > RECRUITMENT_AMBITION_THRESHOLD_SIZE)
+      targetSize += RECRUITMENT_AMBITIOUS_SIZE_BONUS;
+    if (oyakata.traits.tradition > RECRUITMENT_TRADITION_THRESHOLD_SIZE)
+      targetSize += RECRUITMENT_TRADITIONALIST_SIZE_BONUS;
 
     const currentSize = heya.rikishiIds?.length ?? 0;
     const count = Math.max(0, targetSize - currentSize);

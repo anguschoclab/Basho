@@ -52,7 +52,10 @@ export function calculateScoutingLevel(
   investment: ScoutingInvestment
 ): number {
   if (isOwned) return MAX_SCOUTING_LEVEL;
-  const passiveBase = Math.min(PASSIVE_SCOUTING_MAX_BASE, Math.max(0, observations) * PASSIVE_SCOUTING_MULTIPLIER);
+  const passiveBase = Math.min(
+    PASSIVE_SCOUTING_MAX_BASE,
+    Math.max(0, observations) * PASSIVE_SCOUTING_MULTIPLIER
+  );
   return clampInt(passiveBase + (INVESTMENT_BONUS[investment] || 0), 0, MAX_SCOUTING_LEVEL);
 }
 

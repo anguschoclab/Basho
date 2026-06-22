@@ -404,7 +404,9 @@ export function applyWeeklySparring(world: WorldState): StateImpact {
   for (const [heyaId, sparringState] of world.sparringPairs) {
     const updatedPairs: Record<string, SparringPair> = { ...sparringState.pairs };
 
-    for (const [pairKey, pair] of Object.entries(sparringState.pairs)) {
+    for (const pairKey in sparringState.pairs) {
+      if (!Object.prototype.hasOwnProperty.call(sparringState.pairs, pairKey)) continue;
+      const pair = sparringState.pairs[pairKey];
       const a = getRikishi(world, pair.aId);
       const b = getRikishi(world, pair.bId);
 

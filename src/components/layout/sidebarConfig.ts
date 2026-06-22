@@ -29,6 +29,7 @@ import {
   Calendar,
   Globe,
   Crown,
+  Bookmark,
 } from "lucide-react";
 
 export interface MenuItem {
@@ -71,6 +72,7 @@ export function getMenuGroups(
         { title: "Staff", url: "/stable/staff", icon: Briefcase },
         { title: "Oyakata", url: "/stable/oyakata", icon: Crown },
         { title: "Scouting", url: "/office/scouting", icon: Search, locked: !tutorialCompleted },
+        { title: "Bookmarks", url: "/bookmarks", icon: Bookmark },
       ],
     },
     {
@@ -84,9 +86,9 @@ export function getMenuGroups(
           badge: inBasho ? `Day ${bashoDay ?? 1}` : undefined,
           badgeKind: "basho" as const,
         },
-        { title: "Banzuke", url: "/banzuke", icon: ScrollText },
-        { title: "Schedule", url: "/schedule", icon: Calendar },
-        { title: "Rivalries", url: "/rivalries", icon: Swords },
+        { title: "Banzuke", url: "/basho/banzuke", icon: ScrollText },
+        { title: "Schedule", url: "/basho/schedule", icon: Calendar },
+        { title: "Rivalries", url: "/basho/rivalries", icon: Swords },
         { title: "Global Cup", url: "/global-cup", icon: Trophy },
         { title: "World Circuit", url: "/world-circuit", icon: Globe },
       ],
@@ -118,10 +120,10 @@ export function getMenuGroups(
     {
       label: "Records",
       items: [
-        { title: "Stable History", url: "/history", icon: Archive },
-        { title: "Almanac", url: "/almanac", icon: BookOpen },
-        { title: "Hall of Fame", url: "/hall-of-fame", icon: Award },
-        { title: "Museum", url: "/museum", icon: Crown },
+        { title: "Stable History", url: "/records/history", icon: Archive },
+        { title: "Almanac", url: "/records/almanac", icon: BookOpen },
+        { title: "Hall of Fame", url: "/records/hall-of-fame", icon: Award },
+        { title: "Museum", url: "/records/museum", icon: Crown },
       ],
     },
   ];

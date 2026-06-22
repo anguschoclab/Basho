@@ -98,6 +98,36 @@ export const FACILITY_UPKEEP = {
 /** Staff weekly upkeep per member (¥). */
 export const STAFF_UPKEEP_PER_MEMBER = 6_000;
 
+/**
+ * Fixed weekly operating overhead (¥) — unavoidable heya administrative cost
+ * (utilities, groundskeeping, association dues) that is NOT clamped away by the
+ * solvency guard. Intentional sink so net can go negative for thin-income stables.
+ * Tuned to exceed the maintenance subsidy (¥500k/wk) so insolvent stables keep sinking.
+ */
+export const FIXED_OPERATING_OVERHEAD_WEEKLY = 750_000;
+
+/**
+ * Monthly operating overhead per sekitori, scaled by rank (¥).
+ * A roster-strength-scaled heya expense that is NOT covered by the JSA salary
+ * credit (which goes to the rikishi, not the heya). Prevents strong rosters from
+ * compounding funds without bound.
+ */
+export const SEKITORI_OVERHEAD_MONTHLY = {
+  yokozuna: 5_000_000,
+  ozeki: 3_500_000,
+  sekiwake: 2_500_000,
+  komusubi: 2_000_000,
+  maegashira: 1_500_000,
+  juryo: 800_000,
+} as const;
+
+/**
+ * Monthly operating overhead per non-sekitori rikishi (¥).
+ * Covers chanko provisions, tsukebito duties, and ring time for lower-division
+ * wrestlers. Intentional roster-scaled sink.
+ */
+export const NON_SEKITORI_OVERHEAD_MONTHLY = 100_000;
+
 /** Daily food cost per rikishi by diet regimen (¥).
  * Based on communal chanko-nabe bulk kitchen economics.
  * (Previously 3×–10× higher which caused immediate systemic insolvency.) */
@@ -117,6 +147,27 @@ export const LOAN_ISSUANCE_THRESHOLD = -5_000_000;
 
 /** Merger threshold (¥) - when funds drop below this, NPC stables are forced to merge. */
 export const MERGER_THRESHOLD = -15_000_000;
+
+/** Seed funds for a newly founded stable (¥). */
+export const FOUNDING_SEED_FUNDS = 30_000_000;
+
+/** Maximum number of stables allowed in the world. */
+export const HEYA_COUNT_CAP = 50;
+
+/** Minimum number of stables to preserve — mergers are blocked below this count. */
+export const HEYA_FLOOR = 10;
+
+/** Probability that an accomplished retiree with available myoseki founds a new stable. */
+export const FOUNDING_CHANCE = 0.35;
+
+/** Basho of consecutive make-koshi / underperformance before non-financial merger is considered. */
+export const CHRONIC_UNDERPERFORMANCE_BASHO = 6;
+
+/** Prestige band that qualifies as "collapsed" for non-financial merger. */
+export const PRESTIGE_COLLAPSE_BAND = "struggling";
+
+/** Maximum roster size for a non-financial merger trigger (small + failing). */
+export const NON_FINANCIAL_MERGER_MAX_ROSTER = 5;
 
 /** Faction bailout amount (¥) - gift from wealthy faction-mates. */
 export const FACTION_BAILOUT_AMOUNT = 10_000_000;

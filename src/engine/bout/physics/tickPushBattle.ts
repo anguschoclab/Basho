@@ -37,7 +37,8 @@ export function tickPushBattle(
   st: EngineStateV2,
   boutLog: BoutLogEntry[],
   division: Division,
-  meta: { tone: string; drift: Record<string, number> }
+  meta: { tone: string; drift: Record<string, number> },
+  playerTactic?: import("../../types/combat").BoutTactic
 ): { winner?: Side; kimarite?: KimariteId } | undefined {
   if (st.phase.tag !== "push_battle") return undefined;
 
@@ -55,15 +56,24 @@ export function tickPushBattle(
   const westEffFatigue = stat(west, "fatigue") + st.west.boutFatigue * BOUT_FATIGUE_MULTIPLIER;
 
   // Penalty: max 40% reduction (capped at fatigue ~100)
-  const eastFatPenalty = Math.max(MIN_FORCE_AFTER_FATIGUE, 1 - eastEffFatigue * FATIGUE_PENALTY_PER_POINT);
-  const westFatPenalty = Math.max(MIN_FORCE_AFTER_FATIGUE, 1 - westEffFatigue * FATIGUE_PENALTY_PER_POINT);
+  const eastFatPenalty = Math.max(
+    MIN_FORCE_AFTER_FATIGUE,
+    1 - eastEffFatigue * FATIGUE_PENALTY_PER_POINT
+  );
+  const westFatPenalty = Math.max(
+    MIN_FORCE_AFTER_FATIGUE,
+    1 - westEffFatigue * FATIGUE_PENALTY_PER_POINT
+  );
 
   const adjustedEastForce = push.eastForce * eastFatPenalty;
   const adjustedWestForce = push.westForce * westFatPenalty;
 
   const massAdvantageEast = (st.east.mass - st.west.mass) * MASS_ADVANTAGE_MULTIPLIER;
   const jitteredForceDiff =
-    adjustedEastForce - adjustedWestForce + massAdvantageEast + jitter(rng, FORCE_DIFF_JITTER_MAGNITUDE);
+    adjustedEastForce -
+    adjustedWestForce +
+    massAdvantageEast +
+    jitter(rng, FORCE_DIFF_JITTER_MAGNITUDE);
   const displacement = Math.abs(jitteredForceDiff) * DISPLACEMENT_PER_FORCE;
 
   push.contestLine += jitteredForceDiff * CONTEST_LINE_JITTER_MULTIPLIER;
@@ -153,7 +163,17 @@ export function tickPushBattle(
   }
 
   // Mid-fight kimarite attempt
-  const attempt = evaluateKimariteAttempt(east, west, push, null, st, rng, division, meta);
+  const attempt = evaluateKimariteAttempt(
+    east,
+    west,
+    push,
+    null,
+    st,
+    rng,
+    division,
+    meta,
+    playerTactic
+  );
   if (attempt) {
     const succeeded = rng.next() < attempt.successProbability;
     if (succeeded) {

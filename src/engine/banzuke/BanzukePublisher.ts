@@ -9,6 +9,10 @@ import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 import { checkShikonaChange, recordShikonaChange } from "../history";
 import { getRikishi } from "../queries";
+import {
+  YOKOZUNA_VACANCY_STREAK_THRESHOLD,
+  YOKOZUNA_VACANCY_PRESTIGE_WINS,
+} from "../../constants/engine/governanceExtended";
 
 /**
  * Helper to retrieve the current basho state from the world.
@@ -111,6 +115,16 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
         if (!hasActiveYokozuna && isYusho) {
           promoteToYokozuna = true;
         }
+      }
+      // Promotion Case 5: Vacancy-streak prestige promotion
+      // After YOKOZUNA_VACANCY_STREAK_THRESHOLD basho with no yokozuna,
+      // relax criteria: 12+ win yusho is sufficient.
+      else if (
+        (world.yokozunaVacancyStreak ?? 0) >= YOKOZUNA_VACANCY_STREAK_THRESHOLD &&
+        stats.wins >= YOKOZUNA_VACANCY_PRESTIGE_WINS &&
+        isYusho
+      ) {
+        promoteToYokozuna = true;
       }
 
       // Track consecutive strong performances (12+) for borderline cases
@@ -253,6 +267,17 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
 
   // Update ozekiKadoban world field
   builder.updateWorldField("ozekiKadoban", result.updatedOzekiKadoban);
+
+  // Update yokozuna vacancy streak: increment if no active yokozuna, reset to 0 otherwise.
+  let hasActiveYokozuna = false;
+  for (const newEntry of result.newBanzuke) {
+    if (newEntry.position.rank === "yokozuna") {
+      hasActiveYokozuna = true;
+      break;
+    }
+  }
+  const nextVacancyStreak = hasActiveYokozuna ? 0 : (world.yokozunaVacancyStreak ?? 0) + 1;
+  builder.updateWorldField("yokozunaVacancyStreak", nextVacancyStreak);
 
   for (const newEntry of result.newBanzuke) {
     const rikishi = getRikishi(world, newEntry.rikishiId);

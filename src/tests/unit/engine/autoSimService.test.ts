@@ -1,9 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { checkStopCondition } from "@/engine/simulation/AutoSimService";
+import { checkStopCondition, runAutoSim } from "@/engine/simulation/AutoSimService";
 import type { AutoSimConfig, StopCondition } from "@/engine/simulation/AutoSimService";
 import type { BashoSimResult } from "@/engine/types/basho";
 import { MockFactory } from "../../helpers/utils/MockFactory";
 import { ChronicleService } from "@/engine/simulation/ChronicleService";
+import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
 
 describe("checkStopCondition", () => {
   const chronicle = ChronicleService.createEmptyReport();
@@ -289,5 +290,43 @@ describe("checkStopCondition", () => {
         checkStopCondition("never" as StopCondition, bashoResult, world, config, chronicle)
       ).toBe(false);
     });
+  });
+});
+
+describe("runAutoSim diagnostic metrics", () => {
+  it("accumulates topKimarite across the full run despite year-boundary resets", () => {
+    const world = { ...generateInitialWorld("kimarite-accum-test"), playerHeyaId: undefined };
+    const result = runAutoSim(world, {
+      duration: { type: "years", count: 2 },
+      stopConditions: [],
+      verbosity: "minimal",
+      delegationPolicy: "balanced",
+      observerMode: true,
+    });
+    expect(result.tuningMetrics.topKimarite.length).toBeGreaterThan(0);
+    expect(
+      result.tuningMetrics.topKimarite.reduce((s, k) => s + k.count, 0)
+    ).toBeGreaterThan(50);
+  }, 120_000); // 2-year runAutoSim is heavy; needs headroom over the 30s default under parallel load
+
+  it("counts every basho with no yokozuna, not just the final world", () => {
+    const rawWorld = generateInitialWorld("yoko-vacancy-test");
+    // Strip yokozuna rank so every basho counts as vacant
+    const nextRikishi = new Map(rawWorld.rikishi);
+    for (const [id, r] of nextRikishi) {
+      if (r.rank === "yokozuna") {
+        nextRikishi.set(id, { ...r, rank: "ozeki" as const });
+      }
+    }
+    const world = { ...rawWorld, rikishi: nextRikishi, playerHeyaId: undefined };
+    const result = runAutoSim(world, {
+      duration: { type: "years", count: 1 },
+      stopConditions: [],
+      verbosity: "minimal",
+      delegationPolicy: "balanced",
+      observerMode: true,
+    });
+    expect(result.tuningMetrics.yokozunaVacantBashoCount).toBeGreaterThan(1);
+    expect(result.tuningMetrics.yokozunaVacantBashoCount).toBeLessThanOrEqual(6);
   });
 });

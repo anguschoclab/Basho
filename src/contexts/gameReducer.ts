@@ -18,6 +18,7 @@ import { heyaSlice } from "./heyaSlice";
 import { rosterSlice } from "./rosterSlice";
 import { financeSlice } from "./financeSlice";
 import { bashoSlice } from "./bashoSlice";
+import { bookmarkSlice } from "./bookmarkSlice";
 
 /**
  * Core generic actions that don't fit cleanly into a domain slice
@@ -156,6 +157,7 @@ const baseReducer = combineReducers<GameState, GameAction>([
   rosterSlice,
   financeSlice,
   bashoSlice,
+  bookmarkSlice,
 ]);
 
 /**

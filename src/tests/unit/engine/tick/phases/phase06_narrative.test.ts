@@ -11,9 +11,7 @@ describe("Phase 6: Narrative", () => {
     vi.clearAllMocks();
     world = {
       playerHeyaId: "heya-1",
-      heyas: new Map<string, any>([
-        ["heya-1", { id: "heya-1", name: "Test Heya", funds: 1000 }],
-      ]),
+      heyas: new Map<string, any>([["heya-1", { id: "heya-1", name: "Test Heya", funds: 1000 }]]),
       rikishi: new Map([
         [
           "r1",
@@ -33,7 +31,6 @@ describe("Phase 6: Narrative", () => {
   });
 
   it("returns StateImpact with empty events if deltas are missing", () => {
-     
     world.transientContext!.deltas = undefined as any;
     const impact = phase06_narrative(world);
     expect(impact).toBeDefined();

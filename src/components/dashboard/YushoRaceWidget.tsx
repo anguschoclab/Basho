@@ -118,7 +118,7 @@ export const YushoRaceWidget: React.FC = () => {
           <Badge
             variant="secondary"
             className="cursor-pointer hover:bg-secondary/80"
-            onClick={() => navigate({ to: "/banzuke" })}
+            onClick={() => navigate({ to: "/basho/banzuke" })}
           >
             View Full Banzuke
           </Badge>

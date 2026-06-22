@@ -122,7 +122,10 @@ export function rollPotential(args: {
   const paCfg = PA_BY_RANK[rank];
 
   // Fat-tail sampling: 15% of rolls use wider σ (creates sleeper talents / busts)
-  const effectiveStdDev = rng.next() < FAT_TAIL_SAMPLING_CHANCE ? paCfg.stdDev * FAT_TAIL_STD_DEV_MULTIPLIER : paCfg.stdDev;
+  const effectiveStdDev =
+    rng.next() < FAT_TAIL_SAMPLING_CHANCE
+      ? paCfg.stdDev * FAT_TAIL_STD_DEV_MULTIPLIER
+      : paCfg.stdDev;
 
   const rollStat = (mod: number = 1.0, regionalBonus: number = 0): number => {
     const mean = paCfg.mean * mod + regionalBonus;
@@ -139,11 +142,27 @@ export function rollPotential(args: {
 
   const paStats: RikishiStats = {
     power: rollStat(powerMod, isEastEuropean ? REGIONAL_BONUS_EAST_EUROPEAN_POWER : 0),
-    technique: rollStat(mods["technique"] ?? 1.0, isMongolian ? REGIONAL_BONUS_MONGOLIAN_TECHNIQUE : isAmericas ? REGIONAL_BONUS_AMERICAS_TECHNIQUE : 0),
-    speed: rollStat(mods["speed"] ?? 1.0, isMongolian ? REGIONAL_BONUS_MONGOLIAN_SPEED : isAmericas ? REGIONAL_BONUS_AMERICAS_SPEED : 0),
-    stamina: rollStat(mods["stamina"] ?? 1.0, isEastEuropean ? REGIONAL_BONUS_EAST_EUROPEAN_STAMINA : 0),
+    technique: rollStat(
+      mods["technique"] ?? 1.0,
+      isMongolian
+        ? REGIONAL_BONUS_MONGOLIAN_TECHNIQUE
+        : isAmericas
+          ? REGIONAL_BONUS_AMERICAS_TECHNIQUE
+          : 0
+    ),
+    speed: rollStat(
+      mods["speed"] ?? 1.0,
+      isMongolian ? REGIONAL_BONUS_MONGOLIAN_SPEED : isAmericas ? REGIONAL_BONUS_AMERICAS_SPEED : 0
+    ),
+    stamina: rollStat(
+      mods["stamina"] ?? 1.0,
+      isEastEuropean ? REGIONAL_BONUS_EAST_EUROPEAN_STAMINA : 0
+    ),
     mental: rollStat(mods["mental"] ?? 1.0),
-    adaptability: rollStat(mods["adaptability"] ?? 1.0, isAmericas ? REGIONAL_BONUS_AMERICAS_ADAPTABILITY : 0),
+    adaptability: rollStat(
+      mods["adaptability"] ?? 1.0,
+      isAmericas ? REGIONAL_BONUS_AMERICAS_ADAPTABILITY : 0
+    ),
     balance: rollStat(mods["balance"] ?? 1.0),
     weight: 0, // Size handled separately below
   };
@@ -249,8 +268,16 @@ export function generateRikishiStats(args: {
     return clampInt(rng.gaussian(mean, stdDev), 10, 100);
   };
 
-  const weight = clampInt(rng.gaussian(WEIGHT_BASE_MEAN * (mods["weight"] ?? 1.0), WEIGHT_GEN_STD_DEV), WEIGHT_GEN_MIN, WEIGHT_GEN_MAX);
-  const height = clampInt(rng.gaussian(HEIGHT_BASE_MEAN * (mods["height"] ?? 1.0), HEIGHT_GEN_STD_DEV), HEIGHT_GEN_MIN, HEIGHT_GEN_MAX);
+  const weight = clampInt(
+    rng.gaussian(WEIGHT_BASE_MEAN * (mods["weight"] ?? 1.0), WEIGHT_GEN_STD_DEV),
+    WEIGHT_GEN_MIN,
+    WEIGHT_GEN_MAX
+  );
+  const height = clampInt(
+    rng.gaussian(HEIGHT_BASE_MEAN * (mods["height"] ?? 1.0), HEIGHT_GEN_STD_DEV),
+    HEIGHT_GEN_MIN,
+    HEIGHT_GEN_MAX
+  );
 
   // 'power' key in statModifiers maps to power in RikishiStats → Rikishi.power
   const powerMod = mods["power"] ?? 1.0;

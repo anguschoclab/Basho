@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { concludeBashoCompetition } from "@/engine/lifecycle/CompetitionService";
 import { WorldState } from "@/engine/types/world";

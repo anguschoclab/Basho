@@ -209,9 +209,7 @@ describe("boutNarrative.wiring — narrative system is wired to the bout engine"
       const impact = applyBoutResult(world, match, result);
 
       expect(impact.events).toBeDefined();
-      const mentorEvents = impact.events!.filter(
-        (e) => e.type === "MENTOR_MENTEE_BOUT"
-      );
+      const mentorEvents = impact.events!.filter((e) => e.type === "MENTOR_MENTEE_BOUT");
       expect(mentorEvents.length).toBe(1);
       expect(mentorEvents[0].category).toBe("training");
       expect(mentorEvents[0].rikishiId).toBe("apprentice");

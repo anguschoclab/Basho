@@ -5,6 +5,7 @@ import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/GameContext";
+import { useGameStore } from "@/store/gameStore";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -194,7 +195,8 @@ function HeatSparkline({ data }: { data: Array<{ basho: string; heat: number }> 
 }
 
 export default function MediaPage() {
-  const { state, handleMediaEvent } = useGame();
+  const { state } = useGame();
+  const sendCommand = useGameStore((s) => s.sendCommand);
   const world = state.world;
   const [beatFilter, setBeatFilter] = useState<Set<MediaBeat>>(new Set());
 
@@ -286,7 +288,7 @@ export default function MediaPage() {
                       variant="outline"
                       className="text-xs h-7 border-success/40 text-success hover:bg-success/10"
                       onClick={() => {
-                        handleMediaEvent(event.id, "apologize");
+                        sendCommand({ type: "HANDLE_MEDIA_EVENT", eventId: event.id, choice: "apologize" });
                         toast.success("Issued public apology — reduces media heat.");
                       }}
                     >
@@ -297,7 +299,7 @@ export default function MediaPage() {
                       variant="outline"
                       className="text-xs h-7 border-destructive/40 text-destructive hover:bg-destructive/10"
                       onClick={() => {
-                        handleMediaEvent(event.id, "deny");
+                        sendCommand({ type: "HANDLE_MEDIA_EVENT", eventId: event.id, choice: "deny" });
                         toast.warning("Denied the story — increases media pressure.");
                       }}
                     >
@@ -308,7 +310,7 @@ export default function MediaPage() {
                       variant="outline"
                       className="text-xs h-7 text-muted-foreground"
                       onClick={() => {
-                        handleMediaEvent(event.id, "ignore");
+                        sendCommand({ type: "HANDLE_MEDIA_EVENT", eventId: event.id, choice: "ignore" });
                         toast.info("Chose to ignore — story may fade on its own.");
                       }}
                     >

@@ -48,7 +48,11 @@ import { ATTRIBUTE_PEAK, STAT_GROUP, maturityFactor } from "../../../constants/e
 export function getStatCeiling(talentSeed: number, statKey: keyof RikishiStats): number {
   const baseCeiling = STAT_CEILING_BASE + (talentSeed / 100) * STAT_CEILING_RANGE;
   const idx = STAT_CEILING_KEYS.indexOf(statKey);
-  const offset = idx >= 0 ? ((idx * STAT_CEILING_OFFSET_MULTIPLIER) % STAT_CEILING_OFFSET_DIVISOR) - STAT_CEILING_OFFSET_SUBTRACT : 0;
+  const offset =
+    idx >= 0
+      ? ((idx * STAT_CEILING_OFFSET_MULTIPLIER) % STAT_CEILING_OFFSET_DIVISOR) -
+        STAT_CEILING_OFFSET_SUBTRACT
+      : 0;
   return Math.min(MAX_STAT_CEILING, Math.max(MIN_STAT_CEILING, Math.round(baseCeiling + offset)));
 }
 
@@ -87,12 +91,13 @@ export function getEffectiveCeiling(
 }
 
 /**
- * cubic diminishing returns for smooth capping.
+ * Quadratic diminishing returns for smooth capping.
+ * Softer than cubic so mid-career growth remains meaningful.
  */
 export function diminishingReturnsMult(currentStat: number, ceiling: number): number {
   if (ceiling <= 0) return 0;
   const ratio = Math.min(currentStat / ceiling, 1);
-  return Math.max(0, 1 - ratio * ratio * ratio);
+  return Math.max(0, 1 - ratio * ratio);
 }
 
 /**
@@ -108,10 +113,31 @@ export function getCareerPhase(experience: number): keyof typeof PHASE_EFFECTS {
 /**
  * Logic for daily/weekly fatigue shifts.
  */
+/**
+ * Clamp every training-profile field to a valid key. A profile can arrive with a
+ * missing OR explicitly-`undefined` field (e.g. a partial trainingState persisted by a
+ * nested-field update — object spread keeps `intensity: undefined`, which then indexes
+ * INTENSITY_MULTIPLIERS as undefined and crashes the tick). Normalizing here, where the
+ * authoritative key-maps live, guarantees the training math never throws.
+ */
+export function normalizeTrainingProfile(profile: TrainingProfile): TrainingProfile {
+  const p = (profile ?? {}) as Partial<TrainingProfile>;
+  return {
+    intensity: p.intensity && INTENSITY_MULTIPLIERS[p.intensity] ? p.intensity : "balanced",
+    focus: p.focus && FOCUS_BIAS_MATRIX[p.focus] ? p.focus : "neutral",
+    recovery: p.recovery && RECOVERY_MULTIPLIERS[p.recovery] ? p.recovery : "normal",
+    styleBias:
+      p.styleBias === "oshi" || p.styleBias === "yotsu" || p.styleBias === "neutral"
+        ? p.styleBias
+        : "neutral",
+  };
+}
+
 export function calculateFatigueDelta(
   profile: TrainingProfile,
   focus: IndividualFocus | undefined
 ): number {
+  profile = normalizeTrainingProfile(profile);
   const intensityMult = INTENSITY_MULTIPLIERS[profile.intensity].fatigue;
   const focusModeMult = focus ? INDIVIDUAL_FOCUS_MODES[focus.focusType].fatigue : 1.0;
   const recoveryMult = RECOVERY_MULTIPLIERS[profile.recovery].fatigueDecay;
@@ -135,6 +161,7 @@ export function calculateGrowthVector(
   heya?: Heya,
   world?: WorldState
 ): Record<TrainingAttribute, number> {
+  profile = normalizeTrainingProfile(profile);
   const intensityMult = INTENSITY_MULTIPLIERS[profile.intensity].growth;
   const focusModeMult = focus ? INDIVIDUAL_FOCUS_MODES[focus.focusType].growth : 1.0;
   const bias = FOCUS_BIAS_MATRIX[profile.focus];

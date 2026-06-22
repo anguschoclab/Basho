@@ -35,10 +35,7 @@ export function InfrastructureDashboard({ heya, onUpgrade }: InfrastructureDashb
   const infra = heya.infrastructure || {};
   const queue = heya.constructionQueue || [];
 
-  const projectByFacilityId = useMemo(
-    () => new Map(queue.map((q) => [q.facilityId, q])),
-    [queue]
-  );
+  const projectByFacilityId = useMemo(() => new Map(queue.map((q) => [q.facilityId, q])), [queue]);
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">

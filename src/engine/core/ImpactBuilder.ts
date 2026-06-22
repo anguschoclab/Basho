@@ -128,19 +128,29 @@ export class ImpactBuilder {
     return deletions[field] as string[];
   }
 
-  private setEntityUpdate<T>(field: string, id: string, update: Partial<T>, useDeepMerge = false): ImpactBuilder {
+  private setEntityUpdate<T>(
+    field: string,
+    id: string,
+    update: Partial<T>,
+    useDeepMerge = false
+  ): ImpactBuilder {
     const map = this.ensureEntityMap<Partial<T>>(field);
     const existing = map.get(id);
     const merged = existing
       ? useDeepMerge
         ? (deepMerge(existing as Record<string, unknown>, update as Record<string, unknown>) as T)
-        : ({ ...existing, ...update })
+        : { ...existing, ...update }
       : update;
     map.set(id, merged as Partial<T>);
     return this;
   }
 
-  private setNestedEntityUpdate<T extends Record<string, unknown>>(field: string, id: string, fieldPath: string, value: unknown): ImpactBuilder {
+  private setNestedEntityUpdate<T extends Record<string, unknown>>(
+    field: string,
+    id: string,
+    fieldPath: string,
+    value: unknown
+  ): ImpactBuilder {
     const map = this.ensureEntityMap<T>(field);
     const existing = map.get(id) || ({} as T);
     const updated = setNestedField(existing, fieldPath, value);
@@ -231,6 +241,14 @@ export class ImpactBuilder {
    */
   addOyakata(oyakata: Oyakata): ImpactBuilder {
     (this.ensureCollectionArray("oyakataToAdd") as Oyakata[]).push(oyakata);
+    return this;
+  }
+
+  /**
+   * Add a new heya to the world (stable founding).
+   */
+  addHeya(heya: Heya): ImpactBuilder {
+    (this.ensureCollectionArray("heyaToAdd") as Heya[]).push(heya);
     return this;
   }
 
@@ -354,6 +372,8 @@ export class ImpactBuilder {
       | "chronicle"
       | "globalKimariteStats"
       | "pendingCrisis"
+      | "pendingDecisions"
+      | "yokozunaVacancyStreak"
       | "events"
     >,
   >(field: K, value: WorldState[K]): ImpactBuilder {
@@ -434,7 +454,9 @@ export class ImpactBuilder {
   merge(other: StateImpact): ImpactBuilder {
     // Merge entity updates via Map-based dispatch (avoids iterating all 8 keys)
     if (other.entities) {
-      for (const [key, map] of Object.entries(other.entities)) {
+      for (const key in other.entities) {
+        if (!Object.prototype.hasOwnProperty.call(other.entities, key)) continue;
+        const map = other.entities[key as keyof typeof other.entities];
         if (!map || (map as Map<string, unknown>).size === 0) continue;
         switch (key) {
           case "heyaUpdates":
@@ -483,7 +505,9 @@ export class ImpactBuilder {
 
     // Merge collections via Map-based dispatch
     if (other.collections) {
-      for (const [key, arr] of Object.entries(other.collections)) {
+      for (const key in other.collections) {
+        if (!Object.prototype.hasOwnProperty.call(other.collections, key)) continue;
+        const arr = other.collections[key as keyof typeof other.collections];
         if (!Array.isArray(arr) || arr.length === 0) continue;
         switch (key) {
           case "rikishiToAdd":
@@ -493,7 +517,9 @@ export class ImpactBuilder {
             for (const id of arr) this.removeRikishi(id as string);
             break;
           case "rikishiToHistorical":
-            for (const id of arr) this.retireRikishi(id as string);
+            (this.ensureCollectionArray("rikishiToHistorical") as string[]).push(
+              ...(arr as string[])
+            );
             break;
           case "rikishiFromHistorical":
             for (const id of arr) this.unretireRikishi(id as string);
@@ -506,7 +532,9 @@ export class ImpactBuilder {
 
     // Merge deletions
     if (other.deletedEntities) {
-      for (const [key, ids] of Object.entries(other.deletedEntities)) {
+      for (const key in other.deletedEntities) {
+        if (!Object.prototype.hasOwnProperty.call(other.deletedEntities, key)) continue;
+        const ids = other.deletedEntities[key as keyof typeof other.deletedEntities];
         if (Array.isArray(ids) && ids.length > 0) {
           this.ensureDeletedArray(key).push(...ids);
         }
@@ -660,6 +688,7 @@ export function updateWorldFieldImpact<
     | "settings"
     | "globalCup"
     | "chronicle"
+    | "yokozunaVacancyStreak"
   >,
 >(field: K, value: WorldState[K], source: string): StateImpact {
   return createImpactBuilder(source).updateWorldField(field, value).build();

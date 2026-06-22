@@ -23,8 +23,9 @@ export function getOzekiStatus(
     return { isKadoban: false, consecutiveMakeKoshi: 0 };
   }
 
+  const nextConsecutive = prev.consecutiveMakeKoshi + 1;
   return {
-    isKadoban: !prev.isKadoban,
-    consecutiveMakeKoshi: prev.isKadoban ? 2 : 1,
+    isKadoban: nextConsecutive === 1,
+    consecutiveMakeKoshi: nextConsecutive,
   };
 }

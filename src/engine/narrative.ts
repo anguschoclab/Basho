@@ -112,7 +112,10 @@ function generateRingEntrance(ctx: NarrativeContext): string[] {
 function generateRitualElements(ctx: NarrativeContext): string[] {
   const intensity = getIntensity(ctx.voiceStyle as VoiceStyle);
   const lines: string[] = [];
-  if (ctx.voiceStyle !== "understated" || (ctx.rng as SeededRNG).next() < RITUAL_SALT_CHANCE_UNDERSTATED) {
+  if (
+    ctx.voiceStyle !== "understated" ||
+    (ctx.rng as SeededRNG).next() < RITUAL_SALT_CHANCE_UNDERSTATED
+  ) {
     lines.push(
       BardEngine.resolve(ctx.rng as SeededRNG, "combat.phases.ritual.salt", {
         ...ctx,
@@ -183,7 +186,12 @@ function generateFinish(ctx: NarrativeContext, entry: BoutLogEntry): string[] {
   const winnerSide = (entry.data?.winner as "east" | "west") ?? (ctx.result as BoutResult).winner;
   const winnerName =
     winnerSide === "east" ? (ctx.east as Rikishi).shikona : (ctx.west as Rikishi).shikona;
-  const kimarite = String(entry.data?.kimariteName || (ctx.result as BoutResult).kimariteName || (ctx.result as BoutResult).kimarite || "");
+  const kimarite = String(
+    entry.data?.kimariteName ||
+      (ctx.result as BoutResult).kimariteName ||
+      (ctx.result as BoutResult).kimarite ||
+      ""
+  );
 
   const result = BardEngine.resolve(ctx.rng as SeededRNG, "combat.phases.finish.common", {
     ...ctx,
@@ -210,7 +218,12 @@ export function generateNarrative(
     RANK_HIERARCHY[west.rank].tier <= HIGH_STAKES_TIER_THRESHOLD ||
     day >= KENSHO_DAY_THRESHOLD ||
     !!result.upset;
-  const voiceStyle = day >= VOICE_DRAMATIC_DAY_THRESHOLD || isHighStakes ? "dramatic" : day <= VOICE_UNDERSTATED_DAY_THRESHOLD ? "understated" : "formal";
+  const voiceStyle =
+    day >= VOICE_DRAMATIC_DAY_THRESHOLD || isHighStakes
+      ? "dramatic"
+      : day <= VOICE_UNDERSTATED_DAY_THRESHOLD
+        ? "understated"
+        : "formal";
   const boutSeed = `${bashoName}-${day}-${east.id}-${west.id}-${result.kimarite}`;
   const rng = rngFromSeed(boutSeed, "narrative", "bout");
   const kensho =

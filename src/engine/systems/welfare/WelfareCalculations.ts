@@ -146,7 +146,9 @@ export function calculateWeeklyWelfareDelta(
   // Facility Impact
   const recQuality = heya.facilities?.recovery ?? 50;
   const nutQuality = heya.facilities?.nutrition ?? 50;
-  const facDelta = Math.round((FACILITY_RECOVERY_QUALITY_BASE - recQuality) / FACILITY_RECOVERY_DIVISOR) + Math.round((FACILITY_NUTRITION_QUALITY_BASE - nutQuality) / FACILITY_NUTRITION_DIVISOR);
+  const facDelta =
+    Math.round((FACILITY_RECOVERY_QUALITY_BASE - recQuality) / FACILITY_RECOVERY_DIVISOR) +
+    Math.round((FACILITY_NUTRITION_QUALITY_BASE - nutQuality) / FACILITY_NUTRITION_DIVISOR);
   if (facDelta !== 0) {
     delta += facDelta;
     reasons.push(`facilities${facDelta >= 0 ? "+" : ""}${facDelta}`);

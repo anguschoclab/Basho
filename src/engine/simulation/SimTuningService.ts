@@ -49,7 +49,12 @@ export const SimTuningService = {
    */
   calculateMetrics(
     world: WorldState,
-    historyStats?: { yokozunaVacancy: number; uniqueWinners: number; successions: number }
+    historyStats?: {
+      yokozunaVacancy: number;
+      uniqueWinners: number;
+      successions: number;
+      cumulativeKimarite?: Record<string, number>;
+    }
   ): TuningMetrics {
     // ⚡ Bolt Optimization: Use direct iteration instead of Array.from().map().filter()
     const activeRikishi: Rikishi[] = [];
@@ -105,6 +110,7 @@ export const SimTuningService = {
     for (const r of retiredRikishi) {
       if (r.retirementYear) {
         const age = r.retirementYear - r.birthYear;
+        if (age < 15 || age > 70) continue;
         retirementAges.push(age);
         retirementAgeSum += age;
       }
@@ -151,7 +157,7 @@ export const SimTuningService = {
     });
 
     // 7. Top Kimarite
-    const kimariteStats = world.globalKimariteStats || {};
+    const kimariteStats = historyStats?.cumulativeKimarite ?? world.globalKimariteStats ?? {};
     const topKimarite = Object.entries(kimariteStats)
       .map(([id, count]) => ({ id, count }))
       .sort((a, b) => b.count - a.count)
@@ -245,13 +251,25 @@ export const SimTuningService = {
           return rates;
         })(),
         wealthGini: (() => {
-          const funds = Array.from(world.heyas.values()).map((h) => h.funds ?? 0).sort((a, b) => a - b);
-          if (funds.length === 0) return 0;
+          // ⚡ Bolt Optimization: Replace O(N^2) Math.abs reduce with O(N) sort property, and remove Array.from().map() allocations.
+          const funds: number[] = [];
+          let sum = 0;
+          for (const h of world.heyas.values()) {
+            const val = h.funds ?? 0;
+            funds.push(val);
+            sum += val;
+          }
           const n = funds.length;
-          const mean = funds.reduce((a, b) => a + b, 0) / n;
+          if (n === 0) return 0;
+          const mean = sum / n;
           if (mean === 0) return 0;
-          const absDiffSum = funds.reduce((sum, fi) => sum + funds.reduce((inner, fj) => inner + Math.abs(fi - fj), 0), 0);
-          return absDiffSum / (2 * n * n * mean);
+          funds.sort((a, b) => a - b);
+
+          let absDiffSumHalf = 0;
+          for (let i = 0; i < n; i++) {
+            absDiffSumHalf += funds[i] * (2 * i - n + 1);
+          }
+          return (absDiffSumHalf * 2) / (2 * n * n * mean);
         })(),
         successionRate: (() => {
           const totalOyakata = world.oyakata.size;

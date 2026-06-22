@@ -35,6 +35,7 @@ import {
   SPONSOR_RENEWAL_WINDOW_WEEKS,
   SPONSOR_MIN_LOYALTY_FOR_RENEWAL,
 } from "../../../constants/engine/time";
+import { clampFundsToDebtLimit } from "../../../constants/engine/economic";
 import { getRikishi } from "../../queries";
 
 export function phase05_monthly_boundary(world: WorldState): StateImpact {
@@ -71,6 +72,11 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
             : runway >= RUNWAY_THRESHOLDS.CRITICAL
               ? RUNWAY_BANDS.CRITICAL
               : RUNWAY_BANDS.DESPERATE;
+
+    // Clamp funds to debt floor after overhead (mirrors weekly FinanceCalculator clamp)
+    if (heyaUpdates.funds !== undefined) {
+      heyaUpdates.funds = clampFundsToDebtLimit(heyaUpdates.funds);
+    }
 
     builder.updateHeya(id, heyaUpdates);
   }

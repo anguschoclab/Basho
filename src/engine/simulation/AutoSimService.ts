@@ -82,10 +82,20 @@ export function runAutoSim(
 
   const chronicle = ChronicleService.createEmptyReport();
   const championCounts = new Map<string, number>();
+  const cumulativeKimarite: Record<string, number> = {};
+  let prevKimariteStats: Record<string, number> = {};
+  let yokozunaVacantBashoCount = 0;
 
   const targetBasho = computeTargetBasho(config.duration);
 
-  let currentWorld = world;
+  // Mark this as an autonomous run so player-facing loop decisions are suppressed
+  // and the within-tick crisis halt is disabled (otherwise the sim freezes waiting
+  // for an interactive choice that never comes).
+  let currentWorld: WorldState = {
+    ...world,
+    _autonomousSim: true,
+    _autonomousPolicy: config.delegationPolicy,
+  };
   while (bashoSimulated < targetBasho) {
     let bashoName = currentWorld.currentBashoName || "hatsu";
     const bashoSeed = `${currentWorld.seed}-basho-${currentWorld.year}-${bashoName}`;
@@ -98,6 +108,15 @@ export function runAutoSim(
     bashoSimulated++;
     // Full cycle: 15 basho days + 7 post-basho + 42 interim days
     daysSimulated += 15 + 7 + INTERIM_DURATION_DAYS;
+
+    // Accumulate kimarite stats before year-boundary reset wipes them
+    const bashoKimarite = currentWorld.globalKimariteStats ?? {};
+    for (const [k, v] of Object.entries(bashoKimarite)) {
+      const prev = prevKimariteStats[k] ?? 0;
+      const delta = v - prev;
+      if (delta > 0) cumulativeKimarite[k] = (cumulativeKimarite[k] ?? 0) + delta;
+    }
+    prevKimariteStats = { ...bashoKimarite };
 
     if (bashoResult.yushoWinner.id) {
       championCounts.set(
@@ -177,6 +196,12 @@ export function runAutoSim(
     const banzukeImpact = publishBanzukeUpdate(worldWithStandings);
     currentWorld = resolveImpacts(worldWithStandings, [banzukeImpact]);
 
+    // Count yokozuna vacancy per basho (after banzuke update so freshly-promoted yokozuna aren't falsely counted vacant)
+    const hasYokozuna = Array.from(currentWorld.rikishi.values()).some(
+      (r) => r.rank === "yokozuna" && !r.isRetired
+    );
+    if (!hasYokozuna) yokozunaVacantBashoCount++;
+
     // 2. Advance through off-season phases to trigger yearly boundary & training
     currentWorld = enterPostBasho(currentWorld);
     currentWorld = advanceDays(currentWorld, 7);
@@ -223,19 +248,27 @@ export function runAutoSim(
   }
 
   // Final Metrics Calculation
-  const activeRikishi = Array.from(currentWorld.activeRikishiIds)
-    .map((id) => currentWorld.rikishi.get(id))
-    .filter((r): r is Rikishi => r !== undefined);
   const successions = (currentWorld.governanceLog || []).filter(
     (l) => l.incident === "oyakata_promotion" || l.data?.status === "oyakata_promotion"
   ).length;
-  const yokozunaVacancy = activeRikishi.filter((r) => r.rank === "yokozuna").length === 0 ? 1 : 0;
+  const yokozunaVacancy = yokozunaVacantBashoCount;
 
   const tuningMetrics = SimTuningService.calculateMetrics(currentWorld, {
     yokozunaVacancy,
     uniqueWinners: championCounts.size,
     successions,
+    cumulativeKimarite,
   });
+
+  // Collect auto-resolved decision events into chronicle highlights
+  const decisionEvents = (currentWorld.events?.log ?? [])
+    .filter((e) => e.type === "DECISION_AUTO_RESOLVED")
+    .slice(-10);
+  for (const e of decisionEvents) {
+    const summary =
+      (e as { data?: { summary?: string } }).data?.summary ?? "Auto-decided a stable matter";
+    ChronicleService.addHighlight(chronicle, `Auto-decided: ${summary}`);
+  }
 
   return {
     startYear,
@@ -300,9 +333,7 @@ export function checkStopCondition(
         return r.injuryStatus?.severity === "serious" || weeks >= MAJOR_INJURY_WEEKS_THRESHOLD;
       };
       const inScope = (r: Rikishi): boolean =>
-        hasPlayer
-          ? r.heyaId === config.playerHeyaId
-          : (RANK_HIERARCHY[r.rank]?.tier ?? 999) <= 4;
+        hasPlayer ? r.heyaId === config.playerHeyaId : (RANK_HIERARCHY[r.rank]?.tier ?? 999) <= 4;
 
       // bashoResult.injuries holds shikona of rikishi injured during this basho.
       const injuredThisBasho = new Set(bashoResult.injuries);

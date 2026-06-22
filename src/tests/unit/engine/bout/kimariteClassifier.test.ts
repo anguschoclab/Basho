@@ -8,7 +8,6 @@ import type {
   PhysicalBody,
 } from "@/engine/types/combat-spatial";
 
- 
 const mockRng: any = { next: () => 0.5 };
 
 // ---------------------------------------------------------------------------
@@ -306,7 +305,10 @@ describe("evaluateKimariteAttempt — push battle", () => {
     const east = mockRikishi("r1");
     const west = mockRikishi("r2");
     // West falling: cogOffset=0.6 → balance=max(0,100-120)=0 ≤ 0; east pushing, nearCenter (edgeDistance=3.85)
-    const st = makeEngineState({ cogOffset: 0, velocityX: -5 }, { cogOffset: 0.6, footSpread: 0.4 });
+    const st = makeEngineState(
+      { cogOffset: 0, velocityX: -5 },
+      { cogOffset: 0.6, footSpread: 0.4 }
+    );
     const push = makePushState({
       eastMomentum: 20,
       westMomentum: 5,
@@ -336,7 +338,7 @@ describe("evaluateKimariteAttempt — push battle", () => {
       eastMomentum: 8,
       westMomentum: 5,
     });
-     
+
     const firstRng: any = { next: () => 0 }; // roll=0 → first applicable strategy wins
 
     const result = evaluateKimariteAttempt(east, west, push, null, st, firstRng);

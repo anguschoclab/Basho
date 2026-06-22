@@ -2,13 +2,26 @@
  * Extended recruitment system constants.
  */
 
-/** Target roster size per heya */
+/**
+ * Target roster size per heya — headroom cap under the gap controller.
+ * The replacement controller (RecruitmentController.allocateVacancies) uses this
+ * as the per-heya ceiling when distributing the global replacement gap. The
+ * controller's `Math.max(0, target - active)` clamp prevents over-growth toward
+ * 45 × 30 = 1350; intake stops at `_populationTarget` (~1084 at worldgen).
+ * Must be >= ceil(1084 / 45) ≈ 25 to ensure total headroom can absorb the gap.
+ */
 export const TARGET_ROSTER_SIZE = 30;
 
-/** Critical roster threshold */
+/** Critical roster threshold — legacy per-heya floor, retained for reference. */
 export const CRITICAL_ROSTER_THRESHOLD = 12;
 
-/** Total active rikishi threshold for emergency recruitment */
+/**
+ * Total active rikishi threshold — safety-net floor for emergency full-dump
+ * in TalentPoolMaintenance. Under the gap controller, replacement runs every
+ * weekly tick above this floor, so this only triggers if the controller itself
+ * fails to hold the population. Must stay in (600, 1084) to avoid fighting
+ * the controller or firing too late.
+ */
 export const TOTAL_ACTIVE_THRESHOLD = 800;
 
 /** Interim duration in days */

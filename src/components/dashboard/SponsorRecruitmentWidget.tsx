@@ -122,32 +122,32 @@ export function SponsorRecruitmentWidget() {
     .slice(0, 10); // Show top 10 available sponsors
 
   function handleRecruit(sponsorId: string) {
-      if (!world?.sponsorPool || !world.playerHeyaId) return;
-      const heya = world.heyas.get(world.playerHeyaId);
-      if (!heya) return;
+    if (!world?.sponsorPool || !world.playerHeyaId) return;
+    const heya = world.heyas.get(world.playerHeyaId);
+    if (!heya) return;
 
-      const sponsor = world.sponsorPool.sponsors.get(sponsorId);
-      if (!sponsor) return;
+    const sponsor = world.sponsorPool.sponsors.get(sponsorId);
+    if (!sponsor) return;
 
-      const cost = RECRUITMENT_COSTS[sponsor.tier] || 0;
+    const cost = RECRUITMENT_COSTS[sponsor.tier] || 0;
 
-      if (heya.funds < cost) {
-        toast({
-          title: "Insufficient funds",
-          description: `You need ${formatYen(cost)} to recruit ${sponsor.displayName}.`,
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (!world.rng) return;
-      recruitSponsor(world, world.playerHeyaId, sponsor.sponsorId, world.rng);
-      updateWorld({ ...world });
+    if (heya.funds < cost) {
       toast({
-        title: "Sponsor recruited",
-        description: `${sponsor.displayName} has joined your Kōenkai.`,
+        title: "Insufficient funds",
+        description: `You need ${formatYen(cost)} to recruit ${sponsor.displayName}.`,
+        variant: "destructive",
       });
+      return;
     }
+
+    if (!world.rng) return;
+    recruitSponsor(world, world.playerHeyaId, sponsor.sponsorId, world.rng);
+    updateWorld({ ...world });
+    toast({
+      title: "Sponsor recruited",
+      description: `${sponsor.displayName} has joined your Kōenkai.`,
+    });
+  }
 
   return (
     <Card className="paper">

@@ -151,7 +151,11 @@ function tryPair(
   if (rivalriesState) {
     const mod = getRivalryBoutModifiers({ state: rivalriesState, aId: a.id, bId: b.id });
     if (mod.tension >= RIVALRY_TENSION_THRESHOLD) {
-      return { ...p, score: clamp(p.score + RIVALRY_HEAT_BONUS, SCORE_CLAMP_MIN, SCORE_CLAMP_MAX), reasons: [...p.reasons, "rivalry_heat"] };
+      return {
+        ...p,
+        score: clamp(p.score + RIVALRY_HEAT_BONUS, SCORE_CLAMP_MIN, SCORE_CLAMP_MAX),
+        reasons: [...p.reasons, "rivalry_heat"],
+      };
     }
   }
   return p;
@@ -215,7 +219,11 @@ function phase1(
     if (paired.has(a.id)) continue;
 
     let matched = false;
-    for (let offset = PROXIMITY_OFFSET_START; offset <= PROXIMITY_OFFSET_MAX && i + offset < remaining.length; offset++) {
+    for (
+      let offset = PROXIMITY_OFFSET_START;
+      offset <= PROXIMITY_OFFSET_MAX && i + offset < remaining.length;
+      offset++
+    ) {
       const b = remaining[i + offset];
       if (paired.has(b.id)) continue;
       const p = tryPair(basho, a, b, facedSet, paired, rivalriesState);

@@ -53,7 +53,12 @@ export function simulateEntireBasho(
   } catch {
     for (let day = 1; day <= 15; day++) {
       const daySeed = `${seed}-day${day}`;
-      const { impact } = scheduleAllDivisionsDay({ world: workingWorld, basho, day, seed: daySeed });
+      const { impact } = scheduleAllDivisionsDay({
+        world: workingWorld,
+        basho,
+        day,
+        seed: daySeed,
+      });
       workingWorld = resolveImpacts(workingWorld, [impact]);
     }
   }

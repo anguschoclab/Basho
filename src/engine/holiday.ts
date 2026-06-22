@@ -402,6 +402,9 @@ function buildHolidayDigest(
  * to manual day-by-day advancement per Constitution A9.2.
  */
 export function runHoliday(world: WorldState, config: HolidayConfig): HolidayResult {
+  // Autonomous fast-forward: suppress interactive loop decisions so the tick
+  // pipeline never freezes waiting for a choice nobody will make.
+  world = { ...world, _autonomousSim: true };
   const startDay = world.dayIndexGlobal ?? 0;
   const maxDays = computeTargetDays(world, config.target);
   const reports: WorldState[] = [];

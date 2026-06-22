@@ -5,7 +5,9 @@ import type { Rikishi } from "@/engine/types/rikishi";
 
 describe("NarrativeAgent", () => {
   it("should trigger championship celebration for yusho in post_basho", () => {
-    const oyakata = MockFactory.createOyakata("o1", { traits: { ambition: 50, tradition: 50, patience: 50, risk: 50, compassion: 50 } });
+    const oyakata = MockFactory.createOyakata("o1", {
+      traits: { ambition: 50, tradition: 50, patience: 50, risk: 50, compassion: 50 },
+    });
     const topRikishi = [
       MockFactory.createRikishi("r1", { rank: "yokozuna", shikona: "Yokozuna A" }),
     ];
@@ -27,10 +29,10 @@ describe("NarrativeAgent", () => {
   });
 
   it("should trigger yokozuna promotion", () => {
-    const oyakata = MockFactory.createOyakata("o1", { traits: { ambition: 50, tradition: 50, patience: 50, risk: 50, compassion: 50 } });
-    const topRikishi = [
-      MockFactory.createRikishi("r1", { rank: "ozeki", shikona: "Ozeki A" }),
-    ];
+    const oyakata = MockFactory.createOyakata("o1", {
+      traits: { ambition: 50, tradition: 50, patience: 50, risk: 50, compassion: 50 },
+    });
+    const topRikishi = [MockFactory.createRikishi("r1", { rank: "ozeki", shikona: "Ozeki A" })];
 
     const ctx: NarrativeAgentContext = {
       oyakata,
@@ -49,10 +51,10 @@ describe("NarrativeAgent", () => {
   });
 
   it("should trigger yokozuna promotion with heroic tone if traditionalist", () => {
-    const oyakata = MockFactory.createOyakata("o1", { traits: { ambition: 50, tradition: 80, patience: 50, risk: 50, compassion: 50 } });
-    const topRikishi = [
-      MockFactory.createRikishi("r1", { rank: "ozeki", shikona: "Ozeki A" }),
-    ];
+    const oyakata = MockFactory.createOyakata("o1", {
+      traits: { ambition: 50, tradition: 80, patience: 50, risk: 50, compassion: 50 },
+    });
+    const topRikishi = [MockFactory.createRikishi("r1", { rank: "ozeki", shikona: "Ozeki A" })];
 
     const ctx: NarrativeAgentContext = {
       oyakata,
@@ -69,10 +71,10 @@ describe("NarrativeAgent", () => {
   });
 
   it("should trigger retirement ceremony", () => {
-    const oyakata = MockFactory.createOyakata("o1", { traits: { ambition: 50, tradition: 50, patience: 50, risk: 50, compassion: 50 } });
-    const topRikishi = [
-      MockFactory.createRikishi("r1", { isRetired: true, shikona: "Retired A" }),
-    ];
+    const oyakata = MockFactory.createOyakata("o1", {
+      traits: { ambition: 50, tradition: 50, patience: 50, risk: 50, compassion: 50 },
+    });
+    const topRikishi = [MockFactory.createRikishi("r1", { isRetired: true, shikona: "Retired A" })];
 
     const ctx: NarrativeAgentContext = {
       oyakata,
@@ -91,7 +93,9 @@ describe("NarrativeAgent", () => {
   });
 
   it("should trigger underdog victory for kinboshi if not ambitious", () => {
-    const oyakata = MockFactory.createOyakata("o1", { traits: { ambition: 50, tradition: 50, patience: 50, risk: 50, compassion: 50 } });
+    const oyakata = MockFactory.createOyakata("o1", {
+      traits: { ambition: 50, tradition: 50, patience: 50, risk: 50, compassion: 50 },
+    });
     const topRikishi = [
       MockFactory.createRikishi("r1", { rank: "maegashira", shikona: "Underdog A" }),
     ];
@@ -113,7 +117,9 @@ describe("NarrativeAgent", () => {
   });
 
   it("should not trigger underdog victory for kinboshi if ambitious", () => {
-    const oyakata = MockFactory.createOyakata("o1", { traits: { ambition: 80, tradition: 50, patience: 50, risk: 50, compassion: 50 } });
+    const oyakata = MockFactory.createOyakata("o1", {
+      traits: { ambition: 80, tradition: 50, patience: 50, risk: 50, compassion: 50 },
+    });
     const topRikishi = [
       MockFactory.createRikishi("r1", { rank: "maegashira", shikona: "Underdog A" }),
     ];
@@ -131,10 +137,11 @@ describe("NarrativeAgent", () => {
   });
 
   it("should trigger media spotlight if publicity hawk in mid_basho", () => {
-    const oyakata = MockFactory.createOyakata("o1", { traits: { ambition: 50, tradition: 50, patience: 50, risk: 50, compassion: 50 }, managerFlags: { publicityHawk: true } });
-    const topRikishi = [
-      MockFactory.createRikishi("r1", { shikona: "Star A" }),
-    ];
+    const oyakata = MockFactory.createOyakata("o1", {
+      traits: { ambition: 50, tradition: 50, patience: 50, risk: 50, compassion: 50 },
+      managerFlags: { publicityHawk: true },
+    });
+    const topRikishi = [MockFactory.createRikishi("r1", { shikona: "Star A" })];
 
     const ctx: NarrativeAgentContext = {
       oyakata,
@@ -153,9 +160,14 @@ describe("NarrativeAgent", () => {
   });
 
   it("should trigger legacy milestone if traditionalist in post_basho", () => {
-    const oyakata = MockFactory.createOyakata("o1", { traits: { ambition: 50, tradition: 80, patience: 50, risk: 50, compassion: 50 } });
+    const oyakata = MockFactory.createOyakata("o1", {
+      traits: { ambition: 50, tradition: 80, patience: 50, risk: 50, compassion: 50 },
+    });
     const topRikishi = [
-      { ...MockFactory.createRikishi("r1", { shikona: "Veteran A" }), stats: { experience: 120 } } as unknown as Rikishi,
+      {
+        ...MockFactory.createRikishi("r1", { shikona: "Veteran A" }),
+        stats: { experience: 120 },
+      } as unknown as Rikishi,
     ];
 
     const ctx: NarrativeAgentContext = {
@@ -175,10 +187,10 @@ describe("NarrativeAgent", () => {
   });
 
   it("should not trigger any event if no conditions are met", () => {
-    const oyakata = MockFactory.createOyakata("o1", { traits: { ambition: 50, tradition: 50, patience: 50, risk: 50, compassion: 50 } });
-    const topRikishi = [
-      MockFactory.createRikishi("r1", { rank: "maegashira" }),
-    ];
+    const oyakata = MockFactory.createOyakata("o1", {
+      traits: { ambition: 50, tradition: 50, patience: 50, risk: 50, compassion: 50 },
+    });
+    const topRikishi = [MockFactory.createRikishi("r1", { rank: "maegashira" })];
 
     const ctx: NarrativeAgentContext = {
       oyakata,

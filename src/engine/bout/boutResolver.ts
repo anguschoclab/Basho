@@ -40,6 +40,7 @@ import { clamp } from "../utils/math";
 import { decideBoutTacticOverride } from "../strategy/NPCStrategyService";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
+import { getTacticProfile } from "./tacticProfiles";
 import {
   CONTENTION_WINDOW,
   FINAL_DAY,
@@ -218,7 +219,11 @@ function detectKinboshi(
     winnerAchievements.kinboshiEarned++;
     loserAchievements.kinboshiConceded++;
     kinboshiDelta = true;
-  } else if (winner.rank === "maegashira" && loser.rank === "ozeki" && result.kimarite !== "fusensho") {
+  } else if (
+    winner.rank === "maegashira" &&
+    loser.rank === "ozeki" &&
+    result.kimarite !== "fusensho"
+  ) {
     winnerAchievements.ginboshiEarned++;
     loserAchievements.ginboshiConceded++;
   }
@@ -227,31 +232,102 @@ function detectKinboshi(
 }
 
 /**
- * Compute henka prestige penalty for the winner.
- * Pure: returns partial rikishi update or null.
+ * Compute tactic aftermath: fatigue, momentum, and injury multiplier.
+ * Returns updates for player/cpu rikishi and the injury risk multiplier.
  */
-function computeHenkaPenalty(
+function computeTacticAftermath(
   bout: BoutContext,
   result: BoutResult,
   winner: Rikishi,
+  loser: Rikishi,
   cpuTacticOverride: import("../types/combat").BoutTactic | undefined
-): Partial<Rikishi> | null {
+): {
+  playerUpdate: Partial<Rikishi>;
+  cpuUpdate: Partial<Rikishi>;
+  injuryMultiplier: number;
+} {
+  let injuryMultiplier = 1.0;
+  let playerUpdate: Partial<Rikishi> = {};
+  let cpuUpdate: Partial<Rikishi> = {};
+
+  const playerIsWinner = result.winner === bout.playerSide;
+  const playerRikishi = playerIsWinner ? winner : loser;
+
+  // Player tactic effects
+  if (bout.playerTactic && bout.playerSide && result.kimarite !== "fusensho") {
+    const profile = getTacticProfile(bout.playerTactic);
+
+    // Fatigue cost applied to player rikishi
+    if (profile.fatigueCost > 0) {
+      const currentFatigue = playerRikishi.fatigue ?? 0;
+      playerUpdate = {
+        ...playerUpdate,
+        fatigue: clamp(currentFatigue + profile.fatigueCost, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
+      };
+    }
+
+    // Momentum delta based on win/loss
+    const momentumDelta = playerIsWinner ? profile.momentumOnWin : profile.momentumOnLoss;
+    if (momentumDelta !== 0) {
+      const currentMomentum = playerRikishi.momentum ?? 50;
+      playerUpdate = {
+        ...playerUpdate,
+        momentum: clamp(currentMomentum + momentumDelta, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
+      };
+    }
+
+    // Injury multiplier from player tactic (applies if player lost)
+    if (!playerIsWinner) {
+      injuryMultiplier = Math.max(injuryMultiplier, profile.injuryRiskMultiplier);
+    }
+  }
+
+  // CPU tactic effects
+  if (cpuTacticOverride && result.kimarite !== "fusensho") {
+    const profile = getTacticProfile(cpuTacticOverride);
+    const cpuIsWinner =
+      (bout.playerSide === "east" && result.winner === "west") ||
+      (bout.playerSide === "west" && result.winner === "east") ||
+      !bout.playerSide;
+    const cpuRikishi = cpuIsWinner ? winner : loser;
+
+    if (profile.fatigueCost > 0) {
+      const currentFatigue = cpuRikishi.fatigue ?? 0;
+      cpuUpdate = {
+        ...cpuUpdate,
+        fatigue: clamp(currentFatigue + profile.fatigueCost, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
+      };
+    }
+
+    const momentumDelta = cpuIsWinner ? profile.momentumOnWin : profile.momentumOnLoss;
+    if (momentumDelta !== 0) {
+      const currentMomentum = cpuRikishi.momentum ?? 50;
+      cpuUpdate = {
+        ...cpuUpdate,
+        momentum: clamp(currentMomentum + momentumDelta, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
+      };
+    }
+
+    if (!cpuIsWinner) {
+      injuryMultiplier = Math.max(injuryMultiplier, profile.injuryRiskMultiplier);
+    }
+  }
+
+  // Legacy henka prestige penalty (momentum loss on win) — folded into profile.momentumOnWin
+  // Keep explicit check for HENKA won to ensure backward-compatible penalty
   const playerHenkaWon =
     bout.playerTactic === "HENKA" &&
     result.winner === bout.playerSide &&
     result.kimarite !== "fusensho";
-
-  const cpuHenkaWon =
-    cpuTacticOverride === "HENKA" &&
-    result.kimarite !== "fusensho" &&
-    ((bout.playerSide === "east" && result.winner === "west") ||
-      (bout.playerSide === "west" && result.winner === "east") ||
-      !bout.playerSide);
-
-  if (playerHenkaWon || cpuHenkaWon) {
-    return { momentum: clamp((winner.momentum ?? 50) - HENKA_MOMENTUM_PENALTY, STAT_CLAMP_MIN, STAT_CLAMP_MAX) };
+  if (playerHenkaWon && !playerUpdate?.momentum) {
+    const currentMomentum = playerRikishi.momentum ?? 50;
+    playerUpdate = {
+      ...playerUpdate,
+      momentum: clamp(currentMomentum - HENKA_MOMENTUM_PENALTY, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
+    };
   }
-  return null;
+
+  return { playerUpdate, cpuUpdate, injuryMultiplier };
 }
 
 /**
@@ -369,7 +445,11 @@ export function resolveBout(
   );
 
   // 2.5. Achievement Detection (Gold & Silver Stars - v2)
-  const { winnerAchievements, loserAchievements, kinboshiDelta } = detectKinboshi(result, winner, loser);
+  const { winnerAchievements, loserAchievements, kinboshiDelta } = detectKinboshi(
+    result,
+    winner,
+    loser
+  );
   result.isKinboshi = !!kinboshiDelta;
   if (kinboshiDelta) {
     result.awardFact = "kinboshi";
@@ -385,15 +465,34 @@ export function resolveBout(
 
   // Track kinboshi earned this basho for per-basho stipend calculation
   if (kinboshiDelta && basho.kinboshiThisBasho !== undefined) {
-    const nextKinboshi = { ...basho.kinboshiThisBasho, [winner.id]: (basho.kinboshiThisBasho[winner.id] ?? 0) + 1 };
-    builder.updateWorldField("currentBasho", { ...basho, kinboshiThisBasho: nextKinboshi } as never);
+    const nextKinboshi = {
+      ...basho.kinboshiThisBasho,
+      [winner.id]: (basho.kinboshiThisBasho[winner.id] ?? 0) + 1,
+    };
+    builder.updateWorldField("currentBasho", {
+      ...basho,
+      kinboshiThisBasho: nextKinboshi,
+    } as never);
   }
 
-  // 3. Henka prestige penalty
-  const henkaPenalty = computeHenkaPenalty(bout, result, winner, cpuTacticOverride);
-  if (henkaPenalty) {
-    builder.updateRikishi(winner.id, henkaPenalty);
+  // 3. Tactic aftermath (fatigue, momentum, injury multiplier)
+  const { playerUpdate, cpuUpdate, injuryMultiplier } = computeTacticAftermath(
+    bout,
+    result,
+    winner,
+    loser,
+    cpuTacticOverride
+  );
+  if (Object.keys(playerUpdate).length > 0) {
+    const playerRikishiId = bout.playerSide === "east" ? east.id : west.id;
+    builder.updateRikishi(playerRikishiId, playerUpdate);
   }
+  if (Object.keys(cpuUpdate).length > 0) {
+    const cpuRikishiId =
+      bout.playerSide === "east" ? west.id : bout.playerSide === "west" ? east.id : undefined;
+    if (cpuRikishiId) builder.updateRikishi(cpuRikishiId, cpuUpdate);
+  }
+  result.tacticInjuryRiskMultiplier = injuryMultiplier;
 
   // 4. Update Rivalry State
   let rivalryImpact = createImpactBuilder("rivalry").build();
@@ -431,8 +530,15 @@ export function resolveBout(
     result.isTitleStakes = playoff || yushoContention;
 
     // Base banner count: random based on importance
-    const baseCountMap = { low: KENSHO_BASE_COUNT_LOW, mid: KENSHO_BASE_COUNT_MID, high: KENSHO_BASE_COUNT_HIGH, peak: KENSHO_BASE_COUNT_PEAK };
-    const bannerCount = Math.floor(baseCountMap[importance] * (KENSHO_RNG_MIN + kenshoRng.next() * KENSHO_RNG_RANGE));
+    const baseCountMap = {
+      low: KENSHO_BASE_COUNT_LOW,
+      mid: KENSHO_BASE_COUNT_MID,
+      high: KENSHO_BASE_COUNT_HIGH,
+      peak: KENSHO_BASE_COUNT_PEAK,
+    };
+    const bannerCount = Math.floor(
+      baseCountMap[importance] * (KENSHO_RNG_MIN + kenshoRng.next() * KENSHO_RNG_RANGE)
+    );
 
     const banners = assignKenshoBanners(
       result.boutId,
@@ -478,13 +584,34 @@ export function applyRivalryToRikishi(
   const condMult = conditionMultiplier(r.condition ?? 100);
   return {
     ...r,
-    aggression: clamp((r.stats.aggression || DEFAULT_STAT_VALUE) * (1 + heat01 * RIVALRY_HEAT_AGGRESSION_MULTIPLIER), STAT_CLAMP_MIN, STAT_CLAMP_MAX),
-    mental: clamp((r.stats.mental || DEFAULT_STAT_VALUE) * (1 + spite01 * RIVALRY_SPITE_MENTAL_MULTIPLIER), STAT_CLAMP_MIN, STAT_CLAMP_MAX),
+    aggression: clamp(
+      (r.stats.aggression || DEFAULT_STAT_VALUE) *
+        (1 + heat01 * RIVALRY_HEAT_AGGRESSION_MULTIPLIER),
+      STAT_CLAMP_MIN,
+      STAT_CLAMP_MAX
+    ),
+    mental: clamp(
+      (r.stats.mental || DEFAULT_STAT_VALUE) * (1 + spite01 * RIVALRY_SPITE_MENTAL_MULTIPLIER),
+      STAT_CLAMP_MIN,
+      STAT_CLAMP_MAX
+    ),
     power: clamp((r.stats.power || DEFAULT_STAT_VALUE) * condMult, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
     speed: clamp((r.stats.speed || DEFAULT_STAT_VALUE) * condMult, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
-    technique: clamp((r.stats.technique || DEFAULT_STAT_VALUE) * condMult, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
-    balance: clamp((r.stats.balance || DEFAULT_STAT_VALUE) * condMult, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
-    stamina: clamp((r.stats.stamina || DEFAULT_STAT_VALUE) * condMult, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
+    technique: clamp(
+      (r.stats.technique || DEFAULT_STAT_VALUE) * condMult,
+      STAT_CLAMP_MIN,
+      STAT_CLAMP_MAX
+    ),
+    balance: clamp(
+      (r.stats.balance || DEFAULT_STAT_VALUE) * condMult,
+      STAT_CLAMP_MIN,
+      STAT_CLAMP_MAX
+    ),
+    stamina: clamp(
+      (r.stats.stamina || DEFAULT_STAT_VALUE) * condMult,
+      STAT_CLAMP_MIN,
+      STAT_CLAMP_MAX
+    ),
   } as Rikishi;
 }
 
@@ -503,7 +630,11 @@ export function applyRivalryToRikishi(
  * console.log(result.winner, result.kimarite);
  * ```
  */
-export function simulateBout(east: Rikishi, west: Rikishi, seed: string): { result: BoutResult; engineSnapshot?: EngineSnapshot } {
+export function simulateBout(
+  east: Rikishi,
+  west: Rikishi,
+  seed: string
+): { result: BoutResult; engineSnapshot?: EngineSnapshot } {
   const fakeBasho: BashoState = {
     // Fold the caller's seed into the basho id so it actually reaches the physics
     // RNG (resolveBoutPhysics seeds from basho.id + day + rikishi ids). Without

@@ -100,7 +100,8 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
     maxFunds,
     avgAge: Math.round(avgAge * 10) / 10,
     injuredCount: active.filter((r) => r.injured).length,
-    retiredTotal: allRikishi.filter((r) => r.isRetired).length,
+    retiredTotal: (world.historicalRikishi ? Array.from(world.historicalRikishi.values()).filter((r) => r.isRetired).length : 0)
+      + allRikishi.filter((r) => r.isRetired).length,
     historicalTotal: world.historicalRikishi?.size ?? 0,
     errors: [...errors],
   };

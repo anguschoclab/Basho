@@ -145,7 +145,7 @@ export function simulateBoutForToday(
     : undefined;
 
   const boutContext = {
-    id: `d${basho.day}-b${unplayedIndex}`,
+    id: match.boutId ?? `d${basho.day}-b${unplayedIndex}`,
     day: basho.day,
     rikishiEastId: east.id,
     rikishiWestId: west.id,

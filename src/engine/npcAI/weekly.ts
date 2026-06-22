@@ -342,7 +342,9 @@ function applyPromotionAwareness(
         if (!decision.individualProtects.includes(rikishiId)) {
           decision.individualProtects = [...decision.individualProtects, rikishiId];
           decision.individualPushes = decision.individualPushes.filter((id) => id !== rikishiId);
-          decision.individualDevelops = decision.individualDevelops.filter((id) => id !== rikishiId);
+          decision.individualDevelops = decision.individualDevelops.filter(
+            (id) => id !== rikishiId
+          );
           decision.reasoning.push(
             `[PromotionAwareness] ${r.shikona ?? rikishiId} is Kadoban — added to protect list`
           );

@@ -297,6 +297,10 @@ export function issueGovernanceRuling(
       // Update ruling with player choice
       const updatedRuling: GovernanceRuling = {
         ...ruling,
+        // `playerChoice` is the canonical "resolved" marker used by the UI's
+        // unresolved-ruling filter (`!r.playerChoice`) and by tests; keep
+        // playerSeverity/playerResponse for richer display.
+        playerChoice: severity,
         playerSeverity: severity,
         playerResponse: `Player issued ${severity} ruling`,
         effects: {

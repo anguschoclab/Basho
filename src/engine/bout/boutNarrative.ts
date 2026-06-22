@@ -87,7 +87,11 @@ export function generateBoutNarrative(
     const rng = rngFromSeed(tickSeed, "pbp", "tick");
 
     if (entry.description) {
-      pbpLines.push({ text: entry.description, id: `${result.boutId}-desc-${idx}`, phase: entry.phase });
+      pbpLines.push({
+        text: entry.description,
+        id: `${result.boutId}-desc-${idx}`,
+        phase: entry.phase,
+      });
     }
 
     // 1.75D engagement narrative: tickPushBattle/tickBeltBattle emit "engagement"
@@ -143,7 +147,11 @@ export function generateBoutNarrative(
           intensity: BardEngine.calculateIntensity(margin, [0, 30]),
         });
         if (res.text) {
-          pbpLines.push({ text: res.text, id: `${result.boutId}-tachiai-${idx}`, phase: "tachiai" });
+          pbpLines.push({
+            text: res.text,
+            id: `${result.boutId}-tachiai-${idx}`,
+            phase: "tachiai",
+          });
         }
       }
     }

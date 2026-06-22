@@ -17,6 +17,7 @@ import { PRESTIGE_ORDER, bandIndex } from "../../prestige/prestigeSystem";
 import { findMergerTarget, executeMerger } from "../../mergers";
 import { checkRetirement } from "../../lifecycle";
 import { generateOyakata } from "../../oyakataPersonalities";
+import { foundStable } from "../generation/WorldFactory";
 import { onRikishiRetired } from "../../records";
 import { updateAvatarForAging } from "../../avatarGenerator";
 import { recordOyakataHandover } from "../../lineage";
@@ -29,6 +30,12 @@ import {
   MERGER_THRESHOLD,
   FACTION_BAILOUT_AMOUNT,
   FACTION_BENEFACTOR_THRESHOLD,
+  FOUNDING_CHANCE,
+  HEYA_COUNT_CAP,
+  HEYA_FLOOR,
+  CHRONIC_UNDERPERFORMANCE_BASHO,
+  PRESTIGE_COLLAPSE_BAND,
+  NON_FINANCIAL_MERGER_MAX_ROSTER,
 } from "../../../constants/engine/economic";
 
 /**
@@ -113,7 +120,8 @@ export function runGovernanceReview(world: WorldState): StateImpact {
         }
       }
       // === Insolvency-triggered merger for NPC stables with no rescue available ===
-      if (heya.funds < MERGER_THRESHOLD && heya.id !== world.playerHeyaId) {
+      // Blocked when at or below HEYA_FLOOR to prevent runaway collapse.
+      if (heya.funds < MERGER_THRESHOLD && heya.id !== world.playerHeyaId && world.heyas.size > HEYA_FLOOR) {
         const targetId = findMergerTarget(world, heya.id);
         if (targetId) {
           builder.logEvent(
@@ -133,6 +141,34 @@ export function runGovernanceReview(world: WorldState): StateImpact {
     } else if (heya.funds > 0 && heya.runwayBand !== "desperate") {
       // Queue heya update to clear financial risk indicator
       builder.updateHeya(heya.id, { riskIndicators: { ...heya.riskIndicators, financial: false } });
+    }
+
+    // === Non-financial merger: chronic underperformance + prestige collapse ===
+    // Small stables with prolonged underperformance and collapsed prestige
+    // are forced to merge even if financially solvent.
+    // Blocked when at or below HEYA_FLOOR to prevent runaway collapse.
+    if (
+      heya.id !== world.playerHeyaId &&
+      world.heyas.size > HEYA_FLOOR &&
+      (heya.consecutiveUnderperformanceBasho ?? 0) >= CHRONIC_UNDERPERFORMANCE_BASHO &&
+      heya.prestigeBand === PRESTIGE_COLLAPSE_BAND &&
+      getStableRikishi(world, heya.id).length <= NON_FINANCIAL_MERGER_MAX_ROSTER &&
+      heya.funds >= MERGER_THRESHOLD
+    ) {
+      const targetId = findMergerTarget(world, heya.id);
+      if (targetId) {
+        builder.logEvent(
+          "GOVERNANCE_RULING",
+          "narrative",
+          {
+            incident: "non_financial_merger",
+            reason: "chronic_underperformance",
+            prestigeBand: heya.prestigeBand,
+          },
+          { heyaId: heya.id, importance: "headline" }
+        );
+        builder.merge(executeMerger(world, heya.id, targetId, "chronic_underperformance"));
+      }
     }
 
     // === Welfare review escalation ===
@@ -207,7 +243,8 @@ export function runGovernanceReview(world: WorldState): StateImpact {
         );
 
         // If roster is 0 or 1, mark for eventual closure (NPC only)
-        if (rosterSize <= 1) {
+        // Blocked when at or below HEYA_FLOOR to prevent runaway collapse.
+        if (rosterSize <= 1 && world.heyas.size > HEYA_FLOOR) {
           builder.logEvent(
             "GOVERNANCE_RULING",
             "narrative",
@@ -428,6 +465,30 @@ export function runRetirements(world: WorldState): StateImpact {
             builder.merge(
               recordOyakataHandover(world, r.heyaId, newOyakataId, availableStock.name)
             );
+
+            // Stable founding: RNG-gated chance for the new oyakata to found a new heya
+            // instead of staying in their original stable. Only if under the heya cap.
+            if (world.heyas.size < HEYA_COUNT_CAP && rng.bool(FOUNDING_CHANCE)) {
+              const { heya: newHeya } = foundStable(
+                world,
+                newOyakataId,
+                `${r.shikona ?? r.name ?? id}-beya`,
+                rng
+              );
+              builder.addHeya(newHeya);
+              builder.logEvent(
+                "LIFECYCLE_EVENT",
+                "career",
+                {
+                  rikishiId: id,
+                  heyaId: newHeya.id,
+                  shikona: r.shikona ?? r.name ?? id,
+                  status: "stable_founded",
+                  heyaName: newHeya.name,
+                },
+                { heyaId: newHeya.id, rikishiId: id, importance: "headline" }
+              );
+            }
           }
         }
       }
@@ -442,7 +503,9 @@ export function runRetirements(world: WorldState): StateImpact {
 
   // Queue collection operation to move rikishi to historical
   for (const id of rikishiToRetire) {
-    builder.retireRikishi(id);
+    const r = getRikishi(world, id);
+    const reason = r ? checkRetirement(r, world.year, world.seed) : "Retirement";
+    builder.retireRikishi(id, world.year, reason ?? "Retirement");
   }
 
   // Add vacancy count to metadata

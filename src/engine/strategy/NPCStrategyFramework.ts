@@ -168,9 +168,12 @@ export const TraitChecks = {
       (o.traits.patience ?? 0) > threshold,
 
   isVindictive: (): TraitCheck => (o) =>
-    o.temperament === "Vindictive" || (o.traits.ambition > TRAIT_VINDICTIVE_AMBITION_THRESHOLD && o.traits.risk > TRAIT_VINDICTIVE_RISK_THRESHOLD),
+    o.temperament === "Vindictive" ||
+    (o.traits.ambition > TRAIT_VINDICTIVE_AMBITION_THRESHOLD &&
+      o.traits.risk > TRAIT_VINDICTIVE_RISK_THRESHOLD),
 
-  isGreedy: (): TraitCheck => (o) => o.traits.risk < TRAIT_GREEDY_RISK_THRESHOLD || (o.quirks?.includes("Numbers Guy") ?? false),
+  isGreedy: (): TraitCheck => (o) =>
+    o.traits.risk < TRAIT_GREEDY_RISK_THRESHOLD || (o.quirks?.includes("Numbers Guy") ?? false),
 
   hasMood:
     (mood: Oyakata["mood"]): TraitCheck =>
@@ -202,7 +205,8 @@ export function calculateTraitAdjustedThreshold(
   traitMultiplier: number
 ): number {
   const traitValue = oyakata.traits[trait] ?? DEFAULT_TRAIT_VALUE;
-  const adjustment = ((traitValue - DEFAULT_TRAIT_VALUE) / TRAIT_MULTIPLIER_DIVISOR) * traitMultiplier;
+  const adjustment =
+    ((traitValue - DEFAULT_TRAIT_VALUE) / TRAIT_MULTIPLIER_DIVISOR) * traitMultiplier;
   return baseThreshold * (1 + adjustment);
 }
 
@@ -230,6 +234,11 @@ export function trySpendResource(
 /**
  * Adjust a numeric score within bounds.
  */
-export function adjustScore(current: number, delta: number, min = ADJUST_SCORE_DEFAULT_MIN, max = ADJUST_SCORE_DEFAULT_MAX): number {
+export function adjustScore(
+  current: number,
+  delta: number,
+  min = ADJUST_SCORE_DEFAULT_MIN,
+  max = ADJUST_SCORE_DEFAULT_MAX
+): number {
   return Math.max(min, Math.min(max, current + delta));
 }

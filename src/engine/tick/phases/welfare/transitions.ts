@@ -65,7 +65,9 @@ export function handleCompliantTransition(
   hasNegligence: boolean,
   seriousCount: number
 ): void {
-  const watchThreshold = hasNegligence ? WATCH_THRESHOLD_WITH_NEGLECT : WATCH_THRESHOLD_WITHOUT_NEGLECT;
+  const watchThreshold = hasNegligence
+    ? WATCH_THRESHOLD_WITH_NEGLECT
+    : WATCH_THRESHOLD_WITHOUT_NEGLECT;
   if (
     state.welfareRisk >= watchThreshold ||
     seriousCount >= SERIOUS_COUNT_THRESHOLD ||
@@ -97,11 +99,19 @@ export function handleWatchTransition(
   mediaPressureChanges: Record<string, number>,
   week: number
 ): void {
-  if (state.welfareRisk >= INVESTIGATION_RISK_THRESHOLD && state.weeksInState >= INVESTIGATION_WEEKS_THRESHOLD) {
+  if (
+    state.welfareRisk >= INVESTIGATION_RISK_THRESHOLD &&
+    state.weeksInState >= INVESTIGATION_WEEKS_THRESHOLD
+  ) {
     setComplianceStatePure(state, "investigation");
     state.investigation = {
       openedWeek: week,
-      severity: state.welfareRisk >= INVESTIGATION_SEVERITY_HIGH ? "high" : state.welfareRisk >= INVESTIGATION_SEVERITY_MEDIUM ? "medium" : "low",
+      severity:
+        state.welfareRisk >= INVESTIGATION_SEVERITY_HIGH
+          ? "high"
+          : state.welfareRisk >= INVESTIGATION_SEVERITY_MEDIUM
+            ? "medium"
+            : "low",
       triggers: reasons,
       progress: 0,
     };
@@ -116,8 +126,16 @@ export function handleWatchTransition(
       { heyaId: heya.id, importance: "notable" }
     );
 
-    applyGovernanceHeadlineAndPressure(world, heya.id, mediaPressureChanges, MEDIA_PRESSURE_INVESTIGATION);
-  } else if (state.welfareRisk <= CLEAR_RISK_THRESHOLD && state.weeksInState >= CLEAR_WEEKS_THRESHOLD) {
+    applyGovernanceHeadlineAndPressure(
+      world,
+      heya.id,
+      mediaPressureChanges,
+      MEDIA_PRESSURE_INVESTIGATION
+    );
+  } else if (
+    state.welfareRisk <= CLEAR_RISK_THRESHOLD &&
+    state.weeksInState >= CLEAR_WEEKS_THRESHOLD
+  ) {
     setComplianceStatePure(state, "compliant");
     builder.logEvent(
       "WELFARE_COMPLIANCE",
@@ -149,12 +167,22 @@ export function handleInvestigationTransition(
       progress: 0,
     };
   }
-  const progressGain = clamp(Math.round(PROGRESS_GAIN_BASE + (heya.facilities?.recovery || 50) / PROGRESS_GAIN_DIVISOR), PROGRESS_GAIN_MIN, PROGRESS_GAIN_MAX);
+  const progressGain = clamp(
+    Math.round(PROGRESS_GAIN_BASE + (heya.facilities?.recovery || 50) / PROGRESS_GAIN_DIVISOR),
+    PROGRESS_GAIN_MIN,
+    PROGRESS_GAIN_MAX
+  );
   state.investigation.progress = clamp((state.investigation.progress || 0) + progressGain, 0, 100);
 
-  if (state.welfareRisk >= SANCTION_RISK_THRESHOLD || (seriousCount >= SANCTION_SERIOUS_COUNT && state.welfareRisk >= SANCTION_RISK_WITH_SERIOUS)) {
+  if (
+    state.welfareRisk >= SANCTION_RISK_THRESHOLD ||
+    (seriousCount >= SANCTION_SERIOUS_COUNT && state.welfareRisk >= SANCTION_RISK_WITH_SERIOUS)
+  ) {
     transitionToSanctioned(world, heya, state, builder, mediaPressureChanges);
-  } else if (state.investigation.progress >= INVESTIGATION_COMPLETE_PROGRESS && state.welfareRisk <= INVESTIGATION_CLOSE_RISK_THRESHOLD) {
+  } else if (
+    state.investigation.progress >= INVESTIGATION_COMPLETE_PROGRESS &&
+    state.welfareRisk <= INVESTIGATION_CLOSE_RISK_THRESHOLD
+  ) {
     setComplianceStatePure(state, "watch");
     state.investigation = undefined;
     builder.logEvent(
@@ -215,7 +243,11 @@ export function handleSanctionedTransition(
   }
   const freezeDone =
     !state.sanctions?.recruitmentFreezeWeeks || state.sanctions.recruitmentFreezeWeeks <= 0;
-  if (freezeDone && state.welfareRisk <= SANCTION_LIFT_RISK_THRESHOLD && state.weeksInState >= SANCTION_LIFT_WEEKS_THRESHOLD) {
+  if (
+    freezeDone &&
+    state.welfareRisk <= SANCTION_LIFT_RISK_THRESHOLD &&
+    state.weeksInState >= SANCTION_LIFT_WEEKS_THRESHOLD
+  ) {
     setComplianceStatePure(state, "watch");
     state.sanctions = undefined;
     builder.logEvent(

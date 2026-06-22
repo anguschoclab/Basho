@@ -2,7 +2,6 @@
  * Tests for HeyaBrandGenerator
  */
 
- 
 import { describe, it, expect } from "vitest";
 import {
   generateHeyaBrandIdentities,

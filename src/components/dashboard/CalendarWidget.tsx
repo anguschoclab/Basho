@@ -64,7 +64,7 @@ export function CalendarWidget() {
     navigate({ to: "/basho" });
   }, [simFullBasho, navigate, toast]);
 
-  const navToSchedule = React.useCallback(() => navigate({ to: "/schedule" }), [navigate]);
+  const navToSchedule = React.useCallback(() => navigate({ to: "/basho/schedule" }), [navigate]);
   const navToBasho = React.useCallback(() => navigate({ to: "/basho" }), [navigate]);
 
   if (!world) return null;

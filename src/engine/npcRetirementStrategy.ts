@@ -24,7 +24,7 @@ const NATURAL_RETIREMENT_RULE: StrategyRule = {
     // Check if ANY rikishi in heya wants to retire naturally
     return (ctx.heya.rikishiIds ?? []).some((id) => {
       const r = getRikishi(ctx.world, id);
-      return r && checkRetirement(r, ctx.world.calendar?.year ?? 2026, ctx.world.seed);
+      return r && checkRetirement(r, ctx.world.year, ctx.world.seed);
     });
   },
   action: (ctx) => {
@@ -32,9 +32,9 @@ const NATURAL_RETIREMENT_RULE: StrategyRule = {
     for (const id of ctx.heya.rikishiIds ?? []) {
       const r = getRikishi(ctx.world, id);
       if (!r) continue;
-      const reason = checkRetirement(r, ctx.world.calendar?.year ?? 2026, ctx.world.seed);
+      const reason = checkRetirement(r, ctx.world.year, ctx.world.seed);
       if (reason) {
-        builder.retireRikishi(id, ctx.world.calendar?.year ?? 2026, reason);
+        builder.retireRikishi(id, ctx.world.year, reason);
       }
     }
     return builder.build();
@@ -56,13 +56,16 @@ const FORCE_RETIRE_STAGNANT_RULE: StrategyRule = {
     const builder = createImpactBuilder("ret_force_stagnant");
     const candidates = (ctx.heya.rikishiIds ?? [])
       .map((id) => getRikishi(ctx.world, id))
-      .filter((r): r is Rikishi => !!r && (ctx.world.calendar?.year ?? 2026) - r.birthYear > 32)
+      .filter(
+        (r): r is Rikishi =>
+          !!r && ctx.world.year - r.birthYear > 32 && ctx.world.year - r.birthYear >= 28
+      )
       .sort((a, b) => (a.stats.power ?? 50) - (b.stats.power ?? 50));
 
     if (candidates.length > 0) {
       builder.retireRikishi(
         candidates[0].id,
-        ctx.world.calendar?.year ?? 2026,
+        ctx.world.year,
         "Forced retirement due to stable restructuring"
       );
     }

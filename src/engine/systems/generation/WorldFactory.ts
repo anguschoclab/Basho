@@ -32,6 +32,7 @@ import { createKoenkai } from "../economy/SponsorshipService";
 import { generateHeyaBrandIdentities } from "../keshoMawashi/HeyaBrandGenerator";
 import type { BashoName, BashoState } from "../../types/basho";
 import type { Faction, IchimonName } from "../../types/economy";
+import { TARGET_ROSTER_SIZE } from "../../../constants/engine/recruitmentExtended";
 import { getBashoNumber } from "../../calendar";
 import { generateOyakata } from "../../oyakataPersonalities";
 import { generateAvatarConfig } from "../../avatarGenerator";
@@ -53,6 +54,7 @@ import {
   YOKOZUNA_COUNT_MIN,
   YOKOZUNA_COUNT_MAX,
 } from "../../../constants/engine/generation";
+import { FOUNDING_SEED_FUNDS } from "../../../constants/engine/economic";
 
 /**
  * Creates a new Heya and its associated Oyakata.
@@ -154,7 +156,11 @@ export function createHeyaWithOyakata(args: {
       weeksInState: 0,
       lastReviewedWeek: 0,
     },
-    facilities: { training: HEYA_FACILITIES_DEFAULT, recovery: HEYA_FACILITIES_DEFAULT, nutrition: HEYA_FACILITIES_DEFAULT },
+    facilities: {
+      training: HEYA_FACILITIES_DEFAULT,
+      recovery: HEYA_FACILITIES_DEFAULT,
+      nutrition: HEYA_FACILITIES_DEFAULT,
+    },
     riskIndicators: { financial: false, governance: false, rivalry: false },
     ichimon: seededPick(rng, ["Dewanoumi", "Nishonoseki", "Takasago", "Tokitsukaze", "Isegahama"]),
     politicalCapital: HEYA_POLITICAL_CAPITAL_DEFAULT,
@@ -164,6 +170,32 @@ export function createHeyaWithOyakata(args: {
   };
 
   return { heya, oyakata };
+}
+
+/**
+ * Found a new stable (heya) for a newly-converted oyakata.
+ * Reuses createHeyaWithOyakata but overrides funds, stature, prestige, and roster.
+ *
+ * @param world - The current world state (used for seed context).
+ * @param oyakataId - The ID of the oyakata who will lead this stable.
+ * @param name - The name for the new stable.
+ * @param rng - A deterministic RNG (typically rngForWorld(world, "found", label)).
+ * @returns {{ heya: Heya }} The newly founded heya (not yet inserted into the world).
+ */
+export function foundStable(
+  world: WorldState,
+  oyakataId: string,
+  name: string,
+  rng: SeededRNG
+): { heya: Heya } {
+  const id = rng.uuid("HY");
+  const { heya } = createHeyaWithOyakata({ id, name, rng, tier: 0.9 });
+  heya.oyakataId = oyakataId;
+  heya.funds = FOUNDING_SEED_FUNDS;
+  heya.statureBand = "new";
+  heya.prestigeBand = "modest";
+  heya.rikishiIds = [];
+  return { heya };
 }
 
 /**
@@ -299,10 +331,10 @@ export function createRosters(
     { rank: "komusubi", division: "makuuchi", count: 2, tierWeight: 4 },
     { rank: "maegashira", division: "makuuchi", count: 34, tierWeight: 3 },
     { rank: "juryo", division: "juryo", count: 28, tierWeight: 2 },
-    { rank: "makushita", division: "makushita", count: 150, tierWeight: 1 },
-    { rank: "sandanme", division: "sandanme", count: 250, tierWeight: 0 },
-    { rank: "jonidan", division: "jonidan", count: 250, tierWeight: 0 },
-    { rank: "jonokuchi", division: "jonokuchi", count: 150, tierWeight: 0 },
+    { rank: "makushita", division: "makushita", count: 120, tierWeight: 1 },
+    { rank: "sandanme", division: "sandanme", count: 110, tierWeight: 0 },
+    { rank: "jonidan", division: "jonidan", count: 90, tierWeight: 0 },
+    { rank: "jonokuchi", division: "jonokuchi", count: 50, tierWeight: 0 },
   ];
 
   rankConfigs.forEach((config) => {
@@ -458,6 +490,17 @@ export function generateInitialWorld(seed: string): WorldState {
 
   // Initialize and populate talent pools
   talentpool.tickWeekTalentPool(world);
+
+  // Capture equilibrium active population target for the replacement-rate controller.
+  // The initial roster is intentionally small (~440); recruitment fills stables to
+  // TARGET_ROSTER_SIZE over the first year. The target is the total NPC stable capacity
+  // so the gap controller maintains the population at the intended equilibrium.
+  let targetPop = 0;
+  for (const heya of world.heyas.values()) {
+    if (heya.id === world.playerHeyaId) continue;
+    targetPop += TARGET_ROSTER_SIZE;
+  }
+  world._populationTarget = targetPop;
 
   // Seed initial rivalries for narrative depth (P0-C1)
   RivalryService.seedInitialRivalries(world);

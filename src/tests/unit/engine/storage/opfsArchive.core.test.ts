@@ -17,20 +17,40 @@ describe("OPFSArchiveService core functionality", () => {
 
   describe("archiveBoutLog", () => {
     it("writes JSON to season_{N}/bouts/{boutId}.json", async () => {
-      const writable = { write: vi.fn().mockResolvedValue(undefined), close: vi.fn().mockResolvedValue(undefined) };
-      const mockDir = {
-        getFileHandle: vi.fn().mockImplementation(async (_name: string, opts?: { create?: boolean }) => {
-          if (opts?.create === false) {
-            const err = new Error("NotFoundError") as Error & { name: string };
-            err.name = "NotFoundError";
-            throw err;
-          }
-          return { createWritable: vi.fn().mockResolvedValue(writable) };
-        }),
+      const writable = {
+        write: vi.fn().mockResolvedValue(undefined),
+        close: vi.fn().mockResolvedValue(undefined),
       };
-      const getDirSpy = vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      const mockDir = {
+        getFileHandle: vi
+          .fn()
+          .mockImplementation(async (_name: string, opts?: { create?: boolean }) => {
+            if (opts?.create === false) {
+              const err = new Error("NotFoundError") as Error & { name: string };
+              err.name = "NotFoundError";
+              throw err;
+            }
+            return { createWritable: vi.fn().mockResolvedValue(writable) };
+          }),
+      };
+      const getDirSpy = vi
+        .spyOn(service, "getDirectoryPath")
+        .mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
 
-      const boutData = { boutId: "b1", winner: "east", winnerRikishiId: "r1", loserRikishiId: "r2", kimarite: "yorikiri", kimariteName: "Yorikiri", stance: "migi", tachiaiWinner: "east", duration: 10, upset: false, kenshoEnvelopes: 0, log: [] };
+      const boutData = {
+        boutId: "b1",
+        winner: "east",
+        winnerRikishiId: "r1",
+        loserRikishiId: "r2",
+        kimarite: "yorikiri",
+        kimariteName: "Yorikiri",
+        stance: "migi",
+        tachiaiWinner: "east",
+        duration: 10,
+        upset: false,
+        kenshoEnvelopes: 0,
+        log: [],
+      };
       await service.archiveBoutLog(2024, "b1", boutData);
 
       expect(getDirSpy).toHaveBeenCalledWith(["season_2024", "bouts"]);
@@ -44,52 +64,75 @@ describe("OPFSArchiveService core functionality", () => {
       const mockDir = {
         getFileHandle: vi.fn().mockResolvedValue({ name: "existing" }),
       };
-      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(
+        mockDir as unknown as FileSystemDirectoryHandle
+      );
 
-      await expect(service.archiveBoutLog(2024, "b1", {})).rejects.toBeInstanceOf(ArchiveConflictError);
+      await expect(service.archiveBoutLog(2024, "b1", {})).rejects.toBeInstanceOf(
+        ArchiveConflictError
+      );
     });
 
     it("bubbles up unexpected errors from file existence check", async () => {
       const mockDir = {
-        getFileHandle: vi.fn().mockImplementation(async (_name: string, opts?: { create?: boolean }) => {
-          if (opts?.create === false) {
-            const err = new Error("UnknownError") as Error & { name: string };
-            err.name = "UnknownError";
-            throw err;
-          }
-          return { createWritable: vi.fn().mockResolvedValue({ write: vi.fn(), close: vi.fn() }) };
-        }),
+        getFileHandle: vi
+          .fn()
+          .mockImplementation(async (_name: string, opts?: { create?: boolean }) => {
+            if (opts?.create === false) {
+              const err = new Error("UnknownError") as Error & { name: string };
+              err.name = "UnknownError";
+              throw err;
+            }
+            return {
+              createWritable: vi.fn().mockResolvedValue({ write: vi.fn(), close: vi.fn() }),
+            };
+          }),
       };
-      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(
+        mockDir as unknown as FileSystemDirectoryHandle
+      );
 
       await expect(service.archiveBoutLog(2024, "b1", {})).rejects.toThrow("UnknownError");
     });
 
     it("bubbles up DOMException errors from file existence check", async () => {
       const mockDir = {
-        getFileHandle: vi.fn().mockImplementation(async (_name: string, opts?: { create?: boolean }) => {
-          if (opts?.create === false) {
-            throw new DOMException("Security error", "SecurityError");
-          }
-          return { createWritable: vi.fn().mockResolvedValue({ write: vi.fn(), close: vi.fn() }) };
-        }),
+        getFileHandle: vi
+          .fn()
+          .mockImplementation(async (_name: string, opts?: { create?: boolean }) => {
+            if (opts?.create === false) {
+              throw new DOMException("Security error", "SecurityError");
+            }
+            return {
+              createWritable: vi.fn().mockResolvedValue({ write: vi.fn(), close: vi.fn() }),
+            };
+          }),
       };
-      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(
+        mockDir as unknown as FileSystemDirectoryHandle
+      );
 
       await expect(service.archiveBoutLog(2024, "b1", {})).rejects.toThrow(DOMException);
     });
 
     it("ignores non-Error/non-DOMException throws from file existence check (fallback behavior)", async () => {
-      const writable = { write: vi.fn().mockResolvedValue(undefined), close: vi.fn().mockResolvedValue(undefined) };
-      const mockDir = {
-        getFileHandle: vi.fn().mockImplementation(async (_name: string, opts?: { create?: boolean }) => {
-          if (opts?.create === false) {
-            throw "Some arbitrary primitive error string";
-          }
-          return { createWritable: vi.fn().mockResolvedValue(writable) };
-        }),
+      const writable = {
+        write: vi.fn().mockResolvedValue(undefined),
+        close: vi.fn().mockResolvedValue(undefined),
       };
-      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      const mockDir = {
+        getFileHandle: vi
+          .fn()
+          .mockImplementation(async (_name: string, opts?: { create?: boolean }) => {
+            if (opts?.create === false) {
+              throw "Some arbitrary primitive error string";
+            }
+            return { createWritable: vi.fn().mockResolvedValue(writable) };
+          }),
+      };
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(
+        mockDir as unknown as FileSystemDirectoryHandle
+      );
 
       // Should fall through the catch block and write the file
       await service.archiveBoutLog(2024, "b1", {});
@@ -99,16 +142,20 @@ describe("OPFSArchiveService core functionality", () => {
     it("handles quota errors gracefully via handleQuotaError", async () => {
       const quotaError = new DOMException("Quota exceeded", "QuotaExceededError");
       const mockDir = {
-        getFileHandle: vi.fn().mockImplementation(async (_name: string, opts?: { create?: boolean }) => {
-          if (opts?.create === false) {
-            const err = new Error("NotFoundError") as Error & { name: string };
-            err.name = "NotFoundError";
-            throw err;
-          }
-          return { createWritable: vi.fn().mockRejectedValue(quotaError) };
-        }),
+        getFileHandle: vi
+          .fn()
+          .mockImplementation(async (_name: string, opts?: { create?: boolean }) => {
+            if (opts?.create === false) {
+              const err = new Error("NotFoundError") as Error & { name: string };
+              err.name = "NotFoundError";
+              throw err;
+            }
+            return { createWritable: vi.fn().mockRejectedValue(quotaError) };
+          }),
       };
-      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(
+        mockDir as unknown as FileSystemDirectoryHandle
+      );
       const handleQuotaSpy = vi.spyOn(service, "handleQuotaError").mockImplementation(() => {});
 
       await service.archiveBoutLog(2024, "b1", {});
@@ -128,9 +175,18 @@ describe("OPFSArchiveService core functionality", () => {
   describe("retrieveBoutLog", () => {
     it("returns parsed BoutResult for valid data", async () => {
       const validBout = {
-        boutId: "b1", winner: "east", winnerRikishiId: "r1", loserRikishiId: "r2",
-        kimarite: "yorikiri", kimariteName: "Yorikiri", stance: "migi", tachiaiWinner: "east",
-        duration: 10, upset: false, kenshoEnvelopes: 0, log: [],
+        boutId: "b1",
+        winner: "east",
+        winnerRikishiId: "r1",
+        loserRikishiId: "r2",
+        kimarite: "yorikiri",
+        kimariteName: "Yorikiri",
+        stance: "migi",
+        tachiaiWinner: "east",
+        duration: 10,
+        upset: false,
+        kenshoEnvelopes: 0,
+        log: [],
       };
       const mockFileHandle = {
         getFile: vi.fn().mockResolvedValue({
@@ -140,7 +196,9 @@ describe("OPFSArchiveService core functionality", () => {
       const mockDir = {
         getFileHandle: vi.fn().mockResolvedValue(mockFileHandle),
       };
-      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(
+        mockDir as unknown as FileSystemDirectoryHandle
+      );
 
       const result = await service.retrieveBoutLog(2024, "b1");
       expect(result).toEqual(validBout);
@@ -154,7 +212,9 @@ describe("OPFSArchiveService core functionality", () => {
           throw err;
         }),
       };
-      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(
+        mockDir as unknown as FileSystemDirectoryHandle
+      );
 
       const result = await service.retrieveBoutLog(2024, "missing");
       expect(result).toBeNull();
@@ -164,7 +224,9 @@ describe("OPFSArchiveService core functionality", () => {
       const mockDir = {
         getFileHandle: vi.fn().mockRejectedValue(new Error("Disk read error")),
       };
-      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(
+        mockDir as unknown as FileSystemDirectoryHandle
+      );
       const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
       const result = await service.retrieveBoutLog(2024, "b1");
@@ -182,7 +244,9 @@ describe("OPFSArchiveService core functionality", () => {
       const mockDir = {
         getFileHandle: vi.fn().mockResolvedValue(mockFileHandle),
       };
-      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(
+        mockDir as unknown as FileSystemDirectoryHandle
+      );
 
       const result = await service.retrieveBoutLog(2024, "b1");
       expect(result).toBeNull();
@@ -208,7 +272,9 @@ describe("OPFSArchiveService core functionality", () => {
       const mockDir = {
         values: vi.fn().mockReturnValue(values()),
       };
-      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(
+        mockDir as unknown as FileSystemDirectoryHandle
+      );
 
       const result = await service.getArchivedBoutIdsForSeason(2024);
       expect(result).toEqual(["b1", "b2"]);
@@ -228,7 +294,9 @@ describe("OPFSArchiveService core functionality", () => {
       const mockDir = {
         values: vi.fn().mockReturnValue(values()),
       };
-      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(
+        mockDir as unknown as FileSystemDirectoryHandle
+      );
       const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
       const result = await service.getArchivedBoutIdsForSeason(2024);
@@ -239,11 +307,18 @@ describe("OPFSArchiveService core functionality", () => {
 
   describe("archiveGazette", () => {
     it("writes markdown to season_{N}/gazettes/week_{W}.md", async () => {
-      const writable = { write: vi.fn().mockResolvedValue(undefined), close: vi.fn().mockResolvedValue(undefined) };
-      const mockDir = {
-        getFileHandle: vi.fn().mockResolvedValue({ createWritable: vi.fn().mockResolvedValue(writable) }),
+      const writable = {
+        write: vi.fn().mockResolvedValue(undefined),
+        close: vi.fn().mockResolvedValue(undefined),
       };
-      const getDirSpy = vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      const mockDir = {
+        getFileHandle: vi
+          .fn()
+          .mockResolvedValue({ createWritable: vi.fn().mockResolvedValue(writable) }),
+      };
+      const getDirSpy = vi
+        .spyOn(service, "getDirectoryPath")
+        .mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
 
       await service.archiveGazette(2024, 3, "# Week 3 Gazette");
 
@@ -256,9 +331,13 @@ describe("OPFSArchiveService core functionality", () => {
     it("handles quota errors gracefully", async () => {
       const quotaError = new DOMException("Quota exceeded", "QuotaExceededError");
       const mockDir = {
-        getFileHandle: vi.fn().mockResolvedValue({ createWritable: vi.fn().mockRejectedValue(quotaError) }),
+        getFileHandle: vi
+          .fn()
+          .mockResolvedValue({ createWritable: vi.fn().mockRejectedValue(quotaError) }),
       };
-      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(
+        mockDir as unknown as FileSystemDirectoryHandle
+      );
       const handleQuotaSpy = vi.spyOn(service, "handleQuotaError").mockImplementation(() => {});
 
       await service.archiveGazette(2024, 1, "test");
@@ -284,7 +363,9 @@ describe("OPFSArchiveService core functionality", () => {
       const mockDir = {
         getFileHandle: vi.fn().mockResolvedValue(mockFileHandle),
       };
-      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(
+        mockDir as unknown as FileSystemDirectoryHandle
+      );
 
       const result = await service.retrieveGazette(2024, 3);
       expect(result).toBe("# Gazette Content");
@@ -298,7 +379,9 @@ describe("OPFSArchiveService core functionality", () => {
           throw err;
         }),
       };
-      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(
+        mockDir as unknown as FileSystemDirectoryHandle
+      );
 
       const result = await service.retrieveGazette(2024, 99);
       expect(result).toBeNull();
@@ -308,7 +391,9 @@ describe("OPFSArchiveService core functionality", () => {
       const mockDir = {
         getFileHandle: vi.fn().mockRejectedValue(new Error("Disk read error")),
       };
-      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(
+        mockDir as unknown as FileSystemDirectoryHandle
+      );
       const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
       const result = await service.retrieveGazette(2024, 1);
@@ -328,13 +413,30 @@ describe("OPFSArchiveService core functionality", () => {
 
   describe("archiveAwards", () => {
     it("writes JSON to season_{N}/awards.json", async () => {
-      const writable = { write: vi.fn().mockResolvedValue(undefined), close: vi.fn().mockResolvedValue(undefined) };
-      const mockDir = {
-        getFileHandle: vi.fn().mockResolvedValue({ createWritable: vi.fn().mockResolvedValue(writable) }),
+      const writable = {
+        write: vi.fn().mockResolvedValue(undefined),
+        close: vi.fn().mockResolvedValue(undefined),
       };
-      const getDirSpy = vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      const mockDir = {
+        getFileHandle: vi
+          .fn()
+          .mockResolvedValue({ createWritable: vi.fn().mockResolvedValue(writable) }),
+      };
+      const getDirSpy = vi
+        .spyOn(service, "getDirectoryPath")
+        .mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
 
-      const awards = [{ id: "a1", year: 2024, bashoNumber: 1 as const, bashoName: "hatsu" as const, yusho: "r1", junYusho: [], prizes: { yushoAmount: 100, junYushoAmount: 50, specialPrizes: 20 } }];
+      const awards = [
+        {
+          id: "a1",
+          year: 2024,
+          bashoNumber: 1 as const,
+          bashoName: "hatsu" as const,
+          yusho: "r1",
+          junYusho: [],
+          prizes: { yushoAmount: 100, junYushoAmount: 50, specialPrizes: 20 },
+        },
+      ];
       await service.archiveAwards(2024, awards);
 
       expect(getDirSpy).toHaveBeenCalledWith(["season_2024"]);
@@ -346,9 +448,13 @@ describe("OPFSArchiveService core functionality", () => {
     it("handles quota errors gracefully", async () => {
       const quotaError = new DOMException("Quota exceeded", "QuotaExceededError");
       const mockDir = {
-        getFileHandle: vi.fn().mockResolvedValue({ createWritable: vi.fn().mockRejectedValue(quotaError) }),
+        getFileHandle: vi
+          .fn()
+          .mockResolvedValue({ createWritable: vi.fn().mockRejectedValue(quotaError) }),
       };
-      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(
+        mockDir as unknown as FileSystemDirectoryHandle
+      );
       const handleQuotaSpy = vi.spyOn(service, "handleQuotaError").mockImplementation(() => {});
 
       await service.archiveAwards(2024, []);
@@ -366,7 +472,17 @@ describe("OPFSArchiveService core functionality", () => {
 
   describe("retrieveAwards", () => {
     it("returns parsed BashoResult[] for valid data", async () => {
-      const awards = [{ id: "a1", year: 2024, bashoNumber: 1 as const, bashoName: "hatsu" as const, yusho: "r1", junYusho: [], prizes: { yushoAmount: 100, junYushoAmount: 50, specialPrizes: 20 } }];
+      const awards = [
+        {
+          id: "a1",
+          year: 2024,
+          bashoNumber: 1 as const,
+          bashoName: "hatsu" as const,
+          yusho: "r1",
+          junYusho: [],
+          prizes: { yushoAmount: 100, junYushoAmount: 50, specialPrizes: 20 },
+        },
+      ];
       const mockFileHandle = {
         getFile: vi.fn().mockResolvedValue({
           text: vi.fn().mockResolvedValue(JSON.stringify(awards)),
@@ -375,7 +491,9 @@ describe("OPFSArchiveService core functionality", () => {
       const mockDir = {
         getFileHandle: vi.fn().mockResolvedValue(mockFileHandle),
       };
-      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(
+        mockDir as unknown as FileSystemDirectoryHandle
+      );
 
       const result = await service.retrieveAwards(2024);
       expect(result).toEqual(awards);
@@ -389,7 +507,9 @@ describe("OPFSArchiveService core functionality", () => {
           throw err;
         }),
       };
-      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(
+        mockDir as unknown as FileSystemDirectoryHandle
+      );
 
       const result = await service.retrieveAwards(2024);
       expect(result).toEqual([]);
@@ -406,13 +526,28 @@ describe("OPFSArchiveService core functionality", () => {
 
   describe("archiveBanzuke", () => {
     it("writes JSON to season_{N}/banzuke/basho_{N}.json", async () => {
-      const writable = { write: vi.fn().mockResolvedValue(undefined), close: vi.fn().mockResolvedValue(undefined) };
-      const mockDir = {
-        getFileHandle: vi.fn().mockResolvedValue({ createWritable: vi.fn().mockResolvedValue(writable) }),
+      const writable = {
+        write: vi.fn().mockResolvedValue(undefined),
+        close: vi.fn().mockResolvedValue(undefined),
       };
-      const getDirSpy = vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      const mockDir = {
+        getFileHandle: vi
+          .fn()
+          .mockResolvedValue({ createWritable: vi.fn().mockResolvedValue(writable) }),
+      };
+      const getDirSpy = vi
+        .spyOn(service, "getDirectoryPath")
+        .mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
 
-      const snapshot = { year: 2024, bashoNumber: 1 as const, bashoName: "hatsu" as const, makuuchiSummary: { totalBouts: 100, avgWins: 8, injuryCount: 2 }, promotions: [], demotions: [], retirements: [] };
+      const snapshot = {
+        year: 2024,
+        bashoNumber: 1 as const,
+        bashoName: "hatsu" as const,
+        makuuchiSummary: { totalBouts: 100, avgWins: 8, injuryCount: 2 },
+        promotions: [],
+        demotions: [],
+        retirements: [],
+      };
       await service.archiveBanzuke(2024, 1, snapshot);
 
       expect(getDirSpy).toHaveBeenCalledWith(["season_2024", "banzuke"]);
@@ -424,19 +559,39 @@ describe("OPFSArchiveService core functionality", () => {
     it("handles quota errors gracefully", async () => {
       const quotaError = new DOMException("Quota exceeded", "QuotaExceededError");
       const mockDir = {
-        getFileHandle: vi.fn().mockResolvedValue({ createWritable: vi.fn().mockRejectedValue(quotaError) }),
+        getFileHandle: vi
+          .fn()
+          .mockResolvedValue({ createWritable: vi.fn().mockRejectedValue(quotaError) }),
       };
-      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(
+        mockDir as unknown as FileSystemDirectoryHandle
+      );
       const handleQuotaSpy = vi.spyOn(service, "handleQuotaError").mockImplementation(() => {});
 
-      await service.archiveBanzuke(2024, 1, { year: 2024, bashoNumber: 1, bashoName: "hatsu", makuuchiSummary: { totalBouts: 0, avgWins: 0, injuryCount: 0 }, promotions: [], demotions: [], retirements: [] });
+      await service.archiveBanzuke(2024, 1, {
+        year: 2024,
+        bashoNumber: 1,
+        bashoName: "hatsu",
+        makuuchiSummary: { totalBouts: 0, avgWins: 0, injuryCount: 0 },
+        promotions: [],
+        demotions: [],
+        retirements: [],
+      });
       expect(handleQuotaSpy).toHaveBeenCalledWith(quotaError);
     });
 
     it("returns early when getDirectoryPath returns null", async () => {
       vi.spyOn(service, "getDirectoryPath").mockResolvedValue(null);
 
-      await service.archiveBanzuke(2024, 1, { year: 2024, bashoNumber: 1, bashoName: "hatsu", makuuchiSummary: { totalBouts: 0, avgWins: 0, injuryCount: 0 }, promotions: [], demotions: [], retirements: [] });
+      await service.archiveBanzuke(2024, 1, {
+        year: 2024,
+        bashoNumber: 1,
+        bashoName: "hatsu",
+        makuuchiSummary: { totalBouts: 0, avgWins: 0, injuryCount: 0 },
+        promotions: [],
+        demotions: [],
+        retirements: [],
+      });
 
       expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024", "banzuke"]);
     });
@@ -444,7 +599,15 @@ describe("OPFSArchiveService core functionality", () => {
 
   describe("retrieveBanzuke", () => {
     it("returns parsed AlmanacSnapshot for valid data", async () => {
-      const snapshot = { year: 2024, bashoNumber: 1 as const, bashoName: "hatsu" as const, makuuchiSummary: { totalBouts: 100, avgWins: 8, injuryCount: 2 }, promotions: [], demotions: [], retirements: [] };
+      const snapshot = {
+        year: 2024,
+        bashoNumber: 1 as const,
+        bashoName: "hatsu" as const,
+        makuuchiSummary: { totalBouts: 100, avgWins: 8, injuryCount: 2 },
+        promotions: [],
+        demotions: [],
+        retirements: [],
+      };
       const mockFileHandle = {
         getFile: vi.fn().mockResolvedValue({
           text: vi.fn().mockResolvedValue(JSON.stringify(snapshot)),
@@ -453,7 +616,9 @@ describe("OPFSArchiveService core functionality", () => {
       const mockDir = {
         getFileHandle: vi.fn().mockResolvedValue(mockFileHandle),
       };
-      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(
+        mockDir as unknown as FileSystemDirectoryHandle
+      );
 
       const result = await service.retrieveBanzuke(2024, 1);
       expect(result).toEqual(snapshot);
@@ -467,7 +632,9 @@ describe("OPFSArchiveService core functionality", () => {
           throw err;
         }),
       };
-      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(
+        mockDir as unknown as FileSystemDirectoryHandle
+      );
 
       const result = await service.retrieveBanzuke(2024, 99);
       expect(result).toBeNull();
@@ -487,39 +654,79 @@ describe("OPFSArchiveService core functionality", () => {
       const writes: string[] = [];
       let fileExists = false;
       const writable = {
-        write: vi.fn().mockImplementation(async (data: string) => { writes.push(data); fileExists = true; }),
+        write: vi.fn().mockImplementation(async (data: string) => {
+          writes.push(data);
+          fileExists = true;
+        }),
         close: vi.fn().mockResolvedValue(undefined),
       };
       const mockDir = {
-        getFileHandle: vi.fn().mockImplementation(async (_name: string, opts?: { create?: boolean }) => {
-          if (opts?.create === false) {
-            if (fileExists) {
-              return { createWritable: vi.fn().mockResolvedValue(writable) };
+        getFileHandle: vi
+          .fn()
+          .mockImplementation(async (_name: string, opts?: { create?: boolean }) => {
+            if (opts?.create === false) {
+              if (fileExists) {
+                return { createWritable: vi.fn().mockResolvedValue(writable) };
+              }
+              const err = new Error("NotFoundError") as Error & { name: string };
+              err.name = "NotFoundError";
+              throw err;
             }
-            const err = new Error("NotFoundError") as Error & { name: string };
-            err.name = "NotFoundError";
-            throw err;
-          }
-          return { createWritable: vi.fn().mockResolvedValue(writable) };
-        }),
+            return { createWritable: vi.fn().mockResolvedValue(writable) };
+          }),
       };
-      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(mockDir as unknown as FileSystemDirectoryHandle);
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(
+        mockDir as unknown as FileSystemDirectoryHandle
+      );
 
-      const data1 = { boutId: "b1", seq: 1, winner: "east", winnerRikishiId: "r1", loserRikishiId: "r2", kimarite: "yorikiri", kimariteName: "Yorikiri", stance: "migi", tachiaiWinner: "east", duration: 10, upset: false, kenshoEnvelopes: 0, log: [] };
-      const data2 = { boutId: "b1", seq: 2, winner: "east", winnerRikishiId: "r1", loserRikishiId: "r2", kimarite: "yorikiri", kimariteName: "Yorikiri", stance: "migi", tachiaiWinner: "east", duration: 10, upset: false, kenshoEnvelopes: 0, log: [] };
+      const data1 = {
+        boutId: "b1",
+        seq: 1,
+        winner: "east",
+        winnerRikishiId: "r1",
+        loserRikishiId: "r2",
+        kimarite: "yorikiri",
+        kimariteName: "Yorikiri",
+        stance: "migi",
+        tachiaiWinner: "east",
+        duration: 10,
+        upset: false,
+        kenshoEnvelopes: 0,
+        log: [],
+      };
+      const data2 = {
+        boutId: "b1",
+        seq: 2,
+        winner: "east",
+        winnerRikishiId: "r1",
+        loserRikishiId: "r2",
+        kimarite: "yorikiri",
+        kimariteName: "Yorikiri",
+        stance: "migi",
+        tachiaiWinner: "east",
+        duration: 10,
+        upset: false,
+        kenshoEnvelopes: 0,
+        log: [],
+      };
 
       let firstError: unknown = null;
       let secondError: unknown = null;
 
       await Promise.all([
-        service.archiveBoutLog(2024, "b1", data1).catch((e) => { firstError = e; }),
-        service.archiveBoutLog(2024, "b1", data2).catch((e) => { secondError = e; }),
+        service.archiveBoutLog(2024, "b1", data1).catch((e) => {
+          firstError = e;
+        }),
+        service.archiveBoutLog(2024, "b1", data2).catch((e) => {
+          secondError = e;
+        }),
       ]);
 
       // One should succeed (write the file), the other should hit a conflict.
       expect(writes.length).toBe(1);
       const oneSucceeded = firstError === null || secondError === null;
-      const oneConflicted = (firstError instanceof ArchiveConflictError) || (secondError instanceof ArchiveConflictError);
+      const oneConflicted =
+        firstError instanceof ArchiveConflictError || secondError instanceof ArchiveConflictError;
       expect(oneSucceeded).toBe(true);
       expect(oneConflicted).toBe(true);
     });

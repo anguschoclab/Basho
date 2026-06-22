@@ -85,7 +85,7 @@ export type GameAction =
   | { type: "SET_PHASE"; phase: GamePhase }
   | { type: "START_BASHO" }
   | { type: "ADVANCE_DAY" }
-  | { type: "SIMULATE_BOUT"; boutIndex: number }
+  | { type: "SIMULATE_BOUT"; boutIndex: number; boutId?: string }
   | { type: "SIMULATE_ALL_BOUTS" }
   | { type: "END_DAY" }
   | { type: "END_BASHO" }
@@ -102,13 +102,18 @@ export type GameAction =
       heyaId: string;
       facilityId: import("@/engine/types/infrastructure").FacilityId;
     }
+  | { type: "TICK_DAY" }
+  | { type: "TICK_MULTIPLE_DAYS"; payload: { days: number } }
   | { type: "ADVANCE_TUTORIAL_STEP"; step: import("@/engine/types/tutorial").TutorialStep }
   | { type: "SET_TUTORIAL_FLAG"; flag: keyof import("@/engine/types/tutorial").TutorialFlags }
   | { type: "COMPLETE_TUTORIAL" }
   | { type: "ASSIGN_MENTOR"; mentorId: string; apprenticeId: string }
   | { type: "REMOVE_MENTOR"; apprenticeId: string }
   | { type: "ADD_SPARRING_PAIR"; heyaId: string; aId: string; bId: string }
-  | { type: "REMOVE_SPARRING_PAIR"; heyaId: string; aId: string; bId: string };
+  | { type: "REMOVE_SPARRING_PAIR"; heyaId: string; aId: string; bId: string }
+  | { type: "BOOKMARK_ENTITY"; entityType: string; entityId: string; note?: string }
+  | { type: "UNBOOKMARK_ENTITY"; entityType: string; entityId: string }
+  | { type: "UPDATE_BOOKMARK_NOTE"; entityType: string; entityId: string; note: string };
 
 /**
  * Initial game state.

@@ -17,7 +17,17 @@ import { toRankPosition } from "@/engine/types/banzuke";
 interface RivalryCardProps {
   pair: RivalryPairState;
   world: {
-    rikishi: Map<string, { id: string; heyaId: string; shikona: string; rank: string; side?: string; rankNumber: number }>;
+    rikishi: Map<
+      string,
+      {
+        id: string;
+        heyaId: string;
+        shikona: string;
+        rank: string;
+        side?: string;
+        rankNumber: number;
+      }
+    >;
     heyas: Map<string, { id: string; name: string }>;
     playerHeyaId?: string;
   };

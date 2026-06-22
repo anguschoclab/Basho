@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { getHealthBadge, getMediaHeatLabel, getMediaToneColor } from "@/presenters/PerceptionPresenter";
+import {
+  getHealthBadge,
+  getMediaHeatLabel,
+  getMediaToneColor,
+} from "@/presenters/PerceptionPresenter";
 import { Rikishi } from "../../engine/types/rikishi";
 
 describe("PerceptionPresenter", () => {
@@ -85,7 +89,6 @@ describe("PerceptionPresenter", () => {
     });
 
     it("returns default color for unknown or unhandled tones", () => {
-       
       expect(getMediaToneColor("unknown" as any)).toBe("#94a3b8");
     });
   });

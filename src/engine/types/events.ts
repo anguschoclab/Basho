@@ -54,7 +54,9 @@ export type EngineEventType =
   | "YOKOZUNA_TSUNA_CREATED" // Yokozuna tsuna created
   | "KESHO_MAWASHI_CREATED" // Kesho mawashi created
   | "NARRATIVE_CRISIS_TRIGGERED" // Narrative crisis was triggered
-  | "MENTOR_MENTEE_BOUT"; // Mentor faced apprentice in bout
+  | "MENTOR_MENTEE_BOUT" // Mentor faced apprentice in bout
+  | "DECISION_AUTO_RESOLVED" // A loop decision was auto-resolved during autonomous sim
+  | "DECISION_RESOLVED"; // A loop decision was resolved (interactive or auto)
 
 /**
  * Type representing event phase.

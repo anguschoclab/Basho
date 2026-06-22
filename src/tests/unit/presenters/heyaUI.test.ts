@@ -187,7 +187,6 @@ describe("heyaUI - projectHeya", () => {
       const heya = makeMockHeya("h1");
       const world = makeMockWorld();
 
-       
       const mockStaff: Staff[] = [
         {
           id: "staff-1",

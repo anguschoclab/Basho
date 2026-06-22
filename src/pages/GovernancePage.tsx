@@ -106,6 +106,10 @@ export default function GovernancePage() {
         ),
       }));
 
+    const unresolvedRulings = (world.governanceLog ?? []).filter(
+      (r) => r.heyaId === world.playerHeyaId && !r.playerChoice
+    );
+
     const criticalHeyas = selectHeyasWithCriticalWelfare(world);
     const welfareRows = criticalHeyas.map((h) => ({
       id: h.id,
@@ -194,6 +198,7 @@ export default function GovernancePage() {
       scandal,
       scandalBand,
       historyRows,
+      unresolvedRulings,
       welfareRows,
       mergerRows,
       completedMergerRows,
@@ -291,6 +296,33 @@ export default function GovernancePage() {
                 stats={derived.recordStats}
               />
             </div>
+
+            {derived.unresolvedRulings.length > 0 && (
+              <div className="space-y-3">
+                <SectionHeader eyebrow="── PENDING ──" title="Unresolved Rulings" />
+                {derived.unresolvedRulings.map((r) => (
+                  <div key={r.id} className="rounded border border-primary/30 bg-primary/5 p-3">
+                    <div className="text-sm font-bold">
+                      {r.type.toUpperCase()} — {r.reason}
+                    </div>
+                    <div className="mt-2 flex gap-2">
+                      {(["lenient", "standard", "harsh"] as const).map((sev) => (
+                        <Button
+                          key={sev}
+                          size="sm"
+                          variant="outline"
+                          onClick={() =>
+                            sendCommand({ type: "ISSUE_RULING", rulingId: r.id, severity: sev })
+                          }
+                        >
+                          {sev}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
 
             <ListCard
               eyebrow="── RULINGS ──"
