@@ -1,21 +1,48 @@
-import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterAll, type Mock } from "vitest";
 import { MockFactory } from "../../helpers/utils/MockFactory";
 import type { EngineCommand, EngineEvent } from "@/engine/worker/types";
 import type { UIDigest } from "@/presenters/uiDigest";
 
-// Mock the self object for Web Worker environment before importing the worker
+// Save original globals to restore after tests finish and avoid polluting globals
+const originalSelf = globalThis.self;
+const originalPostMessage = globalThis.postMessage;
+const originalOnmessage = globalThis.onmessage;
+
 const mockPostMessage = vi.fn();
 
-// Use a separate interface for the mock to avoid global pollution if possible,
-// but we need to satisfy the expectations of the worker script.
+// Mock the self object for Web Worker environment before importing the worker
 interface MockWorkerGlobal {
   postMessage: (message: EngineEvent) => void;
   onmessage: ((event: MessageEvent<EngineCommand>) => void) | null;
+  self?: any;
 }
 
 const mockGlobal = globalThis as unknown as MockWorkerGlobal;
 mockGlobal.postMessage = mockPostMessage;
 mockGlobal.onmessage = null;
+if (!mockGlobal.self) {
+  mockGlobal.self = globalThis;
+}
+
+afterAll(() => {
+  if (originalPostMessage === undefined) {
+    delete (globalThis as any).postMessage;
+  } else {
+    mockGlobal.postMessage = originalPostMessage;
+  }
+
+  if (originalOnmessage === undefined) {
+    delete (globalThis as any).onmessage;
+  } else {
+    mockGlobal.onmessage = originalOnmessage;
+  }
+
+  if (originalSelf === undefined) {
+    delete (globalThis as any).self;
+  } else {
+    mockGlobal.self = originalSelf;
+  }
+});
 
 // Mock other dependencies
 vi.mock("@/presenters/uiDigest", () => ({
