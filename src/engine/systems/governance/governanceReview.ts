@@ -16,13 +16,8 @@ import { getStableRikishi, getActiveRikishi, getRikishi } from "../../queries";
 import { PRESTIGE_ORDER, bandIndex } from "../../prestige/prestigeSystem";
 import { findMergerTarget, executeMerger } from "../../mergers";
 import { checkRetirement } from "../../lifecycle";
-import { generateOyakata } from "../../oyakataPersonalities";
-import { foundStable } from "../generation/WorldFactory";
 import { onRikishiRetired } from "../../records";
-import { updateAvatarForAging } from "../../avatarGenerator";
-import { recordOyakataHandover } from "../../lineage";
 import { LegacyService } from "../legacy/LegacyService";
-import { rngForWorld } from "../../rng";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import {
@@ -30,13 +25,12 @@ import {
   MERGER_THRESHOLD,
   FACTION_BAILOUT_AMOUNT,
   FACTION_BENEFACTOR_THRESHOLD,
-  FOUNDING_CHANCE,
-  HEYA_COUNT_CAP,
   HEYA_FLOOR,
   CHRONIC_UNDERPERFORMANCE_BASHO,
   PRESTIGE_COLLAPSE_BAND,
   NON_FINANCIAL_MERGER_MAX_ROSTER,
 } from "../../../constants/engine/economic";
+import { processRetireeOyakataConversion } from "../../lifecycle/retireeOyakataConversion";
 
 /**
  * Post-basho governance: institutional sanctions, council reactions,
@@ -379,133 +373,9 @@ export function runRetirements(world: WorldState): StateImpact {
       vacanciesByHeyaId[r.heyaId] = (vacanciesByHeyaId[r.heyaId] || 0) + 1;
       rikishiToRetire.push(id);
 
-      // Constitution 2.3 & 61: Oyakata candidate eligibility
-      const age = world.year - r.birthYear;
-      const isAccomplished =
-        r.rank === "yokozuna" || r.rank === "ozeki" || r.rank === "sekiwake" || r.careerWins >= 200;
-
-      if (age >= 28 && isAccomplished) {
-        if (world.myosekiMarket) {
-          // Use seeded RNG early — needed both for merit-stock id and the oyakata/founding logic below.
-          const rng = rngForWorld(world, "governance", `retirement_${id}`);
-          const existing = Object.values(world.myosekiMarket.stocks).find(
-            (s) => s.status === "available"
-          );
-          // Merit issuance: without this the fixed pool stays fully held and no new stables
-          // ever form over a 25-year NPC sim. An accomplished retiree always earns an elder
-          // name — models JSA merit-elder-name issuance (Constitution §61).
-          const availableStock = existing ?? {
-            id: rng.uuid("MY"),
-            name: `${r.shikona ?? r.name ?? id}-myoseki`,
-            prestigeTier: "modest" as const,
-            ownerId: "JSA",
-            holderId: "JSA",
-            status: "available" as const,
-            askingPrice: undefined,
-          };
-          // availableStock is always defined now (existing or freshly minted)
-          if (availableStock) {
-            // Become an Oyakata
-            const newOyakataId = rng.uuid("OY");
-            const newOyakata = generateOyakata(
-              newOyakataId,
-              r.heyaId,
-              r.shikona ?? r.name ?? id,
-              age,
-              undefined,
-              {
-                aggression: r.stats.aggression,
-                experience: r.stats.experience,
-                adaptability: r.stats.adaptability,
-                momentum: r.momentum,
-              },
-              r.rank,
-              r.shikona
-            );
-
-            // Transfer and update rikishi avatar to oyakata
-            if (r.avatarConfig) {
-              newOyakata.avatarConfig = {
-                ...updateAvatarForAging(r.avatarConfig, age),
-                hairstyle: "oyakata",
-              };
-            }
-
-            // Queue Myoseki update
-            const nextStocks = { ...world.myosekiMarket.stocks };
-            nextStocks[availableStock.id] = {
-              ...availableStock,
-              ownerId: newOyakataId,
-              holderId: newOyakataId,
-              status: "held",
-              askingPrice: undefined,
-            };
-
-            const tx = {
-              id: rng.uuid("MT"),
-              date: `${world.year}-W${world.week || 1}`,
-              myosekiId: availableStock.id,
-              type: "sale" as const,
-              fromId: "JSA",
-              toId: newOyakataId,
-              amount: r.economics?.retirementFund || 150000000,
-            };
-
-            const nextHistory = [tx, ...world.myosekiMarket.history];
-
-            builder.updateWorldField("myosekiMarket", {
-              ...world.myosekiMarket,
-              stocks: nextStocks,
-              history: nextHistory,
-            });
-
-            // Queue Oyakata add (newly generated, not an update)
-            builder.addOyakata(newOyakata);
-
-            builder.logEvent(
-              "LIFECYCLE_EVENT",
-              "career",
-              {
-                rikishiId: id,
-                heyaId: r.heyaId,
-                shikona: r.shikona ?? r.name ?? id,
-                status: "elder_stock_acquired",
-                regimen: availableStock.name, // myoseki name
-              },
-              { heyaId: r.heyaId, rikishiId: id }
-            );
-
-            // Merge handover impact
-            builder.merge(
-              recordOyakataHandover(world, r.heyaId, newOyakataId, availableStock.name)
-            );
-
-            // Stable founding: RNG-gated chance for the new oyakata to found a new heya
-            // instead of staying in their original stable. Only if under the heya cap.
-            if (world.heyas.size < HEYA_COUNT_CAP && rng.bool(FOUNDING_CHANCE)) {
-              const { heya: newHeya } = foundStable(
-                world,
-                newOyakataId,
-                `${r.shikona ?? r.name ?? id}-beya`,
-                rng
-              );
-              builder.addHeya(newHeya);
-              builder.logEvent(
-                "LIFECYCLE_EVENT",
-                "career",
-                {
-                  rikishiId: id,
-                  heyaId: newHeya.id,
-                  shikona: r.shikona ?? r.name ?? id,
-                  status: "stable_founded",
-                  heyaName: newHeya.name,
-                },
-                { heyaId: newHeya.id, rikishiId: id, importance: "headline" }
-              );
-            }
-          }
-        }
-      }
+      // Constitution 2.3 & 61: Oyakata candidate eligibility + (RNG-gated) stable founding.
+      // Shared helper — also called from CareerService.processRetirements (AutoSim path).
+      processRetireeOyakataConversion(world, r, builder);
 
       // Register bloodline trait if the retiree was accomplished (yokozuna/ozeki/sekiwake)
       builder.merge(LegacyService.registerLegacyTrait(world, r));

@@ -12,6 +12,7 @@ import { StateImpact } from "@/engine/core/StateImpact";
 import { LegacyService } from "@/engine/systems/legacy/LegacyService";
 import { checkRetirement } from "@/engine/lifecycle";
 import { getRikishi } from "@/engine/queries";
+import { processRetireeOyakataConversion } from "@/engine/lifecycle/retireeOyakataConversion";
 
 export const CareerService = {
   /**
@@ -52,6 +53,11 @@ export const CareerService = {
             importance: rikishi.division === "makuuchi" ? "major" : "notable",
           }
         );
+
+        // Constitution 2.3 & 61: Oyakata conversion + (RNG-gated) stable founding.
+        // Shared helper — mirrors the governanceReview retirement path so AutoSim also
+        // produces new stables when accomplished wrestlers retire.
+        processRetireeOyakataConversion(world, rikishi, builder);
 
         // Register legacy bloodline if applicable (Phase 5: Legacy Engine)
         builder.merge(LegacyService.registerLegacyTrait(world, rikishi));
