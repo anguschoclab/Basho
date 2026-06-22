@@ -157,7 +157,7 @@ export function fillVacanciesForNPCWithBidding(
         candidate.candidateId,
         rivalHeyaId
       );
-      const bidAmount = Math.round(rawBid * balanceMult);
+      const bidAmount = Math.round(Math.max(0, rawBid) * balanceMult);
       bids.push({ heyaId, candidateId: candidate.candidateId, bidAmount, oyakata });
     }
   }
