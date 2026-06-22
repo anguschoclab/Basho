@@ -129,7 +129,10 @@
       "Bash(cd \"/Users/amauricia/Documents/GitHub/sumo-manager-pro\" && echo \"=== existing skills dirs? ===\" && ls -d .claude/skills 2>/dev/null || echo \"no .claude/skills\"; ls ~/.claude/skills 2>/dev/null | head || echo \"no ~/.claude/skills\"; echo \"=== confirm CLAUDE.md test/determinism conventions still accurate ===\" && grep -n \"npx vitest run\\\\|Never \\\\`Math.random\\\\|rngForWorld\" .claude/CLAUDE.md | head)",
       "Bash(cat .claude/skills/run-headless-sim/SKILL.md)",
       "Bash(ls src/engine/simulation/)",
-      "Bash(bun scripts/diagnostic-25yr-sim.ts)"
+      "Bash(bun scripts/diagnostic-25yr-sim.ts)",
+      "Bash(cat implementer-prompt.md)",
+      "Bash(cat spec-reviewer-prompt.md)",
+      "Bash(cat code-quality-reviewer-prompt.md)"
     ]
   },
   "outputStyle": "default"
