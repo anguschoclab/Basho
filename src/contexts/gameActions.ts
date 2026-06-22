@@ -206,7 +206,10 @@ export const loadWorld = (world: WorldState): GameAction => ({
   world,
 });
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2c4f2f20565b4e02797f4d84848b9b0a10c899ae
 /**
  * Builds infrastructure for a heya.
  *
@@ -223,7 +226,10 @@ export const buildInfrastructure = (
   facilityId,
 });
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2c4f2f20565b4e02797f4d84848b9b0a10c899ae
 /**
  * Advances the tutorial to the next step.
  *
