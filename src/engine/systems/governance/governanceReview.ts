@@ -403,6 +403,7 @@ export function runRetirements(world: WorldState): StateImpact {
             status: "available" as const,
             askingPrice: undefined,
           };
+          // availableStock is always defined now (existing or freshly minted)
           if (availableStock) {
             // Become an Oyakata
             const newOyakataId = rng.uuid("OY");

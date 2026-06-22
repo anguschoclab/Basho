@@ -58,16 +58,35 @@ describe("founding reliability with exhausted myoseki", () => {
       const impact = runRetirements(world);
       const next = resolveImpacts(world, [impact]);
 
-      // --- Assert: oyakata conversion OR stable founding happened ---
-      // Oyakata conversion is the deterministic precondition; founding is RNG-gated (35%).
-      const founded = next.heyas.size > before.heyaCount;
-      const oyakataConverted = (next.oyakata?.size ?? 0) > before.oyakataCount;
+      // --- Assert deterministic outcomes ---
 
+      // 1. An accomplished, retirement-age rikishi with an empty myoseki market MUST
+      //    convert to an oyakata — this is the precondition the merit-mint fix unblocks.
+      const oyakataConverted = (next.oyakata?.size ?? 0) > before.oyakataCount;
       expect(
-        founded || oyakataConverted,
-        `Expected either a new heya (was ${before.heyaCount}, now ${next.heyas.size}) ` +
-          `or a new oyakata (was ${before.oyakataCount}, now ${next.oyakata?.size ?? 0})`
+        oyakataConverted,
+        `Expected a new oyakata (was ${before.oyakataCount}, now ${next.oyakata?.size ?? 0}). ` +
+          `Oyakata conversion is deterministic once an accomplished retiree is detected.`
       ).toBe(true);
+
+      // 2. The minted merit stock must be persisted as "held" in the returned world.
+      //    This confirms the stock was minted AND transferred — not just created in memory.
+      const heldStocks = Object.values(next.myosekiMarket?.stocks ?? {}).filter(
+        (s: any) => s.status === "held"
+      );
+      expect(
+        heldStocks.length,
+        `Expected at least one held stock in myosekiMarket.stocks (found ${heldStocks.length}). ` +
+          `Merit-mint fix should persist the minted stock as held.`
+      ).toBeGreaterThan(0);
+
+      // Stable founding is validated end-to-end by the 25-year diagnostic (Task 4).
+      // It is RNG-gated at 35% so we do NOT hard-assert it here; observe it as a soft note.
+      const founded = next.heyas.size > before.heyaCount;
+      if (founded) {
+        // If founding happened, the new heya should also be in next.heyas
+        expect(next.heyas.size).toBeGreaterThan(before.heyaCount);
+      }
     }
   );
 });
