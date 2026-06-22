@@ -9,20 +9,19 @@
  * All sub-module exports are re-exported here so existing imports remain valid.
  */
 
-export { resolvePlayoffs, calculateStandings } from "./PlayoffResolver";
-export { distributePrizes, payBashoTeate, payKinboshiStipends } from "./PrizeDistribution";
-export { recordBashoHistory, checkYokozunaPromotions } from "./BashoHistory";
-
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import { mergeImpacts } from "../core/ImpactResolver";
 import { accumulateMochikyukinPoints } from "../systems/economy/MochikyukinService";
 import type { WorldState } from "../types/world";
 import type { StateImpact } from "../core/StateImpact";
-import { calculateStandings } from "./PlayoffResolver";
-import { resolvePlayoffs } from "./PlayoffResolver";
+import { resolvePlayoffs, calculateStandings } from "./PlayoffResolver";
 import { distributePrizes, payBashoTeate, payKinboshiStipends } from "./PrizeDistribution";
-import { recordBashoHistory } from "./BashoHistory";
+import { recordBashoHistory, checkYokozunaPromotions } from "./BashoHistory";
 import { getRikishi } from "../queries";
+
+export { resolvePlayoffs, calculateStandings };
+export { distributePrizes, payBashoTeate, payKinboshiStipends };
+export { recordBashoHistory, checkYokozunaPromotions };
 
 /**
  * Conclude Tournament Competition — handles yusho, prizes, and playoffs.

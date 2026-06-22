@@ -61,8 +61,6 @@ describe("issueGovernanceRuling", () => {
     const heya = updatedWorld.heyas.get("heya1");
     expect(heya!.scandalScore).toBe(20);
 
-    // capital unchanged for standard? Wait, code only has:
-    // if (severity === 'lenient') ... else if (severity === 'harsh') ...
     expect(heya!.politicalCapital).toBe(50);
 
     const ruling = updatedWorld.governanceLog![0];

@@ -1,7 +1,5 @@
 // NPC Manager AI barrel — implementation decomposed into npcAI/ directory.
 
-export { getManagerPersona } from "./systems/NPCPersonaService";
-
 export type { AgentDecisions, NPCWeeklyDecision } from "./npcAI/types";
 
 export { makeNPCWeeklyDecision } from "./npcAI/weekly";
