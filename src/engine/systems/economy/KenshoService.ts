@@ -80,7 +80,12 @@ function weightedSampleWithoutReplacement<T>(
   items: Array<{ item: T; w: number }>,
   k: number
 ): T[] {
-  const pool = items.map((x) => ({ item: x.item, w: Math.max(0, x.w) })).filter((x) => x.w > 0);
+  // ⚡ Bolt Optimization: Use a direct for...of loop instead of map().filter() to avoid intermediate O(N) array allocations
+  const pool: Array<{ item: T; w: number }> = [];
+  for (const x of items) {
+    const w = Math.max(0, x.w);
+    if (w > 0) pool.push({ item: x.item, w });
+  }
 
   const out: T[] = [];
   let picks = Math.max(0, Math.floor(k));
