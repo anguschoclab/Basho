@@ -6,6 +6,7 @@
 export * from "./development";
 export * from "./economic";
 export * from "./recruitment";
+export * from "./recruitmentBalance";
 export * from "./recruitmentExtended";
 export * from "./rivalry";
 export * from "./training";
