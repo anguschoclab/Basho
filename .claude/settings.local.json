@@ -136,7 +136,10 @@
       "Bash(git -C /Users/amauricia/Documents/GitHub/sumo-manager-pro branch --show-current)",
       "Bash(git -C /Users/amauricia/Documents/GitHub/sumo-manager-pro rev-parse HEAD)",
       "Bash(cat vitest.config.ts)",
-      "Bash(cat vitest.config.js)"
+      "Bash(cat vitest.config.js)",
+      "Bash(xargs ls)",
+      "Bash(git -C /Users/amauricia/Documents/GitHub/sumo-manager-pro add src/engine/systems/governance/governanceReview.ts src/tests/unit/engine/governance/foundingReliability.test.ts)",
+      "Bash(git -C /Users/amauricia/Documents/GitHub/sumo-manager-pro diff --cached --stat)"
     ]
   },
   "outputStyle": "default"
