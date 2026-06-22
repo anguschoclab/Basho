@@ -386,12 +386,25 @@ export function runRetirements(world: WorldState): StateImpact {
 
       if (age >= 28 && isAccomplished) {
         if (world.myosekiMarket) {
-          const availableStock = Object.values(world.myosekiMarket.stocks).find(
+          // Use seeded RNG early — needed both for merit-stock id and the oyakata/founding logic below.
+          const rng = rngForWorld(world, "governance", `retirement_${id}`);
+          const existing = Object.values(world.myosekiMarket.stocks).find(
             (s) => s.status === "available"
           );
+          // Merit issuance: without this the fixed pool stays fully held and no new stables
+          // ever form over a 25-year NPC sim. An accomplished retiree always earns an elder
+          // name — models JSA merit-elder-name issuance (Constitution §61).
+          const availableStock = existing ?? {
+            id: rng.uuid("MY"),
+            name: `${r.shikona ?? r.name ?? id}-myoseki`,
+            prestigeTier: "modest" as const,
+            ownerId: "JSA",
+            holderId: "JSA",
+            status: "available" as const,
+            askingPrice: undefined,
+          };
           if (availableStock) {
             // Become an Oyakata
-            const rng = rngForWorld(world, "governance", `retirement_${id}`);
             const newOyakataId = rng.uuid("OY");
             const newOyakata = generateOyakata(
               newOyakataId,
