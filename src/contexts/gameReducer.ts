@@ -18,7 +18,6 @@ import { heyaSlice } from "./heyaSlice";
 import { rosterSlice } from "./rosterSlice";
 import { financeSlice } from "./financeSlice";
 import { bashoSlice } from "./bashoSlice";
-import { mediaSlice } from "./mediaSlice";
 
 /**
  * Core generic actions that don't fit cleanly into a domain slice
@@ -62,9 +61,6 @@ function coreSlice(state: GameState, action: GameAction): GameState {
 
     case "SET_PHASE":
       return { ...state, phase: action.phase };
-
-    case "SET_AUTO_PLAY":
-      return { ...state, isAutoPlaying: action.value };
 
     case "UPDATE_WORLD":
       return {
@@ -148,21 +144,6 @@ function coreSlice(state: GameState, action: GameAction): GameState {
       };
     }
 
-    case "SET_IMPACTS": {
-      const currentWeek = state.world?.week ?? 0;
-      const newImpactEntry = { week: currentWeek, impacts: action.impacts };
-
-      // Limit impact history to last 52 weeks
-      const impactHistory = [...(state.impactHistory || []), newImpactEntry];
-      const limitedHistory = impactHistory.slice(-52);
-
-      return {
-        ...state,
-        lastImpacts: action.impacts,
-        impactHistory: limitedHistory,
-      };
-    }
-
     default:
       return state;
   }
@@ -175,7 +156,6 @@ const baseReducer = combineReducers<GameState, GameAction>([
   rosterSlice,
   financeSlice,
   bashoSlice,
-  mediaSlice,
 ]);
 
 /**

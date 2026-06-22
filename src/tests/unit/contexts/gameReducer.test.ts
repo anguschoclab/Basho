@@ -24,21 +24,19 @@ describe("Game Reducer Purity", () => {
 
 describe("Game Reducer: World Change Flag", () => {
   it("MUST set digestStale when world changes", () => {
-    const initialState = {
-      ...initialGameState,
-      world: generateInitialWorld("test-stale"),
-    };
+    const world = generateInitialWorld("test-stale");
+    const initialState = { ...initialGameState, world };
 
     const nextState = gameReducer(initialState, {
-      type: "ADVANCE_INTERIM",
-      weeks: 2,
-    } as unknown as GameAction);
+      type: "UPDATE_WORLD",
+      world: { ...world, week: world.week + 1 },
+    } as GameAction);
 
     expect(nextState).not.toBe(initialState);
     expect(nextState.world).not.toBe(initialState.world);
     expect(nextState.digestStale).toBe(true);
     expect(nextState.digest).toBeNull();
-  }, 30000);
+  });
 
   it("MUST NOT set digestStale when world does not change", () => {
     const initialState = {

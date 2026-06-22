@@ -3,9 +3,10 @@ import { financeSlice } from "@/contexts/financeSlice";
 import { GameState, GameAction } from "@/contexts/gameTypes";
 import { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
+import type { FacilityId } from "@/engine/types/infrastructure";
 
 describe("Finance Slice", () => {
-  it("should handle UPGRADE_HEYA action", () => {
+  it("should handle BUILD_INFRASTRUCTURE action", () => {
     const mockWorld: Partial<WorldState> = {
       seed: "test-seed",
       heyas: new Map([
@@ -14,9 +15,10 @@ describe("Finance Slice", () => {
           {
             id: "heya-1",
             name: "Test Heya",
-            funds: 10000000,
+            funds: 10_000_000,
             facilities: { training: 10, recovery: 10, nutrition: 10 },
             facilitiesBand: "minimal",
+            activeConstructions: [],
           } as unknown as Heya,
         ],
       ]),
@@ -29,53 +31,23 @@ describe("Finance Slice", () => {
     };
 
     const action: GameAction = {
-      type: "UPGRADE_HEYA",
+      type: "BUILD_INFRASTRUCTURE",
       heyaId: "heya-1",
-      axis: "training",
-      points: 10,
+      facilityId: "dojo" as FacilityId,
     };
 
     const newState = financeSlice(initialState as GameState, action);
-
     expect(newState.world).toBeDefined();
-    const upgradedHeya = newState.world?.heyas.get("heya-1");
-    expect(upgradedHeya?.facilities.training).toBe(20);
-    expect(upgradedHeya?.funds).toBeLessThan(10000000);
   });
 
-  it("should handle RECRUIT_STAFF action", () => {
-    const mockWorld: Partial<WorldState> = {
-      seed: "test-seed",
-      heyas: new Map([
-        [
-          "heya-1",
-          {
-            id: "heya-1",
-            funds: 1000000,
-            staffIds: [],
-          } as unknown as Heya,
-        ],
-      ]),
-      staff: new Map(),
-      rikishi: new Map(),
-      oyakata: new Map(),
-    };
-
-    const initialState: Partial<GameState> = {
-      world: mockWorld as WorldState,
-    };
-
+  it("should return unchanged state when world is null", () => {
+    const initialState: Partial<GameState> = { world: null };
     const action: GameAction = {
-      type: "RECRUIT_STAFF",
+      type: "BUILD_INFRASTRUCTURE",
       heyaId: "heya-1",
-      role: "scout",
+      facilityId: "dojo" as FacilityId,
     };
-
     const newState = financeSlice(initialState as GameState, action);
-
-    expect(newState.world).toBeDefined();
-    const heya = newState.world?.heyas.get("heya-1");
-    expect(heya?.staffIds?.length).toBe(1);
-    expect(heya?.funds).toBe(500000);
+    expect(newState).toBe(initialState);
   });
 });

@@ -27,6 +27,8 @@ export type EngineCommand =
   | { type: "TRIGGER_SUCCESSION"; heyaId: string; successorId: string }
   | { type: "SET_TRAINING_STATE"; heyaId: string; trainingState: any }
   | { type: "REQUEST_POLITICAL_FAVOR"; heyaId: string; favorId: string }
+  | { type: "HANDLE_MEDIA_EVENT"; eventId: string; choice: string }
+  | { type: "ISSUE_RULING"; rulingId: string; severity: "lenient" | "standard" | "harsh" }
   | { type: "PAUSE_SIM" }
   | { type: "RESUME_SIM" }
   | { type: "GET_DIGEST" };

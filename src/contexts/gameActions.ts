@@ -137,36 +137,6 @@ export const simFullBasho = (): GameAction => ({
   type: "SIM_FULL_BASHO",
 });
 
-/**
- * Advances the interim period by the specified number of weeks.
- *
- * @param {number} weeks - Number of weeks to advance.
- * @returns {GameAction} ADVANCE_INTERIM action.
- */
-export const advanceInterim = (weeks: number): GameAction => ({
-  type: "ADVANCE_INTERIM",
-  weeks,
-});
-
-/**
- * Advances by one day.
- *
- * @returns {GameAction} ADVANCE_ONE_DAY action.
- */
-export const advanceOneDay = (): GameAction => ({
-  type: "ADVANCE_ONE_DAY",
-});
-
-/**
- * Ticks multiple days at once.
- *
- * @param {number} days - Number of days to tick.
- * @returns {GameAction} TICK_MULTIPLE_DAYS action.
- */
-export const tickMultipleDays = (days: number): GameAction => ({
-  type: "TICK_MULTIPLE_DAYS",
-  payload: { days },
-});
 
 /**
  * Runs a holiday event with the given result.
@@ -212,16 +182,6 @@ export const selectHeya = (id: string | null): GameAction => ({
   id,
 });
 
-/**
- * Sets auto-play mode on or off.
- *
- * @param {boolean} value - Whether to enable auto-play.
- * @returns {GameAction} SET_AUTO_PLAY action.
- */
-export const setAutoPlay = (value: boolean): GameAction => ({
-  type: "SET_AUTO_PLAY",
-  value,
-});
 
 /**
  * Updates the world state with a new world.
@@ -245,24 +205,6 @@ export const loadWorld = (world: WorldState): GameAction => ({
   world,
 });
 
-/**
- * Upgrades a heya facility by the specified axis.
- *
- * @param {string} heyaId - The heya ID.
- * @param {"training" | "recovery" | "nutrition"} axis - The facility axis to upgrade.
- * @param {number} [points] - Optional number of points to spend.
- * @returns {GameAction} UPGRADE_HEYA action.
- */
-export const upgradeHeya = (
-  heyaId: string,
-  axis: "training" | "recovery" | "nutrition",
-  points?: number
-): GameAction => ({
-  type: "UPGRADE_HEYA",
-  heyaId,
-  axis,
-  points,
-});
 
 /**
  * Builds infrastructure for a heya.
@@ -280,47 +222,6 @@ export const buildInfrastructure = (
   facilityId,
 });
 
-/**
- * Recruits staff for a heya.
- *
- * @param {string} heyaId - The heya ID.
- * @param {any} role - The staff role to recruit.
- * @returns {GameAction} RECRUIT_STAFF action.
- */
-export const recruitStaff = (heyaId: string, role: any): GameAction => ({
-  type: "RECRUIT_STAFF",
-  heyaId,
-  role,
-});
-
-/**
- * Handles a media event with the given choice.
- *
- * @param {string} eventId - The media event ID.
- * @param {string} choice - The choice made.
- * @returns {GameAction} HANDLE_MEDIA_EVENT action.
- */
-export const handleMediaEvent = (eventId: string, choice: string): GameAction => ({
-  type: "HANDLE_MEDIA_EVENT",
-  eventId,
-  choice,
-});
-
-/**
- * Issues a governance ruling with the given severity.
- *
- * @param {string} rulingId - The ruling ID.
- * @param {"lenient" | "standard" | "harsh"} severity - The ruling severity.
- * @returns {GameAction} ISSUE_RULING action.
- */
-export const issueRuling = (
-  rulingId: string,
-  severity: "lenient" | "standard" | "harsh"
-): GameAction => ({
-  type: "ISSUE_RULING",
-  rulingId,
-  severity,
-});
 
 /**
  * Advances the tutorial to the next step.

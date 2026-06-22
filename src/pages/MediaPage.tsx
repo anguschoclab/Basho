@@ -7,9 +7,11 @@ import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RikishiName, StableName } from "@/components/ClickableName";
-import { Flame, TrendingUp, Building2, Zap, Filter } from "lucide-react";
+import { Flame, TrendingUp, Building2, Zap, Filter, MessageSquare } from "lucide-react";
+import { toast } from "sonner";
 import { PageHeader } from "@/components/layout/control-center";
 import {
   DropdownMenu,
@@ -192,7 +194,7 @@ function HeatSparkline({ data }: { data: Array<{ basho: string; heat: number }> 
 }
 
 export default function MediaPage() {
-  const { state } = useGame();
+  const { state, handleMediaEvent } = useGame();
   const world = state.world;
   const [beatFilter, setBeatFilter] = useState<Set<MediaBeat>>(new Set());
 
@@ -221,6 +223,13 @@ export default function MediaPage() {
   const hotRikishi = digest?.hotRikishi ?? [];
   const pressuredHeya = digest?.pressuredHeya ?? [];
 
+  const pendingMediaEvents = useMemo(() => {
+    if (!world?.playerHeyaId || !world.governanceLog) return [];
+    return world.governanceLog.filter(
+      (r) => r.heyaId === world.playerHeyaId && !r.playerChoice
+    );
+  }, [world]);
+
   if (!world) {
     return (
       <AppLayout subNavTabs={ASSOCIATION_TABS} activeSubTab="media" pageTitle="Media">
@@ -242,6 +251,75 @@ export default function MediaPage() {
           title="Media & Press"
           lede="Headlines, coverage, and public perception across the sumo world."
         />
+
+        {/* Action Required: pending media events */}
+        {pendingMediaEvents.length > 0 && (
+          <Card className="paper border-warning/40 bg-warning/5">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-sm">
+                <MessageSquare className="h-4 w-4 text-warning" />
+                Response Required
+                <Badge variant="destructive" className="ml-1 h-4 px-1.5 text-[9px]">
+                  {pendingMediaEvents.length}
+                </Badge>
+              </CardTitle>
+              <CardDescription className="text-xs">
+                The press is waiting. Choose your response strategy for each story.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {pendingMediaEvents.map((event) => (
+                <div
+                  key={event.id}
+                  className="p-3 rounded-lg border border-border/60 bg-card/60 space-y-2"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <p className="text-sm font-medium capitalize">{event.type.replace("_", " ")}</p>
+                      <p className="text-xs text-muted-foreground">{event.reason}</p>
+                    </div>
+                    <Badge variant="outline" className="text-[10px] shrink-0">{event.date}</Badge>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-xs h-7 border-success/40 text-success hover:bg-success/10"
+                      onClick={() => {
+                        handleMediaEvent(event.id, "apologize");
+                        toast.success("Issued public apology — reduces media heat.");
+                      }}
+                    >
+                      Apologize
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-xs h-7 border-destructive/40 text-destructive hover:bg-destructive/10"
+                      onClick={() => {
+                        handleMediaEvent(event.id, "deny");
+                        toast.warning("Denied the story — increases media pressure.");
+                      }}
+                    >
+                      Deny
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-xs h-7 text-muted-foreground"
+                      onClick={() => {
+                        handleMediaEvent(event.id, "ignore");
+                        toast.info("Chose to ignore — story may fade on its own.");
+                      }}
+                    >
+                      Ignore
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Top Headlines */}
         <Card className="paper">

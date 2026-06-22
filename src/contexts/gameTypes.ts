@@ -17,7 +17,6 @@ import type { BoutResult } from "@/engine/types/basho";
 import type { HolidayResult } from "@/engine/holiday";
 import type { AutoSimResult } from "@/engine/autoSim";
 import type { UIDigest } from "@/presenters/uiDigest";
-import type { StateImpact } from "@/engine/core/StateImpact";
 
 /**
  * Type representing game phase.
@@ -67,10 +66,6 @@ export interface GameState {
   isAutoPlaying: boolean;
   /** Map of bout IDs to tactics set by the player. */
   boutTactics: Record<string, import("@/engine/types/combat").BoutTactic>;
-  /** Store impacts from last tick for UI visualization and debugging. */
-  lastImpacts?: StateImpact[];
-  /** Historical impact tracking for debugging and analysis. Limited to last 52 weeks. */
-  impactHistory?: Array<{ week: number; impacts: StateImpact[] }>;
   /** True when the digest is stale and needs rebuild (set during bulk advances). */
   digestStale?: boolean;
 }
@@ -95,36 +90,21 @@ export type GameAction =
   | { type: "END_DAY" }
   | { type: "END_BASHO" }
   | { type: "SIM_FULL_BASHO" }
-  | { type: "ADVANCE_INTERIM"; weeks: number }
-  | { type: "ADVANCE_ONE_DAY" }
   | { type: "RUN_HOLIDAY"; result: HolidayResult }
   | { type: "RUN_AUTO_SIM"; result: AutoSimResult }
   | { type: "SELECT_RIKISHI"; id: string | null }
   | { type: "SELECT_HEYA"; id: string | null }
-  | { type: "SET_AUTO_PLAY"; value: boolean }
   | { type: "SET_BOUT_TACTIC"; boutId: string; tactic: import("@/engine/types/combat").BoutTactic }
   | { type: "UPDATE_WORLD"; world: WorldState }
   | { type: "LOAD_WORLD"; world: WorldState }
-  | {
-      type: "UPGRADE_HEYA";
-      heyaId: string;
-      axis: "training" | "recovery" | "nutrition";
-      points?: number;
-    }
   | {
       type: "BUILD_INFRASTRUCTURE";
       heyaId: string;
       facilityId: import("@/engine/types/infrastructure").FacilityId;
     }
-  | { type: "RECRUIT_STAFF"; heyaId: string; role: any }
-  | { type: "TICK_DAY" }
-  | { type: "TICK_MULTIPLE_DAYS"; payload: { days: number } }
-  | { type: "HANDLE_MEDIA_EVENT"; eventId: string; choice: string }
-  | { type: "ISSUE_RULING"; rulingId: string; severity: "lenient" | "standard" | "harsh" }
   | { type: "ADVANCE_TUTORIAL_STEP"; step: import("@/engine/types/tutorial").TutorialStep }
   | { type: "SET_TUTORIAL_FLAG"; flag: keyof import("@/engine/types/tutorial").TutorialFlags }
   | { type: "COMPLETE_TUTORIAL" }
-  | { type: "SET_IMPACTS"; impacts: StateImpact[] }
   | { type: "ASSIGN_MENTOR"; mentorId: string; apprenticeId: string }
   | { type: "REMOVE_MENTOR"; apprenticeId: string }
   | { type: "ADD_SPARRING_PAIR"; heyaId: string; aId: string; bId: string }
@@ -146,7 +126,5 @@ export const initialGameState: GameState = {
   playerOyakataId: null,
   isAutoPlaying: false,
   boutTactics: {},
-  lastImpacts: [],
-  impactHistory: [],
   digestStale: false,
 };

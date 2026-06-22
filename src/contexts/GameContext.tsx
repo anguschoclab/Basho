@@ -237,17 +237,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const issueRuling = useCallback(
     (rulingId: string, severity: "lenient" | "standard" | "harsh") => {
-      dispatch(actions.issueRuling(rulingId, severity));
+      sendCommand({ type: "ISSUE_RULING", rulingId, severity });
     },
-    []
+    [sendCommand]
   );
 
   const handleMediaEvent = useCallback(
     (eventId: string, choice: string) => {
-      if (!state.world) return;
-      dispatch(actions.handleMediaEvent(eventId, choice));
+      sendCommand({ type: "HANDLE_MEDIA_EVENT", eventId, choice });
     },
-    [state.world]
+    [sendCommand]
   );
 
   const recruitSponsorAction = useCallback(
