@@ -309,6 +309,7 @@ export default function BashoPage() {
               onClick={handleSimulateNext}
               disabled={remainingBouts === 0 || nextBoutIndex < 0}
               className="gap-1.5"
+              tooltip={(remainingBouts === 0 || nextBoutIndex < 0) ? "All bouts for today have been simulated" : undefined}
             >
               <Play className="h-3.5 w-3.5" /> Next Bout
             </Button>
@@ -318,6 +319,7 @@ export default function BashoPage() {
               onClick={handleSimulateAll}
               disabled={remainingBouts === 0}
               className="gap-1.5"
+              tooltip={remainingBouts === 0 ? "All bouts for today have been simulated" : undefined}
             >
               <FastForward className="h-3.5 w-3.5" /> Sim All
             </Button>
