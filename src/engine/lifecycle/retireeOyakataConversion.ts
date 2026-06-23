@@ -42,14 +42,16 @@ export function processRetireeOyakataConversion(
     retiree.careerWins >= 200;
 
   if (age < 28 || !isAccomplished) return;
-  if (!world.myosekiMarket) return;
+
+  // The myoseki market is only lazily created by the impact resolver, so a freshly
+  // generated (e.g. headless-sim) world may not have one yet. Treat a missing market
+  // as empty rather than bailing — otherwise founding never fires in the 25-year sim.
+  const market = world.myosekiMarket ?? { stocks: {}, history: [] };
 
   // Use seeded RNG — needed both for merit-stock id and the oyakata/founding logic below.
   const rng = rngForWorld(world, "governance", `retirement_${id}`);
 
-  const existing = Object.values(world.myosekiMarket.stocks).find(
-    (s) => s.status === "available"
-  );
+  const existing = Object.values(market.stocks).find((s) => s.status === "available");
 
   // Merit issuance: without this the fixed pool stays fully held and no new stables
   // ever form over a 25-year NPC sim. An accomplished retiree always earns an elder
@@ -91,7 +93,7 @@ export function processRetireeOyakataConversion(
   }
 
   // Queue Myoseki update
-  const nextStocks = { ...world.myosekiMarket.stocks };
+  const nextStocks = { ...market.stocks };
   nextStocks[availableStock.id] = {
     ...availableStock,
     ownerId: newOyakataId,
@@ -110,10 +112,10 @@ export function processRetireeOyakataConversion(
     amount: retiree.economics?.retirementFund || 150000000,
   };
 
-  const nextHistory = [tx, ...world.myosekiMarket.history];
+  const nextHistory = [tx, ...market.history];
 
   builder.updateWorldField("myosekiMarket", {
-    ...world.myosekiMarket,
+    ...market,
     stocks: nextStocks,
     history: nextHistory,
   });
