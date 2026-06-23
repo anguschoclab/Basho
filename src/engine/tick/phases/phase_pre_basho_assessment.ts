@@ -78,7 +78,7 @@ export function phase_pre_basho_assessment(world: WorldState): StateImpact {
           medicalCertificate: {
             injury: rikishi.injuryStatus?.type || "unknown",
             severity: rikishi.injuryStatus?.severity || "moderate",
-            treatmentWeeks: rikishi.injuryWeeksRemaining || 4,
+            treatmentWeeks: rikishi.injuryWeeksRemaining ?? 4,
             submittedDate: world.calendar?.currentWeek ?? 0,
           },
         });
@@ -132,10 +132,10 @@ function assessRikishi(rikishi: Rikishi): {
   healthScore -= rikishi.fatigue * FATIGUE_HEALTH_PENALTY;
 
   // Subtract for low condition
-  healthScore -= (100 - (rikishi.condition || 100)) * CONDITION_HEALTH_PENALTY;
+  healthScore -= (100 - (rikishi.condition ?? 100)) * CONDITION_HEALTH_PENALTY;
 
   // Subtract for low stamina
-  healthScore -= (100 - (rikishi.stats.stamina || 100)) * STAMINA_HEALTH_PENALTY;
+  healthScore -= (100 - (rikishi.stats.stamina ?? 100)) * STAMINA_HEALTH_PENALTY;
 
   // Clamp health score to 0-100
   healthScore = Math.max(0, Math.min(100, healthScore));

@@ -113,15 +113,14 @@ describe("ClickableName", () => {
     expect(link.className).not.toContain("  "); // no double spaces
   });
 
-  it("renders name when children is falsy numeric 0", () => {
-    // Bug-ish: `children || name` drops `0`
+  it("renders numeric 0 child instead of name", () => {
     render(
       <ClickableName type="rikishi" id="r1" name="Takakeisho">
         {0}
       </ClickableName>
     );
-    expect(screen.queryByText("0")).toBeNull();
-    expect(screen.getByText("Takakeisho")).toBeTruthy();
+    expect(screen.getByText("0")).toBeTruthy();
+    expect(screen.queryByText("Takakeisho")).toBeNull();
   });
 
   it("handles empty-string id", () => {
@@ -147,6 +146,16 @@ describe("Convenience wrappers", () => {
       </RikishiName>
     );
     expect(screen.getByTestId("rikishi-child")).toBeTruthy();
+    expect(screen.queryByText("Hakuho")).toBeNull();
+  });
+
+  it("RikishiName renders numeric 0 child instead of name", () => {
+    render(
+      <RikishiName id="r42" name="Hakuho">
+        {0}
+      </RikishiName>
+    );
+    expect(screen.getByText("0")).toBeTruthy();
     expect(screen.queryByText("Hakuho")).toBeNull();
   });
 

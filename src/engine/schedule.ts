@@ -53,7 +53,7 @@ function extractDramaContext(pairing: MatchPairing): DramaContext | undefined {
 
   return {
     label,
-    score: scoreMap[label] || 50,
+    score: scoreMap[label] ?? 50,
     reason: dramaReason,
   };
 }

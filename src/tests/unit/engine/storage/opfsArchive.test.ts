@@ -5,6 +5,7 @@ import { resetMockFileSystem, MockFileSystemDirectoryHandle } from "@/tests/setu
 describe("Stable Lords: OPFS Archival System", () => {
   beforeEach(() => {
     resetMockFileSystem();
+    opfsArchiveService.clearCache();
     vi.restoreAllMocks();
   });
 

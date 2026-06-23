@@ -25,7 +25,7 @@ export function calculateMostFrequentKimarite(
   let totalWins = 0;
   for (const match of history) {
     if (match.win && match.kimarite) {
-      winCounts[match.kimarite] = (winCounts[match.kimarite] || 0) + 1;
+      winCounts[match.kimarite] = (winCounts[match.kimarite] ?? 0) + 1;
       totalWins++;
     }
   }

@@ -108,9 +108,9 @@ export const WorldCircuitService = {
 
     // Simulate result: rikishi's combined stats vs. generated regional champion
     const rikishiPower =
-      ((rikishi.stats.technique || 50) +
-        (rikishi.stats.speed || 50) +
-        (rikishi.stats.mental || 50)) /
+      ((rikishi.stats.technique ?? 50) +
+        (rikishi.stats.speed ?? 50) +
+        (rikishi.stats.mental ?? 50)) /
       3;
     const regionalChampion = 50 + invitation.prestige / 2; // prestige 50 → opponent CA ~75
     const win = rng.next() < rikishiPower / (rikishiPower + regionalChampion);
@@ -236,24 +236,24 @@ export const WorldCircuitService = {
 
     const DRIFT_HANDLERS: Record<ExhibitionRegion, () => void> = {
       Mongolia: () => {
-        nextPhilosophy.speedBias = (nextPhilosophy.speedBias || 0) + driftAmount;
-        nextPhilosophy.powerBias = (nextPhilosophy.powerBias || 0) - driftAmount * 0.5;
+        nextPhilosophy.speedBias = (nextPhilosophy.speedBias ?? 0) + driftAmount;
+        nextPhilosophy.powerBias = (nextPhilosophy.powerBias ?? 0) - driftAmount * 0.5;
       },
       Georgia: () => {
-        nextPhilosophy.powerBias = (nextPhilosophy.powerBias || 0) + driftAmount;
-        nextPhilosophy.techniqueBias = (nextPhilosophy.techniqueBias || 0) - driftAmount * 0.5;
+        nextPhilosophy.powerBias = (nextPhilosophy.powerBias ?? 0) + driftAmount;
+        nextPhilosophy.techniqueBias = (nextPhilosophy.techniqueBias ?? 0) - driftAmount * 0.5;
       },
       Europe: () => {
-        nextPhilosophy.techniqueBias = (nextPhilosophy.techniqueBias || 0) + driftAmount;
-        nextPhilosophy.speedBias = (nextPhilosophy.speedBias || 0) - driftAmount * 0.5;
+        nextPhilosophy.techniqueBias = (nextPhilosophy.techniqueBias ?? 0) + driftAmount;
+        nextPhilosophy.speedBias = (nextPhilosophy.speedBias ?? 0) - driftAmount * 0.5;
       },
       Americas: () => {
-        nextPhilosophy.powerBias = (nextPhilosophy.powerBias || 0) + driftAmount * 0.7;
-        nextPhilosophy.speedBias = (nextPhilosophy.speedBias || 0) - driftAmount * 0.3;
+        nextPhilosophy.powerBias = (nextPhilosophy.powerBias ?? 0) + driftAmount * 0.7;
+        nextPhilosophy.speedBias = (nextPhilosophy.speedBias ?? 0) - driftAmount * 0.3;
       },
       East_Asia: () => {
-        nextPhilosophy.techniqueBias = (nextPhilosophy.techniqueBias || 0) + driftAmount * 0.7;
-        nextPhilosophy.powerBias = (nextPhilosophy.powerBias || 0) - driftAmount * 0.3;
+        nextPhilosophy.techniqueBias = (nextPhilosophy.techniqueBias ?? 0) + driftAmount * 0.7;
+        nextPhilosophy.powerBias = (nextPhilosophy.powerBias ?? 0) - driftAmount * 0.3;
       },
     };
 

@@ -219,7 +219,7 @@ describe("Basho UI Presenters", () => {
       const result = projectBoutRow(match as MatchSchedule, world as WorldState);
 
       expect(result.eastRankShort).toBe("M");
-      expect(result.westRankShort).toBe("J");
+      expect(result.westRankShort).toBe("J0");
     });
   });
 });

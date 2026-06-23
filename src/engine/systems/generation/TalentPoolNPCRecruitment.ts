@@ -60,7 +60,7 @@ export function fillVacanciesForNPC(
         const candidatesWithScores = availableCandidates.map((cId) => {
           const c = currentCandidates[cId];
           const talent = c.talentSeed;
-          const repScore = heya.reputation || 50;
+          const repScore = heya.reputation ?? 50;
           let affinity = 1.0;
           if (talent >= 80 && repScore < 70) affinity = 0.1;
           if (talent >= 90 && repScore < 85) affinity = 0.05;

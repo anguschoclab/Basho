@@ -51,7 +51,7 @@ export function spawnRecruitmentAgent(ctx: RecruitmentAgentContext): Recruitment
     };
   }
 
-  const talent = candidate.talentSeed || 50;
+  const talent = candidate.talentSeed ?? 50;
   const isElite = talent >= 85;
   const isHigh = talent >= 70;
 
@@ -111,9 +111,9 @@ export function spawnRecruitmentAgent(ctx: RecruitmentAgentContext): Recruitment
   // Rival competition adjustment
   if (rivalHeyaId) {
     const rivalHeya = getHeya(world, rivalHeyaId);
-    const rivalReputation = rivalHeya?.reputation || 50;
+    const rivalReputation = rivalHeya?.reputation ?? 50;
     const playerHeya = getHeya(world, oyakata.heyaId);
-    const playerReputation = playerHeya?.reputation || 50;
+    const playerReputation = playerHeya?.reputation ?? 50;
 
     if (rivalReputation > playerReputation) {
       maxBid *= 1.2; // Bid higher to outcompete

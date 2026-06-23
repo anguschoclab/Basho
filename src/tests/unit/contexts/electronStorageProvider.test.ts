@@ -48,9 +48,16 @@ describe("ElectronStorageProvider", () => {
     let provider: ElectronStorageProvider;
     let mocks: ReturnType<typeof mockElectronAPI>;
 
-    beforeEach(() => {
+    beforeEach(async () => {
+      vi.useFakeTimers();
       mocks = mockElectronAPI({ storageKeys: { save1: "data1", save2: "data2" } });
       provider = new ElectronStorageProvider();
+      // Flush initial loadKeys microtask so cachedKeys is populated
+      await Promise.resolve();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
     });
 
     it("delegates getItem to storage.get", () => {
@@ -70,39 +77,41 @@ describe("ElectronStorageProvider", () => {
       expect(result).toBeNull();
     });
 
-    it("delegates setItem to storage.set and reloads keys", async () => {
+    it("delegates setItem to storage.set and debounces key reload", async () => {
+      mocks.storage.keys.mockClear();
       mocks.storage.keys.mockResolvedValue({ newKey: "newValue" });
 
       provider.setItem("my-key", "my-value");
 
       expect(mocks.storage.set).toHaveBeenCalledWith("my-key", "my-value");
-      // loadKeys is async; flush microtasks
-      await Promise.resolve();
-      expect(mocks.storage.keys).toHaveBeenCalled();
+      // keys reload is debounced, not called immediately
+      expect(mocks.storage.keys).not.toHaveBeenCalled();
+      // advance debounce timer
+      await vi.advanceTimersByTimeAsync(100);
+      expect(mocks.storage.keys).toHaveBeenCalledTimes(1);
     });
 
-    it("delegates removeItem to storage.delete and reloads keys", async () => {
+    it("delegates removeItem to storage.delete and debounces key reload", async () => {
+      mocks.storage.keys.mockClear();
       mocks.storage.keys.mockResolvedValue({});
 
       provider.removeItem("my-key");
 
       expect(mocks.storage.delete).toHaveBeenCalledWith("my-key");
-      await Promise.resolve();
-      expect(mocks.storage.keys).toHaveBeenCalled();
+      // keys reload is debounced, not called immediately
+      expect(mocks.storage.keys).not.toHaveBeenCalled();
+      // advance debounce timer
+      await vi.advanceTimersByTimeAsync(100);
+      expect(mocks.storage.keys).toHaveBeenCalledTimes(1);
     });
 
-    it("returns key from cached keys", async () => {
-      // Force loadKeys to populate cache
-      await Promise.resolve();
-
+    it("returns key from cached keys", () => {
       expect(provider.key(0)).toBe("save1");
       expect(provider.key(1)).toBe("save2");
       expect(provider.key(99)).toBeNull();
     });
 
-    it("returns cached keys length", async () => {
-      await Promise.resolve();
-
+    it("returns cached keys length", () => {
       expect(provider.length).toBe(2);
     });
 
@@ -120,6 +129,90 @@ describe("ElectronStorageProvider", () => {
         expect.any(Error)
       );
       errorSpy.mockRestore();
+    });
+
+    describe("key caching and debouncing", () => {
+      it("setItem synchronously adds new key to cache", () => {
+        provider.setItem("b", "2");
+
+        expect(provider.length).toBe(3);
+        expect(provider.key(2)).toBe("b");
+      });
+
+      it("setItem does not duplicate existing key", () => {
+        provider.setItem("save1", "new-value");
+
+        expect(provider.length).toBe(2);
+      });
+
+      it("removeItem synchronously removes key from cache", () => {
+        provider.removeItem("save1");
+
+        expect(provider.length).toBe(1);
+        expect(provider.key(0)).toBe("save2");
+      });
+
+      it("removeItem on non-existent key does not change cache", () => {
+        provider.removeItem("nonexistent");
+
+        expect(provider.length).toBe(2);
+      });
+
+      it("debounce coalesces burst of mutations into single IPC call", async () => {
+        mocks.storage.keys.mockClear();
+
+        provider.setItem("a", "1");
+        provider.setItem("b", "2");
+        provider.setItem("c", "3");
+        provider.setItem("d", "4");
+        provider.setItem("e", "5");
+        provider.removeItem("a");
+        provider.removeItem("b");
+
+        expect(mocks.storage.keys).not.toHaveBeenCalled();
+
+        await vi.advanceTimersByTimeAsync(100);
+
+        expect(mocks.storage.keys).toHaveBeenCalledTimes(1);
+      });
+
+      it("debounce timer is reset on new mutation", async () => {
+        mocks.storage.keys.mockClear();
+
+        provider.setItem("a", "1");
+        vi.advanceTimersByTime(80);
+
+        provider.setItem("b", "2");
+        vi.advanceTimersByTime(80);
+
+        expect(mocks.storage.keys).not.toHaveBeenCalled();
+
+        await vi.advanceTimersByTimeAsync(20);
+
+        expect(mocks.storage.keys).toHaveBeenCalledTimes(1);
+      });
+
+      it("self-heal refreshes cache from authoritative source after debounce", async () => {
+        provider.setItem("newKey", "val");
+
+        mocks.storage.keys.mockResolvedValue({ differentKey: "val" });
+
+        await vi.advanceTimersByTimeAsync(100);
+
+        expect(provider.length).toBe(1);
+        expect(provider.key(0)).toBe("differentKey");
+      });
+
+      it("scheduleKeysReload clears pending timer on new mutation (no leak)", async () => {
+        mocks.storage.keys.mockClear();
+
+        provider.setItem("a", "1");
+        provider.removeItem("a");
+
+        await vi.advanceTimersByTimeAsync(100);
+
+        expect(mocks.storage.keys).toHaveBeenCalledTimes(1);
+      });
     });
   });
 

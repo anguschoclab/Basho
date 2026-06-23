@@ -16,7 +16,7 @@ import type { RikishiEconomicsDTO } from "../types";
 export function toEconomicsDTO(r: Rikishi): RikishiEconomicsDTO {
   return {
     salaryBreakdown: getSalaryBreakdown(
-      RANK_HIERARCHY[(r.rank || "jonokuchi") as Rank]?.salary || 0,
+      RANK_HIERARCHY[(r.rank || "jonokuchi") as Rank]?.salary ?? 0,
       r.division || "jonokuchi",
       r.stats?.achievements?.kinboshiEarned ?? 0
     ),

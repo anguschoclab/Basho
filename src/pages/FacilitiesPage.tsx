@@ -24,7 +24,7 @@ export default function FacilitiesPage() {
     (axis: FacilityAxis, points: number): UpgradeResult | undefined => {
       if (!world || !state.playerHeyaId) return undefined;
 
-      const oldLevel = heya?.facilities[axis] || 0;
+      const oldLevel = heya?.facilities[axis] ?? 0;
       const result = investInFacility(world, state.playerHeyaId, axis, points);
 
       // Convert StateImpact to UpgradeResult

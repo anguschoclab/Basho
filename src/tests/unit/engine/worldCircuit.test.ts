@@ -64,4 +64,41 @@ describe("World Circuit System Integration", () => {
     const hasAcademy = WorldCircuitService.hasForeignAcademy(world, heyaId, "Mongolia");
     expect(hasAcademy).toBe(true);
   });
+
+  it("SHOULD calculate rikishi power with zero stats, not default to 50", () => {
+    const world = generateInitialWorld("test-seed-zero-stats");
+    const heyaId = world.playerHeyaId!;
+    const rikishiId = Array.from(world.rikishi.keys())[0];
+
+    // Force zero stats
+    const r = world.rikishi.get(rikishiId)!;
+    r.stats.technique = 0;
+    r.stats.speed = 0;
+    r.stats.mental = 0;
+
+    // Force initial presence to 0
+    world.heyas.get(heyaId)!.regionalPresence = { Mongolia: 0 };
+
+    const invitation = {
+      id: "ex-zero-stats",
+      heyaId,
+      region: "Mongolia" as const,
+      prestige: 80,
+      expiresAtWeek: world.week + 4,
+    };
+    world.pendingExhibitions = [invitation];
+
+    // With zero stats, rikishiPower = (0+0+0)/3 = 0
+    // regionalChampion = 50 + 80/2 = 90
+    // win probability = 0 / (0 + 90) = 0 → should always lose
+    // Loss gives +5 presence, win gives +15
+    const impact = WorldCircuitService.processExhibitionResult(world, heyaId, rikishiId, invitation);
+    const newWorld = resolveImpacts(world, [impact]);
+
+    const heya = newWorld.heyas.get(heyaId)!;
+    const presence = heya.regionalPresence?.Mongolia ?? 0;
+    // With the fix (?? 50): rikishiPower = 0, always loses → presence = 0 + 5 = 5
+    // With the bug (|| 50): rikishiPower = 50, ~36% win chance → presence could be 15
+    expect(presence).toBe(5);
+  });
 });

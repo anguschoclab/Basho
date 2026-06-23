@@ -11,3 +11,4 @@ export * from "./identity";
 export * from "./collectionOperations";
 export * from "./entityAccess";
 export * from "./citizenshipUtils";
+export * from "./asyncPool";

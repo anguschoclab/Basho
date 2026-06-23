@@ -55,7 +55,7 @@ export function getOzekiRunCandidates(world: WorldState): OzekiRunCandidate[] {
     let recentWins = 0;
     let recentCount = 0;
     for (let i = Math.max(0, len - 3); i < len; i++) {
-      recentWins += history[i].wins || 0;
+      recentWins += history[i].wins ?? 0;
       recentCount++;
     }
 
@@ -109,7 +109,7 @@ export function getYokozunaCandidates(world: WorldState): YokozunaCandidate[] {
 
     const isStrong = yushos >= 2 || (yushos >= 1 && junYushos >= 1);
 
-    const heat = world.mediaState?.mediaHeat?.[r.id] || 0;
+    const heat = world.mediaState?.mediaHeat?.[r.id] ?? 0;
     const supportLevel = heat >= 75 ? "strong" : heat >= 50 ? "adequate" : "insufficient";
 
     if (yushos >= 1 || junYushos >= 1 || r.heyaId === world.playerHeyaId) {

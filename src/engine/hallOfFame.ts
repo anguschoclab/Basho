@@ -97,8 +97,8 @@ export function tryAddInductee(
     inductionYear: world.year,
     stats: {
       highestRank: r.rank,
-      careerWins: r.careerWins || 0,
-      careerLosses: r.careerLosses || 0,
+      careerWins: r.careerWins ?? 0,
+      careerLosses: r.careerLosses ?? 0,
       ...stats,
     },
   };

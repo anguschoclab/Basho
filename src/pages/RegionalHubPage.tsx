@@ -76,7 +76,7 @@ export default function RegionalHubPage() {
               <WidgetHeader title="Regional Influence" icon={Globe} />
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                 {regions.map((region) => {
-                  const score = regionalPresence[region] || 0;
+                  const score = regionalPresence[region] ?? 0;
                   const status = score >= 80 ? "Academy" : score >= 40 ? "Visible" : "Hidden";
 
                   return (

@@ -265,8 +265,8 @@ export function getRikishiBashoStats(world: WorldState, rikishiId: Id) {
     return { wins: 0, losses: 0, absences: 0 };
   }
   return {
-    wins: statsArr.wins || 0,
-    losses: statsArr.losses || 0,
-    absences: statsArr.absences || 0,
+    wins: statsArr.wins ?? 0,
+    losses: statsArr.losses ?? 0,
+    absences: statsArr.absences ?? 0,
   };
 }

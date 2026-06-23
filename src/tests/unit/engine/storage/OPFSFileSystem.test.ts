@@ -83,6 +83,130 @@ describe("OPFSFileSystem", () => {
     });
   });
 
+  describe("getDirectoryPath caching", () => {
+    function setupMockFS() {
+      const mockDirB = { getDirectoryHandle: vi.fn() };
+      const mockDirA = { getDirectoryHandle: vi.fn().mockResolvedValue(mockDirB) };
+      const mockRoot = { getDirectoryHandle: vi.fn().mockResolvedValue(mockDirA) };
+      const getDirectorySpy = vi.fn().mockResolvedValue(mockRoot);
+      Object.defineProperty(globalThis, "navigator", {
+        value: { storage: { getDirectory: getDirectorySpy } },
+        writable: true,
+      });
+      return { mockRoot, mockDirA, mockDirB, getDirectorySpy };
+    }
+
+    it("full cache hit on repeat call — second call hits cache only", async () => {
+      const { mockRoot, mockDirA, mockDirB, getDirectorySpy } = setupMockFS();
+
+      await fs.getDirectoryPath(["a", "b"]);
+      await fs.getDirectoryPath(["a", "b"]);
+
+      expect(getDirectorySpy).toHaveBeenCalledTimes(1);
+      expect(mockRoot.getDirectoryHandle).toHaveBeenCalledTimes(1);
+      expect(mockRoot.getDirectoryHandle).toHaveBeenCalledWith("a", { create: true });
+      expect(mockDirA.getDirectoryHandle).toHaveBeenCalledTimes(1);
+      expect(mockDirA.getDirectoryHandle).toHaveBeenCalledWith("b", { create: true });
+      expect(mockDirB.getDirectoryHandle).not.toHaveBeenCalled();
+    });
+
+    it("intermediate prefix reuse — second call starts from cached prefix", async () => {
+      const { mockRoot, mockDirA, mockDirB } = setupMockFS();
+      const mockDirC = { getDirectoryHandle: vi.fn() };
+      mockDirA.getDirectoryHandle.mockImplementation(async (name: string) => {
+        if (name === "b") return mockDirB;
+        if (name === "c") return mockDirC;
+        throw new Error(`Unexpected: ${name}`);
+      });
+
+      await fs.getDirectoryPath(["a", "b"]);
+      await fs.getDirectoryPath(["a", "c"]);
+
+      expect(mockRoot.getDirectoryHandle).toHaveBeenCalledTimes(1);
+      expect(mockRoot.getDirectoryHandle).toHaveBeenCalledWith("a", { create: true });
+      expect(mockDirA.getDirectoryHandle).toHaveBeenCalledWith("c", { create: true });
+    });
+
+    it("root handle cached — navigator.storage.getDirectory called once across calls", async () => {
+      const { mockRoot, getDirectorySpy } = setupMockFS();
+      const mockDirX = { getDirectoryHandle: vi.fn() };
+      mockRoot.getDirectoryHandle.mockResolvedValue(mockDirX);
+
+      await fs.getDirectoryPath(["a"]);
+      await fs.getDirectoryPath(["b"]);
+
+      expect(getDirectorySpy).toHaveBeenCalledTimes(1);
+      expect(mockRoot.getDirectoryHandle).toHaveBeenCalledWith("a", { create: true });
+      expect(mockRoot.getDirectoryHandle).toHaveBeenCalledWith("b", { create: true });
+    });
+
+    it("no cache pollution on error — failed traversal does not cache null", async () => {
+      const { mockRoot } = setupMockFS();
+      const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      mockRoot.getDirectoryHandle.mockRejectedValue(new Error("fail"));
+      const first = await fs.getDirectoryPath(["a", "b"]);
+      expect(first).toBeNull();
+
+      const mockDirA2 = { getDirectoryHandle: vi.fn() };
+      const mockDirB2 = { getDirectoryHandle: vi.fn() };
+      mockRoot.getDirectoryHandle.mockResolvedValue(mockDirA2);
+      mockDirA2.getDirectoryHandle.mockResolvedValue(mockDirB2);
+
+      const second = await fs.getDirectoryPath(["a", "b"]);
+      expect(second).toBe(mockDirB2);
+      expect(mockRoot.getDirectoryHandle).toHaveBeenCalledWith("a", { create: true });
+
+      consoleWarnSpy.mockRestore();
+    });
+
+    it("in-flight deduplication — concurrent calls share a single traversal", async () => {
+      const { mockRoot, mockDirA, mockDirB, getDirectorySpy } = setupMockFS();
+
+      const results = await Promise.all([
+        fs.getDirectoryPath(["a", "b"]),
+        fs.getDirectoryPath(["a", "b"]),
+        fs.getDirectoryPath(["a", "b"]),
+        fs.getDirectoryPath(["a", "b"]),
+        fs.getDirectoryPath(["a", "b"]),
+      ]);
+
+      expect(getDirectorySpy).toHaveBeenCalledTimes(1);
+      expect(mockRoot.getDirectoryHandle).toHaveBeenCalledTimes(1);
+      expect(mockDirA.getDirectoryHandle).toHaveBeenCalledTimes(1);
+      for (const r of results) {
+        expect(r).toBe(mockDirB);
+      }
+    });
+
+    it("clearCache resets the cache — subsequent call re-traverses", async () => {
+      const { mockRoot, getDirectorySpy } = setupMockFS();
+      const mockDirA = { getDirectoryHandle: vi.fn() };
+      mockRoot.getDirectoryHandle.mockResolvedValue(mockDirA);
+
+      await fs.getDirectoryPath(["a"]);
+      expect(getDirectorySpy).toHaveBeenCalledTimes(1);
+      expect(mockRoot.getDirectoryHandle).toHaveBeenCalledTimes(1);
+
+      fs.clearCache();
+
+      await fs.getDirectoryPath(["a"]);
+      expect(getDirectorySpy).toHaveBeenCalledTimes(2);
+      expect(mockRoot.getDirectoryHandle).toHaveBeenCalledTimes(2);
+    });
+
+    it("empty path returns root directory handle", async () => {
+      const { getDirectorySpy } = setupMockFS();
+
+      const result = await fs.getDirectoryPath([]);
+      expect(getDirectorySpy).toHaveBeenCalledTimes(1);
+      expect(result).toBeDefined();
+
+      await fs.getDirectoryPath([]);
+      expect(getDirectorySpy).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe("handleQuotaError", () => {
     it("dispatches custom event on QuotaExceededError and logs warning", () => {
       const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});

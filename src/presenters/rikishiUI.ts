@@ -149,7 +149,7 @@ function calculateMostFrequentKimarite(
   let totalWins = 0;
   for (const match of history) {
     if (match.win && match.kimarite) {
-      winCounts[match.kimarite] = (winCounts[match.kimarite] || 0) + 1;
+      winCounts[match.kimarite] = (winCounts[match.kimarite] ?? 0) + 1;
       totalWins++;
     }
   }
@@ -419,7 +419,7 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     specialPrizes: calculateSpecialPrizes(r),
     achievements: calculateAchievements(r),
     salaryBreakdown: getSalaryBreakdown(
-      RANK_HIERARCHY[(r.rank || "jonokuchi") as Rank]?.salary || 0,
+      RANK_HIERARCHY[(r.rank || "jonokuchi") as Rank]?.salary ?? 0,
       r.division || "jonokuchi",
       r.stats?.achievements?.kinboshiEarned ?? 0
     ),

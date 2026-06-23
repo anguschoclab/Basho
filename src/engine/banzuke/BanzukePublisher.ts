@@ -150,10 +150,10 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
 
     // Yokozuna make-koshi and kyujo tracking for retirement pressure
     // Real sumo: Yokozuna with consecutive losing records face retirement pressure
-    let consecutiveMakeKoshi = rikishi?.consecutiveMakeKoshi || 0;
-    let consecutiveKyujo = rikishi?.consecutiveKyujo || 0;
-    let pressureScore = rikishi?.pressureScore || 0;
-    let councilWarnings = rikishi?.councilWarnings || 0;
+    let consecutiveMakeKoshi = rikishi?.consecutiveMakeKoshi ?? 0;
+    let consecutiveKyujo = rikishi?.consecutiveKyujo ?? 0;
+    let pressureScore = rikishi?.pressureScore ?? 0;
+    let councilWarnings = rikishi?.councilWarnings ?? 0;
     let statsUpdate: Partial<import("../types/rikishi").RikishiStats> = {};
 
     if (rikishi?.rank === "yokozuna") {
@@ -162,28 +162,28 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       const subPar = stats.wins < 10; // Fails to meet "Yokozuna standard"
 
       if (isMakeKoshi || isKyujo) {
-        consecutiveMakeKoshi = (rikishi.consecutiveMakeKoshi || 0) + 1;
+        consecutiveMakeKoshi = (rikishi.consecutiveMakeKoshi ?? 0) + 1;
       } else {
         consecutiveMakeKoshi = 0;
       }
 
       if (isKyujo) {
-        consecutiveKyujo = (rikishi.consecutiveKyujo || 0) + 1;
+        consecutiveKyujo = (rikishi.consecutiveKyujo ?? 0) + 1;
       } else {
         consecutiveKyujo = 0;
       }
 
       // Council Recommendation / Warning Logic
       if (subPar || isKyujo) {
-        pressureScore = (rikishi.pressureScore || 0) + 1;
+        pressureScore = (rikishi.pressureScore ?? 0) + 1;
 
         // Every 2 "sub-par" performances = 1 Council Warning
         if (pressureScore % 2 === 0) {
-          councilWarnings = (rikishi.councilWarnings || 0) + 1;
+          councilWarnings = (rikishi.councilWarnings ?? 0) + 1;
 
           // Apply Stat Debuff: 10% reduction in Mental and Technique (Dignity loss)
-          const currentMental = rikishi.stats.mental || 50;
-          const currentTechnique = rikishi.stats.technique || 50;
+          const currentMental = rikishi.stats.mental ?? 50;
+          const currentTechnique = rikishi.stats.technique ?? 50;
           statsUpdate = {
             mental: currentMental * 0.9,
             technique: currentTechnique * 0.9,

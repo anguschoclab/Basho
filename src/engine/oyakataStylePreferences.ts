@@ -147,7 +147,7 @@ export function scoreRecruitForOyakata(
   if (profile.preferredStyle !== "any" && candidate.style !== profile.preferredStyle) score -= 10;
 
   // Stat weights
-  score += (candidate.talentSeed || 50) * profile.statWeights.potential * 0.2;
+  score += (candidate.talentSeed ?? 50) * profile.statWeights.potential * 0.2;
   score += (candidate.weightPotentialKg > 130 ? 10 : 0) * profile.statWeights.size;
 
   // Meta Shift: Combat Profile preferences

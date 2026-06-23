@@ -258,7 +258,7 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
   const headline = buildHeadline(
     world,
     matchupResult.items.length,
-    injurySection?.items.length || 0
+    injurySection?.items.length ?? 0
   );
 
   return {
@@ -266,7 +266,7 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
     headline,
     counts: {
       trainingEvents: eventBuckets.training.length,
-      injuries: injurySection?.items.length || 0,
+      injuries: injurySection?.items.length ?? 0,
       recoveries: 0,
       economy: eventBuckets.economy.length,
       scouting: eventBuckets.scouting.length,

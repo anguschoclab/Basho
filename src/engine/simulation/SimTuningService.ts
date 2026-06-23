@@ -73,10 +73,10 @@ export const SimTuningService = {
 
     if (activeRikishi.length > 0) {
       activeRikishi.forEach((r) => {
-        statAverages.power += r.stats.power || 50;
-        statAverages.speed += r.stats.speed || 50;
-        statAverages.technique += r.stats.technique || 50;
-        statAverages.stamina += r.stats.stamina || 50;
+        statAverages.power += r.stats.power ?? 50;
+        statAverages.speed += r.stats.speed ?? 50;
+        statAverages.technique += r.stats.technique ?? 50;
+        statAverages.stamina += r.stats.stamina ?? 50;
       });
 
       statAverages.power /= activeRikishi.length;

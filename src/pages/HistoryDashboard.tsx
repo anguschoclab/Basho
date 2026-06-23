@@ -194,13 +194,13 @@ const StablesTab = ({ world }: { world: WorldState }) => {
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Sekitori:</span>
                           <span className="text-foreground">
-                            {tenure.achievements?.sekitoriCount || 0}
+                            {tenure.achievements?.sekitoriCount ?? 0}
                           </span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Titles:</span>
                           <span className="text-foreground">
-                            {tenure.achievements?.titlesWon || 0}
+                            {tenure.achievements?.titlesWon ?? 0}
                           </span>
                         </div>
                       </div>

@@ -21,8 +21,8 @@ export const HistoryService = {
     const records = world.records || this.createEmptyRecords();
 
     let changed = false;
-    const currentYear = world.year || 2026;
-    const currentMonth = world.calendar?.month || 1;
+    const currentYear = world.year ?? 2026;
+    const currentMonth = world.calendar?.month ?? 1;
 
     const checkRecord = (list: RecordEntry[], value: number, limit: number = 5): boolean => {
       if (list.length < limit || value > list[list.length - 1].value) {
@@ -40,13 +40,13 @@ export const HistoryService = {
     };
 
     // 1. Career Wins
-    if (checkRecord(records.allTime.careerWins, rikishi.careerWins || 0)) changed = true;
+    if (checkRecord(records.allTime.careerWins, rikishi.careerWins ?? 0)) changed = true;
 
     // 2. Yusho Count
-    if (checkRecord(records.allTime.yusho, rikishi.careerRecord?.yusho || 0)) changed = true;
+    if (checkRecord(records.allTime.yusho, rikishi.careerRecord?.yusho ?? 0)) changed = true;
 
     // 3. Kinboshi Earned
-    const kinboshi = rikishi.achievements?.kinboshiEarned || 0;
+    const kinboshi = rikishi.achievements?.kinboshiEarned ?? 0;
     if (kinboshi > 0 && checkRecord(records.allTime.kinboshi, kinboshi)) changed = true;
 
     if (changed) {
@@ -73,7 +73,7 @@ export const HistoryService = {
     if (!records) return "The annals are empty for this year.";
 
     const topWrestler = records.allTime.careerWins[0];
-    return `As the year ${world.year} concludes, ${topWrestler?.shikona || "unknown"} stands as the current pinnacle of career achievement with ${topWrestler?.value || 0} wins.`;
+    return `As the year ${world.year} concludes, ${topWrestler?.shikona ?? "unknown"} stands as the current pinnacle of career achievement with ${topWrestler?.value ?? 0} wins.`;
   },
 
   createEmptyRecords(): WorldRecords {
