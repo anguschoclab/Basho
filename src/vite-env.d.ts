@@ -8,7 +8,7 @@ interface Window {
       set: (key: string, value: unknown) => void;
       delete: (key: string) => void;
       clear: () => void;
-      keys: () => Record<string, unknown>;
+      keys: () => Promise<Record<string, unknown>>;
       size: () => number;
     };
     window: {

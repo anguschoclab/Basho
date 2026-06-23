@@ -43,7 +43,7 @@ export function ClickableName({ type, id, name, className, children }: Clickable
       )}
       onClick={(e) => e.stopPropagation()}
     >
-      {children || name}
+      {children ?? name}
     </Link>
   );
 }

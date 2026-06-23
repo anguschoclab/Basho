@@ -140,3 +140,7 @@ Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop 
 ## 2025-05-24 - O(N) Object Deletion Optimization
 **Learning:** Using `Object.fromEntries(Object.entries(obj).filter(...))` to remove a subset of keys from a large dictionary creates significant O(N) array allocation overhead, scaling linearly with the size of the *entire* object rather than the number of removed items.
 **Action:** For bulk property removals on large dictionaries (like talent pools or entity caches), always prefer a direct loop with the `delete` operator over an array of `removedIds`. This changes the time complexity from O(N) relative to the object size to O(M) relative to the items removed.
+
+## 2026-06-22 - Optimize array reduction in KenshoService
+**Learning:** Chained `.map().filter()` operations on arrays create intermediate `O(N)` array allocations which hurt performance in frequently called service functions.
+**Action:** Replace `.map().filter()` chains with a single `for...of` loop that accumulates all values simultaneously to prevent redundant iterations and intermediate array allocations.

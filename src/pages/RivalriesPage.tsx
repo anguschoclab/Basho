@@ -57,8 +57,8 @@ export default function RivalriesPage() {
       .map((p) => ({
         ...p,
         heat: Math.max(0, Math.min(100, Number(p.heat) || 0)),
-        aWins: p.aWins || 0,
-        bWins: p.bWins || 0,
+        aWins: p.aWins ?? 0,
+        bWins: p.bWins ?? 0,
         triggers: p.triggers || {},
         tone: p.tone || "respect",
       })) as RivalryPairState[];

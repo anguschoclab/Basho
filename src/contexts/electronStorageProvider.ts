@@ -8,6 +8,8 @@
 
 import { type IStorageProvider, setStorageProvider } from "@/engine/storageProvider";
 
+const KEYS_RELOAD_DEBOUNCE_MS = 100;
+
 /**
  * ElectronStorageProvider — wraps electron-store behind IStorageProvider.
  * Falls back to localStorage if electron-store is not available (for web builds).
@@ -18,10 +20,11 @@ export class ElectronStorageProvider implements IStorageProvider {
     set: (key: string, value: unknown) => void;
     delete: (key: string) => void;
     clear: () => void;
-    keys: () => Record<string, unknown>;
+    keys: () => Promise<Record<string, unknown>>;
   };
   private isElectron: boolean;
   private cachedKeys: string[] = [];
+  private keysReloadTimer: ReturnType<typeof setTimeout> | undefined;
 
   constructor() {
     // Check if running in Electron with electronCustom API
@@ -43,7 +46,7 @@ export class ElectronStorageProvider implements IStorageProvider {
             const key = localStorage.key(i);
             if (key) keys[key] = localStorage.getItem(key);
           }
-          return keys;
+          return Promise.resolve(keys);
         },
       };
     }
@@ -69,18 +72,30 @@ export class ElectronStorageProvider implements IStorageProvider {
 
   setItem(key: string, value: string): void {
     this.storage.set(key, value);
-    // Reload keys after setting a new item
     if (this.isElectron) {
-      this.loadKeys();
+      if (!this.cachedKeys.includes(key)) {
+        this.cachedKeys.push(key);
+      }
+      this.scheduleKeysReload();
     }
   }
 
   removeItem(key: string): void {
     this.storage.delete(key);
-    // Reload keys after removing an item
     if (this.isElectron) {
-      this.loadKeys();
+      this.cachedKeys = this.cachedKeys.filter((k) => k !== key);
+      this.scheduleKeysReload();
     }
+  }
+
+  private scheduleKeysReload(): void {
+    if (this.keysReloadTimer) clearTimeout(this.keysReloadTimer);
+    this.keysReloadTimer = setTimeout(() => {
+      this.keysReloadTimer = undefined;
+      this.loadKeys().catch((e) =>
+        console.error("Failed to reload keys from electron-store:", e)
+      );
+    }, KEYS_RELOAD_DEBOUNCE_MS);
   }
 
   key(index: number): string | null {

@@ -161,18 +161,18 @@ export function handleInvestigationTransition(
 ): void {
   if (!state.investigation) {
     state.investigation = {
-      openedWeek: world.calendar?.currentWeek || 0,
+      openedWeek: world.calendar?.currentWeek ?? 0,
       severity: "low",
       triggers: [],
       progress: 0,
     };
   }
   const progressGain = clamp(
-    Math.round(PROGRESS_GAIN_BASE + (heya.facilities?.recovery || 50) / PROGRESS_GAIN_DIVISOR),
+    Math.round(PROGRESS_GAIN_BASE + (heya.facilities?.recovery ?? 50) / PROGRESS_GAIN_DIVISOR),
     PROGRESS_GAIN_MIN,
     PROGRESS_GAIN_MAX
   );
-  state.investigation.progress = clamp((state.investigation.progress || 0) + progressGain, 0, 100);
+  state.investigation.progress = clamp((state.investigation.progress ?? 0) + progressGain, 0, 100);
 
   if (
     state.welfareRisk >= SANCTION_RISK_THRESHOLD ||

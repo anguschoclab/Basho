@@ -315,9 +315,9 @@ export function issueGovernanceRuling(
       builder.updateWorldField("governanceLog", updatedGovernanceLog);
 
       if (severity === "lenient") {
-        updates.politicalCapital = Math.max(0, (heya.politicalCapital || 50) - 10);
+        updates.politicalCapital = Math.max(0, (heya.politicalCapital ?? 50) - 10);
       } else if (severity === "harsh") {
-        updates.politicalCapital = Math.min(100, (heya.politicalCapital || 50) + 5);
+        updates.politicalCapital = Math.min(100, (heya.politicalCapital ?? 50) + 5);
       }
 
       builder.updateHeya(heya.id, updates);

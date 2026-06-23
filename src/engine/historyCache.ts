@@ -8,15 +8,15 @@
 import { opfsArchiveService } from "./storage/opfsArchive";
 import { electronArchiveService } from "./storage/electronArchive";
 import { info } from "./utils/Logger";
-import type { BoutResult } from "./types/basho";
-import type { RecordEntry } from "./types/records";
-import type { BanzukeSnapshot } from "./types/banzuke";
+import { mapWithConcurrency } from "./utils";
+import type { BoutResult, BashoResult } from "./types/basho";
+import type { AlmanacSnapshot } from "./almanac";
 
 export interface ArchivedYear {
   year: number;
   bouts: BoutResult[];
-  awards: RecordEntry[];
-  banzukeSnapshots: BanzukeSnapshot[];
+  awards: BashoResult[];
+  banzukeSnapshots: AlmanacSnapshot[];
 }
 
 class HistoryLRUCache {
@@ -88,8 +88,8 @@ class HistoryLRUCache {
       const boutIds = await archiveService.getArchivedBoutIdsForSeason(year);
       if (boutIds.length === 0) return null;
 
-      const bouts = await Promise.all(
-        boutIds.map((id) => archiveService.retrieveBoutLog(year, id))
+      const bouts = await mapWithConcurrency(boutIds, 8, (id) =>
+        archiveService.retrieveBoutLog(year, id)
       );
 
       // 2. Load Awards
@@ -104,7 +104,7 @@ class HistoryLRUCache {
         year,
         bouts: bouts.filter((b): b is BoutResult => b !== null),
         awards,
-        banzukeSnapshots: snapshots.filter((s): s is BanzukeSnapshot => s !== null),
+        banzukeSnapshots: snapshots.filter((s): s is AlmanacSnapshot => s !== null),
       };
     } catch (err) {
       console.error(`[HistoryCache] Failed to load year ${year} from archive service:`, err);

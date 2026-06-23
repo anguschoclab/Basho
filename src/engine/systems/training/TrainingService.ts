@@ -260,7 +260,7 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
       };
 
       // Pre-snapshot for milestone checks
-      const prevPower = rikishi.stats.power || 50;
+      const prevPower = rikishi.stats.power ?? 50;
 
       // Age-based decline (past peak, per attribute group)
       const decay = calculateAgeDecay(rikishi, world.year);
@@ -271,39 +271,39 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
 
       newStats.power = Math.min(
         getEffectiveCeiling(rikishi, "power", world),
-        Math.max(STAT_FLOOR, (rikishi.stats.power || 50) + finalGrowth.power + decay.power)
+        Math.max(STAT_FLOOR, (rikishi.stats.power ?? 50) + finalGrowth.power + decay.power)
       );
       newStats.speed = Math.min(
         getEffectiveCeiling(rikishi, "speed", world),
-        Math.max(STAT_FLOOR, (rikishi.stats.speed || 50) + finalGrowth.speed + decay.speed)
+        Math.max(STAT_FLOOR, (rikishi.stats.speed ?? 50) + finalGrowth.speed + decay.speed)
       );
       newStats.technique = Math.min(
         getEffectiveCeiling(rikishi, "technique", world),
         Math.max(
           STAT_FLOOR,
-          (rikishi.stats.technique || 50) + finalGrowth.technique + decay.technique
+          (rikishi.stats.technique ?? 50) + finalGrowth.technique + decay.technique
         )
       );
       newStats.balance = Math.min(
         getEffectiveCeiling(rikishi, "balance", world),
-        Math.max(STAT_FLOOR, (rikishi.stats.balance || 50) + finalGrowth.balance + decay.balance)
+        Math.max(STAT_FLOOR, (rikishi.stats.balance ?? 50) + finalGrowth.balance + decay.balance)
       );
       newStats.stamina = Math.min(
         getEffectiveCeiling(rikishi, "stamina", world),
-        Math.max(STAT_FLOOR, (rikishi.stats.stamina || 50) + finalGrowth.stamina + decay.stamina)
+        Math.max(STAT_FLOOR, (rikishi.stats.stamina ?? 50) + finalGrowth.stamina + decay.stamina)
       );
       newStats.adaptability = Math.min(
         getEffectiveCeiling(rikishi, "adaptability", world),
         Math.max(
           STAT_FLOOR,
-          (rikishi.stats.adaptability || 50) + finalGrowth.adaptability + decay.adaptability
+          (rikishi.stats.adaptability ?? 50) + finalGrowth.adaptability + decay.adaptability
         )
       );
       newStats.mental = Math.min(
         getEffectiveCeiling(rikishi, "mental", world),
         Math.max(
           STAT_FLOOR,
-          (rikishi.stats.mental || 50) +
+          (rikishi.stats.mental ?? 50) +
             finalGrowth.mental * EXPERIENCE_GROWTH_MULTIPLIER +
             decay.mental
         )

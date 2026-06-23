@@ -170,7 +170,7 @@ export default function MyosekiMarketPage() {
                             <div className="space-y-1">
                               <p className="text-sm font-medium">Asking Price:</p>
                               <p className="text-xl font-bold text-primary">
-                                ¥{(stock.askingPrice || 0).toLocaleString()}
+                                ¥{(stock.askingPrice ?? 0).toLocaleString()}
                               </p>
                             </div>
                           </CardContent>
@@ -178,7 +178,7 @@ export default function MyosekiMarketPage() {
                             <Button
                               className="w-full h-8 text-xs"
                               onClick={() => handleBuy(stock)}
-                              disabled={playerFunds < (stock.askingPrice || 0)}
+                              disabled={playerFunds < (stock.askingPrice ?? 0)}
                             >
                               Buy
                             </Button>
@@ -234,7 +234,7 @@ export default function MyosekiMarketPage() {
                           </Badge>
                           {stock.status === "leased" && (
                             <p className="text-xs text-muted-foreground">
-                              Annual Fee: ¥{(stock.leaseFee || 0).toLocaleString()}
+                              Annual Fee: ¥{(stock.leaseFee ?? 0).toLocaleString()}
                             </p>
                           )}
                         </div>

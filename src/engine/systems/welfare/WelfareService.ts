@@ -59,7 +59,7 @@ export const WelfareService = {
    */
   applyWeeklyWelfareTick(world: WorldState): void {
     const stables = EntityCollection.getHeyas(world);
-    const week = world.calendar?.currentWeek || 0;
+    const week = world.calendar?.currentWeek ?? 0;
 
     stables.forEach((heya) => {
       const state = this.ensureHeyaWelfareState(heya);
@@ -112,7 +112,7 @@ export const WelfareService = {
   ): void {
     const { seriousCount, negligenceCount } = computeInjuryPressure(world, heya);
     const hasNegligence = negligenceCount > 0;
-    const week = world.calendar?.currentWeek || 0;
+    const week = world.calendar?.currentWeek ?? 0;
 
     const COMPLIANCE_HANDLERS: Record<ComplianceState, () => void> = {
       compliant: () => {
@@ -189,9 +189,9 @@ export const WelfareService = {
             progress: 0,
           };
         }
-        const progressGain = clamp(Math.round(4 + (heya.facilities?.recovery || 50) / 30), 2, 12);
+        const progressGain = clamp(Math.round(4 + (heya.facilities?.recovery ?? 50) / 30), 2, 12);
         state.investigation.progress = clamp(
-          (state.investigation.progress || 0) + progressGain,
+          (state.investigation.progress ?? 0) + progressGain,
           0,
           100
         );

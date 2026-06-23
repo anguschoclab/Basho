@@ -155,7 +155,7 @@ export function calculateWeeklyWelfareDelta(
   }
 
   // Scandal Synergy
-  if ((heya.scandalScore || 0) >= SCANDAL_WELFARE_THRESHOLD) {
+  if ((heya.scandalScore ?? 0) >= SCANDAL_WELFARE_THRESHOLD) {
     delta += WELFARE_SCANDAL_SYNERGY_BONUS;
     reasons.push("scandal_synergy+2");
   }

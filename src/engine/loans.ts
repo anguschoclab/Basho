@@ -132,9 +132,9 @@ export function issueBailoutLoanIfNeeded(world: WorldState, heyaId: Id): StateIm
   const newFunds = heya.funds + terms.principal;
 
   // Penalize prestige
-  const newReputation = Math.max(0, (heya.reputation || 50) - 10);
+  const newReputation = Math.max(0, (heya.reputation ?? 50) - 10);
 
-  let newScandalScore = heya.scandalScore || 0;
+  let newScandalScore = heya.scandalScore ?? 0;
   if (terms.loanType === "benefactor" || terms.loanType === "supporter") {
     newScandalScore = Math.min(100, newScandalScore + 10); // Governance scrutiny
   }

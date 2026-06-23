@@ -42,7 +42,7 @@ export const YokozunaService = {
     const isYushoLast = rikishi.currentBashoWins >= 14; // Simplified check
 
     // We'll need a way to look back further, but for this Phase P logic:
-    const reputation = rikishi.economics?.popularity || 50;
+    const reputation = rikishi.economics?.popularity ?? 50;
 
     let sentiment = 0;
     const reasons: string[] = [];

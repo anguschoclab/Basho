@@ -35,7 +35,7 @@ export function phase01_week_rivalries(world: WorldState): StateImpact {
   // 1. Rivalry Decay
   if (world.rivalriesState) {
     const nextPairs: Record<string, RivalryPairState> = {};
-    const week = world.calendar?.currentWeek || 0;
+    const week = world.calendar?.currentWeek ?? 0;
     const currentPairs = world.rivalriesState.pairs || {};
 
     // ⚡ Bolt Optimization: Use a direct for...in loop instead of Object.entries()
@@ -43,7 +43,7 @@ export function phase01_week_rivalries(world: WorldState): StateImpact {
     for (const key in currentPairs) {
       if (!Object.prototype.hasOwnProperty.call(currentPairs, key)) continue;
       const pair = currentPairs[key];
-      const weeksSince = week - (pair.lastMetWeek || 0);
+      const weeksSince = week - (pair.lastMetWeek ?? 0);
 
       // Skip decay for already cold pairs (optimization)
       const isCold =

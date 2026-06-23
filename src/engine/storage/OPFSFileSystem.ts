@@ -1,4 +1,7 @@
 export class OPFSFileSystem {
+  private dirCache = new Map<string, FileSystemDirectoryHandle>();
+  private inFlight = new Map<string, Promise<FileSystemDirectoryHandle | null>>();
+
   public isSupported(): boolean {
     return (
       typeof navigator !== "undefined" &&
@@ -9,15 +12,61 @@ export class OPFSFileSystem {
 
   /**
    * Navigates or creates a nested directory structure.
+   * Uses a handle cache and in-flight deduplication to avoid redundant traversals.
    */
   public async getDirectoryPath(path: string[]): Promise<FileSystemDirectoryHandle | null> {
     if (!this.isSupported()) return null;
 
+    const key = path.join("/");
+
+    const cached = this.dirCache.get(key);
+    if (cached) return cached;
+
+    const inflight = this.inFlight.get(key);
+    if (inflight) return inflight;
+
+    const promise = this.traversePath(path);
+    this.inFlight.set(key, promise);
     try {
-      let currentDir = await navigator.storage.getDirectory();
-      for (const folder of path) {
-        currentDir = await currentDir.getDirectoryHandle(folder, { create: true });
+      return await promise;
+    } finally {
+      this.inFlight.delete(key);
+    }
+  }
+
+  /**
+   * Clears the directory handle cache and any in-flight traversals.
+   */
+  public clearCache(): void {
+    this.dirCache.clear();
+    this.inFlight.clear();
+  }
+
+  private async traversePath(path: string[]): Promise<FileSystemDirectoryHandle | null> {
+    try {
+      let currentDir: FileSystemDirectoryHandle | null = null;
+      let startIndex = 0;
+
+      for (let i = path.length; i >= 0; i--) {
+        const prefixKey = path.slice(0, i).join("/");
+        const cached = this.dirCache.get(prefixKey);
+        if (cached) {
+          currentDir = cached;
+          startIndex = i;
+          break;
+        }
       }
+
+      if (!currentDir) {
+        currentDir = await navigator.storage.getDirectory();
+        this.dirCache.set("", currentDir);
+      }
+
+      for (let i = startIndex; i < path.length; i++) {
+        currentDir = await currentDir.getDirectoryHandle(path[i], { create: true });
+        this.dirCache.set(path.slice(0, i + 1).join("/"), currentDir);
+      }
+
       return currentDir;
     } catch (e) {
       console.warn(`[OPFS] Failed to access directory path: ${path.join("/")}`, e);

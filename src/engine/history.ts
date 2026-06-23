@@ -41,11 +41,11 @@ export function generateCareerSnapshot(world: WorldState, rikishi: Rikishi): Car
 
     rank: rikishi.rank,
     division: rikishi.division,
-    rankNumber: rikishi.rankNumber || 1,
+    rankNumber: rikishi.rankNumber ?? 1,
     side: rikishi.side,
 
-    wins: rikishi.currentBashoWins || 0,
-    losses: rikishi.currentBashoLosses || 0,
+    wins: rikishi.currentBashoWins ?? 0,
+    losses: rikishi.currentBashoLosses ?? 0,
     absences: 0, // Engine doesn't track absences yet
 
     isYusho: lastBasho?.yusho === rikishi.id,

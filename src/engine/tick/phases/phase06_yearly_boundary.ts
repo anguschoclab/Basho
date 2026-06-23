@@ -155,7 +155,7 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
     for (const [id, o] of world.oyakata) {
       const updated: Partial<typeof o> = {
         age: o.age + 1,
-        yearsInCharge: (o.yearsInCharge || 0) + 1,
+        yearsInCharge: (o.yearsInCharge ?? 0) + 1,
       };
 
       if (o.avatarConfig) {

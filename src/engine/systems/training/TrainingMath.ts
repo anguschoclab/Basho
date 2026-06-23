@@ -284,22 +284,22 @@ export function calculateGrowthVector(
   };
 
   growth.power =
-    applyCapped("power", bias.power, rikishi.stats?.power || 50) *
+    applyCapped("power", bias.power, rikishi.stats?.power ?? 50) *
     nutritionMult *
     styleDriftMults.power;
   growth.speed =
-    applyCapped("speed", bias.speed, rikishi.stats?.speed || 50) * styleDriftMults.speed;
+    applyCapped("speed", bias.speed, rikishi.stats?.speed ?? 50) * styleDriftMults.speed;
   growth.technique =
-    applyCapped("technique", bias.technique, rikishi.stats?.technique || 50) *
+    applyCapped("technique", bias.technique, rikishi.stats?.technique ?? 50) *
     styleDriftMults.technique;
   growth.balance =
-    applyCapped("balance", bias.balance, rikishi.stats?.balance || 50) * styleDriftMults.balance;
+    applyCapped("balance", bias.balance, rikishi.stats?.balance ?? 50) * styleDriftMults.balance;
   growth.stamina =
-    applyCapped("stamina", 0.5, rikishi.stats?.stamina || 50) *
+    applyCapped("stamina", 0.5, rikishi.stats?.stamina ?? 50) *
     nutritionMult *
     styleDriftMults.stamina;
-  growth.mental = applyCapped("mental", 0.2, rikishi.stats?.mental || 50) * styleDriftMults.mental;
-  growth.adaptability = applyCapped("adaptability", 0.2, rikishi.stats?.adaptability || 50);
+  growth.mental = applyCapped("mental", 0.2, rikishi.stats?.mental ?? 50) * styleDriftMults.mental;
+  growth.adaptability = applyCapped("adaptability", 0.2, rikishi.stats?.adaptability ?? 50);
 
   return growth;
 }
