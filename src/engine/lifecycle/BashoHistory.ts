@@ -268,10 +268,15 @@ export function checkYokozunaPromotions(
 ) {
   if (!world.historyIndex) return;
 
-  const ozekiIds = Array.from(world.activeRikishiIds)
-    .map((id) => getRikishi(world, id))
-    .filter((r): r is Rikishi => r !== undefined && r.rank === "ozeki")
-    .map((r) => r.id);
+  // ⚡ Bolt Optimization: Use direct iteration instead of Array.from().map().filter().map()
+  // to avoid multiple O(N) array allocations
+  const ozekiIds: string[] = [];
+  for (const id of world.activeRikishiIds) {
+    const r = getRikishi(world, id);
+    if (r !== undefined && r.rank === "ozeki") {
+      ozekiIds.push(r.id);
+    }
+  }
 
   for (const rid of ozekiIds) {
     const history = world.historyIndex.rikishi[rid] || [];

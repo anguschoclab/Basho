@@ -144,3 +144,6 @@ Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop 
 ## 2026-06-22 - Optimize array reduction in KenshoService
 **Learning:** Chained `.map().filter()` operations on arrays create intermediate `O(N)` array allocations which hurt performance in frequently called service functions.
 **Action:** Replace `.map().filter()` chains with a single `for...of` loop that accumulates all values simultaneously to prevent redundant iterations and intermediate array allocations.
+## 2024-06-23 - Optimize ozekiIds array pipeline in BashoHistory
+**Learning:** Using `Array.from().map().filter().map()` to extract a specific subset of elements from a Set creates multiple O(N) intermediate array allocations which strain memory and execution time in the engine lifecycle.
+**Action:** Replace chained array map and filter operations over active entities with a direct `for...of` loop and conditional `push()` to a new array to completely avoid intermediate allocations.
