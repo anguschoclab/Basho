@@ -35,6 +35,7 @@ export type EngineEventType =
   | "FINANCIAL_ALERT" // Financial alert triggered
   | "AWARD_CONFERRED" // An award was conferred
   | "LIFECYCLE_EVENT" // Career lifecycle event (retirement, promotion, etc.)
+  | "RETIREMENT_ANNOUNCED" // Career lifecycle — intai (retirement) announcement
   | "BASHO_STATUS" // Basho status update
   | "WELFARE_COMPLIANCE" // Welfare compliance check
   | "OYAKATA_MOOD_SHIFT" // Oyakata mood changed

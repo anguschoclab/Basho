@@ -79,12 +79,8 @@ describe("CareerService.processRetirements — oyakata conversion + founding", (
           `Merit-mint fix should persist the minted stock as held.`
       ).toBeGreaterThan(0);
 
-      // Stable founding is RNG-gated at 35% so we do NOT hard-assert it here.
-      // The 25-year diagnostic (Task 4) validates that heyaCount becomes dynamic over a full sim.
-      const founded = next.heyas.size > before.heyaCount;
-      if (founded) {
-        expect(next.heyas.size).toBeGreaterThan(before.heyaCount);
-      }
+      // Stable founding is RNG-gated at 35%, so it is NOT hard-asserted here (that would
+      // flake). The 25-year diagnostic validates that heyaCount becomes dynamic over a full sim.
     }
   );
 });
