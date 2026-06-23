@@ -10,7 +10,6 @@ import { EntityCollection } from "../../core/EntityCollection";
 import { materializeCandidateToRikishiInternal } from "./TalentPoolMaterialization";
 import { isRecruitmentPlayerRelevant } from "../../npcAI/eventSurfacing";
 import { getHeya } from "../../queries";
-import { recruitmentBalanceMultiplier } from "./competitiveBalance";
 
 /**
  * Automates recruitment for NPC stables.
@@ -148,16 +147,14 @@ export function fillVacanciesForNPCWithBidding(
 
     const recruitmentStrat = getRecruitmentStrategy(oyakata.archetype);
     const rivalHeyaId = targetHeyaIds.find((hid) => hid !== heyaId);
-    const balanceMult = recruitmentBalanceMultiplier(world, heyaId);
     for (const candidate of allVisibleCandidates) {
-      const rawBid = recruitmentStrat.calculateMaxBid(
+      const bidAmount = recruitmentStrat.calculateMaxBid(
         world,
         heya,
         oyakata,
         candidate.candidateId,
         rivalHeyaId
       );
-      const bidAmount = Math.round(Math.max(0, rawBid) * balanceMult);
       bids.push({ heyaId, candidateId: candidate.candidateId, bidAmount, oyakata });
     }
   }

@@ -139,7 +139,8 @@
       "Bash(cat vitest.config.js)",
       "Bash(xargs ls)",
       "Bash(git -C /Users/amauricia/Documents/GitHub/sumo-manager-pro add src/engine/systems/governance/governanceReview.ts src/tests/unit/engine/governance/foundingReliability.test.ts)",
-      "Bash(git -C /Users/amauricia/Documents/GitHub/sumo-manager-pro diff --cached --stat)"
+      "Bash(git -C /Users/amauricia/Documents/GitHub/sumo-manager-pro diff --cached --stat)",
+      "Bash(git rm *)"
     ]
   },
   "outputStyle": "default"
