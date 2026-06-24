@@ -65,7 +65,10 @@ export function phase06_narrative(world: WorldState): StateImpact {
   }
 
   // ── Notable training milestones ───────────────────────────────────────────
-  for (const [rId, changes] of Object.entries(deltas.statChanges)) {
+  // ⚡ Bolt Optimization: Use a direct for...in loop instead of Object.entries() to avoid O(N) tuple allocations
+  for (const rId in deltas.statChanges) {
+    if (!Object.prototype.hasOwnProperty.call(deltas.statChanges, rId)) continue;
+    const changes = deltas.statChanges[rId];
     const bigGains = changes.filter((c) => c.amount >= 1.0);
     if (bigGains.length === 0) continue;
     const r = getRikishi(world, rId);

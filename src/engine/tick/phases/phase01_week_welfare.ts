@@ -104,7 +104,10 @@ export function phase01_week_welfare(world: WorldState): StateImpact {
         }
       : undefined;
     if (nextMediaState) {
-      for (const [heyaId, delta] of Object.entries(mediaPressureChanges)) {
+      // ⚡ Bolt Optimization: Use a direct for...in loop instead of Object.entries() to avoid O(N) tuple allocations
+      for (const heyaId in mediaPressureChanges) {
+        if (!Object.prototype.hasOwnProperty.call(mediaPressureChanges, heyaId)) continue;
+        const delta = mediaPressureChanges[heyaId];
         nextMediaState.heyaPressure[heyaId] = Math.min(
           MAX_MEDIA_PRESSURE,
           (nextMediaState.heyaPressure[heyaId] ?? 0) + delta
