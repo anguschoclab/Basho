@@ -28,12 +28,14 @@ export function enforceHardCapRosterOverflow(world: WorldState): StateImpact {
     if (!heya.rikishiIds || heya.rikishiIds.length <= HARD_CAP_ROSTER_SIZE) continue;
 
     const overflowCount = heya.rikishiIds.length - HARD_CAP_ROSTER_SIZE;
-    const candidatesForRelease = heya.rikishiIds
-      .map((rId) => getRikishi(world, rId))
-      .filter((r): r is Rikishi => r !== undefined);
 
-    // Score rikishi for retention (lower score = more likely to be released)
-    const scoredCandidates = candidatesForRelease.map((r) => {
+    // ⚡ Bolt Optimization: Use a single for...of loop instead of chained .map().filter().map()
+    // This avoids intermediate O(N) array allocations for candidatesForRelease
+    const scoredCandidates = [];
+    for (const rId of heya.rikishiIds) {
+      const r = getRikishi(world, rId);
+      if (!r) continue;
+
       let score = 0;
 
       // 1. Potential: Use talentSeed (0-100) or approximate from stats
@@ -62,8 +64,8 @@ export function enforceHardCapRosterOverflow(world: WorldState): StateImpact {
       const tieBreaker = parseInt(r.id.slice(-4), 16) / 65535 || 0;
       score += tieBreaker;
 
-      return { rikishi: r, score };
-    });
+      scoredCandidates.push({ rikishi: r, score });
+    }
 
     // Sort by score ascending (lowest score = release first)
     scoredCandidates.sort(
