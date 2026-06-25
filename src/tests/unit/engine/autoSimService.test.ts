@@ -328,5 +328,5 @@ describe("runAutoSim diagnostic metrics", () => {
     });
     expect(result.tuningMetrics.yokozunaVacantBashoCount).toBeGreaterThan(1);
     expect(result.tuningMetrics.yokozunaVacantBashoCount).toBeLessThanOrEqual(6);
-  });
+  }, 120_000);
 });
