@@ -144,3 +144,6 @@ Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop 
 ## 2026-06-22 - Optimize array reduction in KenshoService
 **Learning:** Chained `.map().filter()` operations on arrays create intermediate `O(N)` array allocations which hurt performance in frequently called service functions.
 **Action:** Replace `.map().filter()` chains with a single `for...of` loop that accumulates all values simultaneously to prevent redundant iterations and intermediate array allocations.
+## 2025-02-09 - Object.entries Allocation Overhead in Simulation Loops
+**Learning:** In high-frequency simulation tick systems (like `phase01_week_welfare.ts` and `phase06_narrative.ts`), iterating over dictionary objects using `Object.entries(obj)` creates unnecessary O(N) tuple array allocations per tick, significantly increasing Garbage Collection (GC) pressure.
+**Action:** Replace `Object.entries` loops with direct `for...in` loops accompanied by `Object.prototype.hasOwnProperty.call(obj, key)` guards in critical engine tick phases to improve memory efficiency and reduce stuttering.
