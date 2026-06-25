@@ -251,10 +251,20 @@ export function AutoSimControls({ onStartSim, isSimulating, playerHeyaId }: Auto
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsOpen(false)} disabled={isSimulating}>
+            <Button
+              variant="outline"
+              onClick={() => setIsOpen(false)}
+              disabled={isSimulating}
+              tooltip={isSimulating ? "Simulation in progress" : undefined}
+            >
               Cancel
             </Button>
-            <Button onClick={handleStartSim} disabled={isSimulating} className="gap-2">
+            <Button
+              onClick={handleStartSim}
+              disabled={isSimulating}
+              className="gap-2"
+              tooltip={isSimulating ? "Simulation in progress" : undefined}
+            >
               {isSimulating ? (
                 <>
                   <Clock className="h-4 w-4 animate-spin" />
