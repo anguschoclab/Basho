@@ -64,7 +64,7 @@ export function phase01_daily_welfare(world: WorldState): StateImpact {
           ...next.stats,
           mental: Math.max(
             MIN_MENTAL_STAT,
-            (next.stats.mental || DEFAULT_MENTAL_STAT) - MENTAL_LOSS_STARVATION
+            (next.stats.mental ?? DEFAULT_MENTAL_STAT) - MENTAL_LOSS_STARVATION
           ),
         };
       }
@@ -75,7 +75,7 @@ export function phase01_daily_welfare(world: WorldState): StateImpact {
           ...next.stats,
           mental: Math.max(
             MIN_MENTAL_STAT,
-            (next.stats.mental || DEFAULT_MENTAL_STAT) - MENTAL_LOSS_POOR
+            (next.stats.mental ?? DEFAULT_MENTAL_STAT) - MENTAL_LOSS_POOR
           ),
         };
       }
@@ -86,7 +86,7 @@ export function phase01_daily_welfare(world: WorldState): StateImpact {
           ...next.stats,
           mental: Math.min(
             MAX_MENTAL_STAT,
-            (next.stats.mental || DEFAULT_MENTAL_STAT) + MENTAL_GAIN_GOOD
+            (next.stats.mental ?? DEFAULT_MENTAL_STAT) + MENTAL_GAIN_GOOD
           ),
         };
       }

@@ -1,4 +1,5 @@
 import type { WorldState } from "../../types/world";
+import type { Id } from "../../types/common";
 import { getStableRikishi } from "../../queries";
 import {
   BALANCE_STRENGTH_SENSITIVITY,
@@ -23,13 +24,40 @@ function sekitoriCount(world: WorldState, heyaId: string): number {
  * pure function of current rosters.
  */
 export function recruitmentBalanceMultiplier(world: WorldState, heyaId: string): number {
-  const heyaIds = Array.from(world.heyas.keys());
-  if (heyaIds.length === 0) return 1;
+  return recruitmentBalanceMultipliers(world, [heyaId]).get(heyaId) ?? 1;
+}
+
+/**
+ * Batch version of recruitmentBalanceMultiplier. Computes sekitori counts for ALL
+ * heyas once (the mean is over the whole league), then returns multipliers only
+ * for the requested subset. Avoids redundant O(H×R) scans when called in a loop.
+ */
+export function recruitmentBalanceMultipliers(
+  world: WorldState,
+  heyaIds: Id[]
+): Map<Id, number> {
+  const result = new Map<Id, number>();
+  if (heyaIds.length === 0) return result;
+
+  const allHeyaIds = Array.from(world.heyas.keys());
+  if (allHeyaIds.length === 0) {
+    for (const id of heyaIds) result.set(id, 1);
+    return result;
+  }
+
   let total = 0;
-  for (const id of heyaIds) total += sekitoriCount(world, id);
-  const mean = total / heyaIds.length;
-  const own = sekitoriCount(world, heyaId);
-  // Above mean → handicap; below mean → boost.
-  const raw = 1 - (own - mean) * BALANCE_STRENGTH_SENSITIVITY;
-  return Math.max(BALANCE_MULTIPLIER_MIN, Math.min(BALANCE_MULTIPLIER_MAX, raw));
+  const allCounts = new Map<Id, number>();
+  for (const id of allHeyaIds) {
+    const c = sekitoriCount(world, id);
+    allCounts.set(id, c);
+    total += c;
+  }
+  const mean = total / allHeyaIds.length;
+
+  for (const id of heyaIds) {
+    const own = allCounts.get(id) ?? sekitoriCount(world, id);
+    const raw = 1 - (own - mean) * BALANCE_STRENGTH_SENSITIVITY;
+    result.set(id, Math.max(BALANCE_MULTIPLIER_MIN, Math.min(BALANCE_MULTIPLIER_MAX, raw)));
+  }
+  return result;
 }

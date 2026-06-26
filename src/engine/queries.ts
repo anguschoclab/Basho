@@ -101,18 +101,6 @@ export function getHeyaRoster(world: WorldState, heyaId: Id): Rikishi[] {
 }
 
 /**
- * Count foreign-born (non-Japanese) rikishi in a heya.
- */
-export function getForeignCountInHeya(world: WorldState, heyaId: Id): number {
-  let count = 0;
-  for (const r of getSelectorsActiveRikishi(world)) {
-    if (r.heyaId !== heyaId) continue;
-    if ((r.nationality || "Japan") !== "Japan") count += 1;
-  }
-  return count;
-}
-
-/**
  * Count sekitori (makuuchi + juryo division) rikishi in a heya.
  */
 export function getSekitoriInHeya(world: WorldState, heyaId: Id): number {

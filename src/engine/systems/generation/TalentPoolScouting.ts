@@ -66,26 +66,46 @@ export function getCandidateScoutingLevel(world: WorldState, candidateId: Id): n
  * Counts foreign rikishi in a specific stable.
  */
 export function getForeignCountInHeya(world: WorldState, heyaId: Id): number {
-  let count = 0;
+  return getForeignCountsByHeya(world).get(heyaId) ?? 0;
+}
+
+/**
+ * Computes foreign rikishi counts for all stables in a single pass.
+ * Includes both active roster rikishi and signed-but-not-yet-materialized
+ * candidates (which remain in pool `candidatesVisible` lists until
+ * materialization removes them).
+ */
+export function getForeignCountsByHeya(world: WorldState): Map<Id, number> {
+  const counts = new Map<Id, number>();
+
   for (const rikishiId of world.activeRikishiIds) {
     const r = getRikishi(world, rikishiId);
-    if (r && r.heyaId === heyaId && (r.nationality ?? "Japan") !== "Japan") {
-      count++;
+    if (r && isForeign(r)) {
+      counts.set(r.heyaId, (counts.get(r.heyaId) ?? 0) + 1);
     }
   }
-  // Also count signed candidates not yet on the roster
+
   if (world.talentPool) {
-    for (const c of Object.values(world.talentPool.candidates)) {
-      if (
-        c.availabilityState === "signed" &&
-        c.competingSuitors.some((s) => s.heyaId === heyaId) &&
-        (c.nationality ?? "Japan") !== "Japan"
-      ) {
-        count++;
+    const tp = world.talentPool;
+    for (const pt of ["high_school", "university", "foreign"] as const) {
+      const pool = tp.pools[pt];
+      if (!pool) continue;
+      for (const cId of pool.candidatesVisible) {
+        const c = tp.candidates[cId];
+        if (
+          c &&
+          c.availabilityState === "signed" &&
+          c.competingSuitors.length > 0 &&
+          isForeign(c)
+        ) {
+          const heyaId = c.competingSuitors[0].heyaId;
+          counts.set(heyaId, (counts.get(heyaId) ?? 0) + 1);
+        }
       }
     }
   }
-  return count;
+
+  return counts;
 }
 
 /**

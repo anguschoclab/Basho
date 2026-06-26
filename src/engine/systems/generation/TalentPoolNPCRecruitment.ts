@@ -10,7 +10,7 @@ import { EntityCollection } from "../../core/EntityCollection";
 import { materializeCandidateToRikishiInternal } from "./TalentPoolMaterialization";
 import { isRecruitmentPlayerRelevant } from "../../npcAI/eventSurfacing";
 import { getHeya } from "../../queries";
-import { recruitmentBalanceMultiplier } from "./competitiveBalance";
+import { recruitmentBalanceMultipliers } from "./competitiveBalance";
 
 /**
  * Automates recruitment for NPC stables.
@@ -140,6 +140,13 @@ export function fillVacanciesForNPCWithBidding(
   const bids: Array<{ heyaId: Id; candidateId: Id; bidAmount: number; oyakata: Oyakata }> = [];
   const targetHeyaIds = Object.keys(targetHeyas);
 
+  // Precompute rival heya map and balance multipliers to avoid O(H²) scans inside the loop.
+  const rivalHeyaMap = new Map<Id, Id | undefined>();
+  for (const hid of targetHeyaIds) {
+    rivalHeyaMap.set(hid as Id, targetHeyaIds.find((other) => other !== hid) as Id | undefined);
+  }
+  const balanceMap = recruitmentBalanceMultipliers(world, targetHeyaIds as Id[]);
+
   for (const [heyaId, _vacancyCount] of Object.entries(targetHeyas)) {
     const heya = getHeya(world, heyaId);
     if (!heya) continue;
@@ -147,8 +154,8 @@ export function fillVacanciesForNPCWithBidding(
     if (!oyakata) continue;
 
     const recruitmentStrat = getRecruitmentStrategy(oyakata.archetype);
-    const rivalHeyaId = targetHeyaIds.find((hid) => hid !== heyaId);
-    const balanceMult = recruitmentBalanceMultiplier(world, heyaId);
+    const rivalHeyaId = rivalHeyaMap.get(heyaId as Id);
+    const balanceMult = balanceMap.get(heyaId as Id) ?? 1;
     for (const candidate of allVisibleCandidates) {
       const rawBid = recruitmentStrat.calculateMaxBid(
         world,

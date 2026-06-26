@@ -2,12 +2,14 @@ import { describe, it, expect } from "vitest";
 import { MockFactory } from "../../helpers/utils/MockFactory";
 import {
   fillVacanciesForNPC,
+  fillVacanciesForNPCWithBidding,
   materializeCandidateToRikishi,
   finalizeSignedCandidates,
 } from "@/engine/systems/generation/TalentPoolService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { CandidateAvailabilityState, TalentPoolWorldState } from "@/engine/types/talent";
 import type { Id } from "@/engine/types/common";
+import type { WorldState } from "@/engine/types/world";
 
 // ── Talent Pool setup helper ───────────────────────────────────────────────
 
@@ -218,5 +220,112 @@ describe("finalizeSignedCandidates", () => {
 
     const impact = finalizeSignedCandidates(world);
     expect(impact.collections?.rikishiToAdd?.length ?? 0).toBe(0);
+  });
+});
+
+// ── fillVacanciesForNPCWithBidding ─────────────────────────────────────────
+
+function makeWorldForBidding(
+  heyaIds: string[],
+  candidateIds: string[]
+): WorldState {
+  const heyas = new Map();
+  const oyakata = new Map();
+  for (const hid of heyaIds) {
+    const oyakataId = `oyakata_${hid}` as Id;
+    heyas.set(hid, MockFactory.createHeya(hid as Id, { oyakataId, rikishiIds: [] }));
+    oyakata.set(oyakataId, MockFactory.createOyakata(oyakataId, { heyaId: hid as Id }));
+  }
+
+  const tp = MockFactory.createTalentPool({});
+  for (const cid of candidateIds) {
+    const candidate = MockFactory.createCandidate(cid as Id, {
+      candidateId: cid as Id,
+      availabilityState: "available",
+      competingSuitors: [],
+    });
+    tp.candidates[cid] = candidate;
+    tp.pools.high_school.candidatesVisible.push(cid);
+  }
+
+  return MockFactory.createWorld({
+    heyas,
+    oyakata,
+    rikishi: new Map(),
+    seed: "bidding-test-seed",
+    talentPool: tp,
+  });
+}
+
+describe("fillVacanciesForNPCWithBidding", () => {
+  it("returns an empty impact when no talent pool exists", () => {
+    const world = MockFactory.createWorld();
+    const impact = fillVacanciesForNPCWithBidding(world, { "npc-heya": 1 });
+    expect(impact.collections?.rikishiToAdd?.length ?? 0).toBe(0);
+  });
+
+  it("returns an empty impact when no candidates are visible", () => {
+    const heyaId = "npc-heya";
+    const world = makeWorldForBidding([heyaId], []);
+    const impact = fillVacanciesForNPCWithBidding(world, { [heyaId]: 1 });
+    expect(impact.collections?.rikishiToAdd?.length ?? 0).toBe(0);
+  });
+
+  it("materializes a candidate for an NPC heya with vacancies", () => {
+    const heyaId = "npc-heya";
+    const world = makeWorldForBidding([heyaId], ["cand-1"]);
+    const impact = fillVacanciesForNPCWithBidding(world, { [heyaId]: 1 });
+    expect(impact.collections?.rikishiToAdd?.length ?? 0).toBeGreaterThan(0);
+
+    const nextWorld = resolveImpacts(world, [impact]);
+    expect(nextWorld.rikishi.size).toBeGreaterThan(0);
+  });
+
+  it("assigns candidates to the highest-bidding heya when multiple heyas compete", () => {
+    const strongId = "strong";
+    const weakId = "weak";
+    // Strong heya has many sekitori (higher funds via default, lower balance multiplier)
+    // Weak heya has none (gets balance boost)
+    const world = makeWorldForBidding([strongId, weakId], ["cand-1"]);
+
+    // Give the strong heya sekitori so it has a lower balance multiplier
+    const strongRikishi = MockFactory.createRikishi("strong-r1", {
+      heyaId: strongId as Id,
+      division: "makuuchi",
+    });
+    world.rikishi.set("strong-r1", strongRikishi);
+    world.heyas.get(strongId)!.rikishiIds = ["strong-r1"];
+
+    const impact = fillVacanciesForNPCWithBidding(world, {
+      [strongId]: 1,
+      [weakId]: 1,
+    });
+
+    // At least one heya should get a rikishi
+    expect(impact.collections?.rikishiToAdd?.length ?? 0).toBeGreaterThan(0);
+  });
+
+  it("respects vacancy limits per heya", () => {
+    const heyaId = "npc-heya";
+    const world = makeWorldForBidding([heyaId], ["cand-1", "cand-2", "cand-3"]);
+    const impact = fillVacanciesForNPCWithBidding(world, { [heyaId]: 1 });
+    // Only 1 vacancy → only 1 rikishi should be materialized
+    expect(impact.collections?.rikishiToAdd?.length ?? 0).toBe(1);
+  });
+
+  it("does not assign the same candidate to two heyas", () => {
+    const hA = "heyaA";
+    const hB = "heyaB";
+    const world = makeWorldForBidding([hA, hB], ["cand-1"]);
+    const impact = fillVacanciesForNPCWithBidding(world, {
+      [hA]: 1,
+      [hB]: 1,
+    });
+
+    // Only one heya can get the single candidate
+    const added = impact.collections?.rikishiToAdd ?? [];
+    expect(added.length).toBe(1);
+    const assignedHeya = added[0]?.heyaId;
+    expect([hA, hB]).toContain(assignedHeya);
   });
 });

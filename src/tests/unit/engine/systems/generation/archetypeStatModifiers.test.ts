@@ -10,7 +10,7 @@ import { rngFromSeed } from "@/engine/rng";
 
 // Run N trials and return the mean of the stat
 function meanStat(
-  statKey: "power" | "stamina" | "mental",
+  statKey: "power" | "stamina" | "mental" | "speed" | "technique",
   profileArchetype: Parameters<typeof buildCombatProfile>[0],
   n = 80
 ): number {
@@ -50,8 +50,7 @@ function meanStatBaseline(
 
 describe("Archetype statModifiers — power key", () => {
   it("oshi archetype power modifier boosts generated power stat", () => {
-    // oshi has power: 1.1
-    // After fix: statModifiers.power should apply to the power generation
+    // oshi has power: 1.1, statModifiers.power applies to power generation
     const oshiMean = meanStat("power", "oshi");
     // hybrid has no power modifier (1.0) — use as baseline
     const hybridMean = meanStat("power", "hybrid");
@@ -98,5 +97,23 @@ describe("Archetype statModifiers — stamina modifier applies to tsuppari", () 
     const tsuppariMean = meanStat("stamina", "tsuppari");
     const yotsuMean = meanStat("stamina", "yotsu");
     expect(yotsuMean).toBeGreaterThanOrEqual(tsuppariMean);
+  });
+});
+
+describe("Archetype statModifiers — speed and technique keys", () => {
+  it("speedster speed modifier produces higher speed than giant", () => {
+    // speedster has speed: 1.25
+    // giant has speed: 0.7
+    const speedsterMean = meanStat("speed", "speedster");
+    const giantMean = meanStat("speed", "giant");
+    expect(speedsterMean).toBeGreaterThan(giantMean);
+  });
+
+  it("trickster technique modifier produces higher technique than oshi", () => {
+    // trickster has technique: 1.2
+    // oshi has technique: 0.8
+    const tricksterMean = meanStat("technique", "trickster");
+    const oshiMean = meanStat("technique", "oshi");
+    expect(tricksterMean).toBeGreaterThan(oshiMean);
   });
 });

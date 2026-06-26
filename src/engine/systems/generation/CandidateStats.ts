@@ -279,12 +279,8 @@ export function generateRikishiStats(args: {
     HEIGHT_GEN_MAX
   );
 
-  // 'power' key in statModifiers maps to power in RikishiStats → Rikishi.power
-  const powerMod = mods["power"] ?? 1.0;
-  const powerMean = baseMean * powerMod;
-
   return {
-    power: clampInt(rng.gaussian(powerMean, stdDev), 10, 100),
+    power: genStat("power"),
     technique: genStat("technique"),
     speed: genStat("speed"),
     stamina: genStat("stamina"),

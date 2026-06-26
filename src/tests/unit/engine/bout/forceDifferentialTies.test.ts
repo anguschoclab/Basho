@@ -92,7 +92,6 @@ describe("force-differential physics — tie scenarios", () => {
   });
 
   it("determinism is maintained with same seed", () => {
-    // Verify that the fix doesn't break determinism
     const east = mockRikishi("east", { power: 70, speed: 60, weight: 120 });
     const west = mockRikishi("west", { power: 70, speed: 60, weight: 120 });
 

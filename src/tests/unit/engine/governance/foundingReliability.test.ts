@@ -1,12 +1,7 @@
 /**
- * Test: Founding reliability with exhausted myoseki market
- *
- * The bug: Object.values(world.myosekiMarket.stocks).find(s => s.status === "available")
- * returns undefined when the fixed pool is fully held, so the whole `if (availableStock)`
- * block is skipped — no oyakata conversion, no founding, ever, over a 25-year sim.
- *
- * The fix: mint a fresh merit stock when none is available, so an accomplished retiree
- * always gets an elder name (models JSA merit-elder-name issuance).
+ * Test: Founding reliability with exhausted myoseki market.
+ * Verifies that accomplished retirees can convert to oyakata and found stables
+ * even when no myoseki stock is available (merit-elder-name issuance).
  */
 
 import { describe, it, expect } from "vitest";
@@ -61,7 +56,7 @@ describe("founding reliability with exhausted myoseki", () => {
       // --- Assert deterministic outcomes ---
 
       // 1. An accomplished, retirement-age rikishi with an empty myoseki market MUST
-      //    convert to an oyakata — this is the precondition the merit-mint fix unblocks.
+      //    convert to an oyakata.
       const oyakataConverted = (next.oyakata?.size ?? 0) > before.oyakataCount;
       expect(
         oyakataConverted,
@@ -89,4 +84,115 @@ describe("founding reliability with exhausted myoseki", () => {
       }
     }
   );
+
+  it("reuses an available stock instead of minting when one exists", () => {
+    const retiree = mockRikishi("legend2", {
+      heyaId: "old-heya",
+      rank: "yokozuna",
+      division: "makuuchi",
+      birthYear: 1980,
+      careerWins: 400,
+      isRetired: false,
+      injured: false,
+      injuryWeeksRemaining: 0,
+    });
+
+    const heyas = new Map([
+      ["old-heya", makeMockHeya("old-heya", { rikishiIds: ["legend2"] })],
+      ["filler", makeMockHeya("filler", { rikishiIds: [] })],
+    ]);
+
+    const existingStockId = "MY-existing-1";
+    const world = makeMockWorld({
+      year: 2025,
+      heyas,
+      rikishi: new Map([["legend2", retiree]]),
+      myosekiMarket: {
+        stocks: {
+          [existingStockId]: {
+            id: existingStockId,
+            name: "TestElderName",
+            prestigeTier: "modest",
+            ownerId: "JSA",
+            holderId: "JSA",
+            status: "available",
+            askingPrice: 100000000,
+          },
+        },
+        history: [],
+      } as any,
+    });
+
+    const impact = runRetirements(world);
+    const next = resolveImpacts(world, [impact]);
+
+    // The existing stock should now be held (transferred, not minted)
+    const stock = (next.myosekiMarket?.stocks ?? {})[existingStockId];
+    expect(stock).toBeDefined();
+    expect(stock.status).toBe("held");
+    // No new stocks should have been minted
+    expect(Object.keys(next.myosekiMarket?.stocks ?? {}).length).toBe(1);
+  });
+
+  it("does not convert a non-accomplished retiree", () => {
+    const retiree = mockRikishi("journeyman", {
+      heyaId: "old-heya",
+      rank: "maegashira",
+      division: "makuuchi",
+      birthYear: 1978,
+      careerWins: 10,
+      isRetired: false,
+      injured: false,
+      injuryWeeksRemaining: 0,
+    });
+
+    const heyas = new Map([
+      ["old-heya", makeMockHeya("old-heya", { rikishiIds: ["journeyman"] })],
+    ]);
+
+    const world = makeMockWorld({
+      year: 2025,
+      heyas,
+      rikishi: new Map([["journeyman", retiree]]),
+      myosekiMarket: { stocks: {}, history: [] } as any,
+    });
+
+    const beforeOyakata = world.oyakata?.size ?? 0;
+    const impact = runRetirements(world);
+    const next = resolveImpacts(world, [impact]);
+
+    // No oyakata conversion — careerWins=10, rank=maegashira → not accomplished
+    expect((next.oyakata?.size ?? 0)).toBe(beforeOyakata);
+  });
+
+  it("does not convert a young accomplished retiree (age < 28)", () => {
+    const retiree = mockRikishi("young-yokozuna", {
+      heyaId: "old-heya",
+      rank: "yokozuna",
+      division: "makuuchi",
+      birthYear: 2000,
+      careerWins: 400,
+      isRetired: false,
+      injured: false,
+      injuryWeeksRemaining: 0,
+    });
+
+    const heyas = new Map([
+      ["old-heya", makeMockHeya("old-heya", { rikishiIds: ["young-yokozuna"] })],
+    ]);
+
+    const world = makeMockWorld({
+      year: 2025,
+      heyas,
+      rikishi: new Map([["young-yokozuna", retiree]]),
+      myosekiMarket: { stocks: {}, history: [] } as any,
+    });
+
+    const beforeOyakata = world.oyakata?.size ?? 0;
+    const impact = runRetirements(world);
+    const next = resolveImpacts(world, [impact]);
+
+    // age = 2025 - 2000 = 25 → guard is age < 28, so no conversion
+    expect((next.oyakata?.size ?? 0)).toBe(beforeOyakata);
+  });
 });

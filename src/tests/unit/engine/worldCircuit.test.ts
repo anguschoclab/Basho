@@ -97,8 +97,71 @@ describe("World Circuit System Integration", () => {
 
     const heya = newWorld.heyas.get(heyaId)!;
     const presence = heya.regionalPresence?.Mongolia ?? 0;
-    // With the fix (?? 50): rikishiPower = 0, always loses → presence = 0 + 5 = 5
-    // With the bug (|| 50): rikishiPower = 50, ~36% win chance → presence could be 15
+    // rikishiPower = 0, always loses → presence = 0 + 5 = 5
     expect(presence).toBe(5);
+  });
+
+  it("SHOULD allow high-stats rikishi to win exhibitions", () => {
+    // Run 20 trials — with ~47% win rate, at least one win is virtually guaranteed
+    let wins = 0;
+    for (let i = 0; i < 20; i++) {
+      const w = generateInitialWorld(`test-seed-high-stats-${i}`);
+      const hid = w.playerHeyaId!;
+      const rid = Array.from(w.rikishi.keys())[0];
+      w.heyas.get(hid)!.regionalPresence = { Mongolia: 0 };
+      const r2 = w.rikishi.get(rid)!;
+      r2.stats.technique = 80;
+      r2.stats.speed = 80;
+      r2.stats.mental = 80;
+
+      const invitation = {
+        id: `ex-high-${i}`,
+        heyaId: hid,
+        region: "Mongolia" as const,
+        prestige: 80,
+        expiresAtWeek: w.week + 4,
+      };
+      w.pendingExhibitions = [invitation];
+
+      const impact = WorldCircuitService.processExhibitionResult(w, hid, rid, invitation);
+      const newWorld = resolveImpacts(w, [impact]);
+      const presence = newWorld.heyas.get(hid)!.regionalPresence?.Mongolia ?? 0;
+      if (presence >= 15) wins++;
+    }
+    // With ~47% win rate over 20 trials, P(0 wins) < 0.0001
+    expect(wins).toBeGreaterThan(0);
+  });
+
+  it("SHOULD cap regional presence at 100", () => {
+    const world = generateInitialWorld("test-seed-cap");
+    const heyaId = world.playerHeyaId!;
+    const rikishiId = Array.from(world.rikishi.keys())[0];
+
+    // Force high stats for guaranteed win
+    const r = world.rikishi.get(rikishiId)!;
+    r.stats.technique = 100;
+    r.stats.speed = 100;
+    r.stats.mental = 100;
+
+    // Start at 95 — a win gives +15, but cap is 100
+    world.heyas.get(heyaId)!.regionalPresence = { Mongolia: 95 };
+
+    const invitation = {
+      id: "ex-cap",
+      heyaId,
+      region: "Mongolia" as const,
+      prestige: 10, // low prestige → weak opponent → high win chance
+      expiresAtWeek: world.week + 4,
+    };
+    world.pendingExhibitions = [invitation];
+
+    const impact = WorldCircuitService.processExhibitionResult(world, heyaId, rikishiId, invitation);
+    const newWorld = resolveImpacts(world, [impact]);
+    const presence = newWorld.heyas.get(heyaId)!.regionalPresence?.Mongolia ?? 0;
+
+    // Win: 95 + 15 = 110, but capped at 100
+    // Loss: 95 + 5 = 100
+    // Either way, presence should be exactly 100
+    expect(presence).toBe(100);
   });
 });

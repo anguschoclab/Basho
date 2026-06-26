@@ -202,10 +202,10 @@ export const SimTuningService = {
         maxStat: (() => {
           let max = 0;
           for (const r of activeRikishi) {
-            if ((r.stats.power || 0) > max) max = r.stats.power || 0;
-            if ((r.stats.speed || 0) > max) max = r.stats.speed || 0;
-            if ((r.stats.technique || 0) > max) max = r.stats.technique || 0;
-            if ((r.stats.stamina || 0) > max) max = r.stats.stamina || 0;
+            if ((r.stats.power ?? 0) > max) max = r.stats.power ?? 0;
+            if ((r.stats.speed ?? 0) > max) max = r.stats.speed ?? 0;
+            if ((r.stats.technique ?? 0) > max) max = r.stats.technique ?? 0;
+            if ((r.stats.stamina ?? 0) > max) max = r.stats.stamina ?? 0;
           }
           return max;
         })(),
