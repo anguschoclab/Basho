@@ -4,7 +4,6 @@ import { WorldCircuitService } from "@/engine/systems/worldCircuit/WorldCircuitS
 import { phase06_yearly_boundary } from "@/engine/tick/phases/phase06_yearly_boundary";
 import { tickWeekNPC } from "@/engine/npcAI";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { EntityCollection } from "@/engine/core/EntityCollection";
 
 describe("World Circuit System Integration", () => {
   it("SHOULD generate invitations at the yearly boundary for all stables", () => {

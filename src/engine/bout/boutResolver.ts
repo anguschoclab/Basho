@@ -584,35 +584,46 @@ export function applyRivalryToRikishi(
   const condMult = conditionMultiplier(r.condition ?? 100);
   return {
     ...r,
-    aggression: clamp(
-      (r.stats.aggression ?? DEFAULT_STAT_VALUE) *
-        (1 + heat01 * RIVALRY_HEAT_AGGRESSION_MULTIPLIER),
-      STAT_CLAMP_MIN,
-      STAT_CLAMP_MAX
-    ),
-    mental: clamp(
-      (r.stats.mental ?? DEFAULT_STAT_VALUE) * (1 + spite01 * RIVALRY_SPITE_MENTAL_MULTIPLIER),
-      STAT_CLAMP_MIN,
-      STAT_CLAMP_MAX
-    ),
-    power: clamp((r.stats.power ?? DEFAULT_STAT_VALUE) * condMult, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
-    speed: clamp((r.stats.speed ?? DEFAULT_STAT_VALUE) * condMult, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
-    technique: clamp(
-      (r.stats.technique ?? DEFAULT_STAT_VALUE) * condMult,
-      STAT_CLAMP_MIN,
-      STAT_CLAMP_MAX
-    ),
-    balance: clamp(
-      (r.stats.balance ?? DEFAULT_STAT_VALUE) * condMult,
-      STAT_CLAMP_MIN,
-      STAT_CLAMP_MAX
-    ),
-    stamina: clamp(
-      (r.stats.stamina ?? DEFAULT_STAT_VALUE) * condMult,
-      STAT_CLAMP_MIN,
-      STAT_CLAMP_MAX
-    ),
-  } as Rikishi;
+    stats: {
+      ...r.stats,
+      aggression: clamp(
+        (r.stats.aggression ?? DEFAULT_STAT_VALUE) *
+          (1 + heat01 * RIVALRY_HEAT_AGGRESSION_MULTIPLIER),
+        STAT_CLAMP_MIN,
+        STAT_CLAMP_MAX
+      ),
+      mental: clamp(
+        (r.stats.mental ?? DEFAULT_STAT_VALUE) * (1 + spite01 * RIVALRY_SPITE_MENTAL_MULTIPLIER),
+        STAT_CLAMP_MIN,
+        STAT_CLAMP_MAX
+      ),
+      power: clamp(
+        (r.stats.power ?? DEFAULT_STAT_VALUE) * condMult,
+        STAT_CLAMP_MIN,
+        STAT_CLAMP_MAX
+      ),
+      speed: clamp(
+        (r.stats.speed ?? DEFAULT_STAT_VALUE) * condMult,
+        STAT_CLAMP_MIN,
+        STAT_CLAMP_MAX
+      ),
+      technique: clamp(
+        (r.stats.technique ?? DEFAULT_STAT_VALUE) * condMult,
+        STAT_CLAMP_MIN,
+        STAT_CLAMP_MAX
+      ),
+      balance: clamp(
+        (r.stats.balance ?? DEFAULT_STAT_VALUE) * condMult,
+        STAT_CLAMP_MIN,
+        STAT_CLAMP_MAX
+      ),
+      stamina: clamp(
+        (r.stats.stamina ?? DEFAULT_STAT_VALUE) * condMult,
+        STAT_CLAMP_MIN,
+        STAT_CLAMP_MAX
+      ),
+    },
+  };
 }
 
 /**

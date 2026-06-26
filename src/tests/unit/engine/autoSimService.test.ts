@@ -3,12 +3,9 @@ import { checkStopCondition, runAutoSim } from "@/engine/simulation/AutoSimServi
 import type { AutoSimConfig, StopCondition } from "@/engine/simulation/AutoSimService";
 import type { BashoSimResult } from "@/engine/types/basho";
 import { MockFactory } from "../../helpers/utils/MockFactory";
-import { ChronicleService } from "@/engine/simulation/ChronicleService";
 import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
 
 describe("checkStopCondition", () => {
-  const chronicle = ChronicleService.createEmptyReport();
-
   const createMockConfig = (overrides: Partial<AutoSimConfig> = {}): AutoSimConfig => ({
     duration: { type: "days", count: 15 },
     stopConditions: [],
@@ -29,6 +26,7 @@ describe("checkStopCondition", () => {
     injuries: [],
     promotions: [],
     demotions: [],
+    finalWorld: MockFactory.createWorld(),
     ...overrides,
   });
 
@@ -37,10 +35,10 @@ describe("checkStopCondition", () => {
       const world = MockFactory.createWorld();
       const config = createMockConfig();
       const bashoResult = createMockBashoResult({
-        promotions: [{ rikishiId: "r1", from: "ozeki", to: "yokozuna", side: "east" }],
+        promotions: [{ rikishiId: "r1", from: "ozeki", to: "yokozuna", description: "" }],
       });
 
-      expect(checkStopCondition("yokozunaPromotion", bashoResult, world, config, chronicle)).toBe(
+      expect(checkStopCondition("yokozunaPromotion", bashoResult, world, config)).toBe(
         true
       );
     });
@@ -49,10 +47,10 @@ describe("checkStopCondition", () => {
       const world = MockFactory.createWorld();
       const config = createMockConfig();
       const bashoResult = createMockBashoResult({
-        promotions: [{ rikishiId: "r1", from: "sekiwake", to: "ozeki", side: "east" }],
+        promotions: [{ rikishiId: "r1", from: "sekiwake", to: "ozeki", description: "" }],
       });
 
-      expect(checkStopCondition("yokozunaPromotion", bashoResult, world, config, chronicle)).toBe(
+      expect(checkStopCondition("yokozunaPromotion", bashoResult, world, config)).toBe(
         false
       );
     });
@@ -63,10 +61,10 @@ describe("checkStopCondition", () => {
       const world = MockFactory.createWorld();
       const config = createMockConfig();
       const bashoResult = createMockBashoResult({
-        promotions: [{ rikishiId: "r1", from: "sekiwake", to: "ozeki", side: "east" }],
+        promotions: [{ rikishiId: "r1", from: "sekiwake", to: "ozeki", description: "" }],
       });
 
-      expect(checkStopCondition("ozekiPromotion", bashoResult, world, config, chronicle)).toBe(
+      expect(checkStopCondition("ozekiPromotion", bashoResult, world, config)).toBe(
         true
       );
     });
@@ -75,10 +73,10 @@ describe("checkStopCondition", () => {
       const world = MockFactory.createWorld();
       const config = createMockConfig();
       const bashoResult = createMockBashoResult({
-        promotions: [{ rikishiId: "r1", from: "komusubi", to: "sekiwake", side: "east" }],
+        promotions: [{ rikishiId: "r1", from: "komusubi", to: "sekiwake", description: "" }],
       });
 
-      expect(checkStopCondition("ozekiPromotion", bashoResult, world, config, chronicle)).toBe(
+      expect(checkStopCondition("ozekiPromotion", bashoResult, world, config)).toBe(
         false
       );
     });
@@ -104,7 +102,7 @@ describe("checkStopCondition", () => {
         MockFactory.createRikishi("player-rikishi", { heyaId: "player-heya" })
       );
 
-      expect(checkStopCondition("yusho", bashoResult, world, config, chronicle)).toBe(true);
+      expect(checkStopCondition("yusho", bashoResult, world, config)).toBe(true);
     });
 
     it("returns false when another heya's rikishi wins yusho", () => {
@@ -126,7 +124,7 @@ describe("checkStopCondition", () => {
         MockFactory.createRikishi("other-rikishi", { heyaId: "other-heya" })
       );
 
-      expect(checkStopCondition("yusho", bashoResult, world, config, chronicle)).toBe(false);
+      expect(checkStopCondition("yusho", bashoResult, world, config)).toBe(false);
     });
 
     it("returns false in observer mode even if player rikishi wins", () => {
@@ -148,7 +146,7 @@ describe("checkStopCondition", () => {
         MockFactory.createRikishi("player-rikishi", { heyaId: "player-heya" })
       );
 
-      expect(checkStopCondition("yusho", bashoResult, world, config, chronicle)).toBe(false);
+      expect(checkStopCondition("yusho", bashoResult, world, config)).toBe(false);
     });
   });
 
@@ -165,7 +163,7 @@ describe("checkStopCondition", () => {
         MockFactory.createHeya("player-heya", { runwayBand: "desperate" })
       );
 
-      expect(checkStopCondition("stableInsolvency", bashoResult, world, config, chronicle)).toBe(
+      expect(checkStopCondition("stableInsolvency", bashoResult, world, config)).toBe(
         true
       );
     });
@@ -179,7 +177,7 @@ describe("checkStopCondition", () => {
       const bashoResult = createMockBashoResult();
       world.heyas.set("player-heya", MockFactory.createHeya("player-heya", { runwayBand: "safe" }));
 
-      expect(checkStopCondition("stableInsolvency", bashoResult, world, config, chronicle)).toBe(
+      expect(checkStopCondition("stableInsolvency", bashoResult, world, config)).toBe(
         false
       );
     });
@@ -196,7 +194,7 @@ describe("checkStopCondition", () => {
         MockFactory.createHeya("player-heya", { runwayBand: "desperate" })
       );
 
-      expect(checkStopCondition("stableInsolvency", bashoResult, world, config, chronicle)).toBe(
+      expect(checkStopCondition("stableInsolvency", bashoResult, world, config)).toBe(
         false
       );
     });
@@ -209,7 +207,7 @@ describe("checkStopCondition", () => {
       const config = createMockConfig();
       const bashoResult = createMockBashoResult();
 
-      expect(checkStopCondition("scandal", bashoResult, world, config, chronicle)).toBe(true);
+      expect(checkStopCondition("scandal", bashoResult, world, config)).toBe(true);
     });
 
     it("returns true when there is a scandal in the event log", () => {
@@ -218,7 +216,7 @@ describe("checkStopCondition", () => {
       const config = createMockConfig();
       const bashoResult = createMockBashoResult();
 
-      expect(checkStopCondition("scandal", bashoResult, world, config, chronicle)).toBe(true);
+      expect(checkStopCondition("scandal", bashoResult, world, config)).toBe(true);
     });
 
     it("returns false when there are no major scandals in the current year or event log", () => {
@@ -231,7 +229,7 @@ describe("checkStopCondition", () => {
       const config = createMockConfig();
       const bashoResult = createMockBashoResult();
 
-      expect(checkStopCondition("scandal", bashoResult, world, config, chronicle)).toBe(false);
+      expect(checkStopCondition("scandal", bashoResult, world, config)).toBe(false);
     });
   });
 
@@ -247,7 +245,7 @@ describe("checkStopCondition", () => {
       const config = createMockConfig();
       const bashoResult = createMockBashoResult();
 
-      expect(checkStopCondition("retirementOfStar", bashoResult, world, config, chronicle)).toBe(
+      expect(checkStopCondition("retirementOfStar", bashoResult, world, config)).toBe(
         true
       );
     });
@@ -263,7 +261,7 @@ describe("checkStopCondition", () => {
       const config = createMockConfig();
       const bashoResult = createMockBashoResult();
 
-      expect(checkStopCondition("retirementOfStar", bashoResult, world, config, chronicle)).toBe(
+      expect(checkStopCondition("retirementOfStar", bashoResult, world, config)).toBe(
         false
       );
     });
@@ -274,7 +272,7 @@ describe("checkStopCondition", () => {
       const config = createMockConfig();
       const bashoResult = createMockBashoResult();
 
-      expect(checkStopCondition("retirementOfStar", bashoResult, world, config, chronicle)).toBe(
+      expect(checkStopCondition("retirementOfStar", bashoResult, world, config)).toBe(
         false
       );
     });
@@ -287,7 +285,7 @@ describe("checkStopCondition", () => {
       const bashoResult = createMockBashoResult();
 
       expect(
-        checkStopCondition("never" as StopCondition, bashoResult, world, config, chronicle)
+        checkStopCondition("never" as StopCondition, bashoResult, world, config)
       ).toBe(false);
     });
   });
@@ -307,7 +305,7 @@ describe("runAutoSim diagnostic metrics", () => {
     expect(
       result.tuningMetrics.topKimarite.reduce((s, k) => s + k.count, 0)
     ).toBeGreaterThan(50);
-  }, 120_000); // 2-year runAutoSim is heavy; needs headroom over the 30s default under parallel load
+  }, 300_000); // 2-year runAutoSim is heavy; needs headroom under parallel worker load
 
   it("counts every basho with no yokozuna, not just the final world", () => {
     const rawWorld = generateInitialWorld("yoko-vacancy-test");
@@ -328,5 +326,5 @@ describe("runAutoSim diagnostic metrics", () => {
     });
     expect(result.tuningMetrics.yokozunaVacantBashoCount).toBeGreaterThan(1);
     expect(result.tuningMetrics.yokozunaVacantBashoCount).toBeLessThanOrEqual(6);
-  }, 120_000);
+  }, 300_000);
 });

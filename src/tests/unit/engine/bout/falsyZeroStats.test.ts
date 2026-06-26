@@ -18,15 +18,15 @@ describe("applyRivalryToRikishi — falsy zero stat handling", () => {
     const result = applyRivalryToRikishi(r, { heat: 0, spite: 0 });
 
     // condMult for condition=100 should be 1.0, so 0 * 1.0 = 0
-    expect(result.power).toBe(0);
-    expect(result.speed).toBe(0);
-    expect(result.technique).toBe(0);
-    expect(result.balance).toBe(0);
-    expect(result.stamina).toBe(0);
+    expect(result.stats.power).toBe(0);
+    expect(result.stats.speed).toBe(0);
+    expect(result.stats.technique).toBe(0);
+    expect(result.stats.balance).toBe(0);
+    expect(result.stats.stamina).toBe(0);
     // aggression: 0 * (1 + 0) = 0
-    expect(result.aggression).toBe(0);
+    expect(result.stats.aggression).toBe(0);
     // mental: 0 * (1 + 0) = 0
-    expect(result.mental).toBe(0);
+    expect(result.stats.mental).toBe(0);
   });
 
   it("undefined stats fall back to DEFAULT_STAT_VALUE (50)", () => {
@@ -44,13 +44,13 @@ describe("applyRivalryToRikishi — falsy zero stat handling", () => {
     const result = applyRivalryToRikishi(r, { heat: 0, spite: 0 });
 
     // Undefined → DEFAULT_STAT_VALUE=50, condMult=1.0 → 50
-    expect(result.power).toBe(50);
-    expect(result.speed).toBe(50);
-    expect(result.technique).toBe(50);
-    expect(result.balance).toBe(50);
-    expect(result.stamina).toBe(50);
-    expect(result.aggression).toBe(50);
-    expect(result.mental).toBe(50);
+    expect(result.stats.power).toBe(50);
+    expect(result.stats.speed).toBe(50);
+    expect(result.stats.technique).toBe(50);
+    expect(result.stats.balance).toBe(50);
+    expect(result.stats.stamina).toBe(50);
+    expect(result.stats.aggression).toBe(50);
+    expect(result.stats.mental).toBe(50);
   });
 
   it("normal stats are unchanged (modulo condition multiplier)", () => {
@@ -68,13 +68,13 @@ describe("applyRivalryToRikishi — falsy zero stat handling", () => {
     const result = applyRivalryToRikishi(r, { heat: 0, spite: 0 });
 
     // condMult for condition=100 is 1.0, so stats pass through unchanged
-    expect(result.power).toBe(70);
-    expect(result.speed).toBe(60);
-    expect(result.technique).toBe(65);
-    expect(result.balance).toBe(50);
-    expect(result.stamina).toBe(80);
-    expect(result.aggression).toBe(45);
-    expect(result.mental).toBe(55);
+    expect(result.stats.power).toBe(70);
+    expect(result.stats.speed).toBe(60);
+    expect(result.stats.technique).toBe(65);
+    expect(result.stats.balance).toBe(50);
+    expect(result.stats.stamina).toBe(80);
+    expect(result.stats.aggression).toBe(45);
+    expect(result.stats.mental).toBe(55);
   });
 
   it("rivalry heat boosts aggression but preserves zero base", () => {
@@ -86,7 +86,7 @@ describe("applyRivalryToRikishi — falsy zero stat handling", () => {
     const result = applyRivalryToRikishi(r, { heat: 50, spite: 0 });
 
     // 0 * (1 + 0.5 * multiplier) = 0 — zero base stays zero
-    expect(result.aggression).toBe(0);
+    expect(result.stats.aggression).toBe(0);
   });
 
   it("rivalry spite modifies mental but preserves zero base", () => {
@@ -98,6 +98,6 @@ describe("applyRivalryToRikishi — falsy zero stat handling", () => {
     const result = applyRivalryToRikishi(r, { heat: 0, spite: 50 });
 
     // 0 * (1 + 0.5 * multiplier) = 0 — zero base stays zero
-    expect(result.mental).toBe(0);
+    expect(result.stats.mental).toBe(0);
   });
 });
