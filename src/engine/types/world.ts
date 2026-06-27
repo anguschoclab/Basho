@@ -243,8 +243,6 @@ export interface WorldState {
 
   rivalriesState?: RivalriesState;
 
-  stableRelations?: Record<string, { tone: string }>;
-
   lastBoutResult?: BoutResult;
 
   /** Crisis waiting to be presented to player (checked on Dashboard load) */
@@ -364,7 +362,6 @@ export interface WorldState {
   scandals?: Array<{ severity: string; year: number }>;
   retirements?: Array<{ rikishiId: string }>;
   eventLog?: Array<{ type: string; [key: string]: unknown }>;
-  heyaRivalryPairs?: Record<string, number>;
   matchmakingOverride?: {
     type: "avoid_rival";
     requesterId: string;

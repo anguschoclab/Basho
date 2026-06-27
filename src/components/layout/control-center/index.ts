@@ -25,7 +25,6 @@
 export { PageHeader } from "./PageHeader";
 export { SectionHeader } from "./SectionHeader";
 export { KanjiTile } from "./KanjiTile";
-export { HeroDossier } from "./HeroDossier";
 export { CardEyebrow } from "./CardEyebrow";
 export type { CardEyebrowProps } from "./CardEyebrow";
 export { StatCard } from "./StatCard";
@@ -33,7 +32,4 @@ export type { StatItem, ProgressItem } from "./StatCard";
 export { ListCard } from "./ListCard";
 export type { ListRow } from "./ListCard";
 export { ProgressRow } from "./ProgressRow";
-export { DataTable } from "./DataTable";
-export type { DataColumn } from "./DataTable";
 export { RankBadge } from "./RankBadge";
-export { SideIndicator } from "./SideIndicator";

@@ -20,7 +20,7 @@ import {
   getOrCreateScouted,
   getScoutingLevel,
 } from "../../engine/scoutingStore";
-import { getScoutedAttributes } from "../../engine";
+import { getScoutedAttributes } from "../../engine/systems/recruitment/ScoutingService";
 import { EntityCollection } from "../../engine/core/EntityCollection";
 
 /**

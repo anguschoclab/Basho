@@ -2,9 +2,6 @@ import type { GameState, GameAction } from "./gameTypes";
 
 export function heyaSlice(state: GameState, action: GameAction): GameState {
   switch (action.type) {
-    case "SELECT_HEYA":
-      return { ...state, selectedHeyaId: action.id, phase: action.id ? "stable" : state.phase };
-
     case "SET_PLAYER_HEYA": {
       if (!state.world) return state;
       const world = { ...state.world, heyas: new Map(state.world.heyas) };

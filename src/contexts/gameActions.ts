@@ -161,28 +161,6 @@ export const runAutoSim = (result: AutoSimResult): GameAction => ({
   result,
 });
 
-/**
- * Selects a rikishi as the currently selected rikishi.
- *
- * @param {string | null} id - The rikishi ID to select, or null to deselect.
- * @returns {GameAction} SELECT_RIKISHI action.
- */
-export const selectRikishi = (id: string | null): GameAction => ({
-  type: "SELECT_RIKISHI",
-  id,
-});
-
-/**
- * Selects a heya as the currently selected heya.
- *
- * @param {string | null} id - The heya ID to select, or null to deselect.
- * @returns {GameAction} SELECT_HEYA action.
- */
-export const selectHeya = (id: string | null): GameAction => ({
-  type: "SELECT_HEYA",
-  id,
-});
-
 
 /**
  * Updates the world state with a new world.

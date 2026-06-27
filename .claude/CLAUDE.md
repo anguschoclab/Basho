@@ -28,7 +28,7 @@ src/
 │   └── rng.ts       SeededRNG, rngFromSeed(), rngForWorld()
 ├── pages/           React page components
 ├── components/      UI components (layout, game, dashboard)
-├── presenters/      uiDigest.ts, selectors.ts, uiModels.ts — engine→UI translation
+├── presenters/      uiDigest.ts, selectors.ts, uiModels.ts, projections/ — engine→UI translation
 ├── contexts/        GameContext + reducer slices (coreSlice, timeSlice, bashoSlice, …)
 ├── routes.tsx       TanStack Router route tree
 └── App.tsx          Root with providers
@@ -76,9 +76,10 @@ src/
 
 ### Command path convention
 - **Engine mutations go through the Web Worker** (`src/engine/worker/engine.worker.ts` `COMMAND_HANDLERS` + `src/engine/worker/types.ts`), dispatched from the UI via `useGameStore((s) => s.sendCommand)`.
-- **The reducer (`src/contexts/*Slice.ts`) is only for:** transient UI state (`selectRikishi`, `selectHeya`, `setPhase`) and the synchronous bout-simulation/time-advance path that drives match animation (`bashoSlice`, `timeSlice`).
-- Do NOT add new engine-mutating actions to the reducer slices — they will not be reachable from the canonical command path. (This is the bug class that left `ISSUE_RULING`/`UPGRADE_HEYA` dead for months.)
+- **The reducer (`src/contexts/*Slice.ts`) is only for:** transient UI state (`setPhase`) and the synchronous bout-simulation/time-advance path that drives match animation (`bashoSlice`, `timeSlice`).
+- Do NOT add new engine-mutating actions to the reducer slices — they will not be reachable from the canonical command path.
 - **`gameReducer`** combines slices + calls engine functions
+- **`issueRuling`** is exposed via `GameContext` and sends `ISSUE_RULING` command to the worker (used by GovernancePage).
 
 ## RNG — Critical Convention
 **ALWAYS use seeded RNG. Never `Math.random()`.**
@@ -127,22 +128,21 @@ generateGovernanceHeadline(world, heyaId, severity, reason);
 - **Mock factory:** `src/engine/__tests__/utils.ts` → `mockRikishi(id, overrides?)`
 - **trainingState in mocks** must be `new Map([["heyaId", {...}]])` — it's a Map, not a plain object
 - **Coverage thresholds:** lines 60%, branches 50% (v8 provider)
-- **Known pre-existing failures:** 4 files / 5 tests failing (as of May 2026):
-  - `random.test.ts` — `getRandom` removed in recent commit, test not updated
-  - `HistoryPage.test.tsx` — missing `ansi-styles` dep
-  - `promotionLogic.test.ts` (×2) — assertion mismatches in movement unit math
-  - `banzuke/promotionLogic.test.ts` (×1) — clamping threshold assertion
+- **Current status:** 195 test files, 1703 tests, all passing. `npx tsc --noEmit` clean. `npx vite build` succeeds.
 
 ## Routing (routes.tsx — TanStack Router)
 Key routes: `/` Dashboard, `/stable/roster`, `/basho`, `/banzuke`, `/office/finances`, `/jsa/governance`, `/history`, `/rikishi/$rikishiId`, `/hall-of-fame`
+**Lazy loading:** All page components except `MainMenu`, `NewGameWizard`, and `Dashboard` are lazy-loaded via `React.lazy()` + `Suspense` with a spinner fallback. This splits the bundle into per-route chunks.
+**Vendor chunks:** `vite.config.ts` defines manual chunks for `vendor-react`, `vendor-recharts`, `vendor-framer`, `vendor-lucide`.
 
 ## Known Issues & Gotchas
-1. **`tickWeeklySubsystems`** — orphaned import in `tickDaily.ts`. Function is in `tickWeekly.ts` but never called. Safe dead code.
-2. **`economics.ts`** — `processHeyaFinances()` and `tickWeekEconomics()` are dead (replaced by FinanceCalculator). Don't call them.
-3. **`as any` in `descriptorBands.ts`** — `|| ("Average" as any)` and `|| ("Fresh" as any)` — unjustified, should be typed.
-4. **BardEngine token mismatches** — some archive.json governance templates may use `%HEYA_NAME%` but code passes `heya` context key. Audit before adding new templates.
-5. **HistoryDashboard** — `src/pages/HistoryDashboard.tsx` is complete but routed at `/museum` — confirm before adding UI links.
-6. **`FogOfWarService.ts`** imports BardEngine from `"../../narrative/BardEngine"` (not `"../narrative/BardEngine"` — systems/narrative is different from engine/narrative).
+1. **`economics.ts`** — `processHeyaFinances()` and `tickWeekEconomics()` are dead (replaced by FinanceCalculator). Don't call them.
+2. **`as any` in `descriptorBands.ts`** — `|| ("Average" as any)` and `|| ("Fresh" as any)` — unjustified, should be typed.
+3. **BardEngine token mismatches** — some archive.json governance templates may use `%HEYA_NAME%` but code passes `heya` context key. Audit before adding new templates.
+4. **HistoryDashboard** — `src/pages/HistoryDashboard.tsx` is complete but routed at `/museum` — confirm before adding UI links.
+5. **`FogOfWarService.ts`** imports BardEngine from `"../../narrative/BardEngine"` (not `"../narrative/BardEngine"` — systems/narrative is different from engine/narrative).
+6. **`rivalriesProjections`** — reads `world.rivalriesState.heyaRivalryPairs` (structured `Record<string, RivalryPairState>`). Do NOT confuse with the old flat `world.heyaRivalryPairs` field which was removed.
+7. **`engine/index.ts` barrel removed** — import directly from subsystem files (e.g. `@/engine/systems/recruitment/ScoutingService`).
 
 ## Refactoring Plan Status
 Plan file: `.claude/plans/encapsulated-herding-origami.md`
@@ -150,10 +150,11 @@ Plan file: `.claude/plans/encapsulated-herding-origami.md`
 | Phase | Items | Status |
 |-------|-------|--------|
 | P0 (bootstrap) | EconomicConstants, FinanceCalculator, remove pbp export | ✅ Done |
-| P1 (critical) | FinanceCalculator integration, BardEngine tokens, dead code, HistoryDashboard route | ⏳ Pending |
+| P1 (critical) | FinanceCalculator integration, BardEngine tokens, dead code, HistoryDashboard route | ✅ Done |
 | P1 (type safety) | `as any` casts, naturalization RNG | ⏳ Pending |
 | P1 (tests) | Centralize mocks, banzuke tests, basho lifecycle tests, governance tests, coverage config | ⏳ Pending |
 | P2 (modularization) | matchmaking.ts split, kimariteStrategy split, BoutReplayViewer split, selectors, merger UI | ✅ Done |
+| Dead Code Audit | Engine modules, components, constants, context actions, CSS, barrel cleanup, lazy loading, vendor chunks | ✅ Done |
 
 ## New UI Components Added (May 2026)
 Dashboard widgets: `PromotionPipelineWidget` (rank distribution funnel + Ozeki/Yokozuna/Kadoban lists)

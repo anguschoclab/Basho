@@ -62,10 +62,6 @@ interface GameContextValue {
   ) => void;
   /** Sets the current game phase. */
   setPhase: (phase: GamePhase) => void;
-  /** Selects a rikishi as the currently selected rikishi. */
-  selectRikishi: (id: string | null) => void;
-  /** Selects a heya as the currently selected heya. */
-  selectHeya: (id: string | null) => void;
   /** Starts a new basho. */
   startBasho: () => void;
   /** Advances to the next day. */
@@ -88,6 +84,8 @@ interface GameContextValue {
   advanceInterim: (weeks?: number) => void;
   /** Advances by one day. */
   advanceOneDay: () => void;
+  /** Issues a governance ruling. */
+  issueRuling: (rulingId: string, severity: "lenient" | "standard" | "harsh") => void;
   /** Runs a holiday event with the given configuration. */
   goOnHoliday: (config: HolidayConfig) => HolidayResult | null;
   /** Runs an auto-simulation with the given configuration. */
@@ -198,14 +196,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
     dispatch(actions.setPhase(phase));
   }, []);
 
-  const selectRikishi = useCallback((id: string | null) => {
-    dispatch(actions.selectRikishi(id));
-  }, []);
-
-  const selectHeya = useCallback((id: string | null) => {
-    dispatch(actions.selectHeya(id));
-  }, []);
-
   const startBasho = useCallback(() => dispatch(actions.startBasho()), []);
   const advanceDay = useCallback(() => sendCommand({ type: "TICK_DAY" }), [sendCommand]);
   const simulateBoutAction = useCallback(
@@ -245,14 +235,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
     },
     [sendCommand]
   );
-
-  const handleMediaEvent = useCallback(
-    (eventId: string, choice: string) => {
-      sendCommand({ type: "HANDLE_MEDIA_EVENT", eventId, choice });
-    },
-    [sendCommand]
-  );
-
 
   const recruitSponsorAction = useCallback(
     (sponsorId: string) => {
@@ -404,8 +386,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       digest,
       createWorld,
       setPhase,
-      selectRikishi,
-      selectHeya,
       startBasho,
       advanceDay,
       simulateBout: simulateBoutAction,
@@ -416,6 +396,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       simFullBasho,
       advanceInterim,
       advanceOneDay: advanceOneDayAction,
+      issueRuling,
       saveToSlot,
       loadFromSlot,
       quickSave: quickSaveAction,
@@ -450,8 +431,6 @@ export function GameProvider({ children }: { children: ReactNode }) {
       digest,
       createWorld,
       setPhase,
-      selectRikishi,
-      selectHeya,
       startBasho,
       advanceDay,
       simulateBoutAction,
@@ -462,6 +441,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       simFullBasho,
       advanceInterim,
       advanceOneDayAction,
+      issueRuling,
       saveToSlot,
       loadFromSlot,
       quickSaveAction,

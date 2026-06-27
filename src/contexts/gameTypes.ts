@@ -50,10 +50,6 @@ export interface GameState {
   world: WorldState | null;
   /** Latest UIDigest built from world after each tick — consumed by InboxNewsTicker and similar components. */
   digest: UIDigest | null;
-  /** Currently selected rikishi ID (null if none selected). */
-  selectedRikishiId: string | null;
-  /** Currently selected heya ID (null if none selected). */
-  selectedHeyaId: string | null;
   /** Current bout index for simulation. */
   currentBoutIndex: number;
   /** Last bout result for display. */
@@ -92,8 +88,6 @@ export type GameAction =
   | { type: "SIM_FULL_BASHO" }
   | { type: "RUN_HOLIDAY"; result: HolidayResult }
   | { type: "RUN_AUTO_SIM"; result: AutoSimResult }
-  | { type: "SELECT_RIKISHI"; id: string | null }
-  | { type: "SELECT_HEYA"; id: string | null }
   | { type: "SET_BOUT_TACTIC"; boutId: string; tactic: import("@/engine/types/combat").BoutTactic }
   | { type: "UPDATE_WORLD"; world: WorldState }
   | { type: "LOAD_WORLD"; world: WorldState }
@@ -123,8 +117,6 @@ export const initialGameState: GameState = {
   phase: "menu",
   world: null,
   digest: null,
-  selectedRikishiId: null,
-  selectedHeyaId: null,
   currentBoutIndex: 0,
   lastBoutResult: null,
   playerHeyaId: null,

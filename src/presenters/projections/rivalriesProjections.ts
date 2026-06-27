@@ -30,9 +30,7 @@ export interface RivalriesPageData {
 }
 
 export function projectRivalriesPage(world: WorldState): RivalriesPageData {
-  const rivalriesState = (world as unknown as Record<string, unknown>).rivalries as
-    | { pairs: Map<string, RivalryPairState> }
-    | undefined;
+  const rivalriesState = world.rivalriesState;
 
   if (!rivalriesState?.pairs) {
     return {
@@ -49,10 +47,7 @@ export function projectRivalriesPage(world: WorldState): RivalriesPageData {
   const playerHeya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
   const playerRikishiIds = new Set(playerHeya?.rikishiIds ?? []);
 
-  const normalized: RivalryPairState[] = [];
-  for (const pair of rivalriesState.pairs.values()) {
-    normalized.push(pair);
-  }
+  const normalized: RivalryPairState[] = Object.values(rivalriesState.pairs);
 
   const player: RivalryPairState[] = [];
   const hot: RivalryPairState[] = [];
@@ -94,19 +89,16 @@ export function projectRivalriesPage(world: WorldState): RivalriesPageData {
     playerRivalries: player,
     hotRivalries: hot,
     coolRivalries: cool,
-    // ⚡ Bolt Optimization: Use Object.keys() to avoid O(N) tuple allocations from Object.entries()
-    stableRivalries: Object.keys(world.heyaRivalryPairs || {}).map((key) => {
-      const heat = (world.heyaRivalryPairs || {})[key];
-      const [aId, bId] = key.split("::");
-      const a = world.heyas.get(aId);
-      const b = world.heyas.get(bId);
+    stableRivalries: Object.values(rivalriesState.heyaRivalryPairs || {}).map((pair) => {
+      const a = world.heyas.get(pair.heyaAId);
+      const b = world.heyas.get(pair.heyaBId);
       return {
-        aId,
-        bId,
-        heat,
-        aName: a?.name ?? aId,
-        bName: b?.name ?? bId,
-        tone: heat >= 80 ? "bad_blood" : heat >= 50 ? "rivalry" : "neutral",
+        aId: pair.heyaAId,
+        bId: pair.heyaBId,
+        heat: pair.heat,
+        aName: a?.name ?? pair.heyaAId,
+        bName: b?.name ?? pair.heyaBId,
+        tone: pair.heat >= 80 ? "bad_blood" : pair.heat >= 50 ? "rivalry" : "neutral",
       };
     }),
     stats: { total: normalized.length, inferno: infernoCount, hot: hotCount },

@@ -6,7 +6,7 @@ import { resolveImpacts } from "@/engine/core/ImpactResolver";
 /**
  * Roster slice handling roster-related actions including mentor assignment.
  *
- * Processes SELECT_RIKISHI, ASSIGN_MENTOR, and REMOVE_MENTOR actions.
+ * Processes ASSIGN_MENTOR, REMOVE_MENTOR, ASSIGN_SPARRING, and REMOVE_SPARRING actions.
  * Mentorship mutations use StateImpact pattern for transactional updates.
  *
  * @param {GameState} state - Current game state.
@@ -15,12 +15,6 @@ import { resolveImpacts } from "@/engine/core/ImpactResolver";
  */
 export function rosterSlice(state: GameState, action: GameAction): GameState {
   switch (action.type) {
-    case "SELECT_RIKISHI":
-      return {
-        ...state,
-        selectedRikishiId: action.id,
-        phase: action.id ? "rikishi" : state.phase,
-      };
     case "ASSIGN_MENTOR": {
       if (!state.world) return state;
       const assignImpact = assignMentor(state.world, action.mentorId, action.apprenticeId);

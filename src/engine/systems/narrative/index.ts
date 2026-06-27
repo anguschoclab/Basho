@@ -13,4 +13,3 @@ export * from "./NarrativeService";
 export * from "./CrisisService";
 export * from "./RivalryHeatService";
 export * from "./RivalryService";
-export * from "./StableRivalryService";

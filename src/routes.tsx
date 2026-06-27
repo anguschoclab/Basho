@@ -7,39 +7,53 @@ import {
   createBrowserHistory,
   redirect,
 } from "@tanstack/react-router";
+import { lazy, Suspense } from "react";
 import { SaveSlotService } from "./engine/persistence/SaveSlotService";
 import MainMenu from "./pages/MainMenu";
 import NewGameWizard from "./pages/NewGameWizard";
 import Dashboard from "./pages/Dashboard";
-import StablePage from "./pages/StablePage";
-import TrainingPage from "./pages/TrainingPage";
-import OyakataPage from "./pages/OyakataPage";
-import RikishiPage from "./pages/RikishiPage";
-import BashoPage from "./pages/BashoPage";
-import SchedulePage from "./pages/SchedulePage";
-import BanzukePage from "./pages/BanzukePage";
-import RivalriesPage from "./pages/RivalriesPage";
-import EconomyPage from "./pages/EconomyPage";
-import TalentPoolPage from "./pages/TalentPoolPage";
-import FacilitiesPage from "./pages/FacilitiesPage";
-import RecapPage from "./pages/RecapPage";
-import HistoryPage from "./pages/HistoryPage";
-import AlmanacPage from "./pages/AlmanacPage";
-import MediaPage from "./pages/MediaPage";
-import HallOfFamePage from "./pages/HallOfFamePage";
-import InjuryRecoveryPage from "./pages/InjuryRecoveryPage";
-import BookmarksPage from "./pages/BookmarksPage";
-import SponsorManagementPage from "./pages/SponsorManagementPage";
-import SettingsPage from "./pages/SettingsPage";
-import StaffPage from "./pages/StaffPage";
-import TrendsPage from "./pages/TrendsPage";
-import ScoutingPage from "./pages/ScoutingPage";
-import GovernancePage from "./pages/GovernancePage";
-import MyosekiMarketPage from "./pages/MyosekiMarketPage";
-import NotFound from "./pages/NotFound";
-import { HistoryDashboard } from "./pages/HistoryDashboard";
-import GlobalCupPage from "./pages/GlobalCupPage";
-import RegionalHubPage from "./pages/RegionalHubPage";
+
+const PageLoader = () => (
+  <div className="flex items-center justify-center min-h-[60vh]">
+    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+  </div>
+);
+
+const withSuspense = (Comp: React.LazyExoticComponent<React.ComponentType>) => (
+  <Suspense fallback={<PageLoader />}>
+    <Comp />
+  </Suspense>
+);
+
+const StablePage = lazy(() => import("./pages/StablePage"));
+const TrainingPage = lazy(() => import("./pages/TrainingPage"));
+const OyakataPage = lazy(() => import("./pages/OyakataPage"));
+const RikishiPage = lazy(() => import("./pages/RikishiPage"));
+const BashoPage = lazy(() => import("./pages/BashoPage"));
+const SchedulePage = lazy(() => import("./pages/SchedulePage"));
+const BanzukePage = lazy(() => import("./pages/BanzukePage"));
+const RivalriesPage = lazy(() => import("./pages/RivalriesPage"));
+const EconomyPage = lazy(() => import("./pages/EconomyPage"));
+const TalentPoolPage = lazy(() => import("./pages/TalentPoolPage"));
+const FacilitiesPage = lazy(() => import("./pages/FacilitiesPage"));
+const RecapPage = lazy(() => import("./pages/RecapPage"));
+const HistoryPage = lazy(() => import("./pages/HistoryPage"));
+const AlmanacPage = lazy(() => import("./pages/AlmanacPage"));
+const MediaPage = lazy(() => import("./pages/MediaPage"));
+const HallOfFamePage = lazy(() => import("./pages/HallOfFamePage"));
+const InjuryRecoveryPage = lazy(() => import("./pages/InjuryRecoveryPage"));
+const BookmarksPage = lazy(() => import("./pages/BookmarksPage"));
+const SponsorManagementPage = lazy(() => import("./pages/SponsorManagementPage"));
+const SettingsPage = lazy(() => import("./pages/SettingsPage"));
+const StaffPage = lazy(() => import("./pages/StaffPage"));
+const TrendsPage = lazy(() => import("./pages/TrendsPage"));
+const ScoutingPage = lazy(() => import("./pages/ScoutingPage"));
+const GovernancePage = lazy(() => import("./pages/GovernancePage"));
+const MyosekiMarketPage = lazy(() => import("./pages/MyosekiMarketPage"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const HistoryDashboard = lazy(() => import("./pages/HistoryDashboard").then(m => ({ default: m.HistoryDashboard })));
+const GlobalCupPage = lazy(() => import("./pages/GlobalCupPage"));
+const RegionalHubPage = lazy(() => import("./pages/RegionalHubPage"));
 
 // In Electron production the app loads from file://, where browser history
 // path traversal fails (e.g. /dashboard → file:///dashboard — not found).
@@ -124,17 +138,17 @@ const dashboardRoute = createRoute({
 const settingsRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/settings",
-  component: SettingsPage,
+  component: () => withSuspense(SettingsPage),
 });
 const recapRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/recap",
-  component: RecapPage,
+  component: () => withSuspense(RecapPage),
 });
 const bookmarksRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/bookmarks",
-  component: BookmarksPage,
+  component: () => withSuspense(BookmarksPage),
 });
 
 // --- STABLE SECTION ---
@@ -142,12 +156,12 @@ const stableBaseRoute = createRoute({ getParentRoute: () => rootRoute, path: "/s
 const stableIndexRoute = createRoute({
   getParentRoute: () => stableBaseRoute,
   path: "/",
-  component: StablePage,
+  component: () => withSuspense(StablePage),
 });
 const stableIdRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/stable/$id",
-  component: StablePage,
+  component: () => withSuspense(StablePage),
 });
 const stableRosterRoute = createRoute({
   getParentRoute: () => stableBaseRoute,
@@ -160,22 +174,22 @@ const stableRosterRoute = createRoute({
 const stableTrainingRoute = createRoute({
   getParentRoute: () => stableBaseRoute,
   path: "/training",
-  component: TrainingPage,
+  component: () => withSuspense(TrainingPage),
 });
 const stableMedicalRoute = createRoute({
   getParentRoute: () => stableBaseRoute,
   path: "/medical",
-  component: InjuryRecoveryPage,
+  component: () => withSuspense(InjuryRecoveryPage),
 });
 const stableStaffRoute = createRoute({
   getParentRoute: () => stableBaseRoute,
   path: "/staff",
-  component: StaffPage,
+  component: () => withSuspense(StaffPage),
 });
 const stableOyakataRoute = createRoute({
   getParentRoute: () => stableBaseRoute,
   path: "/oyakata",
-  component: OyakataPage,
+  component: () => withSuspense(OyakataPage),
 });
 const stableInfrastructureRoute = createRoute({
   getParentRoute: () => stableBaseRoute,
@@ -199,7 +213,7 @@ const economyRedirectRoute = createRoute({
 const officeFinancesNestedRoute = createRoute({
   getParentRoute: () => officeBaseRoute,
   path: "/finances",
-  component: EconomyPage,
+  component: () => withSuspense(EconomyPage),
 });
 const scoutingRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -212,7 +226,7 @@ const scoutingRedirectRoute = createRoute({
 const officeScoutingNestedRoute = createRoute({
   getParentRoute: () => officeBaseRoute,
   path: "/scouting",
-  component: ScoutingPage,
+  component: () => withSuspense(ScoutingPage),
 });
 const sponsorsRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -225,12 +239,12 @@ const sponsorsRedirectRoute = createRoute({
 const officeSponsorsNestedRoute = createRoute({
   getParentRoute: () => officeBaseRoute,
   path: "/sponsors",
-  component: SponsorManagementPage,
+  component: () => withSuspense(SponsorManagementPage),
 });
 const officeFacilitiesRoute = createRoute({
   getParentRoute: () => officeBaseRoute,
   path: "/facilities",
-  component: FacilitiesPage,
+  component: () => withSuspense(FacilitiesPage),
 });
 
 // --- ASSOCIATION (JSA) SECTION ---
@@ -246,12 +260,12 @@ const governanceRedirectRoute = createRoute({
 const jsaGovernanceNestedRoute = createRoute({
   getParentRoute: () => jsaBaseRoute,
   path: "/governance",
-  component: GovernancePage,
+  component: () => withSuspense(GovernancePage),
 });
 const jsaTrendsRoute = createRoute({
   getParentRoute: () => jsaBaseRoute,
   path: "/trends",
-  component: TrendsPage,
+  component: () => withSuspense(TrendsPage),
 });
 const talentRedirectRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -264,12 +278,12 @@ const talentRedirectRoute = createRoute({
 const jsaTalentNestedRoute = createRoute({
   getParentRoute: () => jsaBaseRoute,
   path: "/talent",
-  component: TalentPoolPage,
+  component: () => withSuspense(TalentPoolPage),
 });
 const jsaMyosekiRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/myoseki",
-  component: MyosekiMarketPage,
+  component: () => withSuspense(MyosekiMarketPage),
 });
 
 // --- TOURNAMENT SECTION (nested under /basho/*) ---
@@ -278,32 +292,32 @@ const bashoBaseRoute = createRoute({ getParentRoute: () => rootRoute, path: "/ba
 const bashoIndexRoute = createRoute({
   getParentRoute: () => bashoBaseRoute,
   path: "/",
-  component: BashoPage,
+  component: () => withSuspense(BashoPage),
 });
 const bashoScheduleRoute = createRoute({
   getParentRoute: () => bashoBaseRoute,
   path: "/schedule",
-  component: SchedulePage,
+  component: () => withSuspense(SchedulePage),
 });
 const bashoBanzukeRoute = createRoute({
   getParentRoute: () => bashoBaseRoute,
   path: "/banzuke",
-  component: BanzukePage,
+  component: () => withSuspense(BanzukePage),
 });
 const bashoRivalriesRoute = createRoute({
   getParentRoute: () => bashoBaseRoute,
   path: "/rivalries",
-  component: RivalriesPage,
+  component: () => withSuspense(RivalriesPage),
 });
 const globalCupRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/global-cup",
-  component: GlobalCupPage,
+  component: () => withSuspense(GlobalCupPage),
 });
 const worldCircuitRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/world-circuit",
-  component: RegionalHubPage,
+  component: () => withSuspense(RegionalHubPage),
 });
 
 // Redirect old top-level tournament routes to nested routes
@@ -345,27 +359,27 @@ const recordsIndexRoute = createRoute({
 const recordsHistoryRoute = createRoute({
   getParentRoute: () => recordsBaseRoute,
   path: "/history",
-  component: HistoryPage,
+  component: () => withSuspense(HistoryPage),
 });
 const recordsAlmanacRoute = createRoute({
   getParentRoute: () => recordsBaseRoute,
   path: "/almanac",
-  component: AlmanacPage,
+  component: () => withSuspense(AlmanacPage),
 });
 const recordsHallOfFameRoute = createRoute({
   getParentRoute: () => recordsBaseRoute,
   path: "/hall-of-fame",
-  component: HallOfFamePage,
+  component: () => withSuspense(HallOfFamePage),
 });
 const recordsMuseumRoute = createRoute({
   getParentRoute: () => recordsBaseRoute,
   path: "/museum",
-  component: HistoryDashboard,
+  component: () => withSuspense(HistoryDashboard),
 });
 const mediaRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/media",
-  component: MediaPage,
+  component: () => withSuspense(MediaPage),
 });
 
 // Redirect old top-level archive routes to nested routes
@@ -406,18 +420,18 @@ const museumRedirectRoute = createRoute({
 const rikishiRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/rikishi",
-  component: RikishiPage,
+  component: () => withSuspense(RikishiPage),
 });
 const rikishiIdRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/rikishi/$rikishiId",
-  component: RikishiPage,
+  component: () => withSuspense(RikishiPage),
 });
 
 const notFoundRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "$",
-  component: NotFound,
+  component: () => withSuspense(NotFound),
 });
 
 const routeTree = rootRoute.addChildren([

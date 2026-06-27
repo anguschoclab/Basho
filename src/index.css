@@ -626,35 +626,6 @@
     animation: scaleIn 0.25s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  /* Staggered widget entrance */
-  .widget-enter {
-    animation: widgetEnter 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-  .widget-enter:nth-child(1) {
-    animation-delay: 0ms;
-  }
-  .widget-enter:nth-child(2) {
-    animation-delay: 55ms;
-  }
-  .widget-enter:nth-child(3) {
-    animation-delay: 110ms;
-  }
-  .widget-enter:nth-child(4) {
-    animation-delay: 165ms;
-  }
-  .widget-enter:nth-child(5) {
-    animation-delay: 220ms;
-  }
-  .widget-enter:nth-child(6) {
-    animation-delay: 275ms;
-  }
-  .widget-enter:nth-child(7) {
-    animation-delay: 330ms;
-  }
-  .widget-enter:nth-child(8) {
-    animation-delay: 385ms;
-  }
-
   /* Staggered bout card entrance */
   .bout-enter {
     animation: boutSlideIn 0.3s ease-out both;
@@ -727,17 +698,6 @@
     }
   }
 
-  @keyframes widgetEnter {
-    from {
-      opacity: 0;
-      transform: translateY(18px) scale(0.97);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-  }
-
   @keyframes boutSlideIn {
     from {
       opacity: 0;
@@ -778,25 +738,6 @@
     }
   }
 
-  @keyframes pulse-gold {
-    0%,
-    100% {
-      box-shadow: 0 0 0 0 hsl(var(--gold) / 0);
-    }
-    50% {
-      box-shadow: 0 0 0 4px hsl(var(--gold) / 0.2);
-    }
-  }
-
-  @keyframes dohyo-spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
   /* Avatar animations */
   @keyframes avatar-breathe {
     0%,
@@ -818,71 +759,11 @@
     }
   }
 
-  @keyframes avatar-pulse {
-    0%,
-    100% {
-      transform: scale(1);
-      filter: brightness(1);
-    }
-    50% {
-      transform: scale(1.05);
-      filter: brightness(1.1);
-    }
-  }
-
-  @keyframes avatar-victory {
-    0% {
-      transform: translateY(0) scale(1);
-    }
-    25% {
-      transform: translateY(-5px) scale(1.05);
-    }
-    50% {
-      transform: translateY(-8px) scale(1.08);
-    }
-    75% {
-      transform: translateY(-3px) scale(1.03);
-    }
-    100% {
-      transform: translateY(0) scale(1);
-    }
-  }
-
-  @keyframes avatar-defeat {
-    0% {
-      transform: translateY(0) scale(1);
-    }
-    25% {
-      transform: translateY(3px) scale(0.98);
-    }
-    50% {
-      transform: translateY(5px) scale(0.95);
-    }
-    75% {
-      transform: translateY(2px) scale(0.97);
-    }
-    100% {
-      transform: translateY(0) scale(1);
-    }
-  }
-
   .avatar-animate {
     animation: avatar-breathe 3s ease-in-out infinite;
   }
 
   .avatar-glow {
     animation: avatar-glow 2s ease-in-out infinite;
-  }
-
-  .avatar-pulse {
-    animation: avatar-pulse 1s ease-in-out;
-  }
-
-  .avatar-victory {
-    animation: avatar-victory 0.8s ease-out;
-  }
-
-  .avatar-defeat {
-    animation: avatar-defeat 0.8s ease-out;
   }
 }

@@ -199,10 +199,10 @@ export function calculateGrowthVector(
   }
 
   // Phase 3 Polish: Stable Rivalry Penalty (Boiling Point)
-  // If we have "Bad Blood" with high-ranking stables, training efficacy drops
-  if (world?.stableRelations && heya) {
-    for (const [key, record] of Object.entries(world.stableRelations)) {
-      if (key.includes(heya.id) && record.tone === "bad_blood") {
+  // If we have heated rivalries (heat >= 80 = bad_blood) with other stables, training efficacy drops
+  if (world?.rivalriesState?.heyaRivalryPairs && heya) {
+    for (const pair of Object.values(world.rivalriesState.heyaRivalryPairs)) {
+      if ((pair.heyaAId === heya.id || pair.heyaBId === heya.id) && pair.heat >= 80) {
         degeikoMult *= DEGEIKO_PENALTY_MULTIPLIER;
         break;
       }

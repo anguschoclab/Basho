@@ -33,8 +33,6 @@ export type EngineCommand =
   | { type: "RESUME_SIM" }
   | { type: "GET_DIGEST" }
   | { type: "RESOLVE_LOOP_DECISION"; decisionId: string; optionId: string }
-  | { type: "ISSUE_RULING"; rulingId: string; severity: "lenient" | "standard" | "harsh" }
-  | { type: "HANDLE_MEDIA_EVENT"; eventId: string; choice: string }
   | { type: "WITHDRAW_RIKISHI"; rikishiId: string }
   | { type: "TREAT_INJURY"; rikishiId: string; weeks: number };
 

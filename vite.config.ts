@@ -6,12 +6,22 @@ import path from "path";
 export default defineConfig({
   plugins: [
     react(),
-    // PWA plugin removed - not needed for Electron desktop app
-    // Use electron.vite.config.ts for Electron-specific configuration
   ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+    },
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          "vendor-react": ["react", "react-dom", "@tanstack/react-router"],
+          "vendor-recharts": ["recharts"],
+          "vendor-framer": ["framer-motion"],
+          "vendor-lucide": ["lucide-react"],
+        },
+      },
     },
   },
 });

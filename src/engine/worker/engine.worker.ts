@@ -382,22 +382,6 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
         syncWorld();
       }
     },
-    HANDLE_MEDIA_EVENT: (cmd) => {
-      if (currentWorld) {
-        const impact = handleMediaEvent(currentWorld, cmd.eventId, cmd.choice);
-        currentWorld = resolveImpacts(currentWorld, [impact]);
-        emitDigest();
-        syncWorld();
-      }
-    },
-    ISSUE_RULING: (cmd) => {
-      if (currentWorld) {
-        const impact = issueGovernanceRuling(currentWorld, cmd.rulingId, cmd.severity);
-        currentWorld = resolveImpacts(currentWorld, [impact]);
-        emitDigest();
-        syncWorld();
-      }
-    },
     PAUSE_SIM: () => {
       simPaused = true;
       self.postMessage({ type: "PROGRESS", message: "Simulation paused", current: 0, total: 0 });

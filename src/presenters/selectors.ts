@@ -119,19 +119,6 @@ export const selectKadobanRikishi = createSelector((world: WorldState): Rikishi[
 });
 
 /**
- * Select all Rikishi grouped by Heya ID.
- */
-export const selectRikishiByHeya = createSelector((world: WorldState): Map<string, Rikishi[]> => {
-  const map = new Map<string, Rikishi[]>();
-  for (const r of selectAllRikishi(world)) {
-    const list = map.get(r.heyaId) || [];
-    list.push(r);
-    map.set(r.heyaId, list);
-  }
-  return map;
-});
-
-/**
  * Select top rivals for the dashboard widget.
  */
 export const selectTopRivals = createSelector((world: WorldState) => {

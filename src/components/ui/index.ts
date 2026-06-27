@@ -26,6 +26,4 @@ export * from "./tooltip";
 // New UI primitives
 export { WidgetCard } from "./WidgetCard";
 export { WidgetHeader } from "./WidgetHeader";
-export { StatBlock } from "./StatBlock";
-export { MiniBar } from "./MiniBar";
 export { Sparkline } from "./Sparkline";
