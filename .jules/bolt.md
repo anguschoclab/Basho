@@ -151,3 +151,6 @@ Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop 
 ## 2025-02-09 - Object.entries Allocation Overhead in Simulation Loops
 **Learning:** In high-frequency simulation tick systems (like `phase01_week_welfare.ts` and `phase06_narrative.ts`), iterating over dictionary objects using `Object.entries(obj)` creates unnecessary O(N) tuple array allocations per tick, significantly increasing Garbage Collection (GC) pressure.
 **Action:** Replace `Object.entries` loops with direct `for...in` loops accompanied by `Object.prototype.hasOwnProperty.call(obj, key)` guards in critical engine tick phases to improve memory efficiency and reduce stuttering.
+## 2024-06-27 - Optimize Array.map().filter() chains
+**Learning:** The codebase heavily uses pattern `ids.map(id => map.get(id)).filter(Boolean)` (or similar) to look up entities. This creates an intermediate O(N) array full of undefined values that is immediately discarded.
+**Action:** When creating utility functions or processing lists of IDs, use a direct `for...of` loop to accumulate valid entities into a single result array to avoid O(N) allocations.
