@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { describe, it, expect } from "vitest";
 import { foundStable } from "@/engine/systems/generation/WorldFactory";
 import { rngForWorld } from "@/engine/rng";

@@ -265,7 +265,7 @@ export function tickYear(world: WorldState): StateImpact {
   const poolTypes: TalentPoolType[] = ["high_school", "university", "foreign"];
 
   const nextPools = { ...tp.pools };
-  let nextCandidates = { ...tp.candidates };
+  const nextCandidates = { ...tp.candidates };
 
   for (const poolType of poolTypes) {
     const pool = { ...tp.pools[poolType] };

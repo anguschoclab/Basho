@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 import { describe, it, expect, vi } from "vitest";
 import { checkRetirement } from "@/engine/lifecycle";
 import { mockRikishi } from "./utils";

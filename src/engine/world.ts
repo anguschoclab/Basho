@@ -230,7 +230,7 @@ export function advanceInterim(world: WorldState, weeks: number = 1): WorldState
     return world;
 
   const days = Math.max(1, Math.trunc(weeks)) * 7;
-  let currentWorld = advanceDaysFast(world, days);
+  const currentWorld = advanceDaysFast(world, days);
 
   return currentWorld;
 }

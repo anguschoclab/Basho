@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 import { describe, it, expect } from "vitest";
 import { SimTuningService } from "@/engine/simulation/SimTuningService";
 import { mockRikishi, makeMockWorld } from "./utils";

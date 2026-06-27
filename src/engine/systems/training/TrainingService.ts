@@ -237,7 +237,7 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
       const growth = calculateGrowthVector(profile, individualFocus, rikishi, heya, world);
 
       // Apply staff bonuses + Drill Vector + Infrastructure Buffs
-      let finalGrowth = {
+      const finalGrowth = {
         power:
           (growth.power + drillVector.power) * staffBonuses.conditioning * infra.statBuffs.power,
         speed:

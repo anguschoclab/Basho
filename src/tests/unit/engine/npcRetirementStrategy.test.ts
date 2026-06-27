@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 import { describe, it, expect } from "vitest";
 import { DefaultRetirementStrategy } from "@/engine/npcRetirementStrategy";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
