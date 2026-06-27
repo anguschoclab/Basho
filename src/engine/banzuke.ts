@@ -208,8 +208,7 @@ export function updateBanzuke(
   const makushita = Math.max(60, Math.ceil(lowerPopulation * 0.18) + HEADROOM);
   const sandanme = Math.max(60, Math.ceil(lowerPopulation * 0.24) + HEADROOM);
   const jonidan = Math.max(60, Math.ceil(lowerPopulation * 0.28) + HEADROOM);
-  const jonokuchi =
-    Math.max(40, lowerPopulation - (makushita + sandanme + jonidan)) + HEADROOM;
+  const jonokuchi = Math.max(40, lowerPopulation - (makushita + sandanme + jonidan)) + HEADROOM;
   const fullTemplate = buildFullSlotTemplate(sanyakuCounts, {
     makuuchi: 42,
     juryo: 28,

@@ -235,6 +235,9 @@ export function FacilitiesManagementPanel({
                       className="flex-1 text-xs gap-1"
                       disabled={!canAfford1}
                       onClick={() => handleUpgrade(axis, 1)}
+                      {...(!canAfford1
+                        ? { tooltip: "Insufficient funds", tooltipSide: "top" }
+                        : {})}
                     >
                       <ArrowUp className="h-3 w-3" />
                       +1 ({formatYen(cost1)})
@@ -245,6 +248,9 @@ export function FacilitiesManagementPanel({
                       className="flex-1 text-xs gap-1"
                       disabled={!canAfford5}
                       onClick={() => handleUpgrade(axis, 5)}
+                      {...(!canAfford5
+                        ? { tooltip: "Insufficient funds", tooltipSide: "top" }
+                        : {})}
                     >
                       <ArrowUp className="h-3 w-3" />
                       +5 ({formatYen(cost5)})

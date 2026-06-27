@@ -32,10 +32,7 @@ export function recruitmentBalanceMultiplier(world: WorldState, heyaId: string):
  * heyas once (the mean is over the whole league), then returns multipliers only
  * for the requested subset. Avoids redundant O(H×R) scans when called in a loop.
  */
-export function recruitmentBalanceMultipliers(
-  world: WorldState,
-  heyaIds: Id[]
-): Map<Id, number> {
+export function recruitmentBalanceMultipliers(world: WorldState, heyaIds: Id[]): Map<Id, number> {
   const result = new Map<Id, number>();
   if (heyaIds.length === 0) return result;
 

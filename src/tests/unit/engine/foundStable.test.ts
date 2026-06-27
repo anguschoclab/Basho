@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { foundStable } from "@/engine/systems/generation/WorldFactory";
 import { rngForWorld } from "@/engine/rng";
@@ -9,9 +8,7 @@ describe("foundStable", () => {
   it("creates a heya with deterministic HY-prefixed id, seed funds, new stature, empty roster", () => {
     const world = makeMockWorld({
       heyas: new Map([["heya-1", makeMockHeya("heya-1")]]),
-      oyakata: new Map([
-        ["oy-1", { id: "oy-1", name: "TestOyakata", heyaId: "heya-1" } as any],
-      ]),
+      oyakata: new Map([["oy-1", { id: "oy-1", name: "TestOyakata", heyaId: "heya-1" } as any]]),
     });
 
     const rng = rngForWorld(world, "found", "t");
@@ -29,9 +26,7 @@ describe("foundStable", () => {
   it("is deterministic across two calls with the same seed", () => {
     const world = makeMockWorld({
       heyas: new Map([["heya-1", makeMockHeya("heya-1")]]),
-      oyakata: new Map([
-        ["oy-1", { id: "oy-1", name: "TestOyakata", heyaId: "heya-1" } as any],
-      ]),
+      oyakata: new Map([["oy-1", { id: "oy-1", name: "TestOyakata", heyaId: "heya-1" } as any]]),
     });
 
     const rng1 = rngForWorld(world, "found", "t");

@@ -46,9 +46,7 @@ describe("CardEyebrow", () => {
   });
 
   it("icon and title are siblings in a flex container", () => {
-    const { container } = render(
-      <CardEyebrow eyebrow="Eyebrow" title="Title" icon={Trophy} />
-    );
+    const { container } = render(<CardEyebrow eyebrow="Eyebrow" title="Title" icon={Trophy} />);
     const flexContainer = container.querySelector(".flex.items-center.gap-2");
     expect(flexContainer).toBeTruthy();
     expect(flexContainer!.querySelector("svg")).toBeTruthy();

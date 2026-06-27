@@ -225,10 +225,7 @@ describe("finalizeSignedCandidates", () => {
 
 // ── fillVacanciesForNPCWithBidding ─────────────────────────────────────────
 
-function makeWorldForBidding(
-  heyaIds: string[],
-  candidateIds: string[]
-): WorldState {
+function makeWorldForBidding(heyaIds: string[], candidateIds: string[]): WorldState {
   const heyas = new Map();
   const oyakata = new Map();
   for (const hid of heyaIds) {

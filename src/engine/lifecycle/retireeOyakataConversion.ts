@@ -137,9 +137,7 @@ export function processRetireeOyakataConversion(
   );
 
   // Merge handover impact
-  builder.merge(
-    recordOyakataHandover(world, retiree.heyaId, newOyakataId, availableStock.name)
-  );
+  builder.merge(recordOyakataHandover(world, retiree.heyaId, newOyakataId, availableStock.name));
 
   // Stable founding: RNG-gated chance for the new oyakata to found a new heya
   // instead of staying in their original stable. Only if under the heya cap.

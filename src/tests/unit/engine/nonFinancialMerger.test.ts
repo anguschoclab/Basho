@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { runGovernanceReview } from "@/engine/systems/governance/governanceReview";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
@@ -41,7 +40,10 @@ describe("non-financial merger — chronic underperformance + prestige collapse"
 
     // Player is not the source
     world.playerHeyaId = "heya-player";
-    world.heyas.set("heya-player", makeMockHeya("heya-player", { rikishiIds: ["rp1", "rp2", "rp3"] }));
+    world.heyas.set(
+      "heya-player",
+      makeMockHeya("heya-player", { rikishiIds: ["rp1", "rp2", "rp3"] })
+    );
     world.rikishi.set("rp1", mockRikishi("rp1", { heyaId: "heya-player" }));
     world.rikishi.set("rp2", mockRikishi("rp2", { heyaId: "heya-player" }));
     world.rikishi.set("rp3", mockRikishi("rp3", { heyaId: "heya-player" }));

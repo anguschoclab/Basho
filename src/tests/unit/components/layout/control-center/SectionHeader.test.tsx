@@ -35,10 +35,7 @@ describe("SectionHeader", () => {
 
   it("renders actions slot when provided", () => {
     render(
-      <SectionHeader
-        title="Title"
-        actions={<button data-testid="action-btn">Click</button>}
-      />
+      <SectionHeader title="Title" actions={<button data-testid="action-btn">Click</button>} />
     );
     expect(screen.getByTestId("action-btn")).toBeTruthy();
   });

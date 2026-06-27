@@ -69,7 +69,8 @@ export function processHeyaEconomics(
       totalJsaSalaries += baseSalary;
 
       // Rank-scaled heya overhead for sekitori
-      totalHeyaOverhead += SEKITORI_OVERHEAD_MONTHLY[r.rank as keyof typeof SEKITORI_OVERHEAD_MONTHLY] ?? 0;
+      totalHeyaOverhead +=
+        SEKITORI_OVERHEAD_MONTHLY[r.rank as keyof typeof SEKITORI_OVERHEAD_MONTHLY] ?? 0;
     } else {
       // Flat overhead for non-sekitori
       totalHeyaOverhead += NON_SEKITORI_OVERHEAD_MONTHLY;

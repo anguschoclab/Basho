@@ -1,4 +1,3 @@
- 
 import { describe, it, expect, beforeEach } from "vitest";
 import { runRetirements } from "@/engine/systems/governance/governanceReview";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";

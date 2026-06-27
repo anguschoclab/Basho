@@ -92,9 +92,7 @@ export class ElectronStorageProvider implements IStorageProvider {
     if (this.keysReloadTimer) clearTimeout(this.keysReloadTimer);
     this.keysReloadTimer = setTimeout(() => {
       this.keysReloadTimer = undefined;
-      this.loadKeys().catch((e) =>
-        console.error("Failed to reload keys from electron-store:", e)
-      );
+      this.loadKeys().catch((e) => console.error("Failed to reload keys from electron-store:", e));
     }, KEYS_RELOAD_DEBOUNCE_MS);
   }
 

@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { tickWeekTalentPool } from "@/engine/systems/generation/TalentPoolMaintenance";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";

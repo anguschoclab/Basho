@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { resolveImpacts, mergeImpacts } from "@/engine/core/ImpactResolver";

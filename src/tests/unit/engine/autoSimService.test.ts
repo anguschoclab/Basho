@@ -38,9 +38,7 @@ describe("checkStopCondition", () => {
         promotions: [{ rikishiId: "r1", from: "ozeki", to: "yokozuna", description: "" }],
       });
 
-      expect(checkStopCondition("yokozunaPromotion", bashoResult, world, config)).toBe(
-        true
-      );
+      expect(checkStopCondition("yokozunaPromotion", bashoResult, world, config)).toBe(true);
     });
 
     it("returns false when there is no yokozuna promotion", () => {
@@ -50,9 +48,7 @@ describe("checkStopCondition", () => {
         promotions: [{ rikishiId: "r1", from: "sekiwake", to: "ozeki", description: "" }],
       });
 
-      expect(checkStopCondition("yokozunaPromotion", bashoResult, world, config)).toBe(
-        false
-      );
+      expect(checkStopCondition("yokozunaPromotion", bashoResult, world, config)).toBe(false);
     });
   });
 
@@ -64,9 +60,7 @@ describe("checkStopCondition", () => {
         promotions: [{ rikishiId: "r1", from: "sekiwake", to: "ozeki", description: "" }],
       });
 
-      expect(checkStopCondition("ozekiPromotion", bashoResult, world, config)).toBe(
-        true
-      );
+      expect(checkStopCondition("ozekiPromotion", bashoResult, world, config)).toBe(true);
     });
 
     it("returns false when there is no ozeki promotion", () => {
@@ -76,9 +70,7 @@ describe("checkStopCondition", () => {
         promotions: [{ rikishiId: "r1", from: "komusubi", to: "sekiwake", description: "" }],
       });
 
-      expect(checkStopCondition("ozekiPromotion", bashoResult, world, config)).toBe(
-        false
-      );
+      expect(checkStopCondition("ozekiPromotion", bashoResult, world, config)).toBe(false);
     });
   });
 
@@ -163,9 +155,7 @@ describe("checkStopCondition", () => {
         MockFactory.createHeya("player-heya", { runwayBand: "desperate" })
       );
 
-      expect(checkStopCondition("stableInsolvency", bashoResult, world, config)).toBe(
-        true
-      );
+      expect(checkStopCondition("stableInsolvency", bashoResult, world, config)).toBe(true);
     });
 
     it("returns false when player heya is not desperate", () => {
@@ -177,9 +167,7 @@ describe("checkStopCondition", () => {
       const bashoResult = createMockBashoResult();
       world.heyas.set("player-heya", MockFactory.createHeya("player-heya", { runwayBand: "safe" }));
 
-      expect(checkStopCondition("stableInsolvency", bashoResult, world, config)).toBe(
-        false
-      );
+      expect(checkStopCondition("stableInsolvency", bashoResult, world, config)).toBe(false);
     });
 
     it("returns false in observer mode", () => {
@@ -194,9 +182,7 @@ describe("checkStopCondition", () => {
         MockFactory.createHeya("player-heya", { runwayBand: "desperate" })
       );
 
-      expect(checkStopCondition("stableInsolvency", bashoResult, world, config)).toBe(
-        false
-      );
+      expect(checkStopCondition("stableInsolvency", bashoResult, world, config)).toBe(false);
     });
   });
 
@@ -245,9 +231,7 @@ describe("checkStopCondition", () => {
       const config = createMockConfig();
       const bashoResult = createMockBashoResult();
 
-      expect(checkStopCondition("retirementOfStar", bashoResult, world, config)).toBe(
-        true
-      );
+      expect(checkStopCondition("retirementOfStar", bashoResult, world, config)).toBe(true);
     });
 
     it("returns false when a non-star retires", () => {
@@ -261,9 +245,7 @@ describe("checkStopCondition", () => {
       const config = createMockConfig();
       const bashoResult = createMockBashoResult();
 
-      expect(checkStopCondition("retirementOfStar", bashoResult, world, config)).toBe(
-        false
-      );
+      expect(checkStopCondition("retirementOfStar", bashoResult, world, config)).toBe(false);
     });
 
     it("returns false when no one retires", () => {
@@ -272,9 +254,7 @@ describe("checkStopCondition", () => {
       const config = createMockConfig();
       const bashoResult = createMockBashoResult();
 
-      expect(checkStopCondition("retirementOfStar", bashoResult, world, config)).toBe(
-        false
-      );
+      expect(checkStopCondition("retirementOfStar", bashoResult, world, config)).toBe(false);
     });
   });
 
@@ -284,9 +264,7 @@ describe("checkStopCondition", () => {
       const config = createMockConfig();
       const bashoResult = createMockBashoResult();
 
-      expect(
-        checkStopCondition("never" as StopCondition, bashoResult, world, config)
-      ).toBe(false);
+      expect(checkStopCondition("never" as StopCondition, bashoResult, world, config)).toBe(false);
     });
   });
 });
@@ -302,9 +280,7 @@ describe("runAutoSim diagnostic metrics", () => {
       observerMode: true,
     });
     expect(result.tuningMetrics.topKimarite.length).toBeGreaterThan(0);
-    expect(
-      result.tuningMetrics.topKimarite.reduce((s, k) => s + k.count, 0)
-    ).toBeGreaterThan(50);
+    expect(result.tuningMetrics.topKimarite.reduce((s, k) => s + k.count, 0)).toBeGreaterThan(50);
   }, 300_000); // 2-year runAutoSim is heavy; needs headroom under parallel worker load
 
   it("counts every basho with no yokozuna, not just the final world", () => {

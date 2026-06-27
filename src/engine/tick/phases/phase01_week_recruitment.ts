@@ -16,7 +16,10 @@ import {
 } from "../../../constants/engine/recruitmentExtended";
 import { DAYS_PER_WEEK } from "../../../constants/engine/time";
 import { getHeya, getRikishi } from "../../queries";
-import { computeReplacementGap, allocateVacancies } from "../../systems/generation/RecruitmentController";
+import {
+  computeReplacementGap,
+  allocateVacancies,
+} from "../../systems/generation/RecruitmentController";
 
 export function phase01_week_recruitment(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_recruitment");

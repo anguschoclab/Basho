@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { projectMergerWarnings } from "@/presenters/projections/economyProjections";
 import { makeMockWorld, makeMockHeya } from "./utils";

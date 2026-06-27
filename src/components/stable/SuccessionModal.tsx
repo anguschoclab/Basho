@@ -136,6 +136,9 @@ export function SuccessionModal({
               disabled={!selectedId}
               className="w-full sm:w-auto font-black uppercase tracking-widest bg-gold hover:bg-gold/90 text-background transition-all shadow-lg"
               onClick={() => selectedId && onSelect(selectedId)}
+              {...(!selectedId
+                ? { tooltip: "Select a successor to finalize", tooltipSide: "top" }
+                : {})}
             >
               Finalize Succession
             </Button>

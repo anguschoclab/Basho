@@ -9,7 +9,13 @@ import { ListCard, type ListRow } from "@/components/layout/control-center/ListC
 // Mock CardEyebrow to isolate ListCard logic
 vi.mock("@/components/layout/control-center/CardEyebrow", () => ({
   CardEyebrow: ({ eyebrow, title, icon, actions }: any) => (
-    <div data-testid="card-eyebrow" data-eyebrow={eyebrow} data-title={title} data-has-icon={!!icon} data-has-actions={!!actions} />
+    <div
+      data-testid="card-eyebrow"
+      data-eyebrow={eyebrow}
+      data-title={title}
+      data-has-icon={!!icon}
+      data-has-actions={!!actions}
+    />
   ),
 }));
 

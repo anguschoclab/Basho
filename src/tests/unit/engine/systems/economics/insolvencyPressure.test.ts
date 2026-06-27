@@ -18,11 +18,7 @@ import type { HeyaUpdates } from "@/engine/tick/phases/monthly/types";
  * Simulate advancing a heya through N months, applying weekly finances (4 weeks/month)
  * and monthly overhead. Returns the funds trajectory.
  */
-function simulateMonths(
-  initialHeya: Heya,
-  initialWorld: WorldState,
-  months: number
-): number[] {
+function simulateMonths(initialHeya: Heya, initialWorld: WorldState, months: number): number[] {
   let heya = { ...initialHeya };
   let world = { ...initialWorld, heyas: new Map([[heya.id, heya]]) };
   const trajectory: number[] = [heya.funds];
@@ -141,14 +137,17 @@ describe("Insolvency pressure and wealth stratification", () => {
     }
 
     const koenkais = new Map([
-      ["koenkai-heya-strong", {
-        koenkaiId: "koenkai-heya-strong",
-        heyaId: "heya-strong",
-        strengthBand: "powerful",
-        members: koenkaiMembers,
-        createdAtTick: 0,
-        lastChangedTick: 0,
-      } as any],
+      [
+        "koenkai-heya-strong",
+        {
+          koenkaiId: "koenkai-heya-strong",
+          heyaId: "heya-strong",
+          strengthBand: "powerful",
+          members: koenkaiMembers,
+          createdAtTick: 0,
+          lastChangedTick: 0,
+        } as any,
+      ],
     ]);
 
     const world = makeMockWorld({

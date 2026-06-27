@@ -253,7 +253,10 @@ export default function GovernancePage() {
           }
         />
 
-        <Tabs defaultValue={derived.pendingRulings.length > 0 ? "rulings" : "overview"} className="w-full">
+        <Tabs
+          defaultValue={derived.pendingRulings.length > 0 ? "rulings" : "overview"}
+          className="w-full"
+        >
           <TabsList className="grid w-full grid-cols-3 md:w-[520px] mb-6">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="rulings" className="flex items-center gap-2">

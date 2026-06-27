@@ -27,7 +27,9 @@ describe("FinanceCalculator — fixed operating overhead", () => {
   it("includes FIXED_OPERATING_OVERHEAD_WEEKLY in totalBurn exactly", () => {
     const result = calculateHeyaWeeklyFinances(heya, world);
     const expectedFacilityUpkeep =
-      50 * FACILITY_UPKEEP.training + 50 * FACILITY_UPKEEP.recovery + 50 * FACILITY_UPKEEP.nutrition;
+      50 * FACILITY_UPKEEP.training +
+      50 * FACILITY_UPKEEP.recovery +
+      50 * FACILITY_UPKEEP.nutrition;
     const expectedBurn =
       expectedFacilityUpkeep + 0 + FIXED_OPERATING_OVERHEAD_WEEKLY + RECRUITMENT_BUDGET_WEEKLY;
     expect(result.totalBurn).toBe(expectedBurn);

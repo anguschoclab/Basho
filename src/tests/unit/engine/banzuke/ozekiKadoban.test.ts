@@ -1,4 +1,3 @@
- 
 import { describe, it, expect, vi } from "vitest";
 import { getOzekiStatus } from "@/engine/banzuke/ozekiLogic";
 import * as banzukeHelpers from "@/engine/banzuke/banzukeHelpers";

@@ -91,7 +91,12 @@ describe("World Circuit System Integration", () => {
     // regionalChampion = 50 + 80/2 = 90
     // win probability = 0 / (0 + 90) = 0 → should always lose
     // Loss gives +5 presence, win gives +15
-    const impact = WorldCircuitService.processExhibitionResult(world, heyaId, rikishiId, invitation);
+    const impact = WorldCircuitService.processExhibitionResult(
+      world,
+      heyaId,
+      rikishiId,
+      invitation
+    );
     const newWorld = resolveImpacts(world, [impact]);
 
     const heya = newWorld.heyas.get(heyaId)!;
@@ -154,7 +159,12 @@ describe("World Circuit System Integration", () => {
     };
     world.pendingExhibitions = [invitation];
 
-    const impact = WorldCircuitService.processExhibitionResult(world, heyaId, rikishiId, invitation);
+    const impact = WorldCircuitService.processExhibitionResult(
+      world,
+      heyaId,
+      rikishiId,
+      invitation
+    );
     const newWorld = resolveImpacts(world, [impact]);
     const presence = newWorld.heyas.get(heyaId)!.regionalPresence?.Mongolia ?? 0;
 
