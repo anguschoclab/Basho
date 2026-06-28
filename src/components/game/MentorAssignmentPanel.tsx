@@ -126,7 +126,9 @@ export function MentorAssignmentPanel({
             size="sm"
             onClick={onRemoveMentor}
             className="h-7 px-2 text-xs hover:bg-destructive/10 hover:text-destructive"
-            title="Remove mentor"
+            aria-label="Remove mentor"
+            tooltip="Remove mentor"
+            tooltipSide="top"
           >
             <UserMinus className="h-3 w-3 mr-1" />
             Remove
