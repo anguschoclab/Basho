@@ -151,3 +151,6 @@ Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop 
 ## 2025-02-09 - Object.entries Allocation Overhead in Simulation Loops
 **Learning:** In high-frequency simulation tick systems (like `phase01_week_welfare.ts` and `phase06_narrative.ts`), iterating over dictionary objects using `Object.entries(obj)` creates unnecessary O(N) tuple array allocations per tick, significantly increasing Garbage Collection (GC) pressure.
 **Action:** Replace `Object.entries` loops with direct `for...in` loops accompanied by `Object.prototype.hasOwnProperty.call(obj, key)` guards in critical engine tick phases to improve memory efficiency and reduce stuttering.
+## 2024-06-29 - Optimize object iterations in SimTuningService
+**Learning:** Using `Object.entries()` in performance-sensitive areas like `SimTuningService` creates unnecessary O(N) tuple allocations.
+**Action:** Replace `Object.entries(obj)` with `for...in` loops and `Object.prototype.hasOwnProperty.call()` guards when iterating over large state objects or within tight simulation loops.

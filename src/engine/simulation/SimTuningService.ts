@@ -158,10 +158,14 @@ export const SimTuningService = {
 
     // 7. Top Kimarite
     const kimariteStats = historyStats?.cumulativeKimarite ?? world.globalKimariteStats ?? {};
-    const topKimarite = Object.entries(kimariteStats)
-      .map(([id, count]) => ({ id, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 10);
+    // ⚡ Bolt Optimization: Use a for...in loop to avoid intermediate O(N) array allocations
+    const kimariteArr = [];
+    for (const id in kimariteStats) {
+      if (Object.prototype.hasOwnProperty.call(kimariteStats, id)) {
+        kimariteArr.push({ id, count: kimariteStats[id] });
+      }
+    }
+    const topKimarite = kimariteArr.sort((a, b) => b.count - a.count).slice(0, 10);
 
     // 8. Oyakata Metrics
     // ⚡ Bolt Optimization: Use direct iteration instead of Array.from()
@@ -241,7 +245,10 @@ export const SimTuningService = {
             archetypeTotals[arch].total += (r.careerWins || 0) + (r.careerLosses || 0);
           }
           const rates: Record<string, { wins: number; total: number; rate: number }> = {};
-          for (const [arch, totals] of Object.entries(archetypeTotals)) {
+          // ⚡ Bolt Optimization: Use a for...in loop to avoid O(N) tuple allocations from Object.entries()
+          for (const arch in archetypeTotals) {
+            if (!Object.prototype.hasOwnProperty.call(archetypeTotals, arch)) continue;
+            const totals = archetypeTotals[arch];
             rates[arch] = {
               wins: totals.wins,
               total: totals.total,
