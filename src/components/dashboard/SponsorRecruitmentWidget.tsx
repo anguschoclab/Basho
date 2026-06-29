@@ -78,6 +78,7 @@ const SponsorRow = React.memo(
           onClick={() => onRecruit(sponsorId)}
           disabled={!canAfford}
           variant={canAfford ? "default" : "secondary"}
+          tooltip={!canAfford ? "Insufficient Funds" : undefined}
         >
           {canAfford ? "Recruit" : "Insufficient Funds"}
         </Button>
