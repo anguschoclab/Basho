@@ -552,6 +552,10 @@ ipcMain.handle("app:getPath", (event, name: string) => {
 });
 
 app.whenReady().then(async () => {
+  session.defaultSession.setPermissionRequestHandler((webContents, permission, callback) => {
+    callback(false);
+  });
+
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: {
@@ -559,6 +563,7 @@ app.whenReady().then(async () => {
         "Content-Security-Policy": [
           "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' ws:;",
         ],
+        "X-Content-Type-Options": ["nosniff"],
       },
     });
   });
