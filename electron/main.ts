@@ -552,6 +552,11 @@ ipcMain.handle("app:getPath", (event, name: string) => {
 });
 
 app.whenReady().then(async () => {
+  // Explicitly deny all unnecessary permissions to minimize the attack surface
+  session.defaultSession.setPermissionRequestHandler((webContents, permission, callback) => {
+    callback(false);
+  });
+
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: {
