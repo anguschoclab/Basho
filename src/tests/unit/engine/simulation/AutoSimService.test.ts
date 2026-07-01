@@ -1,8 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { checkStopCondition, type AutoSimConfig } from "@/engine/simulation/AutoSimService";
-import { makeMockWorld, mockRikishi, makeMockBasho, makeMockHeya } from "../utils";
+import { makeMockWorld, mockRikishi, makeMockHeya } from "../utils";
 import type { BashoSimResult } from "@/engine/types/basho";
-import type { ChronicleReport } from "@/engine/types/records";
 
 describe("checkStopCondition", () => {
   const createMockConfig = (overrides?: Partial<AutoSimConfig>): AutoSimConfig => ({
@@ -25,32 +24,18 @@ describe("checkStopCondition", () => {
     injuries: [],
     promotions: [],
     demotions: [],
+    finalWorld: {} as any,
     ...overrides,
   });
-
-  const createMockChronicle = (): ChronicleReport =>
-    ({
-      yearCreated: 2025,
-      yearFinished: 2025,
-      yushoWinners: [],
-      promotionsYokozuna: [],
-      promotionsOzeki: [],
-      scandals: [],
-      majorInjuries: [],
-      retirements: [],
-      playerEvents: [],
-      heyaEvents: [],
-    }) as unknown as ChronicleReport;
 
   it("should return true for yokozunaPromotion when a yokozuna promotion occurs", () => {
     const world = makeMockWorld();
     const config = createMockConfig();
-    const chronicle = createMockChronicle();
     const bashoResult = createMockBashoResult({
       promotions: [{ rikishiId: "r1", from: "ozeki", to: "yokozuna", description: "" }],
     });
 
-    expect(checkStopCondition("yokozunaPromotion", bashoResult, world, config, chronicle)).toBe(
+    expect(checkStopCondition("yokozunaPromotion", bashoResult, world, config)).toBe(
       true
     );
   });
@@ -58,12 +43,11 @@ describe("checkStopCondition", () => {
   it("should return false for yokozunaPromotion when no yokozuna promotion occurs", () => {
     const world = makeMockWorld();
     const config = createMockConfig();
-    const chronicle = createMockChronicle();
     const bashoResult = createMockBashoResult({
       promotions: [{ rikishiId: "r1", from: "sekiwake", to: "ozeki", description: "" }],
     });
 
-    expect(checkStopCondition("yokozunaPromotion", bashoResult, world, config, chronicle)).toBe(
+    expect(checkStopCondition("yokozunaPromotion", bashoResult, world, config)).toBe(
       false
     );
   });
@@ -71,23 +55,21 @@ describe("checkStopCondition", () => {
   it("should return true for ozekiPromotion when an ozeki promotion occurs", () => {
     const world = makeMockWorld();
     const config = createMockConfig();
-    const chronicle = createMockChronicle();
     const bashoResult = createMockBashoResult({
       promotions: [{ rikishiId: "r1", from: "sekiwake", to: "ozeki", description: "" }],
     });
 
-    expect(checkStopCondition("ozekiPromotion", bashoResult, world, config, chronicle)).toBe(true);
+    expect(checkStopCondition("ozekiPromotion", bashoResult, world, config)).toBe(true);
   });
 
   it("should return false for ozekiPromotion when no ozeki promotion occurs", () => {
     const world = makeMockWorld();
     const config = createMockConfig();
-    const chronicle = createMockChronicle();
     const bashoResult = createMockBashoResult({
       promotions: [{ rikishiId: "r1", from: "ozeki", to: "yokozuna", description: "" }],
     });
 
-    expect(checkStopCondition("ozekiPromotion", bashoResult, world, config, chronicle)).toBe(false);
+    expect(checkStopCondition("ozekiPromotion", bashoResult, world, config)).toBe(false);
   });
 
   it("should return true for yusho when player's rikishi wins", () => {
@@ -96,12 +78,11 @@ describe("checkStopCondition", () => {
     world.rikishi.set(rikishi.id, rikishi);
 
     const config = createMockConfig({ playerHeyaId: "player-heya" });
-    const chronicle = createMockChronicle();
     const bashoResult = createMockBashoResult({
       yushoWinner: { id: "winner-id", shikona: "Winner", wins: 15, losses: 0 },
     });
 
-    expect(checkStopCondition("yusho", bashoResult, world, config, chronicle)).toBe(true);
+    expect(checkStopCondition("yusho", bashoResult, world, config)).toBe(true);
   });
 
   it("should return false for yusho when another heya's rikishi wins", () => {
@@ -110,12 +91,11 @@ describe("checkStopCondition", () => {
     world.rikishi.set(rikishi.id, rikishi);
 
     const config = createMockConfig({ playerHeyaId: "player-heya" });
-    const chronicle = createMockChronicle();
     const bashoResult = createMockBashoResult({
       yushoWinner: { id: "winner-id", shikona: "Winner", wins: 15, losses: 0 },
     });
 
-    expect(checkStopCondition("yusho", bashoResult, world, config, chronicle)).toBe(false);
+    expect(checkStopCondition("yusho", bashoResult, world, config)).toBe(false);
   });
 
   it("should return false for yusho in observer mode", () => {
@@ -127,12 +107,11 @@ describe("checkStopCondition", () => {
       observerMode: true,
       playerHeyaId: "player-heya",
     });
-    const chronicle = createMockChronicle();
     const bashoResult = createMockBashoResult({
       yushoWinner: { id: "winner-id", shikona: "Winner", wins: 15, losses: 0 },
     });
 
-    expect(checkStopCondition("yusho", bashoResult, world, config, chronicle)).toBe(false);
+    expect(checkStopCondition("yusho", bashoResult, world, config)).toBe(false);
   });
 
   it("should return true for stableInsolvency when player's heya is desperate", () => {
@@ -141,10 +120,9 @@ describe("checkStopCondition", () => {
     world.heyas.set(heya.id, heya);
 
     const config = createMockConfig({ playerHeyaId: "player-heya" });
-    const chronicle = createMockChronicle();
     const bashoResult = createMockBashoResult();
 
-    expect(checkStopCondition("stableInsolvency", bashoResult, world, config, chronicle)).toBe(
+    expect(checkStopCondition("stableInsolvency", bashoResult, world, config)).toBe(
       true
     );
   });
@@ -155,10 +133,9 @@ describe("checkStopCondition", () => {
     world.heyas.set(heya.id, heya);
 
     const config = createMockConfig({ playerHeyaId: "player-heya" });
-    const chronicle = createMockChronicle();
     const bashoResult = createMockBashoResult();
 
-    expect(checkStopCondition("stableInsolvency", bashoResult, world, config, chronicle)).toBe(
+    expect(checkStopCondition("stableInsolvency", bashoResult, world, config)).toBe(
       false
     );
   });
@@ -168,10 +145,9 @@ describe("checkStopCondition", () => {
     world.scandals = [{ severity: "major", year: 2025 }];
 
     const config = createMockConfig();
-    const chronicle = createMockChronicle();
     const bashoResult = createMockBashoResult();
 
-    expect(checkStopCondition("scandal", bashoResult, world, config, chronicle)).toBe(true);
+    expect(checkStopCondition("scandal", bashoResult, world, config)).toBe(true);
   });
 
   it("should return true for scandal when eventLog has scandal", () => {
@@ -180,10 +156,9 @@ describe("checkStopCondition", () => {
     world.eventLog = [{ type: "scandal" }];
 
     const config = createMockConfig();
-    const chronicle = createMockChronicle();
     const bashoResult = createMockBashoResult();
 
-    expect(checkStopCondition("scandal", bashoResult, world, config, chronicle)).toBe(true);
+    expect(checkStopCondition("scandal", bashoResult, world, config)).toBe(true);
   });
 
   it("should return false for scandal when no major scandal in current year", () => {
@@ -195,10 +170,9 @@ describe("checkStopCondition", () => {
     world.eventLog = [{ type: "other_event" }];
 
     const config = createMockConfig();
-    const chronicle = createMockChronicle();
     const bashoResult = createMockBashoResult();
 
-    expect(checkStopCondition("scandal", bashoResult, world, config, chronicle)).toBe(false);
+    expect(checkStopCondition("scandal", bashoResult, world, config)).toBe(false);
   });
 
   it("should return true for retirementOfStar when a star (tier <= 4) retires", () => {
@@ -208,10 +182,9 @@ describe("checkStopCondition", () => {
     world.retirements = [{ rikishiId: "star-1" }];
 
     const config = createMockConfig();
-    const chronicle = createMockChronicle();
     const bashoResult = createMockBashoResult();
 
-    expect(checkStopCondition("retirementOfStar", bashoResult, world, config, chronicle)).toBe(
+    expect(checkStopCondition("retirementOfStar", bashoResult, world, config)).toBe(
       true
     );
   });
@@ -223,10 +196,9 @@ describe("checkStopCondition", () => {
     world.retirements = [{ rikishiId: "non-star-1" }];
 
     const config = createMockConfig();
-    const chronicle = createMockChronicle();
     const bashoResult = createMockBashoResult();
 
-    expect(checkStopCondition("retirementOfStar", bashoResult, world, config, chronicle)).toBe(
+    expect(checkStopCondition("retirementOfStar", bashoResult, world, config)).toBe(
       false
     );
   });
@@ -242,10 +214,9 @@ describe("checkStopCondition", () => {
     world.rikishi.set(rikishi.id, rikishi);
 
     const config = createMockConfig({ playerHeyaId: "player-heya" });
-    const chronicle = createMockChronicle();
     const bashoResult = createMockBashoResult({ injuries: ["Injured One"] });
 
-    expect(checkStopCondition("majorInjury", bashoResult, world, config, chronicle)).toBe(true);
+    expect(checkStopCondition("majorInjury", bashoResult, world, config)).toBe(true);
   });
 
   it("should return true for majorInjury on a long layoff even if not 'serious'", () => {
@@ -259,10 +230,9 @@ describe("checkStopCondition", () => {
     world.rikishi.set(rikishi.id, rikishi);
 
     const config = createMockConfig({ playerHeyaId: "player-heya" });
-    const chronicle = createMockChronicle();
     const bashoResult = createMockBashoResult({ injuries: ["Long Layoff"] });
 
-    expect(checkStopCondition("majorInjury", bashoResult, world, config, chronicle)).toBe(true);
+    expect(checkStopCondition("majorInjury", bashoResult, world, config)).toBe(true);
   });
 
   it("should return false for majorInjury on a minor short injury", () => {
@@ -276,10 +246,9 @@ describe("checkStopCondition", () => {
     world.rikishi.set(rikishi.id, rikishi);
 
     const config = createMockConfig({ playerHeyaId: "player-heya" });
-    const chronicle = createMockChronicle();
     const bashoResult = createMockBashoResult({ injuries: ["Minor Knock"] });
 
-    expect(checkStopCondition("majorInjury", bashoResult, world, config, chronicle)).toBe(false);
+    expect(checkStopCondition("majorInjury", bashoResult, world, config)).toBe(false);
   });
 
   it("should return false for majorInjury when the injured rikishi belongs to another heya", () => {
@@ -293,10 +262,9 @@ describe("checkStopCondition", () => {
     world.rikishi.set(rikishi.id, rikishi);
 
     const config = createMockConfig({ playerHeyaId: "player-heya" });
-    const chronicle = createMockChronicle();
     const bashoResult = createMockBashoResult({ injuries: ["Rival Wrestler"] });
 
-    expect(checkStopCondition("majorInjury", bashoResult, world, config, chronicle)).toBe(false);
+    expect(checkStopCondition("majorInjury", bashoResult, world, config)).toBe(false);
   });
 
   it("should return true for majorInjury in observer mode when a star is seriously injured", () => {
@@ -310,10 +278,9 @@ describe("checkStopCondition", () => {
     world.rikishi.set(rikishi.id, rikishi);
 
     const config = createMockConfig({ observerMode: true, playerHeyaId: undefined });
-    const chronicle = createMockChronicle();
     const bashoResult = createMockBashoResult({ injuries: ["Star Ozeki"] });
 
-    expect(checkStopCondition("majorInjury", bashoResult, world, config, chronicle)).toBe(true);
+    expect(checkStopCondition("majorInjury", bashoResult, world, config)).toBe(true);
   });
 
   it("should return false for majorInjury in observer mode when a non-star is injured", () => {
@@ -327,10 +294,9 @@ describe("checkStopCondition", () => {
     world.rikishi.set(rikishi.id, rikishi);
 
     const config = createMockConfig({ observerMode: true, playerHeyaId: undefined });
-    const chronicle = createMockChronicle();
     const bashoResult = createMockBashoResult({ injuries: ["Juryo Hopeful"] });
 
-    expect(checkStopCondition("majorInjury", bashoResult, world, config, chronicle)).toBe(false);
+    expect(checkStopCondition("majorInjury", bashoResult, world, config)).toBe(false);
   });
 
   it("should return false for majorInjury when a serious injury was not sustained this basho", () => {
@@ -344,19 +310,17 @@ describe("checkStopCondition", () => {
     world.rikishi.set(rikishi.id, rikishi);
 
     const config = createMockConfig({ playerHeyaId: "player-heya" });
-    const chronicle = createMockChronicle();
     // Not present in bashoResult.injuries -> injury predates this basho.
     const bashoResult = createMockBashoResult({ injuries: [] });
 
-    expect(checkStopCondition("majorInjury", bashoResult, world, config, chronicle)).toBe(false);
+    expect(checkStopCondition("majorInjury", bashoResult, world, config)).toBe(false);
   });
 
   it("should return false for unknown conditions", () => {
     const world = makeMockWorld();
     const config = createMockConfig();
-    const chronicle = createMockChronicle();
     const bashoResult = createMockBashoResult();
 
-    expect(checkStopCondition("never" as any, bashoResult, world, config, chronicle)).toBe(false);
+    expect(checkStopCondition("never" as any, bashoResult, world, config)).toBe(false);
   });
 });

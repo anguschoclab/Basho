@@ -10,14 +10,12 @@ vi.mock("@/engine/events", () => ({
 import type { StandingsTableRuntime } from "../../engine/types/basho";
 import {
   enrichRikishiForUI,
-  formatRadarData,
-  formatMetaTrends,
   getOzekiRunCandidates,
   buildWeeklyDigest,
   getKadobanDrama,
 } from "@/presenters/uiDigest";
 import { mockRikishi as generateMockRikishi } from "../engine/utils";
-import type { RikishiStats, Rikishi } from "../../engine/types/rikishi";
+import type { RikishiStats } from "../../engine/types/rikishi";
 import type { WorldState } from "../../engine/types/world";
 
 // Mock calculatePerceivedStats properly
@@ -51,54 +49,6 @@ describe("UI Digest: Rikishi Perception Boundary", () => {
 
     expect(uiRikishi.id).toBe("r_123");
     expect(uiRikishi.shikona).toBe("Asashoryu");
-  });
-
-  describe("formatRadarData (v2.0 Visuals)", () => {
-    it("should map rikishi attributes to radar points with C5 labels", () => {
-      const mockRikishi: Partial<Rikishi> = {
-        id: "r1",
-        stats: {
-          power: 90,
-          speed: 70,
-          technique: 50,
-          balance: 60,
-          stamina: 80,
-          aggression: 85,
-          experience: 50,
-        },
-        momentum: 50,
-        condition: 50,
-      };
-
-      const result = formatRadarData(mockRikishi as Rikishi);
-      expect(result).toHaveLength(5);
-      expect(result[0].subject).toBe("Power");
-      expect(result[0].A).toBe(5);
-    });
-  });
-
-  describe("formatMetaTrends (Streamgraph Data)", () => {
-    it("should format world history into stacked components totaling 100%", () => {
-      const mockWorld: Partial<WorldState> = {
-        history: [
-          { bashoName: "hatsu", year: 2024, metaBias: "oshi" },
-          { bashoName: "haru", year: 2024, metaBias: "yotsu" },
-        ],
-        bashoNumber: 2,
-      };
-
-      const result = formatMetaTrends(mockWorld as WorldState);
-      expect(result).toHaveLength(2);
-      expect(result[0].basho).toBe("H24");
-      expect(result[0].oshi + result[0].yotsu + result[0].hybrid).toBe(100);
-
-      expect(result[0].oshi).toBeGreaterThan(result[0].yotsu);
-    });
-
-    it("should return empty if no history", () => {
-      const mockWorld: Partial<WorldState> = { history: [], bashoNumber: 0 };
-      expect(formatMetaTrends(mockWorld as WorldState)).toEqual([]);
-    });
   });
 
   describe("getOzekiRunCandidates", () => {

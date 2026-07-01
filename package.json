@@ -22,6 +22,7 @@
     "preview": "vite preview",
     "test": "vitest run --no-cache",
     "test:watch": "vitest --no-cache",
+    "test:perf": "vitest run --config vitest.perf.config.ts",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "simulate": "bun src/engine/simulation/run.ts",

@@ -77,6 +77,40 @@ describe("computeMovementUnits — maegashira (threshold = 8)", () => {
   it("returns 0 when perf is undefined", () => {
     expect(computeMovementUnits(entry("maegashira", 5), undefined, NONE)).toBe(0);
   });
+
+  it("applies absence penalty: 1 absence = light kyujo, 15 absences = heavy kyujo", () => {
+    const perf1 = perf(8, 6, { absences: 1 });
+    expect(computeMovementUnits(entry("maegashira", 5), perf1, NONE)).toBe(-1);
+
+    const perf2 = perf(0, 0, { absences: 15 });
+    expect(computeMovementUnits(entry("maegashira", 5), perf2, NONE)).toBe(-30);
+  });
+
+  it("adds yusho and kinboshi bonuses (14 wins, yusho, 2 kinboshi → +13)", () => {
+    const move = computeMovementUnits(
+      entry("maegashira", 1),
+      perf(14, 1, { yusho: true, kinboshi: 2 }),
+      NONE
+    );
+    expect(move).toBe(13);
+  });
+
+  it("incorporates opponentAvgTier into bonus (harder schedule = more movement)", () => {
+    const perfHard = perf(8, 7, { opponentAvgTier: 2 });
+    expect(computeMovementUnits(entry("maegashira", 15), perfHard, NONE)).toBe(1);
+
+    const perfEasy = perf(8, 7, { opponentAvgTier: 6 });
+    expect(computeMovementUnits(entry("maegashira", 15), perfEasy, NONE)).toBe(0);
+  });
+
+  it("handles junYusho and specialPrizes bonuses (8 wins, junYusho, 2 prizes → +4)", () => {
+    const move = computeMovementUnits(
+      entry("maegashira", 15),
+      perf(8, 7, { junYusho: true, specialPrizes: 2 }),
+      NONE
+    );
+    expect(move).toBe(4);
+  });
 });
 
 describe("computeMovementUnits — yokozuna (±2 ceiling)", () => {
@@ -187,6 +221,11 @@ describe("bestTierAllowed", () => {
     expect(
       bestTierAllowed(entry("maegashira", 10), perf(14, 1, { yusho: true }), undefined, NONE)
     ).toBe(3);
+  });
+
+  it("returns default tier 5 if no special conditions met", () => {
+    expect(bestTierAllowed(entry("maegashira", 10), undefined, undefined, NONE)).toBe(5);
+    expect(bestTierAllowed(entry("maegashira", 10), perf(8, 7), undefined, NONE)).toBe(5);
   });
 });
 

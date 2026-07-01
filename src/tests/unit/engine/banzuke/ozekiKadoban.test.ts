@@ -8,6 +8,12 @@ vi.mock("@/engine/banzuke/banzukeHelpers", () => ({
 }));
 
 describe("getOzekiStatus — kadoban accumulation", () => {
+  it("returns non-kadoban state if not make-koshi", () => {
+    (banzukeHelpers.isMakeKoshi as vi.Mock).mockReturnValue(false);
+    const result = getOzekiStatus(10, 5, 0, undefined);
+    expect(result).toEqual({ isKadoban: false, consecutiveMakeKoshi: 0 });
+  });
+
   it("becomes kadoban on first make-koshi", () => {
     (banzukeHelpers.isMakeKoshi as vi.Mock).mockReturnValue(true);
     const result = getOzekiStatus(7, 8, 0, undefined);
