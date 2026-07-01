@@ -1,13 +1,13 @@
 import { describe, it, expect, vi } from "vitest";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file global mock
 // @ts-ignore
-global.calculatePerceivedStats = vi.fn(() => ({ power: "Dominant" }));
+global.calculatePerceivedStats = vi.fn(() => ({ strength: "Dominant" }));
 vi.mock("@/engine/events", () => ({
   queryEvents: vi.fn(
     (world: any) => world.events?.log?.map((e: any) => ({ ...e, type: e.type || "GENERIC" })) || []
   ),
 }));
-import type { StandingsTableRuntime } from "../../engine/types/basho";
+import type { StandingsTableRuntime } from "../../../engine/types/basho";
 import {
   enrichRikishiForUI,
   getOzekiRunCandidates,
@@ -15,17 +15,17 @@ import {
   getKadobanDrama,
 } from "@/presenters/uiDigest";
 import { mockRikishi as generateMockRikishi } from "../engine/utils";
-import type { RikishiStats } from "../../engine/types/rikishi";
-import type { WorldState } from "../../engine/types/world";
+import type { RikishiStats } from "../../../engine/types/rikishi";
+import type { WorldState } from "../../../engine/types/world";
 
 // Mock calculatePerceivedStats properly
 vi.mock("@/presenters/rikishiUI", () => ({
-  calculatePerceivedStats: vi.fn().mockReturnValue({ power: "Dominant" }),
+  calculatePerceivedStats: vi.fn().mockReturnValue({ strength: "Dominant" }),
   toRikishiDescriptor: vi.fn().mockReturnValue("Veteran"),
   projectRikishi: vi.fn((r: { id: string; shikona: string }) => ({
     id: r.id,
     shikona: r.shikona,
-    perceivedStats: { power: "Dominant" },
+    perceivedStats: { strength: "Dominant" },
   })),
 }));
 
@@ -36,11 +36,11 @@ describe("UI Digest: Rikishi Perception Boundary", () => {
     });
     const uiRikishi = enrichRikishiForUI(rawEngineRikishi);
 
-    expect((uiRikishi as Record<string, unknown>).stats).toBeUndefined();
-    expect((uiRikishi as Record<string, unknown>).power).toBeUndefined();
+    expect((uiRikishi as unknown as Record<string, unknown>).stats).toBeUndefined();
+    expect((uiRikishi as unknown as Record<string, unknown>).power).toBeUndefined();
 
     expect(uiRikishi.perceivedStats).toBeDefined();
-    expect(typeof uiRikishi.perceivedStats.power).toBe("string");
+    expect(typeof uiRikishi.perceivedStats.strength).toBe("string");
   });
 
   it("MUST expose public biographical data correctly", () => {
@@ -227,9 +227,8 @@ describe("UI Digest: Rikishi Perception Boundary", () => {
       const r2 = generateMockRikishi("r2", { shikona: "West1" });
 
       const mockWorld = {
-        week: 2,
-        cyclePhase: "active_basho",
         week: 2, // Must be > 1 to include matchups
+        cyclePhase: "active_basho",
         currentBasho: {
           day: 1,
           matches: [{ day: 1, eastRikishiId: "r1", westRikishiId: "r2" }],
