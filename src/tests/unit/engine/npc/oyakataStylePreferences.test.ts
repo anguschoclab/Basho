@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { getOyakataStyleProfile, scoreRecruitForOyakata } from "@/engine/oyakataStylePreferences";
-import { MockFactory } from "../../helpers/utils/MockFactory";
+import { MockFactory } from "../../../helpers/utils/MockFactory";
 import type { CombatArchetype, Style } from "@/engine/types/combat";
 
 describe("getOyakataStyleProfile — innovator includes defensive", () => {

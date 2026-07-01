@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { buildSwissTorikumi, scorePairing } from "@/engine/matchmaking";
-import { MockFactory } from "../../helpers/utils/MockFactory";
+import { MockFactory } from "../../../helpers/utils/MockFactory";
 import type { BashoState } from "@/engine/types/basho";
 
 // ---------------------------------------------------------------------------

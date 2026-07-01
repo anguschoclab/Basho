@@ -6,7 +6,7 @@ import {
   EventBus,
   tickWeekEvents,
 } from "@/engine/events";
-import { MockFactory } from "../../helpers/utils/MockFactory";
+import { MockFactory } from "../../../helpers/utils/MockFactory";
 import type { EngineEventType, EventsState } from "@/engine/types/events";
 import type { WorldState } from "@/engine/types/world";
 

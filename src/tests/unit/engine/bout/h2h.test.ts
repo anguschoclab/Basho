@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { updateH2H, generateH2HCommentary, getH2HReport } from "@/engine/h2h";
-import { MockFactory } from "../../helpers/utils/MockFactory";
+import { MockFactory } from "../../../helpers/utils/MockFactory";
 import type { MatchResultLog } from "@/engine/types/records";
 import type { BoutResult } from "@/engine/types/basho";
 import type { H2HRecord } from "@/engine/types/records";

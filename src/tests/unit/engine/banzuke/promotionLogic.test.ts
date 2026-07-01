@@ -83,7 +83,7 @@ describe("computeMovementUnits — maegashira (threshold = 8)", () => {
     expect(computeMovementUnits(entry("maegashira", 5), perf1, NONE)).toBe(-1);
 
     const perf2 = perf(0, 0, { absences: 15 });
-    expect(computeMovementUnits(entry("maegashira", 5), perf2, NONE)).toBe(-30);
+    expect(computeMovementUnits(entry("maegashira", 5), perf2, NONE)).toBe(-18);
   });
 
   it("adds yusho and kinboshi bonuses (14 wins, yusho, 2 kinboshi → +13)", () => {

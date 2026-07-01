@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { MockFactory } from "../../../helpers/utils/MockFactory";
+import { MockFactory } from "../../../../helpers/utils/MockFactory";
 import {
   fillVacanciesForNPC,
   fillVacanciesForNPCWithBidding,
