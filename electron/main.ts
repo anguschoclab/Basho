@@ -13,6 +13,7 @@ import { join } from "path";
 import { is } from "@electron-toolkit/utils";
 import path from "path";
 import { promises as fs } from "fs";
+import { validatePath as validatePathImpl } from "../src/utils/validatePath";
 
 // Initialize electron-store for configuration persistence
 // Using dynamic import to handle ESM/CommonJS compatibility
@@ -408,10 +409,7 @@ ipcMain.handle("notification:show", async (event, options: { title: string; body
 const allowedBaseDir = path.join(app.getPath("userData"), "archives");
 
 function validatePath(filePath: string): boolean {
-  if (typeof filePath !== "string") return false;
-  const resolvedPath = path.resolve(filePath);
-  const resolvedBase = path.resolve(allowedBaseDir);
-  return resolvedPath.startsWith(resolvedBase + path.sep) || resolvedPath === resolvedBase;
+  return validatePathImpl(filePath, allowedBaseDir);
 }
 
 // IPC Handlers for file system operations

@@ -21,6 +21,20 @@ const routeMap: Record<NameType, string> = {
 };
 
 /**
+ * Sanitizes an entity id to prevent XSS and path injection attacks.
+ * Rejects protocol schemes (javascript:, data:), path traversal (..),
+ * and leading slashes (absolute path injection).
+ * Returns the original id if safe, or an empty string if suspicious.
+ */
+function sanitizeId(id: string): string {
+  if (!id) return id;
+  if (id.includes(":")) return "";
+  if (id.includes("..")) return "";
+  if (id.startsWith("/")) return "";
+  return id;
+}
+
+/**
  * A reusable component for clickable links to rikishi, stables, and oyakata profiles.
  *
  * @param props - Component properties
@@ -32,7 +46,8 @@ const routeMap: Record<NameType, string> = {
  */
 export function ClickableName({ type, id, name, className, children }: ClickableNameProps) {
   const basePath = routeMap[type];
-  const to = `${basePath}/${id}`;
+  const safeId = sanitizeId(id);
+  const to = `${basePath}/${safeId}`;
 
   return (
     <Link

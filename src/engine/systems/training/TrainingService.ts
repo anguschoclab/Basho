@@ -13,7 +13,7 @@
 
 import type { WorldState } from "../../types/world";
 import type { Id } from "../../types/common";
-import type { HeyaTrainingState } from "../../types/training";
+import type { HeyaTrainingState, IndividualFocus } from "../../types/training";
 import type { Rikishi, RikishiStats } from "../../types/rikishi";
 import { EntityCollection } from "../../core/EntityCollection";
 import { EntityService } from "../../core/EntityService";
@@ -122,10 +122,20 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
   const builder = createImpactBuilder("applyWeeklyTraining");
   const activeRikishi = EntityCollection.getActiveRikishi(world);
 
+  const focusMapCache = new Map<Id, Map<Id, IndividualFocus>>();
+
   activeRikishi.forEach((rikishi) => {
     const beyaState = ensureHeyaTrainingState(world, rikishi.heyaId);
     const profile = beyaState.activeProfile;
-    const individualFocus = beyaState.focusSlots.find((s) => s.rikishiId === rikishi.id);
+    let focusMap = focusMapCache.get(rikishi.heyaId);
+    if (!focusMap) {
+      focusMap = new Map();
+      for (const slot of beyaState.focusSlots) {
+        if (!focusMap.has(slot.rikishiId)) focusMap.set(slot.rikishiId, slot);
+      }
+      focusMapCache.set(rikishi.heyaId, focusMap);
+    }
+    const individualFocus = focusMap.get(rikishi.id);
 
     // 1. Fatigue Logic
     const fatigueDelta = calculateFatigueDelta(profile, individualFocus);

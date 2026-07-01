@@ -1,5 +1,5 @@
 import type { WorldState } from "../types/world";
-import type { BashoName, BoutResult, BashoSimResult, BanzukeUpdateHook } from "../types/basho";
+import type { BashoName, BoutResult, BashoSimResult, BanzukeUpdateHook, MatchSchedule } from "../types/basho";
 import type { PromotionEvent, DemotionEvent } from "../types/banzuke";
 import { simulateBout } from "../bout/boutResolver";
 import { RANK_HIERARCHY } from "../banzuke";
@@ -66,9 +66,17 @@ export function simulateEntireBasho(
   // After schedule generation, read matches from workingWorld.currentBasho (impact resolver put them there)
   const activeBasho = workingWorld.currentBasho ?? basho;
 
+  // Pre-group matches by day for O(1) lookup instead of O(N*M) filter per day
+  const matchesByDay = new Map<number, MatchSchedule[]>();
+  for (const m of activeBasho.matches) {
+    let dayArr = matchesByDay.get(m.day);
+    if (!dayArr) { dayArr = []; matchesByDay.set(m.day, dayArr); }
+    dayArr.push(m);
+  }
+
   // Simulate all 15 days
   for (let day = 1; day <= 15; day++) {
-    const dayMatches = activeBasho.matches.filter((m) => m.day === day && !m.result);
+    const dayMatches = (matchesByDay.get(day) ?? []).filter((m) => !m.result);
 
     for (let boutIndex = 0; boutIndex < dayMatches.length; boutIndex++) {
       const match = dayMatches[boutIndex];

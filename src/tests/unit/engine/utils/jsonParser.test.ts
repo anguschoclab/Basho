@@ -44,6 +44,41 @@ describe("parseLLMResponse", () => {
     const input = '{"outer": {"inner": "value"}}';
     expect(parseLLMResponse(input)).toEqual({ outer: { inner: "value" } });
   });
+
+  it("prevents prototype pollution via fallback path (markdown-wrapped)", () => {
+    const input = '```json\n{"__proto__": {"polluted": true}, "hello": "world"}\n```';
+    const result = parseLLMResponse(input);
+    expect(result).toEqual({ hello: "world" });
+    expect((result as any).__proto__.polluted).toBeUndefined();
+  });
+
+  it("prevents prototype pollution with nested __proto__ keys", () => {
+    const input =
+      '{"outer": {"__proto__": {"nested": true}}, "inner": {"constructor": {"prototype": {"deep": true}}}, "safe": "yes"}';
+    const result = parseLLMResponse(input);
+    expect((result as any).safe).toBe("yes");
+    expect(Object.keys((result as any).outer)).not.toContain("__proto__");
+    expect(Object.keys((result as any).inner)).not.toContain("constructor");
+    expect({}["nested" as keyof object]).toBeUndefined();
+    expect({}["deep" as keyof object]).toBeUndefined();
+  });
+
+  it("prevents prototype pollution via fallback with nested __proto__ in markdown", () => {
+    const input =
+      '```json\n{"data": {"__proto__": {"polluted": true}}, "ok": true}\n```';
+    const result = parseLLMResponse(input);
+    expect(result).toEqual({ data: {}, ok: true });
+    expect({}["polluted" as keyof object]).toBeUndefined();
+  });
+
+  it("strips constructor and prototype keys from parsed result", () => {
+    const input =
+      '{"constructor": {"prototype": {"polluted": true}}, "prototype": {"bad": true}, "good": 1}';
+    const result = parseLLMResponse(input);
+    expect(result).toEqual({ good: 1 });
+    expect(Object.keys(result as Record<string, unknown>)).not.toContain("constructor");
+    expect(Object.keys(result as Record<string, unknown>)).not.toContain("prototype");
+  });
 });
 
 describe("safeParse", () => {
@@ -73,5 +108,17 @@ describe("safeParse", () => {
 
     expect((result as any).__proto__.polluted).toBeUndefined();
     expect({}["polluted" as keyof object]).toBeUndefined();
+  });
+
+  it("prevents prototype pollution with nested dangerous keys", () => {
+    const input =
+      '{"outer": {"__proto__": {"nested": true}}, "constructor": {"prototype": {"deep": true}}, "safe": "yes"}';
+    const fallback = { safe: "fallback" };
+    const result = safeParse(input, fallback);
+    expect((result as any).safe).toBe("yes");
+    expect(Object.keys((result as any).outer)).not.toContain("__proto__");
+    expect(Object.keys(result as Record<string, unknown>)).not.toContain("constructor");
+    expect({}["nested" as keyof object]).toBeUndefined();
+    expect({}["deep" as keyof object]).toBeUndefined();
   });
 });

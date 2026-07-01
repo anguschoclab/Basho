@@ -129,11 +129,13 @@ export function distributeKoenkaiToSekitori(world: WorldState): StateImpact {
     if (sekitoriPortion <= 0) continue;
 
     // Count sekitori in this heya
-    const sekitoriCount =
-      heya.rikishiIds?.filter((rId) => {
-        const r = getRikishi(world, rId);
-        return r && !r.isRetired && (r.division === "makuuchi" || r.division === "juryo");
-      }).length || 0;
+    let sekitoriCount = 0;
+    for (const rId of heya.rikishiIds ?? []) {
+      const r = getRikishi(world, rId);
+      if (r && !r.isRetired && (r.division === "makuuchi" || r.division === "juryo")) {
+        sekitoriCount++;
+      }
+    }
 
     if (sekitoriCount === 0) continue;
 

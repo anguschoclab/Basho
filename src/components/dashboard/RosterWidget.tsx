@@ -125,6 +125,7 @@ const RosterList = React.memo(
       <>
         {(() => {
           const limit = Math.min(ROSTER_WIDGET_MAX_ITEMS, roster.length);
+          const selectedSet = new Set(selectedIds);
           const nodes = new Array(limit);
           for (let i = 0; i < limit; i++) {
             const entry = roster[i];
@@ -138,7 +139,7 @@ const RosterList = React.memo(
                 potentialBand={entry.potentialBand}
                 fatigue={entry.fatigue}
                 healthBadge={entry.healthBadge}
-                isSelected={selectedIds.includes(entry.id)}
+                isSelected={selectedSet.has(entry.id)}
                 onWithdraw={onWithdraw}
                 onToggleSelect={onToggleSelect}
               />

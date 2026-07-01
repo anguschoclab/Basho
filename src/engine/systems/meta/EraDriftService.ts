@@ -6,7 +6,7 @@
  */
 
 import { WorldState } from "../../types/world";
-import { KIMARITE_REGISTRY } from "../../kimarite";
+import { KIMARITE_REGISTRY, getKimarite } from "../../kimarite";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import {
@@ -39,7 +39,7 @@ export function processYearlyEraDrift(world: WorldState): StateImpact {
 
   let totalMoves = 0;
   for (const [id, count] of Object.entries(stats)) {
-    const def = KIMARITE_REGISTRY.find((k) => k.id === id);
+    const def = getKimarite(id);
     if (def && def.tacticalFamily) {
       familyTotals[def.tacticalFamily] += count;
       totalMoves += count;

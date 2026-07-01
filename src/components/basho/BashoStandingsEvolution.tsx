@@ -18,6 +18,7 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import type { BoutResult } from "@/engine/types/basho";
+import { computeStandingsEvolution } from "./computeStandingsEvolution";
 
 /** Color palette cycling through primary + 7 accent colors */
 const LINE_COLORS = [
@@ -41,54 +42,15 @@ interface BashoStandingsEvolutionProps {
   maxLines?: number;
 }
 
-type ChartDataPoint = { day: number } & Record<string, number>;
-
 export function BashoStandingsEvolution({
   basho,
   rikishiMap,
   maxLines = 8,
 }: BashoStandingsEvolutionProps) {
-  const { data, topIds } = useMemo(() => {
-    // Guard: need at least day 2 with results
-    if (!basho.results || basho.results.length === 0 || basho.day < 2) {
-      return { data: [], topIds: [] };
-    }
-
-    // 1. Identify top maxLines rikishi by current standings wins (descending)
-    const standingsEntries = Array.from(basho.standings.entries());
-    const sorted = standingsEntries.sort((a, b) => b[1].wins - a[1].wins).slice(0, maxLines);
-    const topIds = sorted.map(([id]) => id);
-
-    // 2. Reconstruct day-by-day cumulative wins from results array
-    //    results is per-day: results[dayIndex][boutIndex]
-    //    dayIndex 0 = Day 1
-    const cumulative: Record<string, number> = {};
-    topIds.forEach((id) => (cumulative[id] = 0));
-
-    const daysToShow = Math.min(basho.day, 15);
-    const chartData: ChartDataPoint[] = [];
-
-    for (let d = 0; d < daysToShow; d++) {
-      const dayResults = basho.results[d] ?? [];
-      // Count wins for each tracked rikishi on this day
-      for (const bout of dayResults) {
-        if (topIds.includes(bout.winnerRikishiId)) {
-          cumulative[bout.winnerRikishiId] = (cumulative[bout.winnerRikishiId] ?? 0) + 1;
-        }
-      }
-
-      // Snapshot cumulative wins at end of this day
-      const point: ChartDataPoint = { day: d + 1 };
-      for (const id of topIds) {
-        const rikishi = rikishiMap.get(id);
-        const label = rikishi?.shikona ?? id;
-        point[label] = cumulative[id] ?? 0;
-      }
-      chartData.push(point);
-    }
-
-    return { data: chartData, topIds };
-  }, [basho, rikishiMap, maxLines]);
+  const { data, topIds } = useMemo(
+    () => computeStandingsEvolution(basho, rikishiMap, maxLines),
+    [basho, rikishiMap, maxLines]
+  );
 
   // Labels for the lines (shikona or fallback to id)
   const lineLabels = useMemo(

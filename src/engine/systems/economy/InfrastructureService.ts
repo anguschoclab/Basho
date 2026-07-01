@@ -240,8 +240,9 @@ export const InfrastructureService = {
       const lv = state.level;
 
       if (def.bonuses.statBuffs) {
-        for (const [stat, mult] of Object.entries(def.bonuses.statBuffs)) {
-          (totalBonuses.statBuffs as Record<string, number>)[stat] *= 1 + (mult - 1) * lv;
+        const buffs = def.bonuses.statBuffs;
+        for (const stat in buffs) {
+          (totalBonuses.statBuffs as Record<string, number>)[stat] *= 1 + (buffs[stat] - 1) * lv;
         }
       }
 

@@ -78,8 +78,9 @@ export function EventFeed({ maxEvents = 10, filterTypes, minImportance }: EventF
 
   const events = useMemo(() => {
     const allEvents = workerWorld?.events?.log || [];
-    let filtered = filterTypes
-      ? allEvents.filter((e: EngineEvent) => filterTypes.includes(e.type))
+    const filterSet = filterTypes ? new Set(filterTypes) : null;
+    let filtered = filterSet
+      ? allEvents.filter((e: EngineEvent) => filterSet.has(e.type))
       : allEvents;
 
     if (minImportance) {

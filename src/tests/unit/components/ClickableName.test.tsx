@@ -19,11 +19,14 @@ vi.mock("@tanstack/react-router", () => ({
     className?: string;
     onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
     children?: React.ReactNode;
-  }) => (
-    <a href={to} className={className} onClick={onClick} data-testid="router-link">
-      {children}
-    </a>
-  ),
+  }) => {
+    const safeHref = to.startsWith("/") && !to.includes("://") ? to : "#";
+    return (
+      <a href={safeHref} className={className} onClick={onClick} data-testid="router-link">
+        {children}
+      </a>
+    );
+  },
 }));
 
 // ── Helpers ────────────────────────────────────────────────
@@ -127,6 +130,44 @@ describe("ClickableName", () => {
     render(<ClickableName type="rikishi" id="" name="Test" />);
     const link = screen.getByTestId("router-link");
     expect(link.getAttribute("href")).toBe("/rikishi/");
+  });
+
+  it("sanitizes id with javascript: protocol scheme", () => {
+    render(<ClickableName type="rikishi" id="javascript:alert(1)" name="Test" />);
+    const link = screen.getByTestId("router-link");
+    const href = link.getAttribute("href");
+    expect(href).not.toContain("javascript:");
+    expect(href).toBe("/rikishi/");
+  });
+
+  it("sanitizes id with data: protocol scheme", () => {
+    render(<ClickableName type="rikishi" id="data:text/html,<script>alert(1)</script>" name="Test" />);
+    const link = screen.getByTestId("router-link");
+    const href = link.getAttribute("href");
+    expect(href).not.toContain("data:");
+    expect(href).toBe("/rikishi/");
+  });
+
+  it("sanitizes id with path traversal (..)", () => {
+    render(<ClickableName type="rikishi" id="../etc/passwd" name="Test" />);
+    const link = screen.getByTestId("router-link");
+    const href = link.getAttribute("href");
+    expect(href).not.toContain("..");
+    expect(href).toBe("/rikishi/");
+  });
+
+  it("sanitizes id with leading slash (absolute path injection)", () => {
+    render(<ClickableName type="rikishi" id="/admin" name="Test" />);
+    const link = screen.getByTestId("router-link");
+    const href = link.getAttribute("href");
+    expect(href).not.toContain("/admin");
+    expect(href).toBe("/rikishi/");
+  });
+
+  it("preserves safe alphanumeric id", () => {
+    render(<ClickableName type="rikishi" id="RK-ABCD1234" name="Test" />);
+    const link = screen.getByTestId("router-link");
+    expect(link.getAttribute("href")).toBe("/rikishi/RK-ABCD1234");
   });
 });
 
