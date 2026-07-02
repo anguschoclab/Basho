@@ -18,7 +18,15 @@ import type { Oyakata } from "../types/oyakata";
  * @returns Array of entities (undefined for missing IDs filtered out)
  */
 export function mapIdsToEntities<T>(ids: Id[], entityMap: Map<Id, T>): T[] {
-  return ids.map((id) => entityMap.get(id)).filter((entity): entity is T => entity !== undefined);
+  // ⚡ Bolt Optimization: Use a single for...of loop instead of chained .map().filter()
+  const results: T[] = [];
+  for (const id of ids) {
+    const entity = entityMap.get(id);
+    if (entity !== undefined) {
+      results.push(entity);
+    }
+  }
+  return results;
 }
 
 /**
