@@ -1,5 +1,4 @@
 import type { WorldState } from "./types/world";
-import type { Rikishi } from "./types/rikishi";
 import {
   countsAsForeignFromRikishi,
   reinjectToTalentPool,
