@@ -154,3 +154,7 @@ Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop 
 ## 2024-06-27 - Optimize Array.map().filter() chains
 **Learning:** The codebase heavily uses pattern `ids.map(id => map.get(id)).filter(Boolean)` (or similar) to look up entities. This creates an intermediate O(N) array full of undefined values that is immediately discarded.
 **Action:** When creating utility functions or processing lists of IDs, use a direct `for...of` loop to accumulate valid entities into a single result array to avoid O(N) allocations.
+
+## 2024-06-29 - Optimize object iterations in SimTuningService
+**Learning:** Using `Object.entries()` in performance-sensitive areas like `SimTuningService` creates unnecessary O(N) tuple allocations.
+**Action:** Replace `Object.entries(obj)` with `for...in` loops and `Object.prototype.hasOwnProperty.call()` guards when iterating over large state objects or within tight simulation loops.
