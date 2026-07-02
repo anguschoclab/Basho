@@ -117,7 +117,6 @@ export function IdentityStep({
                 size="icon"
                 onClick={onRandomName}
                 className="h-16 w-16 shrink-0 border-2 rounded-lg hover:border-primary hover:text-primary transition-colors"
-                title="Generate random name"
                 aria-label="Generate random name"
                 tooltip="Generate random name"
                 tooltipSide="top"

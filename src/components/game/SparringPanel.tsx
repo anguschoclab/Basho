@@ -100,7 +100,9 @@ export function SparringPanel({ heyaRikishi, pairs, onAddPair, onRemovePair }: P
                 size="sm"
                 variant="ghost"
                 className="h-6 w-6 p-0"
-                title="Remove pair"
+                aria-label="Remove pair"
+                tooltip="Remove pair"
+                tooltipSide="top"
                 onClick={() => onRemovePair(pair.aId, pair.bId)}
               >
                 <X className="h-3 w-3" />
