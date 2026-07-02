@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { DefaultRetirementStrategy } from "@/engine/npcRetirementStrategy";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
@@ -32,11 +31,7 @@ describe("npcRetirementStrategy — year source and force-retire guard", () => {
     });
     world.rikishi.set("r45", r);
 
-    const impact = DefaultRetirementStrategy.evaluateRetirements(
-      world,
-      heya,
-      mockOyakata()
-    );
+    const impact = DefaultRetirementStrategy.evaluateRetirements(world, heya, mockOyakata());
     const resolved = resolveImpacts(world, [impact]);
     const retired = resolved.historicalRikishi.get("r45") as Rikishi | undefined;
 
@@ -58,7 +53,9 @@ describe("npcRetirementStrategy — year source and force-retire guard", () => {
       world.rikishi.set(id, mockRikishi(id, { birthYear: 2030, rank: "jonokuchi", power: 30 }));
     }
     const heya = makeMockHeya("heya-1", { rikishiIds: ids });
-    const oyakata = mockOyakata({ traits: { ambition: 80, patience: 50, risk: 50, tradition: 50, compassion: 50 } });
+    const oyakata = mockOyakata({
+      traits: { ambition: 80, patience: 50, risk: 50, tradition: 50, compassion: 50 },
+    });
 
     const impact = DefaultRetirementStrategy.evaluateRetirements(world, heya, oyakata);
     const resolved = resolveImpacts(world, [impact]);

@@ -85,9 +85,7 @@ describe("SubNavTabs", () => {
   });
 
   it("merges custom className onto container div", () => {
-    const { container } = render(
-      <SubNavTabs tabs={sampleTabs} className="custom-class" />
-    );
+    const { container } = render(<SubNavTabs tabs={sampleTabs} className="custom-class" />);
     const wrapper = container.firstChild as HTMLElement;
     expect(wrapper.classList.contains("custom-class")).toBe(true);
   });

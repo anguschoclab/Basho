@@ -11,7 +11,10 @@ describe("balanced bidding ordering", () => {
       const r = mockRikishi(`strong-s${i}`, { heyaId: "strong", division: "makuuchi" });
       rikishi.set(r.id, r);
     }
-    heyas.set("strong", makeMockHeya("strong", { rikishiIds: Array.from({ length: 8 }, (_, i) => `strong-s${i}`) }));
+    heyas.set(
+      "strong",
+      makeMockHeya("strong", { rikishiIds: Array.from({ length: 8 }, (_, i) => `strong-s${i}`) })
+    );
     heyas.set("weak", makeMockHeya("weak", { rikishiIds: [] }));
     const world = makeMockWorld({ heyas, rikishi });
 

@@ -64,7 +64,11 @@ vi.mock("@/components/ui/tabs", () => {
   const TabsContent = ({ value, children, ...props }: any) => {
     const ctx = React.useContext(TabsContext);
     if (ctx.value !== value) return null;
-    return React.createElement("div", { role: "tabpanel", "data-value": value, ...props }, children);
+    return React.createElement(
+      "div",
+      { role: "tabpanel", "data-value": value, ...props },
+      children
+    );
   };
 
   return { Tabs, TabsList, TabsTrigger, TabsContent };
@@ -102,12 +106,7 @@ function makeTenure(
   };
 }
 
-function makeHeya(
-  id: string,
-  name: string,
-  nameJa?: string,
-  lineage: any[] = []
-) {
+function makeHeya(id: string, name: string, nameJa?: string, lineage: any[] = []) {
   return { id, name, nameJa, lineage } as any;
 }
 
@@ -143,9 +142,7 @@ describe("HistoryDashboard — no world", () => {
     mockUseGame(null);
     render(<HistoryDashboard />);
     expect(screen.getByText("Museum Unavailable")).toBeTruthy();
-    expect(
-      screen.getByText("No world loaded. Start a game to explore the archives.")
-    ).toBeTruthy();
+    expect(screen.getByText("No world loaded. Start a game to explore the archives.")).toBeTruthy();
     expect(screen.queryByText("Museum of Sumo")).toBeNull();
   });
 });
@@ -274,10 +271,7 @@ describe("HistoryDashboard — Records tab", () => {
           allTime: {
             careerWins: [],
             makuuchiWins: [],
-            yusho: [
-              makeRecordEntry("r1", "Hakuho I", 10),
-              makeRecordEntry("r1", "Hakuho II", 8),
-            ],
+            yusho: [makeRecordEntry("r1", "Hakuho I", 10), makeRecordEntry("r1", "Hakuho II", 8)],
             consecutiveYusho: [],
             kinboshi: [],
           },
@@ -294,9 +288,7 @@ describe("HistoryDashboard — Stables tab", () => {
   beforeEach(() => vi.clearAllMocks());
 
   it("switches to Stables tab on trigger click", () => {
-    mockUseGame(
-      makeWorld({ heyas: new Map([["h1", makeHeya("h1", "Kokonoe")]]) })
-    );
+    mockUseGame(makeWorld({ heyas: new Map([["h1", makeHeya("h1", "Kokonoe")]]) }));
     vi.mocked(selectRetiredRikishi).mockReturnValue([]);
     render(<HistoryDashboard />);
     fireEvent.click(screen.getByRole("tab", { name: "Stables" }));
@@ -317,9 +309,7 @@ describe("HistoryDashboard — Stables tab", () => {
   });
 
   it("falls back to heya.name when nameJa is absent", () => {
-    mockUseGame(
-      makeWorld({ heyas: new Map([["h1", makeHeya("h1", "Kokonoe")]]) })
-    );
+    mockUseGame(makeWorld({ heyas: new Map([["h1", makeHeya("h1", "Kokonoe")]]) }));
     vi.mocked(selectRetiredRikishi).mockReturnValue([]);
     render(<HistoryDashboard />);
     fireEvent.click(screen.getByRole("tab", { name: "Stables" }));
@@ -355,12 +345,7 @@ describe("HistoryDashboard — Stables tab", () => {
     mockUseGame(
       makeWorld({
         heyas: new Map([
-          [
-            "h1",
-            makeHeya("h1", "Test", undefined, [
-              makeTenure(1, "Test", 2000, 2010),
-            ]),
-          ],
+          ["h1", makeHeya("h1", "Test", undefined, [makeTenure(1, "Test", 2000, 2010)])],
         ]),
       })
     );
@@ -379,9 +364,7 @@ describe("HistoryDashboard — Stables tab", () => {
         heyas: new Map([
           [
             "h1",
-            makeHeya("h1", "Test", undefined, [
-              makeTenure(1, "Test", 2000, 2010, 5, undefined),
-            ]),
+            makeHeya("h1", "Test", undefined, [makeTenure(1, "Test", 2000, 2010, 5, undefined)]),
           ],
         ]),
       })
@@ -396,9 +379,7 @@ describe("HistoryDashboard — Stables tab", () => {
   });
 
   it("renders empty heya with no lineage gracefully", () => {
-    mockUseGame(
-      makeWorld({ heyas: new Map([["h1", makeHeya("h1", "Empty")]]) })
-    );
+    mockUseGame(makeWorld({ heyas: new Map([["h1", makeHeya("h1", "Empty")]]) }));
     vi.mocked(selectRetiredRikishi).mockReturnValue([]);
     render(<HistoryDashboard />);
     fireEvent.click(screen.getByRole("tab", { name: "Stables" }));
@@ -425,9 +406,7 @@ describe("HistoryDashboard — Stables tab", () => {
   });
 
   it("shows — for retired rikishi with no rank", () => {
-    mockUseGame(
-      makeWorld({ heyas: new Map([["h1", makeHeya("h1", "Test")]]) })
-    );
+    mockUseGame(makeWorld({ heyas: new Map([["h1", makeHeya("h1", "Test")]]) }));
     vi.mocked(selectRetiredRikishi).mockReturnValue([
       makeRikishi("r1", "Unknown", "h1", undefined),
     ]);
@@ -447,9 +426,7 @@ describe("HistoryDashboard — Stables tab", () => {
   });
 
   it("shows empty state when no retired rikishi exist", () => {
-    mockUseGame(
-      makeWorld({ heyas: new Map([["h1", makeHeya("h1", "Test")]]) })
-    );
+    mockUseGame(makeWorld({ heyas: new Map([["h1", makeHeya("h1", "Test")]]) }));
     vi.mocked(selectRetiredRikishi).mockReturnValue([]);
     render(<HistoryDashboard />);
     fireEvent.click(screen.getByRole("tab", { name: "Stables" }));
@@ -457,9 +434,7 @@ describe("HistoryDashboard — Stables tab", () => {
   });
 
   it("caps retired legends at 40 entries", () => {
-    mockUseGame(
-      makeWorld({ heyas: new Map([["h1", makeHeya("h1", "Test")]]) })
-    );
+    mockUseGame(makeWorld({ heyas: new Map([["h1", makeHeya("h1", "Test")]]) }));
     const retired = Array.from({ length: 45 }, (_, i) =>
       makeRikishi(`r${i}`, `R${i}`, "h1", "yokozuna")
     );
@@ -482,9 +457,7 @@ describe("HistoryDashboard — tab switching", () => {
   });
 
   it("switches back to Records tab from Stables tab", () => {
-    mockUseGame(
-      makeWorld({ heyas: new Map([["h1", makeHeya("h1", "Test")]]) })
-    );
+    mockUseGame(makeWorld({ heyas: new Map([["h1", makeHeya("h1", "Test")]]) }));
     vi.mocked(selectRetiredRikishi).mockReturnValue([]);
     render(<HistoryDashboard />);
     fireEvent.click(screen.getByRole("tab", { name: "Stables" }));

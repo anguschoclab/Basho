@@ -46,6 +46,8 @@ describe("updateBanzuke division capacity", () => {
   it("does not pile everyone into jonokuchi", () => {
     const { world, banzuke, perf } = makeWorld(800);
     const result = updateBanzuke(banzuke, perf, world, {}, undefined);
-    expect(result.newBanzuke.filter((e) => e.division === "jonokuchi").length / 800).toBeLessThan(0.4);
+    expect(result.newBanzuke.filter((e) => e.division === "jonokuchi").length / 800).toBeLessThan(
+      0.4
+    );
   });
 });

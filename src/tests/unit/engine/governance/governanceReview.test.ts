@@ -115,7 +115,10 @@ describe("governanceReview", () => {
       world.playerHeyaId = "heya-player"; // Not the player
 
       // Add enough heyas to exceed HEYA_FLOOR so merger is not blocked
-      world.heyas.set("heya-player", makeMockHeya("heya-player", { rikishiIds: ["rp1", "rp2", "rp3"] }));
+      world.heyas.set(
+        "heya-player",
+        makeMockHeya("heya-player", { rikishiIds: ["rp1", "rp2", "rp3"] })
+      );
       world.rikishi.set("rp1", mockRikishi("rp1", { heyaId: "heya-player" }));
       world.rikishi.set("rp2", mockRikishi("rp2", { heyaId: "heya-player" }));
       world.rikishi.set("rp3", mockRikishi("rp3", { heyaId: "heya-player" }));

@@ -219,6 +219,9 @@ export function IdentityStep({
           onClick={onNext}
           disabled={!oyakataName.trim()}
           className="h-16 px-10 gap-3 font-display font-black uppercase tracking-widest text-lg shadow-2xl rounded-lg hover:scale-105 transition-transform"
+          {...(!oyakataName.trim()
+            ? { tooltip: "Enter a name to continue", tooltipSide: "top" }
+            : {})}
         >
           Next Submission <ArrowRight className="w-6 h-6" />
         </Button>

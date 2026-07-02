@@ -10,7 +10,11 @@ function worldWithStables(spec: Record<string, number>): WorldState {
   for (const [heyaId, sekitoriCount] of Object.entries(spec)) {
     const ids: string[] = [];
     for (let i = 0; i < sekitoriCount; i++) {
-      const r = mockRikishi(`${heyaId}-s${i}`, { heyaId, division: "makuuchi", rank: "maegashira" });
+      const r = mockRikishi(`${heyaId}-s${i}`, {
+        heyaId,
+        division: "makuuchi",
+        rank: "maegashira",
+      });
       rikishi.set(r.id, r);
       ids.push(r.id);
     }

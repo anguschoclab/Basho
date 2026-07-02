@@ -138,7 +138,6 @@ export const simFullBasho = (): GameAction => ({
   type: "SIM_FULL_BASHO",
 });
 
-
 /**
  * Runs a holiday event with the given result.
  *
@@ -160,7 +159,6 @@ export const runAutoSim = (result: AutoSimResult): GameAction => ({
   type: "RUN_AUTO_SIM",
   result,
 });
-
 
 /**
  * Updates the world state with a new world.
@@ -184,7 +182,6 @@ export const loadWorld = (world: WorldState): GameAction => ({
   world,
 });
 
-
 /**
  * Builds infrastructure for a heya.
  *
@@ -200,7 +197,6 @@ export const buildInfrastructure = (
   heyaId,
   facilityId,
 });
-
 
 /**
  * Advances the tutorial to the next step.

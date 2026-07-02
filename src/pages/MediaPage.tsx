@@ -227,9 +227,7 @@ export default function MediaPage() {
 
   const pendingMediaEvents = useMemo(() => {
     if (!world?.playerHeyaId || !world.governanceLog) return [];
-    return world.governanceLog.filter(
-      (r) => r.heyaId === world.playerHeyaId && !r.playerChoice
-    );
+    return world.governanceLog.filter((r) => r.heyaId === world.playerHeyaId && !r.playerChoice);
   }, [world]);
 
   if (!world) {
@@ -277,10 +275,14 @@ export default function MediaPage() {
                 >
                   <div className="flex items-start justify-between gap-2">
                     <div>
-                      <p className="text-sm font-medium capitalize">{event.type.replace("_", " ")}</p>
+                      <p className="text-sm font-medium capitalize">
+                        {event.type.replace("_", " ")}
+                      </p>
                       <p className="text-xs text-muted-foreground">{event.reason}</p>
                     </div>
-                    <Badge variant="outline" className="text-[10px] shrink-0">{event.date}</Badge>
+                    <Badge variant="outline" className="text-[10px] shrink-0">
+                      {event.date}
+                    </Badge>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <Button
@@ -288,7 +290,11 @@ export default function MediaPage() {
                       variant="outline"
                       className="text-xs h-7 border-success/40 text-success hover:bg-success/10"
                       onClick={() => {
-                        sendCommand({ type: "HANDLE_MEDIA_EVENT", eventId: event.id, choice: "apologize" });
+                        sendCommand({
+                          type: "HANDLE_MEDIA_EVENT",
+                          eventId: event.id,
+                          choice: "apologize",
+                        });
                         toast.success("Issued public apology — reduces media heat.");
                       }}
                     >
@@ -299,7 +305,11 @@ export default function MediaPage() {
                       variant="outline"
                       className="text-xs h-7 border-destructive/40 text-destructive hover:bg-destructive/10"
                       onClick={() => {
-                        sendCommand({ type: "HANDLE_MEDIA_EVENT", eventId: event.id, choice: "deny" });
+                        sendCommand({
+                          type: "HANDLE_MEDIA_EVENT",
+                          eventId: event.id,
+                          choice: "deny",
+                        });
                         toast.warning("Denied the story — increases media pressure.");
                       }}
                     >
@@ -310,7 +320,11 @@ export default function MediaPage() {
                       variant="outline"
                       className="text-xs h-7 text-muted-foreground"
                       onClick={() => {
-                        sendCommand({ type: "HANDLE_MEDIA_EVENT", eventId: event.id, choice: "ignore" });
+                        sendCommand({
+                          type: "HANDLE_MEDIA_EVENT",
+                          eventId: event.id,
+                          choice: "ignore",
+                        });
                         toast.info("Chose to ignore — story may fade on its own.");
                       }}
                     >

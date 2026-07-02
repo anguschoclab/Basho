@@ -36,9 +36,7 @@ describe("MainContentPane", () => {
   });
 
   it("renders h1 with pageTitle when no subNavTabs", () => {
-    const { container } = render(
-      <MainContentPane pageTitle="Dashboard">Content</MainContentPane>
-    );
+    const { container } = render(<MainContentPane pageTitle="Dashboard">Content</MainContentPane>);
     const h1 = container.querySelector("h1");
     expect(h1).toBeTruthy();
     expect(screen.getByText("Dashboard")).toBeTruthy();
@@ -50,9 +48,7 @@ describe("MainContentPane", () => {
   });
 
   it("renders sticky header with SubNavTabs when subNavTabs is provided", () => {
-    render(
-      <MainContentPane subNavTabs={sampleTabs}>Content</MainContentPane>
-    );
+    render(<MainContentPane subNavTabs={sampleTabs}>Content</MainContentPane>);
     expect(screen.getByTestId("subnav-mock")).toBeTruthy();
   });
 

@@ -8,9 +8,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { Id } from "@/engine/types/common";
 import type { TalentPoolWorldState } from "@/engine/types/talent";
 
-function makeWorldWithTalentPool(
-  overrides: Partial<WorldState> = {}
-): WorldState {
+function makeWorldWithTalentPool(overrides: Partial<WorldState> = {}): WorldState {
   const tp = MockFactory.createTalentPool({});
   return MockFactory.createWorld({ talentPool: tp, ...overrides });
 }

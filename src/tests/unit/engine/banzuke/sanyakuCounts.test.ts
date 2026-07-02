@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { computeVariableSanyakuCounts } from "@/engine/banzuke";
 import type { BanzukeEntry, BashoPerformance, RankPosition } from "@/engine/types/banzuke";

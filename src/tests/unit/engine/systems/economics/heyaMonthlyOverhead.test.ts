@@ -19,7 +19,11 @@ describe("processHeyaEconomics — monthly rank-scaled heya overhead", () => {
   beforeEach(() => {
     // 1 yokozuna + 1 maegashira + 3 non-sekitori
     const r1 = mockRikishi("r-yoko", { rank: "yokozuna", division: "makuuchi", heyaId: "heya-1" });
-    const r2 = mockRikishi("r-maeg", { rank: "maegashira", division: "makuuchi", heyaId: "heya-1" });
+    const r2 = mockRikishi("r-maeg", {
+      rank: "maegashira",
+      division: "makuuchi",
+      heyaId: "heya-1",
+    });
     const r3 = mockRikishi("r-ms1", { rank: "makushita", division: "makushita", heyaId: "heya-1" });
     const r4 = mockRikishi("r-ms2", { rank: "makushita", division: "makushita", heyaId: "heya-1" });
     const r5 = mockRikishi("r-sd1", { rank: "sandanme", division: "sandanme", heyaId: "heya-1" });

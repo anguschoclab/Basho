@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { CareerService } from "@/engine/lifecycle/CareerService";
 import { runRetirements } from "@/engine/systems/governance/governanceReview";

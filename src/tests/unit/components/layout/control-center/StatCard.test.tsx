@@ -4,12 +4,22 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { Trophy } from "lucide-react";
-import { StatCard, type StatItem, type ProgressItem } from "@/components/layout/control-center/StatCard";
+import {
+  StatCard,
+  type StatItem,
+  type ProgressItem,
+} from "@/components/layout/control-center/StatCard";
 
 // Mock CardEyebrow to isolate StatCard logic
 vi.mock("@/components/layout/control-center/CardEyebrow", () => ({
   CardEyebrow: ({ eyebrow, title, icon, actions }: any) => (
-    <div data-testid="card-eyebrow" data-eyebrow={eyebrow} data-title={title} data-has-icon={!!icon} data-has-actions={!!actions} />
+    <div
+      data-testid="card-eyebrow"
+      data-eyebrow={eyebrow}
+      data-title={title}
+      data-has-icon={!!icon}
+      data-has-actions={!!actions}
+    />
   ),
 }));
 
@@ -55,7 +65,9 @@ describe("StatCard", () => {
   it("does not render sub text when absent", () => {
     const stats: StatItem[] = [{ label: "Wins", value: 10 }];
     const { container } = render(<StatCard eyebrow="Stats" title="Performance" stats={stats} />);
-    expect(container.querySelectorAll(".text-\\[10px\\].text-muted-foreground.leading-tight")).toHaveLength(0);
+    expect(
+      container.querySelectorAll(".text-\\[10px\\].text-muted-foreground.leading-tight")
+    ).toHaveLength(0);
   });
 
   it.each([
@@ -114,17 +126,13 @@ describe("StatCard", () => {
     [2, "grid-cols-2"],
     [3, "grid-cols-3"],
   ] as const)("applies cols=%d grid class", (cols, expectedClass) => {
-    const { container } = render(
-      <StatCard eyebrow="E" title="T" stats={baseStats} cols={cols} />
-    );
+    const { container } = render(<StatCard eyebrow="E" title="T" stats={baseStats} cols={cols} />);
     const grid = container.querySelector(".grid") as HTMLElement;
     expect(grid.classList.contains(expectedClass)).toBe(true);
   });
 
   it("applies cols=4 grid class (grid-cols-2 sm:grid-cols-4)", () => {
-    const { container } = render(
-      <StatCard eyebrow="E" title="T" stats={baseStats} cols={4} />
-    );
+    const { container } = render(<StatCard eyebrow="E" title="T" stats={baseStats} cols={4} />);
     const grid = container.querySelector(".grid") as HTMLElement;
     expect(grid.classList.contains("grid-cols-2")).toBe(true);
     expect(grid.classList.contains("sm:grid-cols-4")).toBe(true);

@@ -16,9 +16,7 @@ describe("Operating overhead constants", () => {
     expect(SEKITORI_OVERHEAD_MONTHLY.yokozuna).toBeGreaterThanOrEqual(1_000_000);
     expect(SEKITORI_OVERHEAD_MONTHLY.yokozuna).toBeGreaterThan(SEKITORI_OVERHEAD_MONTHLY.ozeki);
     expect(SEKITORI_OVERHEAD_MONTHLY.ozeki).toBeGreaterThan(SEKITORI_OVERHEAD_MONTHLY.sekiwake);
-    expect(SEKITORI_OVERHEAD_MONTHLY.sekiwake).toBeGreaterThan(
-      SEKITORI_OVERHEAD_MONTHLY.komusubi
-    );
+    expect(SEKITORI_OVERHEAD_MONTHLY.sekiwake).toBeGreaterThan(SEKITORI_OVERHEAD_MONTHLY.komusubi);
     expect(SEKITORI_OVERHEAD_MONTHLY.komusubi).toBeGreaterThan(
       SEKITORI_OVERHEAD_MONTHLY.maegashira
     );

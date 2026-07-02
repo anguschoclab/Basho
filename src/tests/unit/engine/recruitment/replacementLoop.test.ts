@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { phase01_week_recruitment } from "@/engine/tick/phases/phase01_week_recruitment";
 import { tickWeekTalentPool } from "@/engine/systems/generation/TalentPoolMaintenance";

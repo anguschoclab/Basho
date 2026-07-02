@@ -14,7 +14,10 @@ import { phase01_week_welfare } from "@/engine/tick/phases/phase01_week_welfare"
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import { makeMockHeya } from "../../utils";
-import { calculateWeeklyWelfareDelta, computeInjuryPressure } from "@/engine/systems/welfare/WelfareCalculations";
+import {
+  calculateWeeklyWelfareDelta,
+  computeInjuryPressure,
+} from "@/engine/systems/welfare/WelfareCalculations";
 import { MAX_MEDIA_PRESSURE, MEDIA_PRESSURE_WATCH } from "@/constants/engine/welfare";
 
 describe("Phase 01: Week Welfare", () => {
@@ -33,7 +36,11 @@ describe("Phase 01: Week Welfare", () => {
     } as unknown as WorldState;
   }
 
-  function createWelfareHeya(id: string, welfareRisk: number, complianceState: any = "compliant"): Heya {
+  function createWelfareHeya(
+    id: string,
+    welfareRisk: number,
+    complianceState: any = "compliant"
+  ): Heya {
     return makeMockHeya(id, {
       welfareState: {
         welfareRisk,

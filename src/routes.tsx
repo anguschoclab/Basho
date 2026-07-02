@@ -51,7 +51,9 @@ const ScoutingPage = lazy(() => import("./pages/ScoutingPage"));
 const GovernancePage = lazy(() => import("./pages/GovernancePage"));
 const MyosekiMarketPage = lazy(() => import("./pages/MyosekiMarketPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
-const HistoryDashboard = lazy(() => import("./pages/HistoryDashboard").then(m => ({ default: m.HistoryDashboard })));
+const HistoryDashboard = lazy(() =>
+  import("./pages/HistoryDashboard").then((m) => ({ default: m.HistoryDashboard }))
+);
 const GlobalCupPage = lazy(() => import("./pages/GlobalCupPage"));
 const RegionalHubPage = lazy(() => import("./pages/RegionalHubPage"));
 

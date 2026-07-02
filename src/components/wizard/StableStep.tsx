@@ -110,6 +110,9 @@ export function StableStep({
           onClick={onFinish}
           disabled={!selectedHeyaId}
           className="h-16 px-12 gap-3 font-display font-black uppercase tracking-widest text-xl shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] rounded-lg bg-primary text-white hover:scale-105 transition-transform"
+          {...(!selectedHeyaId
+            ? { tooltip: "Select a stable to continue", tooltipSide: "top" }
+            : {})}
         >
           Begin Journey <Sparkles className="w-6 h-6" />
         </Button>

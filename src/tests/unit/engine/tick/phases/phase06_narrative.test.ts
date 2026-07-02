@@ -101,10 +101,7 @@ describe("Phase 6: Narrative", () => {
 
   it("logs TRAINING_UPDATE for multiple rikishi with big gains", () => {
     if (!world.transientContext?.deltas) return;
-    world.rikishi.set(
-      "r3",
-      mockRikishi("r3", { shikona: "Wrestler 3", heyaId: "heya-1" })
-    );
+    world.rikishi.set("r3", mockRikishi("r3", { shikona: "Wrestler 3", heyaId: "heya-1" }));
     world.transientContext.deltas.statChanges = {
       r1: [{ stat: "power", amount: 1.5 }],
       r2: [{ stat: "speed", amount: 2.0 }],

@@ -152,6 +152,9 @@ export function SparringPanel({ heyaRikishi, pairs, onAddPair, onRemovePair }: P
               className="h-7 text-xs"
               disabled={!selectedA || !selectedB}
               onClick={handleAdd}
+              {...(!selectedA || !selectedB
+                ? { tooltip: "Select two rikishi to pair", tooltipSide: "top" }
+                : {})}
             >
               <Plus className="h-3 w-3 mr-1" />
               Pair

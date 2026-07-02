@@ -116,6 +116,7 @@ export function InfrastructurePanel({ heya, onBuild }: InfrastructurePanelProps)
                       className="text-xs h-7 gap-1"
                       disabled={!canAfford}
                       onClick={() => onBuild(id)}
+                      {...(!canAfford ? { tooltip: "Insufficient funds", tooltipSide: "top" } : {})}
                     >
                       <Construction className="h-3 w-3" />
                       Build

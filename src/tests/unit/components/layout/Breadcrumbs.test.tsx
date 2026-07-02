@@ -8,7 +8,15 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 // Mock TanStack Router: Link as real <a>, useLocation returns controllable pathname
 const mockLocation = { pathname: "/dashboard" };
 vi.mock("@tanstack/react-router", () => ({
-  Link: ({ to, className, children }: { to: string; className?: string; children?: React.ReactNode }) => (
+  Link: ({
+    to,
+    className,
+    children,
+  }: {
+    to: string;
+    className?: string;
+    children?: React.ReactNode;
+  }) => (
     <a href={to} className={className} data-testid="router-link">
       {children}
     </a>
@@ -23,7 +31,11 @@ describe("Breadcrumbs", () => {
 
   afterEach(() => {
     // Reset to desktop width after each test
-    Object.defineProperty(window, "innerWidth", { writable: true, configurable: true, value: 1024 });
+    Object.defineProperty(window, "innerWidth", {
+      writable: true,
+      configurable: true,
+      value: 1024,
+    });
   });
 
   it("returns null when pathname is / (only Home crumb)", () => {
@@ -112,7 +124,11 @@ describe("Breadcrumbs", () => {
   });
 
   it("does not collapse on desktop when > 3 crumbs", () => {
-    Object.defineProperty(window, "innerWidth", { writable: true, configurable: true, value: 1024 });
+    Object.defineProperty(window, "innerWidth", {
+      writable: true,
+      configurable: true,
+      value: 1024,
+    });
     render(
       <Breadcrumbs
         items={[

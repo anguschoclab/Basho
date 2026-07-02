@@ -23,12 +23,10 @@ describe("checkYokozunaPromotions", () => {
     }
     const activeRikishiIds = new Set(opts.activeIds ?? opts.rikishiEntries.map((e) => e.id));
 
-    const historyIndex =
-      opts.historyIndex ??
-      ({
-        version: "1.0.0",
-        rikishi: {} as Record<string, any[]>,
-      });
+    const historyIndex = opts.historyIndex ?? {
+      version: "1.0.0",
+      rikishi: {} as Record<string, any[]>,
+    };
     // Fill in history from entries if not explicitly provided
     for (const entry of opts.rikishiEntries) {
       if (entry.history && !historyIndex.rikishi[entry.id]) {

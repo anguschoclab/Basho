@@ -115,7 +115,11 @@ export function runGovernanceReview(world: WorldState): StateImpact {
       }
       // === Insolvency-triggered merger for NPC stables with no rescue available ===
       // Blocked when at or below HEYA_FLOOR to prevent runaway collapse.
-      if (heya.funds < MERGER_THRESHOLD && heya.id !== world.playerHeyaId && world.heyas.size > HEYA_FLOOR) {
+      if (
+        heya.funds < MERGER_THRESHOLD &&
+        heya.id !== world.playerHeyaId &&
+        world.heyas.size > HEYA_FLOOR
+      ) {
         const targetId = findMergerTarget(world, heya.id);
         if (targetId) {
           builder.logEvent(

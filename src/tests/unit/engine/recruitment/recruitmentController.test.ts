@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { computeReplacementGap, allocateVacancies } from "@/engine/systems/generation/RecruitmentController";
+import {
+  computeReplacementGap,
+  allocateVacancies,
+} from "@/engine/systems/generation/RecruitmentController";
 import { makeMockWorld, makeMockHeya } from "../utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
@@ -127,12 +130,7 @@ describe("allocateVacancies", () => {
   });
 
   it("returns empty when gap is 0", () => {
-    const world = buildWorld(
-      [
-        { id: "npc-a", rosterSize: 10 },
-      ],
-      "player-x"
-    );
+    const world = buildWorld([{ id: "npc-a", rosterSize: 10 }], "player-x");
     const vacancies = allocateVacancies(world, 0);
     expect(Object.keys(vacancies).length).toBe(0);
   });
