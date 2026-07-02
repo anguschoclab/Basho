@@ -52,9 +52,14 @@ function generateRandomDrama(world: WorldState): StateImpact {
 
   if (eventType === 0) {
     // Scandal
-    const activeRikishi = Array.from(world.activeRikishiIds)
-      .map((id) => getRikishi(world, id))
-      .filter((r): r is Rikishi => r !== undefined);
+    // ⚡ Bolt Optimization: Use direct iteration instead of Array.from().map().filter()
+    const activeRikishi: Rikishi[] = [];
+    for (const id of world.activeRikishiIds) {
+      const r = getRikishi(world, id);
+      if (r !== undefined) {
+        activeRikishi.push(r);
+      }
+    }
     const rikishis = stableSort(activeRikishi, (x) => x.id);
     const target = rikishis[rng.int(0, rikishis.length - 1)];
     if (target) {

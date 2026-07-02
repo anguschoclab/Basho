@@ -158,3 +158,6 @@ Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop 
 ## 2024-06-29 - Optimize object iterations in SimTuningService
 **Learning:** Using `Object.entries()` in performance-sensitive areas like `SimTuningService` creates unnecessary O(N) tuple allocations.
 **Action:** Replace `Object.entries(obj)` with `for...in` loops and `Object.prototype.hasOwnProperty.call()` guards when iterating over large state objects or within tight simulation loops.
+## 2024-02-18 - Optimize Array.from() allocations in DramaGenerator and HistoryIndex
+**Learning:** Found instances in `dramaGenerator.ts` and `historyIndex.ts` where `Array.from()` was used in conjunction with `.map().filter()` or `.entries()` to convert Maps and Sets to arrays before iteration. This causes unnecessary O(N) array and tuple allocations, negatively impacting simulation performance.
+**Action:** Replaced `Array.from(set).map().filter()` with a direct `for...of` loop over the set in `dramaGenerator.ts`, and `Array.from(map.entries())` with `map.entries()` iterator directly in `historyIndex.ts` to reduce garbage collection overhead.
