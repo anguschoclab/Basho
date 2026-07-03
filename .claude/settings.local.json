@@ -140,7 +140,12 @@
       "Bash(xargs ls)",
       "Bash(git -C /Users/amauricia/Documents/GitHub/sumo-manager-pro add src/engine/systems/governance/governanceReview.ts src/tests/unit/engine/governance/foundingReliability.test.ts)",
       "Bash(git -C /Users/amauricia/Documents/GitHub/sumo-manager-pro diff --cached --stat)",
-      "Bash(git rm *)"
+      "Bash(git rm *)",
+      "Bash(mv \"C:\\\\Users\\\\amauricia\\\\documents\\\\github\\\\basho\\\\docs\\\\plan-01-physics-driven-animation.md\" \"C:\\\\Users\\\\amauricia\\\\Documents\\\\GitHub\\\\Basho\\\\docs\\\\superpowers\\\\plans\\\\2026-07-03-01-physics-driven-animation.md\")",
+      "Bash(mv \"C:\\\\Users\\\\amauricia\\\\documents\\\\github\\\\basho\\\\docs\\\\plan-02-fix-narrative-failures.md\" \"C:\\\\Users\\\\amauricia\\\\Documents\\\\GitHub\\\\Basho\\\\docs\\\\superpowers\\\\plans\\\\2026-07-03-02-fix-narrative-failures.md\")",
+      "Bash(mv \"C:\\\\Users\\\\amauricia\\\\documents\\\\github\\\\basho\\\\docs\\\\plan-03-kimarite-animation-variants.md\" \"C:\\\\Users\\\\amauricia\\\\Documents\\\\GitHub\\\\Basho\\\\docs\\\\superpowers\\\\plans\\\\2026-07-03-03-kimarite-animation-variants.md\")",
+      "Bash(mv \"C:\\\\Users\\\\amauricia\\\\documents\\\\github\\\\basho\\\\docs\\\\plan-04-synchronized-pbp-timeline.md\" \"C:\\\\Users\\\\amauricia\\\\Documents\\\\GitHub\\\\Basho\\\\docs\\\\superpowers\\\\plans\\\\2026-07-03-04-synchronized-pbp-timeline.md\")",
+      "Bash(mv \"C:\\\\Users\\\\amauricia\\\\documents\\\\github\\\\basho\\\\docs\\\\plan-05-bout-of-the-basho-highlight-reel.md\" \"C:\\\\Users\\\\amauricia\\\\Documents\\\\GitHub\\\\Basho\\\\docs\\\\superpowers\\\\plans\\\\2026-07-03-05-bout-of-the-basho-highlight-reel.md\")"
     ]
   },
   "outputStyle": "default"
