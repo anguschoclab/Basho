@@ -298,7 +298,7 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
               </Button>
             )}
             <label
-              className={isImporting ? "opacity-50 cursor-not-allowed pointer-events-none" : ""}
+              className={isImporting ? "opacity-50 cursor-not-allowed" : ""}
             >
               <input
                 type="file"

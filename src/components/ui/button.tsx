@@ -53,6 +53,17 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     );
 
     if (tooltip) {
+      if (props.disabled) {
+        // Native disabled elements swallow pointer events in browsers.
+        // We wrap disabled buttons in a span that has cursor-not-allowed so the tooltip triggers properly.
+        return (
+          <TooltipWrap content={tooltip} side={tooltipSide}>
+            <span className="inline-block cursor-not-allowed">
+              <Comp className={cn(buttonVariants({ variant, size, className }), "pointer-events-none")} ref={ref} {...props} />
+            </span>
+          </TooltipWrap>
+        );
+      }
       return (
         <TooltipWrap content={tooltip} side={tooltipSide}>
           {button}

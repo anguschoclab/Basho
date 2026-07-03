@@ -174,7 +174,7 @@ export function AppSidebar() {
                         <SidebarMenuButton
                           tooltip={`${item.title} — Complete your first Basho to unlock`}
                           isActive={false}
-                          className="mx-1.5 w-[calc(100%-0.75rem)] opacity-35 cursor-not-allowed pointer-events-none py-2 h-auto"
+                          className="mx-1.5 w-[calc(100%-0.75rem)] opacity-35 cursor-not-allowed py-2 h-auto"
                         >
                           <div className="flex items-center gap-3 w-full">
                             <item.icon className="h-3.5 w-3.5 shrink-0 text-[hsl(var(--sidebar-foreground)/0.4)]" />
