@@ -1,7 +1,7 @@
 // BoutNarrativeModal.tsx — Polished bout detail modal with dramatic header,
 // animated phase commentary, and immersive result display
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -14,20 +14,24 @@ import { BoutResultDisplay } from "./BoutResultDisplay";
 import { BoutLog } from "./BoutLog";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
-import type { Rikishi } from "@/engine/types/rikishi";
 import type { PbpLine } from "@/engine/bout/boutNarrative";
 import { RotateCcw, MessageSquareText, BookOpen, Terminal } from "lucide-react";
-import { generateNarrative } from "@/presenters/uiDigest";
-import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
-import { useGame } from "@/contexts/GameContext";
 import { PbpLineText } from "./PbpLineText";
 
 const PHASE_STYLE: Record<string, { label: string; color: string; bg: string }> = {
+  opening: { label: "開幕", color: "text-primary", bg: "bg-primary/10 border-primary/20" },
+  entrance: { label: "入場", color: "text-primary", bg: "bg-primary/10 border-primary/20" },
+  ritual: { label: "儀式", color: "text-muted-foreground", bg: "bg-muted/10 border-muted/20" },
   tactical: { label: "策略", color: "text-primary", bg: "bg-primary/10 border-primary/20" },
   tachiai: { label: "立合", color: "text-east", bg: "bg-east/10 border-east/20" },
+  engagement: { label: "攻防", color: "text-accent", bg: "bg-accent/10 border-accent/20" },
   clinch: { label: "組合", color: "text-warning", bg: "bg-warning/10 border-warning/20" },
-  momentum: { label: "攻防", color: "text-accent", bg: "bg-accent/10 border-accent/20" },
+  momentum: { label: "攻勢", color: "text-accent", bg: "bg-accent/10 border-accent/20" },
+  edge_crisis: { label: "土俵際", color: "text-destructive", bg: "bg-destructive/10 border-destructive/20" },
   finish: { label: "決着", color: "text-success", bg: "bg-success/10 border-success/20" },
+  award: { label: "殊勲", color: "text-success", bg: "bg-success/10 border-success/20" },
+  ceremony: { label: "礼", color: "text-muted-foreground", bg: "bg-muted/10 border-muted/20" },
+  closing: { label: "結び", color: "text-primary", bg: "bg-primary/10 border-primary/20" },
 };
 
 const TAG_ICONS: Record<string, string> = {
@@ -78,37 +82,11 @@ export function BoutNarrativeModal({
   east,
   west,
   result,
-  bashoName,
-  day,
 }: BoutNarrativeModalProps) {
-  const { state } = useGame();
-  const world = state?.world;
-
-  const narrative = generateNarrative(
-    east as unknown as Rikishi,
-    west as unknown as Rikishi,
-    result,
-    bashoName,
-    day
+  const pbpLines: PbpLine[] = result.pbpLines ?? [];
+  const narrativeLines = pbpLines.filter((l) =>
+    ["opening", "entrance", "ritual", "finish", "award", "ceremony", "closing"].includes(l.phase ?? "")
   );
-
-  const pbpLines = useMemo<PbpLine[]>(() => {
-    try {
-      const seed = `${bashoName}-${day}-${east.id}-${west.id}`;
-      generateBoutNarrative(
-        result,
-        east as unknown as Rikishi,
-        west as unknown as Rikishi,
-        bashoName,
-        day,
-        seed,
-        world || ({} as unknown as Parameters<typeof generateBoutNarrative>[6])
-      );
-      return result.pbpLines ?? [];
-    } catch {
-      return [];
-    }
-  }, [east, west, result, bashoName, day, world]);
 
   const [replayKey, setReplayKey] = useState(0);
 
@@ -154,8 +132,8 @@ export function BoutNarrativeModal({
           <BoutReplayViewer
             key={replayKey}
             result={result}
-            eastRikishi={east as unknown as Rikishi}
-            westRikishi={west as unknown as Rikishi}
+            eastRikishi={east}
+            westRikishi={west}
             autoPlay
             className="shadow-sm mx-auto max-w-lg bg-background rounded-md"
           />
@@ -243,15 +221,21 @@ export function BoutNarrativeModal({
               {/* ── Narrative ── */}
               <TabsContent value="narrative" className="mt-4">
                 <div className="prose dark:prose-invert text-sm leading-relaxed text-muted-foreground space-y-2">
-                  {narrative.map((line, i) => (
-                    <p
-                      key={i}
-                      className={`animate-fade-in ${i === narrative.length - 1 ? "font-medium text-foreground italic" : ""}`}
-                      style={{ animationDelay: `${i * 120}ms`, animationFillMode: "both" }}
-                    >
-                      {line}
+                  {narrativeLines.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-6">
+                      No narrative data available.
                     </p>
-                  ))}
+                  ) : (
+                    narrativeLines.map((line, i) => (
+                      <p
+                        key={i}
+                        className={`animate-fade-in ${i === narrativeLines.length - 1 ? "font-medium text-foreground italic" : ""}`}
+                        style={{ animationDelay: `${i * 120}ms`, animationFillMode: "both" }}
+                      >
+                        <PbpLineText text={line.text} />
+                      </p>
+                    ))
+                  )}
                 </div>
               </TabsContent>
 

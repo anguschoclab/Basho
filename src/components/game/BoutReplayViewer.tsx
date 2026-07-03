@@ -65,8 +65,6 @@ export function BoutReplayViewer({
       <div className="relative bg-black">
         <canvas
           ref={canvasRef as React.RefObject<HTMLCanvasElement>}
-          width={800}
-          height={500}
           className="w-full block"
           style={{ aspectRatio: "8/5" }}
         />

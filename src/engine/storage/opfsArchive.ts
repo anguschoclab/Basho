@@ -41,18 +41,8 @@ function validateBoutLog(data: unknown): BoutResult | null {
   }
 
   // Arrays are optional but if present must be arrays
-  if (obj.narrative !== undefined && !Array.isArray(obj.narrative)) {
-    warn("Invalid BoutResult: narrative must be an array of strings", "OPFS Validation");
-    return null;
-  }
-
   if (obj.pbpLines !== undefined && !Array.isArray(obj.pbpLines)) {
     warn("Invalid BoutResult: pbpLines must be an array", "OPFS Validation");
-    return null;
-  }
-
-  if (obj.pbp !== undefined && !Array.isArray(obj.pbp)) {
-    warn("Invalid BoutResult: pbp must be an array", "OPFS Validation");
     return null;
   }
 

@@ -797,6 +797,48 @@
             "The crowd holds its breath as %EAST% and %WEST% face off.",
             "The dohyo is silent before the storm."
           ]
+        },
+        "tactical": {
+          "lateral": [
+            "%ATTACKER% slides laterally, probing for an angle.",
+            "A quick pivot from %ATTACKER% — the ring sense is sharp.",
+            "%ATTACKER% circles, looking to wrong-foot %DEFENDER%.",
+            "Footwork from %ATTACKER% — creating separation, resetting the stance."
+          ],
+          "henka": [
+            "HENKA! %ATTACKER% sidesteps the charge and the crowd erupts!",
+            "A sudden evasion! %ATTACKER% redirects the momentum, leaving %DEFENDER% to tumble past.",
+            "Technical surprise — %ATTACKER% slips the hit and the hall gasps."
+          ],
+          "pull_attempt": [
+            "%ATTACKER% tries a pull-down — %DEFENDER% stumbles forward!",
+            "A calculated hikiotoshi attempt from %ATTACKER%.",
+            "%ATTACKER% baits the charge and pulls — will it connect?"
+          ],
+          "grip_shift": [
+            "%ATTACKER% shifts the grip, hunting for moro-zashi.",
+            "A deliberate grip adjustment from %ATTACKER%.",
+            "%ATTACKER% repositions the hands — the belt battle evolves."
+          ],
+          "rear_take": [
+            "%ATTACKER% slips behind! %DEFENDER% is in serious trouble!",
+            "Angle taken! %ATTACKER% has %DEFENDER% twisted!",
+            "%ATTACKER% circles behind — %DEFENDER% cannot see the attack coming!"
+          ]
+        },
+        "ceremony": {
+          "common": [
+            "%WINNER% returns to the center, offering the respectful bow.",
+            "The gyoji points his gunbai toward %WINNER%. A clean finish.",
+            "%WINNER% crouches at the tawara, accepting the win with quiet dignity.",
+            "The formal closing ritual — %WINNER% bows and steps from the dohyo."
+          ],
+          "dramatic": [
+            "%WINNER% lingers at the center, soaking in the roar of the crowd.",
+            "A thunderous ovation fills the hall as %WINNER% accepts the victory.",
+            "%WINNER% stands motionless, letting the magnitude of the moment settle.",
+            "The arena rises as one — %WINNER% bows deeply, a warrior's farewell."
+          ]
         }
       },
       "kimarite": {

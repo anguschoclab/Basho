@@ -148,7 +148,7 @@ export function interpolate(text: string, context: NarrativeContext): string {
     // Entity Tagging Logic: Wrap known entities in special tags for UI linking
     const lowerKey = key.toLowerCase();
     let entityType: string | undefined;
-    let entityId: string | number | boolean | undefined;
+    let entityId: string | number | boolean | object | null | undefined;
 
     if (lowerKey === "shikona") {
       entityType = "rikishi";
@@ -174,6 +174,15 @@ export function interpolate(text: string, context: NarrativeContext): string {
     } else if (lowerKey === "west") {
       entityType = "rikishi";
       entityId = context.westRikishiId || context.loserId;
+    } else if (lowerKey === "attacker") {
+      entityType = "rikishi";
+      entityId = context.attackerId;
+    } else if (lowerKey === "defender") {
+      entityType = "rikishi";
+      entityId = context.defenderId;
+    } else if (lowerKey === "name") {
+      entityType = "rikishi";
+      entityId = context.nameId;
     }
 
     const stringValue = value.toString();

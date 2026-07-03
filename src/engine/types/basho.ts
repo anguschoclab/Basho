@@ -120,12 +120,10 @@ export interface BoutResult {
   tacticInjuryRiskMultiplier?: number;
   /** Log of key events during the bout. */
   log: BoutLogEntry[];
-  /** Narrative lines generated for this bout. */
-  narrative?: string[];
   /** Play-by-play lines for detailed bout description. */
   pbpLines?: PbpLine[];
-  /** Simplified play-by-play text. */
-  pbp?: string[];
+  /** Optional drama context copied from the match schedule for narrative enhancement. */
+  dramaticContext?: DramaContext;
 }
 
 /**

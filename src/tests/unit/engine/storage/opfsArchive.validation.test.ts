@@ -255,7 +255,7 @@ describe("OPFS Archive Validation", () => {
         tachiaiWinner: "east",
         duration: 10,
         upset: false,
-        narrative: "not an array", // invalid
+        pbpLines: "not an array", // invalid
       };
       const mockFile = {
         getFile: vi.fn().mockResolvedValue({
@@ -273,7 +273,7 @@ describe("OPFS Archive Validation", () => {
 
       expect(result).toBeNull();
       const warnCall = warnSpy.mock.calls.find((call) =>
-        call[0].includes("Invalid BoutResult: narrative must be an array of strings")
+        call[0].includes("Invalid BoutResult: pbpLines must be an array")
       );
       expect(warnCall).toBeDefined();
     });
@@ -290,9 +290,7 @@ describe("OPFS Archive Validation", () => {
         tachiaiWinner: "east",
         duration: 10,
         upset: false,
-        narrative: ["good", "bout"],
-        pbpLines: ["line 1"],
-        pbp: [],
+        pbpLines: [{ text: "line 1", id: "1", phase: "opening" }],
       };
       const mockFile = {
         getFile: vi.fn().mockResolvedValue({

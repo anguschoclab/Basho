@@ -1,23 +1,70 @@
-import { generateNarrative } from "@/engine/narrative";
 import { rngFromSeed } from "../rng";
 import type { Rikishi } from "../types/rikishi";
-import type { BoutResult, BashoName } from "../types/basho";
+import type { BoutResult, BashoName, BoutLogEntry } from "../types/basho";
 import type { WorldState } from "../types/world";
+import type { Stance } from "../types/combat";
 import { BardEngine } from "../bard/BardEngine";
 import { BloodlineService } from "../systems/legacy/BloodlineService";
+import { buildNarrativeContext, type VoiceStyle } from "../bard/narrativeContext";
+import {
+  INTENSITY_DRAMATIC,
+  INTENSITY_UNDERSTATED,
+  INTENSITY_FORMAL,
+  RITUAL_SALT_CHANCE_UNDERSTATED,
+} from "../../constants/engine/generation";
+
+export type PbpPhase =
+  | "opening"
+  | "entrance"
+  | "ritual"
+  | "tactical"
+  | "tachiai"
+  | "engagement"
+  | "clinch"
+  | "momentum"
+  | "edge_crisis"
+  | "finish"
+  | "award"
+  | "ceremony"
+  | "closing";
+
+export type PbpVoice = "dramatic" | "formal" | "understated";
+
+export type PbpTag =
+  | "crowd_roar"
+  | "gasps"
+  | "upset"
+  | "kinboshi"
+  | "ginboshi"
+  | "kensho"
+  | "yusho_race"
+  | "close_call"
+  | "dominant"
+  | "dynasty"
+  | "drama"
+  | "henka";
 
 export type PbpLine = {
   text: string;
   id: string;
   /** Optional phase metadata used by the narrative modal for styling */
-  phase?: string;
+  phase?: PbpPhase;
   /** Optional tags rendered as small icons under the line */
-  tags?: string[];
+  tags?: PbpTag[];
+  /** Voice style used for this line */
+  voice?: PbpVoice;
 };
 
+function getIntensity(voiceStyle: VoiceStyle): number {
+  if (voiceStyle === "dramatic") return INTENSITY_DRAMATIC;
+  if (voiceStyle === "understated") return INTENSITY_UNDERSTATED;
+  return INTENSITY_FORMAL;
+}
+
 /**
- * Pure translator function. Consumes raw physics frames and maps them
- * to the Bard Engine for narrative generation.
+ * Unified bout narrative generator. Consumes raw physics frames and maps them
+ * to the Bard Engine for narrative generation, producing a single rich
+ * PbpLine[] array with phase, voice, and tag metadata.
  */
 export function generateBoutNarrative(
   result: BoutResult,
@@ -28,9 +75,36 @@ export function generateBoutNarrative(
   seed: string,
   world: WorldState
 ): void {
-  const pbpLines: PbpLine[] = [];
+  const lines: PbpLine[] = [];
+  const rng = rngFromSeed(seed, "narrative", "bout");
+  const ctx = buildNarrativeContext(east, west, result, bashoName, day, rng);
+  const intensity = getIntensity(ctx.voiceStyle);
 
-  // 0. Dynasty Narrative (before ritual)
+  const push = (text: string, phase: PbpPhase, tags: PbpTag[] = []) => {
+    if (text && !text.includes("[MISSING:")) {
+      lines.push({
+        text,
+        id: `${result.boutId}-${phase}-${lines.length}`,
+        phase,
+        tags,
+        voice: ctx.voiceStyle,
+      });
+    }
+  };
+
+  // 1. Venue opening line
+  const openingRng = rngFromSeed(seed, "pbp", "opening");
+  const openingRes = BardEngine.resolve(openingRng, `world.venues.${ctx.location}.entrance`, {
+    east: east.shikona,
+    west: west.shikona,
+    eastRikishiId: east.id,
+    westRikishiId: west.id,
+    day: day,
+    intensity,
+  });
+  push(openingRes.text, "opening");
+
+  // 2. Dynasty Narrative
   const eastAncestor = BloodlineService.checkDynastyNarrative(east, world);
   const westAncestor = BloodlineService.checkDynastyNarrative(west, world);
   if (eastAncestor || westAncestor) {
@@ -38,71 +112,84 @@ export function generateBoutNarrative(
     const rikishiWithDynasty = eastAncestor ? east : west;
     const ancestor = eastAncestor || westAncestor;
     if (ancestor) {
-      pbpLines.push({
-        text: BardEngine.resolve(dynastyRng, "dynasty.bout_opening", {
+      push(
+        BardEngine.resolve(dynastyRng, "dynasty.bout_opening", {
           RIKISHI: rikishiWithDynasty.shikona,
           ANCESTOR: ancestor,
         }).text,
-        id: `${result.boutId}-dynasty`,
-        tags: ["dynasty"],
-      });
+        "opening",
+        ["dynasty"]
+      );
     }
   }
 
-  // 0.5. Drama-aware opening line (if dramaticContext exists)
-  const match = world.currentBasho?.matches.find((m) => m.boutId === result.boutId);
-  if (match?.dramaticContext && match.dramaticContext.score > 0) {
+  // 3. Drama-aware opening line (reads from result.dramaticContext)
+  if (result.dramaticContext && result.dramaticContext.score > 0) {
     const dramaRng = rngFromSeed(seed, "pbp", "drama");
-    const dramaPath = `combat.drama.${match.dramaticContext.label}` as const;
+    const dramaPath = `combat.phases.drama.${result.dramaticContext.label}` as const;
     const dramaRes = BardEngine.resolve(dramaRng, dramaPath, {
       east: east.shikona,
       west: west.shikona,
       eastRikishiId: east.id,
       westRikishiId: west.id,
     });
-    pbpLines.push({
-      text: dramaRes.text,
-      id: `${result.boutId}-drama`,
-      tags: ["drama"],
-    });
+    push(dramaRes.text, "opening", ["drama"]);
   }
 
-  // 1. Initial Narrative (Ritual)
+  // 4. Ring entrances (east + west, two separate lines for entity linking)
   if (result.log.length > 0) {
-    const ritualRng = rngFromSeed(seed, "pbp", "ritual");
-    pbpLines.push({
-      text: BardEngine.resolve(ritualRng, "combat.phases.ritual.entrance", {
+    const entranceRng = rngFromSeed(seed, "pbp", "entrance");
+    push(
+      BardEngine.resolve(entranceRng, "combat.phases.ritual.entrance", {
         east: east.shikona,
         west: west.shikona,
         eastRikishiId: east.id,
         westRikishiId: west.id,
+        intensity,
       }).text,
-      id: `${result.boutId}-ritual-1`,
-    });
-    pbpLines.push({
-      text: BardEngine.resolve(ritualRng, "combat.phases.ritual.shikiri", {}).text,
-      id: `${result.boutId}-ritual-2`,
-    });
+      "entrance"
+    );
+
+    // 5. Ritual salt (skipped for understated voice unless RNG passes)
+    if (
+      ctx.voiceStyle !== "understated" ||
+      rng.next() < RITUAL_SALT_CHANCE_UNDERSTATED
+    ) {
+      const saltRng = rngFromSeed(seed, "pbp", "salt");
+      push(
+        BardEngine.resolve(saltRng, "combat.phases.ritual.salt", {
+          east: east.shikona,
+          west: west.shikona,
+          eastRikishiId: east.id,
+          westRikishiId: west.id,
+          intensity,
+        }).text,
+        "ritual"
+      );
+    }
+
+    // 6. Shikiri
+    const shikiriRng = rngFromSeed(seed, "pbp", "shikiri");
+    push(
+      BardEngine.resolve(shikiriRng, "combat.phases.ritual.shikiri", {}).text,
+      "ritual"
+    );
   }
 
-  // 2. Process Log Frames
-  result.log.forEach((entry, idx) => {
+  // 7. Process Log Frames
+  // Track derived phase state to avoid spamming clinch/momentum on every tick
+  let clinchEmitted = false;
+  let lastMomentumTick = -10;
+
+  result.log.forEach((entry: BoutLogEntry, idx: number) => {
     const tickSeed = `${seed}-tick-${(entry.data?.tick as number) || 0}-${idx}`;
     const rng = rngFromSeed(tickSeed, "pbp", "tick");
 
     if (entry.description) {
-      pbpLines.push({
-        text: entry.description,
-        id: `${result.boutId}-desc-${idx}`,
-        phase: entry.phase,
-      });
+      push(entry.description, entry.phase as PbpPhase);
     }
 
-    // 1.75D engagement narrative: tickPushBattle/tickBeltBattle emit "engagement"
-    // entries every NARRATIVE_TICK_CADENCE ticks, tagged with the combat family
-    // (push|belt), the attacking side, and the force/torque differential. Map the
-    // differential magnitude to a narrative intensity and resolve the matching
-    // combat.phases.engagement.<family> template.
+    // Engagement narrative — also derives clinch, momentum, and tactical phases
     if (entry.phase === "engagement" && typeof entry.data?.family === "string") {
       const family = entry.data.family as "push" | "belt" | "speed" | "trick";
       const attacker = entry.data.attackerSide === "west" ? west : east;
@@ -111,36 +198,118 @@ export function generateBoutNarrative(
         family === "belt"
           ? Math.abs((entry.data.torqueAdvantage as number) ?? 0)
           : Math.abs((entry.data.forceDiff as number) ?? 0);
-      // Force/torque differentials run roughly 0–40 on the stat scale; map onto 1–3.
-      const intensity = BardEngine.calculateIntensity(differential, [0, 40]);
+      const engIntensity = BardEngine.calculateIntensity(differential, [0, 40]);
+      const tick = (entry.data?.tick as number) ?? 0;
 
+      // 7a. Engagement line
       const res = BardEngine.resolve(rng, `combat.engagement.${family}`, {
         attacker: attacker.shikona,
         defender: defender.shikona,
-        intensity,
+        intensity: engIntensity,
+        attackerId: attacker.id,
+        defenderId: defender.id,
       });
-      if (res.text) {
-        pbpLines.push({ text: res.text, id: `${result.boutId}-eng-${idx}`, phase: "engagement" });
-      }
-    }
+      push(res.text, "engagement");
 
-    if (entry.phase === "tachiai") {
-      if (entry.data?.event === "henka_success") {
-        // Henka is a sidestep trick — narrate it from the trick engagement family.
-        const attacker = entry.data.attackerSide === "west" ? west : east;
-        const defender = entry.data.attackerSide === "west" ? east : west;
-        const res = BardEngine.resolve(rng, "combat.engagement.trick", {
+      // 7b. Clinch — emit once on first belt engagement
+      if (family === "belt" && !clinchEmitted) {
+        clinchEmitted = true;
+        const clinchRng = rngFromSeed(tickSeed, "pbp", "clinch");
+        const stance: Stance =
+          (entry.data?.stance as Stance) ?? "belt-dominant";
+        const clinchPath =
+          stance === "belt-dominant"
+            ? "combat.phases.clinch.belt"
+            : stance === "push-dominant"
+              ? "combat.phases.clinch.oshi"
+              : "combat.phases.clinch.belt";
+        const clinchRes = BardEngine.resolve(clinchRng, clinchPath, {
+          east: east.shikona,
+          west: west.shikona,
+          eastRikishiId: east.id,
+          westRikishiId: west.id,
+          intensity,
+        });
+        push(clinchRes.text, "clinch");
+      }
+
+      // 7c. Momentum — emit when differential is significant (every 4+ ticks to avoid spam)
+      if (differential > 25 && tick - lastMomentumTick >= 4) {
+        lastMomentumTick = tick;
+        const momRng = rngFromSeed(tickSeed, "pbp", "momentum");
+        const attackerIsWinner =
+          (entry.data.attackerSide === "east" && result.winner === "east") ||
+          (entry.data.attackerSide === "west" && result.winner === "west");
+        const recovery = !attackerIsWinner;
+        const momPath = recovery
+          ? "combat.phases.momentum.recovery"
+          : "combat.phases.momentum.pressure";
+        const winnerName = result.winner === "east" ? east.shikona : west.shikona;
+        const loserName = result.winner === "east" ? west.shikona : east.shikona;
+        const name = recovery ? loserName : winnerName;
+        const nameId = recovery
+          ? result.winner === "east"
+            ? west.id
+            : east.id
+          : result.winner === "east"
+            ? east.id
+            : west.id;
+        const momRes = BardEngine.resolve(momRng, momPath, {
+          name,
+          nameId,
+          east: east.shikona,
+          west: west.shikona,
+          eastRikishiId: east.id,
+          westRikishiId: west.id,
+          intensity,
+        });
+        push(momRes.text, "momentum");
+      }
+
+      // 7d. Tactical — emit on speed (lateral) or trick family engagements
+      if (family === "speed") {
+        const tacRng = rngFromSeed(tickSeed, "pbp", "tactical");
+        const lateralOffset = Math.abs((entry.data.lateralOffsetDiff as number) ?? 0);
+        const tacPath =
+          lateralOffset > 30
+            ? "combat.phases.tactical.rear_take"
+            : "combat.phases.tactical.lateral";
+        const tacRes = BardEngine.resolve(tacRng, tacPath, {
           attacker: attacker.shikona,
           defender: defender.shikona,
-          intensity: 3,
+          attackerId: attacker.id,
+          defenderId: defender.id,
+          east: east.shikona,
+          west: west.shikona,
           eastRikishiId: east.id,
           westRikishiId: west.id,
         });
-        if (res.text) {
-          pbpLines.push({ text: res.text, id: `${result.boutId}-henka`, phase: "tachiai" });
-        }
+        push(tacRes.text, "tactical");
+      } else if (family === "trick") {
+        const tacRng = rngFromSeed(tickSeed, "pbp", "tactical");
+        const tacRes = BardEngine.resolve(tacRng, "combat.phases.tactical.pull_attempt", {
+          attacker: attacker.shikona,
+          defender: defender.shikona,
+          attackerId: attacker.id,
+          defenderId: defender.id,
+        });
+        push(tacRes.text, "tactical");
+      }
+    }
+
+    // Tachiai
+    if (entry.phase === "tachiai") {
+      if (entry.data?.event === "henka_success") {
+        const attacker = entry.data.attackerSide === "west" ? west : east;
+        const defender = entry.data.attackerSide === "west" ? east : west;
+        const tacRes = BardEngine.resolve(rng, "combat.phases.tactical.henka", {
+          attacker: attacker.shikona,
+          defender: defender.shikona,
+          attackerId: attacker.id,
+          defenderId: defender.id,
+        });
+        push(tacRes.text, "tactical", ["henka"]);
       } else {
-        // The opening clash. Intensity scales with how decisive it was.
         const margin = (entry.data?.margin as number) ?? 0;
         const winnerSide = entry.data?.tachiaiWinner === "west" ? west : east;
         const loserSide = entry.data?.tachiaiWinner === "west" ? east : west;
@@ -156,17 +325,54 @@ export function generateBoutNarrative(
           winnerId: winnerSide.id,
           loserId: loserSide.id,
         });
-        if (res.text) {
-          pbpLines.push({
-            text: res.text,
-            id: `${result.boutId}-tachiai-${idx}`,
-            phase: "tachiai",
-          });
-        }
+        push(res.text, "tachiai");
       }
     }
 
-    // Edge crisis handling for B+ spatial system
+    // Clinch (from explicit log entries — rare, kept for compatibility)
+    if (entry.phase === "clinch") {
+      const stance = (entry.data?.stance as Stance) ?? "no-grip";
+      const path =
+        stance === "belt-dominant" ? "combat.phases.clinch.belt" : "combat.phases.clinch.oshi";
+      const res = BardEngine.resolve(rng, path, {
+        east: east.shikona,
+        west: west.shikona,
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+        intensity,
+      });
+      push(res.text, "clinch");
+    }
+
+    // Momentum (from explicit log entries — rare, kept for compatibility)
+    if (entry.phase === "momentum") {
+      const recovery = (entry.data?.recovery as boolean) ?? false;
+      const path = recovery
+        ? "combat.phases.momentum.recovery"
+        : "combat.phases.momentum.pressure";
+      const winnerName = result.winner === "east" ? east.shikona : west.shikona;
+      const loserName = result.winner === "east" ? west.shikona : east.shikona;
+      const name = recovery ? loserName : winnerName;
+      const nameId = recovery
+        ? result.winner === "east"
+          ? west.id
+          : east.id
+        : result.winner === "east"
+          ? east.id
+          : west.id;
+      const res = BardEngine.resolve(rng, path, {
+        name,
+        nameId,
+        east: east.shikona,
+        west: west.shikona,
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+        intensity,
+      });
+      push(res.text, "momentum");
+    }
+
+    // Edge crisis
     if (entry.phase === "edge_crisis") {
       const crisisData = entry.data as {
         side?: "east" | "west";
@@ -176,48 +382,49 @@ export function generateBoutNarrative(
         forced?: boolean;
       };
       const sideName = crisisData.side === "east" ? east.shikona : west.shikona;
+      const sideId = crisisData.side === "east" ? east.id : west.id;
       const toePos = crisisData.tawaraToePosition ?? 0;
 
       if (crisisData.escaped) {
-        // Fighter claws back from the brink
-        pbpLines.push({
-          text: BardEngine.resolve(rng, "combat.phases.edge_crisis.recovery", { NAME: sideName })
-            .text,
-          id: `${result.boutId}-edge-crisis-recovery-${idx}`,
-        });
+        push(
+          BardEngine.resolve(rng, "combat.phases.edge_crisis.recovery", {
+            NAME: sideName,
+            nameId: sideId,
+          }).text,
+          "edge_crisis"
+        );
       } else if (
         crisisData.forced ||
         (crisisData.recoveryProbability !== undefined && crisisData.recoveryProbability < 0.2)
       ) {
-        // forced: true — toe past 1.5, no return possible.
-        // Low recovery prob — bout ends here.
-        pbpLines.push({
-          text: BardEngine.resolve(rng, "combat.phases.edge_crisis.failure", { NAME: sideName })
-            .text,
-          id: `${result.boutId}-edge-crisis-failure-${idx}`,
-        });
-      } else if (toePos > 0.6) {
-        // Deep on the tawara — use the high-drama tawara_drama template
-        pbpLines.push({
-          text: BardEngine.resolve(rng, "combat.phases.edge_crisis.tawara_drama", {
+        push(
+          BardEngine.resolve(rng, "combat.phases.edge_crisis.failure", {
             NAME: sideName,
+            nameId: sideId,
           }).text,
-          id: `${result.boutId}-edge-crisis-drama-${idx}`,
-        });
+          "edge_crisis"
+        );
+      } else if (toePos > 0.6) {
+        push(
+          BardEngine.resolve(rng, "combat.phases.edge_crisis.tawara_drama", {
+            NAME: sideName,
+            nameId: sideId,
+          }).text,
+          "edge_crisis"
+        );
       } else {
-        // Standard edge approach — fighter just reached the tawara zone
-        pbpLines.push({
-          text: BardEngine.resolve(rng, "combat.phases.edge_crisis.approach", { NAME: sideName })
-            .text,
-          id: `${result.boutId}-edge-crisis-approach-${idx}`,
-        });
+        push(
+          BardEngine.resolve(rng, "combat.phases.edge_crisis.approach", {
+            NAME: sideName,
+            nameId: sideId,
+          }).text,
+          "edge_crisis"
+        );
       }
     }
   });
 
-  // 2b. Finishing technique — narrate the decisive kimarite (including the
-  // emergent 1.75D techniques such as utchari/tsukiotoshi/okuridashi) from its
-  // per-technique template, falling back to the generic finish line.
+  // 8. Finishing technique
   if (result.kimarite) {
     const finishRng = rngFromSeed(seed, "pbp", "finish");
     const winnerName = result.winner === "east" ? east.shikona : west.shikona;
@@ -235,25 +442,64 @@ export function generateBoutNarrative(
       eastRikishiId: east.id,
       westRikishiId: west.id,
     });
-    if (res.text) {
-      pbpLines.push({ text: res.text, id: `${result.boutId}-finish`, phase: "finish" });
-    }
+    push(res.text, "finish");
   }
 
-  // 3. Special Awards
+  // 9. Special Awards
   if (result.awardFact === "kinboshi" || result.awardFact === "ginboshi") {
     const awardRng = rngFromSeed(seed, "pbp", "award");
     const winnerName = result.winner === "east" ? east.shikona : west.shikona;
-    pbpLines.push({
-      text: BardEngine.resolve(awardRng, `combat.phases.finish.${result.awardFact}`, {
+    push(
+      BardEngine.resolve(awardRng, `combat.phases.finish.${result.awardFact}`, {
         winner: winnerName,
         winnerId: result.winner === "east" ? east.id : west.id,
       }).text,
-      id: `${result.boutId}-${result.awardFact}`,
-    });
+      "award",
+      [result.awardFact as PbpTag]
+    );
   }
 
-  result.pbpLines = pbpLines;
-  result.pbp = pbpLines.map((l) => l.text);
-  result.narrative = bashoName ? generateNarrative(east, west, result, bashoName, day) : [];
+  // 10. Ceremony — post-bout ritual (all voices, dramatic gets special templates)
+  if (result.kimarite && result.kimarite !== "fusensho") {
+    const ceremonyRng = rngFromSeed(seed, "pbp", "ceremony");
+    const winnerName = result.winner === "east" ? east.shikona : west.shikona;
+    const ceremonyPath =
+      ctx.voiceStyle === "dramatic"
+        ? "combat.phases.ceremony.dramatic"
+        : "combat.phases.ceremony.common";
+    push(
+      BardEngine.resolve(ceremonyRng, ceremonyPath, {
+        winner: winnerName,
+        winnerId: result.winner === "east" ? east.id : west.id,
+        east: east.shikona,
+        west: west.shikona,
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+      }).text,
+      "ceremony"
+    );
+  }
+
+  // 11. Closing line (dramatic voice only)
+  if (ctx.voiceStyle === "dramatic") {
+    const closingRng = rngFromSeed(seed, "pbp", "closing");
+    const winnerName = result.winner === "east" ? east.shikona : west.shikona;
+    const loserName = result.winner === "east" ? west.shikona : east.shikona;
+    push(
+      BardEngine.resolve(closingRng, "combat.phases.finish.dramatic", {
+        winner: winnerName,
+        loser: loserName,
+        east: east.shikona,
+        west: west.shikona,
+        winnerId: result.winner === "east" ? east.id : west.id,
+        loserId: result.winner === "east" ? west.id : east.id,
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+        intensity,
+      }).text,
+      "closing"
+    );
+  }
+
+  result.pbpLines = lines.length > 0 ? lines : undefined;
 }

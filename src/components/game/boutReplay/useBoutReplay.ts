@@ -9,7 +9,8 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import type { BoutResult } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/uiModels";
-import { getReplayPhaseDurations } from "@/engine/bout/ReplayMetadata";
+import { getReplayPhaseDurations, buildBoutScript } from "@/engine/bout/ReplayMetadata";
+import type { BoutScript } from "@/engine/bout/ReplayMetadata";
 import { SeededRNG } from "@/engine/rng";
 import {
   PHASES,
@@ -54,6 +55,22 @@ export function useBoutReplay(
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number | null>(null);
 
+  // HiDPI canvas setup — set backing store to CSS_W * dpr and scale context.
+  // Runs once on mount; all draw code uses CSS-pixel constants (800/500).
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const dpr = window.devicePixelRatio ?? 1;
+    const CSS_W = 800;
+    const CSS_H = 500;
+    canvas.width = CSS_W * dpr;
+    canvas.height = CSS_H * dpr;
+    canvas.style.width = `${CSS_W}px`;
+    canvas.style.height = `${CSS_H}px`;
+    const ctx = canvas.getContext("2d");
+    if (ctx) ctx.scale(dpr, dpr);
+  }, []);
+
   const [isPlaying, setIsPlaying] = useState(autoPlay);
   const [speed, setSpeed] = useState(1);
   const [uiPhase, setUiPhase] = useState<ReplayPhase>("ritual");
@@ -93,7 +110,11 @@ export function useBoutReplay(
   }, [isPlaying]);
 
   const winnerSide = result.winnerRikishiId === eastRikishi.id ? "east" : "west";
-  const phaseDurations = useMemo(() => getReplayPhaseDurations(result), [result]);
+  const boutScript = useMemo<BoutScript>(() => buildBoutScript(result), [result]);
+  const phaseDurations = useMemo(
+    () => getReplayPhaseDurations(result, boutScript),
+    [result, boutScript],
+  );
   const rng = useMemo(() => new SeededRNG(result.boutId || "seed"), [result.boutId]);
   const lines = useMemo(
     () => getNarrationLines(result, eastRikishi, westRikishi),
@@ -168,8 +189,8 @@ export function useBoutReplay(
         return;
       }
 
-      const W = canvas.width;
-      const H = canvas.height;
+      const W = 800;
+      const H = 500;
 
       if (!lastTimeRef.current) lastTimeRef.current = timestamp;
       const rawDelta = clamp(timestamp - lastTimeRef.current, 0, 100);
@@ -219,7 +240,7 @@ export function useBoutReplay(
       }
 
       // Update rikishi positions
-      const target = getTargetState(phaseRef.current, progressRef.current, winnerSide);
+      const target = getTargetState(phaseRef.current, progressRef.current, winnerSide, boutScript);
       const smooth = clamp(delta * 0.012, 0, 0.25);
       eastRef.current = lerpState(eastRef.current, target.east, smooth);
       westRef.current = lerpState(westRef.current, target.west, smooth);
@@ -305,6 +326,7 @@ export function useBoutReplay(
     phaseDurations,
     lines,
     winnerSide,
+    boutScript,
     result,
     eastRikishi,
     westRikishi,
@@ -320,8 +342,8 @@ export function useBoutReplay(
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    const W = canvas.width,
-      H = canvas.height;
+    const W = 800,
+      H = 500;
     drawDohyo(ctx, W, H, { x: 0, y: 0 });
     drawRikishi(ctx, westRef.current, W, H, "west", westRikishi, { x: 0, y: 0 });
     drawRikishi(ctx, eastRef.current, W, H, "east", eastRikishi, { x: 0, y: 0 });

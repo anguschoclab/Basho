@@ -447,7 +447,13 @@ export function resolveBout(
     result.awardFact = "kinboshi";
   }
 
-  // 2.5. Generate narrative based on data frames
+  // 2.5. Copy dramatic context from match schedule onto result
+  const match = basho.matches?.find((m) => m.boutId === result.boutId);
+  if (match?.dramaticContext) {
+    result.dramaticContext = match.dramaticContext;
+  }
+
+  // 2.6. Generate narrative based on data frames
   generateBoutNarrative(
     result,
     east,

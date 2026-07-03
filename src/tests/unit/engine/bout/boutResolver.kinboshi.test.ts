@@ -24,7 +24,7 @@ describe("detectKinboshi ordering and awardFact assignment", () => {
 
     expect(result.awardFact).toBe("kinboshi");
 
-    const awardLine = result.pbpLines?.find((l) => l.id.endsWith("-kinboshi"));
+    const awardLine = result.pbpLines?.find((l) => l.phase === "award" && l.tags?.includes("kinboshi"));
     expect(awardLine).toBeDefined();
     expect(awardLine!.text.length).toBeGreaterThan(0);
   });
@@ -39,7 +39,7 @@ describe("detectKinboshi ordering and awardFact assignment", () => {
 
     expect(result.awardFact).toBe("ginboshi");
 
-    const awardLine = result.pbpLines?.find((l) => l.id.endsWith("-ginboshi"));
+    const awardLine = result.pbpLines?.find((l) => l.phase === "award" && l.tags?.includes("ginboshi"));
     expect(awardLine).toBeDefined();
     expect(awardLine!.text.length).toBeGreaterThan(0);
   });

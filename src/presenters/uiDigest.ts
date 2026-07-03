@@ -90,7 +90,6 @@ export { formatRank, RANK_HIERARCHY, compareRanks } from "../engine/banzuke";
 export { formatStance, formatFinePenalty, formatEventTime } from "../engine/utils/formatters";
 export { HOF_CATEGORY_LABELS } from "../engine/hallOfFame";
 export { deleteSave, importSave } from "../engine/saveload";
-export { generateNarrative } from "../engine/narrative";
 export { getArchetypeDescription } from "../engine/oyakataPersonalities";
 export { getKimarite } from "../engine/kimarite";
 export { setScoutingInvestment } from "../engine/scoutingStore";

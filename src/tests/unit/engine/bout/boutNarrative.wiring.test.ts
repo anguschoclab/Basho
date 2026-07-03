@@ -86,7 +86,7 @@ describe("boutNarrative.wiring — narrative system is wired to the bout engine"
   // -------------------------------------------------------------------------
 
   describe("resolveBout generates narrative for healthy bouts", () => {
-    it("populates pbpLines, pbp, and narrative", () => {
+    it("populates pbpLines with phase and voice metadata", () => {
       const east = mockRikishi("r-east", { injured: false });
       const west = mockRikishi("r-west", { injured: false });
       const basho = makeMockBasho();
@@ -101,23 +101,14 @@ describe("boutNarrative.wiring — narrative system is wired to the bout engine"
         expect(line.text.length).toBeGreaterThan(0);
         expect(typeof line.id).toBe("string");
         expect(line.id.length).toBeGreaterThan(0);
-      }
-
-      expect(result.pbp).toBeDefined();
-      expect(result.pbp!.length).toBe(result.pbpLines!.length);
-      expect(result.pbp).toEqual(result.pbpLines!.map((l) => l.text));
-
-      expect(result.narrative).toBeDefined();
-      expect(result.narrative!.length).toBeGreaterThan(0);
-      for (const line of result.narrative!) {
-        expect(typeof line).toBe("string");
-        expect(line.length).toBeGreaterThan(0);
+        expect(line.phase).toBeDefined();
+        expect(line.voice).toBeDefined();
       }
     });
   });
 
   describe("resolveBout skips narrative for fusensho bouts", () => {
-    it("returns fusensho and leaves pbpLines / narrative undefined", () => {
+    it("returns fusensho and leaves pbpLines undefined", () => {
       const east = mockRikishi("r-east", { injured: false });
       const west = mockRikishi("r-west", { injured: true });
       const basho = makeMockBasho();
@@ -128,8 +119,6 @@ describe("boutNarrative.wiring — narrative system is wired to the bout engine"
       expect(result.kimarite).toBe("fusensho");
       expect(result.duration).toBe(0);
       expect(result.pbpLines).toBeUndefined();
-      expect(result.pbp).toBeUndefined();
-      expect(result.narrative).toBeUndefined();
     });
   });
 

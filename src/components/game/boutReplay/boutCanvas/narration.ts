@@ -5,14 +5,12 @@ import { PHASES } from "./constants";
 import { clamp } from "./math";
 
 export function getNarrationLines(result: BoutResult, east: UIRikishi, west: UIRikishi): string[] {
+  if (result.pbpLines && result.pbpLines.length > 0) {
+    return result.pbpLines.map((l) => l.text).filter((t) => t && t.length > 2);
+  }
+
   const winner = result.winnerRikishiId === east.id ? east : west;
   const loser = result.winnerRikishiId === east.id ? west : east;
-
-  const pbpTexts = (result.pbp || []).filter((t) => t && t.length > 2);
-  if (pbpTexts.length > 0) return pbpTexts;
-
-  const narTexts = (result.narrative || []).filter((t) => t && t.length > 2);
-  if (narTexts.length > 0) return narTexts;
 
   const lines: string[] = [
     `${east.shikona} (East) faces ${west.shikona} (West).`,

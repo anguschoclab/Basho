@@ -83,7 +83,7 @@ describe("boutNarrative generates entity link markup", () => {
       world
     );
 
-    const finishLine = result.pbpLines?.find((l) => l.id.endsWith("-finish"));
+    const finishLine = result.pbpLines?.find((l) => l.phase === "finish");
     expect(finishLine).toBeDefined();
     expect(finishLine!.text).toMatch(/\[\[rikishi:/);
   });
