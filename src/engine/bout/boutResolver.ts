@@ -226,6 +226,7 @@ function detectKinboshi(
   ) {
     winnerAchievements.ginboshiEarned++;
     loserAchievements.ginboshiConceded++;
+    result.awardFact = "ginboshi";
   }
 
   return { winnerAchievements, loserAchievements, kinboshiDelta };
@@ -433,18 +434,9 @@ export function resolveBout(
 
   const bashoName = (basho.bashoName ?? basho.name) as BashoName | undefined;
 
-  // 2. Generate narrative based on data frames
-  generateBoutNarrative(
-    result,
-    east,
-    west,
-    bashoName,
-    bout.day,
-    `${result.boutId}-pbp`,
-    world || ({} as WorldState)
-  );
-
-  // 2.5. Achievement Detection (Gold & Silver Stars - v2)
+  // 2. Achievement Detection (Gold & Silver Stars - v2)
+  // Must run BEFORE generateBoutNarrative so awardFact is set when
+  // the narrative generator checks for kinboshi/ginboshi award lines.
   const { winnerAchievements, loserAchievements, kinboshiDelta } = detectKinboshi(
     result,
     winner,
@@ -454,6 +446,17 @@ export function resolveBout(
   if (kinboshiDelta) {
     result.awardFact = "kinboshi";
   }
+
+  // 2.5. Generate narrative based on data frames
+  generateBoutNarrative(
+    result,
+    east,
+    west,
+    bashoName,
+    bout.day,
+    `${result.boutId}-pbp`,
+    world || ({} as WorldState)
+  );
 
   // Update achievements via StateImpact
   builder.updateRikishi(winner.id, {

@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ChevronRight, Swords, Trophy } from "lucide-react";
 import { MentorOverlay, type MentorStep } from "./MentorOverlay";
+import { PbpLineText } from "@/components/game/PbpLineText";
 import { cn } from "@/lib/utils";
 
 const MENTOR_SEQUENCE: MentorStep[] = ["stamina", "grip", "momentum", "basho_record"];
@@ -185,7 +186,7 @@ export function ExhibitionBout({ onComplete }: ExhibitionBoutProps) {
               i === revealedCount - 1 ? "text-foreground font-medium" : "text-muted-foreground"
             )}
           >
-            {typeof line === "string" ? line : line.text}
+            <PbpLineText text={typeof line === "string" ? line : line.text} />
           </div>
         ))}
         {revealedCount === 0 && (

@@ -750,11 +750,15 @@
           ],
           "kinboshi": [
             "A historic kinboshi! The arena erupts into chaos as a rain of purple zabuton floods the dohyo!",
-            "The Maegashira has toppled the Yokozuna! A golden star is born today."
+            "The Maegashira has toppled the Yokozuna! A golden star is born today.",
+            "Zabuton rain from the second tier! %WINNER% has struck gold against the Yokozuna!",
+            "An epoch-making kinboshi! The crowd surges to its feet as the Maegashira fells the giant!"
           ],
           "ginboshi": [
             "An upset for the ages! The Maegashira has taken a silver star from the Ozeki!",
-            "Institutional shock! %WINNER% overcomes the Ozeki with a stunning performance."
+            "Institutional shock! %WINNER% overcomes the Ozeki with a stunning performance.",
+            "A silver star shines! %WINNER% breaks through the Ozeki's defense in a bout no one saw coming.",
+            "The Ozeki is stunned! %WINNER% claims a ginboshi and the crowd roars its approval."
           ]
         },
         "drama": {
@@ -1039,6 +1043,122 @@
         "hansoku": [
           "The shinpan are signaling a foul! It appears %LOSER% made illegal contact with the topknot of his opponent. A disqualification is called, and %WINNER% is awarded the win by hansoku.",
           "A rare and dramatic end to this bout. The judges have ruled that %LOSER% used a prohibited technique, resulting in an immediate loss. %WINNER% takes the match via hansoku."
+        ],
+        "uwatenage": [
+          "%WINNER% gets the outside belt grip and swings %LOSER% to the clay with a powerful uwatenage!",
+          "A textbook outer-belt throw! %WINNER% hoists %LOSER% by the mawashi and sends him flying with uwatenage."
+        ],
+        "sukuinage": [
+          "%WINNER% reaches under the arm and scoops %LOSER% off his feet — a sukuinage beltless armthrow finish!",
+          "No belt grip needed! %WINNER% scoops %LOSER% upward and pitches him to the dohyo with sukuinage."
+        ],
+        "shitatenage": [
+          "The inside belt grip pays off! %WINNER% rotates and throws %LOSER% with a crisp shitatenage.",
+          "%WINNER% secures the underhand grip and pivots, launching %LOSER% with an inside belt throw."
+        ],
+        "kotenage": [
+          "%WINNER% locks the arm and twists! A devastating kotenage armlock throw sends %LOSER% crashing down.",
+          "The armlock throw is locked in! %WINNER% uses kotenage to wrench %LOSER% to the clay."
+        ],
+        "shitatedashinage": [
+          "Without even stepping back, %WINNER% lifts from the inside grip and flings %LOSER% sideways — shitatedashinage!",
+          "A dynamic inside belt lift-and-throw! %WINNER% executes shitatedashinage to perfection, and %LOSER% is airborne."
+        ],
+        "kimedashi": [
+          "%WINNER% pins both arms and drives %LOSER% out! The official call is kimedashi — arm-bar force-out.",
+          "Both arms locked! %WINNER% marches %LOSER% straight out of the ring with kimedashi."
+        ],
+        "kimetaoshi": [
+          "Before the bout even develops, %WINNER% clamps down on both arms and topples %LOSER% — kimetaoshi!",
+          "A sudden arm-bar force-down! %WINNER% ends it instantly with kimetaoshi."
+        ],
+        "uwatehineri": [
+          "%WINNER% twists from the outer belt grip and sends %LOSER% tumbling — uwatehineri!",
+          "A masterful outer-belt twist-down! %WINNER% uses uwatehineri to spin %LOSER% to the clay."
+        ],
+        "kotehineri": [
+          "%WINNER% grabs the elbow and twists! The arm-twist throw, kotehineri, puts %LOSER% on the sand.",
+          "A rare arm-twist technique! %WINNER% wrenches %LOSER% down with kotehineri."
+        ],
+        "amiuchi": [
+          "Like casting a fishing net! %WINNER% hooks both arms and pulls %LOSER% forward and down — amiuchi!",
+          "The net-throwing technique! %WINNER% ensnares %LOSER% with amiuchi and drags him to the clay."
+        ],
+        "kainahineri": [
+          "%WINNER% gets under the arm and twists! A kainahineri shoulder-twist throw sends %LOSER% sprawling.",
+          "The underarm twist! %WINNER% uses kainahineri to spin %LOSER% off balance and onto the clay."
+        ],
+        "zubuneri": [
+          "%WINNER% ducks low and uses the back of his neck to flip %LOSER% — a zubuneri head pivot throw!",
+          "A stunning zubuneri! %WINNER% pivots %LOSER% over his head and onto the clay."
+        ],
+        "sakatottari": [
+          "%WINNER% reverses the arm-bar and sends %LOSER% toppling backward — sakatottari!",
+          "A counter arm-bar throw! %WINNER% uses sakatottari to flip %LOSER% onto his back."
+        ],
+        "kubiotoshi": [
+          "Incredible! %WINNER% pulls %LOSER% by the neck and sends him stumbling to the clay — kubiotoshi!",
+          "A rare neck-pull drop! %WINNER% executes kubiotoshi and %LOSER% falls forward in defeat."
+        ],
+        "gasshohineri": [
+          "Both hands clasp and twist! %WINNER% uses gasshohineri to throw %LOSER% to the sand.",
+          "A clasped-hand twist-down! %WINNER% employs gasshohineri to send %LOSER% crashing."
+        ],
+        "harimanage": [
+          "%WINNER% reaches behind the back and throws! A spectacular harimanage belly-throw sends %LOSER% flying!",
+          "The behind-the-back throw! %WINNER% uses harimanage to upend %LOSER% in stunning fashion."
+        ],
+        "osakate": [
+          "%WINNER% grabs the back of the thigh and lifts! An osakate thigh-grab throw topples %LOSER%.",
+          "The thigh-grab throw! %WINNER% employs osakate to hoist %LOSER% and send him to the clay."
+        ],
+        "sabaori": [
+          "%WINNER% forces %LOSER% forward, then drops — a sabaori forward-force-down ends the bout!",
+          "The bent-forward force-down! %WINNER% uses sabaori to collapse %LOSER% onto the clay."
+        ],
+        "tokkurinage": [
+          "%WINNER% grabs the head and twists! A tokkurinage head-twist throw sends %LOSER% to the sand.",
+          "The bottle-throw technique! %WINNER% uses tokkurinage to spin %LOSER% down by the head."
+        ],
+        "makiotoshi": [
+          "%WINNER% wraps %LOSER% up and twists him down — makiotoshi, the wrap-around throw!",
+          "The wrap-around throw! %WINNER% uses makiotoshi to coil around %LOSER% and drag him to the clay."
+        ],
+        "uchimuso": [
+          "%WINNER% strikes the inner thigh and throws! An uchimuso inner-thigh throw sends %LOSER% sprawling.",
+          "The inner-thigh throw! %WINNER% uses uchimuso to upend %LOSER% with a sharp leg action."
+        ],
+        "sotomuso": [
+          "%WINNER% strikes the outer thigh and twists! A sotomuso outer-thigh throw topples %LOSER%.",
+          "The outer-thigh throw! %WINNER% employs sotomuso to send %LOSER% tumbling to the clay."
+        ],
+        "ashitori": [
+          "%WINNER% grabs the ankle and lifts! A simple but effective ashitori leg-grab sends %LOSER% off balance.",
+          "The leg-grab! %WINNER% snatches %LOSER%'s foot and forces him down with ashitori."
+        ],
+        "sotogake": [
+          "%WINNER% hooks the outside leg and trips! A sotogake outer-leg trip sends %LOSER% to the clay.",
+          "The outer-leg trip! %WINNER% uses sotogake to sweep %LOSER% off his feet."
+        ],
+        "uchigake": [
+          "%WINNER% hooks the inside leg and drives! An uchigake inner-leg trip topples %LOSER%.",
+          "The inner-leg trip! %WINNER% uses uchigake to hook %LOSER%'s leg and send him down."
+        ],
+        "ketaguri": [
+          "%WINNER% reaches down and pulls the ankle from the outside — ketaguri, the ankle-pull kick-down!",
+          "A swift ankle pull! %WINNER% uses ketaguri to upend %LOSER% before he can react."
+        ],
+        "isamiashi": [
+          "%LOSER% steps over the straw bales in the heat of battle! %WINNER% is awarded the win by isamiashi.",
+          "An involuntary forward step-out! %LOSER% crosses the tawara and the bout goes to %WINNER% via isamiashi."
+        ],
+        "koshikudake": [
+          "%LOSER%'s hips give way and he collapses to the clay! %WINNER% wins by koshikudake, a hip-collapse defeat.",
+          "A sudden loss of balance! %LOSER% buckles at the hips and falls. The call is koshikudake for %WINNER%."
+        ],
+        "tsukite": [
+          "%LOSER%'s hand touches the clay before any offensive move is completed! %WINNER% wins by tsukite.",
+          "A hand-touch-down! %LOSER% loses his balance and his palm hits the dohyo. Tsukite is the call."
         ]
       },
       "engagement": {
@@ -1182,13 +1302,110 @@
           "Regulatory Pressure Lifted for %HEYANAME%",
           "Heya Restored to Full Compliance Status"
         ]
-      }
+      },
+      "governance": {
+        "scandal": [
+          "Scandal Rocks %HEYA%: Authorities Investigate",
+          "Controversy Erupts as %HEYA% Faces Allegations",
+          "Governance Storm: %HEYA% Under Scrutiny"
+        ],
+        "status_escalation": [
+          "Crisis Deepens at %HEYA%: Regulatory Status Escalates",
+          "%HEYA% Governance Worsens — Officials Intervene",
+          "Escalation at %HEYA%: The Situation Deteriorates"
+        ],
+        "low_roster_headline": [
+          "Roster Crisis at %HEYA%: Too Few Rikishi to Sustain Operations",
+          "%HEYA% Faces Existential Threat as Ranks Dwindle",
+          "Governance Warning: %HEYA% Cannot Maintain Minimum Roster"
+        ],
+        "welfare_headline": [
+          "Welfare Concerns Mount at %HEYA%",
+          "%HEYA% Under Review for Wrestler Welfare Standards",
+          "Officials Cite %HEYA% for Welfare Violations"
+        ],
+        "sanction": [
+          "Sanctions Levied Against %HEYA% by the Association",
+          "%HEYA% Penalized: Fines and Restrictions Imposed",
+          "Disciplinary Action: %HEYA% Faces Official Sanctions"
+        ],
+        "probation": [
+          "%HEYA% Placed on Probation Pending Review",
+          "Probation Ordered for %HEYA%: Recruitment Frozen",
+          "Association Puts %HEYA% on Notice with Probation"
+        ],
+        "naturalization_headline": [
+          "New Era at %HEYA%: Foreign Rikishi Seeks Naturalization",
+          "%HEYA% Embraces Change as Wrestler Pursues Japanese Citizenship",
+          "Historic Step: %HEYA% Rikishi Applies for Naturalization"
+        ],
+        "emergency_loan": [
+          "Financial Emergency: %HEYA% Receives Association Bailout",
+          "%HEYA% Bailed Out by Emergency Loan from Headquarters",
+          "Crisis Funding: %HEYA% Kept Afloat by Emergency Assistance"
+        ]
+      },
+      "merger": {
+        "approved": [
+          "Merger Approved: %HEYA% Joins Forces with New Leadership",
+          "%HEYA% Merger Finalized — A New Chapter Begins",
+          "Association Sanctions Merger Involving %HEYA%"
+        ]
+      },
+      "kensho_sponsors": [
+        "Mitsubishi Corporation",
+        "Ito En Ltd.",
+        "Japan Tobacco Inc.",
+        "Suntory Holdings",
+        "Kikkoman Corporation",
+        "Asahi Breweries",
+        "Nippon Telegraph and Telephone",
+        "Sumitomo Bank",
+        "Toyota Motor Corporation",
+        "Nippon Life Insurance"
+      ]
     },
     "world": {
       "venues": {
         "Tokyo": {
           "entrance": "Day %DAY% at the Ryogoku Kokugikan.",
           "closing": "The sun sets over the Sumida River as the fans depart."
+        },
+        "Osaka": {
+          "entrance": [
+            "Day %DAY% at the Edion Arena Osaka — the spring basho is underway.",
+            "The Osaka crowd fills the seats for Day %DAY% of the Haru Basho.",
+            "Springtime in Osaka! Day %DAY% begins at the Edion Arena.",
+            "A packed house in Osaka for Day %DAY% of the tournament."
+          ],
+          "closing": [
+            "The Osaka crowd files out into the spring evening.",
+            "Edion Arena falls quiet as another day of sumo concludes."
+          ]
+        },
+        "Nagoya": {
+          "entrance": [
+            "Day %DAY% at the Aichi Prefectural Gymnasium — the Nagoya Basho begins.",
+            "The Nagoya faithful gather for Day %DAY% of the July tournament.",
+            "Summer heat in Nagoya! Day %DAY% kicks off at the Dolphins Arena.",
+            "Aichi Prefectural Gymnasium roars to life for Day %DAY%."
+          ],
+          "closing": [
+            "The Nagoya crowd departs into the humid summer night.",
+            "Another day ends at the Dolphins Arena in Nagoya."
+          ]
+        },
+        "Fukuoka": {
+          "entrance": [
+            "Day %DAY% at the Fukuoka Kokusai Center — the Kyushu Basho is here.",
+            "The Fukuoka crowd settles in for Day %DAY% of the November tournament.",
+            "Autumn in Kyushu! Day %DAY% begins at the Kokusai Center.",
+            "A warm welcome in Fukuoka for Day %DAY% of the basho."
+          ],
+          "closing": [
+            "The Fukuoka crowd disperses into the cool November evening.",
+            "Kokusai Center goes dark as Day %DAY% concludes in Kyushu."
+          ]
         }
       },
       "seasonal": {

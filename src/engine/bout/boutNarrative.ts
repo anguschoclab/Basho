@@ -57,6 +57,8 @@ export function generateBoutNarrative(
     const dramaRes = BardEngine.resolve(dramaRng, dramaPath, {
       east: east.shikona,
       west: west.shikona,
+      eastRikishiId: east.id,
+      westRikishiId: west.id,
     });
     pbpLines.push({
       text: dramaRes.text,
@@ -72,6 +74,8 @@ export function generateBoutNarrative(
       text: BardEngine.resolve(ritualRng, "combat.phases.ritual.entrance", {
         east: east.shikona,
         west: west.shikona,
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
       }).text,
       id: `${result.boutId}-ritual-1`,
     });
@@ -129,6 +133,8 @@ export function generateBoutNarrative(
           attacker: attacker.shikona,
           defender: defender.shikona,
           intensity: 3,
+          eastRikishiId: east.id,
+          westRikishiId: west.id,
         });
         if (res.text) {
           pbpLines.push({ text: res.text, id: `${result.boutId}-henka`, phase: "tachiai" });
@@ -145,6 +151,10 @@ export function generateBoutNarrative(
           attacker: winnerSide.shikona,
           defender: loserSide.shikona,
           intensity: BardEngine.calculateIntensity(margin, [0, 30]),
+          eastRikishiId: east.id,
+          westRikishiId: west.id,
+          winnerId: winnerSide.id,
+          loserId: loserSide.id,
         });
         if (res.text) {
           pbpLines.push({
@@ -220,6 +230,10 @@ export function generateBoutNarrative(
       kimarite: result.kimariteName ?? result.kimarite,
       east: east.shikona,
       west: west.shikona,
+      winnerId: result.winner === "east" ? east.id : west.id,
+      loserId: result.winner === "east" ? west.id : east.id,
+      eastRikishiId: east.id,
+      westRikishiId: west.id,
     });
     if (res.text) {
       pbpLines.push({ text: res.text, id: `${result.boutId}-finish`, phase: "finish" });
@@ -231,8 +245,9 @@ export function generateBoutNarrative(
     const awardRng = rngFromSeed(seed, "pbp", "award");
     const winnerName = result.winner === "east" ? east.shikona : west.shikona;
     pbpLines.push({
-      text: BardEngine.resolve(awardRng, `combat.finish.${result.awardFact}`, {
+      text: BardEngine.resolve(awardRng, `combat.phases.finish.${result.awardFact}`, {
         winner: winnerName,
+        winnerId: result.winner === "east" ? east.id : west.id,
       }).text,
       id: `${result.boutId}-${result.awardFact}`,
     });

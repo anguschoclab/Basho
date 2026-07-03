@@ -20,6 +20,7 @@ import { RotateCcw, MessageSquareText, BookOpen, Terminal } from "lucide-react";
 import { generateNarrative } from "@/presenters/uiDigest";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 import { useGame } from "@/contexts/GameContext";
+import { PbpLineText } from "./PbpLineText";
 
 const PHASE_STYLE: Record<string, { label: string; color: string; bg: string }> = {
   tactical: { label: "策略", color: "text-primary", bg: "bg-primary/10 border-primary/20" },
@@ -221,7 +222,7 @@ export function BoutNarrativeModal({
                             {style.label}
                           </Badge>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm leading-relaxed">{line.text}</p>
+                            <PbpLineText text={line.text} className="text-sm leading-relaxed" />
                             {tags.length > 0 && (
                               <div className="flex gap-1.5 mt-0.5 flex-wrap">
                                 {tags.map((tag) => (
