@@ -16,6 +16,7 @@ import { SIMULATION_CONFIG } from "../core/SimulationConfig";
 import type { SpecialPrizesResult } from "../banzuke/specialPrizes";
 import { historyCache } from "../historyCache";
 import { getRikishi } from "../queries";
+import { selectKeyBouts } from "../../presenters/projections/recapProjections";
 
 export function recordBashoHistory(
   world: WorldState,
@@ -112,6 +113,18 @@ export function recordBashoHistory(
     }
   }
   if (boutOfTheBasho) result.boutOfTheBasho = boutOfTheBasho;
+
+  // Persist curated highlight bouts for the recap screen
+  const keyMoments = selectKeyBouts(world);
+  if (keyMoments.length > 0) {
+    result.keyBouts = keyMoments.map((m) => ({
+      label: m.label,
+      bout: m.bout,
+      day: m.day,
+      eastRikishiId: m.eastRikishiId,
+      westRikishiId: m.westRikishiId,
+    }));
+  }
 
   builder.appendToWorldArray("history", [result]);
 

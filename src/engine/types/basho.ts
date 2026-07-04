@@ -200,6 +200,15 @@ export interface AwardLogEntry {
   excitementScore?: number;
 }
 
+/** A curated highlight bout entry persisted in BashoResult.keyBouts. */
+export interface KeyBoutEntry {
+  label: "yusho_decider" | "biggest_upset" | "kinboshi";
+  bout: BoutResult;
+  day: number;
+  eastRikishiId: string;
+  westRikishiId: string;
+}
+
 /** Defines the structure for basho result. */
 export interface BashoResult {
   id: string;
@@ -217,6 +226,9 @@ export interface BashoResult {
 
   /** Bout ID of the most exciting bout this basho (highest excitementScore). */
   boutOfTheBasho?: string;
+
+  /** Curated highlight bouts from this basho (yusho decider, upsets, kinboshi). */
+  keyBouts?: KeyBoutEntry[];
 
   playoffMatches?: MatchSchedule[];
 

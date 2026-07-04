@@ -145,7 +145,12 @@
       "Bash(mv \"C:\\\\Users\\\\amauricia\\\\documents\\\\github\\\\basho\\\\docs\\\\plan-02-fix-narrative-failures.md\" \"C:\\\\Users\\\\amauricia\\\\Documents\\\\GitHub\\\\Basho\\\\docs\\\\superpowers\\\\plans\\\\2026-07-03-02-fix-narrative-failures.md\")",
       "Bash(mv \"C:\\\\Users\\\\amauricia\\\\documents\\\\github\\\\basho\\\\docs\\\\plan-03-kimarite-animation-variants.md\" \"C:\\\\Users\\\\amauricia\\\\Documents\\\\GitHub\\\\Basho\\\\docs\\\\superpowers\\\\plans\\\\2026-07-03-03-kimarite-animation-variants.md\")",
       "Bash(mv \"C:\\\\Users\\\\amauricia\\\\documents\\\\github\\\\basho\\\\docs\\\\plan-04-synchronized-pbp-timeline.md\" \"C:\\\\Users\\\\amauricia\\\\Documents\\\\GitHub\\\\Basho\\\\docs\\\\superpowers\\\\plans\\\\2026-07-03-04-synchronized-pbp-timeline.md\")",
-      "Bash(mv \"C:\\\\Users\\\\amauricia\\\\documents\\\\github\\\\basho\\\\docs\\\\plan-05-bout-of-the-basho-highlight-reel.md\" \"C:\\\\Users\\\\amauricia\\\\Documents\\\\GitHub\\\\Basho\\\\docs\\\\superpowers\\\\plans\\\\2026-07-03-05-bout-of-the-basho-highlight-reel.md\")"
+      "Bash(mv \"C:\\\\Users\\\\amauricia\\\\documents\\\\github\\\\basho\\\\docs\\\\plan-05-bout-of-the-basho-highlight-reel.md\" \"C:\\\\Users\\\\amauricia\\\\Documents\\\\GitHub\\\\Basho\\\\docs\\\\superpowers\\\\plans\\\\2026-07-03-05-bout-of-the-basho-highlight-reel.md\")",
+      "Skill(run)",
+      "PowerShell(cd \"C:\\\\Users\\\\amauricia\\\\Documents\\\\GitHub\\\\Basho\"; Start-Process -FilePath \"bun\" -ArgumentList \"run dev\" -WindowStyle Hidden -PassThru | ForEach-Object { $_.Id })",
+      "Bash(bunx playwright *)",
+      "Bash(bunx ts-node *)",
+      "Bash(npx playwright *)"
     ]
   },
   "outputStyle": "default"

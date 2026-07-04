@@ -1,6 +1,36 @@
-import type { ReplayPhase, RikishiState } from "./types";
-import type { BoutScript } from "@/engine/bout/ReplayMetadata";
+import type { ReplayPhase, RikishiState, BodyPhase } from "./types";
+import type { BoutScript, BoutAnimationFamily } from "@/engine/bout/ReplayMetadata";
 import { lerp, easeOut, easeInOut } from "./math";
+
+export function computeArcProgress(
+  finishProgress: number,
+  family: BoutAnimationFamily,
+): number {
+  if (family !== "throw" && family !== "lift") return 0;
+  return Math.min(1, finishProgress / 0.7);
+}
+
+export function computeArcHeight(
+  arcProgress: number,
+  family: BoutAnimationFamily,
+): number {
+  if (family !== "throw" && family !== "lift") return 0;
+  const peak = family === "throw" ? 0.12 : 0.06;
+  return Math.sin(arcProgress * Math.PI) * peak;
+}
+
+export function getLoserBodyPhase(family: BoutAnimationFamily): BodyPhase {
+  return family === "throw" || family === "pull" || family === "lift"
+    ? "thrown"
+    : "falling";
+}
+
+export function getWinnerBodyPhase(family: BoutAnimationFamily): BodyPhase {
+  if (family === "force_out" || family === "throw" || family === "lift")
+    return "gripping";
+  if (family === "pull") return "pushing";
+  return "throwing";
+}
 
 export function getTargetState(
   phase: ReplayPhase,
@@ -112,6 +142,10 @@ export function getTargetState(
       // Family-specific loser trajectories. Winner pose stays similar;
       // loser position/rotation/scale varies by animation family.
       const f = script.family;
+      const loserPhase = getLoserBodyPhase(f);
+      const winnerPhase = getWinnerBodyPhase(f);
+      const loserArcHeight = f === "throw" ? 0.12 : f === "lift" ? 0.06 : undefined;
+      const loserArcProgress = loserArcHeight != null ? 1.0 : undefined;
       if (winnerSide === "east") {
         // Loser (west) family-specific end positions
         const loserEndX =
@@ -144,15 +178,17 @@ export function getTargetState(
             pos: { x: lerp(0.53, winnerEndX, p), y: lerp(0.5, 0.49, p) },
             rotation: winnerRot,
             scale: f === "lift" ? lerp(1.16, 1.22, p) : 1.16,
-            bodyPhase: f === "pull" ? "pushing" : "throwing",
+            bodyPhase: winnerPhase,
             opacity: 1,
           },
           west: {
             pos: { x: lerp(0.67, loserEndX, p), y: lerp(0.52, loserEndY, p) },
             rotation: lerp(-18, loserEndRot, p),
             scale: lerp(0.96, loserEndScale, p),
-            bodyPhase: "falling",
+            bodyPhase: loserPhase,
             opacity: lerp(1, 0.75, p),
+            arcHeight: loserArcHeight,
+            arcProgress: loserArcProgress,
           },
         };
       }
@@ -186,14 +222,16 @@ export function getTargetState(
           pos: { x: lerp(0.33, loserEndX, p), y: lerp(0.52, loserEndY, p) },
           rotation: lerp(18, loserEndRot, p),
           scale: lerp(0.96, loserEndScale, p),
-          bodyPhase: "falling",
+          bodyPhase: loserPhase,
           opacity: lerp(1, 0.75, p),
+          arcHeight: loserArcHeight,
+          arcProgress: loserArcProgress,
         },
         west: {
           pos: { x: lerp(0.47, winnerEndX, p), y: lerp(0.5, 0.49, p) },
           rotation: winnerRot,
           scale: f === "lift" ? lerp(1.16, 1.22, p) : 1.16,
-          bodyPhase: f === "pull" ? "pushing" : "throwing",
+          bodyPhase: winnerPhase,
           opacity: 1,
         },
       };
@@ -260,6 +298,14 @@ export function lerpState(a: RikishiState, b: RikishiState, t: number): RikishiS
     scale: lerp(a.scale, b.scale, t),
     bodyPhase: t > 0.5 ? b.bodyPhase : a.bodyPhase,
     opacity: lerp(a.opacity, b.opacity, t),
+    arcHeight:
+      a.arcHeight != null && b.arcHeight != null
+        ? lerp(a.arcHeight, b.arcHeight, t)
+        : b.arcHeight,
+    arcProgress:
+      a.arcProgress != null && b.arcProgress != null
+        ? lerp(a.arcProgress, b.arcProgress, t)
+        : b.arcProgress,
   };
 }
 

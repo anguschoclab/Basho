@@ -1,5 +1,6 @@
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { RikishiState, Particle, ReplayPhase } from "./types";
+import type { BoutAnimationFamily } from "@/engine/bout/ReplayMetadata";
 import { clamp } from "./math";
 
 export function drawDohyo(
@@ -101,10 +102,17 @@ export function drawRikishi(
   H: number,
   side: "east" | "west",
   rikishi: UIRikishi,
-  shake: { x: number; y: number }
+  shake: { x: number; y: number },
+  family?: BoutAnimationFamily,
+  isLoser?: boolean,
 ) {
   const px = state.pos.x * W + shake.x;
-  const py = state.pos.y * H + shake.y;
+  let py = state.pos.y * H + shake.y;
+
+  if (state.arcProgress != null && state.arcHeight != null) {
+    py -= Math.sin(state.arcProgress * Math.PI) * state.arcHeight * H;
+  }
+
   const S = 26 * state.scale;
 
   ctx.save();
@@ -160,6 +168,21 @@ export function drawRikishi(
       rArmAng = isEast ? 20 : -55;
       legSpread = S * 0.45;
       break;
+    case "thrown":
+      legSpread = S * 0.28;
+      bdy = S * 0.05;
+      lArmAng = isEast ? -60 : 60;
+      rArmAng = isEast ? -60 : 60;
+      break;
+    case "gripping":
+      bdx = isEast ? S * 0.16 : -S * 0.16;
+      bdy = S * 0.08;
+      lArmAng = isEast ? 40 : -40;
+      rArmAng = isEast ? 30 : -30;
+      legSpread = S * 0.5;
+      lLegAng = 12;
+      rLegAng = -12;
+      break;
     case "falling":
       legSpread = S * 0.3;
       bdy = S * 0.1;
@@ -171,6 +194,22 @@ export function drawRikishi(
       break;
     default:
       legSpread = S * 0.38;
+  }
+
+  // Family-specific pose overlays for thrown/falling losers and gripping winners
+  if (family && isLoser && (state.bodyPhase === "thrown" || state.bodyPhase === "falling")) {
+    if (family === "pull") {
+      lArmAng = isEast ? 50 : -50;
+      rArmAng = isEast ? 50 : -50;
+    }
+    if (family === "lift") {
+      legSpread = S * 0.22;
+      bdy = S * 0.18;
+    }
+  }
+  if (family === "force_out" && !isLoser && state.bodyPhase === "gripping") {
+    lArmAng = isEast ? 50 : -50;
+    rArmAng = isEast ? 38 : -38;
   }
 
   ctx.fillStyle = "rgba(0,0,0,0.18)";
@@ -284,7 +323,7 @@ export function drawRikishi(
   ctx.arc(bdx + S * 0.1, bdy - S * 0.82, S * 0.055, 0, Math.PI * 2);
   ctx.fill();
 
-  if (state.bodyPhase === "falling") {
+  if (state.bodyPhase === "falling" || state.bodyPhase === "thrown") {
     ctx.strokeStyle = "rgba(40,20,5,0.5)";
     ctx.lineWidth = 1.5;
     ctx.beginPath();

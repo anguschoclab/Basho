@@ -1,12 +1,18 @@
 // BoutReplayViewer.tsx — 2D bout visualizer (composition root)
 // Canvas rendering, animation state, and controls are in boutReplay/.
 
+import { forwardRef, useImperativeHandle } from "react";
 import { cn } from "@/lib/utils";
 import type { BoutResult } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { PHASE_LABELS, CROWD_TEXT } from "./boutReplay/boutCanvas";
 import { useBoutReplay } from "./boutReplay/useBoutReplay";
+import type { BoutReplayProgress } from "./boutReplay/useBoutReplay";
 import { BoutControls } from "./boutReplay/BoutControls";
+
+export interface BoutReplayViewerHandle {
+  seekTo: (progress: number) => void;
+}
 
 interface BoutReplayViewerProps {
   result: BoutResult;
@@ -15,31 +21,39 @@ interface BoutReplayViewerProps {
   className?: string;
   autoPlay?: boolean;
   onComplete?: () => void;
+  onProgressUpdate?: (progress: BoutReplayProgress) => void;
 }
 
-export function BoutReplayViewer({
-  result,
-  eastRikishi,
-  westRikishi,
-  className,
-  autoPlay = false,
-  onComplete,
-}: BoutReplayViewerProps) {
-  const {
-    canvasRef,
-    isPlaying,
-    setIsPlaying,
-    speed,
-    setSpeed,
-    uiPhase,
-    narration,
-    overallPct,
-    reset,
-  } = useBoutReplay(result, eastRikishi, westRikishi, autoPlay, onComplete);
+export const BoutReplayViewer = forwardRef<BoutReplayViewerHandle, BoutReplayViewerProps>(
+  function BoutReplayViewer({
+    result,
+    eastRikishi,
+    westRikishi,
+    className,
+    autoPlay = false,
+    onComplete,
+    onProgressUpdate,
+  }, ref) {
+    const {
+      canvasRef,
+      isPlaying,
+      setIsPlaying,
+      speed,
+      setSpeed,
+      uiPhase,
+      narration,
+      progress,
+      seekTo,
+      reset,
+    } = useBoutReplay(result, eastRikishi, westRikishi, autoPlay, onComplete, onProgressUpdate);
 
-  const label = PHASE_LABELS[uiPhase];
+    useImperativeHandle(ref, () => ({
+      seekTo,
+    }), [seekTo]);
 
-  return (
+    const label = PHASE_LABELS[uiPhase];
+
+    return (
     <div
       className={cn(
         "rounded-lg overflow-hidden border border-border bg-card flex flex-col",
@@ -119,11 +133,13 @@ export function BoutReplayViewer({
       <BoutControls
         isPlaying={isPlaying}
         speed={speed}
-        overallPct={overallPct}
+        progress={progress.globalProgress}
         onPlayPause={() => setIsPlaying((p) => !p)}
         onRestart={reset}
         onSpeedChange={setSpeed}
+        onSeek={seekTo}
       />
     </div>
   );
-}
+  }
+);

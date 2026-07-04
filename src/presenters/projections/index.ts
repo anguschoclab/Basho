@@ -26,3 +26,4 @@ export * from "./mediaProjection";
 export * from "./hofProjection";
 export * from "./sponsorProjection";
 export * from "./medicalProjection";
+export * from "./recapProjections";

@@ -28,20 +28,35 @@ import {
   drawKimariteBanner,
   drawUpsetBanner,
   drawCrowdAtmosphere,
+  computeArcProgress,
+  computeArcHeight,
+  seekToPhase,
+  computeGlobalProgress,
   type ReplayPhase,
   type RikishiState,
   type Particle,
 } from "./boutCanvas";
 
+export interface BoutReplayProgress {
+  phaseIndex: number;
+  phaseProgress: number;
+  globalProgress: number;
+  totalDurationMs: number;
+  elapsedMs: number;
+}
+
+export type ReplaySpeed = 0.5 | 1 | 2;
+
 export interface UseBoutReplayReturn {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
   isPlaying: boolean;
   setIsPlaying: React.Dispatch<React.SetStateAction<boolean>>;
-  speed: number;
-  setSpeed: (s: number) => void;
+  speed: ReplaySpeed;
+  setSpeed: (s: ReplaySpeed) => void;
   uiPhase: ReplayPhase;
   narration: string;
-  overallPct: number;
+  progress: BoutReplayProgress;
+  seekTo: (globalProgress: number) => void;
   reset: () => void;
 }
 
@@ -50,7 +65,8 @@ export function useBoutReplay(
   eastRikishi: UIRikishi,
   westRikishi: UIRikishi,
   autoPlay: boolean,
-  onComplete?: () => void
+  onComplete?: () => void,
+  onProgressUpdate?: (progress: BoutReplayProgress) => void,
 ): UseBoutReplayReturn {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number | null>(null);
@@ -72,9 +88,16 @@ export function useBoutReplay(
   }, []);
 
   const [isPlaying, setIsPlaying] = useState(autoPlay);
-  const [speed, setSpeed] = useState(1);
+  const [speed, setSpeed] = useState<ReplaySpeed>(1);
   const [uiPhase, setUiPhase] = useState<ReplayPhase>("ritual");
   const [narration, setNarration] = useState("");
+  const [progress, setProgress] = useState<BoutReplayProgress>({
+    phaseIndex: 0,
+    phaseProgress: 0,
+    globalProgress: 0,
+    totalDurationMs: 0,
+    elapsedMs: 0,
+  });
 
   // Animation data in refs (no re-render needed for canvas)
   const phaseRef = useRef<ReplayPhase>("ritual");
@@ -101,6 +124,19 @@ export function useBoutReplay(
   const shakeRef = useRef({ x: 0, y: 0 });
   const lastTimeRef = useRef(0);
   const narIndexRef = useRef(-1);
+  const boutProgressRef = useRef<BoutReplayProgress>({
+    phaseIndex: 0,
+    phaseProgress: 0,
+    globalProgress: 0,
+    totalDurationMs: 0,
+    elapsedMs: 0,
+  });
+  const lastProgressUpdateRef = useRef(0);
+  const onProgressUpdateRef = useRef(onProgressUpdate);
+
+  useEffect(() => {
+    onProgressUpdateRef.current = onProgressUpdate;
+  }, [onProgressUpdate]);
 
   useEffect(() => {
     speedRef.current = speed;
@@ -164,10 +200,105 @@ export function useBoutReplay(
     shakeRef.current = { x: 0, y: 0 };
     particlesRef.current = [];
     narIndexRef.current = -1;
+    const zeroProgress: BoutReplayProgress = {
+      phaseIndex: 0,
+      phaseProgress: 0,
+      globalProgress: 0,
+      totalDurationMs: boutProgressRef.current.totalDurationMs,
+      elapsedMs: 0,
+    };
+    boutProgressRef.current = zeroProgress;
+    setProgress(zeroProgress);
     setUiPhase("ritual");
     setNarration(lines[0] || "");
     setIsPlaying(false);
   }, [lines]);
+
+  const phaseDurationsArr = useMemo(
+    () => PHASES.map((p) => phaseDurations[p] || 0),
+    [phaseDurations],
+  );
+
+  const drawFrame = useCallback(
+    (ctx: CanvasRenderingContext2D, W: number, H: number) => {
+      const shake = shakeRef.current;
+      ctx.clearRect(0, 0, W, H);
+      drawDohyo(ctx, W, H, shake);
+      drawParticles(ctx, particlesRef.current);
+      drawRikishi(ctx, westRef.current, W, H, "west", westRikishi, shake,
+        boutScript.family, winnerSide !== "west");
+      drawRikishi(ctx, eastRef.current, W, H, "east", eastRikishi, shake,
+        boutScript.family, winnerSide !== "east");
+      drawImpactFlash(ctx, W, H, flashRef.current);
+
+      if (phaseRef.current === "finish" || phaseRef.current === "ceremony") {
+        const bannerAlpha = phaseRef.current === "finish" ? easeOut(progressRef.current) : 1;
+        drawKimariteBanner(ctx, W, H, result.kimariteName || result.kimarite, bannerAlpha);
+      }
+      if (phaseRef.current === "ceremony" && (result.upset || result.isKinboshi)) {
+        drawUpsetBanner(ctx, W, H, easeOut(progressRef.current), !!result.isKinboshi);
+      }
+
+      drawCrowdAtmosphere(
+        ctx,
+        W,
+        H,
+        getCrowdIntensity(phaseRef.current, progressRef.current),
+        phaseRef.current,
+      );
+    },
+    [boutScript, winnerSide, result, eastRikishi, westRikishi],
+  );
+
+  const updateProgress = useCallback(() => {
+    const phaseIdx = PHASES.indexOf(phaseRef.current);
+    const computed = computeGlobalProgress(phaseIdx, progressRef.current, phaseDurationsArr);
+    const newProgress: BoutReplayProgress = {
+      phaseIndex: phaseIdx,
+      phaseProgress: progressRef.current,
+      ...computed,
+    };
+    boutProgressRef.current = newProgress;
+
+    const now = performance.now();
+    if (now - lastProgressUpdateRef.current >= 100) {
+      lastProgressUpdateRef.current = now;
+      setProgress(newProgress);
+      onProgressUpdateRef.current?.(newProgress);
+    }
+  }, [phaseDurationsArr]);
+
+  const seekTo = useCallback(
+    (globalProgress: number) => {
+      const target = seekToPhase(globalProgress, phaseDurationsArr);
+      const newPhase = PHASES[target.phaseIndex] || "ritual";
+      phaseRef.current = newPhase;
+      progressRef.current = target.phaseProgress;
+      setUiPhase(newPhase);
+
+      const ni = getPhaseNarrationIndex(newPhase, target.phaseProgress, lines.length);
+      narIndexRef.current = ni;
+      setNarration(lines[ni] || "");
+
+      const computed = computeGlobalProgress(target.phaseIndex, target.phaseProgress, phaseDurationsArr);
+      const newProgress: BoutReplayProgress = {
+        phaseIndex: target.phaseIndex,
+        phaseProgress: target.phaseProgress,
+        ...computed,
+      };
+      boutProgressRef.current = newProgress;
+      lastProgressUpdateRef.current = performance.now();
+      setProgress(newProgress);
+      onProgressUpdateRef.current?.(newProgress);
+
+      const canvas = canvasRef.current;
+      if (canvas) {
+        const ctx = canvas.getContext("2d");
+        if (ctx) drawFrame(ctx, 800, 500);
+      }
+    },
+    [phaseDurationsArr, lines, drawFrame],
+  );
 
   // ── Main RAF loop ────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -223,8 +354,37 @@ export function useBoutReplay(
               };
             }
             if (next === "finish") {
-              spawnParticles("impact", W * (winnerSide === "east" ? 0.62 : 0.38), H * 0.5, 18);
-              spawnParticles("dust", W * 0.5, H * 0.6, 12);
+              const loserX = W * (winnerSide === "east" ? 0.78 : 0.22);
+              const loserY = H * 0.6;
+              switch (boutScript.family) {
+                case "throw":
+                  spawnParticles("spark", loserX, loserY, 18);
+                  break;
+                case "force_out":
+                  spawnParticles(
+                    "dust",
+                    W * (winnerSide === "east" ? 0.88 : 0.12),
+                    H * 0.55,
+                    14,
+                  );
+                  break;
+                case "pull":
+                  spawnParticles("impact", W * 0.5, H * 0.5, 16);
+                  break;
+                case "lift":
+                  if (result.upset || result.isKinboshi) {
+                    spawnParticles("zabuton", W * 0.5, H * 0.1, 10);
+                  } else {
+                    spawnParticles("dust", loserX, loserY, 8);
+                  }
+                  break;
+                case "trip":
+                  spawnParticles("dust", loserX, loserY, 12);
+                  break;
+                default:
+                  spawnParticles("impact", W * 0.5, H * 0.5, 12);
+                  spawnParticles("dust", W * 0.5, H * 0.6, 8);
+              }
             }
             if (next === "ceremony" && (result.upset || result.isKinboshi)) {
               spawnParticles("zabuton", W * 0.5, H * 0.35, 14);
@@ -244,6 +404,20 @@ export function useBoutReplay(
       const smooth = clamp(delta * 0.012, 0, 0.25);
       eastRef.current = lerpState(eastRef.current, target.east, smooth);
       westRef.current = lerpState(westRef.current, target.west, smooth);
+
+      // Drive live arc animation for throw/lift families during finish phase
+      if (phaseRef.current === "finish") {
+        const arcProgress = computeArcProgress(progressRef.current, boutScript.family);
+        const arcHeight = computeArcHeight(arcProgress, boutScript.family);
+        if (arcProgress > 0) {
+          const loserRef = winnerSide === "east" ? westRef : eastRef;
+          loserRef.current = {
+            ...loserRef.current,
+            arcProgress,
+            arcHeight,
+          };
+        }
+      }
 
       // Update particles
       const gravity = 0.04;
@@ -290,29 +464,10 @@ export function useBoutReplay(
       }
 
       // DRAW
-      ctx.clearRect(0, 0, W, H);
-      const shake = shakeRef.current;
-      drawDohyo(ctx, W, H, shake);
-      drawParticles(ctx, particlesRef.current);
-      drawRikishi(ctx, westRef.current, W, H, "west", westRikishi, shake);
-      drawRikishi(ctx, eastRef.current, W, H, "east", eastRikishi, shake);
-      drawImpactFlash(ctx, W, H, flashRef.current);
+      drawFrame(ctx, W, H);
 
-      if (phaseRef.current === "finish" || phaseRef.current === "ceremony") {
-        const bannerAlpha = phaseRef.current === "finish" ? easeOut(progressRef.current) : 1;
-        drawKimariteBanner(ctx, W, H, result.kimariteName || result.kimarite, bannerAlpha);
-      }
-      if (phaseRef.current === "ceremony" && (result.upset || result.isKinboshi)) {
-        drawUpsetBanner(ctx, W, H, easeOut(progressRef.current), !!result.isKinboshi);
-      }
-
-      drawCrowdAtmosphere(
-        ctx,
-        W,
-        H,
-        getCrowdIntensity(phaseRef.current, progressRef.current),
-        phaseRef.current
-      );
+      // Update progress (throttled)
+      updateProgress();
 
       animRef.current = requestAnimationFrame(loop);
     };
@@ -333,6 +488,8 @@ export function useBoutReplay(
     spawnParticles,
     onComplete,
     rng,
+    drawFrame,
+    updateProgress,
   ]);
 
   // Static draw when paused
@@ -342,15 +499,8 @@ export function useBoutReplay(
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
-    const W = 800,
-      H = 500;
-    drawDohyo(ctx, W, H, { x: 0, y: 0 });
-    drawRikishi(ctx, westRef.current, W, H, "west", westRikishi, { x: 0, y: 0 });
-    drawRikishi(ctx, eastRef.current, W, H, "east", eastRikishi, { x: 0, y: 0 });
-  }, [isPlaying, eastRikishi, westRikishi]);
-
-  const phaseIdx = PHASES.indexOf(uiPhase);
-  const overallPct = ((phaseIdx + progressRef.current) / (PHASES.length - 1)) * 100;
+    drawFrame(ctx, 800, 500);
+  }, [isPlaying, drawFrame]);
 
   return {
     canvasRef,
@@ -360,7 +510,8 @@ export function useBoutReplay(
     setSpeed,
     uiPhase,
     narration,
-    overallPct,
+    progress,
+    seekTo,
     reset,
   };
 }

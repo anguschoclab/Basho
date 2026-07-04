@@ -14,6 +14,8 @@ export type BodyPhase =
   | "grappling"
   | "pushing"
   | "throwing"
+  | "thrown"
+  | "gripping"
   | "falling"
   | "victory";
 
@@ -28,6 +30,8 @@ export interface RikishiState {
   scale: number;
   bodyPhase: BodyPhase;
   opacity: number;
+  arcHeight?: number;
+  arcProgress?: number;
 }
 
 export interface Particle {

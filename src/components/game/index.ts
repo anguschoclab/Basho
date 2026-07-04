@@ -23,3 +23,4 @@ export * from "./WelfarePanel";
 export * from "./YokozunaDeliberation";
 export * from "./GlobalCupBracket";
 export * from "./GlobalCupParticipant";
+export * from "./KeyBoutsSection";

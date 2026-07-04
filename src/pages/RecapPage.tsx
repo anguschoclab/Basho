@@ -6,7 +6,7 @@
  * Features a high-fidelity "Rich Aesthetics" orchestration.
  */
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { Helmet } from "react-helmet";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
@@ -23,6 +23,8 @@ import { HoFInductionCeremony } from "@/components/game/HoFInductionCeremony";
 import { IntaiCeremony } from "@/components/game/IntaiCeremony";
 import { PlayoffBracket } from "@/components/game/PlayoffBracket";
 import { BanzukeReveal } from "@/components/game/BanzukeReveal";
+import { KeyBoutsSection } from "@/components/game/KeyBoutsSection";
+import { selectKeyBouts } from "@/presenters/projections/recapProjections";
 import { compareBanzuke, formatRankPosition, RANK_HIERARCHY } from "@/engine/banzuke";
 import { makeBashoKey } from "@/engine/historyIndex";
 import { EntityCollection } from "@/engine/core/EntityCollection";
@@ -227,6 +229,16 @@ export default function RecapPage() {
     setShowBanzukeReveal(false);
   };
 
+  const keyMoments = useMemo(() => (world ? selectKeyBouts(world) : []), [world]);
+  const getRikishiForBout = useCallback(
+    (id: string) => {
+      if (!world) return null;
+      const r = world.rikishi.get(id);
+      return r ? projectRikishi(r, world) : null;
+    },
+    [world]
+  );
+
   if (!world) return null; // useEffect above handles redirect
   const events = world.events?.log || [];
   const bashoEvents = getBashoWrapEvents(events, lastBasho?.bashoNumber);
@@ -324,6 +336,9 @@ export default function RecapPage() {
             }}
           />
         </div>
+
+        {/* ═══ BOUTS OF THE BASHO HIGHLIGHT REEL ═══ */}
+        <KeyBoutsSection moments={keyMoments} getRikishi={getRikishiForBout} />
 
         {/* ═══ MODALS & CEREMONIES ═══ */}
         {showPressConference && (

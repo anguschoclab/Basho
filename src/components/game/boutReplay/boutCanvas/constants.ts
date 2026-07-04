@@ -1,4 +1,5 @@
 import type { ReplayPhase } from "./types";
+import type { PbpPhase } from "@/engine/bout/boutNarrative";
 
 export const PHASES: ReplayPhase[] = [
   "ritual",
@@ -28,4 +29,14 @@ export const CROWD_TEXT: Record<ReplayPhase, string> = {
   finish: "決まり手！",
   ceremony: "The hall erupts!",
   complete: "",
+};
+
+export const CANVAS_PHASE_TO_PBP_PHASE: Record<ReplayPhase, PbpPhase[]> = {
+  ritual: ["ritual", "opening", "entrance"],
+  tachiai: ["tachiai"],
+  clinch: ["clinch", "engagement"],
+  momentum: ["momentum", "tactical", "edge_crisis"],
+  finish: ["finish"],
+  ceremony: ["ceremony", "award", "closing"],
+  complete: [],
 };

@@ -7,24 +7,26 @@
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Play, Pause, RotateCcw } from "lucide-react";
-import { clamp } from "./boutCanvas";
+import type { ReplaySpeed } from "./useBoutReplay";
 
 interface BoutControlsProps {
   isPlaying: boolean;
-  speed: number;
-  overallPct: number;
+  speed: ReplaySpeed;
+  progress: number;
   onPlayPause: () => void;
   onRestart: () => void;
-  onSpeedChange: (s: number) => void;
+  onSpeedChange: (s: ReplaySpeed) => void;
+  onSeek: (progress: number) => void;
 }
 
 export function BoutControls({
   isPlaying,
   speed,
-  overallPct,
+  progress,
   onPlayPause,
   onRestart,
   onSpeedChange,
+  onSeek,
 }: BoutControlsProps) {
   return (
     <div className="px-4 py-2.5 border-t border-border flex items-center gap-3">
@@ -50,15 +52,18 @@ export function BoutControls({
         <RotateCcw className="h-4 w-4" />
       </Button>
 
-      <div className="flex-1 relative h-1.5 bg-muted rounded-full overflow-hidden">
-        <div
-          className="absolute inset-y-0 left-0 bg-primary rounded-full transition-none"
-          style={{ width: `${clamp(overallPct, 0, 100)}%` }}
-        />
-      </div>
+      <input
+        type="range"
+        min={0}
+        max={1000}
+        value={Math.round(progress * 1000)}
+        onChange={(e) => onSeek(Number(e.target.value) / 1000)}
+        className="flex-1 h-1.5 accent-primary cursor-pointer"
+        aria-label="Seek replay progress"
+      />
 
       <div className="flex items-center gap-1 shrink-0">
-        {([1, 2] as const).map((s) => (
+        {([0.5, 1, 2] as const).map((s) => (
           <Button
             key={s}
             variant="ghost"

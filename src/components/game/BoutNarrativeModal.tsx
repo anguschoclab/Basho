@@ -1,7 +1,7 @@
 // BoutNarrativeModal.tsx — Polished bout detail modal with dramatic header,
 // animated phase commentary, and immersive result display
 
-import { useState } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 import { BoutReplayViewer } from "./BoutReplayViewer";
+import type { BoutReplayViewerHandle } from "./BoutReplayViewer";
 import { BoutResultDisplay } from "./BoutResultDisplay";
 import { BoutLog } from "./BoutLog";
 import type { UIRikishi } from "@/presenters/uiModels";
@@ -17,6 +18,9 @@ import type { BoutResult, BashoName } from "@/engine/types/basho";
 import type { PbpLine } from "@/engine/bout/boutNarrative";
 import { RotateCcw, MessageSquareText, BookOpen, Terminal } from "lucide-react";
 import { PbpLineText } from "./PbpLineText";
+import { computeActiveLineIndices } from "./boutReplay/boutCanvas";
+import type { BoutReplayProgress } from "./boutReplay/useBoutReplay";
+import { cn } from "@/lib/utils";
 
 const PHASE_STYLE: Record<string, { label: string; color: string; bg: string }> = {
   opening: { label: "開幕", color: "text-primary", bg: "bg-primary/10 border-primary/20" },
@@ -48,12 +52,14 @@ const TAG_ICONS: Record<string, string> = {
 /** Defines the structure for bout narrative modal props. */
 interface BoutNarrativeModalProps {
   open: boolean;
-  onOpenChange: (open: boolean) => void;
+  onOpenChange?: (open: boolean) => void;
+  onClose?: () => void;
   east: UIRikishi;
   west: UIRikishi;
   result: BoutResult;
-  bashoName: BashoName;
-  day: number;
+  bashoName?: BashoName;
+  day?: number;
+  autoPlay?: boolean;
 }
 
 /**
@@ -79,19 +85,38 @@ interface BoutNarrativeModalProps {
 export function BoutNarrativeModal({
   open,
   onOpenChange,
+  onClose,
   east,
   west,
   result,
+  autoPlay = true,
 }: BoutNarrativeModalProps) {
+  const handleClose = onClose ?? (() => onOpenChange?.(false));
   const pbpLines: PbpLine[] = result.pbpLines ?? [];
   const narrativeLines = pbpLines.filter((l) =>
     ["opening", "entrance", "ritual", "finish", "award", "ceremony", "closing"].includes(l.phase ?? "")
   );
 
   const [replayKey, setReplayKey] = useState(0);
+  const [activeTab, setActiveTab] = useState("commentary");
+  const [animProgress, setAnimProgress] = useState<BoutReplayProgress | null>(null);
+  const viewerRef = useRef<BoutReplayViewerHandle>(null);
+  const activeLineRef = useRef<HTMLDivElement | null>(null);
+
+  const activeLineIndices = useMemo(
+    () => (animProgress ? computeActiveLineIndices(animProgress.phaseIndex, pbpLines) : new Set<number>()),
+    [animProgress, pbpLines],
+  );
+
+  useEffect(() => {
+    if (activeTab !== "commentary") return;
+    if (activeLineRef.current) {
+      activeLineRef.current.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+  }, [activeLineIndices, activeTab]);
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={(open) => { if (!open) handleClose(); onOpenChange?.(open); }}>
       <DialogContent className="max-w-3xl max-h-[95vh] p-0 gap-0 overflow-hidden bg-card border-border/50">
         <DialogHeader className="sr-only">
           <DialogTitle>Bout Narrative</DialogTitle>
@@ -131,10 +156,12 @@ export function BoutNarrativeModal({
           {/* Replay viewer */}
           <BoutReplayViewer
             key={replayKey}
+            ref={viewerRef}
             result={result}
             eastRikishi={east}
             westRikishi={west}
-            autoPlay
+            autoPlay={autoPlay}
+            onProgressUpdate={setAnimProgress}
             className="shadow-sm mx-auto max-w-lg bg-background rounded-md"
           />
           <div className="flex justify-center mt-1.5 mb-1">
@@ -163,7 +190,7 @@ export function BoutNarrativeModal({
             <Separator />
 
             {/* Tabs */}
-            <Tabs defaultValue="commentary" className="w-full">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
               <TabsList className="grid w-full grid-cols-3 h-9">
                 <TabsTrigger value="commentary" className="text-xs gap-1.5">
                   <MessageSquareText className="h-3.5 w-3.5" /> Commentary
@@ -187,10 +214,18 @@ export function BoutNarrativeModal({
                     {pbpLines.map((line, i) => {
                       const style = (line.phase && PHASE_STYLE[line.phase]) || PHASE_STYLE.finish;
                       const tags = line.tags ?? [];
+                      const isActive = activeLineIndices.has(i);
+                      const hasPhase = !!line.phase;
                       return (
                         <div
-                          key={i}
-                          className="flex items-start gap-2 animate-slide-up"
+                          key={line.id ?? i}
+                          ref={isActive ? activeLineRef : undefined}
+                          className={cn(
+                            "flex items-start gap-2 animate-slide-up",
+                            isActive && "bg-primary/10 border-l-2 border-primary rounded-r",
+                            !isActive && hasPhase && "opacity-60",
+                            !hasPhase && "opacity-60",
+                          )}
                           style={{ animationDelay: `${i * 60}ms`, animationFillMode: "both" }}
                         >
                           <Badge

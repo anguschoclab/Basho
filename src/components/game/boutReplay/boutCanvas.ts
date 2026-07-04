@@ -12,5 +12,17 @@ export {
   drawKimariteBanner,
   drawUpsetBanner,
 } from "./boutCanvas/draw";
-export { getTargetState, lerpState, getCrowdIntensity } from "./boutCanvas/animation";
+export {
+  getTargetState,
+  lerpState,
+  getCrowdIntensity,
+  computeArcProgress,
+  computeArcHeight,
+  getLoserBodyPhase,
+  getWinnerBodyPhase,
+} from "./boutCanvas/animation";
 export { getNarrationLines, getPhaseNarrationIndex } from "./boutCanvas/narration";
+export { seekToPhase, computeGlobalProgress } from "./boutCanvas/seek";
+export type { SeekTarget } from "./boutCanvas/seek";
+export { computeActiveLineIndices } from "./boutCanvas/activeLines";
+export { CANVAS_PHASE_TO_PBP_PHASE } from "./boutCanvas/constants";
