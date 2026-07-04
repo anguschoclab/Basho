@@ -63,6 +63,7 @@ export interface PersonnelWorkerContext {
   styleProfile?: OyakataStyleProfile;
   world: WorldState;
   pendingExhibitions?: any[]; // To avoid circular import, use any or imported type
+  riskTolerance?: number; // oyakata.traits.risk (0-100)
 }
 
 export interface GlobalWorkerContext {
@@ -161,8 +162,12 @@ export function spawnPersonnelWorker(ctx: PersonnelWorkerContext): PersonnelWork
       const severity = rikishi.injuryStatus?.severity;
       const weeksRemaining = rikishi.injuryWeeksRemaining;
 
-      // Withdraw if injury is serious and recovery time is long
-      if (severity === "serious" && weeksRemaining > 2) {
+      const isSerious = severity === "serious" && weeksRemaining > 2;
+      const isModerate = severity === "moderate" && weeksRemaining > 1;
+      const riskTolerance = ctx.riskTolerance ?? 50;
+
+      // Serious injuries always withdraw; moderate is probabilistic based on oyakata risk tolerance
+      if (isSerious || (isModerate && Math.random() > riskTolerance / 100)) {
         withdrawalIds.push(rikishi.id);
         reasoning.push(
           `[Withdrawal Worker] Withdrawing ${rikishi.shikona} due to ${severity} injury (${weeksRemaining} weeks remaining)`

@@ -46,6 +46,35 @@ export const TACTICAL_MATRIX: Record<TacticalFamily, TacticalFamily[]> = {
   speed: ["push", "belt"], // Speedster flanks slow heavy fighters
 };
 
+// Maps each player-facing BoutTactic to its underlying TacticalFamily
+// so TACTICAL_MATRIX can evaluate counter advantages.
+export const TACTIC_TO_FAMILY: Record<BoutTactic, TacticalFamily> = {
+  STANDARD: "push",
+  OSHI_THRUST: "push",
+  YOTSU_BELT: "belt",
+  DEFENSIVE_PULL: "trick",
+  HENKA: "trick",
+  ALL_OUT: "push",
+};
+
+export const COUNTER_TACTIC_BONUS = 5;
+
+export function resolveCounterTacticBonus(
+  tactic: BoutTactic,
+  opponentProfile: CombatProfile,
+): number {
+  const family = TACTIC_TO_FAMILY[tactic] ?? "push";
+  const sorted = (
+    Object.entries(opponentProfile.familyPreferences) as [TacticalFamily, number][]
+  ).sort((a, b) => b[1] - a[1]);
+  const top = sorted[0]?.[0] ?? "push";
+  const second = sorted[1]?.[1] ?? 0;
+  // Only apply counter bonus when there's a clearly dominant family (not tied)
+  if ((sorted[0]?.[1] ?? 0) <= second) return 0;
+  const counters = TACTICAL_MATRIX[family] ?? [];
+  return counters.includes(top) ? COUNTER_TACTIC_BONUS : 0;
+}
+
 export type HandPosition = "inside" | "outside" | "blocked";
 export type GripDepth = "maemitsu" | "deep" | "standard";
 

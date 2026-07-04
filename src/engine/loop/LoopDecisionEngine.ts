@@ -119,6 +119,57 @@ export function detectDueDecisions(world: WorldState): LoopDecision[] {
     });
   }
 
+  // Decision 5: Kyujo decision (BLOCKING) — injured player rikishi scheduled today
+  if (world.cyclePhase === "active_basho" && world.currentBasho) {
+    const bashoDay = world.currentBasho.day;
+    const todayMatches = world.currentBasho.matches.filter(
+      (m) => m.day === bashoDay && !m.result,
+    );
+    for (const match of todayMatches) {
+      const eastR = match.eastRikishiId ? world.rikishi.get(match.eastRikishiId) : undefined;
+      const westR = match.westRikishiId ? world.rikishi.get(match.westRikishiId) : undefined;
+      const playerSide = playerHeyaId
+        ? eastR?.heyaId === playerHeyaId
+          ? "east"
+          : westR?.heyaId === playerHeyaId
+            ? "west"
+            : null
+        : null;
+      if (!playerSide) continue;
+
+      const rikishiId = playerSide === "east" ? match.eastRikishiId : match.westRikishiId;
+      const r = playerSide === "east" ? eastR : westR;
+      if (!r || !r.injured || r.isKyujo) continue;
+
+      const severity = r.injuryStatus?.severity ?? "minor";
+      if (severity === "minor") continue;
+
+      const decisionId = `kyujo_${rikishiId}_${bashoDay}`;
+      if (existing.some((d) => d.id === decisionId)) continue;
+
+      const injuryRiskPct = severity === "serious" ? 40 : 20;
+      out.push({
+        id: decisionId,
+        type: "kyujo_decision",
+        description: `${r.shikona} is injured (${severity}). Competing today carries a ~${injuryRiskPct}% injury risk. Withdraw or compete?`,
+        deadlineWeek: currentWeek,
+        required: true,
+        options: [
+          {
+            id: "compete",
+            label: "Compete",
+            impact: `Bout proceeds at elevated injury risk (~${injuryRiskPct}%)`,
+          },
+          {
+            id: "withdraw",
+            label: "Withdraw (Kyujo)",
+            impact: "Forfeit today's bout. Protect long-term health.",
+          },
+        ],
+      });
+    }
+  }
+
   return out;
 }
 
@@ -189,7 +240,8 @@ export function applyDecisionEffect(
   world: WorldState,
   builder: ImpactBuilder,
   decisionType: string,
-  optionId: string
+  optionId: string,
+  decisionId?: string
 ): void {
   const heya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : undefined;
   if (!heya) return;
@@ -231,6 +283,35 @@ export function applyDecisionEffect(
       welfareState: { ...heya.welfareState, activeDiet: optionId },
     } as never);
   }
+  if (decisionType === "kyujo_decision" && decisionId) {
+    const parts = decisionId.split("_");
+    const rikishiId = parts.slice(1, -1).join("_");
+    if (optionId === "withdraw") {
+      const r = world.rikishi.get(rikishiId);
+      if (r) {
+        builder.updateRikishi(rikishiId, {
+          isKyujo: true,
+          kyujoReason: "injury",
+          medicalCertificate: {
+            injury: r.injuryStatus?.type ?? "unknown",
+            severity: r.injuryStatus?.severity ?? "moderate",
+            treatmentWeeks: r.injuryWeeksRemaining,
+            submittedDate: world.calendar?.currentWeek ?? 0,
+          },
+        });
+      }
+    } else if (optionId === "compete") {
+      const r = world.rikishi.get(rikishiId);
+      const mult = r?.injuryStatus?.severity === "serious" ? 2.0 : 1.5;
+      builder.updateWorldField("transientContext", {
+        ...world.transientContext,
+        dailyInjuryRiskOverrides: {
+          ...(world.transientContext?.dailyInjuryRiskOverrides ?? {}),
+          [rikishiId]: mult,
+        },
+      } as never);
+    }
+  }
 }
 
 /** Build a human-readable consequence summary from the actual world state. */
@@ -257,6 +338,10 @@ function decisionConsequenceSummary(
       return `Training emphasis set to ${optionId}.`;
     case "welfare_diet":
       return `Diet set to ${optionId} (welfare risk ${optionId === "premium" ? "eases" : "unchanged"}).`;
+    case "kyujo_decision":
+      return optionId === "withdraw"
+        ? "Withdrew injured wrestler (kyujo). Bout forfeited."
+        : "Competed through injury — elevated injury risk accepted.";
     default:
       return "Decision resolved.";
   }
@@ -286,7 +371,7 @@ export function resolveLoopDecision(
     builder.updateWorldField("pendingCrisis", undefined as never);
   }
 
-  applyDecisionEffect(world, builder, decision.type, optionId);
+  applyDecisionEffect(world, builder, decision.type, optionId, decision.id);
 
   const summary = decisionConsequenceSummary(world, decision.type, optionId);
   builder.logEvent(
@@ -310,18 +395,21 @@ const DELEGATION_DEFAULTS: Record<DelegationPolicy, Record<string, string>> = {
     insolvency_response: "loan",
     weekly_training_emphasis: "conservative",
     welfare_diet: "premium",
+    kyujo_decision: "withdraw",
   },
   balanced: {
     pre_basho_readiness: "rest",
     insolvency_response: "loan",
     weekly_training_emphasis: "intensive",
     welfare_diet: "maintenance",
+    kyujo_decision: "withdraw",
   },
   aggressive: {
     pre_basho_readiness: "push",
     insolvency_response: "austerity",
     weekly_training_emphasis: "intensive",
     welfare_diet: "maintenance",
+    kyujo_decision: "compete",
   },
 };
 
@@ -338,7 +426,7 @@ export function autonomouslyResolveDecisions(
   for (const d of due) {
     const optionId = table[d.type] ?? d.options[0]?.id;
     if (!optionId) continue;
-    applyDecisionEffect(world, builder, d.type, optionId);
+    applyDecisionEffect(world, builder, d.type, optionId, d.id);
     builder.logEvent(
       "DECISION_AUTO_RESOLVED",
       "narrative",

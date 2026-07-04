@@ -161,15 +161,31 @@ export function applyBoutResult(
   builder.merge(updateH2H(winner, loser, result, bashoId, year, match.day));
 
   // 4. Notify Secondary Systems
+  const dailyOverrides = world.transientContext?.dailyInjuryRiskOverrides;
+  const loserId = result.winner === "east" ? west.id : east.id;
+  const overrideMult = dailyOverrides?.[loserId] ?? 1.0;
+  const finalInjuryMultiplier = (result.tacticInjuryRiskMultiplier ?? 1.0) * overrideMult;
+
   builder.merge(
     injuries.onBoutResolvedInjury(world, {
       match,
       result,
       east,
       west,
-      injuryRiskMultiplier: result.tacticInjuryRiskMultiplier,
+      injuryRiskMultiplier: finalInjuryMultiplier,
     })
   );
+
+  // Clear the consumed daily injury risk override for this rikishi
+  if (dailyOverrides && dailyOverrides[loserId] !== undefined) {
+    const cleared = { ...dailyOverrides };
+    delete cleared[loserId];
+    builder.updateWorldField("transientContext", {
+      ...world.transientContext,
+      dailyInjuryRiskOverrides: cleared,
+    } as never);
+  }
+
   builder.merge(rivalries.onBoutResolvedRivalries(world, { match, result, east, west }));
   builder.merge(economics.onBoutResolvedEconomics(world, { match, result, east, west }));
   builder.merge(scoutingStore.onBoutResolvedScouting(world, { match, result, east, west }));

@@ -82,6 +82,7 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
     welfareDiscipline: persona.welfareDiscipline,
     styleProfile,
     world,
+    riskTolerance: persona.traits.risk ?? 50,
   };
   const personnelProposal = spawnPersonnelWorker(personnelCtx);
   reasoning.push(...personnelProposal.reasoning);

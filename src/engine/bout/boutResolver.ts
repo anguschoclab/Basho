@@ -161,8 +161,8 @@ function isPlayoffScenario(east: Rikishi, west: Rikishi, basho: BashoState): boo
  * ```
  */
 function tryFusensho(bout: BoutContext, east: Rikishi, west: Rikishi): BoutResult | null {
-  const eastAbsent = east.injured || east.isRetired;
-  const westAbsent = west.injured || west.isRetired;
+  const eastAbsent = east.injured || east.isRetired || east.isKyujo;
+  const westAbsent = west.injured || west.isRetired || west.isKyujo;
 
   if (!eastAbsent && !westAbsent) return null;
 

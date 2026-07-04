@@ -127,6 +127,11 @@ export const BoutCard = React.memo(
               <div className="font-medium capitalize">
                 {match.east.style} vs {match.west.style}
               </div>
+              {match.scoutHint && (
+                <div className="col-span-2 text-[10px] text-primary/70 italic">
+                  {match.scoutHint}
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-2 gap-2">

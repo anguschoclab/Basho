@@ -88,6 +88,7 @@ export interface TransientContext {
     day2: string[];
     announcedAtWeek: number;
   };
+  dailyInjuryRiskOverrides?: Record<string, number>;
 }
 
 /** Defines the structure for recruitment window. */

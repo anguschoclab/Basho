@@ -21,6 +21,7 @@ import {
   type BoutContext,
 } from "../boutUtils";
 import { getTacticProfile } from "../tacticProfiles";
+import { resolveCounterTacticBonus } from "../../types/combat";
 
 /**
  * Resolves the initial clash. May early-terminate the bout (henka) by setting
@@ -55,6 +56,23 @@ export function resolveTachiaiV2(
       eastPower += mod;
     } else {
       westPower += mod;
+    }
+
+    // Counter-tactic bonus: player's tactic family vs opponent's dominant family
+    if (bout.playerTactic !== "STANDARD") {
+      const opponent = bout.playerSide === "east" ? west : east;
+      if (opponent.combatProfile) {
+        const counterBonus = resolveCounterTacticBonus(bout.playerTactic, opponent.combatProfile);
+        if (counterBonus > 0) {
+          if (bout.playerSide === "east") eastPower += counterBonus;
+          else westPower += counterBonus;
+          boutLog.push({
+            phase: "tachiai",
+            clock: 0,
+            data: { event: "counter_tactic_advantage", counterBonus },
+          });
+        }
+      }
     }
   }
 

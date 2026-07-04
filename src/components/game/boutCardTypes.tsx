@@ -36,6 +36,7 @@ export interface MatchRowData extends MatchLike {
   heatBand: RivalryHeatBand | null;
   isPlayerBout: boolean;
   h2hCommentary: string;
+  scoutHint?: string;
 }
 
 export function getHeatBand(heat: number): RivalryHeatBand {

@@ -52,15 +52,30 @@ export function MatchDayViewer({
   };
 
   const sortedMatches = useMemo(() => {
-    const mapped = [...matches].map((m) =>
-      m
-        ? {
-            ...m,
-            east: m.eastRikishi,
-            west: m.westRikishi,
+    const scouting = world?.playerKnowledge?.scouting;
+    const mapped = [...matches].map((m) => {
+      if (!m) return m;
+      const enriched = {
+        ...m,
+        east: m.eastRikishi,
+        west: m.westRikishi,
+      };
+      if (enriched.isPlayerBout && scouting) {
+        const opponentId =
+          enriched.eastRikishi?.isPlayerOwned === false
+            ? enriched.eastRikishi?.id
+            : enriched.westRikishi?.isPlayerOwned === false
+              ? enriched.westRikishi?.id
+              : null;
+        if (opponentId) {
+          const scouted = scouting[opponentId];
+          if (scouted?.publicInfo?.archetype) {
+            enriched.scoutHint = `Scouting: likely ${scouted.publicInfo.archetype} fighter (Lvl ${scouted.scoutingLevel})`;
           }
-        : m
-    );
+        }
+      }
+      return enriched;
+    });
     return mapped.sort((a, b) => {
       if (!a || !b) return 0;
       if (a.isPlayerBout !== b.isPlayerBout) return a.isPlayerBout ? -1 : 1;
