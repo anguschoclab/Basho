@@ -83,12 +83,12 @@ describe("getTargetState — finish phase", () => {
     expect(loser.arcProgress).toBeUndefined();
   });
 
-  it("lift: winner gripping, loser thrown, arcHeight 0.06, arcProgress 1.0", () => {
+  it("lift: winner gripping, loser thrown, arcHeight 0.09, arcProgress 1.0", () => {
     const script = makeScript("lift", "east");
     const { east: winner, west: loser } = getTargetState("finish", 1, "east", script);
     expect(winner.bodyPhase).toBe("gripping");
     expect(loser.bodyPhase).toBe("thrown");
-    expect(loser.arcHeight).toBeCloseTo(0.06, 10);
+    expect(loser.arcHeight).toBeCloseTo(0.09, 10);
     expect(loser.arcProgress).toBe(1.0);
   });
 
@@ -253,9 +253,9 @@ describe("computeArcHeight", () => {
     expect(computeArcHeight(1.0, "throw")).toBeCloseTo(0, 10);
   });
 
-  it("lift family: sin curve peaking at 0.06", () => {
+  it("lift family: sin curve peaking at 0.09", () => {
     expect(computeArcHeight(0, "lift")).toBeCloseTo(0, 10);
-    expect(computeArcHeight(0.5, "lift")).toBeCloseTo(0.06, 10);
+    expect(computeArcHeight(0.5, "lift")).toBeCloseTo(0.09, 10);
     expect(computeArcHeight(1.0, "lift")).toBeCloseTo(0, 10);
   });
 

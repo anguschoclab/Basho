@@ -15,7 +15,8 @@ export function computeArcHeight(
   family: BoutAnimationFamily,
 ): number {
   if (family !== "throw" && family !== "lift") return 0;
-  const peak = family === "throw" ? 0.12 : 0.06;
+  // throw = 60px peak (dramatic uwatenage arc); lift = 45px (visible chest lift)
+  const peak = family === "throw" ? 0.12 : 0.09;
   return Math.sin(arcProgress * Math.PI) * peak;
 }
 
@@ -144,7 +145,7 @@ export function getTargetState(
       const f = script.family;
       const loserPhase = getLoserBodyPhase(f);
       const winnerPhase = getWinnerBodyPhase(f);
-      const loserArcHeight = f === "throw" ? 0.12 : f === "lift" ? 0.06 : undefined;
+      const loserArcHeight = f === "throw" ? 0.12 : f === "lift" ? 0.09 : undefined;
       const loserArcProgress = loserArcHeight != null ? 1.0 : undefined;
       if (winnerSide === "east") {
         // Loser (west) family-specific end positions
@@ -162,9 +163,9 @@ export function getTargetState(
           0.63;
         const loserEndRot =
           f === "throw" ? -80 :
-          f === "pull" ? -50 :
+          f === "pull" ? -65 :
           f === "lift" ? -55 :
-          f === "trip" ? -75 :
+          f === "trip" ? -60 :
           -65;
         const loserEndScale =
           f === "lift" ? 0.78 :
@@ -207,9 +208,9 @@ export function getTargetState(
         0.63;
       const loserEndRot =
         f === "throw" ? 80 :
-        f === "pull" ? 50 :
+        f === "pull" ? 65 :
         f === "lift" ? 55 :
-        f === "trip" ? 75 :
+        f === "trip" ? 60 :
         65;
       const loserEndScale =
         f === "lift" ? 0.78 :
