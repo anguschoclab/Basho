@@ -150,7 +150,10 @@
       "PowerShell(cd \"C:\\\\Users\\\\amauricia\\\\Documents\\\\GitHub\\\\Basho\"; Start-Process -FilePath \"bun\" -ArgumentList \"run dev\" -WindowStyle Hidden -PassThru | ForEach-Object { $_.Id })",
       "Bash(bunx playwright *)",
       "Bash(bunx ts-node *)",
-      "Bash(npx playwright *)"
+      "Bash(npx playwright *)",
+      "Read(//c/Program Files/Google/Chrome/Application/**)",
+      "Read(//c/Program Files \\(x86\\)/Google/Chrome/Application/**)",
+      "Bash(echo \"Exit: $?\")"
     ]
   },
   "outputStyle": "default"
