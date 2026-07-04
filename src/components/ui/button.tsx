@@ -48,8 +48,13 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, tooltip, tooltipSide = "top", ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
 
+    const derivedProps = { ...props };
+    if (!derivedProps["aria-label"] && typeof tooltip === "string" && tooltip.trim().length > 0) {
+      derivedProps["aria-label"] = tooltip;
+    }
+
     const button = (
-      <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
+      <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...derivedProps} />
     );
 
     if (tooltip) {
@@ -59,7 +64,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         return (
           <TooltipWrap content={tooltip} side={tooltipSide}>
             <span className="inline-block cursor-not-allowed">
-              <Comp className={cn(buttonVariants({ variant, size, className }), "pointer-events-none")} ref={ref} {...props} />
+              <Comp className={cn(buttonVariants({ variant, size, className }), "pointer-events-none")} ref={ref} {...derivedProps} />
             </span>
           </TooltipWrap>
         );
