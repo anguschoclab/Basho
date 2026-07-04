@@ -38,7 +38,15 @@ export function listVisibleCandidates(
   const pool = tp.pools[poolType];
   if (!pool) return [];
 
-  const candidates = pool.candidatesVisible.map((id) => tp.candidates[id]).filter(Boolean);
+  // ⚡ Bolt Optimization: Replace chained .map().filter() with a single for...of loop
+  // to prevent intermediate array allocations and O(N) iteration overhead.
+  const candidates: TalentCandidate[] = [];
+  for (const id of pool.candidatesVisible) {
+    const candidate = tp.candidates[id];
+    if (candidate) {
+      candidates.push(candidate);
+    }
+  }
 
   // Phase 5 Depth: Regional Gating for foreign candidates
   if (poolType === "foreign" && world.playerHeyaId) {
