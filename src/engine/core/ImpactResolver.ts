@@ -2,6 +2,7 @@ import type { WorldState } from "../types/world";
 import type { StateImpact } from "./StateImpact";
 import { logEngineEvent } from "../events";
 import { getNextTimestamp } from "./StateImpact";
+import { error } from "../utils/Logger";
 
 /**
  * Registry of entity update configurations for generic application.
@@ -391,10 +392,11 @@ export function resolveImpacts(world: WorldState, impacts: StateImpact[]): World
           });
         }
       }
-    } catch (error) {
-      console.error(
-        `[IMPACT RESOLVER ERROR] in impact from "${impact.metadata?.source || "unknown"}":`,
-        error
+    } catch (err) {
+      error(
+        `Error in impact from "${impact.metadata?.source || "unknown"}"`,
+        "ImpactResolver",
+        err
       );
     }
   }

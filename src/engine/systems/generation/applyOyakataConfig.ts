@@ -15,6 +15,7 @@ import { OYAKATA_ARCHETYPES } from "@/engine/oyakataPersonalities";
 import { generateToshiyoriName } from "@/engine/shikona/toshiyoriNames";
 import { SeededRNG } from "@/engine/rng";
 import { getHeya } from "../../queries";
+import { warn } from "@/engine/utils/Logger";
 
 // ---------------------------------------------------------------------------
 // Backstory data — defined here (NOT imported from the UI wizard layer).
@@ -181,21 +182,21 @@ export function applyOyakataCreationConfig(
   // 1. Resolve heya
   const heya = getHeya(world, playerHeyaId);
   if (!heya) {
-    console.warn(`[applyOyakataCreationConfig] Heya not found: ${playerHeyaId}`);
+    warn(`Heya not found: ${playerHeyaId}`, "applyOyakataCreationConfig");
     return world;
   }
 
   // 2. Resolve oyakata
   const oyakata = world.oyakata.get(heya.oyakataId);
   if (!oyakata) {
-    console.warn(`[applyOyakataCreationConfig] Oyakata not found: ${heya.oyakataId}`);
+    warn(`Oyakata not found: ${heya.oyakataId}`, "applyOyakataCreationConfig");
     return world;
   }
 
   // 3. Look up backstory
   const backstory = PLAYER_BACKSTORIES.find((b) => b.id === config.backstoryId);
   if (!backstory) {
-    console.warn(`[applyOyakataCreationConfig] Unknown backstoryId: ${config.backstoryId}`);
+    warn(`Unknown backstoryId: ${config.backstoryId}`, "applyOyakataCreationConfig");
     return world;
   }
 

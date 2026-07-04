@@ -11,6 +11,7 @@ import {
 } from "@/contexts/electronStorageProvider";
 import { getStorageProvider, resetStorageProvider } from "@/engine/storageProvider";
 import { mockElectronAPI, clearElectronMock } from "@/tests/helpers/utils/electronMocks";
+import { logger } from "@/engine/utils/Logger";
 
 // Mock localStorage for web-fallback tests
 const localStorageMock = (() => {
@@ -117,7 +118,7 @@ describe("ElectronStorageProvider", () => {
 
     it("keeps cachedKeys empty when storage.keys() throws during loadKeys", async () => {
       mocks.storage.keys.mockRejectedValue(new Error("Store failure"));
-      const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const errorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
 
       // Create a new provider to trigger loadKeys
       provider = new ElectronStorageProvider();
@@ -125,7 +126,8 @@ describe("ElectronStorageProvider", () => {
 
       expect(provider.length).toBe(0);
       expect(errorSpy).toHaveBeenCalledWith(
-        "Failed to load keys from electron-store:",
+        "Failed to load keys from electron-store",
+        "ElectronStorage",
         expect.any(Error)
       );
       errorSpy.mockRestore();

@@ -1,3 +1,5 @@
+import { warn, error } from "../utils/Logger";
+
 export class OPFSFileSystem {
   private dirCache = new Map<string, FileSystemDirectoryHandle>();
   private inFlight = new Map<string, Promise<FileSystemDirectoryHandle | null>>();
@@ -69,14 +71,14 @@ export class OPFSFileSystem {
 
       return currentDir;
     } catch (e) {
-      console.warn(`[OPFS] Failed to access directory path: ${path.join("/")}`, e);
+      warn(`Failed to access directory path: ${path.join("/")}`, "OPFS", e);
       return null;
     }
   }
 
   public handleQuotaError(e: unknown) {
     if (e instanceof DOMException && e.name === "QuotaExceededError") {
-      console.warn("[OPFS] Storage quota exceeded. Archiving skipped.");
+      warn("Storage quota exceeded. Archiving skipped.", "OPFS");
       // Dispatch boundary event to UI layer (Zustand store will listen for this to show a Toast)
       if (typeof window !== "undefined") {
         window.dispatchEvent(
@@ -86,7 +88,7 @@ export class OPFSFileSystem {
         );
       }
     } else {
-      console.error("[OPFS] Unexpected storage error:", e);
+      error("Unexpected storage error", "OPFS", e);
     }
   }
 }

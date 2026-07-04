@@ -1,10 +1,11 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { tickWeekTalentPool } from "@/engine/systems/generation/TalentPoolMaintenance";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { MockFactory } from "../../../helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
 import type { TalentPoolWorldState } from "@/engine/types/talent";
 import type { Id } from "@/engine/types/common";
+import { logger } from "@/engine/utils/Logger";
 
 function buildWorldWithHiddenPool(opts: {
   activeCount: number;
@@ -107,5 +108,48 @@ describe("tickWeekTalentPool — gap-aware supply", () => {
 
     // At target, gap=0, so baseline 20-30 per pool → at least 20*3=60
     expect(countVisibleCandidates(resolved)).toBeGreaterThanOrEqual(60);
+  });
+});
+
+describe("tickWeekTalentPool - emergency logging", () => {
+  let warnSpy: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    warnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    warnSpy.mockRestore();
+  });
+
+  it("warns via Logger when emergency demographic floor triggers (active < 700)", () => {
+    const world = buildWorldWithHiddenPool({
+      activeCount: 600, // below 700 threshold
+      populationTarget: 950,
+      hiddenPerPool: 50,
+    });
+
+    tickWeekTalentPool(world);
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining("Emergency"),
+      "Recruitment",
+      undefined
+    );
+  });
+
+  it("does not warn when population is above emergency threshold", () => {
+    const world = buildWorldWithHiddenPool({
+      activeCount: 800, // above 700
+      populationTarget: 950,
+      hiddenPerPool: 50,
+    });
+
+    tickWeekTalentPool(world);
+
+    expect(warnSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining("Emergency"),
+      "Recruitment"
+    );
   });
 });

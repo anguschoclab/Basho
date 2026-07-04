@@ -13,6 +13,7 @@ import {
   YOKOZUNA_VACANCY_STREAK_THRESHOLD,
   YOKOZUNA_VACANCY_PRESTIGE_WINS,
 } from "../../constants/engine/governanceExtended";
+import { warn } from "../utils/Logger";
 
 /**
  * Helper to retrieve the current basho state from the world.
@@ -43,7 +44,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
   // Standings can be Map or Object depending on the simulation path; normalize here
   const standings = lastBasho.standings;
   if (!standings) {
-    console.warn("publishBanzukeUpdate: No standings found in lastBasho!");
+    warn("No standings found in lastBasho", "BanzukePublisher");
     return builder.build();
   }
 

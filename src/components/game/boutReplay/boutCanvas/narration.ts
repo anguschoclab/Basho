@@ -3,6 +3,7 @@ import type { UIRikishi } from "@/presenters/uiModels";
 import type { ReplayPhase } from "./types";
 import { PHASES } from "./constants";
 import { clamp } from "./math";
+import { warn } from "@/engine/utils/Logger";
 
 export function getNarrationLines(result: BoutResult, east: UIRikishi, west: UIRikishi): string[] {
   if (result.pbpLines && result.pbpLines.length > 0) {
@@ -10,7 +11,7 @@ export function getNarrationLines(result: BoutResult, east: UIRikishi, west: UIR
   }
 
   if (import.meta.env.DEV) {
-    console.warn(`[narration] bout ${result.boutId} has no pbpLines — falling back to hardcoded strings`);
+    warn(`Bout ${result.boutId} has no pbpLines — falling back to hardcoded strings`, "Narration");
   }
 
   const winner = result.winnerRikishiId === east.id ? east : west;

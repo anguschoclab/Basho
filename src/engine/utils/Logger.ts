@@ -14,7 +14,7 @@ interface LogEntry {
   data?: unknown;
 }
 
-class Logger {
+export class Logger {
   private static instance: Logger;
   private level: LogLevel = "info";
   private logHistory: LogEntry[] = [];

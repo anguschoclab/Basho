@@ -1,4 +1,5 @@
 import { destr } from "destr";
+import { warn, error } from "./Logger";
 
 const DANGEROUS_KEYS = new Set(["__proto__", "constructor", "prototype"]);
 
@@ -42,7 +43,7 @@ export function parseLLMResponse<T>(rawText: string): T {
     }
     return result as T;
   } catch (_initialError) {
-    console.warn("[jsonParser] Initial parse failed, attempting sanitization...");
+    warn("Initial parse failed, attempting sanitization...", "jsonParser");
   }
 
   let cleanedText = rawText.trim();
@@ -66,7 +67,7 @@ export function parseLLMResponse<T>(rawText: string): T {
     }
     return result as T;
   } catch (finalError) {
-    console.error("[jsonParser] Critical Parse Failure on output:", cleanedText);
+    error("Critical Parse Failure on output", "jsonParser", cleanedText);
     throw new Error(
       `Failed to parse LLM payload after sanitization. Ensure generationConfig.responseMimeType is 'application/json'. Error: ${(finalError as Error).message}`
     );

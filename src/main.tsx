@@ -1,12 +1,11 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import { error } from "./engine/utils/Logger";
 
-console.log("[Main] Application startup initiated");
 const rootElement = document.getElementById("root");
 if (!rootElement) {
-  console.error("[Main] Root element not found!");
+  error("Root element not found", "Main");
 } else {
-  console.log("[Main] Root element found, rendering App");
   createRoot(rootElement).render(<App />);
 }

@@ -7,7 +7,7 @@
 
 import { opfsArchiveService } from "./storage/opfsArchive";
 import { electronArchiveService } from "./storage/electronArchive";
-import { info } from "./utils/Logger";
+import { info, error } from "./utils/Logger";
 import { mapWithConcurrency } from "./utils";
 import type { BoutResult, BashoResult } from "./types/basho";
 import type { AlmanacSnapshot } from "./almanac";
@@ -64,7 +64,7 @@ class HistoryLRUCache {
       // Evict oldest (first key in Map iterator)
       const oldestYear = this.cache.keys().next().value;
       if (oldestYear !== undefined) {
-        console.log(`[HistoryCache] Evicting year ${oldestYear} from RAM.`);
+        info(`Evicting year ${oldestYear} from RAM.`, "HistoryCache");
         this.cache.delete(oldestYear);
       }
     }
@@ -107,7 +107,7 @@ class HistoryLRUCache {
         banzukeSnapshots: snapshots.filter((s): s is AlmanacSnapshot => s !== null),
       };
     } catch (err) {
-      console.error(`[HistoryCache] Failed to load year ${year} from archive service:`, err);
+      error(`Failed to load year ${year} from archive service`, "HistoryCache", err);
       return null;
     }
   }

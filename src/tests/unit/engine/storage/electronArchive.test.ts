@@ -7,6 +7,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { ElectronArchiveService } from "@/engine/storage/electronArchive";
 import { mockElectronAPI, clearElectronMock } from "@/tests/helpers/utils/electronMocks";
+import { logger } from "@/engine/utils/Logger";
 import type { BoutResult, BashoResult } from "@/engine/types/basho";
 import type { AlmanacSnapshot } from "@/engine/almanac";
 
@@ -126,18 +127,18 @@ describe("ElectronArchiveService", () => {
     it("logs warning and returns early in web build", () => {
       clearElectronMock();
       service = new ElectronArchiveService();
-      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const warnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
 
       service.archiveBoutLog(2024, "bout-1", mockBoutResult);
 
-      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build");
+      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build", "ElectronArchive", undefined);
       expect(mocks.fs.writeFile).not.toHaveBeenCalled();
       warnSpy.mockRestore();
     });
 
     it("logs error when ensureDir fails", async () => {
       mocks.fs.mkdir.mockRejectedValue(new Error("EACCES: permission denied"));
-      const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const errorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
 
       await service.archiveBoutLog(2024, "bout-1", mockBoutResult);
 
@@ -148,7 +149,7 @@ describe("ElectronArchiveService", () => {
 
     it("logs error when writeFile fails", async () => {
       mocks.fs.writeFile.mockRejectedValue(new Error("ENOSPC: no space left"));
-      const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const errorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
 
       await service.archiveBoutLog(2024, "bout-1", mockBoutResult);
 
@@ -180,11 +181,11 @@ describe("ElectronArchiveService", () => {
     it("logs warning and returns null in web build", () => {
       clearElectronMock();
       service = new ElectronArchiveService();
-      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const warnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
 
       const result = service.retrieveBoutLog(2024, "bout-1");
 
-      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build");
+      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build", "ElectronArchive", undefined);
       expect(result).resolves.toBeNull();
       warnSpy.mockRestore();
     });
@@ -208,17 +209,17 @@ describe("ElectronArchiveService", () => {
     it("logs warning and returns early in web build", () => {
       clearElectronMock();
       service = new ElectronArchiveService();
-      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const warnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
 
       service.archiveGazette(2024, 1, "# Test");
 
-      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build");
+      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build", "ElectronArchive", undefined);
       warnSpy.mockRestore();
     });
 
     it("logs error when ensureDir fails", async () => {
       mocks.fs.mkdir.mockRejectedValue(new Error("EACCES: permission denied"));
-      const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const errorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
 
       await service.archiveGazette(2024, 1, "# Test");
 
@@ -229,7 +230,7 @@ describe("ElectronArchiveService", () => {
 
     it("logs error when writeFile fails", async () => {
       mocks.fs.writeFile.mockRejectedValue(new Error("ENOSPC: no space left"));
-      const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const errorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
 
       await service.archiveGazette(2024, 1, "# Test");
 
@@ -254,11 +255,11 @@ describe("ElectronArchiveService", () => {
     it("logs warning and returns null in web build", () => {
       clearElectronMock();
       service = new ElectronArchiveService();
-      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const warnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
 
       const result = service.retrieveGazette(2024, 1);
 
-      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build");
+      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build", "ElectronArchive", undefined);
       expect(result).resolves.toBeNull();
       warnSpy.mockRestore();
     });
@@ -276,7 +277,7 @@ describe("ElectronArchiveService", () => {
 
     it("returns empty array when readDir fails", async () => {
       mocks.fs.readDir.mockRejectedValue(new Error("ENOENT"));
-      const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const errorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
 
       const result = await service.getArchivedBoutIdsForSeason(2024);
 
@@ -288,11 +289,11 @@ describe("ElectronArchiveService", () => {
     it("logs warning and returns empty array in web build", () => {
       clearElectronMock();
       service = new ElectronArchiveService();
-      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const warnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
 
       const result = service.getArchivedBoutIdsForSeason(2024);
 
-      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build");
+      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build", "ElectronArchive", undefined);
       expect(result).resolves.toEqual([]);
       warnSpy.mockRestore();
     });
@@ -315,17 +316,17 @@ describe("ElectronArchiveService", () => {
     it("logs warning and returns early in web build", () => {
       clearElectronMock();
       service = new ElectronArchiveService();
-      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const warnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
 
       service.archiveAwards(2024, mockAwards);
 
-      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build");
+      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build", "ElectronArchive", undefined);
       warnSpy.mockRestore();
     });
 
     it("logs error when ensureDir fails", async () => {
       mocks.fs.mkdir.mockRejectedValue(new Error("EACCES: permission denied"));
-      const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const errorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
 
       await service.archiveAwards(2024, mockAwards);
 
@@ -336,7 +337,7 @@ describe("ElectronArchiveService", () => {
 
     it("logs error when writeFile fails", async () => {
       mocks.fs.writeFile.mockRejectedValue(new Error("ENOSPC: no space left"));
-      const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const errorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
 
       await service.archiveAwards(2024, mockAwards);
 
@@ -368,11 +369,11 @@ describe("ElectronArchiveService", () => {
     it("logs warning and returns empty array in web build", () => {
       clearElectronMock();
       service = new ElectronArchiveService();
-      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const warnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
 
       const result = service.retrieveAwards(2024);
 
-      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build");
+      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build", "ElectronArchive", undefined);
       expect(result).resolves.toEqual([]);
       warnSpy.mockRestore();
     });
@@ -395,17 +396,17 @@ describe("ElectronArchiveService", () => {
     it("logs warning and returns early in web build", () => {
       clearElectronMock();
       service = new ElectronArchiveService();
-      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const warnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
 
       service.archiveBanzuke(2024, 1, mockSnapshot);
 
-      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build");
+      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build", "ElectronArchive", undefined);
       warnSpy.mockRestore();
     });
 
     it("logs error when ensureDir fails", async () => {
       mocks.fs.mkdir.mockRejectedValue(new Error("EACCES: permission denied"));
-      const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const errorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
 
       await service.archiveBanzuke(2024, 1, mockSnapshot);
 
@@ -416,7 +417,7 @@ describe("ElectronArchiveService", () => {
 
     it("logs error when writeFile fails", async () => {
       mocks.fs.writeFile.mockRejectedValue(new Error("ENOSPC: no space left"));
-      const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const errorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
 
       await service.archiveBanzuke(2024, 1, mockSnapshot);
 
@@ -448,11 +449,11 @@ describe("ElectronArchiveService", () => {
     it("logs warning and returns null in web build", () => {
       clearElectronMock();
       service = new ElectronArchiveService();
-      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const warnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
 
       const result = service.retrieveBanzuke(2024, 1);
 
-      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build");
+      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build", "ElectronArchive", undefined);
       expect(result).resolves.toBeNull();
       warnSpy.mockRestore();
     });

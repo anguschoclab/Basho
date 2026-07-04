@@ -29,6 +29,7 @@ import {
   POST_BASHO_DAYS,
   INTERIM_DAYS,
 } from "../../constants/engine/npcStrategy";
+import { warn } from "../utils/Logger";
 
 // ====
 // TYPES
@@ -202,8 +203,9 @@ function buildDailyReport(world: WorldState, isWeekly: boolean): DailyTickReport
 export function advanceDays(world: WorldState, days: number): WorldState {
   let currentWorld = world;
   if (days > MAX_DAYS_ADVANCE) {
-    console.warn(
-      `[advanceDays] Input ${days} exceeds MAX_DAYS_ADVANCE (${MAX_DAYS_ADVANCE}); capping.`
+    warn(
+      `Input ${days} exceeds MAX_DAYS_ADVANCE (${MAX_DAYS_ADVANCE}); capping.`,
+      "advanceDays"
     );
   }
   const n = Math.max(1, Math.min(days, MAX_DAYS_ADVANCE));
@@ -226,8 +228,9 @@ export function advanceDays(world: WorldState, days: number): WorldState {
 export function advanceDaysFast(world: WorldState, days: number): WorldState {
   let currentWorld = world;
   if (days > MAX_DAYS_ADVANCE) {
-    console.warn(
-      `[advanceDaysFast] Input ${days} exceeds MAX_DAYS_ADVANCE (${MAX_DAYS_ADVANCE}); capping.`
+    warn(
+      `Input ${days} exceeds MAX_DAYS_ADVANCE (${MAX_DAYS_ADVANCE}); capping.`,
+      "advanceDaysFast"
     );
   }
   const n = Math.max(1, Math.min(days, MAX_DAYS_ADVANCE));

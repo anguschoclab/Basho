@@ -8,6 +8,7 @@ import {
 import { makeMockWorld } from "../utils";
 import { runArchivalPruning } from "@/engine/archival";
 import { SerializationService } from "@/engine/persistence/SerializationService";
+import { logger } from "@/engine/utils/Logger";
 
 // Mock dependencies
 vi.mock("@/engine/archival", () => ({
@@ -63,14 +64,15 @@ describe("saveload - saveGame error paths", () => {
     const mockStorage = createMockStorage(true, false);
     setStorageProvider(mockStorage);
 
-    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const errorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
 
     const result = saveGame(world, "slot_1");
 
     expect(result).toBe(false);
     expect(errorSpy).toHaveBeenCalledWith(
-      expect.stringContaining("[SaveLoad] Failed to save game"),
-      ""
+      expect.stringContaining("Failed to save game"),
+      "SaveLoad",
+      undefined
     );
 
     errorSpy.mockRestore();
@@ -84,14 +86,15 @@ describe("saveload - saveGame error paths", () => {
     const mockStorage = createMockStorage(false, false);
     setStorageProvider(mockStorage);
 
-    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const errorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
 
     const result = saveGame(world, "slot_1");
 
     expect(result).toBe(false);
     expect(errorSpy).toHaveBeenCalledWith(
-      expect.stringContaining("[SaveLoad] Failed to save game"),
-      ""
+      expect.stringContaining("Failed to save game"),
+      "SaveLoad",
+      undefined
     );
 
     errorSpy.mockRestore();
@@ -106,14 +109,15 @@ describe("saveload - saveGame error paths", () => {
       throw new Error("Archival pruning failed");
     });
 
-    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const errorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
 
     const result = saveGame(world, "slot_1");
 
     expect(result).toBe(false);
     expect(errorSpy).toHaveBeenCalledWith(
-      expect.stringContaining("[SaveLoad] Failed to save game"),
-      ""
+      expect.stringContaining("Failed to save game"),
+      "SaveLoad",
+      undefined
     );
 
     errorSpy.mockRestore();
@@ -128,14 +132,15 @@ describe("saveload - saveGame error paths", () => {
       throw new Error("Serialization failed");
     });
 
-    const errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const errorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
 
     const result = saveGame(world, "slot_1");
 
     expect(result).toBe(false);
     expect(errorSpy).toHaveBeenCalledWith(
-      expect.stringContaining("[SaveLoad] Failed to save game"),
-      ""
+      expect.stringContaining("Failed to save game"),
+      "SaveLoad",
+      undefined
     );
 
     errorSpy.mockRestore();
@@ -183,12 +188,12 @@ describe("saveload - loadGame error paths", () => {
     const mockStorage = createMockStorage(false, true);
     setStorageProvider(mockStorage);
 
-    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const consoleErrorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
 
     const result = loadGame("slot_1");
 
     expect(result).toBe(null);
-    expect(consoleErrorSpy).toHaveBeenCalledWith("Failed to load game:", expect.any(Error));
+    expect(consoleErrorSpy).toHaveBeenCalledWith("Failed to load game", "SaveLoad", expect.any(Error));
 
     consoleErrorSpy.mockRestore();
   });
@@ -200,7 +205,7 @@ describe("saveload - loadGame error paths", () => {
     // Store invalid JSON
     mockStorage.setItem("basho_save_slot_1", "{ invalid json }");
 
-    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const consoleErrorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
 
     const result = loadGame("slot_1");
 
@@ -226,12 +231,12 @@ describe("saveload - loadGame error paths", () => {
       throw new Error("Deserialization failed");
     });
 
-    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const consoleErrorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
 
     const result = loadGame("slot_1");
 
     expect(result).toBe(null);
-    expect(consoleErrorSpy).toHaveBeenCalledWith("Failed to load game:", expect.any(Error));
+    expect(consoleErrorSpy).toHaveBeenCalledWith("Failed to load game", "SaveLoad", expect.any(Error));
 
     consoleErrorSpy.mockRestore();
   });
@@ -244,7 +249,7 @@ describe("saveload - loadGame error paths", () => {
     const invalidSave = { foo: "bar" };
     mockStorage.setItem("basho_save_slot_1", JSON.stringify(invalidSave));
 
-    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const consoleErrorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
 
     const result = loadGame("slot_1");
 

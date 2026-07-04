@@ -78,6 +78,7 @@ function migrateWorldState(world: WorldState): WorldState {
 }
 
 import type { EngineCommand } from "./types";
+import { warn } from "../utils/Logger";
 
 let currentWorld: WorldState | null = null;
 let worldVersion = 0;
@@ -400,7 +401,7 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
     if (handler) {
       await handler(command as any);
     } else {
-      console.warn(`[Worker] Unknown command: ${command.type}`);
+      warn(`Unknown command: ${command.type}`, "Worker");
     }
   } catch (err) {
     self.postMessage({

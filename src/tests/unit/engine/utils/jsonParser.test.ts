@@ -1,5 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { parseLLMResponse, safeParse } from "@/engine/utils/jsonParser";
+import { logger } from "@/engine/utils/Logger";
 
 describe("parseLLMResponse", () => {
   it("parses valid strict JSON", () => {
@@ -78,6 +79,41 @@ describe("parseLLMResponse", () => {
     expect(result).toEqual({ good: 1 });
     expect(Object.keys(result as Record<string, unknown>)).not.toContain("constructor");
     expect(Object.keys(result as Record<string, unknown>)).not.toContain("prototype");
+  });
+});
+
+describe("parseLLMResponse - Logger integration", () => {
+  let warnSpy: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    warnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    warnSpy.mockRestore();
+  });
+
+  it("warns via Logger when initial parse fails", () => {
+    // Markdown-wrapped invalid JSON triggers the fallback path
+    const input = '```json\n{unclosed: "bracket"\n```';
+    try {
+      parseLLMResponse(input);
+    } catch {
+      // Expected to throw after sanitization fails
+    }
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      "Initial parse failed, attempting sanitization...",
+      "jsonParser",
+      undefined
+    );
+  });
+
+  it("does not warn when initial parse succeeds", () => {
+    const input = '{"hello": "world"}';
+    parseLLMResponse(input);
+
+    expect(warnSpy).not.toHaveBeenCalled();
   });
 });
 

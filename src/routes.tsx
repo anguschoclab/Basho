@@ -8,6 +8,7 @@ import {
   redirect,
 } from "@tanstack/react-router";
 import { lazy, Suspense } from "react";
+import { warn, error } from "./engine/utils/Logger";
 import { SaveSlotService } from "./engine/persistence/SaveSlotService";
 import MainMenu from "./pages/MainMenu";
 import NewGameWizard from "./pages/NewGameWizard";
@@ -72,16 +73,16 @@ const isElectronProd =
 const rootRoute = createRootRoute({
   component: () => <Outlet />,
   notFoundComponent: () => {
-    console.warn("[Routes] 404: Not Found Component Triggered");
+    warn("404: Not Found Component Triggered", "Routes");
     return <NotFound />;
   },
-  errorComponent: ({ error }) => {
-    console.error("Root Route Error caught by TanStack Router:", error);
+  errorComponent: ({ error: err }) => {
+    error("Root Route Error caught by TanStack Router", "Routes", err);
     return (
       <div className="p-10 bg-destructive/10 text-destructive border border-destructive rounded-lg m-10">
         <h1 className="text-2xl font-bold mb-4">Application Error</h1>
         <p className="font-mono text-sm whitespace-pre-wrap">
-          {error instanceof Error ? error.message : String(error)}
+          {err instanceof Error ? err.message : String(err)}
         </p>
         <button
           onClick={() => (window.location.href = "/")}

@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { safeRunwayBand, safeKoenkaiBand } from "@/components/economy/economyUtils";
 import { FinancialHealthOverview } from "@/components/economy/FinancialHealthOverview";
 import { BailoutCard } from "@/components/economy/BailoutCard";
+import { error } from "@/engine/utils/Logger";
 import { DebtSection } from "@/components/economy/DebtSection";
 import { KoenkaiSekitoriCards } from "@/components/economy/KoenkaiSekitoriCards";
 import { IncomeExpensesCards } from "@/components/economy/IncomeExpensesCards";
@@ -110,7 +111,7 @@ export default function EconomyPage() {
     try {
       return calculateHeyaWeeklyFinances(playerHeya, world);
     } catch (e) {
-      console.error("Failed to calculate finances:", e);
+      error("Failed to calculate finances", "EconomyPage", e);
       return null;
     }
   }, [world, playerHeya]);

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   advanceOneDay,
   advanceDays,
@@ -8,6 +8,7 @@ import {
 } from "@/engine/tick/tickDaily";
 import { makeMockWorld } from "../utils";
 import * as pipelineRunner from "@/engine/tick/pipelineRunner";
+import { logger } from "@/engine/utils/Logger";
 
 describe("tickDaily", () => {
   describe("advanceOneDay", () => {
@@ -182,6 +183,66 @@ describe("tickDaily", () => {
 
       expect(nextWorld.cyclePhase).toBe("interim");
       expect(nextWorld._interimDaysRemaining).toBe(42);
+    });
+  });
+
+  describe("advanceDays - Logger integration", () => {
+    let warnSpy: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(() => {
+      warnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      warnSpy.mockRestore();
+    });
+
+    it("warns via Logger when input exceeds MAX_DAYS_ADVANCE", () => {
+      const world = makeMockWorld({ dayIndexGlobal: 0 });
+      advanceDays(world, 400);
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining("exceeds MAX_DAYS_ADVANCE"),
+        "advanceDays",
+        undefined
+      );
+    });
+
+    it("does not warn when input is within bounds", () => {
+      const world = makeMockWorld({ dayIndexGlobal: 0 });
+      advanceDays(world, 5);
+
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("advanceDaysFast - Logger integration", () => {
+    let warnSpy: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(() => {
+      warnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      warnSpy.mockRestore();
+    });
+
+    it("warns via Logger when input exceeds MAX_DAYS_ADVANCE", () => {
+      const world = makeMockWorld({ dayIndexGlobal: 0 });
+      advanceDaysFast(world, 400);
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining("exceeds MAX_DAYS_ADVANCE"),
+        "advanceDaysFast",
+        undefined
+      );
+    });
+
+    it("does not warn when input is within bounds", () => {
+      const world = makeMockWorld({ dayIndexGlobal: 0 });
+      advanceDaysFast(world, 5);
+
+      expect(warnSpy).not.toHaveBeenCalled();
     });
   });
 });

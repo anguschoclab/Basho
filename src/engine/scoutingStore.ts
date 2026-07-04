@@ -11,6 +11,7 @@ import { type ScoutingInvestment } from "../constants/engine/recruitment";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
 import { getRikishi } from "./queries";
+import { warn } from "./utils/Logger";
 
 // Local implementations for missing scouting functions
 /**
@@ -103,8 +104,9 @@ export function getOrCreateScouted(
   const truth = getRikishi(world, rikishiId);
   if (!truth) {
     if (existing) return existing;
-    console.warn(
-      `Scouting requested for non-existent rikishi: ${rikishiId}. Returning safety placeholder.`
+    warn(
+      `Scouting requested for non-existent rikishi: ${rikishiId}. Returning safety placeholder.`,
+      "ScoutingStore"
     );
 
     return {

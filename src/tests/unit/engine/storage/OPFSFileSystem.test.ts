@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { OPFSFileSystem } from "@/engine/storage/OPFSFileSystem";
+import { logger } from "@/engine/utils/Logger";
 
 describe("OPFSFileSystem", () => {
   let fs: OPFSFileSystem;
@@ -65,7 +66,7 @@ describe("OPFSFileSystem", () => {
     });
 
     it("returns null and warns on error", async () => {
-      const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const consoleWarnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
       const error = new Error("Test Error");
       Object.defineProperty(globalThis, "navigator", {
         value: { storage: { getDirectory: vi.fn().mockRejectedValue(error) } },
@@ -76,7 +77,8 @@ describe("OPFSFileSystem", () => {
 
       expect(result).toBeNull();
       expect(consoleWarnSpy).toHaveBeenCalledWith(
-        "[OPFS] Failed to access directory path: folder1",
+        "Failed to access directory path: folder1",
+        "OPFS",
         error
       );
       consoleWarnSpy.mockRestore();
@@ -142,7 +144,7 @@ describe("OPFSFileSystem", () => {
 
     it("no cache pollution on error — failed traversal does not cache null", async () => {
       const { mockRoot } = setupMockFS();
-      const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const consoleWarnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
 
       mockRoot.getDirectoryHandle.mockRejectedValue(new Error("fail"));
       const first = await fs.getDirectoryPath(["a", "b"]);
@@ -209,7 +211,7 @@ describe("OPFSFileSystem", () => {
 
   describe("handleQuotaError", () => {
     it("dispatches custom event on QuotaExceededError and logs warning", () => {
-      const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const consoleWarnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
       const dispatchEventSpy = vi.fn();
       Object.defineProperty(globalThis, "window", {
         value: { dispatchEvent: dispatchEventSpy },
@@ -235,7 +237,9 @@ describe("OPFSFileSystem", () => {
       fs.handleQuotaError(error);
 
       expect(consoleWarnSpy).toHaveBeenCalledWith(
-        "[OPFS] Storage quota exceeded. Archiving skipped."
+        "Storage quota exceeded. Archiving skipped.",
+        "OPFS",
+        undefined
       );
       expect(dispatchEventSpy).toHaveBeenCalled();
       const eventCall = dispatchEventSpy.mock.calls[0][0];
@@ -248,12 +252,12 @@ describe("OPFSFileSystem", () => {
     });
 
     it("logs error for other exceptions", () => {
-      const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+      const consoleErrorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
       const error = new Error("Some other error");
 
       fs.handleQuotaError(error);
 
-      expect(consoleErrorSpy).toHaveBeenCalledWith("[OPFS] Unexpected storage error:", error);
+      expect(consoleErrorSpy).toHaveBeenCalledWith("Unexpected storage error", "OPFS", error);
       consoleErrorSpy.mockRestore();
     });
   });

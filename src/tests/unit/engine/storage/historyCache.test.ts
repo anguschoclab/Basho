@@ -1,8 +1,9 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import type { ArchiveService } from "@/engine/storage/opfsArchive";
 import type { BoutResult, BashoResult } from "@/engine/types/basho";
 import type { AlmanacSnapshot } from "@/engine/almanac";
 import type { ArchivedYear } from "@/engine/historyCache";
+import { logger } from "@/engine/utils/Logger";
 
 // --- Fake archive service factory ---
 
@@ -305,6 +306,41 @@ describe("HistoryLRUCache", () => {
       expect(await historyCache.getYear(1)).toBe(y1);
       expect(await historyCache.getYear(3)).toBe(y3);
       expect(await historyCache.getYear(4)).toBe(y4);
+    });
+  });
+
+  describe("LRU eviction logging", () => {
+    let infoSpy: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(() => {
+      infoSpy = vi.spyOn(logger, "info").mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      infoSpy.mockRestore();
+    });
+
+    it("logs via Logger.info when evicting oldest year", () => {
+      const y1: ArchivedYear = { year: 1, bouts: [], awards: [], banzukeSnapshots: [] };
+      const y2: ArchivedYear = { year: 2, bouts: [], awards: [], banzukeSnapshots: [] };
+      const y3: ArchivedYear = { year: 3, bouts: [], awards: [], banzukeSnapshots: [] };
+      const y4: ArchivedYear = { year: 4, bouts: [], awards: [], banzukeSnapshots: [] };
+
+      historyCache.putYear(1, y1);
+      historyCache.putYear(2, y2);
+      historyCache.putYear(3, y3);
+      // Adding y4 evicts y1 (oldest)
+      historyCache.putYear(4, y4);
+
+      expect(infoSpy).toHaveBeenCalledWith("Evicting year 1 from RAM.", "HistoryCache", undefined);
+    });
+
+    it("does not log when no eviction occurs", () => {
+      const y1: ArchivedYear = { year: 1, bouts: [], awards: [], banzukeSnapshots: [] };
+
+      historyCache.putYear(1, y1);
+
+      expect(infoSpy).not.toHaveBeenCalled();
     });
   });
 });

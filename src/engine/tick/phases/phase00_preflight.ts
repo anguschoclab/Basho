@@ -180,8 +180,7 @@ function checkPhaseTransition(
   return undefined;
 }
 
-function logTransition(_world: WorldState, from: CyclePhase, to: CyclePhase, summary: string) {
+function logTransition(_world: WorldState, _from: CyclePhase, _to: CyclePhase, _summary: string) {
   // Note: EventBus replaced - transition logging skipped for now
   // This is a low-priority event that can be added later
-  console.log(`[PhaseTransition] ${from} -> ${to}: ${summary}`);
 }

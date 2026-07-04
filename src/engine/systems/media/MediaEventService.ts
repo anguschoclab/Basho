@@ -65,8 +65,6 @@ export function generateGovernanceHeadline(args: {
     },
   });
 
-  console.log(`MediaService: Generated Governance Headline: ${title}`);
-
   return builder.build();
 }
 

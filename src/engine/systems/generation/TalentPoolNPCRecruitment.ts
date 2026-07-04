@@ -11,6 +11,7 @@ import { materializeCandidateToRikishiInternal } from "./TalentPoolMaterializati
 import { isRecruitmentPlayerRelevant } from "../../npcAI/eventSurfacing";
 import { getHeya } from "../../queries";
 import { recruitmentBalanceMultipliers } from "./competitiveBalance";
+import { error } from "@/engine/utils/Logger";
 
 /**
  * Automates recruitment for NPC stables.
@@ -215,8 +216,10 @@ export function fillVacanciesForNPCWithBidding(
       currentCandidates = materializeImpact.nextCandidates;
       currentPools = materializeImpact.nextPools;
     } catch (err) {
-      console.error(
-        `[RECRUIT ERROR] Failed to materialize candidate ${bid.candidateId}: ${err instanceof Error ? err.message : String(err)}`
+      error(
+        `Failed to materialize candidate ${bid.candidateId}`,
+        "TalentPoolNPCRecruitment",
+        err
       );
       continue;
     }

@@ -18,6 +18,7 @@
  */
 
 import { Component, ErrorInfo, ReactNode } from "react";
+import { error } from "@/engine/utils/Logger";
 
 /**
  * Props for ErrorBoundary component.
@@ -58,8 +59,8 @@ export class ErrorBoundary extends Component<Props, State> {
     return { hasError: true, error };
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error("[ErrorBoundary] Uncaught error:", error, errorInfo);
+  public componentDidCatch(err: Error, errorInfo: ErrorInfo) {
+    error("Uncaught error", "ErrorBoundary", { err, errorInfo });
   }
 
   public render() {

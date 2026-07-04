@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterAll, type Mock } from "vites
 import { MockFactory } from "../../../helpers/utils/MockFactory";
 import type { EngineCommand, EngineEvent } from "@/engine/worker/types";
 import type { UIDigest } from "@/presenters/uiDigest";
+import { logger } from "@/engine/utils/Logger";
 
 // Save original globals to restore after tests finish and avoid polluting globals
 const originalSelf = globalThis.self;
@@ -203,13 +204,13 @@ describe("engine.worker", () => {
   });
 
   it("should handle invalid commands by logging a warning", async () => {
-    const consoleWarnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const consoleWarnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
 
     await triggerMessage({
       type: "INVALID_COMMAND",
     } as unknown as EngineCommand);
 
-    expect(consoleWarnSpy).toHaveBeenCalledWith("[Worker] Unknown command: INVALID_COMMAND");
+    expect(consoleWarnSpy).toHaveBeenCalledWith("Unknown command: INVALID_COMMAND", "Worker", undefined);
     consoleWarnSpy.mockRestore();
   });
 

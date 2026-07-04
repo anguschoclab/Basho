@@ -5,6 +5,7 @@ import { ensureTalentPoolState, refreshAllPools } from "./TalentPoolStateService
 import { resolveCandidateSuitor } from "./TalentPoolOffers";
 import { RNGRegistry } from "../../core/RNGRegistry";
 import { computeReplacementGap } from "./RecruitmentController";
+import { warn } from "@/engine/utils/Logger";
 
 /**
  * Weekly maintenance for the talent pool.
@@ -107,8 +108,9 @@ export function tickWeekTalentPool(world: WorldState): StateImpact {
       pool.candidatesHidden = [];
       nextPools[pt] = pool;
     }
-    console.log(
-      `[RECRUITMENT] Emergency: moved all hidden candidates to visible. Active population: ${population}`
+    warn(
+      `Emergency: moved all hidden candidates to visible. Active population: ${population}`,
+      "Recruitment"
     );
   }
 

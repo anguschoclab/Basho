@@ -12,6 +12,7 @@
  */
 
 import { createContext, useContext, useReducer, useCallback, useMemo, ReactNode } from "react";
+import { error as logError } from "@/engine/utils/Logger";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
@@ -167,8 +168,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     if (!state.world) return null;
     try {
       return buildWeeklyDigest(state.world);
-    } catch (error) {
-      console.error("Error building weekly digest:", error);
+    } catch (err) {
+      logError("Error building weekly digest", "GameContext", err);
       return null;
     }
   }, [state.world]);

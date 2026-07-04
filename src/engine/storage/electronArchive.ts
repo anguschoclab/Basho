@@ -10,6 +10,7 @@ import type { ArchiveService } from "./opfsArchive";
 import { type BoutResult, type BashoResult } from "../types/basho";
 import { type AlmanacSnapshot } from "../almanac";
 import { destr } from "destr";
+import { warn, error } from "../utils/Logger";
 
 /**
  * ElectronArchiveService — file system-based archive service for Electron.
@@ -49,8 +50,8 @@ export class ElectronArchiveService implements ArchiveService {
 
       // Create base directory
       await api.fs.mkdir(this.baseDir, true);
-    } catch (error) {
-      console.error("Failed to initialize archive directory:", error);
+    } catch (err) {
+      error("Failed to initialize archive directory", "ElectronArchive", err);
     }
   }
 
@@ -63,7 +64,7 @@ export class ElectronArchiveService implements ArchiveService {
 
   public async archiveBoutLog(season: number, boutId: string, logData: unknown): Promise<void> {
     if (!this.isElectron) {
-      console.warn("ElectronArchiveService not available in web build");
+      warn("ElectronArchiveService not available in web build", "ElectronArchive");
       return;
     }
 
@@ -74,14 +75,14 @@ export class ElectronArchiveService implements ArchiveService {
       const filePath = `${this.baseDir}/${dirPath}/${boutId}.json`;
       const content = JSON.stringify(logData, null, 2);
       await this.getElectronAPI().fs.writeFile(filePath, content);
-    } catch (error) {
-      console.error(`Failed to archive bout log for season ${season}, bout ${boutId}:`, error);
+    } catch (err) {
+      error(`Failed to archive bout log for season ${season}, bout ${boutId}`, "ElectronArchive", err);
     }
   }
 
   public async retrieveBoutLog(season: number, boutId: string): Promise<BoutResult | null> {
     if (!this.isElectron) {
-      console.warn("ElectronArchiveService not available in web build");
+      warn("ElectronArchiveService not available in web build", "ElectronArchive");
       return null;
     }
 
@@ -93,15 +94,15 @@ export class ElectronArchiveService implements ArchiveService {
         return destr<BoutResult>(content);
       }
       return null;
-    } catch (error) {
-      console.error(`Failed to retrieve bout log for season ${season}, bout ${boutId}:`, error);
+    } catch (err) {
+      error(`Failed to retrieve bout log for season ${season}, bout ${boutId}`, "ElectronArchive", err);
       return null;
     }
   }
 
   public async archiveGazette(season: number, week: number, markdown: string): Promise<void> {
     if (!this.isElectron) {
-      console.warn("ElectronArchiveService not available in web build");
+      warn("ElectronArchiveService not available in web build", "ElectronArchive");
       return;
     }
 
@@ -111,14 +112,14 @@ export class ElectronArchiveService implements ArchiveService {
 
       const filePath = `${this.baseDir}/${dirPath}/${week}.md`;
       await this.getElectronAPI().fs.writeFile(filePath, markdown);
-    } catch (error) {
-      console.error(`Failed to archive gazette for season ${season}, week ${week}:`, error);
+    } catch (err) {
+      error(`Failed to archive gazette for season ${season}, week ${week}`, "ElectronArchive", err);
     }
   }
 
   public async retrieveGazette(season: number, week: number): Promise<string | null> {
     if (!this.isElectron) {
-      console.warn("ElectronArchiveService not available in web build");
+      warn("ElectronArchiveService not available in web build", "ElectronArchive");
       return null;
     }
 
@@ -126,15 +127,15 @@ export class ElectronArchiveService implements ArchiveService {
       const filePath = `${this.baseDir}/season_${season}/gazettes/${week}.md`;
       const content = await this.getElectronAPI().fs.readFile(filePath);
       return content;
-    } catch (error) {
-      console.error(`Failed to retrieve gazette for season ${season}, week ${week}:`, error);
+    } catch (err) {
+      error(`Failed to retrieve gazette for season ${season}, week ${week}`, "ElectronArchive", err);
       return null;
     }
   }
 
   public async getArchivedBoutIdsForSeason(season: number): Promise<string[]> {
     if (!this.isElectron) {
-      console.warn("ElectronArchiveService not available in web build");
+      warn("ElectronArchiveService not available in web build", "ElectronArchive");
       return [];
     }
 
@@ -144,15 +145,15 @@ export class ElectronArchiveService implements ArchiveService {
 
       // Remove .json extension
       return files.map((file: string) => file.replace(".json", ""));
-    } catch (error) {
-      console.error(`Failed to get archived bout IDs for season ${season}:`, error);
+    } catch (err) {
+      error(`Failed to get archived bout IDs for season ${season}`, "ElectronArchive", err);
       return [];
     }
   }
 
   public async archiveAwards(season: number, awards: BashoResult[]): Promise<void> {
     if (!this.isElectron) {
-      console.warn("ElectronArchiveService not available in web build");
+      warn("ElectronArchiveService not available in web build", "ElectronArchive");
       return;
     }
 
@@ -163,14 +164,14 @@ export class ElectronArchiveService implements ArchiveService {
       const filePath = `${this.baseDir}/${dirPath}/awards.json`;
       const content = JSON.stringify(awards, null, 2);
       await this.getElectronAPI().fs.writeFile(filePath, content);
-    } catch (error) {
-      console.error(`Failed to archive awards for season ${season}:`, error);
+    } catch (err) {
+      error(`Failed to archive awards for season ${season}`, "ElectronArchive", err);
     }
   }
 
   public async retrieveAwards(season: number): Promise<BashoResult[]> {
     if (!this.isElectron) {
-      console.warn("ElectronArchiveService not available in web build");
+      warn("ElectronArchiveService not available in web build", "ElectronArchive");
       return [];
     }
 
@@ -182,8 +183,8 @@ export class ElectronArchiveService implements ArchiveService {
         return destr<BashoResult[]>(content);
       }
       return [];
-    } catch (error) {
-      console.error(`Failed to retrieve awards for season ${season}:`, error);
+    } catch (err) {
+      error(`Failed to retrieve awards for season ${season}`, "ElectronArchive", err);
       return [];
     }
   }
@@ -194,7 +195,7 @@ export class ElectronArchiveService implements ArchiveService {
     snapshot: AlmanacSnapshot
   ): Promise<void> {
     if (!this.isElectron) {
-      console.warn("ElectronArchiveService not available in web build");
+      warn("ElectronArchiveService not available in web build", "ElectronArchive");
       return;
     }
 
@@ -205,8 +206,8 @@ export class ElectronArchiveService implements ArchiveService {
       const filePath = `${this.baseDir}/${dirPath}/${bashoNumber}.json`;
       const content = JSON.stringify(snapshot, null, 2);
       await this.getElectronAPI().fs.writeFile(filePath, content);
-    } catch (error) {
-      console.error(`Failed to archive banzuke for season ${season}, basho ${bashoNumber}:`, error);
+    } catch (err) {
+      error(`Failed to archive banzuke for season ${season}, basho ${bashoNumber}`, "ElectronArchive", err);
     }
   }
 
@@ -215,7 +216,7 @@ export class ElectronArchiveService implements ArchiveService {
     bashoNumber: number
   ): Promise<AlmanacSnapshot | null> {
     if (!this.isElectron) {
-      console.warn("ElectronArchiveService not available in web build");
+      warn("ElectronArchiveService not available in web build", "ElectronArchive");
       return null;
     }
 
@@ -227,10 +228,11 @@ export class ElectronArchiveService implements ArchiveService {
         return destr<AlmanacSnapshot>(content);
       }
       return null;
-    } catch (error) {
-      console.error(
-        `Failed to retrieve banzuke for season ${season}, basho ${bashoNumber}:`,
-        error
+    } catch (err) {
+      error(
+        `Failed to retrieve banzuke for season ${season}, basho ${bashoNumber}`,
+        "ElectronArchive",
+        err
       );
       return null;
     }

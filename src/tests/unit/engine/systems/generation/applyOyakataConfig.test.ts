@@ -1,9 +1,10 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
 import {
   applyOyakataCreationConfig,
   PLAYER_BACKSTORIES,
 } from "@/engine/systems/generation/applyOyakataConfig";
+import { logger } from "@/engine/utils/Logger";
 
 describe("applyOyakataCreationConfig", () => {
   const world = generateInitialWorld("test-seed-apply");
@@ -72,6 +73,20 @@ describe("applyOyakataCreationConfig", () => {
       backstoryId: "ozeki_legend",
     });
     expect(result).toBe(world); // same reference — no mutation
+  });
+
+  it("warns via Logger when heyaId is unknown", () => {
+    const warnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
+    applyOyakataCreationConfig(world, "nonexistent-heya", {
+      name: "Testoyama",
+      backstoryId: "ozeki_legend",
+    });
+    expect(warnSpy).toHaveBeenCalledWith(
+      "Heya not found: nonexistent-heya",
+      "applyOyakataCreationConfig",
+      undefined
+    );
+    warnSpy.mockRestore();
   });
 
   it("does not mutate the original world", () => {

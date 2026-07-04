@@ -2,13 +2,14 @@ import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Home } from "lucide-react";
+import { error } from "@/engine/utils/Logger";
 
 const NotFound = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
+    error(`User attempted to access non-existent route: ${location.pathname}`, "NotFound");
   }, [location.pathname]);
 
   return (

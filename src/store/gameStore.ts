@@ -9,6 +9,7 @@ import { create } from "zustand";
 import type { UIDigest } from "../presenters/uiDigest";
 import type { WorldState } from "../engine/types/world";
 import type { EngineCommand, EngineEvent } from "../engine/worker/types";
+import { warn } from "../engine/utils/Logger";
 
 /**
  * Represents the state and actions available in the global Game Store.
@@ -89,7 +90,6 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
 
       switch (data.type) {
         case "READY":
-          console.log("[Store] Engine Worker Ready");
           break;
         case "TICK_COMPLETED":
           set({ digest: data.digest, isSimulating: false, progress: null });
@@ -128,7 +128,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
         command.type === "AUTO_SIM_DAYS" ||
         command.type === "TICK_MULTIPLE_DAYS")
     ) {
-      console.warn("[Store] Tick command dropped - another tick is in progress");
+      warn("Tick command dropped - another tick is in progress", "Store");
       return;
     }
 

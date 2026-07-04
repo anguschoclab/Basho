@@ -1,6 +1,7 @@
 import archData from "./archive.json";
 import { SeededRNG } from "../rng";
 import type { NarrativeContext } from "../types/events";
+import { warn } from "../utils/Logger";
 
 export type ResolutionPath = string; // e.g., 'combat.phases.tachiai'
 
@@ -116,8 +117,7 @@ export function interpolate(text: string, context: NarrativeContext): string {
     const value = context[key] ?? context[key.toLowerCase()];
 
     if (value === undefined || value === null) {
-      const errorMsg = `BardEngine Warning: Missing token {${key}} in context for template: "${text}"`;
-      console.warn(errorMsg);
+      warn(`Missing token {${key}} in context for template: "${text}"`, "BardEngine");
       return `[MISSING: ${key}]`;
     }
 
@@ -202,7 +202,7 @@ export function interpolate(text: string, context: NarrativeContext): string {
     if (shouldThrow) {
       throw new Error(leakMsg);
     }
-    console.warn(leakMsg);
+    warn(leakMsg, "BardEngine");
   }
 
   return result;
@@ -219,7 +219,7 @@ export const BardEngine = {
     const options = getOptions(path, intensity);
 
     if (options.length === 0) {
-      console.warn(`BardEngine: No options found at path "${path}" (Intensity: ${intensity})`);
+      warn(`No options found at path "${path}" (Intensity: ${intensity})`, "BardEngine");
       return { text: "", id: "unknown", path };
     }
 

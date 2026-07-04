@@ -16,6 +16,7 @@
 import type { WorldState } from "../types/world";
 import type { StateImpact } from "../core/StateImpact";
 import { resolveImpacts } from "../core/ImpactResolver";
+import { error } from "../utils/Logger";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -65,8 +66,8 @@ export function runPipeline(initialWorld: WorldState, phases: PipelinePhase[]): 
             `(heyas or rikishi map missing).`
         );
       }
-    } catch (error) {
-      console.error(`[PIPELINE FATAL ERROR] in phase: "${phase.name || "anonymous"}"`, error);
+    } catch (err) {
+      error(`FATAL ERROR in phase: "${phase.name || "anonymous"}"`, "Pipeline", err);
       // Restore from snapshot to ensure unmutated state for subsequent phases
       currentWorld = prePhaseSnapshot;
       continue;
