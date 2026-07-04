@@ -9,6 +9,10 @@ export function getNarrationLines(result: BoutResult, east: UIRikishi, west: UIR
     return result.pbpLines.map((l) => l.text).filter((t) => t && t.length > 2);
   }
 
+  if (import.meta.env.DEV) {
+    console.warn(`[narration] bout ${result.boutId} has no pbpLines — falling back to hardcoded strings`);
+  }
+
   const winner = result.winnerRikishiId === east.id ? east : west;
   const loser = result.winnerRikishiId === east.id ? west : east;
 
