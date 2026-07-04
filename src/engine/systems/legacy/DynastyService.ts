@@ -189,7 +189,7 @@ export const DynastyService = {
         tradition: 50,
         compassion: 50,
       },
-      successionReadiness: 0,
+      successionReadiness: "stable",
       avatarConfig: successorRikishi.avatarConfig,
       formerRikishiId: successorRikishiId,
     };
@@ -244,7 +244,7 @@ export const DynastyService = {
       yearsInCharge: 0,
       archetype: "traditionalist",
       traits: { ambition: 30, patience: 50, risk: 20, tradition: 80, compassion: 50 },
-      successionReadiness: 0,
+      successionReadiness: "stable",
     };
 
     builder.addOyakata(newOyakata);

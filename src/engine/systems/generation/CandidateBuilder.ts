@@ -59,7 +59,6 @@ function createBaseInfo(
     behavior: { discipline: 70, mediaSavvy: 50, stress: 0 },
     personalityTraits: [],
 
-    faceAvatarUrl: "",
     avatarConfig: generateAvatarConfig({
       seed: id,
       nationality,

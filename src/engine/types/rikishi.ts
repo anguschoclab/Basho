@@ -156,7 +156,6 @@ export interface Rikishi {
   stats: RikishiStats;
   careerRecord?: { wins: number; losses: number; yusho: number };
 
-  faceAvatarUrl?: string; // DEPRECATED - kept for backward compatibility
   avatarConfig?: AvatarConfig; // NEW: Procedural avatar configuration
   personalityTraits: string[];
   condition: number;

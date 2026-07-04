@@ -36,6 +36,9 @@ export interface OyakataTraits {
   compassion: number;
 }
 
+/** Succession lifecycle stage — set by DynastyService.tickSuccessionCheck based on oyakata age. */
+export type SuccessionReadiness = "stable" | "transitioning" | "mandatory";
+
 /** Defines the structure for oyakata. */
 export interface Oyakata {
   id: Id;
@@ -66,7 +69,7 @@ export interface Oyakata {
 
   /** Phase 5: Succession Planning */
   successorCandidateId?: Id; // Pre-designated successor rikishi (can be set at any time)
-  successionReadiness?: number; // 0-100: soft warning at 60, forced at 70 (age)
+  successionReadiness?: SuccessionReadiness; // Lifecycle stage set by DynastyService.tickSuccessionCheck
   retirementYear?: number; // Set when succession is triggered
 
   managerFlags?: {

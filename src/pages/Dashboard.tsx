@@ -46,6 +46,7 @@ import {
 import { SkeletonCard } from "@/components/ui/SkeletonCard";
 import { formatYen } from "@/utils/engineUtils";
 import { useGameStore } from "@/store/gameStore";
+import { useSuccessionDismissal } from "@/hooks/useSuccessionDismissal";
 
 /** Control Center — main dashboard. */
 export default function Dashboard() {
@@ -55,6 +56,9 @@ export default function Dashboard() {
   const world = state.world;
   const isLoaded = !!world;
   const [deliberationCandidateId, setDeliberationCandidateId] = useState<string | null>(null);
+  const { isDismissed: successionDismissed, dismiss: dismissSuccession } = useSuccessionDismissal(
+    world?.week ?? 0
+  );
 
   useEffect(() => {
     if (state.phase === "basho_recap" || state.phase === "basho_results")
@@ -437,11 +441,12 @@ export default function Dashboard() {
       {(() => {
         const ph = world.heyas.get(state.playerHeyaId ?? "");
         const ok = world.oyakata.get(ph?.oyakataId ?? "");
-        if ((ok?.successionReadiness ?? 0) < 70) return null;
+        if (ok?.successionReadiness !== "mandatory") return null;
+        if (successionDismissed) return null;
         return (
           <SuccessionModal
             isOpen={true}
-            onClose={() => {}}
+            onClose={dismissSuccession}
             world={world}
             heyaId={state.playerHeyaId ?? ""}
             onSelect={(successorId) => {

@@ -206,7 +206,7 @@ export const MockFactory = {
       archetype: "traditionalist",
       traits: { ambition: 50, patience: 50, risk: 50, tradition: 50, compassion: 50 },
       yearsInCharge: 5,
-      successionReadiness: 0,
+      successionReadiness: "stable",
       ...overrides,
     } as Oyakata;
   },
