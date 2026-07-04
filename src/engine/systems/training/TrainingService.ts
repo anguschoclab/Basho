@@ -340,7 +340,7 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
           val = Math.max(DIVISION_FLOOR_JURYO, val);
         }
 
-        newStats[statsKey] = Math.floor(val);
+        newStats[statsKey] = val;
       });
 
       updates.stats = newStats;

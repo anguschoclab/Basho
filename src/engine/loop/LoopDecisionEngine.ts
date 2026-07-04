@@ -194,14 +194,23 @@ export function applyDecisionEffect(
   const heya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : undefined;
   if (!heya) return;
 
-  if (decisionType === "pre_basho_readiness" && optionId === "rest") {
+  if (decisionType === "pre_basho_readiness") {
     for (const id of heya.rikishiIds ?? []) {
       const r = world.rikishi.get(id);
-      if (!r || !((r.fatigue ?? 0) > 60 || r.injured)) continue;
-      builder.updateRikishi(id, {
-        fatigue: Math.max(0, (r.fatigue ?? 0) - 20),
-        momentum: Math.max(0, (r.momentum ?? 50) - 5),
-      });
+      if (!r) continue;
+      if (optionId === "rest" && ((r.fatigue ?? 0) > 60 || r.injured)) {
+        builder.updateRikishi(id, {
+          fatigue: Math.max(0, (r.fatigue ?? 0) - 20),
+          momentum: Math.max(0, (r.momentum ?? 50) - 5),
+        });
+      } else if (optionId === "push") {
+        // Accept injury risk: boost fatigue heading into the basho so per-bout
+        // injury rolls are more likely to fire throughout the tournament.
+        builder.updateRikishi(id, {
+          fatigue: Math.min(100, (r.fatigue ?? 0) + 15),
+          momentum: Math.min(100, (r.momentum ?? 50) + 8),
+        });
+      }
     }
   }
   if (decisionType === "insolvency_response") {

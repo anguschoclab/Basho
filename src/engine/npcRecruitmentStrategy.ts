@@ -75,8 +75,15 @@ export const DefaultRecruitmentStrategy: RecruitmentStrategy = {
     return { impact: builder.build(), count };
   },
 
-  calculateMaxBid(_world, heya, oyakata, _candidateId, rivalHeyaId) {
+  calculateMaxBid(world, heya, oyakata, candidateId, rivalHeyaId) {
     let maxBid = calculateRunwayAwareMaxBid(heya, oyakata, RECRUITMENT_BASE_MULTIPLIER);
+
+    // Talent premium: scale bid 0.5x–1.5x by candidate talentSeed so high-potential
+    // prospects trigger competitive bidding wars between stables.
+    const candidate = candidateId ? world.talentPool?.candidates?.[candidateId] : undefined;
+    const talentSeed = candidate?.talentSeed ?? 50;
+    const talentMult = 0.5 + talentSeed / 100;
+    maxBid *= talentMult;
 
     // Spite Premium
     if (rivalHeyaId && oyakata.temperament === "Vindictive") {
