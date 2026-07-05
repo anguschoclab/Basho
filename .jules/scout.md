@@ -1,0 +1,4 @@
+## 2025-07-06 - src/engine/selectors.ts tests Gap
+**Gap:** `src/engine/selectors.ts` is central to retrieving filtered state for the engine's subsystems (like active rikishi, eligible opponents, available stables, merger candidates), and lacks tests. Currently, it has very low branch/line coverage (25% func, 30.9% lines) according to `test:coverage`.
+**Learning:** Adding a unit test file for `src/engine/selectors.ts` using `MockFactory` to scaffold `WorldState`, `Rikishi`, and `Heya` entities is a high-value, small footprint change to ensure that basic simulation filtering logic (e.g. `getEligibleOpponents`, `selectMergerCandidates`, etc) returns correctly.
+**Pattern:** Creating `WorldState` explicitly using `MockFactory.createWorld`, inserting records via Map setters, then asserting the selector outcomes directly verifies behavior without complex integration.
