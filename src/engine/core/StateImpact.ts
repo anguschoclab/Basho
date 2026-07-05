@@ -74,6 +74,13 @@ export function getNextTimestamp(): number {
 /**
  * A partial state patch describing changes to apply.
  * Simulation passes return StateImpact objects instead of mutating state directly.
+ *
+ * CONTRACT:
+ * - Determinism: Must be applied atomically by ImpactResolver.
+ * - Mutability: Objects provided as partials (e.g., in entity updates or collections)
+ *   must be deeply immutable; do not leak shared references into the patch.
+ * - Idempotency: Impact fields should describe the absolute final state of the updated
+ *   properties, not relative increments, as patches are merged sequentially.
  */
 export interface StateImpact {
   /**
