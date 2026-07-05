@@ -221,9 +221,6 @@ export const MYOSEKI_THRESHOLD_PATIENT = 700_000_000;
 export const MYOSEKI_BUFFER_AMOUNT = 100_000_000;
 export const MYOSEKI_BUFFER_TRADITIONALIST = 200_000_000;
 
-// Maintenance subsidy (yen) — deprecated, set to 0 to remove safety net
-export const MAINTENANCE_SUBSIDY_AMOUNT = 0;
-
 // Infinite runway sentinel
 export const RUNWAY_INFINITE_SENTINEL = 999;
 
