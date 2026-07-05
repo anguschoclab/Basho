@@ -1863,35 +1863,59 @@
       "narrative": {
         "championship_celebration_title": [
           "Championship Celebration at %HEYA%",
-          "%SHIKONA% Lifts the Emperor's Cup"
+          "%SHIKONA% Lifts the Emperor's Cup",
+          "Historic Victory for %SHIKONA%",
+          "%HEYA% Celebrates a Yusho",
+          "The Emperor's Cup Goes to %SHIKONA%"
         ],
         "championship_celebration_summary": [
           "The celebration is underway at %HEYA% as %SHIKONA% is honored for his tournament victory.",
-          "Joy at the stable as %SHIKONA% returns with the yusho trophy."
+          "Joy at the stable as %SHIKONA% returns with the yusho trophy.",
+          "Fans line the streets around %HEYA% to catch a glimpse of the new champion, %SHIKONA%.",
+          "%SHIKONA% is presented with the Emperor's Cup in a historic moment for %HEYA%.",
+          "A triumphant return for %SHIKONA%, securing the championship after a grueling basho."
         ],
         "yokozuna_promotion_title": [
           "Yokozuna Promotion: %SHIKONA%",
-          "A New Yokozuna is Crowned"
+          "A New Yokozuna is Crowned",
+          "%SHIKONA% Reaches the Pinnacle",
+          "The White Rope for %SHIKONA%",
+          "Ascension: %SHIKONA% Named Yokozuna"
         ],
         "yokozuna_promotion_summary": [
           "The Association has approved %SHIKONA%'s promotion to yokozuna.",
-          "History is made as %SHIKONA% ascends to the highest rank in sumo."
+          "History is made as %SHIKONA% ascends to the highest rank in sumo.",
+          "Following a dominant performance, the council unanimously promotes %SHIKONA% to yokozuna.",
+          "A solemn ceremony at the shrine marks %SHIKONA%'s ascension to the rank of yokozuna.",
+          "%SHIKONA% accepts the honor with humility, vowing to uphold the dignity of the yokozuna rank."
         ],
         "retirement_ceremony_title": [
           "Farewell Ceremony for %SHIKONA%",
-          "%SHIKONA%: A Career Honored"
+          "%SHIKONA%: A Career Honored",
+          "The Final Bow: %SHIKONA% Retires",
+          "Danpatsu-shiki: %SHIKONA%",
+          "%SHIKONA% Steps Down from the Dohyo"
         ],
         "retirement_ceremony_summary": [
           "The heya gathers to honor %SHIKONA%'s distinguished career.",
-          "%SHIKONA% is celebrated in a formal retirement ceremony at %HEYA%."
+          "%SHIKONA% is celebrated in a formal retirement ceremony at %HEYA%.",
+          "Tears flow at the Kokugikan as the topknot of %SHIKONA% is finally cut.",
+          "A legendary career comes to a close as %SHIKONA% bids farewell to the sport.",
+          "Supporters and rivals alike gather to pay their respects to the retiring %SHIKONA%."
         ],
         "underdog_victory_title": [
           "Giant Killing: %SHIKONA% Stuns the Division",
-          "Kinboshi for %SHIKONA%"
+          "Kinboshi for %SHIKONA%",
+          "Massive Upset: %SHIKONA% Wins",
+          "%SHIKONA% Defies the Odds",
+          "A Miracle on the Dohyo for %SHIKONA%"
         ],
         "underdog_victory_summary": [
           "%SHIKONA% has claimed a kinboshi, defeating a yokozuna in a stunning upset.",
-          "An unforgettable upset as %SHIKONA% topples the division's elite."
+          "An unforgettable upset as %SHIKONA% topples the division's elite.",
+          "The crowd erupts as pillows fly — %SHIKONA% has just pulled off the impossible.",
+          "In a bout no one predicted, %SHIKONA% overpowers a heavy favorite.",
+          "A tactical masterclass from %SHIKONA% leads to a shock victory against a top ranker."
         ],
         "legacy_milestone_title": [
           "Legacy Milestone for %SHIKONA%",
