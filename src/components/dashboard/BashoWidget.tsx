@@ -6,6 +6,7 @@ import { RikishiName } from "@/components/ClickableName";
 import { Trophy, Crown, Star, Swords, HeartPulse } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
 import { selectInjuredRikishi } from "@/presenters/selectors";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 const LeaderboardRow = React.memo(
   ({
@@ -104,15 +105,12 @@ export function BashoWidget() {
   if (!stats || !world.currentBasho) {
     return (
       <BaseWidget title="Tournament" icon={Trophy}>
-        <div className="text-center py-8">
-          <div className="h-12 w-12 rounded-full bg-muted/50 flex items-center justify-center mx-auto mb-3">
-            <Trophy className="h-6 w-6 text-muted-foreground/30" />
-          </div>
-          <div className="text-sm text-muted-foreground font-medium">No active basho</div>
-          <div className="text-xs text-muted-foreground/60 mt-1">
-            Advance time to begin the tournament
-          </div>
-        </div>
+        <EmptyState
+          icon={Trophy}
+          title="No active basho"
+          description="Advance time to begin the tournament"
+          compact
+        />
       </BaseWidget>
     );
   }
