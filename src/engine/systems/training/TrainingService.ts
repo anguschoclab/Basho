@@ -345,6 +345,39 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
 
       updates.stats = newStats;
 
+      // Per-stat training attribution event
+      const statKeys = Object.keys(STAT_GROUP) as Array<keyof typeof STAT_GROUP>;
+      const deltas: Record<string, number> = {};
+      for (const key of statKeys) {
+        const prev = rikishi.stats?.[key] ?? 50;
+        const next = newStats[key] ?? prev;
+        const delta = Math.round((next - prev) * 100) / 100;
+        if (Math.abs(delta) >= 0.05) {
+          deltas[key] = delta;
+        }
+      }
+      if (Object.keys(deltas).length > 0) {
+        const shikona = rikishi.shikona || rikishi.name || "Unknown";
+        const deltaParts = Object.entries(deltas).map(
+          ([k, v]) => `${k} ${v >= 0 ? "+" : ""}${v}`
+        );
+        builder.logEvent(
+          "TRAINING_STAT_DELTA",
+          "training",
+          {
+            rikishiId: rikishi.id,
+            heyaId: rikishi.heyaId,
+            shikona,
+            status: profile.focus,
+            intensity: profile.intensity,
+            title: `${shikona} — Training Gains`,
+            summary: deltaParts.join(", "),
+            statDeltas: deltas,
+          },
+          { rikishiId: rikishi.id, heyaId: rikishi.heyaId, importance: "minor" }
+        );
+      }
+
       // Milestone Events (Threshold crossing)
       const currentPower = newStats.power;
       if (

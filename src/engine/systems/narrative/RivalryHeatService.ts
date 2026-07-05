@@ -125,6 +125,8 @@ export function applyBoutToPairState(
     isFinalDay?: boolean;
     isYushoRace?: boolean;
     week: number;
+    kimarite?: string;
+    winnerId?: Id;
   }
 ): RivalryPairState {
   const { rng, isWinForA, isKinboshi, isTitleStakes, week, isFinalDay, isYushoRace } = args;
@@ -192,6 +194,8 @@ export function applyBoutToPairState(
     closeness,
     spite,
     triggers,
+    lastKimarite: args.kimarite ?? pair.lastKimarite,
+    lastWinnerId: args.winnerId ?? pair.lastWinnerId,
   };
 
   const tone = deriveTone(next);

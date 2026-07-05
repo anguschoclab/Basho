@@ -144,7 +144,7 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
       oyakata,
       topRikishi,
       recentAchievements: world._recentAchievements || [],
-      currentBashoPhase: world.bashoPhase || "interim",
+      currentBashoPhase: world.cyclePhase,
     };
     const narrativeResult = spawnNarrativeAgent(narrativeCtx);
     reasoning.push(...narrativeResult.reasoning);

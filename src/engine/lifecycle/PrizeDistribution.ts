@@ -8,6 +8,7 @@ import { applyAchievementImpact } from "../systems/economy/SponsorshipService";
 import { SIMULATION_CONFIG } from "../core/SimulationConfig";
 import type { Id } from "../types/common";
 import { getRikishi } from "../queries";
+import { NON_SEKITORI_BASHO_ALLOWANCE } from "../../constants/engine/economic";
 
 /**
  * Distributes special prizes (Sansho) and tournament bonuses at the end of a basho.
@@ -130,13 +131,7 @@ export function payBashoTeate(world: WorldState): StateImpact {
     // Only non-sekitori receive basho teate
     if (r.division === "makuuchi" || r.division === "juryo") continue;
 
-    const TEATE_AMOUNTS: Partial<Record<string, number>> = {
-      makushita: 175_000,
-      sandanme: 85_000,
-      jonidan: 75_000,
-      jonokuchi: 70_000,
-    };
-    const teateAmount = TEATE_AMOUNTS[r.division] || 0;
+    const teateAmount = NON_SEKITORI_BASHO_ALLOWANCE[r.division] || 0;
 
     if (teateAmount > 0) {
       const economics = r.economics || {

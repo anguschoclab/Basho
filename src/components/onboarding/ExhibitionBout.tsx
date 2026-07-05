@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { ChevronRight, Swords, Trophy } from "lucide-react";
 import { MentorOverlay, type MentorStep } from "./MentorOverlay";
 import { PbpLineText } from "@/components/game/PbpLineText";
+import { KimariteTag } from "@/components/ui/KimariteTag";
 import { cn } from "@/lib/utils";
 
 const MENTOR_SEQUENCE: MentorStep[] = ["stamina", "grip", "momentum", "basho_record"];
@@ -203,12 +204,47 @@ export function ExhibitionBout({ onComplete }: ExhibitionBoutProps) {
           <div>
             <p className="text-[10px] font-black uppercase tracking-widest text-primary">Result</p>
             <p className="font-display font-black text-lg uppercase">
-              {winnerRikishi.shikona ?? winnerRikishi.name} wins by {boutResult.kimariteName}
+              {winnerRikishi.shikona ?? winnerRikishi.name} wins by{" "}
+              <KimariteTag
+                kimariteId={boutResult.kimarite}
+                kimariteName={boutResult.kimariteName}
+              />
             </p>
             <p className="text-xs text-muted-foreground">
               {loserRikishi.shikona ?? loserRikishi.name} defeated
             </p>
           </div>
+        </div>
+      )}
+
+      {/* What's Next — shown once fully revealed */}
+      {isFullyRevealed && (
+        <div className="glass rounded-lg p-6 border border-primary/10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <h3 className="font-display font-black text-lg uppercase tracking-tight mb-3">
+            Your Role as Oyakata
+          </h3>
+          <ul className="space-y-2 text-sm text-muted-foreground">
+            <li className="flex items-start gap-2">
+              <ChevronRight className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+              <span>Manage training regimens and sparring partnerships</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <ChevronRight className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+              <span>Navigate basho (tournament) schedules across 6 Grand Tournaments</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <ChevronRight className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+              <span>Balance finances, sponsors, and facilities</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <ChevronRight className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+              <span>Participate in JSA governance and ichimon politics</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <ChevronRight className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+              <span>Scout recruits and develop the next generation</span>
+            </li>
+          </ul>
         </div>
       )}
 

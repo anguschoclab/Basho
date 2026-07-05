@@ -7,12 +7,13 @@
 
 import type { Oyakata } from "../types/oyakata";
 import type { Rikishi } from "../types/rikishi";
+import type { CyclePhase } from "../types/world";
 
 export interface NarrativeAgentContext {
   oyakata: Oyakata;
   topRikishi: Rikishi[];
   recentAchievements: string[];
-  currentBashoPhase: string;
+  currentBashoPhase: CyclePhase;
 }
 
 export interface NarrativeAgentResult {
@@ -101,7 +102,7 @@ export function spawnNarrativeAgent(ctx: NarrativeAgentContext): NarrativeAgentR
   }
 
   // Publicity hawk generates more events
-  if (isPublicityHawk && !shouldTriggerEvent && currentBashoPhase === "mid_basho") {
+  if (isPublicityHawk && !shouldTriggerEvent && currentBashoPhase === "active_basho") {
     shouldTriggerEvent = true;
     eventType = "media_spotlight";
     const spotlightRikishi = topRikishi[0];

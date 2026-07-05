@@ -17,7 +17,10 @@ import {
   runRetirements,
 } from "../systems/governance/governanceReview";
 import { onBashoEnded } from "../records";
-import { processSponsorChurn } from "../systems/economy/SponsorshipService";
+import {
+  processSponsorChurn,
+  adjustKoenkaiBandToPrestige,
+} from "../systems/economy/SponsorshipService";
 import { checkNaturalizations } from "../naturalization";
 import { runArchivalPruning } from "../archival";
 import { runCareerJournalUpdates, openRecruitmentWindow } from "../lifecycle/RegistryService";
@@ -48,6 +51,9 @@ export function runPostBashoResolution(world: WorldState): void {
 
   const sponsorImpact = processSponsorChurn(world, rng);
   impacts.push(sponsorImpact);
+
+  const koenkaiBandImpact = adjustKoenkaiBandToPrestige(world);
+  impacts.push(koenkaiBandImpact);
 
   const careerJournalImpact = runCareerJournalUpdates(world);
   impacts.push(careerJournalImpact);

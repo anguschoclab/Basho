@@ -178,6 +178,8 @@ export const RivalryService = {
       isFinalDay: args.day === BASHO_FINAL_DAY,
       isYushoRace: !!result.isYushoRace,
       week,
+      kimarite: result.kimarite,
+      winnerId: result.winnerRikishiId,
     });
 
     // Detection for heat spikes (crosses thresholds)

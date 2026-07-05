@@ -9,6 +9,7 @@ import { PHASE_LABELS, CROWD_TEXT } from "./boutReplay/boutCanvas";
 import { useBoutReplay } from "./boutReplay/useBoutReplay";
 import type { BoutReplayProgress } from "./boutReplay/useBoutReplay";
 import { BoutControls } from "./boutReplay/BoutControls";
+import { GlossaryTip } from "@/components/ui/GlossaryTip";
 
 export interface BoutReplayViewerHandle {
   seekTo: (progress: number) => void;
@@ -88,9 +89,17 @@ export const BoutReplayViewer = forwardRef<BoutReplayViewerHandle, BoutReplayVie
           <div className="flex items-center gap-1.5 bg-black/60 rounded-full px-3 py-1 border border-white/10">
             <span className="text-white/50 text-xs font-medium">{label.ja}</span>
             <span className="text-white/20 text-xs">·</span>
-            <span className="text-white text-xs font-semibold tracking-wider uppercase">
-              {label.en}
-            </span>
+            {uiPhase === "tachiai" ? (
+              <GlossaryTip termId="tachiai">
+                <span className="text-white text-xs font-semibold tracking-wider uppercase">
+                  {label.en}
+                </span>
+              </GlossaryTip>
+            ) : (
+              <span className="text-white text-xs font-semibold tracking-wider uppercase">
+                {label.en}
+              </span>
+            )}
           </div>
         </div>
 

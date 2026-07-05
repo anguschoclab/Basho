@@ -126,15 +126,17 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
 
     const bashoWins = r.currentBashoWins ?? 0;
     const bashoLosses = r.currentBashoLosses ?? 0;
-    const isKachiKoshi = bashoWins > bashoLosses;
+    const netWins = bashoWins - bashoLosses;
     const isYusho = id === yusho;
     const isJunYusho = topCandidates.length > 1 && id === topCandidates[1];
     const kinboshiThisBasho = basho.kinboshiThisBasho?.[id] ?? 0;
+    const isZenshoYusho = isYusho && bashoLosses === 0;
 
     const impact = accumulateMochikyukinPoints(world, id, {
-      isKachiKoshi,
+      netWins,
       isYusho,
       isJunYusho,
+      isZenshoYusho,
       kinboshiEarned: kinboshiThisBasho,
     });
 

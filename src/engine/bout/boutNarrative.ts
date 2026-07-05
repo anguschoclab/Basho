@@ -6,6 +6,7 @@ import type { Stance } from "../types/combat";
 import { BardEngine } from "../bard/BardEngine";
 import { BloodlineService } from "../systems/legacy/BloodlineService";
 import { buildNarrativeContext, type VoiceStyle } from "../bard/narrativeContext";
+import { RivalryService } from "../systems/narrative/RivalryService";
 import {
   INTENSITY_DRAMATIC,
   INTENSITY_UNDERSTATED,
@@ -42,7 +43,8 @@ export type PbpTag =
   | "dominant"
   | "dynasty"
   | "drama"
-  | "henka";
+  | "henka"
+  | "rivalry";
 
 export type PbpLine = {
   text: string;
@@ -134,6 +136,98 @@ export function generateBoutNarrative(
       westRikishiId: west.id,
     });
     push(dramaRes.text, "opening", ["drama"]);
+  }
+
+  // 3a. Rivalry context (h2h history)
+  const rivalryState = RivalryService.ensureRivalriesState(world);
+  const rivalryKey = RivalryService.makeRivalryKey(east.id, west.id);
+  const pair = rivalryState.pairs[rivalryKey];
+  if (!pair || pair.meetings < 1) {
+    const h2hRng = rngFromSeed(seed, "pbp", "h2h-first");
+    push(
+      BardEngine.resolve(h2hRng, "h2h.first_meeting", {
+        P1: east.shikona,
+        P2: west.shikona,
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+      }).text,
+      "opening",
+      ["rivalry"]
+    );
+  } else {
+    const aIsEast = pair.aId === east.id;
+    const eastWins = aIsEast ? pair.aWins : pair.bWins;
+    const westWins = aIsEast ? pair.bWins : pair.aWins;
+    const total = pair.meetings;
+    const diff = Math.abs(eastWins - westWins);
+    const h2hRng = rngFromSeed(seed, "pbp", "h2h-context");
+
+    if (diff >= 3 && total >= 2) {
+      const eastDominates = eastWins > westWins;
+      push(
+        BardEngine.resolve(h2hRng, "h2h.domination", {
+          P1: eastDominates ? east.shikona : west.shikona,
+          P2: eastDominates ? west.shikona : east.shikona,
+          WINS: eastDominates ? eastWins : westWins,
+          LOSSES: eastDominates ? westWins : eastWins,
+          TOTAL: total,
+          eastRikishiId: east.id,
+          westRikishiId: west.id,
+        }).text,
+        "opening",
+        ["rivalry"]
+      );
+    } else if (diff <= 1 && total >= 2) {
+      push(
+        BardEngine.resolve(h2hRng, "h2h.deadlock", {
+          WINS: Math.max(eastWins, westWins),
+          LOSSES: Math.min(eastWins, westWins),
+          eastRikishiId: east.id,
+          westRikishiId: west.id,
+        }).text,
+        "opening",
+        ["drama"]
+      );
+    }
+
+    // Recent bout callback
+    if (pair.lastKimarite && pair.lastWinnerId) {
+      const lastWinnerIsEast = pair.lastWinnerId === east.id;
+      push(
+        BardEngine.resolve(h2hRng, "h2h.recent", {
+          WINNER: lastWinnerIsEast ? east.shikona : west.shikona,
+          LOSER: lastWinnerIsEast ? west.shikona : east.shikona,
+          KIMARITE: pair.lastKimarite,
+          DAY: pair.lastMetWeek ?? 1,
+          eastRikishiId: east.id,
+          westRikishiId: west.id,
+        }).text,
+        "opening",
+        ["rivalry"]
+      );
+    }
+  }
+
+  // 3b. In-basho win streak callout
+  const eastStreak = east.currentBashoWins ?? 0;
+  const westStreak = west.currentBashoWins ?? 0;
+  const maxStreak = Math.max(eastStreak, westStreak);
+  if (maxStreak >= 5) {
+    const streakRikishi = eastStreak >= westStreak ? east : west;
+    const streakRng = rngFromSeed(seed, "pbp", "streak");
+    let streakPath: string;
+    if (maxStreak >= 12) streakPath = "media.streaks.legendary";
+    else if (maxStreak >= 8) streakPath = "media.streaks.hot";
+    else streakPath = "media.streaks.notable";
+    push(
+      BardEngine.resolve(streakRng, streakPath, {
+        SHIKONA: streakRikishi.shikona,
+        STREAK: maxStreak,
+        rikishiId: streakRikishi.id,
+      }).text,
+      "opening",
+      ["dominant"]
+    );
   }
 
   // 4. Ring entrances (east + west, two separate lines for entity linking)

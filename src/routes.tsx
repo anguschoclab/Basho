@@ -38,6 +38,7 @@ const EconomyPage = lazy(() => import("./pages/EconomyPage"));
 const TalentPoolPage = lazy(() => import("./pages/TalentPoolPage"));
 const FacilitiesPage = lazy(() => import("./pages/FacilitiesPage"));
 const RecapPage = lazy(() => import("./pages/RecapPage"));
+const WeeklyDigestPage = lazy(() => import("./pages/WeeklyDigestPage"));
 const HistoryPage = lazy(() => import("./pages/HistoryPage"));
 const AlmanacPage = lazy(() => import("./pages/AlmanacPage"));
 const MediaPage = lazy(() => import("./pages/MediaPage"));
@@ -57,6 +58,7 @@ const HistoryDashboard = lazy(() =>
 );
 const GlobalCupPage = lazy(() => import("./pages/GlobalCupPage"));
 const RegionalHubPage = lazy(() => import("./pages/RegionalHubPage"));
+const GlossaryPage = lazy(() => import("./pages/GlossaryPage"));
 
 // In Electron production the app loads from file://, where browser history
 // path traversal fails (e.g. /dashboard → file:///dashboard — not found).
@@ -147,6 +149,11 @@ const recapRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/recap",
   component: () => withSuspense(RecapPage),
+});
+const weeklyDigestRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/digest",
+  component: () => withSuspense(WeeklyDigestPage),
 });
 const bookmarksRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -431,6 +438,12 @@ const rikishiIdRoute = createRoute({
   component: () => withSuspense(RikishiPage),
 });
 
+const glossaryRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/glossary",
+  component: () => withSuspense(GlossaryPage),
+});
+
 const notFoundRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "$",
@@ -444,6 +457,7 @@ const routeTree = rootRoute.addChildren([
   dashboardRoute,
   settingsRoute,
   recapRoute,
+  weeklyDigestRoute,
   bookmarksRoute,
 
   // Stable
@@ -505,6 +519,9 @@ const routeTree = rootRoute.addChildren([
   // Rikishi
   rikishiRoute,
   rikishiIdRoute,
+
+  // Glossary
+  glossaryRoute,
 
   notFoundRoute,
 ]);

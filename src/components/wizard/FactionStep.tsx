@@ -9,6 +9,14 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ICHIMON_FACTIONS } from "../../constants/ui/wizard";
 
+const ICHIMON_MECHANICS: Record<string, { bonus: string; politics: string }> = {
+  dewanoumi: { bonus: "+5% Power training", politics: "High (300)" },
+  nishonoseki: { bonus: "+5% Speed training", politics: "Medium (250)" },
+  takasago: { bonus: "+10% Mental training", politics: "Standard (100)" },
+  tokitsukaze: { bonus: "+10% Stamina training", politics: "Standard (100)" },
+  isegahama: { bonus: "+5% Technique & Balance training", politics: "Standard (100)" },
+};
+
 interface FactionStepProps {
   ichimon: string;
   onIchimonChange: (ichimon: string) => void;
@@ -60,6 +68,20 @@ export function FactionStep({ ichimon, onIchimonChange, onNext, onPrev }: Factio
                 <p className="text-xs text-muted-foreground leading-relaxed pl-8 italic">
                   "{faction.description}"
                 </p>
+                {(() => {
+                  const mech = ICHIMON_MECHANICS[faction.id];
+                  if (!mech) return null;
+                  return (
+                    <div className="mt-3 pl-8 space-y-1">
+                      <p className="text-xs font-semibold text-primary">
+                        {mech.bonus}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                        Political Weight: {mech.politics}
+                      </p>
+                    </div>
+                  );
+                })()}
               </div>
             );
           })}

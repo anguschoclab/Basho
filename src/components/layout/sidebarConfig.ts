@@ -60,6 +60,7 @@ export function getMenuGroups(
       items: [
         { title: "Control Center", url: "/dashboard", icon: LayoutDashboard, exactOnly: true },
         { title: "Events & Recap", url: "/recap", icon: Newspaper, exactOnly: true },
+        { title: "Weekly Report", url: "/digest", icon: TrendingUp, exactOnly: true },
       ],
     },
     {
@@ -124,6 +125,7 @@ export function getMenuGroups(
         { title: "Almanac", url: "/records/almanac", icon: BookOpen },
         { title: "Hall of Fame", url: "/records/hall-of-fame", icon: Award },
         { title: "Museum", url: "/records/museum", icon: Crown },
+        { title: "Glossary", url: "/glossary", icon: BookOpen },
       ],
     },
   ];

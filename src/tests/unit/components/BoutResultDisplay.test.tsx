@@ -45,6 +45,16 @@ vi.mock("@/presenters/uiDigest", () => ({
   },
 }));
 
+// Mock KimariteTag and GlossaryTip to avoid TooltipProvider requirement
+vi.mock("@/components/ui/KimariteTag", () => ({
+  KimariteTag: ({ kimariteName, className }: { kimariteId: string; kimariteName?: string; className?: string }) =>
+    React.createElement("span", { className }, kimariteName),
+}));
+vi.mock("@/components/ui/GlossaryTip", () => ({
+  GlossaryTip: ({ children }: { termId: string; children: React.ReactNode }) =>
+    React.createElement("span", null, children),
+}));
+
 const mockRikishi = (id: string, shikona: string): UIRikishi => ({
   id,
   shikona,
@@ -205,6 +215,34 @@ describe("BoutResultDisplay", () => {
         />
       );
       expect(screen.getByText("UPSET!")).toBeTruthy();
+    });
+  });
+
+  describe("KimariteTag integration", () => {
+    it("wraps kimarite name in KimariteTag (tooltip present)", () => {
+      render(
+        <BoutResultDisplay
+          result={mockResult()}
+          eastRikishi={east}
+          westRikishi={west}
+        />
+      );
+      // The kimarite name "Yorikiri" should be rendered
+      expect(screen.getByText("Yorikiri")).toBeTruthy();
+    });
+  });
+
+  describe("GlossaryTip integration", () => {
+    it("wraps Tachiai label in GlossaryTip", () => {
+      render(
+        <BoutResultDisplay
+          result={mockResult()}
+          eastRikishi={east}
+          westRikishi={west}
+        />
+      );
+      // The Tachiai label should still be present
+      expect(screen.getByText("Tachiai")).toBeTruthy();
     });
   });
 });

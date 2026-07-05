@@ -3,7 +3,11 @@ import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { BaseWidget } from "./BaseWidget";
-import { buildWeeklyDigest, type DigestItem } from "@/presenters/projections/digestProjections";
+import {
+  buildWeeklyDigest,
+  type DigestItem,
+  type UIDigest,
+} from "@/presenters/projections/digestProjections";
 import { DIGEST_WIDGET_MAX_ITEMS, DIGEST_SECTIONS_MAX_ITEMS } from "../../constants/ui/display";
 import {
   AlertTriangle,
@@ -87,10 +91,16 @@ const DigestSectionView = React.memo(({ title, items }: { title: string; items: 
   );
 });
 
+/** digest widget props. */
+interface DigestWidgetProps {
+  digest?: UIDigest | null;
+  fullPage?: boolean;
+}
+
 /** digest widget. */
-export function DigestWidget() {
+export function DigestWidget({ digest: digestProp, fullPage = false }: DigestWidgetProps = {}) {
   const { state } = useGame();
-  const digest = useMemo(() => buildWeeklyDigest(state.world), [state.world]);
+  const digest = digestProp !== undefined ? digestProp : useMemo(() => buildWeeklyDigest(state.world), [state.world]);
 
   // Compute total items before early return
   const totalItems = useMemo(() => {
@@ -101,6 +111,9 @@ export function DigestWidget() {
   }, [digest]);
 
   if (!digest) return null;
+
+  const maxSections = fullPage ? digest.sections.length : DIGEST_SECTIONS_MAX_ITEMS;
+  const scrollHeight = fullPage ? "max-h-[calc(100vh-200px)]" : "max-h-[260px]";
 
   return (
     <BaseWidget
@@ -122,10 +135,10 @@ export function DigestWidget() {
           <p className="text-xs text-muted-foreground">A quiet week. No notable events.</p>
         </div>
       ) : (
-        <ScrollArea className="max-h-[260px]">
+        <ScrollArea className={scrollHeight}>
           <div className="space-y-3">
             {(() => {
-              const limit = Math.min(DIGEST_SECTIONS_MAX_ITEMS, digest.sections.length);
+              const limit = Math.min(maxSections, digest.sections.length);
               const nodes = new Array(limit);
               for (let i = 0; i < limit; i++) {
                 const section = digest.sections[i];

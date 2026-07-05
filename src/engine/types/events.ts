@@ -31,6 +31,7 @@ export type EngineEventType =
   | "SPARRING_RIVALRY_SEEDED" // Rivalry seeded from sparring partnership
   | "MEDICAL_REPORT" // Medical status report generated
   | "TRAINING_UPDATE" // Training results update
+  | "TRAINING_STAT_DELTA" // Per-stat weekly training gains attribution
   | "GOVERNANCE_RULING" // A governance ruling was issued
   | "FINANCIAL_ALERT" // Financial alert triggered
   | "AWARD_CONFERRED" // An award was conferred

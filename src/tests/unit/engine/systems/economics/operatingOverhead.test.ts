@@ -28,7 +28,7 @@ describe("Operating overhead constants", () => {
   });
 
   it("regression-guards the debt floor and merger threshold", () => {
-    expect(DEBT_LIMIT).toBe(-20_000_000);
+    expect(DEBT_LIMIT).toBe(-15_500_000);
     expect(MERGER_THRESHOLD).toBe(-15_000_000);
   });
 });

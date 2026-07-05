@@ -1,5 +1,6 @@
 import { SeededRNG } from "../../rng";
 import type { Rikishi } from "../../types/rikishi";
+import type { Heya } from "../../types/heya";
 import type {
   Sponsor,
   SponsorPool,
@@ -21,10 +22,6 @@ import {
   SPONSOR_TIER_INCOME_T3,
   SPONSOR_TIER_INCOME_T4,
   SPONSOR_TIER_INCOME_T5,
-  KOENKAI_POWERFUL_THRESHOLD,
-  KOENKAI_STRONG_THRESHOLD,
-  KOENKAI_MODERATE_THRESHOLD,
-  KOENKAI_WEAK_THRESHOLD,
   KOENKAI_MEMBER_COUNT_BASE,
   KOENKAI_MEMBER_COUNT_MAX,
   KOENKAI_PILLAR_STRENGTH,
@@ -48,19 +45,51 @@ export const SPONSOR_TIER_INCOME: Record<import("../../types/sponsors").SponsorT
   T5: SPONSOR_TIER_INCOME_T5,
 };
 
+/** Prestige score weights per rank. */
+const PRESTIGE_WEIGHTS: Record<string, number> = {
+  yokozuna: 40,
+  ozeki: 30,
+  sekiwake: 20,
+  komusubi: 15,
+  maegashira: 8,
+  juryo: 4,
+};
+
+/** Prestige score cap. */
+const PRESTIGE_CAP = 100;
+
 /**
- * Recalculate kōenkai band based on current sponsor membership.
+ * Compute a heya's prestige score based on its roster's ranks.
+ * Capped at 100. Non-sekitori contribute 0.
+ */
+export function computeHeyaPrestigeScore(heya: Heya, world: WorldState): number {
+  let score = 0;
+  for (const rId of heya.rikishiIds ?? []) {
+    const r = getRikishi(world, rId);
+    if (!r) continue;
+    score += PRESTIGE_WEIGHTS[r.rank] || 0;
+  }
+  return Math.min(score, PRESTIGE_CAP);
+}
+
+/**
+ * Map a prestige score to a kōenkai band.
+ */
+export function targetKoenkaiBandFromPrestige(prestige: number): KoenkaiBandType {
+  if (prestige >= 80) return "powerful";
+  if (prestige >= 55) return "strong";
+  if (prestige >= 30) return "moderate";
+  if (prestige >= 10) return "weak";
+  return "none";
+}
+
+/**
+ * Recalculate kōenkai band based on heya prestige score (roster ranks).
  * Called after sponsor recruitment or churn to update band tier.
  */
-export function recalculateKoenkaiBand(koenkai: Koenkai): KoenkaiBandType {
-  const memberCount = koenkai.members.length;
-
-  // Band thresholds based on member count
-  if (memberCount >= KOENKAI_POWERFUL_THRESHOLD) return "powerful";
-  if (memberCount >= KOENKAI_STRONG_THRESHOLD) return "strong";
-  if (memberCount >= KOENKAI_MODERATE_THRESHOLD) return "moderate";
-  if (memberCount >= KOENKAI_WEAK_THRESHOLD) return "weak";
-  return "none";
+export function recalculateKoenkaiBand(heya: Heya, world: WorldState): KoenkaiBandType {
+  const prestige = computeHeyaPrestigeScore(heya, world);
+  return targetKoenkaiBandFromPrestige(prestige);
 }
 
 /**
@@ -270,7 +299,7 @@ export function computeStarPower(heya: import("../../types/heya").Heya, world: W
  * Returns StateImpact describing sponsor churn changes instead of mutating state.
  * Note: sponsorPool mutations are still direct and will be migrated in Phase 4.
  */
-export function processSponsorChurn(world: WorldState): StateImpact {
+export function processSponsorChurn(world: WorldState, _rng?: SeededRNG): StateImpact {
   const builder = createImpactBuilder("processSponsorChurn");
   const allChurned: string[] = [];
   let totalRetained = 0;
@@ -278,31 +307,11 @@ export function processSponsorChurn(world: WorldState): StateImpact {
   for (const [koenkaiId, koenkai] of world.sponsorPool?.koenkais || []) {
     const membersToRemove: string[] = [];
 
-    // Calculate satisfaction for this heya
     const heya = getHeya(world, koenkai.heyaId);
-    const prestigeScore = heya ? (heya.reputation || 0) * 0.5 : 0;
+    if (!heya) continue;
 
-    // Calculate star power from rikishi
-    let starPower = 0;
-    if (heya?.rikishiIds) {
-      for (const rikishiId of heya.rikishiIds) {
-        const rikishi = getRikishi(world, rikishiId);
-        if (rikishi) {
-          const rankValue =
-            rikishi.rank === "yokozuna"
-              ? 30
-              : rikishi.rank === "ozeki"
-                ? 25
-                : rikishi.rank === "sekiwake"
-                  ? 15
-                  : rikishi.rank === "komusubi"
-                    ? 10
-                    : 5;
-          starPower += rankValue;
-        }
-      }
-    }
-
+    const prestigeScore = computeHeyaPrestigeScore(heya, world);
+    const starPower = computeStarPower(heya, world);
     const satisfaction = prestigeScore + starPower * 0.3;
 
     for (const member of koenkai.members) {
@@ -311,11 +320,11 @@ export function processSponsorChurn(world: WorldState): StateImpact {
 
       // Satisfaction-based churn: sponsors leave if satisfaction is below their threshold
       const threshold =
-        (sponsor.category as string) === "local_business"
+        sponsor.category === "local_business"
           ? 20
-          : (sponsor.category as string) === "national_brand"
+          : sponsor.category === "national_brand"
             ? 50
-            : (sponsor.category as string) === "unknown"
+            : sponsor.category === "anonymous_patron"
               ? 100
               : 30;
 
@@ -332,34 +341,97 @@ export function processSponsorChurn(world: WorldState): StateImpact {
     if (membersToRemove.length > 0) {
       const updatedMembers = koenkai.members.filter((m) => !membersToRemove.includes(m.sponsorId));
 
-      // Recalculate band based on new member count
-      const newBand = recalculateKoenkaiBand({
-        ...koenkai,
-        members: updatedMembers,
-      });
+      const newBand = recalculateKoenkaiBand(heya, world);
 
-      // Update koenkai members and band using ImpactBuilder
       builder.updateKoenkai(koenkaiId, {
         members: updatedMembers,
-        band: newBand,
+        strengthBand: newBand,
       });
 
-      // Mark churned sponsors as inactive using ImpactBuilder
       for (const sponsorId of membersToRemove) {
         builder.updateSponsor(sponsorId, { active: false });
       }
 
-      // Update heya koenkai band reference
-      const heya = getHeya(world, koenkai.heyaId);
-      if (heya) {
-        builder.updateHeya(heya.id, { koenkaiBand: newBand });
-      }
+      builder.updateHeya(heya.id, { koenkaiBand: newBand });
     }
   }
 
-  // Add metadata for test tracking
   builder.addMetadata("churned", allChurned);
   builder.addMetadata("retained", totalRetained);
+
+  return builder.build();
+}
+
+const BAND_ORDER: KoenkaiBandType[] = ["none", "weak", "moderate", "strong", "powerful"];
+
+/**
+ * Post-basho koenkai band adjustment based on roster prestige.
+ *
+ * For each koenkai, computes the target band from heya prestige and corrects
+ * the current strengthBand if it has drifted. When the band is downgraded,
+ * the weakest members are trimmed. When upgraded, eligible inactive sponsors
+ * are recruited (up to 2 per basho) if the pool has candidates.
+ */
+export function adjustKoenkaiBandToPrestige(world: WorldState): StateImpact {
+  const builder = createImpactBuilder("adjustKoenkaiBandToPrestige");
+
+  for (const [koenkaiId, koenkai] of world.sponsorPool?.koenkais || []) {
+    const heya = getHeya(world, koenkai.heyaId);
+    if (!heya) continue;
+
+    const prestige = computeHeyaPrestigeScore(heya, world);
+    const targetBand = targetKoenkaiBandFromPrestige(prestige);
+    const currentBand = koenkai.strengthBand;
+    const currentIdx = BAND_ORDER.indexOf(currentBand);
+    const targetIdx = BAND_ORDER.indexOf(targetBand);
+
+    if (currentIdx === targetIdx) continue;
+
+    let updatedMembers = koenkai.members;
+
+    if (currentIdx > targetIdx) {
+      // Band downgrade — trim weakest members proportional to gap
+      const gap = currentIdx - targetIdx;
+      const removeCount = Math.min(updatedMembers.length, gap);
+      if (removeCount > 0) {
+        updatedMembers = [...updatedMembers]
+          .sort((a, b) => (a.strength ?? 1) - (b.strength ?? 1))
+          .slice(removeCount);
+      }
+    } else {
+      // Band upgrade — recruit eligible inactive sponsors (max 2 per basho)
+      const gap = targetIdx - currentIdx;
+      const addCount = Math.min(gap, 2);
+      const eligible = Array.from(world.sponsorPool?.sponsors.values() ?? []).filter(
+        (s) =>
+          !s.active &&
+          (s.tier === "T1" || s.tier === "T2" || s.tier === "T3") &&
+          !updatedMembers.some((m) => m.sponsorId === s.sponsorId)
+      );
+      const picked = eligible.slice(0, addCount);
+      for (const sponsor of picked) {
+        updatedMembers = [
+          ...updatedMembers,
+          {
+            relId: `sr_${sponsor.sponsorId}_${world.dayIndexGlobal ?? 0}`,
+            sponsorId: sponsor.sponsorId,
+            targetType: "heya",
+            targetId: heya.id,
+            role: "koenkai_member",
+            strength: KOENKAI_MEMBER_STRENGTH,
+            startedAtTick: world.dayIndexGlobal ?? 0,
+          },
+        ];
+        builder.updateSponsor(sponsor.sponsorId, { active: true });
+      }
+    }
+
+    builder.updateKoenkai(koenkaiId, {
+      members: updatedMembers,
+      strengthBand: targetBand,
+    });
+    builder.updateHeya(heya.id, { koenkaiBand: targetBand });
+  }
 
   return builder.build();
 }

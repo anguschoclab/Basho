@@ -202,7 +202,7 @@ describe("SponsorshipService", () => {
         sponsors.set("s_other", {
           sponsorId: "s_other",
           active: true,
-          category: "unknown",
+          category: "anonymous_patron",
           displayName: "Other",
           tier: "T1",
         } as unknown as Sponsor);
@@ -305,16 +305,21 @@ describe("SponsorshipService", () => {
         id: "h1",
         name: "Heya 1",
         koenkaiId: "koenkai_h1",
-        reputation: 100, // prestige * 0.5 = 50
+        reputation: 100,
         scandalScore: 0,
-        rikishiIds: ["r1"], // star power 30 * 0.3 = 9. satisfaction = 59
+        // prestige = 40 (yokozuna) + 8 (maegashira) = 48
+        // starPower = 30 (yokozuna) + 5 (maegashira) = 35; satisfaction = 48 + 35*0.3 = 58.5
+        rikishiIds: ["r1", "r2"],
       } as unknown as Heya;
 
       const { sponsors, koenkais } = createSponsorsAndKoenkai(true);
 
       const world = {
         heyas: new Map([["h1", heya]]),
-        rikishi: new Map([["r1", mockRikishi("r1", { rank: "yokozuna" })]]),
+        rikishi: new Map([
+          ["r1", mockRikishi("r1", { rank: "yokozuna", division: "makuuchi" })],
+          ["r2", mockRikishi("r2", { rank: "maegashira", division: "makuuchi" })],
+        ]),
         sponsorPool: { sponsors, koenkais },
         events: [],
       } as unknown as WorldState;
@@ -333,7 +338,7 @@ describe("SponsorshipService", () => {
       const updatedKoenkai = resolvedWorld.sponsorPool?.koenkais.get("koenkai_h1");
       expect(updatedKoenkai?.members.length).toBe(2);
       const updatedHeya = resolvedWorld.heyas.get("h1");
-      expect(updatedHeya?.koenkaiBand).toBe("none"); // member count < 5 -> none
+      expect(updatedHeya?.koenkaiBand).toBe("moderate"); // prestige 48 >= 30 -> moderate
     });
   });
 });

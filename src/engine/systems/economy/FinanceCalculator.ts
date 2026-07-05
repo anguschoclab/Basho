@@ -15,13 +15,12 @@ import { calculateKoenkaiIncome, SPONSOR_TIER_INCOME } from "./SponsorshipServic
 import { getHeyaStaffBonuses } from "../../staff";
 import {
   RECRUITMENT_BUDGET_WEEKLY,
-  KOENKAI_SURVIVAL_FLOOR,
   FACILITY_UPKEEP,
   STAFF_UPKEEP_PER_MEMBER,
   JSA_PER_WRESTLER_SUBSIDY_MONTHLY,
   JSA_STABLE_WEEKLY_GRANT,
   KOENKAI_INCOME_SPLIT,
-  MAINTENANCE_SUBSIDY_AMOUNT,
+  OYAKATA_SALARY_MONTHLY,
   DEBT_LIMIT,
   RUNWAY_INFINITE_SENTINEL,
   FIXED_OPERATING_OVERHEAD_WEEKLY,
@@ -46,12 +45,11 @@ export interface HeyaFinanceResult {
  *
  * Algorithm:
  * 1. Calculate income from koenkai, JSA subsidies, sponsor tiers, and base grants
- * 2. Apply survival floor to ensure minimum income
- * 3. Calculate expenses from facilities, staff, and recruitment
- * 4. Apply administration discount from staff bonuses
- * 5. Apply solvency clamping to prevent debt spirals
- * 6. Calculate net change and apply debt floor
- * 7. Compute runway in months
+ * 2. Calculate expenses from facilities, staff, and recruitment
+ * 3. Apply administration discount from staff bonuses
+ * 4. Apply solvency clamping to prevent debt spirals
+ * 5. Calculate net change and apply debt floor
+ * 6. Compute runway in months
  *
  * @param {Heya} heya - The heya to calculate finances for.
  * @param {WorldState} world - The world state for sponsor and staff data.
@@ -70,15 +68,13 @@ export function calculateHeyaWeeklyFinances(heya: Heya, world: WorldState): Heya
   // Only count heya portion (70%) - sekitori portion (30%) is distributed separately
   const weeklyKoenkai = (monthlyKoenkai * KOENKAI_INCOME_SPLIT.heyaPortion) / 4;
 
-  // JSA per-wrestler subsidy (primary stable income from JSA)
+  // JSA per-wrestler subsidy (primary stable income from JSA) — keyed by rank
   let monthlyJsaSubsidy = 0;
   for (const rId of heya.rikishiIds ?? []) {
     const r = getRikishi(world, rId);
     if (!r) continue;
     const subsidy =
-      JSA_PER_WRESTLER_SUBSIDY_MONTHLY[
-        r.division as keyof typeof JSA_PER_WRESTLER_SUBSIDY_MONTHLY
-      ] || 0;
+      JSA_PER_WRESTLER_SUBSIDY_MONTHLY[r.rank as keyof typeof JSA_PER_WRESTLER_SUBSIDY_MONTHLY] || 0;
     monthlyJsaSubsidy += subsidy;
   }
   const weeklyJsaSubsidy = monthlyJsaSubsidy / 4;
@@ -99,13 +95,12 @@ export function calculateHeyaWeeklyFinances(heya: Heya, world: WorldState): Heya
   // JSA base operational grant (all stables, every week)
   const jsaBaseGrant = JSA_STABLE_WEEKLY_GRANT;
 
-  // JSA Maintenance Subsidy (Safety Net for insolvent stables)
-  const maintenanceSubsidy = heya.funds < 0 ? MAINTENANCE_SUBSIDY_AMOUNT : 0;
+  // Oyakata salary as heya income (real-world JSA model)
+  const weeklyOyakataSalary = OYAKATA_SALARY_MONTHLY / 4;
 
-  const effectiveIncome = Math.max(
-    weeklyKoenkai + weeklyJsaSubsidy + weeklySponsorTierIncome + jsaBaseGrant + maintenanceSubsidy,
-    KOENKAI_SURVIVAL_FLOOR
-  );
+  // Safety nets removed: no maintenance subsidy, no koenkai survival floor
+  const effectiveIncome =
+    weeklyKoenkai + weeklyJsaSubsidy + weeklySponsorTierIncome + jsaBaseGrant + weeklyOyakataSalary;
 
   // --- Expenses ---
   // NOTE: Sekitori salaries are now paid by JSA directly to rikishi (not heya expense)
@@ -147,7 +142,7 @@ export function calculateHeyaWeeklyFinances(heya: Heya, world: WorldState): Heya
   let nextFunds = heya.funds + net;
 
   // Strict Debt Floor (Inlined to prevent import failures)
-  // DEBT_LIMIT = -20,000,000 as per EconomicConstants.ts
+  // DEBT_LIMIT = -15,500,000 as per EconomicConstants.ts
   if (nextFunds < DEBT_LIMIT) {
     nextFunds = DEBT_LIMIT;
   }

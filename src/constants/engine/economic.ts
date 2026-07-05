@@ -11,18 +11,23 @@ export const OYAKATA_SALARY_MONTHLY = 1_200_000;
 /** Weekly baseline scouting/recruitment burn (¥). */
 export const RECRUITMENT_BUDGET_WEEKLY = 100_000;
 
-/** Weekly allowance for non-sekitori rikishi (¥). */
-export const NON_SEKITORI_ALLOWANCE = 15_000;
+/** Basho teate (tournament allowance) for non-sekitori rikishi by division (¥). */
+export const NON_SEKITORI_BASHO_ALLOWANCE: Record<string, number> = {
+  makushita: 165_000,
+  sandanme: 110_000,
+  jonidan: 88_000,
+  jonokuchi: 77_000,
+} as const;
 
 /**
  * Minimum weekly income floor guaranteed by kōenkai (¥).
  * Constitution §A6 & C2.4: covers staff/roster for a new heya without sekitori.
  * Formula: (5 rikishi × ¥2,000) + (3 staff × ¥6,000) = ¥28,000.
  */
-export const KOENKAI_SURVIVAL_FLOOR = 28_000;
+export const KOENKAI_SURVIVAL_FLOOR = 0;
 
 /** JSA debt limit before governance intervention (¥). */
-export const DEBT_LIMIT = -20_000_000;
+export const DEBT_LIMIT = -15_500_000;
 
 /** Standard benefactor bailout amount (¥). */
 export const BENEFACTOR_BAILOUT_AMOUNT = 10_000_000;
@@ -32,25 +37,38 @@ export const KENSHO_AMOUNT_PER_ENVELOPE = 70_000;
 
 /** Kensho split per envelope (¥). */
 export const KENSHO_SPLIT = {
-  cash: 10_000,
-  retirement: 50_000,
+  cash: 30_000,
+  retirement: 30_000,
   jsaFee: 10_000,
 } as const;
 
 /** Mochikyukin (cumulative bonus) point value (¥ per point). */
 export const MOCHIKYUKIN_POINT_VALUE = 4_000;
 
-/** Mochikyukin points earned per kachi-koshi (winning record). */
-export const MOCHIKYUKIN_POINTS_KACHI_KOSHI = 1;
+/** Mochikyukin points earned per net win above .500. */
+export const MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN = 0.5;
 
 /** Mochikyukin points earned per yusho (championship). */
-export const MOCHIKYUKIN_POINTS_YUSHO = 10;
+export const MOCHIKYUKIN_POINTS_YUSHO = 30;
 
 /** Mochikyukin points earned per kinboshi (v Yokozuna). */
-export const MOCHIKYUKIN_POINTS_KINBOSHI = 3;
+export const MOCHIKYUKIN_POINTS_KINBOSHI = 10;
 
 /** Mochikyukin points earned per jun-yusho (runner-up). */
 export const MOCHIKYUKIN_POINTS_JUN_YUSHO = 5;
+
+/** Mochikyukin points earned for a zensho-yusho (perfect championship). */
+export const MOCHIKYUKIN_POINTS_ZENSHO_YUSHO = 50;
+
+/** Mochikyukin rank floors — minimum effective points for payout by rank. */
+export const MOCHIKYUKIN_RANK_FLOORS: Record<string, number> = {
+  yokozuna: 150,
+  ozeki: 100,
+  sekiwake: 80,
+  komusubi: 70,
+  maegashira: 60,
+  juryo: 40,
+} as const;
 
 /** Travel/jungyo allowance per sekitori per year (¥). */
 export const TRAVEL_ALLOWANCE_YEARLY = {
@@ -62,10 +80,14 @@ export const TRAVEL_ALLOWANCE_YEARLY = {
   juryo: 450_000,
 } as const;
 
-/** JSA per-wrestler monthly subsidy by division (¥). */
+/** JSA per-wrestler monthly subsidy by rank (¥). */
 export const JSA_PER_WRESTLER_SUBSIDY_MONTHLY = {
-  makuuchi: 150_000,
-  juryo: 100_000,
+  yokozuna: 2_500_000,
+  ozeki: 2_000_000,
+  sekiwake: 1_200_000,
+  komusubi: 1_000_000,
+  maegashira: 400_000,
+  juryo: 200_000,
   makushita: 50_000,
   sandanme: 30_000,
   jonidan: 20_000,
@@ -113,12 +135,12 @@ export const FIXED_OPERATING_OVERHEAD_WEEKLY = 750_000;
  * compounding funds without bound.
  */
 export const SEKITORI_OVERHEAD_MONTHLY = {
-  yokozuna: 5_000_000,
-  ozeki: 3_500_000,
-  sekiwake: 2_500_000,
-  komusubi: 2_000_000,
-  maegashira: 1_500_000,
-  juryo: 800_000,
+  yokozuna: 1_500_000,
+  ozeki: 1_200_000,
+  sekiwake: 900_000,
+  komusubi: 800_000,
+  maegashira: 600_000,
+  juryo: 350_000,
 } as const;
 
 /**
@@ -126,7 +148,7 @@ export const SEKITORI_OVERHEAD_MONTHLY = {
  * Covers chanko provisions, tsukebito duties, and ring time for lower-division
  * wrestlers. Intentional roster-scaled sink.
  */
-export const NON_SEKITORI_OVERHEAD_MONTHLY = 100_000;
+export const NON_SEKITORI_OVERHEAD_MONTHLY = 80_000;
 
 /** Daily food cost per rikishi by diet regimen (¥).
  * Based on communal chanko-nabe bulk kitchen economics.
@@ -184,10 +206,6 @@ export function clampFundsToDebtLimit(funds: number): number {
   return Math.max(funds, DEBT_LIMIT);
 }
 
-// Kensho split ratios
-export const KENSHO_RIKISHI_SHARE_RATIO = 0.5;
-export const KENSHO_RETIREMENT_DIVERSION_RATIO = 0.3;
-
 // Marketability boosts
 export const KINBOSHI_MARKETABILITY_BOOST = 5;
 export const GINBOSHI_MARKETABILITY_BOOST = 2;
@@ -203,8 +221,8 @@ export const MYOSEKI_THRESHOLD_PATIENT = 700_000_000;
 export const MYOSEKI_BUFFER_AMOUNT = 100_000_000;
 export const MYOSEKI_BUFFER_TRADITIONALIST = 200_000_000;
 
-// Maintenance subsidy (yen)
-export const MAINTENANCE_SUBSIDY_AMOUNT = 500_000;
+// Maintenance subsidy (yen) — deprecated, set to 0 to remove safety net
+export const MAINTENANCE_SUBSIDY_AMOUNT = 0;
 
 // Infinite runway sentinel
 export const RUNWAY_INFINITE_SENTINEL = 999;

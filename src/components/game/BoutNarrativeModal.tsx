@@ -21,6 +21,7 @@ import { PbpLineText } from "./PbpLineText";
 import { computeActiveLineIndices } from "./boutReplay/boutCanvas";
 import type { BoutReplayProgress } from "./boutReplay/useBoutReplay";
 import { cn } from "@/lib/utils";
+import { GlossaryTip } from "@/components/ui/GlossaryTip";
 
 const PHASE_STYLE: Record<string, { label: string; color: string; bg: string }> = {
   opening: { label: "開幕", color: "text-primary", bg: "bg-primary/10 border-primary/20" },
@@ -232,7 +233,11 @@ export function BoutNarrativeModal({
                             variant="outline"
                             className={`text-[9px] shrink-0 mt-0.5 font-display ${style.bg} ${style.color} border`}
                           >
-                            {style.label}
+                            {line.phase === "tachiai" ? (
+                              <GlossaryTip termId="tachiai">{style.label}</GlossaryTip>
+                            ) : (
+                              style.label
+                            )}
                           </Badge>
                           <div className="flex-1 min-w-0">
                             <PbpLineText text={line.text} className="text-sm leading-relaxed" />

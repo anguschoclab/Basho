@@ -104,7 +104,7 @@ describe("NarrativeAgent", () => {
       oyakata,
       topRikishi,
       recentAchievements: ["kinboshi"],
-      currentBashoPhase: "mid_basho",
+      currentBashoPhase: "active_basho",
     };
 
     const result = spawnNarrativeAgent(ctx);
@@ -128,7 +128,7 @@ describe("NarrativeAgent", () => {
       oyakata,
       topRikishi,
       recentAchievements: ["kinboshi"],
-      currentBashoPhase: "mid_basho",
+      currentBashoPhase: "active_basho",
     };
 
     const result = spawnNarrativeAgent(ctx);
@@ -147,7 +147,7 @@ describe("NarrativeAgent", () => {
       oyakata,
       topRikishi,
       recentAchievements: [],
-      currentBashoPhase: "mid_basho",
+      currentBashoPhase: "active_basho",
     };
 
     const result = spawnNarrativeAgent(ctx);

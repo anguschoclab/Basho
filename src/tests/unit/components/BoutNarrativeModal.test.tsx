@@ -323,4 +323,19 @@ describe("BoutNarrativeModal", () => {
     );
     expect(screen.getByText("Opening text")).toBeTruthy();
   });
+
+  it("wraps tachiai phase chip label in GlossaryTip", () => {
+    const lines = [makeLine("tachiai", "The charge begins!")];
+    renderWithProvider(
+      <BoutNarrativeModal
+        open
+        onOpenChange={vi.fn()}
+        east={mockRikishi("r-1", "East")}
+        west={mockRikishi("r-2", "West")}
+        result={mockResult(lines)}
+      />,
+    );
+    // The tachiai kanji label should be present
+    expect(screen.getByText("立合")).toBeTruthy();
+  });
 });

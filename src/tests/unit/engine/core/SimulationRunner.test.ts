@@ -31,6 +31,7 @@ vi.mock("@/engine/records", () => ({
 
 vi.mock("@/engine/systems/economy/SponsorshipService", () => ({
   processSponsorChurn: vi.fn(() => ({ metadata: { source: "sponsors", timestamp: 0 } })),
+  adjustKoenkaiBandToPrestige: vi.fn(() => ({ metadata: { source: "koenkaiBand", timestamp: 0 } })),
 }));
 
 vi.mock("@/engine/naturalization", () => ({

@@ -22,8 +22,7 @@ import {
   DEBT_LIMIT,
   BENEFACTOR_BAILOUT_AMOUNT,
   KENSHO_AMOUNT_PER_ENVELOPE,
-  KENSHO_RIKISHI_SHARE_RATIO,
-  KENSHO_RETIREMENT_DIVERSION_RATIO,
+  KENSHO_SPLIT,
   KINBOSHI_MARKETABILITY_BOOST,
   GINBOSHI_MARKETABILITY_BOOST,
   MARKETABILITY_POPULARITY_MULTIPLIER,
@@ -67,8 +66,11 @@ export function handleInsolvency(heya: Heya, world: WorldState): void {
 
 /**
  * Settles Kensho (prize money) rewards when a bout is resolved.
- * Implements Constitution §6: ¥70,000 per envelope, with a 50/50 split between rikishi and heya.
- * 30% of the rikishi's share is diverted to their retirement fund.
+ * Implements real JSA model: ¥70,000 per envelope split as:
+ *   ¥10,000 JSA fee (not credited to anyone)
+ *   ¥30,000 cash to winner
+ *   ¥30,000 to winner's retirement fund
+ * Heya receives ¥0 from kensho (real-world JSA model).
  *
  * @param {WorldState} world - The current world state.
  * @param {Object} context - The context of the resolved bout.
@@ -133,21 +135,17 @@ export function onBoutResolvedEconomics(
   if (kenshoCount > 0) {
     const total = kenshoCount * KENSHO_AMOUNT_PER_ENVELOPE;
 
-    // Constitution: 50/50 split rikishi/heya
-    const rikishiGross = total * KENSHO_RIKISHI_SHARE_RATIO;
-    const stableShare = total * KENSHO_RIKISHI_SHARE_RATIO;
-
-    // Constitution: 30% of rikishi share → retirement fund
-    const retirementDiversion = rikishiGross * KENSHO_RETIREMENT_DIVERSION_RATIO;
-    const rikishiNet = rikishiGross - retirementDiversion;
+    // Real JSA model: ¥10K JSA fee + ¥30K cash + ¥30K retirement per envelope
+    const cashToWinner = kenshoCount * KENSHO_SPLIT.cash;
+    const retirementAdd = kenshoCount * KENSHO_SPLIT.retirement;
 
     const updatedEconomics = {
       ...existingEconomics,
-      cash: existingEconomics.cash + rikishiNet,
-      retirementFund: existingEconomics.retirementFund + retirementDiversion,
-      currentBashoEarnings: existingEconomics.currentBashoEarnings + rikishiNet,
+      cash: existingEconomics.cash + cashToWinner,
+      retirementFund: existingEconomics.retirementFund + retirementAdd,
+      currentBashoEarnings: existingEconomics.currentBashoEarnings + cashToWinner,
       careerKenshoWon: existingEconomics.careerKenshoWon + kenshoCount,
-      totalEarnings: existingEconomics.totalEarnings + rikishiNet,
+      totalEarnings: existingEconomics.totalEarnings + cashToWinner,
       popularity: Math.min(
         100,
         existingEconomics.popularity + marketabilityScale * MARKETABILITY_POPULARITY_MULTIPLIER
@@ -159,9 +157,7 @@ export function onBoutResolvedEconomics(
       marketability: existingMarketability + marketabilityScale,
     });
 
-    builder.updateHeya(winnerHeya.id, {
-      funds: winnerHeya.funds + stableShare,
-    });
+    // Heya receives ¥0 from kensho (real-world JSA model)
 
     builder.logEvent(
       "AWARD_CONFERRED",

@@ -4,14 +4,15 @@
  * Manages the mochikyukin (cumulative bonus) system for sekitori.
  *
  * Mochikyukin is a JSA incentive system where sekitori earn points for:
- * - Kachi-koshi (winning records): 1 point
- * - Yusho (championship): 10 points
- * - Kinboshi (v Yokozuna): 3 points
+ * - Per net win above .500: 0.5 points
+ * - Yusho (championship): 30 points
+ * - Zensho-yusho (perfect championship): +50 points
+ * - Kinboshi (v Yokozuna): 10 points
  * - Jun-yusho (runner-up): 5 points
  *
  * Points accumulate throughout a sekitori's career and are paid out
  * 6 times per year (every 2 months) at ¥4,000 per point.
- * This provides a natural progression mechanic for veteran wrestlers.
+ * Rank floors ensure higher-ranked sekitori receive minimum payouts.
  */
 
 import type { WorldState } from "../../types/world";
@@ -20,10 +21,12 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { Id } from "../../types/common";
 import {
   MOCHIKYUKIN_POINT_VALUE,
-  MOCHIKYUKIN_POINTS_KACHI_KOSHI,
+  MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN,
   MOCHIKYUKIN_POINTS_YUSHO,
   MOCHIKYUKIN_POINTS_KINBOSHI,
   MOCHIKYUKIN_POINTS_JUN_YUSHO,
+  MOCHIKYUKIN_POINTS_ZENSHO_YUSHO,
+  MOCHIKYUKIN_RANK_FLOORS,
 } from "../../../constants/engine/economic";
 import { getRikishi } from "../../queries";
 
@@ -35,9 +38,10 @@ export function accumulateMochikyukinPoints(
   world: WorldState,
   rikishiId: Id,
   bashoResults: {
-    isKachiKoshi: boolean;
+    netWins: number;
     isYusho: boolean;
     isJunYusho: boolean;
+    isZenshoYusho: boolean;
     kinboshiEarned: number;
   }
 ): StateImpact {
@@ -62,14 +66,19 @@ export function accumulateMochikyukinPoints(
 
   let pointsEarned = 0;
 
-  // Kachi-koshi (winning record)
-  if (bashoResults.isKachiKoshi) {
-    pointsEarned += MOCHIKYUKIN_POINTS_KACHI_KOSHI;
+  // Per net win above .500 (negative clamped to 0)
+  if (bashoResults.netWins > 0) {
+    pointsEarned += bashoResults.netWins * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN;
   }
 
   // Yusho (championship)
   if (bashoResults.isYusho) {
     pointsEarned += MOCHIKYUKIN_POINTS_YUSHO;
+  }
+
+  // Zensho-yusho (perfect championship — additional bonus on top of yusho)
+  if (bashoResults.isZenshoYusho) {
+    pointsEarned += MOCHIKYUKIN_POINTS_ZENSHO_YUSHO;
   }
 
   // Jun-yusho (runner-up)
@@ -123,7 +132,11 @@ export function payMochikyukinBonuses(world: WorldState, currentMonth: number): 
 
     if (mochikyukinPoints <= 0) continue;
 
-    const payout = mochikyukinPoints * MOCHIKYUKIN_POINT_VALUE;
+    // Apply rank floor — higher ranks have minimum effective points
+    const rankFloor = MOCHIKYUKIN_RANK_FLOORS[rikishi.rank] || 0;
+    const effectivePoints = Math.max(mochikyukinPoints, rankFloor);
+
+    const payout = effectivePoints * MOCHIKYUKIN_POINT_VALUE;
     const economics = rikishi.economics || {
       cash: 0,
       retirementFund: 0,

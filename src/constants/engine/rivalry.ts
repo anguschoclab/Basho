@@ -123,6 +123,10 @@ export interface RivalryPairState {
   sameHeya: boolean;
   /** Optional custom label for this rivalry (overrides generated labels) */
   label?: string;
+  /** Kimarite of the last bout between these two rikishi */
+  lastKimarite?: string;
+  /** ID of the rikishi who won the last bout between these two */
+  lastWinnerId?: Id;
 }
 
 /**

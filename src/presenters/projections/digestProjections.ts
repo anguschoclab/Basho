@@ -119,7 +119,9 @@ export function buildEventSections(world: WorldState): DigestSection[] {
     ...mapEventToItem(e),
     kind: "narrative" as const,
   }));
-  const trainingItems = eventBuckets.training.map(mapEventToItem);
+  const trainingItems = eventBuckets.training
+    .filter((e) => e.type !== "TRAINING_STAT_DELTA")
+    .map(mapEventToItem);
   const scoutItems = eventBuckets.scouting.map(mapEventToItem);
   const econItems = eventBuckets.economy.map(mapEventToItem);
 
@@ -213,6 +215,36 @@ export function buildMatchupItems(world: WorldState): {
 }
 
 /**
+ * Build training report section from TRAINING_STAT_DELTA events.
+ * Filters to current week and player's heya only.
+ */
+export function buildTrainingReportSection(world: WorldState): DigestSection | null {
+  if (!world.playerHeyaId) return null;
+  const thisWeek = world.week ?? 0;
+  const events = queryEvents(world, {
+    types: ["TRAINING_STAT_DELTA"],
+    heyaId: world.playerHeyaId,
+    limit: 40,
+  });
+  const items: DigestItem[] = events
+    .filter((e) => e.week === thisWeek)
+    .map((e) => ({
+      id: e.id,
+      kind: "training" as const,
+      title: (e.data.shikona as string) ?? "Unknown",
+      detail: e.summary || "",
+      rikishiId: e.rikishiId,
+      heyaId: e.heyaId,
+    }));
+  if (!items.length) return null;
+  return {
+    id: "training-report",
+    title: "Training Report",
+    items,
+  };
+}
+
+/**
  * Build weekly digest.
  */
 export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
@@ -227,6 +259,10 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
 
   const eventSections = buildEventSections(world);
   sections.push(...eventSections);
+
+  // Training Report section (from TRAINING_STAT_DELTA events)
+  const trainingReportSection = buildTrainingReportSection(world);
+  if (trainingReportSection) sections.push(trainingReportSection);
 
   // Rivalry Highlights for pre-basho phase (C4)
   if (world.cyclePhase === "pre_basho") {

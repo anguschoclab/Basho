@@ -9,6 +9,8 @@ import { RikishiName } from "@/components/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Trophy, Zap, Timer, Shield } from "lucide-react";
 import { formatStance, getKimarite } from "@/presenters/uiDigest";
+import { KimariteTag } from "@/components/ui/KimariteTag";
+import { GlossaryTip } from "@/components/ui/GlossaryTip";
 
 /** Defines the structure for bout result display props. */
 interface BoutResultDisplayProps {
@@ -165,7 +167,11 @@ export function BoutResultDisplay({
           <p className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] mb-1.5">
             Winning Technique
           </p>
-          <p className="font-display text-xl font-semibold text-foreground">{kimariteName}</p>
+          <KimariteTag
+            kimariteId={kimariteId}
+            kimariteName={kimariteName}
+            className="font-display text-xl font-semibold text-foreground"
+          />
           {kimariteNameJa && (
             <p className="text-base text-muted-foreground/80 mt-0.5">{kimariteNameJa}</p>
           )}
@@ -193,7 +199,9 @@ export function BoutResultDisplay({
         {!compact && <div className="grid grid-cols-3 gap-3 text-xs">
           <div className="flex flex-col items-center gap-1 p-2 rounded-md bg-muted/30">
             <Zap className="h-3.5 w-3.5 text-muted-foreground" />
-            <p className="text-[10px] text-muted-foreground uppercase">Tachiai</p>
+            <GlossaryTip termId="tachiai">
+              <p className="text-[10px] text-muted-foreground uppercase">Tachiai</p>
+            </GlossaryTip>
             <p
               className={cn(
                 "font-medium text-sm",

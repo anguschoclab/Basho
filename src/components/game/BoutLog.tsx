@@ -10,6 +10,7 @@
 
 import { cn } from "@/lib/utils";
 import type { BoutLogEntry } from "@/engine/types/basho";
+import { GlossaryTip } from "@/components/ui/GlossaryTip";
 
 /** Defines the structure for bout log props. */
 interface BoutLogProps {
@@ -80,7 +81,11 @@ export function BoutLog({ log, className }: BoutLogProps) {
                     phaseColors[phase] ? phaseColors[phase] : color
                   )}
                 >
-                  {label}
+                  {phase === "tachiai" ? (
+                    <GlossaryTip termId="tachiai">{label}</GlossaryTip>
+                  ) : (
+                    label
+                  )}
                 </span>
 
                 <span className="text-foreground">

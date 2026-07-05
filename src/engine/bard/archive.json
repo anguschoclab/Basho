@@ -1590,6 +1590,16 @@
             "A single misstep could end the dream for another two months."
           ]
         }
+      },
+      "spotlight": {
+        "weekly_feature_title": [
+          "Media Spotlight: %SHIKONA%",
+          "Weekly Feature: %SHIKONA% in the News"
+        ],
+        "weekly_feature_summary": [
+          "The press turns its attention to %SHIKONA% as the story of the week.",
+          "%SHIKONA% is the subject of this week's media feature at %HEYA%."
+        ]
       }
     },
     "system": {
@@ -1848,6 +1858,48 @@
           "The Association has reviewed and responded to a reported matter.",
           "Institutional oversight has resulted in a formal decision.",
           "JSA officials have issued a ruling following an internal review."
+        ]
+      },
+      "narrative": {
+        "championship_celebration_title": [
+          "Championship Celebration at %HEYA%",
+          "%SHIKONA% Lifts the Emperor's Cup"
+        ],
+        "championship_celebration_summary": [
+          "The celebration is underway at %HEYA% as %SHIKONA% is honored for his tournament victory.",
+          "Joy at the stable as %SHIKONA% returns with the yusho trophy."
+        ],
+        "yokozuna_promotion_title": [
+          "Yokozuna Promotion: %SHIKONA%",
+          "A New Yokozuna is Crowned"
+        ],
+        "yokozuna_promotion_summary": [
+          "The Association has approved %SHIKONA%'s promotion to yokozuna.",
+          "History is made as %SHIKONA% ascends to the highest rank in sumo."
+        ],
+        "retirement_ceremony_title": [
+          "Farewell Ceremony for %SHIKONA%",
+          "%SHIKONA%: A Career Honored"
+        ],
+        "retirement_ceremony_summary": [
+          "The heya gathers to honor %SHIKONA%'s distinguished career.",
+          "%SHIKONA% is celebrated in a formal retirement ceremony at %HEYA%."
+        ],
+        "underdog_victory_title": [
+          "Giant Killing: %SHIKONA% Stuns the Division",
+          "Kinboshi for %SHIKONA%"
+        ],
+        "underdog_victory_summary": [
+          "%SHIKONA% has claimed a kinboshi, defeating a yokozuna in a stunning upset.",
+          "An unforgettable upset as %SHIKONA% topples the division's elite."
+        ],
+        "legacy_milestone_title": [
+          "Legacy Milestone for %SHIKONA%",
+          "%SHIKONA%: A Career Defined"
+        ],
+        "legacy_milestone_summary": [
+          "%SHIKONA% reaches a significant career milestone, cementing his place in sumo history.",
+          "The veteran %SHIKONA% is honored for his enduring contributions to the sport."
         ]
       }
     },
