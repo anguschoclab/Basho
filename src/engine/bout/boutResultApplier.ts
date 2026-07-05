@@ -163,7 +163,9 @@ export function applyBoutResult(
   // 4. Notify Secondary Systems
   const dailyOverrides = world.transientContext?.dailyInjuryRiskOverrides;
   const loserId = result.winner === "east" ? west.id : east.id;
+  const winnerId = result.winner === "east" ? east.id : west.id;
   const overrideMult = dailyOverrides?.[loserId] ?? 1.0;
+  const winnerOverrideMult = dailyOverrides?.[winnerId] ?? 1.0;
   const finalInjuryMultiplier = (result.tacticInjuryRiskMultiplier ?? 1.0) * overrideMult;
 
   builder.merge(
@@ -173,13 +175,15 @@ export function applyBoutResult(
       east,
       west,
       injuryRiskMultiplier: finalInjuryMultiplier,
+      winnerInjuryRiskMultiplier: winnerOverrideMult,
     })
   );
 
-  // Clear the consumed daily injury risk override for this rikishi
-  if (dailyOverrides && dailyOverrides[loserId] !== undefined) {
+  // Clear the consumed daily injury risk overrides for both loser and winner
+  if (dailyOverrides && (dailyOverrides[loserId] !== undefined || dailyOverrides[winnerId] !== undefined)) {
     const cleared = { ...dailyOverrides };
     delete cleared[loserId];
+    delete cleared[winnerId];
     builder.updateWorldField("transientContext", {
       ...world.transientContext,
       dailyInjuryRiskOverrides: cleared,

@@ -25,6 +25,7 @@ import { destr } from "destr";
 import { OyakataStyleProfile, RecruitmentPhilosophy } from "./oyakataStylePreferences";
 import { OyakataMood } from "./types/oyakata";
 import { Style } from "./types/combat";
+import { RNGRegistry } from "./core/RNGRegistry";
 
 export interface TrainingWorkerContext {
   perception: PerceptionSnapshot;
@@ -167,7 +168,8 @@ export function spawnPersonnelWorker(ctx: PersonnelWorkerContext): PersonnelWork
       const riskTolerance = ctx.riskTolerance ?? 50;
 
       // Serious injuries always withdraw; moderate is probabilistic based on oyakata risk tolerance
-      if (isSerious || (isModerate && Math.random() > riskTolerance / 100)) {
+      const withdrawRng = RNGRegistry.getSystemRNG(ctx.world, "npcPersonnel", `withdraw::${rikishi.id}::${ctx.world.week}`);
+      if (isSerious || (isModerate && withdrawRng.next() > riskTolerance / 100)) {
         withdrawalIds.push(rikishi.id);
         reasoning.push(
           `[Withdrawal Worker] Withdrawing ${rikishi.shikona} due to ${severity} injury (${weeksRemaining} weeks remaining)`

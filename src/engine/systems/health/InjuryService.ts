@@ -307,15 +307,16 @@ export function tickWeekRecovery(world: WorldState): StateImpact {
  */
 export function onBoutResolvedInjury(
   world: WorldState,
-  ctx: { match: any; result: any; east: any; west: any; injuryRiskMultiplier?: number }
+  ctx: { match: any; result: any; east: any; west: any; injuryRiskMultiplier?: number; winnerInjuryRiskMultiplier?: number }
 ): StateImpact {
-  const { result, east, west, injuryRiskMultiplier } = ctx;
+  const { result, east, west, injuryRiskMultiplier, winnerInjuryRiskMultiplier } = ctx;
   const builder = createImpactBuilder("onBoutResolvedInjury");
 
   if (!result) return builder.build();
 
   // Only applies to makuuchi/juryo bouts with high-intensity outcomes
   const loser = result.winner === "east" ? west : east;
+  const winner = result.winner === "east" ? east : west;
   if (!loser || loser.injured) return builder.build();
 
   // Bout-induced injury probability based on kimarite violence
@@ -358,6 +359,47 @@ export function onBoutResolvedInjury(
       },
       { rikishiId: loser.id, heyaId: loser.heyaId }
     );
+  }
+
+  // Winner injury roll: if the winner has an elevated injury risk (e.g. competing
+  // while injured via kyujo_decision "compete"), roll for them at 50% of the base chance.
+  if (winner && !winner.injured && winnerInjuryRiskMultiplier && winnerInjuryRiskMultiplier > 1.0) {
+    const winnerBoutInjuryChance = baseBoutInjuryChance * 0.5 * winnerInjuryRiskMultiplier;
+    const winnerRng = RNGRegistry.getSystemRNG(world, "health", `bout::${winner.id}::${world.week}`);
+    const winnerRoll = winnerRng.next();
+
+    if (winnerRoll < winnerBoutInjuryChance) {
+      const winnerWeeksRemaining =
+        POST_BOUT_INJURY_WEEKS_MIN +
+        Math.floor(winnerRng.next() * (POST_BOUT_INJURY_WEEKS_MAX - POST_BOUT_INJURY_WEEKS_MIN + 1));
+
+      builder.updateRikishi(winner.id, {
+        injured: true,
+        injuryWeeksRemaining: winnerWeeksRemaining,
+      });
+
+      builder.updateRikishiNestedField(winner.id, "currentInjury", {
+        id: winnerRng.uuid("IJ"),
+        severity: "minor",
+        area: "other",
+        type: "inflammation",
+        weeksOut: winnerWeeksRemaining,
+        weekOccurred: world.week ?? 0,
+      });
+
+      builder.logEvent(
+        "LIFECYCLE_EVENT",
+        "injury",
+        {
+          rikishiId: winner.id,
+          shikona: winner.shikona || winner.name,
+          status: "injury_bout",
+          reason: "Bout impact (competing while injured)",
+          score: winnerWeeksRemaining,
+        },
+        { rikishiId: winner.id, heyaId: winner.heyaId }
+      );
+    }
   }
 
   return builder.build();

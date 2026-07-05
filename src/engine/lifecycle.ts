@@ -15,6 +15,7 @@ import { WorldState } from "./types/world";
 import type { InjurySeverity } from "./systems/health/BodyDefinitions";
 import { buildCombatProfile, deriveWeakAgainstStyles } from "./archetype";
 import { rollAgeForRank } from "./systems/generation/CandidateStats";
+import { isCollegeRecruit } from "./utils/identity";
 
 // --- RETIREMENT LOGIC ---
 
@@ -253,7 +254,7 @@ export function _generateRookie(
 
   const shikona = generateShikona(`${world.seed}::rookie::${rookieId}`, {
     rng,
-    nationality: origin.name.includes("University") ? "Japan" : origin.name,
+    nationality: isCollegeRecruit({ origin: origin.name }) ? "Japan" : origin.name,
     rank: targetRank,
     legacyShikona,
   });
@@ -263,7 +264,7 @@ export function _generateRookie(
     name: shikona,
     shikona: shikona,
     heyaId: "scout_pool",
-    nationality: origin.name.includes("University") ? "Japan" : origin.name,
+    nationality: isCollegeRecruit({ origin: origin.name }) ? "Japan" : origin.name,
     birthYear: currentYear - age,
     origin: origin.name,
 

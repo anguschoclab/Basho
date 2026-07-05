@@ -8,6 +8,7 @@ import { rngFromSeed } from "../../rng";
 import { BardEngine } from "../../bard/BardEngine";
 import { ensureTalentPoolState } from "./TalentPoolStateService";
 import { getForeignCountInHeya } from "./TalentPoolScouting";
+import { isForeign } from "../../utils/identity";
 import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "../../../constants/engine/recruitment";
 import { getHeya } from "../../queries";
 import { EventBus } from "../../events";
@@ -31,7 +32,7 @@ export function offerCandidate(
   const rng = rngFromSeed(`offer-validate-${candidateId}-${heyaId}`, "narrative", "scouting");
 
   // 1. Validation: Foreigner limit
-  if ((candidate.nationality ?? "Japan") !== "Japan") {
+  if (isForeign(candidate)) {
     const foreignCount = getForeignCountInHeya(world, heyaId);
     if (foreignCount >= FOREIGN_RIKISHI_LIMIT_PER_HEYA) {
       return {

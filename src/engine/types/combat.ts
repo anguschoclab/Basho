@@ -63,6 +63,7 @@ export function resolveCounterTacticBonus(
   tactic: BoutTactic,
   opponentProfile: CombatProfile,
 ): number {
+  if (tactic === "STANDARD") return 0;
   const family = TACTIC_TO_FAMILY[tactic] ?? "push";
   const sorted = (
     Object.entries(opponentProfile.familyPreferences) as [TacticalFamily, number][]

@@ -123,9 +123,9 @@ describe("getForeignCountInHeya", () => {
     expect(getForeignCountInHeya(world, heyaId)).toBe(0);
   });
 
-  it("handles nationality 'JP' as Japanese (not foreign)", () => {
+  it("handles nationality 'Japanese' as Japanese (not foreign)", () => {
     const heyaId = "h1" as Id;
-    const r1 = MockFactory.createRikishi("r1", { heyaId, nationality: "JP" });
+    const r1 = MockFactory.createRikishi("r1", { heyaId, nationality: "Japanese" });
     const world = makeWorldWithTalentPool({
       heyas: new Map([[heyaId, MockFactory.createHeya(heyaId, { rikishiIds: ["r1"] })]]),
       rikishi: new Map([["r1", r1]]),

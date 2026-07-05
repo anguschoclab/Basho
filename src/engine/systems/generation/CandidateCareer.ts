@@ -5,6 +5,7 @@
 import { SeededRNG } from "../../rng";
 import { Rank, Division } from "../../types/banzuke";
 import { clamp } from "../../utils/math";
+import { isForeign } from "../../utils/identity";
 import {
   DEBUT_AGE_BASE,
   DEBUT_AGE_RANGE,
@@ -79,7 +80,7 @@ function simulateCareerProgression(args: {
   let yearsActive = Math.max(1, age - debutAge);
 
   // Limit career length for foreign wrestlers (realistic pattern)
-  if (nationality && nationality !== "Japan") {
+  if (nationality && isForeign({ nationality })) {
     // Foreign wrestlers typically have shorter careers (8-12 years vs 15-20 for Japanese)
     const maxForeignYears = FOREIGN_MAX_YEARS_BASE + rng.int(0, FOREIGN_MAX_YEARS_RANGE);
     yearsActive = Math.min(yearsActive, maxForeignYears);

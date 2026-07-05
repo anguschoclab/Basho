@@ -28,7 +28,8 @@ export type SystemRNGKey =
   | "health"
   | "lifecycle"
   | "global_cup"
-  | "narrative";
+  | "narrative"
+  | "npcPersonnel";
 
 /**
  * Unified RNG registry.

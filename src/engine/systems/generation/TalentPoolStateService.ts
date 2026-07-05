@@ -13,6 +13,7 @@ import type { Rikishi } from "../../types/rikishi";
 import { TalentPoolType, TalentCandidate, TalentPoolWorldState } from "../../types/talent";
 import { generateCandidate } from "./CandidateGenerator";
 import { deriveStyle } from "./CandidateBuilder";
+import { isForeign, isCollegeRecruit } from "../../utils/identity";
 import { buildCombatProfile } from "../../archetype";
 
 /**
@@ -77,12 +78,11 @@ export function reinjectToTalentPool(world: WorldState, rikishi: Rikishi): State
 
   // Create a candidate from the rikishi
   const candidateId = rikishi.id;
-  const poolType =
-    (rikishi.nationality ?? "Japan") !== "Japan"
-      ? "foreign"
-      : rikishi.origin?.toLowerCase().includes("university")
-        ? "university"
-        : "high_school";
+  const poolType: TalentPoolType = isForeign(rikishi)
+    ? "foreign"
+    : isCollegeRecruit(rikishi)
+      ? "university"
+      : "high_school";
 
   // Determine archetype based on rikishi stats or default to hybrid
   const archetype: "oshi" | "yotsu" | "hybrid" = "hybrid";

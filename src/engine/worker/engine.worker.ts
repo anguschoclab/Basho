@@ -13,6 +13,7 @@ import * as talentpool from "../systems/generation/TalentPoolService";
 import * as myoseki from "../myosekiMarket";
 import * as sponsorService from "../systems/economy/SponsorContractService";
 import * as legacy from "../systems/legacy/DynastyService";
+import { isForeign } from "../utils/identity";
 import * as governance from "../systems/governance/GovernanceService";
 import {
   PoliticalFavorsService,
@@ -64,8 +65,7 @@ function migrateWorldState(world: WorldState): WorldState {
     if (!r.citizenshipStatus) {
       nextR = {
         ...nextR,
-        citizenshipStatus:
-          r.nationality === "Japan" || r.nationality === "Japanese" ? "native" : "foreign",
+        citizenshipStatus: !isForeign(r) ? "native" : "foreign",
       };
       rikishiChanged = true;
     }

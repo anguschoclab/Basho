@@ -52,9 +52,9 @@ describe("resolveCounterTacticBonus", () => {
     expect(resolveCounterTacticBonus("OSHI_THRUST", profile)).toBe(0);
   });
 
-  it("STANDARD (push) still counters belt-dominant opponent", () => {
+  it("STANDARD (push) does NOT counter belt-dominant opponent (no bonus for default tactic)", () => {
     const profile = makeProfile({ belt: 60, push: 10, trick: 10, speed: 10 });
-    expect(resolveCounterTacticBonus("STANDARD", profile)).toBe(COUNTER_TACTIC_BONUS);
+    expect(resolveCounterTacticBonus("STANDARD", profile)).toBe(0);
   });
 
   it("returns bonus for YOTSU_BELT vs trick-dominant opponent", () => {
@@ -101,5 +101,54 @@ describe("resolveCounterTacticBonus", () => {
     const a = resolveCounterTacticBonus("OSHI_THRUST", profile);
     const b = resolveCounterTacticBonus("OSHI_THRUST", profile);
     expect(a).toBe(b);
+  });
+
+  it("returns 0 when top two families are tied (no clearly dominant family)", () => {
+    const profile = makeProfile({ push: 50, belt: 50, trick: 0, speed: 0 });
+    // push and belt tied at 50 — no dominant family → 0 for any tactic
+    expect(resolveCounterTacticBonus("OSHI_THRUST", profile)).toBe(0);
+    expect(resolveCounterTacticBonus("YOTSU_BELT", profile)).toBe(0);
+    expect(resolveCounterTacticBonus("DEFENSIVE_PULL", profile)).toBe(0);
+  });
+
+  it("returns 0 when all familyPreferences are zero", () => {
+    const profile = makeProfile({ push: 0, belt: 0, trick: 0, speed: 0 });
+    expect(resolveCounterTacticBonus("OSHI_THRUST", profile)).toBe(0);
+    expect(resolveCounterTacticBonus("YOTSU_BELT", profile)).toBe(0);
+  });
+
+  it("returns bonus only for countering tactic when single family is dominant", () => {
+    // push is 100, all others 0 → only trick counters push
+    const profile = makeProfile({ push: 100, belt: 0, trick: 0, speed: 0 });
+    // DEFENSIVE_PULL (trick) counters push → bonus
+    expect(resolveCounterTacticBonus("DEFENSIVE_PULL", profile)).toBe(COUNTER_TACTIC_BONUS);
+    // HENKA (trick) counters push → bonus
+    expect(resolveCounterTacticBonus("HENKA", profile)).toBe(COUNTER_TACTIC_BONUS);
+    // OSHI_THRUST (push) does not counter push → 0
+    expect(resolveCounterTacticBonus("OSHI_THRUST", profile)).toBe(0);
+    // YOTSU_BELT (belt) does not counter push → 0
+    expect(resolveCounterTacticBonus("YOTSU_BELT", profile)).toBe(0);
+  });
+
+  it("no tactic maps to speed family — speed-dominant opponent can only be countered by belt", () => {
+    // speed is countered by belt (TACTICAL_MATRIX.belt = ["trick", "speed"])
+    // So YOTSU_BELT (belt) DOES counter speed-dominant opponent.
+    // But no tactic maps to speed family, so no tactic can use speed's own counters.
+    const profile = makeProfile({ speed: 60, push: 20, belt: 10, trick: 10 });
+    // YOTSU_BELT (belt) counters speed → bonus
+    expect(resolveCounterTacticBonus("YOTSU_BELT", profile)).toBe(COUNTER_TACTIC_BONUS);
+    // OSHI_THRUST (push) does not counter speed → 0
+    expect(resolveCounterTacticBonus("OSHI_THRUST", profile)).toBe(0);
+    // DEFENSIVE_PULL (trick) does not counter speed → 0
+    expect(resolveCounterTacticBonus("DEFENSIVE_PULL", profile)).toBe(0);
+    // HENKA (trick) does not counter speed → 0
+    expect(resolveCounterTacticBonus("HENKA", profile)).toBe(0);
+    // ALL_OUT (push) does not counter speed → 0
+    expect(resolveCounterTacticBonus("ALL_OUT", profile)).toBe(0);
+  });
+
+  it("STANDARD returns 0 (no counter bonus for default tactic)", () => {
+    const profile = makeProfile({ belt: 60, push: 10, trick: 10, speed: 10 });
+    expect(resolveCounterTacticBonus("STANDARD", profile)).toBe(0);
   });
 });

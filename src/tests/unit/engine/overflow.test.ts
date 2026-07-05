@@ -126,13 +126,13 @@ describe("enforceHardCapRosterOverflow", () => {
     for (let i = 0; i < HARD_CAP_ROSTER_SIZE + 1; i++) {
       const id = `r${i}`;
       ids.push(id);
-      const isForeign = i === HARD_CAP_ROSTER_SIZE;
+      const isForeignRecruit = i === HARD_CAP_ROSTER_SIZE;
       world.rikishi.set(
         id,
         mockRikishi(id, {
           heyaId: "heya-1",
           talentSeed: 50,
-          nationality: isForeign ? "MN" : "JP",
+          nationality: isForeignRecruit ? "Mongolia" : "Japan",
         })
       );
     }

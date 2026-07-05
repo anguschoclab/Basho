@@ -7,6 +7,7 @@ import { RikishiStats, Rikishi } from "../../types/rikishi";
 import { Rank, Division, Side } from "../../types/banzuke";
 import { CombatProfile, Style, CombatArchetype } from "../../types/combat";
 import { clamp } from "../../utils/math";
+import { isForeign } from "../../utils/identity";
 import { generateShikona } from "../../shikona";
 import { rollArchetype, buildCombatProfile, deriveWeakAgainstStyles } from "../../archetype";
 import type { InjurySeverity } from "../../systems/health/BodyDefinitions";
@@ -37,8 +38,7 @@ function createBaseInfo(
 ) {
   const age = currentYear - birthYear;
   const isSekitori = division === "makuuchi" || division === "juryo";
-  const citizenshipStatus =
-    nationality === "Japan" || nationality === "Japanese" ? "native" : "foreign";
+  const citizenshipStatus = !isForeign({ nationality }) ? "native" : "foreign";
 
   return {
     id,

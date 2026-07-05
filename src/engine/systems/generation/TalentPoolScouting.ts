@@ -244,7 +244,7 @@ export function getScoutedCandidateView(world: WorldState, candidateId: Id) {
   let level = tp.playerScouting?.[candidateId]?.scoutingLevel ?? 0;
 
   // Phase 5 Depth: Academy Advanced Discovery
-  if (world.playerHeyaId && candidate.nationality !== "Japan") {
+  if (world.playerHeyaId && isForeign(candidate)) {
     const heya = getHeya(world, world.playerHeyaId);
     const presence = heya?.regionalPresence?.[candidate.originRegion] || 0;
     if (presence >= 80) {

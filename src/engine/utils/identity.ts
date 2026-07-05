@@ -7,9 +7,8 @@ import type { Rikishi } from "../types/rikishi";
  */
 export function isForeign(rikishi: { nationality?: string }): boolean {
   if (!rikishi.nationality) return false;
-  return (
-    rikishi.nationality.toLowerCase() !== "japan" && rikishi.nationality.toLowerCase() !== "jp"
-  );
+  const n = rikishi.nationality.toLowerCase();
+  return n !== "japan" && n !== "japanese";
 }
 
 /**

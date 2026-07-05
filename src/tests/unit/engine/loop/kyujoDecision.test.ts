@@ -446,3 +446,114 @@ describe("kyujo_decision autonomous resolution", () => {
     expect(tc?.dailyInjuryRiskOverrides?.["r1"]).toBe(1.5);
   });
 });
+
+describe("kyujo_decision — additional edge cases", () => {
+  it("generates separate decisions for two injured player rikishi on the same day", () => {
+    const r1 = makeRikishi("r1", {
+      heyaId: "h1",
+      injured: true,
+      injuryWeeksRemaining: 3,
+      injuryStatus: { type: "muscle", severity: "moderate", weeksRemaining: 3 } as never,
+    });
+    const r2 = makeRikishi("r2", {
+      heyaId: "h1",
+      injured: true,
+      injuryWeeksRemaining: 4,
+      injuryStatus: { type: "sprain", severity: "serious", weeksRemaining: 4 } as never,
+    });
+    const heya = makeHeya("h1", ["r1", "r2"]);
+    const basho = makeBasho({
+      day: 5,
+      matches: [
+        makeMatch(5, "r1", "r3") as never,
+        makeMatch(5, "r2", "r4") as never,
+      ],
+    });
+    const world = makeWorld({
+      cyclePhase: "active_basho",
+      playerHeyaId: "h1",
+      heyas: new Map([["h1", heya]]),
+      rikishi: new Map([
+        ["r1", r1],
+        ["r2", r2],
+      ]),
+      currentBasho: basho,
+    });
+
+    const decisions = detectDueDecisions(world);
+    const kyujo = decisions.filter((d) => d.type === "kyujo_decision");
+    expect(kyujo.length).toBe(2);
+    const ids = kyujo.map((d) => d.id);
+    expect(ids).toContain("kyujo_r1_5");
+    expect(ids).toContain("kyujo_r2_5");
+  });
+
+  it("description includes ~20% risk for moderate severity", () => {
+    const r = makeRikishi("r1", {
+      injured: true,
+      injuryWeeksRemaining: 3,
+      injuryStatus: { type: "muscle", severity: "moderate", weeksRemaining: 3 } as never,
+    });
+    const heya = makeHeya("h1", ["r1"]);
+    const basho = makeBasho({
+      day: 5,
+      matches: [makeMatch(5, "r1", "r2") as never],
+    });
+    const world = makeWorld({
+      cyclePhase: "active_basho",
+      playerHeyaId: "h1",
+      heyas: new Map([["h1", heya]]),
+      rikishi: new Map([["r1", r]]),
+      currentBasho: basho,
+    });
+
+    const decisions = detectDueDecisions(world);
+    const kyujo = decisions.find((d) => d.type === "kyujo_decision");
+    expect(kyujo?.description).toContain("20%");
+  });
+
+  it("description includes ~40% risk for serious severity", () => {
+    const r = makeRikishi("r1", {
+      injured: true,
+      injuryWeeksRemaining: 3,
+      injuryStatus: { type: "muscle", severity: "serious", weeksRemaining: 3 } as never,
+    });
+    const heya = makeHeya("h1", ["r1"]);
+    const basho = makeBasho({
+      day: 5,
+      matches: [makeMatch(5, "r1", "r2") as never],
+    });
+    const world = makeWorld({
+      cyclePhase: "active_basho",
+      playerHeyaId: "h1",
+      heyas: new Map([["h1", heya]]),
+      rikishi: new Map([["r1", r]]),
+      currentBasho: basho,
+    });
+
+    const decisions = detectDueDecisions(world);
+    const kyujo = decisions.find((d) => d.type === "kyujo_decision");
+    expect(kyujo?.description).toContain("40%");
+  });
+
+  it("compete uses 2.0 multiplier for serious severity", () => {
+    const r = makeRikishi("r1", {
+      injured: true,
+      injuryWeeksRemaining: 3,
+      injuryStatus: { type: "muscle", severity: "serious", weeksRemaining: 3 } as never,
+    });
+    const heya = makeHeya("h1", ["r1"]);
+    const world = makeWorld({
+      playerHeyaId: "h1",
+      heyas: new Map([["h1", heya]]),
+      rikishi: new Map([["r1", r]]),
+    });
+    const builder = createImpactBuilder("test");
+    applyDecisionEffect(world, builder, "kyujo_decision", "compete", "kyujo_r1_5");
+    const impact = builder.build();
+    const tc = impact.worldFields?.transientContext as
+      | { dailyInjuryRiskOverrides?: Record<string, number> }
+      | undefined;
+    expect(tc?.dailyInjuryRiskOverrides?.["r1"]).toBe(2.0);
+  });
+});

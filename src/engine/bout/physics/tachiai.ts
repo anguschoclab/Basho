@@ -59,7 +59,7 @@ export function resolveTachiaiV2(
     }
 
     // Counter-tactic bonus: player's tactic family vs opponent's dominant family
-    if (bout.playerTactic !== "STANDARD") {
+    if (bout.playerTactic) {
       const opponent = bout.playerSide === "east" ? west : east;
       if (opponent.combatProfile) {
         const counterBonus = resolveCounterTacticBonus(bout.playerTactic, opponent.combatProfile);

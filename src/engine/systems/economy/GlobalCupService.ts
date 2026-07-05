@@ -10,6 +10,7 @@ import { Rikishi } from "../../types/rikishi";
 import { createImpactBuilder, ImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { RNGRegistry } from "../../core/RNGRegistry";
+import { isForeign } from "../../utils/identity";
 import type {
   GlobalCupMatch,
   GlobalCupParticipant,
@@ -60,7 +61,7 @@ export const GlobalCupService = {
     const talentPool = world.talentPool;
     const foreignCandidates = talentPool
       ? Object.values(talentPool.candidates).filter(
-          (c) => c.nationality !== "Japan" && c.availabilityState === "available"
+          (c) => isForeign(c) && c.availabilityState === "available"
         )
       : [];
 
