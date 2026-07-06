@@ -49,7 +49,7 @@ describe("selectors", () => {
       const stables1 = getAvailableStables(world);
       expect(stables1.length).toBe(1);
 
-      const h2 = MockFactory.createHeya({ id: "h-2" });
+      const h2 = MockFactory.createHeya("h-2");
       world.heyas.set("h-2", h2);
 
       const stables2 = getAvailableStables(world);
