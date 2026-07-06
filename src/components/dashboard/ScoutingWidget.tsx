@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { Search, Globe, GraduationCap, School, Sparkles } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
+import { EmptyState } from "@/components/ui/EmptyState";
 import type { PotentialBand } from "@/engine/descriptorBands";
 import { toPotentialBand } from "@/engine/descriptorBands";
 import * as talentpool from "@/engine/systems/generation/TalentPoolService";
@@ -91,10 +92,11 @@ const ProspectList = React.memo(
     return (
       <>
         {topProspects.length === 0 ? (
-          <div className="text-center py-4">
-            <Search className="h-5 w-5 text-muted-foreground/20 mx-auto mb-1.5" />
-            <p className="text-xs text-muted-foreground">No prospects scouted yet</p>
-          </div>
+          <EmptyState
+            icon={Search}
+            title="No prospects scouted yet"
+            compact
+          />
         ) : (
           (() => {
             const limit = topProspects.length;
