@@ -38,15 +38,7 @@ export function listVisibleCandidates(
   const pool = tp.pools[poolType];
   if (!pool) return [];
 
-  // ⚡ Bolt Optimization: Replace chained .map().filter() with a single for...of loop
-  // to prevent intermediate array allocations and O(N) iteration overhead.
-  const candidates: TalentCandidate[] = [];
-  for (const id of pool.candidatesVisible) {
-    const candidate = tp.candidates[id];
-    if (candidate) {
-      candidates.push(candidate);
-    }
-  }
+  // ⚡ Bolt Optimization: Replace chained .map().filter() with a single for...of loop\n  // to prevent intermediate array allocations and O(N) iteration overhead.\n  const candidates: TalentCandidate[] = [];\n  const isForeignGated = poolType === "foreign" && world.playerHeyaId;\n  const heya = isForeignGated ? getHeya(world, world.playerHeyaId!) : undefined;\n\n  if (isForeignGated && heya) {\n    const presence = heya.regionalPresence || {};\n    for (const id of pool.candidatesVisible) {\n      const candidate = tp.candidates[id];\n      if (candidate && (presence[candidate.originRegion] || 0) >= 40) {\n        candidates.push(candidate);\n      }\n    }\n    return candidates;\n  }\n\n  for (const id of pool.candidatesVisible) {\n    const candidate = tp.candidates[id];\n    if (candidate) {\n      candidates.push(candidate);\n    }\n  }
 
   // Phase 5 Depth: Regional Gating for foreign candidates
   if (poolType === "foreign" && world.playerHeyaId) {
