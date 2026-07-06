@@ -45,7 +45,11 @@ export const EntityService = {
   /**
    * Hydrate a state in a nested record.
    * Useful for per-heya states (world.trainingState[heyaId]).
-   * Automatically determines if the root should be a Map or POJO based on the field name.
+   *
+   * CONTRACT / WARNING: This does NOT automatically detect Map vs POJO types.
+   * It uses a hardcoded allowlist to initialize as a Map.
+   * If a new Map field (like 'sparringPairs') is added to WorldState but not the allowlist here,
+   * it will be silently initialized as a POJO ({}), causing runtime type errors when .set() or .get() is called.
    *
    * @param {WorldState} world - The WorldState.
    * @param {keyof WorldState} rootKey - The top-level key (e.g., 'trainingState').
