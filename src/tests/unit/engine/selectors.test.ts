@@ -63,8 +63,8 @@ describe("selectors", () => {
 
   describe("getEligibleOpponents", () => {
     it("filters out inactive, injured, and same-stable rikishi", () => {
-      const heya1 = MockFactory.createHeya({ id: "heya-1" });
-      const heya2 = MockFactory.createHeya({ id: "heya-2" });
+      const heya1 = MockFactory.createHeya("heya-1");
+      const heya2 = MockFactory.createHeya("heya-2");
 
       const r1 = MockFactory.createRikishi({ id: "r-1", heyaId: "heya-1" });
       const r2 = MockFactory.createRikishi({ id: "r-2", heyaId: "heya-1" }); // Same heya
