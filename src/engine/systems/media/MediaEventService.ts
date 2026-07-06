@@ -111,9 +111,10 @@ export function handleMediaEvent(world: WorldState, eventId: string, choice: str
   } else if (choice === "deny") {
     // Denying may increase pressure
     // ⚡ Bolt Optimization: Replace Object.entries() with for...in loop to avoid O(N) tuple allocations
-    for (const id in world.mediaState.heyaPressure) {
-      if (!Object.prototype.hasOwnProperty.call(world.mediaState.heyaPressure, id)) continue;
-      updatedHeyaPressure[id] = Math.min(100, (world.mediaState.heyaPressure[id] as number) + 5);
+    const heyaPressure = world.mediaState.heyaPressure;
+    for (const id in heyaPressure) {
+      if (!Object.prototype.hasOwnProperty.call(heyaPressure, id)) continue;
+      updatedHeyaPressure[id] = Math.min(100, (heyaPressure[id] as number) + 5);
     }
   } else if (choice === "ignore") {
     // Ignoring has no immediate effect but may cause decay
