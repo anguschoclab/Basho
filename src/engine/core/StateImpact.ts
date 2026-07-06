@@ -77,7 +77,7 @@ export function getNextTimestamp(): number {
  *
  * CONTRACT:
  * - Determinism: Must be applied atomically by ImpactResolver.
- * - Mutability: Objects provided as partials (e.g., in entity updates or collections)
+ * - Immutability: Objects provided as partials (e.g., in entity updates or collections)
  *   must be deeply immutable; do not leak shared references into the patch.
  * - Idempotency: Impact fields should describe the absolute final state of the updated
  *   properties, not relative increments, as patches are merged sequentially.
