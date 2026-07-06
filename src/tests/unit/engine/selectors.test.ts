@@ -173,9 +173,7 @@ describe("selectors", () => {
 
   describe("getStableFinances", () => {
     it("returns stable funds if the stable exists", () => {
-      const h1 = MockFactory.createHeya({ id: "h-1" });
-      h1.id = "h-1";
-      h1.funds = 12345;
+      const h1 = MockFactory.createHeya("h-1", { funds: 12345 });
       world.heyas.set("h-1", h1);
 
       expect(getStableFinances(world, "h-1")).toBe(12345);
