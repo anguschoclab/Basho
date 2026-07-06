@@ -43,7 +43,7 @@ describe("selectors", () => {
 
   describe("getAvailableStables", () => {
     it("returns all heyas, caching on subsequent calls", () => {
-      const h1 = MockFactory.createHeya({ id: "h-1" });
+      const h1 = MockFactory.createHeya("h-1");
       world.heyas.set("h-1", h1);
 
       const stables1 = getAvailableStables(world);
