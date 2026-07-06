@@ -78,14 +78,17 @@ describe("selectors", () => {
   });
 
   it("selectHeyasWithCriticalWelfare should identify heyas by risk or compliance state", () => {
-    const h1 = MockFactory.createHeya("h1");
-    h1.welfareState = { welfareRisk: 10, complianceState: "compliant", stressPoints: 0, flags: [] };
+    const h1 = MockFactory.createHeya("h1", {
+      welfareState: { welfareRisk: 10, complianceState: "compliant", stressPoints: 0, flags: [] }
+    });
 
-    const h2 = MockFactory.createHeya("h2");
-    h2.welfareState = { welfareRisk: 55, complianceState: "compliant", stressPoints: 0, flags: [] };
+    const h2 = MockFactory.createHeya("h2", {
+      welfareState: { welfareRisk: 55, complianceState: "compliant", stressPoints: 0, flags: [] }
+    });
 
-    const h3 = MockFactory.createHeya("h3");
-    h3.welfareState = { welfareRisk: 10, complianceState: "investigation", stressPoints: 0, flags: [] };
+    const h3 = MockFactory.createHeya("h3", {
+      welfareState: { welfareRisk: 10, complianceState: "investigation", stressPoints: 0, flags: [] }
+    });
 
     const world = MockFactory.createWorld();
     world.heyas.set("h1", h1);
