@@ -33,7 +33,6 @@ describe("selectors", () => {
     world.rikishi.set("r2", r2);
     world.rikishi.set("r3", r3);
     world.rikishi.set("r4", r4);
-    world.activeRikishiIds = new Set(["r1", "r2", "r3", "r4"]);
 
     const opponents = getEligibleOpponents(world, "r1");
     expect(opponents).toEqual([r2]);
