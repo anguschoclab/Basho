@@ -385,47 +385,43 @@ export function computeVariableSanyakuCounts(
   perfById: Map<string, BashoPerformance>,
   demoted: Set<string>
 ): BanzukeUpdateResult["sanyakuCounts"] {
-  const m = current.filter((e) => e.division === "makuuchi");
-  const yCount = Math.min(
-    6,
-    m.filter((e) => e.position.rank === "yokozuna").length +
-      m.filter((e) => e.position.rank === "ozeki" && !!perfById.get(e.rikishiId)?.promoteToYokozuna)
-        .length
-  );
-  let oCount = Math.max(
-    2,
-    Math.min(
-      4,
-      m.filter((e) => e.position.rank === "ozeki" && !demoted.has(e.rikishiId)).length +
-        m.filter(
-          (e) => e.position.rank === "sekiwake" && (perfById.get(e.rikishiId)?.wins ?? 0) >= 11
-        ).length
-    )
-  );
-  let sCount = Math.max(
-    2,
-    Math.min(
-      6,
-      2 +
-        demoted.size +
-        m.filter(
-          (e) => e.position.rank === "komusubi" && (perfById.get(e.rikishiId)?.wins ?? 0) >= 10
-        ).length
-    )
-  );
-  let kCount = Math.max(
-    2,
-    Math.min(
-      6,
-      2 +
-        m.filter(
-          (e) =>
-            e.position.rank === "maegashira" &&
-            (!!perfById.get(e.rikishiId)?.yusho ||
-              ((e.position.rankNumber ?? 99) <= 4 && (perfById.get(e.rikishiId)?.wins ?? 0) >= 10))
-        ).length
-    )
-  );
+  // ⚡ Bolt Optimization: Use a single for...of loop instead of chained .filter().length
+  let yokozunaCount = 0;
+  let promoteToYokozunaCount = 0;
+  let ozekiNotDemotedCount = 0;
+  let sekiwakePromoteCount = 0;
+  let komusubiPromoteCount = 0;
+  let maegashiraPromoteCount = 0;
+
+  for (const e of current) {
+    if (e.division !== "makuuchi") continue;
+
+    const rank = e.position.rank;
+    const perf = perfById.get(e.rikishiId);
+
+    if (rank === "yokozuna") {
+      yokozunaCount++;
+    } else if (rank === "ozeki") {
+      if (perf?.promoteToYokozuna) promoteToYokozunaCount++;
+      if (!demoted.has(e.rikishiId)) ozekiNotDemotedCount++;
+    } else if (rank === "sekiwake") {
+      if ((perf?.wins ?? 0) >= 11) sekiwakePromoteCount++;
+    } else if (rank === "komusubi") {
+      if ((perf?.wins ?? 0) >= 10) komusubiPromoteCount++;
+    } else if (rank === "maegashira") {
+      if (
+        perf?.yusho ||
+        ((e.position.rankNumber ?? 99) <= 4 && (perf?.wins ?? 0) >= 10)
+      ) {
+        maegashiraPromoteCount++;
+      }
+    }
+  }
+
+  const yCount = Math.min(6, yokozunaCount + promoteToYokozunaCount);
+  let oCount = Math.max(2, Math.min(4, ozekiNotDemotedCount + sekiwakePromoteCount));
+  let sCount = Math.max(2, Math.min(6, 2 + demoted.size + komusubiPromoteCount));
+  let kCount = Math.max(2, Math.min(6, 2 + maegashiraPromoteCount));
 
   // Balanced trim if needed
   while (yCount + oCount + sCount + kCount > 20) {
