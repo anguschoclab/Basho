@@ -3,6 +3,7 @@ import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { BaseWidget } from "./BaseWidget";
+import { EmptyState } from "@/components/ui/EmptyState";
 import {
   Newspaper,
   Trophy,
@@ -138,12 +139,12 @@ export function NewsWidget() {
     >
       <ScrollArea className="h-[260px]">
         {recentEvents.length === 0 ? (
-          <div className="text-center py-8">
-            <Newspaper className="h-6 w-6 text-muted-foreground/20 mx-auto mb-2" />
-            <p className="text-xs text-muted-foreground italic">
-              No events yet. Advance time to see updates.
-            </p>
-          </div>
+          <EmptyState
+            icon={Newspaper}
+            title="No events yet"
+            description="Advance time to see updates."
+            compact
+          />
         ) : (
           <div className="space-y-0.5 pr-2">
             {(() => {

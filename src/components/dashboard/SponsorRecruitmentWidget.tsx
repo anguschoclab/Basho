@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useGame } from "@/contexts/GameContext";
 import { Coins, TrendingUp, Building2 } from "lucide-react";
 import { formatYen } from "@/utils/engineUtils";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { recruitSponsor } from "@/presenters/uiDigest";
 
 const TIER_LABELS: Record<string, { label: string; color: string }> = {
@@ -164,10 +165,11 @@ export function SponsorRecruitmentWidget() {
       <CardContent>
         <ScrollArea className="h-[400px]">
           {availableSponsors.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <Building2 className="h-12 w-12 mx-auto mb-2 opacity-50" />
-              <p>No sponsors available for recruitment</p>
-            </div>
+            <EmptyState
+              icon={Building2}
+              title="No sponsors available for recruitment"
+              compact
+            />
           ) : (
             <div className="space-y-3">
               {availableSponsors.map((sponsor) => {
