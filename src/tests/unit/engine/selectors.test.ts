@@ -9,7 +9,6 @@ describe("selectors", () => {
     const world = MockFactory.createWorld();
     world.rikishi.set("r1", r1);
     world.rikishi.set("r2", r2);
-    world.activeRikishiIds = new Set(["r1"]);
 
     const active1 = getActiveRikishi(world);
     expect(active1).toEqual([r1]);
