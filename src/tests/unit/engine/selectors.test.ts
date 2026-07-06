@@ -139,25 +139,25 @@ describe("selectors", () => {
 
   describe("selectMergerCandidates", () => {
     it("returns heyas with net debt and 3 or fewer active rikishi", () => {
-      const h1 = MockFactory.createHeya({ id: "h-1" }); // Positive funds
-      h1.id = "h-1";
-      h1.funds = 100;
-      h1.rikishiIds = ["r1"];
+      const h1 = MockFactory.createHeya("h-1", {
+        funds: 100,
+        rikishiIds: ["r1"]
+      });
 
-      const h2 = MockFactory.createHeya({ id: "h-2" }); // Debt but >3 rikishi
-      h2.id = "h-2";
-      h2.funds = -100;
-      h2.rikishiIds = ["r1", "r2", "r3", "r4"];
+      const h2 = MockFactory.createHeya("h-2", {
+        funds: -100,
+        rikishiIds: ["r1", "r2", "r3", "r4"]
+      });
 
-      const h3 = MockFactory.createHeya({ id: "h-3" }); // Merger candidate
-      h3.id = "h-3";
-      h3.funds = -100;
-      h3.rikishiIds = ["r1", "r2", "r3"];
+      const h3 = MockFactory.createHeya("h-3", {
+        funds: -100,
+        rikishiIds: ["r1", "r2", "r3"]
+      });
 
-      const h4 = MockFactory.createHeya({ id: "h-4" }); // Merger candidate
-      h4.id = "h-4";
-      h4.funds = -500;
-      h4.rikishiIds = [];
+      const h4 = MockFactory.createHeya("h-4", {
+        funds: -500,
+        rikishiIds: []
+      });
 
       world.heyas.set("h-1", h1);
       world.heyas.set("h-2", h2);
