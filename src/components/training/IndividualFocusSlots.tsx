@@ -10,6 +10,7 @@ import { Activity, Users } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
 import { FATIGUE_LABELS, toFatigueBand, getCareerPhase } from "@/presenters/uiDigest";
 import { FOCUS_MODE_OPTIONS } from "@/constants/ui/training";
+import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import type { IndividualFocusType } from "@/engine/types/training";
 import type { Rikishi } from "@/engine/types";
 
@@ -104,25 +105,26 @@ export function IndividualFocusSlots({
                 {FOCUS_MODE_OPTIONS.map((opt) => {
                   const isActive = focus?.focusType === opt.value;
                   return (
-                    <button
-                      key={opt.value}
-                      onClick={() =>
-                        onIndividualFocusChange(rikishi.id, isActive ? null : opt.value)
-                      }
-                      className={cn(
-                        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
-                        "flex flex-col items-center justify-center h-14 w-20 rounded-lg transition-all gap-1",
-                        isActive
-                          ? "bg-primary text-white shadow-lg scale-105"
-                          : "text-muted-foreground hover:bg-white/50"
-                      )}
-                      title={opt.description}
-                    >
-                      {opt.icon}
-                      <span className="text-[8px] font-black uppercase tracking-tighter">
-                        {opt.label}
-                      </span>
-                    </button>
+                    <TooltipWrap key={opt.value} content={opt.description} side="top">
+                      <button
+                        onClick={() =>
+                          onIndividualFocusChange(rikishi.id, isActive ? null : opt.value)
+                        }
+                        className={cn(
+                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
+                          "flex flex-col items-center justify-center h-14 w-20 rounded-lg transition-all gap-1",
+                          isActive
+                            ? "bg-primary text-white shadow-lg scale-105"
+                            : "text-muted-foreground hover:bg-white/50"
+                        )}
+                        aria-label={`${opt.label}: ${opt.description}`}
+                      >
+                        {opt.icon}
+                        <span className="text-[8px] font-black uppercase tracking-tighter">
+                          {opt.label}
+                        </span>
+                      </button>
+                    </TooltipWrap>
                   );
                 })}
               </div>
