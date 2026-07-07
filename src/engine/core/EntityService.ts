@@ -83,6 +83,7 @@ export const EntityService = {
         "staff",
         "trainingState",
         "closedHeyas",
+        "sparringPairs",
       ].includes(rootKey as string);
       (world as any)[rootKey] = isMapField ? new Map() : {};
     }
