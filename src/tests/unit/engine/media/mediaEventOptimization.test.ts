@@ -3,8 +3,6 @@ import { handleMediaEvent } from "@/engine/systems/media/MediaEventService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { WorldState } from "@/engine/types/world";
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
-
 describe("handleMediaEvent — for...in optimization safety", () => {
   let mockWorld: WorldState;
 

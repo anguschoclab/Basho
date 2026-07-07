@@ -3,8 +3,6 @@ import { listVisibleCandidates } from "@/engine/systems/generation/TalentPoolSco
 import { makeMockWorld, makeMockHeya } from "../../utils";
 import type { TalentCandidate, TalentPoolWorldState, TalentPoolType } from "@/engine/types/talent";
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
-
 function makeCandidate(id: string, overrides: Partial<TalentCandidate> = {}): TalentCandidate {
   return {
     candidateId: id,
