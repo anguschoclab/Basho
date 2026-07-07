@@ -3,6 +3,7 @@ import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { BaseWidget } from "./BaseWidget";
+import { EmptyState } from "@/components/ui/EmptyState";
 import {
   buildWeeklyDigest,
   type DigestItem,
@@ -130,10 +131,12 @@ export function DigestWidget({ digest: digestProp, fullPage = false }: DigestWid
       <p className="text-xs text-muted-foreground italic">{digest.headline}</p>
 
       {digest.sections.length === 0 ? (
-        <div className="text-center py-4">
-          <Newspaper className="h-5 w-5 text-muted-foreground/20 mx-auto mb-1.5" />
-          <p className="text-xs text-muted-foreground">A quiet week. No notable events.</p>
-        </div>
+        <EmptyState
+          icon={Newspaper}
+          title="A quiet week."
+          description="No notable events."
+          compact
+        />
       ) : (
         <ScrollArea className={scrollHeight}>
           <div className="space-y-3">
