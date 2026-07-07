@@ -167,3 +167,6 @@ Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop 
 ## 2026-07-04 - Array Transformation Chains
 **Learning:** The `listVisibleCandidates` function in `TalentPoolScouting` is called frequently across UI components and projections. Using `.map().filter()` over arrays (like `pool.candidatesVisible`) creates unnecessary O(N) intermediate array allocations and causes redundant iterations which degrade memory performance in high-frequency functions.
 **Action:** When filtering or transforming arrays/maps, replace chained array methods with a direct `for` or `for...of` loop with conditional pushing. This accumulates all values simultaneously and prevents redundant iteration and intermediate allocations.
+## 2025-10-24 - Optimize Object.values() and array mapping in UI Projections
+**Learning:** Using `Object.values(obj).map(...)` or iterating over `Object.values(obj)` directly creates unnecessary intermediate array allocations, which impacts UI performance and memory, especially during frequent state derivations.
+**Action:** Replace `Object.values(obj)` and chained `.map()` calls with direct `for...in` loops containing `hasOwnProperty` guards to accumulate projected UI data, eliminating O(N) array instantiations entirely.
