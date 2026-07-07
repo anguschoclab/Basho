@@ -289,20 +289,31 @@ function createMenu(): void {
   Menu.setApplicationMenu(menu);
 }
 
+// Helper to prevent Prototype Pollution in electron-store dot-notation keys
+function isValidStorageKey(key: string): boolean {
+  if (typeof key !== "string") return false;
+  const lowerKey = key.toLowerCase();
+  return !(
+    lowerKey.includes("__proto__") ||
+    lowerKey.includes("constructor") ||
+    lowerKey.includes("prototype")
+  );
+}
+
 // IPC Handlers for storage operations
 ipcMain.handle("storage:get", (event, key: string) => {
-  if (typeof key !== "string") throw new TypeError("Invalid key type");
+  if (!isValidStorageKey(key)) throw new TypeError("Invalid storage key");
   return store.get(key);
 });
 
 ipcMain.handle("storage:set", (event, key: string, value: unknown) => {
-  if (typeof key !== "string") throw new TypeError("Invalid key type");
+  if (!isValidStorageKey(key)) throw new TypeError("Invalid storage key");
   store.set(key, value);
   return true;
 });
 
 ipcMain.handle("storage:delete", (event, key: string) => {
-  if (typeof key !== "string") throw new TypeError("Invalid key type");
+  if (!isValidStorageKey(key)) throw new TypeError("Invalid storage key");
   store.delete(key);
   return true;
 });

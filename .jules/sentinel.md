@@ -74,3 +74,8 @@ Replaced `JSON.parse` with `destr` in `safeParse` to mitigate prototype pollutio
 **Vulnerability:** Electron apps grant certain permissions by default or prompt the user if not handled.
 **Learning:** In offline, local-first applications like this game, no special permissions (camera, microphone, location) are needed. Leaving them unhandled leaves unnecessary attack surface.
 **Prevention:** Explicitly use `session.defaultSession.setPermissionRequestHandler` to return `false` for all permission requests, acting as defense-in-depth. Also, enforce `X-Content-Type-Options: nosniff`.
+
+## 2025-07-06 - Prevent Prototype Pollution via Electron-Store
+**Vulnerability:** The `storage:set`, `storage:get`, and `storage:delete` IPC handlers accepted any string as a key and passed it directly to `electron-store`. Because `electron-store` supports dot-notation for nested properties (via `dot-prop`), a malicious renderer could pass keys containing `__proto__` or `constructor.prototype` to alter the Object prototype of the main process, leading to Prototype Pollution and potential Denial of Service (DoS) or Remote Code Execution (RCE).
+**Learning:** Any interface that supports dot-notation property paths (like `electron-store` or `lodash.set`) is a prime vector for Prototype Pollution if the path strings are user-controlled and unvalidated.
+**Prevention:** Always validate and sanitize property keys passed from untrusted boundaries (like IPC) before using them in dot-notation property setters. Explicitly reject keys containing `__proto__`, `constructor`, or `prototype`.
