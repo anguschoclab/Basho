@@ -38,17 +38,27 @@ export function listVisibleCandidates(
   const pool = tp.pools[poolType];
   if (!pool) return [];
 
-  const candidates = pool.candidatesVisible.map((id) => tp.candidates[id]).filter(Boolean);
+  // ⚡ Bolt Optimization: Replace chained .map().filter() with a single for...of loop
+  // to prevent intermediate array allocations and O(N) iteration overhead.
+  const candidates: TalentCandidate[] = [];
+  const isForeignGated = poolType === "foreign" && world.playerHeyaId;
+  const heya = isForeignGated ? getHeya(world, world.playerHeyaId!) : undefined;
 
-  // Phase 5 Depth: Regional Gating for foreign candidates
-  if (poolType === "foreign" && world.playerHeyaId) {
-    const heya = getHeya(world, world.playerHeyaId);
-    if (heya) {
-      const presence = heya.regionalPresence || {};
-      return candidates.filter((c) => {
-        const minPresence = 40; // Visibility threshold
-        return (presence[c.originRegion] || 0) >= minPresence;
-      });
+  if (isForeignGated && heya) {
+    const presence = heya.regionalPresence || {};
+    for (const id of pool.candidatesVisible) {
+      const candidate = tp.candidates[id];
+      if (candidate && (presence[candidate.originRegion] || 0) >= 40) {
+        candidates.push(candidate);
+      }
+    }
+    return candidates;
+  }
+
+  for (const id of pool.candidatesVisible) {
+    const candidate = tp.candidates[id];
+    if (candidate) {
+      candidates.push(candidate);
     }
   }
 

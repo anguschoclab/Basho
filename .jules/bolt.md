@@ -164,3 +164,6 @@ Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop 
 ## 2024-05-18 - Optimize media system iteration with Object.entries
 **Learning:** `Object.entries()` creates unnecessary `O(N)` tuple allocations for dictionaries like `mediaHeat` and `heyaPressure` which are frequently iterated during weekly ticks and event resolutions, leading to increased GC pressure.
 **Action:** Replace `Object.entries()` with `for...in` loops and `hasOwnProperty` guards in performance-critical code paths like `MediaStateService.ts` and `MediaEventService.ts`.
+## 2026-07-04 - Array Transformation Chains
+**Learning:** The `listVisibleCandidates` function in `TalentPoolScouting` is called frequently across UI components and projections. Using `.map().filter()` over arrays (like `pool.candidatesVisible`) creates unnecessary O(N) intermediate array allocations and causes redundant iterations which degrade memory performance in high-frequency functions.
+**Action:** When filtering or transforming arrays/maps, replace chained array methods with a direct `for` or `for...of` loop with conditional pushing. This accumulates all values simultaneously and prevents redundant iteration and intermediate allocations.
