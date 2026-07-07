@@ -102,13 +102,19 @@ export function handleMediaEvent(world: WorldState, eventId: string, choice: str
 
   if (choice === "apologize") {
     // Apologizing reduces heat but may hurt reputation
-    for (const [id, heat] of Object.entries(world.mediaState.mediaHeat)) {
-      updatedMediaHeat[id] = Math.max(0, (heat as number) - 5);
+    // ⚡ Bolt Optimization: Replace Object.entries() with for...in loop to avoid O(N) tuple allocations
+    const mediaHeat = world.mediaState.mediaHeat;
+    for (const id in mediaHeat) {
+      if (!Object.prototype.hasOwnProperty.call(mediaHeat, id)) continue;
+      updatedMediaHeat[id] = Math.max(0, (mediaHeat[id] as number) - 5);
     }
   } else if (choice === "deny") {
     // Denying may increase pressure
-    for (const [id, pressure] of Object.entries(world.mediaState.heyaPressure)) {
-      updatedHeyaPressure[id] = Math.min(100, (pressure as number) + 5);
+    // ⚡ Bolt Optimization: Replace Object.entries() with for...in loop to avoid O(N) tuple allocations
+    const heyaPressure = world.mediaState.heyaPressure;
+    for (const id in heyaPressure) {
+      if (!Object.prototype.hasOwnProperty.call(heyaPressure, id)) continue;
+      updatedHeyaPressure[id] = Math.min(100, (heyaPressure[id] as number) + 5);
     }
   } else if (choice === "ignore") {
     // Ignoring has no immediate effect but may cause decay
