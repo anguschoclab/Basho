@@ -14,6 +14,7 @@ import { is } from "@electron-toolkit/utils";
 import path from "path";
 import { promises as fs } from "fs";
 import { validatePath as validatePathImpl } from "../src/utils/validatePath";
+import { isValidStorageKey } from "../src/utils/storageKeyValidation";
 
 // Initialize electron-store for configuration persistence
 // Using dynamic import to handle ESM/CommonJS compatibility
@@ -287,17 +288,6 @@ function createMenu(): void {
 
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
-}
-
-// Helper to prevent Prototype Pollution in electron-store dot-notation keys
-function isValidStorageKey(key: string): boolean {
-  if (typeof key !== "string") return false;
-  const lowerKey = key.toLowerCase();
-  return !(
-    lowerKey.includes("__proto__") ||
-    lowerKey.includes("constructor") ||
-    lowerKey.includes("prototype")
-  );
 }
 
 // IPC Handlers for storage operations

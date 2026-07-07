@@ -52,4 +52,16 @@ describe("EntityService", () => {
       expect((world as any).trainingState.get("heya1")).toEqual({ val: 2 });
     });
   });
+
+  describe("ensureNestedState — sparringPairs field", () => {
+    it("should initialize sparringPairs as a Map", () => {
+      const world = {} as WorldState;
+      const factory = () => ({ val: 1 });
+      const result = EntityService.ensureNestedState(world, "sparringPairs", "pair1", factory);
+
+      expect(result).toEqual({ val: 1 });
+      expect(world.sparringPairs).toBeInstanceOf(Map);
+      expect((world.sparringPairs as any).get("pair1")).toEqual({ val: 1 });
+    });
+  });
 });
