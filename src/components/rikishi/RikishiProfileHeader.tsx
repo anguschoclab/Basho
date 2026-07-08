@@ -228,6 +228,14 @@ export function RikishiProfileHeader({
                   condition: rikishi.careerYusho > 0,
                   tooltip: "Total top-division championship victories",
                 },
+                {
+                  label: "Kinboshi",
+                  value: rikishi.achievements?.kinboshiEarned ?? 0,
+                  sub: "Gold Stars",
+                  color: "text-gold",
+                  condition: (rikishi.achievements?.kinboshiEarned ?? 0) > 0,
+                  tooltip: "Gold stars earned by defeating a Yokozuna as a Maegashira",
+                },
               ].map((stat, i) => (
                 <React.Fragment key={i}>
                   {(!stat.condition || stat.condition === true) && (
