@@ -147,9 +147,6 @@ describe("tickWeekTalentPool - emergency logging", () => {
 
     tickWeekTalentPool(world);
 
-    expect(warnSpy).not.toHaveBeenCalledWith(
-      expect.stringContaining("Emergency"),
-      "Recruitment"
-    );
+    expect(warnSpy).not.toHaveBeenCalledWith(expect.stringContaining("Emergency"), "Recruitment");
   });
 });

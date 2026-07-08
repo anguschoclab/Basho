@@ -203,10 +203,7 @@ function buildDailyReport(world: WorldState, isWeekly: boolean): DailyTickReport
 export function advanceDays(world: WorldState, days: number): WorldState {
   let currentWorld = world;
   if (days > MAX_DAYS_ADVANCE) {
-    warn(
-      `Input ${days} exceeds MAX_DAYS_ADVANCE (${MAX_DAYS_ADVANCE}); capping.`,
-      "advanceDays"
-    );
+    warn(`Input ${days} exceeds MAX_DAYS_ADVANCE (${MAX_DAYS_ADVANCE}); capping.`, "advanceDays");
   }
   const n = Math.max(1, Math.min(days, MAX_DAYS_ADVANCE));
   for (let i = 0; i < n; i++) {

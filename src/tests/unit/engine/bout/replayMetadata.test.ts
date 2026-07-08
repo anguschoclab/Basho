@@ -33,10 +33,7 @@ function makeBoutResult(overrides: Partial<BoutResult> = {}): BoutResult {
   };
 }
 
-function logEntry(
-  phase: BoutLogEntry["phase"],
-  data: Record<string, unknown>,
-): BoutLogEntry {
+function logEntry(phase: BoutLogEntry["phase"], data: Record<string, unknown>): BoutLogEntry {
   return { phase, data };
 }
 

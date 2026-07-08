@@ -5,10 +5,7 @@ export interface SeekTarget {
   phaseProgress: number;
 }
 
-export function seekToPhase(
-  globalProgress: number,
-  phaseDurations: number[],
-): SeekTarget {
+export function seekToPhase(globalProgress: number, phaseDurations: number[]): SeekTarget {
   const total = phaseDurations.reduce((a, b) => a + b, 0);
   if (total <= 0 || phaseDurations.length === 0) {
     return { phaseIndex: 0, phaseProgress: 0 };
@@ -39,7 +36,7 @@ export function seekToPhase(
 export function computeGlobalProgress(
   phaseIndex: number,
   phaseProgress: number,
-  phaseDurations: number[],
+  phaseDurations: number[]
 ): { globalProgress: number; elapsedMs: number; totalDurationMs: number } {
   const total = phaseDurations.reduce((a, b) => a + b, 0);
   if (total <= 0 || phaseDurations.length === 0) {

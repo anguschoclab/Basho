@@ -159,9 +159,7 @@ describe("enforceHardCapRosterOverflow", () => {
 
     const impact = enforceHardCapRosterOverflow(world);
 
-    const releaseEvents = (impact.events ?? []).filter(
-      (e) => e.type === "ROSTER_OVERFLOW_RELEASE"
-    );
+    const releaseEvents = (impact.events ?? []).filter((e) => e.type === "ROSTER_OVERFLOW_RELEASE");
     expect(releaseEvents.length).toBe(1);
   });
 
@@ -182,9 +180,7 @@ describe("enforceHardCapRosterOverflow", () => {
     expect(newWorld.heyas.get("heya-0")!.rikishiIds).toHaveLength(HARD_CAP_ROSTER_SIZE);
     expect(newWorld.heyas.get("heya-1")!.rikishiIds).toHaveLength(HARD_CAP_ROSTER_SIZE);
 
-    const releaseEvents = (impact.events ?? []).filter(
-      (e) => e.type === "ROSTER_OVERFLOW_RELEASE"
-    );
+    const releaseEvents = (impact.events ?? []).filter((e) => e.type === "ROSTER_OVERFLOW_RELEASE");
     expect(releaseEvents.length).toBe(4);
   });
 });

@@ -52,7 +52,11 @@ describe("buildWeeklyDigest — Training Report section", () => {
         rikishiId: "r1",
         title: "Wrestler-r1 — Training Gains",
         summary: "power +0.3, speed +0.2",
-        data: { shikona: "Wrestler-r1", title: "Wrestler-r1 — Training Gains", summary: "power +0.3, speed +0.2" },
+        data: {
+          shikona: "Wrestler-r1",
+          title: "Wrestler-r1 — Training Gains",
+          summary: "power +0.3, speed +0.2",
+        },
       }),
     ];
 

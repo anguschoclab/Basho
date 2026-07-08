@@ -65,8 +65,7 @@ describe("parseLLMResponse", () => {
   });
 
   it("prevents prototype pollution via fallback with nested __proto__ in markdown", () => {
-    const input =
-      '```json\n{"data": {"__proto__": {"polluted": true}}, "ok": true}\n```';
+    const input = '```json\n{"data": {"__proto__": {"polluted": true}}, "ok": true}\n```';
     const result = parseLLMResponse(input);
     expect(result).toEqual({ data: {}, ok: true });
     expect({}["polluted" as keyof object]).toBeUndefined();

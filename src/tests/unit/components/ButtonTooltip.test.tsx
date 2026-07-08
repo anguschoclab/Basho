@@ -8,7 +8,15 @@ import { Button } from "@/components/ui/button";
 
 // Mock TooltipWrap to inspect whether it wraps the button
 vi.mock("@/components/ui/tooltip-wrap", () => ({
-  TooltipWrap: ({ children, content, side }: { children: React.ReactNode; content: React.ReactNode; side?: string }) => {
+  TooltipWrap: ({
+    children,
+    content,
+    side,
+  }: {
+    children: React.ReactNode;
+    content: React.ReactNode;
+    side?: string;
+  }) => {
     if (!content) return <>{children}</>;
     return (
       <div data-testid="tooltip-wrap" data-content={content} data-side={side}>
@@ -32,7 +40,11 @@ describe("Button tooltip props", () => {
   });
 
   it("passes tooltipSide to TooltipWrap", () => {
-    render(<Button tooltip="Hello" tooltipSide="bottom">Click me</Button>);
+    render(
+      <Button tooltip="Hello" tooltipSide="bottom">
+        Click me
+      </Button>
+    );
     expect(screen.getByTestId("tooltip-wrap").getAttribute("data-side")).toBe("bottom");
   });
 
@@ -57,7 +69,9 @@ describe("Button tooltip props", () => {
       </Button>
     );
     expect(screen.getByTestId("tooltip-wrap")).toBeTruthy();
-    expect(screen.getByTestId("tooltip-wrap").getAttribute("data-content")).toBe("Insufficient funds");
+    expect(screen.getByTestId("tooltip-wrap").getAttribute("data-content")).toBe(
+      "Insufficient funds"
+    );
   });
 
   it("spread pattern with cond=true: no tooltip", () => {
@@ -87,7 +101,11 @@ describe("Button auto aria-label from tooltip", () => {
   });
 
   it("does not overwrite explicit aria-label", () => {
-    const { container } = render(<Button tooltip="Save Game" aria-label="Custom Label">Save</Button>);
+    const { container } = render(
+      <Button tooltip="Save Game" aria-label="Custom Label">
+        Save
+      </Button>
+    );
     const btn = container.querySelector("button");
     expect(btn?.getAttribute("aria-label")).toBe("Custom Label");
   });
@@ -113,7 +131,11 @@ describe("Button auto aria-label from tooltip", () => {
   });
 
   it("derives aria-label even when disabled", () => {
-    const { container } = render(<Button tooltip="Insufficient funds" disabled>Recruit</Button>);
+    const { container } = render(
+      <Button tooltip="Insufficient funds" disabled>
+        Recruit
+      </Button>
+    );
     const btn = container.querySelector("button");
     expect(btn?.getAttribute("aria-label")).toBe("Insufficient funds");
   });
@@ -121,35 +143,47 @@ describe("Button auto aria-label from tooltip", () => {
 
 describe("Button disabled tooltip wrapping", () => {
   it("wraps disabled button with tooltip in span for hover events", () => {
-    const { container } = render(<Button tooltip="Cannot afford" disabled>Buy</Button>);
+    const { container } = render(
+      <Button tooltip="Cannot afford" disabled>
+        Buy
+      </Button>
+    );
     expect(screen.getByTestId("tooltip-wrap")).toBeTruthy();
-    const span = container.querySelector('span.cursor-not-allowed');
+    const span = container.querySelector("span.cursor-not-allowed");
     expect(span).toBeTruthy();
     expect(span?.className).toContain("inline-block");
   });
 
   it("adds pointer-events-none to disabled button inside span wrapper", () => {
-    const { container } = render(<Button tooltip="Cannot afford" disabled>Buy</Button>);
+    const { container } = render(
+      <Button tooltip="Cannot afford" disabled>
+        Buy
+      </Button>
+    );
     const btn = container.querySelector("button");
     expect(btn?.className).toContain("pointer-events-none");
   });
 
   it("does NOT wrap enabled button with tooltip in span", () => {
     const { container } = render(<Button tooltip="Click to buy">Buy</Button>);
-    const span = container.querySelector('span.cursor-not-allowed');
+    const span = container.querySelector("span.cursor-not-allowed");
     expect(span).toBeNull();
   });
 
   it("does NOT wrap disabled button without tooltip in span", () => {
     const { container } = render(<Button disabled>Buy</Button>);
     expect(screen.queryByTestId("tooltip-wrap")).toBeNull();
-    const span = container.querySelector('span.cursor-not-allowed');
+    const span = container.querySelector("span.cursor-not-allowed");
     expect(span).toBeNull();
   });
 
   it("disabled + tooltip: span wrapper receives cursor-not-allowed, button keeps disabled", () => {
-    const { container } = render(<Button tooltip="Locked" disabled>Action</Button>);
-    const span = container.querySelector('span.cursor-not-allowed');
+    const { container } = render(
+      <Button tooltip="Locked" disabled>
+        Action
+      </Button>
+    );
+    const span = container.querySelector("span.cursor-not-allowed");
     const btn = container.querySelector("button");
     expect(span).toBeTruthy();
     expect(btn?.disabled).toBe(true);
@@ -157,10 +191,12 @@ describe("Button disabled tooltip wrapping", () => {
 
   it("disabled + tooltip + explicit aria-label: all three work together", () => {
     const { container } = render(
-      <Button tooltip="Locked" aria-label="Custom Action" disabled>Action</Button>
+      <Button tooltip="Locked" aria-label="Custom Action" disabled>
+        Action
+      </Button>
     );
     const btn = container.querySelector("button");
-    const span = container.querySelector('span.cursor-not-allowed');
+    const span = container.querySelector("span.cursor-not-allowed");
     expect(span).toBeTruthy();
     expect(btn?.getAttribute("aria-label")).toBe("Custom Action");
     expect(btn?.disabled).toBe(true);

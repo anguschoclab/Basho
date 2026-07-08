@@ -1,5 +1,11 @@
 import type { WorldState } from "../types/world";
-import type { BashoName, BoutResult, BashoSimResult, BanzukeUpdateHook, MatchSchedule } from "../types/basho";
+import type {
+  BashoName,
+  BoutResult,
+  BashoSimResult,
+  BanzukeUpdateHook,
+  MatchSchedule,
+} from "../types/basho";
 import type { PromotionEvent, DemotionEvent } from "../types/banzuke";
 import { simulateBout } from "../bout/boutResolver";
 import { RANK_HIERARCHY } from "../banzuke";
@@ -70,7 +76,10 @@ export function simulateEntireBasho(
   const matchesByDay = new Map<number, MatchSchedule[]>();
   for (const m of activeBasho.matches) {
     let dayArr = matchesByDay.get(m.day);
-    if (!dayArr) { dayArr = []; matchesByDay.set(m.day, dayArr); }
+    if (!dayArr) {
+      dayArr = [];
+      matchesByDay.set(m.day, dayArr);
+    }
     dayArr.push(m);
   }
 

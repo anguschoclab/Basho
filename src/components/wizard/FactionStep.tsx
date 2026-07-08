@@ -73,9 +73,7 @@ export function FactionStep({ ichimon, onIchimonChange, onNext, onPrev }: Factio
                   if (!mech) return null;
                   return (
                     <div className="mt-3 pl-8 space-y-1">
-                      <p className="text-xs font-semibold text-primary">
-                        {mech.bonus}
-                      </p>
+                      <p className="text-xs font-semibold text-primary">{mech.bonus}</p>
                       <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
                         Political Weight: {mech.politics}
                       </p>

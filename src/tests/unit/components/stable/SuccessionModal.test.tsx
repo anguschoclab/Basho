@@ -58,11 +58,13 @@ function makeHeya(id: string, oyakataId: string) {
   } as any;
 }
 
-function makeWorld(opts: {
-  heyaId?: string;
-  oyakataId?: string;
-  rikishi?: any[];
-} = {}): WorldState {
+function makeWorld(
+  opts: {
+    heyaId?: string;
+    oyakataId?: string;
+    rikishi?: any[];
+  } = {}
+): WorldState {
   const heyaId = opts.heyaId ?? "h1";
   const oyakataId = opts.oyakataId ?? "o1";
   const heyas = new Map([[heyaId, makeHeya(heyaId, oyakataId)]]);
@@ -99,10 +101,7 @@ describe("SuccessionModal", () => {
   });
 
   it("renders candidate list from findEligibleSuccessors", () => {
-    const rikishi = [
-      makeRikishi("r1", "Hakuho", "h1"),
-      makeRikishi("r2", "Kakuryu", "h1"),
-    ];
+    const rikishi = [makeRikishi("r1", "Hakuho", "h1"), makeRikishi("r2", "Kakuryu", "h1")];
     vi.mocked(DynastyService.findEligibleSuccessors).mockReturnValue(["r1", "r2"]);
     const world = makeWorld({ rikishi });
     renderWithProvider(
@@ -130,9 +129,7 @@ describe("SuccessionModal", () => {
         onSelect={vi.fn()}
       />
     );
-    expect(
-      screen.getByText(/no Sekitori-ranked pupils or alumni eligible/i)
-    ).toBeTruthy();
+    expect(screen.getByText(/no Sekitori-ranked pupils or alumni eligible/i)).toBeTruthy();
   });
 
   it("clicking a candidate selects it (gold highlight)", () => {

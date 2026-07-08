@@ -22,7 +22,7 @@ function makeBoutContext(overrides: Partial<BoutContext> = {}): BoutContext {
 function runTachiai(
   bout: BoutContext,
   east: Rikishi,
-  west: Rikishi,
+  west: Rikishi
 ): { st: EngineStateV2; boutLog: BoutLogEntry[] } {
   const st = initEngineStateV2(bout, east, west);
   const boutLog: BoutLogEntry[] = [];
@@ -33,7 +33,7 @@ function runTachiai(
 
 function findCounterLog(boutLog: BoutLogEntry[]): BoutLogEntry | undefined {
   return boutLog.find(
-    (e) => (e.data as Record<string, unknown>).event === "counter_tactic_advantage",
+    (e) => (e.data as Record<string, unknown>).event === "counter_tactic_advantage"
   );
 }
 
@@ -56,9 +56,7 @@ describe("resolveTachiaiV2 — counter-tactic bonus integration", () => {
     const { boutLog } = runTachiai(bout, east, west);
     const counterEntry = findCounterLog(boutLog);
     expect(counterEntry).toBeDefined();
-    expect((counterEntry!.data as Record<string, unknown>).counterBonus).toBe(
-      COUNTER_TACTIC_BONUS,
-    );
+    expect((counterEntry!.data as Record<string, unknown>).counterBonus).toBe(COUNTER_TACTIC_BONUS);
   });
 
   it("applies counter bonus to player west side when OSHI_THRUST counters belt-dominant opponent", () => {
@@ -79,9 +77,7 @@ describe("resolveTachiaiV2 — counter-tactic bonus integration", () => {
     const { boutLog } = runTachiai(bout, east, west);
     const counterEntry = findCounterLog(boutLog);
     expect(counterEntry).toBeDefined();
-    expect((counterEntry!.data as Record<string, unknown>).counterBonus).toBe(
-      COUNTER_TACTIC_BONUS,
-    );
+    expect((counterEntry!.data as Record<string, unknown>).counterBonus).toBe(COUNTER_TACTIC_BONUS);
   });
 
   it("does NOT apply counter bonus when playerTactic is STANDARD", () => {

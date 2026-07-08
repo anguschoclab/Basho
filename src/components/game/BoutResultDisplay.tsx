@@ -196,44 +196,46 @@ export function BoutResultDisplay({
         </div>
 
         {/* Stats row */}
-        {!compact && <div className="grid grid-cols-3 gap-3 text-xs">
-          <div className="flex flex-col items-center gap-1 p-2 rounded-md bg-muted/30">
-            <Zap className="h-3.5 w-3.5 text-muted-foreground" />
-            <GlossaryTip termId="tachiai">
-              <p className="text-[10px] text-muted-foreground uppercase">Tachiai</p>
-            </GlossaryTip>
-            <p
-              className={cn(
-                "font-medium text-sm",
-                tachiaiWinner === "east"
-                  ? "text-east"
+        {!compact && (
+          <div className="grid grid-cols-3 gap-3 text-xs">
+            <div className="flex flex-col items-center gap-1 p-2 rounded-md bg-muted/30">
+              <Zap className="h-3.5 w-3.5 text-muted-foreground" />
+              <GlossaryTip termId="tachiai">
+                <p className="text-[10px] text-muted-foreground uppercase">Tachiai</p>
+              </GlossaryTip>
+              <p
+                className={cn(
+                  "font-medium text-sm",
+                  tachiaiWinner === "east"
+                    ? "text-east"
+                    : tachiaiWinner === "west"
+                      ? "text-west"
+                      : "text-muted-foreground"
+                )}
+              >
+                {tachiaiWinner === "east"
+                  ? (eastRikishi?.shikona ?? "—")
                   : tachiaiWinner === "west"
-                    ? "text-west"
-                    : "text-muted-foreground"
-              )}
-            >
-              {tachiaiWinner === "east"
-                ? (eastRikishi?.shikona ?? "—")
-                : tachiaiWinner === "west"
-                  ? (westRikishi?.shikona ?? "—")
-                  : "—"}
-            </p>
-          </div>
+                    ? (westRikishi?.shikona ?? "—")
+                    : "—"}
+              </p>
+            </div>
 
-          <div className="flex flex-col items-center gap-1 p-2 rounded-md bg-muted/30">
-            <Shield className="h-3.5 w-3.5 text-muted-foreground" />
-            <p className="text-[10px] text-muted-foreground uppercase">Stance</p>
-            <p className="font-medium text-sm text-foreground">{formatStance(result.stance)}</p>
-          </div>
+            <div className="flex flex-col items-center gap-1 p-2 rounded-md bg-muted/30">
+              <Shield className="h-3.5 w-3.5 text-muted-foreground" />
+              <p className="text-[10px] text-muted-foreground uppercase">Stance</p>
+              <p className="font-medium text-sm text-foreground">{formatStance(result.stance)}</p>
+            </div>
 
-          <div className="flex flex-col items-center gap-1 p-2 rounded-md bg-muted/30">
-            <Timer className="h-3.5 w-3.5 text-muted-foreground" />
-            <p className="text-[10px] text-muted-foreground uppercase">Duration</p>
-            <p className="font-medium text-sm text-foreground">
-              {duration > 0 ? `${duration} ticks` : "—"}
-            </p>
+            <div className="flex flex-col items-center gap-1 p-2 rounded-md bg-muted/30">
+              <Timer className="h-3.5 w-3.5 text-muted-foreground" />
+              <p className="text-[10px] text-muted-foreground uppercase">Duration</p>
+              <p className="font-medium text-sm text-foreground">
+                {duration > 0 ? `${duration} ticks` : "—"}
+              </p>
+            </div>
           </div>
-        </div>}
+        )}
       </div>
     </div>
   );

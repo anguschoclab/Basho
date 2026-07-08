@@ -35,7 +35,9 @@ function makeCandidate(id: string, overrides: Partial<TalentCandidate> = {}): Ta
 
 function makeTalentPool(
   candidates: Record<string, TalentCandidate>,
-  pools: Partial<Record<TalentPoolType, { candidatesVisible: string[]; candidatesHidden: string[] }>> = {}
+  pools: Partial<
+    Record<TalentPoolType, { candidatesVisible: string[]; candidatesHidden: string[] }>
+  > = {}
 ): TalentPoolWorldState {
   return {
     version: "1.0.0",

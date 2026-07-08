@@ -20,7 +20,10 @@ import type { RikishiState } from "@/components/game/boutReplay/boutCanvas/types
 // Helpers
 // ---------------------------------------------------------------------------
 
-function makeScript(family: BoutScript["family"], winnerSide: "east" | "west" = "east"): BoutScript {
+function makeScript(
+  family: BoutScript["family"],
+  winnerSide: "east" | "west" = "east"
+): BoutScript {
   return {
     family,
     winnerSide,

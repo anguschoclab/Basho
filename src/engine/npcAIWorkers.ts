@@ -168,7 +168,11 @@ export function spawnPersonnelWorker(ctx: PersonnelWorkerContext): PersonnelWork
       const riskTolerance = ctx.riskTolerance ?? 50;
 
       // Serious injuries always withdraw; moderate is probabilistic based on oyakata risk tolerance
-      const withdrawRng = RNGRegistry.getSystemRNG(ctx.world, "npcPersonnel", `withdraw::${rikishi.id}::${ctx.world.week}`);
+      const withdrawRng = RNGRegistry.getSystemRNG(
+        ctx.world,
+        "npcPersonnel",
+        `withdraw::${rikishi.id}::${ctx.world.week}`
+      );
       if (isSerious || (isModerate && withdrawRng.next() > riskTolerance / 100)) {
         withdrawalIds.push(rikishi.id);
         reasoning.push(

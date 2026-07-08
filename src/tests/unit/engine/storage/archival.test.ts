@@ -7,11 +7,7 @@ import type { Rank } from "@/engine/types/banzuke";
 
 // ── helpers ────────────────────────────────────────────────────────────────
 
-function makeHistoricalRikishi(
-  id: string,
-  rank: string,
-  overrides?: Partial<Rikishi>
-): Rikishi {
+function makeHistoricalRikishi(id: string, rank: string, overrides?: Partial<Rikishi>): Rikishi {
   return mockRikishi(id, {
     rank: rank as Rank,
     isRetired: true,
@@ -21,8 +17,30 @@ function makeHistoricalRikishi(
     perceptionHistory: [{ event: "test" }],
     milestones: [{ type: "debut", year: 2020 } as unknown],
     economics: { salary: 100000 } as unknown as Rikishi["economics"],
-    baseStats: { power: 50, technique: 50, speed: 50, balance: 50, weight: 140, stamina: 100, mental: 50, adaptability: 50, aggression: 50, experience: 50 } as RikishiStats,
-    currentStats: { power: 60, technique: 60, speed: 60, balance: 60, weight: 140, stamina: 100, mental: 60, adaptability: 60, aggression: 60, experience: 60 } as RikishiStats,
+    baseStats: {
+      power: 50,
+      technique: 50,
+      speed: 50,
+      balance: 50,
+      weight: 140,
+      stamina: 100,
+      mental: 50,
+      adaptability: 50,
+      aggression: 50,
+      experience: 50,
+    } as RikishiStats,
+    currentStats: {
+      power: 60,
+      technique: 60,
+      speed: 60,
+      balance: 60,
+      weight: 140,
+      stamina: 100,
+      mental: 60,
+      adaptability: 60,
+      aggression: 60,
+      experience: 60,
+    } as RikishiStats,
     skills: { tree: "test" },
     careerRecord: { wins: 10, losses: 5, yusho: 0 },
     ...overrides,

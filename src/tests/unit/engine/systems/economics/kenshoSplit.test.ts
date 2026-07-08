@@ -9,11 +9,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-function makeBoutContext(
-  winner: Rikishi,
-  loser: Rikishi,
-  kenshoEnvelopes: number
-) {
+function makeBoutContext(winner: Rikishi, loser: Rikishi, kenshoEnvelopes: number) {
   const match: MatchSchedule = {
     rikishiIdEast: winner.id,
     rikishiIdWest: loser.id,

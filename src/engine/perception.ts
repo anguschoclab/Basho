@@ -208,7 +208,10 @@ function bandRivalry(world: WorldState, heyaId: Id): RivalryPerceptionBand {
   if (rIds.length === 0) return "dormant";
 
   const rIdSet = new Set(rIds);
-  for (const pair of Object.values(rivalriesState.pairs)) {
+  // ⚡ Bolt Optimization: Use a direct for...in loop instead of Object.values() to avoid O(N) array allocations
+  for (const key in rivalriesState.pairs) {
+    if (!Object.prototype.hasOwnProperty.call(rivalriesState.pairs, key)) continue;
+    const pair = rivalriesState.pairs[key];
     if (rIdSet.has(pair.aId) || rIdSet.has(pair.bId)) {
       if (pair.heat > maxHeat) maxHeat = pair.heat;
     }

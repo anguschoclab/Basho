@@ -11,7 +11,9 @@ describe("archive.json template path coverage", () => {
 
   function expectResolves(path: string): void {
     const result = BardEngine.resolve(rng, path);
-    expect(result.text.length, `path "${path}" should resolve to non-empty text`).toBeGreaterThan(0);
+    expect(result.text.length, `path "${path}" should resolve to non-empty text`).toBeGreaterThan(
+      0
+    );
   }
 
   // A1: Award template paths

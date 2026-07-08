@@ -165,11 +165,7 @@ export function SponsorRecruitmentWidget() {
       <CardContent>
         <ScrollArea className="h-[400px]">
           {availableSponsors.length === 0 ? (
-            <EmptyState
-              icon={Building2}
-              title="No sponsors available for recruitment"
-              compact
-            />
+            <EmptyState icon={Building2} title="No sponsors available for recruitment" compact />
           ) : (
             <div className="space-y-3">
               {availableSponsors.map((sponsor) => {

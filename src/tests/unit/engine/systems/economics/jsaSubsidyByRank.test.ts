@@ -60,8 +60,7 @@ describe("JSA per-wrestler subsidy — rank-based", () => {
 
     const result = calculateHeyaWeeklyFinances(heya, world);
     const expectedMonthlySubsidy =
-      JSA_PER_WRESTLER_SUBSIDY_MONTHLY.yokozuna +
-      JSA_PER_WRESTLER_SUBSIDY_MONTHLY.maegashira;
+      JSA_PER_WRESTLER_SUBSIDY_MONTHLY.yokozuna + JSA_PER_WRESTLER_SUBSIDY_MONTHLY.maegashira;
     const expectedWeeklySubsidy = expectedMonthlySubsidy / 4;
     // Revenue = weekly JSA subsidy + JSA base grant + oyakata salary
     // We just check that the subsidy portion is correct

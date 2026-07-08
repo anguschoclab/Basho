@@ -160,12 +160,10 @@ function deriveRecentAchievements(world: WorldState): string[] {
     const roster = getHeyaRoster(world, world.playerHeyaId);
     const rosterIds = new Set(roster.map((r) => r.id));
     if (lastBasho.yusho && rosterIds.has(lastBasho.yusho)) achievements.push("yusho");
-    if (lastBasho.shukunsho && rosterIds.has(lastBasho.shukunsho))
-      achievements.push("kinboshi");
+    if (lastBasho.shukunsho && rosterIds.has(lastBasho.shukunsho)) achievements.push("kinboshi");
   }
   const recentEvents = (world.events?.log ?? []).slice(-20);
-  if (recentEvents.some((e) => e.type === "RETIREMENT_ANNOUNCED"))
-    achievements.push("retirement");
+  if (recentEvents.some((e) => e.type === "RETIREMENT_ANNOUNCED")) achievements.push("retirement");
   if (recentEvents.some((e) => e.type === "PROMOTION_DELIBERATION"))
     achievements.push("yokozuna_promotion");
   return achievements;

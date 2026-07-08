@@ -10,7 +10,9 @@ export default function WeeklyDigestPage() {
     return (
       <AppLayout pageTitle="Weekly Report">
         <div className="flex items-center justify-center h-full py-20">
-          <p className="text-muted-foreground">No world loaded. Start a game to view the weekly report.</p>
+          <p className="text-muted-foreground">
+            No world loaded. Start a game to view the weekly report.
+          </p>
         </div>
       </AppLayout>
     );

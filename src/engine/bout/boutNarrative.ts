@@ -245,10 +245,7 @@ export function generateBoutNarrative(
     );
 
     // 5. Ritual salt (skipped for understated voice unless RNG passes)
-    if (
-      ctx.voiceStyle !== "understated" ||
-      rng.next() < RITUAL_SALT_CHANCE_UNDERSTATED
-    ) {
+    if (ctx.voiceStyle !== "understated" || rng.next() < RITUAL_SALT_CHANCE_UNDERSTATED) {
       const saltRng = rngFromSeed(seed, "pbp", "salt");
       push(
         BardEngine.resolve(saltRng, "combat.phases.ritual.salt", {
@@ -264,10 +261,7 @@ export function generateBoutNarrative(
 
     // 6. Shikiri
     const shikiriRng = rngFromSeed(seed, "pbp", "shikiri");
-    push(
-      BardEngine.resolve(shikiriRng, "combat.phases.ritual.shikiri", {}).text,
-      "ritual"
-    );
+    push(BardEngine.resolve(shikiriRng, "combat.phases.ritual.shikiri", {}).text, "ritual");
   }
 
   // 7. Process Log Frames
@@ -309,8 +303,7 @@ export function generateBoutNarrative(
       if (family === "belt" && !clinchEmitted) {
         clinchEmitted = true;
         const clinchRng = rngFromSeed(tickSeed, "pbp", "clinch");
-        const stance: Stance =
-          (entry.data?.stance as Stance) ?? "belt-dominant";
+        const stance: Stance = (entry.data?.stance as Stance) ?? "belt-dominant";
         const clinchPath =
           stance === "belt-dominant"
             ? "combat.phases.clinch.belt"
@@ -441,9 +434,7 @@ export function generateBoutNarrative(
     // Momentum (from explicit log entries — rare, kept for compatibility)
     if (entry.phase === "momentum") {
       const recovery = (entry.data?.recovery as boolean) ?? false;
-      const path = recovery
-        ? "combat.phases.momentum.recovery"
-        : "combat.phases.momentum.pressure";
+      const path = recovery ? "combat.phases.momentum.recovery" : "combat.phases.momentum.pressure";
       const winnerName = result.winner === "east" ? east.shikona : west.shikona;
       const loserName = result.winner === "east" ? west.shikona : east.shikona;
       const name = recovery ? loserName : winnerName;

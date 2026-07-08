@@ -24,7 +24,9 @@ describe("payBashoTeate — centralized allowances", () => {
     const world = makeMockWorld({ rikishi: new Map([["r1", r]]) });
     const impact = payBashoTeate(world);
     const resolved = resolveImpacts(world, [impact]);
-    expect(resolved.rikishi.get("r1")?.economics?.cash).toBe(NON_SEKITORI_BASHO_ALLOWANCE.makushita);
+    expect(resolved.rikishi.get("r1")?.economics?.cash).toBe(
+      NON_SEKITORI_BASHO_ALLOWANCE.makushita
+    );
   });
 
   it("sandanme receives ¥110K", () => {
@@ -84,7 +86,9 @@ describe("payBashoTeate — centralized allowances", () => {
     const world = makeMockWorld({ rikishi: new Map([["r1", r]]) });
     const impact = payBashoTeate(world);
     const resolved = resolveImpacts(world, [impact]);
-    expect(resolved.rikishi.get("r1")?.economics?.cash).toBe(NON_SEKITORI_BASHO_ALLOWANCE.jonokuchi);
+    expect(resolved.rikishi.get("r1")?.economics?.cash).toBe(
+      NON_SEKITORI_BASHO_ALLOWANCE.jonokuchi
+    );
   });
 
   it("sekitori (makuuchi/juryo) receives ¥0", () => {
@@ -144,6 +148,8 @@ describe("payBashoTeate — centralized allowances", () => {
     const impact = payBashoTeate(world);
     const resolved = resolveImpacts(world, [impact]);
     const updated = resolved.rikishi.get("r1");
-    expect(updated?.economics?.totalEarnings).toBe(200_000 + NON_SEKITORI_BASHO_ALLOWANCE.makushita);
+    expect(updated?.economics?.totalEarnings).toBe(
+      200_000 + NON_SEKITORI_BASHO_ALLOWANCE.makushita
+    );
   });
 });

@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { extractLegacyPrefix, extractLegacySuffix, generateLegacyShikona } from "@/engine/shikona/legacy";
+import {
+  extractLegacyPrefix,
+  extractLegacySuffix,
+  generateLegacyShikona,
+} from "@/engine/shikona/legacy";
 import { HOUSE_STYLES } from "@/engine/shikona/houseStyles";
 
 // ── extractLegacyPrefix ────────────────────────────────────────────────────
@@ -18,7 +22,11 @@ describe("extractLegacyPrefix", () => {
       { input: "Ichinojo", expected: "Ichi", label: "Ichi (index 43)" },
       { input: "Aoiyama", expected: "Ao", label: "Ao (index 44)" },
       { input: "Nishiyama", expected: "Nishi", label: "Nishi (index 22)" },
-      { input: "Higashiyama", expected: "Higa", label: "Higa (index 23, NOT Higashi — not in list)" },
+      {
+        input: "Higashiyama",
+        expected: "Higa",
+        label: "Higa (index 23, NOT Higashi — not in list)",
+      },
     ];
 
     for (const { input, expected, label } of cases) {

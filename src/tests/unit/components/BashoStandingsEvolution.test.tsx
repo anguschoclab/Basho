@@ -46,11 +46,7 @@ describe("computeStandingsEvolution", () => {
       ["r4", { id: "r4", shikona: "Delta", rank: "maegashira" }],
     ]);
 
-    const { data, topIds } = computeStandingsEvolution(
-      basho as any,
-      rikishiMap as any,
-      8
-    );
+    const { data, topIds } = computeStandingsEvolution(basho as any, rikishiMap as any, 8);
 
     expect(data).toHaveLength(3);
     expect(topIds[0]).toBe("r1");
@@ -79,11 +75,7 @@ describe("computeStandingsEvolution", () => {
       });
     }
 
-    const { topIds } = computeStandingsEvolution(
-      basho as any,
-      rikishiMap as any,
-      4
-    );
+    const { topIds } = computeStandingsEvolution(basho as any, rikishiMap as any, 4);
 
     expect(topIds).toHaveLength(4);
     expect(topIds[0]).toBe("r0");
@@ -96,11 +88,7 @@ describe("computeStandingsEvolution", () => {
       standings: new Map(),
     };
 
-    const { data, topIds } = computeStandingsEvolution(
-      basho as any,
-      new Map() as any,
-      8
-    );
+    const { data, topIds } = computeStandingsEvolution(basho as any, new Map() as any, 8);
 
     expect(data).toHaveLength(0);
     expect(topIds).toHaveLength(0);
@@ -116,11 +104,7 @@ describe("computeStandingsEvolution", () => {
       ]),
     };
 
-    const { data } = computeStandingsEvolution(
-      basho as any,
-      new Map() as any,
-      8
-    );
+    const { data } = computeStandingsEvolution(basho as any, new Map() as any, 8);
 
     expect(data[0]["r1"]).toBeDefined();
     expect(data[1]["r1"]).toBe(2);

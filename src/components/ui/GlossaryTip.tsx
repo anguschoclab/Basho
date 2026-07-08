@@ -32,12 +32,7 @@ export function GlossaryTip({ termId, children, className }: GlossaryTipProps) {
 
   return (
     <TooltipWrap content={tooltipContent}>
-      <span
-        className={cn(
-          "border-b border-dotted border-current cursor-help",
-          className
-        )}
-      >
+      <span className={cn("border-b border-dotted border-current cursor-help", className)}>
         {children}
       </span>
     </TooltipWrap>

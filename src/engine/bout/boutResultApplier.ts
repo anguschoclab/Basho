@@ -180,7 +180,10 @@ export function applyBoutResult(
   );
 
   // Clear the consumed daily injury risk overrides for both loser and winner
-  if (dailyOverrides && (dailyOverrides[loserId] !== undefined || dailyOverrides[winnerId] !== undefined)) {
+  if (
+    dailyOverrides &&
+    (dailyOverrides[loserId] !== undefined || dailyOverrides[winnerId] !== undefined)
+  ) {
     const cleared = { ...dailyOverrides };
     delete cleared[loserId];
     delete cleared[winnerId];

@@ -39,12 +39,7 @@ export function KimariteTag({ kimariteId, kimariteName, className }: KimariteTag
 
   return (
     <TooltipWrap content={tooltipContent}>
-      <span
-        className={cn(
-          "border-b border-dotted border-current cursor-help",
-          className
-        )}
-      >
+      <span className={cn("border-b border-dotted border-current cursor-help", className)}>
         {displayName}
       </span>
     </TooltipWrap>
