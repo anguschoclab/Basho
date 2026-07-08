@@ -6,6 +6,7 @@
 import { useGame } from "@/contexts/GameContext";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { Building2 } from "lucide-react";
 import { projectHeyaData } from "@/presenters/projections/heyaProjections";
 
@@ -25,7 +26,7 @@ export function InstitutionWidget() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">No stable selected.</p>
+          <EmptyState icon={Building2} title="No stable selected" compact />
         </CardContent>
       </Card>
     );

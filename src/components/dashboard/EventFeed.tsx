@@ -21,6 +21,7 @@ import { WidgetCard } from "@/components/ui/WidgetCard";
 import { WidgetHeader } from "@/components/ui/WidgetHeader";
 import type { EngineEvent, EventImportance } from "@/engine/types/events";
 import { MentionText } from "@/components/MentionText";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 interface EventFeedProps {
   maxEvents?: number;
@@ -109,7 +110,7 @@ export function EventFeed({ maxEvents = 10, filterTypes, minImportance }: EventF
       <WidgetHeader title="Event Feed" icon={Bell} />
       <div className="space-y-2 mt-4 max-h-[400px] overflow-y-auto">
         {events.length === 0 ? (
-          <p className="text-sm text-slate-500 italic">No recent events</p>
+          <EmptyState icon={Bell} title="No recent events" compact />
         ) : (
           events.map((event: EngineEvent) => <EventFeedItem key={event.id} event={event} />)
         )}
