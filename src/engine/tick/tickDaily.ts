@@ -53,21 +53,6 @@ export interface DailyTickReport {
 // MAIN PIPELINE: AdvanceOneDay()
 // ====
 
-/**
- * AdvanceOneDay — the authoritative daily tick per Constitution A3.1.
- *
- * Pipeline order:
- *   0) Preflight: increment day, advance calendar, check phase transitions
- *   1) Scheduled institutional events (governance, loans, sponsors)
- *   2) Training & welfare micro-effects (daily)
- *   3) Basho tournament day (if active_basho) — handled externally via game flow
- *   4) Post-bout downstream updates
- *   5) Economy cadence (daily micro)
- *   6) Weekly tick gate (every 7 days)
- *   7) Monthly tick gate (on month boundary)
- *   8) Year tick gate (on year boundary)
- *   9) UI digest batch
- */
 import { runPipeline } from "./pipelineRunner";
 import * as phases from "./phases";
 import { bashoPipeline } from "./pipelines/bashoPipeline";
@@ -75,21 +60,20 @@ import { offSeasonPipeline } from "./pipelines/offSeasonPipeline";
 
 /**
  * AdvanceOneDay — the authoritative daily tick per Constitution A3.1.
- * Now fully migrated to the Strict Pipeline Architecture.
+ * Fully migrated to the Strict Pipeline Architecture.
  *
- * Pipeline order:
- *   0) Preflight: increment day, advance calendar, check phase transitions
- *   1) Scheduled institutional events (governance, loans, sponsors)
- *   2) Training & welfare micro-effects (daily)
- *   3) Basho tournament day (if active_basho) — handled externally via game flow
- *   4) Post-bout downstream updates
- *   5) Economy cadence (daily micro)
- *   6) Weekly tick gate (every 7 days)
- *   7) Monthly tick gate (on month boundary)
- *   8) Year tick gate (on year boundary)
- *   9) UI digest batch
+ * Execution flow:
+ *   1. Preflight check: advances calendar, sets up transientContext boundaries.
+ *   2. Daily Micro-Phases: runs economy, welfare, sponsors, drama, and market phases (if not skipped).
+ *   3. Weekly Gate: if 7 days passed, runs `bashoPipeline` or `offSeasonPipeline` (and yearly boundary if applicable).
+ *   4. Monthly Gate: runs `phase05_monthly_boundary` if on a month boundary.
+ *
+ * Note: Basho tournament combat resolution is NOT handled here. It is handled
+ * externally by the game flow, and the pipeline merely orchestrates side-effects.
  *
  * @param {WorldState} world - The current world state.
+ * @param {Object} [opts] - Options to modify tick behavior.
+ * @param {boolean} [opts.skipDailyMicroPhases] - Fast-forwards by skipping daily micro effects.
  * @returns {WorldState} The updated world state after one day tick.
  *
  * @example
