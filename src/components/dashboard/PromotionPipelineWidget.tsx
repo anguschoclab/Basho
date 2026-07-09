@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, AlertTriangle, Trophy, ChevronUp } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { BarChart, Bar, Cell, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import {
   getOzekiRunCandidates,
@@ -214,9 +215,7 @@ export function PromotionPipelineWidget() {
         )}
 
         {!hasPromotion && !hasKadoban && (
-          <p className="text-xs text-muted-foreground text-center py-3 italic">
-            No promotion activity this cycle.
-          </p>
+          <EmptyState title="No promotion activity this cycle." compact />
         )}
 
         {hasKadoban && (
