@@ -12,6 +12,7 @@ import { Button } from "../ui/button";
 import { AlertTriangle, Shield, Activity, UserMinus } from "lucide-react";
 import { TooltipWrap } from "../ui/tooltip-wrap";
 import { RikishiName } from "@/components/ClickableName";
+import { useNavigate } from "@tanstack/react-router";
 
 const AssessmentRow = React.memo(
   ({
@@ -92,6 +93,7 @@ const AssessmentList = React.memo(({ assessment, world }: { assessment: any; wor
 
 export function PreBashoAssessment() {
   const { state } = useGame();
+  const navigate = useNavigate();
   const world = state.world;
   const assessment = world?._preBashoAssessment;
 
@@ -148,7 +150,12 @@ export function PreBashoAssessment() {
 
         {/* Action Button */}
         {assessment.withdrawalsThisAssessment > 0 && (
-          <Button variant="outline" size="sm" className="w-full text-xs">
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full text-xs"
+            onClick={() => navigate({ to: "/stable/roster" })}
+          >
             View Roster for Withdrawals
           </Button>
         )}
