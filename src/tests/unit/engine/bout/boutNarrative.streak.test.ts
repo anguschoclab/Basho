@@ -40,9 +40,7 @@ function makeWorld(
 }
 
 function getOpeningLines(result: BoutResult): string[] {
-  return (result.pbpLines ?? [])
-    .filter((l) => l.phase === "opening")
-    .map((l) => l.text);
+  return (result.pbpLines ?? []).filter((l) => l.phase === "opening").map((l) => l.text);
 }
 
 function isStreakLine(text: string): boolean {
@@ -144,7 +142,15 @@ describe("generateBoutNarrative — win-streak PbP injection", () => {
     const result = makeMinimalBoutResult();
 
     expect(() => {
-      generateBoutNarrative(result, east, west, "hatsu" as BashoName, 1, "seed-streak-undef", world);
+      generateBoutNarrative(
+        result,
+        east,
+        west,
+        "hatsu" as BashoName,
+        1,
+        "seed-streak-undef",
+        world
+      );
     }).not.toThrow();
 
     const openings = getOpeningLines(result);
@@ -172,7 +178,15 @@ describe("generateBoutNarrative — win-streak PbP injection", () => {
     const world = makeWorld(east, west);
     const result = makeMinimalBoutResult();
 
-    generateBoutNarrative(result, east, west, "hatsu" as BashoName, 1, "seed-streak-missing", world);
+    generateBoutNarrative(
+      result,
+      east,
+      west,
+      "hatsu" as BashoName,
+      1,
+      "seed-streak-missing",
+      world
+    );
 
     for (const line of result.pbpLines ?? []) {
       expect(line.text).not.toContain("[MISSING:");

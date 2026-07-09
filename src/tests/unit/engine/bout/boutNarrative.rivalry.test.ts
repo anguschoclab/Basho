@@ -67,9 +67,7 @@ function makePair(overrides: Partial<RivalriesState["pairs"][string]> = {}): Riv
 }
 
 function getOpeningLines(result: BoutResult): string[] {
-  return (result.pbpLines ?? [])
-    .filter((l) => l.phase === "opening")
-    .map((l) => l.text);
+  return (result.pbpLines ?? []).filter((l) => l.phase === "opening").map((l) => l.text);
 }
 
 describe("generateBoutNarrative — rivalry PbP injection", () => {
@@ -86,8 +84,12 @@ describe("generateBoutNarrative — rivalry PbP injection", () => {
     generateBoutNarrative(result, east, west, "hatsu" as BashoName, 1, "seed-rivalry-1", world);
 
     const openings = getOpeningLines(result);
-    const firstMeetingLine = openings.find((t) =>
-      t.includes("first time") || t.includes("fresh matchup") || t.includes("first-ever") || t.includes("complete unknown")
+    const firstMeetingLine = openings.find(
+      (t) =>
+        t.includes("first time") ||
+        t.includes("fresh matchup") ||
+        t.includes("first-ever") ||
+        t.includes("complete unknown")
     );
     expect(firstMeetingLine).toBeDefined();
   });
@@ -102,7 +104,9 @@ describe("generateBoutNarrative — rivalry PbP injection", () => {
     generateBoutNarrative(result, east, west, "hatsu" as BashoName, 1, "seed-rivalry-dom", world);
 
     const openings = getOpeningLines(result);
-    const domLine = openings.find((t) => t.includes("dominated") || t.includes("struggled") || t.includes("commanding"));
+    const domLine = openings.find(
+      (t) => t.includes("dominated") || t.includes("struggled") || t.includes("commanding")
+    );
     expect(domLine).toBeDefined();
     expect(domLine!).toContain("Asanoyama");
     expect(domLine!).toContain("4");
@@ -119,8 +123,12 @@ describe("generateBoutNarrative — rivalry PbP injection", () => {
     generateBoutNarrative(result, east, west, "hatsu" as BashoName, 1, "seed-rivalry-dead", world);
 
     const openings = getOpeningLines(result);
-    const deadlockLine = openings.find((t) =>
-      t.includes("close") || t.includes("rivalry") || t.includes("decisive edge") || t.includes("true rivalry")
+    const deadlockLine = openings.find(
+      (t) =>
+        t.includes("close") ||
+        t.includes("rivalry") ||
+        t.includes("decisive edge") ||
+        t.includes("true rivalry")
     );
     expect(deadlockLine).toBeDefined();
   });
@@ -145,8 +153,12 @@ describe("generateBoutNarrative — rivalry PbP injection", () => {
     generateBoutNarrative(result, east, west, "hatsu" as BashoName, 1, "seed-rivalry-flip", world);
 
     const openings = getOpeningLines(result);
-    const domLine = openings.find((t) =>
-      t.includes("dominated") || t.includes("commanding") || t.includes("struggled") || t.includes("History is heavily")
+    const domLine = openings.find(
+      (t) =>
+        t.includes("dominated") ||
+        t.includes("commanding") ||
+        t.includes("struggled") ||
+        t.includes("History is heavily")
     );
     expect(domLine).toBeDefined();
     // P1=WestMan (dominant, 4 wins), P2=EastMan (struggling, 1 win)
@@ -168,7 +180,15 @@ describe("generateBoutNarrative — rivalry PbP injection", () => {
     const world = makeWorld(east, west, state);
     const result = makeMinimalBoutResult();
 
-    generateBoutNarrative(result, east, west, "hatsu" as BashoName, 1, "seed-rivalry-recent", world);
+    generateBoutNarrative(
+      result,
+      east,
+      west,
+      "hatsu" as BashoName,
+      1,
+      "seed-rivalry-recent",
+      world
+    );
 
     const openings = getOpeningLines(result);
     const recentLine = openings.find((t) => t.includes("yorikiri"));
@@ -189,11 +209,22 @@ describe("generateBoutNarrative — rivalry PbP injection", () => {
     const world = makeWorld(east, west, state);
     const result = makeMinimalBoutResult();
 
-    generateBoutNarrative(result, east, west, "hatsu" as BashoName, 1, "seed-rivalry-no-recent", world);
+    generateBoutNarrative(
+      result,
+      east,
+      west,
+      "hatsu" as BashoName,
+      1,
+      "seed-rivalry-no-recent",
+      world
+    );
 
     const openings = getOpeningLines(result);
-    const recentLine = openings.find((t) =>
-      t.includes("Last time they met") || t.includes("looking for revenge") || t.includes("Fans remember")
+    const recentLine = openings.find(
+      (t) =>
+        t.includes("Last time they met") ||
+        t.includes("looking for revenge") ||
+        t.includes("Fans remember")
     );
     expect(recentLine).toBeUndefined();
   });
@@ -205,12 +236,24 @@ describe("generateBoutNarrative — rivalry PbP injection", () => {
     const result = makeMinimalBoutResult();
 
     expect(() => {
-      generateBoutNarrative(result, east, west, "hatsu" as BashoName, 1, "seed-rivalry-none", world);
+      generateBoutNarrative(
+        result,
+        east,
+        west,
+        "hatsu" as BashoName,
+        1,
+        "seed-rivalry-none",
+        world
+      );
     }).not.toThrow();
 
     const openings = getOpeningLines(result);
-    const firstMeetingLine = openings.find((t) =>
-      t.includes("first time") || t.includes("fresh matchup") || t.includes("first-ever") || t.includes("complete unknown")
+    const firstMeetingLine = openings.find(
+      (t) =>
+        t.includes("first time") ||
+        t.includes("fresh matchup") ||
+        t.includes("first-ever") ||
+        t.includes("complete unknown")
     );
     expect(firstMeetingLine).toBeDefined();
   });
@@ -244,11 +287,23 @@ describe("generateBoutNarrative — rivalry PbP injection", () => {
       loserRikishiId: "r-b",
     });
 
-    generateBoutNarrative(result, east, west, "hatsu" as BashoName, 1, "seed-rivalry-missing-pair", world);
+    generateBoutNarrative(
+      result,
+      east,
+      west,
+      "hatsu" as BashoName,
+      1,
+      "seed-rivalry-missing-pair",
+      world
+    );
 
     const openings = getOpeningLines(result);
-    const firstMeetingLine = openings.find((t) =>
-      t.includes("first time") || t.includes("fresh matchup") || t.includes("first-ever") || t.includes("complete unknown")
+    const firstMeetingLine = openings.find(
+      (t) =>
+        t.includes("first time") ||
+        t.includes("fresh matchup") ||
+        t.includes("first-ever") ||
+        t.includes("complete unknown")
     );
     expect(firstMeetingLine).toBeDefined();
   });
@@ -285,7 +340,15 @@ describe("generateBoutNarrative — rivalry PbP injection", () => {
     const world = makeWorld(east, west, state);
     const result = makeMinimalBoutResult();
 
-    generateBoutNarrative(result, east, west, "hatsu" as BashoName, 1, "seed-rivalry-missing", world);
+    generateBoutNarrative(
+      result,
+      east,
+      west,
+      "hatsu" as BashoName,
+      1,
+      "seed-rivalry-missing",
+      world
+    );
 
     for (const line of result.pbpLines ?? []) {
       expect(line.text).not.toContain("[MISSING:");

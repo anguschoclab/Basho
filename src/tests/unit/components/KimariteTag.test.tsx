@@ -9,13 +9,7 @@ import { KimariteTag } from "@/components/ui/KimariteTag";
 
 // Mock TooltipWrap to inspect tooltip content
 vi.mock("@/components/ui/tooltip-wrap", () => ({
-  TooltipWrap: ({
-    children,
-    content,
-  }: {
-    children: React.ReactNode;
-    content: React.ReactNode;
-  }) => (
+  TooltipWrap: ({ children, content }: { children: React.ReactNode; content: React.ReactNode }) => (
     <div data-testid="tooltip-wrap">
       <div data-testid="tooltip-content">{content}</div>
       {children}
@@ -31,7 +25,8 @@ vi.mock("@/presenters/uiDigest", () => ({
         id: "yorikiri",
         name: "Yorikiri",
         nameJa: "寄り切り",
-        description: "Frontal force-out. The attacker drives his opponent backward out of the ring.",
+        description:
+          "Frontal force-out. The attacker drives his opponent backward out of the ring.",
         rarity: "common",
       };
     }
@@ -83,9 +78,7 @@ describe("KimariteTag", () => {
   });
 
   it("accepts optional className prop", () => {
-    renderWithProvider(
-      <KimariteTag kimariteId="yorikiri" className="custom-class" />
-    );
+    renderWithProvider(<KimariteTag kimariteId="yorikiri" className="custom-class" />);
     const el = screen.getByText("Yorikiri");
     expect(el.className).toContain("custom-class");
   });

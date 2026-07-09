@@ -13,7 +13,14 @@ describe("handleMediaEvent — for...in optimization safety", () => {
         heyaPressure: { h1: 60, h2: 10 },
       },
       governanceLog: [
-        { id: "e1", heyaId: "h1", reason: "test", type: "warning", severity: "medium", effects: {} },
+        {
+          id: "e1",
+          heyaId: "h1",
+          reason: "test",
+          type: "warning",
+          severity: "medium",
+          effects: {},
+        },
       ],
     } as any;
   });

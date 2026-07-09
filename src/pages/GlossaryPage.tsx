@@ -91,9 +91,7 @@ export default function GlossaryPage() {
               <CardHeader className="pb-2">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <CardTitle className="text-base font-display font-bold">
-                      {term.term}
-                    </CardTitle>
+                    <CardTitle className="text-base font-display font-bold">{term.term}</CardTitle>
                     <p className="text-sm text-muted-foreground mt-0.5">{term.termJa}</p>
                   </div>
                   <Badge variant="outline" className="text-[10px] shrink-0">
@@ -102,9 +100,7 @@ export default function GlossaryPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {term.definition}
-                </p>
+                <p className="text-sm text-muted-foreground leading-relaxed">{term.definition}</p>
               </CardContent>
             </Card>
           ))}

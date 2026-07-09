@@ -9,13 +9,7 @@ import { GlossaryTip } from "@/components/ui/GlossaryTip";
 
 // Mock TooltipWrap to inspect tooltip content
 vi.mock("@/components/ui/tooltip-wrap", () => ({
-  TooltipWrap: ({
-    children,
-    content,
-  }: {
-    children: React.ReactNode;
-    content: React.ReactNode;
-  }) => (
+  TooltipWrap: ({ children, content }: { children: React.ReactNode; content: React.ReactNode }) => (
     <div data-testid="tooltip-wrap">
       <div data-testid="tooltip-content">{content}</div>
       {children}

@@ -12,7 +12,8 @@ import type { Rikishi } from "@/engine/types/rikishi";
 
 vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => vi.fn(),
-  Link: ({ children, to, ...props }: any) => React.createElement("a", { href: to, ...props }, children),
+  Link: ({ children, to, ...props }: any) =>
+    React.createElement("a", { href: to, ...props }, children),
 }));
 
 vi.mock("@/contexts/GameContext");
@@ -27,7 +28,18 @@ function makeRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikishi {
     division: "makuuchi",
     side: "east",
     style: "oshi",
-    stats: { power: 50, speed: 50, technique: 50, balance: 50, weight: 140, stamina: 50, mental: 50, adaptability: 50, experience: 50, aggression: 50 },
+    stats: {
+      power: 50,
+      speed: 50,
+      technique: 50,
+      balance: 50,
+      weight: 140,
+      stamina: 50,
+      mental: 50,
+      adaptability: 50,
+      experience: 50,
+      aggression: 50,
+    },
     fatigue: 30,
     injured: false,
     isRetired: false,
@@ -67,12 +79,14 @@ describe("RosterWidget selection", () => {
   });
 
   it("highlights selected rikishi", () => {
-    const rikishiList = Array.from({ length: 5 }, (_, i) =>
-      makeRikishi(`r${i + 1}`)
-    );
+    const rikishiList = Array.from({ length: 5 }, (_, i) => makeRikishi(`r${i + 1}`));
     mockUseGame(makeWorld(rikishiList));
 
-    render(<TooltipProvider><RosterWidget /></TooltipProvider>);
+    render(
+      <TooltipProvider>
+        <RosterWidget />
+      </TooltipProvider>
+    );
 
     const row1 = screen.getByText("Wrestler-r1").closest("div");
     fireEvent.click(row1!);
@@ -85,12 +99,14 @@ describe("RosterWidget selection", () => {
   });
 
   it("toggles selection on click (deselects on second click)", () => {
-    const rikishiList = Array.from({ length: 3 }, (_, i) =>
-      makeRikishi(`r${i + 1}`)
-    );
+    const rikishiList = Array.from({ length: 3 }, (_, i) => makeRikishi(`r${i + 1}`));
     mockUseGame(makeWorld(rikishiList));
 
-    render(<TooltipProvider><RosterWidget /></TooltipProvider>);
+    render(
+      <TooltipProvider>
+        <RosterWidget />
+      </TooltipProvider>
+    );
 
     const row1 = screen.getByText("Wrestler-r1").closest("div");
     fireEvent.click(row1!);
@@ -101,12 +117,14 @@ describe("RosterWidget selection", () => {
   });
 
   it("limits selection to 2 rikishi (drops oldest)", () => {
-    const rikishiList = Array.from({ length: 5 }, (_, i) =>
-      makeRikishi(`r${i + 1}`)
-    );
+    const rikishiList = Array.from({ length: 5 }, (_, i) => makeRikishi(`r${i + 1}`));
     mockUseGame(makeWorld(rikishiList));
 
-    render(<TooltipProvider><RosterWidget /></TooltipProvider>);
+    render(
+      <TooltipProvider>
+        <RosterWidget />
+      </TooltipProvider>
+    );
 
     const row1 = screen.getByText("Wrestler-r1").closest("div");
     fireEvent.click(row1!);

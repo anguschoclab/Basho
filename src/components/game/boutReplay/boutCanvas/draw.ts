@@ -104,7 +104,7 @@ export function drawRikishi(
   rikishi: UIRikishi,
   shake: { x: number; y: number },
   family?: BoutAnimationFamily,
-  isLoser?: boolean,
+  isLoser?: boolean
 ) {
   const px = state.pos.x * W + shake.x;
   let py = state.pos.y * H + shake.y;

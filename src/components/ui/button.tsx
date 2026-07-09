@@ -54,7 +54,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     }
 
     const button = (
-      <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...derivedProps} />
+      <Comp
+        className={cn(buttonVariants({ variant, size, className }))}
+        ref={ref}
+        {...derivedProps}
+      />
     );
 
     if (tooltip) {
@@ -64,7 +68,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         return (
           <TooltipWrap content={tooltip} side={tooltipSide}>
             <span className="inline-block cursor-not-allowed">
-              <Comp className={cn(buttonVariants({ variant, size, className }), "pointer-events-none")} ref={ref} {...derivedProps} />
+              <Comp
+                className={cn(buttonVariants({ variant, size, className }), "pointer-events-none")}
+                ref={ref}
+                {...derivedProps}
+              />
             </span>
           </TooltipWrap>
         );

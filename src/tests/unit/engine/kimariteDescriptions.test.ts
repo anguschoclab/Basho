@@ -29,7 +29,9 @@ describe("Kimarite descriptions and nameJa", () => {
     for (const k of KIMARITE_REGISTRY) {
       const strategyJa = strategyMap.get(k.id);
       if (strategyJa) {
-        expect(k.nameJa, `Kimarite "${k.id}" nameJa mismatch with KIMARITE_STRATEGIES`).toBe(strategyJa);
+        expect(k.nameJa, `Kimarite "${k.id}" nameJa mismatch with KIMARITE_STRATEGIES`).toBe(
+          strategyJa
+        );
       }
     }
   });

@@ -87,7 +87,7 @@ describe("formatSaveDate", () => {
 
 describe("formatEventTime", () => {
   const mk = (over: Partial<EngineEvent> = {}): EngineEvent =>
-    ({ week: 1, ...over } as unknown as EngineEvent);
+    ({ week: 1, ...over }) as unknown as EngineEvent;
 
   it("returns B{n} D{d} when day and bashoNumber are both defined", () => {
     expect(formatEventTime(mk({ week: 5, bashoNumber: 3, day: 15 }))).toBe("B3 D15");

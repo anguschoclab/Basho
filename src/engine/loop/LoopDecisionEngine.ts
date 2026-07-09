@@ -122,9 +122,7 @@ export function detectDueDecisions(world: WorldState): LoopDecision[] {
   // Decision 5: Kyujo decision (BLOCKING) — injured player rikishi scheduled today
   if (world.cyclePhase === "active_basho" && world.currentBasho) {
     const bashoDay = world.currentBasho.day;
-    const todayMatches = world.currentBasho.matches.filter(
-      (m) => m.day === bashoDay && !m.result,
-    );
+    const todayMatches = world.currentBasho.matches.filter((m) => m.day === bashoDay && !m.result);
     for (const match of todayMatches) {
       const eastR = match.eastRikishiId ? world.rikishi.get(match.eastRikishiId) : undefined;
       const westR = match.westRikishiId ? world.rikishi.get(match.westRikishiId) : undefined;

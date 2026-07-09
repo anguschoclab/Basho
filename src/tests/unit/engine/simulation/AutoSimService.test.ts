@@ -35,9 +35,7 @@ describe("checkStopCondition", () => {
       promotions: [{ rikishiId: "r1", from: "ozeki", to: "yokozuna", description: "" }],
     });
 
-    expect(checkStopCondition("yokozunaPromotion", bashoResult, world, config)).toBe(
-      true
-    );
+    expect(checkStopCondition("yokozunaPromotion", bashoResult, world, config)).toBe(true);
   });
 
   it("should return false for yokozunaPromotion when no yokozuna promotion occurs", () => {
@@ -47,9 +45,7 @@ describe("checkStopCondition", () => {
       promotions: [{ rikishiId: "r1", from: "sekiwake", to: "ozeki", description: "" }],
     });
 
-    expect(checkStopCondition("yokozunaPromotion", bashoResult, world, config)).toBe(
-      false
-    );
+    expect(checkStopCondition("yokozunaPromotion", bashoResult, world, config)).toBe(false);
   });
 
   it("should return true for ozekiPromotion when an ozeki promotion occurs", () => {
@@ -122,9 +118,7 @@ describe("checkStopCondition", () => {
     const config = createMockConfig({ playerHeyaId: "player-heya" });
     const bashoResult = createMockBashoResult();
 
-    expect(checkStopCondition("stableInsolvency", bashoResult, world, config)).toBe(
-      true
-    );
+    expect(checkStopCondition("stableInsolvency", bashoResult, world, config)).toBe(true);
   });
 
   it("should return false for stableInsolvency when player's heya is not desperate", () => {
@@ -135,9 +129,7 @@ describe("checkStopCondition", () => {
     const config = createMockConfig({ playerHeyaId: "player-heya" });
     const bashoResult = createMockBashoResult();
 
-    expect(checkStopCondition("stableInsolvency", bashoResult, world, config)).toBe(
-      false
-    );
+    expect(checkStopCondition("stableInsolvency", bashoResult, world, config)).toBe(false);
   });
 
   it("should return true for scandal when a major scandal occurs in current year", () => {
@@ -184,9 +176,7 @@ describe("checkStopCondition", () => {
     const config = createMockConfig();
     const bashoResult = createMockBashoResult();
 
-    expect(checkStopCondition("retirementOfStar", bashoResult, world, config)).toBe(
-      true
-    );
+    expect(checkStopCondition("retirementOfStar", bashoResult, world, config)).toBe(true);
   });
 
   it("should return false for retirementOfStar when a non-star retires", () => {
@@ -198,9 +188,7 @@ describe("checkStopCondition", () => {
     const config = createMockConfig();
     const bashoResult = createMockBashoResult();
 
-    expect(checkStopCondition("retirementOfStar", bashoResult, world, config)).toBe(
-      false
-    );
+    expect(checkStopCondition("retirementOfStar", bashoResult, world, config)).toBe(false);
   });
 
   it("should return true for majorInjury when player's rikishi is seriously injured this basho", () => {

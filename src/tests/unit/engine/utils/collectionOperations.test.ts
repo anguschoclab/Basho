@@ -1,5 +1,13 @@
 import { describe, it, expect } from "vitest";
-import { mapIdsToEntities, mapIdsToRikishi, mapIdsToHeya, filterEntities, getEntitiesByIds, groupBy, countBy } from "@/engine/utils/collectionOperations";
+import {
+  mapIdsToEntities,
+  mapIdsToRikishi,
+  mapIdsToHeya,
+  filterEntities,
+  getEntitiesByIds,
+  groupBy,
+  countBy,
+} from "@/engine/utils/collectionOperations";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
 
 describe("mapIdsToEntities", () => {
@@ -17,9 +25,7 @@ describe("mapIdsToEntities", () => {
   });
 
   it("filters out undefined entries for missing IDs", () => {
-    const map = new Map([
-      ["a", { id: "a", name: "Alpha" }],
-    ]);
+    const map = new Map([["a", { id: "a", name: "Alpha" }]]);
     const result = mapIdsToEntities(["a", "missing", "b"], map);
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe("Alpha");
@@ -113,9 +119,7 @@ describe("filterEntities", () => {
 
 describe("getEntitiesByIds", () => {
   it("returns entities including undefined for missing", () => {
-    const map = new Map([
-      ["a", { id: "a" }],
-    ]);
+    const map = new Map([["a", { id: "a" }]]);
     const result = getEntitiesByIds(["a", "missing"], map);
     expect(result).toHaveLength(2);
     expect(result[0]).toEqual({ id: "a" });
@@ -138,12 +142,7 @@ describe("groupBy", () => {
 
 describe("countBy", () => {
   it("counts entities by key", () => {
-    const items = [
-      { type: "x" },
-      { type: "y" },
-      { type: "x" },
-      { type: "x" },
-    ];
+    const items = [{ type: "x" }, { type: "y" }, { type: "x" }, { type: "x" }];
     const counts = countBy(items, (e) => e.type);
     expect(counts.get("x")).toBe(3);
     expect(counts.get("y")).toBe(1);

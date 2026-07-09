@@ -297,9 +297,7 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
                 <Download className="h-3.5 w-3.5" /> Export
               </Button>
             )}
-            <label
-              className={isImporting ? "opacity-50 cursor-not-allowed" : ""}
-            >
+            <label className={isImporting ? "opacity-50 cursor-not-allowed" : ""}>
               <input
                 type="file"
                 accept=".json"

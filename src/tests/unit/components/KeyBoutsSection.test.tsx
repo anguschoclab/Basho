@@ -55,52 +55,54 @@ vi.mock("@/components/game/BoutLog", () => ({
   BoutLog: () => React.createElement("div", { "data-testid": "bout-log-mock" }),
 }));
 
-const mockRikishi = (id: string, shikona: string): UIRikishi => ({
-  id,
-  shikona,
-  rankLabel: "Yokozuna",
-  rank: "yokozuna",
-  stable: "Test",
-  stableId: "s-1",
-  prefecture: "Tokyo",
-  height: 185,
-  weight: 150,
-  age: 28,
-  wins: 10,
-  losses: 2,
-  absences: 0,
-  isPlayer: false,
-  isRetired: false,
-  injuryWeeks: 0,
-  morale: 80,
-  fatigue: 0,
-  popularity: 50,
-  momentum: 0,
-  style: "belt",
-  preferredTech: "oshi",
-  bloodline: "",
-  debutBasho: { year: 2020, month: 1 },
-  record: { totalBouts: 100, wins: 60, losses: 40, absences: 0 },
-  careerWins: 60,
-  careerLosses: 40,
-  careerAbsences: 0,
-} as unknown as UIRikishi);
+const mockRikishi = (id: string, shikona: string): UIRikishi =>
+  ({
+    id,
+    shikona,
+    rankLabel: "Yokozuna",
+    rank: "yokozuna",
+    stable: "Test",
+    stableId: "s-1",
+    prefecture: "Tokyo",
+    height: 185,
+    weight: 150,
+    age: 28,
+    wins: 10,
+    losses: 2,
+    absences: 0,
+    isPlayer: false,
+    isRetired: false,
+    injuryWeeks: 0,
+    morale: 80,
+    fatigue: 0,
+    popularity: 50,
+    momentum: 0,
+    style: "belt",
+    preferredTech: "oshi",
+    bloodline: "",
+    debutBasho: { year: 2020, month: 1 },
+    record: { totalBouts: 100, wins: 60, losses: 40, absences: 0 },
+    careerWins: 60,
+    careerLosses: 40,
+    careerAbsences: 0,
+  }) as unknown as UIRikishi;
 
-const mockResult = (overrides: Partial<BoutResult> = {}): BoutResult => ({
-  boutId: "b-1",
-  winner: "east",
-  winnerRikishiId: "r-1",
-  loserRikishiId: "r-2",
-  kimarite: "yorikiri",
-  kimariteName: "Yorikiri",
-  stance: "push-dominant",
-  tachiaiWinner: "east",
-  duration: 10,
-  upset: false,
-  kenshoEnvelopes: 0,
-  log: [],
-  ...overrides,
-} as unknown as BoutResult);
+const mockResult = (overrides: Partial<BoutResult> = {}): BoutResult =>
+  ({
+    boutId: "b-1",
+    winner: "east",
+    winnerRikishiId: "r-1",
+    loserRikishiId: "r-2",
+    kimarite: "yorikiri",
+    kimariteName: "Yorikiri",
+    stance: "push-dominant",
+    tachiaiWinner: "east",
+    duration: 10,
+    upset: false,
+    kenshoEnvelopes: 0,
+    log: [],
+    ...overrides,
+  }) as unknown as BoutResult;
 
 function makeMoment(
   label: KeyBoutMoment["label"],
@@ -144,9 +146,7 @@ describe("KeyBoutsSection", () => {
     ];
     const getRikishi = (id: string) => mockRikishi(id, `Wrestler-${id}`);
 
-    renderWithProvider(
-      <KeyBoutsSection moments={moments} getRikishi={getRikishi} />
-    );
+    renderWithProvider(<KeyBoutsSection moments={moments} getRikishi={getRikishi} />);
 
     expect(screen.getByText("Yusho-Deciding Bout")).toBeTruthy();
     expect(screen.getByText("Biggest Upset")).toBeTruthy();
@@ -157,9 +157,7 @@ describe("KeyBoutsSection", () => {
     const moments = [makeMoment("yusho_decider", "b1", "r1", "r2")];
     const getRikishi = (id: string) => mockRikishi(id, `Wrestler-${id}`);
 
-    renderWithProvider(
-      <KeyBoutsSection moments={moments} getRikishi={getRikishi} />
-    );
+    renderWithProvider(<KeyBoutsSection moments={moments} getRikishi={getRikishi} />);
 
     const replayBtn = screen.getByText("Watch Replay");
     fireEvent.click(replayBtn);
@@ -181,7 +179,7 @@ describe("KeyBoutsSection", () => {
     expect(screen.getByTestId("replay-viewer-mock")).toBeTruthy();
 
     // Close modal via the dialog's close button (Radix Dialog X)
-    const closeBtn = container.querySelector('[data-radix-collection-item]');
+    const closeBtn = container.querySelector("[data-radix-collection-item]");
     if (closeBtn) {
       fireEvent.click(closeBtn);
     }
@@ -199,9 +197,7 @@ describe("KeyBoutsSection", () => {
       return mockRikishi(id, `Wrestler-${id}`);
     };
 
-    renderWithProvider(
-      <KeyBoutsSection moments={moments} getRikishi={getRikishi} />
-    );
+    renderWithProvider(<KeyBoutsSection moments={moments} getRikishi={getRikishi} />);
 
     // Only the yusho decider card should render
     expect(screen.getByText("Yusho-Deciding Bout")).toBeTruthy();
@@ -216,9 +212,7 @@ describe("KeyBoutsSection", () => {
     ];
     const getRikishi = (id: string) => mockRikishi(id, `Wrestler-${id}`);
 
-    renderWithProvider(
-      <KeyBoutsSection moments={moments} getRikishi={getRikishi} />
-    );
+    renderWithProvider(<KeyBoutsSection moments={moments} getRikishi={getRikishi} />);
 
     expect(screen.getByText("Yusho-Deciding Bout")).toBeTruthy();
     expect(screen.getByText("Biggest Upset")).toBeTruthy();

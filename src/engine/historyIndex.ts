@@ -322,9 +322,7 @@ export function indexBashoResult(world: WorldState, bashoResult: BashoResult): v
   if (standingsMap) {
     // ⚡ Bolt Optimization: Avoid O(N) array allocation by iterating map directly
     const entries =
-      standingsMap instanceof Map
-        ? standingsMap.entries()
-        : Object.entries(standingsMap);
+      standingsMap instanceof Map ? standingsMap.entries() : Object.entries(standingsMap);
 
     for (const [rid, stats] of entries) {
       const s = stats as { wins: number; losses: number };

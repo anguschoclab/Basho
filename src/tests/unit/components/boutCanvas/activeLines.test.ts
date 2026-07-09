@@ -31,13 +31,23 @@ describe("computeActiveLineIndices", () => {
   });
 
   it("phaseIndex 3 (momentum) matches momentum + tactical + edge_crisis lines", () => {
-    const lines = [makeLine("momentum"), makeLine("tactical"), makeLine("edge_crisis"), makeLine("finish")];
+    const lines = [
+      makeLine("momentum"),
+      makeLine("tactical"),
+      makeLine("edge_crisis"),
+      makeLine("finish"),
+    ];
     const result = computeActiveLineIndices(3, lines);
     expect(result).toEqual(new Set([0, 1, 2]));
   });
 
   it("phaseIndex 5 (ceremony) matches ceremony + award + closing lines", () => {
-    const lines = [makeLine("ceremony"), makeLine("award"), makeLine("closing"), makeLine("finish")];
+    const lines = [
+      makeLine("ceremony"),
+      makeLine("award"),
+      makeLine("closing"),
+      makeLine("finish"),
+    ];
     const result = computeActiveLineIndices(5, lines);
     expect(result).toEqual(new Set([0, 1, 2]));
   });
@@ -49,10 +59,7 @@ describe("computeActiveLineIndices", () => {
   });
 
   it("lines with no phase (undefined) are not in set", () => {
-    const lines: PbpLine[] = [
-      { text: "no phase", id: "a" },
-      makeLine("ritual"),
-    ];
+    const lines: PbpLine[] = [{ text: "no phase", id: "a" }, makeLine("ritual")];
     const result = computeActiveLineIndices(0, lines);
     expect(result).toEqual(new Set([1]));
   });

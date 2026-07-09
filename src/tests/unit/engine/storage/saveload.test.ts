@@ -193,7 +193,11 @@ describe("saveload - loadGame error paths", () => {
     const result = loadGame("slot_1");
 
     expect(result).toBe(null);
-    expect(consoleErrorSpy).toHaveBeenCalledWith("Failed to load game", "SaveLoad", expect.any(Error));
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      "Failed to load game",
+      "SaveLoad",
+      expect.any(Error)
+    );
 
     consoleErrorSpy.mockRestore();
   });
@@ -236,7 +240,11 @@ describe("saveload - loadGame error paths", () => {
     const result = loadGame("slot_1");
 
     expect(result).toBe(null);
-    expect(consoleErrorSpy).toHaveBeenCalledWith("Failed to load game", "SaveLoad", expect.any(Error));
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      "Failed to load game",
+      "SaveLoad",
+      expect.any(Error)
+    );
 
     consoleErrorSpy.mockRestore();
   });

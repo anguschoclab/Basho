@@ -26,13 +26,7 @@ export type ReplayPhase =
 // animation-relevant families.
 // ---------------------------------------------------------------------------
 
-export type BoutAnimationFamily =
-  | "force_out"
-  | "throw"
-  | "pull"
-  | "lift"
-  | "trip"
-  | "generic";
+export type BoutAnimationFamily = "force_out" | "throw" | "pull" | "lift" | "trip" | "generic";
 
 const FAMILY_MAP: Record<KimariteClass, BoutAnimationFamily> = {
   force_out: "force_out",
@@ -146,7 +140,7 @@ export function buildBoutScript(result: BoutResult): BoutScript {
  */
 export function getReplayPhaseDurations(
   result: BoutResult,
-  script?: BoutScript,
+  script?: BoutScript
 ): Record<ReplayPhase, number> {
   const s = script ?? buildBoutScript(result);
 

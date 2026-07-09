@@ -2,18 +2,12 @@ import type { ReplayPhase, RikishiState, BodyPhase } from "./types";
 import type { BoutScript, BoutAnimationFamily } from "@/engine/bout/ReplayMetadata";
 import { lerp, easeOut, easeInOut } from "./math";
 
-export function computeArcProgress(
-  finishProgress: number,
-  family: BoutAnimationFamily,
-): number {
+export function computeArcProgress(finishProgress: number, family: BoutAnimationFamily): number {
   if (family !== "throw" && family !== "lift") return 0;
   return Math.min(1, finishProgress / 0.7);
 }
 
-export function computeArcHeight(
-  arcProgress: number,
-  family: BoutAnimationFamily,
-): number {
+export function computeArcHeight(arcProgress: number, family: BoutAnimationFamily): number {
   if (family !== "throw" && family !== "lift") return 0;
   // throw = 60px peak (dramatic uwatenage arc); lift = 45px (visible chest lift)
   const peak = family === "throw" ? 0.12 : 0.09;
@@ -21,14 +15,11 @@ export function computeArcHeight(
 }
 
 export function getLoserBodyPhase(family: BoutAnimationFamily): BodyPhase {
-  return family === "throw" || family === "pull" || family === "lift"
-    ? "thrown"
-    : "falling";
+  return family === "throw" || family === "pull" || family === "lift" ? "thrown" : "falling";
 }
 
 export function getWinnerBodyPhase(family: BoutAnimationFamily): BodyPhase {
-  if (family === "force_out" || family === "throw" || family === "lift")
-    return "gripping";
+  if (family === "force_out" || family === "throw" || family === "lift") return "gripping";
   if (family === "pull") return "pushing";
   return "throwing";
 }
@@ -37,7 +28,7 @@ export function getTargetState(
   phase: ReplayPhase,
   p01: number,
   winnerSide: "east" | "west",
-  script: BoutScript,
+  script: BoutScript
 ): { east: RikishiState; west: RikishiState } {
   const p = easeInOut(p01);
   const pe = easeOut(p01);
@@ -150,27 +141,28 @@ export function getTargetState(
       if (winnerSide === "east") {
         // Loser (west) family-specific end positions
         const loserEndX =
-          f === "throw" ? 0.82 :
-          f === "pull" ? 0.72 :
-          f === "lift" ? 0.78 :
-          f === "trip" ? 0.76 :
-          0.8;
+          f === "throw"
+            ? 0.82
+            : f === "pull"
+              ? 0.72
+              : f === "lift"
+                ? 0.78
+                : f === "trip"
+                  ? 0.76
+                  : 0.8;
         const loserEndY =
-          f === "throw" ? 0.66 :
-          f === "pull" ? 0.6 :
-          f === "lift" ? 0.58 :
-          f === "trip" ? 0.68 :
-          0.63;
+          f === "throw"
+            ? 0.66
+            : f === "pull"
+              ? 0.6
+              : f === "lift"
+                ? 0.58
+                : f === "trip"
+                  ? 0.68
+                  : 0.63;
         const loserEndRot =
-          f === "throw" ? -80 :
-          f === "pull" ? -65 :
-          f === "lift" ? -55 :
-          f === "trip" ? -60 :
-          -65;
-        const loserEndScale =
-          f === "lift" ? 0.78 :
-          f === "trip" ? 0.68 :
-          0.72;
+          f === "throw" ? -80 : f === "pull" ? -65 : f === "lift" ? -55 : f === "trip" ? -60 : -65;
+        const loserEndScale = f === "lift" ? 0.78 : f === "trip" ? 0.68 : 0.72;
         // Winner lateral sidestep for pull family
         const winnerEndX = f === "pull" ? 0.5 : 0.56;
         const winnerRot = f === "pull" ? 8 : 4;
@@ -195,27 +187,28 @@ export function getTargetState(
       }
       // Winner = west, loser = east (mirror)
       const loserEndX =
-        f === "throw" ? 0.18 :
-        f === "pull" ? 0.28 :
-        f === "lift" ? 0.22 :
-        f === "trip" ? 0.24 :
-        0.2;
+        f === "throw"
+          ? 0.18
+          : f === "pull"
+            ? 0.28
+            : f === "lift"
+              ? 0.22
+              : f === "trip"
+                ? 0.24
+                : 0.2;
       const loserEndY =
-        f === "throw" ? 0.66 :
-        f === "pull" ? 0.6 :
-        f === "lift" ? 0.58 :
-        f === "trip" ? 0.68 :
-        0.63;
+        f === "throw"
+          ? 0.66
+          : f === "pull"
+            ? 0.6
+            : f === "lift"
+              ? 0.58
+              : f === "trip"
+                ? 0.68
+                : 0.63;
       const loserEndRot =
-        f === "throw" ? 80 :
-        f === "pull" ? 65 :
-        f === "lift" ? 55 :
-        f === "trip" ? 60 :
-        65;
-      const loserEndScale =
-        f === "lift" ? 0.78 :
-        f === "trip" ? 0.68 :
-        0.72;
+        f === "throw" ? 80 : f === "pull" ? 65 : f === "lift" ? 55 : f === "trip" ? 60 : 65;
+      const loserEndScale = f === "lift" ? 0.78 : f === "trip" ? 0.68 : 0.72;
       const winnerEndX = f === "pull" ? 0.5 : 0.44;
       const winnerRot = f === "pull" ? -8 : -4;
       return {
@@ -300,9 +293,7 @@ export function lerpState(a: RikishiState, b: RikishiState, t: number): RikishiS
     bodyPhase: t > 0.5 ? b.bodyPhase : a.bodyPhase,
     opacity: lerp(a.opacity, b.opacity, t),
     arcHeight:
-      a.arcHeight != null && b.arcHeight != null
-        ? lerp(a.arcHeight, b.arcHeight, t)
-        : b.arcHeight,
+      a.arcHeight != null && b.arcHeight != null ? lerp(a.arcHeight, b.arcHeight, t) : b.arcHeight,
     arcProgress:
       a.arcProgress != null && b.arcProgress != null
         ? lerp(a.arcProgress, b.arcProgress, t)

@@ -66,7 +66,7 @@ export function useBoutReplay(
   westRikishi: UIRikishi,
   autoPlay: boolean,
   onComplete?: () => void,
-  onProgressUpdate?: (progress: BoutReplayProgress) => void,
+  onProgressUpdate?: (progress: BoutReplayProgress) => void
 ): UseBoutReplayReturn {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef = useRef<number | null>(null);
@@ -149,7 +149,7 @@ export function useBoutReplay(
   const boutScript = useMemo<BoutScript>(() => buildBoutScript(result), [result]);
   const phaseDurations = useMemo(
     () => getReplayPhaseDurations(result, boutScript),
-    [result, boutScript],
+    [result, boutScript]
   );
   const rng = useMemo(() => new SeededRNG(result.boutId || "seed"), [result.boutId]);
   const lines = useMemo(
@@ -216,7 +216,7 @@ export function useBoutReplay(
 
   const phaseDurationsArr = useMemo(
     () => PHASES.map((p) => phaseDurations[p] || 0),
-    [phaseDurations],
+    [phaseDurations]
   );
 
   const drawFrame = useCallback(
@@ -225,10 +225,28 @@ export function useBoutReplay(
       ctx.clearRect(0, 0, W, H);
       drawDohyo(ctx, W, H, shake);
       drawParticles(ctx, particlesRef.current);
-      drawRikishi(ctx, westRef.current, W, H, "west", westRikishi, shake,
-        boutScript.family, winnerSide !== "west");
-      drawRikishi(ctx, eastRef.current, W, H, "east", eastRikishi, shake,
-        boutScript.family, winnerSide !== "east");
+      drawRikishi(
+        ctx,
+        westRef.current,
+        W,
+        H,
+        "west",
+        westRikishi,
+        shake,
+        boutScript.family,
+        winnerSide !== "west"
+      );
+      drawRikishi(
+        ctx,
+        eastRef.current,
+        W,
+        H,
+        "east",
+        eastRikishi,
+        shake,
+        boutScript.family,
+        winnerSide !== "east"
+      );
       drawImpactFlash(ctx, W, H, flashRef.current);
 
       if (phaseRef.current === "finish" || phaseRef.current === "ceremony") {
@@ -244,10 +262,10 @@ export function useBoutReplay(
         W,
         H,
         getCrowdIntensity(phaseRef.current, progressRef.current),
-        phaseRef.current,
+        phaseRef.current
       );
     },
-    [boutScript, winnerSide, result, eastRikishi, westRikishi],
+    [boutScript, winnerSide, result, eastRikishi, westRikishi]
   );
 
   const updateProgress = useCallback(() => {
@@ -280,7 +298,11 @@ export function useBoutReplay(
       narIndexRef.current = ni;
       setNarration(lines[ni] || "");
 
-      const computed = computeGlobalProgress(target.phaseIndex, target.phaseProgress, phaseDurationsArr);
+      const computed = computeGlobalProgress(
+        target.phaseIndex,
+        target.phaseProgress,
+        phaseDurationsArr
+      );
       const newProgress: BoutReplayProgress = {
         phaseIndex: target.phaseIndex,
         phaseProgress: target.phaseProgress,
@@ -297,7 +319,7 @@ export function useBoutReplay(
         if (ctx) drawFrame(ctx, 800, 500);
       }
     },
-    [phaseDurationsArr, lines, drawFrame],
+    [phaseDurationsArr, lines, drawFrame]
   );
 
   // ── Main RAF loop ────────────────────────────────────────────────────────────
@@ -361,12 +383,7 @@ export function useBoutReplay(
                   spawnParticles("spark", loserX, loserY, 18);
                   break;
                 case "force_out":
-                  spawnParticles(
-                    "dust",
-                    W * (winnerSide === "east" ? 0.88 : 0.12),
-                    H * 0.55,
-                    14,
-                  );
+                  spawnParticles("dust", W * (winnerSide === "east" ? 0.88 : 0.12), H * 0.55, 14);
                   break;
                 case "pull":
                   spawnParticles("impact", W * 0.5, H * 0.5, 16);

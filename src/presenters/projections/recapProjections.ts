@@ -75,9 +75,7 @@ export function selectKeyBouts(world: WorldState): KeyBoutMoment[] {
   // Reconstruct moments from persisted keyBouts in the last BashoResult.
   const lastBasho = world.history?.[world.history.length - 1];
   if (lastBasho?.keyBouts && lastBasho.keyBouts.length > 0) {
-    return lastBasho.keyBouts.map((entry) =>
-      entryFromPersisted(entry, lastBasho.bashoName)
-    );
+    return lastBasho.keyBouts.map((entry) => entryFromPersisted(entry, lastBasho.bashoName));
   }
 
   return [];
@@ -173,9 +171,7 @@ function selectFromMatches(
 
   // 3. First kinboshi
   const kinboshiMatch = completed.find(
-    (m) =>
-      m.result?.isKinboshi &&
-      !usedBoutIds.has(m.result.boutId)
+    (m) => m.result?.isKinboshi && !usedBoutIds.has(m.result.boutId)
   );
 
   if (kinboshiMatch) {

@@ -1,12 +1,25 @@
 import { describe, it, expect } from "vitest";
-import { CANVAS_PHASE_TO_PBP_PHASE, PHASES } from "@/components/game/boutReplay/boutCanvas/constants";
+import {
+  CANVAS_PHASE_TO_PBP_PHASE,
+  PHASES,
+} from "@/components/game/boutReplay/boutCanvas/constants";
 import type { ReplayPhase } from "@/components/game/boutReplay/boutCanvas/types";
 import type { PbpPhase } from "@/engine/bout/boutNarrative";
 
 const VALID_PBP_PHASES: PbpPhase[] = [
-  "opening", "entrance", "ritual", "tactical", "tachiai",
-  "engagement", "clinch", "momentum", "edge_crisis",
-  "finish", "award", "ceremony", "closing",
+  "opening",
+  "entrance",
+  "ritual",
+  "tactical",
+  "tachiai",
+  "engagement",
+  "clinch",
+  "momentum",
+  "edge_crisis",
+  "finish",
+  "award",
+  "ceremony",
+  "closing",
 ];
 
 describe("CANVAS_PHASE_TO_PBP_PHASE", () => {

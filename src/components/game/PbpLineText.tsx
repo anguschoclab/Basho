@@ -22,12 +22,7 @@ function renderSegment(seg: ResolvedSegment, key: number) {
   const clickableType = typeMap[seg.entityType] ?? "rikishi";
 
   return (
-    <ClickableName
-      key={key}
-      type={clickableType}
-      id={seg.entityId}
-      name={seg.label}
-    >
+    <ClickableName key={key} type={clickableType} id={seg.entityId} name={seg.label}>
       {seg.label}
     </ClickableName>
   );

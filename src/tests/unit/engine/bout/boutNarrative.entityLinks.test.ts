@@ -43,15 +43,7 @@ describe("boutNarrative generates entity link markup", () => {
     }) as WorldState;
     const result = makeMinimalBoutResult();
 
-    generateBoutNarrative(
-      result,
-      east,
-      west,
-      "hatsu" as BashoName,
-      1,
-      "test-seed",
-      world
-    );
+    generateBoutNarrative(result, east, west, "hatsu" as BashoName, 1, "test-seed", world);
 
     expect(result.pbpLines).toBeDefined();
     expect(result.pbpLines!.length).toBeGreaterThan(0);
@@ -73,15 +65,7 @@ describe("boutNarrative generates entity link markup", () => {
     }) as WorldState;
     const result = makeMinimalBoutResult({ winner: "east" });
 
-    generateBoutNarrative(
-      result,
-      east,
-      west,
-      "hatsu" as BashoName,
-      1,
-      "test-seed-finish",
-      world
-    );
+    generateBoutNarrative(result, east, west, "hatsu" as BashoName, 1, "test-seed-finish", world);
 
     const finishLine = result.pbpLines?.find((l) => l.phase === "finish");
     expect(finishLine).toBeDefined();

@@ -4,9 +4,7 @@ import { join, relative } from "node:path";
 
 const SRC_ROOT = join(import.meta.dirname, "..", "..", "..", "..");
 
-const PRODUCTION_EXCLUSIONS = new Set<string>([
-  "engine/utils/Logger.ts",
-]);
+const PRODUCTION_EXCLUSIONS = new Set<string>(["engine/utils/Logger.ts"]);
 
 const CONSOLE_CALL_RE = /console\.(log|warn|error|info|debug)\s*\(/g;
 const JSDOC_LINE_RE = /^\s*\*/;

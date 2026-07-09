@@ -108,7 +108,9 @@ describe("accumulateMochikyukinPoints — per-net-win model", () => {
     } as any);
     const resolved = resolveImpacts(world, [impact]);
     const points = resolved.rikishi.get("r1")?.stats?.achievements?.mochikyukinPoints;
-    expect(points).toBe(3 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN + MOCHIKYUKIN_POINTS_JUN_YUSHO);
+    expect(points).toBe(
+      3 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN + MOCHIKYUKIN_POINTS_JUN_YUSHO
+    );
   });
 
   it("kinboshi adds 10 points each", () => {
@@ -123,7 +125,9 @@ describe("accumulateMochikyukinPoints — per-net-win model", () => {
     } as any);
     const resolved = resolveImpacts(world, [impact]);
     const points = resolved.rikishi.get("r1")?.stats?.achievements?.mochikyukinPoints;
-    expect(points).toBe(2 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN + 3 * MOCHIKYUKIN_POINTS_KINBOSHI);
+    expect(points).toBe(
+      2 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN + 3 * MOCHIKYUKIN_POINTS_KINBOSHI
+    );
   });
 
   it("zensho-yusho (15-0) adds 50 points", () => {

@@ -82,12 +82,7 @@ function makeBasho(overrides: Partial<BashoState> = {}): BashoState {
   } as unknown as BashoState;
 }
 
-function makeMatch(
-  day: number,
-  eastId: string,
-  westId: string,
-  result: unknown = null,
-): unknown {
+function makeMatch(day: number, eastId: string, westId: string, result: unknown = null): unknown {
   return {
     day,
     eastRikishiId: eastId,
@@ -464,10 +459,7 @@ describe("kyujo_decision — additional edge cases", () => {
     const heya = makeHeya("h1", ["r1", "r2"]);
     const basho = makeBasho({
       day: 5,
-      matches: [
-        makeMatch(5, "r1", "r3") as never,
-        makeMatch(5, "r2", "r4") as never,
-      ],
+      matches: [makeMatch(5, "r1", "r3") as never, makeMatch(5, "r2", "r4") as never],
     });
     const world = makeWorld({
       cyclePhase: "active_basho",

@@ -92,11 +92,7 @@ const ProspectList = React.memo(
     return (
       <>
         {topProspects.length === 0 ? (
-          <EmptyState
-            icon={Search}
-            title="No prospects scouted yet"
-            compact
-          />
+          <EmptyState icon={Search} title="No prospects scouted yet" compact />
         ) : (
           (() => {
             const limit = topProspects.length;

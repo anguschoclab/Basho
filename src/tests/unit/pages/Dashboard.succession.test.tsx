@@ -118,10 +118,12 @@ vi.mock("@/store/gameStore", () => ({
 
 // ── Helpers ────────────────────────────────────────────────
 
-function makeWorld(opts: {
-  week?: number;
-  readiness?: "stable" | "transitioning" | "mandatory";
-} = {}): any {
+function makeWorld(
+  opts: {
+    week?: number;
+    readiness?: "stable" | "transitioning" | "mandatory";
+  } = {}
+): any {
   const heyaId = "h1";
   const oyakataId = "o1";
   return {
@@ -129,9 +131,7 @@ function makeWorld(opts: {
     week: opts.week ?? 10,
     cyclePhase: "interim",
     playerHeyaId: heyaId,
-    heyas: new Map([
-      [heyaId, { id: heyaId, oyakataId, name: "Test Stable", rikishiIds: [] }],
-    ]),
+    heyas: new Map([[heyaId, { id: heyaId, oyakataId, name: "Test Stable", rikishiIds: [] }]]),
     oyakata: new Map([
       [
         oyakataId,
