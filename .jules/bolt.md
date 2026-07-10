@@ -170,3 +170,7 @@ Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop 
 ## 2025-10-24 - Optimize Object.values() and array mapping in UI Projections
 **Learning:** Using `Object.values(obj).map(...)` or iterating over `Object.values(obj)` directly creates unnecessary intermediate array allocations, which impacts UI performance and memory, especially during frequent state derivations.
 **Action:** Replace `Object.values(obj)` and chained `.map()` calls with direct `for...in` loops containing `hasOwnProperty` guards to accumulate projected UI data, eliminating O(N) array instantiations entirely.
+
+## 2025-05-24 - Avoid Object.values() in perception calculations
+**Learning:** Found an `Object.values(rivalriesState.pairs)` allocation inside `bandRivalry`, which is called during perception passes. This creates an unnecessary intermediate O(N) array per call.
+**Action:** Replaced `Object.values()` with a direct `for...in` loop and a `hasOwnProperty` guard to avoid the array allocation while preserving logic.
