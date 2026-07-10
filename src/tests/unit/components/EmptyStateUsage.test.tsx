@@ -56,7 +56,7 @@ describe("EmptyState usage in dashboard widgets", () => {
       playerHeyaId: null,
     });
     render(<InstitutionWidget />);
-    expect(screen.getByText("No stable selected.")).toBeTruthy();
+    expect(screen.getByText("No stable selected")).toBeTruthy();
   });
 
   it("InstitutionWidget renders 'No stable selected' when world is null", () => {
@@ -65,6 +65,6 @@ describe("EmptyState usage in dashboard widgets", () => {
       playerHeyaId: "heya1",
     });
     render(<InstitutionWidget />);
-    expect(screen.getByText("No stable selected.")).toBeTruthy();
+    expect(screen.getByText("No stable selected")).toBeTruthy();
   });
 });

@@ -18,10 +18,10 @@ import {
 } from "lucide-react";
 import { useGameStore } from "@/store/gameStore";
 import { WidgetCard } from "@/components/ui/WidgetCard";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { WidgetHeader } from "@/components/ui/WidgetHeader";
 import type { EngineEvent, EventImportance } from "@/engine/types/events";
 import { MentionText } from "@/components/MentionText";
-import { EmptyState } from "@/components/ui/EmptyState";
 
 interface EventFeedProps {
   maxEvents?: number;

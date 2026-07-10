@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import type { EngineEvent } from "@/engine/types/events";
@@ -99,9 +100,7 @@ export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
       <ScrollArea className="flex-1">
         <div className="p-1">
           {grouped.length === 0 && (
-            <p className="text-xs text-muted-foreground p-3 text-center italic">
-              No events yet. Advance time to see updates.
-            </p>
+            <EmptyState title="No events yet." description="Advance time to see updates." compact />
           )}
 
           {grouped.map((group, gi) => (
