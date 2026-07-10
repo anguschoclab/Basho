@@ -1594,11 +1594,19 @@
       "spotlight": {
         "weekly_feature_title": [
           "Media Spotlight: %SHIKONA%",
-          "Weekly Feature: %SHIKONA% in the News"
+          "Weekly Feature: %SHIKONA% in the News",
+          "Press Tour: %SHIKONA% Meets the Media",
+          "Headlines at %HEYA%: %SHIKONA% Takes the Spotlight",
+          "Behind the Scenes with %SHIKONA%",
+          "The Buzz Around %SHIKONA%"
         ],
         "weekly_feature_summary": [
           "The press turns its attention to %SHIKONA% as the story of the week.",
-          "%SHIKONA% is the subject of this week's media feature at %HEYA%."
+          "%SHIKONA% is the subject of this week's media feature at %HEYA%.",
+          "Reporters crowd the keiko-ba at %HEYA% seeking interviews with %SHIKONA%.",
+          "A popular sports magazine runs an exclusive cover story on %SHIKONA%.",
+          "Media obligations pile up for %SHIKONA% following a surge in public interest.",
+          "Cameras follow %SHIKONA%'s every move as media scrutiny intensifies at %HEYA%."
         ]
       }
     },
