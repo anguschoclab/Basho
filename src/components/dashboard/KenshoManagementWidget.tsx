@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useGame } from "@/contexts/GameContext";
@@ -136,9 +137,7 @@ export function KenshoManagementWidget() {
               Recent Kensho Awards
             </h4>
             {recentBoutsWithKensho.length === 0 ? (
-              <div className="text-center py-4 text-muted-foreground text-sm">
-                No kensho awards in recent bouts
-              </div>
+              <EmptyState icon={Coins} title="No kensho awards in recent bouts" compact />
             ) : (
               <ScrollArea className="h-[200px]">
                 <div className="space-y-2">
