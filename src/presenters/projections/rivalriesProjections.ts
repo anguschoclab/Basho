@@ -47,23 +47,27 @@ export function projectRivalriesPage(world: WorldState): RivalriesPageData {
   const playerHeya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
   const playerRikishiIds = new Set(playerHeya?.rikishiIds ?? []);
 
-  const normalized: RivalryPairState[] = Object.values(rivalriesState.pairs);
-
+  // ⚡ Bolt Optimization: Replaced Object.values() with for...in loop to avoid O(N) intermediate array allocation
   const player: RivalryPairState[] = [];
   const hot: RivalryPairState[] = [];
   const cool: RivalryPairState[] = [];
+  let totalPairs = 0;
   let infernoCount = 0;
   let hotCount = 0;
 
-  for (const pair of normalized) {
-    const h = pair.heat ?? 0;
-    if (h >= 80) infernoCount++;
-    else if (h >= 55) hotCount++;
+  for (const key in rivalriesState.pairs) {
+    if (Object.prototype.hasOwnProperty.call(rivalriesState.pairs, key)) {
+      const pair = rivalriesState.pairs[key];
+      totalPairs++;
+      const h = pair.heat ?? 0;
+      if (h >= 80) infernoCount++;
+      else if (h >= 55) hotCount++;
 
-    const isPlayer = playerRikishiIds.has(pair.aId) || playerRikishiIds.has(pair.bId);
-    if (isPlayer) player.push(pair);
-    else if (h >= 55) hot.push(pair);
-    else cool.push(pair);
+      const isPlayer = playerRikishiIds.has(pair.aId) || playerRikishiIds.has(pair.bId);
+      if (isPlayer) player.push(pair);
+      else if (h >= 55) hot.push(pair);
+      else cool.push(pair);
+    }
   }
 
   const byHeat = (a: RivalryPairState, b: RivalryPairState) => (b.heat ?? 0) - (a.heat ?? 0);
@@ -85,23 +89,31 @@ export function projectRivalriesPage(world: WorldState): RivalriesPageData {
     (id) => world.rikishi.get(id)?.shikona ?? id
   );
 
-  return {
-    playerRivalries: player,
-    hotRivalries: hot,
-    coolRivalries: cool,
-    stableRivalries: Object.values(rivalriesState.heyaRivalryPairs || {}).map((pair) => {
+  // ⚡ Bolt Optimization: Use direct iteration instead of Object.values().map()
+  const stableRivalries = [];
+  const heyaPairs = rivalriesState.heyaRivalryPairs || {};
+  for (const key in heyaPairs) {
+    if (Object.prototype.hasOwnProperty.call(heyaPairs, key)) {
+      const pair = heyaPairs[key];
       const a = world.heyas.get(pair.heyaAId);
       const b = world.heyas.get(pair.heyaBId);
-      return {
+      stableRivalries.push({
         aId: pair.heyaAId,
         bId: pair.heyaBId,
         heat: pair.heat,
         aName: a?.name ?? pair.heyaAId,
         bName: b?.name ?? pair.heyaBId,
         tone: pair.heat >= 80 ? "bad_blood" : pair.heat >= 50 ? "rivalry" : "neutral",
-      };
-    }),
-    stats: { total: normalized.length, inferno: infernoCount, hot: hotCount },
+      });
+    }
+  }
+
+  return {
+    playerRivalries: player,
+    hotRivalries: hot,
+    coolRivalries: cool,
+    stableRivalries,
+    stats: { total: totalPairs, inferno: infernoCount, hot: hotCount },
     heatmapData,
     playerRikishiNames,
   };
