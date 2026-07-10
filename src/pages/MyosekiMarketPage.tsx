@@ -179,6 +179,9 @@ export default function MyosekiMarketPage() {
                               className="w-full h-8 text-xs"
                               onClick={() => handleBuy(stock)}
                               disabled={playerFunds < (stock.askingPrice ?? 0)}
+                              {...(playerFunds < (stock.askingPrice ?? 0)
+                                ? { tooltip: "Insufficient funds", tooltipSide: "top" }
+                                : {})}
                             >
                               Buy
                             </Button>
