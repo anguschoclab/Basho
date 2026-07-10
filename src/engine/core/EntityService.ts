@@ -51,6 +51,8 @@ export const EntityService = {
    * If a new Map field (like 'sparringPairs') is added to WorldState but not the allowlist here,
    * it will be silently initialized as a POJO ({}), causing runtime type errors when .set() or .get() is called.
    *
+   * To safely add a new IdMapRuntime field, you MUST update the `isMapField` array below.
+   *
    * @param {WorldState} world - The WorldState.
    * @param {keyof WorldState} rootKey - The top-level key (e.g., 'trainingState').
    * @param {string} id - The nested key (e.g., heyaId).
@@ -73,8 +75,7 @@ export const EntityService = {
     id: string,
     factory: () => T
   ): T {
-    // Determine if the root should be a Map or a POJO
-    // In Sumo Manager Pro, most IdMapRuntime fields are Maps
+    // Use the hardcoded allowlist to determine if the root should be a Map or a POJO
     if (!world[rootKey]) {
       const isMapField = [
         "rikishi",
