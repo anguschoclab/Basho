@@ -1,10 +1,7 @@
 import type { PbpLine } from "@/engine/bout/boutNarrative";
 import { PHASES, CANVAS_PHASE_TO_PBP_PHASE } from "./constants";
 
-export function computeActiveLineIndices(
-  phaseIndex: number,
-  pbpLines: PbpLine[],
-): Set<number> {
+export function computeActiveLineIndices(phaseIndex: number, pbpLines: PbpLine[]): Set<number> {
   if (pbpLines.length === 0) return new Set();
   if (phaseIndex < 0 || phaseIndex >= PHASES.length) return new Set();
   const phase = PHASES[phaseIndex];

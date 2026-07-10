@@ -59,8 +59,7 @@ const GLOSSARY_TERMS: GlossaryTerm[] = [
     term: "Juryo",
     termJa: "十両",
     category: "rank",
-    definition:
-      "The second division. Rikishi in juryo are salaried professionals (sekitori).",
+    definition: "The second division. Rikishi in juryo are salaried professionals (sekitori).",
   },
   {
     id: "sekitori",
@@ -85,8 +84,7 @@ const GLOSSARY_TERMS: GlossaryTerm[] = [
     term: "Basho",
     termJa: "場所",
     category: "tournament",
-    definition:
-      "A grand tournament. Six official basho are held each year, lasting 15 days each.",
+    definition: "A grand tournament. Six official basho are held each year, lasting 15 days each.",
   },
   {
     id: "yusho",

@@ -59,36 +59,37 @@ function renderWithProvider(ui: React.ReactElement) {
   return render(<TooltipProvider>{ui}</TooltipProvider>);
 }
 
-const mockRikishi = (id: string, shikona: string): UIRikishi => ({
-  id,
-  shikona,
-  rankLabel: "Yokozuna",
-  rank: "yokozuna",
-  stable: "Test",
-  stableId: "s-1",
-  prefecture: "Tokyo",
-  height: 185,
-  weight: 150,
-  age: 28,
-  wins: 10,
-  losses: 2,
-  absences: 0,
-  isPlayer: false,
-  isRetired: false,
-  injuryWeeks: 0,
-  morale: 80,
-  fatigue: 0,
-  popularity: 50,
-  momentum: 0,
-  style: "belt",
-  preferredTech: "oshi",
-  bloodline: "",
-  debutBasho: { year: 2020, month: 1 },
-  record: { totalBouts: 100, wins: 60, losses: 40, absences: 0 },
-  careerWins: 60,
-  careerLosses: 40,
-  careerAbsences: 0,
-} as unknown as UIRikishi);
+const mockRikishi = (id: string, shikona: string): UIRikishi =>
+  ({
+    id,
+    shikona,
+    rankLabel: "Yokozuna",
+    rank: "yokozuna",
+    stable: "Test",
+    stableId: "s-1",
+    prefecture: "Tokyo",
+    height: 185,
+    weight: 150,
+    age: 28,
+    wins: 10,
+    losses: 2,
+    absences: 0,
+    isPlayer: false,
+    isRetired: false,
+    injuryWeeks: 0,
+    morale: 80,
+    fatigue: 0,
+    popularity: 50,
+    momentum: 0,
+    style: "belt",
+    preferredTech: "oshi",
+    bloodline: "",
+    debutBasho: { year: 2020, month: 1 },
+    record: { totalBouts: 100, wins: 60, losses: 40, absences: 0 },
+    careerWins: 60,
+    careerLosses: 40,
+    careerAbsences: 0,
+  }) as unknown as UIRikishi;
 
 const makeLine = (phase: PbpLine["phase"], text: string): PbpLine => ({
   text,
@@ -96,22 +97,23 @@ const makeLine = (phase: PbpLine["phase"], text: string): PbpLine => ({
   phase,
 });
 
-const mockResult = (pbpLines: PbpLine[]): BoutResult => ({
-  boutId: "b-1",
-  winner: "east",
-  winnerRikishiId: "r-1",
-  loserRikishiId: "r-2",
-  kimarite: "yorikiri",
-  kimariteName: "Yorikiri",
-  log: [],
-  pbpLines,
-  eastWins: 1,
-  westWins: 0,
-  day: 1,
-  kenshoEnvelopes: 0,
-  upset: false,
-  isKinboshi: false,
-} as unknown as BoutResult);
+const mockResult = (pbpLines: PbpLine[]): BoutResult =>
+  ({
+    boutId: "b-1",
+    winner: "east",
+    winnerRikishiId: "r-1",
+    loserRikishiId: "r-2",
+    kimarite: "yorikiri",
+    kimariteName: "Yorikiri",
+    log: [],
+    pbpLines,
+    eastWins: 1,
+    westWins: 0,
+    day: 1,
+    kenshoEnvelopes: 0,
+    upset: false,
+    isKinboshi: false,
+  }) as unknown as BoutResult;
 
 const bashoName: BashoName = { year: 2026, month: 1 } as unknown as BashoName;
 
@@ -132,7 +134,7 @@ describe("BoutNarrativeModal", () => {
         result={mockResult(lines)}
         bashoName={bashoName}
         day={1}
-      />,
+      />
     );
     expect(screen.getByText("The crowd gathers")).toBeTruthy();
   });
@@ -148,7 +150,7 @@ describe("BoutNarrativeModal", () => {
         result={mockResult(lines)}
         bashoName={bashoName}
         day={1}
-      />,
+      />
     );
     fireEvent.click(screen.getByText("Narrative"));
     expect(screen.getByText("Opening narrative text")).toBeTruthy();
@@ -164,7 +166,7 @@ describe("BoutNarrativeModal", () => {
         result={mockResult([])}
         bashoName={bashoName}
         day={1}
-      />,
+      />
     );
     fireEvent.click(screen.getByText("Log"));
     // BoutLog renders with empty log
@@ -181,7 +183,7 @@ describe("BoutNarrativeModal", () => {
         result={mockResult([])}
         bashoName={bashoName}
         day={1}
-      />,
+      />
     );
     expect(screen.getByText("No play-by-play data available.")).toBeTruthy();
   });
@@ -197,7 +199,7 @@ describe("BoutNarrativeModal", () => {
         result={mockResult(lines)}
         bashoName={bashoName}
         day={1}
-      />,
+      />
     );
     const replayBtn = screen.getByText("Replay");
     fireEvent.click(replayBtn);
@@ -206,10 +208,7 @@ describe("BoutNarrativeModal", () => {
   });
 
   it("active line has bg-primary/10 class when animProgress phaseIndex matches", () => {
-    const lines = [
-      makeLine("opening", "Opening line"),
-      makeLine("tachiai", "Tachiai line"),
-    ];
+    const lines = [makeLine("opening", "Opening line"), makeLine("tachiai", "Tachiai line")];
     const { container: _c } = renderWithProvider(
       <BoutNarrativeModal
         open
@@ -219,7 +218,7 @@ describe("BoutNarrativeModal", () => {
         result={mockResult(lines)}
         bashoName={bashoName}
         day={1}
-      />,
+      />
     );
     // The mock sends phaseIndex 0 (ritual) which maps to opening/entrance/ritual
     // "Opening line" should be active. Dialog renders in a portal, query document.body
@@ -228,10 +227,7 @@ describe("BoutNarrativeModal", () => {
   });
 
   it("non-active lines have opacity-60 class", () => {
-    const lines = [
-      makeLine("opening", "Opening line"),
-      makeLine("tachiai", "Tachiai line"),
-    ];
+    const lines = [makeLine("opening", "Opening line"), makeLine("tachiai", "Tachiai line")];
     renderWithProvider(
       <BoutNarrativeModal
         open
@@ -241,7 +237,7 @@ describe("BoutNarrativeModal", () => {
         result={mockResult(lines)}
         bashoName={bashoName}
         day={1}
-      />,
+      />
     );
     // Tachiai line should have opacity-60 (not active during ritual phase)
     const tachiaiText = screen.getByText("Tachiai line");
@@ -263,7 +259,7 @@ describe("BoutNarrativeModal", () => {
         result={mockResult(lines)}
         bashoName={bashoName}
         day={1}
-      />,
+      />
     );
     const noPhaseText = screen.getByText("No phase line");
     const parent = noPhaseText.closest('[class*="opacity-60"]');
@@ -280,12 +276,12 @@ describe("BoutNarrativeModal", () => {
         east={mockRikishi("r-1", "East")}
         west={mockRikishi("r-2", "West")}
         result={mockResult(lines)}
-      />,
+      />
     );
     // The modal should render when open=true
     expect(screen.getByText("Opening text")).toBeTruthy();
     // Find the dialog close button (Radix Dialog renders an X button)
-    const closeBtn = container.querySelector('[data-radix-collection-item]');
+    const closeBtn = container.querySelector("[data-radix-collection-item]");
     if (closeBtn) {
       fireEvent.click(closeBtn);
     }
@@ -303,7 +299,7 @@ describe("BoutNarrativeModal", () => {
         west={mockRikishi("r-2", "West")}
         result={mockResult(lines)}
         autoPlay={false}
-      />,
+      />
     );
     // The mock BoutReplayViewer renders a div with data-testid="replay-viewer-mock"
     // autoPlay is passed as a prop — we verify the modal renders without crashing
@@ -319,7 +315,7 @@ describe("BoutNarrativeModal", () => {
         east={mockRikishi("r-1", "East")}
         west={mockRikishi("r-2", "West")}
         result={mockResult(lines)}
-      />,
+      />
     );
     expect(screen.getByText("Opening text")).toBeTruthy();
   });
@@ -333,7 +329,7 @@ describe("BoutNarrativeModal", () => {
         east={mockRikishi("r-1", "East")}
         west={mockRikishi("r-2", "West")}
         result={mockResult(lines)}
-      />,
+      />
     );
     // The tachiai kanji label should be present
     expect(screen.getByText("立合")).toBeTruthy();

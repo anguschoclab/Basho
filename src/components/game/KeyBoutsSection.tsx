@@ -49,10 +49,7 @@ export function KeyBoutsSection({ moments, getRikishi }: KeyBoutsSectionProps) {
 
       <div className="grid gap-6 md:grid-cols-3">
         {cards.map(({ moment, east, west }) => (
-          <div
-            key={moment.bout.boutId}
-            className="flex flex-col gap-3"
-          >
+          <div key={moment.bout.boutId} className="flex flex-col gap-3">
             <div className="flex items-center justify-between">
               <Badge
                 variant="outline"
@@ -65,12 +62,7 @@ export function KeyBoutsSection({ moments, getRikishi }: KeyBoutsSectionProps) {
               </span>
             </div>
 
-            <BoutResultDisplay
-              result={moment.bout}
-              eastRikishi={east}
-              westRikishi={west}
-              compact
-            />
+            <BoutResultDisplay result={moment.bout} eastRikishi={east} westRikishi={west} compact />
 
             <Button
               variant="outline"

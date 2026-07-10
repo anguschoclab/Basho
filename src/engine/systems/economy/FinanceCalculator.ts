@@ -74,7 +74,8 @@ export function calculateHeyaWeeklyFinances(heya: Heya, world: WorldState): Heya
     const r = getRikishi(world, rId);
     if (!r) continue;
     const subsidy =
-      JSA_PER_WRESTLER_SUBSIDY_MONTHLY[r.rank as keyof typeof JSA_PER_WRESTLER_SUBSIDY_MONTHLY] || 0;
+      JSA_PER_WRESTLER_SUBSIDY_MONTHLY[r.rank as keyof typeof JSA_PER_WRESTLER_SUBSIDY_MONTHLY] ||
+      0;
     monthlyJsaSubsidy += subsidy;
   }
   const weeklyJsaSubsidy = monthlyJsaSubsidy / 4;

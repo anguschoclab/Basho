@@ -22,15 +22,36 @@ function makeOyakata(overrides: Partial<Oyakata> = {}): Oyakata {
 
 function makeWorld(overrides: Partial<WorldState> = {}): WorldState {
   const rikishi = new Map([
-    ["r1", mockRikishi("r1", { shikona: "Champion", heyaId: "heya-1", division: "makuuchi", rank: "yokozuna" })],
-    ["r2", mockRikishi("r2", { shikona: "Veteran", heyaId: "heya-1", division: "makuuchi", rank: "ozeki" })],
+    [
+      "r1",
+      mockRikishi("r1", {
+        shikona: "Champion",
+        heyaId: "heya-1",
+        division: "makuuchi",
+        rank: "yokozuna",
+      }),
+    ],
+    [
+      "r2",
+      mockRikishi("r2", {
+        shikona: "Veteran",
+        heyaId: "heya-1",
+        division: "makuuchi",
+        rank: "ozeki",
+      }),
+    ],
   ]);
   const heyas = new Map([
-    ["heya-1", makeMockHeya("heya-1", { name: "Test Heya", rikishiIds: ["r1", "r2"], oyakataId: "oyakata-1" })],
+    [
+      "heya-1",
+      makeMockHeya("heya-1", {
+        name: "Test Heya",
+        rikishiIds: ["r1", "r2"],
+        oyakataId: "oyakata-1",
+      }),
+    ],
   ]);
-  const oyakata = new Map([
-    ["oyakata-1", makeOyakata({ heyaId: "heya-1" })],
-  ]);
+  const oyakata = new Map([["oyakata-1", makeOyakata({ heyaId: "heya-1" })]]);
   return {
     playerHeyaId: "heya-1",
     heyas,

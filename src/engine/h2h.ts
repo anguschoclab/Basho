@@ -202,20 +202,30 @@ export function generateH2HCommentary(r1: Rikishi, r2: Rikishi): string {
  * Returns up to 5 recent meetings sorted newest-first.
  */
 export function getH2HReport(rA: Rikishi, rB: Rikishi): H2HReport {
-  const aHistory = (rA.history ?? []).filter((m) => m.opponentId === rB.id);
-  const bHistory = (rB.history ?? []).filter((m) => m.opponentId === rA.id);
+  // ⚡ Bolt Optimization: Use a single for...of loop to prevent multiple O(N) array allocations
+  // from chained .filter(), .length, and .map() calls when processing potentially long career histories.
+  let aWins = 0;
+  const meetings: H2HRecentMeeting[] = [];
 
-  const aWins = aHistory.filter((m) => m.win).length;
-  const bWins = bHistory.filter((m) => m.win).length;
+  for (const m of rA.history ?? []) {
+    if (m.opponentId === rB.id) {
+      if (m.win) aWins++;
+      meetings.push({
+        bashoId: m.bashoId,
+        year: m.year,
+        day: m.day,
+        winnerId: m.win ? rA.id : rB.id,
+        kimarite: m.kimarite,
+      });
+    }
+  }
 
-  // Build recent meetings from rA's perspective (covers all shared bouts)
-  const meetings: H2HRecentMeeting[] = aHistory.map((m) => ({
-    bashoId: m.bashoId,
-    year: m.year,
-    day: m.day,
-    winnerId: m.win ? rA.id : rB.id,
-    kimarite: m.kimarite,
-  }));
+  let bWins = 0;
+  for (const m of rB.history ?? []) {
+    if (m.opponentId === rA.id && m.win) {
+      bWins++;
+    }
+  }
 
   // Sort newest first (year desc, then day desc)
   meetings.sort((a, b) => (b.year !== a.year ? b.year - a.year : b.day - a.day));

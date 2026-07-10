@@ -33,21 +33,37 @@ function makeMockCtx() {
     createRadialGradient: vi.fn(() => ({ addColorStop: vi.fn() })),
     createLinearGradient: vi.fn(() => ({ addColorStop: vi.fn() })),
     set fillStyle(_v: string) {},
-    get fillStyle() { return ""; },
+    get fillStyle() {
+      return "";
+    },
     set strokeStyle(_v: string) {},
-    get strokeStyle() { return ""; },
+    get strokeStyle() {
+      return "";
+    },
     set lineWidth(_v: number) {},
-    get lineWidth() { return 0; },
+    get lineWidth() {
+      return 0;
+    },
     set lineCap(_v: CanvasLineCap) {},
-    get lineCap() { return "butt" as CanvasLineCap; },
+    get lineCap() {
+      return "butt" as CanvasLineCap;
+    },
     set font(_v: string) {},
-    get font() { return ""; },
+    get font() {
+      return "";
+    },
     set textAlign(_v: CanvasTextAlign) {},
-    get textAlign() { return "start" as CanvasTextAlign; },
+    get textAlign() {
+      return "start" as CanvasTextAlign;
+    },
     set textBaseline(_v: CanvasTextBaseline) {},
-    get textBaseline() { return "alphabetic" as CanvasTextBaseline; },
+    get textBaseline() {
+      return "alphabetic" as CanvasTextBaseline;
+    },
     set globalAlpha(_v: number) {},
-    get globalAlpha() { return 1; },
+    get globalAlpha() {
+      return 1;
+    },
     roundRect: vi.fn(),
     fillText: vi.fn(),
     measureText: vi.fn(() => ({ width: 50 })),
@@ -128,7 +144,8 @@ describe("drawRikishi — arc y-offset", () => {
     });
     drawRikishi(ctx, state, W, H, "east", makeUIRikishi(), { x: 0, y: 0 });
 
-    const translateCalls = (ctx as unknown as { translate: ReturnType<typeof vi.fn> }).translate.mock.calls;
+    const translateCalls = (ctx as unknown as { translate: ReturnType<typeof vi.fn> }).translate
+      .mock.calls;
     expect(translateCalls.length).toBeGreaterThan(0);
     const [tx, ty] = translateCalls[0];
     // Expected y = 0.5 * 500 - sin(0.5 * PI) * 0.12 * 500 = 250 - 60 = 190
@@ -147,7 +164,8 @@ describe("drawRikishi — arc y-offset", () => {
     });
     drawRikishi(ctx, state, W, H, "east", makeUIRikishi(), { x: 0, y: 0 });
 
-    const translateCalls = (ctx as unknown as { translate: ReturnType<typeof vi.fn> }).translate.mock.calls;
+    const translateCalls = (ctx as unknown as { translate: ReturnType<typeof vi.fn> }).translate
+      .mock.calls;
     const [, ty] = translateCalls[0];
     // sin(0) = 0, so no offset
     expect(ty).toBeCloseTo(0.5 * H, 1);
@@ -161,7 +179,8 @@ describe("drawRikishi — arc y-offset", () => {
     });
     drawRikishi(ctx, state, W, H, "east", makeUIRikishi(), { x: 0, y: 0 });
 
-    const translateCalls = (ctx as unknown as { translate: ReturnType<typeof vi.fn> }).translate.mock.calls;
+    const translateCalls = (ctx as unknown as { translate: ReturnType<typeof vi.fn> }).translate
+      .mock.calls;
     const [, ty] = translateCalls[0];
     expect(ty).toBeCloseTo(0.5 * H, 1);
   });
@@ -226,9 +245,7 @@ describe("drawRikishi — grimace for thrown bodyPhase", () => {
     // The grimace draws an arc with Math.PI as the end angle, then strokes.
     // Check that arc was called with Math.PI at some point, and stroke was called.
     const arcCalls = (ctx as unknown as { arc: ReturnType<typeof vi.fn> }).arc.mock.calls;
-    const hasGrimaceArc = arcCalls.some(
-      (call) => call[3] === 0 && call[4] === Math.PI
-    );
+    const hasGrimaceArc = arcCalls.some((call) => call[3] === 0 && call[4] === Math.PI);
     expect(hasGrimaceArc).toBe(true);
   });
 
@@ -238,9 +255,7 @@ describe("drawRikishi — grimace for thrown bodyPhase", () => {
     drawRikishi(ctx, state, W, H, "east", makeUIRikishi(), { x: 0, y: 0 });
 
     const arcCalls = (ctx as unknown as { arc: ReturnType<typeof vi.fn> }).arc.mock.calls;
-    const hasGrimaceArc = arcCalls.some(
-      (call) => call[3] === 0 && call[4] === Math.PI
-    );
+    const hasGrimaceArc = arcCalls.some((call) => call[3] === 0 && call[4] === Math.PI);
     expect(hasGrimaceArc).toBe(true);
   });
 
@@ -250,9 +265,7 @@ describe("drawRikishi — grimace for thrown bodyPhase", () => {
     drawRikishi(ctx, state, W, H, "east", makeUIRikishi(), { x: 0, y: 0 });
 
     const arcCalls = (ctx as unknown as { arc: ReturnType<typeof vi.fn> }).arc.mock.calls;
-    const hasGrimaceArc = arcCalls.some(
-      (call) => call[3] === 0 && call[4] === Math.PI
-    );
+    const hasGrimaceArc = arcCalls.some((call) => call[3] === 0 && call[4] === Math.PI);
     expect(hasGrimaceArc).toBe(false);
   });
 });

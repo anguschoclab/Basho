@@ -131,7 +131,11 @@ describe("ElectronArchiveService", () => {
 
       service.archiveBoutLog(2024, "bout-1", mockBoutResult);
 
-      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build", "ElectronArchive", undefined);
+      expect(warnSpy).toHaveBeenCalledWith(
+        "ElectronArchiveService not available in web build",
+        "ElectronArchive",
+        undefined
+      );
       expect(mocks.fs.writeFile).not.toHaveBeenCalled();
       warnSpy.mockRestore();
     });
@@ -185,7 +189,11 @@ describe("ElectronArchiveService", () => {
 
       const result = service.retrieveBoutLog(2024, "bout-1");
 
-      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build", "ElectronArchive", undefined);
+      expect(warnSpy).toHaveBeenCalledWith(
+        "ElectronArchiveService not available in web build",
+        "ElectronArchive",
+        undefined
+      );
       expect(result).resolves.toBeNull();
       warnSpy.mockRestore();
     });
@@ -213,7 +221,11 @@ describe("ElectronArchiveService", () => {
 
       service.archiveGazette(2024, 1, "# Test");
 
-      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build", "ElectronArchive", undefined);
+      expect(warnSpy).toHaveBeenCalledWith(
+        "ElectronArchiveService not available in web build",
+        "ElectronArchive",
+        undefined
+      );
       warnSpy.mockRestore();
     });
 
@@ -259,7 +271,11 @@ describe("ElectronArchiveService", () => {
 
       const result = service.retrieveGazette(2024, 1);
 
-      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build", "ElectronArchive", undefined);
+      expect(warnSpy).toHaveBeenCalledWith(
+        "ElectronArchiveService not available in web build",
+        "ElectronArchive",
+        undefined
+      );
       expect(result).resolves.toBeNull();
       warnSpy.mockRestore();
     });
@@ -293,7 +309,11 @@ describe("ElectronArchiveService", () => {
 
       const result = service.getArchivedBoutIdsForSeason(2024);
 
-      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build", "ElectronArchive", undefined);
+      expect(warnSpy).toHaveBeenCalledWith(
+        "ElectronArchiveService not available in web build",
+        "ElectronArchive",
+        undefined
+      );
       expect(result).resolves.toEqual([]);
       warnSpy.mockRestore();
     });
@@ -320,7 +340,11 @@ describe("ElectronArchiveService", () => {
 
       service.archiveAwards(2024, mockAwards);
 
-      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build", "ElectronArchive", undefined);
+      expect(warnSpy).toHaveBeenCalledWith(
+        "ElectronArchiveService not available in web build",
+        "ElectronArchive",
+        undefined
+      );
       warnSpy.mockRestore();
     });
 
@@ -373,7 +397,11 @@ describe("ElectronArchiveService", () => {
 
       const result = service.retrieveAwards(2024);
 
-      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build", "ElectronArchive", undefined);
+      expect(warnSpy).toHaveBeenCalledWith(
+        "ElectronArchiveService not available in web build",
+        "ElectronArchive",
+        undefined
+      );
       expect(result).resolves.toEqual([]);
       warnSpy.mockRestore();
     });
@@ -400,7 +428,11 @@ describe("ElectronArchiveService", () => {
 
       service.archiveBanzuke(2024, 1, mockSnapshot);
 
-      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build", "ElectronArchive", undefined);
+      expect(warnSpy).toHaveBeenCalledWith(
+        "ElectronArchiveService not available in web build",
+        "ElectronArchive",
+        undefined
+      );
       warnSpy.mockRestore();
     });
 
@@ -453,7 +485,11 @@ describe("ElectronArchiveService", () => {
 
       const result = service.retrieveBanzuke(2024, 1);
 
-      expect(warnSpy).toHaveBeenCalledWith("ElectronArchiveService not available in web build", "ElectronArchive", undefined);
+      expect(warnSpy).toHaveBeenCalledWith(
+        "ElectronArchiveService not available in web build",
+        "ElectronArchive",
+        undefined
+      );
       expect(result).resolves.toBeNull();
       warnSpy.mockRestore();
     });

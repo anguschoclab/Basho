@@ -76,7 +76,11 @@ export class ElectronArchiveService implements ArchiveService {
       const content = JSON.stringify(logData, null, 2);
       await this.getElectronAPI().fs.writeFile(filePath, content);
     } catch (err) {
-      error(`Failed to archive bout log for season ${season}, bout ${boutId}`, "ElectronArchive", err);
+      error(
+        `Failed to archive bout log for season ${season}, bout ${boutId}`,
+        "ElectronArchive",
+        err
+      );
     }
   }
 
@@ -95,7 +99,11 @@ export class ElectronArchiveService implements ArchiveService {
       }
       return null;
     } catch (err) {
-      error(`Failed to retrieve bout log for season ${season}, bout ${boutId}`, "ElectronArchive", err);
+      error(
+        `Failed to retrieve bout log for season ${season}, bout ${boutId}`,
+        "ElectronArchive",
+        err
+      );
       return null;
     }
   }
@@ -128,7 +136,11 @@ export class ElectronArchiveService implements ArchiveService {
       const content = await this.getElectronAPI().fs.readFile(filePath);
       return content;
     } catch (err) {
-      error(`Failed to retrieve gazette for season ${season}, week ${week}`, "ElectronArchive", err);
+      error(
+        `Failed to retrieve gazette for season ${season}, week ${week}`,
+        "ElectronArchive",
+        err
+      );
       return null;
     }
   }
@@ -207,7 +219,11 @@ export class ElectronArchiveService implements ArchiveService {
       const content = JSON.stringify(snapshot, null, 2);
       await this.getElectronAPI().fs.writeFile(filePath, content);
     } catch (err) {
-      error(`Failed to archive banzuke for season ${season}, basho ${bashoNumber}`, "ElectronArchive", err);
+      error(
+        `Failed to archive banzuke for season ${season}, basho ${bashoNumber}`,
+        "ElectronArchive",
+        err
+      );
     }
   }
 

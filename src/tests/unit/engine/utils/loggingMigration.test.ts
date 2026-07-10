@@ -112,7 +112,7 @@ describe("logging migration to Logger", () => {
   describe("jsonParser.ts", () => {
     it("routes initial parse warning through logger.warn with context 'jsonParser'", () => {
       // Provide input that fails initial parse but can be sanitized
-      const input = "```json\n{\"key\": \"value\"}\n```";
+      const input = '```json\n{"key": "value"}\n```';
       parseLLMResponse(input);
       expect(warnSpy).toHaveBeenCalledWith(
         "Initial parse failed, attempting sanitization...",

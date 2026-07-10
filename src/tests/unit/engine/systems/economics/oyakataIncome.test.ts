@@ -1,9 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { calculateHeyaWeeklyFinances } from "@/engine/systems/economy/FinanceCalculator";
-import {
-  OYAKATA_SALARY_MONTHLY,
-  JSA_STABLE_WEEKLY_GRANT,
-} from "@/constants/engine/economic";
+import { OYAKATA_SALARY_MONTHLY, JSA_STABLE_WEEKLY_GRANT } from "@/constants/engine/economic";
 import { makeMockHeya, makeMockWorld } from "../../utils";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */

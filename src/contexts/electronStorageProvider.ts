@@ -33,7 +33,9 @@ export class ElectronStorageProvider implements IStorageProvider {
     if (this.isElectron) {
       this.storage = window.electronCustom!.storage;
       // Load keys asynchronously
-      this.loadKeys().catch((e) => error("Failed to load keys from electron-store", "ElectronStorage", e));
+      this.loadKeys().catch((e) =>
+        error("Failed to load keys from electron-store", "ElectronStorage", e)
+      );
     } else {
       // Fallback to localStorage for web builds
       this.storage = {
@@ -93,7 +95,9 @@ export class ElectronStorageProvider implements IStorageProvider {
     if (this.keysReloadTimer) clearTimeout(this.keysReloadTimer);
     this.keysReloadTimer = setTimeout(() => {
       this.keysReloadTimer = undefined;
-      this.loadKeys().catch((e) => error("Failed to reload keys from electron-store", "ElectronStorage", e));
+      this.loadKeys().catch((e) =>
+        error("Failed to reload keys from electron-store", "ElectronStorage", e)
+      );
     }, KEYS_RELOAD_DEBOUNCE_MS);
   }
 

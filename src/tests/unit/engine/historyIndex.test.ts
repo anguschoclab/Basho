@@ -124,9 +124,7 @@ describe("historyIndex", () => {
           bashoName: "hatsu",
           day: 15,
           matches: [],
-          standings: new Map([
-            ["r1", { wins: 11, losses: 4 }],
-          ]),
+          standings: new Map([["r1", { wins: 11, losses: 4 }]]),
           isActive: false,
         } as WorldState["currentBasho"],
       });

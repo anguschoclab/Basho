@@ -188,15 +188,26 @@ describe("adjustKoenkaiBandToPrestige", () => {
 
   it("downgrades band when prestige drops (powerful → none)", () => {
     const r = mockRikishi("r1", { rank: "makushita", division: "makushita" });
-    const world = makeWorldWithKoenkai(
-      ["r1"],
-      new Map([["r1", r]]),
-      "powerful",
-      [
-        { relId: "sr1", sponsorId: "s1", targetType: "heya", targetId: "h1", role: "koenkai_member", strength: 2, startedAtTick: 0 },
-        { relId: "sr2", sponsorId: "s2", targetType: "heya", targetId: "h1", role: "koenkai_pillar", strength: 4, startedAtTick: 0 },
-      ]
-    );
+    const world = makeWorldWithKoenkai(["r1"], new Map([["r1", r]]), "powerful", [
+      {
+        relId: "sr1",
+        sponsorId: "s1",
+        targetType: "heya",
+        targetId: "h1",
+        role: "koenkai_member",
+        strength: 2,
+        startedAtTick: 0,
+      },
+      {
+        relId: "sr2",
+        sponsorId: "s2",
+        targetType: "heya",
+        targetId: "h1",
+        role: "koenkai_pillar",
+        strength: 4,
+        startedAtTick: 0,
+      },
+    ]);
 
     const impact = adjustKoenkaiBandToPrestige(world);
     const resolved = resolveImpacts(world, [impact]);
@@ -214,9 +225,33 @@ describe("adjustKoenkaiBandToPrestige", () => {
       new Map([["r1", r]]),
       "powerful", // gap = 2 (powerful → strong → moderate)
       [
-        { relId: "sr1", sponsorId: "s1", targetType: "heya", targetId: "h1", role: "koenkai_member", strength: 1, startedAtTick: 0 },
-        { relId: "sr2", sponsorId: "s2", targetType: "heya", targetId: "h1", role: "koenkai_member", strength: 2, startedAtTick: 0 },
-        { relId: "sr3", sponsorId: "s3", targetType: "heya", targetId: "h1", role: "koenkai_pillar", strength: 4, startedAtTick: 0 },
+        {
+          relId: "sr1",
+          sponsorId: "s1",
+          targetType: "heya",
+          targetId: "h1",
+          role: "koenkai_member",
+          strength: 1,
+          startedAtTick: 0,
+        },
+        {
+          relId: "sr2",
+          sponsorId: "s2",
+          targetType: "heya",
+          targetId: "h1",
+          role: "koenkai_member",
+          strength: 2,
+          startedAtTick: 0,
+        },
+        {
+          relId: "sr3",
+          sponsorId: "s3",
+          targetType: "heya",
+          targetId: "h1",
+          role: "koenkai_pillar",
+          strength: 4,
+          startedAtTick: 0,
+        },
       ]
     );
 
@@ -265,12 +300,17 @@ describe("adjustKoenkaiBandToPrestige", () => {
 
   it("no change when band already matches prestige", () => {
     const r = mockRikishi("r1", { rank: "ozeki", division: "makuuchi" }); // prestige 30 → moderate
-    const world = makeWorldWithKoenkai(
-      ["r1"],
-      new Map([["r1", r]]),
-      "moderate",
-      [{ relId: "sr1", sponsorId: "s1", targetType: "heya", targetId: "h1", role: "koenkai_member", strength: 2, startedAtTick: 0 }]
-    );
+    const world = makeWorldWithKoenkai(["r1"], new Map([["r1", r]]), "moderate", [
+      {
+        relId: "sr1",
+        sponsorId: "s1",
+        targetType: "heya",
+        targetId: "h1",
+        role: "koenkai_member",
+        strength: 2,
+        startedAtTick: 0,
+      },
+    ]);
 
     const impact = adjustKoenkaiBandToPrestige(world);
     const resolved = resolveImpacts(world, [impact]);

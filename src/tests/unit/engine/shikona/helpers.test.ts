@@ -8,7 +8,12 @@ import {
   pickPrefixByCategoryBias,
   pickSuffixByCategoryBias,
 } from "@/engine/shikona/helpers";
-import { SHIKONA_PREFIXES, SHIKONA_SUFFIXES, NATIONALITY_PREFIXES, BASE_PATTERN_WEIGHTS } from "@/engine/shikona/constants";
+import {
+  SHIKONA_PREFIXES,
+  SHIKONA_SUFFIXES,
+  NATIONALITY_PREFIXES,
+  BASE_PATTERN_WEIGHTS,
+} from "@/engine/shikona/constants";
 import { HOUSE_STYLES } from "@/engine/shikona/houseStyles";
 import { SeededRNG } from "@/engine/rng";
 import type { PatternId, HouseStyle } from "@/engine/shikona/types";
@@ -64,7 +69,10 @@ describe("choosePattern", () => {
     });
 
     it("returns a valid PatternId for rng=0.999", () => {
-      const result = choosePattern(mockRng(0.999), BASE_PATTERN_WEIGHTS as Record<PatternId, number>);
+      const result = choosePattern(
+        mockRng(0.999),
+        BASE_PATTERN_WEIGHTS as Record<PatternId, number>
+      );
       expect(validPatterns).toContain(result);
     });
 

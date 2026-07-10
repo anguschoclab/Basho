@@ -56,17 +56,13 @@ describe("PbpLineText component", () => {
   });
 
   it("renders multiple links in a single string", () => {
-    render(
-      <PbpLineText text="[[rikishi:r-1:Asanoyama]] beats [[rikishi:r-2:Terunofuji]]" />
-    );
+    render(<PbpLineText text="[[rikishi:r-1:Asanoyama]] beats [[rikishi:r-2:Terunofuji]]" />);
     expect(screen.getByText("Asanoyama")).toBeTruthy();
     expect(screen.getByText("Terunofuji")).toBeTruthy();
   });
 
   it("applies className to wrapper", () => {
-    const { container } = render(
-      <PbpLineText text="test" className="text-sm leading-relaxed" />
-    );
+    const { container } = render(<PbpLineText text="test" className="text-sm leading-relaxed" />);
     const wrapper = container.firstChild as HTMLElement;
     expect(wrapper.classList.contains("text-sm")).toBe(true);
     expect(wrapper.classList.contains("leading-relaxed")).toBe(true);

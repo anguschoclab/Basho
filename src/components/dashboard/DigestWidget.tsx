@@ -101,7 +101,10 @@ interface DigestWidgetProps {
 /** digest widget. */
 export function DigestWidget({ digest: digestProp, fullPage = false }: DigestWidgetProps = {}) {
   const { state } = useGame();
-  const digest = digestProp !== undefined ? digestProp : useMemo(() => buildWeeklyDigest(state.world), [state.world]);
+  const digest =
+    digestProp !== undefined
+      ? digestProp
+      : useMemo(() => buildWeeklyDigest(state.world), [state.world]);
 
   // Compute total items before early return
   const totalItems = useMemo(() => {

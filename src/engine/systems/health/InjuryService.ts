@@ -307,7 +307,14 @@ export function tickWeekRecovery(world: WorldState): StateImpact {
  */
 export function onBoutResolvedInjury(
   world: WorldState,
-  ctx: { match: any; result: any; east: any; west: any; injuryRiskMultiplier?: number; winnerInjuryRiskMultiplier?: number }
+  ctx: {
+    match: any;
+    result: any;
+    east: any;
+    west: any;
+    injuryRiskMultiplier?: number;
+    winnerInjuryRiskMultiplier?: number;
+  }
 ): StateImpact {
   const { result, east, west, injuryRiskMultiplier, winnerInjuryRiskMultiplier } = ctx;
   const builder = createImpactBuilder("onBoutResolvedInjury");
@@ -365,13 +372,19 @@ export function onBoutResolvedInjury(
   // while injured via kyujo_decision "compete"), roll for them at 50% of the base chance.
   if (winner && !winner.injured && winnerInjuryRiskMultiplier && winnerInjuryRiskMultiplier > 1.0) {
     const winnerBoutInjuryChance = baseBoutInjuryChance * 0.5 * winnerInjuryRiskMultiplier;
-    const winnerRng = RNGRegistry.getSystemRNG(world, "health", `bout::${winner.id}::${world.week}`);
+    const winnerRng = RNGRegistry.getSystemRNG(
+      world,
+      "health",
+      `bout::${winner.id}::${world.week}`
+    );
     const winnerRoll = winnerRng.next();
 
     if (winnerRoll < winnerBoutInjuryChance) {
       const winnerWeeksRemaining =
         POST_BOUT_INJURY_WEEKS_MIN +
-        Math.floor(winnerRng.next() * (POST_BOUT_INJURY_WEEKS_MAX - POST_BOUT_INJURY_WEEKS_MIN + 1));
+        Math.floor(
+          winnerRng.next() * (POST_BOUT_INJURY_WEEKS_MAX - POST_BOUT_INJURY_WEEKS_MIN + 1)
+        );
 
       builder.updateRikishi(winner.id, {
         injured: true,

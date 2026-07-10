@@ -409,10 +409,7 @@ export function computeVariableSanyakuCounts(
     } else if (rank === "komusubi") {
       if ((perf?.wins ?? 0) >= 10) komusubiPromoteCount++;
     } else if (rank === "maegashira") {
-      if (
-        perf?.yusho ||
-        ((e.position.rankNumber ?? 99) <= 4 && (perf?.wins ?? 0) >= 10)
-      ) {
+      if (perf?.yusho || ((e.position.rankNumber ?? 99) <= 4 && (perf?.wins ?? 0) >= 10)) {
         maegashiraPromoteCount++;
       }
     }

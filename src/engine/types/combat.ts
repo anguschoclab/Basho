@@ -61,7 +61,7 @@ export const COUNTER_TACTIC_BONUS = 5;
 
 export function resolveCounterTacticBonus(
   tactic: BoutTactic,
-  opponentProfile: CombatProfile,
+  opponentProfile: CombatProfile
 ): number {
   if (tactic === "STANDARD") return 0;
   const family = TACTIC_TO_FAMILY[tactic] ?? "push";

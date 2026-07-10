@@ -527,8 +527,8 @@ describe("applyDecisionEffect", () => {
     const impact = builder.build();
     // push now boosts fatigue (+15) and momentum (+8) to accept injury risk
     const upd = impact.entities?.rikishiUpdates?.get("r1");
-    expect(upd?.fatigue).toBe(45);   // 30 + 15
-    expect(upd?.momentum).toBe(58);  // 50 + 8
+    expect(upd?.fatigue).toBe(45); // 30 + 15
+    expect(upd?.momentum).toBe(58); // 50 + 8
   });
 
   it("sets training intensity for weekly_training_emphasis", () => {
@@ -613,8 +613,8 @@ describe("autonomouslyResolveDecisions", () => {
       impact.entities?.rikishiUpdates instanceof Map
         ? impact.entities.rikishiUpdates.get("r1")
         : undefined;
-    expect(upd?.fatigue).toBe(95);   // 80 + 15, clamped to 100 max → 95
-    expect(upd?.momentum).toBe(58);  // 50 + 8
+    expect(upd?.fatigue).toBe(95); // 80 + 15, clamped to 100 max → 95
+    expect(upd?.momentum).toBe(58); // 50 + 8
     // still logs an event
     const ev = (impact.events ?? []).find((e) => e.type === "DECISION_AUTO_RESOLVED");
     expect(ev).toBeDefined();

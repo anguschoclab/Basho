@@ -216,11 +216,7 @@ export function fillVacanciesForNPCWithBidding(
       currentCandidates = materializeImpact.nextCandidates;
       currentPools = materializeImpact.nextPools;
     } catch (err) {
-      error(
-        `Failed to materialize candidate ${bid.candidateId}`,
-        "TalentPoolNPCRecruitment",
-        err
-      );
+      error(`Failed to materialize candidate ${bid.candidateId}`, "TalentPoolNPCRecruitment", err);
       continue;
     }
 

@@ -4,9 +4,7 @@ import { MockFactory } from "../../../helpers/utils/MockFactory";
 import type { Heya } from "@/engine/types/heya";
 import type { InfrastructureState } from "@/engine/types/infrastructure";
 
-function makeHeyaWithInfra(
-  infra: Record<string, InfrastructureState>
-): Heya {
+function makeHeyaWithInfra(infra: Record<string, InfrastructureState>): Heya {
   return MockFactory.createHeya("heya_test", {
     infrastructure: infra,
   } as any);

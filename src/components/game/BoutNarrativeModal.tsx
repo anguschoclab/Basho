@@ -32,7 +32,11 @@ const PHASE_STYLE: Record<string, { label: string; color: string; bg: string }> 
   engagement: { label: "攻防", color: "text-accent", bg: "bg-accent/10 border-accent/20" },
   clinch: { label: "組合", color: "text-warning", bg: "bg-warning/10 border-warning/20" },
   momentum: { label: "攻勢", color: "text-accent", bg: "bg-accent/10 border-accent/20" },
-  edge_crisis: { label: "土俵際", color: "text-destructive", bg: "bg-destructive/10 border-destructive/20" },
+  edge_crisis: {
+    label: "土俵際",
+    color: "text-destructive",
+    bg: "bg-destructive/10 border-destructive/20",
+  },
   finish: { label: "決着", color: "text-success", bg: "bg-success/10 border-success/20" },
   award: { label: "殊勲", color: "text-success", bg: "bg-success/10 border-success/20" },
   ceremony: { label: "礼", color: "text-muted-foreground", bg: "bg-muted/10 border-muted/20" },
@@ -95,7 +99,9 @@ export function BoutNarrativeModal({
   const handleClose = onClose ?? (() => onOpenChange?.(false));
   const pbpLines: PbpLine[] = result.pbpLines ?? [];
   const narrativeLines = pbpLines.filter((l) =>
-    ["opening", "entrance", "ritual", "finish", "award", "ceremony", "closing"].includes(l.phase ?? "")
+    ["opening", "entrance", "ritual", "finish", "award", "ceremony", "closing"].includes(
+      l.phase ?? ""
+    )
   );
 
   const [replayKey, setReplayKey] = useState(0);
@@ -105,8 +111,11 @@ export function BoutNarrativeModal({
   const activeLineRef = useRef<HTMLDivElement | null>(null);
 
   const activeLineIndices = useMemo(
-    () => (animProgress ? computeActiveLineIndices(animProgress.phaseIndex, pbpLines) : new Set<number>()),
-    [animProgress, pbpLines],
+    () =>
+      animProgress
+        ? computeActiveLineIndices(animProgress.phaseIndex, pbpLines)
+        : new Set<number>(),
+    [animProgress, pbpLines]
   );
 
   useEffect(() => {
@@ -117,7 +126,13 @@ export function BoutNarrativeModal({
   }, [activeLineIndices, activeTab]);
 
   return (
-    <Dialog open={open} onOpenChange={(open) => { if (!open) handleClose(); onOpenChange?.(open); }}>
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        if (!open) handleClose();
+        onOpenChange?.(open);
+      }}
+    >
       <DialogContent className="max-w-3xl max-h-[95vh] p-0 gap-0 overflow-hidden bg-card border-border/50">
         <DialogHeader className="sr-only">
           <DialogTitle>Bout Narrative</DialogTitle>
@@ -225,7 +240,7 @@ export function BoutNarrativeModal({
                             "flex items-start gap-2 animate-slide-up",
                             isActive && "bg-primary/10 border-l-2 border-primary rounded-r",
                             !isActive && hasPhase && "opacity-60",
-                            !hasPhase && "opacity-60",
+                            !hasPhase && "opacity-60"
                           )}
                           style={{ animationDelay: `${i * 60}ms`, animationFillMode: "both" }}
                         >

@@ -210,7 +210,11 @@ describe("engine.worker", () => {
       type: "INVALID_COMMAND",
     } as unknown as EngineCommand);
 
-    expect(consoleWarnSpy).toHaveBeenCalledWith("Unknown command: INVALID_COMMAND", "Worker", undefined);
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      "Unknown command: INVALID_COMMAND",
+      "Worker",
+      undefined
+    );
     consoleWarnSpy.mockRestore();
   });
 

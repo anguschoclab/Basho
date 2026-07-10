@@ -88,7 +88,9 @@ describe("TrainingService TRAINING_STAT_DELTA events", () => {
     expect(ev.rikishiId).toBe("r1");
     expect(ev.heyaId).toBe("h1");
     expect(ev.title).toContain("Wrestler-r1");
-    expect(ev.summary).toMatch(/(power|speed|technique|balance|stamina|adaptability|mental)\s+[+-]/);
+    expect(ev.summary).toMatch(
+      /(power|speed|technique|balance|stamina|adaptability|mental)\s+[+-]/
+    );
     expect(ev.data.statDeltas).toBeDefined();
     expect(typeof ev.data.statDeltas).toBe("object");
   });

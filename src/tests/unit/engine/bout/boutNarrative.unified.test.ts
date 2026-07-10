@@ -73,7 +73,11 @@ describe("generateBoutNarrative — unified narrative generation", () => {
 
   describe("phase coverage", () => {
     it("produces opening, entrance, ritual, tachiai, finish, ceremony phases for a normal bout", () => {
-      const east = mockRikishi("r-east", { shikona: "Asanoyama", injured: false, rank: "yokozuna" });
+      const east = mockRikishi("r-east", {
+        shikona: "Asanoyama",
+        injured: false,
+        rank: "yokozuna",
+      });
       const west = mockRikishi("r-west", { shikona: "Terunofuji", injured: false, rank: "ozeki" });
       const world = makeWorld(east, west);
       const result = makeMinimalBoutResult();
@@ -195,12 +199,23 @@ describe("generateBoutNarrative — unified narrative generation", () => {
       const result = makeMinimalBoutResult({
         log: [
           { phase: "tachiai", data: { tick: 0, tachiaiWinner: "east", margin: 10 } },
-          { phase: "engagement", data: { tick: 4, family: "belt", attackerSide: "east", torqueAdvantage: 30 } },
+          {
+            phase: "engagement",
+            data: { tick: 4, family: "belt", attackerSide: "east", torqueAdvantage: 30 },
+          },
           { phase: "finish", data: {} },
         ],
       });
 
-      generateBoutNarrative(result, east, west, "hatsu" as BashoName, 7, "seed-clinch-derive", world);
+      generateBoutNarrative(
+        result,
+        east,
+        west,
+        "hatsu" as BashoName,
+        7,
+        "seed-clinch-derive",
+        world
+      );
 
       const clinchLine = result.pbpLines!.find((l) => l.phase === "clinch");
       expect(clinchLine).toBeDefined();
@@ -213,9 +228,18 @@ describe("generateBoutNarrative — unified narrative generation", () => {
       const result = makeMinimalBoutResult({
         log: [
           { phase: "tachiai", data: { tick: 0, tachiaiWinner: "east", margin: 10 } },
-          { phase: "engagement", data: { tick: 4, family: "belt", attackerSide: "east", torqueAdvantage: 20 } },
-          { phase: "engagement", data: { tick: 8, family: "belt", attackerSide: "east", torqueAdvantage: 25 } },
-          { phase: "engagement", data: { tick: 12, family: "belt", attackerSide: "east", torqueAdvantage: 30 } },
+          {
+            phase: "engagement",
+            data: { tick: 4, family: "belt", attackerSide: "east", torqueAdvantage: 20 },
+          },
+          {
+            phase: "engagement",
+            data: { tick: 8, family: "belt", attackerSide: "east", torqueAdvantage: 25 },
+          },
+          {
+            phase: "engagement",
+            data: { tick: 12, family: "belt", attackerSide: "east", torqueAdvantage: 30 },
+          },
           { phase: "finish", data: {} },
         ],
       });
@@ -235,12 +259,23 @@ describe("generateBoutNarrative — unified narrative generation", () => {
       const result = makeMinimalBoutResult({
         log: [
           { phase: "tachiai", data: { tick: 0, tachiaiWinner: "east", margin: 10 } },
-          { phase: "engagement", data: { tick: 4, family: "push", attackerSide: "east", forceDiff: 35 } },
+          {
+            phase: "engagement",
+            data: { tick: 4, family: "push", attackerSide: "east", forceDiff: 35 },
+          },
           { phase: "finish", data: {} },
         ],
       });
 
-      generateBoutNarrative(result, east, west, "hatsu" as BashoName, 7, "seed-momentum-derive", world);
+      generateBoutNarrative(
+        result,
+        east,
+        west,
+        "hatsu" as BashoName,
+        7,
+        "seed-momentum-derive",
+        world
+      );
 
       const momentumLine = result.pbpLines!.find((l) => l.phase === "momentum");
       expect(momentumLine).toBeDefined();
@@ -253,12 +288,23 @@ describe("generateBoutNarrative — unified narrative generation", () => {
       const result = makeMinimalBoutResult({
         log: [
           { phase: "tachiai", data: { tick: 0, tachiaiWinner: "east", margin: 10 } },
-          { phase: "engagement", data: { tick: 4, family: "push", attackerSide: "east", forceDiff: 10 } },
+          {
+            phase: "engagement",
+            data: { tick: 4, family: "push", attackerSide: "east", forceDiff: 10 },
+          },
           { phase: "finish", data: {} },
         ],
       });
 
-      generateBoutNarrative(result, east, west, "hatsu" as BashoName, 7, "seed-momentum-small", world);
+      generateBoutNarrative(
+        result,
+        east,
+        west,
+        "hatsu" as BashoName,
+        7,
+        "seed-momentum-small",
+        world
+      );
 
       const momentumLine = result.pbpLines!.find((l) => l.phase === "momentum");
       expect(momentumLine).toBeUndefined();
@@ -273,12 +319,29 @@ describe("generateBoutNarrative — unified narrative generation", () => {
       const result = makeMinimalBoutResult({
         log: [
           { phase: "tachiai", data: { tick: 0, tachiaiWinner: "east", margin: 10 } },
-          { phase: "engagement", data: { tick: 4, family: "speed", attackerSide: "east", forceDiff: 5, lateralOffsetDiff: 15 } },
+          {
+            phase: "engagement",
+            data: {
+              tick: 4,
+              family: "speed",
+              attackerSide: "east",
+              forceDiff: 5,
+              lateralOffsetDiff: 15,
+            },
+          },
           { phase: "finish", data: {} },
         ],
       });
 
-      generateBoutNarrative(result, east, west, "hatsu" as BashoName, 7, "seed-tactical-speed", world);
+      generateBoutNarrative(
+        result,
+        east,
+        west,
+        "hatsu" as BashoName,
+        7,
+        "seed-tactical-speed",
+        world
+      );
 
       const tacticalLine = result.pbpLines!.find((l) => l.phase === "tactical");
       expect(tacticalLine).toBeDefined();
@@ -291,12 +354,29 @@ describe("generateBoutNarrative — unified narrative generation", () => {
       const result = makeMinimalBoutResult({
         log: [
           { phase: "tachiai", data: { tick: 0, tachiaiWinner: "east", margin: 10 } },
-          { phase: "engagement", data: { tick: 4, family: "speed", attackerSide: "east", forceDiff: 5, lateralOffsetDiff: 40 } },
+          {
+            phase: "engagement",
+            data: {
+              tick: 4,
+              family: "speed",
+              attackerSide: "east",
+              forceDiff: 5,
+              lateralOffsetDiff: 40,
+            },
+          },
           { phase: "finish", data: {} },
         ],
       });
 
-      generateBoutNarrative(result, east, west, "hatsu" as BashoName, 7, "seed-tactical-rear", world);
+      generateBoutNarrative(
+        result,
+        east,
+        west,
+        "hatsu" as BashoName,
+        7,
+        "seed-tactical-rear",
+        world
+      );
 
       const tacticalLine = result.pbpLines!.find((l) => l.phase === "tactical");
       expect(tacticalLine).toBeDefined();
@@ -310,12 +390,23 @@ describe("generateBoutNarrative — unified narrative generation", () => {
       const result = makeMinimalBoutResult({
         log: [
           { phase: "tachiai", data: { tick: 0, tachiaiWinner: "east", margin: 10 } },
-          { phase: "engagement", data: { tick: 4, family: "trick", attackerSide: "east", forceDiff: 5 } },
+          {
+            phase: "engagement",
+            data: { tick: 4, family: "trick", attackerSide: "east", forceDiff: 5 },
+          },
           { phase: "finish", data: {} },
         ],
       });
 
-      generateBoutNarrative(result, east, west, "hatsu" as BashoName, 7, "seed-tactical-trick", world);
+      generateBoutNarrative(
+        result,
+        east,
+        west,
+        "hatsu" as BashoName,
+        7,
+        "seed-tactical-trick",
+        world
+      );
 
       const tacticalLine = result.pbpLines!.find((l) => l.phase === "tactical");
       expect(tacticalLine).toBeDefined();
@@ -331,9 +422,19 @@ describe("generateBoutNarrative — unified narrative generation", () => {
         ],
       });
 
-      generateBoutNarrative(result, east, west, "hatsu" as BashoName, 7, "seed-tactical-henka", world);
+      generateBoutNarrative(
+        result,
+        east,
+        west,
+        "hatsu" as BashoName,
+        7,
+        "seed-tactical-henka",
+        world
+      );
 
-      const tacticalLine = result.pbpLines!.find((l) => l.phase === "tactical" && l.tags?.includes("henka"));
+      const tacticalLine = result.pbpLines!.find(
+        (l) => l.phase === "tactical" && l.tags?.includes("henka")
+      );
       expect(tacticalLine).toBeDefined();
     });
   });
@@ -392,7 +493,15 @@ describe("generateBoutNarrative — unified narrative generation", () => {
       const world = makeWorld(east, west);
       const result = makeMinimalBoutResult();
 
-      generateBoutNarrative(result, east, west, "hatsu" as BashoName, 14, "seed-ceremony-drama", world);
+      generateBoutNarrative(
+        result,
+        east,
+        west,
+        "hatsu" as BashoName,
+        14,
+        "seed-ceremony-drama",
+        world
+      );
 
       const ceremonyLine = result.pbpLines!.find((l) => l.phase === "ceremony");
       expect(ceremonyLine).toBeDefined();
@@ -405,7 +514,15 @@ describe("generateBoutNarrative — unified narrative generation", () => {
       const world = makeWorld(east, west);
       const result = makeMinimalBoutResult({ kimarite: "fusensho", kimariteName: "Fusensho" });
 
-      generateBoutNarrative(result, east, west, "hatsu" as BashoName, 1, "seed-ceremony-fusensho", world);
+      generateBoutNarrative(
+        result,
+        east,
+        west,
+        "hatsu" as BashoName,
+        1,
+        "seed-ceremony-fusensho",
+        world
+      );
 
       const ceremonyLine = result.pbpLines!.find((l) => l.phase === "ceremony");
       expect(ceremonyLine).toBeUndefined();
@@ -531,8 +648,24 @@ describe("generateBoutNarrative — unified narrative generation", () => {
       const result1 = makeMinimalBoutResult();
       const result2 = makeMinimalBoutResult();
 
-      generateBoutNarrative(result1, east, west, "hatsu" as BashoName, 7, "seed-determinism", world);
-      generateBoutNarrative(result2, east, west, "hatsu" as BashoName, 7, "seed-determinism", world);
+      generateBoutNarrative(
+        result1,
+        east,
+        west,
+        "hatsu" as BashoName,
+        7,
+        "seed-determinism",
+        world
+      );
+      generateBoutNarrative(
+        result2,
+        east,
+        west,
+        "hatsu" as BashoName,
+        7,
+        "seed-determinism",
+        world
+      );
 
       expect(result1.pbpLines).toEqual(result2.pbpLines);
     });

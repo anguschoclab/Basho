@@ -141,7 +141,9 @@ describe("ClickableName", () => {
   });
 
   it("sanitizes id with data: protocol scheme", () => {
-    render(<ClickableName type="rikishi" id="data:text/html,<script>alert(1)</script>" name="Test" />);
+    render(
+      <ClickableName type="rikishi" id="data:text/html,<script>alert(1)</script>" name="Test" />
+    );
     const link = screen.getByTestId("router-link");
     const href = link.getAttribute("href");
     expect(href).not.toContain("data:");

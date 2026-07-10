@@ -155,26 +155,41 @@ describe("selectKeyBouts", () => {
 
   it("selects biggest upset by rank tier differential", () => {
     const world = makeMockWorld();
-    world.rikishi.set("r-maegashira", mockRikishi("r-maegashira", { rank: "maegashira", rankNumber: 5 }));
+    world.rikishi.set(
+      "r-maegashira",
+      mockRikishi("r-maegashira", { rank: "maegashira", rankNumber: 5 })
+    );
     world.rikishi.set("r-ozeki", mockRikishi("r-ozeki", { rank: "ozeki", rankNumber: 1 }));
     world.rikishi.set("r-juryo", mockRikishi("r-juryo", { rank: "juryo", rankNumber: 1 }));
     world.rikishi.set("r-yokozuna", mockRikishi("r-yokozuna", { rank: "yokozuna", rankNumber: 1 }));
 
     const matches = [
-      makeMatch("b-upset-small", 5, "r-maegashira", "r-ozeki", makeResult({
-        boutId: "b-upset-small",
-        upset: true,
-        winner: "east",
-        winnerRikishiId: "r-maegashira",
-        loserRikishiId: "r-ozeki",
-      })),
-      makeMatch("b-upset-big", 8, "r-juryo", "r-yokozuna", makeResult({
-        boutId: "b-upset-big",
-        upset: true,
-        winner: "east",
-        winnerRikishiId: "r-juryo",
-        loserRikishiId: "r-yokozuna",
-      })),
+      makeMatch(
+        "b-upset-small",
+        5,
+        "r-maegashira",
+        "r-ozeki",
+        makeResult({
+          boutId: "b-upset-small",
+          upset: true,
+          winner: "east",
+          winnerRikishiId: "r-maegashira",
+          loserRikishiId: "r-ozeki",
+        })
+      ),
+      makeMatch(
+        "b-upset-big",
+        8,
+        "r-juryo",
+        "r-yokozuna",
+        makeResult({
+          boutId: "b-upset-big",
+          upset: true,
+          winner: "east",
+          winnerRikishiId: "r-juryo",
+          loserRikishiId: "r-yokozuna",
+        })
+      ),
     ];
     const basho = makeMockBasho({ matches, bashoName: "hatsu", day: 15 });
     world.currentBasho = basho;
@@ -187,7 +202,10 @@ describe("selectKeyBouts", () => {
 
   it("biggest upset skipped if same bout already selected as yusho decider", () => {
     const world = makeMockWorld();
-    world.rikishi.set("r-maegashira", mockRikishi("r-maegashira", { rank: "maegashira", rankNumber: 5 }));
+    world.rikishi.set(
+      "r-maegashira",
+      mockRikishi("r-maegashira", { rank: "maegashira", rankNumber: 5 })
+    );
     world.rikishi.set("r-ozeki", mockRikishi("r-ozeki", { rank: "ozeki", rankNumber: 1 }));
     world.rikishi.set("r-juryo", mockRikishi("r-juryo", { rank: "juryo", rankNumber: 1 }));
     world.rikishi.set("r-yokozuna", mockRikishi("r-yokozuna", { rank: "yokozuna", rankNumber: 1 }));
@@ -234,20 +252,32 @@ describe("selectKeyBouts", () => {
     world.rikishi.set("r4", mockRikishi("r4", { rank: "ozeki", rankNumber: 1 }));
 
     const matches = [
-      makeMatch("b-kin1", 5, "r1", "r2", makeResult({
-        boutId: "b-kin1",
-        isKinboshi: true,
-        winner: "east",
-        winnerRikishiId: "r1",
-        loserRikishiId: "r2",
-      })),
-      makeMatch("b-kin2", 10, "r3", "r4", makeResult({
-        boutId: "b-kin2",
-        isKinboshi: true,
-        winner: "east",
-        winnerRikishiId: "r3",
-        loserRikishiId: "r4",
-      })),
+      makeMatch(
+        "b-kin1",
+        5,
+        "r1",
+        "r2",
+        makeResult({
+          boutId: "b-kin1",
+          isKinboshi: true,
+          winner: "east",
+          winnerRikishiId: "r1",
+          loserRikishiId: "r2",
+        })
+      ),
+      makeMatch(
+        "b-kin2",
+        10,
+        "r3",
+        "r4",
+        makeResult({
+          boutId: "b-kin2",
+          isKinboshi: true,
+          winner: "east",
+          winnerRikishiId: "r3",
+          loserRikishiId: "r4",
+        })
+      ),
     ];
     const basho = makeMockBasho({ matches, bashoName: "hatsu", day: 15 });
     world.currentBasho = basho;
@@ -318,34 +348,58 @@ describe("selectKeyBouts", () => {
         score: 85,
         reason: "",
       }),
-      makeMatch("b-up1", 3, "r1", "r2", makeResult({
-        boutId: "b-up1",
-        upset: true,
-        winner: "east",
-        winnerRikishiId: "r1",
-        loserRikishiId: "r2",
-      })),
-      makeMatch("b-up2", 5, "r3", "r4", makeResult({
-        boutId: "b-up2",
-        upset: true,
-        winner: "east",
-        winnerRikishiId: "r3",
-        loserRikishiId: "r4",
-      })),
-      makeMatch("b-kin1", 7, "r5", "r6", makeResult({
-        boutId: "b-kin1",
-        isKinboshi: true,
-        winner: "east",
-        winnerRikishiId: "r5",
-        loserRikishiId: "r6",
-      })),
-      makeMatch("b-kin2", 9, "r1", "r4", makeResult({
-        boutId: "b-kin2",
-        isKinboshi: true,
-        winner: "east",
-        winnerRikishiId: "r1",
-        loserRikishiId: "r4",
-      })),
+      makeMatch(
+        "b-up1",
+        3,
+        "r1",
+        "r2",
+        makeResult({
+          boutId: "b-up1",
+          upset: true,
+          winner: "east",
+          winnerRikishiId: "r1",
+          loserRikishiId: "r2",
+        })
+      ),
+      makeMatch(
+        "b-up2",
+        5,
+        "r3",
+        "r4",
+        makeResult({
+          boutId: "b-up2",
+          upset: true,
+          winner: "east",
+          winnerRikishiId: "r3",
+          loserRikishiId: "r4",
+        })
+      ),
+      makeMatch(
+        "b-kin1",
+        7,
+        "r5",
+        "r6",
+        makeResult({
+          boutId: "b-kin1",
+          isKinboshi: true,
+          winner: "east",
+          winnerRikishiId: "r5",
+          loserRikishiId: "r6",
+        })
+      ),
+      makeMatch(
+        "b-kin2",
+        9,
+        "r1",
+        "r4",
+        makeResult({
+          boutId: "b-kin2",
+          isKinboshi: true,
+          winner: "east",
+          winnerRikishiId: "r1",
+          loserRikishiId: "r4",
+        })
+      ),
     ];
     const basho = makeMockBasho({ matches, bashoName: "hatsu", day: 15 });
     world.currentBasho = basho;
@@ -367,13 +421,19 @@ describe("selectKeyBouts", () => {
         reason: "",
       }),
       // Upset with missing rikishi — should be skipped
-      makeMatch("b-up-missing", 5, "r3", "r4", makeResult({
-        boutId: "b-up-missing",
-        upset: true,
-        winner: "east",
-        winnerRikishiId: "r3",
-        loserRikishiId: "r4",
-      })),
+      makeMatch(
+        "b-up-missing",
+        5,
+        "r3",
+        "r4",
+        makeResult({
+          boutId: "b-up-missing",
+          upset: true,
+          winner: "east",
+          winnerRikishiId: "r3",
+          loserRikishiId: "r4",
+        })
+      ),
     ];
     const basho = makeMockBasho({ matches, bashoName: "hatsu", day: 15 });
     world.currentBasho = basho;

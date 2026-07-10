@@ -358,9 +358,7 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
       }
       if (Object.keys(deltas).length > 0) {
         const shikona = rikishi.shikona || rikishi.name || "Unknown";
-        const deltaParts = Object.entries(deltas).map(
-          ([k, v]) => `${k} ${v >= 0 ? "+" : ""}${v}`
-        );
+        const deltaParts = Object.entries(deltas).map(([k, v]) => `${k} ${v >= 0 ? "+" : ""}${v}`);
         builder.logEvent(
           "TRAINING_STAT_DELTA",
           "training",
