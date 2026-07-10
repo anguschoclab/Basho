@@ -5,6 +5,7 @@
  */
 
 import React from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "../../contexts/GameContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
@@ -91,6 +92,7 @@ const AssessmentList = React.memo(({ assessment, world }: { assessment: any; wor
 });
 
 export function PreBashoAssessment() {
+  const navigate = useNavigate();
   const { state } = useGame();
   const world = state.world;
   const assessment = world?._preBashoAssessment;
@@ -148,7 +150,12 @@ export function PreBashoAssessment() {
 
         {/* Action Button */}
         {assessment.withdrawalsThisAssessment > 0 && (
-          <Button variant="outline" size="sm" className="w-full text-xs">
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full text-xs"
+            onClick={() => navigate({ to: "/rikishi" })}
+          >
             View Roster for Withdrawals
           </Button>
         )}
