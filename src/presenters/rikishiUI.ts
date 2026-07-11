@@ -57,6 +57,7 @@ export interface UIRikishi {
   style: Style;
   styleName: string;
   archetypeName: string;
+  combatArchetype?: import("../engine/types/combat").CombatArchetype;
   isRetired: boolean;
   isInjured: boolean;
   injurySummary: string;
@@ -354,6 +355,7 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     style: r.style,
     styleName,
     archetypeName,
+    combatArchetype: combatArchetype as import("../engine/types/combat").CombatArchetype,
     isRetired: r.isRetired ?? false,
     isInjured: r.injured,
     injurySummary: calculateInjurySummary(rng, r),
