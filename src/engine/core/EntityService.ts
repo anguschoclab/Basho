@@ -51,7 +51,7 @@ export const EntityService = {
    * If a new Map field (like 'sparringPairs') is added to WorldState but not the allowlist here,
    * it will be silently initialized as a POJO ({}), causing runtime type errors when .set() or .get() is called.
    *
-   * To safely add a new IdMapRuntime field, you MUST update the `isMapField` array below.
+   * To safely add a new IdMapRuntime field, you MUST update the allowlist array inside 'ensureNestedState' below.
    *
    * @param {WorldState} world - The WorldState.
    * @param {keyof WorldState} rootKey - The top-level key (e.g., 'trainingState').
