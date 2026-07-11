@@ -174,3 +174,7 @@ Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop 
 ## 2025-05-24 - Avoid Object.values() in perception calculations
 **Learning:** Found an `Object.values(rivalriesState.pairs)` allocation inside `bandRivalry`, which is called during perception passes. This creates an unnecessary intermediate O(N) array per call.
 **Action:** Replaced `Object.values()` with a direct `for...in` loop and a `hasOwnProperty` guard to avoid the array allocation while preserving logic.
+
+## 2024-05-28 - Replace Object.entries() in talent generation
+**Learning:** Using `Object.entries()` in TalentPoolNPCRecruitment and TalentPoolMaterialization creates unnecessary O(N) tuple allocations in loops.
+**Action:** Replace `Object.entries(obj)` with standard `for...in` loops protected by `Object.prototype.hasOwnProperty.call(obj, key)` guards to eliminate the intermediate tuple array allocations.

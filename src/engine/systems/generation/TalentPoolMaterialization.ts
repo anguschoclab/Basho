@@ -96,7 +96,10 @@ export function finalizeSignedCandidates(world: WorldState): StateImpact {
   let currentPools = { ...tp.pools };
   let changed = false;
 
-  for (const [id, candidate] of Object.entries(tp.candidates)) {
+  // ⚡ Bolt Optimization: Use a direct for...in loop instead of Object.entries() to avoid O(N) tuple allocations
+  for (const id in tp.candidates) {
+    if (!Object.prototype.hasOwnProperty.call(tp.candidates, id)) continue;
+    const candidate = tp.candidates[id];
     if (candidate.availabilityState === "signed" && candidate.competingSuitors.length > 0) {
       const winner = candidate.competingSuitors[0];
       const heyaId = winner.heyaId;

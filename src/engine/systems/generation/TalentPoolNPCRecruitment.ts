@@ -148,7 +148,9 @@ export function fillVacanciesForNPCWithBidding(
   }
   const balanceMap = recruitmentBalanceMultipliers(world, targetHeyaIds as Id[]);
 
-  for (const [heyaId, _vacancyCount] of Object.entries(targetHeyas)) {
+  // ⚡ Bolt Optimization: Use a direct for...in loop instead of Object.entries() to avoid O(N) tuple allocations
+  for (const heyaId in targetHeyas) {
+    if (!Object.prototype.hasOwnProperty.call(targetHeyas, heyaId)) continue;
     const heya = getHeya(world, heyaId);
     if (!heya) continue;
     const oyakata = world.oyakata.get(heya.oyakataId);
