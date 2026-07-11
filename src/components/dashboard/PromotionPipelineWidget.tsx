@@ -215,11 +215,7 @@ export function PromotionPipelineWidget() {
         )}
 
         {!hasPromotion && !hasKadoban && (
-          <EmptyState
-            icon={TrendingUp}
-            title="No promotion activity this cycle"
-            compact
-          />
+          <EmptyState icon={TrendingUp} title="No promotion activity this cycle" compact />
         )}
 
         {hasKadoban && (

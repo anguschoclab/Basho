@@ -1,5 +1,13 @@
 import { describe, it, expect } from "vitest";
-import { getActiveRikishi, getEligibleOpponents, getAvailableStables, getStableFinances, selectRetiredRikishi, selectHeyasWithCriticalWelfare, selectMergerCandidates } from "@/engine/selectors";
+import {
+  getActiveRikishi,
+  getEligibleOpponents,
+  getAvailableStables,
+  getStableFinances,
+  selectRetiredRikishi,
+  selectHeyasWithCriticalWelfare,
+  selectMergerCandidates,
+} from "@/engine/selectors";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { Rikishi } from "@/engine/types/rikishi";
 
@@ -18,8 +26,8 @@ describe("Selectors", () => {
 
       const active1 = getActiveRikishi(world);
       expect(active1.length).toBe(2);
-      expect(active1.find(r => r.id === "r1")).toBeDefined();
-      expect(active1.find(r => r.id === "r2")).toBeUndefined();
+      expect(active1.find((r) => r.id === "r1")).toBeDefined();
+      expect(active1.find((r) => r.id === "r2")).toBeUndefined();
 
       const active2 = getActiveRikishi(world);
       expect(active1).toBe(active2); // Should return cached reference
@@ -56,13 +64,31 @@ describe("Selectors", () => {
       const world = MockFactory.createWorld();
 
       const normal = MockFactory.createHeya("normal");
-      normal.welfareState = { welfareRisk: 20, recentIncidents: [], complianceState: "compliant", stressPoints: 0, resilienceScore: 0 };
+      normal.welfareState = {
+        welfareRisk: 20,
+        recentIncidents: [],
+        complianceState: "compliant",
+        stressPoints: 0,
+        resilienceScore: 0,
+      };
 
       const risky = MockFactory.createHeya("risky");
-      risky.welfareState = { welfareRisk: 60, recentIncidents: [], complianceState: "compliant", stressPoints: 0, resilienceScore: 0 };
+      risky.welfareState = {
+        welfareRisk: 60,
+        recentIncidents: [],
+        complianceState: "compliant",
+        stressPoints: 0,
+        resilienceScore: 0,
+      };
 
       const sanctioned = MockFactory.createHeya("sanctioned");
-      sanctioned.welfareState = { welfareRisk: 10, recentIncidents: [], complianceState: "sanctioned", stressPoints: 0, resilienceScore: 0 };
+      sanctioned.welfareState = {
+        welfareRisk: 10,
+        recentIncidents: [],
+        complianceState: "sanctioned",
+        stressPoints: 0,
+        resilienceScore: 0,
+      };
 
       world.heyas.set("normal", normal);
       world.heyas.set("risky", risky);
@@ -71,8 +97,8 @@ describe("Selectors", () => {
       const result = selectHeyasWithCriticalWelfare(world);
 
       expect(result.length).toBe(2);
-      expect(result.map(h => h.id)).toContain("risky");
-      expect(result.map(h => h.id)).toContain("sanctioned");
+      expect(result.map((h) => h.id)).toContain("risky");
+      expect(result.map((h) => h.id)).toContain("sanctioned");
     });
   });
 });

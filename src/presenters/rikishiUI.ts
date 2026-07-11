@@ -117,6 +117,7 @@ export interface UIRikishi {
     ginboshiEarned: number;
     kinboshiConceded: number;
     ginboshiConceded: number;
+    mochikyukinPoints: number;
   };
   salaryBreakdown: SalaryBreakdown;
   careerHistory: unknown[];
@@ -241,6 +242,7 @@ function calculateAchievements(r: Rikishi) {
     ginboshiEarned: r.stats?.achievements?.ginboshiEarned ?? 0,
     kinboshiConceded: r.stats?.achievements?.kinboshiConceded ?? 0,
     ginboshiConceded: r.stats?.achievements?.ginboshiConceded ?? 0,
+    mochikyukinPoints: r.stats?.achievements?.mochikyukinPoints ?? 0,
   };
 }
 

@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { getStatCeiling, getEffectiveCeiling, diminishingReturnsMult } from "@/engine/systems/training/TrainingMath";
+import {
+  getStatCeiling,
+  getEffectiveCeiling,
+  diminishingReturnsMult,
+} from "@/engine/systems/training/TrainingMath";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import { MAX_STAT_CEILING, MIN_STAT_CEILING } from "@/constants/engine/training";
 
@@ -30,8 +34,8 @@ describe("TrainingMath", () => {
           stats: { power: 80 } as any,
           ceilingFraction: 0.8,
           developmentSpeed: 1,
-          peakAgeOffset: 0
-        }
+          peakAgeOffset: 0,
+        },
       });
 
       const world = MockFactory.createWorld({ year: 2025 });
@@ -44,7 +48,7 @@ describe("TrainingMath", () => {
 
     it("should fall back to getStatCeiling if potential not defined", () => {
       const r = MockFactory.createRikishi("r1", {
-        talentSeed: 50
+        talentSeed: 50,
       });
       // Clear potential
       delete r.potential;

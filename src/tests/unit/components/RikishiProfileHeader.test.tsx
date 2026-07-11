@@ -109,10 +109,20 @@ vi.mock("@/engine/archetype", () => ({
 describe("RikishiProfileHeader", () => {
   it("renders Kinboshi stat when kinboshiEarned > 0", () => {
     const rikishi = makeUIRikishi({
-      achievements: { kinboshiEarned: 3, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0 },
+      achievements: {
+        kinboshiEarned: 3,
+        ginboshiEarned: 0,
+        kinboshiConceded: 0,
+        ginboshiConceded: 0,
+      },
     });
     render(
-      <RikishiProfileHeader rikishi={rikishi} isOwned={false} healthBadge="Healthy" onBack={() => {}} />
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
     );
     expect(screen.getByText("3")).toBeTruthy();
     expect(screen.getByText(/Gold Stars/i)).toBeTruthy();
@@ -120,10 +130,20 @@ describe("RikishiProfileHeader", () => {
 
   it("renders Kinboshi stat with 0 when kinboshiEarned === 0", () => {
     const rikishi = makeUIRikishi({
-      achievements: { kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0 },
+      achievements: {
+        kinboshiEarned: 0,
+        ginboshiEarned: 0,
+        kinboshiConceded: 0,
+        ginboshiConceded: 0,
+      },
     });
     render(
-      <RikishiProfileHeader rikishi={rikishi} isOwned={false} healthBadge="Healthy" onBack={() => {}} />
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
     );
     // The condition logic (!stat.condition || stat.condition === true) always renders,
     // so the Kinboshi stat shows even when 0 (same pattern as Elite Titles)
@@ -132,10 +152,20 @@ describe("RikishiProfileHeader", () => {
 
   it("displays correct count from rikishi.achievements.kinboshiEarned", () => {
     const rikishi = makeUIRikishi({
-      achievements: { kinboshiEarned: 7, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0 },
+      achievements: {
+        kinboshiEarned: 7,
+        ginboshiEarned: 0,
+        kinboshiConceded: 0,
+        ginboshiConceded: 0,
+      },
     });
     render(
-      <RikishiProfileHeader rikishi={rikishi} isOwned={false} healthBadge="Healthy" onBack={() => {}} />
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
     );
     const statValues = screen.getAllByText("7");
     expect(statValues.length).toBeGreaterThan(0);
@@ -148,7 +178,12 @@ describe("RikishiProfileHeader", () => {
       careerLosses: 100,
     });
     render(
-      <RikishiProfileHeader rikishi={rikishi} isOwned={false} healthBadge="Healthy" onBack={() => {}} />
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
     );
     expect(screen.getByText("Elite Titles")).toBeTruthy();
     expect(screen.getByText("Career History")).toBeTruthy();
@@ -158,7 +193,12 @@ describe("RikishiProfileHeader", () => {
   it("renders without crashing for a basic rikishi", () => {
     const rikishi = makeUIRikishi();
     const { container } = render(
-      <RikishiProfileHeader rikishi={rikishi} isOwned={false} healthBadge="Healthy" onBack={() => {}} />
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
     );
     expect(container).toBeTruthy();
     expect(screen.getByText("Test Rikishi")).toBeTruthy();
