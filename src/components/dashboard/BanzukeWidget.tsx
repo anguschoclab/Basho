@@ -4,6 +4,7 @@ import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { ScrollText } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { projectRosterEntry } from "@/presenters/uiModels";
 import { BaseWidget } from "./BaseWidget";
@@ -85,6 +86,10 @@ const BanzukeEntryRow = React.memo(
 );
 
 const BanzukeList = React.memo(({ topRanked }: { topRanked: any[] }) => {
+  if (topRanked.length === 0) {
+    return <EmptyState icon={ScrollText} title="No active banzuke" compact />;
+  }
+
   return (
     <>
       {(() => {
