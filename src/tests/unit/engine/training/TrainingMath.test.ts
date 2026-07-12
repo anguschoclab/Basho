@@ -114,12 +114,12 @@ describe("TrainingMath", () => {
   describe("getCareerPhase", () => {
     it("should return correct phase for given experience values", () => {
       expect(getCareerPhase(0)).toBe("rookie");
-      expect(getCareerPhase(29)).toBe("rookie");
-      expect(getCareerPhase(30)).toBe("prime");
-      expect(getCareerPhase(69)).toBe("prime");
-      expect(getCareerPhase(70)).toBe("veteran");
-      expect(getCareerPhase(89)).toBe("veteran");
-      expect(getCareerPhase(90)).toBe("twilight");
+      expect(getCareerPhase(ROOKIE_EXPERIENCE_THRESHOLD - 1)).toBe("rookie");
+      expect(getCareerPhase(ROOKIE_EXPERIENCE_THRESHOLD)).toBe("prime");
+      expect(getCareerPhase(PRIME_EXPERIENCE_THRESHOLD - 1)).toBe("prime");
+      expect(getCareerPhase(PRIME_EXPERIENCE_THRESHOLD)).toBe("veteran");
+      expect(getCareerPhase(VETERAN_EXPERIENCE_THRESHOLD - 1)).toBe("veteran");
+      expect(getCareerPhase(VETERAN_EXPERIENCE_THRESHOLD)).toBe("twilight");
       expect(getCareerPhase(200)).toBe("twilight");
     });
   });
