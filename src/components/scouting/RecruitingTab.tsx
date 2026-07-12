@@ -314,7 +314,7 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
                             <span>
                               Style:{" "}
                               <TooltipWrap
-                                content={getCombatArchetypeDescription(c.archetype as any)}
+                                content={getCombatArchetypeDescription(c.archetype)}
                               >
                                 <span className="cursor-help border-b border-dotted border-muted-foreground/30 hover:border-muted-foreground/60">
                                   {resolveRegistryLabel("archetypes", c.archetype)}

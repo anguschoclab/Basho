@@ -124,7 +124,7 @@ export function RikishiProfileHeader({
                         {" - "}
                         {rikishi.combatArchetype ? (
                           <TooltipWrap
-                            content={getCombatArchetypeDescription(rikishi.combatArchetype as any)}
+                            content={getCombatArchetypeDescription(rikishi.combatArchetype)}
                           >
                             <span className="cursor-help border-b border-dotted border-white/30 hover:border-white/60">
                               {rikishi.archetypeName}

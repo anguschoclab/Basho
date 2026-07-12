@@ -192,7 +192,7 @@ export function RikishiDetailDialog({
                       {selectedRikishi.combatArchetype && (
                         <TooltipContent>
                           <p className="max-w-xs">
-                            {getCombatArchetypeDescription(selectedRikishi.combatArchetype as any)}
+                            {getCombatArchetypeDescription(selectedRikishi.combatArchetype)}
                           </p>
                         </TooltipContent>
                       )}

@@ -2,7 +2,7 @@ import type { Id } from "../engine/types/common";
 import type { Rikishi } from "../engine/types/rikishi";
 import type { WorldState } from "../engine/types/world";
 import type { Rank, Division, Side } from "../engine/types/banzuke";
-import type { Style } from "../engine/types/combat";
+import type { Style, CombatArchetype } from "../engine/types/combat";
 import type { AvatarConfig } from "../engine/types/avatar";
 import type { KeshoMawashi, YokozunaTsuna } from "../engine/types/keshoMawashi";
 import {
@@ -57,6 +57,7 @@ export interface UIRikishi {
   style: Style;
   styleName: string;
   archetypeName: string;
+  combatArchetype?: CombatArchetype;
   isRetired: boolean;
   isInjured: boolean;
   injurySummary: string;
@@ -354,6 +355,7 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishi {
     style: r.style,
     styleName,
     archetypeName,
+    combatArchetype,
     isRetired: r.isRetired ?? false,
     isInjured: r.injured,
     injurySummary: calculateInjurySummary(rng, r),

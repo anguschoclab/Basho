@@ -53,7 +53,7 @@ export function RikishiCombatTab({ rikishi, rawRikishi, isOwned = false }: Rikis
                   {rikishi.combatArchetype && (
                     <TooltipContent>
                       <p className="max-w-xs">
-                        {getCombatArchetypeDescription(rikishi.combatArchetype as any)}
+                        {getCombatArchetypeDescription(rikishi.combatArchetype)}
                       </p>
                     </TooltipContent>
                   )}

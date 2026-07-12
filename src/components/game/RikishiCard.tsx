@@ -72,7 +72,7 @@ export const RikishiCard: React.FC<RikishiCardProps> = React.memo(({ rikishi }) 
                 {rikishi.combatArchetype && (
                   <TooltipContent>
                     <p className="max-w-xs">
-                      {getCombatArchetypeDescription(rikishi.combatArchetype as any)}
+                      {getCombatArchetypeDescription(rikishi.combatArchetype)}
                     </p>
                   </TooltipContent>
                 )}

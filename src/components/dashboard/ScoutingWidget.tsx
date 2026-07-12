@@ -1,3 +1,4 @@
+import type { CombatArchetype } from "@/engine/types/combat";
 import React, { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
@@ -40,7 +41,7 @@ const ProspectRow = React.memo(
   }: {
     candidateId: string;
     name: string;
-    archetype: string;
+    archetype: CombatArchetype;
     talentSeed?: number;
     pool: TalentPoolType;
     visibilityBand: string;
@@ -57,7 +58,7 @@ const ProspectRow = React.memo(
         <span className="flex-1 font-medium truncate">
           {canShowName ? name : "Unknown Prospect"}
         </span>
-        <TooltipWrap content={getCombatArchetypeDescription(archetype as any)}>
+        <TooltipWrap content={getCombatArchetypeDescription(archetype)}>
           <span className="text-[10px] text-muted-foreground capitalize truncate max-w-16 cursor-help border-b border-dotted border-muted-foreground/30 hover:border-muted-foreground/60">
             {archetype.replace(/_/g, " ")}
           </span>
