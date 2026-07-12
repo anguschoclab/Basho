@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { RikishiName } from "@/components/ClickableName";
 import { Heart, Activity, AlertTriangle, Clock, Shield, Thermometer } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { useGameStore } from "@/store/gameStore";
 import type { projectMedicalUIDigest } from "@/presenters/uiDigest";
 
@@ -80,13 +81,13 @@ export function InjuryRecoveryPanel({ digest }: InjuryRecoveryPanelProps) {
       {/* Injured Roster */}
       {injuredRikishi.length === 0 ? (
         <Card>
-          <CardContent className="p-8 text-center">
-            <Shield className="h-8 w-8 text-success mx-auto mb-3" />
-            <p className="font-medium">All Clear</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              No injuries in your stable. Keep training smart.
-            </p>
-          </CardContent>
+          <EmptyState
+            icon={Shield}
+            iconClassName="text-success"
+            title="All Clear"
+            description="No injuries in your stable. Keep training smart."
+            compact
+          />
         </Card>
       ) : (
         <div className="space-y-3">

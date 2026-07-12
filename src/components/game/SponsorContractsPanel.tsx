@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { Coins, HandshakeIcon, Clock, Star } from "lucide-react";
+import { EmptyState } from "@/components/ui/EmptyState";
 import type { projectSponsorUIDigest } from "@/presenters/uiDigest";
 
 const TIER_LABELS: Record<string, { label: string; color: string }> = {
@@ -150,13 +151,12 @@ export function SponsorContractsPanel({
       {/* Contract List */}
       {digest.activeSponsors.length === 0 ? (
         <Card>
-          <CardContent className="p-8 text-center">
-            <Coins className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-            <p className="font-medium">No Active Sponsors</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              Build your stable's prestige and reputation to attract sponsors.
-            </p>
-          </CardContent>
+          <EmptyState
+            icon={Coins}
+            title="No Active Sponsors"
+            description="Build your stable's prestige and reputation to attract sponsors."
+            compact
+          />
         </Card>
       ) : (
         <ScrollArea className="max-h-[500px]">
