@@ -66,9 +66,9 @@ The core engine is strictly deterministic to ensure that simulations are reprodu
 bun test
 ```
 
-**Verify determinism (RNG checks):**
+**Verify determinism (static analysis for RNG & mutable state violations):**
 ```bash
-bun run check:determinism
+bun scripts/engine-reviewer.ts
 ```
 
 ## Building for Production

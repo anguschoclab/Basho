@@ -22,7 +22,11 @@ export interface EntityQueryOptions {
   includeRetired?: boolean;
   /** If provided, filters by heyaId. */
   heyaId?: string;
-  /** If true, returns a Map instead of an Array for O(1) specific lookup. */
+  /**
+   * @deprecated ⚠️ IGNORED BY IMPLEMENTATION.
+   * `getRikishi` unconditionally returns `Rikishi[]` regardless of this flag.
+   * If O(1) lookup is needed, iterate `world.rikishi` directly or build your own Map.
+   */
   asMap?: boolean;
 }
 
