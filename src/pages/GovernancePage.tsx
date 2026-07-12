@@ -517,6 +517,9 @@ export default function GovernancePage() {
                         }
                       }}
                       disabled={(heya.politicalCapital ?? 0) < 100}
+                      {...((heya.politicalCapital ?? 0) < 100
+                        ? { tooltip: "Not enough Political Capital (need 100)", tooltipSide: "top" }
+                        : {})}
                     >
                       Spend 100
                     </Button>
@@ -577,6 +580,9 @@ export default function GovernancePage() {
                             size="sm"
                             className="h-7 px-3 text-[9px] uppercase font-black tracking-tighter border-primary/20 hover:border-primary/50 transition-all"
                             disabled={(heya.politicalCapital ?? 0) < favor.cost}
+                            {...((heya.politicalCapital ?? 0) < favor.cost
+                              ? { tooltip: `Not enough Political Capital (need ${favor.cost})`, tooltipSide: "top" }
+                              : {})}
                             onClick={() => {
                               sendCommand({
                                 type: "REQUEST_POLITICAL_FAVOR",
