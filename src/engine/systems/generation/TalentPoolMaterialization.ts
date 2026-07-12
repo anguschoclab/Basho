@@ -100,6 +100,7 @@ export function finalizeSignedCandidates(world: WorldState): StateImpact {
   for (const id in tp.candidates) {
     if (!Object.prototype.hasOwnProperty.call(tp.candidates, id)) continue;
     const candidate = tp.candidates[id];
+    const candidate = tp.candidates[id];
     if (!candidate) continue;
     if (candidate.availabilityState === "signed" && candidate.competingSuitors.length > 0) {
       const winner = candidate.competingSuitors[0];
