@@ -1,7 +1,15 @@
 import { describe, it, expect } from "vitest";
-import { getStatCeiling, getEffectiveCeiling, diminishingReturnsMult } from "@/engine/systems/training/TrainingMath";
+import {
+  getStatCeiling,
+  getEffectiveCeiling,
+  diminishingReturnsMult,
+  normalizeTrainingProfile,
+  calculateFatigueDelta,
+  getCareerPhase
+} from "@/engine/systems/training/TrainingMath";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import { MAX_STAT_CEILING, MIN_STAT_CEILING } from "@/constants/engine/training";
+import type { TrainingProfile } from "@/engine/types/training";
+import { MAX_STAT_CEILING, MIN_STAT_CEILING, ROOKIE_EXPERIENCE_THRESHOLD, PRIME_EXPERIENCE_THRESHOLD, VETERAN_EXPERIENCE_THRESHOLD } from "@/constants/engine/training";
 
 describe("TrainingMath", () => {
   describe("getStatCeiling", () => {
@@ -54,6 +62,65 @@ describe("TrainingMath", () => {
 
       const ceiling = getEffectiveCeiling(r, "power", world);
       expect(ceiling).toBeGreaterThan(0);
+    });
+  });
+
+  describe("normalizeTrainingProfile", () => {
+    it("should provide defaults for undefined fields", () => {
+      const p = normalizeTrainingProfile({} as TrainingProfile);
+      expect(p.intensity).toBe("balanced");
+      expect(p.focus).toBe("neutral");
+      expect(p.recovery).toBe("normal");
+      expect(p.styleBias).toBe("neutral");
+    });
+
+    it("should preserve valid fields", () => {
+      const p = normalizeTrainingProfile({ intensity: "punishing", focus: "power", recovery: "low", styleBias: "oshi" });
+      expect(p.intensity).toBe("punishing");
+      expect(p.focus).toBe("power");
+      expect(p.recovery).toBe("low");
+      expect(p.styleBias).toBe("oshi");
+    });
+
+    it("should overwrite invalid fields with safe defaults", () => {
+      const p = normalizeTrainingProfile({ intensity: "fake", focus: "fake", recovery: "fake", styleBias: "fake" } as any);
+      expect(p.intensity).toBe("balanced");
+      expect(p.focus).toBe("neutral");
+      expect(p.recovery).toBe("normal");
+      expect(p.styleBias).toBe("neutral");
+    });
+  });
+
+  describe("calculateFatigueDelta", () => {
+    it("should calculate correctly for high intensity / low recovery", () => {
+      const delta = calculateFatigueDelta({ intensity: "punishing", recovery: "low", focus: "neutral", styleBias: "neutral" }, undefined);
+      expect(delta).toBe(8);
+    });
+
+    it("should calculate correctly for low intensity / high recovery", () => {
+      const delta = calculateFatigueDelta({ intensity: "conservative", recovery: "high", focus: "neutral", styleBias: "neutral" }, undefined);
+      expect(delta).toBe(-3);
+    });
+
+    it("should calculate correctly with a focus multiplier", () => {
+      const delta = calculateFatigueDelta(
+        { intensity: "balanced", recovery: "normal", focus: "neutral", styleBias: "neutral" },
+        { rikishiId: "r1", focusType: "push" }
+      );
+      expect(delta).toBe(4);
+    });
+  });
+
+  describe("getCareerPhase", () => {
+    it("should return correct phase for given experience values", () => {
+      expect(getCareerPhase(0)).toBe("rookie");
+      expect(getCareerPhase(ROOKIE_EXPERIENCE_THRESHOLD - 1)).toBe("rookie");
+      expect(getCareerPhase(ROOKIE_EXPERIENCE_THRESHOLD)).toBe("prime");
+      expect(getCareerPhase(PRIME_EXPERIENCE_THRESHOLD - 1)).toBe("prime");
+      expect(getCareerPhase(PRIME_EXPERIENCE_THRESHOLD)).toBe("veteran");
+      expect(getCareerPhase(VETERAN_EXPERIENCE_THRESHOLD - 1)).toBe("veteran");
+      expect(getCareerPhase(VETERAN_EXPERIENCE_THRESHOLD)).toBe("twilight");
+      expect(getCareerPhase(200)).toBe("twilight");
     });
   });
 
