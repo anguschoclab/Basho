@@ -236,9 +236,17 @@ export function RikishiProfileHeader({
                   condition: (rikishi.achievements?.kinboshiEarned ?? 0) > 0,
                   tooltip: "Gold stars earned by defeating a Yokozuna as a Maegashira",
                 },
+                {
+                  label: "Bonus Points",
+                  value: rikishi.achievements?.mochikyukinPoints ?? 0,
+                  sub: "Mochikyukin",
+                  color: "text-success",
+                  condition: (rikishi.achievements?.mochikyukinPoints ?? 0) > 0,
+                  tooltip: "Cumulative bonus points determining bi-monthly JSA payout",
+                },
               ].map((stat, i) => (
                 <React.Fragment key={i}>
-                  {(!stat.condition || stat.condition === true) && (
+                  {(stat.condition ?? true) && (
                     <TooltipWrap content={stat.tooltip} side="bottom">
                       <div className="text-center group cursor-help">
                         <div

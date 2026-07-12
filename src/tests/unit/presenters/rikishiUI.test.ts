@@ -227,4 +227,59 @@ describe("projectRikishi - new band calculations", () => {
     expect(projected).toHaveProperty("weightDescriptor");
     expect(projected).toHaveProperty("heightDescriptor");
   });
+
+  it("should project combatArchetype from combatProfile", () => {
+    const rikishi = mockRikishi("r1", {
+      shikona: "Testyama",
+      heyaId: "h1",
+      birthYear: 1995,
+      height: 180,
+      weight: 95,
+    });
+
+    const projected = projectRikishi(rikishi, baseWorld);
+    expect(projected.combatArchetype).toBeDefined();
+    expect(projected.combatArchetype).toBe(rikishi.combatProfile?.archetype);
+  });
+
+  it("should default combatArchetype to 'hybrid' when combatProfile is missing", () => {
+    const rikishi = mockRikishi("r1", {
+      shikona: "Testyama",
+      heyaId: "h1",
+      birthYear: 1995,
+      height: 180,
+      weight: 95,
+    });
+    delete (rikishi as any).combatProfile;
+
+    const projected = projectRikishi(rikishi, baseWorld);
+    expect(projected.combatArchetype).toBe("hybrid");
+  });
+
+  it("should include mochikyukinPoints in achievements", () => {
+    const rikishi = mockRikishi("r1", {
+      shikona: "Testyama",
+      heyaId: "h1",
+      birthYear: 1995,
+      height: 180,
+      weight: 95,
+    });
+    rikishi.stats.achievements.mochikyukinPoints = 42;
+
+    const projected = projectRikishi(rikishi, baseWorld);
+    expect(projected.achievements.mochikyukinPoints).toBe(42);
+  });
+
+  it("should default mochikyukinPoints to 0 when not set", () => {
+    const rikishi = mockRikishi("r1", {
+      shikona: "Testyama",
+      heyaId: "h1",
+      birthYear: 1995,
+      height: 180,
+      weight: 95,
+    });
+
+    const projected = projectRikishi(rikishi, baseWorld);
+    expect(projected.achievements.mochikyukinPoints).toBe(0);
+  });
 });

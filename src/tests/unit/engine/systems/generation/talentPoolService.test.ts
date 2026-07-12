@@ -221,6 +221,27 @@ describe("finalizeSignedCandidates", () => {
     const impact = finalizeSignedCandidates(world);
     expect(impact.collections?.rikishiToAdd?.length ?? 0).toBe(0);
   });
+
+  it("handles undefined candidate entries without crashing", () => {
+    const heyaId = "test-heya" as Id;
+    const heya = MockFactory.createHeya(heyaId, { rikishiIds: [] });
+    const world = MockFactory.createWorld({
+      heyas: new Map([[heyaId, heya]]),
+      rikishi: new Map(),
+      seed: "finalize-undef-seed",
+    });
+    const talentPool = makeTalentPool("cand-signed", "signed");
+    talentPool.candidates["cand-signed"].competingSuitors = [
+      { heyaId, offerType: "standard" as const, interestBand: "high" as const, deadlineWeek: 1 },
+    ];
+    // Add an undefined entry to test the defensive guard
+    (talentPool.candidates as any)["cand-undefined"] = undefined;
+    world.talentPool = talentPool;
+
+    const impact = finalizeSignedCandidates(world);
+    // Should still materialize the signed candidate despite the undefined entry
+    expect(impact.collections?.rikishiToAdd?.length ?? 0).toBeGreaterThan(0);
+  });
 });
 
 // ── fillVacanciesForNPCWithBidding ─────────────────────────────────────────

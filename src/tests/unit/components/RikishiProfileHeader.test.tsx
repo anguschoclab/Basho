@@ -84,7 +84,9 @@ function makeUIRikishi(overrides: Partial<UIRikishi> = {}): UIRikishi {
       ginboshiEarned: 0,
       kinboshiConceded: 0,
       ginboshiConceded: 0,
+      mochikyukinPoints: 0,
     },
+    combatArchetype: "hybrid" as any,
     salaryBreakdown: {} as any,
     careerHistory: [],
     milestones: [],
@@ -109,7 +111,7 @@ vi.mock("@/engine/archetype", () => ({
 describe("RikishiProfileHeader", () => {
   it("renders Kinboshi stat when kinboshiEarned > 0", () => {
     const rikishi = makeUIRikishi({
-      achievements: { kinboshiEarned: 3, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0 },
+      achievements: { kinboshiEarned: 3, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0, mochikyukinPoints: 0 },
     });
     render(
       <RikishiProfileHeader rikishi={rikishi} isOwned={false} healthBadge="Healthy" onBack={() => {}} />
@@ -118,21 +120,50 @@ describe("RikishiProfileHeader", () => {
     expect(screen.getByText(/Gold Stars/i)).toBeTruthy();
   });
 
-  it("renders Kinboshi stat with 0 when kinboshiEarned === 0", () => {
+  it("hides Kinboshi stat when kinboshiEarned === 0", () => {
     const rikishi = makeUIRikishi({
-      achievements: { kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0 },
+      achievements: { kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0, mochikyukinPoints: 0 },
     });
     render(
       <RikishiProfileHeader rikishi={rikishi} isOwned={false} healthBadge="Healthy" onBack={() => {}} />
     );
-    // The condition logic (!stat.condition || stat.condition === true) always renders,
-    // so the Kinboshi stat shows even when 0 (same pattern as Elite Titles)
-    expect(screen.getByText(/Gold Stars/i)).toBeTruthy();
+    expect(screen.queryByText(/Gold Stars/i)).toBeNull();
+  });
+
+  it("hides Elite Titles when careerYusho === 0", () => {
+    const rikishi = makeUIRikishi({
+      careerYusho: 0,
+    });
+    render(
+      <RikishiProfileHeader rikishi={rikishi} isOwned={false} healthBadge="Healthy" onBack={() => {}} />
+    );
+    expect(screen.queryByText(/Elite Titles/i)).toBeNull();
+  });
+
+  it("renders Mochikyukin stat when mochikyukinPoints > 0", () => {
+    const rikishi = makeUIRikishi({
+      achievements: { kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0, mochikyukinPoints: 15 },
+    });
+    render(
+      <RikishiProfileHeader rikishi={rikishi} isOwned={false} healthBadge="Healthy" onBack={() => {}} />
+    );
+    expect(screen.getByText(/Mochikyukin/i)).toBeTruthy();
+    expect(screen.getByText("15")).toBeTruthy();
+  });
+
+  it("hides Mochikyukin stat when mochikyukinPoints === 0", () => {
+    const rikishi = makeUIRikishi({
+      achievements: { kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0, mochikyukinPoints: 0 },
+    });
+    render(
+      <RikishiProfileHeader rikishi={rikishi} isOwned={false} healthBadge="Healthy" onBack={() => {}} />
+    );
+    expect(screen.queryByText(/Mochikyukin/i)).toBeNull();
   });
 
   it("displays correct count from rikishi.achievements.kinboshiEarned", () => {
     const rikishi = makeUIRikishi({
-      achievements: { kinboshiEarned: 7, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0 },
+      achievements: { kinboshiEarned: 7, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0, mochikyukinPoints: 0 },
     });
     render(
       <RikishiProfileHeader rikishi={rikishi} isOwned={false} healthBadge="Healthy" onBack={() => {}} />
