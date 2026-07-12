@@ -22,6 +22,7 @@ import {
   type RivalriesState,
   type RivalryPairState,
   type RivalryKey,
+  type RivalryTone,
 } from "../../../constants/engine/rivalry";
 import { applyBoutToPairState, deriveTone } from "./RivalryHeatService";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
@@ -488,7 +489,7 @@ export const RivalryService = {
     const initialHeat = rng.int(SPARRING_INITIAL_HEAT_MIN, SPARRING_INITIAL_HEAT_MAX);
 
     // Determine tone based on chemistry
-    let tone = "respect";
+    let tone: RivalryTone = "respect";
     if (chemistry === "friction") {
       tone = rng.pick(["grudge", "bad_blood", "public_hype"]);
     } else if (chemistry === "rut") {
@@ -500,7 +501,7 @@ export const RivalryService = {
     // Create new rivalry pair
     const pair = this.createFreshPair(aId, bId, world);
     pair.heat = initialHeat;
-    pair.tone = tone as any;
+    pair.tone = tone;
     pair.triggers.sparring = weeksActive;
 
     // Update rivalry state
