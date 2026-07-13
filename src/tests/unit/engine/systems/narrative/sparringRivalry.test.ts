@@ -10,11 +10,7 @@ import {
   SPARRING_INITIAL_HEAT_MAX,
 } from "@/constants/engine/rivalry";
 
-function makeWorld(
-  aId: string,
-  bId: string,
-  overrides: Partial<WorldState> = {}
-): WorldState {
+function makeWorld(aId: string, bId: string, overrides: Partial<WorldState> = {}): WorldState {
   const a = mockRikishi(aId, { heyaId: "h1" });
   const b = mockRikishi(bId, { heyaId: "h1" });
   const heya = makeMockHeya("h1", { rikishiIds: [aId, bId] });
@@ -29,9 +25,7 @@ function makeWorld(
   return world as WorldState;
 }
 
-function makeRivalriesState(
-  pairs: Record<string, unknown> = {}
-): RivalriesState {
+function makeRivalriesState(pairs: Record<string, unknown> = {}): RivalriesState {
   return {
     version: "1.0.0",
     pairs: pairs as RivalriesState["pairs"],
@@ -41,25 +35,13 @@ function makeRivalriesState(
 describe("RivalryService.maybeSeedSparringRivalry", () => {
   it("returns empty impact for non-friction chemistry (neutral)", () => {
     const world = makeWorld("r1", "r2");
-    const impact = RivalryService.maybeSeedSparringRivalry(
-      world,
-      "r1",
-      "r2",
-      "neutral",
-      20
-    );
+    const impact = RivalryService.maybeSeedSparringRivalry(world, "r1", "r2", "neutral", 20);
     expect(impact.worldFields?.rivalriesState).toBeUndefined();
   });
 
   it("returns empty impact for non-friction chemistry (rut)", () => {
     const world = makeWorld("r1", "r2");
-    const impact = RivalryService.maybeSeedSparringRivalry(
-      world,
-      "r1",
-      "r2",
-      "rut",
-      20
-    );
+    const impact = RivalryService.maybeSeedSparringRivalry(world, "r1", "r2", "rut", 20);
     expect(impact.worldFields?.rivalriesState).toBeUndefined();
   });
 
@@ -97,13 +79,7 @@ describe("RivalryService.maybeSeedSparringRivalry", () => {
     const world = makeWorld("r1", "r2", {
       rivalriesState: existingState,
     });
-    const impact = RivalryService.maybeSeedSparringRivalry(
-      world,
-      "r1",
-      "r2",
-      "friction",
-      20
-    );
+    const impact = RivalryService.maybeSeedSparringRivalry(world, "r1", "r2", "friction", 20);
     expect(impact.worldFields?.rivalriesState).toBeUndefined();
   });
 
@@ -185,9 +161,7 @@ describe("RivalryService.maybeSeedSparringRivalry", () => {
 
     expect(impact.events).toBeDefined();
     expect(impact.events!.length).toBeGreaterThan(0);
-    const event = impact.events!.find(
-      (e) => e.type === "SPARRING_RIVALRY_SEEDED"
-    );
+    const event = impact.events!.find((e) => e.type === "SPARRING_RIVALRY_SEEDED");
     expect(event).toBeDefined();
     expect(event!.data.chemistry).toBe("friction");
     expect(event!.data.weeksActive).toBe(SPARRING_RIVALRY_WEEKS_THRESHOLD);
@@ -197,13 +171,7 @@ describe("RivalryService.maybeSeedSparringRivalry", () => {
     for (const chemistry of ["neutral", "rut"] as const) {
       for (let seedIndex = 0; seedIndex < 10; seedIndex++) {
         const world = makeWorld("r1", "r2", { seed: `test-seed-${seedIndex}` });
-        const impact = RivalryService.maybeSeedSparringRivalry(
-          world,
-          "r1",
-          "r2",
-          chemistry,
-          20
-        );
+        const impact = RivalryService.maybeSeedSparringRivalry(world, "r1", "r2", chemistry, 20);
         expect(impact.worldFields?.rivalriesState).toBeUndefined();
       }
     }

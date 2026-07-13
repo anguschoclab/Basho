@@ -4,7 +4,12 @@ import { projectRivalriesPage } from "@/presenters/projections/rivalriesProjecti
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { RivalriesState, RivalryPairState } from "@/constants/engine/rivalry";
 
-function makePair(aId: string, bId: string, heat: number, overrides: Partial<RivalryPairState> = {}): RivalryPairState {
+function makePair(
+  aId: string,
+  bId: string,
+  heat: number,
+  overrides: Partial<RivalryPairState> = {}
+): RivalryPairState {
   return {
     key: `${aId}|${bId}`,
     aId,

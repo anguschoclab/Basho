@@ -2,7 +2,11 @@
 import { describe, it, expect } from "vitest";
 import { buildPerceptionSnapshot } from "@/engine/perception";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import { HEAT_BLAZING_THRESHOLD, HEAT_HOT_THRESHOLD, HEAT_WARM_THRESHOLD } from "@/constants/engine/perception";
+import {
+  HEAT_BLAZING_THRESHOLD,
+  HEAT_HOT_THRESHOLD,
+  HEAT_WARM_THRESHOLD,
+} from "@/constants/engine/perception";
 import type { RivalriesState, RivalryPairState } from "@/constants/engine/rivalry";
 
 function makePair(aId: string, bId: string, heat: number): RivalryPairState {

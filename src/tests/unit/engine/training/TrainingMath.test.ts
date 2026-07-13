@@ -5,11 +5,17 @@ import {
   diminishingReturnsMult,
   normalizeTrainingProfile,
   calculateFatigueDelta,
-  getCareerPhase
+  getCareerPhase,
 } from "@/engine/systems/training/TrainingMath";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { TrainingProfile } from "@/engine/types/training";
-import { MAX_STAT_CEILING, MIN_STAT_CEILING, ROOKIE_EXPERIENCE_THRESHOLD, PRIME_EXPERIENCE_THRESHOLD, VETERAN_EXPERIENCE_THRESHOLD } from "@/constants/engine/training";
+import {
+  MAX_STAT_CEILING,
+  MIN_STAT_CEILING,
+  ROOKIE_EXPERIENCE_THRESHOLD,
+  PRIME_EXPERIENCE_THRESHOLD,
+  VETERAN_EXPERIENCE_THRESHOLD,
+} from "@/constants/engine/training";
 
 describe("TrainingMath", () => {
   describe("getStatCeiling", () => {
@@ -38,8 +44,8 @@ describe("TrainingMath", () => {
           stats: { power: 80 } as any,
           ceilingFraction: 0.8,
           developmentSpeed: 1,
-          peakAgeOffset: 0
-        }
+          peakAgeOffset: 0,
+        },
       });
 
       const world = MockFactory.createWorld({ year: 2025 });
@@ -52,7 +58,7 @@ describe("TrainingMath", () => {
 
     it("should fall back to getStatCeiling if potential not defined", () => {
       const r = MockFactory.createRikishi("r1", {
-        talentSeed: 50
+        talentSeed: 50,
       });
       // Clear potential
       delete r.potential;
@@ -75,7 +81,12 @@ describe("TrainingMath", () => {
     });
 
     it("should preserve valid fields", () => {
-      const p = normalizeTrainingProfile({ intensity: "punishing", focus: "power", recovery: "low", styleBias: "oshi" });
+      const p = normalizeTrainingProfile({
+        intensity: "punishing",
+        focus: "power",
+        recovery: "low",
+        styleBias: "oshi",
+      });
       expect(p.intensity).toBe("punishing");
       expect(p.focus).toBe("power");
       expect(p.recovery).toBe("low");
@@ -83,7 +94,12 @@ describe("TrainingMath", () => {
     });
 
     it("should overwrite invalid fields with safe defaults", () => {
-      const p = normalizeTrainingProfile({ intensity: "fake", focus: "fake", recovery: "fake", styleBias: "fake" } as any);
+      const p = normalizeTrainingProfile({
+        intensity: "fake",
+        focus: "fake",
+        recovery: "fake",
+        styleBias: "fake",
+      } as any);
       expect(p.intensity).toBe("balanced");
       expect(p.focus).toBe("neutral");
       expect(p.recovery).toBe("normal");
@@ -93,12 +109,18 @@ describe("TrainingMath", () => {
 
   describe("calculateFatigueDelta", () => {
     it("should calculate correctly for high intensity / low recovery", () => {
-      const delta = calculateFatigueDelta({ intensity: "punishing", recovery: "low", focus: "neutral", styleBias: "neutral" }, undefined);
+      const delta = calculateFatigueDelta(
+        { intensity: "punishing", recovery: "low", focus: "neutral", styleBias: "neutral" },
+        undefined
+      );
       expect(delta).toBe(8);
     });
 
     it("should calculate correctly for low intensity / high recovery", () => {
-      const delta = calculateFatigueDelta({ intensity: "conservative", recovery: "high", focus: "neutral", styleBias: "neutral" }, undefined);
+      const delta = calculateFatigueDelta(
+        { intensity: "conservative", recovery: "high", focus: "neutral", styleBias: "neutral" },
+        undefined
+      );
       expect(delta).toBe(-3);
     });
 
