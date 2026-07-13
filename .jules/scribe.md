@@ -16,3 +16,13 @@
 **Gap:** The JSDoc claimed it "Automatically determines if the root should be a Map or POJO based on the field name", which implies dynamic detection.
 **Truth:** It actually uses a hardcoded array of field names (`["rikishi", "heyas", "oyakata", "staff", "trainingState", "closedHeyas", "sparringPairs"]`). Other fields intended as Maps (like `historicalRikishi` or `heyaBrandIdentities`) will be incorrectly initialized as POJOs.
 **Watch:** Anywhere `ensureNestedState` is used for new `WorldState` IdMapRuntime fields that aren't in the allowlist.
+
+## 2025-07-06 - [EntityCollection] Stale asMap Query Option Trap
+**Gap:** The JSDoc for `EntityQueryOptions.asMap` claimed it "returns a Map instead of an Array for O(1) specific lookup."
+**Truth:** The implementation of `EntityCollection.getRikishi` ignores this option entirely and unconditionally returns a `Rikishi[]` array, leading to potential runtime crashes if a caller uses `.get()`.
+**Watch:** Other options in query interfaces that might have been abandoned during performance optimizations.
+
+## 2025-07-06 - [README] Dead determinism command
+**Gap:** The README instructed developers to run `bun run check:determinism` to verify determinism.
+**Truth:** There is no such script in `package.json`. The correct static analysis command is `bun scripts/engine-reviewer.ts`.
+**Watch:** Other onboarding commands in the README that may have drifted from `package.json`.
