@@ -209,7 +209,9 @@ export function WeeklyDrillPlanner({
               <SelectTrigger className="w-40 bg-white/10 border-white/20 h-8 text-[10px] font-bold uppercase">
                 <SelectValue placeholder="Select Drill..." />
               </SelectTrigger>
-              <SelectContent>{DRILL_OPTIONS_BATCH}</SelectContent>
+              <SelectContent>
+                {DRILL_OPTIONS_BATCH}
+              </SelectContent>
             </Select>
           </div>
           <Button
@@ -337,7 +339,9 @@ export function WeeklyDrillPlanner({
                           {meta.label}
                         </span>
                       </SelectTrigger>
-                      <SelectContent>{DRILL_OPTIONS_CELL}</SelectContent>
+                      <SelectContent>
+                        {DRILL_OPTIONS_CELL}
+                      </SelectContent>
                     </Select>
                   </div>
                 );

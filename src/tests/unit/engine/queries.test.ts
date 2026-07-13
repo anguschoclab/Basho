@@ -12,10 +12,22 @@ describe("Queries", () => {
       world.heyas.set("heya1", heya);
 
       // Setup rikishi with different divisions
-      world.rikishi.set("rikishi1", MockFactory.createRikishi("rikishi1", { heyaId: "heya1", division: "makuuchi" }));
-      world.rikishi.set("rikishi2", MockFactory.createRikishi("rikishi2", { heyaId: "heya1", division: "juryo" }));
-      world.rikishi.set("rikishi3", MockFactory.createRikishi("rikishi3", { heyaId: "heya1", division: "makushita" }));
-      world.rikishi.set("rikishi4", MockFactory.createRikishi("rikishi4", { heyaId: "heya1", division: "sandanme" }));
+      world.rikishi.set(
+        "rikishi1",
+        MockFactory.createRikishi("rikishi1", { heyaId: "heya1", division: "makuuchi" })
+      );
+      world.rikishi.set(
+        "rikishi2",
+        MockFactory.createRikishi("rikishi2", { heyaId: "heya1", division: "juryo" })
+      );
+      world.rikishi.set(
+        "rikishi3",
+        MockFactory.createRikishi("rikishi3", { heyaId: "heya1", division: "makushita" })
+      );
+      world.rikishi.set(
+        "rikishi4",
+        MockFactory.createRikishi("rikishi4", { heyaId: "heya1", division: "sandanme" })
+      );
 
       clearQueryCaches();
       const count = getSekitoriInHeya(world, "heya1");
@@ -62,7 +74,10 @@ describe("Queries", () => {
 
       world.rikishi.set("r1", MockFactory.createRikishi("r1", { heyaId: "heya1", style: "oshi" }));
       world.rikishi.set("r2", MockFactory.createRikishi("r2", { heyaId: "heya1", style: "yotsu" }));
-      world.rikishi.set("r3", MockFactory.createRikishi("r3", { heyaId: "heya1", style: "balanced" as any }));
+      world.rikishi.set(
+        "r3",
+        MockFactory.createRikishi("r3", { heyaId: "heya1", style: "balanced" as any })
+      );
 
       clearQueryCaches();
       const bias = getHeyaStyleBias(world, "heya1");
