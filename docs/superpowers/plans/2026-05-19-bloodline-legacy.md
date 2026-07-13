@@ -377,7 +377,7 @@ Pass `world` from `useGameContext()` or whichever context hook is used in the ex
 
 - [ ] **Step 3: Manual smoke test**
 
-Start dev server (`npm run dev`). Navigate to `/hall-of-fame`.
+Start dev server (`bun run dev`). Navigate to `/hall-of-fame`.
 1. Confirm Dynasty Registry panel renders with placeholder text on a fresh world.
 2. Advance until an ozeki retires — confirm their trait appears.
 3. Confirm stat floor bonuses and ceiling are displayed correctly.

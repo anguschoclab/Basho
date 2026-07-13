@@ -457,7 +457,7 @@ For each stat display in the candidate card, pass `biased={attr.biased ?? false}
 
 - [ ] **Step 4: Manual smoke test**
 
-Start dev server (`npm run dev`), navigate to the recruitment/scouting page. Confirm:
+Start dev server (`bun run dev`), navigate to the recruitment/scouting page. Confirm:
 1. New candidates show 1–2 stars (low confidence).
 2. After scouting investment or multiple observations, stars increase.
 3. Stats on fresh candidates are visibly off from their eventual revealed values.

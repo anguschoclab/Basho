@@ -63,7 +63,7 @@ The core engine is strictly deterministic to ensure that simulations are reprodu
 
 **Run tests:**
 ```bash
-bun test
+bun run test
 ```
 
 **Verify determinism (static analysis for RNG & mutable state violations):**

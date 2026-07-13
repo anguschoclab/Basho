@@ -609,7 +609,7 @@ In the training page, add:
 
 - [ ] **Step 4: Manual smoke test**
 
-Start dev server (`npm run dev`). Navigate to the training page:
+Start dev server (`bun run dev`). Navigate to the training page:
 1. Add a friction pair — confirm chemistry label appears.
 2. Add a rut pair — confirm different color.
 3. Advance one week — confirm stats of friction pair members tick up slightly.

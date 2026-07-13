@@ -590,7 +590,7 @@ In the roster page component, for each rikishi row, render:
 
 - [ ] **Step 5: Manual smoke test**
 
-Start dev server (`npm run dev`), navigate to `/stable/roster`. Confirm:
+Start dev server (`bun run dev`), navigate to `/stable/roster`. Confirm:
 1. Lower-division rikishi show a mentor dropdown populated with juryo+ stablemates.
 2. Assigning a mentor shows the badge.
 3. Removing a mentor clears the badge.
