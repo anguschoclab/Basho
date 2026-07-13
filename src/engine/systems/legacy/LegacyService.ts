@@ -157,7 +157,7 @@ export const LegacyService = {
     }
 
     // Apply Ceiling Bonus to the peak stat in the trait
-    const peakStat = this.findPeakStat(trait.statFloorBonus as any);
+    const peakStat = this.findPeakStat(trait.statFloorBonus as Partial<RikishiStats>);
     if (peakStat && peakStat in boosted) {
       boosted[peakStat] = clampInt((boosted[peakStat] || 0) + trait.ceilingBonus, 0, 99);
     }
@@ -165,7 +165,7 @@ export const LegacyService = {
     return boosted;
   },
 
-  findPeakStat(stats: RikishiStats): keyof RikishiStats {
+  findPeakStat(stats: Partial<RikishiStats>): keyof RikishiStats {
     const keys: Array<keyof RikishiStats> = [
       "power",
       "technique",
