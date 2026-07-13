@@ -17,6 +17,7 @@ import {
   Clock,
 } from "lucide-react";
 import type { ActionItem, ActionSeverity } from "@/presenters/projections/actionQueue";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { useGameStore } from "@/store/gameStore";
 import { toast } from "sonner";
 import { decisionToastMessage } from "@/components/game/decisionFeedback";
@@ -109,7 +110,23 @@ export function ActionQueueWidget({ items }: ActionQueueWidgetProps) {
     return SEVERITY_CONFIG[worst];
   }, [visibleItems]);
 
-  if (visibleItems.length === 0) return null;
+  if (visibleItems.length === 0) {
+    return (
+      <Card className="paper border border-border/40">
+        <CardHeader className="pb-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2 text-sm font-bold">
+              <Inbox className="h-4 w-4 text-primary" />
+              Action Queue
+            </CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <EmptyState icon={Inbox} title="No pending actions" compact />
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className={`paper border ${config?.border ?? "border-border/40"}`}>

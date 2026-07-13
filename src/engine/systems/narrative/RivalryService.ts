@@ -22,11 +22,13 @@ import {
   type RivalriesState,
   type RivalryPairState,
   type RivalryKey,
+  type RivalryTone,
 } from "../../../constants/engine/rivalry";
 import { applyBoutToPairState, deriveTone } from "./RivalryHeatService";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import type { BoutResult } from "../../types/basho";
+import type { SparringChemistry } from "../../types/training";
 import {
   BOUT_DURATION_CLOSENESS_DIVISOR,
   BOUT_DURATION_DOMINATION_DIVISOR,
@@ -445,7 +447,7 @@ export const RivalryService = {
    * @param {WorldState} world - The current world state.
    * @param {string} aId - First rikishi ID.
    * @param {string} bId - Second rikishi ID.
-   * @param {string} chemistry - Sparring chemistry state ("friction", "rut", "neutral").
+   * @param {SparringChemistry} chemistry - Sparring chemistry state ("friction", "rut", "neutral").
    * @param {number} weeksActive - Number of weeks the pair has been sparring.
    * @returns {StateImpact} Impact describing rivalry seeding (or empty if no rivalry seeded).
    *
@@ -459,7 +461,7 @@ export const RivalryService = {
     world: WorldState,
     aId: string,
     bId: string,
-    chemistry: string,
+    chemistry: SparringChemistry,
     weeksActive: number
   ): StateImpact {
     const builder = createImpactBuilder("maybeSeedSparringRivalry");
@@ -487,20 +489,13 @@ export const RivalryService = {
 
     const initialHeat = rng.int(SPARRING_INITIAL_HEAT_MIN, SPARRING_INITIAL_HEAT_MAX);
 
-    // Determine tone based on chemistry
-    let tone = "respect";
-    if (chemistry === "friction") {
-      tone = rng.pick(["grudge", "bad_blood", "public_hype"]);
-    } else if (chemistry === "rut") {
-      tone = rng.pick(["respect", "mentor_student"]);
-    } else {
-      tone = rng.pick(["respect", "public_hype", "unstable"]);
-    }
+    // Determine tone — only friction pairs reach this point (early return above)
+    const tone: RivalryTone = rng.pick(["grudge", "bad_blood", "public_hype"]);
 
     // Create new rivalry pair
     const pair = this.createFreshPair(aId, bId, world);
     pair.heat = initialHeat;
-    pair.tone = tone as any;
+    pair.tone = tone;
     pair.triggers.sparring = weeksActive;
 
     // Update rivalry state

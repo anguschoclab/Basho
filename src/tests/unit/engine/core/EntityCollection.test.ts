@@ -93,4 +93,16 @@ describe("EntityCollection", () => {
       expect(result).toBeUndefined();
     });
   });
+
+  describe("asMap option removal", () => {
+    it("getRikishi always returns an array, never a Map", () => {
+      const result = EntityCollection.getRikishi(mockWorld);
+      expect(Array.isArray(result)).toBe(true);
+    });
+
+    it("getRikishi with includeRetired always returns an array", () => {
+      const result = EntityCollection.getRikishi(mockWorld, { includeRetired: true });
+      expect(Array.isArray(result)).toBe(true);
+    });
+  });
 });

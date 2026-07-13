@@ -22,8 +22,6 @@ export interface EntityQueryOptions {
   includeRetired?: boolean;
   /** If provided, filters by heyaId. */
   heyaId?: string;
-  /** If true, returns a Map instead of an Array for O(1) specific lookup. */
-  asMap?: boolean;
 }
 
 /**

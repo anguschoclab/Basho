@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { BaseWidget } from "./BaseWidget";
 import { Users, HeartPulse, AlertTriangle, Activity, Star, UserMinus, Layers } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { projectRosterEntry, type UIRosterEntry, projectRikishi } from "@/presenters/uiModels";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { getHealthBadge } from "@/presenters/PerceptionPresenter";
@@ -121,6 +122,10 @@ const RosterList = React.memo(
     onToggleSelect: (id: string) => void;
     onViewAll: () => void;
   }) => {
+    if (roster.length === 0) {
+      return <EmptyState icon={Users} title="No wrestlers in roster" compact />;
+    }
+
     return (
       <>
         {(() => {

@@ -402,7 +402,7 @@ export function applyWeeklySparring(world: WorldState): StateImpact {
   const updatedSparringPairs = new Map(world.sparringPairs);
 
   for (const [heyaId, sparringState] of world.sparringPairs) {
-    const updatedPairs: Record<string, SparringPair> = { ...sparringState.pairs };
+    let updatedPairs: Record<string, SparringPair> = { ...sparringState.pairs };
 
     for (const pairKey in sparringState.pairs) {
       if (!Object.prototype.hasOwnProperty.call(sparringState.pairs, pairKey)) continue;
@@ -411,15 +411,24 @@ export function applyWeeklySparring(world: WorldState): StateImpact {
       const b = getRikishi(world, pair.bId);
 
       if (!a || !b) {
-        delete updatedPairs[pairKey];
+        const { [pairKey]: _removed, ...rest } = updatedPairs;
+        updatedPairs = rest;
         continue;
       }
 
       // Skip if either rikishi is injured or retired
       if (a.injured || a.isRetired || b.injured || b.isRetired) {
-        delete updatedPairs[pairKey];
+        const { [pairKey]: _removed, ...rest } = updatedPairs;
+        updatedPairs = rest;
         continue;
       }
+
+      // Always increment weeksActive (even when no stat growth occurs)
+      const newWeeksActive = pair.weeksActive + 1;
+      updatedPairs[pairKey] = {
+        ...pair,
+        weeksActive: newWeeksActive,
+      };
 
       // Calculate growth delta
       const growthDelta = SparringService.calculateGrowthDelta(a, b, pair.chemistry);
@@ -442,13 +451,6 @@ export function applyWeeklySparring(world: WorldState): StateImpact {
         nextStats[stat] = clamp(current + bonus, 0, 99);
       }
       builder.updateRikishi(weaker.id, { stats: nextStats });
-
-      // Increment weeksActive
-      const newWeeksActive = pair.weeksActive + 1;
-      updatedPairs[pairKey] = {
-        ...pair,
-        weeksActive: newWeeksActive,
-      };
 
       // Check for rivalry seeding after 12+ weeks
       if (newWeeksActive >= 12) {
