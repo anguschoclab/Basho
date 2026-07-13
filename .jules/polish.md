@@ -7,3 +7,7 @@
 **Issue:** Game panels (`SponsorContractsPanel`, `InjuryRecoveryPanel`) hardcoded custom empty states in cards instead of using `EmptyState`.
 **Learning:** The previous rule for dashboard widgets applies equally to generic game panels to maintain consistent typography, margins, and icons.
 **Rule:** Extend the use of the `<EmptyState compact />` component to all empty list fallbacks across all `src/components/game` panels.
+## 2025-07-12 - Polish Dashboard Widgets Empty States
+**Issue:** RosterWidget, BanzukeWidget had blank or unhandled states when no items were available. ActionQueueWidget would render null causing layout shifts.
+**Learning:** The widgets were incorrectly handling empty arrays of items, returning null or missing EmptyState.
+**Rule:** Always handle empty arrays in UI rendering to display an EmptyState with correct spacing.

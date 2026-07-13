@@ -4,6 +4,7 @@ import { useGame } from "@/contexts/GameContext";
 import { Badge } from "@/components/ui/badge";
 import { ScrollText } from "lucide-react";
 import { RikishiName } from "@/components/ClickableName";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { projectRosterEntry, type UIRosterEntry } from "@/presenters/uiModels";
 import { BaseWidget } from "./BaseWidget";
