@@ -5,7 +5,10 @@ import {
   diminishingReturnsMult,
   normalizeTrainingProfile,
   calculateFatigueDelta,
-  getCareerPhase
+  getCareerPhase,
+  calculateGrowthVector,
+  calculateGains,
+  calculateAgeDecay
 } from "@/engine/systems/training/TrainingMath";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { TrainingProfile } from "@/engine/types/training";
@@ -143,6 +146,85 @@ describe("TrainingMath", () => {
     it("should return 0 when ceiling is <= 0", () => {
       expect(diminishingReturnsMult(50, 0)).toBe(0);
       expect(diminishingReturnsMult(50, -10)).toBe(0);
+    });
+  });
+  describe("calculateGrowthVector", () => {
+    it("should calculate growth values respecting profile, focus, phase and heya facilities", () => {
+      const r = MockFactory.createRikishi("r1", {
+        birthYear: 2000,
+        stats: {
+          power: 50, speed: 50, technique: 50, balance: 50, stamina: 50, mental: 50, adaptability: 50, experience: 0, weight: 100, aggression: 50
+        },
+        combatProfile: {
+          archetype: "pusher" as any,
+          stance: "neutral",
+          preferredGrip: "none"
+        }
+      });
+      const h = MockFactory.createHeya("h1", {
+        facilities: { training: 50, nutrition: 50, recovery: 50, scouting: 50 },
+        ichimon: "Dewanoumi",
+        trainingPhilosophy: { powerBias: 0.1, speedBias: -0.1, techniqueBias: 0 }
+      });
+      const w = MockFactory.createWorld({
+        year: 2025,
+        factions: { Dewanoumi: { id: "Dewanoumi", name: "Dewanoumi", influence: 85, reputation: 50, members: [] } } as any,
+        rivalriesState: {
+          heyaRivalryPairs: {
+            "pair1": { id: "pair1", heyaAId: "h1", heyaBId: "h2", heat: 90, tension: 0, trust: 0, history: [] }
+          }
+        } as any
+      });
+
+      const profile = { intensity: "balanced" as const, focus: "power" as const, recovery: "normal" as const, styleBias: "neutral" as const };
+
+      const growth = calculateGrowthVector(profile, undefined, r, h, w);
+
+      expect(growth.power).toBeGreaterThan(0);
+      expect(growth.speed).toBeGreaterThan(0);
+      expect(growth.power).toBeGreaterThan(growth.speed); // Due to focus="power"
+    });
+  });
+
+  describe("calculateGains", () => {
+    it("should scale growth by trainingMultiplier", () => {
+      const r = MockFactory.createRikishi("r1", {
+        birthYear: 2000,
+        stats: {
+          power: 50, speed: 50, technique: 50, balance: 50, stamina: 50, mental: 50, adaptability: 50, experience: 0, weight: 100, aggression: 50
+        }
+      });
+      const profile = { intensity: "balanced" as const, focus: "power" as const, recovery: "normal" as const, styleBias: "neutral" as const };
+
+      const gains = calculateGains(r, { trainingMultiplier: 1.5 } as any, profile, undefined);
+
+      expect(gains.power).toBeGreaterThan(0);
+    });
+  });
+
+  describe("calculateAgeDecay", () => {
+    it("should return zero for young rikishi", () => {
+      const r = MockFactory.createRikishi("r1", {
+        birthYear: 2000
+      });
+
+      const decay = calculateAgeDecay(r, 2020); // 20 years old
+      expect(decay.power).toBe(0);
+      expect(decay.speed).toBe(0);
+    });
+
+    it("should return negative values for older rikishi", () => {
+      const r = MockFactory.createRikishi("r1", {
+        birthYear: 2000,
+        stats: {
+          power: 50, speed: 50, technique: 50, balance: 50, stamina: 50, mental: 50, adaptability: 50, experience: 100, weight: 100, aggression: 50
+        }
+      });
+
+      const decay = calculateAgeDecay(r, 2040); // 40 years old
+
+      expect(decay.power).toBeLessThan(0);
+      expect(decay.speed).toBeLessThan(0);
     });
   });
 });

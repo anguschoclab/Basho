@@ -12,3 +12,7 @@
 **Gap:** The pure math module `WelfareCalculations.ts` lacked tests, leaving injury severity weighting, negligence detection, and welfare delta accumulation untested.
 **Learning:** Pure functions containing key simulation constants and game logic require coverage even if they only map state properties. The simulation math must be explicitly locked in.
 **Pattern:** For engine rules like `WelfareCalculations.ts`, we mock `WorldState` and `Heya` with `MockFactory`, push state overrides, and verify specific numerical rules/strings out (like `reasons` delta arrays).
+## 2025-02-27 - Scout: test TrainingMath core growth calculations
+**Gap:** The primary math functions `calculateGrowthVector`, `calculateGains`, and `calculateAgeDecay` in `TrainingMath.ts` were previously completely untested, which represents significant risk since this dictates core progression mechanics.
+**Learning:** The testing context in `calculateGrowthVector` takes many nested mock properties (factions, rivalries), so ensuring these are explicitly set using `MockFactory` is necessary.
+**Pattern:** Construct `WorldState` and `Heya` using `MockFactory.createWorld` and `createHeya` with appropriate overrides for nested faction/rivalry data. `import` statements at the top level are preferable.
