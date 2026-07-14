@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import type { ActionItem, ActionSeverity } from "@/presenters/projections/actionQueue";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { BaseWidget } from "./BaseWidget";
 import { useGameStore } from "@/store/gameStore";
 import { toast } from "sonner";
 import { decisionToastMessage } from "@/components/game/decisionFeedback";
@@ -112,36 +113,24 @@ export function ActionQueueWidget({ items }: ActionQueueWidgetProps) {
 
   if (visibleItems.length === 0) {
     return (
-      <Card className="paper border border-border/40">
-        <CardHeader className="pb-2">
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2 text-sm font-bold">
-              <Inbox className="h-4 w-4 text-primary" />
-              Action Queue
-            </CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <EmptyState icon={Inbox} title="No pending actions" compact />
-        </CardContent>
-      </Card>
+      <BaseWidget title="Action Queue" icon={Inbox}>
+        <EmptyState icon={Inbox} title="No pending actions" compact />
+      </BaseWidget>
     );
   }
 
   return (
-    <Card className={`paper border ${config?.border ?? "border-border/40"}`}>
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2 text-sm font-bold">
-            <Inbox className="h-4 w-4 text-primary" />
-            Action Queue
-            <Badge variant="outline" className={config?.badge ?? ""}>
-              {visibleItems.length}
-            </Badge>
-          </CardTitle>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-2 pt-0">
+    <BaseWidget
+      title="Action Queue"
+      icon={Inbox}
+      className={`border ${config?.border ?? "border-border/40"}`}
+      headerContent={
+        <Badge variant="outline" className={config?.badge ?? ""}>
+          {visibleItems.length}
+        </Badge>
+      }
+    >
+      <div className="space-y-2">
         {visibleItems.map(({ item, index }) => {
           const sev = SEVERITY_CONFIG[item.severity];
           const isExpanded = expanded.has(index);
@@ -203,7 +192,7 @@ export function ActionQueueWidget({ items }: ActionQueueWidgetProps) {
             </div>
           );
         })}
-      </CardContent>
-    </Card>
+      </div>
+    </BaseWidget>
   );
 }

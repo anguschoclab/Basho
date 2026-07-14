@@ -11,3 +11,7 @@
 **Issue:** RosterWidget, BanzukeWidget had blank or unhandled states when no items were available. ActionQueueWidget would render null causing layout shifts.
 **Learning:** The widgets were incorrectly handling empty arrays of items, returning null or missing EmptyState.
 **Rule:** Always handle empty arrays in UI rendering to display an EmptyState with correct spacing.
+## 2025-07-12 - Action Queue Widget Consistency
+**Issue:** `ActionQueueWidget` handled its empty and non-empty state inconsistently by wrapping content directly in a custom `Card` rather than the standard `BaseWidget`.
+**Learning:** This caused structural inconsistency with other widgets in the dashboard that use `BaseWidget`.
+**Rule:** Always use `BaseWidget` as the top-level wrapper for all dashboard widgets to maintain consistent layout, headers, and padding for both populated and empty states.
