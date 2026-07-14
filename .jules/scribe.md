@@ -26,3 +26,8 @@
 **Gap:** The README instructed developers to run `bun run check:determinism` to verify determinism.
 **Truth:** There is no such script in `package.json`. The correct static analysis command is `bun scripts/engine-reviewer.ts`.
 **Watch:** Other onboarding commands in the README that may have drifted from `package.json`.
+
+## 2024-07-15 - [tickDaily.ts] Stale Constitution Top-Level Comment
+**Gap:** The top-level documentation block incorrectly referred to "Canon Daily Tick Pipeline (A3.1 / A4.1)" and "Basho Constitution v1.2", listing a monolithic 9-step sequence that had been removed.
+**Truth:** The logic was migrated to a Strict Pipeline Architecture that delegates to `bashoPipeline` and `offSeasonPipeline`.
+**Watch:** Other files in `src/engine/tick` that may still have legacy monolithic comments in their top-level summaries instead of mentioning the pipeline runner.
