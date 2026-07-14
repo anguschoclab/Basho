@@ -375,6 +375,7 @@ export class ImpactBuilder {
       | "pendingDecisions"
       | "yokozunaVacancyStreak"
       | "events"
+      | "lineage"
     >,
   >(field: K, value: WorldState[K]): ImpactBuilder {
     if (!this.impact.worldFields) {

@@ -70,7 +70,7 @@ export function assignMentor(
     sinceYear: world.year,
     sinceWeek: world.week,
   });
-  builder.updateWorldField("lineage" as any, currentLineage);
+  builder.updateWorldField("lineage", currentLineage);
 
   // 2. Rivalry seeding
   if (world.rivalriesState) {
