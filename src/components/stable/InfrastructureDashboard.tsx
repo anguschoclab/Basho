@@ -178,6 +178,9 @@ export function InfrastructureDashboard({ heya, onUpgrade }: InfrastructureDashb
                     )}
                     disabled={isBuilding}
                     onClick={() => onUpgrade(facility.id)}
+                    {...(isBuilding
+                      ? { tooltip: "Facility is currently under construction", tooltipSide: "top" }
+                      : {})}
                   >
                     {isBuilding ? (
                       <>
