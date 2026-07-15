@@ -51,7 +51,12 @@ describe("npcMediaStrategy — EventBus migration", () => {
     const world = makeWorldWithHeya();
     const heya = world.heyas.get("h1")!;
     const oyakata = world.oyakata.get("o1")!;
-    const result = TraditionalistMediaStrategy.evaluateMediaEventResponse(world, heya, oyakata, "event_1");
+    const result = TraditionalistMediaStrategy.evaluateMediaEventResponse(
+      world,
+      heya,
+      oyakata,
+      "event_1"
+    );
     const decisionEvent = result.events?.find((e) => e.type === "NPC_MANAGER_DECISION");
     expect(decisionEvent?.data?.choice).toBe("apologize");
   });
@@ -69,7 +74,12 @@ describe("npcMediaStrategy — EventBus migration", () => {
     const world = makeWorldWithHeya();
     const heya = world.heyas.get("h1")!;
     const oyakata = world.oyakata.get("o1")!;
-    const result = IndulgentMediaStrategy.evaluateMediaEventResponse(world, heya, oyakata, "event_1");
+    const result = IndulgentMediaStrategy.evaluateMediaEventResponse(
+      world,
+      heya,
+      oyakata,
+      "event_1"
+    );
     const decisionEvent = result.events?.find((e) => e.type === "NPC_MANAGER_DECISION");
     expect(decisionEvent?.data?.choice).toBe("ignore");
   });

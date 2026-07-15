@@ -58,7 +58,10 @@ describe("NPCGovernanceCalculator.evaluateGovernanceStrategy", () => {
     const rivalHeya = MockFactory.createHeya("h2", { scandalScore: 20 });
     const ctx = makeCtx(
       { politicalCapital: 50 },
-      { traits: { ambition: 85, patience: 30, risk: 75, tradition: 30, compassion: 20 }, temperament: "Vindictive" }
+      {
+        traits: { ambition: 85, patience: 30, risk: 75, tradition: 30, compassion: 20 },
+        temperament: "Vindictive",
+      }
     );
     // Add rival heya to world
     ctx.world.heyas.set("h2", rivalHeya);
@@ -66,16 +69,17 @@ describe("NPCGovernanceCalculator.evaluateGovernanceStrategy", () => {
     const impact = evaluateGovernanceStrategy(ctx);
     // Sabotage should produce an event
     expect(impact.events?.length ?? 0).toBeGreaterThan(0);
-    const sabotageEvent = impact.events?.find(
-      (e) => e.type === "NARRATIVE_CRISIS_TRIGGERED"
-    );
+    const sabotageEvent = impact.events?.find((e) => e.type === "NARRATIVE_CRISIS_TRIGGERED");
     expect(sabotageEvent).toBeDefined();
   });
 
   it("with traditionalist oyakata and scandalScore >= 5 maintains standing", () => {
     const ctx = makeCtx(
       { scandalScore: 8, politicalCapital: 20 },
-      { archetype: "traditionalist", traits: { ambition: 30, patience: 70, risk: 30, tradition: 80, compassion: 50 } }
+      {
+        archetype: "traditionalist",
+        traits: { ambition: 30, patience: 70, risk: 30, tradition: 80, compassion: 50 },
+      }
     );
     const impact = evaluateGovernanceStrategy(ctx);
     const updates = impact.entities?.heyaUpdates;

@@ -157,7 +157,12 @@ describe("computeInjuryPressure", () => {
     });
     const { world, heya } = setupHeya("h1", [r1]);
     const ts = makeTrainingState("h1", {
-      activeProfile: { intensity: "punishing", focus: "neutral", styleBias: "neutral", recovery: "normal" },
+      activeProfile: {
+        intensity: "punishing",
+        focus: "neutral",
+        styleBias: "neutral",
+        recovery: "normal",
+      },
     });
     world.trainingState = new Map([["h1", ts]]);
     const result = computeInjuryPressure(world, heya);
@@ -172,7 +177,12 @@ describe("computeInjuryPressure", () => {
     });
     const { world, heya } = setupHeya("h1", [r1]);
     const ts = makeTrainingState("h1", {
-      activeProfile: { intensity: "punishing", focus: "neutral", styleBias: "neutral", recovery: "normal" },
+      activeProfile: {
+        intensity: "punishing",
+        focus: "neutral",
+        styleBias: "neutral",
+        recovery: "normal",
+      },
       focusSlots: [{ rikishiId: "r1", focusType: "protect" }],
     });
     world.trainingState = new Map([["h1", ts]]);
@@ -188,7 +198,12 @@ describe("computeInjuryPressure", () => {
     });
     const { world, heya } = setupHeya("h1", [r1]);
     const ts = makeTrainingState("h1", {
-      activeProfile: { intensity: "intensive", focus: "neutral", styleBias: "neutral", recovery: "normal" },
+      activeProfile: {
+        intensity: "intensive",
+        focus: "neutral",
+        styleBias: "neutral",
+        recovery: "normal",
+      },
       focusSlots: [{ rikishiId: "r1", focusType: "rebuild" }],
     });
     world.trainingState = new Map([["h1", ts]]);
@@ -204,7 +219,12 @@ describe("computeInjuryPressure", () => {
     });
     const { world, heya } = setupHeya("h1", [r1]);
     const ts = makeTrainingState("h1", {
-      activeProfile: { intensity: "balanced", focus: "neutral", styleBias: "neutral", recovery: "normal" },
+      activeProfile: {
+        intensity: "balanced",
+        focus: "neutral",
+        styleBias: "neutral",
+        recovery: "normal",
+      },
     });
     world.trainingState = new Map([["h1", ts]]);
     const result = computeInjuryPressure(world, heya);
@@ -236,8 +256,7 @@ describe("calculateWeeklyWelfareDelta", () => {
     const state = makeWelfareState();
     const result = calculateWeeklyWelfareDelta(world, heya, state);
     expect(result.delta).toBe(
-      Math.round(INJURY_PRESSURE_SERIOUS / WELFARE_PRESSURE_DIVISOR) +
-        WELFARE_SERIOUS_INJURY_BONUS
+      Math.round(INJURY_PRESSURE_SERIOUS / WELFARE_PRESSURE_DIVISOR) + WELFARE_SERIOUS_INJURY_BONUS
     );
     expect(result.reasons).toContain("serious_injuries+2");
   });
@@ -250,16 +269,19 @@ describe("calculateWeeklyWelfareDelta", () => {
     });
     const { world, heya } = setupHeya("h1", [r1]);
     const ts = makeTrainingState("h1", {
-      activeProfile: { intensity: "punishing", focus: "neutral", styleBias: "neutral", recovery: "normal" },
+      activeProfile: {
+        intensity: "punishing",
+        focus: "neutral",
+        styleBias: "neutral",
+        recovery: "normal",
+      },
     });
     world.trainingState = new Map([["h1", ts]]);
     const state = makeWelfareState();
     const result = calculateWeeklyWelfareDelta(world, heya, state);
     const expectedPressure = Math.round(INJURY_PRESSURE_MODERATE / WELFARE_PRESSURE_DIVISOR);
     expect(result.delta).toBe(
-      expectedPressure +
-        WELFARE_NEGLIGENCE_PENALTY_MULTIPLIER +
-        WELFARE_PUNISHING_INTENSITY_BONUS
+      expectedPressure + WELFARE_NEGLIGENCE_PENALTY_MULTIPLIER + WELFARE_PUNISHING_INTENSITY_BONUS
     );
     expect(result.reasons).toContain(`negligence+${WELFARE_NEGLIGENCE_PENALTY_MULTIPLIER}`);
     expect(result.reasons).not.toContain("misfortune");
@@ -306,7 +328,12 @@ describe("calculateWeeklyWelfareDelta", () => {
     const r1 = mockRikishi("r1", { heyaId: "h1", injured: false });
     const { world, heya } = setupHeya("h1", [r1]);
     const ts = makeTrainingState("h1", {
-      activeProfile: { intensity: "punishing", focus: "neutral", styleBias: "neutral", recovery: "normal" },
+      activeProfile: {
+        intensity: "punishing",
+        focus: "neutral",
+        styleBias: "neutral",
+        recovery: "normal",
+      },
     });
     world.trainingState = new Map([["h1", ts]]);
     const state = makeWelfareState();
@@ -319,7 +346,12 @@ describe("calculateWeeklyWelfareDelta", () => {
     const r1 = mockRikishi("r1", { heyaId: "h1", injured: false });
     const { world, heya } = setupHeya("h1", [r1]);
     const ts = makeTrainingState("h1", {
-      activeProfile: { intensity: "intensive", focus: "neutral", styleBias: "neutral", recovery: "normal" },
+      activeProfile: {
+        intensity: "intensive",
+        focus: "neutral",
+        styleBias: "neutral",
+        recovery: "normal",
+      },
     });
     world.trainingState = new Map([["h1", ts]]);
     const state = makeWelfareState();
@@ -332,7 +364,12 @@ describe("calculateWeeklyWelfareDelta", () => {
     const r1 = mockRikishi("r1", { heyaId: "h1", injured: false });
     const { world, heya } = setupHeya("h1", [r1]);
     const ts = makeTrainingState("h1", {
-      activeProfile: { intensity: "balanced", focus: "neutral", styleBias: "neutral", recovery: "low" },
+      activeProfile: {
+        intensity: "balanced",
+        focus: "neutral",
+        styleBias: "neutral",
+        recovery: "low",
+      },
     });
     world.trainingState = new Map([["h1", ts]]);
     const state = makeWelfareState();
@@ -345,7 +382,12 @@ describe("calculateWeeklyWelfareDelta", () => {
     const r1 = mockRikishi("r1", { heyaId: "h1", injured: false });
     const { world, heya } = setupHeya("h1", [r1]);
     const ts = makeTrainingState("h1", {
-      activeProfile: { intensity: "balanced", focus: "neutral", styleBias: "neutral", recovery: "high" },
+      activeProfile: {
+        intensity: "balanced",
+        focus: "neutral",
+        styleBias: "neutral",
+        recovery: "high",
+      },
     });
     world.trainingState = new Map([["h1", ts]]);
     const state = makeWelfareState();
@@ -395,7 +437,12 @@ describe("calculateWeeklyWelfareDelta", () => {
       facilities: { training: 50, recovery: 50, nutrition: 50 },
     });
     const ts = makeTrainingState("h1", {
-      activeProfile: { intensity: "punishing", focus: "neutral", styleBias: "neutral", recovery: "low" },
+      activeProfile: {
+        intensity: "punishing",
+        focus: "neutral",
+        styleBias: "neutral",
+        recovery: "low",
+      },
     });
     world.trainingState = new Map([["h1", ts]]);
     const state = makeWelfareState({ activeDiet: "austerity" });

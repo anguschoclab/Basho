@@ -132,9 +132,7 @@ describe("assignMentor", () => {
     world.rikishi.set("r3", r3);
 
     // Add lineage entry for previous mentor link
-    world.lineage = [
-      { mentorId: "r2", menteeId: "r1", sinceYear: 2025, sinceWeek: 1 },
-    ];
+    world.lineage = [{ mentorId: "r2", menteeId: "r1", sinceYear: 2025, sinceWeek: 1 }];
 
     const result = assignMentor(world, "r1", "r3");
     expect(result.ok).toBe(true);

@@ -185,7 +185,8 @@ export function applyBoutResult(
     (dailyOverrides[loserId] !== undefined || dailyOverrides[winnerId] !== undefined)
   ) {
     const { [loserId]: _l, [winnerId]: _w, ...cleared } = dailyOverrides;
-    void _l; void _w;
+    void _l;
+    void _w;
     builder.updateWorldField("transientContext", {
       ...world.transientContext,
       dailyInjuryRiskOverrides: cleared,

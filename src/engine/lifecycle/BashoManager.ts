@@ -75,11 +75,16 @@ export function startBasho(world: WorldState, bashoName?: BashoName): StateImpac
   const builder = createImpactBuilder("startBasho")
     .updateWorldField("currentBasho", basho)
     .updateWorldField("cyclePhase", "active_basho")
-    .logEvent("BASHO_STATUS", "basho", {
-      status: "started",
-      incident: name,
-      day: 1,
-    }, { importance: "headline" });
+    .logEvent(
+      "BASHO_STATUS",
+      "basho",
+      {
+        status: "started",
+        incident: name,
+        day: 1,
+      },
+      { importance: "headline" }
+    );
 
   // Merge schedule impact
   builder.merge(scheduleImpact);

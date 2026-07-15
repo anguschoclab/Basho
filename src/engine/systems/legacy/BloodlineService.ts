@@ -90,8 +90,16 @@ export const BloodlineService = {
       let changed = false;
 
       const numericStatKeys: ReadonlySet<keyof RikishiStats> = new Set([
-        "power", "technique", "speed", "weight", "stamina",
-        "mental", "adaptability", "balance", "aggression", "experience",
+        "power",
+        "technique",
+        "speed",
+        "weight",
+        "stamina",
+        "mental",
+        "adaptability",
+        "balance",
+        "aggression",
+        "experience",
       ]);
 
       for (const [stat, floor] of Object.entries(trait.statFloorBonus)) {
@@ -99,7 +107,11 @@ export const BloodlineService = {
         if (!numericStatKeys.has(stat as keyof RikishiStats)) continue;
         const current = nextStats[stat as keyof RikishiStats] as number;
         if (current < floor) {
-          (nextStats as unknown as Record<string, number>)[stat] = clampInt(current + WEEKLY_HERITAGE_BONUS, 0, 99);
+          (nextStats as unknown as Record<string, number>)[stat] = clampInt(
+            current + WEEKLY_HERITAGE_BONUS,
+            0,
+            99
+          );
           changed = true;
         }
       }

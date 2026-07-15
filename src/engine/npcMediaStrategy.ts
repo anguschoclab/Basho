@@ -75,12 +75,17 @@ export const DefaultMediaStrategy: MediaStrategy = {
 
     const builder = createImpactBuilder("DefaultMediaStrategy");
     builder.merge(handleMediaEvent(world, eventId, choice));
-    builder.logEvent("NPC_MANAGER_DECISION", "training", {
-      archetype: oyakata.archetype,
-      mediaEvent: eventId,
-      choice,
-      reasoning: reason,
-    }, { heyaId: heya.id, importance: "minor" });
+    builder.logEvent(
+      "NPC_MANAGER_DECISION",
+      "training",
+      {
+        archetype: oyakata.archetype,
+        mediaEvent: eventId,
+        choice,
+        reasoning: reason,
+      },
+      { heyaId: heya.id, importance: "minor" }
+    );
     return builder.build();
   },
 };
@@ -90,12 +95,17 @@ export const TraditionalistMediaStrategy: MediaStrategy = {
     const choice: "apologize" | "deny" | "ignore" = "apologize";
     const builder = createImpactBuilder("TraditionalistMediaStrategy");
     builder.merge(handleMediaEvent(world, eventId, choice));
-    builder.logEvent("NPC_MANAGER_DECISION", "training", {
-      archetype: oyakata.archetype,
-      mediaEvent: eventId,
-      choice,
-      reasoning: "Traditionalist apologized to maintain honor and tradition",
-    }, { heyaId: heya.id, importance: "minor" });
+    builder.logEvent(
+      "NPC_MANAGER_DECISION",
+      "training",
+      {
+        archetype: oyakata.archetype,
+        mediaEvent: eventId,
+        choice,
+        reasoning: "Traditionalist apologized to maintain honor and tradition",
+      },
+      { heyaId: heya.id, importance: "minor" }
+    );
     return builder.build();
   },
 };
@@ -105,12 +115,17 @@ export const ScientistMediaStrategy: MediaStrategy = {
     const choice = oyakata.traits.risk > 60 ? "deny" : "ignore";
     const builder = createImpactBuilder("ScientistMediaStrategy");
     builder.merge(handleMediaEvent(world, eventId, choice));
-    builder.logEvent("NPC_MANAGER_DECISION", "training", {
-      archetype: oyakata.archetype,
-      mediaEvent: eventId,
-      choice,
-      reasoning: "Scientist responded strategically to minimize impact",
-    }, { heyaId: heya.id, importance: "minor" });
+    builder.logEvent(
+      "NPC_MANAGER_DECISION",
+      "training",
+      {
+        archetype: oyakata.archetype,
+        mediaEvent: eventId,
+        choice,
+        reasoning: "Scientist responded strategically to minimize impact",
+      },
+      { heyaId: heya.id, importance: "minor" }
+    );
     return builder.build();
   },
 };
@@ -120,12 +135,17 @@ export const GamblerMediaStrategy: MediaStrategy = {
     const choice: "apologize" | "deny" | "ignore" = "deny";
     const builder = createImpactBuilder("GamblerMediaStrategy");
     builder.merge(handleMediaEvent(world, eventId, choice));
-    builder.logEvent("NPC_MANAGER_DECISION", "training", {
-      archetype: oyakata.archetype,
-      mediaEvent: eventId,
-      choice,
-      reasoning: "Gambler denied aggressively to take a risk",
-    }, { heyaId: heya.id, importance: "minor" });
+    builder.logEvent(
+      "NPC_MANAGER_DECISION",
+      "training",
+      {
+        archetype: oyakata.archetype,
+        mediaEvent: eventId,
+        choice,
+        reasoning: "Gambler denied aggressively to take a risk",
+      },
+      { heyaId: heya.id, importance: "minor" }
+    );
     return builder.build();
   },
 };
@@ -135,12 +155,17 @@ export const NurturerMediaStrategy: MediaStrategy = {
     const choice: "apologize" | "deny" | "ignore" = "apologize";
     const builder = createImpactBuilder("NurturerMediaStrategy");
     builder.merge(handleMediaEvent(world, eventId, choice));
-    builder.logEvent("NPC_MANAGER_DECISION", "training", {
-      archetype: oyakata.archetype,
-      mediaEvent: eventId,
-      choice,
-      reasoning: "Nurturer apologized to show empathy and protect rikishi",
-    }, { heyaId: heya.id, importance: "minor" });
+    builder.logEvent(
+      "NPC_MANAGER_DECISION",
+      "training",
+      {
+        archetype: oyakata.archetype,
+        mediaEvent: eventId,
+        choice,
+        reasoning: "Nurturer apologized to show empathy and protect rikishi",
+      },
+      { heyaId: heya.id, importance: "minor" }
+    );
     return builder.build();
   },
 };
@@ -150,12 +175,17 @@ export const TyrantMediaStrategy: MediaStrategy = {
     const choice: "apologize" | "deny" | "ignore" = "deny";
     const builder = createImpactBuilder("TyrantMediaStrategy");
     builder.merge(handleMediaEvent(world, eventId, choice));
-    builder.logEvent("NPC_MANAGER_DECISION", "training", {
-      archetype: oyakata.archetype,
-      mediaEvent: eventId,
-      choice,
-      reasoning: "Tyrant denied to maintain power and authority",
-    }, { heyaId: heya.id, importance: "minor" });
+    builder.logEvent(
+      "NPC_MANAGER_DECISION",
+      "training",
+      {
+        archetype: oyakata.archetype,
+        mediaEvent: eventId,
+        choice,
+        reasoning: "Tyrant denied to maintain power and authority",
+      },
+      { heyaId: heya.id, importance: "minor" }
+    );
     return builder.build();
   },
 };
@@ -165,12 +195,17 @@ export const StrategistMediaStrategy: MediaStrategy = {
     const choice = oyakata.traits.ambition > 70 ? "deny" : "ignore";
     const builder = createImpactBuilder("StrategistMediaStrategy");
     builder.merge(handleMediaEvent(world, eventId, choice));
-    builder.logEvent("NPC_MANAGER_DECISION", "training", {
-      archetype: oyakata.archetype,
-      mediaEvent: eventId,
-      choice,
-      reasoning: "Strategist timed response for optimal outcome",
-    }, { heyaId: heya.id, importance: "minor" });
+    builder.logEvent(
+      "NPC_MANAGER_DECISION",
+      "training",
+      {
+        archetype: oyakata.archetype,
+        mediaEvent: eventId,
+        choice,
+        reasoning: "Strategist timed response for optimal outcome",
+      },
+      { heyaId: heya.id, importance: "minor" }
+    );
     return builder.build();
   },
 };
@@ -180,12 +215,17 @@ export const StrictMediaStrategy: MediaStrategy = {
     const choice: "apologize" | "deny" | "ignore" = "apologize";
     const builder = createImpactBuilder("StrictMediaStrategy");
     builder.merge(handleMediaEvent(world, eventId, choice));
-    builder.logEvent("NPC_MANAGER_DECISION", "training", {
-      archetype: oyakata.archetype,
-      mediaEvent: eventId,
-      choice,
-      reasoning: "Strict apologized to maintain discipline",
-    }, { heyaId: heya.id, importance: "minor" });
+    builder.logEvent(
+      "NPC_MANAGER_DECISION",
+      "training",
+      {
+        archetype: oyakata.archetype,
+        mediaEvent: eventId,
+        choice,
+        reasoning: "Strict apologized to maintain discipline",
+      },
+      { heyaId: heya.id, importance: "minor" }
+    );
     return builder.build();
   },
 };
@@ -195,12 +235,17 @@ export const IndulgentMediaStrategy: MediaStrategy = {
     const choice: "apologize" | "deny" | "ignore" = "ignore";
     const builder = createImpactBuilder("IndulgentMediaStrategy");
     builder.merge(handleMediaEvent(world, eventId, choice));
-    builder.logEvent("NPC_MANAGER_DECISION", "training", {
-      archetype: oyakata.archetype,
-      mediaEvent: eventId,
-      choice,
-      reasoning: "Indulgent ignored media event with lenient approach",
-    }, { heyaId: heya.id, importance: "minor" });
+    builder.logEvent(
+      "NPC_MANAGER_DECISION",
+      "training",
+      {
+        archetype: oyakata.archetype,
+        mediaEvent: eventId,
+        choice,
+        reasoning: "Indulgent ignored media event with lenient approach",
+      },
+      { heyaId: heya.id, importance: "minor" }
+    );
     return builder.build();
   },
 };
