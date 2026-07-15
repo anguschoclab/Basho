@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -113,7 +112,7 @@ export function ActionQueueWidget({ items }: ActionQueueWidgetProps) {
 
   if (visibleItems.length === 0) {
     return (
-      <BaseWidget title="Action Queue" icon={Inbox}>
+      <BaseWidget title="Action Queue" icon={Inbox} className="border border-border/40">
         <EmptyState icon={Inbox} title="No pending actions" compact />
       </BaseWidget>
     );
