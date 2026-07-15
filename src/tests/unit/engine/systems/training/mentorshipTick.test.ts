@@ -68,7 +68,7 @@ describe("applyMentorshipBonuses", () => {
   });
 
   it("clamps technique at MAX_STAT_CEILING and applies the adaptability penalty", () => {
-    const world = makeWorldWithPair({ technique: 90 }, { technique: 98, adaptability: 50 });
+    const world = makeWorldWithPair({ technique: 140 }, { technique: 98, adaptability: 50 });
     const impact = applyMentorshipBonuses(world);
     const update = impact.entities?.rikishiUpdates?.get("apprentice");
     expect(update).toBeDefined();

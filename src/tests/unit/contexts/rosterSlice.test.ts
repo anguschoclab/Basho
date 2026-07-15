@@ -18,7 +18,12 @@ function makeGameStateWithPair(
     [apprentice.id, apprentice],
   ]);
   const heya = makeMockHeya("h1", { rikishiIds: Array.from(rikishi.keys()) });
-  const world = makeMockWorld({ rikishi, heyas: new Map([["h1", heya]]) });
+  const world = makeMockWorld({
+    rikishi,
+    heyas: new Map([["h1", heya]]),
+    lineage: [],
+    rivalriesState: { pairs: {}, version: "1.0.0" } as any,
+  });
 
   return {
     phase: "stable",
