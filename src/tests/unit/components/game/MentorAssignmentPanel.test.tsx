@@ -119,10 +119,10 @@ describe("MentorAssignmentPanel", () => {
     expect(onRemoveMentor).toHaveBeenCalledTimes(1);
   });
 
-  it("shows 'No eligible mentors' helper text when the list is empty", () => {
+  it("shows helper text when no mentors are available", () => {
     const apprentice = makeRikishi("apprentice", { rank: "makushita", division: "makushita" });
     renderPanel({ apprenticeId: "apprentice", roster: [apprentice] });
 
-    expect(screen.getByText(/No eligible mentors/)).not.toBeNull();
+    expect(screen.getByText(/Requires a sekitori in the same heya/)).not.toBeNull();
   });
 });

@@ -67,13 +67,13 @@ describe("applyMentorshipBonuses", () => {
     expect((impact.entities?.rikishiUpdates?.size ?? 0)).toBe(0);
   });
 
-  it("clamps technique and adaptability at MAX_STAT_CEILING", () => {
-    const world = makeWorldWithPair({ technique: 90 }, { technique: 50, adaptability: MAX_STAT_CEILING });
+  it("clamps technique at MAX_STAT_CEILING and applies the adaptability penalty", () => {
+    const world = makeWorldWithPair({ technique: 90 }, { technique: 98, adaptability: 50 });
     const impact = applyMentorshipBonuses(world);
     const update = impact.entities?.rikishiUpdates?.get("apprentice");
     expect(update).toBeDefined();
-    expect((update!.stats as { technique: number }).technique).toBe(52);
-    expect((update!.stats as { adaptability: number }).adaptability).toBe(MAX_STAT_CEILING);
+    expect((update!.stats as { technique: number }).technique).toBe(MAX_STAT_CEILING);
+    expect((update!.stats as { adaptability: number }).adaptability).toBe(49);
   });
 
   it("handles multiple apprentices of the same mentor", () => {
