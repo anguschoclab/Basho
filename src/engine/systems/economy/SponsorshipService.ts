@@ -402,13 +402,20 @@ export function adjustKoenkaiBandToPrestige(world: WorldState): StateImpact {
       // Band upgrade — recruit eligible inactive sponsors (max 2 per basho)
       const gap = targetIdx - currentIdx;
       const addCount = Math.min(gap, 2);
-      const eligible = Array.from(world.sponsorPool?.sponsors.values() ?? []).filter(
-        (s) =>
+
+      // ⚡ Bolt Optimization: Use early-exit loop instead of Array.from().filter().slice() to avoid O(N) allocations
+      const picked: Sponsor[] = [];
+      for (const s of world.sponsorPool?.sponsors.values() ?? []) {
+        if (picked.length >= addCount) break;
+        if (
           !s.active &&
           (s.tier === "T1" || s.tier === "T2" || s.tier === "T3") &&
           !updatedMembers.some((m) => m.sponsorId === s.sponsorId)
-      );
-      const picked = eligible.slice(0, addCount);
+        ) {
+          picked.push(s);
+        }
+      }
+
       for (const sponsor of picked) {
         updatedMembers = [
           ...updatedMembers,

@@ -257,3 +257,8 @@ Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop 
 
 **Learning:** In a codebase obsessed with performance, it is tempting to replace highly readable array chains like `Object.entries(counts).map(...)` on small, static-sized objects (e.g., sumo rank categories) with imperative `for...in` loops. However, this violates the persona's directive against sacrificing readability for unmeasurable micro-optimizations.
 **Action:** Only target unbounded arrays or large datasets for O(N) allocation reductions. When counting elements, replacing `.filter(condition).length` with a `for...of` loop and a counter is a highly effective, targeted optimization that avoids intermediate array creation.
+
+## 2025-05-24 - Optimize array mapping in Koenkai Upgrade
+
+**Learning:** Using `Array.from(world.sponsorPool?.sponsors.values() ?? []).filter(...).slice(...)` creates an unnecessary intermediate O(N) array of all sponsors globally and executes a filter callback on all elements even though only a small slice (e.g. 2 items) are needed. This wastes cycles and strains GC.
+**Action:** Replace `Array.from().filter().slice()` pattern with a direct `for...of` iteration on the `.values()` iterator. Combine the condition internally and `break` out of the loop early once the required number of items is reached.
