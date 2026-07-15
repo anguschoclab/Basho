@@ -5,8 +5,8 @@ import type { Rikishi } from "./types/rikishi";
 import type { Id } from "./types/common";
 import { getRivalry, makeRivalryKey } from "./rivalries";
 import { getHeya, getRikishi } from "./queries";
-import { RANK_HIERARCHY } from "./types/banzuke";
 import type { Heya } from "./types/heya";
+import { MentorshipService } from "./systems/training/MentorshipService";
 import type { HistoricalOyakata, OyakataAchievements } from "./types/history";
 
 export interface LineageEdge {
@@ -36,23 +36,10 @@ export function assignMentor(
   const mentor = getRikishi(world, mentorId);
   if (!mentee || !mentor) return { ok: false, reason: "Invalid mentor or mentee." };
 
-  // Eligibility checks
-  if (mentor.heyaId !== mentee.heyaId) {
-    return { ok: false, reason: "Mentor and mentee must belong to the same heya." };
-  }
-  const mentorRank = RANK_HIERARCHY[mentor.rank];
-  if (!mentorRank?.isSekitori) {
-    return { ok: false, reason: "Mentor must be a sekitori." };
-  }
-  const menteeRank = RANK_HIERARCHY[mentee.rank];
-  if (menteeRank?.isSekitori) {
-    return { ok: false, reason: "Mentee must not be a sekitori." };
-  }
-  if (mentor.injured || mentor.isRetired) {
-    return { ok: false, reason: "Mentor must be active." };
-  }
-  if (mentee.isRetired) {
-    return { ok: false, reason: "Mentee must be active." };
+  // Eligibility check is delegated to the canonical MentorshipService so UI and
+  // engine share the same rules.
+  if (!MentorshipService.canMentor(mentor, mentee)) {
+    return { ok: false, reason: "Ineligible mentorship pair." };
   }
 
   const builder = createImpactBuilder("assignMentor");
