@@ -7,11 +7,17 @@ import {
   calculateFatigueDelta,
   getCareerPhase,
   calculateGains,
-  calculateGrowthVector
+  calculateGrowthVector,
 } from "@/engine/systems/training/TrainingMath";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { TrainingProfile } from "@/engine/types/training";
-import { MAX_STAT_CEILING, MIN_STAT_CEILING, ROOKIE_EXPERIENCE_THRESHOLD, PRIME_EXPERIENCE_THRESHOLD, VETERAN_EXPERIENCE_THRESHOLD } from "@/constants/engine/training";
+import {
+  MAX_STAT_CEILING,
+  MIN_STAT_CEILING,
+  ROOKIE_EXPERIENCE_THRESHOLD,
+  PRIME_EXPERIENCE_THRESHOLD,
+  VETERAN_EXPERIENCE_THRESHOLD,
+} from "@/constants/engine/training";
 
 describe("TrainingMath", () => {
   describe("getStatCeiling", () => {
@@ -40,8 +46,8 @@ describe("TrainingMath", () => {
           stats: { power: 80 } as any,
           ceilingFraction: 0.8,
           developmentSpeed: 1,
-          peakAgeOffset: 0
-        }
+          peakAgeOffset: 0,
+        },
       });
 
       const world = MockFactory.createWorld({ year: 2025 });
@@ -54,7 +60,7 @@ describe("TrainingMath", () => {
 
     it("should fall back to getStatCeiling if potential not defined", () => {
       const r = MockFactory.createRikishi("r1", {
-        talentSeed: 50
+        talentSeed: 50,
       });
       // Clear potential
       delete r.potential;
@@ -77,7 +83,12 @@ describe("TrainingMath", () => {
     });
 
     it("should preserve valid fields", () => {
-      const p = normalizeTrainingProfile({ intensity: "punishing", focus: "power", recovery: "low", styleBias: "oshi" });
+      const p = normalizeTrainingProfile({
+        intensity: "punishing",
+        focus: "power",
+        recovery: "low",
+        styleBias: "oshi",
+      });
       expect(p.intensity).toBe("punishing");
       expect(p.focus).toBe("power");
       expect(p.recovery).toBe("low");
@@ -85,7 +96,12 @@ describe("TrainingMath", () => {
     });
 
     it("should overwrite invalid fields with safe defaults", () => {
-      const p = normalizeTrainingProfile({ intensity: "fake", focus: "fake", recovery: "fake", styleBias: "fake" } as any);
+      const p = normalizeTrainingProfile({
+        intensity: "fake",
+        focus: "fake",
+        recovery: "fake",
+        styleBias: "fake",
+      } as any);
       expect(p.intensity).toBe("balanced");
       expect(p.focus).toBe("neutral");
       expect(p.recovery).toBe("normal");
@@ -95,12 +111,18 @@ describe("TrainingMath", () => {
 
   describe("calculateFatigueDelta", () => {
     it("should calculate correctly for high intensity / low recovery", () => {
-      const delta = calculateFatigueDelta({ intensity: "punishing", recovery: "low", focus: "neutral", styleBias: "neutral" }, undefined);
+      const delta = calculateFatigueDelta(
+        { intensity: "punishing", recovery: "low", focus: "neutral", styleBias: "neutral" },
+        undefined
+      );
       expect(delta).toBe(8);
     });
 
     it("should calculate correctly for low intensity / high recovery", () => {
-      const delta = calculateFatigueDelta({ intensity: "conservative", recovery: "high", focus: "neutral", styleBias: "neutral" }, undefined);
+      const delta = calculateFatigueDelta(
+        { intensity: "conservative", recovery: "high", focus: "neutral", styleBias: "neutral" },
+        undefined
+      );
       expect(delta).toBe(-3);
     });
 
@@ -158,7 +180,11 @@ describe("TrainingMath", () => {
 
     it("with trainingMultiplier 1.0 produces baseline gains", () => {
       const r = MockFactory.createRikishi("r1", { stats: { experience: 50 } as any });
-      const gains = calculateGains(r, { trainingMultiplier: 1.0, recoveryMultiplier: 1.0 } as any, baseProfile);
+      const gains = calculateGains(
+        r,
+        { trainingMultiplier: 1.0, recoveryMultiplier: 1.0 } as any,
+        baseProfile
+      );
       // Gains should be positive for a mid-career rikishi
       const totalGains = Object.values(gains).reduce((a, b) => a + b, 0);
       expect(totalGains).toBeGreaterThan(0);
@@ -166,8 +192,16 @@ describe("TrainingMath", () => {
 
     it("with trainingMultiplier 1.5 produces 1.5x baseline gains", () => {
       const r = MockFactory.createRikishi("r1", { stats: { experience: 50 } as any });
-      const baseline = calculateGains(r, { trainingMultiplier: 1.0, recoveryMultiplier: 1.0 } as any, baseProfile);
-      const boosted = calculateGains(r, { trainingMultiplier: 1.5, recoveryMultiplier: 1.0 } as any, baseProfile);
+      const baseline = calculateGains(
+        r,
+        { trainingMultiplier: 1.0, recoveryMultiplier: 1.0 } as any,
+        baseProfile
+      );
+      const boosted = calculateGains(
+        r,
+        { trainingMultiplier: 1.5, recoveryMultiplier: 1.0 } as any,
+        baseProfile
+      );
       for (const key of Object.keys(baseline) as Array<keyof typeof baseline>) {
         if (baseline[key] !== 0) {
           expect(boosted[key]).toBeCloseTo(baseline[key] * 1.5, 5);
@@ -177,8 +211,16 @@ describe("TrainingMath", () => {
 
     it("with trainingMultiplier 0.5 produces 0.5x baseline gains", () => {
       const r = MockFactory.createRikishi("r1", { stats: { experience: 50 } as any });
-      const baseline = calculateGains(r, { trainingMultiplier: 1.0, recoveryMultiplier: 1.0 } as any, baseProfile);
-      const halved = calculateGains(r, { trainingMultiplier: 0.5, recoveryMultiplier: 1.0 } as any, baseProfile);
+      const baseline = calculateGains(
+        r,
+        { trainingMultiplier: 1.0, recoveryMultiplier: 1.0 } as any,
+        baseProfile
+      );
+      const halved = calculateGains(
+        r,
+        { trainingMultiplier: 0.5, recoveryMultiplier: 1.0 } as any,
+        baseProfile
+      );
       for (const key of Object.keys(baseline) as Array<keyof typeof baseline>) {
         if (baseline[key] !== 0) {
           expect(halved[key]).toBeCloseTo(baseline[key] * 0.5, 5);
@@ -197,8 +239,12 @@ describe("TrainingMath", () => {
 
     it("with facilities.training 100 produces higher growth than facilities.training 0", () => {
       const r = MockFactory.createRikishi("r1", { stats: { experience: 50 } as any });
-      const heyaLow = MockFactory.createHeya("h1", { facilities: { training: 0, recovery: 50, nutrition: 50 } as any });
-      const heyaHigh = MockFactory.createHeya("h2", { facilities: { training: 100, recovery: 50, nutrition: 50 } as any });
+      const heyaLow = MockFactory.createHeya("h1", {
+        facilities: { training: 0, recovery: 50, nutrition: 50 } as any,
+      });
+      const heyaHigh = MockFactory.createHeya("h2", {
+        facilities: { training: 100, recovery: 50, nutrition: 50 } as any,
+      });
 
       const lowGrowth = calculateGrowthVector(baseProfile, undefined, r, heyaLow);
       const highGrowth = calculateGrowthVector(baseProfile, undefined, r, heyaHigh);
@@ -210,20 +256,34 @@ describe("TrainingMath", () => {
 
     it("with rivalry heat >= 80 produces lower growth than no rivalry", () => {
       const r = MockFactory.createRikishi("r1", { stats: { experience: 50 } as any });
-      const heya = MockFactory.createHeya("h1", { facilities: { training: 50, recovery: 50, nutrition: 50 } as any });
+      const heya = MockFactory.createHeya("h1", {
+        facilities: { training: 50, recovery: 50, nutrition: 50 } as any,
+      });
 
       const worldNoRivalry = MockFactory.createWorld();
       const worldWithRivalry = MockFactory.createWorld({
         rivalriesState: {
           pairs: {},
           heyaRivalryPairs: {
-            "h1_h2": { heyaAId: "h1", heyaBId: "h2", heat: 90 },
+            h1_h2: { heyaAId: "h1", heyaBId: "h2", heat: 90 },
           },
         } as any,
       });
 
-      const noRivalryGrowth = calculateGrowthVector(baseProfile, undefined, r, heya, worldNoRivalry);
-      const rivalryGrowth = calculateGrowthVector(baseProfile, undefined, r, heya, worldWithRivalry);
+      const noRivalryGrowth = calculateGrowthVector(
+        baseProfile,
+        undefined,
+        r,
+        heya,
+        worldNoRivalry
+      );
+      const rivalryGrowth = calculateGrowthVector(
+        baseProfile,
+        undefined,
+        r,
+        heya,
+        worldWithRivalry
+      );
 
       const noRivalryTotal = Object.values(noRivalryGrowth).reduce((a, b) => a + b, 0);
       const rivalryTotal = Object.values(rivalryGrowth).reduce((a, b) => a + b, 0);

@@ -645,9 +645,7 @@ describe("ImpactBuilder", () => {
   describe("updateWorldField — lineage support", () => {
     it("should accept lineage field without as any cast", () => {
       const builder = new ImpactBuilder("test_source");
-      const edges = [
-        { mentorId: "r1", menteeId: "r2", sinceYear: 2025, sinceWeek: 1 },
-      ];
+      const edges = [{ mentorId: "r1", menteeId: "r2", sinceYear: 2025, sinceWeek: 1 }];
       builder.updateWorldField("lineage", edges);
 
       const impact = builder.build();
@@ -655,9 +653,7 @@ describe("ImpactBuilder", () => {
     });
 
     it("updateWorldFieldImpact should accept lineage field", () => {
-      const edges = [
-        { mentorId: "r1", menteeId: "r2", sinceYear: 2025, sinceWeek: 1 },
-      ];
+      const edges = [{ mentorId: "r1", menteeId: "r2", sinceYear: 2025, sinceWeek: 1 }];
       const impact = updateWorldFieldImpact("lineage", edges, "test_source");
 
       expect(impact.worldFields?.lineage).toEqual(edges);

@@ -1349,22 +1349,34 @@
         "scandal": [
           "Scandal Rocks %HEYA%: Authorities Investigate",
           "Controversy Erupts as %HEYA% Faces Allegations",
-          "Governance Storm: %HEYA% Under Scrutiny"
+          "Governance Storm: %HEYA% Under Scrutiny",
+          "Damaging Allegations Cast a Shadow Over %HEYA%",
+          "Misconduct Claims Put %HEYA% on the Defensive",
+          "Shockwaves in the Sumo World: %HEYA% Engulfed in Controversy"
         ],
         "status_escalation": [
           "Crisis Deepens at %HEYA%: Regulatory Status Escalates",
           "%HEYA% Governance Worsens — Officials Intervene",
-          "Escalation at %HEYA%: The Situation Deteriorates"
+          "Escalation at %HEYA%: The Situation Deteriorates",
+          "Patience Wearing Thin: Association Steps Up Pressure on %HEYA%",
+          "Situation Worsens Dramatically at %HEYA%",
+          "%HEYA% Fails to Stem the Tide as Regulatory Action Intensifies"
         ],
         "low_roster_headline": [
           "Roster Crisis at %HEYA%: Too Few Rikishi to Sustain Operations",
           "%HEYA% Faces Existential Threat as Ranks Dwindle",
-          "Governance Warning: %HEYA% Cannot Maintain Minimum Roster"
+          "Governance Warning: %HEYA% Cannot Maintain Minimum Roster",
+          "Empty Mats: Severe Shortage of Personnel Threatens %HEYA%",
+          "Critical Depletion: %HEYA% Struggles to Field Enough Recruits",
+          "Survival in Question as Numbers Plummet at %HEYA%"
         ],
         "welfare_headline": [
           "Welfare Concerns Mount at %HEYA%",
           "%HEYA% Under Review for Wrestler Welfare Standards",
-          "Officials Cite %HEYA% for Welfare Violations"
+          "Officials Cite %HEYA% for Welfare Violations",
+          "Training Standards Questioned as Spotlight Turns to %HEYA%",
+          "Unsettling Reports from %HEYA% Draw Association Scrutiny",
+          "Wrestler Well-Being Becomes Focal Point of Crisis at %HEYA%"
         ],
         "sanction": [
           "Sanctions Levied Against %HEYA% by the Association",

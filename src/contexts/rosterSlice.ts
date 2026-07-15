@@ -1,5 +1,6 @@
 import type { GameState, GameAction } from "./gameTypes";
-import { assignMentor, removeMentor } from "@/engine/systems/training/MentorshipService";
+import { assignMentor } from "@/engine/lineage";
+import { removeMentor } from "@/engine/systems/training/MentorshipService";
 import { assignSparringPair, removeSparringPair } from "@/engine/systems/training/SparringService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 
@@ -17,10 +18,11 @@ export function rosterSlice(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case "ASSIGN_MENTOR": {
       if (!state.world) return state;
-      const assignImpact = assignMentor(state.world, action.mentorId, action.apprenticeId);
+      const { ok, impact } = assignMentor(state.world, action.apprenticeId, action.mentorId);
+      if (!ok || !impact) return state;
       return {
         ...state,
-        world: resolveImpacts(state.world, [assignImpact]),
+        world: resolveImpacts(state.world, [impact]),
       };
     }
     case "REMOVE_MENTOR": {

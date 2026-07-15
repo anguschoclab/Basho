@@ -6,6 +6,7 @@ import type { Id } from "./types/common";
 import { getRivalry, makeRivalryKey } from "./rivalries";
 import { getHeya, getRikishi } from "./queries";
 import type { Heya } from "./types/heya";
+import { MentorshipService } from "./systems/training/MentorshipService";
 import type { HistoricalOyakata, OyakataAchievements } from "./types/history";
 
 export interface LineageEdge {
@@ -34,6 +35,12 @@ export function assignMentor(
   const mentee = getRikishi(world, menteeId);
   const mentor = getRikishi(world, mentorId);
   if (!mentee || !mentor) return { ok: false, reason: "Invalid mentor or mentee." };
+
+  // Eligibility check is delegated to the canonical MentorshipService so UI and
+  // engine share the same rules.
+  if (!MentorshipService.canMentor(mentor, mentee)) {
+    return { ok: false, reason: "Ineligible mentorship pair." };
+  }
 
   const builder = createImpactBuilder("assignMentor");
   let currentLineage = [...ensureLineage(world)];

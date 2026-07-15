@@ -22,15 +22,21 @@ import type { Staff } from "../types/staff";
 import type { StateImpact } from "./StateImpact";
 import { createEmptyImpact, getNextTimestamp } from "./StateImpact";
 
-type ArrayAppendItem<K extends string> =
-  K extends "history" ? import("../types/basho").BashoResult[] :
-  K extends "almanacSnapshots" ? import("../almanac/types").AlmanacSnapshot[] :
-  K extends "basho.matches" ? import("../types/basho").MatchSchedule[] :
-  K extends "governanceLog" ? import("../types/economy").GovernanceRuling[] :
-  K extends "awardLog" ? import("../types/basho").AwardLogEntry[] :
-  K extends "myosekiMarket.history" ? MyosekiTransaction[] :
-  K extends "pendingExhibitions" ? unknown[] :
-  never;
+type ArrayAppendItem<K extends string> = K extends "history"
+  ? import("../types/basho").BashoResult[]
+  : K extends "almanacSnapshots"
+    ? import("../almanac/types").AlmanacSnapshot[]
+    : K extends "basho.matches"
+      ? import("../types/basho").MatchSchedule[]
+      : K extends "governanceLog"
+        ? import("../types/economy").GovernanceRuling[]
+        : K extends "awardLog"
+          ? import("../types/basho").AwardLogEntry[]
+          : K extends "myosekiMarket.history"
+            ? MyosekiTransaction[]
+            : K extends "pendingExhibitions"
+              ? unknown[]
+              : never;
 
 /**
  * Deep merge two objects, handling nested structures.

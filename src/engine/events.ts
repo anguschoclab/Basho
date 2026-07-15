@@ -70,7 +70,14 @@ interface LogEngineEventParams {
 }
 
 /**
- * Log engine event.
+ * Log an engine event.
+ *
+ * CONTRACT: This function MUTATES `world.events` directly.
+ * Do NOT call this function (or `EventBus` methods) directly from inside pure simulation phases.
+ * Instead, simulation phases must push event definitions to `StateImpact.events`,
+ * which will be applied atomically by `ImpactResolver`.
+ *
+ * This function also relies on `world.dayIndexGlobal` to scope deduplication.
  */
 export function logEngineEvent(world: WorldState, params: LogEngineEventParams): EngineEvent {
   const events = ensureEventsState(world);

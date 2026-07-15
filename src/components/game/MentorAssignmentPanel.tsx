@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { UserMinus, GraduationCap } from "lucide-react";
 import type { Rikishi } from "@/engine/types/rikishi";
+import { MentorshipService } from "@/engine/systems/training/MentorshipService";
 
 /**
  * Props for MentorAssignmentPanel component.
@@ -38,18 +39,6 @@ export interface MentorAssignmentPanelProps {
   /** Callback when a mentor is removed. */
   onRemoveMentor: () => void;
 }
-
-/**
- * Minimum ranks required for mentor eligibility.
- */
-const MENTOR_MIN_RANKS = new Set([
-  "juryo",
-  "maegashira",
-  "komusubi",
-  "sekiwake",
-  "ozeki",
-  "yokozuna",
-]);
 
 /**
  * MentorAssignmentPanel component.
@@ -81,25 +70,23 @@ export function MentorAssignmentPanel({
 }: MentorAssignmentPanelProps): JSX.Element {
   /**
    * Filter eligible mentors from the heya roster.
-   * Mentors must be sekitori, in the same heya, and not injured/retired.
+   * Uses MentorshipService.canMentor so the UI and engine share one source of truth.
    */
+  const apprentice = useMemo(
+    () => roster.find((r) => r.id === apprenticeId),
+    [roster, apprenticeId]
+  );
+
   const eligibleMentors = useMemo(() => {
-    const results = [];
-    // ⚡ Bolt Optimization: Replace Array.from().filter() with direct for...of loop over cached roster
+    const results: Rikishi[] = [];
+    if (!apprentice) return results;
     for (const r of roster) {
-      // Must be sekitori
-      if (!MENTOR_MIN_RANKS.has(r.rank)) continue;
-
-      // Cannot be the apprentice
-      if (r.id === apprenticeId) continue;
-
-      // Must be active (not injured or retired)
-      if (r.injured || r.isRetired === true) continue;
-
-      results.push(r);
+      if (MentorshipService.canMentor(r, apprentice)) {
+        results.push(r);
+      }
     }
     return results;
-  }, [roster, apprenticeId]);
+  }, [roster, apprentice]);
 
   /**
    * Get the current mentor rikishi object.

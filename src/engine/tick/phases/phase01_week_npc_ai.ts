@@ -12,6 +12,7 @@
 
 import type { WorldState } from "../../types/world";
 import type { Id } from "../../types/common";
+import type { Heya } from "../../types/heya";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { getAvailableStables } from "../../selectors";
@@ -27,6 +28,10 @@ import {
   collectStrategyShiftEvents,
 } from "./npc_ai";
 import { ensurePersonaForOyakata } from "../../systems/NPCPersonaService";
+import { getRikishi } from "../../queries";
+import { assignMentor } from "../../lineage";
+import { MentorshipService } from "../../systems/training/MentorshipService";
+import { RANK_HIERARCHY } from "../../types/banzuke";
 
 export function phase01_week_npc_ai(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_npc_ai");
@@ -65,6 +70,8 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
       }
 
       builder.updateOyakata(nextOya.id, nextOya);
+
+      maybeAssignNPCMentors(world, heya, builder);
     }
   }
 
@@ -73,4 +80,52 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
   builder.merge(enforceHardCapRosterOverflow(world));
 
   return builder.build();
+}
+
+/**
+ * Auto-assign mentors for non-player heya.
+ * Uses the same canonical eligibility and lineage path as the player UI.
+ */
+function maybeAssignNPCMentors(
+  world: WorldState,
+  heya: Heya,
+  builder: ReturnType<typeof createImpactBuilder>
+): void {
+  const members: import("../../types/rikishi").Rikishi[] = [];
+  for (const id of heya.rikishiIds ?? []) {
+    const r = getRikishi(world, id);
+    if (r) members.push(r);
+  }
+
+  const active = members.filter((r) => !r.isRetired && !r.injured);
+  const apprentices = active.filter((r) => !r.mentorId && !RANK_HIERARCHY[r.rank]?.isSekitori);
+
+  if (apprentices.length === 0) return;
+
+  const mentors = active;
+
+  for (const apprentice of apprentices) {
+    const validMentors = mentors
+      .filter((m) => m.id !== apprentice.id && MentorshipService.canMentor(m, apprentice))
+      .sort((a, b) => b.stats.technique - a.stats.technique);
+
+    if (validMentors.length === 0) continue;
+
+    const mentor = validMentors[0];
+    const result = assignMentor(world, apprentice.id, mentor.id);
+    if (result.ok && result.impact) {
+      builder.merge(result.impact);
+      builder.logEvent(
+        "LIFECYCLE_EVENT",
+        "narrative",
+        {
+          rikishiId: apprentice.id,
+          heyaId: heya.id,
+          status: "mentor_assigned",
+          mentorId: mentor.id,
+        },
+        { rikishiId: apprentice.id, heyaId: heya.id }
+      );
+    }
+  }
 }

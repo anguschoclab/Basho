@@ -142,12 +142,7 @@ export function FinancialTrendsChart({
   );
 
   // Count non-zero weeks to decide if we have enough history.
-  // ⚡ Bolt Optimization: Use a direct for...of loop instead of .filter().length to avoid intermediate O(N) array allocation
-  let nonEmptyWeeks = 0;
-  for (const b of chartData) {
-    if (b.income > 0 || b.burn > 0) nonEmptyWeeks++;
-  }
-  const hasEnoughData = ledger.length >= 3 && nonEmptyWeeks >= 1;
+  const hasEnoughData = ledger.length >= 3 && chartData.some((b) => b.income > 0 || b.burn > 0);
 
   return (
     <Card className="paper">

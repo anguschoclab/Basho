@@ -62,6 +62,30 @@ const DRILL_ICONS: Record<DrillType, React.ReactNode> = {
   none: <Coffee className="h-3 w-3" />,
 };
 
+// ⚡ Bolt Optimization: Pre-compute drill select options once outside the component
+// using a for...in loop. This prevents creating new arrays and React elements
+// 6 times per Rikishi on every render cycle.
+const DRILL_OPTIONS_BATCH: React.ReactNode[] = [];
+const DRILL_OPTIONS_CELL: React.ReactNode[] = [];
+for (const key in DRILL_METADATA) {
+  if (Object.prototype.hasOwnProperty.call(DRILL_METADATA, key)) {
+    const m = DRILL_METADATA[key];
+    DRILL_OPTIONS_BATCH.push(
+      <SelectItem key={key} value={key} className="text-[10px] uppercase font-black">
+        {m.label}
+      </SelectItem>
+    );
+    DRILL_OPTIONS_CELL.push(
+      <SelectItem key={key} value={key} className="text-[10px] uppercase font-black">
+        <div className="flex items-center gap-2">
+          {DRILL_ICONS[key as DrillType]}
+          <span>{m.label}</span>
+        </div>
+      </SelectItem>
+    );
+  }
+}
+
 export function WeeklyDrillPlanner({
   rikishiList,
   weeklyPlan,
@@ -185,13 +209,7 @@ export function WeeklyDrillPlanner({
               <SelectTrigger className="w-40 bg-white/10 border-white/20 h-8 text-[10px] font-bold uppercase">
                 <SelectValue placeholder="Select Drill..." />
               </SelectTrigger>
-              <SelectContent>
-                {Object.entries(DRILL_METADATA).map(([key, m]) => (
-                  <SelectItem key={key} value={key} className="text-[10px] uppercase font-black">
-                    {m.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
+              <SelectContent>{DRILL_OPTIONS_BATCH}</SelectContent>
             </Select>
           </div>
           <Button
@@ -319,20 +337,7 @@ export function WeeklyDrillPlanner({
                           {meta.label}
                         </span>
                       </SelectTrigger>
-                      <SelectContent>
-                        {Object.entries(DRILL_METADATA).map(([key, m]) => (
-                          <SelectItem
-                            key={key}
-                            value={key}
-                            className="text-[10px] uppercase font-black"
-                          >
-                            <div className="flex items-center gap-2">
-                              {DRILL_ICONS[key as DrillType]}
-                              <span>{m.label}</span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
+                      <SelectContent>{DRILL_OPTIONS_CELL}</SelectContent>
                     </Select>
                   </div>
                 );

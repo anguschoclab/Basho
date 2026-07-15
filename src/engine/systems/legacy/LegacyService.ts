@@ -145,8 +145,16 @@ export const LegacyService = {
   applyLegacyTrait(candidateStats: RikishiStats, trait: BloodlineTrait): RikishiStats {
     const boosted = { ...candidateStats } as unknown as Record<string, number>;
     const numericKeys = new Set([
-      "power", "technique", "speed", "weight", "stamina",
-      "mental", "adaptability", "balance", "aggression", "experience",
+      "power",
+      "technique",
+      "speed",
+      "weight",
+      "stamina",
+      "mental",
+      "adaptability",
+      "balance",
+      "aggression",
+      "experience",
     ]);
 
     // Apply Floor Bonuses
@@ -166,15 +174,7 @@ export const LegacyService = {
   },
 
   findPeakStat(stats: Partial<Record<string, number>>): string {
-    const keys = [
-      "power",
-      "technique",
-      "speed",
-      "stamina",
-      "mental",
-      "adaptability",
-      "balance",
-    ];
+    const keys = ["power", "technique", "speed", "stamina", "mental", "adaptability", "balance"];
     let peak = "technique";
     let peakVal = -1;
     for (const key of keys) {

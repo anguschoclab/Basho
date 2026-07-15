@@ -25,21 +25,10 @@ import {
   MENTORSHIP_MAX_BLEED,
   MENTORSHIP_BLEED_THRESHOLD,
   MENTORSHIP_BLEED_SCALE,
+  MAX_STAT_CEILING,
 } from "../../../constants/engine/training";
 import { getRikishi } from "../../queries";
-
-/**
- * Minimum ranks required for a rikishi to be eligible as a mentor.
- * Only sekitori (juryo and above) can mentor lower-division wrestlers.
- */
-const MENTOR_MIN_RANKS = new Set([
-  "juryo",
-  "maegashira",
-  "komusubi",
-  "sekiwake",
-  "ozeki",
-  "yokozuna",
-]);
+import { RANK_HIERARCHY } from "../../types/banzuke";
 
 /**
  * Maximum technique points that can bleed from mentor to apprentice per week.
@@ -80,6 +69,7 @@ export const MentorshipService = {
    * Eligibility criteria:
    * - Both must be in the same heya
    * - Mentor must be sekitori (juryo or above)
+   * - Apprentice must be non-sekitori
    * - Mentor and apprentice must be different rikishi
    * - Mentor must not be injured or retired
    * - Apprentice must not be retired
@@ -96,20 +86,21 @@ export const MentorshipService = {
    * ```
    */
   canMentor(mentor: Rikishi, apprentice: Rikishi): boolean {
-    // Must be in the same heya
-    if (mentor.heyaId !== apprentice.heyaId) return false;
-
-    // Mentor must be sekitori
-    if (!MENTOR_MIN_RANKS.has(mentor.rank)) return false;
-
     // Cannot mentor oneself
     if (mentor.id === apprentice.id) return false;
+
+    // Must be in the same heya
+    if (mentor.heyaId !== apprentice.heyaId) return false;
 
     // Mentor must be active (not injured or retired)
     if (mentor.injured || mentor.isRetired) return false;
 
     // Apprentice must not be retired
     if (apprentice.isRetired) return false;
+
+    // Mentor must be sekitori and apprentice must be non-sekitori
+    if (!RANK_HIERARCHY[mentor.rank]?.isSekitori) return false;
+    if (RANK_HIERARCHY[apprentice.rank]?.isSekitori) return false;
 
     return true;
   },
@@ -176,7 +167,7 @@ export const MentorshipService = {
    * ```
    */
   calculateAdaptabilityPenalty(mentor: Rikishi, apprentice: Rikishi): number {
-    if (!this.canMentor(mentor, apprentice)) return 0;
+    if (!MentorshipService.canMentor(mentor, apprentice)) return 0;
 
     const gap = mentor.stats.technique - apprentice.stats.technique;
     if (gap < BLEED_THRESHOLD) return 0;
@@ -259,60 +250,15 @@ export function applyMentorshipBonuses(world: WorldState): StateImpact {
     builder.updateRikishi(apprentice.id, {
       stats: {
         ...apprentice.stats,
-        technique: clamp(apprentice.stats.technique + techniqueBleed, 0, 99),
-        adaptability: clamp(apprentice.stats.adaptability + adaptabilityPenalty, 0, 99),
+        technique: clamp(apprentice.stats.technique + techniqueBleed, 0, MAX_STAT_CEILING),
+        adaptability: clamp(
+          apprentice.stats.adaptability + adaptabilityPenalty,
+          0,
+          MAX_STAT_CEILING
+        ),
       },
     });
   }
-
-  return builder.build();
-}
-
-/**
- * Assigns a mentor to an apprentice.
- *
- * This function validates the mentorship eligibility and, if valid, returns a
- * StateImpact that sets the apprentice's mentorId and adds the apprentice to
- * the mentor's menteeIds array.
- *
- * @param {WorldState} world - The current world state.
- * @param {string} mentorId - The mentor's rikishi ID.
- * @param {string} apprenticeId - The apprentice's rikishi ID.
- * @returns {StateImpact} Impact describing mentorship assignment.
- *
- * @example
- * ```ts
- * const mentor = mockRikishi("m1", { rank: "ozeki", heyaId: "h1" });
- * const apprentice = mockRikishi("a1", { rank: "jonokuchi", heyaId: "h1" });
- * const world = makeMockWorld({ rikishi: new Map([[mentor.id, mentor], [apprentice.id, apprentice]]) });
- *
- * const impact = assignMentor(world, mentor.id, apprentice.id);
- * const appUpdate = impact.entities?.rikishiUpdates?.get(apprentice.id);
- * expect(appUpdate?.mentorId).toBe(mentor.id);
- * ```
- */
-export function assignMentor(
-  world: WorldState,
-  mentorId: string,
-  apprenticeId: string
-): StateImpact {
-  const builder = createImpactBuilder("assignMentor");
-  const mentor = getRikishi(world, mentorId);
-  const apprentice = getRikishi(world, apprenticeId);
-
-  // Validate both rikishi exist
-  if (!mentor || !apprentice) return builder.build();
-
-  // Validate eligibility
-  if (!MentorshipService.canMentor(mentor, apprentice)) return builder.build();
-
-  // Set mentorId on apprentice
-  builder.updateRikishi(apprenticeId, { mentorId });
-
-  // Add apprentice to mentor's menteeIds (with null safety)
-  builder.updateRikishi(mentorId, {
-    menteeIds: [...(mentor.menteeIds ?? []), apprenticeId],
-  });
 
   return builder.build();
 }

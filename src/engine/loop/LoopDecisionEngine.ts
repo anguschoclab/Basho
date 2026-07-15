@@ -7,7 +7,12 @@ import type { WorldState } from "../types/world";
 import { createImpactBuilder, type ImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 import { issueBailoutLoanIfNeeded } from "../loans";
-import type { TrainingIntensity, TrainingFocus, StyleBias, RecoveryEmphasis } from "../types/training";
+import type {
+  TrainingIntensity,
+  TrainingFocus,
+  StyleBias,
+  RecoveryEmphasis,
+} from "../types/training";
 import type { DietRegimen } from "../types/economy";
 
 export interface LoopDecision {
@@ -269,7 +274,14 @@ export function applyDecisionEffect(
     if (optionId === "loan") builder.merge(issueBailoutLoanIfNeeded(world, heya.id));
     else if (optionId === "austerity")
       builder.updateHeya(heya.id, {
-        welfareState: { ...(heya.welfareState ?? { welfareRisk: 0, complianceState: "compliant", weeksInState: 0 }), activeDiet: "austerity" },
+        welfareState: {
+          ...(heya.welfareState ?? {
+            welfareRisk: 0,
+            complianceState: "compliant",
+            weeksInState: 0,
+          }),
+          activeDiet: "austerity",
+        },
       });
   }
   if (
@@ -280,7 +292,10 @@ export function applyDecisionEffect(
   }
   if (decisionType === "welfare_diet" && (optionId === "premium" || optionId === "maintenance")) {
     builder.updateHeya(heya.id, {
-      welfareState: { ...(heya.welfareState ?? { welfareRisk: 0, complianceState: "compliant", weeksInState: 0 }), activeDiet: optionId },
+      welfareState: {
+        ...(heya.welfareState ?? { welfareRisk: 0, complianceState: "compliant", weeksInState: 0 }),
+        activeDiet: optionId,
+      },
     });
   }
   if (decisionType === "kyujo_decision" && decisionId) {
@@ -471,7 +486,14 @@ export function applyExpiredQueueDefaults(world: WorldState): StateImpact {
       setTrainingIntensity(builder, world, heya.id, def);
     } else if (d.type === "welfare_diet") {
       builder.updateHeya(heya.id, {
-        welfareState: { ...(heya.welfareState ?? { welfareRisk: 0, complianceState: "compliant", weeksInState: 0 }), activeDiet: def as DietRegimen },
+        welfareState: {
+          ...(heya.welfareState ?? {
+            welfareRisk: 0,
+            complianceState: "compliant",
+            weeksInState: 0,
+          }),
+          activeDiet: def as DietRegimen,
+        },
       });
     }
   }

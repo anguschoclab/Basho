@@ -50,12 +50,17 @@ export function handleInsolvency(heya: Heya, world: WorldState): StateImpact {
 
   if (benefactor) {
     builder.updateHeya(heya.id, { funds: heya.funds + BENEFACTOR_BAILOUT_AMOUNT });
-    builder.logEvent("FINANCIAL_ALERT", "economy", {
-      heyaname: heya.name,
-      incident: "bailout",
-      money: BENEFACTOR_BAILOUT_AMOUNT,
-      sponsor: benefactor.displayName,
-    }, { heyaId: heya.id, importance: "major" });
+    builder.logEvent(
+      "FINANCIAL_ALERT",
+      "economy",
+      {
+        heyaname: heya.name,
+        incident: "bailout",
+        money: BENEFACTOR_BAILOUT_AMOUNT,
+        sponsor: benefactor.displayName,
+      },
+      { heyaId: heya.id, importance: "major" }
+    );
   } else if (heya.governanceStatus !== "sanctioned") {
     builder.merge(reportScandal(world, heya.id, "major", "Severe Insolvency / Debt Limit Breach"));
     // Cap debt so math doesn't spiral into infinity

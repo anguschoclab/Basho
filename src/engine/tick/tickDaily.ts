@@ -1,25 +1,18 @@
 /**
  * dailyTick.ts
- * =======
- * Canon Daily Tick Pipeline (A3.1 / A4.1)
+ * ============
+ * Canon Daily Tick Orchestrator
  *
- * Implements the authoritative AdvanceOneDay() pipeline from the
- * Basho Constitution v1.2. Each day tick runs a deterministic,
- * ordered sequence of subsystem updates.
- *
- * Tick granularity per constitution:
- *   - Basho phase: 15 daily ticks (combat days)
- *   - Inter-basho: 6 weekly ticks (each = 7 daily ticks internally)
- *   - Pre-basho: 7 daily ticks (preparation week)
- *   - Post-basho: 7 daily ticks (wrap-up week)
+ * Orchestrates the daily tick sequence using the Strict Pipeline Architecture.
+ * This file sets up transient context boundaries and delegates execution
+ * to either the `bashoPipeline` or `offSeasonPipeline` based on the
+ * current calendar state, rather than handling a monolithic execution sequence.
  *
  * Phase transitions are checked at the start of each day tick.
- *
- * Boundary ticks per constitution:
- *   - Weekly (A3.2): every 7 days — training, injuries, economy, governance, etc.
- *   - Monthly (A3.3): on month boundary — salaries, rent, kōenkai, loans
- *   - Year (A3.5): on year boundary — HoF, era labels, annual summary
- * =======
+ * Daily micro-phases (e.g., small economic changes, welfare drops) run daily,
+ * while heavy processing (training, governance, NPC AI) is batched into weekly
+ * or monthly boundary runs.
+ * ============
  */
 
 import type { WorldState, CyclePhase } from "../types/world";

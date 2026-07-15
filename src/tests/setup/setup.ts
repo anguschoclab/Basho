@@ -1,7 +1,26 @@
-import { vi, afterEach } from "vitest";
+import { vi, afterEach, beforeAll } from "vitest";
 import { cleanup } from "@testing-library/react";
 import { setSeed } from "../../engine/rng";
 import { resetImpactTimestampCounter } from "../../engine/core/StateImpact";
+
+// jsdom does not implement pointer capture, but Radix Select relies on it.
+beforeAll(() => {
+  if (!Element.prototype.setPointerCapture) {
+    Element.prototype.setPointerCapture = () => {};
+  }
+  if (!Element.prototype.releasePointerCapture) {
+    Element.prototype.releasePointerCapture = () => {};
+  }
+  if (!Element.prototype.hasPointerCapture) {
+    Element.prototype.hasPointerCapture = () => false;
+  }
+  if (!Element.prototype.scrollIntoView) {
+    Element.prototype.scrollIntoView = () => {};
+  }
+  if (!HTMLElement.prototype.scrollIntoView) {
+    HTMLElement.prototype.scrollIntoView = () => {};
+  }
+});
 
 // Several storage/electron tests replace global window / navigator (some leave
 // them undefined). Under the single-process runner that leaks into later files —
