@@ -31,3 +31,7 @@
 **Gap:** The JSDoc for `logEngineEvent` (and by extension `EventBus`) didn't mention that it mutates `world.events` in-place, which violates the strict pure-pipeline architecture if called directly.
 **Truth:** `logEngineEvent` mutates `world.events.log` and `world.events.dedupe`. Pure simulation phases must queue events in `StateImpact.events` instead of calling this or `EventBus` directly.
 **Watch:** Legacy simulation phases that might still be importing and calling `EventBus` directly instead of using the `StateImpact` collector.
+## 2024-07-15 - [tickDaily.ts] Stale Constitution Top-Level Comment
+**Gap:** The top-level documentation block incorrectly referred to "Canon Daily Tick Pipeline (A3.1 / A4.1)" and "Basho Constitution v1.2", listing a monolithic 9-step sequence that had been removed.
+**Truth:** The logic was migrated to a Strict Pipeline Architecture that delegates to `bashoPipeline` and `offSeasonPipeline`.
+**Watch:** Other files in `src/engine/tick` that may still have legacy monolithic comments in their top-level summaries instead of mentioning the pipeline runner.
