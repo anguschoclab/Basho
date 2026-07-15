@@ -26,3 +26,8 @@
 **Gap:** The README instructed developers to run `bun run check:determinism` to verify determinism.
 **Truth:** There is no such script in `package.json`. The correct static analysis command is `bun scripts/engine-reviewer.ts`.
 **Watch:** Other onboarding commands in the README that may have drifted from `package.json`.
+
+## 2024-07-13 - [logEngineEvent] Direct state mutation contract
+**Gap:** The JSDoc for `logEngineEvent` (and by extension `EventBus`) didn't mention that it mutates `world.events` in-place, which violates the strict pure-pipeline architecture if called directly.
+**Truth:** `logEngineEvent` mutates `world.events.log` and `world.events.dedupe`. Pure simulation phases must queue events in `StateImpact.events` instead of calling this or `EventBus` directly.
+**Watch:** Legacy simulation phases that might still be importing and calling `EventBus` directly instead of using the `StateImpact` collector.
