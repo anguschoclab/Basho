@@ -1,5 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { MentorshipService, checkMentorMenteeBout } from "@/engine/systems/training/MentorshipService";
+import {
+  MentorshipService,
+  checkMentorMenteeBout,
+} from "@/engine/systems/training/MentorshipService";
 import { mockRikishi } from "../../utils";
 
 describe("MentorshipService.canMentor", () => {
@@ -46,7 +49,11 @@ describe("MentorshipService.canMentor", () => {
 
   it("returns false when the apprentice is retired", () => {
     const mentor = mockRikishi("mentor", { rank: "maegashira", heyaId: "h1" });
-    const apprentice = mockRikishi("apprentice", { rank: "makushita", heyaId: "h1", isRetired: true });
+    const apprentice = mockRikishi("apprentice", {
+      rank: "makushita",
+      heyaId: "h1",
+      isRetired: true,
+    });
     expect(MentorshipService.canMentor(mentor, apprentice)).toBe(false);
   });
 });
@@ -88,7 +95,11 @@ describe("MentorshipService.calculateAdaptabilityPenalty", () => {
 
   it("returns -1 when the pair is eligible and the gap is large enough", () => {
     const mentor = mockRikishi("mentor", { rank: "maegashira", heyaId: "h1", technique: 70 });
-    const apprentice = mockRikishi("apprentice", { rank: "makushita", heyaId: "h1", technique: 50 });
+    const apprentice = mockRikishi("apprentice", {
+      rank: "makushita",
+      heyaId: "h1",
+      technique: 50,
+    });
     expect(MentorshipService.calculateAdaptabilityPenalty(mentor, apprentice)).toBe(-1);
   });
 });
@@ -101,7 +112,11 @@ describe("checkMentorMenteeBout", () => {
     apprentice.mentorId = "mentor";
 
     const event = checkMentorMenteeBout(mentor, apprentice);
-    expect(event).toEqual({ type: "mentor_mentee_bout", mentorId: "mentor", apprenticeId: "apprentice" });
+    expect(event).toEqual({
+      type: "mentor_mentee_bout",
+      mentorId: "mentor",
+      apprenticeId: "apprentice",
+    });
   });
 
   it("returns an event when b mentors a", () => {
@@ -111,7 +126,11 @@ describe("checkMentorMenteeBout", () => {
     apprentice.mentorId = "mentor";
 
     const event = checkMentorMenteeBout(apprentice, mentor);
-    expect(event).toEqual({ type: "mentor_mentee_bout", mentorId: "mentor", apprenticeId: "apprentice" });
+    expect(event).toEqual({
+      type: "mentor_mentee_bout",
+      mentorId: "mentor",
+      apprenticeId: "apprentice",
+    });
   });
 
   it("returns null for unrelated rikishi", () => {

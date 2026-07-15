@@ -76,12 +76,23 @@ describe("MentorAssignmentPanel", () => {
   it("lists only eligible mentors in the dropdown", async () => {
     const apprentice = makeRikishi("apprentice", { rank: "makushita", division: "makushita" });
     const eligibleMentor = makeRikishi("eligible", { rank: "maegashira", heyaId: "h1" });
-    const injuredMentor = makeRikishi("injured", { rank: "maegashira", heyaId: "h1", injured: true });
+    const injuredMentor = makeRikishi("injured", {
+      rank: "maegashira",
+      heyaId: "h1",
+      injured: true,
+    });
     const otherHeya = makeRikishi("other", { rank: "maegashira", heyaId: "h2" });
-    const nonSekitori = makeRikishi("nonsekitori", { rank: "makushita", division: "makushita", heyaId: "h1" });
+    const nonSekitori = makeRikishi("nonsekitori", {
+      rank: "makushita",
+      division: "makushita",
+      heyaId: "h1",
+    });
 
     const user = userEvent.setup();
-    renderPanel({ apprenticeId: "apprentice", roster: [apprentice, eligibleMentor, injuredMentor, otherHeya, nonSekitori] });
+    renderPanel({
+      apprenticeId: "apprentice",
+      roster: [apprentice, eligibleMentor, injuredMentor, otherHeya, nonSekitori],
+    });
 
     const trigger = screen.getByRole("combobox");
     await user.click(trigger);

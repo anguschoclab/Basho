@@ -142,8 +142,7 @@ export function FinancialTrendsChart({
   );
 
   // Count non-zero weeks to decide if we have enough history.
-  const hasEnoughData =
-    ledger.length >= 3 && chartData.some((b) => b.income > 0 || b.burn > 0);
+  const hasEnoughData = ledger.length >= 3 && chartData.some((b) => b.income > 0 || b.burn > 0);
 
   return (
     <Card className="paper">

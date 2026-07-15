@@ -41,20 +41,30 @@ function makeGameStateWithPair(
 describe("rosterSlice mentorship", () => {
   it("ASSIGN_MENTOR applies lineage.assignMentor impact to world", () => {
     const state = makeGameStateWithPair();
-    const action = { type: "ASSIGN_MENTOR" as const, mentorId: "mentor", apprenticeId: "apprentice" };
+    const action = {
+      type: "ASSIGN_MENTOR" as const,
+      mentorId: "mentor",
+      apprenticeId: "apprentice",
+    };
     const next = rosterSlice(state, action);
 
     const apprentice = next.world?.rikishi.get("apprentice");
     const mentor = next.world?.rikishi.get("mentor");
     expect(apprentice?.mentorId).toBe("mentor");
     expect(mentor?.menteeIds).toContain("apprentice");
-    expect(next.world?.lineage?.some((e) => e.mentorId === "mentor" && e.menteeId === "apprentice")).toBe(true);
+    expect(
+      next.world?.lineage?.some((e) => e.mentorId === "mentor" && e.menteeId === "apprentice")
+    ).toBe(true);
     expect(next.world?.rivalriesState?.pairs).toBeDefined();
   });
 
   it("ASSIGN_MENTOR leaves world unchanged when eligibility check fails", () => {
     const state = makeGameStateWithPair({}, { rank: "juryo" }); // apprentice is sekitori
-    const action = { type: "ASSIGN_MENTOR" as const, mentorId: "mentor", apprenticeId: "apprentice" };
+    const action = {
+      type: "ASSIGN_MENTOR" as const,
+      mentorId: "mentor",
+      apprenticeId: "apprentice",
+    };
     const next = rosterSlice(state, action);
 
     const apprentice = next.world?.rikishi.get("apprentice");
@@ -64,7 +74,11 @@ describe("rosterSlice mentorship", () => {
 
   it("REMOVE_MENTOR clears mentorId and menteeIds", () => {
     const state = makeGameStateWithPair();
-    const assignAction = { type: "ASSIGN_MENTOR" as const, mentorId: "mentor", apprenticeId: "apprentice" };
+    const assignAction = {
+      type: "ASSIGN_MENTOR" as const,
+      mentorId: "mentor",
+      apprenticeId: "apprentice",
+    };
     const assigned = rosterSlice(state, assignAction);
 
     const removeAction = { type: "REMOVE_MENTOR" as const, apprenticeId: "apprentice" };

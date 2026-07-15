@@ -251,7 +251,11 @@ export function applyMentorshipBonuses(world: WorldState): StateImpact {
       stats: {
         ...apprentice.stats,
         technique: clamp(apprentice.stats.technique + techniqueBleed, 0, MAX_STAT_CEILING),
-        adaptability: clamp(apprentice.stats.adaptability + adaptabilityPenalty, 0, MAX_STAT_CEILING),
+        adaptability: clamp(
+          apprentice.stats.adaptability + adaptabilityPenalty,
+          0,
+          MAX_STAT_CEILING
+        ),
       },
     });
   }

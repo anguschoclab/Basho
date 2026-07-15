@@ -72,7 +72,10 @@ export function MentorAssignmentPanel({
    * Filter eligible mentors from the heya roster.
    * Uses MentorshipService.canMentor so the UI and engine share one source of truth.
    */
-  const apprentice = useMemo(() => roster.find((r) => r.id === apprenticeId), [roster, apprenticeId]);
+  const apprentice = useMemo(
+    () => roster.find((r) => r.id === apprenticeId),
+    [roster, apprenticeId]
+  );
 
   const eligibleMentors = useMemo(() => {
     const results: Rikishi[] = [];

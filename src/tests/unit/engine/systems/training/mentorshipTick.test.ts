@@ -52,19 +52,19 @@ describe("applyMentorshipBonuses", () => {
   it("skips apprentices whose mentor is injured", () => {
     const world = makeWorldWithPair({ technique: 70, injured: true }, { technique: 50 });
     const impact = applyMentorshipBonuses(world);
-    expect((impact.entities?.rikishiUpdates?.size ?? 0)).toBe(0);
+    expect(impact.entities?.rikishiUpdates?.size ?? 0).toBe(0);
   });
 
   it("skips apprentices whose mentor is retired", () => {
     const world = makeWorldWithPair({ technique: 70, isRetired: true }, { technique: 50 });
     const impact = applyMentorshipBonuses(world);
-    expect((impact.entities?.rikishiUpdates?.size ?? 0)).toBe(0);
+    expect(impact.entities?.rikishiUpdates?.size ?? 0).toBe(0);
   });
 
   it("skips updates when the technique gap is below the threshold", () => {
     const world = makeWorldWithPair({ technique: 55 }, { technique: 50 });
     const impact = applyMentorshipBonuses(world);
-    expect((impact.entities?.rikishiUpdates?.size ?? 0)).toBe(0);
+    expect(impact.entities?.rikishiUpdates?.size ?? 0).toBe(0);
   });
 
   it("clamps technique at MAX_STAT_CEILING and applies the adaptability penalty", () => {

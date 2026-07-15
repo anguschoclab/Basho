@@ -9,8 +9,16 @@ function makeWorldWithRikishi(
   mentorId: string,
   overrides: Partial<WorldState> = {}
 ): WorldState {
-  const mentee = mockRikishi(menteeId, { heyaId: "heya_1", rank: "makushita", division: "makushita" });
-  const mentor = mockRikishi(mentorId, { heyaId: "heya_1", rank: "maegashira", division: "makuuchi" });
+  const mentee = mockRikishi(menteeId, {
+    heyaId: "heya_1",
+    rank: "makushita",
+    division: "makushita",
+  });
+  const mentor = mockRikishi(mentorId, {
+    heyaId: "heya_1",
+    rank: "maegashira",
+    division: "makuuchi",
+  });
   const heya = makeMockHeya("heya_1", { rikishiIds: [menteeId, mentorId] });
 
   const world = makeMockWorld({

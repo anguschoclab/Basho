@@ -24,7 +24,10 @@ function makeMinimalBoutResult(overrides: Partial<BoutResult> = {}): BoutResult 
   };
 }
 
-function makeTestWorld(east: ReturnType<typeof mockRikishi>, west: ReturnType<typeof mockRikishi>): WorldState {
+function makeTestWorld(
+  east: ReturnType<typeof mockRikishi>,
+  west: ReturnType<typeof mockRikishi>
+): WorldState {
   const basho = makeMockBasho({
     matches: [],
     standings: new Map([
