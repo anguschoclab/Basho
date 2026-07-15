@@ -1,6 +1,8 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { DigestWidget } from "@/components/dashboard/DigestWidget";
 import { useGame } from "@/contexts/GameContext";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Newspaper } from "lucide-react";
 
 export default function WeeklyDigestPage() {
   const { state, digest } = useGame();
@@ -10,9 +12,11 @@ export default function WeeklyDigestPage() {
     return (
       <AppLayout pageTitle="Weekly Report">
         <div className="flex items-center justify-center h-full py-20">
-          <p className="text-muted-foreground">
-            No world loaded. Start a game to view the weekly report.
-          </p>
+          <EmptyState
+            icon={Newspaper}
+            title="No world loaded"
+            description="Start a game to view the weekly report."
+          />
         </div>
       </AppLayout>
     );
