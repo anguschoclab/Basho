@@ -9,8 +9,8 @@ function makeWorldWithRikishi(
   mentorId: string,
   overrides: Partial<WorldState> = {}
 ): WorldState {
-  const mentee = mockRikishi(menteeId, { heyaId: "heya_1" });
-  const mentor = mockRikishi(mentorId, { heyaId: "heya_1" });
+  const mentee = mockRikishi(menteeId, { heyaId: "heya_1", rank: "makushita", division: "makushita" });
+  const mentor = mockRikishi(mentorId, { heyaId: "heya_1", rank: "maegashira", division: "makuuchi" });
   const heya = makeMockHeya("heya_1", { rikishiIds: [menteeId, mentorId] });
 
   const world = makeMockWorld({
@@ -128,7 +128,7 @@ describe("assignMentor", () => {
     r2.menteeIds = ["r1"];
 
     // Now reassign r1 -> r3
-    const r3 = mockRikishi("r3", { heyaId: "heya_1" });
+    const r3 = mockRikishi("r3", { heyaId: "heya_1", rank: "maegashira", division: "makuuchi" });
     world.rikishi.set("r3", r3);
 
     // Add lineage entry for previous mentor link
@@ -143,5 +143,71 @@ describe("assignMentor", () => {
       const prevMentorUpdate = updates.get("r2");
       expect(prevMentorUpdate?.menteeIds).not.toContain("r1");
     }
+  });
+});
+
+describe("assignMentor eligibility", () => {
+  it("returns ok:false for cross-heya assignments", () => {
+    const world = makeWorldWithRikishi("r1", "r2");
+    const mentor = world.rikishi.get("r2") as Rikishi;
+    mentor.heyaId = "other_heya";
+
+    const result = assignMentor(world, "r1", "r2");
+    expect(result.ok).toBe(false);
+  });
+
+  it("returns ok:false when the mentor is not sekitori", () => {
+    const world = makeWorldWithRikishi("r1", "r2");
+    const mentor = world.rikishi.get("r2") as Rikishi;
+    mentor.rank = "makushita";
+
+    const result = assignMentor(world, "r1", "r2");
+    expect(result.ok).toBe(false);
+  });
+
+  it("returns ok:false when the apprentice is sekitori", () => {
+    const world = makeWorldWithRikishi("r1", "r2");
+    const mentee = world.rikishi.get("r1") as Rikishi;
+    mentee.rank = "juryo";
+
+    const result = assignMentor(world, "r1", "r2");
+    expect(result.ok).toBe(false);
+  });
+
+  it("returns ok:false when the mentor is injured", () => {
+    const world = makeWorldWithRikishi("r1", "r2");
+    const mentor = world.rikishi.get("r2") as Rikishi;
+    mentor.injured = true;
+
+    const result = assignMentor(world, "r1", "r2");
+    expect(result.ok).toBe(false);
+  });
+
+  it("returns ok:false when the mentor is retired", () => {
+    const world = makeWorldWithRikishi("r1", "r2");
+    const mentor = world.rikishi.get("r2") as Rikishi;
+    mentor.isRetired = true;
+
+    const result = assignMentor(world, "r1", "r2");
+    expect(result.ok).toBe(false);
+  });
+
+  it("returns ok:false when the apprentice is retired", () => {
+    const world = makeWorldWithRikishi("r1", "r2");
+    const mentee = world.rikishi.get("r1") as Rikishi;
+    mentee.isRetired = true;
+
+    const result = assignMentor(world, "r1", "r2");
+    expect(result.ok).toBe(false);
+  });
+
+  it("records lineage and rivalry when the assignment is valid", () => {
+    const world = makeWorldWithRikishi("r1", "r2");
+    const result = assignMentor(world, "r1", "r2");
+
+    expect(result.ok).toBe(true);
+    expect(result.impact?.worldFields?.lineage).toHaveLength(1);
+    const pairKeys = Object.keys(result.impact?.worldFields?.rivalriesState?.pairs ?? {});
+    expect(pairKeys.length).toBeGreaterThan(0);
   });
 });
