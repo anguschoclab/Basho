@@ -481,7 +481,7 @@ export function resolveBout(
     builder.updateWorldField("currentBasho", {
       ...basho,
       kinboshiThisBasho: nextKinboshi,
-    } as never);
+    });
   }
 
   // 3. Tactic aftermath (fatigue, momentum, injury multiplier)

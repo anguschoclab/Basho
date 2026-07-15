@@ -70,7 +70,7 @@ export function assignMentor(
     sinceYear: world.year,
     sinceWeek: world.week,
   });
-  builder.updateWorldField("lineage" as any, currentLineage);
+  builder.updateWorldField("lineage", currentLineage);
 
   // 2. Rivalry seeding
   if (world.rivalriesState) {
@@ -84,7 +84,7 @@ export function assignMentor(
       pair = {
         key: makeRivalryKey(menteeId, mentorId),
         aId: menteeId < mentorId ? menteeId : mentorId,
-        bId: menteeId < mentorId ? mentorId : mentorId,
+        bId: menteeId < mentorId ? mentorId : menteeId,
         sameHeya: mentee.heyaId === mentor.heyaId,
         meetings: 0,
         lastMetWeek: world.week,

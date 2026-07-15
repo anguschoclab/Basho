@@ -265,7 +265,7 @@ export function tickYear(world: WorldState): StateImpact {
   const poolTypes: TalentPoolType[] = ["high_school", "university", "foreign"];
 
   const nextPools = { ...tp.pools };
-  const nextCandidates = { ...tp.candidates };
+  let nextCandidates = { ...tp.candidates };
 
   for (const poolType of poolTypes) {
     const pool = { ...tp.pools[poolType] };
@@ -281,10 +281,10 @@ export function tickYear(world: WorldState): StateImpact {
     // Remove from nextCandidates
     const removedIds = [...visible.idsToRemove, ...hidden.idsToRemove];
     if (removedIds.length > 0) {
-      // ⚡ Bolt Optimization: Replace O(N) Object.fromEntries(Object.entries()) with direct O(1) property deletion
-      for (const id of removedIds) {
-        delete nextCandidates[id];
-      }
+      const removedSet = new Set(removedIds);
+      nextCandidates = Object.fromEntries(
+        Object.entries(nextCandidates).filter(([id]) => !removedSet.has(id))
+      );
     }
 
     // 2. Inject fresh prospects for the new year — fill to population cap

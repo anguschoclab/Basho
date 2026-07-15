@@ -22,6 +22,16 @@ import type { Staff } from "../types/staff";
 import type { StateImpact } from "./StateImpact";
 import { createEmptyImpact, getNextTimestamp } from "./StateImpact";
 
+type ArrayAppendItem<K extends string> =
+  K extends "history" ? import("../types/basho").BashoResult[] :
+  K extends "almanacSnapshots" ? import("../almanac/types").AlmanacSnapshot[] :
+  K extends "basho.matches" ? import("../types/basho").MatchSchedule[] :
+  K extends "governanceLog" ? import("../types/economy").GovernanceRuling[] :
+  K extends "awardLog" ? import("../types/basho").AwardLogEntry[] :
+  K extends "myosekiMarket.history" ? MyosekiTransaction[] :
+  K extends "pendingExhibitions" ? unknown[] :
+  never;
+
 /**
  * Deep merge two objects, handling nested structures.
  */
@@ -375,6 +385,7 @@ export class ImpactBuilder {
       | "pendingDecisions"
       | "yokozunaVacancyStreak"
       | "events"
+      | "lineage"
     >,
   >(field: K, value: WorldState[K]): ImpactBuilder {
     if (!this.impact.worldFields) {
@@ -398,11 +409,11 @@ export class ImpactBuilder {
       | "awardLog"
       | "myosekiMarket.history"
       | "pendingExhibitions",
-  >(field: K, items: unknown[]): ImpactBuilder {
+  >(field: K, items: ArrayAppendItem<K>): ImpactBuilder {
     if (!this.impact.arrayAppends) {
       this.impact.arrayAppends = [];
     }
-    this.impact.arrayAppends.push({ field, items } as never);
+    (this.impact.arrayAppends as Array<{ field: string; items: unknown[] }>).push({ field, items });
     return this;
   }
 
@@ -689,6 +700,7 @@ export function updateWorldFieldImpact<
     | "globalCup"
     | "chronicle"
     | "yokozunaVacancyStreak"
+    | "lineage"
   >,
 >(field: K, value: WorldState[K], source: string): StateImpact {
   return createImpactBuilder(source).updateWorldField(field, value).build();

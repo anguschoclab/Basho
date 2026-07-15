@@ -34,7 +34,7 @@ export const LegacyService = {
 
     // Use the rikishi's peak stat to determine which stat the bloodline grants
     const stats: RikishiStats = rikishi.stats;
-    const peakStat = this.findPeakStat(stats);
+    const peakStat = this.findPeakStat(stats as unknown as Partial<Record<string, number>>);
 
     const trait: BloodlineTrait = {
       traitId: `bl_${rikishi.id}`,
@@ -143,30 +143,30 @@ export const LegacyService = {
    * Applies the legacy trait bonuses to the candidate's potential stats.
    */
   applyLegacyTrait(candidateStats: RikishiStats, trait: BloodlineTrait): RikishiStats {
-    const boosted = { ...candidateStats };
+    const boosted = { ...candidateStats } as unknown as Record<string, number>;
+    const numericKeys = new Set([
+      "power", "technique", "speed", "weight", "stamina",
+      "mental", "adaptability", "balance", "aggression", "experience",
+    ]);
 
     // Apply Floor Bonuses
     for (const [stat, bonus] of Object.entries(trait.statFloorBonus)) {
-      if (stat in boosted) {
-        boosted[stat as keyof RikishiStats] = clampInt(
-          (boosted[stat as keyof RikishiStats] || 0) + (bonus || 0),
-          0,
-          99
-        );
+      if (numericKeys.has(stat)) {
+        boosted[stat] = clampInt((boosted[stat] || 0) + (bonus || 0), 0, 99);
       }
     }
 
     // Apply Ceiling Bonus to the peak stat in the trait
-    const peakStat = this.findPeakStat(trait.statFloorBonus as any);
-    if (peakStat && peakStat in boosted) {
+    const peakStat = this.findPeakStat(trait.statFloorBonus);
+    if (peakStat && numericKeys.has(peakStat)) {
       boosted[peakStat] = clampInt((boosted[peakStat] || 0) + trait.ceilingBonus, 0, 99);
     }
 
-    return boosted;
+    return boosted as unknown as RikishiStats;
   },
 
-  findPeakStat(stats: RikishiStats): keyof RikishiStats {
-    const keys: Array<keyof RikishiStats> = [
+  findPeakStat(stats: Partial<Record<string, number>>): string {
+    const keys = [
       "power",
       "technique",
       "speed",
@@ -175,7 +175,7 @@ export const LegacyService = {
       "adaptability",
       "balance",
     ];
-    let peak: keyof RikishiStats = "technique";
+    let peak = "technique";
     let peakVal = -1;
     for (const key of keys) {
       const val = stats[key] ?? 0;

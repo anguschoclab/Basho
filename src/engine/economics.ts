@@ -12,7 +12,6 @@ import type { Heya } from "./types/heya";
 import type { BoutResult, MatchSchedule } from "./types/basho";
 import type { Rikishi } from "./types/rikishi";
 import { reportScandal } from "./systems/governance/ScandalService";
-import { EventBus } from "./events";
 import { calculateKenshoEnvelopes } from "./systems/economy/KenshoService";
 import {
   processSponsorChurn as runSponsorChurnService,
@@ -39,27 +38,31 @@ import { getHeya } from "./queries";
  *
  * @param {Heya} heya - The heya experiencing insolvency.
  * @param {WorldState} world - The current world state.
+ * @returns {StateImpact} The state impact containing financial updates and queued events.
  */
-export function handleInsolvency(heya: Heya, world: WorldState): void {
-  if (heya.funds >= DEBT_LIMIT) return;
+export function handleInsolvency(heya: Heya, world: WorldState): StateImpact {
+  const builder = createImpactBuilder("handleInsolvency");
+  if (heya.funds >= DEBT_LIMIT) return builder.build();
 
   const pool = world.sponsorPool;
   const koenkai = pool?.koenkais.get(`koenkai_${heya.id}`);
   const benefactor = pool ? selectBenefactor(heya.id, pool, koenkai) : null;
 
   if (benefactor) {
-    heya.funds += BENEFACTOR_BAILOUT_AMOUNT;
-    EventBus.financialAlert(world, heya.id, {
+    builder.updateHeya(heya.id, { funds: heya.funds + BENEFACTOR_BAILOUT_AMOUNT });
+    builder.logEvent("FINANCIAL_ALERT", "economy", {
       heyaname: heya.name,
       incident: "bailout",
       money: BENEFACTOR_BAILOUT_AMOUNT,
       sponsor: benefactor.displayName,
-    });
+    }, { heyaId: heya.id, importance: "major" });
   } else if (heya.governanceStatus !== "sanctioned") {
-    reportScandal(world, heya.id, "major", "Severe Insolvency / Debt Limit Breach");
+    builder.merge(reportScandal(world, heya.id, "major", "Severe Insolvency / Debt Limit Breach"));
     // Cap debt so math doesn't spiral into infinity
-    heya.funds = DEBT_LIMIT;
+    builder.updateHeya(heya.id, { funds: DEBT_LIMIT });
   }
+
+  return builder.build();
 }
 
 // === BOUT REWARDS (KENSHO) ===

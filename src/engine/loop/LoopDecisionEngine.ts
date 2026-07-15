@@ -7,6 +7,8 @@ import type { WorldState } from "../types/world";
 import { createImpactBuilder, type ImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 import { issueBailoutLoanIfNeeded } from "../loans";
+import type { TrainingIntensity, TrainingFocus, StyleBias, RecoveryEmphasis } from "../types/training";
+import type { DietRegimen } from "../types/economy";
 
 export interface LoopDecision {
   id: string;
@@ -200,7 +202,7 @@ export function evaluatePendingDecisions(world: WorldState): StateImpact {
         description: o.impact,
         impactGenerator: () => createImpactBuilder("loopDecision").build(),
       })),
-    } as never);
+    });
   }
 
   return builder.build();
@@ -223,13 +225,13 @@ function setTrainingIntensity(
   builder.updateTrainingState(heyaId, {
     heyaId,
     activeProfile: {
-      intensity: intensity as never,
-      focus: (cp?.focus ?? "neutral") as never,
-      styleBias: (cp?.styleBias ?? "neutral") as never,
-      recovery: (cp?.recovery ?? "normal") as never,
+      intensity: intensity as TrainingIntensity,
+      focus: (cp?.focus ?? "neutral") as TrainingFocus,
+      styleBias: (cp?.styleBias ?? "neutral") as StyleBias,
+      recovery: (cp?.recovery ?? "normal") as RecoveryEmphasis,
     },
     focusSlots: current?.focusSlots ?? [],
-  } as never);
+  });
 }
 
 /** Apply a decision option's real engine effect to the builder. Shared by the
@@ -267,8 +269,8 @@ export function applyDecisionEffect(
     if (optionId === "loan") builder.merge(issueBailoutLoanIfNeeded(world, heya.id));
     else if (optionId === "austerity")
       builder.updateHeya(heya.id, {
-        welfareState: { ...heya.welfareState, activeDiet: "austerity" },
-      } as never);
+        welfareState: { ...(heya.welfareState ?? { welfareRisk: 0, complianceState: "compliant", weeksInState: 0 }), activeDiet: "austerity" },
+      });
   }
   if (
     decisionType === "weekly_training_emphasis" &&
@@ -278,8 +280,8 @@ export function applyDecisionEffect(
   }
   if (decisionType === "welfare_diet" && (optionId === "premium" || optionId === "maintenance")) {
     builder.updateHeya(heya.id, {
-      welfareState: { ...heya.welfareState, activeDiet: optionId },
-    } as never);
+      welfareState: { ...(heya.welfareState ?? { welfareRisk: 0, complianceState: "compliant", weeksInState: 0 }), activeDiet: optionId },
+    });
   }
   if (decisionType === "kyujo_decision" && decisionId) {
     const parts = decisionId.split("_");
@@ -307,7 +309,7 @@ export function applyDecisionEffect(
           ...(world.transientContext?.dailyInjuryRiskOverrides ?? {}),
           [rikishiId]: mult,
         },
-      } as never);
+      });
     }
   }
 }
@@ -366,7 +368,7 @@ export function resolveLoopDecision(
 
   // Clear pendingCrisis if this was the blocking decision
   if (world.pendingCrisis?.id === decisionId) {
-    builder.updateWorldField("pendingCrisis", undefined as never);
+    builder.updateWorldField("pendingCrisis", undefined);
   }
 
   applyDecisionEffect(world, builder, decision.type, optionId, decision.id);
@@ -445,7 +447,7 @@ export function autonomouslyResolveDecisions(
 const QUEUE_DEFAULTS: Record<string, string> = {
   weekly_training_emphasis: "balanced",
   welfare_diet: "maintenance",
-};
+} as const;
 
 /**
  * Apply sensible defaults to non-required (queue) decisions whose deadline has
@@ -469,8 +471,8 @@ export function applyExpiredQueueDefaults(world: WorldState): StateImpact {
       setTrainingIntensity(builder, world, heya.id, def);
     } else if (d.type === "welfare_diet") {
       builder.updateHeya(heya.id, {
-        welfareState: { ...heya.welfareState, activeDiet: def },
-      } as never);
+        welfareState: { ...(heya.welfareState ?? { welfareRisk: 0, complianceState: "compliant", weeksInState: 0 }), activeDiet: def as DietRegimen },
+      });
     }
   }
 

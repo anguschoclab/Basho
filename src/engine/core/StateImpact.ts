@@ -191,6 +191,7 @@ export interface StateImpact {
       | "events"
       | "pendingDecisions"
       | "pendingCrisis"
+      | "lineage"
     >
   >;
 

@@ -60,7 +60,7 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
         );
         const mediaStrat = getMediaStrategy(oyakata.archetype);
         for (const event of mediaEvents) {
-          mediaStrat.evaluateMediaEventResponse(world, heya, oyakata, event.id);
+          builder.merge(mediaStrat.evaluateMediaEventResponse(world, heya, oyakata, event.id));
         }
       }
 

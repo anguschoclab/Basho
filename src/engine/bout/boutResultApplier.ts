@@ -184,13 +184,12 @@ export function applyBoutResult(
     dailyOverrides &&
     (dailyOverrides[loserId] !== undefined || dailyOverrides[winnerId] !== undefined)
   ) {
-    const cleared = { ...dailyOverrides };
-    delete cleared[loserId];
-    delete cleared[winnerId];
+    const { [loserId]: _l, [winnerId]: _w, ...cleared } = dailyOverrides;
+    void _l; void _w;
     builder.updateWorldField("transientContext", {
       ...world.transientContext,
       dailyInjuryRiskOverrides: cleared,
-    } as never);
+    });
   }
 
   builder.merge(rivalries.onBoutResolvedRivalries(world, { match, result, east, west }));

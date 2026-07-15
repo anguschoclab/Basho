@@ -52,7 +52,8 @@ export const issueGovernanceRuling = governance.issueGovernanceRuling;
  * @returns {WorldState} The updated world state with the new basho started.
  */
 export function startBasho(world: WorldState, bashoName?: BashoName): WorldState {
-  const updated = bashoManager.startBasho(world, bashoName);
+  const impact = bashoManager.startBasho(world, bashoName);
+  const updated = resolveImpacts(world, [impact]);
 
   // Reset basho-scoped media tracking (streaks, promo watch)
   if (updated.mediaState) {

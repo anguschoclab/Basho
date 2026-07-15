@@ -34,7 +34,13 @@ import type { Id } from "./types/common";
 export { EventBus } from "./EventBus";
 
 /**
- * Ensure events state.
+ * Ensure events state exists on the world object, initializing it if needed.
+ *
+ * **Coordinator-only:** This function mutates `world.events` in-place and must
+ * only be called from the coordinator layer (`ImpactResolver`). Calling it from
+ * within simulation phases violates the pure pipeline contract — simulation
+ * phases must queue events via `ImpactBuilder.logEvent()` → `StateImpact.events[]`
+ * and let the `ImpactResolver` apply them atomically after all phases complete.
  */
 export function ensureEventsState(world: WorldState): EventsState {
   if (world.events && world.events.version && Array.isArray(world.events.log)) {

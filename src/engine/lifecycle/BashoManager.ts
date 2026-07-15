@@ -13,12 +13,12 @@
  * @see ensureDaySchedule for day schedule management
  */
 
-import { EventBus } from "../events";
 import { initializeBasho } from "../systems/generation/WorldFactory";
 import { ensureDaySchedule } from "../schedule";
 import type { WorldState } from "../types/world";
 import type { BashoName, BashoState } from "../types/basho";
-import { resolveImpacts } from "../core/ImpactResolver";
+import { createImpactBuilder } from "../core/ImpactBuilder";
+import type { StateImpact } from "../core/StateImpact";
 
 /**
  * Get current basho state.
@@ -51,34 +51,38 @@ export function getCurrentBasho(world: WorldState): BashoState | undefined {
  *
  * @param {WorldState} world - Current world state.
  * @param {BashoName} [bashoName] - Optional basho name override.
- * @returns {WorldState} Updated world state with active basho.
+ * @returns {StateImpact} State impact with basho state updates and queued BASHO_STATUS event.
  *
  * @example
  * ```ts
- * const updatedWorld = startBasho(world, "haru");
- * console.log(updatedWorld.cyclePhase); // "active_basho"
+ * const impact = startBasho(world, "haru");
+ * const resolved = resolveImpacts(world, [impact]);
+ * console.log(resolved.cyclePhase); // "active_basho"
  * ```
  */
-export function startBasho(world: WorldState, bashoName?: BashoName): WorldState {
-  if (world.cyclePhase === "active_basho") return world;
+export function startBasho(world: WorldState, bashoName?: BashoName): StateImpact {
+  if (world.cyclePhase === "active_basho") return createImpactBuilder("startBasho").build();
 
   const name: BashoName = bashoName || world.currentBashoName || "hatsu";
 
   // Initialize new basho state
   const basho = initializeBasho(world, name);
 
-  world.currentBasho = basho;
-  world.cyclePhase = "active_basho";
-
   // Ensure initial schedule is available
   const scheduleImpact = ensureDaySchedule(world, basho.day);
-  const resolvedWorld = resolveImpacts(world, [scheduleImpact]);
-  Object.assign(world, resolvedWorld);
 
-  EventBus.bashoStatus(world, {
-    status: "started",
-    incident: name,
-    day: 1,
-  });
-  return world;
+  // Build impact with world field updates and queued event
+  const builder = createImpactBuilder("startBasho")
+    .updateWorldField("currentBasho", basho)
+    .updateWorldField("cyclePhase", "active_basho")
+    .logEvent("BASHO_STATUS", "basho", {
+      status: "started",
+      incident: name,
+      day: 1,
+    }, { importance: "headline" });
+
+  // Merge schedule impact
+  builder.merge(scheduleImpact);
+
+  return builder.build();
 }

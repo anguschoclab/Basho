@@ -12,6 +12,7 @@
 
 import type { WorldState } from "../../types/world";
 import type { DynastyRecord } from "../../types/dynasty";
+import type { OyakataArchetype, SuccessionReadiness } from "../../types/oyakata";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { TrainingPhilosophyService } from "./TrainingPhilosophyService";
@@ -181,7 +182,7 @@ export const DynastyService = {
       highestRank: successorRikishi.rank,
       age: world.year - successorRikishi.birthYear,
       yearsInCharge: 0,
-      archetype: "traditionalist", // Default or derived from rikishi archetype
+      archetype: "traditionalist" as OyakataArchetype,
       traits: {
         ambition: 50,
         patience: 50,
@@ -189,12 +190,12 @@ export const DynastyService = {
         tradition: 50,
         compassion: 50,
       },
-      successionReadiness: "stable",
+      successionReadiness: "stable" as SuccessionReadiness,
       avatarConfig: successorRikishi.avatarConfig,
       formerRikishiId: successorRikishiId,
     };
 
-    builder.addOyakata(newOyakata as any);
+    builder.addOyakata(newOyakata);
 
     // 5. Retire the rikishi (only if still active) and assign the new Oyakata to the stable
     if (successorIsActive) {
@@ -235,16 +236,16 @@ export const DynastyService = {
 
     const name = `JSA Trustee (${currentOyakata.shikona} lineage)`;
 
-    const newOyakata: any = {
+    const newOyakata = {
       id: dummyId,
       heyaId,
       name,
       shikona: "Trustee",
       age: 45,
       yearsInCharge: 0,
-      archetype: "traditionalist",
+      archetype: "traditionalist" as OyakataArchetype,
       traits: { ambition: 30, patience: 50, risk: 20, tradition: 80, compassion: 50 },
-      successionReadiness: "stable",
+      successionReadiness: "stable" as SuccessionReadiness,
     };
 
     builder.addOyakata(newOyakata);
