@@ -178,3 +178,6 @@ Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop 
 ## 2024-05-28 - Replace Object.entries() in talent generation
 **Learning:** Using `Object.entries()` in TalentPoolNPCRecruitment and TalentPoolMaterialization creates unnecessary O(N) tuple allocations in loops.
 **Action:** Replace `Object.entries(obj)` with standard `for...in` loops protected by `Object.prototype.hasOwnProperty.call(obj, key)` guards to eliminate the intermediate tuple array allocations.
+## 2024-05-14 - Meaningful vs Micro Optimizations
+**Learning:** In a codebase obsessed with performance, it is tempting to replace highly readable array chains like `Object.entries(counts).map(...)` on small, static-sized objects (e.g., sumo rank categories) with imperative `for...in` loops. However, this violates the persona's directive against sacrificing readability for unmeasurable micro-optimizations.
+**Action:** Only target unbounded arrays or large datasets for O(N) allocation reductions. When counting elements, replacing `.filter(condition).length` with a `for...of` loop and a counter is a highly effective, targeted optimization that avoids intermediate array creation.
