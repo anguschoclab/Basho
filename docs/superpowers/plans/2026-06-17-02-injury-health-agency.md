@@ -11,6 +11,7 @@
 ---
 
 ## Background facts (verified — use these)
+
 - `Rikishi` (`src/engine/types/rikishi.ts`): `fatigue: number` (72), `injured: boolean` (78), `injuryWeeksRemaining: number` (79), `injuryStatus?` (80), `isKyujo: boolean` (94), `kyujoReason?: "voluntary" | "injury" | "personal"` (95).
 - `InjuryService` (`src/engine/systems/health/InjuryService.ts`): `clearInjury(rikishiId): StateImpact` (368), `tickWeekRecovery(world): StateImpact` (239). These return impacts via `ImpactBuilder`.
 - `ImpactBuilder`: `.updateRikishi(id, Partial<Rikishi>)`, `.updateHeya(id, Partial<Heya>)`, `.logEvent(type, category, data, { heyaId, rikishiId })`, `.build()` (`src/engine/core/ImpactBuilder.ts`).
@@ -18,6 +19,7 @@
 - The panel `src/components/game/InjuryRecoveryPanel.tsx` is **display-only** today (no `sendCommand`/`onClick`). Worker handler pattern: `KEY: (cmd) => { const impact = fn(currentWorld, ...); currentWorld = resolveImpacts(currentWorld, [impact]); emitDigest(); syncWorld(); }`; command type added to `src/engine/worker/types.ts`.
 
 ## Design decisions
+
 - **Withdraw (kyūjō):** set `isKyujo = true`, `kyujoReason = "injury"`. Free, but the wrestler sits out remaining bouts (loses by default — existing bout logic already treats injured/kyūjō as fusenpai/fusen). Reversible only by recovery.
 - **Treat:** spend `TREATMENT_COST_PER_WEEK` (new constant, ¥500,000) per week of injury cut; reduce `injuryWeeksRemaining` by `min(weeks, current)`, clamp ≥ 0; if it reaches 0, also clear `injured`. Guarded by sufficient `funds`.
 
@@ -26,6 +28,7 @@
 ### Task 1: Engine — `withdrawRikishi` and `treatInjury`
 
 **Files:**
+
 - Create: `src/engine/systems/health/HealthActions.ts`
 - Create: `src/constants/engine/health.ts` (or append if it exists — check first)
 - Test: `src/engine/systems/health/__tests__/HealthActions.test.ts`
@@ -44,13 +47,20 @@ import type { WorldState } from "../../../types/world";
 function worldWith(rikishiOverrides: Record<string, unknown>, funds = 5_000_000): WorldState {
   const r = mockRikishi("r1", { heyaId: "h1", ...rikishiOverrides });
   return {
-    seed: "t", year: 1, week: 1, dayIndexGlobal: 1, cyclePhase: "active_basho",
+    seed: "t",
+    year: 1,
+    week: 1,
+    dayIndexGlobal: 1,
+    cyclePhase: "active_basho",
     playerHeyaId: "h1",
     heyas: new Map([["h1", { id: "h1", name: "H", rikishiIds: ["r1"], funds } as never]]),
     rikishi: new Map([["r1", r]]),
-    oyakata: new Map(), events: { log: [], headlines: [] },
-    activeRikishiIds: new Set(["r1"]), historicalRikishi: new Map(),
-    meta: { tone: "classic", drift: {} }, globalKimariteStats: {},
+    oyakata: new Map(),
+    events: { log: [], headlines: [] },
+    activeRikishiIds: new Set(["r1"]),
+    historicalRikishi: new Map(),
+    meta: { tone: "classic", drift: {} },
+    globalKimariteStats: {},
   } as unknown as WorldState;
 }
 
@@ -121,7 +131,8 @@ export function withdrawRikishi(world: WorldState, rikishiId: string): StateImpa
   if (!r) return builder.build();
   builder.updateRikishi(rikishiId, { isKyujo: true, kyujoReason: "injury" });
   builder.logEvent(
-    "LIFECYCLE_EVENT", "health",
+    "LIFECYCLE_EVENT",
+    "health",
     { rikishiId, heyaId: r.heyaId, status: "withdrawn_kyujo" },
     { rikishiId, heyaId: r.heyaId }
   );
@@ -147,7 +158,8 @@ export function treatInjury(world: WorldState, rikishiId: string, weeks: number)
   });
   builder.updateHeya(heya.id, { funds: (heya.funds ?? 0) - cost });
   builder.logEvent(
-    "LIFECYCLE_EVENT", "health",
+    "LIFECYCLE_EVENT",
+    "health",
     { rikishiId, heyaId: heya.id, status: "treated", weeksCut: cut, cost },
     { rikishiId, heyaId: heya.id }
   );
@@ -174,6 +186,7 @@ git commit -m "feat(health): withdrawRikishi and treatInjury engine actions"
 ### Task 2: Worker commands `WITHDRAW_RIKISHI` and `TREAT_INJURY`
 
 **Files:**
+
 - Modify: `src/engine/worker/types.ts`
 - Modify: `src/engine/worker/engine.worker.ts`
 
@@ -230,6 +243,7 @@ git commit -m "feat(worker): WITHDRAW_RIKISHI and TREAT_INJURY commands"
 ### Task 3: Add action buttons to `InjuryRecoveryPanel`
 
 **Files:**
+
 - Modify: `src/components/game/InjuryRecoveryPanel.tsx`
 
 - [ ] **Step 1: Read the panel to find the per-rikishi row**
@@ -252,13 +266,19 @@ In each injured-wrestler row, add two actions (Treat 1 week; Withdraw if not alr
 
 ```tsx
 <div className="mt-1 flex gap-2">
-  <Button size="sm" variant="outline"
-    onClick={() => sendCommand({ type: "TREAT_INJURY", rikishiId: r.id, weeks: 1 })}>
+  <Button
+    size="sm"
+    variant="outline"
+    onClick={() => sendCommand({ type: "TREAT_INJURY", rikishiId: r.id, weeks: 1 })}
+  >
     Treat 1wk (¥500k)
   </Button>
   {!r.isKyujo && (
-    <Button size="sm" variant="outline"
-      onClick={() => sendCommand({ type: "WITHDRAW_RIKISHI", rikishiId: r.id })}>
+    <Button
+      size="sm"
+      variant="outline"
+      onClick={() => sendCommand({ type: "WITHDRAW_RIKISHI", rikishiId: r.id })}
+    >
       Withdraw
     </Button>
   )}
@@ -281,11 +301,13 @@ git commit -m "feat(medical): treat and withdraw actions for injured wrestlers"
 ---
 
 ## Final verification
+
 - [ ] `npx vitest run` — full suite green.
 - [ ] `npx vite build` — clean.
 - [ ] Manual: medical view treat/withdraw both mutate world state and respect the funds guard.
 
 ## Self-review notes
+
 - **Coverage:** engine actions (Task 1) + worker commands (Task 2) + UI (Task 3) = full vertical slice for the two health decisions.
 - **Type consistency:** `withdrawRikishi(world, rikishiId)` / `treatInjury(world, rikishiId, weeks)` signatures identical across engine, worker handlers, command union, and UI dispatch. `TREATMENT_COST_PER_WEEK = 500_000` used in engine and reflected in the UI label.
 - **Reuse:** `ImpactBuilder`, `resolveImpacts`, existing `Rikishi.isKyujo`/`injuryWeeksRemaining` fields. No change to injury-rolling/recovery tick logic.

@@ -138,7 +138,10 @@ console.log();
 console.log("--- RivalryAgent ---");
 const rivalryCtx = {
   oyakata,
-  activeRivalries: {} as Record<string, import("../src/engine/systems/narrative/RivalryConstants").RivalryPairState>,
+  activeRivalries: {} as Record<
+    string,
+    import("../src/engine/systems/narrative/RivalryConstants").RivalryPairState
+  >,
   currentMood: "content",
 };
 const rivalryResult = spawnRivalryAgent(rivalryCtx);

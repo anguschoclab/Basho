@@ -12,12 +12,12 @@ Two absences together make `active_basho` a passive spectator experience with ze
 
 ## Affected Files
 
-| File | Change |
-|------|--------|
-| `src/engine/types/combat.ts` | Add `TACTIC_TO_FAMILY` map; export counter-resolution function |
-| `src/engine/bout/physics/tachiai.ts` | Read opponent's `familyPreferences` max, apply `TACTICAL_MATRIX` counter bonus |
+| File                                    | Change                                                                                          |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `src/engine/types/combat.ts`            | Add `TACTIC_TO_FAMILY` map; export counter-resolution function                                  |
+| `src/engine/bout/physics/tachiai.ts`    | Read opponent's `familyPreferences` max, apply `TACTICAL_MATRIX` counter bonus                  |
 | `src/engine/loop/LoopDecisionEngine.ts` | Add `"kyujo_decision"` blocking decision type in `detectDueDecisions` and `applyDecisionEffect` |
-| `src/engine/npcAIWorkers.ts` | Extend NPC kyujo to cover moderate-severity wrestlers (compete/withdraw trade-off) |
+| `src/engine/npcAIWorkers.ts`            | Extend NPC kyujo to cover moderate-severity wrestlers (compete/withdraw trade-off)              |
 
 ---
 
@@ -29,12 +29,12 @@ Two absences together make `active_basho` a passive spectator experience with ze
 // Maps each player-facing BoutTactic to its underlying TacticalFamily
 // so TACTICAL_MATRIX can evaluate counter advantages.
 export const TACTIC_TO_FAMILY: Record<BoutTactic, TacticalFamily> = {
-  STANDARD:       "push",
-  OSHI_THRUST:    "push",
-  YOTSU_BELT:     "belt",
+  STANDARD: "push",
+  OSHI_THRUST: "push",
+  YOTSU_BELT: "belt",
   DEFENSIVE_PULL: "trick",
-  HENKA:          "trick",
-  ALL_OUT:        "push",   // all-out commits to push family
+  HENKA: "trick",
+  ALL_OUT: "push", // all-out commits to push family
 };
 ```
 
@@ -52,12 +52,14 @@ export const COUNTER_TACTIC_BONUS = 5; // points, vs ±4 base jitter
 
 export function resolveCounterTacticBonus(
   playerTactic: BoutTactic,
-  opponentProfile: CombatProfile,
+  opponentProfile: CombatProfile
 ): number {
   const playerFamily = TACTIC_TO_FAMILY[playerTactic] ?? "push";
   // Opponent's dominant family = highest familyPreference value
-  const opponentFamily = (Object.entries(opponentProfile.familyPreferences) as [TacticalFamily, number][])
-    .sort((a, b) => b[1] - a[1])[0]?.[0] ?? "push";
+  const opponentFamily =
+    (Object.entries(opponentProfile.familyPreferences) as [TacticalFamily, number][]).sort(
+      (a, b) => b[1] - a[1]
+    )[0]?.[0] ?? "push";
   const counters = TACTICAL_MATRIX[playerFamily] ?? [];
   return counters.includes(opponentFamily) ? COUNTER_TACTIC_BONUS : 0;
 }
@@ -84,7 +86,7 @@ if (bout.playerTactic && bout.playerTactic !== "STANDARD") {
   if (opponentRikishi.combatProfile) {
     const counterBonus = resolveCounterTacticBonus(
       bout.playerTactic,
-      opponentRikishi.combatProfile,
+      opponentRikishi.combatProfile
     );
     if (bout.playerSide === "east") {
       eastTachiaiPower += counterBonus;
@@ -137,7 +139,7 @@ In `detectDueDecisions` (after the `pre_basho_readiness` block, around line 60),
 // is injured with moderate+ severity and scheduled to compete today.
 if (world.cyclePhase === "active_basho" && world.currentBasho) {
   const todayMatches = world.currentBasho.matches.filter(
-    (m) => m.day === world.currentBasho!.day && !m.result,
+    (m) => m.day === world.currentBasho!.day && !m.result
   );
   for (const match of todayMatches) {
     const playerSide =
@@ -214,7 +216,7 @@ if (decisionType === "kyujo_decision") {
     builder.mergeTransientContext({
       dailyInjuryRiskOverrides: {
         ...existing,
-        [rikishiId]: (r?.injuryStatus?.severity === "serious" ? 2.0 : 1.5),
+        [rikishiId]: r?.injuryStatus?.severity === "serious" ? 2.0 : 1.5,
       },
     });
   }

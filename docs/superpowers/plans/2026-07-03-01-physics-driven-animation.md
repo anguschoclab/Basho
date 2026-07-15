@@ -10,13 +10,13 @@ The `boutLog: BoutLogEntry[]` array already encodes everything needed — tachia
 
 ## Affected Files
 
-| File | Change |
-|------|--------|
-| `src/components/game/boutReplay/boutCanvas/types.ts` | Add `BoutScript`, `BoutKeyframe`, `kimariteFamily` to types |
+| File                                                     | Change                                                              |
+| -------------------------------------------------------- | ------------------------------------------------------------------- |
+| `src/components/game/boutReplay/boutCanvas/types.ts`     | Add `BoutScript`, `BoutKeyframe`, `kimariteFamily` to types         |
 | `src/components/game/boutReplay/boutCanvas/animation.ts` | Replace hardcoded `getTargetState` with script-driven interpolation |
-| `src/components/game/boutReplay/boutCanvas/constants.ts` | Add kimarite family lookup map |
-| `src/components/game/boutReplay/useBoutReplay.ts` | Build `BoutScript` from `result.log` on init, pass to animation |
-| `src/engine/bout/ReplayMetadata.ts` | Expose `getKimariteFamily(kimarite: string): KimariteFamily` |
+| `src/components/game/boutReplay/boutCanvas/constants.ts` | Add kimarite family lookup map                                      |
+| `src/components/game/boutReplay/useBoutReplay.ts`        | Build `BoutScript` from `result.log` on init, pass to animation     |
+| `src/engine/bout/ReplayMetadata.ts`                      | Expose `getKimariteFamily(kimarite: string): KimariteFamily`        |
 
 ---
 
@@ -28,12 +28,12 @@ Add at end of file:
 
 ```typescript
 export type KimariteFamily =
-  | "force_out"   // yorikiri, oshidashi, okuridashi, tsukidashi
-  | "throw"       // uwatenage, shitatenage, kotenage, sukuinage, ipponzeoi
-  | "pull"        // hatakikomi, hikitoshi, okuritaoshi, tsukiotoshi
-  | "lift"        // tsuridashi, tsuriotoshi
-  | "trip"        // ashitori, ketaguri, sotogake, uchigake
-  | "generic";    // fallback
+  | "force_out" // yorikiri, oshidashi, okuridashi, tsukidashi
+  | "throw" // uwatenage, shitatenage, kotenage, sukuinage, ipponzeoi
+  | "pull" // hatakikomi, hikitoshi, okuritaoshi, tsukiotoshi
+  | "lift" // tsuridashi, tsuriotoshi
+  | "trip" // ashitori, ketaguri, sotogake, uchigake
+  | "generic"; // fallback
 
 // A resolved keyframe override for one phase
 export interface PhaseOverride {
@@ -75,23 +75,35 @@ Add after existing exports:
 import type { KimariteFamily } from "./types";
 
 const FORCE_OUT_TECHNIQUES = new Set([
-  "yorikiri", "oshidashi", "tsukidashi", "okuridashi", "yoritaoshi",
-  "oshitaoshi", "tsukitaoshi",
+  "yorikiri",
+  "oshidashi",
+  "tsukidashi",
+  "okuridashi",
+  "yoritaoshi",
+  "oshitaoshi",
+  "tsukitaoshi",
 ]);
 const THROW_TECHNIQUES = new Set([
-  "uwatenage", "shitatenage", "kotenage", "sukuinage", "ipponzeoi",
-  "uwatedashinage", "shitatedashinage", "kakenage", "kainahineri",
+  "uwatenage",
+  "shitatenage",
+  "kotenage",
+  "sukuinage",
+  "ipponzeoi",
+  "uwatedashinage",
+  "shitatedashinage",
+  "kakenage",
+  "kainahineri",
 ]);
 const PULL_TECHNIQUES = new Set([
-  "hatakikomi", "hikitoshi", "okuritaoshi", "tsukiotoshi", "abisetaoshi",
+  "hatakikomi",
+  "hikitoshi",
+  "okuritaoshi",
+  "tsukiotoshi",
+  "abisetaoshi",
   "okurihikitaoshi",
 ]);
-const LIFT_TECHNIQUES = new Set([
-  "tsuridashi", "tsuriotoshi",
-]);
-const TRIP_TECHNIQUES = new Set([
-  "ashitori", "ketaguri", "sotogake", "uchigake", "mitokorozeme",
-]);
+const LIFT_TECHNIQUES = new Set(["tsuridashi", "tsuriotoshi"]);
+const TRIP_TECHNIQUES = new Set(["ashitori", "ketaguri", "sotogake", "uchigake", "mitokorozeme"]);
 
 export function getKimariteFamily(kimarite: string): KimariteFamily {
   const k = kimarite.toLowerCase().replace(/[-_\s]/g, "");
@@ -141,10 +153,13 @@ function buildBoutScript(result: BoutResult, winnerSide: "east" | "west"): BoutS
   // Tachiai: dominant margin → surge; low margin → stagger
   if (tachiaiMargin > 0.7) {
     // Attacker surges forward aggressively
-    const winnerDelta = winnerSide === "east"
-      ? { x: 0.08, rotation: -8 }
-      : { x: -0.08, rotation: 8 };
-    overrides.push({ phase: "tachiai", eastDelta: winnerSide === "east" ? winnerDelta : undefined, westDelta: winnerSide === "west" ? winnerDelta : undefined });
+    const winnerDelta =
+      winnerSide === "east" ? { x: 0.08, rotation: -8 } : { x: -0.08, rotation: 8 };
+    overrides.push({
+      phase: "tachiai",
+      eastDelta: winnerSide === "east" ? winnerDelta : undefined,
+      westDelta: winnerSide === "west" ? winnerDelta : undefined,
+    });
   } else if (tachiaiMargin < 0.35) {
     // Both stagger — minimal forward movement
     overrides.push({ phase: "tachiai", durationScale: 1.3 });
@@ -197,16 +212,20 @@ Pass `boutScriptRef.current` to `getTargetState` calls throughout the RAF loop.
 **File: `src/components/game/boutReplay/boutCanvas/animation.ts`**
 
 Change signature:
+
 ```typescript
 // Before:
-export function getTargetState(phase: ReplayPhase, winnerSide: "east" | "west"): { east: RikishiState; west: RikishiState }
+export function getTargetState(
+  phase: ReplayPhase,
+  winnerSide: "east" | "west"
+): { east: RikishiState; west: RikishiState };
 
 // After:
 export function getTargetState(
   phase: ReplayPhase,
   winnerSide: "east" | "west",
-  script: BoutScript,
-): { east: RikishiState; west: RikishiState }
+  script: BoutScript
+): { east: RikishiState; west: RikishiState };
 ```
 
 Inside the function, after computing the default `east` and `west` target states from the existing `switch(phase)` block, apply overrides:
@@ -214,14 +233,18 @@ Inside the function, after computing the default `east` and `west` target states
 ```typescript
 const override = script.overrides.find((o) => o.phase === phase);
 if (override?.eastDelta) {
-  Object.assign(east, { ...east, ...override.eastDelta,
+  Object.assign(east, {
+    ...east,
+    ...override.eastDelta,
     x: east.x + (override.eastDelta.x ?? 0),
     y: east.y + (override.eastDelta.y ?? 0),
     rotation: east.rotation + (override.eastDelta.rotation ?? 0),
   });
 }
 if (override?.westDelta) {
-  Object.assign(west, { ...west, ...override.westDelta,
+  Object.assign(west, {
+    ...west,
+    ...override.westDelta,
     x: west.x + (override.westDelta.x ?? 0),
     y: west.y + (override.westDelta.y ?? 0),
     rotation: west.rotation + (override.westDelta.rotation ?? 0),
@@ -270,7 +293,7 @@ Export a new function that accepts a `BoutScript` and returns adjusted durations
 ```typescript
 export function applyScriptDurations(
   base: Record<ReplayPhase, number>,
-  script: BoutScript,
+  script: BoutScript
 ): Record<ReplayPhase, number> {
   const result = { ...base };
   for (const override of script.overrides) {

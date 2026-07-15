@@ -11,6 +11,7 @@ This document outlines a comprehensive agent architecture for the Sumo Manager P
 **Location:** `src/engine/npcAIWorkers.ts`
 
 **Current Workers:**
+
 1. **Training Worker** - Decides training intensity, focus, and recovery
 2. **Scouting Worker** - Determines scouting priority
 3. **Personnel Worker** - Identifies rikishi to protect, develop, push, or withdraw
@@ -32,6 +33,7 @@ This document outlines a comprehensive agent architecture for the Sumo Manager P
 ### Key Decision Points in Tick Pipeline
 
 **Weekly Phases:**
+
 - `phase01_week_npc_ai.ts` - Main NPC AI decision loop
 - `phase01_week_recruitment.ts` - NPC recruitment with bidding
 - `phase01_week_governance.ts` - Governance status transitions
@@ -45,6 +47,7 @@ This document outlines a comprehensive agent architecture for the Sumo Manager P
 ### Pattern Definition
 
 All agents follow this pattern:
+
 ```typescript
 export interface [AgentName]Context {
   // Input context
@@ -62,13 +65,15 @@ export function spawn[AgentName]Agent(ctx: [AgentName]Context): [AgentName]Resul
 ### Approved Agents (High Priority)
 
 #### 1. Crisis Agent
+
 **Purpose:** Handle NPC responses to narrative crises
 **Context:** Crisis event details, oyakata personality, current state
 **Decision:** Choose crisis response option
 **Impact:** Narrative outcomes, reputation changes, mood shifts
 **Justification:** CrisisService has registry of crises with choices - NPCs need to make these decisions autonomously
 
-#### 2. Finance Agent  
+#### 2. Finance Agent
+
 **Purpose:** Financial investment decisions
 **Context:** Heya finances, runway, oyakata risk appetite
 **Decision:** Buy myoseki stocks, invest in facilities, build reserves
@@ -76,6 +81,7 @@ export function spawn[AgentName]Agent(ctx: [AgentName]Context): [AgentName]Resul
 **Justification:** npcFinanceStrategy exists but not agentified - would benefit from worker pattern
 
 #### 3. Governance Agent
+
 **Purpose:** Political maneuvering and scandal management
 **Context:** Political capital, scandal score, oyakata personality
 **Decision:** Reduce scandals, sabotage rivals, use political favors
@@ -83,6 +89,7 @@ export function spawn[AgentName]Agent(ctx: [AgentName]Context): [AgentName]Resul
 **Justification:** npcGovernanceStrategy exists - agentification would integrate with weekly decision loop
 
 #### 4. Recruitment Agent
+
 **Purpose:** Recruitment strategy and bidding
 **Context:** Vacancies, talent pool, oyakata philosophy
 **Decision:** Max bid calculations, target candidate selection
@@ -90,6 +97,7 @@ export function spawn[AgentName]Agent(ctx: [AgentName]Context): [AgentName]Resul
 **Justification:** TalentPoolNPCRecruitment has bidding logic - agent would centralize strategy
 
 #### 5. Rivalry Agent
+
 **Purpose:** Rivalry management and response
 **Context:** Active rivalries, oyakata personality, stable reputation
 **Decision:** Escalate or de-escalate rivalries, strategic targeting
@@ -97,6 +105,7 @@ export function spawn[AgentName]Agent(ctx: [AgentName]Context): [AgentName]Resul
 **Justification:** RivalryService manages state but NPC strategic decisions are missing
 
 #### 6. Narrative Agent
+
 **Purpose:** Story generation and event orchestration
 **Context:** World state, rikishi achievements, historical context
 **Decision:** Trigger narrative events, generate storylines
@@ -106,31 +115,39 @@ export function spawn[AgentName]Agent(ctx: [AgentName]Context): [AgentName]Resul
 ### Disapproved/Lower Priority Agents
 
 #### Matchmaking Agent - DISAPPROVED
+
 **Reason:** SwissAlgorithm.ts is a deterministic algorithm for the JSA (player-facing system). NPCs should not influence matchmaking as it would break competitive integrity.
 
-#### Injury Agent - DISAPPROVED  
+#### Injury Agent - DISAPPROVED
+
 **Reason:** InjuryService is a simulation system based on fatigue and durability. NPC decisions should not directly cause injuries - that's simulation, not strategy.
 
 #### Welfare Agent - DISAPPROVED
+
 **Reason:** WelfareService is a compliance system with state machine transitions. NPC behavior influences welfare (via training decisions) but shouldn't directly control compliance status.
 
 #### Bout Agent - DISAPPROVED
+
 **Reason:** boutResolver runs physics simulation. NPC tactic overrides already exist (decideBoutTacticOverride) - no need for full agent.
 
 #### Retirement Agent - DISAPPROVED
+
 **Reason:** Retirement is a lifecycle decision based on age, injury, and performance. It's not a strategic choice NPCs make weekly.
 
 #### Sponsor Agent - DISAPPROVED
+
 **Reason:** Sponsor recruitment is handled in npcSponsorStrategy. The existing strategy pattern is sufficient - no need for separate agent.
 
 ## Implementation Strategy
 
 ### Phase 1: Core Agents (Immediate)
+
 1. **Crisis Agent** - Highest impact, clear decision points
 2. **Finance Agent** - Direct integration with existing strategy
 3. **Governance Agent** - Political depth
 
 ### Phase 2: Strategic Agents (Secondary)
+
 4. **Recruitment Agent** - Centralize bidding logic
 5. **Rivalry Agent** - Add strategic layer to rivalry system
 6. **Narrative Agent** - Enhance story generation
@@ -138,6 +155,7 @@ export function spawn[AgentName]Agent(ctx: [AgentName]Context): [AgentName]Resul
 ### Integration Points
 
 Agents will be integrated into:
+
 1. **Crisis Agent** - `phase01_week_npc_ai.ts` or `CrisisService.ts` when crisis is triggered
 2. **Finance Agent** - `npcFinanceStrategy.ts` or weekly financial phase
 3. **Governance Agent** - `npcGovernanceStrategy.ts` or `phase01_week_governance.ts`
@@ -165,6 +183,7 @@ Agents will be integrated into:
 ## Implementation Status
 
 ### Completed
+
 1. **Crisis Agent** - `src/engine/agents/CrisisAgent.ts` - Handles crisis responses based on personality traits
 2. **Finance Agent** - `src/engine/agents/FinanceAgent.ts` - Financial investment decisions
 3. **Governance Agent** - `src/engine/agents/GovernanceAgent.ts` - Political maneuvering and scandal management
@@ -174,7 +193,9 @@ Agents will be integrated into:
 7. **Agent Index** - `src/engine/agents/index.ts` - Barrel export for all agents
 
 ### Integration (Next Steps)
+
 The agents are implemented and ready for integration into their respective systems. Each agent follows the established worker pattern with:
+
 - Context interface defining inputs
 - Result interface defining outputs with reasoning
 - spawn[AgentName]Agent function implementing decision logic

@@ -74,8 +74,13 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
   let maxFunds = 0;
   for (let i = 0; i < heyas.length; i++) {
     const f = heyas[i].funds ?? 0;
-    if (i === 0) { minFunds = f; maxFunds = f; }
-    else { if (f < minFunds) minFunds = f; if (f > maxFunds) maxFunds = f; }
+    if (i === 0) {
+      minFunds = f;
+      maxFunds = f;
+    } else {
+      if (f < minFunds) minFunds = f;
+      if (f > maxFunds) maxFunds = f;
+    }
   }
 
   const chronicle = world.chronicle;
@@ -100,8 +105,10 @@ function snapshot(world: WorldState, errors: string[]): YearSnapshot {
     maxFunds,
     avgAge: Math.round(avgAge * 10) / 10,
     injuredCount: active.filter((r) => r.injured).length,
-    retiredTotal: (world.historicalRikishi ? Array.from(world.historicalRikishi.values()).filter((r) => r.isRetired).length : 0)
-      + allRikishi.filter((r) => r.isRetired).length,
+    retiredTotal:
+      (world.historicalRikishi
+        ? Array.from(world.historicalRikishi.values()).filter((r) => r.isRetired).length
+        : 0) + allRikishi.filter((r) => r.isRetired).length,
     historicalTotal: world.historicalRikishi?.size ?? 0,
     errors: [...errors],
   };
@@ -115,18 +122,24 @@ function checkAnomalies(snap: YearSnapshot, prev: YearSnapshot | null): string[]
   if (snap.yokozunaCount === 0) issues.push("WARN: No yokozuna in division");
   if (snap.yokozunaCount > 4) issues.push(`WARN: ${snap.yokozunaCount} yokozuna (high)`);
   if (snap.ozekiCount === 0) issues.push("WARN: No ozeki in division");
-  if (snap.makuuchiCount < 30) issues.push(`WARN: Makuuchi has only ${snap.makuuchiCount} rikishi (should be ~42)`);
-  if (snap.makuuchiCount > 60) issues.push(`WARN: Makuuchi overflow: ${snap.makuuchiCount} rikishi`);
-  if (snap.rikishiActive < 100) issues.push(`WARN: Active rikishi critically low: ${snap.rikishiActive}`);
-  if (snap.negativeHeyas > 0) issues.push(`WARN: ${snap.negativeHeyas} heyas insolvent: ${snap.insolventHeyas.join(", ")}`);
+  if (snap.makuuchiCount < 30)
+    issues.push(`WARN: Makuuchi has only ${snap.makuuchiCount} rikishi (should be ~42)`);
+  if (snap.makuuchiCount > 60)
+    issues.push(`WARN: Makuuchi overflow: ${snap.makuuchiCount} rikishi`);
+  if (snap.rikishiActive < 100)
+    issues.push(`WARN: Active rikishi critically low: ${snap.rikishiActive}`);
+  if (snap.negativeHeyas > 0)
+    issues.push(`WARN: ${snap.negativeHeyas} heyas insolvent: ${snap.insolventHeyas.join(", ")}`);
   if (snap.heyaCount < 3) issues.push(`ERROR: Heya count collapsed to ${snap.heyaCount}`);
   if (snap.avgAge > 35) issues.push(`WARN: Avg rikishi age ${snap.avgAge} — roster aging out`);
   if (snap.avgAge < 18) issues.push(`WARN: Avg age ${snap.avgAge} — suspiciously young`);
 
   if (prev) {
     const rikishiDelta = snap.rikishiActive - prev.rikishiActive;
-    if (rikishiDelta < -30) issues.push(`WARN: Active rikishi dropped ${Math.abs(rikishiDelta)} in one year`);
-    if (snap.heyaCount < prev.heyaCount - 2) issues.push(`WARN: ${prev.heyaCount - snap.heyaCount} heyas merged/dissolved this year`);
+    if (rikishiDelta < -30)
+      issues.push(`WARN: Active rikishi dropped ${Math.abs(rikishiDelta)} in one year`);
+    if (snap.heyaCount < prev.heyaCount - 2)
+      issues.push(`WARN: ${prev.heyaCount - snap.heyaCount} heyas merged/dissolved this year`);
   }
 
   return issues;
@@ -165,7 +178,9 @@ for (const [heyaId, heya] of nextHeyas) {
 }
 world = { ...world, heyas: nextHeyas };
 
-console.log(`World initialised: ${world.rikishi.size} rikishi, ${world.heyas.size} heyas, year ${world.year}\n`);
+console.log(
+  `World initialised: ${world.rikishi.size} rikishi, ${world.heyas.size} heyas, year ${world.year}\n`
+);
 
 let currentWorld = world;
 let totalErrors = 0;
@@ -212,10 +227,10 @@ for (let yr = 0; yr < YEARS; yr++) {
 
   console.log(
     `${marker} Year ${snap.year} | rikishi=${snap.rikishiActive}(+${snap.historicalTotal} hist) ` +
-    `heyas=${snap.heyaCount} Y=${snap.yokozunaCount} O=${snap.ozekiCount} ` +
-    `mak=${snap.makuuchiCount} injured=${snap.injuredCount} ` +
-    `funds=¥${(snap.avgFunds / 1_000_000).toFixed(1)}M avg [min=${(snap.minFunds / 1_000_000).toFixed(1)}M] ` +
-    `HoF=${snap.hofInductees} cup=${snap.globalCupChampion ?? "—"}`
+      `heyas=${snap.heyaCount} Y=${snap.yokozunaCount} O=${snap.ozekiCount} ` +
+      `mak=${snap.makuuchiCount} injured=${snap.injuredCount} ` +
+      `funds=¥${(snap.avgFunds / 1_000_000).toFixed(1)}M avg [min=${(snap.minFunds / 1_000_000).toFixed(1)}M] ` +
+      `HoF=${snap.hofInductees} cup=${snap.globalCupChampion ?? "—"}`
   );
 
   for (const a of anomalies) console.log(`    ${a}`);
@@ -234,12 +249,18 @@ console.log(`${"═".repeat(70)}`);
 const last = yearSnapshots.at(-1);
 if (last) {
   console.log(`\nFinal state (year ${last.year}):`);
-  console.log(`  Active rikishi: ${last.rikishiActive} (${last.historicalTotal} historical/retired)`);
+  console.log(
+    `  Active rikishi: ${last.rikishiActive} (${last.historicalTotal} historical/retired)`
+  );
   console.log(`  Heyas: ${last.heyaCount}`);
-  console.log(`  Yokozuna: ${last.yokozunaCount} | Ozeki: ${last.ozekiCount} | Makuuchi: ${last.makuuchiCount}`);
+  console.log(
+    `  Yokozuna: ${last.yokozunaCount} | Ozeki: ${last.ozekiCount} | Makuuchi: ${last.makuuchiCount}`
+  );
   console.log(`  HoF inductees: ${last.hofInductees}`);
   console.log(`  Avg age: ${last.avgAge}`);
-  console.log(`  Funds: avg=¥${(last.avgFunds / 1_000_000).toFixed(1)}M min=¥${(last.minFunds / 1_000_000).toFixed(1)}M max=¥${(last.maxFunds / 1_000_000).toFixed(1)}M`);
+  console.log(
+    `  Funds: avg=¥${(last.avgFunds / 1_000_000).toFixed(1)}M min=¥${(last.minFunds / 1_000_000).toFixed(1)}M max=¥${(last.maxFunds / 1_000_000).toFixed(1)}M`
+  );
   console.log(`  Global Cups held: ${currentWorld.chronicle?.globalCups?.length ?? 0}`);
 }
 
@@ -257,13 +278,17 @@ const allAnomalyYears = yearSnapshots
   .map((s) => s.year);
 
 console.log(`\nTotal engine errors captured: ${totalErrors}`);
-console.log(`Years with anomalies: ${allAnomalyYears.length > 0 ? allAnomalyYears.join(", ") : "none"}`);
+console.log(
+  `Years with anomalies: ${allAnomalyYears.length > 0 ? allAnomalyYears.join(", ") : "none"}`
+);
 
 // Rikishi drift analysis
 if (yearSnapshots.length > 1) {
   const first = yearSnapshots[0];
   const final = yearSnapshots.at(-1)!;
-  console.log(`\nRikishi drift: ${first.rikishiActive} → ${final.rikishiActive} active over ${YEARS} years`);
+  console.log(
+    `\nRikishi drift: ${first.rikishiActive} → ${final.rikishiActive} active over ${YEARS} years`
+  );
   console.log(`Heya drift: ${first.heyaCount} → ${final.heyaCount}`);
 }
 

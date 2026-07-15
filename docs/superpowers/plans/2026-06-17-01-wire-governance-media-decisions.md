@@ -11,6 +11,7 @@
 ---
 
 ## Background facts (verified — use these)
+
 - `issueGovernanceRuling(world, rulingId, severity: "lenient" | "standard" | "harsh"): StateImpact` — `src/engine/systems/governance/ScandalService.ts:269`, re-exported as `worldEngine.issueGovernanceRuling` (`src/engine/world.ts:45`). Operates on `world.governanceLog` entries by `id`.
 - `handleMediaEvent(world, eventId, choice: string): StateImpact` — `src/engine/systems/media/MediaEventService.ts:78`, re-exported from `src/engine/world.ts:32`. Operates on `world.governanceLog` + `world.mediaState`.
 - `GovernanceRuling` (`src/engine/types/economy.ts:55`): `{ id, date, heyaId, type: "fine"|"suspension"|"warning"|"closure", severity, reason, effects, playerChoice?, playerResponse? }`. **A ruling is unresolved iff `playerChoice` is undefined.**
@@ -23,6 +24,7 @@
 ### Task 1: Add `ISSUE_RULING` and `HANDLE_MEDIA_EVENT` to the worker command path
 
 **Files:**
+
 - Modify: `src/engine/worker/types.ts` (command union)
 - Modify: `src/engine/worker/engine.worker.ts` (handlers + imports)
 - Test: `src/engine/worker/__tests__/governanceMediaCommands.test.ts` (new — tests the engine fns the handlers call, since the worker globals aren't unit-testable)
@@ -42,8 +44,12 @@ function worldWithUnresolvedRuling() {
   const world = generateInitialWorld("gov-cmd-test");
   const heyaId = world.playerHeyaId!;
   const ruling: GovernanceRuling = {
-    id: "ruling-1", date: "2026-01", heyaId,
-    type: "fine", severity: "medium", reason: "test",
+    id: "ruling-1",
+    date: "2026-01",
+    heyaId,
+    type: "fine",
+    severity: "medium",
+    reason: "test",
     effects: { fineAmount: 1_000_000 },
   };
   return { world: { ...world, governanceLog: [ruling] }, heyaId };
@@ -123,6 +129,7 @@ git commit -m "feat(worker): add ISSUE_RULING and HANDLE_MEDIA_EVENT commands"
 ### Task 2: Surface ruling responses in `GovernancePage`
 
 **Files:**
+
 - Modify: `src/pages/GovernancePage.tsx`
 
 - [ ] **Step 1: Add a derived list of unresolved rulings**
@@ -130,9 +137,9 @@ git commit -m "feat(worker): add ISSUE_RULING and HANDLE_MEDIA_EVENT commands"
 In `src/pages/GovernancePage.tsx`, near the existing `governanceLog` mapping (~line 87), add:
 
 ```typescript
-  const unresolvedRulings = (state.world?.governanceLog ?? []).filter(
-    (r) => r.heyaId === state.world?.playerHeyaId && !r.playerChoice
-  );
+const unresolvedRulings = (state.world?.governanceLog ?? []).filter(
+  (r) => r.heyaId === state.world?.playerHeyaId && !r.playerChoice
+);
 ```
 
 - [ ] **Step 2: Render a response panel with three severity buttons per unresolved ruling**
@@ -140,27 +147,31 @@ In `src/pages/GovernancePage.tsx`, near the existing `governanceLog` mapping (~l
 Add a section (above the existing read-only ruling history list) that renders, for each `unresolvedRulings` entry, the reason plus three buttons:
 
 ```tsx
-{unresolvedRulings.length > 0 && (
-  <div className="space-y-3">
-    {unresolvedRulings.map((r) => (
-      <div key={r.id} className="rounded border border-primary/30 bg-primary/5 p-3">
-        <div className="text-sm font-bold">{r.type.toUpperCase()} — {r.reason}</div>
-        <div className="mt-2 flex gap-2">
-          {(["lenient", "standard", "harsh"] as const).map((sev) => (
-            <Button
-              key={sev}
-              size="sm"
-              variant="outline"
-              onClick={() => sendCommand({ type: "ISSUE_RULING", rulingId: r.id, severity: sev })}
-            >
-              {sev}
-            </Button>
-          ))}
+{
+  unresolvedRulings.length > 0 && (
+    <div className="space-y-3">
+      {unresolvedRulings.map((r) => (
+        <div key={r.id} className="rounded border border-primary/30 bg-primary/5 p-3">
+          <div className="text-sm font-bold">
+            {r.type.toUpperCase()} — {r.reason}
+          </div>
+          <div className="mt-2 flex gap-2">
+            {(["lenient", "standard", "harsh"] as const).map((sev) => (
+              <Button
+                key={sev}
+                size="sm"
+                variant="outline"
+                onClick={() => sendCommand({ type: "ISSUE_RULING", rulingId: r.id, severity: sev })}
+              >
+                {sev}
+              </Button>
+            ))}
+          </div>
         </div>
-      </div>
-    ))}
-  </div>
-)}
+      ))}
+    </div>
+  );
+}
 ```
 
 > `Button` is already imported in this file (it renders the political-favor "Request" button). If not, add `import { Button } from "@/components/ui/button";`.
@@ -181,6 +192,7 @@ git commit -m "feat(governance): let the player issue rulings on pending cases"
 ### Task 3: Surface media-event responses in `MediaPage`
 
 **Files:**
+
 - Modify: `src/pages/MediaPage.tsx`
 
 - [ ] **Step 1: Read the page to find where media events are listed**
@@ -208,19 +220,25 @@ const unresolvedMedia = (state.world?.governanceLog ?? []).filter(
 For each `unresolvedMedia` entry, render the standard three media responses (the `choice` string is free-form; use the conventional set the engine recognizes — `"no_comment"`, `"deny"`, `"apologize"`):
 
 ```tsx
-{unresolvedMedia.map((e) => (
-  <div key={e.id} className="rounded border border-border p-3">
-    <div className="text-sm font-medium">{e.reason}</div>
-    <div className="mt-2 flex gap-2">
-      {["no_comment", "deny", "apologize"].map((choice) => (
-        <Button key={choice} size="sm" variant="outline"
-          onClick={() => sendCommand({ type: "HANDLE_MEDIA_EVENT", eventId: e.id, choice })}>
-          {choice.replace("_", " ")}
-        </Button>
-      ))}
+{
+  unresolvedMedia.map((e) => (
+    <div key={e.id} className="rounded border border-border p-3">
+      <div className="text-sm font-medium">{e.reason}</div>
+      <div className="mt-2 flex gap-2">
+        {["no_comment", "deny", "apologize"].map((choice) => (
+          <Button
+            key={choice}
+            size="sm"
+            variant="outline"
+            onClick={() => sendCommand({ type: "HANDLE_MEDIA_EVENT", eventId: e.id, choice })}
+          >
+            {choice.replace("_", " ")}
+          </Button>
+        ))}
+      </div>
     </div>
-  </div>
-))}
+  ));
+}
 ```
 
 > Confirm the accepted `choice` values by reading `handleMediaEvent` (`MediaEventService.ts:78`). If it switches on specific strings, use those exact strings; if it stores the choice verbatim with no branching, any label is fine.
@@ -239,11 +257,13 @@ git commit -m "feat(media): let the player respond to media events"
 ---
 
 ## Final verification
+
 - [ ] `npx vitest run` — full suite green.
 - [ ] `npx vite build` — clean.
 - [ ] Manual: `GovernancePage` and `MediaPage` both let the player resolve a pending item, and the world state reflects the choice (`playerChoice` set, effects applied).
 
 ## Self-review notes
+
 - **Coverage:** Task 1 (worker commands) + Task 2 (governance UI) + Task 3 (media UI) cover the whole "wire it up" spec.
 - **Type consistency:** command names `ISSUE_RULING` / `HANDLE_MEDIA_EVENT` and their payload fields (`rulingId`/`severity`, `eventId`/`choice`) match the engine fn signatures and the worker union exactly.
 - **Reuse:** uses existing `issueGovernanceRuling` / `handleMediaEvent` engine fns, existing `sendCommand`, existing `Button`. No new engine logic.

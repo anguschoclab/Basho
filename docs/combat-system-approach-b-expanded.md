@@ -10,14 +10,14 @@
 
 Approach B+ keeps the deterministic tick loop structure but replaces every abstract scalar with physically meaningful quantities. The core shift:
 
-| Before | After |
-|--------|-------|
-| `balanceEast/West` (HP drain) | `positionEast/West` (meters from ring center, with CoG) |
-| `gripAdvantage` (enum) | `BeltBattleState` (lever arm torques per hand) |
-| `position: 'front/lateral/rear'` | `facingAngle` (radians, continuous) |
-| Edge = `balance ≤ 0` | Edge = foot position ≥ 4.55m |
-| Kimarite = post-physics retroactive fit | Kimarite = first successful declared technique |
-| Tawara = not modeled | `EdgeCrisisState` phase with tawara bounce resistance |
+| Before                                  | After                                                   |
+| --------------------------------------- | ------------------------------------------------------- |
+| `balanceEast/West` (HP drain)           | `positionEast/West` (meters from ring center, with CoG) |
+| `gripAdvantage` (enum)                  | `BeltBattleState` (lever arm torques per hand)          |
+| `position: 'front/lateral/rear'`        | `facingAngle` (radians, continuous)                     |
+| Edge = `balance ≤ 0`                    | Edge = foot position ≥ 4.55m                            |
+| Kimarite = post-physics retroactive fit | Kimarite = first successful declared technique          |
+| Tawara = not modeled                    | `EdgeCrisisState` phase with tawara bounce resistance   |
 
 The engagement loop stays at **~120–180 ticks** (same performance envelope), but each tick now advances spatial state rather than draining HP.
 
@@ -58,9 +58,9 @@ Victory condition: any body part (except sole of foot) touching outside tawara c
 ```typescript
 interface PhysicalBody {
   // Spatial position in dohyo (meters, origin = ring center)
-  x: number;               // positive = east
-  z: number;               // positive = north (shomen side)
-  facingAngle: number;     // radians; 0 = facing east opponent, π = facing away
+  x: number; // positive = east
+  z: number; // positive = north (shomen side)
+  facingAngle: number; // radians; 0 = facing east opponent, π = facing away
 
   // Velocity (meters per tick, 1 tick ≈ 0.2s in this model)
   vx: number;
@@ -68,26 +68,27 @@ interface PhysicalBody {
   angularVelocity: number; // rad/tick (rotation from torque)
 
   // Center of Mass
-  cogHeight: number;       // meters; derived from rikishi height * 0.54
-  cogOffset: number;       // lateral CoG drift from base of support, meters
-                           // > baseOfSupport/2 = falling
+  cogHeight: number; // meters; derived from rikishi height * 0.54
+  cogOffset: number; // lateral CoG drift from base of support, meters
+  // > baseOfSupport/2 = falling
 
   // Base of Support
-  footSpread: number;      // meters between feet; wider = more stable
-  leadingFootX: number;    // leading foot position (used for boundary check)
+  footSpread: number; // meters between feet; wider = more stable
+  leadingFootX: number; // leading foot position (used for boundary check)
   trailingFootX: number;
 
   // Structural
-  mass: number;            // kg, from rikishi weight stat
-  height: number;          // cm, from rikishi height stat
+  mass: number; // kg, from rikishi weight stat
+  height: number; // cm, from rikishi height stat
 
   // Accumulated strain
-  fatigue: number;         // 0–100
-  muscleStrain: number;    // 0–100; high strain = force output capped
+  fatigue: number; // 0–100
+  muscleStrain: number; // 0–100; high strain = force output capped
 }
 ```
 
 **Stability check (replaces `balance ≤ 0`):**
+
 ```typescript
 function isBodyFalling(body: PhysicalBody): boolean {
   const maxOffset = body.footSpread / 2;
@@ -106,19 +107,19 @@ function isOutOfRing(body: PhysicalBody): boolean {
 ```typescript
 interface HandGrip {
   // Physical contact point on opponent's mawashi
-  armReach: number;        // meters, how far in the hand has penetrated
-  contactX: number;        // position on opponent's body (meters from centerline)
+  armReach: number; // meters, how far in the hand has penetrated
+  contactX: number; // position on opponent's body (meters from centerline)
   contactZ: number;
-  leverArm: number;        // meters from opponent's CoG to contact point
-  isInside: boolean;       // true = arm inside opponent's arm (uwate/shitate)
-  isBlocked: boolean;      // opponent's arm is blocking this hand
-  gripStrength: number;    // 0–1, decays with fatigue and strain
+  leverArm: number; // meters from opponent's CoG to contact point
+  isInside: boolean; // true = arm inside opponent's arm (uwate/shitate)
+  isBlocked: boolean; // opponent's arm is blocking this hand
+  gripStrength: number; // 0–1, decays with fatigue and strain
 }
 
 interface BeltBattleState {
-  eastLeft:  HandGrip | null;
+  eastLeft: HandGrip | null;
   eastRight: HandGrip | null;
-  westLeft:  HandGrip | null;
+  westLeft: HandGrip | null;
   westRight: HandGrip | null;
 
   // Net torque each fighter can apply this tick (N·m)
@@ -126,16 +127,17 @@ interface BeltBattleState {
   torqueWest: number;
 
   // Derived grip classification (for kimarite classification and narrative)
-  eastGripClass: 'morozashi' | 'uwate' | 'shitate' | 'outside' | 'none';
-  westGripClass: 'morozashi' | 'uwate' | 'shitate' | 'outside' | 'none';
+  eastGripClass: "morozashi" | "uwate" | "shitate" | "outside" | "none";
+  westGripClass: "morozashi" | "uwate" | "shitate" | "outside" | "none";
 
   // Grip depth (arm penetration into opponent's side)
-  eastDepth: 'maemitsu' | 'deep' | 'standard';
-  westDepth: 'maemitsu' | 'deep' | 'standard';
+  eastDepth: "maemitsu" | "deep" | "standard";
+  westDepth: "maemitsu" | "deep" | "standard";
 }
 ```
 
 **Torque calculation (replaces grip multiplier scalars):**
+
 ```typescript
 function calculateTorque(grip: HandGrip, force: number): number {
   // τ = F × r × sin(θ); simplified to lever arm × force × inside bonus
@@ -145,7 +147,7 @@ function calculateTorque(grip: HandGrip, force: number): number {
 }
 
 function computeNetTorque(left: HandGrip | null, right: HandGrip | null, force: number): number {
-  const tLeft  = left  ? calculateTorque(left,  force * 0.55) : 0;
+  const tLeft = left ? calculateTorque(left, force * 0.55) : 0;
   const tRight = right ? calculateTorque(right, force * 0.45) : 0;
   return tLeft + tRight; // morozashi: both inside = ~2.6× single outside
 }
@@ -157,14 +159,14 @@ function computeNetTorque(left: HandGrip | null, right: HandGrip | null, force: 
 interface PushBattleState {
   // Contest line: how far the engagement center has shifted toward each fighter
   // 0 = center; positive = east is being pushed back; negative = west being pushed back
-  contestLine: number;         // meters
+  contestLine: number; // meters
 
   // Each fighter's lead foot position
-  eastLeadFoot: number;        // meters from ring center (east positive)
-  westLeadFoot: number;        // meters from ring center (west positive)
+  eastLeadFoot: number; // meters from ring center (east positive)
+  westLeadFoot: number; // meters from ring center (west positive)
 
   // Directional momentum vectors
-  eastMomentum: { x: number; z: number };  // m/tick
+  eastMomentum: { x: number; z: number }; // m/tick
   westMomentum: { x: number; z: number };
 
   // Step counts (yorikiri is measured in step count)
@@ -172,7 +174,7 @@ interface PushBattleState {
   westSteps: number;
 
   // Footwork stability (wide stance = more resistance, but slower)
-  eastStanceWidth: number;     // meters
+  eastStanceWidth: number; // meters
   westStanceWidth: number;
 }
 ```
@@ -181,39 +183,40 @@ interface PushBattleState {
 
 ```typescript
 type CombatPhase =
-  | { tag: 'approach' }
-  | { tag: 'tachiai';     impactVelocity: number; contactAngle: number }
-  | { tag: 'push_battle'; state: PushBattleState }
-  | { tag: 'belt_battle'; state: BeltBattleState; push: PushBattleState }
-  | { tag: 'edge_crisis'; crisis: EdgeCrisisState; prev: 'push_battle' | 'belt_battle' }
-  | { tag: 'resolved';    winner: Side; exitVector: { x: number; z: number }; technique: KimariteId }
+  | { tag: "approach" }
+  | { tag: "tachiai"; impactVelocity: number; contactAngle: number }
+  | { tag: "push_battle"; state: PushBattleState }
+  | { tag: "belt_battle"; state: BeltBattleState; push: PushBattleState }
+  | { tag: "edge_crisis"; crisis: EdgeCrisisState; prev: "push_battle" | "belt_battle" }
+  | { tag: "resolved"; winner: Side; exitVector: { x: number; z: number }; technique: KimariteId };
 ```
 
 ### EdgeCrisisState (new — tawara drama)
 
 ```typescript
 interface EdgeCrisisState {
-  side: Side;                  // who is at the edge
-  tawaraToePosition: number;   // 0.0 = heel on tawara, 1.0 = toe on tawara, 2.0 = fully out
-  tawaraBounceForce: number;   // resistance the straw provides (spikes when toe contacts it)
-  escapeAngle: number;         // radians — direction fighter can pivot to escape
-  escapeForceAvailable: number;// remaining force to push back
-  opponentPressureX: number;   // how much force opponent is applying this tick
+  side: Side; // who is at the edge
+  tawaraToePosition: number; // 0.0 = heel on tawara, 1.0 = toe on tawara, 2.0 = fully out
+  tawaraBounceForce: number; // resistance the straw provides (spikes when toe contacts it)
+  escapeAngle: number; // radians — direction fighter can pivot to escape
+  escapeForceAvailable: number; // remaining force to push back
+  opponentPressureX: number; // how much force opponent is applying this tick
   opponentPressureZ: number;
   recoveryProbability: number; // P(step back in) per tick
-  ticksInCrisis: number;       // drama counter — longer crisis = more tension
+  ticksInCrisis: number; // drama counter — longer crisis = more tension
 }
 ```
 
 **Tawara bounce physics:**
+
 ```typescript
 // The raised tawara gives a brief opposing force when stepped on.
 // This is why fighters can claw back from impossible positions.
 function tawaraBounceResistance(toePos: number): number {
-  if (toePos < 0.0) return 0;           // not on tawara yet
-  if (toePos < 0.5) return 15.0;        // heel contacts tawara — spike of resistance
-  if (toePos < 1.0) return 8.0;         // toe on tawara — still some bounce
-  return 0;                             // fully outside, no resistance
+  if (toePos < 0.0) return 0; // not on tawara yet
+  if (toePos < 0.5) return 15.0; // heel contacts tawara — spike of resistance
+  if (toePos < 1.0) return 8.0; // toe on tawara — still some bounce
+  return 0; // fully outside, no resistance
 }
 ```
 
@@ -244,7 +247,7 @@ interface EngineStateV2 {
     technique: KimariteId;
     succeeded: boolean;
   }>;
-  tentativeKimarite: KimariteId | null;  // set when a technique first succeeds
+  tentativeKimarite: KimariteId | null; // set when a technique first succeeds
 
   // Playback log
   log: BoutLogEntryV2[];
@@ -279,24 +282,28 @@ function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Engine
   const westImpulse = west.weight * westVelocity * Math.cos(contactAngle);
 
   // Tachiai winner = more impulse, with jitter
-  const winner: Side = (eastImpulse + jitter(rng, 5)) > (westImpulse + jitter(rng, 5))
-    ? 'east' : 'west';
+  const winner: Side =
+    eastImpulse + jitter(rng, 5) > westImpulse + jitter(rng, 5) ? "east" : "west";
 
   // Apply displacement to loser's PhysicalBody
-  const loserBody = winner === 'east' ? st.west : st.east;
+  const loserBody = winner === "east" ? st.west : st.east;
   const impulseDiff = Math.abs(eastImpulse - westImpulse);
-  loserBody.cogOffset += impulseDiff * 0.02;  // CoG drift from impact
-  loserBody.vx += impulseDiff * 0.15 * (winner === 'east' ? 1 : -1);
+  loserBody.cogOffset += impulseDiff * 0.02; // CoG drift from impact
+  loserBody.vx += impulseDiff * 0.15 * (winner === "east" ? 1 : -1);
 
   // Transition to push or belt phase
   const eastWantsBelt = east.combatProfile.familyPreferences.belt > 40;
   const westWantsBelt = west.combatProfile.familyPreferences.belt > 40;
 
   if (eastWantsBelt || westWantsBelt) {
-    st.phase = { tag: 'belt_battle', state: initBeltBattle(rng, east, west, winner), push: initPushState(east, west) };
+    st.phase = {
+      tag: "belt_battle",
+      state: initBeltBattle(rng, east, west, winner),
+      push: initPushState(east, west),
+    };
     st.beltBattle = (st.phase as any).state;
   } else {
-    st.phase = { tag: 'push_battle', state: initPushState(east, west) };
+    st.phase = { tag: "push_battle", state: initPushState(east, west) };
   }
 
   st.tachiaiWinner = winner;
@@ -307,9 +314,12 @@ function resolveTachiai(rng: SeededRNG, east: Rikishi, west: Rikishi, st: Engine
 
 ```typescript
 function tickPushBattle(
-  rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineStateV2, push: PushBattleState
+  rng: SeededRNG,
+  east: Rikishi,
+  west: Rikishi,
+  st: EngineStateV2,
+  push: PushBattleState
 ): { winner?: Side; kimarite?: KimariteId } | void {
-
   // Select actions
   const eastAction = selectAction(rng, east, st, west);
   const westAction = selectAction(rng, west, st, east);
@@ -327,12 +337,12 @@ function tickPushBattle(
   push.westMomentum.x += westForce * Math.cos(westAngle) * 0.01;
 
   // Apply momentum to positions
-  push.eastLeadFoot += push.westMomentum.x;  // west pushing east back
-  push.westLeadFoot += push.eastMomentum.x;  // east pushing west back
+  push.eastLeadFoot += push.westMomentum.x; // west pushing east back
+  push.westLeadFoot += push.eastMomentum.x; // east pushing west back
 
   // Momentum decay (friction — wide stance decays faster)
-  push.eastMomentum.x *= (1 - push.eastStanceWidth * 0.1);
-  push.westMomentum.x *= (1 - push.westStanceWidth * 0.1);
+  push.eastMomentum.x *= 1 - push.eastStanceWidth * 0.1;
+  push.westMomentum.x *= 1 - push.westStanceWidth * 0.1;
 
   // Update CoG offsets
   st.east.cogOffset += push.westMomentum.x * (st.east.mass / 1000);
@@ -341,7 +351,12 @@ function tickPushBattle(
   // Check for mid-fight kimarite attempt (NEW: not retroactive)
   const attempt = evaluateKimariteAttempt(east, west, eastAction, westAction, push, null, rng);
   if (attempt) {
-    st.attemptedTechniques.push({ tick: st.tick, side: attempt.side, technique: attempt.id, succeeded: attempt.succeeded });
+    st.attemptedTechniques.push({
+      tick: st.tick,
+      side: attempt.side,
+      technique: attempt.id,
+      succeeded: attempt.succeeded,
+    });
     if (attempt.succeeded) {
       return { winner: attempt.side, kimarite: attempt.id };
     }
@@ -349,17 +364,19 @@ function tickPushBattle(
 
   // Boundary check: trigger edge crisis
   if (push.eastLeadFoot >= TAWARA_RADIUS || push.westLeadFoot >= TAWARA_RADIUS) {
-    const crisisSide: Side = push.eastLeadFoot >= TAWARA_RADIUS ? 'east' : 'west';
+    const crisisSide: Side = push.eastLeadFoot >= TAWARA_RADIUS ? "east" : "west";
     st.phase = {
-      tag: 'edge_crisis',
+      tag: "edge_crisis",
       crisis: initEdgeCrisis(crisisSide, push, east, west),
-      prev: 'push_battle'
+      prev: "push_battle",
     };
   }
 
   // Falling check: extreme CoG offset
-  if (isBodyFalling(st.east)) return { winner: 'west', kimarite: classifyFallKimarite(push, st, 'east') };
-  if (isBodyFalling(st.west)) return { winner: 'east', kimarite: classifyFallKimarite(push, st, 'west') };
+  if (isBodyFalling(st.east))
+    return { winner: "west", kimarite: classifyFallKimarite(push, st, "east") };
+  if (isBodyFalling(st.west))
+    return { winner: "east", kimarite: classifyFallKimarite(push, st, "west") };
 }
 ```
 
@@ -367,15 +384,19 @@ function tickPushBattle(
 
 ```typescript
 function tickBeltBattle(
-  rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineStateV2, belt: BeltBattleState, push: PushBattleState
+  rng: SeededRNG,
+  east: Rikishi,
+  west: Rikishi,
+  st: EngineStateV2,
+  belt: BeltBattleState,
+  push: PushBattleState
 ): { winner?: Side; kimarite?: KimariteId } | void {
-
   // Each tick: fighters attempt to improve grip and apply torque
   evolveGripGeometry(rng, east, west, belt);
 
   // Compute net torques from lever arm geometry
-  belt.torqueEast = computeNetTorque(belt.eastLeft, belt.eastRight, stat(east, 'strength'));
-  belt.torqueWest = computeNetTorque(belt.westLeft, belt.westRight, stat(west, 'strength'));
+  belt.torqueEast = computeNetTorque(belt.eastLeft, belt.eastRight, stat(east, "strength"));
+  belt.torqueWest = computeNetTorque(belt.westLeft, belt.westRight, stat(west, "strength"));
 
   // Torque differential → angular velocity on opponent's body
   const torqueDiff = belt.torqueEast - belt.torqueWest;
@@ -392,8 +413,10 @@ function tickBeltBattle(
   st.west.facingAngle += st.west.angularVelocity;
 
   // Torque also translates to linear displacement (throw momentum)
-  push.eastLeadFoot += Math.abs(belt.torqueWest) * 0.008 * (belt.torqueWest > belt.torqueEast ? 1 : 0);
-  push.westLeadFoot += Math.abs(belt.torqueEast) * 0.008 * (belt.torqueEast > belt.torqueWest ? 1 : 0);
+  push.eastLeadFoot +=
+    Math.abs(belt.torqueWest) * 0.008 * (belt.torqueWest > belt.torqueEast ? 1 : 0);
+  push.westLeadFoot +=
+    Math.abs(belt.torqueEast) * 0.008 * (belt.torqueEast > belt.torqueWest ? 1 : 0);
 
   // Derive grip class (for kimarite classification)
   belt.eastGripClass = deriveGripClass(belt.eastLeft, belt.eastRight);
@@ -407,17 +430,19 @@ function tickBeltBattle(
 
   // Edge crisis trigger
   if (push.eastLeadFoot >= TAWARA_RADIUS || push.westLeadFoot >= TAWARA_RADIUS) {
-    const crisisSide: Side = push.eastLeadFoot >= TAWARA_RADIUS ? 'east' : 'west';
+    const crisisSide: Side = push.eastLeadFoot >= TAWARA_RADIUS ? "east" : "west";
     st.phase = {
-      tag: 'edge_crisis',
+      tag: "edge_crisis",
       crisis: initEdgeCrisis(crisisSide, push, east, west),
-      prev: 'belt_battle'
+      prev: "belt_battle",
     };
   }
 
   // Falling
-  if (isBodyFalling(st.east)) return { winner: 'west', kimarite: classifyBeltFallKimarite(belt, st, 'east') };
-  if (isBodyFalling(st.west)) return { winner: 'east', kimarite: classifyBeltFallKimarite(belt, st, 'west') };
+  if (isBodyFalling(st.east))
+    return { winner: "west", kimarite: classifyBeltFallKimarite(belt, st, "east") };
+  if (isBodyFalling(st.west))
+    return { winner: "east", kimarite: classifyBeltFallKimarite(belt, st, "west") };
 }
 ```
 
@@ -425,35 +450,42 @@ function tickBeltBattle(
 
 ```typescript
 function tickEdgeCrisis(
-  rng: SeededRNG, east: Rikishi, west: Rikishi, st: EngineStateV2, crisis: EdgeCrisisState
+  rng: SeededRNG,
+  east: Rikishi,
+  west: Rikishi,
+  st: EngineStateV2,
+  crisis: EdgeCrisisState
 ): { winner?: Side; kimarite?: KimariteId; escaped?: true } | void {
-
-  const defenderBody = crisis.side === 'east' ? st.east : st.west;
-  const attackerBody = crisis.side === 'east' ? st.west : st.east;
-  const defender     = crisis.side === 'east' ? east : west;
-  const attacker     = crisis.side === 'east' ? west : east;
+  const defenderBody = crisis.side === "east" ? st.east : st.west;
+  const attackerBody = crisis.side === "east" ? st.west : st.east;
+  const defender = crisis.side === "east" ? east : west;
+  const attacker = crisis.side === "east" ? west : east;
 
   crisis.ticksInCrisis++;
 
   // Advance toe position each tick based on net force
-  const netPressure = crisis.opponentPressureX - crisis.escapeForceAvailable - tawaraBounceResistance(crisis.tawaraToePosition);
+  const netPressure =
+    crisis.opponentPressureX -
+    crisis.escapeForceAvailable -
+    tawaraBounceResistance(crisis.tawaraToePosition);
   crisis.tawaraToePosition += netPressure * 0.03;
 
   // Check full exit
   if (crisis.tawaraToePosition >= 2.0) {
     // Out! Classify which kimarite based on how they exited
     const kimarite = classifyEdgeExitKimarite(crisis, st, rng);
-    return { winner: attacker === east ? 'east' : 'west', kimarite };
+    return { winner: attacker === east ? "east" : "west", kimarite };
   }
 
   // Escape attempt: per-tick recovery roll
-  const recoveryBonus = stat(defender, 'balance') * 0.005 + tawaraBounceResistance(crisis.tawaraToePosition) * 0.05;
+  const recoveryBonus =
+    stat(defender, "balance") * 0.005 + tawaraBounceResistance(crisis.tawaraToePosition) * 0.05;
   const escapeProbability = crisis.recoveryProbability + recoveryBonus;
 
   if (rng.bool(escapeProbability)) {
     // TAWARA DRAMA: fighter steps back in!
     // Shift from edge, resume previous phase with reduced momentum
-    defenderBody.vx *= -0.4;  // reverse some momentum
+    defenderBody.vx *= -0.4; // reverse some momentum
     crisis.tawaraToePosition -= 0.6;
     logEdgeCrisisEscape(st, crisis, rng);
     return { escaped: true };
@@ -462,11 +494,15 @@ function tickEdgeCrisis(
   // Torque reversal: if defender has belt grip, attempt throw FROM the edge
   // This produces utchari (backward pivot), sotogake from edge, etc.
   if (st.beltBattle) {
-    const defenderGripClass = crisis.side === 'east' ? st.beltBattle.eastGripClass : st.beltBattle.westGripClass;
-    if (defenderGripClass === 'morozashi' || defenderGripClass === 'uwate') {
+    const defenderGripClass =
+      crisis.side === "east" ? st.beltBattle.eastGripClass : st.beltBattle.westGripClass;
+    if (defenderGripClass === "morozashi" || defenderGripClass === "uwate") {
       const reversalAttempt = evaluateEdgeReversal(defender, attacker, crisis, st.beltBattle, rng);
       if (reversalAttempt.succeeded) {
-        return { winner: crisis.side === 'east' ? 'east' : 'west', kimarite: reversalAttempt.kimarite };
+        return {
+          winner: crisis.side === "east" ? "east" : "west",
+          kimarite: reversalAttempt.kimarite,
+        };
       }
     }
   }
@@ -487,27 +523,29 @@ interface KimariteAttempt {
 }
 
 function evaluateKimariteAttempt(
-  east: Rikishi, west: Rikishi,
-  eastAction: CombatAction | null, westAction: CombatAction | null,
+  east: Rikishi,
+  west: Rikishi,
+  eastAction: CombatAction | null,
+  westAction: CombatAction | null,
   push: PushBattleState | null,
   belt: BeltBattleState | null,
   rng: SeededRNG
 ): KimariteAttempt | null {
-
   // Build spatial context for classifier
   const ctx: SpatialBoutContext = {
-    eastLeadFoot:   push?.eastLeadFoot ?? 0,
-    westLeadFoot:   push?.westLeadFoot ?? 0,
-    eastFacingAngle: 0,    // from PhysicalBody
+    eastLeadFoot: push?.eastLeadFoot ?? 0,
+    westLeadFoot: push?.westLeadFoot ?? 0,
+    eastFacingAngle: 0, // from PhysicalBody
     westFacingAngle: Math.PI,
-    eastCoGOffset:  0,     // from PhysicalBody
-    westCoGOffset:  0,
-    eastGrip:       belt?.eastGripClass ?? 'none',
-    westGrip:       belt?.westGripClass ?? 'none',
-    torqueDiff:     belt ? belt.torqueEast - belt.torqueWest : 0,
-    eastMomentumX:  push?.eastMomentum.x ?? 0,
-    westMomentumX:  push?.westMomentum.x ?? 0,
-    atEdge: (push?.eastLeadFoot ?? 0) >= EDGE_THRESHOLD || (push?.westLeadFoot ?? 0) >= EDGE_THRESHOLD,
+    eastCoGOffset: 0, // from PhysicalBody
+    westCoGOffset: 0,
+    eastGrip: belt?.eastGripClass ?? "none",
+    westGrip: belt?.westGripClass ?? "none",
+    torqueDiff: belt ? belt.torqueEast - belt.torqueWest : 0,
+    eastMomentumX: push?.eastMomentum.x ?? 0,
+    westMomentumX: push?.westMomentum.x ?? 0,
+    atEdge:
+      (push?.eastLeadFoot ?? 0) >= EDGE_THRESHOLD || (push?.westLeadFoot ?? 0) >= EDGE_THRESHOLD,
   };
 
   // Each kimarite strategy now has a spatial condition instead of balance-based condition
@@ -516,15 +554,17 @@ function evaluateKimariteAttempt(
     if (!side) continue;
 
     // Technique succeeds based on force differential and stat check
-    const power = side === 'east'
-      ? ctx.torqueDiff + ctx.eastMomentumX + stat(east, 'technique')
-      : -ctx.torqueDiff + ctx.westMomentumX + stat(west, 'technique');
+    const power =
+      side === "east"
+        ? ctx.torqueDiff + ctx.eastMomentumX + stat(east, "technique")
+        : -ctx.torqueDiff + ctx.westMomentumX + stat(west, "technique");
 
-    const resistance = side === 'east'
-      ? stat(west, 'balance') + ctx.westCoGOffset * 10
-      : stat(east, 'balance') + ctx.eastCoGOffset * 10;
+    const resistance =
+      side === "east"
+        ? stat(west, "balance") + ctx.westCoGOffset * 10
+        : stat(east, "balance") + ctx.eastCoGOffset * 10;
 
-    const succeeded = (power + jitter(rng, 8)) > (resistance + jitter(rng, 8));
+    const succeeded = power + jitter(rng, 8) > resistance + jitter(rng, 8);
 
     if (succeeded) {
       return { side, id: strategy.id, succeeded: true };
@@ -545,21 +585,21 @@ The key change to `kimariteStrategy.ts` conditions — from balance-based to spa
 ```typescript
 // BEFORE (retroactive, balance-based):
 yorikiri: {
-  condition: (w, l) => w.grip !== 'none' && l.edgeDistance < 3 && w.forwardMomentum > 2
+  condition: (w, l) => w.grip !== "none" && l.edgeDistance < 3 && w.forwardMomentum > 2;
 }
 
 // AFTER (spatial, emergent):
 yorikiri: {
   appliesTo: (ctx, e, w) => {
     // Yorikiri = belt grip + push walk-out + forward momentum
-    const hasBelt = ctx.eastGrip !== 'none' || ctx.westGrip !== 'none';
+    const hasBelt = ctx.eastGrip !== "none" || ctx.westGrip !== "none";
     const atEdge = ctx.eastLeadFoot > EDGE_THRESHOLD || ctx.westLeadFoot > EDGE_THRESHOLD;
     const pushing = Math.abs(ctx.eastMomentumX) > 0.05 || Math.abs(ctx.westMomentumX) > 0.05;
     if (hasBelt && atEdge && pushing) {
-      return ctx.eastLeadFoot > ctx.westLeadFoot ? 'west' : 'east'; // who's being pushed
+      return ctx.eastLeadFoot > ctx.westLeadFoot ? "west" : "east"; // who's being pushed
     }
     return null;
-  }
+  };
 }
 
 // Isamiashi (winner stumbles out after opponent dodges):
@@ -569,23 +609,23 @@ isamiashi: {
     const eastOverrun = ctx.eastLeadFoot >= RING_RADIUS && ctx.eastMomentumX > 0.15;
     const westOverrun = ctx.westLeadFoot >= RING_RADIUS && ctx.westMomentumX > 0.15;
     // The opponent is NOT at the edge (they dodged)
-    if (eastOverrun && ctx.westLeadFoot < EDGE_THRESHOLD) return 'east'; // east stepped out
-    if (westOverrun && ctx.eastLeadFoot < EDGE_THRESHOLD) return 'west';
+    if (eastOverrun && ctx.westLeadFoot < EDGE_THRESHOLD) return "east"; // east stepped out
+    if (westOverrun && ctx.eastLeadFoot < EDGE_THRESHOLD) return "west";
     return null;
-  }
+  };
 }
 
 // Tsuriotoshi (lift and drop):
 tsuriotoshi: {
   appliesTo: (ctx, e, w) => {
     // Requires: moro-zashi grip, extreme vertical torque, opponent lifted
-    const eastCanLift = ctx.eastGrip === 'morozashi' && stat(e, 'strength') > 75;
-    const westCanLift = ctx.westGrip === 'morozashi' && stat(w, 'strength') > 75;
+    const eastCanLift = ctx.eastGrip === "morozashi" && stat(e, "strength") > 75;
+    const westCanLift = ctx.westGrip === "morozashi" && stat(w, "strength") > 75;
     const weightAdvantage = Math.abs(e.weight - w.weight) < 20; // close weights = lift is feasible
-    if (eastCanLift && weightAdvantage && ctx.torqueDiff > 20) return 'east';
-    if (westCanLift && weightAdvantage && -ctx.torqueDiff > 20) return 'west';
+    if (eastCanLift && weightAdvantage && ctx.torqueDiff > 20) return "east";
+    if (westCanLift && weightAdvantage && -ctx.torqueDiff > 20) return "west";
     return null;
-  }
+  };
 }
 ```
 
@@ -595,17 +635,17 @@ tsuriotoshi: {
 
 The spatial conditions in `KIMARITE_STRATEGIES_V2` must reproduce professional sumo's real kimarite distribution. These are the acceptance targets for Phase 8 verification (10,000-bout simulation, 50/50 push-dominant vs belt-dominant fighter split):
 
-| Rank | Technique | Real Frequency | Phase 8 Target (±5pp) |
-|------|-----------|---------------|----------------------|
-| 1 | Yorikiri | ~32.4% | 27–38% |
-| 2 | Oshidashi | ~20.9–25.8% | 17–28% |
-| 3 | Hatakikomi | ~7.8–8.5% | 5–12% |
-| 4 | Tsukidashi | ~5.7% | 3–9% |
-| 5 | Yoritaoshi | ~4.7% | 2–8% |
-| 6–8 | Uwatenage, Shitatenage, Hikiotoshi | ~2–4% each | 1–6% each |
-| — | Top 10 combined | ~85% | ≥80% |
-| — | Top 20 combined | ~96% | ≥90% |
-| — | Henka (as finishing move) | 63–92% success rate | 55–95% |
+| Rank | Technique                          | Real Frequency      | Phase 8 Target (±5pp) |
+| ---- | ---------------------------------- | ------------------- | --------------------- |
+| 1    | Yorikiri                           | ~32.4%              | 27–38%                |
+| 2    | Oshidashi                          | ~20.9–25.8%         | 17–28%                |
+| 3    | Hatakikomi                         | ~7.8–8.5%           | 5–12%                 |
+| 4    | Tsukidashi                         | ~5.7%               | 3–9%                  |
+| 5    | Yoritaoshi                         | ~4.7%               | 2–8%                  |
+| 6–8  | Uwatenage, Shitatenage, Hikiotoshi | ~2–4% each          | 1–6% each             |
+| —    | Top 10 combined                    | ~85%                | ≥80%                  |
+| —    | Top 20 combined                    | ~96%                | ≥90%                  |
+| —    | Henka (as finishing move)          | 63–92% success rate | 55–95%                |
 
 ### Why `weight` ≠ frequency
 
@@ -613,18 +653,21 @@ The `weight` field is a **selection bias within a phase/condition bucket** — i
 
 For example, Yorikiri dominates at ~32% not because `weight: 90` is highest, but because `belt_battle` with forward momentum and an opponent near the edge is the single most common end-state in professional sumo. Likewise, Oshidashi at ~23% reflects how often a pure push battle resolves with the defender walking out — not a weight value.
 
-Implication for calibration: **tune phase entry probabilities** (the tachiai belt establishment rate, `push_battle → belt_battle` transition threshold) against the target distribution. Adjusting `weight` values is only effective for shifting the relative frequency *within the same phase bucket*.
+Implication for calibration: **tune phase entry probabilities** (the tachiai belt establishment rate, `push_battle → belt_battle` transition threshold) against the target distribution. Adjusting `weight` values is only effective for shifting the relative frequency _within the same phase bucket_.
 
 Current concerns about `weight` miscalibration in V2:
+
 - `uwatenage` (weight 85) rivals `oshidashi` (85) — but uwatenage is ~3% vs oshidashi ~23%. These are in different phase buckets (belt vs push) so the weight comparison is misleading, but the weight should still reflect relative throw frequency within belt_battle.
 - `yoritaoshi` (72) vs `tsukidashi` (60) — real ratio is roughly equal (~5% each), but they are in different buckets (belt vs push) so the absolute weight gap doesn't matter as long as each is the top candidate in its bucket condition.
 
 ### Henka note
 
 The historical henka success rate of 63–92% is consistent with the current check:
+
 ```
 stat(r, 'technique') + jitter(rng, 10) > opponent.balance + jitter(rng, 10)
 ```
+
 This does not require a tuning change, but must be verified explicitly in Phase 8 with a run of 500 henka bouts at varying technique/balance levels.
 
 ---
@@ -634,56 +677,60 @@ This does not require a tuning change, but must be verified explicitly in Phase 
 CoG tracking enables four kimarite families that are physically impossible in the current system:
 
 ### 1. Izori / Kakezori (back-bend throws)
+
 ```typescript
 // Requires: winner is at severe CoG deficit (falling backward) but has mawashi grip
 izori: {
   appliesTo: (ctx, e, w) => {
-    const eastBackBend = st.east.cogOffset < -0.3 && ctx.eastGrip !== 'none';
-    if (eastBackBend && ctx.torqueDiff > 15) return 'east'; // east falls back, throws west over
+    const eastBackBend = st.east.cogOffset < -0.3 && ctx.eastGrip !== "none";
+    if (eastBackBend && ctx.torqueDiff > 15) return "east"; // east falls back, throws west over
     return null;
-  }
+  };
 }
 ```
 
 ### 2. Koshikudake (hip collapse)
+
 ```typescript
 // Requires: CoG too high, opponent applies lifting torque from below
 koshikudake: {
   appliesTo: (ctx, e, w) => {
     // Tall fighter's CoG is high → vulnerable to low-body attacks
-    const tallEast = st.east.cogHeight > 1.1 && stat(e, 'height') > 185;
-    const westLowGrip = ctx.westGrip === 'shitate' && ctx.torqueDiff < -10;
-    if (tallEast && westLowGrip) return 'east';
+    const tallEast = st.east.cogHeight > 1.1 && stat(e, "height") > 185;
+    const westLowGrip = ctx.westGrip === "shitate" && ctx.torqueDiff < -10;
+    if (tallEast && westLowGrip) return "east";
     return null;
-  }
+  };
 }
 ```
 
 ### 3. Fumidashi (foot forced out)
+
 ```typescript
 // Requires: foot position crosses boundary even though body is upright
 fumidashi: {
   appliesTo: (ctx, e, w) => {
     // Foot out but CoG is still inside (not a clean push-out)
     const eastFootOut = ctx.eastLeadFoot >= RING_RADIUS && st.east.cogOffset < 0.1;
-    if (eastFootOut && ctx.westMomentumX < 0.1) return 'east'; // stepped out, not pushed
+    if (eastFootOut && ctx.westMomentumX < 0.1) return "east"; // stepped out, not pushed
     return null;
-  }
+  };
 }
 ```
 
 ### 4. Uchigake / Sotogake (leg trips)
+
 ```typescript
 // Requires: leg position vulnerable (tracked via stance width) + torque loading
 sotogake: {
   appliesTo: (ctx, e, w) => {
     // West hooks outside east's leg; viable when east's stance is narrow
     const eastNarrowStance = push?.eastStanceWidth < 0.35;
-    const westLegReach = stat(w, 'technique') > 60;
+    const westLegReach = stat(w, "technique") > 60;
     const appropriateFacing = Math.abs(st.east.facingAngle) < 0.4; // facing roughly toward west
-    if (eastNarrowStance && westLegReach && appropriateFacing && ctx.torqueDiff < -8) return 'east';
+    if (eastNarrowStance && westLegReach && appropriateFacing && ctx.torqueDiff < -8) return "east";
     return null;
-  }
+  };
 }
 ```
 
@@ -695,10 +742,13 @@ sotogake: {
 
 ```typescript
 function evolveGripGeometry(
-  rng: SeededRNG, east: Rikishi, west: Rikishi, belt: BeltBattleState
+  rng: SeededRNG,
+  east: Rikishi,
+  west: Rikishi,
+  belt: BeltBattleState
 ): void {
-  const eastTech = stat(east, 'technique');
-  const westTech = stat(west, 'technique');
+  const eastTech = stat(east, "technique");
+  const westTech = stat(west, "technique");
   const margin = eastTech - westTech + jitter(rng, 8);
 
   // Hand penetration evolution (replaces outside→inside binary)
@@ -715,16 +765,22 @@ function evolveGripGeometry(
 
   // Grip strength decay from fatigue
   const fatigueDecay = 1 - (east.stats?.stamina ?? 50) / 1000;
-  if (belt.eastLeft)  belt.eastLeft.gripStrength  *= fatigueDecay;
+  if (belt.eastLeft) belt.eastLeft.gripStrength *= fatigueDecay;
   if (belt.eastRight) belt.eastRight.gripStrength *= fatigueDecay;
 
   // Moro-zashi detection (both arms inside)
   const eastMorozashi = belt.eastLeft?.isInside && belt.eastRight?.isInside;
   const westMorozashi = belt.westLeft?.isInside && belt.westRight?.isInside;
-  belt.eastGripClass = eastMorozashi ? 'morozashi'
-    : (belt.eastLeft?.isInside || belt.eastRight?.isInside) ? 'uwate' : 'outside';
-  belt.westGripClass = westMorozashi ? 'morozashi'
-    : (belt.westLeft?.isInside || belt.westRight?.isInside) ? 'uwate' : 'outside';
+  belt.eastGripClass = eastMorozashi
+    ? "morozashi"
+    : belt.eastLeft?.isInside || belt.eastRight?.isInside
+      ? "uwate"
+      : "outside";
+  belt.westGripClass = westMorozashi
+    ? "morozashi"
+    : belt.westLeft?.isInside || belt.westRight?.isInside
+      ? "uwate"
+      : "outside";
 }
 ```
 
@@ -738,19 +794,19 @@ The `EdgeCrisisState` generates richer narrative than any current system can pro
 // New narrative events generated by edge_crisis phase:
 
 // 1. Entry into crisis
-"${defenderShikona} is backed to the tawara, heels on the straw"
+"${defenderShikona} is backed to the tawara, heels on the straw";
 // → combat.phases.edge_crisis.entry (new BardEngine path)
 
 // 2. Tawara bounce recovery (escaped: true)
-"${defenderShikona} uses the tawara's resistance to pivot back — impossible recovery!"
+"${defenderShikona} uses the tawara's resistance to pivot back — impossible recovery!";
 // → combat.phases.edge_crisis.tawara_escape
 
-// 3. Extended crisis (ticksInCrisis > 5)  
-"The crowd holds its breath. ${defenderShikona} has been at the edge for ${ticks} exchanges."
+// 3. Extended crisis (ticksInCrisis > 5)
+"The crowd holds its breath. ${defenderShikona} has been at the edge for ${ticks} exchanges.";
 // → combat.phases.edge_crisis.extended_tension
 
 // 4. Utchari (edge reversal throw)
-"From the very lip of the ring, ${defenderShikona} throws ${attackerShikona} back across the dohyo!"
+"From the very lip of the ring, ${defenderShikona} throws ${attackerShikona} back across the dohyo!";
 // → combat.phases.edge_crisis.utchari_reversal
 ```
 
@@ -762,22 +818,22 @@ The `EdgeCrisisState` generates richer narrative than any current system can pro
 interface BoutLogEntryV2 extends BoutLogEntry {
   phase: "tachiai" | "push_battle" | "belt_battle" | "edge_crisis" | "finish" | "engagement";
   spatial?: {
-    eastLeadFoot:    number;  // meters
-    westLeadFoot:    number;  // meters
-    eastCoGOffset:   number;
-    westCoGOffset:   number;
-    eastFacingAngle: number;  // radians
+    eastLeadFoot: number; // meters
+    westLeadFoot: number; // meters
+    eastCoGOffset: number;
+    westCoGOffset: number;
+    eastFacingAngle: number; // radians
     westFacingAngle: number;
-    contestLine:     number;
+    contestLine: number;
   };
   beltState?: {
     eastGripClass: string;
     westGripClass: string;
-    torqueDiff:    number;
+    torqueDiff: number;
   };
   attemptedKimarite?: {
-    id:        KimariteId;
-    side:      Side;
+    id: KimariteId;
+    side: Side;
     succeeded: boolean;
   };
 }
@@ -787,20 +843,20 @@ interface BoutLogEntryV2 extends BoutLogEntry {
 
 ## Comparison to Current System
 
-| Feature | Current | B+ |
-|---------|---------|-----|
-| Ring boundary | `balance / 100 × 15` estimate | Real foot position in meters |
-| Kimarite | Post-physics retroactive fit | Mid-fight attempt on every tick |
-| Isamiashi | Weighted option in a list | Emergent (momentum carries winner out) |
-| Tawara drama | Impossible | `EdgeCrisisState` phase with bounce resistance |
-| Grip power | Enum multipliers (1.3×, 0.85×) | Lever arm geometry (armReach × torque) |
-| CoG | Comments only | Tracked; enables izori, koshikudake, sotogake |
-| Leg trips | Balance < 30 check | Stance width + facing angle + torque loading |
-| Momentum | Advantage streak counter | Directional vectors (m/tick) |
-| Facing direction | Categorical (front/lateral/rear) | Continuous radians |
-| Computation | ~120 ticks × simple math | ~120–180 ticks × spatial math (~2–3× heavier) |
-| Determinism | ✓ seeded RNG | ✓ seeded RNG + fixed coordinate system |
-| Narrative coupling | `log[]` array | `log[]` + spatial fields + edge_crisis events |
+| Feature            | Current                          | B+                                             |
+| ------------------ | -------------------------------- | ---------------------------------------------- |
+| Ring boundary      | `balance / 100 × 15` estimate    | Real foot position in meters                   |
+| Kimarite           | Post-physics retroactive fit     | Mid-fight attempt on every tick                |
+| Isamiashi          | Weighted option in a list        | Emergent (momentum carries winner out)         |
+| Tawara drama       | Impossible                       | `EdgeCrisisState` phase with bounce resistance |
+| Grip power         | Enum multipliers (1.3×, 0.85×)   | Lever arm geometry (armReach × torque)         |
+| CoG                | Comments only                    | Tracked; enables izori, koshikudake, sotogake  |
+| Leg trips          | Balance < 30 check               | Stance width + facing angle + torque loading   |
+| Momentum           | Advantage streak counter         | Directional vectors (m/tick)                   |
+| Facing direction   | Categorical (front/lateral/rear) | Continuous radians                             |
+| Computation        | ~120 ticks × simple math         | ~120–180 ticks × spatial math (~2–3× heavier)  |
+| Determinism        | ✓ seeded RNG                     | ✓ seeded RNG + fixed coordinate system         |
+| Narrative coupling | `log[]` array                    | `log[]` + spatial fields + edge_crisis events  |
 
 ---
 

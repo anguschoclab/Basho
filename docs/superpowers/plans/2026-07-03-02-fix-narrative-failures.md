@@ -15,12 +15,12 @@ Additionally, BardEngine wraps entity names in `[[entityType:entityId:text]]` ma
 
 ## Affected Files
 
-| File | Change |
-|------|--------|
-| `src/engine/bout/boutNarrative.ts` | Fix wrong template path for kinboshi/ginboshi award lines |
-| `src/engine/bard/archive.json` | Add ~60 missing templates across 4 categories |
-| `src/components/game/BoutNarrativeModal.tsx` | Add `resolveEntityLinks` renderer for PbpLine text |
-| `src/presenters/entityLinks.ts` | New file — pure function, parses and resolves entity link markup |
+| File                                         | Change                                                           |
+| -------------------------------------------- | ---------------------------------------------------------------- |
+| `src/engine/bout/boutNarrative.ts`           | Fix wrong template path for kinboshi/ginboshi award lines        |
+| `src/engine/bard/archive.json`               | Add ~60 missing templates across 4 categories                    |
+| `src/components/game/BoutNarrativeModal.tsx` | Add `resolveEntityLinks` renderer for PbpLine text               |
+| `src/presenters/entityLinks.ts`              | New file — pure function, parses and resolves entity link markup |
 
 ---
 
@@ -36,6 +36,7 @@ const awardLine = BardEngine.resolve(rng, `combat.finish.${result.awardFact}`, c
 ```
 
 Fix:
+
 ```typescript
 // CORRECT — templates live under combat.phases.finish
 const awardLine = BardEngine.resolve(rng, `combat.phases.finish.${result.awardFact}`, context);
@@ -113,6 +114,7 @@ Add under `domains.institutional.governance`:
 ```
 
 Note: also add `"emergency_loan"` which is referenced in `GovernanceReview`:
+
 ```json
 "emergency_loan": [
   "%HEYA% Secures Emergency JSA Stabilisation Loan",
@@ -238,10 +240,7 @@ export type ResolvedSegment =
   | { type: "text"; content: string }
   | { type: "link"; entityType: string; entityId: string; label: string; href: string };
 
-export function parseEntityLinks(
-  text: string,
-  world: WorldState,
-): ResolvedSegment[] {
+export function parseEntityLinks(text: string, world: WorldState): ResolvedSegment[] {
   const segments: ResolvedSegment[] = [];
   let lastIndex = 0;
 

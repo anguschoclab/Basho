@@ -2,18 +2,18 @@ name: Autonomous Narrative Generation
 
 on:
   schedule:
-    - cron: '0 0 * * 0' # Weekly on Sunday at midnight
+    - cron: "0 0 * * 0" # Weekly on Sunday at midnight
   workflow_dispatch:
     inputs:
       model:
-        description: 'Primary Gemini Model'
+        description: "Primary Gemini Model"
         required: true
-        default: 'gemini-3-flash-preview'
+        default: "gemini-3-flash-preview"
         type: choice
         options:
-          - 'gemini-3-flash-preview'
-          - 'gemini-2.5-flash'
-          - 'gemini-2.0-flash'
+          - "gemini-3-flash-preview"
+          - "gemini-2.5-flash"
+          - "gemini-2.0-flash"
 
 jobs:
   generate:

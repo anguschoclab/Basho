@@ -3,11 +3,12 @@
 > **For agentic workers:** REQUIRED SUB-SKILL: `superpowers:test-driven-development` (write the failing test first, run it RED, implement the minimum real code, run it GREEN, commit). Determinism is mandatory — never `Math.random()`, always seeded RNG. Run tests with `npx vitest run` (NOT `bun test -- --run`). Wrap every shell path in double quotes.
 
 ## ⚠️ Build order: RUN THIS PLAN FIRST
+
 Three diagnostic/tuning metrics misreport. Until they are fixed, every `simulation-results.json` is untrustworthy and **no balance plan's before/after comparison is valid.** Land this before the lifecycle / progression / recruitment / economy / macro plans.
 
 ## Goal
 
-Fix the *measurement*, not the underlying balance:
+Fix the _measurement_, not the underlying balance:
 
 1. `tuningMetrics.topKimarite` is empty over 150 basho — the cumulative counter is wiped every year boundary before metrics are read.
 2. `tuningMetrics.yokozunaVacantBashoCount` is always `0` — it samples only the final world state instead of accumulating per-basho.
@@ -19,7 +20,7 @@ Plus one investigation result to document (no code change): `averageRetirementAg
 
 Root causes confirmed by reading the code:
 
-- **Kimarite reset:** `src/engine/simulation/TournamentSimulator.ts:215-221` correctly tallies each basho's `m.result.kimarite` into `world.globalKimariteStats`. But `src/engine/systems/meta/EraDriftService.ts:90` (`processYearlyEraDrift`, invoked from `src/engine/tick/phases/phase06_yearly_boundary.ts:44`) calls `builder.updateWorldField("globalKimariteStats", {})` at every year boundary. `scripts/diagnostic-25yr-sim.ts` reads `tuningMetrics` only after the final year (after the last reset), and `SimTuningService.ts:154-158` reads `world.globalKimariteStats` — which is `{}`. The intra-era reset is intentional; the *diagnostic* needs a cumulative figure the reset can't clobber.
+- **Kimarite reset:** `src/engine/simulation/TournamentSimulator.ts:215-221` correctly tallies each basho's `m.result.kimarite` into `world.globalKimariteStats`. But `src/engine/systems/meta/EraDriftService.ts:90` (`processYearlyEraDrift`, invoked from `src/engine/tick/phases/phase06_yearly_boundary.ts:44`) calls `builder.updateWorldField("globalKimariteStats", {})` at every year boundary. `scripts/diagnostic-25yr-sim.ts` reads `tuningMetrics` only after the final year (after the last reset), and `SimTuningService.ts:154-158` reads `world.globalKimariteStats` — which is `{}`. The intra-era reset is intentional; the _diagnostic_ needs a cumulative figure the reset can't clobber.
   - **Fix:** maintain a cumulative accumulator inside `runAutoSim` (`src/engine/simulation/AutoSimService.ts`) summed per-basho from `globalKimariteStats` deltas, fed to `SimTuningService.calculateMetrics` via the existing `historyStats` parameter (extended). Era-drift reset stays untouched.
 - **Yokozuna vacancy:** `src/engine/simulation/AutoSimService.ts:235` computes a single 0/1 from the final world. Over 150 basho this is one boolean.
   - **Fix:** accumulate a per-basho vacancy count inside the `while` loop and pass the total through `historyStats.yokozunaVacancy`. `SimTuningService.ts:191` already wires it straight into `yokozunaVacantBashoCount`.
@@ -28,6 +29,7 @@ Root causes confirmed by reading the code:
 - **averageRetirementAge:** `SimTuningService.ts:93-113` already unions `world.rikishi` + `world.historicalRikishi` and computes age from `retirementYear - birthYear`. No artifact. Documented + pinned by test.
 
 ## Tech Stack
+
 Vite + React 19 + TypeScript. Vitest (`npx vitest run`), jsdom. Mock factories: `src/tests/unit/engine/utils.ts` — `makeMockWorld`, `mockRikishi`, `makeMockHeya`, `makeMockBasho` (NOTE: CLAUDE.md lists the stale path `src/engine/__tests__/utils.ts`; the live path is `src/tests/unit/engine/utils.ts`).
 
 ---
@@ -75,7 +77,9 @@ describe("SimTuningService.topKimarite", () => {
   it("uses cumulative kimarite totals from historyStats when provided", () => {
     const world = makeMockWorld({ globalKimariteStats: {} });
     const metrics = SimTuningService.calculateMetrics(world, {
-      yokozunaVacancy: 0, uniqueWinners: 0, successions: 0,
+      yokozunaVacancy: 0,
+      uniqueWinners: 0,
+      successions: 0,
       cumulativeKimarite: { oshidashi: 120, yorikiri: 90, uwatenage: 30 },
     });
     expect(metrics.topKimarite.length).toBeGreaterThan(0);
@@ -83,7 +87,10 @@ describe("SimTuningService.topKimarite", () => {
   });
   it("falls back to world.globalKimariteStats when no cumulative provided", () => {
     const world = makeMockWorld({ globalKimariteStats: { hatakikomi: 7 } });
-    expect(SimTuningService.calculateMetrics(world).topKimarite[0]).toEqual({ id: "hatakikomi", count: 7 });
+    expect(SimTuningService.calculateMetrics(world).topKimarite[0]).toEqual({
+      id: "hatakikomi",
+      count: 7,
+    });
   });
 });
 ```
@@ -91,6 +98,7 @@ describe("SimTuningService.topKimarite", () => {
 **Step 2.2 — Run (RED).** `npx vitest run src/tests/unit/engine/simTuningService.test.ts`
 
 **Step 2.3 — Implement** in `src/engine/simulation/SimTuningService.ts`:
+
 - Extend the `historyStats` parameter type (line ~52) to `{ yokozunaVacancy: number; uniqueWinners: number; successions: number; cumulativeKimarite?: Record<string, number> }`.
 - Change line 154 from `const kimariteStats = world.globalKimariteStats || {};` to `const kimariteStats = historyStats?.cumulativeKimarite ?? world.globalKimariteStats ?? {};`
 - Leave the `Object.entries(...).map(...).sort(...).slice(0,10)` lines unchanged.
@@ -115,13 +123,25 @@ import { runAutoSim } from "@/engine/simulation/AutoSimService";
 describe("runAutoSim diagnostic metrics", () => {
   it("accumulates topKimarite across the full run despite year-boundary resets", () => {
     const world = { ...generateInitialWorld("kimarite-accum-test"), playerHeyaId: undefined };
-    const result = runAutoSim(world, { duration: { type: "years", count: 2 }, stopConditions: [], verbosity: "minimal", delegationPolicy: "balanced", observerMode: true });
+    const result = runAutoSim(world, {
+      duration: { type: "years", count: 2 },
+      stopConditions: [],
+      verbosity: "minimal",
+      delegationPolicy: "balanced",
+      observerMode: true,
+    });
     expect(result.tuningMetrics.topKimarite.length).toBeGreaterThan(0);
     expect(result.tuningMetrics.topKimarite.reduce((s, k) => s + k.count, 0)).toBeGreaterThan(50);
   });
   it("counts every basho with no yokozuna, not just the final world", () => {
     const world = { ...generateInitialWorld("yoko-vacancy-test"), playerHeyaId: undefined };
-    const result = runAutoSim(world, { duration: { type: "years", count: 1 }, stopConditions: [], verbosity: "minimal", delegationPolicy: "balanced", observerMode: true });
+    const result = runAutoSim(world, {
+      duration: { type: "years", count: 1 },
+      stopConditions: [],
+      verbosity: "minimal",
+      delegationPolicy: "balanced",
+      observerMode: true,
+    });
     expect(result.tuningMetrics.yokozunaVacantBashoCount).toBeGreaterThan(1);
     expect(result.tuningMetrics.yokozunaVacantBashoCount).toBeLessThanOrEqual(6);
   });
@@ -131,9 +151,11 @@ describe("runAutoSim diagnostic metrics", () => {
 **Step 3.2 — Run (RED).** `npx vitest run src/tests/unit/engine/autoSimService.test.ts`
 
 **Step 3.3 — Implement** in `src/engine/simulation/AutoSimService.ts`:
+
 - Before the `while` loop (near line 84): `const cumulativeKimarite: Record<string, number> = {};` and `let yokozunaVacantBashoCount = 0;`
 - Just before `simulateEntireBasho` (line ~96): `const preKimarite = { ...(currentWorld.globalKimariteStats ?? {}) };`
 - After `currentWorld = bashoResult.finalWorld;` (line ~100), sum reset-proof positive deltas:
+
 ```ts
 const postKimarite = bashoResult.finalWorld.globalKimariteStats ?? {};
 for (const [id, count] of Object.entries(postKimarite)) {
@@ -141,11 +163,16 @@ for (const [id, count] of Object.entries(postKimarite)) {
   if (delta > 0) cumulativeKimarite[id] = (cumulativeKimarite[id] ?? 0) + delta;
 }
 ```
+
 - After the banzuke update each basho (`currentWorld = resolveImpacts(worldWithStandings, [banzukeImpact]);`, line ~181):
+
 ```ts
-const hasYokozuna = Array.from(currentWorld.activeRikishiIds).some((id) => currentWorld.rikishi.get(id)?.rank === "yokozuna");
+const hasYokozuna = Array.from(currentWorld.activeRikishiIds).some(
+  (id) => currentWorld.rikishi.get(id)?.rank === "yokozuna"
+);
 if (!hasYokozuna) yokozunaVacantBashoCount++;
 ```
+
 - Delete the final-state one-shot (line 235) and change the `calculateMetrics` call to pass `{ yokozunaVacancy: yokozunaVacantBashoCount, uniqueWinners: championCounts.size, successions, cumulativeKimarite }`.
 
 **Step 3.4 — Run (GREEN).** Same command.
@@ -163,9 +190,23 @@ if (!hasYokozuna) yokozunaVacantBashoCount++;
 ```ts
 import { mockRikishi } from "./utils";
 it("computes averageRetirementAge from historicalRikishi retirees (not a metric artifact)", () => {
-  const retiredOld = mockRikishi("ret-1", { isRetired: true, birthYear: 1990, retirementYear: 2025 }); // 35
-  const retiredYoung = mockRikishi("ret-2", { isRetired: true, birthYear: 2020, retirementYear: 2025 }); // 5
-  const world = makeMockWorld({ rikishi: new Map(), historicalRikishi: new Map([[retiredOld.id, retiredOld], [retiredYoung.id, retiredYoung]]) });
+  const retiredOld = mockRikishi("ret-1", {
+    isRetired: true,
+    birthYear: 1990,
+    retirementYear: 2025,
+  }); // 35
+  const retiredYoung = mockRikishi("ret-2", {
+    isRetired: true,
+    birthYear: 2020,
+    retirementYear: 2025,
+  }); // 5
+  const world = makeMockWorld({
+    rikishi: new Map(),
+    historicalRikishi: new Map([
+      [retiredOld.id, retiredOld],
+      [retiredYoung.id, retiredYoung],
+    ]),
+  });
   const metrics = SimTuningService.calculateMetrics(world);
   expect(metrics.retirementAges.sort((a, b) => a - b)).toEqual([5, 35]);
   expect(metrics.averageRetirementAge).toBe(20);
@@ -195,7 +236,10 @@ describe("diagnostic retiredTotal counting", () => {
   it("counts retirees that live in historicalRikishi", () => {
     const world = makeMockWorld({
       rikishi: new Map([["a-1", mockRikishi("a-1", { isRetired: false })]]),
-      historicalRikishi: new Map([["h-1", mockRikishi("h-1", { isRetired: true })], ["h-2", mockRikishi("h-2", { isRetired: true })]]),
+      historicalRikishi: new Map([
+        ["h-1", mockRikishi("h-1", { isRetired: true })],
+        ["h-2", mockRikishi("h-2", { isRetired: true })],
+      ]),
     });
     expect(countRetired(world)).toBe(2);
   });
@@ -214,16 +258,18 @@ Leave `historicalTotal` unchanged.
 ---
 
 ## Verification
+
 1. `npx vitest run` — all new tests pass; no new failures beyond the 4 documented pre-existing ones.
 2. `bun scripts/diagnostic-25yr-sim.ts`, then inspect `simulation-results.json`:
    - `tuningMetrics.topKimarite` non-empty, descending integer counts summing to hundreds+.
    - `yokozunaVacantBashoCount` a real total in `[0,150]` consistent with per-year snapshots (dozens if late years show 0 yokozuna).
    - Each `yearSnapshots[i].retiredTotal` equals `historicalTotal` and climbs 5 → ~948.
    - `averageRetirementAge` unchanged behavior (if still ~19.6 that is the lifecycle plan's defect, out of scope here).
-   Quick check: `node -e "const r=require('./simulation-results.json'); console.log(r.tuningMetrics.topKimarite.length, r.tuningMetrics.yokozunaVacantBashoCount, r.yearSnapshots.every(s=>s.retiredTotal>=s.historicalTotal))"`
+     Quick check: `node -e "const r=require('./simulation-results.json'); console.log(r.tuningMetrics.topKimarite.length, r.tuningMetrics.yokozunaVacantBashoCount, r.yearSnapshots.every(s=>s.retiredTotal>=s.historicalTotal))"`
 3. `npx vitest run src/tests/unit/engine/eraDriftKimariteReset.test.ts` still GREEN (intended reset preserved).
 
 ## Self-review
+
 - `EraDriftService.ts:90` reset is bypassed for diagnostics, not removed; `grep -rn "globalKimariteStats" src/` confirms no other consumer needs whole-run cumulative.
 - `historyStats.cumulativeKimarite?` is optional so existing callers type-check.
 - Yokozuna vacancy read AFTER the per-basho banzuke update so freshly-promoted yokozuna aren't falsely counted vacant.

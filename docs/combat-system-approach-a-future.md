@@ -10,7 +10,7 @@
 
 Approach B+ gives us spatial meaning — real positions, real ring boundaries, emergent kimarite. But it still uses simplified scalar forces, inferred leg positions, and a phase-state machine to manage what would naturally fall out of a real physics simulation.
 
-Approach A completes the model: every interaction is a consequence of forces, masses, and geometry. You don't select a technique and check if it works — you simulate the contact forces, watch the bodies move, and *then* classify what happened as one of the 82 kimarite.
+Approach A completes the model: every interaction is a consequence of forces, masses, and geometry. You don't select a technique and check if it works — you simulate the contact forces, watch the bodies move, and _then_ classify what happened as one of the 82 kimarite.
 
 The tradeoff: **significantly more complex**, and the payoff is mainly visual (realistic rendered bouts) and edge-case correctness (obscure kimarite that B+ can't model cleanly). The gameplay is not substantially different from B+.
 
@@ -54,31 +54,31 @@ The tradeoff: **significantly more complex**, and the payoff is mainly visual (r
 ```typescript
 interface RigidBody {
   // Linear state
-  position: Vec3;          // (x, y, z) in meters; y = up
-  velocity: Vec3;          // m/s
-  acceleration: Vec3;      // m/s² (cleared each tick after integration)
+  position: Vec3; // (x, y, z) in meters; y = up
+  velocity: Vec3; // m/s
+  acceleration: Vec3; // m/s² (cleared each tick after integration)
 
-  // Rotational state  
+  // Rotational state
   orientation: Quaternion; // unit quaternion representing body rotation
-  angularVelocity: Vec3;   // rad/s (in world space)
+  angularVelocity: Vec3; // rad/s (in world space)
   angularAcceleration: Vec3;
 
   // Mass properties
-  mass: number;            // kg
-  inertiaTensor: Mat3;     // 3×3 moment of inertia (simplified to diagonal for wrestler shape)
-  invInertiaTensor: Mat3;  // cached inverse
+  mass: number; // kg
+  inertiaTensor: Mat3; // 3×3 moment of inertia (simplified to diagonal for wrestler shape)
+  invInertiaTensor: Mat3; // cached inverse
 
   // Center of mass (local space offset from body origin)
   // Wrestlers: CoM is at ~(0, height × 0.54, 0) — above hip level
   comOffset: Vec3;
 
   // Collider: capsule (two spheres + cylinder connecting them)
-  capsuleBottom: Vec3;     // local space
+  capsuleBottom: Vec3; // local space
   capsuleTop: Vec3;
-  capsuleRadius: number;   // meters (half-shoulder-width ~0.35m)
+  capsuleRadius: number; // meters (half-shoulder-width ~0.35m)
 
   // Foot contact points (8 points per foot for ground detection)
-  leftFootPoints:  Vec3[];
+  leftFootPoints: Vec3[];
   rightFootPoints: Vec3[];
 }
 ```
@@ -89,11 +89,11 @@ interface RigidBody {
 interface ContactManifold {
   // Points where bodies are in contact
   contacts: Array<{
-    pointA: Vec3;      // contact point on body A (world space)
-    pointB: Vec3;      // contact point on body B (world space)
-    normal: Vec3;      // collision normal pointing from B to A
-    depth: number;     // penetration depth (meters)
-    friction: number;  // coefficient (dry clay: ~0.7)
+    pointA: Vec3; // contact point on body A (world space)
+    pointB: Vec3; // contact point on body B (world space)
+    normal: Vec3; // collision normal pointing from B to A
+    depth: number; // penetration depth (meters)
+    friction: number; // coefficient (dry clay: ~0.7)
   }>;
 
   // Relative velocity at contact
@@ -118,19 +118,19 @@ interface GripConstraint {
   anchorB: Vec3;
 
   // Constraint parameters
-  minDistance: number;    // can't pull hand out past this
-  maxDistance: number;    // can't extend arm past this
-  stiffness: number;      // N/m (how strongly constraint enforces distance)
-  damping: number;        // N·s/m (oscillation damping)
+  minDistance: number; // can't pull hand out past this
+  maxDistance: number; // can't extend arm past this
+  stiffness: number; // N/m (how strongly constraint enforces distance)
+  damping: number; // N·s/m (oscillation damping)
 
   // Force limits (grip fails above this)
-  maxForce: number;       // N (breaks when opponent's weight exceeds grip strength)
-  currentForce: number;   // N (tracked to detect grip breaks)
+  maxForce: number; // N (breaks when opponent's weight exceeds grip strength)
+  currentForce: number; // N (tracked to detect grip breaks)
 
   // State
   isActive: boolean;
-  gripSide: 'left' | 'right';
-  isInsideArm: boolean;   // determines torque leverage
+  gripSide: "left" | "right";
+  isInsideArm: boolean; // determines torque leverage
 }
 ```
 
@@ -139,22 +139,22 @@ interface GripConstraint {
 ```typescript
 interface DohyoGeometry {
   // Inner ring (loss boundary)
-  ringRadius: number;       // 4.55m (center of tawara)
-  ringCenter: Vec3;         // (0, 0, 0)
+  ringRadius: number; // 4.55m (center of tawara)
+  ringCenter: Vec3; // (0, 0, 0)
 
   // Tawara (straw bales at boundary)
   tawaraInnerRadius: number; // 4.55m
   tawaraOuterRadius: number; // 4.79m
-  tawaraHeight: number;      // 0.06m
-  tawaraNormalMap: Vec3[];    // 36 normals around the circle (per bale)
+  tawaraHeight: number; // 0.06m
+  tawaraNormalMap: Vec3[]; // 36 normals around the circle (per bale)
 
   // Haridashi (east/west protrusions)
-  haridashiEastCenter: Vec3;  // (4.55, 0, 0)
-  haridashiWestCenter: Vec3;  // (-4.55, 0, 0)
-  haridashiRadius: number;    // 0.36m additional protrusion
+  haridashiEastCenter: Vec3; // (4.55, 0, 0)
+  haridashiWestCenter: Vec3; // (-4.55, 0, 0)
+  haridashiRadius: number; // 0.36m additional protrusion
 
   // Surface properties
-  surfaceFriction: number;    // clay friction coefficient ~0.65
+  surfaceFriction: number; // clay friction coefficient ~0.65
   surfaceRestitution: number; // bounce coefficient ~0.1 (clay is not bouncy)
 }
 ```
@@ -234,7 +234,7 @@ function computeBalanceCorrection(body: RigidBody, balanceStat: number): Vec3 {
   return {
     x: -lateralDisplacement.z * gain,
     y: 0,
-    z: lateralDisplacement.x * gain
+    z: lateralDisplacement.x * gain,
   };
 }
 ```
@@ -242,7 +242,12 @@ function computeBalanceCorrection(body: RigidBody, balanceStat: number): Vec3 {
 ### Grip Constraint Solver
 
 ```typescript
-function solveGripConstraint(constraint: GripConstraint, bodyA: RigidBody, bodyB: RigidBody, dt: number): void {
+function solveGripConstraint(
+  constraint: GripConstraint,
+  bodyA: RigidBody,
+  bodyB: RigidBody,
+  dt: number
+): void {
   if (!constraint.isActive) return;
 
   // World-space anchor positions
@@ -250,7 +255,7 @@ function solveGripConstraint(constraint: GripConstraint, bodyA: RigidBody, bodyB
   const anchorBWorld = addVec3(bodyB.position, rotateVec3(constraint.anchorB, bodyB.orientation));
 
   const delta = subtractVec3(anchorAWorld, anchorBWorld);
-  const dist  = lengthVec3(delta);
+  const dist = lengthVec3(delta);
 
   if (dist < constraint.minDistance || dist > constraint.maxDistance) {
     // Constraint violation — apply corrective impulse
@@ -260,7 +265,7 @@ function solveGripConstraint(constraint: GripConstraint, bodyA: RigidBody, bodyB
 
     // Apply to both bodies (inverse mass weighted)
     applyImpulse(bodyA, scaleVec3(impulse, -bodyA.invMass), anchorAWorld);
-    applyImpulse(bodyB, scaleVec3(impulse,  bodyB.invMass), anchorBWorld);
+    applyImpulse(bodyB, scaleVec3(impulse, bodyB.invMass), anchorBWorld);
 
     // Track force for grip-break detection
     constraint.currentForce = lengthVec3(impulse) / dt;
@@ -282,29 +287,33 @@ function solveGripConstraint(constraint: GripConstraint, bodyA: RigidBody, bodyB
 function capsuleCapsuleContact(a: RigidBody, b: RigidBody): ContactManifold | null {
   // Closest point on capsule A's axis segment to capsule B's axis segment
   const [closestA, closestB] = closestPointsOnSegments(
-    a.capsuleBottom, a.capsuleTop,
-    b.capsuleBottom, b.capsuleTop
+    a.capsuleBottom,
+    a.capsuleTop,
+    b.capsuleBottom,
+    b.capsuleTop
   );
 
   const delta = subtractVec3(closestA, closestB);
-  const dist  = lengthVec3(delta);
+  const dist = lengthVec3(delta);
   const minDist = a.capsuleRadius + b.capsuleRadius;
 
   if (dist >= minDist) return null; // no contact
 
   const normal = dist > 0.001 ? normalizeVec3(delta) : { x: 1, y: 0, z: 0 };
-  const depth  = minDist - dist;
+  const depth = minDist - dist;
 
   return {
-    contacts: [{
-      pointA: addVec3(closestA, scaleVec3(normal, -a.capsuleRadius)),
-      pointB: addVec3(closestB, scaleVec3(normal,  b.capsuleRadius)),
-      normal,
-      depth,
-      friction: 0.5 // body-on-body (skin/mawashi)
-    }],
+    contacts: [
+      {
+        pointA: addVec3(closestA, scaleVec3(normal, -a.capsuleRadius)),
+        pointB: addVec3(closestB, scaleVec3(normal, b.capsuleRadius)),
+        normal,
+        depth,
+        friction: 0.5, // body-on-body (skin/mawashi)
+      },
+    ],
     relativeVelocity: subtractVec3(a.velocity, b.velocity),
-    accumulatedImpulse: 0
+    accumulatedImpulse: 0,
   };
 }
 ```
@@ -330,15 +339,17 @@ function bodyTawaraContact(body: RigidBody, dohyo: DohyoGeometry): ContactManifo
       const depth = Math.min(protrusion, dohyo.tawaraHeight);
 
       return {
-        contacts: [{
-          pointA: worldFoot,
-          pointB: { ...worldFoot, y: dohyo.tawaraHeight },
-          normal: tawaraNormal,
-          depth,
-          friction: dohyo.surfaceFriction
-        }],
+        contacts: [
+          {
+            pointA: worldFoot,
+            pointB: { ...worldFoot, y: dohyo.tawaraHeight },
+            normal: tawaraNormal,
+            depth,
+            friction: dohyo.surfaceFriction,
+          },
+        ],
         relativeVelocity: body.velocity,
-        accumulatedImpulse: 0
+        accumulatedImpulse: 0,
       };
     }
   }
@@ -351,20 +362,24 @@ function bodyTawaraContact(body: RigidBody, dohyo: DohyoGeometry): ContactManifo
 ## Victory Conditions
 
 ```typescript
-function checkVictoryConditions(east: RigidBody, west: RigidBody, dohyo: DohyoGeometry): PhysicsResult | null {
+function checkVictoryConditions(
+  east: RigidBody,
+  west: RigidBody,
+  dohyo: DohyoGeometry
+): PhysicsResult | null {
   // 1. Foot out of ring (any foot point past tawara outer edge)
   const eastFootOut = isAnyFootOutside(east, dohyo.tawaraOuterRadius);
   const westFootOut = isAnyFootOutside(west, dohyo.tawaraOuterRadius);
 
-  if (eastFootOut) return { winner: 'west', exitType: 'foot_out', exitBody: east };
-  if (westFootOut) return { winner: 'east', exitType: 'foot_out', exitBody: west };
+  if (eastFootOut) return { winner: "west", exitType: "foot_out", exitBody: east };
+  if (westFootOut) return { winner: "east", exitType: "foot_out", exitBody: west };
 
   // 2. Body touch (any non-foot part touches outside ring OR ground)
   const eastBodyOut = isBodyTouchingOutside(east, dohyo) || isBodyTouchingGround(east);
   const westBodyOut = isBodyTouchingOutside(west, dohyo) || isBodyTouchingGround(west);
 
-  if (eastBodyOut) return { winner: 'west', exitType: 'body_touch', exitBody: east };
-  if (westBodyOut) return { winner: 'east', exitType: 'body_touch', exitBody: west };
+  if (eastBodyOut) return { winner: "west", exitType: "body_touch", exitBody: east };
+  if (westBodyOut) return { winner: "east", exitType: "body_touch", exitBody: west };
 
   // 3. Both out simultaneously → gyoji (referee) calls monoii review
   // (extremely rare but physically possible — track for playoff handling)
@@ -381,50 +396,50 @@ In Approach A, kimarite is classified AFTER the bout by reading the physics hist
 
 ```typescript
 function classifyKimarite(history: PhysicsFrame[], winner: Side, dohyo: DohyoGeometry): KimariteId {
-  const finalFrame  = history[history.length - 1];
-  const loser: Side = winner === 'east' ? 'west' : 'east';
+  const finalFrame = history[history.length - 1];
+  const loser: Side = winner === "east" ? "west" : "east";
 
-  const loserBody   = loser === 'east' ? finalFrame.bodyEast  : finalFrame.bodyWest;
-  const winnerBody  = winner === 'east' ? finalFrame.bodyEast : finalFrame.bodyWest;
+  const loserBody = loser === "east" ? finalFrame.bodyEast : finalFrame.bodyWest;
+  const winnerBody = winner === "east" ? finalFrame.bodyEast : finalFrame.bodyWest;
 
   // Get exit trajectory
-  const exitVelocity     = loserBody.velocity;
-  const exitAngularVel   = loserBody.angularVelocity;
-  const exitPosition     = loserBody.position;
-  const wasGripped       = history.some(f => getActiveGrips(f, winner).length > 0);
-  const wasGrippedLoser  = history.some(f => getActiveGrips(f, loser).length > 0);
+  const exitVelocity = loserBody.velocity;
+  const exitAngularVel = loserBody.angularVelocity;
+  const exitPosition = loserBody.position;
+  const wasGripped = history.some((f) => getActiveGrips(f, winner).length > 0);
+  const wasGrippedLoser = history.some((f) => getActiveGrips(f, loser).length > 0);
 
   // Classify by trajectory and final state
   const movingForward = dot(exitVelocity, forwardVec(winnerBody)) > 0.3;
-  const spinningOut   = lengthVec3(exitAngularVel) > 1.5;
-  const liftedOff     = exitPosition.y > 0.1; // was in the air
-  const backwardFall  = dot(exitVelocity, forwardVec(loserBody)) > 0.3; // moving own forward = backing out
+  const spinningOut = lengthVec3(exitAngularVel) > 1.5;
+  const liftedOff = exitPosition.y > 0.1; // was in the air
+  const backwardFall = dot(exitVelocity, forwardVec(loserBody)) > 0.3; // moving own forward = backing out
 
   // PRIMARY CLASSIFIERS (in priority order)
-  if (!wasGripped && movingForward && !spinningOut)   return 'oshidashi';    // pure push
-  if (wasGripped   && movingForward && !spinningOut)  return 'yorikiri';     // belt walk-out
-  if (!wasGripped && !movingForward && spinningOut)   return 'hatakikomi';   // slap pull-down
-  if (wasGripped   && spinningOut   && !liftedOff)    return 'uwatenage';    // belt throw
-  if (wasGripped   && liftedOff)                      return 'tsuriotoshi';  // lift-and-drop
-  if (backwardFall && wasGripped)                     return 'okuridashi';   // rear push-out
+  if (!wasGripped && movingForward && !spinningOut) return "oshidashi"; // pure push
+  if (wasGripped && movingForward && !spinningOut) return "yorikiri"; // belt walk-out
+  if (!wasGripped && !movingForward && spinningOut) return "hatakikomi"; // slap pull-down
+  if (wasGripped && spinningOut && !liftedOff) return "uwatenage"; // belt throw
+  if (wasGripped && liftedOff) return "tsuriotoshi"; // lift-and-drop
+  if (backwardFall && wasGripped) return "okuridashi"; // rear push-out
 
   // LEG TRIP detection (requires foot-contact data from narrow phase)
-  const legContact = history.findLast(f => hasLegContact(f, winner, loser));
+  const legContact = history.findLast((f) => hasLegContact(f, winner, loser));
   if (legContact) {
     const tripSide = getTripSide(legContact, winner);
-    return tripSide === 'outside' ? 'sotogake' : 'uchigake';
+    return tripSide === "outside" ? "sotogake" : "uchigake";
   }
 
   // ISAMIASHI (winner stepped out after loser moved away)
   const winnerSteppedOut = isAnyFootOutside(winnerBody, dohyo.tawaraOuterRadius);
-  if (winnerSteppedOut) return 'isamiashi';
+  if (winnerSteppedOut) return "isamiashi";
 
   // BACK-BEND (izori/kakezori family — winner's CoM went below normal range)
-  const minWinnerY = Math.min(...history.map(f => getBodyY(f, winner)));
-  if (minWinnerY < 0.4) return 'izori';
+  const minWinnerY = Math.min(...history.map((f) => getBodyY(f, winner)));
+  if (minWinnerY < 0.4) return "izori";
 
   // Fallback: classify by grip state + direction
-  return wasGripped ? 'yoritaoshi' : 'oshitaoshi';
+  return wasGripped ? "yoritaoshi" : "oshitaoshi";
 }
 ```
 
@@ -438,19 +453,19 @@ The AI decision system feeds into the physics as **intended forces**, not as ins
 interface MusclePlan {
   // Where the wrestler wants to push (in their local frame)
   pushDirection: Vec3;
-  pushMagnitude: number;  // Newtons — derived from strength stat × action weight
+  pushMagnitude: number; // Newtons — derived from strength stat × action weight
 
   // Where they want to plant their feet
-  footTargetLeft:  Vec3;
+  footTargetLeft: Vec3;
   footTargetRight: Vec3;
 
   // Grip intention
-  gripTargetLeft:  Vec3 | null;  // null = not attempting grip this tick
+  gripTargetLeft: Vec3 | null; // null = not attempting grip this tick
   gripTargetRight: Vec3 | null;
 }
 
 function computeMuscleForce(rikishi: Rikishi, plan: MusclePlan, body: RigidBody): Vec3 {
-  const maxForce = stat(rikishi, 'strength') * 12; // ~600–1200N for sumo-class wrestlers
+  const maxForce = stat(rikishi, "strength") * 12; // ~600–1200N for sumo-class wrestlers
   const fatiguePenalty = 1.0 - (body.fatigue / 100) * 0.45;
   const magnitude = Math.min(plan.pushMagnitude, maxForce) * fatiguePenalty;
 
@@ -466,30 +481,40 @@ function computeMuscleForce(rikishi: Rikishi, plan: MusclePlan, body: RigidBody)
 
 ```typescript
 function planNextTick(
-  rng: SeededRNG, rikishi: Rikishi, myBody: RigidBody, opponentBody: RigidBody,
-  activeGrips: GripConstraint[], tactic: BoutTactic
+  rng: SeededRNG,
+  rikishi: Rikishi,
+  myBody: RigidBody,
+  opponentBody: RigidBody,
+  activeGrips: GripConstraint[],
+  tactic: BoutTactic
 ): MusclePlan {
-
   // Compute where I want to push (toward opponent + apply arc based on stance)
   const toOpponent = normalizeVec3(subtractVec3(opponentBody.position, myBody.position));
-  const pushAngle  = jitter(rng, 0.3); // ±17° variance
-  const pushDir    = rotateY(toOpponent, pushAngle);
+  const pushAngle = jitter(rng, 0.3); // ±17° variance
+  const pushDir = rotateY(toOpponent, pushAngle);
 
   // Strength-based push magnitude
-  const strength  = stat(rikishi, 'strength');
+  const strength = stat(rikishi, "strength");
   const magnitude = strength * 11 + jitter(rng, 2) * strength;
 
   // Foot targets: step toward opponent, adjust width based on balance stat
-  const stanceWidth = 0.25 + stat(rikishi, 'balance') / 400; // 0.25–0.50m
-  const footTargetLeft  = { x: opponentBody.position.x * 0.3, y: 0, z: -stanceWidth };
-  const footTargetRight = { x: opponentBody.position.x * 0.3, y: 0, z:  stanceWidth };
+  const stanceWidth = 0.25 + stat(rikishi, "balance") / 400; // 0.25–0.50m
+  const footTargetLeft = { x: opponentBody.position.x * 0.3, y: 0, z: -stanceWidth };
+  const footTargetRight = { x: opponentBody.position.x * 0.3, y: 0, z: stanceWidth };
 
   // Grip attempt: if yotsu style or YOTSU_BELT tactic
-  const wantsBelt = rikishi.combatProfile.familyPreferences.belt > 40 || tactic === 'YOTSU_BELT';
-  const gripTargetLeft  = wantsBelt ? computeGripTarget(myBody, opponentBody, 'left')  : null;
-  const gripTargetRight = wantsBelt ? computeGripTarget(myBody, opponentBody, 'right') : null;
+  const wantsBelt = rikishi.combatProfile.familyPreferences.belt > 40 || tactic === "YOTSU_BELT";
+  const gripTargetLeft = wantsBelt ? computeGripTarget(myBody, opponentBody, "left") : null;
+  const gripTargetRight = wantsBelt ? computeGripTarget(myBody, opponentBody, "right") : null;
 
-  return { pushDirection: pushDir, pushMagnitude: magnitude, footTargetLeft, footTargetRight, gripTargetLeft, gripTargetRight };
+  return {
+    pushDirection: pushDir,
+    pushMagnitude: magnitude,
+    footTargetLeft,
+    footTargetRight,
+    gripTargetLeft,
+    gripTargetRight,
+  };
 }
 ```
 
@@ -499,16 +524,16 @@ function planNextTick(
 
 These 8 techniques require full physics simulation and cannot be emergent in B+:
 
-| Kimarite | Why It Needs A |
-|----------|---------------|
-| **Tsuriotoshi** | Requires actual vertical lift (y-axis > 0), gravity, opponent mass — needs rigid body flight |
-| **Kakezori** | Winner's spine bends backward past 90° — requires spinal rotation constraint |
-| **Shumokuzori** | Both fighters fall simultaneously — requires simultaneous boundary exit resolution |
-| **Mitokorozeme** | Three simultaneous contact points (arm + body + leg) — needs full contact manifold |
+| Kimarite           | Why It Needs A                                                                               |
+| ------------------ | -------------------------------------------------------------------------------------------- |
+| **Tsuriotoshi**    | Requires actual vertical lift (y-axis > 0), gravity, opponent mass — needs rigid body flight |
+| **Kakezori**       | Winner's spine bends backward past 90° — requires spinal rotation constraint                 |
+| **Shumokuzori**    | Both fighters fall simultaneously — requires simultaneous boundary exit resolution           |
+| **Mitokorozeme**   | Three simultaneous contact points (arm + body + leg) — needs full contact manifold           |
 | **Hansoku** (foul) | Hair grab / slap to face — requires hand trajectory tracking through opponent's head capsule |
-| **Kirikaeshi** | Leg sweep from behind — requires foot-path history showing wrap-around trajectory |
-| **Ipponzeoi** | Shoulder throw — requires arm getting under opponent's armpit (spatial sweep) |
-| **Yaguranage** | Inner thigh throw — requires leg penetrating between opponent's legs (complex geometry) |
+| **Kirikaeshi**     | Leg sweep from behind — requires foot-path history showing wrap-around trajectory            |
+| **Ipponzeoi**      | Shoulder throw — requires arm getting under opponent's armpit (spatial sweep)                |
+| **Yaguranage**     | Inner thigh throw — requires leg penetrating between opponent's legs (complex geometry)      |
 
 ---
 

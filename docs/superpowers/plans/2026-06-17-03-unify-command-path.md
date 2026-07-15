@@ -11,13 +11,16 @@
 ---
 
 ## Prerequisite
+
 **This plan MUST run after `2026-06-17-01-wire-governance-media-decisions.md`**, which moves `ISSUE_RULING`/`HANDLE_MEDIA_EVENT` into the worker. Deleting `mediaSlice` before that would remove the only working path.
 
 ## Verified live/dead audit (do not re-derive — but re-confirm in Task 1)
+
 Legacy actions dispatched from the UI via `GameContext` wrapper methods (**LIVE — keep**):
 `simulateBout`, `setBoutTactic` (`bashoSlice`); `advanceDay`, `advanceInterim`, `RUN_HOLIDAY`, `RUN_AUTO_SIM` (`timeSlice`); `buildInfrastructure` (`financeSlice`); `assignMentor`, `removeMentor`, `addSparringPair` (`rosterSlice`); `selectRikishi`, `selectHeya`, `setPlayerHeya` (UI state).
 
 Confirmed **DEAD** (no UI caller — safe to remove):
+
 - `upgradeHeya` / `UPGRADE_HEYA` (`financeSlice`)
 - `recruitStaff` / `RECRUIT_STAFF` (`financeSlice`)
 - `mediaSlice` entirely (`ISSUE_RULING`, `HANDLE_MEDIA_EVENT`) — redundant after the worker handles them.
@@ -25,6 +28,7 @@ Confirmed **DEAD** (no UI caller — safe to remove):
 Slices present: `bashoSlice`, `financeSlice`, `heyaSlice`, `mediaSlice`, `rosterSlice`, `timeSlice` (no `coreSlice` — the CLAUDE.md reference is stale).
 
 ## Explicitly out of scope (deferred — large, risky)
+
 Migrating the **live** legacy engine paths (synchronous bout simulation, time advance, facilities, mentors) into the worker. The bout path returns results synchronously to drive match animation; moving it to the async worker is a significant architectural change with low immediate user value. Task 4 documents the convention so this can be tackled deliberately later.
 
 ---
@@ -48,6 +52,7 @@ Expected: both present (from plan 01). If absent, run plan 01 first.
 ### Task 2: Remove `UPGRADE_HEYA` and `RECRUIT_STAFF`
 
 **Files:**
+
 - Modify: `src/contexts/financeSlice.ts` (remove the two `case` blocks)
 - Modify: `src/contexts/gameActions.ts` (remove `upgradeHeya`, `recruitStaff` creators)
 - Modify: `src/contexts/gameTypes.ts` (remove the two union members)
@@ -86,6 +91,7 @@ git commit -m "refactor(state): remove dead UPGRADE_HEYA and RECRUIT_STAFF actio
 ### Task 3: Remove the legacy `mediaSlice`
 
 **Files:**
+
 - Delete: `src/contexts/mediaSlice.ts`
 - Modify: the reducer aggregator that calls `mediaSlice` (find it in Step 1)
 - Modify: `src/contexts/gameActions.ts` (remove `handleMediaEvent`, `issueRuling` creators ≈ lines 303, 316)
@@ -125,6 +131,7 @@ git commit -m "refactor(state): remove legacy mediaSlice (rulings/media now work
 ### Task 4: Codify the command-path convention
 
 **Files:**
+
 - Modify: `.claude/CLAUDE.md` (the "State Management" section)
 
 - [ ] **Step 1: Add the rule**
@@ -133,6 +140,7 @@ In `.claude/CLAUDE.md`, under "## State Management", append:
 
 ```markdown
 ### Command path convention
+
 - **Engine mutations go through the Web Worker** (`src/engine/worker/engine.worker.ts` `COMMAND_HANDLERS` + `src/engine/worker/types.ts`), dispatched from the UI via `useGameStore((s) => s.sendCommand)`.
 - **The reducer (`src/contexts/*Slice.ts`) is only for:** transient UI state (`selectRikishi`, `selectHeya`, `setPhase`) and the synchronous bout-simulation/time-advance path that drives match animation (`bashoSlice`, `timeSlice`).
 - Do NOT add new engine-mutating actions to the reducer slices — they will not be reachable from the canonical command path. (This is the bug class that left `ISSUE_RULING`/`UPGRADE_HEYA` dead for months.)
@@ -148,12 +156,14 @@ git commit -m "docs: codify worker-vs-reducer command path convention"
 ---
 
 ## Final verification
+
 - [ ] `npx vitest run` — full suite green (deletion must not break tests; if a test referenced the removed actions, delete that test or its assertions).
 - [ ] `npx vite build` — clean.
 - [ ] `grep -rn "UPGRADE_HEYA\|RECRUIT_STAFF\|mediaSlice\|issueRuling" src | grep -v test` → no output.
 - [ ] Manual smoke: governance rulings (plan 01) still work; facilities build, mentor assignment, bout simulation, and time advance still work (live legacy paths untouched).
 
 ## Self-review notes
+
 - **Coverage:** Removes every confirmed-dead handler (Task 2 + 3) and prevents recurrence (Task 4). Live paths explicitly preserved.
 - **Type consistency:** all four artifacts per action (slice case, creator, union member, GameContext method) are removed together so the `GameAction` union and context type stay consistent.
 - **Scope honesty:** full migration of live legacy engine paths is deferred with rationale; this plan delivers the safe, valuable subset (dead-code removal + convention) that directly fixes the "stranded features" critique.

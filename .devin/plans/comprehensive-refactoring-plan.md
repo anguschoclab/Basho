@@ -11,6 +11,7 @@
 ## Executive Summary
 
 This comprehensive refactoring plan addresses:
+
 1. **Monolithic code** - 25 files >500 lines identified for decomposition
 2. **Duplicate code patterns** - Map/filter chains, entity access patterns, projection logic
 3. **System integration gaps** - Ensuring all engine services are properly connected to UI
@@ -27,14 +28,17 @@ This comprehensive refactoring plan addresses:
 ### 1.1 Presenter Layer Refactoring
 
 #### File: `src/presenters/uiDigest.ts` (1,099 lines)
+
 **Current State**: Central presenter file with ~89 exported functions covering projections, formatters, constants, and action helpers.
 **Issues**:
+
 - Violates single responsibility principle
 - Difficult to navigate and maintain
 - Mixed concerns (projections, formatters, actions, constants)
 - Large import/export surface area
 
 **Refactoring Strategy**:
+
 ```
 src/presenters/
 ├── uiDigest.ts (coordinator, re-exports only)
@@ -74,6 +78,7 @@ src/presenters/
 ```
 
 **Implementation Steps**:
+
 1. Create new directory structure under `src/presenters/`
 2. Move functions to appropriate modules by concern
 3. Update all imports across the codebase (44+ files reference uiDigest)
@@ -83,6 +88,7 @@ src/presenters/
 7. Update TypeScript paths if needed for cleaner imports
 
 **Test Additions**:
+
 - `src/presenters/projections/__tests__/rikishiProjections.test.ts`
 - `src/presenters/projections/__tests__/heyaProjections.test.ts`
 - `src/presenters/formatters/__tests__/rankFormatters.test.ts`
@@ -95,13 +101,16 @@ src/presenters/
 ### 1.2 Page Component Decomposition
 
 #### File: `src/pages/RikishiPage.tsx` (1,132 lines)
+
 **Current State**: Large page component with tabs for profile, combat, and career archives.
 **Issues**:
+
 - Single file handles multiple complex views
 - Mixed presentation and data fetching logic
 - Difficult to test individual sections
 
 **Refactoring Strategy**:
+
 ```
 src/pages/rikishi/
 ├── RikishiPage.tsx (coordinator, ~150 lines)
@@ -118,6 +127,7 @@ src/pages/rikishi/
 ```
 
 **Implementation Steps**:
+
 1. Extract tab content into separate components
 2. Create custom hooks for data fetching logic
 3. Move component-specific types to local files
@@ -125,6 +135,7 @@ src/pages/rikishi/
 5. Create unit tests for each sub-component
 
 **Test Additions**:
+
 - `src/pages/rikishi/components/__tests__/ProfileTab.test.tsx`
 - `src/pages/rikishi/components/__tests__/CombatTab.test.tsx`
 - `src/pages/rikishi/hooks/__tests__/useRikishiData.test.ts`
@@ -134,13 +145,16 @@ src/pages/rikishi/
 ---
 
 #### File: `src/pages/EconomyPage.tsx` (754 lines)
+
 **Current State**: Economy page with financial overview, debt management, and income/expense breakdowns.
 **Issues**:
+
 - Complex inline calculations
 - Mixed narrative and data logic
 - Large conditional rendering blocks
 
 **Refactoring Strategy**:
+
 ```
 src/pages/economy/
 ├── EconomyPage.tsx (coordinator, ~200 lines)
@@ -160,6 +174,7 @@ src/pages/economy/
 ```
 
 **Test Additions**:
+
 - `src/pages/economy/components/__tests__/FinancialOverview.test.tsx`
 - `src/pages/economy/components/__tests__/DebtPanel.test.tsx`
 - `src/pages/economy/utilities/__tests__/kenshoTiering.test.ts`
@@ -169,9 +184,11 @@ src/pages/economy/
 ---
 
 #### File: `src/pages/TrainingPage.tsx` (670 lines)
+
 **Current State**: Training page with complex regime management and UI.
 
 **Refactoring Strategy**:
+
 ```
 src/pages/training/
 ├── TrainingPage.tsx (coordinator, ~200 lines)
@@ -185,6 +202,7 @@ src/pages/training/
 ```
 
 **Test Additions**:
+
 - Component tests for training sub-components
 - Hook tests for training data logic
 
@@ -195,13 +213,16 @@ src/pages/training/
 ### 1.3 Engine Service Decomposition
 
 #### File: `src/engine/systems/generation/TalentPoolService.ts` (936 lines)
+
 **Current State**: Large service handling scouting, recruitment, candidate visibility, and NPC bidding.
 **Issues**:
+
 - Multiple responsibilities (scouting, visibility, NPC AI, materialization)
 - Complex state mutation logic
 - Hard to test individual features
 
 **Refactoring Strategy**:
+
 ```
 src/engine/systems/generation/
 ├── TalentPoolService.ts (read operations, ~200 lines)
@@ -213,12 +234,14 @@ src/engine/systems/generation/
 ```
 
 **Implementation Steps**:
+
 1. Separate concerns into focused modules
 2. Create clear interfaces between modules
 3. Move state mutation to dedicated functions
 4. Add comprehensive unit tests
 
 **Test Additions**:
+
 - `src/engine/systems/generation/__tests__/TalentPoolScouting.test.ts`
 - `src/engine/systems/generation/__tests__/TalentPoolVisibility.test.ts`
 - `src/engine/systems/generation/__tests__/TalentPoolNPC.test.ts`
@@ -229,12 +252,15 @@ src/engine/systems/generation/
 ---
 
 #### File: `src/engine/events.ts` (665 lines)
+
 **Current State**: Event bus with many event factory methods.
 **Issues**:
+
 - Large object with many methods
 - Could be organized by domain
 
 **Refactoring Strategy**:
+
 ```
 src/engine/events/
 ├── index.ts (main exports)
@@ -255,6 +281,7 @@ src/engine/events/
 ```
 
 **Test Additions**:
+
 - Tests for each event factory module
 - Integration tests for event logging
 
@@ -263,13 +290,16 @@ src/engine/events/
 ---
 
 #### File: `src/engine/bout/boutPhysics.ts` (722 lines)
+
 **Current State**: Core bout simulation with complex physics state management.
 **Issues**:
+
 - Large simulation function
 - Multiple phase handlers in one file
 - Complex state mutation
 
 **Refactoring Strategy**:
+
 ```
 src/engine/bout/
 ├── boutPhysics.ts (orchestrator, ~200 lines)
@@ -284,6 +314,7 @@ src/engine/bout/
 ```
 
 **Test Additions**:
+
 - Unit tests for each physics phase
 - Determinism tests for physics simulation
 
@@ -294,12 +325,15 @@ src/engine/bout/
 ### 1.4 Component Decomposition
 
 #### File: `src/components/kesho/KeshoMawashiDisplay.tsx` (797 lines)
+
 **Current State**: Large SVG rendering component with many pattern renderers.
 **Issues**:
+
 - Multiple render functions for different patterns
 - Could be split into pattern components
 
 **Refactoring Strategy**:
+
 ```
 src/components/kesho/
 ├── KeshoMawashiDisplay.tsx (main component, ~200 lines)
@@ -315,6 +349,7 @@ src/components/kesho/
 ```
 
 **Test Additions**:
+
 - Visual regression tests for each pattern
 - Snapshot tests for component rendering
 
@@ -323,12 +358,15 @@ src/components/kesho/
 ---
 
 #### File: `src/components/game/PerceptionOverview.tsx` (658 lines)
+
 **Current State**: Complex comparison component with multiple comparison modes.
 **Issues**:
+
 - Large component with multiple comparison views
 - Complex state management
 
 **Refactoring Strategy**:
+
 ```
 src/components/game/perception/
 ├── PerceptionOverview.tsx (coordinator, ~200 lines)
@@ -342,6 +380,7 @@ src/components/game/perception/
 ```
 
 **Test Additions**:
+
 - Component tests for each comparison mode
 - Data transformation tests
 
@@ -350,12 +389,15 @@ src/components/game/perception/
 ---
 
 #### File: `src/components/ui/sidebar.tsx` (641 lines)
+
 **Current State**: Complex sidebar with mobile/desktop variants.
 **Issues**:
+
 - Large component with multiple variants
 - Complex context logic
 
 **Refactoring Strategy**:
+
 ```
 src/components/ui/sidebar/
 ├── Sidebar.tsx (main component, ~200 lines)
@@ -369,6 +411,7 @@ src/components/ui/sidebar/
 ```
 
 **Test Additions**:
+
 - Component tests for sidebar variants
 - Hook tests for sidebar state
 
@@ -379,12 +422,15 @@ src/components/ui/sidebar/
 ### 1.5 Data-Heavy File Optimization
 
 #### File: `src/engine/bout/kimariteStrategy.ts` (874 lines)
+
 **Current State**: Large kimarite strategy registry with condition functions.
 **Issues**:
+
 - Data-heavy file with many strategy definitions
 - Could be split by kimarite categories
 
 **Refactoring Strategy**:
+
 ```
 src/engine/bout/kimarite/
 ├── index.ts (main exports)
@@ -407,12 +453,15 @@ src/engine/bout/kimarite/
 ---
 
 #### File: `src/engine/shikona.ts` (810 lines)
+
 **Current State**: Complex shikona generation with house styles and patterns.
 **Issues**:
+
 - Multiple generation strategies in one file
 - Complex pattern matching logic
 
 **Refactoring Strategy**:
+
 ```
 src/engine/shikona/
 ├── index.ts (main exports)
@@ -432,6 +481,7 @@ src/engine/shikona/
 ```
 
 **Test Additions**:
+
 - Tests for each pattern module
 - Generation determinism tests
 
@@ -440,12 +490,15 @@ src/engine/shikona/
 ---
 
 #### File: `src/engine/npcSponsorStrategy.ts` (677 lines)
+
 **Current State**: Large NPC sponsor strategy logic.
 **Issues**:
+
 - Complex decision-making logic
 - Could be split by strategy types
 
 **Refactoring Strategy**:
+
 ```
 src/engine/npc/
 ├── sponsorStrategy.ts (main logic, ~200 lines)
@@ -458,6 +511,7 @@ src/engine/npc/
 ```
 
 **Test Additions**:
+
 - Tests for each strategy module
 - Integration tests for sponsor decisions
 
@@ -466,11 +520,14 @@ src/engine/npc/
 ---
 
 #### File: `src/engine/npcAI.ts` (584 lines)
+
 **Current State**: NPC AI with decision-making logic.
 **Issues**:
+
 - Multiple AI decision types in one file
 
 **Refactoring Strategy**:
+
 ```
 src/engine/npc/
 ├── npcAI.ts (main AI, ~200 lines)
@@ -483,6 +540,7 @@ src/engine/npc/
 ```
 
 **Test Additions**:
+
 - Tests for each decision module
 - AI behavior tests
 
@@ -524,12 +582,13 @@ export function getHeyaRikishi(world: WorldState, heyaId: Id): Rikishi[] {
   const heya = getHeya(world, heyaId);
   if (!heya) return [];
   return (heya.rikishiIds ?? [])
-    .map(id => getRikishi(world, id))
+    .map((id) => getRikishi(world, id))
     .filter((r): r is Rikishi => r !== undefined);
 }
 ```
 
 **Implementation Steps**:
+
 1. Create utility module
 2. Find and replace all `world.heyas.get()` and `world.rikishi.get()` calls
 3. Use appropriate variant (get vs getOrThrow) based on context
@@ -544,6 +603,7 @@ export function getHeyaRikishi(world: WorldState, heyaId: Id): Rikishi[] {
 **Pattern Found**: Repeated `.map().filter()` chains for entity lookups.
 
 **Current Example**:
+
 ```typescript
 const heyaRikishi = (heya.rikishiIds ?? []).map((id) => world.rikishi.get(id)).filter(Boolean);
 ```
@@ -552,14 +612,9 @@ const heyaRikishi = (heya.rikishiIds ?? []).map((id) => world.rikishi.get(id)).f
 
 ```typescript
 // src/engine/utils/collectionOperations.ts
-export function mapIdsToEntities<T>(
-  ids: Id[] | undefined,
-  entityMap: Map<Id, T>
-): T[] {
+export function mapIdsToEntities<T>(ids: Id[] | undefined, entityMap: Map<Id, T>): T[] {
   if (!ids) return [];
-  return ids
-    .map(id => entityMap.get(id))
-    .filter((entity): entity is T => entity !== undefined);
+  return ids.map((id) => entityMap.get(id)).filter((entity): entity is T => entity !== undefined);
 }
 
 export function mapIdsToRikishi(world: WorldState, ids: Id[] | undefined): Rikishi[] {
@@ -572,6 +627,7 @@ export function mapIdsToHeya(world: WorldState, ids: Id[] | undefined): Heya[] {
 ```
 
 **Implementation Steps**:
+
 1. Create utility module
 2. Replace map/filter chains with utility functions
 3. Add unit tests
@@ -588,16 +644,11 @@ export function mapIdsToHeya(world: WorldState, ids: Id[] | undefined): Heya[] {
 
 ```typescript
 // src/presenters/projections/baseProjections.ts
-export function createBaseProjection<T extends { id: Id }>(
-  entity: T
-): { id: Id } & Partial<T> {
+export function createBaseProjection<T extends { id: Id }>(entity: T): { id: Id } & Partial<T> {
   return { id: entity.id };
 }
 
-export function projectWithDefaults<T, P>(
-  entity: T,
-  defaults: P
-): T & P {
+export function projectWithDefaults<T, P>(entity: T, defaults: P): T & P {
   return { ...entity, ...defaults };
 }
 ```
@@ -633,6 +684,7 @@ export const BAND_COLORS = {
 ```
 
 **Implementation Steps**:
+
 1. Extract common color maps to shared module
 2. Replace inline color maps with imports
 3. Ensure type safety with `as const`
@@ -648,6 +700,7 @@ export const BAND_COLORS = {
 **Goal**: Ensure all engine services are properly connected to UI layer.
 
 **Services to Verify**:
+
 1. **TalentPoolService** - Connected to TalentPoolPage ✓
 2. **MediaService** - Connected to MediaPage ✓
 3. **TrainingService** - Connected to TrainingPage ✓
@@ -665,21 +718,25 @@ export const BAND_COLORS = {
 15. **NarrativeService** - Connected to various pages ✓
 
 **Verification Steps**:
+
 1. For each service, trace import chain from engine → presenter → page
 2. Identify any services without UI connections
 3. Create presenter functions for disconnected services
 4. Add UI components for missing features
 
 **Potential Gaps Identified**:
+
 - **MyosekiMarket** - Connected to MyosekiMarketPage ✓
 - **HolidaySystem** - Connected via game context ✓
 - **AutoSim** - Connected via game context ✓
 
 **Action Items**:
+
 - All major services appear connected
 - Add integration tests to verify end-to-end data flow
 
 **Test Additions**:
+
 - `src/__tests__/integration/serviceToUIIntegration.test.ts`
 - Tests verifying data flows from engine through presenters to UI
 
@@ -692,6 +749,7 @@ export const BAND_COLORS = {
 **Goal**: Ensure all event types are properly surfaced in UI.
 
 **Event Categories**:
+
 - injury ✓ (InjuryRecoveryPage, WeeklyDigest)
 - training ✓ (TrainingPage, WeeklyDigest)
 - economy ✓ (EconomyPage, WeeklyDigest)
@@ -706,15 +764,18 @@ export const BAND_COLORS = {
 - rivalry ✓ (RivalriesPage, WeeklyDigest)
 
 **Verification Steps**:
+
 1. Check each event category has corresponding UI display
 2. Verify EventLogPanel displays all event types
 3. Ensure event filtering works correctly
 
 **Action Items**:
+
 - All event categories appear connected
 - Add event type filtering tests
 
 **Test Additions**:
+
 - `src/components/layout/__tests__/EventLogPanel.test.tsx`
 - Tests for event filtering and display
 
@@ -727,9 +788,10 @@ export const BAND_COLORS = {
 **Goal**: Ensure all tick phases are properly connected.
 
 **Tick Phases**:
+
 - phase00_preflight ✓
-- phase01_week_* (economy, training, health, welfare, recruitment, governance, rivalries, npc_ai) ✓
-- phase01_daily_* (economy, welfare, sponsors, drama) ✓
+- phase01*week*\* (economy, training, health, welfare, recruitment, governance, rivalries, npc_ai) ✓
+- phase01*daily*\* (economy, welfare, sponsors, drama) ✓
 - phase01_monthly_market ✓
 - phase02_context ✓
 - phase_pre_basho_assessment ✓
@@ -739,15 +801,18 @@ export const BAND_COLORS = {
 - phase06_yearly_boundary ✓
 
 **Verification Steps**:
+
 1. Verify each phase is included in appropriate pipeline
 2. Check phase order is correct
 3. Ensure phase dependencies are documented
 
 **Action Items**:
+
 - All phases appear connected
 - Add pipeline integration tests
 
 **Test Additions**:
+
 - `src/engine/tick/__tests__/pipelineIntegration.test.ts`
 - Tests verifying phase execution order and data flow
 
@@ -760,6 +825,7 @@ export const BAND_COLORS = {
 ### 4.1 Navigation Structure Audit
 
 **Current Navigation**:
+
 - HQ_TABS: stable, roster, training, staff, medical ✓
 - OFFICE_TABS: economy, facilities, sponsors, scouting ✓
 - ASSOCIATION_TABS: governance, myoseki, media, trends ✓
@@ -767,6 +833,7 @@ export const BAND_COLORS = {
 - RECORDS_TABS: history, almanac, hall-of-fame ✓
 
 **All Pages Connected**:
+
 - MainMenu ✓
 - Dashboard ✓
 - StablePage ✓ (with sub-routes)
@@ -794,11 +861,13 @@ export const BAND_COLORS = {
 - NotFound ✓
 
 **Action Items**:
+
 - All pages are connected via navigation
 - No disconnected pages found
 - Add route tests to verify navigation
 
 **Test Additions**:
+
 - `src/__tests__/integration/navigation.test.tsx`
 - Tests verifying all routes are accessible
 
@@ -809,6 +878,7 @@ export const BAND_COLORS = {
 ### 4.2 Component Integration Audit
 
 **Dashboard Widgets** (all connected to Dashboard):
+
 - StableWidget ✓
 - ScoutingWidget ✓
 - TrainingWidget ✓
@@ -824,6 +894,7 @@ export const BAND_COLORS = {
 - InstitutionWidget ✓
 
 **Game Components** (all integrated):
+
 - WeeklyDigest ✓
 - BoutNarrativeModal ✓
 - MatchDayViewer ✓
@@ -842,21 +913,25 @@ export const BAND_COLORS = {
 - SaveLoadDialog ✓
 
 **Kesho Components** (all integrated):
+
 - KeshoMawashiDisplay ✓
 - KeshoBadge ✓
 - KeshoMiniIndicator ✓
 
 **Avatar Components** (all integrated):
+
 - SumoAvatar ✓
 - AvatarWithBadge ✓
 - AvatarStack ✓
 - AvatarGallery ✓
 
 **Action Items**:
+
 - All components appear integrated
 - Add component usage tests
 
 **Test Additions**:
+
 - Component integration tests
 - Widget rendering tests
 
@@ -917,11 +992,13 @@ export const BAND_COLORS = {
     - RecapPage (inductees)
 
 **Action Items**:
+
 - All major features are surfaced
 - No disconnected features found
 - Add feature integration tests
 
 **Test Additions**:
+
 - Feature flow tests (e.g., recruitment → signing → roster)
 - End-to-end feature tests
 
@@ -937,6 +1014,7 @@ export const BAND_COLORS = {
 **Test Directories**: 14 directories in src/engine
 
 **Coverage by Area**:
+
 - **Engine Core**: Good coverage (core, utils, types)
 - **Bout System**: Good coverage (boutResolver, boutPhysics, kimariteClassifier)
 - **Tick System**: Good coverage (advanceWeek, pipelineRunner)
@@ -962,6 +1040,7 @@ export const BAND_COLORS = {
 **Priority**: High - Presenters are critical for UI data transformation
 
 **Tests to Add**:
+
 ```
 src/presenters/__tests__/
 ├── rikishiProjections.test.ts
@@ -975,6 +1054,7 @@ src/presenters/__tests__/
 ```
 
 **Coverage Goals**:
+
 - All projection functions
 - Edge cases (null/undefined handling)
 - Data transformation accuracy
@@ -988,6 +1068,7 @@ src/presenters/__tests__/
 **Priority**: High - Core game logic
 
 **Tests to Add**:
+
 ```
 src/engine/systems/media/__tests__/
 ├── MediaService.test.ts
@@ -1008,6 +1089,7 @@ src/engine/systems/training/__tests__/
 ```
 
 **Coverage Goals**:
+
 - All service methods
 - State mutations
 - Edge cases and error handling
@@ -1021,6 +1103,7 @@ src/engine/systems/training/__tests__/
 **Priority**: Medium - UI integration
 
 **Tests to Add**:
+
 ```
 src/pages/__tests__/
 ├── Dashboard.test.tsx
@@ -1031,6 +1114,7 @@ src/pages/__tests__/
 ```
 
 **Coverage Goals**:
+
 - Component rendering
 - User interactions
 - Data flow
@@ -1044,6 +1128,7 @@ src/pages/__tests__/
 **Priority**: Medium - Reusable components
 
 **Tests to Add**:
+
 ```
 src/components/dashboard/__tests__/
 ├── StableWidget.test.tsx
@@ -1057,6 +1142,7 @@ src/components/game/__tests__/
 ```
 
 **Coverage Goals**:
+
 - Component rendering
 - Props validation
 - User interactions
@@ -1070,6 +1156,7 @@ src/components/game/__tests__/
 **Priority**: High - End-to-end verification
 
 **Tests to Add**:
+
 ```
 src/__tests__/integration/
 ├── serviceToUIIntegration.test.ts
@@ -1080,6 +1167,7 @@ src/__tests__/integration/
 ```
 
 **Coverage Goals**:
+
 - End-to-end data flows
 - Feature workflows
 - System integration
@@ -1091,6 +1179,7 @@ src/__tests__/integration/
 ### 5.3 Test Infrastructure Improvements
 
 **Actions**:
+
 1. Set up test coverage reporting (Istanbul/nyc)
 2. Add coverage thresholds to package.json
 3. Create test utilities for common test scenarios
@@ -1104,11 +1193,13 @@ src/__tests__/integration/
 ## Part 6: Implementation Timeline
 
 ### Phase 1: Foundation (Week 1)
+
 - Create utility modules for common patterns (entity access, collection operations)
 - Set up test infrastructure improvements
 - Create directory structures for refactored modules
 
 **Deliverables**:
+
 - Utility modules created
 - Test infrastructure improved
 - Directory structures ready
@@ -1116,11 +1207,13 @@ src/__tests__/integration/
 ---
 
 ### Phase 2: Presenter Layer Refactoring (Week 2)
+
 - Decompose uiDigest.ts into focused modules
 - Add presenter tests
 - Update all imports
 
 **Deliverables**:
+
 - uiDigest decomposed into 20+ focused modules
 - Presenter tests added
 - All imports updated
@@ -1128,11 +1221,13 @@ src/__tests__/integration/
 ---
 
 ### Phase 3: Page Component Decomposition (Week 3)
+
 - Refactor RikishiPage, EconomyPage, TrainingPage
 - Add component tests
 - Create custom hooks
 
 **Deliverables**:
+
 - 3 major pages refactored
 - Sub-components created
 - Component tests added
@@ -1140,11 +1235,13 @@ src/__tests__/integration/
 ---
 
 ### Phase 4: Engine Service Decomposition (Week 4)
+
 - Refactor TalentPoolService, events.ts, boutPhysics.ts
 - Add service tests
 - Separate concerns into focused modules
 
 **Deliverables**:
+
 - 3 major services refactored
 - Service tests added
 - Modules separated by concern
@@ -1152,11 +1249,13 @@ src/__tests__/integration/
 ---
 
 ### Phase 5: Component Decomposition (Week 5)
+
 - Refactor KeshoMawashiDisplay, PerceptionOverview, sidebar
 - Add component tests
 - Split pattern renderers
 
 **Deliverables**:
+
 - 3 major components refactored
 - Component tests added
 - Pattern modules created
@@ -1164,10 +1263,12 @@ src/__tests__/integration/
 ---
 
 ### Phase 6: Data-Heavy File Optimization (Week 5-6)
+
 - Refactor kimariteStrategy, shikona, npcSponsorStrategy, npcAI
 - Add tests for data modules
 
 **Deliverables**:
+
 - 4 data-heavy files optimized
 - Data modules separated
 - Tests added
@@ -1175,11 +1276,13 @@ src/__tests__/integration/
 ---
 
 ### Phase 7: System Integration & Testing (Week 6)
+
 - Verify all system integrations
 - Add integration tests
 - Verify UI/UX connectivity
 
 **Deliverables**:
+
 - All integrations verified
 - Integration tests added
 - UI/UX connectivity confirmed
@@ -1187,11 +1290,13 @@ src/__tests__/integration/
 ---
 
 ### Phase 8: Final Review & Documentation (Week 6)
+
 - Code review
 - Documentation updates
 - Performance verification
 
 **Deliverables**:
+
 - Code review completed
 - Documentation updated
 - Performance verified
@@ -1205,6 +1310,7 @@ src/__tests__/integration/
 **Risk**: Refactoring may break existing functionality.
 
 **Mitigation**:
+
 - Create feature flags for major changes
 - Maintain compatibility layers during transition
 - Run full test suite after each phase
@@ -1217,6 +1323,7 @@ src/__tests__/integration/
 **Risk**: Import path updates may be missed.
 
 **Mitigation**:
+
 - Use TypeScript to catch missing imports
 - Run comprehensive grep for old import patterns
 - Add linter rules to enforce new patterns
@@ -1229,6 +1336,7 @@ src/__tests__/integration/
 **Risk**: New tests may fail or existing tests may break.
 
 **Mitigation**:
+
 - Run tests frequently during refactoring
 - Fix test failures immediately
 - Update test data fixtures as needed
@@ -1241,6 +1349,7 @@ src/__tests__/integration/
 **Risk**: Refactoring may impact performance.
 
 **Mitigation**:
+
 - Benchmark critical paths before and after
 - Profile performance during refactoring
 - Optimize hot paths
@@ -1315,6 +1424,7 @@ src/__tests__/integration/
 ### Appendix A: File Size Audit Results
 
 **Files >500 lines**:
+
 1. src/presenters/uiDigest.ts: 1,099 lines
 2. src/pages/RikishiPage.tsx: 1,132 lines
 3. src/engine/systems/generation/TalentPoolService.ts: 936 lines
@@ -1328,7 +1438,7 @@ src/__tests__/integration/
 11. src/engine/events.ts: 665 lines
 12. src/components/game/PerceptionOverview.tsx: 658 lines
 13. src/components/ui/sidebar.tsx: 641 lines
-14. src/engine/bout/__tests__/boutResultApplier.test.ts: 631 lines
+14. src/engine/bout/**tests**/boutResultApplier.test.ts: 631 lines
 15. src/engine/almanac.ts: 609 lines
 16. src/pages/RivalriesPage.tsx: 599 lines
 17. src/engine/systems/generation/CandidateGenerator.ts: 585 lines
@@ -1345,21 +1455,25 @@ src/__tests__/integration/
 ### Appendix B: Duplicate Pattern Analysis
 
 **Pattern 1: Entity Access**
+
 - Occurrences: 50+
 - Files affected: 30+
 - Solution: Utility functions
 
 **Pattern 2: Map/Filter Chains**
+
 - Occurrences: 20+
 - Files affected: 15+
 - Solution: Collection utilities
 
 **Pattern 3: Color Maps**
+
 - Occurrences: 10+
 - Files affected: 8+
 - Solution: Centralized color utilities
 
 **Pattern 4: Projection Logic**
+
 - Occurrences: 15+
 - Files affected: 12+
 - Solution: Base projection utilities
@@ -1368,23 +1482,23 @@ src/__tests__/integration/
 
 ### Appendix C: System Integration Matrix
 
-| Service | UI Connection | Presenter | Page | Status |
-|---------|---------------|-----------|------|--------|
-| TalentPoolService | ✓ | ✓ | TalentPoolPage | Connected |
-| MediaService | ✓ | ✓ | MediaPage | Connected |
-| TrainingService | ✓ | ✓ | TrainingPage | Connected |
-| WelfareService | ✓ | ✓ | InjuryRecoveryPage | Connected |
-| SponsorshipService | ✓ | ✓ | SponsorManagementPage | Connected |
-| KenshoService | ✓ | ✓ | EconomyPage | Connected |
-| InjuryService | ✓ | ✓ | InjuryRecoveryPage | Connected |
-| RecoveryService | ✓ | ✓ | InjuryRecoveryPage | Connected |
-| GovernanceService | ✓ | ✓ | GovernancePage | Connected |
-| RivalryService | ✓ | ✓ | RivalriesPage | Connected |
-| FacilitiesService | ✓ | ✓ | FacilitiesPage | Connected |
-| StaffService | ✓ | ✓ | StaffPage | Connected |
-| KeshoMawashiGenerator | ✓ | ✓ | Kesho components | Connected |
-| HeyaBrandGenerator | ✓ | ✓ | StablePage | Connected |
-| NarrativeService | ✓ | ✓ | Multiple pages | Connected |
+| Service               | UI Connection | Presenter | Page                  | Status    |
+| --------------------- | ------------- | --------- | --------------------- | --------- |
+| TalentPoolService     | ✓             | ✓         | TalentPoolPage        | Connected |
+| MediaService          | ✓             | ✓         | MediaPage             | Connected |
+| TrainingService       | ✓             | ✓         | TrainingPage          | Connected |
+| WelfareService        | ✓             | ✓         | InjuryRecoveryPage    | Connected |
+| SponsorshipService    | ✓             | ✓         | SponsorManagementPage | Connected |
+| KenshoService         | ✓             | ✓         | EconomyPage           | Connected |
+| InjuryService         | ✓             | ✓         | InjuryRecoveryPage    | Connected |
+| RecoveryService       | ✓             | ✓         | InjuryRecoveryPage    | Connected |
+| GovernanceService     | ✓             | ✓         | GovernancePage        | Connected |
+| RivalryService        | ✓             | ✓         | RivalriesPage         | Connected |
+| FacilitiesService     | ✓             | ✓         | FacilitiesPage        | Connected |
+| StaffService          | ✓             | ✓         | StaffPage             | Connected |
+| KeshoMawashiGenerator | ✓             | ✓         | Kesho components      | Connected |
+| HeyaBrandGenerator    | ✓             | ✓         | StablePage            | Connected |
+| NarrativeService      | ✓             | ✓         | Multiple pages        | Connected |
 
 ---
 
@@ -1394,6 +1508,7 @@ src/__tests__/integration/
 **Test Directories**: 14
 
 **Coverage by Module**:
+
 - Engine Core: 85%
 - Bout System: 90%
 - Tick System: 85%
@@ -1410,6 +1525,7 @@ src/__tests__/integration/
 - Components: 0%
 
 **Target Coverage**:
+
 - Engine Core: 90%
 - Bout System: 90%
 - Tick System: 90%
@@ -1436,7 +1552,8 @@ The refactoring will be executed in 8 phases over 6 weeks, with careful attentio
 **Total Estimated Time**: 6 weeks
 **Total Estimated Effort**: 30-35 person-days
 **Risk Level**: Medium (mitigated by phased approach)
-**Expected Benefits**: 
+**Expected Benefits**:
+
 - Improved maintainability
 - Better test coverage
 - Easier onboarding

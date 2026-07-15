@@ -56,11 +56,11 @@ When you start a new game you will be walked through a setup wizard:
 
 The game is turn-based at the day level. Three options control time:
 
-| Button | What It Does |
-|--------|-------------|
-| **Advance One Day** | Simulate a single day — basho fights happen, training ticks, events fire |
+| Button                    | What It Does                                                                           |
+| ------------------------- | -------------------------------------------------------------------------------------- |
+| **Advance One Day**       | Simulate a single day — basho fights happen, training ticks, events fire               |
 | **Advance to Next Event** | Jump to the next meaningful moment (next bout day, phase transition, recruit deadline) |
-| **Auto-Sim** | Simulate multiple days or weeks automatically |
+| **Auto-Sim**              | Simulate multiple days or weeks automatically                                          |
 
 Use **Advance to Next Event** during inter-basho periods to skip quiet stretches. Use **Advance One Day** during active tournaments to watch each bout play out.
 
@@ -86,13 +86,13 @@ The game uses a three-panel layout:
 
 ### Navigation Sections
 
-| Section | Key Screens |
-|---------|-------------|
-| **Stable** | Roster, Training, Medical, Staff, Oyakata |
-| **Office** | Finances, Scouting, Sponsors, Facilities |
-| **Association** | Governance, Talent Pool, Trends, Myoseki |
-| **Tournament** | Basho, Schedule, Banzuke, Rivalries |
-| **Archives** | History, Almanac, Media, Hall of Fame |
+| Section         | Key Screens                               |
+| --------------- | ----------------------------------------- |
+| **Stable**      | Roster, Training, Medical, Staff, Oyakata |
+| **Office**      | Finances, Scouting, Sponsors, Facilities  |
+| **Association** | Governance, Talent Pool, Trends, Myoseki  |
+| **Tournament**  | Basho, Schedule, Banzuke, Rivalries       |
+| **Archives**    | History, Almanac, Media, Hall of Fame     |
 
 ---
 
@@ -102,26 +102,26 @@ The game uses a three-panel layout:
 
 Professional sumo holds **six Basho per year**, each 15 days long:
 
-| # | Name | Month | Venue |
-|---|------|-------|-------|
-| 1 | **Hatsu** (初場所) — New Year | January | Tokyo — Ryōgoku Kokugikan |
-| 2 | **Haru** (春場所) — Spring | March | Osaka — Edion Arena |
-| 3 | **Natsu** (夏場所) — Summer | May | Tokyo — Ryōgoku Kokugikan |
-| 4 | **Nagoya** (名古屋場所) | July | Nagoya — Aichi Prefectural Gymnasium |
-| 5 | **Aki** (秋場所) — Autumn | September | Tokyo — Ryōgoku Kokugikan |
-| 6 | **Kyushu** (九州場所) | November | Fukuoka — Fukuoka Kokusai Center |
+| #   | Name                          | Month     | Venue                                |
+| --- | ----------------------------- | --------- | ------------------------------------ |
+| 1   | **Hatsu** (初場所) — New Year | January   | Tokyo — Ryōgoku Kokugikan            |
+| 2   | **Haru** (春場所) — Spring    | March     | Osaka — Edion Arena                  |
+| 3   | **Natsu** (夏場所) — Summer   | May       | Tokyo — Ryōgoku Kokugikan            |
+| 4   | **Nagoya** (名古屋場所)       | July      | Nagoya — Aichi Prefectural Gymnasium |
+| 5   | **Aki** (秋場所) — Autumn     | September | Tokyo — Ryōgoku Kokugikan            |
+| 6   | **Kyushu** (九州場所)         | November  | Fukuoka — Fukuoka Kokusai Center     |
 
 ### Cycle Phases
 
 Between and during tournaments the game moves through five distinct phases:
 
-| Phase | Description |
-|-------|-------------|
-| **pre_basho** | Final preparations, ~7 days before the tournament opens |
-| **active_basho** | The tournament is live — 15 days of daily bouts |
-| **post_basho** | Results processed, prizes awarded, banzuke calculations begin |
-| **banzuke_reveal** | Official rankings published, 14 days before next basho |
-| **interim** | 6-week inter-tournament bridge — training, recruitment, finance |
+| Phase              | Description                                                     |
+| ------------------ | --------------------------------------------------------------- |
+| **pre_basho**      | Final preparations, ~7 days before the tournament opens         |
+| **active_basho**   | The tournament is live — 15 days of daily bouts                 |
+| **post_basho**     | Results processed, prizes awarded, banzuke calculations begin   |
+| **banzuke_reveal** | Official rankings published, 14 days before next basho          |
+| **interim**        | 6-week inter-tournament bridge — training, recruitment, finance |
 
 The **interim** period is your main window for management: training hard, scouting new talent, negotiating sponsorships, and responding to governance matters.
 
@@ -133,49 +133,50 @@ The **interim** period is your main window for management: training hard, scouti
 
 Every wrestler has ten core stats, each rated 0–100:
 
-| Stat | What It Does |
-|------|-------------|
-| **Strength** | Power in grapples, throws, and force-outs |
-| **Speed** | Movement velocity and reaction time |
-| **Balance** | Stability and footing recovery after impact |
-| **Technique** | Execution precision of winning moves |
-| **Weight** | Mass in kg — affects physics of clashes |
-| **Stamina** | Endurance over a 15-day tournament |
-| **Mental** | Composure under pressure, crisis recovery |
-| **Adaptability** | How quickly they adjust to new opponents |
-| **Aggression** | Initiative tendency — how often they attack first |
-| **Experience** | Career learning that sharpens all other stats |
+| Stat             | What It Does                                      |
+| ---------------- | ------------------------------------------------- |
+| **Strength**     | Power in grapples, throws, and force-outs         |
+| **Speed**        | Movement velocity and reaction time               |
+| **Balance**      | Stability and footing recovery after impact       |
+| **Technique**    | Execution precision of winning moves              |
+| **Weight**       | Mass in kg — affects physics of clashes           |
+| **Stamina**      | Endurance over a 15-day tournament                |
+| **Mental**       | Composure under pressure, crisis recovery         |
+| **Adaptability** | How quickly they adjust to new opponents          |
+| **Aggression**   | Initiative tendency — how often they attack first |
+| **Experience**   | Career learning that sharpens all other stats     |
 
 ### Condition Stats
 
 These fluctuate daily and weekly:
 
-| Stat | Range | What It Means |
-|------|-------|---------------|
-| **Condition** | 0–100 | Physical readiness right now |
-| **Motivation** | 0–100 | Drive and morale |
-| **Fatigue** | 0–100 | Accumulated tiredness — high fatigue hurts performance |
-| **Momentum** | Variable | Psychological state mid-basho (winning streaks boost it) |
-| **Durability** | 0–100 | Resistance to injury |
+| Stat           | Range    | What It Means                                            |
+| -------------- | -------- | -------------------------------------------------------- |
+| **Condition**  | 0–100    | Physical readiness right now                             |
+| **Motivation** | 0–100    | Drive and morale                                         |
+| **Fatigue**    | 0–100    | Accumulated tiredness — high fatigue hurts performance   |
+| **Momentum**   | Variable | Psychological state mid-basho (winning streaks boost it) |
+| **Durability** | 0–100    | Resistance to injury                                     |
 
 ### Combat Archetypes
 
 Each rikishi has a fighting style that shapes which techniques they prefer:
 
-| Archetype | Style |
-|-----------|-------|
-| **Oshi** | Push/thrust specialist — drives opponents out with open palms |
-| **Yotsu** | Belt specialist — seeks mawashi grip, wins through grapples |
-| **Trickster** | Pulldowns, feints, unconventional tactics — high variance |
-| **Speedster** | Lateral movement and quick angles — evades before attacking |
-| **Hybrid** | Balanced push/belt — flexible but no single strength |
-| **Giant** | Mass-dominant — sheer weight and strength |
-| **Tsuppari** | Rapid open-palm thrusting — no belt contact, relentless offense |
-| **Defensive** | Counter-wrestler — absorbs pressure and punishes aggression |
+| Archetype     | Style                                                           |
+| ------------- | --------------------------------------------------------------- |
+| **Oshi**      | Push/thrust specialist — drives opponents out with open palms   |
+| **Yotsu**     | Belt specialist — seeks mawashi grip, wins through grapples     |
+| **Trickster** | Pulldowns, feints, unconventional tactics — high variance       |
+| **Speedster** | Lateral movement and quick angles — evades before attacking     |
+| **Hybrid**    | Balanced push/belt — flexible but no single strength            |
+| **Giant**     | Mass-dominant — sheer weight and strength                       |
+| **Tsuppari**  | Rapid open-palm thrusting — no belt contact, relentless offense |
+| **Defensive** | Counter-wrestler — absorbs pressure and punishes aggression     |
 
 ### Grip Preference
 
 Belt wrestlers additionally have preferred grip types:
+
 - **Migi** (right inside) or **Hidari** (left inside)
 - **Depth**: Maemitsu (front belt), Deep, or Standard
 
@@ -192,13 +193,13 @@ Wrestlers are not static. Stats develop over time based on training, experience,
 
 **Development Profiles:**
 
-| Profile | Description |
-|---------|-------------|
-| **Prodigy** | Fast early development, peaks young |
-| **Standard** | Steady growth, peak in mid-20s |
-| **Late Bloomer** | Slow start, peaks in late 20s–early 30s |
-| **Early Peaker** | Strong early, falls off fast |
-| **Journeyman** | Ceiling fraction below 1.0 — reliable but limited |
+| Profile          | Description                                       |
+| ---------------- | ------------------------------------------------- |
+| **Prodigy**      | Fast early development, peaks young               |
+| **Standard**     | Steady growth, peak in mid-20s                    |
+| **Late Bloomer** | Slow start, peaks in late 20s–early 30s           |
+| **Early Peaker** | Strong early, falls off fast                      |
+| **Journeyman**   | Ceiling fraction below 1.0 — reliable but limited |
 
 ### Shikona — The Ring Name
 
@@ -216,26 +217,26 @@ Professional sumo has six divisions. Only the top two divisions (Makuuchi and Ju
 
 ### Divisions from Top to Bottom
 
-| Division | Pro Status | Monthly Salary |
-|----------|-----------|----------------|
-| **Makuuchi** (幕内) | Professional | ¥1,400,000 – ¥3,000,000 |
-| **Juryo** (十両) | Professional | ¥1,100,000 |
-| **Makushita** (幕下) | Semi-pro | None |
-| **Sandanme** (三段目) | Amateur | None |
-| **Jonidan** (序二段) | Amateur | None |
-| **Jonokuchi** (序ノ口) | Amateur | None |
+| Division               | Pro Status   | Monthly Salary          |
+| ---------------------- | ------------ | ----------------------- |
+| **Makuuchi** (幕内)    | Professional | ¥1,400,000 – ¥3,000,000 |
+| **Juryo** (十両)       | Professional | ¥1,100,000              |
+| **Makushita** (幕下)   | Semi-pro     | None                    |
+| **Sandanme** (三段目)  | Amateur      | None                    |
+| **Jonidan** (序二段)   | Amateur      | None                    |
+| **Jonokuchi** (序ノ口) | Amateur      | None                    |
 
 The term **Sekitori** refers to all wrestlers in Makuuchi and Juryo — the paid professionals who receive monthly salaries and travel allowances.
 
 ### Ranks Within Makuuchi
 
-| Rank | Japanese | Notes |
-|------|----------|-------|
-| **Yokozuna** | 横綱 | Grand Champion — never demotes, only retires |
-| **Ozeki** | 大関 | Champion — subject to Kadoban system |
-| **Sekiwake** | 関脇 | Third rank |
-| **Komusubi** | 小結 | Fourth rank |
-| **Maegashira** | 前頭 | Numbered 1–13+, East and West |
+| Rank           | Japanese | Notes                                        |
+| -------------- | -------- | -------------------------------------------- |
+| **Yokozuna**   | 横綱     | Grand Champion — never demotes, only retires |
+| **Ozeki**      | 大関     | Champion — subject to Kadoban system         |
+| **Sekiwake**   | 関脇     | Third rank                                   |
+| **Komusubi**   | 小結     | Fourth rank                                  |
+| **Maegashira** | 前頭     | Numbered 1–13+, East and West                |
 
 ### East and West Sides
 
@@ -258,23 +259,23 @@ Matchups are set by the **torikumi** — a scheduling committee that uses a Swis
 
 ### Tournament Awards
 
-| Award | Japanese | Description |
-|-------|----------|-------------|
-| **Yusho** | 優勝 | Championship — most wins (playoff if tied) |
-| **Jun-Yusho** | 準優勝 | Runner-up |
-| **Ginosho** | 技能賞 | Technique Award — best technique display |
-| **Kantosho** | 敢闘賞 | Fighting Spirit Award |
-| **Shukunsho** | 殊勲賞 | Outstanding Performance — beating top-ranked opponents |
-| **Bout of the Basho** | — | Most exciting match by excitement score |
+| Award                 | Japanese | Description                                            |
+| --------------------- | -------- | ------------------------------------------------------ |
+| **Yusho**             | 優勝     | Championship — most wins (playoff if tied)             |
+| **Jun-Yusho**         | 準優勝   | Runner-up                                              |
+| **Ginosho**           | 技能賞   | Technique Award — best technique display               |
+| **Kantosho**          | 敢闘賞   | Fighting Spirit Award                                  |
+| **Shukunsho**         | 殊勲賞   | Outstanding Performance — beating top-ranked opponents |
+| **Bout of the Basho** | —        | Most exciting match by excitement score                |
 
 ### Special Bout Outcomes
 
-| Event | Description |
-|-------|-------------|
-| **Kinboshi** (金星) | Gold Star — Maegashira or lower beats a Yokozuna |
-| **Ginboshi** (銀星) | Silver Star — Maegashira or lower beats an Ozeki |
-| **Fusensho** (不戦勝) | Default win — opponent absent (kyūjō) |
-| **Hansoku** (反則) | Disqualification — rule violation |
+| Event                 | Description                                      |
+| --------------------- | ------------------------------------------------ |
+| **Kinboshi** (金星)   | Gold Star — Maegashira or lower beats a Yokozuna |
+| **Ginboshi** (銀星)   | Silver Star — Maegashira or lower beats an Ozeki |
+| **Fusensho** (不戦勝) | Default win — opponent absent (kyūjō)            |
+| **Hansoku** (反則)    | Disqualification — rule violation                |
 
 **Kinboshi** is one of the highest individual honours outside a championship win. It is a significant career milestone for lower-ranked wrestlers and a source of media attention.
 
@@ -285,6 +286,7 @@ Corporate sponsors place **kenshō** envelopes on featured bouts. Each envelope 
 ### Withdrawal — Kyūjō
 
 Wrestlers can withdraw from a tournament, receiving default losses for the remaining days. Reasons include:
+
 - **Injury** (most common — a medical certificate is required for official records)
 - **Voluntary** — rare, with reputational consequences
 - **Personal circumstances**
@@ -297,34 +299,34 @@ There are **82 official kimarite** (winning techniques) in professional sumo, fr
 
 ### Kimarite Families
 
-| Family | Type | Examples |
-|--------|------|---------|
-| **Kihonwaza** | Force-out & push basics | Yorikiri, Oshidashi, Tsukidashi |
-| **Nageite** | Throwing | Uwatenage, Sukuinage, Shitatenage |
-| **Hinerite** | Twisting | Tsukiotoshi, Tottari, Kotehineri |
-| **Kakeite** | Tripping/Hooking | Sotogake, Ashitori, Ketaguri |
-| **Sorite** | Backwards body drops | Izori, Kakezori — extremely rare |
+| Family        | Type                    | Examples                          |
+| ------------- | ----------------------- | --------------------------------- |
+| **Kihonwaza** | Force-out & push basics | Yorikiri, Oshidashi, Tsukidashi   |
+| **Nageite**   | Throwing                | Uwatenage, Sukuinage, Shitatenage |
+| **Hinerite**  | Twisting                | Tsukiotoshi, Tottari, Kotehineri  |
+| **Kakeite**   | Tripping/Hooking        | Sotogake, Ashitori, Ketaguri      |
+| **Sorite**    | Backwards body drops    | Izori, Kakezori — extremely rare  |
 
 ### Most Common Techniques
 
-| Kimarite | Japanese | Meaning | Frequency |
-|----------|----------|---------|-----------|
-| **Yorikiri** | 寄り切り | Belt force-out | Very common |
-| **Oshidashi** | 押し出し | Push out | Common |
-| **Uwatenage** | 上手投げ | Overarm throw | Moderate |
-| **Tsukidashi** | 突き出し | Thrust out | Moderate |
-| **Oshitaoshi** | 押し倒し | Push down | Moderate |
+| Kimarite       | Japanese | Meaning        | Frequency   |
+| -------------- | -------- | -------------- | ----------- |
+| **Yorikiri**   | 寄り切り | Belt force-out | Very common |
+| **Oshidashi**  | 押し出し | Push out       | Common      |
+| **Uwatenage**  | 上手投げ | Overarm throw  | Moderate    |
+| **Tsukidashi** | 突き出し | Thrust out     | Moderate    |
+| **Oshitaoshi** | 押し倒し | Push down      | Moderate    |
 
 Rare techniques like **Ipponzeoi** (shoulder throw) or the **Sorite** family (backward body drops) are extraordinary moments that generate significant media attention and excitement.
 
 ### Rarity Tiers
 
-| Tier | Weight Range | Example |
-|------|-------------|---------|
-| Common | > 150 | Yorikiri (1000), Oshidashi (850) |
-| Uncommon | 30–150 | Uwatenage (350), Tsukiotoshi (350) |
-| Rare | 5–30 | Kubinage (15), Tottari (30) |
-| Legendary | 1 | Sorite family, exotic tricks |
+| Tier      | Weight Range | Example                            |
+| --------- | ------------ | ---------------------------------- |
+| Common    | > 150        | Yorikiri (1000), Oshidashi (850)   |
+| Uncommon  | 30–150       | Uwatenage (350), Tsukiotoshi (350) |
+| Rare      | 5–30         | Kubinage (15), Tottari (30)        |
+| Legendary | 1            | Sorite family, exotic tricks       |
 
 ---
 
@@ -336,68 +338,69 @@ Training is how your wrestlers grow. During the **interim** and **pre_basho** ph
 
 **Training Intensity** — affects stat gains and fatigue accumulation:
 
-| Level | Stat Gains | Fatigue | Notes |
-|-------|-----------|---------|-------|
-| **Conservative** | Low | Low | Safe — good for recovering wrestlers |
-| **Balanced** | Moderate | Moderate | Default for most stables |
-| **Intensive** | High | Moderate-High | Pushes development faster |
-| **Punishing** | Maximum | High | Burnout risk — use sparingly |
+| Level            | Stat Gains | Fatigue       | Notes                                |
+| ---------------- | ---------- | ------------- | ------------------------------------ |
+| **Conservative** | Low        | Low           | Safe — good for recovering wrestlers |
+| **Balanced**     | Moderate   | Moderate      | Default for most stables             |
+| **Intensive**    | High       | Moderate-High | Pushes development faster            |
+| **Punishing**    | Maximum    | High          | Burnout risk — use sparingly         |
 
 > **Warning:** Intensive and Punishing training can trigger welfare investigations if sustained. They may also be blocked if your stable is under sanctions.
 
 **Training Focus** — which stat cluster receives emphasis:
 
-| Focus | Primary Benefit |
-|-------|----------------|
-| **Power** | Strength gains |
-| **Speed** | Speed gains |
-| **Technique** | Technique gains |
-| **Balance** | Balance gains |
-| **Neutral** | Spread across all stats |
+| Focus         | Primary Benefit         |
+| ------------- | ----------------------- |
+| **Power**     | Strength gains          |
+| **Speed**     | Speed gains             |
+| **Technique** | Technique gains         |
+| **Balance**   | Balance gains           |
+| **Neutral**   | Spread across all stats |
 
 **Style Bias** — heya-wide tactical direction:
 
-| Bias | Effect |
-|------|--------|
-| **Oshi** | Emphasises push technique and speed — favours thrusting archetypes |
-| **Yotsu** | Emphasises belt/grappling and technique — favours belt archetypes |
-| **Neutral** | No bias — develops all archetypes equally |
+| Bias        | Effect                                                             |
+| ----------- | ------------------------------------------------------------------ |
+| **Oshi**    | Emphasises push technique and speed — favours thrusting archetypes |
+| **Yotsu**   | Emphasises belt/grappling and technique — favours belt archetypes  |
+| **Neutral** | No bias — develops all archetypes equally                          |
 
 **Recovery Emphasis** — how aggressively the stable manages fatigue:
 
-| Setting | Effect |
-|---------|--------|
-| **Low** | Training-first — fatigue accumulates faster |
-| **Normal** | Balanced approach |
-| **High** | Recovery-first — reduces fatigue, protects at the cost of gains |
+| Setting    | Effect                                                          |
+| ---------- | --------------------------------------------------------------- |
+| **Low**    | Training-first — fatigue accumulates faster                     |
+| **Normal** | Balanced approach                                               |
+| **High**   | Recovery-first — reduces fatigue, protects at the cost of gains |
 
 ### Per-Wrestler Focus Modes
 
 You can override the heya-wide settings for individual wrestlers:
 
-| Mode | Use When |
-|------|---------|
-| **Develop** | Normal progression — follow heya settings |
-| **Push** | Accelerate gains — more fatigue, higher reward |
+| Mode        | Use When                                          |
+| ----------- | ------------------------------------------------- |
+| **Develop** | Normal progression — follow heya settings         |
+| **Push**    | Accelerate gains — more fatigue, higher reward    |
 | **Protect** | Cap intensity — recovering from injury or burnout |
-| **Rebuild** | Post-injury rehabilitation focus |
+| **Rebuild** | Post-injury rehabilitation focus                  |
 
 ### Advanced Drill Scheduling (P2 Extension)
 
 The advanced training system lets you schedule day-by-day drills each week:
 
-| Drill | Japanese | Focus |
-|-------|----------|-------|
-| **Asageiko** | 朝稽古 | Dawn sparring — technique and conditioning |
-| **Butsukari** | ぶつかり | Charging practice — strength and aggression |
-| **Teppo** | 手っ甲 | Pole thrusting — arm strength and push technique |
-| **Moushi-ai** | 申し合い | Full match practice — competitive experience |
-| **Shindo** | 進道 | Advancement training — focused stat development |
-| **Rest** | — | Recovery day — reduces fatigue |
+| Drill         | Japanese | Focus                                            |
+| ------------- | -------- | ------------------------------------------------ |
+| **Asageiko**  | 朝稽古   | Dawn sparring — technique and conditioning       |
+| **Butsukari** | ぶつかり | Charging practice — strength and aggression      |
+| **Teppo**     | 手っ甲   | Pole thrusting — arm strength and push technique |
+| **Moushi-ai** | 申し合い | Full match practice — competitive experience     |
+| **Shindo**    | 進道     | Advancement training — focused stat development  |
+| **Rest**      | —        | Recovery day — reduces fatigue                   |
 
 ### How Stats Actually Grow
 
 Each week, a wrestler's stats advance toward their **Potential Ability** ceiling based on:
+
 1. Training intensity and focus
 2. Facility level (training, recovery, nutrition)
 3. Coaching staff quality
@@ -416,18 +419,18 @@ Over time, a wrestler's actual combat habits (tracked from real bout outcomes) m
 
 ### Injury Types
 
-| Category | Examples |
-|----------|---------|
-| **Type** | Sprain, Strain, Contusion, Inflammation, Tear, Fracture, Nerve |
-| **Location** | Shoulder, Elbow, Wrist, Back, Hip, Knee, Ankle, Neck, Rib |
+| Category     | Examples                                                       |
+| ------------ | -------------------------------------------------------------- |
+| **Type**     | Sprain, Strain, Contusion, Inflammation, Tear, Fracture, Nerve |
+| **Location** | Shoulder, Elbow, Wrist, Back, Hip, Knee, Ankle, Neck, Rib      |
 
 ### Severity Levels
 
-| Severity | Typical Recovery |
-|----------|----------------|
-| **Minor** | 1–2 weeks |
-| **Moderate** | 2–5 weeks |
-| **Serious** | 6–13 weeks |
+| Severity     | Typical Recovery |
+| ------------ | ---------------- |
+| **Minor**    | 1–2 weeks        |
+| **Moderate** | 2–5 weeks        |
+| **Serious**  | 6–13 weeks       |
 
 Recovery times extend for certain locations: knee and back injuries take longer regardless of severity. Fractures and nerve injuries carry additional weeks on top of the base estimate.
 
@@ -459,6 +462,7 @@ The size of rank movement depends on how dominant the performance was. A 10-5 re
 ### Banzuke Reveal Phase
 
 Before each basho, a dedicated **banzuke_reveal** phase (14 days) publishes the official rankings. Use this period to:
+
 - Assess where your wrestlers will be placed
 - Study opponent matchup projections
 - Adjust training targets and recovery plans
@@ -466,6 +470,7 @@ Before each basho, a dedicated **banzuke_reveal** phase (14 days) publishes the 
 ### Kadoban — Ozeki Probation
 
 If an **Ozeki** posts a losing record (make-koshi) in any basho, they enter **kadoban** status for the following tournament. Kadoban means:
+
 - They must achieve kachi-koshi (8+ wins) or face demotion to Sekiwake
 - Kadoban status is publicly tracked and generates media attention
 - A wrestler can enter and exit kadoban multiple times in their career
@@ -473,6 +478,7 @@ If an **Ozeki** posts a losing record (make-koshi) in any basho, they enter **ka
 ### Yokozuna — The Grand Champion
 
 Promotion to **Yokozuna** requires:
+
 - Current Ozeki status
 - Two consecutive yusho (championships) — or exceptional equivalent performance
 - Approval by the Yokozuna Deliberation Council
@@ -487,47 +493,47 @@ Running a heya costs money — wrestlers' salaries, facilities, food, travel, st
 
 ### Monthly Salary Scale
 
-| Division/Rank | Monthly Salary |
-|--------------|----------------|
-| Yokozuna | ¥3,000,000 |
-| Ozeki | ¥2,500,000 |
+| Division/Rank       | Monthly Salary  |
+| ------------------- | --------------- |
+| Yokozuna            | ¥3,000,000      |
+| Ozeki               | ¥2,500,000      |
 | Sekiwake / Komusubi | ¥1,800,000 each |
-| Maegashira | ¥1,400,000 |
-| Juryo | ¥1,100,000 |
-| Makushita and below | ¥0 (no salary) |
+| Maegashira          | ¥1,400,000      |
+| Juryo               | ¥1,100,000      |
+| Makushita and below | ¥0 (no salary)  |
 
 Sekitori (Makuuchi and Juryo wrestlers) also receive a **travel allowance** each month, variable by rank and tournament location.
 
 ### Income Sources
 
-| Source | Frequency | Amount |
-|--------|-----------|--------|
-| **Prize money** | Per basho | Yusho: ~¥2,000,000+; Jun-Yusho: ~¥1,000,000; Special prizes: ~¥200,000 |
-| **Kenshō envelopes** | Per bout | ¥50,000 per envelope won |
-| **Koenkai donations** | Monthly | ¥0 – ¥500,000+ depending on supporter strength |
-| **Sponsorships** | Per contract | Variable by sponsor tier |
-| **Mochikyukin** | Career-accumulated | Prize money that converts to stable revenue |
+| Source                | Frequency          | Amount                                                                 |
+| --------------------- | ------------------ | ---------------------------------------------------------------------- |
+| **Prize money**       | Per basho          | Yusho: ~¥2,000,000+; Jun-Yusho: ~¥1,000,000; Special prizes: ~¥200,000 |
+| **Kenshō envelopes**  | Per bout           | ¥50,000 per envelope won                                               |
+| **Koenkai donations** | Monthly            | ¥0 – ¥500,000+ depending on supporter strength                         |
+| **Sponsorships**      | Per contract       | Variable by sponsor tier                                               |
+| **Mochikyukin**       | Career-accumulated | Prize money that converts to stable revenue                            |
 
 ### Expenses
 
-| Expense | Frequency |
-|---------|-----------|
-| Salaries | Monthly |
-| Travel allowances | Monthly |
-| Facility maintenance/rent | Monthly |
-| Food/nutrition | Monthly (rate depends on diet regimen) |
-| Medical treatment | As needed |
-| Loan repayments | Monthly (fixed principal + interest) |
-| Governance fines | As imposed |
+| Expense                   | Frequency                              |
+| ------------------------- | -------------------------------------- |
+| Salaries                  | Monthly                                |
+| Travel allowances         | Monthly                                |
+| Facility maintenance/rent | Monthly                                |
+| Food/nutrition            | Monthly (rate depends on diet regimen) |
+| Medical treatment         | As needed                              |
+| Loan repayments           | Monthly (fixed principal + interest)   |
+| Governance fines          | As imposed                             |
 
 ### Loans
 
 When funds run low you can take out loans:
 
-| Type | Notes |
-|------|-------|
-| **Emergency** | High interest, fast access |
-| **Supporter** | Fan-backed, moderate terms |
+| Type           | Notes                                    |
+| -------------- | ---------------------------------------- |
+| **Emergency**  | High interest, fast access               |
+| **Supporter**  | Fan-backed, moderate terms               |
 | **Benefactor** | Wealthy patron, may come with conditions |
 
 Interest rates typically range from **5–15% per payment**. Loans with conditions ("strings attached") — such as a requirement to promote a specific wrestler within a timeframe — can have serious consequences if you fail to meet them.
@@ -535,6 +541,7 @@ Interest rates typically range from **5–15% per payment**. Loans with conditio
 ### The Finance Ledger
 
 The **Office → Finances** screen shows:
+
 - Running balance
 - Monthly income/expense projection
 - Loan obligations and remaining terms
@@ -548,25 +555,27 @@ The **Office → Finances** screen shows:
 
 A **Koenkai** is a stable's organised fan club. Members contribute regular donations. The stronger your Koenkai, the more reliable monthly income you receive:
 
-| Band | Monthly Income Range |
-|------|---------------------|
-| None | ¥0 |
-| Weak | Small contribution |
-| Moderate | Meaningful contribution |
-| Strong | Significant contribution |
-| Powerful | Major monthly income |
+| Band     | Monthly Income Range     |
+| -------- | ------------------------ |
+| None     | ¥0                       |
+| Weak     | Small contribution       |
+| Moderate | Meaningful contribution  |
+| Strong   | Significant contribution |
+| Powerful | Major monthly income     |
 
 Koenkai strength grows with prestige, notable wrestlers, championship victories, and community engagement.
 
 ### Corporate Sponsorships
 
 Sponsors offer financial support in several roles:
+
 - **Kenshō** — bout-specific banner sponsorship (prize per bout win)
 - **Koenkai Member / Pillar** — regular supporter club contributor
 - **Benefactor** — large one-time donation
 - **Creditor** — loan provider
 
 Sponsors have hidden personality traits:
+
 - **Prestige Affinity** — how much they care about your stable's ranking
 - **Loyalty** — willingness to stick through difficult periods
 - **Scandal Tolerance** — how much misbehaviour they'll accept
@@ -584,22 +593,22 @@ Building for the future means finding and signing new talent before your rivals 
 
 Candidates enter the talent pool from three sources:
 
-| Source | Profile |
-|--------|---------|
-| **High School** | Youngest entrants — cheapest, least experienced, highest development ceiling |
-| **University** | More developed, moderate cost, less total development room |
-| **Foreign** | International wrestlers — variable stats, costs, and political capital requirements |
+| Source          | Profile                                                                             |
+| --------------- | ----------------------------------------------------------------------------------- |
+| **High School** | Youngest entrants — cheapest, least experienced, highest development ceiling        |
+| **University**  | More developed, moderate cost, less total development room                          |
+| **Foreign**     | International wrestlers — variable stats, costs, and political capital requirements |
 
 ### Visibility
 
 Not all candidates are equally visible. You may need to scout to find them:
 
-| Visibility | How to Access |
-|------------|--------------|
-| **Public** | Everyone can see and scout immediately |
+| Visibility  | How to Access                                     |
+| ----------- | ------------------------------------------------- |
+| **Public**  | Everyone can see and scout immediately            |
 | **Rumored** | Word of mouth — require light scouting to confirm |
-| **Obscure** | Require dedicated scouting investment |
-| **Hidden** | Rare talent requiring master-level scouting |
+| **Obscure** | Require dedicated scouting investment             |
+| **Hidden**  | Rare talent requiring master-level scouting       |
 
 ### Scouting
 
@@ -613,18 +622,19 @@ Scouting costs time and money. Higher scouting levels reveal more of a candidate
 
 Once you've scouted a candidate:
 
-| Offer Type | Notes |
-|------------|-------|
-| **Standard** | Normal offer — competitive but not aggressive |
-| **Aggressive** | Higher financial terms — better chance vs. rivals |
+| Offer Type         | Notes                                                |
+| ------------------ | ---------------------------------------------------- |
+| **Standard**       | Normal offer — competitive but not aggressive        |
+| **Aggressive**     | Higher financial terms — better chance vs. rivals    |
 | **Prestige Pitch** | Emphasise stable legacy and development track record |
-| **Covert** | Quiet approach — reduces visibility of your interest |
+| **Covert**         | Quiet approach — reduces visibility of your interest |
 
 Other stables compete for the same talent. A candidate's **suitor interest band** (Low, Medium, High, All-In) tells you how much competition you're facing. Watch the **deadline** — if you don't finalise before it closes, the candidate may sign elsewhere.
 
 ### Recruitment Windows
 
 Recruitment is only open during specific periods:
+
 - **Post-basho** recovery period
 - **Mid-interim** window
 
@@ -640,12 +650,12 @@ The Japan Sumo Association (JSA) maintains strict standards. Violations damage y
 
 Your heya's standing with the JSA:
 
-| Status | Effect |
-|--------|--------|
-| **Good Standing** | No restrictions |
-| **Warning** | First formal notice — reputation penalty |
-| **Probation** | Escalated scrutiny — prestige penalty, possible fine |
-| **Sanctioned** | Active penalties — recruitment freeze, fines, training caps |
+| Status            | Effect                                                      |
+| ----------------- | ----------------------------------------------------------- |
+| **Good Standing** | No restrictions                                             |
+| **Warning**       | First formal notice — reputation penalty                    |
+| **Probation**     | Escalated scrutiny — prestige penalty, possible fine        |
+| **Sanctioned**    | Active penalties — recruitment freeze, fines, training caps |
 
 ### What Triggers Violations
 
@@ -657,6 +667,7 @@ Your heya's standing with the JSA:
 ### Responding to Governance Actions
 
 When you receive a ruling you can:
+
 - **Submit a written response** — may reduce penalty severity
 - **Issue internal discipline** — warn or dismiss staff involved
 - **Spend political capital** — influence council decisions
@@ -664,6 +675,7 @@ When you receive a ruling you can:
 ### Scandal Score
 
 Every heya carries a **scandal score** (0–100+). This accumulates with each incident and decays slowly over time. A high scandal score:
+
 - Damages sponsor satisfaction
 - Reduces Koenkai strength
 - Attracts negative media coverage
@@ -686,16 +698,17 @@ Separate from governance, the welfare system monitors how your wrestlers are tre
 
 ### Compliance States
 
-| State | Meaning |
-|-------|---------|
-| **Compliant** | Passes inspection — no issues |
-| **Watch** | Flagged for monitoring |
+| State             | Meaning                                 |
+| ----------------- | --------------------------------------- |
+| **Compliant**     | Passes inspection — no issues           |
+| **Watch**         | Flagged for monitoring                  |
 | **Investigation** | Active audit underway (progress 0–100%) |
-| **Sanctioned** | Penalties active |
+| **Sanctioned**    | Penalties active                        |
 
 ### What Sanctions Do
 
 If your welfare investigation fails:
+
 - **Recruitment freeze**: Cannot sign new wrestlers for a fixed number of weeks
 - **Training intensity cap**: Limited to Conservative or Balanced training only
 - **Fines**: Direct financial penalty
@@ -704,12 +717,12 @@ If your welfare investigation fails:
 
 The food you provide directly affects welfare risk and rikishi wellbeing:
 
-| Diet | Effect |
-|------|--------|
-| **Austerity** | Budget cut — increases welfare risk |
-| **Maintenance** | Standard — neutral welfare impact |
-| **Heavy Bulk** | Aggressive weight gain — moderate cost |
-| **Premium** | High-end nutrition — morale and stamina boost, best welfare score |
+| Diet            | Effect                                                            |
+| --------------- | ----------------------------------------------------------------- |
+| **Austerity**   | Budget cut — increases welfare risk                               |
+| **Maintenance** | Standard — neutral welfare impact                                 |
+| **Heavy Bulk**  | Aggressive weight gain — moderate cost                            |
+| **Premium**     | High-end nutrition — morale and stamina boost, best welfare score |
 
 ---
 
@@ -719,15 +732,16 @@ The food you provide directly affects welfare risk and rikishi wellbeing:
 
 Every stable belongs to one of five historical sumo factions:
 
-| Faction | Japanese |
-|---------|----------|
-| Dewanoumi | 出羽海 |
+| Faction     | Japanese |
+| ----------- | -------- |
+| Dewanoumi   | 出羽海   |
 | Nishonoseki | 二所ノ関 |
-| Takasago | 高砂 |
-| Tokitsukaze | 時津風 |
-| Isegahama | 伊勢ヶ浜 |
+| Takasago    | 高砂     |
+| Tokitsukaze | 時津風   |
+| Isegahama   | 伊勢ヶ浜 |
 
 Your ichimon affects:
+
 - Alliances with other stables in your faction
 - NPC oyakata relationships
 - Access to political capital trades
@@ -735,6 +749,7 @@ Your ichimon affects:
 ### Political Capital
 
 **Political capital** is a resource spent to influence JSA decisions:
+
 - Soften governance rulings
 - Influence banzuke committee decisions
 - Support or oppose other stables
@@ -750,25 +765,26 @@ Your heya's physical infrastructure directly affects training outcomes and wrest
 
 ### Facility Types
 
-| Facility | What It Affects |
-|----------|----------------|
-| **Training** | Stat gains per week (multiplier on all training) |
-| **Recovery** | Injury healing speed and fatigue recovery rate |
-| **Nutrition** | Stamina baseline and health recovery |
+| Facility      | What It Affects                                  |
+| ------------- | ------------------------------------------------ |
+| **Training**  | Stat gains per week (multiplier on all training) |
+| **Recovery**  | Injury healing speed and fatigue recovery rate   |
+| **Nutrition** | Stamina baseline and health recovery             |
 
 ### Upgrade Levels
 
 Each facility can be upgraded from **Level 1 to Level 5**:
 
-| Level | Description |
-|-------|-------------|
-| 1 | Basic — minimal multiplier |
-| 2 | Decent — noticeable improvement |
-| 3 | Good — meaningful impact |
-| 4 | Excellent — significant advantage |
-| 5 | World-class — maximum benefit |
+| Level | Description                       |
+| ----- | --------------------------------- |
+| 1     | Basic — minimal multiplier        |
+| 2     | Decent — noticeable improvement   |
+| 3     | Good — meaningful impact          |
+| 4     | Excellent — significant advantage |
+| 5     | World-class — maximum benefit     |
 
 Upgrades are expensive and take time to complete. Prioritise based on your current strategy:
+
 - Building a training-focused dynasty? → invest in Training first
 - Running older wrestlers hard? → Recovery facility is critical
 - Focused on stamina and endurance? → Nutrition delivers sustained gains
@@ -785,11 +801,11 @@ The scrolling event log on the right side of the screen captures everything sign
 
 Three media outlets cover sumo in different ways:
 
-| Outlet | Focus |
-|--------|-------|
-| **JSA Official** | Formal announcements, rulings, banzuke |
+| Outlet           | Focus                                       |
+| ---------------- | ------------------------------------------- |
+| **JSA Official** | Formal announcements, rulings, banzuke      |
 | **Sports Daily** | Mainstream sports coverage, tournament news |
-| **Tabloid** | Gossip, scandals, personal stories |
+| **Tabloid**      | Gossip, scandals, personal stories          |
 
 ### Media Heat
 
@@ -799,13 +815,13 @@ Heat rises from: championship runs, kinboshi victories, dramatic comebacks, stre
 
 ### Scandal Types
 
-| Scandal | Description |
-|---------|-------------|
-| **Late-night brawl** | Off-field violence incident |
-| **Secret injury leak** | Private medical information exposed |
-| **Illegal gambling** | Betting on matches |
-| **Training abuse allegation** | Welfare violation |
-| **Coach dispute** | Staff conflict made public |
+| Scandal                       | Description                         |
+| ----------------------------- | ----------------------------------- |
+| **Late-night brawl**          | Off-field violence incident         |
+| **Secret injury leak**        | Private medical information exposed |
+| **Illegal gambling**          | Betting on matches                  |
+| **Training abuse allegation** | Welfare violation                   |
+| **Coach dispute**             | Staff conflict made public          |
 
 Each scandal type carries different governance and sponsor consequences.
 
@@ -817,18 +833,19 @@ Each scandal type carries different governance and sponsor consequences.
 
 Wrestlers retire for several reasons:
 
-| Reason | Details |
-|--------|---------|
-| **Age** | Mandatory retirement at 45; Yokozuna at 40 |
-| **Career-ending injury** | Injury severity beyond the critical threshold |
-| **Council pressure** | Yokozuna receiving 3 formal performance warnings |
-| **Performance decline** | 2+ consecutive make-koshi, or 3+ missed basho |
-| **Natural aging** | ~5% chance per year after age 34 |
-| **Voluntary** | Player-initiated early retirement |
+| Reason                   | Details                                          |
+| ------------------------ | ------------------------------------------------ |
+| **Age**                  | Mandatory retirement at 45; Yokozuna at 40       |
+| **Career-ending injury** | Injury severity beyond the critical threshold    |
+| **Council pressure**     | Yokozuna receiving 3 formal performance warnings |
+| **Performance decline**  | 2+ consecutive make-koshi, or 3+ missed basho    |
+| **Natural aging**        | ~5% chance per year after age 34                 |
+| **Voluntary**            | Player-initiated early retirement                |
 
 ### Hall of Fame
 
 Retired wrestlers with significant careers enter the **Hall of Fame**, accessible via the Archives section. Records include:
+
 - Career wins, yusho, special prizes
 - Rank peak achieved
 - Basho milestones
@@ -839,12 +856,12 @@ Retired wrestlers with significant careers enter the **Hall of Fame**, accessibl
 
 Your heya's long-term track record earns a **legacy tier**:
 
-| Tier | Meaning |
-|------|---------|
-| **Emerging** | New or rebuilding stable |
-| **Established** | Proven track record |
-| **Dynasty** | Multiple championships, deep history |
-| **Legend** | All-time great stable — historical prestige |
+| Tier            | Meaning                                     |
+| --------------- | ------------------------------------------- |
+| **Emerging**    | New or rebuilding stable                    |
+| **Established** | Proven track record                         |
+| **Dynasty**     | Multiple championships, deep history        |
+| **Legend**      | All-time great stable — historical prestige |
 
 Legacy tier affects Koenkai strength, sponsor attraction, and recruitment appeal.
 
@@ -856,20 +873,21 @@ Legacy tier affects Koenkai strength, sponsor attraction, and recruitment appeal
 
 Your personal management style affects how the game's AI and events respond to you:
 
-| Archetype | Tendency |
-|-----------|---------|
+| Archetype          | Tendency                                                    |
+| ------------------ | ----------------------------------------------------------- |
 | **Traditionalist** | Conservative training, historical methods, slow development |
-| **Scientist** | Data-driven, experimental tactics — higher burnout risk |
-| **Gambler** | High risk/reward decisions, volatile outcomes |
-| **Nurturer** | Welfare-focused, steady growth, morale-heavy |
-| **Tyrant** | Punishing training, scandal-prone, high turnover |
-| **Strategist** | Political play, faction moves, long calculation |
-| **Strict** | Discipline-focused, rigid structure, welfare-compliant |
-| **Indulgent** | Permissive, morale-boosting — potential scandal risk |
+| **Scientist**      | Data-driven, experimental tactics — higher burnout risk     |
+| **Gambler**        | High risk/reward decisions, volatile outcomes               |
+| **Nurturer**       | Welfare-focused, steady growth, morale-heavy                |
+| **Tyrant**         | Punishing training, scandal-prone, high turnover            |
+| **Strategist**     | Political play, faction moves, long calculation             |
+| **Strict**         | Discipline-focused, rigid structure, welfare-compliant      |
+| **Indulgent**      | Permissive, morale-boosting — potential scandal risk        |
 
 ### Excitement Score
 
 Every bout is assigned an **excitement score** based on:
+
 - Rank disparity (upsets score higher)
 - Rarity of the kimarite used
 - Competitive balance (close matches score higher than dominant ones)
@@ -881,12 +899,12 @@ The highest-excitement match of the tournament wins **Bout of the Basho**.
 
 The sumo world's overall tactical meta shifts over time between four eras:
 
-| Era | Tendency |
-|-----|---------|
-| **Classic** | Yorikiri and traditional belt wrestling dominate |
-| **Explosive** | Fast, high-energy bouts with more throws |
-| **Technical** | Rare techniques appear more often |
-| **Defensive** | Counter-wrestling and patience rewarded |
+| Era           | Tendency                                         |
+| ------------- | ------------------------------------------------ |
+| **Classic**   | Yorikiri and traditional belt wrestling dominate |
+| **Explosive** | Fast, high-energy bouts with more throws         |
+| **Technical** | Rare techniques appear more often                |
+| **Defensive** | Counter-wrestling and patience rewarded          |
 
 Era drift is reflected in media commentary and visible in the Almanac's league-wide kimarite statistics.
 
@@ -902,61 +920,61 @@ The **Auto-Sim** function simulates weeks or months of game time automatically. 
 
 ## 22. Glossary
 
-| Term | Definition |
-|------|-----------|
-| **Aki** | Autumn basho, held in September in Tokyo |
-| **Asageiko** | Dawn sparring session |
-| **Banzuke** | Official ranking document published before each basho |
-| **Basho** | Grand sumo tournament; six per year |
-| **Bout of the Basho** | Most exciting match of a tournament |
-| **Butsukari** | Charging practice drill |
-| **Cycleephase** | Current game phase (pre_basho, active_basho, post_basho, interim, banzuke_reveal) |
-| **Fusensho** | Default win — opponent was absent |
-| **Ginosho** | Technique Award special prize |
-| **Ginboshi** | Silver Star — beating an Ozeki as a lower-ranked wrestler |
-| **Hansoku** | Disqualification for rule violation |
-| **Hatsu** | New Year basho, held in January in Tokyo |
-| **Heya** | Sumo stable — your organisation |
-| **H2H** | Head-to-head record between two specific wrestlers |
-| **Ichimon** | Sumo faction |
-| **Interim** | Six-week period between tournaments |
-| **Jonidan** | Fifth division |
-| **Jonokuchi** | Sixth (lowest) division |
-| **Juryo** | Second division; first paid professional level |
-| **Kachi-koshi** | Winning record: 8+ wins in a 15-match basho |
-| **Kadoban** | Ozeki on probation after a losing record |
-| **Kantosho** | Fighting Spirit Award |
-| **Kenshō** | Prize envelopes placed on featured bouts |
-| **Kimarite** | Official winning technique used to end a bout |
-| **Kinboshi** | Gold Star — lower-ranked wrestler beats a Yokozuna |
-| **Koenkai** | Stable's organised fan and supporter club |
-| **Komusubi** | Fourth rank in Makuuchi |
-| **Kyūjō** | Tournament withdrawal |
-| **Kyushu** | November basho, held in Fukuoka |
-| **Makuuchi** | Top (first) division |
-| **Makushita** | Third division; first below professional |
-| **Make-koshi** | Losing record: 7 or fewer wins |
-| **Maegashira** | Numbered ranks in Makuuchi (1–13+) |
-| **Mochikyukin** | Career prize money accumulation |
-| **Moushi-ai** | Full match practice |
-| **Myoseki** | Official wrestling name — a tradable asset |
-| **Nagoya** | July basho, held in Nagoya |
-| **Natsu** | Summer basho, held in May in Tokyo |
-| **Oyakata** | Stable master — the player character |
-| **Ozeki** | Second rank in Makuuchi |
-| **PA (Potential Ability)** | Hidden ceiling for each wrestler stat |
-| **Rikishi** | A sumo wrestler |
-| **Sandanme** | Fourth division |
-| **Sekitori** | Professional wrestler — Makuuchi or Juryo rank |
-| **Sekiwake** | Third rank in Makuuchi |
-| **Shikona** | Ring name |
-| **Shukunsho** | Outstanding Performance Award |
-| **Teppo** | Pole-thrusting practice drill |
-| **Torikumi** | Daily bout schedule set by the JSA committee |
-| **Welfare Risk** | Score (0–100) measuring quality of training environment |
-| **Yokozuna** | Grand Champion — highest rank in sumo |
-| **Yusho** | Tournament championship |
+| Term                       | Definition                                                                        |
+| -------------------------- | --------------------------------------------------------------------------------- |
+| **Aki**                    | Autumn basho, held in September in Tokyo                                          |
+| **Asageiko**               | Dawn sparring session                                                             |
+| **Banzuke**                | Official ranking document published before each basho                             |
+| **Basho**                  | Grand sumo tournament; six per year                                               |
+| **Bout of the Basho**      | Most exciting match of a tournament                                               |
+| **Butsukari**              | Charging practice drill                                                           |
+| **Cycleephase**            | Current game phase (pre_basho, active_basho, post_basho, interim, banzuke_reveal) |
+| **Fusensho**               | Default win — opponent was absent                                                 |
+| **Ginosho**                | Technique Award special prize                                                     |
+| **Ginboshi**               | Silver Star — beating an Ozeki as a lower-ranked wrestler                         |
+| **Hansoku**                | Disqualification for rule violation                                               |
+| **Hatsu**                  | New Year basho, held in January in Tokyo                                          |
+| **Heya**                   | Sumo stable — your organisation                                                   |
+| **H2H**                    | Head-to-head record between two specific wrestlers                                |
+| **Ichimon**                | Sumo faction                                                                      |
+| **Interim**                | Six-week period between tournaments                                               |
+| **Jonidan**                | Fifth division                                                                    |
+| **Jonokuchi**              | Sixth (lowest) division                                                           |
+| **Juryo**                  | Second division; first paid professional level                                    |
+| **Kachi-koshi**            | Winning record: 8+ wins in a 15-match basho                                       |
+| **Kadoban**                | Ozeki on probation after a losing record                                          |
+| **Kantosho**               | Fighting Spirit Award                                                             |
+| **Kenshō**                 | Prize envelopes placed on featured bouts                                          |
+| **Kimarite**               | Official winning technique used to end a bout                                     |
+| **Kinboshi**               | Gold Star — lower-ranked wrestler beats a Yokozuna                                |
+| **Koenkai**                | Stable's organised fan and supporter club                                         |
+| **Komusubi**               | Fourth rank in Makuuchi                                                           |
+| **Kyūjō**                  | Tournament withdrawal                                                             |
+| **Kyushu**                 | November basho, held in Fukuoka                                                   |
+| **Makuuchi**               | Top (first) division                                                              |
+| **Makushita**              | Third division; first below professional                                          |
+| **Make-koshi**             | Losing record: 7 or fewer wins                                                    |
+| **Maegashira**             | Numbered ranks in Makuuchi (1–13+)                                                |
+| **Mochikyukin**            | Career prize money accumulation                                                   |
+| **Moushi-ai**              | Full match practice                                                               |
+| **Myoseki**                | Official wrestling name — a tradable asset                                        |
+| **Nagoya**                 | July basho, held in Nagoya                                                        |
+| **Natsu**                  | Summer basho, held in May in Tokyo                                                |
+| **Oyakata**                | Stable master — the player character                                              |
+| **Ozeki**                  | Second rank in Makuuchi                                                           |
+| **PA (Potential Ability)** | Hidden ceiling for each wrestler stat                                             |
+| **Rikishi**                | A sumo wrestler                                                                   |
+| **Sandanme**               | Fourth division                                                                   |
+| **Sekitori**               | Professional wrestler — Makuuchi or Juryo rank                                    |
+| **Sekiwake**               | Third rank in Makuuchi                                                            |
+| **Shikona**                | Ring name                                                                         |
+| **Shukunsho**              | Outstanding Performance Award                                                     |
+| **Teppo**                  | Pole-thrusting practice drill                                                     |
+| **Torikumi**               | Daily bout schedule set by the JSA committee                                      |
+| **Welfare Risk**           | Score (0–100) measuring quality of training environment                           |
+| **Yokozuna**               | Grand Champion — highest rank in sumo                                             |
+| **Yusho**                  | Tournament championship                                                           |
 
 ---
 
-*Sumo Manager Pro — build your heya, forge your dynasty.*
+_Sumo Manager Pro — build your heya, forge your dynasty._

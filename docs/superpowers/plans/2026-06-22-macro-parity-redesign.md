@@ -4,16 +4,18 @@
 
 **Goal:** Break the rich-get-richer dynasty loop and unfreeze the stable count so a 25-year NPC sim produces real competitive churn — target ≥9 unique basho winners (was 5–6), no single stable above ~18 yusho (was Futagoyama 35), and a heyaCount that actually moves (was frozen at 45).
 
-**Architecture:** Two root-cause levers, not constant tweaks. (1) **Competitive-balance recruitment** — NPC recruitment is a bid war sorted by `bidAmount` desc, and bids scale with a stable's funds surplus, so the richest stable wins the best recruits and compounds forever. Add a *strength-based* handicap (a "draft order" effect) that dampens already-strong stables' effective bids and boosts weak ones, decoupling talent acquisition from wealth. (2) **Reliable founding** — new stables only spawn when an accomplished retiree finds an *available* myoseki, but the fixed myoseki pool is fully held across 45 stables, so founding never fires. Mint a myoseki on merit so accomplished retirees can found stables, injecting fresh competitors.
+**Architecture:** Two root-cause levers, not constant tweaks. (1) **Competitive-balance recruitment** — NPC recruitment is a bid war sorted by `bidAmount` desc, and bids scale with a stable's funds surplus, so the richest stable wins the best recruits and compounds forever. Add a _strength-based_ handicap (a "draft order" effect) that dampens already-strong stables' effective bids and boosts weak ones, decoupling talent acquisition from wealth. (2) **Reliable founding** — new stables only spawn when an accomplished retiree finds an _available_ myoseki, but the fixed myoseki pool is fully held across 45 stables, so founding never fires. Mint a myoseki on merit so accomplished retirees can found stables, injecting fresh competitors.
 
 **Tech Stack:** Vite + React 19 + TypeScript engine. Vitest (`npx vitest run`). Deterministic RNG only (`rngForWorld`/`rngFromSeed`, never `Math.random`/`Date.now`). Mutations via `ImpactBuilder` + `resolveImpacts`. Diagnostic harness: `bun scripts/diagnostic-25yr-sim.ts` (writes `simulation-results.json` with `tuningMetrics.uniqueWinnerCount`, `beyaDominance`, and `yearSnapshots[].heyaCount`).
 
 ---
 
 ## Why constant-tweaks failed (read before starting)
-A prior pass tried lowering operating overhead to reduce wealth inequality. It made parity **worse** (unique winners 6 → 4): cheaper economy → richer dominant stables → they out-bid even harder. Parity and the economy are coupled *through recruitment bidding*. This plan attacks that coupling directly (Lever 1) instead of touching economy constants, so it won't have that side effect. Do **not** "fix" parity by changing `economic.ts` overhead values.
+
+A prior pass tried lowering operating overhead to reduce wealth inequality. It made parity **worse** (unique winners 6 → 4): cheaper economy → richer dominant stables → they out-bid even harder. Parity and the economy are coupled _through recruitment bidding_. This plan attacks that coupling directly (Lever 1) instead of touching economy constants, so it won't have that side effect. Do **not** "fix" parity by changing `economic.ts` overhead values.
 
 ## Verified mechanics (cited — use these)
+
 - Recruitment bid war: `fillVacanciesForNPCWithBidding` (`src/engine/systems/generation/TalentPoolNPCRecruitment.ts`) builds `bids` (line 139), computes each `bidAmount` via `recruitmentStrat.calculateMaxBid(world, heya, oyakata, candidateId, rivalHeyaId)` (lines 151-158), then `bids.sort((a, b) => b.bidAmount - a.bidAmount)` (line 162) and assigns top bids first.
 - Bids scale with wealth: `calculateRunwayAwareMaxBid` (`src/engine/npcRecruitmentStrategy.ts`) uses `surplus = max(0, heya.funds - yearlyBurn)`.
 - Founding path exists but is gated on an available myoseki: `governanceReview.ts:387-491` — `isAccomplished` retiree (rank sanyaku or `careerWins >= 200`, age ≥ 28) → `Object.values(world.myosekiMarket.stocks).find(s => s.status === "available")` (line 389); only inside that does it `foundStable(...)` + `builder.addHeya(...)` (lines 471-491, gated by `world.heyas.size < HEYA_COUNT_CAP && rng.bool(FOUNDING_CHANCE)`). The fixed myoseki pool is fully `held`, so `availableStock` is undefined and the whole block is skipped — no oyakata conversion, no founding (confirmed: heyaCount 45→45 over 25 years, oyakata promotion rate ~2.2%).
@@ -25,6 +27,7 @@ A prior pass tried lowering operating overhead to reduce wealth inequality. It m
 ### Task 1: Competitive-balance multiplier (pure helper)
 
 **Files:**
+
 - Create: `src/engine/systems/generation/competitiveBalance.ts`
 - Create: `src/constants/engine/recruitmentBalance.ts`
 - Test: `src/tests/unit/engine/recruitment/competitiveBalance.test.ts`
@@ -46,7 +49,11 @@ function worldWithStables(spec: Record<string, number>): WorldState {
   for (const [heyaId, sekitoriCount] of Object.entries(spec)) {
     const ids: string[] = [];
     for (let i = 0; i < sekitoriCount; i++) {
-      const r = mockRikishi(`${heyaId}-s${i}`, { heyaId, division: "makuuchi", rank: "maegashira" });
+      const r = mockRikishi(`${heyaId}-s${i}`, {
+        heyaId,
+        division: "makuuchi",
+        rank: "maegashira",
+      });
       rikishi.set(r.id, r);
       ids.push(r.id);
     }
@@ -160,6 +167,7 @@ git commit -m "feat(recruitment): competitive-balance bid multiplier (anti-dynas
 ### Task 2: Apply the handicap to NPC recruitment bids
 
 **Files:**
+
 - Modify: `src/engine/systems/generation/TalentPoolNPCRecruitment.ts` (the bid loop at lines 150-159)
 - Test: `src/tests/unit/engine/recruitment/balancedBidding.test.ts`
 
@@ -181,7 +189,10 @@ describe("balanced bidding ordering", () => {
       const r = mockRikishi(`strong-s${i}`, { heyaId: "strong", division: "makuuchi" });
       rikishi.set(r.id, r);
     }
-    heyas.set("strong", makeMockHeya("strong", { rikishiIds: Array.from({ length: 8 }, (_, i) => `strong-s${i}`) }));
+    heyas.set(
+      "strong",
+      makeMockHeya("strong", { rikishiIds: Array.from({ length: 8 }, (_, i) => `strong-s${i}`) })
+    );
     heyas.set("weak", makeMockHeya("weak", { rikishiIds: [] }));
     const world = makeMockWorld({ heyas, rikishi });
 
@@ -210,18 +221,18 @@ import { recruitmentBalanceMultiplier } from "./competitiveBalance";
 Change the bid construction (lines 150-159) to scale each bid by the stable's balance multiplier:
 
 ```typescript
-    const balanceMult = recruitmentBalanceMultiplier(world, heyaId);
-    for (const candidate of allVisibleCandidates) {
-      const rawBid = recruitmentStrat.calculateMaxBid(
-        world,
-        heya,
-        oyakata,
-        candidate.candidateId,
-        rivalHeyaId
-      );
-      const bidAmount = Math.round(rawBid * balanceMult);
-      bids.push({ heyaId, candidateId: candidate.candidateId, bidAmount, oyakata });
-    }
+const balanceMult = recruitmentBalanceMultiplier(world, heyaId);
+for (const candidate of allVisibleCandidates) {
+  const rawBid = recruitmentStrat.calculateMaxBid(
+    world,
+    heya,
+    oyakata,
+    candidate.candidateId,
+    rivalHeyaId
+  );
+  const bidAmount = Math.round(rawBid * balanceMult);
+  bids.push({ heyaId, candidateId: candidate.candidateId, bidAmount, oyakata });
+}
 ```
 
 The `bids.sort` (line 162) and assignment loop are unchanged — they now operate on handicapped bids, so top recruits spread toward hungrier stables.
@@ -229,7 +240,7 @@ The `bids.sort` (line 162) and assignment loop are unchanged — they now operat
 - [ ] **Step 4: Run the recruitment suite to verify no regression**
 
 Run: `npx vitest run src/tests/unit/engine/recruitment`
-Expected: PASS (including the prior population-stability tests — total intake is unchanged, only *who* wins each recruit shifts).
+Expected: PASS (including the prior population-stability tests — total intake is unchanged, only _who_ wins each recruit shifts).
 
 - [ ] **Step 5: Commit**
 
@@ -243,6 +254,7 @@ git commit -m "feat(recruitment): handicap bids by stable strength to spread tal
 ### Task 3: Reliable founding — mint a myoseki on merit when none is available
 
 **Files:**
+
 - Modify: `src/engine/systems/governance/governanceReview.ts` (the accomplished-retiree block, lines 387-492)
 - Test: `src/tests/unit/engine/governance/foundingReliability.test.ts`
 
@@ -359,6 +371,7 @@ git commit -m "feat(governance): issue merit myoseki so accomplished retirees ca
 This is the integration gate. The unit tests prove the mechanisms; only the 25-year sim proves parity moved.
 
 **Files:**
+
 - Tune (values only, if needed): `src/constants/engine/recruitmentBalance.ts`, `src/constants/engine/economic.ts` (`FOUNDING_CHANCE`)
 
 - [ ] **Step 1: Run the full suite**
@@ -373,6 +386,7 @@ Run: `bun scripts/diagnostic-25yr-sim.ts`
 - [ ] **Step 3: Assert parity + churn improved**
 
 Run:
+
 ```bash
 node -e '
 const r=require("./simulation-results.json");
@@ -384,6 +398,7 @@ console.log("heyaCount range", heyaMin, "-", heyaMax);
 console.log("top stable yusho", topYusho);
 '
 ```
+
 Expected: `uniqueWinnerCount >= 9` (was 5–6); `heyaCount` range is **not** flat (min !== max — founding/merger now move it); top stable yusho **≤ ~18** over 150 basho (was 35).
 
 - [ ] **Step 4: Tune if targets missed**
@@ -400,15 +415,18 @@ git commit -m "tune(parity): calibrate competitive-balance + founding for unique
 ---
 
 ## Optional stretch (only if Tasks 1-4 don't reach ≥9 winners): Dynasty decline on succession
+
 If handicapped recruitment + founding still leave one stable dominant, add a transition penalty: when a stable's oyakata is replaced (`recordOyakataHandover`), apply a temporary reduction to that stable's recruitment/training edge (e.g. a multi-basho `prestigeBand` step-down or a flag the balance multiplier reads). Scope as a separate task with its own test + diagnostic check; only pursue if measured parity is still short, to avoid over-engineering.
 
 ## Verification (end-to-end)
+
 - [ ] `npx vitest run` — full suite green.
 - [ ] `npx vite build` — clean.
 - [ ] `bun scripts/diagnostic-25yr-sim.ts` then the Step-3 assertions: `uniqueWinnerCount >= 9`, `heyaCount` dynamic, top stable ≤ ~18 yusho.
 - [ ] Determinism: run the diagnostic twice with the fixed seed; `uniqueWinnerCount` and final `heyaCount` byte-identical. `grep -rn "Math.random\|Date.now" src/engine/systems/generation/competitiveBalance.ts src/engine/systems/governance/governanceReview.ts` → nothing.
 
 ## Self-review notes
+
 - **Spec coverage:** Lever 1 = Tasks 1-2 (anti-dynasty recruitment); Lever 2 = Task 3 (reliable founding); Task 4 is the integration gate that proves parity actually moved (the thing constant-tweaks failed to do). Stretch covers the residual-dominance case.
 - **Avoids the prior failure:** no economy-overhead changes — parity is fixed at the recruitment-coupling source, so it won't regress wealth/parity the way the overhead cut did.
 - **Type/name consistency:** `recruitmentBalanceMultiplier(world, heyaId)` signature is identical across the helper, both tests, and the bid loop. Constants (`BALANCE_STRENGTH_SENSITIVITY`, `BALANCE_MULTIPLIER_MIN/MAX`) named identically in the constants file and helper. The minted-myoseki object matches the fields the existing founding code reads (`id`,`name`,`status`,`ownerId`,`holderId`,`askingPrice`).

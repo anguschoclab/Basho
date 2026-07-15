@@ -4,13 +4,14 @@
 
 **Goal:** Stop AutoSim/holiday from silently skipping all loop decisions. Instead, auto-resolve each pending decision using the player's delegation policy, apply its real effect, and report what was decided in a "while you were away" digest — so the decision depth persists across the play mode used for long careers.
 
-**Architecture:** Extract decision *detection* and *effect application* into reusable helpers (DRY with the interactive path). Add a policy-keyed default table + an `autonomouslyResolveDecisions` function. In autonomous runs, `phase00_preflight` calls it instead of suppressing decisions; resolutions are logged and surfaced as AutoSim chronicle highlights.
+**Architecture:** Extract decision _detection_ and _effect application_ into reusable helpers (DRY with the interactive path). Add a policy-keyed default table + an `autonomouslyResolveDecisions` function. In autonomous runs, `phase00_preflight` calls it instead of suppressing decisions; resolutions are logged and surfaced as AutoSim chronicle highlights.
 
 **Tech Stack:** TS engine, `ImpactBuilder`, `phase00_preflight`, `runAutoSim`/`runHoliday`, `ChronicleService`.
 
 ---
 
 ## Background facts (verified — use these)
+
 - Today, autonomous runs set `world._autonomousSim = true`; `evaluatePendingDecisions` and `applyExpiredQueueDefaults` early-return empty when it's set, and `tickDaily.ts:108` skips the crisis halt. Net effect: **no decisions happen at all during AutoSim/holiday**.
 - `runAutoSim` (`src/engine/simulation/AutoSimService.ts`) sets `_autonomousSim`; `runHoliday` (`src/engine/holiday.ts`) sets it too. `AutoSimConfig.delegationPolicy: "conservative" | "balanced" | "aggressive"`.
 - `AutoSimResult.chronicle.highlights: string[]` is rendered by `AutoSimResultDialog` (`src/components/game/AutoSimResultDialog.tsx:47`). `ChronicleService.addHighlight(report, string)` (`src/engine/simulation/ChronicleService.ts:64`).
@@ -22,6 +23,7 @@
 ### Task 1: Refactor — extract `detectDueDecisions` and `applyDecisionEffect` (behavior-preserving)
 
 **Files:**
+
 - Modify: `src/engine/loop/LoopDecisionEngine.ts`
 - Test: `src/engine/loop/__tests__/LoopDecisionEngine.test.ts` (existing — must stay green)
 
@@ -69,10 +71,16 @@ export function evaluatePendingDecisions(world: WorldState): StateImpact {
   if (blocking.length > 0 && !world.pendingCrisis) {
     const first = blocking[0];
     builder.updateWorldField("pendingCrisis", {
-      id: first.id, type: "loop_decision", title: first.description,
+      id: first.id,
+      type: "loop_decision",
+      title: first.description,
       description: first.description,
-      options: first.options.map((o) => ({ id: o.id, label: o.label, description: o.impact,
-        impactGenerator: () => createImpactBuilder("loopDecision").build() })),
+      options: first.options.map((o) => ({
+        id: o.id,
+        label: o.label,
+        description: o.impact,
+        impactGenerator: () => createImpactBuilder("loopDecision").build(),
+      })),
     } as never);
   }
   return builder.build();
@@ -87,8 +95,10 @@ Move the per-option mutation bodies out of `resolveLoopDecision` into a shared h
 /** Apply a decision option's real engine effect to the builder. Shared by the
  *  interactive (resolveLoopDecision) and autonomous (auto-resolve) paths. */
 export function applyDecisionEffect(
-  world: WorldState, builder: ReturnType<typeof createImpactBuilder>,
-  decisionType: string, optionId: string
+  world: WorldState,
+  builder: ReturnType<typeof createImpactBuilder>,
+  decisionType: string,
+  optionId: string
 ): void {
   const heya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : undefined;
   if (!heya) return;
@@ -96,7 +106,7 @@ export function applyDecisionEffect(
   if (decisionType === "pre_basho_readiness" && optionId === "rest") {
     for (const id of heya.rikishiIds ?? []) {
       const r = world.rikishi.get(id);
-      if (!r || !(((r.fatigue ?? 0) > 60) || r.injured)) continue;
+      if (!r || !((r.fatigue ?? 0) > 60 || r.injured)) continue;
       builder.updateRikishi(id, {
         fatigue: Math.max(0, (r.fatigue ?? 0) - 20),
         momentum: Math.max(0, (r.momentum ?? 50) - 5),
@@ -106,13 +116,20 @@ export function applyDecisionEffect(
   if (decisionType === "insolvency_response") {
     if (optionId === "loan") builder.merge(issueBailoutLoanIfNeeded(world, heya.id));
     else if (optionId === "austerity")
-      builder.updateHeya(heya.id, { welfareState: { ...heya.welfareState, activeDiet: "austerity" } } as never);
+      builder.updateHeya(heya.id, {
+        welfareState: { ...heya.welfareState, activeDiet: "austerity" },
+      } as never);
   }
-  if (decisionType === "weekly_training_emphasis" && (optionId === "intensive" || optionId === "conservative")) {
+  if (
+    decisionType === "weekly_training_emphasis" &&
+    (optionId === "intensive" || optionId === "conservative")
+  ) {
     builder.updateTrainingStateNestedField(heya.id, "activeProfile.intensity", optionId);
   }
   if (decisionType === "welfare_diet" && (optionId === "premium" || optionId === "maintenance")) {
-    builder.updateHeya(heya.id, { welfareState: { ...heya.welfareState, activeDiet: optionId } } as never);
+    builder.updateHeya(heya.id, {
+      welfareState: { ...heya.welfareState, activeDiet: optionId },
+    } as never);
   }
 }
 ```
@@ -136,6 +153,7 @@ git commit -m "refactor(loop): extract detectDueDecisions and applyDecisionEffec
 ### Task 2: Policy defaults + `autonomouslyResolveDecisions`
 
 **Files:**
+
 - Modify: `src/engine/loop/LoopDecisionEngine.ts`
 - Test: `src/engine/loop/__tests__/LoopDecisionEngine.test.ts`
 
@@ -150,12 +168,18 @@ describe("autonomouslyResolveDecisions", () => {
     const r = makeRikishi("r1", "makushita", "Tired");
     (r as unknown as { fatigue: number }).fatigue = 80;
     const world = makeWorld({
-      cyclePhase: "pre_basho", playerHeyaId: "h1", _autonomousSim: true,
-      heyas: new Map([["h1", heya]]), rikishi: new Map([["r1", r]]),
+      cyclePhase: "pre_basho",
+      playerHeyaId: "h1",
+      _autonomousSim: true,
+      heyas: new Map([["h1", heya]]),
+      rikishi: new Map([["r1", r]]),
     });
     const impact = autonomouslyResolveDecisions(world, "balanced");
     // balanced default for pre_basho_readiness is "rest" -> fatigue reduced
-    const upd = impact.entities?.rikishiUpdates instanceof Map ? impact.entities.rikishiUpdates.get("r1") : undefined;
+    const upd =
+      impact.entities?.rikishiUpdates instanceof Map
+        ? impact.entities.rikishiUpdates.get("r1")
+        : undefined;
     expect((upd as { fatigue: number }).fatigue).toBe(60);
     // and it does NOT leave anything pending
     expect(impact.worldFields?.pendingDecisions).toBeUndefined();
@@ -184,13 +208,31 @@ type DelegationPolicy = "conservative" | "balanced" | "aggressive";
 
 /** Default option each policy picks per decision type when auto-delegating. */
 const DELEGATION_DEFAULTS: Record<DelegationPolicy, Record<string, string>> = {
-  conservative: { pre_basho_readiness: "rest", insolvency_response: "loan", weekly_training_emphasis: "conservative", welfare_diet: "premium" },
-  balanced:     { pre_basho_readiness: "rest", insolvency_response: "loan", weekly_training_emphasis: "intensive", welfare_diet: "maintenance" },
-  aggressive:   { pre_basho_readiness: "push", insolvency_response: "austerity", weekly_training_emphasis: "intensive", welfare_diet: "maintenance" },
+  conservative: {
+    pre_basho_readiness: "rest",
+    insolvency_response: "loan",
+    weekly_training_emphasis: "conservative",
+    welfare_diet: "premium",
+  },
+  balanced: {
+    pre_basho_readiness: "rest",
+    insolvency_response: "loan",
+    weekly_training_emphasis: "intensive",
+    welfare_diet: "maintenance",
+  },
+  aggressive: {
+    pre_basho_readiness: "push",
+    insolvency_response: "austerity",
+    weekly_training_emphasis: "intensive",
+    welfare_diet: "maintenance",
+  },
 };
 
 /** Autonomous path: detect due decisions, apply the policy default, log each. Never leaves anything pending. */
-export function autonomouslyResolveDecisions(world: WorldState, policy: DelegationPolicy): StateImpact {
+export function autonomouslyResolveDecisions(
+  world: WorldState,
+  policy: DelegationPolicy
+): StateImpact {
   const builder = createImpactBuilder("autonomouslyResolveDecisions");
   const due = detectDueDecisions(world);
   if (due.length === 0) return builder.build();
@@ -201,8 +243,14 @@ export function autonomouslyResolveDecisions(world: WorldState, policy: Delegati
     if (!optionId) continue;
     applyDecisionEffect(world, builder, d.type, optionId);
     builder.logEvent(
-      "DECISION_AUTO_RESOLVED", "narrative",
-      { status: "auto_resolved", decisionType: d.type, optionId, summary: `${d.description} → ${optionId}` },
+      "DECISION_AUTO_RESOLVED",
+      "narrative",
+      {
+        status: "auto_resolved",
+        decisionType: d.type,
+        optionId,
+        summary: `${d.description} → ${optionId}`,
+      },
       heyaId ? { heyaId } : undefined
     );
   }
@@ -227,6 +275,7 @@ git commit -m "feat(loop): autonomous decision resolution via delegation policy"
 ### Task 3: Wire autonomous resolution into the tick + carry the policy
 
 **Files:**
+
 - Modify: `src/engine/types/world.ts` (add `_autonomousPolicy`)
 - Modify: `src/engine/tick/phases/phase00_preflight.ts`
 - Modify: `src/engine/simulation/AutoSimService.ts` (set policy)
@@ -246,19 +295,23 @@ In `src/engine/types/world.ts`, beside `_autonomousSim`:
 In `src/engine/tick/phases/phase00_preflight.ts`, replace the two existing decision calls (around lines 67-72) with:
 
 ```typescript
-  // 5/6. Loop decisions: auto-resolve in autonomous runs, otherwise surface for the player.
-  if (world._autonomousSim) {
-    builder.merge(autonomouslyResolveDecisions(world, world._autonomousPolicy ?? "balanced"));
-  } else {
-    builder.merge(evaluatePendingDecisions(world));
-    builder.merge(applyExpiredQueueDefaults(world));
-  }
+// 5/6. Loop decisions: auto-resolve in autonomous runs, otherwise surface for the player.
+if (world._autonomousSim) {
+  builder.merge(autonomouslyResolveDecisions(world, world._autonomousPolicy ?? "balanced"));
+} else {
+  builder.merge(evaluatePendingDecisions(world));
+  builder.merge(applyExpiredQueueDefaults(world));
+}
 ```
 
 Update the import:
 
 ```typescript
-import { evaluatePendingDecisions, applyExpiredQueueDefaults, autonomouslyResolveDecisions } from "../../loop/LoopDecisionEngine";
+import {
+  evaluatePendingDecisions,
+  applyExpiredQueueDefaults,
+  autonomouslyResolveDecisions,
+} from "../../loop/LoopDecisionEngine";
 ```
 
 - [ ] **Step 3: Pass the policy from AutoSim**
@@ -266,7 +319,11 @@ import { evaluatePendingDecisions, applyExpiredQueueDefaults, autonomouslyResolv
 In `src/engine/simulation/AutoSimService.ts`, where it sets `_autonomousSim` (the `let currentWorld: WorldState = { ...world, _autonomousSim: true };` line), also set the policy:
 
 ```typescript
-  let currentWorld: WorldState = { ...world, _autonomousSim: true, _autonomousPolicy: config.delegationPolicy };
+let currentWorld: WorldState = {
+  ...world,
+  _autonomousSim: true,
+  _autonomousPolicy: config.delegationPolicy,
+};
 ```
 
 - [ ] **Step 4: Run the freeze regression + loop suites**
@@ -286,6 +343,7 @@ git commit -m "feat(loop): auto-resolve decisions during autonomous runs with de
 ### Task 4: Surface a "while you were away" digest in the AutoSim result
 
 **Files:**
+
 - Modify: `src/engine/simulation/AutoSimService.ts`
 - Test: `src/tests/unit/engine/autoSimDigest.test.ts` (new)
 
@@ -303,8 +361,10 @@ describe("AutoSim while-you-were-away digest", () => {
     const world = generateInitialWorld("digest-test-001");
     const result = runAutoSim(world, {
       duration: { type: "basho", count: 2 },
-      stopConditions: ["never"], verbosity: "standard",
-      delegationPolicy: "balanced", observerMode: true,
+      stopConditions: ["never"],
+      verbosity: "standard",
+      delegationPolicy: "balanced",
+      observerMode: true,
     });
     const hasDecisionHighlight = result.chronicle.highlights.some((h) => /Auto-decided|→/.test(h));
     expect(hasDecisionHighlight).toBe(true);
@@ -324,13 +384,14 @@ Expected: FAIL — no decision highlights yet.
 In `src/engine/simulation/AutoSimService.ts`, after the `while` loop ends and before building the result, scan the final world's event log for auto-resolved decisions and add them as highlights (cap to keep the dialog readable):
 
 ```typescript
-  const decisionEvents = (currentWorld.events?.log ?? [])
-    .filter((e) => (e as { type?: string }).type === "DECISION_AUTO_RESOLVED")
-    .slice(-10);
-  for (const e of decisionEvents) {
-    const summary = (e as { data?: { summary?: string } }).data?.summary ?? "Auto-decided a stable matter";
-    ChronicleService.addHighlight(chronicle, `Auto-decided: ${summary}`);
-  }
+const decisionEvents = (currentWorld.events?.log ?? [])
+  .filter((e) => (e as { type?: string }).type === "DECISION_AUTO_RESOLVED")
+  .slice(-10);
+for (const e of decisionEvents) {
+  const summary =
+    (e as { data?: { summary?: string } }).data?.summary ?? "Auto-decided a stable matter";
+  ChronicleService.addHighlight(chronicle, `Auto-decided: ${summary}`);
+}
 ```
 
 > Confirm the event-log accessor (`currentWorld.events.log`) and that `ChronicleService` is already imported in this file (it is — `createEmptyReport`/`addHighlight` are used for yusho highlights).
@@ -350,11 +411,13 @@ git commit -m "feat(autosim): surface auto-resolved decisions in the result dige
 ---
 
 ## Final verification
+
 - [ ] `npx vitest run` — full suite green (incl. `banzukePromotion` — no freeze).
 - [ ] `npx vite build` — clean.
 - [ ] Manual: run AutoSim a few basho from the Time Controls → the result dialog lists "Auto-decided: …" entries reflecting the delegation policy (try `conservative` vs `aggressive` and confirm the chosen options differ).
 
 ## Self-review notes
+
 - **Coverage:** detection + effect extraction (T1), policy resolver (T2), tick wiring + policy carry (T3), digest surfacing (T4) = decisions now happen and are reported during fast-forward.
 - **Type consistency:** decision-type strings and option ids match Task 1's `applyDecisionEffect`, Task 2's `DELEGATION_DEFAULTS`, and the existing `LoopDecisionEngine` taxonomy exactly. `DelegationPolicy` mirrors `AutoSimConfig.delegationPolicy`.
 - **Determinism:** `autonomouslyResolveDecisions` is a pure function of world state + a fixed table — no RNG, no `Date.now`. Holiday runs (which also set `_autonomousSim`, default policy "balanced") get the same behavior for free.

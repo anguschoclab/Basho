@@ -1,155 +1,155 @@
 - generic [ref=e2]:
-  - region "Notifications (F8)":
-    - list
-  - region "Notifications alt+T"
-  - generic [ref=e3]:
-    - generic [ref=e4]:
-      - generic: INAUGURATION
-      - generic [ref=e5]:
-        - generic:
-          - img
-        - heading "Begin Your Legacy" [level=1] [ref=e6]
-    - main [ref=e12]:
-      - generic [ref=e13]:
-        - generic [ref=e14]:
-          - generic [ref=e15]:
-            - img [ref=e17]
-            - generic [ref=e21]:
-              - heading "Establish Your Identity" [level=2] [ref=e22]
-              - paragraph [ref=e23]: Association Registry Phase 1
-          - generic [ref=e24]:
-            - generic [ref=e25]:
-              - generic [ref=e26]: Official Elder Name (Toshiyori-mei)
-              - generic [ref=e27]:
-                - textbox "Official Elder Name (Toshiyori-mei)" [ref=e28]:
-                  - /placeholder: e.g. Takanohana
-                - button "Generate random name" [ref=e29] [cursor=pointer]:
-                  - img
-              - paragraph [ref=e30]: This name will be inscribed in the Association's professional directory.
-            - generic [ref=e31]:
-              - generic [ref=e32]: Professional History & Background
-              - generic [ref=e33]:
-                - generic [ref=e34] [cursor=pointer]:
-                  - generic: 横綱出身
-                  - generic [ref=e35]:
-                    - img [ref=e37]
-                    - generic [ref=e43]:
-                      - generic [ref=e44]:
-                        - generic [ref=e45]: Champion Inheritor
-                        - generic [ref=e46]: Easy
-                      - paragraph [ref=e47]: "横綱出身 · Peak: Yokozuna"
-                  - paragraph [ref=e48]: You reached sumo's pinnacle. Now you guide the next generation — but expectations are sky-high and rivals watch your every move.
-                  - generic [ref=e49]:
-                    - generic [ref=e50]: ¥300万
-                    - generic [ref=e51]: +4 Prestige
-                    - generic [ref=e52]: +1 Training
-                    - generic [ref=e53]: +1 Scouting
-                    - generic [ref=e54]: +3 Politics
-                - generic [ref=e55] [cursor=pointer]:
-                  - generic: 大関出身
-                  - generic [ref=e56]:
-                    - img [ref=e58]
-                    - generic [ref=e60]:
-                      - generic [ref=e61]:
-                        - generic [ref=e62]: Tournament Legend
-                        - generic [ref=e63]: Normal
-                      - paragraph [ref=e64]: "大関出身 · Peak: Ozeki"
-                  - paragraph [ref=e65]: A champion-maker with a proven record. Your koenkai network opens doors, and your tactical mind gives you an edge in the training hall.
-                  - generic [ref=e66]:
-                    - generic [ref=e67]: ¥500万
-                    - generic [ref=e68]: +3 Prestige
-                    - generic [ref=e69]: +2 Training
-                    - generic [ref=e70]: +1 Politics
-                - generic [ref=e71] [cursor=pointer]:
-                  - generic: 三役出身
-                  - generic [ref=e72]:
-                    - img [ref=e74]
-                    - generic [ref=e79]:
-                      - generic [ref=e80]:
-                        - generic [ref=e81]: Sanyaku Veteran
-                        - generic [ref=e82]: Normal
-                      - paragraph [ref=e83]: "三役出身 · Peak: Sekiwake"
-                  - paragraph [ref=e84]: Years at the top tier sharpened both your technical knowledge and your reading of talent. A solid, balanced foundation.
-                  - generic [ref=e85]:
-                    - generic [ref=e86]: ¥1,000万
-                    - generic [ref=e87]: +1 Prestige
-                    - generic [ref=e88]: +2 Training
-                    - generic [ref=e89]: +1 Scouting
-                - generic [ref=e90] [cursor=pointer]:
-                  - generic: 幕内出身
-                  - generic [ref=e91]:
-                    - img [ref=e93]
-                    - generic [ref=e95]:
-                      - generic [ref=e96]:
-                        - generic [ref=e97]: Long-Distance Runner
-                        - generic [ref=e98]: Hard
-                      - paragraph [ref=e99]: "幕内出身 · Peak: Maegashira"
-                  - paragraph [ref=e100]: 135 tournaments, never a yusho — but your hands-on mastery of every technique is unmatched. Prestige must be earned the hard way.
-                  - generic [ref=e101]:
-                    - generic [ref=e102]: ¥1,500万
-                    - generic [ref=e103]: "-1 Prestige"
-                    - generic [ref=e104]: +4 Training
-                    - generic [ref=e105]: "-1 Politics"
-                - generic [ref=e106] [cursor=pointer]:
-                  - generic: 復活出身
-                  - generic [ref=e107]:
-                    - img [ref=e109]
-                    - generic [ref=e111]:
-                      - generic [ref=e112]:
-                        - generic [ref=e113]: Comeback King
-                        - generic [ref=e114]: Normal
-                      - paragraph [ref=e115]: "復活出身 · Peak: Ozeki"
-                  - paragraph [ref=e116]: Injury cut short a brilliant career. Unfinished business drives you — but the gambler in you never learned patience.
-                  - generic [ref=e117]:
-                    - generic [ref=e118]: ¥800万
-                    - generic [ref=e119]: +2 Prestige
-                    - generic [ref=e120]: +1 Training
-                    - generic [ref=e121]: +1 Scouting
-                    - generic [ref=e122]: +1 Politics
-                - generic [ref=e123] [cursor=pointer]:
-                  - generic: 国際派出身
-                  - generic [ref=e124]:
-                    - img [ref=e126]
-                    - generic [ref=e129]:
-                      - generic [ref=e130]:
-                        - generic [ref=e131]: International Scout
-                        - generic [ref=e132]: Hard
-                      - paragraph [ref=e133]: "国際派出身 · Peak: Maegashira"
-                  - paragraph [ref=e134]: You built the first Mongolian pipeline. Your continental network is unrivalled — traditionalists distrust you, but results speak.
-                  - generic [ref=e135]:
-                    - generic [ref=e136]: ¥1,200万
-                    - generic [ref=e137]: +1 Training
-                    - generic [ref=e138]: +5 Scouting
-                    - generic [ref=e139]: "-1 Politics"
-                - generic [ref=e140] [cursor=pointer]:
-                  - generic: 評議員出身
-                  - generic [ref=e141]:
-                    - img [ref=e143]
-                    - generic [ref=e145]:
-                      - generic [ref=e146]:
-                        - generic [ref=e147]: Council Elder
-                        - generic [ref=e148]: Very Hard
-                      - paragraph [ref=e149]: "評議員出身 · Peak: Sekiwake"
-                  - paragraph [ref=e150]: Your power lies in the association, not the ring. Political capital is your currency — but the training hall is unfamiliar ground.
-                  - generic [ref=e151]:
-                    - generic [ref=e152]: ¥2,000万
-                    - generic [ref=e153]: "-1 Prestige"
-                    - generic [ref=e154]: "-1 Training"
-                    - generic [ref=e155]: +5 Politics
-        - generic [ref=e156]:
-          - button "Next Submission" [disabled]:
-            - text: Next Submission
-            - img
-    - contentinfo [ref=e157]:
-      - generic [ref=e158]:
-        - generic [ref=e159]:
-          - generic [ref=e160]:
-            - paragraph [ref=e161]: Oyakata
-            - paragraph [ref=e162]: UNREGISTERED
-          - generic [ref=e164]:
-            - paragraph [ref=e165]: Endowment
-            - paragraph [ref=e166]: 300万
-          - generic [ref=e168]:
-            - paragraph [ref=e169]: Allegiance
-            - paragraph [ref=e170]: Dewanoumi
-        - generic [ref=e171]: Association Record • Year 2025
+    - region "Notifications (F8)":
+        - list
+    - region "Notifications alt+T"
+    - generic [ref=e3]:
+        - generic [ref=e4]:
+            - generic: INAUGURATION
+            - generic [ref=e5]:
+                - generic:
+                    - img
+                - heading "Begin Your Legacy" [level=1] [ref=e6]
+        - main [ref=e12]:
+            - generic [ref=e13]:
+                - generic [ref=e14]:
+                    - generic [ref=e15]:
+                        - img [ref=e17]
+                        - generic [ref=e21]:
+                            - heading "Establish Your Identity" [level=2] [ref=e22]
+                            - paragraph [ref=e23]: Association Registry Phase 1
+                    - generic [ref=e24]:
+                        - generic [ref=e25]:
+                            - generic [ref=e26]: Official Elder Name (Toshiyori-mei)
+                            - generic [ref=e27]:
+                                - textbox "Official Elder Name (Toshiyori-mei)" [ref=e28]:
+                                    - /placeholder: e.g. Takanohana
+                                - button "Generate random name" [ref=e29] [cursor=pointer]:
+                                    - img
+                            - paragraph [ref=e30]: This name will be inscribed in the Association's professional directory.
+                        - generic [ref=e31]:
+                            - generic [ref=e32]: Professional History & Background
+                            - generic [ref=e33]:
+                                - generic [ref=e34] [cursor=pointer]:
+                                    - generic: 横綱出身
+                                    - generic [ref=e35]:
+                                        - img [ref=e37]
+                                        - generic [ref=e43]:
+                                            - generic [ref=e44]:
+                                                - generic [ref=e45]: Champion Inheritor
+                                                - generic [ref=e46]: Easy
+                                            - paragraph [ref=e47]: "横綱出身 · Peak: Yokozuna"
+                                    - paragraph [ref=e48]: You reached sumo's pinnacle. Now you guide the next generation — but expectations are sky-high and rivals watch your every move.
+                                    - generic [ref=e49]:
+                                        - generic [ref=e50]: ¥300万
+                                        - generic [ref=e51]: +4 Prestige
+                                        - generic [ref=e52]: +1 Training
+                                        - generic [ref=e53]: +1 Scouting
+                                        - generic [ref=e54]: +3 Politics
+                                - generic [ref=e55] [cursor=pointer]:
+                                    - generic: 大関出身
+                                    - generic [ref=e56]:
+                                        - img [ref=e58]
+                                        - generic [ref=e60]:
+                                            - generic [ref=e61]:
+                                                - generic [ref=e62]: Tournament Legend
+                                                - generic [ref=e63]: Normal
+                                            - paragraph [ref=e64]: "大関出身 · Peak: Ozeki"
+                                    - paragraph [ref=e65]: A champion-maker with a proven record. Your koenkai network opens doors, and your tactical mind gives you an edge in the training hall.
+                                    - generic [ref=e66]:
+                                        - generic [ref=e67]: ¥500万
+                                        - generic [ref=e68]: +3 Prestige
+                                        - generic [ref=e69]: +2 Training
+                                        - generic [ref=e70]: +1 Politics
+                                - generic [ref=e71] [cursor=pointer]:
+                                    - generic: 三役出身
+                                    - generic [ref=e72]:
+                                        - img [ref=e74]
+                                        - generic [ref=e79]:
+                                            - generic [ref=e80]:
+                                                - generic [ref=e81]: Sanyaku Veteran
+                                                - generic [ref=e82]: Normal
+                                            - paragraph [ref=e83]: "三役出身 · Peak: Sekiwake"
+                                    - paragraph [ref=e84]: Years at the top tier sharpened both your technical knowledge and your reading of talent. A solid, balanced foundation.
+                                    - generic [ref=e85]:
+                                        - generic [ref=e86]: ¥1,000万
+                                        - generic [ref=e87]: +1 Prestige
+                                        - generic [ref=e88]: +2 Training
+                                        - generic [ref=e89]: +1 Scouting
+                                - generic [ref=e90] [cursor=pointer]:
+                                    - generic: 幕内出身
+                                    - generic [ref=e91]:
+                                        - img [ref=e93]
+                                        - generic [ref=e95]:
+                                            - generic [ref=e96]:
+                                                - generic [ref=e97]: Long-Distance Runner
+                                                - generic [ref=e98]: Hard
+                                            - paragraph [ref=e99]: "幕内出身 · Peak: Maegashira"
+                                    - paragraph [ref=e100]: 135 tournaments, never a yusho — but your hands-on mastery of every technique is unmatched. Prestige must be earned the hard way.
+                                    - generic [ref=e101]:
+                                        - generic [ref=e102]: ¥1,500万
+                                        - generic [ref=e103]: "-1 Prestige"
+                                        - generic [ref=e104]: +4 Training
+                                        - generic [ref=e105]: "-1 Politics"
+                                - generic [ref=e106] [cursor=pointer]:
+                                    - generic: 復活出身
+                                    - generic [ref=e107]:
+                                        - img [ref=e109]
+                                        - generic [ref=e111]:
+                                            - generic [ref=e112]:
+                                                - generic [ref=e113]: Comeback King
+                                                - generic [ref=e114]: Normal
+                                            - paragraph [ref=e115]: "復活出身 · Peak: Ozeki"
+                                    - paragraph [ref=e116]: Injury cut short a brilliant career. Unfinished business drives you — but the gambler in you never learned patience.
+                                    - generic [ref=e117]:
+                                        - generic [ref=e118]: ¥800万
+                                        - generic [ref=e119]: +2 Prestige
+                                        - generic [ref=e120]: +1 Training
+                                        - generic [ref=e121]: +1 Scouting
+                                        - generic [ref=e122]: +1 Politics
+                                - generic [ref=e123] [cursor=pointer]:
+                                    - generic: 国際派出身
+                                    - generic [ref=e124]:
+                                        - img [ref=e126]
+                                        - generic [ref=e129]:
+                                            - generic [ref=e130]:
+                                                - generic [ref=e131]: International Scout
+                                                - generic [ref=e132]: Hard
+                                            - paragraph [ref=e133]: "国際派出身 · Peak: Maegashira"
+                                    - paragraph [ref=e134]: You built the first Mongolian pipeline. Your continental network is unrivalled — traditionalists distrust you, but results speak.
+                                    - generic [ref=e135]:
+                                        - generic [ref=e136]: ¥1,200万
+                                        - generic [ref=e137]: +1 Training
+                                        - generic [ref=e138]: +5 Scouting
+                                        - generic [ref=e139]: "-1 Politics"
+                                - generic [ref=e140] [cursor=pointer]:
+                                    - generic: 評議員出身
+                                    - generic [ref=e141]:
+                                        - img [ref=e143]
+                                        - generic [ref=e145]:
+                                            - generic [ref=e146]:
+                                                - generic [ref=e147]: Council Elder
+                                                - generic [ref=e148]: Very Hard
+                                            - paragraph [ref=e149]: "評議員出身 · Peak: Sekiwake"
+                                    - paragraph [ref=e150]: Your power lies in the association, not the ring. Political capital is your currency — but the training hall is unfamiliar ground.
+                                    - generic [ref=e151]:
+                                        - generic [ref=e152]: ¥2,000万
+                                        - generic [ref=e153]: "-1 Prestige"
+                                        - generic [ref=e154]: "-1 Training"
+                                        - generic [ref=e155]: +5 Politics
+                - generic [ref=e156]:
+                    - button "Next Submission" [disabled]:
+                        - text: Next Submission
+                        - img
+        - contentinfo [ref=e157]:
+            - generic [ref=e158]:
+                - generic [ref=e159]:
+                    - generic [ref=e160]:
+                        - paragraph [ref=e161]: Oyakata
+                        - paragraph [ref=e162]: UNREGISTERED
+                    - generic [ref=e164]:
+                        - paragraph [ref=e165]: Endowment
+                        - paragraph [ref=e166]: 300万
+                    - generic [ref=e168]:
+                        - paragraph [ref=e169]: Allegiance
+                        - paragraph [ref=e170]: Dewanoumi
+                - generic [ref=e171]: Association Record • Year 2025

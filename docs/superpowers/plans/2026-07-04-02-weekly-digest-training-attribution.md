@@ -14,14 +14,14 @@ Three information gaps leave the player managing a black box.
 
 ## Affected Files
 
-| File | Change |
-|------|--------|
-| `src/engine/systems/training/TrainingService.ts` | Emit `TRAINING_STAT_DELTA` events each week with per-stat deltas |
-| `src/presenters/projections/digestProjections.ts` | Consume `TRAINING_STAT_DELTA` events into a "Training" digest section |
-| `src/pages/WeeklyDigestPage.tsx` | New page: full-screen digest viewer |
-| `src/routes.tsx` | Add `/digest` route lazy-loaded |
-| `src/components/layout/TopNavBar.tsx` (or wherever the nav is) | Add "Weekly Report" nav link |
-| Call site of `SuccessionModal` | Pass real `onClose` handler |
+| File                                                           | Change                                                                |
+| -------------------------------------------------------------- | --------------------------------------------------------------------- |
+| `src/engine/systems/training/TrainingService.ts`               | Emit `TRAINING_STAT_DELTA` events each week with per-stat deltas      |
+| `src/presenters/projections/digestProjections.ts`              | Consume `TRAINING_STAT_DELTA` events into a "Training" digest section |
+| `src/pages/WeeklyDigestPage.tsx`                               | New page: full-screen digest viewer                                   |
+| `src/routes.tsx`                                               | Add `/digest` route lazy-loaded                                       |
+| `src/components/layout/TopNavBar.tsx` (or wherever the nav is) | Add "Weekly Report" nav link                                          |
+| Call site of `SuccessionModal`                                 | Pass real `onClose` handler                                           |
 
 ---
 
@@ -43,7 +43,8 @@ if (updates.stats) {
   let hasGrowth = false;
   for (const key of Object.keys(STAT_GROUP) as Array<keyof RikishiStats>) {
     const delta = (updates.stats[key] ?? 0) - (prevStats[key] ?? 0);
-    if (Math.abs(delta) >= 0.05) {  // ignore sub-noise changes
+    if (Math.abs(delta) >= 0.05) {
+      // ignore sub-noise changes
       deltas[key] = delta;
       hasGrowth = true;
     }

@@ -1,4 +1,5 @@
 # Oyakata Creation at Game Start — Design Spec
+
 **Date:** 2026-05-03  
 **Status:** Ready for implementation
 
@@ -15,6 +16,7 @@ When a player starts a new game, they should feel like they are becoming an oyak
 3. **Backstory options are thin.** `wizardConstants.ts` defines 3 backgrounds (yokozuna, ozeki, maegashira) whose `bonuses` are collected but never applied to the world. Real oyakata come from 7–8 meaningfully distinct paths.
 
 **Confirmed by code audit:**
+
 - `grep playerOyakataId src/` → zero matches. No world-level pointer to player oyakata.
 - `grep PATCH_OYAKATA src/` → zero matches. No mutation action exists.
 - `grep wizardData src/` → zero matches. Wizard state never escapes the component.
@@ -25,6 +27,7 @@ When a player starts a new game, they should feel like they are becoming an oyak
 ## 2. Goal
 
 On every new game start, the player:
+
 1. **Names their oyakata** (toshiyori-mei / elder name) with a random-generate option.
 2. **Picks a backstory** from 7 realistic paths rooted in actual sumo culture, each yielding distinct starting bonuses and setting their oyakata's career fields.
 3. These choices **persist into the world** and are immediately visible on the Oyakata page.
@@ -70,17 +73,19 @@ MainMenu.beginWithHeya(heyaId)
 ## 4. Data Model Changes
 
 ### 4.1 `OyakataCreationConfig` — New Type
+
 File: `src/engine/types/oyakata.ts`
 
 ```typescript
 export interface OyakataCreationConfig {
-  name: string;         // player-chosen toshiyori name
-  backstoryId: string;  // key into OYAKATA_BACKSTORIES
-  ichimon?: string;     // faction selected in step 2
+  name: string; // player-chosen toshiyori name
+  backstoryId: string; // key into OYAKATA_BACKSTORIES
+  ichimon?: string; // faction selected in step 2
 }
 ```
 
 ### 4.2 `CREATE_WORLD` Action — Extended
+
 File: `src/contexts/gameTypes.ts`
 
 ```typescript
@@ -88,12 +93,13 @@ File: `src/contexts/gameTypes.ts`
 ```
 
 ### 4.3 `GameState` — `playerOyakataId` Added
+
 File: `src/contexts/gameTypes.ts`
 
 ```typescript
 interface GameState {
   // existing ...
-  playerOyakataId: string | null;  // NEW — derived and cached on CREATE_WORLD
+  playerOyakataId: string | null; // NEW — derived and cached on CREATE_WORLD
 }
 ```
 
@@ -125,10 +131,11 @@ export function applyOyakataCreationConfig(
   world: WorldState,
   playerHeyaId: string,
   config: OyakataCreationConfig
-): WorldState
+): WorldState;
 ```
 
 **What it does — in order:**
+
 1. Resolve `heya = world.heyas.get(playerHeyaId)` and `oyakata = world.oyakata.get(heya.oyakataId)`.
 2. Look up backstory: `backstory = OYAKATA_BACKSTORIES.find(b => b.id === config.backstoryId)`.
 3. Generate `formerShikona` using the shikona generation system, filtered to backstory's rank tier.
@@ -158,6 +165,7 @@ This function is **pure** — takes world, returns new world. No side effects. F
 File: `src/components/wizard/wizardConstants.ts` — replaces existing 3-option array.
 
 Each backstory has:
+
 - `id`, `label`, `icon` (Lucide), `flavor` (2-sentence description)
 - `highestRank`: string stored on Oyakata.highestRank
 - `preferredArchetype`: OyakataArchetype (optional; falls back to existing random)
@@ -166,17 +174,18 @@ Each backstory has:
 - `difficulty`: "Easy" | "Normal" | "Hard" | "Very Hard"
 - `startingQuirks`: string[] (1-2 guaranteed quirks from the pool)
 
-| id | Label | Highest Rank | Archetype | Prestige | Funds | Scout | Train | Politic | Difficulty |
-|----|-------|-------------|-----------|----------|-------|-------|-------|---------|-----------|
-| `yokozuna_champion` | Champion Inheritor | Yokozuna | traditionalist | +4 | +3M | +1 | +1 | +3 | Easy |
-| `ozeki_legend` | Tournament Legend | Ozeki | strategist | +3 | +5M | 0 | +2 | +1 | Normal |
-| `sanyaku_veteran` | Sanyaku Veteran | Sekiwake | scientist | +1 | +10M | +1 | +2 | 0 | Normal |
-| `maegashira_lifer` | Long-Distance Runner | Maegashira | nurturer | -1 | +15M | 0 | +4 | -1 | Hard |
-| `injury_comeback` | Comeback King | Ozeki | gambler | +2 | +8M | +1 | +1 | +1 | Normal |
-| `international_scout` | International Scout | Maegashira | scientist | 0 | +12M | +5 | +1 | -1 | Hard |
-| `council_elder` | Council Elder | Sekiwake | strategist | -1 | +20M | 0 | -1 | +5 | Very Hard |
+| id                    | Label                | Highest Rank | Archetype      | Prestige | Funds | Scout | Train | Politic | Difficulty |
+| --------------------- | -------------------- | ------------ | -------------- | -------- | ----- | ----- | ----- | ------- | ---------- |
+| `yokozuna_champion`   | Champion Inheritor   | Yokozuna     | traditionalist | +4       | +3M   | +1    | +1    | +3      | Easy       |
+| `ozeki_legend`        | Tournament Legend    | Ozeki        | strategist     | +3       | +5M   | 0     | +2    | +1      | Normal     |
+| `sanyaku_veteran`     | Sanyaku Veteran      | Sekiwake     | scientist      | +1       | +10M  | +1    | +2    | 0       | Normal     |
+| `maegashira_lifer`    | Long-Distance Runner | Maegashira   | nurturer       | -1       | +15M  | 0     | +4    | -1      | Hard       |
+| `injury_comeback`     | Comeback King        | Ozeki        | gambler        | +2       | +8M   | +1    | +1    | +1      | Normal     |
+| `international_scout` | International Scout  | Maegashira   | scientist      | 0        | +12M  | +5    | +1    | -1      | Hard       |
+| `council_elder`       | Council Elder        | Sekiwake     | strategist     | -1       | +20M  | 0     | -1    | +5      | Very Hard  |
 
 **Notes on balance:**
+
 - `maegashira_lifer` funds offset prestige penalty — takes longer to attract elite recruits.
 - `international_scout` gets the highest scouting bonus (+5) but starts governance-penalised.
 - `council_elder` flips the game toward political/governance challenges with less hands-on training.
@@ -191,6 +200,7 @@ Each backstory has:
 File: `src/engine/shikona/toshiyoriNames.ts` (new)
 
 ### 7.1 Curated name pool (30 entries)
+
 Authentic-sounding toshiyori names following the geographic + nature element pattern (e.g., Kitanoumi, Dewanoumi, Tokitsukaze). These are NOT the real heya names (already used for NPC oyakata) — they are plausible alternatives:
 
 Examples: `"Saganoumi"`, `"Ryogoku"`, `"Azumayama"`, `"Shiranami"`, `"Nishikido"`, `"Kasugaumi"`, `"Otodake"`, `"Tomozuna"`, `"Kumagatani"`, `"Wakamatsu"` ...30 total.
@@ -198,15 +208,17 @@ Examples: `"Saganoumi"`, `"Ryogoku"`, `"Azumayama"`, `"Shiranami"`, `"Nishikido"
 ### 7.2 Procedural generation function
 
 ```typescript
-export function generateToshiyoriName(rng: SeededRNG): string
+export function generateToshiyoriName(rng: SeededRNG): string;
 ```
 
 Uses 3 patterns (weighted):
+
 - **Geographic + nature** (50%): direction/prefecture prefix + sea/mountain suffix. E.g., "Nishi" + "noumi" → "Nishiumi"
 - **Curated pool pick** (35%): selects from the 30-entry authentic pool
 - **Classical compound** (15%): two kanji compounds from a curated set
 
 ### 7.3 IdentityStep integration
+
 A `RefreshCw` icon button next to the name input calls `generateToshiyoriName(rng)` with a deterministic seed derived from `Date.now()` (acceptable for UI-only randomness). Each click produces a new candidate name.
 
 **Validation:** Name must be 2–20 characters. No special characters. Leading/trailing whitespace trimmed.
@@ -313,6 +325,7 @@ case "CREATE_WORLD": {
 ## 10. OyakataPage — What Already Works / What Needs Adding
 
 **Already works (no changes needed):**
+
 - Name display: reads `oyakata.name` ✓
 - Traits display: reads `oyakata.traits` ✓
 - Career section: reads `oyakata.highestRank` and `oyakata.formerShikona` ✓
@@ -320,6 +333,7 @@ case "CREATE_WORLD": {
 - Yokozuna legacy display: conditional on `oyakata.highestRank === "yokozuna"` ✓
 
 **Needs adding:**
+
 - **Backstory flavor section**: A short prose card below the identity header quoting the backstory's flavor text (stored on the backstory definition, looked up by `backstoryId` which must be stored on Oyakata). Add `backstoryId?: string` to Oyakata type, set it in `applyOyakataCreationConfig`.
 - **Starting bonus history**: The bonuses applied at creation should appear as a one-time historical note (e.g., "Entered with Ozeki-level prestige endowment"). Store as an oyakata `memory` directive.
 
@@ -332,6 +346,7 @@ case "CREATE_WORLD": {
 ### 11.1 Unit Tests (Vitest)
 
 **`src/engine/systems/generation/__tests__/applyOyakataConfig.test.ts`**
+
 - All 7 backstory IDs apply without throwing.
 - `oyakata.name` equals the provided config name.
 - `heya.funds` increases by the backstory's fund bonus.
@@ -343,12 +358,14 @@ case "CREATE_WORLD": {
 - Function is pure: original world is not mutated.
 
 **`src/engine/shikona/__tests__/toshiyoriNames.test.ts`**
+
 - `generateToshiyoriName(rng)` returns a string.
 - Length is between 4 and 18 characters.
 - Two different RNG seeds produce different names (at least 50% of time across 100 samples).
 - Output contains no special characters.
 
 **`src/components/wizard/__tests__/wizardConstants.test.ts`**
+
 - All 7 backstories have required fields: id, label, flavor, highestRank, bonuses.
 - `bonuses.funds` is a positive number for all.
 - No two backstories share the same `id`.
@@ -357,12 +374,14 @@ case "CREATE_WORLD": {
 ### 11.2 Integration Tests (Vitest + in-memory reducer)
 
 **`src/contexts/__tests__/coreSlice.oyakata.test.ts`**
+
 - Dispatching `CREATE_WORLD` with `oyakataConfig` results in `world.oyakata.get(playerOyakataId).name === config.name`.
 - `playerOyakataId` is populated in the returned `GameState`.
 - Dispatching `CREATE_WORLD` without `oyakataConfig` still succeeds (backward compatibility).
 - Ichimon in `config` is applied to the player's heya.
 
 ### 11.3 What Is NOT Tested (and Why)
+
 - ExhibitionBout rendering — covered by existing snapshot tests.
 - OyakataPage visual output — not testable without a running game world; covered by the integration test proving data flows correctly.
 
@@ -370,34 +389,34 @@ case "CREATE_WORLD": {
 
 ## 12. Files Modified / Created
 
-| File | Change |
-|------|--------|
-| `src/engine/types/oyakata.ts` | Add `OyakataCreationConfig` interface; add `backstoryId?: string` to `Oyakata` |
-| `src/contexts/gameTypes.ts` | Extend `CREATE_WORLD` action; add `playerOyakataId` to `GameState` |
-| `src/contexts/gameActions.ts` | Update `createWorld()` signature |
-| `src/contexts/coreSlice.ts` | Apply `applyOyakataCreationConfig` in CREATE_WORLD handler; set `playerOyakataId` |
-| `src/engine/systems/generation/applyOyakataConfig.ts` | **NEW** — pure function |
-| `src/engine/shikona/toshiyoriNames.ts` | **NEW** — name pool + generator |
-| `src/components/wizard/wizardConstants.ts` | Replace 3-backstory array with 7-backstory array |
-| `src/components/wizard/IdentityStep.tsx` | Add random-name button; update to 7-card backstory grid |
-| `src/components/wizard/WizardFooter.tsx` | Add background chip |
-| `src/pages/NewGameWizard.tsx` | Accept `heyaId` route param; skip StableStep when pre-selected; pass `oyakataConfig` to createWorld |
-| `src/pages/MainMenu.tsx` | Change `beginWithHeya` to navigate to `/new-game` with heyaId param |
-| `src/pages/OyakataPage.tsx` | Add backstory flavor text section |
-| **Tests** | 3 new test files (see §11) |
+| File                                                  | Change                                                                                              |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `src/engine/types/oyakata.ts`                         | Add `OyakataCreationConfig` interface; add `backstoryId?: string` to `Oyakata`                      |
+| `src/contexts/gameTypes.ts`                           | Extend `CREATE_WORLD` action; add `playerOyakataId` to `GameState`                                  |
+| `src/contexts/gameActions.ts`                         | Update `createWorld()` signature                                                                    |
+| `src/contexts/coreSlice.ts`                           | Apply `applyOyakataCreationConfig` in CREATE_WORLD handler; set `playerOyakataId`                   |
+| `src/engine/systems/generation/applyOyakataConfig.ts` | **NEW** — pure function                                                                             |
+| `src/engine/shikona/toshiyoriNames.ts`                | **NEW** — name pool + generator                                                                     |
+| `src/components/wizard/wizardConstants.ts`            | Replace 3-backstory array with 7-backstory array                                                    |
+| `src/components/wizard/IdentityStep.tsx`              | Add random-name button; update to 7-card backstory grid                                             |
+| `src/components/wizard/WizardFooter.tsx`              | Add background chip                                                                                 |
+| `src/pages/NewGameWizard.tsx`                         | Accept `heyaId` route param; skip StableStep when pre-selected; pass `oyakataConfig` to createWorld |
+| `src/pages/MainMenu.tsx`                              | Change `beginWithHeya` to navigate to `/new-game` with heyaId param                                 |
+| `src/pages/OyakataPage.tsx`                           | Add backstory flavor text section                                                                   |
+| **Tests**                                             | 3 new test files (see §11)                                                                          |
 
 ---
 
 ## 13. Explicitly Disproved Assumptions
 
-| Assumption | Result | Evidence |
-|-----------|--------|---------|
-| "Wizard is accessible from MainMenu" | ❌ WRONG | `beginWithHeya` navigates to `/dashboard`, not `/new-game` |
-| "Wizard data is saved to the world" | ❌ WRONG | `createWorld(seed, heyaId)` — no oyakata params; reducer ignores wizard state |
-| "playerOyakataId exists on GameState" | ❌ WRONG | Zero grep matches; only `playerHeyaId` exists |
-| "An UPDATE_PLAYER_OYAKATA action exists" | ❌ WRONG | Zero grep matches in gameTypes.ts |
-| "Background bonuses are applied" | ❌ WRONG | `wizardConstants.ts` has `bonuses` object, but handler never reads them |
-| "OyakataPage needs structural refactor" | ✅ WRONG (it's fine) | Already reads via correct `heya → oyakataId → oyakata` chain; just needs correct data fed in |
-| "generateOyakataName() is useful for players" | ❌ WRONG | Picks from 15 real heya names — all already used by NPC oyakata; players cannot share these names |
-| "Tyrant archetype is safe for player use" | ❌ WRONG | Compassion=5 triggers immediate welfare crises; excluded from player backstories |
-| "ichimon from wizard is applied to heya" | ❌ WRONG | FactionStep collects value but `handleFinish()` never uses it |
+| Assumption                                    | Result               | Evidence                                                                                          |
+| --------------------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------- |
+| "Wizard is accessible from MainMenu"          | ❌ WRONG             | `beginWithHeya` navigates to `/dashboard`, not `/new-game`                                        |
+| "Wizard data is saved to the world"           | ❌ WRONG             | `createWorld(seed, heyaId)` — no oyakata params; reducer ignores wizard state                     |
+| "playerOyakataId exists on GameState"         | ❌ WRONG             | Zero grep matches; only `playerHeyaId` exists                                                     |
+| "An UPDATE_PLAYER_OYAKATA action exists"      | ❌ WRONG             | Zero grep matches in gameTypes.ts                                                                 |
+| "Background bonuses are applied"              | ❌ WRONG             | `wizardConstants.ts` has `bonuses` object, but handler never reads them                           |
+| "OyakataPage needs structural refactor"       | ✅ WRONG (it's fine) | Already reads via correct `heya → oyakataId → oyakata` chain; just needs correct data fed in      |
+| "generateOyakataName() is useful for players" | ❌ WRONG             | Picks from 15 real heya names — all already used by NPC oyakata; players cannot share these names |
+| "Tyrant archetype is safe for player use"     | ❌ WRONG             | Compassion=5 triggers immediate welfare crises; excluded from player backstories                  |
+| "ichimon from wizard is applied to heya"      | ❌ WRONG             | FactionStep collects value but `handleFinish()` never uses it                                     |

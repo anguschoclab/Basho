@@ -20,15 +20,15 @@ No glossary page or popover system exists. Sumo terminology (shikona, oyakata, h
 
 ## Affected Files
 
-| File | Change |
-|------|--------|
-| `src/components/wizard/FactionStep.tsx` | Show mechanical bonuses for each ichimon |
+| File                                           | Change                                                            |
+| ---------------------------------------------- | ----------------------------------------------------------------- |
+| `src/components/wizard/FactionStep.tsx`        | Show mechanical bonuses for each ichimon                          |
 | `src/components/onboarding/ExhibitionBout.tsx` | Wrap kimarite name in KimariteTag; add "What's Next" closing step |
-| `src/components/ui/KimariteTag.tsx` | New component: kimarite name + tooltip with description |
-| `src/components/game/BoutResultDisplay.tsx` | Replace raw kimarite name with KimariteTag |
-| `src/pages/GlossaryPage.tsx` | New page: sumo terms A-Z with search |
-| `src/routes.tsx` | Add `/glossary` route |
-| `src/engine/glossary/GlossaryService.ts` | New service: term definitions + search |
+| `src/components/ui/KimariteTag.tsx`            | New component: kimarite name + tooltip with description           |
+| `src/components/game/BoutResultDisplay.tsx`    | Replace raw kimarite name with KimariteTag                        |
+| `src/pages/GlossaryPage.tsx`                   | New page: sumo terms A-Z with search                              |
+| `src/routes.tsx`                               | Add `/glossary` route                                             |
+| `src/engine/glossary/GlossaryService.ts`       | New service: term definitions + search                            |
 
 ---
 
@@ -40,27 +40,27 @@ Add a mechanic summary beneath each faction's tagline. Create a constant mapping
 
 ```typescript
 const ICHIMON_MECHANICS: Record<string, { bonus: string; politics: string }> = {
-  dewanoumi:    { bonus: "+5% Power training", politics: "Highest JSA election weight" },
-  nishonoseki:  { bonus: "+5% Speed training", politics: "High JSA election weight" },
-  takasago:     { bonus: "+10% Mental training", politics: "Standard election weight" },
-  tokitsukaze:  { bonus: "+10% Stamina training", politics: "Standard election weight" },
-  isegahama:    { bonus: "+5% Technique & Balance training", politics: "Standard election weight" },
+  dewanoumi: { bonus: "+5% Power training", politics: "Highest JSA election weight" },
+  nishonoseki: { bonus: "+5% Speed training", politics: "High JSA election weight" },
+  takasago: { bonus: "+10% Mental training", politics: "Standard election weight" },
+  tokitsukaze: { bonus: "+10% Stamina training", politics: "Standard election weight" },
+  isegahama: { bonus: "+5% Technique & Balance training", politics: "Standard election weight" },
 };
 ```
 
 In the faction card, below the existing description text, render:
 
 ```tsx
-{ICHIMON_MECHANICS[faction.id] && (
-  <div className="mt-2 space-y-1">
-    <div className="text-xs font-medium text-amber-400">
-      {ICHIMON_MECHANICS[faction.id].bonus}
+{
+  ICHIMON_MECHANICS[faction.id] && (
+    <div className="mt-2 space-y-1">
+      <div className="text-xs font-medium text-amber-400">
+        {ICHIMON_MECHANICS[faction.id].bonus}
+      </div>
+      <div className="text-xs text-muted-foreground">{ICHIMON_MECHANICS[faction.id].politics}</div>
     </div>
-    <div className="text-xs text-muted-foreground">
-      {ICHIMON_MECHANICS[faction.id].politics}
-    </div>
-  </div>
-)}
+  );
+}
 ```
 
 This is a pure UI change — the constants are UI-layer copies of the values from `TrainingMath.ts` and `banzuke.ts`. No engine changes needed.
@@ -74,18 +74,31 @@ This is a pure UI change — the constants are UI-layer copies of the values fro
 After the bout result is fully revealed and before "Begin My Career" is clickable, show a final info card:
 
 ```tsx
-{boutRevealed && (
-  <div className="mt-4 p-4 border rounded-lg bg-card space-y-3">
-    <h3 className="text-base font-semibold">Your Role as Oyakata</h3>
-    <ul className="text-sm space-y-2 text-muted-foreground">
-      <li>🏆 <strong>Compete in 6 basho per year</strong> — each is 15 days of bouts</li>
-      <li>💪 <strong>Train your wrestlers weekly</strong> — set intensity and focus between basho</li>
-      <li>💴 <strong>Manage your stable's finances</strong> — sponsors, facilities, and wrestler costs</li>
-      <li>⚖️ <strong>Navigate JSA governance</strong> — rulings, scandals, and political alliances</li>
-      <li>📋 <strong>Make daily decisions</strong> — injury calls, recruitment, training emphasis</li>
-    </ul>
-  </div>
-)}
+{
+  boutRevealed && (
+    <div className="mt-4 p-4 border rounded-lg bg-card space-y-3">
+      <h3 className="text-base font-semibold">Your Role as Oyakata</h3>
+      <ul className="text-sm space-y-2 text-muted-foreground">
+        <li>
+          🏆 <strong>Compete in 6 basho per year</strong> — each is 15 days of bouts
+        </li>
+        <li>
+          💪 <strong>Train your wrestlers weekly</strong> — set intensity and focus between basho
+        </li>
+        <li>
+          💴 <strong>Manage your stable's finances</strong> — sponsors, facilities, and wrestler
+          costs
+        </li>
+        <li>
+          ⚖️ <strong>Navigate JSA governance</strong> — rulings, scandals, and political alliances
+        </li>
+        <li>
+          📋 <strong>Make daily decisions</strong> — injury calls, recruitment, training emphasis
+        </li>
+      </ul>
+    </div>
+  );
+}
 ```
 
 Keep "Begin My Career" gated behind `boutRevealed` as it already is — the closing card appears in the same reveal state.
@@ -107,23 +120,30 @@ interface KimariteTagProps {
   className?: string;
 }
 
-export function KimariteTag({ kimariteId, kimariteName, kimariteNameJa, className }: KimariteTagProps) {
+export function KimariteTag({
+  kimariteId,
+  kimariteName,
+  kimariteNameJa,
+  className,
+}: KimariteTagProps) {
   const definition = getKimarite(kimariteId);
-  const content = definition?.description
-    ? (
-      <div className="max-w-xs space-y-1">
-        <div className="font-semibold">{kimariteName}</div>
-        {kimariteNameJa && <div className="text-muted-foreground text-xs">{kimariteNameJa}</div>}
-        <div className="text-sm">{definition.description}</div>
-      </div>
-    )
-    : kimariteName;
+  const content = definition?.description ? (
+    <div className="max-w-xs space-y-1">
+      <div className="font-semibold">{kimariteName}</div>
+      {kimariteNameJa && <div className="text-muted-foreground text-xs">{kimariteNameJa}</div>}
+      <div className="text-sm">{definition.description}</div>
+    </div>
+  ) : (
+    kimariteName
+  );
 
   return (
     <TooltipWrap content={content} delayDuration={300}>
       <span className={`cursor-help underline decoration-dotted ${className ?? ""}`}>
         {kimariteName}
-        {kimariteNameJa && <span className="text-muted-foreground ml-1 text-xs">({kimariteNameJa})</span>}
+        {kimariteNameJa && (
+          <span className="text-muted-foreground ml-1 text-xs">({kimariteNameJa})</span>
+        )}
       </span>
     </TooltipWrap>
   );
@@ -167,19 +187,107 @@ export interface GlossaryTerm {
 }
 
 export const GLOSSARY_TERMS: GlossaryTerm[] = [
-  { id: "shikona",   term: "Shikona",   termJa: "四股名", category: "general",    definition: "A wrestler's ring name, chosen at debut. Often references nature, history, or the stable." },
-  { id: "oyakata",   term: "Oyakata",   termJa: "親方",   category: "stable",     definition: "The stable master — a retired former wrestler who manages the heya's wrestlers, training, and finances." },
-  { id: "heya",      term: "Heya",      termJa: "部屋",   category: "stable",     definition: "A sumo stable. Wrestlers train, live, and compete under their heya's banner." },
-  { id: "basho",     term: "Basho",     termJa: "場所",   category: "tournament", definition: "A tournament. Six basho are held per year: Hatsu (Jan), Haru (Mar), Natsu (May), Nagoya (Jul), Aki (Sep), Kyushu (Nov)." },
-  { id: "dohyo",     term: "Dohyo",     termJa: "土俵",   category: "bout",       definition: "The raised clay ring where bouts are fought. A wrestler loses when any body part except the soles of the feet touches outside the ring, or touches the ground inside." },
-  { id: "tachiai",   term: "Tachiai",   termJa: "立合い", category: "bout",       definition: "The initial charge at the start of a bout. Both wrestlers drive forward simultaneously." },
-  { id: "kimarite",  term: "Kimarite",  termJa: "決まり手", category: "bout",      definition: "The winning technique that ended the bout. 82 official kimarite exist, grouped into push, throw, trip, and pull families." },
-  { id: "koenkai",   term: "Kōenkai",   termJa: "後援会", category: "stable",     definition: "A fan support association that provides the stable with regular income and resources." },
-  { id: "ichimon",   term: "Ichimon",   termJa: "一門",   category: "governance", definition: "A sumo faction — a group of affiliated stables that share political influence in the JSA." },
-  { id: "kadoban",   term: "Kadoban",   termJa: "角番",   category: "rank",       definition: "An Ozeki who failed to achieve 8 wins (kachi-koshi) in the previous basho. Must win 8 in the current basho or be demoted." },
-  { id: "kyujo",     term: "Kyujo",     termJa: "休場",   category: "bout",       definition: "Withdrawal from a tournament due to injury. A kyujo rikishi forfeits all remaining bouts." },
-  { id: "zensho",    term: "Zenshō",    termJa: "全勝",   category: "tournament", definition: "A perfect 15-0 record in a basho. Extremely rare." },
-  { id: "yusho",     term: "Yushō",     termJa: "優勝",   category: "tournament", definition: "The tournament championship, awarded to the wrestler with the best record." },
+  {
+    id: "shikona",
+    term: "Shikona",
+    termJa: "四股名",
+    category: "general",
+    definition:
+      "A wrestler's ring name, chosen at debut. Often references nature, history, or the stable.",
+  },
+  {
+    id: "oyakata",
+    term: "Oyakata",
+    termJa: "親方",
+    category: "stable",
+    definition:
+      "The stable master — a retired former wrestler who manages the heya's wrestlers, training, and finances.",
+  },
+  {
+    id: "heya",
+    term: "Heya",
+    termJa: "部屋",
+    category: "stable",
+    definition: "A sumo stable. Wrestlers train, live, and compete under their heya's banner.",
+  },
+  {
+    id: "basho",
+    term: "Basho",
+    termJa: "場所",
+    category: "tournament",
+    definition:
+      "A tournament. Six basho are held per year: Hatsu (Jan), Haru (Mar), Natsu (May), Nagoya (Jul), Aki (Sep), Kyushu (Nov).",
+  },
+  {
+    id: "dohyo",
+    term: "Dohyo",
+    termJa: "土俵",
+    category: "bout",
+    definition:
+      "The raised clay ring where bouts are fought. A wrestler loses when any body part except the soles of the feet touches outside the ring, or touches the ground inside.",
+  },
+  {
+    id: "tachiai",
+    term: "Tachiai",
+    termJa: "立合い",
+    category: "bout",
+    definition:
+      "The initial charge at the start of a bout. Both wrestlers drive forward simultaneously.",
+  },
+  {
+    id: "kimarite",
+    term: "Kimarite",
+    termJa: "決まり手",
+    category: "bout",
+    definition:
+      "The winning technique that ended the bout. 82 official kimarite exist, grouped into push, throw, trip, and pull families.",
+  },
+  {
+    id: "koenkai",
+    term: "Kōenkai",
+    termJa: "後援会",
+    category: "stable",
+    definition:
+      "A fan support association that provides the stable with regular income and resources.",
+  },
+  {
+    id: "ichimon",
+    term: "Ichimon",
+    termJa: "一門",
+    category: "governance",
+    definition:
+      "A sumo faction — a group of affiliated stables that share political influence in the JSA.",
+  },
+  {
+    id: "kadoban",
+    term: "Kadoban",
+    termJa: "角番",
+    category: "rank",
+    definition:
+      "An Ozeki who failed to achieve 8 wins (kachi-koshi) in the previous basho. Must win 8 in the current basho or be demoted.",
+  },
+  {
+    id: "kyujo",
+    term: "Kyujo",
+    termJa: "休場",
+    category: "bout",
+    definition:
+      "Withdrawal from a tournament due to injury. A kyujo rikishi forfeits all remaining bouts.",
+  },
+  {
+    id: "zensho",
+    term: "Zenshō",
+    termJa: "全勝",
+    category: "tournament",
+    definition: "A perfect 15-0 record in a basho. Extremely rare.",
+  },
+  {
+    id: "yusho",
+    term: "Yushō",
+    termJa: "優勝",
+    category: "tournament",
+    definition: "The tournament championship, awarded to the wrestler with the best record.",
+  },
 ];
 
 export const GlossaryService = {

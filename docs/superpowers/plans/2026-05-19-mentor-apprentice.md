@@ -12,20 +12,21 @@
 
 ## File Map
 
-| Action | Path | Purpose |
-|--------|------|---------|
-| Create | `src/engine/systems/training/MentorshipService.ts` | Pure mentor logic: assign, validate, bonus calc |
-| Create | `src/engine/systems/training/__tests__/MentorshipService.test.ts` | Unit tests |
-| Modify | `src/engine/tick/phases/phase01_week_training.ts` | Call mentorship bonus after standard training tick |
-| Modify | `src/engine/types/world.ts` | Add `mentorshipLog` event category if not present |
-| Create | `src/components/game/MentorAssignmentPanel.tsx` | UI to assign/remove mentor on roster page |
-| Modify | `src/pages/StableRoster.tsx` (or equivalent roster page) | Render `MentorAssignmentPanel` per rikishi |
+| Action | Path                                                              | Purpose                                            |
+| ------ | ----------------------------------------------------------------- | -------------------------------------------------- |
+| Create | `src/engine/systems/training/MentorshipService.ts`                | Pure mentor logic: assign, validate, bonus calc    |
+| Create | `src/engine/systems/training/__tests__/MentorshipService.test.ts` | Unit tests                                         |
+| Modify | `src/engine/tick/phases/phase01_week_training.ts`                 | Call mentorship bonus after standard training tick |
+| Modify | `src/engine/types/world.ts`                                       | Add `mentorshipLog` event category if not present  |
+| Create | `src/components/game/MentorAssignmentPanel.tsx`                   | UI to assign/remove mentor on roster page          |
+| Modify | `src/pages/StableRoster.tsx` (or equivalent roster page)          | Render `MentorAssignmentPanel` per rikishi         |
 
 ---
 
 ## Task 1: MentorshipService — Core Types and Assignment
 
 **Files:**
+
 - Create: `src/engine/systems/training/MentorshipService.ts`
 - Create: `src/engine/systems/training/__tests__/MentorshipService.test.ts`
 
@@ -89,7 +90,14 @@ Expected: FAIL — `MentorshipService` not found.
 import type { Rikishi } from "../../types/rikishi";
 import { clamp } from "../../utils/math";
 
-const MENTOR_MIN_RANKS = new Set(["juryo", "maegashira", "komusubi", "sekiwake", "ozeki", "yokozuna"]);
+const MENTOR_MIN_RANKS = new Set([
+  "juryo",
+  "maegashira",
+  "komusubi",
+  "sekiwake",
+  "ozeki",
+  "yokozuna",
+]);
 const MAX_BLEED = 3; // max technique points per week
 const BLEED_THRESHOLD = 10; // gap below which no bleed occurs
 const BLEED_SCALE = 0.06; // fraction of gap transferred per week
@@ -149,6 +157,7 @@ git commit -m "feat(training): add MentorshipService with eligibility and techni
 ## Task 2: Wire Mentorship Bonus into the Weekly Training Tick
 
 **Files:**
+
 - Modify: `src/engine/tick/phases/phase01_week_training.ts`
 - Create: `src/engine/systems/training/__tests__/mentorshipTick.test.ts`
 
@@ -161,12 +170,27 @@ import { mockRikishi } from "../../../__tests__/utils";
 import { applyMentorshipBonuses } from "../MentorshipService";
 import type { WorldState } from "../../../types/world";
 
-function makeWorld(mentor: ReturnType<typeof mockRikishi>, apprentice: ReturnType<typeof mockRikishi>): WorldState {
-  const rikishi = new Map([[mentor.id, mentor], [apprentice.id, apprentice]]);
+function makeWorld(
+  mentor: ReturnType<typeof mockRikishi>,
+  apprentice: ReturnType<typeof mockRikishi>
+): WorldState {
+  const rikishi = new Map([
+    [mentor.id, mentor],
+    [apprentice.id, apprentice],
+  ]);
   return {
-    id: "w1", seed: "seed", year: 2025, week: 1, dayIndexGlobal: 1,
-    cyclePhase: "interim", rikishi, heyas: new Map(), events: [],
-    trainingState: new Map(), governanceLog: [], currentBasho: null,
+    id: "w1",
+    seed: "seed",
+    year: 2025,
+    week: 1,
+    dayIndexGlobal: 1,
+    cyclePhase: "interim",
+    rikishi,
+    heyas: new Map(),
+    events: [],
+    trainingState: new Map(),
+    governanceLog: [],
+    currentBasho: null,
   } as unknown as WorldState;
 }
 
@@ -266,6 +290,7 @@ git commit -m "feat(training): apply mentorship technique bleed in weekly tick"
 ## Task 3: Mentor Assignment Mutation (assign / unassign)
 
 **Files:**
+
 - Modify: `src/engine/systems/training/MentorshipService.ts`
 - Create: `src/engine/systems/training/__tests__/mentorAssignment.test.ts`
 
@@ -294,7 +319,9 @@ describe("assignMentor", () => {
     const updates = impact.rikishiUpdates ?? [];
 
     expect(updates.find((u: { id: string }) => u.id === apprentice.id)?.mentorId).toBe(mentor.id);
-    expect(updates.find((u: { id: string }) => u.id === mentor.id)?.menteeIds).toContain(apprentice.id);
+    expect(updates.find((u: { id: string }) => u.id === mentor.id)?.menteeIds).toContain(
+      apprentice.id
+    );
   });
 
   it("returns empty impact when pairing is invalid", () => {
@@ -337,7 +364,11 @@ Expected: FAIL — `assignMentor` / `removeMentor` not exported.
 Add to the bottom of `src/engine/systems/training/MentorshipService.ts`:
 
 ```typescript
-export function assignMentor(world: WorldState, mentorId: string, apprenticeId: string): StateImpact {
+export function assignMentor(
+  world: WorldState,
+  mentorId: string,
+  apprenticeId: string
+): StateImpact {
   const builder = createImpactBuilder("assignMentor");
   const mentor = world.rikishi.get(mentorId);
   const apprentice = world.rikishi.get(apprenticeId);
@@ -385,6 +416,7 @@ git commit -m "feat(training): add assignMentor / removeMentor mutations"
 ## Task 4: Rivalry Seeding — When Mentor Faces Mentee in Basho
 
 **Files:**
+
 - Modify: `src/engine/bout/boutResultApplier.ts`
 - Create: `src/engine/systems/training/__tests__/mentorRivalrySeed.test.ts`
 
@@ -435,10 +467,7 @@ export interface MentorMenteeBoutEvent {
   apprenticeId: string;
 }
 
-export function checkMentorMenteeBout(
-  a: Rikishi,
-  b: Rikishi
-): MentorMenteeBoutEvent | null {
+export function checkMentorMenteeBout(a: Rikishi, b: Rikishi): MentorMenteeBoutEvent | null {
   if (a.menteeIds?.includes(b.id)) {
     return { type: "mentor_mentee_bout", mentorId: a.id, apprenticeId: b.id };
   }
@@ -493,6 +522,7 @@ git commit -m "feat(training): seed mentor-mentee bout event in basho result app
 ## Task 5: Mentor Assignment UI Panel
 
 **Files:**
+
 - Create: `src/components/game/MentorAssignmentPanel.tsx`
 - Modify: Stable Roster page (check `src/pages/` for file named `Roster`, `StableRoster`, or similar)
 
@@ -509,7 +539,13 @@ Or check: `ls src/pages/` and `ls src/components/game/` — find the component t
 ```tsx
 // src/components/game/MentorAssignmentPanel.tsx
 import { useState } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { Rikishi } from "@/engine/types/rikishi";
@@ -525,9 +561,7 @@ interface Props {
 export function MentorAssignmentPanel({ apprentice, heyaRikishi, onAssign, onRemove }: Props) {
   const [selected, setSelected] = useState<string>("");
 
-  const eligibleMentors = heyaRikishi.filter((r) =>
-    MentorshipService.canMentor(r, apprentice)
-  );
+  const eligibleMentors = heyaRikishi.filter((r) => MentorshipService.canMentor(r, apprentice));
 
   const currentMentor = heyaRikishi.find((r) => r.id === apprentice.mentorId);
 
@@ -536,7 +570,9 @@ export function MentorAssignmentPanel({ apprentice, heyaRikishi, onAssign, onRem
       {currentMentor ? (
         <>
           <Badge variant="secondary">Mentor: {currentMentor.shikona}</Badge>
-          <Button size="sm" variant="ghost" onClick={onRemove}>Remove</Button>
+          <Button size="sm" variant="ghost" onClick={onRemove}>
+            Remove
+          </Button>
         </>
       ) : eligibleMentors.length > 0 ? (
         <>
@@ -591,6 +627,7 @@ In the roster page component, for each rikishi row, render:
 - [ ] **Step 5: Manual smoke test**
 
 Start dev server (`bun run dev`), navigate to `/stable/roster`. Confirm:
+
 1. Lower-division rikishi show a mentor dropdown populated with juryo+ stablemates.
 2. Assigning a mentor shows the badge.
 3. Removing a mentor clears the badge.

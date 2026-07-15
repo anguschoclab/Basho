@@ -27,7 +27,7 @@ async function verifyTrainingDecay() {
       stamina: 70,
       adaptability: 50,
       mental: 95,
-      weight: 150
+      weight: 150,
     },
     isRetired: false,
   } as any;
@@ -36,14 +36,19 @@ async function verifyTrainingDecay() {
     year: 2026,
     week: 1,
     rikishi: new Map([["old-vet", mockRikishi]]),
-    heyas: new Map([["stable-1", { id: "stable-1", name: "Test Stable", funds: 1000000, rikishiIds: ["old-vet"] } as any]]),
+    heyas: new Map([
+      [
+        "stable-1",
+        { id: "stable-1", name: "Test Stable", funds: 1000000, rikishiIds: ["old-vet"] } as any,
+      ],
+    ]),
     trainingState: new Map(),
     calendar: { year: 2026, month: 1, week: 1 },
     seed: "test-seed",
     transientContext: {
-      boundaries: { monthBoundary: false, yearBoundary: false }
+      boundaries: { monthBoundary: false, yearBoundary: false },
     },
-    oyakata: new Map()
+    oyakata: new Map(),
   } as any;
 
   console.log(`Initial Power: ${mockRikishi.power}`);
@@ -61,7 +66,9 @@ async function verifyTrainingDecay() {
   if (finalRikishi.power < 90) {
     console.log("SUCCESS: Stat decay detected for veteran.");
   } else {
-    console.log("FAILURE: No stat decay detected. Training logic might still be too generous or decay is missing.");
+    console.log(
+      "FAILURE: No stat decay detected. Training logic might still be too generous or decay is missing."
+    );
   }
 }
 

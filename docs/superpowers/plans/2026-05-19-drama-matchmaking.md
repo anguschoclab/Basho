@@ -12,19 +12,20 @@
 
 ## File Map
 
-| Action | Path | Purpose |
-|--------|------|---------|
-| Create | `src/engine/matchmaking/DramaMatchmaker.ts` | Pure drama-swap logic |
-| Create | `src/engine/matchmaking/__tests__/DramaMatchmaker.test.ts` | Unit tests |
-| Modify | `src/engine/types/basho.ts` | Add `dramaticContext` to `BoutSchedule` / match type |
-| Modify | `src/engine/matchmaking/SwissAlgorithm.ts` | Call `applyDramaBudget` after standard pass |
-| Modify | `src/engine/bout/boutNarrative.ts` | Check `dramaticContext` to select elevated templates |
+| Action | Path                                                       | Purpose                                              |
+| ------ | ---------------------------------------------------------- | ---------------------------------------------------- |
+| Create | `src/engine/matchmaking/DramaMatchmaker.ts`                | Pure drama-swap logic                                |
+| Create | `src/engine/matchmaking/__tests__/DramaMatchmaker.test.ts` | Unit tests                                           |
+| Modify | `src/engine/types/basho.ts`                                | Add `dramaticContext` to `BoutSchedule` / match type |
+| Modify | `src/engine/matchmaking/SwissAlgorithm.ts`                 | Call `applyDramaBudget` after standard pass          |
+| Modify | `src/engine/bout/boutNarrative.ts`                         | Check `dramaticContext` to select elevated templates |
 
 ---
 
 ## Task 1: DramaRule Types and Scoring
 
 **Files:**
+
 - Create: `src/engine/matchmaking/DramaMatchmaker.ts`
 - Create: `src/engine/matchmaking/__tests__/DramaMatchmaker.test.ts`
 
@@ -87,11 +88,11 @@ import type { Rikishi } from "../types/rikishi";
 import type { BashoState } from "../types/basho";
 
 export type DramaLabel =
-  | "make_or_break"       // 7-7 record, any day
-  | "yusho_decider"       // two leaders tied for championship
-  | "kadoban_survival"    // ozeki at 7-7 (demote or survive)
-  | "kinboshi_hunt"       // maegashira vs yokozuna
-  | "senshuraku_finale";  // day 15 final bout
+  | "make_or_break" // 7-7 record, any day
+  | "yusho_decider" // two leaders tied for championship
+  | "kadoban_survival" // ozeki at 7-7 (demote or survive)
+  | "kinboshi_hunt" // maegashira vs yokozuna
+  | "senshuraku_finale"; // day 15 final bout
 
 export interface DramaContext {
   label: DramaLabel;
@@ -100,8 +101,12 @@ export interface DramaContext {
 
 const DAY_15 = 15;
 
-function wins(r: Rikishi): number { return r.currentBashoWins ?? 0; }
-function losses(r: Rikishi): number { return r.currentBashoLosses ?? 0; }
+function wins(r: Rikishi): number {
+  return r.currentBashoWins ?? 0;
+}
+function losses(r: Rikishi): number {
+  return r.currentBashoLosses ?? 0;
+}
 
 /**
  * Score the narrative drama value of a proposed pairing.
@@ -113,8 +118,12 @@ export function scoreDrama(
   day: number,
   opts?: { returnContext?: boolean }
 ): number | DramaContext {
-  const wA = wins(a), lA = losses(a), wB = wins(b), lB = losses(b);
-  const totalA = wA + lA, totalB = wB + lB;
+  const wA = wins(a),
+    lA = losses(a),
+    wB = wins(b),
+    lB = losses(b);
+  const totalA = wA + lA,
+    totalB = wB + lB;
 
   // 7–7 make-or-break on Day 15
   if (day === DAY_15 && wA === 7 && lA === 7 && wB === 7 && lB === 7) {
@@ -124,8 +133,8 @@ export function scoreDrama(
 
   // Ozeki kadoban survival (7-7 ozeki, any day from 14+)
   if (day >= 14) {
-    const kadoban = (a.rank === "ozeki" && wA === 7 && lA === 7)
-      || (b.rank === "ozeki" && wB === 7 && lB === 7);
+    const kadoban =
+      (a.rank === "ozeki" && wA === 7 && lA === 7) || (b.rank === "ozeki" && wB === 7 && lB === 7);
     if (kadoban) {
       const ctx: DramaContext = { label: "kadoban_survival", score: 90 };
       return opts?.returnContext ? ctx : 90;
@@ -180,6 +189,7 @@ git commit -m "feat(matchmaking): add DramaMatchmaker with scoreDrama logic"
 ## Task 2: The Drama Budget Swap Algorithm
 
 **Files:**
+
 - Modify: `src/engine/matchmaking/DramaMatchmaker.ts`
 - Create additional tests in `src/engine/matchmaking/__tests__/DramaMatchmaker.test.ts`
 
@@ -194,47 +204,91 @@ import type { MatchPairing } from "../MatchmakingPhases";
 describe("applyDramaBudget", () => {
   it("swaps a lower-drama pair to create a 7-7 showdown on day 15", () => {
     // Four rikishi: two at 7-7, two at 5-9 — initially paired 0-1 and 2-3
-    const r7a = mockRikishi("r7a", { currentBashoWins: 7, currentBashoLosses: 7, rank: "maegashira", heyaId: "h1" });
-    const r7b = mockRikishi("r7b", { currentBashoWins: 7, currentBashoLosses: 7, rank: "maegashira", heyaId: "h2" });
-    const r5a = mockRikishi("r5a", { currentBashoWins: 5, currentBashoLosses: 9, rank: "maegashira", heyaId: "h1" });
-    const r5b = mockRikishi("r5b", { currentBashoWins: 5, currentBashoLosses: 9, rank: "maegashira", heyaId: "h2" });
+    const r7a = mockRikishi("r7a", {
+      currentBashoWins: 7,
+      currentBashoLosses: 7,
+      rank: "maegashira",
+      heyaId: "h1",
+    });
+    const r7b = mockRikishi("r7b", {
+      currentBashoWins: 7,
+      currentBashoLosses: 7,
+      rank: "maegashira",
+      heyaId: "h2",
+    });
+    const r5a = mockRikishi("r5a", {
+      currentBashoWins: 5,
+      currentBashoLosses: 9,
+      rank: "maegashira",
+      heyaId: "h1",
+    });
+    const r5b = mockRikishi("r5b", {
+      currentBashoWins: 5,
+      currentBashoLosses: 9,
+      rank: "maegashira",
+      heyaId: "h2",
+    });
 
     const pairings: MatchPairing[] = [
       { eastId: r7a.id, westId: r5a.id, score: 10 },
       { eastId: r7b.id, westId: r5b.id, score: 10 },
     ];
     const rikishiMap = new Map([
-      [r7a.id, r7a], [r7b.id, r7b], [r5a.id, r5a], [r5b.id, r5b]
+      [r7a.id, r7a],
+      [r7b.id, r7b],
+      [r5a.id, r5a],
+      [r5b.id, r5b],
     ]);
 
     const optimized = applyDramaBudget(pairings, rikishiMap, 15, new Set());
     // Should swap to produce r7a vs r7b
     const dramaticPair = optimized.find(
-      (p) => (p.eastId === r7a.id && p.westId === r7b.id) ||
-              (p.eastId === r7b.id && p.westId === r7a.id)
+      (p) =>
+        (p.eastId === r7a.id && p.westId === r7b.id) || (p.eastId === r7b.id && p.westId === r7a.id)
     );
     expect(dramaticPair).toBeDefined();
   });
 
   it("does not swap if it would create a rematch", () => {
-    const rA = mockRikishi("rA", { currentBashoWins: 7, currentBashoLosses: 7, rank: "maegashira" });
-    const rB = mockRikishi("rB", { currentBashoWins: 7, currentBashoLosses: 7, rank: "maegashira" });
-    const rC = mockRikishi("rC", { currentBashoWins: 5, currentBashoLosses: 9, rank: "maegashira" });
-    const rD = mockRikishi("rD", { currentBashoWins: 5, currentBashoLosses: 9, rank: "maegashira" });
+    const rA = mockRikishi("rA", {
+      currentBashoWins: 7,
+      currentBashoLosses: 7,
+      rank: "maegashira",
+    });
+    const rB = mockRikishi("rB", {
+      currentBashoWins: 7,
+      currentBashoLosses: 7,
+      rank: "maegashira",
+    });
+    const rC = mockRikishi("rC", {
+      currentBashoWins: 5,
+      currentBashoLosses: 9,
+      rank: "maegashira",
+    });
+    const rD = mockRikishi("rD", {
+      currentBashoWins: 5,
+      currentBashoLosses: 9,
+      rank: "maegashira",
+    });
 
     const pairings: MatchPairing[] = [
       { eastId: rA.id, westId: rC.id, score: 10 },
       { eastId: rB.id, westId: rD.id, score: 10 },
     ];
-    const rikishiMap = new Map([[rA.id, rA], [rB.id, rB], [rC.id, rC], [rD.id, rD]]);
+    const rikishiMap = new Map([
+      [rA.id, rA],
+      [rB.id, rB],
+      [rC.id, rC],
+      [rD.id, rD],
+    ]);
     // Mark rA and rB as already having faced each other
     const facedSet = new Set([`${rA.id}-${rB.id}`]);
 
     const optimized = applyDramaBudget(pairings, rikishiMap, 15, facedSet);
     // Should NOT swap — rA vs rB would be a rematch
     const rematched = optimized.find(
-      (p) => (p.eastId === rA.id && p.westId === rB.id) ||
-              (p.eastId === rB.id && p.westId === rA.id)
+      (p) =>
+        (p.eastId === rA.id && p.westId === rB.id) || (p.eastId === rB.id && p.westId === rA.id)
     );
     expect(rematched).toBeUndefined();
   });
@@ -273,12 +327,16 @@ export function applyDramaBudget(
   facedSet: Set<string>,
   maxSwaps = 3
 ): Array<MatchPairing & { dramaticContext?: DramaContext }> {
-  const result = pairings.map((p) => ({ ...p, dramaticContext: undefined as DramaContext | undefined }));
+  const result = pairings.map((p) => ({
+    ...p,
+    dramaticContext: undefined as DramaContext | undefined,
+  }));
   let swapsUsed = 0;
 
   for (let i = 0; i < result.length && swapsUsed < maxSwaps; i++) {
     for (let j = i + 1; j < result.length && swapsUsed < maxSwaps; j++) {
-      const pi = result[i], pj = result[j];
+      const pi = result[i],
+        pj = result[j];
       const riA = rikishiMap.get(pi.eastId);
       const riB = rikishiMap.get(pi.westId);
       const riC = rikishiMap.get(pj.eastId);
@@ -287,8 +345,7 @@ export function applyDramaBudget(
 
       // Current drama
       const currentScore =
-        (scoreDrama(riA, riB, day) as number) +
-        (scoreDrama(riC, riD, day) as number);
+        (scoreDrama(riA, riB, day) as number) + (scoreDrama(riC, riD, day) as number);
 
       // Candidate swap: A-C vs B-D
       const swapKey1 = pairKey(pi.eastId, pj.eastId);
@@ -297,13 +354,22 @@ export function applyDramaBudget(
 
       if (swap1Legal) {
         const swapScore =
-          (scoreDrama(riA, riC, day) as number) +
-          (scoreDrama(riB, riD, day) as number);
+          (scoreDrama(riA, riC, day) as number) + (scoreDrama(riB, riD, day) as number);
         if (swapScore > currentScore) {
           const ctxAC = scoreDrama(riA, riC, day, { returnContext: true }) as DramaContext;
           const ctxBD = scoreDrama(riB, riD, day, { returnContext: true }) as DramaContext;
-          result[i] = { eastId: pi.eastId, westId: pj.eastId, score: swapScore, dramaticContext: ctxAC.score > 0 ? ctxAC : undefined };
-          result[j] = { eastId: pi.westId, westId: pj.westId, score: swapScore, dramaticContext: ctxBD.score > 0 ? ctxBD : undefined };
+          result[i] = {
+            eastId: pi.eastId,
+            westId: pj.eastId,
+            score: swapScore,
+            dramaticContext: ctxAC.score > 0 ? ctxAC : undefined,
+          };
+          result[j] = {
+            eastId: pi.westId,
+            westId: pj.westId,
+            score: swapScore,
+            dramaticContext: ctxBD.score > 0 ? ctxBD : undefined,
+          };
           facedSet.add(swapKey1);
           facedSet.add(swapKey2);
           swapsUsed++;
@@ -318,13 +384,22 @@ export function applyDramaBudget(
 
       if (swap2Legal) {
         const swapScore2 =
-          (scoreDrama(riA, riD, day) as number) +
-          (scoreDrama(riB, riC, day) as number);
+          (scoreDrama(riA, riD, day) as number) + (scoreDrama(riB, riC, day) as number);
         if (swapScore2 > currentScore) {
           const ctxAD = scoreDrama(riA, riD, day, { returnContext: true }) as DramaContext;
           const ctxBC = scoreDrama(riB, riC, day, { returnContext: true }) as DramaContext;
-          result[i] = { eastId: pi.eastId, westId: pj.westId, score: swapScore2, dramaticContext: ctxAD.score > 0 ? ctxAD : undefined };
-          result[j] = { eastId: pi.westId, westId: pj.eastId, score: swapScore2, dramaticContext: ctxBC.score > 0 ? ctxBC : undefined };
+          result[i] = {
+            eastId: pi.eastId,
+            westId: pj.westId,
+            score: swapScore2,
+            dramaticContext: ctxAD.score > 0 ? ctxAD : undefined,
+          };
+          result[j] = {
+            eastId: pi.westId,
+            westId: pj.eastId,
+            score: swapScore2,
+            dramaticContext: ctxBC.score > 0 ? ctxBC : undefined,
+          };
           facedSet.add(swapKey3);
           facedSet.add(swapKey4);
           swapsUsed++;
@@ -357,6 +432,7 @@ git commit -m "feat(matchmaking): implement applyDramaBudget swap algorithm"
 ## Task 3: Add `dramaticContext` to BashoState Match Type
 
 **Files:**
+
 - Modify: `src/engine/types/basho.ts`
 
 - [ ] **Step 1: Open `src/engine/types/basho.ts` and find the match/bout schedule type**
@@ -392,6 +468,7 @@ git commit -m "feat(types): add optional dramaticContext to basho match schedule
 ## Task 4: Call applyDramaBudget in SwissAlgorithm
 
 **Files:**
+
 - Modify: `src/engine/matchmaking/SwissAlgorithm.ts`
 
 - [ ] **Step 1: Locate `buildSwissTorikumi` or equivalent main export in `SwissAlgorithm.ts`**
@@ -441,6 +518,7 @@ git commit -m "feat(matchmaking): call applyDramaBudget after Swiss pass in buil
 ## Task 5: BardEngine Drama Template Selection
 
 **Files:**
+
 - Modify: `src/engine/bout/boutNarrative.ts`
 
 - [ ] **Step 1: Read `boutNarrative.ts` to find where pre-bout or bout narrative is generated**

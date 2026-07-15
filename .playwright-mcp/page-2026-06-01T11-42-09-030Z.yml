@@ -1,126 +1,126 @@
 - generic [ref=e2]:
-  - region "Notifications (F8)":
-    - list
-  - region "Notifications alt+T"
-  - generic [ref=e3]:
-    - generic [ref=e4]:
-      - generic: SUMO BASHO
-      - generic [ref=e6]:
-        - img [ref=e8]
-        - generic [ref=e17]:
-          - heading "BASHO" [level=1] [ref=e18]
-          - paragraph [ref=e19]: 相撲経営シミュレーション
-        - generic [ref=e20]:
-          - paragraph [ref=e21]: ASSOCIATION STATUS
-          - paragraph [ref=e22]: Assume the mantle of Oyakata. Architect your lineage, refine your technique, and dominate the Kokugikan.
-    - main [ref=e23]:
-      - generic [ref=e24]:
-        - generic [ref=e25]:
-          - heading "Select your stable" [level=2] [ref=e26]
-          - tablist [ref=e27]:
-            - tab "Recommended" [selected] [ref=e28] [cursor=pointer]
-            - tab "Professional Directory" [ref=e29] [cursor=pointer]
-        - tabpanel "Recommended" [ref=e30]:
-          - generic [ref=e31]:
-            - generic "Click to select • Double-click to preview roster" [ref=e32] [cursor=pointer]:
-              - generic [ref=e34]:
-                - heading "Dewanoumi REC" [level=3] [ref=e37]:
-                  - link "Dewanoumi" [ref=e39]:
-                    - /url: /stable/HY-719339BD
-                  - generic [ref=e40]: REC
-                - generic [ref=e41]:
-                  - img [ref=e42]
-                  - text: Legendary
-              - generic [ref=e44]:
-                - generic [ref=e45]:
-                  - generic [ref=e46]: "Difficulty: Very Easy"
-                  - generic [ref=e47]: "Sekitori: 2"
-                - button "Review Roster" [ref=e49]
-            - generic "Click to select • Double-click to preview roster" [ref=e50] [cursor=pointer]:
-              - generic [ref=e52]:
-                - heading "Tatsunami REC" [level=3] [ref=e55]:
-                  - link "Tatsunami" [ref=e57]:
-                    - /url: /stable/HY-58C39A8A
-                  - generic [ref=e58]: REC
-                - generic [ref=e59]:
-                  - img [ref=e60]
-                  - text: Established
-              - generic [ref=e64]:
-                - generic [ref=e65]:
-                  - generic [ref=e66]: "Difficulty: Normal"
-                  - generic [ref=e67]: "Sekitori: 4"
-                - button "Review Roster" [ref=e69]
-            - generic "Click to select • Double-click to preview roster" [ref=e70] [cursor=pointer]:
-              - generic [ref=e72]:
-                - heading "Sadogatake REC" [level=3] [ref=e75]:
-                  - link "Sadogatake" [ref=e77]:
-                    - /url: /stable/HY-4FC38C5F
-                  - generic [ref=e78]: REC
-                - generic [ref=e79]:
-                  - img [ref=e80]
-                  - text: Established
-              - generic [ref=e84]:
-                - generic [ref=e85]:
-                  - generic [ref=e86]: "Difficulty: Normal"
-                  - generic [ref=e87]: "Sekitori: 4"
-                - button "Review Roster" [ref=e89]
-            - generic "Click to select • Double-click to preview roster" [ref=e90] [cursor=pointer]:
-              - generic [ref=e92]:
-                - heading "Tagonoura REC" [level=3] [ref=e95]:
-                  - link "Tagonoura" [ref=e97]:
-                    - /url: /stable/HY-41BCBA90
-                  - generic [ref=e98]: REC
-                - generic [ref=e99]:
-                  - img [ref=e100]
-                  - text: Rebuilding
-              - generic [ref=e103]:
-                - generic [ref=e104]:
-                  - generic [ref=e105]: "Difficulty: Hard"
-                  - generic [ref=e106]: "Sekitori: 3"
-                - button "Review Roster" [ref=e108]
-            - generic "Click to select • Double-click to preview roster" [ref=e109] [cursor=pointer]:
-              - generic [ref=e111]:
-                - heading "Futagoyama REC" [level=3] [ref=e114]:
-                  - link "Futagoyama" [ref=e116]:
-                    - /url: /stable/HY-47BF0299
-                  - generic [ref=e117]: REC
-                - generic [ref=e118]:
-                  - img [ref=e119]
-                  - text: Fragile
-              - generic [ref=e121]:
-                - generic [ref=e122]:
-                  - generic [ref=e123]: "Difficulty: Very Hard"
-                  - generic [ref=e124]: "Sekitori: 4"
-                - button "Review Roster" [ref=e126]
-            - generic "Click to select • Double-click to preview roster" [ref=e127] [cursor=pointer]:
-              - generic [ref=e129]:
-                - heading "Fujishima REC" [level=3] [ref=e132]:
-                  - link "Fujishima" [ref=e134]:
-                    - /url: /stable/HY-46BF0106
-                  - generic [ref=e135]: REC
-                - generic [ref=e136]:
-                  - img [ref=e137]
-                  - text: Fragile
-              - generic [ref=e139]:
-                - generic [ref=e140]:
-                  - generic [ref=e141]: "Difficulty: Very Hard"
-                  - generic [ref=e142]: "Sekitori: 3"
-                - button "Review Roster" [ref=e144]
-    - contentinfo [ref=e145]:
-      - generic [ref=e146]:
-        - generic [ref=e147]:
-          - paragraph [ref=e148]: WORLD SEED
-          - paragraph [ref=e149]: world-mpv52dih
-        - generic [ref=e150]:
-          - button "Reroll World" [ref=e151] [cursor=pointer]:
-            - img
-            - text: Reroll World
-          - button "Manual Seed" [ref=e152] [cursor=pointer]:
-            - img
-            - text: Manual Seed
-      - button "Career Archives" [ref=e155] [cursor=pointer]:
-        - img
-        - text: Career Archives
-      - generic [ref=e156]:
-        - paragraph [ref=e157]: Reach the Summit — 頂点を目指せ
-        - paragraph [ref=e158]: © 2026 Sumo Manager Pro · Institutional Grade Simulation
+    - region "Notifications (F8)":
+        - list
+    - region "Notifications alt+T"
+    - generic [ref=e3]:
+        - generic [ref=e4]:
+            - generic: SUMO BASHO
+            - generic [ref=e6]:
+                - img [ref=e8]
+                - generic [ref=e17]:
+                    - heading "BASHO" [level=1] [ref=e18]
+                    - paragraph [ref=e19]: 相撲経営シミュレーション
+                - generic [ref=e20]:
+                    - paragraph [ref=e21]: ASSOCIATION STATUS
+                    - paragraph [ref=e22]: Assume the mantle of Oyakata. Architect your lineage, refine your technique, and dominate the Kokugikan.
+        - main [ref=e23]:
+            - generic [ref=e24]:
+                - generic [ref=e25]:
+                    - heading "Select your stable" [level=2] [ref=e26]
+                    - tablist [ref=e27]:
+                        - tab "Recommended" [selected] [ref=e28] [cursor=pointer]
+                        - tab "Professional Directory" [ref=e29] [cursor=pointer]
+                - tabpanel "Recommended" [ref=e30]:
+                    - generic [ref=e31]:
+                        - generic "Click to select • Double-click to preview roster" [ref=e32] [cursor=pointer]:
+                            - generic [ref=e34]:
+                                - heading "Dewanoumi REC" [level=3] [ref=e37]:
+                                    - link "Dewanoumi" [ref=e39]:
+                                        - /url: /stable/HY-719339BD
+                                    - generic [ref=e40]: REC
+                                - generic [ref=e41]:
+                                    - img [ref=e42]
+                                    - text: Legendary
+                            - generic [ref=e44]:
+                                - generic [ref=e45]:
+                                    - generic [ref=e46]: "Difficulty: Very Easy"
+                                    - generic [ref=e47]: "Sekitori: 2"
+                                - button "Review Roster" [ref=e49]
+                        - generic "Click to select • Double-click to preview roster" [ref=e50] [cursor=pointer]:
+                            - generic [ref=e52]:
+                                - heading "Tatsunami REC" [level=3] [ref=e55]:
+                                    - link "Tatsunami" [ref=e57]:
+                                        - /url: /stable/HY-58C39A8A
+                                    - generic [ref=e58]: REC
+                                - generic [ref=e59]:
+                                    - img [ref=e60]
+                                    - text: Established
+                            - generic [ref=e64]:
+                                - generic [ref=e65]:
+                                    - generic [ref=e66]: "Difficulty: Normal"
+                                    - generic [ref=e67]: "Sekitori: 4"
+                                - button "Review Roster" [ref=e69]
+                        - generic "Click to select • Double-click to preview roster" [ref=e70] [cursor=pointer]:
+                            - generic [ref=e72]:
+                                - heading "Sadogatake REC" [level=3] [ref=e75]:
+                                    - link "Sadogatake" [ref=e77]:
+                                        - /url: /stable/HY-4FC38C5F
+                                    - generic [ref=e78]: REC
+                                - generic [ref=e79]:
+                                    - img [ref=e80]
+                                    - text: Established
+                            - generic [ref=e84]:
+                                - generic [ref=e85]:
+                                    - generic [ref=e86]: "Difficulty: Normal"
+                                    - generic [ref=e87]: "Sekitori: 4"
+                                - button "Review Roster" [ref=e89]
+                        - generic "Click to select • Double-click to preview roster" [ref=e90] [cursor=pointer]:
+                            - generic [ref=e92]:
+                                - heading "Tagonoura REC" [level=3] [ref=e95]:
+                                    - link "Tagonoura" [ref=e97]:
+                                        - /url: /stable/HY-41BCBA90
+                                    - generic [ref=e98]: REC
+                                - generic [ref=e99]:
+                                    - img [ref=e100]
+                                    - text: Rebuilding
+                            - generic [ref=e103]:
+                                - generic [ref=e104]:
+                                    - generic [ref=e105]: "Difficulty: Hard"
+                                    - generic [ref=e106]: "Sekitori: 3"
+                                - button "Review Roster" [ref=e108]
+                        - generic "Click to select • Double-click to preview roster" [ref=e109] [cursor=pointer]:
+                            - generic [ref=e111]:
+                                - heading "Futagoyama REC" [level=3] [ref=e114]:
+                                    - link "Futagoyama" [ref=e116]:
+                                        - /url: /stable/HY-47BF0299
+                                    - generic [ref=e117]: REC
+                                - generic [ref=e118]:
+                                    - img [ref=e119]
+                                    - text: Fragile
+                            - generic [ref=e121]:
+                                - generic [ref=e122]:
+                                    - generic [ref=e123]: "Difficulty: Very Hard"
+                                    - generic [ref=e124]: "Sekitori: 4"
+                                - button "Review Roster" [ref=e126]
+                        - generic "Click to select • Double-click to preview roster" [ref=e127] [cursor=pointer]:
+                            - generic [ref=e129]:
+                                - heading "Fujishima REC" [level=3] [ref=e132]:
+                                    - link "Fujishima" [ref=e134]:
+                                        - /url: /stable/HY-46BF0106
+                                    - generic [ref=e135]: REC
+                                - generic [ref=e136]:
+                                    - img [ref=e137]
+                                    - text: Fragile
+                            - generic [ref=e139]:
+                                - generic [ref=e140]:
+                                    - generic [ref=e141]: "Difficulty: Very Hard"
+                                    - generic [ref=e142]: "Sekitori: 3"
+                                - button "Review Roster" [ref=e144]
+        - contentinfo [ref=e145]:
+            - generic [ref=e146]:
+                - generic [ref=e147]:
+                    - paragraph [ref=e148]: WORLD SEED
+                    - paragraph [ref=e149]: world-mpv52dih
+                - generic [ref=e150]:
+                    - button "Reroll World" [ref=e151] [cursor=pointer]:
+                        - img
+                        - text: Reroll World
+                    - button "Manual Seed" [ref=e152] [cursor=pointer]:
+                        - img
+                        - text: Manual Seed
+            - button "Career Archives" [ref=e155] [cursor=pointer]:
+                - img
+                - text: Career Archives
+            - generic [ref=e156]:
+                - paragraph [ref=e157]: Reach the Summit — 頂点を目指せ
+                - paragraph [ref=e158]: © 2026 Sumo Manager Pro · Institutional Grade Simulation

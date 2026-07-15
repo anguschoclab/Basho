@@ -4,28 +4,24 @@
   copyright: "Copyright © 2026",
   directories: {
     buildResources: "resources",
-    output: "dist-electron"
+    output: "dist-electron",
   },
-  files: [
-    "out/**"
-  ],
+  files: ["out/**"],
   mac: {
     category: "public.app-category.games",
     target: [
       { target: "dmg", arch: ["x64", "arm64"] },
-      { target: "zip", arch: ["x64", "arm64"] }
+      { target: "zip", arch: ["x64", "arm64"] },
     ],
     icon: "resources/icon.icns",
-    identity: null
+    identity: null,
   },
   win: {
-    target: [
-      { target: "nsis", arch: ["x64"] }
-    ],
-    icon: "resources/icon.ico"
+    target: [{ target: "nsis", arch: ["x64"] }],
+    icon: "resources/icon.ico",
   },
   nsis: {
     oneClick: false,
-    allowToChangeInstallationDirectory: true
-  }
+    allowToChangeInstallationDirectory: true,
+  },
 }

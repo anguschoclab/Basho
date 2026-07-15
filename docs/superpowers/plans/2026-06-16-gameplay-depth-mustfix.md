@@ -23,6 +23,7 @@ So tactics **do** move win probability — in fact too much (a tactic turns a co
 ## Scope
 
 **In scope (verified defects):**
+
 1. `Date.now()` in decision ID generation — determinism violation.
 2. `Math.random()` in the ozeki petition roll — determinism violation.
 3. Multi-day worker loops (`TICK_MULTIPLE_DAYS`, `AUTO_SIM_DAYS`) do not halt on a blocking decision.
@@ -30,7 +31,7 @@ So tactics **do** move win probability — in fact too much (a tactic turns a co
 5. Tactic test is tautological (asserts table values, never simulates a bout).
 6. Tactic win-rate swing is extreme (0.99 / 0.03), making the "gamble" a no-brainer.
 
-**Out of scope — needs product sign-off (do NOT build blind):** The implemented decision taxonomy (`recruit_or_develop`, `ozeki_promotion`, `training_regime`) does not match the approved set (pre-basho readiness, insolvency, weekly training, welfare diet). Task 4 below makes the *existing* decisions' effects real so the feature is honest, but **the taxonomy swap is a design decision** — raise it with the product owner before re-implementing the decision set. See the "Product sign-off" section at the end.
+**Out of scope — needs product sign-off (do NOT build blind):** The implemented decision taxonomy (`recruit_or_develop`, `ozeki_promotion`, `training_regime`) does not match the approved set (pre-basho readiness, insolvency, weekly training, welfare diet). Task 4 below makes the _existing_ decisions' effects real so the feature is honest, but **the taxonomy swap is a design decision** — raise it with the product owner before re-implementing the decision set. See the "Product sign-off" section at the end.
 
 **Conventions (enforced):** Deterministic only — never `Math.random()`/`Date.now()` in engine code; use `rngFromSeed(seed, system, label)` from `src/engine/rng.ts`. Never fold a player choice into an RNG seed. Run tests with `npx vitest run` (NOT `bun test -- --run`).
 
@@ -39,6 +40,7 @@ So tactics **do** move win probability — in fact too much (a tactic turns a co
 ### Task 1: Deterministic decision IDs (remove `Date.now()`)
 
 **Files:**
+
 - Modify: `src/engine/loop/LoopDecisionEngine.ts:19-21` (the `makeId` helper)
 - Test: `src/engine/loop/__tests__/LoopDecisionEngine.test.ts` (add cases)
 
@@ -118,6 +120,7 @@ git commit -m "fix(loop): deterministic decision IDs (remove Date.now)"
 ### Task 2: Seeded RNG for the ozeki petition (remove `Math.random()`)
 
 **Files:**
+
 - Modify: `src/engine/loop/LoopDecisionEngine.ts:212-214` (the petition roll) + add import
 - Test: `src/engine/loop/__tests__/LoopDecisionEngine.test.ts`
 
@@ -137,7 +140,14 @@ it("ozeki petition outcome is deterministic for a fixed world+decision", () => {
       heyas: new Map([["h1", heya]]),
       rikishi: new Map([["r1", sekiwake]]),
       pendingDecisions: [
-        { id: "ozeki-r1-fixed", type: "ozeki_promotion", description: "x", deadlineWeek: 3, required: true, options: [] },
+        {
+          id: "ozeki-r1-fixed",
+          type: "ozeki_promotion",
+          description: "x",
+          deadlineWeek: 3,
+          required: true,
+          options: [],
+        },
       ],
     });
     return world;
@@ -145,8 +155,10 @@ it("ozeki petition outcome is deterministic for a fixed world+decision", () => {
   const a = resolveLoopDecision(buildWorld(), "ozeki-r1-fixed", "petition");
   const b = resolveLoopDecision(buildWorld(), "ozeki-r1-fixed", "petition");
   // Same seed + same decision id => same rikishi update (promotion or mental penalty)
-  const ua = a.entities?.rikishiUpdates instanceof Map ? a.entities.rikishiUpdates.get("r1") : undefined;
-  const ub = b.entities?.rikishiUpdates instanceof Map ? b.entities.rikishiUpdates.get("r1") : undefined;
+  const ua =
+    a.entities?.rikishiUpdates instanceof Map ? a.entities.rikishiUpdates.get("r1") : undefined;
+  const ub =
+    b.entities?.rikishiUpdates instanceof Map ? b.entities.rikishiUpdates.get("r1") : undefined;
   expect(JSON.stringify(ua)).toEqual(JSON.stringify(ub));
 });
 ```
@@ -195,6 +207,7 @@ git commit -m "fix(loop): seed the ozeki petition roll (remove Math.random)"
 ### Task 3: Multi-day worker loops halt on a blocking decision
 
 **Files:**
+
 - Modify: `src/engine/worker/engine.worker.ts:110-149` (`TICK_MULTIPLE_DAYS`) and `:150-172` (`AUTO_SIM_DAYS`)
 - Test: `src/engine/loop/__tests__/multiDayHalt.test.ts` (new — tests the halt predicate at the engine level, since the worker itself is hard to unit-test)
 
@@ -216,11 +229,19 @@ describe("shouldHaltAdvance", () => {
     expect(shouldHaltAdvance(base)).toBe(false);
   });
   it("halts when a pendingCrisis exists", () => {
-    const w = { ...base, pendingCrisis: { id: "c1", type: "loop_decision", title: "x", description: "x", options: [] } } as unknown as WorldState;
+    const w = {
+      ...base,
+      pendingCrisis: { id: "c1", type: "loop_decision", title: "x", description: "x", options: [] },
+    } as unknown as WorldState;
     expect(shouldHaltAdvance(w)).toBe(true);
   });
   it("halts when a required pendingDecision exists even without a crisis", () => {
-    const w = { ...base, pendingDecisions: [{ id: "d1", type: "x", description: "x", deadlineWeek: 1, required: true, options: [] }] } as unknown as WorldState;
+    const w = {
+      ...base,
+      pendingDecisions: [
+        { id: "d1", type: "x", description: "x", deadlineWeek: 1, required: true, options: [] },
+      ],
+    } as unknown as WorldState;
     expect(shouldHaltAdvance(w)).toBe(true);
   });
 });
@@ -266,21 +287,21 @@ import { shouldHaltAdvance } from "../loop/shouldHaltAdvance";
 In `TICK_MULTIPLE_DAYS`, after the `if (useFast) { ... } else { ... }` block that advances `currentWorld` (right after line 133, before the PROGRESS post), insert:
 
 ```typescript
-          if (shouldHaltAdvance(currentWorld)) {
-            self.postMessage({
-              type: "PROGRESS",
-              message: `Paused for a decision on day ${i + step} of ${days}.`,
-              current: i + step,
-              total: days,
-            });
-            break;
-          }
+if (shouldHaltAdvance(currentWorld)) {
+  self.postMessage({
+    type: "PROGRESS",
+    message: `Paused for a decision on day ${i + step} of ${days}.`,
+    current: i + step,
+    total: days,
+  });
+  break;
+}
 ```
 
 In `AUTO_SIM_DAYS`, immediately after `currentWorld = tickOrchestrator(currentWorld);` (line 158), insert:
 
 ```typescript
-          if (shouldHaltAdvance(currentWorld)) break;
+if (shouldHaltAdvance(currentWorld)) break;
 ```
 
 (Leave the existing `emitDigest()` + `WORLD_UPDATED` post after each loop — they run on break too, so the UI re-renders and `CrisisModal` opens.)
@@ -302,6 +323,7 @@ git commit -m "fix(worker): halt multi-day advance on blocking decision"
 ### Task 4: Make loop-decision option effects real (remove no-ops)
 
 **Files:**
+
 - Modify: `src/engine/loop/LoopDecisionEngine.ts:200-242` (`resolveLoopDecision`)
 - Test: `src/engine/loop/__tests__/LoopDecisionEngine.test.ts`
 
@@ -321,8 +343,14 @@ describe("resolveLoopDecision — effects are not no-ops", () => {
         heyas: new Map([["h1", makeHeya("h1", ["r1"])]]),
         rikishi: new Map([["r1", makeRikishi("r1", "makushita", "X")]]),
         pendingDecisions: [
-          { id: `${type}-1`, type, description: "x", deadlineWeek: 2, required: false,
-            options: [{ id: optionId, label: optionId, impact: "x" }] },
+          {
+            id: `${type}-1`,
+            type,
+            description: "x",
+            deadlineWeek: 2,
+            required: false,
+            options: [{ id: optionId, label: optionId, impact: "x" }],
+          },
         ],
       }),
       decisionId: `${type}-1`,
@@ -356,28 +384,28 @@ Expected: FAIL — `transientContext.trainingRegime` is undefined (no effect app
 In `src/engine/loop/LoopDecisionEngine.ts`, inside `resolveLoopDecision`, after the existing `recruit_or_develop` block and before the `ozeki_promotion` block, add a `training_regime` handler and broaden `recruit_or_develop`:
 
 ```typescript
-  if (decision.type === "training_regime") {
-    // Deterministic regime flag consumed by phase01_week_training.
+if (decision.type === "training_regime") {
+  // Deterministic regime flag consumed by phase01_week_training.
+  builder.updateWorldField("transientContext", {
+    ...world.transientContext,
+    trainingRegime: optionId, // "power_focus" | "technique_focus" | "balanced"
+  } as never);
+}
+
+if (decision.type === "recruit_or_develop") {
+  if (optionId === "train_current") {
     builder.updateWorldField("transientContext", {
       ...world.transientContext,
-      trainingRegime: optionId, // "power_focus" | "technique_focus" | "balanced"
+      trainingGrowthBuff: 1.05,
+    } as never);
+  } else if (optionId === "scout_youth" || optionId === "recruit_veteran") {
+    // Flag a recruitment intent the recruitment phase can act on next tick.
+    builder.updateWorldField("transientContext", {
+      ...world.transientContext,
+      recruitmentIntent: optionId,
     } as never);
   }
-
-  if (decision.type === "recruit_or_develop") {
-    if (optionId === "train_current") {
-      builder.updateWorldField("transientContext", {
-        ...world.transientContext,
-        trainingGrowthBuff: 1.05,
-      } as never);
-    } else if (optionId === "scout_youth" || optionId === "recruit_veteran") {
-      // Flag a recruitment intent the recruitment phase can act on next tick.
-      builder.updateWorldField("transientContext", {
-        ...world.transientContext,
-        recruitmentIntent: optionId,
-      } as never);
-    }
-  }
+}
 ```
 
 > Consumer note: `trainingRegime`, `trainingGrowthBuff`, and `recruitmentIntent` must be read by the corresponding phase. Confirm `phase01_week_training.ts` (training) and the recruitment phase read these flags; if a flag is not yet consumed, add a follow-up task — do not leave a written-but-unread flag. (The existing `trainingGrowthBuff` is already written by the prior implementation; verify it is consumed and, if not, file it.)
@@ -399,6 +427,7 @@ git commit -m "fix(loop): apply real effects for all decision options"
 ### Task 5: Real end-to-end tactic win-rate test (replace tautology)
 
 **Files:**
+
 - Create: `src/tests/unit/engine/bout/tacticWinRate.test.ts`
 - Reference (no change): `src/engine/bout/boutResolver.ts`, `src/tests/unit/engine/utils.ts` (`mockRikishi`, `makeMockBasho`)
 
@@ -420,10 +449,30 @@ import type { BoutTactic } from "@/engine/types/combat";
 function eastWinRate(tactic: BoutTactic, n = 300): number {
   let wins = 0;
   for (let day = 1; day <= n; day++) {
-    const east = mockRikishi("r-east", { power: 60, speed: 60, balance: 60, technique: 60, momentum: 50, fatigue: 0 });
-    const west = mockRikishi("r-west", { power: 60, speed: 60, balance: 60, technique: 60, momentum: 50, fatigue: 0 });
+    const east = mockRikishi("r-east", {
+      power: 60,
+      speed: 60,
+      balance: 60,
+      technique: 60,
+      momentum: 50,
+      fatigue: 0,
+    });
+    const west = mockRikishi("r-west", {
+      power: 60,
+      speed: 60,
+      balance: 60,
+      technique: 60,
+      momentum: 50,
+      fatigue: 0,
+    });
     const basho = makeMockBasho();
-    const ctx: BoutContext = { id: `b-${day}`, day, rikishiEastId: east.id, rikishiWestId: west.id, playerSide: "east" };
+    const ctx: BoutContext = {
+      id: `b-${day}`,
+      day,
+      rikishiEastId: east.id,
+      rikishiWestId: west.id,
+      playerSide: "east",
+    };
     const { result } = resolveBout(ctx, east, west, basho, tactic);
     if (result.winner === "east") wins++;
   }
@@ -444,7 +493,13 @@ describe("tactic win-rate (end-to-end)", () => {
       const east = mockRikishi("r-east", { power: 60, speed: 60, balance: 60 });
       const west = mockRikishi("r-west", { power: 60, speed: 60, balance: 60 });
       const basho = makeMockBasho();
-      const ctx: BoutContext = { id: "b-1", day: 7, rikishiEastId: east.id, rikishiWestId: west.id, playerSide: "east" };
+      const ctx: BoutContext = {
+        id: "b-1",
+        day: 7,
+        rikishiEastId: east.id,
+        rikishiWestId: west.id,
+        playerSide: "east",
+      };
       return resolveBout(ctx, east, west, basho, "ALL_OUT").result.winner;
     };
     expect(mk()).toBe(mk());
@@ -469,6 +524,7 @@ git commit -m "test(bout): real end-to-end tactic win-rate coverage"
 ### Task 6: Rebalance the extreme tactic win-rate swing
 
 **Files:**
+
 - Modify: `src/engine/bout/tacticProfiles.ts` (the `tachiaiPowerModifier` values)
 - Test: `src/tests/unit/engine/bout/tacticWinRate.test.ts` (extend with bound assertions)
 
@@ -481,13 +537,13 @@ Measured swing for evenly-matched wrestlers is ALL_OUT ≈ 0.99 and DEFENSIVE_PU
 Append to `describe("tactic win-rate (end-to-end)")` in `src/tests/unit/engine/bout/tacticWinRate.test.ts`:
 
 ```typescript
-  it("keeps the swing bounded (no auto-win / auto-loss) for evenly matched wrestlers", () => {
-    const allOut = eastWinRate("ALL_OUT");
-    const defensive = eastWinRate("DEFENSIVE_PULL");
-    // A tactic should tilt, not decide. Tune with product; bounds are generous.
-    expect(allOut).toBeLessThan(0.85);
-    expect(defensive).toBeGreaterThan(0.15);
-  });
+it("keeps the swing bounded (no auto-win / auto-loss) for evenly matched wrestlers", () => {
+  const allOut = eastWinRate("ALL_OUT");
+  const defensive = eastWinRate("DEFENSIVE_PULL");
+  // A tactic should tilt, not decide. Tune with product; bounds are generous.
+  expect(allOut).toBeLessThan(0.85);
+  expect(defensive).toBeGreaterThan(0.15);
+});
 ```
 
 - [ ] **Step 2: Run to verify it fails**
@@ -541,7 +597,7 @@ git commit -m "balance(bout): bound tactic win-rate swing"
 
 ## Product sign-off needed (not built here)
 
-The merged decision taxonomy (`recruit_or_develop`, `ozeki_promotion`, `training_regime`) differs from the approved set (pre-basho readiness, insolvency response, weekly training emphasis, welfare diet). Tasks 1-4 make the *existing* decisions correct and non-hollow, but **before investing in a taxonomy rewrite, confirm with the product owner** whether to (a) keep the current set, or (b) replace it with the approved set. If (b), that is a separate plan: each new decision needs a real tradeoff wired to `Heya.funds` / `Rikishi.fatigue` / `welfareState` via the `ImpactBuilder`, plus the blocking/queue tier per the approved hybrid design.
+The merged decision taxonomy (`recruit_or_develop`, `ozeki_promotion`, `training_regime`) differs from the approved set (pre-basho readiness, insolvency response, weekly training emphasis, welfare diet). Tasks 1-4 make the _existing_ decisions correct and non-hollow, but **before investing in a taxonomy rewrite, confirm with the product owner** whether to (a) keep the current set, or (b) replace it with the approved set. If (b), that is a separate plan: each new decision needs a real tradeoff wired to `Heya.funds` / `Rikishi.fatigue` / `welfareState` via the `ImpactBuilder`, plus the blocking/queue tier per the approved hybrid design.
 
 ---
 

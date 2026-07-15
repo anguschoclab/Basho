@@ -11,6 +11,7 @@
 ---
 
 ## Background facts (verified — use these)
+
 - `resolveLoopDecision(world, decisionId, optionId): StateImpact` lives in `src/engine/loop/LoopDecisionEngine.ts`; decision types `pre_basho_readiness` / `insolvency_response` / `weekly_training_emphasis` / `welfare_diet`; option ids `rest`/`push`, `loan`/`austerity`, `intensive`/`conservative`, `premium`/`maintenance`.
 - `ImpactBuilder.logEvent(type, category, data, { heyaId, importance })` (`src/engine/core/ImpactBuilder.ts:393`).
 - `EngineEventType` union is in `src/engine/types/events.ts`.
@@ -23,6 +24,7 @@
 ### Task 1: Emit a `DECISION_RESOLVED` event with a real consequence summary
 
 **Files:**
+
 - Modify: `src/engine/types/events.ts` (add event type)
 - Modify: `src/engine/loop/LoopDecisionEngine.ts` (`resolveLoopDecision`)
 - Test: `src/engine/loop/__tests__/LoopDecisionEngine.test.ts`
@@ -37,13 +39,20 @@ describe("resolveLoopDecision — feedback event", () => {
     const r = makeRikishi("r1", "makushita", "Tired");
     (r as unknown as { fatigue: number }).fatigue = 80;
     const world = makeWorld({
-      seed: "s", playerHeyaId: "h1",
+      seed: "s",
+      playerHeyaId: "h1",
       heyas: new Map([["h1", makeHeya("h1", ["r1"])]]),
       rikishi: new Map([["r1", r]]),
-      pendingDecisions: [{
-        id: "pbr-1", type: "pre_basho_readiness", description: "x", deadlineWeek: 2, required: true,
-        options: [{ id: "rest", label: "Rest", impact: "x" }],
-      }],
+      pendingDecisions: [
+        {
+          id: "pbr-1",
+          type: "pre_basho_readiness",
+          description: "x",
+          deadlineWeek: 2,
+          required: true,
+          options: [{ id: "rest", label: "Rest", impact: "x" }],
+        },
+      ],
     });
     const impact = resolveLoopDecision(world, "pbr-1", "rest");
     const ev = (impact.events ?? []).find((e) => e.type === "DECISION_RESOLVED");
@@ -67,14 +76,18 @@ In `src/engine/types/events.ts`, add `"DECISION_RESOLVED"` to the `EngineEventTy
 In `src/engine/loop/LoopDecisionEngine.ts`, add a pure summary helper and call it at the end of `resolveLoopDecision` (after the effect is applied, before `return builder.build()`):
 
 ```typescript
-function decisionConsequenceSummary(world: WorldState, decisionType: string, optionId: string): string {
+function decisionConsequenceSummary(
+  world: WorldState,
+  decisionType: string,
+  optionId: string
+): string {
   const heya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : undefined;
   switch (decisionType) {
     case "pre_basho_readiness": {
       if (optionId !== "rest") return "Pushed for rank — no rest, injury risk accepted.";
       const n = (heya?.rikishiIds ?? []).filter((id) => {
         const r = world.rikishi.get(id);
-        return !!r && (((r.fatigue ?? 0) > 60) || r.injured);
+        return !!r && ((r.fatigue ?? 0) > 60 || r.injured);
       }).length;
       return `Rested ${n} at-risk wrestler${n === 1 ? "" : "s"} (−20 fatigue each, −5 momentum).`;
     }
@@ -95,14 +108,22 @@ function decisionConsequenceSummary(world: WorldState, decisionType: string, opt
 Then in `resolveLoopDecision`, after applying the effect:
 
 ```typescript
-  builder.logEvent(
-    "DECISION_RESOLVED", "narrative",
-    { status: "resolved", decisionType: decision.type, optionId, summary: decisionConsequenceSummary(world, decision.type, optionId) },
-    world.playerHeyaId ? { heyaId: world.playerHeyaId, importance: "notable" } : { importance: "notable" }
-  );
+builder.logEvent(
+  "DECISION_RESOLVED",
+  "narrative",
+  {
+    status: "resolved",
+    decisionType: decision.type,
+    optionId,
+    summary: decisionConsequenceSummary(world, decision.type, optionId),
+  },
+  world.playerHeyaId
+    ? { heyaId: world.playerHeyaId, importance: "notable" }
+    : { importance: "notable" }
+);
 ```
 
-> `decisionConsequenceSummary` reads `world` *before* the impact is applied, which is correct for "how many were at-risk" / "what we switched to". Confirm `EventImportance` includes `"notable"` (used as the EventFeed default).
+> `decisionConsequenceSummary` reads `world` _before_ the impact is applied, which is correct for "how many were at-risk" / "what we switched to". Confirm `EventImportance` includes `"notable"` (used as the EventFeed default).
 
 - [ ] **Step 5: Run to verify pass**
 
@@ -121,6 +142,7 @@ git commit -m "feat(loop): emit DECISION_RESOLVED event with consequence summary
 ### Task 2: Immediate toast feedback on resolve (Action Queue + Crisis Modal)
 
 **Files:**
+
 - Modify: `src/components/dashboard/ActionQueueWidget.tsx`
 - Modify: `src/components/game/CrisisModal.tsx`
 
@@ -178,6 +200,7 @@ git commit -m "feat(ui): toast feedback when a loop decision is resolved"
 ### Task 3: Make `DECISION_RESOLVED` legible in the Event Feed
 
 **Files:**
+
 - Modify: `src/components/dashboard/EventFeed.tsx`
 
 - [ ] **Step 1: Add an icon for the new event type**
@@ -211,13 +234,18 @@ git commit -m "feat(ui): render DECISION_RESOLVED events in the Event Feed"
 ---
 
 ## Final verification
+
 - [ ] `npx vitest run` — full suite green.
 - [ ] `npx vite build` — clean.
 - [ ] Manual: resolving any of the four decisions (queue or blocking) produces (a) an immediate toast and (b) an Event Feed row with the real consequence (counts/amounts), so the tradeoff is legible after the fact.
 
 ## Self-review notes
+
 - **Coverage:** engine consequence event (T1), immediate toast on both resolve surfaces (T2), feed legibility (T3) = every resolution now reports its outcome.
 - **Type consistency:** `DECISION_RESOLVED` added to `EngineEventType` and used identically in `logEvent` (T1) and the `EventFeed` icon map (T3); decision-type/option-id strings match the existing `LoopDecisionEngine` taxonomy.
 - **Truthfulness:** the engine event computes real numbers from world state (at-risk count, chosen diet/intensity); the toast is a lightweight client acknowledgement that defers to the feed for specifics — no fabricated metrics.
 - **Reuse:** `ImpactBuilder.logEvent`, existing `EventFeed`, existing sonner `toast`. Independent of the other four plans (works whether or not `2026-06-17-04` has landed; if it has, both `DECISION_RESOLVED` and `DECISION_AUTO_RESOLVED` coexist).
+
+```
+
 ```

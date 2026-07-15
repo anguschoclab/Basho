@@ -10,13 +10,13 @@ Additionally, `BoutControls` only offers 1x and 2x playback speed. The progress 
 
 ## Affected Files
 
-| File | Change |
-|------|--------|
-| `src/components/game/boutReplay/useBoutReplay.ts` | Expose `(phaseIndex, phaseProgress, totalDuration, elapsed)` in return value; add seek function |
-| `src/components/game/boutReplay/BoutControls.tsx` | Make progress bar seekable; add 0.5x speed button |
-| `src/components/game/BoutNarrativeModal.tsx` | Subscribe to animation progress; highlight active PbpLine; auto-scroll |
-| `src/components/game/boutReplay/boutCanvas/constants.ts` | Export `PHASE_TO_PBP_CATEGORY` mapping |
-| `src/components/game/BoutReplayViewer.tsx` | Thread `onProgressChange` callback and expose animation state ref |
+| File                                                     | Change                                                                                          |
+| -------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `src/components/game/boutReplay/useBoutReplay.ts`        | Expose `(phaseIndex, phaseProgress, totalDuration, elapsed)` in return value; add seek function |
+| `src/components/game/boutReplay/BoutControls.tsx`        | Make progress bar seekable; add 0.5x speed button                                               |
+| `src/components/game/BoutNarrativeModal.tsx`             | Subscribe to animation progress; highlight active PbpLine; auto-scroll                          |
+| `src/components/game/boutReplay/boutCanvas/constants.ts` | Export `PHASE_TO_PBP_CATEGORY` mapping                                                          |
+| `src/components/game/BoutReplayViewer.tsx`               | Thread `onProgressChange` callback and expose animation state ref                               |
 
 ---
 
@@ -25,6 +25,7 @@ Additionally, `BoutControls` only offers 1x and 2x playback speed. The progress 
 **File: `src/components/game/boutReplay/useBoutReplay.ts`**
 
 The hook currently returns:
+
 ```typescript
 return { canvasRef, isPlaying, play, pause, restart, setSpeed };
 ```
@@ -33,11 +34,11 @@ Extend the return shape:
 
 ```typescript
 export interface BoutReplayProgress {
-  phaseIndex: number;       // 0–6 (maps to ReplayPhase enum index)
-  phaseProgress: number;    // 0–1 within current phase
-  globalProgress: number;   // 0–1 across the entire replay
-  totalDurationMs: number;  // sum of all phase durations
-  elapsedMs: number;        // current playhead position
+  phaseIndex: number; // 0–6 (maps to ReplayPhase enum index)
+  phaseProgress: number; // 0–1 within current phase
+  globalProgress: number; // 0–1 across the entire replay
+  totalDurationMs: number; // sum of all phase durations
+  elapsedMs: number; // current playhead position
 }
 
 export interface UseBoutReplayReturn {
@@ -48,7 +49,7 @@ export interface UseBoutReplayReturn {
   pause: () => void;
   restart: () => void;
   setSpeed: (speed: 0.5 | 1 | 2) => void;
-  seekTo: (globalProgress: number) => void;  // new
+  seekTo: (globalProgress: number) => void; // new
 }
 ```
 
@@ -66,8 +67,9 @@ const [progress, setProgress] = useState<BoutReplayProgress>(progressRef.current
 
 // Inside RAF loop, after computing phaseIndex and phaseProgress:
 const totalDurationMs = phaseDurations.reduce((a, b) => a + b, 0);
-const elapsedMs = phaseDurations.slice(0, phaseIndex).reduce((a, b) => a + b, 0)
-                + phaseProgress * phaseDurations[phaseIndex];
+const elapsedMs =
+  phaseDurations.slice(0, phaseIndex).reduce((a, b) => a + b, 0) +
+  phaseProgress * phaseDurations[phaseIndex];
 
 progressRef.current = {
   phaseIndex,
@@ -87,33 +89,36 @@ if (Date.now() - lastProgressUpdateRef.current > 100) {
 ### Seek implementation
 
 ```typescript
-const seekTo = useCallback((targetGlobalProgress: number) => {
-  const total = phaseDurations.reduce((a, b) => a + b, 0);
-  const targetMs = Math.max(0, Math.min(total, targetGlobalProgress * total));
+const seekTo = useCallback(
+  (targetGlobalProgress: number) => {
+    const total = phaseDurations.reduce((a, b) => a + b, 0);
+    const targetMs = Math.max(0, Math.min(total, targetGlobalProgress * total));
 
-  // Find the phase containing targetMs
-  let accumulated = 0;
-  let targetPhase = 0;
-  let targetPhaseProgress = 0;
+    // Find the phase containing targetMs
+    let accumulated = 0;
+    let targetPhase = 0;
+    let targetPhaseProgress = 0;
 
-  for (let i = 0; i < phaseDurations.length; i++) {
-    const phaseDur = phaseDurations[i];
-    if (accumulated + phaseDur >= targetMs) {
+    for (let i = 0; i < phaseDurations.length; i++) {
+      const phaseDur = phaseDurations[i];
+      if (accumulated + phaseDur >= targetMs) {
+        targetPhase = i;
+        targetPhaseProgress = (targetMs - accumulated) / phaseDur;
+        break;
+      }
+      accumulated += phaseDur;
       targetPhase = i;
-      targetPhaseProgress = (targetMs - accumulated) / phaseDur;
-      break;
+      targetPhaseProgress = 1;
     }
-    accumulated += phaseDur;
-    targetPhase = i;
-    targetPhaseProgress = 1;
-  }
 
-  // Update animation state synchronously before next frame
-  phaseIndexRef.current = targetPhase;
-  phaseProgressRef.current = targetPhaseProgress;
-  // Force a canvas redraw
-  drawFrameImmediate();
-}, [phaseDurations]);
+    // Update animation state synchronously before next frame
+    phaseIndexRef.current = targetPhase;
+    phaseProgressRef.current = targetPhaseProgress;
+    // Force a canvas redraw
+    drawFrameImmediate();
+  },
+  [phaseDurations]
+);
 ```
 
 ---
@@ -123,6 +128,7 @@ const seekTo = useCallback((targetGlobalProgress: number) => {
 **File: `src/components/game/boutReplay/BoutControls.tsx`**
 
 Current progress bar (read-only):
+
 ```tsx
 <div className="h-1 bg-muted rounded-full">
   <div className="h-1 bg-primary rounded-full" style={{ width: `${progress * 100}%` }} />
@@ -134,13 +140,13 @@ Replace with a real `<input type="range">`:
 ```tsx
 interface BoutControlsProps {
   isPlaying: boolean;
-  progress: number;           // 0–1 globalProgress
+  progress: number; // 0–1 globalProgress
   speed: 0.5 | 1 | 2;
   onPlay: () => void;
   onPause: () => void;
   onRestart: () => void;
   onSpeedChange: (s: 0.5 | 1 | 2) => void;
-  onSeek: (p: number) => void;  // new
+  onSeek: (p: number) => void; // new
 }
 
 // Seekable slider:
@@ -152,25 +158,32 @@ interface BoutControlsProps {
   onChange={(e) => onSeek(Number(e.target.value) / 1000)}
   className="w-full h-1 accent-primary cursor-pointer"
   aria-label="Replay position"
-/>
+/>;
 ```
 
 Speed buttons — add 0.5x:
+
 ```tsx
 const SPEEDS: Array<0.5 | 1 | 2> = [0.5, 1, 2];
 
-{SPEEDS.map((s) => (
-  <button
-    key={s}
-    onClick={() => onSpeedChange(s)}
-    className={cn("text-xs px-2 py-0.5 rounded", speed === s && "bg-primary text-primary-foreground")}
-  >
-    {s}x
-  </button>
-))}
+{
+  SPEEDS.map((s) => (
+    <button
+      key={s}
+      onClick={() => onSpeedChange(s)}
+      className={cn(
+        "text-xs px-2 py-0.5 rounded",
+        speed === s && "bg-primary text-primary-foreground"
+      )}
+    >
+      {s}x
+    </button>
+  ));
+}
 ```
 
 The `setSpeed` function in `useBoutReplay.ts` must accept `0.5`:
+
 ```typescript
 // Change type signature:
 const setSpeed = useCallback((s: 0.5 | 1 | 2) => { ... }, []);
@@ -189,13 +202,13 @@ Add a mapping from canvas `ReplayPhase` to `PbpLine.phase` category tags:
 ```typescript
 // Maps canvas animation phase index to PbpLine phase tag values
 export const CANVAS_PHASE_TO_PBP_PHASE: Record<number, string[]> = {
-  0: ["tactical"],          // ritual → tactical setup lines
-  1: ["tachiai"],           // tachiai phase
+  0: ["tactical"], // ritual → tactical setup lines
+  1: ["tachiai"], // tachiai phase
   2: ["clinch", "tachiai"], // clinch phase (may include tachiai follow-up)
-  3: ["momentum"],          // momentum phase
-  4: ["momentum", "finish"],// finish approach
-  5: ["finish"],            // finish
-  6: ["finish"],            // ceremony
+  3: ["momentum"], // momentum phase
+  4: ["momentum", "finish"], // finish approach
+  5: ["finish"], // finish
+  6: ["finish"], // ceremony
 };
 ```
 
@@ -228,21 +241,21 @@ const activeLineIndices = useMemo(() => {
 Render each line with conditional highlight:
 
 ```tsx
-{pbpLines.map((line, i) => (
-  <div
-    key={line.id ?? i}
-    ref={activeLineIndices.has(i) ? activeLineRef : undefined}
-    className={cn(
-      "flex gap-2 items-start py-1 px-2 rounded transition-colors duration-300",
-      activeLineIndices.has(i)
-        ? "bg-primary/10 border-l-2 border-primary"
-        : "opacity-60"
-    )}
-    style={{ animationDelay: `${i * 60}ms` }}
-  >
-    {/* existing phase badge + text render */}
-  </div>
-))}
+{
+  pbpLines.map((line, i) => (
+    <div
+      key={line.id ?? i}
+      ref={activeLineIndices.has(i) ? activeLineRef : undefined}
+      className={cn(
+        "flex gap-2 items-start py-1 px-2 rounded transition-colors duration-300",
+        activeLineIndices.has(i) ? "bg-primary/10 border-l-2 border-primary" : "opacity-60"
+      )}
+      style={{ animationDelay: `${i * 60}ms` }}
+    >
+      {/* existing phase badge + text render */}
+    </div>
+  ));
+}
 ```
 
 ### Auto-scroll to active line

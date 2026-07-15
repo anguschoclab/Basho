@@ -11,18 +11,20 @@
 ---
 
 ## Status: product-approved
+
 The product owner approved swapping the taxonomy (this plan replaces the deferred item from `2026-06-16-gameplay-depth-mustfix.md`). The hybrid tiers and tradeoffs below match the originally-approved Plan 3 table.
 
 ## Approved decision set
 
-| Decision | Trigger | Tier (`required`) | Options → real effect |
-|----------|---------|-------------------|------------------------|
-| **Pre-basho readiness** | entering `pre_basho`, player has ≥1 rikishi with `fatigue > 60` or `injured` | **Blocking** (`true`) | `rest` → at-risk rikishi `fatigue -= 20`, `momentum -= 5` (recover, lose edge); `push` → no change (accept risk) |
-| **Insolvency response** | weekly tick, player heya `runwayBand ∈ {critical, desperate}` | **Blocking** (`true`) | `loan` → merge `issueBailoutLoanIfNeeded`; `austerity` → `welfareState.activeDiet = "austerity"` |
-| **Weekly training emphasis** | `interim` weekly tick, player has a `trainingState` | **Queue** (`false`) | `intensive` → `activeProfile.intensity = "intensive"`; `conservative` → `"conservative"`. **Default if ignored: `"balanced"`** |
-| **Welfare diet** | weekly tick, player heya `welfareState.welfareRisk > 60` | **Queue** (`false`) | `premium` → `activeDiet = "premium"`; `maintenance` → `"maintenance"`. **Default if ignored: `"maintenance"`** |
+| Decision                     | Trigger                                                                      | Tier (`required`)     | Options → real effect                                                                                                          |
+| ---------------------------- | ---------------------------------------------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| **Pre-basho readiness**      | entering `pre_basho`, player has ≥1 rikishi with `fatigue > 60` or `injured` | **Blocking** (`true`) | `rest` → at-risk rikishi `fatigue -= 20`, `momentum -= 5` (recover, lose edge); `push` → no change (accept risk)               |
+| **Insolvency response**      | weekly tick, player heya `runwayBand ∈ {critical, desperate}`                | **Blocking** (`true`) | `loan` → merge `issueBailoutLoanIfNeeded`; `austerity` → `welfareState.activeDiet = "austerity"`                               |
+| **Weekly training emphasis** | `interim` weekly tick, player has a `trainingState`                          | **Queue** (`false`)   | `intensive` → `activeProfile.intensity = "intensive"`; `conservative` → `"conservative"`. **Default if ignored: `"balanced"`** |
+| **Welfare diet**             | weekly tick, player heya `welfareState.welfareRisk > 60`                     | **Queue** (`false`)   | `premium` → `activeDiet = "premium"`; `maintenance` → `"maintenance"`. **Default if ignored: `"maintenance"`**                 |
 
 ## Verified engine facts (use these — do not re-derive)
+
 - `WorldState.pendingDecisions?: Array<{ id; type; description; deadlineWeek; options: {id;label;impact}[]; required }>` (`src/engine/types/world.ts:226`).
 - `WorldState.pendingCrisis?: ActiveCrisis` (`:223`); `_preBashoAssessment?: PreBashoAssessment` (`:287`).
 - `Heya`: `funds: number`, `runwayBand: RunwayBand`, `activeLoans?: Loan[]`, `welfareState?: WelfareState` (`src/engine/types/heya.ts`).
@@ -35,6 +37,7 @@ The product owner approved swapping the taxonomy (this plan replaces the deferre
 - `shouldHaltAdvance(world)` halts the worker loop on `pendingCrisis` or any `required` decision (`src/engine/loop/shouldHaltAdvance.ts`) — already built.
 
 ## Conventions (enforced)
+
 Deterministic only — never `Math.random()`/`Date.now()`; use `rngFromSeed`. Run tests with `npx vitest run` (NOT `bun test -- --run`). Test helpers `makeWorld`/`makeHeya`/`makeRikishi` already exist at the top of `src/engine/loop/__tests__/LoopDecisionEngine.test.ts`.
 
 ---
@@ -42,6 +45,7 @@ Deterministic only — never `Math.random()`/`Date.now()`; use `rngFromSeed`. Ru
 ### Task 1: Replace the decision generators with the four approved decisions
 
 **Files:**
+
 - Modify: `src/engine/loop/LoopDecisionEngine.ts` — replace the three decision blocks in `evaluatePendingDecisions` (current lines ~37-148)
 - Test: `src/engine/loop/__tests__/LoopDecisionEngine.test.ts`
 
@@ -56,11 +60,16 @@ describe("evaluatePendingDecisions — approved taxonomy", () => {
     const r = makeRikishi("r1", "makushita", "Tired");
     (r as unknown as { fatigue: number }).fatigue = 75;
     const world = makeWorld({
-      cyclePhase: "pre_basho", playerHeyaId: "h1",
-      heyas: new Map([["h1", heya]]), rikishi: new Map([["r1", r]]),
+      cyclePhase: "pre_basho",
+      playerHeyaId: "h1",
+      heyas: new Map([["h1", heya]]),
+      rikishi: new Map([["r1", r]]),
     });
     const impact = evaluatePendingDecisions(world);
-    const decisions = impact.worldFields?.pendingDecisions as Array<{ type: string; required: boolean }>;
+    const decisions = impact.worldFields?.pendingDecisions as Array<{
+      type: string;
+      required: boolean;
+    }>;
     const d = decisions.find((x) => x.type === "pre_basho_readiness");
     expect(d).toBeDefined();
     expect(d!.required).toBe(true);
@@ -68,39 +77,77 @@ describe("evaluatePendingDecisions — approved taxonomy", () => {
   });
 
   it("insolvency is BLOCKING when runway is desperate", () => {
-    const heya = { ...makeHeya("h1", []), runwayBand: "desperate" } as unknown as ReturnType<typeof makeHeya>;
+    const heya = { ...makeHeya("h1", []), runwayBand: "desperate" } as unknown as ReturnType<
+      typeof makeHeya
+    >;
     const world = makeWorld({
-      cyclePhase: "interim", playerHeyaId: "h1", week: 2,
+      cyclePhase: "interim",
+      playerHeyaId: "h1",
+      week: 2,
       heyas: new Map([["h1", heya]]),
     });
     const impact = evaluatePendingDecisions(world);
-    const decisions = impact.worldFields?.pendingDecisions as Array<{ type: string; required: boolean }>;
+    const decisions = impact.worldFields?.pendingDecisions as Array<{
+      type: string;
+      required: boolean;
+    }>;
     expect(decisions.find((x) => x.type === "insolvency_response")?.required).toBe(true);
   });
 
   it("weekly training emphasis is a QUEUE decision in interim", () => {
     const heya = makeHeya("h1", ["r1"]);
     const world = makeWorld({
-      cyclePhase: "interim", playerHeyaId: "h1",
+      cyclePhase: "interim",
+      playerHeyaId: "h1",
       heyas: new Map([["h1", heya]]),
       rikishi: new Map([["r1", makeRikishi("r1", "makushita", "X")]]),
-      trainingState: new Map([["h1", { heyaId: "h1", activeProfile: { intensity: "balanced", focus: "neutral", styleBias: "neutral", recovery: "normal" }, focusSlots: [] }]]),
+      trainingState: new Map([
+        [
+          "h1",
+          {
+            heyaId: "h1",
+            activeProfile: {
+              intensity: "balanced",
+              focus: "neutral",
+              styleBias: "neutral",
+              recovery: "normal",
+            },
+            focusSlots: [],
+          },
+        ],
+      ]),
     });
     const impact = evaluatePendingDecisions(world);
-    const decisions = impact.worldFields?.pendingDecisions as Array<{ type: string; required: boolean }>;
+    const decisions = impact.worldFields?.pendingDecisions as Array<{
+      type: string;
+      required: boolean;
+    }>;
     const d = decisions.find((x) => x.type === "weekly_training_emphasis");
     expect(d).toBeDefined();
     expect(d!.required).toBe(false);
   });
 
   it("welfare diet is a QUEUE decision when welfareRisk > 60", () => {
-    const heya = { ...makeHeya("h1", []), welfareState: { welfareRisk: 75, activeDiet: "maintenance", complianceState: "watch", weeksInState: 0 } } as unknown as ReturnType<typeof makeHeya>;
+    const heya = {
+      ...makeHeya("h1", []),
+      welfareState: {
+        welfareRisk: 75,
+        activeDiet: "maintenance",
+        complianceState: "watch",
+        weeksInState: 0,
+      },
+    } as unknown as ReturnType<typeof makeHeya>;
     const world = makeWorld({
-      cyclePhase: "interim", playerHeyaId: "h1", week: 3,
+      cyclePhase: "interim",
+      playerHeyaId: "h1",
+      week: 3,
       heyas: new Map([["h1", heya]]),
     });
     const impact = evaluatePendingDecisions(world);
-    const decisions = impact.worldFields?.pendingDecisions as Array<{ type: string; required: boolean }>;
+    const decisions = impact.worldFields?.pendingDecisions as Array<{
+      type: string;
+      required: boolean;
+    }>;
     expect(decisions.find((x) => x.type === "welfare_diet")?.required).toBe(false);
   });
 });
@@ -116,74 +163,96 @@ Expected: FAIL — the new decision types are not produced yet.
 In `src/engine/loop/LoopDecisionEngine.ts`, delete the three existing decision blocks (the `recruit_or_develop`, `ozeki_promotion`, and `training_regime` blocks) and insert these four. Keep the surrounding `existing`/`newDecisions` scaffolding and the final append + blocking-crisis logic (lines ~150-171) unchanged.
 
 ```typescript
-  // Decision 1: Pre-basho readiness (BLOCKING)
-  if (world.cyclePhase === "pre_basho" && playerHeya) {
-    const atRisk = (playerHeya.rikishiIds ?? []).filter((id) => {
-      const r = world.rikishi.get(id);
-      return !!r && (((r.fatigue ?? 0) > 60) || r.injured === true);
-    });
-    if (atRisk.length > 0 && !existing.some((d) => d.type === "pre_basho_readiness")) {
-      newDecisions.push({
-        id: makeId("prebasho", world.seed, world),
-        type: "pre_basho_readiness",
-        description: `${atRisk.length} wrestler(s) enter the basho fatigued or injured. Rest them or push for rank?`,
-        deadlineWeek: currentWeek + 1,
-        required: true,
-        options: [
-          { id: "rest", label: "Rest At-Risk Wrestlers", impact: "Lower injury risk; some lost conditioning (-momentum)." },
-          { id: "push", label: "Push For Rank", impact: "Keep conditioning; accept the injury risk." },
-        ],
-      });
-    }
-  }
-
-  // Decision 2: Insolvency response (BLOCKING)
-  if (playerHeya && (playerHeya.runwayBand === "critical" || playerHeya.runwayBand === "desperate")
-      && !existing.some((d) => d.type === "insolvency_response")) {
+// Decision 1: Pre-basho readiness (BLOCKING)
+if (world.cyclePhase === "pre_basho" && playerHeya) {
+  const atRisk = (playerHeya.rikishiIds ?? []).filter((id) => {
+    const r = world.rikishi.get(id);
+    return !!r && ((r.fatigue ?? 0) > 60 || r.injured === true);
+  });
+  if (atRisk.length > 0 && !existing.some((d) => d.type === "pre_basho_readiness")) {
     newDecisions.push({
-      id: makeId("insolvency", world.seed, world),
-      type: "insolvency_response",
-      description: `Stable finances are ${playerHeya.runwayBand}. Choose a response:`,
+      id: makeId("prebasho", world.seed, world),
+      type: "pre_basho_readiness",
+      description: `${atRisk.length} wrestler(s) enter the basho fatigued or injured. Rest them or push for rank?`,
       deadlineWeek: currentWeek + 1,
       required: true,
       options: [
-        { id: "loan", label: "Take Emergency Loan", impact: "Cash now; monthly debt repayments." },
-        { id: "austerity", label: "Austerity Diet", impact: "Cut costs; raises welfare risk." },
+        {
+          id: "rest",
+          label: "Rest At-Risk Wrestlers",
+          impact: "Lower injury risk; some lost conditioning (-momentum).",
+        },
+        {
+          id: "push",
+          label: "Push For Rank",
+          impact: "Keep conditioning; accept the injury risk.",
+        },
       ],
     });
   }
+}
 
-  // Decision 3: Weekly training emphasis (QUEUE)
-  if (world.cyclePhase === "interim" && playerHeya && world.trainingState?.get(playerHeya.id)
-      && !existing.some((d) => d.type === "weekly_training_emphasis")) {
-    newDecisions.push({
-      id: makeId("training", world.seed, world),
-      type: "weekly_training_emphasis",
-      description: "Set this week's training emphasis:",
-      deadlineWeek: currentWeek + 1,
-      required: false,
-      options: [
-        { id: "intensive", label: "Intensive", impact: "Faster gains; more fatigue and injury risk." },
-        { id: "conservative", label: "Conservative", impact: "Slower gains; safer." },
-      ],
-    });
-  }
+// Decision 2: Insolvency response (BLOCKING)
+if (
+  playerHeya &&
+  (playerHeya.runwayBand === "critical" || playerHeya.runwayBand === "desperate") &&
+  !existing.some((d) => d.type === "insolvency_response")
+) {
+  newDecisions.push({
+    id: makeId("insolvency", world.seed, world),
+    type: "insolvency_response",
+    description: `Stable finances are ${playerHeya.runwayBand}. Choose a response:`,
+    deadlineWeek: currentWeek + 1,
+    required: true,
+    options: [
+      { id: "loan", label: "Take Emergency Loan", impact: "Cash now; monthly debt repayments." },
+      { id: "austerity", label: "Austerity Diet", impact: "Cut costs; raises welfare risk." },
+    ],
+  });
+}
 
-  // Decision 4: Welfare diet (QUEUE)
-  if (playerHeya && (playerHeya.welfareState?.welfareRisk ?? 0) > 60
-      && !existing.some((d) => d.type === "welfare_diet")) {
-    newDecisions.push({
-      id: makeId("welfare", world.seed, world),
-      type: "welfare_diet",
-      description: `Welfare risk is high (${playerHeya.welfareState?.welfareRisk}). Adjust the diet?`,
-      deadlineWeek: currentWeek + 1,
-      required: false,
-      options: [
-        { id: "premium", label: "Premium Diet", impact: "Lowers welfare risk; higher cost." },
-        { id: "maintenance", label: "Maintenance Diet", impact: "Cheaper; risk persists." },
-      ],
-    });
-  }
+// Decision 3: Weekly training emphasis (QUEUE)
+if (
+  world.cyclePhase === "interim" &&
+  playerHeya &&
+  world.trainingState?.get(playerHeya.id) &&
+  !existing.some((d) => d.type === "weekly_training_emphasis")
+) {
+  newDecisions.push({
+    id: makeId("training", world.seed, world),
+    type: "weekly_training_emphasis",
+    description: "Set this week's training emphasis:",
+    deadlineWeek: currentWeek + 1,
+    required: false,
+    options: [
+      {
+        id: "intensive",
+        label: "Intensive",
+        impact: "Faster gains; more fatigue and injury risk.",
+      },
+      { id: "conservative", label: "Conservative", impact: "Slower gains; safer." },
+    ],
+  });
+}
+
+// Decision 4: Welfare diet (QUEUE)
+if (
+  playerHeya &&
+  (playerHeya.welfareState?.welfareRisk ?? 0) > 60 &&
+  !existing.some((d) => d.type === "welfare_diet")
+) {
+  newDecisions.push({
+    id: makeId("welfare", world.seed, world),
+    type: "welfare_diet",
+    description: `Welfare risk is high (${playerHeya.welfareState?.welfareRisk}). Adjust the diet?`,
+    deadlineWeek: currentWeek + 1,
+    required: false,
+    options: [
+      { id: "premium", label: "Premium Diet", impact: "Lowers welfare risk; higher cost." },
+      { id: "maintenance", label: "Maintenance Diet", impact: "Cheaper; risk persists." },
+    ],
+  });
+}
 ```
 
 - [ ] **Step 4: Run to verify the new trigger tests pass**
@@ -212,6 +281,7 @@ git commit -m "feat(loop): generate the approved decision taxonomy"
 ### Task 2: Implement real effects for all new options in `resolveLoopDecision`
 
 **Files:**
+
 - Modify: `src/engine/loop/LoopDecisionEngine.ts` — replace the option-effect bodies in `resolveLoopDecision` (current lines ~200-242)
 - Test: `src/engine/loop/__tests__/LoopDecisionEngine.test.ts`
 
@@ -223,11 +293,20 @@ Add:
 describe("resolveLoopDecision — approved effects", () => {
   function withDecision(type: string, optId: string, extra: Record<string, unknown> = {}) {
     return makeWorld({
-      seed: "s", playerHeyaId: "h1",
+      seed: "s",
+      playerHeyaId: "h1",
       heyas: new Map([["h1", makeHeya("h1", ["r1"])]]),
       rikishi: new Map([["r1", makeRikishi("r1", "makushita", "X")]]),
-      pendingDecisions: [{ id: `${type}-1`, type, description: "x", deadlineWeek: 2, required: type.includes("pre_basho") || type.includes("insolvency"),
-        options: [{ id: optId, label: optId, impact: "x" }] }],
+      pendingDecisions: [
+        {
+          id: `${type}-1`,
+          type,
+          description: "x",
+          deadlineWeek: 2,
+          required: type.includes("pre_basho") || type.includes("insolvency"),
+          options: [{ id: optId, label: optId, impact: "x" }],
+        },
+      ],
       ...extra,
     });
   }
@@ -237,23 +316,48 @@ describe("resolveLoopDecision — approved effects", () => {
     (r as unknown as { fatigue: number }).fatigue = 80;
     const world = withDecision("pre_basho_readiness", "rest", { rikishi: new Map([["r1", r]]) });
     const impact = resolveLoopDecision(world, "pre_basho_readiness-1", "rest");
-    const upd = impact.entities?.rikishiUpdates instanceof Map ? impact.entities.rikishiUpdates.get("r1") : undefined;
+    const upd =
+      impact.entities?.rikishiUpdates instanceof Map
+        ? impact.entities.rikishiUpdates.get("r1")
+        : undefined;
     expect((upd as { fatigue: number }).fatigue).toBe(60); // 80 - 20
   });
 
   it("insolvency austerity sets activeDiet to austerity", () => {
     const world = withDecision("insolvency_response", "austerity");
     const impact = resolveLoopDecision(world, "insolvency_response-1", "austerity");
-    const upd = impact.entities?.heyaUpdates instanceof Map ? impact.entities.heyaUpdates.get("h1") : undefined;
-    expect((upd as { welfareState: { activeDiet: string } }).welfareState.activeDiet).toBe("austerity");
+    const upd =
+      impact.entities?.heyaUpdates instanceof Map
+        ? impact.entities.heyaUpdates.get("h1")
+        : undefined;
+    expect((upd as { welfareState: { activeDiet: string } }).welfareState.activeDiet).toBe(
+      "austerity"
+    );
   });
 
   it("weekly_training_emphasis intensive sets training intensity", () => {
     const world = withDecision("weekly_training_emphasis", "intensive", {
-      trainingState: new Map([["h1", { heyaId: "h1", activeProfile: { intensity: "balanced", focus: "neutral", styleBias: "neutral", recovery: "normal" }, focusSlots: [] }]]),
+      trainingState: new Map([
+        [
+          "h1",
+          {
+            heyaId: "h1",
+            activeProfile: {
+              intensity: "balanced",
+              focus: "neutral",
+              styleBias: "neutral",
+              recovery: "normal",
+            },
+            focusSlots: [],
+          },
+        ],
+      ]),
     });
     const impact = resolveLoopDecision(world, "weekly_training_emphasis-1", "intensive");
-    const upd = impact.entities?.trainingStateUpdates instanceof Map ? impact.entities.trainingStateUpdates.get("h1") : undefined;
+    const upd =
+      impact.entities?.trainingStateUpdates instanceof Map
+        ? impact.entities.trainingStateUpdates.get("h1")
+        : undefined;
     expect(JSON.stringify(upd)).toContain("intensive");
   });
 
@@ -283,39 +387,47 @@ import { issueBailoutLoanIfNeeded } from "../loans";
 In `resolveLoopDecision`, after the decision-removal lines (`builder.updateWorldField("pendingDecisions", remaining)` and the `pendingCrisis` clear), delete the old `recruit_or_develop` / `training_regime` / `ozeki_promotion` effect blocks and insert:
 
 ```typescript
-  const heya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : undefined;
+const heya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : undefined;
 
-  if (decision.type === "pre_basho_readiness" && optionId === "rest" && heya) {
-    for (const id of heya.rikishiIds ?? []) {
-      const r = world.rikishi.get(id);
-      if (!r || !(((r.fatigue ?? 0) > 60) || r.injured)) continue;
-      builder.updateRikishi(id, {
-        fatigue: Math.max(0, (r.fatigue ?? 0) - 20),
-        momentum: Math.max(0, (r.momentum ?? 50) - 5),
-      });
-    }
-    // "push" intentionally has no effect — the player accepts the risk.
+if (decision.type === "pre_basho_readiness" && optionId === "rest" && heya) {
+  for (const id of heya.rikishiIds ?? []) {
+    const r = world.rikishi.get(id);
+    if (!r || !((r.fatigue ?? 0) > 60 || r.injured)) continue;
+    builder.updateRikishi(id, {
+      fatigue: Math.max(0, (r.fatigue ?? 0) - 20),
+      momentum: Math.max(0, (r.momentum ?? 50) - 5),
+    });
   }
+  // "push" intentionally has no effect — the player accepts the risk.
+}
 
-  if (decision.type === "insolvency_response" && heya) {
-    if (optionId === "loan") {
-      builder.merge(issueBailoutLoanIfNeeded(world, heya.id));
-    } else if (optionId === "austerity") {
-      builder.updateHeya(heya.id, {
-        welfareState: { ...heya.welfareState, activeDiet: "austerity" },
-      } as never);
-    }
-  }
-
-  if (decision.type === "weekly_training_emphasis" && heya && (optionId === "intensive" || optionId === "conservative")) {
-    builder.updateTrainingStateNestedField(heya.id, "activeProfile.intensity", optionId);
-  }
-
-  if (decision.type === "welfare_diet" && heya && (optionId === "premium" || optionId === "maintenance")) {
+if (decision.type === "insolvency_response" && heya) {
+  if (optionId === "loan") {
+    builder.merge(issueBailoutLoanIfNeeded(world, heya.id));
+  } else if (optionId === "austerity") {
     builder.updateHeya(heya.id, {
-      welfareState: { ...heya.welfareState, activeDiet: optionId },
+      welfareState: { ...heya.welfareState, activeDiet: "austerity" },
     } as never);
   }
+}
+
+if (
+  decision.type === "weekly_training_emphasis" &&
+  heya &&
+  (optionId === "intensive" || optionId === "conservative")
+) {
+  builder.updateTrainingStateNestedField(heya.id, "activeProfile.intensity", optionId);
+}
+
+if (
+  decision.type === "welfare_diet" &&
+  heya &&
+  (optionId === "premium" || optionId === "maintenance")
+) {
+  builder.updateHeya(heya.id, {
+    welfareState: { ...heya.welfareState, activeDiet: optionId },
+  } as never);
+}
 ```
 
 - [ ] **Step 4: Run to verify pass**
@@ -335,6 +447,7 @@ git commit -m "feat(loop): real effects for approved decision options"
 ### Task 3: Auto-apply defaults for ignored queue decisions
 
 **Files:**
+
 - Modify: `src/engine/loop/LoopDecisionEngine.ts` — add `applyExpiredQueueDefaults`
 - Modify: `src/engine/tick/phases/phase00_preflight.ts` — call it (currently calls `evaluatePendingDecisions` at line ~67)
 - Test: `src/engine/loop/__tests__/LoopDecisionEngine.test.ts`
@@ -345,25 +458,62 @@ git commit -m "feat(loop): real effects for approved decision options"
 describe("applyExpiredQueueDefaults", () => {
   it("applies the default and removes a queue decision past its deadline", () => {
     const world = makeWorld({
-      seed: "s", playerHeyaId: "h1", week: 5,
+      seed: "s",
+      playerHeyaId: "h1",
+      week: 5,
       heyas: new Map([["h1", makeHeya("h1", [])]]),
-      trainingState: new Map([["h1", { heyaId: "h1", activeProfile: { intensity: "intensive", focus: "neutral", styleBias: "neutral", recovery: "normal" }, focusSlots: [] }]]),
+      trainingState: new Map([
+        [
+          "h1",
+          {
+            heyaId: "h1",
+            activeProfile: {
+              intensity: "intensive",
+              focus: "neutral",
+              styleBias: "neutral",
+              recovery: "normal",
+            },
+            focusSlots: [],
+          },
+        ],
+      ]),
       pendingDecisions: [
-        { id: "wt-1", type: "weekly_training_emphasis", description: "x", deadlineWeek: 3, required: false, options: [] },
+        {
+          id: "wt-1",
+          type: "weekly_training_emphasis",
+          description: "x",
+          deadlineWeek: 3,
+          required: false,
+          options: [],
+        },
       ],
     });
     const impact = applyExpiredQueueDefaults(world);
     // default intensity is "balanced"
-    const upd = impact.entities?.trainingStateUpdates instanceof Map ? impact.entities.trainingStateUpdates.get("h1") : undefined;
+    const upd =
+      impact.entities?.trainingStateUpdates instanceof Map
+        ? impact.entities.trainingStateUpdates.get("h1")
+        : undefined;
     expect(JSON.stringify(upd)).toContain("balanced");
     expect(impact.worldFields?.pendingDecisions).toEqual([]);
   });
 
   it("does not touch a queue decision still within its deadline", () => {
     const world = makeWorld({
-      seed: "s", playerHeyaId: "h1", week: 2,
+      seed: "s",
+      playerHeyaId: "h1",
+      week: 2,
       heyas: new Map([["h1", makeHeya("h1", [])]]),
-      pendingDecisions: [{ id: "wt-1", type: "weekly_training_emphasis", description: "x", deadlineWeek: 3, required: false, options: [] }],
+      pendingDecisions: [
+        {
+          id: "wt-1",
+          type: "weekly_training_emphasis",
+          description: "x",
+          deadlineWeek: 3,
+          required: false,
+          options: [],
+        },
+      ],
     });
     const impact = applyExpiredQueueDefaults(world);
     expect(impact.worldFields?.pendingDecisions).toBeUndefined();
@@ -374,7 +524,11 @@ describe("applyExpiredQueueDefaults", () => {
 Add `applyExpiredQueueDefaults` to the imports at the top of the test file:
 
 ```typescript
-import { evaluatePendingDecisions, resolveLoopDecision, applyExpiredQueueDefaults } from "../LoopDecisionEngine";
+import {
+  evaluatePendingDecisions,
+  resolveLoopDecision,
+  applyExpiredQueueDefaults,
+} from "../LoopDecisionEngine";
 ```
 
 - [ ] **Step 2: Run to verify it fails**
@@ -413,11 +567,13 @@ export function applyExpiredQueueDefaults(world: WorldState): StateImpact {
     if (d.type === "weekly_training_emphasis") {
       builder.updateTrainingStateNestedField(heya.id, "activeProfile.intensity", def);
     } else if (d.type === "welfare_diet") {
-      builder.updateHeya(heya.id, { welfareState: { ...heya.welfareState, activeDiet: def } } as never);
+      builder.updateHeya(heya.id, {
+        welfareState: { ...heya.welfareState, activeDiet: def },
+      } as never);
     }
   }
 
-  const remaining = decisions.filter((d) => !(expired.includes(d)));
+  const remaining = decisions.filter((d) => !expired.includes(d));
   builder.updateWorldField("pendingDecisions", remaining);
   return builder.build();
 }
@@ -439,9 +595,9 @@ import { evaluatePendingDecisions, applyExpiredQueueDefaults } from "../../loop/
 Immediately after the line that captures `evaluatePendingDecisions(world)`'s impact, add a second impact and ensure both are returned/merged the same way the existing one is. If preflight returns a single impact, merge them:
 
 ```typescript
-  const decisionImpact = evaluatePendingDecisions(world);
-  const defaultsImpact = applyExpiredQueueDefaults(world);
-  // Merge defaultsImpact into whatever aggregation preflight already does with decisionImpact.
+const decisionImpact = evaluatePendingDecisions(world);
+const defaultsImpact = applyExpiredQueueDefaults(world);
+// Merge defaultsImpact into whatever aggregation preflight already does with decisionImpact.
 ```
 
 > Match the file's existing impact-aggregation style (it may push into an array of impacts or merge via `ImpactBuilder.merge`). Apply `defaultsImpact` the same way `decisionImpact` is applied so it actually reaches `resolveImpacts`.
@@ -465,6 +621,7 @@ git commit -m "feat(loop): auto-apply defaults for ignored queue decisions"
 The old decisions fed `transientContext` flags (`trainingRegime`, `trainingGrowthBuff`, `recruitmentIntent`) consumed by `TrainingService` and a dedicated recruitment phase. With the old decisions gone, those flags are never set, so the consumers are dead code.
 
 **Files:**
+
 - Modify: `src/engine/systems/training/TrainingService.ts` — remove the `trainingRegime` / `trainingGrowthBuff` read/apply/clear blocks (lines ~110-113, ~248-266, ~359-365)
 - Delete: `src/engine/tick/phases/phase01_week_recruitment.ts` and its test `src/engine/tick/phases/__tests__/phase01_week_recruitment.test.ts`
 - Modify: `src/engine/tick/phases/index.ts` (remove the export line ~17), `src/engine/tick/pipelines/bashoPipeline.ts:31`, `src/engine/tick/pipelines/offSeasonPipeline.ts:31` (remove `phases.phase01_week_recruitment`)
@@ -527,6 +684,7 @@ Expected: "built in …", no errors.
 - [ ] **Step 4: Manual smoke test**
 
 Run: `bun run dev`. Then:
+
 - Drive a player heya into `runwayBand: "desperate"` (or seed it) and advance a week → multi-day advance halts, `CrisisModal` shows the **Insolvency response**; pick "Take Emergency Loan" → a loan appears and funds rise; pick "Austerity Diet" on a fresh run → diet flips to austerity.
 - Enter `pre_basho` with a fatigued wrestler → blocking **Pre-basho readiness**; "Rest" lowers that wrestler's fatigue.
 - In `interim`, see **Weekly training emphasis** and **Welfare diet** (when risk > 60) appear in the Action Queue (non-blocking). Ignore the training one past its deadline → intensity defaults to `balanced` and the card disappears.
@@ -541,8 +699,12 @@ git commit -m "test(loop): verify approved decision taxonomy end-to-end"
 ---
 
 ## Self-review notes
+
 - **Spec coverage:** All four approved decisions (pre-basho readiness, insolvency, weekly training, welfare diet) are generated (Task 1), have real effects (Task 2), queue ones default-on-ignore (Task 3); superseded code removed (Task 4); verified (Task 5).
 - **Type/name consistency:** decision `type` strings (`pre_basho_readiness`, `insolvency_response`, `weekly_training_emphasis`, `welfare_diet`) and option ids (`rest`/`push`, `loan`/`austerity`, `intensive`/`conservative`, `premium`/`maintenance`) are identical across Tasks 1-3 and `QUEUE_DEFAULTS`. `applyExpiredQueueDefaults` named identically in engine, export, test import, and preflight. Enum values match the verified types (`DietRegimen`, `TrainingIntensity`).
 - **Placeholder scan:** every code step shows real code using verified APIs (`updateHeya`, `updateRikishi`, `updateTrainingStateNestedField`, `merge`, `issueBailoutLoanIfNeeded`). The two "confirm accessor name / match aggregation style" notes are verification guards, not deferred implementation — the surrounding code is complete.
 - **Reuse:** leans on existing `issueBailoutLoanIfNeeded`, `ImpactBuilder`, `makeId`, `shouldHaltAdvance`, `CrisisModal`, and the Action Queue rather than new infrastructure.
+
+```
+
 ```

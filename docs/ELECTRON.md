@@ -6,12 +6,12 @@ Sumo Manager Pro ships as both a **web PWA** (`bun run dev`) and a **native desk
 
 ## Prerequisites
 
-| Tool | Minimum Version | Notes |
-|------|----------------|-------|
-| [Bun](https://bun.sh) | 1.3+ | Package manager and script runner |
-| [Node.js](https://nodejs.org) | 18+ | Required by Electron internals |
-| macOS | 12 Monterey+ | For Mac builds and `.icns` icon generation |
-| Windows | 10+ | For Windows builds (or cross-compile from Mac via Wine — see below) |
+| Tool                          | Minimum Version | Notes                                                               |
+| ----------------------------- | --------------- | ------------------------------------------------------------------- |
+| [Bun](https://bun.sh)         | 1.3+            | Package manager and script runner                                   |
+| [Node.js](https://nodejs.org) | 18+             | Required by Electron internals                                      |
+| macOS                         | 12 Monterey+    | For Mac builds and `.icns` icon generation                          |
+| Windows                       | 10+             | For Windows builds (or cross-compile from Mac via Wine — see below) |
 
 ---
 
@@ -24,6 +24,7 @@ bun install
 ```
 
 This installs all runtime dependencies **and** the Electron devDependencies:
+
 - `electron` — Electron runtime
 - `electron-vite` — Vite-based build tool for Electron (main + preload + renderer)
 - `electron-builder` — Packaging into DMG/NSIS installers
@@ -42,7 +43,7 @@ This starts the **Vite dev server** for the renderer, then launches Electron poi
 
 - **Full HMR** — edit any `src/` file and the window updates instantly
 - **Browser history routing** — all URLs work as `/dashboard`, `/stable/roster`, etc.
-- **DevTools** — right-click the window → *Inspect Element*, or press `Cmd+Option+I` / `Ctrl+Shift+I`
+- **DevTools** — right-click the window → _Inspect Element_, or press `Cmd+Option+I` / `Ctrl+Shift+I`
 
 > The web dev server (`bun run dev`) continues to work independently for browser-based development.
 
@@ -57,6 +58,7 @@ bunx electron-vite build
 ```
 
 Outputs to `out/`:
+
 ```
 out/
 ├── main/index.js       ← Bundled main process
@@ -110,15 +112,19 @@ dist-electron/
 ## How It Works
 
 ### Routing
+
 TanStack Router uses **browser history** during dev (HTTP origin) and automatically switches to **hash routing** (`#/dashboard`) in production — when the app loads from `file://`. This is handled transparently in `src/routes.tsx` using the `window.__ELECTRON__` flag injected by the preload script.
 
 ### Storage
+
 All saves use `window.localStorage` (same as the browser). No Node.js file system access is needed. OPFS (cold storage for Play-By-Play archives) also works in Electron's Chromium renderer.
 
 ### Web Worker
+
 The game simulation engine runs in a Web Worker (`src/engine/worker/engine.worker.ts`). Electron's renderer is a full Chromium environment, so Web Workers work identically to the browser — no changes needed.
 
 ### Security
+
 - `contextIsolation: true` — renderer and main process are isolated
 - `nodeIntegration: false` — renderer cannot access Node.js
 - `sandbox: true` — renderer process is sandboxed
@@ -130,10 +136,10 @@ The game simulation engine runs in a Web Worker (`src/engine/worker/engine.worke
 
 Icons live in `resources/` and were generated from `public/pwa-512.png`:
 
-| File | Platform | Format |
-|------|---------|--------|
-| `resources/icon.icns` | macOS | ICNS (multi-resolution) |
-| `resources/icon.ico` | Windows | ICO (multi-resolution) |
+| File                  | Platform | Format                  |
+| --------------------- | -------- | ----------------------- |
+| `resources/icon.icns` | macOS    | ICNS (multi-resolution) |
+| `resources/icon.ico`  | Windows  | ICO (multi-resolution)  |
 
 To regenerate from a new source PNG:
 
@@ -179,16 +185,21 @@ Windows code signing uses `WIN_CSC_LINK` and `WIN_CSC_KEY_PASSWORD` with a `.pfx
 ## Troubleshooting
 
 ### `electron: command not found`
+
 Run `bun install` to install devDependencies.
 
 ### Window is blank / white screen
+
 Open DevTools and check the Console tab for errors. In dev mode, confirm `electron:dev` started the Vite dev server on `http://localhost:5173`.
 
 ### Routes show `file:///dashboard` (404) in production
+
 This should not happen — hash routing is enabled automatically in production via `window.__ELECTRON__`. If it does, verify the preload script is being loaded by checking `window.__ELECTRON__` in DevTools console — it should be `true`.
 
 ### `OPFS` errors in console
+
 Origin Private File System (cold storage for bout archives) may have limited support under `file://` on some Electron versions. This is non-critical — the core save/load system uses `localStorage` and is unaffected.
 
 ### `electron-builder` fails with missing icon
+
 Ensure `resources/icon.icns` (Mac) and `resources/icon.ico` (Windows) exist. See the **App Icons** section above to regenerate them.

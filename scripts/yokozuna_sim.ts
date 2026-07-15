@@ -43,17 +43,19 @@ async function runSim() {
     }
   }
 
-  // A year is considered "without" if no basho in that year had a Yokozuna? 
+  // A year is considered "without" if no basho in that year had a Yokozuna?
   // Or more accurately: Basho-by-basho percentage.
-  
-  const zeroYokozunaBasho = yokozunaHistory.filter(h => h.count === 0).length;
-  
+
+  const zeroYokozunaBasho = yokozunaHistory.filter((h) => h.count === 0).length;
+
   console.log("\n=== Baseline Simulation Results (50 Years) ===");
   console.log(`Total Basho: ${totalBasho}`);
-  console.log(`Basho with 0 Yokozuna: ${zeroYokozunaBasho} (${((zeroYokozunaBasho / totalBasho) * 100).toFixed(1)}%)`);
-  
+  console.log(
+    `Basho with 0 Yokozuna: ${zeroYokozunaBasho} (${((zeroYokozunaBasho / totalBasho) * 100).toFixed(1)}%)`
+  );
+
   const counts = new Map<number, number>();
-  yokozunaHistory.forEach(h => {
+  yokozunaHistory.forEach((h) => {
     counts.set(h.count, (counts.get(h.count) || 0) + 1);
   });
 

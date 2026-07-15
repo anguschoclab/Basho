@@ -2,7 +2,7 @@
 
 ## Problem
 
-`drawRikishi` in `boutCanvas/draw.ts` uses a `BodyPhase` enum (`standing`, `pushing`, `gripping`, `falling`, `thrown`, `ceremony`) but the canvas never knows *which* technique caused the finish. A kotenage (arm-lock throw) and a yorikiri (force-out) both trigger `BodyPhase.thrown` / `BodyPhase.falling` and render identically. There is no visual differentiation between sumo's 82 official kimarite.
+`drawRikishi` in `boutCanvas/draw.ts` uses a `BodyPhase` enum (`standing`, `pushing`, `gripping`, `falling`, `thrown`, `ceremony`) but the canvas never knows _which_ technique caused the finish. A kotenage (arm-lock throw) and a yorikiri (force-out) both trigger `BodyPhase.thrown` / `BodyPhase.falling` and render identically. There is no visual differentiation between sumo's 82 official kimarite.
 
 This plan extends the canvas draw and animation layers to give each kimarite family a distinct visual signature during the `finish` and `momentum` phases — without requiring new assets, only programmatic canvas drawing.
 
@@ -12,12 +12,12 @@ This plan extends the canvas draw and animation layers to give each kimarite fam
 
 ## Affected Files
 
-| File | Change |
-|------|--------|
-| `src/components/game/boutReplay/boutCanvas/types.ts` | Add `ExitArc`, extend `RikishiState` with `arcProgress` |
-| `src/components/game/boutReplay/boutCanvas/draw.ts` | New `drawRikishiWithFamily` function, family-specific body shapes |
-| `src/components/game/boutReplay/boutCanvas/animation.ts` | Family-aware `getTargetState` exit logic |
-| `src/components/game/boutReplay/useBoutReplay.ts` | Pass `kimariteFamily` into draw calls |
+| File                                                     | Change                                                            |
+| -------------------------------------------------------- | ----------------------------------------------------------------- |
+| `src/components/game/boutReplay/boutCanvas/types.ts`     | Add `ExitArc`, extend `RikishiState` with `arcProgress`           |
+| `src/components/game/boutReplay/boutCanvas/draw.ts`      | New `drawRikishiWithFamily` function, family-specific body shapes |
+| `src/components/game/boutReplay/boutCanvas/animation.ts` | Family-aware `getTargetState` exit logic                          |
+| `src/components/game/boutReplay/useBoutReplay.ts`        | Pass `kimariteFamily` into draw calls                             |
 
 ---
 
@@ -26,11 +26,12 @@ This plan extends the canvas draw and animation layers to give each kimarite fam
 **File: `src/components/game/boutReplay/boutCanvas/types.ts`**
 
 The existing `RikishiState`:
+
 ```typescript
 export interface RikishiState {
-  x: number;         // 0–1, normalized canvas width
-  y: number;         // 0–1, normalized canvas height
-  rotation: number;  // degrees
+  x: number; // 0–1, normalized canvas width
+  y: number; // 0–1, normalized canvas height
+  rotation: number; // degrees
   scale: number;
   opacity: number;
   bodyPhase: BodyPhase;
@@ -38,6 +39,7 @@ export interface RikishiState {
 ```
 
 Add optional arc fields:
+
 ```typescript
 export interface RikishiState {
   x: number;
@@ -69,9 +71,9 @@ export function drawRikishi(
   shikona: string,
   canvasW: number,
   canvasH: number,
-  kimariteFamily?: KimariteFamily,  // new
-  isLoser?: boolean,                 // new
-): void
+  kimariteFamily?: KimariteFamily, // new
+  isLoser?: boolean // new
+): void;
 ```
 
 Inside the function, add a family/phase-specific body modification block after computing the base position (just before drawing the torso):
@@ -123,7 +125,7 @@ These are all ~15–20 line canvas drawing functions using existing ellipse/arc/
 
 **File: `src/components/game/boutReplay/boutCanvas/animation.ts`**
 
-This step defines *where* each rikishi ends up at the finish phase, by family. The existing `finish` case in `getTargetState` puts the loser at a fixed exit position (off-screen). Replace it with:
+This step defines _where_ each rikishi ends up at the finish phase, by family. The existing `finish` case in `getTargetState` puts the loser at a fixed exit position (off-screen). Replace it with:
 
 ```typescript
 case "finish": {
@@ -273,14 +275,14 @@ The `drawFrame(ctx, state, canvasW, canvasH)` call chain needs to pass `kimarite
 
 ## Visual Design Reference
 
-| Family | Winner Pose | Loser Exit | Particle |
-|--------|-------------|------------|----------|
-| force_out | Forward drive crouch | Slides off edge | Dust at tawara |
-| throw | Gripping stance, planted | Parabolic arc, tumble rotation | Spark burst |
-| pull | Sidestep, arm raised | Pitches forward, face-down | Impact flash |
-| lift | Planted low, arms under | Rises then drops, feet up | Zabuton (upsets only) |
-| trip | One leg behind, planted | Lateral fall, sideways rotation | Dust |
-| generic | Forward lean | Slides off | Impact |
+| Family    | Winner Pose              | Loser Exit                      | Particle              |
+| --------- | ------------------------ | ------------------------------- | --------------------- |
+| force_out | Forward drive crouch     | Slides off edge                 | Dust at tawara        |
+| throw     | Gripping stance, planted | Parabolic arc, tumble rotation  | Spark burst           |
+| pull      | Sidestep, arm raised     | Pitches forward, face-down      | Impact flash          |
+| lift      | Planted low, arms under  | Rises then drops, feet up       | Zabuton (upsets only) |
+| trip      | One leg behind, planted  | Lateral fall, sideways rotation | Dust                  |
+| generic   | Forward lean             | Slides off                      | Impact                |
 
 ---
 

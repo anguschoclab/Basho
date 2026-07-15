@@ -12,21 +12,22 @@
 
 ## File Map
 
-| Action | Path | Purpose |
-|--------|------|---------|
-| Modify | `src/engine/systems/recruitment/FogOfWarService.ts` | Add `generateScoutingBias`, `decayBias`, `applyBias` |
-| Modify | `src/engine/types/talent.ts` | Add `scoutingBias` field to `TalentPoolEntry` |
-| Modify | `src/engine/systems/generation/TalentPoolMaterialization.ts` | Generate bias at materialization |
-| Modify | `src/engine/systems/recruitment/ScoutingService.ts` | Apply bias in `getScoutedAttributes` |
-| Modify | `src/engine/tick/phases/phase01_week_recruitment.ts` | Decay bias each week when observations increase |
-| Create | `src/engine/systems/recruitment/__tests__/scoutingBias.test.ts` | Unit tests |
-| Modify | Recruitment UI component (find via `grep -r "TalentPool\|scoutedRikishi" src/components`) | Show confidence stars |
+| Action | Path                                                                                      | Purpose                                              |
+| ------ | ----------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| Modify | `src/engine/systems/recruitment/FogOfWarService.ts`                                       | Add `generateScoutingBias`, `decayBias`, `applyBias` |
+| Modify | `src/engine/types/talent.ts`                                                              | Add `scoutingBias` field to `TalentPoolEntry`        |
+| Modify | `src/engine/systems/generation/TalentPoolMaterialization.ts`                              | Generate bias at materialization                     |
+| Modify | `src/engine/systems/recruitment/ScoutingService.ts`                                       | Apply bias in `getScoutedAttributes`                 |
+| Modify | `src/engine/tick/phases/phase01_week_recruitment.ts`                                      | Decay bias each week when observations increase      |
+| Create | `src/engine/systems/recruitment/__tests__/scoutingBias.test.ts`                           | Unit tests                                           |
+| Modify | Recruitment UI component (find via `grep -r "TalentPool\|scoutedRikishi" src/components`) | Show confidence stars                                |
 
 ---
 
 ## Task 1: Bias Types and Pure Functions in FogOfWarService
 
 **Files:**
+
 - Modify: `src/engine/systems/recruitment/FogOfWarService.ts`
 - Create: `src/engine/systems/recruitment/__tests__/scoutingBias.test.ts`
 
@@ -35,11 +36,7 @@
 ```typescript
 // src/engine/systems/recruitment/__tests__/scoutingBias.test.ts
 import { describe, it, expect } from "vitest";
-import {
-  generateScoutingBias,
-  applyBias,
-  decayBias,
-} from "../FogOfWarService";
+import { generateScoutingBias, applyBias, decayBias } from "../FogOfWarService";
 
 describe("generateScoutingBias", () => {
   it("produces a bias in the ±20 range for each stat", () => {
@@ -61,7 +58,9 @@ describe("generateScoutingBias", () => {
     const b = generateScoutingBias("candidate-bbb", 2025);
     // At least one stat should differ
     const diffFound = Object.keys(a.statOffsets).some(
-      (k) => a.statOffsets[k as keyof typeof a.statOffsets] !== b.statOffsets[k as keyof typeof b.statOffsets]
+      (k) =>
+        a.statOffsets[k as keyof typeof a.statOffsets] !==
+        b.statOffsets[k as keyof typeof b.statOffsets]
     );
     expect(diffFound).toBe(true);
   });
@@ -177,6 +176,7 @@ git commit -m "feat(scouting): add generateScoutingBias, applyBias, decayBias to
 ## Task 2: Store Bias on TalentPoolEntry
 
 **Files:**
+
 - Modify: `src/engine/types/talent.ts`
 - Modify: `src/engine/systems/generation/TalentPoolMaterialization.ts`
 - Create: `src/engine/systems/generation/__tests__/talentPoolBias.test.ts`
@@ -203,9 +203,16 @@ import type { WorldState } from "../../../types/world";
 describe("materializeCandidate", () => {
   it("attaches a scoutingBias to each materialized candidate", () => {
     const mockWorld = {
-      id: "w1", seed: "seed", year: 2025, week: 10,
-      rikishi: new Map(), heyas: new Map(), events: [],
-      trainingState: new Map(), governanceLog: [], currentBasho: null,
+      id: "w1",
+      seed: "seed",
+      year: 2025,
+      week: 10,
+      rikishi: new Map(),
+      heyas: new Map(),
+      events: [],
+      trainingState: new Map(),
+      governanceLog: [],
+      currentBasho: null,
     } as unknown as WorldState;
 
     // materializeCandidate signature may vary — adjust call to match existing API
@@ -255,6 +262,7 @@ git commit -m "feat(scouting): attach scoutingBias to TalentPoolEntry at materia
 ## Task 3: Apply Bias in ScoutingService.getScoutedAttributes
 
 **Files:**
+
 - Modify: `src/engine/systems/recruitment/ScoutingService.ts`
 - Create: `src/engine/systems/recruitment/__tests__/scoutedAttributesBias.test.ts`
 
@@ -271,7 +279,10 @@ describe("ScoutingService.getScoutedAttributes with bias", () => {
   it("returns biased values when scoutingLevel is low and bias decayFactor is 1", () => {
     const r = mockRikishi("r1", { technique: 50, power: 50 });
     // High positive bias on technique
-    const bias = { statOffsets: { power: 0, speed: 0, balance: 0, technique: 15, aggression: 0, experience: 0 }, decayFactor: 1.0 };
+    const bias = {
+      statOffsets: { power: 0, speed: 0, balance: 0, technique: 15, aggression: 0, experience: 0 },
+      decayFactor: 1.0,
+    };
     const scouted = ScoutingService.createScoutedView(1, r, null, 0, "none");
     const attrs = ScoutingService.getScoutedAttributesWithBias(scouted, bias, `seed-r1`);
     // The displayed technique value should reflect bias (will be in narrative string)
@@ -345,6 +356,7 @@ git commit -m "feat(scouting): apply scoutingBias in getScoutedAttributesWithBia
 ## Task 4: Decay Bias in the Weekly Recruitment Phase
 
 **Files:**
+
 - Modify: `src/engine/tick/phases/phase01_week_recruitment.ts`
 - Create: `src/engine/systems/recruitment/__tests__/biasDecayTick.test.ts`
 
@@ -423,6 +435,7 @@ git commit -m "feat(scouting): decay scoutingBias each week as observations accu
 ## Task 5: Confidence Stars in Recruitment UI
 
 **Files:**
+
 - Modify: Recruitment/TalentPool UI component (find with `grep -r "timesObserved\|scoutingLevel" src/components --include="*.tsx" -l`)
 
 - [ ] **Step 1: Locate the recruitment panel**
@@ -443,7 +456,9 @@ function ScoutingConfidenceBadge({ level, biased }: { level: number; biased: boo
   return (
     <div className="flex items-center gap-1">
       {Array.from({ length: 5 }).map((_, i) => (
-        <span key={i} className={i < stars ? "text-yellow-400" : "text-muted-foreground/30"}>★</span>
+        <span key={i} className={i < stars ? "text-yellow-400" : "text-muted-foreground/30"}>
+          ★
+        </span>
       ))}
       {biased && <span className="text-xs text-amber-500 ml-1">est.</span>}
     </div>
@@ -458,6 +473,7 @@ For each stat display in the candidate card, pass `biased={attr.biased ?? false}
 - [ ] **Step 4: Manual smoke test**
 
 Start dev server (`bun run dev`), navigate to the recruitment/scouting page. Confirm:
+
 1. New candidates show 1–2 stars (low confidence).
 2. After scouting investment or multiple observations, stars increase.
 3. Stats on fresh candidates are visibly off from their eventual revealed values.

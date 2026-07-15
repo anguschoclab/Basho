@@ -32,7 +32,8 @@ function checkFile(filePath: string) {
         file: filePath.replace(__dirname + "/", ""),
         line: lineNum,
         type: "RNG Convention Breach",
-        description: "Math.random() used - must use rngForWorld(), rngFromSeed(), or new SeededRNG()",
+        description:
+          "Math.random() used - must use rngForWorld(), rngFromSeed(), or new SeededRNG()",
       });
     }
 
@@ -54,7 +55,8 @@ function checkFile(filePath: string) {
         file: filePath.replace(__dirname + "/", ""),
         line: lineNum,
         type: "Incorrect Call Signature",
-        description: "generateGovernanceHeadline must use named-arg object, not positional arguments",
+        description:
+          "generateGovernanceHeadline must use named-arg object, not positional arguments",
       });
     }
 
@@ -90,7 +92,8 @@ function checkFile(filePath: string) {
         file: filePath.replace(__dirname + "/", ""),
         line: lineNum,
         type: "Potential Mutable State Leak",
-        description: "Direct mutation of world state - consider using structuredClone or ImpactBuilder",
+        description:
+          "Direct mutation of world state - consider using structuredClone or ImpactBuilder",
       });
     }
   });

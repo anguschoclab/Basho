@@ -12,22 +12,23 @@
 
 ## File Map
 
-| Action | Path | Purpose |
-|--------|------|---------|
-| Create | `src/engine/systems/training/SparringService.ts` | Core sparring logic |
-| Create | `src/engine/systems/training/__tests__/SparringService.test.ts` | Unit tests |
-| Modify | `src/engine/types/training.ts` | Add `SparringPair` and `SparringState` to training types |
-| Modify | `src/engine/types/world.ts` | Add `sparringPairs: Map<heyaId, SparringState>` |
-| Modify | `src/engine/tick/phases/phase01_week_training.ts` | Call `applyWeeklySparring` |
-| Modify | `src/engine/systems/narrative/RivalryService.ts` | Add `seedSparringRivalry` |
-| Create | `src/components/game/SparringPanel.tsx` | UI: assign/remove pairs |
-| Modify | Training page (find via `grep -r "Training\|training" src/pages --include="*.tsx" -l`) | Render SparringPanel |
+| Action | Path                                                                                   | Purpose                                                  |
+| ------ | -------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| Create | `src/engine/systems/training/SparringService.ts`                                       | Core sparring logic                                      |
+| Create | `src/engine/systems/training/__tests__/SparringService.test.ts`                        | Unit tests                                               |
+| Modify | `src/engine/types/training.ts`                                                         | Add `SparringPair` and `SparringState` to training types |
+| Modify | `src/engine/types/world.ts`                                                            | Add `sparringPairs: Map<heyaId, SparringState>`          |
+| Modify | `src/engine/tick/phases/phase01_week_training.ts`                                      | Call `applyWeeklySparring`                               |
+| Modify | `src/engine/systems/narrative/RivalryService.ts`                                       | Add `seedSparringRivalry`                                |
+| Create | `src/components/game/SparringPanel.tsx`                                                | UI: assign/remove pairs                                  |
+| Modify | Training page (find via `grep -r "Training\|training" src/pages --include="*.tsx" -l`) | Render SparringPanel                                     |
 
 ---
 
 ## Task 1: SparringPair Type and Chemistry Scoring
 
 **Files:**
+
 - Modify: `src/engine/types/training.ts`
 - Create: `src/engine/systems/training/SparringService.ts`
 - Create: `src/engine/systems/training/__tests__/SparringService.test.ts`
@@ -154,9 +155,7 @@ export const SparringService = {
     b: Rikishi,
     pair: SparringPair
   ): { aGain: Partial<Rikishi>; bGain: Partial<Rikishi> } {
-    const multiplier = pair.chemistry === "friction" ? 1.0
-      : pair.chemistry === "rut" ? 0.3
-      : 0.6;
+    const multiplier = pair.chemistry === "friction" ? 1.0 : pair.chemistry === "rut" ? 0.3 : 0.6;
 
     // Stat bleed: each partner gains a fraction of the gap toward the other's stronger stats
     const gapPower = b.power - a.power;
@@ -200,6 +199,7 @@ git commit -m "feat(training): add SparringService with chemistry and growth del
 ## Task 2: Weekly Sparring Tick
 
 **Files:**
+
 - Modify: `src/engine/systems/training/SparringService.ts`
 - Create: `src/engine/systems/training/__tests__/sparringTick.test.ts`
 - Modify: `src/engine/tick/phases/phase01_week_training.ts`
@@ -214,20 +214,46 @@ import { mockRikishi } from "../../../__tests__/utils";
 import type { WorldState } from "../../../types/world";
 import type { SparringState } from "../../../types/training";
 
-function makeWorld(a: ReturnType<typeof mockRikishi>, b: ReturnType<typeof mockRikishi>, state: SparringState): WorldState {
+function makeWorld(
+  a: ReturnType<typeof mockRikishi>,
+  b: ReturnType<typeof mockRikishi>,
+  state: SparringState
+): WorldState {
   const sparringPairs = new Map([[a.heyaId, state]]);
   return {
-    id: "w1", seed: "s", year: 2025, week: 5, dayIndexGlobal: 35,
-    cyclePhase: "interim", rikishi: new Map([[a.id, a], [b.id, b]]),
-    heyas: new Map(), events: [], trainingState: new Map(), governanceLog: [],
-    currentBasho: null, sparringPairs,
+    id: "w1",
+    seed: "s",
+    year: 2025,
+    week: 5,
+    dayIndexGlobal: 35,
+    cyclePhase: "interim",
+    rikishi: new Map([
+      [a.id, a],
+      [b.id, b],
+    ]),
+    heyas: new Map(),
+    events: [],
+    trainingState: new Map(),
+    governanceLog: [],
+    currentBasho: null,
+    sparringPairs,
   } as unknown as WorldState;
 }
 
 describe("applyWeeklySparring", () => {
   it("increases rikishi stats after a friction pair week", () => {
-    const a = mockRikishi("a1", { power: 50, technique: 70, heyaId: "h1", combatProfile: { archetype: "pusher" } as any });
-    const b = mockRikishi("b1", { power: 80, technique: 40, heyaId: "h1", combatProfile: { archetype: "technician" } as any });
+    const a = mockRikishi("a1", {
+      power: 50,
+      technique: 70,
+      heyaId: "h1",
+      combatProfile: { archetype: "pusher" } as any,
+    });
+    const b = mockRikishi("b1", {
+      power: 80,
+      technique: 40,
+      heyaId: "h1",
+      combatProfile: { archetype: "technician" } as any,
+    });
     const state: SparringState = {
       heyaId: "h1",
       pairs: [{ aId: "a1", bId: "b1", weeksActive: 1, chemistry: "friction" }],
@@ -288,9 +314,7 @@ export function applyWeeklySparring(world: WorldState): StateImpact {
 
       // Increment weeksActive on the pair
       const updatedPairs = state.pairs.map((p) =>
-        p.aId === pair.aId && p.bId === pair.bId
-          ? { ...p, weeksActive: p.weeksActive + 1 }
-          : p
+        p.aId === pair.aId && p.bId === pair.bId ? { ...p, weeksActive: p.weeksActive + 1 } : p
       );
       builder.updateSparringState(heyaId, { ...state, pairs: updatedPairs });
     }
@@ -333,6 +357,7 @@ git commit -m "feat(training): wire applyWeeklySparring into weekly tick"
 ## Task 3: Sparring-Born Rivalry Seeding
 
 **Files:**
+
 - Modify: `src/engine/systems/narrative/RivalryService.ts`
 - Create: `src/engine/systems/narrative/__tests__/sparringRivalry.test.ts`
 
@@ -432,17 +457,23 @@ In `SparringService.applyWeeklySparring`, after incrementing `weeksActive`, add:
 import { maybeSeedSparringRivalry } from "../narrative/RivalryService";
 
 const rivalrySeed = maybeSeedSparringRivalry(
-  a, b,
+  a,
+  b,
   { ...pair, weeksActive: pair.weeksActive + 1 },
   `${world.week}_${heyaId}`
 );
 if (rivalrySeed) {
-  builder.logEvent("SPARRING_RIVALRY_SEEDED", "training", {
-    heyaId,
-    rikishiIdA: rivalrySeed.aId,
-    rikishiIdB: rivalrySeed.bId,
-    intensity: rivalrySeed.intensity,
-  }, { importance: "notable" });
+  builder.logEvent(
+    "SPARRING_RIVALRY_SEEDED",
+    "training",
+    {
+      heyaId,
+      rikishiIdA: rivalrySeed.aId,
+      rikishiIdB: rivalrySeed.bId,
+      intensity: rivalrySeed.intensity,
+    },
+    { importance: "notable" }
+  );
 }
 ```
 
@@ -458,6 +489,7 @@ git commit -m "feat(rivalry): seed sparring-born rivalries after 12 friction wee
 ## Task 4: Sparring Assignment UI
 
 **Files:**
+
 - Create: `src/components/game/SparringPanel.tsx`
 - Modify: Training page (find via `grep -r "Training\|training" src/pages --include="*.tsx" -l`)
 
@@ -467,7 +499,13 @@ git commit -m "feat(rivalry): seed sparring-born rivalries after 12 friction wee
 // src/components/game/SparringPanel.tsx
 import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { Rikishi } from "@/engine/types/rikishi";
@@ -483,7 +521,7 @@ interface Props {
 
 const CHEM_LABELS = {
   friction: { label: "Friction", color: "text-green-500", tip: "Different styles — both grow" },
-  rut:     { label: "Rut",     color: "text-amber-500", tip: "Same style — diminishing returns" },
+  rut: { label: "Rut", color: "text-amber-500", tip: "Same style — diminishing returns" },
   neutral: { label: "Neutral", color: "text-muted-foreground", tip: "Moderate gains" },
 };
 
@@ -513,35 +551,59 @@ export function SparringPanel({ heyaRikishi, pairs, onAddPair, onRemovePair }: P
           if (!a || !b) return null;
           const chem = CHEM_LABELS[pair.chemistry];
           return (
-            <div key={`${pair.aId}-${pair.bId}`} className="flex items-center justify-between gap-2">
-              <span className="text-sm">{a.shikona} ↔ {b.shikona}</span>
-              <Badge variant="outline" className={chem.color}>{chem.label}</Badge>
+            <div
+              key={`${pair.aId}-${pair.bId}`}
+              className="flex items-center justify-between gap-2"
+            >
+              <span className="text-sm">
+                {a.shikona} ↔ {b.shikona}
+              </span>
+              <Badge variant="outline" className={chem.color}>
+                {chem.label}
+              </Badge>
               <span className="text-xs text-muted-foreground">{pair.weeksActive}w</span>
-              <Button size="sm" variant="ghost" onClick={() => onRemovePair(pair.aId, pair.bId)}>×</Button>
+              <Button size="sm" variant="ghost" onClick={() => onRemovePair(pair.aId, pair.bId)}>
+                ×
+              </Button>
             </div>
           );
         })}
 
         <div className="flex gap-2 items-center pt-2 border-t">
           <Select value={selectedA} onValueChange={setSelectedA}>
-            <SelectTrigger className="w-32 h-7 text-xs"><SelectValue placeholder="Rikishi A" /></SelectTrigger>
+            <SelectTrigger className="w-32 h-7 text-xs">
+              <SelectValue placeholder="Rikishi A" />
+            </SelectTrigger>
             <SelectContent>
-              {heyaRikishi.filter((r) => !paiредIds.has(r.id)).map((r) => (
-                <SelectItem key={r.id} value={r.id}>{r.shikona}</SelectItem>
-              ))}
+              {heyaRikishi
+                .filter((r) => !paiредIds.has(r.id))
+                .map((r) => (
+                  <SelectItem key={r.id} value={r.id}>
+                    {r.shikona}
+                  </SelectItem>
+                ))}
             </SelectContent>
           </Select>
           <span className="text-muted-foreground">↔</span>
           <Select value={selectedB} onValueChange={setSelectedB}>
-            <SelectTrigger className="w-32 h-7 text-xs"><SelectValue placeholder="Rikishi B" /></SelectTrigger>
+            <SelectTrigger className="w-32 h-7 text-xs">
+              <SelectValue placeholder="Rikishi B" />
+            </SelectTrigger>
             <SelectContent>
-              {heyaRikishi.filter((r) => !paiредIds.has(r.id) && r.id !== selectedA).map((r) => (
-                <SelectItem key={r.id} value={r.id}>{r.shikona}</SelectItem>
-              ))}
+              {heyaRikishi
+                .filter((r) => !paiредIds.has(r.id) && r.id !== selectedA)
+                .map((r) => (
+                  <SelectItem key={r.id} value={r.id}>
+                    {r.shikona}
+                  </SelectItem>
+                ))}
             </SelectContent>
           </Select>
           {previewChemistry && (
-            <span className={`text-xs ${CHEM_LABELS[previewChemistry].color}`} title={CHEM_LABELS[previewChemistry].tip}>
+            <span
+              className={`text-xs ${CHEM_LABELS[previewChemistry].color}`}
+              title={CHEM_LABELS[previewChemistry].tip}
+            >
               {CHEM_LABELS[previewChemistry].label}
             </span>
           )}
@@ -549,7 +611,11 @@ export function SparringPanel({ heyaRikishi, pairs, onAddPair, onRemovePair }: P
             size="sm"
             className="h-7 text-xs"
             disabled={!selectedA || !selectedB}
-            onClick={() => { onAddPair(selectedA, selectedB); setSelectedA(""); setSelectedB(""); }}
+            onClick={() => {
+              onAddPair(selectedA, selectedB);
+              setSelectedA("");
+              setSelectedB("");
+            }}
           >
             Pair
           </Button>
@@ -567,7 +633,12 @@ In the relevant slice, add handlers that update `world.sparringPairs` directly u
 Add to `SparringService.ts`:
 
 ```typescript
-export function assignSparringPair(world: WorldState, heyaId: string, aId: string, bId: string): StateImpact {
+export function assignSparringPair(
+  world: WorldState,
+  heyaId: string,
+  aId: string,
+  bId: string
+): StateImpact {
   const builder = createImpactBuilder("assignSparringPair");
   const a = world.rikishi.get(aId);
   const b = world.rikishi.get(bId);
@@ -581,7 +652,12 @@ export function assignSparringPair(world: WorldState, heyaId: string, aId: strin
   return builder.build();
 }
 
-export function removeSparringPair(world: WorldState, heyaId: string, aId: string, bId: string): StateImpact {
+export function removeSparringPair(
+  world: WorldState,
+  heyaId: string,
+  aId: string,
+  bId: string
+): StateImpact {
   const builder = createImpactBuilder("removeSparringPair");
   const state = world.sparringPairs?.get(heyaId);
   if (!state) return builder.build();
@@ -610,6 +686,7 @@ In the training page, add:
 - [ ] **Step 4: Manual smoke test**
 
 Start dev server (`bun run dev`). Navigate to the training page:
+
 1. Add a friction pair — confirm chemistry label appears.
 2. Add a rut pair — confirm different color.
 3. Advance one week — confirm stats of friction pair members tick up slightly.

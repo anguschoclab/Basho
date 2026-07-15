@@ -4,10 +4,10 @@
 
 There are currently two parallel, partially-overlapping narrative generation systems that produce separate arrays on `BoutResult`:
 
-| Track | File | Output field | Phase coverage |
-|-------|------|-------------|----------------|
-| **Legacy prose** | `src/engine/narrative.ts` | `result.narrative[]` | venue framing, ring entrances, ritual, phase commentary, closing |
-| **PbP** | `src/engine/bout/boutNarrative.ts` | `result.pbpLines[]` + `result.pbp[]` | ritual, tachiai, engagement, edge_crisis, finish kimarite, awards |
+| Track            | File                               | Output field                         | Phase coverage                                                    |
+| ---------------- | ---------------------------------- | ------------------------------------ | ----------------------------------------------------------------- |
+| **Legacy prose** | `src/engine/narrative.ts`          | `result.narrative[]`                 | venue framing, ring entrances, ritual, phase commentary, closing  |
+| **PbP**          | `src/engine/bout/boutNarrative.ts` | `result.pbpLines[]` + `result.pbp[]` | ritual, tachiai, engagement, edge_crisis, finish kimarite, awards |
 
 Problems arising from the split:
 
@@ -21,6 +21,7 @@ Problems arising from the split:
 ### Goal
 
 Produce a **single generation pass** that outputs one `PbpLine[]` array with:
+
 - Venue framing (opening)
 - Ritual (entrance, salt, shikiri)
 - Tachiai
@@ -36,15 +37,15 @@ All with `phase`, `tags`, and voice style awareness. Retire `result.narrative[]`
 
 ## Affected Files
 
-| File | Change |
-|------|--------|
-| `src/engine/bout/boutNarrative.ts` | Rewrite as the single source of truth; absorb venue + voice from `narrative.ts` |
-| `src/engine/narrative.ts` | Deprecate `generateNarrative()`; have it call the new unified path |
-| `src/engine/bard/narrativeContext.ts` | Expose `buildNarrativeContext(world, day, eastRikishi, westRikishi)` for use in `boutNarrative.ts` |
-| `src/engine/types/basho.ts` | Mark `BoutResult.narrative` as `@deprecated` |
-| `src/components/game/BoutNarrativeModal.tsx` | Remove the `useMemo` re-generation; remove the Narrative tab (or merge it into Commentary) |
-| `src/components/game/BoutLog.tsx` | Unchanged — Log tab continues to render `result.log` |
-| `src/components/game/boutReplay/boutCanvas/narration.ts` | Update to use `pbpLines` exclusively (no `result.pbp` fallback needed once unified) |
+| File                                                     | Change                                                                                             |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `src/engine/bout/boutNarrative.ts`                       | Rewrite as the single source of truth; absorb venue + voice from `narrative.ts`                    |
+| `src/engine/narrative.ts`                                | Deprecate `generateNarrative()`; have it call the new unified path                                 |
+| `src/engine/bard/narrativeContext.ts`                    | Expose `buildNarrativeContext(world, day, eastRikishi, westRikishi)` for use in `boutNarrative.ts` |
+| `src/engine/types/basho.ts`                              | Mark `BoutResult.narrative` as `@deprecated`                                                       |
+| `src/components/game/BoutNarrativeModal.tsx`             | Remove the `useMemo` re-generation; remove the Narrative tab (or merge it into Commentary)         |
+| `src/components/game/BoutLog.tsx`                        | Unchanged — Log tab continues to render `result.log`                                               |
+| `src/components/game/boutReplay/boutCanvas/narration.ts` | Update to use `pbpLines` exclusively (no `result.pbp` fallback needed once unified)                |
 
 ---
 
@@ -53,6 +54,7 @@ All with `phase`, `tags`, and voice style awareness. Retire `result.narrative[]`
 **File: `src/engine/types/basho.ts`**
 
 The existing `PbpLine`:
+
 ```typescript
 export interface PbpLine {
   text: string;
@@ -66,15 +68,15 @@ Add new phase values and a `segment` field for UI rendering:
 
 ```typescript
 export type PbpPhase =
-  | "opening"    // venue framing
-  | "entrance"   // fighter ring walks
-  | "ritual"     // salt, shikiri
+  | "opening" // venue framing
+  | "entrance" // fighter ring walks
+  | "ritual" // salt, shikiri
   | "tactical"
   | "tachiai"
   | "clinch"
   | "momentum"
   | "finish"
-  | "award"      // kinboshi/ginboshi/kensho
+  | "award" // kinboshi/ginboshi/kensho
   | "closing";
 
 export type PbpVoice = "dramatic" | "formal" | "understated";
@@ -84,11 +86,12 @@ export interface PbpLine {
   id?: string;
   phase?: PbpPhase;
   tags?: PbpTag[];
-  voice?: PbpVoice;    // new — drives rendering style
+  voice?: PbpVoice; // new — drives rendering style
 }
 ```
 
 Mark `narrative` as deprecated:
+
 ```typescript
 export interface BoutResult {
   // ...
@@ -116,7 +119,7 @@ export function buildNarrativeContext(
   world: WorldState,
   day: number,
   eastRikishi: Rikishi,
-  westRikishi: Rikishi,
+  westRikishi: Rikishi
 ): NarrativeContext {
   const isElite =
     eastRikishi.rank.startsWith("Y") ||
@@ -125,12 +128,10 @@ export function buildNarrativeContext(
     westRikishi.rank.startsWith("O");
 
   const voiceStyle: VoiceStyle =
-    day >= 13 && isElite ? "dramatic"
-    : isElite ? "formal"
-    : "understated";
+    day >= 13 && isElite ? "dramatic" : isElite ? "formal" : "understated";
 
   const venue = world.currentBasho?.bashoName
-    ? BASHO_TO_VENUE[world.currentBasho.bashoName] ?? "Tokyo"
+    ? (BASHO_TO_VENUE[world.currentBasho.bashoName] ?? "Tokyo")
     : "Tokyo";
 
   return {
@@ -331,14 +332,22 @@ export function generateNarrative(
   east: Rikishi,
   west: Rikishi,
   world: WorldState,
-  day: number,
+  day: number
 ): string[] {
   // If pbpLines are already populated (new path already ran), just extract
   if (result.pbpLines && result.pbpLines.length > 0) {
     return result.pbpLines.map((l) => l.text);
   }
   // Fallback for any caller that bypassed boutResolver:
-  generateBoutNarrative(result, east, west, world.currentBasho?.bashoName ?? "", day, result.boutId, world);
+  generateBoutNarrative(
+    result,
+    east,
+    west,
+    world.currentBasho?.bashoName ?? "",
+    day,
+    result.boutId,
+    world
+  );
   return result.pbp ?? [];
 }
 ```
@@ -393,18 +402,20 @@ const narrativeLines = pbpLines.filter((l) =>
   ["opening", "entrance", "ritual", "finish", "award", "closing"].includes(l.phase ?? "")
 );
 
-{narrativeLines.map((line, i) => (
-  <p
-    key={line.id ?? i}
-    className={cn(
-      "text-sm leading-relaxed",
-      line.voice === "dramatic" && "font-semibold",
-      i === narrativeLines.length - 1 && "italic",
-    )}
-  >
-    {line.text}
-  </p>
-))}
+{
+  narrativeLines.map((line, i) => (
+    <p
+      key={line.id ?? i}
+      className={cn(
+        "text-sm leading-relaxed",
+        line.voice === "dramatic" && "font-semibold",
+        i === narrativeLines.length - 1 && "italic"
+      )}
+    >
+      {line.text}
+    </p>
+  ));
+}
 ```
 
 ---
@@ -437,6 +448,7 @@ Remove the `result.narrative` fallback entirely — it is now always a subset of
 Currently `pbpLines` may be empty because `generateBoutNarrative` is not called before the onboarding bout is displayed. Now that `boutResolver.ts` calls `generateBoutNarrative` internally (verify this is the case; if not, add the call to `resolveBout`), `pbpLines` will be populated automatically.
 
 If `resolveBout` does not call `generateBoutNarrative` for exhibition bouts, add:
+
 ```typescript
 // In resolveBout, after buildBoutResultV2:
 generateBoutNarrative(result, east, west, "exhibition", 1, result.boutId, world);
@@ -446,13 +458,13 @@ generateBoutNarrative(result, east, west, "exhibition", 1, result.boutId, world)
 
 ## Migration Checklist — Backward Compatibility
 
-| Caller | Uses | Migration |
-|--------|------|-----------|
-| `BoutNarrativeModal` Commentary tab | `pbpLines` | No change — already using new format |
-| `BoutNarrativeModal` Narrative tab | `result.narrative` | Switch to filtered `pbpLines` (Step 6) |
-| `boutCanvas/narration.ts` | `result.pbp` first, `result.narrative` second | Switch to `pbpLines` (Step 7) |
-| `ExhibitionBout` | `pbpLines` | Ensure `generateBoutNarrative` is called (Step 8) |
-| Any test that asserts `result.narrative` content | `result.narrative` | Update assertions to use `pbpLines` |
+| Caller                                           | Uses                                          | Migration                                         |
+| ------------------------------------------------ | --------------------------------------------- | ------------------------------------------------- |
+| `BoutNarrativeModal` Commentary tab              | `pbpLines`                                    | No change — already using new format              |
+| `BoutNarrativeModal` Narrative tab               | `result.narrative`                            | Switch to filtered `pbpLines` (Step 6)            |
+| `boutCanvas/narration.ts`                        | `result.pbp` first, `result.narrative` second | Switch to `pbpLines` (Step 7)                     |
+| `ExhibitionBout`                                 | `pbpLines`                                    | Ensure `generateBoutNarrative` is called (Step 8) |
+| Any test that asserts `result.narrative` content | `result.narrative`                            | Update assertions to use `pbpLines`               |
 
 ---
 

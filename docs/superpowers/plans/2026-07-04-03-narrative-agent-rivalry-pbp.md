@@ -16,11 +16,11 @@ Two narrative systems produced results that were silently discarded.
 
 ## Affected Files (as built)
 
-| File | Change |
-|------|--------|
-| `src/engine/tick/phases/phase06_narrative.ts` | Calls `spawnNarrativeAgent` for player heya; emits typed story events via `narrativeEventMap` |
-| `src/engine/bard/narrativeEventMap.ts` | New file — maps `NarrativeAgentResult.eventType` to `{ titlePath, summaryPath }` template pairs |
-| `src/engine/bout/boutNarrative.ts` | Injects `h2h.*` rivalry lines into opening PbP; adds basho win-streak callouts |
+| File                                          | Change                                                                                          |
+| --------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `src/engine/tick/phases/phase06_narrative.ts` | Calls `spawnNarrativeAgent` for player heya; emits typed story events via `narrativeEventMap`   |
+| `src/engine/bard/narrativeEventMap.ts`        | New file — maps `NarrativeAgentResult.eventType` to `{ titlePath, summaryPath }` template pairs |
+| `src/engine/bout/boutNarrative.ts`            | Injects `h2h.*` rivalry lines into opening PbP; adds basho win-streak callouts                  |
 
 ---
 
@@ -39,43 +39,44 @@ When `narrativeResult.shouldTriggerEvent && narrativeResult.eventType` is true, 
 **Deviation from original spec — file location and structure:** The plan specified `src/engine/narrative/narrativeEventMap.ts` with a single `string` path per entry. The implementation places the file at `src/engine/bard/narrativeEventMap.ts` (alongside `BardEngine.ts`, which is the correct co-location) and uses `{ titlePath: string, summaryPath: string }` pairs per entry. This allows each narrative trigger to resolve both a headline and a body line independently.
 
 Structure:
+
 ```typescript
 // src/engine/bard/narrativeEventMap.ts
 export interface NarrativeEventMapEntry {
-  eventType: string;          // engine event type to emit (e.g. "AWARD_CONFERRED")
-  titlePath: string;          // archive.json path for headline template
-  summaryPath: string;        // archive.json path for summary template
+  eventType: string; // engine event type to emit (e.g. "AWARD_CONFERRED")
+  titlePath: string; // archive.json path for headline template
+  summaryPath: string; // archive.json path for summary template
 }
 
 export const NARRATIVE_EVENT_MAP: Record<string, NarrativeEventMapEntry> = {
   championship_celebration: {
     eventType: "AWARD_CONFERRED",
-    titlePath:   "events.narrative.championship_celebration_title",
+    titlePath: "events.narrative.championship_celebration_title",
     summaryPath: "events.narrative.championship_celebration_summary",
   },
   yokozuna_promotion: {
     eventType: "LIFECYCLE_EVENT",
-    titlePath:   "events.narrative.yokozuna_promotion_title",
+    titlePath: "events.narrative.yokozuna_promotion_title",
     summaryPath: "events.narrative.yokozuna_promotion_summary",
   },
   retirement_ceremony: {
     eventType: "RETIREMENT_ANNOUNCED",
-    titlePath:   "events.narrative.retirement_ceremony_title",
+    titlePath: "events.narrative.retirement_ceremony_title",
     summaryPath: "events.narrative.retirement_ceremony_summary",
   },
   underdog_victory: {
     eventType: "NARRATIVE_STRATEGY_SHIFT",
-    titlePath:   "events.narrative.underdog_victory_title",
+    titlePath: "events.narrative.underdog_victory_title",
     summaryPath: "events.narrative.underdog_victory_summary",
   },
   media_spotlight: {
     eventType: "NARRATIVE_STRATEGY_SHIFT",
-    titlePath:   "events.narrative.media_spotlight_title",
+    titlePath: "events.narrative.media_spotlight_title",
     summaryPath: "events.narrative.media_spotlight_summary",
   },
   legacy_milestone: {
     eventType: "LIFECYCLE_EVENT",
-    titlePath:   "events.narrative.legacy_milestone_title",
+    titlePath: "events.narrative.legacy_milestone_title",
     summaryPath: "events.narrative.legacy_milestone_summary",
   },
 };
@@ -89,12 +90,12 @@ export const NARRATIVE_EVENT_MAP: Record<string, NarrativeEventMapEntry> = {
 
 `RivalryService.makeRivalryKey(east.id, west.id)` is called after the drama block in the opening phase. The `RivalryPairState` for the pair is retrieved and used to select a template:
 
-| Condition | Template used |
-|-----------|--------------|
-| `pair.meetings === 0` | `h2h.first_meeting` |
+| Condition                       | Template used                                                            |
+| ------------------------------- | ------------------------------------------------------------------------ |
+| `pair.meetings === 0`           | `h2h.first_meeting`                                                      |
 | `meetings >= 5` and win gap ≥ 3 | `h2h.domination` (with P1/P2 swapped to put the dominant wrestler first) |
-| `meetings >= 2` and win gap ≥ 1 | `h2h.recent` |
-| `meetings >= 2` and wins tied | `h2h.deadlock` |
+| `meetings >= 2` and win gap ≥ 1 | `h2h.recent`                                                             |
+| `meetings >= 2` and wins tied   | `h2h.deadlock`                                                           |
 
 **Deviation from original spec — `h2h.streak` not used:** The plan proposed `h2h.streak` for the tied-record case. The implementation uses `h2h.deadlock` instead, which is the semantically correct template for a deadlocked record. `h2h.streak` in `archive.json` describes a wrestler on a consecutive-win run against one opponent — a different scenario from a tied career record. The choice is correct.
 
@@ -104,11 +105,11 @@ Tokens passed to all H2H templates: `P1`, `P2`, `WINS`, `LOSSES`, `TOTAL`, `STRE
 
 Reads `east.currentBashoWins` and `west.currentBashoWins` directly from the rikishi (pre-computed fields, not scanned from `basho.matches`). Threshold tiers:
 
-| Wins | Template |
-|------|----------|
-| 5–7 | `media.streaks.notable` |
-| 8–11 | `media.streaks.hot` |
-| 12+ | `media.streaks.legendary` |
+| Wins | Template                  |
+| ---- | ------------------------- |
+| 5–7  | `media.streaks.notable`   |
+| 8–11 | `media.streaks.hot`       |
+| 12+  | `media.streaks.legendary` |
 
 Lines are pushed with tag `"dominant"` into the `"opening"` PbP phase. The threshold to trigger is ≥ 5 wins; bouts on days 1–5 are below threshold and produce no callout.
 

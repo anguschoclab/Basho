@@ -13,37 +13,44 @@ The research below used real JSA data (Wikipedia, confirmed 2018–2019 figures)
 ### 1. Kensho split is wrong (and internally inconsistent)
 
 **Reality (confirmed 2019 JSA structure):**
+
 - Sponsor pays: ¥70,000 per banner
 - JSA administrative fee: ¥10,000 retained
 - Winner receives: ¥60,000 total — ¥30,000 immediate cash, ¥30,000 to retirement fund
 
 **Game (`src/constants/engine/economic.ts`):**
+
 ```
 KENSHO_AMOUNT_PER_ENVELOPE = ¥70,000  ✓
 KENSHO_SPLIT = { cash: ¥10,000, retirement: ¥50,000, jsaFee: ¥10,000 }  ✗
 ```
+
 The game gives only ¥10,000 immediate cash — 3× lower than reality — and diverts ¥50,000 to retirement. Independently, `KENSHO_RIKISHI_SHARE_RATIO = 0.5` and `KENSHO_RETIREMENT_DIVERSION_RATIO = 0.3` imply yet another split (¥35,000 cash / ¥21,000 retirement / ¥14,000 JSA). Both models are internally inconsistent with each other. The `KENSHO_SPLIT` object and the ratio constants need to be reconciled to a single source of truth.
 
 ### 2. Mochikyukin multipliers are 3× underscaled
 
 **Reality:**
+
 - ¥4,000/unit/basho = ¥24,000/unit/year ✓ (game matches)
 - Kinboshi: +10 units permanently → +¥240,000/year
 - Yusho: +30 units → +¥720,000/year from that basho forward
 - Rank floors: Yokozuna minimum 150 units (¥3,600,000/year), Ozeki 100 units, Makuuchi 60 units, Juryo 40 units
 
 **Game (`src/constants/engine/economic.ts`):**
+
 ```
 MOCHIKYUKIN_POINT_VALUE = ¥4,000  ✓
 kinboshi: +3 points   ✗  (should be +10)
 yusho:    +10 points  ✗  (should be +30)
 kachi-koshi: +1 point per net win above even  ✗  (real is +0.5 per net win above even)
 ```
+
 No rank floor guarantees exist in the game. This means a veteran Yokozuna with 20+ basho wins has negligible mochikyukin compared to reality. Hakuho earned ~¥52M/year from mochikyukin alone at career peak; the game's system would produce under ¥5M/year.
 
 ### 3. Non-sekitori receive no per-tournament allowance
 
 **Reality:**
+
 - Makushita: ¥165,000 per basho (×6/year = ¥990,000)
 - Sandanme: ¥110,000 per basho (×6/year = ¥660,000)
 - Jonidan: ¥88,000 per basho (×6/year = ¥528,000)
@@ -56,7 +63,8 @@ No rank floor guarantees exist in the game. This means a veteran Yokozuna with 2
 
 **Reality:** JSA pays the oyakata ~¥1,250,000/month salary directly, plus per-sekitori incentives (amounts not public, but described as "scaling with rank"). The heya's revenue from having a yokozuna is substantial — this is how stable finances work.
 
-**Game:** 
+**Game:**
+
 - `JSA_STABLE_WEEKLY_GRANT = ¥50,000` (¥2.6M/year — correct order of magnitude for base grant)
 - `JSA_PER_WRESTLER_SUBSIDY_MONTHLY`: makuuchi ¥150,000, juryo ¥100,000, makushita ¥50,000...
 - But `OYAKATA_SALARY_MONTHLY = ¥1,200,000` is explicitly commented as "JSA pays directly (not heya expense)" with **no code that actually processes this payment**. The oyakata salary — the largest and most consistent heya income source — is an orphaned constant.
@@ -69,7 +77,7 @@ No rank floor guarantees exist in the game. This means a veteran Yokozuna with 2
 
 ### 6. SEKITORI_OVERHEAD scales incorrectly vs income
 
-A yokozuna costs the heya ¥5,000,000/month in SEKITORI_OVERHEAD, while the heya receives only ¥150,000/month JSA subsidy for them. The gap is ¥4,850,000/month — nearly the sekitori's entire personal salary. In reality, the heya *profits* from having a yokozuna through JSA incentives and koenkai. The overhead model has the direction of financial pressure backwards.
+A yokozuna costs the heya ¥5,000,000/month in SEKITORI_OVERHEAD, while the heya receives only ¥150,000/month JSA subsidy for them. The gap is ¥4,850,000/month — nearly the sekitori's entire personal salary. In reality, the heya _profits_ from having a yokozuna through JSA incentives and koenkai. The overhead model has the direction of financial pressure backwards.
 
 The overhead abstraction isn't entirely wrong — facilities, food, staff, and tournament logistics are real costs. But at ¥5M/month for a yokozuna (¥60M/year overhead vs ¥36M salary), it's numerically inverted. Reducing sekitori overhead to match reality's food/facilities scale requires a commensurate increase in JSA rank-based income to keep the budget balanced.
 
@@ -100,9 +108,9 @@ Remove the conflicting ratio constants and standardize on the explicit split:
 
 // Replace KENSHO_SPLIT with:
 export const KENSHO_SPLIT = {
-  jsaFee:     10_000,   // JSA administrative cut
-  cash:       30_000,   // Immediate cash to winner (was ¥10,000 — now matches 2019 JSA)
-  retirement: 30_000,   // Deferred to retirement fund (was ¥50,000)
+  jsaFee: 10_000, // JSA administrative cut
+  cash: 30_000, // Immediate cash to winner (was ¥10,000 — now matches 2019 JSA)
+  retirement: 30_000, // Deferred to retirement fund (was ¥50,000)
 } as const;
 // Sum: 70,000 = KENSHO_AMOUNT_PER_ENVELOPE ✓
 ```
@@ -118,21 +126,21 @@ Search for any code consuming `KENSHO_RIKISHI_SHARE_RATIO` or `KENSHO_RETIREMENT
 ```typescript
 // Mochikyukin point awards — aligned to real JSA values
 export const MOCHIKYUKIN_POINTS = {
-  kachiKoshiPerNetWin: 0.5,  // per net win above even (was 1 per kachi-koshi, ambiguous)
-  kinboshi:            10,   // per kinboshi (was 3 — real: 10 units)
-  junYusho:             5,   // runner-up (unchanged)
-  yusho:               30,   // championship (was 10 — real: 30 units)
-  zenshoYusho:         50,   // perfect record (new — real: 50 units extra)
+  kachiKoshiPerNetWin: 0.5, // per net win above even (was 1 per kachi-koshi, ambiguous)
+  kinboshi: 10, // per kinboshi (was 3 — real: 10 units)
+  junYusho: 5, // runner-up (unchanged)
+  yusho: 30, // championship (was 10 — real: 30 units)
+  zenshoYusho: 50, // perfect record (new — real: 50 units extra)
 } as const;
 
 // Minimum guaranteed mochikyukin units by rank (new — real JSA floors)
 export const MOCHIKYUKIN_RANK_FLOORS: Record<string, number> = {
-  yokozuna:  150,
-  ozeki:     100,
-  sekiwake:   80,
-  komusubi:   70,
+  yokozuna: 150,
+  ozeki: 100,
+  sekiwake: 80,
+  komusubi: 70,
   maegashira: 60,
-  juryo:      40,
+  juryo: 40,
 };
 ```
 
@@ -160,9 +168,9 @@ const payoutAmount = effectivePoints * MOCHIKYUKIN_POINT_VALUE;
 // Per-tournament allowances paid to non-sekitori wrestlers at each basho (real JSA values)
 export const NON_SEKITORI_BASHO_ALLOWANCE: Record<string, number> = {
   makushita: 165_000,
-  sandanme:  110_000,
-  jonidan:    88_000,
-  jonokuchi:  77_000,
+  sandanme: 110_000,
+  jonidan: 88_000,
+  jonokuchi: 77_000,
 };
 ```
 
@@ -217,16 +225,16 @@ The current JSA per-wrestler subsidy (makuuchi ¥150K/month) is tiny vs the over
 // vs a heya with 1 maegashira.
 export const JSA_PER_WRESTLER_SUBSIDY_MONTHLY: Record<string, number> = {
   // Before: makuuchi ¥150K, juryo ¥100K, makushita ¥50K, sandanme ¥30K, jonidan ¥20K, jonokuchi ¥15K
-  yokozuna:   2_500_000,  // was ¥150K — a yokozuna is a massive revenue generator for the JSA
-  ozeki:      2_000_000,  // was ¥150K
-  sekiwake:   1_200_000,  // was ¥150K
-  komusubi:   1_000_000,  // was ¥150K
-  maegashira:   400_000,  // was ¥150K — modest but meaningful
-  juryo:        200_000,  // was ¥100K
-  makushita:     50_000,  // was ¥50K — unchanged (non-sekitori, minimal JSA investment)
-  sandanme:      30_000,  // unchanged
-  jonidan:       20_000,  // unchanged
-  jonokuchi:     15_000,  // unchanged
+  yokozuna: 2_500_000, // was ¥150K — a yokozuna is a massive revenue generator for the JSA
+  ozeki: 2_000_000, // was ¥150K
+  sekiwake: 1_200_000, // was ¥150K
+  komusubi: 1_000_000, // was ¥150K
+  maegashira: 400_000, // was ¥150K — modest but meaningful
+  juryo: 200_000, // was ¥100K
+  makushita: 50_000, // was ¥50K — unchanged (non-sekitori, minimal JSA investment)
+  sandanme: 30_000, // unchanged
+  jonidan: 20_000, // unchanged
+  jonokuchi: 15_000, // unchanged
 };
 ```
 
@@ -250,7 +258,12 @@ function computeHeyaPrestigeScore(heya: Heya, world: WorldState): number {
     if (!r) return sum;
     // Weight heavily toward high-rank wrestlers — this is what attracts koenkai members
     const rankWeight: Record<string, number> = {
-      yokozuna: 40, ozeki: 30, sekiwake: 20, komusubi: 15, maegashira: 8, juryo: 4,
+      yokozuna: 40,
+      ozeki: 30,
+      sekiwake: 20,
+      komusubi: 15,
+      maegashira: 8,
+      juryo: 4,
     };
     return sum + (rankWeight[r.rank?.split(" ")[0] ?? ""] ?? 1);
   }, 0);
@@ -285,17 +298,18 @@ The current overhead is calibrated as "total cost" which inverts the P&L directi
 // Real food/chankonabe for a wrestler: ~¥100-200K/month; total facilities/overhead ~¥200-400K.
 export const SEKITORI_OVERHEAD_MONTHLY: Partial<Record<string, number>> = {
   // Before: yokozuna ¥5M, ozeki ¥3.5M, sekiwake ¥2.5M, komusubi ¥2M, maegashira ¥1.5M, juryo ¥800K
-  yokozuna:   1_500_000,  // food + facilities + entourage + tournament logistics
-  ozeki:      1_200_000,
-  sekiwake:     900_000,
-  komusubi:     800_000,
-  maegashira:   600_000,
-  juryo:        350_000,
+  yokozuna: 1_500_000, // food + facilities + entourage + tournament logistics
+  ozeki: 1_200_000,
+  sekiwake: 900_000,
+  komusubi: 800_000,
+  maegashira: 600_000,
+  juryo: 350_000,
 };
 export const NON_SEKITORI_OVERHEAD_MONTHLY = 80_000; // food + dorm (was ¥100K — minor reduction)
 ```
 
 **P&L impact of Changes 4+5+7 combined** (example: heya with 1 yokozuna, 10 lower-division):
+
 - Weekly income: ¥300K (oyakata) + ¥625K (yokozuna JSA/4) + ¥50K (base grant) = ~¥975K/week
 - Weekly overhead: ¥750K (fixed) + ¥375K (yokozuna, ¥1.5M/4) + ¥200K (10 lower-div, ¥80K×12÷52) = ~¥1.3M/week
 - Net: -¥325K/week before koenkai. A `moderate` koenkai (¥1.5M/month = ¥375K/week × 70% = ¥262K/week) brings near-breakeven.
@@ -346,59 +360,59 @@ export const DEBT_LIMIT = -15_500_000;
 
 ### Scenario A: Struggling Low-Division Stable (0 sekitori, 8 lower-div wrestlers)
 
-| Source | Weekly Amount |
-|--------|--------------|
-| Oyakata salary | ¥300,000 |
-| JSA base grant | ¥50,000 |
-| JSA per-wrestler (8 × ¥20K / 4) | ¥40,000 |
-| Koenkai (none band) | ¥0 |
-| **Total income** | **¥390,000** |
-| Fixed overhead | ¥750,000 |
-| Roster overhead (8 × ¥80K / 4) | ¥160,000 |
-| **Total expenses** | **¥910,000** |
-| **Net** | **−¥520,000/week** |
+| Source                          | Weekly Amount      |
+| ------------------------------- | ------------------ |
+| Oyakata salary                  | ¥300,000           |
+| JSA base grant                  | ¥50,000            |
+| JSA per-wrestler (8 × ¥20K / 4) | ¥40,000            |
+| Koenkai (none band)             | ¥0                 |
+| **Total income**                | **¥390,000**       |
+| Fixed overhead                  | ¥750,000           |
+| Roster overhead (8 × ¥80K / 4)  | ¥160,000           |
+| **Total expenses**              | **¥910,000**       |
+| **Net**                         | **−¥520,000/week** |
 
 Without koenkai, this stable burns through starting funds in ~57 weeks. That's ~1 real year to build up sekitori or face merger — genuine pressure without being instant-fail.
 
 ### Scenario B: Mid-Tier Stable (1 maegashira, 1 juryo, 8 lower-div)
 
-| Source | Weekly Amount |
-|--------|--------------|
-| Oyakata salary | ¥300,000 |
-| JSA base grant | ¥50,000 |
-| JSA maegashira subsidy (¥400K/4) | ¥100,000 |
-| JSA juryo subsidy (¥200K/4) | ¥50,000 |
-| JSA lower-div (8 × avg ¥25K / 4) | ¥50,000 |
-| Koenkai (moderate: ¥1.5M/4 × 70%) | ¥262,500 |
-| **Total income** | **¥812,500** |
-| Fixed overhead | ¥750,000 |
-| Maegashira overhead (¥600K/4) | ¥150,000 |
-| Juryo overhead (¥350K/4) | ¥87,500 |
-| Lower-div overhead (8 × ¥80K/4) | ¥160,000 |
-| **Total expenses** | **¥1,147,500** |
-| **Net** | **−¥335,000/week** |
+| Source                            | Weekly Amount      |
+| --------------------------------- | ------------------ |
+| Oyakata salary                    | ¥300,000           |
+| JSA base grant                    | ¥50,000            |
+| JSA maegashira subsidy (¥400K/4)  | ¥100,000           |
+| JSA juryo subsidy (¥200K/4)       | ¥50,000            |
+| JSA lower-div (8 × avg ¥25K / 4)  | ¥50,000            |
+| Koenkai (moderate: ¥1.5M/4 × 70%) | ¥262,500           |
+| **Total income**                  | **¥812,500**       |
+| Fixed overhead                    | ¥750,000           |
+| Maegashira overhead (¥600K/4)     | ¥150,000           |
+| Juryo overhead (¥350K/4)          | ¥87,500            |
+| Lower-div overhead (8 × ¥80K/4)   | ¥160,000           |
+| **Total expenses**                | **¥1,147,500**     |
+| **Net**                           | **−¥335,000/week** |
 
 With a `strong` koenkai (¥612,500/week), this flips to +¥277K/week surplus. Koenkai management is the decisive lever — matching reality.
 
 ### Scenario C: Elite Stable (1 yokozuna, 2 maegashira, 2 juryo, 8 lower-div)
 
-| Source | Weekly Amount |
-|--------|--------------|
-| Oyakata salary | ¥300,000 |
-| JSA base grant | ¥50,000 |
-| JSA yokozuna subsidy (¥2.5M/4) | ¥625,000 |
-| JSA 2× maegashira (¥400K×2/4) | ¥200,000 |
-| JSA 2× juryo (¥200K×2/4) | ¥100,000 |
-| JSA lower-div | ¥50,000 |
-| Koenkai (powerful: ¥7M/4 × 70%) | ¥1,225,000 |
-| **Total income** | **¥2,550,000** |
-| Fixed overhead | ¥750,000 |
-| Yokozuna overhead (¥1.5M/4) | ¥375,000 |
-| 2× maegashira overhead | ¥300,000 |
-| 2× juryo overhead | ¥175,000 |
-| Lower-div overhead | ¥160,000 |
-| **Total expenses** | **¥1,760,000** |
-| **Net** | **+¥790,000/week** |
+| Source                          | Weekly Amount      |
+| ------------------------------- | ------------------ |
+| Oyakata salary                  | ¥300,000           |
+| JSA base grant                  | ¥50,000            |
+| JSA yokozuna subsidy (¥2.5M/4)  | ¥625,000           |
+| JSA 2× maegashira (¥400K×2/4)   | ¥200,000           |
+| JSA 2× juryo (¥200K×2/4)        | ¥100,000           |
+| JSA lower-div                   | ¥50,000            |
+| Koenkai (powerful: ¥7M/4 × 70%) | ¥1,225,000         |
+| **Total income**                | **¥2,550,000**     |
+| Fixed overhead                  | ¥750,000           |
+| Yokozuna overhead (¥1.5M/4)     | ¥375,000           |
+| 2× maegashira overhead          | ¥300,000           |
+| 2× juryo overhead               | ¥175,000           |
+| Lower-div overhead              | ¥160,000           |
+| **Total expenses**              | **¥1,760,000**     |
+| **Net**                         | **+¥790,000/week** |
 
 Elite stable generates ~¥41M/year surplus — affluent but not trivially so. The yokozuna could retire and drop the koenkai to `strong`, cutting the surplus to roughly +¥177K/week — financially tight and motivating succession planning.
 
@@ -406,14 +420,14 @@ Elite stable generates ~¥41M/year surplus — affluent but not trivially so. Th
 
 ## Affected Files
 
-| File | Change |
-|------|--------|
-| `src/constants/engine/economic.ts` | Fix kensho split, scale mochikyukin, add basho allowances, add oyakata salary, reduce sekitori overhead, raise JSA per-sekitori income, lower DEBT_LIMIT, add mochikyukin rank floors |
-| `src/engine/systems/economy/FinanceCalculator.ts` | Add oyakata salary to income, remove maintenance subsidy, remove survival floor |
-| `src/engine/systems/economy/SponsorshipService.ts` | Tie koenkai band progression to prestige score post-basho |
-| `src/engine/tick/phases/[basho results phase]` | Add non-sekitori basho allowance payment to wrestlers |
-| `src/engine/tick/phases/monthly/economics/salaries.ts` | Apply mochikyukin rank floor before payout |
-| `src/engine/types/rikishi.ts` | Add `lastYushoWeek?: number` for koenkai prestige calculation |
+| File                                                   | Change                                                                                                                                                                                |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/constants/engine/economic.ts`                     | Fix kensho split, scale mochikyukin, add basho allowances, add oyakata salary, reduce sekitori overhead, raise JSA per-sekitori income, lower DEBT_LIMIT, add mochikyukin rank floors |
+| `src/engine/systems/economy/FinanceCalculator.ts`      | Add oyakata salary to income, remove maintenance subsidy, remove survival floor                                                                                                       |
+| `src/engine/systems/economy/SponsorshipService.ts`     | Tie koenkai band progression to prestige score post-basho                                                                                                                             |
+| `src/engine/tick/phases/[basho results phase]`         | Add non-sekitori basho allowance payment to wrestlers                                                                                                                                 |
+| `src/engine/tick/phases/monthly/economics/salaries.ts` | Apply mochikyukin rank floor before payout                                                                                                                                            |
+| `src/engine/types/rikishi.ts`                          | Add `lastYushoWeek?: number` for koenkai prestige calculation                                                                                                                         |
 
 ---
 

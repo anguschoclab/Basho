@@ -8,12 +8,12 @@
 
 ## Affected Files
 
-| File | Change |
-|------|--------|
-| `src/presenters/projections/recapProjections.ts` | Add `selectKeyBouts(world): BoutResult[]` presenter function |
-| `src/pages/RecapPage.tsx` | Add `KeyBoutsSection` between NarrativeSummary and PressConference |
-| `src/components/game/KeyBoutsSection.tsx` | New component — curated moment cards with inline replay |
-| `src/engine/types/basho.ts` | Confirm `BoutResult.dramaticContext` exists; add `YushoDecider` flag if missing |
+| File                                             | Change                                                                          |
+| ------------------------------------------------ | ------------------------------------------------------------------------------- |
+| `src/presenters/projections/recapProjections.ts` | Add `selectKeyBouts(world): BoutResult[]` presenter function                    |
+| `src/pages/RecapPage.tsx`                        | Add `KeyBoutsSection` between NarrativeSummary and PressConference              |
+| `src/components/game/KeyBoutsSection.tsx`        | New component — curated moment cards with inline replay                         |
+| `src/engine/types/basho.ts`                      | Confirm `BoutResult.dramaticContext` exists; add `YushoDecider` flag if missing |
 
 ---
 
@@ -50,10 +50,12 @@ export function selectKeyBouts(world: WorldState): KeyBoutMoment[] {
 
   // 1. Yusho decider — the final bout of senshuraku (day 15) that determined the winner
   const day15Bouts = completedBouts.filter((m) => m.day === 15);
-  const yushoDecider = day15Bouts.find(
-    (m) => m.result?.dramaticContext?.label === "yusho_decider"
-        || m.result?.dramaticContext?.score >= 90
-  ) ?? day15Bouts.at(-1); // fallback: last bout of day 15
+  const yushoDecider =
+    day15Bouts.find(
+      (m) =>
+        m.result?.dramaticContext?.label === "yusho_decider" ||
+        m.result?.dramaticContext?.score >= 90
+    ) ?? day15Bouts.at(-1); // fallback: last bout of day 15
 
   if (yushoDecider?.result) {
     moments.push({
@@ -97,10 +99,7 @@ export function selectKeyBouts(world: WorldState): KeyBoutMoment[] {
 
   // 3. Kinboshi — first kinboshi of the basho (if any)
   const kinboshiBout = completedBouts.find((m) => m.result?.isKinboshi);
-  if (kinboshiBout?.result
-    && kinboshiBout !== yushoDecider
-    && kinboshiBout !== biggestUpset
-  ) {
+  if (kinboshiBout?.result && kinboshiBout !== yushoDecider && kinboshiBout !== biggestUpset) {
     moments.push({
       label: "kinboshi",
       labelText: "Kinboshi — Gold Star",
@@ -149,8 +148,8 @@ interface KeyBoutsSectionProps {
 
 const MOMENT_BADGE_VARIANT: Record<string, string> = {
   yusho_decider: "bg-yellow-500/20 text-yellow-700 border-yellow-500/40",
-  biggest_upset:  "bg-red-500/20 text-red-700 border-red-500/40",
-  kinboshi:       "bg-amber-400/20 text-amber-700 border-amber-400/40",
+  biggest_upset: "bg-red-500/20 text-red-700 border-red-500/40",
+  kinboshi: "bg-amber-400/20 text-amber-700 border-amber-400/40",
   senshuraku_classic: "bg-blue-500/20 text-blue-700 border-blue-500/40",
 };
 
@@ -175,10 +174,7 @@ export function KeyBoutsSection({ moments, getRikishi }: KeyBoutsSectionProps) {
           return (
             <Card key={moment.bout.boutId} className="overflow-hidden">
               <CardHeader className="pb-2 flex flex-row items-center justify-between">
-                <Badge
-                  variant="outline"
-                  className={MOMENT_BADGE_VARIANT[moment.label]}
-                >
+                <Badge variant="outline" className={MOMENT_BADGE_VARIANT[moment.label]}>
                   {moment.labelText}
                 </Badge>
               </CardHeader>
@@ -276,6 +272,7 @@ interface BoutResultDisplayProps {
 ```
 
 When `compact` is true, omit:
+
 - The kimarite description text
 - Duration and stance detail rows
 - Kensho envelope count (or show inline)

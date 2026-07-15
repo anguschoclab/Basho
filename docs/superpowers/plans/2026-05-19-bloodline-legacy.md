@@ -12,16 +12,16 @@
 
 ## File Map
 
-| Action | Path | Purpose |
-|--------|------|---------|
-| Read first | `src/engine/systems/legacy/DynastyService.ts` | Understand current scaffold |
-| Read first | `src/engine/types/dynasty.ts` | Understand BloodlineTrait, BloodlineRegistry shapes |
-| Modify | `src/engine/systems/legacy/DynastyService.ts` | Add `applyHeritageBonus`, `checkDynastyNarrative` |
-| Create | `src/engine/systems/legacy/__tests__/DynastyService.test.ts` | Unit tests |
-| Modify | `src/engine/tick/phases/phase01_week_training.ts` | Call `applyHeritageBonus` weekly |
-| Modify | `src/engine/narrative/archive.json` | Add dynasty narrative templates |
-| Modify | `src/engine/bout/boutNarrative.ts` | Inject dynasty opening line when applicable |
-| Modify | `src/pages/HallOfFame.tsx` (or equivalent at `/hall-of-fame`) | Render dynasty tree panel |
+| Action     | Path                                                          | Purpose                                             |
+| ---------- | ------------------------------------------------------------- | --------------------------------------------------- |
+| Read first | `src/engine/systems/legacy/DynastyService.ts`                 | Understand current scaffold                         |
+| Read first | `src/engine/types/dynasty.ts`                                 | Understand BloodlineTrait, BloodlineRegistry shapes |
+| Modify     | `src/engine/systems/legacy/DynastyService.ts`                 | Add `applyHeritageBonus`, `checkDynastyNarrative`   |
+| Create     | `src/engine/systems/legacy/__tests__/DynastyService.test.ts`  | Unit tests                                          |
+| Modify     | `src/engine/tick/phases/phase01_week_training.ts`             | Call `applyHeritageBonus` weekly                    |
+| Modify     | `src/engine/narrative/archive.json`                           | Add dynasty narrative templates                     |
+| Modify     | `src/engine/bout/boutNarrative.ts`                            | Inject dynasty opening line when applicable         |
+| Modify     | `src/pages/HallOfFame.tsx` (or equivalent at `/hall-of-fame`) | Render dynasty tree panel                           |
 
 ---
 
@@ -39,6 +39,7 @@ This task has no checkboxes — it is mandatory reading before any implementatio
 ## Task 1: Heritage Bonus in DynastyService
 
 **Files:**
+
 - Modify: `src/engine/systems/legacy/DynastyService.ts`
 - Create: `src/engine/systems/legacy/__tests__/DynastyService.test.ts`
 
@@ -64,10 +65,18 @@ const mockTrait: BloodlineTrait = {
 
 function makeWorld(rikishi: ReturnType<typeof mockRikishi>, trait: BloodlineTrait): WorldState {
   return {
-    id: "w1", seed: "s", year: 2025, week: 5, dayIndexGlobal: 35,
+    id: "w1",
+    seed: "s",
+    year: 2025,
+    week: 5,
+    dayIndexGlobal: 35,
     cyclePhase: "interim",
     rikishi: new Map([[rikishi.id, rikishi]]),
-    heyas: new Map(), events: [], trainingState: new Map(), governanceLog: [], currentBasho: null,
+    heyas: new Map(),
+    events: [],
+    trainingState: new Map(),
+    governanceLog: [],
+    currentBasho: null,
     bloodlineRegistry: { traits: { [trait.traitId]: trait } },
   } as unknown as WorldState;
 }
@@ -211,6 +220,7 @@ git commit -m "feat(legacy): implement DynastyService.applyHeritageBonus and che
 ## Task 2: Wire Heritage Bonus into Weekly Training Tick
 
 **Files:**
+
 - Modify: `src/engine/tick/phases/phase01_week_training.ts`
 
 - [ ] **Step 1: Import and call `applyHeritageBonus`**
@@ -245,6 +255,7 @@ git commit -m "feat(legacy): call DynastyService.applyHeritageBonus in weekly tr
 ## Task 3: Dynasty Narrative Templates
 
 **Files:**
+
 - Modify: `src/engine/narrative/archive.json`
 - Modify: `src/engine/bout/boutNarrative.ts`
 
@@ -283,11 +294,14 @@ import { DynastyService } from "../systems/legacy/DynastyService";
 import { BardEngine } from "../narrative/BardEngine";
 
 // Check if either rikishi carries a dynasty lineage
-const dynastyAncestor = DynastyService.checkDynastyNarrative(eastRikishi, world)
-  ?? DynastyService.checkDynastyNarrative(westRikishi, world);
+const dynastyAncestor =
+  DynastyService.checkDynastyNarrative(eastRikishi, world) ??
+  DynastyService.checkDynastyNarrative(westRikishi, world);
 
 if (dynastyAncestor) {
-  const dynastyLine = BardEngine.resolve(rng, "dynasty.opening", { ancestor: dynastyAncestor }).text;
+  const dynastyLine = BardEngine.resolve(rng, "dynasty.opening", {
+    ancestor: dynastyAncestor,
+  }).text;
   narrative.push(dynastyLine);
 }
 ```
@@ -314,6 +328,7 @@ git commit -m "feat(narrative): add dynasty bout opening line and archive.json t
 ## Task 4: Dynasty Tree UI in Hall of Fame
 
 **Files:**
+
 - Modify: `src/pages/HallOfFame.tsx` (or whichever file renders the `/hall-of-fame` route)
 
 - [ ] **Step 1: Find the Hall of Fame page**
@@ -348,12 +363,16 @@ function DynastyRegistryPanel({ registry }: { registry: BloodlineRegistry | unde
           <div className="flex items-center gap-2">
             <span className="font-semibold text-sm">{trait.ancestorShikona}</span>
             <span className="text-xs bg-muted px-1.5 py-0.5 rounded">{trait.label}</span>
-            <span className="text-xs text-muted-foreground ml-auto">Est. {trait.registeredYear}</span>
+            <span className="text-xs text-muted-foreground ml-auto">
+              Est. {trait.registeredYear}
+            </span>
           </div>
           <p className="text-xs text-muted-foreground">{trait.description}</p>
           <div className="flex gap-3 text-xs">
             {Object.entries(trait.statFloorBonus).map(([stat, bonus]) => (
-              <span key={stat} className="text-green-500">+{bonus} {stat}</span>
+              <span key={stat} className="text-green-500">
+                +{bonus} {stat}
+              </span>
             ))}
             <span className="text-blue-400">+{trait.ceilingBonus} ceiling</span>
           </div>
@@ -378,6 +397,7 @@ Pass `world` from `useGameContext()` or whichever context hook is used in the ex
 - [ ] **Step 3: Manual smoke test**
 
 Start dev server (`bun run dev`). Navigate to `/hall-of-fame`.
+
 1. Confirm Dynasty Registry panel renders with placeholder text on a fresh world.
 2. Advance until an ozeki retires — confirm their trait appears.
 3. Confirm stat floor bonuses and ceiling are displayed correctly.
@@ -394,6 +414,7 @@ git commit -m "feat(ui): add Dynasty Registry panel to Hall of Fame page"
 ## Task 5: Dynasty Narrative Event on Trait Registration
 
 **Files:**
+
 - Modify: `src/engine/systems/legacy/LegacyService.ts`
 
 - [ ] **Step 1: Add BardEngine dynasty headline to `registerLegacyTrait`**
@@ -410,12 +431,17 @@ const headline = BardEngine.resolve(rng, "dynasty.registered", {
   heya: world.heyas.get(rikishi.heyaId)?.name ?? "Unknown Heya",
 }).text;
 
-builder.logEvent("DYNASTY_REGISTERED", "career", {
-  rikishiId: rikishi.id,
-  shikona: rikishi.shikona,
-  headline,
-  traitLabel: trait.label,
-}, { importance: "major" });
+builder.logEvent(
+  "DYNASTY_REGISTERED",
+  "career",
+  {
+    rikishiId: rikishi.id,
+    shikona: rikishi.shikona,
+    headline,
+    traitLabel: trait.label,
+  },
+  { importance: "major" }
+);
 ```
 
 - [ ] **Step 2: Write a test for `registerLegacyTrait` narrative**
@@ -430,12 +456,28 @@ import type { WorldState } from "../../../types/world";
 describe("LegacyService.registerLegacyTrait", () => {
   it("logs a DYNASTY_REGISTERED event with a headline", () => {
     const r = mockRikishi("r1", { rank: "ozeki", shikona: "Testzan" });
-    r.stats = { strength: 85, technique: 80, speed: 70, stamina: 75, mental: 78, adaptability: 65, balance: 72 };
+    r.stats = {
+      strength: 85,
+      technique: 80,
+      speed: 70,
+      stamina: 75,
+      mental: 78,
+      adaptability: 65,
+      balance: 72,
+    };
     const world = {
-      id: "w1", seed: "s", year: 2025, week: 1, dayIndexGlobal: 1,
-      cyclePhase: "interim", rikishi: new Map([[r.id, r]]),
+      id: "w1",
+      seed: "s",
+      year: 2025,
+      week: 1,
+      dayIndexGlobal: 1,
+      cyclePhase: "interim",
+      rikishi: new Map([[r.id, r]]),
       heyas: new Map([["h1", { id: "h1", name: "Fuji-beya" }]]),
-      events: [], trainingState: new Map(), governanceLog: [], currentBasho: null,
+      events: [],
+      trainingState: new Map(),
+      governanceLog: [],
+      currentBasho: null,
       records: { allTime: { yusho: [], careerWins: [] } },
     } as unknown as WorldState;
 
