@@ -257,3 +257,6 @@ Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop 
 
 **Learning:** In a codebase obsessed with performance, it is tempting to replace highly readable array chains like `Object.entries(counts).map(...)` on small, static-sized objects (e.g., sumo rank categories) with imperative `for...in` loops. However, this violates the persona's directive against sacrificing readability for unmeasurable micro-optimizations.
 **Action:** Only target unbounded arrays or large datasets for O(N) allocation reductions. When counting elements, replacing `.filter(condition).length` with a `for...of` loop and a counter is a highly effective, targeted optimization that avoids intermediate array creation.
+## 2024-05-24 - Avoid O(N) array allocation with filter().length
+**Learning:** Counting elements matching a condition using `.filter(condition).length` allocates a temporary array which can be a performance bottleneck when executed frequently or on large lists.
+**Action:** Replace chained `.filter().length` with a direct `for...of` loop and a counter variable to prevent unnecessary intermediate O(N) allocations.

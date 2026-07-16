@@ -49,7 +49,14 @@ export function yearsUntilNaturalization(rikishi: Rikishi, currentYear: number):
  * Limits are typically 2 per heya.
  */
 export function getHeyaForeignUsage(rikishiList: Rikishi[], currentYear: number): number {
-  return rikishiList.filter((r) => countsAsForeign(r, currentYear)).length;
+  // ⚡ Bolt Optimization: Use direct for...of loop instead of .filter().length
+  let count = 0;
+  for (const r of rikishiList) {
+    if (countsAsForeign(r, currentYear)) {
+      count++;
+    }
+  }
+  return count;
 }
 
 export function isAtForeignLimit(rikishiList: Rikishi[], currentYear: number): boolean {
