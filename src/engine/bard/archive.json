@@ -1937,10 +1937,19 @@
           "In a bout no one predicted, %SHIKONA% overpowers a heavy favorite.",
           "A tactical masterclass from %SHIKONA% leads to a shock victory against a top ranker."
         ],
-        "legacy_milestone_title": ["Legacy Milestone for %SHIKONA%", "%SHIKONA%: A Career Defined"],
+        "legacy_milestone_title": [
+          "Legacy Milestone for %SHIKONA%",
+          "%SHIKONA%: A Career Defined",
+          "An Era Defined by %SHIKONA%",
+          "%SHIKONA% Etches His Name in History",
+          "The Enduring Legacy of %SHIKONA%"
+        ],
         "legacy_milestone_summary": [
           "%SHIKONA% reaches a significant career milestone, cementing his place in sumo history.",
-          "The veteran %SHIKONA% is honored for his enduring contributions to the sport."
+          "The veteran %SHIKONA% is honored for his enduring contributions to the sport.",
+          "A testament to longevity and skill, %SHIKONA% celebrates another monumental achievement.",
+          "Fans reflect on a storied career as %SHIKONA% hits a milestone few ever reach.",
+          "The JSA acknowledges %SHIKONA% for his lasting impact on the sport."
         ]
       }
     },
