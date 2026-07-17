@@ -9,3 +9,8 @@
 **Discovery:** The `spawnNarrativeAgent` in `phase06_narrative.ts` only provides `shikona`, `rikishiId`, `heya` (which resolves to the name), and `heyaId` in the `NarrativeContext` when triggering events from the `narrativeEventMap` like `media_spotlight`.
 **Rule:** When adding new templates for `narrativeEventMap` events, limit placeholders strictly to `%SHIKONA%` and `%HEYA%`.
 **Check:** Verify the exact context object passed to `BardEngine.resolve` in `phase06_narrative.ts` before adding new tokens to the corresponding templates.
+## 2025-07-17 - [Rivalry Heat Spike Templates]
+
+**Discovery:** The `RIVALRY_HEAT_SPIKE` event was logged in `src/engine/EventBus.ts` using `events.rivalry.title` and `events.rivalry.press_rumors`, which were completely missing from `archive.json`.
+**Rule:** When adding new templates for dynamically loaded paths, ensure you verify they are actually missing using `jq` and check the correct context placeholders by looking at the calling code (e.g. `shikona`, `rival`, `winner`, `loser` in `EventBus.ts`).
+**Check:** Run a scratchpad script invoking `BardEngine.resolve(rng, "path", context)` to ensure no fallback empty strings or missing tokens are generated before shipping.
