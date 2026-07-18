@@ -257,3 +257,8 @@ Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop 
 
 **Learning:** In a codebase obsessed with performance, it is tempting to replace highly readable array chains like `Object.entries(counts).map(...)` on small, static-sized objects (e.g., sumo rank categories) with imperative `for...in` loops. However, this violates the persona's directive against sacrificing readability for unmeasurable micro-optimizations.
 **Action:** Only target unbounded arrays or large datasets for O(N) allocation reductions. When counting elements, replacing `.filter(condition).length` with a `for...of` loop and a counter is a highly effective, targeted optimization that avoids intermediate array creation.
+
+## 2024-05-18 - Optimize single maximum value finding without intermediate arrays
+
+**Learning:** When trying to find a single element that meets a condition and has the highest (or lowest) value of a property, using chained methods like `.filter(condition).sort(compare)` followed by accessing `[0]` causes multiple issues: it creates an intermediate O(N) array full of filtered values, and it incurs an O(N log N) sorting cost just to find one element.
+**Action:** Replace the `.filter().sort()` chain with a single `for...of` or `for` loop that iterates over the source array. Check the condition inside the loop and track the maximum/minimum value seen so far (along with the corresponding element). This reduces time complexity to O(N) and eliminates the intermediate array allocation entirely.

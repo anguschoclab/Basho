@@ -105,13 +105,23 @@ function maybeAssignNPCMentors(
   const mentors = active;
 
   for (const apprentice of apprentices) {
-    const validMentors = mentors
-      .filter((m) => m.id !== apprentice.id && MentorshipService.canMentor(m, apprentice))
-      .sort((a, b) => b.stats.technique - a.stats.technique);
+    // ⚡ Bolt Optimization: Replace chained .filter().sort() with a single loop
+    // to avoid O(N) allocations and redundant O(N log N) sorting for finding the max value.
+    let bestMentor = null;
+    let maxTechnique = -Infinity;
 
-    if (validMentors.length === 0) continue;
+    for (const m of mentors) {
+      if (m.id !== apprentice.id && MentorshipService.canMentor(m, apprentice)) {
+        if (m.stats.technique > maxTechnique) {
+          maxTechnique = m.stats.technique;
+          bestMentor = m;
+        }
+      }
+    }
 
-    const mentor = validMentors[0];
+    if (!bestMentor) continue;
+
+    const mentor = bestMentor;
     const result = assignMentor(world, apprentice.id, mentor.id);
     if (result.ok && result.impact) {
       builder.merge(result.impact);
