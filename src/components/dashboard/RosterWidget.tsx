@@ -177,7 +177,7 @@ export function RosterWidget() {
   const headerAction = useMemo(
     () => ({
       label: "All Rikishi",
-      onClick: () => navigate({ to: "/rikishi" }),
+      onClick: () => navigate({ to: "/stable/roster" }),
     }),
     [navigate]
   );
@@ -263,7 +263,7 @@ export function RosterWidget() {
     };
   }, [world]);
 
-  const handleViewAllRikishi = React.useCallback(() => navigate({ to: "/rikishi" }), [navigate]);
+  const handleViewAllRikishi = React.useCallback(() => navigate({ to: "/stable/roster" }), [navigate]);
 
   if (!world) return null;
 

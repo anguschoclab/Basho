@@ -154,7 +154,7 @@ export function PreBashoAssessment() {
             variant="outline"
             size="sm"
             className="w-full text-xs"
-            onClick={() => navigate({ to: "/rikishi" })}
+            onClick={() => navigate({ to: "/stable/roster" })}
           >
             View Roster for Withdrawals
           </Button>
