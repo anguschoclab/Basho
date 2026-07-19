@@ -18,6 +18,7 @@ import type { WorldState } from "./types/world";
 import type { BashoResult } from "./types/basho";
 import type { Id } from "./types/common";
 import type { Rank } from "./types/banzuke";
+import type { Rikishi } from "./types/rikishi";
 import { getRikishi } from "./queries";
 
 // === TYPES ===
@@ -83,7 +84,7 @@ export function tryAddInductee(
   hof: HallOfFameState,
   newInductees: HoFInductee[],
   rid: Id,
-  r: any,
+  r: Rikishi,
   category: HoFCategory,
   stats: Partial<HoFInductee["stats"]>
 ) {
