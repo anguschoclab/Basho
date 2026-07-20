@@ -95,6 +95,8 @@ function generateRandomDrama(world: WorldState): StateImpact {
             loserRikishiId: b.id,
             winner: a.name,
             loser: b.name,
+            shikona: a.name,
+            rival: b.name,
             status: "formed",
             heat: 15,
           },

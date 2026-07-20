@@ -122,7 +122,7 @@ export default function RikishiPage() {
     updateWorld(resolveImpacts(world, [impact]));
     setShowIntaiCeremony(false);
     // Navigate back to roster
-    navigate({ to: "/rikishi" });
+    navigate({ to: "/stable/roster" });
   };
 
   return (
@@ -132,7 +132,7 @@ export default function RikishiPage() {
       activeSubTab="roster"
       breadcrumbItems={[
         { label: "Home", href: "/dashboard" },
-        { label: "Rikishi", href: "/rikishi" },
+        { label: "Roster", href: "/stable/roster" },
         { label: rikishi.shikona, href: `/rikishi/${rikishiId}`, isCurrent: true },
       ]}
     >
@@ -146,7 +146,7 @@ export default function RikishiPage() {
           isOwned={isOwned}
           healthBadge={healthBadge}
           isKadoban={rikishi.rank === "ozeki" && !!world.ozekiKadoban?.[rikishi.id]?.isKadoban}
-          onBack={() => navigate({ to: "/rikishi" })}
+          onBack={() => navigate({ to: "/stable/roster" })}
         />
 
         <div className="p-8">
