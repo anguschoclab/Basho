@@ -1943,7 +1943,10 @@
           "A Lifetime of Dedication: %SHIKONA%",
           "A Monumental Achievement: %SHIKONA%",
           "%SHIKONA% Writes His Name in History",
-          "An Enduring Legacy for %SHIKONA%"
+          "An Enduring Legacy for %SHIKONA%",
+          "An Era Defined by %SHIKONA%",
+          "%SHIKONA% Etches His Name in History",
+          "The Enduring Legacy of %SHIKONA%"
         ],
         "legacy_milestone_summary": [
           "%SHIKONA% reaches a significant career milestone, cementing his place in sumo history.",
@@ -1951,7 +1954,10 @@
           "Supporters gather to celebrate the remarkable journey and accomplishments of %SHIKONA%.",
           "Years of tireless keiko culminate in a historic milestone for %SHIKONA%.",
           "The sumo world pauses to recognize the extraordinary longevity and success of %SHIKONA%.",
-          "A proud day in sumo history as %SHIKONA% joins an elite group of rikishi with this milestone."
+          "A proud day in sumo history as %SHIKONA% joins an elite group of rikishi with this milestone.",
+          "A testament to longevity and skill, %SHIKONA% celebrates another monumental achievement.",
+          "Fans reflect on a storied career as %SHIKONA% hits a milestone few ever reach.",
+          "The JSA acknowledges %SHIKONA% for his lasting impact on the sport."
         ]
       }
     },
