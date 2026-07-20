@@ -117,7 +117,13 @@ export default function EconomyPage() {
   }, [world, playerHeya]);
 
   if (!playerHeya) {
-    return <div className="p-6 text-center text-muted-foreground">No heya selected.</div>;
+    return (
+      <AppLayout subNavTabs={OFFICE_TABS} activeSubTab="economy" pageTitle="Financial Management">
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-muted-foreground">
+          <p className="text-sm font-display italic uppercase tracking-widest">No heya selected.</p>
+        </div>
+      </AppLayout>
+    );
   }
 
   const runwayBand = safeRunwayBand(playerHeya.runwayBand || "unknown");
