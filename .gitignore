@@ -31,6 +31,15 @@ playwright-report/
 test-results/
 test_failures.txt
 
+# ─── TypeScript build info ─────────────────────────────────────────────────────
+*.tsbuildinfo
+
+# ─── Simulation results ────────────────────────────────────────────────────────
+simulation-results.json
+
+# ─── AI tool local settings ────────────────────────────────────────────────────
+.claude/settings.local.json
+
 # ─── Editor directories and files ──────────────────────────────────────────────
 .vscode/*
 !.vscode/extensions.json
