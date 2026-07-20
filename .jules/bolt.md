@@ -260,3 +260,8 @@ Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop 
 ## 2024-05-24 - Avoid O(N) array allocation with filter().length
 **Learning:** Counting elements matching a condition using `.filter(condition).length` allocates a temporary array which can be a performance bottleneck when executed frequently or on large lists.
 **Action:** Replace chained `.filter().length` with a direct `for...of` loop and a counter variable to prevent unnecessary intermediate O(N) allocations.
+
+## 2025-05-24 - Optimize array mapping in Koenkai Upgrade
+
+**Learning:** Using `Array.from(world.sponsorPool?.sponsors.values() ?? []).filter(...).slice(...)` creates an unnecessary intermediate O(N) array of all sponsors globally and executes a filter callback on all elements even though only a small slice (e.g. 2 items) are needed. This wastes cycles and strains GC.
+**Action:** Replace `Array.from().filter().slice()` pattern with a direct `for...of` iteration on the `.values()` iterator. Combine the condition internally and `break` out of the loop early once the required number of items is reached.
