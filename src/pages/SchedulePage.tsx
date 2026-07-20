@@ -12,7 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { CalendarDays, Swords } from "lucide-react";
+import { CalendarDays, Swords, Trophy } from "lucide-react";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHeader } from "@/components/layout/control-center";
 import { Division } from "@/engine/types/banzuke";
 import { getTotalBashodays, needsScheduleForDay } from "@/presenters/uiDigest";
@@ -65,9 +66,11 @@ export default function SchedulePage() {
     return (
       <AppLayout subNavTabs={TOURNAMENT_TABS} activeSubTab="schedule" pageTitle="Schedule">
         <Card>
-          <CardContent className="py-8 text-center text-muted-foreground">
-            No active basho currently.
-          </CardContent>
+          <EmptyState
+            icon={Trophy}
+            title="No active basho"
+            description="Advance time to begin the tournament"
+          />
         </Card>
       </AppLayout>
     );
