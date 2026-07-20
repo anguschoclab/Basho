@@ -1778,6 +1778,20 @@
         "escalated_title": ["Rivalry intensifies (%HEAT%)"],
         "escalated_summary": [
           "The tension between %A_NAME% and %B_NAME% has reached a %HEAT% heat."
+        ],
+        "title": [
+          "Bad Blood: %WINNER% vs %RIVAL%",
+          "Rivalry Reaches Boiling Point",
+          "Tensions Explode on the Dohyo",
+          "A Grudge Settled in Dirt",
+          "Heat Spike: %WINNER% Defeats %RIVAL%"
+        ],
+        "press_rumors": [
+          "The friction between %SHIKONA% and %RIVAL% is the talk of the arena after today's bout.",
+          "Whispers in the keiko-ba suggest this rivalry has become intensely personal after %WINNER%'s victory.",
+          "The sports papers are having a field day with the rising tension between %SHIKONA% and %RIVAL%.",
+          "%LOSER% stormed out of the hall following the match, fueling rumors of genuine bad blood with %WINNER%.",
+          "Observers note that %SHIKONA% and %RIVAL% refused to acknowledge each other after the bout—the animosity is palpable."
         ]
       },
       "welfare": {
