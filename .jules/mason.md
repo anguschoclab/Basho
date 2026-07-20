@@ -15,3 +15,8 @@
 **Finding:** The `updateWorldField` in `src/engine/core/ImpactBuilder.ts` was missing the `lineage` field, leading to a weak type cast `builder.updateWorldField("lineage" as any, currentLineage);` in `src/engine/lineage.ts`.
 **Learning:** The ImpactBuilder types are tightly bound to a subset of WorldState fields. When new fields are added to WorldState and mutated via ImpactBuilder, the ImpactBuilder type definitions must be explicitly updated.
 **Constraint:** Any future top-level WorldState fields that are modified via ImpactBuilder must be added to the generic type constraints in `updateWorldField` and `updateWorldFieldImpact`.
+
+## 2025-02-28 - [Tighten Type in SimulationRunner vacancies extraction]
+**Finding:** `vacanciesByHeyaId` was extracted from `retirementImpact.metadata` using an intermediate `as unknown` cast.
+**Learning:** `metadata` property on `StateImpact` is typed as `{ source: string, timestamp?: number, [key: string]: unknown }` which already allows index-signature access for any property like `vacanciesByHeyaId`. No intermediate `as unknown as Record<string, unknown>` is needed.
+**Constraint:** Use the existing index signature in `metadata` directly rather than polluting the code with unneeded and unsafe type casts.
