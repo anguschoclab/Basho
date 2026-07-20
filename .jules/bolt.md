@@ -265,3 +265,8 @@ Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop 
 
 **Learning:** Using `Array.from(world.sponsorPool?.sponsors.values() ?? []).filter(...).slice(...)` creates an unnecessary intermediate O(N) array of all sponsors globally and executes a filter callback on all elements even though only a small slice (e.g. 2 items) are needed. This wastes cycles and strains GC.
 **Action:** Replace `Array.from().filter().slice()` pattern with a direct `for...of` iteration on the `.values()` iterator. Combine the condition internally and `break` out of the loop early once the required number of items is reached.
+
+## 2024-05-18 - Optimize single maximum value finding without intermediate arrays
+
+**Learning:** When trying to find a single element that meets a condition and has the highest (or lowest) value of a property, using chained methods like `.filter(condition).sort(compare)` followed by accessing `[0]` causes multiple issues: it creates an intermediate O(N) array full of filtered values, and it incurs an O(N log N) sorting cost just to find one element.
+**Action:** Replace the `.filter().sort()` chain with a single `for...of` or `for` loop that iterates over the source array. Check the condition inside the loop and track the maximum/minimum value seen so far (along with the corresponding element). This reduces time complexity to O(N) and eliminates the intermediate array allocation entirely.
