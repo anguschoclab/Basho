@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { BaseWidget } from "./BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -100,17 +100,8 @@ export function KenshoManagementWidget() {
   }
 
   return (
-    <Card className="paper">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Coins className="h-5 w-5" />
-          Kensho Management
-        </CardTitle>
-        <CardDescription>
-          Track kensho (prize banner) earnings and projections for your rikishi.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+    <BaseWidget title="Kensho Management" icon={Coins} className="paper">
+      <p className="text-sm text-muted-foreground mb-4">Track kensho (prize banner) earnings and projections for your rikishi.</p>
         <div className="space-y-6">
           {/* Summary Stats */}
           <div className="grid grid-cols-2 gap-4">
@@ -210,7 +201,6 @@ export function KenshoManagementWidget() {
             </ScrollArea>
           </div>
         </div>
-      </CardContent>
-    </Card>
+    </BaseWidget>
   );
 }

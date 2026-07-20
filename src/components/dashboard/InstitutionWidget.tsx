@@ -5,7 +5,7 @@
 
 import { useGame } from "@/contexts/GameContext";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { BaseWidget } from "./BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Building2 } from "lucide-react";
 import { projectHeyaData } from "@/presenters/projections/heyaProjections";
@@ -18,29 +18,15 @@ export function InstitutionWidget() {
 
   if (!world || !heya) {
     return (
-      <Card className="paper h-full">
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-sm">
-            <Building2 className="h-4 w-4" />
-            Institution
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <EmptyState icon={Building2} title="No stable selected" compact />
-        </CardContent>
-      </Card>
+      <BaseWidget title="Institution" icon={Building2} className="h-full">
+        <EmptyState icon={Building2} title="No stable selected" compact />
+      </BaseWidget>
     );
   }
 
   return (
-    <Card className="paper h-full">
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-sm">
-          <Building2 className="h-4 w-4" />
-          Institution
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-0">
+    <BaseWidget title="Institution" icon={Building2} className="h-full">
+      <div className="p-0">
         {(() => {
           const data = projectHeyaData(world, heya.id);
           if (!data) return null;
@@ -53,7 +39,7 @@ export function InstitutionWidget() {
             />
           );
         })()}
-      </CardContent>
-    </Card>
+      </div>
+    </BaseWidget>
   );
 }

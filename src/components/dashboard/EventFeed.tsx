@@ -17,9 +17,8 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { useGameStore } from "@/store/gameStore";
-import { WidgetCard } from "@/components/ui/WidgetCard";
+import { BaseWidget } from "./BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { WidgetHeader } from "@/components/ui/WidgetHeader";
 import type { EngineEvent, EventImportance } from "@/engine/types/events";
 import { MentionText } from "@/components/MentionText";
 
@@ -106,16 +105,15 @@ export function EventFeed({ maxEvents = 10, filterTypes, minImportance }: EventF
   }, [workerWorld?.events?.log, maxEvents, filterTypes, minImportance]);
 
   return (
-    <WidgetCard>
-      <WidgetHeader title="Event Feed" icon={Bell} />
-      <div className="space-y-2 mt-4 max-h-[400px] overflow-y-auto">
+    <BaseWidget title="Event Feed" icon={Bell}>
+      <div className="space-y-2 max-h-[400px] overflow-y-auto">
         {events.length === 0 ? (
           <EmptyState icon={Bell} title="No recent events" compact />
         ) : (
           events.map((event: EngineEvent) => <EventFeedItem key={event.id} event={event} />)
         )}
       </div>
-    </WidgetCard>
+    </BaseWidget>
   );
 }
 
