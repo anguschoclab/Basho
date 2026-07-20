@@ -284,7 +284,13 @@ function calculateMatchIntensity(
     return "high_stakes";
   }
 
-  const momentumShifts = result.log.filter((l) => l.phase === "momentum").length;
+  // ⚡ Bolt Optimization: Use a direct for...of loop instead of .filter().length
+  let momentumShifts = 0;
+  for (const l of result.log) {
+    if (l.phase === "momentum") {
+      momentumShifts++;
+    }
+  }
   if (result.duration > 15 || momentumShifts > 3) {
     return "technical";
   }
