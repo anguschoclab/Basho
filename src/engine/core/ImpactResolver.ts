@@ -364,7 +364,8 @@ function _applyImpact(result: WorldState, impact: StateImpact): WorldState {
 
 /**
  * Resolves an array of StateImpact objects against a base WorldState.
- * Uses a single mutable accumulator to avoid redundant WorldState copies.
+ * Sequentially applies immutable patches, returning a new WorldState reference
+ * if any impacts were applied.
  */
 export function resolveImpacts(world: WorldState, impacts: StateImpact[]): WorldState {
   if (impacts.length === 0) {
