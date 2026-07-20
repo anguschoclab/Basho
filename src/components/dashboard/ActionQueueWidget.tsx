@@ -139,7 +139,7 @@ export function ActionQueueWidget({ items }: ActionQueueWidgetProps) {
               <button
                 key={index}
                 onClick={() => handleNavigate(item)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded border text-left transition-colors group ${sev.border} ${sev.bg} ${sev.hoverBg}`}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded border text-left transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ring-offset-background ${sev.border} ${sev.bg} ${sev.hoverBg}`}
               >
                 <div className="shrink-0">
                   {item.icon ? (ICON_MAP[item.icon] ?? sev.icon) : sev.icon}
@@ -157,7 +157,8 @@ export function ActionQueueWidget({ items }: ActionQueueWidgetProps) {
             <div key={index} className={`rounded border ${sev.border} ${sev.bg}`}>
               <button
                 onClick={() => toggleExpand(index)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors ${sev.hoverBg}`}
+                aria-expanded={isExpanded}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 text-left rounded-t transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ring-offset-background ${sev.hoverBg}`}
               >
                 <div className="shrink-0">{sev.icon}</div>
                 <span className={`text-xs font-semibold flex-1 ${sev.text}`}>{item.title}</span>
