@@ -119,9 +119,18 @@ export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
                   <div
                     key={e.id}
                     onClick={() => handleEventClick(e)}
+                    onKeyDown={(evt) => {
+                      if (evt.key === "Enter" || evt.key === " ") {
+                        evt.preventDefault();
+                        handleEventClick(e);
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
                     className={cn(
                       "w-full text-left p-2.5 rounded-md transition-all mb-1 cursor-pointer border border-transparent hover:border-zinc-800",
                       "hover:bg-zinc-900/50 active:bg-zinc-900 group relative",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
                       isPlayerRelevant ? "border-l-primary/50 bg-primary/5" : ""
                     )}
                   >
