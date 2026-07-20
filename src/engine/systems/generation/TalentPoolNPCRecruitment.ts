@@ -12,6 +12,7 @@ import { isRecruitmentPlayerRelevant } from "../../npcAI/eventSurfacing";
 import { getHeya } from "../../queries";
 import { recruitmentBalanceMultipliers } from "./competitiveBalance";
 import { error } from "@/engine/utils/Logger";
+import { perceivedTalentSeed } from "../recruitment/perceivedTalent";
 
 /**
  * Automates recruitment for NPC stables.
@@ -60,7 +61,10 @@ export function fillVacanciesForNPC(
       if (availableCandidates.length > 0) {
         const candidatesWithScores = availableCandidates.map((cId) => {
           const c = currentCandidates[cId];
-          const talent = c.talentSeed;
+          // Imperfect information: the stable evaluates its scouted ESTIMATE, not the
+          // candidate's true talentSeed — see perceivedTalent.ts. This is what lets
+          // hidden gems slip past the affinity gate into low-reputation stables.
+          const talent = perceivedTalentSeed(world, heyaId, c);
           const repScore = heya.reputation ?? 50;
           let affinity = 1.0;
           if (talent >= 80 && repScore < 70) affinity = 0.1;

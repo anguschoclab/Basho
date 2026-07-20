@@ -153,7 +153,9 @@
       "Bash(npx playwright *)",
       "Read(//c/Program Files/Google/Chrome/Application/**)",
       "Read(//c/Program Files \\(x86\\)/Google/Chrome/Application/**)",
-      "Bash(echo \"Exit: $?\")"
+      "Bash(echo \"Exit: $?\")",
+      "Bash(xargs -I{} sh -c 'echo ==={}===; grep -n \"export function makeMockWorld\\\\|export function makeMockHeya\" {}')",
+      "Bash(cd \"/Users/amauricia/Documents/GitHub/sumo-manager-pro\" && git diff src/engine/systems/generation/TalentPoolNPCRecruitment.ts > /tmp/hidden-gem-fix.patch && git stash push -- src/engine/systems/generation/TalentPoolNPCRecruitment.ts)"
     ]
   },
   "outputStyle": "default"

@@ -3,6 +3,7 @@ import type { Heya } from "./types/heya";
 import type { Oyakata, OyakataArchetype } from "./types/oyakata";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
+import { perceivedTalentSeed } from "./systems/recruitment/perceivedTalent";
 import {
   MONTHLY_BURN_PER_RIKISHI,
   MONTHS_PER_YEAR,
@@ -78,10 +79,12 @@ export const DefaultRecruitmentStrategy: RecruitmentStrategy = {
   calculateMaxBid(world, heya, oyakata, candidateId, rivalHeyaId) {
     let maxBid = calculateRunwayAwareMaxBid(heya, oyakata, RECRUITMENT_BASE_MULTIPLIER);
 
-    // Talent premium: scale bid 0.5x–1.5x by candidate talentSeed so high-potential
-    // prospects trigger competitive bidding wars between stables.
+    // Talent premium: scale bid 0.5x–1.5x by the stable's SCOUTED ESTIMATE of the
+    // candidate's talentSeed (not the true value — see perceivedTalent.ts) so
+    // high-potential prospects trigger competitive bidding wars between stables,
+    // without the richest stable always identifying the objectively best prospect.
     const candidate = candidateId ? world.talentPool?.candidates?.[candidateId] : undefined;
-    const talentSeed = candidate?.talentSeed ?? 50;
+    const talentSeed = candidate ? perceivedTalentSeed(world, heya.id, candidate) : 50;
     const talentMult = 0.5 + talentSeed / 100;
     maxBid *= talentMult;
 
