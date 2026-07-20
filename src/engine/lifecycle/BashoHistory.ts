@@ -297,8 +297,13 @@ export function checkYokozunaPromotions(
     if (len < 2) continue;
 
     const last2 = history.slice(-2);
-    const yushos = last2.filter((h) => h.yusho).length;
-    const junYushos = last2.filter((h) => h.junYusho).length;
+    // ⚡ Bolt Optimization: Use a direct for...of loop instead of .filter().length
+    let yushos = 0;
+    let junYushos = 0;
+    for (const h of last2) {
+      if (h.yusho) yushos++;
+      if (h.junYusho) junYushos++;
+    }
 
     // Combo Logic: Stats + Political Pressure
     const heat = world.mediaState?.mediaHeat?.[rid] || 0;

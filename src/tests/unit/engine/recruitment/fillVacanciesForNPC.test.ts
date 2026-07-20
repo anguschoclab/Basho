@@ -62,9 +62,7 @@ describe("fillVacanciesForNPC — uses perceived talent for scoring", () => {
     const impact = fillVacanciesForNPC(world, { [HEYA_ID]: 1 });
     const resolved = resolveImpacts(world, [impact]);
 
-    const signedForHeya = Array.from(resolved.rikishi.values()).filter(
-      (r) => r.heyaId === HEYA_ID
-    );
+    const signedForHeya = Array.from(resolved.rikishi.values()).filter((r) => r.heyaId === HEYA_ID);
     expect(signedForHeya.length).toBe(1);
     expect(signedForHeya[0].id).toBe(gemCandidate.personId);
   });

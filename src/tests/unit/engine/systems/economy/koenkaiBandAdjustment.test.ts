@@ -84,10 +84,7 @@ describe("adjustKoenkaiBandToPrestige — Set-based sponsor lookup", () => {
 
   it("band upgrade adds eligible inactive sponsors", () => {
     const koenkai = makeKoenkai("h1", "weak", []);
-    const sponsors = [
-      makeSponsor("s1", "T1", false),
-      makeSponsor("s2", "T2", false),
-    ];
+    const sponsors = [makeSponsor("s1", "T1", false), makeSponsor("s2", "T2", false)];
     const world = makeWorldWithSponsors(sponsors, koenkai, "weak");
 
     const impact = adjustKoenkaiBandToPrestige(world);
@@ -118,10 +115,7 @@ describe("adjustKoenkaiBandToPrestige — Set-based sponsor lookup", () => {
   it("all sponsors already active in koenkai — no new duplicates added", () => {
     const members = [makeKoenkaiMember("s1"), makeKoenkaiMember("s2")];
     const koenkai = makeKoenkai("h1", "moderate", members);
-    const sponsors = [
-      makeSponsor("s1", "T1", true),
-      makeSponsor("s2", "T2", true),
-    ];
+    const sponsors = [makeSponsor("s1", "T1", true), makeSponsor("s2", "T2", true)];
     const world = makeWorldWithSponsors(sponsors, koenkai, "moderate");
 
     const impact = adjustKoenkaiBandToPrestige(world);
