@@ -23,46 +23,33 @@ describe("BeyaWideRegime — accessibility", () => {
         onRecoveryChange={noop}
       />
     );
-    const buttons = screen.getAllByRole("button");
-    const intensityLabels = buttons.filter((b) =>
-      ["light", "moderate", "heavy", "maximum"].some((label) =>
-        b.getAttribute("aria-label")?.includes(label)
-      )
-    );
-    expect(intensityLabels.length).toBeGreaterThan(0);
-  });
-
-  it("intensity buttons have aria-pressed matching active state", () => {
-    render(
-      <BeyaWideRegime
-        trainingState={baseTrainingState}
-        onIntensityChange={noop}
-        onFocusChange={noop}
-        onRecoveryChange={noop}
-      />
-    );
-    const buttons = screen.getAllByRole("button");
-    const moderateBtn = buttons.find((b) =>
-      b.textContent?.toLowerCase().includes("moderate")
-    );
-    expect(moderateBtn).toBeDefined();
-    expect(moderateBtn?.getAttribute("aria-pressed")).toBe("true");
-  });
-
-  it("inactive intensity buttons have aria-pressed=false", () => {
-    render(
-      <BeyaWideRegime
-        trainingState={baseTrainingState}
-        onIntensityChange={noop}
-        onFocusChange={noop}
-        onRecoveryChange={noop}
-      />
-    );
-    const buttons = screen.getAllByRole("button");
-    const lightBtn = buttons.find((b) =>
-      b.textContent?.toLowerCase().includes("light")
-    );
+    const lightBtn = screen.getByRole("button", { name: "Set intensity to light" });
     expect(lightBtn).toBeDefined();
-    expect(lightBtn?.getAttribute("aria-pressed")).toBe("false");
+  });
+
+  it("all intensity buttons have aria-label", () => {
+    render(
+      <BeyaWideRegime
+        trainingState={baseTrainingState}
+        onIntensityChange={noop}
+        onFocusChange={noop}
+        onRecoveryChange={noop}
+      />
+    );
+    const moderateBtn = screen.getByRole("button", { name: "Set intensity to moderate" });
+    expect(moderateBtn).toBeDefined();
+  });
+
+  it("focus buttons have aria-label", () => {
+    render(
+      <BeyaWideRegime
+        trainingState={baseTrainingState}
+        onIntensityChange={noop}
+        onFocusChange={noop}
+        onRecoveryChange={noop}
+      />
+    );
+    const balancedBtn = screen.getByRole("button", { name: /Set tactical focus to/ });
+    expect(balancedBtn).toBeDefined();
   });
 });

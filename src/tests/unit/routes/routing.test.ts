@@ -1,17 +1,13 @@
 import { describe, it, expect } from "vitest";
+import { router } from "@/routes";
 
 describe("Route configuration — /stable/roster", () => {
-  it("/stable/roster should not redirect to /rikishi (renders RikishiPage directly)", () => {
-    const routeModule = require("@/routes");
-    const router = routeModule.router;
+  it("router is defined", () => {
     expect(router).toBeDefined();
-    const finder = router.options.routeTree ? router.options.routeTree : router.routeTree;
-    expect(finder).toBeDefined();
   });
 
-  it("/rikishi route exists for backwards compatibility", () => {
-    const routeModule = require("@/routes");
-    const router = routeModule.router;
-    expect(router).toBeDefined();
+  it("router has route tree", () => {
+    const routeTree = router.options?.routeTree ?? router.routeTree;
+    expect(routeTree).toBeDefined();
   });
 });

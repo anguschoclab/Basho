@@ -45,7 +45,7 @@ function makeWorldWithSponsors(
     koenkais: new Map([[koenkai.koenkaiId, koenkai]]),
   } as unknown as SponsorPool;
 
-  const heya = makeMockHeya("h1", { koenkaiBand: heyaBand as any });
+  const heya = makeMockHeya("h1", { koenkaiBand: heyaBand as any, rikishiIds: ["r1"] });
   const r1 = mockRikishi("r1", { heyaId: "h1", rank: "yokozuna" });
 
   return makeMockWorld({
@@ -93,7 +93,8 @@ describe("adjustKoenkaiBandToPrestige — Set-based sponsor lookup", () => {
     const impact = adjustKoenkaiBandToPrestige(world);
     const resolved = resolveImpacts(world, [impact]);
     const updated = resolved.sponsorPool?.koenkais.get("k_h1");
-    expect(updated?.members.length).toBeGreaterThan(0);
+    // Yokozuna prestige=40 → "moderate" band, upgrade from "weak" → addCount=1
+    expect(updated?.members.length).toBe(1);
   });
 
   it("band downgrade trims weakest members", () => {
@@ -116,17 +117,18 @@ describe("adjustKoenkaiBandToPrestige — Set-based sponsor lookup", () => {
 
   it("all sponsors already active in koenkai — no new duplicates added", () => {
     const members = [makeKoenkaiMember("s1"), makeKoenkaiMember("s2")];
-    const koenkai = makeKoenkai("h1", "weak", members);
+    const koenkai = makeKoenkai("h1", "moderate", members);
     const sponsors = [
       makeSponsor("s1", "T1", true),
       makeSponsor("s2", "T2", true),
     ];
-    const world = makeWorldWithSponsors(sponsors, koenkai, "weak");
+    const world = makeWorldWithSponsors(sponsors, koenkai, "moderate");
 
     const impact = adjustKoenkaiBandToPrestige(world);
     const resolved = resolveImpacts(world, [impact]);
     const updated = resolved.sponsorPool?.koenkais.get("k_h1");
     const sponsorIds = updated?.members.map((m) => m.sponsorId);
+    // Band stays "moderate" (prestige=40 → moderate), no change → members stay as-is
     expect(sponsorIds?.length).toBe(2);
     expect(new Set(sponsorIds).size).toBe(2);
   });

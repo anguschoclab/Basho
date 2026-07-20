@@ -21,6 +21,8 @@ describe("Rivalry heat spike template resolution", () => {
     loser: "Oyakata B",
     winnerRikishiId: "a1",
     loserRikishiId: "b1",
+    shikona: "Oyakata A",
+    rival: "Oyakata B",
     status: "formed",
     heat: 15,
   };
