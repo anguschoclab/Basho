@@ -155,7 +155,9 @@
       "Read(//c/Program Files \\(x86\\)/Google/Chrome/Application/**)",
       "Bash(echo \"Exit: $?\")",
       "Bash(xargs -I{} sh -c 'echo ==={}===; grep -n \"export function makeMockWorld\\\\|export function makeMockHeya\" {}')",
-      "Bash(cd \"/Users/amauricia/Documents/GitHub/sumo-manager-pro\" && git diff src/engine/systems/generation/TalentPoolNPCRecruitment.ts > /tmp/hidden-gem-fix.patch && git stash push -- src/engine/systems/generation/TalentPoolNPCRecruitment.ts)"
+      "Bash(cd \"/Users/amauricia/Documents/GitHub/sumo-manager-pro\" && git diff src/engine/systems/generation/TalentPoolNPCRecruitment.ts > /tmp/hidden-gem-fix.patch && git stash push -- src/engine/systems/generation/TalentPoolNPCRecruitment.ts)",
+      "Bash(cp src/engine/npcRecruitmentStrategy.ts /tmp/npcRec.bak)",
+      "Bash(cp src/engine/systems/generation/TalentPoolNPCRecruitment.ts /tmp/talentPool.bak)"
     ]
   },
   "outputStyle": "default"
