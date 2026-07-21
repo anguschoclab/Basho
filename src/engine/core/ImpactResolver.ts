@@ -170,8 +170,11 @@ export function applyImpact(world: WorldState, impact: StateImpact): WorldState 
 }
 
 /**
- * Internal: apply impact to an existing mutable accumulator.
- * Used by resolveImpacts to avoid redundant WorldState copies.
+ * Internal: applies a single impact to a WorldState.
+ *
+ * CONTRACT / WARNING: This function does NOT mutate an accumulator in-place.
+ * It sequentially returns shallow copies of the result and its internal Maps for each applied change,
+ * resulting in multiple allocations. Do not assume O(1) in-place mutation when chaining impacts.
  */
 function _applyImpact(result: WorldState, impact: StateImpact): WorldState {
   // Apply entity updates

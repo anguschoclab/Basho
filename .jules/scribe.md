@@ -46,3 +46,9 @@
 **Truth:** The logic was migrated to a Strict Pipeline Architecture that delegates to `bashoPipeline` and `offSeasonPipeline`.
 **Watch:** Other files in `src/engine/tick` that may still have legacy monolithic comments in their top-level summaries instead of mentioning the pipeline runner.
 ## 2026-07-19 - [ImpactResolver] Mutable Accumulator JSDoc Trap\n\n**Gap:** The JSDoc for `resolveImpacts` claimed it "Uses a single mutable accumulator to avoid redundant WorldState copies."\n**Truth:** `resolveImpacts` uses `_applyImpact` which sequentially returns shallow copies of `result` and internal maps for each impact applied, making multiple O(N) allocations instead of mutating an accumulator.\n**Watch:** Other parts of the Collector-Resolver pattern or performance-focused comments claiming "no redundant copies" without verifying the internal logic.
+
+## 2026-07-19 - [ImpactResolver] Mutable Accumulator JSDoc Trap
+
+**Gap:** The JSDoc for `_applyImpact` claimed it uses a "mutable accumulator to avoid redundant WorldState copies."
+**Truth:** `_applyImpact` does not mutate a single accumulator in-place. Through its internal operations and `applyEntityUpdates`, it sequentially creates and returns multiple shallow copies of the result and its internal Maps, leading to multiple allocations per impact.
+**Watch:** Other parts of the Collector-Resolver pattern or performance-focused comments claiming "no redundant copies" without verifying the internal logic.
