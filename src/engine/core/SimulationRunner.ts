@@ -88,7 +88,7 @@ export function runPostBashoResolution(world: WorldState): void {
 
   // Extract vacancies from retirement impact metadata for talent pool
   const vacancies =
-    ((retirementImpact.metadata as unknown as Record<string, unknown>)?.vacanciesByHeyaId as Record<
+    (retirementImpact.metadata?.vacanciesByHeyaId as Record<
       string,
       number
     >) || {};
