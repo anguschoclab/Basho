@@ -250,4 +250,285 @@ describe("ImpactResolver", () => {
       expect(merged.metadata?.source).toBe("merged");
     });
   });
+
+  describe("heya roster sync", () => {
+    function makeHeya(id: string, rikishiIds: string[] | undefined): Heya {
+      return {
+        id,
+        name: `Heya-${id}`,
+        funds: 1000,
+        reputation: 50,
+        prestigeBand: "unknown",
+        statureBand: "new",
+        oyakataId: `oyakata-${id}`,
+        isActive: true,
+        facilities: { level: 1, condition: 100 },
+        fanbase: 100,
+        monthlyExpenses: 1000,
+        rikishiIds,
+      } as any;
+    }
+
+    function setupRikishi(
+      world: WorldState,
+      ids: string[],
+      heyaId: string = "h1"
+    ): void {
+      for (const id of ids) {
+        world.rikishi.set(id, mockRikishi(id, { heyaId } as never));
+      }
+    }
+
+    // ── rikishiToRemove roster sync ───────────────────────────────────────
+
+    it("removes single rikishi from heya roster", () => {
+      const heya = makeHeya("h1", ["r1", "r2"]);
+      world.heyas.set("h1", heya);
+      setupRikishi(world, ["r1", "r2"]);
+
+      const impact: StateImpact = {
+        collections: { rikishiToRemove: ["r1"] },
+        metadata: { source: "test" },
+      };
+
+      const result = ImpactResolver.resolveImpacts(world, [impact]);
+      expect(result.heyas.get("h1")?.rikishiIds).toEqual(["r2"]);
+      expect(result.rikishi.has("r1")).toBe(false);
+    });
+
+    it("removes multiple rikishi from same heya (O(N²) case)", () => {
+      const heya = makeHeya("h1", ["r1", "r2", "r3"]);
+      world.heyas.set("h1", heya);
+      setupRikishi(world, ["r1", "r2", "r3"]);
+
+      const impact: StateImpact = {
+        collections: { rikishiToRemove: ["r1", "r3"] },
+        metadata: { source: "test" },
+      };
+
+      const result = ImpactResolver.resolveImpacts(world, [impact]);
+      expect(result.heyas.get("h1")?.rikishiIds).toEqual(["r2"]);
+      expect(result.rikishi.has("r1")).toBe(false);
+      expect(result.rikishi.has("r3")).toBe(false);
+      expect(result.rikishi.has("r2")).toBe(true);
+    });
+
+    it("removes rikishi from different heyas", () => {
+      world.heyas.set("h1", makeHeya("h1", ["r1", "r2"]));
+      world.heyas.set("h2", makeHeya("h2", ["r3", "r4"]));
+      setupRikishi(world, ["r1", "r2"], "h1");
+      setupRikishi(world, ["r3", "r4"], "h2");
+
+      const impact: StateImpact = {
+        collections: { rikishiToRemove: ["r1", "r3"] },
+        metadata: { source: "test" },
+      };
+
+      const result = ImpactResolver.resolveImpacts(world, [impact]);
+      expect(result.heyas.get("h1")?.rikishiIds).toEqual(["r2"]);
+      expect(result.heyas.get("h2")?.rikishiIds).toEqual(["r4"]);
+    });
+
+    it("handles heya with undefined rikishiIds", () => {
+      const heya = makeHeya("h1", undefined);
+      world.heyas.set("h1", heya);
+      setupRikishi(world, ["r1"]);
+
+      const impact: StateImpact = {
+        collections: { rikishiToRemove: ["r1"] },
+        metadata: { source: "test" },
+      };
+
+      const result = ImpactResolver.resolveImpacts(world, [impact]);
+      // Should not crash; rikishiIds becomes empty array after Set conversion
+      expect(result.heyas.get("h1")?.rikishiIds).toEqual([]);
+      expect(result.rikishi.has("r1")).toBe(false);
+    });
+
+    it("skips rikishi not in world.rikishi", () => {
+      world.heyas.set("h1", makeHeya("h1", ["r1"]));
+
+      const impact: StateImpact = {
+        collections: { rikishiToRemove: ["ghost"] },
+        metadata: { source: "test" },
+      };
+
+      const result = ImpactResolver.resolveImpacts(world, [impact]);
+      // No crash, heya roster unchanged
+      expect(result.heyas.get("h1")?.rikishiIds).toEqual(["r1"]);
+    });
+
+    it("skips when heya does not exist", () => {
+      setupRikishi(world, ["r1"]);
+
+      const impact: StateImpact = {
+        collections: { rikishiToRemove: ["r1"] },
+        metadata: { source: "test" },
+      };
+
+      const result = ImpactResolver.resolveImpacts(world, [impact]);
+      // No crash, rikishi still removed from world
+      expect(result.rikishi.has("r1")).toBe(false);
+    });
+
+    it("handles duplicate IDs in rikishiToRemove idempotently", () => {
+      world.heyas.set("h1", makeHeya("h1", ["r1", "r2"]));
+      setupRikishi(world, ["r1", "r2"]);
+
+      const impact: StateImpact = {
+        collections: { rikishiToRemove: ["r1", "r1"] },
+        metadata: { source: "test" },
+      };
+
+      const result = ImpactResolver.resolveImpacts(world, [impact]);
+      expect(result.heyas.get("h1")?.rikishiIds).toEqual(["r2"]);
+      expect(result.rikishi.has("r1")).toBe(false);
+    });
+
+    it("preserves order of remaining rikishiIds", () => {
+      world.heyas.set("h1", makeHeya("h1", ["r1", "r2", "r3", "r4"]));
+      setupRikishi(world, ["r1", "r2", "r3", "r4"]);
+
+      const impact: StateImpact = {
+        collections: { rikishiToRemove: ["r2", "r4"] },
+        metadata: { source: "test" },
+      };
+
+      const result = ImpactResolver.resolveImpacts(world, [impact]);
+      expect(result.heyas.get("h1")?.rikishiIds).toEqual(["r1", "r3"]);
+    });
+
+    // ── rikishiToHistorical roster sync ───────────────────────────────────
+
+    it("moves single rikishi to historical and removes from roster", () => {
+      world.heyas.set("h1", makeHeya("h1", ["r1", "r2"]));
+      setupRikishi(world, ["r1", "r2"]);
+
+      const impact: StateImpact = {
+        collections: { rikishiToHistorical: ["r1"] },
+        metadata: { source: "test" },
+      };
+
+      const result = ImpactResolver.resolveImpacts(world, [impact]);
+      expect(result.heyas.get("h1")?.rikishiIds).toEqual(["r2"]);
+      expect(result.rikishi.has("r1")).toBe(false);
+      expect(result.historicalRikishi.has("r1")).toBe(true);
+    });
+
+    it("moves multiple rikishi from same heya to historical", () => {
+      world.heyas.set("h1", makeHeya("h1", ["r1", "r2", "r3"]));
+      setupRikishi(world, ["r1", "r2", "r3"]);
+
+      const impact: StateImpact = {
+        collections: { rikishiToHistorical: ["r1", "r3"] },
+        metadata: { source: "test" },
+      };
+
+      const result = ImpactResolver.resolveImpacts(world, [impact]);
+      expect(result.heyas.get("h1")?.rikishiIds).toEqual(["r2"]);
+      expect(result.historicalRikishi.has("r1")).toBe(true);
+      expect(result.historicalRikishi.has("r3")).toBe(true);
+    });
+
+    it("handles heya with undefined rikishiIds for historical", () => {
+      world.heyas.set("h1", makeHeya("h1", undefined));
+      setupRikishi(world, ["r1"]);
+
+      const impact: StateImpact = {
+        collections: { rikishiToHistorical: ["r1"] },
+        metadata: { source: "test" },
+      };
+
+      const result = ImpactResolver.resolveImpacts(world, [impact]);
+      expect(result.heyas.get("h1")?.rikishiIds).toEqual([]);
+      expect(result.historicalRikishi.has("r1")).toBe(true);
+    });
+
+    it("skips rikishi not in world.rikishi for historical", () => {
+      world.heyas.set("h1", makeHeya("h1", ["r1"]));
+
+      const impact: StateImpact = {
+        collections: { rikishiToHistorical: ["ghost"] },
+        metadata: { source: "test" },
+      };
+
+      const result = ImpactResolver.resolveImpacts(world, [impact]);
+      expect(result.heyas.get("h1")?.rikishiIds).toEqual(["r1"]);
+    });
+
+    it("preserves order for historical roster sync", () => {
+      world.heyas.set("h1", makeHeya("h1", ["r1", "r2", "r3", "r4"]));
+      setupRikishi(world, ["r1", "r2", "r3", "r4"]);
+
+      const impact: StateImpact = {
+        collections: { rikishiToHistorical: ["r2", "r4"] },
+        metadata: { source: "test" },
+      };
+
+      const result = ImpactResolver.resolveImpacts(world, [impact]);
+      expect(result.heyas.get("h1")?.rikishiIds).toEqual(["r1", "r3"]);
+    });
+
+    // ── Cross-loop interaction ────────────────────────────────────────────
+
+    it("both rikishiToRemove and rikishiToHistorical touch same heya", () => {
+      world.heyas.set("h1", makeHeya("h1", ["r1", "r2", "r3"]));
+      setupRikishi(world, ["r1", "r2", "r3"]);
+
+      const impact: StateImpact = {
+        collections: {
+          rikishiToRemove: ["r1"],
+          rikishiToHistorical: ["r2"],
+        },
+        metadata: { source: "test" },
+      };
+
+      const result = ImpactResolver.resolveImpacts(world, [impact]);
+      expect(result.heyas.get("h1")?.rikishiIds).toEqual(["r3"]);
+      expect(result.rikishi.has("r1")).toBe(false);
+      expect(result.rikishi.has("r2")).toBe(false);
+      expect(result.historicalRikishi.has("r2")).toBe(true);
+      expect(result.historicalRikishi.has("r1")).toBe(false);
+    });
+
+    it("same ID in both rikishiToRemove and rikishiToHistorical", () => {
+      world.heyas.set("h1", makeHeya("h1", ["r1", "r2"]));
+      setupRikishi(world, ["r1", "r2"]);
+
+      const impact: StateImpact = {
+        collections: {
+          rikishiToRemove: ["r1"],
+          rikishiToHistorical: ["r1"],
+        },
+        metadata: { source: "test" },
+      };
+
+      const result = ImpactResolver.resolveImpacts(world, [impact]);
+      // rikishiToRemove runs first, so r1 is deleted, not moved to historical
+      expect(result.rikishi.has("r1")).toBe(false);
+      expect(result.historicalRikishi.has("r1")).toBe(false);
+      expect(result.heyas.get("h1")?.rikishiIds).toEqual(["r2"]);
+    });
+
+    // ── rikishiToAdd + rikishiToRemove interaction ────────────────────────
+
+    it("add then remove same rikishi in one impact", () => {
+      world.heyas.set("h1", makeHeya("h1", ["r2"]));
+      setupRikishi(world, ["r2"], "h1");
+      const r1 = mockRikishi("r1", { heyaId: "h1" } as never);
+
+      const impact: StateImpact = {
+        collections: {
+          rikishiToAdd: [r1],
+          rikishiToRemove: ["r1"],
+        },
+        metadata: { source: "test" },
+      };
+
+      const result = ImpactResolver.resolveImpacts(world, [impact]);
+      // r1 was added then removed — net zero, no duplicate in roster
+      expect(result.rikishi.has("r1")).toBe(false);
+      expect(result.heyas.get("h1")?.rikishiIds).toEqual(["r2"]);
+    });
+  });
 });

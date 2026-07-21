@@ -156,20 +156,33 @@ function triggerCrisis(world: WorldState, heyaId: string, type: CrisisType): Sta
           id: "seek_pardon",
           label: "Plead with JSA",
           description: "Beg the JSA for a grace period. High risk of prestige loss and sanctions.",
-          prestigeCost: 15,
-          consequences: {
-            resolutionSuccess: true,
-            narrativeText:
-              "The JSA grants a temporary reprieve, but the stable's reputation suffers greatly.",
+          impactGenerator: (_world: WorldState) => {
+            const b = createImpactBuilder("crisis_seek_pardon");
+            b.logEvent("GOVERNANCE_RULING", "narrative", {
+              incident: "crisis_resolved",
+              choice: "seek_pardon",
+              prestigeCost: 15,
+              resolutionSuccess: true,
+              narrativeText:
+                "The JSA grants a temporary reprieve, but the stable's reputation suffers greatly.",
+            });
+            return b.build();
           },
         },
         {
           id: "emergency_loan",
           label: "Take Predatory Loan",
           description: "Borrow ¥10,000,000 from loan sharks at exorbitant interest rates.",
-          consequences: {
-            resolutionSuccess: true,
-            narrativeText: "You secure the funds, but the stable's future is heavily mortgaged.",
+          impactGenerator: (_world: WorldState) => {
+            const b = createImpactBuilder("crisis_emergency_loan");
+            b.logEvent("GOVERNANCE_RULING", "narrative", {
+              incident: "crisis_resolved",
+              choice: "emergency_loan",
+              resolutionSuccess: true,
+              narrativeText:
+                "You secure the funds, but the stable's future is heavily mortgaged.",
+            });
+            return b.build();
           },
         },
       ],

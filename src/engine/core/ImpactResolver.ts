@@ -222,20 +222,27 @@ function _applyImpact(result: WorldState, impact: StateImpact): WorldState {
 
     if (impact.collections.rikishiToRemove) {
       const nextRikishi = new Map(result.rikishi);
+      const removalsByHeya = new Map<string, Set<string>>();
       for (const id of impact.collections.rikishiToRemove) {
         const r = nextRikishi.get(id);
         if (r) {
-          // Sync Heya Roster
-          const heya = nextHeyas?.get(r.heyaId) || result.heyas.get(r.heyaId);
-          if (heya) {
-            ensureHeyas().set(r.heyaId, {
-              ...heya,
-              rikishiIds: (heya.rikishiIds || []).filter((rid) => rid !== id),
-            });
-            heyasChanged = true;
+          let bucket = removalsByHeya.get(r.heyaId);
+          if (!bucket) {
+            bucket = new Set();
+            removalsByHeya.set(r.heyaId, bucket);
           }
+          bucket.add(id);
+          nextRikishi.delete(id);
         }
-        nextRikishi.delete(id);
+      }
+      for (const [heyaId, idsToRemove] of removalsByHeya) {
+        const heya = nextHeyas?.get(heyaId) || result.heyas.get(heyaId);
+        if (heya) {
+          const ids = new Set(heya.rikishiIds || []);
+          for (const id of idsToRemove) ids.delete(id);
+          ensureHeyas().set(heyaId, { ...heya, rikishiIds: Array.from(ids) });
+          heyasChanged = true;
+        }
       }
       result = { ...result, rikishi: nextRikishi };
     }
@@ -243,21 +250,27 @@ function _applyImpact(result: WorldState, impact: StateImpact): WorldState {
     if (impact.collections.rikishiToHistorical) {
       const nextRikishi = new Map(result.rikishi);
       const nextHistorical = new Map(result.historicalRikishi);
+      const removalsByHeya = new Map<string, Set<string>>();
       for (const id of impact.collections.rikishiToHistorical) {
         const rikishi = nextRikishi.get(id);
         if (rikishi) {
           nextRikishi.delete(id);
           nextHistorical.set(id, rikishi);
-
-          // Sync Heya Roster (Remove from active roster)
-          const heya = nextHeyas?.get(rikishi.heyaId) || result.heyas.get(rikishi.heyaId);
-          if (heya) {
-            ensureHeyas().set(rikishi.heyaId, {
-              ...heya,
-              rikishiIds: (heya.rikishiIds || []).filter((rid) => rid !== id),
-            });
-            heyasChanged = true;
+          let bucket = removalsByHeya.get(rikishi.heyaId);
+          if (!bucket) {
+            bucket = new Set();
+            removalsByHeya.set(rikishi.heyaId, bucket);
           }
+          bucket.add(id);
+        }
+      }
+      for (const [heyaId, idsToRemove] of removalsByHeya) {
+        const heya = nextHeyas?.get(heyaId) || result.heyas.get(heyaId);
+        if (heya) {
+          const ids = new Set(heya.rikishiIds || []);
+          for (const id of idsToRemove) ids.delete(id);
+          ensureHeyas().set(heyaId, { ...heya, rikishiIds: Array.from(ids) });
+          heyasChanged = true;
         }
       }
       result = { ...result, rikishi: nextRikishi, historicalRikishi: nextHistorical };

@@ -161,7 +161,6 @@ describe("boutResultApplier — dailyInjuryRiskOverrides consumption", () => {
   });
 
   it("override for winner IS consumed and cleared (fixed behavior)", () => {
-    // FIX: The winner's override is now consumed and cleared, just like the loser's.
     // The winner gets an injury roll at 50% of the base chance multiplied by the override.
     const world = makeWorld({
       transientContext: {
