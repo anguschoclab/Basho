@@ -19,10 +19,11 @@ import {
   spendPoliticalCapital,
   toScandalBand,
 } from "@/presenters/uiDigest";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { selectHeyasWithCriticalWelfare, selectMergerCandidates } from "@/presenters/selectors";
 
 export default function GovernancePage() {
-  const { state, issueRuling } = useGame();
+  const { state, issueRuling, updateWorld } = useGame();
   const sendCommand = useGameStore((s) => s.sendCommand);
   const world = state.world;
 
@@ -510,8 +511,10 @@ export default function GovernancePage() {
                       variant="outline"
                       size="sm"
                       onClick={() => {
-                        if (heya && (heya.politicalCapital ?? 0) >= 100) {
-                          spendPoliticalCapital(world, heya.id, 100);
+                        if (heya && (heya.politicalCapital ?? 0) >= 100 && world) {
+                          const impact = spendPoliticalCapital(world, heya.id, 100);
+                          const nextWorld = resolveImpacts(world, [impact]);
+                          updateWorld(nextWorld);
                         } else {
                           toast.error("Not enough Political Capital (need 100).");
                         }

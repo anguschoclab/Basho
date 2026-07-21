@@ -198,12 +198,10 @@ export function applyBoutResult(
   builder.merge(scoutingStore.onBoutResolvedScouting(world, { match, result, east, west }));
 
   // 5. Update Media (generates headlines, heat, etc.)
-  if (!world.mediaState) {
-    world.mediaState = createDefaultMediaState();
-  }
+  const mediaState = world.mediaState ?? createDefaultMediaState();
   builder.merge(
     updateMediaFromBout({
-      state: world.mediaState,
+      state: mediaState,
       world,
       result,
       day: match.day,
@@ -212,6 +210,9 @@ export function applyBoutResult(
       rivalries: world.rivalriesState,
     })
   );
+  if (!world.mediaState) {
+    builder.updateWorldField("mediaState", mediaState);
+  }
 
   // 6. Emit Canonical Event (Bard Engine v2.1)
   const intensity = calculateMatchIntensity(match, result);

@@ -424,8 +424,8 @@ export function runHoliday(world: WorldState, config: HolidayConfig): HolidayRes
       break;
     }
 
-    const report = advanceOneDay(world);
-    reports.push(report);
+    world = advanceOneDay(world);
+    reports.push(world);
     daysAdvanced++;
 
     // Check safety gates

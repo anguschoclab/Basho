@@ -36,7 +36,9 @@ export function processDramaTick(world: WorldState): StateImpact {
 
   // Daily chance for drama
   if (rng.next() > 0.95) {
-    generateRandomDrama(world);
+    const randomDramaImpact = generateRandomDrama(world);
+    const triggeredImpact = checkTriggeredDrama(world);
+    return mergeImpacts([builder.build(), randomDramaImpact, triggeredImpact]);
   }
 
   // Specific triggers (e.g., high debt, low compliance)
@@ -111,6 +113,7 @@ function generateRandomDrama(world: WorldState): StateImpact {
 
 function checkTriggeredDrama(world: WorldState): StateImpact {
   const builder = createImpactBuilder("checkTriggeredDrama");
+  const crisisImpacts: StateImpact[] = [];
 
   // Check for financial crisis
   for (const heya of stableSort(world.heyas.values(), (x) => x.id)) {
@@ -128,12 +131,12 @@ function checkTriggeredDrama(world: WorldState): StateImpact {
       if (heya.isPlayerOwned) {
         // This triggers a CrisisModal in the UI by attaching an ActiveCrisis to the heya
         const crisisImpact = triggerCrisis(world, heya.id, "financial_insolvency");
-        return mergeImpacts([builder.build(), crisisImpact]);
+        crisisImpacts.push(crisisImpact);
       }
     }
   }
 
-  return builder.build();
+  return mergeImpacts([builder.build(), ...crisisImpacts]);
 }
 
 function triggerCrisis(world: WorldState, heyaId: string, type: CrisisType): StateImpact {

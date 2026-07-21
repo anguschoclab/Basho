@@ -46,14 +46,17 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
 
     if (oyakata) {
       // Lazily hydrate oyakata persona quirks/flags if not yet assigned
-      ensurePersonaForOyakata(world, oyakata);
       const nextOya = { ...oyakata };
-      consolidateOyakataMemoryPure(world, nextOya, perception);
+      const persona = ensurePersonaForOyakata(world, nextOya);
+      nextOya.quirks = persona.quirks;
+      nextOya.managerFlags = persona.managerFlags;
+      nextOya.memory = consolidateOyakataMemoryPure(world, nextOya, perception);
 
       const decision = makeNPCWeeklyDecision(world, heya.id);
       applyNPCDecisionPure(world, builder, decision);
 
-      processOyakataMood(nextOya, decision, heya.id, builder);
+      const newMood = processOyakataMood(nextOya, decision, heya.id, builder);
+      nextOya.mood = newMood;
       scoutingMap[heya.id] = decision.scoutingPriority;
       collectManagementDecisionEvents(heya.id, decision, builder);
       collectStrategyShiftEvents(heya.id, decision, builder);

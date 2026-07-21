@@ -49,7 +49,7 @@ export function renewSponsorContract(
   updatedRelationships[relIdx] = {
     ...rel,
     endsAtTick: (world.week ?? 0) + 52,
-    strength: Math.min(5, rel.power + 1) as 1 | 2 | 3 | 4 | 5,
+    strength: Math.min(5, rel.strength + 1) as 1 | 2 | 3 | 4 | 5,
   };
 
   builder.updateSponsor(sponsorId, {

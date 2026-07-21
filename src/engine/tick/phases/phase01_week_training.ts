@@ -23,6 +23,7 @@
 
 import type { WorldState } from "../../types/world";
 import type { StateImpact } from "../../core/StateImpact";
+import { mergeImpacts } from "../../core/ImpactResolver";
 import { TrainingService } from "../../systems/training/TrainingService";
 import { BloodlineService } from "../../systems/legacy/BloodlineService";
 import { applyMentorshipBonuses } from "../../systems/training/MentorshipService";
@@ -58,31 +59,5 @@ export function phase01_week_training(world: WorldState): StateImpact {
   const mentorshipImpact = applyMentorshipBonuses(world);
   const sparringImpact = applyWeeklySparring(world);
 
-  // Merge impacts: heritage, mentorship, and sparring bonuses are applied after training
-  const mergedRikishiUpdates = new Map([
-    ...(trainingImpact.entities?.rikishiUpdates ?? []),
-    ...(heritageImpact.entities?.rikishiUpdates ?? []),
-    ...(mentorshipImpact.entities?.rikishiUpdates ?? []),
-    ...(sparringImpact.entities?.rikishiUpdates ?? []),
-  ]);
-
-  return {
-    ...trainingImpact,
-    entities: {
-      ...trainingImpact.entities,
-      rikishiUpdates: mergedRikishiUpdates,
-    },
-    worldFields: {
-      ...trainingImpact.worldFields,
-      ...heritageImpact.worldFields,
-      ...mentorshipImpact.worldFields,
-      ...sparringImpact.worldFields,
-    },
-    events: [
-      ...(trainingImpact.events ?? []),
-      ...(heritageImpact.events ?? []),
-      ...(mentorshipImpact.events ?? []),
-      ...(sparringImpact.events ?? []),
-    ],
-  };
+  return mergeImpacts([trainingImpact, heritageImpact, mentorshipImpact, sparringImpact]);
 }

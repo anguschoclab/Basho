@@ -32,7 +32,7 @@ import { runElections } from "../systems/governance/ScandalService";
  * Collects StateImpact from migrated functions and resolves them atomically.
  * Functions not yet migrated still mutate directly (will be migrated later).
  */
-export function runPostBashoResolution(world: WorldState): void {
+export function runPostBashoResolution(world: WorldState): WorldState {
   const impacts: StateImpact[] = [];
   const rng = rngForWorld(world, "postBasho", "sponsorChurn");
 
@@ -75,7 +75,7 @@ export function runPostBashoResolution(world: WorldState): void {
   impacts.push(recordsImpact);
 
   // Only prune at year-end (November Basho)
-  if (world.calendar.month === 11) {
+  if (world.calendar?.month === 11) {
     const archivalImpact = runArchivalPruning(world);
     impacts.push(archivalImpact);
   }
@@ -83,18 +83,14 @@ export function runPostBashoResolution(world: WorldState): void {
   // Resolve all collected impacts atomically
   const resolvedWorld = resolveImpacts(world, impacts);
 
-  // Apply resolved changes to the shared world reference
-  Object.assign(world, resolvedWorld);
-
   // Extract vacancies from retirement impact metadata for talent pool
   const vacancies =
-    (retirementImpact.metadata?.vacanciesByHeyaId as Record<
-      string,
-      number
-    >) || {};
+    (retirementImpact.metadata?.vacanciesByHeyaId as Record<string, number> | undefined) ?? {};
 
-  // Run recruitment window (now returns StateImpact, but we need to handle its direct mutation)
-  const recruitmentImpact = openRecruitmentWindow(world, vacancies);
-  const recruitmentResolved = resolveImpacts(world, [recruitmentImpact]);
-  Object.assign(world, recruitmentResolved);
+  // Run recruitment window on the resolved world, then resolve its impact
+  const recruitmentImpact = openRecruitmentWindow(resolvedWorld, vacancies);
+  const finalWorld = resolveImpacts(resolvedWorld, [recruitmentImpact]);
+
+  // Return the final world so callers can use it immutably
+  return finalWorld;
 }

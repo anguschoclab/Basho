@@ -20,20 +20,18 @@ export function consolidateOyakataMemoryPure(
   world: WorldState,
   oyakata: Oyakata,
   perception: PerceptionSnapshot
-): void {
-  if (!oyakata.memory) {
-    oyakata.memory = {
-      observations: [],
-      coreDirectives: [
-        `Maintain the excellence of stable`,
-        `Prioritize ${oyakata.archetype} values`,
-      ],
-      lastConsolidationTick: world.week,
-    };
-  }
+): NonNullable<Oyakata["memory"]> {
+  const memory: NonNullable<Oyakata["memory"]> = oyakata.memory
+    ? { ...oyakata.memory, observations: [...oyakata.memory.observations] }
+    : {
+        observations: [],
+        coreDirectives: [
+          `Maintain the excellence of stable`,
+          `Prioritize ${oyakata.archetype} values`,
+        ],
+        lastConsolidationTick: world.week,
+      };
 
-  const memory = { ...oyakata.memory };
-  memory.observations = [...memory.observations];
   const tick = world.week;
 
   if (
@@ -66,5 +64,5 @@ export function consolidateOyakataMemoryPure(
   }
 
   memory.lastConsolidationTick = tick;
-  oyakata.memory = memory;
+  return memory;
 }

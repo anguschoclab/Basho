@@ -89,23 +89,35 @@ function pickUnique<T>(rng: { next: () => number }, items: readonly T[], count: 
   return out;
 }
 
+export interface OyakataPersona {
+  quirks: string[];
+  managerFlags: NonNullable<Oyakata["managerFlags"]>;
+}
+
 /**
  * Ensure an Oyakata has a defined persona (quirks and flags).
  * Generates quirks and behavioral flags if not already present.
+ * Returns the persona data without mutating the input oyakata.
  *
  * @param {WorldState} world - The current world state.
  * @param {Oyakata} oyakata - The oyakata to ensure persona for.
- *
- * @example
- * ```ts
- * const oyakata = world.oyakata.get(oyakataId);
- * ensurePersonaForOyakata(world, oyakata);
- * console.log(oyakata.quirks); // Array of personality quirks
- * console.log(oyakata.managerFlags); // Behavioral flags
- * ```
+ * @returns {OyakataPersona} The persona data (quirks and managerFlags).
  */
-export function ensurePersonaForOyakata(world: WorldState, oyakata: Oyakata): void {
-  if (Array.isArray(oyakata.quirks) && oyakata.quirks.length) return;
+export function ensurePersonaForOyakata(
+  world: WorldState,
+  oyakata: Oyakata
+): OyakataPersona {
+  if (Array.isArray(oyakata.quirks) && oyakata.quirks.length) {
+    return {
+      quirks: oyakata.quirks,
+      managerFlags: oyakata.managerFlags ?? {
+        welfareHawk: false,
+        disciplineHawk: false,
+        publicityHawk: false,
+        nepotist: false,
+      },
+    };
+  }
 
   const rng = rngForWorld(world, "oyakataPersona", oyakata.id);
 
@@ -125,8 +137,7 @@ export function ensurePersonaForOyakata(world: WorldState, oyakata: Oyakata): vo
     nepotist: quirkIds.includes("Nepotist"),
   };
 
-  oyakata.quirks = quirkLabels;
-  oyakata.managerFlags = flags;
+  return { quirks: quirkLabels, managerFlags: flags };
 }
 
 /**
@@ -167,14 +178,14 @@ export function getManagerPersona(world: WorldState, heyaId: string): NPCPersona
     };
   }
 
-  ensurePersonaForOyakata(world, oyakata);
+  const persona = ensurePersonaForOyakata(world, oyakata);
 
   const traits = oyakata.traits;
   const flags = {
-    welfareHawk: Boolean(oyakata.managerFlags?.welfareHawk),
-    disciplineHawk: Boolean(oyakata.managerFlags?.disciplineHawk),
-    publicityHawk: Boolean(oyakata.managerFlags?.publicityHawk),
-    nepotist: Boolean(oyakata.managerFlags?.nepotist),
+    welfareHawk: Boolean(persona.managerFlags?.welfareHawk),
+    disciplineHawk: Boolean(persona.managerFlags?.disciplineHawk),
+    publicityHawk: Boolean(persona.managerFlags?.publicityHawk),
+    nepotist: Boolean(persona.managerFlags?.nepotist),
   };
 
   const welfareDiscipline = Math.max(
@@ -190,7 +201,7 @@ export function getManagerPersona(world: WorldState, heyaId: string): NPCPersona
   return {
     archetype: oyakata.archetype,
     traits,
-    quirks: oyakata.quirks ?? [],
+    quirks: persona.quirks,
     flags,
     styleBias: getHeyaStyleBias(world, heyaId),
     welfareDiscipline,

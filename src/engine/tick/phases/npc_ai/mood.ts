@@ -15,10 +15,9 @@ export function processOyakataMood(
   decision: NPCWeeklyDecision,
   heyaId: Id,
   builder: ImpactBuilder
-): void {
+): Oyakata["mood"] {
   const oldMood = oyakata.mood ?? "content";
-  const newMood = decision.mood;
-  if (newMood) oyakata.mood = newMood;
+  const newMood = decision.mood ?? oldMood;
 
   if (oldMood !== newMood) {
     builder.logEvent(
@@ -31,4 +30,6 @@ export function processOyakataMood(
       { heyaId }
     );
   }
+
+  return newMood;
 }

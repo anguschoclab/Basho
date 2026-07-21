@@ -12,14 +12,8 @@ function renderSegment(seg: ResolvedSegment, key: number) {
     return <span key={key}>{seg.content}</span>;
   }
 
-  const typeMap: Record<string, "rikishi" | "stable" | "oyakata"> = {
-    rikishi: "rikishi",
-    stable: "stable",
-    heya: "stable",
-    oyakata: "oyakata",
-  };
-
-  const clickableType = typeMap[seg.entityType] ?? "rikishi";
+  // Entity types from parseEntityLinks are already normalized to rikishi|stable|oyakata
+  const clickableType = seg.entityType as "rikishi" | "stable" | "oyakata";
 
   return (
     <ClickableName key={key} type={clickableType} id={seg.entityId} name={seg.label}>

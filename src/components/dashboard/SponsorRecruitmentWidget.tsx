@@ -9,6 +9,7 @@ import { Coins, TrendingUp, Building2 } from "lucide-react";
 import { formatYen } from "@/utils/engineUtils";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { recruitSponsor } from "@/presenters/uiDigest";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
 
 const TIER_LABELS: Record<string, { label: string; color: string }> = {
   T0: { label: "Local", color: "text-muted-foreground" },
@@ -143,8 +144,9 @@ export function SponsorRecruitmentWidget() {
     }
 
     if (!world.rng) return;
-    recruitSponsor(world, world.playerHeyaId, sponsor.sponsorId, world.rng);
-    updateWorld({ ...world });
+    const impact = recruitSponsor(world, world.playerHeyaId, sponsor.sponsorId, world.rng);
+    const nextWorld = resolveImpacts(world, [impact]);
+    updateWorld(nextWorld);
     toast({
       title: "Sponsor recruited",
       description: `${sponsor.displayName} has joined your Kōenkai.`,

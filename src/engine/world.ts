@@ -28,6 +28,7 @@ import * as bashoManager from "./lifecycle/BashoManager";
 import * as competition from "./lifecycle/CompetitionService";
 import { ensureDaySchedule } from "./schedule";
 import { onBashoEnded } from "./records";
+import { runPostBashoResolution } from "./core/SimulationRunner";
 
 export { getActiveRikishi, getStableRikishi, applyBoutResult, handleMediaEvent };
 
@@ -196,7 +197,8 @@ export function simulateBoutForToday(
 export function endBasho(world: WorldState): WorldState {
   const competitionImpact = competition.concludeBashoCompetition(world);
   const recordsImpact = onBashoEnded(world);
-  return resolveImpacts(world, [competitionImpact, recordsImpact]);
+  const resolvedWorld = resolveImpacts(world, [competitionImpact, recordsImpact]);
+  return runPostBashoResolution(resolvedWorld);
 }
 
 // runRetirements moved to governanceReview.ts

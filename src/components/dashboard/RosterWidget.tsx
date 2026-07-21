@@ -152,14 +152,14 @@ const RosterList = React.memo(
           }
           return nodes;
         })()}
-        {roster.length > 8 && (
+        {roster.length > ROSTER_WIDGET_MAX_ITEMS && (
           <TooltipWrap content="Navigate to the full rikishi directory" side="top">
             <Button
               variant="ghost"
               onClick={onViewAll}
               className="w-full h-auto py-1.5 text-[11px] text-primary hover:text-primary/80 hover:bg-transparent rounded-sm"
             >
-              +<span className="tabular-nums">{roster.length - 8}</span> more wrestlers →
+              +<span className="tabular-nums">{roster.length - ROSTER_WIDGET_MAX_ITEMS}</span> more wrestlers →
             </Button>
           </TooltipWrap>
         )}

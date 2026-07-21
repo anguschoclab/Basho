@@ -155,6 +155,7 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
     // Phase 5: Emergent Prodigy Burnout Check
     if (rikishi.injuryStatus?.isEmergentProdigy) {
       const { crashed, consecutiveWeeks } = applyBurnoutStep(rikishi, profile.intensity, world);
+      updates.consecutiveExtremeWeeks = consecutiveWeeks;
       if (crashed) {
         builder.logEvent(
           "NARRATIVE_CRISIS_TRIGGERED",
@@ -425,12 +426,10 @@ function applyBurnoutStep(
   world: WorldState
 ): { crashed: boolean; consecutiveWeeks: number } {
   if (intensity !== "punishing") {
-    r.consecutiveExtremeWeeks = 0;
     return { crashed: false, consecutiveWeeks: 0 };
   }
 
   const currentWeeks = (r.consecutiveExtremeWeeks || 0) + 1;
-  r.consecutiveExtremeWeeks = currentWeeks;
 
   // Probability roll: 15% (W1) -> 35% (W2) -> 100% (W3+)
   let crashProb = BURNOUT_PROB_WEEK_1;

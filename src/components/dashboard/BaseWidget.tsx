@@ -54,7 +54,7 @@ export function BaseWidget({
       role={onInteract ? "button" : undefined}
       tabIndex={onInteract ? 0 : undefined}
       onKeyDown={(e) => {
-        if (onInteract && (e.key === "Enter" || e.key === " ")) {
+        if (onInteract && e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) {
           e.preventDefault();
           onInteract();
         }

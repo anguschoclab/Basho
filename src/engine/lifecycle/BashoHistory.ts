@@ -5,9 +5,7 @@ import { safeCall } from "../utils/safe";
 import { rngForWorld } from "../rng";
 import { opfsArchiveService } from "../storage/opfsArchive";
 import { electronArchiveService } from "../storage/electronArchive";
-import { runPostBashoResolution } from "../core/SimulationRunner";
 import type { WorldState } from "../types/world";
-import type { Rikishi } from "../types/rikishi";
 import type { BashoState, BashoResult, MatchSchedule, AwardLogEntry } from "../types/basho";
 import type { Id } from "../types/common";
 import { createImpactBuilder } from "../core/ImpactBuilder";
@@ -213,7 +211,7 @@ export function recordBashoHistory(
     });
   });
 
-  runPostBashoResolution(world);
+  // Post-basho resolution is now called by endBasho() after applying all impacts
   const yushoRikishiForLog = getRikishi(world, yusho);
   builder.logEvent(
     "BASHO_STATUS",
@@ -296,14 +294,15 @@ export function checkYokozunaPromotions(
     const len = history.length;
     if (len < 2) continue;
 
-    const last2 = history.slice(-2);
-    // ⚡ Bolt Optimization: Use a direct for...of loop instead of .filter().length
+    // ⚡ Bolt Optimization: Direct index access instead of slice(-2) allocation
+    const last = history[len - 1];
+    const prev = history[len - 2];
     let yushos = 0;
     let junYushos = 0;
-    for (const h of last2) {
-      if (h.yusho) yushos++;
-      if (h.junYusho) junYushos++;
-    }
+    if (last.yusho) yushos++;
+    if (last.junYusho) junYushos++;
+    if (prev.yusho) yushos++;
+    if (prev.junYusho) junYushos++;
 
     // Combo Logic: Stats + Political Pressure
     const heat = world.mediaState?.mediaHeat?.[rid] || 0;

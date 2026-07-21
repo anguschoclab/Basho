@@ -143,7 +143,7 @@ function applyArrayAppends(world: WorldState, appends: StateImpact["arrayAppends
             ...result,
             myosekiMarket: {
               ...result.myosekiMarket,
-              history: [...(items as never[]), ...(result.myosekiMarket.history || [])],
+              history: [...(result.myosekiMarket.history || []), ...(items as never[])],
             },
           };
         }
