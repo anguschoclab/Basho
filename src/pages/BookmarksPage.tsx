@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet";
 import { useGame } from "@/contexts/GameContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -113,12 +114,11 @@ export default function BookmarksPage() {
       <div className="max-w-4xl mx-auto space-y-6 pb-20 animate-in fade-in duration-700">
         {bookmarks.length === 0 ? (
           <Card className="border-primary/10 bg-card/50">
-            <CardContent className="py-12 text-center">
-              <Bookmark className="h-8 w-8 text-muted-foreground/40 mx-auto mb-4" />
-              <p className="text-muted-foreground">
-                No bookmarks yet. Tag rikishi, stables, or bouts to track them here.
-              </p>
-            </CardContent>
+            <EmptyState
+              icon={Bookmark}
+              title="No bookmarks yet"
+              description="Tag rikishi, stables, or bouts to track them here."
+            />
           </Card>
         ) : (
           Array.from(grouped.entries()).map(([entityType, items]) => (
