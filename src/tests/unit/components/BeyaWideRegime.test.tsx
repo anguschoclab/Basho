@@ -2,7 +2,12 @@ import { describe, it, expect } from "vitest";
 import { render } from "@testing-library/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { BeyaWideRegime } from "@/components/training/BeyaWideRegime";
-import type { HeyaTrainingState, TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "@/engine/types/training";
+import type {
+  HeyaTrainingState,
+  TrainingIntensity,
+  TrainingFocus,
+  RecoveryEmphasis,
+} from "@/engine/types/training";
 
 const baseTrainingState: HeyaTrainingState = {
   activeProfile: {

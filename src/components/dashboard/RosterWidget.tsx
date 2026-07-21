@@ -263,7 +263,10 @@ export function RosterWidget() {
     };
   }, [world]);
 
-  const handleViewAllRikishi = React.useCallback(() => navigate({ to: "/stable/roster" }), [navigate]);
+  const handleViewAllRikishi = React.useCallback(
+    () => navigate({ to: "/stable/roster" }),
+    [navigate]
+  );
 
   if (!world) return null;
 

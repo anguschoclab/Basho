@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { getCitizenshipStatus, countsAsForeign, yearsUntilNaturalization, getHeyaForeignUsage, isAtForeignLimit } from "@/engine/utils/citizenshipUtils";
+import {
+  getCitizenshipStatus,
+  countsAsForeign,
+  yearsUntilNaturalization,
+  getHeyaForeignUsage,
+  isAtForeignLimit,
+} from "@/engine/utils/citizenshipUtils";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 
 describe("citizenshipUtils", () => {
@@ -15,7 +21,10 @@ describe("citizenshipUtils", () => {
     });
 
     it("returns naturalized if explicitly set", () => {
-      const r = MockFactory.createRikishi({ nationality: "Mongolia", citizenshipStatus: "naturalized" });
+      const r = MockFactory.createRikishi({
+        nationality: "Mongolia",
+        citizenshipStatus: "naturalized",
+      });
       expect(getCitizenshipStatus(r, 2024)).toBe("naturalized");
     });
 

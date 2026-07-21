@@ -1,7 +1,13 @@
 import { describe, it, expect } from "vitest";
-import { perceivedTalentSeed, scoutingNoiseSpread } from "@/engine/systems/recruitment/perceivedTalent";
+import {
+  perceivedTalentSeed,
+  scoutingNoiseSpread,
+} from "@/engine/systems/recruitment/perceivedTalent";
 import { makeMockWorld, makeMockHeya } from "../utils";
-import { PERCEPTION_NOISE_BASE, PERCEPTION_NOISE_FLOOR } from "@/constants/engine/scoutingPerception";
+import {
+  PERCEPTION_NOISE_BASE,
+  PERCEPTION_NOISE_FLOOR,
+} from "@/constants/engine/scoutingPerception";
 import type { TalentCandidate } from "@/engine/types/talent";
 
 const candidate = (id: string, talentSeed: number) =>
@@ -22,7 +28,9 @@ describe("perceivedTalentSeed", () => {
   it("different stables get different estimates of the same candidate", () => {
     const world = worldWith(["h1", "h2", "h3", "h4", "h5", "h6"]);
     const c = candidate("c1", 80);
-    const estimates = ["h1", "h2", "h3", "h4", "h5", "h6"].map((h) => perceivedTalentSeed(world, h, c));
+    const estimates = ["h1", "h2", "h3", "h4", "h5", "h6"].map((h) =>
+      perceivedTalentSeed(world, h, c)
+    );
     expect(new Set(estimates).size).toBeGreaterThan(1);
   });
 
