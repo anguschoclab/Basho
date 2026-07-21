@@ -13,7 +13,7 @@ export function MentionText({ text, className }: MentionTextProps) {
   if (!text) return null;
 
   // Regex to find [[type:id:label]]
-  const mentionRegex = /\[\[(rikishi|stable|oyakata):([^:]+):([^\]]+)\]\]/g;
+  const mentionRegex = /\[\[(rikishi|stable|oyakata):([a-zA-Z0-9_-]+):([^\]]+)\]\]/g;
 
   const parts = [];
   let lastIndex = 0;

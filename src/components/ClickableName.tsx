@@ -20,18 +20,11 @@ const routeMap: Record<NameType, string> = {
   oyakata: "/oyakata", // Oyakata links to their profile page
 };
 
-/**
- * Sanitizes an entity id to prevent XSS and path injection attacks.
- * Rejects protocol schemes (javascript:, data:), path traversal (..),
- * and leading slashes (absolute path injection).
- * Returns the original id if safe, or an empty string if suspicious.
- */
+const SAFE_ID_PATTERN = /^[a-zA-Z0-9_-]+$/;
+
 function sanitizeId(id: string): string {
-  if (!id) return id;
-  if (id.includes(":")) return "";
-  if (id.includes("..")) return "";
-  if (id.startsWith("/")) return "";
-  return id;
+  if (!id) return "";
+  return SAFE_ID_PATTERN.test(id) ? id : "";
 }
 
 /**

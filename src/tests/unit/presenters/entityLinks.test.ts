@@ -109,3 +109,58 @@ describe("parseEntityLinks", () => {
     });
   });
 });
+
+describe("parseEntityLinks security hardening", () => {
+  it("matches id 'javascript' but not id with colon (javascript:alert injection)", () => {
+    // [[rikishi:javascript:alert(1):Name]] matches with id=javascript, label=alert(1):Name
+    // because [a-zA-Z0-9_-]+ matches 'javascript' and [^\]]+ matches 'alert(1):Name'
+    const segments = parseEntityLinks("[[rikishi:javascript:alert(1):Name]]");
+    expect(segments).toHaveLength(1);
+    expect(segments[0]).toEqual({
+      type: "link",
+      entityType: "rikishi",
+      entityId: "javascript",
+      label: "alert(1):Name",
+    });
+  });
+
+  it("matches id 'javascript' as valid alphanumeric (downstream sanitization handles it)", () => {
+    const segments = parseEntityLinks("[[rikishi:javascript:Name]]");
+    expect(segments).toHaveLength(1);
+    expect(segments[0]).toEqual({
+      type: "link",
+      entityType: "rikishi",
+      entityId: "javascript",
+      label: "Name",
+    });
+  });
+
+  it("does not match id with special chars ($)", () => {
+    const segments = parseEntityLinks("[[rikishi:r$1:Name]]");
+    expect(segments).toHaveLength(1);
+    expect(segments[0].type).toBe("text");
+  });
+
+  it("does not match id with whitespace", () => {
+    const segments = parseEntityLinks("[[rikishi:r 1:Name]]");
+    expect(segments).toHaveLength(1);
+    expect(segments[0].type).toBe("text");
+  });
+
+  it("does not match id with URL-encoded colon", () => {
+    const segments = parseEntityLinks("[[rikishi:javascript%3Aalert:Name]]");
+    expect(segments).toHaveLength(1);
+    expect(segments[0].type).toBe("text");
+  });
+
+  it("preserves valid id with dashes and underscores", () => {
+    const segments = parseEntityLinks("[[rikishi:RK_ABCD-1234:Name]]");
+    expect(segments).toHaveLength(1);
+    expect(segments[0]).toEqual({
+      type: "link",
+      entityType: "rikishi",
+      entityId: "RK_ABCD-1234",
+      label: "Name",
+    });
+  });
+});

@@ -2,7 +2,7 @@ export type ResolvedSegment =
   | { type: "text"; content: string }
   | { type: "link"; entityType: string; entityId: string; label: string };
 
-const ENTITY_LINK_REGEX = /\[\[(\w+):([^\]]+):([^\]]+)\]\]/g;
+const ENTITY_LINK_REGEX = /\[\[(\w+):([a-zA-Z0-9_-]+):([^\]]+)\]\]/g;
 
 export function parseEntityLinks(text: string): ResolvedSegment[] {
   const segments: ResolvedSegment[] = [];

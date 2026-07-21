@@ -173,6 +173,39 @@ describe("ClickableName", () => {
   });
 });
 
+describe("sanitizeId security hardening", () => {
+  it.each([
+    ["javascript :alert(1)", "whitespace bypass"],
+    ["javascript%3Aalert(1)", "URL-encoded colon"],
+    ["\\admin", "backslash path"],
+    ["..%2fetc", "dot-dot-slash variant"],
+    ["java\nscript:alert(1)", "newline in protocol"],
+    ["朝乃山", "unicode shikona as id"],
+  ])("rejects unsafe id: %s (%s)", (unsafeId) => {
+    render(<ClickableName type="rikishi" id={unsafeId} name="Test" />);
+    const link = screen.getByTestId("router-link");
+    const href = link.getAttribute("href");
+    expect(href).toBe("/rikishi/");
+  });
+
+  it.each([
+    ["RK_ABCD_1234", "/rikishi/RK_ABCD_1234"],
+    ["WD-1A2B3C4D", "/rikishi/WD-1A2B3C4D"],
+    ["r1", "/rikishi/r1"],
+    ["s7", "/rikishi/s7"],
+  ])("preserves safe id: %s", (safeId, expectedHref) => {
+    render(<ClickableName type="rikishi" id={safeId} name="Test" />);
+    const link = screen.getByTestId("router-link");
+    expect(link.getAttribute("href")).toBe(expectedHref);
+  });
+
+  it("handles null id without crashing", () => {
+    render(<ClickableName type="rikishi" id={null as unknown as string} name="Test" />);
+    const link = screen.getByTestId("router-link");
+    expect(link.getAttribute("href")).toBe("/rikishi/");
+  });
+});
+
 describe("Convenience wrappers", () => {
   it("RikishiName passes type=rikishi and forwards props", () => {
     render(<RikishiName id="r42" name="Hakuho" className="champion" />);

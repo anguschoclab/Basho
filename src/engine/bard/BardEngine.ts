@@ -110,7 +110,12 @@ function getOptions(path: string, intensity: number): string[] {
  * Zero-Leakage Interpolation with Auto-Formatting and Domain-Specific Logic.
  */
 export function interpolate(text: string, context: NarrativeContext): string {
+  // Static pattern: character classes use a single '+' quantifier with no
+  // nesting or overlapping alternation, and context keys are never interpolated
+  // into the pattern. Therefore this regex is not susceptible to ReDoS.
   const pattern = /%([A-Z0-9_]+)%|\{\{([a-zA-Z0-9_]+)\}\}/g;
+  const MAX_CONTEXT_VALUE_LENGTH = 2000;
+  const MAX_INTERPOLATED_LENGTH = 10000;
 
   const result = text.replace(pattern, (_match, p1, p2) => {
     const key = (p1 || p2) as string;
@@ -185,14 +190,24 @@ export function interpolate(text: string, context: NarrativeContext): string {
       entityId = context.nameId;
     }
 
-    const stringValue = value.toString();
+    const raw = typeof value === "string" ? value : String(value);
+    const capped = raw.length > MAX_CONTEXT_VALUE_LENGTH
+      ? raw.slice(0, MAX_CONTEXT_VALUE_LENGTH) + "…truncated"
+      : raw;
+    const stringValue = capped.replace(/[\[\]:]/g, "");
 
     if (entityType && entityId) {
-      return `[[${entityType}:${entityId}:${stringValue}]]`;
+      const safeEntityId = String(entityId).replace(/[\[\]:]/g, "");
+      return `[[${entityType}:${safeEntityId}:${stringValue}]]`;
     }
 
     return stringValue;
   });
+
+  if (result.length > MAX_INTERPOLATED_LENGTH) {
+    warn(`BardEngine: interpolated result exceeded ${MAX_INTERPOLATED_LENGTH} chars, truncating`, "BardEngine");
+    return result.slice(0, MAX_INTERPOLATED_LENGTH) + "…[truncated]";
+  }
 
   if (result.includes("%") || result.includes("{{") || result.includes("}}")) {
     const leakMsg = `BardEngine Warning: Token leakage or unresolved brackets in result: "${result}"`;
