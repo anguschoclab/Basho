@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { type LucideIcon, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export interface BaseWidgetAction {
   label: string;
@@ -42,7 +43,23 @@ export function BaseWidget({
 }: BaseWidgetProps) {
   // If no specific actions are provided but onInteract is, we could use it for a generic footer action, but let's just make it available.
   return (
-    <div className={`widget-card p-4 space-y-3 ${className || ""}`} onClick={onInteract}>
+    <div
+      className={cn(
+        "widget-card p-4 space-y-3",
+        className,
+        onInteract &&
+          "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
+      )}
+      onClick={onInteract}
+      role={onInteract ? "button" : undefined}
+      tabIndex={onInteract ? 0 : undefined}
+      onKeyDown={(e) => {
+        if (onInteract && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          onInteract();
+        }
+      }}
+    >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Icon className={`h-4 w-4 ${iconClassName || "text-primary"}`} />
