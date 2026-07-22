@@ -277,7 +277,7 @@ export function generateFullRikishi(args: {
       ceilingFraction: potentialPkg.ceilingFraction,
       profile: potentialPkg.profile,
     },
-  } as unknown as Rikishi;
+  } as Rikishi;
 }
 
 /**
@@ -361,7 +361,7 @@ export function convertCandidateToRikishi(args: {
           profile: candidate.developmentProfile ?? "standard",
         }
       : undefined,
-  } as unknown as Rikishi;
+  } as Rikishi;
 
   return rikishi;
 }

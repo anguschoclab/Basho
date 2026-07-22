@@ -20,3 +20,8 @@
 **Finding:** `vacanciesByHeyaId` was extracted from `retirementImpact.metadata` using an intermediate `as unknown` cast.
 **Learning:** `metadata` property on `StateImpact` is typed as `{ source: string, timestamp?: number, [key: string]: unknown }` which already allows index-signature access for any property like `vacanciesByHeyaId`. No intermediate `as unknown as Record<string, unknown>` is needed.
 **Constraint:** Use the existing index signature in `metadata` directly rather than polluting the code with unneeded and unsafe type casts.
+
+## 2025-07-22 - Remove redundant type casts in CandidateBuilder and phase01_daily_welfare
+**Finding:** Found multiple uses of `as unknown as Rikishi` in `src/engine/systems/generation/CandidateBuilder.ts` and `as unknown as import("../../types/rikishi").Rikishi` in `src/engine/tick/phases/phase01_daily_welfare.ts`.
+**Learning:** These casts were redundant and unsafe. By using `as Rikishi`, we tighten the types and ensure compile-time checks without changing behavior.
+**Constraint:** Future object construction should conform to the expected types instead of relying on `as unknown as Type` to bypass validation.
