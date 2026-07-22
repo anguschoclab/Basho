@@ -29,3 +29,8 @@
 **Issue:** `ActionQueueWidget` handled its empty and non-empty state inconsistently by wrapping content directly in a custom `Card` rather than the standard `BaseWidget`.
 **Learning:** This caused structural inconsistency with other widgets in the dashboard that use `BaseWidget`.
 **Rule:** Always use `BaseWidget` as the top-level wrapper for all dashboard widgets to maintain consistent layout, headers, and padding for both populated and empty states.
+
+## 2025-07-22 - Game Panels Empty State Consistency
+**Issue:** `SparringPanel` used a custom `<p>` tag for its empty state instead of the standard `EmptyState` component.
+**Learning:** The previous rule for dashboard widgets and game panels applies here as well.
+**Rule:** Always use the `<EmptyState compact />` component for null or length-zero list fallback renders within all `src/components/game` panels.
