@@ -33,3 +33,8 @@
 **Gap:** The utility functions in `citizenshipUtils.ts` (e.g., `getCitizenshipStatus`, `countsAsForeign`, `yearsUntilNaturalization`, `getHeyaForeignUsage`, `isAtForeignLimit`) lacked unit tests, leaving the core rules around foreign recruitment and naturalization untested against regressions.
 **Learning:** These utility functions contain complex boundary checks related to joined dates and specific string comparisons (e.g., "Japan" vs "Japanese"). Modifying these functions without tests could easily break foreign recruitment rules in the game.
 **Pattern:** Construct `Rikishi` objects using `MockFactory.createRikishi` with specific combinations of `nationality`, `citizenshipStatus`, and `joinedHeyaDate` to verify all possible permutations of citizenship status and boundary conditions for naturalization.
+
+## 2025-02-23 - InfrastructureService Test Coverage
+**Gap:** `src/engine/systems/economy/InfrastructureService.ts` was mostly untested, leaving core construction and bonus logic unverified.
+**Learning:** `InfrastructureService` methods return `StateImpact` objects which must be asserted by checking the respective maps within the impact object (e.g. `impact.entities?.heyaUpdates?.get(heya.id)`). When `startConstruction` fails validation, it still emits an event of type `CONSTRUCTION_STARTED` but with a `status: "failed_requirements"` detail, which is counterintuitive but functionally correct per the current codebase.
+**Pattern:** Provide a pre-configured `WorldState` and `Heya` using `MockFactory` to test `startConstruction`, `processCompletionTick`, and `getHeyaBonuses`. Assertions are made directly on the `StateImpact` and its `heyaUpdates` maps, `events` array, etc.
