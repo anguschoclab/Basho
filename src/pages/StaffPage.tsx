@@ -100,7 +100,13 @@ export default function StaffPage() {
 
   const staffList = useMemo(() => {
     if (!world || !heya) return [];
-    return (heya.staffIds || []).map((id) => world.staff.get(id)).filter(Boolean) as Staff[];
+    // ⚡ Bolt Optimization: Use a single for...of loop instead of chained .map().filter(Boolean)
+    const list: Staff[] = [];
+    for (const id of heya.staffIds || []) {
+      const staffMember = world.staff.get(id);
+      if (staffMember) list.push(staffMember);
+    }
+    return list;
   }, [world, heya]);
 
   const handleHire = useCallback(() => {

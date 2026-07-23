@@ -128,7 +128,11 @@ export default function MainMenu() {
     while (picks.length < 6 && bandIdx < remainingBands.length * 3) {
       const band = remainingBands[bandIdx % remainingBands.length];
       const bandStables = groups[band];
-      const pickCount = picks.filter((p) => p.statureBand === band).length;
+      // ⚡ Bolt Optimization: Use a single for...of loop instead of .filter().length
+      let pickCount = 0;
+      for (const p of picks) {
+        if (p.statureBand === band) pickCount++;
+      }
       if (bandStables[pickCount]) {
         const next = bandStables[pickCount];
         if (!pickedIds.has(next.id)) {
