@@ -20,3 +20,7 @@
 **Finding:** `vacanciesByHeyaId` was extracted from `retirementImpact.metadata` using an intermediate `as unknown` cast.
 **Learning:** `metadata` property on `StateImpact` is typed as `{ source: string, timestamp?: number, [key: string]: unknown }` which already allows index-signature access for any property like `vacanciesByHeyaId`. No intermediate `as unknown as Record<string, unknown>` is needed.
 **Constraint:** Use the existing index signature in `metadata` directly rather than polluting the code with unneeded and unsafe type casts.
+## 2026-07-23 - Tighten generic typing in EntityService
+**Finding:** EntityService.ensureState and ensureNestedState used 'any' to bypass TS errors when dynamically hydrating child objects.
+**Learning:** TypeScript type-checks can be satisfied using standard Map and Record generic casts without resorting to 'any' for object mutation.
+**Constraint:** Future additions to 'isMapField' check in EntityService.ensureNestedState must respect the generic signatures to maintain type propagation.

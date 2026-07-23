@@ -35,11 +35,15 @@ export const EntityService = {
    * }));
    * ```
    */
-  ensureState<T>(parent: any, key: string, factory: () => T): T {
+  ensureState<Parent extends Record<string, any>, Key extends keyof Parent>(
+    parent: Parent,
+    key: Key,
+    factory: () => NonNullable<Parent[Key]>
+  ): NonNullable<Parent[Key]> {
     if (!parent[key]) {
-      parent[key] = factory();
+      parent[key] = factory() as unknown as Parent[Key];
     }
-    return parent[key];
+    return parent[key] as NonNullable<Parent[Key]>;
   },
 
   /**
@@ -86,21 +90,22 @@ export const EntityService = {
         "closedHeyas",
         "sparringPairs",
       ].includes(rootKey as string);
-      (world as any)[rootKey] = isMapField ? new Map() : {};
+      (world as unknown as Record<string, unknown>)[rootKey as string] = isMapField ? new Map() : {};
     }
 
-    const root = world[rootKey] as any;
+    const root = world[rootKey] as unknown;
 
     if (root instanceof Map) {
       if (!root.has(id)) {
         root.set(id, factory());
       }
-      return root.get(id);
+      return root.get(id) as T;
     } else {
-      if (!root[id]) {
-        root[id] = factory();
+      const record = root as Record<string, T>;
+      if (!record[id]) {
+        record[id] = factory();
       }
-      return root[id];
+      return record[id];
     }
   },
 };
