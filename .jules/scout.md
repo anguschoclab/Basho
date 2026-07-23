@@ -33,3 +33,9 @@
 **Gap:** The utility functions in `citizenshipUtils.ts` (e.g., `getCitizenshipStatus`, `countsAsForeign`, `yearsUntilNaturalization`, `getHeyaForeignUsage`, `isAtForeignLimit`) lacked unit tests, leaving the core rules around foreign recruitment and naturalization untested against regressions.
 **Learning:** These utility functions contain complex boundary checks related to joined dates and specific string comparisons (e.g., "Japan" vs "Japanese"). Modifying these functions without tests could easily break foreign recruitment rules in the game.
 **Pattern:** Construct `Rikishi` objects using `MockFactory.createRikishi` with specific combinations of `nationality`, `citizenshipStatus`, and `joinedHeyaDate` to verify all possible permutations of citizenship status and boundary conditions for naturalization.
+
+## 2025-02-27 - Test naturalization eligibility and RNG chance logic
+
+**Gap:** `checkNaturalizations` in `naturalization.ts` was entirely untested. This core logic handles when and if foreign rikishi gain Japanese citizenship, which unlocks their stable's foreign slot (a major strategic constraint).
+**Learning:** `checkNaturalizations` relies on `rngFromSeed` which uses the rikishi's ID and the current year. To deterministically test the ~5% chance passing or failing, specific IDs that yield passing (`< 5`) or failing (`> 5`) RNG outputs must be brute-forced or hardcoded (`rikishi_24` passes in `2025`). Also, `createImpactBuilder` stores patches in `impact.entities.rikishiUpdates` map, not a flat object.
+**Pattern:** For modules relying on rare RNG chances tied to entity IDs, write a small scratchpad script to find an ID that yields a passing roll for a given seed setup. For state verification, check `impact.entities.rikishiUpdates.get(id)` instead of expecting direct mutation.
