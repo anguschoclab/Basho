@@ -8,9 +8,13 @@ import {
   getCareerPhase,
   calculateGains,
   calculateGrowthVector,
+  calculateGrowthWithModifiers,
+  extractTrainingModifiers,
+  computeDisplayTrainingMultiplier,
 } from "@/engine/systems/training/TrainingMath";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
-import type { TrainingProfile } from "@/engine/types/training";
+import type { TrainingProfile, IndividualFocus } from "@/engine/types/training";
+import type { ActiveModifiers } from "@/engine/types/world";
 import {
   MAX_STAT_CEILING,
   MIN_STAT_CEILING,
@@ -18,6 +22,7 @@ import {
   PRIME_EXPERIENCE_THRESHOLD,
   VETERAN_EXPERIENCE_THRESHOLD,
 } from "@/constants/engine/training";
+import { MORALE_BOOST_MULTIPLIER, FINANCIAL_PENALTY_MULTIPLIER } from "@/constants/engine/multipliers";
 
 describe("TrainingMath", () => {
   describe("getStatCeiling", () => {
@@ -170,62 +175,197 @@ describe("TrainingMath", () => {
     });
   });
 
-  describe("calculateGains — proportional scaling", () => {
+  describe("calculateGains — proportional scaling with raw components", () => {
     const baseProfile: TrainingProfile = {
       intensity: "balanced",
       focus: "neutral",
       styleBias: "neutral",
       recovery: "normal",
     };
+    const currentYear = 2025;
 
-    it("with trainingMultiplier 1.0 produces baseline gains", () => {
+    function makeAM(overrides: Partial<ActiveModifiers> = {}): ActiveModifiers {
+      return {
+        facilityGrowthMult: 1.0,
+        nutritionMult: 1.0,
+        degeikoMult: 1.0,
+        styleDriftMults: {
+          power: 1.0,
+          speed: 1.0,
+          technique: 1.0,
+          balance: 1.0,
+          stamina: 1.0,
+          mental: 1.0,
+        },
+        recoveryMultiplier: 1.0,
+        financialPenalty: false,
+        moraleBoost: false,
+        ...overrides,
+      };
+    }
+
+    it("with neutral modifiers produces baseline gains", () => {
       const r = MockFactory.createRikishi("r1", { stats: { experience: 50 } as any });
-      const gains = calculateGains(
-        r,
-        { trainingMultiplier: 1.0, recoveryMultiplier: 1.0 } as any,
-        baseProfile
-      );
-      // Gains should be positive for a mid-career rikishi
+      const gains = calculateGains(r, makeAM(), baseProfile, undefined, currentYear);
       const totalGains = Object.values(gains).reduce((a, b) => a + b, 0);
       expect(totalGains).toBeGreaterThan(0);
     });
 
-    it("with trainingMultiplier 1.5 produces 1.5x baseline gains", () => {
+    it("with facilityGrowthMult 1.2 produces higher gains than 1.0", () => {
       const r = MockFactory.createRikishi("r1", { stats: { experience: 50 } as any });
-      const baseline = calculateGains(
-        r,
-        { trainingMultiplier: 1.0, recoveryMultiplier: 1.0 } as any,
-        baseProfile
-      );
+      const baseline = calculateGains(r, makeAM(), baseProfile, undefined, currentYear);
       const boosted = calculateGains(
         r,
-        { trainingMultiplier: 1.5, recoveryMultiplier: 1.0 } as any,
-        baseProfile
+        makeAM({ facilityGrowthMult: 1.2 }),
+        baseProfile,
+        undefined,
+        currentYear
       );
       for (const key of Object.keys(baseline) as Array<keyof typeof baseline>) {
         if (baseline[key] !== 0) {
-          expect(boosted[key]).toBeCloseTo(baseline[key] * 1.5, 5);
+          expect(boosted[key]).toBeGreaterThan(baseline[key]);
         }
       }
     });
 
-    it("with trainingMultiplier 0.5 produces 0.5x baseline gains", () => {
+    it("with moraleBoost true produces 1.15x baseline gains", () => {
       const r = MockFactory.createRikishi("r1", { stats: { experience: 50 } as any });
-      const baseline = calculateGains(
+      const baseline = calculateGains(r, makeAM(), baseProfile, undefined, currentYear);
+      const boosted = calculateGains(
         r,
-        { trainingMultiplier: 1.0, recoveryMultiplier: 1.0 } as any,
-        baseProfile
-      );
-      const halved = calculateGains(
-        r,
-        { trainingMultiplier: 0.5, recoveryMultiplier: 1.0 } as any,
-        baseProfile
+        makeAM({ moraleBoost: true }),
+        baseProfile,
+        undefined,
+        currentYear
       );
       for (const key of Object.keys(baseline) as Array<keyof typeof baseline>) {
         if (baseline[key] !== 0) {
-          expect(halved[key]).toBeCloseTo(baseline[key] * 0.5, 5);
+          expect(boosted[key]).toBeCloseTo(baseline[key] * (1 + MORALE_BOOST_MULTIPLIER), 5);
         }
       }
+    });
+
+    it("with financialPenalty true produces 0.5x baseline gains", () => {
+      const r = MockFactory.createRikishi("r1", { stats: { experience: 50 } as any });
+      const baseline = calculateGains(r, makeAM(), baseProfile, undefined, currentYear);
+      const halved = calculateGains(
+        r,
+        makeAM({ financialPenalty: true }),
+        baseProfile,
+        undefined,
+        currentYear
+      );
+      for (const key of Object.keys(baseline) as Array<keyof typeof baseline>) {
+        if (baseline[key] !== 0) {
+          expect(halved[key]).toBeCloseTo(baseline[key] * FINANCIAL_PENALTY_MULTIPLIER, 5);
+        }
+      }
+    });
+
+    it("with both moraleBoost and financialPenalty produces 0.575x baseline gains", () => {
+      const r = MockFactory.createRikishi("r1", { stats: { experience: 50 } as any });
+      const baseline = calculateGains(r, makeAM(), baseProfile, undefined, currentYear);
+      const both = calculateGains(
+        r,
+        makeAM({ moraleBoost: true, financialPenalty: true }),
+        baseProfile,
+        undefined,
+        currentYear
+      );
+      const expectedMult = (1 + MORALE_BOOST_MULTIPLIER) * FINANCIAL_PENALTY_MULTIPLIER;
+      for (const key of Object.keys(baseline) as Array<keyof typeof baseline>) {
+        if (baseline[key] !== 0) {
+          expect(both[key]).toBeCloseTo(baseline[key] * expectedMult, 5);
+        }
+      }
+    });
+
+    it("with degeikoMult 1.1 produces higher gains than 1.0", () => {
+      const r = MockFactory.createRikishi("r1", { stats: { experience: 50 } as any });
+      const baseline = calculateGains(r, makeAM(), baseProfile, undefined, currentYear);
+      const boosted = calculateGains(
+        r,
+        makeAM({ degeikoMult: 1.1 }),
+        baseProfile,
+        undefined,
+        currentYear
+      );
+      for (const key of Object.keys(baseline) as Array<keyof typeof baseline>) {
+        if (baseline[key] !== 0) {
+          expect(boosted[key]).toBeGreaterThan(baseline[key]);
+        }
+      }
+    });
+
+    it("with styleDriftMults.power=1.1 produces higher power gains", () => {
+      const r = MockFactory.createRikishi("r1", { stats: { experience: 50 } as any });
+      const baseline = calculateGains(r, makeAM(), baseProfile, undefined, currentYear);
+      const drifted = calculateGains(
+        r,
+        makeAM({
+          styleDriftMults: {
+            power: 1.1,
+            speed: 1.0,
+            technique: 1.0,
+            balance: 1.0,
+            stamina: 1.0,
+            mental: 1.0,
+          },
+        }),
+        baseProfile,
+        undefined,
+        currentYear
+      );
+      expect(drifted.power).toBeGreaterThan(baseline.power);
+    });
+  });
+
+  describe("computeDisplayTrainingMultiplier", () => {
+    function makeAM(overrides: Partial<ActiveModifiers> = {}): ActiveModifiers {
+      return {
+        facilityGrowthMult: 1.0,
+        nutritionMult: 1.0,
+        degeikoMult: 1.0,
+        styleDriftMults: {
+          power: 1.0,
+          speed: 1.0,
+          technique: 1.0,
+          balance: 1.0,
+          stamina: 1.0,
+          mental: 1.0,
+        },
+        recoveryMultiplier: 1.0,
+        financialPenalty: false,
+        moraleBoost: false,
+        ...overrides,
+      };
+    }
+
+    it("returns facilityGrowthMult when no morale/penalty", () => {
+      expect(computeDisplayTrainingMultiplier(makeAM({ facilityGrowthMult: 1.025 }))).toBeCloseTo(
+        1.025
+      );
+    });
+
+    it("adds MORALE_BOOST_MULTIPLIER when moraleBoost is true", () => {
+      const am = makeAM({ facilityGrowthMult: 1.025, moraleBoost: true });
+      expect(computeDisplayTrainingMultiplier(am)).toBeCloseTo(1.025 + MORALE_BOOST_MULTIPLIER);
+    });
+
+    it("applies FINANCIAL_PENALTY_MULTIPLIER when financialPenalty is true", () => {
+      const am = makeAM({ facilityGrowthMult: 1.025, financialPenalty: true });
+      expect(computeDisplayTrainingMultiplier(am)).toBeCloseTo(1.025 * FINANCIAL_PENALTY_MULTIPLIER);
+    });
+
+    it("applies both morale and penalty", () => {
+      const am = makeAM({
+        facilityGrowthMult: 1.025,
+        moraleBoost: true,
+        financialPenalty: true,
+      });
+      expect(computeDisplayTrainingMultiplier(am)).toBeCloseTo(
+        (1.025 + MORALE_BOOST_MULTIPLIER) * FINANCIAL_PENALTY_MULTIPLIER
+      );
     });
   });
 

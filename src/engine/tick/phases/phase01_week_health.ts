@@ -47,8 +47,11 @@ export function phase01_week_health(world: WorldState): StateImpact {
     let changed = false;
 
     if (r.injured) {
-      changed = processRecovery(world, r, builder);
-    } else {
+      processRecovery(world, r, builder);
+      // Always persist recovery progress — tickRikishiRecovery mutates r in place
+      // (reduces injuryWeeksRemaining), and partial recovery must be saved.
+      changed = true;
+    } else if (world.cyclePhase !== "active_basho") {
       changed = processInjuryRoll(world, r, builder);
     }
 
@@ -64,7 +67,11 @@ export function phase01_week_health(world: WorldState): StateImpact {
 
 function processRecovery(world: WorldState, r: Rikishi, builder: ImpactBuilder): boolean {
   const staffBonuses = getHeyaStaffBonuses(world, r.heyaId);
-  const recovered = tickRikishiRecovery(r, staffBonuses.medical);
+  const activeModifiers = world.transientContext?.activeModifiers;
+  const recoveryMultiplier = activeModifiers?.recoveryMultiplier ?? 1.0;
+  // Combine staff medical bonus with facility/nutrition-derived recoveryMultiplier
+  const effectiveRecoveryMult = staffBonuses.medical * recoveryMultiplier;
+  const recovered = tickRikishiRecovery(r, effectiveRecoveryMult);
 
   if (recovered) {
     builder.logEvent(

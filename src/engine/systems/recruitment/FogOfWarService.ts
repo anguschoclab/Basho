@@ -152,12 +152,12 @@ export function resolveScoutedAttribute(
   const { text: confidenceLabel } = BardEngine.resolve(rng, `scouting.confidence.${confidence}`);
 
   if (confidence === "certain") {
-    const label = NarrativeService.describeAttribute(attributeName, trueValue);
+    const label = NarrativeService.describeAttribute(rng, attributeName, trueValue);
     return { value: label, confidence: "certain", narrative: label };
   }
 
   const estimated = getEstimatedValue(trueValue, confidence, seed, range);
-  const label = NarrativeService.describeAttribute(attributeName, estimated);
+  const label = NarrativeService.describeAttribute(rng, attributeName, estimated);
 
   const qKey = confidence === "medium" ? "appears" : "may_be";
   const { text: qLabel } = BardEngine.resolve(rng, `scouting.qualifiers.${qKey}`);

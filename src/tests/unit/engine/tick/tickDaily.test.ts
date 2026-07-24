@@ -88,6 +88,32 @@ describe("tickDaily", () => {
       runPipelineSpy.mockRestore();
     });
 
+    it("fires yearly boundary during active_basho phase", () => {
+      const world = makeMockWorld({
+        calendar: { year: 2025, month: 12, currentWeek: 52, currentDay: 31 },
+        cyclePhase: "active_basho",
+        _daysSinceLastWeeklyTick: 6, // weekly tick
+        currentBasho: {
+          id: "test-basho",
+          year: 2025,
+          bashoNumber: 6,
+          bashoName: "kyushu",
+          day: 15,
+          matches: [],
+          standings: new Map(),
+          isActive: true,
+        } as any,
+      });
+
+      const nextWorld = advanceOneDay(world);
+
+      // Calendar should cross to new year
+      expect(nextWorld.calendar!.year).toBe(2026);
+      expect(nextWorld.calendar!.month).toBe(1);
+      // Year boundary flag should be set
+      expect(nextWorld.transientContext?.boundaries?.yearBoundary).toBe(true);
+    });
+
     it("populates daily tick report correctly", () => {
       const world = makeMockWorld({
         dayIndexGlobal: 5,

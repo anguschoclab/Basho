@@ -49,4 +49,22 @@ describe("perceivedTalentSeed", () => {
     expect(scoutingNoiseSpread(3, true)).toBeLessThan(scoutingNoiseSpread(0, false));
     expect(scoutingNoiseSpread(99, true)).toBeGreaterThanOrEqual(PERCEPTION_NOISE_FLOOR);
   });
+
+  it("scouting office reduces spread beyond scouts alone", () => {
+    expect(scoutingNoiseSpread(2, true)).toBeLessThan(scoutingNoiseSpread(2, false));
+  });
+
+  it("extreme talent values (0, 100) produce estimates within [0, 100]", () => {
+    const world = worldWith(["h1"]);
+    const est0 = perceivedTalentSeed(world, "h1", candidate("c0", 0));
+    const est100 = perceivedTalentSeed(world, "h1", candidate("c100", 100));
+    expect(est0).toBeGreaterThanOrEqual(0);
+    expect(est0).toBeLessThanOrEqual(100);
+    expect(est100).toBeGreaterThanOrEqual(0);
+    expect(est100).toBeLessThanOrEqual(100);
+  });
+
+  it("scoutingNoiseSpread floor is enforced even with many scouts + office", () => {
+    expect(scoutingNoiseSpread(50, true)).toBeGreaterThanOrEqual(PERCEPTION_NOISE_FLOOR);
+  });
 });

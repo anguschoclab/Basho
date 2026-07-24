@@ -16,6 +16,7 @@ import {
   RECOVERY_MULTIPLIERS,
   ensureHeyaTrainingState,
 } from "@/presenters/uiDigest";
+import { computeDisplayTrainingMultiplier } from "@/engine/systems/training/TrainingMath";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 
 const INTENSITY_OPTIONS: TrainingIntensity[] = [
@@ -252,7 +253,7 @@ export function TrainingWidget() {
   // Falls back to raw intensity multiplier if context hasn't been built yet.
   const activeModifiers = world.transientContext?.activeModifiers;
   const effectiveGrowthMultiplier =
-    activeModifiers != null ? activeModifiers.trainingMultiplier : intensityInfo.growth;
+    activeModifiers != null ? computeDisplayTrainingMultiplier(activeModifiers) : intensityInfo.growth;
   const financialPenalty = activeModifiers?.financialPenalty ?? false;
   const moraleBoost = activeModifiers?.moraleBoost ?? false;
 

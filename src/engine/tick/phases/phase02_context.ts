@@ -6,29 +6,29 @@
  * Reads the post-Phase-1 world to compute all active buffs/debuffs
  * and resets TickDeltas (except revenue/expenses already set by phase01).
  *
- * ActiveModifiers derivation:
- *   trainingMultiplier  = facilityMult * oyakataMult * [morale +0.15] * [penalty *0.5]
- *   recoveryMultiplier  = recoveryFacilityMult * nutritionMult
- *   financialPenalty    = playerHeya.funds < 0
- *   moraleBoost         = a player rikishi won a basho within the last 4 weeks
+ * ActiveModifiers derivation (raw components — no bundled trainingMultiplier):
+ *   facilityGrowthMult = training facility level → 0.85 + (lvl/100)*0.35
+ *   nutritionMult      = nutrition facility level → 0.92 + (lvl/100)*0.16
+ *   degeikoMult        = ichimon/faction/rivalry modifiers (from extractTrainingModifiers)
+ *   styleDriftMults    = per-stat drift from training philosophy + ichimon stat bonuses
+ *   recoveryMultiplier = recoveryFacilityMult * nutritionMult (clamped 0.5–2.0)
+ *   financialPenalty   = playerHeya.funds < 0 (applied as 0.5× in calculateGains)
+ *   moraleBoost        = a player rikishi won the most recent basho (applied as +0.15 in calculateGains)
+ *
+ * Morale boost and financial penalty are stored as boolean flags and applied
+ * downstream in TrainingMath.calculateGains, not bundled here.
  *
  * After this phase, world.transientContext.activeModifiers is the authoritative
  * source for all downstream phase calculations.
  */
 
 import type { WorldState, ActiveModifiers } from "../../types/world";
-import type { Heya } from "../../types/heya";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { emptyDeltas } from "../pipelineRunner";
 import { clamp } from "../../utils";
 import {
-  TRAINING_MULTIPLIERS,
   FACILITY_RECOVERY_MULTIPLIERS,
-  NUTRITION_MULTIPLIERS,
-  MORALE_BOOST_MULTIPLIER,
-  FINANCIAL_PENALTY_MULTIPLIER,
-  TRAINING_MULTIPLIER_BOUNDS,
   RECOVERY_MULTIPLIER_BOUNDS,
 } from "../../../constants/engine/multipliers";
 import {
@@ -37,6 +37,7 @@ import {
   DEFAULT_FACILITY_LEVEL,
 } from "../../../constants/engine/rikishi";
 import { getHeya } from "../../queries";
+import { extractTrainingModifiers } from "../../systems/training/TrainingMath";
 
 // ── Phase ─────────────────────────────────────────────────────────────────────
 
@@ -46,20 +47,20 @@ export function phase02_context(world: WorldState): StateImpact {
   const playerHeya = playerHeyaId ? getHeya(world, playerHeyaId) : undefined;
 
   const financialPenalty = (playerHeya?.funds ?? 0) < 0;
-  const facilityMultipliers = calculateFacilityMultipliers(playerHeya);
   const moraleBoost = checkMoraleBoost(world);
-  const trainingMultiplier = calculateTrainingMultiplier(
-    facilityMultipliers.training,
-    moraleBoost,
-    financialPenalty
-  );
-  const recoveryMultiplier = calculateRecoveryMultiplier(
-    facilityMultipliers.recovery,
-    facilityMultipliers.nutrition
-  );
+
+  // Extract raw training modifier components (facility, nutrition, degeiko, style drift)
+  const { facilityGrowthMult, nutritionMult, degeikoMult, styleDriftMults } =
+    extractTrainingModifiers(playerHeya, world);
+
+  // Recovery multiplier is derived from recovery facility * nutrition
+  const recoveryMultiplier = calculateRecoveryMultiplier(playerHeya, nutritionMult);
 
   const activeModifiers: ActiveModifiers = {
-    trainingMultiplier,
+    facilityGrowthMult,
+    nutritionMult,
+    degeikoMult,
+    styleDriftMults,
     recoveryMultiplier,
     financialPenalty,
     moraleBoost,
@@ -67,26 +68,23 @@ export function phase02_context(world: WorldState): StateImpact {
 
   const deltas = preserveRevenueExpenses(world);
 
-  builder.updateWorldField("transientContext", { activeModifiers, deltas });
+  // Preserve existing transientContext fields (e.g. boundaries from phase00_preflight)
+  // while updating activeModifiers and deltas.
+  builder.updateWorldField("transientContext", {
+    ...world.transientContext,
+    activeModifiers,
+    deltas,
+  });
 
   return builder.build();
 }
 
 // --- Helper Functions ---
 
-function calculateFacilityMultipliers(playerHeya: Heya | undefined): {
-  training: number;
-  recovery: number;
-  nutrition: number;
-} {
-  const trainingLevel = clamp(
-    playerHeya?.facilities?.training ?? DEFAULT_FACILITY_LEVEL,
-    MIN_STAT_VALUE,
-    MAX_STAT_VALUE
-  );
-  const facilityTrainingMult =
-    TRAINING_MULTIPLIERS.BASE + (trainingLevel / MAX_STAT_VALUE) * TRAINING_MULTIPLIERS.RANGE;
-
+function calculateRecoveryMultiplier(
+  playerHeya: ReturnType<typeof getHeya>,
+  nutritionMult: number
+): number {
   const recoveryLevel = clamp(
     playerHeya?.facilities?.recovery ?? DEFAULT_FACILITY_LEVEL,
     MIN_STAT_VALUE,
@@ -96,33 +94,6 @@ function calculateFacilityMultipliers(playerHeya: Heya | undefined): {
     FACILITY_RECOVERY_MULTIPLIERS.BASE +
     (recoveryLevel / MAX_STAT_VALUE) * FACILITY_RECOVERY_MULTIPLIERS.RANGE;
 
-  const nutritionLevel = clamp(
-    playerHeya?.facilities?.nutrition ?? DEFAULT_FACILITY_LEVEL,
-    MIN_STAT_VALUE,
-    MAX_STAT_VALUE
-  );
-  const nutritionMult =
-    NUTRITION_MULTIPLIERS.BASE + (nutritionLevel / MAX_STAT_VALUE) * NUTRITION_MULTIPLIERS.RANGE;
-
-  return {
-    training: facilityTrainingMult,
-    recovery: facilityRecoveryMult,
-    nutrition: nutritionMult,
-  };
-}
-
-function calculateTrainingMultiplier(
-  facilityTrainingMult: number,
-  moraleBoost: boolean,
-  financialPenalty: boolean
-): number {
-  let trainingMultiplier = facilityTrainingMult;
-  if (moraleBoost) trainingMultiplier += MORALE_BOOST_MULTIPLIER;
-  if (financialPenalty) trainingMultiplier *= FINANCIAL_PENALTY_MULTIPLIER;
-  return clamp(trainingMultiplier, TRAINING_MULTIPLIER_BOUNDS.MIN, TRAINING_MULTIPLIER_BOUNDS.MAX);
-}
-
-function calculateRecoveryMultiplier(facilityRecoveryMult: number, nutritionMult: number): number {
   return clamp(
     facilityRecoveryMult * nutritionMult,
     RECOVERY_MULTIPLIER_BOUNDS.MIN,

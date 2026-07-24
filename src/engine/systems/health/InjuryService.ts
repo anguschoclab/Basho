@@ -253,7 +253,9 @@ export function tickWeekRecovery(world: WorldState): StateImpact {
     if (!rikishi || !rikishi.injured) continue;
 
     const staffBonuses = getHeyaStaffBonuses(world, rikishi.heyaId);
-    const recovered = tickRikishiRecovery(rikishi, staffBonuses.medical);
+    const recoveryMultiplier = world.transientContext?.activeModifiers?.recoveryMultiplier ?? 1.0;
+    const effectiveRecoveryMult = staffBonuses.medical * recoveryMultiplier;
+    const recovered = tickRikishiRecovery(rikishi, effectiveRecoveryMult);
 
     if (recovered) {
       builder.updateRikishi(rikishi.id, {

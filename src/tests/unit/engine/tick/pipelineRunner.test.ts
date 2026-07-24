@@ -2,6 +2,31 @@ import { describe, it, expect, vi } from "vitest";
 import { runPipeline, emptyDeltas, defaultActiveModifiers } from "@/engine/tick/pipelineRunner";
 import type { WorldState } from "@/engine/types/world";
 
+describe("defaultActiveModifiers", () => {
+  it("returns neutral raw component structure", () => {
+    const am = defaultActiveModifiers();
+    expect(am.facilityGrowthMult).toBe(1.0);
+    expect(am.nutritionMult).toBe(1.0);
+    expect(am.degeikoMult).toBe(1.0);
+    expect(am.recoveryMultiplier).toBe(1.0);
+    expect(am.financialPenalty).toBe(false);
+    expect(am.moraleBoost).toBe(false);
+    expect(am.styleDriftMults).toEqual({
+      power: 1.0,
+      speed: 1.0,
+      technique: 1.0,
+      balance: 1.0,
+      stamina: 1.0,
+      mental: 1.0,
+    });
+  });
+
+  it("does not have trainingMultiplier field", () => {
+    const am = defaultActiveModifiers() as any;
+    expect(am.trainingMultiplier).toBeUndefined();
+  });
+});
+
 describe("pipelineRunner", () => {
   it("runs phases in sequence", () => {
     const world = {

@@ -1319,7 +1319,7 @@
       "qualifiers": {
         "appears": ["appears", "seems to be", "looks like"],
         "may_be": ["may be", "could be", "possibly"],
-        "unknown_narrative": ["Insufficient observation to determine %attr%."]
+        "unknown_narrative": ["Insufficient observation to determine {{attr}}."]
       }
     },
     "institutional": {

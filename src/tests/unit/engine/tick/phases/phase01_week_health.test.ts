@@ -1,0 +1,143 @@
+import { describe, it, expect } from "vitest";
+import { phase01_week_health } from "@/engine/tick/phases/phase01_week_health";
+import { applyImpact } from "@/engine/core/ImpactResolver";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
+import type { WorldState, ActiveModifiers } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import { RECOVERY_MULTIPLIER_DOUBLE_WEEK_THRESHOLD } from "@/constants/engine/condition";
+
+describe("phase01_week_health recoveryMultiplier wiring", () => {
+  function makeActiveModifiers(recoveryMultiplier: number): ActiveModifiers {
+    return {
+      facilityGrowthMult: 1.0,
+      nutritionMult: 1.0,
+      degeikoMult: 1.0,
+      styleDriftMults: {
+        power: 1.0,
+        speed: 1.0,
+        technique: 1.0,
+        balance: 1.0,
+        stamina: 1.0,
+        mental: 1.0,
+      },
+      recoveryMultiplier,
+      financialPenalty: false,
+      moraleBoost: false,
+    };
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  function makeHeya(id: string): any {
+    return {
+      id,
+      name: `${id} name`,
+      oyakataId: `oy-${id}`,
+      rikishiIds: [],
+      bankBalance: 1000,
+      funds: 1000,
+      reputation: 50,
+      prestige: 50,
+      scandalScore: 0,
+      statureBand: "mid",
+      prestigeBand: "mid",
+      facilitiesBand: "mid",
+      koenkaiBand: "mid",
+      runwayBand: "mid",
+      facilities: { training: 50, recovery: 50, nutrition: 50 },
+    };
+  }
+
+  function makeInjuredRikishi(id: string, heyaId: string, weeksRemaining: number): Rikishi {
+    return MockFactory.createRikishi(id, {
+      heyaId,
+      birthYear: 2000,
+      injured: true,
+      injuryWeeksRemaining: weeksRemaining,
+      injuryStatus: {
+        type: "strain",
+        severity: "moderate",
+        weeksRemaining,
+        weeksToHeal: weeksRemaining,
+      } as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any);
+  }
+
+  function buildWorldWithInjuredRikishi(
+    recoveryMultiplier: number,
+    weeksRemaining: number
+  ): WorldState {
+    const r = makeInjuredRikishi("r1", "heya-1", weeksRemaining);
+
+    const rikishiMap = new Map<string, Rikishi>();
+    rikishiMap.set("r1", r);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const heyasMap = new Map<string, any>();
+    heyasMap.set("heya-1", makeHeya("heya-1"));
+
+    const w = MockFactory.createWorld({
+      playerHeyaId: "heya-1",
+      rikishi: rikishiMap,
+      heyas: heyasMap,
+      activeRikishiIds: new Set(["r1"]),
+      year: 2026,
+      week: 1,
+      cyclePhase: "interim",
+    });
+
+    w.transientContext = { activeModifiers: makeActiveModifiers(recoveryMultiplier) };
+    return w;
+  }
+
+  it("uses recoveryMultiplier from activeModifiers for recovery speed", () => {
+    // With recoveryMultiplier = 1.0 (and staff medical default ~1.0),
+    // recovery should reduce by 1 week (single week reduction)
+    const w = buildWorldWithInjuredRikishi(1.0, 4);
+    const impact = phase01_week_health(w);
+    const updated = applyImpact(w, impact);
+
+    const r = updated.rikishi.get("r1")!;
+    expect(r.injuryWeeksRemaining).toBe(3); // 4 - 1 = 3
+  });
+
+  it("high recoveryMultiplier triggers double-week reduction", () => {
+    // With recoveryMultiplier >= RECOVERY_MULTIPLIER_DOUBLE_WEEK_THRESHOLD (1.2),
+    // combined with staff medical (~1.0), the effective mult should trigger double reduction.
+    // We need effectiveRecoveryMult >= 1.2, so set recoveryMultiplier to 1.2
+    // (staff medical defaults to 1.0 with no medical staff)
+    const w = buildWorldWithInjuredRikishi(RECOVERY_MULTIPLIER_DOUBLE_WEEK_THRESHOLD, 4);
+    const impact = phase01_week_health(w);
+    const updated = applyImpact(w, impact);
+
+    const r = updated.rikishi.get("r1")!;
+    expect(r.injuryWeeksRemaining).toBe(2); // 4 - 2 = 3 (double reduction)
+  });
+
+  it("falls back to default when activeModifiers is not set", () => {
+    const r = makeInjuredRikishi("r1", "heya-1", 4);
+    const rikishiMap = new Map<string, Rikishi>();
+    rikishiMap.set("r1", r);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const heyasMap = new Map<string, any>();
+    heyasMap.set("heya-1", makeHeya("heya-1"));
+
+    const w = MockFactory.createWorld({
+      playerHeyaId: "heya-1",
+      rikishi: rikishiMap,
+      heyas: heyasMap,
+      activeRikishiIds: new Set(["r1"]),
+      year: 2026,
+      week: 1,
+      cyclePhase: "interim",
+    });
+
+    // No transientContext.activeModifiers
+    const impact = phase01_week_health(w);
+    const updated = applyImpact(w, impact);
+
+    const rUpdated = updated.rikishi.get("r1")!;
+    expect(rUpdated.injuryWeeksRemaining).toBe(3); // Default: single week reduction
+  });
+});

@@ -52,15 +52,31 @@ export type CyclePhase = "pre_basho" | "active_basho" | "post_basho" | "interim"
 // ── Pipeline: Transient Context ───────────────────────────────────────────────
 // Computed once per week by phase02_context.ts. Never persisted to save files.
 
+/** Per-stat style drift multipliers from training philosophy + ichimon stat bonuses. */
+export interface StyleDriftMults {
+  power: number;
+  speed: number;
+  technique: number;
+  balance: number;
+  stamina: number;
+  mental: number;
+}
+
 /** Pre-calculated modifier bundle derived by phase02_context each tick. */
 export interface ActiveModifiers {
-  /** Multiplier applied to all training gains. Derived from facility level + oyakata bonus. */
-  trainingMultiplier: number;
-  /** Multiplier applied to stamina recovery and injury healing. Derived from recovery facility + nutrition. */
+  /** Training facility growth multiplier (0.85 + training/100 * 0.35). */
+  facilityGrowthMult: number;
+  /** Nutrition facility multiplier (0.92 + nutrition/100 * 0.16). */
+  nutritionMult: number;
+  /** Degeiko multiplier from ichimon + faction influence + rivalry penalties. */
+  degeikoMult: number;
+  /** Per-stat style drift from training philosophy + ichimon stat bonuses. */
+  styleDriftMults: StyleDriftMults;
+  /** Multiplier applied to injury healing speed. Derived from recovery facility * nutrition. */
   recoveryMultiplier: number;
-  /** True when the heya's bank balance < 0. Halves effective trainingMultiplier. */
+  /** True when the heya's bank balance < 0. Halves training gains. */
   financialPenalty: boolean;
-  /** True when a rikishi won a basho in the last 4 weeks. Adds +0.15 to trainingMultiplier. */
+  /** True when a player heya rikishi won yusho in most recent basho. Adds +0.15 to training gains. */
   moraleBoost: boolean;
 }
 

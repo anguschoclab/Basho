@@ -6,6 +6,11 @@ import {
   applyAchievementImpact,
   computeStarPower,
   processSponsorChurn,
+  recruitSponsor,
+  computeHeyaPrestigeScore,
+  targetKoenkaiBandFromPrestige,
+  recalculateKoenkaiBand,
+  adjustKoenkaiBandToPrestige,
 } from "@/engine/systems/economy/SponsorshipService";
 import type { WorldState } from "@/engine/types/world";
 import type { Sponsor, SponsorPool, Koenkai } from "@/engine/types/sponsors";
@@ -339,6 +344,253 @@ describe("SponsorshipService", () => {
       expect(updatedKoenkai?.members.length).toBe(2);
       const updatedHeya = resolvedWorld.heyas.get("h1");
       expect(updatedHeya?.koenkaiBand).toBe("moderate"); // prestige 48 >= 30 -> moderate
+    });
+  });
+
+  // ── recruitSponsor ─────────────────────────────────────────────────────
+
+  describe("recruitSponsor", () => {
+    const rng = rngFromSeed("test", "sponsorship", "recruit");
+
+    const setupWorld = (opts: {
+      funds?: number;
+      sponsorTier?: any;
+      sponsorActive?: boolean;
+      existingMember?: boolean;
+    } = {}) => {
+      const sponsor: Sponsor = {
+        sponsorId: "sp1",
+        active: opts.sponsorActive ?? true,
+        tier: opts.sponsorTier ?? "T2",
+        displayName: "Test Sponsor",
+        prestigeAffinity: 50,
+        riskAppetite: 50,
+      } as unknown as Sponsor;
+
+      const members = opts.existingMember
+        ? [{ sponsorId: "sp1", role: "koenkai_member", strength: 2 }]
+        : [];
+
+      const koenkai: Koenkai = {
+        koenkaiId: "k1",
+        heyaId: "h1",
+        strengthBand: "moderate",
+        members,
+      } as unknown as Koenkai;
+
+      const heya: Heya = {
+        id: "h1",
+        funds: opts.funds ?? 10_000_000,
+        rikishiIds: [],
+      } as unknown as Heya;
+
+      const world = {
+        heyas: new Map([["h1", heya]]),
+        rikishi: new Map(),
+        sponsorPool: {
+          sponsors: new Map([["sp1", sponsor]]),
+          koenkais: new Map([["h1", koenkai]]),
+        },
+        week: 1,
+      } as unknown as WorldState;
+
+      return { world, heya, sponsor, koenkai };
+    };
+
+    it("returns empty impact when no sponsorPool", () => {
+      const world = { heyas: new Map(), rikishi: new Map() } as unknown as WorldState;
+      const impact = recruitSponsor(world, "h1", "sp1", rng);
+      expect(impact.events ?? []).toHaveLength(0);
+    });
+
+    it("returns empty impact when heya not found", () => {
+      const { world } = setupWorld();
+      const impact = recruitSponsor(world, "nonexistent", "sp1", rng);
+      expect(impact.events ?? []).toHaveLength(0);
+    });
+
+    it("returns empty impact when sponsor not found", () => {
+      const { world } = setupWorld();
+      const impact = recruitSponsor(world, "h1", "nonexistent", rng);
+      expect(impact.events ?? []).toHaveLength(0);
+    });
+
+    it("returns empty impact when sponsor is inactive", () => {
+      const { world } = setupWorld({ sponsorActive: false });
+      const impact = recruitSponsor(world, "h1", "sp1", rng);
+      expect(impact.events ?? []).toHaveLength(0);
+    });
+
+    it("returns empty impact when sponsor already in koenkai", () => {
+      const { world } = setupWorld({ existingMember: true });
+      const impact = recruitSponsor(world, "h1", "sp1", rng);
+      expect(impact.events ?? []).toHaveLength(0);
+    });
+
+    it("returns empty impact when heya has insufficient funds", () => {
+      const { world } = setupWorld({ funds: 100, sponsorTier: "T5" });
+      const impact = recruitSponsor(world, "h1", "sp1", rng);
+      expect(impact.events ?? []).toHaveLength(0);
+    });
+
+    it("deducts recruitment cost and adds sponsor to koenkai", () => {
+      const { world, heya } = setupWorld({ funds: 10_000_000, sponsorTier: "T2" });
+      const impact = recruitSponsor(world, "h1", "sp1", rng);
+      const resolved = resolveImpacts(world, [impact]);
+
+      const updatedHeya = resolved.heyas.get("h1")!;
+      // T2 cost = 400,000
+      expect(updatedHeya.funds).toBe(10_000_000 - 400_000);
+
+      const updatedKoenkai = resolved.sponsorPool?.koenkais.get("h1")!;
+      expect(updatedKoenkai.members.length).toBe(1);
+      expect(updatedKoenkai.members[0].sponsorId).toBe("sp1");
+
+      // Check event logged
+      const hasEvent = impact.events?.some(
+        (e: any) => e.type === "RECRUIT_DISCOVERED" && e.data?.sponsorId === "sp1"
+      );
+      expect(hasEvent).toBe(true);
+    });
+  });
+
+  // ── computeHeyaPrestigeScore ───────────────────────────────────────────
+
+  describe("computeHeyaPrestigeScore", () => {
+    it("sums prestige weights for roster ranks", () => {
+      const world = {
+        rikishi: new Map([
+          ["r1", mockRikishi("r1", { rank: "yokozuna", division: "makuuchi" })],
+          ["r2", mockRikishi("r2", { rank: "maegashira", division: "makuuchi" })],
+        ]),
+      } as unknown as WorldState;
+      const heya = { id: "h1", rikishiIds: ["r1", "r2"] } as unknown as Heya;
+      // yokozuna=40 + maegashira=8 = 48
+      expect(computeHeyaPrestigeScore(heya, world)).toBe(48);
+    });
+
+    it("caps at 100", () => {
+      const world = {
+        rikishi: new Map([
+          ["r1", mockRikishi("r1", { rank: "yokozuna" })],
+          ["r2", mockRikishi("r2", { rank: "yokozuna" })],
+          ["r3", mockRikishi("r3", { rank: "yokozuna" })],
+        ]),
+      } as unknown as WorldState;
+      const heya = { id: "h1", rikishiIds: ["r1", "r2", "r3"] } as unknown as Heya;
+      // 3*40 = 120 -> capped 100
+      expect(computeHeyaPrestigeScore(heya, world)).toBe(100);
+    });
+
+    it("returns 0 for non-sekitori roster", () => {
+      const world = {
+        rikishi: new Map([
+          ["r1", mockRikishi("r1", { rank: "makushita", division: "makushita" })],
+        ]),
+      } as unknown as WorldState;
+      const heya = { id: "h1", rikishiIds: ["r1"] } as unknown as Heya;
+      expect(computeHeyaPrestigeScore(heya, world)).toBe(0);
+    });
+  });
+
+  // ── targetKoenkaiBandFromPrestige ──────────────────────────────────────
+
+  describe("targetKoenkaiBandFromPrestige", () => {
+    it("maps prestige >= 80 to powerful", () => {
+      expect(targetKoenkaiBandFromPrestige(80)).toBe("powerful");
+      expect(targetKoenkaiBandFromPrestige(100)).toBe("powerful");
+    });
+
+    it("maps prestige >= 55 to strong", () => {
+      expect(targetKoenkaiBandFromPrestige(55)).toBe("strong");
+      expect(targetKoenkaiBandFromPrestige(79)).toBe("strong");
+    });
+
+    it("maps prestige >= 30 to moderate", () => {
+      expect(targetKoenkaiBandFromPrestige(30)).toBe("moderate");
+    });
+
+    it("maps prestige >= 10 to weak", () => {
+      expect(targetKoenkaiBandFromPrestige(10)).toBe("weak");
+    });
+
+    it("maps prestige < 10 to none", () => {
+      expect(targetKoenkaiBandFromPrestige(0)).toBe("none");
+      expect(targetKoenkaiBandFromPrestige(9)).toBe("none");
+    });
+  });
+
+  // ── recalculateKoenkaiBand ─────────────────────────────────────────────
+
+  describe("recalculateKoenkaiBand", () => {
+    it("returns band derived from heya prestige", () => {
+      const world = {
+        rikishi: new Map([
+          ["r1", mockRikishi("r1", { rank: "yokozuna", division: "makuuchi" })],
+          ["r2", mockRikishi("r2", { rank: "ozeki", division: "makuuchi" })],
+        ]),
+      } as unknown as WorldState;
+      const heya = { id: "h1", rikishiIds: ["r1", "r2"] } as unknown as Heya;
+      // prestige = 40 + 30 = 70 -> strong
+      expect(recalculateKoenkaiBand(heya, world)).toBe("strong");
+    });
+  });
+
+  // ── adjustKoenkaiBandToPrestige ────────────────────────────────────────
+
+  describe("adjustKoenkaiBandToPrestige", () => {
+    it("does nothing when band matches target", () => {
+      const heya = { id: "h1", rikishiIds: [], koenkaiBand: "none" } as unknown as Heya;
+      const koenkai = {
+        koenkaiId: "k1",
+        heyaId: "h1",
+        strengthBand: "none",
+        members: [],
+      } as unknown as Koenkai;
+      const world = {
+        heyas: new Map([["h1", heya]]),
+        rikishi: new Map(),
+        sponsorPool: {
+          sponsors: new Map(),
+          koenkais: new Map([["k1", koenkai]]),
+        },
+      } as unknown as WorldState;
+
+      const impact = adjustKoenkaiBandToPrestige(world);
+      // No events or updates when band matches
+      expect(impact.events ?? []).toHaveLength(0);
+    });
+
+    it("trims weakest members on band downgrade", () => {
+      const heya = { id: "h1", rikishiIds: [], koenkaiBand: "strong" } as unknown as Heya;
+      const members = [
+        { relId: "sr1", sponsorId: "s1", strength: 1, role: "koenkai_member" },
+        { relId: "sr2", sponsorId: "s2", strength: 3, role: "koenkai_pillar" },
+        { relId: "sr3", sponsorId: "s3", strength: 2, role: "koenkai_member" },
+      ];
+      const koenkai = {
+        koenkaiId: "k1",
+        heyaId: "h1",
+        strengthBand: "strong",
+        members,
+      } as unknown as Koenkai;
+      const world = {
+        heyas: new Map([["h1", heya]]),
+        rikishi: new Map(),
+        sponsorPool: {
+          sponsors: new Map(),
+          koenkais: new Map([["k1", koenkai]]),
+        },
+      } as unknown as WorldState;
+
+      const impact = adjustKoenkaiBandToPrestige(world);
+      const resolved = resolveImpacts(world, [impact]);
+
+      const updatedKoenkai = resolved.sponsorPool?.koenkais.get("k1")!;
+      // Downgrade from strong (idx 3) to none (idx 0) = gap 3, remove 3 weakest
+      // But only 3 members, so all removed
+      expect(updatedKoenkai.strengthBand).toBe("none");
+      expect(updatedKoenkai.members.length).toBe(0);
     });
   });
 });

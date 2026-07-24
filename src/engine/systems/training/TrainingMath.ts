@@ -13,7 +13,7 @@
 
 import type { Rikishi, RikishiStats } from "../../types/rikishi";
 import type { Heya } from "../../types/heya";
-import type { WorldState, ActiveModifiers } from "../../types/world";
+import type { WorldState, ActiveModifiers, StyleDriftMults } from "../../types/world";
 import type { IchimonName } from "../../types/economy";
 import type { TrainingProfile, IndividualFocus } from "../../types/training";
 import type { CombatArchetype } from "../../types/combat";
@@ -39,7 +39,23 @@ import {
   DEGEIKO_PENALTY_MULTIPLIER,
   type TrainingAttribute,
 } from "../../../constants/engine/training";
+import {
+  TRAINING_MULTIPLIERS,
+  NUTRITION_MULTIPLIERS,
+  MORALE_BOOST_MULTIPLIER,
+  FINANCIAL_PENALTY_MULTIPLIER,
+} from "../../../constants/engine/multipliers";
+import { DEFAULT_FACILITY_LEVEL } from "../../../constants/engine/rikishi";
+import { clamp } from "../../utils/math";
 import { ATTRIBUTE_PEAK, STAT_GROUP, maturityFactor } from "../../../constants/engine/development";
+
+/** Extracted training modifiers from heya/world context. */
+export interface TrainingModifiers {
+  facilityGrowthMult: number;
+  nutritionMult: number;
+  degeikoMult: number;
+  styleDriftMults: StyleDriftMults;
+}
 
 /**
  * Derives the stat ceiling for a given attribute from talentSeed.
@@ -152,54 +168,39 @@ export function calculateFatigueDelta(
 }
 
 /**
- * Authoritative growth vector calculation per Basho Constitution.
+ * Extract heya/world-dependent training modifiers as a pure function.
+ * Consolidates facility, nutrition, degeiko (ichimon/faction/rivalry), and style drift
+ * (philosophy/ichimon stat bonuses) logic into one place.
  */
-export function calculateGrowthVector(
-  profile: TrainingProfile,
-  focus: IndividualFocus | undefined,
-  rikishi: Rikishi,
-  heya?: Heya,
-  world?: WorldState
-): Record<TrainingAttribute, number> {
-  profile = normalizeTrainingProfile(profile);
-  const intensityMult = INTENSITY_MULTIPLIERS[profile.intensity].growth;
-  const focusModeMult = focus ? INDIVIDUAL_FOCUS_MODES[focus.focusType].growth : 1.0;
-  const bias = FOCUS_BIAS_MATRIX[profile.focus];
+export function extractTrainingModifiers(heya?: Heya, world?: WorldState): TrainingModifiers {
+  const trainingFacility = heya?.facilities?.training ?? DEFAULT_FACILITY_LEVEL;
+  const facilityGrowthMult =
+    TRAINING_MULTIPLIERS.BASE +
+    (clamp(trainingFacility, 0, 100) / 100) * TRAINING_MULTIPLIERS.RANGE;
 
-  const phase = getCareerPhase(rikishi.stats.experience);
-  const phaseMult = PHASE_EFFECTS[phase].growthMult;
+  const nutritionFacility = heya?.facilities?.nutrition ?? DEFAULT_FACILITY_LEVEL;
+  const nutritionMult =
+    NUTRITION_MULTIPLIERS.BASE +
+    (clamp(nutritionFacility, 0, 100) / 100) * NUTRITION_MULTIPLIERS.RANGE;
 
-  // Stability check for heya facilities
-  const trainingFacility = heya?.facilities?.training ?? 50;
-  const facilityGrowthMult = 0.85 + (Math.min(100, Math.max(0, trainingFacility)) / 100) * 0.35;
-
-  const nutritionFacility = heya?.facilities?.nutrition ?? 50;
-  const nutritionMult = 0.92 + (Math.min(100, Math.max(0, nutritionFacility)) / 100) * 0.16;
-
-  const BASE_GROWTH_VALUE = BASE_GROWTH;
   let degeikoMult = 1.0;
   if (heya && heya.ichimon) {
-    // Basic political influence bonus
     if (world?.factions) {
       const faction = world.factions[heya.ichimon];
       if (faction && faction.influence >= 80) degeikoMult *= 1.1;
     }
 
-    // --- Ichimon Traditions ---
-    // Real-world inspired specific training specialties for each clan
     const ICHIMON_GROWTH_BONUSES: Partial<Record<IchimonName, number>> = {
       Dewanoumi: 1.05,
       Isegahama: 1.05,
       Nishonoseki: 1.05,
       Tokitsukaze: 1.05,
-      Takasago: 1.05, // Fixed name to match IchimonName type
+      Takasago: 1.05,
     };
     const bonus = ICHIMON_GROWTH_BONUSES[heya.ichimon];
     if (bonus) degeikoMult *= bonus;
   }
 
-  // Phase 3 Polish: Stable Rivalry Penalty (Boiling Point)
-  // If we have heated rivalries (heat >= 80 = bad_blood) with other stables, training efficacy drops
   if (world?.rivalriesState?.heyaRivalryPairs && heya) {
     for (const pair of Object.values(world.rivalriesState.heyaRivalryPairs)) {
       if ((pair.heyaAId === heya.id || pair.heyaBId === heya.id) && pair.heat >= 80) {
@@ -209,8 +210,60 @@ export function calculateGrowthVector(
     }
   }
 
-  // Adaptability multiplier: faster learners absorb training more efficiently
-  // range: adaptability=0 → 0.8x, adaptability=50 → 1.0x, adaptability=100 → 1.2x
+  const philosophy = heya?.trainingPhilosophy;
+  const styleDriftMults: StyleDriftMults = {
+    power: 1.0 + (philosophy?.powerBias || 0),
+    speed: 1.0 + (philosophy?.speedBias || 0),
+    technique: 1.0 + (philosophy?.techniqueBias || 0),
+    balance: 1.0,
+    stamina: 1.0,
+    mental: 1.0,
+  };
+
+  const ICHIMON_STAT_BONUSES: Record<string, Partial<StyleDriftMults>> = {
+    Dewanoumi: { power: 0.05 },
+    Isegahama: { technique: 0.05, balance: 0.05 },
+    Nishonoseki: { speed: 0.05 },
+    Tokitsukaze: { stamina: 0.1 },
+    Takasago: { mental: 0.1 },
+  };
+
+  const statBonus = heya?.ichimon ? ICHIMON_STAT_BONUSES[heya.ichimon] : undefined;
+  if (statBonus) {
+    styleDriftMults.power += statBonus.power || 0;
+    styleDriftMults.speed += statBonus.speed || 0;
+    styleDriftMults.technique += statBonus.technique || 0;
+    styleDriftMults.balance += statBonus.balance || 0;
+    styleDriftMults.stamina += statBonus.stamina || 0;
+    styleDriftMults.mental += statBonus.mental || 0;
+  }
+
+  return { facilityGrowthMult, nutritionMult, degeikoMult, styleDriftMults };
+}
+
+/**
+ * Core growth calculation using pre-extracted modifiers. No heya/world access.
+ * Anti-Monolith: all context-dependent values are passed in via `modifiers`.
+ */
+export function calculateGrowthWithModifiers(
+  profile: TrainingProfile,
+  focus: IndividualFocus | undefined,
+  rikishi: Rikishi,
+  modifiers: TrainingModifiers,
+  currentYear: number
+): Record<TrainingAttribute, number> {
+  profile = normalizeTrainingProfile(profile);
+  const intensityMult = INTENSITY_MULTIPLIERS[profile.intensity].growth;
+  const focusModeMult = focus ? INDIVIDUAL_FOCUS_MODES[focus.focusType].growth : 1.0;
+  const bias = FOCUS_BIAS_MATRIX[profile.focus];
+
+  const phase = getCareerPhase(rikishi.stats.experience);
+  const phaseMult = PHASE_EFFECTS[phase].growthMult;
+
+  const { facilityGrowthMult, nutritionMult, degeikoMult, styleDriftMults } = modifiers;
+
+  const BASE_GROWTH_VALUE = BASE_GROWTH;
+
   const adaptabilityMult = 0.8 + (rikishi.stats.adaptability ?? 50) * 0.004;
 
   const totalMult =
@@ -225,39 +278,6 @@ export function calculateGrowthVector(
   const archetype = rikishi.combatProfile?.archetype as CombatArchetype;
   const affinity = archetype ? ARCHETYPE_AFFINITY[archetype] : null;
 
-  // Phase 5 Depth: Training Philosophy Drift (Style Drift)
-  // Numeric accumulators for cultural influence provide subtle stat gain multipliers
-  const philosophy = heya?.trainingPhilosophy;
-  const styleDriftMults = {
-    power: 1.0 + (philosophy?.powerBias || 0),
-    speed: 1.0 + (philosophy?.speedBias || 0),
-    technique: 1.0 + (philosophy?.techniqueBias || 0),
-    balance: 1.0,
-    stamina: 1.0,
-    mental: 1.0,
-  };
-
-  // Add Ichimon-specific stat bonuses
-  const ICHIMON_STAT_BONUSES: Record<string, Partial<typeof styleDriftMults>> = {
-    Dewanoumi: { power: 0.05 },
-    Isegahama: { technique: 0.05, balance: 0.05 },
-    Nishonoseki: { speed: 0.05 },
-    Tokitsukaze: { stamina: 0.1 },
-    Takasago: { mental: 0.1 },
-  };
-
-  const statBonus = heya?.ichimon ? ICHIMON_STAT_BONUSES[heya.ichimon] : undefined;
-  if (statBonus) {
-    Object.assign(styleDriftMults, {
-      power: styleDriftMults.power + (statBonus.power || 0),
-      speed: styleDriftMults.speed + (statBonus.speed || 0),
-      technique: styleDriftMults.technique + (statBonus.technique || 0),
-      balance: styleDriftMults.balance + (statBonus.balance || 0),
-      stamina: styleDriftMults.stamina + (statBonus.stamina || 0),
-      mental: styleDriftMults.mental + (statBonus.mental || 0),
-    });
-  }
-
   const growth: Record<TrainingAttribute, number> = {
     power: 0,
     speed: 0,
@@ -271,9 +291,9 @@ export function calculateGrowthVector(
     experience: 0,
   };
 
-  // Use PA (potential) as ceiling when present; fall back to talentSeed for legacy/unrolled rikishi.
+  const worldRef = { year: currentYear } as WorldState;
   const resolveCeiling = (stat: keyof RikishiStats): number => {
-    return getEffectiveCeiling(rikishi, stat, world);
+    return getEffectiveCeiling(rikishi, stat, worldRef);
   };
 
   const applyCapped = (stat: keyof RikishiStats, rawMult: number, currentVal: number) => {
@@ -305,34 +325,69 @@ export function calculateGrowthVector(
 }
 
 /**
+ * Backward-compatible wrapper: extracts modifiers from heya/world, calls core.
+ */
+export function calculateGrowthVector(
+  profile: TrainingProfile,
+  focus: IndividualFocus | undefined,
+  rikishi: Rikishi,
+  heya?: Heya,
+  world?: WorldState
+): Record<TrainingAttribute, number> {
+  const modifiers = extractTrainingModifiers(heya, world);
+  return calculateGrowthWithModifiers(profile, focus, rikishi, modifiers, world?.year ?? 2026);
+}
+
+/**
  * Pipeline-friendly entry point: calculates weekly training gains for a
  * rikishi given an explicit `ActiveModifiers` context from phase02_context.
  *
- * Unlike `calculateGrowthVector`, this function does NOT require a Heya or
- * WorldState reference — the modifier values have already been pre-computed and
- * stored in `activeModifiers`. This satisfies the Anti-Monolith mandate: phase
- * controllers pass modifiers; math functions never reach into world state.
+ * Uses the raw modifier components (facilityGrowthMult, nutritionMult, degeikoMult,
+ * styleDriftMults) from `activeModifiers` to drive the core growth function,
+ * then applies morale boost and financial penalty as a separate context multiplier.
  *
  * @param rikishi        The rikishi to compute gains for.
  * @param activeModifiers Pre-calculated modifier bundle from transientContext.
  * @param profile        The heya's active training profile.
  * @param focus          Optional individual focus slot for this rikishi.
+ * @param currentYear    The current simulation year for age-based ceiling calculation.
  */
 export function calculateGains(
   rikishi: Rikishi,
   activeModifiers: ActiveModifiers,
   profile: TrainingProfile,
-  focus?: IndividualFocus
+  focus: IndividualFocus | undefined,
+  currentYear: number
 ): Record<TrainingAttribute, number> {
-  // Derive base growth without facility/world references
-  const base = calculateGrowthVector(profile, focus, rikishi);
+  const modifiers: TrainingModifiers = {
+    facilityGrowthMult: activeModifiers.facilityGrowthMult,
+    nutritionMult: activeModifiers.nutritionMult,
+    degeikoMult: activeModifiers.degeikoMult,
+    styleDriftMults: activeModifiers.styleDriftMults,
+  };
 
-  const mult = activeModifiers.trainingMultiplier;
+  const base = calculateGrowthWithModifiers(profile, focus, rikishi, modifiers, currentYear);
+
+  let contextMult = 1.0;
+  if (activeModifiers.moraleBoost) contextMult += MORALE_BOOST_MULTIPLIER;
+  if (activeModifiers.financialPenalty) contextMult *= FINANCIAL_PENALTY_MULTIPLIER;
+
   const result = {} as Record<TrainingAttribute, number>;
   for (const key of Object.keys(base) as TrainingAttribute[]) {
-    result[key] = base[key] * mult;
+    result[key] = base[key] * contextMult;
   }
   return result;
+}
+
+/**
+ * Reconstructs a display-friendly training multiplier from raw ActiveModifiers components.
+ * Used by the UI to show the effective training multiplier including morale/penalty.
+ */
+export function computeDisplayTrainingMultiplier(am: ActiveModifiers): number {
+  let mult = am.facilityGrowthMult;
+  if (am.moraleBoost) mult += MORALE_BOOST_MULTIPLIER;
+  if (am.financialPenalty) mult *= FINANCIAL_PENALTY_MULTIPLIER;
+  return mult;
 }
 
 /**

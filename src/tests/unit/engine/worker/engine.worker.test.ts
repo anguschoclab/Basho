@@ -131,6 +131,30 @@ describe("engine.worker", () => {
     });
   });
 
+  it("should emit WORLD_UPDATED after TICK_DAY (sync world to main thread)", async () => {
+    const world = MockFactory.createWorld({ seed: "tick-sync-seed" });
+    await triggerMessage({
+      type: "LOAD_WORLD",
+      world,
+    });
+    vi.clearAllMocks();
+
+    await triggerMessage({
+      type: "TICK_DAY",
+    });
+
+    // TICK_DAY should also sync the world back to the main thread
+    expect(mockPostMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "WORLD_UPDATED",
+        world: expect.objectContaining({
+          seed: "tick-sync-seed",
+          ticked: true,
+        }),
+      })
+    );
+  });
+
   it("should handle AUTO_SIM_DAYS command", async () => {
     // First load a world
     const world = MockFactory.createWorld({ seed: "auto-sim-seed" });

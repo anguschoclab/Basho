@@ -92,7 +92,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
         case "READY":
           break;
         case "TICK_COMPLETED":
-          set({ digest: data.digest, isSimulating: false, progress: null });
+          set({ digest: data.digest, isSimulating: false, progress: null, pendingTick: false });
           break;
         case "DIGEST_UPDATED":
           set({ digest: data.digest });
@@ -110,7 +110,7 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
           set({ progress: { message: data.message, current: data.current, total: data.total } });
           break;
         case "ERROR":
-          set({ error: data.message, isSimulating: false });
+          set({ error: data.message, isSimulating: false, pendingTick: false });
           break;
       }
     };

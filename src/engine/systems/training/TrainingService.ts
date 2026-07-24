@@ -11,7 +11,7 @@
  * Goal: Service-oriented architecture with clear dependencies.
  */
 
-import type { WorldState } from "../../types/world";
+import type { WorldState, ActiveModifiers } from "../../types/world";
 import type { Id } from "../../types/common";
 import type { HeyaTrainingState, IndividualFocus } from "../../types/training";
 import type { Rikishi, RikishiStats } from "../../types/rikishi";
@@ -22,6 +22,7 @@ import { STAT_GROUP } from "../../../constants/engine/development";
 import type { StateImpact } from "../../core/StateImpact";
 import {
   calculateFatigueDelta,
+  calculateGains,
   calculateGrowthVector,
   calculateAgeDecay,
   getEffectiveCeiling,
@@ -245,7 +246,16 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
       const heya = EntityCollection.getHeya(world, rikishi.heyaId);
       const staffBonuses = getHeyaStaffBonuses(world, rikishi.heyaId);
       const infra = InfrastructureService.getHeyaBonuses(heya);
-      const growth = calculateGrowthVector(profile, individualFocus, rikishi, heya, world);
+
+      // Use calculateGains (pipeline-friendly) for player heya rikishi when
+      // activeModifiers are available from phase02_context. Fall back to
+      // calculateGrowthVector for NPC heya (extracts modifiers from heya/world).
+      const activeModifiers = world.transientContext?.activeModifiers;
+      const isPlayerHeya = rikishi.heyaId === world.playerHeyaId;
+      const growth =
+        isPlayerHeya && activeModifiers
+          ? calculateGains(rikishi, activeModifiers, profile, individualFocus, world.year)
+          : calculateGrowthVector(profile, individualFocus, rikishi, heya, world);
 
       // Apply staff bonuses + Drill Vector + Infrastructure Buffs
       const finalGrowth = {

@@ -39,12 +39,7 @@ export function phase00_preflight(world: WorldState): StateImpact {
 
   // 2. Advance calendar (day) - Purely
   const { calendar, monthBoundary, yearBoundary } = advanceCalendarDay(world);
-
-  // Clear memoization caches when week changes
   const currentWeek = calendar.currentWeek;
-  if (currentWeek !== world.week) {
-    clearQueryCaches();
-  }
 
   // Use ImpactBuilder for world field updates
   builder.updateWorldField("dayIndexGlobal", dayIndexGlobal);

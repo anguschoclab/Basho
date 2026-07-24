@@ -401,3 +401,106 @@ describe("payMochikyukinBonuses — rank floor", () => {
 function makeSekishi(id: string, overrides: Partial<any> = {}) {
   return makeSekitori(id, overrides);
 }
+
+describe("accumulateMochikyukinPoints — cumulative accumulation", () => {
+  it("points add to existing total across multiple basho", () => {
+    const r = makeSekitori("r1", {
+      stats: {
+        achievements: {
+          kinboshiEarned: 0,
+          ginboshiEarned: 0,
+          kinboshiConceded: 0,
+          ginboshiConceded: 0,
+          specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
+          mochikyukinPoints: 10,
+        },
+      } as any,
+    });
+    const world = makeMockWorld({ rikishi: new Map([["r1", r]]) });
+
+    // First basho: +2.5 points (5 net wins)
+    const impact1 = accumulateMochikyukinPoints(world, "r1", {
+      netWins: 5,
+      isYusho: false,
+      isJunYusho: false,
+      isZenshoYusho: false,
+      kinboshiEarned: 0,
+    } as any);
+    const resolved1 = resolveImpacts(world, [impact1]);
+    const points1 = resolved1.rikishi.get("r1")?.stats?.achievements?.mochikyukinPoints;
+    expect(points1).toBe(10 + 5 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN);
+
+    // Second basho: +1.5 points (3 net wins) on top of updated total
+    const impact2 = accumulateMochikyukinPoints(resolved1, "r1", {
+      netWins: 3,
+      isYusho: false,
+      isJunYusho: false,
+      isZenshoYusho: false,
+      kinboshiEarned: 0,
+    } as any);
+    const resolved2 = resolveImpacts(resolved1, [impact2]);
+    const points2 = resolved2.rikishi.get("r1")?.stats?.achievements?.mochikyukinPoints;
+    expect(points2).toBe(10 + 5 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN + 3 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN);
+  });
+});
+
+describe("payMochikyukinBonuses — sanyaku rank floors", () => {
+  it("sekiwake with 50 points pays at floor 80", () => {
+    const r = makeSekitori("r1", {
+      rank: "sekiwake",
+      stats: {
+        achievements: {
+          kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0,
+          specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
+          mochikyukinPoints: 50,
+        },
+      } as any,
+      economics: { cash: 0, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0, popularity: 50 } as any,
+    });
+    const world = makeMockWorld({ rikishi: new Map([["r1", r]]) });
+    const impact = payMochikyukinBonuses(world, 0);
+    const resolved = resolveImpacts(world, [impact]);
+    const updated = resolved.rikishi.get("r1");
+    const expectedPayout = Math.max(50, MOCHIKYUKIN_RANK_FLOORS.sekiwake) * MOCHIKYUKIN_POINT_VALUE;
+    expect(updated?.economics?.totalEarnings).toBe(expectedPayout);
+  });
+
+  it("komusubi with 50 points pays at floor 70", () => {
+    const r = makeSekitori("r1", {
+      rank: "komusubi",
+      stats: {
+        achievements: {
+          kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0,
+          specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
+          mochikyukinPoints: 50,
+        },
+      } as any,
+      economics: { cash: 0, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0, popularity: 50 } as any,
+    });
+    const world = makeMockWorld({ rikishi: new Map([["r1", r]]) });
+    const impact = payMochikyukinBonuses(world, 0);
+    const resolved = resolveImpacts(world, [impact]);
+    const updated = resolved.rikishi.get("r1");
+    const expectedPayout = Math.max(50, MOCHIKYUKIN_RANK_FLOORS.komusubi) * MOCHIKYUKIN_POINT_VALUE;
+    expect(updated?.economics?.totalEarnings).toBe(expectedPayout);
+  });
+
+  it("sets mochikyukinLastPayoutMonth after payout", () => {
+    const r = makeSekitori("r1", {
+      rank: "maegashira",
+      stats: {
+        achievements: {
+          kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0,
+          specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
+          mochikyukinPoints: 100,
+        },
+      } as any,
+      economics: { cash: 0, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashhoEarnings: 0, popularity: 50 } as any,
+    });
+    const world = makeMockWorld({ rikishi: new Map([["r1", r]]) });
+    const impact = payMochikyukinBonuses(world, 4);
+    const resolved = resolveImpacts(world, [impact]);
+    const updated = resolved.rikishi.get("r1");
+    expect(updated?.economics?.mochikyukinLastPayoutMonth).toBe(4);
+  });
+});

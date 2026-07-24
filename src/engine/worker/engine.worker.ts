@@ -113,12 +113,13 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
       if (currentWorld) {
         currentWorld = tickOrchestrator(currentWorld);
         emitDigest();
+        syncWorld();
       }
     },
     TICK_MULTIPLE_DAYS: async (cmd) => {
       if (currentWorld) {
         const days = cmd.days;
-        const useFast = days >= 7;
+        const useFast = days >= 2;
         const chunk = useFast ? 7 : 1;
 
         for (let i = 0; i < days; i += chunk) {

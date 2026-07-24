@@ -13,7 +13,7 @@
  * Zero in-place mutations. Every phase must use spread/clone semantics.
  */
 
-import type { WorldState } from "../types/world";
+import type { WorldState, ActiveModifiers } from "../types/world";
 import type { StateImpact } from "../core/StateImpact";
 import { resolveImpacts } from "../core/ImpactResolver";
 import { error } from "../utils/Logger";
@@ -90,9 +90,19 @@ export function emptyDeltas() {
 }
 
 /** Build default ActiveModifiers (neutral — no bonuses or penalties). */
-export function defaultActiveModifiers() {
+export function defaultActiveModifiers(): ActiveModifiers {
   return {
-    trainingMultiplier: 1.0,
+    facilityGrowthMult: 1.0,
+    nutritionMult: 1.0,
+    degeikoMult: 1.0,
+    styleDriftMults: {
+      power: 1.0,
+      speed: 1.0,
+      technique: 1.0,
+      balance: 1.0,
+      stamina: 1.0,
+      mental: 1.0,
+    },
     recoveryMultiplier: 1.0,
     financialPenalty: false,
     moraleBoost: false,

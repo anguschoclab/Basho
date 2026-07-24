@@ -115,9 +115,9 @@ export function advanceOneDay(
       activePhases.push(...bashoPipeline);
     } else {
       activePhases.push(...offSeasonPipeline);
-      if (boundaries.yearBoundary) {
-        activePhases.push(phases.phase06_yearly_boundary);
-      }
+    }
+    if (boundaries.yearBoundary) {
+      activePhases.push(phases.phase06_yearly_boundary);
     }
   }
 
