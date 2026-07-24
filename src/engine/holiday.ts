@@ -317,65 +317,57 @@ function buildHolidayDigest(
   const startWeek = Math.max(0, Math.floor(startDay / 7));
   const holidayEvents = allEvents.filter((e) => e.week >= startWeek);
 
-  // Stable category
-  const stableEvents = holidayEvents.filter(
-    (e) => e.category === "welfare" || e.category === "training" || e.type.includes("STAFF")
-  );
-  if (stableEvents.length) {
-    categories.push({
-      id: "stable",
-      title: "Stable Updates",
-      items: stableEvents.slice(0, 8).map((e) => e.title),
-    });
+  // ⚡ Bolt Optimization: Replace 5 chained .filter().slice().map() passes with a single loop
+  const stableItems: string[] = [];
+  const bashoItems: string[] = [];
+  const econItems: string[] = [];
+  const govItems: string[] = [];
+  const historyItems: string[] = [];
+
+  for (const e of holidayEvents) {
+    if (
+      stableItems.length < 8 &&
+      (e.category === "welfare" || e.category === "training" || e.type.includes("STAFF"))
+    ) {
+      stableItems.push(e.title);
+    }
+    if (
+      bashoItems.length < 5 &&
+      (e.category === "basho" || e.type.includes("BASHO") || e.type.includes("YUSHO"))
+    ) {
+      bashoItems.push(e.title);
+    }
+    if (econItems.length < 5 && (e.category === "economy" || e.category === "sponsor")) {
+      econItems.push(e.title);
+    }
+    if (
+      govItems.length < 5 &&
+      (e.category === "discipline" || e.type.includes("GOVERNANCE") || e.type.includes("SCANDAL"))
+    ) {
+      govItems.push(e.title);
+    }
+    if (
+      historyItems.length < 5 &&
+      (e.category === "career" || e.type.includes("RETIREMENT") || e.type.includes("DEBUT"))
+    ) {
+      historyItems.push(e.title);
+    }
   }
 
-  // Banzuke/Basho category
-  const bashoEvents = holidayEvents.filter(
-    (e) => e.category === "basho" || e.type.includes("BASHO") || e.type.includes("YUSHO")
-  );
-  if (bashoEvents.length) {
-    categories.push({
-      id: "basho",
-      title: "Basho & Banzuke",
-      items: bashoEvents.slice(0, 5).map((e) => e.title),
-    });
+  if (stableItems.length) {
+    categories.push({ id: "stable", title: "Stable Updates", items: stableItems });
   }
-
-  // Economy category
-  const econEvents = holidayEvents.filter(
-    (e) => e.category === "economy" || e.category === "sponsor"
-  );
-  if (econEvents.length) {
-    categories.push({
-      id: "economy",
-      title: "Economy",
-      items: econEvents.slice(0, 5).map((e) => e.title),
-    });
+  if (bashoItems.length) {
+    categories.push({ id: "basho", title: "Basho & Banzuke", items: bashoItems });
   }
-
-  // Governance category
-  const govEvents = holidayEvents.filter(
-    (e) =>
-      e.category === "discipline" || e.type.includes("GOVERNANCE") || e.type.includes("SCANDAL")
-  );
-  if (govEvents.length) {
-    categories.push({
-      id: "governance",
-      title: "Governance",
-      items: govEvents.slice(0, 5).map((e) => e.title),
-    });
+  if (econItems.length) {
+    categories.push({ id: "economy", title: "Economy", items: econItems });
   }
-
-  // Career / History category
-  const careerEvents = holidayEvents.filter(
-    (e) => e.category === "career" || e.type.includes("RETIREMENT") || e.type.includes("DEBUT")
-  );
-  if (careerEvents.length) {
-    categories.push({
-      id: "history",
-      title: "Career & History",
-      items: careerEvents.slice(0, 5).map((e) => e.title),
-    });
+  if (govItems.length) {
+    categories.push({ id: "governance", title: "Governance", items: govItems });
+  }
+  if (historyItems.length) {
+    categories.push({ id: "history", title: "Career & History", items: historyItems });
   }
 
   // Headline
