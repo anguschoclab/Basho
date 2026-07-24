@@ -29,3 +29,8 @@
 **Issue:** `ActionQueueWidget` handled its empty and non-empty state inconsistently by wrapping content directly in a custom `Card` rather than the standard `BaseWidget`.
 **Learning:** This caused structural inconsistency with other widgets in the dashboard that use `BaseWidget`.
 **Rule:** Always use `BaseWidget` as the top-level wrapper for all dashboard widgets to maintain consistent layout, headers, and padding for both populated and empty states.
+
+## 2025-07-12 - Empty State Consistency in ListCard
+**Issue:** `ListCard` hardcoded an empty state paragraph instead of using the standard `EmptyState` component.
+**Learning:** Shared UI layout components like `ListCard` must enforce the same `EmptyState` consistency rules as standalone dashboard widgets.
+**Rule:** Ensure all reusable list container components, not just top-level widgets, rely on `@/components/ui/EmptyState` for empty data fallbacks.
