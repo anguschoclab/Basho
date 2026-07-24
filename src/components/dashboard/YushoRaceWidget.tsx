@@ -14,6 +14,7 @@ import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Trophy, Medal, Award } from "lucide-react";
 import { getRikishiByDivision } from "@/engine/queries";
 import { type UIRosterEntry, projectRosterEntry } from "@/presenters/rikishiUI";
+import type { Rikishi } from "@/engine/types/rikishi";
 
 interface YushoContenderProps {
   entry: UIRosterEntry;
@@ -92,7 +93,7 @@ export const YushoRaceWidget: React.FC = () => {
     if (!world?.currentBasho) return [];
     const standings = world.currentBasho.standings;
 
-    const contenders: { r: any; wins: number }[] = [];
+    const contenders: { r: Rikishi; wins: number }[] = [];
     for (const r of getRikishiByDivision(world, "makuuchi")) {
       const record = standings.get(r.id);
       contenders.push({ r, wins: record?.wins ?? r.currentBashoWins ?? 0 });

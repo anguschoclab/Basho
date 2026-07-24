@@ -102,6 +102,7 @@ export function EmptyState({
               variant={action.variant || "default"}
               onClick={action.onClick}
               className="text-xs"
+              aria-label={action.label}
             >
               {action.label}
             </Button>
@@ -112,6 +113,7 @@ export function EmptyState({
               variant="ghost"
               onClick={secondaryAction.onClick}
               className="text-xs"
+              aria-label={secondaryAction.label}
             >
               {secondaryAction.label}
             </Button>

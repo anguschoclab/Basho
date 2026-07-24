@@ -4,6 +4,7 @@ import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import { NATURALIZATION_CAREER_WINS_THRESHOLD } from "@/constants/engine/generation";
 
 describe("checkNaturalizations", () => {
+  // RNG seed: nat_rikishi_24_2025 — deterministic, produces roll < 5 (passes 5% chance)
   it("naturalizes an eligible rikishi if the chance roll passes", () => {
     const world = MockFactory.createWorld();
     world.year = 2025;
@@ -35,6 +36,7 @@ describe("checkNaturalizations", () => {
     expect(updates?.nationality).toEqual("Japan");
   });
 
+  // RNG seed: nat_rikishi_fail_1_2025 — deterministic, produces roll >= 5 (fails 5% chance)
   it("does not naturalize an eligible rikishi if chance roll fails", () => {
     const world = MockFactory.createWorld();
     world.year = 2025;
@@ -57,6 +59,7 @@ describe("checkNaturalizations", () => {
     expect(impact.entities?.rikishiUpdates?.has(rikishi.id)).toBeFalsy();
   });
 
+  // Uses same seed as test 1 (nat_rikishi_24_2025) but rikishi is ineligible due to low careerWins
   it("does not naturalize if the rikishi is ineligible despite a passing chance roll", () => {
     const world = MockFactory.createWorld();
     world.year = 2025;
@@ -80,6 +83,7 @@ describe("checkNaturalizations", () => {
     expect(impact.entities?.rikishiUpdates?.has(rikishi.id)).toBeFalsy();
   });
 
+  // RNG seed: nat_rikishi_24_2025 — same as test 1, roll passes. Yokozuna age 32 qualifies via age rule.
   it("does naturalize if Yokozuna is old enough", () => {
     const world = MockFactory.createWorld();
     world.year = 2025;
