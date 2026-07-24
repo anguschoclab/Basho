@@ -7,8 +7,9 @@
 import React, { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { BaseWidget } from "./BaseWidget";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Trophy, Medal, Award } from "lucide-react";
 import { getRikishiByDivision } from "@/engine/queries";
@@ -103,43 +104,39 @@ export const YushoRaceWidget: React.FC = () => {
       .map(({ r }) => projectRosterEntry(r, world));
   }, [state.world]);
 
+  const headerAction = useMemo(
+    () => ({
+      label: "View Full Banzuke",
+      onClick: () => navigate({ to: "/basho/banzuke" }),
+      tooltip: "View Full Banzuke",
+    }),
+    [navigate]
+  );
+
   if (topContenders.length === 0) {
-    return null;
+    return (
+      <BaseWidget title="Yūshō Race" icon={Trophy} headerAction={headerAction}>
+        <EmptyState icon={Trophy} title="No active Yūshō race" compact />
+      </BaseWidget>
+    );
   }
 
   return (
-    <Card>
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg font-display flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-gold" />
-            Yūshō Race
-          </CardTitle>
-          <Badge
-            variant="secondary"
-            className="cursor-pointer hover:bg-secondary/80"
-            onClick={() => navigate({ to: "/basho/banzuke" })}
-          >
-            View Full Banzuke
-          </Badge>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="flex justify-around items-start">
-          {topContenders.map((entry, index) => (
-            <YushoContender key={entry.id} entry={entry} rank={index + 1} />
-          ))}
-        </div>
+    <BaseWidget title="Yūshō Race" icon={Trophy} headerAction={headerAction}>
+      <div className="flex justify-around items-start">
+        {topContenders.map((entry, index) => (
+          <YushoContender key={entry.id} entry={entry} rank={index + 1} />
+        ))}
+      </div>
 
-        {/* Race summary */}
-        <div className="mt-4 pt-4 border-t text-center">
-          <p className="text-xs text-muted-foreground">
-            Top <span className="tabular-nums">{topContenders.length}</span> contenders based on
-            current tournament record
-          </p>
-        </div>
-      </CardContent>
-    </Card>
+      {/* Race summary */}
+      <div className="mt-4 pt-4 border-t text-center">
+        <p className="text-xs text-muted-foreground">
+          Top <span className="tabular-nums">{topContenders.length}</span> contenders based on
+          current tournament record
+        </p>
+      </div>
+    </BaseWidget>
   );
 };
 
