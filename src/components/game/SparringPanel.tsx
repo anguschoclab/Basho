@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Swords, Plus, X } from "lucide-react";
+import { EmptyState } from "@/components/ui/EmptyState";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { SparringPair } from "@/engine/types/training";
 import { SparringService } from "@/engine/systems/training/SparringService";
@@ -69,9 +70,12 @@ export function SparringPanel({ heyaRikishi, pairs, onAddPair, onRemovePair }: P
       </CardHeader>
       <CardContent className="space-y-3">
         {pairs.length === 0 && (
-          <p className="text-xs text-muted-foreground italic font-body">
-            No sparring pairs assigned. Pair rikishi with different styles for best results.
-          </p>
+          <EmptyState
+            icon={Swords}
+            title="No sparring pairs assigned"
+            description="Pair rikishi with different styles for best results."
+            compact
+          />
         )}
 
         {pairs.map((pair) => {
