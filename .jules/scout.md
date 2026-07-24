@@ -33,3 +33,9 @@
 **Gap:** The utility functions in `citizenshipUtils.ts` (e.g., `getCitizenshipStatus`, `countsAsForeign`, `yearsUntilNaturalization`, `getHeyaForeignUsage`, `isAtForeignLimit`) lacked unit tests, leaving the core rules around foreign recruitment and naturalization untested against regressions.
 **Learning:** These utility functions contain complex boundary checks related to joined dates and specific string comparisons (e.g., "Japan" vs "Japanese"). Modifying these functions without tests could easily break foreign recruitment rules in the game.
 **Pattern:** Construct `Rikishi` objects using `MockFactory.createRikishi` with specific combinations of `nationality`, `citizenshipStatus`, and `joinedHeyaDate` to verify all possible permutations of citizenship status and boundary conditions for naturalization.
+
+## 2025-02-27 - Scout: test monthly economics calculation modules
+
+**Gap:** The monthly calculation modules `loans.ts` and `salaries.ts` were isolated from `phase05_monthly_boundary.ts` but lacked their own explicit unit tests, leaving the core rules around Heya loans and Sekitori salaries untested.
+**Learning:** These modules generate financial events (`FINANCIAL_ALERT`) and perform entity updates directly via `ImpactBuilder` references. They mutate an externally passed `heyaUpdates` object rather than creating it themselves.
+**Pattern:** For modules that patch game state using `heyaUpdates` and `ImpactBuilder`, construct `WorldState`, `Heya`, and `Rikishi` using `MockFactory`. Pass them along with an initialized `heyaUpdates` and `createImpactBuilder()` into the function. Validate that `heyaUpdates` holds the mutated scalar fields (like `funds`) and `builder.build()` holds the complex object updates and events.
