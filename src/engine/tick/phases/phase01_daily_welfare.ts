@@ -53,7 +53,7 @@ export function phase01_daily_welfare(world: WorldState): StateImpact {
       rikishiRng,
       next,
       next.descriptor
-    ) as unknown as Rikishi["descriptor"];
+    );
 
     // 2. Diet Effects
     const diet = heyaDietCache.get(next.heyaId);
@@ -102,7 +102,7 @@ export function phase01_daily_welfare(world: WorldState): StateImpact {
 
     // 4. Condition decay (during basho) / recovery (during off-season)
     const withCondition = tickCondition(
-      next as unknown as import("../../types/rikishi").Rikishi,
+      next,
       world.cyclePhase as Parameters<typeof tickCondition>[1]
     );
     next.condition = withCondition.condition;
