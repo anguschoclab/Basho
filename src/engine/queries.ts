@@ -211,3 +211,15 @@ export function getHeyaStaff(world: WorldState, heyaId: Id): Staff[] {
   }
   return staffList;
 }
+
+/**
+ * Immutably update a heya in the world, returning a new WorldState.
+ * Returns the same world reference if the heyaId is not found.
+ */
+export function updateHeyaInWorld(world: WorldState, heyaId: Id, patch: Partial<Heya>): WorldState {
+  const heya = world.heyas.get(heyaId);
+  if (!heya) return world;
+  const updatedHeyas = new Map(world.heyas);
+  updatedHeyas.set(heyaId, { ...heya, ...patch });
+  return { ...world, heyas: updatedHeyas };
+}

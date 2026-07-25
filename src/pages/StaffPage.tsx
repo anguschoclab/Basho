@@ -1,10 +1,11 @@
-import { useMemo, useState, useCallback, useEffect } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGameStore } from "@/store/gameStore";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
 import { STABLE_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/GameContext";
+import { useRequireWorld } from "@/components/RequireWorld";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -93,9 +94,7 @@ export default function StaffPage() {
 
   const world = state.world;
 
-  useEffect(() => {
-    if (!world) navigate({ to: "/main-menu", replace: true });
-  }, [world, navigate]);
+  const hasWorld = useRequireWorld();
 
   const heya = world ? getPlayerHeya(world) : undefined;
 
@@ -139,7 +138,7 @@ export default function StaffPage() {
     [world, heya, sendCommand]
   );
 
-  if (!heya) return null;
+  if (!hasWorld || !heya) return null;
 
   return (
     <AppLayout subNavTabs={STABLE_TABS} activeSubTab="staff" pageTitle="Support Staff">

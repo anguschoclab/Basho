@@ -4,7 +4,7 @@ import {
   removeBookmark,
   updateBookmarkNote,
 } from "@/engine/systems/bookmark/BookmarkService";
-import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { applyImpact } from "./gameHelpers";
 
 /**
  * Bookmark slice handling bookmark-related actions.
@@ -18,17 +18,11 @@ export function bookmarkSlice(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case "BOOKMARK_ENTITY": {
       const impact = addBookmark(state.world, action.entityType, action.entityId, action.note);
-      return {
-        ...state,
-        world: resolveImpacts(state.world, [impact]),
-      };
+      return applyImpact(state, impact);
     }
     case "UNBOOKMARK_ENTITY": {
       const impact = removeBookmark(state.world, action.entityType, action.entityId);
-      return {
-        ...state,
-        world: resolveImpacts(state.world, [impact]),
-      };
+      return applyImpact(state, impact);
     }
     case "UPDATE_BOOKMARK_NOTE": {
       const impact = updateBookmarkNote(
@@ -37,10 +31,7 @@ export function bookmarkSlice(state: GameState, action: GameAction): GameState {
         action.entityId,
         action.note
       );
-      return {
-        ...state,
-        world: resolveImpacts(state.world, [impact]),
-      };
+      return applyImpact(state, impact);
     }
     default:
       return state;

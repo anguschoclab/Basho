@@ -6,7 +6,11 @@
  */
 
 import type { WorldState } from "../../engine/types/world";
+import type { Heya } from "../../engine/types/heya";
+import type { GovernanceRuling, Faction } from "../../engine/types/economy";
+import type { StatItem } from "@/components/layout/control-center";
 import { selectHeyasWithCriticalWelfare, selectMergerCandidates } from "../selectors";
+import { toScandalBand } from "@/engine/descriptorBands";
 
 export type ScandalBand = "clean" | "whispers" | "scrutiny" | "scandal" | "crisis";
 
@@ -22,12 +26,123 @@ export interface GovernanceSummary {
   governanceLog: unknown[];
 }
 
-function toScandalBand(score: number): ScandalBand {
+function toScandalBandLocal(score: number): ScandalBand {
   if (score < 10) return "clean";
   if (score < 30) return "whispers";
   if (score < 55) return "scrutiny";
   if (score < 80) return "scandal";
   return "crisis";
+}
+
+export interface GovernanceDerived {
+  status: string;
+  scandal: number;
+  scandalBand: ScandalBand;
+  scandalTone: StatItem["tone"];
+  welfareRisk: number;
+  welfareLabel: string;
+  welfareTone: StatItem["tone"];
+  compState: string;
+  compTone: StatItem["tone"];
+  statusTone: StatItem["tone"];
+  statusSub: string;
+  unresolvedRulings: GovernanceRuling[];
+  pendingRulings: GovernanceRuling[];
+  criticalHeyas: ReturnType<typeof selectHeyasWithCriticalWelfare>;
+  mergerCandidates: ReturnType<typeof selectMergerCandidates>;
+  completedMergerEvents: Array<{ id: string; year: number; week: number; data?: { heyaname?: string; heya?: string; reason?: string; incident?: string } }>;
+  factionList: Faction[];
+}
+
+export function projectGovernanceDerived(world: WorldState, heya: Heya): GovernanceDerived {
+  const status = heya.governanceStatus ?? "good_standing";
+  const scandal = heya.scandalScore ?? 0;
+
+  const scandalBand = toScandalBand(scandal) as ScandalBand;
+  const scandalTone: StatItem["tone"] =
+    scandalBand === "clean"
+      ? "success"
+      : scandalBand === "whispers"
+        ? "default"
+        : scandalBand === "scrutiny"
+          ? "warning"
+          : "destructive";
+
+  const welfare = heya.welfareState;
+  const welfareRisk = Math.max(0, Math.min(100, Number(welfare?.welfareRisk ?? 10)));
+  const compState = String(welfare?.complianceState ?? "compliant");
+  const welfareLabel =
+    welfareRisk <= 20
+      ? "Safe"
+      : welfareRisk <= 44
+        ? "Cautious"
+        : welfareRisk <= 69
+          ? "Elevated"
+          : "Critical";
+  const welfareTone: StatItem["tone"] =
+    welfareRisk <= 20
+      ? "success"
+      : welfareRisk <= 44
+        ? "default"
+        : welfareRisk <= 69
+          ? "warning"
+          : "destructive";
+  const compTone: StatItem["tone"] =
+    compState === "compliant" ? "success" : compState === "watch" ? "warning" : "destructive";
+
+  const statusTone: StatItem["tone"] =
+    status === "good_standing" ? "success" : status === "warning" ? "warning" : "destructive";
+  const statusSub =
+    status === "good_standing"
+      ? "No active concerns"
+      : status === "warning"
+        ? "Council has noted concerns"
+        : status === "probation"
+          ? "Formal probation in effect"
+          : "Serious sanctions applied";
+
+  const governanceLog = world.governanceLog ?? [];
+
+  const unresolvedRulings = governanceLog.filter(
+    (r) => r.heyaId === world.playerHeyaId && !r.playerChoice
+  );
+
+  const pendingRulings = governanceLog.filter(
+    (r) => r.heyaId === heya.id && !r.playerSeverity
+  );
+
+  const criticalHeyas = selectHeyasWithCriticalWelfare(world);
+  const mergerCandidates = selectMergerCandidates(world);
+
+  const eventLog = world.events?.log ?? [];
+  const completedMergerEvents = eventLog
+    .filter((e) => e.type === "GOVERNANCE_RULING" && e.data?.incident === "stable_merger")
+    .sort((a, b) => b.year - a.year || b.week - a.week)
+    .slice(0, 10) as Array<{ id: string; year: number; week: number; data?: { heyaname?: string; heya?: string; reason?: string; incident?: string } }>;
+
+  const factionList = Object.values(world.factions ?? {}).sort(
+    (a, b) => b.influence - a.influence
+  );
+
+  return {
+    status,
+    scandal,
+    scandalBand,
+    scandalTone,
+    welfareRisk,
+    welfareLabel,
+    welfareTone,
+    compState,
+    compTone,
+    statusTone,
+    statusSub,
+    unresolvedRulings,
+    pendingRulings,
+    criticalHeyas,
+    mergerCandidates,
+    completedMergerEvents,
+    factionList,
+  };
 }
 
 export function projectGovernancePage(world: WorldState, heyaId: string): GovernanceSummary | null {
@@ -54,7 +169,7 @@ export function projectGovernancePage(world: WorldState, heyaId: string): Govern
   return {
     status,
     scandalScore,
-    scandalBand: toScandalBand(scandalScore),
+    scandalBand: toScandalBandLocal(scandalScore),
     politicalCapital,
     politicalCapitalMax: 100,
     isSanctioned: status === "sanctioned",

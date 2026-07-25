@@ -15,9 +15,9 @@
 // - Safer prize display (shows yusho prize only when available)
 
 import { Helmet } from "react-helmet";
-import { useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
+import { useRequireWorld } from "@/components/RequireWorld";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { RECORDS_TABS } from "@/constants/ui/navigation";
 import { PageHeader } from "@/components/layout/control-center";
@@ -75,12 +75,10 @@ function safeRankJa(rank: string | null | undefined): string {
 export default function HistoryPage() {
   const navigate = useNavigate();
   const { state, getRikishi } = useGame();
+  const hasWorld = useRequireWorld("/dashboard");
   const { world } = state;
 
-  useEffect(() => {
-    if (!world) navigate({ to: "/dashboard" });
-  }, [world, navigate]);
-  if (!world) return null;
+  if (!hasWorld || !world) return null;
 
   const history = [...((world.history ?? []) as HistoryRecord[])].reverse();
 

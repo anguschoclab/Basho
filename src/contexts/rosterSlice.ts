@@ -2,7 +2,7 @@ import type { GameState, GameAction } from "./gameTypes";
 import { assignMentor } from "@/engine/lineage";
 import { removeMentor } from "@/engine/systems/training/MentorshipService";
 import { assignSparringPair, removeSparringPair } from "@/engine/systems/training/SparringService";
-import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { applyImpact } from "./gameHelpers";
 
 /**
  * Roster slice handling roster-related actions including mentor assignment.
@@ -20,18 +20,12 @@ export function rosterSlice(state: GameState, action: GameAction): GameState {
       if (!state.world) return state;
       const { ok, impact } = assignMentor(state.world, action.apprenticeId, action.mentorId);
       if (!ok || !impact) return state;
-      return {
-        ...state,
-        world: resolveImpacts(state.world, [impact]),
-      };
+      return applyImpact(state, impact);
     }
     case "REMOVE_MENTOR": {
       if (!state.world) return state;
       const removeImpact = removeMentor(state.world, action.apprenticeId);
-      return {
-        ...state,
-        world: resolveImpacts(state.world, [removeImpact]),
-      };
+      return applyImpact(state, removeImpact);
     }
     case "ADD_SPARRING_PAIR": {
       if (!state.world) return state;
@@ -42,7 +36,7 @@ export function rosterSlice(state: GameState, action: GameAction): GameState {
         action.bId,
         state.world.week
       );
-      return { ...state, world: resolveImpacts(state.world, [addPairImpact]) };
+      return applyImpact(state, addPairImpact);
     }
     case "REMOVE_SPARRING_PAIR": {
       if (!state.world) return state;
@@ -52,7 +46,7 @@ export function rosterSlice(state: GameState, action: GameAction): GameState {
         action.aId,
         action.bId
       );
-      return { ...state, world: resolveImpacts(state.world, [removePairImpact]) };
+      return applyImpact(state, removePairImpact);
     }
     default:
       return state;

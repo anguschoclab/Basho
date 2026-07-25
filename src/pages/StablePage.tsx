@@ -1,9 +1,10 @@
-import { useMemo, useEffect } from "react";
+import { useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { STABLE_TABS } from "@/constants/ui/navigation";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
+import { useRequireWorld } from "@/components/RequireWorld";
 import { projectRikishi } from "@/presenters/rikishi";
 import { InfrastructureService } from "@/engine/systems/economy/InfrastructureService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
@@ -36,9 +37,8 @@ export default function StablePage() {
   const viewingHeyaId = routeId || playerHeyaId || "";
   const heya = world?.heyas.get(viewingHeyaId) ?? null;
 
-  useEffect(() => {
-    if (!world) navigate({ to: "/main-menu", replace: true });
-  }, [world, navigate]);
+  const hasWorld = useRequireWorld();
+  if (!hasWorld || !world || !heya) return null;
 
   const rawRoster = useMemo(() => {
     if (!world || !heya) return [];

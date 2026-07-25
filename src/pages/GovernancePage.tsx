@@ -17,11 +17,10 @@ import {
   formatFinePenalty,
   getStatusLabel,
   spendPoliticalCapital,
-  toScandalBand,
 } from "@/presenters/uiDigest";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { selectHeyasWithCriticalWelfare, selectMergerCandidates } from "@/presenters/selectors";
 import { getPlayerHeya } from "@/engine/queries";
+import { projectGovernanceDerived } from "@/presenters/projections/governanceProjections";
 
 export default function GovernancePage() {
   const { state, issueRuling, updateWorld } = useGame();
@@ -36,53 +35,9 @@ export default function GovernancePage() {
   const derived = useMemo(() => {
     if (!world || !heya) return null;
 
-    const status = heya.governanceStatus ?? "good_standing";
-    const scandal = heya.scandalScore ?? 0;
+    const gov = projectGovernanceDerived(world, heya);
+
     const history = heya.governanceHistory ?? [];
-
-    const scandalBand = toScandalBand(scandal);
-    const scandalTone: StatItem["tone"] =
-      scandalBand === "clean"
-        ? "success"
-        : scandalBand === "whispers"
-          ? "default"
-          : scandalBand === "scrutiny"
-            ? "warning"
-            : "destructive";
-
-    const welfare = heya.welfareState;
-    const welfareRisk = Math.max(0, Math.min(100, Number(welfare?.welfareRisk ?? 10)));
-    const compState = String(welfare?.complianceState ?? "compliant");
-    const welfareLabel =
-      welfareRisk <= 20
-        ? "Safe"
-        : welfareRisk <= 44
-          ? "Cautious"
-          : welfareRisk <= 69
-            ? "Elevated"
-            : "Critical";
-    const welfareTone: StatItem["tone"] =
-      welfareRisk <= 20
-        ? "success"
-        : welfareRisk <= 44
-          ? "default"
-          : welfareRisk <= 69
-            ? "warning"
-            : "destructive";
-    const compTone: StatItem["tone"] =
-      compState === "compliant" ? "success" : compState === "watch" ? "warning" : "destructive";
-
-    const statusTone: StatItem["tone"] =
-      status === "good_standing" ? "success" : status === "warning" ? "warning" : "destructive";
-    const statusSub =
-      status === "good_standing"
-        ? "No active concerns"
-        : status === "warning"
-          ? "Council has noted concerns"
-          : status === "probation"
-            ? "Formal probation in effect"
-            : "Serious sanctions applied";
-
     const historyRows = [...history]
       .reverse()
       .slice(0, 10)
@@ -108,12 +63,7 @@ export default function GovernancePage() {
         ),
       }));
 
-    const unresolvedRulings = (world.governanceLog ?? []).filter(
-      (r) => r.heyaId === world.playerHeyaId && !r.playerChoice
-    );
-
-    const criticalHeyas = selectHeyasWithCriticalWelfare(world);
-    const welfareRows = criticalHeyas.map((h) => ({
+    const welfareRows = gov.criticalHeyas.map((h) => ({
       id: h.id,
       label: h.name,
       sub: `${h.welfareState?.complianceState ?? "compliant"} · ${h.rikishiIds?.length ?? 0} rikishi`,
@@ -121,8 +71,7 @@ export default function GovernancePage() {
       tone: "warning" as const,
     }));
 
-    const mergerCandidates = selectMergerCandidates(world);
-    const mergerRows = mergerCandidates.map((h) => ({
+    const mergerRows = gov.mergerCandidates.map((h) => ({
       id: h.id,
       label: h.name,
       sub: `${h.rikishiIds?.length ?? 0} rikishi · ${(h.governanceStatus ?? "good_standing").replace("_", " ")}`,
@@ -130,22 +79,15 @@ export default function GovernancePage() {
       tone: "destructive" as const,
     }));
 
-    const completedMergerEvents = (world.events?.log ?? [])
-      .filter((e) => e.type === "GOVERNANCE_RULING" && e.data?.incident === "stable_merger")
-      .sort((a, b) => b.year - a.year || b.week - a.week)
-      .slice(0, 10);
-    const completedMergerRows = completedMergerEvents.map((e) => ({
+    const completedMergerRows = gov.completedMergerEvents.map((e) => ({
       id: e.id,
-      label: `${e.data.heyaname ?? "Unknown"} → ${e.data.heya ?? "Unknown"}`,
-      sub: `Year ${e.year}, Week ${e.week} · ${String(e.data.reason ?? e.data.incident ?? "merger")}`,
+      label: `${e.data?.heyaname ?? "Unknown"} → ${e.data?.heya ?? "Unknown"}`,
+      sub: `Year ${e.year}, Week ${e.week} · ${String(e.data?.reason ?? e.data?.incident ?? "merger")}`,
       tone: "default" as const,
     }));
 
-    const factionList = Object.values(world.factions ?? {}).sort(
-      (a, b) => b.influence - a.influence
-    );
-    const maxInfluence = factionList.length > 0 ? factionList[0].influence : 0;
-    const factionRows = factionList.map((fac) => ({
+    const maxInfluence = gov.factionList.length > 0 ? gov.factionList[0].influence : 0;
+    const factionRows = gov.factionList.map((fac) => ({
       id: fac.id,
       label: (
         <span className="flex items-center gap-1.5 flex-wrap">
@@ -171,48 +113,44 @@ export default function GovernancePage() {
     }));
 
     const reputationStats: StatItem[] = [
-      { label: "Scandal Index", value: SCANDAL_LABELS[scandalBand], tone: scandalTone },
+      { label: "Scandal Index", value: SCANDAL_LABELS[gov.scandalBand], tone: gov.scandalTone },
     ];
     const reputationProgress: ProgressItem[] = [
-      { label: "Scandal Score", value: Math.min(scandal, 100), tone: scandalTone },
+      { label: "Scandal Score", value: Math.min(gov.scandal, 100), tone: gov.scandalTone },
     ];
 
     const welfareStats: StatItem[] = [
-      { label: "Risk Level", value: welfareLabel, tone: welfareTone },
-      { label: "Status", value: compState.toUpperCase(), tone: compTone },
+      { label: "Risk Level", value: gov.welfareLabel, tone: gov.welfareTone },
+      { label: "Status", value: gov.compState.toUpperCase(), tone: gov.compTone },
     ];
     const welfareProgress: ProgressItem[] = [
-      { label: "Welfare Risk", value: welfareRisk, tone: welfareTone },
+      { label: "Welfare Risk", value: gov.welfareRisk, tone: gov.welfareTone },
     ];
 
     const councilStats: StatItem[] = [
-      { label: "Standing", value: getStatusLabel(world, status), tone: statusTone, sub: statusSub },
+      { label: "Standing", value: getStatusLabel(world, gov.status), tone: gov.statusTone, sub: gov.statusSub },
     ];
 
     const recordStats: StatItem[] = [{ label: "Decisions on File", value: history.length }];
 
-    const pendingRulings = (world.governanceLog ?? []).filter(
-      (r) => r.heyaId === heya.id && !r.playerSeverity
-    );
-
     return {
-      status,
-      scandal,
-      scandalBand,
+      status: gov.status,
+      scandal: gov.scandal,
+      scandalBand: gov.scandalBand,
       historyRows,
-      unresolvedRulings,
+      unresolvedRulings: gov.unresolvedRulings,
       welfareRows,
       mergerRows,
       completedMergerRows,
       factionRows,
-      factionList,
+      factionList: gov.factionList,
       reputationStats,
       reputationProgress,
       welfareStats,
       welfareProgress,
       councilStats,
       recordStats,
-      pendingRulings,
+      pendingRulings: gov.pendingRulings,
     };
   }, [world, heya]);
 

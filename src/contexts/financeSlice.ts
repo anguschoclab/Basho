@@ -1,6 +1,6 @@
 import type { GameState, GameAction } from "./gameTypes";
 import { InfrastructureService } from "@/engine/systems/economy/InfrastructureService";
-import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { applyImpact } from "./gameHelpers";
 
 export function financeSlice(state: GameState, action: GameAction): GameState {
   if (!state.world) return state;
@@ -12,7 +12,7 @@ export function financeSlice(state: GameState, action: GameAction): GameState {
         action.heyaId,
         action.facilityId
       );
-      return { ...state, world: resolveImpacts(state.world, [impact]) };
+      return applyImpact(state, impact);
     }
 
     default:

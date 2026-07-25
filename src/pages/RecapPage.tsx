@@ -10,6 +10,7 @@ import { useState, useMemo, useEffect, useCallback } from "react";
 import { Helmet } from "react-helmet";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
+import { useRequireWorld } from "@/components/RequireWorld";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ChevronRight } from "lucide-react";
@@ -28,7 +29,7 @@ import { selectKeyBouts } from "@/presenters/projections/recapProjections";
 import { compareBanzuke, formatRankPosition, RANK_HIERARCHY } from "@/engine/banzuke";
 import { makeBashoKey } from "@/engine/historyIndex";
 import { EntityCollection } from "@/engine/core/EntityCollection";
-import { getPlayerHeya } from "@/engine/queries";
+import { getPlayerHeya, updateHeyaInWorld } from "@/engine/queries";
 import { projectRikishi } from "@/presenters/uiModels";
 import type { EngineEvent } from "@/engine/types/events";
 import type { HoFInductee } from "@/engine/hallOfFame";
@@ -131,23 +132,15 @@ export default function RecapPage() {
     if (world && world.playerHeyaId) {
       const heya = getPlayerHeya(world);
       if (heya) {
-        const updatedHeya = {
-          ...heya,
-          reputation: Math.max(0, Math.min(100, (heya.reputation ?? 50) + effects.reputation)),
-        };
-        const updatedHeyas = new Map(world.heyas);
-        updatedHeyas.set(world.playerHeyaId, updatedHeya);
-        updateWorld({ ...world, heyas: updatedHeyas });
+        const newReputation = Math.max(0, Math.min(100, (heya.reputation ?? 50) + effects.reputation));
+        updateWorld(updateHeyaInWorld(world, world.playerHeyaId, { reputation: newReputation }));
       }
     }
   };
 
   const lastBasho = world?.history?.[world.history.length - 1];
 
-  // Redirect to main menu if world is not loaded
-  useEffect(() => {
-    if (!world) navigate({ to: "/main-menu", replace: true });
-  }, [world, navigate]);
+  const hasWorld = useRequireWorld();
 
   // Check for player rikishi retirements and populate intai ceremony queue
   useEffect(() => {
@@ -240,7 +233,7 @@ export default function RecapPage() {
     [world]
   );
 
-  if (!world) return null; // useEffect above handles redirect
+  if (!hasWorld || !world) return null;
   const events = world.events?.log || [];
   const bashoEvents = getBashoWrapEvents(events, lastBasho?.bashoNumber);
   const groupedEvents = groupEventsByNarrative(bashoEvents);

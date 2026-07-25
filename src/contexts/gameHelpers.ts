@@ -1,8 +1,11 @@
-// Game Context Helpers — autosave signal + match-day projection
+// Game Context Helpers — autosave signal + match-day projection + impact application
 import type { WorldState } from "@/engine/types/world";
 import { autosave as rawAutosave } from "@/engine/saveload";
 import { signalAutosave } from "@/hooks/useAutosaveIndicator";
 import { getAutosaveEnabled } from "@/pages/settingsHelpers";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import type { StateImpact } from "@/engine/core/StateImpact";
+import type { GameState } from "./gameTypes";
 
 // Module-level state to track autosave progress and prevent overlaps
 let saveInProgress = false;
@@ -62,4 +65,16 @@ export function combineReducers<S, A>(slices: Array<Reducer<S, A>>): Reducer<S, 
   return (state: S, action: A) => {
     return slices.reduce((currentState, slice) => slice(currentState, action), state);
   };
+}
+
+/** Apply a single StateImpact to GameState, returning a new state with updated world. */
+export function applyImpact(state: GameState, impact: StateImpact): GameState {
+  if (!state.world) return state;
+  return { ...state, world: resolveImpacts(state.world, [impact]) };
+}
+
+/** Apply multiple StateImpacts to GameState in order, returning a new state with updated world. */
+export function applyImpacts(state: GameState, impacts: StateImpact[]): GameState {
+  if (!state.world || impacts.length === 0) return state;
+  return { ...state, world: resolveImpacts(state.world, impacts) };
 }

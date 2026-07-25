@@ -35,10 +35,9 @@ import type { GamePhase, GameState } from "./gameTypes";
 import type { UIDigest } from "@/presenters/uiDigest";
 import { initialGameState } from "./gameTypes";
 import { gameReducer } from "./gameReducer";
-import { autosaveWithSignal, getMatchesForDay } from "./gameHelpers";
+import { autosaveWithSignal, getMatchesForDay, applyImpact } from "./gameHelpers";
 import { selectMakuuchiStandings } from "@/presenters/selectors";
 import { recruitSponsor, buildWeeklyDigest } from "@/presenters/uiDigest";
-import { resolveImpacts } from "@/engine/core/ImpactResolver";
 
 // Re-export types so existing imports from GameContext still work
 export type { GamePhase, GameState } from "./gameTypes";
@@ -243,8 +242,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
     (sponsorId: string) => {
       if (!state.world || !state.world.playerHeyaId || !state.world.rng) return;
       const impact = recruitSponsor(state.world, state.world.playerHeyaId, sponsorId, state.world.rng);
-      const nextWorld = resolveImpacts(state.world, [impact]);
-      updateWorld(nextWorld);
+      const nextWorld = applyImpact(state, impact).world;
+      if (nextWorld) updateWorld(nextWorld);
     },
     [state.world, updateWorld]
   );

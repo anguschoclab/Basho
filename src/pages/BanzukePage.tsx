@@ -21,7 +21,7 @@ import { RikishiCell } from "@/components/banzuke/RikishiCell";
 import { YokozunaTrajectory } from "@/components/banzuke/YokozunaTrajectory";
 import { getYokozunaCandidates } from "@/presenters/projections/promotionProjections";
 import type { UIRankRow } from "@/presenters/banzukeUI";
-import { getPlayerHeya } from "@/engine/queries";
+import { getPlayerHeya, updateHeyaInWorld } from "@/engine/queries";
 
 const DIVISION_KEYS: Division[] = [
   "makuuchi",
@@ -124,13 +124,8 @@ export default function BanzukePage() {
     if (world.playerHeyaId) {
       const heya = getPlayerHeya(world);
       if (heya) {
-        const updatedHeya = {
-          ...heya,
-          reputation: Math.max(0, Math.min(100, (heya.reputation ?? 50) + effects.reputation)),
-        };
-        const updatedHeyas = new Map(world.heyas);
-        updatedHeyas.set(world.playerHeyaId, updatedHeya);
-        updateWorld({ ...world, heyas: updatedHeyas });
+        const newReputation = Math.max(0, Math.min(100, (heya.reputation ?? 50) + effects.reputation));
+        updateWorld(updateHeyaInWorld(world, world.playerHeyaId, { reputation: newReputation }));
       }
     }
   };
