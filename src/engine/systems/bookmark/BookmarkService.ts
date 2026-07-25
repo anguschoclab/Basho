@@ -36,8 +36,6 @@ export function addBookmark(
   const bookmarks = getBookmarks(world);
   const key = makeKey(entityType, entityId);
 
-  // ⚡ Bolt Optimization: Replace .find() + .map() (2 passes) with a single for loop
-  // that finds the index and builds the updated array in one pass
   let existingIndex = -1;
   for (let i = 0; i < bookmarks.length; i++) {
     if (makeKey(bookmarks[i].entityType, bookmarks[i].entityId) === key) {

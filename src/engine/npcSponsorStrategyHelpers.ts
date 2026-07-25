@@ -24,8 +24,6 @@ export function countSponsors(world: WorldState, heyaId: string): number {
   const pool = world.sponsorPool;
   if (!pool || !pool.sponsors) return 0;
 
-  // ⚡ Bolt Optimization: Use a direct for...of loop instead of Array.from().filter().length
-  // to avoid O(N) array allocation overhead
   let count = 0;
   for (const s of pool.sponsors.values()) {
     if (s.active && s.relationships?.some((r) => r.targetId === heyaId)) {
@@ -50,8 +48,6 @@ export function filterEligibleSponsors(
 
   const { excludeTiers = [], includeTiers = [] } = options;
 
-  // ⚡ Bolt Optimization: Use a direct for...of loop instead of Array.from().filter()
-  // to avoid an O(N) intermediate array allocation
   const eligibleSponsors = [];
   for (const s of pool.sponsors.values()) {
     if (!s.active) continue;

@@ -108,8 +108,6 @@ function maybeAssignNPCMentors(
   const mentors = active;
 
   for (const apprentice of apprentices) {
-    // ⚡ Bolt Optimization: Replace chained .filter().sort() with a single loop
-    // to avoid O(N) allocations and redundant O(N log N) sorting for finding the max value.
     let bestMentor = null;
     let maxTechnique = -Infinity;
 

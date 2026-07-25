@@ -372,7 +372,6 @@ export const RivalryService = {
   seedInitialRivalries(world: WorldState): StateImpact {
     const builder = createImpactBuilder("seedInitialRivalries");
     const state = this.ensureRivalriesState(world);
-    // ⚡ Bolt Optimization: Use direct iteration instead of Array.from().map().filter()
     const makuuchiJuryo: Rikishi[] = [];
     for (const id of world.activeRikishiIds) {
       const r = getRikishi(world, id);

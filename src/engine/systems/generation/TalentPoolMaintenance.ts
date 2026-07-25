@@ -31,7 +31,6 @@ export function tickWeekTalentPool(world: WorldState): StateImpact {
   const nextScouting = { ...(tp.playerScouting || {}) };
 
   // 1. Weekly decay of scouting intel
-  // ⚡ Bolt Optimization: Replace Object.entries() with for...in loop to avoid O(N) tuple allocations
   for (const id in nextScouting) {
     if (!Object.prototype.hasOwnProperty.call(nextScouting, id)) continue;
     const record = nextScouting[id];
@@ -44,7 +43,6 @@ export function tickWeekTalentPool(world: WorldState): StateImpact {
   }
 
   // 2. Resolve suitor deadlines
-  // ⚡ Bolt Optimization: Replace Object.entries() with for...in loop to avoid O(N) tuple allocations
   for (const id in nextCandidates) {
     if (!Object.prototype.hasOwnProperty.call(nextCandidates, id)) continue;
     const candidate = nextCandidates[id];

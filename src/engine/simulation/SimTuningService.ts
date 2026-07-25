@@ -56,7 +56,6 @@ export const SimTuningService = {
       cumulativeKimarite?: Record<string, number>;
     }
   ): TuningMetrics {
-    // ⚡ Bolt Optimization: Use direct iteration instead of Array.from().map().filter()
     const activeRikishi: Rikishi[] = [];
     for (const id of world.activeRikishiIds) {
       const r = getRikishi(world, id);
@@ -94,7 +93,6 @@ export const SimTuningService = {
     });
 
     // 3. Retirement Ages (Check Historical Collection)
-    // ⚡ Bolt Optimization: Use direct iteration instead of Array.from() allocations
     const allRikishi: Rikishi[] = [];
     for (const r of world.rikishi.values()) allRikishi.push(r);
     if (world.historicalRikishi) {
@@ -119,7 +117,6 @@ export const SimTuningService = {
       retirementAges.length > 0 ? retirementAgeSum / retirementAges.length : 0;
 
     // 4. Stable Wealth & Dominance
-    // ⚡ Bolt Optimization: Use EntityCollection instead of Array.from()
     const heyas = EntityCollection.getHeyas(world);
     const funds: number[] = [];
     let fundSum = 0;
@@ -158,7 +155,6 @@ export const SimTuningService = {
 
     // 7. Top Kimarite
     const kimariteStats = historyStats?.cumulativeKimarite ?? world.globalKimariteStats ?? {};
-    // ⚡ Bolt Optimization: Use a for...in loop to avoid intermediate O(N) array allocations
     const kimariteArr = [];
     for (const id in kimariteStats) {
       if (Object.prototype.hasOwnProperty.call(kimariteStats, id)) {
@@ -168,7 +164,6 @@ export const SimTuningService = {
     const topKimarite = kimariteArr.sort((a, b) => b.count - a.count).slice(0, 10);
 
     // 8. Oyakata Metrics
-    // ⚡ Bolt Optimization: Use direct iteration instead of Array.from()
     const oyakata: Oyakata[] = [];
     for (const o of world.oyakata.values()) oyakata.push(o);
     let newOyakataFromRikishi = 0;
@@ -202,7 +197,6 @@ export const SimTuningService = {
       uniqueWinnerCount: historyStats?.uniqueWinners ?? 0,
       beyaDominance,
       entropyAudit: {
-        // ⚡ Bolt Optimization: Use a direct for...of loop instead of Math.max(...Array.from().map()) to avoid O(N) allocations and spread operator
         maxStat: (() => {
           let max = 0;
           for (const r of activeRikishi) {
@@ -245,7 +239,6 @@ export const SimTuningService = {
             archetypeTotals[arch].total += (r.careerWins || 0) + (r.careerLosses || 0);
           }
           const rates: Record<string, { wins: number; total: number; rate: number }> = {};
-          // ⚡ Bolt Optimization: Use a for...in loop to avoid O(N) tuple allocations from Object.entries()
           for (const arch in archetypeTotals) {
             if (!Object.prototype.hasOwnProperty.call(archetypeTotals, arch)) continue;
             const totals = archetypeTotals[arch];
@@ -258,7 +251,6 @@ export const SimTuningService = {
           return rates;
         })(),
         wealthGini: (() => {
-          // ⚡ Bolt Optimization: Replace O(N^2) Math.abs reduce with O(N) sort property, and remove Array.from().map() allocations.
           const funds: number[] = [];
           let sum = 0;
           for (const h of world.heyas.values()) {

@@ -142,8 +142,6 @@ export function phase01_week_governance(world: WorldState): StateImpact {
 
   // Handle global election logs if needed
   if (isElectionWeek) {
-    // ⚡ Bolt Optimization: Use a single for...of loop instead of Array.from().map().filter()
-    // This avoids O(N) intermediate array allocations and redundant iterations
     const ichimons = new Set<string>();
     for (const heya of world.heyas.values()) {
       if (heya.ichimon) {

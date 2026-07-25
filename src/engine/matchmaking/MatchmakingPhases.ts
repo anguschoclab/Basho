@@ -357,9 +357,6 @@ export function buildPlayoffPairs(
     ...(options.rules || {}),
   };
 
-  // ⚡ Bolt Optimization: Pre-build facedPairs Set so scorePairing uses O(1) Set.has()
-  // instead of falling back to haveFacedThisBasho which is O(matches) per call.
-  // Without this, generatePairs triggers O(N²×matches) scans across the pool.
   const facedPairs = new Set<string>();
   for (const m of basho.matches) {
     const key =

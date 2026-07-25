@@ -25,7 +25,6 @@ export const GlobalCupService = {
    * Selection: Top 6 JSA Rikishi (by Rank) + 2 International Challengers.
    */
   selectParticipants(world: WorldState): GlobalCupParticipant[] {
-    // ⚡ Bolt Optimization: Use direct iteration instead of Array.from().map().filter().sort()
     const pool: Rikishi[] = [];
     for (const id of world.activeRikishiIds) {
       const r = getRikishi(world, id);

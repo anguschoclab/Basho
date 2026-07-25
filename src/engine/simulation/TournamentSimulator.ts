@@ -156,9 +156,6 @@ export function simulateEntireBasho(
   }
 
   // Determine yusho winner with canonical tie-breaking
-  // ⚡ Bolt Optimization: Replace Array.from(standings.entries()).map().sort() with
-  // a single for...of loop pushing mapped objects, then sort in-place.
-  // Avoids intermediate array from Array.from() + .map() chain.
   const sortedStandings: Array<{ id: string; rikishi: ReturnType<typeof getRikishi>; wins: number; losses: number }> = [];
   for (const [id, stats] of standings.entries()) {
     sortedStandings.push({ id, rikishi: getRikishi(workingWorld, id), wins: stats.wins, losses: stats.losses });
@@ -175,7 +172,6 @@ export function simulateEntireBasho(
 
   const second = finalStandings[1];
   const junYushoTargetWins = second ? second.wins : -1;
-  // ⚡ Bolt Optimization: Replace .filter().map() with a single for loop
   const junYusho: string[] = [];
   for (const s of finalStandings) {
     if (s.id !== yushoEntry?.id && s.wins === junYushoTargetWins) {

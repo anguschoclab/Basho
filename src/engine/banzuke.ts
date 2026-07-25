@@ -217,7 +217,6 @@ export function updateBanzuke(
     jonokuchi,
   });
 
-  // ⚡ Bolt Optimization: Pre-calculate rikishi to heya mapping to avoid O(N*M) nested lookups
   const rikishiToHeyaMap = new Map<string, Heya>();
   if (heyaMap) {
     for (const heya of heyaMap.values()) {
@@ -384,7 +383,6 @@ export function computeVariableSanyakuCounts(
   perfById: Map<string, BashoPerformance>,
   demoted: Set<string>
 ): BanzukeUpdateResult["sanyakuCounts"] {
-  // ⚡ Bolt Optimization: Use a single for...of loop instead of chained .filter().length
   let yokozunaCount = 0;
   let promoteToYokozunaCount = 0;
   let ozekiNotDemotedCount = 0;

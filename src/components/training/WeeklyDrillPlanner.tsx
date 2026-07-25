@@ -62,9 +62,6 @@ const DRILL_ICONS: Record<DrillType, React.ReactNode> = {
   none: <Coffee className="h-3 w-3" />,
 };
 
-// ⚡ Bolt Optimization: Pre-compute drill select options once outside the component
-// using a for...in loop. This prevents creating new arrays and React elements
-// 6 times per Rikishi on every render cycle.
 const DRILL_OPTIONS_BATCH: React.ReactNode[] = [];
 const DRILL_OPTIONS_CELL: React.ReactNode[] = [];
 for (const key in DRILL_METADATA) {

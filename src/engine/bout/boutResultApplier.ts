@@ -285,7 +285,6 @@ function calculateMatchIntensity(
     return "high_stakes";
   }
 
-  // ⚡ Bolt Optimization: Use a direct for...of loop instead of .filter().length
   let momentumShifts = 0;
   for (const l of result.log) {
     if (l.phase === "momentum") {

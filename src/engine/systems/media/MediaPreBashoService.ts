@@ -51,7 +51,6 @@ export function triggerPreBashoJournalism(world: WorldState): StateImpact {
   }
 
   // B. Promotion Race
-  // ⚡ Bolt Optimization: Use direct iteration instead of Array.from().map().filter().sort()
   const ozekiRikishi: Rikishi[] = [];
   for (const id of world.activeRikishiIds) {
     const r = getRikishi(world, id);
@@ -174,7 +173,6 @@ export function buildMediaDigest(world: WorldState): {
     .sort((a, b) => (b.impact as number) - (a.impact as number))
     .slice(0, 5);
 
-  // ⚡ Bolt Optimization: Use direct iteration instead of Object.entries().map().filter().sort()
   const hotRikishiRaw = [];
   for (const id in mediaState.mediaHeat) {
     if (!Object.prototype.hasOwnProperty.call(mediaState.mediaHeat, id)) continue;
@@ -184,7 +182,6 @@ export function buildMediaDigest(world: WorldState): {
   }
   const hotRikishi = hotRikishiRaw.sort((a, b) => b.heat - a.heat).slice(0, 5);
 
-  // ⚡ Bolt Optimization: Use direct iteration instead of Object.entries().map().filter().sort()
   const hotHeyaRaw = [];
   for (const id in mediaState.heyaPressure) {
     if (!Object.prototype.hasOwnProperty.call(mediaState.heyaPressure, id)) continue;

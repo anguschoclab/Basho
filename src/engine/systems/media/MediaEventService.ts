@@ -102,7 +102,6 @@ export function handleMediaEvent(world: WorldState, eventId: string, choice: str
 
   if (choice === "apologize") {
     // Apologizing reduces heat but may hurt reputation
-    // ⚡ Bolt Optimization: Replace Object.entries() with for...in loop to avoid O(N) tuple allocations
     const mediaHeat = world.mediaState.mediaHeat;
     for (const id in mediaHeat) {
       if (!Object.prototype.hasOwnProperty.call(mediaHeat, id)) continue;
@@ -110,7 +109,6 @@ export function handleMediaEvent(world: WorldState, eventId: string, choice: str
     }
   } else if (choice === "deny") {
     // Denying may increase pressure
-    // ⚡ Bolt Optimization: Replace Object.entries() with for...in loop to avoid O(N) tuple allocations
     const heyaPressure = world.mediaState.heyaPressure;
     for (const id in heyaPressure) {
       if (!Object.prototype.hasOwnProperty.call(heyaPressure, id)) continue;

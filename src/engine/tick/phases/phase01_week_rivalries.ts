@@ -38,8 +38,6 @@ export function phase01_week_rivalries(world: WorldState): StateImpact {
     const week = world.calendar?.currentWeek ?? 0;
     const currentPairs = world.rivalriesState.pairs || {};
 
-    // ⚡ Bolt Optimization: Use a direct for...in loop instead of Object.entries()
-    // This avoids O(N) tuple allocations per tick for thousands of rivalry pairs
     for (const key in currentPairs) {
       if (!Object.prototype.hasOwnProperty.call(currentPairs, key)) continue;
       const pair = currentPairs[key];

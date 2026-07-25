@@ -71,8 +71,6 @@ export default function EconomyPage() {
     if (!playerHeya || !world) return [];
     const ids: string[] = Array.isArray(playerHeya.rikishiIds) ? playerHeya.rikishiIds : [];
 
-    // ⚡ Bolt Optimization: Use a single for...of loop instead of .map().filter()
-    // This eliminates intermediate array allocations.
     const result: NonNullable<ReturnType<typeof world.rikishi.get>>[] = [];
     for (const id of ids) {
       const rikishi = world.rikishi.get(id);

@@ -100,7 +100,6 @@ export default function StaffPage() {
 
   const staffList = useMemo(() => {
     if (!world || !heya) return [];
-    // ⚡ Bolt Optimization: Use a single for...of loop instead of chained .map().filter(Boolean)
     const list: Staff[] = [];
     for (const id of heya.staffIds || []) {
       const staffMember = world.staff.get(id);

@@ -114,8 +114,6 @@ export function spawnGovernanceAgent(ctx: GovernanceAgentContext): GovernanceAge
   if (isMachiavellian && politicalCapital > 60 && scandalScore < 20) {
     shouldSabotageRival = true;
 
-    // ⚡ Bolt Optimization: Replaced Array.from().filter().sort() with a single pass O(N) loop
-    // to find the highest reputation rival heya without array allocations or sorting overhead.
     let bestRival: Heya | null = null;
     let maxReputation = heya.reputation || 0;
 

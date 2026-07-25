@@ -69,8 +69,6 @@ export function projectBashoUIDigest(world: WorldState): BashoUIDigest | null {
 
   const dayProgress = matches.length > 0 ? (completedBouts / matches.length) * 100 : 0;
 
-  // ⚡ Bolt Optimization: Replace O(N) Array.from(world.rikishi.values()).filter(...)
-  // with cached getRikishiByDivision to eliminate redundant array allocations and iterations
   const standings: StandingEntry[] = sortStandings(
     getRikishiByDivision(world, "makuuchi").map((r: Rikishi) => {
       const record = r.currentBashoRecord || { wins: 0, losses: 0 };

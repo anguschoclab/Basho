@@ -197,8 +197,6 @@ export function runAutoSim(
     currentWorld = resolveImpacts(worldWithStandings, [banzukeImpact]);
 
     // Count yokozuna vacancy per basho (after banzuke update so freshly-promoted yokozuna aren't falsely counted vacant)
-    // ⚡ Bolt Optimization: Replace Array.from(rikishi.values()).some() with direct for...of
-    // and early exit to avoid O(N) array allocation in this per-basho loop
     let hasYokozuna = false;
     for (const r of currentWorld.rikishi.values()) {
       if (r.rank === "yokozuna" && !r.isRetired) {
@@ -343,7 +341,6 @@ export function checkStopCondition(
 
       // bashoResult.injuries holds shikona of rikishi injured during this basho.
       const injuredThisBasho = new Set(bashoResult.injuries);
-      // ⚡ Bolt Optimization: Use direct iteration with early exit instead of Array.from().some()
       for (const r of world.rikishi.values()) {
         if (injuredThisBasho.has(r.shikona) && inScope(r) && isMajorInjury(r)) {
           return true;

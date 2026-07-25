@@ -23,8 +23,6 @@ export function projectMediaUIDigest(world: WorldState) {
     (a, b) => b.impact - a.impact || b.week - a.week
   );
 
-  // ⚡ Bolt Optimization: Replace Object.entries().map().filter() with a for...in loop
-  // to avoid O(N) array allocations from Map/Tuple conversions and multiple iterations
   const mediaHeat = mediaState.mediaHeat || {};
   const hotRikishiRaw = [];
   for (const id in mediaHeat) {

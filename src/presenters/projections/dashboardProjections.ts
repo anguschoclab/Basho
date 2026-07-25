@@ -83,8 +83,6 @@ export function projectBanzukeUIDigest(world: WorldState): BanzukeUIDigest {
     return projectRosterEntry(r, world, prevScoreMap.get(r.id));
   });
 
-  // ⚡ Bolt Optimization: Single-pass grouping instead of 6 redundant filters
-  // Reduces O(6n) to O(n) - from 5,160 comparisons to 860 iterations
   const entriesByDivision: Record<string, UIRosterEntry[]> = {
     makuuchi: [],
     juryo: [],

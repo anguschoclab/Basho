@@ -106,7 +106,6 @@ export function SponsorRecruitmentWidget() {
   const existingSponsorIds = new Set(koenkai?.members.map((m) => m.sponsorId) || []);
 
   // Filter available sponsors (active, not already recruited)
-  // ⚡ Bolt Optimization: Use direct iteration instead of Array.from(world.sponsorPool.sponsors.values()).filter(...)
   const rawSponsors = [];
   for (const s of world.sponsorPool.sponsors.values()) {
     if (s.active && !existingSponsorIds.has(s.sponsorId)) {

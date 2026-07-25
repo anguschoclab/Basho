@@ -48,7 +48,6 @@ export function projectRivalriesPage(world: WorldState): RivalriesPageData {
   const playerHeya = getPlayerHeya(world);
   const playerRikishiIds = new Set(playerHeya?.rikishiIds ?? []);
 
-  // ⚡ Bolt Optimization: Replaced Object.values() with for...in loop to avoid O(N) intermediate array allocation
   const player: RivalryPairState[] = [];
   const hot: RivalryPairState[] = [];
   const cool: RivalryPairState[] = [];
@@ -90,7 +89,6 @@ export function projectRivalriesPage(world: WorldState): RivalriesPageData {
     (id) => world.rikishi.get(id)?.shikona ?? id
   );
 
-  // ⚡ Bolt Optimization: Use direct iteration instead of Object.values().map()
   const stableRivalries = [];
   const heyaPairs = rivalriesState.heyaRivalryPairs || {};
   for (const key in heyaPairs) {

@@ -71,7 +71,6 @@ export function phase06_narrative(world: WorldState): StateImpact {
   }
 
   // ── Notable training milestones ───────────────────────────────────────────
-  // ⚡ Bolt Optimization: Use a direct for...in loop instead of Object.entries() to avoid O(N) tuple allocations
   for (const rId in deltas.statChanges) {
     if (!Object.prototype.hasOwnProperty.call(deltas.statChanges, rId)) continue;
     const changes = deltas.statChanges[rId];

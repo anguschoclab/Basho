@@ -24,7 +24,6 @@ const MENTOR_SEQUENCE: MentorStep[] = ["stamina", "grip", "momentum", "basho_rec
 /** Picks two makuuchi rikishi from the world to fight. */
 function pickExhibitionPair(world: import("@/engine/types/world").WorldState) {
   const candidates = [];
-  // ⚡ Bolt Optimization: Replace O(N) Array.from().filter() with early-exit loop
   for (const r of world.rikishi.values()) {
     if (isSekitoriDivision(r.division)) {
       candidates.push(r);

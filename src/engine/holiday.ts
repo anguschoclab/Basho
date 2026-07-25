@@ -317,7 +317,6 @@ function buildHolidayDigest(
   const startWeek = Math.max(0, Math.floor(startDay / 7));
   const holidayEvents = allEvents.filter((e) => e.week >= startWeek);
 
-  // ⚡ Bolt Optimization: Replace 5 chained .filter().slice().map() passes with a single loop
   const stableItems: string[] = [];
   const bashoItems: string[] = [];
   const econItems: string[] = [];

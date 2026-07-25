@@ -34,7 +34,6 @@ function createSelector<T>(fn: (world: WorldState) => T) {
  */
 const selectAllRikishi = createSelector((world: WorldState): Rikishi[] => {
   if (!world.rikishi) return [];
-  // ⚡ Bolt Optimization: Use direct iteration instead of Array.from()
   const result: Rikishi[] = [];
   for (const r of world.rikishi.values()) result.push(r);
   return result;
@@ -155,7 +154,6 @@ export const selectTopRivals = createSelector((world: WorldState) => {
  */
 export const selectRetiredRikishi = createSelector((world: WorldState): Rikishi[] => {
   if (!world.historicalRikishi) return [];
-  // ⚡ Bolt Optimization: Use direct iteration instead of Array.from()
   const result: Rikishi[] = [];
   for (const r of world.historicalRikishi.values()) result.push(r);
   return result;
@@ -168,8 +166,6 @@ export const selectHeyasWithCriticalWelfare = createSelector((world: WorldState)
   const results: Heya[] = [];
   if (!world.heyas) return results;
 
-  // ⚡ Bolt Optimization: Use a direct for...of loop instead of Array.from().filter()
-  // to avoid O(N) array allocations
   for (const h of world.heyas.values()) {
     const ws = h.welfareState;
     if (!ws) continue;
@@ -192,7 +188,6 @@ export const selectMergerCandidates = createSelector((world: WorldState): Heya[]
   const results: Heya[] = [];
   if (!world.heyas) return results;
 
-  // ⚡ Bolt Optimization: Use a direct for...of loop instead of Array.from().filter()
   for (const h of world.heyas.values()) {
     if (h.id === world.playerHeyaId) continue;
     const rosterSize = h.rikishiIds?.length ?? 0;

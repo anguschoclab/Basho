@@ -33,8 +33,6 @@ export const EntityCollection = {
    * Auto-filters retired by default.
    */
   getRikishi(world: WorldState, options: EntityQueryOptions = {}): Rikishi[] {
-    // ⚡ Bolt Optimization: Use a single for...of loop instead of Array.from().filter()
-    // This avoids intermediate array allocations and redundant iteration
     const filtered: Rikishi[] = [];
     const includeRetired = options.includeRetired ?? false;
     const heyaId = options.heyaId;

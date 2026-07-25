@@ -279,8 +279,6 @@ export function checkYokozunaPromotions(
 ) {
   if (!world.historyIndex) return;
 
-  // ⚡ Bolt Optimization: Use direct iteration instead of Array.from().map().filter().map()
-  // to avoid multiple O(N) array allocations
   const ozekiIds: string[] = [];
   for (const id of world.activeRikishiIds) {
     const r = getRikishi(world, id);
@@ -294,7 +292,6 @@ export function checkYokozunaPromotions(
     const len = history.length;
     if (len < 2) continue;
 
-    // ⚡ Bolt Optimization: Direct index access instead of slice(-2) allocation
     const last = history[len - 1];
     const prev = history[len - 2];
     let yushos = 0;

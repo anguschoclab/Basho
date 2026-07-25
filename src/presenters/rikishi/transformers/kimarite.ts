@@ -30,7 +30,6 @@ export function calculateMostFrequentKimarite(
     }
   }
   if (totalWins === 0) return [];
-  // ⚡ Bolt Optimization: Use Object.keys() to avoid O(N) tuple allocations from Object.entries()
   return Object.keys(winCounts)
     .sort((a, b) => winCounts[b] - winCounts[a])
     .map((kimarite) => ({

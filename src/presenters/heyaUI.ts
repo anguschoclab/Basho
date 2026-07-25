@@ -54,8 +54,6 @@ export function projectHeya(h: Heya, world: WorldState): UIHeya {
     });
   }
 
-  // ⚡ Bolt Optimization: Use a single reduce pass instead of chained .map().filter().map()
-  // This avoids intermediate array allocations, improving UI render performance when calculating the roster.
   const roster = (h.rikishiIds || []).reduce<UIRosterEntry[]>((acc, id) => {
     const r = world.rikishi.get(id);
     if (r !== undefined) {

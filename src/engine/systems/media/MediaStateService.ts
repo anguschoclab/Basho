@@ -49,7 +49,6 @@ export function resetBashoMediaTracking(state: MediaState): MediaState {
 export function snapshotMediaHeatForBasho(state: MediaState, bashoName: string): MediaState {
   const nextHistory = { ...state.mediaHeatHistory };
 
-  // ⚡ Bolt Optimization: Replace Object.entries() with for...in loop to avoid O(N) tuple allocations
   for (const id in state.mediaHeat) {
     if (!Object.prototype.hasOwnProperty.call(state.mediaHeat, id)) continue;
     const heat = state.mediaHeat[id];
@@ -81,7 +80,6 @@ export function processWeeklyMediaBoundary(world: WorldState): StateImpact {
 
   const state = world.mediaState;
   const nextHeat: Record<string, number> = {};
-  // ⚡ Bolt Optimization: Replace Object.entries() with for...in loop to avoid O(N) tuple allocations
   for (const id in state.mediaHeat) {
     if (!Object.prototype.hasOwnProperty.call(state.mediaHeat, id)) continue;
     const nv = decayHeat(state.mediaHeat[id] as number);
@@ -89,7 +87,6 @@ export function processWeeklyMediaBoundary(world: WorldState): StateImpact {
   }
 
   const nextPressure: Record<string, number> = {};
-  // ⚡ Bolt Optimization: Replace Object.entries() with for...in loop to avoid O(N) tuple allocations
   for (const id in state.heyaPressure) {
     if (!Object.prototype.hasOwnProperty.call(state.heyaPressure, id)) continue;
     const nv = decayPressure(state.heyaPressure[id] as number);

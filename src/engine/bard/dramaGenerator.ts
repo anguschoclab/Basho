@@ -54,7 +54,6 @@ function generateRandomDrama(world: WorldState): StateImpact {
 
   if (eventType === 0) {
     // Scandal
-    // ⚡ Bolt Optimization: Use direct iteration instead of Array.from().map().filter()
     const activeRikishi: Rikishi[] = [];
     for (const id of world.activeRikishiIds) {
       const r = getRikishi(world, id);

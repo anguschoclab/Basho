@@ -70,8 +70,6 @@ export function projectBashoResults(world: WorldState, lastBasho: BashoResult) {
     .filter((x): x is NonNullable<typeof x> => x !== null);
 
   const matches = world.currentBasho?.matches || [];
-  // ⚡ Bolt Optimization: Replaced chained .filter().map().filter() with a single loop
-  // and direct push to avoid intermediate array allocations and improve performance.
   const kinboshi = [];
   for (const m of matches) {
     if (m.result?.isKinboshi) {

@@ -25,8 +25,6 @@ export function listVisibleCandidates(
   const pool = tp.pools[poolType];
   if (!pool) return [];
 
-  // ⚡ Bolt Optimization: Replace chained .map().filter() with a single for...of loop
-  // to prevent intermediate array allocations and O(N) iteration overhead.
   const candidates: TalentCandidate[] = [];
   const isForeignGated = poolType === "foreign" && world.playerHeyaId;
   const heya = isForeignGated ? getHeya(world, world.playerHeyaId!) : undefined;

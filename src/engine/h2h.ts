@@ -202,8 +202,6 @@ export function generateH2HCommentary(r1: Rikishi, r2: Rikishi): string {
  * Returns up to 5 recent meetings sorted newest-first.
  */
 export function getH2HReport(rA: Rikishi, rB: Rikishi): H2HReport {
-  // ⚡ Bolt Optimization: Use a single for...of loop to prevent multiple O(N) array allocations
-  // from chained .filter(), .length, and .map() calls when processing potentially long career histories.
   let aWins = 0;
   const meetings: H2HRecentMeeting[] = [];
 

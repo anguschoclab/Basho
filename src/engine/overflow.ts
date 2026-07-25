@@ -21,15 +21,11 @@ export const HARD_CAP_ROSTER_SIZE = 30;
 export function enforceHardCapRosterOverflow(world: WorldState): StateImpact {
   const builder = createImpactBuilder("enforceHardCapRosterOverflow");
 
-  // ⚡ Bolt Optimization: Use EntityCollection.getHeyas() instead of Array.from().sort()
-  // EntityCollection already returns heyas sorted by ID
   for (const heya of EntityCollection.getHeyas(world)) {
     if (!heya.rikishiIds || heya.rikishiIds.length <= HARD_CAP_ROSTER_SIZE) continue;
 
     const overflowCount = heya.rikishiIds.length - HARD_CAP_ROSTER_SIZE;
 
-    // ⚡ Bolt Optimization: Use a single for...of loop instead of chained .map().filter().map()
-    // This avoids intermediate O(N) array allocations for candidatesForRelease
     const scoredCandidates = [];
     for (const rId of heya.rikishiIds) {
       const r = getRikishi(world, rId);

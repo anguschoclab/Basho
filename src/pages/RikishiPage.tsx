@@ -49,8 +49,6 @@ export default function RikishiPage() {
   const rikishiList = useMemo(() => {
     if (!world || rikishiId) return [];
     if (!effectiveHeyaId) return [];
-    // ⚡ Bolt Optimization: Replace Array.from(world.rikishi.values()).filter(...)
-    // with centralized EntityCollection.getHeyaRoster to eliminate O(N) allocation overhead.
     return EntityCollection.getHeyaRoster(world, effectiveHeyaId).map((r) =>
       projectRikishi(r, world)
     );

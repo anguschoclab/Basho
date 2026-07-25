@@ -18,7 +18,6 @@ import type { Oyakata } from "../types/oyakata";
  * @returns Array of entities (undefined for missing IDs filtered out)
  */
 export function mapIdsToEntities<T>(ids: Id[], entityMap: Map<Id, T>): T[] {
-  // ⚡ Bolt Optimization: Use a single for...of loop instead of chained .map().filter()
   const results: T[] = [];
   for (const id of ids) {
     const entity = entityMap.get(id);
@@ -67,7 +66,6 @@ export function mapIdsToOyakata(world: WorldState, ids: Id[]): Oyakata[] {
  */
 export function filterEntities<T>(entityMap: Map<Id, T>, predicate: (entity: T) => boolean): T[] {
   const results: T[] = [];
-  // ⚡ Bolt Optimization: Use direct for...of loop to prevent O(N) intermediate array allocation
   for (const entity of entityMap.values()) {
     if (predicate(entity)) {
       results.push(entity);

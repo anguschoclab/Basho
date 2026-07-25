@@ -282,8 +282,6 @@ export function tickYear(world: WorldState): StateImpact {
     const removedIds = [...visible.idsToRemove, ...hidden.idsToRemove];
     if (removedIds.length > 0) {
       const removedSet = new Set(removedIds);
-      // ⚡ Bolt Optimization: Replace Object.fromEntries(Object.entries().filter())
-      // with for...in loop to avoid N tuple allocations from Object.entries()
       const filteredCandidates: Record<string, TalentCandidate> = {};
       for (const id in nextCandidates) {
         if (Object.prototype.hasOwnProperty.call(nextCandidates, id)) {

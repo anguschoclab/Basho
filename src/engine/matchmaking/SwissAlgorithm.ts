@@ -467,9 +467,6 @@ function sortChronologically(pairings: MatchPairing[], pool: Rikishi[]): MatchPa
   const isElite = (p: MatchPairing) =>
     p.reasons.includes("finale") || p.reasons.includes("kore_yori_sanyaku");
 
-  // ⚡ Bolt Optimization: Replace double filter().sort() with single-pass partition
-  // into regular and elite arrays via a for loop, then sort each.
-  // Eliminates one full iteration and two intermediate array allocations.
   const regular: MatchPairing[] = [];
   const elite: MatchPairing[] = [];
   for (const p of pairings) {

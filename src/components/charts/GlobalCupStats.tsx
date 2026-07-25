@@ -44,7 +44,6 @@ export function ParticipantNationalityChart({ projection }: GlobalCupStatsProps)
       counts[p.nationality] = (counts[p.nationality] || 0) + 1;
     });
 
-    // ⚡ Bolt Optimization: Use Object.keys() to avoid O(N) tuple allocations from Object.entries()
     return Object.keys(counts).map((name) => ({ name, value: counts[name] }));
   }, [projection]);
 
@@ -100,7 +99,6 @@ export function BracketProgressChart({ projection }: GlobalCupStatsProps) {
       }
     });
 
-    // ⚡ Bolt Optimization: Use Object.keys() to avoid O(N) tuple allocations from Object.entries()
     return Object.keys(rounds).map((round) => {
       const stats = rounds[round];
       return {
