@@ -63,6 +63,12 @@ function getCareerNarrative(r: UIRikishi, reason: string): string[] {
     );
   }
 
+  if (r.achievements?.ginboshiEarned && r.achievements.ginboshiEarned > 0) {
+    lines.push(
+      `Earned ${r.achievements.ginboshiEarned} ginboshi (silver star) victories over ozeki.`
+    );
+  }
+
   lines.push(
     `The danpatsu-shiki (断髪式) ceremony marks the final cutting of the topknot — a solemn farewell to the dohyō.`
   );

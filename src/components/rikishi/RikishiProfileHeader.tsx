@@ -237,6 +237,14 @@ export function RikishiProfileHeader({
                   tooltip: "Gold stars earned by defeating a Yokozuna as a Maegashira",
                 },
                 {
+                  label: "Ginboshi",
+                  value: rikishi.achievements?.ginboshiEarned ?? 0,
+                  sub: "Silver Stars",
+                  color: "text-silver",
+                  condition: (rikishi.achievements?.ginboshiEarned ?? 0) > 0,
+                  tooltip: "Silver stars earned by defeating an Ozeki as a Maegashira",
+                },
+                {
                   label: "Bonus Points",
                   value: rikishi.achievements?.mochikyukinPoints ?? 0,
                   sub: "Mochikyukin",

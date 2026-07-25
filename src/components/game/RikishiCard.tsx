@@ -180,14 +180,16 @@ export const RikishiCard: React.FC<RikishiCardProps> = React.memo(({ rikishi }) 
                   {rikishi.achievements.kinboshiEarned}
                 </span>
               </div>
-              <div className="flex flex-col gap-1 p-2 rounded bg-silver/5 border border-silver/10">
-                <span className="text-[10px] uppercase font-bold text-silver dark:text-silver/70">
-                  Silver Stars Won
-                </span>
-                <span className="font-display text-xl font-bold">
-                  {rikishi.achievements.ginboshiEarned}
-                </span>
-              </div>
+              {rikishi.achievements.ginboshiEarned > 0 && (
+                <div className="flex flex-col gap-1 p-2 rounded bg-silver/5 border border-silver/10">
+                  <span className="text-[10px] uppercase font-bold text-silver dark:text-silver/70">
+                    Silver Stars Won
+                  </span>
+                  <span className="font-display text-xl font-bold">
+                    {rikishi.achievements.ginboshiEarned}
+                  </span>
+                </div>
+              )}
               {rikishi.rank === "yokozuna" && (
                 <div className="col-span-2 flex justify-between items-center p-2 rounded bg-destructive/5 border border-destructive/10">
                   <span className="text-[10px] uppercase font-bold text-destructive dark:text-destructive/70">
@@ -195,6 +197,16 @@ export const RikishiCard: React.FC<RikishiCardProps> = React.memo(({ rikishi }) 
                   </span>
                   <span className="font-display font-bold text-destructive dark:text-destructive/70">
                     {rikishi.achievements.kinboshiConceded}
+                  </span>
+                </div>
+              )}
+              {rikishi.rank === "ozeki" && (
+                <div className="col-span-2 flex justify-between items-center p-2 rounded bg-destructive/5 border border-destructive/10">
+                  <span className="text-[10px] uppercase font-bold text-destructive dark:text-destructive/70">
+                    Silver Stars Conceded
+                  </span>
+                  <span className="font-display font-bold text-destructive dark:text-destructive/70">
+                    {rikishi.achievements.ginboshiConceded}
                   </span>
                 </div>
               )}
