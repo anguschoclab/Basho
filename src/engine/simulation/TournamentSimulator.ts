@@ -155,9 +155,14 @@ export function simulateEntireBasho(
   }
 
   // Determine yusho winner with canonical tie-breaking
-  const sortedStandings = Array.from(standings.entries())
-    .map(([id, stats]) => ({ id, rikishi: getRikishi(workingWorld, id), ...stats }))
-    .sort((a, b) => b.wins - a.wins || a.losses - b.losses || stableTieBreak(a.id, b.id));
+  // ⚡ Bolt Optimization: Replace Array.from(standings.entries()).map().sort() with
+  // a single for...of loop pushing mapped objects, then sort in-place.
+  // Avoids intermediate array from Array.from() + .map() chain.
+  const sortedStandings: Array<{ id: string; rikishi: ReturnType<typeof getRikishi>; wins: number; losses: number }> = [];
+  for (const [id, stats] of standings.entries()) {
+    sortedStandings.push({ id, rikishi: getRikishi(workingWorld, id), wins: stats.wins, losses: stats.losses });
+  }
+  sortedStandings.sort((a, b) => b.wins - a.wins || a.losses - b.losses || stableTieBreak(a.id, b.id));
 
   const yushoEntry = sortedStandings[0];
   const yushoWinner = {
@@ -169,9 +174,13 @@ export function simulateEntireBasho(
 
   const second = sortedStandings[1];
   const junYushoTargetWins = second ? second.wins : -1;
-  const junYusho = sortedStandings
-    .filter((s) => s.id !== yushoEntry?.id && s.wins === junYushoTargetWins)
-    .map((s) => s.rikishi?.shikona ?? "Unknown");
+  // ⚡ Bolt Optimization: Replace .filter().map() with a single for loop
+  const junYusho: string[] = [];
+  for (const s of sortedStandings) {
+    if (s.id !== yushoEntry?.id && s.wins === junYushoTargetWins) {
+      junYusho.push(s.rikishi?.shikona ?? "Unknown");
+    }
+  }
 
   let promotions: PromotionEvent[] = [];
   let demotions: DemotionEvent[] = [];

@@ -282,9 +282,17 @@ export function tickYear(world: WorldState): StateImpact {
     const removedIds = [...visible.idsToRemove, ...hidden.idsToRemove];
     if (removedIds.length > 0) {
       const removedSet = new Set(removedIds);
-      nextCandidates = Object.fromEntries(
-        Object.entries(nextCandidates).filter(([id]) => !removedSet.has(id))
-      );
+      // ⚡ Bolt Optimization: Replace Object.fromEntries(Object.entries().filter())
+      // with for...in loop to avoid N tuple allocations from Object.entries()
+      const filteredCandidates: Record<string, TalentCandidate> = {};
+      for (const id in nextCandidates) {
+        if (Object.prototype.hasOwnProperty.call(nextCandidates, id)) {
+          if (!removedSet.has(id)) {
+            filteredCandidates[id] = nextCandidates[id];
+          }
+        }
+      }
+      nextCandidates = filteredCandidates;
     }
 
     // 2. Inject fresh prospects for the new year — fill to population cap

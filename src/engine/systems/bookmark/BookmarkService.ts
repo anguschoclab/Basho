@@ -35,17 +35,28 @@ export function addBookmark(
 ): StateImpact {
   const bookmarks = getBookmarks(world);
   const key = makeKey(entityType, entityId);
-  const existing = bookmarks.find((b) => makeKey(b.entityType, b.entityId) === key);
-  if (existing) {
-    // Idempotent: update note if provided
+
+  // ⚡ Bolt Optimization: Replace .find() + .map() (2 passes) with a single for loop
+  // that finds the index and builds the updated array in one pass
+  let existingIndex = -1;
+  for (let i = 0; i < bookmarks.length; i++) {
+    if (makeKey(bookmarks[i].entityType, bookmarks[i].entityId) === key) {
+      existingIndex = i;
+      break;
+    }
+  }
+
+  if (existingIndex >= 0) {
+    const existing = bookmarks[existingIndex];
+    // Idempotent: update note if provided and different
     if (note !== undefined && note !== existing.note) {
-      const updated = bookmarks.map((b) =>
-        makeKey(b.entityType, b.entityId) === key ? { ...b, note } : b
-      );
+      const updated = [...bookmarks];
+      updated[existingIndex] = { ...existing, note };
       return buildUpdatedKnowledge(world, updated);
     }
     return buildUpdatedKnowledge(world, bookmarks);
   }
+
   const entry: BookmarkEntry = {
     entityType,
     entityId,

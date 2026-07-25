@@ -224,7 +224,7 @@ export default function OyakataPage() {
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {Array.from(world.oyakata.values()).map((o) => {
+              {[...world.oyakata.values()].map((o) => {
                 const heya = world.heyas.get(o.heyaId);
                 const isSelected = o.id === selectedOyakata.id;
                 return (

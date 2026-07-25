@@ -197,9 +197,15 @@ export function runAutoSim(
     currentWorld = resolveImpacts(worldWithStandings, [banzukeImpact]);
 
     // Count yokozuna vacancy per basho (after banzuke update so freshly-promoted yokozuna aren't falsely counted vacant)
-    const hasYokozuna = Array.from(currentWorld.rikishi.values()).some(
-      (r) => r.rank === "yokozuna" && !r.isRetired
-    );
+    // ⚡ Bolt Optimization: Replace Array.from(rikishi.values()).some() with direct for...of
+    // and early exit to avoid O(N) array allocation in this per-basho loop
+    let hasYokozuna = false;
+    for (const r of currentWorld.rikishi.values()) {
+      if (r.rank === "yokozuna" && !r.isRetired) {
+        hasYokozuna = true;
+        break;
+      }
+    }
     if (!hasYokozuna) yokozunaVacantBashoCount++;
 
     // 2. Advance through off-season phases to trigger yearly boundary & training
