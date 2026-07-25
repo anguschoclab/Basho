@@ -2,8 +2,9 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { processHeyaEconomics } from "@/engine/tick/phases/monthly/economics/salaries";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
-import type { Heya } from "@/engine/types/heya";
 import { createImpactBuilder, ImpactBuilder } from "@/engine/core/ImpactBuilder";
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 describe("processHeyaEconomics", () => {
   let world: WorldState;
@@ -11,10 +12,7 @@ describe("processHeyaEconomics", () => {
 
   beforeEach(() => {
     world = MockFactory.createWorld();
-    if (!world.rikishis) {
-       world.rikishis = new Map();
-    }
-    builder = createImpactBuilder();
+    builder = createImpactBuilder("test");
   });
 
   it("should process sekitori and non-sekitori salaries and overhead correctly", () => {
@@ -41,10 +39,10 @@ describe("processHeyaEconomics", () => {
         rank: "makushita"
     });
 
-    world.rikishis.set("r-sekitori", sekitori);
-    world.rikishis.set("r-non-sekitori", nonSekitori);
+    world.rikishi.set("r-sekitori", sekitori);
+    world.rikishi.set("r-non-sekitori", nonSekitori);
 
-    const rikishiMap = world.rikishis;
+    const rikishiMap = world.rikishi;
     const heyaUpdates: any = { funds: heya.funds };
 
     const totalBurn = processHeyaEconomics(world, heya, rikishiMap, heyaUpdates, builder);

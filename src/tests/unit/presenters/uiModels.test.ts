@@ -73,36 +73,36 @@ describe("UI Models Projections", () => {
       if (!rikishi) throw new Error("No rikishi found");
 
       rikishi.injured = true;
-      rikishi.injuryStatus = { type: "strain", severity: 65, location: "back", weeksRemaining: 2 };
+      rikishi.injuryStatus = { type: "strain", severity: "moderate", location: "back", weeksRemaining: 2 };
 
       const uiRikishi = projectRikishi(rikishi, world);
       expect(uiRikishi.descriptor.injuryModifiers).toContain("hampered");
     });
 
-    it("should project favoring_it modifier when severity is around 45", () => {
+    it("should project taped_up modifier when severity is minor", () => {
       const world = generateInitialWorld("test-inj-4");
       const rikishiId = Array.from(world.rikishi.keys())[0];
       const rikishi = world.rikishi.get(rikishiId);
       if (!rikishi) throw new Error("No rikishi found");
 
       rikishi.injured = true;
-      rikishi.injuryStatus = { type: "sprain", severity: 45, location: "ankle", weeksRemaining: 1 };
+      rikishi.injuryStatus = { type: "sprain", severity: "minor", location: "ankle", weeksRemaining: 1 };
 
       const uiRikishi = projectRikishi(rikishi, world);
-      expect(uiRikishi.descriptor.injuryModifiers).toContain("favoring_it");
+      expect(uiRikishi.descriptor.injuryModifiers).toContain("taped_up");
     });
 
-    it("should project moving_gingerly modifier when severity is around 25", () => {
+    it("should project taped_up modifier when severity is minor (low end)", () => {
       const world = generateInitialWorld("test-inj-5");
       const rikishiId = Array.from(world.rikishi.keys())[0];
       const rikishi = world.rikishi.get(rikishiId);
       if (!rikishi) throw new Error("No rikishi found");
 
       rikishi.injured = true;
-      rikishi.injuryStatus = { type: "bruise", severity: 25, location: "ribs", weeksRemaining: 1 };
+      rikishi.injuryStatus = { type: "contusion", severity: "minor", location: "rib", weeksRemaining: 1 };
 
       const uiRikishi = projectRikishi(rikishi, world);
-      expect(uiRikishi.descriptor.injuryModifiers).toContain("moving_gingerly");
+      expect(uiRikishi.descriptor.injuryModifiers).toContain("taped_up");
     });
 
     it("should not project injury modifiers when rikishi is healthy", () => {

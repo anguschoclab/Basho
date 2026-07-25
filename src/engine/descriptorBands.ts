@@ -9,6 +9,7 @@
 
 import { NarrativeService } from "./systems/narrative/NarrativeService";
 import { SeededRNG } from "./rng";
+import type { Rikishi } from "./types/rikishi";
 
 // --- AUTHORITATIVE DELEGATION ---
 export * from "./systems/narrative/NarrativeBands";
@@ -207,7 +208,11 @@ export interface RikishiDescriptor {
 /**
  * To rikishi descriptor (Legacy support).
  */
-export function toRikishiDescriptor(_rng: SeededRNG, r: any, prev?: any): RikishiDescriptor {
+export function toRikishiDescriptor(
+  _rng: SeededRNG,
+  r: Rikishi,
+  prev?: RikishiDescriptor
+): RikishiDescriptor {
   return {
     powerBand: NarrativeService.getStatBand(r.stats.power, prev?.powerBand),
     speedBand: NarrativeService.getStatBand(r.stats.speed, prev?.speedBand),
@@ -223,20 +228,17 @@ export function toRikishiDescriptor(_rng: SeededRNG, r: any, prev?: any): Rikish
       prev?.experienceBand
     ),
     weightBand: NarrativeService.getWeightBand(r.weight ?? 150, prev?.weightBand),
+    heightBand: NarrativeService.getHeightBand(r.height ?? 180, prev?.heightBand),
     archetypeLabel: undefined, // Simplified legacy field
     injuryModifiers: r.injured ? [getInjuryModifier(r)] : [],
   };
 }
 
-function getInjuryModifier(r: any): string {
-  const inj = r.currentInjury || r.injuryStatus;
+function getInjuryModifier(r: Rikishi): string {
+  const inj = r.injuryStatus;
   const severity = inj?.severity;
-  if (severity === "serious" || (typeof severity === "number" && severity >= 80))
-    return "sidelined";
-  if (severity === "moderate" || (typeof severity === "number" && severity >= 60))
-    return "hampered";
-  if (typeof severity === "number" && severity >= 40) return "favoring_it";
-  if (typeof severity === "number" && severity >= 20) return "moving_gingerly";
+  if (severity === "serious") return "sidelined";
+  if (severity === "moderate") return "hampered";
   return "taped_up";
 }
 

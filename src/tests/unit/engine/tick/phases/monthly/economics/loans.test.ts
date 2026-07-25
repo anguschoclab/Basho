@@ -2,8 +2,9 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { processLoanRepayments } from "@/engine/tick/phases/monthly/economics/loans";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
-import type { Heya } from "@/engine/types/heya";
 import { createImpactBuilder, ImpactBuilder } from "@/engine/core/ImpactBuilder";
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 describe("processLoanRepayments", () => {
   let world: WorldState;
@@ -11,19 +12,22 @@ describe("processLoanRepayments", () => {
 
   beforeEach(() => {
     world = MockFactory.createWorld();
-    builder = createImpactBuilder();
+    builder = createImpactBuilder("test");
   });
 
   it("should process loan repayments and deduct from funds", () => {
     const heya = MockFactory.createHeya("heya-1", {
       activeLoans: [
         {
-          type: "standard",
+          id: "loan-1",
+          type: "supporter",
           providerName: "Bank",
           principal: 500,
+          interestRate: 0.05,
           remainingBalance: 500,
           monthlyPayment: 100,
-          durationMonths: 5,
+          issuedAtYear: 2026,
+          issuedAtMonth: 1,
         },
       ],
     });
@@ -44,12 +48,15 @@ describe("processLoanRepayments", () => {
       name: "Test Heya",
       activeLoans: [
         {
-          type: "standard",
+          id: "loan-1",
+          type: "supporter",
           providerName: "Bank",
           principal: 500,
+          interestRate: 0.05,
           remainingBalance: 50,
           monthlyPayment: 100, // payment > balance
-          durationMonths: 5,
+          issuedAtYear: 2026,
+          issuedAtMonth: 1,
         },
       ],
     });

@@ -5,6 +5,8 @@
  * Each transformer handles a specific domain of rikishi data.
  */
 
+/* eslint-disable @typescript-eslint/no-unused-vars -- Barrel exports: these are used by external modules */
+
 // Identity
 export { toIdentityDTO } from "./identity";
 
