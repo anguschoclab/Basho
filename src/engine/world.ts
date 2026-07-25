@@ -56,9 +56,12 @@ export function startBasho(world: WorldState, bashoName?: BashoName): WorldState
   const impact = bashoManager.startBasho(world, bashoName);
   const updated = resolveImpacts(world, [impact]);
 
-  // Reset basho-scoped media tracking (streaks, promo watch)
+  // Reset basho-scoped media tracking (streaks, promo watch) — immutably
   if (updated.mediaState) {
-    updated.mediaState = resetBashoMediaTracking(updated.mediaState);
+    return {
+      ...updated,
+      mediaState: resetBashoMediaTracking(updated.mediaState),
+    };
   }
   return updated;
 }

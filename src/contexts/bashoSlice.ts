@@ -1,17 +1,21 @@
-import { cloneWorldForTick } from "@/engine/tick/tickOrchestrator";
 import type { GameState, GameAction } from "./gameTypes";
 import type { BoutResult } from "../engine/types/basho";
 import * as worldEngine from "../engine/world";
 import { autosaveWithSignal } from "./gameHelpers";
 import { resolveImpacts } from "../engine/core/ImpactResolver";
 
+/**
+ * P3.4: bashoSlice is now fully immutable — no cloneWorldForTick needed.
+ * All worldEngine.* functions return new WorldState objects via resolveImpacts.
+ * P2.4: SIMULATE_ALL_BOUTS and SIM_FULL_BASHO pre-compute todays bouts
+ * instead of using a 64-iteration loop with re-filtering.
+ */
 export function bashoSlice(state: GameState, action: GameAction): GameState {
   if (!state.world) return state;
 
   switch (action.type) {
     case "START_BASHO": {
-      const world = cloneWorldForTick(state.world);
-      worldEngine.startBasho(world, world.currentBashoName);
+      const world = worldEngine.startBasho(state.world, state.world.currentBashoName);
       return {
         ...state,
         world,
@@ -24,8 +28,7 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
 
     case "ADVANCE_DAY": {
       if (!state.world.currentBasho) return state;
-      const world = cloneWorldForTick(state.world);
-      worldEngine.advanceBashoDay(world);
+      let world = worldEngine.advanceBashoDay(state.world);
       const day = world.currentBasho?.day ?? 0;
       if (day > 15) {
         try {
@@ -52,8 +55,7 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
 
     case "SIMULATE_BOUT": {
       if (!state.world.currentBasho) return state;
-      const world = cloneWorldForTick(state.world);
-      const basho = world.currentBasho!;
+      const basho = state.world.currentBasho;
       const todays = basho.matches.filter((m) => m.day === basho.day && !m.result);
       let unplayedIndex = action.boutIndex;
       if (action.boutId) {
@@ -61,7 +63,7 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
         if (idx >= 0) unplayedIndex = idx;
       }
       const playerTactic = action.boutId ? state.boutTactics[action.boutId] : undefined;
-      const { result } = worldEngine.simulateBoutForToday(world, unplayedIndex, playerTactic);
+      const { world, result } = worldEngine.simulateBoutForToday(state.world, unplayedIndex, playerTactic);
       return {
         ...state,
         world,
@@ -81,17 +83,19 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
 
     case "SIMULATE_ALL_BOUTS": {
       if (!state.world.currentBasho) return state;
-      const world = cloneWorldForTick(state.world);
+      // P2.4: Pre-compute todays bouts once, iterate over them directly.
+      let world = state.world;
       let lastResult: BoutResult | null = state.lastBoutResult;
-      for (let i = 0; i < 64; i++) {
-        const basho = world.currentBasho;
-        if (!basho) break;
+      const basho = world.currentBasho;
+      if (basho) {
         const todays = (basho.matches ?? []).filter((m) => m.day === basho.day && !m.result);
-        const match = todays[0];
-        const playerTactic = match?.boutId ? state.boutTactics[match.boutId] : undefined;
-        const { result } = worldEngine.simulateBoutForToday(world, 0, playerTactic);
-        if (!result) break;
-        lastResult = result;
+        for (let i = 0; i < todays.length; i++) {
+          const match = todays[i];
+          const playerTactic = match?.boutId ? state.boutTactics[match.boutId] : undefined;
+          const result = worldEngine.simulateBoutForToday(world, i, playerTactic);
+          world = result.world;
+          if (result.result) lastResult = result.result;
+        }
       }
       try {
         autosaveWithSignal(world);
@@ -106,8 +110,7 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
 
     case "END_BASHO": {
       if (!state.world.currentBasho) return state;
-      let world = cloneWorldForTick(state.world);
-      world = worldEngine.endBasho(world);
+      let world = worldEngine.endBasho(state.world);
       const banzukeImpact = worldEngine.publishBanzukeUpdate(world);
       world = resolveImpacts(world, [banzukeImpact]);
       return { ...state, world, phase: "basho_recap", currentBoutIndex: 0, lastBoutResult: null };
@@ -115,19 +118,20 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
 
     case "SIM_FULL_BASHO": {
       if (!state.world.currentBasho) return state;
-      const world = cloneWorldForTick(state.world);
+      // P2.4: Pre-compute todays bouts per day, iterate directly.
+      let world = state.world;
       const currentDay = world.currentBasho?.day ?? 1;
       for (let d = currentDay; d <= 15; d++) {
-        for (let i = 0; i < 64; i++) {
-          const basho = world.currentBasho;
-          if (!basho) break;
-          const todays = (basho.matches ?? []).filter((m) => m.day === basho.day && !m.result);
-          const match = todays[0];
+        const basho = world.currentBasho;
+        if (!basho) break;
+        const todays = (basho.matches ?? []).filter((m) => m.day === basho.day && !m.result);
+        for (let i = 0; i < todays.length; i++) {
+          const match = todays[i];
           const playerTactic = match?.boutId ? state.boutTactics[match.boutId] : undefined;
-          const { result } = worldEngine.simulateBoutForToday(world, 0, playerTactic);
-          if (!result) break;
+          const result = worldEngine.simulateBoutForToday(world, i, playerTactic);
+          world = result.world;
         }
-        if (d < 15) worldEngine.advanceBashoDay(world);
+        if (d < 15) world = worldEngine.advanceBashoDay(world);
       }
       try {
         autosaveWithSignal(world);

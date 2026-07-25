@@ -3,7 +3,6 @@ import { bashoSlice } from "@/contexts/bashoSlice";
 import type { GameState, GameAction } from "@/contexts/gameTypes";
 import * as gameHelpers from "@/contexts/gameHelpers";
 import * as worldEngine from "@/engine/world";
-import * as tickOrchestrator from "../../engine/tick/tickOrchestrator";
 
 // Mock dependencies
 vi.mock("@/contexts/gameHelpers", () => ({
@@ -11,14 +10,17 @@ vi.mock("@/contexts/gameHelpers", () => ({
 }));
 
 vi.mock("@/engine/world", () => ({
-  advanceBashoDay: vi.fn(),
-  simulateBoutForToday: vi.fn().mockReturnValue({
+  advanceBashoDay: vi.fn((world: any) => ({
+    ...world,
+    currentBasho: { ...world.currentBasho, day: world.currentBasho.day + 1 },
+  })),
+  simulateBoutForToday: vi.fn((world: any) => ({
+    world,
     result: { winnerId: "w1", loserId: "l1", kimarite: "yorikiri" },
-  }),
-}));
-
-vi.mock("@/engine/tick/tickOrchestrator", () => ({
-  cloneWorldForTick: vi.fn((world) => ({ ...world })),
+  })),
+  startBasho: vi.fn((world: any) => world),
+  endBasho: vi.fn((world: any) => world),
+  publishBanzukeUpdate: vi.fn(() => ({ type: "noop" })),
 }));
 
 describe("bashoSlice - autosave errors", () => {
@@ -34,7 +36,7 @@ describe("bashoSlice - autosave errors", () => {
 
     const initialState: Partial<GameState> = {
       world: {
-        currentBasho: { day: 10 },
+        currentBasho: { day: 10, matches: [] },
       } as any,
     };
 
@@ -56,7 +58,7 @@ describe("bashoSlice - autosave errors", () => {
 
     const initialState: Partial<GameState> = {
       world: {
-        currentBasho: { day: 16 },
+        currentBasho: { day: 16, matches: [] },
       } as any,
     };
 
@@ -74,24 +76,32 @@ describe("bashoSlice - autosave errors", () => {
       throw new Error("Disk full");
     });
 
-    // Mock simulateBoutForToday to return a result only once to avoid infinite loop
-    let called = false;
-    (worldEngine.simulateBoutForToday as ReturnType<typeof vi.fn>).mockImplementation(() => {
-      if (!called) {
-        called = true;
-        return {
-          result: { winnerId: "w1", loserId: "l1", kimarite: "yorikiri" },
-        } as any;
-      }
-      return { result: null };
+    // Mock simulateBoutForToday to return a result with world updated (bout marked resolved)
+    let callCount = 0;
+    (worldEngine.simulateBoutForToday as ReturnType<typeof vi.fn>).mockImplementation((world: any) => {
+      callCount++;
+      const basho = world.currentBasho;
+      if (!basho) return { world, result: null };
+      // Mark the first unplayed match as resolved so the loop terminates
+      const updatedMatches = basho.matches.map((m: any) =>
+        m.day === basho.day && !m.result ? { ...m, result: { winnerId: "w1" } } : m
+      );
+      return {
+        world: {
+          ...world,
+          currentBasho: { ...basho, matches: updatedMatches },
+        },
+        result: { winnerId: "w1", loserId: "l1", kimarite: "yorikiri" },
+      };
     });
 
     const initialState: Partial<GameState> = {
       world: {
-        currentBasho: { day: 10 },
+        currentBasho: { day: 10, matches: [{ day: 10, boutId: "b1", result: null }] },
       } as any,
       lastBoutResult: null,
-    };
+      boutTactics: {},
+    } as any;
 
     const action: GameAction = { type: "SIMULATE_ALL_BOUTS" };
 
@@ -109,18 +119,20 @@ describe("bashoSlice - autosave errors", () => {
     });
 
     // Mock advanceBashoDay to increase day to terminate loop
-    (worldEngine.advanceBashoDay as ReturnType<typeof vi.fn>).mockImplementation((world: any) => {
-      world.currentBasho.day += 1;
-    });
+    (worldEngine.advanceBashoDay as ReturnType<typeof vi.fn>).mockImplementation((world: any) => ({
+      ...world,
+      currentBasho: { ...world.currentBasho, day: world.currentBasho.day + 1 },
+    }));
 
-    // Mock simulateBoutForToday to return null to skip internal loop
+    // Mock simulateBoutForToday to return null result to skip internal loop
     (worldEngine.simulateBoutForToday as ReturnType<typeof vi.fn>).mockReturnValue({
+      world: undefined as any,
       result: null,
     });
 
     const initialState: Partial<GameState> = {
       world: {
-        currentBasho: { day: 10 },
+        currentBasho: { day: 10, matches: [] },
       } as any,
     };
 
