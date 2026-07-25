@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { CardEyebrow } from "./CardEyebrow";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export interface ListRow {
   id: string;
@@ -60,7 +61,7 @@ export function ListCard({
       <CardEyebrow eyebrow={eyebrow} title={title} icon={Icon} actions={actions} />
 
       {displayRows.length === 0 ? (
-        <p className="text-xs text-muted-foreground italic text-center py-4">{emptyText}</p>
+        <EmptyState title={emptyText} compact />
       ) : (
         <div className="space-y-0.5">
           {displayRows.map((row) => (

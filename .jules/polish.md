@@ -33,3 +33,8 @@
 **Issue:** `YushoRaceWidget` handled its empty and non-empty state inconsistently by returning `null` when no contenders existed, creating a hole in the layout. It also wrapped content in a `Card` instead of `BaseWidget`.
 **Learning:** Returning `null` on widgets inside a dashboard causes inconsistent visual shifts, and bypassing the `BaseWidget` wrapper loses dashboard uniformity.
 **Rule:** Dashboard widgets must always use `BaseWidget` as the top-level element, and handle empty data scenarios with the `EmptyState` component for predictable layout.
+
+## 2025-07-12 - Empty State Consistency in ListCard
+**Issue:** `ListCard` hardcoded an empty state paragraph instead of using the standard `EmptyState` component.
+**Learning:** Shared UI layout components like `ListCard` must enforce the same `EmptyState` consistency rules as standalone dashboard widgets.
+**Rule:** Ensure all reusable list container components, not just top-level widgets, rely on `@/components/ui/EmptyState` for empty data fallbacks.
