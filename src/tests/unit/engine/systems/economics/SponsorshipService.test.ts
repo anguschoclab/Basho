@@ -13,7 +13,13 @@ import {
   adjustKoenkaiBandToPrestige,
 } from "@/engine/systems/economy/SponsorshipService";
 import type { WorldState } from "@/engine/types/world";
-import type { Sponsor, SponsorPool, Koenkai } from "@/engine/types/sponsors";
+import type {
+  Sponsor,
+  SponsorPool,
+  Koenkai,
+  KoenkaiBandType,
+  SponsorRelationship,
+} from "@/engine/types/sponsors";
 import type { Heya } from "@/engine/types/heya";
 import { mockRikishi } from "../../utils";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
@@ -590,6 +596,274 @@ describe("SponsorshipService", () => {
       // Downgrade from strong (idx 3) to none (idx 0) = gap 3, remove 3 weakest
       // But only 3 members, so all removed
       expect(updatedKoenkai.strengthBand).toBe("none");
+      expect(updatedKoenkai.members.length).toBe(0);
+    });
+
+    // ── Band upgrade branch (Set-based O(1) sponsor ID lookup) ──
+
+    /**
+     * Helper: build a world where the koenkai's strengthBand is below the
+     * prestige-derived target, triggering the upgrade/recruit branch.
+     * `currentBand` controls the koenkai's starting band; rikishi roster
+     * is set to produce a prestige score that maps to `targetBand`.
+     */
+    const setupUpgradeWorld = (opts: {
+      currentBand: KoenkaiBandType;
+      targetBand: KoenkaiBandType;
+      sponsors: Map<string, Sponsor>;
+      existingMembers?: SponsorRelationship[];
+    }) => {
+      // Build a roster that produces the desired prestige target band
+      let rikishiMap: Map<string, any>;
+      switch (opts.targetBand) {
+        case "weak": // prestige >= 10
+          rikishiMap = new Map([
+            ["r1", mockRikishi("r1", { rank: "maegashira", division: "makuuchi" })], // 8
+            ["r2", mockRikishi("r2", { rank: "maegashira", division: "makuuchi" })], // 8 → total 16
+          ]);
+          break;
+        case "moderate": // prestige >= 30
+          rikishiMap = new Map([
+            ["r1", mockRikishi("r1", { rank: "ozeki", division: "makuuchi" })], // 30
+          ]);
+          break;
+        case "strong": // prestige >= 55
+          rikishiMap = new Map([
+            ["r1", mockRikishi("r1", { rank: "yokozuna", division: "makuuchi" })], // 40
+            ["r2", mockRikishi("r2", { rank: "sekiwake", division: "makuuchi" })], // 20 → total 60
+          ]);
+          break;
+        case "powerful": // prestige >= 80
+          rikishiMap = new Map([
+            ["r1", mockRikishi("r1", { rank: "yokozuna", division: "makuuchi" })], // 40
+            ["r2", mockRikishi("r2", { rank: "ozeki", division: "makuuchi" })], // 30
+            ["r3", mockRikishi("r3", { rank: "sekiwake", division: "makuuchi" })], // 20 → total 90
+          ]);
+          break;
+        default:
+          rikishiMap = new Map();
+      }
+
+      const heya = {
+        id: "h1",
+        rikishiIds: Array.from(rikishiMap.keys()),
+        koenkaiBand: opts.currentBand,
+      } as unknown as Heya;
+
+      const koenkai = {
+        koenkaiId: "k1",
+        heyaId: "h1",
+        strengthBand: opts.currentBand,
+        members: opts.existingMembers ?? [],
+      } as unknown as Koenkai;
+
+      const world = {
+        heyas: new Map([["h1", heya]]),
+        rikishi: rikishiMap,
+        sponsorPool: {
+          sponsors: opts.sponsors,
+          koenkais: new Map([["k1", koenkai]]),
+        },
+        dayIndexGlobal: 100,
+      } as unknown as WorldState;
+
+      return { world, heya, koenkai };
+    };
+
+    const makeInactiveSponsor = (id: string, tier: Sponsor["tier"]): Sponsor =>
+      ({
+        sponsorId: id,
+        active: false,
+        tier,
+        displayName: `Sponsor ${id}`,
+        prestigeAffinity: 50,
+        riskAppetite: 50,
+      }) as unknown as Sponsor;
+
+    it("recruits eligible inactive sponsors on band upgrade", () => {
+      const sponsors = new Map<string, Sponsor>([
+        ["s1", makeInactiveSponsor("s1", "T1")],
+        ["s2", makeInactiveSponsor("s2", "T2")],
+        ["s3", makeInactiveSponsor("s3", "T3")],
+      ]);
+      // none → moderate (gap 2, addCount 2)
+      const { world } = setupUpgradeWorld({
+        currentBand: "none",
+        targetBand: "moderate",
+        sponsors,
+      });
+
+      const impact = adjustKoenkaiBandToPrestige(world);
+      const resolved = resolveImpacts(world, [impact]);
+
+      const updatedKoenkai = resolved.sponsorPool?.koenkais.get("k1")!;
+      expect(updatedKoenkai.strengthBand).toBe("moderate");
+      expect(updatedKoenkai.members.length).toBe(2);
+      // New members should have sponsorIds from the picked sponsors
+      const newSponsorIds = updatedKoenkai.members.map((m) => m.sponsorId);
+      expect(newSponsorIds).toContain("s1");
+      expect(newSponsorIds).toContain("s2");
+      // Recruited sponsors should be marked active
+      expect(resolved.sponsorPool?.sponsors.get("s1")?.active).toBe(true);
+      expect(resolved.sponsorPool?.sponsors.get("s2")?.active).toBe(true);
+      // s3 should remain inactive (only 2 picked)
+      expect(resolved.sponsorPool?.sponsors.get("s3")?.active).toBe(false);
+    });
+
+    it("respects max 2 sponsors per basho even with larger gap", () => {
+      const sponsors = new Map<string, Sponsor>([
+        ["s1", makeInactiveSponsor("s1", "T1")],
+        ["s2", makeInactiveSponsor("s2", "T2")],
+        ["s3", makeInactiveSponsor("s3", "T3")],
+        ["s4", makeInactiveSponsor("s4", "T1")],
+      ]);
+      // none → powerful (gap 4, but addCount capped at 2)
+      const { world } = setupUpgradeWorld({
+        currentBand: "none",
+        targetBand: "powerful",
+        sponsors,
+      });
+
+      const impact = adjustKoenkaiBandToPrestige(world);
+      const resolved = resolveImpacts(world, [impact]);
+
+      const updatedKoenkai = resolved.sponsorPool?.koenkais.get("k1")!;
+      expect(updatedKoenkai.strengthBand).toBe("powerful");
+      // Only 2 sponsors added despite gap of 4
+      expect(updatedKoenkai.members.length).toBe(2);
+    });
+
+    it("skips sponsors already in koenkai (Set-based dedup)", () => {
+      const sponsors = new Map<string, Sponsor>([
+        // s1 is already a member — must not be re-picked
+        ["s1", { ...makeInactiveSponsor("s1", "T1"), active: false } as unknown as Sponsor],
+        ["s2", makeInactiveSponsor("s2", "T2")],
+        ["s3", makeInactiveSponsor("s3", "T3")],
+      ]);
+      const existingMembers: SponsorRelationship[] = [
+        {
+          relId: "sr_existing",
+          sponsorId: "s1",
+          targetType: "heya",
+          targetId: "h1",
+          role: "koenkai_member",
+          strength: 2,
+          startedAtTick: 50,
+        } as unknown as SponsorRelationship,
+      ];
+      // none → moderate (gap 2, addCount 2)
+      const { world } = setupUpgradeWorld({
+        currentBand: "none",
+        targetBand: "moderate",
+        sponsors,
+        existingMembers,
+      });
+
+      const impact = adjustKoenkaiBandToPrestige(world);
+      const resolved = resolveImpacts(world, [impact]);
+
+      const updatedKoenkai = resolved.sponsorPool?.koenkais.get("k1")!;
+      expect(updatedKoenkai.strengthBand).toBe("moderate");
+      // Should have 3 members: 1 existing + 2 new (s2, s3)
+      expect(updatedKoenkai.members.length).toBe(3);
+      const sponsorIds = updatedKoenkai.members.map((m) => m.sponsorId);
+      expect(sponsorIds).toContain("s1");
+      expect(sponsorIds).toContain("s2");
+      expect(sponsorIds).toContain("s3");
+      // s1 should NOT be re-added as a duplicate
+      const s1Count = sponsorIds.filter((id) => id === "s1").length;
+      expect(s1Count).toBe(1);
+    });
+
+    it("only recruits T1/T2/T3 tier sponsors", () => {
+      const sponsors = new Map<string, Sponsor>([
+        ["s_t0", makeInactiveSponsor("s_t0", "T0")],
+        ["s_t4", makeInactiveSponsor("s_t4", "T4")],
+        ["s_t5", makeInactiveSponsor("s_t5", "T5")],
+        ["s_t1", makeInactiveSponsor("s_t1", "T1")],
+      ]);
+      // none → weak (gap 1, addCount 1)
+      const { world } = setupUpgradeWorld({
+        currentBand: "none",
+        targetBand: "weak",
+        sponsors,
+      });
+
+      const impact = adjustKoenkaiBandToPrestige(world);
+      const resolved = resolveImpacts(world, [impact]);
+
+      const updatedKoenkai = resolved.sponsorPool?.koenkais.get("k1")!;
+      expect(updatedKoenkai.strengthBand).toBe("weak");
+      // Only 1 sponsor should be picked, and it must be s_t1 (the only eligible tier)
+      expect(updatedKoenkai.members.length).toBe(1);
+      expect(updatedKoenkai.members[0].sponsorId).toBe("s_t1");
+      // Ineligible tier sponsors should remain inactive
+      expect(resolved.sponsorPool?.sponsors.get("s_t0")?.active).toBe(false);
+      expect(resolved.sponsorPool?.sponsors.get("s_t4")?.active).toBe(false);
+      expect(resolved.sponsorPool?.sponsors.get("s_t5")?.active).toBe(false);
+    });
+
+    it("skips active sponsors during upgrade recruitment", () => {
+      const sponsors = new Map<string, Sponsor>([
+        // s1 is active — should be skipped
+        ["s1", { ...makeInactiveSponsor("s1", "T1"), active: true } as unknown as Sponsor],
+        ["s2", makeInactiveSponsor("s2", "T2")],
+      ]);
+      // none → weak (gap 1, addCount 1)
+      const { world } = setupUpgradeWorld({
+        currentBand: "none",
+        targetBand: "weak",
+        sponsors,
+      });
+
+      const impact = adjustKoenkaiBandToPrestige(world);
+      const resolved = resolveImpacts(world, [impact]);
+
+      const updatedKoenkai = resolved.sponsorPool?.koenkais.get("k1")!;
+      expect(updatedKoenkai.strengthBand).toBe("weak");
+      // Only s2 should be picked (s1 is active, so skipped)
+      expect(updatedKoenkai.members.length).toBe(1);
+      expect(updatedKoenkai.members[0].sponsorId).toBe("s2");
+    });
+
+    it("updates heya koenkaiBand to match target band on upgrade", () => {
+      const sponsors = new Map<string, Sponsor>([
+        ["s1", makeInactiveSponsor("s1", "T1")],
+        ["s2", makeInactiveSponsor("s2", "T2")],
+      ]);
+      // none → moderate (gap 2)
+      const { world } = setupUpgradeWorld({
+        currentBand: "none",
+        targetBand: "moderate",
+        sponsors,
+      });
+
+      const impact = adjustKoenkaiBandToPrestige(world);
+      const resolved = resolveImpacts(world, [impact]);
+
+      const updatedHeya = resolved.heyas.get("h1")!;
+      expect(updatedHeya.koenkaiBand).toBe("moderate");
+    });
+
+    it("handles no eligible sponsors gracefully", () => {
+      // No inactive T1/T2/T3 sponsors available
+      const sponsors = new Map<string, Sponsor>([
+        ["s1", { ...makeInactiveSponsor("s1", "T1"), active: true } as unknown as Sponsor],
+        ["s2", makeInactiveSponsor("s2", "T0")], // wrong tier
+      ]);
+      // none → weak (gap 1, addCount 1)
+      const { world } = setupUpgradeWorld({
+        currentBand: "none",
+        targetBand: "weak",
+        sponsors,
+      });
+
+      const impact = adjustKoenkaiBandToPrestige(world);
+      const resolved = resolveImpacts(world, [impact]);
+
+      const updatedKoenkai = resolved.sponsorPool?.koenkais.get("k1")!;
+      // Band should still update even with no new members
+      expect(updatedKoenkai.strengthBand).toBe("weak");
       expect(updatedKoenkai.members.length).toBe(0);
     });
   });

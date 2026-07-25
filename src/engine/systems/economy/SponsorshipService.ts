@@ -403,8 +403,7 @@ export function adjustKoenkaiBandToPrestige(world: WorldState): StateImpact {
       const gap = targetIdx - currentIdx;
       const addCount = Math.min(gap, 2);
 
-      // ⚡ Bolt Optimization: Use early-exit loop instead of Array.from().filter().slice() to avoid O(N) allocations
-      // ⚡ Review Fix: Use Set for O(1) sponsor ID lookup instead of updatedMembers.some() per iteration
+      // Early-exit loop with O(1) Set-based sponsor ID lookup to avoid O(N) allocations per iteration
       const existingSponsorIds = new Set(updatedMembers.map((m) => m.sponsorId));
       const picked: Sponsor[] = [];
       for (const s of world.sponsorPool?.sponsors.values() ?? []) {
