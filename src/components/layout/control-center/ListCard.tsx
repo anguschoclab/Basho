@@ -69,9 +69,19 @@ export function ListCard({
               key={row.id}
               className={cn(
                 "flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs transition-colors",
-                row.onClick ? "cursor-pointer hover:bg-muted/50" : ""
+                row.onClick
+                  ? "cursor-pointer hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ring-offset-background"
+                  : ""
               )}
               onClick={row.onClick}
+              role={row.onClick ? "button" : undefined}
+              tabIndex={row.onClick ? 0 : undefined}
+              onKeyDown={(e) => {
+                if (row.onClick && (e.key === "Enter" || e.key === " ")) {
+                  e.preventDefault();
+                  row.onClick();
+                }
+              }}
             >
               {row.leading && <span className="shrink-0">{row.leading}</span>}
               <span className="flex-1 min-w-0 font-medium truncate">{row.label}</span>
