@@ -1,3 +1,5 @@
+# Scout Learnings Log
+
 ## 2025-02-27 - Test Fix for MediaStateService
 
 **Gap:** The media tests failed when we introduced `welfareState` to the `Heya` type without updating `MockFactory`.

@@ -1,3 +1,5 @@
+# Mason Learnings Log
+
 ## 2025-02-24 - [CombatArchetype UI Typings]
 
 **Finding:** `CombatArchetype` was being cast to `any` in multiple UI components when passed to `getCombatArchetypeDescription()`.
@@ -17,16 +19,19 @@
 **Constraint:** Any future top-level WorldState fields that are modified via ImpactBuilder must be added to the generic type constraints in `updateWorldField` and `updateWorldFieldImpact`.
 
 ## 2025-02-28 - [Tighten Type in SimulationRunner vacancies extraction]
+
 **Finding:** `vacanciesByHeyaId` was extracted from `retirementImpact.metadata` using an intermediate `as unknown` cast.
 **Learning:** `metadata` property on `StateImpact` is typed as `{ source: string, timestamp?: number, [key: string]: unknown }` which already allows index-signature access for any property like `vacanciesByHeyaId`. No intermediate `as unknown as Record<string, unknown>` is needed.
 **Constraint:** Use the existing index signature in `metadata` directly rather than polluting the code with unneeded and unsafe type casts.
 
 ## 2025-07-22 - Remove redundant type casts in CandidateBuilder and phase01_daily_welfare
+
 **Finding:** Found multiple uses of `as unknown as Rikishi` in `src/engine/systems/generation/CandidateBuilder.ts` and `as unknown as import("../../types/rikishi").Rikishi` in `src/engine/tick/phases/phase01_daily_welfare.ts`.
 **Learning:** These casts were redundant and unsafe. By using `as Rikishi`, we tighten the types and ensure compile-time checks without changing behavior.
 **Constraint:** Future object construction should conform to the expected types instead of relying on `as unknown as Type` to bypass validation.
 
 ## 2025-05-23 - [Tighten Rikishi descriptor type]
+
 **Finding:** `Rikishi["descriptor"]` was loosely typed as an object with `[key: string]: unknown`, leading to a weak `as unknown as Rikishi["descriptor"]` cast in `phase01_daily_welfare.ts` when assigning `toRikishiDescriptor()`.
 **Learning:** By importing the concrete `RikishiDescriptor` interface from `descriptorBands.ts` into the main `rikishi.ts` types, we remove the need for intermediate casts and correctly surface the structure to presenters.
 **Constraint:** Shared types used for complex entity states (like descriptor strings) must be defined properly and linked instead of relying on loose inline objects and casting.
