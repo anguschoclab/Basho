@@ -9,7 +9,7 @@ describe("checkNaturalizations", () => {
     const world = MockFactory.createWorld();
     world.year = 2025;
 
-    const heya = MockFactory.createHeya();
+    const heya = MockFactory.createHeya("heya_24");
     const rikishi = MockFactory.createRikishi({
       id: "rikishi_24",
       nationality: "Mongolia",
@@ -41,7 +41,7 @@ describe("checkNaturalizations", () => {
     const world = MockFactory.createWorld();
     world.year = 2025;
 
-    const heya = MockFactory.createHeya();
+    const heya = MockFactory.createHeya("heya_fail_1");
     const rikishi = MockFactory.createRikishi({
       id: "rikishi_fail_1",
       nationality: "Mongolia",
@@ -64,7 +64,7 @@ describe("checkNaturalizations", () => {
     const world = MockFactory.createWorld();
     world.year = 2025;
 
-    const heya = MockFactory.createHeya();
+    const heya = MockFactory.createHeya("heya_ineligible");
     const rikishi = MockFactory.createRikishi({
       id: "rikishi_24",
       nationality: "Mongolia",
@@ -88,7 +88,7 @@ describe("checkNaturalizations", () => {
     const world = MockFactory.createWorld();
     world.year = 2025;
 
-    const heya = MockFactory.createHeya();
+    const heya = MockFactory.createHeya("heya_yokozuna");
     const rikishi = MockFactory.createRikishi({
       id: "rikishi_24",
       nationality: "Georgia",
