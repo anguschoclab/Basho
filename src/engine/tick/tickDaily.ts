@@ -41,6 +41,23 @@ export interface DailyTickReport {
   [key: string]: unknown;
 }
 
+/**
+ * P3.2: Unified advance options shared by all advance entry points.\n * All advance functions delegate to `advanceOneDay(world, opts)` or
+ * `advanceDays(world, days, opts)`.
+ */
+export interface AdvanceOptions {
+  /** Skip daily micro-phases (economy, welfare, sponsors, drama) for performance. */
+  skipDailyMicroPhases?: boolean;
+  /** If true, sets `_autonomousSim` before advancing (suppresses interactive halts). */
+  autonomous?: boolean;
+  /** If true, checks `shouldHaltAdvance` after each tick and stops if true. */
+  haltOnPendingDecision?: boolean;
+  /** Chunk size for progress reporting (used by multi-day advance). */
+  chunkSize?: number;
+  /** Optional progress callback invoked after each day. */
+  onProgress?: (daysAdvanced: number, world: WorldState) => void;
+}
+
 // Migration complete: daily micro-logic moved to phases/phase01_daily_*.ts
 
 // ====
@@ -78,8 +95,12 @@ import { offSeasonPipeline } from "./pipelines/offSeasonPipeline";
  */
 export function advanceOneDay(
   world: WorldState,
-  opts?: { skipDailyMicroPhases?: boolean }
+  opts?: AdvanceOptions
 ): WorldState {
+  // P3.2: Apply autonomous flag if specified
+  if (opts?.autonomous && !world._autonomousSim) {
+    world = { ...world, _autonomousSim: true };
+  }
   // 1. Run Preflight to advance calendar and determine boundaries
   let nextWorld = runPipeline(world, [phases.phase00_preflight]);
 
@@ -179,14 +200,16 @@ export function advanceOneDay(
     _daysSinceLastWeeklyTick: isWeeklyTick ? 0 : daysSinceTick,
   };
 
-  // 6. Finalize report in transient context
-  nextWorld = {
-    ...nextWorld,
-    transientContext: {
-      ...nextWorld.transientContext,
-      lastReport: buildDailyReport(nextWorld, isWeeklyTick),
-    },
-  };
+  // 6. Finalize report in transient context (skip for fast advance)
+  if (!opts?.skipDailyMicroPhases) {
+    nextWorld = {
+      ...nextWorld,
+      transientContext: {
+        ...nextWorld.transientContext,
+        lastReport: buildDailyReport(nextWorld, isWeeklyTick),
+      },
+    };
+  }
 
   return nextWorld;
 }
@@ -223,14 +246,16 @@ function buildDailyReport(world: WorldState, isWeekly: boolean): DailyTickReport
  * console.log(nextWorld.dayIndexGlobal);
  * ```
  */
-export function advanceDays(world: WorldState, days: number): WorldState {
-  let currentWorld = world;
+export function advanceDays(world: WorldState, days: number, opts?: AdvanceOptions): WorldState {
+  let currentWorld = opts?.autonomous ? { ...world, _autonomousSim: true } : world;
   if (days > MAX_DAYS_ADVANCE) {
     warn(`Input ${days} exceeds MAX_DAYS_ADVANCE (${MAX_DAYS_ADVANCE}); capping.`, "advanceDays");
   }
   const n = Math.max(1, Math.min(days, MAX_DAYS_ADVANCE));
   for (let i = 0; i < n; i++) {
-    currentWorld = advanceOneDay(currentWorld);
+    currentWorld = advanceOneDay(currentWorld, opts);
+    if (opts?.haltOnPendingDecision && shouldHaltAdvance(currentWorld)) break;
+    opts?.onProgress?.(i + 1, currentWorld);
   }
   return currentWorld;
 }
@@ -245,8 +270,8 @@ export function advanceDays(world: WorldState, days: number): WorldState {
  * @param {number} days - Number of days to advance (capped at 365).
  * @returns {WorldState} The updated world state after N day ticks.
  */
-export function advanceDaysFast(world: WorldState, days: number): WorldState {
-  let currentWorld = world;
+export function advanceDaysFast(world: WorldState, days: number, opts?: AdvanceOptions): WorldState {
+  let currentWorld = opts?.autonomous ? { ...world, _autonomousSim: true } : world;
   if (days > MAX_DAYS_ADVANCE) {
     warn(
       `Input ${days} exceeds MAX_DAYS_ADVANCE (${MAX_DAYS_ADVANCE}); capping.`,
@@ -255,7 +280,9 @@ export function advanceDaysFast(world: WorldState, days: number): WorldState {
   }
   const n = Math.max(1, Math.min(days, MAX_DAYS_ADVANCE));
   for (let i = 0; i < n; i++) {
-    currentWorld = advanceOneDay(currentWorld, { skipDailyMicroPhases: true });
+    currentWorld = advanceOneDay(currentWorld, { ...opts, skipDailyMicroPhases: true });
+    if (opts?.haltOnPendingDecision && shouldHaltAdvance(currentWorld)) break;
+    opts?.onProgress?.(i + 1, currentWorld);
   }
   return currentWorld;
 }

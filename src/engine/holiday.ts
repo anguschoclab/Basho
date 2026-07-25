@@ -13,7 +13,7 @@
 
 import type { WorldState, CyclePhase } from "./types/world";
 import type { Heya } from "./types/heya";
-import { advanceOneDay } from "./tick/tickDaily";
+import { advanceWithGates } from "./tick/advanceWithGates";
 import { queryEvents } from "./events";
 import { getHeya, getRikishi } from "./queries";
 
@@ -396,44 +396,47 @@ function buildHolidayDigest(
 export function runHoliday(world: WorldState, config: HolidayConfig): HolidayResult {
   // Autonomous fast-forward: suppress interactive loop decisions so the tick
   // pipeline never freezes waiting for a choice nobody will make.
-  world = { ...world, _autonomousSim: true };
-  const startDay = world.dayIndexGlobal ?? 0;
-  const maxDays = computeTargetDays(world, config.target);
+  const startWorld = { ...world, _autonomousSim: true };
+  const startDay = startWorld.dayIndexGlobal ?? 0;
+  const maxDays = computeTargetDays(startWorld, config.target);
   const reports: WorldState[] = [];
   let gateTriggered: HolidayGateTriggered | null = null;
-  let daysAdvanced = 0;
 
-  // Safety cap to prevent infinite loops
-  const cap = Math.min(maxDays, 500);
+  // P3.6: Use advanceWithGates helper instead of duplicated loop logic.
+  // The helper handles the advance loop, gate checks, and target detection.
+  const result = advanceWithGates(startWorld, {
+    maxDays,
+    autonomous: true,
+    shouldStop: (w) => {
+      // Don't advance during active_basho unless target is endOfBasho/postBasho
+      if (
+        w.cyclePhase === "active_basho" &&
+        config.target !== "endOfBasho" &&
+        config.target !== "postBasho"
+      ) {
+        return true;
+      }
+      // Check safety gates
+      const gate = evaluateGates(w, config.gates, config.playerHeyaId, startDay);
+      if (gate) {
+        gateTriggered = gate;
+        return true;
+      }
+      return false;
+    },
+    isTargetReached: (w, days) => isTargetReached(w, config.target, startDay, days),
+    onProgress: (_days, w) => reports.push(w),
+  });
 
-  for (let i = 0; i < cap; i++) {
-    // Don't advance during active_basho unless target is endOfBasho/postBasho
-    if (
-      world.cyclePhase === "active_basho" &&
-      config.target !== "endOfBasho" &&
-      config.target !== "postBasho"
-    ) {
-      break;
-    }
+  const daysAdvanced = result.daysAdvanced;
+  const finalWorld = result.world;
 
-    world = advanceOneDay(world);
-    reports.push(world);
-    daysAdvanced++;
-
-    // Check safety gates
-    gateTriggered = evaluateGates(world, config.gates, config.playerHeyaId, startDay);
-    if (gateTriggered) break;
-
-    // Target reached?
-    if (isTargetReached(world, config.target, startDay, daysAdvanced)) break;
-  }
-
-  const digest = buildHolidayDigest(world, startDay, daysAdvanced, gateTriggered);
+  const digest = buildHolidayDigest(finalWorld, startDay, daysAdvanced, gateTriggered);
 
   return {
     daysAdvanced,
     gateTriggered,
-    phaseOnExit: world.cyclePhase,
+    phaseOnExit: finalWorld.cyclePhase,
     digest,
     reports,
   };

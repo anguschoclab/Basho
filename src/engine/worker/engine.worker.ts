@@ -82,6 +82,7 @@ import { warn } from "../utils/Logger";
 
 let currentWorld: WorldState | null = null;
 let worldVersion = 0;
+let digestRevision = 0;
 let simPaused = false;
 
 /**
@@ -410,7 +411,8 @@ function emitDigest() {
   if (!currentWorld) return;
   const digest = buildWeeklyDigest(currentWorld);
   if (digest) {
-    self.postMessage({ type: "TICK_COMPLETED", digest });
+    digestRevision++;
+    self.postMessage({ type: "TICK_COMPLETED", digest, digestRevision });
   }
 }
 

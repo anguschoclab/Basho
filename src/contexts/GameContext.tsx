@@ -164,8 +164,15 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const initWorker = useGameStore((s) => s.initWorker);
   const setOnWorldUpdated = useGameStore((s) => s.setOnWorldUpdated);
 
-  // Build digest outside the reducer (selector pattern) — pure, memoized
+  // Build digest outside the reducer (selector pattern) — pure, memoized.
+  // P2.5: Use digestRevision from the worker (via store) instead of state.world
+  // reference. The worker already builds the digest via buildWeeklyDigest —
+  // we only rebuild locally if the store doesn't have one yet (e.g. main-thread
+  // actions like SIMULATE_BOUT that don't go through the worker).
+  const storeDigest = useGameStore((s) => s.digest);
+  const digestRevision = useGameStore((s) => s.digestRevision);
   const digest = useMemo(() => {
+    if (storeDigest) return storeDigest;
     if (!state.world) return null;
     try {
       return buildWeeklyDigest(state.world);
@@ -173,7 +180,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       logError("Error building weekly digest", "GameContext", err);
       return null;
     }
-  }, [state.world]);
+  }, [storeDigest, digestRevision, state.world]);
 
   // Initialize worker once on mount and wire world-update sync
   useMemo(() => {

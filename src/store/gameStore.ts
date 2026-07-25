@@ -17,6 +17,8 @@ import { warn } from "../engine/utils/Logger";
 interface GameStoreState {
   /** The UI-visible summary of the game state. */
   digest: UIDigest | null;
+  /** Monotonic revision counter — increments only when the worker builds a new digest. */
+  digestRevision: number;
   /** Last world state received from the worker after long-running simulations. */
   workerWorld: WorldState | null;
   /** Monotonic version counter for state synchronization. */
@@ -66,6 +68,7 @@ interface GameStoreState {
 
 export const useGameStore = create<GameStoreState>((set, get) => ({
   digest: null,
+  digestRevision: 0,
   workerWorld: null,
   worldVersion: 0,
   pendingTick: false,
@@ -92,10 +95,10 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
         case "READY":
           break;
         case "TICK_COMPLETED":
-          set({ digest: data.digest, isSimulating: false, progress: null, pendingTick: false });
+          set({ digest: data.digest, digestRevision: data.digestRevision ?? get().digestRevision + 1, isSimulating: false, progress: null, pendingTick: false });
           break;
         case "DIGEST_UPDATED":
-          set({ digest: data.digest });
+          set({ digest: data.digest, digestRevision: data.digestRevision ?? get().digestRevision + 1 });
           break;
         case "WORLD_UPDATED":
           set({

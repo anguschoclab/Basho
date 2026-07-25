@@ -39,8 +39,8 @@ export type EngineCommand =
 /** Worker -> UI Events */
 export type EngineEvent =
   | { type: "READY"; worldExists: boolean }
-  | { type: "TICK_COMPLETED"; digest: UIDigest }
-  | { type: "DIGEST_UPDATED"; digest: UIDigest }
+  | { type: "TICK_COMPLETED"; digest: UIDigest; digestRevision?: number }
+  | { type: "DIGEST_UPDATED"; digest: UIDigest; digestRevision?: number }
   | { type: "WORLD_UPDATED"; world: WorldState; version: number }
   | { type: "ERROR"; message: string }
   | { type: "PROGRESS"; message: string; current: number; total: number };

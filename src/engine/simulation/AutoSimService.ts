@@ -2,7 +2,9 @@ import type { WorldState } from "../types/world";
 import type { Rikishi } from "../types/rikishi";
 import type { BashoSimResult, BanzukeUpdateHook } from "../types/basho";
 import { getNextBasho, getBashoNumber } from "../calendar";
-import { advanceDays, enterPostBasho, enterInterim } from "../tick/tickDaily";
+import { enterPostBasho, enterInterim } from "../tick/tickDaily";
+import { advanceWithGates } from "../tick/advanceWithGates";
+import { resolveImpacts } from "../core/ImpactResolver";
 import { INTERIM_DURATION_DAYS } from "../../constants/engine/recruitmentExtended";
 import { simulateEntireBasho } from "./TournamentSimulator";
 import { ChronicleService } from "./ChronicleService";
@@ -204,27 +206,29 @@ export function runAutoSim(
     }
     if (!hasYokozuna) yokozunaVacantBashoCount++;
 
-    // 2. Advance through off-season phases to trigger yearly boundary & training
+    // 2. Advance through off-season phases to trigger yearly boundary & training.
+    // P3.6: Use advanceWithGates for post-basho + interim + year-boundary crossing.
     currentWorld = enterPostBasho(currentWorld);
-    currentWorld = advanceDays(currentWorld, 7);
+    currentWorld = advanceWithGates(currentWorld, {
+      maxDays: 7,
+      autonomous: true,
+    }).world;
 
     currentWorld = enterInterim(currentWorld);
-    currentWorld = advanceDays(currentWorld, 42);
+    currentWorld = advanceWithGates(currentWorld, {
+      maxDays: 42,
+      autonomous: true,
+    }).world;
 
     // 3. After kyushu (last basho of the year), ensure the year boundary fires.
-    // The 42-day interim advance should naturally cross Dec 31 → Jan 1 via the
-    // pipeline's boundary detection. If it hasn't fired yet (calendar misalignment),
-    // advance day-by-day until it does.
+    // P3.6: Use advanceWithGates with a target predicate for year-boundary detection.
     if (bashoName === "kyushu") {
-      let safetyCounter = 0;
-      while (
-        currentWorld.calendar &&
-        currentWorld.calendar.month === 12 &&
-        safetyCounter < 31
-      ) {
-        currentWorld = advanceDays(currentWorld, 1);
-        safetyCounter++;
-      }
+      const yearResult = advanceWithGates(currentWorld, {
+        maxDays: 31,
+        autonomous: true,
+        isTargetReached: (w) => w.calendar?.month === 1,
+      });
+      currentWorld = yearResult.world;
     }
 
     // Preparation for next basho

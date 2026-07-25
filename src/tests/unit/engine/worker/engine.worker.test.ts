@@ -84,13 +84,15 @@ describe("engine.worker", () => {
       playerHeyaId: "heya-123",
     });
 
-    expect(mockPostMessage).toHaveBeenCalledWith({
-      type: "TICK_COMPLETED",
-      digest: {
-        mockDigest: true,
-        worldSeed: "test-seed",
-      } as unknown as UIDigest,
-    });
+    expect(mockPostMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "TICK_COMPLETED",
+        digest: {
+          mockDigest: true,
+          worldSeed: "test-seed",
+        } as unknown as UIDigest,
+      })
+    );
   });
 
   it("should handle LOAD_WORLD command", async () => {
@@ -100,13 +102,15 @@ describe("engine.worker", () => {
       world,
     });
 
-    expect(mockPostMessage).toHaveBeenCalledWith({
-      type: "TICK_COMPLETED",
-      digest: {
-        mockDigest: true,
-        worldSeed: "loaded-seed",
-      } as unknown as UIDigest,
-    });
+    expect(mockPostMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "TICK_COMPLETED",
+        digest: {
+          mockDigest: true,
+          worldSeed: "loaded-seed",
+        } as unknown as UIDigest,
+      })
+    );
   });
 
   it("should handle TICK_DAY command", async () => {
@@ -123,13 +127,15 @@ describe("engine.worker", () => {
     });
 
     // Since tickOrchestrator is mocked to return { ...world, ticked: true }
-    expect(mockPostMessage).toHaveBeenCalledWith({
-      type: "TICK_COMPLETED",
-      digest: {
-        mockDigest: true,
-        worldSeed: "tick-seed",
-      } as unknown as UIDigest,
-    });
+    expect(mockPostMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "TICK_COMPLETED",
+        digest: {
+          mockDigest: true,
+          worldSeed: "tick-seed",
+        } as unknown as UIDigest,
+      })
+    );
   });
 
   it("should emit WORLD_UPDATED after TICK_DAY (sync world to main thread)", async () => {
@@ -186,13 +192,15 @@ describe("engine.worker", () => {
     });
 
     // It should emit digest at the end
-    expect(mockPostMessage).toHaveBeenCalledWith({
-      type: "TICK_COMPLETED",
-      digest: {
-        mockDigest: true,
-        worldSeed: "auto-sim-seed",
-      } as unknown as UIDigest,
-    });
+    expect(mockPostMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "TICK_COMPLETED",
+        digest: {
+          mockDigest: true,
+          worldSeed: "auto-sim-seed",
+        } as unknown as UIDigest,
+      })
+    );
 
     // It should return the updated world
     expect(mockPostMessage).toHaveBeenCalledWith(
@@ -247,13 +255,15 @@ describe("engine.worker", () => {
       type: "GET_DIGEST",
     });
 
-    expect(mockPostMessage).toHaveBeenCalledWith({
-      type: "TICK_COMPLETED",
-      digest: {
-        mockDigest: true,
-        worldSeed: "digest-seed",
-      } as unknown as UIDigest,
-    });
+    expect(mockPostMessage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: "TICK_COMPLETED",
+        digest: {
+          mockDigest: true,
+          worldSeed: "digest-seed",
+        } as unknown as UIDigest,
+      })
+    );
   });
 
   it("should handle invalid commands by logging a warning", async () => {
