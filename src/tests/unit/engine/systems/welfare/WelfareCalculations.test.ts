@@ -1,9 +1,10 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import {
   getSeverityWeight,
   computeInjuryPressure,
   calculateWeeklyWelfareDelta,
 } from "@/engine/systems/welfare/WelfareCalculations";
+import { clearQueryCaches } from "@/engine/queries";
 import { mockRikishi, makeMockWorld, makeMockHeya } from "../../utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
@@ -77,6 +78,10 @@ function setupHeya(
   world.heyas.set(heyaId, heya);
   return { world: world as WorldState, heya: heya as Heya };
 }
+
+beforeEach(() => {
+  clearQueryCaches();
+});
 
 describe("getSeverityWeight", () => {
   it("returns INJURY_PRESSURE_SERIOUS for 'serious'", () => {

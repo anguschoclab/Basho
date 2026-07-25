@@ -1,13 +1,18 @@
 /**
- * uiDigest.ts
+ * uiDigest.ts — Intentional Facade (SRP-09)
+ * ==========================================
+ * This file is a deliberate facade pattern that re-exports UI-facing functions
+ * from extracted projection modules and engine utilities.
  *
- * Compatibility layer for UI presenter functions.
- * Re-exports from extracted modules to maintain backward compatibility.
+ * Design rationale:
+ * - The UI layer MUST NOT import from @/engine directly (enforced by ESLint
+ *   no-restricted-imports rule). This facade is the single authorized gateway.
+ * - Projection logic lives in focused modules under projections/ and utilities/.
+ * - This file contains zero business logic — it is purely a re-export barrel.
+ * - ~177 lines is acceptable for a facade covering ~60+ exports across 15+ modules.
  *
- * This file has been refactored to ~100 lines as a compatibility layer.
- * Original implementations have been moved to focused modules in:
- * - projections/ (digest, promotion, facility, bout, dashboard, basho, economy, heya, event)
- * - utilities/ (uiUtilities)
+ * @see projections/ for the actual projection implementations
+ * @see uiUtilities for shared UI helper functions
  */
 
 // Re-exports from extracted projection modules
