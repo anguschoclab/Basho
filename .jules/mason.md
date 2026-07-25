@@ -25,3 +25,8 @@
 **Finding:** Found multiple uses of `as unknown as Rikishi` in `src/engine/systems/generation/CandidateBuilder.ts` and `as unknown as import("../../types/rikishi").Rikishi` in `src/engine/tick/phases/phase01_daily_welfare.ts`.
 **Learning:** These casts were redundant and unsafe. By using `as Rikishi`, we tighten the types and ensure compile-time checks without changing behavior.
 **Constraint:** Future object construction should conform to the expected types instead of relying on `as unknown as Type` to bypass validation.
+
+## 2025-05-23 - [Tighten Rikishi descriptor type]
+**Finding:** `Rikishi["descriptor"]` was loosely typed as an object with `[key: string]: unknown`, leading to a weak `as unknown as Rikishi["descriptor"]` cast in `phase01_daily_welfare.ts` when assigning `toRikishiDescriptor()`.
+**Learning:** By importing the concrete `RikishiDescriptor` interface from `descriptorBands.ts` into the main `rikishi.ts` types, we remove the need for intermediate casts and correctly surface the structure to presenters.
+**Constraint:** Shared types used for complex entity states (like descriptor strings) must be defined properly and linked instead of relying on loose inline objects and casting.

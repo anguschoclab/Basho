@@ -8,6 +8,7 @@ import type { AvatarConfig } from "./avatar";
 import type { Style, KimariteId, CombatProfile } from "./combat";
 export type { Style, KimariteId } from "./combat";
 
+import type { RikishiDescriptor } from "../descriptorBands";
 import type { Division, Rank, Side } from "./banzuke";
 import type { H2HRecord, MatchResultLog } from "./records";
 import type { RikishiEconomics } from "./economy";
@@ -208,13 +209,7 @@ export interface Rikishi {
   currentBashoRecord?: { wins: number; losses: number };
 
   // UI hysteresis descriptor (set by tickDaily, consumed by presenters)
-  descriptor?: {
-    title?: string;
-    subtitle?: string;
-    color?: string;
-    icon?: string;
-    [key: string]: unknown;
-  };
+  descriptor?: RikishiDescriptor;
 
   // Backward-compat alias for injuryStatus (set by RecoveryService)
   injury?: Rikishi["injuryStatus"];
