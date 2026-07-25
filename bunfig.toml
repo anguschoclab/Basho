@@ -1,0 +1,3 @@
+[test]
+# This project uses vitest, not bun's built-in test runner.
+# Run tests with: bun run test

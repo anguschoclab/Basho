@@ -35,6 +35,28 @@ describe("yokozuna promotion in AutoSim", () => {
         rikishiMap.set(id, { ...r, isRetired: true });
       }
     }
+
+    // Boost the top ozeki's stats to ensure deterministic 13+ win yusho,
+    // triggering Case 4 prestige promotion (no active yokozuna + 13+ win yusho)
+    const activeOzeki = Array.from(rikishiMap.values())
+      .filter((r) => r.rank === "ozeki" && !r.isRetired)
+      .sort((a, b) => (b.stats.power ?? 0) - (a.stats.power ?? 0));
+    if (activeOzeki.length > 0) {
+      const topOzeki = activeOzeki[0];
+      rikishiMap.set(topOzeki.id, {
+        ...topOzeki,
+        stats: {
+          ...topOzeki.stats,
+          power: 95,
+          technique: 95,
+          speed: 95,
+          balance: 95,
+          stamina: 85,
+          mental: 85,
+        },
+      });
+    }
+
     const worldNoYokozuna = { ...world, rikishi: rikishiMap };
 
     const result = runAutoSim(worldNoYokozuna, {

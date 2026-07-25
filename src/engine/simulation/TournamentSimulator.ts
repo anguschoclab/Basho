@@ -178,7 +178,7 @@ export function simulateEntireBasho(
   const junYusho: string[] = [];
   for (const s of sortedStandings) {
     if (s.id !== yushoEntry?.id && s.wins === junYushoTargetWins) {
-      junYusho.push(s.rikishi?.shikona ?? "Unknown");
+      junYusho.push(s.id);
     }
   }
 

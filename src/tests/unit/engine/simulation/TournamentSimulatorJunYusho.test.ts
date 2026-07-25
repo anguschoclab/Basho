@@ -18,11 +18,10 @@ describe("TournamentSimulator — yusho and jun-yusho extraction", () => {
 
     const yushoWins = result.yushoWinner.wins;
 
-    // Jun-yusho should have wins <= yusho wins
-    for (const junShikona of result.junYusho) {
-      // Jun-yusho is a shikona string, just verify it's a non-empty string
-      expect(typeof junShikona).toBe("string");
-      expect(junShikona.length).toBeGreaterThan(0);
+    // Jun-yusho should contain rikishi IDs (not shikona names)
+    for (const junId of result.junYusho) {
+      // Jun-yusho is a rikishi ID — verify it exists in the world
+      expect(result.finalWorld.rikishi.has(junId)).toBe(true);
     }
 
     // If there are jun-yusho, they should have fewer wins than yusho
@@ -32,7 +31,7 @@ describe("TournamentSimulator — yusho and jun-yusho extraction", () => {
       const standings = result.standings;
       let junWins = -1;
       for (const [id, stats] of standings.entries()) {
-        if (result.junYusho.includes(result.finalWorld.rikishi.get(id)?.shikona ?? "")) {
+        if (result.junYusho.includes(id)) {
           junWins = Math.max(junWins, stats.wins);
         }
       }
