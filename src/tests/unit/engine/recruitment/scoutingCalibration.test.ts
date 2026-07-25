@@ -1,6 +1,7 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { getRecruitmentStrategy } from "@/engine/npcRecruitmentStrategy";
 import { recruitmentBalanceMultiplier } from "@/engine/systems/generation/competitiveBalance";
+import { clearQueryCaches } from "@/engine/queries";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
 import {
   PERCEPTION_NOISE_BASE,
@@ -21,6 +22,8 @@ function makeOyakata(heyaId: string): Oyakata {
     yearsInCharge: 5,
   } as Oyakata;
 }
+
+beforeEach(() => clearQueryCaches());
 
 describe("scouting noise calibration", () => {
   // Regression lock: a same-branch A/B (isolating only PERCEPTION_NOISE_BASE, everything

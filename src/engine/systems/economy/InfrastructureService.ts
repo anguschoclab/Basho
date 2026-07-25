@@ -19,10 +19,9 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { FACILITY_REGISTRY, FacilityId } from "../../types/infrastructure";
 import {
-  CONSTRUCTION_COST_LEVEL_MULTIPLIER,
   CONSTRUCTION_BUILD_TIME_THRESHOLD,
 } from "../../../constants/engine/economyExtended";
-import { getHeya } from "../../queries";
+import { validateConstruction } from "./infrastructureValidation";
 
 /**
  * Infrastructure Service namespace.
@@ -61,46 +60,26 @@ export const InfrastructureService = {
    */
   startConstruction(world: WorldState, heyaId: Id, facilityId: FacilityId): StateImpact {
     const builder = createImpactBuilder("startConstruction");
-    const heya = getHeya(world, heyaId);
-    if (!heya) return builder.build();
 
-    const def = FACILITY_REGISTRY[facilityId];
-    if (!def) return builder.build();
-
-    // Check if under construction already
-    const existing = heya.infrastructure?.[facilityId];
-    if (existing && existing.status === "under_construction") return builder.build();
-
-    const currentLevel = existing?.level || 0;
-    const nextLevel = currentLevel + 1;
-
-    // Calculate cost (scales with level)
-    const cost = def.baseCost * (1 + (nextLevel - 1) * CONSTRUCTION_COST_LEVEL_MULTIPLIER);
-    if (heya.funds < cost) return builder.build();
-
-    // Phase 5 Depth: Regional Presence check
-    if (def.requirements?.regionalPresence) {
-      const presence = heya.regionalPresence || {};
-      for (const [region, minPresence] of Object.entries(def.requirements.regionalPresence)) {
-        if ((presence[region] || 0) < (minPresence as number)) {
-          builder.logEvent(
-            "CONSTRUCTION_STARTED",
-            "facility",
-            {
-              facilityId,
-              status: "failed_requirements",
-              reason: `Insufficient presence in ${region}. Need ${minPresence}, have ${presence[region] || 0}.`,
-            },
-            { heyaId }
-          );
-          return builder.build();
-        }
+    const result = validateConstruction(world, heyaId, facilityId);
+    if (!result.ok || !result.heya || !result.def || result.cost === undefined || result.nextLevel === undefined) {
+      if (result.reason && result.reason !== "heya_not_found" && result.reason !== "facility_not_found" && result.reason !== "already_under_construction" && result.reason !== "insufficient_funds") {
+        builder.logEvent(
+          "CONSTRUCTION_STARTED",
+          "facility",
+          {
+            facilityId,
+            status: "failed_requirements",
+            reason: result.reason,
+          },
+          { heyaId }
+        );
       }
+      return builder.build();
     }
 
-    // Determine completion date (relative to current world state)
-    // We'll use a simple "next basho" or "N basho from now" logic
-    // For now, let's assume world.currentBashoName exists
+    const { heya, def, cost, nextLevel } = result;
+
     const completionYear =
       world.year + (def.buildTimeBasho > CONSTRUCTION_BUILD_TIME_THRESHOLD ? 1 : 0);
 
@@ -108,7 +87,7 @@ export const InfrastructureService = {
       facilityId,
       level: nextLevel,
       completionYear: completionYear,
-      completionBasho: "TBD", // Will be resolved by the tick logic
+      completionBasho: "TBD",
     };
 
     builder.updateHeya(heyaId, {

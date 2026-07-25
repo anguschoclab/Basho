@@ -18,7 +18,7 @@
  */
 
 import type { BoutContext } from "../bout/boutPhysics";
-import type { Rikishi, RikishiAchievements } from "../types/rikishi";
+import type { Rikishi } from "../types/rikishi";
 import type { BashoState, BoutResult, BashoName } from "../types/basho";
 import type { WorldState } from "../types/world";
 import type { Side } from "../types/banzuke";
@@ -40,11 +40,10 @@ import { clamp } from "../utils/math";
 import { decideBoutTacticOverride } from "../strategy/NPCStrategyService";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
-import { getTacticProfile } from "./tacticProfiles";
+import { isYushoContention, isPlayoffScenario } from "./boutContention";
+import { detectKinboshi } from "./boutAchievements";
+import { computeTacticAftermath } from "./boutTacticAftermath";
 import {
-  CONTENTION_WINDOW,
-  FINAL_DAY,
-  HENKA_MOMENTUM_PENALTY,
   KENSHO_BASE_COUNT_LOW,
   KENSHO_BASE_COUNT_MID,
   KENSHO_BASE_COUNT_HIGH,
@@ -64,101 +63,12 @@ import {
 
 // Phase 8 complete: kimariteClassifier.ts owns all kimarite selection.
 // kimariteEvaluator.ts has been deleted.
-
-/**
- * Check if a bout is in yusho contention.
- * Returns true if both rikishi are within 2 wins of the basho leader.
- *
- * @param {Rikishi} east - East rikishi.
- * @param {Rikishi} west - West rikishi.
- * @param {BashoState} basho - Current basho state.
- * @returns {boolean} True if bout is in yusho contention.
- *
- * @example
- * ```ts
- * const inContention = isYushoContention(east, west, basho);
- * if (inContention) console.log("Yusho contention bout!");
- * ```
- */
-function isYushoContention(east: Rikishi, west: Rikishi, basho: BashoState): boolean {
-  const standings = basho.standings;
-  if (!standings || standings.size === 0) return false;
-
-  // Find the current leader(s) win count
-  let maxWins = 0;
-  for (const record of standings.values()) {
-    if (record.wins > maxWins) {
-      maxWins = record.wins;
-    }
-  }
-
-  // Get east and west win counts
-  const eastRecord = standings.get(east.id);
-  const westRecord = standings.get(west.id);
-  const eastWins = eastRecord?.wins ?? 0;
-  const westWins = westRecord?.wins ?? 0;
-
-  // Both must be within 2 wins of the leader (contention window)
-  const eastInContention = maxWins - eastWins <= CONTENTION_WINDOW;
-  const westInContention = maxWins - westWins <= CONTENTION_WINDOW;
-
-  return eastInContention && westInContention;
-}
-
-/**
- * Check if this bout is a playoff scenario.
- * Returns true if this is the final day and both rikishi are tied for the lead.
- *
- * @param {Rikishi} east - East rikishi.
- * @param {Rikishi} west - West rikishi.
- * @param {BashoState} basho - Current basho state.
- * @returns {boolean} True if bout is a playoff scenario.
- *
- * @example
- * ```ts
- * const isPlayoff = isPlayoffScenario(east, west, basho);
- * if (isPlayoff) console.log("Playoff bout!");
- * ```
- */
-function isPlayoffScenario(east: Rikishi, west: Rikishi, basho: BashoState): boolean {
-  // Playoffs only happen on day 15 (final day)
-  if (basho.day !== FINAL_DAY) return false;
-
-  const standings = basho.standings;
-  if (!standings || standings.size === 0) return false;
-
-  const eastRecord = standings.get(east.id);
-  const westRecord = standings.get(west.id);
-  const eastWins = eastRecord?.wins ?? 0;
-  const westWins = westRecord?.wins ?? 0;
-
-  // Find leader win count
-  let maxWins = 0;
-  for (const record of standings.values()) {
-    if (record.wins > maxWins) {
-      maxWins = record.wins;
-    }
-  }
-
-  // Both must be tied for the lead on the final day
-  return eastWins === maxWins && westWins === maxWins && eastWins === westWins;
-}
+// Contention, achievement, and tactic aftermath logic extracted to dedicated modules.
 
 /**
  * Pre-physics fusensho check.
  * If either rikishi is injured/absent, return a walkover result immediately
  * without running the physics simulation.
- *
- * @param {BoutContext} bout - The bout context.
- * @param {Rikishi} east - East rikishi.
- * @param {Rikishi} west - West rikishi.
- * @returns {BoutResult | null} Walkover result or null if both rikishi are present.
- *
- * @example
- * ```ts
- * const fusenshoResult = tryFusensho(bout, east, west);
- * if (fusenshoResult) return { result: fusenshoResult, impact: builder.build() };
- * ```
  */
 function tryFusensho(bout: BoutContext, east: Rikishi, west: Rikishi): BoutResult | null {
   const eastAbsent = east.injured || east.isRetired || east.isKyujo;
@@ -166,7 +76,6 @@ function tryFusensho(bout: BoutContext, east: Rikishi, west: Rikishi): BoutResul
 
   if (!eastAbsent && !westAbsent) return null;
 
-  // If both absent (very rare), east wins by convention
   const winnerSide: Side = westAbsent ? "east" : "west";
   const winner = winnerSide === "east" ? east : west;
   const loser = winnerSide === "east" ? west : east;
@@ -177,7 +86,7 @@ function tryFusensho(bout: BoutContext, east: Rikishi, west: Rikishi): BoutResul
     winnerRikishiId: winner.id,
     loserRikishiId: loser.id,
     kimarite: "fusensho",
-    kimariteName: "Fusenshō",
+    kimariteName: "Fusensh\u014d",
     stance: "no-grip",
     tachiaiWinner: winnerSide,
     duration: 0,
@@ -187,148 +96,6 @@ function tryFusensho(bout: BoutContext, east: Rikishi, west: Rikishi): BoutResul
     log: [{ phase: "finish", data: { event: "fusensho", absent: loser.id } }],
     kenshoEnvelopes: 0,
   };
-}
-
-/**
- * Detect kinboshi/ginboshi achievements.
- * Pure: returns updated achievements and kinboshi delta without mutating state.
- */
-function detectKinboshi(
-  result: BoutResult,
-  winner: Rikishi,
-  loser: Rikishi
-): {
-  winnerAchievements: RikishiAchievements;
-  loserAchievements: RikishiAchievements;
-  kinboshiDelta: boolean;
-} {
-  const defaultAchievements = (): RikishiAchievements => ({
-    kinboshiEarned: 0,
-    ginboshiEarned: 0,
-    kinboshiConceded: 0,
-    ginboshiConceded: 0,
-    specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
-    mochikyukinPoints: 0,
-  });
-
-  const winnerAchievements = winner.stats.achievements || defaultAchievements();
-  const loserAchievements = loser.stats.achievements || defaultAchievements();
-  let kinboshiDelta = false;
-
-  if (winner.rank === "maegashira" && loser.rank === "yokozuna" && result.kimarite !== "fusensho") {
-    winnerAchievements.kinboshiEarned++;
-    loserAchievements.kinboshiConceded++;
-    kinboshiDelta = true;
-  } else if (
-    winner.rank === "maegashira" &&
-    loser.rank === "ozeki" &&
-    result.kimarite !== "fusensho"
-  ) {
-    winnerAchievements.ginboshiEarned++;
-    loserAchievements.ginboshiConceded++;
-    result.awardFact = "ginboshi";
-  }
-
-  return { winnerAchievements, loserAchievements, kinboshiDelta };
-}
-
-/**
- * Compute tactic aftermath: fatigue, momentum, and injury multiplier.
- * Returns updates for player/cpu rikishi and the injury risk multiplier.
- */
-function computeTacticAftermath(
-  bout: BoutContext,
-  result: BoutResult,
-  winner: Rikishi,
-  loser: Rikishi,
-  cpuTacticOverride: import("../types/combat").BoutTactic | undefined
-): {
-  playerUpdate: Partial<Rikishi>;
-  cpuUpdate: Partial<Rikishi>;
-  injuryMultiplier: number;
-} {
-  let injuryMultiplier = 1.0;
-  let playerUpdate: Partial<Rikishi> = {};
-  let cpuUpdate: Partial<Rikishi> = {};
-
-  const playerIsWinner = result.winner === bout.playerSide;
-  const playerRikishi = playerIsWinner ? winner : loser;
-
-  // Player tactic effects
-  if (bout.playerTactic && bout.playerSide && result.kimarite !== "fusensho") {
-    const profile = getTacticProfile(bout.playerTactic);
-
-    // Fatigue cost applied to player rikishi
-    if (profile.fatigueCost > 0) {
-      const currentFatigue = playerRikishi.fatigue ?? 0;
-      playerUpdate = {
-        ...playerUpdate,
-        fatigue: clamp(currentFatigue + profile.fatigueCost, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
-      };
-    }
-
-    // Momentum delta based on win/loss
-    const momentumDelta = playerIsWinner ? profile.momentumOnWin : profile.momentumOnLoss;
-    if (momentumDelta !== 0) {
-      const currentMomentum = playerRikishi.momentum ?? 50;
-      playerUpdate = {
-        ...playerUpdate,
-        momentum: clamp(currentMomentum + momentumDelta, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
-      };
-    }
-
-    // Injury multiplier from player tactic (applies if player lost)
-    if (!playerIsWinner) {
-      injuryMultiplier = Math.max(injuryMultiplier, profile.injuryRiskMultiplier);
-    }
-  }
-
-  // CPU tactic effects
-  if (cpuTacticOverride && result.kimarite !== "fusensho") {
-    const profile = getTacticProfile(cpuTacticOverride);
-    const cpuIsWinner =
-      (bout.playerSide === "east" && result.winner === "west") ||
-      (bout.playerSide === "west" && result.winner === "east") ||
-      !bout.playerSide;
-    const cpuRikishi = cpuIsWinner ? winner : loser;
-
-    if (profile.fatigueCost > 0) {
-      const currentFatigue = cpuRikishi.fatigue ?? 0;
-      cpuUpdate = {
-        ...cpuUpdate,
-        fatigue: clamp(currentFatigue + profile.fatigueCost, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
-      };
-    }
-
-    const momentumDelta = cpuIsWinner ? profile.momentumOnWin : profile.momentumOnLoss;
-    if (momentumDelta !== 0) {
-      const currentMomentum = cpuRikishi.momentum ?? 50;
-      cpuUpdate = {
-        ...cpuUpdate,
-        momentum: clamp(currentMomentum + momentumDelta, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
-      };
-    }
-
-    if (!cpuIsWinner) {
-      injuryMultiplier = Math.max(injuryMultiplier, profile.injuryRiskMultiplier);
-    }
-  }
-
-  // Legacy henka prestige penalty (momentum loss on win) — folded into profile.momentumOnWin
-  // Keep explicit check for HENKA won to ensure backward-compatible penalty
-  const playerHenkaWon =
-    bout.playerTactic === "HENKA" &&
-    result.winner === bout.playerSide &&
-    result.kimarite !== "fusensho";
-  if (playerHenkaWon && !playerUpdate?.momentum) {
-    const currentMomentum = playerRikishi.momentum ?? 50;
-    playerUpdate = {
-      ...playerUpdate,
-      momentum: clamp(currentMomentum - HENKA_MOMENTUM_PENALTY, STAT_CLAMP_MIN, STAT_CLAMP_MAX),
-    };
-  }
-
-  return { playerUpdate, cpuUpdate, injuryMultiplier };
 }
 
 /**

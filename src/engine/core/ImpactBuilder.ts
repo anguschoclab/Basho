@@ -21,6 +21,7 @@ import type { MyosekiStock, MyosekiTransaction } from "../types/myoseki";
 import type { Staff } from "../types/staff";
 import type { StateImpact } from "./StateImpact";
 import { createEmptyImpact, getNextTimestamp } from "./StateImpact";
+import { deepMerge, setNestedField } from "../utils/objectMerge";
 
 type ArrayAppendItem<K extends string> = K extends "history"
   ? import("../types/basho").BashoResult[]
@@ -37,61 +38,6 @@ type ArrayAppendItem<K extends string> = K extends "history"
             : K extends "pendingExhibitions"
               ? unknown[]
               : never;
-
-/**
- * Deep merge two objects, handling nested structures.
- */
-function deepMerge(
-  target: Record<string, unknown>,
-  source: Record<string, unknown>
-): Record<string, unknown> {
-  if (!target || typeof target !== "object") return source;
-  if (!source || typeof source !== "object") return source;
-
-  const output = { ...target };
-
-  for (const key in source) {
-    if (Object.prototype.hasOwnProperty.call(source, key)) {
-      if (typeof source[key] === "object" && source[key] !== null && !Array.isArray(source[key])) {
-        output[key] = deepMerge(
-          target[key] as Record<string, unknown>,
-          source[key] as Record<string, unknown>
-        );
-      } else {
-        output[key] = source[key];
-      }
-    }
-  }
-
-  return output;
-}
-
-/**
- * Set a nested field value using a dot-separated path.
- */
-function setNestedField(
-  obj: Record<string, unknown>,
-  path: string,
-  value: unknown
-): Record<string, unknown> {
-  const keys = path.split(".");
-  const result = { ...obj };
-  let current = result as Record<string, unknown>;
-
-  for (let i = 0; i < keys.length - 1; i++) {
-    const key = keys[i];
-    if (!(key in current)) {
-      current[key] = {};
-    }
-    const currentValue = current[key];
-    current[key] =
-      typeof currentValue === "object" && currentValue !== null ? { ...currentValue } : {};
-    current = current[key] as Record<string, unknown>;
-  }
-
-  current[keys[keys.length - 1]] = value;
-  return result;
-}
 
 /**
  * Builder class for constructing StateImpact objects.

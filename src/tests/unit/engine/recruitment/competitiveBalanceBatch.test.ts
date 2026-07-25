@@ -1,8 +1,9 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import {
   recruitmentBalanceMultiplier,
   recruitmentBalanceMultipliers,
 } from "@/engine/systems/generation/competitiveBalance";
+import { clearQueryCaches } from "@/engine/queries";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Id } from "@/engine/types/common";
@@ -25,6 +26,8 @@ function worldWithStables(spec: Record<string, number>): WorldState {
   }
   return makeMockWorld({ heyas, rikishi });
 }
+
+beforeEach(() => clearQueryCaches());
 
 describe("recruitmentBalanceMultipliers", () => {
   it("returns a Map with the same values as individual recruitmentBalanceMultiplier calls", () => {

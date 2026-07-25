@@ -1,5 +1,6 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { recruitmentBalanceMultiplier, recruitmentBalanceMultipliers } from "@/engine/systems/generation/competitiveBalance";
+import { clearQueryCaches } from "@/engine/queries";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
 import type { WorldState } from "@/engine/types/world";
 
@@ -22,6 +23,8 @@ function worldWithStables(spec: Record<string, number>): WorldState {
   }
   return makeMockWorld({ heyas, rikishi });
 }
+
+beforeEach(() => clearQueryCaches());
 
 describe("recruitmentBalanceMultiplier", () => {
   it("handicaps a strong stable below 1 and boosts a weak stable above 1", () => {
