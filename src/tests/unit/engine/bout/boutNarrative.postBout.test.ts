@@ -76,7 +76,7 @@ describe("generateBoutNarrative — post-bout context", () => {
       const world = makeWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 14, "seed-kachi-1", world);
-      const kachiLines = getPostBoutLines(result).filter((l) => l.tags?.includes("career_high"));
+      const kachiLines = getPostBoutLines(result).filter((l) => l.tags?.includes("kachi_koshi"));
       expect(kachiLines.length).toBeGreaterThan(0);
     });
 
@@ -150,7 +150,7 @@ describe("generateBoutNarrative — post-bout context", () => {
       generateBoutNarrative(result, east, west, BASHO, 12, "seed-consec-post-1", world);
       // Pre-bout should mention the consecutive kachi (>= 3 threshold not met with 2, so no pre-bout line)
       // But post-bout kachi-koshi line should exist
-      const kachiLines = getPostBoutLines(result).filter((l) => l.tags?.includes("career_high"));
+      const kachiLines = getPostBoutLines(result).filter((l) => l.tags?.includes("kachi_koshi"));
       expect(kachiLines.length).toBeGreaterThan(0);
     });
 

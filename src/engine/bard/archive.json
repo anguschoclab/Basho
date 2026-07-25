@@ -2393,6 +2393,104 @@
       }
     },
     "pre_bout": {
+      "records": {
+        "both_contending": [
+          "%EAST_NAME% at %EAST_WINS% and %EAST_LOSSES%. %WEST_NAME% at %WEST_WINS% and %WEST_LOSSES%.",
+          "Both men with winning records — %EAST_NAME% %EAST_WINS%-%EAST_LOSSES%, %WEST_NAME% %WEST_WINS%-%WEST_LOSSES%.",
+          "Two contenders here — %EAST_NAME% at %EAST_WINS% and %WEST_LOSSES%, %WEST_NAME% also at %WEST_WINS% and %WEST_LOSSES%."
+        ],
+        "both_struggling": [
+          "%EAST_NAME% at %EAST_WINS% and %EAST_LOSSES%. %WEST_NAME% at %WEST_WINS% and %WEST_LOSSES%. A tough basho for both.",
+          "Both men looking for answers — %EAST_NAME% %EAST_WINS%-%EAST_LOSSES%, %WEST_NAME% %WEST_WINS%-%WEST_LOSSES%.",
+          "A difficult tournament for both — %EAST_NAME% at %EAST_WINS% and %WEST_LOSSES%, %WEST_NAME% at %WEST_WINS% and %WEST_LOSSES%."
+        ],
+        "one_struggling": [
+          "%EAST_NAME% at %EAST_WINS% and %EAST_LOSSES%, while %WEST_NAME% sits at %WEST_WINS% and %WEST_LOSSES%.",
+          "%EAST_NAME% with %EAST_WINS% wins and %EAST_LOSSES% losses. %WEST_NAME% at %WEST_WINS% and %WEST_LOSSES%.",
+          "A tale of two records — %EAST_NAME% %EAST_WINS%-%EAST_LOSSES%, %WEST_NAME% %WEST_WINS%-%WEST_LOSSES%."
+        ],
+        "both_even": [
+          "%EAST_NAME% and %WEST_NAME% both at %EAST_WINS% and %EAST_LOSSES%.",
+          "Identical records — both men at %EAST_WINS% and %EAST_LOSSES%.",
+          "Even Steven — %EAST_NAME% and %WEST_NAME% each with %EAST_WINS% wins and %EAST_LOSSES% losses."
+        ],
+        "championship_elimination": [
+          "Both men at %EAST_WINS% and %EAST_LOSSES% — this is essentially a championship elimination match.",
+          "%EAST_NAME% and %WEST_NAME% both at %EAST_WINS%-%EAST_LOSSES%. The yusho could hinge on this bout.",
+          "A crucial matchup — both at %EAST_WINS% and %EAST_LOSSES%. The loser falls out of contention."
+        ],
+        "winless": [
+          "%EAST_NAME% is winless after %DAY% days. The pressure is mounting.",
+          "Zero and %EAST_LOSSES% for %EAST_NAME%. When will the first win come?",
+          "%EAST_NAME% still searching for that first win — %EAST_LOSSES% losses so far this basho."
+        ]
+      },
+      "previous_basho": {
+        "standard": [
+          "%NAME% went %PREV_WINS% and %PREV_LOSSES% last tournament.",
+          "%NAME% is coming off a %PREV_WINS%-%PREV_LOSSES% basho.",
+          "Last time out, %NAME% finished at %PREV_WINS% and %PREV_LOSSES%."
+        ],
+        "kyujo": [
+          "%NAME% sat out the entire tournament last time.",
+          "%NAME% missed the last basho with injury — a full kyujo.",
+          "%NAME% did not compete last tournament — sat out all fifteen days."
+        ],
+        "yusho": [
+          "%NAME% is coming off a yusho — %PREV_WINS% and %PREV_LOSSES% with the championship.",
+          "%NAME% won the yusho last basho with a %PREV_WINS%-%PREV_LOSSES% record.",
+          "The defending champion %NAME% went %PREV_WINS% and %PREV_LOSSES% last time out."
+        ],
+        "both_relevant": [
+          "%EAST_NAME% went %EAST_PREV_WINS% and %EAST_PREV_LOSSES% last basho, %WEST_NAME% went %WEST_PREV_WINS% and %WEST_PREV_LOSSES%.",
+          "Both coming off notable tournaments — %EAST_NAME% at %EAST_PREV_WINS%-%EAST_PREV_LOSSES%, %WEST_NAME% at %WEST_PREV_WINS%-%WEST_PREV_LOSSES%.",
+          "Last basho: %EAST_NAME% %EAST_PREV_WINS% and %EAST_PREV_LOSSES%, %WEST_NAME% %WEST_PREV_WINS% and %WEST_PREV_LOSSES%."
+        ]
+      },
+      "career_high": {
+        "makuuchi": [
+          "%NAME% is competing at his personal high rank of Maegashira %RANK_NUMBER%.",
+          "%NAME% at a career-high rank — Maegashira %RANK_NUMBER%.",
+          "This is the highest rank %NAME% has ever held — Maegashira %RANK_NUMBER%."
+        ],
+        "juryo": [
+          "%NAME% is competing at his personal high rank of Juryo %RANK_NUMBER%.",
+          "%NAME% at a career-high — Juryo %RANK_NUMBER%.",
+          "The highest rank %NAME% has reached — Juryo %RANK_NUMBER%."
+        ],
+        "sanyaku": [
+          "%NAME% is competing at a career-high rank.",
+          "%NAME% has reached his highest-ever rank this basho.",
+          "A career-high rank for %NAME% — a testament to his dedication."
+        ]
+      },
+      "storylines": {
+        "kachi_chase": [
+          "%NAME% needs %NEEDED% more win%PLURAL% for kachi-koshi.",
+          "%NAME% is on the verge — %NEEDED% win%PLURAL% away from a winning record.",
+          "Just %NEEDED% more for %NAME% to secure kachi-koshi."
+        ],
+        "make_koshi_avoidance": [
+          "%NAME% cannot afford another loss — one more defeat means make-koshi.",
+          "The pressure is on %NAME% — one more loss and it's a losing tournament.",
+          "%NAME% is on the brink. One more loss will confirm make-koshi."
+        ],
+        "rookie": [
+          "%NAME% — the rookie, in only his %COUNT% top division tournament.",
+          "A makuuchi debut for %NAME% — still finding his feet in the top division.",
+          "%NAME% in just his %COUNT%nd top division tournament. The young fighter is learning."
+        ],
+        "tournament_count": [
+          "%NAME% in his %COUNT%th makuuchi tournament.",
+          "This is tournament number %COUNT% in the top division for %NAME%.",
+          "%NAME% — a veteran of %COUNT% top division basho."
+        ],
+        "consecutive_kachi": [
+          "%NAME% is going for kachi-koshi for the %ORDINAL% consecutive tournament.",
+          "%NAME% rides a %STREAK%-basho kachi-koshi streak into this bout.",
+          "Can %NAME% extend the %STREAK%-tournament kachi-koshi run today?"
+        ]
+      },
       "h2h_streak": [
         "%P1% has won the last %STREAK% straight against %P2%. Can the streak continue today?",
         "A %STREAK%-bout winning streak for %P1% over %P2% — history favors one man today.",
@@ -2481,6 +2579,65 @@
         "%WINNER% prevails! The %KIMARITE% was picture-perfect.",
         "%LOSER% could find no answer. %WINNER% controls the bout from start to finish."
       ],
+      "records": {
+        "winner_improves": [
+          "%WINNER% improves to %WINNER_WINS% and %WINNER_LOSSES%.",
+          "%WINNER% moves to %WINNER_WINS%-%WINNER_LOSSES% on the tournament.",
+          "That's %WINNER_WINS% wins now for %WINNER% against %WINNER_LOSSES% losses."
+        ],
+        "loser_falls": [
+          "%LOSER% falls to %LOSER_WINS% and %LOSER_LOSSES%.",
+          "%LOSER% drops to %LOSER_WINS%-%LOSER_LOSSES%.",
+          "A tough day for %LOSER% — now at %LOSER_WINS% wins and %LOSER_LOSSES% losses."
+        ],
+        "both_even": [
+          "Both men are now at %WINNER_WINS% and %WINNER_LOSSES% after %DAY% days.",
+          "%WINNER% and %LOSER% both sitting at %WINNER_WINS%-%WINNER_LOSSES% after this one.",
+          "Even records now — %WINNER_WINS% wins and %WINNER_LOSSES% losses for both."
+        ]
+      },
+      "storylines": {
+        "streak_snapped": [
+          "That %STREAK%-bout winning streak comes to an end for %LOSER%.",
+          "%LOSER%'s %STREAK% straight wins are no more — %WINNER% stops the run.",
+          "The streak is over. %LOSER% had won %STREAK% in a row before today."
+        ],
+        "streak_continued": [
+          "%WINNER% makes it %STREAK% straight victories.",
+          "%STREAK% in a row now for %WINNER% — can anyone stop the run?",
+          "%WINNER% keeps rolling — %STREAK% consecutive wins and counting."
+        ],
+        "loss_streak": [
+          "%LOSER% loses for the %STREAK%th straight day.",
+          "%STREAK% straight losses now for %LOSER%. A difficult stretch.",
+          "The losing streak reaches %STREAK% for %LOSER%."
+        ],
+        "first_win": [
+          "%WINNER% picks up his first win of the basho!",
+          "The first win finally came today for %WINNER%.",
+          "%WINNER% gets off the schneid — first victory of the tournament."
+        ],
+        "consecutive_kachi": [
+          "Kachi-koshi for the %ORDINAL% consecutive tournament for %SHIKONA%!",
+          "%SHIKONA% makes it %STREAK% straight basho with a winning record.",
+          "%SHIKONA% — kachi-koshi for the %STREAK%th tournament in a row."
+        ],
+        "sole_leader": [
+          "%WINNER% is now the sole leader of the tournament.",
+          "%WINNER% stands alone at the top — sole leader after %DAY% days.",
+          "A clear leader emerges: %WINNER% alone in first place."
+        ],
+        "falls_out": [
+          "%LOSER% falls out of a share of first place.",
+          "%LOSER% drops from the co-leadership with this loss.",
+          "No longer a co-leader — %LOSER% falls off the pace."
+        ],
+        "ties_leader": [
+          "%WINNER% ties the leader with this win.",
+          "%WINNER% pulls level with the tournament leader.",
+          "We have a tie at the top — %WINNER% joins the leader."
+        ]
+      },
       "career_milestone": [
         "That win brings %SHIKONA% to %MILESTONE% career victories — a remarkable achievement.",
         "History for %SHIKONA% — career win number %MILESTONE% is in the books.",
@@ -2501,48 +2658,179 @@
         "The championship chase tightens — %WINNER% is right in the thick of it at %WINS%.",
         "A massive win for %WINNER% in the yusho race. %WINS% wins and counting."
       ],
-      "mono_ii": [
-        "The judges are conferencing — a mono-ii has been called.",
-        "A close call brings the judges to the dohyo. The crowd waits in suspense.",
-        "Mono-ii! The five judges deliberate over the finish."
-      ],
-      "replay": [
-        "Let's see that again — %WINNER%'s %KIMARITE% in slow motion.",
-        "The replay shows the precision of %WINNER%'s winning technique.",
-        "One more look at that spectacular finish — %KIMARITE% seals it for %WINNER%."
-      ]
+      "mono_ii": {
+        "gunbai_contested": [
+          "The goji points his gunbai to %WINNER%. Will we have a mono-ii?",
+          "The gyoji calls it for %WINNER%, but the judges are looking at each other."
+        ],
+        "gyoji_confused": [
+          "The goji got caught up in the action at the edge of the ring. The goji looks a bit confused now."
+        ],
+        "review": [
+          "The judges want to talk it over. It's another mono-ii.",
+          "The five judges convene on the dohyo. A mono-ii has been called.",
+          "A close call brings the judges to the dohyo. The crowd waits in suspense."
+        ],
+        "replay_analysis": [
+          "Let's see what happened at the edge. %LOSER% has that left foot on the tawara, but it doesn't look like he stepped out with his heel.",
+          "The replay shows the critical moment — both men right at the edge."
+        ],
+        "call_reversed": [
+          "After discussion, it was determined that %LOSER% stepped out first. So the Goji's decision is reversed. The winner is %WINNER%.",
+          "The judges reverse the call — %LOSER% touched down first. %WINNER% takes it."
+        ],
+        "call_upheld": [
+          "It was determined that %LOSER% touched down first. So the Goji's decision stands. The winner is %WINNER%.",
+          "The call is upheld — %WINNER% is confirmed as the winner."
+        ],
+        "rematch_ordered": [
+          "A rematch has been ordered.",
+          "The judges call for a rematch — back to the shikiri lines."
+        ]
+      },
+      "replay": {
+        "tachiai_decisive": [
+          "The speed of the left hand into the tachi was the winning move for %WINNER%.",
+          "Watch the tachiai again — %WINNER% got the jump and never looked back."
+        ],
+        "grip_battle": [
+          "Right hand in, left hand out. Bread and butter sumo from %WINNER%.",
+          "The grip battle was key — %WINNER% secured his favorite hold and took control."
+        ],
+        "edge_drama": [
+          "%LOSER% almost goes out, but look at his footwork. Stays inside the ring — remarkable balance.",
+          "At the tawara, %LOSER% somehow stays in. The crowd gasps at that footwork."
+        ],
+        "counter": [
+          "Good defense and then good offense from %WINNER%. A great technique sequence.",
+          "%WINNER% absorbs the pressure, then counters beautifully. That's sumo at its finest."
+        ],
+        "size_overcame": [
+          "Just overpowered. Too big, too strong — %WINNER% used every kilogram to advantage.",
+          "The size difference was telling. %WINNER% simply outmuscled %LOSER%."
+        ],
+        "reversal": [
+          "What a reversal move by %WINNER%! Look at that hip shift.",
+          "An incredible reversal — %LOSER% thought he had it, but %WINNER% turned the tables."
+        ],
+        "quick_finish": [
+          "This happened oh so quickly — blink and you missed it.",
+          "A flash finish. %WINNER% ended it before %LOSER% could react."
+        ],
+        "control": [
+          "%WINNER% was in total control from start to finish.",
+          "A masterclass from %WINNER% — never threatened, always in command."
+        ],
+        "generic": [
+          "Let's see that again — %WINNER%'s %KIMARITE% in slow motion.",
+          "The replay shows the precision of %WINNER%'s winning technique.",
+          "One more look at that spectacular finish — %KIMARITE% seals it for %WINNER%."
+        ]
+      }
     },
     "interview": {
+      "questions": {
+        "kachi_koshi": [
+          "You've secured your kachi-koshi. How do you feel?",
+          "What's been going well this tournament?",
+          "How will you approach the rest of the tournament?",
+          "Any message for your fans?"
+        ],
+        "make_koshi": [
+          "Tough day today. What went wrong?",
+          "What's your mindset heading into tomorrow?",
+          "How will you bounce back next basho?"
+        ],
+        "milestone": [
+          "That's your %MILESTONE%th top division win. How does it feel?",
+          "Were you nervous approaching the milestone?",
+          "What does this milestone mean to you?"
+        ],
+        "upset": [
+          "You defeated a %OPPONENT_RANK% today. What was the key?",
+          "How did you prepare for this matchup?",
+          "What does this win mean for your tournament?"
+        ],
+        "first_win": [
+          "Your first win finally came today. How do you feel?",
+          "How did you reset mentally after the losing streak?",
+          "What's the approach for tomorrow?"
+        ],
+        "general_win": [
+          "How do you feel about that performance?",
+          "What was the key moment in the bout?",
+          "How will you prepare for tomorrow?",
+          "Any thoughts on your opponent today?"
+        ],
+        "general_loss": [
+          "What happened out there today?",
+          "How will you regroup for tomorrow?",
+          "What do you need to improve?"
+        ]
+      },
       "stoic": [
-        "\"I just focused on my sumo. That is all.\"",
-        "\"The result speaks for itself. I will prepare for tomorrow.\"",
-        "\"I have nothing to say. My sumo did the talking.\"",
-        "\"One bout at a time. That is my approach.\""
+        "\"It feels great.\"",
+        "\"I'll do my best.\"",
+        "\"One bout at a time.\"",
+        "\"My sumo spoke for itself.\"",
+        "\"I prepare the same way every day.\"",
+        "\"The result is what it is.\""
       ],
       "villain": [
         "\"Of course I won. Did anyone expect otherwise?\"",
         "\"%OPPONENT% never stood a chance. I told you all.\"",
         "\"This is what I do. I win. Deal with it.\"",
-        "\"Another opponent, another victory. Next question.\""
+        "\"Another opponent, another victory. Next question.\"",
+        "\"I'm the best here. Everyone else is fighting for second.\"",
+        "\"Easy work. Next.\""
       ],
       "celebrity": [
         "\"I want to thank my fans — their support means everything to me.\"",
         "\"It's been a wonderful tournament. I'm enjoying every moment on the dohyo.\"",
         "\"I hope everyone watching enjoyed that bout as much as I did!\"",
-        "\"The energy from the crowd today was incredible. Thank you all.\""
+        "\"The energy from the crowd today was incredible. Thank you all.\"",
+        "\"I'm so grateful for the support of my heya and my family.\"",
+        "\"This one's for everyone who believed in me.\""
       ],
       "firebrand": [
         "\"I came here to fight and that's exactly what I did!\"",
         "\"Nobody pushes me around. Nobody! %OPPONENT% found that out today.\"",
         "\"I train harder than anyone. That's why I win. That's why I'll keep winning!\"",
-        "\"Don't test me in that ring. The result speaks for itself!\""
+        "\"Don't test me in that ring. The result speaks for itself!\"",
+        "\"I've been fighting for this moment my entire career!\"",
+        "\"Nobody believed in me, but here I am!\""
       ],
       "neutral": [
         "\"I'm pleased with the result. %KIMARITE% was the right technique today.\"",
         "\"It was a tough bout. I'm glad I could come away with the win.\"",
         "\"I stayed focused on my game plan and it worked out.\"",
-        "\"%OPPONENT% is a strong opponent. I'm happy to get the victory.\""
-      ]
+        "\"%OPPONENT% is a strong opponent. I'm happy to get the victory.\"",
+        "\"I've been staying on the attack. That's been working for me.\"",
+        "\"One bout at a time, stay focused on my sumo.\""
+      ],
+      "modifiers": {
+        "witty": [
+          "...But I wouldn't bet against me either.",
+          "...Though I did consider letting him win for a change."
+        ],
+        "humble": [
+          "I couldn't have done it without my stable and my oyakata.",
+          "The credit goes to everyone who supported me."
+        ],
+        "philosophical": [
+          "Sumo is a journey of a thousand bouts.",
+          "Every bout teaches you something about yourself."
+        ],
+        "analytical": [
+          "My tachiai was the key today. I got the position I wanted.",
+          "I noticed his grip was weak, so I attacked at that moment."
+        ],
+        "laconic": [
+          "Yes.",
+          "I'll try my best.",
+          "We'll see."
+        ]
+      }
     }
   },
   "vocabulary": {

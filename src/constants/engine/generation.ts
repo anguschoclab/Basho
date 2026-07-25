@@ -534,6 +534,9 @@ export const REPUTATION_SEED_MAX = 100;
 /** Probability of injury mention in pre-bout narrative (0-1) */
 export const INJURY_MENTION_CHANCE = 0.6;
 
+/** Probability of post-bout interview (0-1) */
+export const INTERVIEW_CHANCE = 0.25;
+
 /** Weight difference threshold (kg) for physical comparison narrative */
 export const WEIGHT_DIFF_THRESHOLD = 20;
 
