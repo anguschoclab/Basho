@@ -37,6 +37,7 @@
 **Rule:** Always use `BaseWidget` as the top-level wrapper for all dashboard widgets to maintain consistent layout, headers, and padding for both populated and empty states.
 
 ## 2025-07-25 - Yusho Race Widget consistency
+
 **Issue:** `YushoRaceWidget` handled its empty and non-empty state inconsistently by returning `null` when no contenders existed, creating a hole in the layout. It also wrapped content in a `Card` instead of `BaseWidget`.
 **Learning:** Returning `null` on widgets inside a dashboard causes inconsistent visual shifts, and bypassing the `BaseWidget` wrapper loses dashboard uniformity.
 **Rule:** Dashboard widgets must always use `BaseWidget` as the top-level element, and handle empty data scenarios with the `EmptyState` component for predictable layout.
