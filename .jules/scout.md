@@ -39,3 +39,9 @@
 **Gap:** `checkNaturalizations` in `naturalization.ts` was entirely untested. This core logic handles when and if foreign rikishi gain Japanese citizenship, which unlocks their stable's foreign slot (a major strategic constraint).
 **Learning:** `checkNaturalizations` relies on `rngFromSeed` which uses the rikishi's ID and the current year. To deterministically test the ~5% chance passing or failing, specific IDs that yield passing (`< 5`) or failing (`> 5`) RNG outputs must be brute-forced or hardcoded (`rikishi_24` passes in `2025`). Also, `createImpactBuilder` stores patches in `impact.entities.rikishiUpdates` map, not a flat object.
 **Pattern:** For modules relying on rare RNG chances tied to entity IDs, write a small scratchpad script to find an ID that yields a passing roll for a given seed setup. For state verification, check `impact.entities.rikishiUpdates.get(id)` instead of expecting direct mutation.
+
+## 2025-02-27 - Scout: test monthly economics calculation modules
+
+**Gap:** The monthly calculation modules `loans.ts` and `salaries.ts` were isolated from `phase05_monthly_boundary.ts` but lacked their own explicit unit tests, leaving the core rules around Heya loans and Sekitori salaries untested.
+**Learning:** These modules generate financial events (`FINANCIAL_ALERT`) and perform entity updates directly via `ImpactBuilder` references. They mutate an externally passed `heyaUpdates` object rather than creating it themselves.
+**Pattern:** For modules that patch game state using `heyaUpdates` and `ImpactBuilder`, construct `WorldState`, `Heya`, and `Rikishi` using `MockFactory`. Pass them along with an initialized `heyaUpdates` and `createImpactBuilder()` into the function. Validate that `heyaUpdates` holds the mutated scalar fields (like `funds`) and `builder.build()` holds the complex object updates and events.
