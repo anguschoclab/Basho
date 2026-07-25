@@ -18,6 +18,7 @@
 import type { WorldState } from "../../types/world";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { CrisisService } from "../../systems/narrative/CrisisService";
 import { getHeya, getRikishi, getHeyaRoster, getOyakataForHeya } from "../../queries";
 import { spawnNarrativeAgent } from "../../agents/NarrativeAgent";
@@ -104,7 +105,7 @@ export function phase06_narrative(world: WorldState): StateImpact {
     const oyakata = getOyakataForHeya(world, world.playerHeyaId);
     if (oyakata) {
       const topRikishi = getHeyaRoster(world, world.playerHeyaId)
-        .filter((r) => r.division === "makuuchi" || r.division === "juryo")
+        .filter((r) => isSekitoriDivision(r.division))
         .slice(0, 3);
       const recentAchievements = deriveRecentAchievements(world);
       const narrativeResult = spawnNarrativeAgent({

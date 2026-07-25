@@ -79,7 +79,7 @@ export {
 export { resolveRegistryLabel, enrichRikishiForUI } from "./uiUtilities";
 
 // Original re-exports from existing modules (preserved for compatibility)
-export { projectRikishi } from "./rikishiUI";
+export { projectRikishi } from "./rikishi";
 export { formatRadarData, formatMetaTrends } from "./uiFormatters";
 export { getHallOfFame } from "../engine/hallOfFame";
 // Re-exports re-pointed to current source modules (uiConstants barrel removed)

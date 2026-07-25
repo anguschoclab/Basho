@@ -10,6 +10,7 @@
 import type { WorldState } from "../../types/world";
 import type { StateImpact } from "../../core/StateImpact";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import {
   TRAVEL_ALLOWANCE_YEARLY,
   TSUKEBITO_COSTS_MONTHLY,
@@ -132,7 +133,7 @@ export function distributeKoenkaiToSekitori(world: WorldState): StateImpact {
     let sekitoriCount = 0;
     for (const rId of heya.rikishiIds ?? []) {
       const r = getRikishi(world, rId);
-      if (r && !r.isRetired && (r.division === "makuuchi" || r.division === "juryo")) {
+      if (r && !r.isRetired && isSekitoriDivision(r.division)) {
         sekitoriCount++;
       }
     }

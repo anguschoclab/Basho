@@ -21,7 +21,7 @@ import { resetBashoMediaTracking, handleMediaEvent } from "./systems/media/Media
 import { applyBoutResult } from "./bout/boutResultApplier";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import { resolveImpacts } from "./core/ImpactResolver";
-import { getActiveRikishi, getStableRikishi } from "./queries";
+import { getActiveRikishi, getHeyaRoster } from "./queries";
 
 // New Lifecycle Services
 import * as bashoManager from "./lifecycle/BashoManager";
@@ -30,7 +30,7 @@ import { ensureDaySchedule } from "./schedule";
 import { onBashoEnded } from "./records";
 import { runPostBashoResolution } from "./core/SimulationRunner";
 
-export { getActiveRikishi, getStableRikishi, applyBoutResult, handleMediaEvent };
+export { getActiveRikishi, getHeyaRoster, applyBoutResult, handleMediaEvent };
 
 // Type guard or helper to access current basho
 /**

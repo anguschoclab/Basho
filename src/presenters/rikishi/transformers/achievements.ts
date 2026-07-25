@@ -27,6 +27,7 @@ export function calculateAchievements(r: Rikishi): RikishiAchievementsDTO["achie
     ginboshiEarned: r.stats?.achievements?.ginboshiEarned ?? 0,
     kinboshiConceded: r.stats?.achievements?.kinboshiConceded ?? 0,
     ginboshiConceded: r.stats?.achievements?.ginboshiConceded ?? 0,
+    mochikyukinPoints: r.stats?.achievements?.mochikyukinPoints ?? 0,
   };
 }
 

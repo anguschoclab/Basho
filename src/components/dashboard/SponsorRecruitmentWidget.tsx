@@ -10,6 +10,7 @@ import { formatYen } from "@/utils/engineUtils";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { recruitSponsor } from "@/presenters/uiDigest";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { getPlayerHeya } from "@/engine/queries";
 
 const TIER_LABELS: Record<string, { label: string; color: string }> = {
   T0: { label: "Local", color: "text-muted-foreground" },
@@ -98,7 +99,7 @@ export function SponsorRecruitmentWidget() {
     return null;
   }
 
-  const heya = world.heyas.get(world.playerHeyaId);
+  const heya = getPlayerHeya(world);
   if (!heya) return null;
 
   const koenkai = world.sponsorPool.koenkais.get(world.playerHeyaId);
@@ -126,7 +127,7 @@ export function SponsorRecruitmentWidget() {
 
   function handleRecruit(sponsorId: string) {
     if (!world?.sponsorPool || !world.playerHeyaId) return;
-    const heya = world.heyas.get(world.playerHeyaId);
+    const heya = getPlayerHeya(world);
     if (!heya) return;
 
     const sponsor = world.sponsorPool.sponsors.get(sponsorId);

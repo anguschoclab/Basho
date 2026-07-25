@@ -1,5 +1,5 @@
 import type { Id } from "./types/common";
-import { getStableRikishi, getHeya, getRikishi } from "./queries";
+import { getHeyaRoster, getHeya, getRikishi } from "./queries";
 import type { WorldState, ClosedHeyaRecord } from "./types/world";
 import { generateGovernanceHeadline } from "./systems/media/MediaService";
 import { updateFacilitiesBand } from "./facilities";
@@ -39,7 +39,7 @@ export function executeMerger(
 
   // 1. Transfer rikishi
   const transferredRikishiIds: Id[] = [];
-  for (const rId of getStableRikishi(world, source.id).map((r) => r.id)) {
+  for (const rId of getHeyaRoster(world, source.id).map((r) => r.id)) {
     const rikishi = getRikishi(world, rId);
     if (rikishi) {
       builder.updateRikishi(rId, { heyaId: target.id });
@@ -161,7 +161,7 @@ export function findMergerTarget(world: WorldState, sourceHeyaId: Id): Id | null
   for (const h of world.heyas.values()) {
     if (
       h.id !== sourceHeyaId &&
-      getStableRikishi(world, h.id).length < ROSTER_CAPACITY_STANDARD &&
+      getHeyaRoster(world, h.id).length < ROSTER_CAPACITY_STANDARD &&
       (h.prestigeBand === "elite" || h.prestigeBand === "respected" || h.prestigeBand === "modest")
     ) {
       candidates.push(h);
@@ -172,7 +172,7 @@ export function findMergerTarget(world: WorldState, sourceHeyaId: Id): Id | null
     // Fallback: any stable with room
     const fallback: import("./types/heya").Heya[] = [];
     for (const h of world.heyas.values()) {
-      if (h.id !== sourceHeyaId && getStableRikishi(world, h.id).length < ROSTER_CAPACITY_MERGER)
+      if (h.id !== sourceHeyaId && getHeyaRoster(world, h.id).length < ROSTER_CAPACITY_MERGER)
         fallback.push(h);
     }
     if (fallback.length === 0) return null;

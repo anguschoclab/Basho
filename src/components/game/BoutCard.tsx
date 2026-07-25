@@ -10,6 +10,7 @@ import { HEAT_CONFIG } from "./boutCardTypes.tsx";
 import { RikishiSide, H2HCenter, MatchFooter } from "./boutCardComponents";
 import { TACTIC_PROFILES, type TacticProfile } from "@/engine/bout/tacticProfiles";
 import type { BoutTactic } from "@/engine/types/combat";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 
 function getTacticRiskIcon(profile: TacticProfile) {
   if (profile.injuryRiskMultiplier >= 1.3) return <Flame className="h-3 w-3 text-rose-500" />;
@@ -55,7 +56,7 @@ export const BoutCard = React.memo(
           <SumoAvatar
             config={match.east.avatarConfig}
             size="sm"
-            showHairstyle={match.east.division === "makuuchi" || match.east.division === "juryo"}
+            showHairstyle={isSekitoriDivision(match.east.division)}
             fallback={match.east.shikona}
             expression={match.east.condition < 50 ? "intense" : "neutral"}
           />
@@ -81,7 +82,7 @@ export const BoutCard = React.memo(
           <SumoAvatar
             config={match.west.avatarConfig}
             size="sm"
-            showHairstyle={match.west.division === "makuuchi" || match.west.division === "juryo"}
+            showHairstyle={isSekitoriDivision(match.west.division)}
             fallback={match.west.shikona}
             expression={match.west.condition < 50 ? "intense" : "neutral"}
           />

@@ -6,6 +6,7 @@ import { RikishiName } from "@/components/ClickableName";
 import { Trophy, Crown, Star, Swords, HeartPulse } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
 import { selectInjuredRikishi } from "@/presenters/selectors";
+import { sortStandings } from "@/engine/utils/sort";
 import { EmptyState } from "@/components/ui/EmptyState";
 
 const LeaderboardRow = React.memo(
@@ -84,11 +85,9 @@ export function BashoWidget() {
       }
     }
 
-    const standingsArr = [];
-    for (const [id, rec] of basho.standings.entries()) {
-      standingsArr.push({ id, ...rec });
-    }
-    standingsArr.sort((a, b) => b.wins - a.wins || a.losses - b.losses);
+    const standingsArr = sortStandings(
+      Array.from(basho.standings.entries()).map(([id, rec]) => ({ id, ...rec }))
+    );
 
     return {
       day: basho.day,

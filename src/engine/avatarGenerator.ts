@@ -11,6 +11,7 @@ import {
   HAIR_COLORS,
 } from "./types/avatar";
 import type { Division } from "./types/banzuke";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 
 /**
  * Generate a complete avatar configuration from parameters.
@@ -168,7 +169,7 @@ export function generateDefaultAvatarConfig(rikishi: {
 }): AvatarConfig {
   const currentYear = 2025; // Should be passed in from world state in actual use
   const age = currentYear - rikishi.birthYear;
-  const isSekitori = rikishi.division === "makuuchi" || rikishi.division === "juryo";
+  const isSekitori = rikishi.division ? isSekitoriDivision(rikishi.division) : false;
 
   return generateAvatarConfig({
     seed: rikishi.id,

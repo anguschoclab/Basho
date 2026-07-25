@@ -6,6 +6,7 @@ import { Style, BoutTactic } from "../types/combat";
 import { Id } from "../types/common";
 import { BardEngine } from "../bard/BardEngine";
 import { SeededRNG } from "../rng";
+import { isSanyakuRank } from "@/constants/engine/rankDisplay";
 import {
   WELFARE_DISCIPLINE_ELEVATED_THRESHOLD,
   FRAGILE_RATIO_CRITICAL_THRESHOLD,
@@ -348,13 +349,12 @@ export function identifyProtects(
   providedRng?: SeededRNG
 ): ProtectResult {
   const rng = seededRng(providedRng);
-  const HIGH_RANKS = new Set(["yokozuna", "ozeki", "sekiwake", "komusubi"]);
   const protectIds: Id[] = [];
 
   for (const rp of observation.rikishiPerceptions) {
     if (rp.healthBand === "fragile") {
       protectIds.push(rp.rikishiId);
-    } else if (rp.healthBand === "worn" && HIGH_RANKS.has(rp.rank)) {
+    } else if (rp.healthBand === "worn" && isSanyakuRank(rp.rank)) {
       protectIds.push(rp.rikishiId);
     } else if (
       rp.healthBand === "worn" &&

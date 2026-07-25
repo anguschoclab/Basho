@@ -11,6 +11,7 @@ import { WelfarePanel } from "@/components/game/WelfarePanel";
 import { projectMedicalUIDigest, setHeyaDietAction } from "@/presenters/uiDigest";
 import { InjuryRiskHeatmap } from "@/components/training/InjuryRiskHeatmap";
 import type { DietRegimen } from "@/engine/types/economy";
+import { resolveRegistryLabel } from "@/presenters/uiUtilities";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { SeededRNG } from "@/engine/rng";
 import { getHeyaRoster } from "@/engine/queries";
@@ -34,8 +35,7 @@ export default function InjuryRecoveryPage() {
     return getHeyaRoster(state.world, state.playerHeyaId)
       .filter((r) => !r.isRetired)
       .map((r) => {
-        const rankEntry = BardEngine.getRegistryEntry("ranks", r.rank);
-        const rankLabel = rankEntry?.label ?? r.rank;
+        const rankLabel = resolveRegistryLabel("ranks", r.rank);
 
         let injurySummary: string | undefined;
         if (r.injured && r.injuryStatus) {

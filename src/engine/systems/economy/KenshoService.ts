@@ -24,6 +24,7 @@ import {
   MIN_GINBOSHI_BANNER_COUNT,
   ADDITIONAL_GINBOSHI_BANNER_MAX,
 } from "../../../constants/engine/economyExtended";
+import { isSanyakuRank } from "@/constants/engine/rankDisplay";
 
 /** Type representing bout importance bucket. */
 export type BoutImportanceBucket = "low" | "mid" | "high" | "peak";
@@ -60,8 +61,7 @@ export function determineBoutImportance(
   const e = normalizeRank(eastRank);
   const w = normalizeRank(westRank);
 
-  const topRanks = ["yokozuna", "ozeki", "sekiwake", "komusubi"];
-  const isTopRank = topRanks.includes(e) || topRanks.includes(w);
+  const isTopRank = isSanyakuRank(e) || isSanyakuRank(w);
 
   if (isYushoContention || (day === FINAL_BASHO_DAY && isTopRank)) return "peak";
   if (isTopRank) return "high";

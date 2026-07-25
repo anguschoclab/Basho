@@ -14,6 +14,7 @@ import type {
   RecoveryEmphasis,
 } from "../types/training";
 import type { DietRegimen } from "../types/economy";
+import { getPlayerHeya } from "../queries";
 
 export interface LoopDecision {
   id: string;
@@ -34,7 +35,7 @@ export function detectDueDecisions(world: WorldState): LoopDecision[] {
   const out: LoopDecision[] = [];
   const currentWeek = world.week ?? 1;
   const playerHeyaId = world.playerHeyaId;
-  const playerHeya = playerHeyaId ? world.heyas.get(playerHeyaId) : undefined;
+  const playerHeya = getPlayerHeya(world);
   const existing = world.pendingDecisions ?? [];
   if (!playerHeya) return out;
 
@@ -248,7 +249,7 @@ export function applyDecisionEffect(
   optionId: string,
   decisionId?: string
 ): void {
-  const heya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : undefined;
+  const heya = getPlayerHeya(world);
   if (!heya) return;
 
   if (decisionType === "pre_basho_readiness") {
@@ -335,7 +336,7 @@ function decisionConsequenceSummary(
   decisionType: string,
   optionId: string
 ): string {
-  const heya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : undefined;
+  const heya = getPlayerHeya(world);
   switch (decisionType) {
     case "pre_basho_readiness": {
       if (optionId !== "rest") return "Pushed for rank — no rest, injury risk accepted.";
@@ -474,7 +475,7 @@ export function applyExpiredQueueDefaults(world: WorldState): StateImpact {
   if (world._autonomousSim) return builder.build();
   const decisions = world.pendingDecisions ?? [];
   const currentWeek = world.week ?? 1;
-  const heya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : undefined;
+  const heya = getPlayerHeya(world);
 
   const expired = decisions.filter((d) => !d.required && currentWeek > d.deadlineWeek);
   if (expired.length === 0) return builder.build();

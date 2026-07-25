@@ -17,23 +17,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { PageHeader } from "@/components/layout/control-center";
 import { Division } from "@/engine/types/banzuke";
 import { getTotalBashodays, needsScheduleForDay } from "@/presenters/uiDigest";
-
-const DIVISIONS: Division[] = [
-  "makuuchi",
-  "juryo",
-  "makushita",
-  "sandanme",
-  "jonidan",
-  "jonokuchi",
-];
-const DIVISION_NAMES: Record<Division, string> = {
-  makuuchi: "Makuuchi",
-  juryo: "Juryo",
-  makushita: "Makushita",
-  sandanme: "Sandanme",
-  jonidan: "Jonidan",
-  jonokuchi: "Jonokuchi",
-};
+import { DIVISIONS, DIVISION_NAMES } from "@/constants/engine/rankDisplay";
 
 /** schedule page. */
 export default function SchedulePage() {

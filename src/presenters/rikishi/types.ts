@@ -7,7 +7,7 @@
 
 import type { Id } from "../../engine/types/common";
 import type { Rank, Division, Side } from "../../engine/types/banzuke";
-import type { Style } from "../../engine/types/combat";
+import type { Style, CombatArchetype } from "../../engine/types/combat";
 import type { RikishiDescriptor, PotentialBand } from "../../engine/descriptorBands";
 import type { SalaryBreakdown } from "../../engine/economics_awards";
 import type { AvatarConfig } from "../../engine/types/avatar";
@@ -41,6 +41,7 @@ export interface RikishiIdentityDTO {
 export interface RikishiRankDTO {
   rank: Rank;
   rankLabel: string;
+  rankLabelJa: string;
   rankNumber: number;
   division: Division;
   side: Side;
@@ -52,6 +53,7 @@ export interface RikishiStyleDTO {
   style: Style;
   styleName: string;
   archetypeName: string;
+  combatArchetype?: CombatArchetype;
   preferredGrip: string;
   preferredGripDepth: string;
 }
@@ -96,7 +98,7 @@ export interface RikishiCareerDTO {
 
 /** Perceived stat labels (UI display) */
 export interface RikishiPerceivedStatsDTO {
-  power: string;
+  strength: string;
   technique: string;
   speed: string;
   stamina: string;
@@ -112,6 +114,9 @@ export interface RikishiDescriptorDTO {
   conditionDescriptor: string;
   moraleDescriptor: string;
   potentialDescriptor: string;
+  ageDescriptor: string;
+  weightDescriptor: string;
+  heightDescriptor: string;
 }
 
 /** Top rival information */
@@ -155,6 +160,7 @@ export interface RikishiAchievementsDTO {
     ginboshiEarned: number;
     kinboshiConceded: number;
     ginboshiConceded: number;
+    mochikyukinPoints: number;
   };
 }
 
@@ -205,7 +211,6 @@ export interface UIRikishiDTO
     RikishiStatusDTO,
     RikishiBandsDTO,
     RikishiCareerDTO,
-    RikishiPerceivedStatsDTO,
     RikishiDescriptorDTO,
     RikishiRivalsDTO,
     RikishiKimariteDTO,
@@ -215,7 +220,9 @@ export interface UIRikishiDTO
     RikishiVisualDTO,
     RikishiCareerDataDTO,
     RikishiLineageDTO,
-    RikishiH2HDTO {}
+    RikishiH2HDTO {
+  perceivedStats: RikishiPerceivedStatsDTO;
+}
 
 // ============================================================================
 // Legacy Compatibility
@@ -223,3 +230,47 @@ export interface UIRikishiDTO
 
 /** Type alias for UIRikishiDTO for backward compatibility. */
 export type UIRikishi = UIRikishiDTO;
+
+/** Rank delta for roster entries */
+export interface UIRankDelta {
+  type: "new" | "unchanged" | "up" | "down";
+  steps: number;
+}
+
+/** Roster entry (lighter projection for banzuke/roster views) */
+export interface UIRosterEntry {
+  id: Id;
+  shikona: string;
+  heyaId: Id;
+  isPlayerOwned: boolean;
+  rank: Rank;
+  rankLabel: string;
+  rankLabelJa: string;
+  rankNumber?: number;
+  division: Division;
+  side: Side;
+  record: string;
+  careerRecord: string;
+  currentBashoWins: number;
+  currentBashoLosses: number;
+  careerWins: number;
+  careerLosses: number;
+  isInjured: boolean;
+  condition: number;
+  fatigue: number;
+  powerBand: string;
+  techniqueBand: string;
+  speedBand: string;
+  balanceBand: string;
+  momentum: number;
+  potentialBand: PotentialBand;
+  keshoMawashi?: KeshoMawashi;
+  avatarConfig?: AvatarConfig;
+  rankDelta?: UIRankDelta;
+  archetypeLabel?: string;
+  consecutiveStrongOzeki: number;
+  streakLabel: string;
+  winPercentage: number;
+  citizenshipStatus: string;
+  yearsToNaturalization: number;
+}

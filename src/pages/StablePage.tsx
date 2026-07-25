@@ -4,7 +4,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { STABLE_TABS } from "@/constants/ui/navigation";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useGame } from "@/contexts/GameContext";
-import { projectRikishi } from "@/presenters/rikishiUI";
+import { projectRikishi } from "@/presenters/rikishi";
 import { InfrastructureService } from "@/engine/systems/economy/InfrastructureService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { Card, CardContent } from "@/components/ui/card";

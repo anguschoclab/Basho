@@ -31,8 +31,8 @@ function generateScoutNote(rikishi: UIRikishi, rawRikishi: Rikishi, rng: SeededR
 
   const top = ranked[0];
   const weak = ranked[ranked.length - 1];
-  const topBand = NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(top.v));
-  const weakBand = NarrativeService.getStatLabel(rng, NarrativeService.getStatBand(weak.v));
+  const topBand = NarrativeService.getStatLabelForValue(rng, top.v);
+  const weakBand = NarrativeService.getStatLabelForValue(rng, weak.v);
 
   const phasePhrases: Record<string, string[]> = {
     prodigy: ["shows rare maturity for his age", "is drawing comparisons to historical greats"],
@@ -174,7 +174,7 @@ export function RikishiProfileTab({ rikishi, rawRikishi, worldSeed }: RikishiPro
             {
               label: "Forcefulness",
               key: "power",
-              val: rikishi.perceivedStats.power,
+              val: rikishi.perceivedStats.strength,
               raw: rawRikishi.stats?.power ?? 50,
               color: "bg-gold",
               icon: <Zap className="h-3.5 w-3.5" />,

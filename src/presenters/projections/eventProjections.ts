@@ -7,8 +7,9 @@
 
 import type { WorldState } from "../../engine/types/world";
 import type { BashoResult } from "../../engine/types/basho";
-import type { EventLogData, GovernanceSummary } from "../types/uiDigest";
-import { projectRikishi } from "../rikishiUI";
+import type { EventLogData, GovernanceSummary } from "../uiDigestTypes";
+import { getPlayerHeya } from "../../engine/queries";
+import { projectRikishi } from "../rikishi";
 import { EntityCollection } from "../../engine/core/EntityCollection";
 
 /**
@@ -107,7 +108,7 @@ export function projectBashoResults(world: WorldState, lastBasho: BashoResult) {
  * Project data for press conference questions.
  */
 export function projectPressConferenceData(world: WorldState) {
-  const playerHeya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
+  const playerHeya = getPlayerHeya(world);
   if (!playerHeya) return null;
 
   const lastBasho = world.history[world.history.length - 1];

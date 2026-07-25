@@ -6,7 +6,7 @@
  * compatibility with existing imports while enforcing strict typing.
  */
 
-export * from "./rikishiUI";
+export * from "./rikishi";
 export * from "./heyaUI";
 export * from "./bashoUI";
 export * from "./banzukeUI";

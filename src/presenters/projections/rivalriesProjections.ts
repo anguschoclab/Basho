@@ -7,6 +7,7 @@
 
 import type { WorldState } from "../../engine/types/world";
 import type { RivalryPairState } from "../../engine/rivalries";
+import { getPlayerHeya } from "../../engine/queries";
 
 export interface RivalriesPageData {
   playerRivalries: RivalryPairState[];
@@ -44,7 +45,7 @@ export function projectRivalriesPage(world: WorldState): RivalriesPageData {
     };
   }
 
-  const playerHeya = world.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
+  const playerHeya = getPlayerHeya(world);
   const playerRikishiIds = new Set(playerHeya?.rikishiIds ?? []);
 
   // ⚡ Bolt Optimization: Replaced Object.values() with for...in loop to avoid O(N) intermediate array allocation

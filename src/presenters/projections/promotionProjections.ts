@@ -14,8 +14,8 @@ import {
   selectYokozunaCandidates,
   selectKadobanRikishi,
 } from "../selectors";
-import { projectRikishi } from "../rikishiUI";
-import type { UIRikishi } from "../rikishiUI";
+import { projectRikishi } from "../rikishi";
+import type { UIRikishi } from "../rikishi";
 
 /** Defines the structure for ozeki run candidate. */
 export interface OzekiRunCandidate {

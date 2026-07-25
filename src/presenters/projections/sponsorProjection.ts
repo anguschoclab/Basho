@@ -7,6 +7,7 @@
 
 import type { WorldState } from "../../engine/types/world";
 import { SPONSOR_TIER_INCOME } from "../../engine/systems/economy/SponsorshipService";
+import { getPlayerHeya } from "../../engine/queries";
 
 interface SponsorData {
   sponsorId: string;
@@ -167,7 +168,7 @@ function calculateKoenkaiIncome(heya: { koenkaiBand?: string }): number {
 export function projectSponsorUIDigest(world: WorldState) {
   const playerHeyaId = world.playerHeyaId;
   if (!playerHeyaId) return null;
-  const heya = world.heyas.get(playerHeyaId);
+  const heya = getPlayerHeya(world);
   if (!heya) return null;
 
   const pool = world.sponsorPool;

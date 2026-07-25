@@ -16,6 +16,7 @@ import { Search, UserPlus, Globe, GraduationCap, School } from "lucide-react";
 import type { TalentPoolType, TalentCandidate, VisibilityBand } from "@/engine/types/talent";
 import * as talentpool from "@/engine/systems/generation/TalentPoolService";
 import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/engine/systems/generation/TalentPoolService";
+import { getPlayerHeya } from "@/engine/queries";
 
 function poolLabel(pool: TalentPoolType) {
   switch (pool) {
@@ -66,7 +67,7 @@ export default function TalentPoolPage() {
   const sendCommand = useGameStore((s) => s.sendCommand);
 
   const playerHeyaId = world?.playerHeyaId;
-  const playerHeya = world && playerHeyaId ? world.heyas.get(playerHeyaId) : null;
+  const playerHeya = world ? getPlayerHeya(world) ?? null : null;
   const foreignCount = useMemo(() => {
     if (!world || !playerHeyaId) return 0;
     return talentpool.getForeignCountInHeya(world, playerHeyaId);

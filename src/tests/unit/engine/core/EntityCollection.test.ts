@@ -8,8 +8,8 @@ describe("EntityCollection", () => {
   const activeRikishi2 = mockRikishi("r2", { heyaId: "h2", isRetired: false } as any);
   const retiredRikishi = mockRikishi("r3", { heyaId: "h1", isRetired: true } as any);
 
-  const mockHeya1 = { id: "h1", name: "Heya 1" } as any;
-  const mockHeya2 = { id: "h2", name: "Heya 2" } as any;
+  const mockHeya1 = { id: "h1", name: "Heya 1", rikishiIds: ["r1", "r3"] } as any;
+  const mockHeya2 = { id: "h2", name: "Heya 2", rikishiIds: ["r2"] } as any;
 
   const mockWorld = {
     rikishi: new Map([

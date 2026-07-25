@@ -12,7 +12,7 @@ import type { WorldState } from "../types/world";
 import type { Rikishi } from "../types/rikishi";
 import type { Heya } from "../types/heya";
 import { stableSort } from "../utils/sort";
-import { getHeya, getRikishi } from "../queries";
+import { getHeya, getRikishi, getHeyaRoster as queryGetHeyaRoster } from "../queries";
 
 /**
  * Options for entity retrieval.
@@ -56,10 +56,11 @@ export const EntityCollection = {
   },
 
   /**
-   * Get all rikishi for a specific heya.
+   * Get all active (non-retired) rikishi for a specific heya.
+   * Delegates to queries.getHeyaRoster (memoized) and filters retired.
    */
   getHeyaRoster(world: WorldState, heyaId: string): Rikishi[] {
-    return this.getRikishi(world, { heyaId, includeRetired: false });
+    return queryGetHeyaRoster(world, heyaId).filter((r) => !r.isRetired);
   },
 
   /**

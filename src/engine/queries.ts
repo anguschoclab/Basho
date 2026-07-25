@@ -13,6 +13,7 @@ import type { Division } from "./types/banzuke";
 import type { Style } from "./types/combat";
 import type { Staff } from "./types/staff";
 import type { Id } from "./types/common";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { getAvailableStables, getActiveRikishi as getSelectorsActiveRikishi } from "./selectors";
 
 // ─── Single-Entity Lookups ──────────────────────────────
@@ -39,6 +40,15 @@ export function getRikishiAnywhere(world: WorldState, id: Id): Rikishi | undefin
  */
 export function getHeya(world: WorldState, id: Id): Heya | undefined {
   return world.heyas.get(id);
+}
+
+/**
+ * Get the player's heya.
+ * @returns The Heya, or undefined if playerHeyaId is not set or heya not found.
+ */
+export function getPlayerHeya(world: WorldState): Heya | undefined {
+  if (!world.playerHeyaId) return undefined;
+  return world.heyas.get(world.playerHeyaId);
 }
 
 /**
@@ -107,7 +117,7 @@ export function getSekitoriInHeya(world: WorldState, heyaId: Id): number {
   const roster = getHeyaRoster(world, heyaId);
   let count = 0;
   for (const r of roster) {
-    if (r.division === "makuuchi" || r.division === "juryo") count += 1;
+    if (isSekitoriDivision(r.division)) count += 1;
   }
   return count;
 }
@@ -188,19 +198,6 @@ export function getRikishiByDivision(world: WorldState, division: Division): Rik
 export function getCurrentBasho(world: WorldState) {
   return world.currentBasho;
 }
-/**
- * Get all rikishi associated with a specific heyaId.
- */
-export function getStableRikishi(world: WorldState, heyaId: string): Rikishi[] {
-  const list: Rikishi[] = [];
-  if (!world.activeRikishiIds) return list;
-  for (const rikishiId of world.activeRikishiIds) {
-    const r = world.rikishi.get(rikishiId);
-    if (r && r.heyaId === heyaId) list.push(r);
-  }
-  return list;
-}
-
 /**
  * Get all staff associated with a specific heyaId.
  */

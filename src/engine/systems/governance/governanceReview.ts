@@ -12,7 +12,7 @@ import type { Heya } from "../../types/heya";
 import * as governance from "./ScandalService";
 import { generateGovernanceHeadline } from "../media/MediaService";
 import { issueBailoutLoanIfNeeded } from "../../loans";
-import { getStableRikishi, getActiveRikishi, getRikishi } from "../../queries";
+import { getHeyaRoster, getActiveRikishi, getRikishi } from "../../queries";
 import { PRESTIGE_ORDER, bandIndex } from "../../prestige/prestigeSystem";
 import { findMergerTarget, executeMerger } from "../../mergers";
 import { checkRetirement } from "../../lifecycle";
@@ -150,7 +150,7 @@ export function runGovernanceReview(world: WorldState): StateImpact {
       world.heyas.size > HEYA_FLOOR &&
       (heya.consecutiveUnderperformanceBasho ?? 0) >= CHRONIC_UNDERPERFORMANCE_BASHO &&
       heya.prestigeBand === PRESTIGE_COLLAPSE_BAND &&
-      getStableRikishi(world, heya.id).length <= NON_FINANCIAL_MERGER_MAX_ROSTER &&
+      getHeyaRoster(world, heya.id).length <= NON_FINANCIAL_MERGER_MAX_ROSTER &&
       heya.funds >= MERGER_THRESHOLD
     ) {
       const targetId = findMergerTarget(world, heya.id);
@@ -216,7 +216,7 @@ export function runGovernanceReview(world: WorldState): StateImpact {
     }
 
     // === Merger/closure pressure for extremely small stables ===
-    const rosterSize = getStableRikishi(world, heya.id).length;
+    const rosterSize = getHeyaRoster(world, heya.id).length;
     if (rosterSize < 3) {
       if (heya.id !== world.playerHeyaId) {
         builder.logEvent(

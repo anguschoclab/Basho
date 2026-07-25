@@ -1,9 +1,9 @@
+import { clamp } from "@/engine/utils/math";
+
+export { clamp };
+
 export function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
-}
-
-export function clamp(v: number, lo: number, hi: number) {
-  return Math.max(lo, Math.min(hi, v));
 }
 
 export function easeOut(t: number) {

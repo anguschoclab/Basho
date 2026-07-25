@@ -13,6 +13,7 @@
 import { Badge } from "@/components/ui/badge";
 import { RikishiName } from "@/components/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { Button } from "@/components/ui/button";
 import { Swords } from "lucide-react";
 import type { BoutPreviewUI } from "@/presenters/boutPreviewUI";
@@ -178,7 +179,7 @@ export function BoutPreMatchOverlay({ preview, onDismiss, onBegin }: BoutPreMatc
                   config={eastRikishi.avatarConfig}
                   size="md"
                   showHairstyle={
-                    eastRikishi.division === "makuuchi" || eastRikishi.division === "juryo"
+                    isSekitoriDivision(eastRikishi.division)
                   }
                   fallback={eastRikishi.shikona}
                   className="mb-1"
@@ -194,7 +195,7 @@ export function BoutPreMatchOverlay({ preview, onDismiss, onBegin }: BoutPreMatc
                   config={westRikishi.avatarConfig}
                   size="md"
                   showHairstyle={
-                    westRikishi.division === "makuuchi" || westRikishi.division === "juryo"
+                    isSekitoriDivision(westRikishi.division)
                   }
                   fallback={westRikishi.shikona}
                   className="mb-1"

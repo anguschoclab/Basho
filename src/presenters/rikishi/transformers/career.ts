@@ -6,6 +6,7 @@
 
 import type { Rikishi } from "../../../engine/types/rikishi";
 import type { RikishiCareerDTO } from "../types";
+import { RANK_HIERARCHY } from "@/engine/types/banzuke";
 
 interface HistoryEntry {
   win?: boolean;
@@ -65,24 +66,10 @@ export function calculateAvgRank(history: HistoryEntry[]): string {
  * Convert rank to numeric score for averaging.
  */
 export function rankScore(rank: string, rankNumber?: number, side?: string): number {
-  const RANK_TIER: Record<string, number> = {
-    yokozuna: 1,
-    ozeki: 2,
-    sekiwake: 3,
-    komusubi: 4,
-    maegashira: 5,
-    juryo: 6,
-    makushita: 7,
-    sandanme: 8,
-    jonidan: 9,
-    jonokuchi: 10,
-  };
-
-  const tier = RANK_TIER[rank.toLowerCase()] ?? 5;
-  const num = rankNumber ?? 8;
-  const sideBonus = side === "east" ? 0 : 1;
-
-  return tier * 1000 + num * 2 + sideBonus;
+  const tier = RANK_HIERARCHY[rank as keyof typeof RANK_HIERARCHY]?.tier ?? 99;
+  const num = rankNumber ?? 0;
+  const sideVal = side === "east" ? 0 : 0.5;
+  return tier * 1000 + num * 2 + sideVal;
 }
 
 /**

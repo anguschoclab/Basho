@@ -7,14 +7,15 @@
 
 import type { WorldState } from "../../engine/types/world";
 import type { Rikishi } from "../../engine/types/rikishi";
-import type { BashoUIDigest, BoutMatchUI, HeatBand, StandingEntry } from "../types/uiDigest";
-import { projectRikishi } from "../rikishiUI";
+import type { BashoUIDigest, BoutMatchUI, HeatBand, StandingEntry } from "../uiDigestTypes";
+import { projectRikishi } from "../rikishi";
 import { generateH2HCommentary } from "../../engine/h2h";
 import { getRivalry } from "../../engine/rivalries";
 import { compareRanks } from "../../engine/banzuke";
 import { toRankPosition } from "../../engine/types/banzuke";
+import { sortStandings } from "../../engine/utils/sort";
 import { isKeyDay, getSeasonalFlavor, BASHO_CALENDAR } from "../../engine/calendar";
-import { getRikishiByDivision } from "../../engine/queries";
+import { getRikishiByDivision, getPlayerHeya } from "../../engine/queries";
 
 /**
  * Project tournament live data for BashoPage.
@@ -23,13 +24,10 @@ export function projectBashoUIDigest(world: WorldState): BashoUIDigest | null {
   const basho = world.currentBasho;
   if (!basho) return null;
 
-  const playerHeyaId = world.playerHeyaId;
+  const playerHeya = getPlayerHeya(world);
   const playerRikishiIds = new Set<string>();
-  if (playerHeyaId) {
-    const heya = world.heyas.get(playerHeyaId);
-    if (heya && heya.rikishiIds) {
-      heya.rikishiIds.forEach((id) => playerRikishiIds.add(id));
-    }
+  if (playerHeya && playerHeya.rikishiIds) {
+    playerHeya.rikishiIds.forEach((id) => playerRikishiIds.add(id));
   }
 
   const day = basho.day;
@@ -73,32 +71,29 @@ export function projectBashoUIDigest(world: WorldState): BashoUIDigest | null {
 
   // ⚡ Bolt Optimization: Replace O(N) Array.from(world.rikishi.values()).filter(...)
   // with cached getRikishiByDivision to eliminate redundant array allocations and iterations
-  const standings: StandingEntry[] = getRikishiByDivision(world, "makuuchi")
-    .map((r: Rikishi) => {
+  const standings: StandingEntry[] = sortStandings(
+    getRikishiByDivision(world, "makuuchi").map((r: Rikishi) => {
       const record = r.currentBashoRecord || { wins: 0, losses: 0 };
       return {
         rikishi: projectRikishi(r, world),
         wins: record.wins,
         losses: record.losses,
       };
-    })
-    .sort(
-      (a, b) =>
-        b.wins - a.wins ||
-        compareRanks(
-          toRankPosition({
-            rank: a.rikishi.rank,
-            side: a.rikishi.side,
-            rankNumber: a.rikishi.rankNumber,
-          }),
-          toRankPosition({
-            rank: b.rikishi.rank,
-            side: b.rikishi.side,
-            rankNumber: b.rikishi.rankNumber,
-          })
-        )
-    )
-    .slice(0, 10);
+    }),
+    (a, b) =>
+      compareRanks(
+        toRankPosition({
+          rank: a.rikishi.rank,
+          side: a.rikishi.side,
+          rankNumber: a.rikishi.rankNumber,
+        }),
+        toRankPosition({
+          rank: b.rikishi.rank,
+          side: b.rikishi.side,
+          rankNumber: b.rikishi.rankNumber,
+        })
+      )
+  ).slice(0, 10);
 
   return {
     bashoName: basho.bashoName,

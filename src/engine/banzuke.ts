@@ -13,6 +13,7 @@ import {
   type BanzukeSnapshot,
 } from "./types/banzuke";
 export type { BanzukeEntry, BashoPerformance };
+import { isSanyakuRank } from "@/constants/engine/rankDisplay";
 import type { Rikishi } from "./types/rikishi";
 import type { Heya } from "./types/heya";
 
@@ -132,10 +133,8 @@ export function compareBanzuke(
 
   // Sort by significance: sanyaku changes > major promotions > demotions > no change > new
   changes.sort((a, b) => {
-    const isSanyaku = (pos: RankPosition | null) =>
-      pos && ["yokozuna", "ozeki", "sekiwake", "komusubi"].includes(pos.rank);
-    const aSanyaku = isSanyaku(a.newPosition) || isSanyaku(a.oldPosition);
-    const bSanyaku = isSanyaku(b.newPosition) || isSanyaku(b.oldPosition);
+    const aSanyaku = isSanyakuRank(a.newPosition?.rank ?? "") || isSanyakuRank(a.oldPosition?.rank ?? "");
+    const bSanyaku = isSanyakuRank(b.newPosition?.rank ?? "") || isSanyakuRank(b.oldPosition?.rank ?? "");
 
     if (aSanyaku && !bSanyaku) return -1;
     if (!aSanyaku && bSanyaku) return 1;

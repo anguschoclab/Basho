@@ -8,6 +8,7 @@ import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { Sun, Moon, ChevronRight, Settings } from "lucide-react";
 import { formatYen } from "@/utils/engineUtils";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { getPlayerHeya } from "@/engine/queries";
 
 const RUNWAY_COLORS: Record<string, string> = {
   secure: "hsl(var(--success))",
@@ -32,7 +33,7 @@ export function TopNavBar() {
   const navigate = useNavigate();
   const world = state.world;
 
-  const playerHeya = world?.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
+  const playerHeya = world ? getPlayerHeya(world) ?? null : null;
   const inBasho = world?.cyclePhase === "active_basho";
   const bashoDay = world?.currentBasho?.day ?? 1;
   const cyclePhase = world?.cyclePhase ?? "interim";

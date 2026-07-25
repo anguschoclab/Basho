@@ -13,9 +13,11 @@ import {
 } from "@/presenters/projections/promotionProjections";
 import { projectDashboardUIDigest } from "@/presenters/uiDigest";
 import { projectFinanceSummary } from "@/presenters/projections/financeProjections";
+import { isSekitoriRank } from "@/constants/engine/rankDisplay";
 import { projectTrainingSummary } from "@/presenters/projections/trainingProjections";
 import { buildActionQueue } from "@/presenters/projections/actionQueue";
 import { FATIGUE_LABELS } from "@/constants/ui/labels";
+import { getPlayerHeya } from "@/engine/queries";
 
 import { OnboardingTourDialog } from "@/components/onboarding/OnboardingTourDialog";
 import { CrisisModal } from "@/components/game/CrisisModal";
@@ -94,7 +96,7 @@ export default function Dashboard() {
   }, [world?.events?.log, deliberationCandidateId]);
 
   const playerHeya = useMemo(
-    () => (world?.playerHeyaId ? (world.heyas.get(world.playerHeyaId) ?? null) : null),
+    () => (world?.playerHeyaId ? (getPlayerHeya(world) ?? null) : null),
     [world]
   );
 
@@ -132,14 +134,7 @@ export default function Dashboard() {
       if (!r) continue;
 
       const rank = r.rank ?? "";
-      if (
-        rank === "juryo" ||
-        rank === "yokozuna" ||
-        rank === "ozeki" ||
-        rank === "sekiwake" ||
-        rank === "komusubi" ||
-        rank === "maegashira"
-      ) {
+      if (isSekitoriRank(rank)) {
         sekitoriCount++;
       }
 
@@ -439,7 +434,7 @@ export default function Dashboard() {
       <OnboardingTourDialog />
 
       {(() => {
-        const ph = world.heyas.get(state.playerHeyaId ?? "");
+        const ph = getPlayerHeya(world);
         const ok = world.oyakata.get(ph?.oyakataId ?? "");
         if (ok?.successionReadiness !== "mandatory") return null;
         if (successionDismissed) return null;

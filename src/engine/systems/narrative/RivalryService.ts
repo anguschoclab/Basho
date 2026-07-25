@@ -13,6 +13,7 @@
 
 import type { WorldState } from "../../types/world";
 import type { Id } from "../../types/common";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { EntityCollection } from "../../core/EntityCollection";
 import { RNGRegistry } from "../../core/RNGRegistry";
 import { EntityService } from "../../core/EntityService";
@@ -99,7 +100,7 @@ export const RivalryService = {
    * @returns {RivalriesState} The existing or newly created rivalries state.
    */
   ensureRivalriesState(world: WorldState): RivalriesState {
-    return EntityService.ensureState(world, "rivalriesState", () => ({
+    return EntityService.ensureState(world, "rivalriesState", (): RivalriesState => ({
       version: "1.0.0",
       pairs: {},
     }));
@@ -375,7 +376,7 @@ export const RivalryService = {
     const makuuchiJuryo: Rikishi[] = [];
     for (const id of world.activeRikishiIds) {
       const r = getRikishi(world, id);
-      if (r && (r.division === "makuuchi" || r.division === "juryo")) {
+      if (r && isSekitoriDivision(r.division)) {
         makuuchiJuryo.push(r);
       }
     }

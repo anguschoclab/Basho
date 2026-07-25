@@ -1,4 +1,5 @@
-import { UIRosterEntry, rankScore } from "./rikishiUI";
+import { UIRosterEntry, rankScore } from "./rikishi";
+import { isSanyakuRank, getRankDisplayEntry } from "@/constants/engine/rankDisplay";
 
 export interface UIRankRow {
   rankLabel: string;
@@ -10,18 +11,6 @@ export interface UIRankRow {
   west: UIRosterEntry | null;
 }
 
-const RANK_TIER: Record<string, number> = {
-  yokozuna: 1,
-  ozeki: 2,
-  sekiwake: 3,
-  komusubi: 4,
-  maegashira: 5,
-  juryo: 6,
-  makushita: 7,
-  sandanme: 8,
-  jonidan: 9,
-  jonokuchi: 10,
-};
 
 /**
  * Build a map of rikishi IDs to their rank scores from the most recent banzuke snapshot
@@ -109,21 +98,9 @@ export function buildBanzukeRows(
     const sample = east || west;
     const rank = sample?.rank ?? "unknown";
     const rankNumber = sample?.rankNumber ?? 1;
-    const isSanyaku =
-      rank === "yokozuna" || rank === "ozeki" || rank === "sekiwake" || rank === "komusubi";
-    const RANK_DISPLAY_NAMES: Record<string, string> = {
-      yokozuna: "Yokozuna",
-      ozeki: "Ozeki",
-      sekiwake: "Sekiwake",
-      komusubi: "Komusubi",
-      maegashira: "Maegashira",
-      juryo: "Juryo",
-      makushita: "Makushita",
-      sandanme: "Sandanme",
-      jonidan: "Jonidan",
-      jonokuchi: "Jonokuchi",
-    };
-    const baseLabel = RANK_DISPLAY_NAMES[rank] ?? rank.charAt(0).toUpperCase() + rank.slice(1);
+    const isSanyaku = isSanyakuRank(rank);
+    const entry = getRankDisplayEntry(rank);
+    const baseLabel = entry?.en ?? rank.charAt(0).toUpperCase() + rank.slice(1);
     const rankLabel = isSanyaku ? baseLabel : `${baseLabel} #${rankNumber}`;
 
     // Calculate Japanese title
@@ -146,7 +123,7 @@ export function buildBanzukeRows(
       isSanyaku,
       east,
       west,
-      _tier: RANK_TIER[rank] ?? 99,
+      _tier: getRankDisplayEntry(rank)?.tier ?? 99,
       _num: rankNumber,
     });
   }

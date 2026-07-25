@@ -6,8 +6,8 @@
  */
 
 import type { WorldState } from "../../engine/types/world";
-import { projectRikishi } from "../rikishiUI";
-import type { UIRikishi } from "../rikishiUI";
+import { projectRikishi } from "../rikishi";
+import type { UIRikishi } from "../rikishi";
 
 /**
  * Project rikishi with heya data for ceremony components.

@@ -19,7 +19,7 @@ import type { RikishiStats } from "../../../engine/types/rikishi";
 import type { WorldState } from "../../../engine/types/world";
 
 // Mock calculatePerceivedStats properly
-vi.mock("@/presenters/rikishiUI", () => ({
+vi.mock("@/presenters/rikishi", () => ({
   calculatePerceivedStats: vi.fn().mockReturnValue({ strength: "Dominant" }),
   toRikishiDescriptor: vi.fn().mockReturnValue("Veteran"),
   projectRikishi: vi.fn((r: { id: string; shikona: string }) => ({

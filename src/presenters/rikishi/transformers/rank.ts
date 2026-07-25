@@ -5,19 +5,18 @@
  */
 
 import type { Rikishi } from "../../../engine/types/rikishi";
-import { BardEngine } from "../../../engine/bard/BardEngine";
+import { resolveRegistryLabel, resolveRegistryLabelJa } from "../../uiUtilities";
 import type { RikishiRankDTO, RikishiStyleDTO } from "../types";
+import type { CombatArchetype } from "../../../engine/types/combat";
 
 /**
  * Transform rank-related fields.
  */
 export function toRankDTO(r: Rikishi): RikishiRankDTO {
-  const rankEntry = BardEngine.getRegistryEntry("ranks", r.rank);
-  const rankLabel = rankEntry?.label ?? r.rank;
-
   return {
     rank: r.rank,
-    rankLabel,
+    rankLabel: resolveRegistryLabel("ranks", r.rank),
+    rankLabelJa: resolveRegistryLabelJa("ranks", r.rank),
     rankNumber: r.rankNumber ?? 1,
     division: r.division,
     side: r.side,
@@ -29,17 +28,13 @@ export function toRankDTO(r: Rikishi): RikishiRankDTO {
  * Transform style and archetype fields.
  */
 export function toStyleDTO(r: Rikishi): RikishiStyleDTO {
-  const styleEntry = BardEngine.getRegistryEntry("styles", r.style);
-  const styleName = styleEntry?.label ?? r.style;
-
-  const combatArchetype = r.combatProfile?.archetype ?? "hybrid";
-  const archEntry = BardEngine.getRegistryEntry("archetypes", combatArchetype);
-  const archetypeName = archEntry?.label ?? combatArchetype;
+  const combatArchetype: CombatArchetype = r.combatProfile?.archetype ?? "hybrid";
 
   return {
     style: r.style,
-    styleName,
-    archetypeName,
+    styleName: resolveRegistryLabel("styles", r.style),
+    archetypeName: resolveRegistryLabel("archetypes", combatArchetype),
+    combatArchetype,
     preferredGrip: r.combatProfile?.preferredGrip ?? "none",
     preferredGripDepth: r.combatProfile?.preferredGripDepth ?? "standard",
   };

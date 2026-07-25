@@ -42,3 +42,18 @@ export function formatFinePenalty(amount: number): string {
   if (amount >= 500_000) return "Moderate fine";
   return "Minor fine";
 }
+
+export function formatCurrency(
+  amount: number,
+  locale: "en-US" | "ja-JP" = "ja-JP"
+): string {
+  const formatted = new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: "JPY",
+    maximumFractionDigits: 0,
+  }).format(amount);
+  if (locale === "en-US") {
+    return formatted.replace("￥", "¥");
+  }
+  return formatted.replace("¥", "￥");
+}

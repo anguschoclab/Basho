@@ -16,6 +16,7 @@ import { generateToshiyoriName } from "@/engine/shikona/toshiyoriNames";
 import { SeededRNG } from "@/engine/rng";
 import { getHeya } from "../../queries";
 import { warn } from "@/engine/utils/Logger";
+import { clamp } from "@/engine/utils/math";
 
 // ---------------------------------------------------------------------------
 // Backstory data — defined here (NOT imported from the UI wizard layer).
@@ -154,14 +155,6 @@ export const PLAYER_BACKSTORIES: PlayerBackstory[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// Helper
-// ---------------------------------------------------------------------------
-
-function clamp(value: number, min = 0, max = 100): number {
-  return Math.max(min, Math.min(max, value));
-}
-
-// ---------------------------------------------------------------------------
 // Main export
 // ---------------------------------------------------------------------------
 
@@ -210,11 +203,11 @@ export function applyOyakataCreationConfig(
   const baseTraits = OYAKATA_ARCHETYPES[archetype];
   const mods = backstory.traitModifiers;
   const traits: OyakataTraits = {
-    ambition: clamp(baseTraits.ambition + (mods.ambition ?? 0)),
-    patience: clamp(baseTraits.patience + (mods.patience ?? 0)),
-    risk: clamp(baseTraits.risk + (mods.risk ?? 0)),
-    tradition: clamp(baseTraits.tradition + (mods.tradition ?? 0)),
-    compassion: clamp(baseTraits.compassion + (mods.compassion ?? 0)),
+    ambition: clamp(baseTraits.ambition + (mods.ambition ?? 0), 0, 100),
+    patience: clamp(baseTraits.patience + (mods.patience ?? 0), 0, 100),
+    risk: clamp(baseTraits.risk + (mods.risk ?? 0), 0, 100),
+    tradition: clamp(baseTraits.tradition + (mods.tradition ?? 0), 0, 100),
+    compassion: clamp(baseTraits.compassion + (mods.compassion ?? 0), 0, 100),
   };
 
   // Deduplicate quirks: backstory quirks prepended before existing ones

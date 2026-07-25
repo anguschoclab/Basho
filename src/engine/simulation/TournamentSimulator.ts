@@ -11,8 +11,9 @@ import { simulateBout } from "../bout/boutResolver";
 import { RANK_HIERARCHY } from "../banzuke";
 import { initializeBasho } from "../systems/generation/WorldFactory";
 import { generateFullBashoSchedule, scheduleAllDivisionsDay } from "../schedule";
-import { stableTieBreak } from "../utils/sort";
+import { stableTieBreak, sortStandings } from "../utils/sort";
 import { resolveImpacts } from "../core/ImpactResolver";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { getRikishi } from "../queries";
 
 /**
@@ -45,7 +46,7 @@ export function simulateEntireBasho(
   for (const id of workingWorld.activeRikishiIds) {
     const rikishi = getRikishi(workingWorld, id);
     if (!rikishi) continue;
-    if (rikishi.division === "makuuchi" || rikishi.division === "juryo") {
+    if (isSekitoriDivision(rikishi.division)) {
       standings.set(id, { wins: 0, losses: 0 });
       const nextRikishi = { ...rikishi, currentBashoWins: 0, currentBashoLosses: 0 };
       workingWorld.rikishi.set(id, nextRikishi);
@@ -162,9 +163,9 @@ export function simulateEntireBasho(
   for (const [id, stats] of standings.entries()) {
     sortedStandings.push({ id, rikishi: getRikishi(workingWorld, id), wins: stats.wins, losses: stats.losses });
   }
-  sortedStandings.sort((a, b) => b.wins - a.wins || a.losses - b.losses || stableTieBreak(a.id, b.id));
+  const finalStandings = sortStandings(sortedStandings, (a, b) => stableTieBreak(a.id, b.id));
 
-  const yushoEntry = sortedStandings[0];
+  const yushoEntry = finalStandings[0];
   const yushoWinner = {
     id: yushoEntry?.id || "",
     shikona: yushoEntry?.rikishi?.shikona || "Unknown",
@@ -172,11 +173,11 @@ export function simulateEntireBasho(
     losses: yushoEntry?.losses ?? 0,
   };
 
-  const second = sortedStandings[1];
+  const second = finalStandings[1];
   const junYushoTargetWins = second ? second.wins : -1;
   // ⚡ Bolt Optimization: Replace .filter().map() with a single for loop
   const junYusho: string[] = [];
-  for (const s of sortedStandings) {
+  for (const s of finalStandings) {
     if (s.id !== yushoEntry?.id && s.wins === junYushoTargetWins) {
       junYusho.push(s.id);
     }

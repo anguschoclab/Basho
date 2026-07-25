@@ -36,6 +36,7 @@ import type { UIDigest } from "@/presenters/uiDigest";
 import { initialGameState } from "./gameTypes";
 import { gameReducer } from "./gameReducer";
 import { autosaveWithSignal, getMatchesForDay } from "./gameHelpers";
+import { selectMakuuchiStandings } from "@/presenters/selectors";
 import { recruitSponsor, buildWeeklyDigest } from "@/presenters/uiDigest";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 
@@ -291,19 +292,8 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const getCurrentDayMatches = useCallback(() => getMatchesForDay(state.world), [state.world]);
 
   const getStandings = useCallback(() => {
-    if (!state.world?.currentBasho) return [];
-    const standings = state.world.currentBasho.standings;
-    const results: Array<{ rikishi: Rikishi; wins: number; losses: number }> = [];
-    for (const r of state.world.rikishi.values()) {
-      if (r.division === "makuuchi") {
-        results.push({
-          rikishi: r,
-          wins: standings.get(r.id)?.wins || 0,
-          losses: standings.get(r.id)?.losses || 0,
-        });
-      }
-    }
-    return results.sort((a, b) => b.wins - a.wins || a.losses - b.losses);
+    if (!state.world) return [];
+    return selectMakuuchiStandings(state.world);
   }, [state.world]);
 
   const saveToSlot = useCallback(

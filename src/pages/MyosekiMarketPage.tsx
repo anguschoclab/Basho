@@ -18,6 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import type { MyosekiStock } from "@/engine/types/myoseki";
+import { getPlayerHeya } from "@/engine/queries";
 
 export default function MyosekiMarketPage() {
   const { state } = useGame();
@@ -39,8 +40,7 @@ export default function MyosekiMarketPage() {
 
   const market = world.myosekiMarket;
   const stocks = Object.values(market.stocks);
-  const playerHeyaId = world.playerHeyaId;
-  const playerHeya = playerHeyaId ? world.heyas.get(playerHeyaId) : null;
+  const playerHeya = getPlayerHeya(world) ?? null;
   const playerFunds = playerHeya?.funds ?? 0;
 
   const availableStocks = stocks.filter((s) => s.status === "available");

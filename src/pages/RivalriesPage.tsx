@@ -19,6 +19,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { toRivalryHeatBand } from "@/engine/descriptorBands";
 import { RIVALRY_HEAT_LABELS } from "@/constants/ui/labels";
+import { getPlayerHeya } from "@/engine/queries";
 
 // Page
 /** rivalries page. */
@@ -35,7 +36,7 @@ export default function RivalriesPage() {
 
   const playerRikishiIds = useMemo(() => {
     if (!world || !playerHeyaId) return new Set<string>();
-    const heya = world.heyas.get(playerHeyaId);
+    const heya = getPlayerHeya(world);
     return new Set(heya?.rikishiIds ?? []);
   }, [world, playerHeyaId]);
 

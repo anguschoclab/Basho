@@ -10,10 +10,10 @@ import type { Rank } from "../../engine/types/banzuke";
 import type { TalentCandidate } from "../../engine/types/talent";
 import { RANK_HIERARCHY } from "../../engine/banzuke";
 import type { BoutPreviewUI } from "../boutPreviewUI";
-import type { UIRikishi } from "../rikishiUI";
+import type { UIRikishi } from "../rikishi";
 import { getH2HReport } from "../../engine/h2h";
 import { RivalryService } from "../../engine/systems/narrative/RivalryService";
-import { projectRikishi } from "../rikishiUI";
+import { projectRikishi } from "../rikishi";
 import * as talentpool from "../../engine/systems/generation/TalentPoolService";
 import {
   warmScoutingForRikishiList,

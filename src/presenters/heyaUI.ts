@@ -1,7 +1,7 @@
 import type { Id } from "../engine/types/common";
 import type { Heya } from "../engine/types/heya";
 import { WorldState } from "../engine/types/world";
-import { UIRosterEntry, projectRosterEntry } from "./rikishiUI";
+import { UIRosterEntry, projectRosterEntry } from "./rikishi";
 import { getOyakataForHeya } from "../engine/queries";
 import { getHeyaStyleBias, getHeyaStaff } from "../engine/queries";
 

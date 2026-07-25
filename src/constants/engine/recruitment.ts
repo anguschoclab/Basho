@@ -7,25 +7,10 @@
  * Goal: Domain-driven design.
  */
 
-import type { Rank } from "../../engine/types/banzuke";
+import { RANK_NAMES } from "./rankDisplay";
 
-/** Human-readable rank labels (JA + EN). */
-export interface RankLabel {
-  ja: string;
-  en: string;
-}
-export const RANK_NAMES: Record<Rank, RankLabel> = {
-  yokozuna: { ja: "横綱", en: "Yokozuna" },
-  ozeki: { ja: "大関", en: "Ozeki" },
-  sekiwake: { ja: "関脇", en: "Sekiwake" },
-  komusubi: { ja: "小結", en: "Komusubi" },
-  maegashira: { ja: "前頭", en: "Maegashira" },
-  juryo: { ja: "十両", en: "Juryo" },
-  makushita: { ja: "幕下", en: "Makushita" },
-  sandanme: { ja: "三段目", en: "Sandanme" },
-  jonidan: { ja: "序二段", en: "Jonidan" },
-  jonokuchi: { ja: "序ノ口", en: "Jonokuchi" },
-};
+export type { RankLabel } from "./rankDisplay";
+export { RANK_NAMES };
 
 /** Scouting Confidence Levels */
 export type ConfidenceLevel = "unknown" | "low" | "medium" | "high" | "certain";

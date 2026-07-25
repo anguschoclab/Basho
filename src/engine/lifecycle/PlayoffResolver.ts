@@ -1,4 +1,4 @@
-import { stableTieBreak } from "../utils/sort";
+import { stableTieBreak, sortStandings } from "../utils/sort";
 import { resolveBout } from "../bout/boutResolver";
 import type { WorldState } from "../types/world";
 import type { BashoState, MatchSchedule } from "../types/basho";
@@ -75,15 +75,15 @@ export function calculateStandings(basho: BashoState): {
     table.push({ id, wins: s.wins, losses: s.losses });
   }
 
-  table.sort((a, b) => b.wins - a.wins || a.losses - b.losses || stableTieBreak(a.id, b.id));
+  const sortedTable = sortStandings(table, (a, b) => stableTieBreak(a.id, b.id));
 
-  if (table.length === 0) return { topCandidates: [], bestWins: 0, table };
+  if (sortedTable.length === 0) return { topCandidates: [], bestWins: 0, table: sortedTable };
 
-  const bestWins = table[0].wins;
-  const topCandidates = table.reduce<Id[]>((acc, t) => {
+  const bestWins = sortedTable[0].wins;
+  const topCandidates = sortedTable.reduce<Id[]>((acc, t) => {
     if (t.wins === bestWins) acc.push(t.id);
     return acc;
   }, []);
 
-  return { topCandidates, bestWins, table };
+  return { topCandidates, bestWins, table: sortedTable };
 }

@@ -36,12 +36,13 @@ import type { DrillType, DaySchedule } from "@/engine/types/training";
 import type { Rikishi } from "@/engine/types/rikishi";
 
 import { useGameStore } from "@/store/gameStore";
+import { getPlayerHeya } from "@/engine/queries";
 
 export default function TrainingPage() {
   const { state, addSparringPair, removeSparringPair } = useGame();
   const sendCommand = useGameStore((s) => s.sendCommand);
   const { world, playerHeyaId } = state;
-  const heya = world?.heyas.get(playerHeyaId || "") ?? null;
+  const heya = world ? getPlayerHeya(world) ?? null : null;
 
   const [trainingState, setTrainingState] = useState<HeyaTrainingState>(() => {
     if (!world || !playerHeyaId) return createDefaultTrainingState(playerHeyaId || "");

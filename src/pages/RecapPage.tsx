@@ -28,6 +28,7 @@ import { selectKeyBouts } from "@/presenters/projections/recapProjections";
 import { compareBanzuke, formatRankPosition, RANK_HIERARCHY } from "@/engine/banzuke";
 import { makeBashoKey } from "@/engine/historyIndex";
 import { EntityCollection } from "@/engine/core/EntityCollection";
+import { getPlayerHeya } from "@/engine/queries";
 import { projectRikishi } from "@/presenters/uiModels";
 import type { EngineEvent } from "@/engine/types/events";
 import type { HoFInductee } from "@/engine/hallOfFame";
@@ -128,7 +129,7 @@ export default function RecapPage() {
   }) => {
     setShowPressConference(false);
     if (world && world.playerHeyaId) {
-      const heya = world.heyas.get(world.playerHeyaId);
+      const heya = getPlayerHeya(world);
       if (heya) {
         const updatedHeya = {
           ...heya,
@@ -353,7 +354,7 @@ export default function RecapPage() {
           <YokozunaDeliberation
             open={showYokozunaDelib}
             rikishi={projectRikishi(EntityCollection.getActiveRikishi(world)[0], world)}
-            heyaName={world.heyas.get(world.playerHeyaId || "")?.name || "Unknown Stable"}
+            heyaName={getPlayerHeya(world)?.name || "Unknown Stable"}
             isPlayerRikishi={true}
             verdict="deferred"
             reasoning={["Continued performance required."]}
@@ -381,7 +382,7 @@ export default function RecapPage() {
 
         {intaiQueue.length > 0 && currentIntaiIndex < intaiQueue.length && (
           <IntaiCeremony
-            heyaName={world.heyas.get(world.playerHeyaId || "")?.name || "Unknown Stable"}
+            heyaName={getPlayerHeya(world)?.name || "Unknown Stable"}
             isPlayerRikishi={true}
             open={true}
             rikishi={intaiQueue[currentIntaiIndex].rikishi}

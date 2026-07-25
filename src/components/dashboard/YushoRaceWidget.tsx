@@ -13,7 +13,8 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Trophy, Medal, Award } from "lucide-react";
 import { getRikishiByDivision } from "@/engine/queries";
-import { type UIRosterEntry, projectRosterEntry } from "@/presenters/rikishiUI";
+import { sortStandings } from "@/engine/utils/sort";
+import { type UIRosterEntry, projectRosterEntry } from "@/presenters/rikishi";
 import type { Rikishi } from "@/engine/types/rikishi";
 
 interface YushoContenderProps {
@@ -99,8 +100,7 @@ export const YushoRaceWidget: React.FC = () => {
       contenders.push({ r, wins: record?.wins ?? r.currentBashoWins ?? 0 });
     }
 
-    return contenders
-      .sort((a, b) => b.wins - a.wins)
+    return sortStandings(contenders.map((c) => ({ r: c.r, wins: c.wins, losses: 0 })))
       .slice(0, 5)
       .map(({ r }) => projectRosterEntry(r, world));
   }, [state.world]);

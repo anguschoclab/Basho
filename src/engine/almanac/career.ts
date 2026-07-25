@@ -2,6 +2,7 @@ import type { WorldState } from "../types/world";
 import type { Rikishi } from "../types/rikishi";
 import type { BashoName } from "../types/basho";
 import type { Division, Rank } from "../types/banzuke";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import type { BashoPerformance, RikishiCareerRecord } from "./types";
 import {
   CAREER_BASHO_BASE,
@@ -197,7 +198,7 @@ function simulateBashoPerformance(
   kinboshi: number;
 } {
   const boutCount =
-    currentDivision === "makuuchi" || currentDivision === "juryo"
+    isSekitoriDivision(currentDivision)
       ? BOUTS_PER_BASHO_SEKITORI
       : BOUTS_PER_BASHO_LOWER_DIVISION;
   const targetMult = getRankCareerMultiplier(targetRank);

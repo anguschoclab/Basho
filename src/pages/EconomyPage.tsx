@@ -8,9 +8,11 @@ import { useGame } from "@/contexts/GameContext";
 import { SponsorsPanel } from "@/components/game/SponsorsPanel";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
 import { projectHeyaData } from "@/presenters/projections/heyaProjections";
+import { getPlayerHeya } from "@/engine/queries";
 import { calculateHeyaWeeklyFinances } from "@/engine/systems/economy/FinanceCalculator";
 import { toast } from "sonner";
 import { safeRunwayBand, safeKoenkaiBand } from "@/components/economy/economyUtils";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { FinancialHealthOverview } from "@/components/economy/FinancialHealthOverview";
 import { BailoutCard } from "@/components/economy/BailoutCard";
 import { error } from "@/engine/utils/Logger";
@@ -43,7 +45,7 @@ export default function EconomyPage() {
 
   const playerHeya = useMemo(() => {
     if (!world || !state.playerHeyaId) return null;
-    return world.heyas.get(state.playerHeyaId) || null;
+    return getPlayerHeya(world) || null;
   }, [world, state.playerHeyaId]);
 
   const handleBailoutRequest = useCallback(() => {
@@ -86,7 +88,7 @@ export default function EconomyPage() {
     if (!playerRikishi) return 0;
     let count = 0;
     for (const r of playerRikishi) {
-      if (r?.division === "makuuchi" || r?.division === "juryo") {
+      if (r && isSekitoriDivision(r.division)) {
         count++;
       }
     }

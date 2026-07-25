@@ -24,7 +24,7 @@ import { RecruitSigningDialog } from "@/components/game/RecruitSigningDialog";
 import { projectRecruitmentUIDigest, resolveRegistryLabel } from "@/presenters/uiDigest";
 import { getHeyaForeignUsage } from "@/engine/utils/citizenshipUtils";
 import type { CandidateDigestEntry } from "@/presenters/projections/boutProjections";
-import { getStableRikishi } from "@/engine/queries";
+import { getHeyaRoster } from "@/engine/queries";
 import { CompareModePanel } from "./CompareModePanel";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Layers } from "lucide-react";
@@ -96,7 +96,7 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
 
   const foreignUsage = useMemo(() => {
     if (!world || !playerHeyaId) return 0;
-    const rikishi = getStableRikishi(world, playerHeyaId);
+    const rikishi = getHeyaRoster(world, playerHeyaId);
     return getHeyaForeignUsage(rikishi, world.year);
   }, [world, playerHeyaId]);
 

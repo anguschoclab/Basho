@@ -13,6 +13,7 @@ import { getHeatBand, H2HBar, HeatGauge } from "./rivalryUtils";
 import { HEAT_BAND_CONFIG, TONE_CONFIG, TRIGGER_LABELS } from "../../constants/ui/rivalry";
 import type { RivalryPairState, RivalryTrigger } from "@/engine/rivalries";
 import { toRankPosition } from "@/engine/types/banzuke";
+import type { Rank, Side } from "@/engine/types/banzuke";
 
 interface RivalryCardProps {
   pair: RivalryPairState;
@@ -23,9 +24,9 @@ interface RivalryCardProps {
         id: string;
         heyaId: string;
         shikona: string;
-        rank: string;
-        side?: string;
-        rankNumber: number;
+        rank: Rank;
+        side?: Side;
+        rankNumber?: number;
       }
     >;
     heyas: Map<string, { id: string; name: string }>;
@@ -84,7 +85,7 @@ export function RivalryCard({ pair, world, isPlayerRivalry, index }: RivalryCard
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Badge className={`${heatConfig.bgColor} ${heatConfig.color} border text-[10px] gap-1`}>
-              <Flame className={`h-3 w-3 ${heatBand === "inferno" ? "animate-pulse" : ""}`} />
+              <Flame className={`h-3 w-3 ${heatBand === "legendary" ? "animate-pulse" : ""}`} />
               {heatConfig.label}
             </Badge>
             {isPlayerRivalry && (

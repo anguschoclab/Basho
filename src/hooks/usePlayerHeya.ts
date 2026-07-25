@@ -1,4 +1,5 @@
 import { useGame } from "@/contexts/GameContext";
+import { getPlayerHeya } from "@/engine/queries";
 
 /**
  * Custom hook to retrieve the player's current heya (stable) from the game state.
@@ -11,6 +12,6 @@ export function usePlayerHeya() {
 
   if (!world?.playerHeyaId) return { world, heya: null };
 
-  const heya = world.heyas.get(world.playerHeyaId);
+  const heya = getPlayerHeya(world);
   return { world, heya: heya || null };
 }

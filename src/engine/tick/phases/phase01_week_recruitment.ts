@@ -10,6 +10,7 @@ import type { StateImpact } from "../../core/StateImpact";
 import * as talentpool from "../../systems/generation/TalentPoolService";
 import { assignMentor } from "../../lineage";
 import { rngFromSeed } from "../../rng";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import {
   INTERIM_DURATION_DAYS,
   RECRUITMENT_WINDOW_CLOSES_WEEKS,
@@ -102,7 +103,7 @@ export function phase01_week_recruitment(world: WorldState): StateImpact {
     for (const id of heya.rikishiIds ?? []) {
       const r = getRikishi(world, id);
       if (r) {
-        if (r.division === "makuuchi" || r.division === "juryo" || r.stats.experience > 50) {
+        if (isSekitoriDivision(r.division) || r.stats.experience > 50) {
           potentialMentors.push(r.id);
         }
         if (!r.mentorId && r.stats.experience < 30) {

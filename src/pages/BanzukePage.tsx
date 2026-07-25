@@ -21,6 +21,7 @@ import { RikishiCell } from "@/components/banzuke/RikishiCell";
 import { YokozunaTrajectory } from "@/components/banzuke/YokozunaTrajectory";
 import { getYokozunaCandidates } from "@/presenters/projections/promotionProjections";
 import type { UIRankRow } from "@/presenters/banzukeUI";
+import { getPlayerHeya } from "@/engine/queries";
 
 const DIVISION_KEYS: Division[] = [
   "makuuchi",
@@ -121,7 +122,7 @@ export default function BanzukePage() {
     setShowPressConference(false);
     // Apply effects to world via game context (similar to RecapPage)
     if (world.playerHeyaId) {
-      const heya = world.heyas.get(world.playerHeyaId);
+      const heya = getPlayerHeya(world);
       if (heya) {
         const updatedHeya = {
           ...heya,

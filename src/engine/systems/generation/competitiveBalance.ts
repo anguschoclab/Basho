@@ -1,17 +1,18 @@
 import type { WorldState } from "../../types/world";
 import type { Id } from "../../types/common";
-import { getStableRikishi } from "../../queries";
+import { getHeyaRoster } from "../../queries";
 import {
   BALANCE_STRENGTH_SENSITIVITY,
   BALANCE_MULTIPLIER_MIN,
   BALANCE_MULTIPLIER_MAX,
 } from "../../../constants/engine/recruitmentBalance";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 
 /** Sekitori (top-two-division) count is the stable-strength proxy. */
 function sekitoriCount(world: WorldState, heyaId: string): number {
   let n = 0;
-  for (const r of getStableRikishi(world, heyaId)) {
-    if (r.division === "makuuchi" || r.division === "juryo") n++;
+  for (const r of getHeyaRoster(world, heyaId)) {
+    if (isSekitoriDivision(r.division)) n++;
   }
   return n;
 }

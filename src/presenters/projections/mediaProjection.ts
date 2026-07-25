@@ -7,7 +7,7 @@
 
 import type { WorldState } from "../../engine/types/world";
 import type { MediaState } from "../../engine/types/media";
-import { projectRikishi } from "../rikishiUI";
+import { projectRikishi } from "../rikishi";
 
 /**
  * Project a list of recent headlines for the Media Page.

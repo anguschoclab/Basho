@@ -21,6 +21,7 @@ import {
 } from "@/presenters/uiDigest";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { selectHeyasWithCriticalWelfare, selectMergerCandidates } from "@/presenters/selectors";
+import { getPlayerHeya } from "@/engine/queries";
 
 export default function GovernancePage() {
   const { state, issueRuling, updateWorld } = useGame();
@@ -29,7 +30,7 @@ export default function GovernancePage() {
 
   const heya = useMemo(() => {
     if (!world || !world.playerHeyaId) return null;
-    return world.heyas.get(world.playerHeyaId) ?? null;
+    return getPlayerHeya(world) ?? null;
   }, [world]);
 
   const derived = useMemo(() => {

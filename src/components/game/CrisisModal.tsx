@@ -20,6 +20,7 @@ import { Button } from "../ui/button";
 import { ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 import { decisionToastMessage } from "./decisionFeedback";
+import { getPlayerHeya } from "@/engine/queries";
 
 export function CrisisModal() {
   const digest = useGameStore((state) => state.digest);
@@ -29,8 +30,7 @@ export function CrisisModal() {
   const [isOpen, setIsOpen] = useState(false);
 
   // Get player heya welfare state
-  const playerHeyaId = world?.playerHeyaId;
-  const playerHeya = playerHeyaId ? world?.heyas.get(playerHeyaId) : null;
+  const playerHeya = world ? getPlayerHeya(world) ?? null : null;
   const welfareState = playerHeya?.welfareState;
 
   // Check for welfare crisis (investigation, sanctioned, high risk)

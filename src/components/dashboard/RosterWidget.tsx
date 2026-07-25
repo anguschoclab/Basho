@@ -16,6 +16,7 @@ import { CompareModePanel } from "../scouting/CompareModePanel";
 import { toFatigueBand } from "@/engine/descriptorBands";
 import { ROSTER_WIDGET_MAX_ITEMS } from "../../constants/ui/display";
 import { FATIGUE_LABELS } from "@/constants/ui/labels";
+import { getPlayerHeya } from "@/engine/queries";
 
 type RosterEntryWithHealth = UIRosterEntry & { healthBadge: string };
 
@@ -230,7 +231,7 @@ export function RosterWidget() {
   const { roster, injuredCount, avgFatigueValue, avgFatigueBand } = useMemo(() => {
     if (!world?.playerHeyaId)
       return { roster: [], injuredCount: 0, avgFatigueValue: 0, avgFatigueBand: "fresh" as const };
-    const heya = world.heyas.get(world.playerHeyaId);
+    const heya = getPlayerHeya(world);
     if (!heya)
       return { roster: [], injuredCount: 0, avgFatigueValue: 0, avgFatigueBand: "fresh" as const };
 

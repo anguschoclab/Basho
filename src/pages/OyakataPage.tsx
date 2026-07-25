@@ -15,6 +15,7 @@ import { YokozunaTsunaDisplay } from "@/components/kesho/keshoComponents";
 import { TRAIT_LABELS, toTraitBand } from "@/presenters/uiDigest";
 import { menteesOf } from "@/engine/lineage";
 import { RikishiName, StableName } from "@/components/ClickableName";
+import { getPlayerHeya } from "@/engine/queries";
 
 /** oyakata page. */
 export default function OyakataPage() {
@@ -24,7 +25,7 @@ export default function OyakataPage() {
 
   useEffect(() => {
     if (world && world.playerHeyaId) {
-      const playerHeya = world.heyas.get(world.playerHeyaId);
+      const playerHeya = getPlayerHeya(world);
       if (playerHeya && playerHeya.oyakataId) {
         const o = world.oyakata.get(playerHeya.oyakataId);
         if (o) setSelectedOyakata(o);

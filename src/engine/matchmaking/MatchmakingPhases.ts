@@ -10,6 +10,7 @@
 import { clamp } from "../utils";
 import { stableTieBreak } from "../utils/sort";
 import { rngFromSeed } from "../rng";
+import { isSanyakuRank } from "@/constants/engine/rankDisplay";
 import type { BashoState } from "../types/basho";
 import type { Division, Side } from "../types/banzuke";
 import type { Rikishi } from "../types/rikishi";
@@ -195,10 +196,8 @@ export function scorePairing(args: {
     const s = rankSimilarity(a, b);
     const day = basho.day || 1;
 
-    const isSanyaku = (r: Rikishi) =>
-      ["yokozuna", "ozeki", "sekiwake", "komusubi"].includes(r.rank);
-    const aSanyaku = isSanyaku(a);
-    const bSanyaku = isSanyaku(b);
+    const aSanyaku = isSanyakuRank(a.rank);
+    const bSanyaku = isSanyakuRank(b.rank);
 
     if (aSanyaku && bSanyaku) {
       if (day > 7) {

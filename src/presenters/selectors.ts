@@ -8,6 +8,7 @@ import type { Rikishi } from "../engine/types/rikishi";
 import type { Heya } from "../engine/types/heya";
 import type { EngineEvent } from "../engine/types/events";
 import { queryEvents } from "../engine/events";
+import { sortStandings } from "../engine/utils/sort";
 import { getCachedPerception } from "./uiDigest";
 
 /**
@@ -201,3 +202,25 @@ export const selectMergerCandidates = createSelector((world: WorldState): Heya[]
   }
   return results.sort((a, b) => a.funds - b.funds); // worst debt first
 });
+
+export interface StandingEntry {
+  rikishi: Rikishi;
+  wins: number;
+  losses: number;
+}
+
+export function selectMakuuchiStandings(world: WorldState): StandingEntry[] {
+  if (!world.currentBasho?.standings) return [];
+  const standings = world.currentBasho.standings;
+  const results: StandingEntry[] = [];
+  for (const r of world.rikishi.values()) {
+    if (r.division === "makuuchi") {
+      results.push({
+        rikishi: r,
+        wins: standings.get(r.id)?.wins || 0,
+        losses: standings.get(r.id)?.losses || 0,
+      });
+    }
+  }
+  return sortStandings(results);
+}

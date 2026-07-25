@@ -33,6 +33,7 @@ import { Save, Trash2, Upload, Clock, ArrowRight, Database, History, Star } from
 import type { SaveSlotInfo } from "@/engine/saveload";
 import type { BashoName } from "@/engine/types/basho";
 import { BASHO_CALENDAR, deleteSave, importSave } from "@/presenters/uiDigest";
+import { formatSaveDate } from "@/engine/utils/formatters";
 
 interface SaveSlotManagerProps {
   getSaveSlots: () => SaveSlotInfo[];
@@ -122,16 +123,6 @@ export function SaveSlotManager({
       setIsImporting(false);
       e.target.value = "";
     }
-  };
-
-  const formatSaveDate = (isoDate: string) => {
-    const date = new Date(isoDate);
-    return date.toLocaleDateString(undefined, {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
   };
 
   const getBashoDisplay = (bashoName?: BashoName) => {

@@ -6,9 +6,9 @@
  */
 
 import type { WorldState } from "../../engine/types/world";
-import type { HeyaDataUI } from "../types/uiDigest";
-import { projectRikishi } from "../rikishiUI";
-import type { UIRikishi } from "../rikishiUI";
+import type { HeyaDataUI } from "../uiDigestTypes";
+import { projectRikishi } from "../rikishi";
+import type { UIRikishi } from "../rikishi";
 
 /**
  * Project heya data with oyakata for ceremony components.

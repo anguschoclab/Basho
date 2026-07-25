@@ -44,6 +44,7 @@ import type { Staff, StaffRole } from "@/engine/types/staff";
 import { toast } from "sonner";
 import { toFatigueBand, toScandalBand } from "@/engine/descriptorBands";
 import { FATIGUE_LABELS, SCANDAL_LABELS } from "@/constants/ui/labels";
+import { getPlayerHeya } from "@/engine/queries";
 
 const ROLE_LABELS: Record<StaffRole, string> = {
   oyakata: "Steward",
@@ -96,7 +97,7 @@ export default function StaffPage() {
     if (!world) navigate({ to: "/main-menu", replace: true });
   }, [world, navigate]);
 
-  const heya = world?.heyas.get(state.playerHeyaId || "");
+  const heya = world ? getPlayerHeya(world) : undefined;
 
   const staffList = useMemo(() => {
     if (!world || !heya) return [];

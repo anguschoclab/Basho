@@ -8,6 +8,7 @@
 
 import { cn } from "@/lib/utils";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
+import { RANK_DISPLAY_REGISTRY, isSanyakuRank, getDivisionOfRank } from "@/constants/engine/rankDisplay";
 
 export type RankTier =
   | "yokozuna"
@@ -30,34 +31,17 @@ interface RankBadgeProps {
   className?: string;
 }
 
-// Rank metadata for display
-const RANK_META: Record<string, { label: string; abbr: string; ja: string; tier: number }> = {
-  yokozuna: { label: "Yokozuna", abbr: "Y", ja: "横綱", tier: 0 },
-  ozeki: { label: "Ozeki", abbr: "O", ja: "大関", tier: 1 },
-  sekiwake: { label: "Sekiwake", abbr: "S", ja: "関脇", tier: 2 },
-  komusubi: { label: "Komusubi", abbr: "K", ja: "小結", tier: 2 },
-  maegashira: { label: "Maegashira", abbr: "M", ja: "前頭", tier: 3 },
-  juryo: { label: "Juryo", abbr: "J", ja: "十両", tier: 4 },
-  makushita: { label: "Makushita", abbr: "Mk", ja: "幕下", tier: 5 },
-  sandanme: { label: "Sandanme", abbr: "Sd", ja: "三段目", tier: 6 },
-  jonidan: { label: "Jonidan", abbr: "Jd", ja: "序二段", tier: 7 },
-  jonokuchi: { label: "Jonokuchi", abbr: "Jk", ja: "序ノ口", tier: 8 },
-};
-
-// Division groupings for styling
-const DIVISIONS = {
-  sanyaku: ["yokozuna", "ozeki", "sekiwake", "komusubi"],
-  makuuchi: ["maegashira"],
-  juryo: ["juryo"],
-  makushita: ["makushita"],
-  lower: ["sandanme", "jonidan", "jonokuchi"],
-};
+// Rank metadata sourced from RANK_DISPLAY_REGISTRY (canonical)
+function getRankMeta(rank: string) {
+  return RANK_DISPLAY_REGISTRY[rank as keyof typeof RANK_DISPLAY_REGISTRY];
+}
 
 function getDivision(rank: string): "sanyaku" | "makuuchi" | "juryo" | "makushita" | "lower" {
-  if (DIVISIONS.sanyaku.includes(rank)) return "sanyaku";
-  if (DIVISIONS.makuuchi.includes(rank)) return "makuuchi";
-  if (DIVISIONS.juryo.includes(rank)) return "juryo";
-  if (DIVISIONS.makushita.includes(rank)) return "makushita";
+  if (isSanyakuRank(rank)) return "sanyaku";
+  const div = getDivisionOfRank(rank);
+  if (div === "makuuchi") return "makuuchi";
+  if (div === "juryo") return "juryo";
+  if (div === "makushita") return "makushita";
   return "lower";
 }
 
@@ -67,7 +51,7 @@ function formatRankDisplay(
   side?: "east" | "west",
   variant: "pill" | "compact" | "full" | "roster" = "full"
 ): string {
-  const meta = RANK_META[rank];
+  const meta = getRankMeta(rank);
   if (!meta) return rank;
 
   const num = rankNumber && rankNumber > 0 ? rankNumber : "";
@@ -82,19 +66,19 @@ function formatRankDisplay(
   }
 
   // full or pill
-  const hasNumber = num !== "" && !DIVISIONS.sanyaku.includes(rank);
-  const base = hasNumber ? `${meta.label} #${num}` : meta.label;
+  const hasNumber = num !== "" && !isSanyakuRank(rank);
+  const base = hasNumber ? `${meta.en} #${num}` : meta.en;
   return side ? `${base} ${sideChar}` : base;
 }
 
 function formatJapanese(rank: string, rankNumber?: number, side?: "east" | "west"): string {
-  const meta = RANK_META[rank];
+  const meta = getRankMeta(rank);
   if (!meta) return rank;
 
   const num = rankNumber && rankNumber > 0 ? rankNumber : "";
   const sideChar = side ? (side === "east" ? "東" : "西") : "";
 
-  if (DIVISIONS.sanyaku.includes(rank)) {
+  if (isSanyakuRank(rank)) {
     return `${meta.ja}${sideChar}`;
   }
   return `${meta.ja.charAt(0)}${num}${sideChar}`;
@@ -116,7 +100,7 @@ export function RankBadge({
   if (variant === "compact") {
     return (
       <TooltipWrap
-        content={`${RANK_META[rank]?.label || rank} ${rankNumber ? `#${rankNumber}` : ""} ${side ? (side === "east" ? "East" : "West") : ""}`}
+        content={`${getRankMeta(rank)?.en || rank} ${rankNumber ? `#${rankNumber}` : ""} ${side ? (side === "east" ? "East" : "West") : ""}`}
         side="top"
       >
         <span
@@ -281,7 +265,7 @@ export function RankInline({
   side,
   className,
 }: Omit<RankBadgeProps, "variant" | "showJapanese">) {
-  const meta = RANK_META[rank];
+  const meta = getRankMeta(rank);
   const num = rankNumber && rankNumber > 0 ? rankNumber : "";
   const display = meta ? `${meta.abbr}${num}` : rank;
 

@@ -18,6 +18,7 @@ import {
 } from "@/presenters/uiDigest";
 import { computeDisplayTrainingMultiplier } from "@/engine/systems/training/TrainingMath";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
+import { getPlayerHeya } from "@/engine/queries";
 
 const INTENSITY_OPTIONS: TrainingIntensity[] = [
   "conservative",
@@ -172,7 +173,7 @@ export function TrainingWidget() {
 
   const sanctionCap = useMemo(() => {
     if (!world?.playerHeyaId) return null;
-    const ph = world.heyas.get(world.playerHeyaId);
+    const ph = getPlayerHeya(world);
     return ph?.welfareState?.sanctions?.trainingIntensityCap ?? null;
   }, [world]);
 

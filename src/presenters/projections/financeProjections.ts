@@ -8,6 +8,7 @@
 import type { WorldState } from "../../engine/types/world";
 import { calculateHeyaWeeklyFinances } from "../../engine/systems/economy/FinanceCalculator";
 import { calculateKoenkaiIncome } from "../../engine/systems/economy/SponsorshipService";
+import { getPlayerHeya } from "../../engine/queries";
 import { KOENKAI_INCOME_SPLIT } from "../../constants/engine/economic";
 import { formatYen } from "../../utils/engineUtils";
 
@@ -44,7 +45,7 @@ function toRunwayBand(months: number): RunwayBand {
 
 export function projectFinanceSummary(world: WorldState): FinanceSummary | null {
   if (!world.playerHeyaId) return null;
-  const heya = world.heyas.get(world.playerHeyaId);
+  const heya = getPlayerHeya(world);
   if (!heya) return null;
 
   const fin = calculateHeyaWeeklyFinances(heya, world);

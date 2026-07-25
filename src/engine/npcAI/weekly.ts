@@ -1,11 +1,16 @@
 import type { WorldState } from "../types/world";
 import type { Rikishi } from "../types/rikishi";
 import type { Id } from "../types/common";
+import type { PerceptionSnapshot } from "../perception";
+import type { TrainingIntensity } from "../types/training";
+import type { ExhibitionInvitation } from "../systems/worldCircuit/WorldCircuitService";
+import type { RecruitmentAgentResult } from "../agents/RecruitmentAgent";
 import { getOyakataStyleProfile } from "../oyakataStylePreferences";
 import { WorldCircuitService } from "../systems/worldCircuit/WorldCircuitService";
 import { getOyakataForHeya, getRikishi, getHeya } from "../queries";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import { getManagerPersona } from "../systems/NPCPersonaService";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import {
   TOP_RIKISHI_COUNT,
   MAX_ROSTER_SIZE,
@@ -52,10 +57,13 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
   const styleProfile = oyakata ? getOyakataStyleProfile(world, oyakata) : undefined;
   const philosophy = styleProfile?.philosophy;
 
-  const complianceCap = heya?.welfareState?.sanctions?.trainingIntensityCap;
+  const rawCap = heya?.welfareState?.sanctions?.trainingIntensityCap;
+  const complianceCap: TrainingIntensity | undefined = rawCap
+    ? ({ low: "conservative", medium: "balanced", high: "intensive" } as const)[rawCap]
+    : undefined;
 
   const trainingCtx: TrainingWorkerContext = {
-    perception: rpPerception(perception),
+    perception: rpPerception(perception) as PerceptionSnapshot,
     riskAppetite: persona.riskAppetite,
     welfareDiscipline: persona.welfareDiscipline,
     mood: persona.mood,
@@ -106,7 +114,7 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
       world,
       runwayBand: perception.runwayBand,
       funds: heya?.funds || 0,
-      monthlyBurn: heya?.monthlyBurnRate || 0,
+      monthlyBurn: 0,
     };
     const financeResult = spawnFinanceAgent(financeCtx);
     reasoning.push(...financeResult.reasoning);
@@ -115,7 +123,7 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
       heya: heya!,
       oyakata,
       world,
-      scandalScore: heya?.welfareState?.scandalScore || 0,
+      scandalScore: heya?.scandalScore || 0,
       politicalCapital: heya?.politicalCapital || 0,
       governanceStatus: heya?.welfareState?.complianceState || "good",
     };
@@ -124,7 +132,7 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
 
     const rivalryCtx: RivalryAgentContext = {
       oyakata,
-      activeRivalries: world.rivalries || {},
+      activeRivalries: world.rivalriesState?.pairs || {},
       currentMood: persona.mood,
     };
     const rivalryResult = spawnRivalryAgent(rivalryCtx);
@@ -134,7 +142,7 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
     for (const rikishiId of world.activeRikishiIds) {
       const r = getRikishi(world, rikishiId);
       if (!r) continue;
-      if (r.division === "makuuchi" || r.division === "juryo") {
+      if (isSekitoriDivision(r.division)) {
         topRikishi.push(r);
         if (topRikishi.length >= TOP_RIKISHI_COUNT) break;
       }
@@ -143,16 +151,16 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
     const narrativeCtx: NarrativeAgentContext = {
       oyakata,
       topRikishi,
-      recentAchievements: world._recentAchievements || [],
+      recentAchievements: [],
       currentBashoPhase: world.cyclePhase,
     };
     const narrativeResult = spawnNarrativeAgent(narrativeCtx);
     reasoning.push(...narrativeResult.reasoning);
 
-    let recruitmentResult = {
+    let recruitmentResult: RecruitmentAgentResult = {
       maxBid: 0,
       shouldBid: false,
-      bidStrategy: "conservative" as const,
+      bidStrategy: "conservative",
       reasoning: ["[Recruitment Agent] No vacancies - skipping recruitment"],
       confidence: 0,
     };
@@ -208,7 +216,7 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
       financeResult.riskLevel === "conservative" &&
       trainingProposal.trainingIntensity === "punishing"
     ) {
-      trainingProposal.trainingIntensity = "intense";
+      trainingProposal.trainingIntensity = "intensive";
       reasoning.push(
         "[Agent Review] Finance agent overrides: Reducing intensity to 'intense' due to conservative financial stance"
       );
@@ -243,7 +251,7 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
           world,
           heyaId,
           globalProposal.rikishiId,
-          invitation
+          invitation as unknown as ExhibitionInvitation
         )
       );
       const nextPending = (world.pendingExhibitions || []).filter(
@@ -271,19 +279,19 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
 
   if (agentDecisions) {
     if (agentDecisions.finance.shouldBuyMyoseki) {
-      builder.logEvent("NPC_DECISION", "finance", { heyaId, decision: "buy_myoseki" }, { heyaId });
+      builder.logEvent("NPC_MANAGER_DECISION", "economy", { heyaId, decision: "buy_myoseki" }, { heyaId });
     }
     if (agentDecisions.governance.shouldReduceScandal) {
       builder.logEvent(
-        "NPC_DECISION",
-        "governance",
+        "NPC_MANAGER_DECISION",
+        "welfare",
         { heyaId, decision: "reduce_scandal" },
         { heyaId }
       );
     }
     if (agentDecisions.rivalry.escalateRivalry) {
       builder.logEvent(
-        "NPC_DECISION",
+        "NPC_MANAGER_DECISION",
         "rivalry",
         { heyaId, decision: "escalate_rivalry" },
         { heyaId }
@@ -291,7 +299,7 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
     }
     if (agentDecisions.narrative.shouldTriggerEvent) {
       builder.logEvent(
-        "NPC_DECISION",
+        "NPC_MANAGER_DECISION",
         "narrative",
         { heyaId, decision: "trigger_event", eventType: agentDecisions.narrative.eventType },
         { heyaId }

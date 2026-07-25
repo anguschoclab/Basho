@@ -13,6 +13,7 @@
 import type { WorldState } from "../../types/world";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { processYearEndInduction, createEmptyHallOfFame } from "../../hallOfFame";
 import * as npcAI from "../../npcAI";
 import { updateAvatarForAging, updateHairstyleForPromotion } from "../../avatarGenerator";
@@ -135,7 +136,7 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
       const r = getRikishi(world, id);
       if (!r) continue; // Skip retired rikishi - they don't need age/avatar updates
       const age = world.year - r.birthYear;
-      const isSekitori = r.division === "makuuchi" || r.division === "juryo";
+      const isSekitori = isSekitoriDivision(r.division);
 
       // Explicitly update rikishi age property for metrics and checks
       builder.updateRikishi(id, { age });

@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Bookmark, BookmarkX, ChevronDown, ChevronRight } from "lucide-react";
 import { RikishiCard } from "@/components/game/RikishiCard";
-import { projectRikishi } from "@/presenters/rikishiUI";
+import { projectRikishi } from "@/presenters/rikishi";
 import type { BookmarkEntry } from "@/engine/types/world";
 
 function BookmarkItem({

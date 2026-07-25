@@ -7,8 +7,8 @@
 
 import type { Rikishi } from "@/engine/types/rikishi";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { projectRikishi } from "@/presenters/rikishiUI";
-import type { UIRikishi } from "@/presenters/rikishiUI";
+import { projectRikishi } from "@/presenters/rikishi";
+import type { UIRikishi } from "@/presenters/rikishi";
 import type { SeededRNG } from "@/engine/rng";
 
 /** Minimal world state for rikishi projection */
@@ -27,6 +27,13 @@ export function resolveRegistryLabel(domain: string, id: string, useJa: boolean 
   const entry = BardEngine.getRegistryEntry(domain, id);
   if (!entry) return id;
   return useJa ? (entry.labelJa ?? entry.label) : entry.label;
+}
+
+/**
+ * Resolve a Japanese localized label for a given registry domain and ID.
+ */
+export function resolveRegistryLabelJa(domain: string, id: string): string {
+  return resolveRegistryLabel(domain, id, true);
 }
 
 /**

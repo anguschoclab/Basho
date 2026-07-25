@@ -15,6 +15,7 @@ import { Link, useLocation } from "@tanstack/react-router";
 import { useRef, useEffect } from "react";
 import { useGame } from "@/contexts/GameContext";
 import { getMenuGroups } from "./sidebarConfig";
+import { getPlayerHeya } from "@/engine/queries";
 
 export function AppSidebar() {
   const { state } = useGame();
@@ -25,7 +26,7 @@ export function AppSidebar() {
 
   const isLoaded = !!world;
   const tutorialCompleted = world?.tutorialState?.completed ?? false;
-  const playerHeya = isLoaded && world?.playerHeyaId ? world.heyas.get(world.playerHeyaId) : null;
+  const playerHeya = isLoaded && world ? getPlayerHeya(world) ?? null : null;
 
   const inBasho = world?.cyclePhase === "active_basho";
   const bashoDay = world?.currentBasho?.day;

@@ -26,16 +26,4 @@ export function simpleHashToIndex(s: string, mod: number): number {
   return (h >>> 0) % mod;
 }
 
-/**
- * Formats a number as a Japanese Yen currency string.
- */
-export function formatCurrency(amount: number): string {
-  const formatted = new Intl.NumberFormat("ja-JP", {
-    style: "currency",
-    currency: "JPY",
-    maximumFractionDigits: 0,
-  }).format(amount);
-  // Ensure half-width symbol for modern UI, but the tests want full-width?
-  // Wait, let's just make it match the tests if that's the canonical standard for this project.
-  return formatted.replace("¥", "￥");
-}
+export { formatCurrency } from "./formatters";

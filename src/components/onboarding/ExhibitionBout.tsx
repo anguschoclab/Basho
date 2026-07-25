@@ -13,6 +13,7 @@ import type { BoutResult } from "@/engine/types/basho";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ChevronRight, Swords, Trophy } from "lucide-react";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { MentorOverlay, type MentorStep } from "./MentorOverlay";
 import { PbpLineText } from "@/components/game/PbpLineText";
 import { KimariteTag } from "@/components/ui/KimariteTag";
@@ -25,7 +26,7 @@ function pickExhibitionPair(world: import("@/engine/types/world").WorldState) {
   const candidates = [];
   // ⚡ Bolt Optimization: Replace O(N) Array.from().filter() with early-exit loop
   for (const r of world.rikishi.values()) {
-    if (r.division === "makuuchi" || r.division === "juryo") {
+    if (isSekitoriDivision(r.division)) {
       candidates.push(r);
       if (candidates.length === 2) break;
     }

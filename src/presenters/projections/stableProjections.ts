@@ -8,6 +8,7 @@
 import type { WorldState } from "../../engine/types/world";
 import { getCachedPerception } from "../uiDigest";
 import type { WelfareRiskBand, MoraleBand } from "../../engine/perception";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 
 export interface StableSummary {
   heyaName: string;
@@ -36,7 +37,7 @@ export function projectStableSummary(world: WorldState, heyaId: string): StableS
   for (const id of heya.rikishiIds ?? []) {
     const r = world.rikishi.get(id);
     if (!r) continue;
-    if (r.division === "makuuchi" || r.division === "juryo") sekitoriCount++;
+    if (isSekitoriDivision(r.division)) sekitoriCount++;
     if (r.injury != null) injuredCount++;
   }
 

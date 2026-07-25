@@ -16,7 +16,7 @@ import { queryEvents } from "../../engine/events";
 import { selectTopRivals } from "../selectors";
 import { getSekitoriInHeya } from "../../engine/queries";
 import { buildPrevRankScores, buildBanzukeRows } from "../banzukeUI";
-import { projectRosterEntry, UIRosterEntry } from "../rikishiUI";
+import { projectRosterEntry, UIRosterEntry } from "../rikishi";
 import { EntityCollection } from "../../engine/core/EntityCollection";
 
 /**

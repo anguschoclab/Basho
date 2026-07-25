@@ -11,6 +11,7 @@ import type { PrestigeBand } from "../types/narrative";
 import { getHeyaRoster } from "../queries";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 
 export const PRESTIGE_ORDER: PrestigeBand[] = [
   "unknown",
@@ -100,7 +101,7 @@ export function runPrestigeDecay(world: WorldState): StateImpact {
       if (lastBasho.kantosho === r.id) sanshoPrizeCount++;
       if (lastBasho.shukunsho === r.id) sanshoPrizeCount++;
 
-      if (r.division === "makuuchi" || r.division === "juryo") sekitoriCount++;
+      if (isSekitoriDivision(r.division)) sekitoriCount++;
     }
 
     const totalBouts = totalWins + totalLosses;

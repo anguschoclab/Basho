@@ -19,6 +19,7 @@ import { rosterSlice } from "./rosterSlice";
 import { financeSlice } from "./financeSlice";
 import { bashoSlice } from "./bashoSlice";
 import { bookmarkSlice } from "./bookmarkSlice";
+import { tutorialSlice } from "./tutorialSlice";
 
 /**
  * Core generic actions that don't fit cleanly into a domain slice
@@ -84,67 +85,6 @@ function coreSlice(state: GameState, action: GameAction): GameState {
         phase: action.world.playerHeyaId ? "interim" : "menu",
       };
 
-    case "ADVANCE_TUTORIAL_STEP": {
-      if (!state.world) return state;
-      const ts = state.world.tutorialState;
-      return {
-        ...state,
-        world: {
-          ...state.world,
-          tutorialState: ts
-            ? { ...ts, currentStep: action.step }
-            : {
-                completed: false,
-                currentStep: action.step,
-                flags: {
-                  seenStaminaTooltip: false,
-                  seenGripTooltip: false,
-                  seenMomentumTooltip: false,
-                  seenBashoRecordTooltip: false,
-                  finishedExhibition: false,
-                },
-              },
-        },
-      };
-    }
-
-    case "SET_TUTORIAL_FLAG": {
-      if (!state.world?.tutorialState) return state;
-      return {
-        ...state,
-        world: {
-          ...state.world,
-          tutorialState: {
-            ...state.world.tutorialState,
-            flags: { ...state.world.tutorialState.flags, [action.flag]: true },
-          },
-        },
-      };
-    }
-
-    case "COMPLETE_TUTORIAL": {
-      if (!state.world) return state;
-      return {
-        ...state,
-        world: {
-          ...state.world,
-          tutorialState: {
-            ...(state.world.tutorialState ?? {
-              flags: {
-                seenStaminaTooltip: false,
-                seenGripTooltip: false,
-                seenMomentumTooltip: false,
-                seenBashoRecordTooltip: false,
-                finishedExhibition: false,
-              },
-            }),
-            completed: true,
-            currentStep: "DONE" as const,
-          },
-        },
-      };
-    }
-
     default:
       return state;
   }
@@ -158,6 +98,7 @@ const baseReducer = combineReducers<GameState, GameAction>([
   financeSlice,
   bashoSlice,
   bookmarkSlice,
+  tutorialSlice,
 ]);
 
 /**

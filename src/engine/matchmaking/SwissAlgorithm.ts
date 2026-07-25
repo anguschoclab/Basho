@@ -18,6 +18,7 @@ import type { RivalriesState } from "../../constants/engine/rivalry";
 import { getRivalryBoutModifiers } from "../systems/narrative/RivalryHeatService";
 import { scorePairing, type MatchPairing, type MatchmakingRules } from "./MatchmakingPhases";
 import { applyDramaBudget } from "./DramaMatchmaker";
+import { isSanyakuRank } from "@/constants/engine/rankDisplay";
 import {
   SWISS_RANK_YOKOZUNA,
   SWISS_RANK_OZEKI,
@@ -80,15 +81,8 @@ function banzukeOrdinal(r: Rikishi): number {
   return base + num * RANK_NUMBER_MULTIPLIER + side;
 }
 
-/**
- * Checks if a rikishi is in san'yaku ranks.
- *
- * @param {Rikishi} r - The rikishi to check.
- * @returns {boolean} True if rank is yokozuna, ozeki, sekiwake, or komusubi.
- */
-function isSanyakuRank(r: Rikishi): boolean {
-  return ["yokozuna", "ozeki", "sekiwake", "komusubi"].includes(r.rank);
-}
+/** Checks if a rikishi is in san'yaku ranks (delegates to canonical helper). */
+const isSanyakuRikishi = (r: Rikishi): boolean => isSanyakuRank(r.rank);
 
 /**
  * Checks if a rikishi is in M1-M4 ranks.
@@ -285,9 +279,9 @@ function phase2(
 
   for (const r of pool) {
     const rec = standings?.get(r.id) ?? { wins: 0, losses: 0 };
-    if (rec.wins >= HOT_STREAK_WINS_THRESHOLD && rec.losses === 0 && !isSanyakuRank(r)) {
+    if (rec.wins >= HOT_STREAK_WINS_THRESHOLD && rec.losses === 0 && !isSanyakuRikishi(r)) {
       const topSanyaku = pool
-        .filter((s) => isSanyakuRank(s) && !paired.has(s.id) && !pulledUp.has(s.id))
+        .filter((s) => isSanyakuRikishi(s) && !paired.has(s.id) && !pulledUp.has(s.id))
         .sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b))[0];
       if (topSanyaku) {
         const p = tryPair(basho, r, topSanyaku, facedSet, paired, rivalriesState);

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getPlayerHeya } from "@/engine/queries";
 
 interface PendingExhibition {
   id: string;
@@ -22,8 +23,7 @@ interface PendingExhibition {
 export default function RegionalHubPage() {
   const { state } = useGame();
   const world = state.world;
-  const playerHeyaId = world?.playerHeyaId;
-  const playerHeya = playerHeyaId ? world?.heyas.get(playerHeyaId) : null;
+  const playerHeya = world ? getPlayerHeya(world) ?? null : null;
 
   const regionalPresence = playerHeya?.regionalPresence || {};
   const pendingExhibitions = (world?.pendingExhibitions || []) as PendingExhibition[];

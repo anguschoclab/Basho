@@ -174,6 +174,14 @@ export const NarrativeService = {
   },
 
   /**
+   * Get the narrative stat label for a raw numeric value.
+   * Combines getStatBand + getStatLabel in one call.
+   */
+  getStatLabelForValue(rng: SeededRNG, rawValue: number | undefined): string {
+    return getStatLabel(rng, this.getStatBand(rawValue ?? 50));
+  },
+
+  /**
    * Describe an attribute with narrative prose.
    *
    * @param {SeededRNG} rng - The RNG instance.

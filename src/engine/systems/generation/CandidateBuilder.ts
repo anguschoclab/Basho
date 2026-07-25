@@ -21,6 +21,7 @@ import {
   generateRikishiStats,
 } from "./CandidateStats";
 import { generateSyntheticCareer, type DivisionRecords } from "./CandidateCareer";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 
 function createBaseInfo(
   id: string,
@@ -37,7 +38,7 @@ function createBaseInfo(
   currentYear: number
 ) {
   const age = currentYear - birthYear;
-  const isSekitori = division === "makuuchi" || division === "juryo";
+  const isSekitori = isSekitoriDivision(division);
   const citizenshipStatus = !isForeign({ nationality }) ? "native" : "foreign";
 
   return {
@@ -277,6 +278,8 @@ export function generateFullRikishi(args: {
       ceilingFraction: potentialPkg.ceilingFraction,
       profile: potentialPkg.profile,
     },
+    heyaHistory: [],
+    lineage: {},
   } as Rikishi;
 }
 
@@ -361,6 +364,8 @@ export function convertCandidateToRikishi(args: {
           profile: candidate.developmentProfile ?? "standard",
         }
       : undefined,
+    heyaHistory: [],
+    lineage: {},
   } as Rikishi;
 
   return rikishi;

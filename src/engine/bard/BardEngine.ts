@@ -2,6 +2,7 @@ import archData from "./archive.json";
 import { SeededRNG } from "../rng";
 import type { NarrativeContext } from "../types/events";
 import { warn } from "../utils/Logger";
+import { formatCurrency as formatCurrencyEnUS } from "../utils/formatters";
 
 export type ResolutionPath = string; // e.g., 'combat.phases.tachiai'
 
@@ -36,13 +37,7 @@ let lruCache: string[] = [];
 const MAX_CACHE_SIZE = 50;
 
 function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "JPY",
-    maximumFractionDigits: 0,
-  })
-    .format(amount)
-    .replace("￥", "¥");
+  return formatCurrencyEnUS(amount, "en-US");
 }
 
 const percentFormatter = new Intl.NumberFormat("en-US", {

@@ -6,6 +6,7 @@
 
 import type { WorldState } from "@/engine/types/world";
 import type { ActiveCrisis } from "@/engine/types/crises";
+import { getPlayerHeya } from "@/engine/queries";
 
 export interface CrisisProjection {
   isActive: boolean;
@@ -19,8 +20,7 @@ export interface CrisisProjection {
  * Project crisis data for UI consumption
  */
 export function projectCrisisData(world: WorldState): CrisisProjection {
-  const playerHeyaId = world.playerHeyaId;
-  const playerHeya = playerHeyaId ? world.heyas.get(playerHeyaId) : null;
+  const playerHeya = getPlayerHeya(world);
   const activeCrisis = playerHeya?.activeCrisis || null;
   const pendingCrisis = world.pendingCrisis || null;
 
@@ -51,7 +51,6 @@ export function getPendingCrisis(world: WorldState): ActiveCrisis | null {
  * Get active crisis for player heya
  */
 export function getActiveCrisis(world: WorldState): ActiveCrisis | null {
-  const playerHeyaId = world.playerHeyaId;
-  const playerHeya = playerHeyaId ? world.heyas.get(playerHeyaId) : null;
+  const playerHeya = getPlayerHeya(world);
   return playerHeya?.activeCrisis || null;
 }

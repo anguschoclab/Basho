@@ -11,12 +11,29 @@
  */
 
 import type { WorldState } from "../../types/world";
+import type { Rikishi } from "../../types/rikishi";
 import type { DynastyRecord } from "../../types/dynasty";
 import type { OyakataArchetype, SuccessionReadiness } from "../../types/oyakata";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
+import { RANK_HIERARCHY } from "../../types/banzuke";
+import type { Rank } from "../../types/banzuke";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { TrainingPhilosophyService } from "./TrainingPhilosophyService";
 import { getHeya, getRikishi } from "../../queries";
+
+function computeHighestRank(rikishi: Rikishi): Rank {
+  let best: Rank = rikishi.rank;
+  let bestTier = RANK_HIERARCHY[best]?.tier ?? 99;
+  for (const snap of rikishi.careerHistory ?? []) {
+    const tier = RANK_HIERARCHY[snap.rank as Rank]?.tier ?? 99;
+    if (tier < bestTier) {
+      best = snap.rank;
+      bestTier = tier;
+    }
+  }
+  return best;
+}
 
 export const DynastyService = {
   // ──────────────────────────────────────────────────────────────────────────
@@ -87,7 +104,7 @@ export const DynastyService = {
     for (const rikishiId of world.activeRikishiIds) {
       const rikishi = getRikishi(world, rikishiId);
       if (!rikishi) continue;
-      const isSekitori = rikishi.division === "makuuchi" || rikishi.division === "juryo";
+      const isSekitori = isSekitoriDivision(rikishi.division);
       // Elite candidates: Current sekitori or high-performing alumni
       if (rikishi.heyaId === heyaId && isSekitori) {
         eligible.push(rikishi.id);
@@ -118,7 +135,8 @@ export const DynastyService = {
     // 2. Fallback: Check historical rikishi (retired legends)
     if (eligible.length === 0 && world.historicalRikishi) {
       for (const [id, r] of world.historicalRikishi) {
-        if (r.highestRank === "yokozuna" || r.highestRank === "ozeki") {
+        const highestRank = computeHighestRank(r);
+        if (highestRank === "yokozuna" || highestRank === "ozeki") {
           eligible.push(id);
         }
       }

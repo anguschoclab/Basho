@@ -14,7 +14,7 @@ export { toIdentityDTO } from "./identity";
 export { toRankDTO, toStyleDTO } from "./rank";
 
 // Stats & Status
-export { toStatusDTO, toBandsDTO, toPerceivedStatsDTO, toDescriptorDTO } from "./stats";
+export { toStatusDTO, toBandsDTO, toPerceivedStatsDTO, calculatePerceivedStats, toDescriptorDTO } from "./stats";
 export { calculateInjurySummary } from "./injury";
 
 // Career
@@ -41,3 +41,6 @@ export { toLineageDTO, toCareerDataDTO } from "./lineage";
 
 // Visual
 export { toVisualDTO, toH2HDTO } from "./visual";
+
+// Roster
+export { projectRosterEntry } from "./roster";

@@ -9,6 +9,7 @@ import { SIMULATION_CONFIG } from "../core/SimulationConfig";
 import type { Id } from "../types/common";
 import { getRikishi } from "../queries";
 import { NON_SEKITORI_BASHO_ALLOWANCE } from "../../constants/engine/economic";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 
 /**
  * Distributes special prizes (Sansho) and tournament bonuses at the end of a basho.
@@ -129,7 +130,7 @@ export function payBashoTeate(world: WorldState): StateImpact {
     if (!r) continue;
 
     // Only non-sekitori receive basho teate
-    if (r.division === "makuuchi" || r.division === "juryo") continue;
+    if (isSekitoriDivision(r.division)) continue;
 
     const teateAmount = NON_SEKITORI_BASHO_ALLOWANCE[r.division] || 0;
 

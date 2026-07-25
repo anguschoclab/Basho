@@ -9,6 +9,7 @@ import type { WorldState } from "../../engine/types/world";
 import { SeededRNG } from "../../engine/rng";
 import { BardEngine } from "../../engine/bard/BardEngine";
 import { getHeyaRoster } from "../../engine/queries";
+import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 
 function getFacilityLevelLabel(rng: SeededRNG, level: number): string {
   let band = "limited";
@@ -62,7 +63,7 @@ export function projectMedicalUIDigest(world: WorldState) {
 
   const rosterSize = roster.length;
   const sekitoriCount = roster.filter(
-    (r) => r.division === "makuuchi" || r.division === "juryo"
+    (r) => isSekitoriDivision(r.division)
   ).length;
   const rosterStrengthBand: "dominant" | "strong" | "competitive" | "developing" | "weak" =
     sekitoriCount >= 6

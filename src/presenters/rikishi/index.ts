@@ -34,12 +34,17 @@ export type {
   UIRikishiDTO,
   // Legacy compatibility
   UIRikishi,
+  UIRosterEntry,
+  UIRankDelta,
 } from "./types";
 
 // ============================================================================
 // Transformers
 // ============================================================================
 export * from "./transformers";
+
+// Re-export projectRosterEntry at top level for convenience
+export { projectRosterEntry } from "./transformers/roster";
 
 // ============================================================================
 // Main Composition Function
@@ -100,8 +105,8 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishiDTO {
     // Status & Stats
     ...toStatusDTO(r, rng),
     ...toBandsDTO(r, rng, world),
-    ...toPerceivedStatsDTO(r, rng),
-    ...toDescriptorDTO(r, rng),
+    perceivedStats: toPerceivedStatsDTO(r, rng),
+    ...toDescriptorDTO(r, rng, world),
 
     // Career
     ...toCareerDTO(r),

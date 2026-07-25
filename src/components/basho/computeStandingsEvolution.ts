@@ -1,4 +1,5 @@
 import type { BoutResult } from "@/engine/types/basho";
+import { sortStandings } from "@/engine/utils/sort";
 
 type ChartDataPoint = { day: number } & Record<string, number>;
 
@@ -25,8 +26,8 @@ export function computeStandingsEvolution(
   }
 
   const standingsEntries = Array.from(basho.standings.entries());
-  const sorted = standingsEntries.sort((a, b) => b[1].wins - a[1].wins).slice(0, maxLines);
-  const topIds = sorted.map(([id]) => id);
+  const sorted = sortStandings(standingsEntries.map(([id, rec]) => ({ id, ...rec }))).slice(0, maxLines);
+  const topIds = sorted.map((s) => s.id);
   const topIdSet = new Set(topIds);
 
   const cumulative: Record<string, number> = {};

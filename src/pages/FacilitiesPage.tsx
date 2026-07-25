@@ -10,6 +10,7 @@ import { investInFacility } from "@/engine/facilities";
 import type { FacilityAxis, UpgradeResult } from "@/engine/facilities";
 import type { FacilityId } from "@/engine/types/infrastructure";
 import { FacilityROIChart } from "@/components/economy/FacilityROIChart";
+import { getPlayerHeya } from "@/engine/queries";
 
 /** facilities page. */
 export default function FacilitiesPage() {
@@ -17,7 +18,7 @@ export default function FacilitiesPage() {
   const world = state.world;
   const heya = useMemo(() => {
     if (!world || !state.playerHeyaId) return null;
-    return world.heyas.get(state.playerHeyaId) || null;
+    return getPlayerHeya(world) || null;
   }, [world, state.playerHeyaId]);
 
   const handleUpgrade = useCallback(
