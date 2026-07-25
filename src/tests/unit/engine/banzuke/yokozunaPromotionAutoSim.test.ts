@@ -28,11 +28,13 @@ describe("yokozuna promotion in AutoSim", () => {
 
   it("has yokozuna or yokozuna promotion event within 12 basho from a world with 0 yokozuna", () => {
     const world = generateInitialWorld("no-yokozuna-test-001");
-    // Force all yokozuna to retired state
+    // Force all yokozuna to retired state and remove from activeRikishiIds
     const rikishiMap = new Map(world.rikishi);
+    const newActiveIds = new Set(world.activeRikishiIds);
     for (const [id, r] of rikishiMap) {
       if (r.rank === "yokozuna") {
         rikishiMap.set(id, { ...r, isRetired: true });
+        newActiveIds.delete(id);
       }
     }
 
@@ -45,6 +47,8 @@ describe("yokozuna promotion in AutoSim", () => {
       const topOzeki = activeOzeki[0];
       rikishiMap.set(topOzeki.id, {
         ...topOzeki,
+        condition: 100,
+        motivation: 100,
         stats: {
           ...topOzeki.stats,
           power: 95,
@@ -57,7 +61,7 @@ describe("yokozuna promotion in AutoSim", () => {
       });
     }
 
-    const worldNoYokozuna = { ...world, rikishi: rikishiMap };
+    const worldNoYokozuna = { ...world, rikishi: rikishiMap, activeRikishiIds: newActiveIds };
 
     const result = runAutoSim(worldNoYokozuna, {
       duration: { type: "basho", count: 18 },
