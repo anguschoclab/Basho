@@ -4,6 +4,9 @@
 
 import type { Id } from "./common";
 
+/** Press persona for interview tone selection. */
+export type PressPersona = "stoic" | "villain" | "celebrity" | "firebrand" | "neutral";
+
 /** Hidden behavioral stats for Rikishi. */
 export interface RikishiBehavior {
   discipline: number; // 1-100. Low = prone to late-night drinking/fights

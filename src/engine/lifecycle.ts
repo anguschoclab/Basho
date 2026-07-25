@@ -16,6 +16,7 @@ import type { InjurySeverity } from "./systems/health/BodyDefinitions";
 import { buildCombatProfile, deriveWeakAgainstStyles } from "./archetype";
 import { rollAgeForRank } from "./systems/generation/CandidateStats";
 import { isCollegeRecruit } from "./utils/identity";
+import { applyPersonaAssignment } from "./systems/generation/PersonaAssignment";
 
 // --- RETIREMENT LOGIC ---
 
@@ -259,7 +260,7 @@ export function _generateRookie(
     legacyShikona,
   });
 
-  return {
+  const rookie: Rikishi = {
     id: rookieId,
     name: shikona,
     shikona: shikona,
@@ -344,5 +345,9 @@ export function _generateRookie(
     milestones: [],
     heyaHistory: [],
     lineage: {},
-  };
+  } as Rikishi;
+
+  applyPersonaAssignment(rookie, archetype, rng);
+
+  return rookie;
 }

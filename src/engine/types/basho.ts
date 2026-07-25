@@ -124,6 +124,8 @@ export interface BoutResult {
   pbpLines?: PbpLine[];
   /** Optional drama context copied from the match schedule for narrative enhancement. */
   dramaticContext?: DramaContext;
+  /** Whether this bout required a mono-ii (judge consultation). */
+  monoii?: boolean;
 }
 
 /**

@@ -12,7 +12,7 @@ import type { RikishiDescriptor } from "../descriptorBands";
 import type { Division, Rank, Side } from "./banzuke";
 import type { H2HRecord, MatchResultLog } from "./records";
 import type { RikishiEconomics } from "./economy";
-import type { RikishiBehavior } from "./media";
+import type { RikishiBehavior, PressPersona } from "./media";
 import type { CareerSnapshot, Milestone } from "./history";
 
 /** Log of tactical success/failure during a basho. */
@@ -64,6 +64,8 @@ export interface Rikishi {
   heyaId: Id;
   nationality: string;
   birthYear: number;
+  birthMonth?: number;
+  birthDay?: number;
   origin?: string;
 
   height: number;
@@ -84,9 +86,6 @@ export interface Rikishi {
     severity: InjurySeverity;
     location?: InjuryBodyArea;
     weeksRemaining: number;
-    /** Phase 4: Media & Press Persona */
-    behavior?: RikishiBehavior;
-    pressPersona?: "stoic" | "villain" | "celebrity" | "firebrand" | "neutral";
     weeksToHeal?: number;
     /** Phase 5: Overtraining & Burnout tracking */
     isEmergentProdigy?: boolean;
@@ -130,6 +129,7 @@ export interface Rikishi {
   consecutiveYusho: number;
   consecutiveStrongOzeki?: number; // Tracks consecutive 12+ win performances at ozeki for yokozuna promotion
   consecutiveMakeKoshi?: number; // Tracks consecutive losing records (make-koshi) for yokozuna retirement pressure
+  consecutiveKachiKoshi?: number; // Tracks consecutive winning records (kachi-koshi) for narrative
   consecutiveKyujo?: number; // Tracks consecutive tournaments missed entirely
   councilWarnings?: number; // Number of formal council warnings received (stat debuffs)
   pressureScore?: number; // Internal score tracking sub-par performances for warnings
@@ -163,6 +163,7 @@ export interface Rikishi {
   motivation: number;
 
   behavior: RikishiBehavior;
+  pressPersona?: PressPersona;
 
   motivationCap?: number;
   motivationCapWeeks?: number;

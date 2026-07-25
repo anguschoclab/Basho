@@ -22,6 +22,7 @@ import {
 } from "./CandidateStats";
 import { generateSyntheticCareer, type DivisionRecords } from "./CandidateCareer";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
+import { applyPersonaAssignment } from "./PersonaAssignment";
 
 function createBaseInfo(
   id: string,
@@ -249,7 +250,7 @@ export function generateFullRikishi(args: {
     },
   };
 
-  return {
+  const rikishi: Rikishi = {
     ...createBaseInfo(
       id,
       name,
@@ -281,6 +282,10 @@ export function generateFullRikishi(args: {
     heyaHistory: [],
     lineage: {},
   } as Rikishi;
+
+  applyPersonaAssignment(rikishi, archetype, rng);
+
+  return rikishi;
 }
 
 /**
@@ -367,6 +372,8 @@ export function convertCandidateToRikishi(args: {
     heyaHistory: [],
     lineage: {},
   } as Rikishi;
+
+  applyPersonaAssignment(rikishi, candidate.archetype, rng);
 
   return rikishi;
 }

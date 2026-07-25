@@ -100,8 +100,15 @@ function maybeAssignNPCMentors(
     if (r) members.push(r);
   }
 
-  const active = members.filter((r) => !r.isRetired && !r.injured);
-  const apprentices = active.filter((r) => !r.mentorId && !RANK_HIERARCHY[r.rank]?.isSekitori);
+  const active: import("../../types/rikishi").Rikishi[] = [];
+  const apprentices: import("../../types/rikishi").Rikishi[] = [];
+  for (const r of members) {
+    if (r.isRetired || r.injured) continue;
+    active.push(r);
+    if (!r.mentorId && !RANK_HIERARCHY[r.rank]?.isSekitori) {
+      apprentices.push(r);
+    }
+  }
 
   if (apprentices.length === 0) return;
 

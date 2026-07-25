@@ -177,6 +177,139 @@ describe("historyIndex", () => {
     });
   });
 
+  describe("indexBashoResult — multi-prize entry tracking", () => {
+    it("updates first entry when rikishi has yusho AND ginoSho", () => {
+      const r1 = mockRikishi("r1");
+      const world = makeMockWorld({
+        rikishi: new Map([["r1", r1]]),
+        currentBasho: {
+          id: "test-basho",
+          year: 2025,
+          bashoNumber: 1,
+          bashoName: "hatsu",
+          day: 15,
+          matches: [],
+          standings: new Map([["r1", { wins: 14, losses: 1 }]]),
+          isActive: false,
+        } as WorldState["currentBasho"],
+      });
+
+      const result = makeMockBashoResult({ yusho: "r1", ginoSho: "r1" });
+      indexBashoResult(world, result);
+
+      const idx = world.historyIndex as HistoryIndex;
+      const entries = idx.rikishi["r1"];
+      expect(entries).toBeTruthy();
+      expect(entries?.length).toBe(2);
+
+      const yushoEntry = entries?.find((e) => e.yusho === true);
+      const ginoShoEntry = entries?.find((e) => e.ginoSho === true);
+      expect(yushoEntry).toBeTruthy();
+      expect(ginoShoEntry).toBeTruthy();
+
+      // Standings should have updated the FIRST entry (yusho), not the second (ginoSho)
+      expect(yushoEntry?.wins).toBe(14);
+      expect(yushoEntry?.losses).toBe(1);
+      expect(ginoShoEntry?.wins).toBeUndefined();
+      expect(ginoShoEntry?.losses).toBeUndefined();
+    });
+
+    it("updates first entry when rikishi has yusho AND shukunsho", () => {
+      const r1 = mockRikishi("r1");
+      const world = makeMockWorld({
+        rikishi: new Map([["r1", r1]]),
+        currentBasho: {
+          id: "test-basho",
+          year: 2025,
+          bashoNumber: 1,
+          bashoName: "hatsu",
+          day: 15,
+          matches: [],
+          standings: new Map([["r1", { wins: 13, losses: 2 }]]),
+          isActive: false,
+        } as WorldState["currentBasho"],
+      });
+
+      const result = makeMockBashoResult({ yusho: "r1", shukunsho: "r1" });
+      indexBashoResult(world, result);
+
+      const idx = world.historyIndex as HistoryIndex;
+      const entries = idx.rikishi["r1"];
+      expect(entries?.length).toBe(2);
+
+      const yushoEntry = entries?.find((e) => e.yusho === true);
+      const shukunshoEntry = entries?.find((e) => e.shukunsho === true);
+      expect(yushoEntry?.wins).toBe(13);
+      expect(yushoEntry?.losses).toBe(2);
+      expect(shukunshoEntry?.wins).toBeUndefined();
+    });
+
+    it("creates new entry for standings-only rikishi (no prizes)", () => {
+      const r1 = mockRikishi("r1");
+      const world = makeMockWorld({
+        rikishi: new Map([["r1", r1]]),
+        currentBasho: {
+          id: "test-basho",
+          year: 2025,
+          bashoNumber: 1,
+          bashoName: "hatsu",
+          day: 15,
+          matches: [],
+          standings: new Map([["r1", { wins: 7, losses: 8 }]]),
+          isActive: false,
+        } as WorldState["currentBasho"],
+      });
+
+      const result = makeMockBashoResult();
+      indexBashoResult(world, result);
+
+      const idx = world.historyIndex as HistoryIndex;
+      const entries = idx.rikishi["r1"];
+      expect(entries).toBeTruthy();
+      expect(entries?.length).toBe(1);
+      expect(entries?.[0]?.wins).toBe(7);
+      expect(entries?.[0]?.losses).toBe(8);
+      expect(entries?.[0]?.yusho).toBeUndefined();
+    });
+
+    it("handles large standings map without regression", () => {
+      const rikishiMap = new Map();
+      const standingsEntries: [string, { wins: number; losses: number }][] = [];
+      for (let i = 0; i < 100; i++) {
+        const rid = `r${i}`;
+        rikishiMap.set(rid, mockRikishi(rid));
+        standingsEntries.push([rid, { wins: i % 15, losses: 15 - (i % 15) }]);
+      }
+
+      const world = makeMockWorld({
+        rikishi: rikishiMap,
+        currentBasho: {
+          id: "test-basho",
+          year: 2025,
+          bashoNumber: 1,
+          bashoName: "hatsu",
+          day: 15,
+          matches: [],
+          standings: new Map(standingsEntries),
+          isActive: false,
+        } as WorldState["currentBasho"],
+      });
+
+      const result = makeMockBashoResult();
+      indexBashoResult(world, result);
+
+      const idx = world.historyIndex as HistoryIndex;
+      for (let i = 0; i < 100; i++) {
+        const rid = `r${i}`;
+        const entries = idx.rikishi[rid];
+        expect(entries).toBeTruthy();
+        expect(entries?.length).toBe(1);
+        expect(entries?.[0]?.wins).toBe(i % 15);
+        expect(entries?.[0]?.losses).toBe(15 - (i % 15));
+      }
+    });
+  });
+
   describe("createEmptyHistoryIndex", () => {
     it("creates an index with version 1.0.0", () => {
       const idx = createEmptyHistoryIndex();

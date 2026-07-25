@@ -14,6 +14,8 @@ import {
   YOKOZUNA_VACANCY_PRESTIGE_WINS,
 } from "../../constants/engine/governanceExtended";
 import { warn } from "../utils/Logger";
+import { isKachiKoshi } from "./banzukeHelpers";
+import { BASHO_CALENDAR } from "../calendar";
 
 /**
  * Helper to retrieve the current basho state from the world.
@@ -202,13 +204,25 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       }
     }
 
+    // Consecutive kachi-koshi tracking for ALL rikishi (not just yokozuna)
+    let consecutiveKachiKoshi = rikishi?.consecutiveKachiKoshi ?? 0;
+    if (rikishi) {
+      const isKachi = isKachiKoshi(stats.wins, stats.losses, rikishi.rank);
+      const isFullAbsence = stats.absences >= 15;
+      if (isKachi && !isFullAbsence) {
+        consecutiveKachiKoshi = (rikishi.consecutiveKachiKoshi ?? 0) + 1;
+      } else {
+        consecutiveKachiKoshi = 0;
+      }
+    }
+
     // Update rikishi with promotion tracking fields and append careerHistory
     if (rikishi) {
       const historyEntry = {
         id: `${lastBasho.bashoName}-${world.year}-${id}`,
         bashoId: `${lastBasho.bashoName}-${world.year}`,
         year: world.year,
-        month: 0,
+        month: BASHO_CALENDAR[lastBasho.bashoName]?.month ?? 0,
         bashoName: lastBasho.bashoName,
         rank: rikishi.rank,
         division: rikishi.division,
@@ -232,6 +246,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       builder.updateRikishi(id, {
         consecutiveStrongOzeki,
         consecutiveMakeKoshi,
+        consecutiveKachiKoshi,
         consecutiveKyujo,
         pressureScore,
         councilWarnings,

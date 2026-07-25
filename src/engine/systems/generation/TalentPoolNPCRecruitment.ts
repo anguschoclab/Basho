@@ -147,8 +147,10 @@ export function fillVacanciesForNPCWithBidding(
 
   // Precompute rival heya map and balance multipliers to avoid O(H²) scans inside the loop.
   const rivalHeyaMap = new Map<Id, Id | undefined>();
+  const first = targetHeyaIds[0];
+  const second = targetHeyaIds[1];
   for (const hid of targetHeyaIds) {
-    rivalHeyaMap.set(hid as Id, targetHeyaIds.find((other) => other !== hid) as Id | undefined);
+    rivalHeyaMap.set(hid as Id, (hid === first ? second : first) as Id | undefined);
   }
   const balanceMap = recruitmentBalanceMultipliers(world, targetHeyaIds as Id[]);
 

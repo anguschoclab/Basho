@@ -526,3 +526,104 @@ export const OTHER_BIRTH_YEAR_RANGE = 3;
 // Reputation seed range
 export const REPUTATION_SEED_MIN = 0;
 export const REPUTATION_SEED_MAX = 100;
+
+// ─────────────────────────────────────────
+// NHK PBP Narrative constants
+// ─────────────────────────────────────────
+
+/** Probability of injury mention in pre-bout narrative (0-1) */
+export const INJURY_MENTION_CHANCE = 0.6;
+
+/** Weight difference threshold (kg) for physical comparison narrative */
+export const WEIGHT_DIFF_THRESHOLD = 20;
+
+/** Height difference threshold (cm) for physical comparison narrative */
+export const HEIGHT_DIFF_THRESHOLD = 10;
+
+/** Probability of fighting style description in pre-bout narrative (0-1) */
+export const STYLE_DESC_CHANCE = 0.4;
+
+/** Age difference threshold (years) for veteran/youngster narrative */
+export const AGE_DIFF_THRESHOLD = 10;
+
+/** Days before/after birthday to trigger birthday mention */
+export const BIRTHDAY_WINDOW_DAYS = 2;
+
+/** Earliest basho day to call someone winless */
+export const WINLESS_MENTION_MIN_DAY = 3;
+
+/** Earliest basho day where first win is noteworthy */
+export const FIRST_WIN_MENTION_MIN_DAY = 4;
+
+/** Minimum wins for leaderboard to be mentioned (meaningful data) */
+export const LEADERBOARD_MIN_LEADER_WINS = 4;
+
+/** Total days in a basho */
+export const BASHO_DAYS = 15;
+
+/** Senshuraku (final day) of a basho */
+export const SENSURAKU_DAY = 15;
+
+// ─────────────────────────────────────────
+// Personality & Press Persona constants
+// ─────────────────────────────────────────
+
+/** Minimum number of personality traits per rikishi */
+export const PERSONALITY_TRAITS_PER_RIKISHI_MIN = 2;
+
+/** Maximum number of personality traits per rikishi */
+export const PERSONALITY_TRAITS_PER_RIKISHI_MAX = 4;
+
+/** Probability that a personality trait modifier fires on an interview answer (0-1) */
+export const TRAIT_MODIFIER_CHANCE = 0.4;
+
+/** Stress threshold above which interview answers become terse */
+export const STRESS_TERSE_THRESHOLD = 70;
+
+/** MediaSavvy threshold above which interview answers are polished */
+export const MEDIA_SAVVY_POLISHED_THRESHOLD = 70;
+
+/** Press persona assignment thresholds */
+export const PRESS_PERSONA_CELEBRITY_MEDIA_SAVVY = 75;
+export const PRESS_PERSONA_CELEBRITY_DISCIPLINE = 60;
+export const PRESS_PERSONA_FIREBRAND_MEDIA_SAVVY = 70;
+export const PRESS_PERSONA_STOIC_DISCIPLINE = 75;
+export const PRESS_PERSONA_VILLAIN_DISCIPLINE = 35;
+
+/** Full personality trait pool */
+export const PERSONALITY_TRAITS = [
+  "aggressive", "calm", "witty", "humble", "boastful",
+  "philosophical", "laconic", "emotional", "analytical",
+  "traditional", "rebellious", "gentle",
+] as const;
+
+/** Trait weights by combat archetype (higher = more likely for that archetype) */
+export const TRAIT_WEIGHTS: Record<string, Partial<Record<string, number>>> = {
+  calm: { defensive: 2, yotsu: 1.5, giant: 1.5 },
+  aggressive: { oshi: 2, tsuppari: 2, speedster: 1.5 },
+  witty: { trickster: 2, hybrid: 1.5 },
+  humble: { yotsu: 1.5, giant: 1.5, defensive: 1.5 },
+  boastful: { oshi: 1.5, tsuppari: 2 },
+  philosophical: { yotsu: 2, defensive: 1.5, hybrid: 1 },
+  laconic: { giant: 2.5, oshi: 1.5, defensive: 1.5 },
+  emotional: { speedster: 2, tsuppari: 1.5 },
+  analytical: { defensive: 2, hybrid: 1.5, trickster: 1 },
+  traditional: { yotsu: 2, giant: 1.5 },
+  rebellious: { trickster: 2, tsuppari: 1.5 },
+  gentle: { giant: 2, yotsu: 1.5 },
+};
+
+/** Behavior-based trait weight modifiers */
+export const BEHAVIOR_TRAIT_WEIGHTS: Record<string, { stat: "discipline" | "mediaSavvy"; threshold: number; weight: number }> = {
+  calm: { stat: "discipline", threshold: 70, weight: 2 },
+  humble: { stat: "discipline", threshold: 70, weight: 1.5 },
+  traditional: { stat: "discipline", threshold: 70, weight: 1.5 },
+  laconic: { stat: "discipline", threshold: 75, weight: 1.5 },
+  boastful: { stat: "discipline", threshold: 35, weight: 1.5 },
+  aggressive: { stat: "discipline", threshold: 35, weight: 1.5 },
+  rebellious: { stat: "discipline", threshold: 35, weight: 1.5 },
+  emotional: { stat: "discipline", threshold: 35, weight: 1.5 },
+  witty: { stat: "mediaSavvy", threshold: 65, weight: 2 },
+  philosophical: { stat: "mediaSavvy", threshold: 65, weight: 1.5 },
+  analytical: { stat: "mediaSavvy", threshold: 60, weight: 1.5 },
+};

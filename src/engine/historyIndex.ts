@@ -269,8 +269,18 @@ export function indexBashoResult(world: WorldState, bashoResult: BashoResult): v
     idx.banzukeByBasho[bashoKey] = bashoResult.nextBanzuke;
   }
 
+  // Track entries pushed this call for O(1) lookup in standings loop below.
+  // Matches original .find() behavior: first entry pushed for a given rikishi wins.
+  const entriesByRidThisBasho = new Map<Id, RikishiHistoryEntry>();
+  const trackedPush = (rid: Id, entry: RikishiHistoryEntry): void => {
+    pushRikishiEntry(idx, rid, entry);
+    if (!entriesByRidThisBasho.has(rid)) {
+      entriesByRidThisBasho.set(rid, entry);
+    }
+  };
+
   if (bashoResult.yusho) {
-    pushRikishiEntry(idx, bashoResult.yusho, {
+    trackedPush(bashoResult.yusho, {
       bashoKey,
       year: bashoResult.year,
       bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6,
@@ -280,7 +290,7 @@ export function indexBashoResult(world: WorldState, bashoResult: BashoResult): v
     });
   }
   for (const rid of bashoResult.junYusho || []) {
-    pushRikishiEntry(idx, rid, {
+    trackedPush(rid, {
       bashoKey,
       year: bashoResult.year,
       bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6,
@@ -290,7 +300,7 @@ export function indexBashoResult(world: WorldState, bashoResult: BashoResult): v
     });
   }
   if (bashoResult.ginoSho)
-    pushRikishiEntry(idx, bashoResult.ginoSho, {
+    trackedPush(bashoResult.ginoSho, {
       bashoKey,
       year: bashoResult.year,
       bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6,
@@ -299,7 +309,7 @@ export function indexBashoResult(world: WorldState, bashoResult: BashoResult): v
       rikishiId: bashoResult.ginoSho,
     });
   if (bashoResult.kantosho)
-    pushRikishiEntry(idx, bashoResult.kantosho, {
+    trackedPush(bashoResult.kantosho, {
       bashoKey,
       year: bashoResult.year,
       bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6,
@@ -308,7 +318,7 @@ export function indexBashoResult(world: WorldState, bashoResult: BashoResult): v
       rikishiId: bashoResult.kantosho,
     });
   if (bashoResult.shukunsho)
-    pushRikishiEntry(idx, bashoResult.shukunsho, {
+    trackedPush(bashoResult.shukunsho, {
       bashoKey,
       year: bashoResult.year,
       bashoNumber: bashoResult.bashoNumber as 1 | 2 | 3 | 4 | 5 | 6,
@@ -325,8 +335,7 @@ export function indexBashoResult(world: WorldState, bashoResult: BashoResult): v
 
     for (const [rid, stats] of entries) {
       const s = stats as { wins: number; losses: number };
-      const historyArr = idx.rikishi[rid];
-      const existing = historyArr ? historyArr.find((e) => e.bashoKey === bashoKey) : undefined;
+      const existing = entriesByRidThisBasho.get(rid as Id);
 
       if (existing) {
         existing.wins = s.wins;

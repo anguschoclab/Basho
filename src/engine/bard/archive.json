@@ -641,22 +641,39 @@
         },
         "tachiai": {
           "intensity_1": [
-            "The fan drops.",
-            "%WINNER% wins the tachiai.",
-            "A cautious tachiai… feeling for position.",
-            "No wild rush — they meet and measure each other."
+            "The fan drops. A soft tachi from both men.",
+            "Not a big hit at the tachi. They feel each other out.",
+            "A hesitant tachi — neither commits fully.",
+            "Casual but hard-hitting tachi. They settle into position."
           ],
           "intensity_2": [
-            "The fan drops—*tachiai!*",
-            "%WINNER% finds the better of it.",
-            "They collide — neither gives an inch!",
-            "Solid contact at the tachiai, straight into a battle!"
+            "Good charge by the two. Bang — slamming in.",
+            "%WINNER% gets the better of the tachi, moving forward.",
+            "Solid contact at the tachi. Straight into the grind.",
+            "They meet head-on. A proper tachi from both."
           ],
           "intensity_3": [
-            "A devastating charge from %WINNER%! He connects with terrifying force!",
-            "%WINNER% explodes off the mark! A perfect, punishing tachi-ai!",
-            "Tremendous impact! %WINNER% dictates the terms immediately!",
-            "Like a freight train! %WINNER% bowls into his opponent!"
+            "What a tachi! %WINNER% just explodes into the opponent!",
+            "Bang! %WINNER% wins the charge decisively — a thunderous hit!",
+            "An enormous tachi from %WINNER%! That set the tone immediately.",
+            "Hard hit at the tachi! %WINNER% just overwhelmed him at the start."
+          ],
+          "soft": [
+            "Soft tachi from both men. Not much intensity there.",
+            "A strange pause after the tachi — neither seizes the initiative.",
+            "They barely touch at the tachi. A feeling-out process."
+          ],
+          "sharp": [
+            "Sharp tachi! %WINNER% is right on top of him from the start.",
+            "Crack of the tachi — %WINNER% is immediately on the front foot."
+          ],
+          "hesitant": [
+            "A hesitant tachi — both men seem reluctant to commit.",
+            "Strange pause after the tachi. Who's going to make the first move?"
+          ],
+          "neutral": [
+            "Even tachi — neither man gains a clear advantage.",
+            "They clash at the tachi and immediately lock up."
           ],
           "henka": [
             "HENKA! %ATTACKER% sidesteps the charge and the crowd erupts!",
@@ -666,16 +683,21 @@
         },
         "clinch": {
           "belt": [
-            "They lock up! A brutal test of pure strength on the belt!",
-            "Deep grips established! It's a grinding battle of attrition now!",
-            "They freeze in a massive embrace—four hands locked on the mawashi!",
-            "A heavy yotsu-zumo battle begins! Neither giving an inch!"
+            "Right hand in, left hand out. Bread and butter sumo.",
+            "Left hand inside is solid. %EAST% gets his favorite grip.",
+            "Chest to chest again. Right hand inside, left hand outside.",
+            "Both mawashi men — they settle into the grip battle."
           ],
           "oshi": [
-            "Hands at the chest—pure oshi-zumo!",
-            "They struggle for position.",
-            "%NAME% applies relentless forward pressure!",
-            "%NAME% unleashes a vicious flurry of tsuppari!"
+            "Hands at the chest — pure pushing and thrusting.",
+            "Not doing much at the moment except standing there.",
+            "%NAME% applies forward pressure, looking to move him back.",
+            "It's a standoff at the moment. Who's going to dig deep and move forward?"
+          ],
+          "stall": [
+            "It's a standoff at the moment. Neither man wants to overcommit.",
+            "Not doing much at the moment — just leaning on each other.",
+            "Hugs and chugs. A grinding battle of attrition."
           ],
           "rear": [
             "%LEADER% slips to the side — danger from behind!",
@@ -685,16 +707,16 @@
         },
         "momentum": {
           "recovery": [
-            "Incredible balance! %NAME% dances on the straw to stay alive!",
-            "A desperate parry from %NAME%! He survives the onslaught!",
-            "%NAME% bends backward over the bales but refuses to fall!",
-            "%NAME% survives the pressure."
+            "%NAME% seems better positioned even though he's much lighter.",
+            "Good defense from %NAME% — he weathered that storm and is back in it.",
+            "%NAME% looks like he wants to raise the upper body and reset.",
+            "%NAME% survives the pressure and gets back to center."
           ],
           "pressure": [
-            "%NAME% maintains pressure.",
-            "The attack continues! %NAME% leaves no room to breathe!",
-            "%NAME% shifts gears, overwhelming the defense!",
-            "%NAME% methodically breaks down his opponent's posture!"
+            "%NAME% is moving forward with real purpose now.",
+            "Who's going to dig deep and move forward? %NAME% is answering that question.",
+            "%NAME% shifts gears and starts driving the opponent back.",
+            "%NAME% methodically breaks down the posture — inch by inch."
           ]
         },
         "edge_crisis": {
@@ -838,6 +860,10 @@
             "A thunderous ovation fills the hall as %WINNER% accepts the victory.",
             "%WINNER% stands motionless, letting the magnitude of the moment settle.",
             "The arena rises as one — %WINNER% bows deeply, a warrior's farewell."
+          ],
+          "bow": [
+            "%WINNER% offers a simple bow at the edge of the dohyo.",
+            "A brief bow from %WINNER% — businesslike, no extras."
           ]
         }
       },
@@ -1207,35 +1233,40 @@
         "push": {
           "intensity_1": [
             "%ATTACKER% moves forward with cautious thrusts.",
-            "Standard oshi-zumo as %ATTACKER% maintains distance.",
-            "%ATTACKER% probes the defense with steady pushing."
+            "Standard pushing attack from %ATTACKER% — nothing fancy.",
+            "%ATTACKER% probes the defense with steady tsuppari."
           ],
           "intensity_2": [
             "Heavy thrusts from %ATTACKER% begin to tell.",
-            "Professional pressure! %ATTACKER% dictates terms with the palms.",
-            "%ATTACKER% finds a rhythm with the tsuppari, driving forward."
+            "Trademark pushing and thrusting attack from %ATTACKER%.",
+            "%ATTACKER% finds a rhythm — palm to chest, driving forward."
           ],
           "intensity_3": [
-            "Thunderous oshi-zumo! %ATTACKER% detonates against the chest!",
-            "Relentless, piston-like thrusts from %ATTACKER%! Total dominance!",
-            "%ATTACKER% overwhelms the defense with a ferocious barrage!"
+            "%ATTACKER% just keeps coming forward — too big, too strong!",
+            "Relentless thrusts from %ATTACKER%! The defense is crumbling!",
+            "%ATTACKER% overwhelms with a ferocious barrage of tsuppari!"
+          ],
+          "stall": [
+            "It's a standoff at the moment. Neither man overcommitting.",
+            "Not doing much at the moment except standing there.",
+            "Who's going to dig deep and move forward?"
           ]
         },
         "belt": {
           "intensity_1": [
             "They lock up on the belt. A steady test of strength.",
-            "%ATTACKER% secures a standard grip and settles in.",
+            "%ATTACKER% gets a hand inside — looking for the favored grip.",
             "A technical battle for leverage begins on the mawashi."
           ],
           "intensity_2": [
-            "Resolute yotsu-zumo! %ATTACKER% commands the position.",
-            "%ATTACKER% secures the favored grip and begins to drive.",
-            "Professional grappling. %ATTACKER% establishes iron control."
+            "Right hand in, left hand out. %ATTACKER% is in control now.",
+            "%ATTACKER% secures the favored grip and begins to drive forward.",
+            "Once he secures that grip, %ATTACKER% can control the bout."
           ],
           "intensity_3": [
-            "A monumental struggle! %ATTACKER% wrenches the belt with extraordinary force!",
-            "Deep moro-zashi established! %ATTACKER% is decimated the defense!",
-            "Total control! %ATTACKER% anchors onto the mawashi and dictates every move!"
+            "Deep moro-zashi from %ATTACKER%! Both hands inside — total control!",
+            "%ATTACKER% wrenches the belt and drives forward with enormous force!",
+            "Total grip dominance! %ATTACKER% anchors onto the mawashi and dictates every move!"
           ]
         },
         "trick": {
@@ -2360,6 +2391,158 @@
           "Three generations of the %ANCESTOR% line now compete."
         ]
       }
+    },
+    "pre_bout": {
+      "h2h_streak": [
+        "%P1% has won the last %STREAK% straight against %P2%. Can the streak continue today?",
+        "A %STREAK%-bout winning streak for %P1% over %P2% — history favors one man today.",
+        "%P2% looks to finally break through, having lost %STREAK% in a row to %P1%."
+      ],
+      "injury": [
+        "%SHIKONA% has been battling injuries this tournament. How much will that factor today?",
+        "Questions remain about %SHIKONA%'s fitness after recent injury concerns.",
+        "The medical report flagged %SHIKONA% — can they overcome it today?"
+      ],
+      "physical_comparison": [
+        "A stark physical contrast: %HEAVIER% outweighs %LIGHTER% by %WEIGHT_DIFF% kilograms.",
+        "%HEAVIER% brings %WEIGHT_DIFF% kg more to the dohyo than %LIGHTER% — will mass decide this bout?",
+        "The size gap is unmistakable — %HEAVIER% towers over %LIGHTER% by %HEIGHT_DIFF% centimeters."
+      ],
+      "style_matchup": [
+        "A classic clash of styles: %EAST%'s %EAST_STYLE% against %WEST%'s %WEST_STYLE%.",
+        "Tactical intrigue as %EAST_STYLE% meets %WEST_STYLE% in this matchup.",
+        "Two contrasting approaches — %EAST%'s %EAST_STYLE% versus %WEST%'s %WEST_STYLE%."
+      ],
+      "age_narrative": [
+        "A generational battle: %YOUNGER%, years from his prime, faces the veteran %OLDER%.",
+        "%OLDER% brings %AGE_DIFF% years of experience against the rising %YOUNGER%.",
+        "The age gap is %AGE_DIFF% years — %OLDER%'s wisdom against %YOUNGER%'s hunger."
+      ],
+      "career_milestone": [
+        "%SHIKONA% sits on the cusp of a career milestone — %MILESTONE% career wins.",
+        "One more victory brings %SHIKONA% to the %MILESTONE%-win plateau.",
+        "A milestone moment potentially awaits %SHIKONA% today at %MILESTONE% career wins."
+      ],
+      "consecutive_kachi": [
+        "%SHIKONA% rides a %STREAK%-basho kachi-koshi streak into this bout.",
+        "Consistency defines %SHIKONA% — %STREAK% straight winning records coming in.",
+        "Can %SHIKONA% extend the %STREAK%-tournament kachi-koshi run today?"
+      ],
+      "kadoban": [
+        "%SHIKONA% fights for ozeki survival today — kadoban status hangs in the balance.",
+        "The pressure is immense for kadoban %SHIKONA% — a loss today could mean demotion.",
+        "Everything is on the line for %SHIKONA%, who enters the day in kadoban territory."
+      ],
+      "hometown": [
+        "A homecoming for %SHIKONA%, fighting in %LOCATION% today.",
+        "The local crowd rallies behind %SHIKONA% — a %LOCATION% native on the dohyo.",
+        "%SHIKONA% grew up right here in %LOCATION%. The hometown support is palpable."
+      ],
+      "birthday": [
+        "A birthday bout for %SHIKONA% — can they celebrate with a victory?",
+        "%SHIKONA% marks another year today. What better gift than a win?",
+        "The crowd sings softly as %SHIKONA% enters on his birthday."
+      ],
+      "winless": [
+        "%SHIKONA% is still searching for that first win — %LOSSES% losses so far this basho.",
+        "The pressure mounts for %SHIKONA% at 0-%LOSSES%. When will the drought end?",
+        "A tough tournament for %SHIKONA%, winless through %LOSSES% bouts."
+      ],
+      "first_win": [
+        "%SHIKONA% finally gets on the board — but can they build momentum?",
+        "The first win is in the books for %SHIKONA%. Now the real work begins.",
+        "%SHIKONA% notched that elusive first victory — relief washes over the heya."
+      ],
+      "senshuraku": [
+        "Senshuraku — the final day. Everything is on the line.",
+        "The last day of the tournament. Champions are made on days like this.",
+        "A packed house for senshuraku. The drama reaches its climax today."
+      ],
+      "penultimate": [
+        "Day 14 — one day before senshuraku. The race is tightening.",
+        "The penultimate day. Every bout carries yusho implications.",
+        "With one day remaining, the pressure could not be higher."
+      ],
+      "title_stakes": [
+        "Title implications are clear — %EAST% and %WEST% both have yusho aspirations.",
+        "This bout could shape the final standings. The championship race is wide open.",
+        "A potential yusho decider — the crowd senses the magnitude of this matchup."
+      ],
+      "leaderboard": [
+        "%SHIKONA% leads the tournament at %WINS%-0. Can anyone catch them?",
+        "The current leader %SHIKONA% sits at %WINS% wins. The chase pack is running out of days.",
+        "%SHIKONA% tops the leaderboard with %WINS% victories. The pressure of the leader's jersey."
+      ]
+    },
+    "post_bout": {
+      "reaction": [
+        "%WINNER% takes it with a decisive %KIMARITE%. A statement performance.",
+        "A clean victory for %WINNER% — %KIMARITE% ends it.",
+        "%WINNER% prevails! The %KIMARITE% was picture-perfect.",
+        "%LOSER% could find no answer. %WINNER% controls the bout from start to finish."
+      ],
+      "career_milestone": [
+        "That win brings %SHIKONA% to %MILESTONE% career victories — a remarkable achievement.",
+        "History for %SHIKONA% — career win number %MILESTONE% is in the books.",
+        "A milestone moment: %SHIKONA% reaches the %MILESTONE%-win mark."
+      ],
+      "kachi_koshi": [
+        "Kachi-koshi! %SHIKONA% secures a winning record at %WINS% wins.",
+        "%SHIKONA% clinches kachi-koshi with %WINS% victories. A successful tournament.",
+        "The winning record is confirmed — %SHIKONA% celebrates %WINS% wins."
+      ],
+      "make_koshi": [
+        "Make-koshi for %SHIKONA% — %LOSSES% losses confirm a losing tournament.",
+        "A difficult basho ends in disappointment for %SHIKONA% at %LOSSES% losses.",
+        "%SHIKONA% drops to make-koshi. The demotion talk will begin."
+      ],
+      "yusho_race": [
+        "%WINNER% stays alive in the yusho race at %WINS% wins. The crowd roars.",
+        "The championship chase tightens — %WINNER% is right in the thick of it at %WINS%.",
+        "A massive win for %WINNER% in the yusho race. %WINS% wins and counting."
+      ],
+      "mono_ii": [
+        "The judges are conferencing — a mono-ii has been called.",
+        "A close call brings the judges to the dohyo. The crowd waits in suspense.",
+        "Mono-ii! The five judges deliberate over the finish."
+      ],
+      "replay": [
+        "Let's see that again — %WINNER%'s %KIMARITE% in slow motion.",
+        "The replay shows the precision of %WINNER%'s winning technique.",
+        "One more look at that spectacular finish — %KIMARITE% seals it for %WINNER%."
+      ]
+    },
+    "interview": {
+      "stoic": [
+        "\"I just focused on my sumo. That is all.\"",
+        "\"The result speaks for itself. I will prepare for tomorrow.\"",
+        "\"I have nothing to say. My sumo did the talking.\"",
+        "\"One bout at a time. That is my approach.\""
+      ],
+      "villain": [
+        "\"Of course I won. Did anyone expect otherwise?\"",
+        "\"%OPPONENT% never stood a chance. I told you all.\"",
+        "\"This is what I do. I win. Deal with it.\"",
+        "\"Another opponent, another victory. Next question.\""
+      ],
+      "celebrity": [
+        "\"I want to thank my fans — their support means everything to me.\"",
+        "\"It's been a wonderful tournament. I'm enjoying every moment on the dohyo.\"",
+        "\"I hope everyone watching enjoyed that bout as much as I did!\"",
+        "\"The energy from the crowd today was incredible. Thank you all.\""
+      ],
+      "firebrand": [
+        "\"I came here to fight and that's exactly what I did!\"",
+        "\"Nobody pushes me around. Nobody! %OPPONENT% found that out today.\"",
+        "\"I train harder than anyone. That's why I win. That's why I'll keep winning!\"",
+        "\"Don't test me in that ring. The result speaks for itself!\""
+      ],
+      "neutral": [
+        "\"I'm pleased with the result. %KIMARITE% was the right technique today.\"",
+        "\"It was a tough bout. I'm glad I could come away with the win.\"",
+        "\"I stayed focused on my game plan and it worked out.\"",
+        "\"%OPPONENT% is a strong opponent. I'm happy to get the victory.\""
+      ]
     }
   },
   "vocabulary": {
