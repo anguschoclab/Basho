@@ -59,6 +59,7 @@ vi.mock("@/engine/systems/generation/WorldFactory", () => ({
 
 vi.mock("@/engine/tick/tickOrchestrator", () => ({
   tickOrchestrator: vi.fn((world) => ({ ...world, ticked: true })),
+  advanceDaysFastOrchestrator: vi.fn((world, days) => ({ ...world, ticked: true, daysAdvanced: days })),
   cloneWorldForTick: vi.fn((world) => world),
 }));
 
@@ -169,18 +170,18 @@ describe("engine.worker", () => {
       days: 10,
     });
 
-    // It should emit progress at day 1 (index 0) and day 6 (index 5)
+    // It should emit progress at day 7 (first chunk) and day 10 (final chunk)
     expect(mockPostMessage).toHaveBeenCalledWith({
       type: "PROGRESS",
-      message: "Simulating day 1 of 10...",
-      current: 1,
+      message: "Simulating day 7 of 10...",
+      current: 7,
       total: 10,
     });
 
     expect(mockPostMessage).toHaveBeenCalledWith({
       type: "PROGRESS",
-      message: "Simulating day 6 of 10...",
-      current: 6,
+      message: "Simulating day 10 of 10...",
+      current: 10,
       total: 10,
     });
 
@@ -203,6 +204,34 @@ describe("engine.worker", () => {
         }),
       })
     );
+  });
+
+  it("should handle AUTO_SIM_DAYS with chunked progress (P1.7)", async () => {
+    const world = MockFactory.createWorld({ seed: "auto-sim-chunk-seed" });
+    await triggerMessage({
+      type: "LOAD_WORLD",
+      world,
+    });
+    vi.clearAllMocks();
+
+    await triggerMessage({
+      type: "AUTO_SIM_DAYS",
+      days: 14,
+    });
+
+    // With chunk=7, days=14: progress at day 7 (i=0) and day 14 (i=7)
+    expect(mockPostMessage).toHaveBeenCalledWith({
+      type: "PROGRESS",
+      message: "Simulating day 7 of 14...",
+      current: 7,
+      total: 14,
+    });
+    expect(mockPostMessage).toHaveBeenCalledWith({
+      type: "PROGRESS",
+      message: "Simulating day 14 of 14...",
+      current: 14,
+      total: 14,
+    });
   });
 
   it("should handle GET_DIGEST command", async () => {

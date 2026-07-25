@@ -7,6 +7,7 @@
 import type { WorldState, CyclePhase } from "../../types/world";
 import { createImpactBuilder, ImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
+import { info } from "../../utils/Logger";
 import { assertNever } from "../../utils/types";
 import { initializeBasho } from "../../systems/generation/WorldFactory";
 import { resetBashoMediaTracking } from "../../systems/media/MediaService";
@@ -49,9 +50,14 @@ export function phase00_preflight(world: WorldState): StateImpact {
   builder.updateWorldField("week", currentWeek);
 
   // Store boundaries and fresh working context in transient context for the pipeline
+  // Accumulate pending boundaries from previous tick (for deferred boundary execution)
+  const prevPendingMonth = world.transientContext?.pendingMonthBoundary ?? false;
+  const prevPendingYear = world.transientContext?.pendingYearBoundary ?? false;
   builder.updateWorldField("transientContext", {
     ...world.transientContext,
     boundaries: { monthBoundary, yearBoundary },
+    pendingMonthBoundary: prevPendingMonth || monthBoundary,
+    pendingYearBoundary: prevPendingYear || yearBoundary,
     deltas: emptyDeltas(),
     activeModifiers: defaultActiveModifiers(),
   });
@@ -175,7 +181,10 @@ function checkPhaseTransition(
   return undefined;
 }
 
-function logTransition(_world: WorldState, _from: CyclePhase, _to: CyclePhase, _summary: string) {
-  // Note: EventBus replaced - transition logging skipped for now
-  // This is a low-priority event that can be added later
+function logTransition(world: WorldState, from: CyclePhase, to: CyclePhase, summary: string) {
+  info(`Phase transition: ${from} → ${to} — ${summary}`, "Pipeline", {
+    dayIndexGlobal: world.dayIndexGlobal,
+    year: world.calendar?.year,
+    month: world.calendar?.month,
+  });
 }

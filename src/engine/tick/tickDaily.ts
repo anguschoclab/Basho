@@ -23,6 +23,7 @@ import {
   INTERIM_DAYS,
 } from "../../constants/engine/npcStrategy";
 import { warn } from "../utils/Logger";
+import { shouldHaltAdvance } from "../loop/shouldHaltAdvance";
 
 // ====
 // TYPES
@@ -82,10 +83,10 @@ export function advanceOneDay(
   // 1. Run Preflight to advance calendar and determine boundaries
   let nextWorld = runPipeline(world, [phases.phase00_preflight]);
 
-  // Plan 3: Halt pipeline if a blocking crisis/loop decision was set during preflight.
+  // Halt pipeline if a blocking crisis or required decision was set during preflight.
   // Skip in autonomous runs (AutoSim, holiday) — there is no interactive player to
   // resolve it, so halting would freeze the whole world indefinitely.
-  if (nextWorld.pendingCrisis && !nextWorld._autonomousSim) {
+  if (!nextWorld._autonomousSim && shouldHaltAdvance(nextWorld)) {
     return nextWorld;
   }
 
@@ -106,8 +107,13 @@ export function advanceOneDay(
       phases.phase01_daily_welfare,
       phases.phase01_daily_sponsors,
       phases.phase01_daily_drama,
-      phases.phase01_monthly_market
     );
+  }
+
+  // P1.2: Bout resolution runs daily during active_basho (not just weekly).
+  // This replaces the bashoSlice mutable bout-simulation path.
+  if (nextWorld.cyclePhase === "active_basho") {
+    activePhases.push(phases.phase01_basho_bouts);
   }
 
   if (isWeeklyTick) {
@@ -116,16 +122,56 @@ export function advanceOneDay(
     } else {
       activePhases.push(...offSeasonPipeline);
     }
-    if (boundaries.yearBoundary) {
+
+    // Consume deferred boundaries from previous non-weekly days in this cycle
+    const pendingMonth = nextWorld.transientContext?.pendingMonthBoundary ?? false;
+    const pendingYear = nextWorld.transientContext?.pendingYearBoundary ?? false;
+    const effectiveMonthBoundary = boundaries.monthBoundary || pendingMonth;
+    const effectiveYearBoundary = boundaries.yearBoundary || pendingYear;
+
+    // If we have a deferred boundary, override boundaries so phases can detect it
+    if (effectiveMonthBoundary && !boundaries.monthBoundary) {
+      nextWorld = {
+        ...nextWorld,
+        transientContext: {
+          ...nextWorld.transientContext,
+          boundaries: { ...nextWorld.transientContext!.boundaries!, monthBoundary: true },
+        },
+      };
+    }
+    if (effectiveYearBoundary && !boundaries.yearBoundary) {
+      nextWorld = {
+        ...nextWorld,
+        transientContext: {
+          ...nextWorld.transientContext,
+          boundaries: { ...nextWorld.transientContext!.boundaries!, yearBoundary: true },
+        },
+      };
+    }
+
+    // P3.7: Monthly market runs on month-boundary weekly ticks (not daily micro-phases)
+    if (effectiveMonthBoundary) {
+      activePhases.push(phases.phase05_monthly_boundary);
+      activePhases.push(phases.phase01_monthly_market);
+    }
+    if (effectiveYearBoundary) {
       activePhases.push(phases.phase06_yearly_boundary);
     }
   }
 
-  if (boundaries.monthBoundary) {
-    activePhases.push(phases.phase05_monthly_boundary);
-  }
-
   nextWorld = runPipeline(nextWorld, activePhases);
+
+  // Clear deferred boundary flags after boundary phases have executed
+  if (isWeeklyTick) {
+    nextWorld = {
+      ...nextWorld,
+      transientContext: {
+        ...nextWorld.transientContext,
+        pendingMonthBoundary: false,
+        pendingYearBoundary: false,
+      },
+    };
+  }
 
   // 5. Update Weekly Tick Counter purely
   nextWorld = {

@@ -34,6 +34,7 @@ import type { SaveSlotInfo } from "@/engine/saveload";
 import type { BashoName } from "@/engine/types/basho";
 import { BASHO_CALENDAR, deleteSave, importSave } from "@/presenters/uiDigest";
 import { formatSaveDate } from "@/engine/utils/formatters";
+import { toast } from "@/hooks/use-toast";
 
 interface SaveSlotManagerProps {
   getSaveSlots: () => SaveSlotInfo[];
@@ -119,6 +120,12 @@ export function SaveSlotManager({
         }
         onLoadSuccess();
       }
+    } catch (err) {
+      toast({
+        title: "Import Failed",
+        description: err instanceof Error ? err.message : "Could not import save file.",
+        variant: "destructive",
+      });
     } finally {
       setIsImporting(false);
       e.target.value = "";

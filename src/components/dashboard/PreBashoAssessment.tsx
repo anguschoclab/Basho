@@ -13,6 +13,8 @@ import { Button } from "../ui/button";
 import { AlertTriangle, Shield, Activity, UserMinus } from "lucide-react";
 import { TooltipWrap } from "../ui/tooltip-wrap";
 import { RikishiName } from "@/components/ClickableName";
+// eslint-disable-next-line no-restricted-imports
+import type { PreBashoAssessment as PreBashoAssessmentType, WorldState } from "@/engine/types/world";
 
 const AssessmentRow = React.memo(
   ({
@@ -69,7 +71,7 @@ const AssessmentRow = React.memo(
   }
 );
 
-const AssessmentList = React.memo(({ assessment, world }: { assessment: any; world: any }) => {
+const AssessmentList = React.memo(({ assessment, world }: { assessment: PreBashoAssessmentType; world: WorldState }) => {
   const nodes = [];
   for (const [rikishiId, rikishiAssessment] of assessment.rikishiAssessments.entries()) {
     const rikishi = world.rikishi.get(rikishiId);

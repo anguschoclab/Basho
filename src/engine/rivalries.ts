@@ -11,6 +11,8 @@
 import { RivalryService } from "./systems/narrative/RivalryService";
 import { WorldState } from "./types/world";
 import type { Id } from "./types/common";
+import type { MatchSchedule, BoutResult } from "./types/basho";
+import type { Rikishi } from "./types/rikishi";
 import type { RivalriesState, RivalryPairState, RivalryKey } from "../constants/engine/rivalry";
 import type { StateImpact } from "./core/StateImpact";
 
@@ -53,7 +55,10 @@ export function upsertRivalry(state: RivalriesState, pair: RivalryPairState): vo
  * Handle bout resolution for rivalries (Legacy wrapper).
  * Returns StateImpact describing rivalry updates.
  */
-export function onBoutResolvedRivalries(world: WorldState, context: any): StateImpact {
+export function onBoutResolvedRivalries(
+  world: WorldState,
+  context: { match: MatchSchedule; result: BoutResult; east: Rikishi; west: Rikishi }
+): StateImpact {
   return RivalryService.onBoutResolved(world, {
     result: context.result,
     day: context.match?.day,

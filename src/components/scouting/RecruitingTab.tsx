@@ -253,8 +253,7 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
 
       <ScrollArea className="h-[550px]">
         <div className="space-y-3 pr-2">
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any -- Complex candidate type from projectRecruitmentUIDigest */}
-          {digest.candidates.map((c: any) => {
+          {digest.candidates.map((c: CandidateDigestEntry) => {
             const isSelected = selectedCandidates.includes(c.candidateId);
             const visLabel =
               c.visibilityBand === "public"

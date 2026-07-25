@@ -6,6 +6,7 @@
 import type { WorldState } from "./types/world";
 import type { Id } from "./types/common";
 import type { Rikishi } from "./types/rikishi";
+import type { MatchSchedule, BoutResult } from "./types/basho";
 import { type ScoutedRikishi, ScoutingService } from "./systems/recruitment/ScoutingService";
 import { type ScoutingInvestment } from "../constants/engine/recruitment";
 import { createImpactBuilder } from "./core/ImpactBuilder";
@@ -231,7 +232,7 @@ export function warmScoutingForRikishiList(
  */
 export function onBoutResolvedScouting(
   world: WorldState,
-  context: { match: any; result: any; east: any; west: any }
+  context: { match: MatchSchedule; result: BoutResult; east: Rikishi; west: Rikishi }
 ): StateImpact {
   const builder = createImpactBuilder("onBoutResolvedScouting");
   const playerHeyaId = getPlayerHeyaId(world);

@@ -93,8 +93,10 @@ export const SaveSlotService = {
     });
   },
 
-  isValidSave(x: any): x is SaveGame {
-    return x && typeof x === "object" && !!x.version && !!x.world;
+  isValidSave(x: unknown): x is SaveGame {
+    if (!x || typeof x !== "object") return false;
+    const obj = x as Record<string, unknown>;
+    return !!obj.version && !!obj.world;
   },
 
   getAvailableSlotNames(): string[] {

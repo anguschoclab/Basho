@@ -35,7 +35,7 @@ export const EntityService = {
    * }));
    * ```
    */
-  ensureState<Parent extends Record<string, any>, Key extends keyof Parent>(
+  ensureState<Parent extends Record<string, unknown>, Key extends keyof Parent>(
     parent: Parent,
     key: Key,
     factory: () => NonNullable<Parent[Key]>

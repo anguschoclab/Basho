@@ -9,15 +9,19 @@ import { CircleDot, Swords } from "lucide-react";
 import { compareRanks, buildBoutPreviewUI } from "@/presenters/uiDigest";
 import type { RankPosition } from "@/engine/types/banzuke";
 import { BoutPreMatchOverlay } from "./BoutPreMatchOverlay";
+import type { BoutMatchUI } from "@/presenters/uiDigestTypes";
+// eslint-disable-next-line no-restricted-imports
+import type { WorldState } from "@/engine/types/world";
+import type { MatchRowData } from "./boutCardTypes";
 
 // ── Types ──────────────────────────────────────────────
 
 /** Defines the structure for match day viewer props. */
 interface MatchDayViewerProps {
-  matches: any[]; // enriched via projectBashoUIDigest
-  world: any;
+  matches: BoutMatchUI[]; // enriched via projectBashoUIDigest
+  world: WorldState;
   playerRikishiIds: Set<string>;
-  onBoutClick?: (match: any) => void;
+  onBoutClick?: (match: BoutMatchUI) => void;
   onTacticChange?: (boutId: string, tactic: string) => void;
   playerTactics?: Record<string, string>;
   onSimulateBout?: (index: number) => void;
@@ -42,13 +46,13 @@ export function MatchDayViewer({
     return buildBoutPreviewUI(previewBoutId, world);
   }, [previewBoutId, world]);
 
-  const handleBoutClick = (match: any) => {
+  const handleBoutClick = (match: MatchRowData) => {
     // Show pre-match overlay for pending player bouts
     if (match.boutId && !match.result && match.isPlayerBout) {
       setPreviewBoutId(match.boutId);
       return;
     }
-    onBoutClick?.(match);
+    onBoutClick?.(match as unknown as BoutMatchUI);
   };
 
   const sortedMatches = useMemo(() => {
@@ -158,7 +162,7 @@ export function MatchDayViewer({
                 nodes[i] = (
                   <BoutCard
                     key={match.boutId || `${match.eastRikishiId}-${match.westRikishiId}-${i}`}
-                    match={match}
+                    match={match as unknown as MatchRowData}
                     idx={i}
                     onBoutClick={handleBoutClick}
                     onTacticChange={onTacticChange}

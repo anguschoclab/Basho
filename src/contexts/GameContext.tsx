@@ -212,7 +212,14 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const simulateAllBouts = useCallback(() => dispatch(actions.simulateAllBouts()), []);
   const endDay = useCallback(() => dispatch(actions.endDay()), []);
   const endBasho = useCallback(() => dispatch(actions.endBasho()), []);
-  const simFullBasho = useCallback(() => dispatch(actions.simFullBasho()), []);
+  const simFullBasho = useCallback(() => {
+    // Route through the worker as TICK_MULTIPLE_DAYS with enough days to
+    // finish the remaining basho days. The pipeline's phase01_basho_bouts
+    // phase handles bout resolution and basho day advancement.
+    const currentDay = state.world?.currentBasho?.day ?? 1;
+    const remainingDays = Math.max(1, 15 - currentDay + 1);
+    sendCommand({ type: "TICK_MULTIPLE_DAYS", days: remainingDays });
+  }, [sendCommand, state.world?.currentBasho?.day]);
   const tickMultipleDays = useCallback(
     (days: number) => sendCommand({ type: "TICK_MULTIPLE_DAYS", days }),
     [sendCommand]

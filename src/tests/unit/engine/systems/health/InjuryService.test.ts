@@ -14,6 +14,7 @@ import { rngFromSeed, SeededRNG } from "@/engine/rng";
 import { mockRikishi, makeMockWorld } from "../../utils";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { WorldState } from "@/engine/types/world";
+import type { MatchSchedule, BoutResult } from "@/engine/types/basho";
 
 // Mock config if needed or just use default.
 describe("InjuryService", () => {
@@ -155,7 +156,7 @@ describe("InjuryService", () => {
     it("returns empty impact if no result", () => {
       const world = makeMockWorld();
       const impact = onBoutResolvedInjury(world, {
-        match: {},
+        match: {} as MatchSchedule,
         result: null,
         east: null,
         west: null,
@@ -167,9 +168,9 @@ describe("InjuryService", () => {
       const world = makeMockWorld();
       const east = mockRikishi("e1", { injured: true });
       const west = mockRikishi("w1", { injured: false });
-      const result = { winner: "west", kimarite: "yorikiri" };
+      const result = { winner: "west", kimarite: "yorikiri" } as unknown as BoutResult;
 
-      const impact = onBoutResolvedInjury(world, { match: {}, result, east, west });
+      const impact = onBoutResolvedInjury(world, { match: {} as MatchSchedule, result, east, west });
       expect(impact.entities?.rikishiUpdates?.size).toBeUndefined();
     });
 
@@ -177,7 +178,7 @@ describe("InjuryService", () => {
       const world = makeMockWorld();
       const east = mockRikishi("e1", { injured: false });
       const west = mockRikishi("w1", { injured: false });
-      const result = { winner: "west", kimarite: "uwatenage" }; // violent
+      const result = { winner: "west", kimarite: "uwatenage" } as unknown as BoutResult; // violent
 
       vi.spyOn(RNGRegistry, "getSystemRNG").mockReturnValue({
         next: vi
@@ -187,7 +188,7 @@ describe("InjuryService", () => {
         uuid: () => "IJ-123",
       } as unknown as SeededRNG);
 
-      const impact = onBoutResolvedInjury(world, { match: {}, result, east, west });
+      const impact = onBoutResolvedInjury(world, { match: {} as MatchSchedule, result, east, west });
       const updates = impact.entities?.rikishiUpdates?.get("e1");
       expect(updates).toBeDefined();
       expect(updates?.injured).toBe(true);
@@ -209,19 +210,24 @@ describe("InjuryService", () => {
 
   describe("toInjuryEvent", () => {
     it("returns null if not injured or no currentInjury", () => {
-      expect(toInjuryEvent({ injured: false })).toBeNull();
-      expect(toInjuryEvent({ injured: true })).toBeNull();
+      const r1 = mockRikishi("r1", { injured: false });
+      const r2 = mockRikishi("r2", { injured: true });
+      expect(toInjuryEvent(r1)).toBeNull();
+      expect(toInjuryEvent(r2)).toBeNull();
     });
 
     it("returns formatted event when injured", () => {
-      const rikishi = {
-        id: "r1",
+      const rikishi = mockRikishi("r1", {
         injured: true,
         currentInjury: {
+          id: "ij-1",
           severity: "moderate",
+          area: "knee",
+          type: "strain",
           weeksOut: 3,
+          weekOccurred: 5,
         },
-      };
+      });
 
       const event = toInjuryEvent(rikishi);
       expect(event).toEqual({

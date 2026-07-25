@@ -112,14 +112,15 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
     TICK_DAY: () => {
       if (currentWorld) {
         currentWorld = tickOrchestrator(currentWorld);
-        emitDigest();
-        syncWorld();
+        syncAndDigest();
       }
     },
     TICK_MULTIPLE_DAYS: async (cmd) => {
       if (currentWorld) {
         const days = cmd.days;
-        const useFast = days >= 2;
+        // Use fast path (skip daily micro-phases) only for week+ advances.
+        // Short advances (2-6 days) should run full daily micro-phases for correctness.
+        const useFast = days >= 7;
         const chunk = useFast ? 7 : 1;
 
         for (let i = 0; i < days; i += chunk) {
@@ -168,19 +169,23 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
     },
     AUTO_SIM_DAYS: async (cmd) => {
       if (currentWorld) {
-        for (let i = 0; i < cmd.days; i++) {
+        // Use fast orchestrator for parity with AutoSimService (skip daily micro-phases).
+        const chunk = 7;
+        for (let i = 0; i < cmd.days; i += chunk) {
           if (simPaused) {
             await new Promise((resolve) => setTimeout(resolve, 100));
-            i--; // retry same day
+            i -= chunk; // retry same chunk
             continue;
           }
-          currentWorld = tickOrchestrator(currentWorld);
+          const remaining = cmd.days - i;
+          const step = Math.min(chunk, remaining);
+          currentWorld = advanceDaysFastOrchestrator(currentWorld, step);
           if (shouldHaltAdvance(currentWorld)) break;
-          if (i % 5 === 0) {
+          if (i % (chunk * 2) === 0 || i + step >= cmd.days) {
             self.postMessage({
               type: "PROGRESS",
-              message: `Simulating day ${i + 1} of ${cmd.days}...`,
-              current: i + 1,
+              message: `Simulating day ${i + step} of ${cmd.days}...`,
+              current: i + step,
               total: cmd.days,
             });
           }
@@ -240,39 +245,34 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
           cmd.choice as "harsh" | "cover_up"
         );
         currentWorld = resolveImpacts(currentWorld, [impact]);
-        emitDigest();
-        syncWorld();
+        syncAndDigest();
       }
     },
     RESOLVE_LOOP_DECISION: (cmd) => {
       if (currentWorld) {
         const impact = resolveLoopDecision(currentWorld, cmd.decisionId, cmd.optionId);
         currentWorld = resolveImpacts(currentWorld, [impact]);
-        emitDigest();
-        syncWorld();
+        syncAndDigest();
       }
     },
     ISSUE_RULING: (cmd) => {
       if (currentWorld) {
         const impact = issueGovernanceRuling(currentWorld, cmd.rulingId, cmd.severity);
         currentWorld = resolveImpacts(currentWorld, [impact]);
-        emitDigest();
-        syncWorld();
+        syncAndDigest();
       }
     },
     HANDLE_MEDIA_EVENT: (cmd) => {
       if (currentWorld) {
         const impact = handleMediaEvent(currentWorld, cmd.eventId, cmd.choice);
         currentWorld = resolveImpacts(currentWorld, [impact]);
-        emitDigest();
-        syncWorld();
+        syncAndDigest();
       }
     },
     WITHDRAW_RIKISHI: (cmd) => {
       if (currentWorld) {
         currentWorld = resolveImpacts(currentWorld, [withdrawRikishi(currentWorld, cmd.rikishiId)]);
-        emitDigest();
-        syncWorld();
+        syncAndDigest();
       }
     },
     TREAT_INJURY: (cmd) => {
@@ -280,8 +280,7 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
         currentWorld = resolveImpacts(currentWorld, [
           treatInjury(currentWorld, cmd.rikishiId, cmd.weeks),
         ]);
-        emitDigest();
-        syncWorld();
+        syncAndDigest();
       }
     },
     BUY_MYOSEKI: (cmd) => {
@@ -293,16 +292,14 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
           cmd.myosekiId
         );
         currentWorld = resolveImpacts(currentWorld, [impact]);
-        emitDigest();
-        syncWorld();
+        syncAndDigest();
       }
     },
     LEASE_MYOSEKI: (cmd) => {
       if (currentWorld) {
         const impact = myoseki.leaseMyoseki(currentWorld, cmd.buyerId, cmd.myosekiId);
         currentWorld = resolveImpacts(currentWorld, [impact]);
-        emitDigest();
-        syncWorld();
+        syncAndDigest();
       }
     },
     RENEW_SPONSOR: (cmd) => {
@@ -313,40 +310,35 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
           cmd.sponsorId
         );
         currentWorld = resolveImpacts(currentWorld, [impact]);
-        emitDigest();
-        syncWorld();
+        syncAndDigest();
       }
     },
     REQUEST_BAILOUT: (cmd) => {
       if (currentWorld) {
         const impact = loans.issueBailoutLoanIfNeeded(currentWorld, cmd.heyaId);
         currentWorld = resolveImpacts(currentWorld, [impact]);
-        emitDigest();
-        syncWorld();
+        syncAndDigest();
       }
     },
     PREPAY_LOAN: (cmd) => {
       if (currentWorld) {
         const impact = loans.prepayLoan(currentWorld, cmd.heyaId, cmd.loanId);
         currentWorld = resolveImpacts(currentWorld, [impact]);
-        emitDigest();
-        syncWorld();
+        syncAndDigest();
       }
     },
     HIRE_STAFF: (cmd) => {
       if (currentWorld) {
         const impact = staffService.hireStaff(currentWorld, cmd.heyaId, cmd.role);
         currentWorld = resolveImpacts(currentWorld, [impact]);
-        emitDigest();
-        syncWorld();
+        syncAndDigest();
       }
     },
     FIRE_STAFF: (cmd) => {
       if (currentWorld) {
         const impact = staffService.fireStaff(currentWorld, cmd.heyaId, cmd.staffId);
         currentWorld = resolveImpacts(currentWorld, [impact]);
-        emitDigest();
-        syncWorld();
+        syncAndDigest();
       }
     },
     TRIGGER_SUCCESSION: (cmd) => {
@@ -357,8 +349,7 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
           cmd.successorId
         );
         currentWorld = resolveImpacts(currentWorld, [impact]);
-        emitDigest();
-        syncWorld();
+        syncAndDigest();
       }
     },
     SET_TRAINING_STATE: (cmd) => {
@@ -380,8 +371,7 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
           cmd.favorId as FavorType
         );
         currentWorld = resolveImpacts(currentWorld, [impact]);
-        emitDigest();
-        syncWorld();
+        syncAndDigest();
       }
     },
     PAUSE_SIM: () => {
@@ -431,6 +421,15 @@ function syncWorld() {
   if (!currentWorld) return;
   worldVersion++;
   self.postMessage({ type: "WORLD_UPDATED", world: currentWorld, version: worldVersion });
+}
+
+/**
+ * Emits the UI digest and syncs the world state to the main thread.
+ * Consolidates the repeated emitDigest() + syncWorld() pattern.
+ */
+function syncAndDigest() {
+  emitDigest();
+  syncWorld();
 }
 
 // Signal that worker is ready

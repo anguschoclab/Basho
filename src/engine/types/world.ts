@@ -98,6 +98,12 @@ export interface TransientContext {
     monthBoundary: boolean;
     yearBoundary: boolean;
   };
+  /** Deferred month boundary — set when a month boundary lands on a non-weekly day,
+   *  consumed on the next weekly tick. */
+  pendingMonthBoundary?: boolean;
+  /** Deferred year boundary — set when a year boundary lands on a non-weekly day,
+   *  consumed on the next weekly tick. */
+  pendingYearBoundary?: boolean;
   lastReport?: Record<string, unknown>;
   preGeneratedSchedules?: {
     day1: string[];

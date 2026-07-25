@@ -21,6 +21,7 @@ import { ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 import { decisionToastMessage } from "./decisionFeedback";
 import { getPlayerHeya } from "@/engine/queries";
+import type { CrisisOption } from "@/engine/types/crises";
 
 export function CrisisModal() {
   const digest = useGameStore((state) => state.digest);
@@ -136,7 +137,7 @@ export function CrisisModal() {
 
         {crisis.options && crisis.options.length > 0 && (
           <div className="flex flex-col gap-2 mt-6">
-            {crisis.options.map((opt: any) => (
+            {crisis.options.map((opt: CrisisOption) => (
               <Button
                 key={opt.id}
                 variant={

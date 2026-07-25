@@ -10,8 +10,6 @@ import { SimTuningService, type TuningMetrics } from "./SimTuningService";
 import type { ChronicleReport } from "../types/records";
 import { RANK_HIERARCHY } from "../banzuke";
 import { publishBanzukeUpdate } from "../banzuke/BanzukePublisher";
-import { phase06_yearly_boundary } from "../tick/phases/phase06_yearly_boundary";
-import { resolveImpacts } from "../core/ImpactResolver";
 import { getHeya, getRikishi } from "../queries";
 
 // === AUTO-SIM CONFIGURATION ===
@@ -213,30 +211,20 @@ export function runAutoSim(
     currentWorld = enterInterim(currentWorld);
     currentWorld = advanceDays(currentWorld, 42);
 
-    // 3. After kyushu (last basho of the year), fire the yearly boundary explicitly.
-    // We also reset the calendar to Jan 1 of the new year so the next year's off-seasons
-    // don't naturally cross Dec 31 and double-trigger the yearly boundary.
+    // 3. After kyushu (last basho of the year), ensure the year boundary fires.
+    // The 42-day interim advance should naturally cross Dec 31 → Jan 1 via the
+    // pipeline's boundary detection. If it hasn't fired yet (calendar misalignment),
+    // advance day-by-day until it does.
     if (bashoName === "kyushu") {
-      const yearBoundaryWorld: WorldState = {
-        ...currentWorld,
-        // Reset to Jan 1 so subsequent off-seasons never cross Dec 31 naturally.
-        calendar: {
-          ...currentWorld.calendar,
-          currentDay: 1,
-          month: 1,
-          currentWeek: currentWorld.calendar?.currentWeek ?? 1,
-        },
-        transientContext: {
-          ...currentWorld.transientContext,
-          boundaries: {
-            ...currentWorld.transientContext?.boundaries,
-            yearBoundary: true,
-            monthBoundary: currentWorld.transientContext?.boundaries?.monthBoundary ?? false,
-          },
-        },
-      };
-      const yearImpact = phase06_yearly_boundary(yearBoundaryWorld);
-      currentWorld = resolveImpacts(yearBoundaryWorld, [yearImpact]);
+      let safetyCounter = 0;
+      while (
+        currentWorld.calendar &&
+        currentWorld.calendar.month === 12 &&
+        safetyCounter < 31
+      ) {
+        currentWorld = advanceDays(currentWorld, 1);
+        safetyCounter++;
+      }
     }
 
     // Preparation for next basho
@@ -361,18 +349,21 @@ export function checkStopCondition(
  * @param duration - The specified simulation duration
  * @returns The number of basho to simulate
  */
-function computeTargetBasho(duration: SimDuration): number {
-  const DURATION_RESOLVERS: Record<SimDuration["type"], (d: any) => number> = {
-    days: (d) => Math.max(0, Math.ceil(d.count / 15)),
-    weeks: (d) => Math.max(0, Math.ceil(d.count / 9)),
-    months: (d) => Math.max(0, Math.ceil(d.count / 2)),
-    basho: (d) => Math.max(0, Math.floor(d.count)),
-    years: (d) => Math.max(0, Math.floor(d.count) * 6),
-    untilEvent: () => 600, // 100-year cap
-  };
-
-  const resolver = DURATION_RESOLVERS[duration.type];
-  return resolver ? resolver(duration) : 0;
+export function computeTargetBasho(duration: SimDuration): number {
+  switch (duration.type) {
+    case "days":
+      return Math.max(0, Math.ceil(duration.count / 15));
+    case "weeks":
+      return Math.max(0, Math.ceil(duration.count / 9));
+    case "months":
+      return Math.max(0, Math.ceil(duration.count / 2));
+    case "basho":
+      return Math.max(0, Math.floor(duration.count));
+    case "years":
+      return Math.max(0, Math.floor(duration.count) * 6);
+    case "untilEvent":
+      return 600; // 100-year cap
+  }
 }
 
 /**

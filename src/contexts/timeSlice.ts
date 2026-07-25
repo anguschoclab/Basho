@@ -22,7 +22,8 @@ export function timeSlice(state: GameState, action: GameAction): GameState {
 
     case "RUN_AUTO_SIM": {
       if (!action.result.finalWorld) return state;
-      return { ...state, world: structuredClone(action.result.finalWorld), phase: "interim" };
+      // finalWorld is already a fresh object from the simulation — no clone needed.
+      return { ...state, world: action.result.finalWorld, phase: "interim" };
     }
 
     default:

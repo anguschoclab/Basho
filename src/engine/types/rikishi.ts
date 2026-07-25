@@ -214,6 +214,16 @@ export interface Rikishi {
   // Backward-compat alias for injuryStatus (set by RecoveryService)
   injury?: Rikishi["injuryStatus"];
 
+  // Current injury details (set by InjuryService via updateRikishiNestedField)
+  currentInjury?: {
+    id: string;
+    severity: InjurySeverity;
+    area: InjuryBodyArea;
+    type: InjuryType;
+    weeksOut: number;
+    weekOccurred: number;
+  };
+
   // Used by InjuryService for durability calculation
   durability?: number;
 

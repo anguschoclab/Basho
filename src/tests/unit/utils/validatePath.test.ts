@@ -38,4 +38,45 @@ describe("validatePath", () => {
   it("allows deeply nested paths within base", () => {
     expect(validatePath(path.join(baseDir, "nested", "deep", "file.txt"), baseDir)).toBe(true);
   });
+
+  it("allows trailing slash on base dir", () => {
+    expect(validatePath(path.join(baseDir, "file.json"), baseDir + "/")).toBe(true);
+  });
+
+  it("allows base with trailing slash and file without", () => {
+    expect(validatePath(path.join(baseDir, "sub", "file.json"), baseDir + "/")).toBe(true);
+  });
+
+  it("allows path equal to base with trailing slash", () => {
+    expect(validatePath(baseDir + "/", baseDir + "/")).toBe(true);
+  });
+
+  it("allows .. that stays inside base", () => {
+    expect(validatePath(path.join(baseDir, "sub", "..", "file.json"), baseDir)).toBe(true);
+  });
+
+  it("allows multiple .. that stay inside base", () => {
+    expect(validatePath(path.join(baseDir, "a", "b", "..", "..", "c.json"), baseDir)).toBe(true);
+  });
+
+  it("rejects empty string filePath (resolves to cwd, outside base)", () => {
+    expect(validatePath("", baseDir)).toBe(false);
+  });
+
+  it("allows paths with spaces within base", () => {
+    expect(validatePath(path.join(baseDir, "my file.json"), baseDir)).toBe(true);
+  });
+
+  it("allows very long nested paths within base", () => {
+    const deep = path.join(baseDir, ...Array(10).fill("nested"), "file.txt");
+    expect(validatePath(deep, baseDir)).toBe(true);
+  });
+
+  it("allows relative filePath within base when base is cwd", () => {
+    expect(validatePath("file.json", process.cwd())).toBe(true);
+  });
+
+  it("allows filePath with trailing slash (directory) within base", () => {
+    expect(validatePath(path.join(baseDir, "subdir") + "/", baseDir)).toBe(true);
+  });
 });

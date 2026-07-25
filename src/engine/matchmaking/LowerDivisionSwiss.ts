@@ -17,7 +17,7 @@
 import type { BashoState } from "../types/basho";
 import type { Division } from "../types/banzuke";
 import type { Rikishi } from "../types/rikishi";
-import { scorePairing, type MatchPairing } from "./MatchmakingPhases";
+import { scorePairing, type MatchPairing, type MatchmakingRules } from "./MatchmakingPhases";
 
 // ── Banzuke ordinal helpers ────────────────────────────────────────────────────
 
@@ -245,7 +245,7 @@ export function buildLowerDivisionSwiss(
   options: {
     seed: string;
     division?: Division;
-    rules?: any;
+    rules?: Partial<MatchmakingRules>;
   }
 ): MatchPairing[] {
   const pool = rikishi.filter((r) => {

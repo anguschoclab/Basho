@@ -7,7 +7,7 @@
 
 import type { WorldState } from "../../engine/types/world";
 import type { Rank } from "../../engine/types/banzuke";
-import type { TalentCandidate } from "../../engine/types/talent";
+import type { TalentCandidate, TalentPoolType } from "../../engine/types/talent";
 import { RANK_HIERARCHY } from "../../engine/banzuke";
 import type { BoutPreviewUI } from "../boutPreviewUI";
 import type { UIRikishi } from "../rikishi";
@@ -65,6 +65,14 @@ export interface CandidateDigestEntry extends TalentCandidate {
    * Decays as scouting observations accumulate.
    */
   biasStrength?: number;
+  /** UI-enriched properties for recruitment display */
+  poolType?: TalentPoolType;
+  age?: number;
+  ageDescriptor?: string;
+  height?: number;
+  heightDescriptor?: string;
+  weight?: number;
+  weightDescriptor?: string;
 }
 
 /** Recruitment digest returned by projectRecruitmentUIDigest */

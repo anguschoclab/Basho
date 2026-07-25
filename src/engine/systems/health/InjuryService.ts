@@ -17,6 +17,7 @@
 import { SeededRNG } from "../../rng";
 import { WorldState } from "../../types/world";
 import { Rikishi } from "../../types/rikishi";
+import type { MatchSchedule, BoutResult } from "../../types/basho";
 import { SIMULATION_CONFIG } from "../../core/SimulationConfig";
 import { clamp, clampInt } from "../../utils/math";
 import { InjurySeverity, InjuryBodyArea, InjuryType, getBaseWeeksOut } from "./BodyDefinitions";
@@ -294,11 +295,11 @@ export function tickWeekRecovery(world: WorldState): StateImpact {
  * 5. If injury occurs, applies minor injury (1-2 weeks)
  *
  * @param {WorldState} world - The current world state.
- * @param {{ match: any; result: any; east: any; west: any }} ctx - The bout context.
- * @param {any} ctx.match - The bout match data.
- * @param {any} ctx.result - The bout result data.
- * @param {any} ctx.east - The east rikishi data.
- * @param {any} ctx.west - The west rikishi data.
+ * @param {{ match: MatchSchedule; result: BoutResult | null; east: Rikishi | null; west: Rikishi | null }} ctx - The bout context.
+ * @param {MatchSchedule} ctx.match - The bout match data.
+ * @param {BoutResult | null} ctx.result - The bout result data.
+ * @param {Rikishi | null} ctx.east - The east rikishi data.
+ * @param {Rikishi | null} ctx.west - The west rikishi data.
  * @returns {StateImpact} Impact describing injury updates.
  *
  * @example
@@ -310,10 +311,10 @@ export function tickWeekRecovery(world: WorldState): StateImpact {
 export function onBoutResolvedInjury(
   world: WorldState,
   ctx: {
-    match: any;
-    result: any;
-    east: any;
-    west: any;
+    match: MatchSchedule;
+    result: BoutResult | null;
+    east: Rikishi | null;
+    west: Rikishi | null;
     injuryRiskMultiplier?: number;
     winnerInjuryRiskMultiplier?: number;
   }
@@ -450,7 +451,7 @@ export function clearInjury(rikishiId: string): StateImpact {
  * Converts a rikishi's current injury state to an engine event object for UI display.
  * Used to surface injury information in the event log and UI components.
  *
- * @param {any} rikishi - The rikishi to convert injury state for.
+ * @param {Rikishi} rikishi - The rikishi to convert injury state for.
  * @returns {{ type: string; rikishiId: string; severity: string; weeksOut: number } | null} Injury event object or null if not injured.
  *
  * @example
@@ -462,7 +463,7 @@ export function clearInjury(rikishiId: string): StateImpact {
  * ```
  */
 export function toInjuryEvent(
-  rikishi: any
+  rikishi: Rikishi
 ): { type: string; rikishiId: string; severity: string; weeksOut: number } | null {
   if (!rikishi.injured || !rikishi.currentInjury) return null;
   const inj = rikishi.currentInjury;

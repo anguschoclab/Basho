@@ -8,26 +8,23 @@ import type { WorldState } from "../types/world";
 import { advanceOneDay, advanceDaysFast } from "./tickDaily";
 
 /**
- * Deep-clones a WorldState so tick mutations don't affect the original state.
- * Uses `structuredClone`, which correctly handles Map and Set instances.
- *
- * @param {WorldState} world - The world state to clone.
- * @returns {WorldState} A deep clone of the world state.
+ * Deep-clones a WorldState. Retained for bashoSlice and other callers that
+ * still use mutable world-engine functions. The orchestrators no longer clone
+ * because the pipeline is immutable (returns new objects via spread/resolveImpacts).
  */
 export function cloneWorldForTick(world: WorldState): WorldState {
   return structuredClone(world) as WorldState;
 }
 
 /**
- * Advances the world state by one day (clone → mutate → return).
+ * Advances the world state by one day.
  * Used by the web worker to process ticks off the main thread to avoid UI blocking.
  *
  * @param {WorldState} world - The current world state.
  * @returns {WorldState} The new world state after advancing one day.
  */
 export function tickOrchestrator(world: WorldState): WorldState {
-  const next = cloneWorldForTick(world);
-  return advanceOneDay(next);
+  return advanceOneDay(world);
 }
 
 /**
@@ -39,6 +36,5 @@ export function tickOrchestrator(world: WorldState): WorldState {
  * @returns {WorldState} The new world state after advancing N days.
  */
 export function advanceDaysFastOrchestrator(world: WorldState, days: number): WorldState {
-  const next = cloneWorldForTick(world);
-  return advanceDaysFast(next, days);
+  return advanceDaysFast(world, days);
 }

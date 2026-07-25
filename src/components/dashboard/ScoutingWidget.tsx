@@ -10,6 +10,8 @@ import { BaseWidget } from "./BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 import type { PotentialBand } from "@/engine/descriptorBands";
 import { toPotentialBand } from "@/engine/descriptorBands";
+// eslint-disable-next-line no-restricted-imports
+import type { WorldState } from "@/engine/types/world";
 import * as talentpool from "@/engine/systems/generation/TalentPoolService";
 import type { TalentCandidate, TalentPoolType } from "@/engine/types/talent";
 import { POTENTIAL_LABELS } from "@/constants/ui/labels";
@@ -87,7 +89,7 @@ const ProspectList = React.memo(
   }: {
     topProspects: (TalentCandidate & { pool: TalentPoolType })[];
     prospectsLength: number;
-    world: any;
+    world: WorldState;
     onViewAll: () => void;
   }) => {
     return (

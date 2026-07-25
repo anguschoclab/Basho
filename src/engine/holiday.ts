@@ -12,6 +12,7 @@
  */
 
 import type { WorldState, CyclePhase } from "./types/world";
+import type { Heya } from "./types/heya";
 import { advanceOneDay } from "./tick/tickDaily";
 import { queryEvents } from "./events";
 import { getHeya, getRikishi } from "./queries";
@@ -120,7 +121,7 @@ function evaluateGates(
 function checkGate(
   gate: SafetyGate,
   world: WorldState,
-  heya: any,
+  heya: Heya,
   playerHeyaId: string,
   startDay: number
 ): HolidayGateTriggered | null {
@@ -128,7 +129,7 @@ function checkGate(
     SafetyGate,
     (
       world: WorldState,
-      heya: any,
+      heya: Heya,
       playerHeyaId: string,
       startDay: number
     ) => HolidayGateTriggered | null
