@@ -442,7 +442,11 @@ export function generateBoutNarrative(
   // Rookie / tournament count
   for (const r of [east, west]) {
     if (!r.careerHistory) continue;
-    const makuuchiCount = r.careerHistory.filter(s => s.division === "makuuchi").length;
+    // ⚡ Bolt Optimization: Replace .filter().length with a loop to prevent intermediate O(N) array allocation.
+    let makuuchiCount = 0;
+    for (const s of r.careerHistory) {
+      if (s.division === "makuuchi") makuuchiCount++;
+    }
     if (makuuchiCount === 1) {
       push(
         BardEngine.resolve(preBoutRng, "pre_bout.storylines.rookie", {

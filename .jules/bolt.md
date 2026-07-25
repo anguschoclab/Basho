@@ -273,3 +273,6 @@ Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop 
 ## 2025-05-18 - Optimized Array Iteration in buildHolidayDigest
 **Learning:** In scenarios processing hundreds of engine events (like a multi-week holiday simulation), chaining array methods (e.g., `.filter().slice().map()`) across multiple parallel category checks forces N redundant passes over the same large dataset and allocates numerous intermediate arrays.
 **Action:** Replace multiple chained category filters with a single O(N) `for...of` loop that evaluates each element once and populates distinct target arrays simultaneously, capping bounds in-place. This reduces iterations from 5*O(N) to O(N) and prevents intermediate array allocations.
+## 2026-07-25 - Prevent Intermediate Allocations in `.filter().length`
+**Learning:** `array.filter(condition).length` allocates an intermediate O(N) array just to get the count, triggering extra memory allocation and GC overhead for large unbounded datasets (like long rikishi career histories evaluated on every bout).
+**Action:** Always rewrite `.filter(condition).length` into a direct `for...of` loop with a counter to optimize memory and GC.
