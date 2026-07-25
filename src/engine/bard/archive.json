@@ -699,6 +699,11 @@
             "Not doing much at the moment — just leaning on each other.",
             "Hugs and chugs. A grinding battle of attrition."
           ],
+          "stamina": [
+            "%NAME% looks like he's bothered with stamina issues — breathing heavy.",
+            "The pace is telling on %NAME%. He's clearly flagging.",
+            "%NAME% is running on fumes. Can he survive this grinding exchange?"
+          ],
           "rear": [
             "%LEADER% slips to the side — danger from behind!",
             "Angle taken! %LEADER% has %TRAILER% twisted!",
@@ -1302,7 +1307,19 @@
             "%ATTACKER% explodes into the blind spot with extraordinary quickness!",
             "Lightning speed! %ATTACKER% decimates the posture with a rapid flank!"
           ]
-        }
+        },
+        "stamina": [
+          "Not doing much at the moment — both men look gassed.",
+          "The energy is draining from this bout. Who's going to dig deep and move forward?",
+          "At a standstill — the stamina is telling on both rikishi now.",
+          "The pace has dropped. This is becoming a test of endurance."
+        ],
+        "stall": [
+          "It's a standoff at the moment. Neither man committing.",
+          "Not doing much at the moment except standing there.",
+          "A pause in the action — both sizing each other up.",
+          "Who's going to make the first move? It's a stalemate."
+        ]
       }
     },
     "medical": {
@@ -2310,6 +2327,16 @@
         "Last time they met on Day %DAY%, %WINNER% won decisively by %KIMARITE%.",
         "%LOSER% will be looking for revenge after that %KIMARITE% loss in the previous basho.",
         "Fans remember their last bout well—a crushing %KIMARITE% victory for %WINNER%."
+      ],
+      "winless": [
+        "%P2% has never defeated %P1% in %TOTAL% meetings. Will today be different?",
+        "An incredible streak — %P1% has won all %TOTAL% of their encounters. %P2% is still searching for that first win.",
+        "%P2% is winless against %P1% across %TOTAL% bouts. The psychological edge is enormous."
+      ],
+      "career_parallel": [
+        "Amazingly, both enter this bout with %WINS% career wins each. A true parallel.",
+        "An incredible stat — %P1% and %P2% both sit at %WINS% career victories. Destiny on the dohyo?",
+        "Level pegging on career wins: both men have %WINS%. Something has to give today."
       ]
     },
     "training": {
@@ -2496,11 +2523,28 @@
         "A %STREAK%-bout winning streak for %P1% over %P2% — history favors one man today.",
         "%P2% looks to finally break through, having lost %STREAK% in a row to %P1%."
       ],
-      "injury": [
-        "%SHIKONA% has been battling injuries this tournament. How much will that factor today?",
-        "Questions remain about %SHIKONA%'s fitness after recent injury concerns.",
-        "The medical report flagged %SHIKONA% — can they overcome it today?"
-      ],
+      "injury": {
+        "generic": [
+          "%SHIKONA% has been battling injuries this tournament. How much will that factor today?",
+          "Questions remain about %SHIKONA%'s fitness after recent injury concerns.",
+          "The medical report flagged %SHIKONA% — can they overcome it today?"
+        ],
+        "nagging": [
+          "%SHIKONA% has been dealing with a nagging %AREA% injury. It's not enough to sit out, but it lingers.",
+          "A troublesome %AREA% has been bothering %SHIKONA% this tournament — far from 100%.",
+          "%SHIKONA% is fighting through a nagging %AREA% issue. How much will it factor today?"
+        ],
+        "struggling": [
+          "%SHIKONA% is clearly struggling with a %AREA% injury — in constant pain out there.",
+          "The %AREA% injury is really affecting %SHIKONA%. You can see the discomfort.",
+          "%SHIKONA% is far from fully fit — that %AREA% is a real problem heading into this bout."
+        ],
+        "specific_area": [
+          "%SHIKONA% has been troubled by a %AREA% injury — it's been a persistent issue.",
+          "That %AREA% injury for %SHIKONA% is well documented. The question is how much it limits him today.",
+          "The %AREA% has been a problem area for %SHIKONA% — constant pain, but he keeps fighting."
+        ]
+      },
       "physical_comparison": [
         "A stark physical contrast: %HEAVIER% outweighs %LIGHTER% by %WEIGHT_DIFF% kilograms.",
         "%HEAVIER% brings %WEIGHT_DIFF% kg more to the dohyo than %LIGHTER% — will mass decide this bout?",
@@ -2531,6 +2575,16 @@
         "The pressure is immense for kadoban %SHIKONA% — a loss today could mean demotion.",
         "Everything is on the line for %SHIKONA%, who enters the day in kadoban territory."
       ],
+      "ozeki_return": [
+        "%SHIKONA% needs %NEEDED% more wins to regain his ozeki rank.",
+        "%SHIKONA% is one win away from securing his return to ozeki.",
+        "The road back to ozeki continues for %SHIKONA% — %NEEDED% wins still needed."
+      ],
+      "yokozuna_promotion": [
+        "%SHIKONA% is going for promotion to yokozuna. Cannot afford to lose.",
+        "%SHIKONA% is on a path to yokozuna if he can win the yusho. Every bout matters.",
+        "The yokozuna promotion talk is swirling around %SHIKONA%. No room for error."
+      ],
       "hometown": [
         "A homecoming for %SHIKONA%, fighting in %LOCATION% today.",
         "The local crowd rallies behind %SHIKONA% — a %LOCATION% native on the dohyo.",
@@ -2556,6 +2610,31 @@
         "The last day of the tournament. Champions are made on days like this.",
         "A packed house for senshuraku. The drama reaches its climax today."
       ],
+      "opening_day": [
+        "Day one of the basho. Fifteen days of sumo ahead.",
+        "The tournament begins. Everyone starts at zero.",
+        "Opening day — the slate is clean and the possibilities are endless."
+      ],
+      "early_days": [
+        "Still early days at the basho — only day %DAY%.",
+        "Only day %DAY%, but already some surprises emerging.",
+        "It's early in the tournament, but every win counts."
+      ],
+      "mid_tournament": [
+        "We're at the halfway point of the tournament.",
+        "After %DAY% days of action, the leaderboard is starting to take shape.",
+        "Day %DAY% — the tournament is heating up and the contenders are separating from the pack."
+      ],
+      "late_tournament": [
+        "The tournament is entering its final stretch.",
+        "Only a few days left and the yusho race is heating up.",
+        "Day %DAY% — every bout from here carries championship implications."
+      ],
+      "final_day": [
+        "The last day of the basho. Champions will be decided today.",
+        "Day fifteen — the culmination of two weeks of sumo.",
+        "The final day. Everything that has happened before comes down to this."
+      ],
       "penultimate": [
         "Day 14 — one day before senshuraku. The race is tightening.",
         "The penultimate day. Every bout carries yusho implications.",
@@ -2570,6 +2649,11 @@
         "%SHIKONA% leads the tournament at %WINS%-0. Can anyone catch them?",
         "The current leader %SHIKONA% sits at %WINS% wins. The chase pack is running out of days.",
         "%SHIKONA% tops the leaderboard with %WINS% victories. The pressure of the leader's jersey."
+      ],
+      "playoff_implications": [
+        "A playoff could be on the cards if this one goes to %EAST%.",
+        "With both men at the top, a playoff scenario looms large.",
+        "The yusho could come down to a playoff — every bout from here is crucial."
       ]
     },
     "post_bout": {
@@ -2658,6 +2742,16 @@
         "The championship chase tightens — %WINNER% is right in the thick of it at %WINS%.",
         "A massive win for %WINNER% in the yusho race. %WINS% wins and counting."
       ],
+      "birthday_kachi": [
+        "Kachi-koshi on his birthday! %SHIKONA% celebrates with a winning record.",
+        "What a birthday gift — %SHIKONA% secures kachi-koshi on his special day.",
+        "%SHIKONA% picks up kachi-koshi on his birthday. A double celebration."
+      ],
+      "birthday_milestone": [
+        "%SHIKONA% picks up his %MILESTONE%th career victory on his birthday. A double celebration.",
+        "What a birthday — %SHIKONA% notches his %MILESTONE%th career win on his special day.",
+        "A milestone and a birthday — %SHIKONA% celebrates %MILESTONE% career wins."
+      ],
       "mono_ii": {
         "gunbai_contested": [
           "The goji points his gunbai to %WINNER%. Will we have a mono-ii?",
@@ -2721,6 +2815,11 @@
           "%WINNER% was in total control from start to finish.",
           "A masterclass from %WINNER% — never threatened, always in command."
         ],
+        "stamina_issue": [
+          "%LOSER% looks like he's bothered with stamina issues in this replay. The energy just wasn't there.",
+          "Watch the late stages — %LOSER% fades badly. The conditioning wasn't enough today.",
+          "The replay tells the story — %LOSER% simply ran out of gas against %WINNER%."
+        ],
         "generic": [
           "Let's see that again — %WINNER%'s %KIMARITE% in slow motion.",
           "The replay shows the precision of %WINNER%'s winning technique.",
@@ -2735,6 +2834,12 @@
           "What's been going well this tournament?",
           "How will you approach the rest of the tournament?",
           "Any message for your fans?"
+        ],
+        "earliest_kachi": [
+          "You've secured the earliest kachi-koshi of your career. Congratulations.",
+          "How does it feel clinching it on day %DAY%?",
+          "What's been going well this tournament?",
+          "How will you approach the rest?"
         ],
         "make_koshi": [
           "Tough day today. What went wrong?",
@@ -2755,6 +2860,12 @@
           "Your first win finally came today. How do you feel?",
           "How did you reset mentally after the losing streak?",
           "What's the approach for tomorrow?"
+        ],
+        "debut_win": [
+          "How do you feel picking up a victory in your makuuchi debut?",
+          "Did that win feel different from the lower divisions?",
+          "Were you nervous going up as a makuuchi fighter?",
+          "What kind of basho do you want to make it?"
         ],
         "general_win": [
           "How do you feel about that performance?",

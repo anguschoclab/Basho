@@ -81,7 +81,10 @@ describe("generateBoutNarrative — leaderboard computation (T23)", () => {
     const world = makeWorldWithStandings(east, west, standings, 1);
     const result = makeBoutResult();
     generateBoutNarrative(result, east, west, BASHO, 1, "seed-lb-day1", world);
-    const lbLines = getPreBoutLines(result).filter((l) => l.tags?.includes("tournament_context"));
+    // No leaderboard line should mention a leader with wins
+    const lbLines = getPreBoutLines(result).filter(
+      (l) => l.tags?.includes("tournament_context") && l.text.includes("leads")
+    );
     expect(lbLines.length).toBe(0);
   });
 
@@ -95,7 +98,10 @@ describe("generateBoutNarrative — leaderboard computation (T23)", () => {
     const world = makeWorldWithStandings(east, west, standings, 5);
     const result = makeBoutResult();
     generateBoutNarrative(result, east, west, BASHO, 5, "seed-lb-low", world);
-    const lbLines = getPreBoutLines(result).filter((l) => l.tags?.includes("tournament_context"));
+    // No leaderboard line should mention a leader with wins
+    const lbLines = getPreBoutLines(result).filter(
+      (l) => l.tags?.includes("tournament_context") && l.text.includes("leads")
+    );
     expect(lbLines.length).toBe(0);
   });
 

@@ -82,7 +82,11 @@ export type PbpTag =
   | "streak"
   | "title_stakes"
   | "senshuraku"
-  | "tournament_context";
+  | "tournament_context"
+  | "weight_diff"
+  | "age_diff"
+  | "mono_ii"
+  | "interview";
 
 export type PbpLine = {
   text: string;
@@ -242,6 +246,38 @@ export function generateBoutNarrative(
         }).text,
         "opening",
         ["rivalry"]
+      );
+    }
+
+    // H2H winless (one rikishi has 0 wins in 3+ meetings)
+    if (total >= 3 && (eastWins === 0 || westWins === 0)) {
+      const dominantRikishi = eastWins > westWins ? east : west;
+      const winlessRikishi = eastWins > westWins ? west : east;
+      push(
+        BardEngine.resolve(h2hRng, "h2h.winless", {
+          P1: dominantRikishi.shikona,
+          P2: winlessRikishi.shikona,
+          TOTAL: total,
+          eastRikishiId: east.id,
+          westRikishiId: west.id,
+        }).text,
+        "opening",
+        ["rivalry"]
+      );
+    }
+
+    // Career wins parallel (both have same career wins)
+    if (east.careerWins !== undefined && west.careerWins !== undefined && east.careerWins === west.careerWins) {
+      push(
+        BardEngine.resolve(h2hRng, "h2h.career_parallel", {
+          P1: east.shikona,
+          P2: west.shikona,
+          WINS: east.careerWins,
+          eastRikishiId: east.id,
+          westRikishiId: west.id,
+        }).text,
+        "opening",
+        ["milestone"]
       );
     }
   }
@@ -495,13 +531,26 @@ export function generateBoutNarrative(
     );
   }
 
-  // 3d. Injury mention (probabilistic)
+  // 3d. Injury mention (probabilistic, with sub-path selection)
   if (east.injured || west.injured) {
     const injuredRikishi = east.injured ? east : west;
     if (preBoutRng.next() < INJURY_MENTION_CHANCE) {
+      const injuryStatus = injuredRikishi.injuryStatus;
+      const currentInjury = injuredRikishi.currentInjury;
+      const severity = injuryStatus?.severity ?? currentInjury?.severity;
+      const area = injuryStatus?.location ?? currentInjury?.area ?? "leg";
+      let injuryPath = "pre_bout.injury.generic";
+      if (severity === "minor") {
+        injuryPath = "pre_bout.injury.nagging";
+      } else if (severity === "moderate" || severity === "serious") {
+        injuryPath = "pre_bout.injury.struggling";
+      } else if (area && area !== "leg") {
+        injuryPath = "pre_bout.injury.specific_area";
+      }
       push(
-        BardEngine.resolve(preBoutRng, "pre_bout.injury", {
+        BardEngine.resolve(preBoutRng, injuryPath, {
           SHIKONA: injuredRikishi.shikona,
+          AREA: area,
           rikishiId: injuredRikishi.id,
         }).text,
         "pre_bout",
@@ -526,7 +575,7 @@ export function generateBoutNarrative(
         lighterRikishiId: lighter.id,
       }).text,
       "pre_bout",
-      []
+      ["weight_diff"]
     );
   }
 
@@ -566,7 +615,7 @@ export function generateBoutNarrative(
         youngerRikishiId: younger.id,
       }).text,
       "pre_bout",
-      [...olderTags, ...youngerTags]
+      ["age_diff", ...olderTags, ...youngerTags]
     );
   }
 
@@ -617,6 +666,39 @@ export function generateBoutNarrative(
       "pre_bout",
       ["kadoban"]
     );
+  }
+
+  // 3j2. Ozeki return detection (sekiwake/komusubi formerly ozeki, with 9+ wins)
+  for (const r of [east, west]) {
+    if ((r.rank === "sekiwake" || r.rank === "komusubi") && r.careerHistory) {
+      const wasOzeki = r.careerHistory.some(s => s.rank === "ozeki");
+      if (wasOzeki && (r.currentBashoWins ?? 0) >= 9) {
+        const needed = Math.max(0, 10 - (r.currentBashoWins ?? 0));
+        push(
+          BardEngine.resolve(preBoutRng, "pre_bout.ozeki_return", {
+            SHIKONA: r.shikona,
+            NEEDED: needed.toString(),
+            rikishiId: r.id,
+          }).text,
+          "pre_bout",
+          ["kadoban"]
+        );
+      }
+    }
+  }
+
+  // 3j3. Yokozuna promotion detection (ozeki with consecutiveStrongOzeki >= 1)
+  for (const r of [east, west]) {
+    if (r.rank === "ozeki" && (r.consecutiveStrongOzeki ?? 0) >= 1) {
+      push(
+        BardEngine.resolve(preBoutRng, "pre_bout.yokozuna_promotion", {
+          SHIKONA: r.shikona,
+          rikishiId: r.id,
+        }).text,
+        "pre_bout",
+        ["title_stakes"]
+      );
+    }
   }
 
   // 3k. Hometown angle
@@ -720,6 +802,45 @@ export function generateBoutNarrative(
       "pre_bout",
       ["tournament_context"]
     );
+  } else if (day === 1) {
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.opening_day", {
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+      }).text,
+      "pre_bout",
+      ["tournament_context"]
+    );
+  } else if (day >= 2 && day <= 4) {
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.early_days", {
+        DAY: day.toString(),
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+      }).text,
+      "pre_bout",
+      ["tournament_context"]
+    );
+  } else if (day >= 5 && day <= 9) {
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.mid_tournament", {
+        DAY: day.toString(),
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+      }).text,
+      "pre_bout",
+      ["tournament_context"]
+    );
+  } else if (day >= 10 && day <= 13) {
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.late_tournament", {
+        DAY: day.toString(),
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+      }).text,
+      "pre_bout",
+      ["tournament_context"]
+    );
   }
 
   // 3o. Title stakes / yusho race context
@@ -757,6 +878,29 @@ export function generateBoutNarrative(
         }).text,
         "pre_bout",
         ["tournament_context"]
+      );
+    }
+  }
+
+  // 3p2. Playoff implications — when both rikishi are at or near the lead late in tournament
+  if (day >= SENSURAKU_DAY - 1 && world.currentBasho) {
+    const standings = world.currentBasho.standings;
+    const eastWins = standings.get(east.id)?.wins ?? (east.currentBashoWins ?? 0);
+    const westWins = standings.get(west.id)?.wins ?? (west.currentBashoWins ?? 0);
+    let maxWins = 0;
+    for (const rec of standings.values()) {
+      if (rec.wins > maxWins) maxWins = rec.wins;
+    }
+    if (eastWins >= maxWins - 1 && westWins >= maxWins - 1 && maxWins >= 8) {
+      push(
+        BardEngine.resolve(preBoutRng, "pre_bout.playoff_implications", {
+          EAST: east.shikona,
+          WEST: west.shikona,
+          eastRikishiId: east.id,
+          westRikishiId: west.id,
+        }).text,
+        "pre_bout",
+        ["yusho_race"]
       );
     }
   }
@@ -829,6 +973,22 @@ export function generateBoutNarrative(
         defenderId: defender.id,
       });
       push(res.text, "engagement");
+
+      // 7a2. Stamina engagement — if late in a long bout with low intensity, mention fatigue
+      if (tick > 15 && engIntensity === 1 && result.duration && result.duration > 15) {
+        const staminaRng = rngFromSeed(tickSeed, "pbp", "engagement-stamina");
+        if (staminaRng.next() < 0.4) {
+          push(
+            BardEngine.resolve(staminaRng, "combat.engagement.stamina", {
+              ATTACKER: attacker.shikona,
+              DEFENDER: defender.shikona,
+              attackerId: attacker.id,
+              defenderId: defender.id,
+            }).text,
+            "engagement"
+          );
+        }
+      }
 
       // 7b. Clinch — emit once on first belt engagement
       if (family === "belt" && !clinchEmitted) {
@@ -1165,15 +1325,30 @@ export function generateBoutNarrative(
   // 13. Post-bout career impact (milestone reached with this win)
   for (const milestone of CAREER_WIN_MILESTONES) {
     if (winnerRikishi.careerWins === milestone) {
-      push(
-        BardEngine.resolve(postBoutRng, "post_bout.career_milestone", {
-          SHIKONA: winnerRikishi.shikona,
-          MILESTONE: milestone.toString(),
-          rikishiId: winnerRikishi.id,
-        }).text,
-        "post_bout",
-        ["milestone"]
-      );
+      // Check if it's also the winner's birthday for a combo line
+      const isBirthday = bashoInfo && winnerRikishi.birthMonth && winnerRikishi.birthDay &&
+        winnerRikishi.birthMonth === bashoInfo.month && winnerRikishi.birthDay === day;
+      if (isBirthday) {
+        push(
+          BardEngine.resolve(postBoutRng, "post_bout.birthday_milestone", {
+            SHIKONA: winnerRikishi.shikona,
+            MILESTONE: milestone.toString(),
+            rikishiId: winnerRikishi.id,
+          }).text,
+          "post_bout",
+          ["milestone", "birthday"]
+        );
+      } else {
+        push(
+          BardEngine.resolve(postBoutRng, "post_bout.career_milestone", {
+            SHIKONA: winnerRikishi.shikona,
+            MILESTONE: milestone.toString(),
+            rikishiId: winnerRikishi.id,
+          }).text,
+          "post_bout",
+          ["milestone"]
+        );
+      }
       break;
     }
   }
@@ -1206,6 +1381,20 @@ export function generateBoutNarrative(
         ["consecutive_kachi"]
       );
     }
+
+    // 14c. Birthday kachi-koshi — winner gets kachi-koshi on their birthday
+    if (bashoInfo && winnerRikishi.birthMonth && winnerRikishi.birthDay) {
+      if (winnerRikishi.birthMonth === bashoInfo.month && winnerRikishi.birthDay === day) {
+        push(
+          BardEngine.resolve(postBoutRng, "post_bout.birthday_kachi", {
+            SHIKONA: winnerRikishi.shikona,
+            rikishiId: winnerRikishi.id,
+          }).text,
+          "post_bout",
+          ["birthday", "kachi_koshi"]
+        );
+      }
+    }
   }
   if (isMakeKoshi(loserRikishi.currentBashoWins ?? 0, loserLosses, loserRikishi.rank)) {
     push(
@@ -1230,6 +1419,57 @@ export function generateBoutNarrative(
       "post_bout",
       ["yusho_race"]
     );
+  }
+
+  // 15a. Post-bout leaderboard update — sole leader, falls out, ties leader
+  if (world.currentBasho && day >= 5) {
+    const standings = world.currentBasho.standings;
+    let maxWins = 0;
+    let coLeaders = 0;
+    for (const [rid, rec] of standings) {
+      const w = rid === winnerRikishi.id ? winnerWins : rid === loserRikishi.id ? loserWins : rec.wins;
+      if (w > maxWins) {
+        maxWins = w;
+        coLeaders = 1;
+      } else if (w === maxWins) {
+        coLeaders++;
+      }
+    }
+    // Winner is now sole leader
+    if (winnerWins === maxWins && coLeaders === 1) {
+      push(
+        BardEngine.resolve(postBoutRng, "post_bout.storylines.sole_leader", {
+          WINNER: winnerRikishi.shikona,
+          DAY: day.toString(),
+          winnerId: winnerRikishi.id,
+        }).text,
+        "post_bout",
+        ["yusho_race"]
+      );
+    }
+    // Winner ties the leader
+    if (winnerWins === maxWins && coLeaders > 1 && winnerWins > (standings.get(winnerRikishi.id)?.wins ?? 0)) {
+      push(
+        BardEngine.resolve(postBoutRng, "post_bout.storylines.ties_leader", {
+          WINNER: winnerRikishi.shikona,
+          winnerId: winnerRikishi.id,
+        }).text,
+        "post_bout",
+        ["yusho_race"]
+      );
+    }
+    // Loser falls out of co-leadership
+    const loserPrevWins = (standings.get(loserRikishi.id)?.wins ?? loserWins);
+    if (loserPrevWins === maxWins && loserWins < maxWins) {
+      push(
+        BardEngine.resolve(postBoutRng, "post_bout.storylines.falls_out", {
+          LOSER: loserRikishi.shikona,
+          loserId: loserRikishi.id,
+        }).text,
+        "post_bout",
+        ["yusho_race"]
+      );
+    }
   }
 
   // 15b. Post-bout storyline: streaks, first win, sole leader
@@ -1294,7 +1534,7 @@ export function generateBoutNarrative(
         loserId: loserRikishi.id,
       }).text,
       "mono_ii",
-      ["drama"]
+      ["drama", "mono_ii"]
     );
     push(
       BardEngine.resolve(monoiiRng, "post_bout.mono_ii.replay_analysis", {
@@ -1304,7 +1544,7 @@ export function generateBoutNarrative(
         loserId: loserRikishi.id,
       }).text,
       "mono_ii",
-      ["drama"]
+      ["drama", "mono_ii"]
     );
     // Randomly decide if call is reversed or upheld
     if (monoiiRng.next() < 0.3) {
@@ -1350,6 +1590,11 @@ export function generateBoutNarrative(
       replayPath = "post_bout.replay.quick_finish";
     } else if (isDominant) {
       replayPath = "post_bout.replay.control";
+    } else if (result.duration && result.duration > 20) {
+      // Long bouts often involve stamina issues for the loser
+      replayPath = "post_bout.replay.stamina_issue";
+    } else if (Math.abs(east.weight - west.weight) >= WEIGHT_DIFF_THRESHOLD) {
+      replayPath = "post_bout.replay.size_overcame";
     } else {
       // Pick from a few common replay types
       const replayTypes = ["tachiai_decisive", "grip_battle", "counter", "generic"];
@@ -1378,12 +1623,20 @@ export function generateBoutNarrative(
 
     // Determine interview question type
     let questionType = "general_win";
+    const makuuchiTournaments = winnerRikishi.careerHistory?.filter(s => s.division === "makuuchi").length ?? 0;
     if (isKachiKoshi(winnerWins, winnerRikishi.currentBashoLosses ?? 0, winnerRikishi.rank)) {
-      questionType = "kachi_koshi";
+      // Earliest kachi-koshi variant — achieved on day 7 or earlier with some career history
+      if (day <= 7 && makuuchiTournaments >= 2) {
+        questionType = "earliest_kachi";
+      } else {
+        questionType = "kachi_koshi";
+      }
     } else if (isMakeKoshi(winnerWins, winnerLosses, winnerRikishi.rank)) {
       questionType = "make_koshi";
     } else if (winnerWins === 1 && day >= FIRST_WIN_MENTION_MIN_DAY) {
       questionType = "first_win";
+    } else if (makuuchiTournaments <= 1 && winnerRikishi.rank !== "yokozuna" && winnerRikishi.rank !== "ozeki") {
+      questionType = "debut_win";
     } else if (result.upset) {
       questionType = "upset";
     }
@@ -1403,10 +1656,11 @@ export function generateBoutNarrative(
             OPPONENT_RANK: loserRikishi.rank ?? "",
             MILESTONE: (winnerRikishi.careerWins ?? 0).toString(),
             WINS: winnerWins.toString(),
+            DAY: day.toString(),
             rikishiId: winnerRikishi.id,
           }).text,
           "interview",
-          []
+          ["interview"]
         );
       }
       // Answer (persona-driven)
@@ -1419,7 +1673,7 @@ export function generateBoutNarrative(
           rikishiId: winnerRikishi.id,
         }).text,
         "interview",
-        []
+        ["interview"]
       );
 
       // Trait modifier (probabilistic)
@@ -1435,7 +1689,7 @@ export function generateBoutNarrative(
                 rikishiId: winnerRikishi.id,
               }).text,
               "interview",
-              []
+              ["interview"]
             );
           }
         }

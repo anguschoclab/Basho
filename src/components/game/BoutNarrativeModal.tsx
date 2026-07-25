@@ -82,6 +82,8 @@ const TAG_ICONS: Record<string, string> = {
   title_stakes: "👑",
   senshuraku: "🎯",
   tournament_context: "📅",
+  mono_ii: "🔍",
+  interview: "🎤",
 };
 
 /** Defines the structure for bout narrative modal props. */
