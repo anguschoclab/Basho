@@ -107,8 +107,8 @@ describe("generateBoutNarrative — post-bout context", () => {
 
   // ── T11: Career milestones ──
   describe("T11: career milestones", () => {
-    it("T11.1: careerWins at 100 → milestone line", () => {
-      const east = mockRikishi("r-east", { shikona: "Alpha", careerWins: 100, currentBashoWins: 5, currentBashoLosses: 3 });
+    it("T11.1: careerWins at 99 (pre-bout) → milestone line with 100 after win", () => {
+      const east = mockRikishi("r-east", { shikona: "Alpha", careerWins: 99, currentBashoWins: 5, currentBashoLosses: 3 });
       const west = mockRikishi("r-west", { shikona: "Beta", careerWins: 50, currentBashoWins: 3, currentBashoLosses: 5 });
       const world = makeWorld(east, west);
       const result = makeBoutResult();
@@ -118,8 +118,8 @@ describe("generateBoutNarrative — post-bout context", () => {
       expect(milestoneLines[0].text).toContain("100");
     });
 
-    it("T11.3: careerWins = 99 → no milestone line", () => {
-      const east = mockRikishi("r-east", { shikona: "Alpha", careerWins: 99, currentBashoWins: 5, currentBashoLosses: 3 });
+    it("T11.3: careerWins = 100 (pre-bout, 101 post) → no milestone line", () => {
+      const east = mockRikishi("r-east", { shikona: "Alpha", careerWins: 100, currentBashoWins: 5, currentBashoLosses: 3 });
       const west = mockRikishi("r-west", { shikona: "Beta", careerWins: 50, currentBashoWins: 3, currentBashoLosses: 5 });
       const world = makeWorld(east, west);
       const result = makeBoutResult();
@@ -129,7 +129,7 @@ describe("generateBoutNarrative — post-bout context", () => {
     });
 
     it("T11.6: no [MISSING:] tokens in milestone lines", () => {
-      const east = mockRikishi("r-east", { shikona: "Alpha", careerWins: 200, currentBashoWins: 5, currentBashoLosses: 3 });
+      const east = mockRikishi("r-east", { shikona: "Alpha", careerWins: 199, currentBashoWins: 5, currentBashoLosses: 3 });
       const west = mockRikishi("r-west", { shikona: "Beta", careerWins: 50, currentBashoWins: 3, currentBashoLosses: 5 });
       const world = makeWorld(east, west);
       const result = makeBoutResult();

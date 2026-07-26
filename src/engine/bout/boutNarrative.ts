@@ -625,7 +625,7 @@ export function generateBoutNarrative(
 
   // 3h. Career win milestone check
   for (const milestone of CAREER_WIN_MILESTONES) {
-    if (winnerRikishi.careerWins === milestone) {
+    if ((winnerRikishi.careerWins ?? 0) + 1 === milestone) {
       push(
         BardEngine.resolve(preBoutRng, "pre_bout.career_milestone", {
           SHIKONA: winnerRikishi.shikona,
@@ -1337,7 +1337,7 @@ export function generateBoutNarrative(
   push(
     BardEngine.resolve(postBoutRng, "post_bout.records.winner_improves", {
       WINNER: winnerRikishi.shikona,
-      WINNER_WINS: winnerWins.toString(),
+      WINNER_WINS: (winnerWins + 1).toString(),
       WINNER_LOSSES: winnerLosses.toString(),
       winnerId: winnerRikishi.id,
     }).text,
@@ -1348,7 +1348,7 @@ export function generateBoutNarrative(
     BardEngine.resolve(postBoutRng, "post_bout.records.loser_falls", {
       LOSER: loserRikishi.shikona,
       LOSER_WINS: loserWins.toString(),
-      LOSER_LOSSES: loserLosses.toString(),
+      LOSER_LOSSES: (loserLosses + 1).toString(),
       loserId: loserRikishi.id,
     }).text,
     "post_bout",
@@ -1357,7 +1357,7 @@ export function generateBoutNarrative(
 
   // 13. Post-bout career impact (milestone reached with this win)
   for (const milestone of CAREER_WIN_MILESTONES) {
-    if (winnerRikishi.careerWins === milestone) {
+    if ((winnerRikishi.careerWins ?? 0) + 1 === milestone) {
       // Check if it's also the winner's birthday for a combo line
       const isBirthday = bashoInfo && winnerRikishi.birthMonth && winnerRikishi.birthDay &&
         winnerRikishi.birthMonth === bashoInfo.month && winnerRikishi.birthDay === day;
@@ -1676,7 +1676,7 @@ export function generateBoutNarrative(
     let questionType = "general_win";
     const makuuchiTournaments = winnerRikishi.careerHistory?.filter(s => s.division === "makuuchi").length ?? 0;
     // Check for career milestone hit with this win
-    const hitMilestone = CAREER_WIN_MILESTONES.includes(winnerRikishi.careerWins ?? 0);
+    const hitMilestone = CAREER_WIN_MILESTONES.includes((winnerRikishi.careerWins ?? 0) + 1);
     const loserLosses = (loserRikishi.currentBashoLosses ?? 0) + 1;
     const loserWins = loserRikishi.currentBashoWins ?? 0;
     if (isKachiKoshi(winnerWins + 1, winnerRikishi.currentBashoLosses ?? 0, winnerRikishi.rank)) {
@@ -1714,7 +1714,7 @@ export function generateBoutNarrative(
             KIMARITE: result.kimariteName ?? result.kimarite,
             OPPONENT: loserRikishi.shikona,
             OPPONENT_RANK: loserRikishi.rank ?? "",
-            MILESTONE: (winnerRikishi.careerWins ?? 0).toString(),
+            MILESTONE: ((winnerRikishi.careerWins ?? 0) + 1).toString(),
             WINS: (winnerWins + 1).toString(),
             DAY: day.toString(),
             rikishiId: winnerRikishi.id,
