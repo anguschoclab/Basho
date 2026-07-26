@@ -144,34 +144,44 @@ export function assignKenshoBanners(
     }))
     .sort((a, b) => b.score - a.score || a.sponsor.sponsorId.localeCompare(b.sponsor.sponsorId));
 
-  const t4plus = scored.filter((x) => x.sponsor.tier === "T4" || x.sponsor.tier === "T5");
-  const t3 = scored.filter((x) => x.sponsor.tier === "T3");
+  // ⚡ Bolt Optimization: Replaced chained .filter().map() with a single loop to avoid intermediate O(N) array allocations
+  const t4plusWeights: Array<{ item: Sponsor; w: number }> = [];
+  const t3Weights: Array<{ item: Sponsor; w: number }> = [];
+  for (const x of scored) {
+    if (x.sponsor.tier === "T4" || x.sponsor.tier === "T5") {
+      t4plusWeights.push({ item: x.sponsor, w: x.score });
+    } else if (x.sponsor.tier === "T3") {
+      t3Weights.push({ item: x.sponsor, w: x.score });
+    }
+  }
 
   const chosen: Sponsor[] = [];
   chosen.push(
-    ...weightedSampleWithoutReplacement(
-      rng,
-      t4plus.map((x) => ({ item: x.sponsor, w: x.score })),
-      Math.min(caps.maxT4Plus, count)
-    )
+    ...weightedSampleWithoutReplacement(rng, t4plusWeights, Math.min(caps.maxT4Plus, count))
   );
   chosen.push(
     ...weightedSampleWithoutReplacement(
       rng,
-      t3.map((x) => ({ item: x.sponsor, w: x.score })),
+      t3Weights,
       Math.min(caps.maxT3, Math.max(0, count - chosen.length))
     )
   );
 
   if (chosen.length < count) {
     const chosenIds = new Set(chosen.map((s) => s.sponsorId));
-    const remaining = scored
-      .map((x) => x.sponsor)
-      .filter((s) => !chosenIds.has(s.sponsorId))
-      .map((s) => ({
-        item: s,
-        w: 1 + (s.prestigeAffinity * PRESTIGE_AFFINITY_T3_WEIGHT + s.loyalty * LOYALTY_T3_WEIGHT),
-      }));
+    // ⚡ Bolt Optimization: Replaced chained .map().filter().map() with a single loop to prevent redundant iterations and array creations
+    const remaining: Array<{ item: Sponsor; w: number }> = [];
+    for (const x of scored) {
+      if (!chosenIds.has(x.sponsor.sponsorId)) {
+        remaining.push({
+          item: x.sponsor,
+          w:
+            1 +
+            (x.sponsor.prestigeAffinity * PRESTIGE_AFFINITY_T3_WEIGHT +
+              x.sponsor.loyalty * LOYALTY_T3_WEIGHT),
+        });
+      }
+    }
 
     const fill = weightedSampleWithoutReplacement(rng, remaining, count - chosen.length);
     chosen.push(...fill);

@@ -273,3 +273,7 @@ Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop 
 ## 2025-05-18 - Optimized Array Iteration in buildHolidayDigest
 **Learning:** In scenarios processing hundreds of engine events (like a multi-week holiday simulation), chaining array methods (e.g., `.filter().slice().map()`) across multiple parallel category checks forces N redundant passes over the same large dataset and allocates numerous intermediate arrays.
 **Action:** Replace multiple chained category filters with a single O(N) `for...of` loop that evaluates each element once and populates distinct target arrays simultaneously, capping bounds in-place. This reduces iterations from 5*O(N) to O(N) and prevents intermediate array allocations.
+## 2025-07-26 - Optimize Chained Object Iteration in KenshoService
+
+**Learning:** Chained `.filter().map()` operations on arrays (like `scored` in `assignKenshoBanners`) creates unnecessary O(N) intermediate array allocations and redundant iterations which hurt memory performance in heavily used features.
+**Action:** Replaced chained array map and filter operations with a direct `for...of` loop to accumulate filtered and mapped results in a single pass to eliminate intermediate arrays.
