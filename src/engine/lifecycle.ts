@@ -10,10 +10,9 @@ import { rngFromSeed } from "./rng";
 import type { Rikishi, RikishiStats } from "./types/rikishi";
 import type { Rank } from "./types/banzuke";
 import { generateShikona } from "./shikona";
-import { CombatArchetype } from "./types/combat";
-import { WorldState } from "./types/world";
+import type { WorldState } from "./types/world";
 import type { InjurySeverity } from "./systems/health/BodyDefinitions";
-import { buildCombatProfile, deriveWeakAgainstStyles } from "./archetype";
+import { buildCombatProfile, deriveWeakAgainstStyles, rollArchetype } from "./archetype";
 import { rollAgeForRank } from "./systems/generation/CandidateStats";
 import { isCollegeRecruit } from "./utils/identity";
 import { applyPersonaAssignment } from "./systems/generation/PersonaAssignment";
@@ -186,14 +185,6 @@ const ORIGINS = [
   { name: "Ishikawa", weightMod: 1.05, strMod: 1.05 },
 ];
 
-const ARCHETYPES: CombatArchetype[] = [
-  "oshi",
-  "yotsu",
-  "speedster",
-  "trickster",
-  "hybrid",
-  "giant",
-];
 
 /**
  * Internal function to generate a new rookie rikishi.
@@ -216,7 +207,7 @@ export function _generateRookie(
   const rng = rngFromSeed(world.seed, "lifecycle", `rookie::${rookieId}`);
 
   const origin = ORIGINS[rng.int(0, ORIGINS.length - 1)];
-  const archetype = ARCHETYPES[rng.int(0, ARCHETYPES.length - 1)];
+  const archetype = rollArchetype(rng);
 
   const isElite = origin.isElite || false;
   const age = rollAgeForRank(rng, isElite ? "makushita" : targetRank);
