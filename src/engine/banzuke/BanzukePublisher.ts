@@ -259,7 +259,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       rikishiId: id,
       wins: stats.wins,
       losses: stats.losses,
-      absences: 0,
+      absences: stats.absences ?? 0,
       yusho: isYusho,
       junYusho: isJunYusho,
       specialPrizes: prizePoints,

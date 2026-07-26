@@ -3,7 +3,6 @@ import { applyBoutResult } from "@/engine/bout/boutResultApplier";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BashoName, BoutResult, MatchSchedule } from "@/engine/types/basho";
-import { resolveImpacts } from "@/engine/core/ImpactResolver";
 
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
 
@@ -240,7 +239,20 @@ describe("Bug 15 + N5: Absences tracking", () => {
   it("A.5: consecutive fusensho losses accumulate absences correctly", () => {
     const { world, match, result } = makeFusenshoWorld({ westInjured: true, westAbsences: 5 });
     const impact = applyBoutResult(world, match, result);
-    const updatedWorld = resolveImpacts(world, [impact]);
+    const standings1 = impact.metadata?.updatedStandings as Map<
+      string,
+      { wins: number; losses: number; absences: number }
+    >;
+    expect(standings1!.get("west")?.absences).toBe(6);
+
+    // Manually update the world's basho standings for the second call
+    const updatedWorld = {
+      ...world,
+      currentBasho: {
+        ...world.currentBasho!,
+        standings: standings1,
+      },
+    };
     // Apply another fusensho
     const impact2 = applyBoutResult(updatedWorld, match, result);
     const standings2 = impact2.metadata?.updatedStandings as Map<
