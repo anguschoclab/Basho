@@ -35,3 +35,9 @@
 **Finding:** `Rikishi["descriptor"]` was loosely typed as an object with `[key: string]: unknown`, leading to a weak `as unknown as Rikishi["descriptor"]` cast in `phase01_daily_welfare.ts` when assigning `toRikishiDescriptor()`.
 **Learning:** By importing the concrete `RikishiDescriptor` interface from `descriptorBands.ts` into the main `rikishi.ts` types, we remove the need for intermediate casts and correctly surface the structure to presenters.
 **Constraint:** Shared types used for complex entity states (like descriptor strings) must be defined properly and linked instead of relying on loose inline objects and casting.
+
+## 2025-10-25 - Tighten EngineCommand payload types
+
+**Finding:** `HIRE_STAFF` and `SET_TRAINING_STATE` actions inside `src/engine/worker/types.ts` accepted their payloads as `any` instead of `StaffRole` and `HeyaTrainingState`.
+**Learning:** The EngineCommand is a critical boundary between the UI and worker threads. Typing its payloads strongly ensures type checking flows through the serialization boundary safely.
+**Constraint:** Payloads sent via the worker message bridge (`EngineCommand`) must use strongly-typed definitions via inline imports, avoiding `any` completely.
