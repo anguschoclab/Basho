@@ -652,4 +652,236 @@ describe("boutResultApplier", () => {
       expect(westUpdate?.divisionRecords?.juryo.losses).toBe(26); // 25 + 1
     });
   });
+
+  describe("currentBashoWins / currentBashoLosses / currentBashoRecord (Bug 2)", () => {
+    function makeWorldForBout(opts?: {
+      winnerWins?: number;
+      winnerLosses?: number;
+      loserWins?: number;
+      loserLosses?: number;
+    }): { world: Partial<WorldState>; match: MatchSchedule; result: BoutResult } {
+      const world: Partial<WorldState> = {
+        rikishi: new Map([
+          [
+            "east",
+            {
+              id: "east",
+              shikona: "East Rikishi",
+              careerWins: 10,
+              careerLosses: 5,
+              currentBashoWins: opts?.winnerWins ?? 0,
+              currentBashoLosses: opts?.winnerLosses ?? 0,
+              currentBashoRecord: { wins: opts?.winnerWins ?? 0, losses: opts?.winnerLosses ?? 0 },
+              makuuchiWins: 0,
+              divisionRecords: {
+                makuuchi: { wins: 0, losses: 0 },
+                juryo: { wins: 0, losses: 0 },
+                makushita: { wins: 0, losses: 0 },
+                sandanme: { wins: 0, losses: 0 },
+                jonidan: { wins: 0, losses: 0 },
+                jonokuchi: { wins: 0, losses: 0 },
+              },
+              division: "makuuchi",
+              rank: "maegashira",
+              side: "east",
+              stats: { achievements: undefined },
+              heyaId: "test-heya",
+            } as Rikishi,
+          ],
+          [
+            "west",
+            {
+              id: "west",
+              shikona: "West Rikishi",
+              careerWins: 8,
+              careerLosses: 7,
+              currentBashoWins: opts?.loserWins ?? 0,
+              currentBashoLosses: opts?.loserLosses ?? 0,
+              currentBashoRecord: { wins: opts?.loserWins ?? 0, losses: opts?.loserLosses ?? 0 },
+              makuuchiWins: 0,
+              divisionRecords: {
+                makuuchi: { wins: 0, losses: 0 },
+                juryo: { wins: 0, losses: 0 },
+                makushita: { wins: 0, losses: 0 },
+                sandanme: { wins: 0, losses: 0 },
+                jonidan: { wins: 0, losses: 0 },
+                jonokuchi: { wins: 0, losses: 0 },
+              },
+              division: "makuuchi",
+              rank: "maegashira",
+              side: "west",
+              stats: { achievements: undefined },
+              heyaId: "test-heya",
+            } as Rikishi,
+          ],
+        ]),
+        heyas: new Map([
+          [
+            "test-heya",
+            {
+              id: "test-heya",
+              name: "Test Heya",
+              rikishiIds: ["east", "west"],
+            } as unknown as import("@/engine/types/heya").Heya,
+          ],
+        ]),
+        calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
+        currentBasho: {
+          id: "test-basho",
+          year: 2025,
+          day: 1,
+          bashoName: "hatsu" as BashoName,
+          bashoNumber: 1,
+          matches: [],
+          standings: new Map([
+            ["east", { wins: opts?.winnerWins ?? 0, losses: opts?.winnerLosses ?? 0 }],
+            ["west", { wins: opts?.loserWins ?? 0, losses: opts?.loserLosses ?? 0 }],
+          ]),
+          isActive: true,
+        },
+      };
+
+      const match: MatchSchedule = {
+        boutId: "test-bout",
+        day: 1,
+        eastRikishiId: "east",
+        westRikishiId: "west",
+      };
+
+      const result: BoutResult = {
+        boutId: "test-bout",
+        winner: "east",
+        winnerRikishiId: "east",
+        loserRikishiId: "west",
+        kimarite: "oshidashi",
+        kimariteName: "Oshidashi",
+        stance: "migi-yotsu",
+        tachiaiWinner: "east",
+        duration: 5.2,
+        upset: false,
+        isKinboshi: false,
+        log: [],
+        kenshoEnvelopes: 0,
+      };
+
+      return { world, match, result };
+    }
+
+    it("Test 1.1: should increment currentBashoWins on winner", () => {
+      const { world, match, result } = makeWorldForBout({ winnerWins: 3, loserLosses: 2 });
+      const impact = applyBoutResult(world as WorldState, match, result);
+      const eastUpdate = impact.entities?.rikishiUpdates?.get("east");
+      expect(eastUpdate?.currentBashoWins).toBe(4);
+    });
+
+    it("Test 1.2: should increment currentBashoLosses on loser", () => {
+      const { world, match, result } = makeWorldForBout({ winnerWins: 3, loserLosses: 2 });
+      const impact = applyBoutResult(world as WorldState, match, result);
+      const westUpdate = impact.entities?.rikishiUpdates?.get("west");
+      expect(westUpdate?.currentBashoLosses).toBe(3);
+    });
+
+    it("Test 1.3: should set currentBashoRecord on winner with correct wins/losses", () => {
+      const { world, match, result } = makeWorldForBout({ winnerWins: 5, winnerLosses: 2 });
+      const impact = applyBoutResult(world as WorldState, match, result);
+      const eastUpdate = impact.entities?.rikishiUpdates?.get("east");
+      expect(eastUpdate?.currentBashoRecord).toEqual({ wins: 6, losses: 2 });
+    });
+
+    it("Test 1.4: should set currentBashoRecord on loser with correct wins/losses", () => {
+      const { world, match, result } = makeWorldForBout({ loserWins: 3, loserLosses: 4 });
+      const impact = applyBoutResult(world as WorldState, match, result);
+      const westUpdate = impact.entities?.rikishiUpdates?.get("west");
+      expect(westUpdate?.currentBashoRecord).toEqual({ wins: 3, losses: 5 });
+    });
+
+    it("Test 1.5: should increment careerWins on winner (existing test confirms, regression)", () => {
+      const { world, match, result } = makeWorldForBout();
+      const impact = applyBoutResult(world as WorldState, match, result);
+      const eastUpdate = impact.entities?.rikishiUpdates?.get("east");
+      expect(eastUpdate?.careerWins).toBe(11);
+    });
+
+    it("Test 1.6: should increment careerLosses on loser (existing test confirms, regression)", () => {
+      const { world, match, result } = makeWorldForBout();
+      const impact = applyBoutResult(world as WorldState, match, result);
+      const westUpdate = impact.entities?.rikishiUpdates?.get("west");
+      expect(westUpdate?.careerLosses).toBe(8);
+    });
+
+    it("Test 1.7: should update standings Map with winner wins+1", () => {
+      const { world, match, result } = makeWorldForBout({ winnerWins: 4, loserLosses: 3 });
+      const impact = applyBoutResult(world as WorldState, match, result);
+      const standings = impact.metadata?.updatedStandings as Map<string, { wins: number; losses: number }>;
+      expect(standings).toBeDefined();
+      expect(standings.get("east")?.wins).toBe(5);
+    });
+
+    it("Test 1.8: should update standings Map with loser losses+1", () => {
+      const { world, match, result } = makeWorldForBout({ winnerWins: 4, loserLosses: 3 });
+      const impact = applyBoutResult(world as WorldState, match, result);
+      const standings = impact.metadata?.updatedStandings as Map<string, { wins: number; losses: number }>;
+      expect(standings).toBeDefined();
+      expect(standings.get("west")?.losses).toBe(4);
+    });
+
+    it("Test 1.9: should store updatedStandings in metadata", () => {
+      const { world, match, result } = makeWorldForBout();
+      const impact = applyBoutResult(world as WorldState, match, result);
+      expect(impact.metadata?.updatedStandings).toBeDefined();
+      expect(impact.metadata?.updatedStandings).toBeInstanceOf(Map);
+    });
+
+    it("Test 1.10: should handle missing currentBasho gracefully", () => {
+      const { match, result } = makeWorldForBout();
+      const worldNoBasho: Partial<WorldState> = {
+        rikishi: new Map(),
+        heyas: new Map(),
+        calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
+      };
+      const impact = applyBoutResult(worldNoBasho as WorldState, match, result);
+      expect(impact.entities?.rikishiUpdates).toBeUndefined();
+    });
+
+    it("Test 1.11: should handle missing rikishi gracefully", () => {
+      const { world, match, result } = makeWorldForBout();
+      const worldNoRikishi: Partial<WorldState> = {
+        ...world,
+        rikishi: new Map(),
+      };
+      const impact = applyBoutResult(worldNoRikishi as WorldState, match, result);
+      expect(impact.entities?.rikishiUpdates).toBeUndefined();
+    });
+
+    it("Test 1.12: should increment divisionRecords for winner", () => {
+      const { world, match, result } = makeWorldForBout();
+      const impact = applyBoutResult(world as WorldState, match, result);
+      const eastUpdate = impact.entities?.rikishiUpdates?.get("east");
+      expect(eastUpdate?.divisionRecords?.makuuchi.wins).toBe(1);
+    });
+
+    it("Test 1.13: should increment divisionRecords for loser", () => {
+      const { world, match, result } = makeWorldForBout();
+      const impact = applyBoutResult(world as WorldState, match, result);
+      const westUpdate = impact.entities?.rikishiUpdates?.get("west");
+      expect(westUpdate?.divisionRecords?.makuuchi.losses).toBe(1);
+    });
+
+    it("Test 1.14: should award kinboshi achievement when awardFact is kinboshi", () => {
+      const { world, match, result } = makeWorldForBout();
+      result.awardFact = "kinboshi";
+      result.isKinboshi = true;
+      const impact = applyBoutResult(world as WorldState, match, result);
+      const eastUpdate = impact.entities?.rikishiUpdates?.get("east");
+      expect(eastUpdate?.stats?.achievements?.kinboshiEarned).toBe(1);
+    });
+
+    it("Test 1.15: should award ginboshi achievement when awardFact is ginboshi", () => {
+      const { world, match, result } = makeWorldForBout();
+      result.awardFact = "ginboshi";
+      const impact = applyBoutResult(world as WorldState, match, result);
+      const eastUpdate = impact.entities?.rikishiUpdates?.get("east");
+      expect(eastUpdate?.stats?.achievements?.ginboshiEarned).toBe(1);
+    });
+  });
 });

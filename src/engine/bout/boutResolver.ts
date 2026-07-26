@@ -240,10 +240,11 @@ export function resolveBout(
   });
 
   // Track kinboshi earned this basho for per-basho stipend calculation
-  if (kinboshiDelta && basho.kinboshiThisBasho !== undefined) {
+  if (kinboshiDelta) {
+    const currentKinboshi = basho.kinboshiThisBasho ?? {};
     const nextKinboshi = {
-      ...basho.kinboshiThisBasho,
-      [winner.id]: (basho.kinboshiThisBasho[winner.id] ?? 0) + 1,
+      ...currentKinboshi,
+      [winner.id]: (currentKinboshi[winner.id] ?? 0) + 1,
     };
     builder.updateWorldField("currentBasho", {
       ...basho,

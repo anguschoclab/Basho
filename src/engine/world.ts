@@ -27,7 +27,6 @@ import { getActiveRikishi, getHeyaRoster } from "./queries";
 import * as bashoManager from "./lifecycle/BashoManager";
 import * as competition from "./lifecycle/CompetitionService";
 import { ensureDaySchedule } from "./schedule";
-import { onBashoEnded } from "./records";
 import { runPostBashoResolution } from "./core/SimulationRunner";
 
 export { getActiveRikishi, getHeyaRoster, applyBoutResult, handleMediaEvent };
@@ -176,11 +175,29 @@ export function simulateBoutForToday(
       string,
       { wins: number; losses: number }
     >;
+    // Also set match.result on the match in the matches array
+    const updatedMatches = currentWorld.currentBasho.matches.map((m) =>
+      m.boutId === match.boutId ? { ...m, result } : m
+    );
     currentWorld = resolveImpacts(currentWorld, [
       createImpactBuilder("simulateBoutForToday")
         .updateWorldField("currentBasho", {
           ...currentWorld.currentBasho,
           standings: standingsMap,
+          matches: updatedMatches,
+        })
+        .build(),
+    ]);
+  } else if (currentWorld.currentBasho) {
+    // Even without standings update, persist match.result
+    const updatedMatches = currentWorld.currentBasho.matches.map((m) =>
+      m.boutId === match.boutId ? { ...m, result } : m
+    );
+    currentWorld = resolveImpacts(currentWorld, [
+      createImpactBuilder("simulateBoutForToday")
+        .updateWorldField("currentBasho", {
+          ...currentWorld.currentBasho,
+          matches: updatedMatches,
         })
         .build(),
     ]);
@@ -199,8 +216,7 @@ export function simulateBoutForToday(
  */
 export function endBasho(world: WorldState): WorldState {
   const competitionImpact = competition.concludeBashoCompetition(world);
-  const recordsImpact = onBashoEnded(world);
-  const resolvedWorld = resolveImpacts(world, [competitionImpact, recordsImpact]);
+  const resolvedWorld = resolveImpacts(world, [competitionImpact]);
   return runPostBashoResolution(resolvedWorld);
 }
 

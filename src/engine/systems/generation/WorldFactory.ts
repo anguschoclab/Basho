@@ -177,6 +177,7 @@ export function initializeBasho(world: WorldState, name: BashoName): BashoState 
     matches: [],
     standings: new Map(),
     isActive: true,
+    kinboshiThisBasho: {},
   };
 }
 

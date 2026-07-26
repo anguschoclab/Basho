@@ -33,6 +33,15 @@ import { BASHO_CALENDAR } from "../calendar";
 import { isKachiKoshi, isMakeKoshi } from "../banzuke/banzukeHelpers";
 import { isYushoContention, isPlayoffScenario } from "./boutContention";
 
+function countMakuuchiTournaments(history: { division?: string }[] | undefined): number {
+  if (!history) return 0;
+  let count = 0;
+  for (const s of history) {
+    if (s.division === "makuuchi") count++;
+  }
+  return count;
+}
+
 export type PbpPhase =
   | "opening"
   | "pre_bout"
@@ -482,7 +491,7 @@ export function generateBoutNarrative(
   // Rookie / tournament count
   for (const r of [east, west]) {
     if (!r.careerHistory) continue;
-    const makuuchiCount = r.careerHistory.filter(s => s.division === "makuuchi").length;
+    const makuuchiCount = countMakuuchiTournaments(r.careerHistory);
     if (makuuchiCount === 1) {
       push(
         BardEngine.resolve(preBoutRng, "pre_bout.storylines.rookie", {
@@ -1493,7 +1502,7 @@ export function generateBoutNarrative(
     }
     // Loser falls out of co-leadership
     const loserPrevWins = (standings.get(loserRikishi.id)?.wins ?? loserWins);
-    if (loserPrevWins === maxWins && loserWins < maxWins) {
+    if (loserPrevWins === maxWins && winnerWins + 1 > maxWins) {
       push(
         BardEngine.resolve(postBoutRng, "post_bout.storylines.falls_out", {
           LOSER: loserRikishi.shikona,
@@ -1674,7 +1683,7 @@ export function generateBoutNarrative(
 
     // Determine interview question type
     let questionType = "general_win";
-    const makuuchiTournaments = winnerRikishi.careerHistory?.filter(s => s.division === "makuuchi").length ?? 0;
+    const makuuchiTournaments = countMakuuchiTournaments(winnerRikishi.careerHistory);
     // Check for career milestone hit with this win
     const hitMilestone = CAREER_WIN_MILESTONES.includes((winnerRikishi.careerWins ?? 0) + 1);
     const loserLosses = (loserRikishi.currentBashoLosses ?? 0) + 1;

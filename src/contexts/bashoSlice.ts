@@ -83,7 +83,6 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
 
     case "SIMULATE_ALL_BOUTS": {
       if (!state.world.currentBasho) return state;
-      // P2.4: Pre-compute todays bouts once, iterate over them directly.
       let world = state.world;
       let lastResult: BoutResult | null = state.lastBoutResult;
       const basho = world.currentBasho;
@@ -92,7 +91,7 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
         for (let i = 0; i < todays.length; i++) {
           const match = todays[i];
           const playerTactic = match?.boutId ? state.boutTactics[match.boutId] : undefined;
-          const result = worldEngine.simulateBoutForToday(world, i, playerTactic);
+          const result = worldEngine.simulateBoutForToday(world, 0, playerTactic);
           world = result.world;
           if (result.result) lastResult = result.result;
         }
@@ -118,7 +117,6 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
 
     case "SIM_FULL_BASHO": {
       if (!state.world.currentBasho) return state;
-      // P2.4: Pre-compute todays bouts per day, iterate directly.
       let world = state.world;
       const currentDay = world.currentBasho?.day ?? 1;
       for (let d = currentDay; d <= 15; d++) {
@@ -128,7 +126,7 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
         for (let i = 0; i < todays.length; i++) {
           const match = todays[i];
           const playerTactic = match?.boutId ? state.boutTactics[match.boutId] : undefined;
-          const result = worldEngine.simulateBoutForToday(world, i, playerTactic);
+          const result = worldEngine.simulateBoutForToday(world, 0, playerTactic);
           world = result.world;
         }
         if (d < 15) world = worldEngine.advanceBashoDay(world);

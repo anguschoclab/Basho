@@ -51,18 +51,24 @@ export function applyBoutResult(
 
   // 1. Update Standing
   const standings = new Map(basho.standings);
-  const wRec = standings.get(winner.id) || { wins: 0, losses: 0 };
-  const lRec = standings.get(loser.id) || { wins: 0, losses: 0 };
-  standings.set(winner.id, { wins: wRec.wins + 1, losses: wRec.losses });
-  standings.set(loser.id, { wins: lRec.wins, losses: lRec.losses + 1 });
+  const wRec = standings.get(winner.id) || { wins: 0, losses: 0, absences: 0 };
+  const lRec = standings.get(loser.id) || { wins: 0, losses: 0, absences: 0 };
+  standings.set(winner.id, { wins: wRec.wins + 1, losses: wRec.losses, absences: wRec.absences ?? 0 });
+  standings.set(loser.id, { wins: lRec.wins, losses: lRec.losses + 1, absences: lRec.absences ?? 0 });
 
   // 1.5. Update Career Records Per-Bout (Architectural Change)
   // Increment career wins/losses immediately after each bout
+  const winnerBashoWins = (winner.currentBashoWins ?? 0) + 1;
+  const loserBashoLosses = (loser.currentBashoLosses ?? 0) + 1;
   builder.updateRikishi(winner.id, {
     careerWins: (winner.careerWins ?? 0) + 1,
+    currentBashoWins: winnerBashoWins,
+    currentBashoRecord: { wins: winnerBashoWins, losses: winner.currentBashoLosses ?? 0 },
   });
   builder.updateRikishi(loser.id, {
     careerLosses: (loser.careerLosses ?? 0) + 1,
+    currentBashoLosses: loserBashoLosses,
+    currentBashoRecord: { wins: loser.currentBashoWins ?? 0, losses: loserBashoLosses },
   });
 
   // Increment makuuchiWins if winner is in makuuchi division

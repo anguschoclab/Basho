@@ -76,15 +76,15 @@ describe("bashoSlice - autosave errors", () => {
       throw new Error("Disk full");
     });
 
-    // Mock simulateBoutForToday to return a result with world updated (bout marked resolved)
-    let callCount = 0;
+    // Mock simulateBoutForToday to return a result with world updated (one bout at a time)
     (worldEngine.simulateBoutForToday as ReturnType<typeof vi.fn>).mockImplementation((world: any) => {
-      callCount++;
       const basho = world.currentBasho;
       if (!basho) return { world, result: null };
-      // Mark the first unplayed match as resolved so the loop terminates
-      const updatedMatches = basho.matches.map((m: any) =>
-        m.day === basho.day && !m.result ? { ...m, result: { winnerId: "w1" } } : m
+      // Find the first unplayed match for today and resolve only that one
+      const matchIdx = basho.matches.findIndex((m: any) => m.day === basho.day && !m.result);
+      if (matchIdx < 0) return { world, result: null };
+      const updatedMatches = basho.matches.map((m: any, i: number) =>
+        i === matchIdx ? { ...m, result: { winnerId: "w1" } } : m
       );
       return {
         world: {

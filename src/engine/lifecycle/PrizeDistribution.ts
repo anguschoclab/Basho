@@ -61,7 +61,12 @@ export function distributePrizes(
         // Apply sansho popularity boost via applyAchievementImpact
         const tempR = { ...r, economics: r.economics ? { ...r.economics } : undefined };
         if (tempR.economics) {
-          applyAchievementImpact(world, tempR, "sansho");
+          builder.merge(applyAchievementImpact(world, tempR, "sansho"));
+          // Update tempR.economics to reflect the popularity boost for subsequent prize money
+          tempR.economics = {
+            ...tempR.economics,
+            popularity: Math.min(100, (tempR.economics.popularity || 0) + 12),
+          };
         }
 
         builder.updateRikishi(rikishiId, {
@@ -87,7 +92,8 @@ export function distributePrizes(
         );
 
         // Credit sansho prize to rikishi economics (not heya funds under JSA model)
-        const economics = r.economics || {
+        // Use tempR.economics (with popularity boost) if available, otherwise fall back to r.economics
+        const economics = tempR.economics || r.economics || {
           cash: 0,
           retirementFund: 0,
           careerKenshoWon: 0,
