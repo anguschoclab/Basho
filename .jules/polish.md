@@ -47,3 +47,7 @@
 **Issue:** `ListCard` hardcoded an empty state paragraph instead of using the standard `EmptyState` component.
 **Learning:** Shared UI layout components like `ListCard` must enforce the same `EmptyState` consistency rules as standalone dashboard widgets.
 **Rule:** Ensure all reusable list container components, not just top-level widgets, rely on `@/components/ui/EmptyState` for empty data fallbacks.
+## 2025-02-05 - Use Standard EmptyState Component
+**Issue:** Hardcoded empty state implementations were found in various components like `RivalriesEmptyState`, creating visual inconsistencies across the app.
+**Learning:** Some views manually re-implemented empty state layouts instead of using the standard `EmptyState` component.
+**Rule:** Always use the global `EmptyState` component from `@/components/ui/EmptyState` instead of hardcoded bespoke elements to maintain consistent padding, typography, and visual hierarchy. Use `<EmptyState compact />` for inline dashboard widgets or reusable list containers if needed.

@@ -6,16 +6,17 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Swords } from "lucide-react";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 export function RivalriesEmptyState() {
   return (
     <Card>
-      <CardContent className="p-12 text-center">
-        <Swords className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-        <h3 className="font-display text-xl font-semibold mb-2">No Rivalries Yet</h3>
-        <p className="text-muted-foreground">
-          Rivalries develop as rikishi meet repeatedly. Complete tournaments to see tensions form.
-        </p>
+      <CardContent className="p-0">
+        <EmptyState
+          icon={Swords}
+          title="No Rivalries Yet"
+          description="Rivalries develop as rikishi meet repeatedly. Complete tournaments to see tensions form."
+        />
       </CardContent>
     </Card>
   );
