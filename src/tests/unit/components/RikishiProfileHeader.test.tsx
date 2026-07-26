@@ -152,6 +152,49 @@ describe("RikishiProfileHeader", () => {
     expect(screen.queryByText(/Gold Stars/i)).toBeNull();
   });
 
+  it("renders Ginboshi stat when ginboshiEarned > 0", () => {
+    const rikishi = makeUIRikishi({
+      achievements: {
+        kinboshiEarned: 0,
+        ginboshiEarned: 4, // use a unique number to avoid multiple match errors with Elite Titles
+        kinboshiConceded: 0,
+        ginboshiConceded: 0,
+        mochikyukinPoints: 0,
+      },
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.getByText("4")).toBeTruthy();
+    expect(screen.getByText(/Silver Stars/i)).toBeTruthy();
+  });
+
+  it("hides Ginboshi stat when ginboshiEarned === 0", () => {
+    const rikishi = makeUIRikishi({
+      achievements: {
+        kinboshiEarned: 0,
+        ginboshiEarned: 0,
+        kinboshiConceded: 0,
+        ginboshiConceded: 0,
+        mochikyukinPoints: 0,
+      },
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.queryByText(/Silver Stars/i)).toBeNull();
+  });
+
   it("hides Elite Titles when careerYusho === 0", () => {
     const rikishi = makeUIRikishi({
       careerYusho: 0,

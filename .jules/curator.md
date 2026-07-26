@@ -9,3 +9,9 @@
 **Data:** `rikishi.stats.achievements.mochikyukinPoints`
 **Learning:** This value represents the cumulative JSA bonus points earned by sekitori for career accomplishments (like Kachi-Koshi, Yusho, Kinboshi). It directly dictates their bi-monthly bonus payout (¥4,000 per point). This helps players decide whether to keep an aging sekitori active for their passive income.
 **Pattern:** Surface it in the `RikishiProfileHeader` alongside other career highlights (Elite Titles, Kinboshi) by adding it to the `achievements` object in the UI projection (`src/presenters/rikishiUI.ts`).
+
+## 2024-07-25 - Ginboshi (Silver Stars)
+
+**Data:** rikishi.stats.achievements.ginboshiEarned and ginboshiConceded
+**Learning:** Ozeki concedes and Maegashira ginboshi wins were tracked but barely surfaced in the UI. Exposing them in the profile, retirement narrative, and Ozeki cards gives context to giant-killing achievements for Maegashira and upset vulnerabilities for Ozeki.
+**Pattern:** Similar to Kinboshi, conditional display items in RikishiProfileHeader and RikishiCard were added, avoiding clutter when values are 0.
