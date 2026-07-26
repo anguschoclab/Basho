@@ -208,6 +208,8 @@ export interface Rikishi {
   currentBashoWins?: number;
   currentBashoLosses?: number;
   currentBashoRecord?: { wins: number; losses: number };
+  currentWinStreak?: number;
+  currentLossStreak?: number;
 
   // UI hysteresis descriptor (set by tickDaily, consumed by presenters)
   descriptor?: RikishiDescriptor;

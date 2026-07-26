@@ -28,6 +28,7 @@ function makeRikishi(id: string, opts?: Record<string, any>): Rikishi {
     side: id === "east" ? "east" : "west",
     stats: { achievements: undefined },
     heyaId: "test-heya",
+    h2h: {},
     ...opts,
   } as Rikishi;
 }

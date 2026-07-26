@@ -1515,12 +1515,15 @@ export function generateBoutNarrative(
   }
 
   // 15b. Post-bout storyline: streaks, first win, sole leader
+  const winnerWinStreak = winnerRikishi.currentWinStreak ?? 0;
+  const loserWinStreak = loserRikishi.currentWinStreak ?? 0;
+  const loserLossStreak = loserRikishi.currentLossStreak ?? 0;
   // Winning streak continued
-  if (winnerWins >= 3) {
+  if (winnerWinStreak >= 3) {
     push(
       BardEngine.resolve(postBoutRng, "post_bout.storylines.streak_continued", {
         WINNER: winnerRikishi.shikona,
-        STREAK: (winnerWins + 1).toString(),
+        STREAK: (winnerWinStreak + 1).toString(),
         winnerId: winnerRikishi.id,
       }).text,
       "post_bout",
@@ -1528,12 +1531,12 @@ export function generateBoutNarrative(
     );
   }
   // Losing streak snapped (loser had a winning streak before this)
-  if (loserWins >= 3) {
+  if (loserWinStreak >= 3) {
     push(
       BardEngine.resolve(postBoutRng, "post_bout.storylines.streak_snapped", {
         WINNER: winnerRikishi.shikona,
         LOSER: loserRikishi.shikona,
-        STREAK: loserWins.toString(),
+        STREAK: loserWinStreak.toString(),
         winnerId: winnerRikishi.id,
         loserId: loserRikishi.id,
       }).text,
@@ -1542,11 +1545,11 @@ export function generateBoutNarrative(
     );
   }
   // Losing streak continued
-  if (loserLosses + 1 >= 3 && loserWins === 0) {
+  if (loserLossStreak + 1 >= 3 && loserWins === 0) {
     push(
       BardEngine.resolve(postBoutRng, "post_bout.storylines.loss_streak", {
         LOSER: loserRikishi.shikona,
-        STREAK: (loserLosses + 1).toString(),
+        STREAK: (loserLossStreak + 1).toString(),
         loserId: loserRikishi.id,
       }).text,
       "post_bout",

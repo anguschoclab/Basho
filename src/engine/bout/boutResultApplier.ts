@@ -65,15 +65,23 @@ export function applyBoutResult(
   // Increment career wins/losses immediately after each bout
   const winnerBashoWins = (winner.currentBashoWins ?? 0) + 1;
   const loserBashoLosses = (loser.currentBashoLosses ?? 0) + 1;
+  const winnerStreak = (winner.currentWinStreak ?? 0) + 1;
+  const loserStreak = 0;
+  const loserLossStreak = (loser.currentLossStreak ?? 0) + 1;
+  const winnerLossStreak = 0;
   builder.updateRikishi(winner.id, {
     careerWins: (winner.careerWins ?? 0) + 1,
     currentBashoWins: winnerBashoWins,
     currentBashoRecord: { wins: winnerBashoWins, losses: winner.currentBashoLosses ?? 0 },
+    currentWinStreak: winnerStreak,
+    currentLossStreak: winnerLossStreak,
   });
   builder.updateRikishi(loser.id, {
     careerLosses: (loser.careerLosses ?? 0) + 1,
     currentBashoLosses: loserBashoLosses,
     currentBashoRecord: { wins: loser.currentBashoWins ?? 0, losses: loserBashoLosses },
+    currentWinStreak: loserStreak,
+    currentLossStreak: loserLossStreak,
   });
 
   // Increment makuuchiWins if winner is in makuuchi division

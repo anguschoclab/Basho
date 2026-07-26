@@ -312,6 +312,8 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
           side: newEntry.position.side,
           currentBashoWins: 0,
           currentBashoLosses: 0,
+          currentWinStreak: 0,
+          currentLossStreak: 0,
           shikona: newShikona,
         });
       } else {
@@ -322,6 +324,8 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
           side: newEntry.position.side,
           currentBashoWins: 0,
           currentBashoLosses: 0,
+          currentWinStreak: 0,
+          currentLossStreak: 0,
         });
       }
     }
