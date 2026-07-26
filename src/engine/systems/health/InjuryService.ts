@@ -440,6 +440,9 @@ export function clearInjury(rikishiId: string): StateImpact {
   builder.updateRikishi(rikishiId, {
     injured: false,
     injuryWeeksRemaining: 0,
+    isKyujo: false,
+    kyujoReason: undefined,
+    medicalCertificate: undefined,
   });
 
   builder.updateRikishiNestedField(rikishiId, "currentInjury", undefined);

@@ -17,6 +17,8 @@ export function tickRikishiRecovery(rikishi: Rikishi, recoveryMult: number = 1.0
   if (!rikishi.injured || rikishi.injuryWeeksRemaining <= 0) {
     rikishi.injured = false;
     rikishi.injuryWeeksRemaining = 0;
+    rikishi.isKyujo = false;
+    rikishi.kyujoReason = undefined;
     return false;
   }
 
@@ -32,6 +34,8 @@ export function tickRikishiRecovery(rikishi: Rikishi, recoveryMult: number = 1.0
     rikishi.injured = false;
     rikishi.injuryStatus = { type: "none", severity: "none", weeksRemaining: 0 };
     rikishi.injury = rikishi.injuryStatus;
+    rikishi.isKyujo = false;
+    rikishi.kyujoReason = undefined;
     return true; // Recovered
   }
 

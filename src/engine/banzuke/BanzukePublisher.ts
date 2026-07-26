@@ -314,6 +314,8 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
           currentBashoLosses: 0,
           currentWinStreak: 0,
           currentLossStreak: 0,
+          isKyujo: false,
+          kyujoReason: undefined,
           shikona: newShikona,
         });
       } else {
@@ -326,6 +328,8 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
           currentBashoLosses: 0,
           currentWinStreak: 0,
           currentLossStreak: 0,
+          isKyujo: false,
+          kyujoReason: undefined,
         });
       }
     }
