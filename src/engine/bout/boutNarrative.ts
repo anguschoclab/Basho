@@ -1468,7 +1468,10 @@ export function generateBoutNarrative(
     const standings = world.currentBasho.standings;
     let maxWins = 0;
     let coLeaders = 0;
+    let preBoutMaxWins = 0;
     for (const [rid, rec] of standings) {
+      const preW = rid === winnerRikishi.id ? winnerWins : rid === loserRikishi.id ? loserWins : rec.wins;
+      if (preW > preBoutMaxWins) preBoutMaxWins = preW;
       const w = rid === winnerRikishi.id ? winnerWins + 1 : rid === loserRikishi.id ? loserWins : rec.wins;
       if (w > maxWins) {
         maxWins = w;
@@ -1502,7 +1505,7 @@ export function generateBoutNarrative(
     }
     // Loser falls out of co-leadership
     const loserPrevWins = (standings.get(loserRikishi.id)?.wins ?? loserWins);
-    if (loserPrevWins === maxWins && winnerWins + 1 > maxWins) {
+    if (loserPrevWins === preBoutMaxWins && winnerWins + 1 > preBoutMaxWins) {
       push(
         BardEngine.resolve(postBoutRng, "post_bout.storylines.falls_out", {
           LOSER: loserRikishi.shikona,
