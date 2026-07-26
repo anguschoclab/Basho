@@ -56,7 +56,7 @@ describe("generateBoutNarrative — post-bout interview (T13)", () => {
     const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
     const world = makeWorld(east, west);
     const result = makeBoutResult();
-    generateBoutNarrative(result, east, west, BASHO, 8, "seed-interview-1", world);
+    generateBoutNarrative(result, east, west, BASHO, 8, "seed-interview-1-1", world);
     const interviewLines = getInterviewLines(result);
     expect(interviewLines.length).toBeGreaterThan(0);
   });
@@ -67,8 +67,8 @@ describe("generateBoutNarrative — post-bout interview (T13)", () => {
     const world = makeWorld(east, west);
     const r1 = makeBoutResult();
     const r2 = makeBoutResult();
-    generateBoutNarrative(r1, east, west, BASHO, 8, "seed-interview-det", world);
-    generateBoutNarrative(r2, east, west, BASHO, 8, "seed-interview-det", world);
+    generateBoutNarrative(r1, east, west, BASHO, 8, "seed-interview-det-6", world);
+    generateBoutNarrative(r2, east, west, BASHO, 8, "seed-interview-det-6", world);
     expect(getInterviewLines(r1).map((l) => l.text)).toEqual(getInterviewLines(r2).map((l) => l.text));
   });
 
@@ -93,7 +93,7 @@ describe("generateBoutNarrative — post-bout interview (T13)", () => {
     const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
     const world = makeWorld(east, west);
     const result = makeBoutResult();
-    generateBoutNarrative(result, east, west, BASHO, 8, "seed-interview-stoic", world);
+    generateBoutNarrative(result, east, west, BASHO, 8, "seed-interview-stoic-8", world);
     const interviewLines = getInterviewLines(result);
     expect(interviewLines.length).toBeGreaterThan(0);
   });
@@ -108,7 +108,7 @@ describe("generateBoutNarrative — post-bout interview (T13)", () => {
     const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
     const world = makeWorld(east, west);
     const result = makeBoutResult();
-    generateBoutNarrative(result, east, west, BASHO, 8, "seed-interview-villain", world);
+    generateBoutNarrative(result, east, west, BASHO, 8, "seed-interview-villain-2", world);
     const interviewLines = getInterviewLines(result);
     expect(interviewLines.length).toBeGreaterThan(0);
   });
@@ -123,7 +123,7 @@ describe("generateBoutNarrative — post-bout interview (T13)", () => {
     const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
     const world = makeWorld(east, west);
     const result = makeBoutResult();
-    generateBoutNarrative(result, east, west, BASHO, 8, "seed-interview-firebrand", world);
+    generateBoutNarrative(result, east, west, BASHO, 8, "seed-interview-firebrand-9", world);
     const interviewLines = getInterviewLines(result);
     expect(interviewLines.length).toBeGreaterThan(0);
   });

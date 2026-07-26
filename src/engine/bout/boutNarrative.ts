@@ -20,14 +20,18 @@ import {
   H2H_STREAK_THRESHOLD,
   CAREER_WIN_MILESTONES,
   BASHO_DAYS,
-  SENSURAKU_DAY,
   WINLESS_MENTION_MIN_DAY,
   FIRST_WIN_MENTION_MIN_DAY,
   LEADERBOARD_MIN_LEADER_WINS,
   TRAIT_MODIFIER_CHANCE,
+  INTERVIEW_CHANCE,
+  STRESS_TERSE_THRESHOLD,
+  MEDIA_SAVVY_POLISHED_THRESHOLD,
+  BIRTHDAY_WINDOW_DAYS,
 } from "../../constants/engine/generation";
 import { BASHO_CALENDAR } from "../calendar";
 import { isKachiKoshi, isMakeKoshi } from "../banzuke/banzukeHelpers";
+import { isYushoContention, isPlayoffScenario } from "./boutContention";
 
 export type PbpPhase =
   | "opening"
@@ -451,7 +455,7 @@ export function generateBoutNarrative(
     const rLosses = r.currentBashoLosses ?? 0;
     const threshold = 8;
     const needed = threshold - rWins;
-    if (needed > 0 && needed <= 2 && rLosses < threshold && day < SENSURAKU_DAY) {
+    if (needed > 0 && needed <= 2 && rLosses < threshold && day < BASHO_DAYS) {
       push(
         BardEngine.resolve(preBoutRng, "pre_bout.storylines.kachi_chase", {
           NAME: r.shikona,
@@ -463,7 +467,7 @@ export function generateBoutNarrative(
         ["kachi_koshi"]
       );
     }
-    if (rLosses === threshold - 1 && rWins < threshold && day < SENSURAKU_DAY) {
+    if (rLosses === threshold - 1 && rWins < threshold && day < BASHO_DAYS) {
       push(
         BardEngine.resolve(preBoutRng, "pre_bout.storylines.make_koshi_avoidance", {
           NAME: r.shikona,
@@ -719,18 +723,22 @@ export function generateBoutNarrative(
     }
   }
 
-  // 3l. Birthday mention
+  // 3l. Birthday mention (within BIRTHDAY_WINDOW_DAYS of current basho day)
   if (bashoInfo) {
     for (const r of [east, west]) {
       if (r.birthMonth && r.birthDay && r.birthMonth === bashoInfo.month) {
-        push(
-          BardEngine.resolve(preBoutRng, "pre_bout.birthday", {
-            SHIKONA: r.shikona,
-            rikishiId: r.id,
-          }).text,
-          "pre_bout",
-          ["birthday"]
-        );
+        const dayDiff = Math.abs(r.birthDay - day);
+        if (dayDiff <= BIRTHDAY_WINDOW_DAYS) {
+          push(
+            BardEngine.resolve(preBoutRng, "pre_bout.birthday", {
+              SHIKONA: r.shikona,
+              AGE: (r.age ?? 0).toString(),
+              rikishiId: r.id,
+            }).text,
+            "pre_bout",
+            ["birthday"]
+          );
+        }
       }
     }
   }
@@ -784,7 +792,8 @@ export function generateBoutNarrative(
   }
 
   // 3n. Tournament day context
-  if (day === SENSURAKU_DAY) {
+  if (day === BASHO_DAYS) {
+    // Final day — emit both senshuraku and final_day templates
     push(
       BardEngine.resolve(preBoutRng, "pre_bout.senshuraku", {
         eastRikishiId: east.id,
@@ -792,6 +801,14 @@ export function generateBoutNarrative(
       }).text,
       "pre_bout",
       ["senshuraku", "tournament_context"]
+    );
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.final_day", {
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+      }).text,
+      "pre_bout",
+      ["tournament_context"]
     );
   } else if (day === BASHO_DAYS - 1) {
     push(
@@ -858,23 +875,34 @@ export function generateBoutNarrative(
     );
   }
 
-  // 3p. Leaderboard summary (early days only, when leader has enough wins)
-  if (day <= 5 && world.currentBasho) {
+  // 3p. Leaderboard summary (days 5+, when leader has enough wins)
+  if (day >= 5 && world.currentBasho) {
     const standings = world.currentBasho.standings;
-    let leaderWins = 0;
-    let leaderShikona = "";
+    let maxWins = 0;
+    const leaders: string[] = [];
+    let chasers = 0;
     for (const [rid, rec] of standings) {
-      if (rec.wins > leaderWins) {
-        leaderWins = rec.wins;
-        const leaderRikishi = world.rikishi.get(rid);
-        leaderShikona = leaderRikishi?.shikona ?? "";
+      const w = rec.wins;
+      if (w > maxWins) {
+        maxWins = w;
+        leaders.length = 0;
+        const r = world.rikishi.get(rid);
+        if (r) leaders.push(r.shikona);
+      } else if (w === maxWins) {
+        const r = world.rikishi.get(rid);
+        if (r) leaders.push(r.shikona);
+      } else if (w === maxWins - 1) {
+        chasers++;
       }
     }
-    if (leaderWins >= LEADERBOARD_MIN_LEADER_WINS && leaderShikona) {
+    if (maxWins >= LEADERBOARD_MIN_LEADER_WINS && leaders.length > 0) {
+      const leaderNames = leaders.length === 1 ? leaders[0] : leaders.slice(0, 2).join(" and ");
+      const isCoLeaders = leaders.length >= 2;
       push(
-        BardEngine.resolve(preBoutRng, "pre_bout.leaderboard", {
-          SHIKONA: leaderShikona,
-          WINS: leaderWins.toString(),
+        BardEngine.resolve(preBoutRng, isCoLeaders ? "pre_bout.leaderboard_co_leaders" : "pre_bout.leaderboard", {
+          SHIKONA: leaderNames,
+          WINS: maxWins.toString(),
+          CHASERS: chasers.toString(),
         }).text,
         "pre_bout",
         ["tournament_context"]
@@ -882,16 +910,21 @@ export function generateBoutNarrative(
     }
   }
 
-  // 3p2. Playoff implications — when both rikishi are at or near the lead late in tournament
-  if (day >= SENSURAKU_DAY - 1 && world.currentBasho) {
-    const standings = world.currentBasho.standings;
-    const eastWins = standings.get(east.id)?.wins ?? (east.currentBashoWins ?? 0);
-    const westWins = standings.get(west.id)?.wins ?? (west.currentBashoWins ?? 0);
-    let maxWins = 0;
-    for (const rec of standings.values()) {
-      if (rec.wins > maxWins) maxWins = rec.wins;
+  // 3p2. Yusho contention / playoff implications
+  if (world.currentBasho) {
+    if (isYushoContention(east, west, world.currentBasho)) {
+      push(
+        BardEngine.resolve(preBoutRng, "pre_bout.yusho_race", {
+          EAST: east.shikona,
+          WEST: west.shikona,
+          eastRikishiId: east.id,
+          westRikishiId: west.id,
+        }).text,
+        "pre_bout",
+        ["yusho_race"]
+      );
     }
-    if (eastWins >= maxWins - 1 && westWins >= maxWins - 1 && maxWins >= 8) {
+    if (isPlayoffScenario(east, west, world.currentBasho)) {
       push(
         BardEngine.resolve(preBoutRng, "pre_bout.playoff_implications", {
           EAST: east.shikona,
@@ -1354,11 +1387,11 @@ export function generateBoutNarrative(
   }
 
   // 14. Post-bout kachi-koshi / make-koshi confirmation
-  if (isKachiKoshi(winnerWins, winnerRikishi.currentBashoLosses ?? 0, winnerRikishi.rank)) {
+  if (isKachiKoshi(winnerWins + 1, winnerRikishi.currentBashoLosses ?? 0, winnerRikishi.rank)) {
     push(
       BardEngine.resolve(postBoutRng, "post_bout.kachi_koshi", {
         SHIKONA: winnerRikishi.shikona,
-        WINS: winnerWins.toString(),
+        WINS: (winnerWins + 1).toString(),
         rikishiId: winnerRikishi.id,
       }).text,
       "post_bout",
@@ -1396,11 +1429,11 @@ export function generateBoutNarrative(
       }
     }
   }
-  if (isMakeKoshi(loserRikishi.currentBashoWins ?? 0, loserLosses, loserRikishi.rank)) {
+  if (isMakeKoshi(loserRikishi.currentBashoWins ?? 0, loserLosses + 1, loserRikishi.rank)) {
     push(
       BardEngine.resolve(postBoutRng, "post_bout.make_koshi", {
         SHIKONA: loserRikishi.shikona,
-        LOSSES: loserLosses.toString(),
+        LOSSES: (loserLosses + 1).toString(),
         rikishiId: loserRikishi.id,
       }).text,
       "post_bout",
@@ -1413,7 +1446,7 @@ export function generateBoutNarrative(
     push(
       BardEngine.resolve(postBoutRng, "post_bout.yusho_race", {
         WINNER: winnerRikishi.shikona,
-        WINS: winnerWins.toString(),
+        WINS: (winnerWins + 1).toString(),
         winnerId: winnerRikishi.id,
       }).text,
       "post_bout",
@@ -1427,7 +1460,7 @@ export function generateBoutNarrative(
     let maxWins = 0;
     let coLeaders = 0;
     for (const [rid, rec] of standings) {
-      const w = rid === winnerRikishi.id ? winnerWins : rid === loserRikishi.id ? loserWins : rec.wins;
+      const w = rid === winnerRikishi.id ? winnerWins + 1 : rid === loserRikishi.id ? loserWins : rec.wins;
       if (w > maxWins) {
         maxWins = w;
         coLeaders = 1;
@@ -1436,7 +1469,7 @@ export function generateBoutNarrative(
       }
     }
     // Winner is now sole leader
-    if (winnerWins === maxWins && coLeaders === 1) {
+    if (winnerWins + 1 === maxWins && coLeaders === 1) {
       push(
         BardEngine.resolve(postBoutRng, "post_bout.storylines.sole_leader", {
           WINNER: winnerRikishi.shikona,
@@ -1448,7 +1481,7 @@ export function generateBoutNarrative(
       );
     }
     // Winner ties the leader
-    if (winnerWins === maxWins && coLeaders > 1 && winnerWins > (standings.get(winnerRikishi.id)?.wins ?? 0)) {
+    if (winnerWins + 1 === maxWins && coLeaders > 1 && winnerWins + 1 > (standings.get(winnerRikishi.id)?.wins ?? 0)) {
       push(
         BardEngine.resolve(postBoutRng, "post_bout.storylines.ties_leader", {
           WINNER: winnerRikishi.shikona,
@@ -1478,7 +1511,7 @@ export function generateBoutNarrative(
     push(
       BardEngine.resolve(postBoutRng, "post_bout.storylines.streak_continued", {
         WINNER: winnerRikishi.shikona,
-        STREAK: winnerWins.toString(),
+        STREAK: (winnerWins + 1).toString(),
         winnerId: winnerRikishi.id,
       }).text,
       "post_bout",
@@ -1500,11 +1533,11 @@ export function generateBoutNarrative(
     );
   }
   // Losing streak continued
-  if (loserLosses >= 3 && loserWins === 0) {
+  if (loserLosses + 1 >= 3 && loserWins === 0) {
     push(
       BardEngine.resolve(postBoutRng, "post_bout.storylines.loss_streak", {
         LOSER: loserRikishi.shikona,
-        STREAK: loserLosses.toString(),
+        STREAK: (loserLosses + 1).toString(),
         loserId: loserRikishi.id,
       }).text,
       "post_bout",
@@ -1512,7 +1545,7 @@ export function generateBoutNarrative(
     );
   }
   // First win
-  if (winnerWins === 1 && day >= FIRST_WIN_MENTION_MIN_DAY) {
+  if (winnerWins === 0 && day >= FIRST_WIN_MENTION_MIN_DAY) {
     push(
       BardEngine.resolve(postBoutRng, "post_bout.storylines.first_win", {
         WINNER: winnerRikishi.shikona,
@@ -1520,6 +1553,22 @@ export function generateBoutNarrative(
       }).text,
       "post_bout",
       ["first_win"]
+    );
+  }
+
+  // 15c. Post-bout upset over elite — maegashira beats yokozuna/ozeki
+  if (result.upset && result.isKinboshi) {
+    push(
+      BardEngine.resolve(postBoutRng, "post_bout.storylines.upset_elite", {
+        WINNER: winnerRikishi.shikona,
+        LOSER: loserRikishi.shikona,
+        LOSER_RANK: loserRikishi.rank ?? "",
+        DAY: day.toString(),
+        winnerId: winnerRikishi.id,
+        loserId: loserRikishi.id,
+      }).text,
+      "post_bout",
+      ["upset"]
     );
   }
 
@@ -1572,15 +1621,15 @@ export function generateBoutNarrative(
     }
   }
 
-  // 17. Replay highlight (for dramatic bouts) — expanded sub-paths
-  if (ctx.voiceStyle === "dramatic" && result.excitementScore && result.excitementScore > 50) {
+  // 17. Replay highlight — expanded sub-paths
+  if (result.excitementScore !== undefined && result.excitementScore > 30) {
     const replayRng = rngFromSeed(seed, "pbp", "replay");
     // Select replay sub-path based on bout characteristics
     let replayPath = "post_bout.replay.generic";
     const hasEdgeCrisis = result.log.some(e => e.phase === "edge_crisis");
     const hasHenka = result.log.some(e => e.data?.event === "henka_success");
     const isQuickFinish = result.log.length <= 3;
-    const isDominant = result.excitementScore < 60;
+    const isDominant = (result.excitementScore ?? 50) < 60;
 
     if (hasHenka) {
       replayPath = "post_bout.replay.reversal";
@@ -1614,8 +1663,10 @@ export function generateBoutNarrative(
     );
   }
 
-  // 18. Post-bout interview (personality-driven, multi-question)
+  // 18. Post-bout interview (personality-driven, multi-question, RNG-gated)
   {
+    const interviewRng = rngFromSeed(seed, "pbp", "interview-gate");
+    if (interviewRng.next() < INTERVIEW_CHANCE) {
     const persona = winnerRikishi.pressPersona ?? "neutral";
     const personaPath = `interview.${persona}`;
     const hasPersonaTemplate = BardEngine.has(personaPath);
@@ -1624,25 +1675,34 @@ export function generateBoutNarrative(
     // Determine interview question type
     let questionType = "general_win";
     const makuuchiTournaments = winnerRikishi.careerHistory?.filter(s => s.division === "makuuchi").length ?? 0;
-    if (isKachiKoshi(winnerWins, winnerRikishi.currentBashoLosses ?? 0, winnerRikishi.rank)) {
+    // Check for career milestone hit with this win
+    const hitMilestone = CAREER_WIN_MILESTONES.includes(winnerRikishi.careerWins ?? 0);
+    const loserLosses = (loserRikishi.currentBashoLosses ?? 0) + 1;
+    const loserWins = loserRikishi.currentBashoWins ?? 0;
+    if (isKachiKoshi(winnerWins + 1, winnerRikishi.currentBashoLosses ?? 0, winnerRikishi.rank)) {
       // Earliest kachi-koshi variant — achieved on day 7 or earlier with some career history
       if (day <= 7 && makuuchiTournaments >= 2) {
         questionType = "earliest_kachi";
       } else {
         questionType = "kachi_koshi";
       }
-    } else if (isMakeKoshi(winnerWins, winnerLosses, winnerRikishi.rank)) {
+    } else if (hitMilestone) {
+      questionType = "milestone";
+    } else if (isMakeKoshi(loserWins, loserLosses, loserRikishi.rank)) {
       questionType = "make_koshi";
-    } else if (winnerWins === 1 && day >= FIRST_WIN_MENTION_MIN_DAY) {
+    } else if (winnerWins === 0 && day >= FIRST_WIN_MENTION_MIN_DAY) {
       questionType = "first_win";
     } else if (makuuchiTournaments <= 1 && winnerRikishi.rank !== "yokozuna" && winnerRikishi.rank !== "ozeki") {
       questionType = "debut_win";
     } else if (result.upset) {
       questionType = "upset";
+    } else if (loserLosses >= 8) {
+      // Loser confirmed make-koshi but didn't trigger the specific make_koshi type above
+      questionType = "general_loss";
     }
     const questionPath = `interview.questions.${questionType}`;
     const hasQuestionTemplate = BardEngine.has(questionPath);
-    const numQuestions = ctx.voiceStyle === "dramatic" ? 3 : 2;
+    const numQuestions = ctx.voiceStyle === "dramatic" ? 4 : 3;
 
     for (let q = 0; q < numQuestions; q++) {
       const qRng = rngFromSeed(seed, "pbp", `interview-q${q}`);
@@ -1655,7 +1715,7 @@ export function generateBoutNarrative(
             OPPONENT: loserRikishi.shikona,
             OPPONENT_RANK: loserRikishi.rank ?? "",
             MILESTONE: (winnerRikishi.careerWins ?? 0).toString(),
-            WINS: winnerWins.toString(),
+            WINS: (winnerWins + 1).toString(),
             DAY: day.toString(),
             rikishiId: winnerRikishi.id,
           }).text,
@@ -1669,7 +1729,7 @@ export function generateBoutNarrative(
           SHIKONA: winnerRikishi.shikona,
           KIMARITE: result.kimariteName ?? result.kimarite,
           OPPONENT: loserRikishi.shikona,
-          WINS: winnerWins.toString(),
+          WINS: (winnerWins + 1).toString(),
           rikishiId: winnerRikishi.id,
         }).text,
         "interview",
@@ -1694,7 +1754,41 @@ export function generateBoutNarrative(
           }
         }
       }
+
+      // Behavior stat modifiers — stress makes answers terse, mediaSavvy makes them polished
+      // These are handled by selecting shorter/longer variants via RNG biasing
+      const stressLevel = winnerRikishi.behavior?.stress ?? 0;
+      const mediaSavvyLevel = winnerRikishi.behavior?.mediaSavvy ?? 0;
+      if (stressLevel >= STRESS_TERSE_THRESHOLD && qRng.next() < 0.5) {
+        const tersePath = "interview.modifiers.laconic";
+        if (BardEngine.has(tersePath)) {
+          push(
+            BardEngine.resolve(qRng, tersePath, {
+              SHIKONA: winnerRikishi.shikona,
+              OPPONENT: loserRikishi.shikona,
+              rikishiId: winnerRikishi.id,
+            }).text,
+            "interview",
+            ["interview"]
+          );
+        }
+      } else if (mediaSavvyLevel >= MEDIA_SAVVY_POLISHED_THRESHOLD && qRng.next() < 0.4) {
+        // Media-savvy rikishi add a polished follow-up
+        const polishedPath = "interview.modifiers.philosophical";
+        if (BardEngine.has(polishedPath)) {
+          push(
+            BardEngine.resolve(qRng, polishedPath, {
+              SHIKONA: winnerRikishi.shikona,
+              OPPONENT: loserRikishi.shikona,
+              rikishiId: winnerRikishi.id,
+            }).text,
+            "interview",
+            ["interview"]
+          );
+        }
+      }
     }
+    } // end INTERVIEW_CHANCE gate
   }
 
   result.pbpLines = lines.length > 0 ? lines : undefined;

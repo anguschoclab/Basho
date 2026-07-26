@@ -61,7 +61,7 @@ describe("generateBoutNarrative — personality-driven interviews (T21)", () => 
     const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
     const world = makeWorld(east, west);
     const result = makeBoutResult();
-    generateBoutNarrative(result, east, west, BASHO, 8, "seed-pers-stoic", world);
+    generateBoutNarrative(result, east, west, BASHO, 8, "seed-pers-stoic-2", world);
     expect(getInterviewLines(result).length).toBeGreaterThan(0);
   });
 
@@ -75,7 +75,7 @@ describe("generateBoutNarrative — personality-driven interviews (T21)", () => 
     const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
     const world = makeWorld(east, west);
     const result = makeBoutResult();
-    generateBoutNarrative(result, east, west, BASHO, 8, "seed-pers-villain", world);
+    generateBoutNarrative(result, east, west, BASHO, 8, "seed-pers-villain-2", world);
     expect(getInterviewLines(result).length).toBeGreaterThan(0);
   });
 
@@ -89,7 +89,7 @@ describe("generateBoutNarrative — personality-driven interviews (T21)", () => 
     const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
     const world = makeWorld(east, west);
     const result = makeBoutResult();
-    generateBoutNarrative(result, east, west, BASHO, 8, "seed-pers-celebrity", world);
+    generateBoutNarrative(result, east, west, BASHO, 8, "seed-pers-celebrity-5", world);
     expect(getInterviewLines(result).length).toBeGreaterThan(0);
   });
 
@@ -118,7 +118,7 @@ describe("generateBoutNarrative — personality-driven interviews (T21)", () => 
     const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
     const world = makeWorld(east, west);
     const result = makeBoutResult();
-    generateBoutNarrative(result, east, west, BASHO, 8, "seed-pers-neutral", world);
+    generateBoutNarrative(result, east, west, BASHO, 8, "seed-pers-neutral-6", world);
     expect(getInterviewLines(result).length).toBeGreaterThan(0);
   });
 
@@ -129,7 +129,7 @@ describe("generateBoutNarrative — personality-driven interviews (T21)", () => 
     const world = makeWorld(east, west);
     const result = makeBoutResult();
     expect(() => {
-      generateBoutNarrative(result, east, west, BASHO, 8, "seed-pers-undef", world);
+      generateBoutNarrative(result, east, west, BASHO, 8, "seed-pers-undef-2", world);
     }).not.toThrow();
     expect(getInterviewLines(result).length).toBeGreaterThan(0);
   });

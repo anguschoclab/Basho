@@ -2646,9 +2646,19 @@
         "A potential yusho decider — the crowd senses the magnitude of this matchup."
       ],
       "leaderboard": [
-        "%SHIKONA% leads the tournament at %WINS%-0. Can anyone catch them?",
+        "%SHIKONA% leads the tournament at %WINS% wins. %CHASERS% rikishi just one win behind.",
         "The current leader %SHIKONA% sits at %WINS% wins. The chase pack is running out of days.",
-        "%SHIKONA% tops the leaderboard with %WINS% victories. The pressure of the leader's jersey."
+        "%SHIKONA% tops the leaderboard with %WINS% victories. The pressure of the lead."
+      ],
+      "leaderboard_co_leaders": [
+        "%SHIKONA% are the co-leaders at %WINS% wins. %CHASERS% rikishi just one win behind.",
+        "Tied at the top — %SHIKONA% share the lead at %WINS%. The yusho race is wide open.",
+        "Two at the summit: %SHIKONA% co-leading at %WINS% wins with %CHASERS% chasers close behind."
+      ],
+      "yusho_race": [
+        "This is essentially a championship elimination match. %EAST% and %WEST% both in contention.",
+        "The yusho is on the line — %EAST% and %WEST% both within striking distance of the lead.",
+        "A massive bout in the yusho race. %EAST% versus %WEST% with the championship in sight."
       ],
       "playoff_implications": [
         "A playoff could be on the cards if this one goes to %EAST%.",
@@ -2700,6 +2710,11 @@
           "%WINNER% picks up his first win of the basho!",
           "The first win finally came today for %WINNER%.",
           "%WINNER% gets off the schneid — first victory of the tournament."
+        ],
+        "upset_elite": [
+          "A kinboshi! %WINNER% defeats a %LOSER_RANK% on day %DAY% — an upset that will be talked about.",
+          "What an upset! %WINNER% takes down the %LOSER_RANK% — pillows fly in the crowd.",
+          "Big upset on day %DAY% — %WINNER% topples %LOSER%, a %LOSER_RANK% falls to a maegashira."
         ],
         "consecutive_kachi": [
           "Kachi-koshi for the %ORDINAL% consecutive tournament for %SHIKONA%!",
