@@ -91,4 +91,62 @@ describe("generateBoutNarrative — mono-ii stub (T14)", () => {
       expect(line.text).not.toContain("[MISSING:");
     }
   });
+
+  it("T14.5: monoii → multiple mono_ii lines (gunbai, review, replay, outcome)", () => {
+    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
+    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 4, currentBashoLosses: 4 });
+    const world = makeWorld(east, west);
+    const result = makeBoutResult({ monoii: true } as any);
+    generateBoutNarrative(result, east, west, BASHO, 8, "seed-monoii-expanded", world);
+    const monoiiLines = getMonoiiLines(result);
+    // Should have at least: gunbai_contested + review + replay_analysis + outcome = 4+ lines
+    expect(monoiiLines.length).toBeGreaterThanOrEqual(4);
+  });
+
+  it("T14.6: monoii → gunbai_contested line present", () => {
+    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
+    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 4, currentBashoLosses: 4 });
+    const world = makeWorld(east, west);
+    const result = makeBoutResult({ monoii: true } as any);
+    generateBoutNarrative(result, east, west, BASHO, 8, "seed-monoii-gunbai", world);
+    const monoiiLines = getMonoiiLines(result);
+    // First line should be the gunbai contested line (mentions gunbai or goji)
+    expect(monoiiLines[0].text.toLowerCase()).toMatch(/gunbai|goji|gyoji/);
+  });
+
+  it("T14.7: monoii → review and replay_analysis lines present", () => {
+    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
+    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 4, currentBashoLosses: 4 });
+    const world = makeWorld(east, west);
+    const result = makeBoutResult({ monoii: true } as any);
+    generateBoutNarrative(result, east, west, BASHO, 8, "seed-monoii-review", world);
+    const monoiiLines = getMonoiiLines(result);
+    const allText = monoiiLines.map((l) => l.text.toLowerCase()).join(" ");
+    // Should mention judges/review and replay
+    expect(allText).toMatch(/judge|mono-ii|review/);
+    expect(allText).toMatch(/replay|edge|foot/);
+  });
+
+  it("T14.8: monoii → outcome line (reversed, upheld, or rematch) present", () => {
+    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
+    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 4, currentBashoLosses: 4 });
+    const world = makeWorld(east, west);
+    const result = makeBoutResult({ monoii: true } as any);
+    generateBoutNarrative(result, east, west, BASHO, 8, "seed-monoii-outcome", world);
+    const monoiiLines = getMonoiiLines(result);
+    const lastLine = monoiiLines[monoiiLines.length - 1].text.toLowerCase();
+    // Outcome should be one of: reversed, upheld, rematch
+    expect(lastLine).toMatch(/revers|upheld|stands|rematch/);
+  });
+
+  it("T14.9: monoii with multiple seeds → deterministic output", () => {
+    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
+    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 4, currentBashoLosses: 4 });
+    const world = makeWorld(east, west);
+    const result1 = makeBoutResult({ monoii: true } as any);
+    const result2 = makeBoutResult({ monoii: true } as any);
+    generateBoutNarrative(result1, east, west, BASHO, 8, "seed-monoii-det", world);
+    generateBoutNarrative(result2, east, west, BASHO, 8, "seed-monoii-det", world);
+    expect(getMonoiiLines(result1).map((l) => l.text)).toEqual(getMonoiiLines(result2).map((l) => l.text));
+  });
 });

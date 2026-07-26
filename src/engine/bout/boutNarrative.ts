@@ -1364,6 +1364,23 @@ export function generateBoutNarrative(
     []
   );
 
+  // 12c. Both even after this bout
+  if (winnerWins + 1 === loserWins && winnerLosses === loserLosses + 1) {
+    push(
+      BardEngine.resolve(postBoutRng, "post_bout.records.both_even", {
+        WINNER: winnerRikishi.shikona,
+        LOSER: loserRikishi.shikona,
+        WINNER_WINS: (winnerWins + 1).toString(),
+        WINNER_LOSSES: winnerLosses.toString(),
+        DAY: day.toString(),
+        winnerId: winnerRikishi.id,
+        loserId: loserRikishi.id,
+      }).text,
+      "post_bout",
+      []
+    );
+  }
+
   // 13. Post-bout career impact (milestone reached with this win)
   for (const milestone of CAREER_WIN_MILESTONES) {
     if ((winnerRikishi.careerWins ?? 0) + 1 === milestone) {
@@ -1590,6 +1607,31 @@ export function generateBoutNarrative(
   // 16. Mono-ii (judge consultation) — expanded sub-paths
   if (result.monoii) {
     const monoiiRng = rngFromSeed(seed, "pbp", "mono-ii");
+    // Initial gunbai call — contested
+    push(
+      BardEngine.resolve(monoiiRng, "post_bout.mono_ii.gunbai_contested", {
+        WINNER: winnerRikishi.shikona,
+        LOSER: loserRikishi.shikona,
+        winnerId: winnerRikishi.id,
+        loserId: loserRikishi.id,
+      }).text,
+      "mono_ii",
+      ["drama", "mono_ii"]
+    );
+    // Gyoji confusion (flavor, 40% chance)
+    if (monoiiRng.next() < 0.4) {
+      push(
+        BardEngine.resolve(monoiiRng, "post_bout.mono_ii.gyoji_confused", {
+          WINNER: winnerRikishi.shikona,
+          LOSER: loserRikishi.shikona,
+          winnerId: winnerRikishi.id,
+          loserId: loserRikishi.id,
+        }).text,
+        "mono_ii",
+        ["drama", "mono_ii"]
+      );
+    }
+    // Judges convene
     push(
       BardEngine.resolve(monoiiRng, "post_bout.mono_ii.review", {
         WINNER: winnerRikishi.shikona,
@@ -1600,6 +1642,7 @@ export function generateBoutNarrative(
       "mono_ii",
       ["drama", "mono_ii"]
     );
+    // Replay analysis
     push(
       BardEngine.resolve(monoiiRng, "post_bout.mono_ii.replay_analysis", {
         WINNER: winnerRikishi.shikona,
@@ -1610,8 +1653,10 @@ export function generateBoutNarrative(
       "mono_ii",
       ["drama", "mono_ii"]
     );
-    // Randomly decide if call is reversed or upheld
-    if (monoiiRng.next() < 0.3) {
+    // Outcome: reversed (with possible rematch), or upheld
+    const outcomeRoll = monoiiRng.next();
+    if (outcomeRoll < 0.25) {
+      // Call reversed — judges determine the loser actually touched first
       push(
         BardEngine.resolve(monoiiRng, "post_bout.mono_ii.call_reversed", {
           WINNER: winnerRikishi.shikona,
@@ -1622,7 +1667,20 @@ export function generateBoutNarrative(
         "mono_ii",
         ["drama"]
       );
+    } else if (outcomeRoll < 0.35) {
+      // Too close to call — rematch ordered
+      push(
+        BardEngine.resolve(monoiiRng, "post_bout.mono_ii.rematch_ordered", {
+          WINNER: winnerRikishi.shikona,
+          LOSER: loserRikishi.shikona,
+          winnerId: winnerRikishi.id,
+          loserId: loserRikishi.id,
+        }).text,
+        "mono_ii",
+        ["drama"]
+      );
     } else {
+      // Call upheld — original decision stands
       push(
         BardEngine.resolve(monoiiRng, "post_bout.mono_ii.call_upheld", {
           WINNER: winnerRikishi.shikona,
