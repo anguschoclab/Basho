@@ -293,7 +293,7 @@ export function buildCandidatePairs(
   options: CandidateBuildOptions
 ): MatchPairing[] {
   const pool = rikishi.filter((r) => {
-    if (r.isRetired || r.injured) return false;
+    if (r.isRetired || r.injured || r.isKyujo) return false;
     if (options.division && r.division !== options.division) return false;
     return true;
   });
@@ -396,7 +396,7 @@ export function buildExhibitionPairs(
   options: CandidateBuildOptions
 ): MatchPairing[] {
   const rng = rngFromSeed(options.seed, "matchmaking", "exhibition");
-  const pool = rikishi.filter((r) => !r.isRetired && !r.injured);
+  const pool = rikishi.filter((r) => !r.isRetired && !r.injured && !r.isKyujo);
   return generatePairs(pool, (a, b) => ({
     eastId: a.id,
     westId: b.id,

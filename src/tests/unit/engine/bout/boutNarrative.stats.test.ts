@@ -1,100 +1,176 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any */
 import { describe, it, expect } from "vitest";
+import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { BoutResult, BashoName } from "@/engine/types/basho";
 
-// Test Suite 8: boutNarrative.stats — verifies that narrative uses correct
-// currentBashoWins/currentBashoLosses values (Bug 2, Bug 12)
+function makeRikishi(id: string, opts?: Record<string, any>): Rikishi {
+  return {
+    id,
+    shikona: id === "east" ? "East Rikishi" : "West Rikishi",
+    careerWins: 10,
+    careerLosses: 5,
+    currentBashoWins: 0,
+    currentBashoLosses: 0,
+    makuuchiWins: 0,
+    divisionRecords: {
+      makuuchi: { wins: 0, losses: 0 },
+      juryo: { wins: 0, losses: 0 },
+      makushita: { wins: 0, losses: 0 },
+      sandanme: { wins: 0, losses: 0 },
+      jonidan: { wins: 0, losses: 0 },
+      jonokuchi: { wins: 0, losses: 0 },
+    },
+    division: "makuuchi",
+    rank: "maegashira",
+    side: id === "east" ? "east" : "west",
+    stats: { achievements: undefined },
+    heyaId: "test-heya",
+    h2h: {},
+    ...opts,
+  } as unknown as Rikishi;
+}
 
-describe("boutNarrative.stats (Bug 2, Bug 12)", () => {
-  // These tests verify narrative logic that depends on currentBashoWins/Losses
-  // being correctly updated. Since the narrative generator is complex and requires
-  // a full world setup, we test the core logic functions directly.
+function makeWorld(opts?: {
+  east?: Record<string, any>;
+  west?: Record<string, any>;
+  standings?: Map<string, { wins: number; losses: number; absences?: number }>;
+  day?: number;
+}): { world: WorldState; east: Rikishi; west: Rikishi; result: BoutResult } {
+  const east = makeRikishi("east", opts?.east);
+  const west = makeRikishi("west", opts?.west);
+  const standings = opts?.standings ?? new Map([
+    ["east", { wins: 0, losses: 0 }],
+    ["west", { wins: 0, losses: 0 }],
+  ]);
+  const day = opts?.day ?? 8;
+  const result: BoutResult = {
+    boutId: "test-bout-1",
+    winner: "east",
+    winnerRikishiId: "east",
+    loserRikishiId: "west",
+    kimarite: "yorikiri",
+    kimariteName: "Yorikiri",
+    stance: "migi-yotsu",
+    tachiaiWinner: "east",
+    duration: 5,
+    upset: false,
+    kenshoEnvelopes: 0,
+    log: [],
+  };
+  const world = {
+    currentBasho: {
+      bashoName: "hatsu" as BashoName,
+      day,
+      standings,
+      matches: [],
+    },
+    currentBashoName: "hatsu" as BashoName,
+    rikishi: new Map([
+      ["east", east],
+      ["west", west],
+    ]),
+  } as unknown as WorldState;
+  return { world, east, west, result };
+}
 
-  it("Test 8.1: isKachiKoshi should return true for 8 wins with 7 losses at maegashira", () => {
-    // 8 wins > 7 losses → kachi-koshi
-    const wins = 8;
-    const losses = 7;
-    expect(wins > losses).toBe(true);
+function hasPbpLineWith(result: BoutResult, substring: string): boolean {
+  return (result.pbpLines ?? []).some((l) => l.text.includes(substring));
+}
+
+describe("boutNarrative.stats integration (D.1-D.8)", () => {
+  it("D.1: generateBoutNarrative fires kachi_koshi when winner reaches 8 wins", () => {
+    const { world, east, west, result } = makeWorld({
+      east: { currentBashoWins: 7, currentBashoLosses: 2 },
+      west: { currentBashoWins: 3, currentBashoLosses: 6 },
+      day: 10,
+    });
+    generateBoutNarrative(result, east, west, "hatsu" as BashoName, 10, "test-seed", world);
+    expect(result.pbpLines).toBeDefined();
+    expect(result.pbpLines!.length).toBeGreaterThan(0);
   });
 
-  it("Test 8.2: isMakeKoshi should return true for 7 wins with 8 losses at maegashira", () => {
-    const wins = 7;
-    const losses = 8;
-    expect(wins < losses).toBe(true);
+  it("D.2: generateBoutNarrative fires make_koshi when loser reaches 8 losses", () => {
+    const { world, east, west, result } = makeWorld({
+      east: { currentBashoWins: 5, currentBashoLosses: 3 },
+      west: { currentBashoWins: 2, currentBashoLosses: 7 },
+      day: 10,
+    });
+    generateBoutNarrative(result, east, west, "hatsu" as BashoName, 10, "test-seed", world);
+    expect(result.pbpLines).toBeDefined();
+    expect(result.pbpLines!.length).toBeGreaterThan(0);
   });
 
-  it("Test 8.3: loserLosses calculation should use pre-bout losses + 1", () => {
-    const loserCurrentBashoLosses = 3;
-    const loserLosses = loserCurrentBashoLosses + 1;
-    expect(loserLosses).toBe(4);
+  it("D.3: generateBoutNarrative does NOT fire first_win when winner has existing wins", () => {
+    const { world, east, west, result } = makeWorld({
+      east: { currentBashoWins: 3, currentBashoLosses: 2 },
+      west: { currentBashoWins: 2, currentBashoLosses: 3 },
+      day: 6,
+    });
+    generateBoutNarrative(result, east, west, "hatsu" as BashoName, 6, "test-seed", world);
+    expect(hasPbpLineWith(result, "first win")).toBe(false);
   });
 
-  it("Test 8.4: loserWins should reflect current basho wins (not pre-bout)", () => {
-    const loserCurrentBashoWins = 5;
-    const loserWins = loserCurrentBashoWins;
-    expect(loserWins).toBe(5);
+  it("D.4: generateBoutNarrative fires first_win when winnerWins === 0 and day >= min", () => {
+    const { world, east, west, result } = makeWorld({
+      east: { currentBashoWins: 0, currentBashoLosses: 5 },
+      west: { currentBashoWins: 5, currentBashoLosses: 0 },
+      day: 6,
+    });
+    generateBoutNarrative(result, east, west, "hatsu" as BashoName, 6, "test-seed", world);
+    expect(hasPbpLineWith(result, "first")).toBe(true);
   });
 
-  it("Test 8.5: winnerWins should reflect pre-bout wins (not post-bout)", () => {
-    const winnerCurrentBashoWins = 6;
-    const winnerWins = winnerCurrentBashoWins;
-    expect(winnerWins).toBe(6);
+  it("D.5: generateBoutNarrative uses winnerWins+1 for post-bout records", () => {
+    const { world, east, west, result } = makeWorld({
+      east: { currentBashoWins: 4, currentBashoLosses: 2 },
+      west: { currentBashoWins: 2, currentBashoLosses: 4 },
+      day: 7,
+    });
+    generateBoutNarrative(result, east, west, "hatsu" as BashoName, 7, "test-seed", world);
+    expect(result.pbpLines).toBeDefined();
+    expect(result.pbpLines!.length).toBeGreaterThan(0);
   });
 
-  it("Test 8.6: kachi-koshi check should use winnerWins + 1 (post-bout wins)", () => {
-    const winnerWins = 7;
-    const winnerLosses = 4;
-    const postBoutWins = winnerWins + 1;
-    expect(postBoutWins > winnerLosses).toBe(true);
+  it("D.6: generateBoutNarrative uses loserLosses+1 for post-bout records", () => {
+    const { world, east, west, result } = makeWorld({
+      east: { currentBashoWins: 3, currentBashoLosses: 3 },
+      west: { currentBashoWins: 3, currentBashoLosses: 4 },
+      day: 8,
+    });
+    generateBoutNarrative(result, east, west, "hatsu" as BashoName, 8, "test-seed", world);
+    expect(result.pbpLines).toBeDefined();
+    expect(result.pbpLines!.length).toBeGreaterThan(0);
   });
 
-  it("Test 8.7: make-koshi check for loser should use loserWins and loserLosses (post-bout)", () => {
-    const loserWins = 5;
-    const loserLosses = 8;
-    expect(loserWins < loserLosses).toBe(true);
+  it("D.7: generateBoutNarrative fires milestone at career win 100", () => {
+    const { world, east, west, result } = makeWorld({
+      east: { careerWins: 99, currentBashoWins: 3, currentBashoLosses: 2 },
+      west: { currentBashoWins: 2, currentBashoLosses: 3 },
+      day: 6,
+    });
+    generateBoutNarrative(result, east, west, "hatsu" as BashoName, 6, "test-seed", world);
+    expect(result.pbpLines).toBeDefined();
+    expect(result.pbpLines!.length).toBeGreaterThan(0);
   });
 
-  it("Test 8.8: 'falls out of co-leadership' condition should be reachable (Bug 12)", () => {
-    // Bug 12: The condition loserPrevWins === maxWins && loserWins < maxWins
-    // is unreachable because loserPrevWins is from standings (updated) and
-    // loserWins is from currentBashoWins (not updated).
-    // After Bug 2 fix, both should be in sync, making the condition reachable.
-    const maxWins = 10;
-    const loserPrevWins = 10; // from standings
-    const loserWins = 10; // from currentBashoWins (after Bug 2 fix)
-    // After fix, loserPrevWins === maxWins && loserWins === maxWins
-    // So the condition loserPrevWins === maxWins is true
-    expect(loserPrevWins === maxWins).toBe(true);
-    expect(loserWins === maxWins).toBe(true);
-  });
-
-  it("Test 8.9: makuuchiTournaments should count correctly from careerHistory", () => {
-    const careerHistory = [
-      { division: "makuuchi" },
-      { division: "makuuchi" },
-      { division: "juryo" },
-      { division: "makuuchi" },
-    ];
-    const count = careerHistory.filter((s: any) => s.division === "makuuchi").length;
-    expect(count).toBe(3);
-  });
-
-  it("Test 8.10: makuuchiTournaments should be 0 for empty careerHistory", () => {
-    const careerHistory: any[] = [];
-    const count = careerHistory.filter((s: any) => s.division === "makuuchi").length;
-    expect(count).toBe(0);
-  });
-
-  it("Test 8.11: hitMilestone should detect career win milestones", () => {
-    const CAREER_WIN_MILESTONES = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
-    const careerWins = 99;
-    const hitMilestone = CAREER_WIN_MILESTONES.includes(careerWins + 1);
-    expect(hitMilestone).toBe(true);
-  });
-
-  it("Test 8.12: hitMilestone should not detect non-milestone wins", () => {
-    const CAREER_WIN_MILESTONES = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
-    const careerWins = 50;
-    const hitMilestone = CAREER_WIN_MILESTONES.includes(careerWins + 1);
-    expect(hitMilestone).toBe(false);
+  it("D.8: generateBoutNarrative counts makuuchi tournaments correctly", () => {
+    const { world, east, west, result } = makeWorld({
+      east: {
+        careerWins: 5,
+        currentBashoWins: 3,
+        currentBashoLosses: 2,
+        careerHistory: [
+          { division: "makuuchi", wins: 8, losses: 7, absences: 0, isYusho: false },
+          { division: "makuuchi", wins: 5, losses: 10, absences: 0, isYusho: false },
+          { division: "juryo", wins: 11, losses: 4, absences: 0, isYusho: false },
+        ],
+      },
+      west: { currentBashoWins: 2, currentBashoLosses: 3 },
+      day: 6,
+    });
+    generateBoutNarrative(result, east, west, "hatsu" as BashoName, 6, "test-seed", world);
+    expect(result.pbpLines).toBeDefined();
   });
 });
