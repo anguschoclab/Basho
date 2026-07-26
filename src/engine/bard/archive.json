@@ -2671,7 +2671,12 @@
         "%WINNER% takes it with a decisive %KIMARITE%. A statement performance.",
         "A clean victory for %WINNER% — %KIMARITE% ends it.",
         "%WINNER% prevails! The %KIMARITE% was picture-perfect.",
-        "%LOSER% could find no answer. %WINNER% controls the bout from start to finish."
+        "%LOSER% could find no answer. %WINNER% controls the bout from start to finish.",
+        "No doubt about that one — %WINNER% executes a flawless %KIMARITE%.",
+        "A masterful display from %WINNER%, dispatching %LOSER% with %KIMARITE%.",
+        "%WINNER% leaves no room for error, finishing %LOSER% off swiftly.",
+        "The technique is undeniable. %WINNER% secures the win via %KIMARITE%.",
+        "Total dominance on the dohyo today as %WINNER% handles %LOSER%."
       ],
       "records": {
         "winner_improves": [

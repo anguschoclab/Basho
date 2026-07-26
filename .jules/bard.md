@@ -14,3 +14,7 @@
 **Discovery:** The `RIVALRY_HEAT_SPIKE` event was logged in `src/engine/EventBus.ts` using `events.rivalry.title` and `events.rivalry.press_rumors`, which were completely missing from `archive.json`.
 **Rule:** When adding new templates for dynamically loaded paths, ensure you verify they are actually missing using `jq` and check the correct context placeholders by looking at the calling code (e.g. `shikona`, `rival`, `winner`, `loser` in `EventBus.ts`).
 **Check:** Run a scratchpad script invoking `BardEngine.resolve(rng, "path", context)` to ensure no fallback empty strings or missing tokens are generated before shipping.
+## 2024-05-18 - Expanding Post-Bout Reactions
+**Discovery:** The `post_bout.reaction` array in `archive.json` had only 4 variants, which fire frequently since they occur right after every bout decision in the play-by-play. This creates noticeable repetition.
+**Rule:** When adding new narrative strings to an existing array, it's vital to preserve exact formatting and spacing to avoid large, noisy diffs that break formatting rules on surrounding sections. Direct JSON manipulation via standard tools like node or python `json` can rewrite the whole file's formatting. Direct text replacement via `replace_with_git_merge_diff` is safer.
+**Check:** Run a test script resolving the template hundreds of times (via `BardEngine.resolve(rng, "path", ctx)`) to ensure no token leakage occurs (e.g. `%WINNER%` is populated, not literal text) and `[MISSING:` isn't appearing.
