@@ -95,10 +95,11 @@ export function simulateEntireBasho(
 
       if (!east || !west) continue;
 
-      if (east.injured || west.injured) {
+      if (east.injured || west.injured || east.isKyujo || west.isKyujo || east.isRetired || west.isRetired) {
         // Fusen-sho / Fusen-paku (standardization point)
-        const winner = east.injured ? west : east;
-        const loser = east.injured ? east : west;
+        const eastAbsent = east.injured || east.isKyujo || east.isRetired;
+        const winner = eastAbsent ? west : east;
+        const loser = eastAbsent ? east : west;
 
         winner.currentBashoWins = (winner.currentBashoWins ?? 0) + 1;
         loser.currentBashoLosses = (loser.currentBashoLosses ?? 0) + 1;
@@ -106,18 +107,21 @@ export function simulateEntireBasho(
         const winnerStanding = standings.get(winner.id);
         const loserStanding = standings.get(loser.id);
         if (winnerStanding) winnerStanding.wins++;
-        if (loserStanding) loserStanding.losses++;
+        if (loserStanding) {
+          loserStanding.losses++;
+          loserStanding.absences = (loserStanding.absences ?? 0) + 1;
+        }
 
         // Add fake bout result for stats consistency
         match.result = {
           boutId: match.boutId,
-          winner: east.injured ? "west" : "east",
+          winner: eastAbsent ? "west" : "east",
           winnerRikishiId: winner.id,
           loserRikishiId: loser.id,
-          kimarite: "oshidashi",
-          kimariteName: "Oshidashi",
-          stance: "push-dominant",
-          tachiaiWinner: east.injured ? "west" : "east",
+          kimarite: "fusensho",
+          kimariteName: "Fusensh\u014d",
+          stance: "no-grip",
+          tachiaiWinner: eastAbsent ? "west" : "east",
           duration: 0,
           upset: false,
           kenshoEnvelopes: 0,

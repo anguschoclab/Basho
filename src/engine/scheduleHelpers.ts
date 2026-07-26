@@ -63,7 +63,7 @@ export function getDivisionBelow(division: Division): Division | null {
 export function activeDivisionRoster(world: WorldState, division: Division): Rikishi[] {
   const pool: Rikishi[] = [];
   for (const r of getActiveRikishi(world)) {
-    if (r.division === division && !r.injured) {
+    if (r.division === division && !r.injured && !r.isKyujo) {
       pool.push(r);
     }
   }
