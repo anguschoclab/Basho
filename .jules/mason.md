@@ -35,3 +35,7 @@
 **Finding:** `Rikishi["descriptor"]` was loosely typed as an object with `[key: string]: unknown`, leading to a weak `as unknown as Rikishi["descriptor"]` cast in `phase01_daily_welfare.ts` when assigning `toRikishiDescriptor()`.
 **Learning:** By importing the concrete `RikishiDescriptor` interface from `descriptorBands.ts` into the main `rikishi.ts` types, we remove the need for intermediate casts and correctly surface the structure to presenters.
 **Constraint:** Shared types used for complex entity states (like descriptor strings) must be defined properly and linked instead of relying on loose inline objects and casting.
+## 2026-07-27 - Tighten Rikishi stat types in boutUtils
+**Finding:** `h2hConfidence`, `tachiaiPowerWithMatchupPenalty`, and `stat` used `as unknown as Record<string, unknown>` to bypass types and read properties like `h2h` and `style`.
+**Learning:** These properties are formally typed on the `Rikishi` interface now, making the `unknown` casting redundant and weakening type safety.
+**Constraint:** Directly access properties (`r.h2h`, `opponent.style`, `r.weakAgainstStyles`) and limit casts to explicit valid subsets (like `Record<string, unknown>` for dynamic reads) instead of fully breaking the type chain.
