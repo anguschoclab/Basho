@@ -225,6 +225,136 @@ function phase2(
   return pairings;
 }
 
+// ── Lower Division Drama Scoring (3.3) ─────────────────────────────────────────
+
+/**
+ * Scores drama for 7-bout lower divisions.
+ * Adapts the makuuchi drama labels for the shorter format:
+ * - 3-3 on Day 7 = kachi-koshi showdown (equivalent to 7-7 Day 15)
+ * - Winless on Day 4+ (equivalent to Day 5+ in makuuchi)
+ * - Rookie vs veteran and archetype clash apply regardless of division
+ */
+function scoreLowerDivisionDrama(
+  a: Rikishi,
+  b: Rikishi,
+  day: number,
+  standings: Map<string, { wins: number; losses: number }>
+): import("./DramaMatchmaker").DramaContext | null {
+  const aRecord = standings.get(a.id) ?? { wins: 0, losses: 0 };
+  const bRecord = standings.get(b.id) ?? { wins: 0, losses: 0 };
+
+  // Day 7: 3-3 kachi-koshi showdown (highest drama in lower divisions)
+  if (
+    day === 7 &&
+    aRecord.wins === 3 &&
+    aRecord.losses === 3 &&
+    bRecord.wins === 3 &&
+    bRecord.losses === 3
+  ) {
+    return {
+      label: "make_or_break",
+      score: 100,
+      reason: "kachi_koshi_showdown_day7_lower",
+    };
+  }
+
+  // Yusho decider: both rikishi undefeated or within 1 win of leader (day 5+)
+  let leaderWins = 0;
+  for (const record of standings.values()) {
+    if (record.wins > leaderWins) leaderWins = record.wins;
+  }
+  if (day >= 5 && leaderWins >= 4) {
+    const aIsContender = leaderWins - aRecord.wins <= 1;
+    const bIsContender = leaderWins - bRecord.wins <= 1;
+    if (aIsContender && bIsContender) {
+      return {
+        label: "yusho_decider",
+        score: 85,
+        reason: "lower_division_yusho_contender_matchup",
+      };
+    }
+  }
+
+  // Archetype clash: opposing archetype families face off
+  const aArchetype = a.combatProfile?.archetype;
+  const bArchetype = b.combatProfile?.archetype;
+  if (aArchetype && bArchetype) {
+    const isPushVsBelt =
+      (aArchetype === "tsuppari" && bArchetype === "yotsu") ||
+      (aArchetype === "yotsu" && bArchetype === "tsuppari") ||
+      (aArchetype === "oshi" && bArchetype === "yotsu") ||
+      (aArchetype === "yotsu" && bArchetype === "oshi");
+    if (isPushVsBelt) {
+      return {
+        label: "archetype_clash",
+        score: 60,
+        reason: `archetype_clash_${aArchetype}_vs_${bArchetype}`,
+      };
+    }
+  }
+
+  // Rookie vs veteran: young debutant vs established veteran
+  const aIsRookie = (a.careerWins + a.careerLosses) < 5;
+  const bIsRookie = (b.careerWins + b.careerLosses) < 5;
+  const aIsVeteran = (a.careerWins + a.careerLosses) > 100;
+  const bIsVeteran = (b.careerWins + b.careerLosses) > 100;
+  if ((aIsRookie && bIsVeteran) || (bIsRookie && aIsVeteran)) {
+    return {
+      label: "rookie_vs_veteran",
+      score: 55,
+      reason: "rookie_vs_veteran_lower",
+    };
+  }
+
+  // Winless warrior: rikishi still winless on day 4+
+  if (day >= 4 && (aRecord.wins === 0 || bRecord.wins === 0)) {
+    return {
+      label: "winless_warrior",
+      score: 45,
+      reason: "winless_streak_lower",
+    };
+  }
+
+  // Streak breaker: one rikishi on a 3+ win streak (lower threshold for 7-bout)
+  const aStreak = (a as Rikishi & { winStreak?: number }).winStreak ?? 0;
+  const bStreak = (b as Rikishi & { winStreak?: number }).winStreak ?? 0;
+  if (aStreak >= 3 || bStreak >= 3) {
+    return {
+      label: "streak_breaker",
+      score: 50,
+      reason: `win_streak_${Math.max(aStreak, bStreak)}_lower`,
+    };
+  }
+
+  return null;
+}
+
+/**
+ * Applies drama budget post-processing for lower division pairings.
+ * Adds drama labels to pairing reasons for narrative context.
+ */
+function applyLowerDivisionDramaLabels(
+  pairings: MatchPairing[],
+  rikishiMap: Map<string, Rikishi>,
+  day: number,
+  standings: Map<string, { wins: number; losses: number }>
+): MatchPairing[] {
+  return pairings.map((p) => {
+    if (p.reasons.some((r: string) => r.startsWith("drama_"))) return p;
+    const east = rikishiMap.get(p.eastId);
+    const west = rikishiMap.get(p.westId);
+    if (!east || !west) return p;
+    const drama = scoreLowerDivisionDrama(east, west, day, standings);
+    if (drama && drama.score > 0) {
+      return {
+        ...p,
+        reasons: [...p.reasons, `drama_${drama.label}`],
+      };
+    }
+    return p;
+  });
+}
+
 // ── Public: buildLowerDivisionSwiss ─────────────────────────────────────────────────
 
 /**
@@ -264,5 +394,9 @@ export function buildLowerDivisionSwiss(
     raw = phase2(basho, pool, facedSet, day);
   }
 
-  return raw;
+  // Apply drama labels for lower division narrative context (3.3)
+  const rikishiMap = new Map(rikishi.map((r) => [r.id, r]));
+  const withDrama = applyLowerDivisionDramaLabels(raw, rikishiMap, day, basho.standings);
+
+  return withDrama;
 }

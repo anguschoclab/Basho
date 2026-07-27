@@ -13,7 +13,8 @@
 
 import type { Id } from "./common";
 import type { Side, BanzukeSnapshot } from "./banzuke";
-import type { KimariteId, Stance } from "./combat";
+import type { KimariteId, Stance, CombatArchetype } from "./combat";
+import type { InjuryBodyArea, InjurySeverity } from "../systems/health/BodyDefinitions";
 import type { PbpLine } from "../bout/boutNarrative";
 import type { PromotionEvent, DemotionEvent } from "./banzuke";
 import type { WorldState } from "./world";
@@ -64,7 +65,20 @@ export interface BashoInfo {
  */
 export interface BoutLogEntry {
   /** Phase of the bout when this event occurred. */
-  phase: "tachiai" | "clinch" | "momentum" | "finish" | "tactical" | "engagement" | "edge_crisis";
+  phase:
+    | "tachiai"
+    | "clinch"
+    | "momentum"
+    | "finish"
+    | "tactical"
+    | "engagement"
+    | "edge_crisis"
+    | "grip_transition"
+    | "fatigue"
+    | "bout_injury"
+    | "momentum_shift"
+    | "counter_tactic"
+    | "bout_timeout";
   /** Clock time when this event occurred (in seconds). */
   clock?: number;
   /** Human-readable description of the event. */
@@ -126,6 +140,23 @@ export interface BoutResult {
   dramaticContext?: DramaContext;
   /** Whether this bout required a mono-ii (judge consultation). */
   monoii?: boolean;
+  /** Momentum score (positive = east dominated, negative = west dominated). */
+  momentumScore: number;
+  /** In-bout injury if one occurred during the bout. */
+  inBoutInjury: {
+    rikishiId: string;
+    area: InjuryBodyArea;
+    severity: InjurySeverity;
+    triggerEvent: string;
+  } | null;
+  /** Archetype matchup data for narrative context. */
+  archetypeMatchup?: {
+    eastArchetype: CombatArchetype;
+    westArchetype: CombatArchetype;
+    counterActivated: boolean;
+  };
+  /** Whether the bout ended via timeout (max ticks reached). */
+  isTimeout: boolean;
 }
 
 /**
@@ -189,6 +220,19 @@ export interface BashoState {
   schedule?: MatchSchedule[][];
   results?: BoutResult[][];
   currentDay?: number;
+
+  /**
+   * Per-rikishi bout metrics accumulated during the basho (7.1).
+   * Used to populate enriched BashoPerformance fields at basho end.
+   */
+  boutMetrics?: Record<Id, {
+    kimariteUsed: Record<string, number>;
+    upsetCount: number;
+    boutDurations: number[];
+    edgeCrisisSurvived: number;
+    comebackWins: number;
+    opponentTiers: number[];
+  }>;
 }
 
 /** A single award entry persisted to the global award log. */

@@ -160,43 +160,17 @@ export interface EngineStateV2 {
   grappleState: GrappleState;
   /** Tracks who won the initial tachiai clash (may differ from bout winner) */
   tachiaiWinner: Side;
-}
-
-// ---------------------------------------------------------------------------
-// Engine Snapshot Types (moved from kimariteEvaluator.ts — Phase 8)
-// ---------------------------------------------------------------------------
-
-/**
- * Enriched slice of EngineState extracted by resolveBoutPhysics.
- * Kept for API compatibility; the legacy evaluator that consumed it
- * has been deleted as of Phase 8.
- */
-export interface EngineSnapshot {
-  stance: import("./combat").Stance;
-  grappleState: GrappleState;
-  /** East rikishi balance (0–100, derived from cogOffset) */
-  balanceEast: number;
-  /** West rikishi balance (0–100, derived from cogOffset) */
-  balanceWest: number;
-  /** Rough positional label derived from foot positions */
-  position: "front" | "lateral" | "rear";
-  /** Who held advantage at resolution */
-  advantage: "none" | "east" | "west";
-  /** How many ticks the winner held continuous advantage */
-  winnerConsecutiveAdvantage: number;
-  loserLastActionFamily?: string;
-  finalLoserBalanceDrain: number;
-}
-
-// ---------------------------------------------------------------------------
-// Extended Bout Log Types
-// ---------------------------------------------------------------------------
-
-export interface BoutLogEntryV2 {
-  phase: "approach" | "tachiai" | "push_battle" | "belt_battle" | "edge_crisis" | "resolved";
-  tick?: number;
-  data: Record<string, unknown>;
-  spatialData?: Record<string, unknown>;
+  /** Accumulated momentum score (positive = east dominated, negative = west dominated) */
+  momentumScore: number;
+  /** Previous dominant side for momentum shift detection */
+  prevDominantSide: Side | null;
+  /** In-bout injury if one occurred */
+  inBoutInjury: {
+    rikishiId: string;
+    area: import("../systems/health/BodyDefinitions").InjuryBodyArea;
+    severity: import("../systems/health/BodyDefinitions").InjurySeverity;
+    triggerEvent: string;
+  } | null;
 }
 
 // ---------------------------------------------------------------------------

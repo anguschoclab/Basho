@@ -819,6 +819,48 @@
             "Senshuraku arrives with this high-stakes clash between %EAST% and %WEST%.",
             "The curtain falls on the basho with this marquee matchup between %EAST% and %WEST%."
           ],
+          "rivalry_renewed": [
+            "Old wounds reopen as %EAST% and %WEST% face each other once more—their rivalry writes another chapter.",
+            "The crowd buzzes with anticipation—%EAST% versus %WEST% is a grudge match that needs no introduction.",
+            "History hangs heavy in the air as %EAST% and %WEST% renew their storied rivalry on the dohyo.",
+            "These two have bad blood between them. %EAST% and %WEST% settle scores today."
+          ],
+          "archetype_clash": [
+            "A clash of styles! %EAST%'s power meets %WEST%'s technique in a fascinating tactical encounter.",
+            "Opposing philosophies collide—%EAST% and %WEST% represent different paths to victory.",
+            "The dohyo becomes a chessboard as %EAST%'s approach is tested against %WEST%'s contrasting style.",
+            "Style versus style! %EAST% and %WEST% embody fundamentally different sumo philosophies."
+          ],
+          "comeback_story": [
+            "A triumphant return! %EAST% steps back onto the dohyo after a long absence, eyes set on redemption.",
+            "The comeback trail leads here—%EAST% fights to prove the doubters wrong after injury.",
+            "Resilience personified! %EAST% returns from adversity, ready to reclaim former glory.",
+            "The crowd rallies behind %EAST%'s inspiring return from the injury list."
+          ],
+          "rookie_vs_veteran": [
+            "Youth versus experience! The debutant %EAST% faces the wily veteran %WEST% in a generational clash.",
+            "A rookie's baptism by fire—%EAST% tests his mettle against the seasoned campaigner %WEST%.",
+            "The torch could pass today as young %EAST% challenges the established %WEST%.",
+            "Fresh legs against old wisdom—%EAST% and %WEST% represent opposite ends of the career arc."
+          ],
+          "winless_warrior": [
+            "Desperation mounts for %EAST%—still searching for that first win as the basho slips away.",
+            "The pressure is immense! %EAST% enters this bout winless, fighting to avoid a disastrous tournament.",
+            "Pride is on the line for %EAST%, who desperately needs a victory to salvage something from this basho.",
+            "The crowd watches with sympathy as the winless %EAST% battles to break the duck."
+          ],
+          "streak_breaker": [
+            "Can %WEST% halt the unstoppable momentum of %EAST%? A win streak faces its toughest test.",
+            "The streak breaker! %WEST% stands between %EAST% and continued dominance.",
+            "Momentum versus resistance—%EAST%'s hot streak meets %WEST%'s determination to end it.",
+            "All eyes on this one—%EAST%'s winning run is on the line against a resolute %WEST%."
+          ],
+          "demotion_danger": [
+            "Sanyaku survival! %EAST% fights to hold onto his rank against the looming threat of demotion.",
+            "The pressure of rank preservation weighs heavily on %EAST% in this critical sanyaku bout.",
+            "Demotion danger! %EAST% needs a strong showing to avoid the drop from his prestigious rank.",
+            "With sanyaku status hanging in the balance, %EAST% enters this bout with everything to lose."
+          ],
           "generic": [
             "A pivotal moment in the basho.",
             "The crowd holds its breath as %EAST% and %WEST% face off.",
@@ -1600,24 +1642,24 @@
           "%SHIKONA% Extends Win Streak to %STREAK%",
           "Hot Streak: %SHIKONA% Now %STREAK%-0",
           "%STREAK% Wins! %SHIKONA% Keeps Rolling"
-        ]
-      },
-      "subtitles": {
-        "legendary": [
-          "The history books are being rewritten in real-time.",
-          "Is there anyone left who can stand against this momentum?",
-          "The dominance is becoming the only story in the hall."
         ],
-        "hot": [
-          "Confidence is a physical presence in the ring now.",
-          "The win streak is starting to draw national attention.",
-          "Execution has been flawless for days."
-        ],
-        "notable": [
-          "A solid run that puts the rest of the division on notice.",
-          "Consistency is building into a serious threat.",
-          "The momentum is clearly shifting in one direction."
-        ]
+        "subtitles": {
+          "legendary": [
+            "The history books are being rewritten in real-time.",
+            "Is there anyone left who can stand against this momentum?",
+            "The dominance is becoming the only story in the hall."
+          ],
+          "hot": [
+            "Confidence is a physical presence in the ring now.",
+            "The win streak is starting to draw national attention.",
+            "Execution has been flawless for days."
+          ],
+          "notable": [
+            "A solid run that puts the rest of the division on notice.",
+            "Consistency is building into a serious threat.",
+            "The momentum is clearly shifting in one direction."
+          ]
+        }
       },
       "preBasho": {
         "rivalryWatch": [
@@ -2545,6 +2587,11 @@
           "The %AREA% has been a problem area for %SHIKONA% — constant pain, but he keeps fighting."
         ]
       },
+      "injury_return": [
+        "%SHIKONA% is back on the dohyo after injury — a welcome return for the fans.",
+        "Returning from injury, %SHIKONA% looks ready to compete again. How will the body hold up?",
+        "The layoff is over — %SHIKONA% steps back into the ring after time away recovering."
+      ],
       "physical_comparison": [
         "A stark physical contrast: %HEAVIER% outweighs %LIGHTER% by %WEIGHT_DIFF% kilograms.",
         "%HEAVIER% brings %WEIGHT_DIFF% kg more to the dohyo than %LIGHTER% — will mass decide this bout?",
@@ -2564,6 +2611,26 @@
         "%SHIKONA% sits on the cusp of a career milestone — %MILESTONE% career wins.",
         "One more victory brings %SHIKONA% to the %MILESTONE%-win plateau.",
         "A milestone moment potentially awaits %SHIKONA% today at %MILESTONE% career wins."
+      ],
+      "career_phase_debut": [
+        "%SHIKONA% takes the dohyo early in his career — %BOUTS% bouts in, the future stretches ahead.",
+        "A young %SHIKONA% finds his footing in the professional ranks.",
+        "Still finding his way with just %BOUTS% career bouts, %SHIKONA% shows promise."
+      ],
+      "career_phase_prime": [
+        "%SHIKONA% stands at the peak of his powers — %AGE% years old and in his prime.",
+        "In his wrestling prime at %AGE%, %SHIKONA% embodies the best of his craft.",
+        "The prime years suit %SHIKONA% well — %BOUTS% bouts of hard-earned experience."
+      ],
+      "career_phase_decline": [
+        "At %AGE%, %SHIKONA% fights against time as much as his opponent.",
+        "The twilight years approach for %SHIKONA%, but the fire still burns.",
+        "%SHIKONA% may be past his peak at %AGE%, but wisdom compensates for fading speed."
+      ],
+      "career_phase_veteran": [
+        "A true veteran at %AGE%, %SHIKONA% has seen it all across %BOUTS% career bouts.",
+        "The veteran %SHIKONA% continues his remarkable longevity on the dohyo.",
+        "Years of battle have shaped %SHIKONA% into a grizzled veteran at %AGE%."
       ],
       "consecutive_kachi": [
         "%SHIKONA% rides a %STREAK%-basho kachi-koshi streak into this bout.",
@@ -2742,6 +2809,33 @@
           "We have a tie at the top — %WINNER% joins the leader."
         ]
       },
+      "rivalry": {
+        "domination": [
+          "%WINNER% extends the dominance — now %WINNER_WINS%-%LOSER_WINS% in the series.",
+          "It's %WINNER_WINS% to %LOSER_WINS% now. %WINNER% owns this matchup.",
+          "The pattern continues: %WINNER% has beaten %LOSER% %WINNER_WINS% times across %TOTAL% meetings."
+        ],
+        "evened": [
+          "All even now — %WINNER% levels the series at %WINNER_WINS%-%LOSER_WINS%.",
+          "The rivalry is deadlocked: %WINNER_WINS%-%LOSER_WINS% after %TOTAL% bouts.",
+          "%WINNER% draws level. This one's going to be settled on the dohyo."
+        ],
+        "revenge": [
+          "Revenge for %WINNER% — avenging the last loss to bring the series to %WINNER_WINS%-%LOSER_WINS%.",
+          "%WINNER% gets payback. The series tightens to %WINNER_WINS%-%LOSER_WINS%.",
+          "Last time went to %LOSER%, but not today. %WINNER% strikes back to make it %WINNER_WINS%-%LOSER_WINS%."
+        ],
+        "continued": [
+          "%WINNER% adds another chapter — %WINNER_WINS%-%LOSER_WINS% in the head-to-head.",
+          "The series moves to %WINNER_WINS%-%LOSER_WINS% after %TOTAL% meetings.",
+          "%WINNER% edges ahead in the rivalry: %WINNER_WINS% wins to %LOSER_WINS%."
+        ]
+      },
+      "kensho": [
+        "%ENVELOPES% kensho envelopes rain down for %WINNER% — the sponsors are pleased.",
+        "Sponsor banners flutter as %WINNER% collects %ENVELOPES% kensho envelopes.",
+        "%WINNER% is rewarded with %ENVELOPES% kensho payouts — a lucrative day on the dohyo."
+      ],
       "career_milestone": [
         "That win brings %SHIKONA% to %MILESTONE% career victories — a remarkable achievement.",
         "History for %SHIKONA% — career win number %MILESTONE% is in the books.",

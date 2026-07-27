@@ -27,6 +27,8 @@ import type {
   BeltBattleState,
 } from "../../types/combat-spatial";
 import { tawaraBounceResistance, classifyEdgeExitKimarite } from "../boutSpatial";
+import { CLOCK_MULTIPLIER } from "../../../constants/engine/physics";
+import type { InjuryBodyArea, InjurySeverity } from "../../systems/health/BodyDefinitions";
 
 export function buildEdgeCrisis(
   crisisSide: Side,
@@ -72,8 +74,8 @@ export function buildEdgeCrisis(
 
 export function tickEdgeCrisis(
   rng: SeededRNG,
-  _east: Rikishi,
-  _west: Rikishi,
+  east: Rikishi,
+  west: Rikishi,
   st: EngineStateV2,
   boutLog: BoutLogEntry[]
 ): { winner?: Side; kimarite?: KimariteId; escaped?: true } | undefined {
@@ -100,8 +102,40 @@ export function tickEdgeCrisis(
   if (crisis.tawaraToePosition >= TOE_POSITION_FORCED_OUT) {
     const kimarite = classifyEdgeExitKimarite(crisis, st, rng);
     const winner: Side = crisis.side === "east" ? "west" : "east";
+
+    // Injury risk during bouts (1.3): high-pressure edge exits can cause injury
+    const injuryRisk =
+      (crisis.tawaraToePosition / TOE_POSITION_MAX) *
+      (crisis.opponentPressureX + Math.abs(crisis.opponentPressureZ)) * 0.001;
+    if (injuryRisk > 0.15 && rng.next() < injuryRisk && !st.inBoutInjury) {
+      const areas: InjuryBodyArea[] = ["knee", "ankle", "shoulder", "back", "wrist"];
+      const area = areas[Math.floor(rng.next() * areas.length)];
+      const severity: InjurySeverity = injuryRisk > 0.3 ? "moderate" : "minor";
+      const injuredId = crisis.side === "east" ? east.id : west.id;
+      st.inBoutInjury = {
+        rikishiId: injuredId,
+        area,
+        severity,
+        triggerEvent: "edge_crisis_forced_out",
+      };
+      boutLog.push({
+        phase: "bout_injury",
+        clock: st.tick * CLOCK_MULTIPLIER,
+        data: {
+          rikishiId: injuredId,
+          area,
+          severity,
+          triggerEvent: "edge_crisis_forced_out",
+          injuryRisk,
+        },
+      });
+    }
+
+    // Mono-ii detection (1.7): close edge calls are controversial
+    const controversial = crisis.tawaraToePosition < TOE_POSITION_FORCED_OUT * 1.1;
     boutLog.push({
       phase: "edge_crisis",
+      clock: st.tick * CLOCK_MULTIPLIER,
       data: {
         side: crisis.side,
         escaped: false,
@@ -109,6 +143,7 @@ export function tickEdgeCrisis(
         escapeAngle: crisis.escapeAngle,
         opponentPressureZ: crisis.opponentPressureZ,
         forced: true,
+        controversial,
       },
     });
     return { winner, kimarite };
@@ -127,9 +162,13 @@ export function tickEdgeCrisis(
     (escapeMargin > ESCAPE_MARGIN_THRESHOLD ||
       rng.next() < ESCAPE_BASE_PROBABILITY + escapeMargin * ESCAPE_MARGIN_PROBABILITY_MULTIPLIER);
 
+  // Mono-ii detection for close escape calls (1.7)
+  const controversial = !didEscape && Math.abs(escapeMargin) < ESCAPE_MARGIN_THRESHOLD * 0.5;
+
   // Log this crisis tick for narrative
   boutLog.push({
     phase: "edge_crisis",
+    clock: st.tick * CLOCK_MULTIPLIER,
     data: {
       side: crisis.side,
       escaped: didEscape,
@@ -138,6 +177,7 @@ export function tickEdgeCrisis(
       opponentPressureZ: crisis.opponentPressureZ,
       tawaraBounceForce: bounceForce,
       ticksInCrisis: crisis.ticksInCrisis,
+      controversial,
     },
   });
 

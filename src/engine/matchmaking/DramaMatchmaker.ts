@@ -26,7 +26,19 @@ export type DramaLabel =
   | "yusho_decider" // Yusho leaders facing each other
   | "kadoban_survival" // Ozeki kadoban pressure bout
   | "kinboshi_hunt" // Maegashira vs Yokozuna/Ozeki
-  | "senshuraku_finale"; // Final day elite matchup
+  | "senshuraku_finale" // Final day elite matchup
+  | "rivalry_renewed" // Rikishi with active rivalry facing each other
+  | "archetype_clash" // Opposing archetypes face off (e.g. push vs belt)
+  | "comeback_story" // Rikishi returning from injury facing tough opponent
+  | "rookie_vs_veteran" // Young debutant vs established veteran
+  | "winless_warrior" // Rikishi still winless on day 5+
+  | "streak_breaker" // One rikishi on a long win streak vs opponent
+  | "demotion_danger" // Sekiwake/Komusubi at risk of demotion
+  | "grudge_match" // Rivalry heat > 70 — overrides rivalry_renewed
+  | "debut_showcase" // Rookie's first makuuchi bout vs sanyaku
+  | "relegation_battle" // Day 14-15, both at make-koshi risk in lower divisions
+  | "yokozuna_hunt" // Komusubi/sekiwake vs yokozuna on days 10-14
+  | "origin_matchup"; // Two rikishi from same origin facing each other
 
 /**
  * Drama context describing the narrative significance of a pairing.
@@ -77,7 +89,8 @@ export function scoreDrama(
   a: Rikishi,
   b: Rikishi,
   day: number,
-  standings: Map<string, { wins: number; losses: number }>
+  standings: Map<string, { wins: number; losses: number }>,
+  rivalryState?: Map<string, { heat: number; aId: string; bId: string }>
 ): DramaContext | null {
   const aRecord = standings.get(a.id) ?? { wins: 0, losses: 0 };
   const bRecord = standings.get(b.id) ?? { wins: 0, losses: 0 };
@@ -146,6 +159,167 @@ export function scoreDrama(
     };
   }
 
+  // Expanded drama labels (3.1) + Rivalry-aware matchmaking (3.2)
+
+  // Rivalry: use rivalryState if available, fall back to rikishi.rivalries
+  let rivalryHeat = 0;
+  if (rivalryState) {
+    const pairKey = a.id < b.id ? `${a.id}-${b.id}` : `${b.id}-${a.id}`;
+    const rivalry = rivalryState.get(pairKey);
+    if (rivalry) rivalryHeat = rivalry.heat;
+  }
+  const aRivalry = (a as Rikishi & { rivalries?: string[] }).rivalries;
+  const bRivalry = (b as Rikishi & { rivalries?: string[] }).rivalries;
+  const hasRivalryLink = aRivalry?.includes(b.id) || bRivalry?.includes(a.id);
+  if (rivalryHeat > 70) {
+    return {
+      label: "grudge_match",
+      score: 95,
+      reason: "rivalry_heat_extreme",
+    };
+  }
+  if (rivalryHeat > 40 || hasRivalryLink) {
+    return {
+      label: "rivalry_renewed",
+      score: Math.min(95, 50 + rivalryHeat / 2),
+      reason: "active_rivalry_matchup",
+    };
+  }
+
+  // Archetype clash: opposing archetype families face off
+  const aArchetype = a.combatProfile?.archetype;
+  const bArchetype = b.combatProfile?.archetype;
+  if (aArchetype && bArchetype) {
+    const isPushVsBelt =
+      (aArchetype === "tsuppari" && bArchetype === "yotsu") ||
+      (aArchetype === "yotsu" && bArchetype === "tsuppari");
+    const isSpeedVsGiant =
+      (aArchetype === "speedster" && bArchetype === "giant") ||
+      (aArchetype === "giant" && bArchetype === "speedster");
+    if (isPushVsBelt || isSpeedVsGiant) {
+      return {
+        label: "archetype_clash",
+        score: 60,
+        reason: `archetype_clash_${aArchetype}_vs_${bArchetype}`,
+      };
+    }
+  }
+
+  // Comeback story: rikishi returning from injury
+  const aComeback = a.injured === false && (a as Rikishi & { justReturnedFromInjury?: boolean }).justReturnedFromInjury;
+  const bComeback = b.injured === false && (b as Rikishi & { justReturnedFromInjury?: boolean }).justReturnedFromInjury;
+  if (aComeback || bComeback) {
+    return {
+      label: "comeback_story",
+      score: 65,
+      reason: "return_from_injury",
+    };
+  }
+
+  // Rookie vs veteran: young debutant vs established veteran
+  const aIsRookie = (a.careerWins + a.careerLosses) < 5;
+  const bIsRookie = (b.careerWins + b.careerLosses) < 5;
+  const aIsVeteran = (a.careerWins + a.careerLosses) > 200;
+  const bIsVeteran = (b.careerWins + b.careerLosses) > 200;
+  if ((aIsRookie && bIsVeteran) || (bIsRookie && aIsVeteran)) {
+    return {
+      label: "rookie_vs_veteran",
+      score: 55,
+      reason: "rookie_vs_veteran",
+    };
+  }
+
+  // Winless warrior: rikishi still winless on day 5+
+  if (day >= 5 && (aRecord.wins === 0 || bRecord.wins === 0)) {
+    return {
+      label: "winless_warrior",
+      score: 45,
+      reason: "winless_streak",
+    };
+  }
+
+  // Streak breaker: one rikishi on a 5+ win streak
+  const aStreak = (a as Rikishi & { winStreak?: number }).winStreak ?? 0;
+  const bStreak = (b as Rikishi & { winStreak?: number }).winStreak ?? 0;
+  if (aStreak >= 5 || bStreak >= 5) {
+    return {
+      label: "streak_breaker",
+      score: 50,
+      reason: `win_streak_${Math.max(aStreak, bStreak)}`,
+    };
+  }
+
+  // Demotion danger: Sekiwake/Komusubi at risk of demotion (day 12+, < 6 wins)
+  const aIsSanyaku = a.rank === "sekiwake" || a.rank === "komusubi";
+  const bIsSanyaku = b.rank === "sekiwake" || b.rank === "komusubi";
+  if (day >= 12 && ((aIsSanyaku && aRecord.wins < 6) || (bIsSanyaku && bRecord.wins < 6))) {
+    return {
+      label: "demotion_danger",
+      score: 60,
+      reason: "sanyaku_demotion_risk",
+    };
+  }
+
+  // Debut showcase: rookie's first makuuchi bout against sanyaku
+  const aMakuuchiBouts = (a.careerHistory ?? []).filter(
+    (h) => h.division === "makuuchi"
+  ).length;
+  const bMakuuchiBouts = (b.careerHistory ?? []).filter(
+    (h) => h.division === "makuuchi"
+  ).length;
+  const aIsDebut = aMakuuchiBouts <= 1 && a.division === "makuuchi";
+  const bIsDebut = bMakuuchiBouts <= 1 && b.division === "makuuchi";
+  if ((aIsDebut && bIsSanyaku) || (bIsDebut && aIsSanyaku)) {
+    return {
+      label: "debut_showcase",
+      score: 65,
+      reason: "rookie_debut_vs_sanyaku",
+    };
+  }
+
+  // Yokozuna hunt: komusubi/sekiwake vs yokozuna on days 10-14
+  const aIsYokozuna = a.rank === "yokozuna";
+  const bIsYokozuna = b.rank === "yokozuna";
+  if (
+    day >= 10 &&
+    day <= 14 &&
+    ((aIsSanyaku && bIsYokozuna) || (bIsSanyaku && aIsYokozuna))
+  ) {
+    return {
+      label: "yokozuna_hunt",
+      score: 70,
+      reason: "sanyaku_vs_yokozuna",
+    };
+  }
+
+  // Relegation battle: day 14-15, both at make-koshi risk in lower divisions
+  const aIsLowerDivision =
+    a.division === "makushita" || a.division === "sandanme";
+  const bIsLowerDivision =
+    b.division === "makushita" || b.division === "sandanme";
+  if (
+    day >= 14 &&
+    aIsLowerDivision &&
+    bIsLowerDivision &&
+    aRecord.wins < 4 &&
+    bRecord.wins < 4
+  ) {
+    return {
+      label: "relegation_battle",
+      score: 60,
+      reason: "lower_division_relegation",
+    };
+  }
+
+  // Origin matchup: two rikishi from same origin
+  if (a.origin && b.origin && a.origin === b.origin) {
+    return {
+      label: "origin_matchup",
+      score: 40,
+      reason: `same_origin_${a.origin}`,
+    };
+  }
+
   // No significant drama
   return null;
 }
@@ -189,7 +363,8 @@ export function applyDramaBudget(
   rikishiMap: Map<string, Rikishi>,
   day: number,
   standings: Map<string, { wins: number; losses: number }>,
-  facedSet: Set<string>
+  facedSet: Set<string>,
+  rivalryState?: Map<string, { heat: number; aId: string; bId: string }>
 ): MatchPairing[] {
   // Score all pairings for drama
   let initialScore = 0;
@@ -197,14 +372,17 @@ export function applyDramaBudget(
     const east = rikishiMap.get(p.eastId);
     const west = rikishiMap.get(p.westId);
     if (!east || !west) continue;
-    const drama = scoreDrama(east, west, day, standings);
+    const drama = scoreDrama(east, west, day, standings, rivalryState);
     initialScore += drama?.score ?? 0;
   }
 
-  // Attempt up to 3 swaps to increase drama
+  // Rivalry-aware: increase max swaps when rivalry pairs exist (3.2)
+  const hasRivalryPairs = rivalryState && rivalryState.size > 0;
+  const maxSwaps = hasRivalryPairs ? 5 : 3;
+
+  // Attempt up to maxSwaps to increase drama
   let bestPairings = [...pairings];
   let bestScore = initialScore;
-  const maxSwaps = 3;
 
   for (let swapCount = 0; swapCount < maxSwaps; swapCount++) {
     let improved = false;
@@ -234,8 +412,8 @@ export function applyDramaBudget(
 
         if (!east1 || !west1 || !east2 || !west2) continue;
 
-        const drama1 = scoreDrama(east1, west1, day, standings);
-        const drama2 = scoreDrama(east2, west2, day, standings);
+        const drama1 = scoreDrama(east1, west1, day, standings, rivalryState);
+        const drama2 = scoreDrama(east2, west2, day, standings, rivalryState);
 
         // Calculate new total score
         const p1East = rikishiMap.get(p1.eastId);
@@ -243,8 +421,8 @@ export function applyDramaBudget(
         const p2East = rikishiMap.get(p2.eastId);
         const p2West = rikishiMap.get(p2.westId);
         if (!p1East || !p1West || !p2East || !p2West) continue;
-        const oldDrama1 = scoreDrama(p1East, p1West, day, standings);
-        const oldDrama2 = scoreDrama(p2East, p2West, day, standings);
+        const oldDrama1 = scoreDrama(p1East, p1West, day, standings, rivalryState);
+        const oldDrama2 = scoreDrama(p2East, p2West, day, standings, rivalryState);
 
         const scoreChange =
           (drama1?.score ?? 0) +
@@ -287,7 +465,7 @@ export function applyDramaBudget(
     const west = rikishiMap.get(p.westId);
     if (!east || !west) return p;
 
-    const drama = scoreDrama(east, west, day, standings);
+    const drama = scoreDrama(east, west, day, standings, rivalryState);
     if (drama && drama.score > 0) {
       return {
         ...p,

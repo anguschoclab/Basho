@@ -68,10 +68,17 @@ export function tickPushBattle(
   const adjustedEastForce = push.eastForce * eastFatPenalty;
   const adjustedWestForce = push.westForce * westFatPenalty;
 
+  // Archetype-specific bout behavior (2.1): apply pushVelocityBonus to force
+  // Body type behavior (5.1): combine with body type push/lateral bonuses
+  const eastPushBonus = ((east.combatProfile?.archetypeBehavior?.pushVelocityBonus ?? 0) + (east.combatProfile?.bodyTypeBehavior?.pushVelocityBonus ?? 0)) / 100;
+  const westPushBonus = ((west.combatProfile?.archetypeBehavior?.pushVelocityBonus ?? 0) + (west.combatProfile?.bodyTypeBehavior?.pushVelocityBonus ?? 0)) / 100;
+  const eastLateralBonus = ((east.combatProfile?.archetypeBehavior?.lateralMovementBonus ?? 0) + (east.combatProfile?.bodyTypeBehavior?.lateralMovementBonus ?? 0)) / 100;
+  const westLateralBonus = ((west.combatProfile?.archetypeBehavior?.lateralMovementBonus ?? 0) + (west.combatProfile?.bodyTypeBehavior?.lateralMovementBonus ?? 0)) / 100;
+
   const massAdvantageEast = (st.east.mass - st.west.mass) * MASS_ADVANTAGE_MULTIPLIER;
   const jitteredForceDiff =
-    adjustedEastForce -
-    adjustedWestForce +
+    adjustedEastForce * (1 + eastPushBonus) -
+    adjustedWestForce * (1 + westPushBonus) +
     massAdvantageEast +
     jitter(rng, FORCE_DIFF_JITTER_MAGNITUDE);
   const displacement = Math.abs(jitteredForceDiff) * DISPLACEMENT_PER_FORCE;
@@ -97,7 +104,7 @@ export function tickPushBattle(
     // Defender (west) may attempt a discrete lateral slip — likelier the faster
     // it is. Stochastic (seeded) so even a sustained duel flickers between square
     // pushing and glancing rather than saturating off-axis.
-    if (rng.next() < (stat(west, "speed") / 100) * LATERAL_SLIP_CHANCE) {
+    if (rng.next() < (stat(west, "speed") / 100) * LATERAL_SLIP_CHANCE * (1 + westLateralBonus)) {
       push.westLateralMomentum += LATERAL_SLIP_IMPULSE;
     }
   } else if (jitteredForceDiff < 0) {
@@ -106,7 +113,7 @@ export function tickPushBattle(
     st.east.cogOffset += Math.abs(jitteredForceDiff) * COG_OFFSET_PER_FORCE;
     st.west.velocityX = Math.abs(jitteredForceDiff) * DOMINANT_VELOCITY_SCALE;
     st.east.velocityX = 0;
-    if (rng.next() < (stat(east, "speed") / 100) * LATERAL_SLIP_CHANCE) {
+    if (rng.next() < (stat(east, "speed") / 100) * LATERAL_SLIP_CHANCE * (1 + eastLateralBonus)) {
       push.eastLateralMomentum += LATERAL_SLIP_IMPULSE;
     }
   }

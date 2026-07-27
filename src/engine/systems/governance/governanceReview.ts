@@ -362,6 +362,14 @@ export function runRetirements(world: WorldState): StateImpact {
     const id = r.id;
     const reason = checkRetirement(r, world.year, world.seed);
     if (reason) {
+      const careerWins = r.careerWins ?? 0;
+      const careerLosses = r.careerLosses ?? 0;
+      const yearsActive = world.year - r.birthYear - 15;
+      const highestRank = r.rank;
+      const yushoCount = (r.careerHistory ?? []).filter(
+        (h) => h.isYusho
+      ).length;
+      const kinboshiCount = r.economics?.kinboshiCount ?? 0;
       builder.logEvent(
         "LIFECYCLE_EVENT",
         "career",
@@ -371,8 +379,16 @@ export function runRetirements(world: WorldState): StateImpact {
           shikona: r.shikona ?? r.name ?? id,
           status: "retirement",
           reason,
+          careerWins,
+          careerLosses,
+          highestRank,
+          yushoCount,
+          kinboshiCount,
+          yearsActive,
+          careerPhase: r.declinePhase ?? "twilight",
+          origin: r.origin ?? "Japan",
         },
-        { heyaId: r.heyaId, rikishiId: id }
+        { heyaId: r.heyaId, rikishiId: id, importance: "headline" }
       );
       vacanciesByHeyaId[r.heyaId] = (vacanciesByHeyaId[r.heyaId] || 0) + 1;
       rikishiToRetire.push(id);

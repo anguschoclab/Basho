@@ -5,7 +5,7 @@ import type { InjuryType, InjurySeverity, InjuryBodyArea } from "../systems/heal
 
 import type { Id } from "./common";
 import type { AvatarConfig } from "./avatar";
-import type { Style, KimariteId, CombatProfile } from "./combat";
+import type { Style, KimariteId, CombatProfile, CombatArchetype } from "./combat";
 export type { Style, KimariteId } from "./combat";
 
 import type { RikishiDescriptor } from "../descriptorBands";
@@ -230,6 +230,9 @@ export interface Rikishi {
   // Used by InjuryService for durability calculation
   durability?: number;
 
+  // Set when a rikishi returns from injury (cleared after one basho)
+  recentlyReturnedFromInjury?: boolean;
+
   // Fan appeal score, bumped by kinboshi/ginboshi upsets
   marketability?: number;
 
@@ -242,4 +245,19 @@ export interface Rikishi {
   // Citizenship & Tenure (J1)
   joinedHeyaDate?: string; // ISO year string e.g. "2025"
   citizenshipStatus?: "native" | "foreign" | "naturalized";
+
+  // Body type derived from height/weight ratio — affects physics modifiers
+  bodyType?: "tower" | "barrel" | "compact" | "lanky";
+
+  // Generated backstory string for narrative enrichment
+  backstory?: string;
+
+  // History of archetype changes over career
+  archetypeHistory?: Array<{ archetype: CombatArchetype; year: number }>;
+
+  // Career decline phase for narrative context
+  declinePhase?: "pre-peak" | "peak" | "early-decline" | "late-decline" | "twilight";
+
+  // Tracks consecutive 11+ win performances at sekiwake/komusubi for ozeki promotion
+  consecutiveStrongSekiwake?: number;
 }

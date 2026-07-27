@@ -7,13 +7,10 @@ import {
   CLOCK_MULTIPLIER,
   EXCITEMENT_TICK_DIVISOR,
   EDGE_CRISIS_ESCAPE_EXCITEMENT_POINTS,
-  POSITION_REAR_THRESHOLD,
-  POSITION_LATERAL_THRESHOLD,
-  ADVANTAGE_THRESHOLD_DIFFERENTIAL,
-  BALANCE_CALCULATION_MULTIPLIER,
 } from "../../../constants/engine/physics";
-import type { EngineStateV2, EngineSnapshot, BeltBattleState } from "../../types/combat-spatial";
+import type { EngineStateV2, BeltBattleState } from "../../types/combat-spatial";
 import type { BoutContext } from "../boutUtils";
+import type { CombatArchetype } from "../../types/combat";
 
 export function buildBoutResultV2(
   bout: BoutContext,
@@ -22,7 +19,8 @@ export function buildBoutResultV2(
   st: EngineStateV2,
   winner: Side,
   kimarite: KimariteId,
-  boutLog: BoutLogEntry[]
+  boutLog: BoutLogEntry[],
+  isTimeout: boolean = false
 ): BoutResult {
   const duration = Math.max(DURATION_MIN_SECONDS, st.tick * CLOCK_MULTIPLIER);
 
@@ -30,13 +28,17 @@ export function buildBoutResultV2(
   //   - Bout length: up to 40 points (120 ticks max → ~40)
   //   - Each tawara escape: +20 points (dramatic near-defeats)
   //   - Grip reversals (inside→outside swaps in log): +10 points each
+  //   - Momentum shifts: +5 points each
   const edgeCrisisEscapes = boutLog.filter(
     (e) => e.phase === "edge_crisis" && (e.data as Record<string, unknown>)?.escaped === true
   ).length;
+  const momentumShifts = boutLog.filter((e) => e.phase === "momentum_shift").length;
   const excitementScore = Math.min(
     100,
     Math.round(
-      st.tick / EXCITEMENT_TICK_DIVISOR + edgeCrisisEscapes * EDGE_CRISIS_ESCAPE_EXCITEMENT_POINTS
+      st.tick / EXCITEMENT_TICK_DIVISOR +
+        edgeCrisisEscapes * EDGE_CRISIS_ESCAPE_EXCITEMENT_POINTS +
+        momentumShifts * 5
     )
   );
 
@@ -53,6 +55,16 @@ export function buildBoutResultV2(
   const loserRankNum = loserRikishi.rankNumber ?? 99;
   const upset = winnerRankNum > loserRankNum;
 
+  // Detect mono-ii trigger: close bout with edge crisis controversy
+  const monoii = boutLog.some((e) => e.phase === "edge_crisis" && (e.data as Record<string, unknown>)?.controversial === true);
+
+  // Archetype matchup data
+  const eastArchetype: CombatArchetype = east.combatProfile.archetype;
+  const westArchetype: CombatArchetype = west.combatProfile.archetype;
+  const counterActivated =
+    east.combatProfile.counterFamily === west.combatProfile.counterFamily ||
+    west.combatProfile.counterFamily === east.combatProfile.counterFamily;
+
   return {
     boutId: bout.id,
     winner,
@@ -68,62 +80,11 @@ export function buildBoutResultV2(
     isKinboshi: false, // set by boutResolver
     log: boutLog,
     kenshoEnvelopes: 0,
-  };
-}
-
-/**
- * Build EngineSnapshot from final spatial state.
- * Provides real derived values for position, advantage, balance.
- */
-export function buildEngineSnapshotV2(st: EngineStateV2, winner: Side): EngineSnapshot {
-  const beltPhase = st.phase.tag === "belt_battle" ? st.phase : null;
-  const grappleState: GrappleState = beltPhase
-    ? deriveGrappleStateFromBelt(beltPhase.state)
-    : st.grappleState;
-  st.grappleState = grappleState;
-
-  const resolvedStance =
-    st.phase.tag === "belt_battle" ||
-    (st.phase.tag === "edge_crisis" && st.phase.prev === "belt_battle")
-      ? ("belt-dominant" as const)
-      : ("push-dominant" as const);
-
-  // Derive position from average foot position
-  const avgFoot = (Math.abs(st.east.leadingFootX) + Math.abs(st.west.leadingFootX)) / 2;
-  const position: "front" | "lateral" | "rear" =
-    avgFoot > POSITION_REAR_THRESHOLD
-      ? "rear"
-      : avgFoot > POSITION_LATERAL_THRESHOLD
-        ? "lateral"
-        : "front";
-
-  // Derive advantage from CoG stability differential
-  const advantage: "none" | "east" | "west" =
-    st.east.cogOffset < st.west.cogOffset - ADVANTAGE_THRESHOLD_DIFFERENTIAL
-      ? "east"
-      : st.west.cogOffset < st.east.cogOffset - ADVANTAGE_THRESHOLD_DIFFERENTIAL
-        ? "west"
-        : "none";
-
-  return {
-    stance: resolvedStance,
-    grappleState,
-    balanceEast: Math.max(
-      0,
-      Math.min(100, 100 - Math.abs(st.east.cogOffset) * BALANCE_CALCULATION_MULTIPLIER)
-    ),
-    balanceWest: Math.max(
-      0,
-      Math.min(100, 100 - Math.abs(st.west.cogOffset) * BALANCE_CALCULATION_MULTIPLIER)
-    ),
-    position,
-    advantage,
-    winnerConsecutiveAdvantage: st.tick,
-    loserLastActionFamily: undefined,
-    finalLoserBalanceDrain:
-      winner === "east"
-        ? Math.abs(st.west.cogOffset) * BALANCE_CALCULATION_MULTIPLIER
-        : Math.abs(st.east.cogOffset) * BALANCE_CALCULATION_MULTIPLIER,
+    momentumScore: st.momentumScore,
+    inBoutInjury: st.inBoutInjury,
+    archetypeMatchup: { eastArchetype, westArchetype, counterActivated },
+    isTimeout,
+    monoii,
   };
 }
 

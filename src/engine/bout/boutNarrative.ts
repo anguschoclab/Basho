@@ -88,6 +88,7 @@ export type PbpTag =
   | "rookie"
   | "kadoban"
   | "career_high"
+  | "career_phase"
   | "consecutive_kachi"
   | "kachi_koshi"
   | "make_koshi"
@@ -572,6 +573,20 @@ export function generateBoutNarrative(
     }
   }
 
+  // 3d-2. Injury recovery narrative (6.3): rikishi returning from injury
+  for (const r of [east, west]) {
+    if (r.recentlyReturnedFromInjury && !r.injured) {
+      push(
+        BardEngine.resolve(preBoutRng, "pre_bout.injury_return", {
+          SHIKONA: r.shikona,
+          rikishiId: r.id,
+        }).text,
+        "pre_bout",
+        ["comeback", "injury"]
+      );
+    }
+  }
+
   // 3e. Physical comparison (weight/height diff)
   const weightDiff = Math.abs(east.weight - west.weight);
   const heightDiff = Math.abs(east.height - west.height);
@@ -710,6 +725,29 @@ export function generateBoutNarrative(
         }).text,
         "pre_bout",
         ["title_stakes"]
+      );
+    }
+  }
+
+  // 3j4. Career phase narrative (6.1): debut, prime, decline, veteran
+  for (const r of [east, west]) {
+    const age = r.age ?? (world.year - r.birthYear);
+    const careerBouts = (r.careerWins ?? 0) + (r.careerLosses ?? 0);
+    let phase: "debut" | "prime" | "decline" | "veteran" | null = null;
+    if (careerBouts < 15) phase = "debut";
+    else if (age >= 34) phase = "veteran";
+    else if (age >= 30) phase = "decline";
+    else if (age >= 24 && age <= 29 && careerBouts > 50) phase = "prime";
+    if (phase) {
+      push(
+        BardEngine.resolve(preBoutRng, `pre_bout.career_phase_${phase}`, {
+          SHIKONA: r.shikona,
+          AGE: age.toString(),
+          BOUTS: careerBouts.toString(),
+          rikishiId: r.id,
+        }).text,
+        "pre_bout",
+        [phase === "debut" ? "rookie" : phase === "veteran" ? "veteran" : "career_phase"]
       );
     }
   }
@@ -1601,6 +1639,63 @@ export function generateBoutNarrative(
       }).text,
       "post_bout",
       ["upset"]
+    );
+  }
+
+  // 15d. Post-bout rivalry result (7.2): narrative about series implications
+  if (pair && pair.meetings >= 1) {
+    const aIsEast = pair.aId === east.id;
+    const eastWinsBefore = aIsEast ? pair.aWins : pair.bWins;
+    const westWinsBefore = aIsEast ? pair.bWins : pair.aWins;
+    const winnerIsEast = result.winner === "east";
+    const newEastWins = eastWinsBefore + (winnerIsEast ? 1 : 0);
+    const newWestWins = westWinsBefore + (winnerIsEast ? 0 : 1);
+    const totalAfter = newEastWins + newWestWins;
+
+    if (totalAfter >= 2) {
+      const winnerShikona = winnerIsEast ? east.shikona : west.shikona;
+      const loserShikona = winnerIsEast ? west.shikona : east.shikona;
+      const winnerNewWins = winnerIsEast ? newEastWins : newWestWins;
+      const loserNewWins = winnerIsEast ? newWestWins : newEastWins;
+      const diff = Math.abs(newEastWins - newWestWins);
+
+      let rivalryPath: string;
+      if (diff >= 3) {
+        rivalryPath = "post_bout.rivalry.domination";
+      } else if (winnerNewWins === loserNewWins) {
+        rivalryPath = "post_bout.rivalry.evened";
+      } else if (loserNewWins > 0 && winnerNewWins === loserNewWins + 1 && loserNewWins >= 1) {
+        rivalryPath = "post_bout.rivalry.revenge";
+      } else {
+        rivalryPath = "post_bout.rivalry.continued";
+      }
+
+      push(
+        BardEngine.resolve(postBoutRng, rivalryPath, {
+          WINNER: winnerShikona,
+          LOSER: loserShikona,
+          WINNER_WINS: winnerNewWins.toString(),
+          LOSER_WINS: loserNewWins.toString(),
+          TOTAL: totalAfter.toString(),
+          winnerId: winnerRikishi.id,
+          loserId: loserRikishi.id,
+        }).text,
+        "post_bout",
+        ["rivalry"]
+      );
+    }
+  }
+
+  // 15e. Kensho & economic context (7.3): mention sponsor envelopes when awarded
+  if (result.kenshoEnvelopes > 0) {
+    push(
+      BardEngine.resolve(postBoutRng, "post_bout.kensho", {
+        WINNER: winnerRikishi.shikona,
+        ENVELOPES: result.kenshoEnvelopes.toString(),
+        winnerId: winnerRikishi.id,
+      }).text,
+      "post_bout",
+      ["kensho"]
     );
   }
 

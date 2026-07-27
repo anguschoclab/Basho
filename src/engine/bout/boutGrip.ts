@@ -252,10 +252,21 @@ export function evolveGripGeometry(
   const eastFatigueDecay = 1 - eastFatigue * 0.003;
   const westFatigueDecay = 1 - westFatigue * 0.003;
 
-  if (belt.eastLeft) belt.eastLeft.gripStrength *= eastFatigueDecay;
-  if (belt.eastRight) belt.eastRight.gripStrength *= eastFatigueDecay;
-  if (belt.westLeft) belt.westLeft.gripStrength *= westFatigueDecay;
-  if (belt.westRight) belt.westRight.gripStrength *= westFatigueDecay;
+  // Grip degradation under pressure (1.8): the losing side's grip degrades faster
+  // due to defensive strain and being forced backwards
+  const torqueDiff = belt.torqueEast - belt.torqueWest;
+  const PRESSURE_GRIP_DECAY = 0.001;
+  const PRESSURE_THRESHOLD = 20;
+  const eastPressureDecay = torqueDiff < -PRESSURE_THRESHOLD ? Math.abs(torqueDiff) * PRESSURE_GRIP_DECAY : 0;
+  const westPressureDecay = torqueDiff > PRESSURE_THRESHOLD ? torqueDiff * PRESSURE_GRIP_DECAY : 0;
+
+  const eastTotalDecay = eastFatigueDecay - eastPressureDecay;
+  const westTotalDecay = westFatigueDecay - westPressureDecay;
+
+  if (belt.eastLeft) belt.eastLeft.gripStrength *= Math.max(0.5, eastTotalDecay);
+  if (belt.eastRight) belt.eastRight.gripStrength *= Math.max(0.5, eastTotalDecay);
+  if (belt.westLeft) belt.westLeft.gripStrength *= Math.max(0.5, westTotalDecay);
+  if (belt.westRight) belt.westRight.gripStrength *= Math.max(0.5, westTotalDecay);
 
   // Update grip class
   belt.eastGripClass = deriveGripClass(belt.eastLeft, belt.eastRight);

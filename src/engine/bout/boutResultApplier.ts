@@ -69,6 +69,48 @@ export function applyBoutResult(
   const loserStreak = 0;
   const loserLossStreak = (loser.currentLossStreak ?? 0) + 1;
   const winnerLossStreak = 0;
+
+  // 1.6. Track bout metrics for enriched BashoPerformance (7.1)
+  const boutMetrics = { ...(basho.boutMetrics ?? {}) };
+  const ensureMetrics = (id: string) => {
+    if (!boutMetrics[id]) {
+      boutMetrics[id] = {
+        kimariteUsed: {},
+        upsetCount: 0,
+        boutDurations: [],
+        edgeCrisisSurvived: 0,
+        comebackWins: 0,
+        opponentTiers: [],
+      };
+    }
+    return boutMetrics[id];
+  };
+  if (!isFusensho && result.kimarite) {
+    const wMetrics = ensureMetrics(winner.id);
+    wMetrics.kimariteUsed[result.kimarite] = (wMetrics.kimariteUsed[result.kimarite] ?? 0) + 1;
+    wMetrics.boutDurations.push(result.duration ?? 0);
+    if (result.upset) wMetrics.upsetCount++;
+    // Edge crisis survived: count edge_crisis log entries where escaped=true for winner
+    const edgeEscapes = (result.log ?? []).filter(
+      (e) => e.phase === "edge_crisis" && (e.data as Record<string, unknown>)?.escaped === true
+    ).length;
+    wMetrics.edgeCrisisSurvived += edgeEscapes;
+    // Comeback win: winner was in edge crisis and survived
+    if (edgeEscapes > 0) wMetrics.comebackWins++;
+    // Opponent tier for SOS calculation (4.3)
+    const loserTier = loser.rankNumber ?? 99;
+    wMetrics.opponentTiers.push(loserTier);
+
+    const lMetrics = ensureMetrics(loser.id);
+    lMetrics.boutDurations.push(result.duration ?? 0);
+    // Opponent tier for SOS calculation (4.3)
+    const winnerTier = winner.rankNumber ?? 99;
+    lMetrics.opponentTiers.push(winnerTier);
+  }
+  builder.updateWorldField("currentBasho", {
+    ...basho,
+    boutMetrics,
+  });
   builder.updateRikishi(winner.id, {
     careerWins: (winner.careerWins ?? 0) + 1,
     currentBashoWins: winnerBashoWins,
@@ -252,6 +294,7 @@ export function applyBoutResult(
     day: match.day,
     upset: result.upset,
     isKinboshi: result.isKinboshi,
+    careerPhase: winner.declinePhase ?? "peak",
   };
 
   builder.logEvent("BOUT_RESOLVED", "narrative", ctx, {

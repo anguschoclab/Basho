@@ -114,6 +114,45 @@ export const KimariteSelectionEngine = {
           weight *= KIMARITE_FAVORITE_BOOST;
         }
 
+        // Archetype-based kimarite bias (8.3): archetype aligns with tactical family
+        const archetype = attacker.combatProfile?.archetype;
+        if (archetype && tacticalFamily) {
+          const ARCHETYPE_FAMILY_BIAS: Record<string, Record<string, number>> = {
+            oshi: { push: 1.3, belt: 0.7 },
+            yotsu: { belt: 1.3, push: 0.7 },
+            tsuppari: { push: 1.4 },
+            trickster: { trick: 1.3, push: 0.8 },
+            speedster: { speed: 1.3, trick: 1.1 },
+            giant: { belt: 1.2, push: 1.1 },
+            hybrid: {},
+            defensive: { trick: 1.2, push: 0.9 },
+          };
+          const familyBias = ARCHETYPE_FAMILY_BIAS[archetype]?.[tacticalFamily];
+          if (familyBias) weight *= familyBias;
+        }
+
+        // Grip state weight (8.3): boost belt techniques when grip advantage is high
+        if (tacticalFamily === "belt" && st.phase.tag === "belt_battle") {
+          const beltState = st.phase.state;
+          const attackerTorque = side === "east" ? beltState.torqueEast : beltState.torqueWest;
+          const defenderTorque = side === "east" ? beltState.torqueWest : beltState.torqueEast;
+          const gripAdvantage = attackerTorque - defenderTorque;
+          if (gripAdvantage > 5) {
+            weight *= 1 + Math.min(0.3, gripAdvantage * 0.02);
+          }
+        }
+
+        // Opponent vulnerability weight (8.3): boost trip/sweep when opponent balance is low
+        const defenderBalance = defender.stats?.balance ?? 50;
+        if (tacticalFamily === "speed" && defenderBalance < 40) {
+          weight *= 1.2;
+        }
+        // Boost push techniques when opponent technique is low (clumsy defender)
+        const defenderTech = defender.stats?.technique ?? 50;
+        if (tacticalFamily === "push" && defenderTech < 40) {
+          weight *= 1.15;
+        }
+
         totalWeight += weight;
         return { strategy: s, weight };
       });

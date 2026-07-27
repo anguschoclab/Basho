@@ -240,6 +240,11 @@ export interface BashoPerformance {
   kinboshi?: number;
   opponentAvgTier?: number;
   promoteToYokozuna?: boolean;
+  kimariteUsed?: Record<string, number>;
+  upsetCount?: number;
+  avgBoutDuration?: number;
+  edgeCrisisSurvived?: number;
+  comebackWins?: number;
 }
 
 /** Defines the structure for movement event. */
@@ -249,6 +254,10 @@ export interface MovementEvent {
   to: string;
   description: string;
   kind: "promotion" | "demotion" | "lateral" | "status";
+  moveDistance?: number;
+  isJumpPromotion?: boolean;
+  isSekitoriPromotion?: boolean;
+  isSanyakuPromotion?: boolean;
 }
 
 /** Defines the structure for promotion event. */

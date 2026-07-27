@@ -194,6 +194,8 @@ export interface NarrativeContext {
   heat?: number;
   /** Day number. */
   day?: number;
+  /** Career phase of the rikishi for narrative context. */
+  careerPhase?: string;
 
   /** Index signature for additional custom fields. */
   [key: string]: string | number | boolean | object | null | undefined;
