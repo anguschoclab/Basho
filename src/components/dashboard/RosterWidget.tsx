@@ -48,9 +48,18 @@ const RosterEntryRow = React.memo(
       <div
         className={cn(
           "flex items-center gap-2 py-1.5 px-2 rounded-md text-xs transition-colors cursor-pointer group",
-          isSelected ? "bg-primary/10 ring-1 ring-primary/30 shadow-sm" : "hover:bg-muted/50"
+          isSelected ? "bg-primary/10 ring-1 ring-primary/30 shadow-sm" : "hover:bg-muted/50",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ring-offset-background"
         )}
         onClick={() => onToggleSelect(id)}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onToggleSelect(id);
+          }
+        }}
       >
         <div
           className={cn(
@@ -160,7 +169,8 @@ const RosterList = React.memo(
               onClick={onViewAll}
               className="w-full h-auto py-1.5 text-[11px] text-primary hover:text-primary/80 hover:bg-transparent rounded-sm"
             >
-              +<span className="tabular-nums">{roster.length - ROSTER_WIDGET_MAX_ITEMS}</span> more wrestlers →
+              +<span className="tabular-nums">{roster.length - ROSTER_WIDGET_MAX_ITEMS}</span> more
+              wrestlers →
             </Button>
           </TooltipWrap>
         )}
