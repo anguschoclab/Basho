@@ -261,14 +261,16 @@ export function scoreDrama(
   }
 
   // Debut showcase: rookie's first makuuchi bout against sanyaku
+  const aTotalBouts = (a.careerWins ?? 0) + (a.careerLosses ?? 0);
+  const bTotalBouts = (b.careerWins ?? 0) + (b.careerLosses ?? 0);
   const aMakuuchiBouts = (a.careerHistory ?? []).filter(
     (h) => h.division === "makuuchi"
   ).length;
   const bMakuuchiBouts = (b.careerHistory ?? []).filter(
     (h) => h.division === "makuuchi"
   ).length;
-  const aIsDebut = aMakuuchiBouts <= 1 && a.division === "makuuchi";
-  const bIsDebut = bMakuuchiBouts <= 1 && b.division === "makuuchi";
+  const aIsDebut = aMakuuchiBouts <= 1 && a.division === "makuuchi" && aTotalBouts < 15 && a.rank !== "ozeki" && a.rank !== "yokozuna";
+  const bIsDebut = bMakuuchiBouts <= 1 && b.division === "makuuchi" && bTotalBouts < 15 && b.rank !== "ozeki" && b.rank !== "yokozuna";
   if ((aIsDebut && bIsSanyaku) || (bIsDebut && aIsSanyaku)) {
     return {
       label: "debut_showcase",

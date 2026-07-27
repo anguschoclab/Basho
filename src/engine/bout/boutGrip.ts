@@ -268,6 +268,59 @@ export function evolveGripGeometry(
   if (belt.westLeft) belt.westLeft.gripStrength *= Math.max(0.5, westTotalDecay);
   if (belt.westRight) belt.westRight.gripStrength *= Math.max(0.5, westTotalDecay);
 
+  // Grip breaking under pressure (1.8): when torque differential is strongly against a side,
+  // the dominant fighter can break the opponent's inside grip — setting isInside=false
+  // and reducing armReach, causing grip class downgrade (morozashi → uwate → shitate → outside)
+  const GRIP_BREAK_THRESHOLD = 50;
+  const GRIP_BREAK_CHANCE = 0.4;
+  if (torqueDiff > GRIP_BREAK_THRESHOLD) {
+    // East dominant — can break west's inside grips
+    const breakRoll = rng.next();
+    if (breakRoll < GRIP_BREAK_CHANCE) {
+      // Break the weaker of west's inside grips (lower gripStrength)
+      const westLeftStrength = belt.westLeft?.isInside ? belt.westLeft.gripStrength : 0;
+      const westRightStrength = belt.westRight?.isInside ? belt.westRight.gripStrength : 0;
+      if (westLeftStrength > 0 && westRightStrength > 0) {
+        // Both inside — break the weaker one
+        if (westLeftStrength <= westRightStrength && belt.westLeft) {
+          belt.westLeft.isInside = false;
+          belt.westLeft.armReach = Math.max(DEFAULT_ARM_REACH, belt.westLeft.armReach - ARM_REACH_INCREMENT * 4);
+        } else if (belt.westRight) {
+          belt.westRight.isInside = false;
+          belt.westRight.armReach = Math.max(DEFAULT_ARM_REACH, belt.westRight.armReach - ARM_REACH_INCREMENT * 4);
+        }
+      } else if (westLeftStrength > 0 && belt.westLeft) {
+        belt.westLeft.isInside = false;
+        belt.westLeft.armReach = Math.max(DEFAULT_ARM_REACH, belt.westLeft.armReach - ARM_REACH_INCREMENT * 4);
+      } else if (westRightStrength > 0 && belt.westRight) {
+        belt.westRight.isInside = false;
+        belt.westRight.armReach = Math.max(DEFAULT_ARM_REACH, belt.westRight.armReach - ARM_REACH_INCREMENT * 4);
+      }
+    }
+  } else if (torqueDiff < -GRIP_BREAK_THRESHOLD) {
+    // West dominant — can break east's inside grips
+    const breakRoll = rng.next();
+    if (breakRoll < GRIP_BREAK_CHANCE) {
+      const eastLeftStrength = belt.eastLeft?.isInside ? belt.eastLeft.gripStrength : 0;
+      const eastRightStrength = belt.eastRight?.isInside ? belt.eastRight.gripStrength : 0;
+      if (eastLeftStrength > 0 && eastRightStrength > 0) {
+        if (eastLeftStrength <= eastRightStrength && belt.eastLeft) {
+          belt.eastLeft.isInside = false;
+          belt.eastLeft.armReach = Math.max(DEFAULT_ARM_REACH, belt.eastLeft.armReach - ARM_REACH_INCREMENT * 4);
+        } else if (belt.eastRight) {
+          belt.eastRight.isInside = false;
+          belt.eastRight.armReach = Math.max(DEFAULT_ARM_REACH, belt.eastRight.armReach - ARM_REACH_INCREMENT * 4);
+        }
+      } else if (eastLeftStrength > 0 && belt.eastLeft) {
+        belt.eastLeft.isInside = false;
+        belt.eastLeft.armReach = Math.max(DEFAULT_ARM_REACH, belt.eastLeft.armReach - ARM_REACH_INCREMENT * 4);
+      } else if (eastRightStrength > 0 && belt.eastRight) {
+        belt.eastRight.isInside = false;
+        belt.eastRight.armReach = Math.max(DEFAULT_ARM_REACH, belt.eastRight.armReach - ARM_REACH_INCREMENT * 4);
+      }
+    }
+  }
+
   // Update grip class
   belt.eastGripClass = deriveGripClass(belt.eastLeft, belt.eastRight);
   belt.westGripClass = deriveGripClass(belt.westLeft, belt.westRight);

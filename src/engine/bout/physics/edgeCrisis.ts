@@ -151,7 +151,10 @@ export function tickEdgeCrisis(
 
   // 1.75D: Physics-driven escape — angular authority projected along escapeAngle vs opponent pressure
   const defender = crisis.side === "east" ? st.east : st.west;
-  const angularEscapePower = Math.abs(defender.facingAngle) * ANGULAR_ESCAPE_POWER_SCALE; // rough projection scaling
+  const defenderRikishi = crisis.side === "east" ? east : west;
+  // Archetype-specific edge escape bonus (2.1): defensive wrestlers pivot better at the tawara
+  const edgeEscapeBonus = (defenderRikishi.combatProfile?.archetypeBehavior?.edgeEscapeBonus ?? 0) / 100;
+  const angularEscapePower = Math.abs(defender.facingAngle) * ANGULAR_ESCAPE_POWER_SCALE * (1 + edgeEscapeBonus);
   const totalPressure = crisis.opponentPressureX + Math.abs(crisis.opponentPressureZ);
   const canEscape = angularEscapePower >= totalPressure;
 

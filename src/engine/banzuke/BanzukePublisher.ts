@@ -264,6 +264,12 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       ? boutMetrics.opponentTiers.reduce((a: number, b: number) => a + b, 0) / boutMetrics.opponentTiers.length
       : undefined;
 
+    // Ozeki promotion detection (4.2): sekiwake/komusubi with 3 consecutive 11+ win basho
+    const isSanyakuForOzeki = rikishi?.rank === "sekiwake" || rikishi?.rank === "komusubi";
+    const promoteToOzeki = isSanyakuForOzeki
+      && stats.wins >= 11
+      && (rikishi?.consecutiveStrongSekiwake ?? 0) >= 2;
+
     performanceList.push({
       rikishiId: id,
       wins: stats.wins,
@@ -273,6 +279,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       junYusho: isJunYusho,
       specialPrizes: prizePoints,
       promoteToYokozuna,
+      promoteToOzeki,
       kimariteUsed: boutMetrics?.kimariteUsed,
       upsetCount: boutMetrics?.upsetCount,
       avgBoutDuration,

@@ -76,7 +76,9 @@ export function bestTierAllowed(
   if (rank === "yokozuna") return 1;
   if (rank === "ozeki" && demotedOzeki.has(entry.rikishiId)) return 3;
   if (rank === "ozeki" && perf?.promoteToYokozuna) return 1;
+  if (rank === "sekiwake" && perf?.promoteToOzeki) return 2;
   if (rank === "sekiwake" && (perf?.wins ?? 0) >= 11) return 2;
+  if (rank === "komusubi" && perf?.promoteToOzeki) return 2;
   if (rank === "komusubi" && (perf?.wins ?? 0) >= 10) return 3;
 
   if (rank === "maegashira") {

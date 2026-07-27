@@ -1,4 +1,5 @@
 import type { SeededRNG } from "../../rng";
+import { rngFromSeed } from "../../rng";
 import type { Rikishi } from "../../types/rikishi";
 import type { BoutLogEntry } from "../../types/basho";
 import type { Side } from "../../types/banzuke";
@@ -36,15 +37,6 @@ export function resolveTachiaiV2(
   boutLog: BoutLogEntry[]
 ): void {
   st.phase = { tag: "tachiai", impactVelocity: TACHIAI_IMPACT_VELOCITY, contactAngle: 0 };
-
-  // Tachiai richness (1.5): matta (false start) — rare 5% pre-tachiai event
-  if (rng.next() < 0.05) {
-    boutLog.push({
-      phase: "tachiai",
-      clock: 0,
-      data: { event: "matta" },
-    });
-  }
 
   // Tachiai richness (1.5): derive tachiaiType from winner's archetype
   const eastArchetype = east.combatProfile?.archetype;
@@ -173,6 +165,17 @@ export function resolveTachiaiV2(
       speedRating,
     },
   });
+
+  // Tachiai richness (1.5): matta (false start) — rare 5% event
+  // Uses separate RNG to avoid disrupting main bout RNG sequence
+  const mattaRng = rngFromSeed(bout.id, "tachiai", "matta");
+  if (mattaRng.next() < 0.05) {
+    boutLog.push({
+      phase: "tachiai",
+      clock: 0,
+      data: { event: "matta" },
+    });
+  }
 
   // CR-02: Henka resolution — must check before phase loop
   // NPC Henka Gap (1.6): high-technique, high-speed NPCs can attempt henka

@@ -985,6 +985,21 @@ export function generateBoutNarrative(
     }
   }
 
+  // 3p3. Pre-bout kensho mention (7.3): sponsor interest when high kensho expected
+  if (result.kenshoEnvelopes > 3) {
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.kensho", {
+        BANNERS: result.kenshoEnvelopes.toString(),
+        EAST: east.shikona,
+        WEST: west.shikona,
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+      }).text,
+      "pre_bout",
+      ["kensho"]
+    );
+  }
+
   // 4. Ring entrances (east + west, two separate lines for entity linking)
   if (result.log.length > 0) {
     const entranceRng = rngFromSeed(seed, "pbp", "entrance");
@@ -1688,8 +1703,9 @@ export function generateBoutNarrative(
 
   // 15e. Kensho & economic context (7.3): mention sponsor envelopes when awarded
   if (result.kenshoEnvelopes > 0) {
+    const kenshoPath = result.upset ? "post_bout.kensho_upset" : "post_bout.kensho";
     push(
-      BardEngine.resolve(postBoutRng, "post_bout.kensho", {
+      BardEngine.resolve(postBoutRng, kenshoPath, {
         WINNER: winnerRikishi.shikona,
         ENVELOPES: result.kenshoEnvelopes.toString(),
         winnerId: winnerRikishi.id,

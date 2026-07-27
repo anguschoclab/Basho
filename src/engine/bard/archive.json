@@ -762,6 +762,79 @@
             "Inches from defeat! %NAME% clings to the edge of existence!"
           ]
         },
+        "fatigue": {
+          "early": [
+            "The pace is telling — %EAST% is breathing hard, legs heavy from the grind.",
+            "Sweat drips freely now. %WEST% looks labored in his movements.",
+            "The accumulated effort shows — both men are slowing, muscles burning."
+          ],
+          "mid": [
+            "Fatigue is setting in deeply. %EAST%'s footwork has gone sluggish.",
+            "%WEST% is gasping for air — the bout has become a war of attrition.",
+            "Heavy legs on both sides. The stamina battle is now the real fight."
+          ],
+          "late": [
+            "Exhaustion is written on every movement. %EAST% is running on fumes.",
+            "%WEST% can barely lift his arms — pure willpower keeping him upright.",
+            "Both men are spent. This is no longer technique — it's heart."
+          ]
+        },
+        "bout_injury": {
+          "minor": [
+            "%NAME% winces — that landing looked awkward. He's favoring his %AREA%.",
+            "A grimace from %NAME% as he lands hard. The %AREA% took the brunt of it.",
+            "%NAME% clutches his %AREA% — the crowd murmurs with concern."
+          ],
+          "moderate": [
+            "%NAME% is hurt! He's clutching his %AREA% after that brutal exchange.",
+            "That looked nasty — %NAME%'s %AREA% took a serious impact.",
+            "The referee watches closely as %NAME% favors his injured %AREA%."
+          ],
+          "serious": [
+            "%NAME% is down! A serious %AREA% injury — this could end the bout!",
+            "Troubling signs from %NAME% — that %AREA% injury looks severe.",
+            "Medical staff lean forward as %NAME% crumples with a %AREA% injury."
+          ]
+        },
+        "momentum_shift": {
+          "east_takes_over": [
+            "The tide has turned! %EAST% seizes control of this bout!",
+            "A massive shift — %EAST% is now dictating the pace!",
+            "%WEST% was on top, but %EAST% has flipped the script completely!"
+          ],
+          "west_takes_over": [
+            "The momentum swings wildly — %WEST% now has the upper hand!",
+            "What a reversal! %WEST% has turned the tables on %EAST%!",
+            "%EAST% was dominating, but %WEST% has seized the initiative!"
+          ]
+        },
+        "grip_transition": {
+          "morozashi_gained": [
+            "%NAME% gets both hands inside — morozashi! The most dominant grip in sumo.",
+            "Double inside grip for %NAME% — he has his opponent exactly where he wants him.",
+            "%NAME% secures morozashi! The crowd senses this bout is about to turn."
+          ],
+          "morozashi_lost": [
+            "%NAME% loses the double inside grip — a critical setback!",
+            "The morozashi is gone for %NAME% — his opponent fought it off brilliantly.",
+            "%NAME%'s inside grip is broken! The advantage evaporates in an instant."
+          ],
+          "uwate_gained": [
+            "%NAME% secures the outside grip — uwate gives him the leverage advantage.",
+            "A deep outside grip for %NAME% — he's controlling the mawashi now.",
+            "%NAME% gets the uwate! That's a significant grip advantage."
+          ],
+          "uwate_lost": [
+            "%NAME% loses his outside grip — the belt battle shifts.",
+            "The uwate slips away from %NAME% — back to neutral positioning.",
+            "%NAME%'s grip on the mawashi loosens — the advantage is gone."
+          ],
+          "depth_change": [
+            "%NAME% deepens his grip on the mawashi — more leverage, more control.",
+            "The belt grip tightens for %NAME% — he's sinking deeper into position.",
+            "%NAME% adjusts his grip — a subtle but important shift in the belt battle."
+          ]
+        },
         "finish": {
           "common": [
             "And that is the conclusion. %WINNER% takes the victory.",
@@ -2731,6 +2804,11 @@
         "A playoff could be on the cards if this one goes to %EAST%.",
         "With both men at the top, a playoff scenario looms large.",
         "The yusho could come down to a playoff — every bout from here is crucial."
+      ],
+      "kensho": [
+        "Sponsor banners line the kokugikan — %BANNERS% kensho envelopes await the winner of this bout.",
+        "The prize money is stacked high today: %BANNERS% kensho payouts on the line for %EAST% versus %WEST%.",
+        "A lucrative bout for the sponsors — %BANNERS% kensho envelopes hang in the balance."
       ]
     },
     "post_bout": {
@@ -2835,6 +2913,12 @@
         "%ENVELOPES% kensho envelopes rain down for %WINNER% — the sponsors are pleased.",
         "Sponsor banners flutter as %WINNER% collects %ENVELOPES% kensho envelopes.",
         "%WINNER% is rewarded with %ENVELOPES% kensho payouts — a lucrative day on the dohyo."
+      ],
+      "kensho_upset": [
+        "An upset and a payday — %ENVELOPES% kensho envelopes for %WINNER% after a stunning shock!",
+        "The sponsors didn't see that coming! %ENVELOPES% kensho envelopes for the underdog %WINNER%.",
+        "%WINNER% shocks the dohyo and pockets %ENVELOPES% kensho envelopes — an upset worth every yen.",
+        "A stunning result and %ENVELOPES% kensho envelopes for %WINNER% — the sponsors love an underdog story."
       ],
       "career_milestone": [
         "That win brings %SHIKONA% to %MILESTONE% career victories — a remarkable achievement.",

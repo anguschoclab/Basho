@@ -240,6 +240,7 @@ export interface BashoPerformance {
   kinboshi?: number;
   opponentAvgTier?: number;
   promoteToYokozuna?: boolean;
+  promoteToOzeki?: boolean;
   kimariteUsed?: Record<string, number>;
   upsetCount?: number;
   avgBoutDuration?: number;

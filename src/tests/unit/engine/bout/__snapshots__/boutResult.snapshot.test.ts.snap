@@ -20,11 +20,14 @@ exports[`BoutResult snapshot > BoutResult shape snapshot 1`] = `
     {
       "clock": 0,
       "data": {
+        "contactPoint": "chest",
         "eastArchetype": "all_rounder",
         "eastPower": 48.6,
         "eastTachiaiBonus": 0,
         "intensity": "even",
         "margin": 5.091436603477604,
+        "speedRating": 50,
+        "tachiaiType": "chest_clash",
         "tachiaiWinner": "west",
         "westArchetype": "all_rounder",
         "westPower": 53.7,
