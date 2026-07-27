@@ -2190,6 +2190,31 @@
           "A testament to longevity and skill, %SHIKONA% celebrates another monumental achievement.",
           "Fans reflect on a storied career as %SHIKONA% hits a milestone few ever reach.",
           "The JSA acknowledges %SHIKONA% for his lasting impact on the sport."
+        ],
+        "banzuke_movement_jump_promotion": [
+          "%SHIKONA% rockets up the banzuke — from %FROM% to %TO%, a jump promotion that turns heads.",
+          "A stunning rise for %SHIKONA%: %FROM% to %TO% in a single basho. The Association took notice.",
+          "%SHIKONA% leaps up the rankings — %FROM% to %TO% — a promotion that defies expectations."
+        ],
+        "banzuke_movement_sekitori_promotion": [
+          "%SHIKONA% crosses the sekitori threshold — promoted from %FROM% to %TO%. The paid ranks await.",
+          "From %FROM% to %TO% — %SHIKONA% is now a sekitori. A career milestone achieved.",
+          "The sekitori barrier is broken: %SHIKONA% rises from %FROM% to %TO% with salary and status."
+        ],
+        "banzuke_movement_sanyaku_promotion": [
+          "%SHIKONA% enters the sanyaku — promoted from %FROM% to %TO%. The elite ranks await.",
+          "A sanyaku promotion for %SHIKONA%: %FROM% to %TO%. The dohyo's upper echelon has a new member.",
+          "From %FROM% to %TO% — %SHIKONA% joins the titled ranks. A new chapter begins."
+        ],
+        "banzuke_movement_standard_promotion": [
+          "%SHIKONA% moves up the banzuke — from %FROM% to %TO%.",
+          "A promotion for %SHIKONA%: %FROM% to %TO%. Steady progress up the ranks.",
+          "The banzuke shifts: %SHIKONA% rises from %FROM% to %TO%."
+        ],
+        "banzuke_movement_demotion": [
+          "%SHIKONA% drops down the banzuke — from %FROM% to %TO%.",
+          "A demotion for %SHIKONA%: %FROM% to %TO%. The road back starts now.",
+          "The banzuke falls for %SHIKONA%: %FROM% to %TO%. A basho to forget."
         ]
       }
     },
@@ -2869,6 +2894,72 @@
         "Sponsor banners line the kokugikan — %BANNERS% kensho envelopes await the winner of this bout.",
         "The prize money is stacked high today: %BANNERS% kensho payouts on the line for %EAST% versus %WEST%.",
         "A lucrative bout for the sponsors — %BANNERS% kensho envelopes hang in the balance."
+      ],
+      "body_type": {
+        "tower": [
+          "The towering frame of %SHIKONA% casts a long shadow across the dohyo.",
+          "%SHIKONA%'s height gives him a leverage edge few can match.",
+          "At his full height, %SHIKONA% looks down on the competition — literally."
+        ],
+        "barrel": [
+          "%SHIKONA% is built like a barrel — low center of gravity and deceptively powerful.",
+          "The stocky, powerful frame of %SHIKONA% makes him a nightmare in the belt battle.",
+          "Compact and dense, %SHIKONA% uses his barrel-chested build to anchor against bigger men."
+        ],
+        "compact": [
+          "%SHIKONA% is compact and agile — a low-slung wrestler who moves with surprising quickness.",
+          "The compact build of %SHIKONA% gives him explosive mobility off the tachiai.",
+          "Don't underestimate the compact frame — %SHIKONA% turns leverage into victory."
+        ],
+        "lanky": [
+          "%SHIKONA% is lean and wiry — all arms and legs, using reach to control the bout.",
+          "The lanky frame of %SHIKONA% belies a crafty grappler who uses his length well.",
+          "Long-limbed and lean, %SHIKONA% fights with a style that maximizes every inch."
+        ]
+      },
+      "debut_backstory": [
+        "Making his makuuchi debut, %SHIKONA% brings %BACKSTORY% to the sport's biggest stage.",
+        "A makuuchi debut for %SHIKONA% — %BACKSTORY% Now he faces the elite.",
+        "The rookie %SHIKONA% arrives in makuuchi. %BACKSTORY% Today, the story continues."
+      ],
+      "heya_style": {
+        "oshi": [
+          "Trained in the pusher's tradition at %HEYA_NAME%, %SHIKONA% embodies the stable's aggressive oshi style.",
+          "%HEYA_NAME%'s emphasis on forward pressure shows in %SHIKONA%'s relentless attacking."
+        ],
+        "yotsu": [
+          "From the belt-focused dojo of %HEYA_NAME%, %SHIKONA% carries the stable's yotsu tradition.",
+          "%HEYA_NAME% breeds belt specialists — %SHIKONA% is no exception, favoring the inside grip."
+        ],
+        "tsuppari": [
+          "The tsuppari heritage of %HEYA_NAME% is alive in %SHIKONA%'s rapid-fire thrusting attack.",
+          "%SHIKONA% channels %HEYA_NAME%'s tradition of blistering tsuppari at the tachiai."
+        ],
+        "defensive": [
+          "%HEYA_NAME% teaches patience — %SHIKONA% waits for the mistake, then punishes it.",
+          "The counter-wrestling philosophy of %HEYA_NAME% is reflected in %SHIKONA%'s measured approach."
+        ],
+        "hybrid": [
+          "%HEYA_NAME% trains all-rounders, and %SHIKONA% reflects that balanced approach.",
+          "From %HEYA_NAME%'s versatile dojo comes %SHIKONA%, equally comfortable pushing or grappling."
+        ],
+        "speedster": [
+          "%HEYA_NAME% values speed above all — %SHIKONA%'s quick feet are the product of that philosophy.",
+          "The speed-first training at %HEYA_NAME% shows in %SHIKONA%'s explosive lateral movement."
+        ],
+        "trickster": [
+          "%HEYA_NAME% embraces the unconventional — %SHIKONA% brings trickery and feints to the dohyo.",
+          "From %HEYA_NAME%'s creative tradition comes %SHIKONA%, a wrestler of surprises."
+        ],
+        "giant": [
+          "%HEYA_NAME% has produced giants before, and %SHIKONA% carries that imposing tradition forward.",
+          "The power-first philosophy of %HEYA_NAME% is embodied in %SHIKONA%'s massive frame."
+        ]
+      },
+      "archetype_evolution": [
+        "%SHIKONA% has evolved from a %OLD_STYLE% to a %NEW_STYLE% over %YEARS% years — a testament to adaptability.",
+        "Once a pure %OLD_STYLE%, %SHIKONA% has reinvented himself as a %NEW_STYLE% — the dohyo rewards flexibility.",
+        "The years have changed %SHIKONA%: from %OLD_STYLE% to %NEW_STYLE%, a career of adaptation."
       ]
     },
     "post_bout": {
@@ -2992,6 +3083,23 @@
         "They said he was done, but %WINNER% silences the doubters once more.",
         "%WINNER% writes another chapter in a remarkable late-career story."
       ],
+      "injury_assessment": {
+        "minor": [
+          "%SHIKONA% appears to have avoided serious damage — the %AREA% injury looks minor.",
+          "A grimace from %SHIKONA% as he leaves the dohyo, but the %AREA% seems to be just a tweak.",
+          "Medical staff check %SHIKONA%'s %AREA% — early signs suggest nothing serious."
+        ],
+        "moderate": [
+          "%SHIKONA% is favoring his %AREA% — this could mean time away from the dohyo.",
+          "The %AREA% injury to %SHIKONA% looked painful — a moderate strain at minimum.",
+          "%SHIKONA% will need treatment for that %AREA% — the bout took a physical toll."
+        ],
+        "serious": [
+          "Concern for %SHIKONA% — the %AREA% injury looked severe and may sideline him for weeks.",
+          "A grim sight as %SHIKONA% clutches his %AREA% — this could be a long recovery.",
+          "%SHIKONA% may be facing a lengthy absence after that serious %AREA% injury."
+        ]
+      },
       "career_milestone": [
         "That win brings %SHIKONA% to %MILESTONE% career victories — a remarkable achievement.",
         "History for %SHIKONA% — career win number %MILESTONE% is in the books.",

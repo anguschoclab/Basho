@@ -16,6 +16,7 @@ import {
 import { warn } from "../utils/Logger";
 import { isKachiKoshi } from "./banzukeHelpers";
 import { BASHO_CALENDAR } from "../calendar";
+import { generateBanzukeMovementNarrative } from "./banzukeMovementNarrative";
 
 /**
  * Helper to retrieve the current basho state from the world.
@@ -323,6 +324,26 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
         from: evt.from,
       },
       { rikishiId: evt.rikishiId, heyaId: promotedRikishi.heyaId, importance: "headline" }
+    );
+  }
+
+  // Banzuke movement narrative (4.1): generate narrative lines for notable promotions/demotions
+  const movementNarratives = generateBanzukeMovementNarrative(
+    result.events,
+    world,
+    `${world.seed}-${lastBasho.bashoName}-banzuke`
+  );
+  for (const narrative of movementNarratives) {
+    const narrativeRikishi = getRikishi(world, narrative.rikishiId);
+    builder.logEvent(
+      "BASHO_STATUS",
+      "promotion",
+      {
+        status: "banzuke_movement",
+        description: narrative.text,
+        rikishiId: narrative.rikishiId,
+      },
+      { rikishiId: narrative.rikishiId, heyaId: narrativeRikishi?.heyaId, importance: "notable" }
     );
   }
 

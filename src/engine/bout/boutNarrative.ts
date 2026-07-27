@@ -42,6 +42,17 @@ function countMakuuchiTournaments(history: { division?: string }[] | undefined):
   return count;
 }
 
+const FOCUS_BIAS_TO_STYLE: Record<string, string> = {
+  power: "oshi",
+  technique: "yotsu",
+  speed: "speedster",
+  balanced: "hybrid",
+};
+
+function focusBiasToStyleKey(focusBias: string): string | undefined {
+  return FOCUS_BIAS_TO_STYLE[focusBias];
+}
+
 export type PbpPhase =
   | "opening"
   | "pre_bout"
@@ -106,7 +117,11 @@ export type PbpTag =
   | "weight_diff"
   | "age_diff"
   | "mono_ii"
-  | "interview";
+  | "interview"
+  | "body_type"
+  | "debut"
+  | "heya_style"
+  | "archetype_evolution";
 
 export type PbpLine = {
   text: string;
@@ -501,7 +516,17 @@ export function generateBoutNarrative(
   for (const r of [east, west]) {
     if (!r.careerHistory) continue;
     const makuuchiCount = countMakuuchiTournaments(r.careerHistory);
-    if (makuuchiCount === 1) {
+    if (makuuchiCount === 0 && r.backstory) {
+      push(
+        BardEngine.resolve(preBoutRng, "pre_bout.debut_backstory", {
+          SHIKONA: r.shikona,
+          BACKSTORY: r.backstory,
+          rikishiId: r.id,
+        }).text,
+        "pre_bout",
+        ["rookie", "debut"]
+      );
+    } else if (makuuchiCount === 1) {
       push(
         BardEngine.resolve(preBoutRng, "pre_bout.storylines.rookie", {
           NAME: r.shikona,
@@ -630,6 +655,63 @@ export function generateBoutNarrative(
       }).text,
       "pre_bout",
       []
+    );
+  }
+
+  // 3f-2. Body type narrative (5.1)
+  for (const r of [east, west]) {
+    if (r.bodyType && BardEngine.has(`pre_bout.body_type.${r.bodyType}`)) {
+      push(
+        BardEngine.resolve(preBoutRng, `pre_bout.body_type.${r.bodyType}`, {
+          SHIKONA: r.shikona,
+          rikishiId: r.id,
+        }).text,
+        "pre_bout",
+        ["body_type"]
+      );
+    }
+  }
+
+  // 3f-3. Heya style narrative (5.3)
+  const seenHeya = new Set<string>();
+  for (const r of [east, west]) {
+    if (!r.heyaId || seenHeya.has(r.heyaId)) continue;
+    const heya = world.heyas?.get(r.heyaId);
+    if (!heya?.trainingPhilosophy) continue;
+    const tp = heya.trainingPhilosophy;
+    const styleKey = tp.signatureStyle ?? focusBiasToStyleKey(tp.focusBias);
+    if (styleKey && BardEngine.has(`pre_bout.heya_style.${styleKey}`)) {
+      seenHeya.add(r.heyaId);
+      push(
+        BardEngine.resolve(preBoutRng, `pre_bout.heya_style.${styleKey}`, {
+          SHIKONA: r.shikona,
+          HEYA_NAME: heya.name,
+          rikishiId: r.id,
+          heyaId: heya.id,
+        }).text,
+        "pre_bout",
+        ["heya_style"]
+      );
+    }
+  }
+
+  // 3f-4. Archetype evolution narrative (2.3)
+  for (const r of [east, west]) {
+    if (!r.archetypeHistory || r.archetypeHistory.length < 1) continue;
+    const originalArchetype = r.archetypeHistory[0].archetype;
+    const currentArchetype = r.combatProfile?.archetype;
+    if (!currentArchetype || originalArchetype === currentArchetype) continue;
+    const years = (world.year - r.archetypeHistory[0].year).toString();
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.archetype_evolution", {
+        SHIKONA: r.shikona,
+        OLD_STYLE: originalArchetype,
+        NEW_STYLE: currentArchetype,
+        YEARS: years,
+        rikishiId: r.id,
+      }).text,
+      "pre_bout",
+      ["archetype_evolution"]
     );
   }
 
@@ -1898,6 +1980,25 @@ export function generateBoutNarrative(
         }).text,
         "post_bout",
         ["veteran"]
+      );
+    }
+  }
+
+  // 15g. Post-bout injury assessment (6.3)
+  if (result.inBoutInjury) {
+    const injuredRikishi = result.inBoutInjury.rikishiId === east.id ? east : west;
+    const severity = result.inBoutInjury.severity;
+    const area = String(result.inBoutInjury.area);
+    if (BardEngine.has(`post_bout.injury_assessment.${severity}`)) {
+      push(
+        BardEngine.resolve(postBoutRng, `post_bout.injury_assessment.${severity}`, {
+          SHIKONA: injuredRikishi.shikona,
+          AREA: area,
+          SEVERITY: severity,
+          rikishiId: injuredRikishi.id,
+        }).text,
+        "post_bout",
+        ["injury"]
       );
     }
   }
