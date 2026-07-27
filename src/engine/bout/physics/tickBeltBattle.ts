@@ -91,7 +91,35 @@ export function tickBeltBattle(
   const eastTorqueBonus = ((east.combatProfile?.archetypeBehavior?.beltTorqueBonus ?? 0) + (east.combatProfile?.bodyTypeBehavior?.beltTorqueBonus ?? 0)) / 100;
   const westTorqueBonus = ((west.combatProfile?.archetypeBehavior?.beltTorqueBonus ?? 0) + (west.combatProfile?.bodyTypeBehavior?.beltTorqueBonus ?? 0)) / 100;
   // Apply torque bonus as additive bonus rather than multiplier to preserve simulation balance
-  const torqueAdvantage = (belt.torqueEast - belt.torqueWest) * (1 + (eastTorqueBonus - westTorqueBonus) * 0.5);
+  let torqueAdvantage = (belt.torqueEast - belt.torqueWest) * (1 + (eastTorqueBonus - westTorqueBonus) * 0.5);
+
+  // In-bout counter-tactic activation (2.2): when defender's counterFamily matches
+  // the current engagement family ("belt"), reduce attacker's effective torque
+  const COUNTER_TORQUE_REDUCTION = 0.1; // 10% torque reduction when countered
+  let counterActivated = false;
+  let counterSide: Side | null = null;
+  if (west.combatProfile?.counterFamily === "belt" && east.combatProfile?.counterFamily !== "belt") {
+    torqueAdvantage *= (1 - COUNTER_TORQUE_REDUCTION);
+    counterActivated = true;
+    counterSide = "west";
+  } else if (east.combatProfile?.counterFamily === "belt" && west.combatProfile?.counterFamily !== "belt") {
+    torqueAdvantage *= (1 + COUNTER_TORQUE_REDUCTION);
+    counterActivated = true;
+    counterSide = "east";
+  }
+  if (counterActivated && counterSide && st.tick % NARRATIVE_TICK_CADENCE === 0) {
+    boutLog.push({
+      phase: "counter_tactic",
+      clock: st.tick * CLOCK_MULTIPLIER,
+      data: {
+        event: "counter_tactic",
+        side: counterSide,
+        counterFamily: "belt",
+        attackerFamily: "belt",
+        torqueReduction: COUNTER_TORQUE_REDUCTION,
+      },
+    });
+  }
 
   // --- 1.75D Grip → Rotation ---
   // Angular velocity from torque advantage, clamped per tick

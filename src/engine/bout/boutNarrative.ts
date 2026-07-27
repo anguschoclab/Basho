@@ -52,7 +52,12 @@ export type PbpPhase =
   | "engagement"
   | "clinch"
   | "momentum"
+  | "momentum_shift"
   | "edge_crisis"
+  | "fatigue"
+  | "bout_injury"
+  | "grip_transition"
+  | "bout_timeout"
   | "finish"
   | "post_bout"
   | "replay"
@@ -78,6 +83,7 @@ export type PbpTag =
   | "drama"
   | "henka"
   | "rivalry"
+  | "grudge_match"
   | "injury"
   | "comeback"
   | "milestone"
@@ -198,6 +204,8 @@ export function generateBoutNarrative(
   const rivalryState = RivalryService.ensureRivalriesState(world);
   const rivalryKey = RivalryService.makeRivalryKey(east.id, west.id);
   const pair = rivalryState.pairs[rivalryKey];
+  const isGrudgeMatch = pair && pair.heat > 70;
+  const rivalryTags: PbpTag[] = isGrudgeMatch ? ["rivalry", "grudge_match"] : ["rivalry"];
   if (!pair || pair.meetings < 1) {
     const h2hRng = rngFromSeed(seed, "pbp", "h2h-first");
     push(
@@ -208,7 +216,7 @@ export function generateBoutNarrative(
         westRikishiId: west.id,
       }).text,
       "opening",
-      ["rivalry"]
+      rivalryTags
     );
   } else {
     const aIsEast = pair.aId === east.id;
@@ -231,7 +239,7 @@ export function generateBoutNarrative(
           westRikishiId: west.id,
         }).text,
         "opening",
-        ["rivalry"]
+        rivalryTags
       );
     } else if (diff <= 1 && total >= 2) {
       push(
@@ -259,7 +267,7 @@ export function generateBoutNarrative(
           westRikishiId: west.id,
         }).text,
         "opening",
-        ["rivalry"]
+        rivalryTags
       );
     }
 
@@ -276,7 +284,7 @@ export function generateBoutNarrative(
           westRikishiId: west.id,
         }).text,
         "opening",
-        ["rivalry"]
+        rivalryTags
       );
     }
 
@@ -644,6 +652,20 @@ export function generateBoutNarrative(
       }).text,
       "pre_bout",
       ["age_diff", ...olderTags, ...youngerTags]
+    );
+  }
+
+  // 3g2. Battle of veterans (6.4): when both rikishi are 30+, add special framing
+  if (eastAge >= 30 && westAge >= 30) {
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.battle_of_veterans", {
+        EAST: east.shikona,
+        WEST: west.shikona,
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+      }).text,
+      "pre_bout",
+      ["veteran", "age_diff"]
     );
   }
 
@@ -1243,6 +1265,141 @@ export function generateBoutNarrative(
       push(res.text, "momentum");
     }
 
+    // Fatigue snapshot (1.2): narrate fatigue levels at tick 10 and 20
+    if (entry.phase === "fatigue") {
+      const fatigueData = entry.data as {
+        eastFatigue?: number;
+        westFatigue?: number;
+        fatigueDelta?: number;
+      };
+      const tick = (entry.data?.tick as number) ?? 0;
+      const maxFatigue = Math.max(fatigueData.eastFatigue ?? 0, fatigueData.westFatigue ?? 0);
+      const fatigueStage = tick >= 20 || maxFatigue > 60 ? "late" : maxFatigue > 30 ? "mid" : "early";
+      push(
+        BardEngine.resolve(rng, `combat.phases.fatigue.${fatigueStage}`, {
+          EAST: east.shikona,
+          WEST: west.shikona,
+          eastRikishiId: east.id,
+          westRikishiId: west.id,
+        }).text,
+        "fatigue" as PbpPhase
+      );
+    }
+
+    // Bout injury (1.3): narrate in-bout injury events
+    if (entry.phase === "bout_injury") {
+      const injuryData = entry.data as {
+        rikishiId?: string;
+        area?: string;
+        severity?: string;
+      };
+      const injuredRikishi = injuryData.rikishiId === east.id ? east : west;
+      const severity = injuryData.severity ?? "minor";
+      const area = injuryData.area ?? "leg";
+      push(
+        BardEngine.resolve(rng, `combat.phases.bout_injury.${severity}`, {
+          NAME: injuredRikishi.shikona,
+          AREA: area,
+          rikishiId: injuredRikishi.id,
+        }).text,
+        "bout_injury" as PbpPhase
+      );
+    }
+
+    // Momentum shift (1.4): narrate when dominant side flips
+    if (entry.phase === "momentum_shift") {
+      const shiftData = entry.data as {
+        prevDominantSide?: string;
+        newDominantSide?: string;
+      };
+      const newSide = shiftData.newDominantSide;
+      const shiftPath = newSide === "east"
+        ? "combat.phases.momentum_shift.east_takes_over"
+        : "combat.phases.momentum_shift.west_takes_over";
+      push(
+        BardEngine.resolve(rng, shiftPath, {
+          EAST: east.shikona,
+          WEST: west.shikona,
+          eastRikishiId: east.id,
+          westRikishiId: west.id,
+        }).text,
+        "momentum_shift" as PbpPhase
+      );
+    }
+
+    // Grip transition (1.1): narrate grip class shifts
+    if (entry.phase === "grip_transition") {
+      const gripData = entry.data as {
+        type?: string;
+        eastGripFrom?: string;
+        eastGripTo?: string;
+        westGripFrom?: string;
+        westGripTo?: string;
+      };
+      if (gripData.type === "grip_class_shift") {
+        // Determine which side had the notable transition
+        const eastChanged = gripData.eastGripFrom !== gripData.eastGripTo;
+        const side = eastChanged ? "east" : "west";
+        const r = side === "east" ? east : west;
+        const from = side === "east" ? gripData.eastGripFrom : gripData.westGripFrom;
+        const to = side === "east" ? gripData.eastGripTo : gripData.westGripTo;
+
+        let gripPath: string | null = null;
+        if (to === "morozashi") gripPath = "combat.phases.grip_transition.morozashi_gained";
+        else if (from === "morozashi" && to !== "morozashi") gripPath = "combat.phases.grip_transition.morozashi_lost";
+        else if (to === "uwate") gripPath = "combat.phases.grip_transition.uwate_gained";
+        else if (from === "uwate" && to !== "uwate" && to !== "morozashi") gripPath = "combat.phases.grip_transition.uwate_lost";
+
+        if (gripPath) {
+          push(
+            BardEngine.resolve(rng, gripPath, {
+              NAME: r.shikona,
+              rikishiId: r.id,
+            }).text,
+            "grip_transition" as PbpPhase
+          );
+        }
+      } else if (gripData.type === "depth_change") {
+        // Only narrate depth changes occasionally to avoid spam
+        if (rng.next() < 0.3) {
+          push(
+            BardEngine.resolve(rng, "combat.phases.grip_transition.depth_change", {
+              NAME: east.shikona,
+              rikishiId: east.id,
+            }).text,
+            "grip_transition" as PbpPhase
+          );
+        }
+      }
+    }
+
+    // Bout timeout (8.5): narrate when bout goes to judges' decision
+    if (entry.phase === "bout_timeout") {
+      const timeoutData = entry.data as {
+        eastForce?: number;
+        westForce?: number;
+        eastMomentum?: number;
+        westMomentum?: number;
+        decisionBasis?: string;
+      };
+      const eastAdv = (timeoutData.eastForce ?? 0) + (timeoutData.eastMomentum ?? 0);
+      const westAdv = (timeoutData.westForce ?? 0) + (timeoutData.westMomentum ?? 0);
+      const timeoutPath = eastAdv > westAdv
+        ? "combat.phases.bout_timeout.east_advantage"
+        : westAdv > eastAdv
+          ? "combat.phases.bout_timeout.west_advantage"
+          : "combat.phases.bout_timeout.stalemate";
+      push(
+        BardEngine.resolve(rng, timeoutPath, {
+          EAST: east.shikona,
+          WEST: west.shikona,
+          eastRikishiId: east.id,
+          westRikishiId: west.id,
+        }).text,
+        "bout_timeout"
+      );
+    }
+
     // Edge crisis
     if (entry.phase === "edge_crisis") {
       const crisisData = entry.data as {
@@ -1715,6 +1872,36 @@ export function generateBoutNarrative(
     );
   }
 
+  // 15f. Age-based decline narrative (6.4): father time / defying age
+  {
+    const loserDecline = loserRikishi.declinePhase;
+    const winnerDecline = winnerRikishi.declinePhase;
+
+    // Father time: loser is in decline phase
+    if (loserDecline === "early-decline" || loserDecline === "late-decline" || loserDecline === "twilight") {
+      push(
+        BardEngine.resolve(postBoutRng, "post_bout.father_time", {
+          LOSER: loserRikishi.shikona,
+          loserId: loserRikishi.id,
+        }).text,
+        "post_bout",
+        ["veteran"]
+      );
+    }
+
+    // Defying age: winner is in late-decline or twilight
+    if (winnerDecline === "late-decline" || winnerDecline === "twilight") {
+      push(
+        BardEngine.resolve(postBoutRng, "post_bout.defying_age", {
+          WINNER: winnerRikishi.shikona,
+          winnerId: winnerRikishi.id,
+        }).text,
+        "post_bout",
+        ["veteran"]
+      );
+    }
+  }
+
   // 16. Mono-ii (judge consultation) — expanded sub-paths
   if (result.monoii) {
     const monoiiRng = rngFromSeed(seed, "pbp", "mono-ii");
@@ -1884,6 +2071,20 @@ export function generateBoutNarrative(
       // Loser confirmed make-koshi but didn't trigger the specific make_koshi type above
       questionType = "general_loss";
     }
+
+    // Career phase question (6.1): use declinePhase for phase-specific question
+    const careerPhaseMap: Record<string, string> = {
+      "pre-peak": "career_pre_peak",
+      "peak": "career_peak",
+      "early-decline": "career_early_decline",
+      "late-decline": "career_late_decline",
+      "twilight": "career_twilight",
+    };
+    const careerPhaseQuestion = careerPhaseMap[ctx.careerPhase];
+    const careerPhaseQuestionPath = `interview.questions.${careerPhaseQuestion}`;
+    const hasCareerPhaseQuestion = careerPhaseQuestion
+      ? BardEngine.has(careerPhaseQuestionPath)
+      : false;
     const questionPath = `interview.questions.${questionType}`;
     const hasQuestionTemplate = BardEngine.has(questionPath);
     const numQuestions = ctx.voiceStyle === "dramatic" ? 4 : 3;
@@ -1971,6 +2172,58 @@ export function generateBoutNarrative(
           );
         }
       }
+    }
+
+    // Career phase question (6.1): add a phase-specific question after standard questions
+    if (hasCareerPhaseQuestion) {
+      const cpRng = rngFromSeed(seed, "pbp", "interview-career-phase");
+      push(
+        BardEngine.resolve(cpRng, careerPhaseQuestionPath, {
+          SHIKONA: winnerRikishi.shikona,
+          KIMARITE: result.kimariteName ?? result.kimarite,
+          OPPONENT: loserRikishi.shikona,
+          WINS: (winnerWins + 1).toString(),
+          rikishiId: winnerRikishi.id,
+        }).text,
+        "interview",
+        ["interview", "career_phase"]
+      );
+      push(
+        BardEngine.resolve(cpRng, interviewPath, {
+          SHIKONA: winnerRikishi.shikona,
+          KIMARITE: result.kimariteName ?? result.kimarite,
+          OPPONENT: loserRikishi.shikona,
+          WINS: (winnerWins + 1).toString(),
+          rikishiId: winnerRikishi.id,
+        }).text,
+        "interview",
+        ["interview", "career_phase"]
+      );
+    }
+
+    // Rivalry question (7.2): add a rivalry-specific question when meetings >= 3
+    if (pair && pair.meetings >= 3) {
+      const rvRng = rngFromSeed(seed, "pbp", "interview-rivalry");
+      push(
+        BardEngine.resolve(rvRng, "interview.questions.rivalry_renewed", {
+          SHIKONA: winnerRikishi.shikona,
+          OPPONENT: loserRikishi.shikona,
+          rikishiId: winnerRikishi.id,
+        }).text,
+        "interview",
+        ["interview", "rivalry"]
+      );
+      push(
+        BardEngine.resolve(rvRng, interviewPath, {
+          SHIKONA: winnerRikishi.shikona,
+          KIMARITE: result.kimariteName ?? result.kimarite,
+          OPPONENT: loserRikishi.shikona,
+          WINS: (winnerWins + 1).toString(),
+          rikishiId: winnerRikishi.id,
+        }).text,
+        "interview",
+        ["interview", "rivalry"]
+      );
     }
     } // end INTERVIEW_CHANCE gate
   }

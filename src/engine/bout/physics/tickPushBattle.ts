@@ -65,8 +65,36 @@ export function tickPushBattle(
     1 - westEffFatigue * FATIGUE_PENALTY_PER_POINT
   );
 
-  const adjustedEastForce = push.eastForce * eastFatPenalty;
-  const adjustedWestForce = push.westForce * westFatPenalty;
+  let adjustedEastForce = push.eastForce * eastFatPenalty;
+  let adjustedWestForce = push.westForce * westFatPenalty;
+
+  // In-bout counter-tactic activation (2.2): when defender's counterFamily matches
+  // the current engagement family ("push"), reduce attacker's effective force
+  const COUNTER_FORCE_REDUCTION = 0.1; // 10% force reduction when countered
+  let counterActivated = false;
+  let counterSide: Side | null = null;
+  if (west.combatProfile?.counterFamily === "push" && east.combatProfile?.counterFamily !== "push") {
+    adjustedEastForce *= (1 - COUNTER_FORCE_REDUCTION);
+    counterActivated = true;
+    counterSide = "west";
+  } else if (east.combatProfile?.counterFamily === "push" && west.combatProfile?.counterFamily !== "push") {
+    adjustedWestForce *= (1 - COUNTER_FORCE_REDUCTION);
+    counterActivated = true;
+    counterSide = "east";
+  }
+  if (counterActivated && counterSide && st.tick % NARRATIVE_TICK_CADENCE === 0) {
+    boutLog.push({
+      phase: "counter_tactic",
+      clock: st.tick * CLOCK_MULTIPLIER,
+      data: {
+        event: "counter_tactic",
+        side: counterSide,
+        counterFamily: "push",
+        attackerFamily: "push",
+        forceReduction: COUNTER_FORCE_REDUCTION,
+      },
+    });
+  }
 
   // Archetype-specific bout behavior (2.1): apply pushVelocityBonus to force
   // Body type behavior (5.1): combine with body type push/lateral bonuses

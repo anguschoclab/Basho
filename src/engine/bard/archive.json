@@ -835,6 +835,24 @@
             "%NAME% adjusts his grip — a subtle but important shift in the belt battle."
           ]
         },
+        "bout_timeout": {
+          "stalemate": [
+            "The bout goes to the judges — after a grueling stalemate, neither man could finish it.",
+            "Time expires! The referee calls for a decision — this one goes to the shimpan.",
+            "An exhausting marathon ends without a decisive blow — the judges must decide.",
+            "The gyoji signals a timeout — both men are spent after an epic struggle."
+          ],
+          "east_advantage": [
+            "The judges confer — %EAST% had the forward pressure throughout. The decision goes his way.",
+            "After a grueling stalemate, the shimpan rule in favor of %EAST% — he was the aggressor.",
+            "%EAST% is awarded the bout on the judges' decision — his consistency earned it."
+          ],
+          "west_advantage": [
+            "The judges confer — %WEST% had the forward pressure throughout. The decision goes his way.",
+            "After a grueling stalemate, the shimpan rule in favor of %WEST% — he was the aggressor.",
+            "%WEST% is awarded the bout on the judges' decision — his consistency earned it."
+          ]
+        },
         "finish": {
           "common": [
             "And that is the conclusion. %WINNER% takes the victory.",
@@ -2100,6 +2118,43 @@
           "A legendary career comes to a close as %SHIKONA% bids farewell to the sport.",
           "Supporters and rivals alike gather to pay their respects to the retiring %SHIKONA%."
         ],
+        "retirement_career_summary": [
+          "%SHIKONA% retires with %CAREER_WINS% career wins against %CAREER_LOSSES% losses across %BASHO_COUNT% basho.",
+          "Over %YEARS_ACTIVE% years on the dohyo, %SHIKONA% amassed %CAREER_WINS% victories and %YUSHO_COUNT% yusho titles.",
+          "A career spanning %BASHO_COUNT% basho comes to an end — %SHIKONA% finishes with %CAREER_WINS% wins and %KINBOSHI_COUNT% kinboshi.",
+          "%SHIKONA% hangs up the mawashi after %YEARS_ACTIVE% years, %CAREER_WINS% wins, and %YUSHO_COUNT% tournament championships."
+        ],
+        "retirement_legacy": [
+          "%SHIKONA% reached the rank of %HIGHEST_RANK%, leaving an indelible mark on the sport.",
+          "The highest rank achieved by %SHIKONA% was %HIGHEST_RANK% — a testament to years of dedication.",
+          "History will remember %SHIKONA% as a %HIGHEST_RANK% who gave everything to the sport.",
+          "%SHIKONA%'s legacy as a %HIGHEST_RANK% is secure — the dohyo will not be the same without that presence."
+        ],
+        "retirement_press_stoic": [
+          "\"I did what I could. The rest is for others to judge.\"",
+          "\"My body has decided. I accept it.\"",
+          "\"I have no regrets. I gave my best every day.\""
+        ],
+        "retirement_press_celebrity": [
+          "\"Thank you to all my fans. This journey would not have been possible without you.\"",
+          "\"I'm overwhelmed by the support. Every cheer, every banner — I carried them with me.\"",
+          "\"This isn't goodbye. I'll always be part of the sumo family.\""
+        ],
+        "retirement_press_villain": [
+          "\"They wanted me gone. Now they have their wish. But they'll miss me when I'm not here.\"",
+          "\"I leave on my own terms. No one forced this hand.\"",
+          "\"The dohyo won't be as interesting without me. That's just a fact.\""
+        ],
+        "retirement_press_firebrand": [
+          "\"I fought every bout like it was my last. Now it actually is.\"",
+          "\"No half-measures. That's how I wrestled, and that's how I leave.\"",
+          "\"They'll remember the fire. That's all I ever wanted.\""
+        ],
+        "retirement_oyakata_conversion": [
+          "%SHIKONA% will remain in the sumo world, staying on as an oyakata at %HEYA%.",
+          "The newly minted oyakata %SHIKONA% will begin coaching duties at %HEYA%.",
+          "%SHIKONA% transitions to the role of oyakata, passing on wisdom to the next generation."
+        ],
         "underdog_victory_title": [
           "Giant Killing: %SHIKONA% Stuns the Division",
           "Kinboshi for %SHIKONA%",
@@ -2680,6 +2735,11 @@
         "%OLDER% brings %AGE_DIFF% years of experience against the rising %YOUNGER%.",
         "The age gap is %AGE_DIFF% years — %OLDER%'s wisdom against %YOUNGER%'s hunger."
       ],
+      "battle_of_veterans": [
+        "Two veterans collide — %EAST% and %WEST% have seen it all across decades on the dohyo.",
+        "A battle of legends: %EAST% and %WEST%, both well past 30, still answering the bell.",
+        "The crowd appreciates this rare clash of veterans — %EAST% and %WEST% refuse to fade quietly."
+      ],
       "career_milestone": [
         "%SHIKONA% sits on the cusp of a career milestone — %MILESTONE% career wins.",
         "One more victory brings %SHIKONA% to the %MILESTONE%-win plateau.",
@@ -2920,6 +2980,18 @@
         "%WINNER% shocks the dohyo and pockets %ENVELOPES% kensho envelopes — an upset worth every yen.",
         "A stunning result and %ENVELOPES% kensho envelopes for %WINNER% — the sponsors love an underdog story."
       ],
+      "father_time": [
+        "Father time catches up to %LOSER% — the years are taking their toll.",
+        "%LOSER% can't turn back the clock — age finally factoring into the result.",
+        "The legs aren't what they used to be for %LOSER% — time remains undefeated.",
+        "%LOSER% shows flashes of the old brilliance, but the body can't keep up anymore."
+      ],
+      "defying_age": [
+        "Defying age itself — %WINNER% proves the old warrior still has it!",
+        "%WINNER% turns back the clock with that performance — age is just a number.",
+        "They said he was done, but %WINNER% silences the doubters once more.",
+        "%WINNER% writes another chapter in a remarkable late-career story."
+      ],
       "career_milestone": [
         "That win brings %SHIKONA% to %MILESTONE% career victories — a remarkable achievement.",
         "History for %SHIKONA% — career win number %MILESTONE% is in the books.",
@@ -3075,6 +3147,42 @@
           "What happened out there today?",
           "How will you regroup for tomorrow?",
           "What do you need to improve?"
+        ],
+        "career_pre_peak": [
+          "You're showing real promise at this stage. How does it feel to be rising?",
+          "What are your goals for this basho and beyond?",
+          "Who do you look up to in the division?",
+          "How do you handle the pressure of expectations?"
+        ],
+        "career_peak": [
+          "You're at the top of your game. How do you maintain this level?",
+          "What's driving you at this stage of your career?",
+          "Do you feel the target on your back from younger wrestlers?",
+          "How do you stay motivated when you've achieved so much?"
+        ],
+        "career_early_decline": [
+          "How are you adapting your sumo as the years go on?",
+          "What keeps you going at this stage of your career?",
+          "Have you changed your training approach recently?",
+          "What wisdom would you share with younger wrestlers?"
+        ],
+        "career_late_decline": [
+          "After all these years, what does each bout mean to you now?",
+          "How much longer do you see yourself competing?",
+          "What legacy do you hope to leave on the dohyo?",
+          "What keeps the fire burning after so many years?"
+        ],
+        "career_twilight": [
+          "You've had an extraordinary career. How do you reflect on it?",
+          "What memories stand out from your time in the ring?",
+          "Is there a message you'd like to share with your fans?",
+          "What does sumo mean to you at this point in your life?"
+        ],
+        "rivalry_renewed": [
+          "Another chapter in your rivalry with %OPPONENT%. How did you approach this one?",
+          "You've faced %OPPONENT% several times now. What makes these bouts different?",
+          "The history between you and %OPPONENT% — does it affect your preparation?",
+          "What's it like stepping onto the dohyo against a familiar rival?"
         ]
       },
       "stoic": [
