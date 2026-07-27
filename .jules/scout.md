@@ -47,3 +47,9 @@
 **Gap:** The monthly calculation modules `loans.ts` and `salaries.ts` were isolated from `phase05_monthly_boundary.ts` but lacked their own explicit unit tests, leaving the core rules around Heya loans and Sekitori salaries untested.
 **Learning:** These modules generate financial events (`FINANCIAL_ALERT`) and perform entity updates directly via `ImpactBuilder` references. They mutate an externally passed `heyaUpdates` object rather than creating it themselves.
 **Pattern:** For modules that patch game state using `heyaUpdates` and `ImpactBuilder`, construct `WorldState`, `Heya`, and `Rikishi` using `MockFactory`. Pass them along with an initialized `heyaUpdates` and `createImpactBuilder()` into the function. Validate that `heyaUpdates` holds the mutated scalar fields (like `funds`) and `builder.build()` holds the complex object updates and events.
+
+## 2025-02-27 - Scout: test weekly governance review phase
+
+**Gap:** `phase01_week_governance.ts` was untested. It handles weekly decay of scandal scores, transitions for governance status when hitting thresholds, and bi-annual JSA board elections.
+**Learning:** `createImpactBuilder` wraps nested `StateImpact` and their `events` may exist top-level on the returned impact, or within `.impacts` array if `mergeImpacts` wraps multiple sources (e.g. from `evaluateScandals`). For testing events reliably, extract `.events` manually considering this structure or just use `resolveImpacts`.
+**Pattern:** For tick phases generating events via `ImpactBuilder`, mock multiple `Heya` instances with boundary values (e.g., exactly at or above a threshold) and the player's ID using `MockFactory`. Validate both the modified `world` via `resolveImpacts` (for scalar mutations like `politicalCapital` and `scandalScore`) and the raw `impact.events` (for conditionally logged notifications).
