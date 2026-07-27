@@ -68,10 +68,19 @@ async function createWindow(): Promise<void> {
     width: 1280,
     height: 800,
   };
+  const rawWindowState = store.get("windowState");
+
+  // Defensively validate windowState since it's sourced from IPC-accessible storage
   const windowState =
-    (store.get("windowState") as
-      | { x?: number; y?: number; width: number; height: number }
-      | undefined) ?? defaultWindowState;
+    typeof rawWindowState === "object" && rawWindowState !== null && !Array.isArray(rawWindowState)
+      ? {
+          x: typeof (rawWindowState as any).x === "number" ? (rawWindowState as any).x : undefined,
+          y: typeof (rawWindowState as any).y === "number" ? (rawWindowState as any).y : undefined,
+          width: typeof (rawWindowState as any).width === "number" ? (rawWindowState as any).width : defaultWindowState.width,
+          height: typeof (rawWindowState as any).height === "number" ? (rawWindowState as any).height : defaultWindowState.height,
+        }
+      : defaultWindowState;
+
   if (windowState.x !== undefined && windowState.y !== undefined) {
     mainWindow.setPosition(windowState.x, windowState.y);
   }
