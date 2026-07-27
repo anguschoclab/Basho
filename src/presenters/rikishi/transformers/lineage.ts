@@ -35,8 +35,6 @@ export function toCareerDataDTO(r: Rikishi, world: WorldState): RikishiCareerDat
     citizenshipStatus: getCitizenshipStatus(r, world.year),
     yearsToNaturalization: yearsUntilNaturalization(r, world.year),
     consecutiveStrongOzeki: r.consecutiveStrongOzeki ?? 0,
-    notableBouts: r.almanacRecord?.notableBouts,
-    narrativeHighlights: r.almanacRecord?.narrativeHighlights,
-    promotionHistory: r.almanacRecord?.promotionHistory,
+    consecutiveStrongSekiwake: r.consecutiveStrongSekiwake ?? 0,
   };
 }
