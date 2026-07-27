@@ -2770,6 +2770,43 @@
         "One more victory brings %SHIKONA% to the %MILESTONE%-win plateau.",
         "A milestone moment potentially awaits %SHIKONA% today at %MILESTONE% career wins."
       ],
+      "career_bout_milestone": [
+        "%SHIKONA% approaches a career landmark — %MILESTONE% total bouts on the dohyo.",
+        "One more appearance brings %SHIKONA% to the %MILESTONE%-bout milestone.",
+        "A testament to longevity — %SHIKONA% nears %MILESTONE% career bouts."
+      ],
+      "bout_of_the_day": [
+        "This is the featured bout of the day — %EAST% versus %WEST% promises drama.",
+        "The highlight matchup: %EAST% and %WEST% square off in today's marquee bout.",
+        "All eyes on the dohyo — %EAST% versus %WEST% is the bout of the day."
+      ],
+      "spoiler": [
+        "Former %SPOILER_FORMER_RANK% %SPOILER% looks to play spoiler against %CONTENDER% today.",
+        "%SPOILER%, once a %SPOILER_FORMER_RANK%, stands in the path of the surging %CONTENDER%.",
+        "The veteran %SPOILER% aims to derail %CONTENDER%'s campaign — a classic spoiler role."
+      ],
+      "rank_debut": {
+        "shin_sekiwake": [
+          "Shin-sekiwake %SHIKONA% makes his debut at the rank today.",
+          "A new sekiwake — %SHIKONA% takes the dohyo at his elevated rank for the first time.",
+          "%SHIKONA% begins his sekiwake tenure with this bout."
+        ],
+        "shin_komusubi": [
+          "Shin-komusubi %SHIKONA% debuts at his new rank today.",
+          "%SHIKONA% steps onto the dohyo as a komusubi for the first time.",
+          "A proud moment for shin-komusubi %SHIKONA% in his first bout at the rank."
+        ],
+        "shin_maegashira": [
+          "Shin-maegashira %SHIKONA% at Maegashira %RANK_NUMBER% — a career-high debut.",
+          "%SHIKONA% makes his first appearance at the Maegashira %RANK_NUMBER% rank.",
+          "A new rank for %SHIKONA% — Maegashira %RANK_NUMBER% and rising."
+        ]
+      },
+      "playoff_bout": [
+        "A playoff bout to decide the yusho! %EAST% versus %WEST% — winner takes all.",
+        "Championship on the line — %EAST% and %WEST% face off in a yusho playoff.",
+        "The yusho hangs in the balance — %EAST% versus %WEST% in a decisive playoff bout."
+      ],
       "career_phase_debut": [
         "%SHIKONA% takes the dohyo early in his career — %BOUTS% bouts in, the future stretches ahead.",
         "A young %SHIKONA% finds his footing in the professional ranks.",
@@ -3105,6 +3142,22 @@
         "History for %SHIKONA% — career win number %MILESTONE% is in the books.",
         "A milestone moment: %SHIKONA% reaches the %MILESTONE%-win mark."
       ],
+      "career_bout_milestone": [
+        "That was %SHIKONA%'s %MILESTONE%th career bout — a remarkable milestone of longevity.",
+        "History for %SHIKONA% — %MILESTONE% total bouts on the dohyo and counting.",
+        "A milestone of endurance: %SHIKONA% reaches the %MILESTONE%-bout mark."
+      ],
+      "comeback_win": [
+        "A stunning comeback victory for %WINNER% — saved from the edge of defeat!",
+        "%WINNER% was on the brink, but turns it around to defeat %LOSER%!",
+        "Incredible resilience from %WINNER% — a comeback win from the edge of the dohyo.",
+        "%WINNER% snatches victory from the jaws of defeat against %LOSER%."
+      ],
+      "playoff_result": [
+        "The yusho is decided! %WINNER% prevails over %LOSER% in the playoff.",
+        "%WINNER% claims the championship — a playoff victory over %LOSER%!",
+        "Championship secured — %WINNER% defeats %LOSER% in the decisive playoff bout."
+      ],
       "kachi_koshi": [
         "Kachi-koshi! %SHIKONA% secures a winning record at %WINS% wins.",
         "%SHIKONA% clinches kachi-koshi with %WINS% victories. A successful tournament.",
@@ -3204,6 +3257,50 @@
           "One more look at that spectacular finish — %KIMARITE% seals it for %WINNER%."
         ]
       }
+    },
+    "kyujo": {
+      "injury_withdrawal": [
+        "%SHIKONA% has withdrawn from the basho due to a %AREA% injury sustained on day %DAY%.",
+        "A tough blow for %SHIKONA% — the %AREA% injury forces a kyujo withdrawal.",
+        "%SHIKONA% pulls out of the tournament on day %DAY% — the %AREA% injury proves too much."
+      ],
+      "pre_basho_withdrawal": [
+        "%SHIKONA% will sit out the entire basho — %REASON%.",
+        "%SHIKONA% has withdrawn from the tournament before it begins — %REASON%.",
+        "A full kyujo for %SHIKONA% — the %REASON% keeps him off the dohyo."
+      ],
+      "return_from_kyujo": [
+        "%SHIKONA% returns to the dohyo after missing %BASHOS_MISSED% basho(s) — welcome back.",
+        "Back in action — %SHIKONA% has recovered and returns from a %BASHOS_MISSED%-basho absence.",
+        "%SHIKONA% is back on the dohyo after %BASHOS_MISSED% tournament(s) away."
+      ]
+    },
+    "sansho_ceremony": {
+      "ceremony_intro": [
+        "The sansho ceremony begins — the judges announce the special prize recipients.",
+        "It's time for the special prize ceremony at the conclusion of the tournament.",
+        "The three special prizes are about to be awarded."
+      ],
+      "shukunsho": [
+        "The Shukun-sho goes to %SHIKONA% — Outstanding Performance Prize for a remarkable tournament.",
+        "%SHIKONA% receives the Shukun-sho — the Outstanding Performance Prize is well deserved.",
+        "Outstanding Performance Prize: %SHIKONA% earns the Shukun-sho for his exceptional basho."
+      ],
+      "kantosho": [
+        "The Kanto-sho is awarded to %SHIKONA% — Fighting Spirit Prize for his relentless effort.",
+        "%SHIKONA% earns the Kanto-sho — the Fighting Spirit Prize recognizes his warrior's heart.",
+        "Fighting Spirit Prize: %SHIKONA% receives the Kanto-sho for his tenacious tournament."
+      ],
+      "ginosho": [
+        "The Gino-sho goes to %SHIKONA% — Technique Prize for his masterful sumo.",
+        "%SHIKONA% is awarded the Gino-sho — the Technique Prize celebrates his skill and craft.",
+        "Technique Prize: %SHIKONA% earns the Gino-sho for his brilliant technical display."
+      ],
+      "multiple_prizes": [
+        "%SHIKONA% sweeps the sansho — %COUNT% special prizes in a single tournament!",
+        "An extraordinary haul for %SHIKONA% — %COUNT% special prizes awarded today.",
+        "%SHIKONA% makes history with %COUNT% sansho prizes in one basho."
+      ]
     },
     "interview": {
       "questions": {

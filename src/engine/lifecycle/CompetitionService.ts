@@ -64,6 +64,9 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
     playoffMatches.push(...playoffResult.matches);
 
     const champ = getRikishi(world, yusho);
+    const playoffPbpLines = playoffResult.matches.flatMap(
+      (m) => m.result?.pbpLines ?? []
+    );
     builder.logEvent(
       "BOUT_RESOLVED",
       "narrative",
@@ -72,6 +75,7 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
         shikona: champ?.shikona ?? yusho,
         score: topCandidates.length,
         delta: bestWins,
+        pbpLines: playoffPbpLines,
       },
       { rikishiId: yusho }
     );

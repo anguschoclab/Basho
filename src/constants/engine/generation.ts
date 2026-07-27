@@ -273,6 +273,9 @@ export const HOF_CAREER_WINS_THRESHOLD = 500;
 /** Career win milestones */
 export const CAREER_WIN_MILESTONES = [100, 200, 300, 500];
 
+/** Career bout count milestones (total appearances: wins + losses) */
+export const CAREER_BOUT_MILESTONES = [500, 700, 1000, 1200];
+
 // ─────────────────────────────────────────
 // History/shikona constants
 // ─────────────────────────────────────────

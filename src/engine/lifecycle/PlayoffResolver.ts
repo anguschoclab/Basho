@@ -5,6 +5,9 @@ import type { BashoState, MatchSchedule } from "../types/basho";
 import type { Id } from "../types/common";
 import { rngForWorld } from "../rng";
 import { getRikishi } from "../queries";
+import { BardEngine } from "../bard/BardEngine";
+import { rngFromSeed } from "../rng";
+import type { PbpLine } from "../bout/boutNarrative";
 
 /**
  * Run a single-elimination playoff among tied yūshō candidates.
@@ -47,6 +50,49 @@ export function resolvePlayoffs(
         undefined,
         world
       );
+
+      // Add playoff-specific narrative lines (Gap 3)
+      const playoffRng = rngFromSeed(`playoff-${boutId}-narrative`, "pbp", "playoff");
+      const playoffLines: PbpLine[] = [];
+      const preLine = BardEngine.resolve(playoffRng, "pre_bout.playoff_bout", {
+        EAST: east.shikona,
+        WEST: west.shikona,
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+      });
+      if (preLine.text && !preLine.text.includes("[MISSING:")) {
+        playoffLines.push({
+          text: preLine.text,
+          id: `${boutId}-playoff-pre`,
+          phase: "pre_bout",
+          tags: ["yusho_race"],
+        });
+      }
+      const winnerName = result.winner === "east" ? east.shikona : west.shikona;
+      const loserName = result.winner === "east" ? west.shikona : east.shikona;
+      const winnerId = result.winner === "east" ? east.id : west.id;
+      const loserId = result.winner === "east" ? west.id : east.id;
+      const postLine = BardEngine.resolve(playoffRng, "post_bout.playoff_result", {
+        WINNER: winnerName,
+        LOSER: loserName,
+        winnerId,
+        loserId,
+      });
+      if (postLine.text && !postLine.text.includes("[MISSING:")) {
+        playoffLines.push({
+          text: postLine.text,
+          id: `${boutId}-playoff-post`,
+          phase: "post_bout",
+          tags: ["yusho_race"],
+        });
+      }
+      // Prepend playoff opening line and append playoff result line to existing pbpLines
+      if (result.pbpLines && result.pbpLines.length > 0) {
+        result.pbpLines = [...playoffLines.slice(0, 1), ...result.pbpLines, ...playoffLines.slice(1)];
+      } else {
+        result.pbpLines = playoffLines.length > 0 ? playoffLines : undefined;
+      }
+
       allMatches.push({ boutId, day, eastRikishiId: eastId, westRikishiId: westId, result });
       next.push(result.winnerRikishiId);
     }

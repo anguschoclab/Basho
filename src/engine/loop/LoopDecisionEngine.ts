@@ -15,6 +15,7 @@ import type {
 } from "../types/training";
 import type { DietRegimen } from "../types/economy";
 import { getPlayerHeya } from "../queries";
+import { generateKyujoNarrative } from "../bout/boutNarrative";
 
 export interface LoopDecision {
   id: string;
@@ -315,6 +316,21 @@ export function applyDecisionEffect(
             submittedDate: world.calendar?.currentWeek ?? 0,
           },
         });
+        const narrative = generateKyujoNarrative(
+          r,
+          "injury_withdrawal",
+          {
+            area: r.injuryStatus?.location ?? r.currentInjury?.area ?? "leg",
+            day: world.currentBasho?.day ?? 1,
+          },
+          `kyujo-${rikishiId}-${world.week ?? 0}`
+        );
+        builder.logEvent(
+          "LIFECYCLE_EVENT",
+          "injury",
+          { rikishiId, heyaId: r.heyaId, status: "withdrawn_kyujo", narrative },
+          { rikishiId, heyaId: r.heyaId }
+        );
       }
     } else if (optionId === "compete") {
       const r = world.rikishi.get(rikishiId);

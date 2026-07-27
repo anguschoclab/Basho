@@ -28,6 +28,7 @@ import {
   STRESS_TERSE_THRESHOLD,
   MEDIA_SAVVY_POLISHED_THRESHOLD,
   BIRTHDAY_WINDOW_DAYS,
+  CAREER_BOUT_MILESTONES,
 } from "../../constants/engine/generation";
 import { BASHO_CALENDAR } from "../calendar";
 import { isKachiKoshi, isMakeKoshi } from "../banzuke/banzukeHelpers";
@@ -76,7 +77,8 @@ export type PbpPhase =
   | "mono_ii"
   | "award"
   | "ceremony"
-  | "closing";
+  | "closing"
+  | "kyujo";
 
 export type PbpVoice = "dramatic" | "formal" | "understated";
 
@@ -767,6 +769,25 @@ export function generateBoutNarrative(
     }
   }
 
+  // 3h2. Career bout count milestone (Gap 1)
+  for (const r of [east, west]) {
+    const careerBouts = (r.careerWins ?? 0) + (r.careerLosses ?? 0);
+    for (const milestone of CAREER_BOUT_MILESTONES) {
+      if (careerBouts + 1 === milestone) {
+        push(
+          BardEngine.resolve(preBoutRng, "pre_bout.career_bout_milestone", {
+            SHIKONA: r.shikona,
+            MILESTONE: milestone.toString(),
+            rikishiId: r.id,
+          }).text,
+          "pre_bout",
+          ["milestone"]
+        );
+        break;
+      }
+    }
+  }
+
   // 3i. Consecutive kachi-koshi streak
   const eastKachiStreak = east.consecutiveKachiKoshi ?? 0;
   const westKachiStreak = west.consecutiveKachiKoshi ?? 0;
@@ -833,6 +854,35 @@ export function generateBoutNarrative(
     }
   }
 
+  // 3j3b. Spoiler narrative (Gap 7): former sanyaku facing a contender
+  for (const [spoiler, contender] of [[east, west], [west, east]] as const) {
+    if (!spoiler.careerHistory || spoiler.careerHistory.length === 0) continue;
+    const formerSanyaku = spoiler.careerHistory.some(
+      (s) => s.rank === "ozeki" || s.rank === "sekiwake" || s.rank === "komusubi"
+    );
+    const isCurrentlyLower = spoiler.rank === "maegashira";
+    if (!formerSanyaku || !isCurrentlyLower) continue;
+    const contenderInContention =
+      (world.currentBasho && isYushoContention(contender, spoiler, world.currentBasho)) ||
+      (contender.currentBashoWins ?? 0) >= 8;
+    if (!contenderInContention) continue;
+    const formerRank = spoiler.careerHistory.find(
+      (s) => s.rank === "ozeki" || s.rank === "sekiwake" || s.rank === "komusubi"
+    )?.rank ?? "sanyaku";
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.spoiler", {
+        SPOILER: spoiler.shikona,
+        CONTENDER: contender.shikona,
+        SPOILER_FORMER_RANK: formerRank,
+        spoilerId: spoiler.id,
+        contenderId: contender.id,
+      }).text,
+      "pre_bout",
+      ["title_stakes"]
+    );
+    break;
+  }
+
   // 3j4. Career phase narrative (6.1): debut, prime, decline, veteran
   for (const r of [east, west]) {
     const age = r.age ?? (world.year - r.birthYear);
@@ -853,6 +903,40 @@ export function generateBoutNarrative(
         "pre_bout",
         [phase === "debut" ? "rookie" : phase === "veteran" ? "veteran" : "career_phase"]
       );
+    }
+  }
+
+  // 3j4b. Rank debut narrative (Gap 8): shin-sekiwake, shin-komusubi, shin-maegashira
+  for (const r of [east, west]) {
+    if (!r.careerHistory || r.careerHistory.length === 0) continue;
+    const prevBasho = r.careerHistory[r.careerHistory.length - 1];
+    const prevRank = prevBasho.rank;
+    const currentRank = r.rank;
+    const sanyakuRanks = ["sekiwake", "komusubi"];
+    if (sanyakuRanks.includes(currentRank ?? "") && !sanyakuRanks.includes(prevRank ?? "") && prevRank !== "yokozuna" && prevRank !== "ozeki") {
+      const debutPath = currentRank === "sekiwake" ? "pre_bout.rank_debut.shin_sekiwake" : "pre_bout.rank_debut.shin_komusubi";
+      push(
+        BardEngine.resolve(preBoutRng, debutPath, {
+          SHIKONA: r.shikona,
+          rikishiId: r.id,
+        }).text,
+        "pre_bout",
+        ["debut"]
+      );
+    } else if (currentRank === "maegashira" && prevRank !== "maegashira") {
+      const currentRankNumber = r.rankNumber ?? 99;
+      const isCareerHigh = r.careerHistory.every((s) => (s.rankNumber ?? 99) >= currentRankNumber);
+      if (isCareerHigh) {
+        push(
+          BardEngine.resolve(preBoutRng, "pre_bout.rank_debut.shin_maegashira", {
+            SHIKONA: r.shikona,
+            RANK_NUMBER: currentRankNumber.toString(),
+            rikishiId: r.id,
+          }).text,
+          "pre_bout",
+          ["debut"]
+        );
+      }
     }
   }
 
@@ -1101,6 +1185,20 @@ export function generateBoutNarrative(
       }).text,
       "pre_bout",
       ["kensho"]
+    );
+  }
+
+  // 3p4. Bout of the day designation (Gap 6): high-drama matchup
+  if (result.dramaticContext && (result.dramaticContext.score >= 85 || result.dramaticContext.label === "make_or_break" || result.dramaticContext.label === "grudge_match")) {
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.bout_of_the_day", {
+        EAST: east.shikona,
+        WEST: west.shikona,
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+      }).text,
+      "pre_bout",
+      ["tournament_context"]
     );
   }
 
@@ -1704,6 +1802,25 @@ export function generateBoutNarrative(
     }
   }
 
+  // 13b. Post-bout career bout count milestone (Gap 1)
+  {
+    const winnerCareerBouts = (winnerRikishi.careerWins ?? 0) + (winnerRikishi.careerLosses ?? 0);
+    for (const milestone of CAREER_BOUT_MILESTONES) {
+      if (winnerCareerBouts + 1 === milestone) {
+        push(
+          BardEngine.resolve(postBoutRng, "post_bout.career_bout_milestone", {
+            SHIKONA: winnerRikishi.shikona,
+            MILESTONE: milestone.toString(),
+            rikishiId: winnerRikishi.id,
+          }).text,
+          "post_bout",
+          ["milestone"]
+        );
+        break;
+      }
+    }
+  }
+
   // 14. Post-bout kachi-koshi / make-koshi confirmation
   if (isKachiKoshi(winnerWins + 1, winnerRikishi.currentBashoLosses ?? 0, winnerRikishi.rank)) {
     push(
@@ -1893,6 +2010,23 @@ export function generateBoutNarrative(
       }).text,
       "post_bout",
       ["upset"]
+    );
+  }
+
+  // 15c2. Comeback win narrative (Gap 5): winner escaped edge crisis during bout
+  const winnerHadEdgeCrisisEscape = result.log.some(
+    (entry) => entry.phase === "edge_crisis" && entry.data?.escaped === true && entry.data?.side === result.winner
+  );
+  if (winnerHadEdgeCrisisEscape) {
+    push(
+      BardEngine.resolve(postBoutRng, "post_bout.comeback_win", {
+        WINNER: winnerRikishi.shikona,
+        LOSER: loserRikishi.shikona,
+        winnerId: winnerRikishi.id,
+        loserId: loserRikishi.id,
+      }).text,
+      "post_bout",
+      ["comeback"]
     );
   }
 
@@ -2330,4 +2464,41 @@ export function generateBoutNarrative(
   }
 
   result.pbpLines = lines.length > 0 ? lines : undefined;
+}
+
+/**
+ * Generate narrative lines for kyujo (withdrawal) events.
+ * Used by HealthActions.withdrawRikishi and LoopDecisionEngine for withdrawal decisions.
+ */
+export function generateKyujoNarrative(
+  rikishi: Rikishi,
+  type: "injury_withdrawal" | "pre_basho_withdrawal" | "return_from_kyujo",
+  context: { area?: string; day?: number; reason?: string; bashosMissed?: number },
+  seed: string
+): PbpLine[] {
+  const rng = rngFromSeed(seed, "kyujo", type);
+  const lines: PbpLine[] = [];
+
+  const path = `kyujo.${type}`;
+  if (!BardEngine.has(path)) return lines;
+
+  const res = BardEngine.resolve(rng, path, {
+    SHIKONA: rikishi.shikona,
+    AREA: context.area ?? "leg",
+    DAY: (context.day ?? 1).toString(),
+    REASON: context.reason ?? "injury",
+    BASHOS_MISSED: (context.bashosMissed ?? 1).toString(),
+    rikishiId: rikishi.id,
+  });
+
+  if (res.text && !res.text.includes("[MISSING:")) {
+    lines.push({
+      text: res.text,
+      id: `kyujo-${rikishi.id}-${type}-${lines.length}`,
+      phase: "kyujo",
+      tags: ["injury"],
+    });
+  }
+
+  return lines;
 }

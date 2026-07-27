@@ -2,6 +2,7 @@ import type { WorldState } from "../../types/world";
 import type { StateImpact } from "../../core/StateImpact";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { TREATMENT_COST_PER_WEEK } from "../../../constants/engine/health";
+import { generateKyujoNarrative } from "../../bout/boutNarrative";
 
 /** Withdraw a rikishi from competition (kyūjō) due to injury. */
 export function withdrawRikishi(world: WorldState, rikishiId: string): StateImpact {
@@ -9,10 +10,19 @@ export function withdrawRikishi(world: WorldState, rikishiId: string): StateImpa
   const r = world.rikishi.get(rikishiId);
   if (!r) return builder.build();
   builder.updateRikishi(rikishiId, { isKyujo: true, kyujoReason: "injury" });
+  const narrative = generateKyujoNarrative(
+    r,
+    "injury_withdrawal",
+    {
+      area: r.injuryStatus?.location ?? r.currentInjury?.area ?? "leg",
+      day: world.currentBasho?.day ?? 1,
+    },
+    `withdraw-${rikishiId}-${world.week ?? 0}`
+  );
   builder.logEvent(
     "LIFECYCLE_EVENT",
     "injury",
-    { rikishiId, heyaId: r.heyaId, status: "withdrawn_kyujo" },
+    { rikishiId, heyaId: r.heyaId, status: "withdrawn_kyujo", narrative },
     { rikishiId, heyaId: r.heyaId }
   );
   return builder.build();
