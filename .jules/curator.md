@@ -15,3 +15,8 @@
 **Data:** rikishi.stats.achievements.ginboshiEarned and ginboshiConceded
 **Learning:** Ozeki concedes and Maegashira ginboshi wins were tracked but barely surfaced in the UI. Exposing them in the profile, retirement narrative, and Ozeki cards gives context to giant-killing achievements for Maegashira and upset vulnerabilities for Ozeki.
 **Pattern:** Similar to Kinboshi, conditional display items in RikishiProfileHeader and RikishiCard were added, avoiding clutter when values are 0.
+## 2024-08-01 - Ozeki Promotion Watch
+
+**Data:** `rikishi.consecutiveStrongSekiwake`
+**Learning:** The simulation tracks consecutive strong performances (11+ wins) for Sekiwake and Komusubi to qualify for Ozeki promotion (4.2 rule), but this was completely hidden from the UI. Players had to track sekiwake records manually to know if a promotion was imminent.
+**Pattern:** Similar to `consecutiveStrongOzeki`, added it to `RikishiCareerDataDTO` and surfaced it as a progress bar in `RikishiProfileHeader` when the wrestler is at a Sanyaku rank and actively on a run.
