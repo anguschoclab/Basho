@@ -29,10 +29,16 @@ export function buildBoutResultV2(
   //   - Each tawara escape: +20 points (dramatic near-defeats)
   //   - Grip reversals (inside→outside swaps in log): +10 points each
   //   - Momentum shifts: +5 points each
-  const edgeCrisisEscapes = boutLog.filter(
-    (e) => e.phase === "edge_crisis" && (e.data as Record<string, unknown>)?.escaped === true
-  ).length;
-  const momentumShifts = boutLog.filter((e) => e.phase === "momentum_shift").length;
+  // ⚡ Bolt Optimization: Replaced intermediate .filter().length arrays with a single O(N) loop
+  let edgeCrisisEscapes = 0;
+  let momentumShifts = 0;
+  for (const e of boutLog) {
+    if (e.phase === "edge_crisis" && (e.data as Record<string, unknown>)?.escaped === true) {
+      edgeCrisisEscapes++;
+    } else if (e.phase === "momentum_shift") {
+      momentumShifts++;
+    }
+  }
   const excitementScore = Math.min(
     100,
     Math.round(
