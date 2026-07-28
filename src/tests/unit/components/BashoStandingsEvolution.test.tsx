@@ -1,5 +1,4 @@
 /**
- * @vitest-environment jsdom
  */
 import { describe, it, expect } from "vitest";
 import { computeStandingsEvolution } from "@/components/basho/computeStandingsEvolution";
