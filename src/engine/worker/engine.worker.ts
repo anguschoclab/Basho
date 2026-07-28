@@ -389,9 +389,10 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
   };
 
   try {
-    const handler = COMMAND_HANDLERS[command.type];
+    // Explicit generic function type to assert that the handler will process the correct command.
+    const handler = COMMAND_HANDLERS[command.type] as ((cmd: EngineCommand) => void | Promise<void>) | undefined;
     if (handler) {
-      await handler(command as any);
+      await handler(command);
     } else {
       warn(`Unknown command: ${command.type}`, "Worker");
     }
