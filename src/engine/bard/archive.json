@@ -2816,7 +2816,12 @@
       "playoff_bout": [
         "A playoff bout to decide the yusho! %EAST% versus %WEST% — winner takes all.",
         "Championship on the line — %EAST% and %WEST% face off in a yusho playoff.",
-        "The yusho hangs in the balance — %EAST% versus %WEST% in a decisive playoff bout."
+        "The yusho hangs in the balance — %EAST% versus %WEST% in a decisive playoff bout.",
+        "The culmination of the basho is here — %EAST% and %WEST% for the Emperor's Cup.",
+        "A tiebreaker for glory — %EAST% meets %WEST% with the championship on the line.",
+        "The ultimate test remains — %EAST% and %WEST% square off in a high-stakes playoff.",
+        "It comes down to this — a sudden-death playoff between %EAST% and %WEST%.",
+        "Two contenders, one cup — %EAST% faces %WEST% in a monumental playoff."
       ],
       "career_phase_debut": [
         "%SHIKONA% takes the dohyo early in his career — %BOUTS% bouts in, the future stretches ahead.",
@@ -3186,7 +3191,12 @@
       "playoff_result": [
         "The yusho is decided! %WINNER% prevails over %LOSER% in the playoff.",
         "%WINNER% claims the championship — a playoff victory over %LOSER%!",
-        "Championship secured — %WINNER% defeats %LOSER% in the decisive playoff bout."
+        "Championship secured — %WINNER% defeats %LOSER% in the decisive playoff bout.",
+        "A magnificent finish to the basho — %WINNER% conquers %LOSER% in the playoff to take the Cup.",
+        "The Emperor's Cup belongs to %WINNER% following a dramatic playoff win over %LOSER%.",
+        "A hard-fought tournament ends in triumph for %WINNER%, leaving %LOSER% as the runner-up.",
+        "Glory for %WINNER%! A sensational playoff victory over %LOSER% seals the yusho.",
+        "The dust settles and %WINNER% stands victorious, having overcome %LOSER% in the final showdown."
       ],
       "kachi_koshi": [
         "Kachi-koshi! %SHIKONA% secures a winning record at %WINS% wins.",
@@ -3477,11 +3487,7 @@
           "My tachiai was the key today. I got the position I wanted.",
           "I noticed his grip was weak, so I attacked at that moment."
         ],
-        "laconic": [
-          "Yes.",
-          "I'll try my best.",
-          "We'll see."
-        ]
+        "laconic": ["Yes.", "I'll try my best.", "We'll see."]
       }
     }
   },
