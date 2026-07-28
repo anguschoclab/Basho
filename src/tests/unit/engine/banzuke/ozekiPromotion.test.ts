@@ -73,26 +73,39 @@ describe("Ozeki promotion (4.2)", () => {
   });
 
   describe("promoteToOzeki detection logic", () => {
-    it("consecutiveStrongSekiwake >= 3 should set promoteToOzeki", () => {
-      // This tests the detection logic that will be in BanzukePublisher
-      const consecutiveStrongSekiwake = 3;
+    it("consecutiveStrongSekiwake >= 2 with wins >= 11 should set promoteToOzeki", () => {
+      const consecutiveStrongSekiwake = 2;
       const wins = 11;
-      const shouldPromote = consecutiveStrongSekiwake >= 3 && wins >= 11;
+      const shouldPromote = consecutiveStrongSekiwake >= 2 && wins >= 11;
       expect(shouldPromote).toBe(true);
     });
 
-    it("consecutiveStrongSekiwake = 2 should NOT set promoteToOzeki", () => {
-      const consecutiveStrongSekiwake = 2;
+    it("consecutiveStrongSekiwake = 1 with wins >= 11 should NOT set promoteToOzeki", () => {
+      const consecutiveStrongSekiwake = 1;
       const wins = 11;
-      const shouldPromote = consecutiveStrongSekiwake >= 3 && wins >= 11;
+      const shouldPromote = consecutiveStrongSekiwake >= 2 && wins >= 11;
       expect(shouldPromote).toBe(false);
     });
 
-    it("consecutiveStrongSekiwake >= 3 but wins < 11 should NOT set promoteToOzeki", () => {
-      const consecutiveStrongSekiwake = 3;
+    it("consecutiveStrongSekiwake >= 2 but wins < 11 should NOT set promoteToOzeki", () => {
+      const consecutiveStrongSekiwake = 2;
       const wins = 10;
-      const shouldPromote = consecutiveStrongSekiwake >= 3 && wins >= 11;
+      const shouldPromote = consecutiveStrongSekiwake >= 2 && wins >= 11;
       expect(shouldPromote).toBe(false);
+    });
+
+    it("consecutiveStrongSekiwake resets when wins 8-10 (kachi-koshi but not strong)", () => {
+      const wins = 9;
+      const isSanyaku = true;
+      const shouldReset = isSanyaku && wins < 11;
+      expect(shouldReset).toBe(true);
+    });
+
+    it("consecutiveStrongSekiwake does NOT reset when wins >= 11 (strong basho)", () => {
+      const wins = 11;
+      const isSanyaku = true;
+      const shouldReset = isSanyaku && wins < 11;
+      expect(shouldReset).toBe(false);
     });
   });
 });

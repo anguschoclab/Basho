@@ -74,10 +74,10 @@ async function createWindow(): Promise<void> {
   const windowState =
     typeof rawWindowState === "object" && rawWindowState !== null && !Array.isArray(rawWindowState)
       ? {
-          x: typeof (rawWindowState as any).x === "number" ? (rawWindowState as any).x : undefined,
-          y: typeof (rawWindowState as any).y === "number" ? (rawWindowState as any).y : undefined,
-          width: typeof (rawWindowState as any).width === "number" ? (rawWindowState as any).width : defaultWindowState.width,
-          height: typeof (rawWindowState as any).height === "number" ? (rawWindowState as any).height : defaultWindowState.height,
+          x: typeof (rawWindowState as Record<string, unknown>).x === "number" ? (rawWindowState as Record<string, unknown>).x : undefined,
+          y: typeof (rawWindowState as Record<string, unknown>).y === "number" ? (rawWindowState as Record<string, unknown>).y : undefined,
+          width: typeof (rawWindowState as Record<string, unknown>).width === "number" ? (rawWindowState as Record<string, unknown>).width : defaultWindowState.width,
+          height: typeof (rawWindowState as Record<string, unknown>).height === "number" ? (rawWindowState as Record<string, unknown>).height : defaultWindowState.height,
         }
       : defaultWindowState;
 

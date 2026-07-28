@@ -144,7 +144,6 @@ export function assignKenshoBanners(
     }))
     .sort((a, b) => b.score - a.score || a.sponsor.sponsorId.localeCompare(b.sponsor.sponsorId));
 
-  // ⚡ Bolt Optimization: Replaced chained .filter().map() with a single loop to avoid intermediate O(N) array allocations
   const t4plusWeights: Array<{ item: Sponsor; w: number }> = [];
   const t3Weights: Array<{ item: Sponsor; w: number }> = [];
   for (const x of scored) {
@@ -169,7 +168,6 @@ export function assignKenshoBanners(
 
   if (chosen.length < count) {
     const chosenIds = new Set(chosen.map((s) => s.sponsorId));
-    // ⚡ Bolt Optimization: Replaced chained .map().filter().map() with a single loop to prevent redundant iterations and array creations
     const remaining: Array<{ item: Sponsor; w: number }> = [];
     for (const x of scored) {
       if (!chosenIds.has(x.sponsor.sponsorId)) {

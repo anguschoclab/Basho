@@ -7,6 +7,7 @@ import {
   ELECTION_WEEK,
   SCANDAL_SCORE_ALERT_THRESHOLD,
   SCANDAL_SCORE_HIGH_THRESHOLD,
+  SCANDAL_SCORE_LOW_THRESHOLD,
 } from "@/constants/engine/governanceExtended";
 import {
   ELECTION_POLITICAL_CAPITAL_GAIN,
@@ -107,5 +108,74 @@ describe("phase01_week_governance", () => {
     const electionEvent = events.find((e: any) => e.type === "BASHO_STATUS" && e.data.status === "phase_transition");
     expect(electionEvent).toBeDefined();
     expect(electionEvent?.data.incident).toContain("Dewanoumi");
+  });
+
+  it("uses post-decay score for status: score 16 decays to 15 → 'warning'", () => {
+    const heya = MockFactory.createHeya("h1", {
+      scandalScore: SCANDAL_SCORE_LOW_THRESHOLD + 1,
+      governanceStatus: "good_standing",
+    });
+    const world = MockFactory.createWorld({
+      heyas: new Map([["h1", heya]]),
+    });
+
+    const impact = phase01_week_governance(world);
+    const resolvedWorld = resolveImpacts(world, [impact]);
+
+    expect(resolvedWorld.heyas.get("h1")?.scandalScore).toBe(SCANDAL_SCORE_LOW_THRESHOLD);
+    expect(resolvedWorld.heyas.get("h1")?.governanceStatus).toBe("warning");
+  });
+
+  it("uses post-decay score for status: score 15 decays to 14 → 'good_standing'", () => {
+    const heya = MockFactory.createHeya("h1", {
+      scandalScore: SCANDAL_SCORE_LOW_THRESHOLD,
+      governanceStatus: "warning",
+    });
+    const world = MockFactory.createWorld({
+      heyas: new Map([["h1", heya]]),
+    });
+
+    const impact = phase01_week_governance(world);
+    const resolvedWorld = resolveImpacts(world, [impact]);
+
+    expect(resolvedWorld.heyas.get("h1")?.scandalScore).toBe(SCANDAL_SCORE_LOW_THRESHOLD - 1);
+    expect(resolvedWorld.heyas.get("h1")?.governanceStatus).toBe("good_standing");
+  });
+
+  it("alert uses post-decay score: score 31 decays to 30 → alert fires", () => {
+    const playerHeya = MockFactory.createHeya("player", {
+      scandalScore: SCANDAL_SCORE_ALERT_THRESHOLD + 1,
+    });
+    const world = MockFactory.createWorld({
+      heyas: new Map([["player", playerHeya]]),
+      playerHeyaId: "player",
+    });
+
+    const impact = phase01_week_governance(world);
+    const events = extractEvents(impact);
+
+    const alerts = events.filter(
+      (e: any) => e.type === "GOVERNANCE_RULING" && e.data.incident === "governance_warning",
+    );
+    expect(alerts.length).toBeGreaterThan(0);
+    expect(alerts[0]?.data.score).toBe(SCANDAL_SCORE_ALERT_THRESHOLD);
+  });
+
+  it("alert does NOT fire when post-decay score is below threshold", () => {
+    const playerHeya = MockFactory.createHeya("player", {
+      scandalScore: SCANDAL_SCORE_ALERT_THRESHOLD,
+    });
+    const world = MockFactory.createWorld({
+      heyas: new Map([["player", playerHeya]]),
+      playerHeyaId: "player",
+    });
+
+    const impact = phase01_week_governance(world);
+    const events = extractEvents(impact);
+
+    const alerts = events.filter(
+      (e: any) => e.type === "GOVERNANCE_RULING" && e.data.incident === "governance_warning",
+    );
+    expect(alerts.length).toBe(0);
   });
 });

@@ -208,14 +208,14 @@ export function RikishiProfileHeader({
                         Ozeki Promotion Watch
                       </span>
                       <span className="opacity-70">
-                        {rikishi.consecutiveStrongSekiwake} / 3 Strong Basho
+                        {rikishi.consecutiveStrongSekiwake} / 2 Strong Basho
                       </span>
                     </div>
                     <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
                       <div
                         className="h-full bg-silver transition-all duration-1000 ease-out"
                         style={{
-                          width: `${Math.min(100, Math.max(0, (rikishi.consecutiveStrongSekiwake / 3) * 100))}%`,
+                          width: `${Math.min(100, Math.max(0, (rikishi.consecutiveStrongSekiwake / 2) * 100))}%`,
                         }}
                       />
                     </div>

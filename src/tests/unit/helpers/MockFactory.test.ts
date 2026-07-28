@@ -70,4 +70,9 @@ describe("MockFactory.createRikishi stats correctness", () => {
     const desc = toRikishiDescriptor(rng, r, r.descriptor);
     expect(desc.powerBand).toBe("exceptional");
   });
+
+  it("createHeya returns governanceStatus 'good_standing' by default", () => {
+    const heya = MockFactory.createHeya("h1");
+    expect(heya.governanceStatus).toBe("good_standing");
+  });
 });

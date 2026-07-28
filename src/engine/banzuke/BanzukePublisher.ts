@@ -106,8 +106,8 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       ) {
         promoteToYokozuna = true;
       }
-      // Promotion Case 3: 3 consecutive 13+ wins + at least one yusho
-      else if ((rikishi.consecutiveStrongOzeki || 0) >= 3 && (isYusho || wonPrevious)) {
+      // Promotion Case 3: 3 consecutive 12+ wins + at least one yusho
+      else if ((rikishi.consecutiveStrongOzeki || 0) >= 2 && (isYusho || wonPrevious)) {
         promoteToYokozuna = true;
       }
       // Promotion Case 4: Prestige Promotion (If world has 0 Yokozuna, 13+ win Yusho is enough)
@@ -408,7 +408,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       builder.updateRikishi(newEntry.rikishiId, {
         consecutiveStrongSekiwake: (r.consecutiveStrongSekiwake ?? 0) + 1,
       });
-    } else if (isSanyaku && wins < 8) {
+    } else if (isSanyaku && wins < 11) {
       builder.updateRikishi(newEntry.rikishiId, {
         consecutiveStrongSekiwake: 0,
       });

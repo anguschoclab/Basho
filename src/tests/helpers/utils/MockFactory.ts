@@ -181,7 +181,7 @@ export const MockFactory = {
       prestige: 50,
       funds: 5000000,
       scandalScore: 0,
-      governanceStatus: "compliant",
+      governanceStatus: "good_standing",
       facilities: { training: 10, recovery: 10, nutrition: 10 },
       riskIndicators: { financial: false, governance: false, rivalry: false },
       lineage: [],

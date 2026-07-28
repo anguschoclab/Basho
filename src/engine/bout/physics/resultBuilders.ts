@@ -29,7 +29,6 @@ export function buildBoutResultV2(
   //   - Each tawara escape: +20 points (dramatic near-defeats)
   //   - Grip reversals (inside→outside swaps in log): +10 points each
   //   - Momentum shifts: +5 points each
-  // ⚡ Bolt Optimization: Replaced intermediate .filter().length arrays with a single O(N) loop
   let edgeCrisisEscapes = 0;
   let momentumShifts = 0;
   for (const e of boutLog) {

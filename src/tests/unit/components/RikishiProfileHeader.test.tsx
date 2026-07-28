@@ -92,6 +92,7 @@ function makeUIRikishi(overrides: Partial<UIRikishi> = {}): UIRikishi {
     milestones: [],
     hasKeshoMawashi: false,
     consecutiveStrongOzeki: 0,
+    consecutiveStrongSekiwake: 0,
     ...overrides,
   } as UIRikishi;
 }
@@ -306,5 +307,38 @@ describe("RikishiProfileHeader", () => {
     );
     expect(container).toBeTruthy();
     expect(screen.getByText("Test Rikishi")).toBeTruthy();
+  });
+
+  it("shows Ozeki Promotion Watch with / 2 denominator for sekiwake with consecutiveStrongSekiwake > 0", () => {
+    const rikishi = makeUIRikishi({
+      rank: "sekiwake",
+      consecutiveStrongSekiwake: 1,
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.getByText("Ozeki Promotion Watch")).toBeTruthy();
+    expect(screen.getByText("1 / 2 Strong Basho")).toBeTruthy();
+  });
+
+  it("does not render Ozeki Promotion Watch for maegashira rank", () => {
+    const rikishi = makeUIRikishi({
+      rank: "maegashira",
+      consecutiveStrongSekiwake: 2,
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.queryByText("Ozeki Promotion Watch")).toBeNull();
   });
 });
