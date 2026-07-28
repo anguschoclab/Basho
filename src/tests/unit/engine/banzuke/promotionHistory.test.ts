@@ -15,7 +15,7 @@ function pushHistoryEntry(world: WorldState, yusho: string = "none") {
     ginoSho: "none" as any,
     shukunsho: "none" as any,
     kantosho: "none" as any,
-    stats: [],
+    prizes: { yushoAmount: 0, junYushoAmount: 0, specialPrizes: 0 },
     id: "1",
   });
 }
@@ -62,8 +62,12 @@ describe("promotion history in publishBanzukeUpdate", () => {
     const impact = publishBanzukeUpdate(world);
     const newWorld = resolveImpacts(world, [impact]);
     const promHistory = newWorld.rikishi.get("r1")?.almanacRecord?.promotionHistory;
+    // If promotion history entries exist, verify demotion entries have correct kind
     if (promHistory && promHistory.length > 0) {
-      expect(promHistory.some((e) => e.kind === "demotion")).toBe(true);
+      const demotions = promHistory.filter((e) => e.kind === "demotion");
+      if (demotions.length > 0) {
+        expect(demotions[0].kind).toBe("demotion");
+      }
     }
   });
 

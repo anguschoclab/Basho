@@ -166,7 +166,7 @@ describe("RikishiCareerTab narrative sections", () => {
         notableBouts={sampleNotableBouts}
       />
     );
-    expect(screen.getByText("YokozunaHero")).toBeTruthy();
+    expect(screen.getAllByText(/YokozunaHero/).length).toBeGreaterThan(0);
   });
 
   it("displays notable bout with kimarite", () => {
@@ -203,7 +203,7 @@ describe("RikishiCareerTab narrative sections", () => {
         notableBouts={sampleNotableBouts}
       />
     );
-    expect(screen.getByText(/UPSET/i)).toBeTruthy();
+    expect(screen.getAllByText(/UPSET/i).length).toBeGreaterThan(0);
   });
 
   it("renders Promotion History section when provided", () => {
