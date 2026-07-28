@@ -233,6 +233,9 @@ export interface Rikishi {
   // Set when a rikishi returns from injury (cleared after one basho)
   recentlyReturnedFromInjury?: boolean;
 
+  // Set when a rikishi is promoted to sanyaku this basho (cleared after one basho)
+  sanyakuPromotionThisBasho?: boolean;
+
   // Fan appeal score, bumped by kinboshi/ginboshi upsets
   marketability?: number;
 

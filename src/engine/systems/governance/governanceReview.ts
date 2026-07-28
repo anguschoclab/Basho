@@ -16,6 +16,7 @@ import { getHeyaRoster, getActiveRikishi, getRikishi } from "../../queries";
 import { PRESTIGE_ORDER, bandIndex } from "../../prestige/prestigeSystem";
 import { findMergerTarget, executeMerger } from "../../mergers";
 import { checkRetirement } from "../../lifecycle";
+import { generateRetirementNarrative } from "../../lifecycle/retirementNarrative";
 import { onRikishiRetired } from "../../records";
 import { LegacyService } from "../legacy/LegacyService";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
@@ -370,6 +371,11 @@ export function runRetirements(world: WorldState): StateImpact {
         (h) => h.isYusho
       ).length;
       const kinboshiCount = r.economics?.kinboshiCount ?? 0;
+      const retirementNarrative = generateRetirementNarrative(
+        r,
+        world,
+        `retirement-${id}-${world.year}`
+      );
       builder.logEvent(
         "LIFECYCLE_EVENT",
         "career",
@@ -387,6 +393,7 @@ export function runRetirements(world: WorldState): StateImpact {
           yearsActive,
           careerPhase: r.declinePhase ?? "twilight",
           origin: r.origin ?? "Japan",
+          retirementNarrative,
         },
         { heyaId: r.heyaId, rikishiId: id, importance: "headline" }
       );

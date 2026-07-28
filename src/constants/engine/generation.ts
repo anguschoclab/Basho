@@ -564,6 +564,9 @@ export const FIRST_WIN_MENTION_MIN_DAY = 4;
 /** Minimum wins for leaderboard to be mentioned (meaningful data) */
 export const LEADERBOARD_MIN_LEADER_WINS = 4;
 
+/** Momentum score threshold above which a momentum narrative line is generated */
+export const MOMENTUM_NARRATIVE_THRESHOLD = 15;
+
 /** Total days in a basho */
 export const BASHO_DAYS = 15;
 

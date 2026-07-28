@@ -30,7 +30,7 @@ export function generateBanzukeMovementNarrative(
     } else if (evt.isSekitoriPromotion) {
       templatePath = "events.narrative.banzuke_movement_sekitori_promotion";
     } else if (evt.isSanyakuPromotion) {
-      templatePath = "events.narrative.banzuke_movement_sanyaku_promotion";
+      templatePath = "events.narrative.banzuke_movement_shin_debut";
     } else {
       templatePath = "events.narrative.banzuke_movement_standard_promotion";
     }

@@ -724,6 +724,12 @@
             "%NAME% methodically breaks down the posture — inch by inch."
           ]
         },
+        "counter_tactic": [
+          "%DEFENDER%'s counter lands perfectly — %ATTACKER%'s aggression turned against him.",
+          "A textbook counter from %DEFENDER% — reads %ATTACKER%'s attack and reverses the momentum.",
+          "%DEFENDER% absorbs the pressure and counters beautifully. The counter-tactic is working.",
+          "The counter is in — %DEFENDER% neutralizes %ATTACKER%'s assault with perfect timing."
+        ],
         "edge_crisis": {
           "approach": [
             "%NAME% is dangerously close to the edge!",
@@ -2206,6 +2212,11 @@
           "A sanyaku promotion for %SHIKONA%: %FROM% to %TO%. The dohyo's upper echelon has a new member.",
           "From %FROM% to %TO% — %SHIKONA% joins the titled ranks. A new chapter begins."
         ],
+        "banzuke_movement_shin_debut": [
+          "Shin-%TO% %SHIKONA% takes his place among the titled ranks — a new sanyaku debut from %FROM%.",
+          "A debut in the elite: %SHIKONA% rises from %FROM% to shin-%TO%. The banzuke tells a new story.",
+          "The crowd awaits shin-%TO% %SHIKONA% — promoted from %FROM%, a new name among the titled."
+        ],
         "banzuke_movement_standard_promotion": [
           "%SHIKONA% moves up the banzuke — from %FROM% to %TO%.",
           "A promotion for %SHIKONA%: %FROM% to %TO%. Steady progress up the ranks.",
@@ -2997,6 +3008,13 @@
         "%SHIKONA% has evolved from a %OLD_STYLE% to a %NEW_STYLE% over %YEARS% years — a testament to adaptability.",
         "Once a pure %OLD_STYLE%, %SHIKONA% has reinvented himself as a %NEW_STYLE% — the dohyo rewards flexibility.",
         "The years have changed %SHIKONA%: from %OLD_STYLE% to %NEW_STYLE%, a career of adaptation."
+      ],
+      "archetype_counter": [
+        "A tactical chess match: %EAST%'s %EAST_STYLE% against the counter-wrestling of %WEST%'s %WEST_STYLE%.",
+        "%WEST%'s %WEST_STYLE% is tailor-made to neutralize %EAST%'s %EAST_STYLE% — the counter is the story here.",
+        "Watch the counter: %WEST% reads %EAST%'s %EAST_STYLE% and looks to turn it against him.",
+        "%EAST%'s aggressive %EAST_STYLE% could walk right into %WEST%'s counter trap.",
+        "The counter-tactic is set — %WEST% has the blueprint to defuse %EAST%'s %EAST_STYLE%."
       ]
     },
     "post_bout": {
@@ -3152,6 +3170,18 @@
         "%WINNER% was on the brink, but turns it around to defeat %LOSER%!",
         "Incredible resilience from %WINNER% — a comeback win from the edge of the dohyo.",
         "%WINNER% snatches victory from the jaws of defeat against %LOSER%."
+      ],
+      "momentum_shift": [
+        "%DOMINANT% has seized complete control of this bout — the momentum is overwhelming.",
+        "A massive momentum swing — %DOMINANT% is dictating every exchange.",
+        "The momentum is all with %DOMINANT% right now. %LOSER% is on the back foot.",
+        "%DOMINANT% dominates the pace — the momentum score tells the story of this bout."
+      ],
+      "injury_kyujo_warning": [
+        "%SHIKONA% is clutching his %AREA% — that could threaten the rest of his tournament.",
+        "The medical staff is concerned about %SHIKONA%'s %AREA% — a kyujo may be on the horizon.",
+        "That %AREA% injury looks serious — %SHIKONA%'s participation going forward is in doubt.",
+        "A worrying sign for %SHIKONA% — the %AREA% could force a withdrawal if it worsens."
       ],
       "playoff_result": [
         "The yusho is decided! %WINNER% prevails over %LOSER% in the playoff.",

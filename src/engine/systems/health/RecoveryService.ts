@@ -36,6 +36,7 @@ export function tickRikishiRecovery(rikishi: Rikishi, recoveryMult: number = 1.0
     rikishi.injury = rikishi.injuryStatus;
     rikishi.isKyujo = false;
     rikishi.kyujoReason = undefined;
+    rikishi.recentlyReturnedFromInjury = true;
     return true; // Recovered
   }
 

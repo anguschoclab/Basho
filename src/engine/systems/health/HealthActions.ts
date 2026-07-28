@@ -10,19 +10,32 @@ export function withdrawRikishi(world: WorldState, rikishiId: string): StateImpa
   const r = world.rikishi.get(rikishiId);
   if (!r) return builder.build();
   builder.updateRikishi(rikishiId, { isKyujo: true, kyujoReason: "injury" });
+
+  // Gap 10: Check if this withdrawal stems from an in-bout injury (weekOccurred matches current basho week)
+  const currentWeek = world.currentBasho?.day ?? world.week ?? 0;
+  const injuryWeek = r.currentInjury?.weekOccurred;
+  const isInBoutInjury = injuryWeek !== undefined && injuryWeek === currentWeek;
+
   const narrative = generateKyujoNarrative(
     r,
     "injury_withdrawal",
     {
       area: r.injuryStatus?.location ?? r.currentInjury?.area ?? "leg",
       day: world.currentBasho?.day ?? 1,
+      reason: isInBoutInjury ? "in-bout injury" : "injury",
     },
     `withdraw-${rikishiId}-${world.week ?? 0}`
   );
   builder.logEvent(
     "LIFECYCLE_EVENT",
     "injury",
-    { rikishiId, heyaId: r.heyaId, status: "withdrawn_kyujo", narrative },
+    {
+      rikishiId,
+      heyaId: r.heyaId,
+      status: "withdrawn_kyujo",
+      narrative,
+      isInBoutInjury,
+    },
     { rikishiId, heyaId: r.heyaId }
   );
   return builder.build();

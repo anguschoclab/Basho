@@ -29,6 +29,7 @@ import {
   MEDIA_SAVVY_POLISHED_THRESHOLD,
   BIRTHDAY_WINDOW_DAYS,
   CAREER_BOUT_MILESTONES,
+  MOMENTUM_NARRATIVE_THRESHOLD,
 } from "../../constants/engine/generation";
 import { BASHO_CALENDAR } from "../calendar";
 import { isKachiKoshi, isMakeKoshi } from "../banzuke/banzukeHelpers";
@@ -70,6 +71,7 @@ export type PbpPhase =
   | "bout_injury"
   | "grip_transition"
   | "bout_timeout"
+  | "counter_tactic"
   | "finish"
   | "post_bout"
   | "replay"
@@ -123,7 +125,10 @@ export type PbpTag =
   | "body_type"
   | "debut"
   | "heya_style"
-  | "archetype_evolution";
+  | "archetype_counter"
+  | "archetype_evolution"
+  | "counter"
+  | "momentum_shift";
 
 export type PbpLine = {
   text: string;
@@ -619,6 +624,17 @@ export function generateBoutNarrative(
         "pre_bout",
         ["comeback", "injury"]
       );
+
+      // Also generate the kyujo return narrative line
+      const kyujoReturnLines = generateKyujoNarrative(
+        r,
+        "return_from_kyujo",
+        { bashosMissed: 1 },
+        `return-kyujo-${r.id}-${world.year}-${world.currentBashoName ?? ""}`
+      );
+      for (const line of kyujoReturnLines) {
+        push(line.text, "pre_bout", ["comeback", "injury"]);
+      }
     }
   }
 
@@ -714,6 +730,22 @@ export function generateBoutNarrative(
       }).text,
       "pre_bout",
       ["archetype_evolution"]
+    );
+  }
+
+  // 3f-5. Archetype counter narrative — when archetypeMatchup.counterActivated is true
+  if (result.archetypeMatchup?.counterActivated) {
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.archetype_counter", {
+        EAST: east.shikona,
+        WEST: west.shikona,
+        EAST_STYLE: east.combatProfile?.archetype ?? "hybrid",
+        WEST_STYLE: west.combatProfile?.archetype ?? "hybrid",
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+      }).text,
+      "pre_bout",
+      ["archetype_counter"]
     );
   }
 
@@ -913,7 +945,11 @@ export function generateBoutNarrative(
     const prevRank = prevBasho.rank;
     const currentRank = r.rank;
     const sanyakuRanks = ["sekiwake", "komusubi"];
-    if (sanyakuRanks.includes(currentRank ?? "") && !sanyakuRanks.includes(prevRank ?? "") && prevRank !== "yokozuna" && prevRank !== "ozeki") {
+    // Use both rank comparison and the sanyakuPromotionThisBasho flag from banzuke (Gap 5)
+    const isSanyakuDebut =
+      (sanyakuRanks.includes(currentRank ?? "") && !sanyakuRanks.includes(prevRank ?? "") && prevRank !== "yokozuna" && prevRank !== "ozeki") ||
+      r.sanyakuPromotionThisBasho;
+    if (isSanyakuDebut && sanyakuRanks.includes(currentRank ?? "")) {
       const debutPath = currentRank === "sekiwake" ? "pre_bout.rank_debut.shin_sekiwake" : "pre_bout.rank_debut.shin_komusubi";
       push(
         BardEngine.resolve(preBoutRng, debutPath, {
@@ -1240,6 +1276,7 @@ export function generateBoutNarrative(
   // Track derived phase state to avoid spamming clinch/momentum on every tick
   let clinchEmitted = false;
   let lastMomentumTick = -10;
+  let counterTacticCount = 0;
 
   result.log.forEach((entry: BoutLogEntry, idx: number) => {
     const tickSeed = `${seed}-tick-${(entry.data?.tick as number) || 0}-${idx}`;
@@ -1578,6 +1615,32 @@ export function generateBoutNarrative(
         }).text,
         "bout_timeout"
       );
+    }
+
+    // Counter tactic — archetype counter activated during bout (Gap 2)
+    // Limit to 2 narrative lines per bout
+    if (entry.phase === "counter_tactic" && counterTacticCount < 2) {
+      const counterData = entry.data as {
+        attacker?: "east" | "west";
+        defender?: "east" | "west";
+        attackerFamily?: string;
+        defenderFamily?: string;
+      };
+      const attackerSide = counterData.attacker ?? "east";
+      const defenderSide = counterData.defender ?? "west";
+      const attackerName = attackerSide === "east" ? east.shikona : west.shikona;
+      const defenderName = defenderSide === "east" ? east.shikona : west.shikona;
+      push(
+        BardEngine.resolve(rng, "combat.phases.counter_tactic", {
+          ATTACKER: attackerName,
+          DEFENDER: defenderName,
+          attackerId: attackerSide === "east" ? east.id : west.id,
+          defenderId: defenderSide === "east" ? east.id : west.id,
+        }).text,
+        "counter_tactic",
+        ["counter"]
+      );
+      counterTacticCount++;
     }
 
     // Edge crisis
@@ -2135,6 +2198,38 @@ export function generateBoutNarrative(
         ["injury"]
       );
     }
+
+    // 15g-2. Injury-to-kyujo warning narrative thread (Gap 8)
+    // When in-bout injury is moderate or worse, warn about potential kyujo
+    if (severity === "moderate" || severity === "serious") {
+      push(
+        BardEngine.resolve(postBoutRng, "post_bout.injury_kyujo_warning", {
+          SHIKONA: injuredRikishi.shikona,
+          AREA: area,
+          rikishiId: injuredRikishi.id,
+        }).text,
+        "post_bout",
+        ["injury"]
+      );
+    }
+  }
+
+  // 15h. Momentum score narrative (Gap 7)
+  // Highlight dominant momentum when the score exceeds the threshold
+  if (Math.abs(result.momentumScore) >= MOMENTUM_NARRATIVE_THRESHOLD) {
+    const dominantSide = result.momentumScore > 0 ? "east" : "west";
+    const dominantRikishi = dominantSide === "east" ? east : west;
+    const losingRikishi = dominantSide === "east" ? west : east;
+    push(
+      BardEngine.resolve(postBoutRng, "post_bout.momentum_shift", {
+        DOMINANT: dominantRikishi.shikona,
+        LOSER: losingRikishi.shikona,
+        dominantId: dominantRikishi.id,
+        loserId: losingRikishi.id,
+      }).text,
+      "post_bout",
+      ["momentum_shift"]
+    );
   }
 
   // 16. Mono-ii (judge consultation) — expanded sub-paths

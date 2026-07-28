@@ -13,6 +13,7 @@ import { LegacyService } from "@/engine/systems/legacy/LegacyService";
 import { checkRetirement } from "@/engine/lifecycle";
 import { getRikishi } from "@/engine/queries";
 import { processRetireeOyakataConversion } from "@/engine/lifecycle/retireeOyakataConversion";
+import { generateRetirementNarrative } from "@/engine/lifecycle/retirementNarrative";
 
 export const CareerService = {
   /**
@@ -38,6 +39,11 @@ export const CareerService = {
       if (!rikishi) continue;
       const reason = checkRetirement(rikishi, world.year, world.seed);
       if (reason) {
+        const retirementNarrative = generateRetirementNarrative(
+          rikishi,
+          world,
+          `retirement-${rikishi.id}-${world.year}`
+        );
         builder.retireRikishi(rikishi.id, world.year, reason);
 
         builder.logEvent(
@@ -59,6 +65,7 @@ export const CareerService = {
             yearsActive: world.year - rikishi.birthYear - 15,
             careerPhase: rikishi.declinePhase ?? "twilight",
             origin: rikishi.origin ?? "Japan",
+            retirementNarrative,
           },
           {
             heyaId: rikishi.heyaId,

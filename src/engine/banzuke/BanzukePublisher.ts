@@ -17,6 +17,7 @@ import { warn } from "../utils/Logger";
 import { isKachiKoshi } from "./banzukeHelpers";
 import { BASHO_CALENDAR } from "../calendar";
 import { generateBanzukeMovementNarrative } from "./banzukeMovementNarrative";
+import { generateKyujoNarrative } from "../bout/boutNarrative";
 
 /**
  * Helper to retrieve the current basho state from the world.
@@ -388,6 +389,13 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       // Check if shikona should change due to promotion
       const newShikona = checkShikonaChange(world, rikishi, oldRank);
 
+      // Track if rikishi was kyujo due to injury — set return flag for narrative triggers
+      const wasKyujoFromInjury = rikishi.isKyujo && rikishi.kyujoReason === "injury";
+
+      // Check if this rikishi had a sanyaku promotion this basho (Gap 5)
+      const movementEvent = result.events.find((e) => e.rikishiId === newEntry.rikishiId);
+      const isSanyakuPromotion = movementEvent?.isSanyakuPromotion ?? false;
+
       if (newShikona) {
         recordShikonaChange(world, rikishi.id, oldShikona, newShikona);
         builder.updateRikishi(newEntry.rikishiId, {
@@ -401,6 +409,8 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
           currentLossStreak: 0,
           isKyujo: false,
           kyujoReason: undefined,
+          recentlyReturnedFromInjury: wasKyujoFromInjury || undefined,
+          sanyakuPromotionThisBasho: isSanyakuPromotion || undefined,
           shikona: newShikona,
         });
       } else {
@@ -415,7 +425,33 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
           currentLossStreak: 0,
           isKyujo: false,
           kyujoReason: undefined,
+          recentlyReturnedFromInjury: wasKyujoFromInjury || undefined,
+          sanyakuPromotionThisBasho: isSanyakuPromotion || undefined,
         });
+      }
+
+      // Gap 4/9: Generate return_from_kyujo narrative for returning rikishi
+      if (rikishi.isKyujo) {
+        const bashosMissed = (rikishi as { consecutiveKyujo?: number }).consecutiveKyujo ?? 1;
+        const returnNarrative = generateKyujoNarrative(
+          rikishi,
+          "return_from_kyujo",
+          { bashosMissed },
+          `return-kyujo-${newEntry.rikishiId}-${world.seed}-${lastBasho.bashoName}`
+        );
+        builder.logEvent(
+          "BASHO_STATUS",
+          "basho",
+          {
+            rikishiId: newEntry.rikishiId,
+            heyaId: rikishi.heyaId,
+            shikona: rikishi.shikona,
+            status: "kyujo_return",
+            bashosMissed,
+            narrative: returnNarrative,
+          },
+          { rikishiId: newEntry.rikishiId, heyaId: rikishi.heyaId }
+        );
       }
     }
   }

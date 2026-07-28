@@ -26,6 +26,9 @@ function calculatePerformanceBonuses(perf: BashoPerformance): number {
   if (perf.junYusho) bonus += 2;
   if (perf.specialPrizes) bonus += Math.min(3, perf.specialPrizes);
   if (perf.kinboshi) bonus += Math.min(3, perf.kinboshi);
+  // Resilience bonuses: comeback wins and edge crisis survival (Gap 6)
+  if (perf.comebackWins) bonus += Math.min(2, perf.comebackWins);
+  if (perf.edgeCrisisSurvived) bonus += Math.min(2, Math.floor(perf.edgeCrisisSurvived / 2));
   return bonus;
 }
 
