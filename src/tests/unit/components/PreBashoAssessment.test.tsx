@@ -4,6 +4,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { PreBashoAssessment } from "@/components/dashboard/PreBashoAssessment";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 vi.mock("@/contexts/GameContext", () => ({
   useGame: vi.fn(),
@@ -31,7 +32,7 @@ describe("PreBashoAssessment", () => {
       _interimDaysRemaining: 5,
       rikishi: new Map(),
     });
-    render(<PreBashoAssessment />);
+    render(<TooltipProvider><PreBashoAssessment /></TooltipProvider>);
     expect(screen.getByText("View Roster for Withdrawals")).toBeTruthy();
   });
 
@@ -46,7 +47,7 @@ describe("PreBashoAssessment", () => {
       _interimDaysRemaining: 5,
       rikishi: new Map(),
     });
-    render(<PreBashoAssessment />);
+    render(<TooltipProvider><PreBashoAssessment /></TooltipProvider>);
     expect(screen.queryByText("View Roster for Withdrawals")).toBeNull();
   });
 
@@ -56,7 +57,7 @@ describe("PreBashoAssessment", () => {
       _preBashoAssessment: undefined,
       rikishi: new Map(),
     });
-    const { container } = render(<PreBashoAssessment />);
+    const { container } = render(<TooltipProvider><PreBashoAssessment /></TooltipProvider>);
     expect(container.firstChild).toBeNull();
   });
 
@@ -70,7 +71,7 @@ describe("PreBashoAssessment", () => {
       },
       rikishi: new Map(),
     });
-    const { container } = render(<PreBashoAssessment />);
+    const { container } = render(<TooltipProvider><PreBashoAssessment /></TooltipProvider>);
     expect(container.firstChild).toBeNull();
   });
 });
