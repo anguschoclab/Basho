@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { applyBoutResult } from "@/engine/bout/boutResultApplier";
+import { mockRikishi } from "../utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BashoName, BoutResult, MatchSchedule } from "@/engine/types/basho";
@@ -7,29 +8,18 @@ import type { BashoName, BoutResult, MatchSchedule } from "@/engine/types/basho"
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
 
 function makeRikishi(id: string, opts?: Record<string, any>): Rikishi {
-  return {
-    id,
+  return mockRikishi(id, {
     shikona: id === "east" ? "East Rikishi" : "West Rikishi",
     careerWins: 10,
     careerLosses: 5,
     currentBashoWins: 0,
     currentBashoLosses: 0,
-    makuuchiWins: 0,
-    divisionRecords: {
-      makuuchi: { wins: 0, losses: 0 },
-      juryo: { wins: 0, losses: 0 },
-      makushita: { wins: 0, losses: 0 },
-      sandanme: { wins: 0, losses: 0 },
-      jonidan: { wins: 0, losses: 0 },
-      jonokuchi: { wins: 0, losses: 0 },
-    },
     division: "makuuchi",
     rank: "maegashira",
     side: id === "east" ? "east" : "west",
-    stats: { achievements: undefined },
     heyaId: "test-heya",
     ...opts,
-  } as Rikishi;
+  });
 }
 
 function makeWorld(opts?: {
@@ -84,6 +74,9 @@ function makeWorld(opts?: {
     isKinboshi: false,
     log: [],
     kenshoEnvelopes: 0,
+    momentumScore: 0,
+    inBoutInjury: null,
+    isTimeout: false,
   };
 
   return { world: world as WorldState, match, result };
@@ -104,6 +97,9 @@ function makeWestWinResult(): BoutResult {
     isKinboshi: false,
     log: [],
     kenshoEnvelopes: 0,
+    momentumScore: 0,
+    inBoutInjury: null,
+    isTimeout: false,
   };
 }
 

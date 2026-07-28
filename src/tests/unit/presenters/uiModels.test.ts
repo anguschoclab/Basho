@@ -4,11 +4,25 @@ import { vi } from "vitest";
 global.calculatePerceivedStats = vi.fn(() => ({ power: "Dominant" }));
 import { describe, it, expect } from "vitest";
 import { projectRikishi, projectHeya } from "@/presenters/uiModels";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
+import type { WorldState } from "@/engine/types/world";
+
+function makeMockWorld(seed: string): WorldState {
+  const heyaId = "h1";
+  const rikishiId = "r1";
+  const rikishi = MockFactory.createRikishi(rikishiId, { heyaId });
+  const heya = MockFactory.createHeya(heyaId, { rikishiIds: [rikishiId] });
+  return MockFactory.createWorld({
+    seed,
+    playerHeyaId: heyaId,
+    rikishi: new Map([[rikishiId, rikishi]]),
+    heyas: new Map([[heyaId, heya]]),
+  });
+}
 
 describe("UI Models Projections", () => {
   it("should project a Rikishi safely for the UI without leaking raw stats", () => {
-    const world = generateInitialWorld("test-uimodels");
+    const world = makeMockWorld("test-uimodels");
     const rikishiId = Array.from(world.rikishi.keys())[0];
     const rikishi = world.rikishi.get(rikishiId);
     if (!rikishi) throw new Error("No rikishi found");
@@ -31,7 +45,7 @@ describe("UI Models Projections", () => {
   });
 
   it("should project a Heya safely for the UI", () => {
-    const world = generateInitialWorld("test-uimodels-heya");
+    const world = makeMockWorld("test-uimodels-heya");
     const heyaId = Array.from(world.heyas.keys())[0];
     const heya = world.heyas.get(heyaId);
     if (!heya) throw new Error("No heya found");
@@ -49,7 +63,7 @@ describe("UI Models Projections", () => {
 
   describe("Injury Modifiers", () => {
     it("should project injury modifiers when rikishi has a minor knee injury", () => {
-      const world = generateInitialWorld("test-inj-1");
+      const world = makeMockWorld("test-inj-1");
       const rikishiId = Array.from(world.rikishi.keys())[0];
       const rikishi = world.rikishi.get(rikishiId);
       if (!rikishi) throw new Error("No rikishi found");
@@ -67,7 +81,7 @@ describe("UI Models Projections", () => {
     });
 
     it("should project injury modifiers when rikishi has a moderate back injury", () => {
-      const world = generateInitialWorld("test-inj-2");
+      const world = makeMockWorld("test-inj-2");
       const rikishiId = Array.from(world.rikishi.keys())[0];
       const rikishi = world.rikishi.get(rikishiId);
       if (!rikishi) throw new Error("No rikishi found");
@@ -80,7 +94,7 @@ describe("UI Models Projections", () => {
     });
 
     it("should project taped_up modifier when severity is minor", () => {
-      const world = generateInitialWorld("test-inj-4");
+      const world = makeMockWorld("test-inj-4");
       const rikishiId = Array.from(world.rikishi.keys())[0];
       const rikishi = world.rikishi.get(rikishiId);
       if (!rikishi) throw new Error("No rikishi found");
@@ -93,7 +107,7 @@ describe("UI Models Projections", () => {
     });
 
     it("should project taped_up modifier when severity is minor (low end)", () => {
-      const world = generateInitialWorld("test-inj-5");
+      const world = makeMockWorld("test-inj-5");
       const rikishiId = Array.from(world.rikishi.keys())[0];
       const rikishi = world.rikishi.get(rikishiId);
       if (!rikishi) throw new Error("No rikishi found");
@@ -106,7 +120,7 @@ describe("UI Models Projections", () => {
     });
 
     it("should not project injury modifiers when rikishi is healthy", () => {
-      const world = generateInitialWorld("test-inj-3");
+      const world = makeMockWorld("test-inj-3");
       const rikishiId = Array.from(world.rikishi.keys())[0];
       const rikishi = world.rikishi.get(rikishiId);
       if (!rikishi) throw new Error("No rikishi found");

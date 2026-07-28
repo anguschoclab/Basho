@@ -1,3 +1,4 @@
+// @vitest-environment node
 /**
  * Tests for boutCanvas/draw.ts — drawRikishi behavior with new BodyPhase
  * values, arc y-offset, and family/isLoser params.

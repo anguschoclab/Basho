@@ -1,3 +1,4 @@
+// @vitest-environment node
 /**
  * Tests for boutCanvas/animation.ts — getTargetState, lerpState, and the
  * pure arc/pose helpers extracted for testability.

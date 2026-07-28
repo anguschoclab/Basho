@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { isYushoContention, isPlayoffScenario } from "@/engine/bout/boutContention";
 import type { Rikishi } from "@/engine/types/rikishi";
-import type { BashoState } from "@/engine/types/basho";
+import { makeMockBasho } from "../utils";
 
 function makeRikishi(id: string, rank: string = "maegashira"): Rikishi {
   return {
@@ -9,15 +9,6 @@ function makeRikishi(id: string, rank: string = "maegashira"): Rikishi {
     rank,
     stats: { aggression: 50, mental: 50, power: 50, speed: 50, technique: 50, balance: 50, stamina: 50 },
   } as unknown as Rikishi;
-}
-
-function makeBasho(standings: Map<string, { wins: number; losses: number }>, day = 10): BashoState {
-  return {
-    id: "test-basho",
-    day,
-    standings,
-    isActive: true,
-  } as unknown as BashoState;
 }
 
 describe("boutContention", () => {
@@ -30,7 +21,7 @@ describe("boutContention", () => {
       ]);
       const east = makeRikishi("east");
       const west = makeRikishi("west");
-      expect(isYushoContention(east, west, makeBasho(standings))).toBe(true);
+      expect(isYushoContention(east, west, makeMockBasho({ standings, day: 10 }))).toBe(true);
     });
 
     it("returns false when one rikishi is more than 2 wins behind leader", () => {
@@ -41,7 +32,7 @@ describe("boutContention", () => {
       ]);
       const east = makeRikishi("east");
       const west = makeRikishi("west");
-      expect(isYushoContention(east, west, makeBasho(standings))).toBe(false);
+      expect(isYushoContention(east, west, makeMockBasho({ standings, day: 10 }))).toBe(false);
     });
 
     it("returns true when both are leaders", () => {
@@ -51,19 +42,19 @@ describe("boutContention", () => {
       ]);
       const east = makeRikishi("east");
       const west = makeRikishi("west");
-      expect(isYushoContention(east, west, makeBasho(standings))).toBe(true);
+      expect(isYushoContention(east, west, makeMockBasho({ standings, day: 10 }))).toBe(true);
     });
 
     it("returns false when standings is empty", () => {
       const east = makeRikishi("east");
       const west = makeRikishi("west");
-      expect(isYushoContention(east, west, makeBasho(new Map()))).toBe(false);
+      expect(isYushoContention(east, west, makeMockBasho({ standings: new Map(), day: 10 }))).toBe(false);
     });
 
     it("returns false when standings is undefined", () => {
       const east = makeRikishi("east");
       const west = makeRikishi("west");
-      const basho = { id: "test", day: 10, isActive: true } as unknown as BashoState;
+      const basho = { id: "test", day: 10, isActive: true, standings: undefined } as unknown as Parameters<typeof isYushoContention>[2];
       expect(isYushoContention(east, west, basho)).toBe(false);
     });
 
@@ -74,7 +65,7 @@ describe("boutContention", () => {
       ]);
       const east = makeRikishi("east");
       const west = makeRikishi("west");
-      expect(isYushoContention(east, west, makeBasho(standings))).toBe(false);
+      expect(isYushoContention(east, west, makeMockBasho({ standings, day: 10 }))).toBe(false);
     });
   });
 
@@ -87,7 +78,7 @@ describe("boutContention", () => {
       ]);
       const east = makeRikishi("east");
       const west = makeRikishi("west");
-      expect(isPlayoffScenario(east, west, makeBasho(standings, 15))).toBe(true);
+      expect(isPlayoffScenario(east, west, makeMockBasho({ standings, day: 15 }))).toBe(true);
     });
 
     it("returns false on non-final day even if tied for lead", () => {
@@ -97,7 +88,7 @@ describe("boutContention", () => {
       ]);
       const east = makeRikishi("east");
       const west = makeRikishi("west");
-      expect(isPlayoffScenario(east, west, makeBasho(standings, 10))).toBe(false);
+      expect(isPlayoffScenario(east, west, makeMockBasho({ standings, day: 10 }))).toBe(false);
     });
 
     it("returns false on final day when not tied", () => {
@@ -107,13 +98,13 @@ describe("boutContention", () => {
       ]);
       const east = makeRikishi("east");
       const west = makeRikishi("west");
-      expect(isPlayoffScenario(east, west, makeBasho(standings, 15))).toBe(false);
+      expect(isPlayoffScenario(east, west, makeMockBasho({ standings, day: 15 }))).toBe(false);
     });
 
     it("returns false when standings is empty", () => {
       const east = makeRikishi("east");
       const west = makeRikishi("west");
-      expect(isPlayoffScenario(east, west, makeBasho(new Map(), 15))).toBe(false);
+      expect(isPlayoffScenario(east, west, makeMockBasho({ standings: new Map(), day: 15 }))).toBe(false);
     });
   });
 });

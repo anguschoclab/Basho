@@ -1,10 +1,22 @@
 import { vi, afterEach, beforeAll } from "vitest";
-import { cleanup } from "@testing-library/react";
 import { setSeed } from "../../engine/rng";
 import { resetImpactTimestampCounter } from "../../engine/core/StateImpact";
 
+// Guard for node environment where DOM APIs don't exist.
+const hasDOM = typeof Element !== "undefined" && typeof HTMLElement !== "undefined";
+
+let cleanup: (() => void) | undefined;
+if (hasDOM) {
+  try {
+    cleanup = require("@testing-library/react").cleanup;
+  } catch {
+    cleanup = undefined;
+  }
+}
+
 // jsdom does not implement pointer capture, but Radix Select relies on it.
 beforeAll(() => {
+  if (!hasDOM) return;
   if (!Element.prototype.setPointerCapture) {
     Element.prototype.setPointerCapture = () => {};
   }
@@ -66,7 +78,7 @@ restoreBrowserGlobals();
 
 // Reset all mocks and singleton state between tests to prevent state pollution
 afterEach(() => {
-  cleanup();
+  if (hasDOM && cleanup) cleanup();
   vi.clearAllMocks();
   vi.restoreAllMocks();
   setSeed("test-reset");

@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect } from "vitest";
 import type { WorldState } from "@/engine/types/world";
 import type { EngineEvent, EventsState } from "@/engine/types/events";

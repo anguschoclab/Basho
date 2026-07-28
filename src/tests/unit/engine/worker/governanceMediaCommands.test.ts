@@ -1,12 +1,15 @@
 import { describe, it, expect } from "vitest";
 import { issueGovernanceRuling } from "@/engine/systems/governance/ScandalService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { GovernanceRuling } from "@/engine/types/economy";
 
 function worldWithUnresolvedRuling() {
-  const world = generateInitialWorld("gov-cmd-test");
-  const heyaId = world.playerHeyaId!;
+  const heyaId = "h1";
+  const world = MockFactory.createWorld({
+    playerHeyaId: heyaId,
+    heyas: new Map([[heyaId, MockFactory.createHeya(heyaId)]]),
+  });
   const ruling: GovernanceRuling = {
     id: "ruling-1",
     date: "2026-01",

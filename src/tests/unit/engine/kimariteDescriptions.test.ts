@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect } from "vitest";
 import { KIMARITE_REGISTRY, KIMARITE_STRATEGIES } from "@/engine/kimarite";
 

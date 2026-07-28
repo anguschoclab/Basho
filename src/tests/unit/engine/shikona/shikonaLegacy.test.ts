@@ -102,11 +102,9 @@ describe("extractLegacySuffix", () => {
       { input: "Takanohana", expected: "hana", label: "hana (index 20)" },
     ];
 
-    for (const { input, expected, label } of cases) {
-      it(`${input} → ${expected} (${label})`, () => {
-        expect(extractLegacySuffix(input)).toBe(expected);
-      });
-    }
+    it.each(cases)("$input → $expected ($label)", ({ input, expected }) => {
+      expect(extractLegacySuffix(input)).toBe(expected);
+    });
   });
 
   describe("suffix priority", () => {

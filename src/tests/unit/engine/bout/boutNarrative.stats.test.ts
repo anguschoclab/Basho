@@ -1,35 +1,24 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any */
 import { describe, it, expect } from "vitest";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
+import { mockRikishi } from "../utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
 
 function makeRikishi(id: string, opts?: Record<string, any>): Rikishi {
-  return {
-    id,
+  return mockRikishi(id, {
     shikona: id === "east" ? "East Rikishi" : "West Rikishi",
     careerWins: 10,
     careerLosses: 5,
     currentBashoWins: 0,
     currentBashoLosses: 0,
-    makuuchiWins: 0,
-    divisionRecords: {
-      makuuchi: { wins: 0, losses: 0 },
-      juryo: { wins: 0, losses: 0 },
-      makushita: { wins: 0, losses: 0 },
-      sandanme: { wins: 0, losses: 0 },
-      jonidan: { wins: 0, losses: 0 },
-      jonokuchi: { wins: 0, losses: 0 },
-    },
     division: "makuuchi",
     rank: "maegashira",
     side: id === "east" ? "east" : "west",
-    stats: { achievements: undefined },
     heyaId: "test-heya",
-    h2h: {},
     ...opts,
-  } as unknown as Rikishi;
+  });
 }
 
 function makeWorld(opts?: {
@@ -58,6 +47,9 @@ function makeWorld(opts?: {
     upset: false,
     kenshoEnvelopes: 0,
     log: [],
+    momentumScore: 0,
+    inBoutInjury: null,
+    isTimeout: false,
   };
   const world = {
     currentBasho: {
