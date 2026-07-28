@@ -200,6 +200,9 @@ export default function RikishiPage() {
                 history={history as CareerSnapshot[]}
                 milestones={milestones as Milestone[]}
                 careerProgressionData={careerProgressionData}
+                notableBouts={rikishi?.notableBouts}
+                narrativeHighlights={rikishi?.narrativeHighlights}
+                promotionHistory={rikishi?.promotionHistory}
               />
               <RikishiGlobalCup rikishiId={rikishi.id} world={world} />
             </TabsContent>

@@ -7,9 +7,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { History, Star, Trophy, Medal, TrendingUp } from "lucide-react";
+import { History, Star, Trophy, Medal, TrendingUp, Sparkles, Swords, ArrowUpCircle, ArrowDownCircle, Zap, Crown } from "lucide-react";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import type { CareerSnapshot, Milestone } from "@/engine/types/history";
+import type { NotableBoutEntry, NarrativeHighlight, PromotionHistoryEntry } from "@/engine/almanac/types";
+import { useState } from "react";
 import {
   ComposedChart,
   Line,
@@ -83,13 +85,41 @@ interface RikishiCareerTabProps {
     losses: number;
     winRate: number;
   }>;
+  notableBouts?: NotableBoutEntry[];
+  narrativeHighlights?: NarrativeHighlight[];
+  promotionHistory?: PromotionHistoryEntry[];
+}
+
+const HIGHLIGHT_ICONS: Partial<Record<NarrativeHighlight["type"], typeof Star>> = {
+  yusho: Trophy,
+  kinboshi: Star,
+  upset: Zap,
+  promotion: ArrowUpCircle,
+  retirement: ArrowDownCircle,
+  milestone: Medal,
+  debut: Sparkles,
+  comeback: Sparkles,
+  dominant: Swords,
+  dynasty: Crown,
+  career_high: Star,
+  streak: TrendingUp,
+  rivalry: Swords,
+};
+
+function HighlightIcon({ type }: { type: NarrativeHighlight["type"] }) {
+  const Icon = HIGHLIGHT_ICONS[type] ?? Star;
+  return <Icon className="h-4 w-4 text-primary" />;
 }
 
 export function RikishiCareerTab({
   history,
   milestones,
   careerProgressionData,
+  notableBouts,
+  narrativeHighlights,
+  promotionHistory,
 }: RikishiCareerTabProps) {
+  const [expandedBoutId, setExpandedBoutId] = useState<string | null>(null);
   return (
     <div className="space-y-8">
       {/* Career Progression Chart */}
@@ -322,6 +352,159 @@ export function RikishiCareerTab({
           </div>
         </CardContent>
       </Card>
+
+      {/* Narrative Highlights */}
+      {narrativeHighlights && narrativeHighlights.length > 0 && (
+        <div className="space-y-6 pt-10 border-t-2 border-dashed">
+          <h3 className="text-2xl font-display font-black flex items-center gap-3 uppercase tracking-tight">
+            <Sparkles className="h-6 w-6 text-primary" />
+            Narrative Highlights
+          </h3>
+          <div className="relative pl-10 space-y-8 before:absolute before:left-3 before:top-3 before:bottom-3 before:w-1 before:bg-muted before:rounded-full">
+            {narrativeHighlights.map((h, i: number) => (
+              <div
+                key={i}
+                className="relative animate-in slide-in-from-left-2 duration-500 fill-mode-both"
+                style={{ animationDelay: `${i * 80}ms` }}
+              >
+                <div className="absolute -left-[35px] top-1.5 h-4 w-4 rounded-full bg-primary border-4 border-background shadow-lg ring-4 ring-primary/10" />
+                <div className="space-y-1 max-w-2xl">
+                  <div className="flex items-center gap-3">
+                    <HighlightIcon type={h.type} />
+                    <Badge
+                      variant="outline"
+                      className="text-[10px] font-black uppercase tracking-widest border-2"
+                    >
+                      {h.year} {h.bashoName}
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground leading-relaxed font-display italic opacity-80">
+                    {h.text}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Notable Bouts */}
+      {notableBouts && notableBouts.length > 0 && (
+        <div className="space-y-6 pt-10 border-t-2 border-dashed">
+          <h3 className="text-2xl font-display font-black flex items-center gap-3 uppercase tracking-tight">
+            <Swords className="h-6 w-6 text-primary" />
+            Notable Bouts
+          </h3>
+          <div className="space-y-3">
+            {notableBouts.map((b, i: number) => (
+              <div
+                key={i}
+                className="border border-border/40 rounded-lg p-4 hover:bg-primary/5 transition-colors"
+              >
+                <div
+                  className="flex items-center justify-between cursor-pointer"
+                  onClick={() => setExpandedBoutId(expandedBoutId === b.boutId ? null : b.boutId)}
+                >
+                  <div className="flex items-center gap-3">
+                    <button
+                      className="text-xs font-black uppercase tracking-widest text-primary hover:underline"
+                      onClick={(e) => { e.stopPropagation(); setExpandedBoutId(expandedBoutId === b.boutId ? null : b.boutId); }}
+                    >
+                      {b.boutId}
+                    </button>
+                    <span className="text-sm font-display font-black">
+                      {b.winner ? "W" : "L"} vs {b.opponentShikona}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {b.isKinboshi && (
+                      <Badge className="text-[9px] font-black uppercase tracking-widest bg-gold/20 text-gold border border-gold/40">
+                        <Star className="h-3 w-3 mr-1" /> Kinboshi
+                      </Badge>
+                    )}
+                    {b.isUpset && (
+                      <Badge className="text-[9px] font-black uppercase tracking-widest bg-primary/20 text-primary border border-primary/40">
+                        UPSET
+                      </Badge>
+                    )}
+                    {b.isYushoRace && (
+                      <Badge className="text-[9px] font-black uppercase tracking-widest bg-gold/20 text-gold border border-gold/40">
+                        Yusho Race
+                      </Badge>
+                    )}
+                    <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest">
+                      {b.kimarite}
+                    </Badge>
+                    <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest">
+                      {b.year} {b.bashoName} Day {b.day}
+                    </Badge>
+                  </div>
+                </div>
+                {expandedBoutId === b.boutId && b.narrativeLines.length > 0 && (
+                  <div className="mt-3 pt-3 border-t border-border/20 space-y-1">
+                    {b.narrativeLines.map((line, j: number) => (
+                      <p key={j} className="text-xs text-muted-foreground font-display italic">
+                        {line}
+                      </p>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Promotion History */}
+      {promotionHistory && promotionHistory.length > 0 && (
+        <div className="space-y-6 pt-10 border-t-2 border-dashed">
+          <h3 className="text-2xl font-display font-black flex items-center gap-3 uppercase tracking-tight">
+            <ArrowUpCircle className="h-6 w-6 text-primary" />
+            Promotion History
+          </h3>
+          <div className="space-y-2">
+            {promotionHistory.map((p, i: number) => (
+              <div
+                key={i}
+                className="flex items-center gap-4 border border-border/40 rounded-lg p-3"
+              >
+                <div className="flex items-center gap-2">
+                  {p.kind === "promotion" ? (
+                    <ArrowUpCircle className="h-4 w-4 text-success" />
+                  ) : (
+                    <ArrowDownCircle className="h-4 w-4 text-gold" />
+                  )}
+                  <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest border-2">
+                    {p.year} {p.bashoName}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-2 text-sm font-display">
+                  <span className="font-black opacity-60">{p.fromRank}</span>
+                  <span className="opacity-40">→</span>
+                  <span className="font-black text-primary">{p.toRank}</span>
+                </div>
+                <div className="flex items-center gap-2 ml-auto">
+                  {p.isJump && (
+                    <Badge className="text-[8px] font-black uppercase tracking-widest bg-primary/20 text-primary">
+                      Jump
+                    </Badge>
+                  )}
+                  {p.isSanyaku && (
+                    <Badge className="text-[8px] font-black uppercase tracking-widest bg-gold/20 text-gold">
+                      Sanyaku
+                    </Badge>
+                  )}
+                  {p.isSekitori && (
+                    <Badge className="text-[8px] font-black uppercase tracking-widest bg-success/20 text-success">
+                      Sekitori
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Milestone Timeline */}
       <div className="space-y-6 pt-10 border-t-2 border-dashed">

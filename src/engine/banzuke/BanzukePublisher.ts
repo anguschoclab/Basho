@@ -18,6 +18,9 @@ import { isKachiKoshi } from "./banzukeHelpers";
 import { BASHO_CALENDAR } from "../calendar";
 import { generateBanzukeMovementNarrative } from "./banzukeMovementNarrative";
 import { generateKyujoNarrative } from "../bout/boutNarrative";
+import { createEmptyAlmanacRecord } from "../almanac/narrativeEnrichment";
+import { MAX_PROMOTION_HISTORY } from "../almanac/types";
+import type { PromotionHistoryEntry } from "../almanac/types";
 
 /**
  * Helper to retrieve the current basho state from the world.
@@ -336,6 +339,8 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
   );
   for (const narrative of movementNarratives) {
     const narrativeRikishi = getRikishi(world, narrative.rikishiId);
+    // Phase 6: Enrich BASHO_STATUS event data with MovementEvent fields
+    const movementEvt = result.events.find((e) => e.rikishiId === narrative.rikishiId);
     builder.logEvent(
       "BASHO_STATUS",
       "promotion",
@@ -343,9 +348,50 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
         status: "banzuke_movement",
         description: narrative.text,
         rikishiId: narrative.rikishiId,
+        from: movementEvt?.from,
+        to: movementEvt?.to,
+        kind: movementEvt?.kind,
+        isJumpPromotion: movementEvt?.isJumpPromotion,
+        isSanyakuPromotion: movementEvt?.isSanyakuPromotion,
+        isSekitoriPromotion: movementEvt?.isSekitoriPromotion,
       },
       { rikishiId: narrative.rikishiId, heyaId: narrativeRikishi?.heyaId, importance: "notable" }
     );
+  }
+
+  // Phase 4B: Capture promotion history into almanacRecord
+  const bashoYear = lastBasho.year;
+  const bashoName = lastBasho.bashoName;
+  for (const evt of result.events) {
+    if (evt.kind !== "promotion" && evt.kind !== "demotion") continue;
+    const r = getRikishi(world, evt.rikishiId);
+    if (!r) continue;
+
+    let record = r.almanacRecord;
+    if (!record) {
+      record = createEmptyAlmanacRecord(r);
+    }
+
+    const entry: PromotionHistoryEntry = {
+      year: bashoYear,
+      bashoName,
+      fromRank: evt.from,
+      toRank: evt.to,
+      kind: evt.kind,
+      isJump: evt.isJumpPromotion ?? false,
+      isSanyaku: evt.isSanyakuPromotion ?? false,
+      isSekitori: evt.isSekitoriPromotion ?? false,
+    };
+
+    const existingHistory = record.promotionHistory ?? [];
+    const updatedHistory = [entry, ...existingHistory].slice(0, MAX_PROMOTION_HISTORY);
+
+    builder.updateRikishi(evt.rikishiId, {
+      almanacRecord: {
+        ...record,
+        promotionHistory: updatedHistory,
+      },
+    });
   }
 
   // Update ozekiKadoban world field

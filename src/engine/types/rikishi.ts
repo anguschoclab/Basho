@@ -14,6 +14,7 @@ import type { H2HRecord, MatchResultLog } from "./records";
 import type { RikishiEconomics } from "./economy";
 import type { RikishiBehavior, PressPersona } from "./media";
 import type { CareerSnapshot, Milestone } from "./history";
+import type { RikishiCareerRecord } from "../almanac/types";
 
 /** Log of tactical success/failure during a basho. */
 export type AttributeKey = "power" | "speed" | "balance" | "technique";
@@ -156,6 +157,7 @@ export interface Rikishi {
   name?: string;
   stats: RikishiStats;
   careerRecord?: { wins: number; losses: number; yusho: number };
+  almanacRecord?: RikishiCareerRecord;
 
   avatarConfig?: AvatarConfig; // NEW: Procedural avatar configuration
   personalityTraits: string[];

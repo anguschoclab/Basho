@@ -2597,3 +2597,34 @@ export function generateKyujoNarrative(
 
   return lines;
 }
+
+import { NOTABLE_NARRATIVE_TAGS, NOTABLE_NARRATIVE_PHASES } from "../almanac/types";
+
+export function extractNotableNarrativeLines(lines: PbpLine[]): string[] {
+  const tagSet = new Set<string>(NOTABLE_NARRATIVE_TAGS);
+  const phaseSet = new Set<string>(NOTABLE_NARRATIVE_PHASES);
+  const result: string[] = [];
+  for (const line of lines) {
+    const hasTag = line.tags?.some((t) => tagSet.has(t));
+    const hasPhase = line.phase != null && phaseSet.has(line.phase);
+    if (hasTag || hasPhase) {
+      result.push(line.text);
+    }
+  }
+  return result;
+}
+
+export function isNotableBout(
+  result: BoutResult,
+  lines: PbpLine[],
+  winnerCareerWins: number
+): boolean {
+  if (result.isKinboshi === true) return true;
+  if (result.isYushoRace === true) return true;
+  if (result.upset === true) return true;
+  if (lines.some((l) => l.tags?.includes("milestone") || l.tags?.includes("career_high")))
+    return true;
+  if (result.excitementScore != null && result.excitementScore > 30) return true;
+  if (CAREER_WIN_MILESTONES.includes(winnerCareerWins + 1)) return true;
+  return false;
+}

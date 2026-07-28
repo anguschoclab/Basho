@@ -8,6 +8,7 @@
 import type { Id } from "../../engine/types/common";
 import type { Rank, Division, Side } from "../../engine/types/banzuke";
 import type { Style, CombatArchetype } from "../../engine/types/combat";
+import type { NotableBoutEntry, NarrativeHighlight, PromotionHistoryEntry } from "../../engine/almanac/types";
 import type { RikishiDescriptor, PotentialBand } from "../../engine/descriptorBands";
 import type { SalaryBreakdown } from "../../engine/economics_awards";
 import type { AvatarConfig } from "../../engine/types/avatar";
@@ -184,6 +185,9 @@ export interface RikishiCareerDataDTO {
   citizenshipStatus: string;
   yearsToNaturalization: number;
   consecutiveStrongOzeki: number;
+  notableBouts?: NotableBoutEntry[];
+  narrativeHighlights?: NarrativeHighlight[];
+  promotionHistory?: PromotionHistoryEntry[];
 }
 
 /** Lineage (mentor/mentee relationships) */
