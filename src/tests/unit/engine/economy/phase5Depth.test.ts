@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { InfrastructureService } from "@/engine/systems/economy/InfrastructureService";
 import * as TalentPoolScouting from "@/engine/systems/generation/TalentPoolScouting";
 import { TrainingPhilosophyService } from "@/engine/systems/legacy/TrainingPhilosophyService";
-import { MockFactory } from "../../../../helpers/utils/MockFactory";
+import { MockFactory } from "../../../helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import type { Id } from "@/engine/types/common";

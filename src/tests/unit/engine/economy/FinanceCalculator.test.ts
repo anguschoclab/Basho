@@ -14,7 +14,7 @@ import {
 } from "@/constants/engine/economic";
 import { SPONSOR_TIER_INCOME } from "@/engine/systems/economy/SponsorshipService";
 import { KOENKAI_INCOME_POWERFUL } from "@/constants/engine/economyExtended";
-import { makeMockHeya, makeMockWorld, mockRikishi } from "../../utils";
+import { makeMockHeya, makeMockWorld, mockRikishi } from "../utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import type { Sponsor, SponsorPool, Koenkai } from "@/engine/types/sponsors";

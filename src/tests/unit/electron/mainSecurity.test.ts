@@ -1,7 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /**
- * @vitest-environment jsdom
- *
  * Tests for electron/main.ts security handlers.
  * Since electron/main.ts imports the native 'electron' package which isn't
  * available in the vitest environment, we mock all dependencies and test

@@ -8,6 +8,8 @@ import type { BashoState } from "../../engine/types/basho";
 /**
  * MockFactory
  * Provides type-safe generators for engine entities.
+ * Use for new tests requiring type-safe mocks. Supports createWorld, createRikishi, createHeya.
+ * Do not mix with `utils.ts` helpers in the same file. Pick one and stick with it.
  */
 export const MockFactory = {
   createWorld(overrides: Partial<WorldState> = {}): WorldState {

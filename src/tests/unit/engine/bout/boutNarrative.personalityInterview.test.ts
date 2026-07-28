@@ -1,44 +1,12 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { mockRikishi, makeMockWorld } from "../utils";
+import { mockRikishi } from "../utils";
+import { makeBoutResult, makeBoutWorld } from "@/tests/helpers/boutTestHelpers";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
-import type { WorldState } from "@/engine/types/world";
-import type { Rikishi } from "@/engine/types/rikishi";
 import type { PressPersona } from "@/engine/types/media";
 
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
-
-function makeBoutResult(overrides: Partial<BoutResult> = {}): BoutResult {
-  return {
-    boutId: "test-bout-personality",
-    winner: "east",
-    winnerRikishiId: "r-east",
-    loserRikishiId: "r-west",
-    kimarite: "yorikiri",
-    kimariteName: "Yorikiri",
-    stance: "migi-yotsu",
-    tachiaiWinner: "east",
-    duration: 8.5,
-    upset: false,
-    isKinboshi: false,
-    log: [
-      { phase: "tachiai", data: { tick: 0, tachiaiWinner: "east", margin: 10 } },
-      { phase: "finish", data: {} },
-    ],
-    kenshoEnvelopes: 0,
-    ...overrides,
-  };
-}
-
-function makeWorld(east: Rikishi, west: Rikishi): WorldState {
-  return makeMockWorld({
-    rikishi: new Map([
-      [east.id, east],
-      [west.id, west],
-    ]),
-  }) as WorldState;
-}
 
 function getInterviewLines(result: BoutResult) {
   return (result.pbpLines ?? []).filter((l) => l.phase === "interview");
@@ -59,7 +27,7 @@ describe("generateBoutNarrative — personality-driven interviews (T21)", () => 
       pressPersona: "stoic" as PressPersona,
     });
     const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
-    const world = makeWorld(east, west);
+    const world = makeBoutWorld(east, west);
     const result = makeBoutResult();
     generateBoutNarrative(result, east, west, BASHO, 8, "seed-pers-stoic-2", world);
     expect(getInterviewLines(result).length).toBeGreaterThan(0);
@@ -73,7 +41,7 @@ describe("generateBoutNarrative — personality-driven interviews (T21)", () => 
       pressPersona: "villain" as PressPersona,
     });
     const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
-    const world = makeWorld(east, west);
+    const world = makeBoutWorld(east, west);
     const result = makeBoutResult();
     generateBoutNarrative(result, east, west, BASHO, 8, "seed-pers-villain-2", world);
     expect(getInterviewLines(result).length).toBeGreaterThan(0);
@@ -87,7 +55,7 @@ describe("generateBoutNarrative — personality-driven interviews (T21)", () => 
       pressPersona: "celebrity" as PressPersona,
     });
     const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
-    const world = makeWorld(east, west);
+    const world = makeBoutWorld(east, west);
     const result = makeBoutResult();
     generateBoutNarrative(result, east, west, BASHO, 8, "seed-pers-celebrity-5", world);
     expect(getInterviewLines(result).length).toBeGreaterThan(0);
@@ -101,7 +69,7 @@ describe("generateBoutNarrative — personality-driven interviews (T21)", () => 
       pressPersona: "firebrand" as PressPersona,
     });
     const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
-    const world = makeWorld(east, west);
+    const world = makeBoutWorld(east, west);
     const result = makeBoutResult();
     generateBoutNarrative(result, east, west, BASHO, 8, "seed-pers-firebrand", world);
     expect(getInterviewLines(result).length).toBeGreaterThan(0);
@@ -116,7 +84,7 @@ describe("generateBoutNarrative — personality-driven interviews (T21)", () => 
       personalityTraits: [],
     });
     const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
-    const world = makeWorld(east, west);
+    const world = makeBoutWorld(east, west);
     const result = makeBoutResult();
     generateBoutNarrative(result, east, west, BASHO, 8, "seed-pers-neutral-6", world);
     expect(getInterviewLines(result).length).toBeGreaterThan(0);
@@ -126,7 +94,7 @@ describe("generateBoutNarrative — personality-driven interviews (T21)", () => 
     const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
     delete (east as any).pressPersona;
     const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
-    const world = makeWorld(east, west);
+    const world = makeBoutWorld(east, west);
     const result = makeBoutResult();
     expect(() => {
       generateBoutNarrative(result, east, west, BASHO, 8, "seed-pers-undef-2", world);
@@ -143,7 +111,7 @@ describe("generateBoutNarrative — personality-driven interviews (T21)", () => 
       personalityTraits: [],
     });
     const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
-    const world = makeWorld(east, west);
+    const world = makeBoutWorld(east, west);
     const result = makeBoutResult();
     generateBoutNarrative(result, east, west, BASHO, 8, "seed-pers-notraits", world);
     expect(getInterviewLines(result).length).toBeGreaterThan(0);
@@ -158,7 +126,7 @@ describe("generateBoutNarrative — personality-driven interviews (T21)", () => 
       personalityTraits: ["calm", "humble"],
     });
     const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
-    const world = makeWorld(east, west);
+    const world = makeBoutWorld(east, west);
     const r1 = makeBoutResult();
     const r2 = makeBoutResult();
     generateBoutNarrative(r1, east, west, BASHO, 8, "seed-pers-det", world);
@@ -175,7 +143,7 @@ describe("generateBoutNarrative — personality-driven interviews (T21)", () => 
       personalityTraits: ["witty", "humble"],
     });
     const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
-    const world = makeWorld(east, west);
+    const world = makeBoutWorld(east, west);
     const result = makeBoutResult();
     generateBoutNarrative(result, east, west, BASHO, 8, "seed-pers-missing", world);
     for (const line of getInterviewLines(result)) {

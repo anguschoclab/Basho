@@ -92,4 +92,68 @@ describe("determineSpecialPrizes", () => {
     expect(result.kantosho).toBe("mae_kanto");
     expect(result.ginoSho).toBe("mae_gino");
   });
+
+  it("does not award prizes to non-maegashira (sekiwake)", () => {
+    const rikishiMap = new Map([["s1", createRikishi("s1", "sekiwake")]]);
+    const matches: MatchSchedule[] = [];
+    for (let i = 0; i < 10; i++) matches.push(createMatch("s1", `opp${i}`));
+    for (let i = 0; i < 10; i++) rikishiMap.set(`opp${i}`, createRikishi(`opp${i}`, "maegashira"));
+    const result = determineSpecialPrizes(matches, rikishiMap, "s1");
+    expect(result.shukunsho).toBeUndefined();
+    expect(result.kantosho).toBeUndefined();
+    expect(result.ginoSho).toBeUndefined();
+  });
+
+  it("awards at most 3 sansho prizes (one of each type)", () => {
+    const rikishiMap = new Map([
+      ["m1", createRikishi("m1", "maegashira")],
+      ["m2", createRikishi("m2", "maegashira")],
+      ["m3", createRikishi("m3", "maegashira")],
+      ["y1", createRikishi("y1", "yokozuna")],
+    ]);
+    const matches: MatchSchedule[] = [];
+    // m1 beats yokozuna + 7 more = shukunsho candidate
+    matches.push(createMatch("m1", "y1"));
+    for (let i = 0; i < 7; i++) matches.push(createMatch("m1", `o1_${i}`));
+    // m2 gets 10 wins = kantosho candidate
+    for (let i = 0; i < 10; i++) matches.push(createMatch("m2", `o2_${i}`));
+    // m3 gets 8 wins with 3+ kimarite = ginoSho candidate
+    const kimarites = ["yorikiri", "oshidashi", "uwatenage"];
+    for (let i = 0; i < 8; i++) {
+      matches.push(createMatch("m3", `o3_${i}`, kimarites[i % 3]));
+    }
+    // Add all opponents to rikishiMap
+    for (let i = 0; i < 7; i++) rikishiMap.set(`o1_${i}`, createRikishi(`o1_${i}`, "maegashira"));
+    for (let i = 0; i < 10; i++) rikishiMap.set(`o2_${i}`, createRikishi(`o2_${i}`, "maegashira"));
+    for (let i = 0; i < 8; i++) rikishiMap.set(`o3_${i}`, createRikishi(`o3_${i}`, "maegashira"));
+
+    const result = determineSpecialPrizes(matches, rikishiMap, "y1");
+    const count = [result.shukunsho, result.kantosho, result.ginoSho].filter(Boolean).length;
+    expect(count).toBeLessThanOrEqual(3);
+  });
+
+  it("does not award sansho to yokozuna or ozeki", () => {
+    const rikishiMap = new Map([
+      ["y1", createRikishi("y1", "yokozuna")],
+      ["o1", createRikishi("o1", "ozeki")],
+    ]);
+    const matches: MatchSchedule[] = [];
+    for (let i = 0; i < 14; i++) {
+      rikishiMap.set(`opp_y_${i}`, createRikishi(`opp_y_${i}`, "maegashira"));
+      matches.push(createMatch("y1", `opp_y_${i}`));
+    }
+    const result = determineSpecialPrizes(matches, rikishiMap, "y1");
+    expect(result).toEqual({});
+  });
+
+  it("handles empty matches array", () => {
+    const rikishiMap = new Map([["east", createRikishi("east", "maegashira")]]);
+    const result = determineSpecialPrizes([], rikishiMap, "east");
+    expect(result).toEqual({});
+  });
+
+  it("handles empty rikishiMap", () => {
+    const result = determineSpecialPrizes([], new Map(), "nobody");
+    expect(result).toEqual({});
+  });
 });

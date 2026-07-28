@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { onBoutResolvedEconomics } from "@/engine/economics";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { KENSHO_SPLIT, KENSHO_AMOUNT_PER_ENVELOPE } from "@/constants/engine/economic";
-import { makeMockHeya, makeMockWorld, mockRikishi } from "../../utils";
+import { makeMockHeya, makeMockWorld, mockRikishi } from "../utils";
 import type { WorldState } from "@/engine/types/world";
 import type { BoutResult, MatchSchedule } from "@/engine/types/basho";
 import type { Rikishi } from "@/engine/types/rikishi";

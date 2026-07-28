@@ -1,8 +1,6 @@
 /**
  * Tests for boutCanvas/animation.ts — getTargetState, lerpState, and the
  * pure arc/pose helpers extracted for testability.
- *
- * @vitest-environment jsdom
  */
 import { describe, it, expect } from "vitest";
 import {

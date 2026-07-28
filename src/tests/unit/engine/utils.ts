@@ -1,3 +1,8 @@
+/**
+ * Engine test utilities.
+ * Use for engine tests needing flat stat overrides. Functions: mockRikishi, makeMockWorld, makeMockBasho.
+ * Do not mix with `MockFactory.ts` in the same file. Pick one and stick with it.
+ */
 import type { Rikishi, RikishiStats } from "../types/rikishi";
 import type { CombatArchetype } from "../types/combat";
 

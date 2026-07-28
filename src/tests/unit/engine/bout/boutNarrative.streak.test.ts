@@ -1,9 +1,10 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 import { BardEngine } from "@/engine/bard/BardEngine";
-import { mockRikishi, makeMockWorld } from "../utils";
+import { mockRikishi, makeMockWorld, makeMockBasho } from "../utils";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
 import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
 
 function makeMinimalBoutResult(overrides: Partial<BoutResult> = {}): BoutResult {
   return {
@@ -23,6 +24,9 @@ function makeMinimalBoutResult(overrides: Partial<BoutResult> = {}): BoutResult 
       { phase: "finish", data: {} },
     ],
     kenshoEnvelopes: 0,
+    momentumScore: 0,
+    inBoutInjury: null,
+    isTimeout: false,
     ...overrides,
   };
 }
@@ -191,5 +195,99 @@ describe("generateBoutNarrative — win-streak PbP injection", () => {
     for (const line of result.pbpLines ?? []) {
       expect(line.text).not.toContain("[MISSING:");
     }
+  });
+});
+
+describe("generateBoutNarrative — streak logic: currentWinStreak vs total wins (B.9-B.12)", () => {
+  beforeEach(() => {
+    BardEngine.resetCache();
+  });
+
+  function makeStreakWorld(opts?: {
+    east?: Partial<Rikishi>;
+    west?: Partial<Rikishi>;
+    standings?: Map<string, { wins: number; losses: number; absences?: number }>;
+    day?: number;
+  }): { world: WorldState; east: Rikishi; west: Rikishi; result: BoutResult } {
+    const east = mockRikishi("east", { shikona: "East Rikishi", ...opts?.east });
+    const west = mockRikishi("west", { shikona: "West Rikishi", ...opts?.west });
+    const day = opts?.day ?? 7;
+    const basho = makeMockBasho({
+      day,
+      standings:
+        opts?.standings ??
+        new Map([
+          ["east", { wins: 0, losses: 0, absences: 0 }],
+          ["west", { wins: 0, losses: 0, absences: 0 }],
+        ]),
+    });
+    const world = makeMockWorld({
+      rikishi: new Map([
+        ["east", east],
+        ["west", west],
+      ]),
+      currentBasho: basho,
+    }) as WorldState;
+
+    const result: BoutResult = {
+      boutId: "test-bout",
+      winner: "east",
+      winnerRikishiId: "east",
+      loserRikishiId: "west",
+      kimarite: "oshidashi",
+      kimariteName: "Oshidashi",
+      stance: "migi-yotsu",
+      tachiaiWinner: "east",
+      duration: 5.2,
+      upset: false,
+      isKinboshi: false,
+      log: [],
+      kenshoEnvelopes: 0,
+    } as unknown as BoutResult;
+
+    return { world, east, west, result };
+  }
+
+  it("B.9: streak_continued fires when currentWinStreak >= 3 (not total wins)", () => {
+    const { world, east, west, result } = makeStreakWorld({
+      east: { currentWinStreak: 3, currentBashoWins: 5 } as any,
+      day: 7,
+    });
+    generateBoutNarrative(result, east, west, "hatsu" as BashoName, 7, "test-seed", world);
+    const streakLine = result.pbpLines?.find((l) => l.tags?.includes("streak"));
+    expect(streakLine).toBeDefined();
+  });
+
+  it("B.10: streak_continued does NOT fire when currentWinStreak < 3 even if total wins >= 3", () => {
+    const { world, east, west, result } = makeStreakWorld({
+      east: { currentWinStreak: 1, currentBashoWins: 5 } as any,
+      day: 7,
+    });
+    generateBoutNarrative(result, east, west, "hatsu" as BashoName, 7, "test-seed", world);
+    const streakLines = result.pbpLines?.filter((l) => l.tags?.includes("streak"));
+    const streakContinued = streakLines?.find(
+      (l) => l.text?.includes("streak") || l.text?.includes("winning")
+    );
+    expect(streakContinued).toBeUndefined();
+  });
+
+  it("B.11: streak_snapped fires when loser had currentWinStreak >= 3", () => {
+    const { world, east, west, result } = makeStreakWorld({
+      west: { currentWinStreak: 3, currentBashoWins: 4 } as any,
+      day: 7,
+    });
+    generateBoutNarrative(result, east, west, "hatsu" as BashoName, 7, "test-seed", world);
+    const streakLines = result.pbpLines?.filter((l) => l.tags?.includes("streak"));
+    expect(streakLines?.length).toBeGreaterThan(0);
+  });
+
+  it("B.12: loss_streak fires when currentLossStreak >= 3 and currentWinStreak === 0", () => {
+    const { world, east, west, result } = makeStreakWorld({
+      west: { currentLossStreak: 3, currentBashoWins: 0, currentBashoLosses: 3 } as any,
+      day: 7,
+    });
+    generateBoutNarrative(result, east, west, "hatsu" as BashoName, 7, "test-seed", world);
+    const winlessLines = result.pbpLines?.filter((l) => l.tags?.includes("winless"));
+    expect(winlessLines?.length).toBeGreaterThan(0);
   });
 });

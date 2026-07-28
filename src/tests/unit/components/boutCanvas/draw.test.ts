@@ -1,8 +1,6 @@
 /**
  * Tests for boutCanvas/draw.ts — drawRikishi behavior with new BodyPhase
  * values, arc y-offset, and family/isLoser params.
- *
- * @vitest-environment jsdom
  */
 import { describe, it, expect, vi } from "vitest";
 import { drawRikishi } from "@/components/game/boutReplay/boutCanvas/draw";

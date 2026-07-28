@@ -1,6 +1,3 @@
-/**
- * @vitest-environment jsdom
- */
 import { describe, it, expect } from "vitest";
 import { toRikishiDescriptor } from "@/engine/descriptorBands";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
@@ -93,6 +90,26 @@ describe("toRikishiDescriptor", () => {
     const rng = new SeededRNG("test-desc");
     const desc = toRikishiDescriptor(rng, r, r.descriptor);
     expect(desc.injuryModifiers).toContain("taped_up");
+  });
+
+  it("powerBand maps to exceptional for high power stat (95)", () => {
+    const r = makeRikishi({
+      stats: {
+        power: 95,
+        technique: 50,
+        speed: 50,
+        weight: 140,
+        stamina: 50,
+        mental: 50,
+        adaptability: 50,
+        balance: 50,
+        aggression: 50,
+        experience: 10,
+      },
+    });
+    const rng = new SeededRNG("test-desc");
+    const desc = toRikishiDescriptor(rng, r, r.descriptor);
+    expect(desc.powerBand).toBe("exceptional");
   });
 
   it("preserves previous band via hysteresis when value is near boundary", () => {

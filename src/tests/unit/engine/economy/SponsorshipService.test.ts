@@ -21,7 +21,7 @@ import type {
   SponsorRelationship,
 } from "@/engine/types/sponsors";
 import type { Heya } from "@/engine/types/heya";
-import { mockRikishi } from "../../utils";
+import { mockRikishi } from "../utils";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { rngFromSeed } from "@/engine/rng";
 

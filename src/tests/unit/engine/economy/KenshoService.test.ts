@@ -7,7 +7,7 @@ import {
 import { rngFromSeed } from "@/engine/rng";
 import type { SponsorPool, Sponsor } from "@/engine/types/sponsors";
 import type { WorldState } from "@/engine/types/world";
-import { mockRikishi } from "../../utils";
+import { mockRikishi } from "../utils";
 
 describe("KenshoService", () => {
   describe("determineBoutImportance", () => {

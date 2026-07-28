@@ -9,7 +9,7 @@ import {
   NON_SEKITORI_OVERHEAD_MONTHLY,
   FIXED_OPERATING_OVERHEAD_WEEKLY,
 } from "@/constants/engine/economic";
-import { makeMockHeya, makeMockWorld, mockRikishi } from "../../utils";
+import { makeMockHeya, makeMockWorld, mockRikishi } from "../utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import type { HeyaUpdates } from "@/engine/tick/phases/monthly/types";

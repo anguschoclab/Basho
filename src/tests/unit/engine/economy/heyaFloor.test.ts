@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { runGovernanceReview } from "@/engine/systems/governance/governanceReview";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { makeMockWorld, makeMockHeya, mockRikishi } from "../../utils";
+import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
 import { HEYA_FLOOR } from "@/constants/engine/economic";
 
 describe("heya floor — prevent runaway collapse", () => {
