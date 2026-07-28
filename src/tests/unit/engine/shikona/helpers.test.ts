@@ -24,11 +24,6 @@ function mockRng(value: number): () => number {
   return () => value;
 }
 
-function seqRng(values: number[]): () => number {
-  let idx = 0;
-  return () => values[idx++ % values.length];
-}
-
 // ── choosePattern ──────────────────────────────────────────────────────────
 
 describe("choosePattern", () => {
@@ -44,12 +39,10 @@ describe("choosePattern", () => {
       { rng: 0.999, expected: "c", label: "near-max → c (last item fallback)" },
     ];
 
-    for (const { rng, expected, label } of cases) {
-      it(label, () => {
-        const result = choosePattern(mockRng(rng), weights as Record<PatternId, number>);
-        expect(result).toBe(expected);
-      });
-    }
+    it.each(cases)("$label", ({ rng, expected }) => {
+      const result = choosePattern(mockRng(rng), weights as Record<PatternId, number>);
+      expect(result).toBe(expected);
+    });
   });
 
   describe("with BASE_PATTERN_WEIGHTS", () => {
@@ -84,14 +77,14 @@ describe("choosePattern", () => {
 
   describe("edge cases", () => {
     it("single pattern always returns that pattern", () => {
-      const weights = { x: 5 } as Record<PatternId, number>;
+      const weights = { x: 5 } as unknown as Record<PatternId, number>;
       expect(choosePattern(mockRng(0.0), weights)).toBe("x");
       expect(choosePattern(mockRng(0.5), weights)).toBe("x");
       expect(choosePattern(mockRng(0.999), weights)).toBe("x");
     });
 
     it("zero-weight item is skipped for non-zero rng", () => {
-      const weights = { a: 0, b: 10 } as Record<PatternId, number>;
+      const weights = { a: 0, b: 10 } as unknown as Record<PatternId, number>;
       // At rng()=0.0: r=0, r-=0 → 0 ≤ 0 → returns "a" (boundary catches zero-weight first item)
       expect(choosePattern(mockRng(0.0), weights)).toBe("a");
       // At rng()=0.5: r=5, r-=0 → 5 > 0 (skip), r-=10 → -5 ≤ 0 → returns "b"
@@ -100,7 +93,7 @@ describe("choosePattern", () => {
     });
 
     it("all zero weights returns first item", () => {
-      const weights = { a: 0, b: 0 } as Record<PatternId, number>;
+      const weights = { a: 0, b: 0 } as unknown as Record<PatternId, number>;
       expect(choosePattern(mockRng(0.5), weights)).toBe("a");
     });
   });
@@ -128,11 +121,9 @@ describe("pickConnectorToken", () => {
       { rng: 0.999, expected: "yori", label: "r=29.97 → yori (last fallback)" },
     ];
 
-    for (const { rng, expected, label } of cases) {
-      it(label, () => {
-        expect(pickConnectorToken(mockRng(rng), balancedClassic)).toBe(expected);
-      });
-    }
+    it.each(cases)("$label", ({ rng, expected }) => {
+      expect(pickConnectorToken(mockRng(rng), balancedClassic)).toBe(expected);
+    });
   });
 
   describe("with sea_wind (connectorBias: { no: 3, yori: 2 }, total=35)", () => {

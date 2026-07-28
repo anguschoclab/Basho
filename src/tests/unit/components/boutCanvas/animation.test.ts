@@ -134,26 +134,24 @@ describe("getTargetState — finish phase", () => {
 describe("getTargetState — non-finish phases", () => {
   const phases = ["ritual", "tachiai", "clinch", "momentum", "ceremony"] as const;
 
-  for (const phase of phases) {
-    it(`${phase}: returns valid states without arc fields for all families`, () => {
-      for (const family of ALL_FAMILIES) {
-        const script = makeScript(family);
-        const { east, west } = getTargetState(phase, 0.5, "east", script);
-        expect(east.pos.x).toBeGreaterThanOrEqual(0);
-        expect(east.pos.x).toBeLessThanOrEqual(1);
-        expect(east.pos.y).toBeGreaterThanOrEqual(0);
-        expect(east.pos.y).toBeLessThanOrEqual(1);
-        expect(west.pos.x).toBeGreaterThanOrEqual(0);
-        expect(west.pos.x).toBeLessThanOrEqual(1);
-        expect(west.pos.y).toBeGreaterThanOrEqual(0);
-        expect(west.pos.y).toBeLessThanOrEqual(1);
-        expect(east.arcHeight).toBeUndefined();
-        expect(east.arcProgress).toBeUndefined();
-        expect(west.arcHeight).toBeUndefined();
-        expect(west.arcProgress).toBeUndefined();
-      }
-    });
-  }
+  it.each(phases)("%s: returns valid states without arc fields for all families", (phase) => {
+    for (const family of ALL_FAMILIES) {
+      const script = makeScript(family);
+      const { east, west } = getTargetState(phase, 0.5, "east", script);
+      expect(east.pos.x).toBeGreaterThanOrEqual(0);
+      expect(east.pos.x).toBeLessThanOrEqual(1);
+      expect(east.pos.y).toBeGreaterThanOrEqual(0);
+      expect(east.pos.y).toBeLessThanOrEqual(1);
+      expect(west.pos.x).toBeGreaterThanOrEqual(0);
+      expect(west.pos.x).toBeLessThanOrEqual(1);
+      expect(west.pos.y).toBeGreaterThanOrEqual(0);
+      expect(west.pos.y).toBeLessThanOrEqual(1);
+      expect(east.arcHeight).toBeUndefined();
+      expect(east.arcProgress).toBeUndefined();
+      expect(west.arcHeight).toBeUndefined();
+      expect(west.arcProgress).toBeUndefined();
+    }
+  });
 });
 
 // ---------------------------------------------------------------------------
