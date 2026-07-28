@@ -385,5 +385,16 @@ describe("events.test.ts - Helpers & Cleanup", () => {
       expect(events[0].type).toBe("LIFECYCLE_EVENT");
       expect(events[0].data?.status).toBe("naturalization");
     });
+
+    it("emits GOVERNANCE_RULING via governanceRuling factory", () => {
+      const world = MockFactory.createWorld();
+      world.heya = new Map([
+        ["h1", MockFactory.createHeya("h1", { name: "MockHeya" })]
+      ]);
+      EventBus.governanceRuling(world, "h1", { decision: "ban", reason: "Scandal", incident: "drugs" });
+      const events = queryEvents(world, { category: "discipline" });
+      expect(events.length).toBe(1);
+      expect(events[0].type).toBe("GOVERNANCE_RULING");
+    });
   });
 });
