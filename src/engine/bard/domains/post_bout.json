@@ -167,7 +167,12 @@
   "playoff_result": [
     "The yusho is decided! %WINNER% prevails over %LOSER% in the playoff.",
     "%WINNER% claims the championship — a playoff victory over %LOSER%!",
-    "Championship secured — %WINNER% defeats %LOSER% in the decisive playoff bout."
+    "Championship secured — %WINNER% defeats %LOSER% in the decisive playoff bout.",
+    "A magnificent finish to the basho — %WINNER% conquers %LOSER% in the playoff to take the Cup.",
+    "The Emperor's Cup belongs to %WINNER% following a dramatic playoff win over %LOSER%.",
+    "A hard-fought tournament ends in triumph for %WINNER%, leaving %LOSER% as the runner-up.",
+    "Glory for %WINNER%! A sensational playoff victory over %LOSER% seals the yusho.",
+    "The dust settles and %WINNER% stands victorious, having overcome %LOSER% in the final showdown."
   ],
   "kachi_koshi": [
     "Kachi-koshi! %SHIKONA% secures a winning record at %WINS% wins.",
