@@ -388,6 +388,9 @@ describe("events.test.ts - Helpers & Cleanup", () => {
 
     it("emits GOVERNANCE_RULING via governanceRuling factory", () => {
       const world = MockFactory.createWorld();
+      world.heyas = new Map([
+        ["h1", MockFactory.createHeya("h1", { name: "MockHeya" })],
+      ]);
       EventBus.governanceRuling(world, "h1", {
         decision: "ban",
         reason: "Scandal",

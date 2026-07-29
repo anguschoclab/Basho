@@ -53,3 +53,7 @@
 **Gap:** `phase01_week_governance.ts` was untested. It handles weekly decay of scandal scores, transitions for governance status when hitting thresholds, and bi-annual JSA board elections.
 **Learning:** `createImpactBuilder` wraps nested `StateImpact` and their `events` may exist top-level on the returned impact, or within `.impacts` array if `mergeImpacts` wraps multiple sources (e.g. from `evaluateScandals`). For testing events reliably, extract `.events` manually considering this structure or just use `resolveImpacts`.
 **Pattern:** For tick phases generating events via `ImpactBuilder`, mock multiple `Heya` instances with boundary values (e.g., exactly at or above a threshold) and the player's ID using `MockFactory`. Validate both the modified `world` via `resolveImpacts` (for scalar mutations like `politicalCapital` and `scandalScore`) and the raw `impact.events` (for conditionally logged notifications).
+## 2025-02-23 - EventBus missing test coverage
+**Gap:** The EventBus.governanceRuling factory was completely untested.
+**Learning:** Testing EventBus factories requires asserting that a correct event entry is recorded using queryEvents, mocking Heya entities if they are required to build context.
+**Pattern:** For EventBus factories requiring complex context (like Heya names), create the Heya in the mock world state before calling the factory.
