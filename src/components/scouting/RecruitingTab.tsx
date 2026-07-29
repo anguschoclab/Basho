@@ -406,10 +406,8 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
           </DialogHeader>
           {comparisonPair && comparisonPair.a && comparisonPair.b && (
             <CompareModePanel
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              rikishiA={comparisonPair.a as any}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              rikishiB={comparisonPair.b as any}
+              rikishiA={comparisonPair.a as unknown as import("@/presenters/uiModels").UIRikishi}
+              rikishiB={comparisonPair.b as unknown as import("@/presenters/uiModels").UIRikishi}
               onClose={() => setShowCompare(false)}
             />
           )}
