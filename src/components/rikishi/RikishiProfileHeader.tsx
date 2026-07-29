@@ -240,6 +240,19 @@ export function RikishiProfileHeader({
                     </div>
                   </div>
                 )}
+                {(rikishi.consecutiveKachiKoshi ?? 0) >= 2 && (
+                  <div className="pt-2">
+                    <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest mb-1.5">
+                      <span className="text-orange-500 flex items-center gap-1">
+                        <span role="img" aria-label="Hot Streak">
+                          🔥
+                        </span>{" "}
+                        Kachi-Koshi Streak
+                      </span>
+                      <span className="text-orange-500 font-black">{rikishi.consecutiveKachiKoshi}</span>
+                    </div>
+                  </div>
+                )}
                 {(rikishi.rank === "sekiwake" || rikishi.rank === "komusubi") && (rikishi.consecutiveStrongSekiwake ?? 0) > 0 && (
                   <div className="pt-2">
                     <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest mb-1.5">

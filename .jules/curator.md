@@ -26,3 +26,7 @@
 **Data:** `rikishi.consecutiveStrongSekiwake`
 **Learning:** The simulation tracks consecutive strong performances (11+ wins) for Sekiwake and Komusubi to qualify for Ozeki promotion (4.2 rule), but this was completely hidden from the UI. Players had to track sekiwake records manually to know if a promotion was imminent.
 **Pattern:** Similar to `consecutiveStrongOzeki`, added it to `RikishiCareerDataDTO` and surfaced it as a progress bar in `RikishiProfileHeader` when the wrestler is at a Sanyaku rank and actively on a run.
+## 2024-07-29 - Kachi-Koshi Streak
+**Data:** `rikishi.consecutiveKachiKoshi`
+**Learning:** The simulation tracks a wrestler's consecutive winning tournament streak, which is a major point of pride and prestige in sumo. Players want to know if their wrestler is "on a roll", but this was hidden in state.
+**Pattern:** Surface it in the `RikishiProfileHeader` alongside other streaks/warnings, showing conditionally only when the streak >= 2 to avoid cluttering normal records.

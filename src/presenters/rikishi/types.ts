@@ -189,6 +189,7 @@ export interface RikishiCareerDataDTO {
   consecutiveStrongSekiwake: number;
   consecutiveMakeKoshi?: number;
   consecutiveKyujo?: number;
+  consecutiveKachiKoshi?: number;
   councilWarnings?: number;
 }
 
@@ -279,6 +280,7 @@ export interface UIRosterEntry {
   consecutiveStrongSekiwake: number;
   consecutiveMakeKoshi?: number;
   consecutiveKyujo?: number;
+  consecutiveKachiKoshi?: number;
   councilWarnings?: number;
   streakLabel: string;
   winPercentage: number;
