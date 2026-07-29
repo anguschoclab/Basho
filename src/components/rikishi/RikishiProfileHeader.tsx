@@ -111,6 +111,16 @@ export function RikishiProfileHeader({
                       </Badge>
                     </TooltipWrap>
                   )}
+                  {rikishi.rank === "yokozuna" && rikishi.councilWarnings > 0 && (
+                    <TooltipWrap content="Yokozuna Deliberation Council Warning: Poor performance is degrading stats and risking forced retirement">
+                      <Badge
+                        variant="outline"
+                        className="border-warning text-warning bg-warning/10 h-6 font-bold text-[9px] tracking-widest uppercase cursor-help"
+                      >
+                        YDC Warning ({rikishi.councilWarnings})
+                      </Badge>
+                    </TooltipWrap>
+                  )}
                 </div>
 
                 <div>
@@ -238,8 +248,8 @@ export function RikishiProfileHeader({
                 },
                 {
                   label: "Career History",
-                  value: `${rikishi.careerWins}-${rikishi.careerLosses}`,
-                  sub: "Professional Record",
+                  value: rikishi.careerRecord,
+                  sub: rikishi.careerAbsences > 0 ? "Wins-Losses-Absences" : "Professional Record",
                   color: "text-white",
                   tooltip: "Lifetime professional record across all tournaments",
                 },

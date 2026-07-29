@@ -15,6 +15,12 @@
 **Data:** rikishi.stats.achievements.ginboshiEarned and ginboshiConceded
 **Learning:** Ozeki concedes and Maegashira ginboshi wins were tracked but barely surfaced in the UI. Exposing them in the profile, retirement narrative, and Ozeki cards gives context to giant-killing achievements for Maegashira and upset vulnerabilities for Ozeki.
 **Pattern:** Similar to Kinboshi, conditional display items in RikishiProfileHeader and RikishiCard were added, avoiding clutter when values are 0.
+
+## 2024-07-26 - Career Absences & Yokozuna Warnings
+
+**Data:** `rikishi.careerAbsences` and `rikishi.councilWarnings`
+**Learning:** Absences drastically affect rikishi value (injury proneness) but were hidden from the primary career stat. Similarly, YDC Warnings silently debuffed Yokozunas without UI context.
+**Pattern:** Surface `careerAbsences` dynamically in `careerRecord` strings (W-L-A) only if > 0 to not clutter the standard W-L display. Surface warnings as a conditional badge on `RikishiProfileHeader`.
 ## 2024-08-01 - Ozeki Promotion Watch
 
 **Data:** `rikishi.consecutiveStrongSekiwake`
