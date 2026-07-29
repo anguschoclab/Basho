@@ -57,11 +57,14 @@ export function projectRosterEntry(
     division: r.division,
     side: r.side,
     record: `${r.currentBashoWins ?? 0}-${r.currentBashoLosses ?? 0}`,
-    careerRecord: `${r.careerWins}-${r.careerLosses}`,
+    careerRecord: (r.careerAbsences ?? 0) > 0
+      ? `${r.careerWins}-${r.careerLosses}-${r.careerAbsences}`
+      : `${r.careerWins}-${r.careerLosses}`,
     currentBashoWins: r.currentBashoWins ?? 0,
     currentBashoLosses: r.currentBashoLosses ?? 0,
     careerWins: r.careerWins,
     careerLosses: r.careerLosses,
+    careerAbsences: r.careerAbsences ?? 0,
     isInjured: r.injured,
     condition: r.condition,
     fatigue: r.fatigue,

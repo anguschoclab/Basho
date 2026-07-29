@@ -66,6 +66,7 @@ export interface RikishiStatusDTO {
   condition: number;
   motivation: number;
   fatigue: number;
+  councilWarnings: number;
 }
 
 /** Performance bands (power, technique, etc.) */
@@ -88,6 +89,7 @@ export interface RikishiCareerDTO {
   currentBashoRecord: string;
   careerWins: number;
   careerLosses: number;
+  careerAbsences: number;
   careerRecord: string;
   careerYusho: number;
   streak: number;
@@ -255,6 +257,7 @@ export interface UIRosterEntry {
   currentBashoLosses: number;
   careerWins: number;
   careerLosses: number;
+  careerAbsences: number;
   isInjured: boolean;
   condition: number;
   fatigue: number;
