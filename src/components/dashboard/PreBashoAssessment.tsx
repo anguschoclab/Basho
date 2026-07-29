@@ -8,7 +8,6 @@ import React from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "../../contexts/GameContext";
 import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
 import { AlertTriangle, Shield, Activity, UserMinus } from "lucide-react";
 import { TooltipWrap } from "../ui/tooltip-wrap";
 import { RikishiName } from "@/components/ClickableName";
