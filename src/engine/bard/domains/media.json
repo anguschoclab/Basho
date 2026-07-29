@@ -67,32 +67,46 @@
   "streaks": {
     "legendary": [
       "%SHIKONA% Is Unstoppable — %STREAK% Straight Wins",
-      "%STREAK%-0: %SHIKONA% Rewrites the Narrative"
+      "%STREAK%-0: %SHIKONA% Rewrites the Narrative",
+      "History in the Making: %SHIKONA% Reaches %STREAK% Wins",
+      "Perfection Intact: %SHIKONA% Claims Win Number %STREAK%",
+      "The Streak Survives: %SHIKONA% Moves to %STREAK%-0"
     ],
     "hot": [
       "%SHIKONA% Surges to %STREAK% Consecutive Victories",
-      "%STREAK% and Counting for %SHIKONA%"
+      "%STREAK% and Counting for %SHIKONA%",
+      "Red Hot: %SHIKONA% Notches Win Number %STREAK%",
+      "The Momentum Builds: %SHIKONA% Hits %STREAK% Straight",
+      "%STREAK% Without a Blemish: %SHIKONA% Continues to Climb"
     ],
     "notable": [
       "%SHIKONA% Extends Win Streak to %STREAK%",
       "Hot Streak: %SHIKONA% Now %STREAK%-0",
-      "%STREAK% Wins! %SHIKONA% Keeps Rolling"
+      "%STREAK% Wins! %SHIKONA% Keeps Rolling",
+      "On the March: %SHIKONA% Reaches %STREAK% Consecutive Wins",
+      "Quietly Dominant: %SHIKONA% Hits %STREAK% Straight"
     ],
     "subtitles": {
       "legendary": [
         "The history books are being rewritten in real-time.",
         "Is there anyone left who can stand against this momentum?",
-        "The dominance is becoming the only story in the hall."
+        "The dominance is becoming the only story in the hall.",
+        "Every bout now carries the weight of history.",
+        "A true masterclass in consistency and power."
       ],
       "hot": [
         "Confidence is a physical presence in the ring now.",
         "The win streak is starting to draw national attention.",
-        "Execution has been flawless for days."
+        "Execution has been flawless for days.",
+        "The rest of the division must be taking notice.",
+        "A run of form that demands respect."
       ],
       "notable": [
         "A solid run that puts the rest of the division on notice.",
         "Consistency is building into a serious threat.",
-        "The momentum is clearly shifting in one direction."
+        "The momentum is clearly shifting in one direction.",
+        "Finding ways to win, day in and day out.",
+        "A foundation of steady victories being laid."
       ]
     }
   },
