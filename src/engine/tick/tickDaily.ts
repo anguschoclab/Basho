@@ -75,12 +75,11 @@ import { offSeasonPipeline } from "./pipelines/offSeasonPipeline";
  *
  * Execution flow:
  *   1. Preflight check: advances calendar, sets up transientContext boundaries.
- *   2. Daily Micro-Phases: runs economy, welfare, sponsors, drama, and market phases (if not skipped).
- *   3. Weekly Gate: if 7 days passed, runs `bashoPipeline` or `offSeasonPipeline` (and yearly boundary if applicable).
- *   4. Monthly Gate: runs `phase05_monthly_boundary` if on a month boundary.
- *
- * Note: Basho tournament combat resolution is NOT handled here. It is handled
- * externally by the game flow, and the pipeline merely orchestrates side-effects.
+ *   2. Daily Micro-Phases: conditionally runs economy, welfare, sponsors, and drama.
+ *   3. Basho Bouts: if in `active_basho`, injects `phase01_basho_bouts` to run combat resolution.
+ *   4. Weekly Gate: if 7 days passed, pushes `bashoPipeline` or `offSeasonPipeline`.
+ *      Also consumes deferred boundaries to inject monthly (`phase05_monthly_boundary`, `phase01_monthly_market`)
+ *      and yearly boundary phases.
  *
  * @param {WorldState} world - The current world state.
  * @param {Object} [opts] - Options to modify tick behavior.
