@@ -1,0 +1,130 @@
+{
+  "champion": {
+    "walking_wounded": [
+      "%SHIKONA% reveals the toll: 'I got the shock of my life when my left big toe went mid-bout.'",
+      "'I neither thought about pulling out nor changing my style,' says %SHIKONA%, battling through visible pain.",
+      "%SHIKONA% admits the injury was worse than publicly known: 'Every bout was a test of willpower.'"
+    ],
+    "persevered": [
+      "'I neither thought about pulling out nor changing my style,' %SHIKONA% states firmly.",
+      "%SHIKONA% insists the injury never crossed his mind as a reason to withdraw.",
+      "'Pain is temporary — the Emperor's Cup is forever,' %SHIKONA% declares."
+    ],
+    "growth": [
+      "'I showed everyone there is more to me than just youth and momentum,' %SHIKONA% reflects.",
+      "%SHIKONA% speaks with newfound maturity: 'This title proves I can win with more than just raw energy.'",
+      "'I'm not just a young wrestler anymore — I'm a champion,' %SHIKONA% says with quiet pride."
+    ],
+    "diary": [
+      "%SHIKONA% reveals he started keeping a diary of every daily activity during the tournament.",
+      "'I write down everything — what I ate, how I felt, what I trained. It keeps me focused,' says %SHIKONA%.",
+      "%SHIKONA% credits his tournament preparation to meticulous journaling of his daily routine."
+    ],
+    "superstition": [
+      "%SHIKONA% switched his yukata after a defeat to one bearing the motif of his hometown.",
+      "Superstition or routine — %SHIKONA% wore the same yukata every day after his first win.",
+      "'I changed everything after that loss — even the yukata,' %SHIKONA% admits with a sheepish grin."
+    ],
+    "clinic_visit": [
+      "%SHIKONA% heads to the clinic to verify the damage done during the tournament.",
+      "'I'll get checked out tomorrow — the adrenaline is still masking a lot,' %SHIKONA% says.",
+      "Post-tournament medical visit confirmed for %SHIKONA% — the champion's body needs attention."
+    ],
+    "title_parade": [
+      "%SHIKONA%'s title parade sees a flag bearer from the same stable leading the way.",
+      "The champion's car winds through the streets as %SHIKONA% waves to supporters from the parade.",
+      "A senior stablemate carries the banner as %SHIKONA% celebrates his yusho with a traditional parade."
+    ],
+    "persona_stoic": [
+      "%SHIKONA% faces the press with characteristic brevity: 'I did what was required. Nothing more.'",
+      "Few words from %SHIKONA% in the press room — a nod, a slight bow, and a simple 'I am satisfied.'",
+      "True to form, %SHIKONA% offers only the essentials: 'The result speaks for itself.'"
+    ],
+    "persona_villain": [
+      "%SHIKONA% smirks at the assembled reporters: 'Did anyone doubt me? They should have known better.'",
+      "'I told you all I would take the cup. None of you believed me,' %SHIKONA% declares with a cold grin.",
+      "%SHIKONA% relishes the discomfort of the press corps: 'The look on your faces — that's the best part of winning.'"
+    ],
+    "persona_celebrity": [
+      "%SHIKONA% charms the press room with a warm smile: 'This one is for everyone who believed in me.'",
+      "'I'm grateful for all the support — the fans, my stable, everyone,' %SHIKONA% beams, working the room.",
+      "%SHIKONA% fields questions with charisma, even pausing for a selfie with a junior reporter: 'This is what sumo is about — connection.'"
+    ],
+    "persona_firebrand": [
+      "%SHIKONA% pounds the table: 'I said I'd win and I WON! Anyone who doubted me — look at me NOW!'",
+      "'This is just the beginning! I'm coming for everything!' %SHIKONA% roars at the press.",
+      "%SHIKONA% fires up the press room with raw emotion: 'I fought every bout like it was my last! That's how you win a yusho!'"
+    ],
+    "persona_neutral": [
+      "%SHIKONA% addresses the press with measured words: 'I prepared well and the results followed.'",
+      "'It was a difficult tournament, but I stayed focused on each bout,' %SHIKONA% states evenly.",
+      "%SHIKONA% offers a balanced assessment: 'There were moments of doubt, but my training carried me through.'"
+    ]
+  },
+  "prize_winner": {
+    "veteran_emotional": [
+      "'I tensed up when I heard of the potential prize,' admits the veteran %SHIKONA%, eyes glistening.",
+      "%SHIKONA%, a 30-year veteran, struggles to compose himself: 'I never thought I'd be up for it.'",
+      "'At my age, to receive this prize — it means everything,' says %SHIKONA% with visible emotion."
+    ],
+    "fought_match_not_situation": [
+      "'I fought the match and not the situation,' %SHIKONA% explains calmly.",
+      "%SHIKONA% credits his mental approach: 'I focused on the bout, not the stakes.'",
+      "'The pressure was there, but I refused to let it dictate my sumo,' %SHIKONA% reflects."
+    ],
+    "rival_frustration": [
+      "'Damn it, I lost to him again,' %SHIKONA% is overheard muttering after the press conference.",
+      "Overheard from %SHIKONA%'s corner: frustration at once again falling to the champion.",
+      "%SHIKONA% masks his frustration in public, but the competitive fire burns clearly behind his words."
+    ]
+  },
+  "ydc_bid": {
+    "continuation": [
+      "The Chief Judge notes that %SHIKONA%'s Yokozuna bid continues, but he will have to win the title to rise.",
+      "'%SHIKONA% has the qualities, but the yusho is the threshold,' the Chief Judge states.",
+      "The YDC acknowledges %SHIKONA%'s strong tournament but reaffirms: only a championship will suffice."
+    ],
+    "score_threshold": [
+      "'A score greater than 12 gives extra credence to his case,' the Chief Judge remarks on %SHIKONA%.",
+      "The YDC notes that %SHIKONA%'s 13-win performance strengthens his Yokozuna candidacy considerably.",
+      "'Double-digit wins are expected — 13 and above is what truly moves the needle,' the Chief Judge says."
+    ]
+  },
+  "ozeki_stake": [
+    "%SHIKONA% can stake his claim for Ozeki next time with another strong performance.",
+    "With this result, %SHIKONA% puts himself firmly in the Ozeki promotion conversation.",
+    "'I know what's at stake — another tournament like this and the promotion talk becomes real,' %SHIKONA% says."
+  ],
+  "ozeki_comeback_yusho": [
+    "He is the first to respond to demotion by taking the cup in the following meet — %SHIKONA% writes his name in history.",
+    "History written — a demoted Ozeki, %SHIKONA% claims the Emperor's Cup in his very next tournament.",
+    "%SHIKONA% silences every doubt with a yusho immediately following his Ozeki demotion — an extraordinary response."
+  ],
+  "ozeki_comeback_reflection": [
+    "%SHIKONA% looked distant even 30 minutes before the final bout, the weight of the moment visible on his face.",
+    "'A third title from the past five looked distant even 30 minutes before the final bout,' %SHIKONA% recalls.",
+    "The champion's eyes reveal the pressure: %SHIKONA% admits the comeback yusho felt improbable until the very end."
+  ],
+  "coach_criticism": [
+    "A former coach assesses %SHIKONA%'s weaknesses: 'His tachiai remains inconsistent against stronger opponents.'",
+    "'%SHIKONA% has technical gaps that a Yokozuna-level wrestler cannot afford,' a former coach observes.",
+    "Critical analysis from a former mentor: '%SHIKONA% must address his belt work before the next tournament.'"
+  ],
+  "lower_division": {
+    "first_honor": [
+      "%SHIKONA% savors his first %DIVISION% championship — a milestone moment in his young career.",
+      "'This is my first divisional honor — I can hardly believe it,' says %SHIKONA%.",
+      "%SHIKONA% celebrates a maiden %DIVISION% yusho, the first step on what he hopes is a long journey."
+    ],
+    "career_goal": [
+      "'Salaried rank within the next 3 years — that's my goal,' %SHIKONA% declares with determination.",
+      "%SHIKONA% sets his sights on sekitori status: 'I must keep training well and the results will come.'",
+      "'I set myself up to attack non-stop — that's what got me here,' %SHIKONA% says of his divisional win."
+    ],
+    "coach_gratitude": [
+      "'My gratitude to coach Yamada — he believed in me when no one else did,' %SHIKONA% says emotionally.",
+      "%SHIKONA% thanks his amateur coach: 'Everything I have is built on what he taught me.'",
+      "'My high school coach told me I could make it — I hope he's watching,' says %SHIKONA%."
+    ]
+  }
+}

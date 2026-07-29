@@ -1,0 +1,423 @@
+{
+  "training": {
+    "milestone": [
+      "%SHIKONA% is making measurable progress this week.",
+      "A strong training cycle for %SHIKONA% — the work is paying off.",
+      "%SHIKONA% continues to improve in key areas."
+    ],
+    "title": [
+      "Training Update",
+      "%SHIKONA%: Training Progress",
+      "Weekly Training Report"
+    ],
+    "summary": [
+      "%SHIKONA% has completed a successful training cycle.",
+      "Steady improvement observed for %SHIKONA% this week.",
+      "%HEYANAME% reports solid progress for %SHIKONA% on the clay."
+    ],
+    "breakthrough_title": [
+      "%SHIKONA% Breakthrough",
+      "Major Progress for %SHIKONA%",
+      "%SHIKONA%: Technical Leap"
+    ]
+  },
+  "economy": {
+    "kensho_title": [
+      "Kensho prize money"
+    ],
+    "kensho_summary": [
+      "%ENVELOPES% envelope(s) awarded (¥%AMOUNT%)."
+    ],
+    "special_prize_title": [
+      "Special Prize Awarded!"
+    ],
+    "special_prize_summary": [
+      "Awarded %PRIZETYPE%-shō for outstanding performance (¥%AMOUNT%)."
+    ],
+    "insolvency_title": [
+      "Financial Insolvency"
+    ],
+    "insolvency_summary": [
+      "%HEYANAME% has run out of funds! Bankruptcy is an imminent threat."
+    ],
+    "deficit_title": [
+      "Operating Deficit"
+    ],
+    "deficit_summary": [
+      "%HEYANAME% is operating at a ¥%AMOUNT% deficit this month. Reserve funds are depleting.",
+      "Financial pressure mounts: %HEYANAME% loses ¥%AMOUNT% after upkeep and salaries.",
+      "Stability warning: %HEYANAME% spend exceeds income by ¥%AMOUNT%."
+    ]
+  },
+  "lifecycle": {
+    "title": [
+      "Career Milestone",
+      "Sumo Life Cycle Event"
+    ],
+    "summary": [
+      "A significant event in the career of %SHIKONA%."
+    ],
+    "retirement_title": [
+      "%SHIKONA% Retires",
+      "Intai: %SHIKONA%"
+    ],
+    "retirement_summary": [
+      "After a distinguished career, %SHIKONA% has decided to hang up his mawashi.",
+      "%SHIKONA% announces his retirement from professional sumo."
+    ],
+    "naturalization_title": [
+      "Naturalization: %SHIKONA%",
+      "%SHIKONA% Obtains Citizenship"
+    ],
+    "naturalization_summary": [
+      "%SHIKONA% has officially completed the naturalization process, securing his future in the Association.",
+      "Legal milestone: %SHIKONA% is now a Japanese citizen."
+    ],
+    "merger_title": [
+      "Stable Merger",
+      "Heya Reorganization"
+    ],
+    "merger_summary": [
+      "Administrative shift: %HEYANAME% has completed a merger process."
+    ]
+  },
+  "rivalry": {
+    "formed_title": [
+      "New rivalry emerges"
+    ],
+    "formed_summary": [
+      "%A_NAME% has developed a personal grudge against %B_NAME%."
+    ],
+    "escalated_title": [
+      "Rivalry intensifies (%HEAT%)"
+    ],
+    "escalated_summary": [
+      "The tension between %A_NAME% and %B_NAME% has reached a %HEAT% heat."
+    ],
+    "title": [
+      "Bad Blood: %WINNER% vs %RIVAL%",
+      "Rivalry Reaches Boiling Point",
+      "Tensions Explode on the Dohyo",
+      "A Grudge Settled in Dirt",
+      "Heat Spike: %WINNER% Defeats %RIVAL%"
+    ],
+    "press_rumors": [
+      "The friction between %SHIKONA% and %RIVAL% is the talk of the arena after today's bout.",
+      "Whispers in the keiko-ba suggest this rivalry has become intensely personal after %WINNER%'s victory.",
+      "The sports papers are having a field day with the rising tension between %SHIKONA% and %RIVAL%.",
+      "%LOSER% stormed out of the hall following the match, fueling rumors of genuine bad blood with %WINNER%.",
+      "Observers note that %SHIKONA% and %RIVAL% refused to acknowledge each other after the bout—the animosity is palpable."
+    ]
+  },
+  "welfare": {
+    "alert_title": [
+      "Welfare Alert"
+    ],
+    "alert_summary": [
+      "%HEYANAME% is under scrutiny for welfare compliance. Status: %STATUS%"
+    ]
+  },
+  "basho": {
+    "day_title": [
+      "Day %DAY%"
+    ],
+    "day_summary": [
+      "Tournament day %DAY% begins."
+    ],
+    "status_title": [
+      "Basho Status Update",
+      "Tournament News",
+      "Kokugikan Report"
+    ],
+    "status_summary": [
+      "Tournament progress: %DAY% days concluded. Standing: %SHIKONA% (%WINS%-%LOSSES%).",
+      "The race for the Cup continues. %SHIKONA% currently holds a %WINS%-%LOSSES% record.",
+      "Basho Update: %SHIKONA% is %WINS%-%LOSSES% after a crucial day of action."
+    ],
+    "bout_title": [
+      "Bout concluded"
+    ],
+    "bout_summary": [
+      "Winner decided by %KIMARITE%."
+    ],
+    "concluded_title": [
+      "%BASHONAME% Basho Concluded"
+    ],
+    "concluded_summary": [
+      "%SHIKONA% wins the tournament with a dominant %WINS%-%LOSSES% record!",
+      "The Emperor's Cup goes to %SHIKONA% after a historic performance.",
+      "%SHIKONA% stands victorious at the end of the %BASHONAME% basho."
+    ],
+    "playoff_title": [
+      "Playoff Champion: %SHIKONA%"
+    ],
+    "playoff_summary": [
+      "%CONTENDERS% rikishi tied at %WINS% wins. %SHIKONA% wins the Cup via playoff victory.",
+      "Drama at the Kokugikan! %SHIKONA% overcomes all rivals in the tie-breaker rounds.",
+      "The tie-break concludes: %SHIKONA% is the last man standing."
+    ],
+    "banzuke_reveal_summary": [
+      "The official rankings have been posted. A new hierarchy takes shape.",
+      "New ranks confirmed. The banzuke reveal shifts the landscape for the coming basho.",
+      "The Association has published the banzuke. All eyes on the new promotions."
+    ]
+  },
+  "health": {
+    "injury_sustained": [
+      "%SHIKONA% leaves training with an injury. Recovery timeline pending.",
+      "Concern in the heya: %SHIKONA% has sustained an injury.",
+      "%SHIKONA% will be sidelined. The medical staff is evaluating."
+    ],
+    "financial_crisis": [
+      "%HEYANAME% is operating at a deficit. Immediate action required.",
+      "Financial pressure mounts at %HEYANAME%. Training capacity may be affected.",
+      "%HEYANAME% faces a funding shortfall this period."
+    ]
+  },
+  "milestone": {
+    "hof_induction": [
+      "%SHIKONA% is inducted into the Hall of Fame as a %CATEGORY%.",
+      "Hall of Fame: %SHIKONA% joins the immortals of sumo as a %CATEGORY%.",
+      "A legend enshrined: %SHIKONA% receives the highest honour, inducted as %CATEGORY%."
+    ],
+    "year_boundary": [
+      "The sumo world enters year %YEAR%.",
+      "Year %YEAR% dawns. The rankings reset, the goals remain.",
+      "A new year begins — year %YEAR% in the sumo calendar."
+    ],
+    "decade_boundary": [
+      "A new decade dawns in year %YEAR%. The era evolves.",
+      "Year %YEAR% marks a generational shift. A decade turns.",
+      "Ten years pass. Year %YEAR% opens a new chapter."
+    ]
+  },
+  "titles": {
+    "RECRUITMENT_WINDOW_CLOSED": [
+      "Recruitment window closed"
+    ],
+    "RECRUITMENT_BLOCKED_SANCTIONS": [
+      "Recruitment blocked by sanctions"
+    ],
+    "RECRUITMENT_WINDOW_OPEN": [
+      "Recruitment window open"
+    ],
+    "PHASE_TRANSITION": [
+      "Phase transition"
+    ],
+    "BANZUKE_REVEAL": [
+      "Banzuke Hatsu-Dashi"
+    ],
+    "MONTHLY_BOUNDARY": [
+      "Financial cycle complete"
+    ],
+    "MONTHLY_DEFICIT": [
+      "Operating deficit"
+    ],
+    "ARCHETYPE_DRIFT": [
+      "Tactical shift"
+    ],
+    "YEAR_BOUNDARY": [
+      "Year %YEAR% begins"
+    ],
+    "HOF_INDUCTION": [
+      "Hall of Fame: %SHIKONA%"
+    ],
+    "CAREER_WINS_MILESTONE": [
+      "%SHIKONA% reaches %WINS% wins"
+    ],
+    "HOF_ELIGIBLE": [
+      "Hall of Fame eligibility reached"
+    ],
+    "NPC_RECRUITMENT_SUMMARY": [
+      "NPC stables recruit"
+    ],
+    "TALENT_POOL_REINJECTION": [
+      "Wrestler re-enters talent pool"
+    ],
+    "HIGH_TALENT_SIGNED": [
+      "Elite prospect signed"
+    ],
+    "GOVERNANCE_SCANDAL_REPORTED": [
+      "Scandal reported"
+    ],
+    "GOVERNANCE_WARNING": [
+      "JSA Warning"
+    ],
+    "GOVERNANCE_STATUS_CHANGED": [
+      "Governance status change"
+    ],
+    "COMPLIANCE_SANCTIONS_LIFTED": [
+      "Sanctions lifted"
+    ],
+    "JSA_ELECTION": [
+      "JSA Board Election"
+    ],
+    "INJURY_SUSTAINED": [
+      "%SHIKONA% Injured"
+    ],
+    "GOVERNANCE_BAILOUT": [
+      "Ichimon Bailout"
+    ]
+  },
+  "governance": {
+    "title": [
+      "Governance Ruling",
+      "Association Notice",
+      "Institutional Decision",
+      "JSA Ruling Issued"
+    ],
+    "summary": [
+      "A governance ruling has been issued regarding a recent incident.",
+      "The Association has reviewed and responded to a reported matter.",
+      "Institutional oversight has resulted in a formal decision.",
+      "JSA officials have issued a ruling following an internal review."
+    ]
+  },
+  "narrative": {
+    "championship_celebration_title": [
+      "Championship Celebration at %HEYA%",
+      "%SHIKONA% Lifts the Emperor's Cup",
+      "Historic Victory for %SHIKONA%",
+      "%HEYA% Celebrates a Yusho",
+      "The Emperor's Cup Goes to %SHIKONA%"
+    ],
+    "championship_celebration_summary": [
+      "The celebration is underway at %HEYA% as %SHIKONA% is honored for his tournament victory.",
+      "Joy at the stable as %SHIKONA% returns with the yusho trophy.",
+      "Fans line the streets around %HEYA% to catch a glimpse of the new champion, %SHIKONA%.",
+      "%SHIKONA% is presented with the Emperor's Cup in a historic moment for %HEYA%.",
+      "A triumphant return for %SHIKONA%, securing the championship after a grueling basho."
+    ],
+    "yokozuna_promotion_title": [
+      "Yokozuna Promotion: %SHIKONA%",
+      "A New Yokozuna is Crowned",
+      "%SHIKONA% Reaches the Pinnacle",
+      "The White Rope for %SHIKONA%",
+      "Ascension: %SHIKONA% Named Yokozuna"
+    ],
+    "yokozuna_promotion_summary": [
+      "The Association has approved %SHIKONA%'s promotion to yokozuna.",
+      "History is made as %SHIKONA% ascends to the highest rank in sumo.",
+      "Following a dominant performance, the council unanimously promotes %SHIKONA% to yokozuna.",
+      "A solemn ceremony at the shrine marks %SHIKONA%'s ascension to the rank of yokozuna.",
+      "%SHIKONA% accepts the honor with humility, vowing to uphold the dignity of the yokozuna rank."
+    ],
+    "retirement_ceremony_title": [
+      "Farewell Ceremony for %SHIKONA%",
+      "%SHIKONA%: A Career Honored",
+      "The Final Bow: %SHIKONA% Retires",
+      "Danpatsu-shiki: %SHIKONA%",
+      "%SHIKONA% Steps Down from the Dohyo"
+    ],
+    "retirement_ceremony_summary": [
+      "The heya gathers to honor %SHIKONA%'s distinguished career.",
+      "%SHIKONA% is celebrated in a formal retirement ceremony at %HEYA%.",
+      "Tears flow at the Kokugikan as the topknot of %SHIKONA% is finally cut.",
+      "A legendary career comes to a close as %SHIKONA% bids farewell to the sport.",
+      "Supporters and rivals alike gather to pay their respects to the retiring %SHIKONA%."
+    ],
+    "retirement_career_summary": [
+      "%SHIKONA% retires with %CAREER_WINS% career wins against %CAREER_LOSSES% losses across %BASHO_COUNT% basho.",
+      "Over %YEARS_ACTIVE% years on the dohyo, %SHIKONA% amassed %CAREER_WINS% victories and %YUSHO_COUNT% yusho titles.",
+      "A career spanning %BASHO_COUNT% basho comes to an end — %SHIKONA% finishes with %CAREER_WINS% wins and %KINBOSHI_COUNT% kinboshi.",
+      "%SHIKONA% hangs up the mawashi after %YEARS_ACTIVE% years, %CAREER_WINS% wins, and %YUSHO_COUNT% tournament championships."
+    ],
+    "retirement_legacy": [
+      "%SHIKONA% reached the rank of %HIGHEST_RANK%, leaving an indelible mark on the sport.",
+      "The highest rank achieved by %SHIKONA% was %HIGHEST_RANK% — a testament to years of dedication.",
+      "History will remember %SHIKONA% as a %HIGHEST_RANK% who gave everything to the sport.",
+      "%SHIKONA%'s legacy as a %HIGHEST_RANK% is secure — the dohyo will not be the same without that presence."
+    ],
+    "retirement_press_stoic": [
+      "\"I did what I could. The rest is for others to judge.\"",
+      "\"My body has decided. I accept it.\"",
+      "\"I have no regrets. I gave my best every day.\""
+    ],
+    "retirement_press_celebrity": [
+      "\"Thank you to all my fans. This journey would not have been possible without you.\"",
+      "\"I'm overwhelmed by the support. Every cheer, every banner — I carried them with me.\"",
+      "\"This isn't goodbye. I'll always be part of the sumo family.\""
+    ],
+    "retirement_press_villain": [
+      "\"They wanted me gone. Now they have their wish. But they'll miss me when I'm not here.\"",
+      "\"I leave on my own terms. No one forced this hand.\"",
+      "\"The dohyo won't be as interesting without me. That's just a fact.\""
+    ],
+    "retirement_press_firebrand": [
+      "\"I fought every bout like it was my last. Now it actually is.\"",
+      "\"No half-measures. That's how I wrestled, and that's how I leave.\"",
+      "\"They'll remember the fire. That's all I ever wanted.\""
+    ],
+    "retirement_oyakata_conversion": [
+      "%SHIKONA% will remain in the sumo world, staying on as an oyakata at %HEYA%.",
+      "The newly minted oyakata %SHIKONA% will begin coaching duties at %HEYA%.",
+      "%SHIKONA% transitions to the role of oyakata, passing on wisdom to the next generation."
+    ],
+    "underdog_victory_title": [
+      "Giant Killing: %SHIKONA% Stuns the Division",
+      "Kinboshi for %SHIKONA%",
+      "Massive Upset: %SHIKONA% Wins",
+      "%SHIKONA% Defies the Odds",
+      "A Miracle on the Dohyo for %SHIKONA%"
+    ],
+    "underdog_victory_summary": [
+      "%SHIKONA% has claimed a kinboshi, defeating a yokozuna in a stunning upset.",
+      "An unforgettable upset as %SHIKONA% topples the division's elite.",
+      "The crowd erupts as pillows fly — %SHIKONA% has just pulled off the impossible.",
+      "In a bout no one predicted, %SHIKONA% overpowers a heavy favorite.",
+      "A tactical masterclass from %SHIKONA% leads to a shock victory against a top ranker."
+    ],
+    "legacy_milestone_title": [
+      "Legacy Milestone for %SHIKONA%",
+      "%SHIKONA%: A Career Defined",
+      "A Lifetime of Dedication: %SHIKONA%",
+      "A Monumental Achievement: %SHIKONA%",
+      "%SHIKONA% Writes His Name in History",
+      "An Enduring Legacy for %SHIKONA%",
+      "An Era Defined by %SHIKONA%",
+      "%SHIKONA% Etches His Name in History",
+      "The Enduring Legacy of %SHIKONA%"
+    ],
+    "legacy_milestone_summary": [
+      "%SHIKONA% reaches a significant career milestone, cementing his place in sumo history.",
+      "The veteran %SHIKONA% is honored for his enduring contributions to the sport.",
+      "Supporters gather to celebrate the remarkable journey and accomplishments of %SHIKONA%.",
+      "Years of tireless keiko culminate in a historic milestone for %SHIKONA%.",
+      "The sumo world pauses to recognize the extraordinary longevity and success of %SHIKONA%.",
+      "A proud day in sumo history as %SHIKONA% joins an elite group of rikishi with this milestone.",
+      "A testament to longevity and skill, %SHIKONA% celebrates another monumental achievement.",
+      "Fans reflect on a storied career as %SHIKONA% hits a milestone few ever reach.",
+      "The JSA acknowledges %SHIKONA% for his lasting impact on the sport."
+    ],
+    "banzuke_movement_jump_promotion": [
+      "%SHIKONA% rockets up the banzuke — from %FROM% to %TO%, a jump promotion that turns heads.",
+      "A stunning rise for %SHIKONA%: %FROM% to %TO% in a single basho. The Association took notice.",
+      "%SHIKONA% leaps up the rankings — %FROM% to %TO% — a promotion that defies expectations."
+    ],
+    "banzuke_movement_sekitori_promotion": [
+      "%SHIKONA% crosses the sekitori threshold — promoted from %FROM% to %TO%. The paid ranks await.",
+      "From %FROM% to %TO% — %SHIKONA% is now a sekitori. A career milestone achieved.",
+      "The sekitori barrier is broken: %SHIKONA% rises from %FROM% to %TO% with salary and status."
+    ],
+    "banzuke_movement_sanyaku_promotion": [
+      "%SHIKONA% enters the sanyaku — promoted from %FROM% to %TO%. The elite ranks await.",
+      "A sanyaku promotion for %SHIKONA%: %FROM% to %TO%. The dohyo's upper echelon has a new member.",
+      "From %FROM% to %TO% — %SHIKONA% joins the titled ranks. A new chapter begins."
+    ],
+    "banzuke_movement_shin_debut": [
+      "Shin-%TO% %SHIKONA% takes his place among the titled ranks — a new sanyaku debut from %FROM%.",
+      "A debut in the elite: %SHIKONA% rises from %FROM% to shin-%TO%. The banzuke tells a new story.",
+      "The crowd awaits shin-%TO% %SHIKONA% — promoted from %FROM%, a new name among the titled."
+    ],
+    "banzuke_movement_standard_promotion": [
+      "%SHIKONA% moves up the banzuke — from %FROM% to %TO%.",
+      "A promotion for %SHIKONA%: %FROM% to %TO%. Steady progress up the ranks.",
+      "The banzuke shifts: %SHIKONA% rises from %FROM% to %TO%."
+    ],
+    "banzuke_movement_demotion": [
+      "%SHIKONA% drops down the banzuke — from %FROM% to %TO%.",
+      "A demotion for %SHIKONA%: %FROM% to %TO%. The road back starts now.",
+      "The banzuke falls for %SHIKONA%: %FROM% to %TO%. A basho to forget."
+    ]
+  }
+}

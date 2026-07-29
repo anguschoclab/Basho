@@ -1,0 +1,152 @@
+{
+  "questions": {
+    "kachi_koshi": [
+      "You've secured your kachi-koshi. How do you feel?",
+      "What's been going well this tournament?",
+      "How will you approach the rest of the tournament?",
+      "Any message for your fans?"
+    ],
+    "earliest_kachi": [
+      "You've secured the earliest kachi-koshi of your career. Congratulations.",
+      "How does it feel clinching it on day %DAY%?",
+      "What's been going well this tournament?",
+      "How will you approach the rest?"
+    ],
+    "make_koshi": [
+      "Tough day today. What went wrong?",
+      "What's your mindset heading into tomorrow?",
+      "How will you bounce back next basho?"
+    ],
+    "milestone": [
+      "That's your %MILESTONE%th top division win. How does it feel?",
+      "Were you nervous approaching the milestone?",
+      "What does this milestone mean to you?"
+    ],
+    "upset": [
+      "You defeated a %OPPONENT_RANK% today. What was the key?",
+      "How did you prepare for this matchup?",
+      "What does this win mean for your tournament?"
+    ],
+    "first_win": [
+      "Your first win finally came today. How do you feel?",
+      "How did you reset mentally after the losing streak?",
+      "What's the approach for tomorrow?"
+    ],
+    "debut_win": [
+      "How do you feel picking up a victory in your makuuchi debut?",
+      "Did that win feel different from the lower divisions?",
+      "Were you nervous going up as a makuuchi fighter?",
+      "What kind of basho do you want to make it?"
+    ],
+    "general_win": [
+      "How do you feel about that performance?",
+      "What was the key moment in the bout?",
+      "How will you prepare for tomorrow?",
+      "Any thoughts on your opponent today?"
+    ],
+    "general_loss": [
+      "What happened out there today?",
+      "How will you regroup for tomorrow?",
+      "What do you need to improve?"
+    ],
+    "career_pre_peak": [
+      "You're showing real promise at this stage. How does it feel to be rising?",
+      "What are your goals for this basho and beyond?",
+      "Who do you look up to in the division?",
+      "How do you handle the pressure of expectations?"
+    ],
+    "career_peak": [
+      "You're at the top of your game. How do you maintain this level?",
+      "What's driving you at this stage of your career?",
+      "Do you feel the target on your back from younger wrestlers?",
+      "How do you stay motivated when you've achieved so much?"
+    ],
+    "career_early_decline": [
+      "How are you adapting your sumo as the years go on?",
+      "What keeps you going at this stage of your career?",
+      "Have you changed your training approach recently?",
+      "What wisdom would you share with younger wrestlers?"
+    ],
+    "career_late_decline": [
+      "After all these years, what does each bout mean to you now?",
+      "How much longer do you see yourself competing?",
+      "What legacy do you hope to leave on the dohyo?",
+      "What keeps the fire burning after so many years?"
+    ],
+    "career_twilight": [
+      "You've had an extraordinary career. How do you reflect on it?",
+      "What memories stand out from your time in the ring?",
+      "Is there a message you'd like to share with your fans?",
+      "What does sumo mean to you at this point in your life?"
+    ],
+    "rivalry_renewed": [
+      "Another chapter in your rivalry with %OPPONENT%. How did you approach this one?",
+      "You've faced %OPPONENT% several times now. What makes these bouts different?",
+      "The history between you and %OPPONENT% — does it affect your preparation?",
+      "What's it like stepping onto the dohyo against a familiar rival?"
+    ]
+  },
+  "stoic": [
+    "\"It feels great.\"",
+    "\"I'll do my best.\"",
+    "\"One bout at a time.\"",
+    "\"My sumo spoke for itself.\"",
+    "\"I prepare the same way every day.\"",
+    "\"The result is what it is.\""
+  ],
+  "villain": [
+    "\"Of course I won. Did anyone expect otherwise?\"",
+    "\"%OPPONENT% never stood a chance. I told you all.\"",
+    "\"This is what I do. I win. Deal with it.\"",
+    "\"Another opponent, another victory. Next question.\"",
+    "\"I'm the best here. Everyone else is fighting for second.\"",
+    "\"Easy work. Next.\""
+  ],
+  "celebrity": [
+    "\"I want to thank my fans — their support means everything to me.\"",
+    "\"It's been a wonderful tournament. I'm enjoying every moment on the dohyo.\"",
+    "\"I hope everyone watching enjoyed that bout as much as I did!\"",
+    "\"The energy from the crowd today was incredible. Thank you all.\"",
+    "\"I'm so grateful for the support of my heya and my family.\"",
+    "\"This one's for everyone who believed in me.\""
+  ],
+  "firebrand": [
+    "\"I came here to fight and that's exactly what I did!\"",
+    "\"Nobody pushes me around. Nobody! %OPPONENT% found that out today.\"",
+    "\"I train harder than anyone. That's why I win. That's why I'll keep winning!\"",
+    "\"Don't test me in that ring. The result speaks for itself!\"",
+    "\"I've been fighting for this moment my entire career!\"",
+    "\"Nobody believed in me, but here I am!\""
+  ],
+  "neutral": [
+    "\"I'm pleased with the result. %KIMARITE% was the right technique today.\"",
+    "\"It was a tough bout. I'm glad I could come away with the win.\"",
+    "\"I stayed focused on my game plan and it worked out.\"",
+    "\"%OPPONENT% is a strong opponent. I'm happy to get the victory.\"",
+    "\"I've been staying on the attack. That's been working for me.\"",
+    "\"One bout at a time, stay focused on my sumo.\""
+  ],
+  "modifiers": {
+    "witty": [
+      "...But I wouldn't bet against me either.",
+      "...Though I did consider letting him win for a change."
+    ],
+    "humble": [
+      "I couldn't have done it without my stable and my oyakata.",
+      "The credit goes to everyone who supported me."
+    ],
+    "philosophical": [
+      "Sumo is a journey of a thousand bouts.",
+      "Every bout teaches you something about yourself."
+    ],
+    "analytical": [
+      "My tachiai was the key today. I got the position I wanted.",
+      "I noticed his grip was weak, so I attacked at that moment."
+    ],
+    "laconic": [
+      "Yes.",
+      "I'll try my best.",
+      "We'll see."
+    ]
+  }
+}

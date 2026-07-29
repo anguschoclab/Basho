@@ -1,0 +1,271 @@
+{
+  "reaction": [
+    "%WINNER% takes it with a decisive %KIMARITE%. A statement performance.",
+    "A clean victory for %WINNER% — %KIMARITE% ends it.",
+    "%WINNER% prevails! The %KIMARITE% was picture-perfect.",
+    "%LOSER% could find no answer. %WINNER% controls the bout from start to finish.",
+    "No doubt about that one — %WINNER% executes a flawless %KIMARITE%.",
+    "A masterful display from %WINNER%, dispatching %LOSER% with %KIMARITE%.",
+    "%WINNER% leaves no room for error, finishing %LOSER% off swiftly.",
+    "The technique is undeniable. %WINNER% secures the win via %KIMARITE%.",
+    "Total dominance on the dohyo today as %WINNER% handles %LOSER%."
+  ],
+  "records": {
+    "winner_improves": [
+      "%WINNER% improves to %WINNER_WINS% and %WINNER_LOSSES%.",
+      "%WINNER% moves to %WINNER_WINS%-%WINNER_LOSSES% on the tournament.",
+      "That's %WINNER_WINS% wins now for %WINNER% against %WINNER_LOSSES% losses."
+    ],
+    "loser_falls": [
+      "%LOSER% falls to %LOSER_WINS% and %LOSER_LOSSES%.",
+      "%LOSER% drops to %LOSER_WINS%-%LOSER_LOSSES%.",
+      "A tough day for %LOSER% — now at %LOSER_WINS% wins and %LOSER_LOSSES% losses."
+    ],
+    "both_even": [
+      "Both men are now at %WINNER_WINS% and %WINNER_LOSSES% after %DAY% days.",
+      "%WINNER% and %LOSER% both sitting at %WINNER_WINS%-%WINNER_LOSSES% after this one.",
+      "Even records now — %WINNER_WINS% wins and %WINNER_LOSSES% losses for both."
+    ]
+  },
+  "storylines": {
+    "streak_snapped": [
+      "That %STREAK%-bout winning streak comes to an end for %LOSER%.",
+      "%LOSER%'s %STREAK% straight wins are no more — %WINNER% stops the run.",
+      "The streak is over. %LOSER% had won %STREAK% in a row before today."
+    ],
+    "streak_continued": [
+      "%WINNER% makes it %STREAK% straight victories.",
+      "%STREAK% in a row now for %WINNER% — can anyone stop the run?",
+      "%WINNER% keeps rolling — %STREAK% consecutive wins and counting."
+    ],
+    "loss_streak": [
+      "%LOSER% loses for the %STREAK%th straight day.",
+      "%STREAK% straight losses now for %LOSER%. A difficult stretch.",
+      "The losing streak reaches %STREAK% for %LOSER%."
+    ],
+    "first_win": [
+      "%WINNER% picks up his first win of the basho!",
+      "The first win finally came today for %WINNER%.",
+      "%WINNER% gets off the schneid — first victory of the tournament."
+    ],
+    "upset_elite": [
+      "A kinboshi! %WINNER% defeats a %LOSER_RANK% on day %DAY% — an upset that will be talked about.",
+      "What an upset! %WINNER% takes down the %LOSER_RANK% — pillows fly in the crowd.",
+      "Big upset on day %DAY% — %WINNER% topples %LOSER%, a %LOSER_RANK% falls to a maegashira."
+    ],
+    "consecutive_kachi": [
+      "Kachi-koshi for the %ORDINAL% consecutive tournament for %SHIKONA%!",
+      "%SHIKONA% makes it %STREAK% straight basho with a winning record.",
+      "%SHIKONA% — kachi-koshi for the %STREAK%th tournament in a row."
+    ],
+    "sole_leader": [
+      "%WINNER% is now the sole leader of the tournament.",
+      "%WINNER% stands alone at the top — sole leader after %DAY% days.",
+      "A clear leader emerges: %WINNER% alone in first place."
+    ],
+    "falls_out": [
+      "%LOSER% falls out of a share of first place.",
+      "%LOSER% drops from the co-leadership with this loss.",
+      "No longer a co-leader — %LOSER% falls off the pace."
+    ],
+    "ties_leader": [
+      "%WINNER% ties the leader with this win.",
+      "%WINNER% pulls level with the tournament leader.",
+      "We have a tie at the top — %WINNER% joins the leader."
+    ]
+  },
+  "rivalry": {
+    "domination": [
+      "%WINNER% extends the dominance — now %WINNER_WINS%-%LOSER_WINS% in the series.",
+      "It's %WINNER_WINS% to %LOSER_WINS% now. %WINNER% owns this matchup.",
+      "The pattern continues: %WINNER% has beaten %LOSER% %WINNER_WINS% times across %TOTAL% meetings."
+    ],
+    "evened": [
+      "All even now — %WINNER% levels the series at %WINNER_WINS%-%LOSER_WINS%.",
+      "The rivalry is deadlocked: %WINNER_WINS%-%LOSER_WINS% after %TOTAL% bouts.",
+      "%WINNER% draws level. This one's going to be settled on the dohyo."
+    ],
+    "revenge": [
+      "Revenge for %WINNER% — avenging the last loss to bring the series to %WINNER_WINS%-%LOSER_WINS%.",
+      "%WINNER% gets payback. The series tightens to %WINNER_WINS%-%LOSER_WINS%.",
+      "Last time went to %LOSER%, but not today. %WINNER% strikes back to make it %WINNER_WINS%-%LOSER_WINS%."
+    ],
+    "continued": [
+      "%WINNER% adds another chapter — %WINNER_WINS%-%LOSER_WINS% in the head-to-head.",
+      "The series moves to %WINNER_WINS%-%LOSER_WINS% after %TOTAL% meetings.",
+      "%WINNER% edges ahead in the rivalry: %WINNER_WINS% wins to %LOSER_WINS%."
+    ]
+  },
+  "kensho": [
+    "%ENVELOPES% kensho envelopes rain down for %WINNER% — the sponsors are pleased.",
+    "Sponsor banners flutter as %WINNER% collects %ENVELOPES% kensho envelopes.",
+    "%WINNER% is rewarded with %ENVELOPES% kensho payouts — a lucrative day on the dohyo."
+  ],
+  "kensho_upset": [
+    "An upset and a payday — %ENVELOPES% kensho envelopes for %WINNER% after a stunning shock!",
+    "The sponsors didn't see that coming! %ENVELOPES% kensho envelopes for the underdog %WINNER%.",
+    "%WINNER% shocks the dohyo and pockets %ENVELOPES% kensho envelopes — an upset worth every yen.",
+    "A stunning result and %ENVELOPES% kensho envelopes for %WINNER% — the sponsors love an underdog story."
+  ],
+  "father_time": [
+    "Father time catches up to %LOSER% — the years are taking their toll.",
+    "%LOSER% can't turn back the clock — age finally factoring into the result.",
+    "The legs aren't what they used to be for %LOSER% — time remains undefeated.",
+    "%LOSER% shows flashes of the old brilliance, but the body can't keep up anymore."
+  ],
+  "defying_age": [
+    "Defying age itself — %WINNER% proves the old warrior still has it!",
+    "%WINNER% turns back the clock with that performance — age is just a number.",
+    "They said he was done, but %WINNER% silences the doubters once more.",
+    "%WINNER% writes another chapter in a remarkable late-career story."
+  ],
+  "injury_assessment": {
+    "minor": [
+      "%SHIKONA% appears to have avoided serious damage — the %AREA% injury looks minor.",
+      "A grimace from %SHIKONA% as he leaves the dohyo, but the %AREA% seems to be just a tweak.",
+      "Medical staff check %SHIKONA%'s %AREA% — early signs suggest nothing serious."
+    ],
+    "moderate": [
+      "%SHIKONA% is favoring his %AREA% — this could mean time away from the dohyo.",
+      "The %AREA% injury to %SHIKONA% looked painful — a moderate strain at minimum.",
+      "%SHIKONA% will need treatment for that %AREA% — the bout took a physical toll."
+    ],
+    "serious": [
+      "Concern for %SHIKONA% — the %AREA% injury looked severe and may sideline him for weeks.",
+      "A grim sight as %SHIKONA% clutches his %AREA% — this could be a long recovery.",
+      "%SHIKONA% may be facing a lengthy absence after that serious %AREA% injury."
+    ]
+  },
+  "career_milestone": [
+    "That win brings %SHIKONA% to %MILESTONE% career victories — a remarkable achievement.",
+    "History for %SHIKONA% — career win number %MILESTONE% is in the books.",
+    "A milestone moment: %SHIKONA% reaches the %MILESTONE%-win mark."
+  ],
+  "career_bout_milestone": [
+    "That was %SHIKONA%'s %MILESTONE%th career bout — a remarkable milestone of longevity.",
+    "History for %SHIKONA% — %MILESTONE% total bouts on the dohyo and counting.",
+    "A milestone of endurance: %SHIKONA% reaches the %MILESTONE%-bout mark."
+  ],
+  "comeback_win": [
+    "A stunning comeback victory for %WINNER% — saved from the edge of defeat!",
+    "%WINNER% was on the brink, but turns it around to defeat %LOSER%!",
+    "Incredible resilience from %WINNER% — a comeback win from the edge of the dohyo.",
+    "%WINNER% snatches victory from the jaws of defeat against %LOSER%."
+  ],
+  "momentum_shift": [
+    "%DOMINANT% has seized complete control of this bout — the momentum is overwhelming.",
+    "A massive momentum swing — %DOMINANT% is dictating every exchange.",
+    "The momentum is all with %DOMINANT% right now. %LOSER% is on the back foot.",
+    "%DOMINANT% dominates the pace — the momentum score tells the story of this bout."
+  ],
+  "injury_kyujo_warning": [
+    "%SHIKONA% is clutching his %AREA% — that could threaten the rest of his tournament.",
+    "The medical staff is concerned about %SHIKONA%'s %AREA% — a kyujo may be on the horizon.",
+    "That %AREA% injury looks serious — %SHIKONA%'s participation going forward is in doubt.",
+    "A worrying sign for %SHIKONA% — the %AREA% could force a withdrawal if it worsens."
+  ],
+  "playoff_result": [
+    "The yusho is decided! %WINNER% prevails over %LOSER% in the playoff.",
+    "%WINNER% claims the championship — a playoff victory over %LOSER%!",
+    "Championship secured — %WINNER% defeats %LOSER% in the decisive playoff bout."
+  ],
+  "kachi_koshi": [
+    "Kachi-koshi! %SHIKONA% secures a winning record at %WINS% wins.",
+    "%SHIKONA% clinches kachi-koshi with %WINS% victories. A successful tournament.",
+    "The winning record is confirmed — %SHIKONA% celebrates %WINS% wins."
+  ],
+  "make_koshi": [
+    "Make-koshi for %SHIKONA% — %LOSSES% losses confirm a losing tournament.",
+    "A difficult basho ends in disappointment for %SHIKONA% at %LOSSES% losses.",
+    "%SHIKONA% drops to make-koshi. The demotion talk will begin."
+  ],
+  "yusho_race": [
+    "%WINNER% stays alive in the yusho race at %WINS% wins. The crowd roars.",
+    "The championship chase tightens — %WINNER% is right in the thick of it at %WINS%.",
+    "A massive win for %WINNER% in the yusho race. %WINS% wins and counting."
+  ],
+  "birthday_kachi": [
+    "Kachi-koshi on his birthday! %SHIKONA% celebrates with a winning record.",
+    "What a birthday gift — %SHIKONA% secures kachi-koshi on his special day.",
+    "%SHIKONA% picks up kachi-koshi on his birthday. A double celebration."
+  ],
+  "birthday_milestone": [
+    "%SHIKONA% picks up his %MILESTONE%th career victory on his birthday. A double celebration.",
+    "What a birthday — %SHIKONA% notches his %MILESTONE%th career win on his special day.",
+    "A milestone and a birthday — %SHIKONA% celebrates %MILESTONE% career wins."
+  ],
+  "mono_ii": {
+    "gunbai_contested": [
+      "The goji points his gunbai to %WINNER%. Will we have a mono-ii?",
+      "The gyoji calls it for %WINNER%, but the judges are looking at each other."
+    ],
+    "gyoji_confused": [
+      "The goji got caught up in the action at the edge of the ring. The goji looks a bit confused now."
+    ],
+    "review": [
+      "The judges want to talk it over. It's another mono-ii.",
+      "The five judges convene on the dohyo. A mono-ii has been called.",
+      "A close call brings the judges to the dohyo. The crowd waits in suspense."
+    ],
+    "replay_analysis": [
+      "Let's see what happened at the edge. %LOSER% has that left foot on the tawara, but it doesn't look like he stepped out with his heel.",
+      "The replay shows the critical moment — both men right at the edge."
+    ],
+    "call_reversed": [
+      "After discussion, it was determined that %LOSER% stepped out first. So the Goji's decision is reversed. The winner is %WINNER%.",
+      "The judges reverse the call — %LOSER% touched down first. %WINNER% takes it."
+    ],
+    "call_upheld": [
+      "It was determined that %LOSER% touched down first. So the Goji's decision stands. The winner is %WINNER%.",
+      "The call is upheld — %WINNER% is confirmed as the winner."
+    ],
+    "rematch_ordered": [
+      "A rematch has been ordered.",
+      "The judges call for a rematch — back to the shikiri lines."
+    ]
+  },
+  "replay": {
+    "tachiai_decisive": [
+      "The speed of the left hand into the tachi was the winning move for %WINNER%.",
+      "Watch the tachiai again — %WINNER% got the jump and never looked back."
+    ],
+    "grip_battle": [
+      "Right hand in, left hand out. Bread and butter sumo from %WINNER%.",
+      "The grip battle was key — %WINNER% secured his favorite hold and took control."
+    ],
+    "edge_drama": [
+      "%LOSER% almost goes out, but look at his footwork. Stays inside the ring — remarkable balance.",
+      "At the tawara, %LOSER% somehow stays in. The crowd gasps at that footwork."
+    ],
+    "counter": [
+      "Good defense and then good offense from %WINNER%. A great technique sequence.",
+      "%WINNER% absorbs the pressure, then counters beautifully. That's sumo at its finest."
+    ],
+    "size_overcame": [
+      "Just overpowered. Too big, too strong — %WINNER% used every kilogram to advantage.",
+      "The size difference was telling. %WINNER% simply outmuscled %LOSER%."
+    ],
+    "reversal": [
+      "What a reversal move by %WINNER%! Look at that hip shift.",
+      "An incredible reversal — %LOSER% thought he had it, but %WINNER% turned the tables."
+    ],
+    "quick_finish": [
+      "This happened oh so quickly — blink and you missed it.",
+      "A flash finish. %WINNER% ended it before %LOSER% could react."
+    ],
+    "control": [
+      "%WINNER% was in total control from start to finish.",
+      "A masterclass from %WINNER% — never threatened, always in command."
+    ],
+    "stamina_issue": [
+      "%LOSER% looks like he's bothered with stamina issues in this replay. The energy just wasn't there.",
+      "Watch the late stages — %LOSER% fades badly. The conditioning wasn't enough today.",
+      "The replay tells the story — %LOSER% simply ran out of gas against %WINNER%."
+    ],
+    "generic": [
+      "Let's see that again — %WINNER%'s %KIMARITE% in slow motion.",
+      "The replay shows the precision of %WINNER%'s winning technique.",
+      "One more look at that spectacular finish — %KIMARITE% seals it for %WINNER%."
+    ]
+  }
+}

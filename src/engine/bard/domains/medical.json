@@ -1,0 +1,34 @@
+{
+  "injury": {
+    "sprain": [
+      "A %SEVERITY% sprain slows %SHIKONA% down.",
+      "Medical staff confirms a painful sprain to the joint.",
+      "%SHIKONA% is nursing a %SEVERITY% sprain following that encounter."
+    ],
+    "strain": [
+      "An overextension leads to a %SEVERITY% muscle strain.",
+      "%SHIKONA% favors the limb, clearly suffering a deep strain.",
+      "Persistent strain will definitely affect the next outing."
+    ],
+    "contusion": [
+      "A brutal impact results in a %SEVERITY% contusion.",
+      "Strategic concern: %SHIKONA% absorbs a heavy blow, causing deep bruising.",
+      "Blunt force trauma results in a visible contusion."
+    ],
+    "tear": [
+      "A %SEVERITY% tear requires immediate professional attention.",
+      "Institutional setback: %SHIKONA% has suffered a muscle tear.",
+      "Diagnostic review confirms a structural tear to the soft tissue."
+    ],
+    "fracture": [
+      "A clean %SEVERITY% fracture to the bone. Exceptional misfortune.",
+      "The impact has resulted in a structural fracture.",
+      "%SHIKONA% is sidelined following a confirmed bone fracture."
+    ],
+    "generic": [
+      "%SHIKONA% withdraws with an undisclosed %SEVERITY% injury.",
+      "Medical review in progress for a %SEVERITY% ailment.",
+      "Physical condition downgraded following the last bout."
+    ]
+  }
+}

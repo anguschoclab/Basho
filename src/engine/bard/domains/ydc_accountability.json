@@ -1,0 +1,32 @@
+{
+  "warning": [
+    "The chairman names %SHIKONA% specifically, referencing the need for awareness of his role as Yokozuna.",
+    "The YDC chairman states: '%SHIKONA% must be acutely aware of his position and the dignity it demands.'",
+    "Council deliberation concludes with a formal warning to %SHIKONA% — the tone is stern."
+  ],
+  "encouragement": [
+    "The chairman offers measured encouragement: 'We'd like to hope highly for %SHIKONA% next time.'",
+    "The YDC expresses cautious optimism for %SHIKONA%'s trajectory, while noting room for improvement.",
+    "'We expect to see better from %SHIKONA% — the potential remains,' the chairman states."
+  ],
+  "demand_reflection": [
+    "The chairman demands %SHIKONA% ask himself what is meant by spirit, technique, and physique.",
+    "'%SHIKONA% must reflect deeply on what it means to wear the tsuna,' the YDC declares.",
+    "A pointed statement from the council: %SHIKONA% is told to examine his commitment to the Yokozuna standard."
+  ],
+  "praise": [
+    "The chairman praises %SHIKONA%: 'That mentality and spirit is exactly what we'd hoped to see.'",
+    "The YDC commends %SHIKONA% for exemplary performance and dignified conduct throughout the tournament.",
+    "'%SHIKONA% has shown the fighting spirit befitting the rank,' the chairman affirms."
+  ],
+  "absence_criticism": [
+    "The chairman calls it 'a crying shame' that %SHIKONA% absented himself on that important final day.",
+    "The YDC notes with displeasure that %SHIKONA% withdrew on the final day — a day of great significance.",
+    "'For a Yokozuna to absent himself on senshuraku is regrettable,' the chairman states of %SHIKONA%."
+  ],
+  "private_cynicism": [
+    "Privately, the chairman confides that he feels further warnings to %SHIKONA% may be pointless.",
+    "Behind closed doors, the chairman expresses doubt that %SHIKONA% will respond to further pressure.",
+    "The chairman's private assessment of %SHIKONA% is far bleaker than his public statement suggests."
+  ]
+}

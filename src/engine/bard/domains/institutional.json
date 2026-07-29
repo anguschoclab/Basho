@@ -1,0 +1,97 @@
+{
+  "welfare": {
+    "watch_headline": [
+      "Heya Placed Under Regulatory Watch",
+      "Compliance Alert: %HEYANAME% Monitored",
+      "Welfare Review Triggered for %HEYANAME%"
+    ],
+    "investigation_headline": [
+      "Full-Scale Investigation Opened: %HEYANAME%",
+      "JSA Launches Probe Into %HEYANAME% Operations",
+      "Governance Crisis: Investigation at %HEYANAME%"
+    ],
+    "sanction_headline": [
+      "Sanctions Imposed on %HEYANAME%",
+      "Association Penalizes %HEYANAME% for Welfare Violations",
+      "Heavy Fines and Recruitment Freeze for %HEYANAME%"
+    ],
+    "cleared_headline": [
+      "Investigation Concluded: %HEYANAME% Cleared",
+      "Regulatory Pressure Lifted for %HEYANAME%",
+      "Heya Restored to Full Compliance Status"
+    ]
+  },
+  "governance": {
+    "scandal": [
+      "Scandal Rocks %HEYA%: Authorities Investigate",
+      "Controversy Erupts as %HEYA% Faces Allegations",
+      "Governance Storm: %HEYA% Under Scrutiny",
+      "Damaging Allegations Cast a Shadow Over %HEYA%",
+      "Misconduct Claims Put %HEYA% on the Defensive",
+      "Shockwaves in the Sumo World: %HEYA% Engulfed in Controversy"
+    ],
+    "status_escalation": [
+      "Crisis Deepens at %HEYA%: Regulatory Status Escalates",
+      "%HEYA% Governance Worsens — Officials Intervene",
+      "Escalation at %HEYA%: The Situation Deteriorates",
+      "Patience Wearing Thin: Association Steps Up Pressure on %HEYA%",
+      "Situation Worsens Dramatically at %HEYA%",
+      "%HEYA% Fails to Stem the Tide as Regulatory Action Intensifies"
+    ],
+    "low_roster_headline": [
+      "Roster Crisis at %HEYA%: Too Few Rikishi to Sustain Operations",
+      "%HEYA% Faces Existential Threat as Ranks Dwindle",
+      "Governance Warning: %HEYA% Cannot Maintain Minimum Roster",
+      "Empty Mats: Severe Shortage of Personnel Threatens %HEYA%",
+      "Critical Depletion: %HEYA% Struggles to Field Enough Recruits",
+      "Survival in Question as Numbers Plummet at %HEYA%"
+    ],
+    "welfare_headline": [
+      "Welfare Concerns Mount at %HEYA%",
+      "%HEYA% Under Review for Wrestler Welfare Standards",
+      "Officials Cite %HEYA% for Welfare Violations",
+      "Training Standards Questioned as Spotlight Turns to %HEYA%",
+      "Unsettling Reports from %HEYA% Draw Association Scrutiny",
+      "Wrestler Well-Being Becomes Focal Point of Crisis at %HEYA%"
+    ],
+    "sanction": [
+      "Sanctions Levied Against %HEYA% by the Association",
+      "%HEYA% Penalized: Fines and Restrictions Imposed",
+      "Disciplinary Action: %HEYA% Faces Official Sanctions"
+    ],
+    "probation": [
+      "%HEYA% Placed on Probation Pending Review",
+      "Probation Ordered for %HEYA%: Recruitment Frozen",
+      "Association Puts %HEYA% on Notice with Probation"
+    ],
+    "naturalization_headline": [
+      "New Era at %HEYA%: Foreign Rikishi Seeks Naturalization",
+      "%HEYA% Embraces Change as Wrestler Pursues Japanese Citizenship",
+      "Historic Step: %HEYA% Rikishi Applies for Naturalization"
+    ],
+    "emergency_loan": [
+      "Financial Emergency: %HEYA% Receives Association Bailout",
+      "%HEYA% Bailed Out by Emergency Loan from Headquarters",
+      "Crisis Funding: %HEYA% Kept Afloat by Emergency Assistance"
+    ]
+  },
+  "merger": {
+    "approved": [
+      "Merger Approved: %HEYA% Joins Forces with New Leadership",
+      "%HEYA% Merger Finalized — A New Chapter Begins",
+      "Association Sanctions Merger Involving %HEYA%"
+    ]
+  },
+  "kensho_sponsors": [
+    "Mitsubishi Corporation",
+    "Ito En Ltd.",
+    "Japan Tobacco Inc.",
+    "Suntory Holdings",
+    "Kikkoman Corporation",
+    "Asahi Breweries",
+    "Nippon Telegraph and Telephone",
+    "Sumitomo Bank",
+    "Toyota Motor Corporation",
+    "Nippon Life Insurance"
+  ]
+}

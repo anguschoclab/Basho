@@ -1,0 +1,97 @@
+{
+  "descriptors": {
+    "bands": {
+      "stats": {
+        "exceptional": "Exceptional",
+        "outstanding": "Outstanding",
+        "strong": "Strong",
+        "capable": "Capable",
+        "developing": "Developing",
+        "limited": "Limited",
+        "struggling": "Struggling"
+      },
+      "fatigue": {
+        "fresh": "Fresh",
+        "alert": "Alert",
+        "light": "Light",
+        "tired": "Tired",
+        "worn": "Worn",
+        "exhausted": "Exhausted",
+        "spent": "Spent"
+      },
+      "potential": {
+        "transcendent": "Transcendent",
+        "elite": "Elite",
+        "high": "High",
+        "average": "Average",
+        "low": "Low",
+        "unknown": "Unknown"
+      },
+      "age": {
+        "prodigy": "Prodigy",
+        "young": "Young",
+        "prime": "Prime",
+        "veteran": "Veteran",
+        "aging": "Aging",
+        "elder": "Elder"
+      },
+      "experience": {
+        "novice": "Novice",
+        "developing": "Developing",
+        "seasoned": "Seasoned",
+        "veteran": "Veteran",
+        "master": "Master"
+      },
+      "weight": {
+        "lean": "Lean",
+        "solid": "Solid Build",
+        "powerful": "Powerful",
+        "massive": "Massive",
+        "imposing": "Imposing"
+      },
+      "height": {
+        "short": "Short",
+        "average": "Average",
+        "tall": "Tall",
+        "giant": "Giant",
+        "towering": "Towering"
+      },
+      "reputation": {
+        "obscure": "Obscure",
+        "known": "Known",
+        "respected": "Respected",
+        "renowned": "Renowned",
+        "legendary": "Legendary"
+      },
+      "injury": {
+        "minimal": "Minimal",
+        "mild": "Mild",
+        "moderate": "Moderate",
+        "severe": "Severe",
+        "critical": "Critical"
+      },
+      "winrate": {
+        "dismal": "Dismal",
+        "poor": "Poor",
+        "mediocre": "Mediocre",
+        "decent": "Decent",
+        "strong": "Strong",
+        "dominant": "Dominant"
+      },
+      "rivalry": {
+        "dormant": "Dormant",
+        "simmering": "Simmering",
+        "heated": "Heated",
+        "fierce": "Fierce",
+        "legendary": "Legendary"
+      },
+      "scandal": {
+        "none": "Clean Record",
+        "whispers": "Whispers",
+        "notable": "Under Review",
+        "severe": "On Probation",
+        "critical": "Critical Scrutiny"
+      }
+    }
+  }
+}

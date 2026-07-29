@@ -1,0 +1,27 @@
+{
+  "ceremony_intro": [
+    "The sansho ceremony begins — the judges announce the special prize recipients.",
+    "It's time for the special prize ceremony at the conclusion of the tournament.",
+    "The three special prizes are about to be awarded."
+  ],
+  "shukunsho": [
+    "The Shukun-sho goes to %SHIKONA% — Outstanding Performance Prize for a remarkable tournament.",
+    "%SHIKONA% receives the Shukun-sho — the Outstanding Performance Prize is well deserved.",
+    "Outstanding Performance Prize: %SHIKONA% earns the Shukun-sho for his exceptional basho."
+  ],
+  "kantosho": [
+    "The Kanto-sho is awarded to %SHIKONA% — Fighting Spirit Prize for his relentless effort.",
+    "%SHIKONA% earns the Kanto-sho — the Fighting Spirit Prize recognizes his warrior's heart.",
+    "Fighting Spirit Prize: %SHIKONA% receives the Kanto-sho for his tenacious tournament."
+  ],
+  "ginosho": [
+    "The Gino-sho goes to %SHIKONA% — Technique Prize for his masterful sumo.",
+    "%SHIKONA% is awarded the Gino-sho — the Technique Prize celebrates his skill and craft.",
+    "Technique Prize: %SHIKONA% earns the Gino-sho for his brilliant technical display."
+  ],
+  "multiple_prizes": [
+    "%SHIKONA% sweeps the sansho — %COUNT% special prizes in a single tournament!",
+    "An extraordinary haul for %SHIKONA% — %COUNT% special prizes awarded today.",
+    "%SHIKONA% makes history with %COUNT% sansho prizes in one basho."
+  ]
+}

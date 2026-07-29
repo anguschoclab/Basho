@@ -1,0 +1,44 @@
+{
+  "confidence": {
+    "unknown": [
+      "Unknown",
+      "Undiscovered",
+      "No data"
+    ],
+    "low": [
+      "Limited observation",
+      "Rough estimate",
+      "Preliminary data"
+    ],
+    "medium": [
+      "Moderately scouted",
+      "Fair observation",
+      "Grounded estimate"
+    ],
+    "high": [
+      "Well-observed",
+      "In-depth scouting",
+      "Robust data"
+    ],
+    "certain": [
+      "Certain",
+      "Verified",
+      "Fact-checked"
+    ]
+  },
+  "qualifiers": {
+    "appears": [
+      "appears",
+      "seems to be",
+      "looks like"
+    ],
+    "may_be": [
+      "may be",
+      "could be",
+      "possibly"
+    ],
+    "unknown_narrative": [
+      "Insufficient observation to determine {{attr}}."
+    ]
+  }
+}

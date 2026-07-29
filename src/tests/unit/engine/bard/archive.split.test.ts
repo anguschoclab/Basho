@@ -2,9 +2,16 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { SeededRNG } from "@/engine/rng";
 import registryData from "@/engine/bard/registry.json";
-import domainsData from "@/engine/bard/domains.json";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+const ALL_DOMAINS = [
+  "combat", "medical", "scouting", "institutional", "world", "media",
+  "system", "events", "rikishi", "npc", "ui", "h2h", "training",
+  "oyakata", "strategy", "dynasty", "pre_bout", "post_bout", "kyujo",
+  "sansho_ceremony", "interview", "ydc_accountability",
+  "post_basho_press", "playoff",
+];
 
 describe("Phase 2: Split archive.json into registry.json + domains.json", () => {
   beforeEach(() => {
@@ -28,18 +35,11 @@ describe("Phase 2: Split archive.json into registry.json + domains.json", () => 
     expect(reg.ranks.yokozuna.label).toBe("Yokozuna");
   });
 
-  // ── domains.json is valid and complete ─────────────────────────────────
-  it("domains.json has all 24 domain keys", () => {
-    const dom = domainsData as any;
-    const expectedDomains = [
-      "combat", "medical", "scouting", "institutional", "world", "media",
-      "system", "events", "rikishi", "npc", "ui", "h2h", "training",
-      "oyakata", "strategy", "dynasty", "pre_bout", "post_bout", "kyujo",
-      "sansho_ceremony", "interview", "ydc_accountability",
-      "post_basho_press", "playoff",
-    ];
-    for (const domain of expectedDomains) {
-      expect(dom[domain], `domain "${domain}" should exist in domains.json`).toBeDefined();
+  // ── domains are valid and complete ─────────────────────────────────────
+  it("all 24 domain keys are loadable via ensureDomains", async () => {
+    await BardEngine.ensureDomains(ALL_DOMAINS);
+    for (const domain of ALL_DOMAINS) {
+      expect(BardEngine.isDomainLoaded(domain), `domain "${domain}" should be loaded`).toBe(true);
     }
   });
 

@@ -1,0 +1,65 @@
+{
+  "digest": {
+    "status": {
+      "injured": "%INJURY_COUNT% injury update this week.",
+      "no_events": "No major events recorded this week.",
+      "basho_day": "Basho Day %DAY%: %DETAIL%",
+      "healthy": "Healthy"
+    },
+    "promotion": {
+      "ozeki_run": {
+        "imminent": "Has reached the traditional 33-win threshold. An Ozeki promotion is imminent.",
+        "brink": "On the brink. A few more wins will secure the rank.",
+        "building": "Building a solid case, but needs a spectacular finish."
+      },
+      "yokozuna_run": {
+        "standard": "Requires two consecutive yusho for promotion.",
+        "unanimous": "Unanimous Yokozuna Deliberation Council recommendation expected.",
+        "borderline": "Borderline case. The Council will scrutinize the quality of sumo.",
+        "partial": "Secured one Yusho. Must win the current basho to complete the run."
+      }
+    },
+    "kadoban": {
+      "fighting": "Fighting for survival as Kadoban Ozeki.",
+      "demoted": "Failed to clear Kadoban. Demotion to Sekiwake confirmed.",
+      "cleared": "Cleared Kadoban. Retains Ozeki rank.",
+      "danger": "In danger of falling to Kadoban status with another losing record."
+    },
+    "sections": {
+      "injuries": "Injuries",
+      "economy": "Economy & Finance",
+      "matchups": "Key Matchups",
+      "governance": "Governance & Compliance",
+      "milestones": "Milestones & Awards",
+      "media": "Media & Headlines"
+    }
+  },
+  "labels": {
+    "kimarite": {
+      "rookie": "Unknown (Rookie)",
+      "display_format": "%NAME% (%PCT%%)"
+    },
+    "injury": {
+      "severity": {
+        "minor": "Minor",
+        "moderate": "Moderate",
+        "severe": "Severe"
+      },
+      "summary_format": "%SEV%%LOC% (%WEEKS%w)"
+    },
+    "scouting": {
+      "reasons": {
+        "foreigner_limit": "Heya already at foreigner limit (1).",
+        "unavailable": "Candidate is no longer accepting offers.",
+        "not_found": "Candidate not found"
+      }
+    },
+    "stats": {
+      "power": "Power",
+      "speed": "Speed",
+      "technique": "Technique",
+      "spirit": "Spirit",
+      "ring_sense": "Ring Sense"
+    }
+  }
+}
