@@ -7,7 +7,11 @@ import { warn } from "@/engine/utils/Logger";
 
 export function getNarrationLines(result: BoutResult, east: UIRikishi, west: UIRikishi): string[] {
   if (result.pbpLines && result.pbpLines.length > 0) {
-    return result.pbpLines.map((l) => l.text).filter((t) => t && t.length > 2);
+    const lines: string[] = [];
+    for (const l of result.pbpLines) {
+      if (l.text && l.text.length > 2) lines.push(l.text);
+    }
+    return lines;
   }
 
   if (import.meta.env.DEV) {
