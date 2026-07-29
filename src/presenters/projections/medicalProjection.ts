@@ -83,7 +83,7 @@ export function projectMedicalUIDigest(world: WorldState) {
     healthBand: string;
     momentum: "rising" | "stable" | "declining";
   }> = roster.map((r) => {
-    const condition = (r as unknown as { condition?: number }).condition ?? 100;
+    const condition = r.condition ?? 100;
     const band =
       condition >= 90
         ? "peak"
@@ -132,11 +132,8 @@ export function projectMedicalUIDigest(world: WorldState) {
           id: r.id,
           shikona: r.shikona,
           severity:
-            typeof (injuryStatus as unknown as Record<string, unknown>)?.severity === "string"
-              ? ((injuryStatus as unknown as Record<string, unknown>).severity as string)
-              : "unknown",
-          location:
-            ((injuryStatus as unknown as Record<string, unknown>)?.location as string) || "unknown",
+            typeof injuryStatus?.severity === "string" ? injuryStatus.severity : "unknown",
+          location: injuryStatus?.location ?? "unknown",
           weeksRemaining,
           weeksTotal,
           recoveryProgress: Math.min(100, Math.max(0, recoveryProgress)),

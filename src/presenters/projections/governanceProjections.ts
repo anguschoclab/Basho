@@ -149,10 +149,9 @@ export function projectGovernancePage(world: WorldState, heyaId: string): Govern
   const heya = world.heyas.get(heyaId);
   if (!heya) return null;
 
-  const h = heya as unknown as Record<string, unknown>;
-  const scandalScore = (h.scandalScore as number) ?? 0;
-  const status = (h.governanceStatus as string) ?? "good_standing";
-  const politicalCapital = (h.politicalCapital as number) ?? 0;
+  const scandalScore = heya.scandalScore ?? 0;
+  const status = heya.governanceStatus ?? "good_standing";
+  const politicalCapital = heya.politicalCapital ?? 0;
 
   const welfareWarnings = selectHeyasWithCriticalWelfare(world).map((w) => ({
     heyaId: w.id,
