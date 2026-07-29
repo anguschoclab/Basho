@@ -84,22 +84,31 @@ describe("PreBashoAssessment", () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it("renders health score badge when assessment exists", () => {
+  it("renders health score badge when assessment has rikishi assessments", () => {
+    const assessments = new Map();
+    assessments.set("r1", {
+      injuryRisk: "low",
+      withdrawalRecommended: false,
+      recommendedFocus: "normal",
+      healthScore: 80,
+    });
     mockState({
       cyclePhase: "pre_basho",
       _preBashoAssessment: {
         withdrawalsThisAssessment: 0,
         overallHealthScore: 75,
-        rikishiAssessments: new Map(),
+        rikishiAssessments: assessments,
       },
       _interimDaysRemaining: 3,
-      rikishi: new Map(),
+      rikishi: new Map([
+        ["r1", { id: "r1", shikona: "TestRikishi" }],
+      ]),
     });
     renderWithProvider(<PreBashoAssessment />);
     expect(screen.getByText("75%")).toBeTruthy();
   });
 
-  it("renders days remaining in description", () => {
+  it("renders days remaining in header content", () => {
     mockState({
       cyclePhase: "pre_basho",
       _preBashoAssessment: {
@@ -111,6 +120,6 @@ describe("PreBashoAssessment", () => {
       rikishi: new Map(),
     });
     renderWithProvider(<PreBashoAssessment />);
-    expect(screen.getByText(/7 days remaining/)).toBeTruthy();
+    expect(screen.getByText(/7 days left/)).toBeTruthy();
   });
 });
