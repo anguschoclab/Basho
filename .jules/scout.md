@@ -57,3 +57,8 @@
 **Gap:** The EventBus.governanceRuling factory was completely untested.
 **Learning:** Testing EventBus factories requires asserting that a correct event entry is recorded using queryEvents, mocking Heya entities if they are required to build context.
 **Pattern:** For EventBus factories requiring complex context (like Heya names), create the Heya in the mock world state before calling the factory.
+## 2025-02-27 - Tick pipeline phase tests
+
+**Gap:** Several `phase*` weekly and pre-basho tick modules were completely untested, relying solely on integration tests to catch if they failed.
+**Learning:** Phase modules usually delegate heavily to service modules. Their role is mostly orchestrating dependencies and routing state impacts. However, even orchestration code can break if it misinterprets constraints (like skipping if `cyclePhase !== 'pre_basho'`).
+**Pattern:** Provide unit tests for tick phase modules by mocking their underlying service calls with `vi.mock()` and verifying that the orchestrator calls them correctly, handles its early-exit conditionals (like `cyclePhase`), and translates service outputs into the expected `StateImpact`.
