@@ -12,10 +12,23 @@ import type { Rank } from "./types/banzuke";
 import { generateShikona } from "./shikona";
 import type { WorldState } from "./types/world";
 import type { InjurySeverity } from "./systems/health/BodyDefinitions";
-import { buildCombatProfile, deriveWeakAgainstStyles, rollArchetype } from "./archetype";
+import { buildCombatProfile, deriveWeakAgainstStyles, rollArchetypeWithBias } from "./archetype";
 import { rollAgeForRank } from "./systems/generation/CandidateStats";
 import { isCollegeRecruit } from "./utils/identity";
 import { applyPersonaAssignment } from "./systems/generation/PersonaAssignment";
+
+// Body type physics behavior modifiers (5.1)
+const BODY_TYPE_BEHAVIORS: Record<string, {
+  pushVelocityBonus: number;
+  lateralMovementBonus: number;
+  beltTorqueBonus: number;
+  tachiaiSpeedBonus: number;
+}> = {
+  tower: { pushVelocityBonus: 4, lateralMovementBonus: -2, beltTorqueBonus: -1, tachiaiSpeedBonus: 2 },
+  barrel: { pushVelocityBonus: 1, lateralMovementBonus: -3, beltTorqueBonus: 5, tachiaiSpeedBonus: -1 },
+  compact: { pushVelocityBonus: -1, lateralMovementBonus: 4, beltTorqueBonus: 2, tachiaiSpeedBonus: 4 },
+  lanky: { pushVelocityBonus: 2, lateralMovementBonus: 3, beltTorqueBonus: -2, tachiaiSpeedBonus: 3 },
+};
 
 // --- RETIREMENT LOGIC ---
 
@@ -199,7 +212,8 @@ const ORIGINS = [
 export function _generateRookie(
   world: WorldState,
   currentYear: number,
-  targetRank: Rank = "jonokuchi"
+  targetRank: Rank = "jonokuchi",
+  heyaId?: string
 ): Rikishi {
   const count = world.rikishi.size;
   const tmpRng = rngFromSeed(world.seed, "lifecycle", `rookie_${currentYear}_${count}`);
@@ -207,7 +221,10 @@ export function _generateRookie(
   const rng = rngFromSeed(world.seed, "lifecycle", `rookie::${rookieId}`);
 
   const origin = ORIGINS[rng.int(0, ORIGINS.length - 1)];
-  const archetype = rollArchetype(rng);
+
+  // Heya style influence (5.3): bias archetype based on heya training philosophy
+  const heya = heyaId ? world.heyas.get(heyaId) : undefined;
+  const archetype = rollArchetypeWithBias(rng, heya?.trainingPhilosophy);
 
   const isElite = origin.isElite || false;
   const age = rollAgeForRank(rng, isElite ? "makushita" : targetRank);
@@ -251,6 +268,24 @@ export function _generateRookie(
     legacyShikona,
   });
 
+  const rookieHeight = 175 + rng.next() * 20;
+  const rookieWeight = stats.weight;
+  // Body type diversity (5.1): derive from height/weight ratio
+  const bmi = rookieWeight / Math.pow(rookieHeight / 100, 2);
+  const bodyType: "tower" | "barrel" | "compact" | "lanky" =
+    rookieHeight >= 185 && bmi < 30
+      ? "tower"
+      : rookieHeight < 180 && bmi >= 32
+        ? "barrel"
+        : rookieHeight < 180 && bmi < 28
+          ? "compact"
+          : rookieHeight >= 185 && bmi >= 30
+            ? "barrel"
+            : "lanky";
+
+  // Origin & backstory enrichment (5.2)
+  const backstory = generateBackstory(origin.name, archetype, bodyType, rng);
+
   const rookie: Rikishi = {
     id: rookieId,
     name: shikona,
@@ -270,8 +305,10 @@ export function _generateRookie(
     stats: stats,
     fatigue: 0,
 
-    height: 175 + rng.next() * 20,
-    weight: stats.weight,
+    height: rookieHeight,
+    weight: rookieWeight,
+    bodyType,
+    backstory,
 
     momentum: 50,
 
@@ -283,7 +320,10 @@ export function _generateRookie(
 
     // Style
     style: archetype === "oshi" ? "oshi" : archetype === "yotsu" ? "yotsu" : "hybrid",
-    combatProfile: buildCombatProfile(archetype),
+    combatProfile: {
+      ...buildCombatProfile(archetype),
+      bodyTypeBehavior: BODY_TYPE_BEHAVIORS[bodyType] ?? BODY_TYPE_BEHAVIORS.lanky,
+    },
 
     careerWins: 0,
     careerLosses: 0,
@@ -341,4 +381,40 @@ export function _generateRookie(
   applyPersonaAssignment(rookie, archetype, rng);
 
   return rookie;
+}
+
+/**
+ * Generates a backstory string for a rookie rikishi based on origin, archetype, and body type (5.2).
+ */
+function generateBackstory(
+  origin: string,
+  archetype: string,
+  bodyType: string,
+  rng: ReturnType<typeof rngFromSeed>
+): string {
+  const archetypeLabels: Record<string, string> = {
+    oshi: "a relentless pusher",
+    yotsu: "a belt specialist",
+    trickster: "a crafty trickster",
+    speedster: "a lightning-fast mover",
+    hybrid: "a versatile all-rounder",
+    giant: "an imposing giant",
+    tsuppari: "a fierce tsuppari attacker",
+    defensive: "a patient counter-wrestler",
+  };
+  const bodyLabels: Record<string, string> = {
+    tower: "tall and imposing",
+    barrel: "stocky and powerful",
+    compact: "compact and agile",
+    lanky: "lean and wiry",
+  };
+  const archLabel = archetypeLabels[archetype] ?? "a determined wrestler";
+  const bodyLabel = bodyLabels[bodyType] ?? "uniquely built";
+  const templates = [
+    `Hailing from ${origin}, this ${bodyLabel} rikishi is known as ${archLabel}.`,
+    `A ${bodyLabel} competitor from ${origin}, trained to become ${archLabel}.`,
+    `From ${origin} comes a ${bodyLabel} hopeful, fighting as ${archLabel}.`,
+    `Born in ${origin}, this ${bodyLabel} wrestler developed into ${archLabel} through years of dedication.`,
+  ];
+  return templates[Math.floor(rng.next() * templates.length)];
 }

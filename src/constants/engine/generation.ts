@@ -273,6 +273,9 @@ export const HOF_CAREER_WINS_THRESHOLD = 500;
 /** Career win milestones */
 export const CAREER_WIN_MILESTONES = [100, 200, 300, 500];
 
+/** Career bout count milestones (total appearances: wins + losses) */
+export const CAREER_BOUT_MILESTONES = [500, 700, 1000, 1200];
+
 // ─────────────────────────────────────────
 // History/shikona constants
 // ─────────────────────────────────────────
@@ -560,6 +563,9 @@ export const FIRST_WIN_MENTION_MIN_DAY = 4;
 
 /** Minimum wins for leaderboard to be mentioned (meaningful data) */
 export const LEADERBOARD_MIN_LEADER_WINS = 4;
+
+/** Momentum score threshold above which a momentum narrative line is generated */
+export const MOMENTUM_NARRATIVE_THRESHOLD = 15;
 
 /** Total days in a basho */
 export const BASHO_DAYS = 15;

@@ -191,7 +191,10 @@ export function buildMediaDigest(world: WorldState): {
   }
   const hotHeya = hotHeyaRaw.sort((a, b) => b.pressure - a.pressure).slice(0, 5);
 
-  const weeklyGazette = topHeadlines.map((h) => h.title).filter(Boolean);
+  const weeklyGazette: string[] = [];
+  for (const h of topHeadlines) {
+    if (h.title) weeklyGazette.push(h.title);
+  }
 
   return { topHeadlines, hotRikishi, hotHeya, weeklyGazette };
 }

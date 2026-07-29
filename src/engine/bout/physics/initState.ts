@@ -11,6 +11,9 @@ export function initEngineStateV2(bout: BoutContext, east: Rikishi, west: Rikish
     east: initPhysicalBody(east, "east"),
     west: initPhysicalBody(west, "west"),
     tachiaiWinner: "east", // placeholder; set in resolveTachiaiV2
+    momentumScore: 0,
+    prevDominantSide: null,
+    inBoutInjury: null,
     grappleState: {
       east: { rightHand: "outside", leftHand: "outside", depth: "standard" },
       west: { rightHand: "outside", leftHand: "outside", depth: "standard" },

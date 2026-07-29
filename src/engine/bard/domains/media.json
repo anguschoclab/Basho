@@ -1,0 +1,149 @@
+{
+  "bout": {
+    "upset": [
+      "%WINNER% Stuns %LOSER%",
+      "%WINNER% Shocks the Arena Against %LOSER%",
+      "%LOSER% Falls — %WINNER% Seizes the Moment",
+      "Massive Upset! %WINNER% Topples %LOSER%",
+      "Unbelievable Scene: %WINNER% Defeats %LOSER%",
+      "%LOSER% Caught Off Guard by a Resilient %WINNER%",
+      "A Stunner in Tokyo! %WINNER% Beats %LOSER%",
+      "David Defeats Goliath: %WINNER% Outlasts %LOSER%",
+      "The Unthinkable Happens! %WINNER% Takes Down %LOSER%",
+      "A Giant Falls: %WINNER% Secures the Ultimate Upset Against %LOSER%",
+      "Nobody Predicted This! %WINNER% Topples %LOSER%",
+      "The Biggest Shock of the Basho! %WINNER% Defeats %LOSER%",
+      "Chaos in the Rankings! %LOSER% Upset by %WINNER%",
+      "%WINNER% Silences the Critics with a Stunning Victory Over %LOSER%",
+      "%WINNER% Defies the Odds, Stunning %LOSER%!",
+      "A Tactical Masterclass: %WINNER% Dismantles %LOSER%"
+    ],
+    "standard": [
+      "%WINNER% Defeats %LOSER% by %KIMARITE%",
+      "%WINNER% Overcomes %LOSER%",
+      "%WINNER% Turns Back %LOSER%",
+      "%WINNER% Proves Too Strong for %LOSER%",
+      "Textbook Sumo: %WINNER% Dispatches %LOSER%",
+      "%WINNER% Shows Superior Form Against %LOSER%",
+      "%WINNER% Takes the Win with a Solid %KIMARITE%",
+      "A Dominant Display as %WINNER% Beats %LOSER%",
+      "%LOSER% Falls Short Against a Ready %WINNER%",
+      "The Execution is Flawless — %WINNER% Dispatches %LOSER%",
+      "A Masterclass by %WINNER% Against %LOSER%",
+      "%WINNER% Comfortably Beats %LOSER% with %KIMARITE%",
+      "No Surprises Here: %WINNER% Handles %LOSER%",
+      "%WINNER% Stays Focused and Defeats %LOSER%",
+      "A Solid Performance Earns %WINNER% the Victory Over %LOSER%",
+      "Business as Usual: %WINNER% Cruises Past %LOSER%",
+      "%WINNER% Shows Championship Form in Win Over %LOSER%",
+      "A Methodical Takedown by %WINNER% Against %LOSER%",
+      "%WINNER% Secures a Hard-Fought Win Against %LOSER%",
+      "No Mistakes Made: %WINNER% Bests %LOSER%"
+    ],
+    "mainEvent": [
+      "%WINNER% Delivers in the Spotlight",
+      "The Main Event Goes to %WINNER%",
+      "%WINNER% Closes Out the Day with a Bang",
+      "%WINNER% Proves They Belong in the Main Event",
+      "A Spectacular Finale: %WINNER% Prevails",
+      "%WINNER% Shines Brightest on the Grand Stage",
+      "The Pressure Fails to Crack %WINNER% in the Main Event"
+    ],
+    "subtitles": {
+      "upset": [
+        "A momentum swing that changes the conversation.",
+        "The crowd roars as the script flips.",
+        "A result that won't be forgotten soon.",
+        "The Kokugikan roof nearly blew off after that finish.",
+        "Is this a fluke, or the beginning of a true crisis?"
+      ],
+      "mainEvent": [
+        "A crisp finish that keeps the pressure on.",
+        "No hesitation — just execution.",
+        "The race tightens with every day."
+      ]
+    }
+  },
+  "streaks": {
+    "legendary": [
+      "%SHIKONA% Is Unstoppable — %STREAK% Straight Wins",
+      "%STREAK%-0: %SHIKONA% Rewrites the Narrative"
+    ],
+    "hot": [
+      "%SHIKONA% Surges to %STREAK% Consecutive Victories",
+      "%STREAK% and Counting for %SHIKONA%"
+    ],
+    "notable": [
+      "%SHIKONA% Extends Win Streak to %STREAK%",
+      "Hot Streak: %SHIKONA% Now %STREAK%-0",
+      "%STREAK% Wins! %SHIKONA% Keeps Rolling"
+    ],
+    "subtitles": {
+      "legendary": [
+        "The history books are being rewritten in real-time.",
+        "Is there anyone left who can stand against this momentum?",
+        "The dominance is becoming the only story in the hall."
+      ],
+      "hot": [
+        "Confidence is a physical presence in the ring now.",
+        "The win streak is starting to draw national attention.",
+        "Execution has been flawless for days."
+      ],
+      "notable": [
+        "A solid run that puts the rest of the division on notice.",
+        "Consistency is building into a serious threat.",
+        "The momentum is clearly shifting in one direction."
+      ]
+    }
+  },
+  "preBasho": {
+    "rivalryWatch": [
+      "Tension Mounts: %SHIKONA1% vs %SHIKONA2% Grudge Still Smoldering",
+      "Rivalry Watch: Bad Blood Between %SHIKONA1% and %SHIKONA2% Highlighting Opening Day",
+      "Can %SHIKONA1% Finally Silence %SHIKONA2%? The Grudge Deepens"
+    ],
+    "promotionRace": [
+      "%SHIKONA% on the Brink: Ozeki Promotion Race Heating Up",
+      "The Path to Ozeki: Can %SHIKONA% Secure the Wins Needed?",
+      "Pressure Rising for %SHIKONA% in Quest for Higher Rank"
+    ],
+    "formWatch": [
+      "Dark Horse Alert: %SHIKONA% Enters Tournament in Peak Condition",
+      "Form Watch: %SHIKONA% Dominating Keiko Sessions Ahead of Tourney",
+      "Keep an Eye on %SHIKONA%: Scouts Report Unusual Agility"
+    ],
+    "titleFavorites": [
+      "Favorites List: %SHIKONA% Picked to Lift the Emperor's Cup",
+      "Is This %SHIKONA%'s Year? Odds Favor the Veteran",
+      "Title Hunt: %SHIKONA% Leads the Pack in Pre-Basho Predictions"
+    ],
+    "subtitles": {
+      "rivalryWatch": [
+        "The keiko-ba whispers suggest this match will be more than just sumo.",
+        "Historical statistics favor a defensive battle."
+      ],
+      "promotionRace": [
+        "The Association's eyes are firmly fixed on this performance.",
+        "A single misstep could end the dream for another two months."
+      ]
+    }
+  },
+  "spotlight": {
+    "weekly_feature_title": [
+      "Media Spotlight: %SHIKONA%",
+      "Weekly Feature: %SHIKONA% in the News",
+      "Press Tour: %SHIKONA% Meets the Media",
+      "Headlines at %HEYA%: %SHIKONA% Takes the Spotlight",
+      "Behind the Scenes with %SHIKONA%",
+      "The Buzz Around %SHIKONA%"
+    ],
+    "weekly_feature_summary": [
+      "The press turns its attention to %SHIKONA% as the story of the week.",
+      "%SHIKONA% is the subject of this week's media feature at %HEYA%.",
+      "Reporters crowd the keiko-ba at %HEYA% seeking interviews with %SHIKONA%.",
+      "A popular sports magazine runs an exclusive cover story on %SHIKONA%.",
+      "Media obligations pile up for %SHIKONA% following a surge in public interest.",
+      "Cameras follow %SHIKONA%'s every move as media scrutiny intensifies at %HEYA%."
+    ]
+  }
+}

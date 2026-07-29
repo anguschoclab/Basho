@@ -10,6 +10,9 @@ import type { Id } from "../types/common";
 import { getRikishi } from "../queries";
 import { NON_SEKITORI_BASHO_ALLOWANCE } from "../../constants/engine/economic";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
+import { BardEngine } from "../bard/BardEngine";
+import { rngFromSeed } from "../rng";
+import type { PbpLine } from "../bout/boutNarrative";
 
 /**
  * Distributes special prizes (Sansho) and tournament bonuses at the end of a basho.
@@ -35,11 +38,46 @@ export function distributePrizes(
     ginoSho: "Gino",
   } as const;
 
+  const sanshoNarrativeLines: PbpLine[] = [];
+  const sanshoRng = rngFromSeed(`sansho-${basho.bashoName}-${world.year}`, "sansho", "ceremony");
+
+  // Ceremony intro line
+  const introRes = BardEngine.resolve(sanshoRng, "sansho_ceremony.ceremony_intro", {});
+  if (introRes.text && !introRes.text.includes("[MISSING:")) {
+    sanshoNarrativeLines.push({
+      text: introRes.text,
+      id: `sansho-intro-${basho.bashoName}-${world.year}`,
+      phase: "ceremony",
+    });
+  }
+
+  // Track multiple prizes per rikishi
+  const prizeCounts: Record<string, number> = {};
+
   for (const [key, type] of Object.entries(awardTypes)) {
     const rikishiId = (prizes as Record<string, string | undefined>)[key];
     if (rikishiId) {
       const r = getRikishi(world, rikishiId);
       if (r) {
+        // Generate sansho ceremony narrative (Gap 4)
+        const sanshoPath =
+          type === "Shukun" ? "sansho_ceremony.shukunsho"
+          : type === "Kanto" ? "sansho_ceremony.kantosho"
+          : "sansho_ceremony.ginosho";
+        const sanshoRes = BardEngine.resolve(sanshoRng, sanshoPath, {
+          SHIKONA: r.shikona,
+          PRIZE_NAME: type === "Shukun" ? "Shukun-sho" : type === "Kanto" ? "Kanto-sho" : "Gino-sho",
+          rikishiId: r.id,
+        });
+        if (sanshoRes.text && !sanshoRes.text.includes("[MISSING:")) {
+          sanshoNarrativeLines.push({
+            text: sanshoRes.text,
+            id: `sansho-${type}-${rikishiId}-${basho.bashoName}-${world.year}`,
+            phase: "ceremony",
+          });
+        }
+        prizeCounts[rikishiId] = (prizeCounts[rikishiId] ?? 0) + 1;
+
         const currentAchievements = r.stats?.achievements || {
           kinboshiEarned: 0,
           ginboshiEarned: 0,
@@ -87,6 +125,7 @@ export function distributePrizes(
             money: SANSHO_PRIZE_AMOUNT,
             status: "special_prize",
             regimen: type as string,
+            narrative: sanshoNarrativeLines.filter((l) => l.id.includes(`sansho-${type}-${rikishiId}`)),
           },
           { rikishiId: r.id, heyaId: r.heyaId }
         );
@@ -116,6 +155,37 @@ export function distributePrizes(
         });
       }
     }
+  }
+
+  // Multiple prizes narrative
+  for (const [rid, count] of Object.entries(prizeCounts)) {
+    if (count >= 2) {
+      const r = getRikishi(world, rid);
+      if (r) {
+        const multiRes = BardEngine.resolve(sanshoRng, "sansho_ceremony.multiple_prizes", {
+          SHIKONA: r.shikona,
+          COUNT: count.toString(),
+          rikishiId: r.id,
+        });
+        if (multiRes.text && !multiRes.text.includes("[MISSING:")) {
+          sanshoNarrativeLines.push({
+            text: multiRes.text,
+            id: `sansho-multi-${rid}-${basho.bashoName}-${world.year}`,
+            phase: "ceremony",
+          });
+        }
+      }
+    }
+  }
+
+  // Log ceremony intro narrative as a separate event
+  if (sanshoNarrativeLines.length > 0) {
+    builder.logEvent(
+      "LIFECYCLE_EVENT",
+      "narrative",
+      { status: "sansho_ceremony", narrative: sanshoNarrativeLines },
+      {}
+    );
   }
 
   return { prizes, impact: builder.build() };

@@ -16,6 +16,7 @@ import { getHeyaRoster, getActiveRikishi, getRikishi } from "../../queries";
 import { PRESTIGE_ORDER, bandIndex } from "../../prestige/prestigeSystem";
 import { findMergerTarget, executeMerger } from "../../mergers";
 import { checkRetirement } from "../../lifecycle";
+import { generateRetirementNarrative } from "../../lifecycle/retirementNarrative";
 import { onRikishiRetired } from "../../records";
 import { LegacyService } from "../legacy/LegacyService";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
@@ -362,6 +363,19 @@ export function runRetirements(world: WorldState): StateImpact {
     const id = r.id;
     const reason = checkRetirement(r, world.year, world.seed);
     if (reason) {
+      const careerWins = r.careerWins ?? 0;
+      const careerLosses = r.careerLosses ?? 0;
+      const yearsActive = world.year - r.birthYear - 15;
+      const highestRank = r.rank;
+      const yushoCount = (r.careerHistory ?? []).filter(
+        (h) => h.isYusho
+      ).length;
+      const kinboshiCount = r.economics?.kinboshiCount ?? 0;
+      const retirementNarrative = generateRetirementNarrative(
+        r,
+        world,
+        `retirement-${id}-${world.year}`
+      );
       builder.logEvent(
         "LIFECYCLE_EVENT",
         "career",
@@ -371,8 +385,17 @@ export function runRetirements(world: WorldState): StateImpact {
           shikona: r.shikona ?? r.name ?? id,
           status: "retirement",
           reason,
+          careerWins,
+          careerLosses,
+          highestRank,
+          yushoCount,
+          kinboshiCount,
+          yearsActive,
+          careerPhase: r.declinePhase ?? "twilight",
+          origin: r.origin ?? "Japan",
+          retirementNarrative,
         },
-        { heyaId: r.heyaId, rikishiId: id }
+        { heyaId: r.heyaId, rikishiId: id, importance: "headline" }
       );
       vacanciesByHeyaId[r.heyaId] = (vacanciesByHeyaId[r.heyaId] || 0) + 1;
       rikishiToRetire.push(id);

@@ -10,6 +10,11 @@ import { BardEngine } from "../../bard/BardEngine";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { getHeya } from "../../queries";
+import {
+  SCANDAL_SCORE_HIGH_THRESHOLD,
+  SCANDAL_SCORE_MEDIUM_THRESHOLD,
+  SCANDAL_SCORE_LOW_THRESHOLD,
+} from "../../../constants/engine/governanceExtended";
 
 /**
  * Reports a scandal and applies immediate score impacts and headlines.
@@ -91,11 +96,11 @@ export function tickWeekGovernance(world: WorldState): StateImpact {
     // Sync governanceStatus from scandalScore thresholds
     const score = newScandalScore;
     const newStatus: GovernanceStatus =
-      score >= 60
+      score >= SCANDAL_SCORE_HIGH_THRESHOLD
         ? "sanctioned"
-        : score >= 30
+        : score >= SCANDAL_SCORE_MEDIUM_THRESHOLD
           ? "probation"
-          : score >= 15
+          : score >= SCANDAL_SCORE_LOW_THRESHOLD
             ? "warning"
             : "good_standing";
 

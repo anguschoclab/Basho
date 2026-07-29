@@ -22,10 +22,10 @@ export type EngineCommand =
   | { type: "RENEW_SPONSOR"; relationshipId: string; sponsorId: string }
   | { type: "REQUEST_BAILOUT"; heyaId: string }
   | { type: "PREPAY_LOAN"; heyaId: string; loanId: string }
-  | { type: "HIRE_STAFF"; heyaId: string; role: any }
+  | { type: "HIRE_STAFF"; heyaId: string; role: import("../types/staff").StaffRole }
   | { type: "FIRE_STAFF"; heyaId: string; staffId: string }
   | { type: "TRIGGER_SUCCESSION"; heyaId: string; successorId: string }
-  | { type: "SET_TRAINING_STATE"; heyaId: string; trainingState: any }
+  | { type: "SET_TRAINING_STATE"; heyaId: string; trainingState: import("../types/training").HeyaTrainingState }
   | { type: "REQUEST_POLITICAL_FAVOR"; heyaId: string; favorId: string }
   | { type: "HANDLE_MEDIA_EVENT"; eventId: string; choice: string }
   | { type: "ISSUE_RULING"; rulingId: string; severity: "lenient" | "standard" | "harsh" }

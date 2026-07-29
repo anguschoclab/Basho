@@ -82,6 +82,13 @@ export function resolveBanzukeTie(
     if (sosa !== sosb) return sosa - sosb;
   }
 
+  // Level 3.5: Performance Quality (4.3) — yusho, jun-yusho, special prizes, kinboshi
+  if (perfa && perfb) {
+    const aQuality = (perfa.yusho ? 100 : 0) + (perfa.junYusho ? 50 : 0) + (perfa.specialPrizes ?? 0) * 10 + (perfa.kinboshi ?? 0) * 5;
+    const bQuality = (perfb.yusho ? 100 : 0) + (perfb.junYusho ? 50 : 0) + (perfb.specialPrizes ?? 0) * 10 + (perfb.kinboshi ?? 0) * 5;
+    if (aQuality !== bQuality) return bQuality - aQuality;
+  }
+
   // Level 4: Fallback (Deterministic Stability)
   return a.entry.rikishiId.localeCompare(b.entry.rikishiId);
 }

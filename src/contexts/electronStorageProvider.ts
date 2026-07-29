@@ -8,6 +8,7 @@
 
 import { type IStorageProvider, setStorageProvider } from "@/engine/storageProvider";
 import { error } from "@/engine/utils/Logger";
+import { isValidStorageKey } from "@/utils/storageKeyValidation";
 
 const KEYS_RELOAD_DEBOUNCE_MS = 100;
 
@@ -68,12 +69,14 @@ export class ElectronStorageProvider implements IStorageProvider {
   }
 
   getItem(key: string): string | null {
+    if (!isValidStorageKey(key)) return null;
     const value = this.storage.get(key);
     if (value == null) return null;
     return value as string;
   }
 
   setItem(key: string, value: string): void {
+    if (!isValidStorageKey(key)) return;
     this.storage.set(key, value);
     if (this.isElectron) {
       if (!this.cachedKeys.includes(key)) {
@@ -84,6 +87,7 @@ export class ElectronStorageProvider implements IStorageProvider {
   }
 
   removeItem(key: string): void {
+    if (!isValidStorageKey(key)) return;
     this.storage.delete(key);
     if (this.isElectron) {
       this.cachedKeys = this.cachedKeys.filter((k) => k !== key);

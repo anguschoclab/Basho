@@ -29,6 +29,7 @@ export interface NarrativeContext {
   hasKensho: boolean;
   kenshoCount: number;
   sponsorName: string | null;
+  careerPhase: "pre-peak" | "peak" | "early-decline" | "late-decline" | "twilight";
 }
 
 export const VENUE_PROFILES: Record<
@@ -69,6 +70,10 @@ export function buildNarrativeContext(
         : "formal";
   const boutSeed = `${bashoName ?? "exhibition"}-${day}-${east.id}-${west.id}-${result.kimarite}`;
 
+  // Career phase narrative (6.1): derive career phase from winner's declinePhase
+  const winnerDeclinePhase = (result.winner === "east" ? east : west).declinePhase;
+  const careerPhase = winnerDeclinePhase ?? "peak";
+
   return {
     rng,
     east,
@@ -85,5 +90,6 @@ export function buildNarrativeContext(
     hasKensho: result.kenshoEnvelopes > 0,
     kenshoCount: result.kenshoEnvelopes,
     sponsorName: null,
+    careerPhase,
   };
 }

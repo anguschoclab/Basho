@@ -1,8 +1,12 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, beforeAll } from "vitest";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { SeededRNG } from "@/engine/rng";
 
 describe("archive.json template path coverage", () => {
+  beforeAll(async () => {
+    await BardEngine.loadDomains();
+  });
+
   beforeEach(() => {
     BardEngine.resetCache();
   });

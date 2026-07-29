@@ -1,4 +1,5 @@
 import type { SeededRNG } from "../../rng";
+import { rngFromSeed } from "../../rng";
 import type { Rikishi } from "../../types/rikishi";
 import type { BoutLogEntry } from "../../types/basho";
 import type { Side } from "../../types/banzuke";
@@ -36,6 +37,13 @@ export function resolveTachiaiV2(
   boutLog: BoutLogEntry[]
 ): void {
   st.phase = { tag: "tachiai", impactVelocity: TACHIAI_IMPACT_VELOCITY, contactAngle: 0 };
+
+  // Tachiai richness (1.5): derive tachiaiType from winner's archetype
+  const eastArchetype = east.combatProfile?.archetype;
+  const westArchetype = west.combatProfile?.archetype;
+  const eastSpeed = stat(east, "speed");
+  const westSpeed = stat(west, "speed");
+  const speedRating = Math.round((eastSpeed + westSpeed) / 2);
 
   // Tachiai power: power 50%, speed 30%, aggression 20% + jitter
   // Apply 8% penalty when opponent's style is in the rikishi's weakAgainstStyles list
@@ -76,20 +84,103 @@ export function resolveTachiaiV2(
     }
   }
 
+  // NPC counter-tactic system activation (2.2): NPCs with counterFamily matching
+  // opponent's dominant family get a counter bonus
+  const npcSide = bout.playerSide === "east" ? "west" : bout.playerSide === "west" ? "east" : null;
+  if (npcSide) {
+    const npc = npcSide === "east" ? east : west;
+    const opponent = npcSide === "east" ? west : east;
+    const npcCounterFamily = npc.combatProfile?.counterFamily;
+    const opponentPrefs = opponent.combatProfile?.familyPreferences;
+    if (npcCounterFamily && opponentPrefs) {
+      const sorted = Object.entries(opponentPrefs).sort((a, b) => b[1] - a[1]);
+      const opponentDominantFamily = sorted[0]?.[0] as import("../../types/combat").TacticalFamily | undefined;
+      const second = sorted[1]?.[1] ?? 0;
+      if (opponentDominantFamily && (sorted[0]?.[1] ?? 0) > second) {
+        if (npcCounterFamily === opponentDominantFamily) {
+          const npcCounterBonus = 3; // Smaller than player's explicit tactic bonus
+          if (npcSide === "east") eastPower += npcCounterBonus;
+          else westPower += npcCounterBonus;
+          boutLog.push({
+            phase: "tachiai",
+            clock: 0,
+            data: {
+              event: "counter_tactic",
+              side: npcSide,
+              counterFamily: npcCounterFamily,
+              opponentDominantFamily,
+              counterBonus: npcCounterBonus,
+            },
+          });
+        }
+      }
+    }
+  }
+
+  // Apply body type tachiai speed bonus (5.1) — archetype bonus remains narrative-only
+  const eastBodyBehavior = east.combatProfile?.bodyTypeBehavior;
+  const westBodyBehavior = west.combatProfile?.bodyTypeBehavior;
+  const eastTachiaiBonus = eastBodyBehavior?.tachiaiSpeedBonus ?? 0;
+  const westTachiaiBonus = westBodyBehavior?.tachiaiSpeedBonus ?? 0;
+  eastPower += eastTachiaiBonus * 0.3;
+  westPower += westTachiaiBonus * 0.3;
+
   const tachiaiWinner: Side = eastPower >= westPower ? "east" : "west";
   st.tachiaiWinner = tachiaiWinner;
+
+  // Tachiai richness (1.5): derive tachiaiType and contactPoint from winner's archetype
+  const winnerArchetype = tachiaiWinner === "east" ? eastArchetype : westArchetype;
+  const tachiaiType =
+    winnerArchetype === "oshi" ? "head_charge"
+    : winnerArchetype === "tsuppari" ? "tsuppari"
+    : winnerArchetype === "speedster" ? "harite"
+    : winnerArchetype === "trickster" ? "henka"
+    : "chest_clash";
+  const contactPoint =
+    tachiaiType === "head_charge" || tachiaiType === "harite" ? "face"
+    : tachiaiType === "chest_clash" ? "chest"
+    : tachiaiType === "tsuppari" ? "chest"
+    : "shoulder";
 
   // Narrative: the opening clash is always worth a line. Intensity scales with
   // how decisive the initial collision was.
   const tachiaiMargin = Math.abs(eastPower - westPower);
+  const tachiaiIntensity =
+    tachiaiMargin > 20 ? "decisive" : tachiaiMargin > 8 ? "clear" : "even";
   boutLog.push({
     phase: "tachiai",
     clock: 0,
-    data: { tachiaiWinner, margin: tachiaiMargin },
+    data: {
+      tachiaiWinner,
+      margin: tachiaiMargin,
+      intensity: tachiaiIntensity,
+      eastPower: Math.round(eastPower * 10) / 10,
+      westPower: Math.round(westPower * 10) / 10,
+      eastArchetype: east.combatProfile?.archetype,
+      westArchetype: west.combatProfile?.archetype,
+      eastTachiaiBonus,
+      westTachiaiBonus,
+      tachiaiType,
+      contactPoint,
+      speedRating,
+    },
   });
 
+  // Tachiai richness (1.5): matta (false start) — rare 5% event
+  // Uses separate RNG to avoid disrupting main bout RNG sequence
+  const mattaRng = rngFromSeed(bout.id, "tachiai", "matta");
+  if (mattaRng.next() < 0.05) {
+    boutLog.push({
+      phase: "tachiai",
+      clock: 0,
+      data: { event: "matta" },
+    });
+  }
+
   // CR-02: Henka resolution — must check before phase loop
-  const henkaSide: Side | null =
+  // NPC Henka Gap (1.6): high-technique, high-speed NPCs can attempt henka
+  // without explicit tactic override when facing a much stronger opponent
+  let henkaSide: Side | null =
     bout.playerTactic === "HENKA"
       ? (bout.playerSide ?? null)
       : bout.cpuTacticOverride === "HENKA"
@@ -97,6 +188,34 @@ export function resolveTachiaiV2(
           ? "west"
           : "east"
         : null;
+
+  // NPC spontaneous henka: when no explicit henka is set, a high-technique NPC
+  // facing a significantly stronger opponent may attempt a henka
+  if (henkaSide === null) {
+    const npcSide = bout.playerSide === "east" ? "west" : bout.playerSide === "west" ? "east" : null;
+    if (npcSide) {
+      const npc = npcSide === "east" ? east : west;
+      const opponent = npcSide === "east" ? west : east;
+      const npcTech = stat(npc, "technique");
+      const npcSpeed = stat(npc, "speed");
+      const opponentPower = tachiaiPowerWithMatchupPenalty(opponent, npc);
+      const npcPower = tachiaiPowerWithMatchupPenalty(npc, opponent);
+      const powerGap = opponentPower - npcPower;
+      // NPC attempts henka when: technique > 60, speed > 60, and opponent is 15+ power stronger
+      const henkaChance =
+        npcTech > 60 && npcSpeed > 60 && powerGap > 15
+          ? Math.min(0.25, (powerGap - 15) * 0.005 + (npcTech - 60) * 0.003)
+          : 0;
+      if (henkaChance > 0 && rng.next() < henkaChance) {
+        henkaSide = npcSide as Side;
+        boutLog.push({
+          phase: "tachiai",
+          clock: 0,
+          data: { event: "npc_spontaneous_henka", attackerSide: henkaSide, henkaChance },
+        });
+      }
+    }
+  }
 
   if (henkaSide !== null) {
     const trickster = henkaSide === "east" ? east : west;

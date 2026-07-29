@@ -5,7 +5,7 @@ import type { InjuryType, InjurySeverity, InjuryBodyArea } from "../systems/heal
 
 import type { Id } from "./common";
 import type { AvatarConfig } from "./avatar";
-import type { Style, KimariteId, CombatProfile } from "./combat";
+import type { Style, KimariteId, CombatProfile, CombatArchetype } from "./combat";
 export type { Style, KimariteId } from "./combat";
 
 import type { RikishiDescriptor } from "../descriptorBands";
@@ -14,6 +14,7 @@ import type { H2HRecord, MatchResultLog } from "./records";
 import type { RikishiEconomics } from "./economy";
 import type { RikishiBehavior, PressPersona } from "./media";
 import type { CareerSnapshot, Milestone } from "./history";
+import type { RikishiCareerRecord } from "../almanac/types";
 
 /** Log of tactical success/failure during a basho. */
 export type AttributeKey = "power" | "speed" | "balance" | "technique";
@@ -134,6 +135,15 @@ export interface Rikishi {
   councilWarnings?: number; // Number of formal council warnings received (stat debuffs)
   pressureScore?: number; // Internal score tracking sub-par performances for warnings
 
+  /** Set when an Ozeki is demoted to Sekiwake — cleared on comeback yusho */
+  wasDemotedFromOzeki?: boolean;
+  /** Tracked per-basho; true if rikishi withdrew or was absent on the final day */
+  absentFinalDay?: boolean;
+  /** 0-100 "clutch fighting spirit" metric derived from bout metrics */
+  kihakuIsenScore?: number;
+  /** True if this rikishi is the son of the stablemaster */
+  isSonOfStablemaster?: boolean;
+
   careerHistory: CareerSnapshot[];
   milestones: Milestone[];
   shikonaHistory?: Array<{ shikona: string; fromYear: number; toYear?: number }>;
@@ -156,6 +166,7 @@ export interface Rikishi {
   name?: string;
   stats: RikishiStats;
   careerRecord?: { wins: number; losses: number; yusho: number };
+  almanacRecord?: RikishiCareerRecord;
 
   avatarConfig?: AvatarConfig; // NEW: Procedural avatar configuration
   personalityTraits: string[];
@@ -230,6 +241,12 @@ export interface Rikishi {
   // Used by InjuryService for durability calculation
   durability?: number;
 
+  // Set when a rikishi returns from injury (cleared after one basho)
+  recentlyReturnedFromInjury?: boolean;
+
+  // Set when a rikishi is promoted to sanyaku this basho (cleared after one basho)
+  sanyakuPromotionThisBasho?: boolean;
+
   // Fan appeal score, bumped by kinboshi/ginboshi upsets
   marketability?: number;
 
@@ -242,4 +259,19 @@ export interface Rikishi {
   // Citizenship & Tenure (J1)
   joinedHeyaDate?: string; // ISO year string e.g. "2025"
   citizenshipStatus?: "native" | "foreign" | "naturalized";
+
+  // Body type derived from height/weight ratio — affects physics modifiers
+  bodyType?: "tower" | "barrel" | "compact" | "lanky";
+
+  // Generated backstory string for narrative enrichment
+  backstory?: string;
+
+  // History of archetype changes over career
+  archetypeHistory?: Array<{ archetype: CombatArchetype; year: number }>;
+
+  // Career decline phase for narrative context
+  declinePhase?: "pre-peak" | "peak" | "early-decline" | "late-decline" | "twilight";
+
+  // Tracks consecutive 11+ win performances at sekiwake/komusubi for ozeki promotion
+  consecutiveStrongSekiwake?: number;
 }

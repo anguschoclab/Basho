@@ -81,6 +81,7 @@ export function projectRosterEntry(
       ? ({ ...r.keshoMawashi, ...world.customKeshoConfigs[r.id] } as KeshoMawashi)
       : r.keshoMawashi,
     consecutiveStrongOzeki: r.consecutiveStrongOzeki ?? 0,
+    consecutiveStrongSekiwake: r.consecutiveStrongSekiwake ?? 0,
     streakLabel: calculateStreak(r.history ?? []).label,
     winPercentage: r.careerWins / Math.max(1, r.careerWins + r.careerLosses),
     citizenshipStatus: getCitizenshipStatus(r, world?.year ?? 2020),

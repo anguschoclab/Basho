@@ -1,13 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /**
- * @vitest-environment jsdom
  */
+import React from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { PreBashoAssessment } from "@/components/dashboard/PreBashoAssessment";
 
 vi.mock("@/contexts/GameContext", () => ({
   useGame: vi.fn(),
+}));
+
+vi.mock("@tanstack/react-router", () => ({
+  useNavigate: vi.fn(() => ({ to: () => {} })),
 }));
 
 vi.mock("@/components/ClickableName", () => ({
@@ -18,6 +23,10 @@ import { useGame } from "@/contexts/GameContext";
 
 function mockState(world: any) {
   vi.mocked(useGame).mockReturnValue({ state: { world } } as any);
+}
+
+function renderWithProvider(ui: React.ReactElement) {
+  return render(<TooltipProvider>{ui}</TooltipProvider>);
 }
 
 describe("PreBashoAssessment", () => {
@@ -32,7 +41,7 @@ describe("PreBashoAssessment", () => {
       _interimDaysRemaining: 5,
       rikishi: new Map(),
     });
-    render(<PreBashoAssessment />);
+    renderWithProvider(<PreBashoAssessment />);
     expect(screen.getByText("View Roster for Withdrawals")).toBeTruthy();
   });
 
@@ -47,7 +56,7 @@ describe("PreBashoAssessment", () => {
       _interimDaysRemaining: 5,
       rikishi: new Map(),
     });
-    render(<PreBashoAssessment />);
+    renderWithProvider(<PreBashoAssessment />);
     expect(screen.queryByText("View Roster for Withdrawals")).toBeNull();
   });
 
@@ -57,7 +66,7 @@ describe("PreBashoAssessment", () => {
       _preBashoAssessment: undefined,
       rikishi: new Map(),
     });
-    const { container } = render(<PreBashoAssessment />);
+    const { container } = renderWithProvider(<PreBashoAssessment />);
     expect(container.firstChild).toBeNull();
   });
 
@@ -71,7 +80,46 @@ describe("PreBashoAssessment", () => {
       },
       rikishi: new Map(),
     });
-    const { container } = render(<PreBashoAssessment />);
+    const { container } = renderWithProvider(<PreBashoAssessment />);
     expect(container.firstChild).toBeNull();
+  });
+
+  it("renders health score badge when assessment has rikishi assessments", () => {
+    const assessments = new Map();
+    assessments.set("r1", {
+      injuryRisk: "low",
+      withdrawalRecommended: false,
+      recommendedFocus: "normal",
+      healthScore: 80,
+    });
+    mockState({
+      cyclePhase: "pre_basho",
+      _preBashoAssessment: {
+        withdrawalsThisAssessment: 0,
+        overallHealthScore: 75,
+        rikishiAssessments: assessments,
+      },
+      _interimDaysRemaining: 3,
+      rikishi: new Map([
+        ["r1", { id: "r1", shikona: "TestRikishi" }],
+      ]),
+    });
+    renderWithProvider(<PreBashoAssessment />);
+    expect(screen.getByText("75%")).toBeTruthy();
+  });
+
+  it("renders days remaining in header content", () => {
+    mockState({
+      cyclePhase: "pre_basho",
+      _preBashoAssessment: {
+        withdrawalsThisAssessment: 0,
+        overallHealthScore: 80,
+        rikishiAssessments: new Map(),
+      },
+      _interimDaysRemaining: 7,
+      rikishi: new Map(),
+    });
+    renderWithProvider(<PreBashoAssessment />);
+    expect(screen.getByText(/7 days left/)).toBeTruthy();
   });
 });

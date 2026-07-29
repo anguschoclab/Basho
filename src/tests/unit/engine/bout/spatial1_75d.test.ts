@@ -18,18 +18,18 @@ describe("1.75D spatial engine", () => {
     }
   });
 
-  it("returns engineSnapshot with lateral and angular fields", () => {
+  it("returns result with momentum and archetype fields", () => {
     const bout = { id: "snap-001", day: 1, rikishiEastId: "r1", rikishiWestId: "r2" };
     const east = mockRikishi("r1", { power: 70, speed: 60, weight: 120 });
     const west = mockRikishi("r2", { power: 65, speed: 55, weight: 130 });
     const basho = makeMockBasho();
 
-    const { result, engineSnapshot } = resolveBoutPhysics(bout, east, west, basho);
+    const { result } = resolveBoutPhysics(bout, east, west, basho);
     expect(result).toBeDefined();
-    expect(engineSnapshot).toBeDefined();
-    expect(typeof engineSnapshot.balanceEast).toBe("number");
-    expect(typeof engineSnapshot.balanceWest).toBe("number");
-    expect(["front", "lateral", "rear"]).toContain(engineSnapshot.position);
+    expect(typeof result.momentumScore).toBe("number");
+    expect(result.inBoutInjury).toBeNull();
+    expect(result.archetypeMatchup).toBeDefined();
+    expect(typeof result.isTimeout).toBe("boolean");
   });
 
   it("boutLog contains engagement entries with spatial data", () => {
@@ -88,7 +88,7 @@ describe("1.75D emergent techniques", () => {
 });
 
 describe("1.75D determinism — seeded RNG", () => {
-  it("identical seed produces identical engineSnapshot", () => {
+  it("identical seed produces identical result", () => {
     const bout = { id: "seed-001", day: 1, rikishiEastId: "r1", rikishiWestId: "r2" };
     const east = mockRikishi("r1");
     const west = mockRikishi("r2");
@@ -100,8 +100,6 @@ describe("1.75D determinism — seeded RNG", () => {
     expect(a.result.winner).toBe(b.result.winner);
     expect(a.result.duration).toBe(b.result.duration);
     expect(a.result.kimarite).toBe(b.result.kimarite);
-    expect(a.engineSnapshot.balanceEast).toBe(b.engineSnapshot.balanceEast);
-    expect(a.engineSnapshot.balanceWest).toBe(b.engineSnapshot.balanceWest);
-    expect(a.engineSnapshot.position).toBe(b.engineSnapshot.position);
+    expect(a.result.momentumScore).toBe(b.result.momentumScore);
   });
 });

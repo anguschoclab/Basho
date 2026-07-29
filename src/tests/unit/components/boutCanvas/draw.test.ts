@@ -1,8 +1,7 @@
+// @vitest-environment node
 /**
  * Tests for boutCanvas/draw.ts — drawRikishi behavior with new BodyPhase
  * values, arc y-offset, and family/isLoser params.
- *
- * @vitest-environment jsdom
  */
 import { describe, it, expect, vi } from "vitest";
 import { drawRikishi } from "@/components/game/boutReplay/boutCanvas/draw";
@@ -110,23 +109,21 @@ const H = 500;
 // ---------------------------------------------------------------------------
 
 describe("drawRikishi — non-crash for all BodyPhase values", () => {
-  for (const phase of ALL_BODY_PHASES) {
-    it(`does not crash for bodyPhase "${phase}"`, () => {
-      const ctx = makeMockCtx();
-      const state = makeState({ bodyPhase: phase });
-      expect(() =>
-        drawRikishi(ctx, state, W, H, "east", makeUIRikishi(), { x: 0, y: 0 })
-      ).not.toThrow();
-    });
+  it.each(ALL_BODY_PHASES)(`does not crash for bodyPhase "%s"`, (phase) => {
+    const ctx = makeMockCtx();
+    const state = makeState({ bodyPhase: phase });
+    expect(() =>
+      drawRikishi(ctx, state, W, H, "east", makeUIRikishi(), { x: 0, y: 0 })
+    ).not.toThrow();
+  });
 
-    it(`calls save() and restore() for bodyPhase "${phase}"`, () => {
-      const ctx = makeMockCtx();
-      const state = makeState({ bodyPhase: phase });
-      drawRikishi(ctx, state, W, H, "east", makeUIRikishi(), { x: 0, y: 0 });
-      expect((ctx as unknown as { save: ReturnType<typeof vi.fn> }).save).toHaveBeenCalled();
-      expect((ctx as unknown as { restore: ReturnType<typeof vi.fn> }).restore).toHaveBeenCalled();
-    });
-  }
+  it.each(ALL_BODY_PHASES)(`calls save() and restore() for bodyPhase "%s"`, (phase) => {
+    const ctx = makeMockCtx();
+    const state = makeState({ bodyPhase: phase });
+    drawRikishi(ctx, state, W, H, "east", makeUIRikishi(), { x: 0, y: 0 });
+    expect((ctx as unknown as { save: ReturnType<typeof vi.fn> }).save).toHaveBeenCalled();
+    expect((ctx as unknown as { restore: ReturnType<typeof vi.fn> }).restore).toHaveBeenCalled();
+  });
 });
 
 // ---------------------------------------------------------------------------

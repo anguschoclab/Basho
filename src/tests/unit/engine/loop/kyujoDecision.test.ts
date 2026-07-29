@@ -9,7 +9,7 @@ import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { WorldState } from "@/engine/types/world";
 import type { Heya } from "@/engine/types/heya";
 import type { Rikishi } from "@/engine/types/rikishi";
-import type { BashoState } from "@/engine/types/basho";
+import { makeMockBasho } from "../utils";
 
 function makeWorld(overrides: Record<string, unknown> = {}): WorldState {
   return {
@@ -68,20 +68,6 @@ function makeRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikishi {
   } as unknown as Rikishi;
 }
 
-function makeBasho(overrides: Partial<BashoState> = {}): BashoState {
-  return {
-    id: "test-basho",
-    year: 2025,
-    bashoNumber: 1,
-    bashoName: "hatsu",
-    day: 5,
-    matches: [],
-    standings: new Map(),
-    isActive: true,
-    ...overrides,
-  } as unknown as BashoState;
-}
-
 function makeMatch(day: number, eastId: string, westId: string, result: unknown = null): unknown {
   return {
     day,
@@ -99,7 +85,7 @@ describe("kyujo_decision detection", () => {
       injuryStatus: { type: "muscle", severity: "moderate", weeksRemaining: 3 } as never,
     });
     const heya = makeHeya("h1", ["r1"]);
-    const basho = makeBasho({
+    const basho = makeMockBasho({
       day: 5,
       matches: [makeMatch(5, "r1", "r2") as never],
     });
@@ -130,7 +116,7 @@ describe("kyujo_decision detection", () => {
       playerHeyaId: "h1",
       heyas: new Map([["h1", heya]]),
       rikishi: new Map([["r1", r]]),
-      currentBasho: makeBasho(),
+      currentBasho: makeMockBasho({ day: 5 }),
     });
 
     const decisions = detectDueDecisions(world);
@@ -144,7 +130,7 @@ describe("kyujo_decision detection", () => {
       injuryStatus: { type: "bruise", severity: "minor", weeksRemaining: 1 } as never,
     });
     const heya = makeHeya("h1", ["r1"]);
-    const basho = makeBasho({
+    const basho = makeMockBasho({
       day: 5,
       matches: [makeMatch(5, "r1", "r2") as never],
     });
@@ -168,7 +154,7 @@ describe("kyujo_decision detection", () => {
       injuryStatus: { type: "muscle", severity: "moderate", weeksRemaining: 3 } as never,
     });
     const heya = makeHeya("h1", ["r1"]);
-    const basho = makeBasho({
+    const basho = makeMockBasho({
       day: 5,
       matches: [makeMatch(5, "r1", "r2") as never],
     });
@@ -191,7 +177,7 @@ describe("kyujo_decision detection", () => {
       injuryStatus: { type: "muscle", severity: "moderate", weeksRemaining: 3 } as never,
     });
     const heya = makeHeya("h1", ["r1"]);
-    const basho = makeBasho({
+    const basho = makeMockBasho({
       day: 5,
       matches: [makeMatch(5, "r3", "r4") as never],
     });
@@ -214,7 +200,7 @@ describe("kyujo_decision detection", () => {
       injuryStatus: { type: "muscle", severity: "moderate", weeksRemaining: 3 } as never,
     });
     const heya = makeHeya("h1", ["r1"]);
-    const basho = makeBasho({
+    const basho = makeMockBasho({
       day: 5,
       matches: [makeMatch(5, "r1", "r2") as never],
     });
@@ -248,7 +234,7 @@ describe("kyujo_decision detection", () => {
       injuryStatus: { type: "muscle", severity: "moderate", weeksRemaining: 3 } as never,
     });
     const heya = makeHeya("h1", ["r1"]);
-    const basho = makeBasho({
+    const basho = makeMockBasho({
       day: 5,
       matches: [makeMatch(5, "r2", "r1") as never],
     });
@@ -396,7 +382,7 @@ describe("kyujo_decision autonomous resolution", () => {
       injuryStatus: { type: "muscle", severity: "moderate", weeksRemaining: 3 } as never,
     });
     const heya = makeHeya("h1", ["r1"]);
-    const basho = makeBasho({
+    const basho = makeMockBasho({
       day: 5,
       matches: [makeMatch(5, "r1", "r2") as never],
     });
@@ -420,7 +406,7 @@ describe("kyujo_decision autonomous resolution", () => {
       injuryStatus: { type: "muscle", severity: "moderate", weeksRemaining: 3 } as never,
     });
     const heya = makeHeya("h1", ["r1"]);
-    const basho = makeBasho({
+    const basho = makeMockBasho({
       day: 5,
       matches: [makeMatch(5, "r1", "r2") as never],
     });
@@ -457,7 +443,7 @@ describe("kyujo_decision — additional edge cases", () => {
       injuryStatus: { type: "sprain", severity: "serious", weeksRemaining: 4 } as never,
     });
     const heya = makeHeya("h1", ["r1", "r2"]);
-    const basho = makeBasho({
+    const basho = makeMockBasho({
       day: 5,
       matches: [makeMatch(5, "r1", "r3") as never, makeMatch(5, "r2", "r4") as never],
     });
@@ -487,7 +473,7 @@ describe("kyujo_decision — additional edge cases", () => {
       injuryStatus: { type: "muscle", severity: "moderate", weeksRemaining: 3 } as never,
     });
     const heya = makeHeya("h1", ["r1"]);
-    const basho = makeBasho({
+    const basho = makeMockBasho({
       day: 5,
       matches: [makeMatch(5, "r1", "r2") as never],
     });
@@ -511,7 +497,7 @@ describe("kyujo_decision — additional edge cases", () => {
       injuryStatus: { type: "muscle", severity: "serious", weeksRemaining: 3 } as never,
     });
     const heya = makeHeya("h1", ["r1"]);
-    const basho = makeBasho({
+    const basho = makeMockBasho({
       day: 5,
       matches: [makeMatch(5, "r1", "r2") as never],
     });

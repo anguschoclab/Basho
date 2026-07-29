@@ -42,10 +42,10 @@ export interface BoutContext {
 
 /** Safe stat read — prefers canonical rikishi.stats, falls back to top-level for bout copies */
 export function stat(r: Rikishi, key: string, fallback = 50): number {
-  const statsObj = r.stats as unknown as Record<string, unknown> | undefined;
+  const statsObj = r.stats as Record<string, unknown> | undefined;
   let v = statsObj?.[key];
   if (typeof v !== "number" || !Number.isFinite(v)) {
-    v = (r as unknown as Record<string, unknown>)[key];
+    v = (r as Record<string, unknown>)[key];
   }
   return typeof v === "number" && Number.isFinite(v) ? v : fallback;
 }
@@ -96,9 +96,7 @@ export function conditionMultiplier(condition: number): number {
  *   dominated record (0-10) → -4
  */
 export function h2hConfidence(r: Rikishi, opponentId: string): number {
-  const record = (r as unknown as Record<string, unknown>).h2h as
-    | Record<string, { wins: number; losses: number }>
-    | undefined;
+  const record = r.h2h;
   if (!record) return 0;
   const h2h = record[opponentId];
   if (!h2h) return 0;
@@ -114,11 +112,8 @@ export function h2hConfidence(r: Rikishi, opponentId: string): number {
  */
 export function tachiaiPowerWithMatchupPenalty(r: Rikishi, opponent: Rikishi): number {
   const base = computeTachiaiPower(r);
-  const opponentStyle = (opponent as unknown as Record<string, unknown>).style as
-    | string
-    | undefined;
-  const weaknesses: string[] =
-    ((r as unknown as Record<string, unknown>).weakAgainstStyles as string[]) ?? [];
+  const opponentStyle = opponent.style;
+  const weaknesses: string[] = r.weakAgainstStyles ?? [];
   if (opponentStyle && weaknesses.includes(opponentStyle)) {
     return base * STYLE_WEAKNESS_PENALTY;
   }

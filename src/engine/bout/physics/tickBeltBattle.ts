@@ -49,9 +49,77 @@ export function tickBeltBattle(
   // Evolve grip geometry (arm reach, depth, grip strength decay)
   const eastBoutFatigue = st.east.boutFatigue * BOUT_FATIGUE_MULTIPLIER;
   const westBoutFatigue = st.west.boutFatigue * BOUT_FATIGUE_MULTIPLIER;
+  const prevEastGripClass = belt.eastGripClass;
+  const prevWestGripClass = belt.westGripClass;
+  const prevEastDepth = belt.eastDepth;
+  const prevWestDepth = belt.westDepth;
   evolveGripGeometry(rng, east, west, belt, eastBoutFatigue, westBoutFatigue);
 
-  const torqueAdvantage = belt.torqueEast - belt.torqueWest;
+  // Log grip transition events (1.1)
+  if (belt.eastGripClass !== prevEastGripClass || belt.westGripClass !== prevWestGripClass) {
+    boutLog.push({
+      phase: "grip_transition",
+      clock: st.tick * CLOCK_MULTIPLIER,
+      data: {
+        type: "grip_class_shift",
+        eastGripFrom: prevEastGripClass,
+        eastGripTo: belt.eastGripClass,
+        westGripFrom: prevWestGripClass,
+        westGripTo: belt.westGripClass,
+        eastRightInside: belt.eastRight?.isInside ?? false,
+        eastLeftInside: belt.eastLeft?.isInside ?? false,
+        westRightInside: belt.westRight?.isInside ?? false,
+        westLeftInside: belt.westLeft?.isInside ?? false,
+      },
+    });
+  }
+  if (belt.eastDepth !== prevEastDepth || belt.westDepth !== prevWestDepth) {
+    boutLog.push({
+      phase: "grip_transition",
+      clock: st.tick * CLOCK_MULTIPLIER,
+      data: {
+        type: "depth_change",
+        eastDepthFrom: prevEastDepth,
+        eastDepthTo: belt.eastDepth,
+        westDepthFrom: prevWestDepth,
+        westDepthTo: belt.westDepth,
+      },
+    });
+  }
+
+  // Archetype-specific bout behavior (2.1) + body type behavior (5.1): apply beltTorqueBonus to torque
+  const eastTorqueBonus = ((east.combatProfile?.archetypeBehavior?.beltTorqueBonus ?? 0) + (east.combatProfile?.bodyTypeBehavior?.beltTorqueBonus ?? 0)) / 100;
+  const westTorqueBonus = ((west.combatProfile?.archetypeBehavior?.beltTorqueBonus ?? 0) + (west.combatProfile?.bodyTypeBehavior?.beltTorqueBonus ?? 0)) / 100;
+  // Apply torque bonus as additive bonus rather than multiplier to preserve simulation balance
+  let torqueAdvantage = (belt.torqueEast - belt.torqueWest) * (1 + (eastTorqueBonus - westTorqueBonus) * 0.5);
+
+  // In-bout counter-tactic activation (2.2): when defender's counterFamily matches
+  // the current engagement family ("belt"), reduce attacker's effective torque
+  const COUNTER_TORQUE_REDUCTION = 0.1; // 10% torque reduction when countered
+  let counterActivated = false;
+  let counterSide: Side | null = null;
+  if (west.combatProfile?.counterFamily === "belt" && east.combatProfile?.counterFamily !== "belt") {
+    torqueAdvantage *= (1 - COUNTER_TORQUE_REDUCTION);
+    counterActivated = true;
+    counterSide = "west";
+  } else if (east.combatProfile?.counterFamily === "belt" && west.combatProfile?.counterFamily !== "belt") {
+    torqueAdvantage *= (1 + COUNTER_TORQUE_REDUCTION);
+    counterActivated = true;
+    counterSide = "east";
+  }
+  if (counterActivated && counterSide && st.tick % NARRATIVE_TICK_CADENCE === 0) {
+    boutLog.push({
+      phase: "counter_tactic",
+      clock: st.tick * CLOCK_MULTIPLIER,
+      data: {
+        event: "counter_tactic",
+        side: counterSide,
+        counterFamily: "belt",
+        attackerFamily: "belt",
+        torqueReduction: COUNTER_TORQUE_REDUCTION,
+      },
+    });
+  }
 
   // --- 1.75D Grip → Rotation ---
   // Angular velocity from torque advantage, clamped per tick
@@ -143,6 +211,14 @@ export function tickBeltBattle(
         westFacingAngle: st.west.facingAngle,
         eastLateral: push.eastLateral,
         westLateral: push.westLateral,
+        eastGripClass: belt.eastGripClass,
+        westGripClass: belt.westGripClass,
+        eastDepth: belt.eastDepth,
+        westDepth: belt.westDepth,
+        eastTorque: belt.torqueEast,
+        westTorque: belt.torqueWest,
+        eastFatigue: st.east.boutFatigue,
+        westFatigue: st.west.boutFatigue,
       },
     });
   }

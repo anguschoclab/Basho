@@ -1,0 +1,30 @@
+{
+  "headline": {
+    "common": [
+      "A new bloodline has been established: %TRAIT_LABEL% — passed down from %ANCESTOR%.",
+      "The %TRAIT_LABEL% trait enters the registry, honoring %ANCESTOR%.",
+      "%ANCESTOR%'s legacy is immortalized as the %TRAIT_LABEL% bloodline."
+    ]
+  },
+  "bout_opening": {
+    "common": [
+      "%RIKISHI% carries the bloodline of %ANCESTOR%.",
+      "The descendant of %ANCESTOR% steps onto the dohyo.",
+      "%ANCESTOR%'s bloodline flows through %RIKISHI%."
+    ]
+  },
+  "registered": {
+    "common": [
+      "A new bloodline enters the registry: the legacy of %HEYA% lives on.",
+      "The JSA records a new dynasty: %HEYA%'s heir carries the torch.",
+      "Future generations will carry this heritage forward."
+    ]
+  },
+  "milestone": {
+    "common": [
+      "%ANCESTOR%'s bloodline claims its first yusho in a new era.",
+      "The %ANCESTOR% dynasty extends its reach across divisions.",
+      "Three generations of the %ANCESTOR% line now compete."
+    ]
+  }
+}

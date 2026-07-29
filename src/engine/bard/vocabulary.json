@@ -1,0 +1,17 @@
+{
+  "intensity_1": {
+    "adjectives": ["standard", "routine", "steady", "calculated", "measured", "methodical"],
+    "verbs": ["moves", "drives", "wins", "finishes", "advances", "presses"],
+    "adverbs": ["steadily", "methodically", "carefully", "deliberately", "patiently"]
+  },
+  "intensity_2": {
+    "adjectives": ["professional", "dominant", "resolute", "technical", "commanding", "assertive"],
+    "verbs": ["executes", "dictates", "neutralizes", "commands", "controls", "imposes"],
+    "adverbs": ["decisively", "authoritatively", "confidently", "skillfully", "effectively"]
+  },
+  "intensity_3": {
+    "adjectives": ["thunderous", "electric", "unstoppable", "extraordinary", "devastating", "explosive"],
+    "verbs": ["detonates", "decimates", "shatters", "conquers", "demolishes", "annihilates"],
+    "adverbs": ["explosively", "overwhelmingly", "ferociously", "spectacularly", "brilliantly"]
+  }
+}

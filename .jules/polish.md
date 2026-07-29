@@ -51,3 +51,8 @@
 **Issue:** Hardcoded empty state implementations were found in various components like `RivalriesEmptyState`, creating visual inconsistencies across the app.
 **Learning:** Some views manually re-implemented empty state layouts instead of using the standard `EmptyState` component.
 **Rule:** Always use the global `EmptyState` component from `@/components/ui/EmptyState` instead of hardcoded bespoke elements to maintain consistent padding, typography, and visual hierarchy. Use `<EmptyState compact />` for inline dashboard widgets or reusable list containers if needed.
+
+## 2025-08-01 - PreBashoAssessment consistency
+**Issue:** `PreBashoAssessment` was built with custom `Card` wrapping and layout instead of `BaseWidget`, leading to inconsistent padding and headers on the dashboard.
+**Learning:** Reusable dashboard components should use `BaseWidget` as the primary wrapper to provide unified header action/content placement and identical card visuals.
+**Rule:** Always use `BaseWidget` as the top-level element for dashboard widgets.

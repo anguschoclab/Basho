@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import type { ArchiveService } from "@/engine/storage/opfsArchive";
 import type { BoutResult, BashoResult } from "@/engine/types/basho";

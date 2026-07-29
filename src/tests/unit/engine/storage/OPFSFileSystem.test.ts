@@ -1,3 +1,4 @@
+// @vitest-environment node
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { OPFSFileSystem } from "@/engine/storage/OPFSFileSystem";
 import { logger } from "@/engine/utils/Logger";

@@ -35,3 +35,12 @@
 **Finding:** `Rikishi["descriptor"]` was loosely typed as an object with `[key: string]: unknown`, leading to a weak `as unknown as Rikishi["descriptor"]` cast in `phase01_daily_welfare.ts` when assigning `toRikishiDescriptor()`.
 **Learning:** By importing the concrete `RikishiDescriptor` interface from `descriptorBands.ts` into the main `rikishi.ts` types, we remove the need for intermediate casts and correctly surface the structure to presenters.
 **Constraint:** Shared types used for complex entity states (like descriptor strings) must be defined properly and linked instead of relying on loose inline objects and casting.
+## 2026-07-27 - Tighten Rikishi stat types in boutUtils
+**Finding:** `h2hConfidence`, `tachiaiPowerWithMatchupPenalty`, and `stat` used `as unknown as Record<string, unknown>` to bypass types and read properties like `h2h` and `style`.
+**Learning:** These properties are formally typed on the `Rikishi` interface now, making the `unknown` casting redundant and weakening type safety.
+**Constraint:** Directly access properties (`r.h2h`, `opponent.style`, `r.weakAgainstStyles`) and limit casts to explicit valid subsets (like `Record<string, unknown>` for dynamic reads) instead of fully breaking the type chain.
+## 2025-08-01 - [Tighten CandidateDigestEntry and engine worker command types]
+
+**Finding:** Used `as any` when passing `comparisonPair.a` and `comparisonPair.b` to `<CompareModePanel>` where `CompareModePanel` expected `UIRikishi` but `comparisonPair` contained objects deriving from `CandidateDigestEntry`. The worker script also casted `command` to `any` when invoking the message handler.
+**Learning:** `CandidateDigestEntry` differs structurally from `UIRikishi` (it doesn't map 1-to-1 to core Rikishi properties, but is a partial proxy for UI purposes). Using `unknown` as an intermediate cast (e.g. `as unknown as UIRikishi`) bridges the type safely for UI projection without dropping `strictNullChecks` or masking underlying object shapes with `any`. In the worker, the message handler was weakly typed due to how TS infers generic union discrimination inside an object literal (`COMMAND_HANDLERS`); assigning an explicit function type `((cmd: EngineCommand) => void)` tightens it and removes the need for `any`.
+**Constraint:** Avoid `as any` in React prop passing, even for cross-domain representations. Use `as unknown as TargetType` if structural compatibility is guaranteed but mathematically unprovable by TS. In generic dispatch tables, explicitly type the handler lookup to preserve union constraints.

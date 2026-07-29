@@ -21,7 +21,7 @@ import { seededPick } from "../../utils/random";
 import { SeededRNG } from "../../rng";
 import { clampInt } from "../../utils/math";
 import { generateShikona } from "../../shikona";
-import { rollArchetype, buildCombatProfile } from "../../archetype";
+import { rollArchetype, rollArchetypeWithBias, buildCombatProfile } from "../../archetype";
 import { DEVELOPMENT_PROFILE_WEIGHTS } from "../../../constants/engine/development";
 import type { DevelopmentProfile } from "../../../constants/engine/development";
 import type { TalentCandidate, TalentPoolType } from "../../types/talent";
@@ -93,10 +93,15 @@ export function generateCandidate(args: {
   currentYear: number;
   poolType: TalentPoolType;
   world?: WorldState;
+  heyaId?: string;
 }): TalentCandidate {
-  const { id, rng, currentYear, poolType, world } = args;
+  const { id, rng, currentYear, poolType, world, heyaId } = args;
 
-  const archetype = rollArchetype(rng);
+  // Heya style influence (5.3): bias archetype based on heya training philosophy
+  const heya = heyaId && world ? world.heyas.get(heyaId) : undefined;
+  const archetype = heya?.trainingPhilosophy
+    ? rollArchetypeWithBias(rng, heya.trainingPhilosophy)
+    : rollArchetype(rng);
   const profile = buildCombatProfile(archetype);
 
   // Candidates are always future jonokuchi recruits — roll PA + dev profile so
@@ -126,7 +131,7 @@ export function generateCandidate(args: {
   // Apply Prodigy bonus to stat ceilings
   if (isEmergentProdigy) {
     const stats = paPkg.stats;
-    const keys: Array<keyof RikishiStats> = [
+    const keys: Array<keyof Omit<RikishiStats, "specialPrizes" | "achievements">> = [
       "power",
       "speed",
       "technique",
@@ -221,7 +226,7 @@ export function generateCandidate(args: {
     developmentSpeed: paPkg.developmentSpeed,
     peakAgeOffset: paPkg.peakAgeOffset,
     ceilingFraction: paPkg.ceilingFraction,
-    bloodlineTrait: legacyTrait,
+    bloodlineTrait: legacyTrait ?? undefined,
     // Generate deterministic scouting bias that skews initial stat readings
     scoutingBias: generateScoutingBias(id, currentYear),
   };

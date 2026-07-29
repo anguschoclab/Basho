@@ -21,3 +21,8 @@
 **Data:** `rikishi.careerAbsences` and `rikishi.councilWarnings`
 **Learning:** Absences drastically affect rikishi value (injury proneness) but were hidden from the primary career stat. Similarly, YDC Warnings silently debuffed Yokozunas without UI context.
 **Pattern:** Surface `careerAbsences` dynamically in `careerRecord` strings (W-L-A) only if > 0 to not clutter the standard W-L display. Surface warnings as a conditional badge on `RikishiProfileHeader`.
+## 2024-08-01 - Ozeki Promotion Watch
+
+**Data:** `rikishi.consecutiveStrongSekiwake`
+**Learning:** The simulation tracks consecutive strong performances (11+ wins) for Sekiwake and Komusubi to qualify for Ozeki promotion (4.2 rule), but this was completely hidden from the UI. Players had to track sekiwake records manually to know if a promotion was imminent.
+**Pattern:** Similar to `consecutiveStrongOzeki`, added it to `RikishiCareerDataDTO` and surfaced it as a progress bar in `RikishiProfileHeader` when the wrestler is at a Sanyaku rank and actively on a run.

@@ -18,3 +18,7 @@
 **Discovery:** The `post_bout.reaction` array in `archive.json` had only 4 variants, which fire frequently since they occur right after every bout decision in the play-by-play. This creates noticeable repetition.
 **Rule:** When adding new narrative strings to an existing array, it's vital to preserve exact formatting and spacing to avoid large, noisy diffs that break formatting rules on surrounding sections. Direct JSON manipulation via standard tools like node or python `json` can rewrite the whole file's formatting. Direct text replacement via `replace_with_git_merge_diff` is safer.
 **Check:** Run a test script resolving the template hundreds of times (via `BardEngine.resolve(rng, "path", ctx)`) to ensure no token leakage occurs (e.g. `%WINNER%` is populated, not literal text) and `[MISSING:` isn't appearing.
+## 2025-02-28 - Playoff Narratives
+**Discovery:** The `pre_bout.playoff_bout` and `post_bout.playoff_result` arrays in `archive.json` had very limited variety, which could feel repetitive during high-drama moments like playoff tiebreakers.
+**Rule:** When adding new narrative templates, strictly use only existing, verified tokens (like `%EAST%`, `%WEST%`, `%WINNER%`, `%LOSER%`) found in sibling templates to avoid shipping visible bugs with unfilled tokens.
+**Check:** Verify that `BardEngine` correctly resolves the new text by writing a temporary typescript file and manually parsing through `BardEngine.resolve` for missing token brackets before committing.

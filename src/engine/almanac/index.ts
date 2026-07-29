@@ -7,9 +7,26 @@ export type {
   HeyaRecord,
   OyakataRecord,
   AlmanacSnapshot,
+  NotableBoutEntry,
+  NarrativeHighlight,
+  PromotionHistoryEntry,
+} from "./types";
+
+export {
+  NOTABLE_NARRATIVE_TAGS,
+  NOTABLE_NARRATIVE_PHASES,
+  MAX_NOTABLE_BOUTS,
+  MAX_NARRATIVE_HIGHLIGHTS,
+  MAX_PROMOTION_HISTORY,
 } from "./types";
 
 export { generateCareerRecord } from "./career";
 export { generateHeyaRecord } from "./heyaRecord";
 export { buildAlmanacSnapshot } from "./snapshot";
 export { getRikishiCareerSummary } from "./summary";
+export {
+  createEmptyAlmanacRecord,
+  buildNotableBoutEntry,
+  enrichAlmanacRecord,
+  runAlmanacNarrativeUpdate,
+} from "./narrativeEnrichment";

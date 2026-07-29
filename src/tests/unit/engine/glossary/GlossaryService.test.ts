@@ -1,6 +1,4 @@
-/**
- * @vitest-environment jsdom
- */
+// @vitest-environment node
 import { describe, it, expect } from "vitest";
 import { GlossaryService } from "@/engine/glossary/GlossaryService";
 

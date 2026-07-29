@@ -1,0 +1,8 @@
+{
+  "philosophies": {
+    "balanced": "Balanced Growth",
+    "aggressive": "Aggressive Development",
+    "conservative": "Risk Aversion",
+    "experimental": "Experimental Training"
+  }
+}

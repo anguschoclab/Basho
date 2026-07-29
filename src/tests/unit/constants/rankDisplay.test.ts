@@ -31,19 +31,17 @@ describe("RANK_DISPLAY_REGISTRY", () => {
     }
   });
 
-  it("each entry has all required fields", () => {
-    for (const r of ALL_RANKS) {
-      const entry = RANK_DISPLAY_REGISTRY[r];
-      expect(entry.en).toBeTruthy();
-      expect(entry.ja).toBeTruthy();
-      expect(entry.abbr).toBeTruthy();
-      expect(entry.tier).toBeGreaterThan(0);
-      expect(entry.division).toBeTruthy();
-      expect(typeof entry.isSanyaku).toBe("boolean");
-      expect(typeof entry.isSekitori).toBe("boolean");
-      expect(typeof entry.salary).toBe("number");
-      expect(typeof entry.fightsPerBasho).toBe("number");
-    }
+  it.each(ALL_RANKS)("%s has all required fields", (r) => {
+    const entry = RANK_DISPLAY_REGISTRY[r];
+    expect(entry.en).toBeTruthy();
+    expect(entry.ja).toBeTruthy();
+    expect(entry.abbr).toBeTruthy();
+    expect(entry.tier).toBeGreaterThan(0);
+    expect(entry.division).toBeTruthy();
+    expect(typeof entry.isSanyaku).toBe("boolean");
+    expect(typeof entry.isSekitori).toBe("boolean");
+    expect(typeof entry.salary).toBe("number");
+    expect(typeof entry.fightsPerBasho).toBe("number");
   });
 
   it("yokozuna has correct values", () => {
@@ -81,11 +79,9 @@ describe("RANK_DISPLAY_REGISTRY", () => {
 });
 
 describe("RANK_NAMES", () => {
-  it("has ja and en for all ranks", () => {
-    for (const r of ALL_RANKS) {
-      expect(RANK_NAMES[r].ja).toBeTruthy();
-      expect(RANK_NAMES[r].en).toBeTruthy();
-    }
+  it.each(ALL_RANKS)("%s has ja and en names", (r) => {
+    expect(RANK_NAMES[r].ja).toBeTruthy();
+    expect(RANK_NAMES[r].en).toBeTruthy();
   });
 
   it("yokozuna has correct ja", () => {
@@ -94,17 +90,12 @@ describe("RANK_NAMES", () => {
 });
 
 describe("isSanyakuRank", () => {
-  it("returns true for sanyaku ranks", () => {
-    expect(isSanyakuRank("yokozuna")).toBe(true);
-    expect(isSanyakuRank("ozeki")).toBe(true);
-    expect(isSanyakuRank("sekiwake")).toBe(true);
-    expect(isSanyakuRank("komusubi")).toBe(true);
+  it.each(["yokozuna", "ozeki", "sekiwake", "komusubi"])("returns true for %s", (rank) => {
+    expect(isSanyakuRank(rank)).toBe(true);
   });
 
-  it("returns false for non-sanyaku ranks", () => {
-    expect(isSanyakuRank("maegashira")).toBe(false);
-    expect(isSanyakuRank("juryo")).toBe(false);
-    expect(isSanyakuRank("makushita")).toBe(false);
+  it.each(["maegashira", "juryo", "makushita"])("returns false for %s", (rank) => {
+    expect(isSanyakuRank(rank)).toBe(false);
   });
 
   it("returns false for unknown ranks", () => {
@@ -113,20 +104,12 @@ describe("isSanyakuRank", () => {
 });
 
 describe("isSekitoriRank", () => {
-  it("returns true for makuuchi and juryo", () => {
-    expect(isSekitoriRank("yokozuna")).toBe(true);
-    expect(isSekitoriRank("ozeki")).toBe(true);
-    expect(isSekitoriRank("sekiwake")).toBe(true);
-    expect(isSekitoriRank("komusubi")).toBe(true);
-    expect(isSekitoriRank("maegashira")).toBe(true);
-    expect(isSekitoriRank("juryo")).toBe(true);
+  it.each(["yokozuna", "ozeki", "sekiwake", "komusubi", "maegashira", "juryo"])("returns true for %s", (rank) => {
+    expect(isSekitoriRank(rank)).toBe(true);
   });
 
-  it("returns false for makushita and below", () => {
-    expect(isSekitoriRank("makushita")).toBe(false);
-    expect(isSekitoriRank("sandanme")).toBe(false);
-    expect(isSekitoriRank("jonidan")).toBe(false);
-    expect(isSekitoriRank("jonokuchi")).toBe(false);
+  it.each(["makushita", "sandanme", "jonidan", "jonokuchi"])("returns false for %s", (rank) => {
+    expect(isSekitoriRank(rank)).toBe(false);
   });
 });
 

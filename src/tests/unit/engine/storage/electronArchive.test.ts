@@ -28,6 +28,9 @@ describe("ElectronArchiveService", () => {
     upset: false,
     kenshoEnvelopes: 0,
     log: [],
+    momentumScore: 0,
+    inBoutInjury: null,
+    isTimeout: false,
   };
 
   const mockAwards: BashoResult[] = [

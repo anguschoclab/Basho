@@ -22,7 +22,6 @@ import type { Rikishi } from "../types/rikishi";
 import type { BashoState, BoutResult, BashoName } from "../types/basho";
 import type { WorldState } from "../types/world";
 import type { Side } from "../types/banzuke";
-import type { EngineSnapshot } from "../types/combat-spatial";
 // We import the B+ spatial physics runner
 import { resolveBoutPhysics, conditionMultiplier } from "./boutPhysics";
 // We import the pure narrative translator
@@ -95,6 +94,9 @@ function tryFusensho(bout: BoutContext, east: Rikishi, west: Rikishi): BoutResul
     isKinboshi: false,
     log: [{ phase: "finish", data: { event: "fusensho", absent: loser.id } }],
     kenshoEnvelopes: 0,
+    momentumScore: 0,
+    inBoutInjury: null,
+    isTimeout: false,
   };
 }
 
@@ -134,7 +136,7 @@ export function resolveBout(
   basho: BashoState,
   playerTactic?: import("../types/combat").BoutTactic,
   world?: WorldState
-): { result: BoutResult; impact: StateImpact; engineSnapshot?: EngineSnapshot } {
+): { result: BoutResult; impact: StateImpact } {
   const builder = createImpactBuilder("resolveBout");
 
   // 0. Fusensho — injured/retired rikishi cannot fight; opponent wins by walkover
@@ -184,7 +186,7 @@ export function resolveBout(
 
   // 1. Run B+ spatial physics engine
   const meta = world?.meta;
-  const { result, engineSnapshot } = resolveBoutPhysics(
+  const { result } = resolveBoutPhysics(
     ctxFinal,
     eastBout as Rikishi,
     westBout as Rikishi,
@@ -333,7 +335,7 @@ export function resolveBout(
   // Merge rivalry impact into main builder
   builder.merge(rivalryImpact);
 
-  return { result, impact: builder.build(), engineSnapshot };
+  return { result, impact: builder.build() };
 }
 
 /**
@@ -422,7 +424,7 @@ export function simulateBout(
   east: Rikishi,
   west: Rikishi,
   seed: string
-): { result: BoutResult; engineSnapshot?: EngineSnapshot } {
+): { result: BoutResult } {
   const fakeBasho: BashoState = {
     // Fold the caller's seed into the basho id so it actually reaches the physics
     // RNG (resolveBoutPhysics seeds from basho.id + day + rikishi ids). Without
@@ -443,6 +445,6 @@ export function simulateBout(
     rikishiEastId: east.id,
     rikishiWestId: west.id,
   };
-  const { result, engineSnapshot } = resolveBout(bout, east, west, fakeBasho);
-  return { result, engineSnapshot };
+  const { result } = resolveBout(bout, east, west, fakeBasho);
+  return { result };
 }

@@ -5,7 +5,6 @@
 
 import type { Rikishi } from "../types/rikishi";
 import type { BoutResult, BashoState } from "../types/basho";
-import type { EngineSnapshot } from "../types/combat-spatial";
 import { resolveBoutPhysicsImpl } from "./boutPhaseLoop";
 import {
   stat,
@@ -37,7 +36,7 @@ export {
 /**
  * Main entrance to bout physics.
  * Delegates to the B+ spatial engine (resolveBoutPhysicsImpl in boutPhaseLoop.ts).
- * Returns { result, engineSnapshot } for downstream consumers.
+ * Returns { result } for downstream consumers.
  */
 export function resolveBoutPhysics(
   bout: BoutContext,
@@ -45,6 +44,6 @@ export function resolveBoutPhysics(
   west: Rikishi,
   basho: BashoState,
   meta?: { tone: string; drift: Record<string, number> }
-): { result: BoutResult; engineSnapshot: EngineSnapshot } {
+): { result: BoutResult } {
   return resolveBoutPhysicsImpl(bout, east, west, basho, meta);
 }

@@ -1,0 +1,17 @@
+{
+  "injury_withdrawal": [
+    "%SHIKONA% has withdrawn from the basho due to a %AREA% injury sustained on day %DAY%.",
+    "A tough blow for %SHIKONA% — the %AREA% injury forces a kyujo withdrawal.",
+    "%SHIKONA% pulls out of the tournament on day %DAY% — the %AREA% injury proves too much."
+  ],
+  "pre_basho_withdrawal": [
+    "%SHIKONA% will sit out the entire basho — %REASON%.",
+    "%SHIKONA% has withdrawn from the tournament before it begins — %REASON%.",
+    "A full kyujo for %SHIKONA% — the %REASON% keeps him off the dohyo."
+  ],
+  "return_from_kyujo": [
+    "%SHIKONA% returns to the dohyo after missing %BASHOS_MISSED% basho(s) — welcome back.",
+    "Back in action — %SHIKONA% has recovered and returns from a %BASHOS_MISSED%-basho absence.",
+    "%SHIKONA% is back on the dohyo after %BASHOS_MISSED% tournament(s) away."
+  ]
+}

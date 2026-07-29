@@ -1,3 +1,8 @@
+/**
+ * Engine test utilities.
+ * Use for engine tests needing flat stat overrides. Functions: mockRikishi, makeMockWorld, makeMockBasho.
+ * Do not mix with `MockFactory.ts` in the same file. Pick one and stick with it.
+ */
 import type { Rikishi, RikishiStats } from "../types/rikishi";
 import type { CombatArchetype } from "../types/combat";
 
@@ -93,6 +98,8 @@ export function mockRikishi(
       preferredGrip: "none",
       preferredGripDepth: "standard",
       statModifiers: {},
+      counterFamily: "push",
+      archetypeBehavior: { tachiaiSpeedBonus: 0, lateralMovementBonus: 0, edgeEscapeBonus: 0, beltTorqueBonus: 0, pushVelocityBonus: 0 },
     },
     ...flatOverrides,
   } as Rikishi;

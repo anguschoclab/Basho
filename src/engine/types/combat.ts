@@ -17,6 +17,14 @@ export type CombatArchetype =
 export type GripPreference = "migi" | "hidari" | "none"; // Right-inside, Left-inside, or no preference
 export type GripDepthPreference = "maemitsu" | "deep" | "standard"; // Front-belt, Deep-back, or Standard
 
+export interface ArchetypeBehavior {
+  tachiaiSpeedBonus: number;
+  lateralMovementBonus: number;
+  edgeEscapeBonus: number;
+  beltTorqueBonus: number;
+  pushVelocityBonus: number;
+}
+
 export interface CombatProfile {
   archetype: CombatArchetype;
   // The % chance the AI will select a specific family during the Engagement Phase
@@ -33,6 +41,17 @@ export interface CombatProfile {
   // Note: 'power' maps to RikishiStats.power → Rikishi.power in the generation pipeline.
   statModifiers: Partial<Record<keyof RikishiStats | "weight" | "height" | "power", number>>;
   favoredKimarite?: string[];
+  /** The tactical family this archetype counters most effectively (from TACTICAL_MATRIX). */
+  counterFamily: TacticalFamily;
+  /** Per-archetype physics behavior modifiers applied during bout simulation. */
+  archetypeBehavior: ArchetypeBehavior;
+  /** Body type-based physics modifiers derived from height/weight ratio (5.1). */
+  bodyTypeBehavior?: {
+    pushVelocityBonus: number;
+    lateralMovementBonus: number;
+    beltTorqueBonus: number;
+    tachiaiSpeedBonus: number;
+  };
 }
 
 // Define the base tactical families

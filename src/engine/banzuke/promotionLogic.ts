@@ -26,6 +26,9 @@ function calculatePerformanceBonuses(perf: BashoPerformance): number {
   if (perf.junYusho) bonus += 2;
   if (perf.specialPrizes) bonus += Math.min(3, perf.specialPrizes);
   if (perf.kinboshi) bonus += Math.min(3, perf.kinboshi);
+  // Resilience bonuses: comeback wins and edge crisis survival (Gap 6)
+  if (perf.comebackWins) bonus += Math.min(2, perf.comebackWins);
+  if (perf.edgeCrisisSurvived) bonus += Math.min(2, Math.floor(perf.edgeCrisisSurvived / 2));
   return bonus;
 }
 
@@ -76,7 +79,9 @@ export function bestTierAllowed(
   if (rank === "yokozuna") return 1;
   if (rank === "ozeki" && demotedOzeki.has(entry.rikishiId)) return 3;
   if (rank === "ozeki" && perf?.promoteToYokozuna) return 1;
+  if (rank === "sekiwake" && perf?.promoteToOzeki) return 2;
   if (rank === "sekiwake" && (perf?.wins ?? 0) >= 11) return 2;
+  if (rank === "komusubi" && perf?.promoteToOzeki) return 2;
   if (rank === "komusubi" && (perf?.wins ?? 0) >= 10) return 3;
 
   if (rank === "maegashira") {

@@ -1,0 +1,409 @@
+{
+  "records": {
+    "both_contending": [
+      "%EAST_NAME% at %EAST_WINS% and %EAST_LOSSES%. %WEST_NAME% at %WEST_WINS% and %WEST_LOSSES%.",
+      "Both men with winning records — %EAST_NAME% %EAST_WINS%-%EAST_LOSSES%, %WEST_NAME% %WEST_WINS%-%WEST_LOSSES%.",
+      "Two contenders here — %EAST_NAME% at %EAST_WINS% and %WEST_LOSSES%, %WEST_NAME% also at %WEST_WINS% and %WEST_LOSSES%."
+    ],
+    "both_struggling": [
+      "%EAST_NAME% at %EAST_WINS% and %EAST_LOSSES%. %WEST_NAME% at %WEST_WINS% and %WEST_LOSSES%. A tough basho for both.",
+      "Both men looking for answers — %EAST_NAME% %EAST_WINS%-%EAST_LOSSES%, %WEST_NAME% %WEST_WINS%-%WEST_LOSSES%.",
+      "A difficult tournament for both — %EAST_NAME% at %EAST_WINS% and %WEST_LOSSES%, %WEST_NAME% at %WEST_WINS% and %WEST_LOSSES%."
+    ],
+    "one_struggling": [
+      "%EAST_NAME% at %EAST_WINS% and %EAST_LOSSES%, while %WEST_NAME% sits at %WEST_WINS% and %WEST_LOSSES%.",
+      "%EAST_NAME% with %EAST_WINS% wins and %EAST_LOSSES% losses. %WEST_NAME% at %WEST_WINS% and %WEST_LOSSES%.",
+      "A tale of two records — %EAST_NAME% %EAST_WINS%-%EAST_LOSSES%, %WEST_NAME% %WEST_WINS%-%WEST_LOSSES%."
+    ],
+    "both_even": [
+      "%EAST_NAME% and %WEST_NAME% both at %EAST_WINS% and %EAST_LOSSES%.",
+      "Identical records — both men at %EAST_WINS% and %EAST_LOSSES%.",
+      "Even Steven — %EAST_NAME% and %WEST_NAME% each with %EAST_WINS% wins and %EAST_LOSSES% losses."
+    ],
+    "championship_elimination": [
+      "Both men at %EAST_WINS% and %EAST_LOSSES% — this is essentially a championship elimination match.",
+      "%EAST_NAME% and %WEST_NAME% both at %EAST_WINS%-%EAST_LOSSES%. The yusho could hinge on this bout.",
+      "A crucial matchup — both at %EAST_WINS% and %EAST_LOSSES%. The loser falls out of contention."
+    ],
+    "winless": [
+      "%EAST_NAME% is winless after %DAY% days. The pressure is mounting.",
+      "Zero and %EAST_LOSSES% for %EAST_NAME%. When will the first win come?",
+      "%EAST_NAME% still searching for that first win — %EAST_LOSSES% losses so far this basho."
+    ]
+  },
+  "previous_basho": {
+    "standard": [
+      "%NAME% went %PREV_WINS% and %PREV_LOSSES% last tournament.",
+      "%NAME% is coming off a %PREV_WINS%-%PREV_LOSSES% basho.",
+      "Last time out, %NAME% finished at %PREV_WINS% and %PREV_LOSSES%."
+    ],
+    "kyujo": [
+      "%NAME% sat out the entire tournament last time.",
+      "%NAME% missed the last basho with injury — a full kyujo.",
+      "%NAME% did not compete last tournament — sat out all fifteen days."
+    ],
+    "yusho": [
+      "%NAME% is coming off a yusho — %PREV_WINS% and %PREV_LOSSES% with the championship.",
+      "%NAME% won the yusho last basho with a %PREV_WINS%-%PREV_LOSSES% record.",
+      "The defending champion %NAME% went %PREV_WINS% and %PREV_LOSSES% last time out."
+    ],
+    "both_relevant": [
+      "%EAST_NAME% went %EAST_PREV_WINS% and %EAST_PREV_LOSSES% last basho, %WEST_NAME% went %WEST_PREV_WINS% and %WEST_PREV_LOSSES%.",
+      "Both coming off notable tournaments — %EAST_NAME% at %EAST_PREV_WINS%-%EAST_PREV_LOSSES%, %WEST_NAME% at %WEST_PREV_WINS%-%WEST_PREV_LOSSES%.",
+      "Last basho: %EAST_NAME% %EAST_PREV_WINS% and %EAST_PREV_LOSSES%, %WEST_NAME% %WEST_PREV_WINS% and %WEST_PREV_LOSSES%."
+    ]
+  },
+  "career_high": {
+    "makuuchi": [
+      "%NAME% is competing at his personal high rank of Maegashira %RANK_NUMBER%.",
+      "%NAME% at a career-high rank — Maegashira %RANK_NUMBER%.",
+      "This is the highest rank %NAME% has ever held — Maegashira %RANK_NUMBER%."
+    ],
+    "juryo": [
+      "%NAME% is competing at his personal high rank of Juryo %RANK_NUMBER%.",
+      "%NAME% at a career-high — Juryo %RANK_NUMBER%.",
+      "The highest rank %NAME% has reached — Juryo %RANK_NUMBER%."
+    ],
+    "sanyaku": [
+      "%NAME% is competing at a career-high rank.",
+      "%NAME% has reached his highest-ever rank this basho.",
+      "A career-high rank for %NAME% — a testament to his dedication."
+    ]
+  },
+  "storylines": {
+    "kachi_chase": [
+      "%NAME% needs %NEEDED% more win%PLURAL% for kachi-koshi.",
+      "%NAME% is on the verge — %NEEDED% win%PLURAL% away from a winning record.",
+      "Just %NEEDED% more for %NAME% to secure kachi-koshi."
+    ],
+    "make_koshi_avoidance": [
+      "%NAME% cannot afford another loss — one more defeat means make-koshi.",
+      "The pressure is on %NAME% — one more loss and it's a losing tournament.",
+      "%NAME% is on the brink. One more loss will confirm make-koshi."
+    ],
+    "rookie": [
+      "%NAME% — the rookie, in only his %COUNT% top division tournament.",
+      "A makuuchi debut for %NAME% — still finding his feet in the top division.",
+      "%NAME% in just his %COUNT%nd top division tournament. The young fighter is learning."
+    ],
+    "tournament_count": [
+      "%NAME% in his %COUNT%th makuuchi tournament.",
+      "This is tournament number %COUNT% in the top division for %NAME%.",
+      "%NAME% — a veteran of %COUNT% top division basho."
+    ],
+    "consecutive_kachi": [
+      "%NAME% is going for kachi-koshi for the %ORDINAL% consecutive tournament.",
+      "%NAME% rides a %STREAK%-basho kachi-koshi streak into this bout.",
+      "Can %NAME% extend the %STREAK%-tournament kachi-koshi run today?"
+    ]
+  },
+  "h2h_streak": [
+    "%P1% has won the last %STREAK% straight against %P2%. Can the streak continue today?",
+    "A %STREAK%-bout winning streak for %P1% over %P2% — history favors one man today.",
+    "%P2% looks to finally break through, having lost %STREAK% in a row to %P1%."
+  ],
+  "injury": {
+    "generic": [
+      "%SHIKONA% has been battling injuries this tournament. How much will that factor today?",
+      "Questions remain about %SHIKONA%'s fitness after recent injury concerns.",
+      "The medical report flagged %SHIKONA% — can they overcome it today?"
+    ],
+    "nagging": [
+      "%SHIKONA% has been dealing with a nagging %AREA% injury. It's not enough to sit out, but it lingers.",
+      "A troublesome %AREA% has been bothering %SHIKONA% this tournament — far from 100%.",
+      "%SHIKONA% is fighting through a nagging %AREA% issue. How much will it factor today?"
+    ],
+    "struggling": [
+      "%SHIKONA% is clearly struggling with a %AREA% injury — in constant pain out there.",
+      "The %AREA% injury is really affecting %SHIKONA%. You can see the discomfort.",
+      "%SHIKONA% is far from fully fit — that %AREA% is a real problem heading into this bout."
+    ],
+    "specific_area": [
+      "%SHIKONA% has been troubled by a %AREA% injury — it's been a persistent issue.",
+      "That %AREA% injury for %SHIKONA% is well documented. The question is how much it limits him today.",
+      "The %AREA% has been a problem area for %SHIKONA% — constant pain, but he keeps fighting."
+    ]
+  },
+  "injury_return": [
+    "%SHIKONA% is back on the dohyo after injury — a welcome return for the fans.",
+    "Returning from injury, %SHIKONA% looks ready to compete again. How will the body hold up?",
+    "The layoff is over — %SHIKONA% steps back into the ring after time away recovering."
+  ],
+  "physical_comparison": [
+    "A stark physical contrast: %HEAVIER% outweighs %LIGHTER% by %WEIGHT_DIFF% kilograms.",
+    "%HEAVIER% brings %WEIGHT_DIFF% kg more to the dohyo than %LIGHTER% — will mass decide this bout?",
+    "The size gap is unmistakable — %HEAVIER% towers over %LIGHTER% by %HEIGHT_DIFF% centimeters."
+  ],
+  "style_matchup": [
+    "A classic clash of styles: %EAST%'s %EAST_STYLE% against %WEST%'s %WEST_STYLE%.",
+    "Tactical intrigue as %EAST_STYLE% meets %WEST_STYLE% in this matchup.",
+    "Two contrasting approaches — %EAST%'s %EAST_STYLE% versus %WEST%'s %WEST_STYLE%."
+  ],
+  "age_narrative": [
+    "A generational battle: %YOUNGER%, years from his prime, faces the veteran %OLDER%.",
+    "%OLDER% brings %AGE_DIFF% years of experience against the rising %YOUNGER%.",
+    "The age gap is %AGE_DIFF% years — %OLDER%'s wisdom against %YOUNGER%'s hunger."
+  ],
+  "battle_of_veterans": [
+    "Two veterans collide — %EAST% and %WEST% have seen it all across decades on the dohyo.",
+    "A battle of legends: %EAST% and %WEST%, both well past 30, still answering the bell.",
+    "The crowd appreciates this rare clash of veterans — %EAST% and %WEST% refuse to fade quietly."
+  ],
+  "career_milestone": [
+    "%SHIKONA% sits on the cusp of a career milestone — %MILESTONE% career wins.",
+    "One more victory brings %SHIKONA% to the %MILESTONE%-win plateau.",
+    "A milestone moment potentially awaits %SHIKONA% today at %MILESTONE% career wins."
+  ],
+  "career_bout_milestone": [
+    "%SHIKONA% approaches a career landmark — %MILESTONE% total bouts on the dohyo.",
+    "One more appearance brings %SHIKONA% to the %MILESTONE%-bout milestone.",
+    "A testament to longevity — %SHIKONA% nears %MILESTONE% career bouts."
+  ],
+  "bout_of_the_day": [
+    "This is the featured bout of the day — %EAST% versus %WEST% promises drama.",
+    "The highlight matchup: %EAST% and %WEST% square off in today's marquee bout.",
+    "All eyes on the dohyo — %EAST% versus %WEST% is the bout of the day."
+  ],
+  "spoiler": [
+    "Former %SPOILER_FORMER_RANK% %SPOILER% looks to play spoiler against %CONTENDER% today.",
+    "%SPOILER%, once a %SPOILER_FORMER_RANK%, stands in the path of the surging %CONTENDER%.",
+    "The veteran %SPOILER% aims to derail %CONTENDER%'s campaign — a classic spoiler role."
+  ],
+  "rank_debut": {
+    "shin_sekiwake": [
+      "Shin-sekiwake %SHIKONA% makes his debut at the rank today.",
+      "A new sekiwake — %SHIKONA% takes the dohyo at his elevated rank for the first time.",
+      "%SHIKONA% begins his sekiwake tenure with this bout."
+    ],
+    "shin_komusubi": [
+      "Shin-komusubi %SHIKONA% debuts at his new rank today.",
+      "%SHIKONA% steps onto the dohyo as a komusubi for the first time.",
+      "A proud moment for shin-komusubi %SHIKONA% in his first bout at the rank."
+    ],
+    "shin_maegashira": [
+      "Shin-maegashira %SHIKONA% at Maegashira %RANK_NUMBER% — a career-high debut.",
+      "%SHIKONA% makes his first appearance at the Maegashira %RANK_NUMBER% rank.",
+      "A new rank for %SHIKONA% — Maegashira %RANK_NUMBER% and rising."
+    ]
+  },
+  "playoff_bout": [
+    "A playoff bout to decide the yusho! %EAST% versus %WEST% — winner takes all.",
+    "Championship on the line — %EAST% and %WEST% face off in a yusho playoff.",
+    "The yusho hangs in the balance — %EAST% versus %WEST% in a decisive playoff bout.",
+    "The culmination of the basho is here — %EAST% and %WEST% for the Emperor's Cup.",
+    "A tiebreaker for glory — %EAST% meets %WEST% with the championship on the line.",
+    "The ultimate test remains — %EAST% and %WEST% square off in a high-stakes playoff.",
+    "It comes down to this — a sudden-death playoff between %EAST% and %WEST%.",
+    "Two contenders, one cup — %EAST% faces %WEST% in a monumental playoff."
+  ],
+  "ozeki_demotion_comeback": [
+    "Demoted from Ozeki, %SHIKONA% fights with something to prove.",
+    "The fallen pillar seeks redemption — %SHIKONA% returns to the dohyo with a point to make.",
+    "Stripped of the Ozeki rank, %SHIKONA% channels frustration into every bout.",
+    "Once an Ozeki, now fighting from below — %SHIKONA% carries the weight of demotion onto the dohyo."
+  ],
+  "son_of_stablemaster": [
+    "All the work I've put in thus far has been worth it — %SHIKONA% carries the family legacy.",
+    "The son of the stablemaster, %SHIKONA% fights with the weight of tradition on his shoulders.",
+    "%SHIKONA% grew up in this stable — every bout is a continuation of his family's story.",
+    "Born into the sumo life, %SHIKONA% represents the next generation of his stable's legacy."
+  ],
+  "career_phase_debut": [
+    "%SHIKONA% takes the dohyo early in his career — %BOUTS% bouts in, the future stretches ahead.",
+    "A young %SHIKONA% finds his footing in the professional ranks.",
+    "Still finding his way with just %BOUTS% career bouts, %SHIKONA% shows promise."
+  ],
+  "career_phase_prime": [
+    "%SHIKONA% stands at the peak of his powers — %AGE% years old and in his prime.",
+    "In his wrestling prime at %AGE%, %SHIKONA% embodies the best of his craft.",
+    "The prime years suit %SHIKONA% well — %BOUTS% bouts of hard-earned experience."
+  ],
+  "career_phase_decline": [
+    "At %AGE%, %SHIKONA% fights against time as much as his opponent.",
+    "The twilight years approach for %SHIKONA%, but the fire still burns.",
+    "%SHIKONA% may be past his peak at %AGE%, but wisdom compensates for fading speed."
+  ],
+  "career_phase_veteran": [
+    "A true veteran at %AGE%, %SHIKONA% has seen it all across %BOUTS% career bouts.",
+    "The veteran %SHIKONA% continues his remarkable longevity on the dohyo.",
+    "Years of battle have shaped %SHIKONA% into a grizzled veteran at %AGE%."
+  ],
+  "consecutive_kachi": [
+    "%SHIKONA% rides a %STREAK%-basho kachi-koshi streak into this bout.",
+    "Consistency defines %SHIKONA% — %STREAK% straight winning records coming in.",
+    "Can %SHIKONA% extend the %STREAK%-tournament kachi-koshi run today?"
+  ],
+  "kadoban": [
+    "%SHIKONA% fights for ozeki survival today — kadoban status hangs in the balance.",
+    "The pressure is immense for kadoban %SHIKONA% — a loss today could mean demotion.",
+    "Everything is on the line for %SHIKONA%, who enters the day in kadoban territory."
+  ],
+  "ozeki_return": [
+    "%SHIKONA% needs %NEEDED% more wins to regain his ozeki rank.",
+    "%SHIKONA% is one win away from securing his return to ozeki.",
+    "The road back to ozeki continues for %SHIKONA% — %NEEDED% wins still needed."
+  ],
+  "yokozuna_promotion": [
+    "%SHIKONA% is going for promotion to yokozuna. Cannot afford to lose.",
+    "%SHIKONA% is on a path to yokozuna if he can win the yusho. Every bout matters.",
+    "The yokozuna promotion talk is swirling around %SHIKONA%. No room for error."
+  ],
+  "hometown": [
+    "A homecoming for %SHIKONA%, fighting in %LOCATION% today.",
+    "The local crowd rallies behind %SHIKONA% — a %LOCATION% native on the dohyo.",
+    "%SHIKONA% grew up right here in %LOCATION%. The hometown support is palpable."
+  ],
+  "birthday": [
+    "A birthday bout for %SHIKONA% — can they celebrate with a victory?",
+    "%SHIKONA% marks another year today. What better gift than a win?",
+    "The crowd sings softly as %SHIKONA% enters on his birthday."
+  ],
+  "winless": [
+    "%SHIKONA% is still searching for that first win — %LOSSES% losses so far this basho.",
+    "The pressure mounts for %SHIKONA% at 0-%LOSSES%. When will the drought end?",
+    "A tough tournament for %SHIKONA%, winless through %LOSSES% bouts."
+  ],
+  "first_win": [
+    "%SHIKONA% finally gets on the board — but can they build momentum?",
+    "The first win is in the books for %SHIKONA%. Now the real work begins.",
+    "%SHIKONA% notched that elusive first victory — relief washes over the heya."
+  ],
+  "senshuraku": [
+    "Senshuraku — the final day. Everything is on the line.",
+    "The last day of the tournament. Champions are made on days like this.",
+    "A packed house for senshuraku. The drama reaches its climax today."
+  ],
+  "opening_day": [
+    "Day one of the basho. Fifteen days of sumo ahead.",
+    "The tournament begins. Everyone starts at zero.",
+    "Opening day — the slate is clean and the possibilities are endless."
+  ],
+  "early_days": [
+    "Still early days at the basho — only day %DAY%.",
+    "Only day %DAY%, but already some surprises emerging.",
+    "It's early in the tournament, but every win counts."
+  ],
+  "mid_tournament": [
+    "We're at the halfway point of the tournament.",
+    "After %DAY% days of action, the leaderboard is starting to take shape.",
+    "Day %DAY% — the tournament is heating up and the contenders are separating from the pack."
+  ],
+  "late_tournament": [
+    "The tournament is entering its final stretch.",
+    "Only a few days left and the yusho race is heating up.",
+    "Day %DAY% — every bout from here carries championship implications."
+  ],
+  "final_day": [
+    "The last day of the basho. Champions will be decided today.",
+    "Day fifteen — the culmination of two weeks of sumo.",
+    "The final day. Everything that has happened before comes down to this."
+  ],
+  "penultimate": [
+    "Day 14 — one day before senshuraku. The race is tightening.",
+    "The penultimate day. Every bout carries yusho implications.",
+    "With one day remaining, the pressure could not be higher."
+  ],
+  "title_stakes": [
+    "Title implications are clear — %EAST% and %WEST% both have yusho aspirations.",
+    "This bout could shape the final standings. The championship race is wide open.",
+    "A potential yusho decider — the crowd senses the magnitude of this matchup."
+  ],
+  "leaderboard": [
+    "%SHIKONA% leads the tournament at %WINS% wins. %CHASERS% rikishi just one win behind.",
+    "The current leader %SHIKONA% sits at %WINS% wins. The chase pack is running out of days.",
+    "%SHIKONA% tops the leaderboard with %WINS% victories. The pressure of the lead."
+  ],
+  "leaderboard_co_leaders": [
+    "%SHIKONA% are the co-leaders at %WINS% wins. %CHASERS% rikishi just one win behind.",
+    "Tied at the top — %SHIKONA% share the lead at %WINS%. The yusho race is wide open.",
+    "Two at the summit: %SHIKONA% co-leading at %WINS% wins with %CHASERS% chasers close behind."
+  ],
+  "yusho_race": [
+    "This is essentially a championship elimination match. %EAST% and %WEST% both in contention.",
+    "The yusho is on the line — %EAST% and %WEST% both within striking distance of the lead.",
+    "A massive bout in the yusho race. %EAST% versus %WEST% with the championship in sight."
+  ],
+  "playoff_implications": [
+    "A playoff could be on the cards if this one goes to %EAST%.",
+    "With both men at the top, a playoff scenario looms large.",
+    "The yusho could come down to a playoff — every bout from here is crucial."
+  ],
+  "kensho": [
+    "Sponsor banners line the kokugikan — %BANNERS% kensho envelopes await the winner of this bout.",
+    "The prize money is stacked high today: %BANNERS% kensho payouts on the line for %EAST% versus %WEST%.",
+    "A lucrative bout for the sponsors — %BANNERS% kensho envelopes hang in the balance."
+  ],
+  "body_type": {
+    "tower": [
+      "The towering frame of %SHIKONA% casts a long shadow across the dohyo.",
+      "%SHIKONA%'s height gives him a leverage edge few can match.",
+      "At his full height, %SHIKONA% looks down on the competition — literally."
+    ],
+    "barrel": [
+      "%SHIKONA% is built like a barrel — low center of gravity and deceptively powerful.",
+      "The stocky, powerful frame of %SHIKONA% makes him a nightmare in the belt battle.",
+      "Compact and dense, %SHIKONA% uses his barrel-chested build to anchor against bigger men."
+    ],
+    "compact": [
+      "%SHIKONA% is compact and agile — a low-slung wrestler who moves with surprising quickness.",
+      "The compact build of %SHIKONA% gives him explosive mobility off the tachiai.",
+      "Don't underestimate the compact frame — %SHIKONA% turns leverage into victory."
+    ],
+    "lanky": [
+      "%SHIKONA% is lean and wiry — all arms and legs, using reach to control the bout.",
+      "The lanky frame of %SHIKONA% belies a crafty grappler who uses his length well.",
+      "Long-limbed and lean, %SHIKONA% fights with a style that maximizes every inch."
+    ]
+  },
+  "debut_backstory": [
+    "Making his makuuchi debut, %SHIKONA% brings %BACKSTORY% to the sport's biggest stage.",
+    "A makuuchi debut for %SHIKONA% — %BACKSTORY% Now he faces the elite.",
+    "The rookie %SHIKONA% arrives in makuuchi. %BACKSTORY% Today, the story continues."
+  ],
+  "heya_style": {
+    "oshi": [
+      "Trained in the pusher's tradition at %HEYA_NAME%, %SHIKONA% embodies the stable's aggressive oshi style.",
+      "%HEYA_NAME%'s emphasis on forward pressure shows in %SHIKONA%'s relentless attacking."
+    ],
+    "yotsu": [
+      "From the belt-focused dojo of %HEYA_NAME%, %SHIKONA% carries the stable's yotsu tradition.",
+      "%HEYA_NAME% breeds belt specialists — %SHIKONA% is no exception, favoring the inside grip."
+    ],
+    "tsuppari": [
+      "The tsuppari heritage of %HEYA_NAME% is alive in %SHIKONA%'s rapid-fire thrusting attack.",
+      "%SHIKONA% channels %HEYA_NAME%'s tradition of blistering tsuppari at the tachiai."
+    ],
+    "defensive": [
+      "%HEYA_NAME% teaches patience — %SHIKONA% waits for the mistake, then punishes it.",
+      "The counter-wrestling philosophy of %HEYA_NAME% is reflected in %SHIKONA%'s measured approach."
+    ],
+    "hybrid": [
+      "%HEYA_NAME% trains all-rounders, and %SHIKONA% reflects that balanced approach.",
+      "From %HEYA_NAME%'s versatile dojo comes %SHIKONA%, equally comfortable pushing or grappling."
+    ],
+    "speedster": [
+      "%HEYA_NAME% values speed above all — %SHIKONA%'s quick feet are the product of that philosophy.",
+      "The speed-first training at %HEYA_NAME% shows in %SHIKONA%'s explosive lateral movement."
+    ],
+    "trickster": [
+      "%HEYA_NAME% embraces the unconventional — %SHIKONA% brings trickery and feints to the dohyo.",
+      "From %HEYA_NAME%'s creative tradition comes %SHIKONA%, a wrestler of surprises."
+    ],
+    "giant": [
+      "%HEYA_NAME% has produced giants before, and %SHIKONA% carries that imposing tradition forward.",
+      "The power-first philosophy of %HEYA_NAME% is embodied in %SHIKONA%'s massive frame."
+    ]
+  },
+  "archetype_evolution": [
+    "%SHIKONA% has evolved from a %OLD_STYLE% to a %NEW_STYLE% over %YEARS% years — a testament to adaptability.",
+    "Once a pure %OLD_STYLE%, %SHIKONA% has reinvented himself as a %NEW_STYLE% — the dohyo rewards flexibility.",
+    "The years have changed %SHIKONA%: from %OLD_STYLE% to %NEW_STYLE%, a career of adaptation."
+  ],
+  "archetype_counter": [
+    "A tactical chess match: %EAST%'s %EAST_STYLE% against the counter-wrestling of %WEST%'s %WEST_STYLE%.",
+    "%WEST%'s %WEST_STYLE% is tailor-made to neutralize %EAST%'s %EAST_STYLE% — the counter is the story here.",
+    "Watch the counter: %WEST% reads %EAST%'s %EAST_STYLE% and looks to turn it against him.",
+    "%EAST%'s aggressive %EAST_STYLE% could walk right into %WEST%'s counter trap.",
+    "The counter-tactic is set — %WEST% has the blueprint to defuse %EAST%'s %EAST_STYLE%."
+  ]
+}

@@ -44,7 +44,8 @@ export interface Milestone {
     | "kinboshi"
     | "stats_record"
     | "retirement"
-    | "shikona_change";
+    | "shikona_change"
+    | "ozeki_demotion_comeback_yusho";
   title: string;
   description: string;
   date: { year: number; month: number };

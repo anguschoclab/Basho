@@ -1,4 +1,5 @@
-import archData from "./archive.json";
+import registryData from "./registry.json";
+import vocabularyData from "./vocabulary.json";
 import { SeededRNG } from "../rng";
 import type { NarrativeContext } from "../types/events";
 import { warn } from "../utils/Logger";
@@ -24,17 +25,67 @@ export interface BardArchive {
   version: string;
   registry: Record<string, Record<string, RegistryEntry>>;
   domains: Record<string, unknown>;
-  matrix: unknown;
-  digests: unknown[];
+}
+
+type DomainMap = Record<string, unknown>;
+
+type VocabLevel = { adjectives: string[]; verbs: string[]; adverbs: string[] };
+type VocabTable = Record<string, VocabLevel>;
+const vocabulary = vocabularyData as unknown as VocabTable;
+
+function pickVocabWord(type: "adjectives" | "verbs" | "adverbs", intensity: number, seedText: string): string {
+  const level = vocabulary[`intensity_${intensity}`] || vocabulary.intensity_2;
+  const words = level[type];
+  if (!words || words.length === 0) return "";
+  let hash = 0;
+  for (let i = 0; i < seedText.length; i++) {
+    hash = ((hash << 5) - hash + seedText.charCodeAt(i)) | 0;
+  }
+  return words[Math.abs(hash) % words.length];
 }
 
 /**
  * The Bard Engine v2.2: A Data-Driven Reactive Narrative System.
  * Ref: Phase 2 exhaustive refactor.
  */
-const archive = archData as unknown as BardArchive;
+const registry = registryData as unknown as Record<string, Record<string, RegistryEntry>>;
+
+let domainsPromise: Promise<DomainMap> | null = null;
+let domainsData: DomainMap | null = null;
+const domainCache = new Map<string, unknown>();
+const domainPromises = new Map<string, Promise<void>>();
+
 let lruCache: string[] = [];
 const MAX_CACHE_SIZE = 50;
+
+const ALL_DOMAIN_NAMES = [
+  "combat", "medical", "scouting", "institutional", "world", "media",
+  "system", "events", "rikishi", "npc", "ui", "h2h", "training",
+  "oyakata", "strategy", "dynasty", "pre_bout", "post_bout", "kyujo",
+  "sansho_ceremony", "interview", "ydc_accountability",
+  "post_basho_press", "playoff",
+];
+
+async function loadDomainsInternal(): Promise<DomainMap> {
+  await Promise.all(
+    ALL_DOMAIN_NAMES.map((name) => loadDomainInternal(name))
+  );
+  const result: DomainMap = {};
+  for (const name of ALL_DOMAIN_NAMES) {
+    result[name] = domainCache.get(name);
+  }
+  domainsData = result;
+  return result;
+}
+
+async function loadDomainInternal(name: string): Promise<void> {
+  const mod = await import(`./domains/${name}.json`);
+  domainCache.set(name, mod.default);
+}
+
+function getDomains(): DomainMap | null {
+  return domainsData;
+}
 
 function formatCurrency(amount: number): string {
   return formatCurrencyEnUS(amount, "en-US");
@@ -60,17 +111,38 @@ function updateCache(template: string) {
  */
 function getOptions(path: string, intensity: number): string[] {
   const keys = path.split(".");
-  let current: unknown = archive;
+  let current: unknown;
+  let startIndex = 0;
 
-  // Check if path starts with root-level keys (registry, matrix, digests)
-  const isRootKey = ["registry", "matrix", "digests"].includes(keys[0]);
+  // Check if path starts with the registry root key
+  const isRootKey = keys[0] === "registry";
 
-  if (!isRootKey && keys[0] !== "domains") {
-    // Legacy support: auto-prefix with 'domains' if not explicitly provided
-    current = archive.domains;
+  if (isRootKey) {
+    current = registry;
+    startIndex = 1; // skip 'registry' prefix
+  } else if (keys[0] === "domains") {
+    // Explicit 'domains' prefix — use bulk-loaded domains
+    current = getDomains();
+    if (!current) return [];
+    startIndex = 1; // skip 'domains' prefix
+  } else {
+    // Legacy support: auto-prefix with 'domains' — use per-domain cache
+    const domainName = keys[0];
+    if (domainCache.has(domainName)) {
+      current = domainCache.get(domainName);
+      startIndex = 1; // skip domain name prefix
+    } else if (domainsData) {
+      // Fall back to bulk-loaded domains if available
+      current = domainsData[domainName];
+      if (current === undefined) return [];
+      startIndex = 1; // skip domain name prefix
+    } else {
+      return [];
+    }
   }
 
-  for (const key of keys) {
+  for (let i = startIndex; i < keys.length; i++) {
+    const key = keys[i];
     if (current && typeof current === "object" && key in current) {
       current = (current as Record<string, unknown>)[key];
     } else {
@@ -112,8 +184,22 @@ export function interpolate(text: string, context: NarrativeContext): string {
   const MAX_CONTEXT_VALUE_LENGTH = 2000;
   const MAX_INTERPOLATED_LENGTH = 10000;
 
+  const intensity = typeof context.intensity === "number" ? context.intensity : 2;
+
   const result = text.replace(pattern, (_match, p1, p2) => {
     const key = (p1 || p2) as string;
+
+    // Vocabulary tokens: %ADJ%, %VERB%, %ADV%
+    if (key === "ADJ") {
+      return pickVocabWord("adjectives", intensity, text);
+    }
+    if (key === "VERB") {
+      return pickVocabWord("verbs", intensity, text);
+    }
+    if (key === "ADV") {
+      return pickVocabWord("adverbs", intensity, text);
+    }
+
     const value = context[key] ?? context[key.toLowerCase()];
 
     if (value === undefined || value === null) {
@@ -220,6 +306,53 @@ export function interpolate(text: string, context: NarrativeContext): string {
 
 export const BardEngine = {
   /**
+   * Pre-loads domain templates so resolve/has can work synchronously.
+   * Returns a cached promise — safe to call multiple times.
+   */
+  loadDomains(): Promise<DomainMap> {
+    if (!domainsPromise) {
+      domainsPromise = loadDomainsInternal();
+    }
+    return domainsPromise;
+  },
+
+  /**
+   * Ensures specific domains are loaded for synchronous resolve/has calls.
+   * Loads each domain file individually via dynamic import.
+   */
+  async ensureDomains(names: string[]): Promise<void> {
+    const toLoad = names.filter((n) => !domainCache.has(n) && !domainPromises.has(n));
+    if (toLoad.length === 0) return;
+    const promises = toLoad.map(async (name) => {
+      if (!domainPromises.has(name)) {
+        const p = loadDomainInternal(name).then(() => {
+          domainPromises.delete(name);
+        });
+        domainPromises.set(name, p);
+      }
+      return domainPromises.get(name)!;
+    });
+    await Promise.all(promises);
+  },
+
+  /**
+   * Checks if a specific domain has been loaded (via ensureDomains or loadDomains).
+   */
+  isDomainLoaded(name: string): boolean {
+    return domainCache.has(name);
+  },
+
+  /**
+   * Resets all domain caches. Used in test cleanup to prevent state pollution.
+   */
+  resetDomains(): void {
+    domainsPromise = null;
+    domainsData = null;
+    domainCache.clear();
+    domainPromises.clear();
+  },
+
+  /**
    * Resolves a narrative path into a final interpolated string.
    */
   resolve(rng: SeededRNG, path: ResolutionPath, context: NarrativeContext = {}): BardResult {
@@ -275,7 +408,6 @@ export const BardEngine = {
    * Useful for the UI/Presenters to get 'label', 'labelJa', and 'description'.
    */
   getRegistryEntry(domain: string, id: string): RegistryEntry | null {
-    const registry = archive.registry;
     if (!registry || !registry[domain]) return null;
     return registry[domain][id] || null;
   },

@@ -10,3 +10,10 @@
 ## 2026-07-17 - Keyboard Accessible Event Log
 **Learning:** In this app, clickable div elements (like event log items) often lack keyboard support (tabIndex, role, onKeyDown) preventing users from navigating lists via keyboard.
 **Action:** Add `role="button"`, `tabIndex={0}`, `onKeyDown` space/enter handlers, and `focus-visible` classes to custom interactive list elements.
+## 2026-07-27 - Keyboard Accessible Roster List Items
+**Learning:** In the Dashboard Roster widget, items acts as toggle buttons but were missing complete keyboard support, preventing non-mouse users from selecting items to compare.
+**Action:** Always ensure that custom list elements behaving like interactive controls have `role="button"`, `tabIndex={0}`, `onKeyDown` handlers for Enter/Space, and visible focus styles (`focus-visible`).
+
+## 2024-07-28 - Interactive Non-Button Elements Need Keyboard Support
+**Learning:** In React, custom components acting as buttons (like clickable `<th>` headers for sorting or `<Badge>` components for filtering) often miss keyboard accessibility out of the box because they lack native focus and key handling.
+**Action:** When adding `onClick` to non-button elements, always pair it with `role="button"`, `tabIndex={0}`, a keyboard handler (`onKeyDown` for "Enter" and "Space"), and explicit `focus-visible` outline styles.

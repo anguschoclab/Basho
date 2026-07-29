@@ -1,5 +1,4 @@
 /**
- * @vitest-environment jsdom
  *
  * Focused integration test for the SuccessionModal render block in Dashboard.
  * Mocks all dashboard widgets, AppLayout, and companion modals to isolate the

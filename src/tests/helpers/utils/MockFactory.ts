@@ -1,13 +1,15 @@
-import type { WorldState } from "../../engine/types/world";
-import type { Rikishi } from "../../engine/types/rikishi";
-import type { Heya } from "../../engine/types/heya";
-import type { Oyakata } from "../../engine/types/oyakata";
-import type { Id } from "../../engine/types/common";
-import type { BashoState } from "../../engine/types/basho";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Heya } from "@/engine/types/heya";
+import type { Oyakata } from "@/engine/types/oyakata";
+import type { Id } from "@/engine/types/common";
+import type { BashoState } from "@/engine/types/basho";
 
 /**
  * MockFactory
  * Provides type-safe generators for engine entities.
+ * Use for new tests requiring type-safe mocks. Supports createWorld, createRikishi, createHeya.
+ * Do not mix with `utils.ts` helpers in the same file. Pick one and stick with it.
  */
 export const MockFactory = {
   createWorld(overrides: Partial<WorldState> = {}): WorldState {
@@ -181,7 +183,7 @@ export const MockFactory = {
       prestige: 50,
       funds: 5000000,
       scandalScore: 0,
-      governanceStatus: "compliant",
+      governanceStatus: "good_standing",
       facilities: { training: 10, recovery: 10, nutrition: 10 },
       riskIndicators: { financial: false, governance: false, rivalry: false },
       lineage: [],
@@ -206,8 +208,8 @@ export const MockFactory = {
 
   createStaff(
     id: Id,
-    overrides: Partial<import("../../engine/types/staff").Staff> = {}
-  ): import("../../engine/types/staff").Staff {
+    overrides: Partial<import("@/engine/types/staff").Staff> = {}
+  ): import("@/engine/types/staff").Staff {
     return {
       id,
       name: `Staff ${id}`,
@@ -217,13 +219,13 @@ export const MockFactory = {
       competenceBands: { primary: "strong" },
       heyaId: "heya_default",
       ...overrides,
-    } as import("../../engine/types/staff").Staff;
+    } as import("@/engine/types/staff").Staff;
   },
 
   createCandidate(
     id: Id,
-    overrides: Partial<import("../../engine/types/talent").TalentCandidate> = {}
-  ): import("../../engine/types/talent").TalentCandidate {
+    overrides: Partial<import("@/engine/types/talent").TalentCandidate> = {}
+  ): import("@/engine/types/talent").TalentCandidate {
     return {
       candidateId: id,
       personId: `person-${id}`,
@@ -250,12 +252,12 @@ export const MockFactory = {
       talentSeed: 50,
       temperament: { discipline: 50, volatility: 30 },
       ...overrides,
-    } as import("../../engine/types/talent").TalentCandidate;
+    } as import("@/engine/types/talent").TalentCandidate;
   },
 
   createTalentPool(
-    overrides: Partial<import("../../engine/types/talent").TalentPoolWorldState> = {}
-  ): import("../../engine/types/talent").TalentPoolWorldState {
+    overrides: Partial<import("@/engine/types/talent").TalentPoolWorldState> = {}
+  ): import("@/engine/types/talent").TalentPoolWorldState {
     return {
       version: "1.0.0",
       lastYearlyRefreshYear: 2026,
@@ -299,6 +301,6 @@ export const MockFactory = {
         },
       },
       ...overrides,
-    } as import("../../engine/types/talent").TalentPoolWorldState;
+    } as import("@/engine/types/talent").TalentPoolWorldState;
   },
 };

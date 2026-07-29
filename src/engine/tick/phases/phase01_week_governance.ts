@@ -56,16 +56,17 @@ export function phase01_week_governance(world: WorldState): StateImpact {
     }
 
     // 2. Alert if crossing critical threshold (player only)
+    const alertScore = updates.scandalScore ?? heya.scandalScore;
     if (
-      heya.scandalScore != null &&
-      heya.scandalScore >= SCANDAL_SCORE_ALERT_THRESHOLD &&
+      alertScore != null &&
+      alertScore >= SCANDAL_SCORE_ALERT_THRESHOLD &&
       heya.id === world.playerHeyaId
     ) {
       builder.logEvent(
         "GOVERNANCE_RULING",
         "discipline",
         {
-          score: heya.scandalScore,
+          score: alertScore,
           incident: "governance_warning",
           reason: "Scandal threshold exceeded",
         },
@@ -74,7 +75,7 @@ export function phase01_week_governance(world: WorldState): StateImpact {
     }
 
     // 3. Status Transition Logic
-    const score = heya.scandalScore ?? 0;
+    const score = updates.scandalScore ?? heya.scandalScore ?? 0;
     const newStatus: GovernanceStatus =
       score >= SCANDAL_SCORE_HIGH_THRESHOLD
         ? "sanctioned"

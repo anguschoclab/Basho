@@ -186,6 +186,7 @@ export interface RikishiCareerDataDTO {
   citizenshipStatus: string;
   yearsToNaturalization: number;
   consecutiveStrongOzeki: number;
+  consecutiveStrongSekiwake: number;
 }
 
 /** Lineage (mentor/mentee relationships) */
@@ -272,6 +273,7 @@ export interface UIRosterEntry {
   rankDelta?: UIRankDelta;
   archetypeLabel?: string;
   consecutiveStrongOzeki: number;
+  consecutiveStrongSekiwake: number;
   streakLabel: string;
   winPercentage: number;
   citizenshipStatus: string;

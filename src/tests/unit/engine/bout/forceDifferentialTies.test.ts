@@ -27,15 +27,14 @@ describe("force-differential physics — tie scenarios", () => {
     const bout = { id: "tie-test-001", day: 1, rikishiEastId: "east", rikishiWestId: "west" };
     const basho = makeMockBasho();
 
-    const { result, engineSnapshot } = resolveBoutPhysics(bout, east, west, basho);
+    const { result } = resolveBoutPhysics(bout, east, west, basho);
 
     // Bout should resolve (no infinite loop)
     expect(result).toBeDefined();
     expect(result.winner).toBeDefined();
 
-    // In a true tie, balance values should be similar (neither significantly destabilized)
-    const balanceDiff = Math.abs(engineSnapshot.balanceEast - engineSnapshot.balanceWest);
-    expect(balanceDiff).toBeLessThan(20); // Allow some variation but not extreme imbalance
+    // In a true tie, momentum should be near zero
+    expect(Math.abs(result.momentumScore)).toBeLessThan(20);
   });
 
   it("belt battle with equal torque results in no retreat/destabilization", () => {
@@ -54,15 +53,14 @@ describe("force-differential physics — tie scenarios", () => {
     const bout = { id: "tie-test-002", day: 1, rikishiEastId: "east", rikishiWestId: "west" };
     const basho = makeMockBasho();
 
-    const { result, engineSnapshot } = resolveBoutPhysics(bout, east, west, basho);
+    const { result } = resolveBoutPhysics(bout, east, west, basho);
 
     // Bout should resolve
     expect(result).toBeDefined();
     expect(result.winner).toBeDefined();
 
-    // Balance should be reasonable (not extremely imbalanced)
-    const balanceDiff = Math.abs(engineSnapshot.balanceEast - engineSnapshot.balanceWest);
-    expect(balanceDiff).toBeLessThan(40);
+    // Momentum should be reasonable (not extremely imbalanced)
+    expect(Math.abs(result.momentumScore)).toBeLessThan(40);
   });
 
   it("jitter is still applied to contestLine for variation", () => {
@@ -116,13 +114,13 @@ describe("force-differential physics — tie scenarios", () => {
     const bout = { id: "mass-test", day: 1, rikishiEastId: "east", rikishiWestId: "west" };
     const basho = makeMockBasho();
 
-    const { result, engineSnapshot } = resolveBoutPhysics(bout, east, west, basho);
+    const { result } = resolveBoutPhysics(bout, east, west, basho);
 
     // Bout should resolve
     expect(result).toBeDefined();
 
     // East should have advantage due to mass (may not always win due to other factors)
     // but the physics should reflect the mass differential
-    expect(engineSnapshot).toBeDefined();
+    expect(result.winner).toBeDefined();
   });
 });

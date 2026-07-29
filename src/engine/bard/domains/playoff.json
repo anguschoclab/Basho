@@ -1,0 +1,29 @@
+{
+  "lower_division": {
+    "intro": [
+      "A %DIVISION% playoff to decide the divisional championship!",
+      "The %DIVISION% title goes to a playoff — tension fills the arena.",
+      "Multiple contenders tied for the %DIVISION% yusho — a playoff is required!"
+    ],
+    "multi_man": [
+      "A %COUNT%-man playoff for division %DIVISION% — the schedule stretches on!",
+      "%DIVISION% sees an extraordinary %COUNT%-way playoff to determine the champion.",
+      "The %DIVISION% division needs a %COUNT%-man playoff — the crowd settles in for a long afternoon."
+    ],
+    "victory": [
+      "%WINNER% claims the %DIVISION% championship in a thrilling playoff!",
+      "%WINNER% emerges victorious from the %DIVISION% playoff — a hard-fought title.",
+      "The %DIVISION% yusho goes to %WINNER% after a grueling playoff sequence."
+    ]
+  },
+  "schedule_delay": [
+    "All these playoffs combined added an extra 35 minutes to the schedule.",
+    "The schedule was actually progressing too quickly, causing judges to slow it down.",
+    "Multiple division playoffs have extended the day's program considerably."
+  ],
+  "justice_done": [
+    "There was a strong sense of justice done when %SHIKONA% took that playoff.",
+    "The controversial call earlier in the basho is avenged — %SHIKONA% wins the playoff!",
+    "%SHIKONA%'s playoff victory carries extra weight after the monoii loss that preceded it."
+  ]
+}

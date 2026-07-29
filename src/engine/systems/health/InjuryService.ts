@@ -262,6 +262,7 @@ export function tickWeekRecovery(world: WorldState): StateImpact {
       builder.updateRikishi(rikishi.id, {
         injured: false,
         injuryWeeksRemaining: 0,
+        recentlyReturnedFromInjury: true,
       });
 
       builder.updateRikishiNestedField(rikishi.id, "currentInjury", undefined);

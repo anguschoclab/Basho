@@ -1,0 +1,37 @@
+{
+  "first_meeting": [
+    "These two are meeting for the very first time in the ring.",
+    "A fresh matchup today; no prior history between these two.",
+    "The crowd leans forward for this first-ever encounter.",
+    "No data exists for this matchup - it's a complete unknown."
+  ],
+  "domination": [
+    "%P1% has absolutely dominated this matchup, leading the series %WINS%-%LOSSES%.",
+    "%P2% has struggled historically here, winning only %LOSSES% of their %TOTAL% meetings.",
+    "History is heavily on %P1%'s side today with a commanding %WINS%-%LOSSES% record."
+  ],
+  "deadlock": [
+    "This is as close as it gets—a %WINS%-%LOSSES% career split between them.",
+    "A true rivalry! The record stands at %WINS% wins to %LOSSES%.",
+    "Neither man has been able to gain a decisive edge in this series."
+  ],
+  "streak": [
+    "%P1% enters the ring confident, having won the last %STREAK% meetings against %P2%.",
+    "%P1% is desperate to snap a %STREAK%-bout losing streak against %P2%."
+  ],
+  "recent": [
+    "Last time they met on Day %DAY%, %WINNER% won decisively by %KIMARITE%.",
+    "%LOSER% will be looking for revenge after that %KIMARITE% loss in the previous basho.",
+    "Fans remember their last bout well—a crushing %KIMARITE% victory for %WINNER%."
+  ],
+  "winless": [
+    "%P2% has never defeated %P1% in %TOTAL% meetings. Will today be different?",
+    "An incredible streak — %P1% has won all %TOTAL% of their encounters. %P2% is still searching for that first win.",
+    "%P2% is winless against %P1% across %TOTAL% bouts. The psychological edge is enormous."
+  ],
+  "career_parallel": [
+    "Amazingly, both enter this bout with %WINS% career wins each. A true parallel.",
+    "An incredible stat — %P1% and %P2% both sit at %WINS% career victories. Destiny on the dohyo?",
+    "Level pegging on career wins: both men have %WINS%. Something has to give today."
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "venues": {
+    "Tokyo": {
+      "entrance": "Day %DAY% at the Ryogoku Kokugikan.",
+      "closing": "The sun sets over the Sumida River as the fans depart."
+    },
+    "Osaka": {
+      "entrance": [
+        "Day %DAY% at the Edion Arena Osaka — the spring basho is underway.",
+        "The Osaka crowd fills the seats for Day %DAY% of the Haru Basho.",
+        "Springtime in Osaka! Day %DAY% begins at the Edion Arena.",
+        "A packed house in Osaka for Day %DAY% of the tournament."
+      ],
+      "closing": [
+        "The Osaka crowd files out into the spring evening.",
+        "Edion Arena falls quiet as another day of sumo concludes."
+      ]
+    },
+    "Nagoya": {
+      "entrance": [
+        "Day %DAY% at the Aichi Prefectural Gymnasium — the Nagoya Basho begins.",
+        "The Nagoya faithful gather for Day %DAY% of the July tournament.",
+        "Summer heat in Nagoya! Day %DAY% kicks off at the Dolphins Arena.",
+        "Aichi Prefectural Gymnasium roars to life for Day %DAY%."
+      ],
+      "closing": [
+        "The Nagoya crowd departs into the humid summer night.",
+        "Another day ends at the Dolphins Arena in Nagoya."
+      ]
+    },
+    "Fukuoka": {
+      "entrance": [
+        "Day %DAY% at the Fukuoka Kokusai Center — the Kyushu Basho is here.",
+        "The Fukuoka crowd settles in for Day %DAY% of the November tournament.",
+        "Autumn in Kyushu! Day %DAY% begins at the Kokusai Center.",
+        "A warm welcome in Fukuoka for Day %DAY% of the basho."
+      ],
+      "closing": [
+        "The Fukuoka crowd disperses into the cool November evening.",
+        "Kokusai Center goes dark as Day %DAY% concludes in Kyushu."
+      ]
+    }
+  },
+  "seasonal": {
+    "winter": [
+      "Cold winds blow across the Kokugikan as the tournament begins.",
+      "The fresh spirit of the new year fills the arena."
+    ],
+    "summer": [
+      "Heat shimmers over the dohyo in the height of summer.",
+      "Fans wave uchiwa as the temperature rises with the action."
+    ]
+  }
+}

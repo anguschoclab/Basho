@@ -72,4 +72,44 @@ describe("getNarrationLines", () => {
     const lines = getNarrationLines(result, east, west);
     expect(lines).toEqual(["Test line"]);
   });
+
+  it("filters out pbpLines with empty or short text (length <= 2)", () => {
+    const east = makeUIRikishi("r-east", "Asanoyama");
+    const west = makeUIRikishi("r-west", "Terunofuji");
+    const result = makeBoutResult({
+      pbpLines: [
+        { text: "Valid line", id: "1", phase: "opening" },
+        { text: "", id: "2", phase: "opening" },
+        { text: "ab", id: "3", phase: "opening" },
+        { text: "Another valid line", id: "4", phase: "finish" },
+      ],
+    });
+
+    const lines = getNarrationLines(result, east, west);
+    expect(lines).toEqual(["Valid line", "Another valid line"]);
+  });
+
+  it("returns fallback when pbpLines is an empty array", () => {
+    const east = makeUIRikishi("r-east", "Asanoyama");
+    const west = makeUIRikishi("r-west", "Terunofuji");
+    const result = makeBoutResult({ pbpLines: [] });
+
+    const lines = getNarrationLines(result, east, west);
+    expect(lines.length).toBeGreaterThan(0);
+    expect(lines.some((l) => l.includes("Asanoyama"))).toBe(true);
+  });
+
+  it("returns fallback when pbpLines is undefined (fusensho)", () => {
+    const east = makeUIRikishi("r-east", "Asanoyama");
+    const west = makeUIRikishi("r-west", "Terunofuji");
+    const result = makeBoutResult({
+      pbpLines: undefined,
+      kimarite: "fusensho",
+      kimariteName: "Fusensho",
+    });
+
+    const lines = getNarrationLines(result, east, west);
+    expect(lines.length).toBeGreaterThan(0);
+    expect(lines.some((l) => l.includes("Asanoyama"))).toBe(true);
+  });
 });

@@ -1,6 +1,4 @@
-/**
- * @vitest-environment jsdom
- */
+// @vitest-environment node
 import { describe, it, expect } from "vitest";
 import { phase01_daily_welfare } from "@/engine/tick/phases/phase01_daily_welfare";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";

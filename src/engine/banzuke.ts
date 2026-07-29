@@ -336,12 +336,26 @@ function banzukeMovementEvents(
     else if (toTier > fromTier || divisionTier(e.division) > divisionTier(o.division))
       kind = "demotion";
 
+    // Enriched movement narrative (4.1)
+    const moveDistance = Math.abs(fromTier - toTier);
+    const isJumpPromotion = kind === "promotion" && moveDistance >= 2;
+    const fromIsSekitori = o.division === "makuuchi" || o.division === "juryo";
+    const toIsSekitori = e.division === "makuuchi" || e.division === "juryo";
+    const isSekitoriPromotion = !fromIsSekitori && toIsSekitori;
+    const fromIsSanyaku = o.position.rank === "yokozuna" || o.position.rank === "ozeki" || o.position.rank === "sekiwake" || o.position.rank === "komusubi";
+    const toIsSanyaku = e.position.rank === "yokozuna" || e.position.rank === "ozeki" || e.position.rank === "sekiwake" || e.position.rank === "komusubi";
+    const isSanyakuPromotion = !fromIsSanyaku && toIsSanyaku;
+
     events.push({
       rikishiId: e.rikishiId,
       from,
       to,
       kind,
       description: `${kind === "promotion" ? "Promoted" : kind === "demotion" ? "Demoted" : "Moved"}: ${from} → ${to}`,
+      moveDistance,
+      isJumpPromotion,
+      isSekitoriPromotion,
+      isSanyakuPromotion,
     });
   }
 

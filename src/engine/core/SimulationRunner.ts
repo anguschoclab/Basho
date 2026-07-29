@@ -26,6 +26,7 @@ import { runArchivalPruning } from "../archival";
 import { runCareerJournalUpdates, openRecruitmentWindow } from "../lifecycle/RegistryService";
 import { runHistoryUpdates } from "../history";
 import { runElections } from "../systems/governance/ScandalService";
+import { runAlmanacNarrativeUpdate } from "../almanac/narrativeEnrichment";
 
 /**
  * Authoritative post-basho pipeline.
@@ -60,6 +61,9 @@ export function runPostBashoResolution(world: WorldState): WorldState {
 
   const historyImpact = runHistoryUpdates(world);
   impacts.push(historyImpact);
+
+  const almanacImpact = runAlmanacNarrativeUpdate(world);
+  impacts.push(almanacImpact);
 
   const electionImpact = runElections(world);
   impacts.push(electionImpact);

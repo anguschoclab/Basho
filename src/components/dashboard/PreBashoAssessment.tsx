@@ -7,12 +7,12 @@
 import React from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "../../contexts/GameContext";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
 import { AlertTriangle, Shield, Activity, UserMinus } from "lucide-react";
 import { TooltipWrap } from "../ui/tooltip-wrap";
 import { RikishiName } from "@/components/ClickableName";
+import { BaseWidget } from "./BaseWidget";
+import { EmptyState } from "@/components/ui/EmptyState";
 // eslint-disable-next-line no-restricted-imports
 import type { PreBashoAssessment as PreBashoAssessmentType, WorldState } from "@/engine/types/world";
 
@@ -106,62 +106,55 @@ export function PreBashoAssessment() {
 
   const daysRemaining = world._interimDaysRemaining ?? 0;
 
-  return (
-    <Card>
-      <CardHeader className="pb-3">
-        <CardTitle className="text-sm font-medium flex items-center gap-2">
-          <Activity className="h-4 w-4" />
-          Pre-Basho Assessment
-        </CardTitle>
-        <CardDescription className="text-xs">
-          Health assessment for upcoming basho • {daysRemaining} days remaining
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Overall Health Score */}
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">Overall Health Score</span>
-          <Badge
-            variant={
-              assessment.overallHealthScore >= 70
-                ? "default"
-                : assessment.overallHealthScore >= 50
-                  ? "secondary"
-                  : "destructive"
-            }
-          >
-            {Math.round(assessment.overallHealthScore)}%
-          </Badge>
-        </div>
+  const footerAction = assessment.withdrawalsThisAssessment > 0 ? {
+    label: "View Roster for Withdrawals",
+    onClick: () => navigate({ to: "/stable/roster" })
+  } : undefined;
 
-        {/* Withdrawals Recommended */}
-        {assessment.withdrawalsThisAssessment > 0 && (
+  return (
+    <BaseWidget
+      title="Pre-Basho Assessment"
+      icon={Activity}
+      footerAction={footerAction}
+      headerContent={<span className="text-[10px] text-muted-foreground">{daysRemaining} days left</span>}
+    >
+      {assessment.rikishiAssessments.size === 0 ? (
+        <EmptyState compact icon={Activity} title="No assessment data" />
+      ) : (
+        <div className="space-y-4">
+          {/* Overall Health Score */}
           <div className="flex items-center justify-between">
-            <span className="text-xs text-muted-foreground">Withdrawals Recommended</span>
-            <Badge variant="destructive" className="flex items-center gap-1">
-              <UserMinus className="h-3 w-3" />
-              {assessment.withdrawalsThisAssessment}
+            <span className="text-xs text-muted-foreground">Overall Health Score</span>
+            <Badge
+              variant={
+                assessment.overallHealthScore >= 70
+                  ? "default"
+                  : assessment.overallHealthScore >= 50
+                    ? "secondary"
+                    : "destructive"
+              }
+            >
+              {Math.round(assessment.overallHealthScore)}%
             </Badge>
           </div>
-        )}
 
-        {/* Rikishi Assessments */}
-        <div className="space-y-2 max-h-60 overflow-y-auto">
-          <AssessmentList assessment={assessment} world={world} />
+          {/* Withdrawals Recommended */}
+          {assessment.withdrawalsThisAssessment > 0 && (
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">Withdrawals Recommended</span>
+              <Badge variant="destructive" className="flex items-center gap-1">
+                <UserMinus className="h-3 w-3" />
+                {assessment.withdrawalsThisAssessment}
+              </Badge>
+            </div>
+          )}
+
+          {/* Rikishi Assessments */}
+          <div className="space-y-2 max-h-60 overflow-y-auto">
+            <AssessmentList assessment={assessment} world={world} />
+          </div>
         </div>
-
-        {/* Action Button */}
-        {assessment.withdrawalsThisAssessment > 0 && (
-          <Button
-            variant="outline"
-            size="sm"
-            className="w-full text-xs"
-            onClick={() => navigate({ to: "/stable/roster" })}
-          >
-            View Roster for Withdrawals
-          </Button>
-        )}
-      </CardContent>
-    </Card>
+      )}
+    </BaseWidget>
   );
 }

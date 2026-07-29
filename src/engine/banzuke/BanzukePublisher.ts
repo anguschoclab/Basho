@@ -16,6 +16,12 @@ import {
 import { warn } from "../utils/Logger";
 import { isKachiKoshi } from "./banzukeHelpers";
 import { BASHO_CALENDAR } from "../calendar";
+import { generateBanzukeMovementNarrative } from "./banzukeMovementNarrative";
+import { generateKyujoNarrative } from "../bout/boutNarrative";
+import { KihakuService } from "../systems/governance/KihakuService";
+import { createEmptyAlmanacRecord } from "../almanac/narrativeEnrichment";
+import { MAX_PROMOTION_HISTORY } from "../almanac/types";
+import type { PromotionHistoryEntry } from "../almanac/types";
 
 /**
  * Helper to retrieve the current basho state from the world.
@@ -101,8 +107,8 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       ) {
         promoteToYokozuna = true;
       }
-      // Promotion Case 3: 3 consecutive 13+ wins + at least one yusho
-      else if ((rikishi.consecutiveStrongOzeki || 0) >= 3 && (isYusho || wonPrevious)) {
+      // Promotion Case 3: 3 consecutive 12+ wins + at least one yusho
+      else if ((rikishi.consecutiveStrongOzeki || 0) >= 2 && (isYusho || wonPrevious)) {
         promoteToYokozuna = true;
       }
       // Promotion Case 4: Prestige Promotion (If world has 0 Yokozuna, 13+ win Yusho is enough)
@@ -242,7 +248,21 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
         momentum: rikishi.momentum,
       };
       const updatedHistory = [...(rikishi.careerHistory || []), historyEntry];
-      // Keep last 6 basho only — promotion logic only needs recent history
+      // Keep last 6 basha only — promotion logic only needs recent history
+
+      // Track absentFinalDay: if rikishi has any absences and didn't complete all 15 bouts
+      const totalBouts = stats.wins + stats.losses;
+      const absentFinalDay = stats.absences > 0 && totalBouts < 15;
+
+      // Calculate kihaku isen (fighting spirit) score using KihakuService
+      const kihakuInput = KihakuService.extractFromBasho(
+        id,
+        lastBasho,
+        stats.wins,
+        absentFinalDay
+      );
+      const kihakuIsenScore = KihakuService.calculateScore(kihakuInput);
+
       builder.updateRikishi(id, {
         consecutiveStrongOzeki,
         consecutiveMakeKoshi,
@@ -252,8 +272,25 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
         councilWarnings,
         stats: statsUpdate as import("../types/rikishi").RikishiStats,
         careerHistory: updatedHistory.slice(-6),
+        absentFinalDay,
+        kihakuIsenScore,
       });
     }
+
+    // Enrich performance with bout metrics (7.1) + SOS (4.3)
+    const boutMetrics = lastBasho.boutMetrics?.[id];
+    const avgBoutDuration = boutMetrics && boutMetrics.boutDurations.length > 0
+      ? boutMetrics.boutDurations.reduce((a: number, b: number) => a + b, 0) / boutMetrics.boutDurations.length
+      : undefined;
+    const opponentAvgTier = boutMetrics && boutMetrics.opponentTiers.length > 0
+      ? boutMetrics.opponentTiers.reduce((a: number, b: number) => a + b, 0) / boutMetrics.opponentTiers.length
+      : undefined;
+
+    // Ozeki promotion detection (4.2): sekiwake/komusubi with 3 consecutive 11+ win basho
+    const isSanyakuForOzeki = rikishi?.rank === "sekiwake" || rikishi?.rank === "komusubi";
+    const promoteToOzeki = isSanyakuForOzeki
+      && stats.wins >= 11
+      && (rikishi?.consecutiveStrongSekiwake ?? 0) >= 2;
 
     performanceList.push({
       rikishiId: id,
@@ -264,6 +301,13 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       junYusho: isJunYusho,
       specialPrizes: prizePoints,
       promoteToYokozuna,
+      promoteToOzeki,
+      kimariteUsed: boutMetrics?.kimariteUsed,
+      upsetCount: boutMetrics?.upsetCount,
+      avgBoutDuration,
+      edgeCrisisSurvived: boutMetrics?.edgeCrisisSurvived,
+      comebackWins: boutMetrics?.comebackWins,
+      opponentAvgTier,
     });
   }
 
@@ -280,8 +324,113 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
   const keshoImpacts = generateKeshoForPromotions(world, result.events);
   builder.merge(keshoImpacts);
 
+  // Ozeki promotion narrative (4.2): log narrative events for new ozeki promotions
+  for (const evt of result.events) {
+    if (evt.kind !== "promotion") continue;
+    const newEntry = result.newBanzuke.find((e) => e.rikishiId === evt.rikishiId);
+    if (!newEntry || newEntry.position.rank !== "ozeki") continue;
+    const promotedRikishi = getRikishi(world, evt.rikishiId);
+    if (!promotedRikishi) continue;
+    const perf = perfMap.get(evt.rikishiId);
+    builder.logEvent(
+      "BASHO_STATUS",
+      "promotion",
+      {
+        status: "ozeki_promotion",
+        description: `${promotedRikishi.shikona} has been promoted to Ozeki — a new pillar of the sumo world.`,
+        rikishiId: evt.rikishiId,
+        wins: perf?.wins ?? 0,
+        losses: perf?.losses ?? 0,
+        yusho: perf?.yusho ?? false,
+        from: evt.from,
+      },
+      { rikishiId: evt.rikishiId, heyaId: promotedRikishi.heyaId, importance: "headline" }
+    );
+  }
+
+  // Banzuke movement narrative (4.1): generate narrative lines for notable promotions/demotions
+  const movementNarratives = generateBanzukeMovementNarrative(
+    result.events,
+    world,
+    `${world.seed}-${lastBasho.bashoName}-banzuke`
+  );
+  for (const narrative of movementNarratives) {
+    const narrativeRikishi = getRikishi(world, narrative.rikishiId);
+    // Phase 6: Enrich BASHO_STATUS event data with MovementEvent fields
+    const movementEvt = result.events.find((e) => e.rikishiId === narrative.rikishiId);
+    builder.logEvent(
+      "BASHO_STATUS",
+      "promotion",
+      {
+        status: "banzuke_movement",
+        description: narrative.text,
+        rikishiId: narrative.rikishiId,
+        from: movementEvt?.from,
+        to: movementEvt?.to,
+        kind: movementEvt?.kind,
+        isJumpPromotion: movementEvt?.isJumpPromotion,
+        isSanyakuPromotion: movementEvt?.isSanyakuPromotion,
+        isSekitoriPromotion: movementEvt?.isSekitoriPromotion,
+      },
+      { rikishiId: narrative.rikishiId, heyaId: narrativeRikishi?.heyaId, importance: "notable" }
+    );
+  }
+
+  // Phase 4B: Capture promotion history into almanacRecord
+  const bashoYear = lastBasho.year;
+  const bashoName = lastBasho.bashoName;
+  for (const evt of result.events) {
+    if (evt.kind !== "promotion" && evt.kind !== "demotion") continue;
+    const r = getRikishi(world, evt.rikishiId);
+    if (!r) continue;
+
+    let record = r.almanacRecord;
+    if (!record) {
+      record = createEmptyAlmanacRecord(r);
+    }
+
+    const entry: PromotionHistoryEntry = {
+      year: bashoYear,
+      bashoName,
+      fromRank: evt.from,
+      toRank: evt.to,
+      kind: evt.kind,
+      isJump: evt.isJumpPromotion ?? false,
+      isSanyaku: evt.isSanyakuPromotion ?? false,
+      isSekitori: evt.isSekitoriPromotion ?? false,
+    };
+
+    const existingHistory = record.promotionHistory ?? [];
+    const updatedHistory = [entry, ...existingHistory].slice(0, MAX_PROMOTION_HISTORY);
+
+    builder.updateRikishi(evt.rikishiId, {
+      almanacRecord: {
+        ...record,
+        promotionHistory: updatedHistory,
+      },
+    });
+  }
+
   // Update ozekiKadoban world field
   builder.updateWorldField("ozekiKadoban", result.updatedOzekiKadoban);
+
+  // Track consecutiveStrongSekiwake for ozeki promotion qualification (4.2)
+  for (const newEntry of result.newBanzuke) {
+    const r = getRikishi(world, newEntry.rikishiId);
+    if (!r) continue;
+    const perf = perfMap.get(newEntry.rikishiId);
+    const wins = perf?.wins ?? 0;
+    const isSanyaku = r.rank === "sekiwake" || r.rank === "komusubi";
+    if (isSanyaku && wins >= 11) {
+      builder.updateRikishi(newEntry.rikishiId, {
+        consecutiveStrongSekiwake: (r.consecutiveStrongSekiwake ?? 0) + 1,
+      });
+    } else if (isSanyaku && wins < 11) {
+      builder.updateRikishi(newEntry.rikishiId, {
+        consecutiveStrongSekiwake: 0,
+      });
+    }
+  }
 
   // Update yokozuna vacancy streak: increment if no active yokozuna, reset to 0 otherwise.
   let hasActiveYokozuna = false;
@@ -303,6 +452,13 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       // Check if shikona should change due to promotion
       const newShikona = checkShikonaChange(world, rikishi, oldRank);
 
+      // Track if rikishi was kyujo due to injury — set return flag for narrative triggers
+      const wasKyujoFromInjury = rikishi.isKyujo && rikishi.kyujoReason === "injury";
+
+      // Check if this rikishi had a sanyaku promotion this basho (Gap 5)
+      const movementEvent = result.events.find((e) => e.rikishiId === newEntry.rikishiId);
+      const isSanyakuPromotion = movementEvent?.isSanyakuPromotion ?? false;
+
       if (newShikona) {
         recordShikonaChange(world, rikishi.id, oldShikona, newShikona);
         builder.updateRikishi(newEntry.rikishiId, {
@@ -316,6 +472,8 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
           currentLossStreak: 0,
           isKyujo: false,
           kyujoReason: undefined,
+          recentlyReturnedFromInjury: wasKyujoFromInjury || undefined,
+          sanyakuPromotionThisBasho: isSanyakuPromotion || undefined,
           shikona: newShikona,
         });
       } else {
@@ -330,7 +488,52 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
           currentLossStreak: 0,
           isKyujo: false,
           kyujoReason: undefined,
+          recentlyReturnedFromInjury: wasKyujoFromInjury || undefined,
+          sanyakuPromotionThisBasho: isSanyakuPromotion || undefined,
         });
+      }
+
+      // Ozeki demotion detection: set wasDemotedFromOzeki flag
+      if (oldRank === "ozeki" && newEntry.position.rank !== "ozeki") {
+        builder.updateRikishi(newEntry.rikishiId, {
+          wasDemotedFromOzeki: true,
+        });
+        builder.logEvent(
+          "BASHO_STATUS",
+          "promotion",
+          {
+            status: "ozeki_demotion",
+            description: `${rikishi.shikona} has been demoted from Ozeki.`,
+            rikishiId: newEntry.rikishiId,
+            from: oldRank,
+            to: newEntry.position.rank,
+          },
+          { rikishiId: newEntry.rikishiId, heyaId: rikishi.heyaId, importance: "headline" }
+        );
+      }
+
+      // Gap 4/9: Generate return_from_kyujo narrative for returning rikishi
+      if (rikishi.isKyujo) {
+        const bashosMissed = (rikishi as { consecutiveKyujo?: number }).consecutiveKyujo ?? 1;
+        const returnNarrative = generateKyujoNarrative(
+          rikishi,
+          "return_from_kyujo",
+          { bashosMissed },
+          `return-kyujo-${newEntry.rikishiId}-${world.seed}-${lastBasho.bashoName}`
+        );
+        builder.logEvent(
+          "BASHO_STATUS",
+          "basho",
+          {
+            rikishiId: newEntry.rikishiId,
+            heyaId: rikishi.heyaId,
+            shikona: rikishi.shikona,
+            status: "kyujo_return",
+            bashosMissed,
+            narrative: returnNarrative,
+          },
+          { rikishiId: newEntry.rikishiId, heyaId: rikishi.heyaId }
+        );
       }
     }
   }

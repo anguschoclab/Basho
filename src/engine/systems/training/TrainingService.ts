@@ -409,6 +409,67 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
       }
     }
 
+    // Archetype evolution over career (2.3): detect significant stat shifts
+    // and evolve the combat profile archetype accordingly
+    const age = rikishi.age ?? (world.year - rikishi.birthYear);
+    const currentArchetype = rikishi.combatProfile?.archetype;
+    const effectiveStats = (updates.stats ?? rikishi.stats) as RikishiStats;
+    if (currentArchetype && age >= 30) {
+      const speedRatio = (effectiveStats.speed ?? 50) / Math.max(1, effectiveStats.power ?? 50);
+      const techRatio = (effectiveStats.technique ?? 50) / Math.max(1, effectiveStats.power ?? 50);
+
+      let newArchetype: import("../../types/combat").CombatArchetype | null = null;
+      // Speedsters that lose speed become defensive or hybrid
+      if (currentArchetype === "speedster" && speedRatio < 0.75) {
+        newArchetype = techRatio > 1.15 ? "defensive" : "hybrid";
+      }
+      // Oshi pushers that gain technique become hybrid
+      else if (currentArchetype === "oshi" && techRatio > 1.25 && age >= 33) {
+        newArchetype = "hybrid";
+      }
+      // Giants that lose power become defensive
+      else if (currentArchetype === "giant" && (effectiveStats.power ?? 50) < 45 && age >= 34) {
+        newArchetype = "defensive";
+      }
+
+      if (newArchetype && newArchetype !== currentArchetype) {
+        const history = rikishi.archetypeHistory ?? [];
+        const lastChange = history[history.length - 1];
+        // Only evolve once per year
+        if (!lastChange || lastChange.year !== world.year) {
+          const newProfile = { ...rikishi.combatProfile, archetype: newArchetype };
+          updates.combatProfile = newProfile;
+          updates.archetypeHistory = [...history, { archetype: newArchetype, year: world.year }];
+          builder.logEvent(
+            "TRAINING_UPDATE",
+            "training",
+            {
+              rikishiId: rikishi.id,
+              heyaId: rikishi.heyaId,
+              shikona: rikishi.shikona || rikishi.name,
+              status: "archetype_evolution",
+              title: `${rikishi.shikona} — Style Evolution`,
+              summary: `Evolved from ${currentArchetype} to ${newArchetype}`,
+              oldArchetype: currentArchetype,
+              newArchetype,
+            },
+            { rikishiId: rikishi.id, heyaId: rikishi.heyaId, importance: "notable" }
+          );
+        }
+      }
+
+      // Update decline phase (6.4)
+      let declinePhase: "pre-peak" | "peak" | "early-decline" | "late-decline" | "twilight";
+      if (age < 24) declinePhase = "pre-peak";
+      else if (age < 28) declinePhase = "peak";
+      else if (age < 32) declinePhase = "early-decline";
+      else if (age < 36) declinePhase = "late-decline";
+      else declinePhase = "twilight";
+      if (rikishi.declinePhase !== declinePhase) {
+        updates.declinePhase = declinePhase;
+      }
+    }
+
     builder.updateRikishi(rikishi.id, updates);
   });
 
