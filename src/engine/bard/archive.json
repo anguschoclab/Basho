@@ -3564,6 +3564,31 @@
           "%SHIKONA%'s title parade sees a flag bearer from the same stable leading the way.",
           "The champion's car winds through the streets as %SHIKONA% waves to supporters from the parade.",
           "A senior stablemate carries the banner as %SHIKONA% celebrates his yusho with a traditional parade."
+        ],
+        "persona_stoic": [
+          "%SHIKONA% faces the press with characteristic brevity: 'I did what was required. Nothing more.'",
+          "Few words from %SHIKONA% in the press room — a nod, a slight bow, and a simple 'I am satisfied.'",
+          "True to form, %SHIKONA% offers only the essentials: 'The result speaks for itself.'"
+        ],
+        "persona_villain": [
+          "%SHIKONA% smirks at the assembled reporters: 'Did anyone doubt me? They should have known better.'",
+          "'I told you all I would take the cup. None of you believed me,' %SHIKONA% declares with a cold grin.",
+          "%SHIKONA% relishes the discomfort of the press corps: 'The look on your faces — that's the best part of winning.'"
+        ],
+        "persona_celebrity": [
+          "%SHIKONA% charms the press room with a warm smile: 'This one is for everyone who believed in me.'",
+          "'I'm grateful for all the support — the fans, my stable, everyone,' %SHIKONA% beams, working the room.",
+          "%SHIKONA% fields questions with charisma, even pausing for a selfie with a junior reporter: 'This is what sumo is about — connection.'"
+        ],
+        "persona_firebrand": [
+          "%SHIKONA% pounds the table: 'I said I'd win and I WON! Anyone who doubted me — look at me NOW!'",
+          "'This is just the beginning! I'm coming for everything!' %SHIKONA% roars at the press.",
+          "%SHIKONA% fires up the press room with raw emotion: 'I fought every bout like it was my last! That's how you win a yusho!'"
+        ],
+        "persona_neutral": [
+          "%SHIKONA% addresses the press with measured words: 'I prepared well and the results followed.'",
+          "'It was a difficult tournament, but I stayed focused on each bout,' %SHIKONA% states evenly.",
+          "%SHIKONA% offers a balanced assessment: 'There were moments of doubt, but my training carried me through.'"
         ]
       },
       "prize_winner": {

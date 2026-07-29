@@ -61,6 +61,8 @@ function groupEventsByNarrative(events: EngineEvent[]) {
     retirements: [] as EngineEvent[],
     injuries: [] as EngineEvent[],
     governance: [] as EngineEvent[],
+    ydcAccountability: [] as EngineEvent[],
+    pressConference: [] as EngineEvent[],
     sponsors: [] as EngineEvent[],
     other: [] as EngineEvent[],
   };
@@ -74,8 +76,12 @@ function groupEventsByNarrative(events: EngineEvent[]) {
       groups.promotions.push(e);
     else if (e.type.includes("RETIRE") || e.category === "career") groups.retirements.push(e);
     else if (e.category === "injury") groups.injuries.push(e);
+    else if (e.type.includes("GOVERNANCE") && e.data?.status && typeof e.data.status === "string" && ["praise", "warning", "demand_reflection", "encouragement", "absence_criticism", "private_cynicism"].includes(e.data.status as string))
+      groups.ydcAccountability.push(e);
     else if (e.category === "discipline" || e.type.includes("GOVERNANCE"))
       groups.governance.push(e);
+    else if (e.data?.incident === "Post-Basho Press Conference")
+      groups.pressConference.push(e);
     else if (e.category === "sponsor") groups.sponsors.push(e);
     else groups.other.push(e);
   }
@@ -239,6 +245,37 @@ export default function RecapPage() {
   const groupedEvents = groupEventsByNarrative(bashoEvents);
   const prestigeChanges = getPrestigeChanges(world);
 
+  // Transform EngineEvent groups into the shape expected by NarrativeSummary
+  const narrativeGroupedEvents = {
+    promotions: groupedEvents.promotions.map((e) => ({
+      title: e.title,
+      summary: e.summary,
+      type: e.type as string,
+    })),
+    retirements: groupedEvents.retirements.map((e) => ({
+      title: e.title,
+      summary: e.summary,
+    })),
+    governance: groupedEvents.governance.map((e) => ({
+      title: e.title,
+      summary: e.summary,
+    })),
+    ydcAccountability: groupedEvents.ydcAccountability.map((e) => ({
+      title: e.title,
+      summary: e.summary,
+      status: (e.data?.status as string) ?? "unknown",
+      chairmanName: e.data?.chairmanName as string | undefined,
+      references: e.data?.references as string[] | undefined,
+      publicStatement: e.data?.publicStatement as string | undefined,
+      privateSentiment: e.data?.privateSentiment as string | undefined,
+    })),
+    pressConference: groupedEvents.pressConference.map((e) => ({
+      title: e.title,
+      summary: e.summary,
+      narrative: e.data?.narrative as { text: string; id: string }[] | undefined,
+    })),
+  };
+
   const dashboardTabs = [
     { id: "overview", label: "Overview", href: "/dashboard" },
     { id: "basho", label: "Basho", href: "/basho" },
@@ -321,7 +358,7 @@ export default function RecapPage() {
             <div className="h-px flex-1 bg-border/20" />
           </div>
           <NarrativeSummary
-            groupedEvents={groupedEvents}
+            groupedEvents={narrativeGroupedEvents}
             prestigeChanges={prestigeChanges}
             narrativeSummaryData={{
               governanceLog: projectGovernanceSummary(world).governanceLog,

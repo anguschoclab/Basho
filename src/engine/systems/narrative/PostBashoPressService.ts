@@ -27,6 +27,7 @@ export interface PressConferenceContext {
   shukunsho?: Id;
   bashoName: string;
   year: number;
+  divisionYushoMap?: Record<string, Id>;
 }
 
 export const PostBashoPressService = {
@@ -76,10 +77,21 @@ export const PostBashoPressService = {
       }
     }
 
-    // Lower division champion press lines
-    const championRikishi = getRikishi(world, yushoId);
-    if (championRikishi && championRikishi.division !== "makuuchi") {
-      lines.push(...this.generateLowerDivisionChampionLines(championRikishi, pressRng, bashoName, year));
+    // Lower division champion press lines — use division yusho map if available
+    if (context.divisionYushoMap) {
+      for (const [division, champId] of Object.entries(context.divisionYushoMap)) {
+        if (division === "makuuchi") continue; // makuuchi champion already covered above
+        const divChamp = getRikishi(world, champId);
+        if (divChamp) {
+          lines.push(...this.generateLowerDivisionChampionLines(divChamp, pressRng, bashoName, year, division));
+        }
+      }
+    } else {
+      // Fallback: only if yusho winner is from a lower division
+      const championRikishi = getRikishi(world, yushoId);
+      if (championRikishi && championRikishi.division !== "makuuchi") {
+        lines.push(...this.generateLowerDivisionChampionLines(championRikishi, pressRng, bashoName, year, championRikishi.division ?? "lower division"));
+      }
     }
 
     return lines;
@@ -93,6 +105,19 @@ export const PostBashoPressService = {
   ): PbpLine[] {
     const lines: PbpLine[] = [];
     const baseId = `press-champion-${champion.id}-${bashoName}-${year}`;
+
+    // Persona-driven opening statement
+    const persona = champion.pressPersona ?? "neutral";
+    const personaPath = `post_basho_press.champion.persona_${persona}`;
+    if (BardEngine.has(personaPath)) {
+      const personaLine = BardEngine.resolve(rng, personaPath, {
+        SHIKONA: champion.shikona,
+        rikishiId: champion.id,
+      });
+      if (personaLine.text) {
+        lines.push({ text: personaLine.text, id: `${baseId}-persona`, phase: "post_bout", tags: ["post_basho_press"] });
+      }
+    }
 
     // Walking wounded — if champion was injured during the basho
     if (champion.injured) {
@@ -272,15 +297,17 @@ export const PostBashoPressService = {
     champion: Rikishi,
     rng: ReturnType<typeof rngFromSeed>,
     bashoName: string,
-    year: number
+    year: number,
+    division?: string
   ): PbpLine[] {
     const lines: PbpLine[] = [];
     const baseId = `press-ld-champion-${champion.id}-${bashoName}-${year}`;
+    const divLabel = division ?? champion.division ?? "lower division";
 
     // First honor — always generate for lower division champions
     const firstHonorLine = BardEngine.resolve(rng, "post_basho_press.lower_division.first_honor", {
       SHIKONA: champion.shikona,
-      DIVISION: champion.division ?? "lower division",
+      DIVISION: divLabel,
       rikishiId: champion.id,
     });
     if (firstHonorLine.text) {

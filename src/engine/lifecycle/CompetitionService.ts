@@ -22,6 +22,7 @@ import { BardEngine } from "../bard/BardEngine";
 import { rngFromSeed } from "../rng";
 import type { PbpLine } from "../bout/boutNarrative";
 import type { Milestone } from "../types/history";
+import type { Id } from "../types/common";
 import { BASHO_CALENDAR } from "../calendar";
 import { PostBashoPressService } from "../systems/narrative/PostBashoPressService";
 
@@ -91,19 +92,32 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
   const lowerDivisions = ["juryo", "makushita", "sandanme", "jonidan", "jonokuchi"];
   const allDivisionPlayoffLines: PbpLine[] = [];
   let divisionPlayoffCount = 0;
+  const divisionYushoMap: Record<string, Id> = {};
 
   for (const division of lowerDivisions) {
     const divStandings = calculateDivisionStandings(basho, world, division);
-    if (divStandings.topCandidates.length > 1) {
-      divisionPlayoffCount++;
-      const divResult = resolveDivisionPlayoffs(world, basho, divStandings.topCandidates, division);
-      allDivisionPlayoffLines.push(...divResult.narrativeLines);
-      playoffMatches.push(...divResult.matches);
+    if (divStandings.topCandidates.length > 0) {
+      // Record division yusho winner (top candidate, or playoff winner if playoff occurred)
+      if (divStandings.topCandidates.length > 1) {
+        divisionPlayoffCount++;
+        const divResult = resolveDivisionPlayoffs(world, basho, divStandings.topCandidates, division);
+        allDivisionPlayoffLines.push(...divResult.narrativeLines);
+        playoffMatches.push(...divResult.matches);
+        // Playoff winner is the last match's winner
+        const lastMatch = divResult.matches[divResult.matches.length - 1];
+        if (lastMatch?.result?.winnerRikishiId) {
+          divisionYushoMap[division] = lastMatch.result.winnerRikishiId;
+        }
+      } else {
+        // Single clear winner — no playoff needed
+        divisionYushoMap[division] = divStandings.topCandidates[0];
+      }
     }
   }
 
-  // Schedule delay narrative if multiple division playoffs occurred
-  if (divisionPlayoffCount >= 2) {
+  // Schedule delay narrative if multiple division playoffs occurred OR total playoff bouts > 3
+  const totalPlayoffBouts = playoffMatches.length;
+  if (divisionPlayoffCount >= 2 || totalPlayoffBouts > 3) {
     const scheduleRng = rngFromSeed(`schedule-delay-${basho.bashoName}-${world.year}`, "narrative", "playoff");
     const delayLine = BardEngine.resolve(scheduleRng, "playoff.schedule_delay", {});
     if (delayLine.text) {
@@ -265,6 +279,7 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
     shukunsho: prizes.shukunsho,
     bashoName: basho.bashoName,
     year: world.year,
+    divisionYushoMap,
   });
   if (pressLines.length > 0) {
     builder.logEvent(

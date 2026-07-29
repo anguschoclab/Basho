@@ -5,94 +5,149 @@ import { YokozunaService } from "@/engine/systems/governance/YokozunaService";
 import { makeMockWorld, mockRikishi } from "../utils";
 
 describe("KihakuService — Fighting Spirit Score", () => {
-  it("returns 0 for a rikishi with no metrics and no wins", () => {
+  it("returns 50 (neutral default) when hasMetrics is false", () => {
     const score = KihakuService.calculateScore({
       comebackWins: 0,
       edgeCrisisSurvived: 0,
-      upsetCount: 0,
-      totalBouts: 0,
-      wins: 0,
+      playoffWins: 0,
+      yushoContentionWins: 0,
+      isMakeKoshi: false,
+      absentFinalDay: false,
+      hasMetrics: false,
+    });
+    expect(score).toBe(50);
+  });
+
+  it("returns 0 for a rikishi with metrics but all zeros and make-koshi + absentFinalDay", () => {
+    const score = KihakuService.calculateScore({
+      comebackWins: 0,
+      edgeCrisisSurvived: 0,
+      playoffWins: 0,
+      yushoContentionWins: 0,
+      isMakeKoshi: true,
+      absentFinalDay: true,
+      hasMetrics: true,
     });
     expect(score).toBe(0);
   });
 
-  it("returns max 100 for dominant performance with 5+ comebacks, 4+ edge crises, 3+ upsets, 80%+ win rate", () => {
+  it("awards +15 per comeback win", () => {
     const score = KihakuService.calculateScore({
-      comebackWins: 5,
-      edgeCrisisSurvived: 4,
-      upsetCount: 3,
-      totalBouts: 15,
-      wins: 13,
-    });
-    expect(score).toBe(100);
-  });
-
-  it("weights comeback wins at 30% of total score", () => {
-    const score = KihakuService.calculateScore({
-      comebackWins: 5,
+      comebackWins: 2,
       edgeCrisisSurvived: 0,
-      upsetCount: 0,
-      totalBouts: 15,
-      wins: 0,
+      playoffWins: 0,
+      yushoContentionWins: 0,
+      isMakeKoshi: false,
+      absentFinalDay: false,
+      hasMetrics: true,
     });
     expect(score).toBe(30);
   });
 
-  it("weights edge crisis survived at 25% of total score", () => {
+  it("awards +10 per edge crisis survived", () => {
     const score = KihakuService.calculateScore({
       comebackWins: 0,
-      edgeCrisisSurvived: 4,
-      upsetCount: 0,
-      totalBouts: 15,
-      wins: 0,
+      edgeCrisisSurvived: 3,
+      playoffWins: 0,
+      yushoContentionWins: 0,
+      isMakeKoshi: false,
+      absentFinalDay: false,
+      hasMetrics: true,
     });
-    expect(score).toBe(25);
+    expect(score).toBe(30);
   });
 
-  it("weights upset count at 20% of total score", () => {
-    const score = KihakuService.calculateScore({
-      comebackWins: 0,
-      edgeCrisisSurvived: 0,
-      upsetCount: 3,
-      totalBouts: 15,
-      wins: 0,
-    });
-    expect(score).toBe(20);
-  });
-
-  it("weights win ratio at 25% of total score", () => {
+  it("awards +20 per playoff win", () => {
     const score = KihakuService.calculateScore({
       comebackWins: 0,
       edgeCrisisSurvived: 0,
-      upsetCount: 0,
-      totalBouts: 15,
-      wins: 12, // 80% win rate
+      playoffWins: 2,
+      yushoContentionWins: 0,
+      isMakeKoshi: false,
+      absentFinalDay: false,
+      hasMetrics: true,
     });
-    expect(score).toBe(25);
+    expect(score).toBe(40);
   });
 
-  it("clamps score to 0-100 range", () => {
-    const highScore = KihakuService.calculateScore({
-      comebackWins: 100,
-      edgeCrisisSurvived: 100,
-      upsetCount: 100,
-      totalBouts: 15,
-      wins: 15,
+  it("awards +8 per yusho-contention win", () => {
+    const score = KihakuService.calculateScore({
+      comebackWins: 0,
+      edgeCrisisSurvived: 0,
+      playoffWins: 0,
+      yushoContentionWins: 3,
+      isMakeKoshi: false,
+      absentFinalDay: false,
+      hasMetrics: true,
     });
-    expect(highScore).toBe(100);
+    expect(score).toBe(24);
+  });
+
+  it("applies -20 for make-koshi", () => {
+    const score = KihakuService.calculateScore({
+      comebackWins: 2,
+      edgeCrisisSurvived: 0,
+      playoffWins: 0,
+      yushoContentionWins: 0,
+      isMakeKoshi: true,
+      absentFinalDay: false,
+      hasMetrics: true,
+    });
+    expect(score).toBe(10); // 30 - 20 = 10
+  });
+
+  it("applies -25 for absentFinalDay", () => {
+    const score = KihakuService.calculateScore({
+      comebackWins: 2,
+      edgeCrisisSurvived: 0,
+      playoffWins: 0,
+      yushoContentionWins: 0,
+      isMakeKoshi: false,
+      absentFinalDay: true,
+      hasMetrics: true,
+    });
+    expect(score).toBe(5); // 30 - 25 = 5
+  });
+
+  it("clamps score to 100 max", () => {
+    const score = KihakuService.calculateScore({
+      comebackWins: 10,
+      edgeCrisisSurvived: 10,
+      playoffWins: 5,
+      yushoContentionWins: 5,
+      isMakeKoshi: false,
+      absentFinalDay: false,
+      hasMetrics: true,
+    });
+    expect(score).toBe(100);
+  });
+
+  it("clamps score to 0 min", () => {
+    const score = KihakuService.calculateScore({
+      comebackWins: 0,
+      edgeCrisisSurvived: 0,
+      playoffWins: 0,
+      yushoContentionWins: 0,
+      isMakeKoshi: true,
+      absentFinalDay: true,
+      hasMetrics: true,
+    });
+    expect(score).toBe(0);
   });
 
   it("extracts from basho state with no bout metrics gracefully", () => {
     const basho = {
       boutMetrics: undefined,
       standings: new Map([["r1", { wins: 10, losses: 5, absences: 0 }]]),
+      matches: [],
     } as any;
-    const input = KihakuService.extractFromBasho("r1", basho, 10);
+    const input = KihakuService.extractFromBasho("r1", basho, 10, false);
     expect(input.comebackWins).toBe(0);
     expect(input.edgeCrisisSurvived).toBe(0);
-    expect(input.upsetCount).toBe(0);
-    expect(input.wins).toBe(10);
-    expect(input.totalBouts).toBe(15);
+    expect(input.playoffWins).toBe(0);
+    expect(input.isMakeKoshi).toBe(false);
+    expect(input.absentFinalDay).toBe(false);
+    expect(input.hasMetrics).toBe(false);
   });
 });
 
@@ -304,5 +359,89 @@ describe("YokozunaService — YDC Accountability", () => {
     expect(hasOldType).toBe(false);
     const hasNewType = impact.events?.some((e) => e.type === "GOVERNANCE_RULING");
     expect(hasNewType).toBe(true);
+  });
+
+  it("includes chairmanName in accountability events", () => {
+    const yokozuna = mockRikishi("y8", {
+      rank: "yokozuna",
+      division: "makuuchi",
+      shikona: "Chairman Test",
+      currentBashoWins: 5,
+      currentBashoLosses: 10,
+      consecutiveMakeKoshi: 1,
+      heyaId: "heya-1",
+    });
+
+    const world = makeMockWorld({
+      rikishi: new Map([["y8", yokozuna]]),
+      year: 2025,
+      currentBashoName: "hatsu",
+    });
+
+    const impact = YokozunaService.processYDCCouncil(world);
+    const warningEvent = impact.events?.find(
+      (e) => (e.data as any).status === "warning"
+    );
+    expect(warningEvent).toBeDefined();
+    expect((warningEvent!.data as any).chairmanName).toBeDefined();
+    expect(typeof (warningEvent!.data as any).chairmanName).toBe("string");
+  });
+
+  it("includes references array in accountability events", () => {
+    const yokozuna = mockRikishi("y9", {
+      rank: "yokozuna",
+      division: "makuuchi",
+      shikona: "Ref Test",
+      currentBashoWins: 5,
+      currentBashoLosses: 10,
+      consecutiveMakeKoshi: 2,
+      heyaId: "heya-1",
+    });
+
+    const world = makeMockWorld({
+      rikishi: new Map([["y9", yokozuna]]),
+      year: 2025,
+      currentBashoName: "hatsu",
+    });
+
+    const impact = YokozunaService.processYDCCouncil(world);
+    const reflectionEvent = impact.events?.find(
+      (e) => (e.data as any).status === "demand_reflection"
+    );
+    expect(reflectionEvent).toBeDefined();
+    const refs = (reflectionEvent!.data as any).references;
+    expect(Array.isArray(refs)).toBe(true);
+    expect(refs).toContain("make-koshi record");
+    expect(refs).toContain("promotion pledge");
+  });
+
+  it("includes publicStatement and privateSentiment in accountability events", () => {
+    const yokozuna = mockRikishi("y10", {
+      rank: "yokozuna",
+      division: "makuuchi",
+      shikona: "Sentiment Test",
+      currentBashoWins: 4,
+      currentBashoLosses: 11,
+      consecutiveMakeKoshi: 3,
+      heyaId: "heya-1",
+    });
+
+    const world = makeMockWorld({
+      rikishi: new Map([["y10", yokozuna]]),
+      year: 2025,
+      currentBashoName: "hatsu",
+    });
+
+    const impact = YokozunaService.processYDCCouncil(world);
+    const cynicismEvent = impact.events?.find(
+      (e) => (e.data as any).status === "private_cynicism"
+    );
+    expect(cynicismEvent).toBeDefined();
+    expect((cynicismEvent!.data as any).publicStatement).toBeDefined();
+    expect((cynicismEvent!.data as any).privateSentiment).toBeDefined();
+    // Private sentiment should differ from public statement for cynicism events
+    expect((cynicismEvent!.data as any).privateSentiment).not.toBe(
+      (cynicismEvent!.data as any).publicStatement
+    );
   });
 });

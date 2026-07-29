@@ -18,6 +18,7 @@ import { isKachiKoshi } from "./banzukeHelpers";
 import { BASHO_CALENDAR } from "../calendar";
 import { generateBanzukeMovementNarrative } from "./banzukeMovementNarrative";
 import { generateKyujoNarrative } from "../bout/boutNarrative";
+import { KihakuService } from "../systems/governance/KihakuService";
 import { createEmptyAlmanacRecord } from "../almanac/narrativeEnrichment";
 import { MAX_PROMOTION_HISTORY } from "../almanac/types";
 import type { PromotionHistoryEntry } from "../almanac/types";
@@ -253,17 +254,14 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       const totalBouts = stats.wins + stats.losses;
       const absentFinalDay = stats.absences > 0 && totalBouts < 15;
 
-      // Calculate kihaku isen (fighting spirit) score from bout metrics
-      const boutMetricsForKihaku = lastBasho.boutMetrics?.[id];
-      let kihakuIsenScore: number | undefined;
-      if (boutMetricsForKihaku) {
-        const comebackPoints = Math.min((boutMetricsForKihaku.comebackWins ?? 0) / 5, 1) * 30;
-        const edgePoints = Math.min((boutMetricsForKihaku.edgeCrisisSurvived ?? 0) / 4, 1) * 25;
-        const upsetPoints = Math.min((boutMetricsForKihaku.upsetCount ?? 0) / 3, 1) * 20;
-        const winRatio = totalBouts > 0 ? stats.wins / totalBouts : 0;
-        const winPoints = Math.min(winRatio / 0.8, 1) * 25;
-        kihakuIsenScore = Math.round(Math.max(0, Math.min(100, comebackPoints + edgePoints + upsetPoints + winPoints)));
-      }
+      // Calculate kihaku isen (fighting spirit) score using KihakuService
+      const kihakuInput = KihakuService.extractFromBasho(
+        id,
+        lastBasho,
+        stats.wins,
+        absentFinalDay
+      );
+      const kihakuIsenScore = KihakuService.calculateScore(kihakuInput);
 
       builder.updateRikishi(id, {
         consecutiveStrongOzeki,

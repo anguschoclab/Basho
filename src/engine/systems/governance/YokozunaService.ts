@@ -14,6 +14,22 @@ import { getRikishi } from "../../queries";
 import { BardEngine } from "../../bard/BardEngine";
 import { rngFromSeed } from "../../rng";
 
+const YDC_CHAIRMAN_SURNAMES = [
+  "Hanzawa", "Morita", "Tanahashi", "Kuroda", "Nakamura",
+  "Ishikawa", "Fujimoto", "Otsuka", "Yamamoto", "Sato",
+];
+const YDC_CHAIRMAN_GIVEN_NAMES = [
+  "Tadashi", "Katsuyoshi", "Masahiro", "Hirofumi", "Noboru",
+  "Shigeru", "Tatsuo", "Kenshin", "Yoshiaki", "Renji",
+];
+
+function getChairmanName(worldSeed: string): string {
+  const rng = rngFromSeed(`ydc-chairman-${worldSeed}`, "narrative", "chairman");
+  const surname = rng.pick(YDC_CHAIRMAN_SURNAMES);
+  const given = rng.pick(YDC_CHAIRMAN_GIVEN_NAMES);
+  return `${given} ${surname}`;
+}
+
 export interface YDCCandidate {
   rikishiId: string;
   name: string;
@@ -40,8 +56,8 @@ export const YokozunaService = {
 
     // In a real implementation, we'd look at specifically this rikishi's performance record
     // For now, we simulate the 'equivalent' check
-    const winsLast = rikishi.currentBashoWins;
-    const isYushoLast = rikishi.currentBashoWins >= 14; // Simplified check
+    const winsLast = rikishi.currentBashoWins ?? 0;
+    const isYushoLast = winsLast >= 14; // Simplified check
 
     // We'll need a way to look back further, but for this Phase P logic:
     const reputation = rikishi.economics?.popularity ?? 50;
@@ -125,6 +141,8 @@ export const YokozunaService = {
    * - consecutiveMakeKoshi (high count triggers private cynicism)
    */
   evaluateActiveYokozuna(world: WorldState, builder: ReturnType<typeof createImpactBuilder>): void {
+    const chairmanName = getChairmanName(`${world.year}-${world.currentBashoName ?? "hatsu"}`);
+
     for (const rikishiId of world.activeRikishiIds) {
       const rikishi = getRikishi(world, rikishiId);
       if (!rikishi || rikishi.rank !== "yokozuna") continue;
@@ -139,11 +157,19 @@ export const YokozunaService = {
 
       const ydcRng = rngFromSeed(`ydc-${rikishiId}-${world.year}-${world.currentBashoName ?? "hatsu"}`, "narrative", "ydc");
 
+      // Build references array — specific items the YDC statement references
+      const references: string[] = [];
+      if (isKachiKoshi && kihakuScore >= 75) references.push("Kihaku Isen");
+      if (absentFinalDay) references.push("absence on final day");
+      if (isMakeKoshi) references.push("make-koshi record");
+      if (consecutiveMK >= 2) references.push("promotion pledge");
+
       // Praise for high fighting spirit and kachi-koshi
       if (isKachiKoshi && kihakuScore >= 75) {
         const line = BardEngine.resolve(ydcRng, "ydc_accountability.praise", {
           SHIKONA: rikishi.shikona,
           rikishiId: rikishi.id,
+          CHAIRMAN: chairmanName,
         });
         if (line.text) {
           builder.logEvent(
@@ -156,6 +182,10 @@ export const YokozunaService = {
               incident: "YDC Praise",
               statement: line.text,
               score: kihakuScore,
+              chairmanName,
+              references,
+              publicStatement: line.text,
+              privateSentiment: "genuine satisfaction",
             },
             { rikishiId: rikishi.id, heyaId: rikishi.heyaId, importance: "notable" }
           );
@@ -167,6 +197,7 @@ export const YokozunaService = {
         const line = BardEngine.resolve(ydcRng, "ydc_accountability.absence_criticism", {
           SHIKONA: rikishi.shikona,
           rikishiId: rikishi.id,
+          CHAIRMAN: chairmanName,
         });
         if (line.text) {
           builder.logEvent(
@@ -178,6 +209,10 @@ export const YokozunaService = {
               status: "absence_criticism",
               incident: "YDC Absence Criticism",
               statement: line.text,
+              chairmanName,
+              references,
+              publicStatement: line.text,
+              privateSentiment: "displeasure",
             },
             { rikishiId: rikishi.id, heyaId: rikishi.heyaId, importance: "major" }
           );
@@ -193,6 +228,7 @@ export const YokozunaService = {
         const line = BardEngine.resolve(ydcRng, templatePath, {
           SHIKONA: rikishi.shikona,
           rikishiId: rikishi.id,
+          CHAIRMAN: chairmanName,
         });
         if (line.text) {
           builder.logEvent(
@@ -205,16 +241,21 @@ export const YokozunaService = {
               incident: "YDC Warning",
               statement: line.text,
               consecutiveMakeKoshi: consecutiveMK,
+              chairmanName,
+              references,
+              publicStatement: line.text,
+              privateSentiment: consecutiveMK >= 2 ? "frustration" : "concern",
             },
             { rikishiId: rikishi.id, heyaId: rikishi.heyaId, importance: "major" }
           );
         }
 
-        // Private cynicism for repeated make-koshi
+        // Private cynicism for repeated make-koshi — divergence between public and private sentiment
         if (consecutiveMK >= 3) {
           const cynicismLine = BardEngine.resolve(ydcRng, "ydc_accountability.private_cynicism", {
             SHIKONA: rikishi.shikona,
             rikishiId: rikishi.id,
+            CHAIRMAN: chairmanName,
           });
           if (cynicismLine.text) {
             builder.logEvent(
@@ -227,6 +268,10 @@ export const YokozunaService = {
                 incident: "YDC Private Cynicism",
                 statement: cynicismLine.text,
                 consecutiveMakeKoshi: consecutiveMK,
+                chairmanName,
+                references,
+                publicStatement: line.text,
+                privateSentiment: cynicismLine.text,
               },
               { rikishiId: rikishi.id, heyaId: rikishi.heyaId, importance: "minor" }
             );
@@ -237,6 +282,7 @@ export const YokozunaService = {
         const line = BardEngine.resolve(ydcRng, "ydc_accountability.encouragement", {
           SHIKONA: rikishi.shikona,
           rikishiId: rikishi.id,
+          CHAIRMAN: chairmanName,
         });
         if (line.text) {
           builder.logEvent(
@@ -249,6 +295,10 @@ export const YokozunaService = {
               incident: "YDC Encouragement",
               statement: line.text,
               score: kihakuScore,
+              chairmanName,
+              references,
+              publicStatement: line.text,
+              privateSentiment: "cautious optimism",
             },
             { rikishiId: rikishi.id, heyaId: rikishi.heyaId, importance: "minor" }
           );
