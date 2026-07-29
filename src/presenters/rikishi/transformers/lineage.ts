@@ -36,5 +36,8 @@ export function toCareerDataDTO(r: Rikishi, world: WorldState): RikishiCareerDat
     yearsToNaturalization: yearsUntilNaturalization(r, world.year),
     consecutiveStrongOzeki: r.consecutiveStrongOzeki ?? 0,
     consecutiveStrongSekiwake: r.consecutiveStrongSekiwake ?? 0,
+    consecutiveMakeKoshi: r.consecutiveMakeKoshi ?? 0,
+    consecutiveKyujo: r.consecutiveKyujo ?? 0,
+    councilWarnings: r.councilWarnings ?? 0,
   };
 }

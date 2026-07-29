@@ -198,6 +198,38 @@ export function RikishiProfileHeader({
                     </div>
                   </div>
                 )}
+                {rikishi.rank === "yokozuna" && ((rikishi.consecutiveMakeKoshi ?? 0) > 0 || (rikishi.consecutiveKyujo ?? 0) > 0 || (rikishi.councilWarnings ?? 0) > 0) && (
+                  <div className="pt-2">
+                    <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest mb-1.5">
+                      <span className="text-destructive flex items-center gap-1">
+                        <span role="img" aria-label="Yokozuna Warning">
+                          ⚠️
+                        </span>{" "}
+                        Retirement Pressure
+                      </span>
+                    </div>
+                    <div className="flex flex-col gap-1 text-[9px]">
+                      {(rikishi.councilWarnings ?? 0) > 0 && (
+                        <div className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded">
+                          <span className="text-destructive/80">Council Warnings</span>
+                          <span className="text-destructive font-bold">{rikishi.councilWarnings} / 3</span>
+                        </div>
+                      )}
+                      {(rikishi.consecutiveMakeKoshi ?? 0) > 0 && (
+                        <div className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded">
+                          <span className="text-destructive/80">Consecutive Make-Koshi</span>
+                          <span className="text-destructive font-bold">{rikishi.consecutiveMakeKoshi}</span>
+                        </div>
+                      )}
+                      {(rikishi.consecutiveKyujo ?? 0) > 0 && (
+                        <div className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded">
+                          <span className="text-destructive/80">Consecutive Kyujo</span>
+                          <span className="text-destructive font-bold">{rikishi.consecutiveKyujo} / 3</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
                 {(rikishi.rank === "sekiwake" || rikishi.rank === "komusubi") && (rikishi.consecutiveStrongSekiwake ?? 0) > 0 && (
                   <div className="pt-2">
                     <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest mb-1.5">

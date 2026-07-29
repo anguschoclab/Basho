@@ -308,6 +308,29 @@ describe("RikishiProfileHeader", () => {
     expect(screen.getByText("Test Rikishi")).toBeTruthy();
   });
 
+  it("shows Yokozuna Retirement Pressure section when conditions are met", () => {
+    const rikishi = makeUIRikishi({
+      rank: "yokozuna",
+      consecutiveMakeKoshi: 2,
+      consecutiveKyujo: 1,
+      councilWarnings: 1,
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={true}
+        healthBadge="Healthy"
+        onBack={vi.fn()}
+      />
+    );
+    expect(screen.getByText("Retirement Pressure")).toBeTruthy();
+    expect(screen.getByText("Council Warnings")).toBeTruthy();
+    expect(screen.getByText("Consecutive Make-Koshi")).toBeTruthy();
+    expect(screen.getByText("Consecutive Kyujo")).toBeTruthy();
+    expect(screen.queryAllByText("1 / 3").length).toBeGreaterThan(0);
+    expect(screen.queryAllByText("2").length).toBeGreaterThan(0);
+  });
+
   it("shows Ozeki Promotion Watch with / 2 denominator for sekiwake with consecutiveStrongSekiwake > 0", () => {
     const rikishi = makeUIRikishi({
       rank: "sekiwake",
