@@ -1,0 +1,560 @@
+{
+  "ranks": {
+    "yokozuna": {
+      "labelJa": "横綱",
+      "label": "Yokozuna"
+    },
+    "ozeki": {
+      "labelJa": "大関",
+      "label": "Ōzeki"
+    },
+    "sekiwake": {
+      "labelJa": "関脇",
+      "label": "Sekiwake"
+    },
+    "komusubi": {
+      "labelJa": "小結",
+      "label": "Komusubi"
+    },
+    "maegashira": {
+      "labelJa": "前頭",
+      "label": "Maegashira"
+    },
+    "juryo": {
+      "labelJa": "十両",
+      "label": "Jūryō"
+    },
+    "makushita": {
+      "labelJa": "幕下",
+      "label": "Makushita"
+    },
+    "sandanme": {
+      "labelJa": "三段目",
+      "label": "Sandanme"
+    },
+    "jonidan": {
+      "labelJa": "序二段",
+      "label": "Jonidan"
+    },
+    "jonokuchi": {
+      "labelJa": "序ノ口",
+      "label": "Jonokuchi"
+    }
+  },
+  "styles": {
+    "oshi": {
+      "label": "Oshi",
+      "labelJa": "押し",
+      "description": "Pushing/thrusting sumo—drive forward with hands and pressure rather than securing the belt."
+    },
+    "yotsu": {
+      "label": "Yotsu",
+      "labelJa": "四つ",
+      "description": "Belt-focused sumo—seek a grip, control the hips, and win with throws or force-outs."
+    },
+    "hybrid": {
+      "label": "Hybrid",
+      "labelJa": "万能",
+      "description": "A mixed approach—comfortable switching between pushing and belt fighting depending on the matchup."
+    }
+  },
+  "archetypes": {
+    "oshi_specialist": {
+      "label": "Oshi Specialist",
+      "labelJa": "押し型",
+      "description": "Relentless forward pressure, strong tachiai."
+    },
+    "yotsu_specialist": {
+      "label": "Yotsu Specialist",
+      "labelJa": "四つ型",
+      "description": "Belt technician—hunts grips, controls the clinch."
+    },
+    "speedster": {
+      "label": "Speedster",
+      "labelJa": "俊敏",
+      "description": "Quick feet and angles—wins with movement."
+    },
+    "trickster": {
+      "label": "Trickster",
+      "labelJa": "奇策",
+      "description": "Unorthodox and volatile—pulls and feints."
+    },
+    "all_rounder": {
+      "label": "All-Rounder",
+      "labelJa": "総合",
+      "description": "Solid fundamentals everywhere."
+    },
+    "hybrid_oshi_yotsu": {
+      "label": "Hybrid Oshi/Yotsu",
+      "labelJa": "押し四つ",
+      "description": "Blends pushing and belt fighting."
+    },
+    "counter_specialist": {
+      "label": "Counter Specialist",
+      "labelJa": "受け",
+      "description": "Reads pressure and punishes mistakes."
+    },
+    "giant": {
+      "label": "Giant",
+      "labelJa": "大型",
+      "description": "Immovable mass—wins through weight and strength dominance."
+    },
+    "tsuppari": {
+      "label": "Tsuppari",
+      "labelJa": "突っ張り",
+      "description": "High-velocity open-palm thrusting. Explosive but tires quickly."
+    },
+    "defensive": {
+      "label": "Counter Fighter",
+      "labelJa": "受け身",
+      "description": "Absorbs pressure. Wins by using the opponent's weight against them."
+    }
+  },
+  "kimarite": {
+    "yorikiri": {
+      "label": "Yorikiri",
+      "labelJa": "寄り切り",
+      "description": "Classic force out by gripping the opponent"
+    },
+    "oshidashi": {
+      "label": "Oshidashi",
+      "labelJa": "押し出し",
+      "description": "Frontal push out using a barrage of powerful hand thrusts to march the opponent out of the ring without touching the belt. A pure demonstration of oshi-zumo."
+    },
+    "oshitaoshi": {
+      "label": "Oshitaoshi",
+      "labelJa": "押し倒し",
+      "description": "Overwhelming frontal push down that crushes the opponent directly into the clay."
+    },
+    "yoritaoshi": {
+      "label": "Yoritaoshi",
+      "labelJa": "寄り倒し",
+      "description": "Devastating frontal force down, collapsing the opponent backward while maintaining a solid belt grip."
+    },
+    "tsukidashi": {
+      "label": "Tsukidashi",
+      "labelJa": "突き出し",
+      "description": "Violent thrust out, using rapid open-palm strikes to send the opponent reeling across the boundary."
+    },
+    "tsukitaoshi": {
+      "label": "Tsukitaoshi",
+      "labelJa": "突き倒し",
+      "description": "Ferocious thrust down that knocks the opponent completely off their feet."
+    },
+    "abisetaoshi": {
+      "label": "Abisetaoshi",
+      "labelJa": "浴びせ倒し",
+      "description": "Backward force down where the attacker leans heavily, using their entire body weight to flatten the defender into the clay."
+    },
+    "hatakikomi": {
+      "label": "Hatakikomi",
+      "labelJa": "叩き込み",
+      "description": "Slap down using the opponent\\"
+    },
+    "hikiotoshi": {
+      "label": "Hikiotoshi",
+      "labelJa": "引き落とし",
+      "description": "Hand pull down"
+    },
+    "okuridashi": {
+      "label": "Okuridashi",
+      "labelJa": "送り出し",
+      "description": "Rear push out"
+    },
+    "tsuriotoshi": {
+      "label": "Tsuriotoshi",
+      "labelJa": "吊り落とし",
+      "description": "Lift-and-drop"
+    },
+    "tsuridashi": {
+      "label": "Tsuridashi",
+      "labelJa": "吊り出し",
+      "description": "Lift out"
+    },
+    "utchari": {
+      "label": "Utchari",
+      "labelJa": "打っ棄り",
+      "description": "Pivot sweep throw"
+    },
+    "okuritaoshi": {
+      "label": "Okuritaoshi",
+      "labelJa": "送り倒し",
+      "description": "Rear push down"
+    },
+    "katasukashi": {
+      "label": "Katasukashi",
+      "labelJa": "肩すかし",
+      "description": "Under-shoulder swing down"
+    },
+    "sokubiotoshi": {
+      "label": "Sokubiotoshi",
+      "labelJa": "素首落とし",
+      "description": "Neck-slap down"
+    },
+    "okurigake": {
+      "label": "Okurigake",
+      "labelJa": "送り掛け",
+      "description": "Rear leg trip"
+    },
+    "okurihikiotoshi": {
+      "label": "Okurihikiotoshi",
+      "labelJa": "送り引き落とし",
+      "description": "Rear pull down"
+    },
+    "waridashi": {
+      "label": "Waridashi",
+      "labelJa": "割り出し",
+      "description": "Upper-arm frontal push out"
+    },
+    "okurinage": {
+      "label": "Okurinage",
+      "labelJa": "送り投げ",
+      "description": "Rear throw"
+    },
+    "tsukaminage": {
+      "label": "Tsukaminage",
+      "labelJa": "つかみ投げ",
+      "description": "Grabbing throw"
+    },
+    "okuritsuridashi": {
+      "label": "Okuritsuridashi",
+      "labelJa": "送り吊り出し",
+      "description": "Rear lift out"
+    },
+    "okuritsuriotoshi": {
+      "label": "Okuritsuriotoshi",
+      "labelJa": "送り吊り落とし",
+      "description": "Rear lift and drop"
+    },
+    "yobimodoshi": {
+      "label": "Yobimodoshi",
+      "labelJa": "呼び戻し",
+      "description": "Pulling body slam"
+    },
+    "ushiromotare": {
+      "label": "Ushiromotare",
+      "labelJa": "後ろもたれ",
+      "description": "Backward leaning out"
+    },
+    "uwatenage": {
+      "label": "Uwatenage",
+      "labelJa": "上手投げ",
+      "description": "A magnificent overarm throw, leveraging an outside belt grip to hurl the opponent to the dirt."
+    },
+    "sukuinage": {
+      "label": "Sukuinage",
+      "labelJa": "掬い投げ",
+      "description": "A swift beltless arm throw, scooping the opponent under their arm and tossing them down."
+    },
+    "shitatenage": {
+      "label": "Shitatenage",
+      "labelJa": "下手投げ",
+      "description": "A sharp underarm throw that uses an inside belt grip to pivot and drop the opponent."
+    },
+    "kotenage": {
+      "label": "Kotenage",
+      "labelJa": "小手投げ",
+      "description": "Armlock throw"
+    },
+    "shitatedashinage": {
+      "label": "Shitatedashinage",
+      "labelJa": "下手出し投げ",
+      "description": "Pulling underarm throw"
+    },
+    "uwatedashinage": {
+      "label": "Uwatedashinage",
+      "labelJa": "上手出し投げ",
+      "description": "Pulling overarm throw"
+    },
+    "kubinage": {
+      "label": "Kubinage",
+      "labelJa": "首投げ",
+      "description": "Headlock throw"
+    },
+    "koshihineri": {
+      "label": "Koshihineri",
+      "labelJa": "腰捻り",
+      "description": "Hip twist throw"
+    },
+    "ipponzeoi": {
+      "label": "Ipponzeoi",
+      "labelJa": "一本背負い",
+      "description": "One-armed shoulder throw"
+    },
+    "nichonage": {
+      "label": "Nichonage",
+      "labelJa": "二丁投げ",
+      "description": "Two-handed arm throw"
+    },
+    "yaguranage": {
+      "label": "Yaguranage",
+      "labelJa": "櫓投げ",
+      "description": "Inner thigh throw"
+    },
+    "kakenage": {
+      "label": "Kakenage",
+      "labelJa": "掛け投げ",
+      "description": "Hooking throw"
+    },
+    "tsukiotoshi": {
+      "label": "Tsukiotoshi",
+      "labelJa": "突き落とし",
+      "description": "A lightning-fast twisting thrust down, redirecting the opponent\\"
+    },
+    "tottari": {
+      "label": "Tottari",
+      "labelJa": "とったり",
+      "description": "Arm bar throw"
+    },
+    "shitatehineri": {
+      "label": "Shitatehineri",
+      "labelJa": "下手捻り",
+      "description": "Underarm twisting throw"
+    },
+    "uwatehineri": {
+      "label": "Uwatehineri",
+      "labelJa": "上手捻り",
+      "description": "Overarm twisting throw"
+    },
+    "kotehineri": {
+      "label": "Kotehineri",
+      "labelJa": "小手捻り",
+      "description": "Armlock twisting throw"
+    },
+    "amiuchi": {
+      "label": "Amiuchi",
+      "labelJa": "網打ち",
+      "description": "Fisherman\\"
+    },
+    "kainahineri": {
+      "label": "Kainahineri",
+      "labelJa": "腕捻り",
+      "description": "Two-arm twisting throw"
+    },
+    "zubuneri": {
+      "label": "Zubuneri",
+      "labelJa": "頭捻り",
+      "description": "Head-propping twisting throw"
+    },
+    "sakatottari": {
+      "label": "Sakatottari",
+      "labelJa": "逆取ったり",
+      "description": "Wrapped arm throw"
+    },
+    "kubiotoshi": {
+      "label": "Kubiotoshi",
+      "labelJa": "首落とし",
+      "description": "Neck-twisting throw"
+    },
+    "gasshohineri": {
+      "label": "Gasshohineri",
+      "labelJa": "合掌捻り",
+      "description": "Clasped-hand twisting throw"
+    },
+    "harimanage": {
+      "label": "Harimanage",
+      "labelJa": "波離間投げ",
+      "description": "Backward belt throw"
+    },
+    "osakate": {
+      "label": "Osakate",
+      "labelJa": "大逆手",
+      "description": "Overarm leg-trip throw"
+    },
+    "sabaori": {
+      "label": "Sabaori",
+      "labelJa": "鯖折り",
+      "description": "Forward force down"
+    },
+    "sotokomata_hinerite": {
+      "label": "Sotokomata",
+      "labelJa": "外小股",
+      "description": "Outside thigh-scooping throw"
+    },
+    "tokkurinage": {
+      "label": "Tokkurinage",
+      "labelJa": "徳利投げ",
+      "description": "Two-hand head-twisting throw"
+    },
+    "makiotoshi": {
+      "label": "Makiotoshi",
+      "labelJa": "巻き落とし",
+      "description": "Twisting pull down"
+    },
+    "uchimuso": {
+      "label": "Uchimuso",
+      "labelJa": "内無双",
+      "description": "Inner thigh-propping twist"
+    },
+    "sotomuso": {
+      "label": "Sotomuso",
+      "labelJa": "外無双",
+      "description": "Outer thigh-propping twist"
+    },
+    "ashitori": {
+      "label": "Ashitori",
+      "labelJa": "足取り",
+      "description": "Leg pick"
+    },
+    "sotogake": {
+      "label": "Sotogake",
+      "labelJa": "外掛け",
+      "description": "Outside leg trip"
+    },
+    "uchigake": {
+      "label": "Uchigake",
+      "labelJa": "内掛け",
+      "description": "Inside leg trip"
+    },
+    "ketaguri": {
+      "label": "Ketaguri",
+      "labelJa": "蹴手繰り",
+      "description": "Ankle kick sweep"
+    },
+    "watashikomi": {
+      "label": "Watashikomi",
+      "labelJa": "渡し込み",
+      "description": "Thigh-hook body drop"
+    },
+    "kekaeshi": {
+      "label": "Kekaeshi",
+      "labelJa": "蹴返し",
+      "description": "Kicking back the leg"
+    },
+    "kosotogake": {
+      "label": "Kosotogake",
+      "labelJa": "小外掛け",
+      "description": "Minor outside leg trip"
+    },
+    "komatasukui": {
+      "label": "Komatasukui",
+      "labelJa": "小股掬い",
+      "description": "Over-thigh scooping throw"
+    },
+    "chongake": {
+      "label": "Chongake",
+      "labelJa": "ちょん掛け",
+      "description": "Hooking heel trip"
+    },
+    "kawarigake": {
+      "label": "Kawarigake",
+      "labelJa": "河津掛け",
+      "description": "Hooking backward trip"
+    },
+    "susoharai": {
+      "label": "Susoharai",
+      "labelJa": "裾払い",
+      "description": "Ankle sweep"
+    },
+    "kirikaeshi": {
+      "label": "Kirikaeshi",
+      "labelJa": "切り返し",
+      "description": "Twisting backward trip"
+    },
+    "nimaigeri": {
+      "label": "Nimaigeri",
+      "labelJa": "二枚蹴り",
+      "description": "Ankle kick sweep"
+    },
+    "omata": {
+      "label": "Omata",
+      "labelJa": "大股",
+      "description": "Thigh-scooping throw"
+    },
+    "susotori": {
+      "label": "Susotori",
+      "labelJa": "裾取り",
+      "description": "Ankle pick"
+    },
+    "mitokorozeme": {
+      "label": "Mitokorozeme",
+      "labelJa": "三所攻め",
+      "description": "Triple-point attack"
+    },
+    "kosotogari": {
+      "label": "Kosotogari",
+      "labelJa": "小外刈",
+      "description": "Minor outside reap"
+    },
+    "tsumatori": {
+      "label": "Tsumatori",
+      "labelJa": "褄取り",
+      "description": "Rear toe pick"
+    },
+    "izori": {
+      "label": "Izori",
+      "labelJa": "居反り",
+      "description": "Backwards body drop"
+    },
+    "kakezori": {
+      "label": "Kakezori",
+      "labelJa": "掛け反り",
+      "description": "Hooking back drop"
+    },
+    "shumokuzori": {
+      "label": "Shumokuzori",
+      "labelJa": "撞木反り",
+      "description": "Bell-clapper back drop"
+    },
+    "sototasukizori": {
+      "label": "Sototasukizori",
+      "labelJa": "外たすき反り",
+      "description": "Outer kimono-string back drop"
+    },
+    "tasukizori": {
+      "label": "Tasukizori",
+      "labelJa": "たすき反り",
+      "description": "Kimono-string back drop"
+    },
+    "tsutaezori": {
+      "label": "Tsutaezori",
+      "labelJa": "伝え反り",
+      "description": "Underarm back drop"
+    },
+    "kimedashi": {
+      "label": "Kimedashi",
+      "labelJa": "極め出し",
+      "description": "Arm-barring force out"
+    },
+    "kimetaoshi": {
+      "label": "Kimetaoshi",
+      "labelJa": "極め倒し",
+      "description": "Arm-barring force down"
+    },
+    "isamiashi": {
+      "label": "Isamiashi",
+      "labelJa": "勇み足",
+      "description": "Inadvertent step out"
+    },
+    "koshikudake": {
+      "label": "Koshikudake",
+      "labelJa": "腰砕け",
+      "description": "Collapsing"
+    },
+    "tsukite": {
+      "label": "Tsukite",
+      "labelJa": "つき手",
+      "description": "Hand touch down"
+    },
+    "tsukihiza": {
+      "label": "Tsukihiza",
+      "labelJa": "つきひざ",
+      "description": "Knee touch down"
+    },
+    "fumidashi": {
+      "label": "Fumidashi",
+      "labelJa": "踏み出し",
+      "description": "Stepping out"
+    },
+    "fusensho": {
+      "label": "Fusensho",
+      "labelJa": "不戦勝",
+      "description": "Win by default"
+    },
+    "hansoku": {
+      "label": "Hansoku",
+      "labelJa": "反則",
+      "description": "Win by disqualification"
+    }
+  }
+}

@@ -17,7 +17,7 @@ const __dirname = path.dirname(__filename);
  * 4. Registry Enrichment (Descriptions/Labels)
  */
 
-const ARCHIVE_PATH = path.resolve(__dirname, "../src/engine/narrative/archive.json");
+const ARCHIVE_PATH = path.resolve(__dirname, "../src/engine/bard/registry.json");
 
 const DOMAINS = [
   {

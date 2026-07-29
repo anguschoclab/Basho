@@ -1,6 +1,12 @@
 import { vi, afterEach, beforeAll } from "vitest";
 import { setSeed } from "../../engine/rng";
 import { resetImpactTimestampCounter } from "../../engine/core/StateImpact";
+import { BardEngine } from "../../engine/bard/BardEngine";
+
+// Pre-warm BardEngine domains so resolve/has work synchronously in all tests.
+beforeAll(async () => {
+  await BardEngine.loadDomains();
+});
 
 // Guard for node environment where DOM APIs don't exist.
 const hasDOM = typeof Element !== "undefined" && typeof HTMLElement !== "undefined";

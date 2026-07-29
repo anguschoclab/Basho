@@ -1,4 +1,4 @@
-import archData from "./archive.json";
+import registryData from "./registry.json";
 import { SeededRNG } from "../rng";
 import type { NarrativeContext } from "../types/events";
 import { warn } from "../utils/Logger";
@@ -24,17 +24,30 @@ export interface BardArchive {
   version: string;
   registry: Record<string, Record<string, RegistryEntry>>;
   domains: Record<string, unknown>;
-  matrix: unknown;
-  digests: unknown[];
 }
+
+type DomainMap = Record<string, unknown>;
 
 /**
  * The Bard Engine v2.2: A Data-Driven Reactive Narrative System.
  * Ref: Phase 2 exhaustive refactor.
  */
-const archive = archData as unknown as BardArchive;
+const registry = registryData as unknown as Record<string, Record<string, RegistryEntry>>;
+
+let domainsPromise: Promise<DomainMap> | null = null;
+let domainsData: DomainMap | null = null;
+
 let lruCache: string[] = [];
 const MAX_CACHE_SIZE = 50;
+
+async function loadDomainsInternal(): Promise<DomainMap> {
+  const mod = await import("./domains.json");
+  return mod.default as unknown as DomainMap;
+}
+
+function getDomains(): DomainMap | null {
+  return domainsData;
+}
 
 function formatCurrency(amount: number): string {
   return formatCurrencyEnUS(amount, "en-US");
@@ -60,17 +73,27 @@ function updateCache(template: string) {
  */
 function getOptions(path: string, intensity: number): string[] {
   const keys = path.split(".");
-  let current: unknown = archive;
+  let current: unknown;
+  let startIndex = 0;
 
-  // Check if path starts with root-level keys (registry, matrix, digests)
-  const isRootKey = ["registry", "matrix", "digests"].includes(keys[0]);
+  // Check if path starts with the registry root key
+  const isRootKey = keys[0] === "registry";
 
-  if (!isRootKey && keys[0] !== "domains") {
+  if (isRootKey) {
+    current = registry;
+    startIndex = 1; // skip 'registry' prefix
+  } else if (keys[0] === "domains") {
+    current = getDomains();
+    if (!current) return [];
+    startIndex = 1; // skip 'domains' prefix
+  } else {
     // Legacy support: auto-prefix with 'domains' if not explicitly provided
-    current = archive.domains;
+    current = getDomains();
+    if (!current) return [];
   }
 
-  for (const key of keys) {
+  for (let i = startIndex; i < keys.length; i++) {
+    const key = keys[i];
     if (current && typeof current === "object" && key in current) {
       current = (current as Record<string, unknown>)[key];
     } else {
@@ -220,6 +243,20 @@ export function interpolate(text: string, context: NarrativeContext): string {
 
 export const BardEngine = {
   /**
+   * Pre-loads domain templates so resolve/has can work synchronously.
+   * Returns a cached promise — safe to call multiple times.
+   */
+  loadDomains(): Promise<DomainMap> {
+    if (!domainsPromise) {
+      domainsPromise = loadDomainsInternal();
+      domainsPromise.then((d: DomainMap) => {
+        domainsData = d;
+      });
+    }
+    return domainsPromise;
+  },
+
+  /**
    * Resolves a narrative path into a final interpolated string.
    */
   resolve(rng: SeededRNG, path: ResolutionPath, context: NarrativeContext = {}): BardResult {
@@ -275,7 +312,6 @@ export const BardEngine = {
    * Useful for the UI/Presenters to get 'label', 'labelJa', and 'description'.
    */
   getRegistryEntry(domain: string, id: string): RegistryEntry | null {
-    const registry = archive.registry;
     if (!registry || !registry[domain]) return null;
     return registry[domain][id] || null;
   },
