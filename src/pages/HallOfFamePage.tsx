@@ -3,6 +3,7 @@
 
 import { useMemo } from "react";
 import { Helmet } from "react-helmet";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { RECORDS_TABS } from "@/constants/ui/navigation";
 import { PageHeader } from "@/components/layout/control-center";
@@ -245,6 +246,7 @@ function CategoryTab({
   inductees: UIHofInductee[];
 }) {
   const label = HOF_CATEGORY_LABELS[category];
+  const Icon = CATEGORY_ICONS[category];
 
   const byYear = useMemo(() => {
     const map = new Map<number, UIHofInductee[]>();
@@ -258,13 +260,12 @@ function CategoryTab({
 
   if (inductees.length === 0) {
     return (
-      <div className="text-center py-16 space-y-3">
-        <div className="text-4xl">{label.icon}</div>
-        <p className="text-muted-foreground">No {label.name.toLowerCase()} inductees yet.</p>
-        <p className="text-xs text-muted-foreground">
-          Legends are forged through years of competition.
-        </p>
-      </div>
+      <EmptyState
+        icon={Icon}
+        title={`No ${label.name.toLowerCase()} inductees yet.`}
+        description="Legends are forged through years of competition."
+        className="py-16"
+      />
     );
   }
 
@@ -307,13 +308,12 @@ function AllInducteesTab({ inductees }: { inductees: UIHofInductee[] }) {
 
   if (inductees.length === 0) {
     return (
-      <div className="text-center py-16 space-y-3">
-        <div className="text-4xl">🏛️</div>
-        <p className="text-muted-foreground">The Hall stands empty, awaiting its first legends.</p>
-        <p className="text-xs text-muted-foreground">
-          Compete through multiple years to see inductees appear.
-        </p>
-      </div>
+      <EmptyState
+        icon={Award}
+        title="The Hall stands empty, awaiting its first legends."
+        description="Compete through multiple years to see inductees appear."
+        className="py-16"
+      />
     );
   }
 
@@ -365,9 +365,12 @@ export default function HallOfFamePage() {
   if (!world) {
     return (
       <AppLayout pageTitle="Hall of Fame" subNavTabs={RECORDS_TABS} activeSubTab="hall-of-fame">
-        <div className="flex items-center justify-center h-64 text-muted-foreground">
-          No world loaded
-        </div>
+        <EmptyState
+          icon={Award}
+          title="No world loaded"
+          description="Load or start a game to view the Hall of Fame."
+          className="h-64"
+        />
       </AppLayout>
     );
   }
