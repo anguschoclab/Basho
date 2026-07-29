@@ -135,6 +135,15 @@ export interface Rikishi {
   councilWarnings?: number; // Number of formal council warnings received (stat debuffs)
   pressureScore?: number; // Internal score tracking sub-par performances for warnings
 
+  /** Set when an Ozeki is demoted to Sekiwake — cleared on comeback yusho */
+  wasDemotedFromOzeki?: boolean;
+  /** Tracked per-basho; true if rikishi withdrew or was absent on the final day */
+  absentFinalDay?: boolean;
+  /** 0-100 "clutch fighting spirit" metric derived from bout metrics */
+  kihakuIsenScore?: number;
+  /** True if this rikishi is the son of the stablemaster */
+  isSonOfStablemaster?: boolean;
+
   careerHistory: CareerSnapshot[];
   milestones: Milestone[];
   shikonaHistory?: Array<{ shikona: string; fromYear: number; toYear?: number }>;

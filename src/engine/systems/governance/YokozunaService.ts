@@ -11,6 +11,8 @@ import type { BashoPerformance } from "../../types/banzuke";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { getRikishi } from "../../queries";
+import { BardEngine } from "../../bard/BardEngine";
+import { rngFromSeed } from "../../rng";
 
 export interface YDCCandidate {
   rikishiId: string;
@@ -86,8 +88,8 @@ export const YokozunaService = {
       const evaluation = this.evaluateCandidate(world, rikishi);
       if (evaluation && evaluation.recommendation !== "reject") {
         builder.logEvent(
-          "YOKOZUNA_DELIBERATION",
-          "governance",
+          "GOVERNANCE_RULING",
+          "promotion",
           {
             rikishiId: rikishi.id,
             status: evaluation.recommendation,
@@ -97,7 +99,7 @@ export const YokozunaService = {
                 : `The YDC is monitoring ${rikishi.shikona} for potential promotion.`,
             score: Math.floor(evaluation.sentiment),
           },
-          { heyaId: rikishi.heyaId, importance: "high" }
+          { heyaId: rikishi.heyaId, importance: "headline" }
         );
 
         if (evaluation.recommendation === "promote") {
@@ -108,6 +110,150 @@ export const YokozunaService = {
       }
     }
 
+    // YDC Accountability: evaluate existing Yokozuna for warnings, encouragement, or retirement pressure
+    this.evaluateActiveYokozuna(world, builder);
+
     return builder.build();
+  },
+
+  /**
+   * Evaluate active Yokozuna for YDC accountability statements.
+   * Generates public and private YDC statements based on:
+   * - Win/loss record (make-koshi triggers warning)
+   * - absentFinalDay (triggers absence criticism)
+   * - kihakuIsenScore (high score triggers praise)
+   * - consecutiveMakeKoshi (high count triggers private cynicism)
+   */
+  evaluateActiveYokozuna(world: WorldState, builder: ReturnType<typeof createImpactBuilder>): void {
+    for (const rikishiId of world.activeRikishiIds) {
+      const rikishi = getRikishi(world, rikishiId);
+      if (!rikishi || rikishi.rank !== "yokozuna") continue;
+
+      const wins = rikishi.currentBashoWins ?? 0;
+      const losses = rikishi.currentBashoLosses ?? 0;
+      const isMakeKoshi = losses > wins;
+      const isKachiKoshi = wins > losses;
+      const absentFinalDay = rikishi.absentFinalDay === true;
+      const consecutiveMK = rikishi.consecutiveMakeKoshi ?? 0;
+      const kihakuScore = rikishi.kihakuIsenScore ?? 50;
+
+      const ydcRng = rngFromSeed(`ydc-${rikishiId}-${world.year}-${world.currentBashoName ?? "hatsu"}`, "narrative", "ydc");
+
+      // Praise for high fighting spirit and kachi-koshi
+      if (isKachiKoshi && kihakuScore >= 75) {
+        const line = BardEngine.resolve(ydcRng, "ydc_accountability.praise", {
+          SHIKONA: rikishi.shikona,
+          rikishiId: rikishi.id,
+        });
+        if (line.text) {
+          builder.logEvent(
+            "GOVERNANCE_RULING",
+            "promotion",
+            {
+              rikishiId: rikishi.id,
+              shikona: rikishi.shikona,
+              status: "praise",
+              incident: "YDC Praise",
+              statement: line.text,
+              score: kihakuScore,
+            },
+            { rikishiId: rikishi.id, heyaId: rikishi.heyaId, importance: "notable" }
+          );
+        }
+      }
+
+      // Absence criticism for missing final day
+      if (absentFinalDay) {
+        const line = BardEngine.resolve(ydcRng, "ydc_accountability.absence_criticism", {
+          SHIKONA: rikishi.shikona,
+          rikishiId: rikishi.id,
+        });
+        if (line.text) {
+          builder.logEvent(
+            "GOVERNANCE_RULING",
+            "discipline",
+            {
+              rikishiId: rikishi.id,
+              shikona: rikishi.shikona,
+              status: "absence_criticism",
+              incident: "YDC Absence Criticism",
+              statement: line.text,
+            },
+            { rikishiId: rikishi.id, heyaId: rikishi.heyaId, importance: "major" }
+          );
+        }
+      }
+
+      // Warning for make-koshi
+      if (isMakeKoshi) {
+        let templatePath = "ydc_accountability.warning";
+        if (consecutiveMK >= 2) {
+          templatePath = "ydc_accountability.demand_reflection";
+        }
+        const line = BardEngine.resolve(ydcRng, templatePath, {
+          SHIKONA: rikishi.shikona,
+          rikishiId: rikishi.id,
+        });
+        if (line.text) {
+          builder.logEvent(
+            "GOVERNANCE_RULING",
+            "discipline",
+            {
+              rikishiId: rikishi.id,
+              shikona: rikishi.shikona,
+              status: consecutiveMK >= 2 ? "demand_reflection" : "warning",
+              incident: "YDC Warning",
+              statement: line.text,
+              consecutiveMakeKoshi: consecutiveMK,
+            },
+            { rikishiId: rikishi.id, heyaId: rikishi.heyaId, importance: "major" }
+          );
+        }
+
+        // Private cynicism for repeated make-koshi
+        if (consecutiveMK >= 3) {
+          const cynicismLine = BardEngine.resolve(ydcRng, "ydc_accountability.private_cynicism", {
+            SHIKONA: rikishi.shikona,
+            rikishiId: rikishi.id,
+          });
+          if (cynicismLine.text) {
+            builder.logEvent(
+              "GOVERNANCE_RULING",
+              "discipline",
+              {
+                rikishiId: rikishi.id,
+                shikona: rikishi.shikona,
+                status: "private_cynicism",
+                incident: "YDC Private Cynicism",
+                statement: cynicismLine.text,
+                consecutiveMakeKoshi: consecutiveMK,
+              },
+              { rikishiId: rikishi.id, heyaId: rikishi.heyaId, importance: "minor" }
+            );
+          }
+        }
+      } else if (isKachiKoshi && kihakuScore < 75 && kihakuScore >= 50) {
+        // Encouragement for adequate but not spectacular performance
+        const line = BardEngine.resolve(ydcRng, "ydc_accountability.encouragement", {
+          SHIKONA: rikishi.shikona,
+          rikishiId: rikishi.id,
+        });
+        if (line.text) {
+          builder.logEvent(
+            "GOVERNANCE_RULING",
+            "promotion",
+            {
+              rikishiId: rikishi.id,
+              shikona: rikishi.shikona,
+              status: "encouragement",
+              incident: "YDC Encouragement",
+              statement: line.text,
+              score: kihakuScore,
+            },
+            { rikishiId: rikishi.id, heyaId: rikishi.heyaId, importance: "minor" }
+          );
+        }
+      }
+    }
   },
 };

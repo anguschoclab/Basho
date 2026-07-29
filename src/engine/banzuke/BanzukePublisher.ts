@@ -247,7 +247,24 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
         momentum: rikishi.momentum,
       };
       const updatedHistory = [...(rikishi.careerHistory || []), historyEntry];
-      // Keep last 6 basho only — promotion logic only needs recent history
+      // Keep last 6 basha only — promotion logic only needs recent history
+
+      // Track absentFinalDay: if rikishi has any absences and didn't complete all 15 bouts
+      const totalBouts = stats.wins + stats.losses;
+      const absentFinalDay = stats.absences > 0 && totalBouts < 15;
+
+      // Calculate kihaku isen (fighting spirit) score from bout metrics
+      const boutMetricsForKihaku = lastBasho.boutMetrics?.[id];
+      let kihakuIsenScore: number | undefined;
+      if (boutMetricsForKihaku) {
+        const comebackPoints = Math.min((boutMetricsForKihaku.comebackWins ?? 0) / 5, 1) * 30;
+        const edgePoints = Math.min((boutMetricsForKihaku.edgeCrisisSurvived ?? 0) / 4, 1) * 25;
+        const upsetPoints = Math.min((boutMetricsForKihaku.upsetCount ?? 0) / 3, 1) * 20;
+        const winRatio = totalBouts > 0 ? stats.wins / totalBouts : 0;
+        const winPoints = Math.min(winRatio / 0.8, 1) * 25;
+        kihakuIsenScore = Math.round(Math.max(0, Math.min(100, comebackPoints + edgePoints + upsetPoints + winPoints)));
+      }
+
       builder.updateRikishi(id, {
         consecutiveStrongOzeki,
         consecutiveMakeKoshi,
@@ -257,6 +274,8 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
         councilWarnings,
         stats: statsUpdate as import("../types/rikishi").RikishiStats,
         careerHistory: updatedHistory.slice(-6),
+        absentFinalDay,
+        kihakuIsenScore,
       });
     }
 
@@ -474,6 +493,25 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
           recentlyReturnedFromInjury: wasKyujoFromInjury || undefined,
           sanyakuPromotionThisBasho: isSanyakuPromotion || undefined,
         });
+      }
+
+      // Ozeki demotion detection: set wasDemotedFromOzeki flag
+      if (oldRank === "ozeki" && newEntry.position.rank !== "ozeki") {
+        builder.updateRikishi(newEntry.rikishiId, {
+          wasDemotedFromOzeki: true,
+        });
+        builder.logEvent(
+          "BASHO_STATUS",
+          "promotion",
+          {
+            status: "ozeki_demotion",
+            description: `${rikishi.shikona} has been demoted from Ozeki.`,
+            rikishiId: newEntry.rikishiId,
+            from: oldRank,
+            to: newEntry.position.rank,
+          },
+          { rikishiId: newEntry.rikishiId, heyaId: rikishi.heyaId, importance: "headline" }
+        );
       }
 
       // Gap 4/9: Generate return_from_kyujo narrative for returning rikishi

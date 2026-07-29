@@ -128,7 +128,15 @@ export type PbpTag =
   | "archetype_counter"
   | "archetype_evolution"
   | "counter"
-  | "momentum_shift";
+  | "momentum_shift"
+  | "ozeki_demotion"
+  | "son_of_stablemaster"
+  | "justice_done"
+  | "schedule_delay"
+  | "ydc_accountability"
+  | "post_basho_press"
+  | "playoff"
+  | "lower_division";
 
 export type PbpLine = {
   text: string;
@@ -635,6 +643,34 @@ export function generateBoutNarrative(
       for (const line of kyujoReturnLines) {
         push(line.text, "pre_bout", ["comeback", "injury"]);
       }
+    }
+  }
+
+  // 3d-3. Ozeki demotion comeback narrative
+  for (const r of [east, west]) {
+    if (r.wasDemotedFromOzeki) {
+      push(
+        BardEngine.resolve(preBoutRng, "pre_bout.ozeki_demotion_comeback", {
+          SHIKONA: r.shikona,
+          rikishiId: r.id,
+        }).text,
+        "pre_bout",
+        ["comeback", "ozeki_demotion"]
+      );
+    }
+  }
+
+  // 3d-4. Son of stablemaster narrative
+  for (const r of [east, west]) {
+    if (r.isSonOfStablemaster) {
+      push(
+        BardEngine.resolve(preBoutRng, "pre_bout.son_of_stablemaster", {
+          SHIKONA: r.shikona,
+          rikishiId: r.id,
+        }).text,
+        "pre_bout",
+        ["son_of_stablemaster"]
+      );
     }
   }
 

@@ -14,12 +14,18 @@ import { mergeImpacts } from "../core/ImpactResolver";
 import { accumulateMochikyukinPoints } from "../systems/economy/MochikyukinService";
 import type { WorldState } from "../types/world";
 import type { StateImpact } from "../core/StateImpact";
-import { resolvePlayoffs, calculateStandings } from "./PlayoffResolver";
+import { resolvePlayoffs, calculateStandings, calculateDivisionStandings, resolveDivisionPlayoffs } from "./PlayoffResolver";
 import { distributePrizes, payBashoTeate, payKinboshiStipends } from "./PrizeDistribution";
 import { recordBashoHistory, checkYokozunaPromotions } from "./BashoHistory";
 import { getRikishi } from "../queries";
+import { BardEngine } from "../bard/BardEngine";
+import { rngFromSeed } from "../rng";
+import type { PbpLine } from "../bout/boutNarrative";
+import type { Milestone } from "../types/history";
+import { BASHO_CALENDAR } from "../calendar";
+import { PostBashoPressService } from "../systems/narrative/PostBashoPressService";
 
-export { resolvePlayoffs, calculateStandings };
+export { resolvePlayoffs, calculateStandings, calculateDivisionStandings, resolveDivisionPlayoffs };
 export { distributePrizes, payBashoTeate, payKinboshiStipends };
 export { recordBashoHistory, checkYokozunaPromotions };
 
@@ -81,6 +87,81 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
     );
   }
 
+  // Per-division playoffs for lower divisions (juryo, makushita, sandanme, jonidan, jonokuchi)
+  const lowerDivisions = ["juryo", "makushita", "sandanme", "jonidan", "jonokuchi"];
+  const allDivisionPlayoffLines: PbpLine[] = [];
+  let divisionPlayoffCount = 0;
+
+  for (const division of lowerDivisions) {
+    const divStandings = calculateDivisionStandings(basho, world, division);
+    if (divStandings.topCandidates.length > 1) {
+      divisionPlayoffCount++;
+      const divResult = resolveDivisionPlayoffs(world, basho, divStandings.topCandidates, division);
+      allDivisionPlayoffLines.push(...divResult.narrativeLines);
+      playoffMatches.push(...divResult.matches);
+    }
+  }
+
+  // Schedule delay narrative if multiple division playoffs occurred
+  if (divisionPlayoffCount >= 2) {
+    const scheduleRng = rngFromSeed(`schedule-delay-${basho.bashoName}-${world.year}`, "narrative", "playoff");
+    const delayLine = BardEngine.resolve(scheduleRng, "playoff.schedule_delay", {});
+    if (delayLine.text) {
+      allDivisionPlayoffLines.push({
+        text: delayLine.text,
+        id: `schedule-delay-${basho.bashoName}-${world.year}`,
+        phase: "post_bout",
+        tags: ["schedule_delay", "playoff"],
+      });
+    }
+  }
+
+  // Log division playoff narrative if any occurred
+  if (allDivisionPlayoffLines.length > 0) {
+    builder.logEvent(
+      "BASHO_STATUS",
+      "basho",
+      {
+        status: "division_playoffs",
+        incident: "Lower Division Playoffs",
+        narrative: allDivisionPlayoffLines,
+        divisionPlayoffCount,
+        bashoName: basho.bashoName,
+      },
+      { importance: "notable" }
+    );
+  }
+
+  // Justice done narrative — if yusho winner suffered a monoii loss earlier in the basho
+  const justiceDoneRng = rngFromSeed(`justice-${basho.bashoName}-${world.year}`, "narrative", "playoff");
+  for (const match of basho.matches ?? []) {
+    if (match.result?.monoii && match.result.loserRikishiId === yusho) {
+      const r = getRikishi(world, yusho);
+      if (r) {
+        const justiceLine = BardEngine.resolve(justiceDoneRng, "playoff.justice_done", {
+          SHIKONA: r.shikona,
+          rikishiId: r.id,
+        });
+        if (justiceLine.text) {
+          builder.logEvent(
+            "BASHO_STATUS",
+            "basho",
+            {
+              status: "justice_done",
+              incident: "Justice Done",
+              shikona: r.shikona,
+              rikishiId: r.id,
+              statement: justiceLine.text,
+              bashoName: basho.bashoName,
+            },
+            { rikishiId: r.id, importance: "major" }
+          );
+        }
+        break;
+      }
+    }
+  }
+
   const { prizes, impact: prizeImpact } = distributePrizes(world, basho, yusho);
 
   // Merge prize impact
@@ -114,6 +195,92 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
     prizes,
     bestWins
   );
+
+  // Ozeki demotion comeback yusho detection
+  const yushoWinner = getRikishi(world, yusho);
+  if (yushoWinner?.wasDemotedFromOzeki === true) {
+    const comebackRng = rngFromSeed(`comeback-yusho-${yusho}-${basho.bashoName}-${world.year}`, "narrative", "comeback");
+    const comebackLine = BardEngine.resolve(comebackRng, "post_basho_press.ozeki_comeback_yusho", {
+      SHIKONA: yushoWinner.shikona,
+      rikishiId: yusho,
+    });
+    const comebackPbpLines: PbpLine[] = [];
+    if (comebackLine.text) {
+      comebackPbpLines.push({
+        text: comebackLine.text,
+        id: `comeback-yusho-${yusho}-${basho.bashoName}-${world.year}`,
+        phase: "post_bout",
+        tags: ["comeback", "ozeki_demotion"],
+      });
+    }
+    const reflectionLine = BardEngine.resolve(comebackRng, "post_basho_press.ozeki_comeback_reflection", {
+      SHIKONA: yushoWinner.shikona,
+      rikishiId: yusho,
+    });
+    if (reflectionLine.text) {
+      comebackPbpLines.push({
+        text: reflectionLine.text,
+        id: `comeback-reflection-${yusho}-${basho.bashoName}-${world.year}`,
+        phase: "post_bout",
+        tags: ["comeback", "ozeki_demotion"],
+      });
+    }
+
+    const bashoMonth = BASHO_CALENDAR[basho.bashoName]?.month ?? 1;
+    const milestone: Milestone = {
+      id: `milestone-comeback-${yusho}-${world.year}-${bashoMonth}`,
+      type: "ozeki_demotion_comeback_yusho",
+      title: "Ozeki Demotion Comeback Yusho",
+      description: `${yushoWinner.shikona} became the first to respond to Ozeki demotion by taking the cup in the following meet.`,
+      date: { year: world.year, month: bashoMonth },
+    };
+
+    builder.logEvent(
+      "LIFECYCLE_EVENT",
+      "milestone",
+      {
+        status: "historic_achievement",
+        incident: "ozeki_demotion_comeback_yusho",
+        shikona: yushoWinner.shikona,
+        rikishiId: yusho,
+        description: milestone.description,
+        narrative: comebackPbpLines,
+      },
+      { rikishiId: yusho, importance: "headline" }
+    );
+
+    const existingMilestones = yushoWinner.milestones || [];
+    builder.updateRikishi(yusho, {
+      wasDemotedFromOzeki: false,
+      milestones: [...existingMilestones, milestone],
+    });
+  }
+
+  // Post-basho press conference PBP generation
+  const pressLines = PostBashoPressService.generatePressConference(world, {
+    yushoId: yusho,
+    junYushoIds: topCandidates,
+    ginoSho: prizes.ginoSho,
+    kantosho: prizes.kantosho,
+    shukunsho: prizes.shukunsho,
+    bashoName: basho.bashoName,
+    year: world.year,
+  });
+  if (pressLines.length > 0) {
+    builder.logEvent(
+      "BASHO_STATUS",
+      "basho",
+      {
+        status: "post_basho_press_conference",
+        incident: "Post-Basho Press Conference",
+        shikona: yushoWinner?.shikona ?? "Unknown",
+        rikishiId: yusho,
+        narrative: pressLines,
+        bashoName: basho.bashoName,
+      },
+      { importance: "major" }
+    );
+  }
 
   // Pay basho teate to non-sekitori rikishi
   const teateImpact = payBashoTeate(world);

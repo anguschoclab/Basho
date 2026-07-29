@@ -2818,6 +2818,18 @@
         "Championship on the line — %EAST% and %WEST% face off in a yusho playoff.",
         "The yusho hangs in the balance — %EAST% versus %WEST% in a decisive playoff bout."
       ],
+      "ozeki_demotion_comeback": [
+        "Demoted from Ozeki, %SHIKONA% fights with something to prove.",
+        "The fallen pillar seeks redemption — %SHIKONA% returns to the dohyo with a point to make.",
+        "Stripped of the Ozeki rank, %SHIKONA% channels frustration into every bout.",
+        "Once an Ozeki, now fighting from below — %SHIKONA% carries the weight of demotion onto the dohyo."
+      ],
+      "son_of_stablemaster": [
+        "All the work I've put in thus far has been worth it — %SHIKONA% carries the family legacy.",
+        "The son of the stablemaster, %SHIKONA% fights with the weight of tradition on his shoulders.",
+        "%SHIKONA% grew up in this stable — every bout is a continuation of his family's story.",
+        "Born into the sumo life, %SHIKONA% represents the next generation of his stable's legacy."
+      ],
       "career_phase_debut": [
         "%SHIKONA% takes the dohyo early in his career — %BOUTS% bouts in, the future stretches ahead.",
         "A young %SHIKONA% finds his footing in the professional ranks.",
@@ -3483,6 +3495,172 @@
           "We'll see."
         ]
       }
+    },
+    "ydc_accountability": {
+      "warning": [
+        "The chairman names %SHIKONA% specifically, referencing the need for awareness of his role as Yokozuna.",
+        "The YDC chairman states: '%SHIKONA% must be acutely aware of his position and the dignity it demands.'",
+        "Council deliberation concludes with a formal warning to %SHIKONA% — the tone is stern."
+      ],
+      "encouragement": [
+        "The chairman offers measured encouragement: 'We'd like to hope highly for %SHIKONA% next time.'",
+        "The YDC expresses cautious optimism for %SHIKONA%'s trajectory, while noting room for improvement.",
+        "'We expect to see better from %SHIKONA% — the potential remains,' the chairman states."
+      ],
+      "demand_reflection": [
+        "The chairman demands %SHIKONA% ask himself what is meant by spirit, technique, and physique.",
+        "'%SHIKONA% must reflect deeply on what it means to wear the tsuna,' the YDC declares.",
+        "A pointed statement from the council: %SHIKONA% is told to examine his commitment to the Yokozuna standard."
+      ],
+      "praise": [
+        "The chairman praises %SHIKONA%: 'That mentality and spirit is exactly what we'd hoped to see.'",
+        "The YDC commends %SHIKONA% for exemplary performance and dignified conduct throughout the tournament.",
+        "'%SHIKONA% has shown the fighting spirit befitting the rank,' the chairman affirms."
+      ],
+      "absence_criticism": [
+        "The chairman calls it 'a crying shame' that %SHIKONA% absented himself on that important final day.",
+        "The YDC notes with displeasure that %SHIKONA% withdrew on the final day — a day of great significance.",
+        "'For a Yokozuna to absent himself on senshuraku is regrettable,' the chairman states of %SHIKONA%."
+      ],
+      "private_cynicism": [
+        "Privately, the chairman confides that he feels further warnings to %SHIKONA% may be pointless.",
+        "Behind closed doors, the chairman expresses doubt that %SHIKONA% will respond to further pressure.",
+        "The chairman's private assessment of %SHIKONA% is far bleaker than his public statement suggests."
+      ]
+    },
+    "post_basho_press": {
+      "champion": {
+        "walking_wounded": [
+          "%SHIKONA% reveals the toll: 'I got the shock of my life when my left big toe went mid-bout.'",
+          "'I neither thought about pulling out nor changing my style,' says %SHIKONA%, battling through visible pain.",
+          "%SHIKONA% admits the injury was worse than publicly known: 'Every bout was a test of willpower.'"
+        ],
+        "persevered": [
+          "'I neither thought about pulling out nor changing my style,' %SHIKONA% states firmly.",
+          "%SHIKONA% insists the injury never crossed his mind as a reason to withdraw.",
+          "'Pain is temporary — the Emperor's Cup is forever,' %SHIKONA% declares."
+        ],
+        "growth": [
+          "'I showed everyone there is more to me than just youth and momentum,' %SHIKONA% reflects.",
+          "%SHIKONA% speaks with newfound maturity: 'This title proves I can win with more than just raw energy.'",
+          "'I'm not just a young wrestler anymore — I'm a champion,' %SHIKONA% says with quiet pride."
+        ],
+        "diary": [
+          "%SHIKONA% reveals he started keeping a diary of every daily activity during the tournament.",
+          "'I write down everything — what I ate, how I felt, what I trained. It keeps me focused,' says %SHIKONA%.",
+          "%SHIKONA% credits his tournament preparation to meticulous journaling of his daily routine."
+        ],
+        "superstition": [
+          "%SHIKONA% switched his yukata after a defeat to one bearing the motif of his hometown.",
+          "Superstition or routine — %SHIKONA% wore the same yukata every day after his first win.",
+          "'I changed everything after that loss — even the yukata,' %SHIKONA% admits with a sheepish grin."
+        ],
+        "clinic_visit": [
+          "%SHIKONA% heads to the clinic to verify the damage done during the tournament.",
+          "'I'll get checked out tomorrow — the adrenaline is still masking a lot,' %SHIKONA% says.",
+          "Post-tournament medical visit confirmed for %SHIKONA% — the champion's body needs attention."
+        ],
+        "title_parade": [
+          "%SHIKONA%'s title parade sees a flag bearer from the same stable leading the way.",
+          "The champion's car winds through the streets as %SHIKONA% waves to supporters from the parade.",
+          "A senior stablemate carries the banner as %SHIKONA% celebrates his yusho with a traditional parade."
+        ]
+      },
+      "prize_winner": {
+        "veteran_emotional": [
+          "'I tensed up when I heard of the potential prize,' admits the veteran %SHIKONA%, eyes glistening.",
+          "%SHIKONA%, a 30-year veteran, struggles to compose himself: 'I never thought I'd be up for it.'",
+          "'At my age, to receive this prize — it means everything,' says %SHIKONA% with visible emotion."
+        ],
+        "fought_match_not_situation": [
+          "'I fought the match and not the situation,' %SHIKONA% explains calmly.",
+          "%SHIKONA% credits his mental approach: 'I focused on the bout, not the stakes.'",
+          "'The pressure was there, but I refused to let it dictate my sumo,' %SHIKONA% reflects."
+        ],
+        "rival_frustration": [
+          "'Damn it, I lost to him again,' %SHIKONA% is overheard muttering after the press conference.",
+          "Overheard from %SHIKONA%'s corner: frustration at once again falling to the champion.",
+          "%SHIKONA% masks his frustration in public, but the competitive fire burns clearly behind his words."
+        ]
+      },
+      "ydc_bid": {
+        "continuation": [
+          "The Chief Judge notes that %SHIKONA%'s Yokozuna bid continues, but he will have to win the title to rise.",
+          "'%SHIKONA% has the qualities, but the yusho is the threshold,' the Chief Judge states.",
+          "The YDC acknowledges %SHIKONA%'s strong tournament but reaffirms: only a championship will suffice."
+        ],
+        "score_threshold": [
+          "'A score greater than 12 gives extra credence to his case,' the Chief Judge remarks on %SHIKONA%.",
+          "The YDC notes that %SHIKONA%'s 13-win performance strengthens his Yokozuna candidacy considerably.",
+          "'Double-digit wins are expected — 13 and above is what truly moves the needle,' the Chief Judge says."
+        ]
+      },
+      "ozeki_stake": [
+        "%SHIKONA% can stake his claim for Ozeki next time with another strong performance.",
+        "With this result, %SHIKONA% puts himself firmly in the Ozeki promotion conversation.",
+        "'I know what's at stake — another tournament like this and the promotion talk becomes real,' %SHIKONA% says."
+      ],
+      "ozeki_comeback_yusho": [
+        "He is the first to respond to demotion by taking the cup in the following meet — %SHIKONA% writes his name in history.",
+        "History written — a demoted Ozeki, %SHIKONA% claims the Emperor's Cup in his very next tournament.",
+        "%SHIKONA% silences every doubt with a yusho immediately following his Ozeki demotion — an extraordinary response."
+      ],
+      "ozeki_comeback_reflection": [
+        "%SHIKONA% looked distant even 30 minutes before the final bout, the weight of the moment visible on his face.",
+        "'A third title from the past five looked distant even 30 minutes before the final bout,' %SHIKONA% recalls.",
+        "The champion's eyes reveal the pressure: %SHIKONA% admits the comeback yusho felt improbable until the very end."
+      ],
+      "coach_criticism": [
+        "A former coach assesses %SHIKONA%'s weaknesses: 'His tachiai remains inconsistent against stronger opponents.'",
+        "'%SHIKONA% has technical gaps that a Yokozuna-level wrestler cannot afford,' a former coach observes.",
+        "Critical analysis from a former mentor: '%SHIKONA% must address his belt work before the next tournament.'"
+      ],
+      "lower_division": {
+        "first_honor": [
+          "%SHIKONA% savors his first %DIVISION% championship — a milestone moment in his young career.",
+          "'This is my first divisional honor — I can hardly believe it,' says %SHIKONA%.",
+          "%SHIKONA% celebrates a maiden %DIVISION% yusho, the first step on what he hopes is a long journey."
+        ],
+        "career_goal": [
+          "'Salaried rank within the next 3 years — that's my goal,' %SHIKONA% declares with determination.",
+          "%SHIKONA% sets his sights on sekitori status: 'I must keep training well and the results will come.'",
+          "'I set myself up to attack non-stop — that's what got me here,' %SHIKONA% says of his divisional win."
+        ],
+        "coach_gratitude": [
+          "'My gratitude to coach Yamada — he believed in me when no one else did,' %SHIKONA% says emotionally.",
+          "%SHIKONA% thanks his amateur coach: 'Everything I have is built on what he taught me.'",
+          "'My high school coach told me I could make it — I hope he's watching,' says %SHIKONA%."
+        ]
+      }
+    },
+    "playoff": {
+      "lower_division": {
+        "intro": [
+          "A %DIVISION% playoff to decide the divisional championship!",
+          "The %DIVISION% title goes to a playoff — tension fills the arena.",
+          "Multiple contenders tied for the %DIVISION% yusho — a playoff is required!"
+        ],
+        "multi_man": [
+          "A %COUNT%-man playoff for division %DIVISION% — the schedule stretches on!",
+          "%DIVISION% sees an extraordinary %COUNT%-way playoff to determine the champion.",
+          "The %DIVISION% division needs a %COUNT%-man playoff — the crowd settles in for a long afternoon."
+        ],
+        "victory": [
+          "%WINNER% claims the %DIVISION% championship in a thrilling playoff!",
+          "%WINNER% emerges victorious from the %DIVISION% playoff — a hard-fought title.",
+          "The %DIVISION% yusho goes to %WINNER% after a grueling playoff sequence."
+        ]
+      },
+      "schedule_delay": [
+        "All these playoffs combined added an extra 35 minutes to the schedule.",
+        "The schedule was actually progressing too quickly, causing judges to slow it down.",
+        "Multiple division playoffs have extended the day's program considerably."
+      ],
+      "justice_done": [
+        "There was a strong sense of justice done when %SHIKONA% took that playoff.",
+        "The controversial call earlier in the basho is avenged — %SHIKONA% wins the playoff!",
+        "%SHIKONA%'s playoff victory carries extra weight after the monoii loss that preceded it."
+      ]
     }
   },
   "vocabulary": {
