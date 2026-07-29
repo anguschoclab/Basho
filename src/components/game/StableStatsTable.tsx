@@ -175,10 +175,18 @@ const TableHeader = React.memo(function TableHeader({
   return (
     <th
       className={cn(
-        "p-4 font-semibold cursor-pointer select-none whitespace-nowrap",
+        "p-4 font-semibold cursor-pointer select-none whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm",
         isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
       )}
       onClick={() => onClick(id)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick(id);
+        }
+      }}
     >
       <div className="flex items-center gap-2">
         {label}
@@ -200,8 +208,16 @@ const DivisionFilterBadge = React.memo(function DivisionFilterBadge({
   return (
     <Badge
       variant={isActive ? "default" : "outline"}
-      className="cursor-pointer capitalize px-3 py-0.5"
+      className="cursor-pointer capitalize px-3 py-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
       onClick={() => onClick(division)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick(division);
+        }
+      }}
     >
       {division}
     </Badge>
