@@ -385,5 +385,69 @@ describe("events.test.ts - Helpers & Cleanup", () => {
       expect(events[0].type).toBe("LIFECYCLE_EVENT");
       expect(events[0].data?.status).toBe("naturalization");
     });
+
+    it("emits GOVERNANCE_RULING via governanceRuling factory", () => {
+      const world = MockFactory.createWorld();
+      EventBus.governanceRuling(world, "h1", {
+        decision: "ban",
+        reason: "Scandal",
+        incident: "drugs",
+      });
+
+      const events = queryEvents(world, { category: "discipline" });
+      expect(events.length).toBe(1);
+      expect(events[0].type).toBe("GOVERNANCE_RULING");
+    });
+
+    it("governanceRuling event has correct heyaId in scope", () => {
+      const world = MockFactory.createWorld();
+      EventBus.governanceRuling(world, "h1", {
+        decision: "suspension",
+        reason: "Misconduct",
+        incident: "assault",
+      });
+
+      const events = queryEvents(world, { category: "discipline" });
+      expect(events.length).toBe(1);
+      expect(events[0].scope).toBe("heya");
+      expect(events[0].heyaId).toBe("h1");
+    });
+
+    it("governanceRuling event title and summary are non-empty strings", () => {
+      const world = MockFactory.createWorld();
+      EventBus.governanceRuling(world, "h1", {
+        decision: "warning",
+        reason: "Tardiness",
+        incident: "discipline",
+      });
+
+      const events = queryEvents(world, { category: "discipline" });
+      expect(events.length).toBe(1);
+      expect(typeof events[0].title).toBe("string");
+      expect(events[0].title.length).toBeGreaterThan(0);
+      expect(typeof events[0].summary).toBe("string");
+      expect(events[0].summary.length).toBeGreaterThan(0);
+    });
+
+    it("governanceRuling enriches context with heya name and oyakata name", () => {
+      const world = MockFactory.createWorld({
+        heyas: new Map([
+          ["h1", MockFactory.createHeya("h1", { name: "Isegahama", oyakataId: "o1" })],
+        ]),
+        oyakata: new Map([
+          ["o1", { id: "o1", name: "Master Isegahama", shikona: "Isegahama-Oyakata" } as any],
+        ]),
+      });
+      EventBus.governanceRuling(world, "h1", {
+        decision: "ban",
+        reason: "Scandal",
+        incident: "drugs",
+      });
+
+      const events = queryEvents(world, { category: "discipline" });
+      expect(events.length).toBe(1);
+      expect(events[0].data?.heya).toBe("Isegahama");
+      expect(events[0].data?.oyakata).toBe("Master Isegahama");
+    });
   });
 });

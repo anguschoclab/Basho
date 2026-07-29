@@ -66,4 +66,52 @@ describe("BaseWidget", () => {
 
     expect((container.firstChild as HTMLElement).className).toContain("custom-widget-class");
   });
+
+  describe("footerAction aria-label", () => {
+    it("uses tooltip when provided", () => {
+      const onClick = vi.fn();
+      renderWidget({
+        footerAction: { label: "Navigate", onClick, tooltip: "Go to roster" },
+      });
+
+      const btn = screen.getByRole("button", { name: "Go to roster" });
+      expect(btn.getAttribute("aria-label")).toBe("Go to roster");
+    });
+
+    it("uses label when no tooltip provided", () => {
+      const onClick = vi.fn();
+      renderWidget({ footerAction: { label: "View Roster", onClick } });
+
+      const btn = screen.getByRole("button", { name: "View Roster" });
+      expect(btn.getAttribute("aria-label")).toBe("View Roster");
+    });
+
+    it("does not produce 'Navigate to undefined' in aria-label", () => {
+      const onClick = vi.fn();
+      renderWidget({ footerAction: { label: "View Roster", onClick } });
+
+      const btn = screen.getByRole("button", { name: "View Roster" });
+      expect(btn.getAttribute("aria-label")).not.toContain("Navigate to undefined");
+    });
+  });
+
+  describe("headerAction aria-label", () => {
+    it("uses tooltip when provided", () => {
+      const onClick = vi.fn();
+      renderWidget({
+        headerAction: { label: "Details", onClick, tooltip: "View details" },
+      });
+
+      const btn = screen.getByRole("button", { name: "View details" });
+      expect(btn.getAttribute("aria-label")).toBe("View details");
+    });
+
+    it("falls back to label when no tooltip", () => {
+      const onClick = vi.fn();
+      renderWidget({ headerAction: { label: "Expand", onClick } });
+
+      const btn = screen.getByRole("button", { name: "Expand" });
+      expect(btn.getAttribute("aria-label")).toBe("Expand");
+    });
+  });
 });
