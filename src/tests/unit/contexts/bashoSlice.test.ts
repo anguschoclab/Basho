@@ -124,11 +124,11 @@ describe("bashoSlice - autosave errors", () => {
       currentBasho: { ...world.currentBasho, day: world.currentBasho.day + 1 },
     }));
 
-    // Mock simulateBoutForToday to return null result to skip internal loop
-    (worldEngine.simulateBoutForToday as ReturnType<typeof vi.fn>).mockReturnValue({
-      world: undefined as any,
+    // Mock simulateBoutForToday to return null result (no matches to sim)
+    (worldEngine.simulateBoutForToday as ReturnType<typeof vi.fn>).mockImplementation((world: any) => ({
+      world,
       result: null,
-    });
+    }));
 
     const initialState: Partial<GameState> = {
       world: {

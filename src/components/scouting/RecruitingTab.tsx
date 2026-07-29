@@ -1,6 +1,7 @@
 // RecruitingTab.tsx — talent scouting and signing
 
 import { useMemo, useState } from "react";
+import type { UIRikishi } from "@/presenters/uiModels";
 import { useGame } from "@/contexts/GameContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -406,8 +407,8 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
           </DialogHeader>
           {comparisonPair && comparisonPair.a && comparisonPair.b && (
             <CompareModePanel
-              rikishiA={comparisonPair.a as unknown as import("@/presenters/uiModels").UIRikishi}
-              rikishiB={comparisonPair.b as unknown as import("@/presenters/uiModels").UIRikishi}
+              rikishiA={comparisonPair.a as unknown as UIRikishi}
+              rikishiB={comparisonPair.b as unknown as UIRikishi}
               onClose={() => setShowCompare(false)}
             />
           )}

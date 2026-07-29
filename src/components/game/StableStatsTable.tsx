@@ -147,7 +147,7 @@ export function StableStatsTable({ rikishiList }: StableStatsTableProps) {
               ))}
               {filteredAndSortedRikishi.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-muted-foreground italic">
+                  <td colSpan={8} className="py-12 text-center text-muted-foreground italic">
                     No rikishi found matching this filter.
                   </td>
                 </tr>

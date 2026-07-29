@@ -2414,8 +2414,8 @@ export function generateBoutNarrative(
     const makuuchiTournaments = countMakuuchiTournaments(winnerRikishi.careerHistory);
     // Check for career milestone hit with this win
     const hitMilestone = CAREER_WIN_MILESTONES.includes((winnerRikishi.careerWins ?? 0) + 1);
-    const loserLosses = (loserRikishi.currentBashoLosses ?? 0) + 1;
-    const loserWins = loserRikishi.currentBashoWins ?? 0;
+    const loserLossesAfter = (loserRikishi.currentBashoLosses ?? 0) + 1;
+    const loserWinsAfter = loserRikishi.currentBashoWins ?? 0;
     if (isKachiKoshi(winnerWins + 1, winnerRikishi.currentBashoLosses ?? 0, winnerRikishi.rank)) {
       // Earliest kachi-koshi variant — achieved on day 7 or earlier with some career history
       if (day <= 7 && makuuchiTournaments >= 2) {
@@ -2425,7 +2425,7 @@ export function generateBoutNarrative(
       }
     } else if (hitMilestone) {
       questionType = "milestone";
-    } else if (isMakeKoshi(loserWins, loserLosses, loserRikishi.rank)) {
+    } else if (isMakeKoshi(loserWinsAfter, loserLossesAfter, loserRikishi.rank)) {
       questionType = "make_koshi";
     } else if (winnerWins === 0 && day >= FIRST_WIN_MENTION_MIN_DAY) {
       questionType = "first_win";
@@ -2433,7 +2433,7 @@ export function generateBoutNarrative(
       questionType = "debut_win";
     } else if (result.upset) {
       questionType = "upset";
-    } else if (loserLosses >= 8) {
+    } else if (loserLossesAfter >= 8) {
       // Loser confirmed make-koshi but didn't trigger the specific make_koshi type above
       questionType = "general_loss";
     }
