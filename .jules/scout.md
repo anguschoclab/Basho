@@ -62,3 +62,9 @@
 **Gap:** Several `phase*` weekly and pre-basho tick modules were completely untested, relying solely on integration tests to catch if they failed.
 **Learning:** Phase modules usually delegate heavily to service modules. Their role is mostly orchestrating dependencies and routing state impacts. However, even orchestration code can break if it misinterprets constraints (like skipping if `cyclePhase !== 'pre_basho'`).
 **Pattern:** Provide unit tests for tick phase modules by mocking their underlying service calls with `vi.mock()` and verifying that the orchestrator calls them correctly, handles its early-exit conditionals (like `cyclePhase`), and translates service outputs into the expected `StateImpact`.
+
+## 2025-02-27 - Scout: test rivalry decay and event log trimming
+
+**Gap:** The pipeline phase `phase01_week_rivalries.ts` handles complex time-bracketed decay rules for active rivalries, early exits for cold pairs, and chronological log trimming for stale un-important engine events. These mutations to global arrays and maps were untested.
+**Learning:** `isCold` check evaluates to true for stale, un-heated, un-met rivalry pairs. When a pair is cold, it skips the decay loop branch, and since it iterates on `currentPairs` and copies to `nextPairs`, the cold pair might be completely dropped if the test assumes all pairs are copied over by default (the codebase actually prunes cold pairs by not including them in the next pair map during iteration). Testing this requires knowing that "untouched" really means "pruned".
+**Pattern:** When testing pipeline modules that iterate over dictionaries to build next-state versions (like event trimming and pair pruning), assert that elements omitted from the new map/array are correctly trimmed (`expect(nextWorld.rivalriesState!.pairs["cold_pair"]).toBeUndefined()`). Use `resolveImpacts` to evaluate the final mutated state.
