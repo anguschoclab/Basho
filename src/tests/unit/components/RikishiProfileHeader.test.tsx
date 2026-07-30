@@ -7,7 +7,7 @@ import { RikishiProfileHeader } from "@/components/rikishi/RikishiProfileHeader"
 import type { UIRikishi } from "@/presenters/uiModels";
 
 function makeUIRikishi(overrides: Partial<UIRikishi> = {}): UIRikishi {
-  return {
+  const base = {
     id: "r1",
     shikona: "Test Rikishi",
     realName: "Test Real",
@@ -44,7 +44,7 @@ function makeUIRikishi(overrides: Partial<UIRikishi> = {}): UIRikishi {
     currentBashoRecord: "8-7",
     careerWins: 100,
     careerLosses: 80,
-    careerRecord: "100-80",
+    careerAbsences: 0,
     careerYusho: 2,
     perceivedStats: {
       strength: "strong",
@@ -94,6 +94,11 @@ function makeUIRikishi(overrides: Partial<UIRikishi> = {}): UIRikishi {
     consecutiveStrongSekiwake: 0,
     ...overrides,
   } as UIRikishi;
+  base.careerRecord =
+    (base.careerAbsences ?? 0) > 0
+      ? `${base.careerWins}-${base.careerLosses}-${base.careerAbsences}`
+      : `${base.careerWins}-${base.careerLosses}`;
+  return base;
 }
 
 vi.mock("@/components/ui/tooltip-wrap", () => ({
