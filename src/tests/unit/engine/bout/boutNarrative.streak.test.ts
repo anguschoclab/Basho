@@ -57,7 +57,15 @@ function isStreakLine(text: string): boolean {
     text.includes("Rewrites the Narrative") ||
     text.includes("Keeps Rolling") ||
     text.includes("Extends Win Streak") ||
-    text.includes("Surges to")
+    text.includes("Surges to") ||
+    text.includes("History in the Making") ||
+    text.includes("Perfection Intact") ||
+    text.includes("The Streak Survives") ||
+    text.includes("Red Hot") ||
+    text.includes("The Momentum Builds") ||
+    text.includes("Without a Blemish") ||
+    text.includes("On the March") ||
+    text.includes("Quietly Dominant")
   );
 }
 

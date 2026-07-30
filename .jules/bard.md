@@ -22,3 +22,7 @@
 **Discovery:** The `pre_bout.playoff_bout` and `post_bout.playoff_result` arrays in `archive.json` had very limited variety, which could feel repetitive during high-drama moments like playoff tiebreakers.
 **Rule:** When adding new narrative templates, strictly use only existing, verified tokens (like `%EAST%`, `%WEST%`, `%WINNER%`, `%LOSER%`) found in sibling templates to avoid shipping visible bugs with unfilled tokens.
 **Check:** Verify that `BardEngine` correctly resolves the new text by writing a temporary typescript file and manually parsing through `BardEngine.resolve` for missing token brackets before committing.
+## 2025-07-28 - Streak Headline Substring Tests
+**Discovery:** Expanding `media.streaks` required updating a test helper `isStreakLine` in `src/tests/unit/engine/bout/boutNarrative.streak.test.ts` which had hardcoded exact substrings of the old 2 templates to detect streak lines in the PbP.
+**Rule:** When adding new narrative text variants to domains heavily relied on in unit tests, be prepared to adjust test utility matching functions.
+**Check:** Run `npx vitest run <related_test>` and manually update any hardcoded text expectations to include your new variants.
