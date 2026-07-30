@@ -7,7 +7,6 @@ import { LineageTree } from "@/components/game/LineageTree";
 interface RikishiLineageProps {
   mentor: Rikishi | null;
   mentees: (Rikishi | null)[];
-  lineageTree: any[]; // Already handled by LineageTree component via internal call or prop
   rikishiId: string;
 }
 

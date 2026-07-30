@@ -50,3 +50,14 @@
 **Finding:** Numerous properties were accessed in UI projections (`medicalProjection.ts`, `governanceProjections.ts`, `stableProjections.ts`) by blindly type-casting domains objects to `unknown` and then arbitrary records (e.g. `(heya as unknown as Record<string, unknown>).scandalScore as number`).
 **Learning:** Properties like `scandalScore`, `governanceStatus`, `politicalCapital` on `Heya` and `condition` on `Rikishi` are already strictly typed in the domain types. Type-gymnastics via `unknown` weaken downstream validation. We can directly access these properties (and use `??` for nullable ones).
 **Constraint:** Avoid redundant `unknown` casting for UI projection files if the domain entity correctly exposes the field. Let TypeScript validate property access naturally.
+## 2023-10-27 - [Tighten Type in Dashboard Rivals Widget]
+
+**Finding:** The `rivals` prop in the `RivalList` component (`src/components/dashboard/RivalsWidget.tsx`) was typed as `any[]`.
+**Learning:** React component props often regress to `any` during prototyping. When data is fetched directly via strongly typed Redux-style selectors (like `selectTopRivals`), we can safely extract the exact structural type using `ReturnType<typeof selectTopRivals>` to tighten the boundary without redefining a huge interface.
+**Constraint:** Avoid using `any[]` in React components when projecting domain data. Use `ReturnType` from the upstream selector or define a precise projection interface.
+
+## 2023-10-27 - [Remove dead prop and computation in RikishiPage]
+
+**Finding:** `RikishiPage.tsx` was computing `lineageTree` by calling `getLineageTree` and passing it to `RikishiLineage.tsx` as a prop typed `any[]`.
+**Learning:** A comment indicated `LineageTree` component already handled this state internally via `useGame`. Prop-drilling data that a child component is independently fetching from a global context is a common form of code duplication and wasted computation.
+**Constraint:** If a deeply nested child component reads its required state from a context (e.g. `useGame`), intermediate parent components should not pre-fetch and pass that data down via props.

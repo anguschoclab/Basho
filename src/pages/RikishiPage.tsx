@@ -18,7 +18,7 @@ import { PageHeader } from "@/components/layout/control-center";
 import { STABLE_TABS } from "@/constants/ui/navigation";
 import { projectRikishi } from "@/presenters/uiModels";
 import { RosterList } from "@/components/rikishi/RosterList";
-import { getMentor, menteesOf, getLineageTree } from "@/engine/lineage";
+import { getMentor, menteesOf } from "@/engine/lineage";
 import { getHealthBadge } from "@/presenters/PerceptionPresenter";
 import type { CareerSnapshot, Milestone } from "@/engine/types/history";
 import { RikishiProfileHeader } from "@/components/rikishi/RikishiProfileHeader";
@@ -111,7 +111,6 @@ export default function RikishiPage() {
   // Get mentorship info using lineage functions
   const mentor = getMentor(world, rawRikishi) ?? null;
   const mentees = menteesOf(world, rawRikishi);
-  const lineageTree = getLineageTree(world, rawRikishi.id);
 
   const finalizeRetirement = () => {
     // Stage 2: Actually apply retirement to the world
@@ -150,7 +149,6 @@ export default function RikishiPage() {
           <RikishiLineage
             mentor={mentor}
             mentees={mentees}
-            lineageTree={lineageTree}
             rikishiId={rikishi.id}
           />
           <RikishiKeshoMawashi rikishi={rikishi} />
