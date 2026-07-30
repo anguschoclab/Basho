@@ -52,3 +52,9 @@
 **Gap:** The JSDoc for `_applyImpact` claimed it uses a "mutable accumulator to avoid redundant WorldState copies."
 **Truth:** `_applyImpact` does not mutate a single accumulator in-place. Through its internal operations and `applyEntityUpdates`, it sequentially creates and returns multiple shallow copies of the result and its internal Maps, leading to multiple allocations per impact.
 **Watch:** Other parts of the Collector-Resolver pattern or performance-focused comments claiming "no redundant copies" without verifying the internal logic.
+
+## 2025-07-29 - [tickDaily.ts] Stale Basho Bouts and Monthly Market Pipeline Docs
+
+**Gap:** The JSDoc for `advanceOneDay` claimed daily micro-phases include the market phase, and explicitly stated that Basho combat resolution is NOT handled in the tick pipeline.
+**Truth:** The monthly market phase now only runs weekly on month boundaries (P3.7). Furthermore, `phase01_basho_bouts` is explicitly injected into the daily pipeline during `active_basho` to handle combat simulation internally.
+**Watch:** Other high-level orchestration comments that haven't been updated since the P3.7 and active_basho bout injection changes.
