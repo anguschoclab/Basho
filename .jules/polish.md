@@ -56,3 +56,7 @@
 **Issue:** `PreBashoAssessment` was built with custom `Card` wrapping and layout instead of `BaseWidget`, leading to inconsistent padding and headers on the dashboard.
 **Learning:** Reusable dashboard components should use `BaseWidget` as the primary wrapper to provide unified header action/content placement and identical card visuals.
 **Rule:** Always use `BaseWidget` as the top-level element for dashboard widgets.
+## 2026-07-29 - Standardized EmptyState in HallOfFamePage
+**Issue:** The Hall of Fame page used hardcoded div elements for empty states ("No inductees yet", "The Hall stands empty", "No world loaded") instead of the project's standard EmptyState component.
+**Learning:** Reusing the EmptyState component ensures consistent padding, typography, and visual hierarchy across all screens when data is absent.
+**Rule:** Always use the global EmptyState component (`@/components/ui/EmptyState`) for 'no data' fallbacks instead of hardcoding custom elements.
