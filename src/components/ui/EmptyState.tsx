@@ -5,13 +5,13 @@
  * Used for no data, empty search results, and feature gates.
  */
 
-import { LucideIcon } from "lucide-react";
+import type { ElementType } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "./button";
 
 interface EmptyStateProps {
   /** Lucide icon or custom icon component */
-  icon?: LucideIcon;
+  icon?: ElementType;
   /** Icon className for custom styling */
   iconClassName?: string;
   /** Main heading */

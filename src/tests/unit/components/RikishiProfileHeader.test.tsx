@@ -368,4 +368,35 @@ describe("RikishiProfileHeader", () => {
     );
     expect(screen.queryByText("Ozeki Promotion Watch")).toBeNull();
   });
+
+  it("shows Kachi-Koshi Streak when consecutiveKachiKoshi >= 2", () => {
+    const rikishi = makeUIRikishi({
+      consecutiveKachiKoshi: 3,
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.getByText("Kachi-Koshi Streak")).toBeTruthy();
+    expect(screen.getByText("3")).toBeTruthy();
+  });
+
+  it("hides Kachi-Koshi Streak when consecutiveKachiKoshi < 2", () => {
+    const rikishi = makeUIRikishi({
+      consecutiveKachiKoshi: 1,
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.queryByText("Kachi-Koshi Streak")).toBeNull();
+  });
 });
