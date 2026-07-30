@@ -26,6 +26,7 @@ import { applyPersonaAssignment } from "./PersonaAssignment";
 import { assignPreSumoBackground, applyBackgroundStatModifiers } from "./PreSumoBackground";
 import { assignQuirk } from "./QuirkAssignment";
 import { maybeAssignEarlyShikona } from "./FightingNameEarly";
+import { assignRecruitmentCohort } from "./CohortTracking";
 
 function createBaseInfo(
   id: string,
@@ -398,5 +399,9 @@ export function convertCandidateToRikishi(args: {
   // Maybe assign early shikona flag for lower-division rikishi
   const rikishiWithShikona = maybeAssignEarlyShikona(rikishiWithQuirks, rng);
 
-  return rikishiWithShikona;
+  // Assign recruitment cohort ID (year-heyaId for new recruits)
+  const cohortId = `${currentYear}-${heyaId}`;
+  const rikishiWithCohort = assignRecruitmentCohort(rikishiWithShikona, cohortId);
+
+  return rikishiWithCohort;
 }
