@@ -23,6 +23,9 @@ import {
 import { generateSyntheticCareer, type DivisionRecords } from "./CandidateCareer";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { applyPersonaAssignment } from "./PersonaAssignment";
+import { assignPreSumoBackground, applyBackgroundStatModifiers } from "./PreSumoBackground";
+import { assignQuirk } from "./QuirkAssignment";
+import { maybeAssignEarlyShikona } from "./FightingNameEarly";
 
 function createBaseInfo(
   id: string,
@@ -285,7 +288,17 @@ export function generateFullRikishi(args: {
 
   applyPersonaAssignment(rikishi, archetype, rng);
 
-  return rikishi;
+  // Assign pre-sumo background and apply stat modifiers
+  const background = assignPreSumoBackground(rng);
+  const rikishiWithBg = applyBackgroundStatModifiers(rikishi, background);
+
+  // Assign quirks (poor eyesight, etc.)
+  const rikishiWithQuirks = assignQuirk(rikishiWithBg, rng);
+
+  // Maybe assign early shikona flag for lower-division rikishi
+  const rikishiWithShikona = maybeAssignEarlyShikona(rikishiWithQuirks, rng);
+
+  return rikishiWithShikona;
 }
 
 /**
@@ -375,5 +388,15 @@ export function convertCandidateToRikishi(args: {
 
   applyPersonaAssignment(rikishi, candidate.archetype, rng);
 
-  return rikishi;
+  // Assign pre-sumo background and apply stat modifiers
+  const bg = assignPreSumoBackground(rng);
+  const rikishiWithBg = applyBackgroundStatModifiers(rikishi, bg);
+
+  // Assign quirks (poor eyesight, etc.)
+  const rikishiWithQuirks = assignQuirk(rikishiWithBg, rng);
+
+  // Maybe assign early shikona flag for lower-division rikishi
+  const rikishiWithShikona = maybeAssignEarlyShikona(rikishiWithQuirks, rng);
+
+  return rikishiWithShikona;
 }

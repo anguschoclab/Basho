@@ -41,6 +41,7 @@ import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 import { isYushoContention, isPlayoffScenario } from "./boutContention";
 import { detectKinboshi } from "./boutAchievements";
+import { recordCareerHighlight, type CareerHighlight } from "./CareerHighlights";
 import { computeTacticAftermath } from "./boutTacticAftermath";
 import {
   KENSHO_BASE_COUNT_LOW,
@@ -214,6 +215,50 @@ export function resolveBout(
   result.isKinboshi = !!kinboshiDelta;
   if (kinboshiDelta) {
     result.awardFact = "kinboshi";
+  }
+
+  // 2.1. Record career highlights for the winner
+  const bashoLabel = `${basho.year ?? world?.year ?? 2025}-${bashoName ?? "unknown"}`;
+  const winnerHighlights: CareerHighlight[] = [];
+  const winnerWins = winner.currentBashoWins ?? 0;
+  const winnerLosses = winner.currentBashoLosses ?? 0;
+
+  // Debut win
+  if (!winner.careerHistory || winner.careerHistory.length === 0) {
+    winnerHighlights.push({
+      type: "debut_win",
+      basho: bashoLabel,
+      opponent: loser.id,
+      description: `First career win over ${loser.shikona}`,
+    });
+  }
+  // 7-7 pressure win
+  if (winnerWins === 7 && winnerLosses === 7) {
+    winnerHighlights.push({
+      type: "seven_seven_win",
+      basho: bashoLabel,
+      opponent: loser.id,
+      description: `Won 7-7 pressure bout on day ${bout.day}`,
+    });
+  }
+  // Kinboshi
+  if (kinboshiDelta) {
+    winnerHighlights.push({
+      type: "kinboshi",
+      basho: bashoLabel,
+      opponent: loser.id,
+      description: `Upset win over ${loser.shikona} (${loser.rank ?? "unknown"})`,
+    });
+  }
+  // Apply highlights to winner
+  if (winnerHighlights.length > 0) {
+    let updatedWinner = winner;
+    for (const hl of winnerHighlights) {
+      updatedWinner = recordCareerHighlight(updatedWinner, hl);
+    }
+    builder.updateRikishi(winner.id, {
+      careerHighlights: updatedWinner.careerHighlights,
+    });
   }
 
   // 2.5. Copy dramatic context from match schedule onto result

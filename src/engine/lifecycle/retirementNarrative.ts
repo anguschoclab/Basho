@@ -3,10 +3,11 @@ import { rngFromSeed } from "../rng";
 import type { Rikishi } from "../types/rikishi";
 import type { WorldState } from "../types/world";
 import type { PressPersona } from "../types/media";
+import { determinePostRetirementPath, getRetirementNarrative } from "./PostRetirementPath";
 
 export interface RetirementNarrativeLine {
   text: string;
-  section: "ceremony" | "career_summary" | "legacy" | "press_reaction" | "oyakata_conversion";
+  section: "ceremony" | "career_summary" | "legacy" | "press_reaction" | "oyakata_conversion" | "post_retirement_path" | "favorite_memory";
 }
 
 export function generateRetirementNarrative(
@@ -96,6 +97,24 @@ export function generateRetirementNarrative(
     });
     if (oyakataRes.text) {
       lines.push({ text: oyakataRes.text, section: "oyakata_conversion" });
+    }
+  }
+
+  // 6. Post-retirement career path (B8)
+  const postRetirementPath = determinePostRetirementPath(rikishi, rng);
+  const pathNarrative = getRetirementNarrative(rikishi, postRetirementPath);
+  if (pathNarrative) {
+    lines.push({ text: pathNarrative, section: "post_retirement_path" });
+  }
+
+  // 7. Favorite career memory (B7 integration)
+  if (rikishi.careerHighlights && rikishi.careerHighlights.length > 0) {
+    const favoriteMemoryRes = BardEngine.resolve(rng, "events.narrative.retirement_favorite_memory_summary", {
+      SHIKONA: shikona,
+      rikishiId: rikishi.id,
+    });
+    if (favoriteMemoryRes.text) {
+      lines.push({ text: favoriteMemoryRes.text, section: "favorite_memory" });
     }
   }
 

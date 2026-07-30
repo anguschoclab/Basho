@@ -13,5 +13,15 @@
     "%SHIKONA% returns to the dohyo after missing %BASHOS_MISSED% basho(s) — welcome back.",
     "Back in action — %SHIKONA% has recovered and returns from a %BASHOS_MISSED%-basho absence.",
     "%SHIKONA% is back on the dohyo after %BASHOS_MISSED% tournament(s) away."
+  ],
+  "oversleeping": [
+    "%SHIKONA% overslept and missed his bout — a fusensho loss that stunned the arena.",
+    "A fusensho scandal — %SHIKONA% failed to appear on the dohyo, costing him the bout by default.",
+    "The crowd murmurs in disbelief as %SHIKONA%'s oversleeping results in a fusensho loss."
+  ],
+  "multi_surgery": [
+    "%SHIKONA% undergoes %COUNT% major operations — a long road to recovery lies ahead.",
+    "A brutal toll: %SHIKONA% faces %COUNT% surgeries as his body pays the price of the dohyo.",
+    "%SHIKONA% begins the long road back — %COUNT% major operations scheduled after tournament injuries."
   ]
 }

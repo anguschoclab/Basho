@@ -28,6 +28,8 @@ import { TrainingService } from "../../systems/training/TrainingService";
 import { BloodlineService } from "../../systems/legacy/BloodlineService";
 import { applyMentorshipBonuses } from "../../systems/training/MentorshipService";
 import { applyWeeklySparring } from "../../systems/training/SparringService";
+import { applyWeightJourneyTick } from "../../training/WeightJourney";
+import { EntityCollection } from "../../core/EntityCollection";
 
 /**
  * Weekly training tick phase.
@@ -59,5 +61,18 @@ export function phase01_week_training(world: WorldState): StateImpact {
   const mentorshipImpact = applyMentorshipBonuses(world);
   const sparringImpact = applyWeeklySparring(world);
 
-  return mergeImpacts([trainingImpact, heritageImpact, mentorshipImpact, sparringImpact]);
+  // Weight journey tick — process all active rikishi
+  const weightJourneyImpacts: StateImpact[] = [];
+  for (const rikishi of EntityCollection.getActiveRikishi(world)) {
+    const heya = EntityCollection.getHeya(world, rikishi.heyaId);
+    weightJourneyImpacts.push(applyWeightJourneyTick(rikishi, heya, world));
+  }
+
+  return mergeImpacts([
+    trainingImpact,
+    heritageImpact,
+    mentorshipImpact,
+    sparringImpact,
+    ...weightJourneyImpacts,
+  ]);
 }

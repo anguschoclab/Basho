@@ -332,8 +332,27 @@ export function generateBoutNarrative(
         ["milestone"]
       );
     }
-  }
 
+    // Cohort reunion: both rikishi from same recruitment cohort
+    if (east.recruitmentCohortId && east.recruitmentCohortId === west.recruitmentCohortId) {
+      const bothSekitori =
+        (east.division === "juryo" || east.division === "makuuchi") &&
+        (west.division === "juryo" || west.division === "makuuchi");
+      const cohortPath = bothSekitori ? "h2h.cohort_reunion" : "h2h.junior_high_rivals";
+      if (BardEngine.has(cohortPath)) {
+        push(
+          BardEngine.resolve(h2hRng, cohortPath, {
+            P1: east.shikona,
+            P2: west.shikona,
+            eastRikishiId: east.id,
+            westRikishiId: west.id,
+          }).text,
+          "opening",
+          ["debut"]
+        );
+      }
+    }
+  }
   // 3b. In-basho win streak callout
   const eastStreak = east.currentBashoWins ?? 0;
   const westStreak = west.currentBashoWins ?? 0;
@@ -523,6 +542,34 @@ export function generateBoutNarrative(
         }).text,
         "pre_bout",
         ["make_koshi"]
+      );
+    }
+  }
+
+  // 3a-pre5. 7-7 pressure — both rikishi at 7-7, everything on the line
+  if (eastWins === 7 && eastLosses === 7 && westWins === 7 && westLosses === 7) {
+    push(
+      BardEngine.resolve(preBoutRng, "pre_bout.storylines.seven_seven", {
+        EAST_NAME: east.shikona,
+        WEST_NAME: west.shikona,
+        eastRikishiId: east.id,
+        westRikishiId: west.id,
+      }).text,
+      "pre_bout",
+      ["title_stakes"]
+    );
+  }
+
+  // 3a-pre6. Fighting name conferred early — rikishi carries shikona before sekitori
+  for (const r of [east, west]) {
+    if (r.shikonaConferredEarly) {
+      push(
+        BardEngine.resolve(preBoutRng, "pre_bout.storylines.fighting_name_early", {
+          SHIKONA: r.shikona,
+          rikishiId: r.id,
+        }).text,
+        "pre_bout",
+        ["debut"]
       );
     }
   }
@@ -2096,6 +2143,29 @@ export function generateBoutNarrative(
     );
   }
 
+  // 15b2. 7-7 pressure result — winner was at 7-7 and got kachi-koshi
+  if (winnerWins === 7 && winnerLosses === 7) {
+    push(
+      BardEngine.resolve(postBoutRng, "post_bout.storylines.seven_seven_win", {
+        WINNER: winnerRikishi.shikona,
+        winnerId: winnerRikishi.id,
+      }).text,
+      "post_bout",
+      ["title_stakes"]
+    );
+  }
+  // 7-7 pressure result — loser was at 7-7 and fell to make-koshi
+  if (loserWins === 7 && loserLosses === 7) {
+    push(
+      BardEngine.resolve(postBoutRng, "post_bout.storylines.seven_seven_loss", {
+        LOSER: loserRikishi.shikona,
+        loserId: loserRikishi.id,
+      }).text,
+      "post_bout",
+      ["title_stakes"]
+    );
+  }
+
   // 15c. Post-bout upset over elite — maegashira beats yokozuna/ozeki
   if (result.upset && result.isKinboshi) {
     push(
@@ -2192,16 +2262,28 @@ export function generateBoutNarrative(
     const loserDecline = loserRikishi.declinePhase;
     const winnerDecline = winnerRikishi.declinePhase;
 
-    // Father time: loser is in decline phase
+    // Father time: loser is in decline phase — use specific template if available
     if (loserDecline === "early-decline" || loserDecline === "late-decline" || loserDecline === "twilight") {
-      push(
-        BardEngine.resolve(postBoutRng, "post_bout.father_time", {
-          LOSER: loserRikishi.shikona,
-          loserId: loserRikishi.id,
-        }).text,
-        "post_bout",
-        ["veteran"]
-      );
+      const declinePath = `post_bout.${loserDecline.replace("-", "_")}`;
+      if (BardEngine.has(declinePath)) {
+        push(
+          BardEngine.resolve(postBoutRng, declinePath, {
+            LOSER: loserRikishi.shikona,
+            loserId: loserRikishi.id,
+          }).text,
+          "post_bout",
+          ["veteran"]
+        );
+      } else {
+        push(
+          BardEngine.resolve(postBoutRng, "post_bout.father_time", {
+            LOSER: loserRikishi.shikona,
+            loserId: loserRikishi.id,
+          }).text,
+          "post_bout",
+          ["veteran"]
+        );
+      }
     }
 
     // Defying age: winner is in late-decline or twilight
@@ -2436,6 +2518,35 @@ export function generateBoutNarrative(
     } else if (loserLossesAfter >= 8) {
       // Loser confirmed make-koshi but didn't trigger the specific make_koshi type above
       questionType = "general_loss";
+    }
+
+    // 7-7 pressure question: winner was at 7-7 before this bout
+    if (winnerWins === 7 && winnerLosses === 7 && BardEngine.has("interview.questions.seven_seven")) {
+      questionType = "seven_seven";
+    }
+    // Weight journey question: winner has active weight journey with significant progress
+    if (
+      winnerRikishi.weightJourney &&
+      winnerRikishi.weightJourney.progressKg >= 10 &&
+      !winnerRikishi.weightJourney.stalled &&
+      BardEngine.has("interview.questions.weight_journey")
+    ) {
+      questionType = "weight_journey";
+    }
+    // Career highlight question: winner has career highlights recorded
+    if (
+      winnerRikishi.careerHighlights &&
+      winnerRikishi.careerHighlights.length > 0 &&
+      BardEngine.has("interview.questions.career_highlight")
+    ) {
+      questionType = "career_highlight";
+    }
+    // Fighting name meaning question: winner has shikona conferred early
+    if (
+      winnerRikishi.shikonaConferredEarly &&
+      BardEngine.has("interview.questions.fighting_name_meaning")
+    ) {
+      questionType = "fighting_name_meaning";
     }
 
     // Career phase question (6.1): use declinePhase for phase-specific question

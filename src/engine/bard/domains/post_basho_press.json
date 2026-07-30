@@ -59,6 +59,26 @@
       "%SHIKONA% addresses the press with measured words: 'I prepared well and the results followed.'",
       "'It was a difficult tournament, but I stayed focused on each bout,' %SHIKONA% states evenly.",
       "%SHIKONA% offers a balanced assessment: 'There were moments of doubt, but my training carried me through.'"
+    ],
+    "weight_journey": [
+      "'My weight just wasn't increasing as planned — I struggled to bulk up for the longest time,' %SHIKONA% admits.",
+      "'There were months where the scale wouldn't move no matter what I ate,' %SHIKONA% reflects on his bulk journey.",
+      "%SHIKONA% credits his breakthrough to finally filling out his frame: 'The weight came, and with it, the power.'"
+    ],
+    "master_intervention": [
+      "'My master intervened before match 7 — that conversation changed everything,' %SHIKONA% reveals.",
+      "%SHIKONA% credits his oyakata's mid-basho intervention: 'He saw something in me that I'd lost sight of.'",
+      "'The master pulled me aside and reset my mindset — I owe this title to that moment,' %SHIKONA% says gratefully."
+    ],
+    "early_struggle": [
+      "'There were certainly times when I couldn't really see the path ahead,' %SHIKONA% admits of his long road to the title.",
+      "%SHIKONA% reflects on the journey: 'Five tournaments of struggle before this moment — every one taught me something.'",
+      "'I doubted myself many times over the years — but I kept showing up,' %SHIKONA% says with quiet emotion."
+    ],
+    "career_highlight_reflection": [
+      "%SHIKONA% reflects on a favorite memory: 'That 7-7 bout win was the moment I knew I could do this.'",
+      "'My favorite sumo memory? Beating %OPPONENT% on senshuraku — that changed everything,' %SHIKONA% recalls.",
+      "%SHIKONA% smiles at the memory: 'The day I got my first kinboshi — that's when I started believing a title was possible.'"
     ]
   },
   "prize_winner": {
@@ -76,6 +96,16 @@
       "'Damn it, I lost to him again,' %SHIKONA% is overheard muttering after the press conference.",
       "Overheard from %SHIKONA%'s corner: frustration at once again falling to the champion.",
       "%SHIKONA% masks his frustration in public, but the competitive fire burns clearly behind his words."
+    ],
+    "fighting_name_vindication": [
+      "'To have it conferred upon me while still in a cotton sash — and now to win this prize,' %SHIKONA% says with pride.",
+      "%SHIKONA% reflects on his early shikona: 'They gave me this name before I was salaried. Today I proved I deserved it.'",
+      "'The fighting name was a burden when I was young — now it's a badge of honor,' %SHIKONA% declares."
+    ],
+    "cohort_pride": [
+      "'All four lads in this photo went on to make salaried level — I'm just the first to win a prize,' %SHIKONA% says proudly.",
+      "%SHIKONA% credits his recruitment class: 'We pushed each other from day one. This prize belongs to all of us.'",
+      "'My cohort — every one of them made sekitori. That kind of competition forges you,' %SHIKONA% reflects."
     ]
   },
   "ydc_bid": {

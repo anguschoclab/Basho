@@ -389,4 +389,7 @@ export interface WorldState {
     type: "avoid_rival";
     requesterId: string;
   };
+
+  // B6: Injured rikishi encouragement log
+  encouragementLog?: Array<{ from: string; to: string; basho: string }>;
 }

@@ -338,6 +338,7 @@ export class ImpactBuilder {
       | "yokozunaVacancyStreak"
       | "events"
       | "lineage"
+      | "encouragementLog"
     >,
   >(field: K, value: WorldState[K]): ImpactBuilder {
     if (!this.impact.worldFields) {
@@ -653,6 +654,7 @@ export function updateWorldFieldImpact<
     | "chronicle"
     | "yokozunaVacancyStreak"
     | "lineage"
+    | "encouragementLog"
   >,
 >(field: K, value: WorldState[K], source: string): StateImpact {
   return createImpactBuilder(source).updateWorldField(field, value).build();

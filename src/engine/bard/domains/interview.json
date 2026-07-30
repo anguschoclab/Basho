@@ -84,6 +84,60 @@
       "You've faced %OPPONENT% several times now. What makes these bouts different?",
       "The history between you and %OPPONENT% — does it affect your preparation?",
       "What's it like stepping onto the dohyo against a familiar rival?"
+    ],
+    "sekitori_debut": [
+      "How does it feel making your sekitori debut?",
+      "You've reached the paid ranks — what does this moment mean to you?",
+      "From cotton sash to silk sash — tell us about that journey.",
+      "What's it like stepping onto the dohyo as a sekitori for the first time?"
+    ],
+    "weight_journey": [
+      "Your weight has increased significantly — tell us about that journey.",
+      "The bulk has been noticeable. How has the weight gain changed your sumo?",
+      "You've filled out considerably — was that a deliberate process?",
+      "What did the weight gain journey teach you about discipline?"
+    ],
+    "glasses_quirk": [
+      "Tell us about the glasses — they've become quite distinctive.",
+      "The glasses have become part of your identity. When did you start wearing them?",
+      "Does the eyesight affect your approach in the ring at all?",
+      "Fans love the look — was it always part of the plan?"
+    ],
+    "childhood_sport": [
+      "Tell us about your background in gymnastics — how does it help in sumo?",
+      "You came from a different sport before sumo. What carried over?",
+      "How did your pre-sumo athletic background shape your style on the dohyo?",
+      "What made you transition from your previous sport to sumo?"
+    ],
+    "hometown_supporters": [
+      "You're heading back to your hometown — what does that mean to you?",
+      "The supporters back home must be proud. Do you feel their support?",
+      "What's it like representing your hometown on the national stage?",
+      "Any message for the fans back home?"
+    ],
+    "injured_champion_encouragement": [
+      "An injured champion encouraged you this tournament. How did that help?",
+      "Tell us about the support from your sidelined stablemate.",
+      "How much did the encouragement from the injured veteran mean to you?",
+      "Did the words from your injured senpai change your approach?"
+    ],
+    "fighting_name_meaning": [
+      "Your fighting name — what does it mean to you?",
+      "Tell us about the significance of your shikona.",
+      "Your shikona carries weight. How did you receive it?",
+      "What does the fighting name represent in your journey?"
+    ],
+    "seven_seven": [
+      "That was a 7-7 bout — how did you approach the pressure?",
+      "Win or go home — what goes through your mind at 7-7?",
+      "The pressure of 7-7 is immense. How did you handle it?",
+      "What did you tell yourself before that 7-7 bout?"
+    ],
+    "career_highlight": [
+      "What's your favorite sumo memory?",
+      "Which bout stands out most in your career so far?",
+      "Is there a moment that defines your career?",
+      "What memory will you carry from this tournament?"
     ]
   },
   "stoic": [
@@ -126,6 +180,22 @@
     "\"I've been staying on the attack. That's been working for me.\"",
     "\"One bout at a time, stay focused on my sumo.\""
   ],
+  "reflective": [
+    "\"The struggles were worth it. Every hardship taught me something.\"",
+    "\"I look back at the difficult times and realize they shaped me.\"",
+    "\"It hasn't always been easy, but I wouldn't change a thing.\"",
+    "\"The journey matters more than the destination — I've learned that.\"",
+    "\"Patience and perseverance — that's what brought me here today.\"",
+    "\"I've grown more from my losses than my wins, honestly.\""
+  ],
+  "quirky": [
+    "\"Well, I can still do a backflip, you know. But I save those for celebration.\"",
+    "\"The glasses? They're not just for show — though they do look rather sharp, don't they?\"",
+    "\"I brought a bit of gymnastics flair to the dohyo today.\"",
+    "\"My coach says I'm the only rikishi who stretches into the splits and calls it a warm-up.\"",
+    "\"I see the bout differently with these glasses — literally and figuratively.\"",
+    "\"A backflip after a kinboshi? Maybe. You'll have to wait and see.\""
+  ],
   "modifiers": {
     "witty": [
       "...But I wouldn't bet against me either.",
@@ -147,6 +217,18 @@
       "Yes.",
       "I'll try my best.",
       "We'll see."
+    ],
+    "quirky_glasses": [
+      " adjusts %SHIKONA%'s glasses with a grin.",
+      " pushes %SHIKONA%'s glasses up — a signature move."
+    ],
+    "gymnast_backflip": [
+      " %SHIKONA% flashes a gymnastics move in celebration.",
+      " The former gymnast in %SHIKONA% can't resist a stretch."
+    ],
+    "hometown_pride": [
+      " %SHIKONA% sends a message back to %SHIKONA%'s hometown.",
+      " The pride of %SHIKONA%'s hometown is on full display."
     ]
   }
 }

@@ -72,6 +72,26 @@
       "%WINNER% ties the leader with this win.",
       "%WINNER% pulls level with the tournament leader.",
       "We have a tie at the top — %WINNER% joins the leader."
+    ],
+    "seven_seven_win": [
+      "%WINNER% vowed to win at all costs that day — and delivered when it mattered most.",
+      "The 7-7 pressure was immense, but %WINNER% rose to the occasion.",
+      "Everything on the line at 7-7 — %WINNER% finds a way to secure the winning record."
+    ],
+    "seven_seven_loss": [
+      "Devastation for %LOSER% — the 7-7 bout ends in defeat and make-koshi is confirmed.",
+      "%LOSER% couldn't find the extra gear at 7-7 — a crushing end to the tournament.",
+      "The pressure of 7-7 proved too much for %LOSER% — make-koshi is the bitter result."
+    ],
+    "crowd_gasps_horror": [
+      "Dozens of gasps of horror ripple through the crowd — a senshuraku shock as %WINNER% pulls off the impossible.",
+      "The crowd erupts in disbelief — %WINNER% stuns everyone with a day-15 upset that changes everything.",
+      "Senshuraku drama at its finest — the crowd gasps as %WINNER% pulls off the impossible."
+    ],
+    "freeze_up_recovery": [
+      "%WINNER% shook off the freeze and found his legs when it mattered — a remarkable recovery.",
+      "From frozen to fearless — %WINNER% overcomes the mid-basho slump to deliver today.",
+      "The freeze is broken — %WINNER% moves freely again and the result speaks for itself."
     ]
   },
   "rivalry": {
@@ -101,6 +121,11 @@
     "Sponsor banners flutter as %WINNER% collects %ENVELOPES% kensho envelopes.",
     "%WINNER% is rewarded with %ENVELOPES% kensho payouts — a lucrative day on the dohyo."
   ],
+  "master_intervention": [
+    "%WINNER% credits the master's intervention before match 7 — 'He reset my mind and my sumo.'",
+    "The oyakata's words lit a fire — %WINNER% delivers after the mid-basho intervention.",
+    "'My master intervened before match 7 — that changed everything,' %WINNER% says after the win."
+  ],
   "kensho_upset": [
     "An upset and a payday — %ENVELOPES% kensho envelopes for %WINNER% after a stunning shock!",
     "The sponsors didn't see that coming! %ENVELOPES% kensho envelopes for the underdog %WINNER%.",
@@ -112,6 +137,21 @@
     "%LOSER% can't turn back the clock — age finally factoring into the result.",
     "The legs aren't what they used to be for %LOSER% — time remains undefeated.",
     "%LOSER% shows flashes of the old brilliance, but the body can't keep up anymore."
+  ],
+  "early_decline": [
+    "The first signs of decline are showing for %LOSER% — reflexes just a half-step slower.",
+    "%LOSER% isn't the rikishi he was two years ago — the slide has begun.",
+    "A tough loss for %LOSER% — the body is starting to betray him."
+  ],
+  "late_decline": [
+    "The end feels near for %LOSER% — each bout is a battle against the clock.",
+    "%LOSER% fights on, but the decline is undeniable now — how much longer can he go?",
+    "Once a champion, now a warrior fading — %LOSER% faces the twilight of his career."
+  ],
+  "twilight": [
+    "The dohyo may not see %LOSER% much longer — this loss stings of finality.",
+    "%LOSER% gave everything, but the twilight years are unforgiving.",
+    "A somber moment for %LOSER% — the career's final chapter may be approaching."
   ],
   "defying_age": [
     "Defying age itself — %WINNER% proves the old warrior still has it!",

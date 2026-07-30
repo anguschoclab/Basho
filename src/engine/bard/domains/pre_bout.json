@@ -95,6 +95,26 @@
       "%NAME% is going for kachi-koshi for the %ORDINAL% consecutive tournament.",
       "%NAME% rides a %STREAK%-basho kachi-koshi streak into this bout.",
       "Can %NAME% extend the %STREAK%-tournament kachi-koshi run today?"
+    ],
+    "seven_seven": [
+      "Both men stand at 7-7. Winner makes kachi-koshi; loser faces make-koshi. Everything is on the line.",
+      "Seven wins, seven losses — for both. This bout decides who finishes with a winning record.",
+      "The pressure is immense: 7-7 for both rikishi. One bout, one result, one career-defining moment."
+    ],
+    "oversleeping_reference": [
+      "Less than a year since he became a laughing stock for oversleeping, %SHIKONA% steps onto the dohyo with something to prove.",
+      "The oversleeping incident still lingers — %SHIKONA% knows the cameras are watching his every move today.",
+      "It's been a while since the fusensho scandal, but %SHIKONA% hasn't forgotten the embarrassment."
+    ],
+    "fighting_name_early": [
+      "%SHIKONA% carries a fighting name that was supposed to be his reward for reaching salaried level — the pressure has been with him since.",
+      "Given his shikona before the silk sash, %SHIKONA% fights with the weight of expectations on his shoulders.",
+      "The early shikona was a gift and a burden — %SHIKONA% has something to prove every time he steps up."
+    ],
+    "freeze_up": [
+      "%SHIKONA% admits that from match 5 he couldn't get his legs moving — the freeze has been a battle all basho.",
+      "The freeze-up has haunted %SHIKONA% this tournament — can he break through today?",
+      "From match 5, %SHIKONA% couldn't get his legs moving. Today is a chance to shake the freeze."
     ]
   },
   "h2h_streak": [
@@ -405,5 +425,12 @@
     "Watch the counter: %WEST% reads %EAST%'s %EAST_STYLE% and looks to turn it against him.",
     "%EAST%'s aggressive %EAST_STYLE% could walk right into %WEST%'s counter trap.",
     "The counter-tactic is set — %WEST% has the blueprint to defuse %EAST%'s %EAST_STYLE%."
-  ]
+  ],
+  "rank_debut_sekitori": {
+    "sekitori_debut": [
+      "From cotton sash to silk sash — %SHIKONA% makes his sekitori debut today.",
+      "A milestone moment: %SHIKONA% steps onto the dohyo as a sekitori for the first time.",
+      "The paid ranks await — %SHIKONA% debuts as a salaried rikishi today."
+    ]
+  }
 }

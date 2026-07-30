@@ -145,6 +145,30 @@
       "positive": "Gifted",
       "negative": "Flawed",
       "neutral": "Balanced"
+    },
+    "quirks": {
+      "poor_eyesight": "Wears glasses",
+      "gymnast_background": "Former gymnast",
+      "foreign_heritage": "Foreign-born",
+      "fashion_conscious": "Style icon"
+    },
+    "weight_journey": {
+      "bulking": "Bulking up",
+      "filled_out": "Filled out nicely",
+      "mass_gain_complete": "Reached target weight"
+    },
+    "pre_sumo_background": {
+      "gymnast": "Former gymnast",
+      "judoka": "Judo background",
+      "baseball": "Baseball background",
+      "wrestler": "Wrestling background",
+      "soccer": "Soccer background",
+      "track": "Track and field",
+      "none": "No prior sport"
+    },
+    "cohort": {
+      "cohort_leader": "First of his class",
+      "cohort_all_sekitori": "All made sekitori"
     }
   }
 }

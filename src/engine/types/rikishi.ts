@@ -274,4 +274,49 @@ export interface Rikishi {
 
   // Tracks consecutive 11+ win performances at sekiwake/komusubi for ozeki promotion
   consecutiveStrongSekiwake?: number;
+
+  // ── Narrative Feature Expansion Fields ──────────────────────────
+
+  // B1: Oversleeping incident — clears after 6 basho cycles
+  oversleptBasho?: { bashoName: string; day: number; year: number };
+
+  // B2: Oyakata mid-basho intervention — cleared at basho start
+  interventionUsedThisBasho?: boolean;
+
+  // B12: Freeze-up flag — set when rikishi freezes during bout
+  frozeUp?: boolean;
+
+  // B3: Weight gain journey tracking
+  weightJourney?: {
+    targetKg: number;
+    progressKg: number;
+    stalled: boolean;
+    phases: string[];
+  };
+
+  // B4: Pre-sumo background trait
+  preSumoBackground?: "gymnast" | "judoka" | "baseball" | "soccer" | "wrestler" | "track" | "none";
+
+  // B5: Visual quirk
+  quirks?: {
+    poorEyesight?: boolean;
+    glasses?: { style: string; acquiredBasho: string };
+  };
+
+  // B7: Career highlight memories
+  careerHighlights?: Array<{
+    type: "debut_win" | "seven_seven_win" | "upset_over_elite" | "yusho" | "playoff_win" | "kinboshi" | "rivalry_defining";
+    basho: string;
+    opponent?: Id;
+    description: string;
+  }>;
+
+  // B8: Post-retirement career path — set at retirement
+  postRetirementPath?: "oyakata" | "media_pundit" | "sumo_school_coach" | "leave_sumo_world";
+
+  // B10: Recruitment cohort tracking
+  recruitmentCohortId?: string;
+
+  // B11: Fighting name conferred early (before sekitori rank)
+  shikonaConferredEarly?: boolean;
 }

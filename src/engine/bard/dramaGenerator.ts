@@ -15,6 +15,10 @@ import { stableSort } from "../utils/sort";
 import type { ActiveCrisis, CrisisType } from "../types/crises";
 import { isGovernancePlayerRelevant } from "../npcAI/eventSurfacing";
 import { getRikishi } from "../queries";
+import {
+  OVERSLEEP_CHANCE,
+  OVERSLEEP_MOTIVATION_PENALTY,
+} from "../../constants/engine/generation";
 
 export interface DramaEvent {
   id: string;
@@ -34,17 +38,20 @@ export function processDramaTick(world: WorldState): StateImpact {
   const builder = createImpactBuilder("processDramaTick");
   const rng = rngForWorld(world, "narrative", "drama");
 
+  // Basho-day-specific drama (oversleeping, etc.)
+  const bashoDayImpact = checkBashoDayDrama(world);
+
   // Daily chance for drama
   if (rng.next() > 0.95) {
     const randomDramaImpact = generateRandomDrama(world);
     const triggeredImpact = checkTriggeredDrama(world);
-    return mergeImpacts([builder.build(), randomDramaImpact, triggeredImpact]);
+    return mergeImpacts([builder.build(), bashoDayImpact, randomDramaImpact, triggeredImpact]);
   }
 
   // Specific triggers (e.g., high debt, low compliance)
   const triggeredImpact = checkTriggeredDrama(world);
 
-  return mergeImpacts([builder.build(), triggeredImpact]);
+  return mergeImpacts([builder.build(), bashoDayImpact, triggeredImpact]);
 }
 
 function generateRandomDrama(world: WorldState): StateImpact {
@@ -136,6 +143,58 @@ function checkTriggeredDrama(world: WorldState): StateImpact {
   }
 
   return mergeImpacts([builder.build(), ...crisisImpacts]);
+}
+
+/**
+ * Basho-day-specific drama events.
+ * Checks for oversleeping incidents during active_basho.
+ * Rolls RNG per active, non-injured, non-retired, non-kyujo rikishi.
+ * If triggered, sets isKyujo = true (triggers fusensho via tryFusensho),
+ * sets oversleptBasho flag, reduces motivation, logs GOVERNANCE_RULING event.
+ */
+export function checkBashoDayDrama(world: WorldState): StateImpact {
+  const builder = createImpactBuilder("checkBashoDayDrama");
+
+  if (world.cyclePhase !== "active_basho") return builder.build();
+  const basho = world.currentBasho;
+  if (!basho) return builder.build();
+
+  const rng = rngForWorld(world, "narrative", "oversleeping");
+
+  for (const id of world.activeRikishiIds) {
+    const r = getRikishi(world, id);
+    if (!r) continue;
+    if (r.injured || r.isRetired || r.isKyujo) continue;
+
+    if (rng.next() < OVERSLEEP_CHANCE) {
+      const importance = isGovernancePlayerRelevant(r.heyaId, "minor");
+      builder.updateRikishi(id, {
+        isKyujo: true,
+        kyujoReason: "personal",
+        motivation: Math.max(0, r.motivation - OVERSLEEP_MOTIVATION_PENALTY),
+        oversleptBasho: {
+          bashoName: basho.bashoName,
+          day: basho.day,
+          year: basho.year,
+        },
+      });
+      builder.logEvent(
+        "GOVERNANCE_RULING",
+        "discipline",
+        {
+          rikishiId: id,
+          shikona: r.shikona,
+          incident: "oversleeping",
+          bashoName: basho.bashoName,
+          day: basho.day,
+          year: basho.year,
+        },
+        { heyaId: r.heyaId, importance }
+      );
+    }
+  }
+
+  return builder.build();
 }
 
 function triggerCrisis(world: WorldState, heyaId: string, type: CrisisType): StateImpact {

@@ -193,6 +193,54 @@ export const PostBashoPressService = {
       lines.push({ text: paradeLine.text, id: `${baseId}-parade`, phase: "post_bout", tags: ["post_basho_press"] });
     }
 
+    // Weight journey — if champion has significant weight gain progress
+    if (champion.weightJourney && champion.weightJourney.progressKg >= 15) {
+      const wjLine = BardEngine.resolve(rng, "post_basho_press.champion.weight_journey", {
+        SHIKONA: champion.shikona,
+        rikishiId: champion.id,
+      });
+      if (wjLine.text) {
+        lines.push({ text: wjLine.text, id: `${baseId}-weight-journey`, phase: "post_bout", tags: ["post_basho_press"] });
+      }
+    }
+
+    // Master intervention — if oyakata intervened during this basho
+    if (champion.interventionUsedThisBasho) {
+      const intLine = BardEngine.resolve(rng, "post_basho_press.champion.master_intervention", {
+        SHIKONA: champion.shikona,
+        rikishiId: champion.id,
+      });
+      if (intLine.text) {
+        lines.push({ text: intLine.text, id: `${baseId}-intervention`, phase: "post_bout", tags: ["post_basho_press"] });
+      }
+    }
+
+    // Early struggle — for champions with 5+ basho before first yusho
+    const totalBashoCount = champion.careerHistory?.length ?? 0;
+    const yushoCount = champion.careerHistory?.filter((h) => h.isYusho).length ?? 0;
+    if (totalBashoCount >= 5 && yushoCount <= 1) {
+      const struggleLine = BardEngine.resolve(rng, "post_basho_press.champion.early_struggle", {
+        SHIKONA: champion.shikona,
+        rikishiId: champion.id,
+      });
+      if (struggleLine.text) {
+        lines.push({ text: struggleLine.text, id: `${baseId}-struggle`, phase: "post_bout", tags: ["post_basho_press"] });
+      }
+    }
+
+    // Career highlight reflection — if champion has recorded career highlights
+    if (champion.careerHighlights && champion.careerHighlights.length > 0) {
+      const highlight = champion.careerHighlights[champion.careerHighlights.length - 1];
+      const highlightLine = BardEngine.resolve(rng, "post_basho_press.champion.career_highlight_reflection", {
+        SHIKONA: champion.shikona,
+        OPPONENT: highlight.opponent ?? "his rival",
+        rikishiId: champion.id,
+      });
+      if (highlightLine.text) {
+        lines.push({ text: highlightLine.text, id: `${baseId}-highlight`, phase: "post_bout", tags: ["post_basho_press"] });
+      }
+    }
+
     return lines;
   },
 
@@ -234,6 +282,28 @@ export const PostBashoPressService = {
       });
       if (rivalLine.text) {
         lines.push({ text: rivalLine.text, id: `${baseId}-rival`, phase: "post_bout", tags: ["post_basho_press"] });
+      }
+    }
+
+    // Fighting name vindication — if shikona was conferred early (before sekitori)
+    if (winner.shikonaConferredEarly) {
+      const fnLine = BardEngine.resolve(rng, "post_basho_press.prize_winner.fighting_name_vindication", {
+        SHIKONA: winner.shikona,
+        rikishiId: winner.id,
+      });
+      if (fnLine.text) {
+        lines.push({ text: fnLine.text, id: `${baseId}-fighting-name`, phase: "post_bout", tags: ["post_basho_press"] });
+      }
+    }
+
+    // Cohort pride — if recruitmentCohortId is set
+    if (winner.recruitmentCohortId) {
+      const cohortLine = BardEngine.resolve(rng, "post_basho_press.prize_winner.cohort_pride", {
+        SHIKONA: winner.shikona,
+        rikishiId: winner.id,
+      });
+      if (cohortLine.text) {
+        lines.push({ text: cohortLine.text, id: `${baseId}-cohort`, phase: "post_bout", tags: ["post_basho_press"] });
       }
     }
 

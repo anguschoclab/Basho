@@ -351,7 +351,112 @@
     "retirement_oyakata_conversion": [
       "%SHIKONA% will remain in the sumo world, staying on as an oyakata at %HEYA%.",
       "The newly minted oyakata %SHIKONA% will begin coaching duties at %HEYA%.",
-      "%SHIKONA% transitions to the role of oyakata, passing on wisdom to the next generation."
+      "%SHIKONA% transitions to the role of oyakata, passing on wisdom to the next generation.",
+      "%SHIKONA% accepts the toshiyori name and beavers away in the outside world, carrying the spirit of the dohyo to a new arena."
+    ],
+    "oversleeping_incident_title": [
+      "%SHIKONA% Oversleeps, Misses Bout",
+      "Fusensho Scandal: %SHIKONA% No-Show",
+      "%SHIKONA% Late to the Dohyo"
+    ],
+    "oversleeping_incident_summary": [
+      "%SHIKONA% overslept and missed his bout on day %DAY% — a fusensho loss that stunned the arena.",
+      "A shocking scene as %SHIKONA% fails to appear — oversleeping costs him the bout by default.",
+      "The crowd murmurs in disbelief as %SHIKONA%'s absence is announced — a fusensho loss from oversleeping."
+    ],
+    "weight_milestone_title": [
+      "%SHIKONA% Reaches %WEIGHT%kg",
+      "Bulk Journey Milestone for %SHIKONA%",
+      "%SHIKONA% Hits Target Weight"
+    ],
+    "weight_milestone_summary": [
+      "%SHIKONA% reaches %WEIGHT%kg — the bulk journey pays off as his frame fills out.",
+      "Months of dedicated bulking culminate in a milestone: %SHIKONA% now weighs %WEIGHT%kg.",
+      "The weight gain journey bears fruit — %SHIKONA% tips the scales at %WEIGHT%kg, a career high."
+    ],
+    "fighting_name_conferred_early_title": [
+      "Fighting Name Conferred Early: %SHIKONA%",
+      "%SHIKONA% Receives Shikona Before Sekitori",
+      "Early Shikona for %SHIKONA%"
+    ],
+    "fighting_name_conferred_early_summary": [
+      "%SHIKONA% has been given his fighting name before reaching the salaried ranks — a rare honor and a heavy burden.",
+      "The stable master confers a distinctive shikona on %SHIKONA% while still in the cotton sash — expectations are high.",
+      "%SHIKONA% carries his fighting name into the lower divisions — a name that was supposed to be his reward for reaching salaried level."
+    ],
+    "cohort_all_sekitori_title": [
+      "All %COUNT% Recruits from %YEAR% Reach the Paid Ranks",
+      "Cohort Milestone: %YEAR% Recruitment Class All Sekitori"
+    ],
+    "cohort_all_sekitori_summary": [
+      "All four lads in this photo went on to make salaried level — a remarkable cohort achievement.",
+      "Every member of the %YEAR% recruitment class has reached sekitori status — a testament to their shared drive.",
+      "The %YEAR% cohort completes its ascent — all members now wear the silk sash."
+    ],
+    "injury_mount_cruel_title": [
+      "Injuries Mount Cruelly for %SHIKONA%",
+      "Cruel Toll on %SHIKONA% Since %OPPONENT% Win"
+    ],
+    "injury_mount_cruel_summary": [
+      "Injuries mount cruelly since that fabulous win over %OPPONENT% — %SHIKONA% can't catch a break.",
+      "Since the triumph over %OPPONENT%, %SHIKONA%'s body has betrayed him — one injury after another.",
+      "The cruel aftermath of the %OPPONENT% victory: %SHIKONA% faces yet another spell on the sidelines."
+    ],
+    "veteran_decline_acceptance_title": [
+      "%SHIKONA% Accepts the Inevitable",
+      "Veteran %SHIKONA% Faces Decline",
+      "The Twilight of %SHIKONA%"
+    ],
+    "veteran_decline_acceptance_summary": [
+      "'I'm assuming I'm down and dwelling on this no more,' %SHIKONA% says with quiet acceptance.",
+      "%SHIKONA% faces the twilight of his career with dignity: 'The years take what they take.'",
+      "His fellow pros will be crestfallen at how even his years of stoic training ceased to provide an edge in the end."
+    ],
+    "retirement_favorite_memory_title": [
+      "%SHIKONA% Reflects on Favorite Memory",
+      "A Career Remembered: %SHIKONA%'s Defining Moment"
+    ],
+    "retirement_favorite_memory_summary": [
+      "'My favorite sumo memory was beating %OPPONENT% on 7-7 in %BASHO%,' %SHIKONA% reflects at retirement.",
+      "%SHIKONA% looks back fondly: 'That day against %OPPONENT% in %BASHO% — that's the one I'll carry.'",
+      "When asked for his favorite memory, %SHIKONA% names the %BASHO% bout against %OPPONENT% without hesitation."
+    ],
+    "retirement_post_path_oyakata_title": [
+      "%SHIKONA% Stays On as Oyakata",
+      "New Oyakata: %SHIKONA%"
+    ],
+    "retirement_post_path_oyakata_summary": [
+      "%SHIKONA% will remain in the sumo world, staying on as an oyakata and beavers away at building the next generation.",
+      "The newly minted oyakata %SHIKONA% begins coaching duties — the wisdom of a career now passed to young shoulders."
+    ],
+    "retirement_post_path_media_title": [
+      "%SHIKONA% Eyes Media Career",
+      "From Dohyo to Broadcast: %SHIKONA%"
+    ],
+    "retirement_post_path_media_summary": [
+      "Not yet confirmed if %SHIKONA% will join the ranks of ex-pros in the commentary booth, but the offers are already coming.",
+      "%SHIKONA% is reportedly fielding media opportunities — a natural fit for the charismatic veteran."
+    ],
+    "retirement_post_path_coach_title": [
+      "%SHIKONA% Returns to Coach",
+      "Homecoming Coach: %SHIKONA%"
+    ],
+    "retirement_post_path_coach_summary": [
+      "%SHIKONA% returns to his hometown to coach the next generation — giving back to the community that raised him.",
+      "The former rikishi %SHIKONA% takes up a coaching role at a local sumo school, shaping young talent."
+    ],
+    "retirement_post_path_leave_title": [
+      "%SHIKONA% Steps Away from Sumo",
+      "A New Path: %SHIKONA% Leaves the Dohyo Behind"
+    ],
+    "retirement_post_path_leave_summary": [
+      "%SHIKONA% steps away from the sumo world entirely — a clean break and a new beginning.",
+      "After years on the dohyo, %SHIKONA% chooses a life outside the sumo world — a quiet exit."
+    ],
+    "retirement_press_reflective": [
+      "\"The struggles were worth it. I wouldn't trade a single day of it.\"",
+      "\"Every hardship shaped me. I leave with gratitude, not regret.\"",
+      "\"The journey was the reward. I found myself on that dohyo.\""
     ],
     "underdog_victory_title": [
       "Giant Killing: %SHIKONA% Stuns the Division",

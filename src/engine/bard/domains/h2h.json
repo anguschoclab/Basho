@@ -33,5 +33,15 @@
     "Amazingly, both enter this bout with %WINS% career wins each. A true parallel.",
     "An incredible stat — %P1% and %P2% both sit at %WINS% career victories. Destiny on the dohyo?",
     "Level pegging on career wins: both men have %WINS%. Something has to give today."
+  ],
+  "junior_high_rivals": [
+    "It's hard seeing my junior high school rivals outstrip me — %P1% and %P2% go way back.",
+    "Junior high rivals reunited on the dohyo — %P1% and %P2% have been chasing each other for years.",
+    "From the same schoolyard to the biggest stage — %P1% and %P2% renew their old rivalry today."
+  ],
+  "cohort_reunion": [
+    "All four lads in this photo went on to make salaried level — and now %P1% and %P2% face off.",
+    "Cohort mates reunited: %P1% and %P2% came up together and both reached the paid ranks.",
+    "From the same recruitment class to the same dohyo — %P1% and %P2% share a journey few can claim."
   ]
 }

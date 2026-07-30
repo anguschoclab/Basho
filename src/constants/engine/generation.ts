@@ -636,3 +636,29 @@ export const BEHAVIOR_TRAIT_WEIGHTS: Record<string, { stat: "discipline" | "medi
   philosophical: { stat: "mediaSavvy", threshold: 65, weight: 1.5 },
   analytical: { stat: "mediaSavvy", threshold: 60, weight: 1.5 },
 };
+
+// ─────────────────────────────────────────
+// Narrative feature constants
+// ─────────────────────────────────────────
+
+/** Chance per rikishi per basho day to oversleep and miss their bout */
+export const OVERSLEEP_CHANCE = 0.005;
+
+/** Motivation penalty for oversleeping incident */
+export const OVERSLEEP_MOTIVATION_PENALTY = 10;
+
+/** Basho cycles after which oversleptBasho flag clears (6 basho = 1 year) */
+export const OVERSLEEP_CLEAR_CYCLES = 6;
+
+/** Motivation boost from oyakata mid-basho intervention */
+export const INTERVENTION_MOTIVATION_BOOST = 5;
+
+/** Minimum consecutive losses to allow oyakata intervention */
+export const INTERVENTION_MIN_LOSSES = 2;
+
+/** Basho day range for oyakata intervention (inclusive) */
+export const INTERVENTION_DAY_MIN = 5;
+export const INTERVENTION_DAY_MAX = 13;
+
+/** Chance for a rikishi to have the poor eyesight quirk */
+export const POOR_EYESIGHT_CHANCE = 0.02;
