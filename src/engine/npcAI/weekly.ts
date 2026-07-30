@@ -377,6 +377,33 @@ function applyPromotionAwareness(
       }
     }
 
+    if (rank === "yokozuna") {
+      const warnings = r.councilWarnings ?? 0;
+      if (warnings > 0) {
+        if (!decision.individualProtects.includes(rikishiId)) {
+          decision.individualProtects = [...decision.individualProtects, rikishiId];
+          decision.individualPushes = decision.individualPushes.filter((id) => id !== rikishiId);
+          decision.individualDevelops = decision.individualDevelops.filter(
+            (id) => id !== rikishiId
+          );
+          decision.reasoning.push(
+            `[PromotionAwareness] ${r.shikona ?? rikishiId} has ${warnings} YDC warning(s) — added to protect list`
+          );
+        }
+        if (warnings >= 2) {
+          if (
+            decision.trainingIntensity === "punishing" ||
+            decision.trainingIntensity === "intensive"
+          ) {
+            decision.trainingIntensity = "balanced";
+            decision.reasoning.push(
+              `[PromotionAwareness] ${r.shikona ?? rikishiId} has ${warnings} YDC warnings — reduced training intensity to 'balanced'`
+            );
+          }
+        }
+      }
+    }
+
     if (rank === "sekiwake" || rank === "komusubi") {
       if (!decision.individualDevelops.includes(rikishiId)) {
         decision.individualDevelops = [...decision.individualDevelops, rikishiId];

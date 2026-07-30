@@ -38,6 +38,7 @@ export function toCareerDataDTO(r: Rikishi, world: WorldState): RikishiCareerDat
     consecutiveStrongSekiwake: r.consecutiveStrongSekiwake ?? 0,
     consecutiveMakeKoshi: r.consecutiveMakeKoshi ?? 0,
     consecutiveKyujo: r.consecutiveKyujo ?? 0,
-    councilWarnings: r.councilWarnings ?? 0,
+    weightJourney: r.weightJourney,
+    oversleptBasho: r.oversleptBasho ?? null,
   };
 }

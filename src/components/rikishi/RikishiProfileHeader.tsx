@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
-import { ArrowLeft, Globe, MapPin, Calendar, Ruler, Scale } from "lucide-react";
+import { ArrowLeft, Globe, MapPin, Calendar, Ruler, Scale, Moon } from "lucide-react";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { getCombatArchetypeDescription } from "@/engine/archetype";
@@ -118,6 +118,18 @@ export function RikishiProfileHeader({
                         className="border-warning text-warning bg-warning/10 h-6 font-bold text-[9px] tracking-widest uppercase cursor-help"
                       >
                         YDC Warning ({rikishi.councilWarnings})
+                      </Badge>
+                    </TooltipWrap>
+                  )}
+                  {rikishi.oversleptBasho && (
+                    <TooltipWrap
+                      content={`Overslept ${rikishi.oversleptBasho.bashoName} ${rikishi.oversleptBasho.year} — missed Day ${rikishi.oversleptBasho.day}`}
+                    >
+                      <Badge
+                        variant="outline"
+                        className="border-muted-foreground text-muted-foreground bg-muted/10 h-6 font-bold text-[9px] tracking-widest uppercase cursor-help"
+                      >
+                        <Moon className="h-3 w-3" /> Overslept
                       </Badge>
                     </TooltipWrap>
                   )}

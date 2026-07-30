@@ -32,6 +32,7 @@ import { IndividualFocusSlots } from "@/components/training/IndividualFocusSlots
 import { WeeklyDrillPlanner } from "@/components/training/WeeklyDrillPlanner";
 import { ReferenceLegend } from "@/components/training/ReferenceLegend";
 import { SparringPanel } from "@/components/game/SparringPanel";
+import { WeightJourneyCard } from "@/components/training/WeightJourneyCard";
 import type { DrillType, DaySchedule } from "@/engine/types/training";
 import type { Rikishi } from "@/engine/types/rikishi";
 
@@ -204,6 +205,25 @@ export default function TrainingPage() {
           onAddPair={(aId, bId) => addSparringPair(playerHeyaId, aId, bId)}
           onRemovePair={(aId, bId) => removeSparringPair(playerHeyaId, aId, bId)}
         />
+
+        {rikishiList.some((r) => r.weightJourney) && (
+          <div className="space-y-4">
+            <h2 className="font-display text-xl font-bold tracking-tight uppercase">
+              Weight Journeys
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {rikishiList
+                .filter((r) => r.weightJourney)
+                .map((r) => (
+                  <WeightJourneyCard
+                    key={r.id}
+                    journey={r.weightJourney}
+                    shikona={r.shikona}
+                  />
+                ))}
+            </div>
+          </div>
+        )}
 
         <IndividualFocusSlots
           rikishiList={rikishiList}

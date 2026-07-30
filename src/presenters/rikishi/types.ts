@@ -189,7 +189,13 @@ export interface RikishiCareerDataDTO {
   consecutiveStrongSekiwake: number;
   consecutiveMakeKoshi?: number;
   consecutiveKyujo?: number;
-  councilWarnings?: number;
+  weightJourney?: {
+    targetKg: number;
+    progressKg: number;
+    stalled: boolean;
+    phases: string[];
+  };
+  oversleptBasho?: { bashoName: string; day: number; year: number } | null;
 }
 
 /** Lineage (mentor/mentee relationships) */
@@ -279,9 +285,16 @@ export interface UIRosterEntry {
   consecutiveStrongSekiwake: number;
   consecutiveMakeKoshi?: number;
   consecutiveKyujo?: number;
-  councilWarnings?: number;
+  councilWarnings: number;
   streakLabel: string;
   winPercentage: number;
   citizenshipStatus: string;
   yearsToNaturalization: number;
+  weightJourney?: {
+    targetKg: number;
+    progressKg: number;
+    stalled: boolean;
+    phases: string[];
+  };
+  oversleptBasho?: { bashoName: string; day: number; year: number } | null;
 }

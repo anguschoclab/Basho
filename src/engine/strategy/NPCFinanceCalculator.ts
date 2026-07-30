@@ -26,6 +26,8 @@ import {
   MYOSEKI_MAX_FUNDS_RATIO,
   STYLE_ALIGNMENT_SCORE,
 } from "../../constants/engine/economy";
+import { WEIGHT_JOURNEY_STALL_THRESHOLD } from "../training/WeightJourney";
+import { getRikishi } from "../queries";
 
 function getSortedMyosekiStocks(world: StrategyContext["world"]) {
   if (!world.myosekiMarket) return [];
@@ -80,7 +82,30 @@ const BUY_MYOSEKI_RULE: StrategyRule = {
   importance: "notable",
 };
 
-const financeRules: StrategyRule[] = [BUY_MYOSEKI_RULE];
+const PRESERVE_FUNDS_FOR_WEIGHT_JOURNEY_RULE: StrategyRule = {
+  id: "fin_preserve_weight_journey",
+  condition: (ctx) => {
+    if (ctx.heya.funds >= WEIGHT_JOURNEY_STALL_THRESHOLD * 2) return false;
+    for (const rikishiId of ctx.heya.rikishiIds ?? []) {
+      const r = getRikishi(ctx.world, rikishiId);
+      if (r?.weightJourney?.stalled === true) return true;
+    }
+    return false;
+  },
+  action: () => {
+    return createImpactBuilder("fin_preserve_weight_journey").build();
+  },
+  buildEvent: () => ({
+    action: "preserve_funds_weight_journey",
+    reasoning: "Weight journey stalled due to low funds — preserving capital for nutrition.",
+  }),
+  importance: "notable",
+};
+
+const financeRules: StrategyRule[] = [
+  PRESERVE_FUNDS_FOR_WEIGHT_JOURNEY_RULE,
+  BUY_MYOSEKI_RULE,
+];
 
 // ============================================================================
 // Public API

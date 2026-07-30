@@ -101,6 +101,99 @@ describe("NPC Weekly Decisions — promotion awareness", () => {
   });
 });
 
+describe("NPC Weekly Decisions — yokozuna council warning protection", () => {
+  const heyaId = "heya-yoko" as Id;
+  const oyakataId = "oyakata-yoko" as Id;
+
+  let world: ReturnType<typeof MockFactory.createWorld>;
+  let heya: ReturnType<typeof MockFactory.createHeya>;
+  let oyakata: ReturnType<typeof MockFactory.createOyakata>;
+
+  beforeEach(() => {
+    vi.mocked(PersonaService.getManagerPersona).mockReturnValue(basePersona as any);
+    world = MockFactory.createWorld({ week: 1, year: 1990 });
+    heya = MockFactory.createHeya(heyaId, { oyakataId });
+    oyakata = MockFactory.createOyakata(oyakataId, { heyaId, archetype: "traditionalist" });
+    world.heyas.set(heyaId, heya);
+    world.oyakata.set(oyakataId, oyakata);
+  });
+
+  it("adds yokozuna with 1 council warning to protect list", () => {
+    const r1 = MockFactory.createRikishi("r1", {
+      heyaId,
+      rank: "yokozuna",
+      division: "makuuchi",
+      councilWarnings: 1,
+    });
+    world.rikishi.set("r1", r1);
+    heya.rikishiIds = ["r1"];
+
+    const decision = makeNPCWeeklyDecision(world, heyaId);
+    expect(decision.individualProtects).toContain("r1");
+    expect(decision.individualPushes).not.toContain("r1");
+    expect(decision.reasoning.some((r) => r.includes("YDC"))).toBe(true);
+  });
+
+  it("reduces training intensity when yokozuna has 2+ council warnings", () => {
+    const r1 = MockFactory.createRikishi("r1", {
+      heyaId,
+      rank: "yokozuna",
+      division: "makuuchi",
+      councilWarnings: 2,
+    });
+    world.rikishi.set("r1", r1);
+    heya.rikishiIds = ["r1"];
+
+    // Force intensive via furious mood to test reduction
+    vi.mocked(PersonaService.getManagerPersona).mockReturnValue({
+      ...basePersona,
+      mood: "furious",
+      perception: {
+        ...basePersona.perception,
+        welfareRiskBand: "safe",
+        rosterStrengthBand: "dominant",
+      },
+      riskAppetite: 0.9,
+    } as any);
+
+    const decision = makeNPCWeeklyDecision(world, heyaId);
+    // Furious forces punishing, then yokozuna protection should reduce to intensive or balanced
+    expect(decision.individualProtects).toContain("r1");
+    expect(decision.reasoning.some((r) => r.includes("YDC"))).toBe(true);
+  });
+
+  it("does not affect yokozuna with 0 council warnings", () => {
+    const r1 = MockFactory.createRikishi("r1", {
+      heyaId,
+      rank: "yokozuna",
+      division: "makuuchi",
+      councilWarnings: 0,
+    });
+    world.rikishi.set("r1", r1);
+    heya.rikishiIds = ["r1"];
+
+    const decision = makeNPCWeeklyDecision(world, heyaId);
+    expect(decision.individualProtects).not.toContain("r1");
+    expect(decision.reasoning.some((r) => r.includes("YDC"))).toBe(false);
+  });
+
+  it("adds yokozuna with 3 warnings to protect list (not double-counted)", () => {
+    const r1 = MockFactory.createRikishi("r1", {
+      heyaId,
+      rank: "yokozuna",
+      division: "makuuchi",
+      councilWarnings: 3,
+    });
+    world.rikishi.set("r1", r1);
+    heya.rikishiIds = ["r1"];
+
+    const decision = makeNPCWeeklyDecision(world, heyaId);
+    expect(decision.individualProtects).toContain("r1");
+    // Should only appear once in protects
+    expect(decision.individualProtects.filter((id) => id === "r1").length).toBe(1);
+  });
+});
+
 describe("NPC Weekly Decisions — injury risk reduction", () => {
   const heyaId = "heya-2" as Id;
   const oyakataId = "oyakata-2" as Id;

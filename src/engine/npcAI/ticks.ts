@@ -13,6 +13,8 @@ import { getSponsorStrategy } from "../npcSponsorStrategy";
 import { evaluateGovernanceStrategy } from "../strategy/NPCGovernanceCalculator";
 import * as talentpool from "../systems/generation/TalentPoolService";
 import { enforceHardCapRosterOverflow } from "../overflow";
+import { getRikishi } from "../queries";
+import { WEIGHT_JOURNEY_STALL_THRESHOLD } from "../training/WeightJourney";
 
 import type { NPCWeeklyDecision } from "./types";
 import { makeNPCWeeklyDecision } from "./weekly";
@@ -145,6 +147,27 @@ export function tickMonthlyNPC(world: WorldState): StateImpact {
 
   for (const heya of sortedHeyas) {
     const oyakata = world.oyakata.get(heya.oyakataId!)!;
+
+    // Check for stalled weight journeys due to low funds
+    if (heya.funds < WEIGHT_JOURNEY_STALL_THRESHOLD) {
+      for (const rikishiId of heya.rikishiIds ?? []) {
+        const r = getRikishi(world, rikishiId);
+        if (r?.weightJourney?.stalled === true) {
+          builder.logEvent(
+            "FINANCIAL_ALERT",
+            "economy",
+            {
+              decision: "weight_journey_funding_awareness",
+              heyaId: heya.id,
+              rikishiId,
+              funds: heya.funds,
+            },
+            { heyaId: heya.id, importance: "notable" }
+          );
+          break;
+        }
+      }
+    }
 
     builder.merge(evaluateFinanceStrategy({ world, heya, oyakata }));
 

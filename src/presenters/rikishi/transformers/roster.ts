@@ -89,5 +89,7 @@ export function projectRosterEntry(
     winPercentage: r.careerWins / Math.max(1, r.careerWins + r.careerLosses),
     citizenshipStatus: getCitizenshipStatus(r, world?.year ?? 2020),
     yearsToNaturalization: yearsUntilNaturalization(r, world?.year ?? 2020),
+    weightJourney: r.weightJourney,
+    oversleptBasho: r.oversleptBasho ?? null,
   };
 }

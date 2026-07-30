@@ -32,6 +32,9 @@ import { getRikishi } from "../../queries";
 import { assignMentor } from "../../lineage";
 import { MentorshipService } from "../../systems/training/MentorshipService";
 import { RANK_HIERARCHY } from "../../types/banzuke";
+import { SparringService } from "../../systems/training/SparringService";
+import type { Rikishi } from "../../types/rikishi";
+import type { SparringChemistry, SparringPair, SparringState } from "../../types/training";
 
 export function phase01_week_npc_ai(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_npc_ai");
@@ -75,6 +78,7 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
       builder.updateOyakata(nextOya.id, nextOya);
 
       maybeAssignNPCMentors(world, heya, builder);
+      maybeAssignNPCSparringPairs(world, heya, builder);
     }
   }
 
@@ -145,5 +149,103 @@ function maybeAssignNPCMentors(
         { rikishiId: apprentice.id, heyaId: heya.id }
       );
     }
+  }
+}
+
+const CHEMISTRY_SCORE: Record<SparringChemistry, number> = {
+  friction: 3,
+  neutral: 2,
+  rut: 1,
+};
+
+/**
+ * Auto-assign sparring pairs for non-player heya.
+ * Scores each potential pair by chemistry + stat gap, then greedily pairs
+ * highest-scoring candidates first.
+ */
+function maybeAssignNPCSparringPairs(
+  world: WorldState,
+  heya: Heya,
+  builder: ReturnType<typeof createImpactBuilder>
+): void {
+  const members: Rikishi[] = [];
+  for (const id of heya.rikishiIds ?? []) {
+    const r = getRikishi(world, id);
+    if (r) members.push(r);
+  }
+
+  const active = members.filter((r) => !r.isRetired && !r.injured);
+
+  // Gather already-paired ids
+  const existingState = world.sparringPairs?.get(heya.id);
+  const pairedIds = new Set<string>();
+  if (existingState) {
+    for (const pair of Object.values(existingState.pairs)) {
+      pairedIds.add(pair.aId);
+      pairedIds.add(pair.bId);
+    }
+  }
+
+  const eligible = active.filter((r) => !pairedIds.has(r.id));
+  if (eligible.length < 2) return;
+
+  // Score all potential pairs
+  const candidates: { a: Rikishi; b: Rikishi; score: number }[] = [];
+  for (let i = 0; i < eligible.length; i++) {
+    for (let j = i + 1; j < eligible.length; j++) {
+      const a = eligible[i];
+      const b = eligible[j];
+      if (!SparringService.canSpar(a, b)) continue;
+      const chemistry = SparringService.calculateChemistry(a, b);
+      const chemScore = CHEMISTRY_SCORE[chemistry];
+      const statGap = Math.abs(a.stats.power - b.stats.power);
+      const statGapBonus = Math.min(3, Math.floor(statGap / 20));
+      candidates.push({ a, b, score: chemScore + statGapBonus });
+    }
+  }
+
+  candidates.sort((x, y) => y.score - x.score);
+
+  const assignedIds = new Set<string>();
+  const currentWeek = world.calendar?.currentWeek ?? 0;
+  const newPairs: SparringPair[] = [];
+
+  for (const { a, b } of candidates) {
+    if (assignedIds.has(a.id) || assignedIds.has(b.id)) continue;
+    const chemistry = SparringService.calculateChemistry(a, b);
+    newPairs.push({
+      key: SparringService.makePairKey(a.id, b.id),
+      aId: a.id,
+      bId: b.id,
+      chemistry,
+      weeksActive: 0,
+      establishedWeek: currentWeek,
+    });
+    assignedIds.add(a.id);
+    assignedIds.add(b.id);
+
+    builder.logEvent(
+      "LIFECYCLE_EVENT",
+      "narrative",
+      {
+        heyaId: heya.id,
+        aId: a.id,
+        bId: b.id,
+        status: "sparring_pair_assigned",
+      },
+      { heyaId: heya.id, rikishiId: a.id }
+    );
+  }
+
+  if (newPairs.length > 0) {
+    const baseState: SparringState = existingState
+      ? { ...existingState, pairs: { ...existingState.pairs } }
+      : { heyaId: heya.id, pairs: {} };
+    for (const pair of newPairs) {
+      baseState.pairs[pair.key] = pair;
+    }
+    const updatedMap = new Map(world.sparringPairs || []);
+    updatedMap.set(heya.id, baseState);
+    builder.updateWorldField("sparringPairs", updatedMap);
   }
 }
