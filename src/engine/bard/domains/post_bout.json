@@ -241,32 +241,46 @@
   ],
   "mono_ii": {
     "gunbai_contested": [
-      "The goji points his gunbai to %WINNER%. Will we have a mono-ii?",
-      "The gyoji calls it for %WINNER%, but the judges are looking at each other."
+      "The gyoji points his gunbai to %WINNER%. Will we have a mono-ii?",
+      "The gyoji calls it for %WINNER%, but the judges are looking at each other.",
+      "A close finish! The gyoji indicates %WINNER%, but the judges aren't convinced.",
+      "The gunbai goes up for %WINNER% — but wait, the judges are raising their hands."
     ],
     "gyoji_confused": [
-      "The goji got caught up in the action at the edge of the ring. The goji looks a bit confused now."
+      "The gyoji got caught up in the action at the edge of the ring. The gyoji looks a bit confused now.",
+      "The gyoji was out of position and couldn't see the finish clearly.",
+      "A tangled finish on the edge leaves the gyoji unsure of the outcome.",
+      "The gyoji hesitated on the call — the action happened incredibly fast."
     ],
     "review": [
       "The judges want to talk it over. It's another mono-ii.",
       "The five judges convene on the dohyo. A mono-ii has been called.",
-      "A close call brings the judges to the dohyo. The crowd waits in suspense."
+      "A close call brings the judges to the dohyo. The crowd waits in suspense.",
+      "The shimpan form a circle in the center of the ring to discuss the finish."
     ],
     "replay_analysis": [
       "Let's see what happened at the edge. %LOSER% has that left foot on the tawara, but it doesn't look like he stepped out with his heel.",
-      "The replay shows the critical moment — both men right at the edge."
+      "The replay shows the critical moment — both men right at the edge.",
+      "Looking at the replay, it's incredibly tight. Did %LOSER% touch out first?",
+      "The slow motion shows how close this really was. A matter of millimeters."
     ],
     "call_reversed": [
-      "After discussion, it was determined that %LOSER% stepped out first. So the Goji's decision is reversed. The winner is %WINNER%.",
-      "The judges reverse the call — %LOSER% touched down first. %WINNER% takes it."
+      "After discussion, it was determined that %LOSER% stepped out first. So the gyoji's decision is reversed. The winner is %WINNER%.",
+      "The judges reverse the call — %LOSER% touched down first. %WINNER% takes it.",
+      "A gunbai-chigai! The gyoji's call is overturned, and %WINNER% is declared the victor.",
+      "The shimpan agree: the original call was incorrect. The win goes to %WINNER%."
     ],
     "call_upheld": [
-      "It was determined that %LOSER% touched down first. So the Goji's decision stands. The winner is %WINNER%.",
-      "The call is upheld — %WINNER% is confirmed as the winner."
+      "It was determined that %LOSER% touched down first. So the gyoji's decision stands. The winner is %WINNER%.",
+      "The call is upheld — %WINNER% is confirmed as the winner.",
+      "The judges agree with the gyoji. The gunbai stands for %WINNER%.",
+      "No change to the decision. %WINNER% officially secures the victory."
     ],
     "rematch_ordered": [
       "A rematch has been ordered.",
-      "The judges call for a rematch — back to the shikiri lines."
+      "The judges call for a rematch — back to the shikiri lines.",
+      "It's too close to call! A torinaoshi has been ordered.",
+      "We will have a rematch! Both men will have to do it again."
     ]
   },
   "replay": {
