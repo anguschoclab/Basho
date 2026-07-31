@@ -58,3 +58,8 @@
 **Gap:** The JSDoc for `advanceOneDay` claimed daily micro-phases include the market phase, and explicitly stated that Basho combat resolution is NOT handled in the tick pipeline.
 **Truth:** The monthly market phase now only runs weekly on month boundaries (P3.7). Furthermore, `phase01_basho_bouts` is explicitly injected into the daily pipeline during `active_basho` to handle combat simulation internally.
 **Watch:** Other high-level orchestration comments that haven't been updated since the P3.7 and active_basho bout injection changes.
+## 2026-07-31 - [DramaMatchmaker] Stale ApplyDramaBudget Swaps Count
+
+**Gap:** The JSDoc for `applyDramaBudget` claimed it "uses a greedy algorithm that tries up to 3 swaps" and didn't document the `rivalryState` parameter.
+**Truth:** It actually scales the swap limit to 5 when there are active rivalry pairs provided via the undocumented `rivalryState` map, maximizing drama where grudges are involved.
+**Watch:** Anywhere hardcoded limits are stated in algorithmic documentation, they might have been made dynamic for later narrative features (like rivalries).

@@ -73,6 +73,7 @@ export interface DramaContext {
  * @param {Rikishi} b - Second rikishi in the pairing.
  * @param {number} day - Current day of the basho (1-15).
  * @param {Map<string, { wins: number; losses: number }>} standings - Current standings map.
+ * @param {Map<string, { heat: number; aId: string; bId: string }>} [rivalryState] - Active rivalries state map for grudge match checks.
  * @returns {DramaContext | null} Drama context if significant, null otherwise.
  *
  * @example
@@ -206,8 +207,12 @@ export function scoreDrama(
   }
 
   // Comeback story: rikishi returning from injury
-  const aComeback = a.injured === false && (a as Rikishi & { justReturnedFromInjury?: boolean }).justReturnedFromInjury;
-  const bComeback = b.injured === false && (b as Rikishi & { justReturnedFromInjury?: boolean }).justReturnedFromInjury;
+  const aComeback =
+    a.injured === false &&
+    (a as Rikishi & { justReturnedFromInjury?: boolean }).justReturnedFromInjury;
+  const bComeback =
+    b.injured === false &&
+    (b as Rikishi & { justReturnedFromInjury?: boolean }).justReturnedFromInjury;
   if (aComeback || bComeback) {
     return {
       label: "comeback_story",
@@ -217,10 +222,10 @@ export function scoreDrama(
   }
 
   // Rookie vs veteran: young debutant vs established veteran
-  const aIsRookie = (a.careerWins + a.careerLosses) < 5;
-  const bIsRookie = (b.careerWins + b.careerLosses) < 5;
-  const aIsVeteran = (a.careerWins + a.careerLosses) > 200;
-  const bIsVeteran = (b.careerWins + b.careerLosses) > 200;
+  const aIsRookie = a.careerWins + a.careerLosses < 5;
+  const bIsRookie = b.careerWins + b.careerLosses < 5;
+  const aIsVeteran = a.careerWins + a.careerLosses > 200;
+  const bIsVeteran = b.careerWins + b.careerLosses > 200;
   if ((aIsRookie && bIsVeteran) || (bIsRookie && aIsVeteran)) {
     return {
       label: "rookie_vs_veteran",
@@ -263,14 +268,20 @@ export function scoreDrama(
   // Debut showcase: rookie's first makuuchi bout against sanyaku
   const aTotalBouts = (a.careerWins ?? 0) + (a.careerLosses ?? 0);
   const bTotalBouts = (b.careerWins ?? 0) + (b.careerLosses ?? 0);
-  const aMakuuchiBouts = (a.careerHistory ?? []).filter(
-    (h) => h.division === "makuuchi"
-  ).length;
-  const bMakuuchiBouts = (b.careerHistory ?? []).filter(
-    (h) => h.division === "makuuchi"
-  ).length;
-  const aIsDebut = aMakuuchiBouts <= 1 && a.division === "makuuchi" && aTotalBouts < 15 && a.rank !== "ozeki" && a.rank !== "yokozuna";
-  const bIsDebut = bMakuuchiBouts <= 1 && b.division === "makuuchi" && bTotalBouts < 15 && b.rank !== "ozeki" && b.rank !== "yokozuna";
+  const aMakuuchiBouts = (a.careerHistory ?? []).filter((h) => h.division === "makuuchi").length;
+  const bMakuuchiBouts = (b.careerHistory ?? []).filter((h) => h.division === "makuuchi").length;
+  const aIsDebut =
+    aMakuuchiBouts <= 1 &&
+    a.division === "makuuchi" &&
+    aTotalBouts < 15 &&
+    a.rank !== "ozeki" &&
+    a.rank !== "yokozuna";
+  const bIsDebut =
+    bMakuuchiBouts <= 1 &&
+    b.division === "makuuchi" &&
+    bTotalBouts < 15 &&
+    b.rank !== "ozeki" &&
+    b.rank !== "yokozuna";
   if ((aIsDebut && bIsSanyaku) || (bIsDebut && aIsSanyaku)) {
     return {
       label: "debut_showcase",
@@ -282,11 +293,7 @@ export function scoreDrama(
   // Yokozuna hunt: komusubi/sekiwake vs yokozuna on days 10-14
   const aIsYokozuna = a.rank === "yokozuna";
   const bIsYokozuna = b.rank === "yokozuna";
-  if (
-    day >= 10 &&
-    day <= 14 &&
-    ((aIsSanyaku && bIsYokozuna) || (bIsSanyaku && aIsYokozuna))
-  ) {
+  if (day >= 10 && day <= 14 && ((aIsSanyaku && bIsYokozuna) || (bIsSanyaku && aIsYokozuna))) {
     return {
       label: "yokozuna_hunt",
       score: 70,
@@ -295,17 +302,9 @@ export function scoreDrama(
   }
 
   // Relegation battle: day 14-15, both at make-koshi risk in lower divisions
-  const aIsLowerDivision =
-    a.division === "makushita" || a.division === "sandanme";
-  const bIsLowerDivision =
-    b.division === "makushita" || b.division === "sandanme";
-  if (
-    day >= 14 &&
-    aIsLowerDivision &&
-    bIsLowerDivision &&
-    aRecord.wins < 4 &&
-    bRecord.wins < 4
-  ) {
+  const aIsLowerDivision = a.division === "makushita" || a.division === "sandanme";
+  const bIsLowerDivision = b.division === "makushita" || b.division === "sandanme";
+  if (day >= 14 && aIsLowerDivision && bIsLowerDivision && aRecord.wins < 4 && bRecord.wins < 4) {
     return {
       label: "relegation_battle",
       score: 60,
@@ -332,13 +331,14 @@ export function scoreDrama(
  * Applies drama budget post-processing to pairings.
  *
  * This function attempts legal swaps to increase total drama score without
- * creating rematches. It uses a greedy algorithm that tries up to 3 swaps,
- * always accepting swaps that improve the total drama score.
+ * creating rematches. It uses a greedy algorithm that tries up to 3 swaps
+ * (or 5 if there are active rivalries), always accepting swaps that improve
+ * the total drama score.
  *
  * Algorithm:
  * 1. Score all pairings for drama value
  * 2. Calculate initial total drama score
- * 3. Attempt up to 3 swaps:
+ * 3. Attempt swaps (up to 3, or 5 with rivalries):
  *    a. Try all pairwise swaps between pairings
  *    b. Check if swap would create a rematch (skip if so)
  *    c. Calculate score change from swap
@@ -351,6 +351,7 @@ export function scoreDrama(
  * @param {number} day - Current day of the basho (1-15).
  * @param {Map<string, { wins: number; losses: number }>} standings - Current standings map.
  * @param {Set<string>} facedSet - Set of already-faced pair keys (to avoid rematches).
+ * @param {Map<string, { heat: number; aId: string; bId: string }>} [rivalryState] - Active rivalries state map.
  * @returns {MatchPairing[]} Optimized pairings with drama labels added.
  *
  * @example
