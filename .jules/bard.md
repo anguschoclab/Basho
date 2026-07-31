@@ -26,3 +26,8 @@
 **Discovery:** Expanding `media.streaks` required updating a test helper `isStreakLine` in `src/tests/unit/engine/bout/boutNarrative.streak.test.ts` which had hardcoded exact substrings of the old 2 templates to detect streak lines in the PbP.
 **Rule:** When adding new narrative text variants to domains heavily relied on in unit tests, be prepared to adjust test utility matching functions.
 **Check:** Run `npx vitest run <related_test>` and manually update any hardcoded text expectations to include your new variants.
+## 2026-07-31 - [Expanding Milestone Narratives]
+
+**Discovery:** High-frequency milestone events like kachi-koshi and make-koshi each had only 3 variants, leading to rapid repetition since every rikishi hits one of these states every tournament.
+**Rule:** When expanding high-frequency JSON text arrays, use exact merge replacements to avoid formatting shifts caused by generic JSON stringifiers.
+**Check:** Always write a loop in a scratchpad script calling BardEngine.resolve hundreds of times to ensure tokens don't leak literally before committing.
