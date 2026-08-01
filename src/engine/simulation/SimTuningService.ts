@@ -171,9 +171,20 @@ export const SimTuningService = {
       if (o.formerRikishiId) newOyakataFromRikishi++;
     }
 
-    const myoseki = world.myosekiMarket ? Object.values(world.myosekiMarket.stocks) : [];
-    const heldMyoseki = myoseki.filter((m) => m.status === "held" || m.status === "leased").length;
-    const myosekiSaturation = myoseki.length > 0 ? (heldMyoseki / myoseki.length) * 100 : 0;
+    let myosekiTotal = 0;
+    let heldMyoseki = 0;
+    if (world.myosekiMarket?.stocks) {
+      for (const key in world.myosekiMarket.stocks) {
+        if (Object.prototype.hasOwnProperty.call(world.myosekiMarket.stocks, key)) {
+          const m = world.myosekiMarket.stocks[key];
+          myosekiTotal++;
+          if (m.status === "held" || m.status === "leased") {
+            heldMyoseki++;
+          }
+        }
+      }
+    }
+    const myosekiSaturation = myosekiTotal > 0 ? (heldMyoseki / myosekiTotal) * 100 : 0;
 
     const promotionRate =
       retiredRikishi.length > 0 ? (newOyakataFromRikishi / retiredRikishi.length) * 100 : 0;
