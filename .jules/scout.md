@@ -62,3 +62,8 @@
 **Gap:** Several `phase*` weekly and pre-basho tick modules were completely untested, relying solely on integration tests to catch if they failed.
 **Learning:** Phase modules usually delegate heavily to service modules. Their role is mostly orchestrating dependencies and routing state impacts. However, even orchestration code can break if it misinterprets constraints (like skipping if `cyclePhase !== 'pre_basho'`).
 **Pattern:** Provide unit tests for tick phase modules by mocking their underlying service calls with `vi.mock()` and verifying that the orchestrator calls them correctly, handles its early-exit conditionals (like `cyclePhase`), and translates service outputs into the expected `StateImpact`.
+
+## 2025-02-27 - Scout: test monthly facility maintenance
+**Gap:** `processFacilitiesMaintenance` inside `maintenance.ts` lacked its own explicit unit tests, meaning the boundary of insufficient funds and minimum facility level decay was unverified.
+**Learning:** It generates the `FACILITY_DEGRADED` event and directly patches the `heyaUpdates` object when funds are short, using `createImpactBuilder` for events.
+**Pattern:** For modules relying on mutable `heyaUpdates` objects, provide a `heyaUpdates` dummy object, check it after the function executes to verify scalar mutations (like facilities or funds), and inspect the `ImpactBuilder`'s output for generated events.
