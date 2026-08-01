@@ -1,6 +1,8 @@
 import { useMemo, useCallback } from "react";
 import { useGameStore } from "@/store/gameStore";
 import { Helmet } from "react-helmet";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Loader2, AlertCircle } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { OFFICE_TABS } from "@/constants/ui/navigation";
 import { PageHeader } from "@/components/layout/control-center";
@@ -119,8 +121,8 @@ export default function EconomyPage() {
   if (!world) {
     return (
       <AppLayout subNavTabs={OFFICE_TABS} activeSubTab="economy" pageTitle="Financial Management">
-        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-muted-foreground">
-          <p className="text-sm font-display italic uppercase tracking-widest">Loading...</p>
+        <div className="flex flex-col items-center justify-center min-h-[60vh]">
+          <EmptyState icon={Loader2} title="Loading Finances" description="Calculating financial health and projections..." className="animate-pulse" />
         </div>
       </AppLayout>
     );
@@ -129,8 +131,8 @@ export default function EconomyPage() {
   if (!playerHeya) {
     return (
       <AppLayout subNavTabs={OFFICE_TABS} activeSubTab="economy" pageTitle="Financial Management">
-        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-muted-foreground">
-          <p className="text-sm font-display italic uppercase tracking-widest">No heya selected.</p>
+        <div className="flex flex-col items-center justify-center min-h-[60vh]">
+          <EmptyState icon={AlertCircle} title="No Stable Selected" description="You must be managing a stable to view financial records." />
         </div>
       </AppLayout>
     );
