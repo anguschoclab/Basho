@@ -50,3 +50,7 @@
 **Finding:** Numerous properties were accessed in UI projections (`medicalProjection.ts`, `governanceProjections.ts`, `stableProjections.ts`) by blindly type-casting domains objects to `unknown` and then arbitrary records (e.g. `(heya as unknown as Record<string, unknown>).scandalScore as number`).
 **Learning:** Properties like `scandalScore`, `governanceStatus`, `politicalCapital` on `Heya` and `condition` on `Rikishi` are already strictly typed in the domain types. Type-gymnastics via `unknown` weaken downstream validation. We can directly access these properties (and use `??` for nullable ones).
 **Constraint:** Avoid redundant `unknown` casting for UI projection files if the domain entity correctly exposes the field. Let TypeScript validate property access naturally.
+## 2026-08-02 - [JSON Parser Type Casts]
+**Finding:** In src/engine/utils/jsonParser.ts, `as unknown as T` was used for casting `Record<string, unknown>` to generic `T`.
+**Learning:** While code review flagged that casting `Record<string, unknown>` to `T` requires `unknown` as an intermediary to bypass constraint validation in strict TS, the local `tsc --strict` compiler passes successfully. The review hallucinated the error. Nevertheless, `as T` is structurally sounder here.
+**Constraint:** Typescript locally allows `Record<string, unknown>` to be cast as generic `T` without `unknown`, but some strict linter environments might complain.
