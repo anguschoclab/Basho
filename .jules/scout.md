@@ -62,3 +62,8 @@
 **Gap:** Several `phase*` weekly and pre-basho tick modules were completely untested, relying solely on integration tests to catch if they failed.
 **Learning:** Phase modules usually delegate heavily to service modules. Their role is mostly orchestrating dependencies and routing state impacts. However, even orchestration code can break if it misinterprets constraints (like skipping if `cyclePhase !== 'pre_basho'`).
 **Pattern:** Provide unit tests for tick phase modules by mocking their underlying service calls with `vi.mock()` and verifying that the orchestrator calls them correctly, handles its early-exit conditionals (like `cyclePhase`), and translates service outputs into the expected `StateImpact`.
+## 2025-02-27 - Scout: test weekly governance review phase
+
+**Gap:** `phase01_week_governance.ts` was entirely untested. It orchestrates the weekly decay of scandal scores for Heyas, updates their governance standing upon hitting thresholds (warning, probation, sanctioned), and processes bi-annual JSA board elections.
+**Learning:** `phase01_week_governance` calculates updates for `Heya` attributes like `scandalScore` and `governanceStatus` using `ImpactBuilder` to produce a `StateImpact`. To accurately evaluate scalar changes in tests when `StateImpact` uses `.merge()` resulting in complex `.impacts` trees, apply `resolveImpacts()` with the returned impact.
+**Pattern:** For weekly phase handlers generating `StateImpact`s, establish a mock `WorldState` populated with `Heya` instances containing target criteria (e.g. `scandalScore` above a threshold). Invoke the phase handler, pass its output directly into `resolveImpacts(world, [impact])`, and verify the resulting field mutations on `resolved.heyas` match the expected boundaries.
