@@ -517,12 +517,18 @@
     "banzuke_movement_standard_promotion": [
       "%SHIKONA% moves up the banzuke — from %FROM% to %TO%.",
       "A promotion for %SHIKONA%: %FROM% to %TO%. Steady progress up the ranks.",
-      "The banzuke shifts: %SHIKONA% rises from %FROM% to %TO%."
+      "The banzuke shifts: %SHIKONA% rises from %FROM% to %TO%.",
+      "%SHIKONA% climbs to %TO%, leaving %FROM% behind after a solid basho.",
+      "Progress for %SHIKONA%, ascending from %FROM% to %TO% on the new banzuke.",
+      "The official rankings confirm %SHIKONA%'s rise from %FROM% to %TO%."
     ],
     "banzuke_movement_demotion": [
       "%SHIKONA% drops down the banzuke — from %FROM% to %TO%.",
       "A demotion for %SHIKONA%: %FROM% to %TO%. The road back starts now.",
-      "The banzuke falls for %SHIKONA%: %FROM% to %TO%. A basho to forget."
+      "The banzuke falls for %SHIKONA%: %FROM% to %TO%. A basho to forget.",
+      "A setback for %SHIKONA%, slipping from %FROM% down to %TO%.",
+      "The new rankings show %SHIKONA% falling to %TO% from %FROM%.",
+      "%SHIKONA% pays the price for a make-koshi, demoted from %FROM% to %TO%."
     ]
   }
 }

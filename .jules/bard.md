@@ -26,3 +26,8 @@
 **Discovery:** Expanding `media.streaks` required updating a test helper `isStreakLine` in `src/tests/unit/engine/bout/boutNarrative.streak.test.ts` which had hardcoded exact substrings of the old 2 templates to detect streak lines in the PbP.
 **Rule:** When adding new narrative text variants to domains heavily relied on in unit tests, be prepared to adjust test utility matching functions.
 **Check:** Run `npx vitest run <related_test>` and manually update any hardcoded text expectations to include your new variants.
+
+## 2025-08-02 - Expanding Banzuke Movement Narrative Variety
+**Discovery:** The `banzuke_movement_standard_promotion` and `banzuke_movement_demotion` arrays in `src/engine/bard/domains/events.json` had very limited variety (3 each), leading to repetition during post-tournament banzuke updates.
+**Rule:** When expanding high-frequency narrative arrays like banzuke updates, reuse existing tokens (`%SHIKONA%`, `%FROM%`, `%TO%`) strictly as they are supplied by `generateBanzukeMovementNarrative`.
+**Check:** Verify that `BardEngine` correctly resolves the new text and doesn't leak literal tokens using a test script before committing.
