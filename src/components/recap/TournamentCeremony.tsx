@@ -7,6 +7,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { Trophy, Star, Medal, Crown, Award, Zap, Building } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { BashoResult } from "@/engine/types/basho";
@@ -149,9 +150,7 @@ export function TournamentCeremony({
                 </div>
               ))}
               {!junYusho.length && (
-                <p className="text-center py-8 text-xs italic text-muted-foreground opacity-50">
-                  No runners-up recorded.
-                </p>
+                <EmptyState icon={Medal} title="No runners-up recorded." compact />
               )}
             </div>
           </CardContent>
@@ -202,8 +201,8 @@ export function TournamentCeremony({
                   </div>
                 ))
               ) : (
-                <div className="col-span-2 text-center py-8 text-xs italic text-muted-foreground opacity-50">
-                  No kinboshi this tournament.
+                <div className="col-span-2">
+                  <EmptyState icon={Star} title="No kinboshi this tournament." compact />
                 </div>
               )}
             </div>

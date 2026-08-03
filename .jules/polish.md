@@ -1,5 +1,3 @@
-# Polish Learnings Log
-
 ## 2024-05-15 - Empty State Consistency
 
 **Issue:** Many widgets hardcode their own empty states instead of using `EmptyState`.
@@ -47,6 +45,7 @@
 **Issue:** `ListCard` hardcoded an empty state paragraph instead of using the standard `EmptyState` component.
 **Learning:** Shared UI layout components like `ListCard` must enforce the same `EmptyState` consistency rules as standalone dashboard widgets.
 **Rule:** Ensure all reusable list container components, not just top-level widgets, rely on `@/components/ui/EmptyState` for empty data fallbacks.
+
 ## 2025-02-05 - Use Standard EmptyState Component
 **Issue:** Hardcoded empty state implementations were found in various components like `RivalriesEmptyState`, creating visual inconsistencies across the app.
 **Learning:** Some views manually re-implemented empty state layouts instead of using the standard `EmptyState` component.
@@ -56,7 +55,13 @@
 **Issue:** `PreBashoAssessment` was built with custom `Card` wrapping and layout instead of `BaseWidget`, leading to inconsistent padding and headers on the dashboard.
 **Learning:** Reusable dashboard components should use `BaseWidget` as the primary wrapper to provide unified header action/content placement and identical card visuals.
 **Rule:** Always use `BaseWidget` as the top-level element for dashboard widgets.
+
 ## 2026-07-29 - Standardized EmptyState in HallOfFamePage
 **Issue:** The Hall of Fame page used hardcoded div elements for empty states ("No inductees yet", "The Hall stands empty", "No world loaded") instead of the project's standard EmptyState component.
 **Learning:** Reusing the EmptyState component ensures consistent padding, typography, and visual hierarchy across all screens when data is absent.
 **Rule:** Always use the global EmptyState component (`@/components/ui/EmptyState`) for 'no data' fallbacks instead of hardcoding custom elements.
+
+## 2026-07-29 - Standardized EmptyState in Recap Pages
+**Issue:** The Recap pages (`TournamentCeremony`, `NarrativeSummary`) used hardcoded text elements for empty states ("No runners-up recorded.", "No kinboshi this tournament.", "No veteran departures recorded this basho.", "No disciplinary or political directives issued.") instead of the standard EmptyState component.
+**Learning:** Recap sections should follow the same pattern as dashboard widgets to maintain layout consistency.
+**Rule:** Always use the global `EmptyState` component (`@/components/ui/EmptyState`) with `compact` mode for missing data (e.g. no kinboshi, no retirements) in tournament recap pages. Make sure to import all required icons when swapping to EmptyState.
