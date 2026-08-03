@@ -49,7 +49,7 @@ export function projectMedicalUIDigest(world: WorldState) {
           ? "cautious"
           : "safe";
 
-  const morale = (heya.welfareState as unknown as { morale?: number })?.morale ?? 50;
+  const morale = heya.welfareState?.morale ?? 50;
   const moraleBand: "inspired" | "content" | "neutral" | "disgruntled" | "mutinous" =
     morale >= 80
       ? "inspired"
