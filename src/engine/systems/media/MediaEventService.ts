@@ -71,7 +71,6 @@ export function generateGovernanceHeadline(args: {
 /**
  * Handles a media event choice and applies its effects.
  * Returns StateImpact describing event handling instead of mutating state directly.
- * Note: governanceLog updates are handled separately as it's not a supported world field in ImpactBuilder.
  */
 export function handleMediaEvent(world: WorldState, eventId: string, choice: string): StateImpact {
   const builder = createImpactBuilder("handleMediaEvent");

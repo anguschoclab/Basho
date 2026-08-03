@@ -58,3 +58,9 @@
 **Gap:** The JSDoc for `advanceOneDay` claimed daily micro-phases include the market phase, and explicitly stated that Basho combat resolution is NOT handled in the tick pipeline.
 **Truth:** The monthly market phase now only runs weekly on month boundaries (P3.7). Furthermore, `phase01_basho_bouts` is explicitly injected into the daily pipeline during `active_basho` to handle combat simulation internally.
 **Watch:** Other high-level orchestration comments that haven't been updated since the P3.7 and active_basho bout injection changes.
+
+## 2024-07-20 - [MediaEventService] Stale Governance Log Support Doc
+
+**Gap:** The JSDoc for `handleMediaEvent` claimed "governanceLog updates are handled separately as it's not a supported world field in ImpactBuilder."
+**Truth:** `governanceLog` is fully supported by `ImpactBuilder.updateWorldField` and is explicitly listed in `StateImpact.worldFields` and `StateImpact.arrayAppends`. The code in `handleMediaEvent` itself calls `builder.updateWorldField("governanceLog", updatedGovernanceLog);`.
+**Watch:** Other parts of the code with comments claiming certain fields are unsupported by ImpactBuilder.
