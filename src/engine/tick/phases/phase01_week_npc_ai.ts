@@ -66,12 +66,11 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
 
       // Handle media events for NPCs
       if (world.governanceLog) {
-        const mediaEvents = world.governanceLog.filter(
-          (r) => r.heyaId === heya.id && !r.playerChoice
-        );
         const mediaStrat = getMediaStrategy(oyakata.archetype);
-        for (const event of mediaEvents) {
-          builder.merge(mediaStrat.evaluateMediaEventResponse(world, heya, oyakata, event.id));
+        for (const event of world.governanceLog) {
+          if (event.heyaId === heya.id && !event.playerChoice) {
+            builder.merge(mediaStrat.evaluateMediaEventResponse(world, heya, oyakata, event.id));
+          }
         }
       }
 
@@ -180,9 +179,12 @@ function maybeAssignNPCSparringPairs(
   const existingState = world.sparringPairs?.get(heya.id);
   const pairedIds = new Set<string>();
   if (existingState) {
-    for (const pair of Object.values(existingState.pairs)) {
-      pairedIds.add(pair.aId);
-      pairedIds.add(pair.bId);
+    for (const key in existingState.pairs) {
+      if (Object.prototype.hasOwnProperty.call(existingState.pairs, key)) {
+        const pair = existingState.pairs[key];
+        pairedIds.add(pair.aId);
+        pairedIds.add(pair.bId);
+      }
     }
   }
 
