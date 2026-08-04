@@ -17,3 +17,6 @@
 ## 2024-07-28 - Interactive Non-Button Elements Need Keyboard Support
 **Learning:** In React, custom components acting as buttons (like clickable `<th>` headers for sorting or `<Badge>` components for filtering) often miss keyboard accessibility out of the box because they lack native focus and key handling.
 **Action:** When adding `onClick` to non-button elements, always pair it with `role="button"`, `tabIndex={0}`, a keyboard handler (`onKeyDown` for "Enter" and "Space"), and explicit `focus-visible` outline styles.
+## 2025-10-27 - Keyboard Accessible Yusho Contenders
+**Learning:** In the Dashboard Yusho Race widget, contender items act as navigation buttons but were missing complete keyboard support, preventing non-mouse users from selecting rikishi to view their profiles.
+**Action:** Always ensure that custom list elements behaving like interactive controls have `role="button"`, `tabIndex={0}`, `onKeyDown` handlers for Enter/Space, and visible focus styles (`focus-visible`).
