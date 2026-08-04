@@ -50,3 +50,9 @@
 **Finding:** Numerous properties were accessed in UI projections (`medicalProjection.ts`, `governanceProjections.ts`, `stableProjections.ts`) by blindly type-casting domains objects to `unknown` and then arbitrary records (e.g. `(heya as unknown as Record<string, unknown>).scandalScore as number`).
 **Learning:** Properties like `scandalScore`, `governanceStatus`, `politicalCapital` on `Heya` and `condition` on `Rikishi` are already strictly typed in the domain types. Type-gymnastics via `unknown` weaken downstream validation. We can directly access these properties (and use `??` for nullable ones).
 **Constraint:** Avoid redundant `unknown` casting for UI projection files if the domain entity correctly exposes the field. Let TypeScript validate property access naturally.
+
+## 2025-10-24 - [Tighten Type in LegacyService and BloodlineService]
+
+**Finding:** `LegacyService.ts` and `BloodlineService.ts` used `as unknown as Record<string, number>` to mutate numeric stats dynamically.
+**Learning:** We can replace this with strictly typing the stat parameter as `keyof RikishiStats` along with type guards. Iterating over object keys shouldn't force us to break type definitions completely when we can type cast safely to `keyof RikishiStats`.
+**Constraint:** Use `keyof Type` to index dynamically into objects with known structure, instead of overriding the types completely with `as unknown as Record<string, number>`.
