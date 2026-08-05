@@ -63,7 +63,7 @@ const ALL_DOMAIN_NAMES = [
   "system", "events", "rikishi", "npc", "ui", "h2h", "training",
   "oyakata", "strategy", "dynasty", "pre_bout", "post_bout", "kyujo",
   "sansho_ceremony", "interview", "ydc_accountability",
-  "post_basho_press", "playoff",
+  "post_basho_press", "playoff", "dohyo_iri",
 ];
 
 async function loadDomainsInternal(): Promise<DomainMap> {

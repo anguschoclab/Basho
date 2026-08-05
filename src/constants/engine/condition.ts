@@ -85,3 +85,6 @@ export const DOUBLE_WEEK_REDUCTION = 2;
 
 /** Single week reduction value */
 export const SINGLE_WEEK_REDUCTION = 1;
+
+/** Fatigue added per tick of bout duration (sekitori only, loser gets 1.5x) */
+export const BOUT_DURATION_FATIGUE_PER_TICK = 0.1;

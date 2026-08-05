@@ -22,6 +22,7 @@ import { KihakuService } from "../systems/governance/KihakuService";
 import { createEmptyAlmanacRecord } from "../almanac/narrativeEnrichment";
 import { MAX_PROMOTION_HISTORY } from "../almanac/types";
 import type { PromotionHistoryEntry } from "../almanac/types";
+import { assignDohyoIriStyle } from "../governance/dohyoIri";
 
 /**
  * Helper to retrieve the current basho state from the world.
@@ -354,6 +355,30 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
     );
   }
 
+  // Yokozuna promotion: assign dohyo-iri ceremony style (Gap 5)
+  for (const evt of result.events) {
+    if (evt.kind !== "promotion") continue;
+    const newEntry = result.newBanzuke.find((e) => e.rikishiId === evt.rikishiId);
+    if (!newEntry || newEntry.position.rank !== "yokozuna") continue;
+    const promotedRikishi = getRikishi(world, evt.rikishiId);
+    if (!promotedRikishi) continue;
+    const styleUpdate = assignDohyoIriStyle(promotedRikishi, "yokozuna", world.seed ?? "default");
+    if (styleUpdate.dohyoIriStyle) {
+      builder.updateRikishi(evt.rikishiId, styleUpdate);
+      builder.logEvent(
+        "BASHO_STATUS",
+        "promotion",
+        {
+          status: "dohyo_iri_assignment",
+          description: `${promotedRikishi.shikona} has been assigned the ${styleUpdate.dohyoIriStyle} dohyo-iri style.`,
+          rikishiId: evt.rikishiId,
+          dohyoIriStyle: styleUpdate.dohyoIriStyle,
+        },
+        { rikishiId: evt.rikishiId, heyaId: promotedRikishi.heyaId, importance: "headline" }
+      );
+    }
+  }
+
   // Banzuke movement narrative (4.1): generate narrative lines for notable promotions/demotions
   const movementNarratives = generateBanzukeMovementNarrative(
     result.events,
@@ -421,19 +446,22 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
   builder.updateWorldField("ozekiKadoban", result.updatedOzekiKadoban);
 
   // Track consecutiveStrongSekiwake for ozeki promotion qualification (4.2)
+  // Updated: uses 10+ wins threshold to align with 33-win/10-in-last criteria
   for (const newEntry of result.newBanzuke) {
     const r = getRikishi(world, newEntry.rikishiId);
     if (!r) continue;
     const perf = perfMap.get(newEntry.rikishiId);
     const wins = perf?.wins ?? 0;
     const isSanyaku = r.rank === "sekiwake" || r.rank === "komusubi";
-    if (isSanyaku && wins >= 11) {
+    if (isSanyaku && wins >= 10) {
       builder.updateRikishi(newEntry.rikishiId, {
         consecutiveStrongSekiwake: (r.consecutiveStrongSekiwake ?? 0) + 1,
+        sekiwakeThreeBashoWins: perf?.sekiwakeThreeBashoWins ?? 0,
       });
-    } else if (isSanyaku && wins < 11) {
+    } else if (isSanyaku && wins < 10) {
       builder.updateRikishi(newEntry.rikishiId, {
         consecutiveStrongSekiwake: 0,
+        sekiwakeThreeBashoWins: perf?.sekiwakeThreeBashoWins ?? 0,
       });
     }
   }

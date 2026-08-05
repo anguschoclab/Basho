@@ -145,6 +145,10 @@ export interface Rikishi {
   isSonOfStablemaster?: boolean;
   /** Dohyo-iri ceremony style assigned on yokozuna promotion */
   dohyoIriStyle?: "unryu" | "shiranui";
+  /** True after the rikishi has completed the maezumo assessment stage */
+  maezumoCompleted?: boolean;
+  /** Rolling 3-basho win total for sekiwake/komusubi for Ozeki promotion qualification */
+  sekiwakeThreeBashoWins?: number;
 
   careerHistory: CareerSnapshot[];
   milestones: Milestone[];

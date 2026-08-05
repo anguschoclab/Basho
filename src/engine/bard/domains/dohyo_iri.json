@@ -1,0 +1,17 @@
+{
+  "dohyo_iri_unryu": [
+    "%SHIKONA% performs the Unryu-style dohyo-iri — the rising dragon ceremony, arms spread wide in the ancient form.",
+    "The Unryu tradition flows through %SHIKONA% as he ascends the dohyo, the tsuna ropes sweeping in grand arcs.",
+    "%SHIKONA% honors the Unryu lineage — one hand leading, one following, the dragon's path traced in salt and ceremony."
+  ],
+  "dohyo_iri_shiranui": [
+    "%SHIKONA% performs the Shiranui-style dohyo-iri — both arms raised together, the fire-light ceremony of the unknown flame.",
+    "The Shiranui form blazes through %SHIKONA% as he steps onto the dohyo, arms lifted in unity above the sacred rope.",
+    "%SHIKONA% embodies the Shiranui tradition — both hands raised as one, the fire that lights the way forward."
+  ],
+  "dohyo_iri_assignment": [
+    "%SHIKONA% has been conferred the %STYLE% dohyo-iri style — a ceremony style that will define his yokozuna legacy.",
+    "The %STYLE% style is bestowed upon %SHIKONA% — the form he will carry for the rest of his grand championship career.",
+    "Tradition assigns %SHIKONA% the %STYLE% dohyo-iri — the ceremonial dance that marks a yokozuna's entrance into immortality."
+  ]
+}

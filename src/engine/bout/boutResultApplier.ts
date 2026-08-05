@@ -20,7 +20,7 @@ import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 import { checkMentorMenteeBout } from "../systems/training/MentorshipService";
 import { getRikishi } from "../queries";
-import { BOUT_DURATION_FATIGUE_PER_TICK } from "../../constants/engine/physics";
+import { BOUT_DURATION_FATIGUE_PER_TICK } from "../../constants/engine/condition";
 
 /**
  * Apply the result of a single bout to the world.

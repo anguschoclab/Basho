@@ -6,6 +6,7 @@ import { TalentPoolType, TalentCandidate, TalentPoolState } from "../../types/ta
 import { convertCandidateToRikishi } from "./CandidateBuilder";
 import { RNGRegistry } from "../../core/RNGRegistry";
 import { getHeya } from "../../queries";
+import { assessMaezumo } from "./MaezumoService";
 
 /**
  * Internal helper for materialization that tracks state updates during a loop.
@@ -27,6 +28,15 @@ export function materializeCandidateToRikishiInternal(
 
   const rng = RNGRegistry.getSystemRNG(world, "scouting", `materialize_${candidateId}`);
   const rikishi = convertCandidateToRikishi({ candidate, rng, currentYear: world.year, heyaId });
+
+  // Apply maezumo assessment to determine initial jonokuchi rankNumber
+  const maezumoResult = assessMaezumo(rikishi, world.seed ?? "default");
+  if (maezumoResult.rankNumber !== undefined) {
+    rikishi.rankNumber = maezumoResult.rankNumber;
+  }
+  if (maezumoResult.maezumoCompleted) {
+    rikishi.maezumoCompleted = true;
+  }
 
   builder.addRikishi(rikishi);
   const heya = getHeya(world, heyaId);

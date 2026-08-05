@@ -449,6 +449,3 @@ export const STAT_CLAMP_MIN = 0;
 
 /** Stat clamp maximum */
 export const STAT_CLAMP_MAX = 100;
-
-/** Fatigue added per tick of bout duration (sekitori only, loser gets 1.5x) */
-export const BOUT_DURATION_FATIGUE_PER_TICK = 0.1;

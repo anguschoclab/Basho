@@ -77,6 +77,16 @@ export function computeMovementUnits(
     return Math.max(-30, Math.min(25, adjusted));
   }
 
+  // Jonokuchi: special movement floor — slight make-koshi (3-4) gets zero movement,
+  // only severe make-koshi (1-6 or 0-7) produces negative movement
+  if (rank === "jonokuchi") {
+    const wins = perf?.wins ?? 0;
+    // 3-4 or better: floor at 0 (no demotion for near-kachi-koshi)
+    if (wins >= 3) return Math.max(0, Math.min(25, move));
+    // 0-7 or 1-6: allow negative movement (punished for total failure)
+    return Math.max(-30, Math.min(25, move));
+  }
+
   return Math.max(-30, Math.min(25, move));
 }
 
