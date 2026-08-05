@@ -4,7 +4,7 @@
  * Manages the mochikyukin (cumulative bonus) system for sekitori.
  *
  * Mochikyukin is a JSA incentive system where sekitori earn points for:
- * - Per net win above .500: 0.5 points
+ * - Per kachi-nokori (wins above 8): 0.5 points
  * - Yusho (championship): 30 points
  * - Zensho-yusho (perfect championship): +50 points
  * - Kinboshi (v Yokozuna): 10 points
@@ -39,6 +39,7 @@ export function accumulateMochikyukinPoints(
   rikishiId: Id,
   bashoResults: {
     netWins: number;
+    kachiNokori: number;
     isYusho: boolean;
     isJunYusho: boolean;
     isZenshoYusho: boolean;
@@ -66,9 +67,9 @@ export function accumulateMochikyukinPoints(
 
   let pointsEarned = 0;
 
-  // Per net win above .500 (negative clamped to 0)
-  if (bashoResults.netWins > 0) {
-    pointsEarned += bashoResults.netWins * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN;
+  // Per kachi-nokori (wins above 8) — aligned to real JSA system
+  if (bashoResults.kachiNokori > 0) {
+    pointsEarned += bashoResults.kachiNokori * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN;
   }
 
   // Yusho (championship)

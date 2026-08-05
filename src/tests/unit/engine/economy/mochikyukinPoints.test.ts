@@ -35,12 +35,13 @@ function makeSekitori(id: string, overrides: Partial<any> = {}) {
   });
 }
 
-describe("accumulateMochikyukinPoints — per-net-win model", () => {
-  it("8-7 record (netWins=1) → +0.5 points", () => {
+describe("accumulateMochikyukinPoints — per-kachi-nokori model", () => {
+  it("8-7 record (kachiNokori=0) → +0 points", () => {
     const r = makeSekitori("r1");
     const world = makeMockWorld({ rikishi: new Map([["r1", r]]) });
     const impact = accumulateMochikyukinPoints(world, "r1", {
       netWins: 1,
+      kachiNokori: 0,
       isYusho: false,
       isJunYusho: false,
       isZenshoYusho: false,
@@ -48,14 +49,15 @@ describe("accumulateMochikyukinPoints — per-net-win model", () => {
     } as any);
     const resolved = resolveImpacts(world, [impact]);
     const points = resolved.rikishi.get("r1")?.stats?.achievements?.mochikyukinPoints;
-    expect(points).toBe(MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN);
+    expect(points).toBe(0);
   });
 
-  it("10-5 record (netWins=5) → +2.5 points", () => {
+  it("10-5 record (kachiNokori=2) → +1.0 points", () => {
     const r = makeSekitori("r1");
     const world = makeMockWorld({ rikishi: new Map([["r1", r]]) });
     const impact = accumulateMochikyukinPoints(world, "r1", {
       netWins: 5,
+      kachiNokori: 2,
       isYusho: false,
       isJunYusho: false,
       isZenshoYusho: false,
@@ -63,14 +65,15 @@ describe("accumulateMochikyukinPoints — per-net-win model", () => {
     } as any);
     const resolved = resolveImpacts(world, [impact]);
     const points = resolved.rikishi.get("r1")?.stats?.achievements?.mochikyukinPoints;
-    expect(points).toBe(5 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN);
+    expect(points).toBe(2 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN);
   });
 
-  it("7-8 record (netWins=-1) → +0 points (negative clamped)", () => {
+  it("7-8 record (kachiNokori=0) → +0 points (negative clamped)", () => {
     const r = makeSekitori("r1");
     const world = makeMockWorld({ rikishi: new Map([["r1", r]]) });
     const impact = accumulateMochikyukinPoints(world, "r1", {
       netWins: -1,
+      kachiNokori: 0,
       isYusho: false,
       isJunYusho: false,
       isZenshoYusho: false,
@@ -86,6 +89,7 @@ describe("accumulateMochikyukinPoints — per-net-win model", () => {
     const world = makeMockWorld({ rikishi: new Map([["r1", r]]) });
     const impact = accumulateMochikyukinPoints(world, "r1", {
       netWins: 5,
+      kachiNokori: 2,
       isYusho: true,
       isJunYusho: false,
       isZenshoYusho: false,
@@ -93,7 +97,7 @@ describe("accumulateMochikyukinPoints — per-net-win model", () => {
     } as any);
     const resolved = resolveImpacts(world, [impact]);
     const points = resolved.rikishi.get("r1")?.stats?.achievements?.mochikyukinPoints;
-    expect(points).toBe(5 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN + MOCHIKYUKIN_POINTS_YUSHO);
+    expect(points).toBe(2 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN + MOCHIKYUKIN_POINTS_YUSHO);
   });
 
   it("jun-yusho adds 5 points", () => {
@@ -101,6 +105,7 @@ describe("accumulateMochikyukinPoints — per-net-win model", () => {
     const world = makeMockWorld({ rikishi: new Map([["r1", r]]) });
     const impact = accumulateMochikyukinPoints(world, "r1", {
       netWins: 3,
+      kachiNokori: 1,
       isYusho: false,
       isJunYusho: true,
       isZenshoYusho: false,
@@ -109,7 +114,7 @@ describe("accumulateMochikyukinPoints — per-net-win model", () => {
     const resolved = resolveImpacts(world, [impact]);
     const points = resolved.rikishi.get("r1")?.stats?.achievements?.mochikyukinPoints;
     expect(points).toBe(
-      3 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN + MOCHIKYUKIN_POINTS_JUN_YUSHO
+      1 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN + MOCHIKYUKIN_POINTS_JUN_YUSHO
     );
   });
 
@@ -118,6 +123,7 @@ describe("accumulateMochikyukinPoints — per-net-win model", () => {
     const world = makeMockWorld({ rikishi: new Map([["r1", r]]) });
     const impact = accumulateMochikyukinPoints(world, "r1", {
       netWins: 2,
+      kachiNokori: 1,
       isYusho: false,
       isJunYusho: false,
       isZenshoYusho: false,
@@ -126,7 +132,7 @@ describe("accumulateMochikyukinPoints — per-net-win model", () => {
     const resolved = resolveImpacts(world, [impact]);
     const points = resolved.rikishi.get("r1")?.stats?.achievements?.mochikyukinPoints;
     expect(points).toBe(
-      2 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN + 3 * MOCHIKYUKIN_POINTS_KINBOSHI
+      1 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN + 3 * MOCHIKYUKIN_POINTS_KINBOSHI
     );
   });
 
@@ -135,6 +141,7 @@ describe("accumulateMochikyukinPoints — per-net-win model", () => {
     const world = makeMockWorld({ rikishi: new Map([["r1", r]]) });
     const impact = accumulateMochikyukinPoints(world, "r1", {
       netWins: 15,
+      kachiNokori: 7,
       isYusho: true,
       isJunYusho: false,
       isZenshoYusho: true,
@@ -143,7 +150,7 @@ describe("accumulateMochikyukinPoints — per-net-win model", () => {
     const resolved = resolveImpacts(world, [impact]);
     const points = resolved.rikishi.get("r1")?.stats?.achievements?.mochikyukinPoints;
     expect(points).toBe(
-      15 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN +
+      7 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN +
         MOCHIKYUKIN_POINTS_YUSHO +
         MOCHIKYUKIN_POINTS_ZENSHO_YUSHO
     );
@@ -167,6 +174,7 @@ describe("accumulateMochikyukinPoints — per-net-win model", () => {
     const world = makeMockWorld({ rikishi: new Map([["r1", r]]) });
     const impact = accumulateMochikyukinPoints(world, "r1", {
       netWins: 5,
+      kachiNokori: 5,
       isYusho: true,
       isJunYusho: false,
       isZenshoYusho: false,
@@ -418,9 +426,10 @@ describe("accumulateMochikyukinPoints — cumulative accumulation", () => {
     });
     const world = makeMockWorld({ rikishi: new Map([["r1", r]]) });
 
-    // First basho: +2.5 points (5 net wins)
+    // First basho: +1.0 points (2 kachi-nokori)
     const impact1 = accumulateMochikyukinPoints(world, "r1", {
       netWins: 5,
+      kachiNokori: 2,
       isYusho: false,
       isJunYusho: false,
       isZenshoYusho: false,
@@ -428,11 +437,12 @@ describe("accumulateMochikyukinPoints — cumulative accumulation", () => {
     } as any);
     const resolved1 = resolveImpacts(world, [impact1]);
     const points1 = resolved1.rikishi.get("r1")?.stats?.achievements?.mochikyukinPoints;
-    expect(points1).toBe(10 + 5 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN);
+    expect(points1).toBe(10 + 2 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN);
 
-    // Second basho: +1.5 points (3 net wins) on top of updated total
+    // Second basho: +0.5 points (1 kachi-nokori) on top of updated total
     const impact2 = accumulateMochikyukinPoints(resolved1, "r1", {
       netWins: 3,
+      kachiNokori: 1,
       isYusho: false,
       isJunYusho: false,
       isZenshoYusho: false,
@@ -440,7 +450,7 @@ describe("accumulateMochikyukinPoints — cumulative accumulation", () => {
     } as any);
     const resolved2 = resolveImpacts(resolved1, [impact2]);
     const points2 = resolved2.rikishi.get("r1")?.stats?.achievements?.mochikyukinPoints;
-    expect(points2).toBe(10 + 5 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN + 3 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN);
+    expect(points2).toBe(10 + 2 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN + 1 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN);
   });
 });
 
