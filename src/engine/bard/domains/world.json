@@ -1,8 +1,18 @@
 {
   "venues": {
     "Tokyo": {
-      "entrance": "Day %DAY% at the Ryogoku Kokugikan.",
-      "closing": "The sun sets over the Sumida River as the fans depart."
+      "entrance": [
+        "Day %DAY% at the Ryogoku Kokugikan — the capital awaits.",
+        "The Tokyo crowd fills the Kokugikan for Day %DAY% of the tournament.",
+        "Day %DAY% begins under the suspended roof of the Ryogoku Kokugikan.",
+        "Anticipation builds in Tokyo as Day %DAY% gets underway."
+      ],
+      "closing": [
+        "The sun sets over the Sumida River as the fans depart.",
+        "The Kokugikan empties into the bustling Tokyo night.",
+        "Another day of sumo concludes in the capital.",
+        "The crowds disperse from Ryogoku as the evening begins."
+      ]
     },
     "Osaka": {
       "entrance": [
