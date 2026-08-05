@@ -17,3 +17,7 @@
 ## 2024-07-28 - Interactive Non-Button Elements Need Keyboard Support
 **Learning:** In React, custom components acting as buttons (like clickable `<th>` headers for sorting or `<Badge>` components for filtering) often miss keyboard accessibility out of the box because they lack native focus and key handling.
 **Action:** When adding `onClick` to non-button elements, always pair it with `role="button"`, `tabIndex={0}`, a keyboard handler (`onKeyDown` for "Enter" and "Space"), and explicit `focus-visible` outline styles.
+
+## 2024-05-24 - Keyboard Accessible Roster List Cards
+**Learning:** In the Stable Roster view, the main `<Card>` elements for each rikishi had `onClick` handlers but no keyboard support, making the primary roster navigation inaccessible to keyboard users.
+**Action:** Always ensure that custom interactive cards used for navigation have `role="button"`, `tabIndex={0}`, `onKeyDown` handlers for Enter/Space, and visible focus styles (`focus-visible`).
