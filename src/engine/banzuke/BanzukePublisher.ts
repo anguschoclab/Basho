@@ -286,11 +286,16 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       ? boutMetrics.opponentTiers.reduce((a: number, b: number) => a + b, 0) / boutMetrics.opponentTiers.length
       : undefined;
 
-    // Ozeki promotion detection (4.2): sekiwake/komusubi with 3 consecutive 11+ win basho
+    // Ozeki promotion detection (4.2): sanyaku with 33+ wins across last 3 basho, 10+ in current
     const isSanyakuForOzeki = rikishi?.rank === "sekiwake" || rikishi?.rank === "komusubi";
+    const recentSanyakuWins = (rikishi?.careerHistory ?? [])
+      .filter(h => h.rank === "sekiwake" || h.rank === "komusubi")
+      .slice(-2)
+      .reduce((sum, h) => sum + h.wins, 0);
+    const sekiwakeThreeBashoWins = recentSanyakuWins + stats.wins;
     const promoteToOzeki = isSanyakuForOzeki
-      && stats.wins >= 11
-      && (rikishi?.consecutiveStrongSekiwake ?? 0) >= 2;
+      && sekiwakeThreeBashoWins >= 33
+      && stats.wins >= 10;
 
     performanceList.push({
       rikishiId: id,
@@ -302,6 +307,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       specialPrizes: prizePoints,
       promoteToYokozuna,
       promoteToOzeki,
+      sekiwakeThreeBashoWins,
       kimariteUsed: boutMetrics?.kimariteUsed,
       upsetCount: boutMetrics?.upsetCount,
       avgBoutDuration,
@@ -507,6 +513,25 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
             rikishiId: newEntry.rikishiId,
             from: oldRank,
             to: newEntry.position.rank,
+          },
+          { rikishiId: newEntry.rikishiId, heyaId: rikishi.heyaId, importance: "headline" }
+        );
+      }
+
+      // Ozeki reclaim detection: demoted ozeki restored to ozeki rank (10+ win reclaim)
+      if (oldRank !== "ozeki" && newEntry.position.rank === "ozeki" && rikishi.wasDemotedFromOzeki) {
+        builder.updateRikishi(newEntry.rikishiId, {
+          wasDemotedFromOzeki: false,
+        });
+        builder.logEvent(
+          "BASHO_STATUS",
+          "promotion",
+          {
+            status: "ozeki_reclaim",
+            description: `${rikishi.shikona} has reclaimed Ozeki rank after a strong performance at Sekiwake.`,
+            rikishiId: newEntry.rikishiId,
+            from: oldRank,
+            to: "ozeki",
           },
           { rikishiId: newEntry.rikishiId, heyaId: rikishi.heyaId, importance: "headline" }
         );

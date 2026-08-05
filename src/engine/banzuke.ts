@@ -194,6 +194,13 @@ export function updateBanzuke(
     if (next.consecutiveMakeKoshi >= 2) demotedOzeki.add(e.rikishiId);
   }
 
+  // Build set of rikishi who have wasDemotedFromOzeki flag (for Ozeki reclaim logic)
+  const reclaimableOzeki = new Set<string>();
+  for (const e of currentBanzuke) {
+    const r = world.rikishi.get(e.rikishiId);
+    if (r?.wasDemotedFromOzeki) reclaimableOzeki.add(e.rikishiId);
+  }
+
   const sanyakuCounts = computeVariableSanyakuCounts(currentBanzuke, perfById, demotedOzeki);
 
   // Dynamic division capacity: scale lower divisions to the active field so no
@@ -204,9 +211,9 @@ export function updateBanzuke(
   const elite = 42 + 28; // makuuchi + juryo fixed
   const lowerPopulation = Math.max(0, fieldSize - elite);
   const HEADROOM = 8;
-  const makushita = Math.max(60, Math.ceil(lowerPopulation * 0.18) + HEADROOM);
-  const sandanme = Math.max(60, Math.ceil(lowerPopulation * 0.24) + HEADROOM);
-  const jonidan = Math.max(60, Math.ceil(lowerPopulation * 0.28) + HEADROOM);
+  const makushita = 120; // Fixed at 120 per real sumo
+  const sandanme = Math.max(60, Math.ceil(lowerPopulation * 0.25) + HEADROOM);
+  const jonidan = Math.max(60, Math.ceil(lowerPopulation * 0.40) + HEADROOM);
   const jonokuchi = Math.max(40, lowerPopulation - (makushita + sandanme + jonidan)) + HEADROOM;
   const fullTemplate = buildFullSlotTemplate(sanyakuCounts, {
     makuuchi: 42,
@@ -248,7 +255,7 @@ export function updateBanzuke(
         entry: e,
         oldKey,
         desiredKey,
-        eligibleBestTier: bestTierAllowed(e, p, updatedOzekiKadoban[e.rikishiId], demotedOzeki),
+        eligibleBestTier: bestTierAllowed(e, p, updatedOzekiKadoban[e.rikishiId], demotedOzeki, reclaimableOzeki),
       };
     })
     .sort((a, b) => {

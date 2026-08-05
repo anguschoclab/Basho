@@ -20,6 +20,7 @@ import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 import { checkMentorMenteeBout } from "../systems/training/MentorshipService";
 import { getRikishi } from "../queries";
+import { BOUT_DURATION_FATIGUE_PER_TICK } from "../../constants/engine/physics";
 
 /**
  * Apply the result of a single bout to the world.
@@ -111,6 +112,26 @@ export function applyBoutResult(
     ...basho,
     boutMetrics,
   });
+
+  // Bout-duration fatigue: longer bouts add more fatigue (sekitori only, loser gets 1.5x)
+  const isFusenshoBout = result.kimarite === "fusensho";
+  const isSekitoriBout = winner.division === "makuuchi" || winner.division === "juryo";
+  if (!isFusenshoBout && isSekitoriBout) {
+    const duration = result.duration ?? 0;
+    const winnerFatigueGain = Math.round(duration * BOUT_DURATION_FATIGUE_PER_TICK);
+    const loserFatigueGain = Math.round(duration * BOUT_DURATION_FATIGUE_PER_TICK * 1.5);
+    if (winnerFatigueGain > 0) {
+      builder.updateRikishi(winner.id, {
+        fatigue: Math.min(100, (winner.fatigue ?? 0) + winnerFatigueGain),
+      });
+    }
+    if (loserFatigueGain > 0) {
+      builder.updateRikishi(loser.id, {
+        fatigue: Math.min(100, (loser.fatigue ?? 0) + loserFatigueGain),
+      });
+    }
+  }
+
   builder.updateRikishi(winner.id, {
     careerWins: (winner.careerWins ?? 0) + 1,
     currentBashoWins: winnerBashoWins,

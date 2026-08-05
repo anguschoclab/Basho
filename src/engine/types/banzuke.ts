@@ -241,6 +241,7 @@ export interface BashoPerformance {
   opponentAvgTier?: number;
   promoteToYokozuna?: boolean;
   promoteToOzeki?: boolean;
+  sekiwakeThreeBashoWins?: number;
   kimariteUsed?: Record<string, number>;
   upsetCount?: number;
   avgBoutDuration?: number;

@@ -63,6 +63,20 @@ export function computeMovementUnits(
 
   // Maegashira and below have high volatility
   if (entry.division === "makuuchi") return Math.max(-18, Math.min(15, move));
+
+  // Makushita: rank-position dependent movement (top 20 get amplified, lower get dampened)
+  if (rank === "makushita") {
+    const rankNum = entry.position.rankNumber ?? 60;
+    const isTop = rankNum <= 20;
+    // For promotions: top-ranked get 1.5x; for demotions: top-ranked get 0.5x (less punishment)
+    // Bottom-ranked: 0.8x promotions, 1.5x demotions (more punishment)
+    const multiplier = move >= 0
+      ? (isTop ? 1.5 : 0.8)
+      : (isTop ? 0.5 : 1.5);
+    const adjusted = Math.round(move * multiplier);
+    return Math.max(-30, Math.min(25, adjusted));
+  }
+
   return Math.max(-30, Math.min(25, move));
 }
 
@@ -71,7 +85,8 @@ export function bestTierAllowed(
   entry: BanzukeEntry,
   perf: BashoPerformance | undefined,
   _ozekiState: OzekiKadobanState | undefined,
-  demotedOzeki: Set<string>
+  demotedOzeki: Set<string>,
+  reclaimableOzeki: Set<string> = new Set()
 ): number {
   const rank = entry.position.rank;
   const tier = RANK_HIERARCHY[rank].tier;
@@ -81,6 +96,10 @@ export function bestTierAllowed(
   if (rank === "ozeki" && perf?.promoteToYokozuna) return 1;
   if (rank === "sekiwake" && perf?.promoteToOzeki) return 2;
   if (rank === "sekiwake" && (perf?.wins ?? 0) >= 11) return 2;
+  // Ozeki reclaim: demoted ozeki at sekiwake with 10+ wins can return to ozeki
+  if (rank === "sekiwake" && reclaimableOzeki.has(entry.rikishiId) && (perf?.wins ?? 0) >= 10) return 2;
+  // 33-win Ozeki promotion: sekiwake with 10+ wins and 33+ total across 3 basho
+  if (rank === "sekiwake" && (perf?.wins ?? 0) >= 10 && (perf?.sekiwakeThreeBashoWins ?? 0) >= 33) return 2;
   if (rank === "komusubi" && perf?.promoteToOzeki) return 2;
   if (rank === "komusubi" && (perf?.wins ?? 0) >= 10) return 3;
 
@@ -88,6 +107,14 @@ export function bestTierAllowed(
     const wins = perf?.wins ?? 0;
     if (perf?.yusho) return 3;
     if ((entry.position.rankNumber ?? 99) <= 4 && wins >= 10) return 4;
+  }
+
+  // Jonokuchi special promotion: yusho → sandanme (tier 8), kachi-koshi → jonidan (tier 9)
+  if (rank === "jonokuchi") {
+    const wins = perf?.wins ?? 0;
+    const threshold = kachiKoshiThreshold(rank);
+    if (perf?.yusho) return 8;
+    if (wins >= threshold) return 9;
   }
 
   return tier;

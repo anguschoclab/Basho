@@ -50,4 +50,41 @@ describe("updateBanzuke division capacity", () => {
       0.4
     );
   });
+
+  it("makushita division size is exactly 120", () => {
+    const { world, banzuke, perf } = makeWorld(800);
+    const result = updateBanzuke(banzuke, perf, world, {}, undefined);
+    const makushitaCount = result.newBanzuke.filter((e) => e.division === "makushita").length;
+    expect(makushitaCount).toBe(120);
+  });
+
+  it("makushita is 120 even with small population", () => {
+    const { world, banzuke, perf } = makeWorld(300);
+    const result = updateBanzuke(banzuke, perf, world, {}, undefined);
+    const makushitaCount = result.newBanzuke.filter((e) => e.division === "makushita").length;
+    expect(makushitaCount).toBe(120);
+  });
+
+  it("jonidan is the largest lower division", () => {
+    const { world, banzuke, perf } = makeWorld(800);
+    const result = updateBanzuke(banzuke, perf, world, {}, undefined);
+    const jonidan = result.newBanzuke.filter((e) => e.division === "jonidan").length;
+    const sandanme = result.newBanzuke.filter((e) => e.division === "sandanme").length;
+    const jonokuchi = result.newBanzuke.filter((e) => e.division === "jonokuchi").length;
+    expect(jonidan).toBeGreaterThan(sandanme);
+    expect(jonidan).toBeGreaterThan(jonokuchi);
+  });
+
+  it("jonokuchi is the smallest lower division (<= 90 with ~500 total)", () => {
+    const { world, banzuke, perf } = makeWorld(500);
+    const result = updateBanzuke(banzuke, perf, world, {}, undefined);
+    const jonokuchi = result.newBanzuke.filter((e) => e.division === "jonokuchi").length;
+    const makushita = result.newBanzuke.filter((e) => e.division === "makushita").length;
+    const sandanme = result.newBanzuke.filter((e) => e.division === "sandanme").length;
+    const jonidan = result.newBanzuke.filter((e) => e.division === "jonidan").length;
+    expect(jonokuchi).toBeLessThanOrEqual(90);
+    expect(jonokuchi).toBeLessThan(makushita);
+    expect(jonokuchi).toBeLessThan(sandanme);
+    expect(jonokuchi).toBeLessThan(jonidan);
+  });
 });

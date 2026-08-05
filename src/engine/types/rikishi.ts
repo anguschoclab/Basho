@@ -143,6 +143,8 @@ export interface Rikishi {
   kihakuIsenScore?: number;
   /** True if this rikishi is the son of the stablemaster */
   isSonOfStablemaster?: boolean;
+  /** Dohyo-iri ceremony style assigned on yokozuna promotion */
+  dohyoIriStyle?: "unryu" | "shiranui";
 
   careerHistory: CareerSnapshot[];
   milestones: Milestone[];

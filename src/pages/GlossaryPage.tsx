@@ -14,6 +14,9 @@ const CATEGORY_LABELS: Record<GlossaryTerm["category"], string> = {
   structure: "Structure",
   culture: "Culture",
   tournament: "Tournament",
+  attire: "Attire",
+  ceremony: "Ceremony",
+  officials: "Officials",
 };
 
 export default function GlossaryPage() {
@@ -35,6 +38,9 @@ export default function GlossaryPage() {
     "structure",
     "culture",
     "tournament",
+    "attire",
+    "ceremony",
+    "officials",
   ];
 
   return (
