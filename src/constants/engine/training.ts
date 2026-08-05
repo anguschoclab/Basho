@@ -178,6 +178,11 @@ export const DRILL_EFFECTS: Record<
     mental: 0.25,
     fatigue: -2.0,
   },
+  shiko: {
+    balance: 0.18,
+    stamina: 0.12,
+    fatigue: 1.5,
+  },
   none: {
     fatigue: -1.2,
   },
@@ -209,6 +214,11 @@ export const DRILL_METADATA: Record<string, { label: string; description: string
       label: "Shindo / Meditation",
       description: "Mental visualization and rest. Boosts Mental stats and reduces fatigue.",
       color: "emerald",
+    },
+    shiko: {
+      label: "Shiko",
+      description: "Ceremonial leg-lift-and-stomp. Builds Balance and Stamina at low fatigue cost.",
+      color: "amber",
     },
     none: {
       label: "Rest",

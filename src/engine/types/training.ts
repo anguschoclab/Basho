@@ -20,7 +20,7 @@ export type IndividualFocusType = FocusMode;
 /**
  * P2 Phase O: Drill-based Weekly Planning
  */
-export type DrillType = "asageiko" | "butsukari" | "teppo" | "moushi-ai" | "shindo" | "none";
+export type DrillType = "asageiko" | "butsukari" | "teppo" | "moushi-ai" | "shindo" | "shiko" | "none";
 
 /** Map of day index (1-6, Mon-Sat) to DrillType */
 export type DaySchedule = Record<number, DrillType>;

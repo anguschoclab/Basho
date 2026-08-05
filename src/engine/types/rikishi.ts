@@ -145,6 +145,10 @@ export interface Rikishi {
   isSonOfStablemaster?: boolean;
   /** Dohyo-iri ceremony style assigned on yokozuna promotion */
   dohyoIriStyle?: "unryu" | "shiranui";
+  /** Sword-bearer attendant (tachimochi) for yokozuna dohyo-iri */
+  tachimochiId?: Id;
+  /** Dew-sweeper attendant (tsuyuharai) for yokozuna dohyo-iri */
+  tsuyuharaiId?: Id;
   /** True after the rikishi has completed the maezumo assessment stage */
   maezumoCompleted?: boolean;
   /** Rolling 3-basho win total for sekiwake/komusubi for Ozeki promotion qualification */

@@ -12,6 +12,9 @@ import type { Heya } from "../types/heya";
 import type { WorldState } from "../types/world";
 import type { StateImpact } from "../core/StateImpact";
 import { createImpactBuilder } from "../core/ImpactBuilder";
+import { NUTRITION_MULTIPLIERS } from "../../constants/engine/multipliers";
+import { DEFAULT_FACILITY_LEVEL } from "../../constants/engine/rikishi";
+import { clamp } from "../utils/math";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
@@ -96,9 +99,14 @@ export function applyWeightJourneyTick(
     return builder.build();
   }
 
-  // Normal progress
+  // Normal progress — scaled by nutrition facility level (chankonabe quality)
+  const nutritionFacility = heya?.facilities?.nutrition ?? DEFAULT_FACILITY_LEVEL;
+  const nutritionMult =
+    NUTRITION_MULTIPLIERS.BASE +
+    (clamp(nutritionFacility, 0, 100) / 100) * NUTRITION_MULTIPLIERS.RANGE;
+
   updates.weightJourney!.stalled = false;
-  updates.weightJourney!.progressKg = journey.progressKg + WEIGHT_JOURNEY_WEEKLY_GAIN;
+  updates.weightJourney!.progressKg = journey.progressKg + WEIGHT_JOURNEY_WEEKLY_GAIN * nutritionMult;
 
   // Breakthrough check
   if (updates.weightJourney!.progressKg >= journey.targetKg) {
