@@ -244,15 +244,21 @@ export function getH2HReport(rA: Rikishi, rB: Rikishi): H2HReport {
 export function determineCPUTactic(cpu: Rikishi, rng: SeededRNG): BoutTactic {
   const isYotsu = cpu.style === "yotsu";
   const isOshi = cpu.style === "oshi";
+  const tech = cpu.stats?.technique ?? 50;
+  const speed = cpu.stats?.speed ?? 50;
+  const canNekodamashi = tech > 65 && speed > 65;
 
   const roll = rng.next();
 
   if (isYotsu) {
+    // Nekodamashi replaces HENKA for qualifying rikishi (roll >= 0.95)
+    if (canNekodamashi && roll >= 0.95) return "NEKODAMASHI";
     if (roll < TACTIC_YOTSU_BELT_THRESHOLD) return "YOTSU_BELT";
     if (roll < TACTIC_YOTSU_STANDARD_THRESHOLD) return "STANDARD";
     if (roll < TACTIC_YOTSU_OSHI_THRESHOLD) return "OSHI_THRUST";
     return "HENKA";
   } else if (isOshi) {
+    if (canNekodamashi && roll >= 0.95) return "NEKODAMASHI";
     if (roll < TACTIC_OSHI_THRUST_THRESHOLD) return "OSHI_THRUST";
     if (roll < TACTIC_OSHI_STANDARD_THRESHOLD) return "STANDARD";
     if (roll < TACTIC_OSHI_YOTSU_THRESHOLD) return "YOTSU_BELT";
@@ -292,11 +298,19 @@ export function resolveTacticalClash(
   if (
     (playerTactic === "YOTSU_BELT" && cpuTactic === "OSHI_THRUST") ||
     (playerTactic === "OSHI_THRUST" && cpuTactic === "HENKA") ||
-    (playerTactic === "HENKA" && cpuTactic === "YOTSU_BELT")
+    (playerTactic === "HENKA" && cpuTactic === "YOTSU_BELT") ||
+    (playerTactic === "NEKODAMASHI" && cpuTactic === "YOTSU_BELT") ||
+    (playerTactic === "NEKODAMASHI" && cpuTactic === "OSHI_THRUST")
   ) {
     result.advantage = "PLAYER";
     result.winProbabilityShift = TACTICAL_ADVANTAGE_SHIFT; // 15% boost
-  } else {
+  } else if (
+    (cpuTactic === "YOTSU_BELT" && playerTactic === "OSHI_THRUST") ||
+    (cpuTactic === "OSHI_THRUST" && playerTactic === "HENKA") ||
+    (cpuTactic === "HENKA" && playerTactic === "YOTSU_BELT") ||
+    (cpuTactic === "NEKODAMASHI" && playerTactic === "YOTSU_BELT") ||
+    (cpuTactic === "NEKODAMASHI" && playerTactic === "OSHI_THRUST")
+  ) {
     result.advantage = "CPU";
     result.winProbabilityShift = -TACTICAL_ADVANTAGE_SHIFT; // 15% penalty
   }

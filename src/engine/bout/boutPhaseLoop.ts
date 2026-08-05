@@ -21,6 +21,7 @@ import { tickPushBattle } from "./physics/tickPushBattle";
 import { tickBeltBattle } from "./physics/tickBeltBattle";
 import { tickEdgeCrisis } from "./physics/edgeCrisis";
 import { buildBoutResultV2 } from "./physics/resultBuilders";
+import { tryShinitai } from "./shinitai";
 
 const MAX_TICKS = MAX_BOUT_TICKS;
 
@@ -100,25 +101,47 @@ function runPhaseLoop(
   // Timeout — most stable rikishi wins (smallest cogOffset relative to footSpread)
   const eastInstability = Math.abs(st.east.cogOffset) / Math.max(0.01, st.east.footSpread);
   const westInstability = Math.abs(st.west.cogOffset) / Math.max(0.01, st.west.footSpread);
-  const winner: Side = eastInstability <= westInstability ? "east" : "west";
+
+  // Shini-tai: if both rikishi exit simultaneously (instability too close to call),
+  // use balance stat as tiebreaker (mono-ii decision)
+  const shinitaiResult = tryShinitai(eastInstability, westInstability, east, west);
+  let winner: Side;
+  if (shinitaiResult) {
+    winner = shinitaiResult.winner;
+    boutLog.push({
+      phase: "bout_timeout",
+      clock: st.tick * CLOCK_MULTIPLIER,
+      data: {
+        shinitai: true,
+        eastInstability,
+        westInstability,
+        winner: shinitaiResult.winner,
+        decisionBasis: "shinitai_balance_tiebreaker",
+      },
+    });
+  } else {
+    winner = eastInstability <= westInstability ? "east" : "west";
+  }
 
   const hadBelt =
     st.phase.tag === "belt_battle" ||
     (st.phase.tag === "edge_crisis" && st.phase.prev === "belt_battle");
   const kimarite: KimariteId = hadBelt ? "yorikiri" : "oshidashi";
 
-  // Log bout timeout event (8.5)
-  boutLog.push({
-    phase: "bout_timeout",
-    clock: st.tick * CLOCK_MULTIPLIER,
-    data: {
-      eastForce: st.phase.tag === "push_battle" ? st.phase.state.eastForce : 0,
-      westForce: st.phase.tag === "push_battle" ? st.phase.state.westForce : 0,
-      eastMomentum: st.momentumScore > 0 ? st.momentumScore : 0,
-      westMomentum: st.momentumScore < 0 ? Math.abs(st.momentumScore) : 0,
-      decisionBasis: eastInstability <= westInstability ? "east_stability" : "west_stability",
-    },
-  });
+  // Log bout timeout event (8.5) — skip if shini-tai already logged
+  if (!shinitaiResult) {
+    boutLog.push({
+      phase: "bout_timeout",
+      clock: st.tick * CLOCK_MULTIPLIER,
+      data: {
+        eastForce: st.phase.tag === "push_battle" ? st.phase.state.eastForce : 0,
+        westForce: st.phase.tag === "push_battle" ? st.phase.state.westForce : 0,
+        eastMomentum: st.momentumScore > 0 ? st.momentumScore : 0,
+        westMomentum: st.momentumScore < 0 ? Math.abs(st.momentumScore) : 0,
+        decisionBasis: eastInstability <= westInstability ? "east_stability" : "west_stability",
+      },
+    });
+  }
 
   // CI-05: Rare hi_waza reversals (isamiashi, tsukite)
   // Very rare (1.5% each) post-resolution reversals where "winner" loses due to own mistake

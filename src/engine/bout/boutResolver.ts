@@ -43,6 +43,9 @@ import { isYushoContention, isPlayoffScenario } from "./boutContention";
 import { detectKinboshi } from "./boutAchievements";
 import { recordCareerHighlight, type CareerHighlight } from "./CareerHighlights";
 import { computeTacticAftermath } from "./boutTacticAftermath";
+import { tryHansoku } from "./kinjite";
+import { checkYaocho } from "./yaocho";
+import { reportScandal } from "../systems/governance/ScandalService";
 import {
   KENSHO_BASE_COUNT_LOW,
   KENSHO_BASE_COUNT_MID,
@@ -187,13 +190,41 @@ export function resolveBout(
 
   // 1. Run B+ spatial physics engine
   const meta = world?.meta;
-  const { result } = resolveBoutPhysics(
+  const { result: physicsResult } = resolveBoutPhysics(
     ctxFinal,
     eastBout as Rikishi,
     westBout as Rikishi,
     basho,
     meta
   );
+
+  // 1.5. Kinjite (forbidden technique) check — high-aggression/low-technique
+  // winner may be disqualified via hansoku, flipping the result.
+  // Only active for player bouts (not AutoSim observer mode) to avoid
+  // disrupting long-term deterministic simulations.
+  const hansokuSeed = `${basho.id ?? "basho"}-${bout.id}-kinjite`;
+  const enableKinjite = bout.playerSide !== undefined;
+  const { result: hansokuResult, fouledHeyaId } = enableKinjite
+    ? tryHansoku(bout, physicsResult, eastBout as Rikishi, westBout as Rikishi, basho, hansokuSeed)
+    : { result: physicsResult, fouledHeyaId: null };
+  const result = hansokuResult;
+
+  // Trigger scandal for the fouled rikishi's heya
+  if (fouledHeyaId && world) {
+    const scandalImpact = reportScandal(
+      world,
+      fouledHeyaId,
+      "major",
+      "Forbidden technique (hansoku) disqualification"
+    );
+    builder.merge(scandalImpact);
+  }
+
+  // 1.6. Yaocho (match-fixing) detection — checks for suspicious patterns
+  if (world && enableKinjite) {
+    const yaochoImpact = checkYaocho(world, result, basho, bout.day ?? 1, `${hansokuSeed}-yaocho`);
+    builder.merge(yaochoImpact);
+  }
 
   const winner = result.winner === "east" ? east : west;
   const loser = result.winner === "east" ? west : east;

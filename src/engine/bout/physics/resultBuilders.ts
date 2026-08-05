@@ -60,8 +60,13 @@ export function buildBoutResultV2(
   const loserRankNum = loserRikishi.rankNumber ?? 99;
   const upset = winnerRankNum > loserRankNum;
 
-  // Detect mono-ii trigger: close bout with edge crisis controversy
-  const monoii = boutLog.some((e) => e.phase === "edge_crisis" && (e.data as Record<string, unknown>)?.controversial === true);
+  // Detect mono-ii trigger: close bout with edge crisis controversy or shini-tai
+  const monoii = boutLog.some(
+    (e) =>
+      (e.phase === "edge_crisis" &&
+        (e.data as Record<string, unknown>)?.controversial === true) ||
+      (e.data as Record<string, unknown>)?.shinitai === true
+  );
 
   // Archetype matchup data
   const eastArchetype: CombatArchetype = east.combatProfile.archetype;

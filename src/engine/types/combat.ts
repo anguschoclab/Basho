@@ -74,6 +74,7 @@ export const TACTIC_TO_FAMILY: Record<BoutTactic, TacticalFamily> = {
   DEFENSIVE_PULL: "trick",
   HENKA: "trick",
   ALL_OUT: "push",
+  NEKODAMASHI: "trick",
 };
 
 export const COUNTER_TACTIC_BONUS = 5;
@@ -222,7 +223,8 @@ export type BoutTactic =
   | "OSHI_THRUST"
   | "HENKA"
   | "DEFENSIVE_PULL"
-  | "ALL_OUT";
+  | "ALL_OUT"
+  | "NEKODAMASHI";
 
 /** Defines the structure for tactical result. */
 export interface TacticalResult {

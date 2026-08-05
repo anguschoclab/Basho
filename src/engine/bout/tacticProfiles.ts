@@ -98,6 +98,17 @@ export const TACTIC_PROFILES: Record<BoutTactic, TacticProfile> = {
     momentumOnWin: 4,
     momentumOnLoss: -4,
   },
+  NEKODAMASHI: {
+    id: "NEKODAMASHI",
+    label: "Nekodamashi",
+    desc: "Cat-like fake-out — unorthodox tachiai clap trick that confuses belt specialists",
+    kimariteWeightBias: { trick: 1.6, speed: 1.2 },
+    tachiaiPowerModifier: -10, // matches HENKA — replaces it for qualifying rikishi
+    fatigueCost: 1,
+    injuryRiskMultiplier: 0.8,
+    momentumOnWin: -3, // prestige penalty — unorthodox win (matches HENKA)
+    momentumOnLoss: -2,
+  },
 };
 
 /** Get the profile for a given tactic, defaulting to STANDARD if unknown. */

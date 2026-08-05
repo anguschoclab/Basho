@@ -233,6 +233,11 @@ export interface BashoState {
     comebackWins: number;
     opponentTiers: number[];
   }>;
+
+  /** True for exhibition/jungyo basho — results do not count toward records or banzuke. */
+  isExhibition?: boolean;
+  /** Display name for exhibition basho (e.g. "Regional Jungyo Tour"). */
+  exhibitionName?: string;
 }
 
 /** A single award entry persisted to the global award log. */
