@@ -292,10 +292,8 @@ export function interpolate(text: string, context: NarrativeContext): string {
 
   if (result.includes("%") || result.includes("{{") || result.includes("}}")) {
     const leakMsg = `BardEngine Warning: Token leakage or unresolved brackets in result: "${result}"`;
-    const proc = (globalThis as unknown as { process?: { env?: Record<string, string> } }).process;
-    const shouldThrow =
-      typeof proc !== "undefined" && (proc.env?.NODE_ENV === "test" || proc.env?.CI);
-    if (shouldThrow) {
+    const isTest = typeof process !== "undefined" && (process.env?.NODE_ENV === "test" || process.env?.CI);
+    if (isTest) {
       throw new Error(leakMsg);
     }
     warn(leakMsg, "BardEngine");
@@ -371,8 +369,7 @@ export const BardEngine = {
     let idx = 0;
     let template = "";
 
-    const proc = (globalThis as unknown as { process?: { env?: Record<string, string> } }).process;
-    const isTest = typeof proc !== "undefined" && proc.env?.NODE_ENV === "test";
+    const isTest = typeof process !== "undefined" && process.env?.NODE_ENV === "test";
 
     do {
       idx = rng.int(0, options.length - 1);
