@@ -281,3 +281,7 @@ Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop 
 
 **Learning:** Replacing `.filter().length` or `.map().filter()` with `for...of` loops avoids intermediate array allocations, but doing so on cold paths (like retirement narratives) or very small, bounded arrays (like basho lines) yields unmeasurably small performance gains while often sacrificing readability (e.g. requiring an IIFE inline).
 **Action:** Only target unbounded arrays (e.g. `world.rikishi.values()`), frequently executed loop bodies (e.g. `SimTuningService`, `WorldEngine.tick`), or explicit hot paths for array transformation refactors. Do not refactor small array chains if it degrades code readability for zero measurable benefit.
+
+## 2026-08-05 - Optimize array reduction in NakabiService
+**Learning:** Counting elements matching a condition using `.filter(condition).length` allocates a temporary array which can be a performance bottleneck when executed frequently or on large lists, like counting undefeated rikishis at nakabi.
+**Action:** Replace chained `.filter().length` with a direct `for...of` loop and a counter variable to prevent unnecessary intermediate O(N) allocations.
