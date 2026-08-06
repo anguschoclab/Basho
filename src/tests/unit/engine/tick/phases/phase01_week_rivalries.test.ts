@@ -1,81 +1,195 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { phase01_week_rivalries } from "../../../../../engine/tick/phases/phase01_week_rivalries";
 import { MockFactory } from "../../../../helpers/utils/MockFactory";
+import { resolveImpacts } from "../../../../../engine/core/ImpactResolver";
+import {
+  RIVALRY_DECAY_RATES,
+  WEEKS_PER_YEAR,
+  MAX_EVENT_AGE_WEEKS,
+  RIVALRY_DECAY_THRESHOLDS,
+  RIVALRY_PRUNING,
+} from "../../../../../constants/engine/time";
+import { type EngineEvent } from "../../../../../engine/types/events";
+
+// Mock deriveTone to return a constant since we're testing the decay pipeline
+vi.mock("../../../../../engine/systems/narrative/RivalryHeatService", () => ({
+  deriveTone: vi.fn().mockReturnValue("respectful"),
+}));
 
 describe("phase01_week_rivalries", () => {
-  it("should decay active rivalries", () => {
-    const world = MockFactory.createWorld();
-    world.calendar = { year: 2025, currentWeek: 10 } as any;
-
-    // Short term decay (2 weeks ago)
-    const weeksSinceShort = 2;
-    world.rivalriesState = {
-      pairs: {
-        "r1_r2": {
-          rikishi1Id: "r1",
-          rikishi2Id: "r2",
-          heat: 50,
-          closeness: 30,
-          spite: 20,
-          meetings: 3,
-          lastMetWeek: 10 - weeksSinceShort,
-          tone: "competitive"
-        }
-      }
-    } as any;
-
-    const impact = phase01_week_rivalries(world);
-
-    expect(impact.worldFields?.rivalriesState).toBeDefined();
-    const newPairs = (impact.worldFields?.rivalriesState as any).pairs;
-    expect(newPairs["r1_r2"].heat).toBeLessThan(50);
+  beforeEach(() => {
+    vi.clearAllMocks();
   });
 
-  it("should not decay already cold rivalries to save processing", () => {
-    const world = MockFactory.createWorld();
-    world.calendar = { year: 2025, currentWeek: 50 } as any; // 40 weeks ago
-    world.rivalriesState = {
-      pairs: {
-        "r1_r2": {
-          rikishi1Id: "r1",
-          rikishi2Id: "r2",
-          heat: 4, // Below MIN_HEAT
-          closeness: 5,
-          spite: 5,
-          meetings: 1, // Below MIN_MEETINGS
-          lastMetWeek: 10,
-          tone: "cold"
-        }
-      }
-    } as any;
+  describe("Rivalry Decay", () => {
+    it("decays heat, closeness, and spite for a recently met pair (SHORT_TERM)", () => {
+      const world = MockFactory.createWorld();
+      world.calendar = { year: 2025, month: 1, week: 1, currentWeek: 10, day: 1, next: vi.fn(), clone: vi.fn() as any, cyclePhase: "basho" } as any;
+      world.rivalriesState = {
+        pairs: {
+          "id1_id2": {
+            heat: 50,
+            closeness: 30,
+            spite: 40,
+            meetings: 5,
+            lastMetWeek: 8, // 2 weeks ago -> SHORT_TERM
+            lastWinnerId: "id1",
+            tone: "grudge"
+          } as any
+        },
+        pairIndex: {}
+      } as any;
 
-    const impact = phase01_week_rivalries(world);
+      const impact = phase01_week_rivalries(world);
+      const nextWorld = resolveImpacts(world, [impact]);
 
-    // Because it's completely skipped, the `nextPairs` object will not include it.
-    // Verify that the resulting pairs object is explicitly empty, showing it was correctly pruned.
-    const newPairs = (impact.worldFields?.rivalriesState as any).pairs;
-    expect(newPairs).toEqual({});
+      const pair = nextWorld.rivalriesState!.pairs["id1_id2"];
+      expect(pair.heat).toBe(50 - RIVALRY_DECAY_RATES.HEAT.SHORT);
+      expect(pair.closeness).toBe(30 - RIVALRY_DECAY_RATES.CLOSENESS);
+      expect(pair.spite).toBe(40 - RIVALRY_DECAY_RATES.SPITE);
+      expect(pair.tone).toBe("respect");
+    });
+
+    it("applies MEDIUM_TERM and LONG_TERM decay rates and clamps to zero", () => {
+      const world = MockFactory.createWorld();
+      world.calendar = { year: 2025, month: 1, week: 1, currentWeek: 50, day: 1, next: vi.fn(), clone: vi.fn() as any, cyclePhase: "basho" } as any;
+      world.rivalriesState = {
+        pairs: {
+          "med_pair": {
+            heat: 10,
+            closeness: 0.1, // will clamp to 0
+            spite: 0.1, // will clamp to 0
+            meetings: 5,
+            lastMetWeek: 40, // 10 weeks ago -> MEDIUM_TERM
+            lastWinnerId: "id1",
+            tone: "grudge"
+          } as any,
+          "long_pair": {
+            heat: 10,
+            closeness: 30,
+            spite: 40,
+            meetings: 5,
+            lastMetWeek: 10, // 40 weeks ago -> LONG_TERM
+            lastWinnerId: "id1",
+            tone: "grudge"
+          } as any
+        },
+        pairIndex: {}
+      } as any;
+
+      const impact = phase01_week_rivalries(world);
+      const nextWorld = resolveImpacts(world, [impact]);
+
+      const medPair = nextWorld.rivalriesState!.pairs["med_pair"];
+      expect(medPair.heat).toBe(10 - RIVALRY_DECAY_RATES.HEAT.MEDIUM);
+      expect(medPair.closeness).toBe(0);
+      expect(medPair.spite).toBe(0);
+
+      const longPair = nextWorld.rivalriesState!.pairs["long_pair"];
+      expect(longPair.heat).toBe(10 - RIVALRY_DECAY_RATES.HEAT.LONG);
+    });
+
+    it("skips decay for cold pairs", () => {
+      const world = MockFactory.createWorld();
+      world.calendar = { year: 2025, month: 1, week: 1, currentWeek: 50, day: 1, next: vi.fn(), clone: vi.fn() as any, cyclePhase: "basho" } as any;
+
+      const heatThreshold = RIVALRY_PRUNING.MIN_HEAT;
+      const meetingThreshold = RIVALRY_PRUNING.MIN_MEETINGS;
+
+      world.rivalriesState = {
+        pairs: {
+          "cold_pair": {
+            heat: heatThreshold - 1, // Below minimum
+            closeness: 10,
+            spite: 10,
+            meetings: meetingThreshold - 1, // Below minimum
+            lastMetWeek: 50 - RIVALRY_DECAY_THRESHOLDS.LONG_TERM - 1, // Very old
+            lastWinnerId: "id1",
+            tone: "respect"
+          } as any
+        },
+        pairIndex: {}
+      } as any;
+
+      const impact = phase01_week_rivalries(world);
+      const nextWorld = resolveImpacts(world, [impact]);
+
+      // Should be completely untouched
+      const coldPair = nextWorld.rivalriesState!.pairs["cold_pair"];
+      expect(coldPair).toBeUndefined();
+
+    });
   });
 
-  it("should trim stale events from the event log", () => {
-    const world = MockFactory.createWorld();
-    world.calendar = { year: 2025, currentWeek: 50 } as any;
-    world.events = {
-      log: [
-        // Very old minor event (should be trimmed)
-        { year: 2024, week: 1, importance: "minor", category: "training" },
-        // Very old headline (should be kept)
-        { year: 2024, week: 1, importance: "headline", category: "career" },
-        // Recent minor event (should be kept)
-        { year: 2025, week: 49, importance: "minor", category: "training" }
-      ]
-    } as any;
+  describe("Event Log Trimming", () => {
+    it("trims old standard events but keeps important ones", () => {
+      const world = MockFactory.createWorld();
+      const currentYear = 2025;
+      const currentWeek = 10;
+      const currentTotalWeeks = currentYear * WEEKS_PER_YEAR + currentWeek;
 
-    const impact = phase01_week_rivalries(world);
+      world.calendar = { year: currentYear, month: 1, week: 1, currentWeek: currentWeek, day: 1, next: vi.fn(), clone: vi.fn() as any, cyclePhase: "basho" } as any;
 
-    const newEvents = (impact.worldFields?.events as any).log;
-    expect(newEvents.length).toBe(2);
-    expect(newEvents[0].importance).toBe("headline");
-    expect(newEvents[1].year).toBe(2025);
+      const staleTotalWeeks = currentTotalWeeks - MAX_EVENT_AGE_WEEKS - 5;
+      const staleYear = Math.floor(staleTotalWeeks / WEEKS_PER_YEAR);
+      const staleWeek = staleTotalWeeks % WEEKS_PER_YEAR;
+
+      const recentTotalWeeks = currentTotalWeeks - 1;
+      const recentYear = Math.floor(recentTotalWeeks / WEEKS_PER_YEAR);
+      const recentWeek = recentTotalWeeks % WEEKS_PER_YEAR;
+
+      const oldUnimportantEvent: EngineEvent = {
+        id: "old1",
+        year: staleYear,
+        week: staleWeek,
+        category: "welfare",
+        importance: "minor",
+        type: "MEDICAL_REPORT",
+      } as any;
+
+      const oldHeadlineEvent: EngineEvent = {
+        id: "old2",
+        year: staleYear,
+        week: staleWeek,
+        category: "welfare",
+        importance: "headline", // Should be kept
+        type: "MEDICAL_REPORT",
+      } as any;
+
+      const oldBashoEvent: EngineEvent = {
+        id: "old3",
+        year: staleYear,
+        week: staleWeek,
+        category: "basho", // Should be kept
+        importance: "minor",
+        type: "BASHO_STATUS",
+      } as any;
+
+      const recentUnimportantEvent: EngineEvent = {
+        id: "recent1",
+        year: recentYear,
+        week: recentWeek,
+        category: "welfare", // Should be kept because it's recent
+        importance: "minor",
+        type: "MEDICAL_REPORT",
+      } as any;
+
+      world.events = {
+        version: "1.0.0",
+        log: [oldUnimportantEvent, oldHeadlineEvent, oldBashoEvent, recentUnimportantEvent],
+        dedupe: {}
+      };
+
+      const impact = phase01_week_rivalries(world);
+      const nextWorld = resolveImpacts(world, [impact]);
+
+      const nextLog = nextWorld.events!.log;
+
+      expect(nextLog.length).toBe(3);
+      expect(nextLog.map(e => e.id)).not.toContain("old1");
+      expect(nextLog.map(e => e.id)).toContain("old2");
+      expect(nextLog.map(e => e.id)).toContain("old3");
+      expect(nextLog.map(e => e.id)).toContain("recent1");
+    });
   });
 });
