@@ -186,8 +186,16 @@ export function SaveSlotManager({
                 saveSlots.map((slot) => (
                   <Card
                     key={slot.key}
-                    className="hover:border-primary/50 transition-all cursor-pointer group shadow-sm hover:shadow-md"
+                    className="hover:border-primary/50 transition-all cursor-pointer group shadow-sm hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ring-offset-background"
                     onClick={() => handleLoadSlot(slot.slotName)}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleLoadSlot(slot.slotName);
+                      }
+                    }}
                   >
                     <CardContent className="p-4 flex items-center justify-between">
                       <div className="flex-1">
