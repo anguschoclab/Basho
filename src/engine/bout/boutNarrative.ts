@@ -31,6 +31,17 @@ import {
   CAREER_BOUT_MILESTONES,
   MOMENTUM_NARRATIVE_THRESHOLD,
 } from "../../constants/engine/generation";
+import {
+  NARRATIVE_STAMINA_CHANCE,
+  NARRATIVE_DEPTH_CHANGE_CHANCE,
+  NARRATIVE_LOW_RECOVERY_THRESHOLD,
+  NARRATIVE_TAWARA_TOE_THRESHOLD,
+  NARRATIVE_GYOJI_CONFUSED_CHANCE,
+  NARRATIVE_CALL_REVERSED_CHANCE,
+  NARRATIVE_REMATCH_CHANCE,
+  NARRATIVE_STRESS_TERSE_CHANCE,
+  NARRATIVE_MEDIA_SAVVY_CHANCE,
+} from "../../constants/engine/narrative";
 import { BASHO_CALENDAR } from "../calendar";
 import { isKachiKoshi, isMakeKoshi } from "../banzuke/banzukeHelpers";
 import { isYushoContention, isPlayoffScenario } from "./boutContention";
@@ -1394,7 +1405,7 @@ export function generateBoutNarrative(
       // 7a2. Stamina engagement — if late in a long bout with low intensity, mention fatigue
       if (tick > 15 && engIntensity === 1 && result.duration && result.duration > 15) {
         const staminaRng = rngFromSeed(tickSeed, "pbp", "engagement-stamina");
-        if (staminaRng.next() < 0.4) {
+        if (staminaRng.next() < NARRATIVE_STAMINA_CHANCE) {
           push(
             BardEngine.resolve(staminaRng, "combat.engagement.stamina", {
               ATTACKER: attacker.shikona,
@@ -1661,7 +1672,7 @@ export function generateBoutNarrative(
         }
       } else if (gripData.type === "depth_change") {
         // Only narrate depth changes occasionally to avoid spam
-        if (rng.next() < 0.3) {
+        if (rng.next() < NARRATIVE_DEPTH_CHANGE_CHANCE) {
           push(
             BardEngine.resolve(rng, "combat.phases.grip_transition.depth_change", {
               NAME: east.shikona,
@@ -1749,7 +1760,7 @@ export function generateBoutNarrative(
         );
       } else if (
         crisisData.forced ||
-        (crisisData.recoveryProbability !== undefined && crisisData.recoveryProbability < 0.2)
+        (crisisData.recoveryProbability !== undefined && crisisData.recoveryProbability < NARRATIVE_LOW_RECOVERY_THRESHOLD)
       ) {
         push(
           BardEngine.resolve(rng, "combat.phases.edge_crisis.failure", {
@@ -1758,7 +1769,7 @@ export function generateBoutNarrative(
           }).text,
           "edge_crisis"
         );
-      } else if (toePos > 0.6) {
+      } else if (toePos > NARRATIVE_TAWARA_TOE_THRESHOLD) {
         push(
           BardEngine.resolve(rng, "combat.phases.edge_crisis.tawara_drama", {
             NAME: sideName,
@@ -2365,7 +2376,7 @@ export function generateBoutNarrative(
       ["drama", "mono_ii"]
     );
     // Gyoji confusion (flavor, 40% chance)
-    if (monoiiRng.next() < 0.4) {
+    if (monoiiRng.next() < NARRATIVE_GYOJI_CONFUSED_CHANCE) {
       push(
         BardEngine.resolve(monoiiRng, "post_bout.mono_ii.gyoji_confused", {
           WINNER: winnerRikishi.shikona,
@@ -2401,7 +2412,7 @@ export function generateBoutNarrative(
     );
     // Outcome: reversed (with possible rematch), or upheld
     const outcomeRoll = monoiiRng.next();
-    if (outcomeRoll < 0.25) {
+    if (outcomeRoll < NARRATIVE_CALL_REVERSED_CHANCE) {
       // Call reversed — judges determine the loser actually touched first
       push(
         BardEngine.resolve(monoiiRng, "post_bout.mono_ii.call_reversed", {
@@ -2413,7 +2424,7 @@ export function generateBoutNarrative(
         "mono_ii",
         ["drama"]
       );
-    } else if (outcomeRoll < 0.35) {
+    } else if (outcomeRoll < NARRATIVE_REMATCH_CHANCE) {
       // Too close to call — rematch ordered
       push(
         BardEngine.resolve(monoiiRng, "post_bout.mono_ii.rematch_ordered", {
@@ -2621,7 +2632,7 @@ export function generateBoutNarrative(
       // These are handled by selecting shorter/longer variants via RNG biasing
       const stressLevel = winnerRikishi.behavior?.stress ?? 0;
       const mediaSavvyLevel = winnerRikishi.behavior?.mediaSavvy ?? 0;
-      if (stressLevel >= STRESS_TERSE_THRESHOLD && qRng.next() < 0.5) {
+      if (stressLevel >= STRESS_TERSE_THRESHOLD && qRng.next() < NARRATIVE_STRESS_TERSE_CHANCE) {
         const tersePath = "interview.modifiers.laconic";
         if (BardEngine.has(tersePath)) {
           push(
@@ -2634,7 +2645,7 @@ export function generateBoutNarrative(
             ["interview"]
           );
         }
-      } else if (mediaSavvyLevel >= MEDIA_SAVVY_POLISHED_THRESHOLD && qRng.next() < 0.4) {
+      } else if (mediaSavvyLevel >= MEDIA_SAVVY_POLISHED_THRESHOLD && qRng.next() < NARRATIVE_MEDIA_SAVVY_CHANCE) {
         // Media-savvy rikishi add a polished follow-up
         const polishedPath = "interview.modifiers.philosophical";
         if (BardEngine.has(polishedPath)) {

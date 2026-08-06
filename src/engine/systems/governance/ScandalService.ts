@@ -15,6 +15,11 @@ import {
   SCANDAL_SCORE_MEDIUM_THRESHOLD,
   SCANDAL_SCORE_LOW_THRESHOLD,
 } from "../../../constants/engine/governanceExtended";
+import {
+  SCANDAL_SEVERITY_MULT_LENIENT,
+  SCANDAL_SEVERITY_MULT_STANDARD,
+  SCANDAL_SEVERITY_MULT_HARSH,
+} from "../../../constants/engine/governance";
 
 /**
  * Reports a scandal and applies immediate score impacts and headlines.
@@ -286,7 +291,7 @@ export function issueGovernanceRuling(
     const heya = getHeya(world, ruling.heyaId);
 
     if (heya) {
-      const severityMultiplier = severity === "lenient" ? 0.5 : severity === "harsh" ? 1.5 : 1.0;
+      const severityMultiplier = severity === "lenient" ? SCANDAL_SEVERITY_MULT_LENIENT : severity === "harsh" ? SCANDAL_SEVERITY_MULT_HARSH : SCANDAL_SEVERITY_MULT_STANDARD;
       const originalDelta = ruling.effects.scandalScoreDelta || 0;
       const adjustedDelta = Math.round(originalDelta * severityMultiplier);
 

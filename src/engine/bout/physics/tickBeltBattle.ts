@@ -18,6 +18,8 @@ import {
   BOUT_FATIGUE_MULTIPLIER,
   CLOCK_MULTIPLIER,
   TORQUE_EDGE_CRISIS_THRESHOLD,
+  COUNTER_TORQUE_REDUCTION,
+  TORQUE_BONUS_FACTOR,
 } from "../../../constants/engine/physics";
 import { EDGE_THRESHOLD } from "../../types/combat-spatial";
 import type { EngineStateV2 } from "../../types/combat-spatial";
@@ -91,11 +93,10 @@ export function tickBeltBattle(
   const eastTorqueBonus = ((east.combatProfile?.archetypeBehavior?.beltTorqueBonus ?? 0) + (east.combatProfile?.bodyTypeBehavior?.beltTorqueBonus ?? 0)) / 100;
   const westTorqueBonus = ((west.combatProfile?.archetypeBehavior?.beltTorqueBonus ?? 0) + (west.combatProfile?.bodyTypeBehavior?.beltTorqueBonus ?? 0)) / 100;
   // Apply torque bonus as additive bonus rather than multiplier to preserve simulation balance
-  let torqueAdvantage = (belt.torqueEast - belt.torqueWest) * (1 + (eastTorqueBonus - westTorqueBonus) * 0.5);
+  let torqueAdvantage = (belt.torqueEast - belt.torqueWest) * (1 + (eastTorqueBonus - westTorqueBonus) * TORQUE_BONUS_FACTOR);
 
   // In-bout counter-tactic activation (2.2): when defender's counterFamily matches
   // the current engagement family ("belt"), reduce attacker's effective torque
-  const COUNTER_TORQUE_REDUCTION = 0.1; // 10% torque reduction when countered
   let counterActivated = false;
   let counterSide: Side | null = null;
   if (west.combatProfile?.counterFamily === "belt" && east.combatProfile?.counterFamily !== "belt") {

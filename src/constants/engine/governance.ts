@@ -29,3 +29,8 @@ export const SCANDAL_THRESHOLD_MAINTENANCE = 15;
 export const POLITICAL_CAPITAL_THRESHOLD_MAINTENANCE = 25;
 export const POLITICAL_SPEND_MAINTENANCE = 10;
 export const SCANDAL_REDUCTION_MAINTENANCE = 2;
+
+// Severity multipliers for governance rulings
+export const SCANDAL_SEVERITY_MULT_LENIENT = 0.5;
+export const SCANDAL_SEVERITY_MULT_STANDARD = 1.0;
+export const SCANDAL_SEVERITY_MULT_HARSH = 1.5;

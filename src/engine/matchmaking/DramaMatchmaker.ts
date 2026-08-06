@@ -15,6 +15,49 @@
 
 import type { Rikishi } from "../types/rikishi";
 import type { MatchPairing } from "./MatchmakingPhases";
+import {
+  DRAMA_DAY_SENSHURAKU,
+  DRAMA_DAY_KADOBAN_START,
+  DRAMA_DAY_DEMOTION_START,
+  DRAMA_DAY_YOKOZUNA_HUNT_START,
+  DRAMA_DAY_YOKOZUNA_HUNT_END,
+  DRAMA_DAY_RELEGATION_START,
+  DRAMA_DAY_WINLESS_START,
+  DRAMA_MAKE_OR_BREAK_WINS,
+  DRAMA_KADOBAN_WIN_THRESHOLD,
+  DRAMA_YUSHO_CONTENDER_GAP,
+  DRAMA_YUSHO_LEADER_MIN_WINS,
+  DRAMA_DEMOTION_WIN_THRESHOLD,
+  DRAMA_RELEGATION_WIN_THRESHOLD,
+  DRAMA_GRUDGE_HEAT_THRESHOLD,
+  DRAMA_RIVALRY_HEAT_THRESHOLD,
+  DRAMA_RIVALRY_SCORE_BASE,
+  DRAMA_RIVALRY_SCORE_CAP,
+  DRAMA_RIVALRY_SCORE_DIVISOR,
+  DRAMA_ROOKIE_TOTAL_BOUTS,
+  DRAMA_VETERAN_TOTAL_BOUTS,
+  DRAMA_DEBUT_MAKUUCHI_BOUTS,
+  DRAMA_DEBUT_TOTAL_BOUTS,
+  DRAMA_STREAK_BREAKER_THRESHOLD,
+  DRAMA_SCORE_MAKE_OR_BREAK,
+  DRAMA_SCORE_GRUDGE_MATCH,
+  DRAMA_SCORE_KADOBAN,
+  DRAMA_SCORE_YUSHO_DECIDER,
+  DRAMA_SCORE_COMEBACK,
+  DRAMA_SCORE_DEBUT_SHOWCASE,
+  DRAMA_SCORE_YOKOZUNA_HUNT,
+  DRAMA_SCORE_SENSHURAKU_FINALE,
+  DRAMA_SCORE_ARCHETYPE_CLASH,
+  DRAMA_SCORE_DEMOTION_DANGER,
+  DRAMA_SCORE_RELEGATION_BATTLE,
+  DRAMA_SCORE_ROOKIE_VS_VETERAN,
+  DRAMA_SCORE_KINBOSHI_HUNT,
+  DRAMA_SCORE_STREAK_BREAKER,
+  DRAMA_SCORE_WINLESS_WARRIOR,
+  DRAMA_SCORE_ORIGIN_MATCHUP,
+  DRAMA_MAX_SWAPS_DEFAULT,
+  DRAMA_MAX_SWAPS_WITH_RIVALRY,
+} from "../../constants/engine/matchmaking";
 
 /**
  * Drama labels identifying narrative significance of a matchup.
@@ -97,26 +140,26 @@ export function scoreDrama(
 
   // Day 15: 7-7 kachi-koshi showdown (highest drama)
   if (
-    day === 15 &&
-    aRecord.wins === 7 &&
-    aRecord.losses === 7 &&
-    bRecord.wins === 7 &&
-    bRecord.losses === 7
+    day === DRAMA_DAY_SENSHURAKU &&
+    aRecord.wins === DRAMA_MAKE_OR_BREAK_WINS &&
+    aRecord.losses === DRAMA_MAKE_OR_BREAK_WINS &&
+    bRecord.wins === DRAMA_MAKE_OR_BREAK_WINS &&
+    bRecord.losses === DRAMA_MAKE_OR_BREAK_WINS
   ) {
     return {
       label: "make_or_break",
-      score: 100,
+      score: DRAMA_SCORE_MAKE_OR_BREAK,
       reason: "kachi_koshi_showdown_day15",
     };
   }
 
   // Ozeki kadoban survival (day 10+ with < 8 wins) — higher priority than yusho
-  const aIsKadoban = a.rank === "ozeki" && day >= 10 && aRecord.wins < 8;
-  const bIsKadoban = b.rank === "ozeki" && day >= 10 && bRecord.wins < 8;
+  const aIsKadoban = a.rank === "ozeki" && day >= DRAMA_DAY_KADOBAN_START && aRecord.wins < DRAMA_KADOBAN_WIN_THRESHOLD;
+  const bIsKadoban = b.rank === "ozeki" && day >= DRAMA_DAY_KADOBAN_START && bRecord.wins < DRAMA_KADOBAN_WIN_THRESHOLD;
   if (aIsKadoban || bIsKadoban) {
     return {
       label: "kadoban_survival",
-      score: 90,
+      score: DRAMA_SCORE_KADOBAN,
       reason: "ozeki_kadoban_pressure",
     };
   }
@@ -127,12 +170,12 @@ export function scoreDrama(
     if (record.wins > leaderWins) leaderWins = record.wins;
   }
 
-  const aIsContender = leaderWins - aRecord.wins <= 2;
-  const bIsContender = leaderWins - bRecord.wins <= 2;
-  if (aIsContender && bIsContender && leaderWins >= 10) {
+  const aIsContender = leaderWins - aRecord.wins <= DRAMA_YUSHO_CONTENDER_GAP;
+  const bIsContender = leaderWins - bRecord.wins <= DRAMA_YUSHO_CONTENDER_GAP;
+  if (aIsContender && bIsContender && leaderWins >= DRAMA_YUSHO_LEADER_MIN_WINS) {
     return {
       label: "yusho_decider",
-      score: 85,
+      score: DRAMA_SCORE_YUSHO_DECIDER,
       reason: "yusho_contender_matchup",
     };
   }
@@ -145,16 +188,16 @@ export function scoreDrama(
   if ((aIsMaegashira && bIsElite) || (bIsMaegashira && aIsElite)) {
     return {
       label: "kinboshi_hunt",
-      score: 50,
+      score: DRAMA_SCORE_KINBOSHI_HUNT,
       reason: "maegashira_vs_elite",
     };
   }
 
   // Senshuraku finale: elite matchup on final day
-  if (day === 15 && (aIsElite || bIsElite)) {
+  if (day === DRAMA_DAY_SENSHURAKU && (aIsElite || bIsElite)) {
     return {
       label: "senshuraku_finale",
-      score: 70,
+      score: DRAMA_SCORE_SENSHURAKU_FINALE,
       reason: "senshuraku_elite",
     };
   }
@@ -171,17 +214,17 @@ export function scoreDrama(
   const aRivalry = (a as Rikishi & { rivalries?: string[] }).rivalries;
   const bRivalry = (b as Rikishi & { rivalries?: string[] }).rivalries;
   const hasRivalryLink = aRivalry?.includes(b.id) || bRivalry?.includes(a.id);
-  if (rivalryHeat > 70) {
+  if (rivalryHeat > DRAMA_GRUDGE_HEAT_THRESHOLD) {
     return {
       label: "grudge_match",
-      score: 95,
+      score: DRAMA_SCORE_GRUDGE_MATCH,
       reason: "rivalry_heat_extreme",
     };
   }
-  if (rivalryHeat > 40 || hasRivalryLink) {
+  if (rivalryHeat > DRAMA_RIVALRY_HEAT_THRESHOLD || hasRivalryLink) {
     return {
       label: "rivalry_renewed",
-      score: Math.min(95, 50 + rivalryHeat / 2),
+      score: Math.min(DRAMA_RIVALRY_SCORE_CAP, DRAMA_RIVALRY_SCORE_BASE + rivalryHeat / DRAMA_RIVALRY_SCORE_DIVISOR),
       reason: "active_rivalry_matchup",
     };
   }
@@ -199,7 +242,7 @@ export function scoreDrama(
     if (isPushVsBelt || isSpeedVsGiant) {
       return {
         label: "archetype_clash",
-        score: 60,
+        score: DRAMA_SCORE_ARCHETYPE_CLASH,
         reason: `archetype_clash_${aArchetype}_vs_${bArchetype}`,
       };
     }
@@ -211,29 +254,29 @@ export function scoreDrama(
   if (aComeback || bComeback) {
     return {
       label: "comeback_story",
-      score: 65,
+      score: DRAMA_SCORE_COMEBACK,
       reason: "return_from_injury",
     };
   }
 
   // Rookie vs veteran: young debutant vs established veteran
-  const aIsRookie = (a.careerWins + a.careerLosses) < 5;
-  const bIsRookie = (b.careerWins + b.careerLosses) < 5;
-  const aIsVeteran = (a.careerWins + a.careerLosses) > 200;
-  const bIsVeteran = (b.careerWins + b.careerLosses) > 200;
+  const aIsRookie = (a.careerWins + a.careerLosses) < DRAMA_ROOKIE_TOTAL_BOUTS;
+  const bIsRookie = (b.careerWins + b.careerLosses) < DRAMA_ROOKIE_TOTAL_BOUTS;
+  const aIsVeteran = (a.careerWins + a.careerLosses) > DRAMA_VETERAN_TOTAL_BOUTS;
+  const bIsVeteran = (b.careerWins + b.careerLosses) > DRAMA_VETERAN_TOTAL_BOUTS;
   if ((aIsRookie && bIsVeteran) || (bIsRookie && aIsVeteran)) {
     return {
       label: "rookie_vs_veteran",
-      score: 55,
+      score: DRAMA_SCORE_ROOKIE_VS_VETERAN,
       reason: "rookie_vs_veteran",
     };
   }
 
   // Winless warrior: rikishi still winless on day 5+
-  if (day >= 5 && (aRecord.wins === 0 || bRecord.wins === 0)) {
+  if (day >= DRAMA_DAY_WINLESS_START && (aRecord.wins === 0 || bRecord.wins === 0)) {
     return {
       label: "winless_warrior",
-      score: 45,
+      score: DRAMA_SCORE_WINLESS_WARRIOR,
       reason: "winless_streak",
     };
   }
@@ -241,10 +284,10 @@ export function scoreDrama(
   // Streak breaker: one rikishi on a 5+ win streak
   const aStreak = (a as Rikishi & { winStreak?: number }).winStreak ?? 0;
   const bStreak = (b as Rikishi & { winStreak?: number }).winStreak ?? 0;
-  if (aStreak >= 5 || bStreak >= 5) {
+  if (aStreak >= DRAMA_STREAK_BREAKER_THRESHOLD || bStreak >= DRAMA_STREAK_BREAKER_THRESHOLD) {
     return {
       label: "streak_breaker",
-      score: 50,
+      score: DRAMA_SCORE_STREAK_BREAKER,
       reason: `win_streak_${Math.max(aStreak, bStreak)}`,
     };
   }
@@ -252,10 +295,10 @@ export function scoreDrama(
   // Demotion danger: Sekiwake/Komusubi at risk of demotion (day 12+, < 6 wins)
   const aIsSanyaku = a.rank === "sekiwake" || a.rank === "komusubi";
   const bIsSanyaku = b.rank === "sekiwake" || b.rank === "komusubi";
-  if (day >= 12 && ((aIsSanyaku && aRecord.wins < 6) || (bIsSanyaku && bRecord.wins < 6))) {
+  if (day >= DRAMA_DAY_DEMOTION_START && ((aIsSanyaku && aRecord.wins < DRAMA_DEMOTION_WIN_THRESHOLD) || (bIsSanyaku && bRecord.wins < DRAMA_DEMOTION_WIN_THRESHOLD))) {
     return {
       label: "demotion_danger",
-      score: 60,
+      score: DRAMA_SCORE_DEMOTION_DANGER,
       reason: "sanyaku_demotion_risk",
     };
   }
@@ -269,12 +312,12 @@ export function scoreDrama(
   const bMakuuchiBouts = (b.careerHistory ?? []).filter(
     (h) => h.division === "makuuchi"
   ).length;
-  const aIsDebut = aMakuuchiBouts <= 1 && a.division === "makuuchi" && aTotalBouts < 15 && a.rank !== "ozeki" && a.rank !== "yokozuna";
-  const bIsDebut = bMakuuchiBouts <= 1 && b.division === "makuuchi" && bTotalBouts < 15 && b.rank !== "ozeki" && b.rank !== "yokozuna";
+  const aIsDebut = aMakuuchiBouts <= DRAMA_DEBUT_MAKUUCHI_BOUTS && a.division === "makuuchi" && aTotalBouts < DRAMA_DEBUT_TOTAL_BOUTS && a.rank !== "ozeki" && a.rank !== "yokozuna";
+  const bIsDebut = bMakuuchiBouts <= DRAMA_DEBUT_MAKUUCHI_BOUTS && b.division === "makuuchi" && bTotalBouts < DRAMA_DEBUT_TOTAL_BOUTS && b.rank !== "ozeki" && b.rank !== "yokozuna";
   if ((aIsDebut && bIsSanyaku) || (bIsDebut && aIsSanyaku)) {
     return {
       label: "debut_showcase",
-      score: 65,
+      score: DRAMA_SCORE_DEBUT_SHOWCASE,
       reason: "rookie_debut_vs_sanyaku",
     };
   }
@@ -283,13 +326,13 @@ export function scoreDrama(
   const aIsYokozuna = a.rank === "yokozuna";
   const bIsYokozuna = b.rank === "yokozuna";
   if (
-    day >= 10 &&
-    day <= 14 &&
+    day >= DRAMA_DAY_YOKOZUNA_HUNT_START &&
+    day <= DRAMA_DAY_YOKOZUNA_HUNT_END &&
     ((aIsSanyaku && bIsYokozuna) || (bIsSanyaku && aIsYokozuna))
   ) {
     return {
       label: "yokozuna_hunt",
-      score: 70,
+      score: DRAMA_SCORE_YOKOZUNA_HUNT,
       reason: "sanyaku_vs_yokozuna",
     };
   }
@@ -300,15 +343,15 @@ export function scoreDrama(
   const bIsLowerDivision =
     b.division === "makushita" || b.division === "sandanme";
   if (
-    day >= 14 &&
+    day >= DRAMA_DAY_RELEGATION_START &&
     aIsLowerDivision &&
     bIsLowerDivision &&
-    aRecord.wins < 4 &&
-    bRecord.wins < 4
+    aRecord.wins < DRAMA_RELEGATION_WIN_THRESHOLD &&
+    bRecord.wins < DRAMA_RELEGATION_WIN_THRESHOLD
   ) {
     return {
       label: "relegation_battle",
-      score: 60,
+      score: DRAMA_SCORE_RELEGATION_BATTLE,
       reason: "lower_division_relegation",
     };
   }
@@ -317,7 +360,7 @@ export function scoreDrama(
   if (a.origin && b.origin && a.origin === b.origin) {
     return {
       label: "origin_matchup",
-      score: 40,
+      score: DRAMA_SCORE_ORIGIN_MATCHUP,
       reason: `same_origin_${a.origin}`,
     };
   }
@@ -380,7 +423,7 @@ export function applyDramaBudget(
 
   // Rivalry-aware: increase max swaps when rivalry pairs exist (3.2)
   const hasRivalryPairs = rivalryState && rivalryState.size > 0;
-  const maxSwaps = hasRivalryPairs ? 5 : 3;
+  const maxSwaps = hasRivalryPairs ? DRAMA_MAX_SWAPS_WITH_RIVALRY : DRAMA_MAX_SWAPS_DEFAULT;
 
   // Attempt up to maxSwaps to increase drama
   let bestPairings = [...pairings];

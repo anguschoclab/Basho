@@ -11,6 +11,14 @@ import type { WorldState } from "../../types/world";
 import type { StateImpact } from "../../core/StateImpact";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { rngForWorld } from "../../rng";
+import {
+  EXHIBITION_INJURY_RISK_MULTIPLIER,
+  EXHIBITION_STIPEND_MULTIPLIER,
+  EXHIBITION_RIVALRY_SEED_CHANCE,
+  EXHIBITION_BASE_STIPEND,
+  EXHIBITION_INJURY_BASE_CHANCE,
+  EXHIBITION_INJURY_FATIGUE_PENALTY,
+} from "../../../constants/engine/exhibitionBasho";
 
 /** Exhibition basho type — extends the 6 honbasho with jungyo events */
 export type ExhibitionBashoName = `${string}-jungyo`;
@@ -20,14 +28,8 @@ export function isExhibitionBasho(name: string): name is ExhibitionBashoName {
   return name.endsWith("-jungyo");
 }
 
-/** Injury risk multiplier for exhibition basho (reduced from 1.0) */
-export const EXHIBITION_INJURY_RISK_MULTIPLIER = 0.5;
-
-/** Stipend multiplier for exhibition basho (partial, vs full honbasho stipend) */
-export const EXHIBITION_STIPEND_MULTIPLIER = 0.3;
-
-/** Rivalry seed chance during exhibition basho */
-export const EXHIBITION_RIVALRY_SEED_CHANCE = 0.15;
+// Re-export constants for backward compatibility
+export { EXHIBITION_INJURY_RISK_MULTIPLIER, EXHIBITION_STIPEND_MULTIPLIER, EXHIBITION_RIVALRY_SEED_CHANCE };
 
 /** Exhibition basho info */
 export interface ExhibitionBashoInfo {
@@ -111,7 +113,7 @@ export function simulateExhibitionBasho(
     if (riki.isRetired) continue;
 
     // Partial stipend
-    const baseStipend = 50000;
+    const baseStipend = EXHIBITION_BASE_STIPEND;
     const stipend = Math.round(baseStipend * EXHIBITION_STIPEND_MULTIPLIER);
     if (riki.economics) {
       builder.updateRikishi(riki.id, {
@@ -124,10 +126,10 @@ export function simulateExhibitionBasho(
 
     // Reduced injury risk — small chance of minor injury
     const injuryRoll = rng.next();
-    if (injuryRoll < 0.02 * EXHIBITION_INJURY_RISK_MULTIPLIER) {
+    if (injuryRoll < EXHIBITION_INJURY_BASE_CHANCE * EXHIBITION_INJURY_RISK_MULTIPLIER) {
       // Minor injury — add small fatigue
       builder.updateRikishi(riki.id, {
-        fatigue: (riki.fatigue ?? 0) + 2,
+        fatigue: (riki.fatigue ?? 0) + EXHIBITION_INJURY_FATIGUE_PENALTY,
       });
     }
 

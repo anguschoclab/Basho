@@ -22,6 +22,7 @@ import {
   NARRATIVE_TICK_CADENCE,
   BOUT_FATIGUE_MULTIPLIER,
   CLOCK_MULTIPLIER,
+  COUNTER_FORCE_REDUCTION,
 } from "../../../constants/engine/physics";
 import { EDGE_THRESHOLD } from "../../types/combat-spatial";
 import type { EngineStateV2 } from "../../types/combat-spatial";
@@ -70,7 +71,6 @@ export function tickPushBattle(
 
   // In-bout counter-tactic activation (2.2): when defender's counterFamily matches
   // the current engagement family ("push"), reduce attacker's effective force
-  const COUNTER_FORCE_REDUCTION = 0.1; // 10% force reduction when countered
   let counterActivated = false;
   let counterSide: Side | null = null;
   if (west.combatProfile?.counterFamily === "push" && east.combatProfile?.counterFamily !== "push") {

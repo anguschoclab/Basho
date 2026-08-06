@@ -27,6 +27,12 @@ import {
   HEYA_WELFARE_RISK_DEFAULT,
   HEYA_FACILITIES_DEFAULT,
   HEYA_POLITICAL_CAPITAL_DEFAULT,
+  HEYA_STATURE_TIER_LEGENDARY,
+  HEYA_STATURE_TIER_POWERFUL,
+  HEYA_STATURE_TIER_ESTABLISHED,
+  HEYA_STATURE_TIER_REBUILDING,
+  HEYA_STATURE_TIER_FRAGILE,
+  HEYA_ELITE_TIER_THRESHOLD,
 } from "../../../constants/engine/generation";
 
 export function createHeyaWithOyakata(args: {
@@ -78,24 +84,24 @@ export function createHeyaWithOyakata(args: {
     oyakataId,
     shikonaPrefix,
     statureBand:
-      tier < 0.1
+      tier < HEYA_STATURE_TIER_LEGENDARY
         ? "legendary"
-        : tier < 0.25
+        : tier < HEYA_STATURE_TIER_POWERFUL
           ? "powerful"
-          : tier < 0.5
+          : tier < HEYA_STATURE_TIER_ESTABLISHED
             ? "established"
-            : tier < 0.7
+            : tier < HEYA_STATURE_TIER_REBUILDING
               ? "rebuilding"
-              : tier < 0.85
+              : tier < HEYA_STATURE_TIER_FRAGILE
                 ? "fragile"
                 : "new",
-    prestigeBand: tier < 0.2 ? "elite" : "respected",
+    prestigeBand: tier < HEYA_ELITE_TIER_THRESHOLD ? "elite" : "respected",
     facilitiesBand: "adequate",
     koenkaiBand: "moderate",
     runwayBand: "secure",
     reputation: HEYA_REPUTATION_BASE - tier * HEYA_REPUTATION_TIER_MULTIPLIER,
     prestige: HEYA_PRESTIGE_BASE - tier * HEYA_PRESTIGE_TIER_MULTIPLIER,
-    funds: tier < 0.2 ? HEYA_FUNDS_ELITE : HEYA_FUNDS_STANDARD,
+    funds: tier < HEYA_ELITE_TIER_THRESHOLD ? HEYA_FUNDS_ELITE : HEYA_FUNDS_STANDARD,
     scandalScore: 0,
     governanceStatus: "good_standing",
     welfareState: {

@@ -6,6 +6,14 @@ import type {
   SponsorTone,
   SponsorPool,
 } from "../../types/sponsors";
+import {
+  SPONSOR_CATEGORY_LOCAL_BUSINESS,
+  SPONSOR_CATEGORY_REGIONAL_CORP,
+  SPONSOR_CATEGORY_NATIONAL_BRAND,
+  SPONSOR_CATEGORY_ALUMNI,
+  SPONSOR_CATEGORY_CULTURAL,
+  SPONSOR_CATEGORY_PRIVATE_BENEFACTOR,
+} from "../../../constants/engine/generation";
 
 // === CONSTANTS & COMPONENTS ===
 
@@ -99,12 +107,12 @@ export function generateSponsorId(rng: SeededRNG): string {
 
 export function rollSponsorCategory(rng: SeededRNG): SponsorCategory {
   const categoryRoll = rng.next();
-  if (categoryRoll < 0.3) return "local_business";
-  if (categoryRoll < 0.5) return "regional_corporation";
-  if (categoryRoll < 0.62) return "national_brand";
-  if (categoryRoll < 0.72) return "alumni_association";
-  if (categoryRoll < 0.82) return "cultural_foundation";
-  if (categoryRoll < 0.94) return "private_benefactor";
+  if (categoryRoll < SPONSOR_CATEGORY_LOCAL_BUSINESS) return "local_business";
+  if (categoryRoll < SPONSOR_CATEGORY_REGIONAL_CORP) return "regional_corporation";
+  if (categoryRoll < SPONSOR_CATEGORY_NATIONAL_BRAND) return "national_brand";
+  if (categoryRoll < SPONSOR_CATEGORY_ALUMNI) return "alumni_association";
+  if (categoryRoll < SPONSOR_CATEGORY_CULTURAL) return "cultural_foundation";
+  if (categoryRoll < SPONSOR_CATEGORY_PRIVATE_BENEFACTOR) return "private_benefactor";
   return "anonymous_patron";
 }
 

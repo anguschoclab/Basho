@@ -18,6 +18,20 @@ import { rngForWorld } from "../rng";
 import { getHeyaStyleBias, getOyakataForHeya, getHeya } from "../queries";
 import { getCachedPerception, PerceptionSnapshot } from "../perception";
 import { BardEngine } from "../bard/BardEngine";
+import {
+  DEFAULT_WELFARE_DISCIPLINE,
+  DEFAULT_RISK_APPETITE,
+  COMPASSION_WELFARE_DIVISOR,
+  WELFARE_HAWK_BONUS,
+  RISK_WELFARE_DIVISOR,
+  RISK_MULTIPLIER,
+  AMBITION_MULTIPLIER,
+  WELFARE_HAWK_COMPASSION_THRESHOLD,
+  DISCIPLINE_HAWK_TRADITION_THRESHOLD,
+  PUBLICITY_HAWK_AMBITION_THRESHOLD,
+  QUIRK_COUNT_HIGH,
+  QUIRK_COUNT_BASE,
+} from "../../constants/engine/npcStrategy";
 
 /**
  * NPC Persona structure for decision making.
@@ -121,19 +135,19 @@ export function ensurePersonaForOyakata(
 
   const rng = rngForWorld(world, "oyakataPersona", oyakata.id);
 
-  const baseCount = oyakata.archetype === "tyrant" || oyakata.archetype === "gambler" ? 3 : 2;
+  const baseCount = oyakata.archetype === "tyrant" || oyakata.archetype === "gambler" ? QUIRK_COUNT_HIGH : QUIRK_COUNT_BASE;
   const quirkIds = pickUnique(rng, QUIRK_IDS, baseCount);
 
   // Hydrate quirk labels via BardEngine
   const quirkLabels = quirkIds.map((id) => BardEngine.resolve(rng, `oyakata.quirks.${id}`).text);
 
   const flags = {
-    welfareHawk: quirkIds.includes("Welfare Hawk") || oyakata.traits.compassion >= 75,
+    welfareHawk: quirkIds.includes("Welfare Hawk") || oyakata.traits.compassion >= WELFARE_HAWK_COMPASSION_THRESHOLD,
     disciplineHawk:
       quirkIds.includes("Discipline Hawk") ||
       oyakata.archetype === "tyrant" ||
-      oyakata.traits.tradition >= 80,
-    publicityHawk: quirkIds.includes("Media Operator") || oyakata.traits.ambition >= 80,
+      oyakata.traits.tradition >= DISCIPLINE_HAWK_TRADITION_THRESHOLD,
+    publicityHawk: quirkIds.includes("Media Operator") || oyakata.traits.ambition >= PUBLICITY_HAWK_AMBITION_THRESHOLD,
     nepotist: quirkIds.includes("Nepotist"),
   };
 
@@ -171,8 +185,8 @@ export function getManagerPersona(world: WorldState, heyaId: string): NPCPersona
       quirks: [],
       flags: { welfareHawk: false, disciplineHawk: false, publicityHawk: false, nepotist: false },
       styleBias: "neutral",
-      welfareDiscipline: 0.4,
-      riskAppetite: 0.5,
+      welfareDiscipline: DEFAULT_WELFARE_DISCIPLINE,
+      riskAppetite: DEFAULT_RISK_APPETITE,
       perception,
       mood: "content" as OyakataMood,
     };
@@ -190,12 +204,12 @@ export function getManagerPersona(world: WorldState, heyaId: string): NPCPersona
 
   const welfareDiscipline = Math.max(
     0,
-    Math.min(1, traits.compassion / 120 + (flags.welfareHawk ? 0.25 : 0) - traits.risk / 220)
+    Math.min(1, traits.compassion / COMPASSION_WELFARE_DIVISOR + (flags.welfareHawk ? WELFARE_HAWK_BONUS : 0) - traits.risk / RISK_WELFARE_DIVISOR)
   );
 
   const riskAppetite = Math.max(
     0,
-    Math.min(1, (traits.risk / 100) * 0.65 + (traits.ambition / 100) * 0.35)
+    Math.min(1, (traits.risk / 100) * RISK_MULTIPLIER + (traits.ambition / 100) * AMBITION_MULTIPLIER)
   );
 
   return {

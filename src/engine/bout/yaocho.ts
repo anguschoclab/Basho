@@ -19,24 +19,20 @@ import { reportScandal } from "../systems/governance/ScandalService";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 import { rngFromSeed } from "../rng";
-
-/** Base probability of yaocho detection per suspicious bout. */
-const YAOCHO_BASE_DETECTION_CHANCE = 0.01;
-
-/** Additional chance per suspicious indicator. */
-const YAOCHO_PER_INDICATOR_CHANCE = 0.02;
-
-/** Maximum detection chance cap. */
-const YAOCHO_MAX_CHANCE = 0.15;
-
-/** Minimum repeated identical kimarite to flag as suspicious. */
-const REPEAT_KIMARITE_THRESHOLD = 3;
-
-/** Minimum h2h meetings to flag dominance pattern as suspicious. */
-const H2H_DOMINANCE_MIN_MEETINGS = 4;
-
-/** Win rate threshold for suspicious dominance. */
-const H2H_DOMINANCE_WIN_RATE = 0.9;
+import {
+  YAOCHO_BASE_DETECTION_CHANCE,
+  YAOCHO_PER_INDICATOR_CHANCE,
+  YAOCHO_MAX_CHANCE,
+  YAOCHO_REPEAT_KIMARITE_THRESHOLD,
+  YAOCHO_H2H_DOMINANCE_MIN_MEETINGS,
+  YAOCHO_H2H_DOMINANCE_WIN_RATE,
+  YAOCHO_SENSHURAKU_START_DAY,
+  YAOCHO_SAME_HEYA_77_BONUS,
+  YAOCHO_SHORT_BOUT_THRESHOLD,
+  YAOCHO_DEFAULT_DURATION,
+  YAOCHO_SEVERITY_CRITICAL_INDICATORS,
+  YAOCHO_SEVERITY_MAJOR_INDICATORS,
+} from "../../constants/engine/bout";
 
 export interface YaochoIndicators {
   /** Both rikishi are from the same heya (cross-stable fixing is rare). */
@@ -76,7 +72,7 @@ export function evaluateYaochoIndicators(
 
   const loserRecord = basho.standings?.get(loser.id);
   const loserIs77OnSenshuraku =
-    day >= 14 && loserRecord?.wins === 7 && loserRecord?.losses === 7;
+    day >= YAOCHO_SENSHURAKU_START_DAY && loserRecord?.wins === 7 && loserRecord?.losses === 7;
 
   // Check H2H dominance from winner's h2h record
   const h2hEntry = winner.h2h?.[loser.id];
@@ -84,15 +80,15 @@ export function evaluateYaochoIndicators(
   const h2hLosses = h2hEntry?.losses ?? 0;
   const totalMeetings = h2hWins + h2hLosses;
   const h2hDominance =
-    totalMeetings >= H2H_DOMINANCE_MIN_MEETINGS &&
-    h2hWins / totalMeetings >= H2H_DOMINANCE_WIN_RATE;
+    totalMeetings >= YAOCHO_H2H_DOMINANCE_MIN_MEETINGS &&
+    h2hWins / totalMeetings >= YAOCHO_H2H_DOMINANCE_WIN_RATE;
 
   // Check repeated kimarite in H2H history (using lastMatch as indicator)
   const lastKimarite = h2hEntry?.lastMatch?.kimarite;
   const repeatedKimarite =
-    lastKimarite === result.kimarite && totalMeetings >= REPEAT_KIMARITE_THRESHOLD;
+    lastKimarite === result.kimarite && totalMeetings >= YAOCHO_REPEAT_KIMARITE_THRESHOLD;
 
-  const suspiciouslyShort = (result.duration ?? 10) < 3 && result.kimarite !== "fusensho";
+  const suspiciouslyShort = (result.duration ?? YAOCHO_DEFAULT_DURATION) < YAOCHO_SHORT_BOUT_THRESHOLD && result.kimarite !== "fusensho";
 
   return {
     sameHeya,
@@ -120,7 +116,7 @@ export function calculateYaochoChance(indicators: YaochoIndicators): number {
 
   // Same-heya + 7-7 on senshuraku is the classic yaocho pattern
   if (indicators.sameHeya && indicators.loserIs77OnSenshuraku) {
-    chance += 0.05;
+    chance += YAOCHO_SAME_HEYA_77_BONUS;
   }
 
   return Math.min(chance, YAOCHO_MAX_CHANCE);
@@ -153,7 +149,7 @@ export function checkYaocho(
   // Determine severity based on indicator count
   const indicatorCount = Object.values(indicators).filter(Boolean).length;
   const severity: "minor" | "major" | "critical" =
-    indicatorCount >= 4 ? "critical" : indicatorCount >= 2 ? "major" : "minor";
+    indicatorCount >= YAOCHO_SEVERITY_CRITICAL_INDICATORS ? "critical" : indicatorCount >= YAOCHO_SEVERITY_MAJOR_INDICATORS ? "major" : "minor";
 
   // Report scandal for both heyas involved
   const winner = getRikishi(world, result.winnerRikishiId);

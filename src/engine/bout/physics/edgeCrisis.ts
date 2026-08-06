@@ -18,6 +18,11 @@ import {
   ESCAPE_MARGIN_PROBABILITY_MULTIPLIER,
   ANGULAR_ESCAPE_POWER_SCALE,
   EDGE_CRISIS_RECOVERY_PROBABILITY,
+  EDGE_INJURY_RISK_MULT,
+  EDGE_INJURY_RISK_THRESHOLD,
+  EDGE_INJURY_SEVERITY_MODERATE,
+  EDGE_CONTROVERSIAL_TOE_MULTIPLIER,
+  EDGE_CONTROVERSIAL_MARGIN_FACTOR,
 } from "../../../constants/engine/physics";
 import { EDGE_THRESHOLD } from "../../types/combat-spatial";
 import type {
@@ -106,11 +111,11 @@ export function tickEdgeCrisis(
     // Injury risk during bouts (1.3): high-pressure edge exits can cause injury
     const injuryRisk =
       (crisis.tawaraToePosition / TOE_POSITION_MAX) *
-      (crisis.opponentPressureX + Math.abs(crisis.opponentPressureZ)) * 0.001;
-    if (injuryRisk > 0.15 && rng.next() < injuryRisk && !st.inBoutInjury) {
+      (crisis.opponentPressureX + Math.abs(crisis.opponentPressureZ)) * EDGE_INJURY_RISK_MULT;
+    if (injuryRisk > EDGE_INJURY_RISK_THRESHOLD && rng.next() < injuryRisk && !st.inBoutInjury) {
       const areas: InjuryBodyArea[] = ["knee", "ankle", "shoulder", "back", "wrist"];
       const area = areas[Math.floor(rng.next() * areas.length)];
-      const severity: InjurySeverity = injuryRisk > 0.3 ? "moderate" : "minor";
+      const severity: InjurySeverity = injuryRisk > EDGE_INJURY_SEVERITY_MODERATE ? "moderate" : "minor";
       const injuredId = crisis.side === "east" ? east.id : west.id;
       st.inBoutInjury = {
         rikishiId: injuredId,
@@ -132,7 +137,7 @@ export function tickEdgeCrisis(
     }
 
     // Mono-ii detection (1.7): close edge calls are controversial
-    const controversial = crisis.tawaraToePosition < TOE_POSITION_FORCED_OUT * 1.1;
+    const controversial = crisis.tawaraToePosition < TOE_POSITION_FORCED_OUT * EDGE_CONTROVERSIAL_TOE_MULTIPLIER;
     boutLog.push({
       phase: "edge_crisis",
       clock: st.tick * CLOCK_MULTIPLIER,
@@ -166,7 +171,7 @@ export function tickEdgeCrisis(
       rng.next() < ESCAPE_BASE_PROBABILITY + escapeMargin * ESCAPE_MARGIN_PROBABILITY_MULTIPLIER);
 
   // Mono-ii detection for close escape calls (1.7)
-  const controversial = !didEscape && Math.abs(escapeMargin) < ESCAPE_MARGIN_THRESHOLD * 0.5;
+  const controversial = !didEscape && Math.abs(escapeMargin) < ESCAPE_MARGIN_THRESHOLD * EDGE_CONTROVERSIAL_MARGIN_FACTOR;
 
   // Log this crisis tick for narrative
   boutLog.push({

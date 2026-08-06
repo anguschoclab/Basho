@@ -139,3 +139,34 @@ export const RANK_DIFF_SCORE_BASE = 15;
 
 /** Rank diff score multiplier */
 export const RANK_DIFF_SCORE_MULTIPLIER = 2;
+
+// ─────────────────────────────────────────
+// Bout narrative probabilities
+// ─────────────────────────────────────────
+
+/** Chance to narrate stamina engagement in long bouts */
+export const NARRATIVE_STAMINA_CHANCE = 0.4;
+
+/** Chance to narrate grip depth changes */
+export const NARRATIVE_DEPTH_CHANGE_CHANCE = 0.3;
+
+/** Recovery probability threshold for low-recovery edge crisis narration */
+export const NARRATIVE_LOW_RECOVERY_THRESHOLD = 0.2;
+
+/** Toe position threshold for tawara drama narration */
+export const NARRATIVE_TAWARA_TOE_THRESHOLD = 0.6;
+
+/** Chance for gyoji confusion flavor in mono-ii */
+export const NARRATIVE_GYOJI_CONFUSED_CHANCE = 0.4;
+
+/** Chance for mono-ii call to be reversed */
+export const NARRATIVE_CALL_REVERSED_CHANCE = 0.25;
+
+/** Cumulative threshold for mono-ii rematch ordered */
+export const NARRATIVE_REMATCH_CHANCE = 0.35;
+
+/** Chance for stress-terse interview modifier */
+export const NARRATIVE_STRESS_TERSE_CHANCE = 0.5;
+
+/** Chance for media-savvy polished interview modifier */
+export const NARRATIVE_MEDIA_SAVVY_CHANCE = 0.4;

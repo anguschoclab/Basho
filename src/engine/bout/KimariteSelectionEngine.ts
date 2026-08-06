@@ -19,6 +19,16 @@ import {
   KIMARITE_LOWER_DIVISION_PENALTY,
   KIMARITE_FAVORITE_SUCCESS_BOOST,
   KIMARITE_SUCCESS_HARD_MIN,
+  ARCHETYPE_FAMILY_BIAS,
+  GRIP_ADVANTAGE_THRESHOLD,
+  GRIP_ADVANTAGE_WEIGHT,
+  GRIP_ADVANTAGE_CAP,
+  LOW_BALANCE_THRESHOLD,
+  LOW_TECHNIQUE_THRESHOLD,
+  SPEED_LOW_BALANCE_BOOST,
+  PUSH_LOW_TECH_BOOST,
+  DEFAULT_DIFFICULTY,
+  DIFFICULTY_SCALE,
 } from "../../constants/engine/kimarite";
 
 /**
@@ -117,16 +127,6 @@ export const KimariteSelectionEngine = {
         // Archetype-based kimarite bias (8.3): archetype aligns with tactical family
         const archetype = attacker.combatProfile?.archetype;
         if (archetype && tacticalFamily) {
-          const ARCHETYPE_FAMILY_BIAS: Record<string, Record<string, number>> = {
-            oshi: { push: 1.3, belt: 0.7 },
-            yotsu: { belt: 1.3, push: 0.7 },
-            tsuppari: { push: 1.4 },
-            trickster: { trick: 1.3, push: 0.8 },
-            speedster: { speed: 1.3, trick: 1.1 },
-            giant: { belt: 1.2, push: 1.1 },
-            hybrid: {},
-            defensive: { trick: 1.2, push: 0.9 },
-          };
           const familyBias = ARCHETYPE_FAMILY_BIAS[archetype]?.[tacticalFamily];
           if (familyBias) weight *= familyBias;
         }
@@ -137,20 +137,20 @@ export const KimariteSelectionEngine = {
           const attackerTorque = side === "east" ? beltState.torqueEast : beltState.torqueWest;
           const defenderTorque = side === "east" ? beltState.torqueWest : beltState.torqueEast;
           const gripAdvantage = attackerTorque - defenderTorque;
-          if (gripAdvantage > 5) {
-            weight *= 1 + Math.min(0.3, gripAdvantage * 0.02);
+          if (gripAdvantage > GRIP_ADVANTAGE_THRESHOLD) {
+            weight *= 1 + Math.min(GRIP_ADVANTAGE_CAP, gripAdvantage * GRIP_ADVANTAGE_WEIGHT);
           }
         }
 
         // Opponent vulnerability weight (8.3): boost trip/sweep when opponent balance is low
         const defenderBalance = defender.stats?.balance ?? 50;
-        if (tacticalFamily === "speed" && defenderBalance < 40) {
-          weight *= 1.2;
+        if (tacticalFamily === "speed" && defenderBalance < LOW_BALANCE_THRESHOLD) {
+          weight *= SPEED_LOW_BALANCE_BOOST;
         }
         // Boost push techniques when opponent technique is low (clumsy defender)
         const defenderTech = defender.stats?.technique ?? 50;
-        if (tacticalFamily === "push" && defenderTech < 40) {
-          weight *= 1.15;
+        if (tacticalFamily === "push" && defenderTech < LOW_TECHNIQUE_THRESHOLD) {
+          weight *= PUSH_LOW_TECH_BOOST;
         }
 
         totalWeight += weight;
@@ -172,14 +172,14 @@ export const KimariteSelectionEngine = {
       // 5. Execution Success Probability (E2 Deep Dive)
       // Execution = f(Technique, Difficulty, Division)
       const attackerTech = attacker.stats?.technique ?? attacker.stats.technique ?? 50;
-      const difficulty = selected.difficulty || 5;
+      const difficulty = selected.difficulty || DEFAULT_DIFFICULTY;
 
       // Base probability: tech (0-100) vs difficulty (1-10) scaled to 10-100
       let successProb = Math.max(
         KIMARITE_SUCCESS_MIN,
         Math.min(
           KIMARITE_SUCCESS_MAX,
-          (attackerTech / (difficulty * 10)) * KIMARITE_SUCCESS_BASE_SCALE
+          (attackerTech / (difficulty * DIFFICULTY_SCALE)) * KIMARITE_SUCCESS_BASE_SCALE
         )
       );
 

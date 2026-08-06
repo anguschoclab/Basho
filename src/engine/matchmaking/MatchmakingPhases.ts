@@ -11,6 +11,37 @@ import { clamp } from "../utils";
 import { stableTieBreak } from "../utils/sort";
 import { rngFromSeed } from "../rng";
 import { isSanyakuRank } from "@/constants/engine/rankDisplay";
+import {
+  RECORD_SIMILARITY_DIFF_MULT,
+  RANK_SIMILARITY_DIFF_RANK_SCORE,
+  RANK_SIMILARITY_NO_RANKNUM_SCORE,
+  RANK_SIMILARITY_DIFF_MULT,
+  MATCH_BASE_SCORE,
+  MATCH_LATE_RECORD_WEIGHT,
+  MATCH_LATE_SIMILARITY_WEIGHT,
+  MATCH_STRICT_RECORD_THRESHOLD,
+  MATCH_YUSHO_CONTENDER_MULTIPLIER,
+  MATCH_EARLY_RECORD_WEIGHT,
+  MATCH_EARLY_SIMILARITY_WEIGHT,
+  MATCH_SIMILAR_RECORDS_THRESHOLD,
+  MATCH_SANYAKU_MATCHUP_MULTIPLIER,
+  MATCH_SANYAKU_AVOIDED_MULTIPLIER,
+  MATCH_JOI_JIN_SIMILARITY_THRESHOLD,
+  MATCH_JOI_JIN_MULTIPLIER,
+  MATCH_RANK_SCORE_WEIGHT,
+  MATCH_RANK_SIMILARITY_WEIGHT,
+  MATCH_SIMILAR_RANK_THRESHOLD,
+  MATCH_FACED_PENALTY,
+  MATCH_KADOBAN_PRESSURE_MULTIPLIER,
+  SIDE_HONOR_BONUS,
+  MATCH_DAY_LATE_THRESHOLD,
+  MATCH_YUSHO_CONTENDER_MIN_WINS,
+  DRAMA_DAY_SENSHURAKU,
+  DRAMA_DAY_KADOBAN_START,
+  DRAMA_KADOBAN_WIN_THRESHOLD,
+  SCORE_CLAMP_MIN,
+  SCORE_CLAMP_MAX,
+} from "../../constants/engine/matchmaking";
 import type { BashoState } from "../types/basho";
 import type { Division, Side } from "../types/banzuke";
 import type { Rikishi } from "../types/rikishi";
@@ -68,16 +99,16 @@ function recordSimilarity(
   b: { wins: number; losses: number }
 ): number {
   const diff = Math.abs(a.wins - b.wins) + Math.abs(a.losses - b.losses);
-  return 1 / (1 + diff * 0.5);
+  return 1 / (1 + diff * RECORD_SIMILARITY_DIFF_MULT);
 }
 
 function rankSimilarity(a: Rikishi, b: Rikishi): number {
-  if (a.rank !== b.rank) return 0.25;
+  if (a.rank !== b.rank) return RANK_SIMILARITY_DIFF_RANK_SCORE;
   const an = typeof a.rankNumber === "number" ? a.rankNumber : 0;
   const bn = typeof b.rankNumber === "number" ? b.rankNumber : 0;
-  if (an <= 0 || bn <= 0) return 0.75;
+  if (an <= 0 || bn <= 0) return RANK_SIMILARITY_NO_RANKNUM_SCORE;
   const diff = Math.abs(an - bn);
-  return 1 / (1 + diff * 0.35);
+  return 1 / (1 + diff * RANK_SIMILARITY_DIFF_MULT);
 }
 
 function haveFacedThisBasho(basho: BashoState, aId: string, bId: string): boolean {
@@ -103,7 +134,7 @@ function assignSides(
     return {
       eastId: aSide === "east" ? a.id : b.id,
       westId: aSide === "west" ? a.id : b.id,
-      bonus: 0.2,
+      bonus: SIDE_HONOR_BONUS,
       reasons,
     };
   }
@@ -170,7 +201,7 @@ export function scorePairing(args: {
   if (rules.avoidRepeatOpponents && faced && !args.allowRepeatOverride) return null;
 
   const reasons: string[] = [];
-  let score = 1.0;
+  let score = MATCH_BASE_SCORE;
 
   if (rules.preferSimilarRecords) {
     const ra = getRecord(basho, a.id);
@@ -178,17 +209,17 @@ export function scorePairing(args: {
     const s = recordSimilarity(ra, rb);
 
     const day = basho.day || 1;
-    if (day > 7) {
-      score *= 0.2 + 0.8 * s;
-      if (s > 0.9) reasons.push("strict_record_match");
+    if (day > MATCH_DAY_LATE_THRESHOLD) {
+      score *= MATCH_LATE_RECORD_WEIGHT + MATCH_LATE_SIMILARITY_WEIGHT * s;
+      if (s > MATCH_STRICT_RECORD_THRESHOLD) reasons.push("strict_record_match");
 
-      if (day === 15 && ra.wins >= 11 && rb.wins >= 11 && Math.abs(ra.wins - rb.wins) <= 1) {
-        score *= 2.0;
+      if (day === DRAMA_DAY_SENSHURAKU && ra.wins >= MATCH_YUSHO_CONTENDER_MIN_WINS && rb.wins >= MATCH_YUSHO_CONTENDER_MIN_WINS && Math.abs(ra.wins - rb.wins) <= 1) {
+        score *= MATCH_YUSHO_CONTENDER_MULTIPLIER;
         reasons.push("yusho_contenders");
       }
     } else {
-      score *= 0.6 + 0.4 * s;
-      if (s > 0.75) reasons.push("similar_records");
+      score *= MATCH_EARLY_RECORD_WEIGHT + MATCH_EARLY_SIMILARITY_WEIGHT * s;
+      if (s > MATCH_SIMILAR_RECORDS_THRESHOLD) reasons.push("similar_records");
     }
   }
 
@@ -200,37 +231,37 @@ export function scorePairing(args: {
     const bSanyaku = isSanyakuRank(b.rank);
 
     if (aSanyaku && bSanyaku) {
-      if (day > 7) {
-        score *= 1.5;
+      if (day > MATCH_DAY_LATE_THRESHOLD) {
+        score *= MATCH_SANYAKU_MATCHUP_MULTIPLIER;
         reasons.push("sanyaku_matchup");
       } else {
-        score *= 0.5;
+        score *= MATCH_SANYAKU_AVOIDED_MULTIPLIER;
         reasons.push("sanyaku_avoided_early");
       }
     } else if ((aSanyaku && !bSanyaku) || (!aSanyaku && bSanyaku)) {
-      if (day <= 7 && s > 0.5) {
-        score *= 1.2;
+      if (day <= MATCH_DAY_LATE_THRESHOLD && s > MATCH_JOI_JIN_SIMILARITY_THRESHOLD) {
+        score *= MATCH_JOI_JIN_MULTIPLIER;
         reasons.push("joi_jin_scheduling");
       }
     }
 
-    score *= 0.6 + 0.4 * s;
-    if (s > 0.75 && !reasons.includes("similar_rank")) reasons.push("similar_rank");
+    score *= MATCH_RANK_SCORE_WEIGHT + MATCH_RANK_SIMILARITY_WEIGHT * s;
+    if (s > MATCH_SIMILAR_RANK_THRESHOLD && !reasons.includes("similar_rank")) reasons.push("similar_rank");
   }
 
   if (faced) {
-    score *= 0.65;
+    score *= MATCH_FACED_PENALTY;
     reasons.push("repeat_forced");
   }
 
   const day = basho.day || 1;
-  if (day > 10) {
+  if (day > DRAMA_DAY_KADOBAN_START) {
     const ra = getRecord(basho, a.id);
     const rb = getRecord(basho, b.id);
-    const aKadoban = a.rank === "ozeki" && ra.wins < 8;
-    const bKadoban = b.rank === "ozeki" && rb.wins < 8;
+    const aKadoban = a.rank === "ozeki" && ra.wins < DRAMA_KADOBAN_WIN_THRESHOLD;
+    const bKadoban = b.rank === "ozeki" && rb.wins < DRAMA_KADOBAN_WIN_THRESHOLD;
     if (aKadoban || bKadoban) {
-      score *= 1.4;
+      score *= MATCH_KADOBAN_PRESSURE_MULTIPLIER;
       reasons.push("kadoban_pressure");
     }
   }
@@ -242,7 +273,7 @@ export function scorePairing(args: {
   return {
     eastId: side.eastId,
     westId: side.westId,
-    score: clamp(score, 0, 5),
+    score: clamp(score, SCORE_CLAMP_MIN, SCORE_CLAMP_MAX),
     reasons,
   };
 }

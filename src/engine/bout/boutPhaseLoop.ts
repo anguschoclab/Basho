@@ -12,6 +12,13 @@ import {
   ISAMIASHI_INSTABILITY_THRESHOLD,
   CLOCK_MULTIPLIER,
 } from "../../constants/engine/physics";
+import {
+  MOMENTUM_SCORE_FACTOR,
+  MOMENTUM_DOMINANT_THRESHOLD,
+  FATIGUE_LOG_TICK_1,
+  FATIGUE_LOG_TICK_2,
+  INSTABILITY_FLOOR,
+} from "../../constants/engine/bout";
 import type { EngineStateV2 } from "../types/combat-spatial";
 import { type BoutContext } from "./boutUtils";
 
@@ -51,11 +58,11 @@ function runPhaseLoop(
     } else if (st.phase.tag === "belt_battle") {
       forceDiff = st.phase.state.torqueEast - st.phase.state.torqueWest;
     }
-    st.momentumScore += forceDiff * 0.01;
+    st.momentumScore += forceDiff * MOMENTUM_SCORE_FACTOR;
 
     // Detect momentum shift (sign flip)
     const currentDominant: Side | null =
-      st.momentumScore > 0.5 ? "east" : st.momentumScore < -0.5 ? "west" : null;
+      st.momentumScore > MOMENTUM_DOMINANT_THRESHOLD ? "east" : st.momentumScore < -MOMENTUM_DOMINANT_THRESHOLD ? "west" : null;
     if (currentDominant && st.prevDominantSide && currentDominant !== st.prevDominantSide) {
       boutLog.push({
         phase: "momentum_shift",
@@ -70,7 +77,7 @@ function runPhaseLoop(
     if (currentDominant) st.prevDominantSide = currentDominant;
 
     // --- Fatigue snapshot logging (1.2) ---
-    if (st.tick === 10 || st.tick === 20) {
+    if (st.tick === FATIGUE_LOG_TICK_1 || st.tick === FATIGUE_LOG_TICK_2) {
       boutLog.push({
         phase: "fatigue",
         clock: st.tick * CLOCK_MULTIPLIER,
@@ -99,8 +106,8 @@ function runPhaseLoop(
   }
 
   // Timeout — most stable rikishi wins (smallest cogOffset relative to footSpread)
-  const eastInstability = Math.abs(st.east.cogOffset) / Math.max(0.01, st.east.footSpread);
-  const westInstability = Math.abs(st.west.cogOffset) / Math.max(0.01, st.west.footSpread);
+  const eastInstability = Math.abs(st.east.cogOffset) / Math.max(INSTABILITY_FLOOR, st.east.footSpread);
+  const westInstability = Math.abs(st.west.cogOffset) / Math.max(INSTABILITY_FLOOR, st.west.footSpread);
 
   // Shini-tai: if both rikishi exit simultaneously (instability too close to call),
   // use balance stat as tiebreaker (mono-ii decision)

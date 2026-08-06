@@ -27,6 +27,16 @@ import { assignPreSumoBackground, applyBackgroundStatModifiers } from "./PreSumo
 import { assignQuirk } from "./QuirkAssignment";
 import { maybeAssignEarlyShikona } from "./FightingNameEarly";
 import { assignRecruitmentCohort } from "./CohortTracking";
+import {
+  FOREIGN_RECRUIT_CHANCE,
+  MONGOLIAN_SHARE,
+  PA_BOOST_REF,
+  PA_BOOST_DIVISOR,
+  PA_BOOST_MAX,
+  PROFILE_BOOST_PRODIGY,
+  PROFILE_BOOST_LATE_BLOOMER,
+  PROFILE_BOOST_JOURNEYMAN,
+} from "../../../constants/engine/generation";
 
 function createBaseInfo(
   id: string,
@@ -192,8 +202,8 @@ export function generateFullRikishi(args: {
 
   // Nationality first for regional PA biases (Phase 3)
   const nationality =
-    rng.next() < 0.15
-      ? rng.next() < 0.7
+    rng.next() < FOREIGN_RECRUIT_CHANCE
+      ? rng.next() < MONGOLIAN_SHARE
         ? "Mongolia"
         : rng.pick(["Georgia", "Russia", "Bulgaria", "Estonia", "Brazil", "Hawaii"])
       : "Japan";
@@ -221,14 +231,14 @@ export function generateFullRikishi(args: {
       potentialPkg.stats.stamina +
       potentialPkg.stats.mental) /
     5;
-  const paBoost = clamp((paAvg - 55) / 120, 0, 0.3); // PA 55→0, PA 85→+0.25, PA 95→+0.33
+  const paBoost = clamp((paAvg - PA_BOOST_REF) / PA_BOOST_DIVISOR, 0, PA_BOOST_MAX); // PA 55→0, PA 85→+0.25, PA 95→+0.33
   const profileBoost =
     potentialPkg.profile === "prodigy"
-      ? 0.15
+      ? PROFILE_BOOST_PRODIGY
       : potentialPkg.profile === "late_bloomer"
-        ? 0.05
+        ? PROFILE_BOOST_LATE_BLOOMER
         : potentialPkg.profile === "journeyman"
-          ? -0.1
+          ? PROFILE_BOOST_JOURNEYMAN
           : 0;
   const heyaPrefixBoost = Math.max(0, paBoost + profileBoost);
 

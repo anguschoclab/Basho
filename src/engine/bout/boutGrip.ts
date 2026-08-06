@@ -19,6 +19,13 @@ import {
   ARM_REACH_INCREMENT,
   GRIP_DEEPEN_MARGIN,
   GRIP_DEEPEN_TECHNIQUE_MARGIN,
+  GRIP_FATIGUE_DECAY_RATE,
+  PRESSURE_GRIP_DECAY_RATE,
+  PRESSURE_THRESHOLD,
+  GRIP_STRENGTH_FLOOR,
+  GRIP_BREAK_THRESHOLD,
+  GRIP_BREAK_CHANCE,
+  GRIP_BREAK_REACH_REDUCTION,
 } from "../../constants/engine/physics";
 import { deriveGripClass } from "./boutSpatial";
 import { stat } from "./boutUtils";
@@ -249,30 +256,26 @@ export function evolveGripGeometry(
   }
 
   // Grip strength decays with fatigue
-  const eastFatigueDecay = 1 - eastFatigue * 0.003;
-  const westFatigueDecay = 1 - westFatigue * 0.003;
+  const eastFatigueDecay = 1 - eastFatigue * GRIP_FATIGUE_DECAY_RATE;
+  const westFatigueDecay = 1 - westFatigue * GRIP_FATIGUE_DECAY_RATE;
 
   // Grip degradation under pressure (1.8): the losing side's grip degrades faster
   // due to defensive strain and being forced backwards
   const torqueDiff = belt.torqueEast - belt.torqueWest;
-  const PRESSURE_GRIP_DECAY = 0.001;
-  const PRESSURE_THRESHOLD = 20;
-  const eastPressureDecay = torqueDiff < -PRESSURE_THRESHOLD ? Math.abs(torqueDiff) * PRESSURE_GRIP_DECAY : 0;
-  const westPressureDecay = torqueDiff > PRESSURE_THRESHOLD ? torqueDiff * PRESSURE_GRIP_DECAY : 0;
+  const eastPressureDecay = torqueDiff < -PRESSURE_THRESHOLD ? Math.abs(torqueDiff) * PRESSURE_GRIP_DECAY_RATE : 0;
+  const westPressureDecay = torqueDiff > PRESSURE_THRESHOLD ? torqueDiff * PRESSURE_GRIP_DECAY_RATE : 0;
 
   const eastTotalDecay = eastFatigueDecay - eastPressureDecay;
   const westTotalDecay = westFatigueDecay - westPressureDecay;
 
-  if (belt.eastLeft) belt.eastLeft.gripStrength *= Math.max(0.5, eastTotalDecay);
-  if (belt.eastRight) belt.eastRight.gripStrength *= Math.max(0.5, eastTotalDecay);
-  if (belt.westLeft) belt.westLeft.gripStrength *= Math.max(0.5, westTotalDecay);
-  if (belt.westRight) belt.westRight.gripStrength *= Math.max(0.5, westTotalDecay);
+  if (belt.eastLeft) belt.eastLeft.gripStrength *= Math.max(GRIP_STRENGTH_FLOOR, eastTotalDecay);
+  if (belt.eastRight) belt.eastRight.gripStrength *= Math.max(GRIP_STRENGTH_FLOOR, eastTotalDecay);
+  if (belt.westLeft) belt.westLeft.gripStrength *= Math.max(GRIP_STRENGTH_FLOOR, westTotalDecay);
+  if (belt.westRight) belt.westRight.gripStrength *= Math.max(GRIP_STRENGTH_FLOOR, westTotalDecay);
 
   // Grip breaking under pressure (1.8): when torque differential is strongly against a side,
   // the dominant fighter can break the opponent's inside grip — setting isInside=false
   // and reducing armReach, causing grip class downgrade (morozashi → uwate → shitate → outside)
-  const GRIP_BREAK_THRESHOLD = 50;
-  const GRIP_BREAK_CHANCE = 0.4;
   if (torqueDiff > GRIP_BREAK_THRESHOLD) {
     // East dominant — can break west's inside grips
     const breakRoll = rng.next();
@@ -284,17 +287,17 @@ export function evolveGripGeometry(
         // Both inside — break the weaker one
         if (westLeftStrength <= westRightStrength && belt.westLeft) {
           belt.westLeft.isInside = false;
-          belt.westLeft.armReach = Math.max(DEFAULT_ARM_REACH, belt.westLeft.armReach - ARM_REACH_INCREMENT * 4);
+          belt.westLeft.armReach = Math.max(DEFAULT_ARM_REACH, belt.westLeft.armReach - ARM_REACH_INCREMENT * GRIP_BREAK_REACH_REDUCTION);
         } else if (belt.westRight) {
           belt.westRight.isInside = false;
-          belt.westRight.armReach = Math.max(DEFAULT_ARM_REACH, belt.westRight.armReach - ARM_REACH_INCREMENT * 4);
+          belt.westRight.armReach = Math.max(DEFAULT_ARM_REACH, belt.westRight.armReach - ARM_REACH_INCREMENT * GRIP_BREAK_REACH_REDUCTION);
         }
       } else if (westLeftStrength > 0 && belt.westLeft) {
         belt.westLeft.isInside = false;
-        belt.westLeft.armReach = Math.max(DEFAULT_ARM_REACH, belt.westLeft.armReach - ARM_REACH_INCREMENT * 4);
+        belt.westLeft.armReach = Math.max(DEFAULT_ARM_REACH, belt.westLeft.armReach - ARM_REACH_INCREMENT * GRIP_BREAK_REACH_REDUCTION);
       } else if (westRightStrength > 0 && belt.westRight) {
         belt.westRight.isInside = false;
-        belt.westRight.armReach = Math.max(DEFAULT_ARM_REACH, belt.westRight.armReach - ARM_REACH_INCREMENT * 4);
+        belt.westRight.armReach = Math.max(DEFAULT_ARM_REACH, belt.westRight.armReach - ARM_REACH_INCREMENT * GRIP_BREAK_REACH_REDUCTION);
       }
     }
   } else if (torqueDiff < -GRIP_BREAK_THRESHOLD) {
@@ -306,17 +309,17 @@ export function evolveGripGeometry(
       if (eastLeftStrength > 0 && eastRightStrength > 0) {
         if (eastLeftStrength <= eastRightStrength && belt.eastLeft) {
           belt.eastLeft.isInside = false;
-          belt.eastLeft.armReach = Math.max(DEFAULT_ARM_REACH, belt.eastLeft.armReach - ARM_REACH_INCREMENT * 4);
+          belt.eastLeft.armReach = Math.max(DEFAULT_ARM_REACH, belt.eastLeft.armReach - ARM_REACH_INCREMENT * GRIP_BREAK_REACH_REDUCTION);
         } else if (belt.eastRight) {
           belt.eastRight.isInside = false;
-          belt.eastRight.armReach = Math.max(DEFAULT_ARM_REACH, belt.eastRight.armReach - ARM_REACH_INCREMENT * 4);
+          belt.eastRight.armReach = Math.max(DEFAULT_ARM_REACH, belt.eastRight.armReach - ARM_REACH_INCREMENT * GRIP_BREAK_REACH_REDUCTION);
         }
       } else if (eastLeftStrength > 0 && belt.eastLeft) {
         belt.eastLeft.isInside = false;
-        belt.eastLeft.armReach = Math.max(DEFAULT_ARM_REACH, belt.eastLeft.armReach - ARM_REACH_INCREMENT * 4);
+        belt.eastLeft.armReach = Math.max(DEFAULT_ARM_REACH, belt.eastLeft.armReach - ARM_REACH_INCREMENT * GRIP_BREAK_REACH_REDUCTION);
       } else if (eastRightStrength > 0 && belt.eastRight) {
         belt.eastRight.isInside = false;
-        belt.eastRight.armReach = Math.max(DEFAULT_ARM_REACH, belt.eastRight.armReach - ARM_REACH_INCREMENT * 4);
+        belt.eastRight.armReach = Math.max(DEFAULT_ARM_REACH, belt.eastRight.armReach - ARM_REACH_INCREMENT * GRIP_BREAK_REACH_REDUCTION);
       }
     }
   }

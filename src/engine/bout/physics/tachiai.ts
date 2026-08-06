@@ -10,6 +10,21 @@ import {
   BELT_THRESHOLD_MAX,
   BELT_BIAS_DIVISOR,
   MIN_ABSOLUTE_FORCE,
+  NPC_COUNTER_BONUS,
+  TACHIAI_SPEED_BONUS_FACTOR,
+  TACHIAI_MARGIN_DECISIVE,
+  TACHIAI_MARGIN_CLEAR,
+  POWER_LOG_ROUNDING,
+  MATTA_CHANCE,
+  DEFAULT_BELT_BIAS,
+  HENKA_TECHNIQUE_THRESHOLD,
+  HENKA_SPEED_THRESHOLD,
+  HENKA_POWER_GAP_THRESHOLD,
+  HENKA_MAX_CHANCE,
+  HENKA_POWER_GAP_BASE,
+  HENKA_POWER_GAP_FACTOR,
+  HENKA_TECH_BASE,
+  HENKA_TECH_FACTOR,
 } from "../../../constants/engine/physics";
 import type { EngineStateV2, PushBattleState } from "../../types/combat-spatial";
 import { initBeltBattle } from "../boutGrip";
@@ -98,7 +113,7 @@ export function resolveTachiaiV2(
       const second = sorted[1]?.[1] ?? 0;
       if (opponentDominantFamily && (sorted[0]?.[1] ?? 0) > second) {
         if (npcCounterFamily === opponentDominantFamily) {
-          const npcCounterBonus = 3; // Smaller than player's explicit tactic bonus
+          const npcCounterBonus = NPC_COUNTER_BONUS;
           if (npcSide === "east") eastPower += npcCounterBonus;
           else westPower += npcCounterBonus;
           boutLog.push({
@@ -122,8 +137,8 @@ export function resolveTachiaiV2(
   const westBodyBehavior = west.combatProfile?.bodyTypeBehavior;
   const eastTachiaiBonus = eastBodyBehavior?.tachiaiSpeedBonus ?? 0;
   const westTachiaiBonus = westBodyBehavior?.tachiaiSpeedBonus ?? 0;
-  eastPower += eastTachiaiBonus * 0.3;
-  westPower += westTachiaiBonus * 0.3;
+  eastPower += eastTachiaiBonus * TACHIAI_SPEED_BONUS_FACTOR;
+  westPower += westTachiaiBonus * TACHIAI_SPEED_BONUS_FACTOR;
 
   const tachiaiWinner: Side = eastPower >= westPower ? "east" : "west";
   st.tachiaiWinner = tachiaiWinner;
@@ -146,7 +161,7 @@ export function resolveTachiaiV2(
   // how decisive the initial collision was.
   const tachiaiMargin = Math.abs(eastPower - westPower);
   const tachiaiIntensity =
-    tachiaiMargin > 20 ? "decisive" : tachiaiMargin > 8 ? "clear" : "even";
+    tachiaiMargin > TACHIAI_MARGIN_DECISIVE ? "decisive" : tachiaiMargin > TACHIAI_MARGIN_CLEAR ? "clear" : "even";
   boutLog.push({
     phase: "tachiai",
     clock: 0,
@@ -154,8 +169,8 @@ export function resolveTachiaiV2(
       tachiaiWinner,
       margin: tachiaiMargin,
       intensity: tachiaiIntensity,
-      eastPower: Math.round(eastPower * 10) / 10,
-      westPower: Math.round(westPower * 10) / 10,
+      eastPower: Math.round(eastPower * POWER_LOG_ROUNDING) / POWER_LOG_ROUNDING,
+      westPower: Math.round(westPower * POWER_LOG_ROUNDING) / POWER_LOG_ROUNDING,
       eastArchetype: east.combatProfile?.archetype,
       westArchetype: west.combatProfile?.archetype,
       eastTachiaiBonus,
@@ -169,7 +184,7 @@ export function resolveTachiaiV2(
   // Tachiai richness (1.5): matta (false start) — rare 5% event
   // Uses separate RNG to avoid disrupting main bout RNG sequence
   const mattaRng = rngFromSeed(bout.id, "tachiai", "matta");
-  if (mattaRng.next() < 0.05) {
+  if (mattaRng.next() < MATTA_CHANCE) {
     boutLog.push({
       phase: "tachiai",
       clock: 0,
@@ -203,8 +218,8 @@ export function resolveTachiaiV2(
       const powerGap = opponentPower - npcPower;
       // NPC attempts henka when: technique > 60, speed > 60, and opponent is 15+ power stronger
       const henkaChance =
-        npcTech > 60 && npcSpeed > 60 && powerGap > 15
-          ? Math.min(0.25, (powerGap - 15) * 0.005 + (npcTech - 60) * 0.003)
+        npcTech > HENKA_TECHNIQUE_THRESHOLD && npcSpeed > HENKA_SPEED_THRESHOLD && powerGap > HENKA_POWER_GAP_THRESHOLD
+          ? Math.min(HENKA_MAX_CHANCE, (powerGap - HENKA_POWER_GAP_BASE) * HENKA_POWER_GAP_FACTOR + (npcTech - HENKA_TECH_BASE) * HENKA_TECH_FACTOR)
           : 0;
       if (henkaChance > 0 && rng.next() < henkaChance) {
         henkaSide = npcSide as Side;
@@ -246,8 +261,8 @@ export function resolveTachiaiV2(
   }
 
   // Decide push vs belt battle (biased by combatProfile)
-  const eastBeltBias = east.combatProfile?.familyPreferences?.belt ?? 25;
-  const westBeltBias = west.combatProfile?.familyPreferences?.belt ?? 25;
+  const eastBeltBias = east.combatProfile?.familyPreferences?.belt ?? DEFAULT_BELT_BIAS;
+  const westBeltBias = west.combatProfile?.familyPreferences?.belt ?? DEFAULT_BELT_BIAS;
   const beltThreshold = Math.min(
     BELT_THRESHOLD_MAX,
     (eastBeltBias + westBeltBias) / BELT_BIAS_DIVISOR

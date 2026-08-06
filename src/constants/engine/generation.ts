@@ -662,3 +662,108 @@ export const INTERVENTION_DAY_MAX = 13;
 
 /** Chance for a rikishi to have the poor eyesight quirk */
 export const POOR_EYESIGHT_CHANCE = 0.02;
+
+// ─────────────────────────────────────────
+// Candidate builder constants
+// ─────────────────────────────────────────
+
+/** Chance that a generated rikishi is foreign */
+export const FOREIGN_RECRUIT_CHANCE = 0.15;
+
+/** Share of foreign recruits that are Mongolian */
+export const MONGOLIAN_SHARE = 0.7;
+
+/** PA average reference point for heya prefix boost */
+export const PA_BOOST_REF = 55;
+
+/** PA boost divisor */
+export const PA_BOOST_DIVISOR = 120;
+
+/** PA boost maximum */
+export const PA_BOOST_MAX = 0.3;
+
+/** Prodigy profile heya prefix boost */
+export const PROFILE_BOOST_PRODIGY = 0.15;
+
+/** Late bloomer profile heya prefix boost */
+export const PROFILE_BOOST_LATE_BLOOMER = 0.05;
+
+/** Journeyman profile heya prefix boost (negative) */
+export const PROFILE_BOOST_JOURNEYMAN = -0.1;
+
+// ─────────────────────────────────────────
+// Heya stature tier thresholds
+// ─────────────────────────────────────────
+
+/** Stature tier threshold for legendary */
+export const HEYA_STATURE_TIER_LEGENDARY = 0.1;
+
+/** Stature tier threshold for powerful */
+export const HEYA_STATURE_TIER_POWERFUL = 0.25;
+
+/** Stature tier threshold for established */
+export const HEYA_STATURE_TIER_ESTABLISHED = 0.5;
+
+/** Stature tier threshold for rebuilding */
+export const HEYA_STATURE_TIER_REBUILDING = 0.7;
+
+/** Stature tier threshold for fragile */
+export const HEYA_STATURE_TIER_FRAGILE = 0.85;
+
+/** Elite tier threshold for prestige and funds */
+export const HEYA_ELITE_TIER_THRESHOLD = 0.2;
+
+// ─────────────────────────────────────────
+// Roster factory constants
+// ─────────────────────────────────────────
+
+/** Chance for a stable to be eligible when barely below tier weight */
+export const ROSTER_TIER_FALLBACK_CHANCE = 0.7;
+
+// ─────────────────────────────────────────
+// Sponsor category roll thresholds
+// ─────────────────────────────────────────
+
+/** Sponsor category roll threshold for local business */
+export const SPONSOR_CATEGORY_LOCAL_BUSINESS = 0.3;
+
+/** Sponsor category roll threshold for regional corporation */
+export const SPONSOR_CATEGORY_REGIONAL_CORP = 0.5;
+
+/** Sponsor category roll threshold for national brand */
+export const SPONSOR_CATEGORY_NATIONAL_BRAND = 0.62;
+
+/** Sponsor category roll threshold for alumni association */
+export const SPONSOR_CATEGORY_ALUMNI = 0.72;
+
+/** Sponsor category roll threshold for cultural foundation */
+export const SPONSOR_CATEGORY_CULTURAL = 0.82;
+
+/** Sponsor category roll threshold for private benefactor */
+export const SPONSOR_CATEGORY_PRIVATE_BENEFACTOR = 0.94;
+
+// ─────────────────────────────────────────
+// Maezumo constants
+// ─────────────────────────────────────────
+
+/** Number of stats averaged for maezumo assessment */
+export const MAEZUMO_STAT_COUNT = 7;
+
+/** Default stat value when undefined in maezumo assessment */
+export const MAEZUMO_DEFAULT_STAT = 50;
+
+/** Base rank number for maezumo placement */
+export const MAEZUMO_RANK_BASE = 50;
+
+/** Rank range subtracted from base based on stat average */
+export const MAEZUMO_RANK_RANGE = 45;
+
+/** Jitter range for maezumo rank variation */
+export const MAEZUMO_JITTER_MIN = -5;
+export const MAEZUMO_JITTER_MAX = 5;
+
+/** Minimum rank number after maezumo placement */
+export const MAEZUMO_RANK_MIN = 1;
+
+/** Maximum rank number after maezumo placement */
+export const MAEZUMO_RANK_MAX = 50;

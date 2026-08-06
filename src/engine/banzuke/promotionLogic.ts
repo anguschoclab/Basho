@@ -6,14 +6,60 @@ import {
 } from "../types/banzuke";
 import { kachiKoshiThreshold } from "./banzukeHelpers";
 import { OzekiKadobanState } from "./ozekiLogic";
+import {
+  ABSENCE_WEIGHT_FULL_KYUJO,
+  ABSENCE_WEIGHT_HEAVY_KYUJO,
+  ABSENCE_WEIGHT_DEFAULT,
+  HEAVY_KYUJO_FRACTION,
+  OPPONENT_TIER_BONUS_MULT,
+  OPPONENT_TIER_BONUS_CAP,
+  YUSHO_BONUS,
+  JUN_YUSHO_BONUS,
+  SPECIAL_PRIZE_BONUS_CAP,
+  KINBOSHI_BONUS_CAP,
+  COMEBACK_WINS_BONUS_CAP,
+  EDGE_CRISIS_BONUS_CAP,
+  EDGE_CRISIS_DIVISOR,
+  RANK_MOVE_CAP_YOKOZUNA_MIN,
+  RANK_MOVE_CAP_YOKOZUNA_MAX,
+  RANK_MOVE_CAP_OZEKI_MIN,
+  RANK_MOVE_CAP_OZEKI_MAX,
+  RANK_MOVE_CAP_OZEKI_DEMOTED_MIN,
+  RANK_MOVE_CAP_SANYAKU_MIN,
+  RANK_MOVE_CAP_SANYAKU_MAX,
+  RANK_MOVE_CAP_MAKUUCHI_MIN,
+  RANK_MOVE_CAP_MAKUUCHI_MAX,
+  RANK_MOVE_CAP_MAKUSHITA_MIN,
+  RANK_MOVE_CAP_MAKUSHITA_MAX,
+  RANK_MOVE_CAP_JONOKUCHI_MIN,
+  RANK_MOVE_CAP_JONOKUCHI_MAX,
+  RANK_MOVE_MULT_OZEKI,
+  RANK_MOVE_MULT_SANYAKU,
+  RANK_MOVE_MULT_MAKUSHITA_TOP_PROMO,
+  RANK_MOVE_MULT_MAKUSHITA_BOTTOM_PROMO,
+  RANK_MOVE_MULT_MAKUSHITA_TOP_DEMO,
+  RANK_MOVE_MULT_MAKUSHITA_BOTTOM_DEMO,
+  MAKUSHITA_TOP_RANK_NUMBER,
+  MAKUSHITA_DEFAULT_RANK_NUMBER,
+  OZEKI_DEMOTED_FLOOR,
+  JONOKUCHI_NEAR_KACHI_WINS,
+  SEKIWAKE_OZEKI_PROMOTION_WINS,
+  SEKIWAKE_OZEKI_RECLAIM_WINS,
+  SEKIWAKE_33_WIN_THRESHOLD,
+  KOMUSUBI_PROMOTION_WINS,
+  MAEGASHIRA_PROMOTION_WINS,
+  MAEGASHIRA_TOP_RANK_THRESHOLD,
+  JONOKUCHI_YUSHO_TIER,
+  JONOKUCHI_KACHI_TIER,
+} from "../../constants/engine/banzuke";
 
 /** Calculation of absence penalty based on bouts. */
 function calculateAbsencePenalty(absences: number, totalBouts: number): number {
   if (absences === 0) return 0;
   // Full Kyujo (all matches missed) should be extremely punishing in sumo
   const isFullKyujo = absences >= totalBouts;
-  const heavyKyujo = absences >= Math.floor(totalBouts * 0.5);
-  const absenceWeight = isFullKyujo ? 2.5 : heavyKyujo ? 1.8 : 1.4;
+  const heavyKyujo = absences >= Math.floor(totalBouts * HEAVY_KYUJO_FRACTION);
+  const absenceWeight = isFullKyujo ? ABSENCE_WEIGHT_FULL_KYUJO : heavyKyujo ? ABSENCE_WEIGHT_HEAVY_KYUJO : ABSENCE_WEIGHT_DEFAULT;
   return Math.round(absences * absenceWeight);
 }
 
@@ -21,14 +67,14 @@ function calculateAbsencePenalty(absences: number, totalBouts: number): number {
 function calculatePerformanceBonuses(perf: BashoPerformance): number {
   let bonus = 0;
   if (typeof perf.opponentAvgTier === "number")
-    bonus += Math.max(-1, Math.min(1, Math.round((5 - perf.opponentAvgTier) * 0.5)));
-  if (perf.yusho) bonus += 5;
-  if (perf.junYusho) bonus += 2;
-  if (perf.specialPrizes) bonus += Math.min(3, perf.specialPrizes);
-  if (perf.kinboshi) bonus += Math.min(3, perf.kinboshi);
+    bonus += Math.max(-OPPONENT_TIER_BONUS_CAP, Math.min(OPPONENT_TIER_BONUS_CAP, Math.round((5 - perf.opponentAvgTier) * OPPONENT_TIER_BONUS_MULT)));
+  if (perf.yusho) bonus += YUSHO_BONUS;
+  if (perf.junYusho) bonus += JUN_YUSHO_BONUS;
+  if (perf.specialPrizes) bonus += Math.min(SPECIAL_PRIZE_BONUS_CAP, perf.specialPrizes);
+  if (perf.kinboshi) bonus += Math.min(KINBOSHI_BONUS_CAP, perf.kinboshi);
   // Resilience bonuses: comeback wins and edge crisis survival (Gap 6)
-  if (perf.comebackWins) bonus += Math.min(2, perf.comebackWins);
-  if (perf.edgeCrisisSurvived) bonus += Math.min(2, Math.floor(perf.edgeCrisisSurvived / 2));
+  if (perf.comebackWins) bonus += Math.min(COMEBACK_WINS_BONUS_CAP, perf.comebackWins);
+  if (perf.edgeCrisisSurvived) bonus += Math.min(EDGE_CRISIS_BONUS_CAP, Math.floor(perf.edgeCrisisSurvived / EDGE_CRISIS_DIVISOR));
   return bonus;
 }
 
@@ -52,29 +98,29 @@ export function computeMovementUnits(
   const move = calculateBaseMove(entry.position.rank, perf);
   const rank = entry.position.rank;
 
-  if (rank === "yokozuna") return Math.max(-2, Math.min(2, move));
+  if (rank === "yokozuna") return Math.max(RANK_MOVE_CAP_YOKOZUNA_MIN, Math.min(RANK_MOVE_CAP_YOKOZUNA_MAX, move));
   if (rank === "ozeki") {
-    const damped = Math.round(move * 0.65);
-    if (demotedOzeki.has(entry.rikishiId)) return Math.min(-6, damped - 4);
-    return Math.max(-4, Math.min(4, damped));
+    const damped = Math.round(move * RANK_MOVE_MULT_OZEKI);
+    if (demotedOzeki.has(entry.rikishiId)) return Math.min(RANK_MOVE_CAP_OZEKI_DEMOTED_MIN, damped + OZEKI_DEMOTED_FLOOR);
+    return Math.max(RANK_MOVE_CAP_OZEKI_MIN, Math.min(RANK_MOVE_CAP_OZEKI_MAX, damped));
   }
   if (rank === "sekiwake" || rank === "komusubi")
-    return Math.max(-8, Math.min(8, Math.round(move * 0.8)));
+    return Math.max(RANK_MOVE_CAP_SANYAKU_MIN, Math.min(RANK_MOVE_CAP_SANYAKU_MAX, Math.round(move * RANK_MOVE_MULT_SANYAKU)));
 
   // Maegashira and below have high volatility
-  if (entry.division === "makuuchi") return Math.max(-18, Math.min(15, move));
+  if (entry.division === "makuuchi") return Math.max(RANK_MOVE_CAP_MAKUUCHI_MIN, Math.min(RANK_MOVE_CAP_MAKUUCHI_MAX, move));
 
   // Makushita: rank-position dependent movement (top 20 get amplified, lower get dampened)
   if (rank === "makushita") {
-    const rankNum = entry.position.rankNumber ?? 60;
-    const isTop = rankNum <= 20;
+    const rankNum = entry.position.rankNumber ?? MAKUSHITA_DEFAULT_RANK_NUMBER;
+    const isTop = rankNum <= MAKUSHITA_TOP_RANK_NUMBER;
     // For promotions: top-ranked get 1.5x; for demotions: top-ranked get 0.5x (less punishment)
     // Bottom-ranked: 0.8x promotions, 1.5x demotions (more punishment)
     const multiplier = move >= 0
-      ? (isTop ? 1.5 : 0.8)
-      : (isTop ? 0.5 : 1.5);
+      ? (isTop ? RANK_MOVE_MULT_MAKUSHITA_TOP_PROMO : RANK_MOVE_MULT_MAKUSHITA_BOTTOM_PROMO)
+      : (isTop ? RANK_MOVE_MULT_MAKUSHITA_TOP_DEMO : RANK_MOVE_MULT_MAKUSHITA_BOTTOM_DEMO);
     const adjusted = Math.round(move * multiplier);
-    return Math.max(-30, Math.min(25, adjusted));
+    return Math.max(RANK_MOVE_CAP_MAKUSHITA_MIN, Math.min(RANK_MOVE_CAP_MAKUSHITA_MAX, adjusted));
   }
 
   // Jonokuchi: special movement floor — slight make-koshi (3-4) gets zero movement,
@@ -82,12 +128,12 @@ export function computeMovementUnits(
   if (rank === "jonokuchi") {
     const wins = perf?.wins ?? 0;
     // 3-4 or better: floor at 0 (no demotion for near-kachi-koshi)
-    if (wins >= 3) return Math.max(0, Math.min(25, move));
+    if (wins >= JONOKUCHI_NEAR_KACHI_WINS) return Math.max(0, Math.min(RANK_MOVE_CAP_JONOKUCHI_MAX, move));
     // 0-7 or 1-6: allow negative movement (punished for total failure)
-    return Math.max(-30, Math.min(25, move));
+    return Math.max(RANK_MOVE_CAP_JONOKUCHI_MIN, Math.min(RANK_MOVE_CAP_JONOKUCHI_MAX, move));
   }
 
-  return Math.max(-30, Math.min(25, move));
+  return Math.max(RANK_MOVE_CAP_JONOKUCHI_MIN, Math.min(RANK_MOVE_CAP_JONOKUCHI_MAX, move));
 }
 
 /** Determines the highest tier a rikishi is allowed to occupy based on performance. */
@@ -105,26 +151,26 @@ export function bestTierAllowed(
   if (rank === "ozeki" && demotedOzeki.has(entry.rikishiId)) return 3;
   if (rank === "ozeki" && perf?.promoteToYokozuna) return 1;
   if (rank === "sekiwake" && perf?.promoteToOzeki) return 2;
-  if (rank === "sekiwake" && (perf?.wins ?? 0) >= 11) return 2;
+  if (rank === "sekiwake" && (perf?.wins ?? 0) >= SEKIWAKE_OZEKI_PROMOTION_WINS) return 2;
   // Ozeki reclaim: demoted ozeki at sekiwake with 10+ wins can return to ozeki
-  if (rank === "sekiwake" && reclaimableOzeki.has(entry.rikishiId) && (perf?.wins ?? 0) >= 10) return 2;
+  if (rank === "sekiwake" && reclaimableOzeki.has(entry.rikishiId) && (perf?.wins ?? 0) >= SEKIWAKE_OZEKI_RECLAIM_WINS) return 2;
   // 33-win Ozeki promotion: sekiwake with 10+ wins and 33+ total across 3 basho
-  if (rank === "sekiwake" && (perf?.wins ?? 0) >= 10 && (perf?.sekiwakeThreeBashoWins ?? 0) >= 33) return 2;
+  if (rank === "sekiwake" && (perf?.wins ?? 0) >= SEKIWAKE_OZEKI_RECLAIM_WINS && (perf?.sekiwakeThreeBashoWins ?? 0) >= SEKIWAKE_33_WIN_THRESHOLD) return 2;
   if (rank === "komusubi" && perf?.promoteToOzeki) return 2;
-  if (rank === "komusubi" && (perf?.wins ?? 0) >= 10) return 3;
+  if (rank === "komusubi" && (perf?.wins ?? 0) >= KOMUSUBI_PROMOTION_WINS) return 3;
 
   if (rank === "maegashira") {
     const wins = perf?.wins ?? 0;
     if (perf?.yusho) return 3;
-    if ((entry.position.rankNumber ?? 99) <= 4 && wins >= 10) return 4;
+    if ((entry.position.rankNumber ?? 99) <= MAEGASHIRA_TOP_RANK_THRESHOLD && wins >= MAEGASHIRA_PROMOTION_WINS) return 4;
   }
 
   // Jonokuchi special promotion: yusho → sandanme (tier 8), kachi-koshi → jonidan (tier 9)
   if (rank === "jonokuchi") {
     const wins = perf?.wins ?? 0;
     const threshold = kachiKoshiThreshold(rank);
-    if (perf?.yusho) return 8;
-    if (wins >= threshold) return 9;
+    if (perf?.yusho) return JONOKUCHI_YUSHO_TIER;
+    if (wins >= threshold) return JONOKUCHI_KACHI_TIER;
   }
 
   return tier;

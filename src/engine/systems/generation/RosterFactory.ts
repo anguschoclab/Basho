@@ -14,6 +14,7 @@ import { Division, Rank, Side } from "../../types/banzuke";
 import {
   YOKOZUNA_COUNT_MIN,
   YOKOZUNA_COUNT_MAX,
+  ROSTER_TIER_FALLBACK_CHANCE,
 } from "../../../constants/engine/generation";
 
 export function createRosters(
@@ -72,7 +73,7 @@ export function createRosters(
           ] ?? 0;
         return (
           stableTier >= config.tierWeight - 1 ||
-          (stableTier >= config.tierWeight - 2 && worldRng.next() > 0.7)
+          (stableTier >= config.tierWeight - 2 && worldRng.next() > ROSTER_TIER_FALLBACK_CHANCE)
         );
       });
 

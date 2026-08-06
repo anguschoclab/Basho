@@ -449,3 +449,113 @@ export const STAT_CLAMP_MIN = 0;
 
 /** Stat clamp maximum */
 export const STAT_CLAMP_MAX = 100;
+
+// ─────────────────────────────────────────
+// Edge crisis injury constants
+// ─────────────────────────────────────────
+
+/** Injury risk multiplier for edge crisis forced exits */
+export const EDGE_INJURY_RISK_MULT = 0.001;
+
+/** Injury risk threshold to trigger injury check */
+export const EDGE_INJURY_RISK_THRESHOLD = 0.15;
+
+/** Injury severity threshold for moderate (vs minor) */
+export const EDGE_INJURY_SEVERITY_MODERATE = 0.3;
+
+/** Controversial toe position multiplier (close calls) */
+export const EDGE_CONTROVERSIAL_TOE_MULTIPLIER = 1.1;
+
+/** Controversial escape margin factor */
+export const EDGE_CONTROVERSIAL_MARGIN_FACTOR = 0.5;
+
+// ─────────────────────────────────────────
+// Tachiai constants
+// ─────────────────────────────────────────
+
+/** NPC counter-tactic bonus power */
+export const NPC_COUNTER_BONUS = 3;
+
+/** Tachiai speed bonus factor (body type) */
+export const TACHIAI_SPEED_BONUS_FACTOR = 0.3;
+
+/** Tachiai margin threshold for "decisive" intensity */
+export const TACHIAI_MARGIN_DECISIVE = 20;
+
+/** Tachiai margin threshold for "clear" intensity */
+export const TACHIAI_MARGIN_CLEAR = 8;
+
+/** Rounding factor for power logging */
+export const POWER_LOG_ROUNDING = 10;
+
+/** Matta (false start) chance */
+export const MATTA_CHANCE = 0.05;
+
+/** Default belt bias when combatProfile is missing */
+export const DEFAULT_BELT_BIAS = 25;
+
+// ─────────────────────────────────────────
+// NPC spontaneous henka constants
+// ─────────────────────────────────────────
+
+/** Technique stat threshold for NPC henka attempt */
+export const HENKA_TECHNIQUE_THRESHOLD = 60;
+
+/** Speed stat threshold for NPC henka attempt */
+export const HENKA_SPEED_THRESHOLD = 60;
+
+/** Power gap required for NPC henka attempt */
+export const HENKA_POWER_GAP_THRESHOLD = 15;
+
+/** Max henka chance cap */
+export const HENKA_MAX_CHANCE = 0.25;
+
+/** Power gap base subtracted before scaling */
+export const HENKA_POWER_GAP_BASE = 15;
+
+/** Power gap scaling factor */
+export const HENKA_POWER_GAP_FACTOR = 0.005;
+
+/** Technique base subtracted before scaling */
+export const HENKA_TECH_BASE = 60;
+
+/** Technique scaling factor */
+export const HENKA_TECH_FACTOR = 0.003;
+
+// ─────────────────────────────────────────
+// Counter-tactic reduction constants
+// ─────────────────────────────────────────
+
+/** Counter torque reduction for belt battle */
+export const COUNTER_TORQUE_REDUCTION = 0.1;
+
+/** Counter force reduction for push battle */
+export const COUNTER_FORCE_REDUCTION = 0.1;
+
+/** Torque bonus factor (archetype/body type) */
+export const TORQUE_BONUS_FACTOR = 0.5;
+
+// ─────────────────────────────────────────
+// Grip evolution constants
+// ─────────────────────────────────────────
+
+/** Grip strength fatigue decay rate per fatigue point */
+export const GRIP_FATIGUE_DECAY_RATE = 0.003;
+
+/** Pressure grip decay rate per torque differential */
+export const PRESSURE_GRIP_DECAY_RATE = 0.001;
+
+/** Torque differential threshold for pressure grip decay */
+export const PRESSURE_THRESHOLD = 20;
+
+/** Grip strength floor (minimum after decay) */
+export const GRIP_STRENGTH_FLOOR = 0.5;
+
+/** Torque differential threshold for grip breaking */
+export const GRIP_BREAK_THRESHOLD = 50;
+
+/** Chance of breaking opponent's grip when dominant */
+export const GRIP_BREAK_CHANCE = 0.4;
+
+/** Arm reach reduction multiplier on grip break */
+export const GRIP_BREAK_REACH_REDUCTION = 4;

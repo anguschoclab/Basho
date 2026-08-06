@@ -16,19 +16,57 @@ import { buildCombatProfile, deriveWeakAgainstStyles, rollArchetypeWithBias } fr
 import { rollAgeForRank } from "./systems/generation/CandidateStats";
 import { isCollegeRecruit } from "./utils/identity";
 import { applyPersonaAssignment } from "./systems/generation/PersonaAssignment";
-
-// Body type physics behavior modifiers (5.1)
-const BODY_TYPE_BEHAVIORS: Record<string, {
-  pushVelocityBonus: number;
-  lateralMovementBonus: number;
-  beltTorqueBonus: number;
-  tachiaiSpeedBonus: number;
-}> = {
-  tower: { pushVelocityBonus: 4, lateralMovementBonus: -2, beltTorqueBonus: -1, tachiaiSpeedBonus: 2 },
-  barrel: { pushVelocityBonus: 1, lateralMovementBonus: -3, beltTorqueBonus: 5, tachiaiSpeedBonus: -1 },
-  compact: { pushVelocityBonus: -1, lateralMovementBonus: 4, beltTorqueBonus: 2, tachiaiSpeedBonus: 4 },
-  lanky: { pushVelocityBonus: 2, lateralMovementBonus: 3, beltTorqueBonus: -2, tachiaiSpeedBonus: 3 },
-};
+import {
+  RETIREMENT_MIN_AGE,
+  RETIREMENT_MANDATORY_AGE,
+  RETIREMENT_YOKOZUNA_MANDATORY_AGE,
+  RETIREMENT_NATURAL_AGE_START,
+  RETIREMENT_STAGNANT_AGE,
+  RETIREMENT_WEAK_AGE,
+  RETIREMENT_CRITICAL_WEAK_AGE,
+  RETIREMENT_INJURY_WEEKS_THRESHOLD,
+  RETIREMENT_COUNCIL_WARNINGS_FORCED,
+  RETIREMENT_CONSECUTIVE_MAKE_KOSHI_WEAK,
+  RETIREMENT_CONSECUTIVE_KYUJO_TOO_LONG,
+  RETIREMENT_PRESSURE_BASE,
+  RETIREMENT_PRESSURE_PER_WARNING,
+  RETIREMENT_PRESSURE_MAX,
+  RETIREMENT_NATURAL_RATE_PER_YEAR,
+  RETIREMENT_PROB_STAGNANT,
+  RETIREMENT_PROB_WEAK,
+  RETIREMENT_PROB_CRITICAL,
+  RETIREMENT_STAT_WEAK_POWER,
+  RETIREMENT_STAT_CRITICAL_POWER,
+  RETIREMENT_STAT_DIMINISHING_POWER,
+  RETIREMENT_DEFAULT_POWER,
+  ROOKIE_ID_MIN,
+  ROOKIE_ID_MAX,
+  ROOKIE_BASE_STAT_ELITE,
+  ROOKIE_BASE_STAT_NORMAL,
+  ROOKIE_STAT_VARIANCE,
+  ROOKIE_BASE_WEIGHT,
+  ROOKIE_WEIGHT_RANGE,
+  ROOKIE_ELITE_EXPERIENCE,
+  ROOKIE_BASE_HEIGHT,
+  ROOKIE_HEIGHT_RANGE,
+  ROOKIE_TALL_HEIGHT_THRESHOLD,
+  ROOKIE_SHORT_HEIGHT_THRESHOLD,
+  ROOKIE_BMI_TOWER_THRESHOLD,
+  ROOKIE_BMI_BARREL_THRESHOLD,
+  ROOKIE_BMI_COMPACT_THRESHOLD,
+  ROOKIE_ELITE_RANK_NUMBER,
+  ROOKIE_NORMAL_RANK_NUMBER,
+  ROOKIE_INITIAL_MOMENTUM,
+  ROOKIE_INITIAL_CONDITION,
+  ROOKIE_MOTIVATION_BASE,
+  ROOKIE_MOTIVATION_RANGE,
+  ROOKIE_DISCIPLINE_BASE,
+  ROOKIE_DISCIPLINE_RANGE,
+  ROOKIE_MEDIA_SAVVY_BASE,
+  ROOKIE_MEDIA_SAVVY_RANGE,
+  BODY_TYPE_BEHAVIORS,
+  ORIGINS,
+} from "../constants/engine/career";
 
 // --- RETIREMENT LOGIC ---
 
@@ -50,12 +88,12 @@ export function checkRetirement(
   const age = currentYear - rikishi.birthYear;
 
   // Defensive: block impossible young retirements
-  if (age < 28) {
+  if (age < RETIREMENT_MIN_AGE) {
     // Check injury retirement — the only plausible path for young rikishi
     const hasCareerEndingInjury =
       rikishi.injured &&
       rikishi.injuryStatus?.severity === "serious" &&
-      (rikishi.injuryWeeksRemaining ?? 0) > 20;
+      (rikishi.injuryWeeksRemaining ?? 0) > RETIREMENT_INJURY_WEEKS_THRESHOLD;
 
     if (hasCareerEndingInjury) {
       return "Career-Ending Injury";
@@ -66,18 +104,18 @@ export function checkRetirement(
   }
 
   // 1. Mandatory Retirement
-  if (age >= 45) return "Mandatory Age Retirement";
+  if (age >= RETIREMENT_MANDATORY_AGE) return "Mandatory Age Retirement";
 
   // 1.5. Yokozuna Mandatory Retirement (earlier due to intense pressure)
   // Real sumo: Yokozuna often retire earlier due to the pressure of maintaining their status
-  if (rikishi.rank === "yokozuna" && age >= 40) return "Yokozuna Mandatory Retirement";
+  if (rikishi.rank === "yokozuna" && age >= RETIREMENT_YOKOZUNA_MANDATORY_AGE) return "Yokozuna Mandatory Retirement";
 
   // 2. Injury Forced Retirement
   // Career-ending: serious injury (from weekly health phase) with >20 weeks remaining
   if (
     rikishi.injured &&
     rikishi.injuryStatus?.severity === "serious" &&
-    (rikishi.injuryWeeksRemaining ?? 0) > 20
+    (rikishi.injuryWeeksRemaining ?? 0) > RETIREMENT_INJURY_WEEKS_THRESHOLD
   ) {
     return "Career-Ending Injury";
   }
@@ -88,17 +126,17 @@ export function checkRetirement(
 
     // 3.1 Council Warning Trigger (Binary)
     // 3 warnings = mandatory retirement
-    if (warnings >= 3) return "Council Forced Retirement (Lack of Dignity)";
+    if (warnings >= RETIREMENT_COUNCIL_WARNINGS_FORCED) return "Council Forced Retirement (Lack of Dignity)";
 
     // 3.2 Performance/Kyujo Pressure
     // Real sumo: Yokozuna who miss 3 consecutive basho or are consistently weak face pressure
-    const isWeak = rikishi.consecutiveMakeKoshi && rikishi.consecutiveMakeKoshi >= 2;
-    const isAbsentTooLong = (rikishi.consecutiveKyujo || 0) >= 3;
+    const isWeak = rikishi.consecutiveMakeKoshi && rikishi.consecutiveMakeKoshi >= RETIREMENT_CONSECUTIVE_MAKE_KOSHI_WEAK;
+    const isAbsentTooLong = (rikishi.consecutiveKyujo || 0) >= RETIREMENT_CONSECUTIVE_KYUJO_TOO_LONG;
 
     if (isWeak || isAbsentTooLong) {
       // Base chance increases by 30% per warning level
-      const pressureChance = 0.5 + warnings * 0.2;
-      if (rng.bool(Math.min(0.95, pressureChance))) {
+      const pressureChance = RETIREMENT_PRESSURE_BASE + warnings * RETIREMENT_PRESSURE_PER_WARNING;
+      if (rng.bool(Math.min(RETIREMENT_PRESSURE_MAX, pressureChance))) {
         return isAbsentTooLong
           ? "Yokozuna Chronic Injury Retirement"
           : "Yokozuna Performance Retirement";
@@ -107,7 +145,7 @@ export function checkRetirement(
   }
 
   // 4. Natural Aging Curve (Probability increases with age)
-  const baseRetireChance = Math.max(0, (age - 34) * 0.1);
+  const baseRetireChance = Math.max(0, (age - RETIREMENT_NATURAL_AGE_START) * RETIREMENT_NATURAL_RATE_PER_YEAR);
   const roll = rng.next();
 
   if (roll < baseRetireChance) {
@@ -115,17 +153,17 @@ export function checkRetirement(
   }
 
   // 5. Performance Drop (Rank & Stat based)
-  const isStagnant = rikishi.rank === "jonokuchi" && age > 28;
-  const isWeak = (rikishi.stats?.power ?? 50) < 40 && age > 38;
-  const isCriticallyWeak = (rikishi.stats?.power ?? 50) < 30 && age > 30;
+  const isStagnant = rikishi.rank === "jonokuchi" && age > RETIREMENT_STAGNANT_AGE;
+  const isWeak = (rikishi.stats?.power ?? RETIREMENT_DEFAULT_POWER) < RETIREMENT_STAT_WEAK_POWER && age > RETIREMENT_WEAK_AGE;
+  const isCriticallyWeak = (rikishi.stats?.power ?? RETIREMENT_DEFAULT_POWER) < RETIREMENT_STAT_CRITICAL_POWER && age > RETIREMENT_CRITICAL_WEAK_AGE;
 
   if (isStagnant || isWeak || isCriticallyWeak) {
-    let retireProb = 0.1;
-    if (isWeak) retireProb = 0.25;
-    if (isCriticallyWeak) retireProb = 0.5;
+    let retireProb = RETIREMENT_PROB_STAGNANT;
+    if (isWeak) retireProb = RETIREMENT_PROB_WEAK;
+    if (isCriticallyWeak) retireProb = RETIREMENT_PROB_CRITICAL;
 
     if (rng.bool(retireProb)) {
-      return (rikishi.stats?.power ?? 50) < 35 ? "Diminishing Physicality" : "Lack of Performance";
+      return (rikishi.stats?.power ?? RETIREMENT_DEFAULT_POWER) < RETIREMENT_STAT_DIMINISHING_POWER ? "Diminishing Physicality" : "Lack of Performance";
     }
   }
 
@@ -133,70 +171,6 @@ export function checkRetirement(
 }
 
 // --- REGENERATION (REPLACEMENT) LOGIC ---
-
-const ORIGINS = [
-  // --- Japanese Hotbeds ---
-  {
-    name: "Hokkaido",
-    weightMod: 1.1,
-    strMod: 1.05,
-    description: "Land of giants and harsh winters.",
-  },
-  { name: "Aomori", weightMod: 1.0, strMod: 1.1, description: "Traditional sumo powerhouse." },
-  {
-    name: "Akita",
-    weightMod: 1.0,
-    techMod: 1.05,
-    description: "Technical wrestlers from the north.",
-  },
-  { name: "Oita", weightMod: 1.05, speedMod: 1.05, description: "Dynamic and explosive style." },
-  { name: "Tokyo", weightMod: 0.95, techMod: 1.15, description: "Urban perfectionists." },
-  { name: "Osaka", weightMod: 1.05, mentalMod: 1.1, description: "Resilient and street-smart." },
-  { name: "Fukuoka", weightMod: 1.02, strMod: 1.02, description: "Southern strength." },
-  { name: "Kagoshima", weightMod: 1.05, strMod: 1.05, description: "Heavyweight islanders." },
-
-  // --- International ---
-  {
-    name: "Mongolia",
-    weightMod: 0.9,
-    strMod: 1.25,
-    mentalMod: 1.3,
-    techMod: 1.1,
-    description: "Masters of leverage and spirit.",
-  },
-  { name: "Georgia", weightMod: 1.15, strMod: 1.2, description: "Raw power from the Caucasus." },
-  { name: "Egypt", weightMod: 1.1, strMod: 1.15, description: "Sturdy and relentless." },
-  {
-    name: "Brazil",
-    weightMod: 1.0,
-    speedMod: 1.15,
-    techMod: 1.05,
-    description: "Flexible and athletic.",
-  },
-  {
-    name: "USA",
-    weightMod: 1.2,
-    strMod: 1.1,
-    speedMod: 0.9,
-    description: "Huge frames and collegiate power.",
-  },
-
-  // --- Academic Elite (Makushita Tsukedashi eligible) ---
-  { name: "Nihon University", weightMod: 1.0, techMod: 1.4, mentalMod: 1.1, isElite: true },
-  { name: "Nippon Sport Science Univ", weightMod: 1.05, stamMod: 1.3, techMod: 1.2, isElite: true },
-  { name: "Kindai University", weightMod: 1.1, strMod: 1.1, techMod: 1.1, isElite: true },
-
-  // --- General Prefectures (Fillers) ---
-  { name: "Chiba", weightMod: 1.0, speedMod: 1.05 },
-  { name: "Saitama", weightMod: 1.05, strMod: 1.0 },
-  { name: "Kanagawa", weightMod: 0.98, techMod: 1.05 },
-  { name: "Hyogo", weightMod: 1.02, mentalMod: 1.05 },
-  { name: "Shizuoka", weightMod: 1.0, balanceMod: 1.1 },
-  { name: "Hiroshima", weightMod: 1.0, mentalMod: 1.1 },
-  { name: "Kyoto", weightMod: 0.9, techMod: 1.2 },
-  { name: "Niigata", weightMod: 1.0, stamMod: 1.1 },
-  { name: "Ishikawa", weightMod: 1.05, strMod: 1.05 },
-];
 
 
 /**
@@ -217,7 +191,7 @@ export function _generateRookie(
 ): Rikishi {
   const count = world.rikishi.size;
   const tmpRng = rngFromSeed(world.seed, "lifecycle", `rookie_${currentYear}_${count}`);
-  const rookieId = `rk_${currentYear}_${tmpRng.int(1000000, 9999999)}`;
+  const rookieId = `rk_${currentYear}_${tmpRng.int(ROOKIE_ID_MIN, ROOKIE_ID_MAX)}`;
   const rng = rngFromSeed(world.seed, "lifecycle", `rookie::${rookieId}`);
 
   const origin = ORIGINS[rng.int(0, ORIGINS.length - 1)];
@@ -229,11 +203,11 @@ export function _generateRookie(
   const isElite = origin.isElite || false;
   const age = rollAgeForRank(rng, isElite ? "makushita" : targetRank);
 
-  const baseStat = isElite ? 40 : 20;
-  const variance = 15;
+  const baseStat = isElite ? ROOKIE_BASE_STAT_ELITE : ROOKIE_BASE_STAT_NORMAL;
+  const variance = ROOKIE_STAT_VARIANCE;
 
   // Raw Stats
-  const baseWeight = 100 + rng.next() * 60;
+  const baseWeight = ROOKIE_BASE_WEIGHT + rng.next() * ROOKIE_WEIGHT_RANGE;
   const stats: RikishiStats = {
     power: baseStat + rng.next() * variance,
     technique: baseStat + rng.next() * variance,
@@ -244,7 +218,7 @@ export function _generateRookie(
     adaptability: baseStat + rng.next() * variance,
     balance: baseStat + rng.next() * variance,
     aggression: baseStat + rng.next() * variance,
-    experience: isElite ? 20 : 0,
+    experience: isElite ? ROOKIE_ELITE_EXPERIENCE : 0,
   };
 
   // Apply Origin Modifiers
@@ -268,18 +242,18 @@ export function _generateRookie(
     legacyShikona,
   });
 
-  const rookieHeight = 175 + rng.next() * 20;
+  const rookieHeight = ROOKIE_BASE_HEIGHT + rng.next() * ROOKIE_HEIGHT_RANGE;
   const rookieWeight = stats.weight;
   // Body type diversity (5.1): derive from height/weight ratio
   const bmi = rookieWeight / Math.pow(rookieHeight / 100, 2);
   const bodyType: "tower" | "barrel" | "compact" | "lanky" =
-    rookieHeight >= 185 && bmi < 30
+    rookieHeight >= ROOKIE_TALL_HEIGHT_THRESHOLD && bmi < ROOKIE_BMI_TOWER_THRESHOLD
       ? "tower"
-      : rookieHeight < 180 && bmi >= 32
+      : rookieHeight < ROOKIE_SHORT_HEIGHT_THRESHOLD && bmi >= ROOKIE_BMI_BARREL_THRESHOLD
         ? "barrel"
-        : rookieHeight < 180 && bmi < 28
+        : rookieHeight < ROOKIE_SHORT_HEIGHT_THRESHOLD && bmi < ROOKIE_BMI_COMPACT_THRESHOLD
           ? "compact"
-          : rookieHeight >= 185 && bmi >= 30
+          : rookieHeight >= ROOKIE_TALL_HEIGHT_THRESHOLD && bmi >= ROOKIE_BMI_TOWER_THRESHOLD
             ? "barrel"
             : "lanky";
 
@@ -297,7 +271,7 @@ export function _generateRookie(
 
     // Rank
     rank: isElite ? "makushita" : targetRank,
-    rankNumber: isElite ? 15 : 50,
+    rankNumber: isElite ? ROOKIE_ELITE_RANK_NUMBER : ROOKIE_NORMAL_RANK_NUMBER,
     division: isElite ? "makushita" : "jonokuchi",
     side: "east",
 
@@ -310,7 +284,7 @@ export function _generateRookie(
     bodyType,
     backstory,
 
-    momentum: 50,
+    momentum: ROOKIE_INITIAL_MOMENTUM,
 
     archetypeEvidence: {
       push: { success: 0, fail: 0 },
@@ -359,11 +333,11 @@ export function _generateRookie(
     kyujoReason: undefined,
     medicalCertificate: undefined,
 
-    condition: 100,
-    motivation: 50 + rng.next() * 50,
+    condition: ROOKIE_INITIAL_CONDITION,
+    motivation: ROOKIE_MOTIVATION_BASE + rng.next() * ROOKIE_MOTIVATION_RANGE,
     behavior: {
-      discipline: 60 + rng.int(0, 30),
-      mediaSavvy: 30 + rng.int(0, 40),
+      discipline: ROOKIE_DISCIPLINE_BASE + rng.int(0, ROOKIE_DISCIPLINE_RANGE),
+      mediaSavvy: ROOKIE_MEDIA_SAVVY_BASE + rng.int(0, ROOKIE_MEDIA_SAVVY_RANGE),
       stress: 0,
     },
     personalityTraits: [],

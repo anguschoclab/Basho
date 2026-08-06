@@ -35,6 +35,18 @@ import {
   POST_BOUT_INJURY_WEEKS_MAX,
   POST_BOUT_INJURY_WEEKS_MIN,
 } from "../../../constants/engine/condition";
+import {
+  INJURY_SEVERITY_MINOR_THRESHOLD,
+  INJURY_SEVERITY_MODERATE_THRESHOLD,
+  INJURY_AREA_WEIGHTS,
+  INJURY_SERIOUS_TEAR_THRESHOLD,
+  INJURY_SERIOUS_FRACTURE_THRESHOLD,
+  INJURY_MODERATE_SPRAIN_THRESHOLD,
+  INJURY_MODERATE_STRAIN_THRESHOLD,
+  BOUT_INJURY_VIOLENT_CHANCE,
+  BOUT_INJURY_NORMAL_CHANCE,
+  WINNER_INJURY_CHANCE_MULTIPLIER,
+} from "../../../constants/engine/health";
 
 /**
  * Calculates a weekly injury chance for a rikishi.
@@ -100,7 +112,7 @@ export function rollWeeklyInjury(args: {
 
   const sevRoll = rng.next();
   const severity: InjurySeverity =
-    sevRoll < 0.72 ? "minor" : sevRoll < 0.95 ? "moderate" : "serious";
+    sevRoll < INJURY_SEVERITY_MINOR_THRESHOLD ? "minor" : sevRoll < INJURY_SEVERITY_MODERATE_THRESHOLD ? "moderate" : "serious";
 
   const area = pickArea(rng);
   const type = pickType(rng, severity);
@@ -127,7 +139,7 @@ function pickArea(rng: SeededRNG): InjuryBodyArea {
     "neck",
     "other",
   ];
-  const weights = [0.18, 0.12, 0.12, 0.1, 0.08, 0.08, 0.08, 0.08, 0.06, 0.1];
+  const weights = INJURY_AREA_WEIGHTS;
 
   let r = rng.next();
   for (let i = 0; i < weights.length; i++) {
@@ -140,13 +152,13 @@ function pickArea(rng: SeededRNG): InjuryBodyArea {
 function pickType(rng: SeededRNG, severity: InjurySeverity): InjuryType {
   const roll = rng.next();
   if (severity === "serious") {
-    if (roll < 0.35) return "tear";
-    if (roll < 0.65) return "fracture";
+    if (roll < INJURY_SERIOUS_TEAR_THRESHOLD) return "tear";
+    if (roll < INJURY_SERIOUS_FRACTURE_THRESHOLD) return "fracture";
     return "nerve";
   }
   if (severity === "moderate") {
-    if (roll < 0.35) return "sprain";
-    if (roll < 0.7) return "strain";
+    if (roll < INJURY_MODERATE_SPRAIN_THRESHOLD) return "sprain";
+    if (roll < INJURY_MODERATE_STRAIN_THRESHOLD) return "strain";
     return "contusion";
   }
   return "inflammation"; // Default minor
@@ -334,7 +346,7 @@ export function onBoutResolvedInjury(
   const violentKimarite = ["uwatenage", "shitatenage", "oshitaoshi", "tsukiotoshi", "hatakikomi"];
   const isViolentFinish = violentKimarite.includes(result.kimarite ?? "");
 
-  const baseBoutInjuryChance = isViolentFinish ? 0.04 : 0.02; // 2-4% per bout
+  const baseBoutInjuryChance = isViolentFinish ? BOUT_INJURY_VIOLENT_CHANCE : BOUT_INJURY_NORMAL_CHANCE; // 2-4% per bout
   const boutInjuryChance = baseBoutInjuryChance * (injuryRiskMultiplier ?? 1.0);
   const rngSeed = RNGRegistry.getSystemRNG(world, "health", `bout::${loser.id}::${world.week}`);
   const roll = rngSeed.next();
@@ -375,7 +387,7 @@ export function onBoutResolvedInjury(
   // Winner injury roll: if the winner has an elevated injury risk (e.g. competing
   // while injured via kyujo_decision "compete"), roll for them at 50% of the base chance.
   if (winner && !winner.injured && winnerInjuryRiskMultiplier && winnerInjuryRiskMultiplier > 1.0) {
-    const winnerBoutInjuryChance = baseBoutInjuryChance * 0.5 * winnerInjuryRiskMultiplier;
+    const winnerBoutInjuryChance = baseBoutInjuryChance * WINNER_INJURY_CHANCE_MULTIPLIER * winnerInjuryRiskMultiplier;
     const winnerRng = RNGRegistry.getSystemRNG(
       world,
       "health",

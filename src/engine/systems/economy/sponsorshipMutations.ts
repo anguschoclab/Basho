@@ -13,6 +13,7 @@ import {
   targetKoenkaiBandFromPrestige,
 } from "./sponsorshipQueries";
 import { KOENKAI_MEMBER_STRENGTH } from "../../../constants/engine/economyExtended";
+import { STAR_POWER_SATISFACTION_WEIGHT } from "../../../constants/engine/sponsors";
 
 const BAND_ORDER: KoenkaiBandType[] = ["none", "weak", "moderate", "strong", "powerful"];
 
@@ -139,7 +140,7 @@ export function processSponsorChurn(world: WorldState, _rng?: SeededRNG): StateI
 
     const prestigeScore = computeHeyaPrestigeScore(heya, world);
     const starPower = computeStarPower(heya, world);
-    const satisfaction = prestigeScore + starPower * 0.3;
+    const satisfaction = prestigeScore + starPower * STAR_POWER_SATISFACTION_WEIGHT;
 
     for (const member of koenkai.members) {
       const sponsor = world.sponsorPool?.sponsors.get(member.sponsorId);

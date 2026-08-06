@@ -14,24 +14,19 @@ import type { BoutResult, BashoState } from "../types/basho";
 import type { Side } from "../types/banzuke";
 import type { BoutContext } from "./boutUtils";
 import { rngFromSeed } from "../rng";
-
-/** Minimum aggression/technique ratio to trigger foul risk. */
-const MIN_RATIO_FOR_FOUL_RISK = 1.4;
-
-/** Base DQ probability before desperation scaling. */
-const BASE_DQ_CHANCE = 0.002;
-
-/** Additional DQ probability on senshuraku weekend (days 14-15). */
-const SENSHURAKU_BONUS = 0.003;
-
-/** Additional DQ probability when winner is 7-7 (must-win pressure). */
-const SEVEN_SEVEN_BONUS = 0.005;
-
-/** Additional DQ probability when winner is kadoban ozeki. */
-const KADOBAN_BONUS = 0.004;
-
-/** Maximum DQ probability cap. */
-const MAX_DQ_CHANCE = 0.05;
+import {
+  KINJITE_MIN_RATIO_FOR_FOUL_RISK,
+  KINJITE_BASE_DQ_CHANCE,
+  KINJITE_SENSHURAKU_BONUS,
+  KINJITE_SEVEN_SEVEN_BONUS,
+  KINJITE_KADOBAN_BONUS,
+  KINJITE_MAX_DQ_CHANCE,
+  KINJITE_SENSHURAKU_START_DAY,
+  KINJITE_KADOBAN_DAY_THRESHOLD,
+  KINJITE_KADOBAN_WIN_THRESHOLD,
+  KINJITE_RATIO_SUBTRACTION,
+  KINJITE_RATIO_DIVISOR,
+} from "../../constants/engine/bout";
 
 /**
  * Calculates the probability that the winner of a bout commits a foul
@@ -48,25 +43,25 @@ export function calculateHansokuChance(
   const technique = winner.stats?.technique ?? 50;
 
   const ratio = aggression / Math.max(1, technique);
-  if (ratio < MIN_RATIO_FOR_FOUL_RISK) return 0;
+  if (ratio < KINJITE_MIN_RATIO_FOR_FOUL_RISK) return 0;
 
-  let dqChance = BASE_DQ_CHANCE;
+  let dqChance = KINJITE_BASE_DQ_CHANCE;
 
   const day = bout.day ?? 1;
-  if (day >= 14) dqChance += SENSHURAKU_BONUS;
+  if (day >= KINJITE_SENSHURAKU_START_DAY) dqChance += KINJITE_SENSHURAKU_BONUS;
 
   const winnerRecord = basho.standings?.get(winner.id);
   if (winnerRecord?.wins === 7 && winnerRecord?.losses === 7) {
-    dqChance += SEVEN_SEVEN_BONUS;
+    dqChance += KINJITE_SEVEN_SEVEN_BONUS;
   }
 
-  if (winner.rank === "ozeki" && day >= 10 && (winnerRecord?.wins ?? 0) < 8) {
-    dqChance += KADOBAN_BONUS;
+  if (winner.rank === "ozeki" && day >= KINJITE_KADOBAN_DAY_THRESHOLD && (winnerRecord?.wins ?? 0) < KINJITE_KADOBAN_WIN_THRESHOLD) {
+    dqChance += KINJITE_KADOBAN_BONUS;
   }
 
-  dqChance *= (ratio - 1.0) / 2;
+  dqChance *= (ratio - KINJITE_RATIO_SUBTRACTION) / KINJITE_RATIO_DIVISOR;
 
-  return Math.min(dqChance, MAX_DQ_CHANCE);
+  return Math.min(dqChance, KINJITE_MAX_DQ_CHANCE);
 }
 
 /**
