@@ -89,3 +89,4 @@ test-benchmark*.ts
 .claude/worktrees/agent-af4c404735b52c7ee/
 .worktrees/
 bun_output.txt
+.jules/
