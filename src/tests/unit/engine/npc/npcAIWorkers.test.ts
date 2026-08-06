@@ -385,7 +385,7 @@ describe("spawnPersonnelWorker", () => {
   });
 
   it("assigns individualPushes for style-matched healthy rikishi with style_purist philosophy", () => {
-    const r1 = mockRikishi("r1", { heyaId: "h1", style: "oshi", archetype: "pusher" });
+    const r1 = mockRikishi("r1", { heyaId: "h1", style: "oshi", combatProfile: { archetype: "pusher" as any, familyPreferences: { push: 25, belt: 25, trick: 25, speed: 25 }, preferredGrip: "none", preferredGripDepth: "standard", statModifiers: {}, counterFamily: "push", archetypeBehavior: { tachiaiSpeedBonus: 0, lateralMovementBonus: 0, edgeEscapeBonus: 0, beltTorqueBonus: 0, pushVelocityBonus: 0 } } });
     const heya = makeMockHeya("h1", { rikishiIds: ["r1"] });
     const world = makeMockWorld({
       rikishi: new Map([["r1", r1]]),
@@ -411,7 +411,7 @@ describe("spawnPersonnelWorker", () => {
   });
 
   it("assigns individualDevelops for partial style match", () => {
-    const r1 = mockRikishi("r1", { heyaId: "h1", style: "oshi", archetype: "grappler" });
+    const r1 = mockRikishi("r1", { heyaId: "h1", style: "oshi", combatProfile: { archetype: "grappler" as any, familyPreferences: { push: 25, belt: 25, trick: 25, speed: 25 }, preferredGrip: "none", preferredGripDepth: "standard", statModifiers: {}, counterFamily: "push", archetypeBehavior: { tachiaiSpeedBonus: 0, lateralMovementBonus: 0, edgeEscapeBonus: 0, beltTorqueBonus: 0, pushVelocityBonus: 0 } } });
     const heya = makeMockHeya("h1", { rikishiIds: ["r1"] });
     const world = makeMockWorld({
       rikishi: new Map([["r1", r1]]),

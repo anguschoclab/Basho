@@ -4,7 +4,8 @@
  * Worker logic for NPC AI decision making.
  */
 
-import type { WorldState } from "./types/world";
+import type { WorldState, PendingExhibition } from "./types/world";
+import type { Rikishi } from "./types/rikishi";
 import type { Id } from "./types/common";
 import { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "./types/training";
 import { getRikishi } from "./queries";
@@ -63,7 +64,7 @@ export interface PersonnelWorkerContext {
   welfareDiscipline: number;
   styleProfile?: OyakataStyleProfile;
   world: WorldState;
-  pendingExhibitions?: Array<{ id: string; region: string; prestige: number; [key: string]: unknown }>;
+  pendingExhibitions?: PendingExhibition[];
   riskTolerance?: number; // oyakata.traits.risk (0-100)
 }
 
@@ -72,7 +73,7 @@ export interface GlobalWorkerContext {
   ambition: number;
   riskAppetite: number;
   perception: PerceptionSnapshot;
-  pendingExhibitions: Array<{ id: string; region: string; prestige: number; [key: string]: unknown }>;
+  pendingExhibitions: PendingExhibition[];
   world: WorldState;
 }
 
@@ -105,7 +106,7 @@ export function spawnTrainingWorker(ctx: TrainingWorkerContext): TrainingWorkerR
   );
   const focus: TrainingFocusResult = decideTrainingFocus(
     ctx.perception,
-    ctx.styleBias,
+    ctx.styleBias ?? "neutral",
     ctx.tradition,
     ctx.philosophy
   );
@@ -195,9 +196,10 @@ export function spawnPersonnelWorker(ctx: PersonnelWorkerContext): PersonnelWork
       const matchesStyle =
         ctx.styleProfile.preferredStyle === "any" ||
         rikishi.style === ctx.styleProfile.preferredStyle;
+      const rikishiArchetype = rikishi.combatProfile?.archetype;
       const matchesArchetype =
-        rikishi.archetype &&
-        (ctx.styleProfile.preferredArchetypes as string[]).includes(rikishi.archetype);
+        rikishiArchetype &&
+        (ctx.styleProfile.preferredArchetypes as string[]).includes(rikishiArchetype);
 
       if (matchesArchetype && matchesStyle) {
         if (
@@ -248,9 +250,10 @@ export function spawnGlobalWorker(ctx: GlobalWorkerContext): GlobalWorkerResult 
     let scoreB = b.prestige;
 
     // Style Drift awareness: prefer regions that match our styleBias
-    if (ctx.styleBias && ctx.styleBias !== "neutral") {
-      if (a.dominantStyle === ctx.styleBias) scoreA += 20;
-      if (b.dominantStyle === ctx.styleBias) scoreB += 20;
+    const styleBias = ctx.perception.styleBias;
+    if (styleBias && styleBias !== "neutral") {
+      if (a.dominantStyle === styleBias) scoreA += 20;
+      if (b.dominantStyle === styleBias) scoreB += 20;
     }
 
     return scoreB - scoreA;
@@ -261,7 +264,7 @@ export function spawnGlobalWorker(ctx: GlobalWorkerContext): GlobalWorkerResult 
   // Evaluate if we have a suitable rikishi
   const candidates = ctx.perception.rikishiPerceptions
     .map((rp) => getRikishi(ctx.world, rp.rikishiId))
-    .filter((r) => r && !r.isRetired && !r.injured && !r.isKyujo);
+    .filter((r): r is Rikishi => !!r && !r.isRetired && !r.injured && !r.isKyujo);
 
   if (candidates.length === 0) {
     reasoning.push(`[Global Worker] No healthy rikishi available for exhibition.`);
@@ -270,7 +273,11 @@ export function spawnGlobalWorker(ctx: GlobalWorkerContext): GlobalWorkerResult 
 
   // NPC accepts if ambition is high enough relative to prestige,
   // or if they have a rikishi who meets the rank requirement.
-  const bestRikishi = candidates.sort((a, b) => (b.power || 0) - (a.power || 0))[0];
+  const bestRikishi = candidates.sort((a, b) => (b.stats.power || 0) - (a.stats.power || 0))[0];
+  if (!bestRikishi) {
+    reasoning.push(`[Global Worker] No healthy rikishi available for exhibition.`);
+    return { reasoning };
+  }
 
   let rankMet = true;
   if (invitation.requiresRank) {
@@ -293,7 +300,7 @@ export function spawnGlobalWorker(ctx: GlobalWorkerContext): GlobalWorkerResult 
 
   if (rankMet && (ctx.ambition > 40 || invitation.prestige > 50)) {
     reasoning.push(
-      `[Global Worker] Accepting ${invitation.region} exhibition for ${bestRikishi.shikona} (Style Match: ${invitation.dominantStyle === ctx.styleBias})`
+      `[Global Worker] Accepting ${invitation.region} exhibition for ${bestRikishi.shikona} (Style Match: ${invitation.dominantStyle === ctx.perception.styleBias})`
     );
     return {
       acceptedExhibitionId: invitation.id,

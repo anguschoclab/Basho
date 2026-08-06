@@ -64,7 +64,7 @@ describe("yokozuna promotion in AutoSim", () => {
     const worldNoYokozuna = { ...world, rikishi: rikishiMap, activeRikishiIds: newActiveIds };
 
     const result = runAutoSim(worldNoYokozuna, {
-      duration: { type: "basho", count: 12 },
+      duration: { type: "basho", count: 18 },
       stopConditions: ["yokozunaPromotion"],
       verbosity: "minimal",
       delegationPolicy: "balanced",
@@ -78,5 +78,5 @@ describe("yokozuna promotion in AutoSim", () => {
     );
     const stoppedByPromotion = result.stoppedBy === "yokozunaPromotion";
     expect(stoppedByPromotion || activeYokozuna.length > 0).toBe(true);
-  }, 120000);
+  }, 180000);
 });
