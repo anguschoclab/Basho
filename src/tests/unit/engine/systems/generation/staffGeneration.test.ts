@@ -63,4 +63,39 @@ describe("generateStaff", () => {
     const scout = generateStaff("seed-scout", "scout", "heya-1", 1);
     expect(scout.successorEligible).toBe(false);
   });
+
+  it("should produce a valid ReputationBand", () => {
+    const staff = generateStaff("seed-rep", "technique_coach", "heya-1", 1);
+    const validReputationBands = ["unknown", "questionable", "respected", "renowned", "legendary"];
+    expect(validReputationBands).toContain(staff.reputationBand);
+  });
+
+  it("should produce a valid LoyaltyBand", () => {
+    const staff = generateStaff("seed-loy", "technique_coach", "heya-1", 1);
+    const validLoyaltyBands = ["mercenary", "wavering", "stable", "devoted", "unshakable"];
+    expect(validLoyaltyBands).toContain(staff.loyaltyBand);
+  });
+
+  it("should produce a valid CompetenceBand for primary", () => {
+    const staff = generateStaff("seed-comp", "technique_coach", "heya-1", 1);
+    const validCompetenceBands = [
+      "feeble", "limited", "serviceable", "strong", "great", "dominant", "monstrous",
+    ];
+    expect(validCompetenceBands).toContain(staff.competenceBands.primary);
+  });
+
+  it("should produce a valid CompetenceBand for secondary when present", () => {
+    // Generate multiple staff to find one with a secondary competence
+    for (let i = 0; i < 20; i++) {
+      const staff = generateStaff(`seed-sec-${i}`, "technique_coach", "heya-1", i);
+      if (staff.competenceBands.secondary) {
+        const validCompetenceBands = [
+          "feeble", "limited", "serviceable", "strong", "great", "dominant", "monstrous",
+        ];
+        expect(validCompetenceBands).toContain(staff.competenceBands.secondary);
+        return;
+      }
+    }
+    // If none have secondary, that's fine — the test still passes
+  });
 });

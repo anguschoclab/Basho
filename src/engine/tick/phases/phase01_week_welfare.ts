@@ -20,6 +20,7 @@ import {
 } from "../../systems/welfare/WelfareCalculations";
 import { clamp } from "../../utils/math";
 import { WelfareService } from "../../systems/welfare/WelfareService";
+import { getHeyaRoster } from "../../queries";
 import {
   handleCompliantTransition,
   handleWatchTransition,
@@ -31,6 +32,13 @@ import {
   WELFARE_RISK_SHIFT_LOG_THRESHOLD,
   MAX_MEDIA_PRESSURE,
   MAX_WELFARE_RISK,
+  MORALE_WELFARE_RISK_WEIGHT,
+  MORALE_MOMENTUM_NORMALIZER,
+  MORALE_MOMENTUM_OFFSET,
+  MORALE_SANCTIONED_PENALTY,
+  MORALE_INVESTIGATION_PENALTY,
+  MORALE_WATCH_PENALTY,
+  MAX_MORALE,
 } from "../../../constants/engine/welfare";
 
 interface HeyaRiskIndicators {
@@ -61,6 +69,23 @@ export function phase01_week_welfare(world: WorldState): StateImpact {
     nextState.welfareRisk = clamp(Math.round(nextState.welfareRisk + delta), 0, MAX_WELFARE_RISK);
     nextState.weeksInState++;
     nextState.lastReviewedWeek = week;
+
+    // 1b. Calculate Morale (0..100)
+    const roster = getHeyaRoster(world, heya.id);
+    let momentumSum = 0;
+    for (const r of roster) {
+      momentumSum += r.momentum ?? 0;
+    }
+    const avgMomentum = roster.length > 0 ? momentumSum / roster.length : 0;
+    let morale = Math.round(
+      (100 - nextState.welfareRisk) * MORALE_WELFARE_RISK_WEIGHT +
+      (avgMomentum + MORALE_MOMENTUM_OFFSET) * MORALE_MOMENTUM_NORMALIZER
+    );
+    // Compliance penalties
+    if (nextState.complianceState === "sanctioned") morale -= MORALE_SANCTIONED_PENALTY;
+    else if (nextState.complianceState === "investigation") morale -= MORALE_INVESTIGATION_PENALTY;
+    else if (nextState.complianceState === "watch") morale -= MORALE_WATCH_PENALTY;
+    nextState.morale = clamp(morale, 0, MAX_MORALE);
 
     // 2. Transition Logic (Inlined/Refactored for purity)
     orchestrateTransitionsPure(world, heya, nextState, reasons, builder, mediaPressureChanges);

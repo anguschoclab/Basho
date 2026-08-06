@@ -71,3 +71,13 @@ export const FACILITY_NUTRITION_DIVISOR = 40;
 
 // Scandal threshold
 export const SCANDAL_WELFARE_THRESHOLD = 50;
+
+// Morale constants
+export const DEFAULT_MORALE = 50;
+export const MORALE_WELFARE_RISK_WEIGHT = 0.6;
+export const MORALE_MOMENTUM_NORMALIZER = 4;
+export const MORALE_MOMENTUM_OFFSET = 5;
+export const MORALE_SANCTIONED_PENALTY = 15;
+export const MORALE_INVESTIGATION_PENALTY = 10;
+export const MORALE_WATCH_PENALTY = 5;
+export const MAX_MORALE = 100;

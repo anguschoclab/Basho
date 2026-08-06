@@ -5,7 +5,6 @@ import { BoutNarrativeModal } from "@/components/game/BoutNarrativeModal";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { PbpLine } from "@/engine/bout/boutNarrative";
-import type { BoutReplayProgress } from "@/components/game/boutReplay/useBoutReplay";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
 // Mock @tanstack/react-router to avoid jsdom router context issues
@@ -28,7 +27,7 @@ vi.mock("@/components/ClickableName", () => ({
 
 // Mock BoutReplayViewer to avoid canvas/RAF in jsdom
 const MockComponent = vi.hoisted(() => {
-  return function ForwardRefMock(props: {
+  return function ForwardRefMock({ onProgressUpdate }: {
     result: unknown;
     eastRikishi: unknown;
     westRikishi: unknown;
@@ -38,14 +37,14 @@ const MockComponent = vi.hoisted(() => {
     onComplete?: () => void;
   }) {
     React.useEffect(() => {
-      props.onProgressUpdate?.({
+      onProgressUpdate?.({
         phaseIndex: 0,
         phaseProgress: 0.5,
         globalProgress: 0,
         totalDurationMs: 6000,
         elapsedMs: 0,
       });
-    }, []);
+    }, [onProgressUpdate]);
     return React.createElement("div", { "data-testid": "replay-viewer-mock" });
   };
 });

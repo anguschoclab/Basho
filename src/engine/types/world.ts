@@ -368,12 +368,7 @@ export interface WorldState {
   customKeshoConfigs?: Record<string, Partial<import("./keshoMawashi").KeshoMawashi>>;
 
   /** Pending exhibition tour invitations (WorldCircuitService) */
-  pendingExhibitions?: Array<{
-    id: string;
-    region: string;
-    prestige: number;
-    [key: string]: unknown;
-  }>;
+  pendingExhibitions?: PendingExhibition[];
 
   /** Bloodline trait registry (BloodlineService) */
   bloodlineRegistry?: BloodlineRegistry;
@@ -392,4 +387,15 @@ export interface WorldState {
 
   // B6: Injured rikishi encouragement log
   encouragementLog?: Array<{ from: string; to: string; basho: string }>;
+}
+
+/** Pending exhibition tour invitation (WorldCircuitService). */
+export interface PendingExhibition {
+  id: string;
+  heyaId?: string;
+  region: string;
+  prestige: number;
+  dominantStyle?: string;
+  requiresRank?: string;
+  expiresAtWeek?: number;
 }

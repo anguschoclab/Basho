@@ -35,15 +35,16 @@ export const EntityService = {
    * }));
    * ```
    */
-  ensureState<Parent extends Record<string, unknown>, Key extends keyof Parent>(
+  ensureState<Parent extends object, Key extends keyof Parent>(
     parent: Parent,
     key: Key,
     factory: () => NonNullable<Parent[Key]>
   ): NonNullable<Parent[Key]> {
-    if (!parent[key]) {
-      parent[key] = factory() as unknown as Parent[Key];
+    const record = parent as Record<string, unknown>;
+    if (!record[key as string]) {
+      record[key as string] = factory() as unknown as Parent[Key];
     }
-    return parent[key] as NonNullable<Parent[Key]>;
+    return record[key as string] as NonNullable<Parent[Key]>;
   },
 
   /**

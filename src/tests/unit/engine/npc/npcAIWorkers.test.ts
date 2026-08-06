@@ -576,4 +576,51 @@ describe("spawnGlobalWorker", () => {
     const result = spawnGlobalWorker(ctx);
     expect(result.acceptedExhibitionId).toBeUndefined();
   });
+
+  it("handles exhibitions with only required fields (no optional fields)", () => {
+    const r1 = mockRikishi("r1", { heyaId: "h1", rank: "maegashara", power: 80 });
+    const heya = makeMockHeya("h1", { rikishiIds: ["r1"] });
+    const world = makeMockWorld({
+      rikishi: new Map([["r1", r1]]),
+      heyas: new Map([["h1", heya]]),
+    });
+    const ctx: GlobalWorkerContext = {
+      heyaId: "h1",
+      ambition: 60,
+      riskAppetite: 50,
+      perception: makePerception({
+        rikishiPerceptions: [makeRikishiPerception({ rikishiId: "r1" })],
+      }),
+      pendingExhibitions: [
+        { id: "e1", heyaId: "h1", prestige: 60, region: "Osaka" },
+      ],
+      world,
+    };
+    const result = spawnGlobalWorker(ctx);
+    expect(result.acceptedExhibitionId).toBe("e1");
+  });
+
+  it("does not match exhibitions with missing heyaId", () => {
+    const r1 = mockRikishi("r1", { heyaId: "h1", rank: "maegashara", power: 80 });
+    const heya = makeMockHeya("h1", { rikishiIds: ["r1"] });
+    const world = makeMockWorld({
+      rikishi: new Map([["r1", r1]]),
+      heyas: new Map([["h1", heya]]),
+    });
+    const ctx: GlobalWorkerContext = {
+      heyaId: "h1",
+      ambition: 60,
+      riskAppetite: 50,
+      perception: makePerception({
+        rikishiPerceptions: [makeRikishiPerception({ rikishiId: "r1" })],
+      }),
+      pendingExhibitions: [
+        { id: "e1", prestige: 60, region: "Osaka" },
+      ],
+      world,
+    };
+    const result = spawnGlobalWorker(ctx);
+    expect(result.acceptedExhibitionId).toBeUndefined();
+    expect(result.reasoning).toEqual([]);
+  });
 });

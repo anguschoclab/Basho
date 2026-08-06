@@ -263,7 +263,16 @@ function bandRosterStrength(heya: Heya, world: WorldState): RosterStrengthBand {
  *  * @returns The result.
  */
 function bandMorale(heya: Heya, world: WorldState): MoraleBand {
-  // Derive from welfare risk + recent momentum
+  // Use stored morale from welfareState, fall back to derivation for uninitialized heyas
+  const storedMorale = heya.welfareState?.morale;
+  if (storedMorale !== undefined) {
+    if (storedMorale >= MORALE_INSPIRED_THRESHOLD) return "inspired";
+    if (storedMorale >= MORALE_CONTENT_THRESHOLD) return "content";
+    if (storedMorale >= MORALE_NEUTRAL_THRESHOLD) return "neutral";
+    if (storedMorale >= MORALE_DISGRUNTLED_THRESHOLD) return "disgruntled";
+    return "mutinous";
+  }
+  // Derive from welfare risk + recent momentum for uninitialized heyas
   const welfareRisk = heya.welfareState?.welfareRisk ?? 10;
   const roster = getHeyaRoster(world, heya.id);
   let momentumSum = 0;
