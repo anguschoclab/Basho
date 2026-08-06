@@ -58,7 +58,13 @@ export function generateNakabiSummary(
   });
 
   const leader = sorted[0] ?? null;
-  const undefeatedCount = records.filter((r) => r.losses === 0 && r.wins > 0).length;
+
+  let undefeatedCount = 0;
+  for (const r of records) {
+    if (r.losses === 0 && r.wins > 0) {
+      undefeatedCount++;
+    }
+  }
 
   // Notable performers: undefeated, or rank-and-file performing above expectation
   const notablePerformers: NakabiSummary["notablePerformers"] = [];
