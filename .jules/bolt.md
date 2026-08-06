@@ -281,7 +281,7 @@ Action: Replaced the global `allRikishi` prop with a pre-filtered `roster` prop 
 
 **Learning:** Replacing `.filter().length` or `.map().filter()` with `for...of` loops avoids intermediate array allocations, but doing so on cold paths (like retirement narratives) or very small, bounded arrays (like basho lines) yields unmeasurably small performance gains while often sacrificing readability (e.g. requiring an IIFE inline).
 **Action:** Only target unbounded arrays (e.g. `world.rikishi.values()`), frequently executed loop bodies (e.g. `SimTuningService`, `WorldEngine.tick`), or explicit hot paths for array transformation refactors. Do not refactor small array chains if it degrades code readability for zero measurable benefit.
-## 2026-10-25 - Avoid Object.values().filter().length on Dictionaries
+## 2026-08-03 - Optimize array allocation in npc ai ticks
 
-**Learning:** When calculating saturation metrics in high-frequency paths (like `SimTuningService.calculateMetrics`), using `Object.values(obj).filter(...).length` creates two intermediate arrays (one from `Object.values`, one from `.filter`).
-**Action:** Replace `Object.values().filter().length` with a standard `for...in` loop accompanied by `hasOwnProperty` guard, and track a local counter. This avoids multiple O(N) array instantiations on dictionary structures.
+**Learning:** `world.governanceLog.filter()` array allocation inside a loop for each heya during engine ticks causes significant intermediate array allocation and GC pressure. Same applies to `Object.values(existingState.pairs)`.
+**Action:** Replace `Array.filter()` and `Object.values()` with a direct `for...of` loop and a `for...in` loop accompanied by `hasOwnProperty` respectively within high frequency tick loops.
