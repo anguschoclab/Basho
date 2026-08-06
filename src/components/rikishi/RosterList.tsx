@@ -104,9 +104,17 @@ export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
             side="top"
           >
             <Card
-              className="paper group hover:border-primary/50 cursor-pointer overflow-hidden relative animate-in zoom-in-95 fill-mode-both"
+              className="paper group hover:border-primary/50 cursor-pointer overflow-hidden relative animate-in zoom-in-95 fill-mode-both focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ring-offset-background"
               style={{ animationDelay: `${idx * 40}ms` }}
               onClick={() => onRikishiClick(r.id)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onRikishiClick(r.id);
+                }
+              }}
             >
               <div
                 className={cn(
