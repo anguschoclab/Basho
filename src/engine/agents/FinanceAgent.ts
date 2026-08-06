@@ -7,6 +7,7 @@
 
 import type { WorldState } from "../types/world";
 import type { Oyakata } from "../types/oyakata";
+import type { MyosekiStock } from "../types/myoseki";
 import { stableSort } from "../utils/sort";
 
 export interface FinanceAgentContext {
@@ -47,7 +48,7 @@ export function spawnFinanceAgent(ctx: FinanceAgentContext): FinanceAgentResult 
   let shouldBuildReserves = false;
   let facilityType: string | undefined;
   let reserveTarget: number = 0;
-  let prioritized: any[] = [];
+  let prioritized: MyosekiStock[] = [];
 
   // Determine risk level based on personality and runway
   if (runwayBand === "desperate" || runwayBand === "critical") {

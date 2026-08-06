@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any */
+ 
 /**
  * Regression safety net for test audit Phase 1.
  * Verifies that assertions from bugfix tests scheduled for deletion/merge

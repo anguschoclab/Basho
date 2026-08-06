@@ -5,7 +5,7 @@ import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { WorldState } from "@/engine/types/world";
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 
 function makeInjuredRikishi(opts?: Record<string, any>): Rikishi {
   return {

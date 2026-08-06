@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import postBout from "@/engine/bard/domains/post_bout.json";
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 
 describe("PR #731: Bard post-bout reactions expansion", () => {
   it("C.1: post_bout.reaction array has at least 10 variants", () => {

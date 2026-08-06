@@ -10,7 +10,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { DramaContext } from "@/engine/matchmaking/DramaMatchmaker";
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 
 function makeBoutResult(overrides: Partial<BoutResult> = {}): BoutResult {
   return {

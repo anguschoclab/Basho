@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { describe, it, expect } from "vitest";
 import { TrainingService } from "@/engine/systems/training/TrainingService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";

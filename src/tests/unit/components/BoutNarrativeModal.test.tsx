@@ -31,7 +31,7 @@ vi.mock("@/components/game/BoutReplayViewer", () => ({
   BoutReplayViewer: forwardRefMock,
 }));
 
-function forwardRefMock(props: {
+function ForwardRefMock(props: {
   result: BoutResult;
   eastRikishi: UIRikishi;
   westRikishi: UIRikishi;

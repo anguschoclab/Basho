@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+ 
 import { describe, it, expect } from "vitest";
 import { bestTierAllowed } from "@/engine/banzuke/promotionLogic";
 import type { BanzukeEntry, BashoPerformance } from "@/engine/types/banzuke";

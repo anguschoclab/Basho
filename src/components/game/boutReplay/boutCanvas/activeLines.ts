@@ -10,7 +10,8 @@ export function computeActiveLineIndices(phaseIndex: number, pbpLines: PbpLine[]
 
   const result = new Set<number>();
   for (let i = 0; i < pbpLines.length; i++) {
-    if (pbpLines[i].phase && targetPhases.includes(pbpLines[i].phase!)) {
+    const phase = pbpLines[i].phase;
+    if (phase && targetPhases.includes(phase)) {
       result.add(i);
     }
   }

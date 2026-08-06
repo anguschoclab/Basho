@@ -48,7 +48,8 @@ export function runGovernanceReview(world: WorldState): StateImpact {
       if (!benefactorsByIchimon.has(h.ichimon)) {
         benefactorsByIchimon.set(h.ichimon, []);
       }
-      benefactorsByIchimon.get(h.ichimon)!.push(h);
+      const list = benefactorsByIchimon.get(h.ichimon);
+      if (list) list.push(h);
     }
   }
 

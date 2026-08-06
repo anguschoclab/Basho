@@ -15,7 +15,7 @@ import {
 } from "@/constants/engine/economic";
 import { makeMockWorld, mockRikishi } from "../utils";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 
 function makeSekitori(id: string, overrides: Partial<any> = {}) {
   return mockRikishi(id, {

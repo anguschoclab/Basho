@@ -74,7 +74,7 @@ describe("getHeyaOrThrow", () => {
 
   it("throws on falsy id (empty string)", () => {
     const world = makeMockWorld({ heyas: new Map([["h1", makeMockHeya("h1")]]) });
-    expect(() => getHeyaOrThrow(world, "")).toThrow(/Heya with id  not found/);
+    expect(() => getHeyaOrThrow(world, "")).toThrow(/Heya with id {2}not found/);
   });
 
   it("thrown value is an Error instance", () => {
@@ -166,7 +166,7 @@ describe("getRikishiOrThrow", () => {
 
   it("throws on falsy id (empty string)", () => {
     const world = makeMockWorld({ rikishi: new Map([["r1", mockRikishi("r1")]]) });
-    expect(() => getRikishiOrThrow(world, "")).toThrow(/Rikishi with id  not found/);
+    expect(() => getRikishiOrThrow(world, "")).toThrow(/Rikishi with id {2}not found/);
   });
 
   it("thrown value is an Error instance", () => {

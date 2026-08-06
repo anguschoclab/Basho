@@ -8,7 +8,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 describe("TrainingService.applyWeeklyTraining", () => {
   let world: WorldState;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   function makeHeya(id: string, isPlayer: boolean): any {
     return {
       id,
@@ -46,7 +46,7 @@ describe("TrainingService.applyWeeklyTraining", () => {
         experience: 10,
         power: 50,
         aggression: 50,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
       } as any,
     });
   }
@@ -79,7 +79,7 @@ describe("TrainingService.applyWeeklyTraining", () => {
     rikishiMap.set("r-player", pr);
     rikishiMap.set("r-npc", nr);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const heyasMap = new Map<string, any>();
     heyasMap.set("heya-player", makeHeya("heya-player", true));
     heyasMap.set("heya-npc", makeHeya("heya-npc", false));

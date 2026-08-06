@@ -63,7 +63,7 @@ export interface PersonnelWorkerContext {
   welfareDiscipline: number;
   styleProfile?: OyakataStyleProfile;
   world: WorldState;
-  pendingExhibitions?: any[]; // To avoid circular import, use any or imported type
+  pendingExhibitions?: Array<{ id: string; region: string; prestige: number; [key: string]: unknown }>;
   riskTolerance?: number; // oyakata.traits.risk (0-100)
 }
 
@@ -72,7 +72,7 @@ export interface GlobalWorkerContext {
   ambition: number;
   riskAppetite: number;
   perception: PerceptionSnapshot;
-  pendingExhibitions: any[];
+  pendingExhibitions: Array<{ id: string; region: string; prestige: number; [key: string]: unknown }>;
   world: WorldState;
 }
 

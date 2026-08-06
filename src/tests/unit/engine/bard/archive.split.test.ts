@@ -3,7 +3,7 @@ import { BardEngine } from "@/engine/bard/BardEngine";
 import { SeededRNG } from "@/engine/rng";
 import registryData from "@/engine/bard/registry.json";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 
 const ALL_DOMAINS = [
   "combat", "medical", "scouting", "institutional", "world", "media",

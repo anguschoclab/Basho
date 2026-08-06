@@ -4,7 +4,7 @@ import { SeededRNG } from "@/engine/rng";
 import * as fs from "fs";
 import * as path from "path";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 
 describe("Phase 1: Dead-code removal — digests, matrix, vocabulary", () => {
   beforeEach(() => {

@@ -141,7 +141,8 @@ function phase2(
     const rec = standings?.get(r.id) ?? { wins: 0, losses: 0 };
     const wins = rec.wins;
     if (!bucketMap.has(wins)) bucketMap.set(wins, []);
-    bucketMap.get(wins)!.push(r);
+    const bucket = bucketMap.get(wins);
+    if (bucket) bucket.push(r);
   }
 
   const bucketKeys = [...bucketMap.keys()].sort((a, b) => b - a);

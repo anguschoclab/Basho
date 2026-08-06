@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { describe, it, expect } from "vitest";
 import { processRetireeOyakataConversion } from "@/engine/lifecycle/retireeOyakataConversion";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";

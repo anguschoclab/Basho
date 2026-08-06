@@ -275,10 +275,10 @@ export function interpolate(text: string, context: NarrativeContext): string {
     const capped = raw.length > MAX_CONTEXT_VALUE_LENGTH
       ? raw.slice(0, MAX_CONTEXT_VALUE_LENGTH) + "…truncated"
       : raw;
-    const stringValue = capped.replace(/[\[\]:]/g, "");
+    const stringValue = capped.replace(/[[\]:]/g, "");
 
     if (entityType && entityId) {
-      const safeEntityId = String(entityId).replace(/[\[\]:]/g, "");
+      const safeEntityId = String(entityId).replace(/[[\]:]/g, "");
       return `[[${entityType}:${safeEntityId}:${stringValue}]]`;
     }
 
@@ -328,7 +328,9 @@ export const BardEngine = {
         });
         domainPromises.set(name, p);
       }
-      return domainPromises.get(name)!;
+      const p = domainPromises.get(name);
+      if (!p) throw new Error(`Domain promise not found for ${name}`);
+      return p;
     });
     await Promise.all(promises);
   },

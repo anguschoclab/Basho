@@ -5,7 +5,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BashoName, BoutResult } from "@/engine/types/basho";
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 
 function makeRikishi(id: string, opts?: Record<string, any>): Rikishi {
   return mockRikishi(id, {

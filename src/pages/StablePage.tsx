@@ -38,7 +38,6 @@ export default function StablePage() {
   const heya = world?.heyas.get(viewingHeyaId) ?? null;
 
   const hasWorld = useRequireWorld();
-  if (!hasWorld || !world || !heya) return null;
 
   const rawRoster = useMemo(() => {
     if (!world || !heya) return [];
@@ -49,6 +48,8 @@ export default function StablePage() {
     if (!world || !heya) return [];
     return rawRoster.map((r) => projectRikishi(r, world));
   }, [world, heya, rawRoster]);
+
+  if (!hasWorld || !world || !heya) return null;
 
   if (!heya) {
     return (

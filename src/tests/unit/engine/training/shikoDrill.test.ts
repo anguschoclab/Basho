@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 import { describe, it, expect } from "vitest";
 import { DRILL_EFFECTS, DRILL_METADATA } from "@/constants/engine/training";
 import type { DrillType } from "@/engine/types/training";

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 import { describe, it, expect } from "vitest";
 import { toCareerDataDTO } from "@/presenters/rikishi/transformers/lineage";
 import { mockRikishi, makeMockWorld } from "../utils";

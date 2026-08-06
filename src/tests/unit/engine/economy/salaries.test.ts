@@ -4,7 +4,7 @@ import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
 import { createImpactBuilder, ImpactBuilder } from "@/engine/core/ImpactBuilder";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 
 describe("processHeyaEconomics", () => {
   let world: WorldState;

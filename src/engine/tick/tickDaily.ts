@@ -155,7 +155,7 @@ export function advanceOneDay(
         ...nextWorld,
         transientContext: {
           ...nextWorld.transientContext,
-          boundaries: { ...nextWorld.transientContext!.boundaries!, monthBoundary: true },
+          boundaries: { ...(nextWorld.transientContext?.boundaries ?? { monthBoundary: false, yearBoundary: false }), monthBoundary: true },
         },
       };
     }
@@ -164,7 +164,7 @@ export function advanceOneDay(
         ...nextWorld,
         transientContext: {
           ...nextWorld.transientContext,
-          boundaries: { ...nextWorld.transientContext!.boundaries!, yearBoundary: true },
+          boundaries: { ...(nextWorld.transientContext?.boundaries ?? { monthBoundary: false, yearBoundary: false }), yearBoundary: true },
         },
       };
     }

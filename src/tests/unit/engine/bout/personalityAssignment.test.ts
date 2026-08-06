@@ -7,7 +7,7 @@ import {
 import { SeededRNG } from "@/engine/rng";
 import { PERSONALITY_TRAITS } from "@/constants/engine/generation";
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 
 describe("PersonaAssignment — press persona & trait assignment (T22)", () => {
   // ── T22.1-T22.5: Press persona assignment ──

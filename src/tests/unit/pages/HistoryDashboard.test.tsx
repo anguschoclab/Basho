@@ -24,7 +24,6 @@ vi.mock("@/presenters/selectors", () => ({
 }));
 
 vi.mock("@/components/ui/tabs", () => {
-  const React = require("react");
   const TabsContext = React.createContext({ value: "", onValueChange: (_v: string) => {} });
 
   const Tabs = ({ value: initialValue, onValueChange, children, ...props }: any) => {

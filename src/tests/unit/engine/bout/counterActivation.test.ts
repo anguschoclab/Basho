@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+ 
 import { describe, it, expect } from "vitest";
 import { mockRikishi } from "../utils";
 import type { Rikishi } from "@/engine/types/rikishi";

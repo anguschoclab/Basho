@@ -27,7 +27,7 @@ export function listVisibleCandidates(
 
   const candidates: TalentCandidate[] = [];
   const isForeignGated = poolType === "foreign" && world.playerHeyaId;
-  const heya = isForeignGated ? getHeya(world, world.playerHeyaId!) : undefined;
+  const heya = isForeignGated ? getHeya(world, world.playerHeyaId ?? "") : undefined;
 
   if (isForeignGated && heya) {
     const presence = heya.regionalPresence || {};

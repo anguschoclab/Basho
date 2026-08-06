@@ -14,6 +14,7 @@ const hasDOM = typeof Element !== "undefined" && typeof HTMLElement !== "undefin
 let cleanup: (() => void) | undefined;
 if (hasDOM) {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     cleanup = require("@testing-library/react").cleanup;
   } catch {
     cleanup = undefined;

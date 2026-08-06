@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { describe, it, expect } from "vitest";
 import { buildMediaDigest } from "@/engine/systems/media/MediaPreBashoService";
 import { MockFactory } from "../../../helpers/utils/MockFactory";

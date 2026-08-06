@@ -28,7 +28,7 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
 
     case "ADVANCE_DAY": {
       if (!state.world.currentBasho) return state;
-      let world = worldEngine.advanceBashoDay(state.world);
+      const world = worldEngine.advanceBashoDay(state.world);
       const day = world.currentBasho?.day ?? 0;
       if (day > 15) {
         try {

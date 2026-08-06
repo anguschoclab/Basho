@@ -8,6 +8,7 @@ import type { RecruitmentAgentResult } from "../agents/RecruitmentAgent";
 import { getOyakataStyleProfile } from "../oyakataStylePreferences";
 import { WorldCircuitService } from "../systems/worldCircuit/WorldCircuitService";
 import { getOyakataForHeya, getRikishi, getHeya } from "../queries";
+import type { Heya } from "../types/heya";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import { getManagerPersona } from "../systems/NPCPersonaService";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
@@ -120,7 +121,7 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
     reasoning.push(...financeResult.reasoning);
 
     const governanceCtx: GovernanceAgentContext = {
-      heya: heya!,
+      heya: heya as Heya,
       oyakata,
       world,
       scandalScore: heya?.scandalScore || 0,

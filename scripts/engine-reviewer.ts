@@ -113,7 +113,7 @@ function scanDirectory(dir: string) {
         checkFile(fullPath);
       }
     }
-  } catch (error) {
+  } catch (_error) {
     // Ignore permission errors
   }
 }

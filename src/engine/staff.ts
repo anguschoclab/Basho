@@ -61,7 +61,7 @@ import {
  * @param bands - The list of possible bands
  * @returns A randomly selected band
  */
-function rollBand(rng: SeededRNG, bands: readonly any[]): any {
+function rollBand<T>(rng: SeededRNG, bands: readonly T[]): T {
   return bands[Math.floor(rng.next() * bands.length)];
 }
 

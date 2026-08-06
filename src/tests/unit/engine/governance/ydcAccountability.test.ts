@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 import { describe, it, expect } from "vitest";
 import { KihakuService } from "@/engine/systems/governance/KihakuService";
 import { YokozunaService } from "@/engine/systems/governance/YokozunaService";

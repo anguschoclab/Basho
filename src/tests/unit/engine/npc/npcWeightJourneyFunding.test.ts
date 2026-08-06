@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 import { describe, it, expect, beforeEach } from "vitest";
 import { evaluateFinanceStrategy } from "@/engine/strategy/NPCFinanceCalculator";
 import { tickMonthlyNPC } from "@/engine/npcAI/ticks";

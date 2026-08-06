@@ -3,7 +3,7 @@ import { activeDivisionRoster } from "@/engine/scheduleHelpers";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 
 function makeRikishi(id: string, opts?: Record<string, any>): Rikishi {
   return {

@@ -42,7 +42,9 @@ export function resolveCrisis(world: WorldState, crisisId: string, choiceId: str
     builder.updateHeya(playerHeyaId, {
       reputation: Math.max(0, (heya.reputation ?? 50) - 15),
       welfareState: {
-        ...heya.welfareState!,
+        ...heya.welfareState,
+        activeDiet: heya.welfareState?.activeDiet ?? "maintenance",
+        weeksInState: heya.welfareState?.weeksInState ?? 0,
         complianceState: "compliant",
         welfareRisk: Math.max(0, (heya.welfareState?.welfareRisk ?? 0) - 30),
       },

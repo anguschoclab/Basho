@@ -587,7 +587,7 @@ export function retireRikishiImpact(
   arg4?: string
 ): StateImpact {
   if (typeof arg2 === "number") {
-    return createImpactBuilder(arg4!).retireRikishi(id, arg2, arg3!).build();
+    return createImpactBuilder(arg4 ?? "retireRikishi").retireRikishi(id, arg2, arg3 ?? "").build();
   }
   return createImpactBuilder(arg2).retireRikishi(id).build();
 }

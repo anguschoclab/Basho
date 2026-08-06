@@ -70,7 +70,7 @@ export function applyWeightJourneyTick(
 
   // Auto-enter if eligible but no journey started
   if (!rikishi.weightJourney && shouldEnterWeightJourney(rikishi)) {
-    const targetKg = rikishi.potential!.weightKg;
+    const targetKg = rikishi.potential?.weightKg ?? 0;
     builder.updateRikishi(rikishi.id, {
       weightJourney: {
         targetKg,
@@ -85,8 +85,9 @@ export function applyWeightJourneyTick(
   const journey = rikishi.weightJourney;
   if (!journey) return builder.build();
 
+  const journeyUpdate = { ...journey };
   const updates: Partial<Rikishi> = {
-    weightJourney: { ...journey },
+    weightJourney: journeyUpdate,
   };
 
   // Stall conditions
@@ -94,7 +95,7 @@ export function applyWeightJourneyTick(
   const isStalled = rikishi.injured || funds < WEIGHT_JOURNEY_STALL_THRESHOLD;
 
   if (isStalled) {
-    updates.weightJourney!.stalled = true;
+    journeyUpdate.stalled = true;
     builder.updateRikishi(rikishi.id, updates);
     return builder.build();
   }
@@ -105,12 +106,12 @@ export function applyWeightJourneyTick(
     NUTRITION_MULTIPLIERS.BASE +
     (clamp(nutritionFacility, 0, 100) / 100) * NUTRITION_MULTIPLIERS.RANGE;
 
-  updates.weightJourney!.stalled = false;
-  updates.weightJourney!.progressKg = journey.progressKg + WEIGHT_JOURNEY_WEEKLY_GAIN * nutritionMult;
+  journeyUpdate.stalled = false;
+  journeyUpdate.progressKg = journey.progressKg + WEIGHT_JOURNEY_WEEKLY_GAIN * nutritionMult;
 
   // Breakthrough check
-  if (updates.weightJourney!.progressKg >= journey.targetKg) {
-    updates.weightJourney!.phases = [...journey.phases, "complete"];
+  if (journeyUpdate.progressKg >= journey.targetKg) {
+    journeyUpdate.phases = [...journey.phases, "complete"];
     updates.stats = {
       ...(rikishi.stats || {}),
       power: (rikishi.stats?.power ?? 50) + WEIGHT_JOURNEY_POWER_BOOST,

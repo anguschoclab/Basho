@@ -43,7 +43,8 @@ export function generateShikona(
 ): string {
   const rng = config.rng
     ? (() => {
-        const rngInstance = config.rng!;
+        const rngInstance = config.rng;
+        if (!rngInstance) return () => 0;
         return () => rngInstance.next();
       })()
     : seededRandom(seed + (config.heyaId || "") + (config.nationality || ""));

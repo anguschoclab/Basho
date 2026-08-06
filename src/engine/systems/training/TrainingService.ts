@@ -11,7 +11,7 @@
  * Goal: Service-oriented architecture with clear dependencies.
  */
 
-import type { WorldState, ActiveModifiers } from "../../types/world";
+import type { WorldState } from "../../types/world";
 import type { Id } from "../../types/common";
 import type { HeyaTrainingState, IndividualFocus } from "../../types/training";
 import type { Rikishi, RikishiStats } from "../../types/rikishi";

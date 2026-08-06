@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { SeededRNG } from "@/engine/rng";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 
 const ALL_DOMAINS = [
   "combat", "medical", "scouting", "institutional", "world", "media",

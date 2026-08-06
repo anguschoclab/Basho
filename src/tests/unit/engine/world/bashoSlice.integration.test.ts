@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any */
+ 
 import { describe, it, expect } from "vitest";
 import { simulateBoutForToday, advanceBashoDay } from "@/engine/world";
 import { phase01_basho_bouts } from "@/engine/tick/phases/phase01_basho_bouts";

@@ -17,7 +17,7 @@ const KEYS_RELOAD_DEBOUNCE_MS = 100;
  * Falls back to localStorage if electron-store is not available (for web builds).
  */
 export class ElectronStorageProvider implements IStorageProvider {
-  private storage: {
+  private storage!: {
     get: (key: string) => unknown;
     set: (key: string, value: unknown) => void;
     delete: (key: string) => void;
@@ -32,7 +32,7 @@ export class ElectronStorageProvider implements IStorageProvider {
     // Check if running in Electron with electronCustom API
     this.isElectron = typeof window !== "undefined" && !!window.electronCustom?.storage;
     if (this.isElectron) {
-      this.storage = window.electronCustom!.storage;
+      this.storage = window.electronCustom?.storage ?? this.storage;
       // Load keys asynchronously
       this.loadKeys().catch((e) =>
         error("Failed to load keys from electron-store", "ElectronStorage", e)

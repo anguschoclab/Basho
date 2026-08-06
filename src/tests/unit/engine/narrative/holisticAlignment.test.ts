@@ -12,7 +12,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { BashoPerformance, BanzukeEntry } from "@/engine/types/banzuke";
 import type { CombatArchetype } from "@/engine/types/combat";
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 
 function makeBoutResult(overrides: Partial<BoutResult> = {}): BoutResult {
   return {

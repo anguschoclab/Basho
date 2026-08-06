@@ -6,7 +6,7 @@ import { makeBoutResult, makeBoutWorld } from "@/tests/helpers/boutTestHelpers";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
 import type { PressPersona } from "@/engine/types/media";
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 
 function getInterviewLines(result: BoutResult) {
   return (result.pbpLines ?? []).filter((l) => l.phase === "interview");

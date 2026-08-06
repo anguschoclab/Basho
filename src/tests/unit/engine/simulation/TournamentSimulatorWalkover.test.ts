@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import type { Rikishi } from "@/engine/types/rikishi";
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 
 function makeRikishi(id: string, opts?: Record<string, any>): Rikishi {
   return {
@@ -32,7 +32,6 @@ function makeRikishi(id: string, opts?: Record<string, any>): Rikishi {
 // Simulates the TournamentSimulator walkover check logic
 function shouldGiveWalkover(east: Rikishi, west: Rikishi): boolean {
   // Current buggy check (N9): only checks injured
-  // return east.injured || west.injured;
   // Fixed check (N9): checks injured, isKyujo, isRetired
   return (
     !!east.injured || !!west.injured || !!east.isKyujo || !!west.isKyujo || !!east.isRetired || !!west.isRetired

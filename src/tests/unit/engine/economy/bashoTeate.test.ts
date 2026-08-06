@@ -4,7 +4,7 @@ import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { NON_SEKITORI_BASHO_ALLOWANCE } from "@/constants/engine/economic";
 import { makeMockWorld, mockRikishi } from "../utils";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 
 describe("payBashoTeate — centralized allowances", () => {
   it("makushita receives ¥165K", () => {

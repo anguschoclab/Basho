@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+ 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { makeMockWorld } from "../utils";
 

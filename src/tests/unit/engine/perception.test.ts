@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { describe, it, expect } from "vitest";
 import { buildPerceptionSnapshot } from "@/engine/perception";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";

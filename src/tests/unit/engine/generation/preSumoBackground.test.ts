@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 import { describe, it, expect } from "vitest";
 import { assignPreSumoBackground, applyBackgroundStatModifiers, PRE_SUMO_BACKGROUNDS } from "@/engine/systems/generation/PreSumoBackground";
 import { mockRikishi } from "../utils";

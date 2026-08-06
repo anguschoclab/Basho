@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 
 describe("PR #728: RikishiCard ginboshi display", () => {
   it("C.3: ginboshiEarned value is accessible from achievements", () => {

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 /**
  * Shared helpers for bout narrative tests.
  * Eliminates duplicated makeBoutResult/makeMinimalBoutResult/makeWorld definitions

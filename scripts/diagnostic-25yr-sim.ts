@@ -153,7 +153,6 @@ console.log(`  Seed: ${SEED}  |  Target: ${YEARS} years (${YEARS * 6} basho)`);
 console.log(`${"═".repeat(70)}\n`);
 
 const startMs = Date.now();
-const sessionErrors: string[] = [];
 const yearSnapshots: YearSnapshot[] = [];
 
 // Intercept console.error to capture engine errors during sim

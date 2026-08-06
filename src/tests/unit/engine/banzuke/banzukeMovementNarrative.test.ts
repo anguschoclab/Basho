@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+ 
 import { describe, it, expect } from "vitest";
 import { generateBanzukeMovementNarrative } from "@/engine/banzuke/banzukeMovementNarrative";
 import { mockRikishi, makeMockWorld } from "../utils";

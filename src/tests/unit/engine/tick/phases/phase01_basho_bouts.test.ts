@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+ 
 import { describe, it, expect } from "vitest";
 import { phase01_basho_bouts } from "@/engine/tick/phases/phase01_basho_bouts";
 import type { WorldState } from "@/engine/types/world";

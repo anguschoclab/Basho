@@ -146,7 +146,8 @@ export function tickMonthlyNPC(world: WorldState): StateImpact {
   const sortedHeyas = stableSort(candidateHeyas, (h) => h.id);
 
   for (const heya of sortedHeyas) {
-    const oyakata = world.oyakata.get(heya.oyakataId!)!;
+    const oyakata = world.oyakata.get(heya.oyakataId ?? "");
+    if (!oyakata) continue;
 
     // Check for stalled weight journeys due to low funds
     if (heya.funds < WEIGHT_JOURNEY_STALL_THRESHOLD) {

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 import { describe, it, expect, beforeAll } from "vitest";
 import { processDramaTick, checkBashoDayDrama } from "@/engine/bard/dramaGenerator";
 import { makeMockWorld, mockRikishi } from "../utils";

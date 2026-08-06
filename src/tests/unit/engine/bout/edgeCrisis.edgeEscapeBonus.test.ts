@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+ 
 import { describe, it, expect } from "vitest";
 import { tickEdgeCrisis, buildEdgeCrisis } from "@/engine/bout/physics/edgeCrisis";
 import { mockRikishi } from "../utils";

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+ 
 import { describe, it, expect } from "vitest";
 import { simulateBoutForToday } from "@/engine/world";
 import type { WorldState } from "@/engine/types/world";

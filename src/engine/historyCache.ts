@@ -35,7 +35,8 @@ class HistoryLRUCache {
   public async getYear(year: number): Promise<ArchivedYear | null> {
     if (this.cache.has(year)) {
       // Move to front (refresh LRU)
-      const data = this.cache.get(year)!;
+      const data = this.cache.get(year);
+      if (!data) return null;
       this.cache.delete(year);
       this.cache.set(year, data);
       return data;

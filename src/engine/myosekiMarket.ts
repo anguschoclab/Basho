@@ -8,6 +8,7 @@ import type { StateImpact } from "./core/StateImpact";
 import { stableSort } from "./utils/sort";
 import { isMyosekiPlayerRelevant } from "./npcAI/eventSurfacing";
 import { getHeya } from "./queries";
+import type { Heya } from "./types/heya";
 
 const TOTAL_MYOSEKI = 105;
 const BASE_ASKING_PRICE = 150_000_000;
@@ -214,7 +215,7 @@ export function tickMyosekiMarket(world: WorldState): StateImpact {
   }
 
   const updatedStocks = { ...market.stocks };
-  const heyaUpdates: Record<Id, any> = {};
+  const heyaUpdates: Record<Id, Partial<Heya>> = {};
 
   for (const stock of stableSort(Object.values(market.stocks), (x) => x.id)) {
     const updatedStock = { ...stock };

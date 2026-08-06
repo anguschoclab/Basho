@@ -79,13 +79,14 @@ export function KeshoMawashiGallery({ world, heyaId }: KeshoMawashiGalleryProps)
             </CardHeader>
             <CardContent className="p-6 pt-2 flex flex-col items-center gap-4">
               <div className="relative group-hover:scale-105 transition-transform duration-500 py-4">
-                <KeshoMawashiDisplay
-                  mawashi={rikishi.keshoMawashi!}
-                  size="lg"
-                  className="shadow-2xl"
-                />
+                {rikishi.keshoMawashi && (
+                  <KeshoMawashiDisplay
+                    mawashi={rikishi.keshoMawashi}
+                    size="lg"
+                    className="shadow-2xl"
+                  />
+                )}
               </div>
-
               <div className="w-full space-y-3 bg-muted/30 p-3 rounded-lg border">
                 <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                   <ShieldCheck className="h-3 w-3" /> Design Specification

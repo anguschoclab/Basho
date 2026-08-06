@@ -45,6 +45,7 @@ function makeMoment(
   return {
     label,
     labelText: LABEL_TEXT[label],
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     bout: match.result!,
     day: match.day,
     bashoName,

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 /**
  * Tests for the shared bout test helpers.
  * Verifies that boutTestHelpers produce valid objects compatible with engine types.

@@ -5,7 +5,7 @@ import { mockRikishi } from "../utils";
 import { makeBoutResult, makeBoutWorld } from "@/tests/helpers/boutTestHelpers";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 
 function getPostBoutLines(result: BoutResult) {
   return (result.pbpLines ?? []).filter((l) => l.phase === "post_bout");

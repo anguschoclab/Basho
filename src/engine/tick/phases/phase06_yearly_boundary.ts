@@ -160,7 +160,7 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
       };
 
       if (o.avatarConfig) {
-        updated.avatarConfig = updateAvatarForAging(o.avatarConfig, updated.age!);
+        updated.avatarConfig = updateAvatarForAging(o.avatarConfig, updated.age ?? 0);
       }
       builder.updateOyakata(id, updated);
     }

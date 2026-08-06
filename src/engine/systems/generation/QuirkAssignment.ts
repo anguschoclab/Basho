@@ -54,7 +54,7 @@ export function applyGlasses(
   return {
     ...rikishi,
     quirks: {
-      ...rikishi.quirks!,
+      ...rikishi.quirks,
       glasses: { style, acquiredBasho },
     },
   };

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any */
+ 
 import { describe, it, expect } from "vitest";
 import {
   DOHYO_IRI_DESCRIPTIONS,

@@ -5,7 +5,7 @@ import { mockRikishi } from "../utils";
 import { makeBoutWorld } from "@/tests/helpers/boutTestHelpers";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 
 function makeBoutResult(overrides: Partial<BoutResult> = {}): BoutResult {
   return {

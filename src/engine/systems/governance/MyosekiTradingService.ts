@@ -143,7 +143,7 @@ export const MYOSEKI_BASE_PRICES: Record<MyosekiStock["prestigeTier"], number> =
  * All stocks start as "available" owned by "JSA".
  */
 export function initializeMyosekiMarket(world: WorldState): MyosekiMarket {
-  const rng = rngForWorld(world, "myoseki", "init");
+  const _rng = rngForWorld(world, "myoseki", "init");
   const stocks: Record<Id, MyosekiStock> = {};
 
   for (let i = 0; i < CANONICAL_MYOSEKI_NAMES.length; i++) {

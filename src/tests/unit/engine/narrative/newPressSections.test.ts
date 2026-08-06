@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 import { describe, it, expect } from "vitest";
 import { PostBashoPressService } from "@/engine/systems/narrative/PostBashoPressService";
 import { makeMockWorld, mockRikishi } from "../utils";

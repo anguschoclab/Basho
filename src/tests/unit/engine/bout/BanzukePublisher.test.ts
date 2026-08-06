@@ -5,7 +5,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { isKachiKoshi } from "@/engine/banzuke/banzukeHelpers";
 
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 
 function makeWorldForPublish(
   rikishiList: Rikishi[],

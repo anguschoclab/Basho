@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-explicit-any */
+ 
 import { describe, it, expect, vi } from "vitest";
 import { endBasho } from "@/engine/world";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";

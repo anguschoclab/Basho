@@ -7,7 +7,7 @@ import type { WorldState } from "@/engine/types/world";
 import type { BoutResult, MatchSchedule } from "@/engine/types/basho";
 import type { Rikishi } from "@/engine/types/rikishi";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 
 function makeBoutContext(winner: Rikishi, loser: Rikishi, kenshoEnvelopes: number) {
   const match: MatchSchedule = {

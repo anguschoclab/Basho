@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { phase01_week_npc_ai } from "@/engine/tick/phases/phase01_week_npc_ai";
 import * as PersonaService from "@/engine/systems/NPCPersonaService";

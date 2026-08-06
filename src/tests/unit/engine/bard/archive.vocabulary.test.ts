@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { BardEngine, interpolate } from "@/engine/bard/BardEngine";
 import { SeededRNG } from "@/engine/rng";
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 
 describe("Phase 4: Vocabulary-token template dedup", () => {
   beforeEach(() => {

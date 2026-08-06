@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-non-null-assertion */
+ 
 import { describe, it, expect } from "vitest";
 import { maybeAssignEarlyShikona, getEarlyShikonaMotivationBoost } from "@/engine/systems/generation/FightingNameEarly";
 import { mockRikishi } from "../utils";

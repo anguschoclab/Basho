@@ -1,14 +1,14 @@
 import type { Rikishi } from "../../types/rikishi";
 import type { BoutResult, BoutLogEntry } from "../../types/basho";
 import type { Side } from "../../types/banzuke";
-import type { KimariteId, GrappleState, HandPosition } from "../../types/combat";
+import type { KimariteId } from "../../types/combat";
 import {
   DURATION_MIN_SECONDS,
   CLOCK_MULTIPLIER,
   EXCITEMENT_TICK_DIVISOR,
   EDGE_CRISIS_ESCAPE_EXCITEMENT_POINTS,
 } from "../../../constants/engine/physics";
-import type { EngineStateV2, BeltBattleState } from "../../types/combat-spatial";
+import type { EngineStateV2 } from "../../types/combat-spatial";
 import type { BoutContext } from "../boutUtils";
 import type { CombatArchetype } from "../../types/combat";
 
@@ -98,41 +98,3 @@ export function buildBoutResultV2(
   };
 }
 
-/** Maps B+ BeltBattleState to legacy GrappleState. */
-function deriveGrappleStateFromBelt(belt: BeltBattleState): GrappleState {
-  const toHandPos = (grip: { isInside: boolean; isBlocked: boolean } | null): HandPosition =>
-    grip === null ? "outside" : grip.isBlocked ? "blocked" : grip.isInside ? "inside" : "outside";
-
-  const eastInsideCount = (belt.eastLeft?.isInside ? 1 : 0) + (belt.eastRight?.isInside ? 1 : 0);
-  const westInsideCount = (belt.westLeft?.isInside ? 1 : 0) + (belt.westRight?.isInside ? 1 : 0);
-
-  const gripAdvantage: GrappleState["gripAdvantage"] =
-    eastInsideCount >= 2
-      ? "moro_zashi_east"
-      : westInsideCount >= 2
-        ? "moro_zashi_west"
-        : eastInsideCount > westInsideCount
-          ? "east_strong"
-          : westInsideCount > eastInsideCount
-            ? "west_strong"
-            : "neutral";
-
-  const eastDepth =
-    belt.eastDepth === "maemitsu" ? "maemitsu" : belt.eastDepth === "deep" ? "deep" : "standard";
-  const westDepth =
-    belt.westDepth === "maemitsu" ? "maemitsu" : belt.westDepth === "deep" ? "deep" : "standard";
-
-  return {
-    east: {
-      rightHand: toHandPos(belt.eastRight),
-      leftHand: toHandPos(belt.eastLeft),
-      depth: eastDepth,
-    },
-    west: {
-      rightHand: toHandPos(belt.westRight),
-      leftHand: toHandPos(belt.westLeft),
-      depth: westDepth,
-    },
-    gripAdvantage,
-  };
-}

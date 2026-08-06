@@ -211,7 +211,7 @@ function sortRikishiLists(idx: HistoryIndex) {
 
 function pushRikishiEntry(idx: HistoryIndex, rikishiId: Id, entry: RikishiHistoryEntry): void {
   if (!idx.rikishi[rikishiId]) idx.rikishi[rikishiId] = [];
-  idx.rikishi[rikishiId]!.push(entry);
+  idx.rikishi[rikishiId].push(entry);
   idx.lastSeenBashoForRikishi[rikishiId] = entry.bashoKey;
 }
 
@@ -234,7 +234,7 @@ export function getBashoSummary(
 }
 
 export function getRikishiHistory(index: HistoryIndex, rikishiId: Id): RikishiHistoryEntry[] {
-  return index.rikishi[rikishiId] ? [...index.rikishi[rikishiId]!] : [];
+  return index.rikishi[rikishiId] ? [...index.rikishi[rikishiId]] : [];
 }
 
 export function indexBashoResult(world: WorldState, bashoResult: BashoResult): void {

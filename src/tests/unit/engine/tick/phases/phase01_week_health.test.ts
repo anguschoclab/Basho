@@ -29,7 +29,7 @@ describe("phase01_week_health", () => {
       };
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     function makeHeya(id: string): any {
       return {
         id,
@@ -62,7 +62,7 @@ describe("phase01_week_health", () => {
           weeksRemaining,
           weeksToHeal: weeksRemaining,
         } as any,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+         
       } as any);
     }
 
@@ -75,7 +75,7 @@ describe("phase01_week_health", () => {
       const rikishiMap = new Map<string, Rikishi>();
       rikishiMap.set("r1", r);
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const heyasMap = new Map<string, any>();
       heyasMap.set("heya-1", makeHeya("heya-1"));
 
@@ -122,7 +122,7 @@ describe("phase01_week_health", () => {
       const rikishiMap = new Map<string, Rikishi>();
       rikishiMap.set("r1", r);
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const heyasMap = new Map<string, any>();
       heyasMap.set("heya-1", makeHeya("heya-1"));
 
@@ -150,7 +150,7 @@ describe("phase01_week_health", () => {
       const rikishiMap = new Map<string, Rikishi>();
       rikishiMap.set(rikishi.id, rikishi);
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       
       const heyasMap = new Map<string, any>();
       heyasMap.set(rikishi.heyaId, {
         id: rikishi.heyaId,
