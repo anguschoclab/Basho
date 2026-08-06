@@ -26,3 +26,7 @@
 **Discovery:** Expanding `media.streaks` required updating a test helper `isStreakLine` in `src/tests/unit/engine/bout/boutNarrative.streak.test.ts` which had hardcoded exact substrings of the old 2 templates to detect streak lines in the PbP.
 **Rule:** When adding new narrative text variants to domains heavily relied on in unit tests, be prepared to adjust test utility matching functions.
 **Check:** Run `npx vitest run <related_test>` and manually update any hardcoded text expectations to include your new variants.
+## 2025-07-28 - [Mono-ii Event Variety and Spelling]
+**Discovery:** The `mono_ii` events in `src/engine/bard/domains/post_bout.json` (like `gunbai_contested`, `gyoji_confused`, `call_reversed`) were limited to 1-2 variants and contained the recurring typo "goji" instead of "gyoji".
+**Rule:** When expanding templates for highly dramatic, recurring edge cases (like mono-ii), ensure multiple distinct variants exist to prevent immediate immersion-breaking repetition, and use correct domain terminology ("gyoji", "shimpan", "gunbai-chigai", "torinaoshi").
+**Check:** Verify all added tokens exist (`%WINNER%`, `%LOSER%`) using a scratchpad script invoking `BardEngine.resolve` against the new paths to prevent leaking literal token strings into the play-by-play.
