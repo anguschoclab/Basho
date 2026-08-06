@@ -27,30 +27,32 @@ vi.mock("@/components/ClickableName", () => ({
 }));
 
 // Mock BoutReplayViewer to avoid canvas/RAF in jsdom
-vi.mock("@/components/game/BoutReplayViewer", () => ({
-  BoutReplayViewer: forwardRefMock,
-}));
+const MockComponent = vi.hoisted(() => {
+  return function ForwardRefMock(props: {
+    result: unknown;
+    eastRikishi: unknown;
+    westRikishi: unknown;
+    autoPlay?: boolean;
+    className?: string;
+    onProgressUpdate?: (p: unknown) => void;
+    onComplete?: () => void;
+  }) {
+    React.useEffect(() => {
+      props.onProgressUpdate?.({
+        phaseIndex: 0,
+        phaseProgress: 0.5,
+        globalProgress: 0,
+        totalDurationMs: 6000,
+        elapsedMs: 0,
+      });
+    }, []);
+    return React.createElement("div", { "data-testid": "replay-viewer-mock" });
+  };
+});
 
-function ForwardRefMock(props: {
-  result: BoutResult;
-  eastRikishi: UIRikishi;
-  westRikishi: UIRikishi;
-  autoPlay?: boolean;
-  className?: string;
-  onProgressUpdate?: (p: BoutReplayProgress) => void;
-  onComplete?: () => void;
-}) {
-  React.useEffect(() => {
-    props.onProgressUpdate?.({
-      phaseIndex: 0,
-      phaseProgress: 0.5,
-      globalProgress: 0,
-      totalDurationMs: 6000,
-      elapsedMs: 0,
-    });
-  }, []);
-  return React.createElement("div", { "data-testid": "replay-viewer-mock" });
-}
+vi.mock("@/components/game/BoutReplayViewer", () => ({
+  BoutReplayViewer: MockComponent,
+}));
 
 function renderWithProvider(ui: React.ReactElement) {
   return render(<TooltipProvider>{ui}</TooltipProvider>);

@@ -284,7 +284,7 @@ console.log(
 // Rikishi drift analysis
 if (yearSnapshots.length > 1) {
   const first = yearSnapshots[0];
-  const final = yearSnapshots.at(-1)!;
+  const final = yearSnapshots.at(-1) ?? yearSnapshots[0];
   console.log(
     `\nRikishi drift: ${first.rikishiActive} → ${final.rikishiActive} active over ${YEARS} years`
   );

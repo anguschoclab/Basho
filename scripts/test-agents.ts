@@ -20,9 +20,11 @@ console.log("=== Testing All 7 NPC Agents ===\n");
 // Generate a mock world for context
 const world = generateInitialWorld("test-agents-seed");
 const heyaId = Array.from(world.heyas.keys())[0];
-const heya = world.heyas.get(heyaId)!;
-const oyakataId = heya.oyakataId!;
-const oyakata = world.oyakata.get(oyakataId)!;
+const heya = world.heyas.get(heyaId) ?? Array.from(world.heyas.values())[0];
+if (!heya) { console.error("No heya found"); process.exit(1); }
+const oyakataId = heya.oyakataId ?? "";
+const oyakata = world.oyakata.get(oyakataId) ?? Array.from(world.oyakata.values())[0];
+if (!oyakata) { console.error("No oyakata found"); process.exit(1); }
 
 console.log(`Testing with heya: ${heya.name}, oyakata: ${oyakata.archetype}\n`);
 

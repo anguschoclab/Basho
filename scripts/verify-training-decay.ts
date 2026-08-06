@@ -30,7 +30,7 @@ async function verifyTrainingDecay() {
       weight: 150,
     },
     isRetired: false,
-  } as any;
+  } as unknown as Record<string, unknown>;
 
   let world: WorldState = {
     year: 2026,
@@ -39,7 +39,7 @@ async function verifyTrainingDecay() {
     heyas: new Map([
       [
         "stable-1",
-        { id: "stable-1", name: "Test Stable", funds: 1000000, rikishiIds: ["old-vet"] } as any,
+        { id: "stable-1", name: "Test Stable", funds: 1000000, rikishiIds: ["old-vet"] } as unknown,
       ],
     ]),
     trainingState: new Map(),
@@ -49,7 +49,7 @@ async function verifyTrainingDecay() {
       boundaries: { monthBoundary: false, yearBoundary: false },
     },
     oyakata: new Map(),
-  } as any;
+  } as unknown as Record<string, unknown>;
 
   console.log(`Initial Power: ${mockRikishi.power}`);
 
@@ -60,7 +60,8 @@ async function verifyTrainingDecay() {
     world.week++;
   }
 
-  const finalRikishi = world.rikishi.get("old-vet")!;
+  const finalRikishi = world.rikishi.get("old-vet");
+  if (!finalRikishi) { console.error("Rikishi not found"); return; }
   console.log(`Final Power: ${finalRikishi.power}`);
 
   if (finalRikishi.power < 90) {
