@@ -116,6 +116,7 @@ export interface DramaContext {
  * @param {Rikishi} b - Second rikishi in the pairing.
  * @param {number} day - Current day of the basho (1-15).
  * @param {Map<string, { wins: number; losses: number }>} standings - Current standings map.
+ * @param {Map<string, { heat: number; aId: string; bId: string }>} [rivalryState] - Active rivalries state map for grudge match checks.
  * @returns {DramaContext | null} Drama context if significant, null otherwise.
  *
  * @example
@@ -375,13 +376,14 @@ export function scoreDrama(
  * Applies drama budget post-processing to pairings.
  *
  * This function attempts legal swaps to increase total drama score without
- * creating rematches. It uses a greedy algorithm that tries up to 3 swaps,
- * always accepting swaps that improve the total drama score.
+ * creating rematches. It uses a greedy algorithm that tries up to 3 swaps
+ * (or 5 if there are active rivalries), always accepting swaps that improve
+ * the total drama score.
  *
  * Algorithm:
  * 1. Score all pairings for drama value
  * 2. Calculate initial total drama score
- * 3. Attempt up to 3 swaps:
+ * 3. Attempt swaps (up to 3, or 5 with rivalries):
  *    a. Try all pairwise swaps between pairings
  *    b. Check if swap would create a rematch (skip if so)
  *    c. Calculate score change from swap
@@ -394,6 +396,7 @@ export function scoreDrama(
  * @param {number} day - Current day of the basho (1-15).
  * @param {Map<string, { wins: number; losses: number }>} standings - Current standings map.
  * @param {Set<string>} facedSet - Set of already-faced pair keys (to avoid rematches).
+ * @param {Map<string, { heat: number; aId: string; bId: string }>} [rivalryState] - Active rivalries state map.
  * @returns {MatchPairing[]} Optimized pairings with drama labels added.
  *
  * @example
