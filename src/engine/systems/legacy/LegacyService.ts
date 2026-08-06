@@ -34,7 +34,7 @@ export const LegacyService = {
 
     // Use the rikishi's peak stat to determine which stat the bloodline grants
     const stats: RikishiStats = rikishi.stats;
-    const peakStat = this.findPeakStat(stats as unknown as Partial<Record<string, number>>);
+    const peakStat = this.findPeakStat(stats);
 
     const trait: BloodlineTrait = {
       traitId: `bl_${rikishi.id}`,
@@ -143,8 +143,8 @@ export const LegacyService = {
    * Applies the legacy trait bonuses to the candidate's potential stats.
    */
   applyLegacyTrait(candidateStats: RikishiStats, trait: BloodlineTrait): RikishiStats {
-    const boosted = { ...candidateStats } as unknown as Record<string, number>;
-    const numericKeys = new Set([
+    const boosted: RikishiStats = { ...candidateStats };
+    const numericKeys = new Set<keyof RikishiStats>([
       "power",
       "technique",
       "speed",
@@ -159,22 +159,24 @@ export const LegacyService = {
 
     // Apply Floor Bonuses
     for (const [stat, bonus] of Object.entries(trait.statFloorBonus)) {
-      if (numericKeys.has(stat)) {
-        boosted[stat] = clampInt((boosted[stat] || 0) + (bonus || 0), 0, 99);
+      const s = stat as keyof RikishiStats;
+      if (numericKeys.has(s)) {
+        boosted[s] = clampInt(((boosted[s] as number) || 0) + (bonus || 0), 0, 99);
       }
     }
 
     // Apply Ceiling Bonus to the peak stat in the trait
     const peakStat = this.findPeakStat(trait.statFloorBonus);
-    if (peakStat && numericKeys.has(peakStat)) {
-      boosted[peakStat] = clampInt((boosted[peakStat] || 0) + trait.ceilingBonus, 0, 99);
+    const p = peakStat as keyof RikishiStats;
+    if (peakStat && numericKeys.has(p)) {
+      boosted[p] = clampInt(((boosted[p] as number) || 0) + trait.ceilingBonus, 0, 99);
     }
 
-    return boosted as unknown as RikishiStats;
+    return boosted;
   },
 
-  findPeakStat(stats: Partial<Record<string, number>>): string {
-    const keys = ["power", "technique", "speed", "stamina", "mental", "adaptability", "balance"];
+  findPeakStat(stats: Partial<RikishiStats>): string {
+    const keys: Array<keyof RikishiStats> = ["power", "technique", "speed", "stamina", "mental", "adaptability", "balance"];
     let peak = "technique";
     let peakVal = -1;
     for (const key of keys) {

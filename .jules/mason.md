@@ -50,7 +50,9 @@
 **Finding:** Numerous properties were accessed in UI projections (`medicalProjection.ts`, `governanceProjections.ts`, `stableProjections.ts`) by blindly type-casting domains objects to `unknown` and then arbitrary records (e.g. `(heya as unknown as Record<string, unknown>).scandalScore as number`).
 **Learning:** Properties like `scandalScore`, `governanceStatus`, `politicalCapital` on `Heya` and `condition` on `Rikishi` are already strictly typed in the domain types. Type-gymnastics via `unknown` weaken downstream validation. We can directly access these properties (and use `??` for nullable ones).
 **Constraint:** Avoid redundant `unknown` casting for UI projection files if the domain entity correctly exposes the field. Let TypeScript validate property access naturally.
-## 2024-08-04 - Tighten WelfareState in medicalProjection
-**Finding:** `heya.welfareState` was being cast with `as unknown as { morale?: number }` to extract a `morale` property that isn't actually part of the `WelfareState` type in `src/engine/types/economy.ts`.
-**Learning:** `WelfareState` track compliance and risk metrics (welfareRisk, activeDiet, complianceState, weeksInState) but doesn't have a `morale` property. The medical projection used this hallucinated type cast, meaning the `morale` would always effectively fall back to the default `50` at runtime, providing a false sense of a working feature.
-**Constraint:** If `morale` needs to be tracked on a stable level, it must be added to the appropriate engine state types (like `WelfareState` or `Heya` directly) rather than relying on an unsafe cast that hides its non-existence. Currently, falling back safely via optional chaining (`?.morale`) causes a type error since it doesn't exist, so this will be corrected to either properly define it in types or safely ignore it until implemented.
+
+## 2025-10-24 - [Tighten Type in LegacyService and BloodlineService]
+
+**Finding:** `LegacyService.ts` and `BloodlineService.ts` used `as unknown as Record<string, number>` to mutate numeric stats dynamically.
+**Learning:** We can replace this with strictly typing the stat parameter as `keyof RikishiStats` along with type guards. Iterating over object keys shouldn't force us to break type definitions completely when we can type cast safely to `keyof RikishiStats`.
+**Constraint:** Use `keyof Type` to index dynamically into objects with known structure, instead of overriding the types completely with `as unknown as Record<string, number>`.

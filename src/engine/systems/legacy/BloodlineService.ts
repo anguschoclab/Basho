@@ -104,14 +104,15 @@ export const BloodlineService = {
 
       for (const [stat, floor] of Object.entries(trait.statFloorBonus)) {
         if (floor === undefined) continue;
-        if (!numericStatKeys.has(stat as keyof RikishiStats)) continue;
-        const current = nextStats[stat as keyof RikishiStats] as number;
+        const s = stat as keyof RikishiStats;
+        if (!numericStatKeys.has(s)) continue;
+        const current = nextStats[s] as number;
         if (current < floor) {
-          (nextStats as unknown as Record<string, number>)[stat] = clampInt(
+          nextStats[s] = clampInt(
             current + WEEKLY_HERITAGE_BONUS,
             0,
             99
-          );
+          ) as never;
           changed = true;
         }
       }
