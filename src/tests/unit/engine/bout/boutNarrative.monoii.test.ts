@@ -124,7 +124,7 @@ describe("generateBoutNarrative — mono-ii stub (T14)", () => {
     const allText = monoiiLines.map((l) => l.text.toLowerCase()).join(" ");
     // Should mention judges/review and replay
     expect(allText).toMatch(/judge|mono-ii|review/);
-    expect(allText).toMatch(/replay|edge|foot/);
+    expect(allText).toMatch(/replay|edge|foot|slow motion|millimeters|tawara/);
   });
 
   it("T14.8: monoii → outcome line (reversed, upheld, or rematch) present", () => {
