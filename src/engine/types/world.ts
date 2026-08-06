@@ -28,6 +28,8 @@ import type { Staff } from "./staff";
 import type { HeyaTrainingState, SparringState } from "./training";
 import type { GovernanceRuling, IchimonName, Faction } from "./economy";
 import type { MyosekiMarket } from "./myoseki";
+import type { Rank } from "./rank";
+import type { ExhibitionRegion } from "../systems/worldCircuit/WorldCircuitService";
 import type { AlmanacSnapshot } from "../almanac";
 import type { GlobalCupState, GlobalCupHistoryEntry } from "./globalCup";
 import type { BloodlineRegistry } from "./dynasty";
@@ -393,9 +395,9 @@ export interface WorldState {
 export interface PendingExhibition {
   id: string;
   heyaId?: string;
-  region: string;
+  region: ExhibitionRegion;
   prestige: number;
   dominantStyle?: string;
-  requiresRank?: string;
+  requiresRank?: Rank;
   expiresAtWeek?: number;
 }
