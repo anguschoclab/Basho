@@ -60,3 +60,7 @@
 **Issue:** The Hall of Fame page used hardcoded div elements for empty states ("No inductees yet", "The Hall stands empty", "No world loaded") instead of the project's standard EmptyState component.
 **Learning:** Reusing the EmptyState component ensures consistent padding, typography, and visual hierarchy across all screens when data is absent.
 **Rule:** Always use the global EmptyState component (`@/components/ui/EmptyState`) for 'no data' fallbacks instead of hardcoding custom elements.
+## 2025-05-15 - Economy Page Empty States
+**Issue:** The Economy page used simple unstyled p tags for loading and no-heya empty states.
+**Learning:** For layout-level (full-page) loading/empty states, using `<EmptyState>` with appropriate icons like `Loader2` or `AlertCircle` is cleaner than raw text.
+**Rule:** Use `@/components/ui/EmptyState` with descriptive titles and icons for full-page loading and error states. Always remember to import the icons from `lucide-react`.
