@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { describe, it, expect } from "vitest";
 import { ensurePersonaForOyakata, getManagerPersona } from "@/engine/systems/NPCPersonaService";
-import { makeMockWorld, makeMockHeya } from "../utils";
+import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
 import type { Oyakata } from "@/engine/types/oyakata";
-import type { Rikishi } from "@/engine/types/rikishi";
 
 function makeOyakataWithoutPersona(): Oyakata {
   return {
@@ -71,8 +69,8 @@ describe("getManagerPersona — styleBias is a valid StyleBias value", () => {
       birthYear: 1960,
     } as unknown as Oyakata;
 
-    const r1 = { id: "r1", heyaId: "h1", style: "oshi" } as unknown as Rikishi;
-    const r2 = { id: "r2", heyaId: "h1", style: "oshi" } as unknown as Rikishi;
+    const r1 = mockRikishi("r1", { heyaId: "h1", style: "oshi" });
+    const r2 = mockRikishi("r2", { heyaId: "h1", style: "oshi" });
 
     const world = makeMockWorld({
       heyas: new Map([["h1", heya]]),
