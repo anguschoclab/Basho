@@ -14,7 +14,7 @@ function stripDangerousKeys<T>(value: T): T {
   }
 
   if (Array.isArray(value)) {
-    return value.map((item) => stripDangerousKeys(item)) as unknown as T;
+    return value.map((item) => stripDangerousKeys(item)) as T;
   }
 
   const obj = value as Record<string, unknown>;
@@ -23,7 +23,7 @@ function stripDangerousKeys<T>(value: T): T {
     if (DANGEROUS_KEYS.has(key)) continue;
     result[key] = stripDangerousKeys(obj[key]);
   }
-  return result as unknown as T;
+  return result as T;
 }
 
 /**
