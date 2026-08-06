@@ -260,7 +260,11 @@
       "The gyoji got caught up in the action at the edge of the ring. The gyoji looks a bit confused now.",
       "The gyoji was out of position and couldn't see the finish clearly.",
       "A tangled finish on the edge leaves the gyoji unsure of the outcome.",
-      "The gyoji hesitated on the call — the action happened incredibly fast."
+      "The gyoji hesitated on the call — the action happened incredibly fast.",
+      "The gyoji was right on top of the action, but it was too close to call immediately.",
+      "There's hesitation from the gyoji — both rikishi tumbled out almost simultaneously.",
+      "A chaotic scramble at the tawara leaves the gyoji looking to the judges for help.",
+      "The gyoji's view might have been obstructed by the falling wrestlers."
     ],
     "review": [
       "The judges want to talk it over. It's another mono-ii.",
@@ -272,13 +276,20 @@
       "Let's see what happened at the edge. %LOSER% has that left foot on the tawara, but it doesn't look like he stepped out with his heel.",
       "The replay shows the critical moment — both men right at the edge.",
       "Looking at the replay, it's incredibly tight. Did %LOSER% touch out first?",
-      "The slow motion shows how close this really was. A matter of millimeters."
+      "The slow motion shows how close this really was. A matter of millimeters.",
+      "The slow-motion replay shows just how tight the margin was at the tawara.",
+      "Look at the heel of %LOSER% — it's a game of millimeters right now.",
+      "Incredible defense from %WINNER% at the edge, but did any part of the body touch first?",
+      "The angle from the opposite side of the dohyo will be crucial to determining if %LOSER% stepped out."
     ],
     "call_reversed": [
       "After discussion, it was determined that %LOSER% stepped out first. So the gyoji's decision is reversed. The winner is %WINNER%.",
       "The judges reverse the call — %LOSER% touched down first. %WINNER% takes it.",
       "A gunbai-chigai! The gyoji's call is overturned, and %WINNER% is declared the victor.",
-      "The shimpan agree: the original call was incorrect. The win goes to %WINNER%."
+      "The shimpan agree: the original call was incorrect. The win goes to %WINNER%.",
+      "The judges overrule the gyoji! %LOSER% was out first, handing the victory to %WINNER%.",
+      "A dramatic reversal from the mono-ii! %WINNER% is awarded the hard-fought win.",
+      "The initial call is overturned. %LOSER% touched down just a fraction of a second earlier. %WINNER% wins."
     ],
     "call_upheld": [
       "It was determined that %LOSER% touched down first. So the gyoji's decision stands. The winner is %WINNER%.",
