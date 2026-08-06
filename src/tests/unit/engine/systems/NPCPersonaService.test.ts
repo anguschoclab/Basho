@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { describe, it, expect } from "vitest";
-import { ensurePersonaForOyakata } from "@/engine/systems/NPCPersonaService";
-import { makeMockWorld } from "../utils";
+import { ensurePersonaForOyakata, getManagerPersona } from "@/engine/systems/NPCPersonaService";
+import { makeMockWorld, makeMockHeya } from "../utils";
 import type { Oyakata } from "@/engine/types/oyakata";
+import type { Rikishi } from "@/engine/types/rikishi";
 
 function makeOyakataWithoutPersona(): Oyakata {
   return {
@@ -56,5 +57,33 @@ describe("Bug R: ensurePersonaForOyakata does not mutate input oyakata", () => {
 
     expect(result.quirks).toBe(existingQuirks);
     expect(result.managerFlags).toBe(existingFlags);
+  });
+});
+
+describe("getManagerPersona — styleBias is a valid StyleBias value", () => {
+  it("returns a styleBias that is one of oshi/yotsu/neutral", () => {
+    const heya = makeMockHeya("h1", { oyakataId: "o1", rikishiIds: ["r1", "r2"] });
+    const oyakata: Oyakata = {
+      id: "o1",
+      heyaId: "h1",
+      archetype: "mentor",
+      traits: { ambition: 50, patience: 50, risk: 50, tradition: 50, compassion: 50 },
+      birthYear: 1960,
+    } as unknown as Oyakata;
+
+    const r1 = { id: "r1", heyaId: "h1", style: "oshi" } as unknown as Rikishi;
+    const r2 = { id: "r2", heyaId: "h1", style: "oshi" } as unknown as Rikishi;
+
+    const world = makeMockWorld({
+      heyas: new Map([["h1", heya]]),
+      oyakata: new Map([["o1", oyakata]]),
+      rikishi: new Map([
+        ["r1", r1],
+        ["r2", r2],
+      ]),
+    });
+
+    const persona = getManagerPersona(world, "h1");
+    expect(["oshi", "yotsu", "neutral"]).toContain(persona.styleBias);
   });
 });

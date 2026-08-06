@@ -10,7 +10,7 @@ import type { Rikishi } from "./types/rikishi";
 import type { Heya } from "./types/heya";
 import type { Oyakata } from "./types/oyakata";
 import type { Division } from "./types/banzuke";
-import type { Style } from "./types/combat";
+import type { StyleBias } from "./types/training";
 import type { Staff } from "./types/staff";
 import type { Id } from "./types/common";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
@@ -74,7 +74,7 @@ export function getHeyaRosterIds(world: WorldState, heyaId: Id): Id[] {
 
 // Memoization cache for roster queries (cleared when week changes)
 const rosterCache = new Map<string, { week: number; roster: Rikishi[] }>();
-const styleBiasCache = new Map<string, { week: number; bias: Style | "neutral" }>();
+const styleBiasCache = new Map<string, { week: number; bias: StyleBias }>();
 
 /**
  * Clear memoization caches for roster and style bias queries.
@@ -127,7 +127,7 @@ export function getSekitoriInHeya(world: WorldState, heyaId: Id): number {
  * Identical logic that was duplicated in npcAI.ts and perception.ts.
  * Memoized per heya per week to avoid redundant calculations.
  */
-export function getHeyaStyleBias(world: WorldState, heyaId: Id): Style | "neutral" {
+export function getHeyaStyleBias(world: WorldState, heyaId: Id): StyleBias {
   const cacheKey = `${heyaId}`;
   const cached = styleBiasCache.get(cacheKey);
   const currentWeek = world.week ?? 0;
@@ -143,7 +143,7 @@ export function getHeyaStyleBias(world: WorldState, heyaId: Id): Style | "neutra
     if (r.style === "oshi") oshi += 1;
     if (r.style === "yotsu") yotsu += 1;
   }
-  const bias: Style | "neutral" = oshi === yotsu ? "neutral" : oshi > yotsu ? "oshi" : "yotsu";
+  const bias: StyleBias = oshi === yotsu ? "neutral" : oshi > yotsu ? "oshi" : "yotsu";
 
   styleBiasCache.set(cacheKey, { week: currentWeek, bias });
   return bias;

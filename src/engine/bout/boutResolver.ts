@@ -384,28 +384,30 @@ export function resolveBout(
     result.isYushoRace = yushoContention;
     result.isTitleStakes = playoff || yushoContention;
 
-    // Base banner count: random based on importance
-    const baseCountMap = {
-      low: KENSHO_BASE_COUNT_LOW,
-      mid: KENSHO_BASE_COUNT_MID,
-      high: KENSHO_BASE_COUNT_HIGH,
-      peak: KENSHO_BASE_COUNT_PEAK,
-    };
-    const bannerCount = Math.floor(
-      baseCountMap[importance] * (KENSHO_RNG_MIN + kenshoRng.next() * KENSHO_RNG_RANGE)
-    );
+    if (world.sponsorPool) {
+      // Base banner count: random based on importance
+      const baseCountMap = {
+        low: KENSHO_BASE_COUNT_LOW,
+        mid: KENSHO_BASE_COUNT_MID,
+        high: KENSHO_BASE_COUNT_HIGH,
+        peak: KENSHO_BASE_COUNT_PEAK,
+      };
+      const bannerCount = Math.floor(
+        baseCountMap[importance] * (KENSHO_RNG_MIN + kenshoRng.next() * KENSHO_RNG_RANGE)
+      );
 
-    const banners = assignKenshoBanners(
-      result.boutId,
-      bannerCount,
-      importance,
-      world.sponsorPool!,
-      kenshoRng
-    );
-    (result as BoutResult & { kenshoBanners?: unknown[] }).kenshoBanners = banners;
+      const banners = assignKenshoBanners(
+        result.boutId,
+        bannerCount,
+        importance,
+        world.sponsorPool,
+        kenshoRng
+      );
+      (result as BoutResult & { kenshoBanners?: unknown[] }).kenshoBanners = banners;
 
-    const awardFact = result.awardFact ?? undefined;
-    result.kenshoEnvelopes = calculateKenshoEnvelopes(world, winner, banners, awardFact, kenshoRng);
+      const awardFact = result.awardFact ?? undefined;
+      result.kenshoEnvelopes = calculateKenshoEnvelopes(world, winner, banners, awardFact, kenshoRng);
+    }
   }
 
   // Merge rivalry impact into main builder

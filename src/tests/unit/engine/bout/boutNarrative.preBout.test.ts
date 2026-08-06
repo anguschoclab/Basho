@@ -357,5 +357,70 @@ describe("generateBoutNarrative — pre-bout context", () => {
         expect(hasMissingTokens(line.text)).toBe(false);
       }
     });
+
+    // ── T2.7: Only one rikishi has careerHistory (else-if branch) ──
+    it("T2.7a: only east has careerHistory → no error, no [MISSING:] tokens", () => {
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        careerHistory: [makeCareerHistory({ wins: 10, losses: 5 })],
+      });
+      const west = mockRikishi("r-west", { shikona: "Beta", careerHistory: [] });
+      const world = makeBoutWorld(east, west);
+      const result = makeBoutResult();
+      expect(() => {
+        generateBoutNarrative(result, east, west, BASHO, 5, "seed-only-east-ch", world);
+      }).not.toThrow();
+      for (const line of getPreBoutLines(result)) {
+        expect(hasMissingTokens(line.text)).toBe(false);
+      }
+    });
+
+    it("T2.7b: only west has careerHistory → no error, no [MISSING:] tokens", () => {
+      const east = mockRikishi("r-east", { shikona: "Alpha", careerHistory: [] });
+      const west = mockRikishi("r-west", {
+        shikona: "Beta",
+        careerHistory: [makeCareerHistory({ wins: 11, losses: 4 })],
+      });
+      const world = makeBoutWorld(east, west);
+      const result = makeBoutResult();
+      expect(() => {
+        generateBoutNarrative(result, east, west, BASHO, 5, "seed-only-west-ch", world);
+      }).not.toThrow();
+      for (const line of getPreBoutLines(result)) {
+        expect(hasMissingTokens(line.text)).toBe(false);
+      }
+    });
+
+    it("T2.7c: only east has careerHistory with yusho → uses yusho path", () => {
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        careerHistory: [makeCareerHistory({ wins: 15, losses: 0, isYusho: true })],
+      });
+      const west = mockRikishi("r-west", { shikona: "Beta", careerHistory: [] });
+      const world = makeBoutWorld(east, west);
+      const result = makeBoutResult();
+      expect(() => {
+        generateBoutNarrative(result, east, west, BASHO, 5, "seed-only-east-yusho", world);
+      }).not.toThrow();
+      for (const line of getPreBoutLines(result)) {
+        expect(hasMissingTokens(line.text)).toBe(false);
+      }
+    });
+
+    it("T2.7d: only east has careerHistory with 15+ absences → uses kyujo path", () => {
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        careerHistory: [makeCareerHistory({ wins: 0, losses: 0, absences: 15 })],
+      });
+      const west = mockRikishi("r-west", { shikona: "Beta", careerHistory: [] });
+      const world = makeBoutWorld(east, west);
+      const result = makeBoutResult();
+      expect(() => {
+        generateBoutNarrative(result, east, west, BASHO, 5, "seed-only-east-kyujo", world);
+      }).not.toThrow();
+      for (const line of getPreBoutLines(result)) {
+        expect(hasMissingTokens(line.text)).toBe(false);
+      }
+    });
   });
 });

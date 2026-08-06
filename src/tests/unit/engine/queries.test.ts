@@ -83,5 +83,19 @@ describe("Queries", () => {
       const bias = getHeyaStyleBias(world, "heya1");
       expect(bias).toBe("neutral");
     });
+
+    it("return type is StyleBias (never hybrid)", () => {
+      const world = MockFactory.createWorld();
+      const heya = MockFactory.createHeya("heya1");
+      heya.rikishiIds = ["r1", "r2"];
+      world.heyas.set("heya1", heya);
+
+      world.rikishi.set("r1", MockFactory.createRikishi("r1", { heyaId: "heya1", style: "oshi" }));
+      world.rikishi.set("r2", MockFactory.createRikishi("r2", { heyaId: "heya1", style: "yotsu" }));
+
+      clearQueryCaches();
+      const bias = getHeyaStyleBias(world, "heya1");
+      expect(["oshi", "yotsu", "neutral"]).toContain(bias);
+    });
   });
 });

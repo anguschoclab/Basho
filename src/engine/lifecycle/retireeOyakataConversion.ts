@@ -18,7 +18,7 @@ import { foundStable } from "@/engine/systems/generation/WorldFactory";
 import { updateAvatarForAging } from "@/engine/avatarGenerator";
 import { recordOyakataHandover } from "@/engine/lineage";
 import { rngForWorld } from "@/engine/rng";
-import { FOUNDING_CHANCE, HEYA_COUNT_CAP } from "@/constants/engine/economic";
+import { FOUNDING_CHANCE } from "@/constants/engine/economic";
 
 /**
  * If `retiree` is accomplished and of eligible age, converts them to an oyakata,
@@ -140,26 +140,28 @@ export function processRetireeOyakataConversion(
   builder.merge(recordOyakataHandover(world, retiree.heyaId, newOyakataId, availableStock.name));
 
   // Stable founding: RNG-gated chance for the new oyakata to found a new heya
-  // instead of staying in their original stable. Only if under the heya cap.
-  if (world.heyas.size < HEYA_COUNT_CAP && rng.bool(FOUNDING_CHANCE)) {
-    const { heya: newHeya } = foundStable(
+  // instead of staying in their original stable. Cap check is inside foundStable.
+  if (rng.bool(FOUNDING_CHANCE)) {
+    const result = foundStable(
       world,
       newOyakataId,
       `${retiree.shikona ?? retiree.name ?? id}-beya`,
       rng
     );
-    builder.addHeya(newHeya);
-    builder.logEvent(
-      "LIFECYCLE_EVENT",
-      "career",
-      {
-        rikishiId: id,
-        heyaId: newHeya.id,
-        shikona: retiree.shikona ?? retiree.name ?? id,
-        status: "stable_founded",
-        heyaName: newHeya.name,
-      },
-      { heyaId: newHeya.id, rikishiId: id, importance: "headline" }
-    );
+    if (result) {
+      builder.addHeya(result.heya);
+      builder.logEvent(
+        "LIFECYCLE_EVENT",
+        "career",
+        {
+          rikishiId: id,
+          heyaId: result.heya.id,
+          shikona: retiree.shikona ?? retiree.name ?? id,
+          status: "stable_founded",
+          heyaName: result.heya.name,
+        },
+        { heyaId: result.heya.id, rikishiId: id, importance: "headline" }
+      );
+    }
   }
 }

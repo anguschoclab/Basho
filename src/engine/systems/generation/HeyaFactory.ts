@@ -14,7 +14,7 @@ import { generateOyakata } from "../../oyakataPersonalities";
 import { generateAvatarConfig } from "../../avatarGenerator";
 import { HEYA_SIGNATURE_PREFIXES, extractPrefixFromShikona } from "../../shikona/heyaPrefixes";
 import { WorldState } from "../../types/world";
-import { FOUNDING_SEED_FUNDS } from "../../../constants/engine/economic";
+import { FOUNDING_SEED_FUNDS, HEYA_COUNT_CAP } from "../../../constants/engine/economic";
 import {
   OYAKATA_BASE_AGE,
   OYAKATA_AGE_RANGE,
@@ -132,7 +132,8 @@ export function foundStable(
   oyakataId: string,
   name: string,
   rng: SeededRNG
-): { heya: Heya } {
+): { heya: Heya } | null {
+  if (world.heyas.size >= HEYA_COUNT_CAP) return null;
   const id = rng.uuid("HY");
   const { heya } = createHeyaWithOyakata({ id, name, rng, tier: 0.9 });
   heya.oyakataId = oyakataId;

@@ -1,7 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { resolveBout, simulateBout } from "@/engine/bout/boutResolver";
-import { mockRikishi, makeMockBasho } from "../utils";
+import { mockRikishi, makeMockBasho, makeMockWorld } from "../utils";
 import type { BoutContext } from "@/engine/bout/boutPhysics";
+import type { SponsorPool, Sponsor } from "@/engine/types/sponsors";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -179,5 +180,61 @@ describe("simulateBout", () => {
     expect(typeof result.kimarite).toBe("string");
     expect((result.kimarite as string).length).toBeGreaterThan(0);
     expect(result.duration).toBeGreaterThan(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Kensho (prize banners) — requires world with sponsorPool
+// ---------------------------------------------------------------------------
+
+describe("resolveBout — kensho banners", () => {
+  it("world with sponsorPool → assigns kenshoBanners to result", () => {
+    const east = mockRikishi("r-east", { injured: false, rank: "yokozuna" });
+    const west = mockRikishi("r-west", { injured: false, rank: "maegashira" });
+    const basho = makeMockBasho();
+    const ctx = makeBoutContext();
+
+    const sponsors = new Map<string, Sponsor>();
+    for (let i = 0; i < 10; i++) {
+      sponsors.set(`s${i}`, {
+        sponsorId: `s${i}`,
+        active: true,
+        tier: "T5",
+        prestigeAffinity: 50,
+        loyalty: 50,
+        displayName: `Sponsor-${i}`,
+        visibilityPreference: 1,
+      } as unknown as Sponsor);
+    }
+    const sponsorPool: SponsorPool = {
+      sponsors,
+      koenkais: new Map(),
+    } as unknown as SponsorPool;
+
+    const world = makeMockWorld({ sponsorPool });
+
+    const { result } = resolveBout(ctx, east, west, basho, undefined, world);
+
+    const kenshoBanners = (result as unknown as { kenshoBanners?: unknown[] }).kenshoBanners;
+    expect(kenshoBanners).toBeDefined();
+    expect(Array.isArray(kenshoBanners)).toBe(true);
+  });
+
+  it("world with undefined sponsorPool → no kenshoBanners, no crash", () => {
+    const east = mockRikishi("r-east", { injured: false, rank: "yokozuna" });
+    const west = mockRikishi("r-west", { injured: false, rank: "maegashira" });
+    const basho = makeMockBasho();
+    const ctx = makeBoutContext();
+
+    const world = makeMockWorld({});
+    // sponsorPool is undefined by default in makeMockWorld
+
+    expect(() => {
+      resolveBout(ctx, east, west, basho, undefined, world);
+    }).not.toThrow();
+
+    const { result } = resolveBout(ctx, east, west, basho, undefined, world);
+    const kenshoBanners = (result as unknown as { kenshoBanners?: unknown[] }).kenshoBanners;
+    expect(kenshoBanners).toBeUndefined();
   });
 });

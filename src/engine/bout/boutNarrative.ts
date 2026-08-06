@@ -479,25 +479,27 @@ export function generateBoutNarrative(
     }
   } else if (eastPrevBasho || westPrevBasho) {
     const r = eastPrevBasho ? east : west;
-    const prev = eastPrevBasho ?? westPrevBasho!;
-    let prevPath: string;
-    if (prev.absences >= 15) {
-      prevPath = "pre_bout.previous_basho.kyujo";
-    } else if (prev.isYusho) {
-      prevPath = "pre_bout.previous_basho.yusho";
-    } else {
-      prevPath = "pre_bout.previous_basho.standard";
+    const prev = eastPrevBasho ?? westPrevBasho;
+    if (prev) {
+      let prevPath: string;
+      if (prev.absences >= 15) {
+        prevPath = "pre_bout.previous_basho.kyujo";
+      } else if (prev.isYusho) {
+        prevPath = "pre_bout.previous_basho.yusho";
+      } else {
+        prevPath = "pre_bout.previous_basho.standard";
+      }
+      push(
+        BardEngine.resolve(preBoutRng, prevPath, {
+          NAME: r.shikona,
+          PREV_WINS: prev.wins.toString(),
+          PREV_LOSSES: prev.losses.toString(),
+          rikishiId: r.id,
+        }).text,
+        "pre_bout",
+        []
+      );
     }
-    push(
-      BardEngine.resolve(preBoutRng, prevPath, {
-        NAME: r.shikona,
-        PREV_WINS: prev.wins.toString(),
-        PREV_LOSSES: prev.losses.toString(),
-        rikishiId: r.id,
-      }).text,
-      "pre_bout",
-      []
-    );
   }
 
   // 3a-pre3. Career-high rank detection
