@@ -217,12 +217,22 @@
   "kachi_koshi": [
     "Kachi-koshi! %SHIKONA% secures a winning record at %WINS% wins.",
     "%SHIKONA% clinches kachi-koshi with %WINS% victories. A successful tournament.",
-    "The winning record is confirmed — %SHIKONA% celebrates %WINS% wins."
+    "The winning record is confirmed — %SHIKONA% celebrates %WINS% wins.",
+    "A collective sigh of relief from the heya as %SHIKONA% locks in kachi-koshi with win number %WINS%.",
+    "%SHIKONA% secures a hard-fought kachi-koshi today, reaching %WINS% victories.",
+    "The pressure lifts — %SHIKONA% guarantees a winning basho at %WINS% wins.",
+    "%SHIKONA% completes the primary goal of any tournament: kachi-koshi with %WINS% wins.",
+    "Win number %WINS% seals the deal. %SHIKONA% walks away with kachi-koshi."
   ],
   "make_koshi": [
     "Make-koshi for %SHIKONA% — %LOSSES% losses confirm a losing tournament.",
     "A difficult basho ends in disappointment for %SHIKONA% at %LOSSES% losses.",
-    "%SHIKONA% drops to make-koshi. The demotion talk will begin."
+    "%SHIKONA% drops to make-koshi. The demotion talk will begin.",
+    "The math is unforgiving — %LOSSES% losses mean make-koshi for %SHIKONA%.",
+    "The damage is done. %SHIKONA% confirms a losing basho with %LOSSES% losses.",
+    "Make-koshi becomes a reality for %SHIKONA% after loss number %LOSSES%.",
+    "A basho to forget for %SHIKONA% as %LOSSES% losses guarantee make-koshi.",
+    "%SHIKONA% hits the dreaded %LOSSES%-loss mark, sealing a make-koshi finish."
   ],
   "yusho_race": [
     "%WINNER% stays alive in the yusho race at %WINS% wins. The crowd roars.",
