@@ -45,6 +45,8 @@ import {
   STAFF_SECONDARY_COMPETENCE_MULTIPLIER,
   STAFF_ADMINISTRATOR_DISCOUNT_MULTIPLIER,
   STAFF_ASSISTANT_OYAKATA_BONUS_MULTIPLIER,
+  STAFF_OYAKATA_BONUS_MULTIPLIER,
+  STAFF_NUTRITIONIST_BONUS_MULTIPLIER,
   STAFF_MIN_ADMINISTRATION_DISCOUNT,
   STAFF_HIRE_COST,
   STAFF_MORALE_HIGH_MULTIPLIER,
@@ -301,8 +303,19 @@ const BAND_VALUES: Record<CompetenceBand, number> = {
 };
 
 const ROLE_HANDLERS: Record<StaffRole, (b: StaffBonuses, val: number) => void> = {
+  oyakata: (b, val) => {
+    b.technique += val * STAFF_OYAKATA_BONUS_MULTIPLIER;
+    b.conditioning += val * STAFF_OYAKATA_BONUS_MULTIPLIER;
+    b.medical += val * STAFF_OYAKATA_BONUS_MULTIPLIER;
+    b.scouting += val * STAFF_OYAKATA_BONUS_MULTIPLIER;
+    b.administration -= val * STAFF_OYAKATA_BONUS_MULTIPLIER * STAFF_ADMINISTRATOR_DISCOUNT_MULTIPLIER;
+  },
   technique_coach: (b, val) => (b.technique += val),
   conditioning_coach: (b, val) => (b.conditioning += val),
+  nutritionist: (b, val) => {
+    b.medical += val * STAFF_NUTRITIONIST_BONUS_MULTIPLIER;
+    b.conditioning += val * STAFF_NUTRITIONIST_BONUS_MULTIPLIER;
+  },
   medical_staff: (b, val) => (b.medical += val),
   scout: (b, val) => (b.scouting += val),
   administrator: (b, val) => (b.administration -= val * STAFF_ADMINISTRATOR_DISCOUNT_MULTIPLIER),

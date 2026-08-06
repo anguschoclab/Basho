@@ -10,7 +10,6 @@ import { projectRosterEntry, type UIRosterEntry } from "@/presenters/uiModels";
 import { BaseWidget } from "./BaseWidget";
 import { RankInline } from "@/components/rikishi/RankBadge";
 import { getActiveRikishi } from "@/engine/selectors";
-import { EmptyState } from "@/components/ui/EmptyState";
 
 import type { AvatarConfig } from "@/engine/types/avatar";
 
