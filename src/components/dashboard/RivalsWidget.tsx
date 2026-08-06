@@ -39,7 +39,7 @@ const RivalRow = React.memo(
 );
 
 /** rivals widget. */
-const RivalList = React.memo(({ rivals }: { rivals: any[] }) => {
+const RivalList = React.memo(({ rivals }: { rivals: ReturnType<typeof selectTopRivals> }) => {
   return (
     <>
       {(() => {
