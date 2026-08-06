@@ -8,6 +8,7 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { EmptyState } from "@/components/ui/EmptyState";
 import {
   Clock,
   TrendingUp,
@@ -224,9 +225,7 @@ export function NarrativeSummary({
                 <EventCard key={i} title={e.title} summary={e.summary} isRetirement icon={UserX} />
               ))}
               {groupedEvents.retirements.length === 0 && (
-                <div className="py-12 text-center opacity-30 italic text-sm">
-                  No veteran departures recorded this basho.
-                </div>
+                <EmptyState icon={UserX} title="No veteran departures recorded this basho." compact />
               )}
             </div>
           </section>
@@ -271,9 +270,7 @@ export function NarrativeSummary({
                     )
                   )}
                   {groupedEvents.governance.length === 0 && (
-                    <p className="text-xs italic text-muted-foreground opacity-50 py-4">
-                      No disciplinary or political directives issued.
-                    </p>
+                    <EmptyState icon={ShieldAlert} title="No disciplinary or political directives issued." compact />
                   )}
                 </div>
               </CardContent>
