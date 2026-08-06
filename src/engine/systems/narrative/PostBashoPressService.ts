@@ -34,10 +34,7 @@ export const PostBashoPressService = {
   /**
    * Generate post-basho press conference PBP lines for all relevant NPC rikishi.
    */
-  generatePressConference(
-    world: WorldState,
-    context: PressConferenceContext
-  ): PbpLine[] {
+  generatePressConference(world: WorldState, context: PressConferenceContext): PbpLine[] {
     const lines: PbpLine[] = [];
     const { yushoId, bashoName, year } = context;
     const pressRng = rngFromSeed(`press-${bashoName}-${year}`, "narrative", "post_basho_press");
@@ -83,14 +80,30 @@ export const PostBashoPressService = {
         if (division === "makuuchi") continue; // makuuchi champion already covered above
         const divChamp = getRikishi(world, champId);
         if (divChamp) {
-          lines.push(...this.generateLowerDivisionChampionLines(divChamp, pressRng, bashoName, year, division));
+          lines.push(
+            ...this.generateLowerDivisionChampionLines(
+              divChamp,
+              pressRng,
+              bashoName,
+              year,
+              division
+            )
+          );
         }
       }
     } else {
       // Fallback: only if yusho winner is from a lower division
       const championRikishi = getRikishi(world, yushoId);
       if (championRikishi && championRikishi.division !== "makuuchi") {
-        lines.push(...this.generateLowerDivisionChampionLines(championRikishi, pressRng, bashoName, year, championRikishi.division ?? "lower division"));
+        lines.push(
+          ...this.generateLowerDivisionChampionLines(
+            championRikishi,
+            pressRng,
+            bashoName,
+            year,
+            championRikishi.division ?? "lower division"
+          )
+        );
       }
     }
 
@@ -115,7 +128,12 @@ export const PostBashoPressService = {
         rikishiId: champion.id,
       });
       if (personaLine.text) {
-        lines.push({ text: personaLine.text, id: `${baseId}-persona`, phase: "post_bout", tags: ["post_basho_press"] });
+        lines.push({
+          text: personaLine.text,
+          id: `${baseId}-persona`,
+          phase: "post_bout",
+          tags: ["post_basho_press"],
+        });
       }
     }
 
@@ -126,7 +144,12 @@ export const PostBashoPressService = {
         rikishiId: champion.id,
       });
       if (line.text) {
-        lines.push({ text: line.text, id: `${baseId}-ww`, phase: "post_bout", tags: ["post_basho_press"] });
+        lines.push({
+          text: line.text,
+          id: `${baseId}-ww`,
+          phase: "post_bout",
+          tags: ["post_basho_press"],
+        });
       }
     }
 
@@ -136,18 +159,33 @@ export const PostBashoPressService = {
       rikishiId: champion.id,
     });
     if (perseveredLine.text) {
-      lines.push({ text: perseveredLine.text, id: `${baseId}-persevered`, phase: "post_bout", tags: ["post_basho_press"] });
+      lines.push({
+        text: perseveredLine.text,
+        id: `${baseId}-persevered`,
+        phase: "post_bout",
+        tags: ["post_basho_press"],
+      });
     }
 
     // Growth — for younger champions (debut count <= 10)
-    const makuuchiCount = champion.careerHistory?.filter((h) => h.division === "makuuchi").length ?? 0;
+    let makuuchiCount = 0;
+    if (champion.careerHistory) {
+      for (const h of champion.careerHistory) {
+        if (h.division === "makuuchi") makuuchiCount++;
+      }
+    }
     if (makuuchiCount <= 10) {
       const growthLine = BardEngine.resolve(rng, "post_basho_press.champion.growth", {
         SHIKONA: champion.shikona,
         rikishiId: champion.id,
       });
       if (growthLine.text) {
-        lines.push({ text: growthLine.text, id: `${baseId}-growth`, phase: "post_bout", tags: ["post_basho_press"] });
+        lines.push({
+          text: growthLine.text,
+          id: `${baseId}-growth`,
+          phase: "post_bout",
+          tags: ["post_basho_press"],
+        });
       }
     }
 
@@ -158,7 +196,12 @@ export const PostBashoPressService = {
         rikishiId: champion.id,
       });
       if (diaryLine.text) {
-        lines.push({ text: diaryLine.text, id: `${baseId}-diary`, phase: "post_bout", tags: ["post_basho_press"] });
+        lines.push({
+          text: diaryLine.text,
+          id: `${baseId}-diary`,
+          phase: "post_bout",
+          tags: ["post_basho_press"],
+        });
       }
     }
 
@@ -169,7 +212,12 @@ export const PostBashoPressService = {
         rikishiId: champion.id,
       });
       if (superstitionLine.text) {
-        lines.push({ text: superstitionLine.text, id: `${baseId}-superstition`, phase: "post_bout", tags: ["post_basho_press"] });
+        lines.push({
+          text: superstitionLine.text,
+          id: `${baseId}-superstition`,
+          phase: "post_bout",
+          tags: ["post_basho_press"],
+        });
       }
     }
 
@@ -180,7 +228,12 @@ export const PostBashoPressService = {
         rikishiId: champion.id,
       });
       if (clinicLine.text) {
-        lines.push({ text: clinicLine.text, id: `${baseId}-clinic`, phase: "post_bout", tags: ["post_basho_press"] });
+        lines.push({
+          text: clinicLine.text,
+          id: `${baseId}-clinic`,
+          phase: "post_bout",
+          tags: ["post_basho_press"],
+        });
       }
     }
 
@@ -190,7 +243,12 @@ export const PostBashoPressService = {
       rikishiId: champion.id,
     });
     if (paradeLine.text) {
-      lines.push({ text: paradeLine.text, id: `${baseId}-parade`, phase: "post_bout", tags: ["post_basho_press"] });
+      lines.push({
+        text: paradeLine.text,
+        id: `${baseId}-parade`,
+        phase: "post_bout",
+        tags: ["post_basho_press"],
+      });
     }
 
     // Weight journey — if champion has significant weight gain progress
@@ -200,7 +258,12 @@ export const PostBashoPressService = {
         rikishiId: champion.id,
       });
       if (wjLine.text) {
-        lines.push({ text: wjLine.text, id: `${baseId}-weight-journey`, phase: "post_bout", tags: ["post_basho_press"] });
+        lines.push({
+          text: wjLine.text,
+          id: `${baseId}-weight-journey`,
+          phase: "post_bout",
+          tags: ["post_basho_press"],
+        });
       }
     }
 
@@ -211,33 +274,57 @@ export const PostBashoPressService = {
         rikishiId: champion.id,
       });
       if (intLine.text) {
-        lines.push({ text: intLine.text, id: `${baseId}-intervention`, phase: "post_bout", tags: ["post_basho_press"] });
+        lines.push({
+          text: intLine.text,
+          id: `${baseId}-intervention`,
+          phase: "post_bout",
+          tags: ["post_basho_press"],
+        });
       }
     }
 
     // Early struggle — for champions with 5+ basho before first yusho
     const totalBashoCount = champion.careerHistory?.length ?? 0;
-    const yushoCount = champion.careerHistory?.filter((h) => h.isYusho).length ?? 0;
+    let yushoCount = 0;
+    if (champion.careerHistory) {
+      for (const h of champion.careerHistory) {
+        if (h.isYusho) yushoCount++;
+      }
+    }
     if (totalBashoCount >= 5 && yushoCount <= 1) {
       const struggleLine = BardEngine.resolve(rng, "post_basho_press.champion.early_struggle", {
         SHIKONA: champion.shikona,
         rikishiId: champion.id,
       });
       if (struggleLine.text) {
-        lines.push({ text: struggleLine.text, id: `${baseId}-struggle`, phase: "post_bout", tags: ["post_basho_press"] });
+        lines.push({
+          text: struggleLine.text,
+          id: `${baseId}-struggle`,
+          phase: "post_bout",
+          tags: ["post_basho_press"],
+        });
       }
     }
 
     // Career highlight reflection — if champion has recorded career highlights
     if (champion.careerHighlights && champion.careerHighlights.length > 0) {
       const highlight = champion.careerHighlights[champion.careerHighlights.length - 1];
-      const highlightLine = BardEngine.resolve(rng, "post_basho_press.champion.career_highlight_reflection", {
-        SHIKONA: champion.shikona,
-        OPPONENT: highlight.opponent ?? "his rival",
-        rikishiId: champion.id,
-      });
+      const highlightLine = BardEngine.resolve(
+        rng,
+        "post_basho_press.champion.career_highlight_reflection",
+        {
+          SHIKONA: champion.shikona,
+          OPPONENT: highlight.opponent ?? "his rival",
+          rikishiId: champion.id,
+        }
+      );
       if (highlightLine.text) {
-        lines.push({ text: highlightLine.text, id: `${baseId}-highlight`, phase: "post_bout", tags: ["post_basho_press"] });
+        lines.push({
+          text: highlightLine.text,
+          id: `${baseId}-highlight`,
+          phase: "post_bout",
+          tags: ["post_basho_press"],
+        });
       }
     }
 
@@ -261,17 +348,31 @@ export const PostBashoPressService = {
         rikishiId: winner.id,
       });
       if (line.text) {
-        lines.push({ text: line.text, id: `${baseId}-veteran`, phase: "post_bout", tags: ["post_basho_press"] });
+        lines.push({
+          text: line.text,
+          id: `${baseId}-veteran`,
+          phase: "post_bout",
+          tags: ["post_basho_press"],
+        });
       }
     }
 
     // Fought match not situation — always generate
-    const foughtLine = BardEngine.resolve(rng, "post_basho_press.prize_winner.fought_match_not_situation", {
-      SHIKONA: winner.shikona,
-      rikishiId: winner.id,
-    });
+    const foughtLine = BardEngine.resolve(
+      rng,
+      "post_basho_press.prize_winner.fought_match_not_situation",
+      {
+        SHIKONA: winner.shikona,
+        rikishiId: winner.id,
+      }
+    );
     if (foughtLine.text) {
-      lines.push({ text: foughtLine.text, id: `${baseId}-fought`, phase: "post_bout", tags: ["post_basho_press"] });
+      lines.push({
+        text: foughtLine.text,
+        id: `${baseId}-fought`,
+        phase: "post_bout",
+        tags: ["post_basho_press"],
+      });
     }
 
     // Rival frustration — 25% chance
@@ -281,18 +382,32 @@ export const PostBashoPressService = {
         rikishiId: winner.id,
       });
       if (rivalLine.text) {
-        lines.push({ text: rivalLine.text, id: `${baseId}-rival`, phase: "post_bout", tags: ["post_basho_press"] });
+        lines.push({
+          text: rivalLine.text,
+          id: `${baseId}-rival`,
+          phase: "post_bout",
+          tags: ["post_basho_press"],
+        });
       }
     }
 
     // Fighting name vindication — if shikona was conferred early (before sekitori)
     if (winner.shikonaConferredEarly) {
-      const fnLine = BardEngine.resolve(rng, "post_basho_press.prize_winner.fighting_name_vindication", {
-        SHIKONA: winner.shikona,
-        rikishiId: winner.id,
-      });
+      const fnLine = BardEngine.resolve(
+        rng,
+        "post_basho_press.prize_winner.fighting_name_vindication",
+        {
+          SHIKONA: winner.shikona,
+          rikishiId: winner.id,
+        }
+      );
       if (fnLine.text) {
-        lines.push({ text: fnLine.text, id: `${baseId}-fighting-name`, phase: "post_bout", tags: ["post_basho_press"] });
+        lines.push({
+          text: fnLine.text,
+          id: `${baseId}-fighting-name`,
+          phase: "post_bout",
+          tags: ["post_basho_press"],
+        });
       }
     }
 
@@ -303,7 +418,12 @@ export const PostBashoPressService = {
         rikishiId: winner.id,
       });
       if (cohortLine.text) {
-        lines.push({ text: cohortLine.text, id: `${baseId}-cohort`, phase: "post_bout", tags: ["post_basho_press"] });
+        lines.push({
+          text: cohortLine.text,
+          id: `${baseId}-cohort`,
+          phase: "post_bout",
+          tags: ["post_basho_press"],
+        });
       }
     }
 
@@ -326,7 +446,12 @@ export const PostBashoPressService = {
       rikishiId: rikishi.id,
     });
     if (continuationLine.text) {
-      lines.push({ text: continuationLine.text, id: `${baseId}-continuation`, phase: "post_bout", tags: ["post_basho_press"] });
+      lines.push({
+        text: continuationLine.text,
+        id: `${baseId}-continuation`,
+        phase: "post_bout",
+        tags: ["post_basho_press"],
+      });
     }
 
     // Score threshold — if 13+ wins
@@ -336,7 +461,12 @@ export const PostBashoPressService = {
         rikishiId: rikishi.id,
       });
       if (scoreLine.text) {
-        lines.push({ text: scoreLine.text, id: `${baseId}-score`, phase: "post_bout", tags: ["post_basho_press"] });
+        lines.push({
+          text: scoreLine.text,
+          id: `${baseId}-score`,
+          phase: "post_bout",
+          tags: ["post_basho_press"],
+        });
       }
     }
 
@@ -357,7 +487,12 @@ export const PostBashoPressService = {
       rikishiId: rikishi.id,
     });
     if (line.text) {
-      lines.push({ text: line.text, id: `${baseId}-stake`, phase: "post_bout", tags: ["post_basho_press"] });
+      lines.push({
+        text: line.text,
+        id: `${baseId}-stake`,
+        phase: "post_bout",
+        tags: ["post_basho_press"],
+      });
     }
 
     return lines;
@@ -381,7 +516,12 @@ export const PostBashoPressService = {
       rikishiId: champion.id,
     });
     if (firstHonorLine.text) {
-      lines.push({ text: firstHonorLine.text, id: `${baseId}-first-honor`, phase: "post_bout", tags: ["post_basho_press"] });
+      lines.push({
+        text: firstHonorLine.text,
+        id: `${baseId}-first-honor`,
+        phase: "post_bout",
+        tags: ["post_basho_press"],
+      });
     }
 
     // Career goal — 50% chance
@@ -391,7 +531,12 @@ export const PostBashoPressService = {
         rikishiId: champion.id,
       });
       if (goalLine.text) {
-        lines.push({ text: goalLine.text, id: `${baseId}-career-goal`, phase: "post_bout", tags: ["post_basho_press"] });
+        lines.push({
+          text: goalLine.text,
+          id: `${baseId}-career-goal`,
+          phase: "post_bout",
+          tags: ["post_basho_press"],
+        });
       }
     }
 
@@ -402,7 +547,12 @@ export const PostBashoPressService = {
         rikishiId: champion.id,
       });
       if (coachLine.text) {
-        lines.push({ text: coachLine.text, id: `${baseId}-coach`, phase: "post_bout", tags: ["post_basho_press"] });
+        lines.push({
+          text: coachLine.text,
+          id: `${baseId}-coach`,
+          phase: "post_bout",
+          tags: ["post_basho_press"],
+        });
       }
     }
 

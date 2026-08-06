@@ -88,7 +88,9 @@ export function evaluateYaochoIndicators(
   const repeatedKimarite =
     lastKimarite === result.kimarite && totalMeetings >= YAOCHO_REPEAT_KIMARITE_THRESHOLD;
 
-  const suspiciouslyShort = (result.duration ?? YAOCHO_DEFAULT_DURATION) < YAOCHO_SHORT_BOUT_THRESHOLD && result.kimarite !== "fusensho";
+  const suspiciouslyShort =
+    (result.duration ?? YAOCHO_DEFAULT_DURATION) < YAOCHO_SHORT_BOUT_THRESHOLD &&
+    result.kimarite !== "fusensho";
 
   return {
     sameHeya,
@@ -147,22 +149,34 @@ export function checkYaocho(
   if (rng.next() >= chance) return builder.build();
 
   // Determine severity based on indicator count
-  const indicatorCount = Object.values(indicators).filter(Boolean).length;
+  let indicatorCount = 0;
+  if (indicators.sameHeya) indicatorCount++;
+  if (indicators.loserIs77OnSenshuraku) indicatorCount++;
+  if (indicators.h2hDominance) indicatorCount++;
+  if (indicators.repeatedKimarite) indicatorCount++;
+  if (indicators.suspiciouslyShort) indicatorCount++;
   const severity: "minor" | "major" | "critical" =
-    indicatorCount >= YAOCHO_SEVERITY_CRITICAL_INDICATORS ? "critical" : indicatorCount >= YAOCHO_SEVERITY_MAJOR_INDICATORS ? "major" : "minor";
+    indicatorCount >= YAOCHO_SEVERITY_CRITICAL_INDICATORS
+      ? "critical"
+      : indicatorCount >= YAOCHO_SEVERITY_MAJOR_INDICATORS
+        ? "major"
+        : "minor";
 
   // Report scandal for both heyas involved
   const winner = getRikishi(world, result.winnerRikishiId);
   const loser = getRikishi(world, result.loserRikishiId);
 
   if (loser?.heyaId) {
-    builder.merge(
-      reportScandal(world, loser.heyaId, severity, "Suspected match-fixing (yaocho)")
-    );
+    builder.merge(reportScandal(world, loser.heyaId, severity, "Suspected match-fixing (yaocho)"));
   }
   if (winner?.heyaId && winner.heyaId !== loser?.heyaId) {
     builder.merge(
-      reportScandal(world, winner.heyaId, severity === "critical" ? "major" : "minor", "Suspected match-fixing (yaocho) — winning stable")
+      reportScandal(
+        world,
+        winner.heyaId,
+        severity === "critical" ? "major" : "minor",
+        "Suspected match-fixing (yaocho) — winning stable"
+      )
     );
   }
 

@@ -7,7 +7,14 @@ import { determinePostRetirementPath, getRetirementNarrative } from "./PostRetir
 
 export interface RetirementNarrativeLine {
   text: string;
-  section: "ceremony" | "career_summary" | "legacy" | "press_reaction" | "oyakata_conversion" | "post_retirement_path" | "favorite_memory";
+  section:
+    | "ceremony"
+    | "career_summary"
+    | "legacy"
+    | "press_reaction"
+    | "oyakata_conversion"
+    | "post_retirement_path"
+    | "favorite_memory";
 }
 
 export function generateRetirementNarrative(
@@ -25,14 +32,20 @@ export function generateRetirementNarrative(
   const careerLosses = rikishi.careerLosses ?? 0;
   const bashoCount = rikishi.careerHistory?.length ?? 0;
   const yearsActive = world.year - rikishi.birthYear - 15;
-  const yushoCount = (rikishi.careerHistory ?? []).filter((h) => h.isYusho).length;
+  let yushoCount = 0;
+  if (rikishi.careerHistory) {
+    for (const h of rikishi.careerHistory) {
+      if (h.isYusho) yushoCount++;
+    }
+  }
   const kinboshiCount = rikishi.economics?.kinboshiCount ?? 0;
-  const highestRank = rikishi.careerHistory
-    ?.map((h) => h.rank)
-    .sort((a, b) => {
-      const order = ["yokozuna", "ozeki", "sekiwake", "komusubi", "maegashira"];
-      return order.indexOf(a) - order.indexOf(b);
-    })[0] ?? rikishi.rank;
+  const highestRank =
+    rikishi.careerHistory
+      ?.map((h) => h.rank)
+      .sort((a, b) => {
+        const order = ["yokozuna", "ozeki", "sekiwake", "komusubi", "maegashira"];
+        return order.indexOf(a) - order.indexOf(b);
+      })[0] ?? rikishi.rank;
 
   // 1. Ceremony line
   const ceremonyRes = BardEngine.resolve(rng, "events.narrative.retirement_ceremony_summary", {
@@ -109,10 +122,14 @@ export function generateRetirementNarrative(
 
   // 7. Favorite career memory (B7 integration)
   if (rikishi.careerHighlights && rikishi.careerHighlights.length > 0) {
-    const favoriteMemoryRes = BardEngine.resolve(rng, "events.narrative.retirement_favorite_memory_summary", {
-      SHIKONA: shikona,
-      rikishiId: rikishi.id,
-    });
+    const favoriteMemoryRes = BardEngine.resolve(
+      rng,
+      "events.narrative.retirement_favorite_memory_summary",
+      {
+        SHIKONA: shikona,
+        rikishiId: rikishi.id,
+      }
+    );
     if (favoriteMemoryRes.text) {
       lines.push({ text: favoriteMemoryRes.text, section: "favorite_memory" });
     }
