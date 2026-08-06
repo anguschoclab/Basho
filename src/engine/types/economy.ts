@@ -49,6 +49,7 @@ export interface WelfareState {
     note?: string;
   };
   lastReviewedWeek?: number;
+  morale?: number;
 }
 
 /** Defines the structure for governance ruling. */
