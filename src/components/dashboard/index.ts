@@ -21,3 +21,4 @@ export * from "./SponsorRecruitmentWidget";
 export * from "./YushoRaceWidget";
 export * from "./PreBashoAssessment";
 export * from "./ActionQueueWidget";
+export * from "./IntelligencePanel";

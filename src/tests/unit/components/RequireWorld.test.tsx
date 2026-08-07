@@ -3,8 +3,7 @@ import { render, renderHook } from "@testing-library/react";
 import { RequireWorld, useRequireWorld } from "@/components/RequireWorld";
 import { useGame } from "@/contexts/useGame";
 
-// Mock GameContext
-vi.mock("@/contexts/GameContext", () => ({
+vi.mock("@/contexts/useGame", () => ({
   useGame: vi.fn(),
 }));
 

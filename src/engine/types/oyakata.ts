@@ -4,6 +4,7 @@
 
 import type { Id } from "./common";
 import type { AvatarConfig } from "./avatar";
+import type { OyakataMemory } from "../ai/types";
 
 /** Mood state for an Oyakata — affects training intensity and decision risk. */
 export type OyakataMood =
@@ -81,29 +82,10 @@ export interface Oyakata {
 
   /**
    * AI Agent Architecture Components (Canon Directive 2026.04)
-   * Implements "Skeptical Memory" and "Background Consolidation"
+   * Implements "Skeptical Memory" and "Background Consolidation".
+   * Extended by the unified AI layer for plans, opponent models, and decision history.
    */
-  memory?: {
-    /**
-     * Recent observations (hints) about the roster/financials.
-     * Used to resolve conflicting information over multiple ticks.
-     */
-    observations: Array<{
-      tick: number;
-      type: "perception" | "incident" | "alignment";
-      summary: string;
-      importance: number;
-    }>;
-
-    /**
-     * The "Active Alignment" context.
-     * Reinserted into the decision loop to prevent instruction drift.
-     */
-    coreDirectives: string[];
-
-    /** Timestamp of last consolidation routine. */
-    lastConsolidationTick: number;
-  };
+  memory?: OyakataMemory;
 }
 
 /** Configuration provided by the player at new-game wizard — applied to their oyakata on world creation. */

@@ -8,61 +8,44 @@
 import type { WorldState } from "../../../types/world";
 import type { Oyakata } from "../../../types/oyakata";
 import type { PerceptionSnapshot } from "../../../perception";
-
-interface OyakataObservation {
-  tick: number;
-  type: string;
-  summary: string;
-  importance: number;
-}
+import { getMemory, addObservation } from "../../../npcAI/MemoryStore";
 
 export function consolidateOyakataMemoryPure(
   world: WorldState,
   oyakata: Oyakata,
   perception: PerceptionSnapshot
 ): NonNullable<Oyakata["memory"]> {
-  const memory: NonNullable<Oyakata["memory"]> = oyakata.memory
-    ? { ...oyakata.memory, observations: [...oyakata.memory.observations] }
-    : {
-        observations: [],
-        coreDirectives: [
-          `Maintain the excellence of stable`,
-          `Prioritize ${oyakata.archetype} values`,
-        ],
-        lastConsolidationTick: world.week,
-      };
-
   const tick = world.week;
+  let memory = getMemory(oyakata, tick);
 
   if (
     perception.moraleBand === "mutinous" &&
     oyakata.mood !== "furious" &&
     oyakata.mood !== "anxious"
   ) {
-    memory.observations.push({
-      tick,
-      type: "alignment",
-      summary: `Unexpected morale collapse detected.`,
-      importance: 8,
-    });
+    memory = addObservation(
+      memory,
+      {
+        type: "alignment",
+        summary: `Unexpected morale collapse detected.`,
+        importance: 8,
+      },
+      tick
+    );
   }
 
   if (perception.runwayBand === "desperate" || perception.runwayBand === "critical") {
-    memory.observations.push({
-      tick,
-      type: "perception",
-      summary: `Financial runway is ${perception.runwayBand}.`,
-      importance: 10,
-    });
-  }
-
-  if (memory.observations.length > 10) {
-    memory.observations.sort(
-      (a: OyakataObservation, b: OyakataObservation) => b.importance - a.importance
+    memory = addObservation(
+      memory,
+      {
+        type: "perception",
+        summary: `Financial runway is ${perception.runwayBand}.`,
+        importance: 10,
+      },
+      tick
     );
-    memory.observations = memory.observations.slice(0, 10);
   }
 
-  memory.lastConsolidationTick = tick;
+  memory = { ...memory, lastConsolidationTick: tick };
   return memory;
 }

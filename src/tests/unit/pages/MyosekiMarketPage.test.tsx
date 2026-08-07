@@ -5,7 +5,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import MyosekiMarketPage from "@/pages/MyosekiMarketPage";
 
-vi.mock("@/contexts/GameContext", () => ({
+vi.mock("@/contexts/useGame", () => ({
   useGame: vi.fn(),
 }));
 

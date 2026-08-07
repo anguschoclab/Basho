@@ -7,7 +7,7 @@ import { resolveBout } from "@/engine/bout/boutResolver";
 
 // Mock GameContext
 const mockUseGame = vi.fn();
-vi.mock("@/contexts/GameContext", () => ({
+vi.mock("@/contexts/useGame", () => ({
   useGame: () => mockUseGame(),
 }));
 

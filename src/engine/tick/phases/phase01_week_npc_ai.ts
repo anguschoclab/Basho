@@ -17,8 +17,12 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { getAvailableStables } from "../../selectors";
 import { buildPerceptionSnapshot } from "../../perception";
+import { buildLeaguePerception } from "../../npcAI/LeaguePerception";
+import { createPlan, shouldReplan } from "../../npcAI/StrategicPlanner";
 import { makeNPCWeeklyDecision } from "../../npcAI";
 import { enforceHardCapRosterOverflow } from "../../overflow";
+import { getMemory, setActivePlan, recordDecision } from "../../npcAI/MemoryStore";
+import type { AIContext } from "../../ai/types";
 import { getMediaStrategy } from "../../npcMediaStrategy";
 import {
   processOyakataMood,
@@ -40,6 +44,7 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_npc_ai");
   const scoutingMap: Record<Id, "none" | "passive" | "active" | "aggressive"> = {};
   const playerHeyaId = world.playerHeyaId;
+  const leaguePerception = buildLeaguePerception(world);
 
   for (const heya of getAvailableStables(world)) {
     if (heya.id === playerHeyaId) continue;
@@ -55,8 +60,43 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
       nextOya.managerFlags = persona.managerFlags;
       nextOya.memory = consolidateOyakataMemoryPure(world, nextOya, perception);
 
-      const decision = makeNPCWeeklyDecision(world, heya.id);
+      const aiCtx: AIContext = {
+        world,
+        heyaId: heya.id,
+        oyakata: {
+          id: nextOya.id,
+          archetype: nextOya.archetype,
+          traits: nextOya.traits,
+          mood: nextOya.mood,
+        },
+        perception,
+        leaguePerception,
+        memory: nextOya.memory,
+      };
+
+      const activePlan = nextOya.memory?.activePlan;
+      const needsReplan = shouldReplan(aiCtx, activePlan);
+      let currentPlan = activePlan;
+      if (needsReplan || !currentPlan) {
+        const newPlan = createPlan(aiCtx);
+        if (newPlan) {
+          nextOya.memory = setActivePlan(nextOya.memory ?? getMemory(nextOya, world.week), newPlan, world.week);
+          currentPlan = newPlan;
+        }
+      }
+
+      const decision = makeNPCWeeklyDecision(world, heya.id, currentPlan);
       applyNPCDecisionPure(world, builder, decision);
+
+      if (currentPlan) {
+        nextOya.memory = recordDecision(
+          nextOya.memory ?? getMemory(nextOya, world.week),
+          world.year,
+          world.week,
+          `Plan ${currentPlan.planId}: intensity ${decision.trainingIntensity}, scouting ${decision.scoutingPriority}`,
+          currentPlan.planId
+        );
+      }
 
       const newMood = processOyakataMood(nextOya, decision, heya.id, builder);
       nextOya.mood = newMood;

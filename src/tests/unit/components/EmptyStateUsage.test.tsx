@@ -6,7 +6,7 @@ import { render, screen } from "@testing-library/react";
 import { EventFeed } from "@/components/dashboard/EventFeed";
 import { InstitutionWidget } from "@/components/dashboard/InstitutionWidget";
 
-vi.mock("@/contexts/GameContext", () => ({
+vi.mock("@/contexts/useGame", () => ({
   useGame: vi.fn(),
 }));
 

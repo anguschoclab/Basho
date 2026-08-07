@@ -7,7 +7,7 @@ import { render, screen } from "@testing-library/react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { PreBashoAssessment } from "@/components/dashboard/PreBashoAssessment";
 
-vi.mock("@/contexts/GameContext", () => ({
+vi.mock("@/contexts/useGame", () => ({
   useGame: vi.fn(),
 }));
 

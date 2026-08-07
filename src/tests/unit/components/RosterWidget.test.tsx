@@ -13,7 +13,7 @@ vi.mock("@tanstack/react-router", () => ({
     React.createElement("a", { href: to, ...props }, children),
 }));
 
-vi.mock("@/contexts/GameContext");
+vi.mock("@/contexts/useGame");
 
 function makeRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikishi {
   return {

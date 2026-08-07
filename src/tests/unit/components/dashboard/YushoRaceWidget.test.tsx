@@ -8,7 +8,7 @@ vi.mock("@tanstack/react-router", () => ({
 }));
 
 const mockUseGame = vi.fn();
-vi.mock("@/contexts/GameContext", () => ({
+vi.mock("@/contexts/useGame", () => ({
   useGame: () => mockUseGame(),
 }));
 

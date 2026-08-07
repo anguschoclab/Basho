@@ -15,6 +15,7 @@ import type { BoutTactic, TacticalResult } from "./types/combat";
 import { BardEngine } from "./bard/BardEngine";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
+import { chooseTacticForCPU } from "./bout/BoutAI";
 import {
   H2H_DOMINATION_MIN_MATCHES,
   H2H_DOMINATION_WIN_RATE_THRESHOLD,
@@ -22,15 +23,6 @@ import {
   H2H_DEADLOCK_MIN_MATCHES,
   H2H_STREAK_THRESHOLD,
   H2H_MAX_RECENT_MEETINGS,
-  TACTIC_YOTSU_BELT_THRESHOLD,
-  TACTIC_YOTSU_STANDARD_THRESHOLD,
-  TACTIC_YOTSU_OSHI_THRESHOLD,
-  TACTIC_OSHI_THRUST_THRESHOLD,
-  TACTIC_OSHI_STANDARD_THRESHOLD,
-  TACTIC_OSHI_YOTSU_THRESHOLD,
-  TACTIC_HYBRID_YOTSU_THRESHOLD,
-  TACTIC_HYBRID_OSHI_THRESHOLD,
-  TACTIC_HYBRID_STANDARD_THRESHOLD,
   TACTICAL_ADVANTAGE_SHIFT,
 } from "../constants/engine/generation";
 
@@ -240,36 +232,11 @@ export function getH2HReport(rA: Rikishi, rB: Rikishi): H2HReport {
 
 /**
  * Determine the CPU rikishi's bout tactic based on their stats and archetype.
+ * Delegates to the context-aware BoutAI module while preserving the original
+ * signature and deterministic output for callers that only supply the CPU rikishi.
  */
 export function determineCPUTactic(cpu: Rikishi, rng: SeededRNG): BoutTactic {
-  const isYotsu = cpu.style === "yotsu";
-  const isOshi = cpu.style === "oshi";
-  const tech = cpu.stats?.technique ?? 50;
-  const speed = cpu.stats?.speed ?? 50;
-  const canNekodamashi = tech > 65 && speed > 65;
-
-  const roll = rng.next();
-
-  if (isYotsu) {
-    // Nekodamashi replaces HENKA for qualifying rikishi (roll >= 0.95)
-    if (canNekodamashi && roll >= 0.95) return "NEKODAMASHI";
-    if (roll < TACTIC_YOTSU_BELT_THRESHOLD) return "YOTSU_BELT";
-    if (roll < TACTIC_YOTSU_STANDARD_THRESHOLD) return "STANDARD";
-    if (roll < TACTIC_YOTSU_OSHI_THRESHOLD) return "OSHI_THRUST";
-    return "HENKA";
-  } else if (isOshi) {
-    if (canNekodamashi && roll >= 0.95) return "NEKODAMASHI";
-    if (roll < TACTIC_OSHI_THRUST_THRESHOLD) return "OSHI_THRUST";
-    if (roll < TACTIC_OSHI_STANDARD_THRESHOLD) return "STANDARD";
-    if (roll < TACTIC_OSHI_YOTSU_THRESHOLD) return "YOTSU_BELT";
-    return "HENKA";
-  } else {
-    // Hybrid / Other
-    if (roll < TACTIC_HYBRID_YOTSU_THRESHOLD) return "YOTSU_BELT";
-    if (roll < TACTIC_HYBRID_OSHI_THRESHOLD) return "OSHI_THRUST";
-    if (roll < TACTIC_HYBRID_STANDARD_THRESHOLD) return "STANDARD";
-    return "HENKA";
-  }
+  return chooseTacticForCPU(cpu, rng);
 }
 
 /**

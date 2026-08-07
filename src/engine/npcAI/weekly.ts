@@ -47,8 +47,14 @@ import {
 } from "../agents";
 
 import type { AgentDecisions, NPCWeeklyDecision } from "./types";
+import type { AIPlan } from "../ai/types";
+import { applyPlanConstraints } from "./TacticalCoordinator";
 
-export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyDecision {
+export function makeNPCWeeklyDecision(
+  world: WorldState,
+  heyaId: Id,
+  plan?: AIPlan
+): NPCWeeklyDecision {
   const persona = getManagerPersona(world, heyaId);
   const perception = persona.perception;
   const reasoning: string[] = [];
@@ -229,6 +235,24 @@ export function makeNPCWeeklyDecision(world: WorldState, heyaId: Id): NPCWeeklyD
     ) {
       reasoning.push(
         "[Agent Review] Governance agent: Cooperative scandal reduction strategy selected"
+      );
+    }
+
+    if (plan) {
+      applyPlanConstraints(
+        plan,
+        {
+          trainingProposal,
+          scoutingProposal,
+          personnelProposal,
+          financeResult,
+          governanceResult,
+          recruitmentResult,
+          rivalryResult,
+          agentDecisions,
+        },
+        perception,
+        reasoning
       );
     }
   }
