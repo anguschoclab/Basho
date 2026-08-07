@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { applyBoutResult } from "@/engine/bout/boutResultApplier";
-import { mockRikishi } from "../utils";
+import { publishBanzukeUpdate } from "@/engine/banzuke/BanzukePublisher";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { mockRikishi, makeMockWorld, makeMockBasho } from "../utils";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BashoName, BoutResult, MatchSchedule } from "@/engine/types/basho";
@@ -271,15 +273,33 @@ describe("Bug 15 + N5: Absences tracking", () => {
     expect(isKyujo2).toBe(false);
   });
 
-  it("A.7: BanzukePublisher passes actual absences from standings to performanceList (N5)", () => {
-    // This tests that absences are not hardcoded to 0.
-    // We verify the logic: if standings has absences: 5, performanceList should have absences: 5
-    const statsAbsences = 5;
-    const performanceAbsences = statsAbsences ?? 0; // This is what the fix should do
-    expect(performanceAbsences).toBe(5);
+  it("A.7: BanzukePublisher passes actual absences from standings to careerHistory (N5)", () => {
+    const r1 = mockRikishi("r1", {
+      rank: "maegashira",
+      rankNumber: 5,
+      division: "makuuchi",
+      careerHistory: [],
+    });
+    const standings = new Map([
+      ["r1", { wins: 5, losses: 5, absences: 5 }],
+    ]);
+    const basho = makeMockBasho({ bashoName: "hatsu", standings, isActive: false, day: 15 });
+    const world = makeMockWorld({
+      rikishi: new Map([["r1", r1]]),
+      activeRikishiIds: new Set(["r1"]),
+      currentBasho: basho,
+      cyclePhase: "post_basho",
+      history: [{
+        year: 2025, bashoNumber: 1, bashoName: "hatsu",
+        yusho: "none", junYusho: [], ginoSho: "none",
+        shukunsho: "none", kantosho: "none", stats: [], id: "1",
+      }],
+    });
 
-    // Current bug: absences is hardcoded to 0
-    const buggyAbsences = 0;
-    expect(buggyAbsences).not.toBe(5);
+    const impact = publishBanzukeUpdate(world);
+    const newWorld = resolveImpacts(world, [impact]);
+    const updatedR1 = newWorld.rikishi.get("r1")!;
+    const lastEntry = updatedR1.careerHistory![updatedR1.careerHistory!.length - 1];
+    expect(lastEntry.absences).toBe(5);
   });
 });
