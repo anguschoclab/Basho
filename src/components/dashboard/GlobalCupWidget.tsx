@@ -6,7 +6,7 @@
 
 import { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useGame } from "@/contexts/GameContext";
+import { useGame } from "@/contexts/useGame";
 import { Trophy, Users, Calendar } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
 

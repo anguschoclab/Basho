@@ -1,7 +1,7 @@
 // SaveLoadDialog.tsx — In-game save/load dialog with slot management
 /* eslint-disable react-refresh/only-export-components */
 import React, { useState, useMemo, useEffect, useCallback } from "react";
-import { useGame } from "@/contexts/GameContext";
+import { useGame } from "@/contexts/useGame";
 import { useToast } from "@/hooks/use-toast";
 import type { SaveSlotInfo } from "@/engine/saveload";
 import {

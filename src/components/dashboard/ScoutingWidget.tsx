@@ -1,7 +1,7 @@
 import type { CombatArchetype } from "@/engine/types/combat";
 import React, { useMemo } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { useGame } from "@/contexts/GameContext";
+import { useGame } from "@/contexts/useGame";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";

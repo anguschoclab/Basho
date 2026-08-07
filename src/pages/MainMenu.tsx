@@ -10,7 +10,7 @@ import { useState, useMemo, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import { useNavigate } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
-import { useGame } from "@/contexts/GameContext";
+import { useGame } from "@/contexts/useGame";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";

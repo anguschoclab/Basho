@@ -7,7 +7,7 @@
 
 import React, { useState, useMemo } from "react";
 import { useGameStore } from "../../store/gameStore";
-import { useGame } from "../../contexts/GameContext";
+import { useGame } from "../../contexts/useGame";
 import {
   Dialog,
   DialogContent,

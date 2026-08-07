@@ -3,7 +3,7 @@
 
 import { useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "@tanstack/react-router";
-import { useGame } from "@/contexts/GameContext";
+import { useGame } from "@/contexts/useGame";
 
 /** Defines the structure for shortcut options. */
 interface ShortcutOptions {

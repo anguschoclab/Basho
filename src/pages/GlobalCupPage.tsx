@@ -7,7 +7,7 @@
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
-import { useGame } from "@/contexts/GameContext";
+import { useGame } from "@/contexts/useGame";
 import { Trophy, Users, Calendar, MapPin, BarChart3 } from "lucide-react";
 import { PageHeader } from "@/components/layout/control-center";
 import { GlobalCupBracket } from "@/components/game/GlobalCupBracket";

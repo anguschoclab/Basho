@@ -13,7 +13,7 @@ import { Slider } from "@/components/ui/slider";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Palette, Sparkles, X, ShieldCheck } from "lucide-react";
-import { useGame } from "@/contexts/GameContext";
+import { useGame } from "@/contexts/useGame";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { KeshoMawashi, TraditionalMotif } from "@/engine/types/keshoMawashi";
 import type { AvatarConfig } from "@/engine/types/avatar";

@@ -7,7 +7,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render } from "@testing-library/react";
 import Dashboard from "@/pages/Dashboard";
-import * as GameContext from "@/contexts/GameContext";
+import * as GameContext from "@/contexts/useGame";
 import type { GameState } from "@/contexts/gameTypes";
 
 // ── Mocks (hoisted by vitest) ──────────────────────────────

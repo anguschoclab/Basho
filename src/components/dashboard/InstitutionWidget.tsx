@@ -3,7 +3,7 @@
  * Dashboard widget displaying institutional health, compliance, and governance status.
  */
 
-import { useGame } from "@/contexts/GameContext";
+import { useGame } from "@/contexts/useGame";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
 import { BaseWidget } from "./BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";

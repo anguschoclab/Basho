@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { useGame } from "../../contexts/GameContext";
+import { useGame } from "../../contexts/useGame";
 import { getLineageTree } from "../../engine/lineage";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Badge } from "../ui/badge";

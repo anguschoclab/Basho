@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { StableName, RikishiName } from "@/components/ClickableName";
 import { Building2, Eye, Shield, Heart, TrendingUp, Flame, Users, Swords } from "lucide-react";
-import { useGame } from "@/contexts/GameContext";
+import { useGame } from "@/contexts/useGame";
 import { projectH2HBetweenHeyas } from "@/presenters/uiDigest";
 import type { PerceptionSnapshot } from "@/engine/perception";
 import type { H2HMatchupData } from "@/presenters/projections/boutProjections";

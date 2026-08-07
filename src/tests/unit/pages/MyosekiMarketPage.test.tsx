@@ -29,7 +29,7 @@ vi.mock("@/components/ui/tooltip-wrap", () => ({
   TooltipWrap: ({ children }: { children: React.ReactNode }) => <span>{children}</span>,
 }));
 
-import { useGame } from "@/contexts/GameContext";
+import { useGame } from "@/contexts/useGame";
 
 function makeStock(overrides: Partial<any> = {}): any {
   return {

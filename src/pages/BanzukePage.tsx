@@ -1,7 +1,7 @@
 import { memo, useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { useGame } from "@/contexts/GameContext";
+import { useGame } from "@/contexts/useGame";
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Division } from "@/engine/types/banzuke";

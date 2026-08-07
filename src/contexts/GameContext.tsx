@@ -11,28 +11,25 @@
  * @see gameTypes for type definitions
  */
 
-import { createContext, useContext, useReducer, useCallback, useMemo, ReactNode } from "react";
+import { useReducer, useCallback, useMemo, ReactNode } from "react";
 import { error as logError } from "@/engine/utils/Logger";
 import type { WorldState } from "@/engine/types/world";
-import type { Rikishi } from "@/engine/types/rikishi";
-import type { Heya } from "@/engine/types/heya";
 import {
   saveGame,
   loadGame,
   hasAutosave,
   loadAutosave,
   getSaveSlotInfos,
-  type SaveSlotInfo,
 } from "@/engine/saveload";
 import { runHoliday, type HolidayConfig, type HolidayResult } from "@/engine/holiday";
 import { runAutoSim, type AutoSimConfig, type AutoSimResult } from "@/engine/autoSim";
 import { registerElectronStorage } from "./electronStorageProvider";
+import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { applyOyakataCreationConfig } from "@/engine/systems/generation/applyOyakataConfig";
 
 // Register electron-store as the engine's storage backend (falls back to localStorage for web builds)
 registerElectronStorage();
 
-import type { GamePhase, GameState } from "./gameTypes";
-import type { UIDigest } from "@/presenters/uiDigest";
 import { initialGameState } from "./gameTypes";
 import { gameReducer } from "./gameReducer";
 import { autosaveWithSignal, getMatchesForDay, applyImpact } from "./gameHelpers";
@@ -42,112 +39,10 @@ import { recruitSponsor, buildWeeklyDigest } from "@/presenters/uiDigest";
 // Re-export types so existing imports from GameContext still work
 export type { GamePhase, GameState } from "./gameTypes";
 
+import { GameContext, type GameContextValue } from "./gameContextInstance";
+import type { GamePhase } from "./gameTypes";
 import * as actions from "./gameActions";
 import { useGameStore } from "@/store/gameStore";
-
-// === CONTEXT VALUE ===
-
-/**
- * Defines the structure for game context value.
- * Contains the current game state and all available actions.
- */
-interface GameContextValue {
-  /** Current game state. */
-  state: GameState;
-  /** Latest UI digest built from world state. */
-  digest: UIDigest | null;
-  /** Creates a new world with the given seed. */
-  createWorld: (
-    seed: string,
-    playerHeyaId?: string,
-    oyakataConfig?: import("@/engine/types/oyakata").OyakataCreationConfig
-  ) => void;
-  /** Sets the current game phase. */
-  setPhase: (phase: GamePhase) => void;
-  /** Starts a new basho. */
-  startBasho: () => void;
-  /** Advances to the next day. */
-  advanceDay: () => void;
-  /** Simulates a specific bout. */
-  simulateBout: (boutIndex: number, boutId?: string) => void;
-  /** Sets the tactic for a specific bout. */
-  setBoutTactic: (boutId: string, tactic: import("@/engine/types/combat").BoutTactic) => void;
-  /** Simulates all bouts for the current day. */
-  simulateAllBouts: () => void;
-  /** Ends the current day. */
-  endDay: () => void;
-  /** Ends the current basho. */
-  endBasho: () => void;
-  /** Simulates a full basho (all 15 days). */
-  simFullBasho: () => void;
-  /** Ticks multiple days at once. */
-  tickMultipleDays: (days: number) => void;
-  /** Advances the interim period by the specified number of weeks. */
-  advanceInterim: (weeks?: number) => void;
-  /** Advances by one day. */
-  advanceOneDay: () => void;
-  /** Issues a governance ruling. */
-  issueRuling: (rulingId: string, severity: "lenient" | "standard" | "harsh") => void;
-  /** Runs a holiday event with the given configuration. */
-  goOnHoliday: (config: HolidayConfig) => HolidayResult | null;
-  /** Runs an auto-simulation with the given configuration. */
-  runAutoSimAction: (config: AutoSimConfig) => Promise<AutoSimResult | null>;
-  /** Saves the game to the specified slot. */
-  saveToSlot: (slotName: string) => boolean;
-  /** Loads the game from the specified slot. */
-  loadFromSlot: (slotName: string) => boolean;
-  /** Performs a quick save. */
-  quickSave: () => boolean;
-  /** Loads the most recent autosave. */
-  loadFromAutosave: () => boolean;
-  /** Checks if an autosave exists. */
-  hasAutosave: () => boolean;
-  /** Gets information about all save slots. */
-  getSaveSlots: () => SaveSlotInfo[];
-  /** Gets a rikishi by ID. */
-  getRikishi: (id: string) => Rikishi | undefined;
-  /** Gets a heya by ID. */
-  getHeya: (id: string) => Heya | undefined;
-  /** Gets the matches for the current day. */
-  getCurrentDayMatches: () => ReturnType<typeof getMatchesForDay>;
-  /** Gets the current standings. */
-  getStandings: () => Array<{ rikishi: Rikishi; wins: number; losses: number }>;
-  /** Updates the world state with a new world. */
-  updateWorld: (world: WorldState) => void;
-  /** Advances the tutorial to the next step. */
-  advanceTutorialStep: (step: import("@/engine/types/tutorial").TutorialStep) => void;
-  /** Sets a tutorial flag. */
-  setTutorialFlag: (flag: keyof import("@/engine/types/tutorial").TutorialFlags) => void;
-  /** Completes the tutorial. */
-  completeTutorial: () => void;
-  /** Builds infrastructure for a heya. */
-  buildInfrastructure: (
-    heyaId: string,
-    facilityId: import("@/engine/types/infrastructure").FacilityId
-  ) => void;
-  /** Assigns a mentor to an apprentice rikishi. */
-  assignMentor: (mentorId: string, apprenticeId: string) => void;
-  /** Removes a mentor from an apprentice rikishi. */
-  removeMentor: (apprenticeId: string) => void;
-  /** Adds a sparring pair within a heya. */
-  addSparringPair: (heyaId: string, aId: string, bId: string) => void;
-  /** Removes a sparring pair within a heya. */
-  removeSparringPair: (heyaId: string, aId: string, bId: string) => void;
-  /** Bookmarks an entity with an optional note. */
-  bookmarkEntity: (entityType: string, entityId: string, note?: string) => void;
-  /** Removes a bookmark from an entity. */
-  unbookmarkEntity: (entityType: string, entityId: string) => void;
-  /** Updates the note on an existing bookmark. */
-  updateBookmarkNote: (entityType: string, entityId: string, note: string) => void;
-  /** Checks if an entity is bookmarked. */
-  isBookmarked: (entityType: string, entityId: string) => boolean;
-  /** Runs an auto-simulation with the given configuration. */
-  runAutoSim: (config: AutoSimConfig) => Promise<AutoSimResult | null>;
-  /** Recruits a sponsor for the player's heya. */
-  recruitSponsor: (sponsorId: string) => void;
-}
-
-const GameContext = createContext<GameContextValue | null>(null);
 
 // === PROVIDER ===
 
@@ -165,12 +60,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const setOnWorldUpdated = useGameStore((s) => s.setOnWorldUpdated);
 
   // Build digest outside the reducer (selector pattern) — pure, memoized.
-  // P2.5: Use digestRevision from the worker (via store) instead of state.world
-  // reference. The worker already builds the digest via buildWeeklyDigest —
-  // we only rebuild locally if the store doesn't have one yet (e.g. main-thread
+  // The worker already builds the digest via buildWeeklyDigest — we only
+  // rebuild locally if the store doesn't have one yet (e.g. main-thread
   // actions like SIMULATE_BOUT that don't go through the worker).
   const storeDigest = useGameStore((s) => s.digest);
-  const digestRevision = useGameStore((s) => s.digestRevision);
   const digest = useMemo(() => {
     if (storeDigest) return storeDigest;
     if (!state.world) return null;
@@ -180,7 +73,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       logError("Error building weekly digest", "GameContext", err);
       return null;
     }
-  }, [storeDigest, digestRevision, state.world]);
+  }, [storeDigest, state.world]);
 
   // Initialize worker once on mount and wire world-update sync
   useMemo(() => {
@@ -197,8 +90,25 @@ export function GameProvider({ children }: { children: ReactNode }) {
       oyakataConfig?: import("@/engine/types/oyakata").OyakataCreationConfig
     ) => {
       dispatch(actions.createWorld(seed, playerHeyaId, oyakataConfig));
+      // Also send the world to the worker so TICK_DAY commands work.
+      // We generate the world here (same as the reducer) and send it via LOAD_WORLD
+      // to ensure the worker has the exact same world state as the main thread.
+      const world = generateInitialWorld(seed);
+      let nextWorld: WorldState = { ...world, playerHeyaId: playerHeyaId || undefined };
+      if (playerHeyaId) {
+        const heya = world.heyas.get(playerHeyaId);
+        if (heya) {
+          const updatedHeya = { ...heya, isPlayerOwned: true };
+          nextWorld.heyas = new Map(world.heyas);
+          nextWorld.heyas.set(playerHeyaId, updatedHeya);
+        }
+        if (oyakataConfig) {
+          nextWorld = applyOyakataCreationConfig(nextWorld, playerHeyaId, oyakataConfig);
+        }
+      }
+      sendCommand({ type: "LOAD_WORLD", world: nextWorld });
     },
-    []
+    [sendCommand]
   );
 
   const setPhase = useCallback((phase: GamePhase) => {
@@ -259,7 +169,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       const nextWorld = applyImpact(state, impact).world;
       if (nextWorld) updateWorld(nextWorld);
     },
-    [state.world, updateWorld]
+    [state, updateWorld]
   );
 
   const advanceTutorialStepAction = useCallback(
@@ -321,10 +231,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
     const world = loadGame(slotName);
     if (world) {
       dispatch(actions.loadWorld(world));
+      sendCommand({ type: "LOAD_WORLD", world });
       return true;
     }
     return false;
-  }, []);
+  }, [sendCommand]);
 
   const quickSaveAction = useCallback(() => {
     if (!state.world) return false;
@@ -336,10 +247,11 @@ export function GameProvider({ children }: { children: ReactNode }) {
     const world = loadAutosave();
     if (world) {
       dispatch(actions.loadWorld(world));
+      sendCommand({ type: "LOAD_WORLD", world });
       return true;
     }
     return false;
-  }, []);
+  }, [sendCommand]);
 
   const hasAutosaveCheck = useCallback(() => hasAutosave(), []);
   const getSaveSlots = useCallback(() => getSaveSlotInfos(), []);
@@ -482,10 +394,4 @@ export function GameProvider({ children }: { children: ReactNode }) {
 }
 
 // === HOOK ===
-
-/** Use game. */
-export function useGame() {
-  const context = useContext(GameContext);
-  if (!context) throw new Error("useGame must be used within a GameProvider");
-  return context;
-}
+// useGame has been moved to ./useGame.ts to satisfy react-refresh/only-export-components.

@@ -2,7 +2,7 @@
 // Shows kōenkai members, sponsor tiers, and churn history (narrative language)
 
 import { useMemo } from "react";
-import { useGame } from "@/contexts/GameContext";
+import { useGame } from "@/contexts/useGame";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";

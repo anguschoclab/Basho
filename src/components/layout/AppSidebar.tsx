@@ -13,7 +13,7 @@ import {
 import { Building2, AlertTriangle, Lock } from "lucide-react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { useRef, useEffect } from "react";
-import { useGame } from "@/contexts/GameContext";
+import { useGame } from "@/contexts/useGame";
 import { getMenuGroups } from "./sidebarConfig";
 import { getPlayerHeya } from "@/engine/queries";
 

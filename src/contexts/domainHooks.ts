@@ -8,7 +8,7 @@
  * @see GameContext for the underlying provider
  */
 
-import { useGame } from "./GameContext";
+import { useGame } from "./useGame";
 
 export function useBashoActions() {
   const game = useGame();

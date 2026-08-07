@@ -3,7 +3,7 @@ import React from "react";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import { RosterWidget } from "@/components/dashboard/RosterWidget";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import * as GameContext from "@/contexts/GameContext";
+import * as GameContext from "@/contexts/useGame";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 

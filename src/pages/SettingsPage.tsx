@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Settings, Keyboard, Palette, Save, Info, Dumbbell } from "lucide-react";
 import { SHORTCUT_REFERENCE } from "@/hooks/useKeyboardShortcuts";
-import { useGame } from "../contexts/GameContext";
+import { useGame } from "../contexts/useGame";
 import { useState } from "react";
 import { getAutosaveEnabled, setAutosaveEnabled } from "./settingsHelpers";
 

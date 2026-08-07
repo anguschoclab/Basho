@@ -4,7 +4,7 @@ import { PageHeader } from "@/components/layout/control-center";
 import { Card, CardContent } from "@/components/ui/card";
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { useMemo, useState } from "react";
-import { useGame } from "@/contexts/GameContext";
+import { useGame } from "@/contexts/useGame";
 import { Users, Flame, Swords, Landmark } from "lucide-react";
 import type { RivalryPairState } from "@/engine/rivalries";
 import { createDefaultRivalriesState, type RivalriesState } from "@/engine/rivalries";

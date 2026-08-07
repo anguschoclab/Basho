@@ -34,7 +34,7 @@ vi.mock("@/presenters/projections/institutionUI", () => ({
   projectHeyaData: vi.fn(() => null),
 }));
 
-import { useGame } from "@/contexts/GameContext";
+import { useGame } from "@/contexts/useGame";
 
 function mockState(state: any) {
   vi.mocked(useGame).mockReturnValue({ state } as any);

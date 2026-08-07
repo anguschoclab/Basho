@@ -3,7 +3,7 @@ import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { STABLE_TABS } from "@/constants/ui/navigation";
 import { useNavigate, useParams } from "@tanstack/react-router";
-import { useGame } from "@/contexts/GameContext";
+import { useGame } from "@/contexts/useGame";
 import { useRequireWorld } from "@/components/RequireWorld";
 import { projectRikishi } from "@/presenters/rikishi";
 import { InfrastructureService } from "@/engine/systems/economy/InfrastructureService";

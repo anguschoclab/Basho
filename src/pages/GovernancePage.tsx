@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
 import { PageHeader, StatCard, ListCard, SectionHeader } from "@/components/layout/control-center";
-import { useGame } from "@/contexts/GameContext";
+import { useGame } from "@/contexts/useGame";
 import { useGameStore } from "@/store/gameStore";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";

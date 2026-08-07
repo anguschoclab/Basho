@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { StableName } from "@/components/ClickableName";
-import { useGame } from "@/contexts/GameContext";
+import { useGame } from "@/contexts/useGame";
 import { useGameStore } from "@/store/gameStore";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";

@@ -8,7 +8,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
-import { useGame } from "@/contexts/GameContext";
+import { useGame } from "@/contexts/useGame";
 import { Helmet } from "react-helmet";
 import { makeDeterministicSeed } from "@/utils/engineUtils";
 import { generateToshiyoriName } from "@/engine/shikona/toshiyoriNames";

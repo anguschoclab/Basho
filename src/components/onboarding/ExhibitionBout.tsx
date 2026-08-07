@@ -5,7 +5,7 @@
  */
 
 import { useState, useMemo, useCallback } from "react";
-import { useGame } from "@/contexts/GameContext";
+import { useGame } from "@/contexts/useGame";
 import { resolveBout } from "@/engine/bout/boutResolver";
 import type { BoutContext } from "@/engine/bout/boutPhysics";
 import type { BashoState } from "@/engine/types/basho";

@@ -3,7 +3,7 @@ import { BaseWidget } from "./BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useGame } from "@/contexts/GameContext";
+import { useGame } from "@/contexts/useGame";
 import { Coins, TrendingUp, Calendar } from "lucide-react";
 import { formatYen } from "@/utils/engineUtils";
 import { RikishiName } from "@/components/ClickableName";

@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 import HistoryPage from "@/pages/HistoryPage";
-import * as GameContext from "@/contexts/GameContext";
+import * as GameContext from "@/contexts/useGame";
 
 // Mock dependencies
 vi.mock("@tanstack/react-router", () => ({

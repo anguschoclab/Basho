@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { UIRikishi } from "@/presenters/uiModels";
-import { useGame } from "@/contexts/GameContext";
+import { useGame } from "@/contexts/useGame";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

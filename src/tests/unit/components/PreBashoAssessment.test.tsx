@@ -19,7 +19,7 @@ vi.mock("@/components/ClickableName", () => ({
   RikishiName: ({ name }: { name: string }) => <span>{name}</span>,
 }));
 
-import { useGame } from "@/contexts/GameContext";
+import { useGame } from "@/contexts/useGame";
 
 function mockState(world: any) {
   vi.mocked(useGame).mockReturnValue({ state: { world } } as any);

@@ -1,6 +1,6 @@
 import { AppLayout } from "@/components/layout/AppLayout";
 import { DigestWidget } from "@/components/dashboard/DigestWidget";
-import { useGame } from "@/contexts/GameContext";
+import { useGame } from "@/contexts/useGame";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Newspaper } from "lucide-react";
 
