@@ -281,19 +281,38 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
 
     // Enrich performance with bout metrics (7.1) + SOS (4.3)
     const boutMetrics = lastBasho.boutMetrics?.[id];
-    const avgBoutDuration = boutMetrics && boutMetrics.boutDurations.length > 0
-      ? boutMetrics.boutDurations.reduce((a: number, b: number) => a + b, 0) / boutMetrics.boutDurations.length
-      : undefined;
-    const opponentAvgTier = boutMetrics && boutMetrics.opponentTiers.length > 0
-      ? boutMetrics.opponentTiers.reduce((a: number, b: number) => a + b, 0) / boutMetrics.opponentTiers.length
-      : undefined;
+
+    let avgBoutDuration: number | undefined;
+    if (boutMetrics && boutMetrics.boutDurations.length > 0) {
+      let sum = 0;
+      for (const d of boutMetrics.boutDurations) {
+        sum += d;
+      }
+      avgBoutDuration = sum / boutMetrics.boutDurations.length;
+    }
+
+    let opponentAvgTier: number | undefined;
+    if (boutMetrics && boutMetrics.opponentTiers.length > 0) {
+      let sum = 0;
+      for (const t of boutMetrics.opponentTiers) {
+        sum += t;
+      }
+      opponentAvgTier = sum / boutMetrics.opponentTiers.length;
+    }
 
     // Ozeki promotion detection (4.2): sanyaku with 33+ wins across last 3 basho, 10+ in current
     const isSanyakuForOzeki = rikishi?.rank === "sekiwake" || rikishi?.rank === "komusubi";
-    const recentSanyakuWins = (rikishi?.careerHistory ?? [])
-      .filter(h => h.rank === "sekiwake" || h.rank === "komusubi")
-      .slice(-2)
-      .reduce((sum, h) => sum + h.wins, 0);
+    let recentSanyakuWins = 0;
+    const chistory = rikishi?.careerHistory ?? [];
+    let count = 0;
+    for (let i = chistory.length - 1; i >= 0; i--) {
+      const h = chistory[i];
+      if (h.rank === "sekiwake" || h.rank === "komusubi") {
+        recentSanyakuWins += h.wins;
+        count++;
+        if (count === 2) break;
+      }
+    }
     const sekiwakeThreeBashoWins = recentSanyakuWins + stats.wins;
     const promoteToOzeki = isSanyakuForOzeki
       && sekiwakeThreeBashoWins >= 33
