@@ -5,6 +5,7 @@ import { Link } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { RECORDS_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/useGame";
+import { selectAlmanacSnapshots, selectKimariteStats } from "@/presenters/selectors";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -74,6 +75,17 @@ export default function AlmanacPage() {
 
   const [activeTab, setActiveTab] = useState("past-bashos");
 
+  const almanacSnapshots = useMemo(
+    () => (world ? (world.almanacSnapshots ?? selectAlmanacSnapshots(world)) : []),
+    [world]
+  );
+  const kimariteStats = useMemo(
+    () => (world ? (world.globalKimariteStats ? selectKimariteStats(world) : []) : []),
+    [world]
+  );
+  const snapshotCount = almanacSnapshots.length;
+  const topKimarite = kimariteStats.slice(0, 5);
+
   // Compute giant slayers data before any early returns
   const giantSlayers = useMemo(() => {
     if (!world) return [];
@@ -135,6 +147,14 @@ export default function AlmanacPage() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-muted-foreground">The authoritative history of the Sumo world.</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {snapshotCount} almanac snapshots archived · {kimariteStats.length} kimarite recorded
+            </p>
+            {topKimarite.length > 0 && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Top technique: {topKimarite[0].kimarite} ({topKimarite[0].count})
+              </p>
+            )}
           </div>
           <Badge variant="outline" className="text-lg px-4 py-2 bg-secondary/50">
             Year {world.year}

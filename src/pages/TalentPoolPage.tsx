@@ -4,6 +4,7 @@ import { useGame } from "@/contexts/useGame";
 import { useGameStore } from "@/store/gameStore";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
+import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -80,7 +81,7 @@ export default function TalentPoolPage() {
 
   if (!world) {
     return (
-      <AppLayout pageTitle="Talent Pools">
+      <AppLayout pageTitle="Talent Pools" subNavTabs={ASSOCIATION_TABS} activeSubTab="talent">
         <Card className="paper">
           <CardHeader>
             <CardTitle>Talent Pools</CardTitle>
@@ -120,10 +121,10 @@ export default function TalentPoolPage() {
   };
 
   return (
-    <AppLayout pageTitle="Talent Pools">
+    <AppLayout pageTitle="Talent Pools" subNavTabs={ASSOCIATION_TABS} activeSubTab="talent">
       <div className="space-y-6">
         <PageHeader
-          eyebrow="── OFFICE ──"
+          eyebrow="── ASSOCIATION ──"
           title="Talent Pools"
           lede="Persistent recruit pipelines: prospects exist before they enter sumo. Scout to reveal, then make offers."
         />

@@ -1,10 +1,11 @@
 import { useState, useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { PageHeader } from "@/components/layout/control-center";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, BookOpen } from "lucide-react";
+import { Search } from "lucide-react";
 import { GlossaryService, type GlossaryTerm } from "@/engine/glossary/GlossaryService";
 import { cn } from "@/lib/utils";
 
@@ -44,22 +45,17 @@ export default function GlossaryPage() {
   ];
 
   return (
-    <AppLayout>
+    <AppLayout pageTitle="Glossary">
       <Helmet>
         <title>Glossary — Sumo Manager Pro</title>
       </Helmet>
 
       <div className="space-y-6">
-        {/* Header */}
-        <div className="flex items-center gap-3">
-          <BookOpen className="h-7 w-7 text-primary" />
-          <div>
-            <h1 className="font-display font-black text-3xl tracking-tight">Glossary</h1>
-            <p className="text-sm text-muted-foreground">
-              Sumo terminology reference — ranks, techniques, structures, and culture.
-            </p>
-          </div>
-        </div>
+        <PageHeader
+          eyebrow="── REFERENCE ──"
+          title="Glossary"
+          lede="Sumo terminology reference — ranks, techniques, structures, and culture."
+        />
 
         {/* Search */}
         <div className="relative max-w-md">

@@ -29,6 +29,7 @@ import {
 import { HoFTimeline } from "@/components/game/HoFTimeline";
 import type { HoFCategory } from "@/engine/hallOfFame";
 import { HOF_CATEGORY_LABELS, projectHOFUIDigest } from "@/presenters/uiDigest";
+import { selectAwardLog } from "@/presenters/selectors";
 import type { UIHofInductee } from "@/presenters/projections/hofProjection";
 import type { UIRikishi } from "@/presenters/uiModels";
 
@@ -346,6 +347,7 @@ export default function HallOfFamePage() {
   const world = state.world;
 
   const hof = useMemo(() => (world ? projectHOFUIDigest(world) : null), [world]);
+  const awardLog = useMemo(() => (world ? selectAwardLog(world) : []), [world]);
 
   const byCategory = useMemo(() => {
     const map: Record<HoFCategory, UIHofInductee[]> = {
@@ -361,6 +363,7 @@ export default function HallOfFamePage() {
   }, [hof]);
 
   const totalInductees = hof?.inductees.length ?? 0;
+  const totalAwards = world ? (world.awardLog?.length ?? awardLog.length) : 0;
 
   if (!world) {
     return (
@@ -413,6 +416,12 @@ export default function HallOfFamePage() {
                   {byCategory.technician.length}
                 </div>
                 <div className="text-[10px] text-muted-foreground">Technicians</div>
+              </div>
+              <div className="text-center">
+                <div className="text-xl font-display font-bold text-primary">
+                  {totalAwards}
+                </div>
+                <div className="text-[10px] text-muted-foreground">Awards</div>
               </div>
             </div>
           )}

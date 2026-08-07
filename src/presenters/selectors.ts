@@ -219,3 +219,51 @@ export function selectMakuuchiStandings(world: WorldState): StandingEntry[] {
   }
   return sortStandings(results);
 }
+
+// ─── Write-only state field selectors ─────────────────────────────────────────
+// These surface previously write-only fields to the UI layer.
+
+export const selectAwardLog = createSelector((world: WorldState) => {
+  return world.awardLog ?? [];
+});
+
+export const selectKimariteStats = createSelector((world: WorldState) => {
+  const stats = world.globalKimariteStats ?? {};
+  return Object.entries(stats)
+    .sort((a, b) => b[1] - a[1])
+    .map(([kimarite, count]) => ({ kimarite, count }));
+});
+
+export const selectPlayerKnowledge = createSelector((world: WorldState) => {
+  return world.playerKnowledge ?? { scouting: {}, bookmarks: [] };
+});
+
+export const selectAlmanacSnapshots = createSelector((world: WorldState) => {
+  return world.almanacSnapshots ?? [];
+});
+
+export const selectClosedHeyas = createSelector((world: WorldState) => {
+  if (!world.closedHeyas) return [];
+  const result: Array<{ id: string; name?: string; closedYear?: number }> = [];
+  for (const [id, record] of world.closedHeyas) {
+    result.push({ id, name: (record as { name?: string }).name, closedYear: (record as { closedYear?: number }).closedYear });
+  }
+  return result;
+});
+
+export const selectBloodlineRegistry = createSelector((world: WorldState) => {
+  const registry = world.bloodlineRegistry;
+  if (!registry) return [];
+  return Object.entries(registry.traits).map(([traitId, trait]) => ({
+    traitId,
+    ...(trait as unknown as Record<string, unknown>),
+  }));
+});
+
+export const selectEncouragementLog = createSelector((world: WorldState) => {
+  return world.encouragementLog ?? [];
+});
+
+export const selectYokozunaVacancyStreak = createSelector((world: WorldState) => {
+  return world.yokozunaVacancyStreak ?? 0;
+});

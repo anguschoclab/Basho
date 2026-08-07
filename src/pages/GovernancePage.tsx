@@ -21,6 +21,7 @@ import {
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { getPlayerHeya } from "@/engine/queries";
 import { projectGovernanceDerived } from "@/presenters/projections/governanceProjections";
+import { selectClosedHeyas, selectYokozunaVacancyStreak } from "@/presenters/selectors";
 
 export default function GovernancePage() {
   const { state, issueRuling, updateWorld } = useGame();
@@ -31,6 +32,15 @@ export default function GovernancePage() {
     if (!world || !world.playerHeyaId) return null;
     return getPlayerHeya(world) ?? null;
   }, [world]);
+
+  const closedHeyas = useMemo(
+    () => (world ? (world.closedHeyas ? selectClosedHeyas(world) : []) : []),
+    [world]
+  );
+  const yokozunaVacancyStreak = useMemo(
+    () => (world ? (world.yokozunaVacancyStreak ?? selectYokozunaVacancyStreak(world)) : 0),
+    [world]
+  );
 
   const derived = useMemo(() => {
     if (!world || !heya) return null;
@@ -192,6 +202,17 @@ export default function GovernancePage() {
             </Badge>
           }
         />
+
+        {(closedHeyas.length > 0 || yokozunaVacancyStreak > 0) && (
+          <div className="flex gap-4 text-xs text-muted-foreground">
+            {closedHeyas.length > 0 && (
+              <span>{closedHeyas.length} stable(s) closed</span>
+            )}
+            {yokozunaVacancyStreak > 0 && (
+              <span>Yokozuna vacancy: {yokozunaVacancyStreak} basho</span>
+            )}
+          </div>
+        )}
 
         <Tabs
           defaultValue={derived.pendingRulings.length > 0 ? "rulings" : "overview"}

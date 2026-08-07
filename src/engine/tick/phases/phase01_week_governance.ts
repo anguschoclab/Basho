@@ -30,6 +30,8 @@ import {
   SCANDAL_SCORE_MEDIUM_THRESHOLD,
   SCANDAL_SCORE_LOW_THRESHOLD,
 } from "../../../constants/engine/governanceExtended";
+import { purchaseMyoseki, findAvailableStock } from "../../systems/governance/MyosekiTradingService";
+import { rngForWorld } from "../../rng";
 
 export function phase01_week_governance(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_governance");
@@ -159,5 +161,25 @@ export function phase01_week_governance(world: WorldState): StateImpact {
   }
 
   // Apply ongoing scandal pressure to media state (scandalScore → heyaPressure bump)
-  return mergeImpacts([builder.build(), evaluateScandals(world)]);
+  const scandalImpact = evaluateScandals(world);
+
+  // 5. NPC Myoseki Market Activity — NPC stables occasionally purchase available elder names.
+  const market = world.myosekiMarket;
+  const myosekiImpacts: StateImpact[] = [];
+  if (market && market.stocks) {
+    const rng = rngForWorld(world, "myoseki", "governance-trade");
+    for (const [heyaId, heya] of world.heyas) {
+      if (heyaId === world.playerHeyaId) continue;
+      // ~2% chance per NPC heya per week to attempt a purchase
+      if (rng.next() > 0.02) continue;
+      const available = findAvailableStock(market);
+      if (!available) continue;
+      const price = available.askingPrice ?? 0;
+      if (heya.funds >= price && price > 0) {
+        myosekiImpacts.push(purchaseMyoseki(world, market, available.id, heyaId, heya.funds));
+      }
+    }
+  }
+
+  return mergeImpacts([builder.build(), scandalImpact, ...myosekiImpacts]);
 }

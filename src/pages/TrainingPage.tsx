@@ -38,12 +38,18 @@ import type { Rikishi } from "@/engine/types/rikishi";
 
 import { useGameStore } from "@/store/gameStore";
 import { getPlayerHeya } from "@/engine/queries";
+import { selectEncouragementLog } from "@/presenters/selectors";
 
 export default function TrainingPage() {
   const { state, addSparringPair, removeSparringPair } = useGame();
   const sendCommand = useGameStore((s) => s.sendCommand);
   const { world, playerHeyaId } = state;
   const heya = world ? getPlayerHeya(world) ?? null : null;
+  const encouragementLog = useMemo(
+    () => (world ? (world.encouragementLog ?? selectEncouragementLog(world)) : []),
+    [world]
+  );
+  const encouragementCount = encouragementLog.length;
 
   const [trainingState, setTrainingState] = useState<HeyaTrainingState>(() => {
     if (!world || !playerHeyaId) return createDefaultTrainingState(playerHeyaId || "");
@@ -177,6 +183,12 @@ export default function TrainingPage() {
 
       <div className="max-w-6xl mx-auto space-y-10 pb-20 animate-in fade-in duration-700">
         <TrainingHeader heya={heya} rikishiList={rikishiList} currentIntensity={currentIntensity} />
+
+        {encouragementCount > 0 && (
+          <p className="text-xs text-muted-foreground">
+            {encouragementCount} encouragement interactions recorded this basho
+          </p>
+        )}
 
         <BeyaWideRegime
           trainingState={trainingState}
