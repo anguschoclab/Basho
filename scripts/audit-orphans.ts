@@ -490,11 +490,25 @@ function main() {
     entries: allEntries,
   };
 
+  // Parse CLI args for --json <path>
+  const args = process.argv.slice(2);
+  let customJsonPath: string | null = null;
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === "--json" && args[i + 1]) {
+      customJsonPath = args[i + 1];
+      i++;
+    }
+  }
+
   // Write JSON report
   const auditDir = join(ROOT, ".windsurf", "audit");
   if (!existsSync(auditDir)) mkdirSync(auditDir, { recursive: true });
 
-  const jsonPath = join(auditDir, "baseline-orphans.json");
+  const jsonPath = customJsonPath ?? join(auditDir, "baseline-orphans.json");
+  if (customJsonPath) {
+    const customDir = join(jsonPath, "..");
+    if (!existsSync(customDir)) mkdirSync(customDir, { recursive: true });
+  }
   writeFileSync(jsonPath, JSON.stringify(report, null, 2));
   console.log(`\n📄 JSON report: ${relPath(jsonPath)}`);
 
