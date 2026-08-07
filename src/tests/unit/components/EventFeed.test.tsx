@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, cleanup } from "@testing-library/react";
+import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import { EventFeed } from "@/components/dashboard/EventFeed";
 import { useGameStore } from "@/store/gameStore";
 import type { EngineEvent } from "@/engine/types/events";
@@ -9,7 +9,8 @@ function makeEvent(
   type: EngineEvent["type"],
   importance: EngineEvent["importance"],
   year: number,
-  week: number
+  week: number,
+  overrides?: { title?: string; summary?: string }
 ): EngineEvent {
   return {
     id,
@@ -20,13 +21,31 @@ function makeEvent(
     category: "misc",
     importance,
     scope: "world",
-    title: `Event ${id}`,
-    summary: `Summary ${id}`,
+    title: overrides?.title ?? `Event ${id}`,
+    summary: overrides?.summary ?? `Summary ${id}`,
   } as EngineEvent;
 }
 
 vi.mock("@/store/gameStore", () => ({
   useGameStore: vi.fn(),
+}));
+
+vi.mock("@tanstack/react-router", () => ({
+  Link: ({ to, children, onClick }: any) => (
+    <a href={to} data-testid="router-link" onClick={onClick}>{children}</a>
+  ),
+}));
+
+vi.mock("@/components/EventDetailDialog", () => ({
+  EventDetailDialog: ({ event, isOpen, onClose }: any) => {
+    if (!isOpen || !event) return null;
+    return (
+      <div data-testid="event-detail-dialog">
+        <span>{event.title}</span>
+        <button onClick={onClose} data-testid="dialog-close">Close</button>
+      </div>
+    );
+  },
 }));
 
 describe("EventFeed filtering", () => {
@@ -96,5 +115,85 @@ describe("EventFeed filtering", () => {
     mockStore({ events: { log: [] } });
     render(<EventFeed maxEvents={10} />);
     expect(screen.queryByText("No recent events")).toBeTruthy();
+  });
+});
+
+describe("EventFeed clickable entities and dialog", () => {
+  function mockStore(workerWorld: any) {
+    const state = { workerWorld };
+    vi.mocked(useGameStore).mockImplementation((selector: any) =>
+      selector ? selector(state) : state
+    );
+  }
+
+  afterEach(() => {
+    cleanup();
+    vi.clearAllMocks();
+  });
+
+  it("renders entity links in event title", () => {
+    const events = [
+      makeEvent("e1", "BASHO_STATUS", "notable", 2026, 10, {
+        title: "[[rikishi:r-1:Asanoyama]] wins by yorikiri",
+      }),
+    ];
+    mockStore({ events: { log: events } });
+    render(<EventFeed maxEvents={10} />);
+    const link = screen.getByTestId("router-link");
+    expect(link.getAttribute("href")).toBe("/rikishi/r-1");
+    expect(screen.getByText("Asanoyama")).toBeTruthy();
+  });
+
+  it("renders entity links in event summary", () => {
+    const events = [
+      makeEvent("e1", "BASHO_STATUS", "notable", 2026, 10, {
+        summary: "Defeated [[rikishi:r-2:Takakeisho]] in a decisive bout",
+      }),
+    ];
+    mockStore({ events: { log: events } });
+    render(<EventFeed maxEvents={10} />);
+    const links = screen.getAllByTestId("router-link");
+    const takakeishoLink = links.find(
+      (l) => l.getAttribute("href") === "/rikishi/r-2"
+    );
+    expect(takakeishoLink).toBeTruthy();
+    expect(screen.getByText("Takakeisho")).toBeTruthy();
+  });
+
+  it("clicking an event opens EventDetailDialog", () => {
+    const events = [
+      makeEvent("e1", "BASHO_STATUS", "notable", 2026, 10),
+    ];
+    mockStore({ events: { log: events } });
+    render(<EventFeed maxEvents={10} />);
+    const items = screen.getAllByRole("button");
+    fireEvent.click(items[0]);
+    expect(screen.getByTestId("event-detail-dialog")).toBeTruthy();
+    const dialog = screen.getByTestId("event-detail-dialog");
+    expect(dialog.textContent).toContain("Event e1");
+  });
+
+  it("EventDetailDialog close button works", () => {
+    const events = [
+      makeEvent("e1", "BASHO_STATUS", "notable", 2026, 10),
+    ];
+    mockStore({ events: { log: events } });
+    render(<EventFeed maxEvents={10} />);
+    const items = screen.getAllByRole("button");
+    fireEvent.click(items[0]);
+    expect(screen.getByTestId("event-detail-dialog")).toBeTruthy();
+    fireEvent.click(screen.getByTestId("dialog-close"));
+    expect(screen.queryByTestId("event-detail-dialog")).toBeNull();
+  });
+
+  it("keyboard activation opens dialog", () => {
+    const events = [
+      makeEvent("e1", "BASHO_STATUS", "notable", 2026, 10),
+    ];
+    mockStore({ events: { log: events } });
+    render(<EventFeed maxEvents={10} />);
+    const items = screen.getAllByRole("button");
+    fireEvent.keyDown(items[0], { key: "Enter" });
+    expect(screen.getByTestId("event-detail-dialog")).toBeTruthy();
   });
 });

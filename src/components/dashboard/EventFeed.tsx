@@ -4,7 +4,7 @@
  * Real-time event feed for dashboard showing Global Cup and other game events.
  */
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import {
   Trophy,
   Bell,
@@ -21,6 +21,7 @@ import { BaseWidget } from "./BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 import type { EngineEvent, EventImportance } from "@/engine/types/events";
 import { MentionText } from "@/components/MentionText";
+import { EventDetailDialog } from "@/components/EventDetailDialog";
 
 interface EventFeedProps {
   maxEvents?: number;
@@ -53,28 +54,39 @@ function formatEventTime(event: EngineEvent): string {
 }
 
 const EventFeedItem = React.memo(
-  ({ event }: { event: EngineEvent }) => {
+  ({ event, onSelect }: { event: EngineEvent; onSelect: (e: EngineEvent) => void }) => {
     const Icon = typeIcons[event.type] || typeIcons.default;
     const importanceClass = importanceStyles[event.importance] || importanceStyles.notable;
 
     return (
       <div
-        className={`flex gap-3 p-2 rounded hover:bg-slate-800/50 transition-colors ${importanceClass}`}
+        className={`flex gap-3 p-2 rounded hover:bg-slate-800/50 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${importanceClass}`}
+        role="button"
+        tabIndex={0}
+        onClick={() => onSelect(event)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onSelect(event);
+          }
+        }}
       >
         <div className="mt-0.5 flex-shrink-0">{Icon}</div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-slate-200 truncate">{event.title}</p>
+          <MentionText text={event.title} className="text-sm font-medium text-slate-200 truncate block" />
           <MentionText text={event.summary} className="text-xs text-slate-400 line-clamp-2" />
           <p className="text-xs text-slate-500 mt-1">{formatEventTime(event)}</p>
         </div>
       </div>
     );
   },
-  (prev, next) => prev.event.id === next.event.id
+  (prev, next) => prev.event.id === next.event.id && prev.onSelect === next.onSelect
 );
 
 export function EventFeed({ maxEvents = 10, filterTypes, minImportance }: EventFeedProps) {
   const workerWorld = useGameStore((s) => s.workerWorld);
+  const [selectedEvent, setSelectedEvent] = useState<EngineEvent | null>(null);
+  const handleSelect = useCallback((e: EngineEvent) => setSelectedEvent(e), []);
 
   const events = useMemo(() => {
     const allEvents = workerWorld?.events?.log || [];
@@ -110,9 +122,14 @@ export function EventFeed({ maxEvents = 10, filterTypes, minImportance }: EventF
         {events.length === 0 ? (
           <EmptyState icon={Bell} title="No recent events" compact />
         ) : (
-          events.map((event: EngineEvent) => <EventFeedItem key={event.id} event={event} />)
+          events.map((event: EngineEvent) => <EventFeedItem key={event.id} event={event} onSelect={handleSelect} />)
         )}
       </div>
+      <EventDetailDialog
+        event={selectedEvent}
+        isOpen={!!selectedEvent}
+        onClose={() => setSelectedEvent(null)}
+      />
     </BaseWidget>
   );
 }

@@ -7,6 +7,7 @@
 import { useGame } from "../../contexts/useGame";
 import { Badge } from "../ui/badge";
 import { cn } from "@/lib/utils";
+import { MentionText } from "@/components/MentionText";
 
 export function InboxNewsTicker() {
   const { digest } = useGame();
@@ -40,8 +41,13 @@ export function InboxNewsTicker() {
             >
               {item.sectionTitle}
             </Badge>
-            <span className="font-semibold">{item.title}</span>
-            <span className="text-muted-foreground">— {item.detail}</span>
+            <MentionText text={item.title} className="font-semibold" />
+            {item.detail && (
+              <>
+                <span className="text-muted-foreground">— </span>
+                <MentionText text={item.detail} className="text-muted-foreground" />
+              </>
+            )}
           </div>
         ))}
       </div>
