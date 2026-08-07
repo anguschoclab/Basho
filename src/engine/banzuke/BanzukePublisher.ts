@@ -2,6 +2,7 @@ import type { WorldState } from "../types/world";
 import type { BashoState } from "../types/basho";
 import { toRankPosition } from "../types/index";
 import type { BashoPerformance, BanzukeEntry } from "../banzuke";
+import type { MovementEvent } from "../types/banzuke";
 import { getNextBasho } from "../calendar";
 import { enterInterim } from "../tick/tickDaily";
 import { updateBanzuke, generateKeshoForPromotions } from "../banzuke";
@@ -327,6 +328,12 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
     world.heyas
   );
 
+  const newBanzukeByRikishiId = new Map(result.newBanzuke.map((e) => [e.rikishiId, e]));
+  const eventsByRikishiId = new Map<string, MovementEvent>();
+  for (const e of result.events) {
+    if (!eventsByRikishiId.has(e.rikishiId)) eventsByRikishiId.set(e.rikishiId, e);
+  }
+
   // Generate kesho-mawashi for promoted rikishi and apply impacts
   const keshoImpacts = generateKeshoForPromotions(world, result.events);
   builder.merge(keshoImpacts);
@@ -334,7 +341,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
   // Ozeki promotion narrative (4.2): log narrative events for new ozeki promotions
   for (const evt of result.events) {
     if (evt.kind !== "promotion") continue;
-    const newEntry = result.newBanzuke.find((e) => e.rikishiId === evt.rikishiId);
+    const newEntry = newBanzukeByRikishiId.get(evt.rikishiId);
     if (!newEntry || newEntry.position.rank !== "ozeki") continue;
     const promotedRikishi = getRikishi(world, evt.rikishiId);
     if (!promotedRikishi) continue;
@@ -358,7 +365,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
   // Yokozuna promotion: assign dohyo-iri ceremony style (Gap 5)
   for (const evt of result.events) {
     if (evt.kind !== "promotion") continue;
-    const newEntry = result.newBanzuke.find((e) => e.rikishiId === evt.rikishiId);
+    const newEntry = newBanzukeByRikishiId.get(evt.rikishiId);
     if (!newEntry || newEntry.position.rank !== "yokozuna") continue;
     const promotedRikishi = getRikishi(world, evt.rikishiId);
     if (!promotedRikishi) continue;
@@ -388,7 +395,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
   for (const narrative of movementNarratives) {
     const narrativeRikishi = getRikishi(world, narrative.rikishiId);
     // Phase 6: Enrich BASHO_STATUS event data with MovementEvent fields
-    const movementEvt = result.events.find((e) => e.rikishiId === narrative.rikishiId);
+    const movementEvt = eventsByRikishiId.get(narrative.rikishiId);
     builder.logEvent(
       "BASHO_STATUS",
       "promotion",
@@ -490,7 +497,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       const wasKyujoFromInjury = rikishi.isKyujo && rikishi.kyujoReason === "injury";
 
       // Check if this rikishi had a sanyaku promotion this basho (Gap 5)
-      const movementEvent = result.events.find((e) => e.rikishiId === newEntry.rikishiId);
+      const movementEvent = eventsByRikishiId.get(newEntry.rikishiId);
       const isSanyakuPromotion = movementEvent?.isSanyakuPromotion ?? false;
 
       if (newShikona) {
