@@ -13,6 +13,7 @@ import { generateH2HCommentary } from "../../engine/h2h";
 import { BardEngine } from "../../engine/bard/BardEngine";
 import { SeededRNG } from "../../engine/rng";
 import { selectInjuredRikishi, selectRecentEvents } from "../selectors";
+import { generateRecommendations } from "../../engine/advisor/AdvisorService";
 
 /** Type representing digest kind. */
 export type DigestKind =
@@ -25,6 +26,7 @@ export type DigestKind =
   | "economy"
   | "scouting"
   | "narrative"
+  | "advisor"
   | "generic";
 
 /** Defines the structure for digest item. */
@@ -245,6 +247,25 @@ export function buildTrainingReportSection(world: WorldState): DigestSection | n
 }
 
 /**
+ * Build advisor recommendations section for digest.
+ * Skipped during autonomous fast-forward to avoid overhead.
+ */
+export function buildAdvisorSection(world: WorldState): DigestSection | null {
+  if (world._autonomousSim) return null;
+  const recs = generateRecommendations(world);
+  if (!recs.length) return null;
+  const items: DigestItem[] = recs.map((r) => ({
+    id: r.id,
+    kind: "advisor",
+    title: r.title,
+    detail: r.detail,
+    rikishiId: r.relatedEntityId,
+    heyaId: world.playerHeyaId,
+  }));
+  return { id: "advisor", title: "Advisor Report", items };
+}
+
+/**
  * Build weekly digest.
  */
 export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
@@ -259,6 +280,10 @@ export function buildWeeklyDigest(world: WorldState | null): UIDigest | null {
 
   const eventSections = buildEventSections(world);
   sections.push(...eventSections);
+
+  // Advisor recommendations section
+  const advisorSection = buildAdvisorSection(world);
+  if (advisorSection) sections.push(advisorSection);
 
   // Training Report section (from TRAINING_STAT_DELTA events)
   const trainingReportSection = buildTrainingReportSection(world);
