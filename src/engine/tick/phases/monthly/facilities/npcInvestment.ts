@@ -76,7 +76,7 @@ export function processNpcAutoInvestment(
           });
           builder.logEvent(
             "FACILITY_UPGRADED",
-            "economy",
+            "facility",
             {
               heyaname: heya.name,
               axis: weakestAxis,

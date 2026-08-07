@@ -144,7 +144,7 @@ describe("boutNarrative.wiring — narrative system is wired to the bout engine"
       expect(impact.events).toBeDefined();
       const boutEvents = impact.events!.filter((e) => e.type === "BOUT_RESOLVED");
       expect(boutEvents.length).toBe(1);
-      expect(boutEvents[0].category).toBe("narrative");
+      expect(boutEvents[0].category).toBe("match");
       expect(boutEvents[0].rikishiId).toBe("east");
     });
 
@@ -166,7 +166,7 @@ describe("boutNarrative.wiring — narrative system is wired to the bout engine"
       const log = updatedWorld.events.log;
       const boutEvents = log.filter((e) => e.type === "BOUT_RESOLVED");
       expect(boutEvents.length).toBe(1);
-      expect(boutEvents[0].category).toBe("narrative"); // category set by applyBoutResult builder.logEvent
+      expect(boutEvents[0].category).toBe("match"); // category set by applyBoutResult builder.logEvent
     });
   });
 

@@ -318,7 +318,7 @@ export function applyBoutResult(
     careerPhase: winner.declinePhase ?? "peak",
   };
 
-  builder.logEvent("BOUT_RESOLVED", "narrative", ctx, {
+  builder.logEvent("BOUT_RESOLVED", "match", ctx, {
     rikishiId: winner.id,
     importance: intensity === "high_stakes" ? "major" : "notable",
   });

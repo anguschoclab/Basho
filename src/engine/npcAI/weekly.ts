@@ -322,6 +322,22 @@ export function makeNPCWeeklyDecision(
         { heyaId }
       );
     }
+    if (agentDecisions.rivalry.targetRivalForMatchmaking) {
+      builder.logEvent(
+        "RIVAL_POSTURE",
+        "ai_rival_posture",
+        { heyaId, target: agentDecisions.rivalry.targetRivalForMatchmaking, posture: "aggressive" },
+        { heyaId, importance: "minor" }
+      );
+    }
+    if (agentDecisions.rivalry.deescalateRivalry) {
+      builder.logEvent(
+        "RIVAL_POSTURE",
+        "ai_rival_posture",
+        { heyaId, posture: "conciliatory" },
+        { heyaId, importance: "minor" }
+      );
+    }
     if (agentDecisions.narrative.shouldTriggerEvent) {
       builder.logEvent(
         "NPC_MANAGER_DECISION",

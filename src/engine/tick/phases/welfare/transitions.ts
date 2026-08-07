@@ -76,7 +76,7 @@ export function handleCompliantTransition(
     setComplianceStatePure(state, "watch");
     builder.logEvent(
       "WELFARE_COMPLIANCE",
-      "discipline",
+      "welfare",
       {
         heyaname: heya.name,
         status: "watch",
@@ -117,7 +117,7 @@ export function handleWatchTransition(
     };
     builder.logEvent(
       "WELFARE_COMPLIANCE",
-      "discipline",
+      "welfare",
       {
         heyaname: heya.name,
         status: "investigation_opened",
@@ -139,7 +139,7 @@ export function handleWatchTransition(
     setComplianceStatePure(state, "compliant");
     builder.logEvent(
       "WELFARE_COMPLIANCE",
-      "discipline",
+      "welfare",
       {
         heyaname: heya.name,
         status: "cleared",
@@ -187,7 +187,7 @@ export function handleInvestigationTransition(
     state.investigation = undefined;
     builder.logEvent(
       "WELFARE_COMPLIANCE",
-      "discipline",
+      "welfare",
       {
         heyaname: heya.name,
         status: "investigation_closed",
@@ -252,7 +252,7 @@ export function handleSanctionedTransition(
     state.sanctions = undefined;
     builder.logEvent(
       "WELFARE_COMPLIANCE",
-      "discipline",
+      "welfare",
       {
         status: "sanctions_lifted",
         heyaname: heya.name,

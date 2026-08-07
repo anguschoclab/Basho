@@ -24,12 +24,12 @@ test("Golden Path: Boot -> Start Game -> View Stable -> Auto-Sim Tournament -> V
   await nameInput.fill("TestOyakata");
 
   // Select first background (Champion Inheritor) — target the card by label text
-  await page.getByText("Champion Inheritor").click();
+  await page.getByRole("main").getByText("Champion Inheritor").click();
   await page.getByRole("button", { name: /Next Submission/i }).click();
 
   // 2c. Select ichimon (faction) — target the card by name text
   await expect(page.getByRole("heading", { name: /Choose Your Ichimon/i })).toBeVisible({ timeout: 10000 });
-  await page.getByText("Dewanoumi").click();
+  await page.getByRole("main").getByText("Dewanoumi").click();
   await page.getByRole("button", { name: /Verify Allegiance/i }).click();
 
   // 2d. Exhibition bout preview — skip through all actions

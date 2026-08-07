@@ -76,7 +76,7 @@ function processRecovery(world: WorldState, r: Rikishi, builder: ImpactBuilder):
   if (recovered) {
     builder.logEvent(
       "LIFECYCLE_EVENT",
-      "welfare",
+      "injury",
       {
         rikishiId: r.id,
         heyaId: r.heyaId,
@@ -113,7 +113,7 @@ function processInjuryRoll(
 
     builder.logEvent(
       "LIFECYCLE_EVENT",
-      "welfare",
+      "injury",
       {
         rikishiId: r.id,
         heyaId: r.heyaId,

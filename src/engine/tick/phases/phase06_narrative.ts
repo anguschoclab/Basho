@@ -40,7 +40,7 @@ export function phase06_narrative(world: WorldState): StateImpact {
     if (!r) continue;
     builder.logEvent(
       "LIFECYCLE_EVENT",
-      "welfare",
+      "injury",
       {
         rikishiId: rId,
         heyaId: r.heyaId,

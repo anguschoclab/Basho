@@ -105,7 +105,7 @@ export function phase01_week_welfare(world: WorldState): StateImpact {
     if (Math.abs(riskUp) >= WELFARE_RISK_SHIFT_LOG_THRESHOLD) {
       builder.logEvent(
         "WELFARE_COMPLIANCE",
-        "discipline",
+        "welfare",
         {
           heyaname: heya.name,
           status: "risk_shift",

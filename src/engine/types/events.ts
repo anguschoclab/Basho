@@ -58,7 +58,10 @@ export type EngineEventType =
   | "NARRATIVE_CRISIS_TRIGGERED" // Narrative crisis was triggered
   | "MENTOR_MENTEE_BOUT" // Mentor faced apprentice in bout
   | "DECISION_AUTO_RESOLVED" // A loop decision was auto-resolved during autonomous sim
-  | "DECISION_RESOLVED"; // A loop decision was resolved (interactive or auto)
+  | "DECISION_RESOLVED" // A loop decision was resolved (interactive or auto)
+  | "RIVAL_POSTURE" // AI rival posture / intelligence assessment
+  | "SPONSOR_UPDATE" // Sponsor contract renewal or change
+  | "PHASE_TRANSITION"; // General phase transition event
 
 /**
  * Type representing event phase.

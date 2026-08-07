@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { readFileSync, existsSync, readdirSync } from "fs";
+import { readFileSync, existsSync, readdirSync, statSync } from "fs";
 import { join } from "path";
 
 const ROOT = join(__dirname, "../../../..");
@@ -194,5 +194,131 @@ describe("CI Gate: Audit test suite completeness", () => {
 
   it("includes ci-gates.test.ts", () => {
     expect(auditFiles).toContain("ci-gates.test.ts");
+  });
+});
+
+describe("CI Gate: Write-only state field classification", () => {
+  // WorldState fields that are written by the tick pipeline but intentionally
+  // NOT read by any UI component. These are internal engine-only fields.
+  //
+  // To add a field here, it must be:
+  // 1. Written by at least one tick phase or engine system
+  // 2. Not read by any presenter, selector, or page component
+  // 3. Documented with a reason for being internal-only
+  const INTERNAL_ONLY_FIELDS: Record<string, string> = {
+    candidatePool: "Reserved for future recruitment pipeline; not yet wired to UI",
+    ftue: "First-time user experience flag; read by BashoHistory for tutorial suppression",
+    heyaBrandIdentities: "Read by KeshoMawashiFactory for procedural kesho-mawashi generation",
+    _interimDaysRemaining: "Internal cycle counter; not user-facing",
+    _postBashoDays: "Internal cycle counter; not user-facing",
+    _daysSinceLastWeeklyTick: "Internal cycle counter; not user-facing",
+    _recruitmentWindow: "Internal recruitment window state; read by recruitment phase",
+    _postBashoMeta: "Internal post-basho metadata; read by pipeline runner",
+    _populationTarget: "Internal population targeting; read by talent pool maintenance",
+    _preBashoAssessment: "Internal pre-basho assessment; read by basho setup",
+  };
+
+  // Fields that MUST be read by UI (presenters, selectors, or pages)
+  const UI_READ_FIELDS = [
+    "staff",
+    "sparringPairs",
+    "talentPool",
+    "chronicle",
+    "calendar",
+    "myosekiMarket",
+    "records",
+    "settings",
+    "meta",
+    "rivalriesState",
+    "globalCup",
+    "hallOfFame",
+    "sponsorPool",
+    "mediaState",
+    "lineage",
+  ];
+
+  it("every UI-read field appears in at least one UI file", () => {
+    const uiDirs = ["presenters", "pages", "components", "contexts"];
+    let uiSource = "";
+    for (const dir of uiDirs) {
+      const dirPath = join(SRC, dir);
+      if (!existsSync(dirPath)) continue;
+      function walk(dir: string) {
+        for (const entry of readdirSync(dir)) {
+          const full = join(dir, entry);
+          if (!existsSync(full)) continue;
+          try {
+            const stat = statSync(full);
+            if (stat.isDirectory()) {
+              walk(full);
+            } else if (entry.endsWith(".ts") || entry.endsWith(".tsx")) {
+              uiSource += readFileSync(full, "utf-8") + "\n";
+            }
+          } catch {
+            // skip
+          }
+        }
+      }
+      walk(dirPath);
+    }
+
+    const missing: string[] = [];
+    for (const field of UI_READ_FIELDS) {
+      if (!uiSource.includes(`.${field}`) && !uiSource.includes(`?.${field}`)) {
+        missing.push(field);
+      }
+    }
+    expect(
+      missing,
+      `UI-read fields not found in any UI file: ${missing.join(", ")}`
+    ).toEqual([]);
+  });
+
+  it("internal-only fields are documented with a reason", () => {
+    for (const [field, reason] of Object.entries(INTERNAL_ONLY_FIELDS)) {
+      expect(reason.length, `Field ${field} must have a non-empty reason`).toBeGreaterThan(10);
+    }
+  });
+
+  it("no field is classified as both UI-read and internal-only", () => {
+    const uiSet = new Set(UI_READ_FIELDS);
+    for (const field of Object.keys(INTERNAL_ONLY_FIELDS)) {
+      expect(uiSet.has(field), `Field ${field} is classified as both UI-read and internal-only`).toBe(false);
+    }
+  });
+});
+
+describe("CI Gate: Audit regression gate", () => {
+  it("baseline-orphans.json has valid structure with entries array", () => {
+    const path = join(ROOT, ".windsurf", "audit", "baseline-orphans.json");
+    const raw = readFileSync(path, "utf-8");
+    const data = JSON.parse(raw);
+    expect(data).toHaveProperty("summary");
+    expect(data).toHaveProperty("entries");
+    expect(Array.isArray(data.entries)).toBe(true);
+  });
+
+  it("baseline-orphans.json summary counts match entry counts", () => {
+    const path = join(ROOT, ".windsurf", "audit", "baseline-orphans.json");
+    const raw = readFileSync(path, "utf-8");
+    const data = JSON.parse(raw);
+    const entries = data.entries as Array<{ orphanType: string }>;
+    const byType = entries.reduce((acc, e) => {
+      acc[e.orphanType] = (acc[e.orphanType] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+    expect(byType["unreferenced-export"] ?? 0).toBe(data.summary.unreferencedExports);
+    expect(byType["orphan-route"] ?? 0).toBe(data.summary.orphanRoutes);
+    expect(byType["write-only-state"] ?? 0).toBe(data.summary.writeOnlyState);
+  });
+
+  it("orphan-tracker.csv has header row", () => {
+    const path = join(ROOT, ".windsurf", "audit", "orphan-tracker.csv");
+    const raw = readFileSync(path, "utf-8");
+    const lines = raw.trim().split("\n");
+    expect(lines.length).toBeGreaterThan(0);
+    expect(lines[0].toLowerCase()).toContain("id");
+    expect(lines[0].toLowerCase()).toContain("file");
+    expect(lines[0].toLowerCase()).toContain("symbol");
   });
 });

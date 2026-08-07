@@ -58,8 +58,8 @@ export function renewSponsorContract(
   });
 
   builder.logEvent(
-    "MANAGEMENT_DECISION",
-    "economy",
+    "SPONSOR_UPDATE",
+    "sponsor",
     {
       action: "sponsor_renewal",
       sponsor: sponsor.displayName,

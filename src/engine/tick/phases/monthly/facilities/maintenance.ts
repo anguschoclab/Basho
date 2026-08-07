@@ -37,7 +37,7 @@ export function processFacilitiesMaintenance(
     heyaUpdates.facilitiesBand = computeFacilitiesBand(heya);
     builder.logEvent(
       "FACILITY_DEGRADED",
-      "economy",
+      "facility",
       {
         heyaname: heya.name,
         reason: "insufficient_funds_for_maintenance",

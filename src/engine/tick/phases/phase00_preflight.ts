@@ -137,6 +137,12 @@ function checkPhaseTransition(
         }
         // Note: EventBus replaced with logEvent - but this is a complex transition
         // For now, we'll skip the event log as it's a low-priority phase transition
+        builder.logEvent(
+          "PHASE_TRANSITION",
+          "misc",
+          { from: prev, to: nextPhase, basho: bashoName },
+          { importance: "minor" }
+        );
 
         logTransition(world, prev, nextPhase, `The ${bashoName} basho begins!`);
         return { from: prev, to: nextPhase };
