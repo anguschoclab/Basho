@@ -111,6 +111,11 @@ describe("spawnFinanceAgent", () => {
     expect(result.myosekiId).toBe("elite");
   });
 
+  it("returns moderate risk level for neutral archetype with comfortable runway", () => {
+    const result = spawnFinanceAgent(makeCtx({ runwayBand: "comfortable" }));
+    expect(result.riskLevel).toBe("moderate");
+  });
+
   it("does not buy when no affordable stocks (all above 50% of funds)", () => {
     const expensive = makeStock("s1", { askingPrice: 300_000_000 });
     const world = makeMockWorld({

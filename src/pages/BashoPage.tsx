@@ -24,7 +24,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { BoutNarrativeModal } from "@/components/game/BoutNarrativeModal";
 import { MatchDayViewer } from "@/components/game/MatchDayViewer";
+import { CornerAdvicePanel } from "@/components/game/CornerAdvicePanel";
 import { BashoStandingsEvolution } from "@/components/basho/BashoStandingsEvolution";
+import { projectCornerAdvice } from "@/presenters/projections/cornerAdviceProjection";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   Play,
@@ -152,6 +154,11 @@ export default function BashoPage() {
     if (!world) return null;
     return projectBashoUIDigest(world);
   }, [world]);
+
+  const cornerAdvice = useMemo(() => {
+    if (!world || !bashoDigest) return null;
+    return projectCornerAdvice(world, bashoDigest.playerRikishiIds);
+  }, [world, bashoDigest]);
 
   const lastBoutKey = useMemo(() => {
     const last = state.lastBoutResult;
@@ -433,6 +440,7 @@ export default function BashoPage() {
 
           {/* Match viewer */}
           <div className="lg:col-span-3 lg:order-1 space-y-3">
+            <CornerAdvicePanel advice={cornerAdvice} />
             <MatchDayViewer
               matches={matches}
               world={world}
