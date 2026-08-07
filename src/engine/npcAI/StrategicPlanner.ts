@@ -169,6 +169,19 @@ const PLAN_CATALOG: PlanTemplate[] = [
   },
 ];
 
+/** Adjust a template score based on memory of past plan outcomes. */
+function scoreWithMemory(
+  template: PlanTemplate,
+  ctx: AIContext,
+  baseScore: number
+): number {
+  const history = ctx.memory?.planHistory ?? [];
+  const failures = history.filter(
+    (h) => h.planId === template.planId && (h.outcome === "abandoned" || h.outcome === "partial")
+  ).length;
+  return baseScore - failures * 8;
+}
+
 /** Create a strategic plan from the current AI context. */
 export function createPlan(ctx: AIContext): AIPlan | undefined {
   const perception = ctx.perception;
@@ -180,7 +193,7 @@ export function createPlan(ctx: AIContext): AIPlan | undefined {
 
   let best: { template: PlanTemplate; score: number } | undefined;
   for (const template of PLAN_CATALOG) {
-    const score = template.score(ctx, perception, league);
+    const score = scoreWithMemory(template, ctx, template.score(ctx, perception, league));
     if (!best || score > best.score) {
       best = { template, score };
     }

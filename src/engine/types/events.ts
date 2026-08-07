@@ -87,6 +87,9 @@ export type EventCategory =
   | "career" // Career lifecycle events
   | "welfare" // Welfare and compliance events
   | "narrative" // Narrative and story events
+  | "ai_decision" // AI-driven management decision events
+  | "ai_plan_change" // AI strategic plan change events
+  | "ai_rival_posture" // AI rival posture / intelligence events
   | "misc"; // Miscellaneous events
 
 /**

@@ -18,6 +18,7 @@ import {
   MessageCircle,
   Search,
   Wrench,
+  Sparkles,
 } from "lucide-react";
 
 export const CATEGORY_META: Record<string, { icon: LucideIcon; color: string; label: string }> = {
@@ -36,6 +37,9 @@ export const CATEGORY_META: Record<string, { icon: LucideIcon; color: string; la
   media: { icon: MessageCircle, color: "text-muted-foreground", label: "Media" },
   milestone: { icon: Star, color: "text-gold", label: "Milestone" },
   facility: { icon: Wrench, color: "text-west", label: "Facility" },
+  ai_decision: { icon: Sparkles, color: "text-primary", label: "AI Decision" },
+  ai_plan_change: { icon: Sparkles, color: "text-accent", label: "AI Plan" },
+  ai_rival_posture: { icon: Sparkles, color: "text-warning", label: "Rival Intel" },
   misc: { icon: MessageCircle, color: "text-muted-foreground", label: "Misc" },
 };
 

@@ -16,7 +16,7 @@ export function collectManagementDecisionEvents(
 ): void {
   builder.logEvent(
     "MANAGEMENT_DECISION",
-    "narrative",
+    "ai_decision",
     {
       archetype: decision.archetype,
       intensity: decision.trainingIntensity,
@@ -44,7 +44,7 @@ export function collectStrategyShiftEvents(
   if (decision.trainingIntensity === "punishing") {
     builder.logEvent(
       "STRATEGY_SHIFT",
-      "narrative",
+      "ai_plan_change",
       {
         intensity: "punishing",
         reasoning: decision.reasoning[0],
