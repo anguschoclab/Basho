@@ -2,6 +2,8 @@
  * Constants for new game wizard.
  */
 
+import { BACKSTORY_STARTING_FUNDS } from "../engine/economic";
+
 export interface OyakataBackstory {
   id: string;
   label: string;
@@ -29,7 +31,7 @@ export const OYAKATA_BACKSTORIES: OyakataBackstory[] = [
     difficulty: "Easy",
     highestRank: "Yokozuna",
     iconName: "Trophy",
-    bonuses: { funds: 3_000_000, prestige: 4, scouting: 1, training: 1, politics: 3 },
+    bonuses: { funds: BACKSTORY_STARTING_FUNDS.yokozuna_champion, prestige: 4, scouting: 1, training: 1, politics: 3 },
   },
   {
     id: "ozeki_legend",
@@ -40,7 +42,7 @@ export const OYAKATA_BACKSTORIES: OyakataBackstory[] = [
     difficulty: "Normal",
     highestRank: "Ozeki",
     iconName: "Star",
-    bonuses: { funds: 5_000_000, prestige: 3, scouting: 0, training: 2, politics: 1 },
+    bonuses: { funds: BACKSTORY_STARTING_FUNDS.ozeki_legend, prestige: 3, scouting: 0, training: 2, politics: 1 },
   },
   {
     id: "sanyaku_veteran",
@@ -51,7 +53,7 @@ export const OYAKATA_BACKSTORIES: OyakataBackstory[] = [
     difficulty: "Normal",
     highestRank: "Sekiwake",
     iconName: "Users",
-    bonuses: { funds: 10_000_000, prestige: 1, scouting: 1, training: 2, politics: 0 },
+    bonuses: { funds: BACKSTORY_STARTING_FUNDS.sanyaku_veteran, prestige: 1, scouting: 1, training: 2, politics: 0 },
   },
   {
     id: "maegashira_lifer",
@@ -62,7 +64,7 @@ export const OYAKATA_BACKSTORIES: OyakataBackstory[] = [
     difficulty: "Hard",
     highestRank: "Maegashira",
     iconName: "Heart",
-    bonuses: { funds: 15_000_000, prestige: -1, scouting: 0, training: 4, politics: -1 },
+    bonuses: { funds: BACKSTORY_STARTING_FUNDS.maegashira_lifer, prestige: -1, scouting: 0, training: 4, politics: -1 },
   },
   {
     id: "injury_comeback",
@@ -73,7 +75,7 @@ export const OYAKATA_BACKSTORIES: OyakataBackstory[] = [
     difficulty: "Normal",
     highestRank: "Ozeki",
     iconName: "Flame",
-    bonuses: { funds: 8_000_000, prestige: 2, scouting: 1, training: 1, politics: 1 },
+    bonuses: { funds: BACKSTORY_STARTING_FUNDS.injury_comeback, prestige: 2, scouting: 1, training: 1, politics: 1 },
   },
   {
     id: "international_scout",
@@ -84,7 +86,7 @@ export const OYAKATA_BACKSTORIES: OyakataBackstory[] = [
     difficulty: "Hard",
     highestRank: "Maegashira",
     iconName: "Globe",
-    bonuses: { funds: 12_000_000, prestige: 0, scouting: 5, training: 1, politics: -1 },
+    bonuses: { funds: BACKSTORY_STARTING_FUNDS.international_scout, prestige: 0, scouting: 5, training: 1, politics: -1 },
   },
   {
     id: "council_elder",
@@ -95,7 +97,7 @@ export const OYAKATA_BACKSTORIES: OyakataBackstory[] = [
     difficulty: "Very Hard",
     highestRank: "Sekiwake",
     iconName: "Landmark",
-    bonuses: { funds: 20_000_000, prestige: -1, scouting: 0, training: -1, politics: 5 },
+    bonuses: { funds: BACKSTORY_STARTING_FUNDS.council_elder, prestige: -1, scouting: 0, training: -1, politics: 5 },
   },
 ];
 

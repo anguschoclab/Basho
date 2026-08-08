@@ -13,10 +13,10 @@ export const RECRUITMENT_BUDGET_WEEKLY = 100_000;
 
 /** Basho teate (tournament allowance) for non-sekitori rikishi by division (¥). */
 export const NON_SEKITORI_BASHO_ALLOWANCE: Record<string, number> = {
-  makushita: 165_000,
-  sandanme: 110_000,
-  jonidan: 88_000,
-  jonokuchi: 77_000,
+  makushita: 180_000,
+  sandanme: 120_000,
+  jonidan: 96_000,
+  jonokuchi: 84_000,
 } as const;
 
 /**
@@ -233,3 +233,77 @@ export const RUNWAY_THRESHOLD_NEPOSTIST = 12;
 export const RUNWAY_THRESHOLD_NURTURER = 6;
 export const RUNWAY_THRESHOLD_TYRANT = 8;
 export const RUNWAY_THRESHOLD_SCIENTIST = 5;
+
+// === EXTRACTED MAGIC NUMBERS (§8b–§8h, §8j–§8k) ===
+
+/** Sponsor recruitment cost by tier (¥). */
+export const SPONSOR_RECRUITMENT_COSTS: Record<string, number> = {
+  T0: 50_000,
+  T1: 150_000,
+  T2: 400_000,
+  T3: 800_000,
+  T4: 1_500_000,
+  T5: 4_000_000,
+} as const;
+
+/** Political favor advance payout amount (¥). */
+export const POLITICAL_FAVOR_ADVANCE_PAYOUT = 5_000_000;
+
+/** NPC fallback monthly burn estimate when actual expenses can't be calculated (¥). */
+export const NPC_FALLBACK_MONTHLY_BURN_ESTIMATE = 5_000_000;
+
+/** NPC per-rikishi monthly burn estimate (¥). */
+export const NPC_RIKISHI_BURN_ESTIMATE_MONTHLY = 150_000;
+
+/** NPC facility burn multiplier — multiplied by facility level for monthly estimate (¥). */
+export const NPC_FACILITY_BURN_MULTIPLIER = 9_000;
+
+/** Insolvency warning threshold — funds below this trigger a warning (¥). */
+export const INSOLVENCY_WARNING_THRESHOLD = 1_000_000;
+
+/** Fine penalty severe threshold — violations above this incur maximum fine (¥). */
+export const FINE_PENALTY_SEVERE_THRESHOLD = 10_000_000;
+
+/** Fine penalty significant threshold (¥). */
+export const FINE_PENALTY_SIGNIFICANT_THRESHOLD = 3_000_000;
+
+/** Fine penalty moderate threshold (¥). */
+export const FINE_PENALTY_MODERATE_THRESHOLD = 500_000;
+
+/** Backstory starting funds keyed by backstory ID (¥). */
+export const BACKSTORY_STARTING_FUNDS: Record<string, number> = {
+  yokozuna_champion: 3_000_000,
+  ozeki_legend: 5_000_000,
+  sanyaku_veteran: 10_000_000,
+  maegashira_lifer: 15_000_000,
+  injury_comeback: 8_000_000,
+  international_scout: 12_000_000,
+  council_elder: 20_000_000,
+} as const;
+
+// === EXTRACTED MYOSEKI MARKET CONSTANTS (§8c) ===
+
+/** Total number of myoseki in the world. */
+export const MYOSEKI_TOTAL_COUNT = 105;
+
+/** Base asking price for a myoseki on the market (¥). */
+export const MYOSEKI_BASE_ASKING_PRICE = 150_000_000;
+
+/** Maximum asking price for a myoseki (¥). */
+export const MYOSEKI_MAX_ASKING_PRICE = 350_000_000;
+
+/** Lease rate as a fraction of asking price per year. */
+export const MYOSEKI_LEASE_RATE_PERCENT = 0.05;
+
+/** Price jitter added to base price during market generation (¥). */
+export const MYOSEKI_PRICE_JITTER = 50_000_000;
+
+/** Price adjustment range for weekly market fluctuations (¥). */
+export const MYOSEKI_PRICE_ADJUSTMENT_RANGE = 20_000_000;
+
+/** Base prices for myoseki generation by prestige tier (¥). Used by generateMyosekiMarket(). */
+export const MYOSEKI_GENERATION_BASE_PRICES: Record<string, number> = {
+  elite: 250_000_000,
+  respected: 200_000_000,
+  modest: 150_000_000,
+} as const;

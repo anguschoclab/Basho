@@ -9,6 +9,7 @@ import { WorldState } from "../../types/world";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { getHeya } from "../../queries";
+import { POLITICAL_FAVOR_ADVANCE_PAYOUT } from "../../../constants/engine/economic";
 
 export type FavorType = "matchmaking_avoid" | "advance_payout" | "governance_pardon";
 
@@ -65,7 +66,7 @@ export const PoliticalFavorsService = {
     // Apply specific favor logic
     const FAVOR_HANDLERS: Record<FavorType, () => void> = {
       advance_payout: () => {
-        builder.updateHeya(heyaId, { funds: heya.funds + 5_000_000 });
+        builder.updateHeya(heyaId, { funds: heya.funds + POLITICAL_FAVOR_ADVANCE_PAYOUT });
         builder.logEvent("OYAKATA_MOOD_SHIFT", "narrative", { newMood: "content" });
       },
       governance_pardon: () => {

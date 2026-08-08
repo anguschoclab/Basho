@@ -192,6 +192,7 @@ export interface StateImpact {
       | "pendingDecisions"
       | "pendingCrisis"
       | "lineage"
+      | "matchmakingOverride"
     >
   >;
 

@@ -13,6 +13,7 @@ import {
   targetKoenkaiBandFromPrestige,
 } from "./sponsorshipQueries";
 import { KOENKAI_MEMBER_STRENGTH } from "../../../constants/engine/economyExtended";
+import { SPONSOR_RECRUITMENT_COSTS } from "../../../constants/engine/economic";
 import { STAR_POWER_SATISFACTION_WEIGHT } from "../../../constants/engine/sponsors";
 
 const BAND_ORDER: KoenkaiBandType[] = ["none", "weak", "moderate", "strong", "powerful"];
@@ -41,17 +42,7 @@ export function recruitSponsor(
   const existingRel = pool.koenkais.get(heyaId)?.members.find((m) => m.sponsorId === sponsorId);
   if (existingRel) return builder.build();
 
-  // Calculate recruitment cost based on sponsor tier
-  const recruitmentCosts: Record<import("../../types/sponsors").SponsorTier, number> = {
-    T0: 50_000,
-    T1: 150_000,
-    T2: 400_000,
-    T3: 800_000,
-    T4: 1_500_000,
-    T5: 4_000_000,
-  };
-
-  const cost = recruitmentCosts[sponsor.tier] || 0;
+  const cost = SPONSOR_RECRUITMENT_COSTS[sponsor.tier] || 0;
 
   // Check if heya has sufficient funds
   if (heya.funds < cost) return builder.build();

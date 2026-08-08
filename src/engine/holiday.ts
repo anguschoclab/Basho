@@ -13,6 +13,7 @@
 
 import type { WorldState, CyclePhase } from "./types/world";
 import type { Heya } from "./types/heya";
+import { INSOLVENCY_WARNING_THRESHOLD } from "../constants/engine/economic";
 import { advanceWithGates } from "./tick/advanceWithGates";
 import { queryEvents } from "./events";
 import { getHeya, getRikishi } from "./queries";
@@ -150,7 +151,7 @@ function checkGate(
       return null;
     },
     insolvencyWarning: (world, heya) => {
-      if (heya.funds != null && heya.funds < 1_000_000) {
+      if (heya.funds != null && heya.funds < INSOLVENCY_WARNING_THRESHOLD) {
         return {
           gate: "insolvencyWarning",
           message: "Solvency risk rising — stable finances are critically low.",

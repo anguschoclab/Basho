@@ -1,4 +1,9 @@
 import type { EngineEvent } from "../types/events";
+import {
+  FINE_PENALTY_SEVERE_THRESHOLD,
+  FINE_PENALTY_SIGNIFICANT_THRESHOLD,
+  FINE_PENALTY_MODERATE_THRESHOLD,
+} from "../../constants/engine/economic";
 
 /** Safely extracts a string or defaults. */
 function safeString(raw: unknown, fallback: string): string {
@@ -37,9 +42,9 @@ export function formatEventTime(e: EngineEvent): string {
 }
 
 export function formatFinePenalty(amount: number): string {
-  if (amount >= 10_000_000) return "Severe fine";
-  if (amount >= 3_000_000) return "Significant fine";
-  if (amount >= 500_000) return "Moderate fine";
+  if (amount >= FINE_PENALTY_SEVERE_THRESHOLD) return "Severe fine";
+  if (amount >= FINE_PENALTY_SIGNIFICANT_THRESHOLD) return "Significant fine";
+  if (amount >= FINE_PENALTY_MODERATE_THRESHOLD) return "Moderate fine";
   return "Minor fine";
 }
 

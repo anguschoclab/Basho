@@ -12,11 +12,12 @@ import { rngForWorld } from "./rng";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
 import { isSponsorPlayerRelevant } from "./npcAI/eventSurfacing";
+import { NPC_RIKISHI_BURN_ESTIMATE_MONTHLY, NPC_FACILITY_BURN_MULTIPLIER } from "../constants/engine/economic";
 
 export function calculateRunwayMonths(heya: Heya): number {
   const avgFacility =
     (heya.facilities.training + heya.facilities.recovery + heya.facilities.nutrition) / 3;
-  const monthlyBurn = (heya.rikishiIds ?? []).length * 150_000 + avgFacility * 9_000;
+  const monthlyBurn = (heya.rikishiIds ?? []).length * NPC_RIKISHI_BURN_ESTIMATE_MONTHLY + avgFacility * NPC_FACILITY_BURN_MULTIPLIER;
   return monthlyBurn > 0 ? heya.funds / monthlyBurn : 0;
 }
 

@@ -7,7 +7,7 @@ import { makeMockWorld, mockRikishi } from "../utils";
  
 
 describe("payBashoTeate — centralized allowances", () => {
-  it("makushita receives ¥165K", () => {
+  it("makushita receives ¥180K", () => {
     const r = mockRikishi("r1", {
       rank: "makushita",
       division: "makushita",
@@ -29,7 +29,7 @@ describe("payBashoTeate — centralized allowances", () => {
     );
   });
 
-  it("sandanme receives ¥110K", () => {
+  it("sandanme receives ¥120K", () => {
     const r = mockRikishi("r1", {
       rank: "sandanme",
       division: "sandanme",
@@ -49,7 +49,7 @@ describe("payBashoTeate — centralized allowances", () => {
     expect(resolved.rikishi.get("r1")?.economics?.cash).toBe(NON_SEKITORI_BASHO_ALLOWANCE.sandanme);
   });
 
-  it("jonidan receives ¥88K", () => {
+  it("jonidan receives ¥96K", () => {
     const r = mockRikishi("r1", {
       rank: "jonidan",
       division: "jonidan",
@@ -69,7 +69,7 @@ describe("payBashoTeate — centralized allowances", () => {
     expect(resolved.rikishi.get("r1")?.economics?.cash).toBe(NON_SEKITORI_BASHO_ALLOWANCE.jonidan);
   });
 
-  it("jonokuchi receives ¥77K", () => {
+  it("jonokuchi receives ¥84K", () => {
     const r = mockRikishi("r1", {
       rank: "jonokuchi",
       division: "jonokuchi",

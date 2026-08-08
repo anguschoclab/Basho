@@ -3,10 +3,20 @@ import { SIMULATION_CONFIG } from "@/engine/core/SimulationConfig";
 
 describe("SimulationConfig", () => {
   describe("SIMULATION_CONFIG", () => {
-    it("should have defined prize amounts", () => {
-      expect(SIMULATION_CONFIG.prizes.yusho).toBe(10_000_000);
+    it("should have defined prize amounts (2027 JSA revision)", () => {
+      expect(SIMULATION_CONFIG.prizes.yusho).toBe(20_000_000);
       expect(SIMULATION_CONFIG.prizes.junYusho).toBe(2_000_000);
-      expect(SIMULATION_CONFIG.prizes.specialPrize).toBe(2_000_000);
+      expect(SIMULATION_CONFIG.prizes.specialPrize).toBe(3_000_000);
+    });
+
+    it("should have per-division yusho prizes", () => {
+      expect(SIMULATION_CONFIG.prizes.yushoByDivision).toBeDefined();
+      expect(SIMULATION_CONFIG.prizes.yushoByDivision.makuuchi).toBe(20_000_000);
+      expect(SIMULATION_CONFIG.prizes.yushoByDivision.juryo).toBe(3_000_000);
+      expect(SIMULATION_CONFIG.prizes.yushoByDivision.makushita).toBe(700_000);
+      expect(SIMULATION_CONFIG.prizes.yushoByDivision.sandanme).toBe(500_000);
+      expect(SIMULATION_CONFIG.prizes.yushoByDivision.jonidan).toBe(300_000);
+      expect(SIMULATION_CONFIG.prizes.yushoByDivision.jonokuchi).toBe(200_000);
     });
 
     it("should define career milestones", () => {

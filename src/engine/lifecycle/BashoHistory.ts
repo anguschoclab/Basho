@@ -30,8 +30,13 @@ export function recordBashoHistory(
   const rng = rngForWorld(world, "history", `basho_result_${world.year}_${basho.bashoName}`);
 
   // Credit yusho prize to rikishi economics (JSA model: paid directly to rikishi)
+  // Per-division yusho prizes (2027 JSA revision)
   const yushoRikishi = getRikishi(world, yusho);
+  let yushoPrize = SIMULATION_CONFIG.prizes.yusho;
   if (yushoRikishi) {
+    const division = yushoRikishi.division || "makuuchi";
+    yushoPrize = SIMULATION_CONFIG.prizes.yushoByDivision[division] ?? SIMULATION_CONFIG.prizes.yusho;
+
     const yushoEconomics = yushoRikishi.economics || {
       cash: 0,
       retirementFund: 0,
@@ -42,15 +47,15 @@ export function recordBashoHistory(
       popularity: 50,
     };
     // Split yusho: 50% cash, 50% retirement fund
-    const yushoCash = SIMULATION_CONFIG.prizes.yusho * 0.5;
-    const yushoRetirement = SIMULATION_CONFIG.prizes.yusho * 0.5;
+    const yushoCash = yushoPrize * 0.5;
+    const yushoRetirement = yushoPrize * 0.5;
 
     builder.updateRikishi(yusho, {
       economics: {
         ...yushoEconomics,
         cash: yushoEconomics.cash + yushoCash,
         retirementFund: yushoEconomics.retirementFund + yushoRetirement,
-        totalEarnings: yushoEconomics.totalEarnings + SIMULATION_CONFIG.prizes.yusho,
+        totalEarnings: yushoEconomics.totalEarnings + yushoPrize,
       },
     });
   }
@@ -94,7 +99,7 @@ export function recordBashoHistory(
     ...prizes,
     playoffMatches,
     prizes: {
-      yushoAmount: SIMULATION_CONFIG.prizes.yusho,
+      yushoAmount: yushoPrize,
       junYushoAmount: SIMULATION_CONFIG.prizes.junYusho,
       specialPrizes: SIMULATION_CONFIG.prizes.specialPrize,
     },

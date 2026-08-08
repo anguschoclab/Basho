@@ -9,11 +9,17 @@ import { stableSort } from "./utils/sort";
 import { isMyosekiPlayerRelevant } from "./npcAI/eventSurfacing";
 import { getHeya } from "./queries";
 import type { Heya } from "./types/heya";
+import {
+  MYOSEKI_TOTAL_COUNT,
+  MYOSEKI_BASE_ASKING_PRICE,
+  MYOSEKI_MAX_ASKING_PRICE,
+  MYOSEKI_LEASE_RATE_PERCENT,
+  MYOSEKI_PRICE_JITTER,
+  MYOSEKI_PRICE_ADJUSTMENT_RANGE,
+  MYOSEKI_GENERATION_BASE_PRICES,
+} from "../constants/engine/economic";
 
-const TOTAL_MYOSEKI = 105;
-const BASE_ASKING_PRICE = 150_000_000;
-const MAX_ASKING_PRICE = 350_000_000;
-const LEASE_RATE_PERCENT = 0.05; // 5% of asking price per year, divided weekly/monthly
+// Constants imported from constants/engine/economic.ts
 
 // Generated names for Myoseki (authentic-sounding or actual names)
 const MYOSEKI_NAMES = [
@@ -126,7 +132,7 @@ const MYOSEKI_NAMES = [
 
 // Dedupe and pad just in case
 const uniqueNames = Array.from(new Set(MYOSEKI_NAMES));
-while (uniqueNames.length < TOTAL_MYOSEKI) {
+while (uniqueNames.length < MYOSEKI_TOTAL_COUNT) {
   uniqueNames.push(`Elder_${uniqueNames.length + 1}`);
 }
 
@@ -142,12 +148,12 @@ export function generateMyosekiMarket(
   const rng = rngFromSeed(seed, "myoseki", "init");
   const stocks: Record<Id, MyosekiStock> = {};
 
-  const availableNames = [...uniqueNames].slice(0, TOTAL_MYOSEKI);
+  const availableNames = [...uniqueNames].slice(0, MYOSEKI_TOTAL_COUNT);
 
   let i = 0;
   // First pass: Assign to every active Oyakata
   for (const oyakata of stableSort(oyakataMap.values(), (x) => x.id)) {
-    if (i >= TOTAL_MYOSEKI) break;
+    if (i >= MYOSEKI_TOTAL_COUNT) break;
 
     const name = availableNames[i];
     const prestigeTier = rng.next() > 0.8 ? "elite" : rng.next() > 0.4 ? "respected" : "modest";
@@ -165,17 +171,12 @@ export function generateMyosekiMarket(
   }
 
   // Second pass: Remaining stocks are on the market (held by JSA or "retired" npc)
-  for (; i < TOTAL_MYOSEKI; i++) {
+  for (; i < MYOSEKI_TOTAL_COUNT; i++) {
     const name = availableNames[i];
     const prestigeTier = rng.next() > 0.8 ? "elite" : rng.next() > 0.4 ? "respected" : "modest";
 
-    const basePrice =
-      prestigeTier === "elite"
-        ? 250_000_000
-        : prestigeTier === "respected"
-          ? 200_000_000
-          : 150_000_000;
-    const askingPrice = basePrice + Math.floor(rng.next() * 50_000_000);
+    const basePrice = MYOSEKI_GENERATION_BASE_PRICES[prestigeTier] ?? MYOSEKI_BASE_ASKING_PRICE;
+    const askingPrice = basePrice + Math.floor(rng.next() * MYOSEKI_PRICE_JITTER);
     const id = rng.uuid("MS");
 
     stocks[id] = {
@@ -229,10 +230,11 @@ export function tickMyosekiMarket(world: WorldState): StateImpact {
         // Find heya owned by this oyakata
         const lesseeHeya = oyakataHeyaMap.get(stock.holderId);
         if (lesseeHeya) {
-          if (!heyaUpdates[lesseeHeya.id]) {
+          const existing = heyaUpdates[lesseeHeya.id];
+          if (!existing) {
             heyaUpdates[lesseeHeya.id] = { funds: lesseeHeya.funds - weeklyFee };
           } else {
-            heyaUpdates[lesseeHeya.id].funds -= weeklyFee;
+            existing.funds = (existing.funds ?? lesseeHeya.funds) - weeklyFee;
           }
         }
       }
@@ -240,10 +242,10 @@ export function tickMyosekiMarket(world: WorldState): StateImpact {
 
     // 2. Randomly fluctuate available asking prices
     if (stock.status === "available" && rng.next() < 0.1) {
-      const adjustment = rng.next() * 20_000_000 - 10_000_000;
+      const adjustment = rng.next() * MYOSEKI_PRICE_ADJUSTMENT_RANGE - MYOSEKI_PRICE_ADJUSTMENT_RANGE / 2;
       updatedStock.askingPrice = Math.max(
-        BASE_ASKING_PRICE,
-        Math.min(MAX_ASKING_PRICE, (stock.askingPrice || BASE_ASKING_PRICE) + adjustment)
+        MYOSEKI_BASE_ASKING_PRICE,
+        Math.min(MYOSEKI_MAX_ASKING_PRICE, (stock.askingPrice || MYOSEKI_BASE_ASKING_PRICE) + adjustment)
       );
     }
 
@@ -348,7 +350,7 @@ export function leaseMyoseki(world: WorldState, lesseeId: Id, myosekiId: Id): St
   const stock = getAvailableStock(world, myosekiId);
   if (!stock || !stock.askingPrice) return builder.build();
 
-  const leaseFee = Math.floor(stock.askingPrice * LEASE_RATE_PERCENT);
+  const leaseFee = Math.floor(stock.askingPrice * MYOSEKI_LEASE_RATE_PERCENT);
 
   builder.updateMyosekiStock(myosekiId, {
     holderId: lesseeId,

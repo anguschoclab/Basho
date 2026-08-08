@@ -13,6 +13,7 @@ import type { ChronicleReport } from "../types/records";
 import { RANK_HIERARCHY } from "../banzuke";
 import { publishBanzukeUpdate } from "../banzuke/BanzukePublisher";
 import { getHeya, getRikishi } from "../queries";
+import { SIMULATION_CONFIG } from "../core/SimulationConfig";
 
 // === AUTO-SIM CONFIGURATION ===
 
@@ -184,9 +185,9 @@ export function runAutoSim(
           shukunsho: bashoResult.shukunsho,
           kantosho: bashoResult.kantosho,
           prizes: {
-            yushoAmount: 10_000_000,
-            junYushoAmount: 2_000_000,
-            specialPrizes: 2_000_000,
+            yushoAmount: SIMULATION_CONFIG.prizes.yusho,
+            junYushoAmount: SIMULATION_CONFIG.prizes.junYusho,
+            specialPrizes: SIMULATION_CONFIG.prizes.specialPrize,
           },
         },
       ],

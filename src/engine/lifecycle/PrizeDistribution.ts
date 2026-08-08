@@ -31,7 +31,7 @@ export function distributePrizes(
   const builder = createImpactBuilder("distributePrizes");
   const prizes = determineSpecialPrizes(basho.matches, world.rikishi, yusho);
 
-  const SANSHO_PRIZE_AMOUNT = 2000000;
+  const SANSHO_PRIZE_AMOUNT = SIMULATION_CONFIG.prizes.specialPrize;
   const awardTypes = {
     shukunsho: "Shukun",
     kantosho: "Kanto",

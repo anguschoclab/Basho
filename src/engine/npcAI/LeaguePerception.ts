@@ -8,6 +8,7 @@
 
 import type { WorldState } from "../types/world";
 import type { Rikishi } from "../types/rikishi";
+import { NPC_FALLBACK_MONTHLY_BURN_ESTIMATE } from "../../constants/engine/economic";
 import type { Id } from "../types/common";
 import type {
   DivisionPressure,
@@ -134,7 +135,7 @@ function buildFinanciallyFragileHeyas(world: WorldState): Id[] {
   // Fallback heuristic when perception cache is missing.
   if (ids.length === 0) {
     for (const [heyaId, heya] of world.heyas.entries()) {
-      const monthlyBurn = 5_000_000; // rough default
+      const monthlyBurn = NPC_FALLBACK_MONTHLY_BURN_ESTIMATE;
       const runwayMonths = (heya.funds ?? 0) / monthlyBurn;
       if (runwayMonths < 2) ids.push(heyaId);
     }

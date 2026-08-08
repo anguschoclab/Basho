@@ -61,7 +61,8 @@ export type EngineEventType =
   | "DECISION_RESOLVED" // A loop decision was resolved (interactive or auto)
   | "RIVAL_POSTURE" // AI rival posture / intelligence assessment
   | "SPONSOR_UPDATE" // Sponsor contract renewal or change
-  | "PHASE_TRANSITION"; // General phase transition event
+  | "PHASE_TRANSITION" // General phase transition event
+  | "POLITICAL_FAVOR_REDEEMED"; // Political favor was redeemed
 
 /**
  * Type representing event phase.

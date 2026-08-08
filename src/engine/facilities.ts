@@ -24,30 +24,34 @@ import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
 import { calculateHeyaWeeklyFinances } from "./systems/economy/FinanceCalculator";
 import { getHeya } from "./queries";
+import {
+  FACILITY_UPGRADE_BASE_COST,
+  MAINTENANCE_COST_PER_POINT,
+  FACILITY_DECAY_AMOUNT,
+  MAX_FACILITY_LEVEL,
+  MIN_FACILITY_LEVEL,
+  FACILITY_UPGRADE_COST_MULTIPLIERS,
+} from "../constants/engine/facilities";
 
-// === CONSTANTS ===
+// === CONSTANTS (imported from constants/engine/facilities.ts) ===
 
 /** Cost per point to upgrade a facility (scales with current level) */
 function upgradeCost(currentLevel: number): number {
-  // Base 200k per point, scaling quadratically past 60
-  const base = 200_000;
-  if (currentLevel < 40) return base;
-  if (currentLevel < 60) return base * 1.5;
-  if (currentLevel < 80) return base * 2.5;
-  return base * 4; // 80+ is very expensive
+  const base = FACILITY_UPGRADE_BASE_COST;
+  if (currentLevel < FACILITY_UPGRADE_COST_MULTIPLIERS.LEVEL_40) return base;
+  if (currentLevel < FACILITY_UPGRADE_COST_MULTIPLIERS.LEVEL_60) return base * FACILITY_UPGRADE_COST_MULTIPLIERS.MULTIPLIER_40;
+  if (currentLevel < FACILITY_UPGRADE_COST_MULTIPLIERS.LEVEL_80) return base * FACILITY_UPGRADE_COST_MULTIPLIERS.MULTIPLIER_60;
+  return base * FACILITY_UPGRADE_COST_MULTIPLIERS.MULTIPLIER_80;
 }
 
 /** Monthly maintenance cost to prevent decay (per facility axis) */
 function maintenanceCost(level: number): number {
-  return Math.round(level * 3_000); // 3k per point per month
+  return Math.round(level * MAINTENANCE_COST_PER_POINT);
 }
 
-/** Monthly decay if maintenance is NOT paid */
-const DECAY_RATE = 2; // points per month without maintenance
-
-/** Maximum facility level */
-const MAX_FACILITY = 100;
-const MIN_FACILITY = 5;
+const DECAY_RATE = FACILITY_DECAY_AMOUNT;
+const MAX_FACILITY = MAX_FACILITY_LEVEL;
+const MIN_FACILITY = MIN_FACILITY_LEVEL;
 
 // === FACILITY BAND CALCULATION ===
 

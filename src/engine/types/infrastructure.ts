@@ -5,6 +5,8 @@
  * (Phase P: Stable Town & Infrastructure)
  */
 
+import { FACILITY_BASE_COSTS, FACILITY_MAINTENANCE_COSTS } from "../../constants/engine/facilities";
+
 export type FacilityId =
   | "weights_room" // Buffs Strength growth & Butsukari drill
   | "medical_suite" // Reduces injury duration & severity
@@ -50,9 +52,9 @@ export const FACILITY_REGISTRY: Record<FacilityId, FacilityDefinition> = {
     label: "Weights & Power Room",
     description:
       "Modern resistance equipment to maximize pure strength and explosive charging power.",
-    baseCost: 15_000_000,
+    baseCost: FACILITY_BASE_COSTS.weights_room,
     buildTimeBasho: 1,
-    maintenanceCost: 450_000,
+    maintenanceCost: FACILITY_MAINTENANCE_COSTS.weights_room,
     bonuses: {
       statBuffs: { power: 1.15, stamina: 1.05 },
     },
@@ -61,9 +63,9 @@ export const FACILITY_REGISTRY: Record<FacilityId, FacilityDefinition> = {
     id: "medical_suite",
     label: "Integrated Medical Suite",
     description: "On-site physiotherapy and advanced diagnostic tools for rapid injury recovery.",
-    baseCost: 25_000_000,
+    baseCost: FACILITY_BASE_COSTS.medical_suite,
     buildTimeBasho: 2,
-    maintenanceCost: 800_000,
+    maintenanceCost: FACILITY_MAINTENANCE_COSTS.medical_suite,
     bonuses: {
       injuryHealMod: -3, // -3 days per level
     },
@@ -73,9 +75,9 @@ export const FACILITY_REGISTRY: Record<FacilityId, FacilityDefinition> = {
     label: "Digital Media Hub",
     description:
       "Pro-audio/visual equipment for recording training clips and managing public relations.",
-    baseCost: 5_000_000,
+    baseCost: FACILITY_BASE_COSTS.media_studio,
     buildTimeBasho: 1,
-    maintenanceCost: 150_000,
+    maintenanceCost: FACILITY_MAINTENANCE_COSTS.media_studio,
     bonuses: {
       mediaMod: 1.25, // +25% rep/heat gains
     },
@@ -84,9 +86,9 @@ export const FACILITY_REGISTRY: Record<FacilityId, FacilityDefinition> = {
     id: "traditional_kitchen",
     label: "Chanko-ba Professional Kitchen",
     description: "Optimized nutrition and high-calorie catering for elite mass management.",
-    baseCost: 8_000_000,
+    baseCost: FACILITY_BASE_COSTS.traditional_kitchen,
     buildTimeBasho: 1,
-    maintenanceCost: 350_000,
+    maintenanceCost: FACILITY_MAINTENANCE_COSTS.traditional_kitchen,
     bonuses: {
       statBuffs: { weight: 1.1, stamina: 1.2 },
       fatigueFloor: 5, // Minimum fatigue floor reduced by 5
@@ -96,9 +98,9 @@ export const FACILITY_REGISTRY: Record<FacilityId, FacilityDefinition> = {
     id: "video_lab",
     label: "Tactical Video Lab",
     description: "Slow-motion analysis gear to break down technique and memorize enemy styles.",
-    baseCost: 12_000_000,
+    baseCost: FACILITY_BASE_COSTS.video_lab,
     buildTimeBasho: 1,
-    maintenanceCost: 250_000,
+    maintenanceCost: FACILITY_MAINTENANCE_COSTS.video_lab,
     bonuses: {
       statBuffs: { technique: 1.15, adaptability: 1.2 },
     },
@@ -108,9 +110,9 @@ export const FACILITY_REGISTRY: Record<FacilityId, FacilityDefinition> = {
     label: "Global Scouting Hub",
     description:
       "A specialized office for tracking international talent pipelines and managing scout networks.",
-    baseCost: 18_000_000,
+    baseCost: FACILITY_BASE_COSTS.scouting_office,
     buildTimeBasho: 2,
-    maintenanceCost: 500_000,
+    maintenanceCost: FACILITY_MAINTENANCE_COSTS.scouting_office,
     bonuses: {
       mediaMod: 1.1, // Minor cross-over bonus for networking
     },
@@ -120,9 +122,9 @@ export const FACILITY_REGISTRY: Record<FacilityId, FacilityDefinition> = {
     label: "Ulaanbaatar High-Performance Academy",
     description:
       "A premier facility specializing in grip-fighting and explosive oshi-sumo techniques.",
-    baseCost: 50_000_000,
+    baseCost: FACILITY_BASE_COSTS.academy_mongolia,
     buildTimeBasho: 3,
-    maintenanceCost: 2_000_000,
+    maintenanceCost: FACILITY_MAINTENANCE_COSTS.academy_mongolia,
     requirements: { regionalPresence: { Mongolia: 80 } },
     bonuses: { statBuffs: { power: 1.1, technique: 1.1 } },
   },
@@ -130,9 +132,9 @@ export const FACILITY_REGISTRY: Record<FacilityId, FacilityDefinition> = {
     id: "academy_georgia",
     label: "Caucasus Strength Center",
     description: "Focuses on raw lifting power and back-breaking endurance training.",
-    baseCost: 45_000_000,
+    baseCost: FACILITY_BASE_COSTS.academy_georgia,
     buildTimeBasho: 3,
-    maintenanceCost: 1_800_000,
+    maintenanceCost: FACILITY_MAINTENANCE_COSTS.academy_georgia,
     requirements: { regionalPresence: { Georgia: 80 } },
     bonuses: { statBuffs: { power: 1.2 } },
   },
@@ -140,9 +142,9 @@ export const FACILITY_REGISTRY: Record<FacilityId, FacilityDefinition> = {
     id: "academy_europe",
     label: "Euro-Continental Dojo",
     description: "Emphasizes technical grappling and anatomical efficiency.",
-    baseCost: 40_000_000,
+    baseCost: FACILITY_BASE_COSTS.academy_europe,
     buildTimeBasho: 2,
-    maintenanceCost: 1_500_000,
+    maintenanceCost: FACILITY_MAINTENANCE_COSTS.academy_europe,
     requirements: { regionalPresence: { Europe: 80 } },
     bonuses: { statBuffs: { technique: 1.2 } },
   },
@@ -150,9 +152,9 @@ export const FACILITY_REGISTRY: Record<FacilityId, FacilityDefinition> = {
     id: "academy_americas",
     label: "Pan-American Athletic Hub",
     description: "Advanced nutrition and conditioning for extreme size and stamina.",
-    baseCost: 40_000_000,
+    baseCost: FACILITY_BASE_COSTS.academy_americas,
     buildTimeBasho: 2,
-    maintenanceCost: 1_500_000,
+    maintenanceCost: FACILITY_MAINTENANCE_COSTS.academy_americas,
     requirements: { regionalPresence: { Americas: 80 } },
     bonuses: { statBuffs: { weight: 1.1, stamina: 1.1 } },
   },

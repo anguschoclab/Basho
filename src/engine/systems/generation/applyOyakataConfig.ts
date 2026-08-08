@@ -17,6 +17,7 @@ import { SeededRNG } from "@/engine/rng";
 import { getHeya } from "../../queries";
 import { warn } from "@/engine/utils/Logger";
 import { clamp } from "@/engine/utils/math";
+import { BACKSTORY_STARTING_FUNDS } from "@/constants/engine/economic";
 
 // ---------------------------------------------------------------------------
 // Backstory data — defined here (NOT imported from the UI wizard layer).
@@ -47,7 +48,7 @@ export const PLAYER_BACKSTORIES: PlayerBackstory[] = [
     preferredArchetype: "traditionalist",
     traitModifiers: { ambition: 10, tradition: 15, patience: -5 },
     bonuses: {
-      funds: 3_000_000,
+      funds: BACKSTORY_STARTING_FUNDS.yokozuna_champion,
       prestige: 4,
       scouting: 1,
       training: 1,
@@ -63,7 +64,7 @@ export const PLAYER_BACKSTORIES: PlayerBackstory[] = [
     preferredArchetype: "strategist",
     traitModifiers: { ambition: 5, patience: 10 },
     bonuses: {
-      funds: 5_000_000,
+      funds: BACKSTORY_STARTING_FUNDS.ozeki_legend,
       prestige: 3,
       scouting: 0,
       training: 2,
@@ -79,7 +80,7 @@ export const PLAYER_BACKSTORIES: PlayerBackstory[] = [
     preferredArchetype: "scientist",
     traitModifiers: { patience: 5, tradition: -10 },
     bonuses: {
-      funds: 10_000_000,
+      funds: BACKSTORY_STARTING_FUNDS.sanyaku_veteran,
       prestige: 1,
       scouting: 1,
       training: 2,
@@ -95,7 +96,7 @@ export const PLAYER_BACKSTORIES: PlayerBackstory[] = [
     preferredArchetype: "nurturer",
     traitModifiers: { compassion: 15, tradition: 10, ambition: -15 },
     bonuses: {
-      funds: 15_000_000,
+      funds: BACKSTORY_STARTING_FUNDS.maegashira_lifer,
       prestige: -1,
       scouting: 0,
       training: 4,
@@ -111,7 +112,7 @@ export const PLAYER_BACKSTORIES: PlayerBackstory[] = [
     preferredArchetype: "gambler",
     traitModifiers: { risk: 20, ambition: 15, patience: -10 },
     bonuses: {
-      funds: 8_000_000,
+      funds: BACKSTORY_STARTING_FUNDS.injury_comeback,
       prestige: 2,
       scouting: 1,
       training: 1,
@@ -127,7 +128,7 @@ export const PLAYER_BACKSTORIES: PlayerBackstory[] = [
     preferredArchetype: "scientist",
     traitModifiers: { tradition: -20, patience: 10 },
     bonuses: {
-      funds: 12_000_000,
+      funds: BACKSTORY_STARTING_FUNDS.international_scout,
       prestige: 0,
       scouting: 5,
       training: 1,
@@ -143,7 +144,7 @@ export const PLAYER_BACKSTORIES: PlayerBackstory[] = [
     preferredArchetype: "strategist",
     traitModifiers: { patience: 15, tradition: 5, ambition: -10 },
     bonuses: {
-      funds: 20_000_000,
+      funds: BACKSTORY_STARTING_FUNDS.council_elder,
       prestige: -1,
       scouting: 0,
       training: -1,
@@ -228,6 +229,9 @@ export function applyOyakataCreationConfig(
         observations: [],
         coreDirectives: [memoryDirective],
         lastConsolidationTick: 0,
+        planHistory: [],
+        decisionHistory: [],
+        opponentModels: {},
       };
 
   // Build updated oyakata (immutable)

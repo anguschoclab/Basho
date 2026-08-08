@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { runCareerJournalUpdates } from "@/engine/lifecycle/RegistryService";
 import { WorldState } from "@/engine/types/world";
-import { BashoResult } from "@/engine/types/basho";
+import { SIMULATION_CONFIG } from "@/engine/core/SimulationConfig";
 
 describe("RegistryService", () => {
   describe("runCareerJournalUpdates", () => {
@@ -37,9 +37,9 @@ describe("RegistryService", () => {
             junYusho: [],
             playoffMatches: [],
             prizes: {
-              yushoAmount: 10000000,
-              junYushoAmount: 2000000,
-              specialPrizes: 2000000,
+              yushoAmount: SIMULATION_CONFIG.prizes.yusho,
+              junYushoAmount: SIMULATION_CONFIG.prizes.junYusho,
+              specialPrizes: SIMULATION_CONFIG.prizes.specialPrize,
             },
           },
         ],
@@ -85,9 +85,9 @@ describe("RegistryService", () => {
             junYusho: [],
             playoffMatches: [],
             prizes: {
-              yushoAmount: 10000000,
-              junYushoAmount: 2000000,
-              specialPrizes: 2000000,
+              yushoAmount: SIMULATION_CONFIG.prizes.yusho,
+              junYushoAmount: SIMULATION_CONFIG.prizes.junYusho,
+              specialPrizes: SIMULATION_CONFIG.prizes.specialPrize,
             },
           },
         ],
@@ -133,9 +133,9 @@ describe("RegistryService", () => {
             junYusho: [],
             playoffMatches: [],
             prizes: {
-              yushoAmount: 10000000,
-              junYushoAmount: 2000000,
-              specialPrizes: 2000000,
+              yushoAmount: SIMULATION_CONFIG.prizes.yusho,
+              junYushoAmount: SIMULATION_CONFIG.prizes.junYusho,
+              specialPrizes: SIMULATION_CONFIG.prizes.specialPrize,
             },
           },
         ],
@@ -179,9 +179,9 @@ describe("RegistryService", () => {
             junYusho: [],
             playoffMatches: [],
             prizes: {
-              yushoAmount: 10000000,
-              junYushoAmount: 2000000,
-              specialPrizes: 2000000,
+              yushoAmount: SIMULATION_CONFIG.prizes.yusho,
+              junYushoAmount: SIMULATION_CONFIG.prizes.junYusho,
+              specialPrizes: SIMULATION_CONFIG.prizes.specialPrize,
             },
           },
         ],
@@ -225,9 +225,9 @@ describe("RegistryService", () => {
             junYusho: [],
             playoffMatches: [],
             prizes: {
-              yushoAmount: 10000000,
-              junYushoAmount: 2000000,
-              specialPrizes: 2000000,
+              yushoAmount: SIMULATION_CONFIG.prizes.yusho,
+              junYushoAmount: SIMULATION_CONFIG.prizes.junYusho,
+              specialPrizes: SIMULATION_CONFIG.prizes.specialPrize,
             },
           },
         ],
@@ -272,9 +272,9 @@ describe("RegistryService", () => {
             junYusho: [],
             playoffMatches: [],
             prizes: {
-              yushoAmount: 10000000,
-              junYushoAmount: 2000000,
-              specialPrizes: 2000000,
+              yushoAmount: SIMULATION_CONFIG.prizes.yusho,
+              junYushoAmount: SIMULATION_CONFIG.prizes.junYusho,
+              specialPrizes: SIMULATION_CONFIG.prizes.specialPrize,
             },
           },
         ],

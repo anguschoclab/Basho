@@ -3,12 +3,22 @@
  * All magic numbers and business rules are externalized here.
  */
 
+import type { Division } from "../types/banzuke";
+
 export const SIMULATION_CONFIG = {
-  /** Prize amounts (Jillian-standard) */
+  /** Prize amounts (2027 JSA revision) */
   prizes: {
-    yusho: 10_000_000,
+    yusho: 20_000_000,
+    yushoByDivision: {
+      makuuchi: 20_000_000,
+      juryo: 3_000_000,
+      makushita: 700_000,
+      sandanme: 500_000,
+      jonidan: 300_000,
+      jonokuchi: 200_000,
+    } as Record<Division, number>,
     junYusho: 2_000_000,
-    specialPrize: 2_000_000,
+    specialPrize: 3_000_000,
     kinboshiStipend: 40_000, // Per kinboshi per basho
   },
 

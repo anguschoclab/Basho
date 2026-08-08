@@ -38,3 +38,31 @@ export const FACILITY_UPGRADE_COST_MULTIPLIERS = {
   /** Cost multiplier at level 80+ */
   MULTIPLIER_80: 4.0,
 } as const;
+
+/** Base construction cost per facility type (¥). Used by FACILITY_REGISTRY. */
+export const FACILITY_BASE_COSTS: Record<string, number> = {
+  weights_room: 15_000_000,
+  medical_suite: 25_000_000,
+  media_studio: 5_000_000,
+  traditional_kitchen: 8_000_000,
+  video_lab: 12_000_000,
+  scouting_office: 18_000_000,
+  academy_mongolia: 50_000_000,
+  academy_georgia: 45_000_000,
+  academy_europe: 40_000_000,
+  academy_americas: 40_000_000,
+} as const;
+
+/** Monthly maintenance cost per facility type (¥). Used by FACILITY_REGISTRY. */
+export const FACILITY_MAINTENANCE_COSTS: Record<string, number> = {
+  weights_room: 450_000,
+  medical_suite: 800_000,
+  media_studio: 150_000,
+  traditional_kitchen: 350_000,
+  video_lab: 250_000,
+  scouting_office: 500_000,
+  academy_mongolia: 2_000_000,
+  academy_georgia: 1_800_000,
+  academy_europe: 1_500_000,
+  academy_americas: 1_500_000,
+} as const;
