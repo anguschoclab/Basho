@@ -1,1 +1,3 @@
 ID,File,Symbol,OrphanType,Priority,UIRoute,NPCConsumer,TickPhase,TestFile,Status,PR
+"ORPH-0001","src/engine/systems/__audit_test__/tempOrphanProbe.ts","__auditProbeOrphanFn_1786170254988__","unreferenced-export","P3","","","","","candidate",""
+"ORPH-0002","src/engine/systems/__audit_test__/tempOrphanProbe.ts","tempOrphanProbe","unticked-service","P3","","","","","candidate",""
