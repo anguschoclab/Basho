@@ -47,7 +47,10 @@ export class OPFSFileSystem {
     this.inFlight.clear();
   }
 
-  private async traversePath(path: string[]): Promise<FileSystemDirectoryHandle | null> {
+  private async traversePath(
+    path: string[],
+    options?: { throwOnError?: boolean }
+  ): Promise<FileSystemDirectoryHandle | null> {
     try {
       let currentDir: FileSystemDirectoryHandle | null = null;
       let startIndex = 0;
