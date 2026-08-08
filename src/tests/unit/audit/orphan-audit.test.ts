@@ -13,6 +13,11 @@ const TRACKER_PATH = join(AUDIT_DIR, "orphan-tracker.csv");
 const TEMP_ORPHAN_DIR = join(ROOT, "src", "engine", "systems", "__audit_test__");
 const TEMP_ORPHAN_FILE = join(TEMP_ORPHAN_DIR, "tempOrphanProbe.ts");
 
+let uniqueCounter = 0;
+function uniqueJsonPath(): string {
+  return join(AUDIT_DIR, `consistency-check-${Date.now()}-${++uniqueCounter}.json`);
+}
+
 interface AuditReport {
   generatedAt: string;
   summary: {
@@ -89,7 +94,7 @@ describe("Audit runner self-test", () => {
 
 describe("Audit runner consistency — two runs produce same orphan set", () => {
   async function runAudit(): Promise<{ summary: AuditReport["summary"]; symbols: string[] }> {
-    const tmpJson = join(AUDIT_DIR, "consistency-check.json");
+    const tmpJson = uniqueJsonPath();
     await execAsync(`npx tsx scripts/audit-orphans.ts --json "${tmpJson}"`, {
       cwd: ROOT,
       timeout: 180000,
@@ -131,7 +136,7 @@ describe("Audit runner injection — detects a deliberately orphaned export", ()
     );
 
     try {
-      const tmpJson = join(AUDIT_DIR, "injection-check.json");
+      const tmpJson = uniqueJsonPath();
       await execAsync(`npx tsx scripts/audit-orphans.ts --json "${tmpJson}"`, {
         cwd: ROOT,
         timeout: 180000,

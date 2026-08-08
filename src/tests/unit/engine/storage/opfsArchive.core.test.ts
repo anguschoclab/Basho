@@ -742,4 +742,101 @@ describe("OPFSArchiveService core functionality", () => {
       expect(service.isSupported()).toBe(false);
     });
   });
+
+  describe("directory creation failures", () => {
+    it("archiveBoutLog: getDirectoryPath rejects with QuotaExceededError → resolves and calls handleQuotaError", async () => {
+      const quotaError = new DOMException("Quota exceeded", "QuotaExceededError");
+      vi.spyOn(service, "getDirectoryPath").mockRejectedValue(quotaError);
+      const handleQuotaSpy = vi.spyOn(service, "handleQuotaError").mockImplementation(() => {});
+
+      await service.archiveBoutLog(2024, "b1", {});
+
+      expect(handleQuotaSpy).toHaveBeenCalledWith(quotaError);
+    });
+
+    it("archiveBoutLog: getDirectoryPath rejects with generic Error → resolves and calls handleQuotaError", async () => {
+      const genericError = new Error("Disk failure");
+      vi.spyOn(service, "getDirectoryPath").mockRejectedValue(genericError);
+      const handleQuotaSpy = vi.spyOn(service, "handleQuotaError").mockImplementation(() => {});
+
+      await service.archiveBoutLog(2024, "b1", {});
+
+      expect(handleQuotaSpy).toHaveBeenCalledWith(genericError);
+    });
+
+    it("archiveBoutLog: overwrite conflict still throws ArchiveConflictError when directory exists", async () => {
+      const mockDir = {
+        getFileHandle: vi.fn().mockResolvedValue({ name: "existing" }),
+      };
+      vi.spyOn(service, "getDirectoryPath").mockResolvedValue(
+        mockDir as unknown as FileSystemDirectoryHandle
+      );
+
+      await expect(service.archiveBoutLog(2024, "b1", {})).rejects.toBeInstanceOf(
+        ArchiveConflictError
+      );
+    });
+
+    it("archiveGazette: getDirectoryPath rejects with QuotaExceededError → resolves and calls handleQuotaError", async () => {
+      const quotaError = new DOMException("Quota exceeded", "QuotaExceededError");
+      vi.spyOn(service, "getDirectoryPath").mockRejectedValue(quotaError);
+      const handleQuotaSpy = vi.spyOn(service, "handleQuotaError").mockImplementation(() => {});
+
+      await service.archiveGazette(2024, 1, "# Test");
+
+      expect(handleQuotaSpy).toHaveBeenCalledWith(quotaError);
+    });
+
+    it("archiveAwards: getDirectoryPath rejects with QuotaExceededError → resolves and calls handleQuotaError", async () => {
+      const quotaError = new DOMException("Quota exceeded", "QuotaExceededError");
+      vi.spyOn(service, "getDirectoryPath").mockRejectedValue(quotaError);
+      const handleQuotaSpy = vi.spyOn(service, "handleQuotaError").mockImplementation(() => {});
+
+      await service.archiveAwards(2024, []);
+
+      expect(handleQuotaSpy).toHaveBeenCalledWith(quotaError);
+    });
+
+    it("archiveBanzuke: getDirectoryPath rejects with QuotaExceededError → resolves and calls handleQuotaError", async () => {
+      const quotaError = new DOMException("Quota exceeded", "QuotaExceededError");
+      vi.spyOn(service, "getDirectoryPath").mockRejectedValue(quotaError);
+      const handleQuotaSpy = vi.spyOn(service, "handleQuotaError").mockImplementation(() => {});
+
+      await service.archiveBanzuke(2024, 1, {
+        year: 2024,
+        bashoNumber: 1,
+        bashoName: "hatsu",
+        makuuchiSummary: { totalBouts: 0, avgWins: 0, injuryCount: 0 },
+        promotions: [],
+        demotions: [],
+        retirements: [],
+      });
+
+      expect(handleQuotaSpy).toHaveBeenCalledWith(quotaError);
+    });
+
+    it("archiveBoutLog: dispatches engine:storage:quota-exceeded event when directory creation fails with quota", async () => {
+      const quotaError = new DOMException("Quota exceeded", "QuotaExceededError");
+      vi.spyOn(service, "getDirectoryPath").mockRejectedValue(quotaError);
+
+      const dispatchSpy = vi.fn();
+      Object.defineProperty(globalThis, "window", {
+        value: { dispatchEvent: dispatchSpy },
+        writable: true,
+        configurable: true,
+      });
+
+      await service.archiveBoutLog(2024, "b1", {});
+
+      expect(dispatchSpy).toHaveBeenCalled();
+      const event = dispatchSpy.mock.calls[0][0] as CustomEvent;
+      expect(event.type).toBe("engine:storage:quota-exceeded");
+
+      Object.defineProperty(globalThis, "window", {
+        value: undefined,
+        writable: true,
+        configurable: true,
+      });
+    });
+  });
 });

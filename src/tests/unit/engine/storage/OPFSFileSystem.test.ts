@@ -84,6 +84,83 @@ describe("OPFSFileSystem", () => {
       );
       consoleWarnSpy.mockRestore();
     });
+
+    it("throwOnError: true rejects with the original error when getDirectory fails", async () => {
+      const traversalError = new Error("getDirectory failed");
+      Object.defineProperty(globalThis, "navigator", {
+        value: { storage: { getDirectory: vi.fn().mockRejectedValue(traversalError) } },
+        writable: true,
+      });
+
+      await expect(fs.getDirectoryPath(["folder1"], { throwOnError: true })).rejects.toBe(
+        traversalError
+      );
+    });
+
+    it("throwOnError: true rejects when an intermediate getDirectoryHandle fails", async () => {
+      const intermediateError = new Error("getDirectoryHandle failed");
+      const mockRoot = {
+        getDirectoryHandle: vi.fn().mockRejectedValue(intermediateError),
+      };
+      Object.defineProperty(globalThis, "navigator", {
+        value: { storage: { getDirectory: vi.fn().mockResolvedValue(mockRoot) } },
+        writable: true,
+      });
+
+      await expect(
+        fs.getDirectoryPath(["folder1", "folder2"], { throwOnError: true })
+      ).rejects.toBe(intermediateError);
+    });
+
+    it("throwOnError: true does not cache a failed traversal and cleans up inFlight", async () => {
+      const mockRoot = { getDirectoryHandle: vi.fn() };
+      const getDirectorySpy = vi.fn().mockResolvedValue(mockRoot);
+      Object.defineProperty(globalThis, "navigator", {
+        value: { storage: { getDirectory: getDirectorySpy } },
+        writable: true,
+      });
+
+      const failError = new Error("fail");
+      mockRoot.getDirectoryHandle.mockRejectedValueOnce(failError);
+
+      await expect(
+        fs.getDirectoryPath(["a"], { throwOnError: true })
+      ).rejects.toBe(failError);
+
+      // Second call should re-traverse, not return cached null
+      const mockDirA2 = { getDirectoryHandle: vi.fn() };
+      mockRoot.getDirectoryHandle.mockResolvedValueOnce(mockDirA2);
+
+      const result = await fs.getDirectoryPath(["a"], { throwOnError: true });
+      expect(result).toBe(mockDirA2);
+      expect(getDirectorySpy).toHaveBeenCalledTimes(2);
+    });
+
+    it("throwOnError: false (default) still returns null and warns", async () => {
+      const consoleWarnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
+      const traversalError = new Error("getDirectory failed");
+      Object.defineProperty(globalThis, "navigator", {
+        value: { storage: { getDirectory: vi.fn().mockRejectedValue(traversalError) } },
+        writable: true,
+      });
+
+      const result = await fs.getDirectoryPath(["folder1"], { throwOnError: false });
+
+      expect(result).toBeNull();
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        "Failed to access directory path: folder1",
+        "OPFS",
+        traversalError
+      );
+      consoleWarnSpy.mockRestore();
+    });
+
+    it("unsupported API still returns null even with throwOnError: true", async () => {
+      Object.defineProperty(globalThis, "navigator", { value: undefined, writable: true });
+
+      const result = await fs.getDirectoryPath(["a"], { throwOnError: true });
+      expect(result).toBeNull();
+    });
   });
 
   describe("getDirectoryPath caching", () => {

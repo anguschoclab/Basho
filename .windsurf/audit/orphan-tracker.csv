@@ -1,1 +1,3 @@
 ID,File,Symbol,OrphanType,Priority,UIRoute,NPCConsumer,TickPhase,TestFile,Status,PR
+"ORPH-0001","src/components/RequireWorld.tsx","RequireWorld","unused-component","P2","","","","","candidate",""
+"ORPH-0002","src/engine/types/world.ts","matchmakingOverride","write-only-state","P1","","","","","candidate",""

@@ -16,7 +16,10 @@ export class OPFSFileSystem {
    * Navigates or creates a nested directory structure.
    * Uses a handle cache and in-flight deduplication to avoid redundant traversals.
    */
-  public async getDirectoryPath(path: string[]): Promise<FileSystemDirectoryHandle | null> {
+  public async getDirectoryPath(
+    path: string[],
+    options?: { throwOnError?: boolean }
+  ): Promise<FileSystemDirectoryHandle | null> {
     if (!this.isSupported()) return null;
 
     const key = path.join("/");
@@ -27,7 +30,7 @@ export class OPFSFileSystem {
     const inflight = this.inFlight.get(key);
     if (inflight) return inflight;
 
-    const promise = this.traversePath(path);
+    const promise = this.traversePath(path, options);
     this.inFlight.set(key, promise);
     try {
       return await promise;

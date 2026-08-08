@@ -1,12 +1,35 @@
 {
-  "generatedAt": "2026-08-08T05:35:19.961Z",
+  "generatedAt": "2026-08-08T16:18:36.143Z",
   "summary": {
-    "total": 0,
+    "total": 2,
     "unreferencedExports": 0,
     "orphanRoutes": 0,
     "untickedServices": 0,
-    "unusedComponents": 0,
-    "writeOnlyState": 0
+    "unusedComponents": 1,
+    "writeOnlyState": 1
   },
-  "entries": []
+  "entries": [
+    {
+      "id": "ORPH-0001",
+      "file": "src/components/RequireWorld.tsx",
+      "symbol": "RequireWorld",
+      "orphanType": "unused-component",
+      "priority": "P2",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
+    },
+    {
+      "id": "ORPH-0002",
+      "file": "src/engine/types/world.ts",
+      "symbol": "matchmakingOverride",
+      "orphanType": "write-only-state",
+      "priority": "P1",
+      "uiRoute": "",
+      "npcConsumer": "",
+      "tickPhase": "",
+      "status": "candidate"
+    }
+  ]
 }

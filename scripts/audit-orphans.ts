@@ -87,7 +87,11 @@ function collectFiles(dir: string, files: string[] = []): string[] {
 }
 
 function readContent(filePath: string): string {
-  return readFileSync(filePath, "utf-8");
+  try {
+    return readFileSync(filePath, "utf-8");
+  } catch {
+    return "";
+  }
 }
 
 function relPath(absPath: string): string {

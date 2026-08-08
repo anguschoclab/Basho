@@ -159,7 +159,10 @@
       "Bash(cp src/engine/npcRecruitmentStrategy.ts /tmp/npcRec.bak)",
       "Bash(cp src/engine/systems/generation/TalentPoolNPCRecruitment.ts /tmp/talentPool.bak)",
       "Bash(cp src/engine/systems/generation/TalentPoolNPCRecruitment.ts /tmp/tp_current.bak)",
-      "Bash(cp src/constants/engine/scoutingPerception.ts /tmp/noise_current.bak)"
+      "Bash(cp src/constants/engine/scoutingPerception.ts /tmp/noise_current.bak)",
+      "Bash(echo \"EXIT=$?\")",
+      "Bash(xargs -I{} dirname {})",
+      "Bash(npx tsx *)"
     ]
   },
   "outputStyle": "default"
