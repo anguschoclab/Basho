@@ -7,7 +7,7 @@
  * The player can poach these candidates by making a competing offer.
  */
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useGame } from "@/contexts/useGame";
 import { useGameStore } from "@/store/gameStore";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -23,6 +23,8 @@ import { Eye, Swords, TrendingUp, AlertCircle } from "lucide-react";
 import type { TalentCandidate, SuitorInterestBand } from "@/engine/types/talent";
 import { listNPCWatchedCandidates, getTopSuitor } from "@/engine/systems/generation/CandidatePoolService";
 import { getPlayerHeya, getHeya } from "@/engine/queries";
+import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
+import { compareBy, type SortDirection } from "@/lib/sortUtils";
 
 const INTEREST_COLORS: Record<SuitorInterestBand, string> = {
   all_in: "bg-red-500/20 text-red-700 border-red-500/40",
@@ -126,11 +128,19 @@ function CandidateRow({
   );
 }
 
+const SORT_OPTIONS: SortOption[] = [
+  { key: "name", label: "Name" },
+  { key: "age", label: "Age" },
+  { key: "potential", label: "Potential" },
+];
+
 /** Candidate pool page — NPC watchlist. */
 export default function CandidatePoolPage() {
   const { state } = useGame();
   const world = state.world;
   const sendCommand = useGameStore((s) => s.sendCommand);
+  const [sortKey, setSortKey] = useState<string>("name");
+  const [sortOrder, setSortOrder] = useState<SortDirection>("asc");
 
   const playerHeyaId = world?.playerHeyaId;
   const playerHeya = world ? getPlayerHeya(world) ?? null : null;
@@ -139,8 +149,18 @@ export default function CandidatePoolPage() {
     if (!world) return [] as TalentCandidate[];
     // Read candidatePool directly to satisfy UI-read field audit
     void world.candidatePool;
-    return listNPCWatchedCandidates(world);
-  }, [world]);
+    const list = listNPCWatchedCandidates(world);
+    const accessor: Record<string, (c: TalentCandidate) => string | number | undefined> = {
+      name: (c) => c.name,
+      age: (c) => (world ? world.year - c.birthYear : undefined),
+      potential: (c) => c.talentSeed,
+    };
+    const fn = accessor[sortKey];
+    if (fn) {
+      return [...list].sort((a, b) => compareBy(a, b, fn, sortOrder));
+    }
+    return list;
+  }, [world, sortKey, sortOrder]);
 
   if (!world) {
     return (
@@ -178,10 +198,22 @@ export default function CandidatePoolPage() {
 
         <Card className="paper">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Eye className="h-5 w-5 text-primary" />
-              NPC Scouting Intelligence
-            </CardTitle>
+            <div className="flex items-center justify-between gap-2">
+              <CardTitle className="flex items-center gap-2">
+                <Eye className="h-5 w-5 text-primary" />
+                NPC Scouting Intelligence
+              </CardTitle>
+              <SortMenu
+                options={SORT_OPTIONS}
+                storageKey="basho_sort_candidate_pool"
+                defaultSortKey="name"
+                defaultSortOrder="asc"
+                onSortChange={(key, order) => {
+                  setSortKey(key);
+                  setSortOrder(order);
+                }}
+              />
+            </div>
             <CardDescription>
               Your intelligence network reports on prospects that rival stables have identified.
               Make a competing offer to poach them before they sign.

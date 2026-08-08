@@ -14,8 +14,17 @@ import {
   projectOpponentScoutingUIDigest,
   setScoutingInvestment,
   RANK_NAMES,
+  RANK_HIERARCHY,
 } from "@/presenters/uiDigest";
 import { AttrChip } from "./AttrChip";
+import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
+import { compareBy, type SortDirection } from "@/lib/sortUtils";
+
+const SORT_OPTIONS: SortOption[] = [
+  { key: "rank", label: "Rank" },
+  { key: "shikona", label: "Shikona" },
+  { key: "scoutLevel", label: "Scout Level" },
+];
 
 export function OpponentScoutingTab({ playerHeyaId }: { playerHeyaId: string | null }) {
   const navigate = useNavigate();
@@ -23,11 +32,31 @@ export function OpponentScoutingTab({ playerHeyaId }: { playerHeyaId: string | n
   const world = state.world;
   const { toast } = useToast();
   const [filterDivision, setFilterDivision] = useState<string>("makuuchi");
+  const [sortKey, setSortKey] = useState<string>("rank");
+  const [sortOrder, setSortOrder] = useState<SortDirection>("asc");
 
   const digest = useMemo(() => {
     if (!world) return { opponents: [] };
-    return projectOpponentScoutingUIDigest(world, playerHeyaId, filterDivision);
-  }, [world, playerHeyaId, filterDivision]);
+    const d = projectOpponentScoutingUIDigest(world, playerHeyaId, filterDivision);
+    if (sortKey === "rank") {
+      d.opponents = [...d.opponents].sort((a, b) => {
+        const ta = (RANK_HIERARCHY as Record<string, { tier: number }>)[a.rank]?.tier ?? 99;
+        const tb = (RANK_HIERARCHY as Record<string, { tier: number }>)[b.rank]?.tier ?? 99;
+        const result = ta - tb || (a.rankNumber ?? 0) - (b.rankNumber ?? 0);
+        return sortOrder === "desc" ? -result : result;
+      });
+    } else {
+      const accessor: Record<string, (r: (typeof d.opponents)[number]) => string | number | undefined> = {
+        shikona: (r) => r.shikona,
+        scoutLevel: (r) => r.scoutLevel,
+      };
+      const fn = accessor[sortKey];
+      if (fn) {
+        d.opponents = [...d.opponents].sort((a, b) => compareBy(a, b, fn, sortOrder));
+      }
+    }
+    return d;
+  }, [world, playerHeyaId, filterDivision, sortKey, sortOrder]);
 
   const handleInvestScouting = (
     rikishiId: string,
@@ -44,8 +73,8 @@ export function OpponentScoutingTab({ playerHeyaId }: { playerHeyaId: string | n
 
   return (
     <div className="space-y-4">
-      {/* Division filter */}
-      <div className="flex gap-2 flex-wrap">
+      {/* Division filter + Sort */}
+      <div className="flex gap-2 flex-wrap items-center">
         {["makuuchi", "juryo", "makushita"].map((div) => (
           <Button
             key={div}
@@ -57,6 +86,18 @@ export function OpponentScoutingTab({ playerHeyaId }: { playerHeyaId: string | n
             {div}
           </Button>
         ))}
+        <div className="ml-auto">
+          <SortMenu
+            options={SORT_OPTIONS}
+            storageKey="basho_sort_opponent_scouting"
+            defaultSortKey="rank"
+            defaultSortOrder="asc"
+            onSortChange={(key, order) => {
+              setSortKey(key);
+              setSortOrder(order);
+            }}
+          />
+        </div>
       </div>
 
       <ScrollArea className="h-[600px]">

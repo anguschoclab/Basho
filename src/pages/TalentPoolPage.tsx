@@ -19,6 +19,8 @@ import * as talentpool from "@/engine/systems/generation/TalentPoolService";
 import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/engine/systems/generation/TalentPoolService";
 import { getPlayerHeya } from "@/engine/queries";
 import { getHeya, getOyakata, getTalentPool } from "@/presenters/worldAccess";
+import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
+import { compareBy, type SortDirection } from "@/lib/sortUtils";
 
 function poolLabel(pool: TalentPoolType) {
   switch (pool) {
@@ -61,11 +63,20 @@ function visibilityLabel(v: VisibilityBand) {
   }
 }
 
+const SORT_OPTIONS: SortOption[] = [
+  { key: "name", label: "Name" },
+  { key: "age", label: "Age" },
+  { key: "potential", label: "Potential" },
+  { key: "intel", label: "Intel" },
+];
+
 /** talent pool page. */
 export default function TalentPoolPage() {
   const { state } = useGame();
   const world = state.world;
   const [activePool, setActivePool] = useState<TalentPoolType>("high_school");
+  const [sortKey, setSortKey] = useState<string>("name");
+  const [sortOrder, setSortOrder] = useState<SortDirection>("asc");
   const sendCommand = useGameStore((s) => s.sendCommand);
 
   const playerHeyaId = world?.playerHeyaId;
@@ -77,8 +88,19 @@ export default function TalentPoolPage() {
 
   const candidates = useMemo(() => {
     if (!world) return [] as TalentCandidate[];
-    return talentpool.listVisibleCandidates(world, activePool);
-  }, [world, activePool]);
+    const list = talentpool.listVisibleCandidates(world, activePool);
+    const accessor: Record<string, (c: TalentCandidate) => string | number | undefined> = {
+      name: (c) => c.name,
+      age: (c) => (world ? world.year - c.birthYear : undefined),
+      potential: (c) => c.talentSeed,
+      intel: (c) => talentpool.getCandidateScoutingLevel(world, c.candidateId),
+    };
+    const fn = accessor[sortKey];
+    if (fn) {
+      return [...list].sort((a, b) => compareBy(a, b, fn, sortOrder));
+    }
+    return list;
+  }, [world, activePool, sortKey, sortOrder]);
 
   const poolState = world ? getTalentPool(world) : undefined;
   const poolSummary = poolState
@@ -194,17 +216,29 @@ export default function TalentPoolPage() {
         </Card>
 
         <Tabs value={activePool} onValueChange={(v) => setActivePool(v as TalentPoolType)}>
-          <TabsList>
-            {(["high_school", "university", "foreign"] as TalentPoolType[]).map((pt) => {
-              const I = poolIcon(pt);
-              return (
-                <TabsTrigger key={pt} value={pt}>
-                  <I className="h-4 w-4 mr-2" />
-                  {poolLabel(pt)}
-                </TabsTrigger>
-              );
-            })}
-          </TabsList>
+          <div className="flex items-center justify-between gap-2">
+            <TabsList>
+              {(["high_school", "university", "foreign"] as TalentPoolType[]).map((pt) => {
+                const I = poolIcon(pt);
+                return (
+                  <TabsTrigger key={pt} value={pt}>
+                    <I className="h-4 w-4 mr-2" />
+                    {poolLabel(pt)}
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
+            <SortMenu
+              options={SORT_OPTIONS}
+              storageKey="basho_sort_talent_pool"
+              defaultSortKey="name"
+              defaultSortOrder="asc"
+              onSortChange={(key, order) => {
+                setSortKey(key);
+                setSortOrder(order);
+              }}
+            />
+          </div>
 
           {(["high_school", "university", "foreign"] as TalentPoolType[]).map((pt) => (
             <TabsContent key={pt} value={pt}>

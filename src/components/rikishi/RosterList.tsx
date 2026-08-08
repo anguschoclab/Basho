@@ -5,15 +5,18 @@
  * Provides quick overview statistics and links to individual profiles.
  */
 
+import { useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import { Zap, Activity, Filter, SortAsc, LayoutGrid } from "lucide-react";
+import { Zap, Activity, Filter, LayoutGrid } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { KeshoBadge } from "@/components/kesho/KeshoBadge";
 import { RankBadge } from "./RankBadge";
+import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
+import { compareBy, type SortDirection } from "@/lib/sortUtils";
 
 const RANK_ORDER: Record<string, number> = {
   yokozuna: 0,
@@ -43,13 +46,38 @@ interface RosterListProps {
  * @param {(id: string) => void} props.onRikishiClick - Callback function invoked when a rikishi card is clicked.
  * @returns {JSX.Element} The rendered roster list.
  */
+const SORT_OPTIONS: SortOption[] = [
+  { key: "rank", label: "Rank" },
+  { key: "shikona", label: "Shikona" },
+  { key: "winPercentage", label: "Win %" },
+  { key: "streak", label: "Streak" },
+  { key: "condition", label: "Condition" },
+];
+
 export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
-  const sorted = [...rikishiList].sort((a, b) => {
-    const rankA = RANK_ORDER[a.rank?.toLowerCase() ?? ""] ?? 99;
-    const rankB = RANK_ORDER[b.rank?.toLowerCase() ?? ""] ?? 99;
-    if (rankA !== rankB) return rankA - rankB;
-    return (a.rankNumber ?? 0) - (b.rankNumber ?? 0);
-  });
+  const [sortKey, setSortKey] = useState<string>("rank");
+  const [sortOrder, setSortOrder] = useState<SortDirection>("asc");
+
+  const sorted = useMemo(() => {
+    if (sortKey === "rank") {
+      const result = [...rikishiList].sort((a, b) => {
+        const rankA = RANK_ORDER[a.rank?.toLowerCase() ?? ""] ?? 99;
+        const rankB = RANK_ORDER[b.rank?.toLowerCase() ?? ""] ?? 99;
+        if (rankA !== rankB) return rankA - rankB;
+        return (a.rankNumber ?? 0) - (b.rankNumber ?? 0);
+      });
+      return sortOrder === "desc" ? result.reverse() : result;
+    }
+    const accessor: Record<string, (r: UIRikishi) => string | number | undefined> = {
+      shikona: (r) => r.shikona,
+      winPercentage: (r) => r.winPercentage,
+      streak: (r) => r.streak,
+      condition: (r) => r.condition,
+    };
+    const fn = accessor[sortKey];
+    if (!fn) return rikishiList;
+    return [...rikishiList].sort((a, b) => compareBy(a, b, fn, sortOrder));
+  }, [rikishiList, sortKey, sortOrder]);
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-700">
@@ -85,14 +113,16 @@ export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
           >
             <Filter className="h-3.5 w-3.5" /> Filter
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="h-10 px-4 text-[10px] font-black uppercase tracking-widest border-2 gap-2"
-            tooltip="Sort roster by name, rank, or performance"
-          >
-            <SortAsc className="h-3.5 w-3.5" /> Sort
-          </Button>
+          <SortMenu
+            options={SORT_OPTIONS}
+            storageKey="basho_sort_roster"
+            defaultSortKey="rank"
+            defaultSortOrder="asc"
+            onSortChange={(key, order) => {
+              setSortKey(key);
+              setSortOrder(order);
+            }}
+          />
         </div>
       </div>
 

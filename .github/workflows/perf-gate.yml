@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: write
+
 jobs:
   perf-gate:
     runs-on: ubuntu-latest
@@ -21,23 +24,15 @@ jobs:
       - name: Run benchmark
         run: npx tsx scripts/bench-pipelines.ts 2>&1 | tee bench-output.txt
       - name: Check performance regression
+        run: npx tsx scripts/perf-gate-check.ts
+      - name: Update baseline on main/develop
+        if: success() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
         run: |
-          node -e "
-          const fs = require('fs');
-          const baseline = JSON.parse(fs.readFileSync('docs/audit/perf-baseline.json', 'utf8'));
-          const current = JSON.parse(fs.readFileSync('docs/audit/perf-baseline.json', 'utf8'));
-          // Compare S3 (365-day advance) p50 against baseline
-          const baselineS3 = baseline.results.find(r => r.scenario === 'S3_year');
-          const currentS3 = current.results.find(r => r.scenario === 'S3_year');
-          if (baselineS3 && currentS3) {
-            const degradation = (currentS3.p50_ms - baselineS3.p50_ms) / baselineS3.p50_ms;
-            if (degradation > 0.15) {
-              console.error('Performance regression: S3 p50 degraded by ' + (degradation * 100).toFixed(1) + '%');
-              process.exit(1);
-            }
-            console.log('S3 p50: ' + currentS3.p50_ms + 'ms (baseline: ' + baselineS3.p50_ms + 'ms, degradation: ' + (degradation * 100).toFixed(1) + '%)');
-          }
-          console.log('Performance gate passed');
-          "
+          git config --global user.name "perf-gate-bot"
+          git config --global user.email "perf-gate-bot@sumo-manager.pro"
+          cp docs/audit/perf-current.json docs/audit/perf-baseline.json
+          git add docs/audit/perf-baseline.json
+          git commit -m "Update perf baseline [skip ci]" || echo "No baseline changes to commit"
+          git push
       - name: Run unit tests
         run: npx vitest run

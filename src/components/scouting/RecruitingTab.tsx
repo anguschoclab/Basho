@@ -33,6 +33,8 @@ import { getCombatArchetypeDescription } from "@/engine/archetype";
 import { cn } from "@/lib/utils";
 import { toPotentialBand } from "@/engine/descriptorBands";
 import { POTENTIAL_LABELS } from "@/constants/ui/labels";
+import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
+import { compareBy, type SortDirection } from "@/lib/sortUtils";
 
 /**
  * Displays scouting confidence as star rating (1-5 stars).
@@ -70,6 +72,13 @@ function ScoutingConfidenceBadge({
   );
 }
 
+const SORT_OPTIONS: SortOption[] = [
+  { key: "name", label: "Name" },
+  { key: "age", label: "Age" },
+  { key: "potential", label: "Potential" },
+  { key: "scoutLevel", label: "Scout Level" },
+];
+
 export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null }) {
   const { state } = useGame();
   const { sendCommand } = useGameStore();
@@ -81,6 +90,8 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
   const [citizensOnly, setCitizensOnly] = useState(false);
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
   const [showCompare, setShowCompare] = useState(false);
+  const [sortKey, setSortKey] = useState<string>("name");
+  const [sortOrder, setSortOrder] = useState<SortDirection>("asc");
 
   const [signingCandidate, setSigningCandidate] = useState<CandidateDigestEntry | null>(null);
 
@@ -92,8 +103,18 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
         (c: CandidateDigestEntry) => c.nationality === "Japan" || c.nationality === "Japanese"
       );
     }
+    const accessor: Record<string, (c: CandidateDigestEntry) => string | number | undefined> = {
+      name: (c) => c.name,
+      age: (c) => c.age,
+      potential: (c) => c.talentSeed,
+      scoutLevel: (c) => c.scoutLevel,
+    };
+    const fn = accessor[sortKey];
+    if (fn) {
+      d.candidates = [...d.candidates].sort((a, b) => compareBy(a, b, fn, sortOrder));
+    }
     return d;
-  }, [world, activePool, citizensOnly]);
+  }, [world, activePool, citizensOnly, sortKey, sortOrder]);
 
   const foreignUsage = useMemo(() => {
     if (!world || !playerHeyaId) return 0;
@@ -230,26 +251,38 @@ export function RecruitingTab({ playerHeyaId }: { playerHeyaId: string | null })
           )}
         </div>
 
-        <Button
-          variant={citizensOnly ? "default" : "outline"}
-          size="sm"
-          className="h-8 text-[10px] uppercase tracking-widest font-bold gap-2"
-          onClick={() => setCitizensOnly(!citizensOnly)}
-        >
-          <UserCheck className="h-3.5 w-3.5" />
-          Citizens Only
-        </Button>
-        {selectedCandidates.length === 2 && (
+        <div className="flex items-center gap-2">
+          <SortMenu
+            options={SORT_OPTIONS}
+            storageKey="basho_sort_recruiting"
+            defaultSortKey="name"
+            defaultSortOrder="asc"
+            onSortChange={(key, order) => {
+              setSortKey(key);
+              setSortOrder(order);
+            }}
+          />
           <Button
-            variant="default"
+            variant={citizensOnly ? "default" : "outline"}
             size="sm"
-            className="h-8 text-[10px] uppercase tracking-widest font-bold gap-2 bg-success hover:bg-success/90"
-            onClick={() => setShowCompare(true)}
+            className="h-8 text-[10px] uppercase tracking-widest font-bold gap-2"
+            onClick={() => setCitizensOnly(!citizensOnly)}
           >
-            <Layers className="h-3.5 w-3.5" />
-            Compare Selected
+            <UserCheck className="h-3.5 w-3.5" />
+            Citizens Only
           </Button>
-        )}
+          {selectedCandidates.length === 2 && (
+            <Button
+              variant="default"
+              size="sm"
+              className="h-8 text-[10px] uppercase tracking-widest font-bold gap-2 bg-success hover:bg-success/90"
+              onClick={() => setShowCompare(true)}
+            >
+              <Layers className="h-3.5 w-3.5" />
+              Compare Selected
+            </Button>
+          )}
+        </div>
       </div>
 
       <ScrollArea className="h-[550px]">

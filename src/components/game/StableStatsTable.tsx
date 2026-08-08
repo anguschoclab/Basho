@@ -5,6 +5,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ArrowUpDown, TrendingUp, TrendingDown } from "lucide-react";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { cn } from "@/lib/utils";
+import { useSortState } from "@/hooks/useSortState";
+import { compareBy } from "@/lib/sortUtils";
 
 interface StableStatsTableProps {
   rikishiList: UIRikishi[];
@@ -19,9 +21,23 @@ type SortKey =
   | "streak"
   | "avgRankLabel";
 
+const SORT_ACCESSORS: Record<SortKey, (r: UIRikishi) => string | number> = {
+  shikona: (r) => r.shikona,
+  division: (r) => r.division,
+  careerWins: (r) => r.careerWins,
+  careerLosses: (r) => r.careerLosses,
+  winPercentage: (r) => r.winPercentage,
+  streak: (r) => r.streak,
+  avgRankLabel: (r) => r.avgRankLabel,
+};
+
 export function StableStatsTable({ rikishiList }: StableStatsTableProps) {
-  const [sortKey, setSortKey] = useState<SortKey>("division");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const { sortKey, sortOrder, setSortKey, toggleOrder } = useSortState<SortKey>(
+    "basho_sort_stable_stats",
+    "division",
+    "desc",
+    "asc"
+  );
   const [divisionFilter, setDivisionFilter] = useState<string>("all");
 
   const divisions = ["all", "makuuchi", "juryo", "makushita", "lower"];
@@ -39,20 +55,8 @@ export function StableStatsTable({ rikishiList }: StableStatsTableProps) {
     }
 
     // Sort
-    result.sort((a, b) => {
-      let valA: string | number = a[sortKey] as string | number;
-      let valB: string | number = b[sortKey] as string | number;
-
-      // Special handling for labels or complex types if needed
-      if (sortKey === "streak") {
-        valA = a.streak;
-        valB = b.streak;
-      }
-
-      if (valA < valB) return sortOrder === "asc" ? -1 : 1;
-      if (valA > valB) return sortOrder === "asc" ? 1 : -1;
-      return 0;
-    });
+    const accessor = SORT_ACCESSORS[sortKey];
+    result.sort((a, b) => compareBy(a, b, accessor, sortOrder));
 
     return result;
   }, [rikishiList, sortKey, sortOrder, divisionFilter]);
@@ -60,13 +64,12 @@ export function StableStatsTable({ rikishiList }: StableStatsTableProps) {
   const toggleSort = useCallback(
     (key: SortKey) => {
       if (sortKey === key) {
-        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+        toggleOrder();
       } else {
         setSortKey(key);
-        setSortOrder("desc"); // Default to desc for stats
       }
     },
-    [sortKey, sortOrder]
+    [sortKey, setSortKey, toggleOrder]
   );
 
   return (
