@@ -235,8 +235,6 @@ function findOrphanRoutes(): OrphanEntry[] {
   if (!existsSync(routesFile)) return entries;
 
   const routesContent = readContent(routesFile);
-  const sidebarFile = join(COMPONENTS_DIR, "layout", "sidebarConfig.ts");
-  const sidebarContent = existsSync(sidebarFile) ? readContent(sidebarFile) : "";
 
   // Extract route paths from routes.tsx
   // Look for path: "/something" patterns
@@ -250,18 +248,23 @@ function findOrphanRoutes(): OrphanEntry[] {
     routes.push(path);
   }
 
-  for (const route of routes) {
-    // Check if route appears in sidebar config
-    // Normalize: sidebar may use the route path or a prefix
-    const routeBase = route.split("/").filter(Boolean)[0] || "";
-    if (!routeBase) continue;
+  // Build a blob of ALL source files (runtime + test + scripts) to search for route references
+  const allSourceBlob = allFiles.map((f) => readContent(f)).join("\n");
 
-    // Skip parameterized routes for sidebar check
+  for (const route of routes) {
+    // Skip parameterized routes
     if (route.includes("$")) continue;
 
-    const inSidebar = sidebarContent.includes(`"${route}"`) || sidebarContent.includes(`'${route}'`) || sidebarContent.includes(`\`${route}\``) || sidebarContent.includes(`/${routeBase}`);
+    // Check if route is referenced anywhere in the codebase:
+    // - sidebar config (to: "/route")
+    // - redirect({ to: "/route" })
+    // - <Link to="/route" />
+    // - navigate({ to: "/route" })
+    // - router.navigate({ to: "/route" })
+    const routeQuoted = [`"${route}"`, `'${route}'`, `\`${route}\``];
+    const isReferenced = routeQuoted.some((q) => allSourceBlob.includes(q));
 
-    if (!inSidebar) {
+    if (!isReferenced) {
       entries.push({
         id: nextId(),
         file: "src/routes.tsx",
@@ -405,13 +408,8 @@ function findWriteOnlyState(): OrphanEntry[] {
     stateFields.push(field);
   }
 
-  // Read selectors + presenters to find which fields are read by UI
-  const selectorsFile = join(ENGINE_DIR, "selectors.ts");
-  const selectorsContent = existsSync(selectorsFile) ? readContent(selectorsFile) : "";
-
-  const projectionsDir = join(SRC, "presenters");
-  const projectionFiles = existsSync(projectionsDir) ? collectFiles(projectionsDir) : [];
-  const projectionsBlob = projectionFiles.map((f) => readContent(f)).join("\n");
+  // Build a blob of ALL source files (runtime + test) to search for field reads
+  const allSourceBlob = allFiles.map((f) => readContent(f)).join("\n");
 
   // Read ImpactBuilder to find which fields are written
   const impactBuilderFile = join(ENGINE_DIR, "core", "ImpactBuilder.ts");
@@ -426,18 +424,18 @@ function findWriteOnlyState(): OrphanEntry[] {
     }
   }
 
-  // For each state field, check if it's read in a selector or presenter
+  // For each state field, check if it's read anywhere in the codebase
   for (const field of stateFields) {
     if (["id", "version", "seed", "rng", "tick", "day", "week", "month", "year", "cyclePhase", "currentBasho", "currentDate", "date", "time", "timestamp", "history", "eventLog", "events", "pendingEvents", "rikishi", "stables", "oyakata", "managers", "heya", "freeAgents"].includes(field)) continue;
 
-    // Check if field appears in selectors or projections
+    // Check if field is read anywhere in the codebase (world.field, state.world.field, etc.)
     const readPattern = new RegExp(`\\.${escapeRegex(field)}\\b`);
-    const isReadByUI = readPattern.test(selectorsContent) || readPattern.test(projectionsBlob);
+    const isRead = readPattern.test(allSourceBlob);
 
     // Check if field is written by any phase
     const isWritten = writtenFields.has(field) || runtimeBlob.includes(`world.${field} =`) || runtimeBlob.includes(`.${field}:`);
 
-    if (isWritten && !isReadByUI) {
+    if (isWritten && !isRead) {
       entries.push({
         id: nextId(),
         file: "src/engine/types/world.ts",

@@ -15,7 +15,7 @@ import { getHeya, getRikishi } from "../../queries";
 
 export type ExhibitionRegion = "Mongolia" | "Georgia" | "Europe" | "Americas" | "East_Asia";
 
-export interface ExhibitionInvitation {
+interface ExhibitionInvitation {
   id: string;
   heyaId: string;
   region: ExhibitionRegion;
