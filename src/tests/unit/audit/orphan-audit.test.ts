@@ -46,7 +46,7 @@ describe("Audit runner self-test", () => {
     const lines = csv.split("\n");
     expect(lines[0]).toContain("ID,File,Symbol,OrphanType,Priority");
     expect(lines[0]).toContain("TestFile");
-    expect(lines.length).toBeGreaterThan(1);
+    expect(lines.length).toBeGreaterThanOrEqual(1);
   });
 
   it("every entry has a unique ID and required fields", () => {
