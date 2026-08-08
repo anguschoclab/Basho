@@ -48,17 +48,20 @@ function buildDivisionPressure(
 ): DivisionPressure {
   const basho = world.currentBasho;
   const rikishi = activeRikishiInDivision(world, division);
-  const withRecords = rikishi
-    .map((r) => {
-      const st = getStanding(world, r.id);
-      return {
+  const withRecords = [];
+  for (const r of rikishi) {
+    const st = getStanding(world, r.id);
+    const wins = st?.wins ?? 0;
+    const losses = st?.losses ?? 0;
+    if (wins > 0 || losses > 0) {
+      withRecords.push({
         rikishiId: r.id,
         shikona: r.shikona,
-        wins: st?.wins ?? 0,
-        losses: st?.losses ?? 0,
-      };
-    })
-    .filter((r) => r.wins > 0 || r.losses > 0);
+        wins,
+        losses,
+      });
+    }
+  }
 
   const sorted = [...withRecords].sort((a, b) => {
     const netA = a.wins - a.losses;
@@ -162,12 +165,14 @@ function buildRivalryClusters(world: WorldState): RivalryCluster[] {
     }
   }
 
-  return Object.values(clusters)
-    .map((c) => ({
+  const result: RivalryCluster[] = [];
+  for (const c of Object.values(clusters)) {
+    result.push({
       ...c,
       averageHeat: c.rivalIds.length ? c.averageHeat / c.rivalIds.length : 0,
-    }))
-    .sort((a, b) => b.averageHeat - a.averageHeat);
+    });
+  }
+  return result.sort((a, b) => b.averageHeat - a.averageHeat);
 }
 
 function topRecruitAvailable(world: WorldState): boolean {
