@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { SaveSlotInfo } from "@/engine/saveload";
 import type { BashoName } from "@/engine/types/basho";
 import { BASHO_CALENDAR, deleteSave, importSave } from "@/presenters/uiDigest";
@@ -28,14 +28,14 @@ export function useSaveSlotManager({
   const [isImporting, setIsImporting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
-  const refreshSlots = () => {
+  const refreshSlots = useCallback(() => {
     try {
       if (typeof getSaveSlots === "function") setSaveSlots(getSaveSlots());
       else setSaveSlots([]);
     } catch {
       setSaveSlots([]);
     }
-  };
+  }, [getSaveSlots]);
 
   useEffect(() => {
     refreshSlots();
