@@ -48,7 +48,8 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
     const heyaUpdates: HeyaUpdates = {};
 
     // -- Economics: Salaries & Upkeep --
-    const totalExpenses = processHeyaEconomics(world, heya, world.rikishi, heyaUpdates, builder);
+    const breakdown = { jsaSalaries: 0, heyaOverhead: 0 };
+    processHeyaEconomics(world, heya, world.rikishi, heyaUpdates, builder, breakdown);
 
     // -- Loan Repayments --
     processLoanRepayments(world, heya, heyaUpdates, builder);
@@ -56,11 +57,11 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
     // -- Facilities Decay & Maintenance --
     const maintenance = processFacilitiesMaintenance(world, heya, heyaUpdates, builder);
 
-    // -- NPC Auto-Investment --
-    processNpcAutoInvestment(world, heya, totalExpenses, maintenance, heyaUpdates, builder);
+    // -- NPC Auto-Investment (uses overhead-only burn, not JSA salaries) --
+    processNpcAutoInvestment(world, heya, breakdown.heyaOverhead, maintenance, heyaUpdates, builder);
 
-    // Runway Band Sync
-    const burn = Math.max(1, totalExpenses + maintenance);
+    // Runway Band Sync (overhead-only burn — JSA salaries don't leave heya.funds)
+    const burn = Math.max(1, breakdown.heyaOverhead + maintenance);
     const runway = (heyaUpdates.funds ?? heya.funds ?? 0) / burn;
     heyaUpdates.runwayBand =
       runway >= RUNWAY_THRESHOLDS.SECURE

@@ -10,6 +10,8 @@ import type { SerializedWorldState } from "../types/save";
 import type { Rikishi } from "../types/rikishi";
 import type { Heya } from "../types/heya";
 import { resetImpactTimestampCounter } from "../core/StateImpact";
+import { RANK_HIERARCHY } from "../banzuke";
+import { warn } from "../utils/Logger";
 
 /**
  * Serialization Service handles the transformation between runtime Maps
@@ -233,6 +235,14 @@ export const SerializationService = {
       const idStr = String(r.id || "");
       for (let i = 0; i < idStr.length; i++) hash = ((hash << 5) - hash + idStr.charCodeAt(i)) | 0;
       r.talentSeed = 30 + Math.abs(hash % 61);
+    }
+    if (!RANK_HIERARCHY[r.rank]) {
+      warn(
+        `Rikishi ${r.id} has invalid rank '${r.rank}', resetting to jonokuchi`,
+        "SerializationService"
+      );
+      r.rank = "jonokuchi";
+      r.division = RANK_HIERARCHY.jonokuchi.division;
     }
   },
 
