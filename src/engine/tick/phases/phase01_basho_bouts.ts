@@ -11,16 +11,20 @@
  *   - Only runs during `active_basho` cycle phase.
  *   - Resolves all unplayed matches for `currentBasho.day` in one pass.
  *   - Does NOT re-simulate bouts that already have results.
- *   - Advances the basho day counter after all bouts are resolved.
+ *   - Advances the basho day after all bouts are resolved.
  */
 
 import type { WorldState } from "../../types/world";
+import type { StateImpact } from "../../core/StateImpact";
+import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { simulateBoutForToday, advanceBashoDay } from "../../world";
 
-export function phase01_basho_bouts(world: WorldState): WorldState {
-  if (world.cyclePhase !== "active_basho") return world;
+export function phase01_basho_bouts(world: WorldState): StateImpact {
+  const builder = createImpactBuilder("phase01_basho_bouts");
+
+  if (world.cyclePhase !== "active_basho") return builder.build();
   const basho = world.currentBasho;
-  if (!basho) return world;
+  if (!basho) return builder.build();
 
   let currentWorld = world;
 
@@ -44,5 +48,29 @@ export function phase01_basho_bouts(world: WorldState): WorldState {
   // Advance the basho day after all bouts for today are resolved
   currentWorld = advanceBashoDay(currentWorld);
 
-  return currentWorld;
+  // Emit the final currentBasho as a world field update
+  if (currentWorld.currentBasho) {
+    builder.updateWorldField("currentBasho", currentWorld.currentBasho);
+  }
+
+  // Collect any rikishi stat changes by diffing — the simulateBoutForToday
+  // function resolves impacts internally, so we capture the final rikishi state
+  // for any rikishi that appear in the basho matches.
+  if (currentWorld.currentBasho) {
+    const matchRikishiIds = new Set<string>();
+    for (const m of currentWorld.currentBasho.matches ?? []) {
+      if (m.result) {
+        matchRikishiIds.add(m.eastRikishiId);
+        matchRikishiIds.add(m.westRikishiId);
+      }
+    }
+    for (const rId of matchRikishiIds) {
+      const updated = currentWorld.rikishi.get(rId);
+      if (updated) {
+        builder.updateRikishi(rId, updated);
+      }
+    }
+  }
+
+  return builder.build();
 }

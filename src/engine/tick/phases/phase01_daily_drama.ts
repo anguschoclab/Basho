@@ -5,8 +5,9 @@
  */
 
 import type { WorldState } from "../../types/world";
+import type { StateImpact } from "../../core/StateImpact";
 import { processDramaTick } from "../../bard/dramaGenerator";
 
-export function phase01_daily_drama(world: WorldState) {
+export function phase01_daily_drama(world: WorldState): StateImpact {
   return processDramaTick(world);
 }

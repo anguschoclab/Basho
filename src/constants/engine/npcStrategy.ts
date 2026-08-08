@@ -219,3 +219,9 @@ export const RECRUITMENT_THRESHOLD_NEPOSTIST = 3;
 export const RECRUITMENT_THRESHOLD_NURTURER = 3;
 export const RECRUITMENT_THRESHOLD_TYRANT = 2;
 export const RECRUITMENT_THRESHOLD_SCIENTIST = 2;
+
+// NPC AI rotation sampling (B2.3)
+// During off-season (non-active_basho) weeks, only ~2/3 of NPC heyas make decisions.
+// The rotation divides heyas into 3 groups and skips one group per week on a round-robin.
+export const NPC_AI_ROTATION_DIVISOR = 3;
+export const NPC_AI_ROTATION_MIN_FULL_SWEEP = 10;

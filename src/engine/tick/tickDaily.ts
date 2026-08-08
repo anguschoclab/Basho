@@ -24,6 +24,7 @@ import {
 } from "../../constants/engine/npcStrategy";
 import { warn } from "../utils/Logger";
 import { shouldHaltAdvance } from "../loop/shouldHaltAdvance";
+import { clearQueryCaches } from "../queries";
 
 // ====
 // TYPES
@@ -137,6 +138,9 @@ export function advanceOneDay(
   }
 
   if (isWeeklyTick) {
+    // Clear query caches on weekly boundary (B1.2 — was daily in preflight, now weekly only)
+    clearQueryCaches();
+
     if (nextWorld.cyclePhase === "active_basho") {
       activePhases.push(...bashoPipeline);
     } else {

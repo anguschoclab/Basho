@@ -1,6 +1,6 @@
- 
 import { describe, it, expect } from "vitest";
 import { phase01_basho_bouts } from "@/engine/tick/phases/phase01_basho_bouts";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { MatchSchedule, BashoState, BashoName } from "@/engine/types/basho";
@@ -65,7 +65,7 @@ function makeWorldForPhase(
     currentBasho: basho,
     cyclePhase: "active_basho",
     sponsorPool: { sponsors: new Map(), koenkais: new Map() } as unknown as import("@/engine/types/sponsors").SponsorPool,
-    rivalriesState: { pairs: {}, version: 1 },
+    rivalriesState: { pairs: {}, version: "1.0.0" },
   });
 }
 
@@ -77,7 +77,8 @@ describe("phase01_basho_bouts", () => {
   it("Test 6.1: simulates all unplayed bouts for the current day", () => {
     const matches = [makeMatch("b1", 1), makeMatch("b2", 1)];
     const world = makeWorldForPhase(matches);
-    const result = phase01_basho_bouts(world);
+    const impact = phase01_basho_bouts(world);
+    const result = resolveImpacts(world, [impact]);
     const basho = result.currentBasho!;
     const resolved = basho.matches.filter((m) => m.result);
     expect(resolved.length).toBe(2);
@@ -100,9 +101,13 @@ describe("phase01_basho_bouts", () => {
       isKinboshi: false,
       log: [],
       kenshoEnvelopes: 0,
+      momentumScore: 0,
+      inBoutInjury: null,
+      isTimeout: false,
     };
     const world = makeWorldForPhase(matches);
-    const result = phase01_basho_bouts(world);
+    const impact = phase01_basho_bouts(world);
+    const result = resolveImpacts(world, [impact]);
     const basho = result.currentBasho!;
     const resolved = basho.matches.filter((m) => m.result);
     expect(resolved.length).toBe(2);
@@ -114,7 +119,8 @@ describe("phase01_basho_bouts", () => {
   it("Test 6.3: advances the basho day after all bouts are resolved", () => {
     const matches = [makeMatch("b1", 1)];
     const world = makeWorldForPhase(matches);
-    const result = phase01_basho_bouts(world);
+    const impact = phase01_basho_bouts(world);
+    const result = resolveImpacts(world, [impact]);
     expect(result.currentBasho!.day).toBe(2);
   });
 
@@ -122,14 +128,17 @@ describe("phase01_basho_bouts", () => {
     const matches = [makeMatch("b1", 1)];
     const world = makeWorldForPhase(matches);
     world.cyclePhase = "pre_basho";
-    const result = phase01_basho_bouts(world);
-    expect(result).toBe(world);
+    const impact = phase01_basho_bouts(world);
+    const result = resolveImpacts(world, [impact]);
+    // No bouts should be resolved, day should not advance
+    expect(result.currentBasho?.day).toBe(1);
   });
 
   it("Test 6.5: does nothing when no currentBasho", () => {
     const world = MockFactory.createWorld({ currentBasho: undefined, cyclePhase: "active_basho" });
-    const result = phase01_basho_bouts(world);
-    expect(result).toBe(world);
+    const impact = phase01_basho_bouts(world);
+    const result = resolveImpacts(world, [impact]);
+    expect(result.currentBasho).toBeUndefined();
   });
 
   it("Test 6.6: does nothing when no unplayed bouts for today", () => {
@@ -148,9 +157,13 @@ describe("phase01_basho_bouts", () => {
       isKinboshi: false,
       log: [],
       kenshoEnvelopes: 0,
+      momentumScore: 0,
+      inBoutInjury: null,
+      isTimeout: false,
     };
     const world = makeWorldForPhase(matches);
-    const result = phase01_basho_bouts(world);
+    const impact = phase01_basho_bouts(world);
+    const result = resolveImpacts(world, [impact]);
     // Day should still advance since all bouts are resolved
     expect(result.currentBasho!.day).toBe(2);
   });
@@ -158,7 +171,8 @@ describe("phase01_basho_bouts", () => {
   it("Test 6.7: sets match.result on all simulated matches", () => {
     const matches = [makeMatch("b1", 1), makeMatch("b2", 1), makeMatch("b3", 1)];
     const world = makeWorldForPhase(matches);
-    const result = phase01_basho_bouts(world);
+    const impact = phase01_basho_bouts(world);
+    const result = resolveImpacts(world, [impact]);
     const basho = result.currentBasho!;
     for (const match of basho.matches) {
       expect(match.result).toBeDefined();
@@ -169,7 +183,8 @@ describe("phase01_basho_bouts", () => {
   it("Test 6.8: updates currentBashoWins/currentBashoLosses for all bouts", () => {
     const matches = [makeMatch("b1", 1), makeMatch("b2", 1)];
     const world = makeWorldForPhase(matches);
-    const result = phase01_basho_bouts(world);
+    const impact = phase01_basho_bouts(world);
+    const result = resolveImpacts(world, [impact]);
     const east = result.rikishi.get("east")!;
     const west = result.rikishi.get("west")!;
     // Each rikishi should have 1 win and 1 loss (they fight each other twice)

@@ -39,15 +39,62 @@ import { RANK_HIERARCHY } from "../../types/banzuke";
 import { SparringService } from "../../systems/training/SparringService";
 import type { Rikishi } from "../../types/rikishi";
 import type { SparringChemistry, SparringPair, SparringState } from "../../types/training";
+import {
+  NPC_AI_ROTATION_DIVISOR,
+  NPC_AI_ROTATION_MIN_FULL_SWEEP,
+} from "../../../constants/engine/npcStrategy";
+
+/**
+ * Selects which NPC heyas should make decisions this week.
+ *
+ * Full sweep (all heyas) when:
+ * - cyclePhase is "active_basho" (NPCs always decide during basho)
+ * - monthBoundary is pending (institutional correctness)
+ * - NPC heya count is at or below NPC_AI_ROTATION_MIN_FULL_SWEEP
+ *
+ * Otherwise, rotates which 1/3 of heyas are skipped each week using
+ * a deterministic round-robin keyed by world.week.
+ */
+function selectNPCHeyasForWeek(world: WorldState, npcHeyas: Heya[]): Heya[] {
+  // Full sweep during active basho
+  if (world.cyclePhase === "active_basho") return npcHeyas;
+
+  // Full sweep on monthly boundary
+  if (world.transientContext?.boundaries?.monthBoundary) return npcHeyas;
+
+  // Full sweep for small heya counts
+  if (npcHeyas.length <= NPC_AI_ROTATION_MIN_FULL_SWEEP) return npcHeyas;
+
+  // Rotation: sort IDs deterministically, skip one third per week
+  const sorted = [...npcHeyas].sort((a, b) => a.id.localeCompare(b.id));
+  const skipGroup = (world.week ?? 0) % NPC_AI_ROTATION_DIVISOR;
+  const groupSize = Math.floor(sorted.length / NPC_AI_ROTATION_DIVISOR);
+
+  // Determine the skip range for this week's group
+  const skipStart = skipGroup * groupSize;
+  // The last group absorbs any remainder
+  const skipEnd =
+    skipGroup === NPC_AI_ROTATION_DIVISOR - 1
+      ? sorted.length
+      : skipStart + groupSize;
+
+  return sorted.filter((_, i) => i < skipStart || i >= skipEnd);
+}
 
 export function phase01_week_npc_ai(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_npc_ai");
-  const scoutingMap: Record<Id, "none" | "passive" | "active" | "aggressive"> = {};
+  const scoutingMap: Record<Id, "none" | "passive" | "active" | "aggressive"> = {
+    ...(world.npcScoutingPriorities || {}),
+  };
   const playerHeyaId = world.playerHeyaId;
   const leaguePerception = buildLeaguePerception(world);
 
-  for (const heya of getAvailableStables(world)) {
-    if (heya.id === playerHeyaId) continue;
+  const allNpcHeyas = getAvailableStables(world).filter(
+    (h) => h.id !== playerHeyaId
+  );
+  const heyasToProcess = selectNPCHeyasForWeek(world, allNpcHeyas);
+
+  for (const heya of heyasToProcess) {
 
     const perception = buildPerceptionSnapshot(world, heya.id);
     const oyakata = heya.oyakataId ? world.oyakata.get(heya.oyakataId) : undefined;

@@ -1,7 +1,7 @@
- 
 import { describe, it, expect } from "vitest";
 import { simulateBoutForToday, advanceBashoDay } from "@/engine/world";
 import { phase01_basho_bouts } from "@/engine/tick/phases/phase01_basho_bouts";
+import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { MatchSchedule, BashoState, BashoName } from "@/engine/types/basho";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
@@ -37,14 +37,15 @@ function makeWorld(day: number = 1, matchesPerDay: number = 1): ReturnType<typeo
     heyas: new Map([["test-heya", MockFactory.createHeya("test-heya", { rikishiIds: ["east", "west"] })]]),
     currentBasho: basho, cyclePhase: "active_basho",
     sponsorPool: { sponsors: new Map(), koenkais: new Map() } as any,
-    rivalriesState: { pairs: {}, version: 1 },
+    rivalriesState: { pairs: {}, version: "1.0.0" },
   });
 }
 
 describe("bashoSlice integration (full day simulation)", () => {
   it("Test 16.1: simulating a full day via phase01 sets match.result on all bouts", () => {
     const world = makeWorld(1, 2);
-    const result = phase01_basho_bouts(world);
+    const impact = phase01_basho_bouts(world);
+    const result = resolveImpacts(world, [impact]);
     const basho = result.currentBasho!;
     const day1Matches = basho.matches.filter((m) => m.day === 1);
     for (const m of day1Matches) {
@@ -54,7 +55,8 @@ describe("bashoSlice integration (full day simulation)", () => {
 
   it("Test 16.2: simulating a full day advances the day", () => {
     const world = makeWorld(1, 1);
-    const result = phase01_basho_bouts(world);
+    const impact = phase01_basho_bouts(world);
+    const result = resolveImpacts(world, [impact]);
     expect(result.currentBasho!.day).toBe(2);
   });
 
@@ -84,7 +86,8 @@ describe("bashoSlice integration (full day simulation)", () => {
     const world = makeWorld(1, 1);
     let currentWorld = world;
     for (let day = 1; day <= 15; day++) {
-      currentWorld = phase01_basho_bouts(currentWorld);
+      const impact = phase01_basho_bouts(currentWorld);
+      currentWorld = resolveImpacts(currentWorld, [impact]);
       // phase01 advances the day, so we need to check if basho is still active
       const basho = currentWorld.currentBasho;
       if (!basho || basho.day > 15) break;

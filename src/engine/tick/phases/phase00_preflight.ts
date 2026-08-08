@@ -13,7 +13,6 @@ import { initializeBasho } from "../../systems/generation/WorldFactory";
 import { resetBashoMediaTracking } from "../../systems/media/MediaService";
 import { getInterimWeeks } from "../../calendar";
 import { emptyDeltas, defaultActiveModifiers } from "../pipelineRunner";
-import { clearQueryCaches } from "../../queries";
 import {
   DAYS_IN_MONTH,
   DEFAULT_MAX_DAY,
@@ -76,8 +75,8 @@ export function phase00_preflight(world: WorldState): StateImpact {
     builder.merge(applyExpiredQueueDefaults(world));
   }
 
-  // 7. Clear caches for the new day
-  clearQueryCaches();
+  // Note: clearQueryCaches() moved to weekly gate in tickDaily.ts (B1.2 optimization).
+  // Daily clearing was wasteful — caches are only hot during weekly phases.
 
   return builder.build();
 }
