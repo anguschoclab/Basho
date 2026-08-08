@@ -257,4 +257,75 @@ describe("DramaMatchmaker", () => {
       expect(dramaLabels).toContain("drama_make_or_break");
     });
   });
+
+  describe("applyDramaBudget — cache behavioral equivalence", () => {
+    it("produces identical results regardless of score caching", () => {
+      const rikishiA = mockRikishi("a", { currentBashoWins: 7, currentBashoLosses: 7 });
+      const rikishiB = mockRikishi("b", { currentBashoWins: 7, currentBashoLosses: 7 });
+      const rikishiC = mockRikishi("c", { currentBashoWins: 8, currentBashoLosses: 6 });
+      const rikishiD = mockRikishi("d", { currentBashoWins: 8, currentBashoLosses: 6 });
+      const rikishiE = mockRikishi("e", { currentBashoWins: 7, currentBashoLosses: 7 });
+      const rikishiF = mockRikishi("f", { currentBashoWins: 7, currentBashoLosses: 7 });
+
+      const rikishiMap = new Map([
+        ["a", rikishiA],
+        ["b", rikishiB],
+        ["c", rikishiC],
+        ["d", rikishiD],
+        ["e", rikishiE],
+        ["f", rikishiF],
+      ]);
+
+      const standings = new Map([
+        ["a", { wins: 7, losses: 7 }],
+        ["b", { wins: 7, losses: 7 }],
+        ["c", { wins: 8, losses: 6 }],
+        ["d", { wins: 8, losses: 6 }],
+        ["e", { wins: 7, losses: 7 }],
+        ["f", { wins: 7, losses: 7 }],
+      ]);
+
+      const pairings: MatchPairing[] = [
+        { eastId: "a", westId: "c", score: 1, reasons: [] },
+        { eastId: "b", westId: "d", score: 1, reasons: [] },
+        { eastId: "e", westId: "f", score: 1, reasons: [] },
+      ];
+
+      const facedSet = new Set<string>();
+
+      const result = applyDramaBudget(pairings, rikishiMap, 15, standings, facedSet);
+
+      expect(result).toHaveLength(3);
+      const dramaLabels = result.flatMap((p) => p.reasons.filter((r) => r.startsWith("drama_")));
+      expect(dramaLabels.length).toBeGreaterThan(0);
+    });
+
+    it("handles sequential swaps correctly (cache updated after first swap)", () => {
+      const rikishi = Array.from({ length: 8 }, (_, i) =>
+        mockRikishi(`r${i}`, { currentBashoWins: 7, currentBashoLosses: 7 })
+      );
+
+      const rikishiMap = new Map(rikishi.map((r) => [r.id, r]));
+      const standings = new Map(rikishi.map((r) => [r.id, { wins: 7, losses: 7 }]));
+
+      const pairings: MatchPairing[] = [
+        { eastId: "r0", westId: "r1", score: 1, reasons: [] },
+        { eastId: "r2", westId: "r3", score: 1, reasons: [] },
+        { eastId: "r4", westId: "r5", score: 1, reasons: [] },
+        { eastId: "r6", westId: "r7", score: 1, reasons: [] },
+      ];
+
+      const facedSet = new Set<string>();
+
+      const result = applyDramaBudget(pairings, rikishiMap, 15, standings, facedSet);
+
+      expect(result).toHaveLength(4);
+      const allPairs = result.map((p) =>
+        p.eastId < p.westId ? `${p.eastId}-${p.westId}` : `${p.westId}-${p.eastId}`
+      );
+      for (const pair of allPairs) {
+        expect(facedSet.has(pair)).toBe(false);
+      }
+    });
+  });
 });

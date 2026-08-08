@@ -213,8 +213,6 @@ function maybeAssignNPCSparringPairs(
     if (r) members.push(r);
   }
 
-  const active = members.filter((r) => !r.isRetired && !r.injured);
-
   // Gather already-paired ids
   const existingState = world.sparringPairs?.get(heya.id);
   const pairedIds = new Set<string>();
@@ -228,7 +226,13 @@ function maybeAssignNPCSparringPairs(
     }
   }
 
-  const eligible = active.filter((r) => !pairedIds.has(r.id));
+  // Single-pass filter: exclude retired, injured, and already-paired rikishi
+  const eligible: Rikishi[] = [];
+  for (const r of members) {
+    if (r.isRetired || r.injured) continue;
+    if (pairedIds.has(r.id)) continue;
+    eligible.push(r);
+  }
   if (eligible.length < 2) return;
 
   // Score all potential pairs

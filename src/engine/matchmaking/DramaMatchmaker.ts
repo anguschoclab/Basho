@@ -414,14 +414,23 @@ export function applyDramaBudget(
   facedSet: Set<string>,
   rivalryState?: Map<string, { heat: number; aId: string; bId: string }>
 ): MatchPairing[] {
-  // Score all pairings for drama
+  // Score all pairings for drama and cache scores
   let initialScore = 0;
-  for (const p of pairings) {
-    const east = rikishiMap.get(p.eastId);
-    const west = rikishiMap.get(p.westId);
-    if (!east || !west) continue;
+  const scoreCache = new Map<number, number>();
+  const dramaCache = new Map<number, { score: number; label: string } | null>();
+  for (let i = 0; i < pairings.length; i++) {
+    const east = rikishiMap.get(pairings[i].eastId);
+    const west = rikishiMap.get(pairings[i].westId);
+    if (!east || !west) {
+      scoreCache.set(i, 0);
+      dramaCache.set(i, null);
+      continue;
+    }
     const drama = scoreDrama(east, west, day, standings, rivalryState);
-    initialScore += drama?.score ?? 0;
+    const score = drama?.score ?? 0;
+    scoreCache.set(i, score);
+    dramaCache.set(i, drama);
+    initialScore += score;
   }
 
   // Rivalry-aware: increase max swaps when rivalry pairs exist (3.2)
@@ -463,20 +472,15 @@ export function applyDramaBudget(
         const drama1 = scoreDrama(east1, west1, day, standings, rivalryState);
         const drama2 = scoreDrama(east2, west2, day, standings, rivalryState);
 
-        // Calculate new total score
-        const p1East = rikishiMap.get(p1.eastId);
-        const p1West = rikishiMap.get(p1.westId);
-        const p2East = rikishiMap.get(p2.eastId);
-        const p2West = rikishiMap.get(p2.westId);
-        if (!p1East || !p1West || !p2East || !p2West) continue;
-        const oldDrama1 = scoreDrama(p1East, p1West, day, standings, rivalryState);
-        const oldDrama2 = scoreDrama(p2East, p2West, day, standings, rivalryState);
+        // Use cached old scores instead of recomputing
+        const oldDrama1Score = scoreCache.get(i) ?? 0;
+        const oldDrama2Score = scoreCache.get(j) ?? 0;
 
         const scoreChange =
           (drama1?.score ?? 0) +
           (drama2?.score ?? 0) -
-          (oldDrama1?.score ?? 0) -
-          (oldDrama2?.score ?? 0);
+          oldDrama1Score -
+          oldDrama2Score;
 
         if (scoreChange > 0) {
           // Apply the swap
@@ -495,6 +499,11 @@ export function applyDramaBudget(
           if (newScore > bestScore) {
             bestPairings = newPairings;
             bestScore = newScore;
+            // Update caches for swapped indices
+            scoreCache.set(i, drama1?.score ?? 0);
+            scoreCache.set(j, drama2?.score ?? 0);
+            dramaCache.set(i, drama1);
+            dramaCache.set(j, drama2);
             improved = true;
             break; // Take this improvement and restart
           }
@@ -507,13 +516,10 @@ export function applyDramaBudget(
   }
 
   // Add drama labels to reasons for high-drama bouts (skip if already labeled from swap)
-  const finalPairings = bestPairings.map((p) => {
+  // Uses cached drama scores instead of recomputing
+  const finalPairings = bestPairings.map((p, idx) => {
     if (p.reasons.some((r: string) => r.startsWith("drama_"))) return p;
-    const east = rikishiMap.get(p.eastId);
-    const west = rikishiMap.get(p.westId);
-    if (!east || !west) return p;
-
-    const drama = scoreDrama(east, west, day, standings, rivalryState);
+    const drama = dramaCache.get(idx);
     if (drama && drama.score > 0) {
       return {
         ...p,

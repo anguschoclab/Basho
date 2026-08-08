@@ -378,6 +378,9 @@ function applyPromotionAwareness(
   const heya = getHeya(world, heyaId);
   if (!heya) return;
 
+  const pushSet = new Set(decision.individualPushes);
+  const developSet = new Set(decision.individualDevelops);
+
   for (const rikishiId of heya.rikishiIds ?? []) {
     const r = getRikishi(world, rikishiId);
     if (!r || r.isRetired || r.injured) continue;
@@ -391,10 +394,8 @@ function applyPromotionAwareness(
       if (isKadoban) {
         if (!decision.individualProtects.includes(rikishiId)) {
           decision.individualProtects = [...decision.individualProtects, rikishiId];
-          decision.individualPushes = decision.individualPushes.filter((id) => id !== rikishiId);
-          decision.individualDevelops = decision.individualDevelops.filter(
-            (id) => id !== rikishiId
-          );
+          pushSet.delete(rikishiId);
+          developSet.delete(rikishiId);
           decision.reasoning.push(
             `[PromotionAwareness] ${r.shikona ?? rikishiId} is Kadoban — added to protect list`
           );
@@ -409,8 +410,8 @@ function applyPromotionAwareness(
             `[PromotionAwareness] Ozeki in stable — raised training intensity to 'intensive' for Yokozuna run`
           );
         }
-        if (!decision.individualPushes.includes(rikishiId)) {
-          decision.individualPushes = [...decision.individualPushes, rikishiId];
+        if (!pushSet.has(rikishiId)) {
+          pushSet.add(rikishiId);
           decision.reasoning.push(
             `[PromotionAwareness] ${r.shikona ?? rikishiId} is Ozeki — added to push list for Yokozuna run`
           );
@@ -423,10 +424,8 @@ function applyPromotionAwareness(
       if (warnings > 0) {
         if (!decision.individualProtects.includes(rikishiId)) {
           decision.individualProtects = [...decision.individualProtects, rikishiId];
-          decision.individualPushes = decision.individualPushes.filter((id) => id !== rikishiId);
-          decision.individualDevelops = decision.individualDevelops.filter(
-            (id) => id !== rikishiId
-          );
+          pushSet.delete(rikishiId);
+          developSet.delete(rikishiId);
           decision.reasoning.push(
             `[PromotionAwareness] ${r.shikona ?? rikishiId} has ${warnings} YDC warning(s) — added to protect list`
           );
@@ -446,14 +445,17 @@ function applyPromotionAwareness(
     }
 
     if (rank === "sekiwake" || rank === "komusubi") {
-      if (!decision.individualDevelops.includes(rikishiId)) {
-        decision.individualDevelops = [...decision.individualDevelops, rikishiId];
+      if (!developSet.has(rikishiId)) {
+        developSet.add(rikishiId);
         decision.reasoning.push(
           `[PromotionAwareness] ${r.shikona ?? rikishiId} is ${r.rank} — added to develop list as Ozeki candidate`
         );
       }
     }
   }
+
+  decision.individualPushes = [...pushSet];
+  decision.individualDevelops = [...developSet];
 }
 
 function applyInjuryRiskReduction(
@@ -498,12 +500,16 @@ function applyInjuryRiskReduction(
   }
 
   const existingProtects = new Set(decision.individualProtects);
+  const pushSet = new Set(decision.individualPushes);
+  const developSet = new Set(decision.individualDevelops);
   for (const id of protectIds) {
     if (!existingProtects.has(id)) {
       decision.individualProtects = [...decision.individualProtects, id];
       existingProtects.add(id);
-      decision.individualPushes = decision.individualPushes.filter((pid) => pid !== id);
-      decision.individualDevelops = decision.individualDevelops.filter((did) => did !== id);
+      pushSet.delete(id);
+      developSet.delete(id);
     }
   }
+  decision.individualPushes = [...pushSet];
+  decision.individualDevelops = [...developSet];
 }

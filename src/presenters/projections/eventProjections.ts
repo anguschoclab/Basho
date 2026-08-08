@@ -52,12 +52,22 @@ export function projectGovernanceSummary(world: WorldState): GovernanceSummary {
  * Project basho results with participant data.
  */
 export function projectBashoResults(world: WorldState, lastBasho: BashoResult) {
+  const projectCache = new Map<string, ReturnType<typeof projectRikishi>>();
+  const cachedProject = (r: { id: string }) => {
+    let cached = projectCache.get(r.id);
+    if (!cached) {
+      cached = projectRikishi(r as Parameters<typeof projectRikishi>[0], world);
+      projectCache.set(r.id, cached);
+    }
+    return cached;
+  };
+
   const getRikishiData = (id: string) => {
     const r = world.rikishi.get(id);
     if (!r) return null;
     const h = r.heyaId ? world.heyas.get(r.heyaId) : null;
     return {
-      rikishi: projectRikishi(r, world),
+      rikishi: cachedProject(r),
       heyaName: h?.name ?? "Unknown Stable",
     };
   };
@@ -77,19 +87,19 @@ export function projectBashoResults(world: WorldState, lastBasho: BashoResult) {
       const loser = world.rikishi.get(m.result.loserRikishiId ?? "");
       if (winner && loser) {
         kinboshi.push({
-          winner: projectRikishi(winner, world),
-          loser: projectRikishi(loser, world),
+          winner: cachedProject(winner),
+          loser: cachedProject(loser),
         });
       }
     }
   }
 
   const ginoShoRikishi = lastBasho.ginoSho ? world.rikishi.get(lastBasho.ginoSho) : null;
-  const ginoSho = ginoShoRikishi ? projectRikishi(ginoShoRikishi, world) : null;
+  const ginoSho = ginoShoRikishi ? cachedProject(ginoShoRikishi) : null;
   const shukunShoRikishi = lastBasho.shukunsho ? world.rikishi.get(lastBasho.shukunsho) : null;
-  const shukunSho = shukunShoRikishi ? projectRikishi(shukunShoRikishi, world) : null;
+  const shukunSho = shukunShoRikishi ? cachedProject(shukunShoRikishi) : null;
   const kantoShoRikishi = lastBasho.kantosho ? world.rikishi.get(lastBasho.kantosho) : null;
-  const kantoSho = kantoShoRikishi ? projectRikishi(kantoShoRikishi, world) : null;
+  const kantoSho = kantoShoRikishi ? cachedProject(kantoShoRikishi) : null;
 
   return {
     champion,

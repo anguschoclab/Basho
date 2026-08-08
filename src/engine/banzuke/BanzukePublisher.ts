@@ -319,7 +319,8 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
     });
   }
 
-  const perfMap = new Map(performanceList.map((p) => [p.rikishiId, p]));
+  const perfMap = new Map<string, typeof performanceList[number]>();
+  for (const p of performanceList) perfMap.set(p.rikishiId, p);
   const result = updateBanzuke(
     currentBanzukeList,
     perfMap,
@@ -328,7 +329,8 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
     world.heyas
   );
 
-  const newBanzukeByRikishiId = new Map(result.newBanzuke.map((e) => [e.rikishiId, e]));
+  const newBanzukeByRikishiId = new Map<string, typeof result.newBanzuke[number]>();
+  for (const e of result.newBanzuke) newBanzukeByRikishiId.set(e.rikishiId, e);
   const eventsByRikishiId = new Map<string, MovementEvent>();
   for (const e of result.events) {
     if (!eventsByRikishiId.has(e.rikishiId)) eventsByRikishiId.set(e.rikishiId, e);

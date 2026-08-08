@@ -91,6 +91,7 @@ export function projectBanzukeUIDigest(world: WorldState): BanzukeUIDigest {
     jonidan: [],
     jonokuchi: [],
   };
+  // Single-pass O(N) grouping into pre-allocated division buckets — no redundant filtering.
   for (const entry of rosterEntries) {
     entriesByDivision[entry.division]?.push(entry);
   }

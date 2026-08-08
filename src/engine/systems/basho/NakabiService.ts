@@ -40,16 +40,18 @@ export function generateNakabiSummary(
   bashoName: string,
   rikishiList: Rikishi[]
 ): NakabiSummary {
-  // Get current basho records
-  const records = rikishiList
-    .filter((r) => !r.isRetired)
-    .map((r) => ({
+  // Get current basho records (single-pass filter+map)
+  const records: { rikishiId: string; shikona: string; wins: number; losses: number; rankNumber: number }[] = [];
+  for (const r of rikishiList) {
+    if (r.isRetired) continue;
+    records.push({
       rikishiId: r.id,
       shikona: r.shikona ?? r.name ?? r.id,
       wins: r.currentBashoWins ?? 0,
       losses: r.currentBashoLosses ?? 0,
       rankNumber: r.rankNumber ?? 99,
-    }));
+    });
+  }
 
   // Find the leader (most wins, tiebreak by rank)
   const sorted = [...records].sort((a, b) => {
