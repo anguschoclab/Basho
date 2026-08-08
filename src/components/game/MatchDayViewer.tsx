@@ -101,7 +101,7 @@ export function MatchDayViewer({
       };
       return compareRanks(aPos as unknown as RankPosition, bPos as unknown as RankPosition);
     });
-  }, [matches]);
+  }, [matches, world?.playerKnowledge?.scouting]);
 
   const completedCount = useMemo(() => {
     let count = 0;

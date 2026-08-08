@@ -33,7 +33,7 @@ interface InfrastructureDashboardProps {
 
 export function InfrastructureDashboard({ heya, onUpgrade }: InfrastructureDashboardProps) {
   const infra = heya.infrastructure || {};
-  const queue = heya.constructionQueue || [];
+  const queue = useMemo(() => heya.constructionQueue || [], [heya.constructionQueue]);
 
   const projectByFacilityId = useMemo(() => new Map(queue.map((q) => [q.facilityId, q])), [queue]);
 

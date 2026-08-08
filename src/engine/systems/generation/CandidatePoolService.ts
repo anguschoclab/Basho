@@ -105,9 +105,9 @@ export function simulateNPCInterest(world: WorldState): StateImpact {
       npcHeyas.push({ id, reputation: heya.reputation ?? 50 });
     }
   }
-  npcHeyas.sort((a, b) => b.reputation - a.reputation);
+  const sortedNpcHeyas = [...npcHeyas].sort((a, b) => b.reputation - a.reputation);
 
-  if (npcHeyas.length === 0) return builder.build();
+  if (sortedNpcHeyas.length === 0) return builder.build();
 
   const nextCandidates: Record<Id, TalentCandidate> = {};
   const nextPools = { ...cp.pools };
@@ -126,7 +126,7 @@ export function simulateNPCInterest(world: WorldState): StateImpact {
       // NPC interest probability: higher reputation heyas watch better candidates
       // Each NPC heya has a chance to watch each candidate
       const suitors: TalentCandidate["competingSuitors"] = [];
-      for (const npc of npcHeyas) {
+      for (const npc of sortedNpcHeyas) {
         // Probability: base 15% + reputation factor + talent factor
         const talentFactor = (candidate.talentSeed ?? 50) / 200; // 0–0.5
         const repFactor = npc.reputation / 200; // 0–0.5

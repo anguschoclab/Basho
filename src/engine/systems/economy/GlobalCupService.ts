@@ -63,11 +63,12 @@ export const GlobalCupService = {
           (c) => isForeign(c) && c.availabilityState === "available"
         )
       : [];
+    const sortedForeignCandidates = [...foreignCandidates].sort((a, b) => (b.talentSeed || 0) - (a.talentSeed || 0));
 
     // Pick or generate challenger 1
     let c1: GlobalCupParticipant;
-    if (foreignCandidates.length > 0) {
-      const best = foreignCandidates.sort((a, b) => (b.talentSeed || 0) - (a.talentSeed || 0))[0];
+    if (sortedForeignCandidates.length > 0) {
+      const best = sortedForeignCandidates[0];
       c1 = {
         rikishiId: best.candidateId,
         shikona: best.name,
@@ -89,8 +90,8 @@ export const GlobalCupService = {
 
     // Pick or generate challenger 2
     let c2: GlobalCupParticipant;
-    if (foreignCandidates.length > 1) {
-      const best = foreignCandidates.sort((a, b) => (b.talentSeed || 0) - (a.talentSeed || 0))[1];
+    if (sortedForeignCandidates.length > 1) {
+      const best = sortedForeignCandidates[1];
       c2 = {
         rikishiId: best.candidateId,
         shikona: best.name,

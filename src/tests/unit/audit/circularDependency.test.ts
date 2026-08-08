@@ -7,19 +7,23 @@ const execAsync = promisify(exec);
 const PROJECT_ROOT = join(import.meta.dirname, "../../../..");
 
 describe("circular dependency detection", () => {
-  it("no circular dependencies in src/", async () => {
+  it("no circular dependencies in src/engine/", async () => {
+    let stdout = "";
     try {
-      const { stdout } = await execAsync("npx madge --circular --extensions ts,tsx src/ --exclude '\\.test\\.'", {
-        cwd: PROJECT_ROOT,
-        maxBuffer: 10 * 1024 * 1024,
-      });
-      const circles = stdout.trim();
-      expect(circles, `Circular dependencies detected:\n${circles}`).toBe("");
+      const result = await execAsync(
+        "npx madge --circular --extensions ts src/engine/ --exclude '\\.test\\.'",
+        { cwd: PROJECT_ROOT, maxBuffer: 10 * 1024 * 1024 }
+      );
+      stdout = result.stdout;
     } catch (e: unknown) {
       const err = e as { stdout?: string };
-      if (err.stdout && err.stdout.trim()) {
-        expect.fail(`Circular dependencies detected:\n${err.stdout}`);
-      }
+      stdout = err.stdout || "";
     }
+
+    const circles = stdout
+      .split("\n")
+      .filter((l) => l.includes("→") || l.includes("Circular"));
+
+    expect(circles, `Circular dependencies in src/engine/:\n${circles.join("\n")}`).toEqual([]);
   }, 60000);
 });

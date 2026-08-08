@@ -129,7 +129,7 @@ export function BoutNarrativeModal({
   autoPlay = true,
 }: BoutNarrativeModalProps) {
   const handleClose = onClose ?? (() => onOpenChange?.(false));
-  const pbpLines: PbpLine[] = result.pbpLines ?? [];
+  const pbpLines: PbpLine[] = useMemo(() => result.pbpLines ?? [], [result.pbpLines]);
   const narrativeLines = pbpLines.filter((l) =>
     [
       "opening",
