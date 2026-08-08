@@ -29,7 +29,8 @@ import { error } from "../utils/Logger";
  * will be treated as invalid legacy states and crash the pipeline.
  * Always use `createEmptyImpact` which guarantees metadata presence.
  */
-export type PipelinePhase = (world: WorldState) => WorldState | StateImpact;
+export type PipelinePhase = ((world: WorldState) => WorldState | StateImpact) &
+  Partial<PipelinePhaseMetadata>;
 
 /**
  * Optional metadata for pipeline phases.
@@ -48,7 +49,11 @@ export interface PipelinePhaseMetadata {
 /**
  * Entity map fields that may be shallow-cloned for snapshot recovery.
  */
-const ENTITY_MAP_FIELDS = ["heyas", "rikishi", "oyakata", "staff", "sponsorPool"] as const;
+type EntityMapField = "heyas" | "rikishi" | "oyakata" | "staff";
+const ENTITY_MAP_FIELDS: EntityMapField[] = ["heyas", "rikishi", "oyakata", "staff"];
+
+type EntityMap = Map<string, unknown>;
+type EntitySnapshot = Partial<Record<EntityMapField, EntityMap>>;
 
 /**
  * Create a shallow snapshot of the specified entity maps for error recovery.
@@ -59,21 +64,23 @@ function createShallowSnapshot(
   world: WorldState,
   touches?: string[],
 ): { snapshot: Partial<WorldState>; restore: (w: WorldState) => WorldState } {
-  const fieldsToSnapshot = touches && touches.length > 0
-    ? touches.filter((f) => ENTITY_MAP_FIELDS.includes(f as any))
-    : [...ENTITY_MAP_FIELDS];
+  const validTouches = new Set<string>(ENTITY_MAP_FIELDS);
+  const fieldsToSnapshot: EntityMapField[] =
+    touches && touches.length > 0
+      ? touches.filter((f): f is EntityMapField => validTouches.has(f))
+      : [...ENTITY_MAP_FIELDS];
 
-  const snapshot: Partial<WorldState> = {};
+  const snapshot: EntitySnapshot = {};
   for (const field of fieldsToSnapshot) {
-    const map = (world as any)[field];
+    const map = world[field];
     if (map instanceof Map) {
-      snapshot[field as keyof WorldState] = new Map(map) as any;
+      snapshot[field] = new Map(map as EntityMap);
     }
   }
 
   return {
-    snapshot,
-    restore: (w: WorldState) => ({ ...w, ...snapshot }),
+    snapshot: snapshot as Partial<WorldState>,
+    restore: (w: WorldState) => ({ ...w, ...(snapshot as Partial<WorldState>) }),
   };
 }
 
@@ -95,9 +102,7 @@ export function runPipeline(initialWorld: WorldState, phases: PipelinePhase[]): 
   const perfTrace: Array<{ phaseName: string; durationMs: number; impactSize?: number }> = [];
 
   for (const phase of phases) {
-    const phaseMeta = (phase as any).touches
-      ? { touches: (phase as any).touches as string[] }
-      : undefined;
+    const phaseMeta = phase.touches ? { touches: phase.touches } : undefined;
     const { restore } = createShallowSnapshot(
       currentWorld,
       phaseMeta?.touches,

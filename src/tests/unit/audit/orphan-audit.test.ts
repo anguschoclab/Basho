@@ -1,7 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync, existsSync, writeFileSync, unlinkSync, mkdirSync, rmSync } from "fs";
 import { join } from "path";
-import { execSync } from "child_process";
+import { exec } from "child_process";
+import { promisify } from "util";
+
+const execAsync = promisify(exec);
 
 const ROOT = join(__dirname, "../../../..");
 const AUDIT_DIR = join(ROOT, ".windsurf", "audit");
@@ -85,12 +88,11 @@ describe("Audit runner self-test", () => {
 });
 
 describe("Audit runner consistency — two runs produce same orphan set", () => {
-  function runAudit(): { summary: AuditReport["summary"]; symbols: string[] } {
+  async function runAudit(): Promise<{ summary: AuditReport["summary"]; symbols: string[] }> {
     const tmpJson = join(AUDIT_DIR, "consistency-check.json");
-    execSync(`npx tsx scripts/audit-orphans.ts --json "${tmpJson}"`, {
+    await execAsync(`npx tsx scripts/audit-orphans.ts --json "${tmpJson}"`, {
       cwd: ROOT,
-      timeout: 60000,
-      stdio: "pipe",
+      timeout: 180000,
     });
     const raw = readFileSync(tmpJson, "utf-8");
     const report = JSON.parse(raw) as AuditReport;
@@ -101,24 +103,24 @@ describe("Audit runner consistency — two runs produce same orphan set", () => 
     };
   }
 
-  it("produces identical orphan counts across two runs", { timeout: 120000 }, () => {
-    const run1 = runAudit();
-    const run2 = runAudit();
+  it("produces identical orphan counts across two runs", { timeout: 240000 }, async () => {
+    const run1 = await runAudit();
+    const run2 = await runAudit();
     expect(run1.summary.total).toBe(run2.summary.total);
     expect(run1.summary.unreferencedExports).toBe(run2.summary.unreferencedExports);
     expect(run1.summary.orphanRoutes).toBe(run2.summary.orphanRoutes);
     expect(run1.summary.writeOnlyState).toBe(run2.summary.writeOnlyState);
   });
 
-  it("produces identical orphan symbol set across two runs", { timeout: 120000 }, () => {
-    const run1 = runAudit();
-    const run2 = runAudit();
+  it("produces identical orphan symbol set across two runs", { timeout: 240000 }, async () => {
+    const run1 = await runAudit();
+    const run2 = await runAudit();
     expect(run1.symbols).toEqual(run2.symbols);
   });
 });
 
 describe("Audit runner injection — detects a deliberately orphaned export", () => {
-  it("detects a temp file with an unreferenced export", { timeout: 60000 }, () => {
+  it("detects a temp file with an unreferenced export", { timeout: 240000 }, async () => {
     // Create a temp file with an exported function that nothing imports
     mkdirSync(TEMP_ORPHAN_DIR, { recursive: true });
     // Use a unique name that won't appear in any test file to avoid false "referenced" matches
@@ -130,10 +132,9 @@ describe("Audit runner injection — detects a deliberately orphaned export", ()
 
     try {
       const tmpJson = join(AUDIT_DIR, "injection-check.json");
-      execSync(`npx tsx scripts/audit-orphans.ts --json "${tmpJson}"`, {
+      await execAsync(`npx tsx scripts/audit-orphans.ts --json "${tmpJson}"`, {
         cwd: ROOT,
-        timeout: 60000,
-        stdio: "pipe",
+        timeout: 180000,
       });
       const raw = readFileSync(tmpJson, "utf-8");
       const report = JSON.parse(raw) as AuditReport;

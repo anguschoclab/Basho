@@ -26,7 +26,7 @@ describe("yokozuna promotion in AutoSim", () => {
     expect(updatedOzeki?.careerHistory?.length).toBeGreaterThanOrEqual(3);
   }, 60000);
 
-  it("has yokozuna or yokozuna promotion event within 12 basho from a world with 0 yokozuna", () => {
+  it("has yokozuna or yokozuna promotion event within 12 basho from a world with 0 yokozuna", { timeout: 120000 }, () => {
     const world = generateInitialWorld("no-yokozuna-test-001");
     // Force all yokozuna to retired state and remove from activeRikishiIds
     const rikishiMap = new Map(world.rikishi);
@@ -78,5 +78,5 @@ describe("yokozuna promotion in AutoSim", () => {
     );
     const stoppedByPromotion = result.stoppedBy === "yokozunaPromotion";
     expect(stoppedByPromotion || activeYokozuna.length > 0).toBe(true);
-  }, 180000);
+  });
 });
