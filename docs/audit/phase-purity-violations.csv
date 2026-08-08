@@ -1,0 +1,2 @@
+file,line,severity,description
+src/engine/simulation/TournamentSimulator.ts,52,LOW,workingWorld.rikishi.set() — operates on local clone, not called from pipeline phases

@@ -44,7 +44,8 @@ export type EngineEvent =
   | { type: "DIGEST_UPDATED"; digest: UIDigest; digestRevision?: number }
   | { type: "WORLD_UPDATED"; world: WorldState; version: number }
   | { type: "ERROR"; message: string }
-  | { type: "PROGRESS"; message: string; current: number; total: number };
+  | { type: "PROGRESS"; message: string; current: number; total: number }
+  | { type: "PERF_TRACE"; trace: Array<{ phaseName: string; durationMs: number; impactSize?: number }> };
 
 export interface WorkerMessage<T = EngineCommand | EngineEvent> {
   data: T;

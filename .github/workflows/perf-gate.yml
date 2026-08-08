@@ -1,0 +1,43 @@
+name: Pipeline Performance Gate
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  perf-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - name: Phase purity lint
+        run: bash scripts/purity-lint.sh
+      - name: Run benchmark
+        run: npx tsx scripts/bench-pipelines.ts 2>&1 | tee bench-output.txt
+      - name: Check performance regression
+        run: |
+          node -e "
+          const fs = require('fs');
+          const baseline = JSON.parse(fs.readFileSync('docs/audit/perf-baseline.json', 'utf8'));
+          const current = JSON.parse(fs.readFileSync('docs/audit/perf-baseline.json', 'utf8'));
+          // Compare S3 (365-day advance) p50 against baseline
+          const baselineS3 = baseline.results.find(r => r.scenario === 'S3_year');
+          const currentS3 = current.results.find(r => r.scenario === 'S3_year');
+          if (baselineS3 && currentS3) {
+            const degradation = (currentS3.p50_ms - baselineS3.p50_ms) / baselineS3.p50_ms;
+            if (degradation > 0.15) {
+              console.error('Performance regression: S3 p50 degraded by ' + (degradation * 100).toFixed(1) + '%');
+              process.exit(1);
+            }
+            console.log('S3 p50: ' + currentS3.p50_ms + 'ms (baseline: ' + baselineS3.p50_ms + 'ms, degradation: ' + (degradation * 100).toFixed(1) + '%)');
+          }
+          console.log('Performance gate passed');
+          "
+      - name: Run unit tests
+        run: npx vitest run

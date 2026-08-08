@@ -1,0 +1,43 @@
+{
+  "nodes": [
+    "phase00_preflight",
+    "phase01_daily_economy",
+    "phase01_daily_welfare",
+    "phase01_daily_sponsors",
+    "phase01_daily_drama",
+    "phase01_daily_micro",
+    "phase01_basho_bouts",
+    "phase01_week_training",
+    "phase01_week_health",
+    "phase01_week_welfare",
+    "phase01_week_npc_ai",
+    "phase01_week_governance",
+    "phase01_week_recruitment",
+    "phase01_week_rivalries",
+    "phase01_week_world_circuit",
+    "phase02_context",
+    "phase05_monthly_boundary",
+    "phase01_monthly_market",
+    "phase06_yearly_boundary",
+    "phase06_narrative",
+    "phase_pre_basho_assessment",
+    "phase_pre_basho_schedule"
+  ],
+  "edges": [
+    { "from": "phase00_preflight", "to": "all", "reads": "transientContext.boundaries, deltas, activeModifiers" },
+    { "from": "phase02_context", "to": "phase01_week_training", "reads": "activeModifiers" },
+    { "from": "phase02_context", "to": "phase01_week_health", "reads": "recoveryMultiplier" },
+    { "from": "phase01_week_economy", "to": "phase01_week_welfare", "reads": "heya.funds" },
+    { "from": "phase05_monthly_boundary", "to": "phase01_monthly_market", "reads": "market state" },
+    { "from": "phase01_daily_economy", "to": "phase01_daily_welfare", "reads": "heya.funds (via fused micro phase)" },
+    { "from": "phase01_daily_welfare", "to": "phase01_daily_sponsors", "reads": "rikishi welfare state" },
+    { "from": "phase01_daily_sponsors", "to": "phase01_daily_drama", "reads": "sponsor satisfaction" },
+    { "from": "phase_pre_basho_assessment", "to": "phase_pre_basho_schedule", "reads": "rikishi assessments" }
+  ],
+  "notes": [
+    "phase00_preflight sets transientContext.boundaries, deltas, activeModifiers consumed by all subsequent phases",
+    "phase01_daily_micro fuses economy → welfare → sponsors → drama (B1.3)",
+    "phase06_yearly_boundary fuses records + avatar aging into single activeRikishiIds pass (B2.1)",
+    "phase01_week_npc_ai uses rotation sampling — ~2/3 of NPC heyas per off-season week (B2.3)"
+  ]
+}

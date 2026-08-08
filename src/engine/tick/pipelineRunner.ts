@@ -90,10 +90,11 @@ function createShallowSnapshot(
 export function runPipeline(initialWorld: WorldState, phases: PipelinePhase[]): WorldState {
   let currentWorld = initialWorld;
 
+  // A2: Lightweight phase timer — only active when __PERF__ flag is set
+  const perfEnabled = typeof globalThis !== "undefined" && (globalThis as Record<string, unknown>).__PERF__ === true;
+  const perfTrace: Array<{ phaseName: string; durationMs: number; impactSize?: number }> = [];
+
   for (const phase of phases) {
-    // B3.1-2: Shallow snapshot of entity maps for error recovery.
-    // If the phase declares touches, only snapshot those fields.
-    // If pure, skip snapshotting entirely.
     const phaseMeta = (phase as any).touches
       ? { touches: (phase as any).touches as string[] }
       : undefined;
@@ -102,36 +103,48 @@ export function runPipeline(initialWorld: WorldState, phases: PipelinePhase[]): 
       phaseMeta?.touches,
     );
 
+    const perfStart = perfEnabled ? performance.now() : 0;
+
     try {
       const result = phase(currentWorld);
 
-      // Check if phase returned StateImpact (migrated) or WorldState (legacy)
-      // StateImpact has metadata, WorldState does not
       const isStateImpact = result && typeof result === "object" && "metadata" in result;
 
+      let impactSize: number | undefined;
       if (isStateImpact) {
-        // Phase returned StateImpact - resolve immediately so subsequent phases
-        // see the updated state (sequential correctness is required)
-        currentWorld = resolveImpacts(currentWorld, [result as StateImpact]);
+        const impact = result as StateImpact;
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        if (perfEnabled) {
+          impactSize = Object.keys(impact.entities ?? {}).length;
+        }
       } else {
-        // Phase returned WorldState (legacy)
         const nextWorld = result as WorldState;
         currentWorld = nextWorld;
       }
 
-      // Safety check: phase must not wipe core entity maps
       if (!currentWorld || !currentWorld.heyas || !currentWorld.rikishi) {
         throw new Error(
           `[pipelineRunner] Phase "${phase.name || "anonymous"}" returned invalid WorldState ` +
             `(heyas or rikishi map missing).`
         );
       }
+
+      if (perfEnabled) {
+        perfTrace.push({
+          phaseName: phase.name || "anonymous",
+          durationMs: performance.now() - perfStart,
+          impactSize,
+        });
+      }
     } catch (err) {
       error(`FATAL ERROR in phase: "${phase.name || "anonymous"}"`, "Pipeline", err);
-      // B3.1: Restore from shallow snapshot to undo any in-place mutations
       currentWorld = restore(currentWorld);
       continue;
     }
+  }
+
+  if (perfEnabled && typeof postMessage === "function") {
+    postMessage({ type: "PERF_TRACE", trace: perfTrace });
   }
 
   return currentWorld;
