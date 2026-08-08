@@ -60,7 +60,9 @@ export const CareerService = {
             division: rikishi.division ?? "makushita",
             age: world.year - rikishi.birthYear,
             retirementReason: reason,
-            yushoCount: (rikishi.careerHistory ?? []).filter((h) => h.isYusho).length,
+            yushoCount: rikishi.careerHistory
+              ? rikishi.careerHistory.reduce((acc, h) => acc + (h.isYusho ? 1 : 0), 0)
+              : 0,
             kinboshiCount: rikishi.economics?.kinboshiCount ?? 0,
             yearsActive: world.year - rikishi.birthYear - 15,
             careerPhase: rikishi.declinePhase ?? "twilight",
