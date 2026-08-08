@@ -10,7 +10,7 @@ import { useState, useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useGame } from "@/contexts/useGame";
-import { useRequireWorld } from "@/components/RequireWorld";
+import { useRequireWorld } from "@/hooks/useRequireWorld";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AppLayout } from "@/components/layout/AppLayout";

@@ -4,7 +4,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import { useSidebar, SIDEBAR_WIDTH_MOBILE } from "./provider";
+import { useSidebar } from "./context";
+import { SIDEBAR_WIDTH_MOBILE } from "./constants";
 
 export const Sidebar = React.forwardRef<
   HTMLDivElement,

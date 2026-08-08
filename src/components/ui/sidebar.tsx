@@ -1,6 +1,14 @@
 // Sidebar barrel — implementation decomposed into sidebar/ directory.
 
-export { useSidebar, SidebarProvider } from "./sidebar/provider";
+export { useSidebar } from "./sidebar/context";
+export {
+  SIDEBAR_WIDTH,
+  SIDEBAR_WIDTH_MOBILE,
+  SIDEBAR_WIDTH_ICON,
+  SIDEBAR_COOKIE_NAME,
+  SIDEBAR_COOKIE_MAX_AGE,
+} from "./sidebar/constants";
+export { SidebarProvider } from "./sidebar/provider";
 export { Sidebar, SidebarTrigger, SidebarRail, SidebarInset } from "./sidebar/core";
 export {
   SidebarInput,

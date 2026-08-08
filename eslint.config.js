@@ -106,6 +106,13 @@ export default tseslint.config(
     },
   },
   {
+    /* BARREL FILES: react-refresh doesn't apply to pure re-export files */
+    files: ["src/components/ui/index.ts", "src/components/ui/sidebar.tsx"],
+    rules: {
+      "react-refresh/only-export-components": "off",
+    },
+  },
+  {
     /* ARCHITECTURAL BOUNDARY: UI/PAGES */
     files: ["src/components/**/*.{ts,tsx}", "src/pages/**/*.{ts,tsx}"],
     rules: {

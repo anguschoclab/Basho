@@ -1,22 +1,5 @@
-import { useEffect, type ReactNode } from "react";
-import { useNavigate } from "@tanstack/react-router";
-import { useGame } from "@/contexts/useGame";
-
-/**
- * Hook that redirects to /main-menu if no world is loaded.
- * Returns true when world is available, false during redirect.
- */
-export function useRequireWorld(redirectTo: string = "/main-menu"): boolean {
-  const { state } = useGame();
-  const navigate = useNavigate();
-  const world = state.world;
-
-  useEffect(() => {
-    if (!world) navigate({ to: redirectTo, replace: true });
-  }, [world, navigate, redirectTo]);
-
-  return !!world;
-}
+import { type ReactNode } from "react";
+import { useRequireWorld } from "@/hooks/useRequireWorld";
 
 /**
  * Wrapper component that renders children only when a world is loaded.

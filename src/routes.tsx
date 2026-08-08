@@ -7,24 +7,13 @@ import {
   createBrowserHistory,
   redirect,
 } from "@tanstack/react-router";
-import { lazy, Suspense } from "react";
+import { lazy } from "react";
 import { warn, error } from "./engine/utils/Logger";
 import { SaveSlotService } from "./engine/persistence/SaveSlotService";
 import MainMenu from "./pages/MainMenu";
 import NewGameWizard from "./pages/NewGameWizard";
 import Dashboard from "./pages/Dashboard";
-
-const PageLoader = () => (
-  <div className="flex items-center justify-center min-h-[60vh]">
-    <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-  </div>
-);
-
-const withSuspense = (Comp: React.LazyExoticComponent<React.ComponentType>) => (
-  <Suspense fallback={<PageLoader />}>
-    <Comp />
-  </Suspense>
-);
+import { withSuspense } from "./routes-helpers";
 
 const StablePage = lazy(() => import("./pages/StablePage"));
 const TrainingPage = lazy(() => import("./pages/TrainingPage"));

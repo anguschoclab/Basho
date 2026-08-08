@@ -75,7 +75,7 @@ export function RikishiSelectorList({
   );
 }
 
-export const COMPARE_ROWS: Array<{
+const COMPARE_ROWS: Array<{
   label: string;
   icon: React.ElementType;
   get: (s: PerceptionSnapshot) => string;

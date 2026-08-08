@@ -17,7 +17,7 @@
 import { Helmet } from "react-helmet";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/useGame";
-import { useRequireWorld } from "@/components/RequireWorld";
+import { useRequireWorld } from "@/hooks/useRequireWorld";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { RECORDS_TABS } from "@/constants/ui/navigation";
 import { PageHeader } from "@/components/layout/control-center";

@@ -2,7 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/useGame";
 import { SaveLoadDialog } from "@/components/game/SaveLoadDialog";
 import { useAutosaveIndicator } from "@/hooks/useAutosaveIndicator";
-import { useTheme } from "@/components/ThemeProvider";
+import { useTheme } from "@/hooks/useTheme";
 import { Button } from "@/components/ui/button";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { Sun, Moon, ChevronRight, Settings } from "lucide-react";
