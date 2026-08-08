@@ -105,6 +105,10 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
         seed: cmd.seed,
         playerConfig: { heyaId: cmd.playerHeyaId },
       });
+      // B4.1.1: Sync world back to main thread so the reducer can load it.
+      // This makes the worker the single source of truth — the main thread
+      // no longer generates worlds independently.
+      syncWorld();
       emitDigest();
     },
     LOAD_WORLD: (cmd) => {
@@ -126,6 +130,10 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
         const chunk = useFast ? 7 : 1;
 
         for (let i = 0; i < days; i += chunk) {
+          // B4.1.4 INVARIANT: simPaused is ONLY read here at the loop top,
+          // never inside the chunk processing below. This ensures pause is
+          // strictly between-chunk — currentWorld is not yet advanced when
+          // the retry occurs, so no partial advancement can be re-run.
           if (simPaused) {
             // Yield control and resume on next iteration when RESUME_SIM clears the flag
             await new Promise((resolve) => setTimeout(resolve, 100));

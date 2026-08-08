@@ -18,6 +18,7 @@ import type { WorldState } from "../../types/world";
 import type { StateImpact } from "../../core/StateImpact";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { simulateBoutForToday, advanceBashoDay } from "../../world";
+import { buildBashoMatchIndex } from "../../bout/bashoMatchIndex";
 
 export function phase01_basho_bouts(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_basho_bouts");
@@ -28,6 +29,9 @@ export function phase01_basho_bouts(world: WorldState): StateImpact {
 
   let currentWorld = world;
 
+  // Pre-index matches by day for O(1) lookup (B1.4)
+  const matchIndex = buildBashoMatchIndex(basho);
+
   // Simulate all unplayed bouts for the current day
   // Use a safety cap to avoid infinite loops from bad data
   const MAX_ITERATIONS = 128;
@@ -35,9 +39,9 @@ export function phase01_basho_bouts(world: WorldState): StateImpact {
     const currentBasho = currentWorld.currentBasho;
     if (!currentBasho) break;
 
-    const todays = (currentBasho.matches ?? []).filter(
-      (m) => m.day === currentBasho.day && !m.result
-    );
+    // Use pre-indexed matches for O(1) day lookup
+    const dayMatches = matchIndex.get(currentBasho.day) ?? [];
+    const todays = dayMatches.filter((m) => !m.result);
     if (todays.length === 0) break;
 
     const { world: nextWorld, result } = simulateBoutForToday(currentWorld, 0);

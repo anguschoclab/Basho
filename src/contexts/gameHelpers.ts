@@ -4,6 +4,7 @@ import { autosave as rawAutosave } from "@/engine/saveload";
 import { signalAutosave } from "@/hooks/useAutosaveIndicator";
 import { getAutosaveEnabled } from "@/pages/settingsHelpers";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { buildBashoMatchIndex } from "@/engine/bout/bashoMatchIndex";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import type { GameState } from "./gameTypes";
 
@@ -46,8 +47,8 @@ export function getMatchesForDay(world: WorldState | null) {
   if (!world?.currentBasho) return [];
 
   const day = world.currentBasho.day;
-  return world.currentBasho.matches
-    .filter((m) => m.day === day)
+  const index = buildBashoMatchIndex(world.currentBasho);
+  return (index.get(day) ?? [])
     .map((m) => ({
       ...m,
       east: world.rikishi.get(m.eastRikishiId),

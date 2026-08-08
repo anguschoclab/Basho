@@ -306,6 +306,7 @@ export class ImpactBuilder {
       | "_postBashoDays"
       | "calendar"
       | "history"
+      | "awardLog"
       | "almanacSnapshots"
       | "mediaState"
       | "ftue"
@@ -356,6 +357,7 @@ export class ImpactBuilder {
   appendToWorldArray<
     K extends
       | "history"
+      | "awardLog"
       | "almanacSnapshots"
       | "basho.matches"
       | "governanceLog"

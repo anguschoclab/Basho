@@ -124,14 +124,12 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
   sendCommand: (command: EngineCommand) => {
     const { worker, initWorker, pendingTick } = get();
 
-    // Prevent concurrent tick commands
-    if (
-      pendingTick &&
-      (command.type === "TICK_DAY" ||
-        command.type === "AUTO_SIM_DAYS" ||
-        command.type === "TICK_MULTIPLE_DAYS")
-    ) {
-      warn("Tick command dropped - another tick is in progress", "Store");
+    // B4.1.3: Reject ALL commands while a tick is in progress.
+    // Previously only tick commands were blocked, but non-tick commands
+    // (OFFER_CONTRACT, BUY_MYOSEKI, etc.) could interleave with async
+    // TICK_MULTIPLE_DAYS loops via the worker's await yield point.
+    if (pendingTick) {
+      warn(`Command "${command.type}" dropped - tick in progress`, "Store");
       return;
     }
 

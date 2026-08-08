@@ -1,7 +1,6 @@
 import type { GameState, GameAction } from "./gameTypes";
 import type { BoutResult } from "../engine/types/basho";
 import * as worldEngine from "../engine/world";
-import { autosaveWithSignal } from "./gameHelpers";
 import { resolveImpacts } from "../engine/core/ImpactResolver";
 
 /**
@@ -31,17 +30,7 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
       const world = worldEngine.advanceBashoDay(state.world);
       const day = world.currentBasho?.day ?? 0;
       if (day > 15) {
-        try {
-          autosaveWithSignal(world);
-        } catch {
-          /* silent */
-        }
         return { ...state, world, phase: "basho_results" };
-      }
-      try {
-        autosaveWithSignal(world);
-      } catch {
-        /* silent */
       }
       return {
         ...state,
@@ -96,11 +85,6 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
           if (result.result) lastResult = result.result;
         }
       }
-      try {
-        autosaveWithSignal(world);
-      } catch {
-        /* silent */
-      }
       return { ...state, world, lastBoutResult: lastResult, phase: "day_results" };
     }
 
@@ -130,11 +114,6 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
           world = result.world;
         }
         if (d < 15) world = worldEngine.advanceBashoDay(world);
-      }
-      try {
-        autosaveWithSignal(world);
-      } catch {
-        /* silent */
       }
       return { ...state, world, phase: "basho_results", currentBoutIndex: 0, lastBoutResult: null };
     }

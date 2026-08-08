@@ -5,6 +5,7 @@ export * from "./phase01_daily_economy";
 export * from "./phase01_daily_drama";
 export * from "./phase01_daily_welfare";
 export * from "./phase01_daily_sponsors";
+export * from "./phase01_daily_micro";
 export * from "./phase01_basho_bouts";
 export * from "./phase01_monthly_market";
 
@@ -28,3 +29,4 @@ export * from "./phase05_monthly_boundary";
 export * from "./phase06_yearly_boundary";
 export * from "./phase06_narrative";
 export * from "./phase_global_cup";
+export * from "./boundHistoryArrays";

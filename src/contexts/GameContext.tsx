@@ -11,7 +11,7 @@
  * @see gameTypes for type definitions
  */
 
-import { useReducer, useCallback, useMemo, ReactNode } from "react";
+import { useReducer, useCallback, useMemo, useEffect, ReactNode } from "react";
 import { error as logError } from "@/engine/utils/Logger";
 import type { WorldState } from "@/engine/types/world";
 import {
@@ -24,8 +24,6 @@ import {
 import { runHoliday, type HolidayConfig, type HolidayResult } from "@/engine/holiday";
 import { runAutoSim, type AutoSimConfig, type AutoSimResult } from "@/engine/autoSim";
 import { registerElectronStorage } from "./electronStorageProvider";
-import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
-import { applyOyakataCreationConfig } from "@/engine/systems/generation/applyOyakataConfig";
 
 // Register electron-store as the engine's storage backend (falls back to localStorage for web builds)
 registerElectronStorage();
@@ -83,30 +81,31 @@ export function GameProvider({ children }: { children: ReactNode }) {
     });
   }, [initWorker, setOnWorldUpdated]);
 
+  // B4.1.2: Autosave as a side-effect of world changes, not inside the reducer.
+  // This preserves reducer purity. The effect debounces via the world reference.
+  useEffect(() => {
+    if (state.world) {
+      try {
+        autosaveWithSignal(state.world);
+      } catch {
+        /* silent */
+      }
+    }
+  }, [state.world]);
+
   const createWorld = useCallback(
     (
       seed: string,
       playerHeyaId?: string,
-      oyakataConfig?: import("@/engine/types/oyakata").OyakataCreationConfig
+      _oyakataConfig?: import("@/engine/types/oyakata").OyakataCreationConfig
     ) => {
-      dispatch(actions.createWorld(seed, playerHeyaId, oyakataConfig));
-      // Also send the world to the worker so TICK_DAY commands work.
-      // We generate the world here (same as the reducer) and send it via LOAD_WORLD
-      // to ensure the worker has the exact same world state as the main thread.
-      const world = generateInitialWorld(seed);
-      let nextWorld: WorldState = { ...world, playerHeyaId: playerHeyaId || undefined };
-      if (playerHeyaId) {
-        const heya = world.heyas.get(playerHeyaId);
-        if (heya) {
-          const updatedHeya = { ...heya, isPlayerOwned: true };
-          nextWorld.heyas = new Map(world.heyas);
-          nextWorld.heyas.set(playerHeyaId, updatedHeya);
-        }
-        if (oyakataConfig) {
-          nextWorld = applyOyakataCreationConfig(nextWorld, playerHeyaId, oyakataConfig);
-        }
-      }
-      sendCommand({ type: "LOAD_WORLD", world: nextWorld });
+      // B4.1.1: Worker is the single source of truth.
+      // Only send START_WORLD to the worker — the worker generates the world
+      // and emits WORLD_UPDATED, which is handled by the onWorldUpdated callback
+      // (wired above) to dispatch updateWorld into the reducer.
+      // This eliminates the redundant main-thread world generation that caused
+      // divergence risk between reducer and worker state.
+      sendCommand({ type: "START_WORLD", seed, playerHeyaId });
     },
     [sendCommand]
   );

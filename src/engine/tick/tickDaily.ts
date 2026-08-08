@@ -123,12 +123,7 @@ export function advanceOneDay(
   const activePhases: import("./pipelineRunner").PipelinePhase[] = [];
 
   if (!opts?.skipDailyMicroPhases) {
-    activePhases.push(
-      phases.phase01_daily_economy,
-      phases.phase01_daily_welfare,
-      phases.phase01_daily_sponsors,
-      phases.phase01_daily_drama,
-    );
+    activePhases.push(phases.phase01_daily_micro);
   }
 
   // P1.2: Bout resolution runs daily during active_basho (not just weekly).

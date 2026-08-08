@@ -27,6 +27,7 @@ import { WorldCircuitService } from "../../systems/worldCircuit/WorldCircuitServ
 import { TrainingPhilosophyService } from "../../systems/legacy/TrainingPhilosophyService";
 import { TalentPoolService } from "../../systems/generation/TalentPoolService";
 import { getRikishi } from "../../queries";
+import { boundHistoryArrays } from "./boundHistoryArrays";
 
 export function phase06_yearly_boundary(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase06_yearly_boundary");
@@ -56,16 +57,6 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
   // World Circuit invitations
   for (const heyaId of world.heyas.keys()) {
     builder.merge(WorldCircuitService.generateYearlyInvitations(world, heyaId));
-  }
-
-  // 0.4 All-Time Records & Legacy (Phase 3)
-  // Update records for all active rikishi at year end
-  for (const rikishiId of world.activeRikishiIds) {
-    const rikishi = getRikishi(world, rikishiId);
-    if (!rikishi) continue;
-    if (rikishi.careerWins > 100 || rikishi.rank === "yokozuna") {
-      builder.merge(HistoryService.updateAllTimeRecords(world, rikishi));
-    }
   }
 
   // 0.4 JSA Board Elections (Phase 4: Bi-Annual)
@@ -130,7 +121,7 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
     builder.updateWorldField("staff", nextStaff);
   }
 
-  // 5. Rikishi Avatar Aging & Physical Aging
+  // 5. Rikishi Avatar Aging & Physical Aging + Records (fused — B2.1)
   if (world.rikishi) {
     for (const id of world.activeRikishiIds) {
       const r = getRikishi(world, id);
@@ -145,6 +136,11 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
         const updated = updateAvatarForAging(r.avatarConfig, age);
         const withHairstyle = updateHairstyleForPromotion(updated, isSekitori);
         builder.updateRikishi(id, { avatarConfig: withHairstyle });
+      }
+
+      // All-Time Records (fused from separate loop — B2.1)
+      if (r.careerWins > 100 || r.rank === "yokozuna") {
+        builder.merge(HistoryService.updateAllTimeRecords(world, r));
       }
     }
   }
@@ -198,6 +194,15 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
     currentWeek: world.calendar?.currentWeek ?? 1,
     year: nextYear,
   });
+
+  // Bound history arrays to prevent unbounded growth (B2.5)
+  const bounded = boundHistoryArrays(world);
+  if (bounded.history !== world.history) {
+    builder.updateWorldField("history", bounded.history);
+  }
+  if (bounded.awardLog && bounded.awardLog !== world.awardLog) {
+    builder.updateWorldField("awardLog", bounded.awardLog);
+  }
 
   return builder.build();
 }
