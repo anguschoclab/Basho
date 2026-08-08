@@ -341,7 +341,7 @@ export const PostBashoPressService = {
     const baseId = `press-prize-${winner.id}-${bashoName}-${year}`;
 
     // Veteran emotional — for older rikishi (30+ years old)
-    const age = (winner.birthYear ?? 1995) <= new Date().getFullYear() - 30;
+    const age = (winner.birthYear ?? 1995) <= year - 30;
     if (age) {
       const line = BardEngine.resolve(rng, "post_basho_press.prize_winner.veteran_emotional", {
         SHIKONA: winner.shikona,

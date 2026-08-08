@@ -12,6 +12,8 @@ import { phase01_daily_sponsors } from "@/engine/tick/phases/phase01_daily_spons
 import { phase01_daily_welfare } from "@/engine/tick/phases/phase01_daily_welfare";
 import { phase01_monthly_market } from "@/engine/tick/phases/phase01_monthly_market";
 import { phase01_week_candidate_pool } from "@/engine/tick/phases/phase01_week_candidate_pool";
+import { phase01_basho_bouts } from "@/engine/tick/phases/phase01_basho_bouts";
+import { phase01_daily_micro } from "@/engine/tick/phases/phase01_daily_micro";
 import { phase01_week_economy } from "@/engine/tick/phases/phase01_week_economy";
 import { phase01_week_governance } from "@/engine/tick/phases/phase01_week_governance";
 import { phase01_week_health } from "@/engine/tick/phases/phase01_week_health";
@@ -109,6 +111,8 @@ const stateImpactPhases: Array<{ name: string; fn: (world: WorldState) => StateI
   { name: "phase01_daily_welfare", fn: phase01_daily_welfare },
   { name: "phase01_monthly_market", fn: phase01_monthly_market },
   { name: "phase01_week_candidate_pool", fn: phase01_week_candidate_pool },
+  { name: "phase01_basho_bouts", fn: phase01_basho_bouts },
+  { name: "phase01_daily_micro", fn: phase01_daily_micro },
   { name: "phase01_week_economy", fn: phase01_week_economy },
   { name: "phase01_week_governance", fn: phase01_week_governance },
   { name: "phase01_week_health", fn: phase01_week_health },

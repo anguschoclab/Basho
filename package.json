@@ -15,6 +15,7 @@
     "type-check": "tsc --noEmit",
     "build:dev": "vite build --mode development",
     "lint": "eslint . || true",
+    "lint:strict": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
