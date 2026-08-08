@@ -185,6 +185,7 @@ export const SerializationService = {
       playerHeyaId: serialized.playerHeyaId,
       currentBanzuke: serialized.currentBanzuke,
       talentPool: s.talentPool,
+      candidatePool: s.candidatePool,
       almanacSnapshots: s.almanacSnapshots || [],
       sponsorPool: this.deserializeSponsorPool(s.sponsorPool),
       ozekiKadoban: s.ozekiKadoban ?? {},

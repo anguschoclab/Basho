@@ -206,7 +206,6 @@ describe("CI Gate: Write-only state field classification", () => {
   // 2. Not read by any presenter, selector, or page component
   // 3. Documented with a reason for being internal-only
   const INTERNAL_ONLY_FIELDS: Record<string, string> = {
-    candidatePool: "Reserved for future recruitment pipeline; not yet wired to UI",
     ftue: "First-time user experience flag; read by BashoHistory for tutorial suppression",
     heyaBrandIdentities: "Read by KeshoMawashiFactory for procedural kesho-mawashi generation",
     _interimDaysRemaining: "Internal cycle counter; not user-facing",
@@ -223,6 +222,7 @@ describe("CI Gate: Write-only state field classification", () => {
     "staff",
     "sparringPairs",
     "talentPool",
+    "candidatePool",
     "chronicle",
     "calendar",
     "myosekiMarket",

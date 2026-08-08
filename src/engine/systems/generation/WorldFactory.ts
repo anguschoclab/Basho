@@ -31,6 +31,7 @@ import { RivalryService } from "../narrative/RivalryService";
 import { resetImpactTimestampCounter } from "../../core/StateImpact";
 import { createStables } from "./HeyaFactory";
 import { createRosters } from "./RosterFactory";
+import { ensureCandidatePoolState } from "./CandidatePoolService";
 
 // Re-export factory functions for backward compatibility
 export { createHeyaWithOyakata, foundStable, createStables } from "./HeyaFactory";
@@ -133,6 +134,9 @@ export function generateInitialWorld(seed: string): WorldState {
 
   // Initialize and populate talent pools
   talentpool.tickWeekTalentPool(world);
+
+  // Initialize candidate pool (NPC watchlist)
+  ensureCandidatePoolState(world);
 
   // Capture equilibrium active population target for the replacement-rate controller.
   // The initial roster is intentionally small (~440); recruitment fills stables to

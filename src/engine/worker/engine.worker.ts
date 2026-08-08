@@ -10,6 +10,7 @@ import { tickOrchestrator, advanceDaysFastOrchestrator } from "../tick/tickOrche
 import { buildWeeklyDigest } from "../../presenters/uiDigest";
 import { generateInitialWorld } from "../systems/generation/WorldFactory";
 import * as talentpool from "../systems/generation/TalentPoolService";
+import { poachCandidate } from "../systems/generation/CandidatePoolService";
 import * as myoseki from "../myosekiMarket";
 import * as sponsorService from "../systems/economy/SponsorContractService";
 import * as legacy from "../systems/legacy/DynastyService";
@@ -235,6 +236,18 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
           currentWorld = resolveImpacts(currentWorld, [result.impact]);
           emitDigest();
           syncWorld();
+        }
+      }
+    },
+    POACH_CANDIDATE: (cmd) => {
+      if (currentWorld) {
+        const result = poachCandidate(currentWorld, cmd.candidateId, cmd.heyaId);
+        if (result.ok && result.impact) {
+          currentWorld = resolveImpacts(currentWorld, [result.impact]);
+          emitDigest();
+          syncWorld();
+        } else {
+          self.postMessage({ type: "ERROR", message: result.reason || "Poach failed" });
         }
       }
     },

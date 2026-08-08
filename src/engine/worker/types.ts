@@ -12,6 +12,7 @@ export type EngineCommand =
   | { type: "OFFER_CONTRACT"; candidateId: string; heyaId: string }
   | { type: "SCOUT_POOL"; pool: import("../types/talent").TalentPoolType; revealCount: number }
   | { type: "SCOUT_CANDIDATE"; candidateId: string; effort: number }
+  | { type: "POACH_CANDIDATE"; candidateId: string; heyaId: string }
   | {
       type: "RESOLVE_CRISIS";
       crisisId: string;

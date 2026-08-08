@@ -20,6 +20,7 @@ export * from "./phase01_week_world_circuit";
 export * from "./phase01_week_staff";
 export * from "./phase01_week_scouting";
 export * from "./phase01_week_talent_pool";
+export * from "./phase01_week_candidate_pool";
 export * from "./phase01_week_recruitment";
 
 export * from "./phase02_context";

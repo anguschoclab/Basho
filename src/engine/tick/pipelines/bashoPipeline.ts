@@ -34,6 +34,7 @@ export const bashoPipeline: PipelinePhase[] = [
   phases.phase01_week_governance,
   phases.phase01_week_npc_ai,
   phases.phase01_week_talent_pool, // Reveal candidates before recruitment (gap-aware supply)
+  phases.phase01_week_candidate_pool, // NPC watchlist: simulate interest + maintenance
   phases.phase01_week_recruitment,
   phases.phase01_week_rivalries,
   phases.phase06_narrative,

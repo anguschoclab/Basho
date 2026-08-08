@@ -36,6 +36,7 @@ const BanzukePage = lazy(() => import("./pages/BanzukePage"));
 const RivalriesPage = lazy(() => import("./pages/RivalriesPage"));
 const EconomyPage = lazy(() => import("./pages/EconomyPage"));
 const TalentPoolPage = lazy(() => import("./pages/TalentPoolPage"));
+const CandidatePoolPage = lazy(() => import("./pages/CandidatePoolPage"));
 const FacilitiesPage = lazy(() => import("./pages/FacilitiesPage"));
 const RecapPage = lazy(() => import("./pages/RecapPage"));
 const WeeklyDigestPage = lazy(() => import("./pages/WeeklyDigestPage"));
@@ -287,6 +288,11 @@ const jsaTalentNestedRoute = createRoute({
   path: "/talent",
   component: () => withSuspense(TalentPoolPage),
 });
+const jsaCandidatePoolRoute = createRoute({
+  getParentRoute: () => jsaBaseRoute,
+  path: "/candidates",
+  component: () => withSuspense(CandidatePoolPage),
+});
 const jsaMyosekiRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/myoseki",
@@ -481,7 +487,7 @@ const routeTree = rootRoute.addChildren([
   sponsorsRedirectRoute,
 
   // Association
-  jsaBaseRoute.addChildren([jsaGovernanceNestedRoute, jsaTrendsRoute, jsaTalentNestedRoute]),
+  jsaBaseRoute.addChildren([jsaGovernanceNestedRoute, jsaTrendsRoute, jsaTalentNestedRoute, jsaCandidatePoolRoute]),
   governanceRedirectRoute,
   talentRedirectRoute,
   jsaMyosekiRoute,
