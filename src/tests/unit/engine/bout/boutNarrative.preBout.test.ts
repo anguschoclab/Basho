@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
+import { generateBoutNarrative, isSanyakuPromotionByRank } from "@/engine/bout/boutNarrative";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { mockRikishi } from "../utils";
 import { makeBoutResult, makeBoutWorld } from "@/tests/helpers/boutTestHelpers";
@@ -421,6 +421,64 @@ describe("generateBoutNarrative — pre-bout context", () => {
       for (const line of getPreBoutLines(result)) {
         expect(hasMissingTokens(line.text)).toBe(false);
       }
+    });
+  });
+
+  describe("record-context gate", () => {
+    it("day 1 with records present → no record commentary line", () => {
+      const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 1, currentBashoLosses: 0 });
+      const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 0, currentBashoLosses: 1 });
+      const world = makeBoutWorld(east, west);
+      const result = makeBoutResult();
+      generateBoutNarrative(result, east, west, BASHO, 1, "seed-day1-records", world);
+      const recordLines = getPreBoutLines(result).filter((l) =>
+        l.text.includes("pre_bout.records")
+      );
+      expect(recordLines.length).toBe(0);
+    });
+
+    it("day 5 with both 0-0 → no record commentary line", () => {
+      const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 0, currentBashoLosses: 0 });
+      const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 0, currentBashoLosses: 0 });
+      const world = makeBoutWorld(east, west);
+      const result = makeBoutResult();
+      generateBoutNarrative(result, east, west, BASHO, 5, "seed-0-0-records", world);
+      const recordLines = getPreBoutLines(result).filter((l) =>
+        l.text.includes("pre_bout.records")
+      );
+      expect(recordLines.length).toBe(0);
+    });
+
+    it("day 5 with east 1-0 and west 0-1 → record commentary generated", () => {
+      const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 1, currentBashoLosses: 0 });
+      const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 0, currentBashoLosses: 1 });
+      const world = makeBoutWorld(east, west);
+      const result = makeBoutResult();
+      generateBoutNarrative(result, east, west, BASHO, 5, "seed-records-pass", world);
+      const preBoutLines = getPreBoutLines(result);
+      expect(preBoutLines.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe("isSanyakuPromotionByRank", () => {
+    it("returns true for sekiwake promoted from maegashira", () => {
+      expect(isSanyakuPromotionByRank("sekiwake", "maegashira")).toBe(true);
+    });
+
+    it("returns true for komusubi promoted from maegashira", () => {
+      expect(isSanyakuPromotionByRank("komusubi", "maegashira")).toBe(true);
+    });
+
+    it("returns false for sekiwake demoted from ozeki", () => {
+      expect(isSanyakuPromotionByRank("sekiwake", "ozeki")).toBe(false);
+    });
+
+    it("returns false for sekiwake demoted from yokozuna", () => {
+      expect(isSanyakuPromotionByRank("sekiwake", "yokozuna")).toBe(false);
+    });
+
+    it("returns false for maegashira remaining maegashira", () => {
+      expect(isSanyakuPromotionByRank("maegashira", "maegashira")).toBe(false);
     });
   });
 });

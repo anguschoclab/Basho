@@ -14,22 +14,15 @@ export function kenshoTierLabel(total: number): { label: string; detail: string 
   return { label: "Unproven", detail: "Little sponsor draw so far." };
 }
 
+const RUNWAY_BANDS = new Set<RunwayBand>(["secure", "comfortable", "tight", "critical", "desperate"]);
+const KOENKAI_BANDS = new Set<KoenkaiBandType>(["powerful", "strong", "moderate", "weak", "none"]);
+
 export function safeRunwayBand(v: unknown): RunwayBand {
   const s = typeof v === "string" ? v : "";
-  if (
-    s === "secure" ||
-    s === "comfortable" ||
-    s === "tight" ||
-    s === "critical" ||
-    s === "desperate"
-  )
-    return s;
-  return "tight";
+  return RUNWAY_BANDS.has(s as RunwayBand) ? (s as RunwayBand) : "tight";
 }
 
 export function safeKoenkaiBand(v: unknown): KoenkaiBandType {
   const s = typeof v === "string" ? v : "";
-  if (s === "powerful" || s === "strong" || s === "moderate" || s === "weak" || s === "none")
-    return s;
-  return "none";
+  return KOENKAI_BANDS.has(s as KoenkaiBandType) ? (s as KoenkaiBandType) : "none";
 }

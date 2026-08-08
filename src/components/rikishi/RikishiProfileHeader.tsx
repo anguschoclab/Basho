@@ -41,6 +41,10 @@ export function RikishiProfileHeader({
   isKadoban,
   onBack,
 }: RikishiProfileHeaderProps) {
+  const hasRetirementPressure =
+    (rikishi.consecutiveMakeKoshi ?? 0) > 0 ||
+    (rikishi.consecutiveKyujo ?? 0) > 0 ||
+    (rikishi.councilWarnings ?? 0) > 0;
   return (
     <div className="space-y-8">
       <Button
@@ -220,7 +224,7 @@ export function RikishiProfileHeader({
                     </div>
                   </div>
                 )}
-                {rikishi.rank === "yokozuna" && ((rikishi.consecutiveMakeKoshi ?? 0) > 0 || (rikishi.consecutiveKyujo ?? 0) > 0 || (rikishi.councilWarnings ?? 0) > 0) && (
+                {rikishi.rank === "yokozuna" && hasRetirementPressure && (
                   <div className="pt-2">
                     <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest mb-1.5">
                       <span className="text-destructive flex items-center gap-1">

@@ -1,5 +1,6 @@
 import { rngFromSeed } from "../rng";
 import type { Rikishi } from "../types/rikishi";
+import type { Rank } from "../types/banzuke";
 import type { BoutResult, BashoName, BoutLogEntry } from "../types/basho";
 import type { WorldState } from "../types/world";
 import type { Stance } from "../types/combat";
@@ -64,6 +65,17 @@ const FOCUS_BIAS_TO_STYLE: Record<string, string> = {
 
 function focusBiasToStyleKey(focusBias: string): string | undefined {
   return FOCUS_BIAS_TO_STYLE[focusBias];
+}
+
+const SANYAKU_RANKS: readonly Rank[] = ["sekiwake", "komusubi"];
+
+export function isSanyakuPromotionByRank(currentRank: Rank, prevRank: Rank): boolean {
+  return (
+    SANYAKU_RANKS.includes(currentRank) &&
+    !SANYAKU_RANKS.includes(prevRank) &&
+    prevRank !== "yokozuna" &&
+    prevRank !== "ozeki"
+  );
 }
 
 export type PbpPhase =
@@ -400,7 +412,9 @@ export function generateBoutNarrative(
   const westWins = west.currentBashoWins ?? 0;
   const westLosses = west.currentBashoLosses ?? 0;
 
-  if (day > 1 && (eastWins > 0 || eastLosses > 0) && (westWins > 0 || westLosses > 0)) {
+  const eastHasRecord = eastWins > 0 || eastLosses > 0;
+  const westHasRecord = westWins > 0 || westLosses > 0;
+  if (day > 1 && eastHasRecord && westHasRecord) {
     const eastWinning = eastWins > eastLosses;
     const westWinning = westWins > westLosses;
     let recordPath: string;
@@ -1040,12 +1054,10 @@ export function generateBoutNarrative(
     const prevBasho = r.careerHistory[r.careerHistory.length - 1];
     const prevRank = prevBasho.rank;
     const currentRank = r.rank;
-    const sanyakuRanks = ["sekiwake", "komusubi"];
-    // Use both rank comparison and the sanyakuPromotionThisBasho flag from banzuke (Gap 5)
     const isSanyakuDebut =
-      (sanyakuRanks.includes(currentRank ?? "") && !sanyakuRanks.includes(prevRank ?? "") && prevRank !== "yokozuna" && prevRank !== "ozeki") ||
+      isSanyakuPromotionByRank(currentRank, prevRank) ||
       r.sanyakuPromotionThisBasho;
-    if (isSanyakuDebut && sanyakuRanks.includes(currentRank ?? "")) {
+    if (isSanyakuDebut && SANYAKU_RANKS.includes(currentRank)) {
       const debutPath = currentRank === "sekiwake" ? "pre_bout.rank_debut.shin_sekiwake" : "pre_bout.rank_debut.shin_komusubi";
       push(
         BardEngine.resolve(preBoutRng, debutPath, {

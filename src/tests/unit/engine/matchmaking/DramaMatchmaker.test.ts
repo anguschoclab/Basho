@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   scoreDrama,
   applyDramaBudget,
-  type DramaContext,
+  isMakuuchiDebut,
 } from "@/engine/matchmaking/DramaMatchmaker";
 import { mockRikishi } from "../utils";
 import type { MatchPairing } from "@/engine/matchmaking/MatchmakingPhases";
@@ -326,6 +326,169 @@ describe("DramaMatchmaker", () => {
       for (const pair of allPairs) {
         expect(facedSet.has(pair)).toBe(false);
       }
+    });
+  });
+
+  describe("scoreDrama — demotion_danger", () => {
+    it("scores sekiwake with <6 wins on day 12 as demotion_danger", () => {
+      const sekiwake = mockRikishi("seki", {
+        rank: "sekiwake",
+        currentBashoWins: 5,
+        currentBashoLosses: 7,
+      });
+      const opponent = mockRikishi("opp", {
+        rank: "maegashira",
+        currentBashoWins: 8,
+        currentBashoLosses: 4,
+      });
+      const standings = new Map([
+        ["seki", { wins: 5, losses: 7 }],
+        ["opp", { wins: 8, losses: 4 }],
+      ]);
+
+      const result = scoreDrama(sekiwake, opponent, 12, standings);
+
+      expect(result).not.toBeNull();
+      expect(result?.label).toBe("demotion_danger");
+      expect(result?.score).toBe(60);
+    });
+
+    it("scores komusubi with <6 wins on day 12 as demotion_danger", () => {
+      const komusubi = mockRikishi("komu", {
+        rank: "komusubi",
+        currentBashoWins: 4,
+        currentBashoLosses: 8,
+      });
+      const opponent = mockRikishi("opp", {
+        rank: "maegashira",
+        currentBashoWins: 7,
+        currentBashoLosses: 5,
+      });
+      const standings = new Map([
+        ["komu", { wins: 4, losses: 8 }],
+        ["opp", { wins: 7, losses: 5 }],
+      ]);
+
+      const result = scoreDrama(komusubi, opponent, 12, standings);
+
+      expect(result).not.toBeNull();
+      expect(result?.label).toBe("demotion_danger");
+    });
+
+    it("does not score demotion_danger for sekiwake with 8 wins on day 12", () => {
+      const sekiwake = mockRikishi("seki", {
+        rank: "sekiwake",
+        currentBashoWins: 8,
+        currentBashoLosses: 4,
+      });
+      const opponent = mockRikishi("opp", {
+        rank: "maegashira",
+        currentBashoWins: 7,
+        currentBashoLosses: 5,
+      });
+      const standings = new Map([
+        ["seki", { wins: 8, losses: 4 }],
+        ["opp", { wins: 7, losses: 5 }],
+      ]);
+
+      const result = scoreDrama(sekiwake, opponent, 12, standings);
+
+      expect(result?.label).not.toBe("demotion_danger");
+    });
+
+    it("does not score demotion_danger before day 12", () => {
+      const sekiwake = mockRikishi("seki", {
+        rank: "sekiwake",
+        currentBashoWins: 3,
+        currentBashoLosses: 7,
+      });
+      const opponent = mockRikishi("opp", {
+        rank: "maegashira",
+        currentBashoWins: 6,
+        currentBashoLosses: 4,
+      });
+      const standings = new Map([
+        ["seki", { wins: 3, losses: 7 }],
+        ["opp", { wins: 6, losses: 4 }],
+      ]);
+
+      const result = scoreDrama(sekiwake, opponent, 10, standings);
+
+      expect(result?.label).not.toBe("demotion_danger");
+    });
+  });
+
+  describe("scoreDrama — debut_showcase", () => {
+    it("scores rookie debut vs sanyaku as debut_showcase", () => {
+      const rookie = mockRikishi("rookie", {
+        rank: "maegashira",
+        division: "makuuchi",
+        careerWins: 5,
+        careerLosses: 3,
+        careerHistory: [],
+      });
+      const sanyaku = mockRikishi("sanyaku", {
+        rank: "sekiwake",
+        division: "makuuchi",
+        careerWins: 200,
+        careerLosses: 100,
+      });
+      const standings = new Map([
+        ["rookie", { wins: 3, losses: 5 }],
+        ["sanyaku", { wins: 8, losses: 4 }],
+      ]);
+
+      const result = scoreDrama(rookie, sanyaku, 8, standings);
+
+      expect(result).not.toBeNull();
+      expect(result?.label).toBe("debut_showcase");
+      expect(result?.score).toBe(65);
+    });
+
+    it("does not score debut_showcase when rookie vs ozeki (ozeki is not sanyaku here)", () => {
+      const rookie = mockRikishi("rookie", {
+        rank: "maegashira",
+        division: "makuuchi",
+        careerWins: 5,
+        careerLosses: 3,
+        careerHistory: [],
+      });
+      const ozeki = mockRikishi("ozeki", {
+        rank: "ozeki",
+        division: "makuuchi",
+        careerWins: 200,
+        careerLosses: 100,
+      });
+      const standings = new Map([
+        ["rookie", { wins: 3, losses: 5 }],
+        ["ozeki", { wins: 8, losses: 4 }],
+      ]);
+
+      const result = scoreDrama(rookie, ozeki, 8, standings);
+
+      expect(result?.label).not.toBe("debut_showcase");
+    });
+  });
+
+  describe("isMakuuchiDebut", () => {
+    it("returns true for makuuchi division, <=1 makuuchi bouts, <15 total bouts, maegashira rank", () => {
+      expect(isMakuuchiDebut(0, "makuuchi", 8, "maegashira")).toBe(true);
+    });
+
+    it("returns false for ozeki rank", () => {
+      expect(isMakuuchiDebut(0, "makuuchi", 8, "ozeki")).toBe(false);
+    });
+
+    it("returns false for yokozuna rank", () => {
+      expect(isMakuuchiDebut(0, "makuuchi", 8, "yokozuna")).toBe(false);
+    });
+
+    it("returns false for juryo division", () => {
+      expect(isMakuuchiDebut(0, "juryo", 8, "juryo")).toBe(false);
+    });
+
+    it("returns false for >=15 total bouts", () => {
+      expect(isMakuuchiDebut(0, "makuuchi", 15, "maegashira")).toBe(false);
     });
   });
 });

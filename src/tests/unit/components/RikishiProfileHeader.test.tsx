@@ -398,4 +398,22 @@ describe("RikishiProfileHeader", () => {
     );
     expect(screen.queryByText("Kachi-Koshi Streak")).toBeNull();
   });
+
+  it("hides Retirement Pressure when yokozuna has all zero pressure indicators", () => {
+    const rikishi = makeUIRikishi({
+      rank: "yokozuna",
+      consecutiveMakeKoshi: 0,
+      consecutiveKyujo: 0,
+      councilWarnings: 0,
+    });
+    render(
+      <RikishiProfileHeader
+        rikishi={rikishi}
+        isOwned={false}
+        healthBadge="Healthy"
+        onBack={() => {}}
+      />
+    );
+    expect(screen.queryByText("Retirement Pressure")).toBeNull();
+  });
 });

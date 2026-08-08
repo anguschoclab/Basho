@@ -95,7 +95,8 @@ export function simulateEntireBasho(
 
       if (!east || !west) continue;
 
-      if (east.injured || west.injured || east.isKyujo || west.isKyujo || east.isRetired || west.isRetired) {
+      const eitherAbsent = east.injured || west.injured || east.isKyujo || west.isKyujo || east.isRetired || west.isRetired;
+      if (eitherAbsent) {
         // Fusen-sho / Fusen-paku (standardization point)
         const eastAbsent = east.injured || east.isKyujo || east.isRetired;
         const winner = eastAbsent ? west : east;

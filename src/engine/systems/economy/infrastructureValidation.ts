@@ -13,6 +13,17 @@ import { FACILITY_REGISTRY } from "../../types/infrastructure";
 import { getHeya } from "../../queries";
 import { CONSTRUCTION_COST_LEVEL_MULTIPLIER } from "../../../constants/engine/economyExtended";
 
+const KNOWN_FAILURE_REASONS = new Set([
+  "heya_not_found",
+  "facility_not_found",
+  "already_under_construction",
+  "insufficient_funds",
+]);
+
+export function isUnexpectedFailureReason(reason: string | undefined): boolean {
+  return !!reason && !KNOWN_FAILURE_REASONS.has(reason);
+}
+
 export interface ValidationResult {
   ok: boolean;
   heya?: Heya;

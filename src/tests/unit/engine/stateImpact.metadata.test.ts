@@ -6,6 +6,7 @@ import type { WorldState } from "@/engine/types/world";
 
 // Import all tick phases that return StateImpact
 import { phase00_preflight } from "@/engine/tick/phases/phase00_preflight";
+import { phase01_daily_drama } from "@/engine/tick/phases/phase01_daily_drama";
 import { phase01_daily_economy } from "@/engine/tick/phases/phase01_daily_economy";
 import { phase01_daily_sponsors } from "@/engine/tick/phases/phase01_daily_sponsors";
 import { phase01_daily_welfare } from "@/engine/tick/phases/phase01_daily_welfare";
@@ -102,6 +103,7 @@ function makeMockWorld(): WorldState {
 // These must include `metadata` in their return value per the pipelineRunner invariant.
 const stateImpactPhases: Array<{ name: string; fn: (world: WorldState) => StateImpact | WorldState }> = [
   { name: "phase00_preflight", fn: phase00_preflight },
+  { name: "phase01_daily_drama", fn: phase01_daily_drama },
   { name: "phase01_daily_economy", fn: phase01_daily_economy },
   { name: "phase01_daily_sponsors", fn: phase01_daily_sponsors },
   { name: "phase01_daily_welfare", fn: phase01_daily_welfare },

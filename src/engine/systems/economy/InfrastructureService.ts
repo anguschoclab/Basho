@@ -21,7 +21,7 @@ import { FACILITY_REGISTRY, FacilityId } from "../../types/infrastructure";
 import {
   CONSTRUCTION_BUILD_TIME_THRESHOLD,
 } from "../../../constants/engine/economyExtended";
-import { validateConstruction } from "./infrastructureValidation";
+import { validateConstruction, isUnexpectedFailureReason } from "./infrastructureValidation";
 
 /**
  * Infrastructure Service namespace.
@@ -62,8 +62,9 @@ export const InfrastructureService = {
     const builder = createImpactBuilder("startConstruction");
 
     const result = validateConstruction(world, heyaId, facilityId);
-    if (!result.ok || !result.heya || !result.def || result.cost === undefined || result.nextLevel === undefined) {
-      if (result.reason && result.reason !== "heya_not_found" && result.reason !== "facility_not_found" && result.reason !== "already_under_construction" && result.reason !== "insufficient_funds") {
+    const isInvalidResult = !result.ok || !result.heya || !result.def || result.cost === undefined || result.nextLevel === undefined;
+    if (isInvalidResult) {
+      if (isUnexpectedFailureReason(result.reason)) {
         builder.logEvent(
           "CONSTRUCTION_STARTED",
           "facility",
@@ -78,7 +79,12 @@ export const InfrastructureService = {
       return builder.build();
     }
 
-    const { heya, def, cost, nextLevel } = result;
+    const { heya, def, cost, nextLevel } = result as typeof result & {
+      heya: NonNullable<typeof result.heya>;
+      def: NonNullable<typeof result.def>;
+      cost: number;
+      nextLevel: number;
+    };
 
     const completionYear =
       world.year + (def.buildTimeBasho > CONSTRUCTION_BUILD_TIME_THRESHOLD ? 1 : 0);

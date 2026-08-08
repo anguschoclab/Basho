@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { InfrastructureService } from "@/engine/systems/economy/InfrastructureService";
+import { isUnexpectedFailureReason } from "@/engine/systems/economy/infrastructureValidation";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import { CONSTRUCTION_COST_LEVEL_MULTIPLIER } from "@/constants/engine/economyExtended";
 
@@ -142,6 +143,49 @@ describe("InfrastructureService", () => {
       // With level 2: 1 + (1.15 - 1) * 2 = 1.30
       expect(bonuses.statBuffs.power).toBeCloseTo(1.3);
       expect(bonuses.injuryHealMod).toBe(0); // medical suite is not active
+    });
+  });
+
+  describe("isUnexpectedFailureReason", () => {
+    it("returns false for 'heya_not_found'", () => {
+      expect(isUnexpectedFailureReason("heya_not_found")).toBe(false);
+    });
+
+    it("returns false for 'facility_not_found'", () => {
+      expect(isUnexpectedFailureReason("facility_not_found")).toBe(false);
+    });
+
+    it("returns false for 'already_under_construction'", () => {
+      expect(isUnexpectedFailureReason("already_under_construction")).toBe(false);
+    });
+
+    it("returns false for 'insufficient_funds'", () => {
+      expect(isUnexpectedFailureReason("insufficient_funds")).toBe(false);
+    });
+
+    it("returns false for undefined reason", () => {
+      expect(isUnexpectedFailureReason(undefined)).toBe(false);
+    });
+
+    it("returns true for an unexpected reason string", () => {
+      expect(isUnexpectedFailureReason("Insufficient presence in mongolia. Need 80, have 10.")).toBe(true);
+    });
+  });
+
+  describe("startConstruction — regional presence failure logs event", () => {
+    it("logs CONSTRUCTION_STARTED with failed_requirements for unexpected reason", () => {
+      const world = MockFactory.createWorld({ year: 2025 });
+      const heya = MockFactory.createHeya("heya-1", {
+        funds: 100_000_000,
+        regionalPresence: { mongolia: 10 },
+      });
+      world.heyas.set(heya.id, heya);
+
+      const impact = InfrastructureService.startConstruction(world, heya.id, "academy_mongolia");
+
+      expect(impact.entities?.heyaUpdates?.size ?? 0).toBe(0);
+      expect(impact.events?.[0].type).toBe("CONSTRUCTION_STARTED");
+      expect((impact.events?.[0].data as { status: string }).status).toBe("failed_requirements");
     });
   });
 });

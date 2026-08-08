@@ -14,6 +14,7 @@
  */
 
 import type { Rikishi } from "../types/rikishi";
+import type { Division, Rank } from "../types/banzuke";
 import type { MatchPairing } from "./MatchmakingPhases";
 import {
   DRAMA_DAY_SENSHURAKU,
@@ -94,6 +95,21 @@ export interface DramaContext {
   score: number;
   /** Human-readable explanation of why this matchup is dramatic. */
   reason: string;
+}
+
+export function isMakuuchiDebut(
+  makuuchiBouts: number,
+  division: Division,
+  totalBouts: number,
+  rank: Rank
+): boolean {
+  return (
+    makuuchiBouts <= DRAMA_DEBUT_MAKUUCHI_BOUTS &&
+    division === "makuuchi" &&
+    totalBouts < DRAMA_DEBUT_TOTAL_BOUTS &&
+    rank !== "ozeki" &&
+    rank !== "yokozuna"
+  );
 }
 
 // ── Drama Scoring ─────────────────────────────────────────────────────────────
@@ -296,7 +312,9 @@ export function scoreDrama(
   // Demotion danger: Sekiwake/Komusubi at risk of demotion (day 12+, < 6 wins)
   const aIsSanyaku = a.rank === "sekiwake" || a.rank === "komusubi";
   const bIsSanyaku = b.rank === "sekiwake" || b.rank === "komusubi";
-  if (day >= DRAMA_DAY_DEMOTION_START && ((aIsSanyaku && aRecord.wins < DRAMA_DEMOTION_WIN_THRESHOLD) || (bIsSanyaku && bRecord.wins < DRAMA_DEMOTION_WIN_THRESHOLD))) {
+  const aDemotionRisk = aIsSanyaku && aRecord.wins < DRAMA_DEMOTION_WIN_THRESHOLD;
+  const bDemotionRisk = bIsSanyaku && bRecord.wins < DRAMA_DEMOTION_WIN_THRESHOLD;
+  if (day >= DRAMA_DAY_DEMOTION_START && (aDemotionRisk || bDemotionRisk)) {
     return {
       label: "demotion_danger",
       score: DRAMA_SCORE_DEMOTION_DANGER,
@@ -313,8 +331,8 @@ export function scoreDrama(
   const bMakuuchiBouts = (b.careerHistory ?? []).filter(
     (h) => h.division === "makuuchi"
   ).length;
-  const aIsDebut = aMakuuchiBouts <= DRAMA_DEBUT_MAKUUCHI_BOUTS && a.division === "makuuchi" && aTotalBouts < DRAMA_DEBUT_TOTAL_BOUTS && a.rank !== "ozeki" && a.rank !== "yokozuna";
-  const bIsDebut = bMakuuchiBouts <= DRAMA_DEBUT_MAKUUCHI_BOUTS && b.division === "makuuchi" && bTotalBouts < DRAMA_DEBUT_TOTAL_BOUTS && b.rank !== "ozeki" && b.rank !== "yokozuna";
+  const aIsDebut = isMakuuchiDebut(aMakuuchiBouts, a.division, aTotalBouts, a.rank);
+  const bIsDebut = isMakuuchiDebut(bMakuuchiBouts, b.division, bTotalBouts, b.rank);
   if ((aIsDebut && bIsSanyaku) || (bIsDebut && aIsSanyaku)) {
     return {
       label: "debut_showcase",

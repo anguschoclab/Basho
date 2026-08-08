@@ -70,4 +70,49 @@ describe("Bug L: processOyakataMood does not mutate input oyakata", () => {
     const moodEvent = impact.events?.find((e) => e.type === "OYAKATA_MOOD_SHIFT");
     expect(moodEvent).toBeUndefined();
   });
+
+  it("defaults to 'content' when oyakata has no mood field (undefined)", () => {
+    const oyakata = { ...makeOyakata(), mood: undefined } as unknown as Oyakata;
+    const builder = createImpactBuilder("test");
+    const decision = makeDecision("frustrated");
+
+    const result = processOyakataMood(oyakata, decision, "h1", builder);
+
+    expect(result).toBe("frustrated");
+    const impact = builder.build();
+    const moodEvent = impact.events?.find((e) => e.type === "OYAKATA_MOOD_SHIFT");
+    expect(moodEvent).toBeDefined();
+    expect(moodEvent?.data?.oldMood).toBe("content");
+    expect(moodEvent?.data?.newMood).toBe("frustrated");
+  });
+
+  it("logs OYAKATA_MOOD_SHIFT event with correct oldMood, newMood, and heyaId", () => {
+    const oyakata = makeOyakata("content");
+    const builder = createImpactBuilder("test");
+    const decision = makeDecision("frustrated");
+
+    processOyakataMood(oyakata, decision, "h1", builder);
+    const impact = builder.build();
+    const moodEvent = impact.events?.find((e) => e.type === "OYAKATA_MOOD_SHIFT");
+
+    expect(moodEvent).toBeDefined();
+    expect(moodEvent?.data?.oldMood).toBe("content");
+    expect(moodEvent?.data?.newMood).toBe("frustrated");
+    expect(moodEvent?.heyaId).toBe("h1");
+  });
+
+  it("logs mood shift correctly for non-default transition (frustrated to inspired)", () => {
+    const oyakata = makeOyakata("frustrated");
+    const builder = createImpactBuilder("test");
+    const decision = makeDecision("inspired");
+
+    const result = processOyakataMood(oyakata, decision, "h1", builder);
+
+    expect(result).toBe("inspired");
+    const impact = builder.build();
+    const moodEvent = impact.events?.find((e) => e.type === "OYAKATA_MOOD_SHIFT");
+    expect(moodEvent).toBeDefined();
+    expect(moodEvent?.data?.oldMood).toBe("frustrated");
+    expect(moodEvent?.data?.newMood).toBe("inspired");
+  });
 });
