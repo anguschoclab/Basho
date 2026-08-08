@@ -101,6 +101,7 @@ This ensures no subsequent phase starts until all parallel shards report done.
 ### Revisit Criteria
 
 Revisit this research track if:
+
 - `advance_365_days_ms` exceeds 2000ms after all B1-B4 optimizations.
 - New embarrassingly parallel phases are added with heavy per-entity computation.
 - The app moves to a pure browser target where Web Workers are already heavily used.

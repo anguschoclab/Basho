@@ -127,6 +127,9 @@ export function simulateEntireBasho(
           upset: false,
           kenshoEnvelopes: 0,
           log: [],
+          momentumScore: 0,
+          inBoutInjury: null,
+          isTimeout: false,
         };
         continue;
       }
