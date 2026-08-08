@@ -17,6 +17,7 @@ function findEngineTsFiles(dir: string): string[] {
   return results;
 }
 
+
 describe("L4.3: correctness traps — parseInt radix", () => {
   it("all parseInt calls in engine use an explicit radix", () => {
     const engineFiles = findEngineTsFiles(join(SRC_DIR, "engine"));
@@ -63,5 +64,63 @@ describe("L4.3: correctness traps — .sort() without clone", () => {
     }
 
     expect(violations, `In-place sort on world state arrays:\n${violations.join("\n")}`).toEqual([]);
+  });
+});
+
+describe("L4.3: correctness traps — loose equality (== / != with non-null values)", () => {
+  it("engine production code uses strict equality (=== / !==) except for nullish checks (!= null / == null)", () => {
+    const engineFiles = findEngineTsFiles(join(SRC_DIR, "engine"));
+    const violations: string[] = [];
+
+    for (const file of engineFiles) {
+      const content = readFileSync(file, "utf-8");
+      const lines = content.split("\n");
+      lines.forEach((line, i) => {
+        const trimmed = line.trim();
+        if (trimmed.startsWith("//") || trimmed.startsWith("*")) return;
+        // Flag == or != that are NOT === or !== and NOT comparing to null/undefined
+        // == null and != null are idiomatic TS nullish checks — allowed
+        // Use negative lookbehind/lookahead to exclude === and !==
+        const looseEq = line.match(/(?<![=!])==(?!=)\s*(?!null\b|undefined\b)\S/);
+        const looseNeq = line.match(/(?<=[^=!])!=(?!=)\s*(?!null\b|undefined\b)\S/);
+        if (looseEq || looseNeq) {
+          violations.push(`${file}:${i + 1}: ${trimmed}`);
+        }
+      });
+    }
+
+    expect(violations, `Loose equality with non-null values (use === or !==):\n${violations.join("\n")}`).toEqual([]);
+  });
+});
+
+describe("L4.3: correctness traps — mutable default arguments", () => {
+  it("engine functions do not use mutable default arguments with new Map/Set/Array (shared state risk)", () => {
+    const engineFiles = findEngineTsFiles(join(SRC_DIR, "engine"));
+    const violations: string[] = [];
+
+    for (const file of engineFiles) {
+      const content = readFileSync(file, "utf-8");
+      const lines = content.split("\n");
+      lines.forEach((line, i) => {
+        const trimmed = line.trim();
+        if (trimmed.startsWith("//") || trimmed.startsWith("*")) return;
+        // In JS/TS, = {} and = [] create new objects per call (unlike Python).
+        // Only flag new Map()/Set()/Array() as default arguments in function signatures.
+        // Must be on a line with function parameter syntax (param: Type = new ...)
+        if (/=\s*new\s+(?:Map|Set|Array)\s*\(\s*\)/.test(line)) {
+          // Must be a function parameter default: has param: Type = new ... pattern
+          // and the line is part of a parameter list (contains , or ) at end)
+          if (/\w+\s*:\s*[\w<>[\]|, ]+\s*=\s*new\s+(?:Map|Set|Array)/.test(line) &&
+              /[,)]\s*$/.test(trimmed)) {
+            violations.push(`${file}:${i + 1}: ${trimmed}`);
+          }
+        }
+      });
+    }
+
+    expect(
+      violations.length,
+      `new Map()/Set()/Array() as default arguments:\n${violations.join("\n")}`,
+    ).toBe(0);
   });
 });

@@ -142,8 +142,9 @@ export function bestTierAllowed(
   perf: BashoPerformance | undefined,
   _ozekiState: OzekiKadobanState | undefined,
   demotedOzeki: Set<string>,
-  reclaimableOzeki: Set<string> = new Set()
+  reclaimableOzeki?: Set<string>,
 ): number {
+  const reclaimable = reclaimableOzeki ?? new Set<string>();
   const rank = entry.position.rank;
   const tier = RANK_HIERARCHY[rank].tier;
 
@@ -153,7 +154,7 @@ export function bestTierAllowed(
   if (rank === "sekiwake" && perf?.promoteToOzeki) return 2;
   if (rank === "sekiwake" && (perf?.wins ?? 0) >= SEKIWAKE_OZEKI_PROMOTION_WINS) return 2;
   // Ozeki reclaim: demoted ozeki at sekiwake with 10+ wins can return to ozeki
-  if (rank === "sekiwake" && reclaimableOzeki.has(entry.rikishiId) && (perf?.wins ?? 0) >= SEKIWAKE_OZEKI_RECLAIM_WINS) return 2;
+  if (rank === "sekiwake" && reclaimable.has(entry.rikishiId) && (perf?.wins ?? 0) >= SEKIWAKE_OZEKI_RECLAIM_WINS) return 2;
   // 33-win Ozeki promotion: sekiwake with 10+ wins and 33+ total across 3 basho
   if (rank === "sekiwake" && (perf?.wins ?? 0) >= SEKIWAKE_OZEKI_RECLAIM_WINS && (perf?.sekiwakeThreeBashoWins ?? 0) >= SEKIWAKE_33_WIN_THRESHOLD) return 2;
   if (rank === "komusubi" && perf?.promoteToOzeki) return 2;
