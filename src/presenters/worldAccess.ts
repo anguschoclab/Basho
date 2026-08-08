@@ -4,6 +4,7 @@ import type { Heya } from "@/engine/types/heya";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { Staff } from "@/engine/types/staff";
 import type { BashoResult } from "@/engine/types/basho";
+import type { TalentPoolWorldState } from "@/engine/types/talent";
 import {
   getRikishi as engineGetRikishi,
   getHeya as engineGetHeya,
@@ -80,4 +81,8 @@ export function getRikishiAnywhere(world: WorldState, id: string): Rikishi | und
 export function getGlobalCupChampion(world: WorldState): Rikishi | undefined {
   const championId = world.globalCup?.championId;
   return championId ? world.rikishi.get(championId) : undefined;
+}
+
+export function getTalentPool(world: WorldState): TalentPoolWorldState | undefined {
+  return world.talentPool;
 }

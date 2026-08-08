@@ -97,12 +97,15 @@ export function reviewSource(content: string, filePath: string): Violation[] {
     // Check 5: Potential mutable state leaks
     // We look for actual assignment or mutating method calls on a world.* member,
     // not comparisons, destructuring, or safe reads.
+    // @world-builder annotation marks intentional world mutations (world creation, lazy init).
+    const hasWorldBuilderAnnotation = rawLine.includes("@world-builder");
     const hasWorldMutation =
       /\bworld\.[A-Za-z_$][\w$]*(?:\[[^\]]+\])?\s*(?:(?:\+|-|\*|\/)?|\*\*|%)?=(?![=>])/.test(line) ||
       /\bworld\.[A-Za-z_$][\w$]*(?:\[[^\]]+\])?\.(?:push|delete|splice|set|shift|unshift|pop|sort|reverse)\s*\(/.test(line);
 
     if (
       hasWorldMutation &&
+      !hasWorldBuilderAnnotation &&
       !line.includes("structuredClone") &&
       !line.includes("builder") &&
       !line.includes("updateWorldField")

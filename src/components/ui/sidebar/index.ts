@@ -1,4 +1,5 @@
-export { useSidebar, SidebarProvider } from "./provider";
+export { useSidebar } from "./context";
+export { SidebarProvider } from "./provider";
 export { Sidebar, SidebarTrigger, SidebarRail, SidebarInset } from "./core";
 export {
   SidebarInput,

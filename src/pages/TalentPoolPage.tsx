@@ -18,7 +18,7 @@ import type { TalentPoolType, TalentCandidate, VisibilityBand } from "@/engine/t
 import * as talentpool from "@/engine/systems/generation/TalentPoolService";
 import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/engine/systems/generation/TalentPoolService";
 import { getPlayerHeya } from "@/engine/queries";
-import { getHeya, getOyakata } from "@/presenters/worldAccess";
+import { getHeya, getOyakata, getTalentPool } from "@/presenters/worldAccess";
 
 function poolLabel(pool: TalentPoolType) {
   switch (pool) {
@@ -79,6 +79,15 @@ export default function TalentPoolPage() {
     if (!world) return [] as TalentCandidate[];
     return talentpool.listVisibleCandidates(world, activePool);
   }, [world, activePool]);
+
+  const poolState = world ? getTalentPool(world) : undefined;
+  const poolSummary = poolState
+    ? (["high_school", "university", "foreign"] as TalentPoolType[]).map((pt) => ({
+        pool: pt,
+        visible: poolState.pools[pt]?.candidatesVisible.length ?? 0,
+        hidden: poolState.pools[pt]?.candidatesHidden.length ?? 0,
+      }))
+    : [];
 
   if (!world) {
     return (
@@ -169,6 +178,18 @@ export default function TalentPoolPage() {
                 quality.
               </div>
             </div>
+            {poolSummary.length > 0 && (
+              <div className="flex flex-wrap gap-4 pt-2 border-t border-border/30">
+                {poolSummary.map((s) => (
+                  <div key={s.pool} className="text-xs">
+                    <span className="font-medium">{poolLabel(s.pool)}</span>
+                    <span className="text-muted-foreground">
+                      {" "}: {s.visible} visible / {s.hidden} hidden
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
 

@@ -113,7 +113,7 @@ export function generateInitialWorld(seed: string): WorldState {
   };
 
   // 3. Generate Heya Brand Identities (for kesho-mawashi designs)
-  world.heyaBrandIdentities = generateHeyaBrandIdentities(worldRng, world.heyas);
+  world.heyaBrandIdentities = generateHeyaBrandIdentities(worldRng, world.heyas); // @world-builder
 
   // 4. Establish Initial Koenkai Relationships (Constitution A6)
   if (world.sponsorPool) {
@@ -147,7 +147,7 @@ export function generateInitialWorld(seed: string): WorldState {
     if (heya.id === world.playerHeyaId) continue;
     targetPop += TARGET_ROSTER_SIZE;
   }
-  world._populationTarget = targetPop;
+  world._populationTarget = targetPop; // @world-builder
 
   // Seed initial rivalries for narrative depth (P0-C1)
   RivalryService.seedInitialRivalries(world);

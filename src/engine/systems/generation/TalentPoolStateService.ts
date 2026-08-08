@@ -21,7 +21,7 @@ import { buildCombatProfile } from "../../archetype";
  */
 export function ensureTalentPoolState(world: WorldState): TalentPoolWorldState {
   if (!world.talentPool) {
-    world.talentPool = {
+    world.talentPool = { // @world-builder
       version: "1.0.0",
       lastYearlyRefreshYear: world.year ?? 2025,
       candidates: {},

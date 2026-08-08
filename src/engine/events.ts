@@ -47,7 +47,7 @@ export function ensureEventsState(world: WorldState): EventsState {
     if (!world.events.dedupe) world.events.dedupe = {};
     return world.events as EventsState;
   }
-  world.events = { version: "1.0.0", log: [], dedupe: {} };
+  world.events = { version: "1.0.0", log: [], dedupe: {} }; // @world-builder
   return world.events;
 }
 

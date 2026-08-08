@@ -41,7 +41,7 @@ import { withdrawRikishi, treatInjury } from "../systems/health/HealthActions";
  */
 function generateWorld(opts: { seed: string; playerConfig?: { heyaId?: string } }) {
   const world = generateInitialWorld(opts.seed);
-  if (opts.playerConfig?.heyaId) world.playerHeyaId = opts.playerConfig.heyaId;
+  if (opts.playerConfig?.heyaId) world.playerHeyaId = opts.playerConfig.heyaId; // @world-builder
   return world;
 }
 

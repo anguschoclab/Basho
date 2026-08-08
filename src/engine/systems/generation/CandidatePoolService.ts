@@ -32,7 +32,7 @@ import { RNGRegistry } from "../../core/RNGRegistry";
 
 export function ensureCandidatePoolState(world: WorldState): TalentPoolWorldState {
   if (!world.candidatePool) {
-    world.candidatePool = {
+    world.candidatePool = { // @world-builder
       version: "1.0.0",
       lastYearlyRefreshYear: world.year ?? 2025,
       candidates: {},

@@ -239,7 +239,7 @@ export function getRikishiHistory(index: HistoryIndex, rikishiId: Id): RikishiHi
 
 export function indexBashoResult(world: WorldState, bashoResult: BashoResult): void {
   if (!world.historyIndex) {
-    world.historyIndex = createEmptyHistoryIndex();
+    world.historyIndex = createEmptyHistoryIndex(); // @world-builder
   }
 
   const idx = world.historyIndex;

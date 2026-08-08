@@ -160,15 +160,15 @@ export function InjuryRiskHeatmap({ rikishiList }: InjuryRiskHeatmapProps) {
         {/* Legend */}
         <div className="mt-4 flex flex-wrap gap-4 text-xs text-muted-foreground border-t border-border pt-3">
           <div className="flex items-center gap-1.5">
-            <span className="inline-block h-3 w-3 rounded-sm bg-success/30" / aria-hidden="true">
+            <span aria-hidden="true" className="inline-block h-3 w-3 rounded-sm bg-success/30" />
             <span>Safe</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="inline-block h-3 w-3 rounded-sm bg-warning/30" / aria-hidden="true">
+            <span aria-hidden="true" className="inline-block h-3 w-3 rounded-sm bg-warning/30" />
             <span>Caution</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="inline-block h-3 w-3 rounded-sm bg-destructive/30" / aria-hidden="true">
+            <span aria-hidden="true" className="inline-block h-3 w-3 rounded-sm bg-destructive/30" />
             <span>High Risk / Injured</span>
           </div>
         </div>
