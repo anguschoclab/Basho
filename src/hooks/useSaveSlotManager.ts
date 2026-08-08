@@ -39,7 +39,7 @@ export function useSaveSlotManager({
 
   useEffect(() => {
     refreshSlots();
-  }, [getSaveSlots]);
+  }, [getSaveSlots, refreshSlots]);
 
   const canContinue = hasAutosave() || saveSlots.length > 0;
 

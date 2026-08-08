@@ -49,7 +49,7 @@ export function useKenshoData() {
       totalKenshoEarnings: earningsSum,
       projectedKensho: projectedSum,
     };
-  }, [heya?.rikishiIds, world?.rikishi]);
+  }, [heya, heya?.rikishiIds, world?.rikishi]);
 
   const recentBoutsWithKensho = useMemo(() => {
     const arr: KenshoBoutEntry[] = [];
