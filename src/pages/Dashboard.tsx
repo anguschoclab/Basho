@@ -18,6 +18,7 @@ import { projectTrainingSummary } from "@/presenters/projections/trainingProject
 import { buildActionQueue } from "@/presenters/projections/actionQueue";
 import { FATIGUE_LABELS } from "@/constants/ui/labels";
 import { getPlayerHeya } from "@/engine/queries";
+import { getHeyaCount, getRikishi, getOyakata } from "@/presenters/worldAccess";
 
 import { OnboardingTourDialog } from "@/components/onboarding/OnboardingTourDialog";
 import { CrisisModal } from "@/components/game/CrisisModal";
@@ -77,7 +78,7 @@ export default function Dashboard() {
 
   // Additional check: if world is loaded but empty, try to load autosave
   useEffect(() => {
-    if (isLoaded && world && hasAutosave() && world.heyas.size === 0) {
+    if (isLoaded && world && hasAutosave() && getHeyaCount(world) === 0) {
       loadFromAutosave();
     }
   }, [isLoaded, world, hasAutosave, loadFromAutosave]);
@@ -130,7 +131,7 @@ export default function Dashboard() {
     const ids = playerHeya.rikishiIds ?? [];
     for (let i = 0; i < ids.length; i++) {
       const id = ids[i];
-      const r = world.rikishi.get(id);
+      const r = getRikishi(world, id);
       if (!r) continue;
 
       const rank = r.rank ?? "";
@@ -435,7 +436,7 @@ export default function Dashboard() {
 
       {(() => {
         const ph = getPlayerHeya(world);
-        const ok = world.oyakata.get(ph?.oyakataId ?? "");
+        const ok = getOyakata(world, ph?.oyakataId ?? "");
         if (ok?.successionReadiness !== "mandatory") return null;
         if (successionDismissed) return null;
         return (

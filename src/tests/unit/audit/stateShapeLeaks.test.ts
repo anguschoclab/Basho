@@ -46,6 +46,6 @@ describe("L3.3: state-shape leaks — world.* direct access in UI", () => {
       }
     }
 
-    expect(violations.length, `Direct world.* access in pages (should use presenters) — budget exceeded:\n${violations.join("\n")}`).toBeLessThanOrEqual(50);
+    expect(violations.length, `Direct world.* access in pages (should use presenters) — budget exceeded:\n${violations.join("\n")}`).toEqual(0);
   });
 });

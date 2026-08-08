@@ -29,6 +29,7 @@ import {
 import { HoFTimeline } from "@/components/game/HoFTimeline";
 import type { HoFCategory } from "@/engine/hallOfFame";
 import { HOF_CATEGORY_LABELS, projectHOFUIDigest } from "@/presenters/uiDigest";
+import { getRikishi } from "@/presenters/worldAccess";
 import { selectAwardLog } from "@/presenters/selectors";
 import type { UIHofInductee } from "@/presenters/projections/hofProjection";
 import type { UIRikishi } from "@/presenters/uiModels";
@@ -434,7 +435,7 @@ export default function HallOfFamePage() {
               new Map(
                 (hof?.inductees ?? [])
                   .map(
-                    (ind) => [ind.rikishiId, world.rikishi.get(ind.rikishiId)] as [string, unknown]
+                    (ind) => [ind.rikishiId, getRikishi(world, ind.rikishiId)] as [string, unknown]
                   )
                   .filter((pair) => !!pair[1])
               ) as unknown as Map<string, import("@/presenters/uiModels").UIRikishi>

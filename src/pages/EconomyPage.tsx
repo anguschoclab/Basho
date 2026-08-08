@@ -11,6 +11,7 @@ import { SponsorsPanel } from "@/components/game/SponsorsPanel";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
 import { projectHeyaData } from "@/presenters/projections/heyaProjections";
 import { getPlayerHeya } from "@/engine/queries";
+import { getRikishi } from "@/presenters/worldAccess";
 import { calculateHeyaWeeklyFinances } from "@/engine/systems/economy/FinanceCalculator";
 import { toast } from "sonner";
 import { safeRunwayBand, safeKoenkaiBand } from "@/components/economy/economyUtils";
@@ -73,9 +74,9 @@ export default function EconomyPage() {
     if (!playerHeya || !world) return [];
     const ids: string[] = Array.isArray(playerHeya.rikishiIds) ? playerHeya.rikishiIds : [];
 
-    const result: NonNullable<ReturnType<typeof world.rikishi.get>>[] = [];
+    const result: ReturnType<typeof getRikishi>[] = [];
     for (const id of ids) {
-      const rikishi = world.rikishi.get(id);
+      const rikishi = getRikishi(world, id);
       if (rikishi) {
         result.push(rikishi);
       }

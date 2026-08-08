@@ -85,29 +85,29 @@ export default function StablePage() {
         />
 
         <Tabs defaultValue="roster" className="space-y-6">
-          <TabsList className="w-full max-w-[900px] flex flex-wrap gap-1 text-[10px] font-black uppercase h-auto">
-            <TabsTrigger value="roster" className="flex-1 min-w-[80px]">
+          <TabsList className="w-full max-w-4xl flex flex-wrap gap-1 text-[10px] font-black uppercase h-auto">
+            <TabsTrigger value="roster" className="flex-1 min-w-20">
               Members
             </TabsTrigger>
-            <TabsTrigger value="performance" className="flex-1 min-w-[80px]">
+            <TabsTrigger value="performance" className="flex-1 min-w-20">
               Performance
             </TabsTrigger>
-            <TabsTrigger value="gallery" className="flex-1 min-w-[80px]">
+            <TabsTrigger value="gallery" className="flex-1 min-w-20">
               Gallery
             </TabsTrigger>
-            <TabsTrigger value="infrastructure" className="flex-1 min-w-[80px]">
+            <TabsTrigger value="infrastructure" className="flex-1 min-w-20">
               Infrastructure
             </TabsTrigger>
-            <TabsTrigger value="sponsorship" className="flex-1 min-w-[80px]">
+            <TabsTrigger value="sponsorship" className="flex-1 min-w-20">
               Sponsorship
             </TabsTrigger>
-            <TabsTrigger value="institution" className="flex-1 min-w-[80px]">
+            <TabsTrigger value="institution" className="flex-1 min-w-20">
               Institution
             </TabsTrigger>
-            <TabsTrigger value="global" className="flex-1 min-w-[80px]">
+            <TabsTrigger value="global" className="flex-1 min-w-20">
               Global
             </TabsTrigger>
-            <TabsTrigger value="chronicle" className="flex-1 min-w-[80px]">
+            <TabsTrigger value="chronicle" className="flex-1 min-w-20">
               Chronicle
             </TabsTrigger>
           </TabsList>

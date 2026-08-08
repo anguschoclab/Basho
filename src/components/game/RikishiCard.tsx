@@ -191,7 +191,7 @@ export const RikishiCard: React.FC<RikishiCardProps> = React.memo(({ rikishi }) 
                 </div>
               )}
               {rikishi.rank === "yokozuna" && (
-                <div className="col-span-2 flex justify-between items-center p-2 rounded bg-destructive/5 border border-destructive/10">
+                <div className="col-span-2 flex justify-between items-center p-2 rounded bg-destructive/5 border border-destructive/10" aria-hidden="true">
                   <span className="text-[10px] uppercase font-bold text-destructive dark:text-destructive/70">
                     Stars Conceded
                   </span>
@@ -201,7 +201,7 @@ export const RikishiCard: React.FC<RikishiCardProps> = React.memo(({ rikishi }) 
                 </div>
               )}
               {rikishi.rank === "ozeki" && (
-                <div className="col-span-2 flex justify-between items-center p-2 rounded bg-destructive/5 border border-destructive/10">
+                <div className="col-span-2 flex justify-between items-center p-2 rounded bg-destructive/5 border border-destructive/10" aria-hidden="true">
                   <span className="text-[10px] uppercase font-bold text-destructive dark:text-destructive/70">
                     Silver Stars Conceded
                   </span>

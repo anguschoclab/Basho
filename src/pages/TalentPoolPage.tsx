@@ -18,6 +18,7 @@ import type { TalentPoolType, TalentCandidate, VisibilityBand } from "@/engine/t
 import * as talentpool from "@/engine/systems/generation/TalentPoolService";
 import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/engine/systems/generation/TalentPoolService";
 import { getPlayerHeya } from "@/engine/queries";
+import { getHeya, getOyakata } from "@/presenters/worldAccess";
 
 function poolLabel(pool: TalentPoolType) {
   switch (pool) {
@@ -282,8 +283,8 @@ export default function TalentPoolPage() {
                               {intel >= 35 && c.competingSuitors.length > 0 && (
                                 <div className="mt-1 space-y-0.5">
                                   {c.competingSuitors.slice(0, 4).map((s) => {
-                                    const h = world.heyas.get(s.heyaId);
-                                    const oy = h ? world.oyakata.get(h.oyakataId) : null;
+                                    const h = getHeya(world, s.heyaId);
+                                    const oy = h ? getOyakata(world, h.oyakataId) : null;
                                     return (
                                       <div key={s.heyaId} className="flex justify-between">
                                         <span>

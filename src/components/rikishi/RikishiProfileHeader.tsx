@@ -236,19 +236,19 @@ export function RikishiProfileHeader({
                     </div>
                     <div className="flex flex-col gap-1 text-[9px]">
                       {(rikishi.councilWarnings ?? 0) > 0 && (
-                        <div className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded">
+                        <div className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded" aria-hidden="true">
                           <span className="text-destructive/80">Council Warnings</span>
                           <span className="text-destructive font-bold">{rikishi.councilWarnings} / 3</span>
                         </div>
                       )}
                       {(rikishi.consecutiveMakeKoshi ?? 0) > 0 && (
-                        <div className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded">
+                        <div className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded" aria-hidden="true">
                           <span className="text-destructive/80">Consecutive Make-Koshi</span>
                           <span className="text-destructive font-bold">{rikishi.consecutiveMakeKoshi}</span>
                         </div>
                       )}
                       {(rikishi.consecutiveKyujo ?? 0) > 0 && (
-                        <div className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded">
+                        <div className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded" aria-hidden="true">
                           <span className="text-destructive/80">Consecutive Kyujo</span>
                           <span className="text-destructive font-bold">{rikishi.consecutiveKyujo} / 3</span>
                         </div>

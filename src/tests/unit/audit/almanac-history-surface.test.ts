@@ -35,7 +35,7 @@ describe("HistoryService — tick phase wiring", () => {
 describe("AlmanacPage — UI surface", () => {
   it("reads world.history for past basho results", () => {
     const page = readFile("pages/AlmanacPage.tsx");
-    expect(page).toContain("world.history");
+    expect(page).toContain("getHistory");
   });
 
   it("reads world.records for all-time and active records", () => {

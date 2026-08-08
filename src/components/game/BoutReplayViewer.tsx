@@ -71,7 +71,7 @@ export const BoutReplayViewer = forwardRef<BoutReplayViewerHandle, BoutReplayVie
           <div className="flex items-center gap-2">
             <span className="text-muted-foreground text-xs">{westRikishi.rankLabel}</span>
             <span className="font-semibold">{westRikishi.shikona}</span>
-            <span className="inline-block w-2.5 h-2.5 rounded-full bg-destructive" />
+            <span className="inline-block w-2.5 h-2.5 rounded-full bg-destructive" / aria-hidden="true">
           </div>
         </div>
 

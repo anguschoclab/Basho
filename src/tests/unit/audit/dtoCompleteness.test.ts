@@ -44,6 +44,6 @@ describe("L4.8: DTO completeness — presenter types exist", () => {
       }
     }
 
-    expect(violations.length, `Pages importing raw WorldState (budget: ≤2):\n${violations.join("\n")}`).toBeLessThanOrEqual(2);
+    expect(violations, `Pages importing raw WorldState:\n${violations.join("\n")}`).toEqual([]);
   });
 });

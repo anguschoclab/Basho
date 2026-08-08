@@ -26,6 +26,7 @@ import type {
   HeyaTrainingState,
 } from "@/engine/types/training";
 import { TrainingHeader } from "@/components/training/TrainingHeader";
+import { getRikishi } from "@/presenters/worldAccess";
 import { BeyaWideRegime } from "@/components/training/BeyaWideRegime";
 import { TrainingAnalytics } from "@/components/training/TrainingAnalytics";
 import { IndividualFocusSlots } from "@/components/training/IndividualFocusSlots";
@@ -62,7 +63,7 @@ export default function TrainingPage() {
   const rikishiList = useMemo<Rikishi[]>(() => {
     if (!world || !heya) return [];
     return (heya.rikishiIds ?? [])
-      .map((id) => world.rikishi.get(id))
+      .map((id) => getRikishi(world, id))
       .filter((r): r is Rikishi => r !== undefined)
       .sort((a, b) => {
         const aTier = RANK_HIERARCHY[a.rank]?.tier ?? 999;

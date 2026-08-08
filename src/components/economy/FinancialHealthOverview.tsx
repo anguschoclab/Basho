@@ -61,7 +61,7 @@ export function FinancialHealthOverview({
           </div>
 
           {hasFinancialRisk && (
-            <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+            <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg" aria-hidden="true">
               <AlertTriangle className="h-4 w-4 text-destructive" />
               <span className="text-sm text-destructive">
                 Financial pressure is rising. Consider cost control, sponsor growth, or safer

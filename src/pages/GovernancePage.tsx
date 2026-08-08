@@ -22,6 +22,7 @@ import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { getPlayerHeya } from "@/engine/queries";
 import { projectGovernanceDerived } from "@/presenters/projections/governanceProjections";
 import { selectClosedHeyas, selectYokozunaVacancyStreak } from "@/presenters/selectors";
+import { getOyakata, getGlobalCupChampion } from "@/presenters/worldAccess";
 
 export default function GovernancePage() {
   const { state, issueRuling, updateWorld } = useGame();
@@ -117,7 +118,7 @@ export default function GovernancePage() {
           )}
         </span>
       ),
-      sub: `Leader: ${world.oyakata.get(fac.oyakataLeaderId ?? "")?.name ?? "Unknown"}`,
+      sub: `Leader: ${getOyakata(world, fac.oyakataLeaderId ?? "")?.name ?? "Unknown"}`,
       value: fac.influence,
       tone: (heya.ichimon === fac.id ? "gold" : "default") as StatItem["tone"],
     }));
@@ -340,7 +341,7 @@ export default function GovernancePage() {
                         {
                           label: "Champion",
                           value:
-                            world.rikishi.get(world.globalCup.championId)?.shikona ?? "Unknown",
+                            getGlobalCupChampion(world)?.shikona ?? "Unknown",
                           tone: "gold" as const,
                         },
                       ]

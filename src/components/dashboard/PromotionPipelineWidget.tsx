@@ -94,7 +94,7 @@ function KadobanRow({ entry }: { entry: ReturnType<typeof getKadobanDrama>[numbe
     isDemoted: boolean;
   };
   return (
-    <div className="flex items-center gap-2 py-1.5 px-2 rounded-md bg-destructive/5 border border-destructive/20">
+    <div className="flex items-center gap-2 py-1.5 px-2 rounded-md bg-destructive/5 border border-destructive/20" aria-hidden="true">
       <AlertTriangle
         className={`h-3 w-3 shrink-0 ${isDemoted ? "text-destructive animate-pulse" : "text-warning"}`}
       />

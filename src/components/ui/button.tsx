@@ -16,10 +16,10 @@ export interface ButtonProps
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, tooltip, tooltipSide = "top", ...props }, ref) => {
+  ({ className, variant, size, asChild = false, tooltip, tooltipSide = "top", type = "button", ...props }, ref) => {
     const Comp = asChild ? Slot : "button";
 
-    const derivedProps = { ...props };
+    const derivedProps = { type, ...props };
     if (!derivedProps["aria-label"] && typeof tooltip === "string" && tooltip.trim().length > 0) {
       derivedProps["aria-label"] = tooltip;
     }

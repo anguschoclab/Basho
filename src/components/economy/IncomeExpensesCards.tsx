@@ -41,7 +41,7 @@ export function IncomeExpensesCards({ weeklyFinances }: IncomeExpensesCardsProps
                 </div>
                 <div className="space-y-2 pt-2">
                   <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 rounded-full bg-success mt-2" />
+                    <div className="w-2 h-2 rounded-full bg-success mt-2" aria-hidden="true" />
                     <div>
                       <p className="font-medium">Kōenkai Support</p>
                       <p className="text-sm text-muted-foreground">
@@ -50,7 +50,7 @@ export function IncomeExpensesCards({ weeklyFinances }: IncomeExpensesCardsProps
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 rounded-full bg-success mt-2" />
+                    <div className="w-2 h-2 rounded-full bg-success mt-2" aria-hidden="true" />
                     <div>
                       <p className="font-medium">JSA Subsidies</p>
                       <p className="text-sm text-muted-foreground">
@@ -59,7 +59,7 @@ export function IncomeExpensesCards({ weeklyFinances }: IncomeExpensesCardsProps
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 rounded-full bg-success mt-2" />
+                    <div className="w-2 h-2 rounded-full bg-success mt-2" aria-hidden="true" />
                     <div>
                       <p className="font-medium">Sponsor Tier Income</p>
                       <p className="text-sm text-muted-foreground">
@@ -97,7 +97,7 @@ export function IncomeExpensesCards({ weeklyFinances }: IncomeExpensesCardsProps
                 </div>
                 <div className="space-y-2 pt-2">
                   <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 rounded-full bg-destructive mt-2" />
+                    <div className="w-2 h-2 rounded-full bg-destructive mt-2" aria-hidden="true" />
                     <div>
                       <p className="font-medium">Facility Maintenance</p>
                       <p className="text-sm text-muted-foreground">
@@ -106,7 +106,7 @@ export function IncomeExpensesCards({ weeklyFinances }: IncomeExpensesCardsProps
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 rounded-full bg-destructive mt-2" />
+                    <div className="w-2 h-2 rounded-full bg-destructive mt-2" aria-hidden="true" />
                     <div>
                       <p className="font-medium">Staff Salaries</p>
                       <p className="text-sm text-muted-foreground">
@@ -115,7 +115,7 @@ export function IncomeExpensesCards({ weeklyFinances }: IncomeExpensesCardsProps
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 rounded-full bg-destructive mt-2" />
+                    <div className="w-2 h-2 rounded-full bg-destructive mt-2" aria-hidden="true" />
                     <div>
                       <p className="font-medium">Food Costs</p>
                       <p className="text-sm text-muted-foreground">
@@ -124,7 +124,7 @@ export function IncomeExpensesCards({ weeklyFinances }: IncomeExpensesCardsProps
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 rounded-full bg-destructive mt-2" />
+                    <div className="w-2 h-2 rounded-full bg-destructive mt-2" aria-hidden="true" />
                     <div>
                       <p className="font-medium">Other Operations</p>
                       <p className="text-sm text-muted-foreground">

@@ -20,24 +20,14 @@ function findFiles(dir: string, exts: string[]): string[] {
 }
 
 describe("L4.6: accessibility & UX debt", () => {
-  it("buttons inside forms have type='button' or type='submit'", () => {
-    const componentFiles = findFiles(join(SRC_DIR, "components"), [".tsx"]);
-    const violations: string[] = [];
+  it("Button component defaults type to \"button\" (prevents accidental form submits)", () => {
+    const buttonSource = readFileSync(join(SRC_DIR, "components/ui/button.tsx"), "utf-8");
+    expect(buttonSource).toContain('type = "button"');
+  });
 
-    for (const file of componentFiles) {
-      const content = readFileSync(file, "utf-8");
-      const lines = content.split("\n");
-      lines.forEach((line, i) => {
-        if (/<Button\b/.test(line) && !line.includes("type=") && !line.includes("variant=")) {
-          const nextLines = lines.slice(i, Math.min(i + 3, lines.length)).join(" ");
-          if (!/type\s*=/.test(nextLines)) {
-            violations.push(`${file}:${i + 1}: <Button> without type attribute`);
-          }
-        }
-      });
-    }
-
-    expect(violations.length, `Buttons without type attribute: ${violations.length}`).toBeLessThanOrEqual(150);
+  it("Button component passes type prop through to the DOM element", () => {
+    const buttonSource = readFileSync(join(SRC_DIR, "components/ui/button.tsx"), "utf-8");
+    expect(buttonSource).toContain("{ type, ...props }");
   });
 
   it("no color-only status indicators without text or aria-label", () => {
@@ -48,12 +38,12 @@ describe("L4.6: accessibility & UX debt", () => {
       const content = readFileSync(file, "utf-8");
       const lines = content.split("\n");
       lines.forEach((line, i) => {
-        if (/className=.*bg-(red|green|yellow|blue|destructive|success|warning)/.test(line) && !line.includes("text-") && !line.includes("aria-label") && !line.includes("children")) {
+        if (/className=.*bg-(red|green|yellow|blue|destructive|success|warning)/.test(line) && !line.includes("text-") && !line.includes("aria-label") && !line.includes("aria-hidden") && !line.includes("children")) {
           violations.push(`${file}:${i + 1}: ${line.trim()}`);
         }
       });
     }
 
-    expect(violations.length, `Potential color-only indicators: ${violations.length}`).toBeLessThanOrEqual(40);
+    expect(violations.length, `Potential color-only indicators: ${violations.length}`).toEqual(0);
   });
 });

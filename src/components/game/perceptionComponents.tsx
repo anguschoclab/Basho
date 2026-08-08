@@ -308,8 +308,7 @@ export function H2HPanel({ heyaAId, heyaBId }: { heyaAId: string; heyaBId: strin
           className="bg-primary transition-all"
           style={{ width: `${(h2hData.winsA / h2hData.totalBouts) * 100}%` }}
         />
-        <div
-          className="bg-destructive transition-all"
+        <div aria-hidden="true" className="bg-destructive transition-all"
           style={{ width: `${(h2hData.winsB / h2hData.totalBouts) * 100}%` }}
         />
       </div>

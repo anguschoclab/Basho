@@ -19,6 +19,7 @@ import { STABLE_TABS } from "@/constants/ui/navigation";
 import { projectRikishi } from "@/presenters/uiModels";
 import { RosterList } from "@/components/rikishi/RosterList";
 import { getMentor, menteesOf } from "@/engine/lineage";
+import { getHeya } from "@/presenters/worldAccess";
 import { getHealthBadge } from "@/presenters/PerceptionPresenter";
 import type { CareerSnapshot, Milestone } from "@/engine/types/history";
 import { RikishiProfileHeader } from "@/components/rikishi/RikishiProfileHeader";
@@ -231,7 +232,7 @@ export default function RikishiPage() {
       <IntaiCeremony
         rikishi={rikishi}
         reason="Personal decision of the Stable Master (Player)"
-        heyaName={world.heyas.get(rikishi.heyaId)?.name || "Unknown"}
+        heyaName={getHeya(world, rikishi.heyaId)?.name || "Unknown"}
         isPlayerRikishi={true}
         open={showIntaiCeremony}
         onClose={finalizeRetirement}

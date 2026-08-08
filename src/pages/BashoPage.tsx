@@ -53,6 +53,7 @@ import type { Division } from "@/engine/types/banzuke";
 import type { BoutTactic } from "@/engine/types/combat";
 import type { BashoName, BoutResult } from "@/engine/types/basho";
 import type { BoutMatchUI, StandingEntry } from "@/presenters/uiDigestTypes";
+import { getRikishiMap } from "@/presenters/worldAccess";
 
 /** Defines the structure for selected bout. */
 interface SelectedBout {
@@ -466,7 +467,7 @@ export default function BashoPage() {
 
         {/* Standings evolution chart — active basho only */}
         {world.cyclePhase === "active_basho" && world.currentBasho && (
-          <BashoStandingsEvolution basho={world.currentBasho} rikishiMap={world.rikishi} />
+          <BashoStandingsEvolution basho={world.currentBasho} rikishiMap={getRikishiMap(world)} />
         )}
       </div>
 

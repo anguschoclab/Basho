@@ -13,6 +13,7 @@ import type { RecordEntry } from "@/engine/types/records";
 import type { BashoResult } from "@/engine/types/basho";
 import { Medal, Star, TrendingUp, Trophy, Users, History, Award } from "lucide-react";
 import { PageHeader } from "@/components/layout/control-center";
+import { getAllRikishi, getRikishi, getHistory } from "@/presenters/worldAccess";
 
 /** Leaderboard widget for record book displays. */
 function LeaderboardWidget({
@@ -98,7 +99,7 @@ export default function AlmanacPage() {
         achievedDate: { year: number; month: number };
       }>
     > = [];
-    for (const r of world.rikishi.values()) {
+    for (const r of getAllRikishi(world)) {
       const value =
         (r.stats?.achievements?.kinboshiEarned ?? 0) + (r.stats?.achievements?.ginboshiEarned ?? 0);
       if (value > 0) {
@@ -179,14 +180,14 @@ export default function AlmanacPage() {
 
           <TabsContent value="past-bashos">
             <div className="grid gap-6">
-              {(world.history || []).length === 0 ? (
+              {getHistory(world).length === 0 ? (
                 <Card className="paper py-12 text-center">
                   <p className="text-muted-foreground">
                     No tournaments have been completed yet in this world.
                   </p>
                 </Card>
               ) : (
-                [...world.history].reverse().map((basho: BashoResult, idx) => (
+                [...getHistory(world)].reverse().map((basho: BashoResult, idx) => (
                   <Card key={idx} className="paper overflow-hidden">
                     <div className="p-4 border-b flex justify-between items-center bg-secondary/20">
                       <div>
@@ -203,7 +204,7 @@ export default function AlmanacPage() {
                           Yūshō Winner
                         </p>
                         <p className="font-display font-bold text-lg">
-                          {world.rikishi.get(basho.yusho)?.shikona ?? basho.yusho ?? "Reserved"}
+                          {getRikishi(world, basho.yusho)?.shikona ?? basho.yusho ?? "Reserved"}
                         </p>
                       </div>
                       <div className="space-y-1">

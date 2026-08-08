@@ -8,7 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/layout/control-center";
 import { Trophy, Building2, ScrollText, Crown } from "lucide-react";
-import type { WorldState, Rikishi, Heya, RecordEntry } from "@/presenters/uiDigest";
+import type { Rikishi, Heya } from "@/presenters/uiDigest";
+import type { RecordEntry, WorldRecords } from "@/engine/types/records";
+import { getAllHeyas } from "@/presenters/worldAccess";
 
 /**
  * HistoryDashboard - The Museum of Sumo
@@ -60,11 +62,14 @@ export const HistoryDashboard = () => {
           </TabsList>
 
           <TabsContent value="records">
-            <RecordsTab world={world} />
+            <RecordsTab records={world.records} />
           </TabsContent>
 
           <TabsContent value="stables">
-            <StablesTab world={world} />
+            <StablesTab
+              heyas={getAllHeyas(world)}
+              retired={selectRetiredRikishi(world)}
+            />
           </TabsContent>
         </Tabs>
       </div>
@@ -121,16 +126,16 @@ function LeaderboardCard({
   );
 }
 
-const RecordsTab = ({ world }: { world: WorldState }) => {
-  const records = world.records || {
+const RecordsTab = ({ records }: { records?: WorldRecords }) => {
+  const r = records || {
     allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
   };
 
   const categories = [
-    { label: "All-Time Wins", data: records.allTime.careerWins, icon: Crown },
-    { label: "Top Division Yusho", data: records.allTime.yusho, icon: Trophy },
-    { label: "Consecutive Wins", data: records.allTime.consecutiveYusho, icon: ScrollText },
-    { label: "Kinboshi Collectors", data: records.allTime.kinboshi, icon: Trophy },
+    { label: "All-Time Wins", data: r.allTime.careerWins, icon: Crown },
+    { label: "Top Division Yusho", data: r.allTime.yusho, icon: Trophy },
+    { label: "Consecutive Wins", data: r.allTime.consecutiveYusho, icon: ScrollText },
+    { label: "Kinboshi Collectors", data: r.allTime.kinboshi, icon: Trophy },
   ];
 
   return (
@@ -158,9 +163,7 @@ interface LineageTenure {
   };
 }
 
-const StablesTab = ({ world }: { world: WorldState }) => {
-  const activeStables = Array.from(world.heyas.values());
-  const retired = selectRetiredRikishi(world);
+const StablesTab = ({ heyas, retired }: { heyas: Heya[]; retired: Rikishi[] }) => {
 
   return (
     <div className="space-y-8">
@@ -170,7 +173,7 @@ const StablesTab = ({ world }: { world: WorldState }) => {
           Stable Lineages
         </h2>
         <div className="space-y-6">
-          {activeStables.map((heya: Heya) => (
+          {heyas.map((heya: Heya) => (
             <Card key={heya.id} className="paper border-l-4 border-l-primary">
               <CardHeader>
                 <CardTitle className="font-display text-xl">{heya.nameJa || heya.name}</CardTitle>
@@ -225,7 +228,7 @@ const StablesTab = ({ world }: { world: WorldState }) => {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {retired.slice(0, 40).map((r: Rikishi) => {
-              const heyaName = world.heyas?.get(r.heyaId)?.name || r.heyaId;
+              const heyaName = heyas.find((h) => h.id === r.heyaId)?.name || r.heyaId;
               return (
                 <Card key={r.id} className="paper p-3 text-center">
                   <div className="font-display font-semibold text-sm mb-1">{r.shikona}</div>

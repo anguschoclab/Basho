@@ -34,6 +34,7 @@ import {
 } from "@/presenters/uiDigest";
 import type { Rank } from "@/engine/types/banzuke";
 import type { BashoName } from "@/engine/types/basho";
+import { getHistory, getHeya } from "@/presenters/worldAccess";
 
 /** Type representing history record. */
 type HistoryRecord = {
@@ -80,7 +81,7 @@ export default function HistoryPage() {
 
   if (!hasWorld || !world) return null;
 
-  const history = [...((world.history ?? []) as HistoryRecord[])].reverse();
+  const history = [...(getHistory(world) as HistoryRecord[])].reverse();
 
   return (
     <AppLayout pageTitle="Stable History" subNavTabs={RECORDS_TABS} activeSubTab="history">
@@ -123,7 +124,7 @@ export default function HistoryPage() {
               const bashoIdx = basho.bashoName ? getBashoIndex(basho.bashoName as BashoName) : -1;
 
               const yushoRikishi = basho.yusho ? (getRikishi?.(basho.yusho) ?? null) : null;
-              const yushoHeya = yushoRikishi ? world.heyas.get(yushoRikishi.heyaId) : null;
+              const yushoHeya = yushoRikishi ? getHeya(world, yushoRikishi.heyaId) : null;
 
               const junYushoIds = Array.isArray(basho.junYusho) ? basho.junYusho : [];
               const prizes = basho.prizes ?? null;

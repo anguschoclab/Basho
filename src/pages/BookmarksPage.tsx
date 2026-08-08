@@ -10,6 +10,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Bookmark, BookmarkX, ChevronDown, ChevronRight } from "lucide-react";
 import { RikishiCard } from "@/components/game/RikishiCard";
 import { projectRikishi } from "@/presenters/rikishi";
+import { getRikishi, getHeya } from "@/presenters/worldAccess";
 
 interface BookmarkEntry {
   entityType: string;
@@ -33,13 +34,13 @@ function BookmarkItem({
     if (!world) return null;
     switch (bookmark.entityType) {
       case "rikishi": {
-        const r = world.rikishi.get(bookmark.entityId);
+        const r = getRikishi(world, bookmark.entityId);
         if (!r) return <p className="text-sm text-muted-foreground">Rikishi not found</p>;
         const uiRikishi = projectRikishi(r, world);
         return <RikishiCard rikishi={uiRikishi} />;
       }
       case "heya": {
-        const h = world.heyas.get(bookmark.entityId);
+        const h = getHeya(world, bookmark.entityId);
         if (!h) return <p className="text-sm text-muted-foreground">Heya not found</p>;
         return (
           <div className="p-3 rounded-lg border border-primary/10 bg-card/50">

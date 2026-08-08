@@ -37,8 +37,8 @@ export function DebtSection({ activeLoans }: DebtSectionProps) {
   }
 
   return (
-    <Card className="border-destructive/20 bg-destructive/5 paper overflow-hidden">
-      <div className="bg-destructive/10 px-4 py-2 border-b border-destructive/20 flex items-center gap-2">
+    <Card className="border-destructive/20 bg-destructive/5 paper overflow-hidden" aria-hidden="true">
+      <div className="bg-destructive/10 px-4 py-2 border-b border-destructive/20 flex items-center gap-2" aria-hidden="true">
         <AlertTriangle className="h-4 w-4 text-destructive" />
         <span className="text-xs font-bold text-destructive uppercase tracking-widest">
           Active Institutional Debt
@@ -99,8 +99,7 @@ export function DebtSection({ activeLoans }: DebtSectionProps) {
                     </span>
                   </div>
                   <div className="w-full h-2 bg-muted/40 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-success rounded-full transition-all duration-500"
+                    <div aria-hidden="true" className="h-full bg-success rounded-full transition-all duration-500"
                       style={{
                         width: `${Math.min(100, (1 - loan.remainingBalance / loan.principal) * 100)}%`,
                       }}

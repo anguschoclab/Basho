@@ -69,7 +69,7 @@ export function SponsorshipHub({ data }: SponsorshipHubProps) {
           </CardContent>
         </Card>
 
-        <Card className="dossier-paper border-2 border-success/10 bg-success/5">
+        <Card className="dossier-paper border-2 border-success/10 bg-success/5" aria-hidden="true">
           <CardHeader className="pb-2">
             <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
               <Users className="h-3 w-3 text-success" /> Supporter Association
@@ -85,7 +85,7 @@ export function SponsorshipHub({ data }: SponsorshipHubProps) {
           </CardContent>
         </Card>
 
-        <Card className="dossier-paper border-2 border-warning/10 bg-warning/5">
+        <Card className="dossier-paper border-2 border-warning/10 bg-warning/5" aria-hidden="true">
           <CardHeader className="pb-2">
             <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
               <Award className="h-3 w-3 text-warning" /> Contract Risk
@@ -208,7 +208,7 @@ export function SponsorshipHub({ data }: SponsorshipHubProps) {
       </div>
 
       {/* ═══ SPONSOR APPEAL CTA ═══ */}
-      <div className="dossier-paper p-8 rounded-2xl flex flex-col md:flex-row items-center gap-10 border-2 border-success/20 shadow-2xl bg-success/[0.03] relative overflow-hidden">
+      <div className="dossier-paper p-8 rounded-2xl flex flex-col md:flex-row items-center gap-10 border-2 border-success/20 shadow-2xl bg-success/[0.03] relative overflow-hidden" aria-hidden="true">
         <div className="absolute -bottom-10 -right-10 opacity-[0.03] rotate-12 pointer-events-none">
           <TrendingUp className="h-64 w-64 text-success" />
         </div>

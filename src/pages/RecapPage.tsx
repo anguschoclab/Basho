@@ -30,7 +30,9 @@ import { compareBanzuke, formatRankPosition, RANK_HIERARCHY } from "@/engine/ban
 import { makeBashoKey } from "@/engine/historyIndex";
 import { EntityCollection } from "@/engine/core/EntityCollection";
 import { getPlayerHeya, updateHeyaInWorld } from "@/engine/queries";
+import { getHeya, getRikishi, getRikishiAnywhere, getHistory, getRikishiMap } from "@/presenters/worldAccess";
 import { projectRikishi } from "@/presenters/uiModels";
+import type { WorldState } from "@/presenters/uiDigest";
 import type { EngineEvent } from "@/engine/types/events";
 import type { HoFInductee } from "@/engine/hallOfFame";
 import type { UIRikishi } from "@/presenters/uiModels";
@@ -88,15 +90,12 @@ function groupEventsByNarrative(events: EngineEvent[]) {
   return groups;
 }
 
-function getPrestigeChanges(world: {
-  heyas: Map<string, { name: string; prestigeBand: string; reputation: number }>;
-  events?: { log: EngineEvent[] };
-}): Array<{ heya: { name: string; prestigeBand: string; reputation: number }; change: string }> {
+function getPrestigeChanges(world: WorldState): Array<{ heya: { name: string; prestigeBand: string; reputation: number }; change: string }> {
   const changes: Array<{
     heya: { name: string; prestigeBand: string; reputation: number };
     change: string;
   }> = [];
-  if (!world?.heyas) return changes;
+  if (!world) return changes;
   const prestige_events = (world.events?.log || [])
     .filter(
       (e: EngineEvent) =>
@@ -105,7 +104,7 @@ function getPrestigeChanges(world: {
     .slice(-20);
   for (const e of prestige_events) {
     if (e.heyaId) {
-      const heya = world.heyas.get(e.heyaId);
+      const heya = getHeya(world, e.heyaId);
       if (heya) changes.push({ heya, change: e.summary });
     }
   }
@@ -144,7 +143,8 @@ export default function RecapPage() {
     }
   };
 
-  const lastBasho = world?.history?.[world.history.length - 1];
+  const _history = world ? getHistory(world) : [];
+  const lastBasho = _history[_history.length - 1];
 
   const hasWorld = useRequireWorld();
 
@@ -160,7 +160,7 @@ export default function RecapPage() {
     for (const event of retirementEvents) {
       if (event.rikishiId) {
         const rikishi =
-          world.rikishi.get(event.rikishiId) || world.historicalRikishi?.get(event.rikishiId);
+          getRikishiAnywhere(world, event.rikishiId);
         if (rikishi && rikishi.heyaId === world.playerHeyaId) {
           playerRetirements.push({
             rikishi: projectRikishi(rikishi, world),
@@ -193,7 +193,7 @@ export default function RecapPage() {
     const previousSnapshot = historyIndex.banzukeByBasho[prevBashoKey];
 
     // Get changes using comparison function
-    const rikishiMap = world.rikishi;
+    const rikishiMap = getRikishiMap(world);
     const changes = compareBanzuke(currentBanzuke, previousSnapshot || null, rikishiMap);
 
     // Transform to reveal entries
@@ -233,7 +233,7 @@ export default function RecapPage() {
   const getRikishiForBout = useCallback(
     (id: string) => {
       if (!world) return null;
-      const r = world.rikishi.get(id);
+      const r = getRikishi(world, id);
       return r ? projectRikishi(r, world) : null;
     },
     [world]
@@ -396,14 +396,12 @@ export default function RecapPage() {
           <HoFInductionCeremony
             inductee={showHoFCeremony}
             heyaName={(() => {
-              const r =
-                world.rikishi.get(showHoFCeremony.rikishiId) ||
-                world.historicalRikishi?.get(showHoFCeremony.rikishiId);
-              const h = r ? world.heyas.get(r.heyaId) : null;
+              const r = getRikishiAnywhere(world, showHoFCeremony.rikishiId);
+              const h = r ? getHeya(world, r.heyaId) : null;
               return h?.name || "Independent";
             })()}
             isPlayerRikishi={
-              world.rikishi.get(showHoFCeremony.rikishiId)?.heyaId === world.playerHeyaId
+              getRikishi(world, showHoFCeremony.rikishiId)?.heyaId === world.playerHeyaId
             }
             open={!!showHoFCeremony}
             onClose={() => setShowHoFCeremony(null)}

@@ -18,6 +18,7 @@ import { PageHeader } from "@/components/layout/control-center";
 import { Division } from "@/engine/types/banzuke";
 import { getTotalBashodays, needsScheduleForDay } from "@/presenters/uiDigest";
 import { DIVISIONS, DIVISION_NAMES } from "@/constants/engine/rankDisplay";
+import { getRikishi } from "@/presenters/worldAccess";
 
 /** schedule page. */
 export default function SchedulePage() {
@@ -39,7 +40,7 @@ export default function SchedulePage() {
     if (!currentBasho || !world) return [];
     return currentBasho.matches.filter((m) => {
       if (m.day !== selectedDay) return false;
-      const eastRikishi = world.rikishi.get(m.eastRikishiId);
+      const eastRikishi = getRikishi(world, m.eastRikishiId);
       return eastRikishi?.division === selectedDivision;
     });
   }, [currentBasho, selectedDay, selectedDivision, world]);
@@ -150,8 +151,8 @@ export default function SchedulePage() {
             ) : (
               <div className="grid gap-3">
                 {matches.map((match, idx) => {
-                  const east = world.rikishi.get(match.eastRikishiId);
-                  const west = world.rikishi.get(match.westRikishiId);
+                  const east = getRikishi(world, match.eastRikishiId);
+                  const west = getRikishi(world, match.westRikishiId);
                   const result = match.result;
 
                   return (

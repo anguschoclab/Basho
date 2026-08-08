@@ -16,6 +16,7 @@ import { TRAIT_LABELS, toTraitBand } from "@/presenters/uiDigest";
 import { menteesOf } from "@/engine/lineage";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { getPlayerHeya } from "@/engine/queries";
+import { getOyakata, getHeya, getRikishi, getAllOyakata } from "@/presenters/worldAccess";
 
 /** oyakata page. */
 export default function OyakataPage() {
@@ -27,7 +28,7 @@ export default function OyakataPage() {
     if (world && world.playerHeyaId) {
       const playerHeya = getPlayerHeya(world);
       if (playerHeya && playerHeya.oyakataId) {
-        const o = world.oyakata.get(playerHeya.oyakataId);
+        const o = getOyakata(world, playerHeya.oyakataId);
         if (o) setSelectedOyakata(o);
       }
     }
@@ -52,11 +53,11 @@ export default function OyakataPage() {
   ];
 
   // Get mentorship relationships in the stable
-  const heya = world.heyas.get(selectedOyakata.heyaId);
+  const heya = getHeya(world, selectedOyakata.heyaId);
   const mentorshipPairs: Array<{ mentor: Rikishi; mentees: Rikishi[] }> = [];
   if (heya?.rikishiIds) {
     for (const id of heya.rikishiIds) {
-      const r = world.rikishi.get(id);
+      const r = getRikishi(world, id);
       if (r) {
         const mentees = menteesOf(world, r);
         if (mentees.length > 0) {
@@ -225,8 +226,8 @@ export default function OyakataPage() {
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {[...world.oyakata.values()].map((o) => {
-                const heya = world.heyas.get(o.heyaId);
+              {getAllOyakata(world).map((o) => {
+                const heya = getHeya(world, o.heyaId);
                 const isSelected = o.id === selectedOyakata.id;
                 return (
                   <Card

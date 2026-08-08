@@ -45,6 +45,7 @@ import { toast } from "sonner";
 import { toFatigueBand, toScandalBand } from "@/engine/descriptorBands";
 import { FATIGUE_LABELS, SCANDAL_LABELS } from "@/constants/ui/labels";
 import { getPlayerHeya } from "@/engine/queries";
+import { getStaffMember } from "@/presenters/worldAccess";
 
 const ROLE_LABELS: Record<StaffRole, string> = {
   oyakata: "Steward",
@@ -100,7 +101,7 @@ export default function StaffPage() {
     if (!world || !heya) return [];
     const list: Staff[] = [];
     for (const id of heya.staffIds || []) {
-      const staffMember = world.staff.get(id);
+      const staffMember = getStaffMember(world, id);
       if (staffMember) list.push(staffMember);
     }
     return list;
@@ -123,7 +124,7 @@ export default function StaffPage() {
     (staffId: string) => {
       if (!world || !heya) return;
 
-      const staff = world.staff.get(staffId);
+      const staff = getStaffMember(world, staffId);
       if (staff?.role === "oyakata") {
         toast.error("You cannot fire the Oyakata.");
         return;

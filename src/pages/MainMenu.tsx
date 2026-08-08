@@ -29,6 +29,7 @@ import {
   selectRecommendedStables,
 } from "@/presenters/projections/stableSelectionProjections";
 import { getSekitoriInHeya } from "@/engine/queries";
+import { getAllHeyas } from "@/presenters/worldAccess";
 import type { Heya } from "@/engine/types/heya";
 import type { StatureBand, StableSelectionMode } from "@/engine/types/narrative";
 
@@ -66,13 +67,13 @@ export default function MainMenu() {
 
   const stables = useMemo(() => {
     if (!state?.world) return [];
-    return Array.from(state.world.heyas.values()) as Heya[];
+    return getAllHeyas(state.world);
   }, [state?.world]);
 
   const sekitoriCounts = useMemo(() => {
     const map = new Map<string, number>();
     if (!state?.world) return map;
-    for (const h of state.world.heyas.values() as IterableIterator<Heya>) {
+    for (const h of getAllHeyas(state.world)) {
       map.set(h.id, getSekitoriInHeya(state.world, h.id));
     }
     return map;

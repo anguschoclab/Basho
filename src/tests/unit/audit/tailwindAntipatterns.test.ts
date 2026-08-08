@@ -29,7 +29,7 @@ describe("L4.7: Tailwind/className anti-patterns", () => {
     for (const file of allFiles) {
       const content = readFileSync(file, "utf-8");
       const matches = content.match(/\b[wh]-\[\d+px\]/g) || [];
-      if (matches.length > 10) {
+      if (matches.length > 5) {
         violations.push(`${file}: ${matches.length} arbitrary values`);
       }
     }
