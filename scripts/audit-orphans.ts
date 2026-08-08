@@ -236,33 +236,52 @@ function findOrphanRoutes(): OrphanEntry[] {
 
   const routesContent = readContent(routesFile);
 
-  // Extract route paths from routes.tsx
-  // Look for path: "/something" patterns
-  const routePattern = /path:\s*["'`]([^"'`]+)["'`]/g;
+  // Extract route variable names and their paths from createRoute calls.
+  // Pattern: const <varName> = createRoute({ ... path: "/something" ... })
+  const createRoutePattern = /const\s+(\w+)\s*=\s*createRoute\s*\(\s*\{[^}]*?path:\s*["'`]([^"'`]+)["'`]/g;
   let match: RegExpExecArray | null;
-  const routes: string[] = [];
-  while ((match = routePattern.exec(routesContent)) !== null) {
-    const path = match[1];
+  const routeVars: Array<{ varName: string; path: string }> = [];
+  while ((match = createRoutePattern.exec(routesContent)) !== null) {
+    const varName = match[1];
+    const path = match[2];
     // Skip dynamic parent routes and root
     if (path === "/" || path === "/_") continue;
-    routes.push(path);
+    routeVars.push({ varName, path });
+  }
+
+  // Extract all variable names registered in addChildren([...]) calls.
+  // These routes are reachable via the router tree and are NOT orphans.
+  const registeredVars = new Set<string>();
+  const addChildrenPattern = /addChildren\s*\(\s*\[([^\]]*)\]/g;
+  let childMatch: RegExpExecArray | null;
+  while ((childMatch = addChildrenPattern.exec(routesContent)) !== null) {
+    const inner = childMatch[1];
+    // Extract identifiers (skip comments, whitespace, dots)
+    const identPattern = /(\w+)/g;
+    let identMatch: RegExpExecArray | null;
+    while ((identMatch = identPattern.exec(inner)) !== null) {
+      registeredVars.add(identMatch[1]);
+    }
   }
 
   // Build a blob of ALL source files (runtime + test + scripts) to search for route references
   const allSourceBlob = allFiles.map((f) => readContent(f)).join("\n");
 
-  for (const route of routes) {
+  for (const { varName, path: route } of routeVars) {
     // Skip parameterized routes
     if (route.includes("$")) continue;
 
-    // Check if route is referenced anywhere in the codebase:
-    // - sidebar config (to: "/route")
-    // - redirect({ to: "/route" })
-    // - <Link to="/route" />
-    // - navigate({ to: "/route" })
-    // - router.navigate({ to: "/route" })
+    // A route is NOT an orphan if:
+    // 1. It's registered in the route tree via addChildren([...])
+    // 2. It's referenced anywhere in the codebase as a string literal
+    //    - sidebar config (to: "/route")
+    //    - redirect({ to: "/route" })
+    //    - <Link to="/route" />
+    //    - navigate({ to: "/route" })
+    //    - router.navigate({ to: "/route" })
+    const isRegistered = registeredVars.has(varName);
     const routeQuoted = [`"${route}"`, `'${route}'`, `\`${route}\``];
-    const isReferenced = routeQuoted.some((q) => allSourceBlob.includes(q));
+    const isReferenced = isRegistered || routeQuoted.some((q) => allSourceBlob.includes(q));
 
     if (!isReferenced) {
       entries.push({
@@ -510,16 +529,18 @@ function main() {
   writeFileSync(jsonPath, JSON.stringify(report, null, 2));
   console.log(`\n📄 JSON report: ${relPath(jsonPath)}`);
 
-  // Write CSV tracker
-  const csvPath = join(auditDir, "orphan-tracker.csv");
-  const csvHeader = "ID,File,Symbol,OrphanType,Priority,UIRoute,NPCConsumer,TickPhase,TestFile,Status,PR\n";
-  const csvRows = allEntries.map((e) =>
-    [e.id, e.file, e.symbol, e.orphanType, e.priority, e.uiRoute, e.npcConsumer, e.tickPhase, "", e.status, ""]
-      .map((v) => `"${v.replace(/"/g, '""')}"`)
-      .join(",")
-  );
-  writeFileSync(csvPath, csvHeader + csvRows.join("\n"));
-  console.log(`📊 CSV tracker: ${relPath(csvPath)}`);
+  // Write CSV tracker (skip in test mode when custom --json path is provided)
+  if (!customJsonPath) {
+    const csvPath = join(auditDir, "orphan-tracker.csv");
+    const csvHeader = "ID,File,Symbol,OrphanType,Priority,UIRoute,NPCConsumer,TickPhase,TestFile,Status,PR\n";
+    const csvRows = allEntries.map((e) =>
+      [e.id, e.file, e.symbol, e.orphanType, e.priority, e.uiRoute, e.npcConsumer, e.tickPhase, "", e.status, ""]
+        .map((v) => `"${v.replace(/"/g, '""')}"`)
+        .join(",")
+    );
+    writeFileSync(csvPath, csvHeader + csvRows.join("\n"));
+    console.log(`📊 CSV tracker: ${relPath(csvPath)}`);
+  }
 
   // Print summary
   console.log("\n" + "─".repeat(60));
