@@ -37,14 +37,19 @@ export function processHeyaEconomics(
 ): number {
   let totalJsaSalaries = 0;
   let totalHeyaOverhead = 0;
-  const rikishiIds = heya.rikishiIds ?? [];
+  const rikishiIds = [...new Set(heya.rikishiIds ?? [])];
 
   for (const rId of rikishiIds) {
     const r = rikishiMap.get(rId) || getRikishi(world, rId);
     if (!r) continue;
 
     const info = RANK_HIERARCHY[r.rank];
-    if (!info) continue;
+    if (!info) {
+      // Unknown rank (e.g. corrupted save with unvalidated rank string).
+      // Charge flat non-sekitori overhead so the rikishi is never a free rider.
+      totalHeyaOverhead += NON_SEKITORI_OVERHEAD_MONTHLY;
+      continue;
+    }
 
     if (info.isSekitori) {
       // Credit salary to the rikishi (paid by JSA, not deducted from heya)

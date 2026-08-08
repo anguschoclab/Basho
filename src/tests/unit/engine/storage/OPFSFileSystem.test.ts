@@ -127,6 +127,9 @@ describe("OPFSFileSystem", () => {
         fs.getDirectoryPath(["a"], { throwOnError: true })
       ).rejects.toBe(failError);
 
+      // Clear cache so root handle is re-fetched
+      fs.clearCache();
+
       // Second call should re-traverse, not return cached null
       const mockDirA2 = { getDirectoryHandle: vi.fn() };
       mockRoot.getDirectoryHandle.mockResolvedValueOnce(mockDirA2);

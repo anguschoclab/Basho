@@ -53,7 +53,7 @@ describe("OPFSArchiveService core functionality", () => {
       };
       await service.archiveBoutLog(2024, "b1", boutData);
 
-      expect(getDirSpy).toHaveBeenCalledWith(["season_2024", "bouts"]);
+      expect(getDirSpy).toHaveBeenCalledWith(["season_2024", "bouts"], { throwOnError: true });
       expect(mockDir.getFileHandle).toHaveBeenCalledWith("b1.json", { create: false });
       expect(mockDir.getFileHandle).toHaveBeenCalledWith("b1.json", { create: true });
       expect(writable.write).toHaveBeenCalledWith(JSON.stringify(boutData));
@@ -168,7 +168,7 @@ describe("OPFSArchiveService core functionality", () => {
       await service.archiveBoutLog(2024, "b1", {});
 
       // Should complete without error and not attempt any file operations
-      expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024", "bouts"]);
+      expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024", "bouts"], { throwOnError: true });
     });
   });
 
@@ -322,7 +322,7 @@ describe("OPFSArchiveService core functionality", () => {
 
       await service.archiveGazette(2024, 3, "# Week 3 Gazette");
 
-      expect(getDirSpy).toHaveBeenCalledWith(["season_2024", "gazettes"]);
+      expect(getDirSpy).toHaveBeenCalledWith(["season_2024", "gazettes"], { throwOnError: true });
       expect(mockDir.getFileHandle).toHaveBeenCalledWith("week_3.md", { create: true });
       expect(writable.write).toHaveBeenCalledWith("# Week 3 Gazette");
       expect(writable.close).toHaveBeenCalled();
@@ -349,7 +349,7 @@ describe("OPFSArchiveService core functionality", () => {
 
       await service.archiveGazette(2024, 1, "# Test");
 
-      expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024", "gazettes"]);
+      expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024", "gazettes"], { throwOnError: true });
     });
   });
 
@@ -439,7 +439,7 @@ describe("OPFSArchiveService core functionality", () => {
       ];
       await service.archiveAwards(2024, awards);
 
-      expect(getDirSpy).toHaveBeenCalledWith(["season_2024"]);
+      expect(getDirSpy).toHaveBeenCalledWith(["season_2024"], { throwOnError: true });
       expect(mockDir.getFileHandle).toHaveBeenCalledWith("awards.json", { create: true });
       expect(writable.write).toHaveBeenCalledWith(JSON.stringify(awards));
       expect(writable.close).toHaveBeenCalled();
@@ -466,7 +466,7 @@ describe("OPFSArchiveService core functionality", () => {
 
       await service.archiveAwards(2024, []);
 
-      expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024"]);
+      expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024"], { throwOnError: true });
     });
   });
 
@@ -550,7 +550,7 @@ describe("OPFSArchiveService core functionality", () => {
       };
       await service.archiveBanzuke(2024, 1, snapshot);
 
-      expect(getDirSpy).toHaveBeenCalledWith(["season_2024", "banzuke"]);
+      expect(getDirSpy).toHaveBeenCalledWith(["season_2024", "banzuke"], { throwOnError: true });
       expect(mockDir.getFileHandle).toHaveBeenCalledWith("basho_1.json", { create: true });
       expect(writable.write).toHaveBeenCalledWith(JSON.stringify(snapshot));
       expect(writable.close).toHaveBeenCalled();
@@ -593,7 +593,7 @@ describe("OPFSArchiveService core functionality", () => {
         retirements: [],
       });
 
-      expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024", "banzuke"]);
+      expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024", "banzuke"], { throwOnError: true });
     });
   });
 
