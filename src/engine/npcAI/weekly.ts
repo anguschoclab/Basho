@@ -3,7 +3,6 @@ import type { Rikishi } from "../types/rikishi";
 import type { Id } from "../types/common";
 import type { PerceptionSnapshot } from "../perception";
 import type { TrainingIntensity } from "../types/training";
-import type { ExhibitionInvitation } from "../systems/worldCircuit/WorldCircuitService";
 import type { RecruitmentAgentResult } from "../agents/RecruitmentAgent";
 import { getOyakataStyleProfile } from "../oyakataStylePreferences";
 import { WorldCircuitService } from "../systems/worldCircuit/WorldCircuitService";
@@ -276,7 +275,7 @@ export function makeNPCWeeklyDecision(
           world,
           heyaId,
           globalProposal.rikishiId,
-          invitation as unknown as ExhibitionInvitation
+          invitation
         )
       );
       const nextPending = (world.pendingExhibitions || []).filter(

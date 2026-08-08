@@ -55,13 +55,12 @@ export function recordGomenfuda(
   }
 
   // Apply reputation penalty to heya (using brandIdentityId or direct field)
-  const currentReputation = (heya as unknown as { reputation?: number }).reputation ?? 50;
+  const currentReputation = heya.reputation ?? 50;
   const newReputation = Math.max(0, currentReputation - penalty);
 
   builder.updateHeya(heya.id, {
-    ...(heya as object),
-    ...({ reputation: newReputation } as object),
-  } as Partial<Heya>);
+    reputation: newReputation,
+  });
 
   // Mark the rikishi as absent
   builder.updateRikishi(rikishi.id, {
