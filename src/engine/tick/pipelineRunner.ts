@@ -20,7 +20,15 @@ import { error } from "../utils/Logger";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
-/** A single pipeline phase: pure function returning either WorldState or StateImpact. */
+/**
+ * A single pipeline phase: pure function returning either WorldState or StateImpact.
+ *
+ * WARNING: If returning a StateImpact, it MUST include the `metadata` property.
+ * The runner uses `"metadata" in result` to distinguish migrated StateImpact
+ * responses from legacy WorldState responses. StateImpacts missing metadata
+ * will be treated as invalid legacy states and crash the pipeline.
+ * Always use `createEmptyImpact` which guarantees metadata presence.
+ */
 export type PipelinePhase = (world: WorldState) => WorldState | StateImpact;
 
 // ── Core runner ───────────────────────────────────────────────────────────────
