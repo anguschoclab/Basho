@@ -22,6 +22,7 @@ import {
   POST_BASHO_DAYS,
   INTERIM_DAYS,
 } from "../../constants/engine/npcStrategy";
+import { DAYS_IN_MONTH, DEFAULT_MAX_DAY, MAX_MONTH } from "../../constants/engine/calendarExtended";
 import { warn } from "../utils/Logger";
 import { shouldHaltAdvance } from "../loop/shouldHaltAdvance";
 import { clearQueryCaches } from "../queries";
@@ -277,12 +278,171 @@ export function advanceDaysFast(world: WorldState, days: number, opts?: AdvanceO
     );
   }
   const n = Math.max(1, Math.min(days, MAX_DAYS_ADVANCE));
-  for (let i = 0; i < n; i++) {
+
+  let daysRemaining = n;
+  let daysAdvanced = 0;
+
+  while (daysRemaining > 0) {
+    // B1.1: Compute how many days we can safely batch-advance without
+    // hitting a weekly gate, month/year boundary, or phase transition.
+    // On those days we must run the full advanceOneDay pipeline.
+    const daysToWeekly = WEEKLY_TICK_THRESHOLD - ((currentWorld._daysSinceLastWeeklyTick ?? 0) + 1);
+    const daysToMonthBoundary = daysUntilMonthBoundary(currentWorld);
+    const daysToYearBoundary = daysUntilYearBoundary(currentWorld);
+    const daysToPhaseTransition = daysUntilPhaseTransition(currentWorld);
+
+    // The safe batch is the minimum of all breakpoints, at least 1
+    const safeBatch = Math.max(1, Math.min(
+      daysRemaining,
+      daysToWeekly,
+      daysToMonthBoundary,
+      daysToYearBoundary,
+      daysToPhaseTransition,
+    ));
+
+    if (safeBatch > 1) {
+      // Batch-advance calendar and counters for (safeBatch - 1) days.
+      // The last day of the batch will be handled by advanceOneDay
+      // to run the full pipeline (weekly gate, boundary, or transition).
+      const batchDays = safeBatch - 1;
+      currentWorld = batchAdvanceCalendar(currentWorld, batchDays);
+      for (let b = 1; b <= batchDays; b++) {
+        daysAdvanced++;
+        daysRemaining--;
+        opts?.onProgress?.(daysAdvanced, currentWorld);
+      }
+    }
+
+    // Run one full advanceOneDay for the boundary/transition day
     currentWorld = advanceOneDay(currentWorld, { ...opts, skipDailyMicroPhases: true });
+    daysAdvanced++;
+    daysRemaining--;
+    opts?.onProgress?.(daysAdvanced, currentWorld);
+
     if (opts?.haltOnPendingDecision && shouldHaltAdvance(currentWorld)) break;
-    opts?.onProgress?.(i + 1, currentWorld);
   }
+
   return currentWorld;
+}
+
+/**
+ * B1.1: Batch-advance calendar and counters for N days without running
+ * the full preflight pipeline. Replicates the exact logic from
+ * phase00_preflight's advanceCalendarDay + counter decrements.
+ */
+function batchAdvanceCalendar(world: WorldState, days: number): WorldState {
+  if (days <= 0) return world;
+
+  const dayIndexGlobal = (world.dayIndexGlobal ?? 0) + days;
+  let _interimDaysRemaining = world._interimDaysRemaining;
+  let _postBashoDays = world._postBashoDays;
+
+  // Decrement counters by N days (matching phase00_preflight logic)
+  if (_interimDaysRemaining != null) {
+    _interimDaysRemaining = _interimDaysRemaining - days;
+  }
+  if (_postBashoDays != null) {
+    _postBashoDays = _postBashoDays - days;
+  }
+
+  // Advance calendar by N days (replicating advanceCalendarDay logic)
+  let currentDay = world.calendar?.currentDay ?? 1;
+  let month = world.calendar?.month ?? 1;
+  let year = world.calendar?.year ?? 2026;
+  let currentWeek = world.calendar?.currentWeek ?? 1;
+
+  for (let i = 0; i < days; i++) {
+    currentDay += 1;
+    const maxDay = DAYS_IN_MONTH[(month - 1) % MAX_MONTH] || DEFAULT_MAX_DAY;
+    if (currentDay > maxDay) {
+      currentDay = 1;
+      month += 1;
+      if (month > MAX_MONTH) {
+        month = 1;
+        year += 1;
+        currentWeek += 1;
+      }
+    }
+  }
+
+  // Update _daysSinceLastWeeklyTick (will be < 7 since we stop before weekly gate)
+  const daysSinceTick = (world._daysSinceLastWeeklyTick ?? 0) + days;
+
+  return {
+    ...world,
+    dayIndexGlobal,
+    _interimDaysRemaining,
+    _postBashoDays,
+    _daysSinceLastWeeklyTick: daysSinceTick,
+    calendar: {
+      ...world.calendar,
+      currentDay,
+      month,
+      year,
+      currentWeek,
+    },
+    week: currentWeek,
+  };
+}
+
+/**
+ * Compute days until the next month boundary (inclusive — returns 1 if today is the boundary).
+ */
+function daysUntilMonthBoundary(world: WorldState): number {
+  const currentDay = world.calendar?.currentDay ?? 1;
+  const month = world.calendar?.month ?? 1;
+  const maxDay = DAYS_IN_MONTH[(month - 1) % MAX_MONTH] || DEFAULT_MAX_DAY;
+  return maxDay - currentDay + 1;
+}
+
+/**
+ * Compute days until the next year boundary (inclusive).
+ */
+function daysUntilYearBoundary(world: WorldState): number {
+  const currentDay = world.calendar?.currentDay ?? 1;
+  const month = world.calendar?.month ?? 1;
+  let days = 0;
+  let m = month;
+  let d = currentDay;
+  while (true) {
+    const maxDay = DAYS_IN_MONTH[(m - 1) % MAX_MONTH] || DEFAULT_MAX_DAY;
+    const remaining = maxDay - d + 1;
+    days += remaining;
+    if (m === MAX_MONTH) return days;
+    m++;
+    d = 1;
+  }
+}
+
+/**
+ * Compute days until a phase transition might occur.
+ * Phase transitions fire when counters (_interimDaysRemaining, _postBashoDays) hit thresholds.
+ * Returns a large number if no transition is possible within the advance window.
+ */
+function daysUntilPhaseTransition(world: WorldState): number {
+  let minDays = MAX_DAYS_ADVANCE;
+
+  const interim = world._interimDaysRemaining;
+  if (interim != null) {
+    if (interim > 0) {
+      minDays = Math.min(minDays, interim);
+    }
+  } else if (world.cyclePhase === "interim" || world.cyclePhase === "banzuke_reveal") {
+    // When _interimDaysRemaining is null/undefined, preflight uses (val ?? 0)
+    // which triggers transitions immediately. Must run full pipeline on day 1.
+    minDays = 1;
+  }
+
+  const postBasho = world._postBashoDays;
+  if (postBasho != null) {
+    if (postBasho > 0) {
+      minDays = Math.min(minDays, postBasho);
+    }
+  } else if (world.cyclePhase === "post_basho") {
+    minDays = 1;
+  }
+
+  return minDays;
 }
 
 // ====
