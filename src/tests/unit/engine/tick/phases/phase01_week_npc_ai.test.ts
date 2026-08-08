@@ -292,3 +292,53 @@ describe("phase01_week_npc_ai mentorship", () => {
     expect(impact.entities?.rikishiUpdates?.size ?? 0).toBe(0);
   });
 });
+
+describe("phase01_week_npc_ai sparring", () => {
+  it("assigns highest scoring pairs first and respects existing pairs", () => {
+    // a1 and a2 will have best score due to power gap
+    const a1 = mockRikishi("a1", { heyaId: "h1", power: 100, technique: 50 });
+    const a2 = mockRikishi("a2", { heyaId: "h1", power: 40, technique: 50 });
+    // b1 is injured, should be ignored
+    const b1 = mockRikishi("b1", { heyaId: "h1", power: 50, technique: 50, injured: true });
+    // c1 is retired, should be ignored
+    const c1 = mockRikishi("c1", { heyaId: "h1", power: 50, technique: 50, isRetired: true });
+    // d1 and d2 are already paired
+    const d1 = mockRikishi("d1", { heyaId: "h1", power: 60, technique: 50 });
+    const d2 = mockRikishi("d2", { heyaId: "h1", power: 65, technique: 50 });
+
+    const oyakata = MockFactory.createOyakata("o1", { heyaId: "h1" });
+    const heya = MockFactory.createHeya("h1", {
+      rikishiIds: ["a1", "a2", "b1", "c1", "d1", "d2"],
+      oyakataId: "o1",
+    });
+
+    const world = makeMockWorld({
+      rikishi: new Map([
+        ["a1", a1], ["a2", a2], ["b1", b1], ["c1", c1], ["d1", d1], ["d2", d2]
+      ]),
+      heyas: new Map([["h1", heya]]),
+      oyakata: new Map([["o1", oyakata]]),
+      playerHeyaId: "player",
+      lineage: [],
+      rivalriesState: { pairs: {}, version: "1.0.0" } as any,
+      sparringPairs: new Map([
+        ["h1", { heyaId: "h1", pairs: { "d1-d2": { aId: "d1", bId: "d2" } as any } }]
+      ])
+    });
+
+    const impact = phase01_week_npc_ai(world);
+    const newPairs = impact.worldFields?.sparringPairs?.get("h1")?.pairs;
+    expect(newPairs).toBeDefined();
+
+    const pairValues = Object.values(newPairs!);
+
+    // They should get paired
+    expect(pairValues.some((p: any) => p.aId === "a1" && p.bId === "a2")).toBe(true);
+
+    // Existing pair should remain
+    expect(pairValues.some((p: any) => p.aId === "d1" && p.bId === "d2")).toBe(true);
+
+    // b1 and c1 should not be paired
+    expect(pairValues.some((p: any) => p.aId === "b1" || p.bId === "b1" || p.aId === "c1" || p.bId === "c1")).toBe(false);
+  });
+});
