@@ -1,54 +1,20 @@
-import React, { useMemo, useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
-import { useGame } from "@/contexts/useGame";
+import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BaseWidget } from "./BaseWidget";
 import { Dumbbell, Zap, Target, Shield, Activity } from "lucide-react";
-import type {
-  TrainingIntensity,
-  TrainingFocus,
-  RecoveryEmphasis,
-  TrainingProfile,
-} from "@/engine/types/training";
 import {
   INTENSITY_MULTIPLIERS,
   RECOVERY_MULTIPLIERS,
-  ensureHeyaTrainingState,
 } from "@/presenters/uiDigest";
 import { computeDisplayTrainingMultiplier } from "@/engine/systems/training/TrainingMath";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import { getPlayerHeya } from "@/engine/queries";
-
-const INTENSITY_OPTIONS: TrainingIntensity[] = [
-  "conservative",
-  "balanced",
-  "intensive",
-  "punishing",
-];
-const FOCUS_OPTIONS: TrainingFocus[] = ["neutral", "power", "speed", "technique", "balance"];
-const RECOVERY_OPTIONS: RecoveryEmphasis[] = ["low", "normal", "high"];
-
-const INTENSITY_ICONS: Record<TrainingIntensity, string> = {
-  conservative: "🛡️",
-  balanced: "⚖️",
-  intensive: "🔥",
-  punishing: "💀",
-};
-
-const FOCUS_LABELS: Record<TrainingFocus, string> = {
-  neutral: "Neutral",
-  power: "Power",
-  speed: "Speed",
-  technique: "Technique",
-  balance: "Balance",
-};
-
-const RECOVERY_LABELS: Record<RecoveryEmphasis, string> = {
-  low: "Low",
-  normal: "Normal",
-  high: "High",
-};
+import {
+  INTENSITY_ICONS,
+  FOCUS_LABELS,
+  RECOVERY_LABELS,
+} from "@/constants/ui/trainingWidget";
+import { useTrainingProfile } from "@/hooks/useTrainingProfile";
 
 /**
  * profile row.
@@ -140,109 +106,19 @@ const MultiplierBar = React.memo(
 
 /** training widget. */
 export function TrainingWidget() {
-  const { state, updateWorld } = useGame();
-  const navigate = useNavigate();
-  const headerAction = useMemo(
-    () => ({
-      label: "Full Plan",
-      onClick: () => navigate({ to: "/stable/training" }),
-      tooltip: "Design and implement comprehensive training regimens for your rikishi",
-    }),
-    [navigate]
-  );
-  const world = state.world;
-  const [expanded, setExpanded] = useState(false);
-
-  // Constants for intensity ranking
-  const CAP_TO_INTENSITY: Record<string, TrainingIntensity> = {
-    low: "conservative",
-    medium: "balanced",
-    high: "intensive",
-  };
-  const INTENSITY_RANK = useMemo<TrainingIntensity[]>(
-    () => ["conservative", "balanced", "intensive", "punishing"],
-    []
-  );
-
-  // All hooks must be called before any early return
-  const profile = useMemo(() => {
-    if (!world?.playerHeyaId) return null;
-    const ts = ensureHeyaTrainingState(world, world.playerHeyaId);
-    return ts.activeProfile;
-  }, [world]);
-
-  const sanctionCap = useMemo(() => {
-    if (!world?.playerHeyaId) return null;
-    const ph = getPlayerHeya(world);
-    return ph?.welfareState?.sanctions?.trainingIntensityCap ?? null;
-  }, [world]);
-
-  const maxIntensityIdx =
-    sanctionCap != null
-      ? INTENSITY_RANK.indexOf(CAP_TO_INTENSITY[sanctionCap] ?? "punishing")
-      : INTENSITY_RANK.length - 1;
-
-  const intensityOptions = useMemo(
-    () =>
-      INTENSITY_OPTIONS.map((v, i) => ({
-        value: v,
-        label: v.charAt(0).toUpperCase() + v.slice(1),
-        disabled: i > maxIntensityIdx,
-      })),
-    [maxIntensityIdx]
-  );
-
-  const focusOptions = useMemo(
-    () =>
-      FOCUS_OPTIONS.map((v) => ({
-        value: v,
-        label: FOCUS_LABELS[v],
-      })),
-    []
-  );
-
-  const recoveryOptions = useMemo(
-    () =>
-      RECOVERY_OPTIONS.map((v) => ({
-        value: v,
-        label: RECOVERY_LABELS[v],
-      })),
-    []
-  );
-
-  const updateProfile = React.useCallback(
-    (patch: Partial<TrainingProfile>) => {
-      if (!world?.playerHeyaId) return;
-      const ts = ensureHeyaTrainingState(world, world.playerHeyaId);
-      // Enforce training intensity cap from active welfare sanctions
-      if (patch.intensity) {
-        const chosenIdx = INTENSITY_RANK.indexOf(patch.intensity);
-        if (chosenIdx > maxIntensityIdx) {
-          patch = { ...patch, intensity: INTENSITY_RANK[maxIntensityIdx] };
-        }
-      }
-      ts.activeProfile = { ...ts.activeProfile, ...patch };
-      updateWorld({ ...world });
-    },
-    [world, maxIntensityIdx, updateWorld, INTENSITY_RANK]
-  );
-
-  const handleIntensityChange = React.useCallback(
-    (v: string) => updateProfile({ intensity: v as TrainingIntensity }),
-    [updateProfile]
-  );
-
-  const handleFocusChange = React.useCallback(
-    (v: string) => updateProfile({ focus: v as TrainingFocus }),
-    [updateProfile]
-  );
-
-  const handleRecoveryChange = React.useCallback(
-    (v: string) => updateProfile({ recovery: v as RecoveryEmphasis }),
-    [updateProfile]
-  );
-
-  const toggleExpanded = React.useCallback(() => setExpanded((prev) => !prev), []);
+  const {
+    world,
+    expanded,
+    headerAction,
+    profile,
+    intensityOptions,
+    focusOptions,
+    recoveryOptions,
+    handleIntensityChange,
+    handleFocusChange,
+    handleRecoveryChange,
+    toggleExpanded,
+  } = useTrainingProfile();
 
   // Early return after all hooks
   if (!world || !profile) return null;

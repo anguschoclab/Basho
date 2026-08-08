@@ -16,3 +16,8 @@ export * from "./animation";
 export * from "./dashboard";
 export * from "./kesho";
 export * from "./presenters";
+export * from "./calendar";
+export * from "./finances";
+export * from "./trainingWidget";
+export * from "./welfare";
+export * from "./promotion";

@@ -1,91 +1,12 @@
-import { useMemo } from "react";
-import { useNavigate } from "@tanstack/react-router";
-import { usePlayerHeya } from "@/hooks/usePlayerHeya";
-import { useGame } from "@/contexts/useGame";
-import { Coins, TrendingUp, TrendingDown, Minus, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { Coins, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { formatYen } from "@/utils/engineUtils";
 import { BaseWidget } from "./BaseWidget";
 import { AreaChart, Area, ResponsiveContainer, Tooltip, ReferenceLine, XAxis } from "recharts";
-import { calculateHeyaWeeklyFinances } from "@/engine/systems/economy/FinanceCalculator";
-import type { LucideIcon } from "lucide-react";
-
-const RUNWAY_CONFIG: Record<
-  string,
-  { label: string; color: string; icon: LucideIcon; bgAccent: string }
-> = {
-  secure: {
-    label: "Secure",
-    color: "text-success",
-    icon: TrendingUp,
-    bgAccent: "bg-success/10",
-  },
-  comfortable: {
-    label: "Comfortable",
-    color: "text-success",
-    icon: TrendingUp,
-    bgAccent: "bg-success/10",
-  },
-  tight: {
-    label: "Tight",
-    color: "text-gold",
-    icon: Minus,
-    bgAccent: "bg-gold/10",
-  },
-  critical: {
-    label: "Critical",
-    color: "text-warning",
-    icon: TrendingDown,
-    bgAccent: "bg-warning/10",
-  },
-  desperate: {
-    label: "Desperate",
-    color: "text-destructive",
-    icon: TrendingDown,
-    bgAccent: "bg-destructive/15",
-  },
-};
+import { useFinancesData } from "@/hooks/useFinancesData";
 
 /** finances widget. */
 export function FinancesWidget() {
-  const navigate = useNavigate();
-  const { heya } = usePlayerHeya();
-  const { state } = useGame();
-  const world = state.world;
-
-  // Compute config before early return
-  const config = useMemo(() => {
-    if (!heya) return RUNWAY_CONFIG.comfortable;
-    const band = (heya as { runwayBand?: string }).runwayBand || "comfortable";
-    return RUNWAY_CONFIG[band] ?? RUNWAY_CONFIG.comfortable;
-  }, [heya]);
-
-  const finances = useMemo(() => {
-    if (!heya || !world) return null;
-    return calculateHeyaWeeklyFinances(heya, world);
-  }, [heya, world]);
-
-  // 10-point fund history: 8 retro + 2 projected future weeks
-  const history = useMemo(() => {
-    const base = heya?.funds ?? 0;
-    const net = (finances?.revenue ?? 0) - (finances?.expenses ?? 0);
-    const points = [];
-    for (let i = 7; i >= 1; i--) {
-      points.push({ name: `W-${i}`, value: Math.max(0, base - net * i), projected: false });
-    }
-    points.push({ name: "Now", value: base, projected: false });
-    points.push({ name: "W+1", value: Math.max(0, base + net), projected: true });
-    points.push({ name: "W+2", value: Math.max(0, base + net * 2), projected: true });
-    return points;
-  }, [heya?.funds, finances?.revenue, finances?.expenses]);
-
-  const headerAction = useMemo(
-    () => ({
-      label: "Deep Dive",
-      onClick: () => navigate({ to: "/office/finances" }),
-      tooltip: "Analyze stable financial health and project future runway",
-    }),
-    [navigate]
-  );
+  const { heya, config, finances, history, headerAction } = useFinancesData();
 
   if (!heya) return null;
 

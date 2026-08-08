@@ -41,6 +41,18 @@ beforeAll(() => {
   }
 });
 
+// jsdom does not implement ResizeObserver, but recharts ResponsiveContainer relies on it.
+beforeAll(() => {
+  if (!hasDOM) return;
+  if (typeof globalThis.ResizeObserver === "undefined") {
+    globalThis.ResizeObserver = class ResizeObserver {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    } as unknown as typeof ResizeObserver;
+  }
+});
+
 // Several storage/electron tests replace global window / navigator (some leave
 // them undefined). Under the single-process runner that leaks into later files —
 // e.g. routes.tsx's createBrowserHistory crashing on window.history, or react-dom
