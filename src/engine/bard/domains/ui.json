@@ -13,10 +13,36 @@
         "building": "Building a solid case, but needs a spectacular finish."
       },
       "yokozuna_run": {
-        "standard": "Requires two consecutive yusho for promotion.",
-        "unanimous": "Unanimous Yokozuna Deliberation Council recommendation expected.",
-        "borderline": "Borderline case. The Council will scrutinize the quality of sumo.",
-        "partial": "Secured one Yusho. Must win the current basho to complete the run."
+        "standard": [
+          "Requires two consecutive yusho for promotion.",
+          "Must demonstrate overwhelming strength with back-to-back championships.",
+          "A distant prospect; needs consecutive Emperor's Cups to be considered.",
+          "Must assemble a flawless record of consecutive titles to impress the Council."
+        ],
+        "unanimous": [
+          "Unanimous Yokozuna Deliberation Council recommendation expected.",
+          "The Council eagerly awaits to bestow the highest rank.",
+          "A generational talent; promotion is virtually guaranteed after this dominant run.",
+          "Unquestionable dominance. The white rope is a mere formality at this point."
+        ],
+        "borderline": [
+          "Borderline case. The Council will scrutinize the quality of sumo.",
+          "A controversial candidate. Every bout will be heavily evaluated by the committee.",
+          "Statistically eligible, but the Council has expressed concerns over recent performances.",
+          "On the bubble. Needs a spectacular and dignified performance to sway the skeptics."
+        ],
+        "partial": [
+          "Secured one Yusho. Must win the current basho to complete the run.",
+          "Halfway there. A second consecutive championship is required for promotion.",
+          "Carrying the momentum of a Yusho; the pressure is on to finish the job this tournament.",
+          "One cup down. All eyes are on whether they can secure the back-to-back requirement."
+        ],
+        "testing": [
+          "Testing the waters. A single Yusho puts them on the radar.",
+          "A recent championship has sparked quiet rumors, though another is needed.",
+          "Entering the conversation after a surprise championship victory.",
+          "Has secured a Yusho, beginning the arduous journey toward consideration."
+        ]
       }
     },
     "kadoban": {
