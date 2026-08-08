@@ -147,7 +147,13 @@ export class OPFSArchiveService extends OPFSFileSystem implements ArchiveService
     // Use write queue to prevent concurrent writes to the same file
     const writeKey = `bout:${season}:${boutId}`;
     await enqueueWrite(writeKey, async () => {
-      const dir = await this.getDirectoryPath([`season_${season}`, "bouts"]);
+      let dir: FileSystemDirectoryHandle | null;
+      try {
+        dir = await this.getDirectoryPath([`season_${season}`, "bouts"], { throwOnError: true });
+      } catch (e) {
+        this.handleQuotaError(e);
+        return;
+      }
       if (!dir) return;
 
       const fileName = `${boutId}.json`;
@@ -243,7 +249,13 @@ export class OPFSArchiveService extends OPFSFileSystem implements ArchiveService
   // --- GAZETTES ---
 
   public async archiveGazette(season: number, week: number, markdown: string): Promise<void> {
-    const dir = await this.getDirectoryPath([`season_${season}`, "gazettes"]);
+    let dir: FileSystemDirectoryHandle | null;
+    try {
+      dir = await this.getDirectoryPath([`season_${season}`, "gazettes"], { throwOnError: true });
+    } catch (e) {
+      this.handleQuotaError(e);
+      return;
+    }
     if (!dir) return;
 
     try {
@@ -282,7 +294,13 @@ export class OPFSArchiveService extends OPFSFileSystem implements ArchiveService
   // --- AWARDS ---
 
   public async archiveAwards(season: number, awards: BashoResult[]): Promise<void> {
-    const dir = await this.getDirectoryPath([`season_${season}`]);
+    let dir: FileSystemDirectoryHandle | null;
+    try {
+      dir = await this.getDirectoryPath([`season_${season}`], { throwOnError: true });
+    } catch (e) {
+      this.handleQuotaError(e);
+      return;
+    }
     if (!dir) return;
 
     try {
@@ -321,7 +339,13 @@ export class OPFSArchiveService extends OPFSFileSystem implements ArchiveService
     bashoNumber: number,
     snapshot: AlmanacSnapshot
   ): Promise<void> {
-    const dir = await this.getDirectoryPath([`season_${season}`, "banzuke"]);
+    let dir: FileSystemDirectoryHandle | null;
+    try {
+      dir = await this.getDirectoryPath([`season_${season}`, "banzuke"], { throwOnError: true });
+    } catch (e) {
+      this.handleQuotaError(e);
+      return;
+    }
     if (!dir) return;
 
     try {

@@ -77,6 +77,7 @@ export class OPFSFileSystem {
 
       return currentDir;
     } catch (e) {
+      if (options?.throwOnError) throw e;
       warn(`Failed to access directory path: ${path.join("/")}`, "OPFS", e);
       return null;
     }
