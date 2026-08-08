@@ -1,5 +1,11 @@
 # Phase Purity Audit (A1)
 
+<!-- STALENESS NOTICE: This report was generated using regex-based heuristics.
+     As of 2026-08-08, the phase purity checker has been upgraded to use AST-based
+     analysis via ts-morph (see src/tests/unit/audit/phasePurity.test.ts).
+     The methodology described below is superseded. This report is retained for
+     historical reference only — rely on the live AST-based test for current status. -->
+
 ## Methodology
 
 Grepped all `.set(`, `.delete(`, `.push(`, `.splice(` calls in `src/engine/tick/phases/**/*.ts` and `src/engine/**/*.ts` for direct mutations of `world.heyas`, `world.rikishi`, `world.activeRikishiIds`, `world.staff`, `world.oyakata`, `world.sponsorPool`, `world.currentBasho.matches`.

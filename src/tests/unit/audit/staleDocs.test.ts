@@ -50,4 +50,23 @@ describe("L1.2: stale documentation audit", () => {
 
     expect(staleRefs, `Stale documentation references:\n${staleRefs.join("\n")}`).toEqual([]);
   });
+
+  it("audit reports in docs/audit/ have staleness annotations if methodology is superseded", () => {
+    const auditDocsDir = join(DOCS_DIR, "audit");
+    if (!existsSync(auditDocsDir)) return;
+
+    const auditMdFiles = findMdFiles(auditDocsDir);
+    const missing: string[] = [];
+
+    for (const mdFile of auditMdFiles) {
+      const content = readFileSync(mdFile, "utf-8");
+      const mentionsRegex = /regex|grep|Grepped/i;
+      const hasStalenessNotice = /STALENESS NOTICE|superseded|retained for historical/i.test(content);
+      if (mentionsRegex.test(content) && !hasStalenessNotice) {
+        missing.push(`${mdFile}: references regex/grep methodology but has no staleness annotation`);
+      }
+    }
+
+    expect(missing, `Audit reports missing staleness annotations:\n${missing.join("\n")}`).toEqual([]);
+  });
 });

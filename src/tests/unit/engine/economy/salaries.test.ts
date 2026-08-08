@@ -484,3 +484,70 @@ describe("processHeyaEconomics — mixed-rank roster (multiple sekitori + non-se
     expect(impact.entities.rikishiUpdates.has("r-ms")).toBe(false);
   });
 });
+
+// ── Fix 1: breakdown output parameter (test-first) ──────────────────────────
+
+describe("processHeyaEconomics — breakdown output parameter", () => {
+  let world: WorldState;
+
+  beforeEach(() => {
+    world = MockFactory.createWorld();
+  });
+
+  it("populates breakdown with jsaSalaries and heyaOverhead separately for a mixed roster", () => {
+    const heya = MockFactory.createHeya("h1", {
+      funds: 100_000_000,
+      rikishiIds: ["r-yoko", "r-ms"],
+    });
+    const mkEcon = () => ({
+      cash: 0,
+      retirementFund: 0,
+      careerKenshoWon: 0,
+      kinboshiCount: 0,
+      totalEarnings: 0,
+      currentBashoEarnings: 0,
+      popularity: 50,
+    });
+    world.rikishi.set("r-yoko", MockFactory.createRikishi("r-yoko", { rank: "yokozuna", economics: mkEcon() }));
+    world.rikishi.set("r-ms", MockFactory.createRikishi("r-ms", { rank: "makushita" }));
+
+    const builder = createImpactBuilder("test");
+    const heyaUpdates: HeyaUpdates = {};
+    const breakdown = { jsaSalaries: 0, heyaOverhead: 0 };
+    const totalBurn = processHeyaEconomics(world, heya, world.rikishi, heyaUpdates, builder, breakdown);
+
+    const expectedJsaSalaries = RANK_HIERARCHY.yokozuna.salary;
+    const expectedHeyaOverhead = SEKITORI_OVERHEAD_MONTHLY.yokozuna + NON_SEKITORI_OVERHEAD_MONTHLY;
+
+    expect(breakdown.jsaSalaries).toBe(expectedJsaSalaries);
+    expect(breakdown.heyaOverhead).toBe(expectedHeyaOverhead);
+    expect(totalBurn).toBe(expectedJsaSalaries + expectedHeyaOverhead);
+  });
+
+  it("behaves identically when breakdown parameter is omitted (regression guard)", () => {
+    const heya = MockFactory.createHeya("h1", {
+      funds: 100_000_000,
+      rikishiIds: ["r-yoko", "r-ms"],
+    });
+    const mkEcon = () => ({
+      cash: 0,
+      retirementFund: 0,
+      careerKenshoWon: 0,
+      kinboshiCount: 0,
+      totalEarnings: 0,
+      currentBashoEarnings: 0,
+      popularity: 50,
+    });
+    world.rikishi.set("r-yoko", MockFactory.createRikishi("r-yoko", { rank: "yokozuna", economics: mkEcon() }));
+    world.rikishi.set("r-ms", MockFactory.createRikishi("r-ms", { rank: "makushita" }));
+
+    const builder = createImpactBuilder("test");
+    const heyaUpdates: HeyaUpdates = {};
+    const totalBurn = processHeyaEconomics(world, heya, world.rikishi, heyaUpdates, builder);
+
+    const expectedJsaSalaries = RANK_HIERARCHY.yokozuna.salary;
+    const expectedHeyaOverhead = SEKITORI_OVERHEAD_MONTHLY.yokozuna + NON_SEKITORI_OVERHEAD_MONTHLY;
+    expect(totalBurn).toBe(expectedJsaSalaries + expectedHeyaOverhead);
+    expect(heyaUpdates.funds).toBe(100_000_000 - expectedHeyaOverhead);
+  });
+});

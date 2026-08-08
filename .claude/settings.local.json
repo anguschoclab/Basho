@@ -162,7 +162,9 @@
       "Bash(cp src/constants/engine/scoutingPerception.ts /tmp/noise_current.bak)",
       "Bash(echo \"EXIT=$?\")",
       "Bash(xargs -I{} dirname {})",
-      "Bash(npx tsx *)"
+      "Bash(npx tsx *)",
+      "Bash(npx eslint *)",
+      "Bash(echo \"ESLINT_EXIT=$?\")"
     ]
   },
   "outputStyle": "default"

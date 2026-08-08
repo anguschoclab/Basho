@@ -33,7 +33,8 @@ export function processHeyaEconomics(
   heya: Heya,
   rikishiMap: Map<string, Rikishi>,
   heyaUpdates: HeyaUpdates,
-  builder: ImpactBuilder
+  builder: ImpactBuilder,
+  breakdown?: { jsaSalaries: number; heyaOverhead: number }
 ): number {
   let totalJsaSalaries = 0;
   let totalHeyaOverhead = 0;
@@ -85,6 +86,11 @@ export function processHeyaEconomics(
   // Deduct operating overhead from heya funds — this is a genuine heya expense
   // that scales with roster strength, creating financial pressure on weak stables.
   heyaUpdates.funds = (heyaUpdates.funds ?? heya.funds ?? 0) - totalHeyaOverhead;
+
+  if (breakdown) {
+    breakdown.jsaSalaries = totalJsaSalaries;
+    breakdown.heyaOverhead = totalHeyaOverhead;
+  }
 
   return totalJsaSalaries + totalHeyaOverhead;
 }

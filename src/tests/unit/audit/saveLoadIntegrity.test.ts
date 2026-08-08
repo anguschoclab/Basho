@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { SerializationService } from "@/engine/persistence/SerializationService";
+import { boundHistoryArrays, HISTORY_MAX_ENTRIES } from "@/engine/tick/phases/boundHistoryArrays";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
+import type { BashoResult } from "@/engine/types/basho";
 
 function makeMockWorld() {
   const world = MockFactory.createWorld({ seed: "save-load-test" });
@@ -65,25 +67,47 @@ describe("L4.9: save/load integrity — serialization round-trip", () => {
 });
 
 describe("L4.9: save/load integrity — unbounded growth", () => {
-  it("history array does not grow unboundedly across many save/load cycles", () => {
+  it("boundHistoryArrays caps world.history to HISTORY_MAX_ENTRIES (production code)", () => {
     const world = makeMockWorld();
     world.history = [];
-    const MAX_HISTORY = 200;
-
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < HISTORY_MAX_ENTRIES + 200; i++) {
       world.history.push({
-        year: i,
-        bashoNumber: i % 6,
-        bashoName: "Hatsu",
-        championId: `rik-${i % 5}`,
-      } as never);
-
-      if (world.history.length > MAX_HISTORY) {
-        world.history = world.history.slice(-MAX_HISTORY);
-      }
+        id: `b${i}`,
+        year: 2020 + Math.floor(i / 6),
+        bashoNumber: (i % 6) as 1 | 2 | 3 | 4 | 5 | 6,
+        bashoName: "hatsu",
+        yusho: "r1",
+        junYusho: [],
+        prizes: { yushoAmount: 0, junYushoAmount: 0, specialPrizes: 0 },
+      } as BashoResult);
     }
 
-    expect(world.history.length).toBeLessThanOrEqual(MAX_HISTORY);
+    const bounded = boundHistoryArrays(world);
+
+    expect(bounded.history.length).toBeLessThanOrEqual(HISTORY_MAX_ENTRIES);
+    expect(bounded.history[bounded.history.length - 1].id).toBe(`b${HISTORY_MAX_ENTRIES + 199}`);
+  });
+
+  it("boundHistoryArrays is idempotent — serializing a bounded world round-trips correctly", () => {
+    const world = makeMockWorld();
+    world.history = [];
+    for (let i = 0; i < HISTORY_MAX_ENTRIES + 100; i++) {
+      world.history.push({
+        id: `b${i}`,
+        year: 2020 + Math.floor(i / 6),
+        bashoNumber: (i % 6) as 1 | 2 | 3 | 4 | 5 | 6,
+        bashoName: "hatsu",
+        yusho: "r1",
+        junYusho: [],
+        prizes: { yushoAmount: 0, junYushoAmount: 0, specialPrizes: 0 },
+      } as BashoResult);
+    }
+
+    const bounded = boundHistoryArrays(world);
+    const serialized = SerializationService.serializeWorld(bounded);
+    const deserialized = SerializationService.deserializeWorld(serialized);
+
+    expect(deserialized.history.length).toBe(HISTORY_MAX_ENTRIES);
   });
 
   it("serialization handles large world without throwing", () => {
@@ -91,11 +115,14 @@ describe("L4.9: save/load integrity — unbounded growth", () => {
     world.history = [];
     for (let i = 0; i < 1000; i++) {
       world.history.push({
-        year: i,
-        bashoNumber: i % 6,
-        bashoName: "Hatsu",
-        championId: `rik-${i % 5}`,
-      } as never);
+        id: `b${i}`,
+        year: 2020 + Math.floor(i / 6),
+        bashoNumber: (i % 6) as 1 | 2 | 3 | 4 | 5 | 6,
+        bashoName: "hatsu",
+        yusho: "r1",
+        junYusho: [],
+        prizes: { yushoAmount: 0, junYushoAmount: 0, specialPrizes: 0 },
+      } as BashoResult);
     }
 
     expect(() => {

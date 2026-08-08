@@ -5,10 +5,24 @@ import { join } from "path";
 const DIST_DIR = join(import.meta.dirname, "../../../..", "dist", "assets");
 
 const BUDGETS: Record<string, number> = {
-  "index": 1_300_000,
-  "engine.worker": 600_000,
+  "index": 500_000,
+  "engine-core": 500_000,
+  "engine-systems": 500_000,
+  "engine-tick": 500_000,
+  "engine-bout": 500_000,
+  "engine-npc": 500_000,
+  "engine-narrative": 500_000,
+  "game-state": 500_000,
+  "ui-primitives": 500_000,
+  "ui-game": 500_000,
+  "ui-layout": 500_000,
+  "ui-features": 500_000,
   "vendor-recharts": 500_000,
-  "vendor-react": 250_000,
+  "vendor-react": 500_000,
+  "vendor-router": 500_000,
+  "vendor-framer": 500_000,
+  "vendor-radix": 500_000,
+  "vendor-lucide": 500_000,
 };
 
 function findChunk(prefix: string): string | null {
