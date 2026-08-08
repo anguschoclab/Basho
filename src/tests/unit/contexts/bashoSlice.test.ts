@@ -9,6 +9,10 @@ vi.mock("@/contexts/gameHelpers", () => ({
   autosaveWithSignal: vi.fn(),
 }));
 
+vi.mock("@/engine/core/ImpactResolver", () => ({
+  resolveImpacts: vi.fn((world: any) => world),
+}));
+
 vi.mock("@/engine/world", () => ({
   advanceBashoDay: vi.fn((world: any) => ({
     ...world,
@@ -29,11 +33,6 @@ describe("bashoSlice - autosave errors", () => {
   });
 
   it("handles autosave errors gracefully on ADVANCE_DAY (day <= 15)", () => {
-    const mockAutosave = gameHelpers.autosaveWithSignal as ReturnType<typeof vi.fn>;
-    mockAutosave.mockImplementation(() => {
-      throw new Error("Disk full");
-    });
-
     const initialState: Partial<GameState> = {
       world: {
         currentBasho: { day: 10, matches: [] },
@@ -44,18 +43,13 @@ describe("bashoSlice - autosave errors", () => {
 
     const newState = bashoSlice(initialState as GameState, action);
 
-    expect(mockAutosave).toHaveBeenCalled();
+    // B4.1.2: autosave is now a side-effect in GameContext, not in the reducer
     expect(newState.phase).toBe("day_preview");
     expect(newState.currentBoutIndex).toBe(0);
     expect(newState.lastBoutResult).toBeNull();
   });
 
   it("handles autosave errors gracefully on ADVANCE_DAY (day > 15)", () => {
-    const mockAutosave = gameHelpers.autosaveWithSignal as ReturnType<typeof vi.fn>;
-    mockAutosave.mockImplementation(() => {
-      throw new Error("Disk full");
-    });
-
     const initialState: Partial<GameState> = {
       world: {
         currentBasho: { day: 16, matches: [] },
@@ -66,15 +60,12 @@ describe("bashoSlice - autosave errors", () => {
 
     const newState = bashoSlice(initialState as GameState, action);
 
-    expect(mockAutosave).toHaveBeenCalled();
+    // B4.1.2: autosave is now a side-effect in GameContext, not in the reducer
     expect(newState.phase).toBe("basho_results");
   });
 
   it("handles autosave errors gracefully on SIMULATE_ALL_BOUTS", () => {
-    const mockAutosave = gameHelpers.autosaveWithSignal as ReturnType<typeof vi.fn>;
-    mockAutosave.mockImplementation(() => {
-      throw new Error("Disk full");
-    });
+    // B4.1.2: autosave is now a side-effect in GameContext, not in the reducer
 
     // Mock simulateBoutForToday to return a result with world updated (one bout at a time)
     (worldEngine.simulateBoutForToday as ReturnType<typeof vi.fn>).mockImplementation((world: any) => {
@@ -107,16 +98,12 @@ describe("bashoSlice - autosave errors", () => {
 
     const newState = bashoSlice(initialState as GameState, action);
 
-    expect(mockAutosave).toHaveBeenCalled();
     expect(newState.phase).toBe("day_results");
     expect(newState.lastBoutResult).not.toBeNull();
   });
 
   it("handles autosave errors gracefully on SIM_FULL_BASHO", () => {
-    const mockAutosave = gameHelpers.autosaveWithSignal as ReturnType<typeof vi.fn>;
-    mockAutosave.mockImplementation(() => {
-      throw new Error("Disk full");
-    });
+    // B4.1.2: autosave is now a side-effect in GameContext, not in the reducer
 
     // Mock advanceBashoDay to increase day to terminate loop
     (worldEngine.advanceBashoDay as ReturnType<typeof vi.fn>).mockImplementation((world: any) => ({
@@ -140,16 +127,12 @@ describe("bashoSlice - autosave errors", () => {
 
     const newState = bashoSlice(initialState as GameState, action);
 
-    expect(mockAutosave).toHaveBeenCalled();
     expect(newState.phase).toBe("basho_results");
     expect(newState.currentBoutIndex).toBe(0);
     expect(newState.lastBoutResult).toBeNull();
   });
 
   it("SIMULATE_ALL_BOUTS simulates multiple bouts and all are resolved", () => {
-    const mockAutosave = gameHelpers.autosaveWithSignal as ReturnType<typeof vi.fn>;
-    mockAutosave.mockImplementation(() => {});
-
     let callCount = 0;
     (worldEngine.simulateBoutForToday as ReturnType<typeof vi.fn>).mockImplementation((world: any) => {
       const basho = world.currentBasho;
@@ -197,9 +180,6 @@ describe("bashoSlice - autosave errors", () => {
   });
 
   it("SIM_FULL_BASHO simulates bouts across multiple days with valid world", () => {
-    const mockAutosave = gameHelpers.autosaveWithSignal as ReturnType<typeof vi.fn>;
-    mockAutosave.mockImplementation(() => {});
-
     let simCallCount = 0;
     (worldEngine.simulateBoutForToday as ReturnType<typeof vi.fn>).mockImplementation((world: any) => {
       const basho = world.currentBasho;
