@@ -28,7 +28,7 @@ import type { Staff } from "./staff";
 import type { HeyaTrainingState, SparringState } from "./training";
 import type { GovernanceRuling, IchimonName, Faction } from "./economy";
 import type { MyosekiMarket } from "./myoseki";
-import type { Rank } from "./rank";
+import type { Rank } from "./banzuke";
 import type { ExhibitionRegion } from "../systems/worldCircuit/WorldCircuitService";
 import type { AlmanacSnapshot } from "../almanac";
 import type { GlobalCupState, GlobalCupHistoryEntry } from "./globalCup";
@@ -394,10 +394,10 @@ export interface WorldState {
 /** Pending exhibition tour invitation (WorldCircuitService). */
 export interface PendingExhibition {
   id: string;
-  heyaId?: string;
+  heyaId: string;
   region: ExhibitionRegion;
   prestige: number;
   dominantStyle?: string;
   requiresRank?: Rank;
-  expiresAtWeek?: number;
+  expiresAtWeek: number;
 }

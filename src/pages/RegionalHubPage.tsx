@@ -14,10 +14,11 @@ import { getPlayerHeya } from "@/engine/queries";
 interface PendingExhibition {
   id: string;
   region: string;
-  prestige?: number;
-  expiresAtWeek?: number;
+  prestige: number;
+  dominantStyle?: string;
   requiresRank?: string;
-  [key: string]: unknown;
+  expiresAtWeek: number;
+  heyaId: string;
 }
 
 export default function RegionalHubPage() {
@@ -26,7 +27,7 @@ export default function RegionalHubPage() {
   const playerHeya = world ? getPlayerHeya(world) ?? null : null;
 
   const regionalPresence = playerHeya?.regionalPresence || {};
-  const pendingExhibitions = (world?.pendingExhibitions || []) as PendingExhibition[];
+  const pendingExhibitions = (world?.pendingExhibitions ?? []) as unknown as PendingExhibition[];
 
   const regions = ["Mongolia", "Georgia", "Europe", "Americas", "East_Asia"];
 

@@ -498,7 +498,7 @@ describe("spawnGlobalWorker", () => {
         rikishiPerceptions: [makeRikishiPerception({ rikishiId: "r1" })],
       }),
       pendingExhibitions: [
-        { id: "e1", heyaId: "h1", prestige: 80, region: "Osaka", dominantStyle: "oshi" },
+        { id: "e1", heyaId: "h1", prestige: 80, region: "Mongolia", dominantStyle: "oshi", expiresAtWeek: 10 },
       ],
       world,
     };
@@ -522,7 +522,7 @@ describe("spawnGlobalWorker", () => {
         rikishiPerceptions: [makeRikishiPerception({ rikishiId: "r1" })],
       }),
       pendingExhibitions: [
-        { id: "e1", heyaId: "h1", prestige: 60, region: "Osaka", dominantStyle: "oshi", requiresRank: "maegashira" },
+        { id: "e1", heyaId: "h1", prestige: 60, region: "Mongolia", dominantStyle: "oshi", requiresRank: "maegashira", expiresAtWeek: 10 },
       ],
       world,
     };
@@ -546,7 +546,7 @@ describe("spawnGlobalWorker", () => {
         rikishiPerceptions: [makeRikishiPerception({ rikishiId: "r1" })],
       }),
       pendingExhibitions: [
-        { id: "e1", heyaId: "h1", prestige: 70, region: "Tokyo", dominantStyle: "yotsu" },
+        { id: "e1", heyaId: "h1", prestige: 70, region: "East_Asia", dominantStyle: "yotsu", expiresAtWeek: 10 },
       ],
       world,
     };
@@ -569,7 +569,7 @@ describe("spawnGlobalWorker", () => {
         rikishiPerceptions: [makeRikishiPerception({ rikishiId: "r1" })],
       }),
       pendingExhibitions: [
-        { id: "e1", heyaId: "h1", prestige: 80, region: "Osaka", dominantStyle: "oshi", requiresRank: "juryo" },
+        { id: "e1", heyaId: "h1", prestige: 80, region: "Mongolia", dominantStyle: "oshi", requiresRank: "juryo", expiresAtWeek: 10 },
       ],
       world,
     };
@@ -578,7 +578,7 @@ describe("spawnGlobalWorker", () => {
   });
 
   it("handles exhibitions with only required fields (no optional fields)", () => {
-    const r1 = mockRikishi("r1", { heyaId: "h1", rank: "maegashara", power: 80 });
+    const r1 = mockRikishi("r1", { heyaId: "h1", rank: "maegashira", power: 80 });
     const heya = makeMockHeya("h1", { rikishiIds: ["r1"] });
     const world = makeMockWorld({
       rikishi: new Map([["r1", r1]]),
@@ -592,7 +592,7 @@ describe("spawnGlobalWorker", () => {
         rikishiPerceptions: [makeRikishiPerception({ rikishiId: "r1" })],
       }),
       pendingExhibitions: [
-        { id: "e1", heyaId: "h1", prestige: 60, region: "Osaka" },
+        { id: "e1", heyaId: "h1", prestige: 60, region: "Mongolia", expiresAtWeek: 10 },
       ],
       world,
     };
@@ -600,8 +600,8 @@ describe("spawnGlobalWorker", () => {
     expect(result.acceptedExhibitionId).toBe("e1");
   });
 
-  it("does not match exhibitions with missing heyaId", () => {
-    const r1 = mockRikishi("r1", { heyaId: "h1", rank: "maegashara", power: 80 });
+  it("does not match exhibitions with different heyaId", () => {
+    const r1 = mockRikishi("r1", { heyaId: "h1", rank: "maegashira", power: 80 });
     const heya = makeMockHeya("h1", { rikishiIds: ["r1"] });
     const world = makeMockWorld({
       rikishi: new Map([["r1", r1]]),
@@ -615,7 +615,7 @@ describe("spawnGlobalWorker", () => {
         rikishiPerceptions: [makeRikishiPerception({ rikishiId: "r1" })],
       }),
       pendingExhibitions: [
-        { id: "e1", prestige: 60, region: "Osaka" },
+        { id: "e1", heyaId: "h2", prestige: 60, region: "Mongolia", expiresAtWeek: 10 },
       ],
       world,
     };

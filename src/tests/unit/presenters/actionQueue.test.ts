@@ -97,8 +97,8 @@ describe("buildActionQueue", () => {
   it("emits info for pending exhibitions", () => {
     const world = makeWorld({
       pendingExhibitions: [
-        { id: "e1", region: "Tokyo", prestige: 5 },
-        { id: "e2", region: "Osaka", prestige: 3 },
+        { id: "e1", heyaId: "h1", region: "Mongolia", prestige: 5, expiresAtWeek: 10 },
+        { id: "e2", heyaId: "h1", region: "East_Asia", prestige: 3, expiresAtWeek: 10 },
       ],
     });
     const queue = buildActionQueue(world, null, makeTraining(), makeFinance());
@@ -140,7 +140,7 @@ describe("buildActionQueue", () => {
   it("sorts by severity (critical > warning > info)", () => {
     const world = makeWorld({
       cyclePhase: "pre_basho",
-      pendingExhibitions: [{ id: "e1", region: "Tokyo", prestige: 5 }],
+      pendingExhibitions: [{ id: "e1", heyaId: "h1", region: "Mongolia", prestige: 5, expiresAtWeek: 10 }],
     });
     const training = makeTraining({ injuryRiskHighCount: 3 });
     const finance = makeFinance({ runwayBand: "critical", runwayMonths: 1 });

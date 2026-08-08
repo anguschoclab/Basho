@@ -69,7 +69,7 @@ describe("checkNaturalizations", () => {
       id: "rikishi_24",
       nationality: "Mongolia",
       careerWins: NATURALIZATION_CAREER_WINS_THRESHOLD - 10,
-      rank: "maegashira_12",
+      rank: "maegashira",
       heyaId: heya.id
     });
 
