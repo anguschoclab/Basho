@@ -39,7 +39,7 @@ describe("BanzukePublisher", () => {
         shukunsho: "none",
         kantosho: "none",
         id: "1",
-      });
+      } as any);
 
       const r1 = mockRikishi("r1", {
         rank: "ozeki",
@@ -82,7 +82,7 @@ describe("BanzukePublisher", () => {
         shukunsho: "none",
         kantosho: "none",
         id: "1",
-      });
+      } as any);
 
       const r1 = mockRikishi("r1", {
         rank: "yokozuna",
@@ -120,7 +120,7 @@ describe("BanzukePublisher", () => {
         shukunsho: "none",
         kantosho: "none",
         id: "1",
-      });
+      } as any);
 
       const r1 = mockRikishi("r1", {
         rank: "yokozuna",

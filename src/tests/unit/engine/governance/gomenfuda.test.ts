@@ -101,8 +101,8 @@ describe("Gomenfuda sanction threshold", () => {
 
     const impact = recordGomenfuda(world, heya as Heya, riki, "hatsu", "scandal");
     // Should not throw and should include sanction warning event
-    expect(impact.events.length).toBeGreaterThan(0);
-    const sanctionEvent = impact.events.find(
+    expect(impact.events ?? [].length).toBeGreaterThan(0);
+    const sanctionEvent = impact.events ?? [].find(
       (e: any) => e.data?.status === "jsa_sanction_warning"
     );
     expect(sanctionEvent).toBeDefined();
@@ -117,7 +117,7 @@ describe("Gomenfuda sanction threshold", () => {
     });
 
     const impact = recordGomenfuda(world, heya as Heya, riki, "hatsu", "injury");
-    const sanctionEvent = impact.events.find(
+    const sanctionEvent = impact.events ?? [].find(
       (e: any) => e.data?.status === "jsa_sanction_warning"
     );
     expect(sanctionEvent).toBeUndefined();

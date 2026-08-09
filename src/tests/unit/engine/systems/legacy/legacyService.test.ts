@@ -27,9 +27,9 @@ describe("LegacyService", () => {
     const impact = LegacyService.registerLegacyTrait(mockWorld, mockRikishi);
     const updatedWorld = resolveImpacts(mockWorld, [impact]);
 
-    expect(updatedWorld.bloodlineRegistry.traits["bl_rikishi1"]).toBeDefined();
-    expect(updatedWorld.bloodlineRegistry.traits["bl_rikishi1"].label).toBe("Iron Wrists");
-    expect(updatedWorld.bloodlineRegistry.traits["bl_rikishi1"].statFloorBonus.mental).toBe(6);
+    expect(updatedWorld.bloodlineRegistry!.traits["bl_rikishi1"]).toBeDefined();
+    expect(updatedWorld.bloodlineRegistry!.traits["bl_rikishi1"].label).toBe("Iron Wrists");
+    expect(updatedWorld.bloodlineRegistry!.traits["bl_rikishi1"].statFloorBonus.mental).toBe(6);
   });
 
   it("does not register a trait for low-ranking rikishi", () => {

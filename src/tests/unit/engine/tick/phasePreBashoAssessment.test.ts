@@ -65,6 +65,7 @@ describe("phase_pre_basho_assessment — falsy zero handling", () => {
         type: "muscle_strain" as any,
         severity: "serious" as any,
         isInjured: true,
+        weeksRemaining: 4,
       },
       condition: 100,
       fatigue: 0,

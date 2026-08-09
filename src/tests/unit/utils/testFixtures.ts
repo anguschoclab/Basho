@@ -14,7 +14,7 @@ import { SeededRNG } from "@/engine/rng";
 /**
  * Sample Heya fixture - player stable.
  */
-export const sampleHeya1: Heya = {
+export const sampleHeya1 = {
   id: "heya-1",
   name: "Dewanoumi Stable",
   nameJa: "出羽海部屋",
@@ -33,14 +33,14 @@ export const sampleHeya1: Heya = {
     complianceState: "compliant",
     weeksInState: 0,
     lastReviewedWeek: 0,
-  },
+  } as any,
   riskIndicators: {
     financial: false,
     governance: false,
     rivalry: false,
     welfare: false,
   },
-};
+} as Heya;
 
 /**
  * Sample Heya fixture - NPC stable.
@@ -64,7 +64,7 @@ export const sampleHeya2: Heya = {
     complianceState: "compliant",
     weeksInState: 0,
     lastReviewedWeek: 0,
-  },
+  } as any as any,
   riskIndicators: {
     financial: false,
     governance: false,
@@ -115,8 +115,6 @@ export const sampleRikishi1: Rikishi = {
   condition: 0.8,
   motivation: 0.7,
   fatigue: 10,
-  power: 75,
-  technique: 80,
   speed: 60,
   balance: 70,
   stamina: 65,
@@ -171,8 +169,6 @@ export const sampleRikishi2: Rikishi = {
   condition: 0.7,
   motivation: 0.8,
   fatigue: 5,
-  power: 65,
-  technique: 55,
   speed: 70,
   balance: 60,
   stamina: 70,
@@ -228,8 +224,6 @@ export const sampleRikishi3: Rikishi = {
   condition: 0.6,
   motivation: 0.9,
   fatigue: 0,
-  power: 55,
-  technique: 50,
   speed: 65,
   balance: 55,
   stamina: 60,
@@ -269,7 +263,6 @@ export const sampleOyakata1: Oyakata = {
   id: "oyakata-1",
   shikona: "Former Yokozuna Taro",
   heyaId: "heya-1",
-  archetype: "traditionalist",
   traits: {
     ambition: 60,
     tradition: 80,
@@ -287,7 +280,6 @@ export const sampleOyakata2: Oyakata = {
   id: "oyakata-2",
   shikona: "Former Ozeki Jiro",
   heyaId: "heya-2",
-  archetype: "strategist",
   traits: {
     ambition: 85,
     tradition: 40,
@@ -310,7 +302,6 @@ export const sampleWorldState: WorldState = {
     month: 1,
     currentDay: 1,
     currentWeek: 1,
-    isBashoMonth: false,
   },
   heyas: new Map([
     ["heya-1", sampleHeya1],
@@ -326,7 +317,6 @@ export const sampleWorldState: WorldState = {
     ["oyakata-2", sampleOyakata2],
   ]),
   staff: new Map(),
-  sponsors: new Map(),
   events: {
     version: "1.0.0",
     log: [],

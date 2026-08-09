@@ -60,7 +60,6 @@ function makeWorldWithRivalry(pair?: RivalryPairState, eastId = "r1", westId = "
   const rivalriesState: RivalriesState = {
     version: "1.0.0",
     pairs: pair ? { [pair.key]: pair } : {},
-    decayedPairs: {},
   };
   return {
     rikishi: new Map([[eastId, mockRikishi(eastId)], [westId, mockRikishi(westId)]]),

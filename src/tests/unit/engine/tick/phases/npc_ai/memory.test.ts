@@ -69,6 +69,9 @@ describe("Bug K: consolidateOyakataMemoryPure does not mutate input oyakata", ()
       observations: existingObs,
       coreDirectives: [],
       lastConsolidationTick: 0,
+    planHistory: [],
+    decisionHistory: [],
+    opponentModels: {},
     };
 
     const result = consolidateOyakataMemoryPure(

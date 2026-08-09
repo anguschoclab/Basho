@@ -39,7 +39,7 @@ function makeEngineState(
 ): EngineStateV2 {
   return {
     tick: 10,
-    phase: { tag: phase, state: makePushState() },
+    phase: { tag: phase, state: makePushState() } as any,
     east: makeBody({ leadingFootX: 0.7, ...eastOverrides }),
     west: makeBody({ leadingFootX: -0.7, ...westOverrides }),
     grappleState: {

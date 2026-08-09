@@ -98,7 +98,7 @@ describe("HoF iron man - processYearEndInduction", () => {
     const world = makeMockWorld({ year: 2030 });
     const retired = mockRikishi("r1", {
       shikona: "Ironclad",
-      rank: "makuuchi",
+      rank: "maegashira",
       isRetired: true,
       careerWins: 200,
       careerLosses: 250,

@@ -8,7 +8,7 @@ import type { WorldState } from "@/engine/types/world";
 function makeWorldForBasho(): WorldState {
   return MockFactory.createWorld({
     cyclePhase: "pre_basho",
-    currentBasho: null,
+    currentBasho: undefined,
     events: { version: "1.0.0", log: [], dedupe: {} },
   });
 }

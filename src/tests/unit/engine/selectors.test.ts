@@ -67,24 +67,18 @@ describe("Selectors", () => {
       normal.welfareState = {
         welfareRisk: 20,
         complianceState: "compliant",
-        stressPoints: 0,
-        resilienceScore: 0,
       };
 
       const risky = MockFactory.createHeya("risky");
       risky.welfareState = {
         welfareRisk: 60,
         complianceState: "compliant",
-        stressPoints: 0,
-        resilienceScore: 0,
       };
 
       const sanctioned = MockFactory.createHeya("sanctioned");
       sanctioned.welfareState = {
         welfareRisk: 10,
         complianceState: "sanctioned",
-        stressPoints: 0,
-        resilienceScore: 0,
       };
 
       world.heyas.set("normal", normal);

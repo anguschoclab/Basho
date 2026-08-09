@@ -140,12 +140,12 @@ describe("computeInjuryPressure", () => {
     const r1 = mockRikishi("r1", {
       heyaId: "h1",
       injured: true,
-      injuryStatus: { isInjured: true, severity: "serious", type: "muscle" },
+      injuryStatus: { isInjured: true, severity: "serious", type: "strain", weeksRemaining: 4 },
     });
     const r2 = mockRikishi("r2", {
       heyaId: "h1",
       injured: true,
-      injuryStatus: { isInjured: true, severity: "minor", type: "bruise" },
+      injuryStatus: { isInjured: true, severity: "minor", type: "contusion", weeksRemaining: 2 },
     });
     const r3 = mockRikishi("r3", { heyaId: "h1", injured: false });
     const { world, heya } = setupHeya("h1", [r1, r2, r3]);
@@ -158,7 +158,7 @@ describe("computeInjuryPressure", () => {
     const r1 = mockRikishi("r1", {
       heyaId: "h1",
       injured: true,
-      injuryStatus: { isInjured: true, severity: "moderate", type: "muscle" },
+      injuryStatus: { isInjured: true, severity: "moderate", type: "strain", weeksRemaining: 4 },
     });
     const { world, heya } = setupHeya("h1", [r1]);
     const ts = makeTrainingState("h1", {
@@ -178,7 +178,7 @@ describe("computeInjuryPressure", () => {
     const r1 = mockRikishi("r1", {
       heyaId: "h1",
       injured: true,
-      injuryStatus: { isInjured: true, severity: "moderate", type: "muscle" },
+      injuryStatus: { isInjured: true, severity: "moderate", type: "strain", weeksRemaining: 4 },
     });
     const { world, heya } = setupHeya("h1", [r1]);
     const ts = makeTrainingState("h1", {
@@ -199,7 +199,7 @@ describe("computeInjuryPressure", () => {
     const r1 = mockRikishi("r1", {
       heyaId: "h1",
       injured: true,
-      injuryStatus: { isInjured: true, severity: "moderate", type: "muscle" },
+      injuryStatus: { isInjured: true, severity: "moderate", type: "strain", weeksRemaining: 4 },
     });
     const { world, heya } = setupHeya("h1", [r1]);
     const ts = makeTrainingState("h1", {
@@ -220,7 +220,7 @@ describe("computeInjuryPressure", () => {
     const r1 = mockRikishi("r1", {
       heyaId: "h1",
       injured: true,
-      injuryStatus: { isInjured: true, severity: "moderate", type: "muscle" },
+      injuryStatus: { isInjured: true, severity: "moderate", type: "strain", weeksRemaining: 4 },
     });
     const { world, heya } = setupHeya("h1", [r1]);
     const ts = makeTrainingState("h1", {
@@ -253,7 +253,7 @@ describe("calculateWeeklyWelfareDelta", () => {
     const r1 = mockRikishi("r1", {
       heyaId: "h1",
       injured: true,
-      injuryStatus: { isInjured: true, severity: "serious", type: "muscle" },
+      injuryStatus: { isInjured: true, severity: "serious", type: "strain", weeksRemaining: 4 },
     });
     const { world, heya } = setupHeya("h1", [r1]);
     const ts = makeTrainingState("h1");
@@ -270,7 +270,7 @@ describe("calculateWeeklyWelfareDelta", () => {
     const r1 = mockRikishi("r1", {
       heyaId: "h1",
       injured: true,
-      injuryStatus: { isInjured: true, severity: "moderate", type: "muscle" },
+      injuryStatus: { isInjured: true, severity: "moderate", type: "strain", weeksRemaining: 4 },
     });
     const { world, heya } = setupHeya("h1", [r1]);
     const ts = makeTrainingState("h1", {
@@ -296,7 +296,7 @@ describe("calculateWeeklyWelfareDelta", () => {
     const r1 = mockRikishi("r1", {
       heyaId: "h1",
       injured: true,
-      injuryStatus: { isInjured: true, severity: "minor", type: "bruise" },
+      injuryStatus: { isInjured: true, severity: "minor", type: "contusion", weeksRemaining: 2 },
     });
     const { world, heya } = setupHeya("h1", [r1]);
     const ts = makeTrainingState("h1");
@@ -435,7 +435,7 @@ describe("calculateWeeklyWelfareDelta", () => {
     const r1 = mockRikishi("r1", {
       heyaId: "h1",
       injured: true,
-      injuryStatus: { isInjured: true, severity: "serious", type: "muscle" },
+      injuryStatus: { isInjured: true, severity: "serious", type: "strain", weeksRemaining: 4 },
     });
     const { world, heya } = setupHeya("h1", [r1], {
       scandalScore: SCANDAL_WELFARE_THRESHOLD,
@@ -472,7 +472,7 @@ describe("calculateWeeklyWelfareDelta", () => {
         mockRikishi(`r${i}`, {
           heyaId: "h1",
           injured: true,
-          injuryStatus: { isInjured: true, severity: "serious", type: "muscle" },
+          injuryStatus: { isInjured: true, severity: "serious", type: "strain", weeksRemaining: 4 },
         })
       );
     }

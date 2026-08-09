@@ -63,9 +63,9 @@ describe("Yokozuna Promotion Logic", () => {
     const world = createMockWorld(1, 80); // 1 past yusho, 80 heat
 
     // For this test, we'll pre-populate the historyIndex with 2 yushos to simulate the "current + past" state
-    world.historyIndex.rikishi[mockRikishiId] = [
-      { bashoKey: "2024-6", yusho: true, rikishiId: mockRikishiId },
-      { bashoKey: "2025-1", yusho: true, rikishiId: mockRikishiId },
+    world.historyIndex!.rikishi[mockRikishiId] = [
+      { bashoKey: "2024-6", yusho: true, rikishiId: mockRikishiId } as any,
+      { bashoKey: "2025-1", yusho: true, rikishiId: mockRikishiId } as any,
     ];
 
     const impact = concludeBashoCompetition(world);
@@ -78,9 +78,9 @@ describe("Yokozuna Promotion Logic", () => {
 
   it("should trigger controversial deliberation for Ozeki with 2 consecutive Yushos but low heat", () => {
     const world = createMockWorld(1, 40); // 1 past yusho, 40 heat
-    world.historyIndex.rikishi[mockRikishiId] = [
-      { bashoKey: "2024-6", yusho: true, rikishiId: mockRikishiId },
-      { bashoKey: "2025-1", yusho: true, rikishiId: mockRikishiId },
+    world.historyIndex!.rikishi[mockRikishiId] = [
+      { bashoKey: "2024-6", yusho: true, rikishiId: mockRikishiId } as any,
+      { bashoKey: "2025-1", yusho: true, rikishiId: mockRikishiId } as any,
     ];
 
     const impact = concludeBashoCompetition(world);
@@ -92,8 +92,8 @@ describe("Yokozuna Promotion Logic", () => {
 
   it("should NOT trigger deliberation if stats are insufficient", () => {
     const world = createMockWorld(0, 90); // 0 past yushos, high heat
-    world.historyIndex.rikishi[mockRikishiId] = [
-      { bashoKey: "2025-1", yusho: true, rikishiId: mockRikishiId }, // Only 1 total
+    world.historyIndex!.rikishi[mockRikishiId] = [
+      { bashoKey: "2025-1", yusho: true, rikishiId: mockRikishiId } as any, // Only 1 total
     ];
 
     const impact = concludeBashoCompetition(world);

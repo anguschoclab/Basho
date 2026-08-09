@@ -21,7 +21,6 @@ function makeCombatProfile(counterFamily: TacticalFamily): CombatProfile {
     },
     bodyTypeBehavior: {
       tachiaiSpeedBonus: 0,
-      edgeEscapeBonus: 0,
       pushVelocityBonus: 0,
       lateralMovementBonus: 0,
       beltTorqueBonus: 0,

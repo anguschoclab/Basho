@@ -88,7 +88,7 @@ describe("phase01_week_governance", () => {
       politicalCapital: 10
     });
     const heyaNoIchimon = MockFactory.createHeya("h2", {
-      ichimon: null,
+      ichimon: undefined,
       politicalCapital: 10
     });
 

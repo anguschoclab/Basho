@@ -31,6 +31,9 @@ function makeEngineState(eastLeadFoot: number, westLeadFoot: number): EngineStat
     east: eastBody,
     west: westBody,
     tachiaiWinner: "east",
+    momentumScore: 0,
+    prevDominantSide: null,
+    inBoutInjury: null,
     grappleState: {
       east: { rightHand: "outside", leftHand: "outside", depth: "standard" },
       west: { rightHand: "outside", leftHand: "outside", depth: "standard" },

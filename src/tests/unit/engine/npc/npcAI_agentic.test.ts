@@ -16,7 +16,7 @@ const mockPersona = {
     rosterSize: 5,
     rosterStrengthBand: "competitive",
     rikishiPerceptions: [],
-  },
+  } as any,
   riskAppetite: 0.5,
   welfareDiscipline: 0.5,
   mood: "content",
@@ -50,8 +50,8 @@ describe("NPC AI Agentic Refactor", () => {
   world.oyakata.set(oyakataId, oyakata);
 
   describe("Phase 1: Background Consolidation", () => {
-    it("should initialize memory if missing", () => {
-      const impact = consolidateOyakataMemory(world, heyaId, { moraleBand: "neutral" });
+    it("should initialize memory! if missing", () => {
+      const impact = consolidateOyakataMemory(world, heyaId, { moraleBand: "neutral" } as any);
       const updatedWorld = resolveImpacts(world, [impact]);
       const updatedOyakata = updatedWorld.oyakata.get(oyakataId);
       expect(updatedOyakata?.memory).toBeDefined();
@@ -60,7 +60,7 @@ describe("NPC AI Agentic Refactor", () => {
 
     it("should flag skeptical conflicts (e.g. morale drop vs content mood)", () => {
       oyakata.mood = "content";
-      const impact = consolidateOyakataMemory(world, heyaId, { moraleBand: "mutinous" });
+      const impact = consolidateOyakataMemory(world, heyaId, { moraleBand: "mutinous" } as any);
       const updatedWorld = resolveImpacts(world, [impact]);
       const updatedOyakata = updatedWorld.oyakata.get(oyakataId);
       const obs = updatedOyakata?.memory?.observations.find((o) => o.type === "alignment");
@@ -75,9 +75,12 @@ describe("NPC AI Agentic Refactor", () => {
         observations: [],
         coreDirectives: [],
         lastConsolidationTick: 0,
+        planHistory: [],
+        decisionHistory: [],
+        opponentModels: {},
       };
 
-      const memory = workingOyakata.memory;
+      const memory = workingOyakata.memory!;
       memory.observations = [];
       for (let i = 0; i < 15; i++) {
         memory.observations.push({
@@ -87,7 +90,7 @@ describe("NPC AI Agentic Refactor", () => {
           importance: i,
         });
       }
-      const impact = consolidateOyakataMemory(world, heyaId, { moraleBand: "neutral" });
+      const impact = consolidateOyakataMemory(world, heyaId, { moraleBand: "neutral" } as any);
       const updatedWorld = resolveImpacts(world, [impact]);
       const updatedOyakata = updatedWorld.oyakata.get(oyakataId);
       const updatedMemory = updatedOyakata?.memory;

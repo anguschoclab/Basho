@@ -25,8 +25,7 @@ function makeBashoWorld(overrides: Partial<WorldState> = {}): WorldState {
       ginoSho: undefined,
       shukunsho: undefined,
       kantosho: undefined,
-      results: {},
-    },
+    } as any,
   ];
   return world;
 }

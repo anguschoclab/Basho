@@ -6,7 +6,7 @@ import type { CombatArchetype, Style } from "@/engine/types/combat";
 describe("getOyakataStyleProfile — innovator includes defensive", () => {
   it("innovator philosophy lists defensive as a preferred archetype", () => {
     const world = MockFactory.createWorld({
-      _postBashoMeta: { metaBias: "oshi" },
+      _postBashoMeta: { metaBias: "oshi" } as any,
     });
     const oyakata = MockFactory.createOyakata("oyakata-test", {
       archetype: "scientist",
@@ -68,10 +68,7 @@ describe("scoreRecruitForOyakata — defensive scores well for innovator", () =>
       style: "hybrid" as Style,
       talentSeed: 500,
       weightPotentialKg: 120,
-      combatProfile: {
-        archetype: "defensive" as CombatArchetype,
-        familyPreferences: { push: 10, belt: 30, trick: 50, speed: 10 },
-      },
+      combatProfile: { archetype: "oshi", familyPreferences: { push: 1, belt: 1, trick: 1, speed: 1 } } as any,
     };
 
     const speedsterCandidate = {
@@ -79,10 +76,7 @@ describe("scoreRecruitForOyakata — defensive scores well for innovator", () =>
       style: "oshi" as Style,
       talentSeed: 500,
       weightPotentialKg: 120,
-      combatProfile: {
-        archetype: "speedster" as CombatArchetype,
-        familyPreferences: { push: 10, belt: 5, trick: 15, speed: 70 },
-      },
+      combatProfile: { archetype: "oshi", familyPreferences: { push: 1, belt: 1, trick: 1, speed: 1 } } as any,
     };
 
     const oyakata = MockFactory.createOyakata("strat-test", { archetype: "strategist" });

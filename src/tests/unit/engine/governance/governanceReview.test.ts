@@ -23,7 +23,7 @@ describe("governanceReview", () => {
       const poorHeya = makeMockHeya("heya-poor", {
         funds: -5000000,
         runwayBand: "desperate",
-        ichimon: "None",
+        ichimon: undefined,
       });
       world.rikishi.set("r1", mockRikishi("r1", { heyaId: "heya-poor" }));
       world.rikishi.set("r2", mockRikishi("r2", { heyaId: "heya-poor" }));
@@ -45,7 +45,7 @@ describe("governanceReview", () => {
       const poorHeya = makeMockHeya("heya-poor", {
         funds: LOAN_ISSUANCE_THRESHOLD - 1000,
         runwayBand: "desperate",
-        ichimon: "None",
+        ichimon: undefined,
       });
       world.rikishi.set("r4", mockRikishi("r4", { heyaId: "heya-poor" }));
       world.rikishi.set("r5", mockRikishi("r5", { heyaId: "heya-poor" }));

@@ -264,7 +264,7 @@ describe("projectRikishi - new band calculations", () => {
       height: 180,
       weight: 95,
     });
-    rikishi.stats.achievements.mochikyukinPoints = 42;
+    rikishi.stats.achievements!.mochikyukinPoints = 42;
 
     const projected = projectRikishi(rikishi, baseWorld);
     expect(projected.achievements.mochikyukinPoints).toBe(42);
