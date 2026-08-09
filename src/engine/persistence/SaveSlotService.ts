@@ -2,6 +2,7 @@ import { getStorageProvider, type IStorageProvider } from "../storageProvider";
 import { stableTieBreak } from "../utils/sort";
 import { destr } from "destr";
 import type { SaveGame, SaveVersion, BashoName } from "../types/index";
+import { KNOWN_SAVE_VERSIONS } from "../types/index";
 
 const SAVE_KEY_PREFIX = "basho_save_";
 const AUTOSAVE_SLOT_NAME = "autosave";
@@ -96,7 +97,8 @@ export const SaveSlotService = {
   isValidSave(x: unknown): x is SaveGame {
     if (!x || typeof x !== "object") return false;
     const obj = x as Record<string, unknown>;
-    return !!obj.version && !!obj.world;
+    if (!obj.version || !obj.world) return false;
+    return (KNOWN_SAVE_VERSIONS as readonly string[]).includes(obj.version as string);
   },
 
   getAvailableSlotNames(): string[] {

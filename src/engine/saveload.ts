@@ -1,5 +1,6 @@
 import { SerializationService } from "./persistence/SerializationService";
 import { SaveSlotService, type SaveSlotInfo } from "./persistence/SaveSlotService";
+import { MigrationService } from "./persistence/MigrationService";
 import { runArchivalPruning } from "./archival";
 import { destr } from "destr";
 import { error } from "./utils/Logger";
@@ -49,13 +50,19 @@ export function loadGame(slotNameOrKey: string): WorldState | null {
     const parsed = destr(raw);
     if (!SaveSlotService.isValidSave(parsed)) return null;
 
-    let save = parsed as SaveGame;
-    // Migration logic could be moved to MigrationService later
-    if (save.version !== CURRENT_SAVE_VERSION) {
-      save = { ...save, version: CURRENT_SAVE_VERSION };
+    const originalSave = parsed as SaveGame;
+    const { save: migratedSave } = MigrationService.migrateSave(originalSave);
+
+    // Persist the migrated save back to storage so future loads skip migration
+    if (migratedSave.version !== originalSave.version) {
+      try {
+        storage.setItem(key, JSON.stringify(migratedSave));
+      } catch (e) {
+        error("Failed to persist migrated save back to storage", "SaveLoad", e);
+      }
     }
 
-    return SerializationService.deserializeWorld(save.world);
+    return SerializationService.deserializeWorld(migratedSave.world);
   } catch (e) {
     error("Failed to load game", "SaveLoad", e);
     return null;
@@ -142,8 +149,8 @@ export async function importSave(file: File): Promise<WorldState | null> {
     const text = await file.text();
     const parsed = destr(text);
     if (!SaveSlotService.isValidSave(parsed)) throw new Error("Invalid save file structure");
-    const save = parsed as SaveGame;
-    return SerializationService.deserializeWorld(save.world);
+    const { save: migratedSave } = MigrationService.migrateSave(parsed as SaveGame);
+    return SerializationService.deserializeWorld(migratedSave.world);
   } catch (e) {
     error("Failed to import save", "SaveLoad", e);
     return null;

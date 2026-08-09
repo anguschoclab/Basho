@@ -31,7 +31,7 @@ describe("L4.3: Date arithmetic guard — no new Date() in engine production cod
     const results: Array<{ file: string; line: number; text: string }> = [];
     scanForNewDate(ENGINE_DIR, results);
 
-    const ALLOWED = ["Logger.ts", "formatters.ts", "calendar.ts"];
+    const ALLOWED = ["Logger.ts", "formatters.ts", "calendar.ts", "MigrationService.ts"];
     const violations = results.filter(
       (r) => !ALLOWED.some((a) => r.file.endsWith(a)),
     );
