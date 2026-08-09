@@ -75,6 +75,7 @@ export function ListCard({
               )}
               onClick={row.onClick}
               role={row.onClick ? "button" : undefined}
+              aria-label={row.onClick && typeof row.label === "string" ? row.label : undefined}
               tabIndex={row.onClick ? 0 : undefined}
               onKeyDown={(e) => {
                 if (row.onClick && (e.key === "Enter" || e.key === " ")) {
