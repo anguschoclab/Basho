@@ -72,7 +72,7 @@ export function SponsorsPanel() {
       for (const r of sponsor.relationships) {
         if (r.targetId === playerHeyaId && r.targetType === "heya") {
           if (!r.endsAtTick) {
-            if (!activeBest || r.stats.power > activeBest.power) {
+            if (!activeBest || r.strength > activeBest.strength) {
               activeBest = r;
             }
           } else {
@@ -82,7 +82,7 @@ export function SponsorsPanel() {
       }
 
       if (activeBest) {
-        active.push({ sponsor, role: activeBest.role, strength: activeBest.power });
+        active.push({ sponsor, role: activeBest.role, strength: activeBest.strength });
         tiers[sponsor.tier] = (tiers[sponsor.tier] || 0) + 1;
       } else if (hasEnded) {
         lost.push(sponsor);
@@ -95,7 +95,7 @@ export function SponsorsPanel() {
       const ta = tierOrder.indexOf(a.sponsor.tier);
       const tb = tierOrder.indexOf(b.sponsor.tier);
       if (ta !== tb) return ta - tb;
-      return b.power - a.power;
+      return b.strength - a.strength;
     });
 
     const koe = pool.koenkais?.get(playerHeyaId) ?? null;

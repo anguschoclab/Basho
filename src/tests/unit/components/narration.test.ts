@@ -25,6 +25,9 @@ function makeBoutResult(overrides: Partial<BoutResult> = {}): BoutResult {
     isKinboshi: false,
     log: [],
     kenshoEnvelopes: 0,
+    momentumScore: 0,
+    inBoutInjury: null,
+    isTimeout: false,
     ...overrides,
   };
 }

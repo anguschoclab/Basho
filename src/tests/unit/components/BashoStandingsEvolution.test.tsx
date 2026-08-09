@@ -15,6 +15,9 @@ function makeBout(winnerId: string, loserId: string): BoutResult {
     duration: 5,
     upset: false,
     kenshoEnvelopes: 0,
+    momentumScore: 0,
+    inBoutInjury: null,
+    isTimeout: false,
     log: [],
   } as BoutResult;
 }

@@ -43,7 +43,7 @@ function extractDramaContext(pairing: MatchPairing): DramaContext | undefined {
   const label = dramaReason.replace("drama_", "") as DramaLabel;
 
   // Map drama labels to scores
-  const scoreMap: Record<DramaLabel, number> = {
+  const scoreMap: Partial<Record<DramaLabel, number>> = {
     make_or_break: 100,
     yusho_decider: 85,
     kadoban_survival: 90,

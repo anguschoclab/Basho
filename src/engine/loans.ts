@@ -24,7 +24,7 @@ export interface LoanTerms {
 export function determineLoanTerms(
   world: WorldState,
   heya: Heya,
-  rng: SeededRNG,
+  _rng: SeededRNG,
   deficit: number
 ): LoanTerms {
   let loanType: LoanType = "emergency";

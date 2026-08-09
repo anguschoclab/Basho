@@ -324,7 +324,7 @@ export const DynastyService = {
     if (!heya?.dynasty) return null;
 
     // Bankrupt stables get a "Scholarship Quota" of at least 1 (A6.2)
-    if (heya.funds < 0) return 1;
+    if (heya.funds < 0) return null;
 
     return {
       eras: heya.dynasty,

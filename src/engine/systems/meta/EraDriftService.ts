@@ -108,9 +108,9 @@ export function processYearlyEraDrift(world: WorldState): StateImpact {
       status: newTone,
       incident: eraNarratives[newTone] || `The world enters a new phase designated as ${newTone}.`,
       score: Math.floor(dominanceRatio * 100),
-      intensity: dominanceRatio > 0.4 ? "high" : "medium",
+      intensity: dominanceRatio > 0.4 ? "high" : "normal",
     },
-    { year: world.year, importance: "headline" }
+    { importance: "headline" }
   );
 
   return builder.build();

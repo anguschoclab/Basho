@@ -26,6 +26,9 @@ vi.mock("@/engine/bout/boutResolver", () => ({
       duration: 10,
       upset: false,
       kenshoEnvelopes: 0,
+      momentumScore: 0,
+      inBoutInjury: null,
+      isTimeout: false,
       log: [],
       pbpLines: [
         { id: "l1", phase: "tachiai", text: "The bout begins." },
@@ -217,6 +220,9 @@ describe("ExhibitionBout — error paths", () => {
         duration: 10,
         upset: false,
         kenshoEnvelopes: 0,
+        momentumScore: 0,
+        inBoutInjury: null,
+        isTimeout: false,
         log: [],
         pbpLines: [
           { id: "l1", phase: "tachiai", text: "The bout begins." },

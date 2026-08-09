@@ -28,7 +28,7 @@ describe("PlayoffResolver (Bug 13 - missing injury side-effects)", () => {
     const world = MockFactory.createWorld({
       rikishi: new Map([["r1", r1], ["r2", r2]]), currentBasho: basho,
       sponsorPool: { sponsors: new Map(), koenkais: new Map() } as any,
-      rivalriesState: { pairs: {}, version: 1 },
+      rivalriesState: { pairs: {}, version: "1.0.0" },
     });
     const result = resolvePlayoffs(world, basho, ["r1", "r2"]);
     expect(result).toBeDefined();
@@ -42,7 +42,7 @@ describe("PlayoffResolver (Bug 13 - missing injury side-effects)", () => {
     const world = MockFactory.createWorld({
       rikishi, currentBasho: basho,
       sponsorPool: { sponsors: new Map(), koenkais: new Map() } as any,
-      rivalriesState: { pairs: {}, version: 1 },
+      rivalriesState: { pairs: {}, version: "1.0.0" },
     });
     const result = resolvePlayoffs(world, basho, ["r1", "r2", "r3"]);
     expect(result).toBeDefined();
@@ -56,7 +56,7 @@ describe("PlayoffResolver (Bug 13 - missing injury side-effects)", () => {
     const world = MockFactory.createWorld({
       rikishi, currentBasho: basho,
       sponsorPool: { sponsors: new Map(), koenkais: new Map() } as any,
-      rivalriesState: { pairs: {}, version: 1 },
+      rivalriesState: { pairs: {}, version: "1.0.0" },
     });
     const result = resolvePlayoffs(world, basho, ["r1", "r2", "r3", "r4"]);
     expect(result).toBeDefined();
@@ -70,7 +70,7 @@ describe("PlayoffResolver (Bug 13 - missing injury side-effects)", () => {
     const world = MockFactory.createWorld({
       rikishi: new Map([["r1", r1], ["r2", r2]]), currentBasho: basho,
       sponsorPool: { sponsors: new Map(), koenkais: new Map() } as any,
-      rivalriesState: { pairs: {}, version: 1 },
+      rivalriesState: { pairs: {}, version: "1.0.0" },
     });
     const result = resolvePlayoffs(world, basho, ["r1", "r2"]);
     expect(result.matches).toBeDefined();
@@ -105,7 +105,7 @@ describe("PlayoffResolver (Bug 13 - missing injury side-effects)", () => {
     const world = MockFactory.createWorld({
       rikishi: new Map([["r1", r1], ["r2", r2]]), currentBasho: basho,
       sponsorPool: { sponsors: new Map(), koenkais: new Map() } as any,
-      rivalriesState: { pairs: {}, version: 1 },
+      rivalriesState: { pairs: {}, version: "1.0.0" },
     });
     const result = resolvePlayoffs(world, basho, ["r1", "r2"]);
     expect(["r1", "r2"]).toContain(result.winner);
@@ -118,7 +118,7 @@ describe("PlayoffResolver (Bug 13 - missing injury side-effects)", () => {
     const world = MockFactory.createWorld({
       rikishi: new Map([["r1", r1], ["r2", r2]]), currentBasho: basho,
       sponsorPool: { sponsors: new Map(), koenkais: new Map() } as any,
-      rivalriesState: { pairs: {}, version: 1 },
+      rivalriesState: { pairs: {}, version: "1.0.0" },
     });
     const result = resolvePlayoffs(world, basho, ["r1", "r2"]);
     expect(result.matches[0].day).toBeGreaterThanOrEqual(16);
@@ -131,7 +131,7 @@ describe("PlayoffResolver (Bug 13 - missing injury side-effects)", () => {
     const world = MockFactory.createWorld({
       rikishi, currentBasho: basho,
       sponsorPool: { sponsors: new Map(), koenkais: new Map() } as any,
-      rivalriesState: { pairs: {}, version: 1 },
+      rivalriesState: { pairs: {}, version: "1.0.0" },
     });
     const result = resolvePlayoffs(world, basho, ["r1", "r2", "r3", "r4", "r5"]);
     expect(result.winner).toBeDefined();

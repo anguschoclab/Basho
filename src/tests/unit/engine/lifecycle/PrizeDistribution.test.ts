@@ -32,6 +32,9 @@ function makeResult(boutId: string, winnerId: string, loserId: string, kimarite:
     boutId, winner: "east", winnerRikishiId: winnerId, loserRikishiId: loserId,
     kimarite, kimariteName: kimarite, stance: "migi-yotsu", tachiaiWinner: "east",
     duration: 5.2, upset: false, isKinboshi: false, log: [], kenshoEnvelopes: 0,
+    momentumScore: 0,
+    inBoutInjury: null,
+    isTimeout: false,
   } as BoutResult;
 }
 

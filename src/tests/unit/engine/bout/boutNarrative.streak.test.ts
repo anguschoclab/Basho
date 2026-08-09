@@ -251,6 +251,9 @@ describe("generateBoutNarrative — streak logic: currentWinStreak vs total wins
       isKinboshi: false,
       log: [],
       kenshoEnvelopes: 0,
+      momentumScore: 0,
+      inBoutInjury: null,
+      isTimeout: false,
     } as unknown as BoutResult;
 
     return { world, east, west, result };

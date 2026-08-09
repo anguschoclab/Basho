@@ -24,6 +24,7 @@ import { sortRikishiByRank } from "@/utils/engineUtils";
 import { StableName } from "@/components/ClickableName";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { HEYA_STATS } from "../../constants/ui/heyaPreview";
+import type { RikishiPreview } from "../../constants/ui/heyaPreview";
 import { RikishiDetailDialog } from "./RikishiDetailDialog";
 
 interface HeyaPreviewProps {
@@ -95,8 +96,8 @@ export function HeyaPreview({
             {/* Stats Row */}
             <div className="grid grid-cols-3 gap-4">
               {HEYA_STATS.map((stat, i) => {
-                const value = stat.value(config, roster, sekitoriCount);
-                const sub = stat.sub(config, roster);
+                const value = stat.value(config, roster as RikishiPreview[], sekitoriCount);
+                const sub = stat.sub(config, roster as RikishiPreview[]);
                 return (
                   <div
                     key={i}

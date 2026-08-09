@@ -47,7 +47,7 @@ describe("JSA per-wrestler subsidy — rank-based", () => {
       funds: 10_000_000,
       rikishiIds: ["r1", "r2"],
       koenkaiBand: "none",
-      facilities: { training: 0, recovery: 0, nutrition: 0, housing: 0 },
+      facilities: { training: 0, recovery: 0, nutrition: 0 },
       staffIds: [],
     });
     const world = makeMockWorld({

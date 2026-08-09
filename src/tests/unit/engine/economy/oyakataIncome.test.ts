@@ -11,7 +11,7 @@ describe("Oyakata salary as heya income", () => {
       funds: 1_000_000,
       rikishiIds: [],
       koenkaiBand: "none",
-      facilities: { training: 0, recovery: 0, nutrition: 0, housing: 0 },
+      facilities: { training: 0, recovery: 0, nutrition: 0 },
       staffIds: [],
     });
     const world = makeMockWorld({ heyas: new Map([["heya-1", heya]]) });
@@ -26,7 +26,7 @@ describe("Oyakata salary as heya income", () => {
       funds: 1_000_000,
       rikishiIds: [],
       koenkaiBand: "none",
-      facilities: { training: 0, recovery: 0, nutrition: 0, housing: 0 },
+      facilities: { training: 0, recovery: 0, nutrition: 0 },
       staffIds: [],
     });
     const world = makeMockWorld({ heyas: new Map([["heya-1", heya]]) });
@@ -41,7 +41,7 @@ describe("Oyakata salary as heya income", () => {
       funds: -5_000_000,
       rikishiIds: [],
       koenkaiBand: "none",
-      facilities: { training: 0, recovery: 0, nutrition: 0, housing: 0 },
+      facilities: { training: 0, recovery: 0, nutrition: 0 },
       staffIds: [],
     });
     const world = makeMockWorld({ heyas: new Map([["heya-1", heya]]) });
@@ -57,7 +57,7 @@ describe("Oyakata salary as heya income", () => {
       funds: 1_000_000,
       rikishiIds: [],
       koenkaiBand: "none",
-      facilities: { training: 0, recovery: 0, nutrition: 0, housing: 0 },
+      facilities: { training: 0, recovery: 0, nutrition: 0 },
       staffIds: [],
     });
     const world = makeMockWorld({ heyas: new Map([["heya-1", heya]]) });

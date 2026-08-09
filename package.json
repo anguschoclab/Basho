@@ -12,7 +12,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "type-check": "tsc --noEmit",
+    "type-check": "tsc --build --force",
     "build:dev": "vite build --mode development",
     "lint": "eslint . || true",
     "lint:strict": "eslint . --max-warnings 0",

@@ -161,7 +161,11 @@ export const LegacyService = {
     for (const [stat, bonus] of Object.entries(trait.statFloorBonus)) {
       const s = stat as keyof RikishiStats;
       if (numericKeys.has(s)) {
-        boosted[s] = clampInt(((boosted[s] as number) || 0) + (bonus || 0), 0, 99);
+        (boosted as unknown as Record<string, unknown>)[s] = clampInt(
+          ((boosted[s] as number) || 0) + (bonus || 0),
+          0,
+          99
+        );
       }
     }
 
@@ -169,7 +173,11 @@ export const LegacyService = {
     const peakStat = this.findPeakStat(trait.statFloorBonus);
     const p = peakStat as keyof RikishiStats;
     if (peakStat && numericKeys.has(p)) {
-      boosted[p] = clampInt(((boosted[p] as number) || 0) + trait.ceilingBonus, 0, 99);
+      (boosted as unknown as Record<string, unknown>)[p] = clampInt(
+        ((boosted[p] as number) || 0) + trait.ceilingBonus,
+        0,
+        99
+      );
     }
 
     return boosted;
@@ -180,7 +188,7 @@ export const LegacyService = {
     let peak = "technique";
     let peakVal = -1;
     for (const key of keys) {
-      const val = stats[key] ?? 0;
+      const val = (stats[key] as number) ?? 0;
       if (val > peakVal) {
         peakVal = val;
         peak = key;

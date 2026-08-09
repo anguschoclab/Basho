@@ -89,6 +89,13 @@ export interface SerializedWorldState {
   dayIndexGlobal: number;
   almanacSnapshots: AlmanacSnapshot[];
 
+  /** First-Time User Experience tracking */
+  ftue?: {
+    isActive: boolean;
+    bashoCompleted: number;
+    suppressedEvents: string[];
+  };
+
   settings: {
     archiveMode: "aggressive" | "standard" | "preserve_player" | "keep_all";
   };

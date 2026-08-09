@@ -83,6 +83,9 @@ describe("Basho match index (B1.4)", () => {
       isKinboshi: false,
       log: [],
       kenshoEnvelopes: 0,
+      momentumScore: 0,
+      inBoutInjury: null,
+      isTimeout: false,
     } as any;
     const m2 = makeMatch("b2", 1);
     const basho = makeBasho([m1, m2]);

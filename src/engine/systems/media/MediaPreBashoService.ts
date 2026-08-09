@@ -4,7 +4,8 @@
 
 import type { WorldState } from "../../types/world";
 import type { RivalryPairState } from "../../../constants/engine/rivalry";
-import { MediaHeadline } from "../../types/media";
+import type { MediaHeadline } from "../../types/media";
+import type { Rikishi } from "../../types/rikishi";
 import { rngForWorld, SeededRNG } from "../../rng";
 import { generatePreBashoHeadline } from "./HeadlineGenerator";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
@@ -39,12 +40,14 @@ export function triggerPreBashoJournalism(world: WorldState): StateImpact {
       headlines.push({
         id: rng.uuid("MH"),
         week,
-        tier: "high",
+        tier: "national",
         beat: "rivalry",
-        tone: "dramatic",
+        tone: "hype",
         rikishiIds: [hotPair.aId, hotPair.bId],
+        heyaIds: [],
         title,
         subtitle,
+        impact: hotPair.heat,
         tags: ["pre_basho", "rivalry"],
       });
     }
@@ -71,11 +74,13 @@ export function triggerPreBashoJournalism(world: WorldState): StateImpact {
       id: rng.uuid("MH"),
       week,
       tier: "main_event",
-      beat: "promotion",
+      beat: "promotion_watch",
       tone: "praise",
       rikishiIds: [r.id],
+      heyaIds: [],
       title,
       subtitle,
+      impact: 50,
       tags: ["pre_basho", "ozeki_watch"],
     });
   }
@@ -83,29 +88,36 @@ export function triggerPreBashoJournalism(world: WorldState): StateImpact {
   // C. Update Media State
   const currentHeadlines = world.mediaState?.headlines || [];
   builder.updateWorldField("mediaState", {
-    ...world.mediaState,
+    version: world.mediaState?.version ?? "1.0.0",
     headlines: [...currentHeadlines, ...headlines].slice(-50),
+    mediaHeat: world.mediaState?.mediaHeat ?? {},
+    heyaPressure: world.mediaState?.heyaPressure ?? {},
+    bashoStreaks: world.mediaState?.bashoStreaks ?? {},
+    streakHeadlinesFired: world.mediaState?.streakHeadlinesFired ?? {},
+    promoWatchFired: world.mediaState?.promoWatchFired ?? {},
+    retirementWatchFired: world.mediaState?.retirementWatchFired ?? {},
+    titleRaceDayFired: world.mediaState?.titleRaceDayFired ?? {},
+    injuryWithdrawalFired: world.mediaState?.injuryWithdrawalFired ?? {},
+    mediaHeatHistory: world.mediaState?.mediaHeatHistory ?? {},
+    absenceAnnouncements: world.mediaState?.absenceAnnouncements ?? [],
   });
 
   // D. Emit Management Decision Event for UI Overlay (D1)
   const interviewPrompt = generateInterviewPrompt(world, rng);
-  builder.addEvent({
-    id: rng.uuid("EV"),
-    type: "MANAGEMENT_DECISION",
-    category: "narrative",
-    title: "Media Day",
-    summary: "The press has arrived at the heya. It's time to address the public.",
-    tags: ["pre_basho", "press_conference", "blocking"],
-    phase: "pre_basho",
-    year: world.year,
-    week,
-    data: {
-      interviewPrompt,
+  builder.logEvent(
+    "MANAGEMENT_DECISION",
+    "narrative",
+    {
+      heyaId: world.playerHeyaId,
+      incident: "Media Day",
+      reason: "The press has arrived at the heya. It's time to address the public.",
+      interviewPrompt: JSON.stringify(interviewPrompt),
     },
-  });
+    { heyaId: world.playerHeyaId, importance: "notable" }
+  );
 
   builder.logEvent("PRE_BASHO_JOURNALISM", "media", {
-    headlines,
+    headlines: headlines.map((h) => h.title),
     year: world.year,
     week,
   });
@@ -116,7 +128,7 @@ export function triggerPreBashoJournalism(world: WorldState): StateImpact {
 /**
  * Generates a random interview prompt for the player stable.
  */
-function generateInterviewPrompt(world: WorldState, rng: SeededRNG) {
+function generateInterviewPrompt(_world: WorldState, rng: SeededRNG) {
   const prompts = [
     {
       question:

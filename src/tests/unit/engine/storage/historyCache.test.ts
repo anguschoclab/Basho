@@ -77,6 +77,9 @@ function makeBoutResult(id: string): BoutResult {
     duration: 10,
     upset: false,
     kenshoEnvelopes: 0,
+    momentumScore: 0,
+    inBoutInjury: null,
+    isTimeout: false,
     log: [],
   };
 }

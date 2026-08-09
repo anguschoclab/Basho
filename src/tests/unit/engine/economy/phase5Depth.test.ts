@@ -34,7 +34,6 @@ describe("Phase 5 Depth: Institutional Power & Regional Mastery", () => {
         candidates: {
           c_1: {
             candidateId: "c_1",
-            id: "c_1" as Id,
             name: "Candidate 1",
             nationality: "Mongolia",
             originRegion: "Mongolia",
@@ -48,7 +47,6 @@ describe("Phase 5 Depth: Institutional Power & Regional Mastery", () => {
           },
           c_2: {
             candidateId: "c_2",
-            id: "c_2" as Id,
             name: "Candidate 2",
             nationality: "Georgia",
             originRegion: "Georgia",
@@ -66,21 +64,18 @@ describe("Phase 5 Depth: Institutional Power & Regional Mastery", () => {
             candidatesVisible: ["c_1", "c_2"],
             candidatesHidden: [],
             poolType: "foreign",
-            visibilityCap: 10,
             hiddenReserveCap: 20,
           },
           high_school: {
             candidatesVisible: [],
             candidatesHidden: [],
             poolType: "high_school",
-            visibilityCap: 10,
             hiddenReserveCap: 20,
           },
           university: {
             candidatesVisible: [],
             candidatesHidden: [],
             poolType: "university",
-            visibilityCap: 10,
             hiddenReserveCap: 20,
           },
         },

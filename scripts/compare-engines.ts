@@ -9,7 +9,7 @@
  */
 
 import { resolveBoutPhysics } from "../src/engine/bout/boutPhysics";
-import { mockRikishi, makeMockBasho } from "../src/engine/__tests__/utils";
+import { mockRikishi, makeMockBasho } from "../src/tests/unit/engine/utils";
 
 interface ComparisonStats {
   totalBouts: number;
@@ -19,7 +19,7 @@ interface ComparisonStats {
   determinismPassed: boolean;
 }
 
-function runBout(seed: string, index: number) {
+function runBout(_seed: string, index: number) {
   const bout = { id: `test-${index}`, day: 1, rikishiEastId: "r1", rikishiWestId: "r2" };
   const east = mockRikishi("r1");
   const west = mockRikishi("r2");

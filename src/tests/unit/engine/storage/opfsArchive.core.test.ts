@@ -49,6 +49,9 @@ describe("OPFSArchiveService core functionality", () => {
         duration: 10,
         upset: false,
         kenshoEnvelopes: 0,
+        momentumScore: 0,
+        inBoutInjury: null,
+        isTimeout: false,
         log: [],
       };
       await service.archiveBoutLog(2024, "b1", boutData);
@@ -186,6 +189,9 @@ describe("OPFSArchiveService core functionality", () => {
         duration: 10,
         upset: false,
         kenshoEnvelopes: 0,
+        momentumScore: 0,
+        inBoutInjury: null,
+        isTimeout: false,
         log: [],
       };
       const mockFileHandle = {
@@ -692,6 +698,9 @@ describe("OPFSArchiveService core functionality", () => {
         duration: 10,
         upset: false,
         kenshoEnvelopes: 0,
+        momentumScore: 0,
+        inBoutInjury: null,
+        isTimeout: false,
         log: [],
       };
       const data2 = {
@@ -707,6 +716,9 @@ describe("OPFSArchiveService core functionality", () => {
         duration: 10,
         upset: false,
         kenshoEnvelopes: 0,
+        momentumScore: 0,
+        inBoutInjury: null,
+        isTimeout: false,
         log: [],
       };
 

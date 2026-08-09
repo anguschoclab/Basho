@@ -165,6 +165,8 @@ export function rollPotential(args: {
     ),
     balance: rollStat(mods["balance"] ?? 1.0),
     weight: 0, // Size handled separately below
+    aggression: rollStat(mods["aggression"] ?? 1.0),
+    experience: 0,
   };
 
   // Size potential: Gaussian biased by archetype modifiers, clamped
@@ -236,6 +238,8 @@ export function deriveCurrentAbility(args: {
     balance: deriveStat(pa.balance, "balance"),
     weight: clampInt(potential.weightKg * weightM, WEIGHT_MIN, WEIGHT_MAX),
     height: clampInt(potential.heightCm * heightM, HEIGHT_MIN, HEIGHT_MAX),
+    aggression: deriveStat(pa.aggression, "aggression"),
+    experience: 0,
   };
 }
 
@@ -289,5 +293,7 @@ export function generateRikishiStats(args: {
     balance: genStat("balance"),
     weight,
     height,
+    aggression: genStat("aggression"),
+    experience: 0,
   };
 }

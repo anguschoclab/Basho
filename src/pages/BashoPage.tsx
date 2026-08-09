@@ -450,7 +450,7 @@ export default function BashoPage() {
               onSimulateAll={simulateAllBouts}
               onTacticChange={handleTacticChange}
               onEndDay={handleNextDay}
-              highlightRikishiId={state.selectedRikishiId || undefined}
+              highlightRikishiId={world.selectedRikishiId || undefined}
               playerTactics={state.boutTactics}
               onBoutClick={(match: BoutMatchUI) => {
                 if (!match.result || !match.eastRikishi || !match.westRikishi) return;

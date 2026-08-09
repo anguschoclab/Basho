@@ -53,7 +53,7 @@ function makeWorld(winnerFatigue: number = 0, loserFatigue: number = 0): WorldSt
     currentBasho: {
       id: "test-basho",
       year: 2025,
-      day: 1,
+      currentDay: 1,
       bashoName: "hatsu" as BashoName,
       bashoNumber: 1,
       matches: [],
@@ -90,6 +90,9 @@ function makeResult(duration: number): BoutResult {
     isKinboshi: false,
     log: [],
     kenshoEnvelopes: 0,
+    momentumScore: 0,
+    inBoutInjury: null,
+    isTimeout: false,
   } as unknown as BoutResult;
 }
 

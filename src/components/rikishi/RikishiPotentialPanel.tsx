@@ -8,7 +8,7 @@
  * the scouting views instead.
  */
 
-import type { Rikishi } from "@/engine/types";
+import type { Rikishi, RikishiStats } from "@/engine/types";
 import { TrendingUp } from "lucide-react";
 import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
 import { SeededRNG } from "@/engine/rng";
@@ -30,7 +30,7 @@ const STAT_LABELS: Array<[keyof NonNullable<Rikishi["potential"]>["stats"], stri
   ["adaptability", "Adaptability"],
 ];
 
-const CURRENT_KEY: Record<string, keyof Rikishi> = {
+const CURRENT_KEY: Record<string, keyof RikishiStats> = {
   power: "power",
   speed: "speed",
   stamina: "stamina",
@@ -59,7 +59,7 @@ export function RikishiPotentialPanel({ rikishi, isOwned }: Props) {
             (pa.stats as unknown as Record<string, number>)[paKey] * ceiling
           );
           const currentValue = Math.round(
-            (rikishi as unknown as Record<string, number>)[CURRENT_KEY[paKey]] ?? 0
+            (rikishi.stats as unknown as Record<string, number>)[CURRENT_KEY[paKey]] ?? 0
           );
           const paPct = Math.min(100, paValue);
           const caPct = Math.min(100, currentValue);

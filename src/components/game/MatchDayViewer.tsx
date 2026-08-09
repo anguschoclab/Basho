@@ -63,7 +63,7 @@ export function MatchDayViewer({
         ...m,
         east: m.eastRikishi,
         west: m.westRikishi,
-      };
+      } as typeof m & { scoutHint?: string };
       if (enriched.isPlayerBout && scouting) {
         const opponentId =
           enriched.eastRikishi?.isPlayerOwned === false

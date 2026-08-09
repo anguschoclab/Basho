@@ -18,6 +18,14 @@ function makeRikishiWithDepth(id: string, depth: "standard" | "deep" | "maemitsu
       preferredGrip: "migi",
       preferredGripDepth: depth,
       statModifiers: {},
+      counterFamily: "push",
+      archetypeBehavior: {
+        tachiaiSpeedBonus: 0,
+        lateralMovementBonus: 0,
+        edgeEscapeBonus: 0,
+        beltTorqueBonus: 0,
+        pushVelocityBonus: 0,
+      },
     },
   });
 }
@@ -84,6 +92,14 @@ describe("initBeltBattle — preferredGripDepth initialises belt state depth", (
         preferredGrip: "migi",
         preferredGripDepth: "deep",
         statModifiers: {},
+        counterFamily: "push",
+        archetypeBehavior: {
+          tachiaiSpeedBonus: 0,
+          lateralMovementBonus: 0,
+          edgeEscapeBonus: 0,
+          beltTorqueBonus: 0,
+          pushVelocityBonus: 0,
+        },
       },
     });
     const west = mockRikishi("std-west");

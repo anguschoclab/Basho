@@ -31,6 +31,9 @@ export function makeBoutResult(overrides: Partial<BoutResult> = {}): BoutResult 
       { phase: "finish", data: {} },
     ],
     kenshoEnvelopes: 0,
+    momentumScore: 0,
+    inBoutInjury: null,
+    isTimeout: false,
     ...overrides,
   } as unknown as BoutResult;
 }
@@ -54,6 +57,9 @@ export function makeMinimalBoutResult(overrides: Partial<BoutResult> = {}): Bout
     isKinboshi: false,
     log: [],
     kenshoEnvelopes: 0,
+    momentumScore: 0,
+    inBoutInjury: null,
+    isTimeout: false,
     ...overrides,
   } as unknown as BoutResult;
 }

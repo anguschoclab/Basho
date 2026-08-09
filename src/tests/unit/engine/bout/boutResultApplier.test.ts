@@ -71,7 +71,7 @@ describe("boutResultApplier", () => {
         currentBasho: {
           id: "test-basho",
           year: 2025,
-          day: 1,
+          currentDay: 1,
           bashoName: "hatsu" as BashoName,
           bashoNumber: 1,
           matches: [],
@@ -104,6 +104,9 @@ describe("boutResultApplier", () => {
         isKinboshi: false,
         log: [],
         kenshoEnvelopes: 0,
+        momentumScore: 0,
+        inBoutInjury: null,
+        isTimeout: false,
       };
 
       const impact = applyBoutResult(world as WorldState, match, result);
@@ -179,7 +182,7 @@ describe("boutResultApplier", () => {
         currentBasho: {
           id: "test-basho",
           year: 2025,
-          day: 1,
+          currentDay: 1,
           bashoName: "hatsu" as BashoName,
           bashoNumber: 1,
           matches: [],
@@ -212,6 +215,9 @@ describe("boutResultApplier", () => {
         isKinboshi: false,
         log: [],
         kenshoEnvelopes: 0,
+        momentumScore: 0,
+        inBoutInjury: null,
+        isTimeout: false,
       };
 
       const impact = applyBoutResult(world as WorldState, match, result);
@@ -286,7 +292,7 @@ describe("boutResultApplier", () => {
         currentBasho: {
           id: "test-basho",
           year: 2025,
-          day: 1,
+          currentDay: 1,
           bashoName: "hatsu" as BashoName,
           bashoNumber: 1,
           matches: [],
@@ -319,6 +325,9 @@ describe("boutResultApplier", () => {
         isKinboshi: false,
         log: [],
         kenshoEnvelopes: 0,
+        momentumScore: 0,
+        inBoutInjury: null,
+        isTimeout: false,
       };
 
       const impact = applyBoutResult(world as WorldState, match, result);
@@ -393,7 +402,7 @@ describe("boutResultApplier", () => {
         currentBasho: {
           id: "test-basho",
           year: 2025,
-          day: 1,
+          currentDay: 1,
           bashoName: "hatsu" as BashoName,
           bashoNumber: 1,
           matches: [],
@@ -426,6 +435,9 @@ describe("boutResultApplier", () => {
         isKinboshi: false,
         log: [],
         kenshoEnvelopes: 0,
+        momentumScore: 0,
+        inBoutInjury: null,
+        isTimeout: false,
       };
 
       const impact = applyBoutResult(world as WorldState, match, result);
@@ -500,7 +512,7 @@ describe("boutResultApplier", () => {
         currentBasho: {
           id: "test-basho",
           year: 2025,
-          day: 1,
+          currentDay: 1,
           bashoName: "hatsu" as BashoName,
           bashoNumber: 1,
           matches: [],
@@ -533,6 +545,9 @@ describe("boutResultApplier", () => {
         isKinboshi: false,
         log: [],
         kenshoEnvelopes: 0,
+        momentumScore: 0,
+        inBoutInjury: null,
+        isTimeout: false,
       };
 
       const impact = applyBoutResult(world as WorldState, match, result);
@@ -608,7 +623,7 @@ describe("boutResultApplier", () => {
         currentBasho: {
           id: "test-basho",
           year: 2025,
-          day: 1,
+          currentDay: 1,
           bashoName: "hatsu" as BashoName,
           bashoNumber: 1,
           matches: [],
@@ -641,6 +656,9 @@ describe("boutResultApplier", () => {
         isKinboshi: false,
         log: [],
         kenshoEnvelopes: 0,
+        momentumScore: 0,
+        inBoutInjury: null,
+        isTimeout: false,
       };
 
       const impact = applyBoutResult(world as WorldState, match, result);
@@ -729,7 +747,7 @@ describe("boutResultApplier", () => {
         currentBasho: {
           id: "test-basho",
           year: 2025,
-          day: 1,
+          currentDay: 1,
           bashoName: "hatsu" as BashoName,
           bashoNumber: 1,
           matches: [],
@@ -762,6 +780,9 @@ describe("boutResultApplier", () => {
         isKinboshi: false,
         log: [],
         kenshoEnvelopes: 0,
+        momentumScore: 0,
+        inBoutInjury: null,
+        isTimeout: false,
       };
 
       return { world, match, result };

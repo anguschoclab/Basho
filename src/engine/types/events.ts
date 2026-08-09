@@ -62,7 +62,13 @@ export type EngineEventType =
   | "RIVAL_POSTURE" // AI rival posture / intelligence assessment
   | "SPONSOR_UPDATE" // Sponsor contract renewal or change
   | "PHASE_TRANSITION" // General phase transition event
-  | "POLITICAL_FAVOR_REDEEMED"; // Political favor was redeemed
+  | "POLITICAL_FAVOR_REDEEMED" // Political favor was redeemed
+  | "CRISIS_RESPONSE" // Crisis response triggered
+  | "MEDIA_RESPONSE" // Media response to an event
+  | "MEDIA_INTERVIEW_COMPLETED" // Media interview completed
+  | "PRE_BASHO_JOURNALISM" // Pre-basho journalism cycle
+  | "WORLD_META_EVOLUTION" // World meta-narrative evolved
+  | "RECORD_BROKEN"; // A record was broken
 
 /**
  * Type representing event phase.

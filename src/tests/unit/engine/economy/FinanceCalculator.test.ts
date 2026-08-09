@@ -26,7 +26,7 @@ describe("FinanceCalculator — fixed operating overhead", () => {
   beforeEach(() => {
     heya = makeMockHeya("heya-1", {
       funds: 10_000_000,
-      facilities: { training: 50, recovery: 50, nutrition: 50, housing: 50 },
+      facilities: { training: 50, recovery: 50, nutrition: 50 },
       staffIds: [],
       rikishiIds: [],
       koenkaiBand: "none",
@@ -48,7 +48,7 @@ describe("FinanceCalculator — fixed operating overhead", () => {
   it("does NOT clamp away fixed overhead — net goes negative when income < baseBurn+fixed", () => {
     const expensiveHeya = makeMockHeya("heya-exp", {
       funds: 5_000_000,
-      facilities: { training: 30, recovery: 30, nutrition: 30, housing: 50 },
+      facilities: { training: 30, recovery: 30, nutrition: 30 },
       staffIds: [],
       rikishiIds: [],
       koenkaiBand: "none",
@@ -66,7 +66,7 @@ describe("FinanceCalculator — fixed operating overhead", () => {
   it("still clamps discretionary recruitment when income < baseBurn", () => {
     const poorHeya = makeMockHeya("heya-poor", {
       funds: 1_000_000,
-      facilities: { training: 30, recovery: 30, nutrition: 30, housing: 50 },
+      facilities: { training: 30, recovery: 30, nutrition: 30 },
       staffIds: [],
       rikishiIds: [],
       koenkaiBand: "none",
@@ -85,7 +85,7 @@ describe("FinanceCalculator — income components", () => {
     const heya = makeMockHeya("h1", {
       funds: 50_000_000,
       koenkaiBand: "powerful",
-      facilities: { training: 0, recovery: 0, nutrition: 0, housing: 50 },
+      facilities: { training: 0, recovery: 0, nutrition: 0 },
       staffIds: [],
       rikishiIds: [],
     });
@@ -103,7 +103,7 @@ describe("FinanceCalculator — income components", () => {
     const heya = makeMockHeya("h1", {
       funds: 50_000_000,
       koenkaiBand: "none",
-      facilities: { training: 0, recovery: 0, nutrition: 0, housing: 50 },
+      facilities: { training: 0, recovery: 0, nutrition: 0 },
       staffIds: [],
       rikishiIds: ["r1", "r2"],
     });
@@ -138,7 +138,7 @@ describe("FinanceCalculator — income components", () => {
       funds: 50_000_000,
       koenkaiBand: "none",
       koenkaiId: "k1",
-      facilities: { training: 0, recovery: 0, nutrition: 0, housing: 50 },
+      facilities: { training: 0, recovery: 0, nutrition: 0 },
       staffIds: [],
       rikishiIds: [],
     });
@@ -158,7 +158,7 @@ describe("FinanceCalculator — income components", () => {
     const heya = makeMockHeya("h1", {
       funds: 50_000_000,
       koenkaiBand: "none",
-      facilities: { training: 0, recovery: 0, nutrition: 0, housing: 50 },
+      facilities: { training: 0, recovery: 0, nutrition: 0 },
       staffIds: [],
       rikishiIds: [],
     });
@@ -172,7 +172,7 @@ describe("FinanceCalculator — income components", () => {
     const heya = makeMockHeya("h1", {
       funds: 50_000_000,
       koenkaiBand: "none",
-      facilities: { training: 0, recovery: 0, nutrition: 0, housing: 50 },
+      facilities: { training: 0, recovery: 0, nutrition: 0 },
       staffIds: [],
       rikishiIds: [],
     });
@@ -188,7 +188,7 @@ describe("FinanceCalculator — expense components", () => {
   it("calculates facility upkeep from training + recovery + nutrition", () => {
     const heya = makeMockHeya("h1", {
       funds: 100_000_000,
-      facilities: { training: 40, recovery: 60, nutrition: 20, housing: 50 },
+      facilities: { training: 40, recovery: 60, nutrition: 20 },
       staffIds: [],
       rikishiIds: [],
       koenkaiBand: "none",
@@ -205,7 +205,7 @@ describe("FinanceCalculator — expense components", () => {
   it("calculates staff upkeep per member", () => {
     const heya = makeMockHeya("h1", {
       funds: 100_000_000,
-      facilities: { training: 0, recovery: 0, nutrition: 0, housing: 50 },
+      facilities: { training: 0, recovery: 0, nutrition: 0 },
       staffIds: ["staff1", "staff2", "staff3"],
       rikishiIds: [],
       koenkaiBand: "none",
@@ -220,7 +220,7 @@ describe("FinanceCalculator — expense components", () => {
   it("skips recruitment cost when funds <= DEBT_LIMIT", () => {
     const heya = makeMockHeya("h1", {
       funds: DEBT_LIMIT,
-      facilities: { training: 0, recovery: 0, nutrition: 0, housing: 50 },
+      facilities: { training: 0, recovery: 0, nutrition: 0 },
       staffIds: [],
       rikishiIds: [],
       koenkaiBand: "none",
@@ -238,7 +238,7 @@ describe("FinanceCalculator — runway and debt floor", () => {
   it("calculates runway as funds / monthlyBurn", () => {
     const heya = makeMockHeya("h1", {
       funds: 10_000_000,
-      facilities: { training: 0, recovery: 0, nutrition: 0, housing: 50 },
+      facilities: { training: 0, recovery: 0, nutrition: 0 },
       staffIds: [],
       rikishiIds: [],
       koenkaiBand: "none",
@@ -254,7 +254,7 @@ describe("FinanceCalculator — runway and debt floor", () => {
     // but test the sentinel path by mocking
     const heya = makeMockHeya("h1", {
       funds: 10_000_000,
-      facilities: { training: 0, recovery: 0, nutrition: 0, housing: 50 },
+      facilities: { training: 0, recovery: 0, nutrition: 0 },
       staffIds: [],
       rikishiIds: [],
       koenkaiBand: "none",
@@ -269,7 +269,7 @@ describe("FinanceCalculator — runway and debt floor", () => {
   it("clamps nextFunds to DEBT_LIMIT (debt floor)", () => {
     const heya = makeMockHeya("h1", {
       funds: DEBT_LIMIT + 100_000,
-      facilities: { training: 50, recovery: 50, nutrition: 50, housing: 50 },
+      facilities: { training: 50, recovery: 50, nutrition: 50 },
       staffIds: [],
       rikishiIds: [],
       koenkaiBand: "none",
@@ -286,7 +286,7 @@ describe("FinanceCalculator — solvency clamping", () => {
   it("clamps to baseBurn when income < totalBurn", () => {
     const heya = makeMockHeya("h1", {
       funds: 1_000_000,
-      facilities: { training: 50, recovery: 50, nutrition: 50, housing: 50 },
+      facilities: { training: 50, recovery: 50, nutrition: 50 },
       staffIds: [],
       rikishiIds: [],
       koenkaiBand: "none",
@@ -303,7 +303,7 @@ describe("FinanceCalculator — solvency clamping", () => {
   it("does not clamp when income >= totalBurn", () => {
     const heya = makeMockHeya("h1", {
       funds: 100_000_000,
-      facilities: { training: 0, recovery: 0, nutrition: 0, housing: 50 },
+      facilities: { training: 0, recovery: 0, nutrition: 0 },
       staffIds: [],
       rikishiIds: [],
       koenkaiBand: "powerful",

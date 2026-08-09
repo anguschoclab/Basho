@@ -66,7 +66,7 @@ export function isMyosekiPlayerRelevant(world: WorldState, stock: MyosekiStock):
 /**
  * Checks if a governance ruling is relevant.
  */
-export function isGovernancePlayerRelevant(heyaId: Id, severity: string): EventImportance {
+export function isGovernancePlayerRelevant(_heyaId: Id, severity: string): EventImportance {
   // Any major sanction on any heya is notable
   if (severity === "critical") return "headline";
   if (severity === "major") return "major";

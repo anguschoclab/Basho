@@ -1,10 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { projectBashoSummary, projectBoutRow } from "@/presenters/bashoUI";
 import { mockRikishi } from "../engine/utils";
-import type { BashoState, BashoResult, MatchSchedule } from "../../engine/types/basho";
-import type { WorldState } from "../../engine/types/world";
-import type { IdMapRuntime } from "../../engine/types/common";
-import type { Rikishi } from "../../engine/types/rikishi";
+import type { BashoState, BashoResult, MatchSchedule } from "@/engine/types/basho";
+import type { WorldState } from "@/engine/types/world";
+import type { IdMapRuntime } from "@/engine/types/common";
+import type { Rikishi } from "@/engine/types/rikishi";
 
 describe("Basho UI Presenters", () => {
   describe("projectBashoSummary", () => {

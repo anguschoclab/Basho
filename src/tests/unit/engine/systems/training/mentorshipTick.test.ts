@@ -43,7 +43,7 @@ describe("applyMentorshipBonuses", () => {
   });
 
   it("skips unmentored rikishi", () => {
-    const lone = mockRikishi("lone", { rank: "makushita", heyaId: "h1", technique: 30 });
+    const lone = mockRikishi("lone", { rank: "makushita", heyaId: "h1"});
     const world = makeWorldWithPair({ technique: 80 }, { technique: 50 }, [lone]);
     const impact = applyMentorshipBonuses(world);
     expect(impact.entities?.rikishiUpdates?.has("lone")).toBe(false);
@@ -77,18 +77,16 @@ describe("applyMentorshipBonuses", () => {
   });
 
   it("handles multiple apprentices of the same mentor", () => {
-    const mentor = mockRikishi("mentor", { rank: "maegashira", heyaId: "h1", technique: 70 });
+    const mentor = mockRikishi("mentor", { rank: "maegashira", heyaId: "h1"});
     const apprentice1 = mockRikishi("apprentice1", {
       rank: "makushita",
       heyaId: "h1",
       mentorId: "mentor",
-      technique: 50,
     });
     const apprentice2 = mockRikishi("apprentice2", {
       rank: "makushita",
       heyaId: "h1",
       mentorId: "mentor",
-      technique: 52,
     });
     mentor.menteeIds = ["apprentice1", "apprentice2"];
 

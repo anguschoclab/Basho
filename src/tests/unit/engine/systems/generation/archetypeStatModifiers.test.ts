@@ -41,6 +41,14 @@ function meanStatBaseline(
         preferredGrip: "none",
         preferredGripDepth: "standard",
         statModifiers: { [statKey]: modifier },
+        counterFamily: "push",
+        archetypeBehavior: {
+          tachiaiSpeedBonus: 0,
+          lateralMovementBonus: 0,
+          edgeEscapeBonus: 0,
+          beltTorqueBonus: 0,
+          pushVelocityBonus: 0,
+        },
       },
     });
     total += stats[statKey];

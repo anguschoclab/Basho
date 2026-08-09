@@ -142,8 +142,7 @@ export const MYOSEKI_BASE_PRICES: Record<MyosekiStock["prestigeTier"], number> =
  * Initialize the myoseki market with a fixed pool of ~105 names.
  * All stocks start as "available" owned by "JSA".
  */
-export function initializeMyosekiMarket(world: WorldState): MyosekiMarket {
-  const _rng = rngForWorld(world, "myoseki", "init");
+export function initializeMyosekiMarket(_world: WorldState): MyosekiMarket {
   const stocks: Record<Id, MyosekiStock> = {};
 
   for (let i = 0; i < CANONICAL_MYOSEKI_NAMES.length; i++) {
@@ -167,7 +166,7 @@ export function initializeMyosekiMarket(world: WorldState): MyosekiMarket {
  * List a held myoseki stock for sale with an asking price.
  */
 export function listMyosekiForSale(
-  world: WorldState,
+  _world: WorldState,
   market: MyosekiMarket,
   myosekiId: Id,
   askingPrice: number

@@ -5,8 +5,8 @@ import {
   selectYokozunaCandidates,
   selectRecentEvents,
 } from "@/presenters/selectors";
-import type { WorldState } from "../../engine/types/world";
-import type { Rikishi } from "../../engine/types/rikishi";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
 import { mockRikishi } from "../engine/utils";
 
 describe("selectKadobanRikishi", () => {

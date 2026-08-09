@@ -1,7 +1,7 @@
-import { WorldState } from "./src/engine/types/world";
-import { Rikishi } from "./src/engine/types/rikishi";
-import { phase01_week_training } from "./src/engine/tick/phases/phase01_week_training";
-import { resolveImpacts } from "./src/engine/core/ImpactResolver";
+import type { WorldState } from "../src/engine/types/world";
+import type { Rikishi } from "../src/engine/types/rikishi";
+import { phase01_week_training } from "../src/engine/tick/phases/phase01_week_training";
+import { resolveImpacts } from "../src/engine/core/ImpactResolver";
 
 async function verifyTrainingDecay() {
   console.log("--- Verifying Training Decay ---");
@@ -12,15 +12,8 @@ async function verifyTrainingDecay() {
     shikona: "Veteran-maru",
     heyaId: "stable-1",
     birthYear: 1980, // Age ~46 in 2026
-    power: 90,
-    speed: 80,
-    technique: 85,
-    stamina: 70,
-    adaptability: 50,
-    experience: 95,
-    talentSeed: 90,
     stats: {
-      strength: 90,
+      power: 90,
       speed: 80,
       technique: 85,
       balance: 50,
@@ -28,9 +21,13 @@ async function verifyTrainingDecay() {
       adaptability: 50,
       mental: 95,
       weight: 150,
+      aggression: 60,
+      experience: 95,
+      achievements: { kinboshiEarned: 0, tournamentWins: 0, specialPrizes: 0 },
+      specialPrizes: [],
     },
     isRetired: false,
-  } as unknown as Record<string, unknown>;
+  } as unknown as Rikishi;
 
   let world: WorldState = {
     year: 2026,
@@ -49,9 +46,9 @@ async function verifyTrainingDecay() {
       boundaries: { monthBoundary: false, yearBoundary: false },
     },
     oyakata: new Map(),
-  } as unknown as Record<string, unknown>;
+  } as unknown as WorldState;
 
-  console.log(`Initial Power: ${mockRikishi.power}`);
+  console.log(`Initial Power: ${mockRikishi.stats.power}`);
 
   // Run 52 weeks (1 year) of training
   for (let i = 0; i < 52; i++) {
@@ -62,9 +59,9 @@ async function verifyTrainingDecay() {
 
   const finalRikishi = world.rikishi.get("old-vet");
   if (!finalRikishi) { console.error("Rikishi not found"); return; }
-  console.log(`Final Power: ${finalRikishi.power}`);
+  console.log(`Final Power: ${finalRikishi.stats?.power}`);
 
-  if (finalRikishi.power < 90) {
+  if ((finalRikishi.stats?.power ?? 90) < 90) {
     console.log("SUCCESS: Stat decay detected for veteran.");
   } else {
     console.log(

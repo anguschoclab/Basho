@@ -89,6 +89,9 @@ function makeResult(winner: "east" | "west", overrides: Partial<BoutResult> = {}
     isKinboshi: false,
     log: [],
     kenshoEnvelopes: 0,
+    momentumScore: 0,
+    inBoutInjury: null,
+    isTimeout: false,
     ...overrides,
   } as BoutResult;
 }

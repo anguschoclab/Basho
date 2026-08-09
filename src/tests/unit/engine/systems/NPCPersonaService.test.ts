@@ -9,7 +9,6 @@ function makeOyakataWithoutPersona(): Oyakata {
     heyaId: "h1",
     archetype: "mentor",
     traits: { ambition: 50, patience: 50, risk: 50, tradition: 50, compassion: 50 },
-    birthYear: 1960,
     // quirks and managerFlags intentionally undefined
   } as unknown as Oyakata;
 }
@@ -66,7 +65,6 @@ describe("getManagerPersona — styleBias is a valid StyleBias value", () => {
       heyaId: "h1",
       archetype: "mentor",
       traits: { ambition: 50, patience: 50, risk: 50, tradition: 50, compassion: 50 },
-      birthYear: 1960,
     } as unknown as Oyakata;
 
     const r1 = mockRikishi("r1", { heyaId: "h1", style: "oshi" });

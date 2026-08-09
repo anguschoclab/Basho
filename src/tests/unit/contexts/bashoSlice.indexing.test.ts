@@ -47,7 +47,7 @@ function makeState(matches: MatchSchedule[], day: number = 1): GameState {
     rikishi: new Map([["east", eastRikishi], ["west", westRikishi]]),
     heyas: new Map([["test-heya", heya]]),
     sponsorPool: { sponsors: new Map(), koenkais: new Map() } as any,
-    rivalriesState: { pairs: {}, version: 1 },
+    rivalriesState: { pairs: {}, version: "1.0.0" },
   });
   return {
     world,

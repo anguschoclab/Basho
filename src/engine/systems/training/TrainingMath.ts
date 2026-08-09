@@ -407,6 +407,7 @@ export function calculateAgeDecay(
     balance: 0,
     adaptability: 0,
     mental: 0,
+    aggression: 0,
   };
   if (!rikishi.birthYear) return zero;
   const age = currentYear - rikishi.birthYear;

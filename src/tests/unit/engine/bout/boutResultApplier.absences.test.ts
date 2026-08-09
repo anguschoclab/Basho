@@ -65,7 +65,7 @@ function makeWorld(opts?: {
     currentBasho: {
       id: "test-basho",
       year: 2025,
-      day: 1,
+      currentDay: 1,
       bashoName: "hatsu" as BashoName,
       bashoNumber: 1,
       matches: [],
@@ -141,7 +141,7 @@ function makeFusenshoWorld(opts?: {
     currentBasho: {
       id: "test-basho",
       year: 2025,
-      day: 1,
+      currentDay: 1,
       bashoName: "hatsu" as BashoName,
       bashoNumber: 1,
       matches: [],

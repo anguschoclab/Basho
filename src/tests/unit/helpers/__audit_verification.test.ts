@@ -69,6 +69,9 @@ function makeResult(
     isKinboshi: false,
     log: [],
     kenshoEnvelopes: 0,
+    momentumScore: 0,
+    inBoutInjury: null,
+    isTimeout: false,
   } as unknown as BoutResult;
 }
 
@@ -398,6 +401,9 @@ describe("audit verification: boutNarrative streaks B.9-B.12", () => {
       isKinboshi: false,
       log: [],
       kenshoEnvelopes: 0,
+      momentumScore: 0,
+      inBoutInjury: null,
+      isTimeout: false,
     } as unknown as BoutResult;
 
     return { world: world as WorldState, east, west, result };

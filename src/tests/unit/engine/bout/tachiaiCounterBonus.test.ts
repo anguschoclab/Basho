@@ -44,7 +44,7 @@ describe("resolveTachiaiV2 — counter-tactic bonus integration", () => {
     west.combatProfile = {
       archetype: "yotsu",
       familyPreferences: { push: 10, belt: 70, trick: 10, speed: 10 },
-      preferredGrip: "mig",
+      preferredGrip: "migi",
       preferredGripDepth: "deep",
       statModifiers: {},
     };
@@ -64,7 +64,7 @@ describe("resolveTachiaiV2 — counter-tactic bonus integration", () => {
     east.combatProfile = {
       archetype: "yotsu",
       familyPreferences: { push: 10, belt: 70, trick: 10, speed: 10 },
-      preferredGrip: "mig",
+      preferredGrip: "migi",
       preferredGripDepth: "deep",
       statModifiers: {},
     };
@@ -86,7 +86,7 @@ describe("resolveTachiaiV2 — counter-tactic bonus integration", () => {
     west.combatProfile = {
       archetype: "yotsu",
       familyPreferences: { push: 10, belt: 70, trick: 10, speed: 10 },
-      preferredGrip: "mig",
+      preferredGrip: "migi",
       preferredGripDepth: "deep",
       statModifiers: {},
     };
@@ -141,7 +141,7 @@ describe("resolveTachiaiV2 — counter-tactic bonus integration", () => {
     west.combatProfile = {
       archetype: "yotsu",
       familyPreferences: { push: 10, belt: 70, trick: 10, speed: 10 },
-      preferredGrip: "mig",
+      preferredGrip: "migi",
       preferredGripDepth: "deep",
       statModifiers: {},
     };
@@ -164,7 +164,7 @@ describe("resolveTachiaiV2 — counter-tactic bonus integration", () => {
     west.combatProfile = {
       archetype: "yotsu",
       familyPreferences: { push: 10, belt: 70, trick: 10, speed: 10 },
-      preferredGrip: "mig",
+      preferredGrip: "migi",
       preferredGripDepth: "deep",
       statModifiers: {},
     };

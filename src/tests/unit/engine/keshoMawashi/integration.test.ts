@@ -64,6 +64,8 @@ describe("Kesho-Mawashi Integration", () => {
         secondaryColor: "#2c5282",
         accentColor: "#d69e2e",
         goldThreadDensity: 0.3,
+        borderStyle: "simple",
+        embroideryStyle: "satin",
         mainSymbol: {
           type: "motif",
           value: "dragon",
@@ -202,6 +204,8 @@ describe("Kesho-Mawashi Integration", () => {
         secondaryColor: "#2c5282",
         accentColor: "#d69e2e",
         goldThreadDensity: 0.3,
+        borderStyle: "simple",
+        embroideryStyle: "satin",
         mainSymbol: {
           type: "motif",
           value: "dragon",

@@ -66,7 +66,6 @@ describe("Selectors", () => {
       const normal = MockFactory.createHeya("normal");
       normal.welfareState = {
         welfareRisk: 20,
-        recentIncidents: [],
         complianceState: "compliant",
         stressPoints: 0,
         resilienceScore: 0,
@@ -75,7 +74,6 @@ describe("Selectors", () => {
       const risky = MockFactory.createHeya("risky");
       risky.welfareState = {
         welfareRisk: 60,
-        recentIncidents: [],
         complianceState: "compliant",
         stressPoints: 0,
         resilienceScore: 0,
@@ -84,7 +82,6 @@ describe("Selectors", () => {
       const sanctioned = MockFactory.createHeya("sanctioned");
       sanctioned.welfareState = {
         welfareRisk: 10,
-        recentIncidents: [],
         complianceState: "sanctioned",
         stressPoints: 0,
         resilienceScore: 0,

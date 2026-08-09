@@ -42,10 +42,10 @@ export interface BoutContext {
 
 /** Safe stat read — prefers canonical rikishi.stats, falls back to top-level for bout copies */
 export function stat(r: Rikishi, key: string, fallback = 50): number {
-  const statsObj = r.stats as Record<string, unknown> | undefined;
+  const statsObj = r.stats as unknown as Record<string, unknown> | undefined;
   let v = statsObj?.[key];
   if (typeof v !== "number" || !Number.isFinite(v)) {
-    v = (r as Record<string, unknown>)[key];
+    v = (r as unknown as Record<string, unknown>)[key];
   }
   return typeof v === "number" && Number.isFinite(v) ? v : fallback;
 }

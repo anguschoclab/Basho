@@ -99,7 +99,7 @@ describe("gameStore - pendingTick lifecycle", () => {
     emit(mockWorker, {
       type: "WORLD_UPDATED",
       world: { id: "test" } as WorldState,
-      version: 1,
+      version: "1.0.0",
     });
 
     expect(useGameStore.getState().pendingTick).toBe(false);

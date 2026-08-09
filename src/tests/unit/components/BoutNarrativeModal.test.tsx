@@ -109,6 +109,9 @@ const mockResult = (pbpLines: PbpLine[]): BoutResult =>
     westWins: 0,
     day: 1,
     kenshoEnvelopes: 0,
+    momentumScore: 0,
+    inBoutInjury: null,
+    isTimeout: false,
     upset: false,
     isKinboshi: false,
   }) as unknown as BoutResult;

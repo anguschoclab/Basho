@@ -24,6 +24,9 @@ function makeMinimalBoutResult(overrides: Partial<BoutResult> = {}): BoutResult 
       { phase: "finish", data: {} },
     ],
     kenshoEnvelopes: 0,
+    momentumScore: 0,
+    inBoutInjury: null,
+    isTimeout: false,
     ...overrides,
   };
 }

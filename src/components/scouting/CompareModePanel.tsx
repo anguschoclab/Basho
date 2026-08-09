@@ -34,7 +34,7 @@ export function CompareModePanel({ rikishiA, rikishiB, onClose }: CompareModePan
         const fullB = state.world?.rikishi.get(rikishiB.id);
         if (fullA && fullB) {
           const res = simulateBout(fullA, fullB, `compare-${Date.now()}-${i}`);
-          if (res.winner === "east") winsA++;
+          if (res.result.winner === "east") winsA++;
           else winsB++;
         }
       }
@@ -125,12 +125,12 @@ export function CompareModePanel({ rikishiA, rikishiB, onClose }: CompareModePan
 
             return (
               <div className="space-y-2">
-                {renderStatRow("Strength", rawA.power, rawB.power)}
-                {renderStatRow("Speed", rawA.speed, rawB.speed)}
-                {renderStatRow("Balance", rawA.balance, rawB.balance)}
-                {renderStatRow("Technique", rawA.technique, rawB.technique)}
-                {renderStatRow("Stamina", rawA.stamina, rawB.stamina)}
-                {renderStatRow("Spirit", rawA.mental, rawB.mental)}
+                {renderStatRow("Strength", rawA.stats.power, rawB.stats.power)}
+                {renderStatRow("Speed", rawA.stats.speed, rawB.stats.speed)}
+                {renderStatRow("Balance", rawA.stats.balance, rawB.stats.balance)}
+                {renderStatRow("Technique", rawA.stats.technique, rawB.stats.technique)}
+                {renderStatRow("Stamina", rawA.stats.stamina, rawB.stats.stamina)}
+                {renderStatRow("Spirit", rawA.stats.mental, rawB.stats.mental)}
                 {renderStatRow("Weight", rawA.weight, rawB.weight)}
                 {renderStatRow("Height", rawA.height, rawB.height)}
               </div>

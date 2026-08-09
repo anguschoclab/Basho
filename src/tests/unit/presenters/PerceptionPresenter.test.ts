@@ -4,7 +4,7 @@ import {
   getMediaHeatLabel,
   getMediaToneColor,
 } from "@/presenters/PerceptionPresenter";
-import { Rikishi } from "../../engine/types/rikishi";
+import type { Rikishi } from "@/engine/types/rikishi";
 
 describe("PerceptionPresenter", () => {
   describe("getHealthBadge", () => {

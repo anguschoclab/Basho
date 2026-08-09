@@ -8,7 +8,7 @@
 
 import type { WorldState } from "../types/world";
 import type { Id } from "../types/common";
-import type { AIRecommendation, AIGoalDomain } from "./types";
+import type { AIRecommendation, AIGoalDomain } from "../ai/types";
 import { buildPerceptionSnapshot } from "../perception";
 import { buildLeaguePerception } from "../npcAI/LeaguePerception";
 import { getAdvice } from "../bout/CornerAdvice";

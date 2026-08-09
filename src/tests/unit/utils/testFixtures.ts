@@ -5,11 +5,11 @@
  * Provides sample WorldState, Rikishi, Heya, and other entities.
  */
 
-import type { WorldState } from "../../engine/types/world";
-import type { Rikishi } from "../../engine/types/rikishi";
-import type { Heya } from "../../engine/types/heya";
-import type { Oyakata } from "../../engine/types/oyakata";
-import { SeededRNG } from "../../engine/rng";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
+import type { Heya } from "@/engine/types/heya";
+import type { Oyakata } from "@/engine/types/oyakata";
+import { SeededRNG } from "@/engine/rng";
 
 /**
  * Sample Heya fixture - player stable.
@@ -29,7 +29,7 @@ export const sampleHeya1: Heya = {
   runwayBand: "secure",
   welfareState: {
     welfareRisk: 10,
-    activeDiet: "protein_balanced",
+    activeDiet: "maintenance",
     complianceState: "compliant",
     weeksInState: 0,
     lastReviewedWeek: 0,
@@ -60,7 +60,7 @@ export const sampleHeya2: Heya = {
   runwayBand: "comfortable",
   welfareState: {
     welfareRisk: 20,
-    activeDiet: "protein_heavy",
+    activeDiet: "heavy_bulk",
     complianceState: "compliant",
     weeksInState: 0,
     lastReviewedWeek: 0,
@@ -82,7 +82,6 @@ export const sampleRikishi1: Rikishi = {
   heyaId: "heya-1",
   nationality: "Japan",
   origin: "Tokyo",
-  birthYear: 1995,
   height: 185,
   weight: 135,
   rank: "maegashira",
@@ -97,6 +96,14 @@ export const sampleRikishi1: Rikishi = {
     preferredGripDepth: "standard",
     statModifiers: {},
     favoredKimarite: [],
+    counterFamily: "push",
+    archetypeBehavior: {
+      tachiaiSpeedBonus: 0,
+      lateralMovementBonus: 0,
+      edgeEscapeBonus: 0,
+      beltTorqueBonus: 0,
+      pushVelocityBonus: 0,
+    },
   },
   archetypeEvidence: {
     push: { success: 0, fail: 0 },
@@ -127,7 +134,7 @@ export const sampleRikishi1: Rikishi = {
     yusho: 1,
   },
   stats: {
-    strength: 75,
+    power: 75,
     technique: 80,
     speed: 60,
     stamina: 65,
@@ -148,7 +155,6 @@ export const sampleRikishi2: Rikishi = {
   heyaId: "heya-1",
   nationality: "Japan",
   origin: "Osaka",
-  birthYear: 1998,
   height: 180,
   weight: 125,
   rank: "juryo",
@@ -182,7 +188,7 @@ export const sampleRikishi2: Rikishi = {
     yusho: 0,
   },
   stats: {
-    strength: 65,
+    power: 65,
     technique: 55,
     speed: 70,
     stamina: 70,
@@ -204,7 +210,6 @@ export const sampleRikishi3: Rikishi = {
   heyaId: "heya-2",
   nationality: "Japan",
   origin: "Kyoto",
-  birthYear: 2000,
   height: 175,
   weight: 115,
   rank: "makushita",
@@ -238,7 +243,7 @@ export const sampleRikishi3: Rikishi = {
     yusho: 0,
   },
   stats: {
-    strength: 55,
+    power: 55,
     technique: 50,
     speed: 65,
     stamina: 60,
@@ -258,7 +263,6 @@ export const sampleOyakata1: Oyakata = {
   id: "oyakata-1",
   shikona: "Former Yokozuna Taro",
   heyaId: "heya-1",
-  birthYear: 1970,
   archetype: "traditionalist",
   traits: {
     ambition: 60,
@@ -277,7 +281,6 @@ export const sampleOyakata2: Oyakata = {
   id: "oyakata-2",
   shikona: "Former Ozeki Jiro",
   heyaId: "heya-2",
-  birthYear: 1975,
   archetype: "strategist",
   traits: {
     ambition: 85,
@@ -299,9 +302,8 @@ export const sampleWorldState: WorldState = {
   calendar: {
     year: 2024,
     month: 1,
-    day: 1,
+    currentDay: 1,
     currentWeek: 1,
-    bashoNumber: 1,
     isBashoMonth: false,
   },
   heyas: new Map([

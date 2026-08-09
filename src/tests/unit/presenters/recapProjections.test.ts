@@ -18,6 +18,9 @@ function makeResult(overrides: Partial<BoutResult> = {}): BoutResult {
     duration: 10,
     upset: false,
     kenshoEnvelopes: 0,
+    momentumScore: 0,
+    inBoutInjury: null,
+    isTimeout: false,
     log: [],
     ...overrides,
   };

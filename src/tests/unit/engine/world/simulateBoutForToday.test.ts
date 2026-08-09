@@ -65,7 +65,7 @@ function makeWorldWithMatches(
     currentBasho: basho,
     cyclePhase: "active_basho",
     sponsorPool: { sponsors: new Map(), koenkais: new Map() } as unknown as import("@/engine/types/sponsors").SponsorPool,
-    rivalriesState: { pairs: {}, version: 1 },
+    rivalriesState: { pairs: {}, version: "1.0.0" },
   });
 }
 
@@ -120,6 +120,9 @@ describe("simulateBoutForToday", () => {
       isKinboshi: false,
       log: [],
       kenshoEnvelopes: 0,
+      momentumScore: 0,
+      inBoutInjury: null,
+      isTimeout: false,
     };
     const world = makeWorldWithMatches(matches);
     const result = simulateBoutForToday(world, 0);
@@ -143,6 +146,9 @@ describe("simulateBoutForToday", () => {
       isKinboshi: false,
       log: [],
       kenshoEnvelopes: 0,
+      momentumScore: 0,
+      inBoutInjury: null,
+      isTimeout: false,
     };
     const world = makeWorldWithMatches(matches);
     const result = simulateBoutForToday(world, 0);
@@ -196,6 +202,9 @@ describe("simulateBoutForToday", () => {
       isKinboshi: false,
       log: [],
       kenshoEnvelopes: 0,
+      momentumScore: 0,
+      inBoutInjury: null,
+      isTimeout: false,
     };
     const world = makeWorldWithMatches(matches);
     const result = simulateBoutForToday(world, 0);

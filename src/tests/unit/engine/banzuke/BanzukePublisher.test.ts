@@ -38,7 +38,6 @@ describe("BanzukePublisher", () => {
         ginoSho: "none",
         shukunsho: "none",
         kantosho: "none",
-        stats: [],
         id: "1",
       });
 
@@ -82,7 +81,6 @@ describe("BanzukePublisher", () => {
         ginoSho: "none",
         shukunsho: "none",
         kantosho: "none",
-        stats: [],
         id: "1",
       });
 
@@ -121,7 +119,6 @@ describe("BanzukePublisher", () => {
         ginoSho: "none",
         shukunsho: "none",
         kantosho: "none",
-        stats: [],
         id: "1",
       });
 

@@ -198,7 +198,7 @@ describe("Holistic System Alignment — 10 Gaps", () => {
         careerHistory: [
           { rank: "maegashira", division: "makuuchi", isYusho: false, wins: 8, losses: 7 },
           { rank: "ozeki", division: "makuuchi", isYusho: true, wins: 13, losses: 2 },
-        ],
+        ] as any,
         pressPersona: "stoic",
       });
       const world = makeMockWorld({
@@ -219,7 +219,7 @@ describe("Holistic System Alignment — 10 Gaps", () => {
         birthYear: 1975,
         careerHistory: [
           { rank: "yokozuna", division: "makuuchi", isYusho: true, wins: 14, losses: 1 },
-        ],
+        ] as any,
       });
       const world = makeMockWorld({
         rikishi: new Map([[rikishi.id, rikishi]]),
@@ -294,7 +294,7 @@ describe("Holistic System Alignment — 10 Gaps", () => {
         sanyakuPromotionThisBasho: true,
         careerHistory: [
           { rank: "maegashira", division: "makuuchi", isYusho: false, wins: 11, losses: 4, rankNumber: 5 },
-        ],
+        ] as any,
       });
       const west = mockRikishi("r-west", { shikona: "Opponent" });
       const world = makeWorld(east, west);

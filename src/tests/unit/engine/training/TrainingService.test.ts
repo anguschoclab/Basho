@@ -35,7 +35,7 @@ describe("TrainingService.applyWeeklyTraining", () => {
       heyaId,
       birthYear: 2000,
       stats: {
-        strength: 50,
+        power: 50,
         speed: 50,
         technique: 50,
         weight: 140,

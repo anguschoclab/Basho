@@ -154,6 +154,8 @@ describe("KeshoMawashiGenerator", () => {
         secondaryColor: "#fff",
         accentColor: "#gold",
         goldThreadDensity: 0.3,
+        borderStyle: "simple",
+        embroideryStyle: "satin",
         mainSymbol: {
           type: "motif",
           value: "dragon",
@@ -264,6 +266,8 @@ describe("KeshoMawashiGenerator", () => {
         secondaryColor: "#fff",
         accentColor: "#gold",
         goldThreadDensity: 0.3,
+        borderStyle: "simple",
+        embroideryStyle: "satin",
         mainSymbol: {
           type: "motif" as const,
           value: "dragon",
@@ -298,6 +302,8 @@ describe("KeshoMawashiGenerator", () => {
         secondaryColor: "#fff",
         accentColor: "#gold",
         goldThreadDensity: 0.5,
+        borderStyle: "simple",
+        embroideryStyle: "satin",
         mainSymbol: {
           type: "motif" as const,
           value: "dragon",

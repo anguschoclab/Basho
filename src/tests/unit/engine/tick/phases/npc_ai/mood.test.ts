@@ -11,7 +11,6 @@ function makeOyakata(mood: string = "content"): Oyakata {
     heyaId: "h1",
     archetype: "mentor",
     traits: { ambition: 50, patience: 50, risk: 50, tradition: 50, compassion: 50 },
-    birthYear: 1960,
     mood,
   } as unknown as Oyakata;
 }

@@ -15,6 +15,7 @@ import {
   Users2,
   Wind,
   Coffee,
+  Activity,
   ArrowRightCircle,
   RotateCcw,
   CheckSquare,
@@ -59,6 +60,7 @@ const DRILL_ICONS: Record<DrillType, React.ReactNode> = {
   teppo: <Zap className="h-3 w-3" />,
   "moushi-ai": <Users2 className="h-3 w-3" />,
   shindo: <Wind className="h-3 w-3" />,
+  shiko: <Activity className="h-3 w-3" />,
   none: <Coffee className="h-3 w-3" />,
 };
 

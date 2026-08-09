@@ -2,8 +2,8 @@
  * Test fixtures for kesho-mawashi system
  */
 
-import type { KeshoMawashi, YokozunaTsuna, HeyaBrandIdentity } from "../../types/keshoMawashi";
-import type { MovementEvent } from "../../types/banzuke";
+import type { KeshoMawashi, YokozunaTsuna, HeyaBrandIdentity } from "@/engine/types/keshoMawashi";
+import type { MovementEvent } from "@/engine/types/banzuke";
 
 export const sampleKeshoJuryo: KeshoMawashi = {
   id: "kesho-1",
@@ -17,6 +17,8 @@ export const sampleKeshoJuryo: KeshoMawashi = {
   secondaryColor: "#2c5282",
   accentColor: "#d69e2e",
   goldThreadDensity: 0.3,
+  borderStyle: "simple",
+  embroideryStyle: "satin",
   mainSymbol: {
     type: "motif",
     value: "dragon",
@@ -39,6 +41,8 @@ export const sampleKeshoMakuuchi: KeshoMawashi = {
   secondaryColor: "#4a5568",
   accentColor: "#ecc94b",
   goldThreadDensity: 0.5,
+  borderStyle: "simple",
+  embroideryStyle: "satin",
   mainSymbol: {
     type: "corporate_logo",
     value: "Nippon Kaiun",
@@ -73,6 +77,8 @@ export const sampleKeshoSanyaku: KeshoMawashi = {
   secondaryColor: "#9b2c2c",
   accentColor: "#f6ad55",
   goldThreadDensity: 0.7,
+  borderStyle: "simple",
+  embroideryStyle: "satin",
   mainSymbol: {
     type: "motif",
     value: "phoenix",
@@ -109,6 +115,8 @@ export const sampleKeshoYokozuna: KeshoMawashi = {
   secondaryColor: "#2c5282",
   accentColor: "#FFD700",
   goldThreadDensity: 0.95,
+  borderStyle: "simple",
+  embroideryStyle: "satin",
   mainSymbol: {
     type: "heya_crest",
     value: "rising_sun",

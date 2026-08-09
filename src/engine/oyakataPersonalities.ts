@@ -277,6 +277,9 @@ export function generateOyakata(
     observations: [],
     coreDirectives: [`Maintain the excellence of stable`, `Prioritize ${type} values`],
     lastConsolidationTick: 0,
+    planHistory: [],
+    decisionHistory: [],
+    opponentModels: {},
   };
 
   // Determine highest rank: use provided formerRank, or generate based on tier

@@ -24,7 +24,7 @@ function makeWelfareState(overrides: Partial<WelfareState> = {}): WelfareState {
 describe("welfare recovery fallback — falsy zero handling", () => {
   it("facilities.recovery 0 does not default to 50 in progress gain", () => {
     const heya = makeMockHeya("heya-zero-recovery", {
-      facilities: { training: 50, recovery: 0, nutrition: 50, housing: 50 },
+      facilities: { training: 50, recovery: 0, nutrition: 50 },
     });
     const world = makeMockWorld({
       calendar: { currentWeek: 10, month: 3 },
@@ -51,7 +51,7 @@ describe("welfare recovery fallback — falsy zero handling", () => {
 
   it("facilities.recovery 50 produces progress gain of 6", () => {
     const heya = makeMockHeya("heya-mid-recovery", {
-      facilities: { training: 50, recovery: 50, nutrition: 50, housing: 50 },
+      facilities: { training: 50, recovery: 50, nutrition: 50 },
     });
     const world = makeMockWorld({
       calendar: { currentWeek: 10, month: 3 },
@@ -104,7 +104,7 @@ describe("welfare recovery fallback — falsy zero handling", () => {
 
   it("recovery at extreme high value clamps progress gain to max (12)", () => {
     const heya = makeMockHeya("heya-max-recovery", {
-      facilities: { training: 50, recovery: 300, nutrition: 50, housing: 50 },
+      facilities: { training: 50, recovery: 300, nutrition: 50 },
     });
     const world = makeMockWorld({
       calendar: { currentWeek: 10, month: 3 },

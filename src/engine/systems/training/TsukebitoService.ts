@@ -98,7 +98,7 @@ export function assignTsukebito(
  * morale + technique exposure to tsukebito.
  */
 export function applyWeeklyTsukebitoBenefits(
-  world: WorldState,
+  _world: WorldState,
   assignment: TsukebitoAssignment,
   senior: Rikishi,
   tsukebitoRikishi: Rikishi[]
@@ -131,7 +131,7 @@ export function applyWeeklyTsukebitoBenefits(
  * for the most junior rikishi in a heya.
  */
 export function applyWeeklyOtotodeshiEffects(
-  world: WorldState,
+  _world: WorldState,
   heyaId: Id,
   rikishiList: Rikishi[]
 ): StateImpact {

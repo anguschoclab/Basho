@@ -3,16 +3,16 @@
  * Use for engine tests needing flat stat overrides. Functions: mockRikishi, makeMockWorld, makeMockBasho.
  * Do not mix with `MockFactory.ts` in the same file. Pick one and stick with it.
  */
-import type { Rikishi, RikishiStats } from "../types/rikishi";
-import type { CombatArchetype } from "../types/combat";
+import type { Rikishi, RikishiStats } from "@/engine/types/rikishi";
+import type { CombatArchetype } from "@/engine/types/combat";
 
 type Style = "oshi" | "yotsu" | "hybrid";
-import type { WorldState } from "../types/world";
-import type { BashoState } from "../types/basho";
-import type { Heya } from "../types/heya";
-import type { HeyaBrandIdentity, KeshoMawashi, YokozunaTsuna } from "../types/keshoMawashi";
+import type { WorldState } from "@/engine/types/world";
+import type { BashoState } from "@/engine/types/basho";
+import type { Heya } from "@/engine/types/heya";
+import type { HeyaBrandIdentity, KeshoMawashi, YokozunaTsuna } from "@/engine/types/keshoMawashi";
 import { SeededRNG } from "@/engine/rng";
-import type { Id } from "../types/common";
+import type { Id } from "@/engine/types/common";
 
 // ── Rikishi ────────────────────────────────────────────────────────────────
 
@@ -119,7 +119,7 @@ export function makeMockHeya(id: string, overrides: Partial<Heya> = {}): Heya {
     governanceStatus: "good_standing",
     politicalCapital: 50,
     koenkaiBand: "bronze",
-    facilities: { training: 50, recovery: 50, nutrition: 50, housing: 50 },
+    facilities: { training: 50, recovery: 50, nutrition: 50 },
     riskIndicators: { financial: false, welfare: false, governance: false },
     ...overrides,
   } as Heya;
@@ -251,6 +251,8 @@ export function mockKeshoMawashi(overrides: Partial<KeshoMawashi> = {}): KeshoMa
     secondaryColor: overrides.secondaryColor || "#2c5282",
     accentColor: overrides.accentColor || "#d69e2e",
     goldThreadDensity: overrides.goldThreadDensity ?? 0.3,
+    borderStyle: "simple",
+    embroideryStyle: "satin",
     mainSymbol: overrides.mainSymbol || {
       type: "motif",
       value: "dragon",

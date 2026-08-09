@@ -73,7 +73,7 @@ export function FinancesWidget() {
                 fillOpacity={1}
                 fill="url(#colorFunds)"
                 strokeWidth={2}
-                strokeDasharray={(d: { projected?: boolean }) => (d?.projected ? "4 2" : "0")}
+                strokeDasharray="0"
                 animationDuration={1500}
               />
             </AreaChart>

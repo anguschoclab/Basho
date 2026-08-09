@@ -37,6 +37,14 @@ describe("initBeltBattle", () => {
         preferredGrip: "migi",
         preferredGripDepth: "standard",
         statModifiers: {},
+        counterFamily: "push",
+        archetypeBehavior: {
+          tachiaiSpeedBonus: 0,
+          lateralMovementBonus: 0,
+          edgeEscapeBonus: 0,
+          beltTorqueBonus: 0,
+          pushVelocityBonus: 0,
+        },
       },
     });
     const west = mockRikishi("r2", {
@@ -46,6 +54,14 @@ describe("initBeltBattle", () => {
         preferredGrip: "hidari",
         preferredGripDepth: "standard",
         statModifiers: {},
+        counterFamily: "push",
+        archetypeBehavior: {
+          tachiaiSpeedBonus: 0,
+          lateralMovementBonus: 0,
+          edgeEscapeBonus: 0,
+          beltTorqueBonus: 0,
+          pushVelocityBonus: 0,
+        },
       },
     });
     const rng = new SeededRNG("test-seed");

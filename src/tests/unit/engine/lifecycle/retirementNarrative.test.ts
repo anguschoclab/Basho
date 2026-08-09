@@ -17,7 +17,7 @@ function makeWorld(year = 2025): WorldState {
     governanceStatus: "good_standing" as const,
     politicalCapital: 50,
     koenkaiBand: "bronze" as const,
-    facilities: { training: 50, recovery: 50, nutrition: 50, housing: 50 },
+    facilities: { training: 50, recovery: 50, nutrition: 50 },
     riskIndicators: { financial: false, welfare: false, governance: false },
   } as unknown as Heya;
   return {

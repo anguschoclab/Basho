@@ -30,6 +30,9 @@ function makeResult(winner: "east" | "west" = "east", kimarite = "yorikiri"): Bo
     isKinboshi: false,
     log: [],
     kenshoEnvelopes: 0,
+    momentumScore: 0,
+    inBoutInjury: null,
+    isTimeout: false,
   } as unknown as BoutResult;
 }
 

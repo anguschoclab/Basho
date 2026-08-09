@@ -441,7 +441,7 @@ describe("spawnPersonnelWorker", () => {
     const rikishiMap = new Map();
     for (let i = 0; i < 5; i++) {
       const id = `r${i}`;
-      const r = mockRikishi(id, { heyaId: "h1", style: "oshi", archetype: "pusher" });
+      const r = mockRikishi(id, { heyaId: "h1", style: "oshi" });
       rikishiMap.set(id, r);
       perceptions.push(makeRikishiPerception({ rikishiId: id, healthBand: "peak" }));
     }

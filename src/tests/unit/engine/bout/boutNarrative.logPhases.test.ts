@@ -19,6 +19,9 @@ function makeBoutResult(log: BoutLogEntry[], overrides: Partial<BoutResult> = {}
     log,
     upset: false,
     kenshoEnvelopes: 0,
+    momentumScore: 0,
+    inBoutInjury: null,
+    isTimeout: false,
     ...overrides,
   } as BoutResult;
 }

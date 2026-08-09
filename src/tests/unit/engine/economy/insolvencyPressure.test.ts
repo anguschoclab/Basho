@@ -62,7 +62,7 @@ describe("Insolvency pressure and wealth stratification", () => {
       funds: 0,
       rikishiIds: rikishi.map((r) => r.id),
       koenkaiBand: "none",
-      facilities: { training: 30, recovery: 30, nutrition: 30, housing: 50 },
+      facilities: { training: 30, recovery: 30, nutrition: 30 },
       staffIds: [],
     });
 
@@ -96,7 +96,7 @@ describe("Insolvency pressure and wealth stratification", () => {
       rikishiIds: rikishi.map((r) => r.id),
       koenkaiBand: "powerful",
       koenkaiId: "koenkai-heya-strong",
-      facilities: { training: 70, recovery: 70, nutrition: 70, housing: 50 },
+      facilities: { training: 70, recovery: 70, nutrition: 70 },
       staffIds: [],
     });
 

@@ -106,7 +106,7 @@ export function generateNakabiSummary(
  * Log the nakabi checkpoint event to the world event log.
  */
 export function logNakabiCheckpoint(
-  world: WorldState,
+  _world: WorldState,
   summary: NakabiSummary
 ): StateImpact {
   const builder = createImpactBuilder("logNakabiCheckpoint");

@@ -45,7 +45,7 @@ function makeWorld(overrides: Partial<WorldState> = {}): WorldState {
           reputation: 60,
           governanceStatus: "good_standing",
           scandalScore: 0,
-          facilities: { training: 50, recovery: 50, nutrition: 50, housing: 50 },
+          facilities: { training: 50, recovery: 50, nutrition: 50 },
         },
       ],
     ]),

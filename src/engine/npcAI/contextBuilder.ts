@@ -9,7 +9,7 @@
 import type { Id } from "../types/common";
 import type { WorldState } from "../types/world";
 import type { Oyakata } from "../types/oyakata";
-import type { AIContext } from "./types";
+import type { AIContext } from "../ai/types";
 import { buildPerceptionSnapshot } from "../perception";
 import { buildLeaguePerception } from "../npcAI/LeaguePerception";
 import { consolidateOyakataMemoryPure } from "../tick/phases/npc_ai/memory";

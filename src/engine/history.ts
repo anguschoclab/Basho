@@ -36,7 +36,7 @@ export function generateCareerSnapshot(world: WorldState, rikishi: Rikishi): Car
     bashoId,
 
     year: world.year,
-    month: world.calendar.month,
+    month: world.calendar?.month ?? 1,
     bashoName: world.currentBashoName || "Honbasho",
 
     rank: rikishi.rank,
@@ -68,7 +68,7 @@ export function recordMilestones(world: WorldState, rikishi: Rikishi) {
   if (!rikishi.milestones) rikishi.milestones = [];
 
   const year = world.year;
-  const month = world.calendar.month;
+  const month = world.calendar?.month ?? 1;
   const lastBasho = world.history.length > 0 ? world.history[world.history.length - 1] : undefined;
 
   const rng = rngForWorld(world, "history", `milestone_${rikishi.id}`);
@@ -116,7 +116,7 @@ export function runHistoryUpdates(world: WorldState): StateImpact {
     // Record milestones
     const milestones = rikishi.milestones || [];
     const year = world.year;
-    const month = world.calendar.month;
+    const month = world.calendar?.month ?? 1;
     const lastBasho =
       world.history.length > 0 ? world.history[world.history.length - 1] : undefined;
     const rng = rngForWorld(world, "history", `milestone_${rikishi.id}`);
@@ -248,7 +248,7 @@ export function recordShikonaChange(
     type: "shikona_change",
     title: "Shikona Change",
     description: `Changed shikona from ${oldShikona} to ${newShikona}.`,
-    date: { year: world.year, month: world.calendar.month },
+    date: { year: world.year, month: world.calendar?.month ?? 1 },
   });
 
   // Add to shikona history

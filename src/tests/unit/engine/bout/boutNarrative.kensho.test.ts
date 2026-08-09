@@ -19,6 +19,9 @@ function makeBoutResult(overrides: Partial<BoutResult> = {}): BoutResult {
     log: [],
     upset: false,
     kenshoEnvelopes: 0,
+    momentumScore: 0,
+    inBoutInjury: null,
+    isTimeout: false,
     ...overrides,
   } as BoutResult;
 }
@@ -42,6 +45,9 @@ describe("kensho narrative (7.3)", () => {
     const world = makeWorld(east, west);
     const result = makeBoutResult({
       kenshoEnvelopes: 5,
+      momentumScore: 0,
+      inBoutInjury: null,
+      isTimeout: false,
       kenshoBanners: [
         { bannerId: "b1", boutId: "test-bout-1", sponsorId: "s1", tier: "T4", displayName: "Test Sponsor", ceremonyStyleTag: "premium" },
         { bannerId: "b2", boutId: "test-bout-1", sponsorId: "s2", tier: "T4", displayName: "Test Sponsor 2", ceremonyStyleTag: "premium" },
@@ -64,6 +70,9 @@ describe("kensho narrative (7.3)", () => {
     const world = makeWorld(east, west);
     const result = makeBoutResult({
       kenshoEnvelopes: 3,
+      momentumScore: 0,
+      inBoutInjury: null,
+      isTimeout: false,
       upset: true,
       winner: "east",
     });

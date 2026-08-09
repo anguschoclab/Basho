@@ -46,7 +46,7 @@ export const HistoryService = {
     if (checkRecord(records.allTime.yusho, rikishi.careerRecord?.yusho ?? 0)) changed = true;
 
     // 3. Kinboshi Earned
-    const kinboshi = rikishi.achievements?.kinboshiEarned ?? 0;
+    const kinboshi = rikishi.stats?.achievements?.kinboshiEarned ?? 0;
     if (kinboshi > 0 && checkRecord(records.allTime.kinboshi, kinboshi)) changed = true;
 
     if (changed) {

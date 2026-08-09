@@ -42,7 +42,7 @@ export function handleNPCCrisis(
 
   builder.logEvent(
     "CRISIS_RESPONSE",
-    "crisis",
+    "narrative",
     {
       heyaId,
       crisisId: crisis.id,
@@ -126,6 +126,9 @@ export function consolidateOyakataMemory(
       `Prioritize ${oyakata.archetype} values`,
     ],
     lastConsolidationTick: world.week,
+    planHistory: [],
+    decisionHistory: [],
+    opponentModels: {},
   };
 
   const memory = { ...existingMemory };
