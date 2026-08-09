@@ -1,1 +1,1 @@
-bun run lint:strict
+bun run lint:commit

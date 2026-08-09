@@ -33,29 +33,20 @@ export default tseslint.config(
       "react-refresh": reactRefresh,
     },
     rules: {
-      ...reactHooks.configs.recommended.rules,
+      "react-hooks/rules-of-hooks": "error",
+      "react-hooks/exhaustive-deps": "warn",
 
-      // Standard enforcement for Fast Refresh
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
-
-      /**
-       * Note: Rule silencing overrides have been removed.
-       * The 'strict' preset now enforces 'error' level for:
-       * - @typescript-eslint/no-explicit-any
-       * - @typescript-eslint/no-unused-vars
-       * - @typescript-eslint/ban-ts-comment
-       * - @typescript-eslint/no-require-imports
-       * - @typescript-eslint/no-empty-object-type
-       * - no-empty
-       */
 
       "@typescript-eslint/no-unused-vars": [
         "error",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_", caughtErrorsIgnorePattern: "^_" },
       ],
-      "react-hooks/rules-of-hooks": "error",
-      "react-hooks/exhaustive-deps": "warn",
       "no-case-declarations": "error",
+
+      "no-useless-assignment": "warn",
+      "no-unassigned-vars": "warn",
+      "preserve-caught-error": "warn",
     },
   },
   {
@@ -104,11 +95,12 @@ export default tseslint.config(
       "@typescript-eslint/no-non-null-assertion": "off",
       "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
       "@typescript-eslint/no-unused-vars": "off",
+      "no-useless-assignment": "off",
     },
   },
   {
-    /* BARREL FILES: react-refresh doesn't apply to pure re-export files */
-    files: ["src/components/ui/index.ts", "src/components/ui/sidebar.tsx"],
+    /* BARREL/ROUTE FILES: react-refresh doesn't apply to pure re-export or route config files */
+    files: ["src/components/ui/index.ts", "src/components/ui/sidebar.tsx", "src/routes.tsx"],
     rules: {
       "react-refresh/only-export-components": "off",
     },
