@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { provideEncouragement, canEncourage } from "@/engine/actions/InjuredEncouragement";
 import { mockRikishi } from "../utils";
@@ -51,10 +50,16 @@ describe("Injured Encouragement System (B6)", () => {
 
   it("provideEncouragement gives +3 motivation to recipient", () => {
     const from = mockRikishi("enc-11", {
-      injured: true, heyaId: "heya-1", shikona: "InjuredMan", motivation: 50,
+      injured: true,
+      heyaId: "heya-1",
+      shikona: "InjuredMan",
+      motivation: 50,
     } as any);
     const to = mockRikishi("enc-12", {
-      injured: false, heyaId: "heya-1", shikona: "ActiveMan", motivation: 50,
+      injured: false,
+      heyaId: "heya-1",
+      shikona: "ActiveMan",
+      motivation: 50,
     } as any);
     const world = makeWorld();
 
@@ -66,10 +71,14 @@ describe("Injured Encouragement System (B6)", () => {
 
   it("provideEncouragement creates encouragementLog entry", () => {
     const from = mockRikishi("enc-13", {
-      injured: true, heyaId: "heya-1", shikona: "InjuredMan",
+      injured: true,
+      heyaId: "heya-1",
+      shikona: "InjuredMan",
     } as any);
     const to = mockRikishi("enc-14", {
-      injured: false, heyaId: "heya-1", shikona: "ActiveMan",
+      injured: false,
+      heyaId: "heya-1",
+      shikona: "ActiveMan",
     } as any);
     const world = makeWorld();
 
@@ -85,10 +94,14 @@ describe("Injured Encouragement System (B6)", () => {
 
   it("provideEncouragement appends to existing encouragementLog", () => {
     const from = mockRikishi("enc-15", {
-      injured: true, heyaId: "heya-1", shikona: "InjuredMan",
+      injured: true,
+      heyaId: "heya-1",
+      shikona: "InjuredMan",
     } as any);
     const to = mockRikishi("enc-16", {
-      injured: false, heyaId: "heya-1", shikona: "ActiveMan",
+      injured: false,
+      heyaId: "heya-1",
+      shikona: "ActiveMan",
     } as any);
     const world = makeWorld();
     world.encouragementLog = [{ from: "other", to: "other2", basho: "2024-hatsu" }];
@@ -100,10 +113,14 @@ describe("Injured Encouragement System (B6)", () => {
 
   it("provideEncouragement logs a narrative event", () => {
     const from = mockRikishi("enc-17", {
-      injured: true, heyaId: "heya-1", shikona: "InjuredMan",
+      injured: true,
+      heyaId: "heya-1",
+      shikona: "InjuredMan",
     } as any);
     const to = mockRikishi("enc-18", {
-      injured: false, heyaId: "heya-1", shikona: "ActiveMan",
+      injured: false,
+      heyaId: "heya-1",
+      shikona: "ActiveMan",
     } as any);
     const world = makeWorld();
 

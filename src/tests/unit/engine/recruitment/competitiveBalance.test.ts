@@ -1,5 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { recruitmentBalanceMultiplier, recruitmentBalanceMultipliers } from "@/engine/systems/generation/competitiveBalance";
+import {
+  recruitmentBalanceMultiplier,
+  recruitmentBalanceMultipliers,
+} from "@/engine/systems/generation/competitiveBalance";
 import { clearQueryCaches } from "@/engine/queries";
 import { makeMockWorld, makeMockHeya, mockRikishi } from "../utils";
 import type { WorldState } from "@/engine/types/world";

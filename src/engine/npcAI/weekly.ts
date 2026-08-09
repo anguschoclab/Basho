@@ -303,7 +303,12 @@ export function makeNPCWeeklyDecision(
 
   if (agentDecisions) {
     if (agentDecisions.finance.shouldBuyMyoseki) {
-      builder.logEvent("NPC_MANAGER_DECISION", "economy", { heyaId, decision: "buy_myoseki" }, { heyaId });
+      builder.logEvent(
+        "NPC_MANAGER_DECISION",
+        "economy",
+        { heyaId, decision: "buy_myoseki" },
+        { heyaId }
+      );
     }
     if (agentDecisions.governance.shouldReduceScandal) {
       builder.logEvent(

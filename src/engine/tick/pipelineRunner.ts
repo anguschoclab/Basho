@@ -62,7 +62,7 @@ type EntitySnapshot = Partial<Record<EntityMapField, EntityMap>>;
  */
 function createShallowSnapshot(
   world: WorldState,
-  touches?: string[],
+  touches?: string[]
 ): { snapshot: Partial<WorldState>; restore: (w: WorldState) => WorldState } {
   const validTouches = new Set<string>(ENTITY_MAP_FIELDS);
   const fieldsToSnapshot: EntityMapField[] =
@@ -98,15 +98,13 @@ export function runPipeline(initialWorld: WorldState, phases: PipelinePhase[]): 
   let currentWorld = initialWorld;
 
   // A2: Lightweight phase timer — only active when __PERF__ flag is set
-  const perfEnabled = typeof globalThis !== "undefined" && (globalThis as Record<string, unknown>).__PERF__ === true;
+  const perfEnabled =
+    typeof globalThis !== "undefined" && (globalThis as Record<string, unknown>).__PERF__ === true;
   const perfTrace: Array<{ phaseName: string; durationMs: number; impactSize?: number }> = [];
 
   for (const phase of phases) {
     const phaseMeta = phase.touches ? { touches: phase.touches } : undefined;
-    const { restore } = createShallowSnapshot(
-      currentWorld,
-      phaseMeta?.touches,
-    );
+    const { restore } = createShallowSnapshot(currentWorld, phaseMeta?.touches);
 
     const perfStart = perfEnabled ? performance.now() : 0;
 

@@ -1,5 +1,5 @@
 // @vitest-environment node
- 
+
 /**
  * Tests for electron/main.ts security handlers.
  * Since electron/main.ts imports the native 'electron' package which isn't

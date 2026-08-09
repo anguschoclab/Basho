@@ -39,10 +39,7 @@ const HIGHLIGHT_PRIORITY: Record<CareerHighlightType, number> = {
  * Record a career highlight on a rikishi, returning a new rikishi object
  * with the highlight appended. Does not mutate the original.
  */
-export function recordCareerHighlight(
-  rikishi: Rikishi,
-  highlight: CareerHighlight
-): Rikishi {
+export function recordCareerHighlight(rikishi: Rikishi, highlight: CareerHighlight): Rikishi {
   const existing = rikishi.careerHighlights ?? [];
   return {
     ...rikishi,
@@ -54,15 +51,11 @@ export function recordCareerHighlight(
  * Get the most significant career highlight for a rikishi.
  * Used at retirement to reference a favorite memory.
  */
-export function getFavoriteHighlight(
-  rikishi: Rikishi
-): CareerHighlight | undefined {
+export function getFavoriteHighlight(rikishi: Rikishi): CareerHighlight | undefined {
   const highlights = rikishi.careerHighlights;
   if (!highlights || highlights.length === 0) return undefined;
 
   return highlights.reduce((best, current) =>
-    HIGHLIGHT_PRIORITY[current.type] > HIGHLIGHT_PRIORITY[best.type]
-      ? current
-      : best
+    HIGHLIGHT_PRIORITY[current.type] > HIGHLIGHT_PRIORITY[best.type] ? current : best
   );
 }

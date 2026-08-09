@@ -25,9 +25,7 @@ function makeWorld(overrides: Partial<WorldState> = {}): WorldState {
     year: 2026,
     week: 5,
     playerHeyaId: "h1",
-    heyas: new Map([
-      ["h1", { id: "h1", name: "Test Heya" }],
-    ]),
+    heyas: new Map([["h1", { id: "h1", name: "Test Heya" }]]),
     rikishi: new Map(),
     activeRikishiIds: new Set(),
     ...overrides,

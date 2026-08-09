@@ -1,14 +1,28 @@
- 
 import { describe, it, expect } from "vitest";
 import { recordBashoHistory } from "@/engine/lifecycle/BashoHistory";
 import type { MatchSchedule, BoutResult, BashoState, BashoName } from "@/engine/types/basho";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 
-function makeResult(boutId: string, winnerId: string, loserId: string, kimarite: string = "yorikiri"): BoutResult {
+function makeResult(
+  boutId: string,
+  winnerId: string,
+  loserId: string,
+  kimarite: string = "yorikiri"
+): BoutResult {
   return {
-    boutId, winner: "east", winnerRikishiId: winnerId, loserRikishiId: loserId,
-    kimarite, kimariteName: kimarite, stance: "migi-yotsu", tachiaiWinner: "east",
-    duration: 5.2, upset: false, isKinboshi: false, log: [], kenshoEnvelopes: 0,
+    boutId,
+    winner: "east",
+    winnerRikishiId: winnerId,
+    loserRikishiId: loserId,
+    kimarite,
+    kimariteName: kimarite,
+    stance: "migi-yotsu",
+    tachiaiWinner: "east",
+    duration: 5.2,
+    upset: false,
+    isKinboshi: false,
+    log: [],
+    kenshoEnvelopes: 0,
     momentumScore: 0,
     inBoutInjury: null,
     isTimeout: false,
@@ -17,8 +31,14 @@ function makeResult(boutId: string, winnerId: string, loserId: string, kimarite:
 
 function makeBasho(matches: MatchSchedule[]): BashoState {
   return {
-    id: "test-basho", year: 2026, bashoNumber: 1, bashoName: "hatsu" as BashoName,
-    day: 15, matches, standings: new Map([["east", { wins: 8, losses: 7 }]]), isActive: true,
+    id: "test-basho",
+    year: 2026,
+    bashoNumber: 1,
+    bashoName: "hatsu" as BashoName,
+    day: 15,
+    matches,
+    standings: new Map([["east", { wins: 8, losses: 7 }]]),
+    isActive: true,
   };
 }
 

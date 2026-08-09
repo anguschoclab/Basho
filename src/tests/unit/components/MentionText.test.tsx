@@ -4,13 +4,7 @@ import React from "react";
 import { MentionText } from "@/components/MentionText";
 
 vi.mock("@tanstack/react-router", () => ({
-  Link: ({
-    to,
-    children,
-  }: {
-    to: string;
-    children?: React.ReactNode;
-  }) => {
+  Link: ({ to, children }: { to: string; children?: React.ReactNode }) => {
     const safeHref = to.startsWith("/") && !to.includes("://") ? to : "#";
     return (
       <a href={safeHref} data-testid="router-link">

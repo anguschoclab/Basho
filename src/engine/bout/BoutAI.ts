@@ -92,7 +92,11 @@ function isLowFatigue(fatigue?: number): boolean {
  * tactic, then makes deterministic adjustments from opponent model, fatigue,
  * and rank pressure.
  */
-export function chooseTactic(cpu: Rikishi, opponent: Rikishi | undefined, ctx: BoutAIContext): BoutTactic {
+export function chooseTactic(
+  cpu: Rikishi,
+  opponent: Rikishi | undefined,
+  ctx: BoutAIContext
+): BoutTactic {
   // 1. High-pressure override (rivalry, kachi/make-koshi precipice).
   if (ctx.cpuRecord && ctx.bashoDay !== undefined) {
     const override = decideBoutTacticOverride(ctx.cpuRecord, ctx.rivalryHeat ?? 0, ctx.bashoDay);
@@ -149,7 +153,10 @@ export function chooseTactic(cpu: Rikishi, opponent: Rikishi | undefined, ctx: B
 }
 
 function getDominantFamily(model: OpponentTacticModel): "push" | "belt" | "trick" | "speed" {
-  const entries = Object.entries(model.familyCounts) as ["push" | "belt" | "trick" | "speed", number][];
+  const entries = Object.entries(model.familyCounts) as [
+    "push" | "belt" | "trick" | "speed",
+    number,
+  ][];
   entries.sort((a, b) => b[1] - a[1]);
   return entries[0]?.[0] ?? "push";
 }

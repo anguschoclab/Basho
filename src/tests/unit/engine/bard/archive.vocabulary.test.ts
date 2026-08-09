@@ -2,8 +2,6 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { BardEngine, interpolate } from "@/engine/bard/BardEngine";
 import { SeededRNG } from "@/engine/rng";
 
- 
-
 describe("Phase 4: Vocabulary-token template dedup", () => {
   beforeEach(() => {
     BardEngine.resetCache();
@@ -43,8 +41,16 @@ describe("Phase 4: Vocabulary-token template dedup", () => {
     const rng2 = new SeededRNG("test-vocab-1");
     // interpolate doesn't take rng directly, but resolve does
     // We test determinism via resolve with same seed
-    const r1 = BardEngine.resolve(rng1, "combat.phases.tachiai", { intensity: 2, WINNER: "A", LOSER: "B" });
-    const r2 = BardEngine.resolve(rng2, "combat.phases.tachiai", { intensity: 2, WINNER: "A", LOSER: "B" });
+    const r1 = BardEngine.resolve(rng1, "combat.phases.tachiai", {
+      intensity: 2,
+      WINNER: "A",
+      LOSER: "B",
+    });
+    const r2 = BardEngine.resolve(rng2, "combat.phases.tachiai", {
+      intensity: 2,
+      WINNER: "A",
+      LOSER: "B",
+    });
     expect(r1.text).toBe(r2.text);
   });
 
@@ -53,9 +59,21 @@ describe("Phase 4: Vocabulary-token template dedup", () => {
     const rng1 = new SeededRNG("test-vocab-intensity");
     const rng2 = new SeededRNG("test-vocab-intensity");
     const rng3 = new SeededRNG("test-vocab-intensity");
-    const r1 = BardEngine.resolve(rng1, "combat.phases.tachiai", { intensity: 1, WINNER: "A", LOSER: "B" });
-    const r2 = BardEngine.resolve(rng2, "combat.phases.tachiai", { intensity: 2, WINNER: "A", LOSER: "B" });
-    const r3 = BardEngine.resolve(rng3, "combat.phases.tachiai", { intensity: 3, WINNER: "A", LOSER: "B" });
+    const r1 = BardEngine.resolve(rng1, "combat.phases.tachiai", {
+      intensity: 1,
+      WINNER: "A",
+      LOSER: "B",
+    });
+    const r2 = BardEngine.resolve(rng2, "combat.phases.tachiai", {
+      intensity: 2,
+      WINNER: "A",
+      LOSER: "B",
+    });
+    const r3 = BardEngine.resolve(rng3, "combat.phases.tachiai", {
+      intensity: 3,
+      WINNER: "A",
+      LOSER: "B",
+    });
     expect(r1.text).not.toBe(r2.text);
     expect(r2.text).not.toBe(r3.text);
     expect(r1.text).not.toBe(r3.text);
@@ -64,19 +82,31 @@ describe("Phase 4: Vocabulary-token template dedup", () => {
   // ── Collapsed tachiai triplet ──────────────────────────────────────────
   it("resolve('combat.phases.tachiai', { intensity: 1 }) produces non-empty text", () => {
     const rng = new SeededRNG("test-tachiai-1");
-    const result = BardEngine.resolve(rng, "combat.phases.tachiai", { intensity: 1, WINNER: "A", LOSER: "B" });
+    const result = BardEngine.resolve(rng, "combat.phases.tachiai", {
+      intensity: 1,
+      WINNER: "A",
+      LOSER: "B",
+    });
     expect(result.text.length).toBeGreaterThan(0);
   });
 
   it("resolve('combat.phases.tachiai', { intensity: 2 }) produces non-empty text", () => {
     const rng = new SeededRNG("test-tachiai-2");
-    const result = BardEngine.resolve(rng, "combat.phases.tachiai", { intensity: 2, WINNER: "A", LOSER: "B" });
+    const result = BardEngine.resolve(rng, "combat.phases.tachiai", {
+      intensity: 2,
+      WINNER: "A",
+      LOSER: "B",
+    });
     expect(result.text.length).toBeGreaterThan(0);
   });
 
   it("resolve('combat.phases.tachiai', { intensity: 3 }) produces non-empty text", () => {
     const rng = new SeededRNG("test-tachiai-3");
-    const result = BardEngine.resolve(rng, "combat.phases.tachiai", { intensity: 3, WINNER: "A", LOSER: "B" });
+    const result = BardEngine.resolve(rng, "combat.phases.tachiai", {
+      intensity: 3,
+      WINNER: "A",
+      LOSER: "B",
+    });
     expect(result.text.length).toBeGreaterThan(0);
   });
 
@@ -92,9 +122,18 @@ describe("Phase 4: Vocabulary-token template dedup", () => {
     });
 
     it("three intensities produce distinct outputs", () => {
-      const r1 = BardEngine.resolve(new SeededRNG("test-eng-dist"), `combat.engagement.${type}`, { intensity: 1, ATTACKER: "A" });
-      const r2 = BardEngine.resolve(new SeededRNG("test-eng-dist"), `combat.engagement.${type}`, { intensity: 2, ATTACKER: "A" });
-      const r3 = BardEngine.resolve(new SeededRNG("test-eng-dist"), `combat.engagement.${type}`, { intensity: 3, ATTACKER: "A" });
+      const r1 = BardEngine.resolve(new SeededRNG("test-eng-dist"), `combat.engagement.${type}`, {
+        intensity: 1,
+        ATTACKER: "A",
+      });
+      const r2 = BardEngine.resolve(new SeededRNG("test-eng-dist"), `combat.engagement.${type}`, {
+        intensity: 2,
+        ATTACKER: "A",
+      });
+      const r3 = BardEngine.resolve(new SeededRNG("test-eng-dist"), `combat.engagement.${type}`, {
+        intensity: 3,
+        ATTACKER: "A",
+      });
       expect(r1.text).not.toBe(r2.text);
       expect(r2.text).not.toBe(r3.text);
       expect(r1.text).not.toBe(r3.text);
@@ -104,7 +143,11 @@ describe("Phase 4: Vocabulary-token template dedup", () => {
   // ── No token leakage ───────────────────────────────────────────────────
   it("tachiai output has no unresolved % tokens", () => {
     const rng = new SeededRNG("test-tachiai-leak");
-    const result = BardEngine.resolve(rng, "combat.phases.tachiai", { intensity: 2, WINNER: "A", LOSER: "B" });
+    const result = BardEngine.resolve(rng, "combat.phases.tachiai", {
+      intensity: 2,
+      WINNER: "A",
+      LOSER: "B",
+    });
     expect(result.text).not.toContain("%ADJ%");
     expect(result.text).not.toContain("%VERB%");
     expect(result.text).not.toContain("%ADV%");
@@ -112,7 +155,10 @@ describe("Phase 4: Vocabulary-token template dedup", () => {
 
   it("engagement output has no unresolved % tokens", () => {
     const rng = new SeededRNG("test-eng-leak");
-    const result = BardEngine.resolve(rng, "combat.engagement.push", { intensity: 2, ATTACKER: "A" });
+    const result = BardEngine.resolve(rng, "combat.engagement.push", {
+      intensity: 2,
+      ATTACKER: "A",
+    });
     expect(result.text).not.toContain("%ADJ%");
     expect(result.text).not.toContain("%VERB%");
     expect(result.text).not.toContain("%ADV%");

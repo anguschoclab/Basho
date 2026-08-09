@@ -1,7 +1,5 @@
 import { describe, it, expect } from "vitest";
 
- 
-
 describe("PR #728: RikishiCard ginboshi display", () => {
   it("C.3: ginboshiEarned value is accessible from achievements", () => {
     const achievements = {

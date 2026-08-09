@@ -81,7 +81,9 @@ describe("createPlan", () => {
 
     const plan = createPlan(ctx);
     expect(plan!.planId).toBe("rebuilding");
-    expect(plan!.constraints.some((c) => c.type === "max_intensity" && c.value === "balanced")).toBe(true);
+    expect(
+      plan!.constraints.some((c) => c.type === "max_intensity" && c.value === "balanced")
+    ).toBe(true);
   });
 
   it("selects status_quo when no strong signal exists", () => {

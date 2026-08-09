@@ -14,7 +14,10 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { rngForWorld } from "../../rng";
 
 /** Canonical fixed pool of ~105 myoseki (elder name) stocks. */
-export const CANONICAL_MYOSEKI_NAMES: Array<{ name: string; prestigeTier: "elite" | "respected" | "modest" }> = [
+export const CANONICAL_MYOSEKI_NAMES: Array<{
+  name: string;
+  prestigeTier: "elite" | "respected" | "modest";
+}> = [
   // Elite tier (yokozuna/ozeki names)
   { name: "Dewanoumi", prestigeTier: "elite" },
   { name: "Futagoyama", prestigeTier: "elite" },

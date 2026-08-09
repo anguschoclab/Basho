@@ -108,11 +108,7 @@ export const BloodlineService = {
         if (!numericStatKeys.has(s)) continue;
         const current = nextStats[s] as number;
         if (current < floor) {
-          nextStats[s] = clampInt(
-            current + WEEKLY_HERITAGE_BONUS,
-            0,
-            99
-          ) as never;
+          nextStats[s] = clampInt(current + WEEKLY_HERITAGE_BONUS, 0, 99) as never;
           changed = true;
         }
       }

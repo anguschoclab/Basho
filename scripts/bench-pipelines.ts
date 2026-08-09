@@ -89,9 +89,7 @@ export function runScenario(name: string, cfg: ScenarioConfig): BenchmarkResult 
     const t0 = performance.now();
     let w = world;
     for (let i = 0; i < cfg.days; i++) {
-      w = cfg.fast
-        ? advanceDaysFast(w, 1, { skipDailyMicroPhases: true })
-        : advanceOneDay(w);
+      w = cfg.fast ? advanceDaysFast(w, 1, { skipDailyMicroPhases: true }) : advanceOneDay(w);
     }
     const elapsed = performance.now() - t0;
 
@@ -125,9 +123,7 @@ export function runScenario(name: string, cfg: ScenarioConfig): BenchmarkResult 
   return result;
 }
 
-export function runBenchmark(
-  scenarios?: Record<string, ScenarioConfig>,
-): BenchmarkRun {
+export function runBenchmark(scenarios?: Record<string, ScenarioConfig>): BenchmarkRun {
   const map = scenarios ?? SCENARIOS;
   const results: BenchmarkResult[] = [];
 

@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 import type { PbpLine } from "@/engine/bout/boutNarrative";
@@ -26,8 +25,16 @@ function makeBoutResult(overrides: Partial<BoutResult> = {}): BoutResult {
   } as BoutResult;
 }
 
-function makeWorld(east: ReturnType<typeof mockRikishi>, west: ReturnType<typeof mockRikishi>): WorldState {
-  return { rikishi: new Map([["r1", east], ["r2", west]]) } as unknown as WorldState;
+function makeWorld(
+  east: ReturnType<typeof mockRikishi>,
+  west: ReturnType<typeof mockRikishi>
+): WorldState {
+  return {
+    rikishi: new Map([
+      ["r1", east],
+      ["r2", west],
+    ]),
+  } as unknown as WorldState;
 }
 
 function getLines(result: BoutResult): PbpLine[] {
@@ -49,10 +56,38 @@ describe("kensho narrative (7.3)", () => {
       inBoutInjury: null,
       isTimeout: false,
       kenshoBanners: [
-        { bannerId: "b1", boutId: "test-bout-1", sponsorId: "s1", tier: "T4", displayName: "Test Sponsor", ceremonyStyleTag: "premium" },
-        { bannerId: "b2", boutId: "test-bout-1", sponsorId: "s2", tier: "T4", displayName: "Test Sponsor 2", ceremonyStyleTag: "premium" },
-        { bannerId: "b3", boutId: "test-bout-1", sponsorId: "s3", tier: "T3", displayName: "Test Sponsor 3", ceremonyStyleTag: "classic" },
-        { bannerId: "b4", boutId: "test-bout-1", sponsorId: "s4", tier: "T3", displayName: "Test Sponsor 4", ceremonyStyleTag: "classic" },
+        {
+          bannerId: "b1",
+          boutId: "test-bout-1",
+          sponsorId: "s1",
+          tier: "T4",
+          displayName: "Test Sponsor",
+          ceremonyStyleTag: "premium",
+        },
+        {
+          bannerId: "b2",
+          boutId: "test-bout-1",
+          sponsorId: "s2",
+          tier: "T4",
+          displayName: "Test Sponsor 2",
+          ceremonyStyleTag: "premium",
+        },
+        {
+          bannerId: "b3",
+          boutId: "test-bout-1",
+          sponsorId: "s3",
+          tier: "T3",
+          displayName: "Test Sponsor 3",
+          ceremonyStyleTag: "classic",
+        },
+        {
+          bannerId: "b4",
+          boutId: "test-bout-1",
+          sponsorId: "s4",
+          tier: "T3",
+          displayName: "Test Sponsor 4",
+          ceremonyStyleTag: "classic",
+        },
       ],
     });
 
@@ -84,8 +119,12 @@ describe("kensho narrative (7.3)", () => {
     const postBoutKensho = kenshoLines.filter((l) => l.phase === "post_bout");
     expect(postBoutKensho.length).toBeGreaterThan(0);
 
-    const hasUpsetKensho = postBoutKensho.some((l) =>
-      l.text.includes("upset") || l.text.includes("stun") || l.text.includes("shock") || l.text.includes("underdog")
+    const hasUpsetKensho = postBoutKensho.some(
+      (l) =>
+        l.text.includes("upset") ||
+        l.text.includes("stun") ||
+        l.text.includes("shock") ||
+        l.text.includes("underdog")
     );
     expect(hasUpsetKensho).toBe(true);
   });

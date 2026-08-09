@@ -6,8 +6,6 @@ import { makeBoutResult, makeBoutWorld } from "@/tests/helpers/boutTestHelpers";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
 import type { CareerSnapshot } from "@/engine/types/history";
 
- 
-
 function getPreBoutLines(result: BoutResult) {
   return (result.pbpLines ?? []).filter((l) => l.phase === "pre_bout");
 }
@@ -26,8 +24,16 @@ describe("generateBoutNarrative — pre-bout context", () => {
   // ── T1: Current basho records ──
   describe("T1: current basho records", () => {
     it("T1.7: deterministic — same seed → same pre_bout lines", () => {
-      const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 8, currentBashoLosses: 2 });
-      const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 7, currentBashoLosses: 3 });
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        currentBashoWins: 8,
+        currentBashoLosses: 2,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "Beta",
+        currentBashoWins: 7,
+        currentBashoLosses: 3,
+      });
       const world = makeBoutWorld(east, west);
       const r1 = makeBoutResult();
       const r2 = makeBoutResult();
@@ -39,8 +45,16 @@ describe("generateBoutNarrative — pre-bout context", () => {
     });
 
     it("T1.8: no [MISSING:] tokens in pre_bout lines", () => {
-      const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 8, currentBashoLosses: 2 });
-      const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 7, currentBashoLosses: 3 });
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        currentBashoWins: 8,
+        currentBashoLosses: 2,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "Beta",
+        currentBashoWins: 7,
+        currentBashoLosses: 3,
+      });
       const world = makeBoutWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 10, "seed-missing-1", world);
@@ -88,8 +102,16 @@ describe("generateBoutNarrative — pre-bout context", () => {
     });
 
     it("T3.9: 0 wins, day >= 3 → winless line with tag", () => {
-      const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 0, currentBashoLosses: 4 });
-      const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 4, currentBashoLosses: 0 });
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        currentBashoWins: 0,
+        currentBashoLosses: 4,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "Beta",
+        currentBashoWins: 4,
+        currentBashoLosses: 0,
+      });
       const world = makeBoutWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 5, "seed-winless", world);
@@ -98,8 +120,16 @@ describe("generateBoutNarrative — pre-bout context", () => {
     });
 
     it("T3.10: 1 win, day >= 4 → first win line", () => {
-      const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 1, currentBashoLosses: 4 });
-      const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 5, currentBashoLosses: 0 });
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        currentBashoWins: 1,
+        currentBashoLosses: 4,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "Beta",
+        currentBashoWins: 5,
+        currentBashoLosses: 0,
+      });
       const world = makeBoutWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 5, "seed-first-win", world);
@@ -108,8 +138,17 @@ describe("generateBoutNarrative — pre-bout context", () => {
     });
 
     it("T3.13: no [MISSING:] tokens in storyline lines", () => {
-      const east = mockRikishi("r-east", { shikona: "Alpha", consecutiveKachiKoshi: 3, currentBashoWins: 0, currentBashoLosses: 5 });
-      const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 5, currentBashoLosses: 0 });
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        consecutiveKachiKoshi: 3,
+        currentBashoWins: 0,
+        currentBashoLosses: 5,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "Beta",
+        currentBashoWins: 5,
+        currentBashoLosses: 0,
+      });
       const world = makeBoutWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 6, "seed-story-missing", world);
@@ -426,8 +465,16 @@ describe("generateBoutNarrative — pre-bout context", () => {
 
   describe("record-context gate", () => {
     it("day 1 with records present → no record commentary line", () => {
-      const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 1, currentBashoLosses: 0 });
-      const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 0, currentBashoLosses: 1 });
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        currentBashoWins: 1,
+        currentBashoLosses: 0,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "Beta",
+        currentBashoWins: 0,
+        currentBashoLosses: 1,
+      });
       const world = makeBoutWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 1, "seed-day1-records", world);
@@ -438,8 +485,16 @@ describe("generateBoutNarrative — pre-bout context", () => {
     });
 
     it("day 5 with both 0-0 → no record commentary line", () => {
-      const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 0, currentBashoLosses: 0 });
-      const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 0, currentBashoLosses: 0 });
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        currentBashoWins: 0,
+        currentBashoLosses: 0,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "Beta",
+        currentBashoWins: 0,
+        currentBashoLosses: 0,
+      });
       const world = makeBoutWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 5, "seed-0-0-records", world);
@@ -450,8 +505,16 @@ describe("generateBoutNarrative — pre-bout context", () => {
     });
 
     it("day 5 with east 1-0 and west 0-1 → record commentary generated", () => {
-      const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 1, currentBashoLosses: 0 });
-      const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 0, currentBashoLosses: 1 });
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        currentBashoWins: 1,
+        currentBashoLosses: 0,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "Beta",
+        currentBashoWins: 0,
+        currentBashoLosses: 1,
+      });
       const world = makeBoutWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 5, "seed-records-pass", world);

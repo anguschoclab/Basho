@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { createEmptyImpact, isStateImpact, resetImpactTimestampCounter } from "@/engine/core/StateImpact";
+import {
+  createEmptyImpact,
+  isStateImpact,
+  resetImpactTimestampCounter,
+} from "@/engine/core/StateImpact";
 import { createImpactBuilder, ImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 import type { WorldState } from "@/engine/types/world";
@@ -103,7 +107,10 @@ function makeMockWorld(): WorldState {
 
 // List of all phases that declare StateImpact as return type.
 // These must include `metadata` in their return value per the pipelineRunner invariant.
-const stateImpactPhases: Array<{ name: string; fn: (world: WorldState) => StateImpact | WorldState }> = [
+const stateImpactPhases: Array<{
+  name: string;
+  fn: (world: WorldState) => StateImpact | WorldState;
+}> = [
   { name: "phase00_preflight", fn: phase00_preflight },
   { name: "phase01_daily_drama", fn: phase01_daily_drama },
   { name: "phase01_daily_economy", fn: phase01_daily_economy },
@@ -176,9 +183,7 @@ describe("StateImpact metadata invariant", () => {
     });
 
     it("addMetadata preserves the source field", () => {
-      const impact = createImpactBuilder("preserve-source")
-        .addMetadata("custom", "value")
-        .build();
+      const impact = createImpactBuilder("preserve-source").addMetadata("custom", "value").build();
       expect(impact.metadata).toBeDefined();
       expect(impact.metadata?.source).toBe("preserve-source");
       expect(impact.metadata?.custom).toBe("value");
@@ -191,9 +196,7 @@ describe("StateImpact metadata invariant", () => {
       // entities/collections/deletedEntities/worldFields/events, not metadata.
       // So an empty impact is NOT a StateImpact per the guard. That's fine —
       // the guard is for distinguishing from WorldState, not for validity.
-      const withEntities = createImpactBuilder("test")
-        .updateHeya("h1", { id: "h1" })
-        .build();
+      const withEntities = createImpactBuilder("test").updateHeya("h1", { id: "h1" }).build();
       expect(isStateImpact(withEntities)).toBe(true);
     });
 

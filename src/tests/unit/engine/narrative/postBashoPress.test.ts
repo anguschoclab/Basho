@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { PostBashoPressService } from "@/engine/systems/narrative/PostBashoPressService";
 import { makeMockWorld, mockRikishi } from "../utils";
@@ -55,7 +54,9 @@ describe("PostBashoPressService — Champion Press Conference", () => {
       year: 2025,
     });
 
-    const hasWalkingWounded = lines.some((l) => l.text.includes("Hurt Champ") && l.id.includes("-ww"));
+    const hasWalkingWounded = lines.some(
+      (l) => l.text.includes("Hurt Champ") && l.id.includes("-ww")
+    );
     expect(hasWalkingWounded).toBe(true);
 
     const hasClinic = lines.some((l) => l.text.includes("Hurt Champ") && l.id.includes("-clinic"));
@@ -90,7 +91,7 @@ describe("PostBashoPressService — Champion Press Conference", () => {
   });
 
   it("does NOT generate growth lines for veteran champions (10+ makuuchi appearances)", () => {
-    const careerHistory = Array.from({ length: 12 }, () => ({ division: "makuuchi" } as any));
+    const careerHistory = Array.from({ length: 12 }, () => ({ division: "makuuchi" }) as any);
     const champion = mockRikishi("champ4", {
       shikona: "Vet Champ",
       rank: "yokozuna",
@@ -180,7 +181,9 @@ describe("PostBashoPressService — Prize Winners", () => {
       year: 2025,
     });
 
-    const hasFoughtLine = lines.some((l) => l.text.includes("Prize Fighter") && l.id.includes("-fought"));
+    const hasFoughtLine = lines.some(
+      (l) => l.text.includes("Prize Fighter") && l.id.includes("-fought")
+    );
     expect(hasFoughtLine).toBe(true);
   });
 
@@ -219,7 +222,9 @@ describe("PostBashoPressService — Prize Winners", () => {
       year: 2025,
     });
 
-    const hasVeteranLine = lines.some((l) => l.text.includes("Old Veteran") && l.id.includes("-veteran"));
+    const hasVeteranLine = lines.some(
+      (l) => l.text.includes("Old Veteran") && l.id.includes("-veteran")
+    );
     expect(hasVeteranLine).toBe(true);
   });
 
@@ -288,11 +293,15 @@ describe("PostBashoPressService — Yokozuna Bid & Ozeki Stake", () => {
       year: 2025,
     });
 
-    const hasBidLine = lines.some((l) => l.text.includes("Ozeki Hopeful") && l.id.includes("ydc-bid"));
+    const hasBidLine = lines.some(
+      (l) => l.text.includes("Ozeki Hopeful") && l.id.includes("ydc-bid")
+    );
     expect(hasBidLine).toBe(true);
 
     // 13+ wins should also generate score_threshold line
-    const hasScoreLine = lines.some((l) => l.text.includes("Ozeki Hopeful") && l.id.includes("-score"));
+    const hasScoreLine = lines.some(
+      (l) => l.text.includes("Ozeki Hopeful") && l.id.includes("-score")
+    );
     expect(hasScoreLine).toBe(true);
   });
 
@@ -329,7 +338,9 @@ describe("PostBashoPressService — Yokozuna Bid & Ozeki Stake", () => {
       year: 2025,
     });
 
-    const hasStakeLine = lines.some((l) => l.text.includes("Sekiwake Rising") && l.id.includes("ozeki-stake"));
+    const hasStakeLine = lines.some(
+      (l) => l.text.includes("Sekiwake Rising") && l.id.includes("ozeki-stake")
+    );
     expect(hasStakeLine).toBe(true);
   });
 

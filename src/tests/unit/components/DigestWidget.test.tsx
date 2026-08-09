@@ -9,7 +9,9 @@ vi.mock("@/contexts/useGame", () => ({
 
 vi.mock("@tanstack/react-router", () => ({
   Link: ({ to, children }: any) => (
-    <a href={to} data-testid="router-link">{children}</a>
+    <a href={to} data-testid="router-link">
+      {children}
+    </a>
   ),
   useNavigate: () => (opts: any) => mockNavigate(opts),
 }));
@@ -158,9 +160,7 @@ describe("DigestWidget", () => {
       {
         id: "sec-1",
         title: "Training",
-        items: [
-          makeDigestItem({ id: "i1", title: "Training gain", rikishiId: "r-5" }),
-        ],
+        items: [makeDigestItem({ id: "i1", title: "Training gain", rikishiId: "r-5" })],
       },
     ]);
     vi.mocked(useGame).mockReturnValue({ state: { world: {} } } as any);
@@ -176,9 +176,7 @@ describe("DigestWidget", () => {
       {
         id: "sec-1",
         title: "Training",
-        items: [
-          makeDigestItem({ id: "i1", title: "Training gain", rikishiId: "r-5" }),
-        ],
+        items: [makeDigestItem({ id: "i1", title: "Training gain", rikishiId: "r-5" })],
       },
     ]);
     vi.mocked(useGame).mockReturnValue({ state: { world: {} } } as any);
@@ -194,9 +192,7 @@ describe("DigestWidget", () => {
       {
         id: "sec-1",
         title: "Economy",
-        items: [
-          makeDigestItem({ id: "i1", title: "Budget update", heyaId: "s-3" }),
-        ],
+        items: [makeDigestItem({ id: "i1", title: "Budget update", heyaId: "s-3" })],
       },
     ]);
     vi.mocked(useGame).mockReturnValue({ state: { world: {} } } as any);
@@ -226,9 +222,7 @@ describe("DigestWidget", () => {
       {
         id: "sec-1",
         title: "Training",
-        items: [
-          makeDigestItem({ id: "i1", title: "Training gain", rikishiId: "r-5" }),
-        ],
+        items: [makeDigestItem({ id: "i1", title: "Training gain", rikishiId: "r-5" })],
       },
     ]);
     vi.mocked(useGame).mockReturnValue({ state: { world: {} } } as any);
@@ -258,9 +252,7 @@ describe("DigestWidget", () => {
     const items = Array.from({ length: 10 }, (_, i) =>
       makeDigestItem({ id: `i${i}`, title: `Item ${i}` })
     );
-    const digest = makeDigest([
-      { id: "sec-1", title: "Big Section", items },
-    ]);
+    const digest = makeDigest([{ id: "sec-1", title: "Big Section", items }]);
     vi.mocked(useGame).mockReturnValue({ state: { world: {} } } as any);
     vi.mocked(buildWeeklyDigest).mockReturnValue(digest as any);
     render(<DigestWidget />);

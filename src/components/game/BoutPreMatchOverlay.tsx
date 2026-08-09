@@ -178,9 +178,7 @@ export function BoutPreMatchOverlay({ preview, onDismiss, onBegin }: BoutPreMatc
                 <SumoAvatar
                   config={eastRikishi.avatarConfig}
                   size="md"
-                  showHairstyle={
-                    isSekitoriDivision(eastRikishi.division)
-                  }
+                  showHairstyle={isSekitoriDivision(eastRikishi.division)}
                   fallback={eastRikishi.shikona}
                   className="mb-1"
                 />
@@ -194,9 +192,7 @@ export function BoutPreMatchOverlay({ preview, onDismiss, onBegin }: BoutPreMatc
                 <SumoAvatar
                   config={westRikishi.avatarConfig}
                   size="md"
-                  showHairstyle={
-                    isSekitoriDivision(westRikishi.division)
-                  }
+                  showHairstyle={isSekitoriDivision(westRikishi.division)}
                   fallback={westRikishi.shikona}
                   className="mb-1"
                 />

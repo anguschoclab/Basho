@@ -4,9 +4,7 @@ import type { UIDigest } from "@/presenters/uiDigest";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
-import {
-  type SaveSlotInfo,
-} from "@/engine/saveload";
+import { type SaveSlotInfo } from "@/engine/saveload";
 import { type HolidayConfig, type HolidayResult } from "@/engine/holiday";
 import { type AutoSimConfig, type AutoSimResult } from "@/engine/autoSim";
 import { getMatchesForDay } from "./gameHelpers";

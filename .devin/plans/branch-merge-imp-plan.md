@@ -12,17 +12,18 @@
 
 All 5 branches were created from `abfe973d` or `5d75b548` (both already merged into `main` at `c5763663`). Each branch has a single commit with a small unique delta. No PR has review comments (only bot greetings from Jules/Gemini, both sunset).
 
-| # | PR | Branch | Unique Change | Files Touched |
-|---|-----|--------|--------------|---------------|
-| 1 | #727 | `bolt-optimize-makuuchi-count-10662305893688698680` | Replace `.filter().length` with `for...of` loop for `makuuchiCount` | `src/engine/bout/boutNarrative.ts`, `.jules/bolt.md` |
-| 2 | #728 | `curator-surface-ginboshi-1943275196600659717` | Surface ginboshi in profile header, rikishi card, intai ceremony | `src/components/game/IntaiCeremony.tsx`, `src/components/game/RikishiCard.tsx`, `src/components/rikishi/RikishiProfileHeader.tsx`, `src/tests/unit/components/RikishiProfileHeader.test.tsx`, `.jules/curator.md` |
-| 3 | #729 | `polish-rivalries-empty-state-14669782824540868683` | Replace bespoke empty state with standard `EmptyState` component | `src/components/rivalries/RivalriesEmptyState.tsx`, `.jules/polish.md` |
-| 4 | #730 | `palette-ux-listcard-keyboard-accessibility-8581097588130117546` | Add keyboard accessibility (role, tabIndex, Enter/Space handlers, focus-visible) to ListCard rows | `src/components/layout/control-center/ListCard.tsx` |
-| 5 | #731 | `bard-expand-post-bout-reactions-13050769027657083684` | Add 5 new post-bout reaction variants | `src/engine/bard/archive.json`, `.jules/bard.md` |
+| #   | PR   | Branch                                                           | Unique Change                                                                                     | Files Touched                                                                                                                                                                                                     |
+| --- | ---- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | #727 | `bolt-optimize-makuuchi-count-10662305893688698680`              | Replace `.filter().length` with `for...of` loop for `makuuchiCount`                               | `src/engine/bout/boutNarrative.ts`, `.jules/bolt.md`                                                                                                                                                              |
+| 2   | #728 | `curator-surface-ginboshi-1943275196600659717`                   | Surface ginboshi in profile header, rikishi card, intai ceremony                                  | `src/components/game/IntaiCeremony.tsx`, `src/components/game/RikishiCard.tsx`, `src/components/rikishi/RikishiProfileHeader.tsx`, `src/tests/unit/components/RikishiProfileHeader.test.tsx`, `.jules/curator.md` |
+| 3   | #729 | `polish-rivalries-empty-state-14669782824540868683`              | Replace bespoke empty state with standard `EmptyState` component                                  | `src/components/rivalries/RivalriesEmptyState.tsx`, `.jules/polish.md`                                                                                                                                            |
+| 4   | #730 | `palette-ux-listcard-keyboard-accessibility-8581097588130117546` | Add keyboard accessibility (role, tabIndex, Enter/Space handlers, focus-visible) to ListCard rows | `src/components/layout/control-center/ListCard.tsx`                                                                                                                                                               |
+| 5   | #731 | `bard-expand-post-bout-reactions-13050769027657083684`           | Add 5 new post-bout reaction variants                                                             | `src/engine/bard/archive.json`, `.jules/bard.md`                                                                                                                                                                  |
 
 ### 1.2 Conflict Analysis
 
 **Source code conflicts**: NONE expected. Each branch touches distinct files.
+
 - PR #727 touches `boutNarrative.ts` at line 485 (makuuchiCount optimization).
 - The uncommitted working-tree changes also touch `boutNarrative.ts` but at different lines (628, 1340, 1351, 1360, 1679, 1717). No conflict with PR #727's change at line 485.
 
@@ -39,6 +40,7 @@ All 5 branches were created from `abfe973d` or `5d75b548` (both already merged i
 ### 1.3 Merge Procedure
 
 For each branch:
+
 ```bash
 git checkout main
 git merge --no-ff origin/<branch-name>
@@ -48,6 +50,7 @@ bun run typecheck && bun run test
 ```
 
 After all merges, delete remote branches:
+
 ```bash
 git push origin --delete <branch-name>
 ```
@@ -70,6 +73,7 @@ git commit -m "Fix off-by-one in bout narrative: careerWins/currentBasho records
 **Comments**: Only bot greetings (Jules, Gemini). No review feedback.
 
 **Code evaluation**:
+
 - Replaces `r.careerHistory.filter(s => s.division === "makuuchi").length` with a `for...of` counting loop at `boutNarrative.ts:485`.
 - Functionally equivalent. Micro-optimization to avoid intermediate array allocation.
 - **Verdict**: ✅ APPROVED. Merge as-is.
@@ -79,6 +83,7 @@ git commit -m "Fix off-by-one in bout narrative: careerWins/currentBasho records
 **Comments**: Only bot greetings. No review feedback.
 
 **Code evaluation**:
+
 - `RikishiProfileHeader.tsx`: Adds "Ginboshi" stat with `condition: ginboshiEarned > 0`. Correct.
 - `RikishiCard.tsx`: Wraps "Silver Stars Won" in `{ginboshiEarned > 0 && (...)}` conditional. Adds "Silver Stars Conceded" block for ozeki rank. Correct.
 - `IntaiCeremony.tsx`: Adds ginboshi line to retirement narrative when `ginboshiEarned > 0`. Correct.
@@ -91,6 +96,7 @@ git commit -m "Fix off-by-one in bout narrative: careerWins/currentBasho records
 **Comments**: Only bot greetings. No review feedback.
 
 **Code evaluation**:
+
 - Replaces bespoke `CardContent` with `p-12 text-center` and manual icon/heading/text with `<EmptyState icon={Swords} title="..." description="..." />`.
 - Delegates to design system component. `EmptyState` at `src/components/ui/EmptyState.tsx` provides consistent styling with icon container, title, and description.
 - `CardContent` className changes from `p-12 text-center` to `p-0` to let `EmptyState` handle padding.
@@ -101,6 +107,7 @@ git commit -m "Fix off-by-one in bout narrative: careerWins/currentBasho records
 **Comments**: Only bot greetings. No review feedback.
 
 **Code evaluation**:
+
 - Adds `role="button"`, `tabIndex={0}`, `onKeyDown` handler (Enter/Space → `row.onClick()`), and `focus-visible` styling to clickable ListCard rows.
 - Guards: `role` and `tabIndex` are only set when `row.onClick` exists. `onKeyDown` checks `row.onClick` before calling.
 - `e.preventDefault()` on Space key prevents page scroll. Correct.
@@ -111,6 +118,7 @@ git commit -m "Fix off-by-one in bout narrative: careerWins/currentBasho records
 **Comments**: Only bot greetings. No review feedback.
 
 **Code evaluation**:
+
 - Adds 5 new variants to `post_bout.reaction` array in `archive.json`:
   - "No doubt about that one — %WINNER% executes a flawless %KIMARITE%."
   - "A masterful display from %WINNER%, dispatching %LOSER% with %KIMARITE%."
@@ -165,6 +173,7 @@ const result = worldEngine.simulateBoutForToday(world, 0, playerTactic);
 **Location**: `src/engine/bout/boutNarrative.ts:1494-1505`
 
 **Root cause**: The condition is:
+
 ```ts
 const loserPrevWins = (standings.get(loserRikishi.id)?.wins ?? loserWins);
 if (loserPrevWins === maxWins && loserWins < maxWins) {
@@ -189,11 +198,14 @@ This triggers when: the winner just became sole leader at `maxWins`, and the los
 **Location**: `src/engine/bout/boutNarrative.ts:1677`
 
 **Root cause**: PR #727 optimizes the `makuuchiCount` calculation at line 485 but misses the identical pattern at line 1677:
+
 ```ts
-const makuuchiTournaments = winnerRikishi.careerHistory?.filter(s => s.division === "makuuchi").length ?? 0;
+const makuuchiTournaments =
+  winnerRikishi.careerHistory?.filter((s) => s.division === "makuuchi").length ?? 0;
 ```
 
 **Fix**: Apply the same `for...of` optimization:
+
 ```ts
 let makuuchiTournaments = 0;
 if (winnerRikishi.careerHistory) {

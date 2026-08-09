@@ -26,7 +26,10 @@ export function computeStandingsEvolution(
   }
 
   const standingsEntries = Array.from(basho.standings.entries());
-  const sorted = sortStandings(standingsEntries.map(([id, rec]) => ({ id, ...rec }))).slice(0, maxLines);
+  const sorted = sortStandings(standingsEntries.map(([id, rec]) => ({ id, ...rec }))).slice(
+    0,
+    maxLines
+  );
   const topIds = sorted.map((s) => s.id);
   const topIdSet = new Set(topIds);
 

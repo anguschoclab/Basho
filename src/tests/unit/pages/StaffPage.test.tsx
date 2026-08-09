@@ -108,9 +108,24 @@ describe("StaffPage sorting", () => {
   beforeEach(() => {
     localStorage.clear();
     mockStaff = [
-      makeStaff("s1", { name: "Charlie", role: "scout", competenceBands: { primary: "feeble" }, yearsAtBeya: 2 }),
-      makeStaff("s2", { name: "Alpha", role: "medical_staff", competenceBands: { primary: "dominant" }, yearsAtBeya: 10 }),
-      makeStaff("s3", { name: "Bravo", role: "technique_coach", competenceBands: { primary: "great" }, yearsAtBeya: 5 }),
+      makeStaff("s1", {
+        name: "Charlie",
+        role: "scout",
+        competenceBands: { primary: "feeble" },
+        yearsAtBeya: 2,
+      }),
+      makeStaff("s2", {
+        name: "Alpha",
+        role: "medical_staff",
+        competenceBands: { primary: "dominant" },
+        yearsAtBeya: 10,
+      }),
+      makeStaff("s3", {
+        name: "Bravo",
+        role: "technique_coach",
+        competenceBands: { primary: "great" },
+        yearsAtBeya: 5,
+      }),
     ];
   });
 

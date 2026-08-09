@@ -48,7 +48,7 @@ describe("issueBailoutLoanIfNeeded", () => {
           issuedAtYear: 2026,
           issuedAtMonth: 1,
           stringsAttached: [],
-        }
+        },
       ],
     });
     world.heyas.set("heya-1", heya);

@@ -108,7 +108,8 @@ export function checkRetirement(
 
   // 1.5. Yokozuna Mandatory Retirement (earlier due to intense pressure)
   // Real sumo: Yokozuna often retire earlier due to the pressure of maintaining their status
-  if (rikishi.rank === "yokozuna" && age >= RETIREMENT_YOKOZUNA_MANDATORY_AGE) return "Yokozuna Mandatory Retirement";
+  if (rikishi.rank === "yokozuna" && age >= RETIREMENT_YOKOZUNA_MANDATORY_AGE)
+    return "Yokozuna Mandatory Retirement";
 
   // 2. Injury Forced Retirement
   // Career-ending: serious injury (from weekly health phase) with >20 weeks remaining
@@ -126,12 +127,16 @@ export function checkRetirement(
 
     // 3.1 Council Warning Trigger (Binary)
     // 3 warnings = mandatory retirement
-    if (warnings >= RETIREMENT_COUNCIL_WARNINGS_FORCED) return "Council Forced Retirement (Lack of Dignity)";
+    if (warnings >= RETIREMENT_COUNCIL_WARNINGS_FORCED)
+      return "Council Forced Retirement (Lack of Dignity)";
 
     // 3.2 Performance/Kyujo Pressure
     // Real sumo: Yokozuna who miss 3 consecutive basho or are consistently weak face pressure
-    const isWeak = rikishi.consecutiveMakeKoshi && rikishi.consecutiveMakeKoshi >= RETIREMENT_CONSECUTIVE_MAKE_KOSHI_WEAK;
-    const isAbsentTooLong = (rikishi.consecutiveKyujo || 0) >= RETIREMENT_CONSECUTIVE_KYUJO_TOO_LONG;
+    const isWeak =
+      rikishi.consecutiveMakeKoshi &&
+      rikishi.consecutiveMakeKoshi >= RETIREMENT_CONSECUTIVE_MAKE_KOSHI_WEAK;
+    const isAbsentTooLong =
+      (rikishi.consecutiveKyujo || 0) >= RETIREMENT_CONSECUTIVE_KYUJO_TOO_LONG;
 
     if (isWeak || isAbsentTooLong) {
       // Base chance increases by 30% per warning level
@@ -145,7 +150,10 @@ export function checkRetirement(
   }
 
   // 4. Natural Aging Curve (Probability increases with age)
-  const baseRetireChance = Math.max(0, (age - RETIREMENT_NATURAL_AGE_START) * RETIREMENT_NATURAL_RATE_PER_YEAR);
+  const baseRetireChance = Math.max(
+    0,
+    (age - RETIREMENT_NATURAL_AGE_START) * RETIREMENT_NATURAL_RATE_PER_YEAR
+  );
   const roll = rng.next();
 
   if (roll < baseRetireChance) {
@@ -154,8 +162,12 @@ export function checkRetirement(
 
   // 5. Performance Drop (Rank & Stat based)
   const isStagnant = rikishi.rank === "jonokuchi" && age > RETIREMENT_STAGNANT_AGE;
-  const isWeak = (rikishi.stats?.power ?? RETIREMENT_DEFAULT_POWER) < RETIREMENT_STAT_WEAK_POWER && age > RETIREMENT_WEAK_AGE;
-  const isCriticallyWeak = (rikishi.stats?.power ?? RETIREMENT_DEFAULT_POWER) < RETIREMENT_STAT_CRITICAL_POWER && age > RETIREMENT_CRITICAL_WEAK_AGE;
+  const isWeak =
+    (rikishi.stats?.power ?? RETIREMENT_DEFAULT_POWER) < RETIREMENT_STAT_WEAK_POWER &&
+    age > RETIREMENT_WEAK_AGE;
+  const isCriticallyWeak =
+    (rikishi.stats?.power ?? RETIREMENT_DEFAULT_POWER) < RETIREMENT_STAT_CRITICAL_POWER &&
+    age > RETIREMENT_CRITICAL_WEAK_AGE;
 
   if (isStagnant || isWeak || isCriticallyWeak) {
     let retireProb = RETIREMENT_PROB_STAGNANT;
@@ -163,7 +175,9 @@ export function checkRetirement(
     if (isCriticallyWeak) retireProb = RETIREMENT_PROB_CRITICAL;
 
     if (rng.bool(retireProb)) {
-      return (rikishi.stats?.power ?? RETIREMENT_DEFAULT_POWER) < RETIREMENT_STAT_DIMINISHING_POWER ? "Diminishing Physicality" : "Lack of Performance";
+      return (rikishi.stats?.power ?? RETIREMENT_DEFAULT_POWER) < RETIREMENT_STAT_DIMINISHING_POWER
+        ? "Diminishing Physicality"
+        : "Lack of Performance";
     }
   }
 
@@ -171,7 +185,6 @@ export function checkRetirement(
 }
 
 // --- REGENERATION (REPLACEMENT) LOGIC ---
-
 
 /**
  * Internal function to generate a new rookie rikishi.

@@ -159,8 +159,30 @@ describe("KenshoService", () => {
   describe("assignKenshoBanners — tier caps and ceremony tags", () => {
     it("filters out inactive sponsors", () => {
       const sponsors = new Map<string, Sponsor>([
-        ["s1", { sponsorId: "s1", active: false, tier: "T5", prestigeAffinity: 50, loyalty: 50, displayName: "Inactive", visibilityPreference: 1 } as unknown as Sponsor],
-        ["s2", { sponsorId: "s2", active: true, tier: "T5", prestigeAffinity: 50, loyalty: 50, displayName: "Active", visibilityPreference: 1 } as unknown as Sponsor],
+        [
+          "s1",
+          {
+            sponsorId: "s1",
+            active: false,
+            tier: "T5",
+            prestigeAffinity: 50,
+            loyalty: 50,
+            displayName: "Inactive",
+            visibilityPreference: 1,
+          } as unknown as Sponsor,
+        ],
+        [
+          "s2",
+          {
+            sponsorId: "s2",
+            active: true,
+            tier: "T5",
+            prestigeAffinity: 50,
+            loyalty: 50,
+            displayName: "Active",
+            visibilityPreference: 1,
+          } as unknown as Sponsor,
+        ],
       ]);
       const pool = { sponsors, koenkais: new Map() } as unknown as SponsorPool;
       const rng = rngFromSeed("test-inactive", "kensho", "inactive");
@@ -172,7 +194,18 @@ describe("KenshoService", () => {
 
     it("assigns 'premium' ceremonyStyleTag for T5 sponsors", () => {
       const sponsors = new Map<string, Sponsor>([
-        ["s1", { sponsorId: "s1", active: true, tier: "T5", prestigeAffinity: 50, loyalty: 50, displayName: "T5-Sponsor", visibilityPreference: 1 } as unknown as Sponsor],
+        [
+          "s1",
+          {
+            sponsorId: "s1",
+            active: true,
+            tier: "T5",
+            prestigeAffinity: 50,
+            loyalty: 50,
+            displayName: "T5-Sponsor",
+            visibilityPreference: 1,
+          } as unknown as Sponsor,
+        ],
       ]);
       const pool = { sponsors, koenkais: new Map() } as unknown as SponsorPool;
       const rng = rngFromSeed("test-premium", "kensho", "premium");
@@ -182,7 +215,18 @@ describe("KenshoService", () => {
 
     it("assigns 'premium' ceremonyStyleTag for T4 sponsors", () => {
       const sponsors = new Map<string, Sponsor>([
-        ["s1", { sponsorId: "s1", active: true, tier: "T4", prestigeAffinity: 50, loyalty: 50, displayName: "T4-Sponsor", visibilityPreference: 1 } as unknown as Sponsor],
+        [
+          "s1",
+          {
+            sponsorId: "s1",
+            active: true,
+            tier: "T4",
+            prestigeAffinity: 50,
+            loyalty: 50,
+            displayName: "T4-Sponsor",
+            visibilityPreference: 1,
+          } as unknown as Sponsor,
+        ],
       ]);
       const pool = { sponsors, koenkais: new Map() } as unknown as SponsorPool;
       const rng = rngFromSeed("test-premium-t4", "kensho", "premium-t4");
@@ -192,7 +236,18 @@ describe("KenshoService", () => {
 
     it("assigns 'quiet' ceremonyStyleTag when visibilityPreference is 0", () => {
       const sponsors = new Map<string, Sponsor>([
-        ["s1", { sponsorId: "s1", active: true, tier: "T3", prestigeAffinity: 50, loyalty: 50, displayName: "Quiet-Sponsor", visibilityPreference: 0 } as unknown as Sponsor],
+        [
+          "s1",
+          {
+            sponsorId: "s1",
+            active: true,
+            tier: "T3",
+            prestigeAffinity: 50,
+            loyalty: 50,
+            displayName: "Quiet-Sponsor",
+            visibilityPreference: 0,
+          } as unknown as Sponsor,
+        ],
       ]);
       const pool = { sponsors, koenkais: new Map() } as unknown as SponsorPool;
       const rng = rngFromSeed("test-quiet", "kensho", "quiet");
@@ -202,7 +257,18 @@ describe("KenshoService", () => {
 
     it("assigns 'classic' ceremonyStyleTag for T3 with visibility > 0", () => {
       const sponsors = new Map<string, Sponsor>([
-        ["s1", { sponsorId: "s1", active: true, tier: "T3", prestigeAffinity: 50, loyalty: 50, displayName: "Classic-Sponsor", visibilityPreference: 1 } as unknown as Sponsor],
+        [
+          "s1",
+          {
+            sponsorId: "s1",
+            active: true,
+            tier: "T3",
+            prestigeAffinity: 50,
+            loyalty: 50,
+            displayName: "Classic-Sponsor",
+            visibilityPreference: 1,
+          } as unknown as Sponsor,
+        ],
       ]);
       const pool = { sponsors, koenkais: new Map() } as unknown as SponsorPool;
       const rng = rngFromSeed("test-classic", "kensho", "classic");
@@ -214,10 +280,42 @@ describe("KenshoService", () => {
       // 2 T5, 2 T4, 2 T3 — request more than caps allow
       const sponsors = new Map<string, Sponsor>();
       for (let i = 0; i < 2; i++) {
-        sponsors.set(`t5-${i}`, { sponsorId: `t5-${i}`, active: true, tier: "T5", prestigeAffinity: 50, loyalty: 50, displayName: `T5-${i}`, visibilityPreference: 1 } as unknown as Sponsor);
-        sponsors.set(`t4-${i}`, { sponsorId: `t4-${i}`, active: true, tier: "T4", prestigeAffinity: 50, loyalty: 50, displayName: `T4-${i}`, visibilityPreference: 1 } as unknown as Sponsor);
-        sponsors.set(`t3-${i}`, { sponsorId: `t3-${i}`, active: true, tier: "T3", prestigeAffinity: 50, loyalty: 50, displayName: `T3-${i}`, visibilityPreference: 1 } as unknown as Sponsor);
-        sponsors.set(`t2-${i}`, { sponsorId: `t2-${i}`, active: true, tier: "T2", prestigeAffinity: 50, loyalty: 50, displayName: `T2-${i}`, visibilityPreference: 1 } as unknown as Sponsor);
+        sponsors.set(`t5-${i}`, {
+          sponsorId: `t5-${i}`,
+          active: true,
+          tier: "T5",
+          prestigeAffinity: 50,
+          loyalty: 50,
+          displayName: `T5-${i}`,
+          visibilityPreference: 1,
+        } as unknown as Sponsor);
+        sponsors.set(`t4-${i}`, {
+          sponsorId: `t4-${i}`,
+          active: true,
+          tier: "T4",
+          prestigeAffinity: 50,
+          loyalty: 50,
+          displayName: `T4-${i}`,
+          visibilityPreference: 1,
+        } as unknown as Sponsor);
+        sponsors.set(`t3-${i}`, {
+          sponsorId: `t3-${i}`,
+          active: true,
+          tier: "T3",
+          prestigeAffinity: 50,
+          loyalty: 50,
+          displayName: `T3-${i}`,
+          visibilityPreference: 1,
+        } as unknown as Sponsor);
+        sponsors.set(`t2-${i}`, {
+          sponsorId: `t2-${i}`,
+          active: true,
+          tier: "T2",
+          prestigeAffinity: 50,
+          loyalty: 50,
+          displayName: `T2-${i}`,
+          visibilityPreference: 1,
+        } as unknown as Sponsor);
       }
       const pool = { sponsors, koenkais: new Map() } as unknown as SponsorPool;
       const rng = rngFromSeed("test-fill", "kensho", "fill");

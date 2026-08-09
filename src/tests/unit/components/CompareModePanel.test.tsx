@@ -50,10 +50,32 @@ describe("CompareModePanel — nested .stats.* access regression (Step 3.3)", ()
 
   it("reads stats from the nested rikishi.stats path, not flat properties", () => {
     const rikishiA = MockFactory.createRikishi("r1", {
-      stats: { power: 80, speed: 60, technique: 70, balance: 50, stamina: 65, mental: 55, adaptability: 50, aggression: 50, experience: 10, weight: 140 },
+      stats: {
+        power: 80,
+        speed: 60,
+        technique: 70,
+        balance: 50,
+        stamina: 65,
+        mental: 55,
+        adaptability: 50,
+        aggression: 50,
+        experience: 10,
+        weight: 140,
+      },
     });
     const rikishiB = MockFactory.createRikishi("r2", {
-      stats: { power: 40, speed: 90, technique: 30, balance: 60, stamina: 45, mental: 75, adaptability: 50, aggression: 50, experience: 10, weight: 130 },
+      stats: {
+        power: 40,
+        speed: 90,
+        technique: 30,
+        balance: 60,
+        stamina: 45,
+        mental: 75,
+        adaptability: 50,
+        aggression: 50,
+        experience: 10,
+        weight: 130,
+      },
     });
 
     mockState.world = {

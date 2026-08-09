@@ -108,7 +108,10 @@ describe("FinanceCalculator — income components", () => {
       rikishiIds: ["r1", "r2"],
     });
     const world = makeMockWorld({
-      rikishi: new Map([["r1", r1], ["r2", r2]]),
+      rikishi: new Map([
+        ["r1", r1],
+        ["r2", r2],
+      ]),
       heyas: new Map([["h1", heya]]),
     });
     const result = calculateHeyaWeeklyFinances(heya, world);
@@ -130,7 +133,10 @@ describe("FinanceCalculator — income components", () => {
       members: [{ sponsorId: "s1" }, { sponsorId: "s2" }],
     } as unknown as Koenkai;
     const sponsorPool = {
-      sponsors: new Map([["s1", sponsor1], ["s2", sponsor2]]),
+      sponsors: new Map([
+        ["s1", sponsor1],
+        ["s2", sponsor2],
+      ]),
       koenkais: new Map([["k1", koenkai]]),
     } as unknown as SponsorPool;
 
@@ -196,7 +202,9 @@ describe("FinanceCalculator — expense components", () => {
     const world = makeMockWorld({ heyas: new Map([["h1", heya]]) });
     const result = calculateHeyaWeeklyFinances(heya, world);
     const expectedFacility =
-      40 * FACILITY_UPKEEP.training + 60 * FACILITY_UPKEEP.recovery + 20 * FACILITY_UPKEEP.nutrition;
+      40 * FACILITY_UPKEEP.training +
+      60 * FACILITY_UPKEEP.recovery +
+      20 * FACILITY_UPKEEP.nutrition;
     const expectedBaseBurn = expectedFacility + FIXED_OPERATING_OVERHEAD_WEEKLY;
     // Income > totalBurn so effectiveBurn = totalBurn = baseBurn + recruitment
     expect(result.totalBurn).toBe(expectedBaseBurn + RECRUITMENT_BUDGET_WEEKLY);
@@ -294,7 +302,9 @@ describe("FinanceCalculator — solvency clamping", () => {
     const world = makeMockWorld({ heyas: new Map([["h1", heya]]) });
     const result = calculateHeyaWeeklyFinances(heya, world);
     const expectedFacility =
-      50 * FACILITY_UPKEEP.training + 50 * FACILITY_UPKEEP.recovery + 50 * FACILITY_UPKEEP.nutrition;
+      50 * FACILITY_UPKEEP.training +
+      50 * FACILITY_UPKEEP.recovery +
+      50 * FACILITY_UPKEEP.nutrition;
     const expectedBaseBurn = expectedFacility + FIXED_OPERATING_OVERHEAD_WEEKLY;
     // Income (350K) < totalBurn (baseBurn + recruitment) → effectiveBurn = baseBurn
     expect(result.expenses).toBe(expectedBaseBurn);

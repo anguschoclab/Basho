@@ -141,16 +141,32 @@ describe("RNG determinism — RNGRegistry", () => {
   });
 
   it("getTrainingRNG is deterministic for same world state", () => {
-    const world1 = { ...mockWorld, seed: "train-seed", calendar: { currentWeek: 3 } } as unknown as WorldState;
-    const world2 = { ...mockWorld, seed: "train-seed", calendar: { currentWeek: 3 } } as unknown as WorldState;
+    const world1 = {
+      ...mockWorld,
+      seed: "train-seed",
+      calendar: { currentWeek: 3 },
+    } as unknown as WorldState;
+    const world2 = {
+      ...mockWorld,
+      seed: "train-seed",
+      calendar: { currentWeek: 3 },
+    } as unknown as WorldState;
     const rng1 = RNGRegistry.getTrainingRNG(world1);
     const rng2 = RNGRegistry.getTrainingRNG(world2);
     expect(rng1.next()).toBe(rng2.next());
   });
 
   it("getScoutingRNG is deterministic for same world state", () => {
-    const world1 = { ...mockWorld, seed: "scout-seed", calendar: { currentWeek: 5 } } as unknown as WorldState;
-    const world2 = { ...mockWorld, seed: "scout-seed", calendar: { currentWeek: 5 } } as unknown as WorldState;
+    const world1 = {
+      ...mockWorld,
+      seed: "scout-seed",
+      calendar: { currentWeek: 5 },
+    } as unknown as WorldState;
+    const world2 = {
+      ...mockWorld,
+      seed: "scout-seed",
+      calendar: { currentWeek: 5 },
+    } as unknown as WorldState;
     const rng1 = RNGRegistry.getScoutingRNG(world1);
     const rng2 = RNGRegistry.getScoutingRNG(world2);
     expect(rng1.next()).toBe(rng2.next());
@@ -202,13 +218,13 @@ describe("RNG determinism — no Math.random() in engine source", () => {
     for (const file of files) {
       const content = readFileSync(file, "utf-8");
       // Strip comments to avoid false positives
-      const stripped = content
-        .replace(/\/\/.*$/gm, "")
-        .replace(/\/\*[\s\S]*?\*\//g, "");
+      const stripped = content.replace(/\/\/.*$/gm, "").replace(/\/\*[\s\S]*?\*\//g, "");
       if (/\bMath\.random\s*\(/.test(stripped)) {
         violations.push(file);
       }
     }
-    expect(violations, `Math.random() found in engine source: ${violations.join(", ")}`).toEqual([]);
+    expect(violations, `Math.random() found in engine source: ${violations.join(", ")}`).toEqual(
+      []
+    );
   });
 });

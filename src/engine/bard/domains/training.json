@@ -1,58 +1,26 @@
 {
   "intensity": {
-    "conservative": [
-      "Conservative"
-    ],
-    "balanced": [
-      "Balanced"
-    ],
-    "intensive": [
-      "Intensive"
-    ],
-    "punishing": [
-      "Punishing"
-    ]
+    "conservative": ["Conservative"],
+    "balanced": ["Balanced"],
+    "intensive": ["Intensive"],
+    "punishing": ["Punishing"]
   },
   "focus": {
-    "power": [
-      "Power"
-    ],
-    "speed": [
-      "Speed"
-    ],
-    "technique": [
-      "Technique"
-    ],
-    "balance": [
-      "Balance"
-    ],
-    "neutral": [
-      "Neutral"
-    ]
+    "power": ["Power"],
+    "speed": ["Speed"],
+    "technique": ["Technique"],
+    "balance": ["Balance"],
+    "neutral": ["Neutral"]
   },
   "recovery": {
-    "low": [
-      "Low"
-    ],
-    "normal": [
-      "Normal"
-    ],
-    "high": [
-      "High"
-    ]
+    "low": ["Low"],
+    "normal": ["Normal"],
+    "high": ["High"]
   },
   "mode": {
-    "develop": [
-      "Develop"
-    ],
-    "push": [
-      "Push"
-    ],
-    "protect": [
-      "Protect"
-    ],
-    "rebuild": [
-      "Rebuild"
-    ]
+    "develop": ["Develop"],
+    "push": ["Push"],
+    "protect": ["Protect"],
+    "rebuild": ["Rebuild"]
   }
 }

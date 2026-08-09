@@ -31,7 +31,9 @@ describe("L4.10: test quality — weak assertion audit", () => {
       }
     }
 
-    expect(weakFiles, `Files with only expect(true).toBe(true):\n${weakFiles.join("\n")}`).toEqual([]);
+    expect(weakFiles, `Files with only expect(true).toBe(true):\n${weakFiles.join("\n")}`).toEqual(
+      []
+    );
   });
 
   it("no test files use only toBeTruthy() without specific value checks", () => {
@@ -47,6 +49,8 @@ describe("L4.10: test quality — weak assertion audit", () => {
       }
     }
 
-    expect(weakFiles, `Files with only toBeTruthy() assertions:\n${weakFiles.join("\n")}`).toEqual([]);
+    expect(weakFiles, `Files with only toBeTruthy() assertions:\n${weakFiles.join("\n")}`).toEqual(
+      []
+    );
   });
 });

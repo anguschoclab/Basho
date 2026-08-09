@@ -147,11 +147,7 @@ export default function RikishiPage() {
         />
 
         <div className="p-8">
-          <RikishiLineage
-            mentor={mentor}
-            mentees={mentees}
-            rikishiId={rikishi.id}
-          />
+          <RikishiLineage mentor={mentor} mentees={mentees} rikishiId={rikishi.id} />
           <RikishiKeshoMawashi rikishi={rikishi} />
           <RikishiNaturalization rikishi={rikishi} />
 
@@ -181,7 +177,12 @@ export default function RikishiPage() {
               value="profile"
               className="space-y-8 animate-in fade-in slide-in-from-left-2 duration-300"
             >
-              <RikishiProfileTab rikishi={rikishi} rawRikishi={rawRikishi} worldSeed={world.seed} world={world} />
+              <RikishiProfileTab
+                rikishi={rikishi}
+                rawRikishi={rawRikishi}
+                worldSeed={world.seed}
+                world={world}
+              />
             </TabsContent>
 
             <TabsContent

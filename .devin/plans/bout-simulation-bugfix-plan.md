@@ -15,6 +15,7 @@
 **Root cause**: `simulateBoutForToday` at `src/engine/world.ts:123-189` calls `resolveBout` (returns `result`) and `applyBoutResult` (returns `StateImpact`), then resolves both impacts. Neither function sets `match.result` on the `currentBasho.matches` array. The `result` is returned to the caller but never persisted in the world state's `matches` array.
 
 **Evidence**:
+
 - `boutResultApplier.ts:32-274` — `applyBoutResult` updates standings, career wins/losses, achievements, H2H, injuries, rivalries, economics, media, events. It never touches `basho.matches`.
 - `world.ts:170-171` — `resolveImpacts` applies the impacts, but neither impact contains a `matches` update.
 - `ImpactBuilder` has `appendToWorldArray("basho.matches", ...)` but no method to update an existing match entry.
@@ -22,6 +23,7 @@
 - `TournamentSimulator.ts:112,131` — The auto-sim path DOES set `match.result = result` directly (mutable). This is the only path that works correctly.
 
 **Downstream impact** (all consumer code that checks `match.result`):
+
 - `BoutCard.tsx:39,66,77,98,103` — Bouts always show as unplayed; no winner highlight, no kimarite display
 - `MatchDayViewer.tsx:51,89-90,108` — No bouts marked as completed; completedCount always 0
 - `BashoWidget.tsx:81-84` — completedCount/kinboshi/upsets always 0
@@ -44,11 +46,13 @@
 **Root cause**: `boutResultApplier.ts:59-66` updates `careerWins`/`careerLosses` per-bout but does NOT update `currentBashoWins`, `currentBashoLosses`, or `currentBashoRecord`. These fields are only initialized to 0 by `BanzukePublisher` and `CandidateBuilder`, and only incremented by `TournamentSimulator` (the separate auto-sim path at lines 103-104, 136-137).
 
 **Evidence**:
+
 - `boutResultApplier.ts:61-66` — Only updates `careerWins` and `careerLosses`, not `currentBashoWins`/`currentBashoLosses`.
 - `TournamentSimulator.ts:103-104,136-137` — The auto-sim path mutates `winner.currentBashoWins` and `loser.currentBashoLosses` directly.
 - `BanzukePublisher.ts:313-314,323-324` — Resets `currentBashoWins` and `currentBashoLosses` to 0 on new banzuke entry.
 
 **Downstream impact** (all consumers of `currentBashoWins`/`currentBashoLosses`):
+
 - `boutNarrative.ts:1332-1335` — `winnerWins`/`loserLosses` always 0 → wrong records in narrative
 - `boutNarrative.ts:1390` — `isKachiKoshi(0+1, 0, rank)` → never true (1 < 8) → kachi-koshi narrative never fires
 - `boutNarrative.ts:1432` — `isMakeKoshi(0, 0+1, rank)` → never true (1 < 8) → make-koshi narrative never fires
@@ -67,16 +71,23 @@
 - `bashoProjections.ts:74` — UI standings always show 0-0 (reads `r.currentBashoRecord`)
 
 **Fix**: In `boutResultApplier.ts`, add `currentBashoWins`/`currentBashoLosses`/`currentBashoRecord` increments alongside the existing `careerWins`/`careerLosses` updates:
+
 ```ts
 builder.updateRikishi(winner.id, {
   careerWins: (winner.careerWins ?? 0) + 1,
   currentBashoWins: (winner.currentBashoWins ?? 0) + 1,
-  currentBashoRecord: { wins: (winner.currentBashoWins ?? 0) + 1, losses: winner.currentBashoLosses ?? 0 },
+  currentBashoRecord: {
+    wins: (winner.currentBashoWins ?? 0) + 1,
+    losses: winner.currentBashoLosses ?? 0,
+  },
 });
 builder.updateRikishi(loser.id, {
   careerLosses: (loser.careerLosses ?? 0) + 1,
   currentBashoLosses: (loser.currentBashoLosses ?? 0) + 1,
-  currentBashoRecord: { wins: loser.currentBashoWins ?? 0, losses: (loser.currentBashoLosses ?? 0) + 1 },
+  currentBashoRecord: {
+    wins: loser.currentBashoWins ?? 0,
+    losses: (loser.currentBashoLosses ?? 0) + 1,
+  },
 });
 ```
 
@@ -89,11 +100,13 @@ builder.updateRikishi(loser.id, {
 **Root cause**: `WorldFactory.initializeBasho` at `src/engine/systems/generation/WorldFactory.ts:168-181` does not set `kinboshiThisBasho: {}`. In `boutResolver.ts:243`, the guard `if (kinboshiDelta && basho.kinboshiThisBasho !== undefined)` is always false because `kinboshiThisBasho` is `undefined` for new basho.
 
 **Evidence**:
+
 - `WorldFactory.ts:170-180` — `initializeBasho` returns object without `kinboshiThisBasho`
 - `boutResolver.ts:243` — `basho.kinboshiThisBasho !== undefined` → always false
 - `BashoState` type at `basho.ts:186` — `kinboshiThisBasho?: Record<Id, number>` (optional)
 
 **Downstream impact**:
+
 - `PrizeDistribution.ts:172` — `payKinboshiStipends` uses `basho.kinboshiThisBasho ?? {}` → always `{}` → no stipends paid
 - `CompetitionService.ts:132` — `basho.kinboshiThisBasho?.[id] ?? 0` → always 0 → mochikyukin kinboshi bonus always 0
 
@@ -185,14 +198,15 @@ builder.updateRikishi(loser.id, {
 
 **Status**: ✅ APPROVED — MEDIUM
 
-**Root cause**: `PrizeDistribution.ts:62-65` calls `applyAchievementImpact(world, tempR, "sansho")` on a *temp* copy of the rikishi. The returned `StateImpact` is **discarded** — it's never merged into the builder. Then at line 75, `tempR.economics` is spread into `builder.updateRikishi`, but `applyAchievementImpact` returned its impact to nowhere. The popularity boost is lost.
+**Root cause**: `PrizeDistribution.ts:62-65` calls `applyAchievementImpact(world, tempR, "sansho")` on a _temp_ copy of the rikishi. The returned `StateImpact` is **discarded** — it's never merged into the builder. Then at line 75, `tempR.economics` is spread into `builder.updateRikishi`, but `applyAchievementImpact` returned its impact to nowhere. The popularity boost is lost.
 
 **Evidence**:
+
 - `PrizeDistribution.ts:64` — `applyAchievementImpact(world, tempR, "sansho")` return value is not captured
 - `sponsorshipMutations.ts:98-121` — `applyAchievementImpact` returns a `StateImpact` with `economics.popularity` updated; it does NOT mutate `tempR` in place
 - `boutResultApplier.ts:149` — Correct usage: `builder.merge(applyAchievementImpact(world, winner, result.awardFact))`
 
-**Impact**: Sansho prize winners never get the +12 popularity boost. Only the cash/retirement split is applied (lines 103-110), using the *original* `r.economics`, not the popularity-boosted one.
+**Impact**: Sansho prize winners never get the +12 popularity boost. Only the cash/retirement split is applied (lines 103-110), using the _original_ `r.economics`, not the popularity-boosted one.
 
 **Fix**: Capture and merge the impact: `const popImpact = applyAchievementImpact(world, r, "sansho"); builder.merge(popImpact);` Then apply the cash/retirement on top via a second `builder.updateRikishi` call (which is already there but uses `r.economics` not the boosted one — the merge will handle it since `updateRikishi` does shallow merge).
 
@@ -205,6 +219,7 @@ builder.updateRikishi(loser.id, {
 **Root cause**: `boutNarrative.ts:1495-1496` checks `loserPrevWins === maxWins && loserWins < maxWins`. But `loserPrevWins` is defined as `standings.get(loserRikishi.id)?.wins ?? loserWins`. Since `standings` hasn't been updated yet (narrative runs BEFORE `applyBoutResult`), `standings.get(loser)?.wins` is the pre-bout wins count. And `loserWins` is `loserRikishi.currentBashoWins ?? 0` which is also the pre-bout count. So `loserPrevWins === loserWins`, making the condition `loserWins === maxWins && loserWins < maxWins` — a logical contradiction that can never be true.
 
 **Evidence**:
+
 - `boutNarrative.ts:1495` — `loserPrevWins = standings.get(loserRikishi.id)?.wins ?? loserWins` → same as `loserWins`
 - `boutNarrative.ts:1496` — `loserPrevWins === maxWins && loserWins < maxWins` → `loserWins === maxWins && loserWins < maxWins` → impossible
 - `boutResolver.ts:224-232` — `generateBoutNarrative` is called BEFORE `applyBoutResult`, so standings and currentBashoWins are both pre-bout
@@ -218,12 +233,14 @@ builder.updateRikishi(loser.id, {
 **Status**: ✅ APPROVED — LOW (by design, but worth documenting)
 
 **Root cause**: `PlayoffResolver.ts:42-49` calls `resolveBout` for playoff matches but does NOT call `applyBoutResult`. This means playoff bouts:
+
 - Do NOT update standings (intentional — playoffs are separate)
 - Do NOT update careerWins/careerLosses (potential issue)
 - Do NOT trigger injury rolls
 - Do NOT update rivalries or media
 
 **Evidence**:
+
 - `PlayoffResolver.ts:42-49` — Only calls `resolveBout`, not `applyBoutResult`
 - `PlayoffResolver.ts:12` — Comment confirms: "skips the full applyBoutResult side-effects"
 
@@ -254,13 +271,15 @@ builder.updateRikishi(loser.id, {
 **Root cause**: `BanzukePublisher.ts:68` casts standings entries as `{ wins: number; losses: number; absences: number }`, but `boutResultApplier.ts:53-66` only ever sets `{ wins, losses }` in standings. `absences` is never written to the standings Map. `BanzukePublisher.ts:163,211` then reads `stats.absences` for kyujo tracking and kachi-koshi eligibility.
 
 **Evidence**:
+
 - `boutResultApplier.ts:53-66` — `standings.set(winner.id, { wins: wRec.wins + 1, losses: wRec.losses })` — no `absences` field
 - `BanzukePublisher.ts:68` — `const stats = stats_any as { wins: number; losses: number; absences: number }` — expects `absences`
 - `BanzukePublisher.ts:163` — `const isKyujo = stats.absences >= 15` — always false (undefined >= 15 is false)
 - `BanzukePublisher.ts:211` — `const isFullAbsence = stats.absences >= 15` — always false
 - `world.ts:261-268` — `getRikishiBashoStats` returns `{ wins: 0, losses: 0, absences: 0 }` as default, confirming absences should exist
 
-**Impact**: 
+**Impact**:
+
 - `isKyujo` is always false → `consecutiveKyujo` never increments → kyujo-based retirement pressure for yokozuna never triggers
 - `isFullAbsence` is always false → kachi-koshi streak not broken by full absence (edge case)
 - `stats.absences ?? 0` at line 233 → always 0 in career history
@@ -276,6 +295,7 @@ builder.updateRikishi(loser.id, {
 **Root cause**: `bashoSlice.test.ts:81-96` mock resolves ALL unplayed matches at once (maps over all unplayed and sets result on each). The real `simulateBoutForToday` only simulates ONE bout per call. This masks the indexing bug (Bug 4) because the mock doesn't use the index parameter at all.
 
 **Evidence**:
+
 - `bashoSlice.test.ts:81-96` — Mock ignores `unplayedIndex` parameter, resolves all unplayed matches
 - Real `world.ts:132` — Uses `unplayedIndex` to pick a specific match
 
@@ -580,6 +600,7 @@ Test 16.7: SIM_FULL_BASHO sets match.result on every bout across all 15 days
 ### Phase 1: Fix Bug 3 (kinboshiThisBasho initialization)
 
 **Files to edit**:
+
 1. `src/engine/systems/generation/WorldFactory.ts` — Add `kinboshiThisBasho: {}` to `initializeBasho`
 2. `src/engine/bout/boutResolver.ts:243` — Change guard from `!== undefined` to always initialize
 
@@ -588,6 +609,7 @@ Test 16.7: SIM_FULL_BASHO sets match.result on every bout across all 15 days
 ### Phase 2: Fix Bug 2 (currentBashoWins/Losses/Record)
 
 **Files to edit**:
+
 1. `src/engine/bout/boutResultApplier.ts:61-66` — Add `currentBashoWins`, `currentBashoLosses`, `currentBashoRecord` increments
 
 **Tests that should now pass**: Suite 1 (partial), Suite 8 (partial)
@@ -595,6 +617,7 @@ Test 16.7: SIM_FULL_BASHO sets match.result on every bout across all 15 days
 ### Phase 3: Fix Bug 1 (match.result storage)
 
 **Files to edit**:
+
 1. `src/engine/world.ts:170-189` — After applying impacts, update `currentBasho.matches` immutably to set `result` on the matched bout
 
 **Tests that should now pass**: Suite 2, Suite 6, Suite 7, Suite 10, Suite 11
@@ -602,6 +625,7 @@ Test 16.7: SIM_FULL_BASHO sets match.result on every bout across all 15 days
 ### Phase 4: Fix Bug 4 (indexing in bashoSlice)
 
 **Files to edit**:
+
 1. `src/contexts/bashoSlice.ts:92-95,128-131` — Change `simulateBoutForToday(world, i, ...)` to `simulateBoutForToday(world, 0, ...)`
 
 **Tests that should now pass**: Suite 5
@@ -609,6 +633,7 @@ Test 16.7: SIM_FULL_BASHO sets match.result on every bout across all 15 days
 ### Phase 5: Fix Bug 6 (duplicate onBashoEnded)
 
 **Files to edit**:
+
 1. `src/engine/world.ts:200-204` — Remove direct `onBashoEnded` call
 
 **Tests that should now pass**: Suite 9
@@ -616,6 +641,7 @@ Test 16.7: SIM_FULL_BASHO sets match.result on every bout across all 15 days
 ### Phase 6: Fix Bug 10 (filter().length performance)
 
 **Files to edit**:
+
 1. `src/engine/bout/boutNarrative.ts:485` — Replace `.filter().length` with `for...of` counter
 2. `src/engine/bout/boutNarrative.ts:1677` — Replace `.filter().length` with `for...of` counter
 
@@ -624,6 +650,7 @@ Test 16.7: SIM_FULL_BASHO sets match.result on every bout across all 15 days
 ### Phase 7: Fix Bug 11 (sansho popularity boost dropped)
 
 **Files to edit**:
+
 1. `src/engine/lifecycle/PrizeDistribution.ts:62-65` — Capture and merge `applyAchievementImpact` return value
 
 **Tests that should now pass**: Suite 12 (Tests 12.8-12.10)
@@ -631,6 +658,7 @@ Test 16.7: SIM_FULL_BASHO sets match.result on every bout across all 15 days
 ### Phase 8: Fix Bug 12 (unreachable "falls_out" condition)
 
 **Files to edit**:
+
 1. `src/engine/bout/boutNarrative.ts:1495-1496` — Fix condition to `loserWins === maxWins && winnerWins + 1 > maxWins`
 
 **Tests that should now pass**: Suite 13
@@ -638,6 +666,7 @@ Test 16.7: SIM_FULL_BASHO sets match.result on every bout across all 15 days
 ### Phase 9: Fix Bug 15 (absences not tracked in standings)
 
 **Files to edit**:
+
 1. `src/engine/bout/boutResultApplier.ts` — Add `absences` field to standings entries (initialize to 0 if missing)
 2. `src/engine/schedule.ts` or `world.ts` — When a rikishi is kyujo/absent, increment absences in standings
 3. `src/engine/banzuke/BanzukePublisher.ts:68` — Ensure `stats.absences` is read correctly
@@ -647,6 +676,7 @@ Test 16.7: SIM_FULL_BASHO sets match.result on every bout across all 15 days
 ### Phase 10: Fix Bug 16 (test mock mismatch)
 
 **Files to edit**:
+
 1. `src/tests/unit/contexts/bashoSlice.test.ts:81-96` — Update mock to simulate one bout per call
 
 **Tests that should now pass**: Suite 16 (Test 16.5)
@@ -667,24 +697,24 @@ bun run test -- --grep "simulate"                # All simulation tests
 
 ## Part 4: Summary
 
-| Bug | Severity | Root Cause File | Fix Phase | Tests |
-|-----|----------|----------------|-----------|-------|
-| 1 | CRITICAL | `world.ts` | Phase 3 | Suite 2, 6, 7, 10, 11 |
-| 2 | CRITICAL | `boutResultApplier.ts` | Phase 2 | Suite 1, 8 |
-| 3 | HIGH | `WorldFactory.ts` | Phase 1 | Suite 3, 4, 12 |
-| 4 | LATENT | `bashoSlice.ts` | Phase 4 | Suite 5, 16 |
-| 5 | CRITICAL | `phase01_basho_bouts.ts` | Auto (Bug 1) | Suite 6 |
-| 6 | LOW | `world.ts` | Phase 5 | Suite 9 |
-| 7 | HIGH | `specialPrizes.ts` | Auto (Bug 1) | Suite 7 |
-| 8 | MEDIUM | `BashoHistory.ts` | Auto (Bug 1) | Suite 11 |
-| 9 | MEDIUM | `recapProjections.ts` | Auto (Bug 1) | Suite 10 |
-| 10 | LOW | `boutNarrative.ts` | Phase 6 | — |
-| 11 | MEDIUM | `PrizeDistribution.ts` | Phase 7 | Suite 12 |
-| 12 | LOW | `boutNarrative.ts` | Phase 8 | Suite 13 |
-| 13 | LOW | `PlayoffResolver.ts` | Documented | Suite 14 |
-| 14 | LATENT | `bashoSlice.ts` | Phase 4 | Suite 16 |
-| 15 | MEDIUM | `boutResultApplier.ts` / `BanzukePublisher.ts` | Phase 9 | Suite 15 |
-| 16 | MEDIUM | `bashoSlice.test.ts` | Phase 10 | Suite 16 |
+| Bug | Severity | Root Cause File                                | Fix Phase    | Tests                 |
+| --- | -------- | ---------------------------------------------- | ------------ | --------------------- |
+| 1   | CRITICAL | `world.ts`                                     | Phase 3      | Suite 2, 6, 7, 10, 11 |
+| 2   | CRITICAL | `boutResultApplier.ts`                         | Phase 2      | Suite 1, 8            |
+| 3   | HIGH     | `WorldFactory.ts`                              | Phase 1      | Suite 3, 4, 12        |
+| 4   | LATENT   | `bashoSlice.ts`                                | Phase 4      | Suite 5, 16           |
+| 5   | CRITICAL | `phase01_basho_bouts.ts`                       | Auto (Bug 1) | Suite 6               |
+| 6   | LOW      | `world.ts`                                     | Phase 5      | Suite 9               |
+| 7   | HIGH     | `specialPrizes.ts`                             | Auto (Bug 1) | Suite 7               |
+| 8   | MEDIUM   | `BashoHistory.ts`                              | Auto (Bug 1) | Suite 11              |
+| 9   | MEDIUM   | `recapProjections.ts`                          | Auto (Bug 1) | Suite 10              |
+| 10  | LOW      | `boutNarrative.ts`                             | Phase 6      | —                     |
+| 11  | MEDIUM   | `PrizeDistribution.ts`                         | Phase 7      | Suite 12              |
+| 12  | LOW      | `boutNarrative.ts`                             | Phase 8      | Suite 13              |
+| 13  | LOW      | `PlayoffResolver.ts`                           | Documented   | Suite 14              |
+| 14  | LATENT   | `bashoSlice.ts`                                | Phase 4      | Suite 16              |
+| 15  | MEDIUM   | `boutResultApplier.ts` / `BanzukePublisher.ts` | Phase 9      | Suite 15              |
+| 16  | MEDIUM   | `bashoSlice.test.ts`                           | Phase 10     | Suite 16              |
 
 **Total tests**: 127 new tests across 16 files
 **Total fix phases**: 10 (Phases 1-10)

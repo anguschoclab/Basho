@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Create competitive parity through recruitment the way real sports get it — **imperfect information**. NPC stables currently value recruits by their *true* `talentSeed` (perfect information), so the richest stable reliably buys the actual best prospect and dynasties compound. Replace that with per-stable noisy *scouted estimates*: money can no longer reliably buy champions, hidden gems land in weak stables and blossom to their true potential, and dynasties waste fortunes on over-scouted duds.
+**Goal:** Create competitive parity through recruitment the way real sports get it — **imperfect information**. NPC stables currently value recruits by their _true_ `talentSeed` (perfect information), so the richest stable reliably buys the actual best prospect and dynasties compound. Replace that with per-stable noisy _scouted estimates_: money can no longer reliably buy champions, hidden gems land in weak stables and blossom to their true potential, and dynasties waste fortunes on over-scouted duds.
 
 **Architecture:** One pure helper, `perceivedTalentSeed(world, heyaId, candidate)`, returns a deterministic per-(stable, candidate) estimate = true `talentSeed` + seeded noise, where noise magnitude shrinks with the stable's scouting quality (scout staff + `scouting_office` facility) but never reaches zero. Substitute it for true `talentSeed` in BOTH live NPC recruitment paths. Development/ceilings continue to use TRUE `talentSeed`, so a mis-scouted gem still grows into a champion — that IS the parity mechanism.
 
@@ -11,11 +11,13 @@
 ---
 
 ## Why the previous parity lever failed (read first — this plan exists because of it)
-A bid *handicap* (scaling strong stables' bids down) was tried and **reverted**: it topped out at 6 unique winners (baseline 5) because the richest stable still bought the *visibly* best recruit — just slightly less often — AND it delayed cold-start elite emergence (broke the 12-basho yokozuna test) by artificially suppressing strong stables' recruitment.
 
-Imperfect information is structurally different: it doesn't suppress anyone's bids — it makes *valuations diverge*. Elites still get recruited and developed at full speed (so yokozuna emergence should NOT slow), but WHICH stable lands them becomes unpredictable. Do not reintroduce bid-scaling; if this plan under-delivers, tune the noise, not the bids.
+A bid _handicap_ (scaling strong stables' bids down) was tried and **reverted**: it topped out at 6 unique winners (baseline 5) because the richest stable still bought the _visibly_ best recruit — just slightly less often — AND it delayed cold-start elite emergence (broke the 12-basho yokozuna test) by artificially suppressing strong stables' recruitment.
+
+Imperfect information is structurally different: it doesn't suppress anyone's bids — it makes _valuations diverge_. Elites still get recruited and developed at full speed (so yokozuna emergence should NOT slow), but WHICH stable lands them becomes unpredictable. Do not reintroduce bid-scaling; if this plan under-delivers, tune the noise, not the bids.
 
 ## Verified mechanics (cited — use these)
+
 - **Bidding path (weekly gap controller):** `fillVacanciesForNPCWithBidding` (`src/engine/systems/generation/TalentPoolNPCRecruitment.ts`) → `recruitmentStrat.calculateMaxBid(...)`. Inside `calculateMaxBid` (`src/engine/npcRecruitmentStrategy.ts:78-86`): `const talentSeed = candidate?.talentSeed ?? 50; const talentMult = 0.5 + talentSeed / 100; maxBid *= talentMult;` — **true talent read directly.**
 - **Non-bidding backfill path (post-basho, live):** `fillVacanciesForNPC` (`TalentPoolNPCRecruitment.ts:17-115`), called from `src/engine/lifecycle/RegistryService.ts:36`. Uses `const talent = c.talentSeed` (line ~61) for scoring AND an affinity gate: `if (talent >= 80 && repScore < 70) affinity = 0.1; if (talent >= 90 && repScore < 85) affinity = 0.05;` — **true top talent refuses low-rep stables**, a second perfect-info concentrator.
 - **Candidate model already distinguishes hidden potential:** `TalentCandidate.talentSeed` (`src/engine/types/talent.ts:106`), `potentialStats` "Hidden; revealed via scouting" (`:119-121`), deep-scouting development profile (`:131`), player scouting progress (`:193`). Only the player respects the fog; NPCs bypass it.
@@ -24,7 +26,9 @@ Imperfect information is structurally different: it doesn't suppress anyone's bi
 - Candidates are generated with `talentSeed: rng.int(TALENT_SEED_MIN, TALENT_SEED_MAX)` (`CandidateGenerator.ts:197`).
 
 ## Success gate (the ONLY measure that counts)
+
 `bun scripts/diagnostic-25yr-sim.ts` after all tasks:
+
 - `tuningMetrics.uniqueWinnerCount` improves materially — target **≥ 8** (baseline 5; be honest if it lands lower and tune noise, don't fudge).
 - Top `beyaDominance` stable **< 20 yusho** /150 (baseline 22–24).
 - `heyaCount` still dynamic (founding must keep working, 45→~53).
@@ -36,6 +40,7 @@ Imperfect information is structurally different: it doesn't suppress anyone's bi
 ### Task 1: `perceivedTalentSeed` helper + scouting-quality function
 
 **Files:**
+
 - Create: `src/engine/systems/recruitment/perceivedTalent.ts`
 - Create: `src/constants/engine/scoutingPerception.ts`
 - Test: `src/tests/unit/engine/recruitment/perceivedTalent.test.ts`
@@ -46,7 +51,10 @@ Create `src/tests/unit/engine/recruitment/perceivedTalent.test.ts`:
 
 ```typescript
 import { describe, it, expect } from "vitest";
-import { perceivedTalentSeed, scoutingNoiseSpread } from "@/engine/systems/recruitment/perceivedTalent";
+import {
+  perceivedTalentSeed,
+  scoutingNoiseSpread,
+} from "@/engine/systems/recruitment/perceivedTalent";
 import { makeMockWorld, makeMockHeya } from "../utils";
 import {
   PERCEPTION_NOISE_BASE,
@@ -137,7 +145,8 @@ import {
 /** Noise spread (±) as a pure function of scouting quality. Never zero. */
 export function scoutingNoiseSpread(scoutCount: number, hasScoutingOffice: boolean): number {
   const reduction =
-    scoutCount * PERCEPTION_NOISE_PER_SCOUT + (hasScoutingOffice ? PERCEPTION_NOISE_OFFICE_BONUS : 0);
+    scoutCount * PERCEPTION_NOISE_PER_SCOUT +
+    (hasScoutingOffice ? PERCEPTION_NOISE_OFFICE_BONUS : 0);
   return Math.max(PERCEPTION_NOISE_FLOOR, PERCEPTION_NOISE_BASE - reduction);
 }
 
@@ -180,6 +189,7 @@ git commit -m "feat(scouting): perceived-talent estimates — imperfect informat
 ### Task 2: Bidding path uses perceived talent
 
 **Files:**
+
 - Modify: `src/engine/npcRecruitmentStrategy.ts` (`calculateMaxBid`, lines ~78-86)
 - Test: `src/tests/unit/engine/recruitment/perceivedBidding.test.ts`
 
@@ -217,11 +227,11 @@ Expected: FAIL — identical stables currently compute identical bids (both read
 In `src/engine/npcRecruitmentStrategy.ts` (~line 83-86), replace the true-talent read:
 
 ```typescript
-    const candidate = candidateId ? world.talentPool?.candidates?.[candidateId] : undefined;
-    // Imperfect information: bid on the stable's scouted ESTIMATE, never true talent.
-    const talentSeed = candidate ? perceivedTalentSeed(world, heya.id, candidate) : 50;
-    const talentMult = 0.5 + talentSeed / 100;
-    maxBid *= talentMult;
+const candidate = candidateId ? world.talentPool?.candidates?.[candidateId] : undefined;
+// Imperfect information: bid on the stable's scouted ESTIMATE, never true talent.
+const talentSeed = candidate ? perceivedTalentSeed(world, heya.id, candidate) : 50;
+const talentMult = 0.5 + talentSeed / 100;
+maxBid *= talentMult;
 ```
 
 Add the import. Verify no other place in this file reads `candidate.talentSeed` directly (grep the file).
@@ -243,12 +253,13 @@ git commit -m "feat(recruitment): bids use scouted estimates, not true talent"
 ### Task 3: Backfill path + affinity gate use perceived talent (the hidden-gem door)
 
 **Files:**
+
 - Modify: `src/engine/systems/generation/TalentPoolNPCRecruitment.ts` (`fillVacanciesForNPC`, the scoring block ~lines 58-69)
 - Test: `src/tests/unit/engine/recruitment/hiddenGem.test.ts`
 
 - [ ] **Step 1: Write the failing test**
 
-The affinity gate currently reads TRUE talent: a true-90 candidate refuses (affinity 0.05) any stable with reputation < 85 — so gems can never join weak stables. With perceived talent, a stable that *underestimates* a gem faces no gate, and one that overestimates a mediocre prospect may overpay. Create `src/tests/unit/engine/recruitment/hiddenGem.test.ts`:
+The affinity gate currently reads TRUE talent: a true-90 candidate refuses (affinity 0.05) any stable with reputation < 85 — so gems can never join weak stables. With perceived talent, a stable that _underestimates_ a gem faces no gate, and one that overestimates a mediocre prospect may overpay. Create `src/tests/unit/engine/recruitment/hiddenGem.test.ts`:
 
 ```typescript
 import { describe, it, expect } from "vitest";
@@ -279,18 +290,18 @@ Expected: FAIL — true-talent affinity gate blocks the signing.
 In `fillVacanciesForNPC` (`TalentPoolNPCRecruitment.ts` ~lines 58-69), replace the true-talent read:
 
 ```typescript
-        const candidatesWithScores = availableCandidates.map((cId) => {
-          const c = currentCandidates[cId];
-          // Imperfect information: the stable evaluates its scouted ESTIMATE.
-          const talent = perceivedTalentSeed(world, heyaId, c);
-          const repScore = heya.reputation ?? 50;
-          let affinity = 1.0;
-          if (talent >= 80 && repScore < 70) affinity = 0.1;
-          if (talent >= 90 && repScore < 85) affinity = 0.05;
+const candidatesWithScores = availableCandidates.map((cId) => {
+  const c = currentCandidates[cId];
+  // Imperfect information: the stable evaluates its scouted ESTIMATE.
+  const talent = perceivedTalentSeed(world, heyaId, c);
+  const repScore = heya.reputation ?? 50;
+  let affinity = 1.0;
+  if (talent >= 80 && repScore < 70) affinity = 0.1;
+  if (talent >= 90 && repScore < 85) affinity = 0.05;
 
-          const score = talent * affinity + rng.int(0, 20);
-          return { cId, score, c };
-        });
+  const score = talent * affinity + rng.int(0, 20);
+  return { cId, score, c };
+});
 ```
 
 Add the import. The affinity gate now runs on the estimate — an under-scouted gem walks through the door; an over-scouted journeyman gets the star treatment and disappoints.
@@ -321,6 +332,7 @@ Expected: ALL green — including `src/tests/unit/engine/banzukePromotion.test.t
 - [ ] **Step 2: 25-year diagnostic**
 
 Run: `bun scripts/diagnostic-25yr-sim.ts`, then:
+
 ```bash
 node -e '
 const r=require("./simulation-results.json");
@@ -331,6 +343,7 @@ console.log("heyaCount", Math.min(...ys.map(s=>s.heyaCount)), "-", Math.max(...y
 console.log("yokozuna last8", ys.slice(-8).map(s=>s.yokozunaCount));
 '
 ```
+
 Targets: `uniqueWinnerCount >= 8` (baseline 5); top stable `< 20` yusho; heyaCount still dynamic (~45–53); yokozuna persist.
 
 - [ ] **Step 3: Calibrate (values only)**
@@ -351,6 +364,7 @@ git commit -m "tune(scouting): calibrate perception noise for recruitment parity
 ---
 
 ## Self-review notes
+
 - **Mechanism honesty:** this attacks the actual root cause (perfect information) rather than distorting bids; elites still develop at true potential so yokozuna emergence is preserved — the plan makes that an explicit non-negotiable gate (Task 4 Step 1).
 - **Both live paths covered:** bidding (`calculateMaxBid`) AND backfill (`fillVacanciesForNPC` incl. the affinity gate) — the previous effort taught that a lever in a path the sim doesn't fully use does nothing.
 - **Determinism:** noise seeded per `(heyaId, candidateId)` via `rngFromSeed` — stable across runs; no choice-derived seeds; no `Math.random`.

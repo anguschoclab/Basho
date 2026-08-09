@@ -15,12 +15,28 @@ import { BardEngine } from "../../bard/BardEngine";
 import { rngFromSeed } from "../../rng";
 
 const YDC_CHAIRMAN_SURNAMES = [
-  "Hanzawa", "Morita", "Tanahashi", "Kuroda", "Nakamura",
-  "Ishikawa", "Fujimoto", "Otsuka", "Yamamoto", "Sato",
+  "Hanzawa",
+  "Morita",
+  "Tanahashi",
+  "Kuroda",
+  "Nakamura",
+  "Ishikawa",
+  "Fujimoto",
+  "Otsuka",
+  "Yamamoto",
+  "Sato",
 ];
 const YDC_CHAIRMAN_GIVEN_NAMES = [
-  "Tadashi", "Katsuyoshi", "Masahiro", "Hirofumi", "Noboru",
-  "Shigeru", "Tatsuo", "Kenshin", "Yoshiaki", "Renji",
+  "Tadashi",
+  "Katsuyoshi",
+  "Masahiro",
+  "Hirofumi",
+  "Noboru",
+  "Shigeru",
+  "Tatsuo",
+  "Kenshin",
+  "Yoshiaki",
+  "Renji",
 ];
 
 function getChairmanName(worldSeed: string): string {
@@ -155,7 +171,11 @@ export const YokozunaService = {
       const consecutiveMK = rikishi.consecutiveMakeKoshi ?? 0;
       const kihakuScore = rikishi.kihakuIsenScore ?? 50;
 
-      const ydcRng = rngFromSeed(`ydc-${rikishiId}-${world.year}-${world.currentBashoName ?? "hatsu"}`, "narrative", "ydc");
+      const ydcRng = rngFromSeed(
+        `ydc-${rikishiId}-${world.year}-${world.currentBashoName ?? "hatsu"}`,
+        "narrative",
+        "ydc"
+      );
 
       // Build references array — specific items the YDC statement references
       const references: string[] = [];

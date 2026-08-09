@@ -3,8 +3,6 @@ import { activeDivisionRoster } from "@/engine/scheduleHelpers";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 
- 
-
 function makeRikishi(id: string, opts?: Record<string, any>): Rikishi {
   return {
     id,
@@ -41,9 +39,7 @@ function makeWorld(rikishiList: Rikishi[]): WorldState {
   return {
     rikishi: map,
     activeRikishiIds: ids,
-    heyas: new Map([
-      ["test-heya", { id: "test-heya", name: "Test Heya", rikishiIds: ids } as any],
-    ]),
+    heyas: new Map([["test-heya", { id: "test-heya", name: "Test Heya", rikishiIds: ids } as any]]),
     calendar: { currentWeek: 1, month: 1, currentDay: 1 },
   } as any;
 }
@@ -98,7 +94,12 @@ describe("N7/N8: Scheduling isKyujo filter", () => {
     const west = makeRikishi("west", { injured: false, isKyujo: false });
     // Simulate the fixed check
     const shouldWalkover =
-      east.injured || west.injured || east.isKyujo || west.isKyujo || east.isRetired || west.isRetired;
+      east.injured ||
+      west.injured ||
+      east.isKyujo ||
+      west.isKyujo ||
+      east.isRetired ||
+      west.isRetired;
     expect(shouldWalkover).toBe(true);
   });
 });

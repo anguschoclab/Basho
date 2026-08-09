@@ -171,8 +171,14 @@ export function scoreDrama(
   }
 
   // Ozeki kadoban survival (day 10+ with < 8 wins) — higher priority than yusho
-  const aIsKadoban = a.rank === "ozeki" && day >= DRAMA_DAY_KADOBAN_START && aRecord.wins < DRAMA_KADOBAN_WIN_THRESHOLD;
-  const bIsKadoban = b.rank === "ozeki" && day >= DRAMA_DAY_KADOBAN_START && bRecord.wins < DRAMA_KADOBAN_WIN_THRESHOLD;
+  const aIsKadoban =
+    a.rank === "ozeki" &&
+    day >= DRAMA_DAY_KADOBAN_START &&
+    aRecord.wins < DRAMA_KADOBAN_WIN_THRESHOLD;
+  const bIsKadoban =
+    b.rank === "ozeki" &&
+    day >= DRAMA_DAY_KADOBAN_START &&
+    bRecord.wins < DRAMA_KADOBAN_WIN_THRESHOLD;
   if (aIsKadoban || bIsKadoban) {
     return {
       label: "kadoban_survival",
@@ -241,7 +247,10 @@ export function scoreDrama(
   if (rivalryHeat > DRAMA_RIVALRY_HEAT_THRESHOLD || hasRivalryLink) {
     return {
       label: "rivalry_renewed",
-      score: Math.min(DRAMA_RIVALRY_SCORE_CAP, DRAMA_RIVALRY_SCORE_BASE + rivalryHeat / DRAMA_RIVALRY_SCORE_DIVISOR),
+      score: Math.min(
+        DRAMA_RIVALRY_SCORE_CAP,
+        DRAMA_RIVALRY_SCORE_BASE + rivalryHeat / DRAMA_RIVALRY_SCORE_DIVISOR
+      ),
       reason: "active_rivalry_matchup",
     };
   }
@@ -266,8 +275,12 @@ export function scoreDrama(
   }
 
   // Comeback story: rikishi returning from injury
-  const aComeback = a.injured === false && (a as Rikishi & { justReturnedFromInjury?: boolean }).justReturnedFromInjury;
-  const bComeback = b.injured === false && (b as Rikishi & { justReturnedFromInjury?: boolean }).justReturnedFromInjury;
+  const aComeback =
+    a.injured === false &&
+    (a as Rikishi & { justReturnedFromInjury?: boolean }).justReturnedFromInjury;
+  const bComeback =
+    b.injured === false &&
+    (b as Rikishi & { justReturnedFromInjury?: boolean }).justReturnedFromInjury;
   if (aComeback || bComeback) {
     return {
       label: "comeback_story",
@@ -277,10 +290,10 @@ export function scoreDrama(
   }
 
   // Rookie vs veteran: young debutant vs established veteran
-  const aIsRookie = (a.careerWins + a.careerLosses) < DRAMA_ROOKIE_TOTAL_BOUTS;
-  const bIsRookie = (b.careerWins + b.careerLosses) < DRAMA_ROOKIE_TOTAL_BOUTS;
-  const aIsVeteran = (a.careerWins + a.careerLosses) > DRAMA_VETERAN_TOTAL_BOUTS;
-  const bIsVeteran = (b.careerWins + b.careerLosses) > DRAMA_VETERAN_TOTAL_BOUTS;
+  const aIsRookie = a.careerWins + a.careerLosses < DRAMA_ROOKIE_TOTAL_BOUTS;
+  const bIsRookie = b.careerWins + b.careerLosses < DRAMA_ROOKIE_TOTAL_BOUTS;
+  const aIsVeteran = a.careerWins + a.careerLosses > DRAMA_VETERAN_TOTAL_BOUTS;
+  const bIsVeteran = b.careerWins + b.careerLosses > DRAMA_VETERAN_TOTAL_BOUTS;
   if ((aIsRookie && bIsVeteran) || (bIsRookie && aIsVeteran)) {
     return {
       label: "rookie_vs_veteran",
@@ -325,12 +338,8 @@ export function scoreDrama(
   // Debut showcase: rookie's first makuuchi bout against sanyaku
   const aTotalBouts = (a.careerWins ?? 0) + (a.careerLosses ?? 0);
   const bTotalBouts = (b.careerWins ?? 0) + (b.careerLosses ?? 0);
-  const aMakuuchiBouts = (a.careerHistory ?? []).filter(
-    (h) => h.division === "makuuchi"
-  ).length;
-  const bMakuuchiBouts = (b.careerHistory ?? []).filter(
-    (h) => h.division === "makuuchi"
-  ).length;
+  const aMakuuchiBouts = (a.careerHistory ?? []).filter((h) => h.division === "makuuchi").length;
+  const bMakuuchiBouts = (b.careerHistory ?? []).filter((h) => h.division === "makuuchi").length;
   const aIsDebut = isMakuuchiDebut(aMakuuchiBouts, a.division, aTotalBouts, a.rank);
   const bIsDebut = isMakuuchiDebut(bMakuuchiBouts, b.division, bTotalBouts, b.rank);
   if ((aIsDebut && bIsSanyaku) || (bIsDebut && aIsSanyaku)) {
@@ -357,10 +366,8 @@ export function scoreDrama(
   }
 
   // Relegation battle: day 14-15, both at make-koshi risk in lower divisions
-  const aIsLowerDivision =
-    a.division === "makushita" || a.division === "sandanme";
-  const bIsLowerDivision =
-    b.division === "makushita" || b.division === "sandanme";
+  const aIsLowerDivision = a.division === "makushita" || a.division === "sandanme";
+  const bIsLowerDivision = b.division === "makushita" || b.division === "sandanme";
   if (
     day >= DRAMA_DAY_RELEGATION_START &&
     aIsLowerDivision &&
@@ -495,10 +502,7 @@ export function applyDramaBudget(
         const oldDrama2Score = scoreCache.get(j) ?? 0;
 
         const scoreChange =
-          (drama1?.score ?? 0) +
-          (drama2?.score ?? 0) -
-          oldDrama1Score -
-          oldDrama2Score;
+          (drama1?.score ?? 0) + (drama2?.score ?? 0) - oldDrama1Score - oldDrama2Score;
 
         if (scoreChange > 0) {
           // Apply the swap

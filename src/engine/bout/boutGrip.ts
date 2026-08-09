@@ -262,8 +262,10 @@ export function evolveGripGeometry(
   // Grip degradation under pressure (1.8): the losing side's grip degrades faster
   // due to defensive strain and being forced backwards
   const torqueDiff = belt.torqueEast - belt.torqueWest;
-  const eastPressureDecay = torqueDiff < -PRESSURE_THRESHOLD ? Math.abs(torqueDiff) * PRESSURE_GRIP_DECAY_RATE : 0;
-  const westPressureDecay = torqueDiff > PRESSURE_THRESHOLD ? torqueDiff * PRESSURE_GRIP_DECAY_RATE : 0;
+  const eastPressureDecay =
+    torqueDiff < -PRESSURE_THRESHOLD ? Math.abs(torqueDiff) * PRESSURE_GRIP_DECAY_RATE : 0;
+  const westPressureDecay =
+    torqueDiff > PRESSURE_THRESHOLD ? torqueDiff * PRESSURE_GRIP_DECAY_RATE : 0;
 
   const eastTotalDecay = eastFatigueDecay - eastPressureDecay;
   const westTotalDecay = westFatigueDecay - westPressureDecay;
@@ -287,17 +289,29 @@ export function evolveGripGeometry(
         // Both inside — break the weaker one
         if (westLeftStrength <= westRightStrength && belt.westLeft) {
           belt.westLeft.isInside = false;
-          belt.westLeft.armReach = Math.max(DEFAULT_ARM_REACH, belt.westLeft.armReach - ARM_REACH_INCREMENT * GRIP_BREAK_REACH_REDUCTION);
+          belt.westLeft.armReach = Math.max(
+            DEFAULT_ARM_REACH,
+            belt.westLeft.armReach - ARM_REACH_INCREMENT * GRIP_BREAK_REACH_REDUCTION
+          );
         } else if (belt.westRight) {
           belt.westRight.isInside = false;
-          belt.westRight.armReach = Math.max(DEFAULT_ARM_REACH, belt.westRight.armReach - ARM_REACH_INCREMENT * GRIP_BREAK_REACH_REDUCTION);
+          belt.westRight.armReach = Math.max(
+            DEFAULT_ARM_REACH,
+            belt.westRight.armReach - ARM_REACH_INCREMENT * GRIP_BREAK_REACH_REDUCTION
+          );
         }
       } else if (westLeftStrength > 0 && belt.westLeft) {
         belt.westLeft.isInside = false;
-        belt.westLeft.armReach = Math.max(DEFAULT_ARM_REACH, belt.westLeft.armReach - ARM_REACH_INCREMENT * GRIP_BREAK_REACH_REDUCTION);
+        belt.westLeft.armReach = Math.max(
+          DEFAULT_ARM_REACH,
+          belt.westLeft.armReach - ARM_REACH_INCREMENT * GRIP_BREAK_REACH_REDUCTION
+        );
       } else if (westRightStrength > 0 && belt.westRight) {
         belt.westRight.isInside = false;
-        belt.westRight.armReach = Math.max(DEFAULT_ARM_REACH, belt.westRight.armReach - ARM_REACH_INCREMENT * GRIP_BREAK_REACH_REDUCTION);
+        belt.westRight.armReach = Math.max(
+          DEFAULT_ARM_REACH,
+          belt.westRight.armReach - ARM_REACH_INCREMENT * GRIP_BREAK_REACH_REDUCTION
+        );
       }
     }
   } else if (torqueDiff < -GRIP_BREAK_THRESHOLD) {
@@ -309,17 +323,29 @@ export function evolveGripGeometry(
       if (eastLeftStrength > 0 && eastRightStrength > 0) {
         if (eastLeftStrength <= eastRightStrength && belt.eastLeft) {
           belt.eastLeft.isInside = false;
-          belt.eastLeft.armReach = Math.max(DEFAULT_ARM_REACH, belt.eastLeft.armReach - ARM_REACH_INCREMENT * GRIP_BREAK_REACH_REDUCTION);
+          belt.eastLeft.armReach = Math.max(
+            DEFAULT_ARM_REACH,
+            belt.eastLeft.armReach - ARM_REACH_INCREMENT * GRIP_BREAK_REACH_REDUCTION
+          );
         } else if (belt.eastRight) {
           belt.eastRight.isInside = false;
-          belt.eastRight.armReach = Math.max(DEFAULT_ARM_REACH, belt.eastRight.armReach - ARM_REACH_INCREMENT * GRIP_BREAK_REACH_REDUCTION);
+          belt.eastRight.armReach = Math.max(
+            DEFAULT_ARM_REACH,
+            belt.eastRight.armReach - ARM_REACH_INCREMENT * GRIP_BREAK_REACH_REDUCTION
+          );
         }
       } else if (eastLeftStrength > 0 && belt.eastLeft) {
         belt.eastLeft.isInside = false;
-        belt.eastLeft.armReach = Math.max(DEFAULT_ARM_REACH, belt.eastLeft.armReach - ARM_REACH_INCREMENT * GRIP_BREAK_REACH_REDUCTION);
+        belt.eastLeft.armReach = Math.max(
+          DEFAULT_ARM_REACH,
+          belt.eastLeft.armReach - ARM_REACH_INCREMENT * GRIP_BREAK_REACH_REDUCTION
+        );
       } else if (eastRightStrength > 0 && belt.eastRight) {
         belt.eastRight.isInside = false;
-        belt.eastRight.armReach = Math.max(DEFAULT_ARM_REACH, belt.eastRight.armReach - ARM_REACH_INCREMENT * GRIP_BREAK_REACH_REDUCTION);
+        belt.eastRight.armReach = Math.max(
+          DEFAULT_ARM_REACH,
+          belt.eastRight.armReach - ARM_REACH_INCREMENT * GRIP_BREAK_REACH_REDUCTION
+        );
       }
     }
   }

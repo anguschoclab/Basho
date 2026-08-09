@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 import type { PbpTag } from "@/engine/bout/boutNarrative";
@@ -30,10 +29,12 @@ function makeWorld(opts?: {
 }): { world: WorldState; east: Rikishi; west: Rikishi; result: BoutResult } {
   const east = makeRikishi("east", opts?.east);
   const west = makeRikishi("west", opts?.west);
-  const standings = opts?.standings ?? new Map([
-    ["east", { wins: 0, losses: 0 }],
-    ["west", { wins: 0, losses: 0 }],
-  ]);
+  const standings =
+    opts?.standings ??
+    new Map([
+      ["east", { wins: 0, losses: 0 }],
+      ["west", { wins: 0, losses: 0 }],
+    ]);
   const day = opts?.day ?? 8;
   const result: BoutResult = {
     boutId: "test-bout-1",

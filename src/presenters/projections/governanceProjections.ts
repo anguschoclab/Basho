@@ -50,7 +50,12 @@ export interface GovernanceDerived {
   pendingRulings: GovernanceRuling[];
   criticalHeyas: ReturnType<typeof selectHeyasWithCriticalWelfare>;
   mergerCandidates: ReturnType<typeof selectMergerCandidates>;
-  completedMergerEvents: Array<{ id: string; year: number; week: number; data?: { heyaname?: string; heya?: string; reason?: string; incident?: string } }>;
+  completedMergerEvents: Array<{
+    id: string;
+    year: number;
+    week: number;
+    data?: { heyaname?: string; heya?: string; reason?: string; incident?: string };
+  }>;
   factionList: Faction[];
 }
 
@@ -107,9 +112,7 @@ export function projectGovernanceDerived(world: WorldState, heya: Heya): Governa
     (r) => r.heyaId === world.playerHeyaId && !r.playerChoice
   );
 
-  const pendingRulings = governanceLog.filter(
-    (r) => r.heyaId === heya.id && !r.playerSeverity
-  );
+  const pendingRulings = governanceLog.filter((r) => r.heyaId === heya.id && !r.playerSeverity);
 
   const criticalHeyas = selectHeyasWithCriticalWelfare(world);
   const mergerCandidates = selectMergerCandidates(world);
@@ -118,11 +121,14 @@ export function projectGovernanceDerived(world: WorldState, heya: Heya): Governa
   const completedMergerEvents = eventLog
     .filter((e) => e.type === "GOVERNANCE_RULING" && e.data?.incident === "stable_merger")
     .sort((a, b) => b.year - a.year || b.week - a.week)
-    .slice(0, 10) as Array<{ id: string; year: number; week: number; data?: { heyaname?: string; heya?: string; reason?: string; incident?: string } }>;
+    .slice(0, 10) as Array<{
+    id: string;
+    year: number;
+    week: number;
+    data?: { heyaname?: string; heya?: string; reason?: string; incident?: string };
+  }>;
 
-  const factionList = Object.values(world.factions ?? {}).sort(
-    (a, b) => b.influence - a.influence
-  );
+  const factionList = Object.values(world.factions ?? {}).sort((a, b) => b.influence - a.influence);
 
   return {
     status,

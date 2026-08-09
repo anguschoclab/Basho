@@ -75,7 +75,8 @@ export function applyBackgroundStatModifiers(
 
   if (mods.power) stats.power = clampInt(stats.power + mods.power, STAT_MIN, STAT_MAX);
   if (mods.speed) stats.speed = clampInt(stats.speed + mods.speed, STAT_MIN, STAT_MAX);
-  if (mods.technique) stats.technique = clampInt(stats.technique + mods.technique, STAT_MIN, STAT_MAX);
+  if (mods.technique)
+    stats.technique = clampInt(stats.technique + mods.technique, STAT_MIN, STAT_MAX);
   if (mods.balance) stats.balance = clampInt(stats.balance + mods.balance, STAT_MIN, STAT_MAX);
   if (mods.stamina) stats.stamina = clampInt(stats.stamina + mods.stamina, STAT_MIN, STAT_MAX);
 

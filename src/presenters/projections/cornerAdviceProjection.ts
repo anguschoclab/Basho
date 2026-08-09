@@ -38,8 +38,7 @@ export function projectCornerAdvice(
     const eastId = m.eastRikishiId;
     const westId = m.westRikishiId;
     return (
-      (eastId && playerRikishiIds.includes(eastId)) ||
-      (westId && playerRikishiIds.includes(westId))
+      (eastId && playerRikishiIds.includes(eastId)) || (westId && playerRikishiIds.includes(westId))
     );
   });
   if (!todayMatch) return null;
@@ -62,13 +61,15 @@ export function projectCornerAdvice(
     playerRikishi,
     opponent,
     bashoDay: day,
-    playerRecord: stats
-      ? { wins: stats.wins ?? 0, losses: stats.losses ?? 0 }
-      : undefined,
+    playerRecord: stats ? { wins: stats.wins ?? 0, losses: stats.losses ?? 0 } : undefined,
   });
 
   return {
-    playerRikishi: { id: playerRikishi.id, shikona: playerRikishi.shikona, name: playerRikishi.name },
+    playerRikishi: {
+      id: playerRikishi.id,
+      shikona: playerRikishi.shikona,
+      name: playerRikishi.name,
+    },
     opponent: { id: opponent.id, shikona: opponent.shikona, name: opponent.name },
     advice: recs.map((r) => ({
       id: r.id,

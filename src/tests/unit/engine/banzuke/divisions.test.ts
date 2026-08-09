@@ -1,6 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { RANK_HIERARCHY } from "@/engine/types/banzuke";
-import { isSekitoriRank, getRanksByDivision, getDivisionOfRank } from "@/constants/engine/rankDisplay";
+import {
+  isSekitoriRank,
+  getRanksByDivision,
+  getDivisionOfRank,
+} from "@/constants/engine/rankDisplay";
 import type { Rank, Division } from "@/engine/types/banzuke";
 
 const ALL_RANKS: Rank[] = [

@@ -56,8 +56,7 @@ function SortMenuInner({
     onSortChange(sortKey, newOrder);
   };
 
-  const currentLabel =
-    options.find((o) => o.key === sortKey)?.label ?? options[0]?.label ?? "";
+  const currentLabel = options.find((o) => o.key === sortKey)?.label ?? options[0]?.label ?? "";
 
   return (
     <div className={cn("flex items-center gap-2", className)}>
@@ -80,11 +79,7 @@ function SortMenuInner({
         onClick={handleToggle}
         aria-label={`toggle sort order: currently ${sortOrder === "asc" ? "ascending" : "descending"}`}
       >
-        {sortOrder === "asc" ? (
-          <ArrowUp className="h-4 w-4" />
-        ) : (
-          <ArrowDown className="h-4 w-4" />
-        )}
+        {sortOrder === "asc" ? <ArrowUp className="h-4 w-4" /> : <ArrowDown className="h-4 w-4" />}
       </Button>
     </div>
   );

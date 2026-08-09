@@ -7,10 +7,26 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { History, Star, Trophy, Medal, TrendingUp, Sparkles, Swords, ArrowUpCircle, ArrowDownCircle, Zap, Crown } from "lucide-react";
+import {
+  History,
+  Star,
+  Trophy,
+  Medal,
+  TrendingUp,
+  Sparkles,
+  Swords,
+  ArrowUpCircle,
+  ArrowDownCircle,
+  Zap,
+  Crown,
+} from "lucide-react";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import type { CareerSnapshot, Milestone } from "@/engine/types/history";
-import type { NotableBoutEntry, NarrativeHighlight, PromotionHistoryEntry } from "@/engine/almanac/types";
+import type {
+  NotableBoutEntry,
+  NarrativeHighlight,
+  PromotionHistoryEntry,
+} from "@/engine/almanac/types";
 import { useState } from "react";
 import {
   ComposedChart,
@@ -408,7 +424,10 @@ export function RikishiCareerTab({
                   <div className="flex items-center gap-3">
                     <button
                       className="text-xs font-black uppercase tracking-widest text-primary hover:underline"
-                      onClick={(e) => { e.stopPropagation(); setExpandedBoutId(expandedBoutId === b.boutId ? null : b.boutId); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setExpandedBoutId(expandedBoutId === b.boutId ? null : b.boutId);
+                      }}
                     >
                       {b.boutId}
                     </button>
@@ -432,10 +451,16 @@ export function RikishiCareerTab({
                         Yusho Race
                       </Badge>
                     )}
-                    <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest">
+                    <Badge
+                      variant="outline"
+                      className="text-[9px] font-black uppercase tracking-widest"
+                    >
                       {b.kimarite}
                     </Badge>
-                    <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest">
+                    <Badge
+                      variant="outline"
+                      className="text-[9px] font-black uppercase tracking-widest"
+                    >
                       {b.year} {b.bashoName} Day {b.day}
                     </Badge>
                   </div>
@@ -474,7 +499,10 @@ export function RikishiCareerTab({
                   ) : (
                     <ArrowDownCircle className="h-4 w-4 text-gold" />
                   )}
-                  <Badge variant="outline" className="text-[9px] font-black uppercase tracking-widest border-2">
+                  <Badge
+                    variant="outline"
+                    className="text-[9px] font-black uppercase tracking-widest border-2"
+                  >
                     {p.year} {p.bashoName}
                   </Badge>
                 </div>

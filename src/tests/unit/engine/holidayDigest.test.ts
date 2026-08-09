@@ -15,7 +15,9 @@ import type { HolidayGateTriggered } from "@/engine/holiday";
 // tested via integration in runHoliday, but for unit-level coverage we
 // replicate the filtering logic to lock in the behavior.
 
-function makeEvent(partial: Partial<EngineEvent> & { id: string; type: any; category: any }): EngineEvent {
+function makeEvent(
+  partial: Partial<EngineEvent> & { id: string; type: any; category: any }
+): EngineEvent {
   return {
     id: partial.id,
     type: partial.type,
@@ -81,33 +83,56 @@ function buildHolidayDigest(
     (e) => e.category === "welfare" || e.category === "training" || e.type.includes("STAFF")
   );
   if (stableEvents.length) {
-    categories.push({ id: "stable", title: "Stable Updates", items: stableEvents.slice(0, 8).map((e) => e.title) });
+    categories.push({
+      id: "stable",
+      title: "Stable Updates",
+      items: stableEvents.slice(0, 8).map((e) => e.title),
+    });
   }
 
   const bashoEvents = holidayEvents.filter(
     (e) => e.category === "basho" || e.type.includes("BASHO") || e.type.includes("YUSHO")
   );
   if (bashoEvents.length) {
-    categories.push({ id: "basho", title: "Basho & Banzuke", items: bashoEvents.slice(0, 5).map((e) => e.title) });
+    categories.push({
+      id: "basho",
+      title: "Basho & Banzuke",
+      items: bashoEvents.slice(0, 5).map((e) => e.title),
+    });
   }
 
-  const econEvents = holidayEvents.filter((e) => e.category === "economy" || e.category === "sponsor");
+  const econEvents = holidayEvents.filter(
+    (e) => e.category === "economy" || e.category === "sponsor"
+  );
   if (econEvents.length) {
-    categories.push({ id: "economy", title: "Economy", items: econEvents.slice(0, 5).map((e) => e.title) });
+    categories.push({
+      id: "economy",
+      title: "Economy",
+      items: econEvents.slice(0, 5).map((e) => e.title),
+    });
   }
 
   const govEvents = holidayEvents.filter(
-    (e) => e.category === "discipline" || e.type.includes("GOVERNANCE") || e.type.includes("SCANDAL")
+    (e) =>
+      e.category === "discipline" || e.type.includes("GOVERNANCE") || e.type.includes("SCANDAL")
   );
   if (govEvents.length) {
-    categories.push({ id: "governance", title: "Governance", items: govEvents.slice(0, 5).map((e) => e.title) });
+    categories.push({
+      id: "governance",
+      title: "Governance",
+      items: govEvents.slice(0, 5).map((e) => e.title),
+    });
   }
 
   const careerEvents = holidayEvents.filter(
     (e) => e.category === "career" || e.type.includes("RETIREMENT") || e.type.includes("DEBUT")
   );
   if (careerEvents.length) {
-    categories.push({ id: "history", title: "Career & History", items: careerEvents.slice(0, 5).map((e) => e.title) });
+    categories.push({
+      id: "history",
+      title: "Career & History",
+      items: careerEvents.slice(0, 5).map((e) => e.title),
+    });
   }
 
   let headline: string;
@@ -132,7 +157,15 @@ describe("buildHolidayDigest", () => {
   });
 
   it("includes welfare events in stable category", () => {
-    const events = [makeEvent({ id: "e1", type: "WELFARE_COMPLIANCE" as any, category: "welfare", title: "Welfare Check", week: 10 })];
+    const events = [
+      makeEvent({
+        id: "e1",
+        type: "WELFARE_COMPLIANCE" as any,
+        category: "welfare",
+        title: "Welfare Check",
+        week: 10,
+      }),
+    ];
     const world = makeWorld(events);
     const digest = buildHolidayDigest(world, 0, 5, null);
     const stable = digest.categories.find((c) => c.id === "stable");
@@ -141,7 +174,15 @@ describe("buildHolidayDigest", () => {
   });
 
   it("includes training events in stable category", () => {
-    const events = [makeEvent({ id: "e1", type: "TRAINING_UPDATE" as any, category: "training", title: "Training Update", week: 10 })];
+    const events = [
+      makeEvent({
+        id: "e1",
+        type: "TRAINING_UPDATE" as any,
+        category: "training",
+        title: "Training Update",
+        week: 10,
+      }),
+    ];
     const world = makeWorld(events);
     const digest = buildHolidayDigest(world, 0, 5, null);
     const stable = digest.categories.find((c) => c.id === "stable");
@@ -150,7 +191,15 @@ describe("buildHolidayDigest", () => {
   });
 
   it("includes events with type containing STAFF in stable category", () => {
-    const events = [makeEvent({ id: "e1", type: "STAFF_HIRED" as any, category: "misc", title: "Staff Hired", week: 10 })];
+    const events = [
+      makeEvent({
+        id: "e1",
+        type: "STAFF_HIRED" as any,
+        category: "misc",
+        title: "Staff Hired",
+        week: 10,
+      }),
+    ];
     const world = makeWorld(events);
     const digest = buildHolidayDigest(world, 0, 5, null);
     const stable = digest.categories.find((c) => c.id === "stable");
@@ -159,7 +208,15 @@ describe("buildHolidayDigest", () => {
   });
 
   it("includes basho category events in basho category", () => {
-    const events = [makeEvent({ id: "e1", type: "BASHO_STATUS" as any, category: "basho", title: "Basho Update", week: 10 })];
+    const events = [
+      makeEvent({
+        id: "e1",
+        type: "BASHO_STATUS" as any,
+        category: "basho",
+        title: "Basho Update",
+        week: 10,
+      }),
+    ];
     const world = makeWorld(events);
     const digest = buildHolidayDigest(world, 0, 5, null);
     const basho = digest.categories.find((c) => c.id === "basho");
@@ -168,7 +225,15 @@ describe("buildHolidayDigest", () => {
   });
 
   it("includes events with type containing YUSHO in basho category", () => {
-    const events = [makeEvent({ id: "e1", type: "BASHO_YUSHO_WIN" as any, category: "misc", title: "Yusho Award", week: 10 })];
+    const events = [
+      makeEvent({
+        id: "e1",
+        type: "BASHO_YUSHO_WIN" as any,
+        category: "misc",
+        title: "Yusho Award",
+        week: 10,
+      }),
+    ];
     const world = makeWorld(events);
     const digest = buildHolidayDigest(world, 0, 5, null);
     const basho = digest.categories.find((c) => c.id === "basho");
@@ -176,7 +241,15 @@ describe("buildHolidayDigest", () => {
   });
 
   it("includes economy category events in economy category", () => {
-    const events = [makeEvent({ id: "e1", type: "FINANCIAL_ALERT" as any, category: "economy", title: "Financial Alert", week: 10 })];
+    const events = [
+      makeEvent({
+        id: "e1",
+        type: "FINANCIAL_ALERT" as any,
+        category: "economy",
+        title: "Financial Alert",
+        week: 10,
+      }),
+    ];
     const world = makeWorld(events);
     const digest = buildHolidayDigest(world, 0, 5, null);
     const econ = digest.categories.find((c) => c.id === "economy");
@@ -185,7 +258,15 @@ describe("buildHolidayDigest", () => {
   });
 
   it("includes sponsor category events in economy category", () => {
-    const events = [makeEvent({ id: "e1", type: "FINANCIAL_ALERT" as any, category: "sponsor", title: "Sponsor Deal", week: 10 })];
+    const events = [
+      makeEvent({
+        id: "e1",
+        type: "FINANCIAL_ALERT" as any,
+        category: "sponsor",
+        title: "Sponsor Deal",
+        week: 10,
+      }),
+    ];
     const world = makeWorld(events);
     const digest = buildHolidayDigest(world, 0, 5, null);
     const econ = digest.categories.find((c) => c.id === "economy");
@@ -194,7 +275,15 @@ describe("buildHolidayDigest", () => {
   });
 
   it("includes discipline category events in governance category", () => {
-    const events = [makeEvent({ id: "e1", type: "GOVERNANCE_RULING" as any, category: "discipline", title: "Governance Ruling", week: 10 })];
+    const events = [
+      makeEvent({
+        id: "e1",
+        type: "GOVERNANCE_RULING" as any,
+        category: "discipline",
+        title: "Governance Ruling",
+        week: 10,
+      }),
+    ];
     const world = makeWorld(events);
     const digest = buildHolidayDigest(world, 0, 5, null);
     const gov = digest.categories.find((c) => c.id === "governance");
@@ -203,7 +292,15 @@ describe("buildHolidayDigest", () => {
   });
 
   it("includes career category events in history category", () => {
-    const events = [makeEvent({ id: "e1", type: "RETIREMENT_ANNOUNCED" as any, category: "career", title: "Retirement", week: 10 })];
+    const events = [
+      makeEvent({
+        id: "e1",
+        type: "RETIREMENT_ANNOUNCED" as any,
+        category: "career",
+        title: "Retirement",
+        week: 10,
+      }),
+    ];
     const world = makeWorld(events);
     const digest = buildHolidayDigest(world, 0, 5, null);
     const history = digest.categories.find((c) => c.id === "history");
@@ -215,7 +312,13 @@ describe("buildHolidayDigest", () => {
     // An event with category "welfare" and type containing "STAFF" should appear in stable
     // An event with category "basho" and type containing "YUSHO" should appear in basho
     const events = [
-      makeEvent({ id: "e1", type: "STAFF_BASHO" as any, category: "welfare", title: "Multi-category", week: 10 }),
+      makeEvent({
+        id: "e1",
+        type: "STAFF_BASHO" as any,
+        category: "welfare",
+        title: "Multi-category",
+        week: 10,
+      }),
     ];
     const world = makeWorld(events);
     const digest = buildHolidayDigest(world, 0, 5, null);
@@ -230,7 +333,13 @@ describe("buildHolidayDigest", () => {
 
   it("limits stable category to 8 items", () => {
     const events = Array.from({ length: 12 }, (_, i) =>
-      makeEvent({ id: `e${i}`, type: "WELFARE_COMPLIANCE" as any, category: "welfare", title: `Welfare ${i}`, week: 10 })
+      makeEvent({
+        id: `e${i}`,
+        type: "WELFARE_COMPLIANCE" as any,
+        category: "welfare",
+        title: `Welfare ${i}`,
+        week: 10,
+      })
     );
     const world = makeWorld(events);
     const digest = buildHolidayDigest(world, 0, 5, null);
@@ -241,7 +350,13 @@ describe("buildHolidayDigest", () => {
 
   it("limits non-stable categories to 5 items", () => {
     const events = Array.from({ length: 10 }, (_, i) =>
-      makeEvent({ id: `e${i}`, type: "BASHO_STATUS" as any, category: "basho", title: `Basho ${i}`, week: 10 })
+      makeEvent({
+        id: `e${i}`,
+        type: "BASHO_STATUS" as any,
+        category: "basho",
+        title: `Basho ${i}`,
+        week: 10,
+      })
     );
     const world = makeWorld(events);
     const digest = buildHolidayDigest(world, 0, 5, null);
@@ -253,8 +368,20 @@ describe("buildHolidayDigest", () => {
   it("excludes events before startWeek", () => {
     const startDay = 70; // week 10
     const events = [
-      makeEvent({ id: "e1", type: "WELFARE_COMPLIANCE" as any, category: "welfare", title: "Old Event", week: 5 }),
-      makeEvent({ id: "e2", type: "WELFARE_COMPLIANCE" as any, category: "welfare", title: "New Event", week: 10 }),
+      makeEvent({
+        id: "e1",
+        type: "WELFARE_COMPLIANCE" as any,
+        category: "welfare",
+        title: "Old Event",
+        week: 5,
+      }),
+      makeEvent({
+        id: "e2",
+        type: "WELFARE_COMPLIANCE" as any,
+        category: "welfare",
+        title: "New Event",
+        week: 10,
+      }),
     ];
     const world = makeWorld(events, startDay);
     const digest = buildHolidayDigest(world, startDay, 5, null);
@@ -284,8 +411,20 @@ describe("buildHolidayDigest", () => {
 
   it("generates correct headline for multiple days with events", () => {
     const events = [
-      makeEvent({ id: "e1", type: "WELFARE_COMPLIANCE" as any, category: "welfare", title: "Event 1", week: 10 }),
-      makeEvent({ id: "e2", type: "TRAINING_UPDATE" as any, category: "training", title: "Event 2", week: 10 }),
+      makeEvent({
+        id: "e1",
+        type: "WELFARE_COMPLIANCE" as any,
+        category: "welfare",
+        title: "Event 1",
+        week: 10,
+      }),
+      makeEvent({
+        id: "e2",
+        type: "TRAINING_UPDATE" as any,
+        category: "training",
+        title: "Event 2",
+        week: 10,
+      }),
     ];
     const world = makeWorld(events);
     const digest = buildHolidayDigest(world, 0, 7, null);

@@ -64,10 +64,7 @@ function dominantFamily(counts: OpponentTacticModel["familyCounts"]): TacticalFa
  * Build a fresh opponent model for a rikishi using recent match history.
  * If the rikishi has no history, falls back to style / combat profile.
  */
-export function buildOpponentModel(
-  rikishi: Rikishi,
-  currentWeek = 0
-): OpponentTacticModel {
+export function buildOpponentModel(rikishi: Rikishi, currentWeek = 0): OpponentTacticModel {
   const counts = { push: 0, belt: 0, trick: 0, speed: 0 };
   let sampleSize = 0;
   let mostUsedKimarite = "";
@@ -127,9 +124,7 @@ export function observeBoutResult(
 }
 
 /** Return the inferred dominant tactical family of an opponent. */
-export function getOpponentDominantFamily(
-  model: OpponentTacticModel
-): TacticalFamily {
+export function getOpponentDominantFamily(model: OpponentTacticModel): TacticalFamily {
   return dominantFamily(model.familyCounts);
 }
 

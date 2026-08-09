@@ -34,7 +34,9 @@ function makePair(heat: number): RivalryPairState {
 describe("spawnRivalryAgent", () => {
   it("does not escalate without active rivalries", () => {
     const result = spawnRivalryAgent({
-      oyakata: makeOyakata({ traits: { ambition: 80, risk: 80, tradition: 20, compassion: 20, patience: 50 } }),
+      oyakata: makeOyakata({
+        traits: { ambition: 80, risk: 80, tradition: 20, compassion: 20, patience: 50 },
+      }),
       activeRivalries: {},
     });
     expect(result.escalateRivalry).toBe(false);
@@ -42,7 +44,9 @@ describe("spawnRivalryAgent", () => {
 
   it("escalates medium-heat rivalries when ambitious", () => {
     const result = spawnRivalryAgent({
-      oyakata: makeOyakata({ traits: { ambition: 80, risk: 50, tradition: 20, compassion: 20, patience: 50 } }),
+      oyakata: makeOyakata({
+        traits: { ambition: 80, risk: 50, tradition: 20, compassion: 20, patience: 50 },
+      }),
       activeRivalries: { "r1-r2": makePair(50) },
     });
     expect(result.escalateRivalry).toBe(true);
@@ -57,7 +61,9 @@ describe("spawnRivalryAgent", () => {
       d: makePair(95),
     };
     const result = spawnRivalryAgent({
-      oyakata: makeOyakata({ traits: { ambition: 30, risk: 20, tradition: 50, compassion: 80, patience: 80 } }),
+      oyakata: makeOyakata({
+        traits: { ambition: 30, risk: 20, tradition: 50, compassion: 80, patience: 80 },
+      }),
       activeRivalries,
     });
     expect(result.deescalateRivalry).toBe(true);
@@ -65,7 +71,9 @@ describe("spawnRivalryAgent", () => {
 
   it("anxiety overrides escalation", () => {
     const result = spawnRivalryAgent({
-      oyakata: makeOyakata({ traits: { ambition: 80, risk: 80, tradition: 20, compassion: 20, patience: 50 } }),
+      oyakata: makeOyakata({
+        traits: { ambition: 80, risk: 80, tradition: 20, compassion: 20, patience: 50 },
+      }),
       activeRivalries: { "r1-r2": makePair(50) },
       currentMood: "anxious",
     });

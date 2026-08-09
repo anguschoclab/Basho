@@ -1,5 +1,11 @@
 import { describe, it, expect } from "vitest";
-import { computeStats, worldChecksum, writeResults, runBenchmark, runScenario } from "../../../../scripts/bench-pipelines";
+import {
+  computeStats,
+  worldChecksum,
+  writeResults,
+  runBenchmark,
+  runScenario,
+} from "../../../../scripts/bench-pipelines";
 import type { WorldState } from "../../../../src/engine/types/world";
 import { readFileSync, rmSync, existsSync } from "node:fs";
 import { join } from "node:path";
@@ -58,7 +64,14 @@ describe("writeResults", () => {
     const run = {
       timestamp: "2026-01-01T00:00:00.000Z",
       results: [
-        { scenario: "S3_year", p50_ms: 100.5, p99_ms: 200.0, mean_ms: 120.0, runs: 50, total_days: 365 },
+        {
+          scenario: "S3_year",
+          p50_ms: 100.5,
+          p99_ms: 200.0,
+          mean_ms: 120.0,
+          runs: 50,
+          total_days: 365,
+        },
       ],
     };
     writeResults(filePath, run);

@@ -258,12 +258,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       const absentFinalDay = stats.absences > 0 && totalBouts < 15;
 
       // Calculate kihaku isen (fighting spirit) score using KihakuService
-      const kihakuInput = KihakuService.extractFromBasho(
-        id,
-        lastBasho,
-        stats.wins,
-        absentFinalDay
-      );
+      const kihakuInput = KihakuService.extractFromBasho(id, lastBasho, stats.wins, absentFinalDay);
       const kihakuIsenScore = KihakuService.calculateScore(kihakuInput);
 
       builder.updateRikishi(id, {
@@ -315,9 +310,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       }
     }
     const sekiwakeThreeBashoWins = recentSanyakuWins + stats.wins;
-    const promoteToOzeki = isSanyakuForOzeki
-      && sekiwakeThreeBashoWins >= 33
-      && stats.wins >= 10;
+    const promoteToOzeki = isSanyakuForOzeki && sekiwakeThreeBashoWins >= 33 && stats.wins >= 10;
 
     performanceList.push({
       rikishiId: id,
@@ -339,7 +332,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
     });
   }
 
-  const perfMap = new Map<string, typeof performanceList[number]>();
+  const perfMap = new Map<string, (typeof performanceList)[number]>();
   for (const p of performanceList) perfMap.set(p.rikishiId, p);
   const result = updateBanzuke(
     currentBanzukeList,
@@ -349,7 +342,7 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
     world.heyas
   );
 
-  const newBanzukeByRikishiId = new Map<string, typeof result.newBanzuke[number]>();
+  const newBanzukeByRikishiId = new Map<string, (typeof result.newBanzuke)[number]>();
   for (const e of result.newBanzuke) newBanzukeByRikishiId.set(e.rikishiId, e);
   const eventsByRikishiId = new Map<string, MovementEvent>();
   for (const e of result.events) {
@@ -583,7 +576,11 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
       }
 
       // Ozeki reclaim detection: demoted ozeki restored to ozeki rank (10+ win reclaim)
-      if (oldRank !== "ozeki" && newEntry.position.rank === "ozeki" && rikishi.wasDemotedFromOzeki) {
+      if (
+        oldRank !== "ozeki" &&
+        newEntry.position.rank === "ozeki" &&
+        rikishi.wasDemotedFromOzeki
+      ) {
         builder.updateRikishi(newEntry.rikishiId, {
           wasDemotedFromOzeki: false,
         });

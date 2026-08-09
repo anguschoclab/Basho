@@ -42,14 +42,24 @@ describe("Maezumo assessment stage", () => {
   it("higher stat recruit gets better (lower) rankNumber", () => {
     const lowStatRecruit = makeRecruit("low");
     lowStatRecruit.stats = {
-      aggression: 20, mental: 20, power: 20, speed: 20,
-      technique: 20, balance: 20, stamina: 20,
+      aggression: 20,
+      mental: 20,
+      power: 20,
+      speed: 20,
+      technique: 20,
+      balance: 20,
+      stamina: 20,
     } as never;
 
     const highStatRecruit = makeRecruit("high");
     highStatRecruit.stats = {
-      aggression: 80, mental: 80, power: 80, speed: 80,
-      technique: 80, balance: 80, stamina: 80,
+      aggression: 80,
+      mental: 80,
+      power: 80,
+      speed: 80,
+      technique: 80,
+      balance: 80,
+      stamina: 80,
     } as never;
 
     const lowResult = assessMaezumo(lowStatRecruit, "stat-seed");

@@ -32,7 +32,9 @@ vi.mock("@/store/gameStore", () => ({
 
 vi.mock("@tanstack/react-router", () => ({
   Link: ({ to, children, onClick }: any) => (
-    <a href={to} data-testid="router-link" onClick={onClick}>{children}</a>
+    <a href={to} data-testid="router-link" onClick={onClick}>
+      {children}
+    </a>
   ),
 }));
 
@@ -42,7 +44,9 @@ vi.mock("@/components/EventDetailDialog", () => ({
     return (
       <div data-testid="event-detail-dialog">
         <span>{event.title}</span>
-        <button onClick={onClose} data-testid="dialog-close">Close</button>
+        <button onClick={onClose} data-testid="dialog-close">
+          Close
+        </button>
       </div>
     );
   },
@@ -153,17 +157,13 @@ describe("EventFeed clickable entities and dialog", () => {
     mockStore({ events: { log: events } });
     render(<EventFeed maxEvents={10} />);
     const links = screen.getAllByTestId("router-link");
-    const takakeishoLink = links.find(
-      (l) => l.getAttribute("href") === "/rikishi/r-2"
-    );
+    const takakeishoLink = links.find((l) => l.getAttribute("href") === "/rikishi/r-2");
     expect(takakeishoLink).toBeTruthy();
     expect(screen.getByText("Takakeisho")).toBeTruthy();
   });
 
   it("clicking an event opens EventDetailDialog", () => {
-    const events = [
-      makeEvent("e1", "BASHO_STATUS", "notable", 2026, 10),
-    ];
+    const events = [makeEvent("e1", "BASHO_STATUS", "notable", 2026, 10)];
     mockStore({ events: { log: events } });
     render(<EventFeed maxEvents={10} />);
     const items = screen.getAllByRole("button");
@@ -174,9 +174,7 @@ describe("EventFeed clickable entities and dialog", () => {
   });
 
   it("EventDetailDialog close button works", () => {
-    const events = [
-      makeEvent("e1", "BASHO_STATUS", "notable", 2026, 10),
-    ];
+    const events = [makeEvent("e1", "BASHO_STATUS", "notable", 2026, 10)];
     mockStore({ events: { log: events } });
     render(<EventFeed maxEvents={10} />);
     const items = screen.getAllByRole("button");
@@ -187,9 +185,7 @@ describe("EventFeed clickable entities and dialog", () => {
   });
 
   it("keyboard activation opens dialog", () => {
-    const events = [
-      makeEvent("e1", "BASHO_STATUS", "notable", 2026, 10),
-    ];
+    const events = [makeEvent("e1", "BASHO_STATUS", "notable", 2026, 10)];
     mockStore({ events: { log: events } });
     render(<EventFeed maxEvents={10} />);
     const items = screen.getAllByRole("button");

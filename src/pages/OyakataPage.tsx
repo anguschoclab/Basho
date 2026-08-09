@@ -261,53 +261,57 @@ export default function OyakataPage() {
                 const fn = accessor[sortKey];
                 const sorted = fn ? [...all].sort((a, b) => compareBy(a, b, fn, sortOrder)) : all;
                 return sorted.map((o) => {
-                const heya = getHeya(world, o.heyaId);
-                const isSelected = o.id === selectedOyakata.id;
-                return (
-                  <Card
-                    key={o.id}
-                    className={`cursor-pointer transition-colors ${isSelected ? "ring-2 ring-primary" : "hover:bg-muted/50"}`}
-                    onClick={() => setSelectedOyakata(o)}
-                  >
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-3">
-                        <SumoAvatar
-                          config={o.avatarConfig}
-                          size="sm"
-                          showHairstyle={true}
-                          fallback={o.name}
-                        />
-                        <div className="flex-1">
-                          <p className="font-medium">{o.name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {heya ? <StableName id={heya.id} name={heya.name} /> : "Unknown Stable"}
-                          </p>
+                  const heya = getHeya(world, o.heyaId);
+                  const isSelected = o.id === selectedOyakata.id;
+                  return (
+                    <Card
+                      key={o.id}
+                      className={`cursor-pointer transition-colors ${isSelected ? "ring-2 ring-primary" : "hover:bg-muted/50"}`}
+                      onClick={() => setSelectedOyakata(o)}
+                    >
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-3">
+                          <SumoAvatar
+                            config={o.avatarConfig}
+                            size="sm"
+                            showHairstyle={true}
+                            fallback={o.name}
+                          />
+                          <div className="flex-1">
+                            <p className="font-medium">{o.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {heya ? (
+                                <StableName id={heya.id} name={heya.name} />
+                              ) : (
+                                "Unknown Stable"
+                              )}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex gap-2 mt-2">
-                        <Badge variant="outline" className="capitalize text-xs">
-                          {o.archetype?.replace("_", " ")}
-                        </Badge>
-                        {o.highestRank && (
-                          <Badge
-                            variant={
-                              o.highestRank.toLowerCase() === "yokozuna" ||
-                              o.highestRank.toLowerCase() === "ozeki"
-                                ? "default"
-                                : "secondary"
-                            }
-                            className="capitalize text-xs"
-                          >
-                            {o.highestRank.toLowerCase() === "yokozuna" && (
-                              <Crown className="h-3 w-3 mr-1" />
-                            )}
-                            {o.highestRank}
+                        <div className="flex gap-2 mt-2">
+                          <Badge variant="outline" className="capitalize text-xs">
+                            {o.archetype?.replace("_", " ")}
                           </Badge>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
+                          {o.highestRank && (
+                            <Badge
+                              variant={
+                                o.highestRank.toLowerCase() === "yokozuna" ||
+                                o.highestRank.toLowerCase() === "ozeki"
+                                  ? "default"
+                                  : "secondary"
+                              }
+                              className="capitalize text-xs"
+                            >
+                              {o.highestRank.toLowerCase() === "yokozuna" && (
+                                <Crown className="h-3 w-3 mr-1" />
+                              )}
+                              {o.highestRank}
+                            </Badge>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
                 });
               })()}
             </div>

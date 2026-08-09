@@ -44,7 +44,18 @@ describe("chooseTactic", () => {
     const cpu = mockRikishi("cpu", {
       style: "oshi",
       fatigue: 90,
-      stats: { power: 80, speed: 50, technique: 50, balance: 50, weight: 140, stamina: 50, mental: 50, adaptability: 50, experience: 50, aggression: 50 },
+      stats: {
+        power: 80,
+        speed: 50,
+        technique: 50,
+        balance: 50,
+        weight: 140,
+        stamina: 50,
+        mental: 50,
+        adaptability: 50,
+        experience: 50,
+        aggression: 50,
+      },
     });
     const opp = mockRikishi("opp", { style: "yotsu" });
     // Use a context where the base roll would produce an intensity tactic.
@@ -56,7 +67,18 @@ describe("chooseTactic", () => {
   it("counters a belt-dominant opponent model", () => {
     const cpu = mockRikishi("cpu", {
       style: "hybrid",
-      stats: { power: 60, speed: 60, technique: 60, balance: 50, weight: 140, stamina: 50, mental: 50, adaptability: 50, experience: 50, aggression: 50 },
+      stats: {
+        power: 60,
+        speed: 60,
+        technique: 60,
+        balance: 50,
+        weight: 140,
+        stamina: 50,
+        mental: 50,
+        adaptability: 50,
+        experience: 50,
+        aggression: 50,
+      },
     });
     const opp = mockRikishi("opp", {
       style: "yotsu",

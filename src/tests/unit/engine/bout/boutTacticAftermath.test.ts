@@ -10,7 +10,15 @@ function makeRikishi(id: string, fatigue = 0, momentum = 50): Rikishi {
     id,
     fatigue,
     momentum,
-    stats: { aggression: 50, mental: 50, power: 50, speed: 50, technique: 50, balance: 50, stamina: 50 },
+    stats: {
+      aggression: 50,
+      mental: 50,
+      power: 50,
+      speed: 50,
+      technique: 50,
+      balance: 50,
+      stamina: 50,
+    },
   } as unknown as Rikishi;
 }
 
@@ -36,7 +44,10 @@ function makeResult(winner: "east" | "west" = "east", kimarite = "yorikiri"): Bo
   } as unknown as BoutResult;
 }
 
-function makeBout(playerSide: "east" | "west" | undefined = "east", playerTactic?: string): BoutContext {
+function makeBout(
+  playerSide: "east" | "west" | undefined = "east",
+  playerTactic?: string
+): BoutContext {
   return {
     id: "test-bout",
     day: 5,
@@ -53,7 +64,13 @@ describe("boutTacticAftermath", () => {
     const west = makeRikishi("west");
     const bout = makeBout("east");
     const result = makeResult("east");
-    const { playerUpdate, cpuUpdate, injuryMultiplier } = computeTacticAftermath(bout, result, east, west, undefined);
+    const { playerUpdate, cpuUpdate, injuryMultiplier } = computeTacticAftermath(
+      bout,
+      result,
+      east,
+      west,
+      undefined
+    );
     expect(playerUpdate).toEqual({});
     expect(cpuUpdate).toEqual({});
     expect(injuryMultiplier).toBe(1.0);
@@ -102,7 +119,13 @@ describe("boutTacticAftermath", () => {
     const west = makeRikishi("west");
     const bout = makeBout("east", "ALL_OUT");
     const result = makeResult("east", "fusensho");
-    const { playerUpdate, injuryMultiplier } = computeTacticAftermath(bout, result, east, west, undefined);
+    const { playerUpdate, injuryMultiplier } = computeTacticAftermath(
+      bout,
+      result,
+      east,
+      west,
+      undefined
+    );
     expect(playerUpdate).toEqual({});
     expect(injuryMultiplier).toBe(1.0);
   });

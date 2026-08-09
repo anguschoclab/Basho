@@ -151,7 +151,12 @@ export default function GovernancePage() {
     ];
 
     const councilStats: StatItem[] = [
-      { label: "Standing", value: getStatusLabel(world, gov.status), tone: gov.statusTone, sub: gov.statusSub },
+      {
+        label: "Standing",
+        value: getStatusLabel(world, gov.status),
+        tone: gov.statusTone,
+        sub: gov.statusSub,
+      },
     ];
 
     const recordStats: StatItem[] = [{ label: "Decisions on File", value: history.length }];
@@ -255,9 +260,7 @@ export default function GovernancePage() {
 
         {(closedHeyas.length > 0 || yokozunaVacancyStreak > 0) && (
           <div className="flex gap-4 text-xs text-muted-foreground">
-            {closedHeyas.length > 0 && (
-              <span>{closedHeyas.length} stable(s) closed</span>
-            )}
+            {closedHeyas.length > 0 && <span>{closedHeyas.length} stable(s) closed</span>}
             {yokozunaVacancyStreak > 0 && (
               <span>Yokozuna vacancy: {yokozunaVacancyStreak} basho</span>
             )}
@@ -389,8 +392,7 @@ export default function GovernancePage() {
                     ? [
                         {
                           label: "Champion",
-                          value:
-                            getGlobalCupChampion(world)?.shikona ?? "Unknown",
+                          value: getGlobalCupChampion(world)?.shikona ?? "Unknown",
                           tone: "gold" as const,
                         },
                       ]

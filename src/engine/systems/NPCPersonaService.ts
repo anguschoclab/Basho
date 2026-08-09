@@ -117,10 +117,7 @@ export interface OyakataPersona {
  * @param {Oyakata} oyakata - The oyakata to ensure persona for.
  * @returns {OyakataPersona} The persona data (quirks and managerFlags).
  */
-export function ensurePersonaForOyakata(
-  world: WorldState,
-  oyakata: Oyakata
-): OyakataPersona {
+export function ensurePersonaForOyakata(world: WorldState, oyakata: Oyakata): OyakataPersona {
   if (Array.isArray(oyakata.quirks) && oyakata.quirks.length) {
     return {
       quirks: oyakata.quirks,
@@ -135,19 +132,26 @@ export function ensurePersonaForOyakata(
 
   const rng = rngForWorld(world, "oyakataPersona", oyakata.id);
 
-  const baseCount = oyakata.archetype === "tyrant" || oyakata.archetype === "gambler" ? QUIRK_COUNT_HIGH : QUIRK_COUNT_BASE;
+  const baseCount =
+    oyakata.archetype === "tyrant" || oyakata.archetype === "gambler"
+      ? QUIRK_COUNT_HIGH
+      : QUIRK_COUNT_BASE;
   const quirkIds = pickUnique(rng, QUIRK_IDS, baseCount);
 
   // Hydrate quirk labels via BardEngine
   const quirkLabels = quirkIds.map((id) => BardEngine.resolve(rng, `oyakata.quirks.${id}`).text);
 
   const flags = {
-    welfareHawk: quirkIds.includes("Welfare Hawk") || oyakata.traits.compassion >= WELFARE_HAWK_COMPASSION_THRESHOLD,
+    welfareHawk:
+      quirkIds.includes("Welfare Hawk") ||
+      oyakata.traits.compassion >= WELFARE_HAWK_COMPASSION_THRESHOLD,
     disciplineHawk:
       quirkIds.includes("Discipline Hawk") ||
       oyakata.archetype === "tyrant" ||
       oyakata.traits.tradition >= DISCIPLINE_HAWK_TRADITION_THRESHOLD,
-    publicityHawk: quirkIds.includes("Media Operator") || oyakata.traits.ambition >= PUBLICITY_HAWK_AMBITION_THRESHOLD,
+    publicityHawk:
+      quirkIds.includes("Media Operator") ||
+      oyakata.traits.ambition >= PUBLICITY_HAWK_AMBITION_THRESHOLD,
     nepotist: quirkIds.includes("Nepotist"),
   };
 
@@ -204,12 +208,20 @@ export function getManagerPersona(world: WorldState, heyaId: string): NPCPersona
 
   const welfareDiscipline = Math.max(
     0,
-    Math.min(1, traits.compassion / COMPASSION_WELFARE_DIVISOR + (flags.welfareHawk ? WELFARE_HAWK_BONUS : 0) - traits.risk / RISK_WELFARE_DIVISOR)
+    Math.min(
+      1,
+      traits.compassion / COMPASSION_WELFARE_DIVISOR +
+        (flags.welfareHawk ? WELFARE_HAWK_BONUS : 0) -
+        traits.risk / RISK_WELFARE_DIVISOR
+    )
   );
 
   const riskAppetite = Math.max(
     0,
-    Math.min(1, (traits.risk / 100) * RISK_MULTIPLIER + (traits.ambition / 100) * AMBITION_MULTIPLIER)
+    Math.min(
+      1,
+      (traits.risk / 100) * RISK_MULTIPLIER + (traits.ambition / 100) * AMBITION_MULTIPLIER
+    )
   );
 
   return {

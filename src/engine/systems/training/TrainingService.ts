@@ -411,7 +411,7 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
 
     // Archetype evolution over career (2.3): detect significant stat shifts
     // and evolve the combat profile archetype accordingly
-    const age = rikishi.age ?? (world.year - rikishi.birthYear);
+    const age = rikishi.age ?? world.year - rikishi.birthYear;
     const currentArchetype = rikishi.combatProfile?.archetype;
     const effectiveStats = (updates.stats ?? rikishi.stats) as RikishiStats;
     if (currentArchetype && age >= 30) {

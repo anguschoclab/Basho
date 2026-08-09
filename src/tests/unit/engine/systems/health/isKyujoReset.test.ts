@@ -5,8 +5,6 @@ import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { WorldState } from "@/engine/types/world";
 
- 
-
 function makeInjuredRikishi(opts?: Record<string, any>): Rikishi {
   return {
     id: "test-rikishi",

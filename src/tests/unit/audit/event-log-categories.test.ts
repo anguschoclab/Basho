@@ -49,14 +49,20 @@ function searchEngineForCategory(category: string): string[] {
 describe("ECONOMY event category", () => {
   it("is emitted by at least one engine file", () => {
     const hits = searchEngineForCategory("economy");
-    expect(hits.length, `Expected 'economy' event category in engine, found in: ${hits.join(", ")}`).toBeGreaterThan(0);
+    expect(
+      hits.length,
+      `Expected 'economy' event category in engine, found in: ${hits.join(", ")}`
+    ).toBeGreaterThan(0);
   });
 });
 
 describe("HEALTH event category", () => {
   it("is emitted by at least one engine file", () => {
     const hits = searchEngineForCategory("welfare");
-    expect(hits.length, `Expected 'welfare' event category in engine, found in: ${hits.join(", ")}`).toBeGreaterThan(0);
+    expect(
+      hits.length,
+      `Expected 'welfare' event category in engine, found in: ${hits.join(", ")}`
+    ).toBeGreaterThan(0);
   });
 });
 
@@ -70,13 +76,19 @@ describe("WELFARE event category", () => {
 describe("TRAINING event category", () => {
   it("is emitted by at least one engine file", () => {
     const hits = searchEngineForCategory("training");
-    expect(hits.length, `Expected 'training' event category in engine, found in: ${hits.join(", ")}`).toBeGreaterThan(0);
+    expect(
+      hits.length,
+      `Expected 'training' event category in engine, found in: ${hits.join(", ")}`
+    ).toBeGreaterThan(0);
   });
 });
 
 describe("RIVALRY event category", () => {
   it("is emitted by at least one engine file", () => {
     const hits = searchEngineForCategory("rivalry");
-    expect(hits.length, `Expected 'rivalry' event category in engine, found in: ${hits.join(", ")}`).toBeGreaterThan(0);
+    expect(
+      hits.length,
+      `Expected 'rivalry' event category in engine, found in: ${hits.join(", ")}`
+    ).toBeGreaterThan(0);
   });
 });

@@ -171,7 +171,9 @@ describe("OPFSArchiveService core functionality", () => {
       await service.archiveBoutLog(2024, "b1", {});
 
       // Should complete without error and not attempt any file operations
-      expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024", "bouts"], { throwOnError: true });
+      expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024", "bouts"], {
+        throwOnError: true,
+      });
     });
   });
 
@@ -355,7 +357,9 @@ describe("OPFSArchiveService core functionality", () => {
 
       await service.archiveGazette(2024, 1, "# Test");
 
-      expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024", "gazettes"], { throwOnError: true });
+      expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024", "gazettes"], {
+        throwOnError: true,
+      });
     });
   });
 
@@ -472,7 +476,9 @@ describe("OPFSArchiveService core functionality", () => {
 
       await service.archiveAwards(2024, []);
 
-      expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024"], { throwOnError: true });
+      expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024"], {
+        throwOnError: true,
+      });
     });
   });
 
@@ -599,7 +605,9 @@ describe("OPFSArchiveService core functionality", () => {
         retirements: [],
       });
 
-      expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024", "banzuke"], { throwOnError: true });
+      expect(service.getDirectoryPath).toHaveBeenCalledWith(["season_2024", "banzuke"], {
+        throwOnError: true,
+      });
     });
   });
 

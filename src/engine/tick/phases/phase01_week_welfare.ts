@@ -79,7 +79,7 @@ export function phase01_week_welfare(world: WorldState): StateImpact {
     const avgMomentum = roster.length > 0 ? momentumSum / roster.length : 0;
     let morale = Math.round(
       (100 - nextState.welfareRisk) * MORALE_WELFARE_RISK_WEIGHT +
-      (avgMomentum + MORALE_MOMENTUM_OFFSET) * MORALE_MOMENTUM_NORMALIZER
+        (avgMomentum + MORALE_MOMENTUM_OFFSET) * MORALE_MOMENTUM_NORMALIZER
     );
     // Compliance penalties
     if (nextState.complianceState === "sanctioned") morale -= MORALE_SANCTIONED_PENALTY;

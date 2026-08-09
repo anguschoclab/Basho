@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 import { mockRikishi } from "../utils";
@@ -44,7 +43,13 @@ function makeWorld(): WorldState {
   } as any;
 }
 
-function runNarrative(eastWins: number, eastLosses: number, westWins: number, westLosses: number, winner: "east" | "west") {
+function runNarrative(
+  eastWins: number,
+  eastLosses: number,
+  westWins: number,
+  westLosses: number,
+  winner: "east" | "west"
+) {
   const east = mockRikishi("east-1", {
     shikona: "EastMan",
     currentBashoWins: eastWins,
@@ -59,15 +64,7 @@ function runNarrative(eastWins: number, eastLosses: number, westWins: number, we
   const result = makeBoutResult(winner);
   const world = makeWorld();
 
-  generateBoutNarrative(
-    result,
-    east,
-    west,
-    "hatsu" as BashoName,
-    14,
-    "test-77-pressure",
-    world
-  );
+  generateBoutNarrative(result, east, west, "hatsu" as BashoName, 14, "test-77-pressure", world);
 
   return result.pbpLines ?? [];
 }
@@ -76,8 +73,11 @@ describe("7-7 Pressure Narrative (B12)", () => {
   it("pre-bout: adds seven_seven storyline when both rikishi are 7-7", () => {
     const lines = runNarrative(7, 7, 7, 7, "east");
     const preBoutLines = lines.filter((e: any) => e.phase === "pre_bout");
-    const has77Line = preBoutLines.some((e: any) =>
-      e.text.includes("7-7") || e.text.includes("Seven wins, seven losses") || e.text.includes("Everything is on the line")
+    const has77Line = preBoutLines.some(
+      (e: any) =>
+        e.text.includes("7-7") ||
+        e.text.includes("Seven wins, seven losses") ||
+        e.text.includes("Everything is on the line")
     );
     expect(has77Line).toBe(true);
   });
@@ -85,8 +85,8 @@ describe("7-7 Pressure Narrative (B12)", () => {
   it("pre-bout: does not add seven_seven storyline when records are not 7-7", () => {
     const lines = runNarrative(8, 6, 6, 8, "east");
     const preBoutLines = lines.filter((e: any) => e.phase === "pre_bout");
-    const has77Line = preBoutLines.some((e: any) =>
-      e.text.includes("7-7") || e.text.includes("Seven wins, seven losses")
+    const has77Line = preBoutLines.some(
+      (e: any) => e.text.includes("7-7") || e.text.includes("Seven wins, seven losses")
     );
     expect(has77Line).toBe(false);
   });
@@ -94,8 +94,12 @@ describe("7-7 Pressure Narrative (B12)", () => {
   it("post-bout: adds seven_seven_win storyline when winner was at 7-7 and wins", () => {
     const lines = runNarrative(7, 7, 7, 7, "east");
     const postBoutLines = lines.filter((e: any) => e.phase === "post_bout");
-    const has77WinLine = postBoutLines.some((e: any) =>
-      e.text.includes("7-7") || e.text.includes("pressure") || e.text.includes("winning record") || e.text.includes("rose to the occasion")
+    const has77WinLine = postBoutLines.some(
+      (e: any) =>
+        e.text.includes("7-7") ||
+        e.text.includes("pressure") ||
+        e.text.includes("winning record") ||
+        e.text.includes("rose to the occasion")
     );
     expect(has77WinLine).toBe(true);
   });
@@ -103,8 +107,12 @@ describe("7-7 Pressure Narrative (B12)", () => {
   it("post-bout: adds seven_seven_loss storyline when loser was at 7-7 and loses", () => {
     const lines = runNarrative(7, 7, 7, 7, "east");
     const postBoutLines = lines.filter((e: any) => e.phase === "post_bout");
-    const has77LossLine = postBoutLines.some((e: any) =>
-      e.text.includes("7-7") || e.text.includes("Devastation") || e.text.includes("make-koshi") || e.text.includes("crushing")
+    const has77LossLine = postBoutLines.some(
+      (e: any) =>
+        e.text.includes("7-7") ||
+        e.text.includes("Devastation") ||
+        e.text.includes("make-koshi") ||
+        e.text.includes("crushing")
     );
     expect(has77LossLine).toBe(true);
   });
@@ -112,8 +120,11 @@ describe("7-7 Pressure Narrative (B12)", () => {
   it("post-bout: does not add seven_seven lines when records are not 7-7", () => {
     const lines = runNarrative(9, 5, 5, 9, "east");
     const postBoutLines = lines.filter((e: any) => e.phase === "post_bout");
-    const has77Line = postBoutLines.some((e: any) =>
-      e.text.includes("7-7") || e.text.includes("rose to the occasion") || e.text.includes("Devastation for")
+    const has77Line = postBoutLines.some(
+      (e: any) =>
+        e.text.includes("7-7") ||
+        e.text.includes("rose to the occasion") ||
+        e.text.includes("Devastation for")
     );
     expect(has77Line).toBe(false);
   });

@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { processOyakataMood } from "@/engine/tick/phases/npc_ai/mood";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";

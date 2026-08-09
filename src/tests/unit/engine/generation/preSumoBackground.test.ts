@@ -1,6 +1,9 @@
- 
 import { describe, it, expect } from "vitest";
-import { assignPreSumoBackground, applyBackgroundStatModifiers, PRE_SUMO_BACKGROUNDS } from "@/engine/systems/generation/PreSumoBackground";
+import {
+  assignPreSumoBackground,
+  applyBackgroundStatModifiers,
+  PRE_SUMO_BACKGROUNDS,
+} from "@/engine/systems/generation/PreSumoBackground";
 import { mockRikishi } from "../utils";
 import { SeededRNG } from "@/engine/rng";
 
@@ -71,7 +74,13 @@ describe("Pre-Sumo Background (B4)", () => {
   });
 
   it("none background does not modify stats", () => {
-    const base = mockRikishi("none-1", { power: 50, speed: 50, technique: 50, balance: 50, stamina: 50 } as any);
+    const base = mockRikishi("none-1", {
+      power: 50,
+      speed: 50,
+      technique: 50,
+      balance: 50,
+      stamina: 50,
+    } as any);
     const modified = applyBackgroundStatModifiers(base, "none");
     expect(modified.stats.power).toBe(50);
     expect(modified.stats.speed).toBe(50);

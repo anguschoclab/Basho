@@ -1,4 +1,3 @@
- 
 /**
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
@@ -102,7 +101,9 @@ const STORAGE_KEY = "basho_sort_myoseki";
 
 function getStockNames(): string[] {
   const titles = document.querySelectorAll(".text-lg");
-  return Array.from(titles).map((el) => el.textContent ?? "").filter((t) => t.length > 0);
+  return Array.from(titles)
+    .map((el) => el.textContent ?? "")
+    .filter((t) => t.length > 0);
 }
 
 function makeSortWorld(stocks: any[]): any {
@@ -127,7 +128,14 @@ describe("MyosekiMarketPage sorting", () => {
   it("renders a SortMenu control", () => {
     mockState(
       makeSortWorld([
-        { id: "m1", name: "Alpha", prestigeTier: "elite", askingPrice: 1000000, status: "available", ownerId: "JSA" },
+        {
+          id: "m1",
+          name: "Alpha",
+          prestigeTier: "elite",
+          askingPrice: 1000000,
+          status: "available",
+          ownerId: "JSA",
+        },
       ])
     );
     render(<MyosekiMarketPage />);
@@ -137,9 +145,30 @@ describe("MyosekiMarketPage sorting", () => {
   it("sorting by name ascending reorders alphabetically", () => {
     mockState(
       makeSortWorld([
-        { id: "m1", name: "Charlie", prestigeTier: "respected", askingPrice: 500000, status: "available", ownerId: "JSA" },
-        { id: "m2", name: "Alpha", prestigeTier: "elite", askingPrice: 1000000, status: "available", ownerId: "JSA" },
-        { id: "m3", name: "Bravo", prestigeTier: "standard", askingPrice: 300000, status: "available", ownerId: "JSA" },
+        {
+          id: "m1",
+          name: "Charlie",
+          prestigeTier: "respected",
+          askingPrice: 500000,
+          status: "available",
+          ownerId: "JSA",
+        },
+        {
+          id: "m2",
+          name: "Alpha",
+          prestigeTier: "elite",
+          askingPrice: 1000000,
+          status: "available",
+          ownerId: "JSA",
+        },
+        {
+          id: "m3",
+          name: "Bravo",
+          prestigeTier: "standard",
+          askingPrice: 300000,
+          status: "available",
+          ownerId: "JSA",
+        },
       ])
     );
     render(<MyosekiMarketPage />);
@@ -154,9 +183,30 @@ describe("MyosekiMarketPage sorting", () => {
   it("sorting by price ascending", () => {
     mockState(
       makeSortWorld([
-        { id: "m1", name: "Charlie", prestigeTier: "respected", askingPrice: 500000, status: "available", ownerId: "JSA" },
-        { id: "m2", name: "Alpha", prestigeTier: "elite", askingPrice: 1000000, status: "available", ownerId: "JSA" },
-        { id: "m3", name: "Bravo", prestigeTier: "standard", askingPrice: 300000, status: "available", ownerId: "JSA" },
+        {
+          id: "m1",
+          name: "Charlie",
+          prestigeTier: "respected",
+          askingPrice: 500000,
+          status: "available",
+          ownerId: "JSA",
+        },
+        {
+          id: "m2",
+          name: "Alpha",
+          prestigeTier: "elite",
+          askingPrice: 1000000,
+          status: "available",
+          ownerId: "JSA",
+        },
+        {
+          id: "m3",
+          name: "Bravo",
+          prestigeTier: "standard",
+          askingPrice: 300000,
+          status: "available",
+          ownerId: "JSA",
+        },
       ])
     );
     render(<MyosekiMarketPage />);
@@ -172,7 +222,14 @@ describe("MyosekiMarketPage sorting", () => {
   it("persists sort state to localStorage", () => {
     mockState(
       makeSortWorld([
-        { id: "m1", name: "Alpha", prestigeTier: "elite", askingPrice: 1000000, status: "available", ownerId: "JSA" },
+        {
+          id: "m1",
+          name: "Alpha",
+          prestigeTier: "elite",
+          askingPrice: 1000000,
+          status: "available",
+          ownerId: "JSA",
+        },
       ])
     );
     render(<MyosekiMarketPage />);
@@ -189,9 +246,30 @@ describe("MyosekiMarketPage sorting", () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ key: "name", order: "desc" }));
     mockState(
       makeSortWorld([
-        { id: "m1", name: "Charlie", prestigeTier: "respected", askingPrice: 500000, status: "available", ownerId: "JSA" },
-        { id: "m2", name: "Alpha", prestigeTier: "elite", askingPrice: 1000000, status: "available", ownerId: "JSA" },
-        { id: "m3", name: "Bravo", prestigeTier: "standard", askingPrice: 300000, status: "available", ownerId: "JSA" },
+        {
+          id: "m1",
+          name: "Charlie",
+          prestigeTier: "respected",
+          askingPrice: 500000,
+          status: "available",
+          ownerId: "JSA",
+        },
+        {
+          id: "m2",
+          name: "Alpha",
+          prestigeTier: "elite",
+          askingPrice: 1000000,
+          status: "available",
+          ownerId: "JSA",
+        },
+        {
+          id: "m3",
+          name: "Bravo",
+          prestigeTier: "standard",
+          askingPrice: 300000,
+          status: "available",
+          ownerId: "JSA",
+        },
       ])
     );
     render(<MyosekiMarketPage />);

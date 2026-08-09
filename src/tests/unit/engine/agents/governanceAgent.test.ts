@@ -41,7 +41,9 @@ describe("spawnGovernanceAgent", () => {
   it("uses political favor when ambitious and has capital", () => {
     const result = spawnGovernanceAgent(
       makeCtx({
-        oyakata: makeOyakata({ traits: { ambition: 80, patience: 50, risk: 50, tradition: 30, compassion: 50 } }),
+        oyakata: makeOyakata({
+          traits: { ambition: 80, patience: 50, risk: 50, tradition: 30, compassion: 50 },
+        }),
         politicalCapital: 50,
       })
     );
@@ -51,7 +53,9 @@ describe("spawnGovernanceAgent", () => {
   it("selects governance pardon when sanctioned", () => {
     const result = spawnGovernanceAgent(
       makeCtx({
-        oyakata: makeOyakata({ traits: { ambition: 80, patience: 50, risk: 50, tradition: 30, compassion: 50 } }),
+        oyakata: makeOyakata({
+          traits: { ambition: 80, patience: 50, risk: 50, tradition: 30, compassion: 50 },
+        }),
         politicalCapital: 50,
         governanceStatus: "sanctioned",
       })

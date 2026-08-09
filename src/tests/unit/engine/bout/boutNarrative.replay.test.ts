@@ -5,8 +5,6 @@ import { mockRikishi } from "../utils";
 import { makeBoutWorld } from "@/tests/helpers/boutTestHelpers";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
 
- 
-
 function makeBoutResult(overrides: Partial<BoutResult> = {}): BoutResult {
   return {
     boutId: "test-bout-replay",
@@ -48,8 +46,16 @@ describe("generateBoutNarrative — replay analysis (T12)", () => {
   });
 
   it("T12.1: dramatic bout with excitement > 50 → replay line generated", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 4, currentBashoLosses: 4 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 5,
+      currentBashoLosses: 3,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 4,
+      currentBashoLosses: 4,
+    });
     const world = makeBoutWorld(east, west);
     // Day 13+ → voiceStyle = "dramatic"
     const result = makeBoutResult({ excitementScore: 75 });
@@ -59,8 +65,16 @@ describe("generateBoutNarrative — replay analysis (T12)", () => {
   });
 
   it("T12.2: low excitement → no replay line", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 4, currentBashoLosses: 4 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 5,
+      currentBashoLosses: 3,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 4,
+      currentBashoLosses: 4,
+    });
     const world = makeBoutWorld(east, west);
     const result = makeBoutResult({ excitementScore: 20 });
     generateBoutNarrative(result, east, west, BASHO, 13, "seed-replay-low", world);
@@ -80,8 +94,16 @@ describe("generateBoutNarrative — replay analysis (T12)", () => {
   });
 
   it("T12.5: replay line has phase 'replay'", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 4, currentBashoLosses: 4 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 5,
+      currentBashoLosses: 3,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 4,
+      currentBashoLosses: 4,
+    });
     const world = makeBoutWorld(east, west);
     const result = makeBoutResult({ excitementScore: 80 });
     generateBoutNarrative(result, east, west, BASHO, 13, "seed-replay-phase", world);
@@ -91,8 +113,16 @@ describe("generateBoutNarrative — replay analysis (T12)", () => {
   });
 
   it("T12.6: no [MISSING:] tokens in replay lines", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 4, currentBashoLosses: 4 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 5,
+      currentBashoLosses: 3,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 4,
+      currentBashoLosses: 4,
+    });
     const world = makeBoutWorld(east, west);
     const result = makeBoutResult({ excitementScore: 70 });
     generateBoutNarrative(result, east, west, BASHO, 13, "seed-replay-missing", world);

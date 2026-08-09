@@ -50,7 +50,11 @@ describe("MemoryStore", () => {
     const mem = getMemory(oyakata, 0);
     expect(mem.decisionHistory).toEqual([]);
 
-    const partial = makeOyakata({ memory: { observations: [{ tick: 1, type: "perception", summary: "x", importance: 5 }] } as any });
+    const partial = makeOyakata({
+      memory: {
+        observations: [{ tick: 1, type: "perception", summary: "x", importance: 5 }],
+      } as any,
+    });
     const normalized = getMemory(partial, 0);
     expect(normalized.observations.length).toBe(1);
     expect(normalized.decisionHistory).toEqual([]);

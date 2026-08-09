@@ -12,8 +12,6 @@ import type { DramaContext } from "@/engine/matchmaking/DramaMatchmaker";
 import type { CareerSnapshot } from "@/engine/types/history";
 import type { Rank, Division } from "@/engine/types/banzuke";
 
- 
-
 function makeBoutResult(overrides: Partial<BoutResult> = {}): BoutResult {
   return {
     boutId: "test-bout-nhk",
@@ -53,7 +51,16 @@ function hasMissingTokens(text: string): boolean {
   return text.includes("[MISSING:");
 }
 
-function makeCareerSnapshot(overrides: Partial<CareerSnapshot> & { rank: Rank; division: Division; wins: number; losses: number; bashoName: string; year: number }): CareerSnapshot {
+function makeCareerSnapshot(
+  overrides: Partial<CareerSnapshot> & {
+    rank: Rank;
+    division: Division;
+    wins: number;
+    losses: number;
+    bashoName: string;
+    year: number;
+  }
+): CareerSnapshot {
   return {
     id: "snap-1",
     bashoId: "basho-1",
@@ -91,9 +98,11 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
       const world = makeWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 8, "seed-bout-milestone-pre", world);
-      const preLines = (result.pbpLines ?? []).filter((l) => l.phase === "pre_bout" && l.tags?.includes("milestone"));
+      const preLines = (result.pbpLines ?? []).filter(
+        (l) => l.phase === "pre_bout" && l.tags?.includes("milestone")
+      );
       const boutMilestoneLines = preLines.filter((l) => l.text.includes("500"));
-      expect((boutMilestoneLines)?.length ?? 0).toBeGreaterThan(0);
+      expect(boutMilestoneLines?.length ?? 0).toBeGreaterThan(0);
     });
 
     it("post-bout: winner careerBouts at 499 → milestone line mentioning 500", () => {
@@ -108,9 +117,11 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
       const world = makeWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 8, "seed-bout-milestone-post", world);
-      const postLines = (result.pbpLines ?? []).filter((l) => l.phase === "post_bout" && l.tags?.includes("milestone"));
+      const postLines = (result.pbpLines ?? []).filter(
+        (l) => l.phase === "post_bout" && l.tags?.includes("milestone")
+      );
       const boutMilestoneLines = postLines.filter((l) => l.text.includes("500"));
-      expect((boutMilestoneLines)?.length ?? 0).toBeGreaterThan(0);
+      expect(boutMilestoneLines?.length ?? 0).toBeGreaterThan(0);
     });
 
     it("no milestone when careerBouts not at threshold", () => {
@@ -128,7 +139,7 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
       const preMilestoneLines = (result.pbpLines ?? []).filter(
         (l) => l.phase === "pre_bout" && l.tags?.includes("milestone") && l.text.includes("500")
       );
-      expect((preMilestoneLines)?.length ?? 0).toBe(0);
+      expect(preMilestoneLines?.length ?? 0).toBe(0);
     });
   });
 
@@ -136,8 +147,13 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
   describe("Gap 2: Kyujo narratives", () => {
     it("generateKyujoNarrative — injury_withdrawal produces narrative line", () => {
       const r = mockRikishi("r-kyujo", { shikona: "Gamma", injured: true });
-      const lines = generateKyujoNarrative(r, "injury_withdrawal", { area: "knee", day: 7 }, "test-kyujo-1");
-      expect((lines)?.length ?? 0).toBeGreaterThan(0);
+      const lines = generateKyujoNarrative(
+        r,
+        "injury_withdrawal",
+        { area: "knee", day: 7 },
+        "test-kyujo-1"
+      );
+      expect(lines?.length ?? 0).toBeGreaterThan(0);
       expect(lines[0].phase).toBe("kyujo");
       expect(lines[0].tags).toContain("injury");
       expect(hasMissingTokens(lines[0].text)).toBe(false);
@@ -146,29 +162,58 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
 
     it("generateKyujoNarrative — pre_basho_withdrawal produces narrative line", () => {
       const r = mockRikishi("r-kyujo", { shikona: "Delta" });
-      const lines = generateKyujoNarrative(r, "pre_basho_withdrawal", { reason: "knee surgery" }, "test-kyujo-2");
-      expect((lines)?.length ?? 0).toBeGreaterThan(0);
+      const lines = generateKyujoNarrative(
+        r,
+        "pre_basho_withdrawal",
+        { reason: "knee surgery" },
+        "test-kyujo-2"
+      );
+      expect(lines?.length ?? 0).toBeGreaterThan(0);
       expect(hasMissingTokens(lines[0].text)).toBe(false);
       expect(lines[0].text).toContain("Delta");
     });
 
     it("generateKyujoNarrative — return_from_kyujo produces narrative line", () => {
       const r = mockRikishi("r-kyujo", { shikona: "Epsilon" });
-      const lines = generateKyujoNarrative(r, "return_from_kyujo", { bashosMissed: 2 }, "test-kyujo-3");
-      expect((lines)?.length ?? 0).toBeGreaterThan(0);
+      const lines = generateKyujoNarrative(
+        r,
+        "return_from_kyujo",
+        { bashosMissed: 2 },
+        "test-kyujo-3"
+      );
+      expect(lines?.length ?? 0).toBeGreaterThan(0);
       expect(hasMissingTokens(lines[0].text)).toBe(false);
       expect(lines[0].text).toContain("Epsilon");
     });
 
     it("generateKyujoNarrative — deterministic with same seed", () => {
       const r = mockRikishi("r-kyujo", { shikona: "Zeta" });
-      const l1 = generateKyujoNarrative(r, "injury_withdrawal", { area: "ankle", day: 5 }, "det-seed");
-      const l2 = generateKyujoNarrative(r, "injury_withdrawal", { area: "ankle", day: 5 }, "det-seed");
+      const l1 = generateKyujoNarrative(
+        r,
+        "injury_withdrawal",
+        { area: "ankle", day: 5 },
+        "det-seed"
+      );
+      const l2 = generateKyujoNarrative(
+        r,
+        "injury_withdrawal",
+        { area: "ankle", day: 5 },
+        "det-seed"
+      );
       expect(l1.map((l) => l.text)).toEqual(l2.map((l) => l.text));
     });
 
     it("withdrawRikishi attaches narrative to event", () => {
-      const r = mockRikishi("r-withdraw", { shikona: "Eta", injured: true, injuryStatus: { type: "sprain", severity: "moderate", weeksRemaining: 4, location: "ankle" } as any });
+      const r = mockRikishi("r-withdraw", {
+        shikona: "Eta",
+        injured: true,
+        injuryStatus: {
+          type: "sprain",
+          severity: "moderate",
+          weeksRemaining: 4,
+          location: "ankle",
+        } as any,
+      });
       const world = makeMockWorld({
         rikishi: new Map([[r.id, r]]),
         currentBasho: { day: 7 } as any,
@@ -185,10 +230,25 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
   // ── Gap 3: Playoff narratives ──
   describe("Gap 3: Playoff narratives", () => {
     it("resolvePlayoffs adds playoff-specific pbpLines", () => {
-      const r1 = mockRikishi("r-p1", { shikona: "Playoff1", careerWins: 100, careerLosses: 50, currentBashoWins: 14, currentBashoLosses: 1 });
-      const r2 = mockRikishi("r-p2", { shikona: "Playoff2", careerWins: 80, careerLosses: 40, currentBashoWins: 14, currentBashoLosses: 1 });
+      const r1 = mockRikishi("r-p1", {
+        shikona: "Playoff1",
+        careerWins: 100,
+        careerLosses: 50,
+        currentBashoWins: 14,
+        currentBashoLosses: 1,
+      });
+      const r2 = mockRikishi("r-p2", {
+        shikona: "Playoff2",
+        careerWins: 80,
+        careerLosses: 40,
+        currentBashoWins: 14,
+        currentBashoLosses: 1,
+      });
       const world = makeMockWorld({
-        rikishi: new Map([[r1.id, r1], [r2.id, r2]]),
+        rikishi: new Map([
+          [r1.id, r1],
+          [r2.id, r2],
+        ]),
         activeRikishiIds: new Set([r1.id, r2.id]),
         year: 2025,
         seed: "playoff-test",
@@ -199,19 +259,31 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
       expect((result as any).matches?.length ?? 0).toBeGreaterThan(0);
       const allLines = result.matches.flatMap((m) => m.result?.pbpLines ?? []);
       const playoffLines = allLines.filter((l) => l.tags?.includes("yusho_race"));
-      expect((playoffLines)?.length ?? 0).toBeGreaterThan(0);
+      expect(playoffLines?.length ?? 0).toBeGreaterThan(0);
       // Check for playoff-specific text
-      const hasPlayoffText = playoffLines.some((l) =>
-        l.text.includes("playoff") || l.text.includes("championship") || l.text.includes("yusho")
+      const hasPlayoffText = playoffLines.some(
+        (l) =>
+          l.text.includes("playoff") || l.text.includes("championship") || l.text.includes("yusho")
       );
       expect(hasPlayoffText).toBe(true);
     });
 
     it("playoff narrative has no [MISSING:] tokens", () => {
-      const r1 = mockRikishi("r-p1", { shikona: "P1", currentBashoWins: 14, currentBashoLosses: 1 });
-      const r2 = mockRikishi("r-p2", { shikona: "P2", currentBashoWins: 14, currentBashoLosses: 1 });
+      const r1 = mockRikishi("r-p1", {
+        shikona: "P1",
+        currentBashoWins: 14,
+        currentBashoLosses: 1,
+      });
+      const r2 = mockRikishi("r-p2", {
+        shikona: "P2",
+        currentBashoWins: 14,
+        currentBashoLosses: 1,
+      });
       const world = makeMockWorld({
-        rikishi: new Map([[r1.id, r1], [r2.id, r2]]),
+        rikishi: new Map([
+          [r1.id, r1],
+          [r2.id, r2],
+        ]),
         activeRikishiIds: new Set([r1.id, r2.id]),
         seed: "playoff-missing",
         sponsorPool: { sponsors: new Map(), koenkais: new Map() },
@@ -229,11 +301,32 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
   describe("Gap 4: Sansho ceremony narratives", () => {
     it("distributePrizes logs sansho ceremony narrative event", () => {
       // Create a basho with matches that will yield special prizes
-      const r1 = mockRikishi("r-sansho1", { shikona: "Sansho1", currentBashoWins: 11, currentBashoLosses: 4, rank: "maegashira", rankNumber: 5 });
-      const r2 = mockRikishi("r-sansho2", { shikona: "Sansho2", currentBashoWins: 10, currentBashoLosses: 5, rank: "maegashira", rankNumber: 7 });
-      const r3 = mockRikishi("r-yusho", { shikona: "Yusho", currentBashoWins: 13, currentBashoLosses: 2, rank: "ozeki" });
+      const r1 = mockRikishi("r-sansho1", {
+        shikona: "Sansho1",
+        currentBashoWins: 11,
+        currentBashoLosses: 4,
+        rank: "maegashira",
+        rankNumber: 5,
+      });
+      const r2 = mockRikishi("r-sansho2", {
+        shikona: "Sansho2",
+        currentBashoWins: 10,
+        currentBashoLosses: 5,
+        rank: "maegashira",
+        rankNumber: 7,
+      });
+      const r3 = mockRikishi("r-yusho", {
+        shikona: "Yusho",
+        currentBashoWins: 13,
+        currentBashoLosses: 2,
+        rank: "ozeki",
+      });
       const world = makeMockWorld({
-        rikishi: new Map([[r1.id, r1], [r2.id, r2], [r3.id, r3]]),
+        rikishi: new Map([
+          [r1.id, r1],
+          [r2.id, r2],
+          [r3.id, r3],
+        ]),
         activeRikishiIds: new Set([r1.id, r2.id, r3.id]),
         year: 2025,
         seed: "sansho-test",
@@ -261,7 +354,7 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
         expect(narrative).toBeDefined();
         expect(Array.isArray(narrative)).toBe(true);
         const narrativeLines = narrative as Array<{ text: string }>;
-        expect((narrativeLines)?.length ?? 0).toBeGreaterThan(0);
+        expect(narrativeLines?.length ?? 0).toBeGreaterThan(0);
         for (const line of narrativeLines) {
           expect(hasMissingTokens(line.text)).toBe(false);
         }
@@ -272,8 +365,16 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
   // ── Gap 5: Comeback win narrative ──
   describe("Gap 5: Comeback win narrative", () => {
     it("winner with edge_crisis escape in log → comeback line", () => {
-      const east = mockRikishi("r-east", { shikona: "Comeback", currentBashoWins: 5, currentBashoLosses: 3 });
-      const west = mockRikishi("r-west", { shikona: "Fallback", currentBashoWins: 3, currentBashoLosses: 5 });
+      const east = mockRikishi("r-east", {
+        shikona: "Comeback",
+        currentBashoWins: 5,
+        currentBashoLosses: 3,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "Fallback",
+        currentBashoWins: 3,
+        currentBashoLosses: 5,
+      });
       const world = makeWorld(east, west);
       const result = makeBoutResult({
         log: [
@@ -284,52 +385,83 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
       });
       generateBoutNarrative(result, east, west, BASHO, 8, "seed-comeback-1", world);
       const comebackLines = (result.pbpLines ?? []).filter((l) => l.tags?.includes("comeback"));
-      expect((comebackLines)?.length ?? 0).toBeGreaterThan(0);
+      expect(comebackLines?.length ?? 0).toBeGreaterThan(0);
       expect(hasMissingTokens(comebackLines[0].text)).toBe(false);
     });
 
     it("no comeback line when no edge_crisis escape", () => {
-      const east = mockRikishi("r-east", { shikona: "NoComeback", currentBashoWins: 5, currentBashoLosses: 3 });
-      const west = mockRikishi("r-west", { shikona: "NoFallback", currentBashoWins: 3, currentBashoLosses: 5 });
+      const east = mockRikishi("r-east", {
+        shikona: "NoComeback",
+        currentBashoWins: 5,
+        currentBashoLosses: 3,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "NoFallback",
+        currentBashoWins: 3,
+        currentBashoLosses: 5,
+      });
       const world = makeWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 8, "seed-comeback-none", world);
       const comebackLines = (result.pbpLines ?? []).filter((l) => l.tags?.includes("comeback"));
-      expect((comebackLines)?.length ?? 0).toBe(0);
+      expect(comebackLines?.length ?? 0).toBe(0);
     });
   });
 
   // ── Gap 6: Bout of the day ──
   describe("Gap 6: Bout of the day", () => {
     it("high drama score (>=85) → bout_of_the_day pre-bout line", () => {
-      const east = mockRikishi("r-east", { shikona: "StarEast", currentBashoWins: 12, currentBashoLosses: 2 });
-      const west = mockRikishi("r-west", { shikona: "StarWest", currentBashoWins: 12, currentBashoLosses: 2 });
+      const east = mockRikishi("r-east", {
+        shikona: "StarEast",
+        currentBashoWins: 12,
+        currentBashoLosses: 2,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "StarWest",
+        currentBashoWins: 12,
+        currentBashoLosses: 2,
+      });
       const world = makeWorld(east, west);
-      const drama: DramaContext = { label: "yusho_decider", score: 90, reason: "Yusho on the line" };
+      const drama: DramaContext = {
+        label: "yusho_decider",
+        score: 90,
+        reason: "Yusho on the line",
+      };
       const result = makeBoutResult({ dramaticContext: drama });
       generateBoutNarrative(result, east, west, BASHO, 15, "seed-botd-1", world);
       const botdLines = (result.pbpLines ?? []).filter(
         (l) => l.phase === "pre_bout" && l.tags?.includes("tournament_context")
       );
-      expect((botdLines)?.length ?? 0).toBeGreaterThan(0);
+      expect(botdLines?.length ?? 0).toBeGreaterThan(0);
       const allText = botdLines.map((l) => l.text).join(" ");
       expect(allText).toContain("StarEast");
       expect(allText).toContain("StarWest");
     });
 
     it("low drama score → no bout_of_the_day line", () => {
-      const east = mockRikishi("r-east", { shikona: "LowEast", currentBashoWins: 5, currentBashoLosses: 5 });
-      const west = mockRikishi("r-west", { shikona: "LowWest", currentBashoWins: 5, currentBashoLosses: 5 });
+      const east = mockRikishi("r-east", {
+        shikona: "LowEast",
+        currentBashoWins: 5,
+        currentBashoLosses: 5,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "LowWest",
+        currentBashoWins: 5,
+        currentBashoLosses: 5,
+      });
       const world = makeWorld(east, west);
       const drama: DramaContext = { label: "archetype_clash", score: 30, reason: "Minor clash" };
       const result = makeBoutResult({ dramaticContext: drama });
       generateBoutNarrative(result, east, west, BASHO, 8, "seed-botd-none", world);
       const botdLines = (result.pbpLines ?? []).filter(
-        (l) => l.phase === "pre_bout" &&
-        l.tags?.includes("tournament_context") &&
-        (l.text.includes("bout of the day") || l.text.includes("featured bout") || l.text.includes("marquee"))
+        (l) =>
+          l.phase === "pre_bout" &&
+          l.tags?.includes("tournament_context") &&
+          (l.text.includes("bout of the day") ||
+            l.text.includes("featured bout") ||
+            l.text.includes("marquee"))
       );
-      expect((botdLines)?.length ?? 0).toBe(0);
+      expect(botdLines?.length ?? 0).toBe(0);
     });
   });
 
@@ -340,7 +472,16 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
         shikona: "FallenStar",
         rank: "maegashira",
         rankNumber: 10,
-        careerHistory: [makeCareerSnapshot({ rank: "ozeki", division: "makuuchi", wins: 10, losses: 5, bashoName: "hatsu", year: 2024 })],
+        careerHistory: [
+          makeCareerSnapshot({
+            rank: "ozeki",
+            division: "makuuchi",
+            wins: 10,
+            losses: 5,
+            bashoName: "hatsu",
+            year: 2024,
+          }),
+        ],
         currentBashoWins: 3,
         currentBashoLosses: 8,
       });
@@ -357,8 +498,9 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
       const spoilerLines = (result.pbpLines ?? []).filter(
         (l) => l.phase === "pre_bout" && l.tags?.includes("title_stakes")
       );
-      const hasSpoilerText = spoilerLines.some((l) =>
-        l.text.includes("spoiler") || l.text.includes("FallenStar") || l.text.includes("derail")
+      const hasSpoilerText = spoilerLines.some(
+        (l) =>
+          l.text.includes("spoiler") || l.text.includes("FallenStar") || l.text.includes("derail")
       );
       expect(hasSpoilerText).toBe(true);
     });
@@ -368,7 +510,16 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
         shikona: "EastMan",
         rank: "maegashira",
         rankNumber: 5,
-        careerHistory: [makeCareerSnapshot({ rank: "maegashira", division: "makuuchi", wins: 8, losses: 7, bashoName: "hatsu", year: 2024 })],
+        careerHistory: [
+          makeCareerSnapshot({
+            rank: "maegashira",
+            division: "makuuchi",
+            wins: 8,
+            losses: 7,
+            bashoName: "hatsu",
+            year: 2024,
+          }),
+        ],
         currentBashoWins: 5,
         currentBashoLosses: 5,
       });
@@ -383,11 +534,12 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 8, "seed-spoiler-none", world);
       const spoilerLines = (result.pbpLines ?? []).filter(
-        (l) => l.phase === "pre_bout" &&
-        l.tags?.includes("title_stakes") &&
-        (l.text.includes("spoiler") || l.text.includes("derail"))
+        (l) =>
+          l.phase === "pre_bout" &&
+          l.tags?.includes("title_stakes") &&
+          (l.text.includes("spoiler") || l.text.includes("derail"))
       );
-      expect((spoilerLines)?.length ?? 0).toBe(0);
+      expect(spoilerLines?.length ?? 0).toBe(0);
     });
   });
 
@@ -398,20 +550,34 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
         shikona: "NewSekiwake",
         rank: "sekiwake",
         rankNumber: 3,
-        careerHistory: [makeCareerSnapshot({ rank: "maegashira", division: "makuuchi", wins: 9, losses: 6, bashoName: "kyushu", year: 2024, rankNumber: 1 })],
+        careerHistory: [
+          makeCareerSnapshot({
+            rank: "maegashira",
+            division: "makuuchi",
+            wins: 9,
+            losses: 6,
+            bashoName: "kyushu",
+            year: 2024,
+            rankNumber: 1,
+          }),
+        ],
         currentBashoWins: 5,
         currentBashoLosses: 3,
       });
-      const west = mockRikishi("r-west", { shikona: "Opponent", currentBashoWins: 3, currentBashoLosses: 5 });
+      const west = mockRikishi("r-west", {
+        shikona: "Opponent",
+        currentBashoWins: 3,
+        currentBashoLosses: 5,
+      });
       const world = makeWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 8, "seed-debut-sekiwake", world);
       const debutLines = (result.pbpLines ?? []).filter(
         (l) => l.phase === "pre_bout" && l.tags?.includes("debut")
       );
-      expect((debutLines)?.length ?? 0).toBeGreaterThan(0);
-      const hasSekiwakeText = debutLines.some((l) =>
-        l.text.includes("sekiwake") || l.text.includes("Sekiwake")
+      expect(debutLines?.length ?? 0).toBeGreaterThan(0);
+      const hasSekiwakeText = debutLines.some(
+        (l) => l.text.includes("sekiwake") || l.text.includes("Sekiwake")
       );
       expect(hasSekiwakeText).toBe(true);
     });
@@ -421,20 +587,34 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
         shikona: "NewKomusubi",
         rank: "komusubi",
         rankNumber: 4,
-        careerHistory: [makeCareerSnapshot({ rank: "maegashira", division: "makuuchi", wins: 10, losses: 5, bashoName: "kyushu", year: 2024, rankNumber: 2 })],
+        careerHistory: [
+          makeCareerSnapshot({
+            rank: "maegashira",
+            division: "makuuchi",
+            wins: 10,
+            losses: 5,
+            bashoName: "kyushu",
+            year: 2024,
+            rankNumber: 2,
+          }),
+        ],
         currentBashoWins: 5,
         currentBashoLosses: 3,
       });
-      const west = mockRikishi("r-west", { shikona: "Opponent", currentBashoWins: 3, currentBashoLosses: 5 });
+      const west = mockRikishi("r-west", {
+        shikona: "Opponent",
+        currentBashoWins: 3,
+        currentBashoLosses: 5,
+      });
       const world = makeWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 8, "seed-debut-komusubi", world);
       const debutLines = (result.pbpLines ?? []).filter(
         (l) => l.phase === "pre_bout" && l.tags?.includes("debut")
       );
-      expect((debutLines)?.length ?? 0).toBeGreaterThan(0);
-      const hasKomusubiText = debutLines.some((l) =>
-        l.text.includes("komusubi") || l.text.includes("Komusubi")
+      expect(debutLines?.length ?? 0).toBeGreaterThan(0);
+      const hasKomusubiText = debutLines.some(
+        (l) => l.text.includes("komusubi") || l.text.includes("Komusubi")
       );
       expect(hasKomusubiText).toBe(true);
     });
@@ -444,20 +624,35 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
         shikona: "SameRank",
         rank: "maegashira",
         rankNumber: 5,
-        careerHistory: [makeCareerSnapshot({ rank: "maegashira", division: "makuuchi", wins: 8, losses: 7, bashoName: "kyushu", year: 2024, rankNumber: 5 })],
+        careerHistory: [
+          makeCareerSnapshot({
+            rank: "maegashira",
+            division: "makuuchi",
+            wins: 8,
+            losses: 7,
+            bashoName: "kyushu",
+            year: 2024,
+            rankNumber: 5,
+          }),
+        ],
         currentBashoWins: 5,
         currentBashoLosses: 3,
       });
-      const west = mockRikishi("r-west", { shikona: "Opponent", currentBashoWins: 3, currentBashoLosses: 5 });
+      const west = mockRikishi("r-west", {
+        shikona: "Opponent",
+        currentBashoWins: 3,
+        currentBashoLosses: 5,
+      });
       const world = makeWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 8, "seed-debut-none", world);
       const debutLines = (result.pbpLines ?? []).filter(
-        (l) => l.phase === "pre_bout" &&
-        l.tags?.includes("debut") &&
-        (l.text.includes("shin-") || l.text.includes("Shin-") || l.text.includes("debut"))
+        (l) =>
+          l.phase === "pre_bout" &&
+          l.tags?.includes("debut") &&
+          (l.text.includes("shin-") || l.text.includes("Shin-") || l.text.includes("debut"))
       );
-      expect((debutLines)?.length ?? 0).toBe(0);
+      expect(debutLines?.length ?? 0).toBe(0);
     });
   });
 
@@ -472,7 +667,17 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
         currentBashoLosses: 2,
         rank: "sekiwake",
         rankNumber: 3,
-        careerHistory: [makeCareerSnapshot({ rank: "maegashira", division: "makuuchi", wins: 9, losses: 6, bashoName: "kyushu", year: 2024, rankNumber: 1 })],
+        careerHistory: [
+          makeCareerSnapshot({
+            rank: "maegashira",
+            division: "makuuchi",
+            wins: 9,
+            losses: 6,
+            bashoName: "kyushu",
+            year: 2024,
+            rankNumber: 1,
+          }),
+        ],
       });
       const west = mockRikishi("r-west", {
         shikona: "TestWest",
@@ -480,7 +685,11 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
         currentBashoLosses: 2,
       });
       const world = makeWorld(east, west);
-      const drama: DramaContext = { label: "yusho_decider", score: 90, reason: "Yusho on the line" };
+      const drama: DramaContext = {
+        label: "yusho_decider",
+        score: 90,
+        reason: "Yusho on the line",
+      };
       const result = makeBoutResult({
         dramaticContext: drama,
         log: [

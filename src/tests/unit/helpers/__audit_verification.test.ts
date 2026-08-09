@@ -1,4 +1,3 @@
- 
 /**
  * Regression safety net for test audit Phase 1.
  * Verifies that assertions from bugfix tests scheduled for deletion/merge
@@ -245,9 +244,7 @@ describe("audit verification: specialPrizes bugfix scenarios", () => {
       ["m3", m3],
       ["y1", y1],
     ]);
-    matches.push(
-      makeMatchWithResult("b1", 1, "m1", "y1", makeResult("b1", "m1", "y1"))
-    );
+    matches.push(makeMatchWithResult("b1", 1, "m1", "y1", makeResult("b1", "m1", "y1")));
     for (let i = 2; i <= 8; i++) {
       const opp = makeRikishi(`o1_${i}`, { rank: "maegashira" });
       rikishiMap.set(opp.id, opp);
@@ -277,9 +274,7 @@ describe("audit verification: specialPrizes bugfix scenarios", () => {
       );
     }
     const prizes = determineSpecialPrizes(matches, rikishiMap, "y1");
-    const count = [prizes.shukunsho, prizes.kantosho, prizes.ginoSho].filter(
-      Boolean
-    ).length;
+    const count = [prizes.shukunsho, prizes.kantosho, prizes.ginoSho].filter(Boolean).length;
     expect(count).toBeLessThanOrEqual(3);
   });
 
@@ -363,10 +358,7 @@ describe("audit verification: boutNarrative streaks B.9-B.12", () => {
         ["west", west],
       ]),
       heyas: new Map([
-        [
-          "test-heya",
-          { id: "test-heya", name: "Test Heya", rikishiIds: ["east", "west"] } as any,
-        ],
+        ["test-heya", { id: "test-heya", name: "Test Heya", rikishiIds: ["east", "west"] } as any],
       ]),
       calendar: { currentWeek: 1, month: 1, currentDay: opts?.day ?? 5 },
       currentBasho: {

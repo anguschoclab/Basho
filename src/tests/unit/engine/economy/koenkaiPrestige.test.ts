@@ -8,7 +8,6 @@ import {
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { makeMockHeya, makeMockWorld, mockRikishi } from "../utils";
 import type { Koenkai, Sponsor, SponsorPool } from "@/engine/types/sponsors";
- 
 
 describe("computeHeyaPrestigeScore", () => {
   it("yokozuna contributes 40 points", () => {

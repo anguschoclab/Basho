@@ -1,6 +1,8 @@
- 
 import { describe, it, expect } from "vitest";
-import { maybeAssignEarlyShikona, getEarlyShikonaMotivationBoost } from "@/engine/systems/generation/FightingNameEarly";
+import {
+  maybeAssignEarlyShikona,
+  getEarlyShikonaMotivationBoost,
+} from "@/engine/systems/generation/FightingNameEarly";
 import { mockRikishi } from "../utils";
 import type { SeededRNG } from "@/engine/rng";
 

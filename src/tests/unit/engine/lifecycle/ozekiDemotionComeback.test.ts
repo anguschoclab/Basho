@@ -1,15 +1,10 @@
- 
 import { describe, it, expect } from "vitest";
 import { concludeBashoCompetition } from "@/engine/lifecycle/CompetitionService";
 import { makeMockWorld, mockRikishi } from "../utils";
 import type { WorldState } from "@/engine/types/world";
 import type { BashoState } from "@/engine/types/basho";
 
-function createComebackWorld(
-  yushoId: string,
-  wasDemoted: boolean,
-  wins: number = 14
-): WorldState {
+function createComebackWorld(yushoId: string, wasDemoted: boolean, wins: number = 14): WorldState {
   const rikishi = mockRikishi(yushoId, {
     rank: "sekiwake",
     division: "makuuchi",
@@ -47,9 +42,7 @@ function createComebackWorld(
     heyas: new Map([
       ["heya-1", { id: "heya-1", name: "Test Stable", oyakataId: "oyakata-1" } as any],
     ]),
-    oyakata: new Map([
-      ["oyakata-1", { id: "oyakata-1", age: 50, name: "Test Oyakata" } as any],
-    ]),
+    oyakata: new Map([["oyakata-1", { id: "oyakata-1", age: 50, name: "Test Oyakata" } as any]]),
   } as any);
 
   return world;
@@ -61,8 +54,8 @@ describe("Ozeki Demotion Comeback Tracking", () => {
     const impact = concludeBashoCompetition(world);
 
     const comebackEvent = impact.events?.find(
-      (e) => e.type === "LIFECYCLE_EVENT" &&
-      (e.data as any).incident === "ozeki_demotion_comeback_yusho"
+      (e) =>
+        e.type === "LIFECYCLE_EVENT" && (e.data as any).incident === "ozeki_demotion_comeback_yusho"
     );
     expect(comebackEvent).toBeDefined();
     expect((comebackEvent!.data as any).status).toBe("historic_achievement");
@@ -76,9 +69,7 @@ describe("Ozeki Demotion Comeback Tracking", () => {
     const milestoneUpdate = impact.entities?.rikishiUpdates?.get("r2");
     const milestones = milestoneUpdate?.milestones as any[] | undefined;
     expect(milestones).toBeDefined();
-    const comebackMilestone = milestones?.find(
-      (m) => m.type === "ozeki_demotion_comeback_yusho"
-    );
+    const comebackMilestone = milestones?.find((m) => m.type === "ozeki_demotion_comeback_yusho");
     expect(comebackMilestone).toBeDefined();
     expect(comebackMilestone?.title).toBe("Ozeki Demotion Comeback Yusho");
   });
@@ -96,8 +87,8 @@ describe("Ozeki Demotion Comeback Tracking", () => {
     const impact = concludeBashoCompetition(world);
 
     const comebackEvent = impact.events?.find(
-      (e) => e.type === "LIFECYCLE_EVENT" &&
-      (e.data as any).incident === "ozeki_demotion_comeback_yusho"
+      (e) =>
+        e.type === "LIFECYCLE_EVENT" && (e.data as any).incident === "ozeki_demotion_comeback_yusho"
     );
     expect(comebackEvent).toBeUndefined();
   });
@@ -107,8 +98,8 @@ describe("Ozeki Demotion Comeback Tracking", () => {
     const impact = concludeBashoCompetition(world);
 
     const comebackEvent = impact.events?.find(
-      (e) => e.type === "LIFECYCLE_EVENT" &&
-      (e.data as any).incident === "ozeki_demotion_comeback_yusho"
+      (e) =>
+        e.type === "LIFECYCLE_EVENT" && (e.data as any).incident === "ozeki_demotion_comeback_yusho"
     );
     expect(comebackEvent).toBeUndefined();
   });
@@ -118,8 +109,8 @@ describe("Ozeki Demotion Comeback Tracking", () => {
     const impact = concludeBashoCompetition(world);
 
     const comebackEvent = impact.events?.find(
-      (e) => e.type === "LIFECYCLE_EVENT" &&
-      (e.data as any).incident === "ozeki_demotion_comeback_yusho"
+      (e) =>
+        e.type === "LIFECYCLE_EVENT" && (e.data as any).incident === "ozeki_demotion_comeback_yusho"
     );
     expect(comebackEvent).toBeDefined();
     const narrative = (comebackEvent!.data as any).narrative as any[];

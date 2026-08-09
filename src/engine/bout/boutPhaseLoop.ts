@@ -62,7 +62,11 @@ function runPhaseLoop(
 
     // Detect momentum shift (sign flip)
     const currentDominant: Side | null =
-      st.momentumScore > MOMENTUM_DOMINANT_THRESHOLD ? "east" : st.momentumScore < -MOMENTUM_DOMINANT_THRESHOLD ? "west" : null;
+      st.momentumScore > MOMENTUM_DOMINANT_THRESHOLD
+        ? "east"
+        : st.momentumScore < -MOMENTUM_DOMINANT_THRESHOLD
+          ? "west"
+          : null;
     if (currentDominant && st.prevDominantSide && currentDominant !== st.prevDominantSide) {
       boutLog.push({
         phase: "momentum_shift",
@@ -106,8 +110,10 @@ function runPhaseLoop(
   }
 
   // Timeout — most stable rikishi wins (smallest cogOffset relative to footSpread)
-  const eastInstability = Math.abs(st.east.cogOffset) / Math.max(INSTABILITY_FLOOR, st.east.footSpread);
-  const westInstability = Math.abs(st.west.cogOffset) / Math.max(INSTABILITY_FLOOR, st.west.footSpread);
+  const eastInstability =
+    Math.abs(st.east.cogOffset) / Math.max(INSTABILITY_FLOOR, st.east.footSpread);
+  const westInstability =
+    Math.abs(st.west.cogOffset) / Math.max(INSTABILITY_FLOOR, st.west.footSpread);
 
   // Shini-tai: if both rikishi exit simultaneously (instability too close to call),
   // use balance stat as tiebreaker (mono-ii decision)

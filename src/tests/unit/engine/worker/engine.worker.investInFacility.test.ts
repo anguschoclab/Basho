@@ -80,10 +80,7 @@ describe("engine.worker — INVEST_IN_FACILITY", () => {
   const BASE_FUNDS = 10_000_000;
   const BASE_LEVEL = 10;
 
-  function createWorldWithHeya(
-    funds: number = BASE_FUNDS,
-    level: number = BASE_LEVEL
-  ) {
+  function createWorldWithHeya(funds: number = BASE_FUNDS, level: number = BASE_LEVEL) {
     const heya = MockFactory.createHeya(HEYA_ID, {
       funds,
       facilities: { training: level, recovery: level, nutrition: level },

@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { resolvePlayoffs } from "@/engine/lifecycle/PlayoffResolver";
 import type { Rikishi } from "@/engine/types/rikishi";
@@ -7,16 +6,35 @@ import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 
 function makeRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikishi {
   return MockFactory.createRikishi(id, {
-    division: "makuuchi", rank: "maegashira", heyaId: "test-heya",
-    stats: { power: 60, speed: 60, technique: 60, weight: 140, stamina: 60, mental: 60, adaptability: 60, balance: 60, aggression: 60, experience: 10 },
+    division: "makuuchi",
+    rank: "maegashira",
+    heyaId: "test-heya",
+    stats: {
+      power: 60,
+      speed: 60,
+      technique: 60,
+      weight: 140,
+      stamina: 60,
+      mental: 60,
+      adaptability: 60,
+      balance: 60,
+      aggression: 60,
+      experience: 10,
+    },
     ...overrides,
   });
 }
 
 function makeBasho(): BashoState {
   return {
-    id: "test-basho", year: 2026, bashoNumber: 1, bashoName: "hatsu" as BashoName,
-    day: 15, matches: [], standings: new Map(), isActive: true,
+    id: "test-basho",
+    year: 2026,
+    bashoNumber: 1,
+    bashoName: "hatsu" as BashoName,
+    day: 15,
+    matches: [],
+    standings: new Map(),
+    isActive: true,
   };
 }
 
@@ -26,7 +44,11 @@ describe("PlayoffResolver (Bug 13 - missing injury side-effects)", () => {
     const r2 = makeRikishi("r2", { rank: "ozeki" });
     const basho = makeBasho();
     const world = MockFactory.createWorld({
-      rikishi: new Map([["r1", r1], ["r2", r2]]), currentBasho: basho,
+      rikishi: new Map([
+        ["r1", r1],
+        ["r2", r2],
+      ]),
+      currentBasho: basho,
       sponsorPool: { sponsors: new Map(), koenkais: new Map() } as any,
       rivalriesState: { pairs: {}, version: "1.0.0" },
     });
@@ -40,7 +62,8 @@ describe("PlayoffResolver (Bug 13 - missing injury side-effects)", () => {
     for (let i = 1; i <= 3; i++) rikishi.set(`r${i}`, makeRikishi(`r${i}`));
     const basho = makeBasho();
     const world = MockFactory.createWorld({
-      rikishi, currentBasho: basho,
+      rikishi,
+      currentBasho: basho,
       sponsorPool: { sponsors: new Map(), koenkais: new Map() } as any,
       rivalriesState: { pairs: {}, version: "1.0.0" },
     });
@@ -54,7 +77,8 @@ describe("PlayoffResolver (Bug 13 - missing injury side-effects)", () => {
     for (let i = 1; i <= 4; i++) rikishi.set(`r${i}`, makeRikishi(`r${i}`));
     const basho = makeBasho();
     const world = MockFactory.createWorld({
-      rikishi, currentBasho: basho,
+      rikishi,
+      currentBasho: basho,
       sponsorPool: { sponsors: new Map(), koenkais: new Map() } as any,
       rivalriesState: { pairs: {}, version: "1.0.0" },
     });
@@ -68,7 +92,11 @@ describe("PlayoffResolver (Bug 13 - missing injury side-effects)", () => {
     const r2 = makeRikishi("r2");
     const basho = makeBasho();
     const world = MockFactory.createWorld({
-      rikishi: new Map([["r1", r1], ["r2", r2]]), currentBasho: basho,
+      rikishi: new Map([
+        ["r1", r1],
+        ["r2", r2],
+      ]),
+      currentBasho: basho,
       sponsorPool: { sponsors: new Map(), koenkais: new Map() } as any,
       rivalriesState: { pairs: {}, version: "1.0.0" },
     });
@@ -103,7 +131,11 @@ describe("PlayoffResolver (Bug 13 - missing injury side-effects)", () => {
     const r2 = makeRikishi("r2");
     const basho = makeBasho();
     const world = MockFactory.createWorld({
-      rikishi: new Map([["r1", r1], ["r2", r2]]), currentBasho: basho,
+      rikishi: new Map([
+        ["r1", r1],
+        ["r2", r2],
+      ]),
+      currentBasho: basho,
       sponsorPool: { sponsors: new Map(), koenkais: new Map() } as any,
       rivalriesState: { pairs: {}, version: "1.0.0" },
     });
@@ -116,7 +148,11 @@ describe("PlayoffResolver (Bug 13 - missing injury side-effects)", () => {
     const r2 = makeRikishi("r2");
     const basho = makeBasho();
     const world = MockFactory.createWorld({
-      rikishi: new Map([["r1", r1], ["r2", r2]]), currentBasho: basho,
+      rikishi: new Map([
+        ["r1", r1],
+        ["r2", r2],
+      ]),
+      currentBasho: basho,
       sponsorPool: { sponsors: new Map(), koenkais: new Map() } as any,
       rivalriesState: { pairs: {}, version: "1.0.0" },
     });
@@ -129,7 +165,8 @@ describe("PlayoffResolver (Bug 13 - missing injury side-effects)", () => {
     for (let i = 1; i <= 5; i++) rikishi.set(`r${i}`, makeRikishi(`r${i}`));
     const basho = makeBasho();
     const world = MockFactory.createWorld({
-      rikishi, currentBasho: basho,
+      rikishi,
+      currentBasho: basho,
       sponsorPool: { sponsors: new Map(), koenkais: new Map() } as any,
       rivalriesState: { pairs: {}, version: "1.0.0" },
     });

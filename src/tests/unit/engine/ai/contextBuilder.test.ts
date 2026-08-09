@@ -40,7 +40,12 @@ describe("buildAIContext", () => {
     const world = makeMockWorld();
     const heya = makeMockHeya(HEYA_ID);
     world.heyas.set(HEYA_ID, heya);
-    const league = { financiallyFragileHeyas: [], rivalryClusters: [], yushoRace: { leaders: [] }, topRecruitAvailable: false };
+    const league = {
+      financiallyFragileHeyas: [],
+      rivalryClusters: [],
+      yushoRace: { leaders: [] },
+      topRecruitAvailable: false,
+    };
     const ctx = buildAIContext(world, HEYA_ID, undefined, league as any);
     expect(ctx.leaguePerception).toBe(league);
   });

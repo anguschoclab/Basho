@@ -20,9 +20,7 @@ describe("circular dependency detection", () => {
       stdout = err.stdout || "";
     }
 
-    const circles = stdout
-      .split("\n")
-      .filter((l) => l.includes("→") || l.includes("Circular"));
+    const circles = stdout.split("\n").filter((l) => l.includes("→") || l.includes("Circular"));
 
     expect(circles, `Circular dependencies in src/engine/:\n${circles.join("\n")}`).toEqual([]);
   }, 60000);

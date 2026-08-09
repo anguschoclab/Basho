@@ -43,10 +43,7 @@ export function provideEncouragement(
   const builder = createImpactBuilder("provideEncouragement");
 
   // Apply motivation boost to recipient
-  const newMotivation = Math.min(
-    100,
-    (to.motivation ?? 50) + ENCOURAGEMENT_MOTIVATION_BOOST
-  );
+  const newMotivation = Math.min(100, (to.motivation ?? 50) + ENCOURAGEMENT_MOTIVATION_BOOST);
   builder.updateRikishi(to.id, { motivation: newMotivation });
 
   // Append to encouragement log

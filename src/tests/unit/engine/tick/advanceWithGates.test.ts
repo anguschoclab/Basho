@@ -50,8 +50,7 @@ describe("P3.6: advanceWithGates", () => {
     const result = advanceWithGates(world, {
       maxDays: 30,
       haltOnPendingDecision: true,
-      isTargetReached: (w) =>
-        w.pendingCrisis !== undefined,
+      isTargetReached: (w) => w.pendingCrisis !== undefined,
     });
 
     // Without a pending crisis, it should run to maxDays

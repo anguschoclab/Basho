@@ -36,6 +36,9 @@ describe("no obsolete snapshots", () => {
       }
     }
 
-    expect(orphans, `Obsolete snapshot files with no corresponding test: ${orphans.join(", ")}`).toEqual([]);
+    expect(
+      orphans,
+      `Obsolete snapshot files with no corresponding test: ${orphans.join(", ")}`
+    ).toEqual([]);
   });
 });

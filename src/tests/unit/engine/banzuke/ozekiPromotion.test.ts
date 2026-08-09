@@ -1,11 +1,10 @@
- 
 import { describe, it, expect } from "vitest";
 import { bestTierAllowed } from "@/engine/banzuke/promotionLogic";
 import type { BanzukeEntry, BashoPerformance } from "@/engine/types/banzuke";
 
 function entry(
   rank: "sekiwake" | "komusubi" | "ozeki" | "maegashira",
-  rankNumber?: number,
+  rankNumber?: number
 ): BanzukeEntry {
   return {
     rikishiId: "r1",
@@ -20,7 +19,7 @@ function entry(
 function perf(
   wins: number,
   losses: number,
-  extras: Partial<BashoPerformance> = {},
+  extras: Partial<BashoPerformance> = {}
 ): BashoPerformance {
   return { rikishiId: "r1", wins, losses, ...extras };
 }
@@ -34,18 +33,13 @@ describe("Ozeki promotion (4.2)", () => {
         entry("sekiwake"),
         perf(11, 4, { promoteToOzeki: true }),
         undefined,
-        NONE,
+        NONE
       );
       expect(result).toBe(2);
     });
 
     it("sekiwake without promoteToOzeki but 11+ wins stays at sekiwake tier (2)", () => {
-      const result = bestTierAllowed(
-        entry("sekiwake"),
-        perf(11, 4),
-        undefined,
-        NONE,
-      );
+      const result = bestTierAllowed(entry("sekiwake"), perf(11, 4), undefined, NONE);
       expect(result).toBe(2);
     });
 
@@ -54,7 +48,7 @@ describe("Ozeki promotion (4.2)", () => {
         entry("komusubi"),
         perf(12, 3, { promoteToOzeki: true }),
         undefined,
-        NONE,
+        NONE
       );
       expect(result).toBe(2);
     });
@@ -66,7 +60,7 @@ describe("Ozeki promotion (4.2)", () => {
         entry("sekiwake"),
         perf(13, 2, { promoteToOzeki: true }),
         undefined,
-        NONE,
+        NONE
       );
       expect(result).toBe(2);
     });

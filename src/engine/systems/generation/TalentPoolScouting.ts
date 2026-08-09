@@ -19,9 +19,4 @@ export {
   countsAsForeignFromRikishi,
 } from "./talentPoolReads";
 
-export {
-  scoutPool,
-  scoutCandidate,
-  getScoutedCandidateView,
-} from "./talentPoolScoutingOps";
-
+export { scoutPool, scoutCandidate, getScoutedCandidateView } from "./talentPoolScoutingOps";

@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { KihakuService } from "@/engine/systems/governance/KihakuService";
 import { YokozunaService } from "@/engine/systems/governance/YokozunaService";
@@ -171,9 +170,7 @@ describe("YokozunaService — YDC Accountability", () => {
     });
 
     const impact = YokozunaService.processYDCCouncil(world);
-    const praiseEvent = impact.events?.find(
-      (e) => (e.data as any).status === "praise"
-    );
+    const praiseEvent = impact.events?.find((e) => (e.data as any).status === "praise");
     expect(praiseEvent).toBeDefined();
     expect(praiseEvent?.type).toBe("GOVERNANCE_RULING");
     expect((praiseEvent!.data as any).shikona).toBe("Yokozuna Taro");
@@ -197,9 +194,7 @@ describe("YokozunaService — YDC Accountability", () => {
     });
 
     const impact = YokozunaService.processYDCCouncil(world);
-    const warningEvent = impact.events?.find(
-      (e) => (e.data as any).status === "warning"
-    );
+    const warningEvent = impact.events?.find((e) => (e.data as any).status === "warning");
     expect(warningEvent).toBeDefined();
     expect(warningEvent?.type).toBe("GOVERNANCE_RULING");
   });
@@ -246,9 +241,7 @@ describe("YokozunaService — YDC Accountability", () => {
     });
 
     const impact = YokozunaService.processYDCCouncil(world);
-    const cynicismEvent = impact.events?.find(
-      (e) => (e.data as any).status === "private_cynicism"
-    );
+    const cynicismEvent = impact.events?.find((e) => (e.data as any).status === "private_cynicism");
     expect(cynicismEvent).toBeDefined();
     expect(cynicismEvent?.importance).toBe("minor");
   });
@@ -273,9 +266,7 @@ describe("YokozunaService — YDC Accountability", () => {
     });
 
     const impact = YokozunaService.processYDCCouncil(world);
-    const absenceEvent = impact.events?.find(
-      (e) => (e.data as any).status === "absence_criticism"
-    );
+    const absenceEvent = impact.events?.find((e) => (e.data as any).status === "absence_criticism");
     expect(absenceEvent).toBeDefined();
     expect(absenceEvent?.type).toBe("GOVERNANCE_RULING");
   });
@@ -379,9 +370,7 @@ describe("YokozunaService — YDC Accountability", () => {
     });
 
     const impact = YokozunaService.processYDCCouncil(world);
-    const warningEvent = impact.events?.find(
-      (e) => (e.data as any).status === "warning"
-    );
+    const warningEvent = impact.events?.find((e) => (e.data as any).status === "warning");
     expect(warningEvent).toBeDefined();
     expect((warningEvent!.data as any).chairmanName).toBeDefined();
     expect(typeof (warningEvent!.data as any).chairmanName).toBe("string");
@@ -433,9 +422,7 @@ describe("YokozunaService — YDC Accountability", () => {
     });
 
     const impact = YokozunaService.processYDCCouncil(world);
-    const cynicismEvent = impact.events?.find(
-      (e) => (e.data as any).status === "private_cynicism"
-    );
+    const cynicismEvent = impact.events?.find((e) => (e.data as any).status === "private_cynicism");
     expect(cynicismEvent).toBeDefined();
     expect((cynicismEvent!.data as any).publicStatement).toBeDefined();
     expect((cynicismEvent!.data as any).privateSentiment).toBeDefined();

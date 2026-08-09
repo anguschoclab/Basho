@@ -9,7 +9,10 @@ import type { WorldState } from "../../../engine/types/world";
 import { SeededRNG } from "../../../engine/rng";
 import { NarrativeService } from "../../../engine/systems/narrative/NarrativeService";
 import { toPotentialBand } from "../../../engine/descriptorBands";
-import { getCitizenshipStatus, yearsUntilNaturalization } from "../../../engine/utils/citizenshipUtils";
+import {
+  getCitizenshipStatus,
+  yearsUntilNaturalization,
+} from "../../../engine/utils/citizenshipUtils";
 import { resolveRegistryLabel, resolveRegistryLabelJa } from "../../uiUtilities";
 import type { UIRosterEntry, UIRankDelta } from "../types";
 import { rankScore, calculateStreak } from "./career";
@@ -58,9 +61,10 @@ export function projectRosterEntry(
     division: r.division,
     side: r.side,
     record: `${r.currentBashoWins ?? 0}-${r.currentBashoLosses ?? 0}`,
-    careerRecord: (r.careerAbsences ?? 0) > 0
-      ? `${r.careerWins}-${r.careerLosses}-${r.careerAbsences}`
-      : `${r.careerWins}-${r.careerLosses}`,
+    careerRecord:
+      (r.careerAbsences ?? 0) > 0
+        ? `${r.careerWins}-${r.careerLosses}-${r.careerAbsences}`
+        : `${r.careerWins}-${r.careerLosses}`,
     currentBashoWins: r.currentBashoWins ?? 0,
     currentBashoLosses: r.currentBashoLosses ?? 0,
     careerWins: r.careerWins,

@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { applyWeightJourneyTick, shouldEnterWeightJourney } from "@/engine/training/WeightJourney";
 import { mockRikishi } from "../utils";

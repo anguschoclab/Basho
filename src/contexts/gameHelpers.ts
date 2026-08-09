@@ -48,12 +48,11 @@ export function getMatchesForDay(world: WorldState | null) {
 
   const day = world.currentBasho.day;
   const index = buildBashoMatchIndex(world.currentBasho);
-  return (index.get(day) ?? [])
-    .map((m) => ({
-      ...m,
-      east: world.rikishi.get(m.eastRikishiId),
-      west: world.rikishi.get(m.westRikishiId),
-    }));
+  return (index.get(day) ?? []).map((m) => ({
+    ...m,
+    east: world.rikishi.get(m.eastRikishiId),
+    west: world.rikishi.get(m.westRikishiId),
+  }));
 }
 
 export type Reducer<S = unknown, A = { type: string; payload?: unknown }> = (

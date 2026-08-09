@@ -11,7 +11,6 @@ export interface UIRankRow {
   west: UIRosterEntry | null;
 }
 
-
 /**
  * Build a map of rikishi IDs to their rank scores from the most recent banzuke snapshot
  */

@@ -20,7 +20,9 @@ describe("AdvisorService.generateRecommendations — return shape (Step 2 regres
 
     for (const r of recs) {
       expect(typeof r.id).toBe("string");
-      expect(["training", "recruitment", "finance", "bout", "governance", "rivalry"]).toContain(r.category);
+      expect(["training", "recruitment", "finance", "bout", "governance", "rivalry"]).toContain(
+        r.category
+      );
       expect(["low", "medium", "high", "critical"]).toContain(r.priority);
       expect(typeof r.title).toBe("string");
       expect(typeof r.detail).toBe("string");
@@ -38,7 +40,9 @@ describe("AdvisorService.generateRecommendations — return shape (Step 2 regres
     const recs = generateRecommendations(world, "heya-1");
     const priorityOrder = { critical: 4, high: 3, medium: 2, low: 1 };
     for (let i = 1; i < recs.length; i++) {
-      expect(priorityOrder[recs[i].priority]).toBeLessThanOrEqual(priorityOrder[recs[i - 1].priority]);
+      expect(priorityOrder[recs[i].priority]).toBeLessThanOrEqual(
+        priorityOrder[recs[i - 1].priority]
+      );
     }
   });
 

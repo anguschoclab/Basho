@@ -33,10 +33,7 @@ export const MAEZUMO_DURATION_WEEKS = 2;
  * @param worldSeed - The world seed for deterministic RNG
  * @returns Partial<Rikishi> with maezumoCompleted and rankNumber set
  */
-export function assessMaezumo(
-  rikishi: Rikishi,
-  worldSeed: string
-): Partial<Rikishi> {
+export function assessMaezumo(rikishi: Rikishi, worldSeed: string): Partial<Rikishi> {
   // Skip if already completed
   if (rikishi.maezumoCompleted) {
     return {

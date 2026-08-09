@@ -35,9 +35,7 @@ export interface AdvanceResult {
  * shouldHaltAdvance returns true, or maxDays reached.
  */
 export function advanceWithGates(world: WorldState, config: GateConfig): AdvanceResult {
-  let currentWorld = config.autonomous
-    ? { ...world, _autonomousSim: true }
-    : world;
+  let currentWorld = config.autonomous ? { ...world, _autonomousSim: true } : world;
   const cap = Math.min(config.maxDays, 500);
   let daysAdvanced = 0;
 

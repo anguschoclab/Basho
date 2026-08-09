@@ -46,7 +46,10 @@ export function OpponentScoutingTab({ playerHeyaId }: { playerHeyaId: string | n
         return sortOrder === "desc" ? -result : result;
       });
     } else {
-      const accessor: Record<string, (r: (typeof d.opponents)[number]) => string | number | undefined> = {
+      const accessor: Record<
+        string,
+        (r: (typeof d.opponents)[number]) => string | number | undefined
+      > = {
         shikona: (r) => r.shikona,
         scoutLevel: (r) => r.scoutLevel,
       };

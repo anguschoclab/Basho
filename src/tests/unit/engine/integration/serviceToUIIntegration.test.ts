@@ -53,8 +53,14 @@ describe("Service-to-UI Integration", () => {
     it("narrative bands produce non-empty labels for projection", () => {
       const rng = new SeededRNG("integration");
       const statLabel = NarrativeService.getStatLabelForValue(rng, 85);
-      const fatigueLabel = NarrativeService.getFatigueLabel(rng, NarrativeService.getFatigueBand(80));
-      const momentumLabel = NarrativeService.getMomentumLabel(rng, NarrativeService.getMomentumBand(80));
+      const fatigueLabel = NarrativeService.getFatigueLabel(
+        rng,
+        NarrativeService.getFatigueBand(80)
+      );
+      const momentumLabel = NarrativeService.getMomentumLabel(
+        rng,
+        NarrativeService.getMomentumBand(80)
+      );
       expect(typeof statLabel).toBe("string");
       expect(typeof fatigueLabel).toBe("string");
       expect(typeof momentumLabel).toBe("string");

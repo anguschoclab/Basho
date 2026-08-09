@@ -114,7 +114,10 @@ export const TACTIC_PROFILES: Record<BoutTactic, TacticProfile> = {
     id: "DEFENSIVE_PULL",
     label: "Defensive Pull",
     desc: "Absorb pressure, punish overcommit — lower win chance, lower risk",
-    kimariteWeightBias: { trick: KIMARITE_BIAS_TRICK_DEFENSIVE, speed: KIMARITE_BIAS_SPEED_DEFENSIVE },
+    kimariteWeightBias: {
+      trick: KIMARITE_BIAS_TRICK_DEFENSIVE,
+      speed: KIMARITE_BIAS_SPEED_DEFENSIVE,
+    },
     tachiaiPowerModifier: TACHIAI_POWER_MOD_DEFENSIVE,
     fatigueCost: FATIGUE_COST_LIGHT,
     injuryRiskMultiplier: INJURY_RISK_MULT_DEFENSIVE,
@@ -136,7 +139,10 @@ export const TACTIC_PROFILES: Record<BoutTactic, TacticProfile> = {
     id: "NEKODAMASHI",
     label: "Nekodamashi",
     desc: "Cat-like fake-out — unorthodox tachiai clap trick that confuses belt specialists",
-    kimariteWeightBias: { trick: KIMARITE_BIAS_TRICK_NEKODAMASHI, speed: KIMARITE_BIAS_SPEED_NEKODAMASHI },
+    kimariteWeightBias: {
+      trick: KIMARITE_BIAS_TRICK_NEKODAMASHI,
+      speed: KIMARITE_BIAS_SPEED_NEKODAMASHI,
+    },
     tachiaiPowerModifier: TACHIAI_POWER_MOD_HENKA,
     fatigueCost: FATIGUE_COST_LIGHT,
     injuryRiskMultiplier: INJURY_RISK_MULT_HENKA,

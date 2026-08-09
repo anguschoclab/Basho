@@ -9,7 +9,15 @@ function makeRikishi(id: string, rank: string = "ozeki"): Rikishi {
     rank,
     division: "makuuchi",
     heyaId: "test-heya",
-    stats: { aggression: 50, mental: 50, power: 50, speed: 50, technique: 50, balance: 50, stamina: 50 },
+    stats: {
+      aggression: 50,
+      mental: 50,
+      power: 50,
+      speed: 50,
+      technique: 50,
+      balance: 50,
+      stamina: 50,
+    },
   } as unknown as Rikishi;
 }
 

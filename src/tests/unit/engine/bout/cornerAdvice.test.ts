@@ -7,7 +7,18 @@ describe("getAdvice", () => {
   function makeCtx(overrides: Partial<CornerAdviceContext> = {}): CornerAdviceContext {
     return {
       playerRikishi: mockRikishi("p1", {
-        stats: { power: 60, speed: 60, technique: 60, balance: 50, weight: 140, stamina: 50, mental: 50, adaptability: 50, experience: 50, aggression: 50 },
+        stats: {
+          power: 60,
+          speed: 60,
+          technique: 60,
+          balance: 50,
+          weight: 140,
+          stamina: 50,
+          mental: 50,
+          adaptability: 50,
+          experience: 50,
+          aggression: 50,
+        },
       }),
       opponent: mockRikishi("o1", {
         style: "yotsu",
@@ -49,7 +60,18 @@ describe("getAdvice", () => {
     const ctx = makeCtx({
       playerRikishi: mockRikishi("p1", {
         fatigue: 85,
-        stats: { power: 30, speed: 30, technique: 30, balance: 50, weight: 140, stamina: 50, mental: 50, adaptability: 50, experience: 50, aggression: 50 },
+        stats: {
+          power: 30,
+          speed: 30,
+          technique: 30,
+          balance: 50,
+          weight: 140,
+          stamina: 50,
+          mental: 50,
+          adaptability: 50,
+          experience: 50,
+          aggression: 50,
+        },
       }),
       opponent: mockRikishi("o1", {
         style: "oshi",

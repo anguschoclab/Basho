@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { processDramaTick } from "@/engine/bard/dramaGenerator";
 import { makeMockWorld, mockRikishi, makeMockHeya } from "../utils";

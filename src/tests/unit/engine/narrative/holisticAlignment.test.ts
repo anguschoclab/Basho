@@ -12,8 +12,6 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { BashoPerformance, BanzukeEntry } from "@/engine/types/banzuke";
 import type { CombatArchetype } from "@/engine/types/combat";
 
- 
-
 function makeBoutResult(overrides: Partial<BoutResult> = {}): BoutResult {
   return {
     boutId: "test-bout-holistic",
@@ -72,7 +70,13 @@ describe("Holistic System Alignment — 10 Gaps", () => {
           preferredGripDepth: "standard",
           statModifiers: {},
           counterFamily: "belt",
-          archetypeBehavior: { tachiaiSpeedBonus: 0, lateralMovementBonus: 0, edgeEscapeBonus: 0, beltTorqueBonus: 0, pushVelocityBonus: 0 },
+          archetypeBehavior: {
+            tachiaiSpeedBonus: 0,
+            lateralMovementBonus: 0,
+            edgeEscapeBonus: 0,
+            beltTorqueBonus: 0,
+            pushVelocityBonus: 0,
+          },
         },
       });
       const west = mockRikishi("r-west", {
@@ -84,7 +88,13 @@ describe("Holistic System Alignment — 10 Gaps", () => {
           preferredGripDepth: "deep",
           statModifiers: {},
           counterFamily: "push",
-          archetypeBehavior: { tachiaiSpeedBonus: 0, lateralMovementBonus: 0, edgeEscapeBonus: 0, beltTorqueBonus: 0, pushVelocityBonus: 0 },
+          archetypeBehavior: {
+            tachiaiSpeedBonus: 0,
+            lateralMovementBonus: 0,
+            edgeEscapeBonus: 0,
+            beltTorqueBonus: 0,
+            pushVelocityBonus: 0,
+          },
         },
       });
       const world = makeWorld(east, west);
@@ -133,7 +143,12 @@ describe("Holistic System Alignment — 10 Gaps", () => {
           { phase: "tachiai", data: { tick: 0 } },
           {
             phase: "counter_tactic",
-            data: { attacker: "east", defender: "west", attackerFamily: "push", defenderFamily: "belt" },
+            data: {
+              attacker: "east",
+              defender: "west",
+              attackerFamily: "push",
+              defenderFamily: "belt",
+            },
           },
           { phase: "finish", data: {} },
         ],
@@ -162,9 +177,7 @@ describe("Holistic System Alignment — 10 Gaps", () => {
         ],
       });
       generateBoutNarrative(result, east, west, BASHO, 5, "seed-counter-limit", world);
-      const counterLines = (result.pbpLines ?? []).filter(
-        (l) => l.phase === "counter_tactic"
-      );
+      const counterLines = (result.pbpLines ?? []).filter((l) => l.phase === "counter_tactic");
       expect(counterLines.length).toBe(2);
     });
 
@@ -293,7 +306,14 @@ describe("Holistic System Alignment — 10 Gaps", () => {
         rankNumber: 3,
         sanyakuPromotionThisBasho: true,
         careerHistory: [
-          { rank: "maegashira", division: "makuuchi", isYusho: false, wins: 11, losses: 4, rankNumber: 5 },
+          {
+            rank: "maegashira",
+            division: "makuuchi",
+            isYusho: false,
+            wins: 11,
+            losses: 4,
+            rankNumber: 5,
+          },
         ] as any,
       });
       const west = mockRikishi("r-west", { shikona: "Opponent" });
@@ -404,7 +424,14 @@ describe("Holistic System Alignment — 10 Gaps", () => {
       });
       generateBoutNarrative(result, east, west, BASHO, 5, "seed-injury-kyujo", world);
       // The injury_kyujo_warning templates use various phrases: "threaten", "kyujo", "doubt", "withdrawal", "worrying", "medical staff"
-      const warningKeywords = ["threaten", "kyujo", "doubt", "withdrawal", "worrying", "medical staff"];
+      const warningKeywords = [
+        "threaten",
+        "kyujo",
+        "doubt",
+        "withdrawal",
+        "worrying",
+        "medical staff",
+      ];
       const injuryLines = (result.pbpLines ?? []).filter(
         (l) => l.phase === "post_bout" && l.tags?.includes("injury")
       );
@@ -428,7 +455,14 @@ describe("Holistic System Alignment — 10 Gaps", () => {
         },
       });
       generateBoutNarrative(result, east, west, BASHO, 5, "seed-injury-serious", world);
-      const warningKeywords = ["threaten", "kyujo", "doubt", "withdrawal", "worrying", "medical staff"];
+      const warningKeywords = [
+        "threaten",
+        "kyujo",
+        "doubt",
+        "withdrawal",
+        "worrying",
+        "medical staff",
+      ];
       const injuryLines = (result.pbpLines ?? []).filter(
         (l) => l.phase === "post_bout" && l.tags?.includes("injury")
       );
@@ -451,7 +485,14 @@ describe("Holistic System Alignment — 10 Gaps", () => {
         },
       });
       generateBoutNarrative(result, east, west, BASHO, 5, "seed-injury-minor", world);
-      const warningKeywords = ["threaten", "kyujo", "doubt", "withdrawal", "worrying", "medical staff"];
+      const warningKeywords = [
+        "threaten",
+        "kyujo",
+        "doubt",
+        "withdrawal",
+        "worrying",
+        "medical staff",
+      ];
       const injuryLines = (result.pbpLines ?? []).filter(
         (l) => l.phase === "post_bout" && l.tags?.includes("injury")
       );

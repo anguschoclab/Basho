@@ -62,7 +62,11 @@ vi.mock("@/components/layout/control-center", () => ({
         React.createElement(
           "div",
           { key: r.id, "data-testid": "faction-row" },
-          React.createElement("span", { className: "flex-1 min-w-0 font-medium truncate" }, r.label),
+          React.createElement(
+            "span",
+            { className: "flex-1 min-w-0 font-medium truncate" },
+            r.label
+          ),
           r.value !== undefined &&
             React.createElement("span", { className: "font-mono font-bold" }, String(r.value))
         )
@@ -89,8 +93,7 @@ vi.mock("@/components/ui/tabs", () => ({
   TabsContent: ({ children, value }: any) =>
     value === "politics" ? React.createElement("div", null, children) : null,
   TabsList: ({ children }: any) => React.createElement("div", null, children),
-  TabsTrigger: ({ children, value }: any) =>
-    React.createElement("button", { value }, children),
+  TabsTrigger: ({ children, value }: any) => React.createElement("button", { value }, children),
 }));
 
 vi.mock("@/presenters/uiDigest", () => ({

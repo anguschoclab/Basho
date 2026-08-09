@@ -41,7 +41,13 @@ export function generateNakabiSummary(
   rikishiList: Rikishi[]
 ): NakabiSummary {
   // Get current basho records (single-pass filter+map)
-  const records: { rikishiId: string; shikona: string; wins: number; losses: number; rankNumber: number }[] = [];
+  const records: {
+    rikishiId: string;
+    shikona: string;
+    wins: number;
+    losses: number;
+    rankNumber: number;
+  }[] = [];
   for (const r of rikishiList) {
     if (r.isRetired) continue;
     records.push({
@@ -105,15 +111,11 @@ export function generateNakabiSummary(
 /**
  * Log the nakabi checkpoint event to the world event log.
  */
-export function logNakabiCheckpoint(
-  _world: WorldState,
-  summary: NakabiSummary
-): StateImpact {
+export function logNakabiCheckpoint(_world: WorldState, summary: NakabiSummary): StateImpact {
   const builder = createImpactBuilder("logNakabiCheckpoint");
 
-  const leaderName = summary.notablePerformers.find(
-    (p) => p.rikishiId === summary.leaderId
-  )?.shikona ?? "Unknown";
+  const leaderName =
+    summary.notablePerformers.find((p) => p.rikishiId === summary.leaderId)?.shikona ?? "Unknown";
 
   builder.logEvent(
     "BASHO_STATUS",

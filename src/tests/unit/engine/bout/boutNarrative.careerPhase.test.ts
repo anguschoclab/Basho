@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 import type { PbpLine, PbpTag } from "@/engine/bout/boutNarrative";
@@ -36,9 +35,19 @@ function hasTag(l: PbpLine, tag: PbpTag): boolean {
 
 describe("career phase template selection (6.1)", () => {
   it("pre-bout career phase narrative is generated for debut wrestlers", () => {
-    const east = mockRikishi("r1", { rank: "maegashira", division: "makuuchi", careerWins: 0, careerLosses: 0 });
+    const east = mockRikishi("r1", {
+      rank: "maegashira",
+      division: "makuuchi",
+      careerWins: 0,
+      careerLosses: 0,
+    });
     const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi" });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]) } as unknown as WorldState;
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+    } as unknown as WorldState;
     const result = makeBoutResult();
 
     generateBoutNarrative(result, east, west, undefined, 7, "career-debut-seed", world);
@@ -49,9 +58,21 @@ describe("career phase template selection (6.1)", () => {
   });
 
   it("pre-bout career phase narrative is generated for veteran wrestlers", () => {
-    const east = mockRikishi("r1", { rank: "maegashira", division: "makuuchi", careerWins: 500, careerLosses: 300, birthYear: 1988 });
+    const east = mockRikishi("r1", {
+      rank: "maegashira",
+      division: "makuuchi",
+      careerWins: 500,
+      careerLosses: 300,
+      birthYear: 1988,
+    });
     const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi" });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]), year: 2030 } as unknown as WorldState;
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+      year: 2030,
+    } as unknown as WorldState;
     const result = makeBoutResult();
 
     generateBoutNarrative(result, east, west, undefined, 7, "career-veteran-seed", world);
@@ -66,7 +87,12 @@ describe("career phase template selection (6.1)", () => {
     // the interview question selection will use it
     const east = mockRikishi("r1", { rank: "ozeki", division: "makuuchi", declinePhase: "peak" });
     const west = mockRikishi("r2", { rank: "ozeki", division: "makuuchi" });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]) } as unknown as WorldState;
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+    } as unknown as WorldState;
     const result = makeBoutResult();
 
     generateBoutNarrative(result, east, west, undefined, 7, "career-phase-context-seed", world);
@@ -77,9 +103,18 @@ describe("career phase template selection (6.1)", () => {
   });
 
   it("interview includes career_phase tagged question when declinePhase is set", () => {
-    const east = mockRikishi("r1", { rank: "ozeki", division: "makuuchi", declinePhase: "early-decline" });
+    const east = mockRikishi("r1", {
+      rank: "ozeki",
+      division: "makuuchi",
+      declinePhase: "early-decline",
+    });
     const west = mockRikishi("r2", { rank: "ozeki", division: "makuuchi" });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]) } as unknown as WorldState;
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+    } as unknown as WorldState;
     const result = makeBoutResult();
 
     generateBoutNarrative(result, east, west, undefined, 7, "career-interview-seed", world);

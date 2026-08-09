@@ -6,8 +6,6 @@ import type { BoutResult, BashoName } from "@/engine/types/basho";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 
- 
-
 function makeBoutResult(overrides: Partial<BoutResult> = {}): BoutResult {
   return {
     boutId: "test-bout-monoii",
@@ -54,8 +52,16 @@ describe("generateBoutNarrative — mono-ii stub (T14)", () => {
   });
 
   it("T14.1: result.monoii = true → mono_ii phase line with drama tag", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 4, currentBashoLosses: 4 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 5,
+      currentBashoLosses: 3,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 4,
+      currentBashoLosses: 4,
+    });
     const world = makeWorld(east, west);
     const result = makeBoutResult({ monoii: true } as any);
     generateBoutNarrative(result, east, west, BASHO, 8, "seed-monoii-1", world);
@@ -65,8 +71,16 @@ describe("generateBoutNarrative — mono-ii stub (T14)", () => {
   });
 
   it("T14.2: result.monoii undefined → no mono_ii line", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 4, currentBashoLosses: 4 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 5,
+      currentBashoLosses: 3,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 4,
+      currentBashoLosses: 4,
+    });
     const world = makeWorld(east, west);
     const result = makeBoutResult();
     generateBoutNarrative(result, east, west, BASHO, 8, "seed-monoii-undef", world);
@@ -85,8 +99,16 @@ describe("generateBoutNarrative — mono-ii stub (T14)", () => {
   });
 
   it("T14.4: no [MISSING:] tokens in mono_ii lines", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 4, currentBashoLosses: 4 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 5,
+      currentBashoLosses: 3,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 4,
+      currentBashoLosses: 4,
+    });
     const world = makeWorld(east, west);
     const result = makeBoutResult({ monoii: true } as any);
     generateBoutNarrative(result, east, west, BASHO, 8, "seed-monoii-missing", world);
@@ -96,8 +118,16 @@ describe("generateBoutNarrative — mono-ii stub (T14)", () => {
   });
 
   it("T14.5: monoii → multiple mono_ii lines (gunbai, review, replay, outcome)", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 4, currentBashoLosses: 4 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 5,
+      currentBashoLosses: 3,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 4,
+      currentBashoLosses: 4,
+    });
     const world = makeWorld(east, west);
     const result = makeBoutResult({ monoii: true } as any);
     generateBoutNarrative(result, east, west, BASHO, 8, "seed-monoii-expanded", world);
@@ -107,8 +137,16 @@ describe("generateBoutNarrative — mono-ii stub (T14)", () => {
   });
 
   it("T14.6: monoii → gunbai_contested line present", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 4, currentBashoLosses: 4 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 5,
+      currentBashoLosses: 3,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 4,
+      currentBashoLosses: 4,
+    });
     const world = makeWorld(east, west);
     const result = makeBoutResult({ monoii: true } as any);
     generateBoutNarrative(result, east, west, BASHO, 8, "seed-monoii-gunbai", world);
@@ -118,8 +156,16 @@ describe("generateBoutNarrative — mono-ii stub (T14)", () => {
   });
 
   it("T14.7: monoii → review and replay_analysis lines present", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 4, currentBashoLosses: 4 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 5,
+      currentBashoLosses: 3,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 4,
+      currentBashoLosses: 4,
+    });
     const world = makeWorld(east, west);
     const result = makeBoutResult({ monoii: true } as any);
     generateBoutNarrative(result, east, west, BASHO, 8, "seed-monoii-review", world);
@@ -131,8 +177,16 @@ describe("generateBoutNarrative — mono-ii stub (T14)", () => {
   });
 
   it("T14.8: monoii → outcome line (reversed, upheld, or rematch) present", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 4, currentBashoLosses: 4 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 5,
+      currentBashoLosses: 3,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 4,
+      currentBashoLosses: 4,
+    });
     const world = makeWorld(east, west);
     const result = makeBoutResult({ monoii: true } as any);
     generateBoutNarrative(result, east, west, BASHO, 8, "seed-monoii-outcome", world);
@@ -143,13 +197,23 @@ describe("generateBoutNarrative — mono-ii stub (T14)", () => {
   });
 
   it("T14.9: monoii with multiple seeds → deterministic output", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 4, currentBashoLosses: 4 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 5,
+      currentBashoLosses: 3,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 4,
+      currentBashoLosses: 4,
+    });
     const world = makeWorld(east, west);
     const result1 = makeBoutResult({ monoii: true } as any);
     const result2 = makeBoutResult({ monoii: true } as any);
     generateBoutNarrative(result1, east, west, BASHO, 8, "seed-monoii-det", world);
     generateBoutNarrative(result2, east, west, BASHO, 8, "seed-monoii-det", world);
-    expect(getMonoiiLines(result1).map((l) => l.text)).toEqual(getMonoiiLines(result2).map((l) => l.text));
+    expect(getMonoiiLines(result1).map((l) => l.text)).toEqual(
+      getMonoiiLines(result2).map((l) => l.text)
+    );
   });
 });

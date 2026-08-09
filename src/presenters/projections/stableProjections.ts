@@ -43,8 +43,7 @@ export function projectStableSummary(world: WorldState, heyaId: string): StableS
 
   const activeStaffCount = heya.staffIds?.length ?? 0;
   const scandalScore = heya.scandalScore ?? 0;
-  const complianceState =
-    heya.governanceStatus ?? "good_standing";
+  const complianceState = heya.governanceStatus ?? "good_standing";
 
   return {
     heyaName: heya.name,

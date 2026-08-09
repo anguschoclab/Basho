@@ -8,12 +8,7 @@
 
 import type { Oyakata } from "../types/oyakata";
 import type { Id } from "../types/common";
-import type {
-  AIPlan,
-  OpponentTacticModel,
-  OyakataMemory,
-  OyakataObservation,
-} from "../ai/types";
+import type { AIPlan, OpponentTacticModel, OyakataMemory, OyakataObservation } from "../ai/types";
 
 export { type OyakataMemory } from "../ai/types";
 
@@ -24,10 +19,7 @@ export { type OyakataMemory } from "../ai/types";
 export function emptyOyakataMemory(oyakata: Oyakata, currentTick = 0): OyakataMemory {
   return {
     observations: [],
-    coreDirectives: [
-      `Maintain the excellence of stable`,
-      `Prioritize ${oyakata.archetype} values`,
-    ],
+    coreDirectives: [`Maintain the excellence of stable`, `Prioritize ${oyakata.archetype} values`],
     lastConsolidationTick: currentTick,
     planHistory: [],
     decisionHistory: [],
@@ -126,7 +118,9 @@ export function recordDecision(
 ): OyakataMemory {
   return {
     ...memory,
-    decisionHistory: [...(memory.decisionHistory ?? []), { year, week, summary, planId }].slice(-52),
+    decisionHistory: [...(memory.decisionHistory ?? []), { year, week, summary, planId }].slice(
+      -52
+    ),
   };
 }
 

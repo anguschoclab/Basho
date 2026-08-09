@@ -94,10 +94,7 @@ export default function HistoryPage() {
   const [sortKey, setSortKey] = useState<string>("year");
   const [sortOrder, setSortOrder] = useState<SortDirection>("asc");
 
-  const rawHistory = useMemo(
-    () => (world ? (getHistory(world) as HistoryRecord[]) : []),
-    [world]
-  );
+  const rawHistory = useMemo(() => (world ? (getHistory(world) as HistoryRecord[]) : []), [world]);
 
   const history = useMemo(() => {
     const fn = historyAccessor[sortKey];

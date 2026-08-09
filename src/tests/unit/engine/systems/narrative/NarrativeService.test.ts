@@ -18,13 +18,29 @@ describe("NarrativeService", () => {
 
     it("returns a valid band for mid-range values", () => {
       const band = NarrativeService.getStatBand(50);
-      expect(["exceptional", "outstanding", "strong", "capable", "developing", "limited", "struggling"]).toContain(band);
+      expect([
+        "exceptional",
+        "outstanding",
+        "strong",
+        "capable",
+        "developing",
+        "limited",
+        "struggling",
+      ]).toContain(band);
     });
   });
 
   describe("getStatLabel", () => {
     it("returns a non-empty string for each band", () => {
-      const bands: StatBand[] = ["exceptional", "outstanding", "strong", "capable", "developing", "limited", "struggling"];
+      const bands: StatBand[] = [
+        "exceptional",
+        "outstanding",
+        "strong",
+        "capable",
+        "developing",
+        "limited",
+        "struggling",
+      ];
       for (const band of bands) {
         const label = NarrativeService.getStatLabel(new SeededRNG(`label-${band}`), band);
         expect(label).toBeTruthy();

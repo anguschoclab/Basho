@@ -437,8 +437,10 @@ describe("HistoryDashboard — Stables tab", () => {
     vi.mocked(selectRetiredRikishi).mockReturnValue(retired);
     render(<HistoryDashboard />);
     fireEvent.click(screen.getByRole("tab", { name: "Stables" }));
-    for (let i = 0; i <= 39; i++) expect(screen.getByText(`R${String(i).padStart(2, "0")}`)).toBeTruthy();
-    for (let i = 40; i <= 44; i++) expect(screen.queryByText(`R${String(i).padStart(2, "0")}`)).toBeNull();
+    for (let i = 0; i <= 39; i++)
+      expect(screen.getByText(`R${String(i).padStart(2, "0")}`)).toBeTruthy();
+    for (let i = 40; i <= 44; i++)
+      expect(screen.queryByText(`R${String(i).padStart(2, "0")}`)).toBeNull();
   });
 });
 
@@ -529,9 +531,7 @@ describe("HistoryDashboard — Retired Legends sorting", () => {
 
   it("persists sort state to localStorage", () => {
     mockUseGame(makeWorld({ heyas: new Map([["h1", makeHeya("h1", "Test")]]) }));
-    vi.mocked(selectRetiredRikishi).mockReturnValue([
-      makeRikishi("r1", "Alpha", "h1", "yokozuna"),
-    ]);
+    vi.mocked(selectRetiredRikishi).mockReturnValue([makeRikishi("r1", "Alpha", "h1", "yokozuna")]);
     render(<HistoryDashboard />);
     fireEvent.click(screen.getByRole("tab", { name: "Stables" }));
     const trigger = screen.getByRole("combobox");

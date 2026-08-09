@@ -11,7 +11,11 @@ function findFiles(dir: string, exts: string[]): string[] {
     const fullPath = join(dir, entry.name);
     if (entry.isDirectory()) {
       results.push(...findFiles(fullPath, exts));
-    } else if (exts.some((e) => entry.name.endsWith(e)) && !entry.name.endsWith(".test.ts") && !entry.name.endsWith(".test.tsx")) {
+    } else if (
+      exts.some((e) => entry.name.endsWith(e)) &&
+      !entry.name.endsWith(".test.ts") &&
+      !entry.name.endsWith(".test.tsx")
+    ) {
       results.push(fullPath);
     }
   }
@@ -46,6 +50,9 @@ describe("L3.3: state-shape leaks — world.* direct access in UI", () => {
       }
     }
 
-    expect(violations.length, `Direct world.* access in pages (should use presenters) — budget exceeded:\n${violations.join("\n")}`).toEqual(0);
+    expect(
+      violations.length,
+      `Direct world.* access in pages (should use presenters) — budget exceeded:\n${violations.join("\n")}`
+    ).toEqual(0);
   });
 });

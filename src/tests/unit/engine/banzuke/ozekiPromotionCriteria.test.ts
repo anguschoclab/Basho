@@ -2,10 +2,7 @@ import { describe, it, expect } from "vitest";
 import { bestTierAllowed } from "@/engine/banzuke/promotionLogic";
 import type { BanzukeEntry, BashoPerformance } from "@/engine/types/banzuke";
 
-function entry(
-  rank: "sekiwake" | "komusubi" | "ozeki",
-  id: string = "r1",
-): BanzukeEntry {
+function entry(rank: "sekiwake" | "komusubi" | "ozeki", id: string = "r1"): BanzukeEntry {
   return {
     rikishiId: id,
     position: { rank, side: "east" } as BanzukeEntry["position"],
@@ -16,7 +13,7 @@ function entry(
 function perf(
   wins: number,
   losses: number,
-  extras: Partial<BashoPerformance> = {},
+  extras: Partial<BashoPerformance> = {}
 ): BashoPerformance {
   return { rikishiId: "r1", wins, losses, ...extras };
 }
@@ -31,7 +28,7 @@ describe("Ozeki promotion — 33-win criteria (bestTierAllowed)", () => {
       entry("sekiwake"),
       perf(10, 5, { sekiwakeThreeBashoWins: 33 }),
       undefined,
-      NONE,
+      NONE
     );
     expect(result).toBe(2);
   });
@@ -41,7 +38,7 @@ describe("Ozeki promotion — 33-win criteria (bestTierAllowed)", () => {
       entry("sekiwake"),
       perf(10, 5, { sekiwakeThreeBashoWins: 34 }),
       undefined,
-      NONE,
+      NONE
     );
     expect(result).toBe(2);
   });
@@ -51,7 +48,7 @@ describe("Ozeki promotion — 33-win criteria (bestTierAllowed)", () => {
       entry("sekiwake"),
       perf(9, 6, { sekiwakeThreeBashoWins: 33 }),
       undefined,
-      NONE,
+      NONE
     );
     expect(result).toBe(3);
   });
@@ -61,7 +58,7 @@ describe("Ozeki promotion — 33-win criteria (bestTierAllowed)", () => {
       entry("sekiwake"),
       perf(10, 5, { sekiwakeThreeBashoWins: 32 }),
       undefined,
-      NONE,
+      NONE
     );
     expect(result).toBe(3);
   });
@@ -71,18 +68,13 @@ describe("Ozeki promotion — 33-win criteria (bestTierAllowed)", () => {
       entry("sekiwake"),
       perf(11, 4, { sekiwakeThreeBashoWins: 33 }),
       undefined,
-      NONE,
+      NONE
     );
     expect(result).toBe(2);
   });
 
   it("sekiwake with 10 wins and no sekiwakeThreeBashoWins → tier 3", () => {
-    const result = bestTierAllowed(
-      entry("sekiwake"),
-      perf(10, 5),
-      undefined,
-      NONE,
-    );
+    const result = bestTierAllowed(entry("sekiwake"), perf(10, 5), undefined, NONE);
     expect(result).toBe(3);
   });
 });

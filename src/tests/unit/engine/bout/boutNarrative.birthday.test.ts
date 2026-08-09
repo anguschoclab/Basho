@@ -6,8 +6,6 @@ import type { BoutResult, BashoName } from "@/engine/types/basho";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 
- 
-
 function makeBoutResult(overrides: Partial<BoutResult> = {}): BoutResult {
   return {
     boutId: "test-bout-birthday",
@@ -62,7 +60,11 @@ describe("generateBoutNarrative — birthday narrative (T19)", () => {
       currentBashoWins: 5,
       currentBashoLosses: 3,
     });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 3,
+      currentBashoLosses: 5,
+    });
     const world = makeWorld(east, west);
     const result = makeBoutResult();
     generateBoutNarrative(result, east, west, BASHO, 10, "seed-birthday-1", world);
@@ -78,7 +80,11 @@ describe("generateBoutNarrative — birthday narrative (T19)", () => {
       currentBashoWins: 5,
       currentBashoLosses: 3,
     });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 3,
+      currentBashoLosses: 5,
+    });
     const world = makeWorld(east, west);
     const result = makeBoutResult();
     generateBoutNarrative(result, east, west, BASHO, 10, "seed-birthday-no", world);
@@ -87,10 +93,18 @@ describe("generateBoutNarrative — birthday narrative (T19)", () => {
   });
 
   it("T19.4: birthMonth/birthDay undefined → no birthday line, no error", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 5,
+      currentBashoLosses: 3,
+    });
     delete (east as any).birthMonth;
     delete (east as any).birthDay;
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 3,
+      currentBashoLosses: 5,
+    });
     const world = makeWorld(east, west);
     const result = makeBoutResult();
     expect(() => {
@@ -108,7 +122,11 @@ describe("generateBoutNarrative — birthday narrative (T19)", () => {
       currentBashoWins: 5,
       currentBashoLosses: 3,
     });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 3,
+      currentBashoLosses: 5,
+    });
     const world = makeWorld(east, west);
     const result = makeBoutResult();
     generateBoutNarrative(result, east, west, BASHO, 10, "seed-birthday-missing", world);

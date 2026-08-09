@@ -29,7 +29,11 @@ export function isExhibitionBasho(name: string): name is ExhibitionBashoName {
 }
 
 // Re-export constants for backward compatibility
-export { EXHIBITION_INJURY_RISK_MULTIPLIER, EXHIBITION_STIPEND_MULTIPLIER, EXHIBITION_RIVALRY_SEED_CHANCE };
+export {
+  EXHIBITION_INJURY_RISK_MULTIPLIER,
+  EXHIBITION_STIPEND_MULTIPLIER,
+  EXHIBITION_RIVALRY_SEED_CHANCE,
+};
 
 /** Exhibition basho info */
 export interface ExhibitionBashoInfo {
@@ -46,12 +50,48 @@ export interface ExhibitionBashoInfo {
  */
 export function getExhibitionBashoSchedule(_year: number): ExhibitionBashoInfo[] {
   const events: ExhibitionBashoInfo[] = [
-    { name: "february-jungyo", displayName: "February Jungyo Tour", month: 2, location: "Regional Tour", isHonbasho: false },
-    { name: "april-jungyo", displayName: "April Jungyo Tour", month: 4, location: "Regional Tour", isHonbasho: false },
-    { name: "june-jungyo", displayName: "June Jungyo Tour", month: 6, location: "Regional Tour", isHonbasho: false },
-    { name: "august-jungyo", displayName: "August Jungyo Tour", month: 8, location: "Regional Tour", isHonbasho: false },
-    { name: "october-jungyo", displayName: "October Jungyo Tour", month: 10, location: "Regional Tour", isHonbasho: false },
-    { name: "december-jungyo", displayName: "December Jungyo Tour", month: 12, location: "Regional Tour", isHonbasho: false },
+    {
+      name: "february-jungyo",
+      displayName: "February Jungyo Tour",
+      month: 2,
+      location: "Regional Tour",
+      isHonbasho: false,
+    },
+    {
+      name: "april-jungyo",
+      displayName: "April Jungyo Tour",
+      month: 4,
+      location: "Regional Tour",
+      isHonbasho: false,
+    },
+    {
+      name: "june-jungyo",
+      displayName: "June Jungyo Tour",
+      month: 6,
+      location: "Regional Tour",
+      isHonbasho: false,
+    },
+    {
+      name: "august-jungyo",
+      displayName: "August Jungyo Tour",
+      month: 8,
+      location: "Regional Tour",
+      isHonbasho: false,
+    },
+    {
+      name: "october-jungyo",
+      displayName: "October Jungyo Tour",
+      month: 10,
+      location: "Regional Tour",
+      isHonbasho: false,
+    },
+    {
+      name: "december-jungyo",
+      displayName: "December Jungyo Tour",
+      month: 12,
+      location: "Regional Tour",
+      isHonbasho: false,
+    },
   ];
   return events;
 }

@@ -148,7 +148,8 @@ describe("CI Gate: Page files use AppLayout shell", () => {
       const content = readFile(`pages/${file}`);
       if (!content) return;
       // Skip NotFound, MainMenu, NewGameWizard — pre-game/shell pages
-      if (file === "NotFound.tsx" || file === "MainMenu.tsx" || file === "NewGameWizard.tsx") return;
+      if (file === "NotFound.tsx" || file === "MainMenu.tsx" || file === "NewGameWizard.tsx")
+        return;
       expect(content).toContain("AppLayout");
     });
   }
@@ -268,10 +269,7 @@ describe("CI Gate: Write-only state field classification", () => {
         missing.push(field);
       }
     }
-    expect(
-      missing,
-      `UI-read fields not found in any UI file: ${missing.join(", ")}`
-    ).toEqual([]);
+    expect(missing, `UI-read fields not found in any UI file: ${missing.join(", ")}`).toEqual([]);
   });
 
   it("internal-only fields are documented with a reason", () => {
@@ -283,7 +281,10 @@ describe("CI Gate: Write-only state field classification", () => {
   it("no field is classified as both UI-read and internal-only", () => {
     const uiSet = new Set(UI_READ_FIELDS);
     for (const field of Object.keys(INTERNAL_ONLY_FIELDS)) {
-      expect(uiSet.has(field), `Field ${field} is classified as both UI-read and internal-only`).toBe(false);
+      expect(
+        uiSet.has(field),
+        `Field ${field} is classified as both UI-read and internal-only`
+      ).toBe(false);
     }
   });
 });
@@ -303,10 +304,13 @@ describe("CI Gate: Audit regression gate", () => {
     const raw = readFileSync(path, "utf-8");
     const data = JSON.parse(raw);
     const entries = data.entries as Array<{ orphanType: string }>;
-    const byType = entries.reduce((acc, e) => {
-      acc[e.orphanType] = (acc[e.orphanType] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const byType = entries.reduce(
+      (acc, e) => {
+        acc[e.orphanType] = (acc[e.orphanType] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
     expect(byType["unreferenced-export"] ?? 0).toBe(data.summary.unreferencedExports);
     expect(byType["orphan-route"] ?? 0).toBe(data.summary.orphanRoutes);
     expect(byType["write-only-state"] ?? 0).toBe(data.summary.writeOnlyState);

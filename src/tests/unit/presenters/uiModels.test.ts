@@ -87,7 +87,12 @@ describe("UI Models Projections", () => {
       if (!rikishi) throw new Error("No rikishi found");
 
       rikishi.injured = true;
-      rikishi.injuryStatus = { type: "strain", severity: "moderate", location: "back", weeksRemaining: 2 };
+      rikishi.injuryStatus = {
+        type: "strain",
+        severity: "moderate",
+        location: "back",
+        weeksRemaining: 2,
+      };
 
       const uiRikishi = projectRikishi(rikishi, world);
       expect(uiRikishi.descriptor.injuryModifiers).toContain("hampered");
@@ -100,7 +105,12 @@ describe("UI Models Projections", () => {
       if (!rikishi) throw new Error("No rikishi found");
 
       rikishi.injured = true;
-      rikishi.injuryStatus = { type: "sprain", severity: "minor", location: "ankle", weeksRemaining: 1 };
+      rikishi.injuryStatus = {
+        type: "sprain",
+        severity: "minor",
+        location: "ankle",
+        weeksRemaining: 1,
+      };
 
       const uiRikishi = projectRikishi(rikishi, world);
       expect(uiRikishi.descriptor.injuryModifiers).toContain("taped_up");
@@ -113,7 +123,12 @@ describe("UI Models Projections", () => {
       if (!rikishi) throw new Error("No rikishi found");
 
       rikishi.injured = true;
-      rikishi.injuryStatus = { type: "contusion", severity: "minor", location: "rib", weeksRemaining: 1 };
+      rikishi.injuryStatus = {
+        type: "contusion",
+        severity: "minor",
+        location: "rib",
+        weeksRemaining: 1,
+      };
 
       const uiRikishi = projectRikishi(rikishi, world);
       expect(uiRikishi.descriptor.injuryModifiers).toContain("taped_up");

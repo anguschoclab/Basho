@@ -10,7 +10,14 @@
     "adverbs": ["decisively", "authoritatively", "confidently", "skillfully", "effectively"]
   },
   "intensity_3": {
-    "adjectives": ["thunderous", "electric", "unstoppable", "extraordinary", "devastating", "explosive"],
+    "adjectives": [
+      "thunderous",
+      "electric",
+      "unstoppable",
+      "extraordinary",
+      "devastating",
+      "explosive"
+    ],
     "verbs": ["detonates", "decimates", "shatters", "conquers", "demolishes", "annihilates"],
     "adverbs": ["explosively", "overwhelmingly", "ferociously", "spectacularly", "brilliantly"]
   }

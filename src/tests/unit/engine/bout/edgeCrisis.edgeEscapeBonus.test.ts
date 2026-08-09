@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { tickEdgeCrisis, buildEdgeCrisis } from "@/engine/bout/physics/edgeCrisis";
 import { mockRikishi } from "../utils";
@@ -28,7 +27,7 @@ function makePhysicalBody(overrides: Partial<EngineStateV2["east"]> = {}) {
 function makeEngineState(
   crisisSide: "east" | "west",
   push: PushBattleState,
-  defenderFacingAngle: number,
+  defenderFacingAngle: number
 ): EngineStateV2 {
   const phase = buildEdgeCrisis(crisisSide, push, undefined, "push_battle", {
     east: makePhysicalBody({ facingAngle: crisisSide === "east" ? defenderFacingAngle : 0 }),
@@ -68,10 +67,7 @@ function makePush(crisisSide: "east" | "west"): PushBattleState {
   };
 }
 
-function makeRikishiWithEdgeEscapeBonus(
-  id: string,
-  edgeEscapeBonus: number,
-): Rikishi {
+function makeRikishiWithEdgeEscapeBonus(id: string, edgeEscapeBonus: number): Rikishi {
   return mockRikishi(id, {
     combatProfile: {
       archetype: "hybrid",
@@ -119,7 +115,13 @@ describe("edgeCrisis edgeEscapeBonus (2.1)", () => {
 
       const defensiveState = makeEngineState(crisisSide, { ...push }, defenderAngle);
       const defensiveRng = new SeededRNG(seed);
-      const defensiveResult = tickEdgeCrisis(defensiveRng, defensiveRikishi, opponent, defensiveState, []);
+      const defensiveResult = tickEdgeCrisis(
+        defensiveRng,
+        defensiveRikishi,
+        opponent,
+        defensiveState,
+        []
+      );
       if (defensiveResult?.escaped) defensiveEscapes++;
     }
 
@@ -150,7 +152,13 @@ describe("edgeCrisis edgeEscapeBonus (2.1)", () => {
 
       const tsuppariState = makeEngineState(crisisSide, { ...push }, defenderAngle);
       const tsuppariRng = new SeededRNG(seed);
-      const tsuppariResult = tickEdgeCrisis(tsuppariRng, tsuppariRikishi, opponent, tsuppariState, []);
+      const tsuppariResult = tickEdgeCrisis(
+        tsuppariRng,
+        tsuppariRikishi,
+        opponent,
+        tsuppariState,
+        []
+      );
       if (tsuppariResult?.escaped) tsuppariEscapes++;
     }
 

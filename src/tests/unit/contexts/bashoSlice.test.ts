@@ -68,23 +68,25 @@ describe("bashoSlice - autosave errors", () => {
     // B4.1.2: autosave is now a side-effect in GameContext, not in the reducer
 
     // Mock simulateBoutForToday to return a result with world updated (one bout at a time)
-    (worldEngine.simulateBoutForToday as ReturnType<typeof vi.fn>).mockImplementation((world: any) => {
-      const basho = world.currentBasho;
-      if (!basho) return { world, result: null };
-      // Find the first unplayed match for today and resolve only that one
-      const matchIdx = basho.matches.findIndex((m: any) => m.day === basho.day && !m.result);
-      if (matchIdx < 0) return { world, result: null };
-      const updatedMatches = basho.matches.map((m: any, i: number) =>
-        i === matchIdx ? { ...m, result: { winnerId: "w1" } } : m
-      );
-      return {
-        world: {
-          ...world,
-          currentBasho: { ...basho, matches: updatedMatches },
-        },
-        result: { winnerId: "w1", loserId: "l1", kimarite: "yorikiri" },
-      };
-    });
+    (worldEngine.simulateBoutForToday as ReturnType<typeof vi.fn>).mockImplementation(
+      (world: any) => {
+        const basho = world.currentBasho;
+        if (!basho) return { world, result: null };
+        // Find the first unplayed match for today and resolve only that one
+        const matchIdx = basho.matches.findIndex((m: any) => m.day === basho.day && !m.result);
+        if (matchIdx < 0) return { world, result: null };
+        const updatedMatches = basho.matches.map((m: any, i: number) =>
+          i === matchIdx ? { ...m, result: { winnerId: "w1" } } : m
+        );
+        return {
+          world: {
+            ...world,
+            currentBasho: { ...basho, matches: updatedMatches },
+          },
+          result: { winnerId: "w1", loserId: "l1", kimarite: "yorikiri" },
+        };
+      }
+    );
 
     const initialState: Partial<GameState> = {
       world: {
@@ -112,10 +114,12 @@ describe("bashoSlice - autosave errors", () => {
     }));
 
     // Mock simulateBoutForToday to return null result (no matches to sim)
-    (worldEngine.simulateBoutForToday as ReturnType<typeof vi.fn>).mockImplementation((world: any) => ({
-      world,
-      result: null,
-    }));
+    (worldEngine.simulateBoutForToday as ReturnType<typeof vi.fn>).mockImplementation(
+      (world: any) => ({
+        world,
+        result: null,
+      })
+    );
 
     const initialState: Partial<GameState> = {
       world: {
@@ -134,23 +138,25 @@ describe("bashoSlice - autosave errors", () => {
 
   it("SIMULATE_ALL_BOUTS simulates multiple bouts and all are resolved", () => {
     let callCount = 0;
-    (worldEngine.simulateBoutForToday as ReturnType<typeof vi.fn>).mockImplementation((world: any) => {
-      const basho = world.currentBasho;
-      if (!basho) return { world, result: null };
-      const matchIdx = basho.matches.findIndex((m: any) => m.day === basho.day && !m.result);
-      if (matchIdx < 0) return { world, result: null };
-      const updatedMatches = basho.matches.map((m: any, i: number) =>
-        i === matchIdx ? { ...m, result: { winnerId: `w${callCount}` } } : m
-      );
-      callCount++;
-      return {
-        world: {
-          ...world,
-          currentBasho: { ...basho, matches: updatedMatches },
-        },
-        result: { winnerId: `w${callCount}`, loserId: "l1", kimarite: "yorikiri" },
-      };
-    });
+    (worldEngine.simulateBoutForToday as ReturnType<typeof vi.fn>).mockImplementation(
+      (world: any) => {
+        const basho = world.currentBasho;
+        if (!basho) return { world, result: null };
+        const matchIdx = basho.matches.findIndex((m: any) => m.day === basho.day && !m.result);
+        if (matchIdx < 0) return { world, result: null };
+        const updatedMatches = basho.matches.map((m: any, i: number) =>
+          i === matchIdx ? { ...m, result: { winnerId: `w${callCount}` } } : m
+        );
+        callCount++;
+        return {
+          world: {
+            ...world,
+            currentBasho: { ...basho, matches: updatedMatches },
+          },
+          result: { winnerId: `w${callCount}`, loserId: "l1", kimarite: "yorikiri" },
+        };
+      }
+    );
 
     const initialState: Partial<GameState> = {
       world: {
@@ -173,31 +179,31 @@ describe("bashoSlice - autosave errors", () => {
     expect(callCount).toBe(3);
     expect(newState.phase).toBe("day_results");
     expect(newState.lastBoutResult).not.toBeNull();
-    const allResolved = newState.world!.currentBasho!.matches.every(
-      (m: any) => m.result !== null
-    );
+    const allResolved = newState.world!.currentBasho!.matches.every((m: any) => m.result !== null);
     expect(allResolved).toBe(true);
   });
 
   it("SIM_FULL_BASHO simulates bouts across multiple days with valid world", () => {
     let simCallCount = 0;
-    (worldEngine.simulateBoutForToday as ReturnType<typeof vi.fn>).mockImplementation((world: any) => {
-      const basho = world.currentBasho;
-      if (!basho) return { world, result: null };
-      const matchIdx = basho.matches.findIndex((m: any) => m.day === basho.day && !m.result);
-      if (matchIdx < 0) return { world, result: null };
-      const updatedMatches = basho.matches.map((m: any, i: number) =>
-        i === matchIdx ? { ...m, result: { winnerId: `w${simCallCount}` } } : m
-      );
-      simCallCount++;
-      return {
-        world: {
-          ...world,
-          currentBasho: { ...basho, matches: updatedMatches },
-        },
-        result: { winnerId: `w${simCallCount}`, loserId: "l1", kimarite: "yorikiri" },
-      };
-    });
+    (worldEngine.simulateBoutForToday as ReturnType<typeof vi.fn>).mockImplementation(
+      (world: any) => {
+        const basho = world.currentBasho;
+        if (!basho) return { world, result: null };
+        const matchIdx = basho.matches.findIndex((m: any) => m.day === basho.day && !m.result);
+        if (matchIdx < 0) return { world, result: null };
+        const updatedMatches = basho.matches.map((m: any, i: number) =>
+          i === matchIdx ? { ...m, result: { winnerId: `w${simCallCount}` } } : m
+        );
+        simCallCount++;
+        return {
+          world: {
+            ...world,
+            currentBasho: { ...basho, matches: updatedMatches },
+          },
+          result: { winnerId: `w${simCallCount}`, loserId: "l1", kimarite: "yorikiri" },
+        };
+      }
+    );
 
     let advanceCallCount = 0;
     (worldEngine.advanceBashoDay as ReturnType<typeof vi.fn>).mockImplementation((world: any) => {
@@ -229,9 +235,7 @@ describe("bashoSlice - autosave errors", () => {
     expect(newState.phase).toBe("basho_results");
     expect(newState.world).toBeDefined();
     expect(newState.world!.currentBasho).toBeDefined();
-    const allResolved = newState.world!.currentBasho!.matches.every(
-      (m: any) => m.result !== null
-    );
+    const allResolved = newState.world!.currentBasho!.matches.every((m: any) => m.result !== null);
     expect(allResolved).toBe(true);
   });
 });

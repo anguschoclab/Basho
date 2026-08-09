@@ -73,7 +73,10 @@ const EventFeedItem = React.memo(
       >
         <div className="mt-0.5 flex-shrink-0">{Icon}</div>
         <div className="flex-1 min-w-0">
-          <MentionText text={event.title} className="text-sm font-medium text-slate-200 truncate block" />
+          <MentionText
+            text={event.title}
+            className="text-sm font-medium text-slate-200 truncate block"
+          />
           <MentionText text={event.summary} className="text-xs text-slate-400 line-clamp-2" />
           <p className="text-xs text-slate-500 mt-1">{formatEventTime(event)}</p>
         </div>
@@ -122,7 +125,9 @@ export function EventFeed({ maxEvents = 10, filterTypes, minImportance }: EventF
         {events.length === 0 ? (
           <EmptyState icon={Bell} title="No recent events" compact />
         ) : (
-          events.map((event: EngineEvent) => <EventFeedItem key={event.id} event={event} onSelect={handleSelect} />)
+          events.map((event: EngineEvent) => (
+            <EventFeedItem key={event.id} event={event} onSelect={handleSelect} />
+          ))
         )}
       </div>
       <EventDetailDialog

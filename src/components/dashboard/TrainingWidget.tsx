@@ -3,17 +3,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BaseWidget } from "./BaseWidget";
 import { Dumbbell, Zap, Target, Shield, Activity } from "lucide-react";
-import {
-  INTENSITY_MULTIPLIERS,
-  RECOVERY_MULTIPLIERS,
-} from "@/presenters/uiDigest";
+import { INTENSITY_MULTIPLIERS, RECOVERY_MULTIPLIERS } from "@/presenters/uiDigest";
 import { computeDisplayTrainingMultiplier } from "@/engine/systems/training/TrainingMath";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import {
-  INTENSITY_ICONS,
-  FOCUS_LABELS,
-  RECOVERY_LABELS,
-} from "@/constants/ui/trainingWidget";
+import { INTENSITY_ICONS, FOCUS_LABELS, RECOVERY_LABELS } from "@/constants/ui/trainingWidget";
 import { useTrainingProfile } from "@/hooks/useTrainingProfile";
 
 /**
@@ -130,7 +123,9 @@ export function TrainingWidget() {
   // Falls back to raw intensity multiplier if context hasn't been built yet.
   const activeModifiers = world.transientContext?.activeModifiers;
   const effectiveGrowthMultiplier =
-    activeModifiers != null ? computeDisplayTrainingMultiplier(activeModifiers) : intensityInfo.growth;
+    activeModifiers != null
+      ? computeDisplayTrainingMultiplier(activeModifiers)
+      : intensityInfo.growth;
   const financialPenalty = activeModifiers?.financialPenalty ?? false;
   const moraleBoost = activeModifiers?.moraleBoost ?? false;
 

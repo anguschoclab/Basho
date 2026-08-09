@@ -236,21 +236,36 @@ export function RikishiProfileHeader({
                     </div>
                     <div className="flex flex-col gap-1 text-[9px]">
                       {(rikishi.councilWarnings ?? 0) > 0 && (
-                        <div className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded" aria-hidden="true">
+                        <div
+                          className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded"
+                          aria-hidden="true"
+                        >
                           <span className="text-destructive/80">Council Warnings</span>
-                          <span className="text-destructive font-bold">{rikishi.councilWarnings} / 3</span>
+                          <span className="text-destructive font-bold">
+                            {rikishi.councilWarnings} / 3
+                          </span>
                         </div>
                       )}
                       {(rikishi.consecutiveMakeKoshi ?? 0) > 0 && (
-                        <div className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded" aria-hidden="true">
+                        <div
+                          className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded"
+                          aria-hidden="true"
+                        >
                           <span className="text-destructive/80">Consecutive Make-Koshi</span>
-                          <span className="text-destructive font-bold">{rikishi.consecutiveMakeKoshi}</span>
+                          <span className="text-destructive font-bold">
+                            {rikishi.consecutiveMakeKoshi}
+                          </span>
                         </div>
                       )}
                       {(rikishi.consecutiveKyujo ?? 0) > 0 && (
-                        <div className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded" aria-hidden="true">
+                        <div
+                          className="flex justify-between items-center bg-destructive/10 px-2 py-1 rounded"
+                          aria-hidden="true"
+                        >
                           <span className="text-destructive/80">Consecutive Kyujo</span>
-                          <span className="text-destructive font-bold">{rikishi.consecutiveKyujo} / 3</span>
+                          <span className="text-destructive font-bold">
+                            {rikishi.consecutiveKyujo} / 3
+                          </span>
                         </div>
                       )}
                     </div>
@@ -265,33 +280,36 @@ export function RikishiProfileHeader({
                         </span>{" "}
                         Kachi-Koshi Streak
                       </span>
-                      <span className="text-orange-500 font-black">{rikishi.consecutiveKachiKoshi}</span>
+                      <span className="text-orange-500 font-black">
+                        {rikishi.consecutiveKachiKoshi}
+                      </span>
                     </div>
                   </div>
                 )}
-                {(rikishi.rank === "sekiwake" || rikishi.rank === "komusubi") && (rikishi.consecutiveStrongSekiwake ?? 0) > 0 && (
-                  <div className="pt-2">
-                    <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest mb-1.5">
-                      <span className="text-silver flex items-center gap-1">
-                        <span role="img" aria-label="Ozeki Run">
-                          ⭐
-                        </span>{" "}
-                        Ozeki Promotion Watch
-                      </span>
-                      <span className="opacity-70">
-                        {rikishi.consecutiveStrongSekiwake} / 2 Strong Basho
-                      </span>
+                {(rikishi.rank === "sekiwake" || rikishi.rank === "komusubi") &&
+                  (rikishi.consecutiveStrongSekiwake ?? 0) > 0 && (
+                    <div className="pt-2">
+                      <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest mb-1.5">
+                        <span className="text-silver flex items-center gap-1">
+                          <span role="img" aria-label="Ozeki Run">
+                            ⭐
+                          </span>{" "}
+                          Ozeki Promotion Watch
+                        </span>
+                        <span className="opacity-70">
+                          {rikishi.consecutiveStrongSekiwake} / 2 Strong Basho
+                        </span>
+                      </div>
+                      <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-silver transition-all duration-1000 ease-out"
+                          style={{
+                            width: `${Math.min(100, Math.max(0, (rikishi.consecutiveStrongSekiwake / 2) * 100))}%`,
+                          }}
+                        />
+                      </div>
                     </div>
-                    <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-silver transition-all duration-1000 ease-out"
-                        style={{
-                          width: `${Math.min(100, Math.max(0, (rikishi.consecutiveStrongSekiwake / 2) * 100))}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                )}
+                  )}
               </div>
             </div>
 

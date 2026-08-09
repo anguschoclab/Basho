@@ -21,7 +21,10 @@ import { toast } from "@/hooks/use-toast";
 import { Eye, Swords, TrendingUp, AlertCircle } from "lucide-react";
 
 import type { TalentCandidate, SuitorInterestBand } from "@/engine/types/talent";
-import { listNPCWatchedCandidates, getTopSuitor } from "@/engine/systems/generation/CandidatePoolService";
+import {
+  listNPCWatchedCandidates,
+  getTopSuitor,
+} from "@/engine/systems/generation/CandidatePoolService";
 import { getPlayerHeya, getHeya } from "@/engine/queries";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
@@ -53,7 +56,8 @@ function CandidateRow({
   playerHeyaId: string | undefined;
   onPoach: (candidateId: string) => void;
 }) {
-  const canPoach = candidate.availabilityState === "available" || candidate.availabilityState === "in_talks";
+  const canPoach =
+    candidate.availabilityState === "available" || candidate.availabilityState === "in_talks";
   const alreadyPoached = candidate.competingSuitors.some((s) => s.heyaId === playerHeyaId);
 
   return (
@@ -67,7 +71,10 @@ function CandidateRow({
             </Badge>
           )}
           {candidate.isEmergentProdigy && (
-            <Badge variant="default" className="text-[9px] px-1.5 py-0 h-4 shrink-0 bg-gold/20 text-gold border-gold/40">
+            <Badge
+              variant="default"
+              className="text-[9px] px-1.5 py-0 h-4 shrink-0 bg-gold/20 text-gold border-gold/40"
+            >
               Prodigy
             </Badge>
           )}
@@ -118,7 +125,10 @@ function CandidateRow({
             </Button>
           )}
           {alreadyPoached && (
-            <Badge variant="outline" className="text-[9px] px-1.5 py-0 h-4 bg-primary/10 text-primary border-primary/30">
+            <Badge
+              variant="outline"
+              className="text-[9px] px-1.5 py-0 h-4 bg-primary/10 text-primary border-primary/30"
+            >
               Your Offer In
             </Badge>
           )}
@@ -143,7 +153,7 @@ export default function CandidatePoolPage() {
   const [sortOrder, setSortOrder] = useState<SortDirection>("asc");
 
   const playerHeyaId = world?.playerHeyaId;
-  const playerHeya = world ? getPlayerHeya(world) ?? null : null;
+  const playerHeya = world ? (getPlayerHeya(world) ?? null) : null;
 
   const watchedCandidates = useMemo(() => {
     if (!world) return [] as TalentCandidate[];
@@ -168,7 +178,9 @@ export default function CandidatePoolPage() {
         <Card className="paper">
           <CardHeader>
             <CardTitle>NPC Watchlist</CardTitle>
-            <CardDescription>Load or create a world to view NPC-watched candidates.</CardDescription>
+            <CardDescription>
+              Load or create a world to view NPC-watched candidates.
+            </CardDescription>
           </CardHeader>
         </Card>
       </AppLayout>
@@ -240,7 +252,8 @@ export default function CandidatePoolPage() {
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <AlertCircle className="h-8 w-8 text-muted-foreground/40 mb-2" />
                 <p className="text-sm text-muted-foreground">
-                  No NPC-watched candidates detected. Rival stables haven't identified any prospects yet.
+                  No NPC-watched candidates detected. Rival stables haven't identified any prospects
+                  yet.
                 </p>
               </div>
             ) : (

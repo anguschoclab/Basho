@@ -237,10 +237,7 @@ describe("DataTable", () => {
   });
 
   it("restores sort state from localStorage on init", () => {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({ key: "age", order: "desc" })
-    );
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ key: "age", order: "desc" }));
     render(
       <DataTable
         columns={columns}

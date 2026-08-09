@@ -41,9 +41,7 @@ describe("Kinjite (hansoku/DQ) — calculateHansokuChance", () => {
     const winner = mockRikishi("r-east", { aggression: 60, technique: 80 });
     const bout = makeBoutContext({ day: 15 });
     const basho = makeMockBasho({ day: 15 });
-    basho.standings = new Map([
-      ["r-east", { wins: 7, losses: 7 }],
-    ]);
+    basho.standings = new Map([["r-east", { wins: 7, losses: 7 }]]);
 
     expect(calculateHansokuChance(winner, bout, basho)).toBe(0);
   });
@@ -52,9 +50,7 @@ describe("Kinjite (hansoku/DQ) — calculateHansokuChance", () => {
     const winner = mockRikishi("r-east", { aggression: 95, technique: 25 });
     const bout = makeBoutContext({ day: 15 });
     const basho = makeMockBasho({ day: 15 });
-    basho.standings = new Map([
-      ["r-east", { wins: 7, losses: 7 }],
-    ]);
+    basho.standings = new Map([["r-east", { wins: 7, losses: 7 }]]);
 
     expect(calculateHansokuChance(winner, bout, basho)).toBeGreaterThan(0);
   });
@@ -125,7 +121,14 @@ describe("Kinjite (hansoku/DQ) — tryHansoku", () => {
       duration: 0,
     };
 
-    const { result, fouledHeyaId } = tryHansoku(bout, fusenshoResult, east, west, basho, "test-seed");
+    const { result, fouledHeyaId } = tryHansoku(
+      bout,
+      fusenshoResult,
+      east,
+      west,
+      basho,
+      "test-seed"
+    );
     expect(result.kimarite).toBe("fusensho");
     expect(fouledHeyaId).toBeNull();
   });
@@ -142,14 +145,7 @@ describe("Kinjite (hansoku/DQ) — tryHansoku", () => {
 
     let dqFired = false;
     for (let i = 0; i < 200; i++) {
-      const { result } = tryHansoku(
-        bout,
-        makeBoutResult("east"),
-        east,
-        west,
-        basho,
-        `seed-${i}`
-      );
+      const { result } = tryHansoku(bout, makeBoutResult("east"), east, west, basho, `seed-${i}`);
       if (result.kimarite === "hansoku") {
         dqFired = true;
         break;

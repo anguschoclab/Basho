@@ -34,7 +34,10 @@ describe("L2.2: test timeout budget — no excessive per-test timeouts", () => {
       });
     }
 
-    expect(violations.length, `Tests with timeout >5000ms:\n${violations.join("\n")}`).toBeLessThanOrEqual(5);
+    expect(
+      violations.length,
+      `Tests with timeout >5000ms:\n${violations.join("\n")}`
+    ).toBeLessThanOrEqual(5);
   });
 
   it("no test file uses vitest.setTimeout with >30000ms", () => {
@@ -52,6 +55,9 @@ describe("L2.2: test timeout budget — no excessive per-test timeouts", () => {
       });
     }
 
-    expect(violations.length, `Files with vitest.setTimeout >30000ms:\n${violations.join("\n")}`).toEqual(0);
+    expect(
+      violations.length,
+      `Files with vitest.setTimeout >30000ms:\n${violations.join("\n")}`
+    ).toEqual(0);
   });
 });

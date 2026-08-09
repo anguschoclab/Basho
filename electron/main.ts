@@ -74,10 +74,18 @@ async function createWindow(): Promise<void> {
   const windowState =
     typeof rawWindowState === "object" && rawWindowState !== null && !Array.isArray(rawWindowState)
       ? {
-          x: Number.isFinite((rawWindowState as Record<string, unknown>).x) ? (rawWindowState as Record<string, unknown>).x as number : undefined,
-          y: Number.isFinite((rawWindowState as Record<string, unknown>).y) ? (rawWindowState as Record<string, unknown>).y as number : undefined,
-          width: Number.isFinite((rawWindowState as Record<string, unknown>).width) ? (rawWindowState as Record<string, unknown>).width as number : defaultWindowState.width,
-          height: Number.isFinite((rawWindowState as Record<string, unknown>).height) ? (rawWindowState as Record<string, unknown>).height as number : defaultWindowState.height,
+          x: Number.isFinite((rawWindowState as Record<string, unknown>).x)
+            ? ((rawWindowState as Record<string, unknown>).x as number)
+            : undefined,
+          y: Number.isFinite((rawWindowState as Record<string, unknown>).y)
+            ? ((rawWindowState as Record<string, unknown>).y as number)
+            : undefined,
+          width: Number.isFinite((rawWindowState as Record<string, unknown>).width)
+            ? ((rawWindowState as Record<string, unknown>).width as number)
+            : defaultWindowState.width,
+          height: Number.isFinite((rawWindowState as Record<string, unknown>).height)
+            ? ((rawWindowState as Record<string, unknown>).height as number)
+            : defaultWindowState.height,
         }
       : defaultWindowState;
 

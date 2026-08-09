@@ -1,4 +1,3 @@
- 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { makeMockWorld } from "../utils";
 
@@ -49,9 +48,10 @@ import * as ImpactResolver from "@/engine/core/ImpactResolver";
 
 beforeEach(() => {
   vi.clearAllMocks();
-  vi.spyOn(ImpactResolver, "resolveImpacts").mockImplementation(
-    (world: any, _impacts: any) => ({ ...world, _resolved: true })
-  );
+  vi.spyOn(ImpactResolver, "resolveImpacts").mockImplementation((world: any, _impacts: any) => ({
+    ...world,
+    _resolved: true,
+  }));
 });
 
 afterEach(() => {

@@ -22,10 +22,7 @@ export const ATTENDANT_POPULARITY_BOOST = 5;
  *
  * @returns StateImpact with attendant assignments and popularity boosts.
  */
-export function assignYokozunaAttendants(
-  yokozuna: Rikishi,
-  world: WorldState
-): StateImpact {
+export function assignYokozunaAttendants(yokozuna: Rikishi, world: WorldState): StateImpact {
   const builder = createImpactBuilder("assignYokozunaAttendants");
 
   if (!yokozuna.dohyoIriStyle) return builder.build();

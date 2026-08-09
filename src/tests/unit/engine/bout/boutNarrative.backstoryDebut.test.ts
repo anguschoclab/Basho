@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 import type { PbpLine, PbpTag } from "@/engine/bout/boutNarrative";
@@ -67,8 +66,18 @@ describe("backstory debut narrative (5.2)", () => {
       careerHistory: [],
       backstory: "Hailing from Osaka, a determined wrestler.",
     });
-    const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi", careerHistory: makeCareerHistory("makuuchi") });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]), year: 2025 } as unknown as WorldState;
+    const west = mockRikishi("r2", {
+      rank: "maegashira",
+      division: "makuuchi",
+      careerHistory: makeCareerHistory("makuuchi"),
+    });
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+      year: 2025,
+    } as unknown as WorldState;
     const result = makeBoutResult();
 
     generateBoutNarrative(result, east, west, undefined, 7, "debut-seed", world);
@@ -85,8 +94,18 @@ describe("backstory debut narrative (5.2)", () => {
       careerHistory: makeCareerHistory("makuuchi"),
       backstory: "Hailing from Osaka.",
     });
-    const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi", careerHistory: makeCareerHistory("makuuchi") });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]), year: 2025 } as unknown as WorldState;
+    const west = mockRikishi("r2", {
+      rank: "maegashira",
+      division: "makuuchi",
+      careerHistory: makeCareerHistory("makuuchi"),
+    });
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+      year: 2025,
+    } as unknown as WorldState;
     const result = makeBoutResult();
 
     generateBoutNarrative(result, east, west, undefined, 7, "no-debut-seed", world);
@@ -102,8 +121,18 @@ describe("backstory debut narrative (5.2)", () => {
       division: "makuuchi",
       careerHistory: [],
     });
-    const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi", careerHistory: makeCareerHistory("makuuchi") });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]), year: 2025 } as unknown as WorldState;
+    const west = mockRikishi("r2", {
+      rank: "maegashira",
+      division: "makuuchi",
+      careerHistory: makeCareerHistory("makuuchi"),
+    });
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+      year: 2025,
+    } as unknown as WorldState;
     const result = makeBoutResult();
 
     generateBoutNarrative(result, east, west, undefined, 7, "no-backstory-seed", world);
@@ -121,8 +150,18 @@ describe("backstory debut narrative (5.2)", () => {
       backstory: "A unique origin story",
       shikona: "DebutRiki",
     });
-    const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi", careerHistory: makeCareerHistory("makuuchi") });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]), year: 2025 } as unknown as WorldState;
+    const west = mockRikishi("r2", {
+      rank: "maegashira",
+      division: "makuuchi",
+      careerHistory: makeCareerHistory("makuuchi"),
+    });
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+      year: 2025,
+    } as unknown as WorldState;
     const result = makeBoutResult();
 
     generateBoutNarrative(result, east, west, undefined, 7, "interp-debut-seed", world);

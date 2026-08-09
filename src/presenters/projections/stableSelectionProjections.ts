@@ -54,9 +54,7 @@ export function selectRecommendedStables(world: WorldState): Heya[] {
 
   // Sort each group by sekitori count descending
   for (const band of STATURE_BANDS) {
-    groups[band].sort(
-      (a, b) => (sekitoriCounts.get(b.id) ?? 0) - (sekitoriCounts.get(a.id) ?? 0),
-    );
+    groups[band].sort((a, b) => (sekitoriCounts.get(b.id) ?? 0) - (sekitoriCounts.get(a.id) ?? 0));
   }
 
   // Curated selection: variety of challenge levels
@@ -105,7 +103,7 @@ export function selectRecommendedStables(world: WorldState): Heya[] {
 
   // Final fallback: any remaining stables by sekitori count
   const allSorted = stables.sort(
-    (a, b) => (sekitoriCounts.get(b.id) ?? 0) - (sekitoriCounts.get(a.id) ?? 0),
+    (a, b) => (sekitoriCounts.get(b.id) ?? 0) - (sekitoriCounts.get(a.id) ?? 0)
   );
   for (const h of allSorted) {
     if (picks.length >= 6) break;

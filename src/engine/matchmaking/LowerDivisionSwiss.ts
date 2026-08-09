@@ -295,10 +295,10 @@ function scoreLowerDivisionDrama(
   }
 
   // Rookie vs veteran: young debutant vs established veteran
-  const aIsRookie = (a.careerWins + a.careerLosses) < 5;
-  const bIsRookie = (b.careerWins + b.careerLosses) < 5;
-  const aIsVeteran = (a.careerWins + a.careerLosses) > 100;
-  const bIsVeteran = (b.careerWins + b.careerLosses) > 100;
+  const aIsRookie = a.careerWins + a.careerLosses < 5;
+  const bIsRookie = b.careerWins + b.careerLosses < 5;
+  const aIsVeteran = a.careerWins + a.careerLosses > 100;
+  const bIsVeteran = b.careerWins + b.careerLosses > 100;
   if ((aIsRookie && bIsVeteran) || (bIsRookie && aIsVeteran)) {
     return {
       label: "rookie_vs_veteran",

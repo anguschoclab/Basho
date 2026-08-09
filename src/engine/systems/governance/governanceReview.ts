@@ -368,9 +368,7 @@ export function runRetirements(world: WorldState): StateImpact {
       const careerLosses = r.careerLosses ?? 0;
       const yearsActive = world.year - r.birthYear - 15;
       const highestRank = r.rank;
-      const yushoCount = (r.careerHistory ?? []).filter(
-        (h) => h.isYusho
-      ).length;
+      const yushoCount = (r.careerHistory ?? []).filter((h) => h.isYusho).length;
       const kinboshiCount = r.economics?.kinboshiCount ?? 0;
       const retirementNarrative = generateRetirementNarrative(
         r,

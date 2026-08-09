@@ -11,7 +11,9 @@ import { phase01_basho_bouts } from "@/engine/tick/phases/phase01_basho_bouts";
 
 function createMockWorld(dayIndex: number): WorldState {
   return {
-    heyas: new Map([["heya1", { id: "heya1", name: "Test Stable", funds: 1000, rikishiIds: ["rik1"] }]]),
+    heyas: new Map([
+      ["heya1", { id: "heya1", name: "Test Stable", funds: 1000, rikishiIds: ["rik1"] }],
+    ]),
     rikishi: new Map([["rik1", { id: "rik1", shikona: "Test", heyaId: "heya1" }]]),
     activeRikishiIds: new Set(["rik1"]),
     dayIndexGlobal: dayIndex,
@@ -65,7 +67,7 @@ describe("Pipeline runner hardening (B3.1-2)", () => {
           .updateWorldField("dayIndexGlobal", world.dayIndexGlobal + 1)
           .build();
       },
-      { touches: ["heyas"] as string[] },
+      { touches: ["heyas"] as string[] }
     );
 
     runPipeline(initialWorld, [declaredPhase]);

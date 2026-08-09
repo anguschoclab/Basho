@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { tickOrchestrator, advanceDaysFastOrchestrator } from "@/engine/tick/tickOrchestrator";
 import { makeMockWorld } from "../utils";

@@ -1,4 +1,3 @@
- 
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { StableStatsTable } from "@/components/game/StableStatsTable";
@@ -63,9 +62,7 @@ function makeMultiRikishi(): UIRikishi[] {
 
 function getCellText(container: HTMLElement, cellIndex: number): string[] {
   const rows = container.querySelectorAll("tbody tr");
-  return Array.from(rows).map(
-    (row) => row.querySelectorAll("td")[cellIndex]?.textContent ?? ""
-  );
+  return Array.from(rows).map((row) => row.querySelectorAll("td")[cellIndex]?.textContent ?? "");
 }
 
 function clickFilterBadge(container: HTMLElement, text: string): void {
@@ -111,9 +108,7 @@ describe("StableStatsTable", () => {
 
   describe("TableHeader keyboard accessibility", () => {
     it("TableHeader has role=button and tabIndex=0", () => {
-      const { container } = render(
-        <StableStatsTable rikishiList={[makeUIRikishi()]} />
-      );
+      const { container } = render(<StableStatsTable rikishiList={[makeUIRikishi()]} />);
       const headers = container.querySelectorAll("th[role='button']");
       expect(headers.length).toBeGreaterThan(0);
       headers.forEach((h) => {
@@ -122,12 +117,8 @@ describe("StableStatsTable", () => {
     });
 
     it("TableHeader fires onClick on Enter key press", () => {
-      const { container } = render(
-        <StableStatsTable rikishiList={[makeUIRikishi()]} />
-      );
-      const firstHeader = container.querySelector(
-        "th[role='button']"
-      ) as HTMLElement;
+      const { container } = render(<StableStatsTable rikishiList={[makeUIRikishi()]} />);
+      const firstHeader = container.querySelector("th[role='button']") as HTMLElement;
       expect(firstHeader).not.toBeNull();
 
       fireEvent.keyDown(firstHeader, { key: "Enter" });
@@ -137,12 +128,8 @@ describe("StableStatsTable", () => {
     });
 
     it("TableHeader fires onClick on Space key press with preventDefault", () => {
-      const { container } = render(
-        <StableStatsTable rikishiList={[makeUIRikishi()]} />
-      );
-      const firstHeader = container.querySelector(
-        "th[role='button']"
-      ) as HTMLElement;
+      const { container } = render(<StableStatsTable rikishiList={[makeUIRikishi()]} />);
+      const firstHeader = container.querySelector("th[role='button']") as HTMLElement;
       expect(firstHeader).not.toBeNull();
 
       const eventsBefore = container.querySelectorAll("th[role='button']");
@@ -152,21 +139,15 @@ describe("StableStatsTable", () => {
     });
 
     it("TableHeader has focus-visible ring class", () => {
-      const { container } = render(
-        <StableStatsTable rikishiList={[makeUIRikishi()]} />
-      );
-      const firstHeader = container.querySelector(
-        "th[role='button']"
-      ) as HTMLElement;
+      const { container } = render(<StableStatsTable rikishiList={[makeUIRikishi()]} />);
+      const firstHeader = container.querySelector("th[role='button']") as HTMLElement;
       expect(firstHeader.className).toContain("focus-visible:ring");
     });
   });
 
   describe("DivisionFilterBadge keyboard accessibility", () => {
     it("DivisionFilterBadge has role=button and tabIndex=0", () => {
-      const { container } = render(
-        <StableStatsTable rikishiList={[makeUIRikishi()]} />
-      );
+      const { container } = render(<StableStatsTable rikishiList={[makeUIRikishi()]} />);
       // Division filter badges should have role=button after PR #742 merge
       // Before merge, they won't have it — this test verifies the merge
       const filterBadges = container.querySelectorAll("[role='button']");
@@ -176,27 +157,21 @@ describe("StableStatsTable", () => {
 
   describe("sorting behavior (regression pin)", () => {
     it("defaults to division ascending", () => {
-      const { container } = render(
-        <StableStatsTable rikishiList={makeMultiRikishi()} />
-      );
+      const { container } = render(<StableStatsTable rikishiList={makeMultiRikishi()} />);
       // cell 1 = division column (0-indexed)
       const divisions = getCellText(container, 1);
       expect(divisions).toEqual(["juryo", "makushita", "makuuchi"]);
     });
 
     it("clicking Shikona header sorts by shikona descending (default for new key)", () => {
-      const { container } = render(
-        <StableStatsTable rikishiList={makeMultiRikishi()} />
-      );
+      const { container } = render(<StableStatsTable rikishiList={makeMultiRikishi()} />);
       fireEvent.click(screen.getByText("Shikona"));
       const shikonas = getCellText(container, 0);
       expect(shikonas).toEqual(["Charlie", "Bravo", "Alpha"]);
     });
 
     it("clicking the same header again toggles to ascending", () => {
-      const { container } = render(
-        <StableStatsTable rikishiList={makeMultiRikishi()} />
-      );
+      const { container } = render(<StableStatsTable rikishiList={makeMultiRikishi()} />);
       fireEvent.click(screen.getByText("Shikona")); // desc
       fireEvent.click(screen.getByText("Shikona")); // asc
       const shikonas = getCellText(container, 0);
@@ -204,27 +179,21 @@ describe("StableStatsTable", () => {
     });
 
     it("clicking Wins header sorts by careerWins descending", () => {
-      const { container } = render(
-        <StableStatsTable rikishiList={makeMultiRikishi()} />
-      );
+      const { container } = render(<StableStatsTable rikishiList={makeMultiRikishi()} />);
       fireEvent.click(screen.getByText("Wins"));
       const wins = getCellText(container, 2);
       expect(wins).toEqual(["20", "10", "5"]);
     });
 
     it("clicking Losses header sorts by careerLosses descending", () => {
-      const { container } = render(
-        <StableStatsTable rikishiList={makeMultiRikishi()} />
-      );
+      const { container } = render(<StableStatsTable rikishiList={makeMultiRikishi()} />);
       fireEvent.click(screen.getByText("Losses"));
       const losses = getCellText(container, 3);
       expect(losses).toEqual(["15", "5", "2"]);
     });
 
     it("clicking Win % header sorts by winPercentage descending", () => {
-      const { container } = render(
-        <StableStatsTable rikishiList={makeMultiRikishi()} />
-      );
+      const { container } = render(<StableStatsTable rikishiList={makeMultiRikishi()} />);
       fireEvent.click(screen.getByText("Win %"));
       // cell 4 = win % column, rendered as "66.7%", "57.1%", "71.4%"
       const winPcts = getCellText(container, 4);
@@ -234,9 +203,7 @@ describe("StableStatsTable", () => {
     });
 
     it("clicking Streak header sorts by streak descending", () => {
-      const { container } = render(
-        <StableStatsTable rikishiList={makeMultiRikishi()} />
-      );
+      const { container } = render(<StableStatsTable rikishiList={makeMultiRikishi()} />);
       fireEvent.click(screen.getByText("Streak"));
       // cell 5 = streak column; positive streak shows label, 0 shows "-"
       const streaks = getCellText(container, 5);
@@ -247,9 +214,7 @@ describe("StableStatsTable", () => {
     });
 
     it("clicking Avg Rank header sorts by avgRankLabel descending", () => {
-      const { container } = render(
-        <StableStatsTable rikishiList={makeMultiRikishi()} />
-      );
+      const { container } = render(<StableStatsTable rikishiList={makeMultiRikishi()} />);
       fireEvent.click(screen.getByText("Avg Rank"));
       const ranks = getCellText(container, 7);
       // desc: "Ms1", "M1", "J1"
@@ -257,9 +222,7 @@ describe("StableStatsTable", () => {
     });
 
     it("switching to a new sort key resets to descending order", () => {
-      const { container } = render(
-        <StableStatsTable rikishiList={makeMultiRikishi()} />
-      );
+      const { container } = render(<StableStatsTable rikishiList={makeMultiRikishi()} />);
       // Sort by shikona asc
       fireEvent.click(screen.getByText("Shikona")); // desc
       fireEvent.click(screen.getByText("Shikona")); // asc
@@ -272,27 +235,21 @@ describe("StableStatsTable", () => {
 
   describe("division filter behavior (regression pin)", () => {
     it("clicking makuuchi filter shows only makuuchi rikishi", () => {
-      const { container } = render(
-        <StableStatsTable rikishiList={makeMultiRikishi()} />
-      );
+      const { container } = render(<StableStatsTable rikishiList={makeMultiRikishi()} />);
       clickFilterBadge(container, "makuuchi");
       const shikonas = getCellText(container, 0);
       expect(shikonas).toEqual(["Alpha"]);
     });
 
     it("clicking juryo filter shows only juryo rikishi", () => {
-      const { container } = render(
-        <StableStatsTable rikishiList={makeMultiRikishi()} />
-      );
+      const { container } = render(<StableStatsTable rikishiList={makeMultiRikishi()} />);
       clickFilterBadge(container, "juryo");
       const shikonas = getCellText(container, 0);
       expect(shikonas).toEqual(["Bravo"]);
     });
 
     it("clicking 'all' filter shows all rikishi", () => {
-      const { container } = render(
-        <StableStatsTable rikishiList={makeMultiRikishi()} />
-      );
+      const { container } = render(<StableStatsTable rikishiList={makeMultiRikishi()} />);
       clickFilterBadge(container, "juryo");
       clickFilterBadge(container, "all");
       const shikonas = getCellText(container, 0);
@@ -315,18 +272,14 @@ describe("StableStatsTable", () => {
           currentBashoRecord: "1-1",
         } as unknown as UIRikishi,
       ];
-      const { container } = render(
-        <StableStatsTable rikishiList={lowerRikishi} />
-      );
+      const { container } = render(<StableStatsTable rikishiList={lowerRikishi} />);
       clickFilterBadge(container, "lower");
       const shikonas = getCellText(container, 0);
       expect(shikonas).toEqual(["Delta"]);
     });
 
     it("filtered empty state shows empty message with colSpan 8", () => {
-      const { container } = render(
-        <StableStatsTable rikishiList={makeMultiRikishi()} />
-      );
+      const { container } = render(<StableStatsTable rikishiList={makeMultiRikishi()} />);
       // Filter to "lower" — none of our 3 rikishi are lower division
       clickFilterBadge(container, "lower");
       const emptyRow = container.querySelector("td[colspan]");

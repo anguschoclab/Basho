@@ -242,10 +242,14 @@ export function tickMyosekiMarket(world: WorldState): StateImpact {
 
     // 2. Randomly fluctuate available asking prices
     if (stock.status === "available" && rng.next() < 0.1) {
-      const adjustment = rng.next() * MYOSEKI_PRICE_ADJUSTMENT_RANGE - MYOSEKI_PRICE_ADJUSTMENT_RANGE / 2;
+      const adjustment =
+        rng.next() * MYOSEKI_PRICE_ADJUSTMENT_RANGE - MYOSEKI_PRICE_ADJUSTMENT_RANGE / 2;
       updatedStock.askingPrice = Math.max(
         MYOSEKI_BASE_ASKING_PRICE,
-        Math.min(MYOSEKI_MAX_ASKING_PRICE, (stock.askingPrice || MYOSEKI_BASE_ASKING_PRICE) + adjustment)
+        Math.min(
+          MYOSEKI_MAX_ASKING_PRICE,
+          (stock.askingPrice || MYOSEKI_BASE_ASKING_PRICE) + adjustment
+        )
       );
     }
 

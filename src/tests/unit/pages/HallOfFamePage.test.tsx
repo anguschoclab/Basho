@@ -51,8 +51,7 @@ vi.mock("@/presenters/selectors", () => ({
 }));
 
 vi.mock("@/components/ClickableName", () => ({
-  RikishiName: ({ name, className }: any) =>
-    React.createElement("span", { className }, name),
+  RikishiName: ({ name, className }: any) => React.createElement("span", { className }, name),
   StableName: ({ name }: any) => React.createElement("span", null, name),
 }));
 
@@ -137,9 +136,21 @@ describe("HallOfFamePage sorting", () => {
   beforeEach(() => {
     localStorage.clear();
     mockInductees = [
-      makeInductee("i1", { shikona: "Charlie", inductionYear: 2023, stats: { yushoCount: 5, careerWins: 600, careerLosses: 300 } }),
-      makeInductee("i2", { shikona: "Alpha", inductionYear: 2024, stats: { yushoCount: 15, careerWins: 900, careerLosses: 100 } }),
-      makeInductee("i3", { shikona: "Bravo", inductionYear: 2022, stats: { yushoCount: 10, careerWins: 750, careerLosses: 250 } }),
+      makeInductee("i1", {
+        shikona: "Charlie",
+        inductionYear: 2023,
+        stats: { yushoCount: 5, careerWins: 600, careerLosses: 300 },
+      }),
+      makeInductee("i2", {
+        shikona: "Alpha",
+        inductionYear: 2024,
+        stats: { yushoCount: 15, careerWins: 900, careerLosses: 100 },
+      }),
+      makeInductee("i3", {
+        shikona: "Bravo",
+        inductionYear: 2022,
+        stats: { yushoCount: 10, careerWins: 750, careerLosses: 250 },
+      }),
     ];
   });
 

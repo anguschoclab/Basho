@@ -3,8 +3,6 @@ import { calculateHeyaWeeklyFinances } from "@/engine/systems/economy/FinanceCal
 import { JSA_PER_WRESTLER_SUBSIDY_MONTHLY } from "@/constants/engine/economic";
 import { makeMockHeya, makeMockWorld, mockRikishi } from "../utils";
 
- 
-
 describe("JSA per-wrestler subsidy — rank-based", () => {
   it("yokozuna subsidy > ozeki subsidy > sekiwake > komusubi > maegashira > juryo", () => {
     expect(JSA_PER_WRESTLER_SUBSIDY_MONTHLY.yokozuna).toBeGreaterThan(

@@ -5,11 +5,9 @@ import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import { isKachiKoshi } from "@/engine/banzuke/banzukeHelpers";
 
- 
-
 function makeWorldForPublish(
   rikishiList: Rikishi[],
-  standingsMap: Map<string, { wins: number; losses: number; absences?: number }>,
+  standingsMap: Map<string, { wins: number; losses: number; absences?: number }>
 ): WorldState {
   const rikishiMap = new Map<string, Rikishi>();
   for (const r of rikishiList) {
@@ -56,9 +54,7 @@ describe("BanzukePublisher — consecutiveKachiKoshi tracking (T16)", () => {
       rankNumber: 5,
       consecutiveKachiKoshi: 1,
     });
-    const standings = new Map([
-      ["r-1", { wins: 9, losses: 6, absences: 0 }],
-    ]);
+    const standings = new Map([["r-1", { wins: 9, losses: 6, absences: 0 }]]);
     const world = makeWorldForPublish([r], standings);
     const impact = publishBanzukeUpdate(world);
     const update = impact.entities?.rikishiUpdates?.get("r-1");
@@ -73,9 +69,7 @@ describe("BanzukePublisher — consecutiveKachiKoshi tracking (T16)", () => {
       rankNumber: 5,
       consecutiveKachiKoshi: 3,
     });
-    const standings = new Map([
-      ["r-1", { wins: 5, losses: 10, absences: 0 }],
-    ]);
+    const standings = new Map([["r-1", { wins: 5, losses: 10, absences: 0 }]]);
     const world = makeWorldForPublish([r], standings);
     const impact = publishBanzukeUpdate(world);
     const update = impact.entities?.rikishiUpdates?.get("r-1");
@@ -90,9 +84,7 @@ describe("BanzukePublisher — consecutiveKachiKoshi tracking (T16)", () => {
       rankNumber: 5,
     });
     delete (r as any).consecutiveKachiKoshi;
-    const standings = new Map([
-      ["r-1", { wins: 8, losses: 7, absences: 0 }],
-    ]);
+    const standings = new Map([["r-1", { wins: 8, losses: 7, absences: 0 }]]);
     const world = makeWorldForPublish([r], standings);
     const impact = publishBanzukeUpdate(world);
     const update = impact.entities?.rikishiUpdates?.get("r-1");
@@ -107,9 +99,7 @@ describe("BanzukePublisher — consecutiveKachiKoshi tracking (T16)", () => {
       rankNumber: 5,
       consecutiveKachiKoshi: 2,
     });
-    const standings = new Map([
-      ["r-1", { wins: 0, losses: 0, absences: 15 }],
-    ]);
+    const standings = new Map([["r-1", { wins: 0, losses: 0, absences: 15 }]]);
     const world = makeWorldForPublish([r], standings);
     const impact = publishBanzukeUpdate(world);
     const update = impact.entities?.rikishiUpdates?.get("r-1");
@@ -126,9 +116,7 @@ describe("BanzukePublisher — consecutiveKachiKoshi tracking (T16)", () => {
       division: "makushita",
       consecutiveKachiKoshi: 0,
     });
-    const standings = new Map([
-      ["r-1", { wins: 4, losses: 3, absences: 0 }],
-    ]);
+    const standings = new Map([["r-1", { wins: 4, losses: 3, absences: 0 }]]);
     const world = makeWorldForPublish([r], standings);
     const impact = publishBanzukeUpdate(world);
     const update = impact.entities?.rikishiUpdates?.get("r-1");
@@ -145,9 +133,7 @@ describe("BanzukePublisher — consecutiveKachiKoshi tracking (T16)", () => {
       rankNumber: 10,
       consecutiveKachiKoshi: 2,
     });
-    const standings = new Map([
-      ["r-1", { wins: 10, losses: 5, absences: 0 }],
-    ]);
+    const standings = new Map([["r-1", { wins: 10, losses: 5, absences: 0 }]]);
     const world = makeWorldForPublish([r], standings);
     const impact = publishBanzukeUpdate(world);
     const update = impact.entities?.rikishiUpdates?.get("r-1");

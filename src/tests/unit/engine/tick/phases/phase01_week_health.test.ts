@@ -29,7 +29,6 @@ describe("phase01_week_health", () => {
       };
     }
 
-     
     function makeHeya(id: string): any {
       return {
         id,
@@ -62,7 +61,6 @@ describe("phase01_week_health", () => {
           weeksRemaining,
           weeksToHeal: weeksRemaining,
         } as any,
-         
       } as any);
     }
 
@@ -75,7 +73,6 @@ describe("phase01_week_health", () => {
       const rikishiMap = new Map<string, Rikishi>();
       rikishiMap.set("r1", r);
 
-       
       const heyasMap = new Map<string, any>();
       heyasMap.set("heya-1", makeHeya("heya-1"));
 
@@ -122,7 +119,6 @@ describe("phase01_week_health", () => {
       const rikishiMap = new Map<string, Rikishi>();
       rikishiMap.set("r1", r);
 
-       
       const heyasMap = new Map<string, any>();
       heyasMap.set("heya-1", makeHeya("heya-1"));
 
@@ -150,7 +146,6 @@ describe("phase01_week_health", () => {
       const rikishiMap = new Map<string, Rikishi>();
       rikishiMap.set(rikishi.id, rikishi);
 
-       
       const heyasMap = new Map<string, any>();
       heyasMap.set(rikishi.heyaId, {
         id: rikishi.heyaId,

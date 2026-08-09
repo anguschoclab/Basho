@@ -323,8 +323,7 @@ const GLOSSARY_TERMS: GlossaryTerm[] = [
     term: "Maezumō",
     termJa: "前相撲",
     category: "tournament",
-    definition:
-      "Preliminary bouts for new or low-ranked rikishi, held before the main schedule.",
+    definition: "Preliminary bouts for new or low-ranked rikishi, held before the main schedule.",
   },
   {
     id: "kachi-nokori",
@@ -357,8 +356,7 @@ const GLOSSARY_TERMS: GlossaryTerm[] = [
     term: "Tsuppari",
     termJa: "突っ張り",
     category: "technique",
-    definition:
-      "Rapid open-palm thrusting strikes, typically to the opponent's chest or face.",
+    definition: "Rapid open-palm thrusting strikes, typically to the opponent's chest or face.",
   },
   {
     id: "yotsu-zumo",
@@ -404,8 +402,7 @@ const GLOSSARY_TERMS: GlossaryTerm[] = [
     term: "Hatakikomi",
     termJa: "叩き込み",
     category: "technique",
-    definition:
-      "A slap-down technique, using the opponent's forward momentum against them.",
+    definition: "A slap-down technique, using the opponent's forward momentum against them.",
   },
   {
     id: "hikiotoshi",
@@ -501,8 +498,7 @@ const GLOSSARY_TERMS: GlossaryTerm[] = [
     term: "Chikara-mizu",
     termJa: "力水",
     category: "culture",
-    definition:
-      '"Power water" drank by a rikishi before a bout, passed by the previous winner.',
+    definition: '"Power water" drank by a rikishi before a bout, passed by the previous winner.',
   },
   {
     id: "chikara-gami",
@@ -548,16 +544,14 @@ const GLOSSARY_TERMS: GlossaryTerm[] = [
     term: "Binzuke",
     termJa: "鬢付け",
     category: "culture",
-    definition:
-      "The hairdressing process using binzuke wax to style a rikishi's topknot.",
+    definition: "The hairdressing process using binzuke wax to style a rikishi's topknot.",
   },
   {
     id: "kohaku-maku",
     term: "Kōhaku Maku",
     termJa: "紅白幕",
     category: "culture",
-    definition:
-      "The red-and-white curtain hung around the dohyo, symbolizing the sacred boundary.",
+    definition: "The red-and-white curtain hung around the dohyo, symbolizing the sacred boundary.",
   },
   {
     id: "gomenfuda",
@@ -589,16 +583,14 @@ const GLOSSARY_TERMS: GlossaryTerm[] = [
     term: "Mawashi",
     termJa: "廻し",
     category: "attire",
-    definition:
-      "The heavy silk belt worn during bouts, the primary grip target in yotsu-zumō.",
+    definition: "The heavy silk belt worn during bouts, the primary grip target in yotsu-zumō.",
   },
   {
     id: "kesho-mawashi",
     term: "Keshō-mawashi",
     termJa: "化粧廻し",
     category: "attire",
-    definition:
-      "The ornamental ceremonial apron worn during the dohyō-iri entrance ceremony.",
+    definition: "The ornamental ceremonial apron worn during the dohyō-iri entrance ceremony.",
   },
   {
     id: "chonmage",
@@ -612,8 +604,7 @@ const GLOSSARY_TERMS: GlossaryTerm[] = [
     term: "Ōichomage",
     termJa: "大銀杏",
     category: "attire",
-    definition:
-      "The elaborate ginkgo-leaf topknot worn only by sekitori during tournaments.",
+    definition: "The elaborate ginkgo-leaf topknot worn only by sekitori during tournaments.",
   },
   {
     id: "fundoshi",
@@ -667,8 +658,7 @@ const GLOSSARY_TERMS: GlossaryTerm[] = [
     term: "Dohyō Matsuri",
     termJa: "土俵祭り",
     category: "ceremony",
-    definition:
-      "The Shinto purification ceremony consecrating the dohyō before a basho begins.",
+    definition: "The Shinto purification ceremony consecrating the dohyō before a basho begins.",
   },
   {
     id: "kanreki-dohyo-iri",
@@ -736,8 +726,7 @@ const GLOSSARY_TERMS: GlossaryTerm[] = [
     term: "Shimpan",
     termJa: "審判",
     category: "officials",
-    definition:
-      "The judges who sit around the dohyō and review disputed decisions via mono-ii.",
+    definition: "The judges who sit around the dohyō and review disputed decisions via mono-ii.",
   },
   {
     id: "yobidashi",
@@ -752,8 +741,7 @@ const GLOSSARY_TERMS: GlossaryTerm[] = [
     term: "Tokoyama",
     termJa: "床山",
     category: "officials",
-    definition:
-      "The hairdresser who styles rikishi's chonmage and ōichomage topknots.",
+    definition: "The hairdresser who styles rikishi's chonmage and ōichomage topknots.",
   },
   {
     id: "tachimochi",
@@ -783,8 +771,7 @@ const GLOSSARY_TERMS: GlossaryTerm[] = [
     term: "Mono-ii",
     termJa: "物言い",
     category: "officials",
-    definition:
-      "A conference of shimpan to review a disputed gyōji decision, held on the dohyō.",
+    definition: "A conference of shimpan to review a disputed gyōji decision, held on the dohyō.",
   },
 ];
 

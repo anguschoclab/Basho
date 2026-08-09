@@ -25,5 +25,4 @@ describe("yokozuna promotion in AutoSim", () => {
     // After 3 basho, careerHistory should have at least 3 entries for sekitori
     expect(updatedOzeki?.careerHistory?.length).toBeGreaterThanOrEqual(3);
   }, 60000);
-
 });

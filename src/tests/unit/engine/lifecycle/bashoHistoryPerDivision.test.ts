@@ -116,9 +116,7 @@ describe("recordBashoHistory — per-division yusho prizes", () => {
     const resolved = resolveImpacts(world, [impact]);
     const history = resolved.history || [];
     const lastEntry = history[history.length - 1];
-    expect(lastEntry?.prizes?.yushoAmount).toBe(
-      SIMULATION_CONFIG.prizes.yushoByDivision.juryo
-    );
+    expect(lastEntry?.prizes?.yushoAmount).toBe(SIMULATION_CONFIG.prizes.yushoByDivision.juryo);
   });
 
   it("falls back to flat yusho value for unknown division", () => {

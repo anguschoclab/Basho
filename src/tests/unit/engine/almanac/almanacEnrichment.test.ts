@@ -234,7 +234,9 @@ describe("enrichAlmanacRecord", () => {
       },
     ];
     const enriched = enrichAlmanacRecord(record, world, rikishi);
-    expect(enriched.narrativeHighlights?.some((h: { type: string }) => h.type === "yusho")).toBe(true);
+    expect(enriched.narrativeHighlights?.some((h: { type: string }) => h.type === "yusho")).toBe(
+      true
+    );
   });
 
   it("builds narrativeHighlights from notable bouts", () => {
@@ -254,7 +256,9 @@ describe("enrichAlmanacRecord", () => {
     };
     world.history = [makeBashoResult({ keyBouts: [keyBout] })];
     const enriched = enrichAlmanacRecord(record, world, rikishi);
-    expect(enriched.narrativeHighlights?.some((h: { type: string }) => h.type === "kinboshi")).toBe(true);
+    expect(enriched.narrativeHighlights?.some((h: { type: string }) => h.type === "kinboshi")).toBe(
+      true
+    );
   });
 
   it("sorts narrativeHighlights chronologically (most recent first)", () => {
@@ -294,8 +298,30 @@ describe("enrichAlmanacRecord", () => {
       pbpLines: [makePbpLine("Milestone", { tags: ["milestone"] })],
     });
     world.history = [
-      makeBashoResult({ year: 2024, keyBouts: [{ label: "yusho_decider", bout: bout1, day: 15, eastRikishiId: "r1", westRikishiId: "r2" }] }),
-      makeBashoResult({ year: 2025, keyBouts: [{ label: "yusho_decider", bout: bout2, day: 15, eastRikishiId: "r1", westRikishiId: "r2" }] }),
+      makeBashoResult({
+        year: 2024,
+        keyBouts: [
+          {
+            label: "yusho_decider",
+            bout: bout1,
+            day: 15,
+            eastRikishiId: "r1",
+            westRikishiId: "r2",
+          },
+        ],
+      }),
+      makeBashoResult({
+        year: 2025,
+        keyBouts: [
+          {
+            label: "yusho_decider",
+            bout: bout2,
+            day: 15,
+            eastRikishiId: "r1",
+            westRikishiId: "r2",
+          },
+        ],
+      }),
     ];
     const enriched = enrichAlmanacRecord(record, world, rikishi);
     expect(enriched.notableBouts?.[0].year).toBeGreaterThanOrEqual(
@@ -354,7 +380,11 @@ describe("enrichAlmanacRecord", () => {
       pbpLines: [makePbpLine("Milestone", { tags: ["milestone"] })],
     });
     world.history = [
-      makeBashoResult({ keyBouts: [{ label: "yusho_decider", bout, day: 15, eastRikishiId: "r3", westRikishiId: "r4" }] }),
+      makeBashoResult({
+        keyBouts: [
+          { label: "yusho_decider", bout, day: 15, eastRikishiId: "r3", westRikishiId: "r4" },
+        ],
+      }),
     ];
     const enriched = enrichAlmanacRecord(record, world, rikishi);
     expect(enriched.notableBouts).toEqual([]);

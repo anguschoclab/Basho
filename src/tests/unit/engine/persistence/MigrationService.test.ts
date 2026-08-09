@@ -124,7 +124,7 @@ describe("MigrationService", () => {
       const save = makeMinimalSave("1.0.0");
       (save.world as { sponsorPool?: unknown }).sponsorPool = {
         sponsors: {
-          "sp_1": {
+          sp_1: {
             id: "rikishi-1",
             shikona: "Test Rikishi",
             heyaId: "heya-1",
@@ -168,7 +168,9 @@ describe("MigrationService", () => {
         koenkais: {},
       };
       const result = MigrationService.migrateSave(save);
-      const pool = result.save.world.sponsorPool as { sponsors: Record<string, typeof validSponsor> };
+      const pool = result.save.world.sponsorPool as {
+        sponsors: Record<string, typeof validSponsor>;
+      };
       expect(pool.sponsors["sp_1"]).toEqual(validSponsor);
     });
 
@@ -187,7 +189,9 @@ describe("MigrationService", () => {
         koenkais: { k_1: validKoenkai },
       };
       const result = MigrationService.migrateSave(save);
-      const pool = result.save.world.sponsorPool as { koenkais: Record<string, typeof validKoenkai> };
+      const pool = result.save.world.sponsorPool as {
+        koenkais: Record<string, typeof validKoenkai>;
+      };
       expect(pool.koenkais["k_1"]).toEqual(validKoenkai);
     });
   });

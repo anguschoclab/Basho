@@ -96,27 +96,59 @@ function buildPlaythroughWorld(): WorldState {
   });
 
   const oy1 = {
-    id: "oy1", heyaId: "h1", name: "Oyakata-1", shikona: "Former-1",
-    age: 55, archetype: "traditionalist", traits: { ambition: 60, patience: 50, risk: 40, tradition: 80, compassion: 30 },
-    yearsInCharge: 15, mood: "frustrated",
+    id: "oy1",
+    heyaId: "h1",
+    name: "Oyakata-1",
+    shikona: "Former-1",
+    age: 55,
+    archetype: "traditionalist",
+    traits: { ambition: 60, patience: 50, risk: 40, tradition: 80, compassion: 30 },
+    yearsInCharge: 15,
+    mood: "frustrated",
   } as any;
   const oy2 = {
-    id: "oy2", heyaId: "h2", name: "Oyakata-2", shikona: "Former-2",
-    age: 48, archetype: "gambler", traits: { ambition: 80, patience: 30, risk: 70, tradition: 20, compassion: 50 },
-    yearsInCharge: 8, mood: "determined",
+    id: "oy2",
+    heyaId: "h2",
+    name: "Oyakata-2",
+    shikona: "Former-2",
+    age: 48,
+    archetype: "gambler",
+    traits: { ambition: 80, patience: 30, risk: 70, tradition: 20, compassion: 50 },
+    yearsInCharge: 8,
+    mood: "determined",
   } as any;
   const oy3 = {
-    id: "oy3", heyaId: "h3", name: "Oyakata-3", shikona: "Former-3",
-    age: 62, archetype: "nurturer", traits: { ambition: 40, patience: 70, risk: 20, tradition: 60, compassion: 80 },
-    yearsInCharge: 20, mood: "content",
+    id: "oy3",
+    heyaId: "h3",
+    name: "Oyakata-3",
+    shikona: "Former-3",
+    age: 62,
+    archetype: "nurturer",
+    traits: { ambition: 40, patience: 70, risk: 20, tradition: 60, compassion: 80 },
+    yearsInCharge: 20,
+    mood: "content",
   } as any;
 
   const rikishi = new Map([
-    ["r1", r1], ["r2", r2], ["r3", r3], ["r4", r4],
-    ["r5", r5], ["r6", r6], ["r7", r7], ["r8", r8],
+    ["r1", r1],
+    ["r2", r2],
+    ["r3", r3],
+    ["r4", r4],
+    ["r5", r5],
+    ["r6", r6],
+    ["r7", r7],
+    ["r8", r8],
   ]);
-  const heyas = new Map([["h1", h1], ["h2", h2], ["h3", h3]]);
-  const oyakata = new Map([["oy1", oy1], ["oy2", oy2], ["oy3", oy3]]);
+  const heyas = new Map([
+    ["h1", h1],
+    ["h2", h2],
+    ["h3", h3],
+  ]);
+  const oyakata = new Map([
+    ["oy1", oy1],
+    ["oy2", oy2],
+    ["oy3", oy3],
+  ]);
 
   // Create a sponsor pool with one sponsor that has a relationship
   const sponsor = {
@@ -136,16 +168,18 @@ function buildPlaythroughWorld(): WorldState {
     satisfaction: 70,
     createdAtTick: 0,
     lastSeenTick: 0,
-    relationships: [{
-      relId: "rel1",
-      sponsorId: "sp1",
-      targetType: "heya" as const,
-      targetId: "h1",
-      role: "kensho" as const,
-      strength: 3 as 1|2|3|4|5,
-      startedAtTick: 0,
-      endsAtTick: 30,
-    }],
+    relationships: [
+      {
+        relId: "rel1",
+        sponsorId: "sp1",
+        targetType: "heya" as const,
+        targetId: "h1",
+        role: "kensho" as const,
+        strength: 3 as 1 | 2 | 3 | 4 | 5,
+        startedAtTick: 0,
+        endsAtTick: 30,
+      },
+    ],
   } as any;
   const sponsorPool = {
     sponsors: new Map([["sp1", sponsor]]),
@@ -318,10 +352,9 @@ describe("Phase 5: Headless 52-week playthrough", () => {
         missing.push(field);
       }
     }
-    expect(
-      missing,
-      `Gameplay state fields not read by any UI file: ${missing.join(", ")}`
-    ).toEqual([]);
+    expect(missing, `Gameplay state fields not read by any UI file: ${missing.join(", ")}`).toEqual(
+      []
+    );
   });
 
   it("does not produce undefined in critical world fields after simulation", () => {

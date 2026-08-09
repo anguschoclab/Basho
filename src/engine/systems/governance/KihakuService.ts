@@ -108,9 +108,8 @@ export const KihakuService = {
     absentFinalDay: boolean
   ): KihakuInput {
     const metrics = basho.boutMetrics?.[rikishiId];
-    const standingsRec = basho.standings instanceof Map
-      ? basho.standings.get(rikishiId)
-      : undefined;
+    const standingsRec =
+      basho.standings instanceof Map ? basho.standings.get(rikishiId) : undefined;
     const losses = standingsRec?.losses ?? 0;
     const isMakeKoshi = losses > wins;
 
@@ -119,7 +118,13 @@ export const KihakuService = {
         comebackWins: 0,
         edgeCrisisSurvived: 0,
         playoffWins: this.countPlayoffWins(rikishiId, basho.matches ?? []),
-        yushoContentionWins: this.countYushoContentionWins(rikishiId, basho.matches ?? [], basho.standings instanceof Map ? basho.standings : new Map(Object.entries(basho.standings))),
+        yushoContentionWins: this.countYushoContentionWins(
+          rikishiId,
+          basho.matches ?? [],
+          basho.standings instanceof Map
+            ? basho.standings
+            : new Map(Object.entries(basho.standings))
+        ),
         isMakeKoshi,
         absentFinalDay,
         hasMetrics: false,
@@ -129,7 +134,11 @@ export const KihakuService = {
       comebackWins: metrics.comebackWins,
       edgeCrisisSurvived: metrics.edgeCrisisSurvived,
       playoffWins: this.countPlayoffWins(rikishiId, basho.matches ?? []),
-      yushoContentionWins: this.countYushoContentionWins(rikishiId, basho.matches ?? [], basho.standings instanceof Map ? basho.standings : new Map(Object.entries(basho.standings))),
+      yushoContentionWins: this.countYushoContentionWins(
+        rikishiId,
+        basho.matches ?? [],
+        basho.standings instanceof Map ? basho.standings : new Map(Object.entries(basho.standings))
+      ),
       isMakeKoshi,
       absentFinalDay,
       hasMetrics: true,

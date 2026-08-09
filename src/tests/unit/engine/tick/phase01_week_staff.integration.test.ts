@@ -18,7 +18,10 @@ describe("phase01_week_staff — integration (no mocking)", () => {
     const heya = makeMockHeya("h1", { staffIds: [s1.id, s2.id], rikishiIds });
     const world = makeMockWorld({
       heyas: new Map([["h1", heya]]),
-      staff: new Map([[s1.id, s1], [s2.id, s2]]),
+      staff: new Map([
+        [s1.id, s1],
+        [s2.id, s2],
+      ]),
     }) as WorldState;
 
     const impact = phase01_week_staff(world);
@@ -52,8 +55,15 @@ describe("phase01_week_staff — integration (no mocking)", () => {
     const heyaB = makeMockHeya("hB", { staffIds: [sB1.id, sB2.id], rikishiIds: ["rB1", "rB2"] });
 
     const world = makeMockWorld({
-      heyas: new Map([["hA", heyaA], ["hB", heyaB]]),
-      staff: new Map([[sA.id, sA], [sB1.id, sB1], [sB2.id, sB2]]),
+      heyas: new Map([
+        ["hA", heyaA],
+        ["hB", heyaB],
+      ]),
+      staff: new Map([
+        [sA.id, sA],
+        [sB1.id, sB1],
+        [sB2.id, sB2],
+      ]),
     }) as WorldState;
 
     const impact = phase01_week_staff(world);

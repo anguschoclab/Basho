@@ -22,7 +22,10 @@ import {
   PRIME_EXPERIENCE_THRESHOLD,
   VETERAN_EXPERIENCE_THRESHOLD,
 } from "@/constants/engine/training";
-import { MORALE_BOOST_MULTIPLIER, FINANCIAL_PENALTY_MULTIPLIER } from "@/constants/engine/multipliers";
+import {
+  MORALE_BOOST_MULTIPLIER,
+  FINANCIAL_PENALTY_MULTIPLIER,
+} from "@/constants/engine/multipliers";
 
 describe("TrainingMath", () => {
   describe("getStatCeiling", () => {
@@ -357,7 +360,9 @@ describe("TrainingMath", () => {
 
     it("applies FINANCIAL_PENALTY_MULTIPLIER when financialPenalty is true", () => {
       const am = makeAM({ facilityGrowthMult: 1.025, financialPenalty: true });
-      expect(computeDisplayTrainingMultiplier(am)).toBeCloseTo(1.025 * FINANCIAL_PENALTY_MULTIPLIER);
+      expect(computeDisplayTrainingMultiplier(am)).toBeCloseTo(
+        1.025 * FINANCIAL_PENALTY_MULTIPLIER
+      );
     });
 
     it("applies both morale and penalty", () => {

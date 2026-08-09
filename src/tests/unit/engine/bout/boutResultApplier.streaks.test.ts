@@ -5,8 +5,6 @@ import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BashoName, BoutResult, MatchSchedule } from "@/engine/types/basho";
 
- 
-
 function makeRikishi(id: string, opts?: Record<string, any>): Rikishi {
   return mockRikishi(id, {
     shikona: id === "east" ? "East Rikishi" : "West Rikishi",
@@ -22,10 +20,11 @@ function makeRikishi(id: string, opts?: Record<string, any>): Rikishi {
   });
 }
 
-function makeWorld(opts?: {
-  east?: Record<string, any>;
-  west?: Record<string, any>;
-}): { world: WorldState; match: MatchSchedule; result: BoutResult } {
+function makeWorld(opts?: { east?: Record<string, any>; west?: Record<string, any> }): {
+  world: WorldState;
+  match: MatchSchedule;
+  result: BoutResult;
+} {
   const east = makeRikishi("east", opts?.east);
   const west = makeRikishi("west", opts?.west);
 

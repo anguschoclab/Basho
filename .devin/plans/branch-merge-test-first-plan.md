@@ -12,17 +12,17 @@
 
 All 9 branches share a common merge-base (`50d77fad`) and a large shared diff (~35 files of identical refactoring: `TrainingMath.ts`, `phase02_context.ts`, `world.ts` type cleanup, test deletions). Each branch adds a small unique delta on top.
 
-| # | Branch | Unique Change | Files Touched (unique) |
-|---|--------|--------------|----------------------|
-| 1 | `mason-tighten-entityservice-types-16132429650355635217` | Tighten `EntityService.ensureState`/`ensureNestedState` generics | `src/engine/core/EntityService.ts` |
-| 2 | `mason-tighten-types-3521035839130886181` | Remove redundant `as unknown as` casts in `CandidateBuilder` and `phase01_daily_welfare` | `src/engine/systems/generation/CandidateBuilder.ts`, `src/engine/tick/phases/phase01_daily_welfare.ts` |
-| 3 | `scout/naturalization-tests-3915564399072206507` | Add `naturalization.test.ts` (4 tests) | `src/tests/unit/engine/naturalization.test.ts` |
-| 4 | `jules-13983115806790070859-6e431f53` | Add `InfrastructureService.test.ts` (147 lines) | `src/tests/unit/engine/systems/economy/InfrastructureService.test.ts` |
-| 5 | `bolt-staff-page-opt-2345290415344466505` | Replace `.filter().length` with `for...of` in `StaffPage` and `MainMenu` | `src/pages/StaffPage.tsx`, `src/pages/MainMenu.tsx` |
-| 6 | `polish-bookmarks-emptystate-16724959925495627399` | Use `EmptyState` in `BookmarksPage` | `src/pages/BookmarksPage.tsx` |
-| 7 | `polish-sparring-empty-state-14386814316902492601` | Use `EmptyState` in `SparringPanel` | `src/components/game/SparringPanel.tsx` |
-| 8 | `polish-yusho-race-widget-15680607004912962964` | Refactor `YushoRaceWidget` to use `BaseWidget` + `EmptyState` | `src/components/dashboard/YushoRaceWidget.tsx` |
-| 9 | `scout/fix-mentor-assignment-test-8279217419747211687` | Add `@testing-library/user-event` dep, update `.jules/scout.md` | `package.json`, `.jules/scout.md`, `.claude/settings.local.json` |
+| #   | Branch                                                   | Unique Change                                                                            | Files Touched (unique)                                                                                 |
+| --- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| 1   | `mason-tighten-entityservice-types-16132429650355635217` | Tighten `EntityService.ensureState`/`ensureNestedState` generics                         | `src/engine/core/EntityService.ts`                                                                     |
+| 2   | `mason-tighten-types-3521035839130886181`                | Remove redundant `as unknown as` casts in `CandidateBuilder` and `phase01_daily_welfare` | `src/engine/systems/generation/CandidateBuilder.ts`, `src/engine/tick/phases/phase01_daily_welfare.ts` |
+| 3   | `scout/naturalization-tests-3915564399072206507`         | Add `naturalization.test.ts` (4 tests)                                                   | `src/tests/unit/engine/naturalization.test.ts`                                                         |
+| 4   | `jules-13983115806790070859-6e431f53`                    | Add `InfrastructureService.test.ts` (147 lines)                                          | `src/tests/unit/engine/systems/economy/InfrastructureService.test.ts`                                  |
+| 5   | `bolt-staff-page-opt-2345290415344466505`                | Replace `.filter().length` with `for...of` in `StaffPage` and `MainMenu`                 | `src/pages/StaffPage.tsx`, `src/pages/MainMenu.tsx`                                                    |
+| 6   | `polish-bookmarks-emptystate-16724959925495627399`       | Use `EmptyState` in `BookmarksPage`                                                      | `src/pages/BookmarksPage.tsx`                                                                          |
+| 7   | `polish-sparring-empty-state-14386814316902492601`       | Use `EmptyState` in `SparringPanel`                                                      | `src/components/game/SparringPanel.tsx`                                                                |
+| 8   | `polish-yusho-race-widget-15680607004912962964`          | Refactor `YushoRaceWidget` to use `BaseWidget` + `EmptyState`                            | `src/components/dashboard/YushoRaceWidget.tsx`                                                         |
+| 9   | `scout/fix-mentor-assignment-test-8279217419747211687`   | Add `@testing-library/user-event` dep, update `.jules/scout.md`                          | `package.json`, `.jules/scout.md`, `.claude/settings.local.json`                                       |
 
 ### 1.2 Conflict Analysis
 
@@ -68,6 +68,7 @@ After each merge, run `bun run typecheck` and `bun run test` to catch regression
 **Status**: ✅ APPROVED
 
 The change replaces `any` with generic constraints:
+
 ```ts
 ensureState<Parent extends Record<string, any>, Key extends keyof Parent>(
   parent: Parent,
@@ -77,6 +78,7 @@ ensureState<Parent extends Record<string, any>, Key extends keyof Parent>(
 ```
 
 **Verification**:
+
 - `src/engine/core/EntityService.ts:38-43` — The new signature is sound. Callers must pass a parent with the key present, and the return type is `NonNullable<Parent[Key]>`.
 - `ensureNestedState` at `src/engine/core/EntityService.ts:72-105` — The `world[rootKey] as unknown` cast is still needed because `rootKey` is `keyof WorldState` and the union includes non-Map types. The `as Record<string, T>` narrowing in the else-branch is safe.
 - The `sparringPairs` allowlist entry at line 87 is correct — `sparringPairs` is `IdMapRuntime<SparringState>` which is `Map<string, SparringState>`.
@@ -90,6 +92,7 @@ ensureState<Parent extends Record<string, any>, Key extends keyof Parent>(
 The change at `src/engine/systems/generation/CandidateBuilder.ts:277` replaces `as unknown as Rikishi` with `as Rikishi`. This means the object literal must be structurally compatible with `Rikishi`.
 
 **Verification**:
+
 - The object literal at lines 240-277 includes: `id`, `name`, `shikona`, `rank`, `division`, `side`, `rankNumber`, `heyaId`, `nationality`, `birthYear`, `age`, `stats`, `combatProfile`, `potential`, `avatarConfig`, `talentSeed`, `joinedHeyaDate`.
 - Cross-referenced with `Rikishi` interface at `src/engine/types/rikishi.ts:1-238`: the interface has many optional fields (`careerWins?`, `careerLosses?`, `injured?`, `injuryStatus?`, `mentorId?`, `descriptor?`, `heyaHistory?`, etc.).
 - The `as Rikishi` cast will succeed because all required `Rikishi` fields are present and the rest are optional.
@@ -103,7 +106,8 @@ The change at `src/engine/systems/generation/CandidateBuilder.ts:277` replaces `
 **Status**: ⚠️ APPROVED WITH FLAKINESS RISK
 
 **Verification**:
-- `src/engine/naturalization.ts:52` uses `rngFromSeed(`nat_${r.id}_${world.year}`, "naturalization", "chance")` — this is **deterministic** based on `r.id` and `world.year`.
+
+- `src/engine/naturalization.ts:52` uses `rngFromSeed(`nat*${r.id}*${world.year}`, "naturalization", "chance")` — this is **deterministic** based on `r.id` and `world.year`.
 - Test 1 uses `id: "rikishi_24"`, `world.year = 2025` → seed = `nat_rikishi_24_2025`. The test **assumes** this seed produces a roll < 5 (passing the 5% chance). This is deterministic but **fragile** — if the RNG implementation changes, the test will break silently.
 - Test 2 uses `id: "rikishi_fail_1"` → seed = `nat_rikishi_fail_1_2025`. The test assumes this produces a roll >= 5.
 - Test 4 uses `id: "rikishi_24"` with `rank: "yokozuna"` and `birthYear: 1993` (age 32). Same seed as test 1, so same RNG outcome.
@@ -115,6 +119,7 @@ The change at `src/engine/systems/generation/CandidateBuilder.ts:277` replaces `
 **Status**: ✅ APPROVED
 
 **Verification**:
+
 - Tests at `src/tests/unit/engine/systems/economy/InfrastructureService.test.ts` cover `startConstruction`, `processCompletionTick`, and `getHeyaBonuses`.
 - Cross-referenced with `src/engine/systems/economy/InfrastructureService.ts:214-263` — `getHeyaBonuses` logic matches test assertions:
   - `statBuffs.power *= 1 + (buffs.power - 1) * lv` → for `weights_room` level 1: `1 + (1.15 - 1) * 1 = 1.15` ✓
@@ -126,14 +131,17 @@ The change at `src/engine/systems/generation/CandidateBuilder.ts:277` replaces `
 **Status**: ✅ APPROVED
 
 **BookmarksPage** (`polish-bookmarks-emptystate`):
+
 - Replaces inline empty state markup with `<EmptyState icon={Bookmark} title="No bookmarks yet" description="..." />`.
 - `EmptyState` at `src/components/ui/EmptyState.tsx` provides consistent styling. No accessibility regression — the component renders a proper `<h3>` heading.
 
 **SparringPanel** (`polish-sparring-empty-state`):
+
 - Replaces `<p>` italic text with `<EmptyState icon={Swords} title="No sparring pairs assigned" description="..." compact />`.
 - The `compact` prop reduces padding. Safe change.
 
 **YushoRaceWidget** (`polish-yusho-race-widget`):
+
 - Replaces `Card`/`CardHeader`/`CardContent` with `BaseWidget` wrapper.
 - Adds `EmptyState` for empty tournament state (previously returned `null`).
 - `BaseWidget` at `src/components/dashboard/BaseWidget.tsx:1-122` provides `headerAction` prop with tooltip support.
@@ -203,6 +211,7 @@ These tests must be written and passing before merging any branch. They serve as
 **File**: `src/tests/unit/engine/naturalization.test.ts` (from branch #3)
 
 **Tests to verify** (4 tests):
+
 ```
 - naturalizes eligible rikishi when chance roll passes (id: "rikishi_24", year: 2025)
 - does not naturalize eligible rikishi when chance roll fails (id: "rikishi_fail_1", year: 2025)
@@ -217,6 +226,7 @@ These tests must be written and passing before merging any branch. They serve as
 **File**: `src/tests/unit/engine/systems/economy/InfrastructureService.test.ts` (from branch #4)
 
 **Tests to verify** (147 lines):
+
 ```
 - getHeyaBonuses: aggregates stat buffs from multiple active facilities
 - getHeyaBonuses: scales by facility level
@@ -277,6 +287,7 @@ These tests must be written and passing before merging any branch. They serve as
 **File**: `src/tests/unit/components/game/MentorAssignmentPanel.test.tsx` (already exists)
 
 **Tests to verify**: Lines 1-140 cover:
+
 ```
 - renders mentor badge when mentorId is set
 - calls onRemoveMentor when remove button clicked
@@ -333,12 +344,12 @@ bun run lint
 
 ### 4.1 Known Issues to Fix
 
-| # | Issue | Severity | Location | Fix |
-|---|-------|----------|----------|-----|
-| 1 | `any` type in `YushoRaceWidget` contenders | Low | `src/components/dashboard/YushoRaceWidget.tsx:94` | Replace `{ r: any; wins: number }` with `{ r: Rikishi; wins: number }` |
-| 2 | `EmptyState` missing `aria-label` on action buttons | Low | `src/components/ui/EmptyState.tsx:100-117` | Add `aria-label={action.label}` to Button components |
-| 3 | Naturalization test seed coupling | Low | `src/tests/unit/engine/naturalization.test.ts` | Add comments documenting expected RNG outcomes for each seed |
-| 4 | `EntityService.ensureState` still uses `any` internally | Low | `src/engine/core/EntityService.ts:38` | The `Parent extends Record<string, any>` constraint is acceptable — `any` here is structural glue |
+| #   | Issue                                                   | Severity | Location                                          | Fix                                                                                               |
+| --- | ------------------------------------------------------- | -------- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| 1   | `any` type in `YushoRaceWidget` contenders              | Low      | `src/components/dashboard/YushoRaceWidget.tsx:94` | Replace `{ r: any; wins: number }` with `{ r: Rikishi; wins: number }`                            |
+| 2   | `EmptyState` missing `aria-label` on action buttons     | Low      | `src/components/ui/EmptyState.tsx:100-117`        | Add `aria-label={action.label}` to Button components                                              |
+| 3   | Naturalization test seed coupling                       | Low      | `src/tests/unit/engine/naturalization.test.ts`    | Add comments documenting expected RNG outcomes for each seed                                      |
+| 4   | `EntityService.ensureState` still uses `any` internally | Low      | `src/engine/core/EntityService.ts:38`             | The `Parent extends Record<string, any>` constraint is acceptable — `any` here is structural glue |
 
 ### 4.2 Post-Merge Verification Checklist
 
@@ -409,6 +420,7 @@ bun run lint
 9. Merge branch #5 (StaffPage/MainMenu optimization)
 
 After each merge:
+
 - Resolve `.jules/*.md` conflicts by concatenating entries
 - Run `bun run typecheck`
 - Run `bun run test`
@@ -439,6 +451,7 @@ After each merge:
 **Merge risk**: LOW. All branches share identical base diff. Unique deltas touch distinct files. Only conflicts are in task-tracking markdown files.
 
 **Estimated effort**:
+
 - Test writing: 2-3 hours
 - Merge + conflict resolution: 1 hour
 - Verification + bug fixes: 1-2 hours

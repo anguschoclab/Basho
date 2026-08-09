@@ -78,9 +78,7 @@ function mockUseGame(world: any | null) {
 
 function getRowNames(): string[] {
   const rows = document.querySelectorAll(".flex.items-center.gap-3.py-2");
-  return Array.from(rows).map(
-    (el) => el.querySelector(".font-medium")?.textContent ?? ""
-  );
+  return Array.from(rows).map((el) => el.querySelector(".font-medium")?.textContent ?? "");
 }
 
 describe("CandidatePoolPage sorting", () => {

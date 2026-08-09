@@ -100,7 +100,13 @@ export function mockRikishi(
       preferredGripDepth: "standard",
       statModifiers: {},
       counterFamily: "push",
-      archetypeBehavior: { tachiaiSpeedBonus: 0, lateralMovementBonus: 0, edgeEscapeBonus: 0, beltTorqueBonus: 0, pushVelocityBonus: 0 },
+      archetypeBehavior: {
+        tachiaiSpeedBonus: 0,
+        lateralMovementBonus: 0,
+        edgeEscapeBonus: 0,
+        beltTorqueBonus: 0,
+        pushVelocityBonus: 0,
+      },
     },
     ...flatOverrides,
   } as Rikishi;

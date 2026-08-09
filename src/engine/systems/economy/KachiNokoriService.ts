@@ -75,9 +75,6 @@ export function buildPostBashoPayload(
  * Uses the same per-win rate as the existing system, but based on
  * wins above 8 instead of net wins.
  */
-export function kachiNokoriToMochikyukinPoints(
-  kachiNokori: number,
-  pointsPerWin: number
-): number {
+export function kachiNokoriToMochikyukinPoints(kachiNokori: number, pointsPerWin: number): number {
   return kachiNokori * pointsPerWin;
 }

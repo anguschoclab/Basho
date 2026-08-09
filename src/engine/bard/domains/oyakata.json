@@ -1,40 +1,16 @@
 {
   "quirks": {
-    "Old-School Stickler": [
-      "Old-School Stickler"
-    ],
-    "Gambler's Instinct": [
-      "Gambler's Instinct"
-    ],
-    "Welfare Hawk": [
-      "Welfare Hawk"
-    ],
-    "Discipline Hawk": [
-      "Discipline Hawk"
-    ],
-    "Media Operator": [
-      "Media Operator"
-    ],
-    "Sleeper Scout": [
-      "Sleeper Scout"
-    ],
-    "Nepotist": [
-      "Nepotist"
-    ],
-    "Weight-Cutter": [
-      "Weight-Cutter"
-    ],
-    "Keiko Romantic": [
-      "Keiko Romantic"
-    ],
-    "Cold Pragmatist": [
-      "Cold Pragmatist"
-    ],
-    "Family First": [
-      "Family First"
-    ],
-    "Numbers Guy": [
-      "Numbers Guy"
-    ]
+    "Old-School Stickler": ["Old-School Stickler"],
+    "Gambler's Instinct": ["Gambler's Instinct"],
+    "Welfare Hawk": ["Welfare Hawk"],
+    "Discipline Hawk": ["Discipline Hawk"],
+    "Media Operator": ["Media Operator"],
+    "Sleeper Scout": ["Sleeper Scout"],
+    "Nepotist": ["Nepotist"],
+    "Weight-Cutter": ["Weight-Cutter"],
+    "Keiko Romantic": ["Keiko Romantic"],
+    "Cold Pragmatist": ["Cold Pragmatist"],
+    "Family First": ["Family First"],
+    "Numbers Guy": ["Numbers Guy"]
   }
 }

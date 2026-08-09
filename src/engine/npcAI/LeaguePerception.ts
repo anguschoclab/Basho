@@ -43,10 +43,7 @@ function activeRikishiInDivision(world: WorldState, division: string): Rikishi[]
   return out;
 }
 
-function buildDivisionPressure(
-  world: WorldState,
-  division: string
-): DivisionPressure {
+function buildDivisionPressure(world: WorldState, division: string): DivisionPressure {
   const basho = world.currentBasho;
   const rikishi = activeRikishiInDivision(world, division);
   const withRecords = [];
@@ -116,9 +113,7 @@ function buildYushoRace(world: WorldState): YushoRaceSnapshot {
 
   const top = leaders[0];
   const isClinched =
-    basho.day >= 15 &&
-    top !== undefined &&
-    leaders.slice(1).every((l) => l.wins < top.wins);
+    basho.day >= 15 && top !== undefined && leaders.slice(1).every((l) => l.wins < top.wins);
 
   return { leaders: leaders.slice(0, 3), isClinched };
 }

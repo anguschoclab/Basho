@@ -22,7 +22,11 @@ function makeWorld(aId: string, bId: string, overrides: Partial<WorldState> = {}
   return world as WorldState;
 }
 
-function makeBoutResult(winnerId: string, loserId: string, overrides: Partial<BoutResult> = {}): BoutResult {
+function makeBoutResult(
+  winnerId: string,
+  loserId: string,
+  overrides: Partial<BoutResult> = {}
+): BoutResult {
   return {
     boutId: "bout-1",
     day: 1,
@@ -89,7 +93,12 @@ describe("RivalryService.createFreshPair", () => {
   it("detects same-heya rikishi", () => {
     const a = mockRikishi("r1", { heyaId: "h1" });
     const b = mockRikishi("r2", { heyaId: "h1" });
-    const world = makeMockWorld({ rikishi: new Map([["r1", a], ["r2", b]]) });
+    const world = makeMockWorld({
+      rikishi: new Map([
+        ["r1", a],
+        ["r2", b],
+      ]),
+    });
     const pair = RivalryService.createFreshPair("r1", "r2", world);
     expect(pair.sameHeya).toBe(true);
   });
@@ -159,7 +168,12 @@ describe("RivalryService.seedInitialRivalries", () => {
   it("seeds rivalries for sekitori rikishi", () => {
     const a = mockRikishi("r1", { heyaId: "h1", division: "makuuchi", style: "oshi" });
     const b = mockRikishi("r2", { heyaId: "h2", division: "makuuchi", style: "yotsu" });
-    const world = makeMockWorld({ rikishi: new Map([["r1", a], ["r2", b]]) });
+    const world = makeMockWorld({
+      rikishi: new Map([
+        ["r1", a],
+        ["r2", b],
+      ]),
+    });
     world.heyas.set("h1", makeMockHeya("h1", { rikishiIds: ["r1"] }));
     world.heyas.set("h2", makeMockHeya("h2", { rikishiIds: ["r2"] }));
 
@@ -172,7 +186,12 @@ describe("RivalryService.seedInitialRivalries", () => {
   it("does not seed rivalries for same-heya rikishi", () => {
     const a = mockRikishi("r1", { heyaId: "h1", division: "makuuchi" });
     const b = mockRikishi("r2", { heyaId: "h1", division: "makuuchi" });
-    const world = makeMockWorld({ rikishi: new Map([["r1", a], ["r2", b]]) });
+    const world = makeMockWorld({
+      rikishi: new Map([
+        ["r1", a],
+        ["r2", b],
+      ]),
+    });
     world.heyas.set("h1", makeMockHeya("h1", { rikishiIds: ["r1", "r2"] }));
 
     const impact = RivalryService.seedInitialRivalries(world);

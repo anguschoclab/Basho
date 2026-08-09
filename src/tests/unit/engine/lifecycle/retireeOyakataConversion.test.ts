@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { processRetireeOyakataConversion } from "@/engine/lifecycle/retireeOyakataConversion";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";

@@ -26,7 +26,9 @@ describe("Command queue (B4.1.3)", () => {
     });
 
     // Try to send a non-tick command
-    useGameStore.getState().sendCommand({ type: "OFFER_CONTRACT", candidateId: "c1", heyaId: "h1" });
+    useGameStore
+      .getState()
+      .sendCommand({ type: "OFFER_CONTRACT", candidateId: "c1", heyaId: "h1" });
 
     // Should not post the message — command should be rejected
     expect(mockPostMessage).not.toHaveBeenCalled();
@@ -40,7 +42,9 @@ describe("Command queue (B4.1.3)", () => {
       pendingTick: false,
     });
 
-    useGameStore.getState().sendCommand({ type: "OFFER_CONTRACT", candidateId: "c1", heyaId: "h1" });
+    useGameStore
+      .getState()
+      .sendCommand({ type: "OFFER_CONTRACT", candidateId: "c1", heyaId: "h1" });
 
     expect(mockPostMessage).toHaveBeenCalled();
   });

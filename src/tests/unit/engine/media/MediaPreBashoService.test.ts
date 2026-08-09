@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { buildMediaDigest } from "@/engine/systems/media/MediaPreBashoService";
 import { MockFactory } from "../../../helpers/utils/MockFactory";
@@ -138,9 +137,7 @@ describe("buildMediaDigest", () => {
   it("limits topHeadlines to 5 sorted by impact", () => {
     const headlines: MediaHeadline[] = [];
     for (let i = 0; i < 8; i++) {
-      headlines.push(
-        makeHeadline({ id: `h${i}`, title: `Title ${i}`, impact: i * 10 })
-      );
+      headlines.push(makeHeadline({ id: `h${i}`, title: `Title ${i}`, impact: i * 10 }));
     }
     const world = MockFactory.createWorld({
       mediaState: {

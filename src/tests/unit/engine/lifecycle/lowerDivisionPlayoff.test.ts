@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import {
   calculateDivisionStandings,
@@ -41,9 +40,7 @@ describe("calculateDivisionStandings", () => {
   it("returns empty candidates when no rikishi in division", () => {
     const world = makeMockWorld();
     const basho = {
-      standings: new Map([
-        ["r1", { wins: 13, losses: 2, absences: 0 }],
-      ]),
+      standings: new Map([["r1", { wins: 13, losses: 2, absences: 0 }]]),
     } as any as BashoState;
 
     const result = calculateDivisionStandings(basho, world, "sandanme");
@@ -246,7 +243,13 @@ describe("Lower Division Playoff Integration in concludeBashoCompetition", () =>
         isActive: false,
       } as BashoState,
       history: [
-        { yusho: "m1", junYusho: [], ginoSho: undefined, shukunsho: undefined, kantosho: undefined } as any,
+        {
+          yusho: "m1",
+          junYusho: [],
+          ginoSho: undefined,
+          shukunsho: undefined,
+          kantosho: undefined,
+        } as any,
       ],
       heyas: new Map([
         ["heya-1", { id: "heya-1", name: "Stable 1", oyakataId: "oy-1" } as any],
@@ -343,7 +346,13 @@ describe("Lower Division Playoff Integration in concludeBashoCompetition", () =>
         isActive: false,
       } as BashoState,
       history: [
-        { yusho: "m2", junYusho: [], ginoSho: undefined, shukunsho: undefined, kantosho: undefined } as any,
+        {
+          yusho: "m2",
+          junYusho: [],
+          ginoSho: undefined,
+          shukunsho: undefined,
+          kantosho: undefined,
+        } as any,
       ],
       heyas: new Map([
         ["heya-1", { id: "heya-1", name: "S1", oyakataId: "oy-1" } as any],
@@ -412,7 +421,13 @@ describe("Lower Division Playoff Integration in concludeBashoCompetition", () =>
         isActive: false,
       } as BashoState,
       history: [
-        { yusho: "m3", junYusho: [], ginoSho: undefined, shukunsho: undefined, kantosho: undefined } as any,
+        {
+          yusho: "m3",
+          junYusho: [],
+          ginoSho: undefined,
+          shukunsho: undefined,
+          kantosho: undefined,
+        } as any,
       ],
       heyas: new Map([
         ["heya-1", { id: "heya-1", name: "S1", oyakataId: "oy-1" } as any],

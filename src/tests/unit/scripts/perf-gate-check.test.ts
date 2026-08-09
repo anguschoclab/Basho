@@ -9,7 +9,14 @@ function makeRun(p50: number): BenchmarkRun {
   return {
     timestamp: "2026-01-01T00:00:00.000Z",
     results: [
-      { scenario: "S3_year", p50_ms: p50, p99_ms: p50 * 2, mean_ms: p50, runs: 50, total_days: 365 },
+      {
+        scenario: "S3_year",
+        p50_ms: p50,
+        p99_ms: p50 * 2,
+        mean_ms: p50,
+        runs: 50,
+        total_days: 365,
+      },
     ],
   };
 }
@@ -44,7 +51,9 @@ describe("checkRegression", () => {
     const baseline = makeRun(100);
     const current: BenchmarkRun = {
       timestamp: "2026-01-01T00:00:00.000Z",
-      results: [{ scenario: "S3_year", p50_ms: 105, p99_ms: 250, mean_ms: 105, runs: 50, total_days: 365 }],
+      results: [
+        { scenario: "S3_year", p50_ms: 105, p99_ms: 250, mean_ms: 105, runs: 50, total_days: 365 },
+      ],
     };
     const result = checkRegression(baseline, current);
     expect(result.passed).toBe(false);
@@ -56,7 +65,9 @@ describe("checkRegression", () => {
     const baseline = makeRun(100);
     const current: BenchmarkRun = {
       timestamp: "2026-01-01T00:00:00.000Z",
-      results: [{ scenario: "S3_year", p50_ms: 100, p99_ms: 220, mean_ms: 100, runs: 50, total_days: 365 }],
+      results: [
+        { scenario: "S3_year", p50_ms: 100, p99_ms: 220, mean_ms: 100, runs: 50, total_days: 365 },
+      ],
     };
     const result = checkRegression(baseline, current);
     expect(result.passed).toBe(true);
@@ -67,7 +78,9 @@ describe("checkRegression", () => {
     const baseline = makeRun(100);
     const current: BenchmarkRun = {
       timestamp: "2026-01-01T00:00:00.000Z",
-      results: [{ scenario: "S1_single_day", p50_ms: 5, p99_ms: 10, mean_ms: 5, runs: 50, total_days: 1 }],
+      results: [
+        { scenario: "S1_single_day", p50_ms: 5, p99_ms: 10, mean_ms: 5, runs: 50, total_days: 1 },
+      ],
     };
     const result = checkRegression(baseline, current);
     expect(result.passed).toBe(true);
@@ -77,7 +90,9 @@ describe("checkRegression", () => {
   it("handles missing S3_year scenario in baseline gracefully", () => {
     const baseline: BenchmarkRun = {
       timestamp: "2026-01-01T00:00:00.000Z",
-      results: [{ scenario: "S1_single_day", p50_ms: 5, p99_ms: 10, mean_ms: 5, runs: 50, total_days: 1 }],
+      results: [
+        { scenario: "S1_single_day", p50_ms: 5, p99_ms: 10, mean_ms: 5, runs: 50, total_days: 1 },
+      ],
     };
     const current = makeRun(100);
     const result = checkRegression(baseline, current);

@@ -20,9 +20,6 @@ describe("L4.5: ESLint CI gate — --max-warnings 0", () => {
       stderr = (err as { stderr?: string }).stderr ?? "";
     }
 
-    expect(
-      exitCode,
-      `ESLint exited with ${exitCode}:\n${stderr}`,
-    ).toBe(0);
+    expect(exitCode, `ESLint exited with ${exitCode}:\n${stderr}`).toBe(0);
   });
 });

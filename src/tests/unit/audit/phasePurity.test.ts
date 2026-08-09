@@ -30,7 +30,11 @@ function isWorldIdentifier(node: import("ts-morph").Expression): boolean {
 
 function isBuilderCall(node: import("ts-morph").Node): boolean {
   const text = node.getText();
-  return text.includes("builder.") || text.includes("ImpactBuilder") || text.includes("builder.updateWorldField");
+  return (
+    text.includes("builder.") ||
+    text.includes("ImpactBuilder") ||
+    text.includes("builder.updateWorldField")
+  );
 }
 
 function checkExpressionAssignment(node: import("ts-morph").BinaryExpression): string | null {
@@ -59,7 +63,17 @@ function checkCallExpression(node: import("ts-morph").CallExpression): string | 
   const pa = expr as import("ts-morph").PropertyAccessExpression;
   const methodName = pa.getName();
 
-  if (methodName !== "push" && methodName !== "splice" && methodName !== "pop" && methodName !== "shift" && methodName !== "unshift" && methodName !== "fill" && methodName !== "sort" && methodName !== "reverse") return null;
+  if (
+    methodName !== "push" &&
+    methodName !== "splice" &&
+    methodName !== "pop" &&
+    methodName !== "shift" &&
+    methodName !== "unshift" &&
+    methodName !== "fill" &&
+    methodName !== "sort" &&
+    methodName !== "reverse"
+  )
+    return null;
 
   const obj = pa.getExpression();
   let root: import("ts-morph").Expression = obj;
@@ -104,6 +118,9 @@ describe("L4.1: phase purity — no direct world.* mutations outside builder (AS
       });
     }
 
-    expect(violations.length, `Direct world.* mutations in tick phases:\n${violations.join("\n")}`).toEqual(0);
+    expect(
+      violations.length,
+      `Direct world.* mutations in tick phases:\n${violations.join("\n")}`
+    ).toEqual(0);
   });
 });

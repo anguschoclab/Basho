@@ -358,12 +358,14 @@ describe("SponsorshipService", () => {
   describe("recruitSponsor", () => {
     const rng = rngFromSeed("test", "sponsorship", "recruit");
 
-    const setupWorld = (opts: {
-      funds?: number;
-      sponsorTier?: any;
-      sponsorActive?: boolean;
-      existingMember?: boolean;
-    } = {}) => {
+    const setupWorld = (
+      opts: {
+        funds?: number;
+        sponsorTier?: any;
+        sponsorActive?: boolean;
+        existingMember?: boolean;
+      } = {}
+    ) => {
       const sponsor: Sponsor = {
         sponsorId: "sp1",
         active: opts.sponsorActive ?? true,
@@ -490,9 +492,7 @@ describe("SponsorshipService", () => {
 
     it("returns 0 for non-sekitori roster", () => {
       const world = {
-        rikishi: new Map([
-          ["r1", mockRikishi("r1", { rank: "makushita", division: "makushita" })],
-        ]),
+        rikishi: new Map([["r1", mockRikishi("r1", { rank: "makushita", division: "makushita" })]]),
       } as unknown as WorldState;
       const heya = { id: "h1", rikishiIds: ["r1"] } as unknown as Heya;
       expect(computeHeyaPrestigeScore(heya, world)).toBe(0);

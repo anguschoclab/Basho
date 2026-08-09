@@ -45,7 +45,7 @@ describe("applyMentorshipBonuses", () => {
   });
 
   it("skips unmentored rikishi", () => {
-    const lone = mockRikishi("lone", { rank: "makushita", heyaId: "h1"});
+    const lone = mockRikishi("lone", { rank: "makushita", heyaId: "h1" });
     const world = makeWorldWithPair({ technique: 80 }, { technique: 50 }, [lone]);
     const impact = applyMentorshipBonuses(world);
     expect(impact.entities?.rikishiUpdates?.has("lone")).toBe(false);

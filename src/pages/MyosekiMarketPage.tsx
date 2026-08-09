@@ -162,7 +162,8 @@ export default function MyosekiMarketPage() {
                   <div>
                     <CardTitle>Available for Acquisition</CardTitle>
                     <CardDescription>
-                      Acquiring Elder Stock is required to run a stable or keep retired stars on staff.
+                      Acquiring Elder Stock is required to run a stable or keep retired stars on
+                      staff.
                     </CardDescription>
                   </div>
                   <SortMenu

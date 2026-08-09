@@ -109,7 +109,9 @@ export function resolveTachiaiV2(
     const opponentPrefs = opponent.combatProfile?.familyPreferences;
     if (npcCounterFamily && opponentPrefs) {
       const sorted = Object.entries(opponentPrefs).sort((a, b) => b[1] - a[1]);
-      const opponentDominantFamily = sorted[0]?.[0] as import("../../types/combat").TacticalFamily | undefined;
+      const opponentDominantFamily = sorted[0]?.[0] as
+        | import("../../types/combat").TacticalFamily
+        | undefined;
       const second = sorted[1]?.[1] ?? 0;
       if (opponentDominantFamily && (sorted[0]?.[1] ?? 0) > second) {
         if (npcCounterFamily === opponentDominantFamily) {
@@ -146,22 +148,33 @@ export function resolveTachiaiV2(
   // Tachiai richness (1.5): derive tachiaiType and contactPoint from winner's archetype
   const winnerArchetype = tachiaiWinner === "east" ? eastArchetype : westArchetype;
   const tachiaiType =
-    winnerArchetype === "oshi" ? "head_charge"
-    : winnerArchetype === "tsuppari" ? "tsuppari"
-    : winnerArchetype === "speedster" ? "harite"
-    : winnerArchetype === "trickster" ? "henka"
-    : "chest_clash";
+    winnerArchetype === "oshi"
+      ? "head_charge"
+      : winnerArchetype === "tsuppari"
+        ? "tsuppari"
+        : winnerArchetype === "speedster"
+          ? "harite"
+          : winnerArchetype === "trickster"
+            ? "henka"
+            : "chest_clash";
   const contactPoint =
-    tachiaiType === "head_charge" || tachiaiType === "harite" ? "face"
-    : tachiaiType === "chest_clash" ? "chest"
-    : tachiaiType === "tsuppari" ? "chest"
-    : "shoulder";
+    tachiaiType === "head_charge" || tachiaiType === "harite"
+      ? "face"
+      : tachiaiType === "chest_clash"
+        ? "chest"
+        : tachiaiType === "tsuppari"
+          ? "chest"
+          : "shoulder";
 
   // Narrative: the opening clash is always worth a line. Intensity scales with
   // how decisive the initial collision was.
   const tachiaiMargin = Math.abs(eastPower - westPower);
   const tachiaiIntensity =
-    tachiaiMargin > TACHIAI_MARGIN_DECISIVE ? "decisive" : tachiaiMargin > TACHIAI_MARGIN_CLEAR ? "clear" : "even";
+    tachiaiMargin > TACHIAI_MARGIN_DECISIVE
+      ? "decisive"
+      : tachiaiMargin > TACHIAI_MARGIN_CLEAR
+        ? "clear"
+        : "even";
   boutLog.push({
     phase: "tachiai",
     clock: 0,
@@ -207,7 +220,8 @@ export function resolveTachiaiV2(
   // NPC spontaneous henka: when no explicit henka is set, a high-technique NPC
   // facing a significantly stronger opponent may attempt a henka
   if (henkaSide === null) {
-    const npcSide = bout.playerSide === "east" ? "west" : bout.playerSide === "west" ? "east" : null;
+    const npcSide =
+      bout.playerSide === "east" ? "west" : bout.playerSide === "west" ? "east" : null;
     if (npcSide) {
       const npc = npcSide === "east" ? east : west;
       const opponent = npcSide === "east" ? west : east;
@@ -218,8 +232,14 @@ export function resolveTachiaiV2(
       const powerGap = opponentPower - npcPower;
       // NPC attempts henka when: technique > 60, speed > 60, and opponent is 15+ power stronger
       const henkaChance =
-        npcTech > HENKA_TECHNIQUE_THRESHOLD && npcSpeed > HENKA_SPEED_THRESHOLD && powerGap > HENKA_POWER_GAP_THRESHOLD
-          ? Math.min(HENKA_MAX_CHANCE, (powerGap - HENKA_POWER_GAP_BASE) * HENKA_POWER_GAP_FACTOR + (npcTech - HENKA_TECH_BASE) * HENKA_TECH_FACTOR)
+        npcTech > HENKA_TECHNIQUE_THRESHOLD &&
+        npcSpeed > HENKA_SPEED_THRESHOLD &&
+        powerGap > HENKA_POWER_GAP_THRESHOLD
+          ? Math.min(
+              HENKA_MAX_CHANCE,
+              (powerGap - HENKA_POWER_GAP_BASE) * HENKA_POWER_GAP_FACTOR +
+                (npcTech - HENKA_TECH_BASE) * HENKA_TECH_FACTOR
+            )
           : 0;
       if (henkaChance > 0 && rng.next() < henkaChance) {
         henkaSide = npcSide as Side;

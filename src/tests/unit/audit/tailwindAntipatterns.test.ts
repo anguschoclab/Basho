@@ -12,7 +12,11 @@ function findFiles(dir: string, exts: string[]): string[] {
     const fullPath = join(dir, entry.name);
     if (entry.isDirectory()) {
       results.push(...findFiles(fullPath, exts));
-    } else if (exts.some((e) => entry.name.endsWith(e)) && !entry.name.endsWith(".test.ts") && !entry.name.endsWith(".test.tsx")) {
+    } else if (
+      exts.some((e) => entry.name.endsWith(e)) &&
+      !entry.name.endsWith(".test.ts") &&
+      !entry.name.endsWith(".test.tsx")
+    ) {
       results.push(fullPath);
     }
   }
@@ -34,7 +38,10 @@ describe("L4.7: Tailwind/className anti-patterns", () => {
       }
     }
 
-    expect(violations, `Files with >5 arbitrary Tailwind values:\n${violations.join("\n")}`).toEqual([]);
+    expect(
+      violations,
+      `Files with >5 arbitrary Tailwind values:\n${violations.join("\n")}`
+    ).toEqual([]);
   });
 
   it("no inline style={{}} that could be Tailwind classes (simple cases only)", () => {
@@ -51,6 +58,9 @@ describe("L4.7: Tailwind/className anti-patterns", () => {
       });
     }
 
-    expect(violations.length, `Inline color styles that could be Tailwind: ${violations.length}`).toBeLessThanOrEqual(10);
+    expect(
+      violations.length,
+      `Inline color styles that could be Tailwind: ${violations.length}`
+    ).toBeLessThanOrEqual(10);
   });
 });

@@ -30,7 +30,10 @@ import {
   SCANDAL_SCORE_MEDIUM_THRESHOLD,
   SCANDAL_SCORE_LOW_THRESHOLD,
 } from "../../../constants/engine/governanceExtended";
-import { purchaseMyoseki, findAvailableStock } from "../../systems/governance/MyosekiTradingService";
+import {
+  purchaseMyoseki,
+  findAvailableStock,
+} from "../../systems/governance/MyosekiTradingService";
 import { assignYokozunaAttendants } from "../../governance/yokozunaAttendants";
 import { rngForWorld } from "../../rng";
 import { getRikishi } from "../../queries";

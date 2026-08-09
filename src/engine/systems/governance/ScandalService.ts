@@ -291,7 +291,12 @@ export function issueGovernanceRuling(
     const heya = getHeya(world, ruling.heyaId);
 
     if (heya) {
-      const severityMultiplier = severity === "lenient" ? SCANDAL_SEVERITY_MULT_LENIENT : severity === "harsh" ? SCANDAL_SEVERITY_MULT_HARSH : SCANDAL_SEVERITY_MULT_STANDARD;
+      const severityMultiplier =
+        severity === "lenient"
+          ? SCANDAL_SEVERITY_MULT_LENIENT
+          : severity === "harsh"
+            ? SCANDAL_SEVERITY_MULT_HARSH
+            : SCANDAL_SEVERITY_MULT_STANDARD;
       const originalDelta = ruling.effects.scandalScoreDelta || 0;
       const adjustedDelta = Math.round(originalDelta * severityMultiplier);
 

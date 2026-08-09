@@ -50,10 +50,7 @@ export function hasHadKanrekiCeremony(world: WorldState, rikishiId: string): boo
  * Generate and log the kanreki dohyo-iri ceremony event.
  * Applies a large popularity boost to the yokozuna.
  */
-export function performKanrekiCeremony(
-  world: WorldState,
-  yokozuna: Rikishi
-): StateImpact {
+export function performKanrekiCeremony(world: WorldState, yokozuna: Rikishi): StateImpact {
   const builder = createImpactBuilder("performKanrekiCeremony");
 
   if (!isEligibleForKanreki(yokozuna, world)) {

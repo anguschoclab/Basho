@@ -62,12 +62,17 @@ export const IntelligencePanel = React.memo(function IntelligencePanel({
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-xs font-medium">{rec.title}</span>
-                    <Badge variant={PRIORITY_VARIANT[rec.priority] ?? "outline"} className="text-[10px] capitalize">
+                    <Badge
+                      variant={PRIORITY_VARIANT[rec.priority] ?? "outline"}
+                      className="text-[10px] capitalize"
+                    >
                       {rec.priority}
                     </Badge>
                   </div>
                   {rec.detail && (
-                    <p className="mt-0.5 text-[11px] leading-snug text-muted-foreground">{rec.detail}</p>
+                    <p className="mt-0.5 text-[11px] leading-snug text-muted-foreground">
+                      {rec.detail}
+                    </p>
                   )}
                 </div>
               </div>

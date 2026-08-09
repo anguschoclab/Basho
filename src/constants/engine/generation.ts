@@ -601,9 +601,18 @@ export const PRESS_PERSONA_VILLAIN_DISCIPLINE = 35;
 
 /** Full personality trait pool */
 export const PERSONALITY_TRAITS = [
-  "aggressive", "calm", "witty", "humble", "boastful",
-  "philosophical", "laconic", "emotional", "analytical",
-  "traditional", "rebellious", "gentle",
+  "aggressive",
+  "calm",
+  "witty",
+  "humble",
+  "boastful",
+  "philosophical",
+  "laconic",
+  "emotional",
+  "analytical",
+  "traditional",
+  "rebellious",
+  "gentle",
 ] as const;
 
 /** Trait weights by combat archetype (higher = more likely for that archetype) */
@@ -623,7 +632,10 @@ export const TRAIT_WEIGHTS: Record<string, Partial<Record<string, number>>> = {
 };
 
 /** Behavior-based trait weight modifiers */
-export const BEHAVIOR_TRAIT_WEIGHTS: Record<string, { stat: "discipline" | "mediaSavvy"; threshold: number; weight: number }> = {
+export const BEHAVIOR_TRAIT_WEIGHTS: Record<
+  string,
+  { stat: "discipline" | "mediaSavvy"; threshold: number; weight: number }
+> = {
   calm: { stat: "discipline", threshold: 70, weight: 2 },
   humble: { stat: "discipline", threshold: 70, weight: 1.5 },
   traditional: { stat: "discipline", threshold: 70, weight: 1.5 },

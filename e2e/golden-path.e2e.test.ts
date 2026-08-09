@@ -18,7 +18,9 @@ test("Golden Path: Boot -> Start Game -> View Stable -> Auto-Sim Tournament -> V
   await inaugurateBtn.click({ force: true });
 
   // 2b. New Game Wizard: Enter elder name
-  await expect(page.getByRole("heading", { name: /Begin Your Legacy/i })).toBeVisible({ timeout: 10000 });
+  await expect(page.getByRole("heading", { name: /Begin Your Legacy/i })).toBeVisible({
+    timeout: 10000,
+  });
   const nameInput = page.getByRole("textbox", { name: /Official Elder Name/i });
   await expect(nameInput).toBeVisible();
   await nameInput.fill("TestOyakata");
@@ -28,12 +30,16 @@ test("Golden Path: Boot -> Start Game -> View Stable -> Auto-Sim Tournament -> V
   await page.getByRole("button", { name: /Next Submission/i }).click();
 
   // 2c. Select ichimon (faction) — target the card by name text
-  await expect(page.getByRole("heading", { name: /Choose Your Ichimon/i })).toBeVisible({ timeout: 10000 });
+  await expect(page.getByRole("heading", { name: /Choose Your Ichimon/i })).toBeVisible({
+    timeout: 10000,
+  });
   await page.getByRole("main").getByText("Dewanoumi").click();
   await page.getByRole("button", { name: /Verify Allegiance/i }).click();
 
   // 2d. Exhibition bout preview — skip through all actions
-  await expect(page.getByRole("heading", { name: /Live Bout Preview/i })).toBeVisible({ timeout: 10000 });
+  await expect(page.getByRole("heading", { name: /Live Bout Preview/i })).toBeVisible({
+    timeout: 10000,
+  });
   // Dismiss tutorial coach if present
   const dismissBtn = page.getByRole("button", { name: /^Dismiss$/i });
   if (await dismissBtn.isVisible().catch(() => false)) {
@@ -85,17 +91,21 @@ test("Golden Path: Boot -> Start Game -> View Stable -> Auto-Sim Tournament -> V
   await page.waitForTimeout(500);
 
   // Advance time until we enter basho phase (Continue button changes to "Day N")
-  const simAllBtn = page.getByRole("button", { name: /Automatically simulate the remainder/i }).first();
+  const simAllBtn = page
+    .getByRole("button", { name: /Automatically simulate the remainder/i })
+    .first();
   let limit = 0;
   while (limit < 60) {
     // Check if Sim All is visible (basho phase on dashboard)
     const isSimAllVisible = await simAllBtn.isVisible().catch(() => false);
     if (isSimAllVisible) break;
-    
+
     // Use Week button to advance 7 days at once (faster), fall back to Continue
-    const weekBtn = page.getByRole("button", { name: /Progress simulation by one full week/i }).first();
+    const weekBtn = page
+      .getByRole("button", { name: /Progress simulation by one full week/i })
+      .first();
     const continueBtn = page.getByRole("button", { name: /Continue|Start Basho/i }).first();
-    
+
     if (await weekBtn.isVisible().catch(() => false)) {
       await weekBtn.click();
       await page.waitForTimeout(500);
@@ -104,7 +114,9 @@ test("Golden Path: Boot -> Start Game -> View Stable -> Auto-Sim Tournament -> V
       await page.waitForTimeout(500);
     } else {
       // Try the Day button from CalendarWidget as fallback
-      const dayBtn = page.getByRole("button", { name: /Advance the simulation by one day/i }).first();
+      const dayBtn = page
+        .getByRole("button", { name: /Advance the simulation by one day/i })
+        .first();
       if (await dayBtn.isVisible().catch(() => false)) {
         await dayBtn.click();
         await page.waitForTimeout(500);
@@ -123,7 +135,7 @@ test("Golden Path: Boot -> Start Game -> View Stable -> Auto-Sim Tournament -> V
   // The worker processes TICK_MULTIPLE_DAYS for the remaining basho days.
   // When complete, the dashboard will update — Sim All button disappears.
   await expect(simAllBtn).not.toBeVisible({ timeout: 120000 });
-  
+
   // Verify the dashboard still has content (world didn't become null)
   const dashboardHeading = page.locator("h1").first();
   await expect(dashboardHeading).toBeVisible({ timeout: 10000 });

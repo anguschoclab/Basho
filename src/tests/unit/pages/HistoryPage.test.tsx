@@ -165,9 +165,7 @@ describe("HistoryPage sorting", () => {
     vi.spyOn(GameContext, "useGame").mockReturnValue({
       state: {
         world: {
-          history: [
-            { year: 2024, bashoNumber: 1, bashoName: "Hatsu", yusho: "r1" },
-          ],
+          history: [{ year: 2024, bashoNumber: 1, bashoName: "Hatsu", yusho: "r1" }],
           heyas: new Map([["h1", { id: "h1", name: "Stable" }]]),
         },
       },
@@ -203,9 +201,7 @@ describe("HistoryPage sorting", () => {
     vi.spyOn(GameContext, "useGame").mockReturnValue({
       state: {
         world: {
-          history: [
-            { year: 2024, bashoNumber: 0, bashoName: "Hatsu", yusho: "r1" },
-          ],
+          history: [{ year: 2024, bashoNumber: 0, bashoName: "Hatsu", yusho: "r1" }],
           heyas: new Map([["h1", { id: "h1", name: "Stable" }]]),
         },
       },

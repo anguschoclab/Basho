@@ -6,7 +6,16 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Activity, Award as AwardIcon, Info, Shield, Sword, Target, TrendingUp, Zap } from "lucide-react";
+import {
+  Activity,
+  Award as AwardIcon,
+  Info,
+  Shield,
+  Sword,
+  Target,
+  TrendingUp,
+  Zap,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
@@ -161,14 +170,23 @@ interface RikishiProfileTabProps {
   world?: WorldState;
 }
 
-export function RikishiProfileTab({ rikishi, rawRikishi, worldSeed, world }: RikishiProfileTabProps) {
+export function RikishiProfileTab({
+  rikishi,
+  rawRikishi,
+  worldSeed,
+  world,
+}: RikishiProfileTabProps) {
   const noteRng = rngFromSeed(worldSeed, "scout-note", rikishi.id);
   const note = generateScoutNote(rikishi, rawRikishi, noteRng);
   const badges = generateBadges(rikishi, rawRikishi);
 
   const dohyoIriStyle = rawRikishi.dohyoIriStyle;
-  const tachimochi = rawRikishi.tachimochiId ? world?.rikishi.get(rawRikishi.tachimochiId) : undefined;
-  const tsuyuharai = rawRikishi.tsuyuharaiId ? world?.rikishi.get(rawRikishi.tsuyuharaiId) : undefined;
+  const tachimochi = rawRikishi.tachimochiId
+    ? world?.rikishi.get(rawRikishi.tachimochiId)
+    : undefined;
+  const tsuyuharai = rawRikishi.tsuyuharaiId
+    ? world?.rikishi.get(rawRikishi.tsuyuharaiId)
+    : undefined;
 
   return (
     <div className="grid md:grid-cols-2 gap-8">

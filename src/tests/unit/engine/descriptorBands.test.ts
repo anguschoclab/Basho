@@ -114,11 +114,37 @@ describe("toRikishiDescriptor", () => {
   });
 
   it("preserves previous band via hysteresis when value is near boundary", () => {
-    const r = makeRikishi({ stats: { power: 50, technique: 50, speed: 50, weight: 140, stamina: 50, mental: 50, adaptability: 50, balance: 50, aggression: 50, experience: 10 } });
+    const r = makeRikishi({
+      stats: {
+        power: 50,
+        technique: 50,
+        speed: 50,
+        weight: 140,
+        stamina: 50,
+        mental: 50,
+        adaptability: 50,
+        balance: 50,
+        aggression: 50,
+        experience: 10,
+      },
+    });
     const rng = new SeededRNG("test-desc");
     const firstDesc = toRikishiDescriptor(rng, r, undefined);
     // Second call with slightly different value but same prev band should preserve band
-    const r2 = makeRikishi({ stats: { power: 52, technique: 50, speed: 50, weight: 140, stamina: 50, mental: 50, adaptability: 50, balance: 50, aggression: 50, experience: 10 } });
+    const r2 = makeRikishi({
+      stats: {
+        power: 52,
+        technique: 50,
+        speed: 50,
+        weight: 140,
+        stamina: 50,
+        mental: 50,
+        adaptability: 50,
+        balance: 50,
+        aggression: 50,
+        experience: 10,
+      },
+    });
     const secondDesc = toRikishiDescriptor(rng, r2, firstDesc);
     // With hysteresis, small changes should not cause band thrashing
     expect(secondDesc.powerBand).toBe(firstDesc.powerBand);

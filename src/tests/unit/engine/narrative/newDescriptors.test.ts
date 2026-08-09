@@ -1,4 +1,3 @@
- 
 import { describe, it, expect, beforeAll } from "vitest";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { rngFromSeed } from "@/engine/rng";
@@ -51,7 +50,10 @@ describe("New Rikishi Descriptor Templates", () => {
     });
 
     it("mass_gain_complete resolves", () => {
-      const result = BardEngine.resolve(rng, "rikishi.descriptors.weight_journey.mass_gain_complete");
+      const result = BardEngine.resolve(
+        rng,
+        "rikishi.descriptors.weight_journey.mass_gain_complete"
+      );
       expect(result.text).toBeTruthy();
       expect(result.text).not.toContain("[MISSING:");
     });

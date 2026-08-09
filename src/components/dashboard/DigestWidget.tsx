@@ -97,41 +97,51 @@ const DigestItemRow = React.memo(
   }
 );
 
-const DigestSectionView = React.memo(({ title, items, onNavigate }: { title: string; items: DigestItem[]; onNavigate: (path: string) => void }) => {
-  return (
-    <div>
-      <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
-        {title}
+const DigestSectionView = React.memo(
+  ({
+    title,
+    items,
+    onNavigate,
+  }: {
+    title: string;
+    items: DigestItem[];
+    onNavigate: (path: string) => void;
+  }) => {
+    return (
+      <div>
+        <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
+          {title}
+        </div>
+        <div className="space-y-1">
+          {(() => {
+            const limit = Math.min(DIGEST_WIDGET_MAX_ITEMS, items.length);
+            const nodes = new Array(limit);
+            for (let i = 0; i < limit; i++) {
+              const item = items[i];
+              nodes[i] = (
+                <DigestItemRow
+                  key={item.id}
+                  kind={item.kind}
+                  title={item.title}
+                  detail={item.detail}
+                  rikishiId={item.rikishiId}
+                  heyaId={item.heyaId}
+                  onNavigate={onNavigate}
+                />
+              );
+            }
+            return nodes;
+          })()}
+          {items.length > DIGEST_WIDGET_MAX_ITEMS && (
+            <p className="text-[10px] text-muted-foreground pl-5">
+              +{items.length - DIGEST_WIDGET_MAX_ITEMS} more
+            </p>
+          )}
+        </div>
       </div>
-      <div className="space-y-1">
-        {(() => {
-          const limit = Math.min(DIGEST_WIDGET_MAX_ITEMS, items.length);
-          const nodes = new Array(limit);
-          for (let i = 0; i < limit; i++) {
-            const item = items[i];
-            nodes[i] = (
-              <DigestItemRow
-                key={item.id}
-                kind={item.kind}
-                title={item.title}
-                detail={item.detail}
-                rikishiId={item.rikishiId}
-                heyaId={item.heyaId}
-                onNavigate={onNavigate}
-              />
-            );
-          }
-          return nodes;
-        })()}
-        {items.length > DIGEST_WIDGET_MAX_ITEMS && (
-          <p className="text-[10px] text-muted-foreground pl-5">
-            +{items.length - DIGEST_WIDGET_MAX_ITEMS} more
-          </p>
-        )}
-      </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 /** digest widget props. */
 interface DigestWidgetProps {
@@ -190,7 +200,12 @@ export function DigestWidget({ digest: digestProp, fullPage = false }: DigestWid
               for (let i = 0; i < limit; i++) {
                 const section = digest.sections[i];
                 nodes[i] = (
-                  <DigestSectionView key={section.id} title={section.title} items={section.items} onNavigate={handleNavigate} />
+                  <DigestSectionView
+                    key={section.id}
+                    title={section.title}
+                    items={section.items}
+                    onNavigate={handleNavigate}
+                  />
                 );
               }
               return nodes;

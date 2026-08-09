@@ -63,8 +63,7 @@ export function buildBoutResultV2(
   // Detect mono-ii trigger: close bout with edge crisis controversy or shini-tai
   const monoii = boutLog.some(
     (e) =>
-      (e.phase === "edge_crisis" &&
-        (e.data as Record<string, unknown>)?.controversial === true) ||
+      (e.phase === "edge_crisis" && (e.data as Record<string, unknown>)?.controversial === true) ||
       (e.data as Record<string, unknown>)?.shinitai === true
   );
 
@@ -97,4 +96,3 @@ export function buildBoutResultV2(
     monoii,
   };
 }
-

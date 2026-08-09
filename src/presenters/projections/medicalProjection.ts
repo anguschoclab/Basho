@@ -62,9 +62,7 @@ export function projectMedicalUIDigest(world: WorldState) {
             : "mutinous";
 
   const rosterSize = roster.length;
-  const sekitoriCount = roster.filter(
-    (r) => isSekitoriDivision(r.division)
-  ).length;
+  const sekitoriCount = roster.filter((r) => isSekitoriDivision(r.division)).length;
   const rosterStrengthBand: "dominant" | "strong" | "competitive" | "developing" | "weak" =
     sekitoriCount >= 6
       ? "dominant"
@@ -131,8 +129,7 @@ export function projectMedicalUIDigest(world: WorldState) {
         result.push({
           id: r.id,
           shikona: r.shikona,
-          severity:
-            typeof injuryStatus?.severity === "string" ? injuryStatus.severity : "unknown",
+          severity: typeof injuryStatus?.severity === "string" ? injuryStatus.severity : "unknown",
           location: injuryStatus?.location ?? "unknown",
           weeksRemaining,
           weeksTotal,

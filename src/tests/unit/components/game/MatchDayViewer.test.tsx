@@ -71,26 +71,14 @@ describe("MatchDayViewer", () => {
 
   it("renders without crashing with empty matches", () => {
     const world = makeWorld();
-    render(
-      <MatchDayViewer
-        matches={[]}
-        world={world}
-        playerRikishiIds={new Set()}
-      />
-    );
+    render(<MatchDayViewer matches={[]} world={world} playerRikishiIds={new Set()} />);
     expect(screen.getByText(/no matches scheduled/i)).toBeTruthy();
   });
 
   it("renders match cards when matches are provided", () => {
     const world = makeWorld();
     const match = makeMatch();
-    render(
-      <MatchDayViewer
-        matches={[match]}
-        world={world}
-        playerRikishiIds={new Set(["r1"])}
-      />
-    );
+    render(<MatchDayViewer matches={[match]} world={world} playerRikishiIds={new Set(["r1"])} />);
     expect(screen.getByText("East Rikishi")).toBeTruthy();
     expect(screen.getByText("West Rikishi")).toBeTruthy();
   });
@@ -102,16 +90,22 @@ describe("MatchDayViewer", () => {
       boutId: "b2",
       eastRikishiId: "r3",
       westRikishiId: "r4",
-      eastRikishi: { id: "r3", shikona: "Another East", rank: "maegashira", division: "makuuchi", avatarConfig: {} } as any,
-      westRikishi: { id: "r4", shikona: "Another West", rank: "maegashira", division: "makuuchi", avatarConfig: {} } as any,
+      eastRikishi: {
+        id: "r3",
+        shikona: "Another East",
+        rank: "maegashira",
+        division: "makuuchi",
+        avatarConfig: {},
+      } as any,
+      westRikishi: {
+        id: "r4",
+        shikona: "Another West",
+        rank: "maegashira",
+        division: "makuuchi",
+        avatarConfig: {},
+      } as any,
     });
-    render(
-      <MatchDayViewer
-        matches={[m1, m2]}
-        world={world}
-        playerRikishiIds={new Set()}
-      />
-    );
+    render(<MatchDayViewer matches={[m1, m2]} world={world} playerRikishiIds={new Set()} />);
     expect(screen.getByText("East Rikishi")).toBeTruthy();
     expect(screen.getByText("Another East")).toBeTruthy();
   });

@@ -8,7 +8,11 @@
 
 import { cn } from "@/lib/utils";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import { RANK_DISPLAY_REGISTRY, isSanyakuRank, getDivisionOfRank } from "@/constants/engine/rankDisplay";
+import {
+  RANK_DISPLAY_REGISTRY,
+  isSanyakuRank,
+  getDivisionOfRank,
+} from "@/constants/engine/rankDisplay";
 
 export type RankTier =
   | "yokozuna"

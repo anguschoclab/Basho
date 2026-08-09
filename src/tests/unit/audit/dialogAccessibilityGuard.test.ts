@@ -4,7 +4,10 @@ import { join, extname } from "path";
 
 const COMPONENTS_DIR = join(import.meta.dirname, "../../../../src/components");
 
-function scanForRawDialog(dir: string, results: Array<{ file: string; line: number; text: string }>): void {
+function scanForRawDialog(
+  dir: string,
+  results: Array<{ file: string; line: number; text: string }>
+): void {
   const entries = readdirSync(dir, { withFileTypes: true });
   for (const entry of entries) {
     const fullPath = join(dir, entry.name);
@@ -31,9 +34,7 @@ describe("L4.6: Dialog accessibility — all dialogs use Radix-based Dialog prim
     scanForRawDialog(COMPONENTS_DIR, results);
 
     // Filter out the ui/dialog.tsx itself (the primitive definition)
-    const violations = results.filter(
-      (r) => !r.file.endsWith("ui/dialog.tsx"),
-    );
+    const violations = results.filter((r) => !r.file.endsWith("ui/dialog.tsx"));
 
     // Check that each file with <Dialog> usage imports from "@/components/ui/dialog"
     const filesWithDialog = new Set(violations.map((v) => v.file));
@@ -48,7 +49,7 @@ describe("L4.6: Dialog accessibility — all dialogs use Radix-based Dialog prim
 
     expect(
       missingImport,
-      `Files using <Dialog> without importing from the Radix-based ui/dialog (missing focus trap):\n${missingImport.map((f) => `  ${f}`).join("\n")}`,
+      `Files using <Dialog> without importing from the Radix-based ui/dialog (missing focus trap):\n${missingImport.map((f) => `  ${f}`).join("\n")}`
     ).toEqual([]);
   });
 });

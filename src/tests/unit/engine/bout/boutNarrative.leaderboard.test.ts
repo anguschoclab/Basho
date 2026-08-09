@@ -6,8 +6,6 @@ import type { BoutResult, BashoName } from "@/engine/types/basho";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 
- 
-
 function makeBoutResult(overrides: Partial<BoutResult> = {}): BoutResult {
   return {
     boutId: "test-bout-leaderboard",
@@ -37,7 +35,7 @@ function makeWorldWithStandings(
   east: Rikishi,
   west: Rikishi,
   standingsMap: Map<string, { wins: number; losses: number }>,
-  day: number = 5,
+  day: number = 5
 ): WorldState {
   const basho = makeMockBasho({ day, standings: standingsMap as any });
   return makeMockWorld({
@@ -61,8 +59,16 @@ describe("generateBoutNarrative — leaderboard computation (T23)", () => {
   });
 
   it("T23.1: clear leader → leaderboard line with leader name and win count", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 0 });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 2 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 5,
+      currentBashoLosses: 0,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 3,
+      currentBashoLosses: 2,
+    });
     const standings = new Map([
       ["r-east", { wins: 5, losses: 0 }],
       ["r-west", { wins: 3, losses: 2 }],
@@ -75,8 +81,16 @@ describe("generateBoutNarrative — leaderboard computation (T23)", () => {
   });
 
   it("T23.6: all rikishi 0-0 (day 1) → no leaderboard line", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 0, currentBashoLosses: 0 });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 0, currentBashoLosses: 0 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 0,
+      currentBashoLosses: 0,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 0,
+      currentBashoLosses: 0,
+    });
     const standings = new Map([
       ["r-east", { wins: 0, losses: 0 }],
       ["r-west", { wins: 0, losses: 0 }],
@@ -92,8 +106,16 @@ describe("generateBoutNarrative — leaderboard computation (T23)", () => {
   });
 
   it("T23.7: leader at 3 wins (day 5) → no leaderboard line (below 4-win threshold)", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 3, currentBashoLosses: 2 });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 2, currentBashoLosses: 3 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 3,
+      currentBashoLosses: 2,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 2,
+      currentBashoLosses: 3,
+    });
     const standings = new Map([
       ["r-east", { wins: 3, losses: 2 }],
       ["r-west", { wins: 2, losses: 3 }],
@@ -109,8 +131,16 @@ describe("generateBoutNarrative — leaderboard computation (T23)", () => {
   });
 
   it("T23.8: leader at 5+ wins (day 5+) → leaderboard line emitted", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 0 });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 2 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 5,
+      currentBashoLosses: 0,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 3,
+      currentBashoLosses: 2,
+    });
     const standings = new Map([
       ["r-east", { wins: 5, losses: 0 }],
       ["r-west", { wins: 3, losses: 2 }],
@@ -123,8 +153,16 @@ describe("generateBoutNarrative — leaderboard computation (T23)", () => {
   });
 
   it("T23.11: no [MISSING:] tokens in leaderboard lines", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 6, currentBashoLosses: 0 });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 4, currentBashoLosses: 2 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 6,
+      currentBashoLosses: 0,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 4,
+      currentBashoLosses: 2,
+    });
     const standings = new Map([
       ["r-east", { wins: 6, losses: 0 }],
       ["r-west", { wins: 4, losses: 2 }],

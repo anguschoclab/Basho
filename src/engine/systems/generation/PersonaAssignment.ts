@@ -23,14 +23,17 @@ import {
  * Determines press persona based on behavior stats (discipline + mediaSavvy).
  * Falls back to "neutral" if no specific threshold is met.
  */
-export function assignPressPersona(
-  discipline: number,
-  mediaSavvy: number,
-): PressPersona {
-  if (mediaSavvy >= PRESS_PERSONA_CELEBRITY_MEDIA_SAVVY && discipline >= PRESS_PERSONA_CELEBRITY_DISCIPLINE) {
+export function assignPressPersona(discipline: number, mediaSavvy: number): PressPersona {
+  if (
+    mediaSavvy >= PRESS_PERSONA_CELEBRITY_MEDIA_SAVVY &&
+    discipline >= PRESS_PERSONA_CELEBRITY_DISCIPLINE
+  ) {
     return "celebrity";
   }
-  if (mediaSavvy >= PRESS_PERSONA_FIREBRAND_MEDIA_SAVVY && discipline < PRESS_PERSONA_VILLAIN_DISCIPLINE) {
+  if (
+    mediaSavvy >= PRESS_PERSONA_FIREBRAND_MEDIA_SAVVY &&
+    discipline < PRESS_PERSONA_VILLAIN_DISCIPLINE
+  ) {
     return "firebrand";
   }
   if (discipline >= PRESS_PERSONA_STOIC_DISCIPLINE && mediaSavvy < 40) {
@@ -50,7 +53,7 @@ export function assignPersonalityTraits(
   archetype: CombatArchetype,
   discipline: number,
   mediaSavvy: number,
-  rng: SeededRNG,
+  rng: SeededRNG
 ): string[] {
   // Build weighted pool
   const pool: Array<{ trait: string; weight: number }> = [];
@@ -125,7 +128,7 @@ export function rollBirthday(rng: SeededRNG): { birthMonth: number; birthDay: nu
 export function applyPersonaAssignment(
   rikishi: Rikishi,
   archetype: CombatArchetype,
-  rng: SeededRNG,
+  rng: SeededRNG
 ): Rikishi {
   const { discipline, mediaSavvy } = rikishi.behavior;
 

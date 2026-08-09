@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import {
   applyWeightJourneyTick,
@@ -12,7 +11,17 @@ import { resolveImpacts } from "@/engine/core/ImpactResolver";
 describe("Chankonabe — nutrition facility tie-in to weight journey", () => {
   it("weight gain scales with high nutrition facility level", () => {
     const rikishi = mockRikishi("wj-nut-high", {
-      stats: { weight: 100, power: 50, speed: 50, technique: 50, balance: 50, stamina: 50, mental: 50, experience: 0, adaptability: 50 } as any,
+      stats: {
+        weight: 100,
+        power: 50,
+        speed: 50,
+        technique: 50,
+        balance: 50,
+        stamina: 50,
+        mental: 50,
+        experience: 0,
+        adaptability: 50,
+      } as any,
       potential: { weightKg: 130 } as any,
       weightJourney: { targetKg: 30, progressKg: 0, stalled: false, phases: ["bulking"] },
     });
@@ -39,7 +48,17 @@ describe("Chankonabe — nutrition facility tie-in to weight journey", () => {
 
   it("weight gain scales down with low nutrition facility level", () => {
     const rikishi = mockRikishi("wj-nut-low", {
-      stats: { weight: 100, power: 50, speed: 50, technique: 50, balance: 50, stamina: 50, mental: 50, experience: 0, adaptability: 50 } as any,
+      stats: {
+        weight: 100,
+        power: 50,
+        speed: 50,
+        technique: 50,
+        balance: 50,
+        stamina: 50,
+        mental: 50,
+        experience: 0,
+        adaptability: 50,
+      } as any,
       potential: { weightKg: 130 } as any,
       weightJourney: { targetKg: 30, progressKg: 0, stalled: false, phases: ["bulking"] },
     });
@@ -66,7 +85,17 @@ describe("Chankonabe — nutrition facility tie-in to weight journey", () => {
 
   it("weight gain uses default nutrition when heya facilities undefined", () => {
     const rikishi = mockRikishi("wj-nut-default", {
-      stats: { weight: 100, power: 50, speed: 50, technique: 50, balance: 50, stamina: 50, mental: 50, experience: 0, adaptability: 50 } as any,
+      stats: {
+        weight: 100,
+        power: 50,
+        speed: 50,
+        technique: 50,
+        balance: 50,
+        stamina: 50,
+        mental: 50,
+        experience: 0,
+        adaptability: 50,
+      } as any,
       potential: { weightKg: 130 } as any,
       weightJourney: { targetKg: 30, progressKg: 0, stalled: false, phases: ["bulking"] },
     });

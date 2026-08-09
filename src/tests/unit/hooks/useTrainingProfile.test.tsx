@@ -24,17 +24,18 @@ function makeWorld(profile?: TrainingProfile | null, sanctions?: any): WorldStat
     rikishi: new Map(),
     activeRikishiIds: new Set(),
     heyas: new Map([
-      ["h1", {
-        id: "h1",
-        name: "TestHeya",
-        rikishiIds: ["r1"],
-        welfareState: sanctions ? { sanctions } : undefined,
-      }],
+      [
+        "h1",
+        {
+          id: "h1",
+          name: "TestHeya",
+          rikishiIds: ["r1"],
+          welfareState: sanctions ? { sanctions } : undefined,
+        },
+      ],
     ]),
     playerHeyaId: "h1",
-    trainingState: new Map([
-      ["h1", { activeProfile: profile ?? makeProfile() }],
-    ]),
+    trainingState: new Map([["h1", { activeProfile: profile ?? makeProfile() }]]),
   };
   return world as unknown as WorldState;
 }

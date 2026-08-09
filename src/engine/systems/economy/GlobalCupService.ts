@@ -63,7 +63,9 @@ export const GlobalCupService = {
           (c) => isForeign(c) && c.availabilityState === "available"
         )
       : [];
-    const sortedForeignCandidates = [...foreignCandidates].sort((a, b) => (b.talentSeed || 0) - (a.talentSeed || 0));
+    const sortedForeignCandidates = [...foreignCandidates].sort(
+      (a, b) => (b.talentSeed || 0) - (a.talentSeed || 0)
+    );
 
     // Pick or generate challenger 1
     let c1: GlobalCupParticipant;

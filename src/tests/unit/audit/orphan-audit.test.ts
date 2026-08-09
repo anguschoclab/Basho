@@ -87,10 +87,19 @@ describe("Audit runner self-test", () => {
     const raw = readFileSync(BASELINE_PATH, "utf-8");
     const report = JSON.parse(raw) as AuditReport;
     if (report.entries.length === 0) return; // baseline may be fully clean
-    const knownTypes = new Set(["unreferenced-export", "orphan-route", "unticked-service", "unused-component", "write-only-state"]);
+    const knownTypes = new Set([
+      "unreferenced-export",
+      "orphan-route",
+      "unticked-service",
+      "unused-component",
+      "write-only-state",
+    ]);
     const types = new Set(report.entries.map((e) => e.orphanType));
     const hasKnownType = [...types].some((t) => knownTypes.has(t));
-    expect(hasKnownType, `Expected at least one known orphan type, got: ${[...types].join(", ")}`).toBe(true);
+    expect(
+      hasKnownType,
+      `Expected at least one known orphan type, got: ${[...types].join(", ")}`
+    ).toBe(true);
   });
 });
 
@@ -132,10 +141,7 @@ describe("Audit runner injection — detects a deliberately orphaned export", ()
     mkdirSync(TEMP_ORPHAN_DIR, { recursive: true });
     // Use a unique name that won't appear in any test file to avoid false "referenced" matches
     const probeName = "__auditProbeOrphanFn_" + Date.now() + "__";
-    writeFileSync(
-      TEMP_ORPHAN_FILE,
-      `export function ${probeName}(): string { return "test"; }\n`
-    );
+    writeFileSync(TEMP_ORPHAN_FILE, `export function ${probeName}(): string { return "test"; }\n`);
 
     try {
       const tmpJson = uniqueJsonPath();

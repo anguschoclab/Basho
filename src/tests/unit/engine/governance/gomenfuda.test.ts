@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import {
   recordGomenfuda,
@@ -62,7 +61,9 @@ describe("Gomenfuda reputation penalty", () => {
 
     const updatedHeya = updated.heyas.get("heya-1") as any;
     // priorCount=1, penalty = 5 * 1.5 * 1 = 7.5 → rounded to 8
-    const expectedPenalty = Math.round(GOMENFUDA_REPUTATION_PENALTY * CONSECUTIVE_WITHDRAWAL_MULTIPLIER * 1);
+    const expectedPenalty = Math.round(
+      GOMENFUDA_REPUTATION_PENALTY * CONSECUTIVE_WITHDRAWAL_MULTIPLIER * 1
+    );
     expect(updatedHeya.reputation).toBe(50 - expectedPenalty);
   });
 
@@ -135,9 +136,21 @@ describe("countGomenfudaForHeya", () => {
     (world as any).events = {
       version: "1.0.0",
       log: [
-        { type: "BASHO_STATUS", category: "discipline", data: { status: "gomenfuda_posted", heyaId: "heya-1", year: 2024 } },
-        { type: "BASHO_STATUS", category: "discipline", data: { status: "gomenfuda_posted", heyaId: "heya-1", year: 2024 } },
-        { type: "BASHO_STATUS", category: "discipline", data: { status: "gomenfuda_posted", heyaId: "heya-2", year: 2024 } },
+        {
+          type: "BASHO_STATUS",
+          category: "discipline",
+          data: { status: "gomenfuda_posted", heyaId: "heya-1", year: 2024 },
+        },
+        {
+          type: "BASHO_STATUS",
+          category: "discipline",
+          data: { status: "gomenfuda_posted", heyaId: "heya-1", year: 2024 },
+        },
+        {
+          type: "BASHO_STATUS",
+          category: "discipline",
+          data: { status: "gomenfuda_posted", heyaId: "heya-2", year: 2024 },
+        },
       ],
       dedupe: {},
     };
@@ -149,8 +162,16 @@ describe("countGomenfudaForHeya", () => {
     (world as any).events = {
       version: "1.0.0",
       log: [
-        { type: "BASHO_STATUS", category: "discipline", data: { status: "gomenfuda_posted", heyaId: "heya-1", year: 2023 } },
-        { type: "BASHO_STATUS", category: "discipline", data: { status: "gomenfuda_posted", heyaId: "heya-1", year: 2024 } },
+        {
+          type: "BASHO_STATUS",
+          category: "discipline",
+          data: { status: "gomenfuda_posted", heyaId: "heya-1", year: 2023 },
+        },
+        {
+          type: "BASHO_STATUS",
+          category: "discipline",
+          data: { status: "gomenfuda_posted", heyaId: "heya-1", year: 2024 },
+        },
       ],
       dedupe: {},
     };
@@ -178,7 +199,11 @@ describe("hasSanctionWarning", () => {
     (world as any).events = {
       version: "1.0.0",
       log: [
-        { type: "BASHO_STATUS", category: "discipline", data: { status: "gomenfuda_posted", heyaId: "heya-1", year: world.year } },
+        {
+          type: "BASHO_STATUS",
+          category: "discipline",
+          data: { status: "gomenfuda_posted", heyaId: "heya-1", year: world.year },
+        },
       ],
       dedupe: {},
     };

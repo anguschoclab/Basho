@@ -15,10 +15,7 @@ import { stableSort } from "../utils/sort";
 import type { ActiveCrisis, CrisisType } from "../types/crises";
 import { isGovernancePlayerRelevant } from "../npcAI/eventSurfacing";
 import { getRikishi } from "../queries";
-import {
-  OVERSLEEP_CHANCE,
-  OVERSLEEP_MOTIVATION_PENALTY,
-} from "../../constants/engine/generation";
+import { OVERSLEEP_CHANCE, OVERSLEEP_MOTIVATION_PENALTY } from "../../constants/engine/generation";
 
 export interface DramaEvent {
   id: string;
@@ -240,8 +237,7 @@ function triggerCrisis(world: WorldState, heyaId: string, type: CrisisType): Sta
               incident: "crisis_resolved",
               choice: "emergency_loan",
               resolutionSuccess: true,
-              narrativeText:
-                "You secure the funds, but the stable's future is heavily mortgaged.",
+              narrativeText: "You secure the funds, but the stable's future is heavily mortgaged.",
             });
             return b.build();
           },

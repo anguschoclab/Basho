@@ -89,9 +89,7 @@ function getProcessedHeyaIds(impact: ReturnType<typeof phase01_week_npc_ai>): Se
   return processed;
 }
 
-function getScoutingMap(
-  impact: ReturnType<typeof phase01_week_npc_ai>
-): Record<string, string> {
+function getScoutingMap(impact: ReturnType<typeof phase01_week_npc_ai>): Record<string, string> {
   return (impact.worldFields?.npcScoutingPriorities ?? {}) as Record<string, string>;
 }
 
@@ -366,8 +364,14 @@ describe("NPC AI rotation", () => {
       const impact1 = phase01_week_npc_ai(world1);
       const impact2 = phase01_week_npc_ai(world2);
 
-      const map1 = JSON.stringify(getScoutingMap(impact1), Object.keys(getScoutingMap(impact1)).sort());
-      const map2 = JSON.stringify(getScoutingMap(impact2), Object.keys(getScoutingMap(impact2)).sort());
+      const map1 = JSON.stringify(
+        getScoutingMap(impact1),
+        Object.keys(getScoutingMap(impact1)).sort()
+      );
+      const map2 = JSON.stringify(
+        getScoutingMap(impact2),
+        Object.keys(getScoutingMap(impact2)).sort()
+      );
 
       expect(map1).toBe(map2);
     });

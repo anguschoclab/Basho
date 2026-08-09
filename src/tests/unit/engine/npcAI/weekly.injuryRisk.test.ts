@@ -79,9 +79,7 @@ describe("makeNPCWeeklyDecision — applyInjuryRiskReduction", () => {
     heya.rikishiIds = ["r1"];
 
     const decision = makeNPCWeeklyDecision(world, "h1");
-    expect(decision.reasoning).not.toContain(
-      expect.stringContaining("[InjuryRisk]")
-    );
+    expect(decision.reasoning).not.toContain(expect.stringContaining("[InjuryRisk]"));
   });
 
   it("reduces training intensity when high-risk ratio exceeds threshold", () => {
@@ -177,8 +175,6 @@ describe("makeNPCWeeklyDecision — applyPromotionAwareness", () => {
     world.ozekiKadoban = { r1: { isKadoban: true, consecutiveMakeKoshi: 1 } } as any;
 
     const decision = makeNPCWeeklyDecision(world, "h1");
-    expect(decision.reasoning).not.toContain(
-      expect.stringContaining("[PromotionAwareness]")
-    );
+    expect(decision.reasoning).not.toContain(expect.stringContaining("[PromotionAwareness]"));
   });
 });

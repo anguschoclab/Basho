@@ -2,7 +2,11 @@ import { describe, it, expect, vi } from "vitest";
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { RikishiCareerTab } from "@/components/rikishi/RikishiCareerTab";
-import type { NotableBoutEntry, NarrativeHighlight, PromotionHistoryEntry } from "@/engine/almanac/types";
+import type {
+  NotableBoutEntry,
+  NarrativeHighlight,
+  PromotionHistoryEntry,
+} from "@/engine/almanac/types";
 import type { CareerSnapshot, Milestone } from "@/engine/types/history";
 
 // Mock recharts to avoid rendering issues in jsdom
@@ -31,8 +35,12 @@ vi.mock("@/engine/systems/narrative/NarrativeService", () => ({
 // Mock SeededRNG
 vi.mock("@/engine/rng", () => ({
   SeededRNG: class {
-    next() { return 0.5; }
-    pick(arr: unknown[]) { return arr[0]; }
+    next() {
+      return 0.5;
+    }
+    pick(arr: unknown[]) {
+      return arr[0];
+    }
   },
 }));
 

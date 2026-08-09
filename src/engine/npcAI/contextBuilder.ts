@@ -24,9 +24,7 @@ export function buildAIContext(
   const perception = buildPerceptionSnapshot(world, heyaId);
   const league = leaguePerception ?? buildLeaguePerception(world);
 
-  const rawOyakata: Oyakata | undefined = oyakataId
-    ? world.oyakata.get(oyakataId)
-    : undefined;
+  const rawOyakata: Oyakata | undefined = oyakataId ? world.oyakata.get(oyakataId) : undefined;
 
   const memory = rawOyakata
     ? consolidateOyakataMemoryPure(world, rawOyakata, perception)

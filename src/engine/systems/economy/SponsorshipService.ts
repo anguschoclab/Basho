@@ -28,4 +28,3 @@ export {
   processSponsorChurn,
   adjustKoenkaiBandToPrestige,
 } from "./sponsorshipMutations";
-

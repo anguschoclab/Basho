@@ -7,7 +7,15 @@ function makeRikishi(id: string, rank: string = "maegashira"): Rikishi {
   return {
     id,
     rank,
-    stats: { aggression: 50, mental: 50, power: 50, speed: 50, technique: 50, balance: 50, stamina: 50 },
+    stats: {
+      aggression: 50,
+      mental: 50,
+      power: 50,
+      speed: 50,
+      technique: 50,
+      balance: 50,
+      stamina: 50,
+    },
   } as unknown as Rikishi;
 }
 
@@ -48,13 +56,20 @@ describe("boutContention", () => {
     it("returns false when standings is empty", () => {
       const east = makeRikishi("east");
       const west = makeRikishi("west");
-      expect(isYushoContention(east, west, makeMockBasho({ standings: new Map(), day: 10 }))).toBe(false);
+      expect(isYushoContention(east, west, makeMockBasho({ standings: new Map(), day: 10 }))).toBe(
+        false
+      );
     });
 
     it("returns false when standings is undefined", () => {
       const east = makeRikishi("east");
       const west = makeRikishi("west");
-      const basho = { id: "test", day: 10, isActive: true, standings: undefined } as unknown as Parameters<typeof isYushoContention>[2];
+      const basho = {
+        id: "test",
+        day: 10,
+        isActive: true,
+        standings: undefined,
+      } as unknown as Parameters<typeof isYushoContention>[2];
       expect(isYushoContention(east, west, basho)).toBe(false);
     });
 
@@ -104,7 +119,9 @@ describe("boutContention", () => {
     it("returns false when standings is empty", () => {
       const east = makeRikishi("east");
       const west = makeRikishi("west");
-      expect(isPlayoffScenario(east, west, makeMockBasho({ standings: new Map(), day: 15 }))).toBe(false);
+      expect(isPlayoffScenario(east, west, makeMockBasho({ standings: new Map(), day: 15 }))).toBe(
+        false
+      );
     });
   });
 });

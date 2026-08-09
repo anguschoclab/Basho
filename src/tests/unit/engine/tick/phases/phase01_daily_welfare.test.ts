@@ -15,7 +15,10 @@ import {
   FATIGUE_RECOVERY_GOOD,
 } from "@/constants/engine/condition";
 
-function makeWorldWithDiet(diet: string, rikishiOverrides: Partial<Rikishi> = {}): {
+function makeWorldWithDiet(
+  diet: string,
+  rikishiOverrides: Partial<Rikishi> = {}
+): {
   world: WorldState;
   heya: Heya;
   rikishi: Rikishi;

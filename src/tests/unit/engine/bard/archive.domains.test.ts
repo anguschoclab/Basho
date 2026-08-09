@@ -2,14 +2,31 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { SeededRNG } from "@/engine/rng";
 
- 
-
 const ALL_DOMAINS = [
-  "combat", "medical", "scouting", "institutional", "world", "media",
-  "system", "events", "rikishi", "npc", "ui", "h2h", "training",
-  "oyakata", "strategy", "dynasty", "pre_bout", "post_bout", "kyujo",
-  "sansho_ceremony", "interview", "ydc_accountability",
-  "post_basho_press", "playoff",
+  "combat",
+  "medical",
+  "scouting",
+  "institutional",
+  "world",
+  "media",
+  "system",
+  "events",
+  "rikishi",
+  "npc",
+  "ui",
+  "h2h",
+  "training",
+  "oyakata",
+  "strategy",
+  "dynasty",
+  "pre_bout",
+  "post_bout",
+  "kyujo",
+  "sansho_ceremony",
+  "interview",
+  "ydc_accountability",
+  "post_basho_press",
+  "playoff",
 ];
 
 describe("Phase 3: Per-domain lazy loading", () => {

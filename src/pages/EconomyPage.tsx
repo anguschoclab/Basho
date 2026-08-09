@@ -107,18 +107,25 @@ export default function EconomyPage() {
 
   // Top earners
   const topEarners = useMemo(() => {
-    const list = (playerRikishi as Array<NonNullable<(typeof playerRikishi)[number]>>)
-      .filter((r): r is NonNullable<typeof r> => r && typeof r === "object");
-    const accessor: Record<string, (r: NonNullable<(typeof playerRikishi)[number]>) => string | number | undefined> = {
+    const list = (playerRikishi as Array<NonNullable<(typeof playerRikishi)[number]>>).filter(
+      (r): r is NonNullable<typeof r> => r && typeof r === "object"
+    );
+    const accessor: Record<
+      string,
+      (r: NonNullable<(typeof playerRikishi)[number]>) => string | number | undefined
+    > = {
       name: (r) => r.shikona,
       kensho: (r) => Number(r.economics?.careerKenshoWon ?? 0) || 0,
     };
     const fn = accessor[earnerSortKey];
-    if (!fn) return list.sort((a, b) => {
-      const av = Number(a.economics?.careerKenshoWon ?? 0) || 0;
-      const bv = Number(b.economics?.careerKenshoWon ?? 0) || 0;
-      return bv - av;
-    }).slice(0, 5);
+    if (!fn)
+      return list
+        .sort((a, b) => {
+          const av = Number(a.economics?.careerKenshoWon ?? 0) || 0;
+          const bv = Number(b.economics?.careerKenshoWon ?? 0) || 0;
+          return bv - av;
+        })
+        .slice(0, 5);
     return [...list].sort((a, b) => compareBy(a, b, fn, earnerSortOrder)).slice(0, 5);
   }, [playerRikishi, earnerSortKey, earnerSortOrder]);
 
@@ -137,7 +144,12 @@ export default function EconomyPage() {
     return (
       <AppLayout subNavTabs={OFFICE_TABS} activeSubTab="economy" pageTitle="Financial Management">
         <div className="flex flex-col items-center justify-center min-h-[60vh]">
-          <EmptyState icon={Loader2} title="Loading Finances" description="Calculating financial health and projections..." className="animate-pulse" />
+          <EmptyState
+            icon={Loader2}
+            title="Loading Finances"
+            description="Calculating financial health and projections..."
+            className="animate-pulse"
+          />
         </div>
       </AppLayout>
     );
@@ -147,7 +159,11 @@ export default function EconomyPage() {
     return (
       <AppLayout subNavTabs={OFFICE_TABS} activeSubTab="economy" pageTitle="Financial Management">
         <div className="flex flex-col items-center justify-center min-h-[60vh]">
-          <EmptyState icon={AlertCircle} title="No Stable Selected" description="You must be managing a stable to view financial records." />
+          <EmptyState
+            icon={AlertCircle}
+            title="No Stable Selected"
+            description="You must be managing a stable to view financial records."
+          />
         </div>
       </AppLayout>
     );

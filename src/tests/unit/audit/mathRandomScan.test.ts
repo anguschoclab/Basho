@@ -10,7 +10,12 @@ function findTsFiles(dir: string, ext: string[]): string[] {
     const fullPath = join(dir, entry.name);
     if (entry.isDirectory()) {
       results.push(...findTsFiles(fullPath, ext));
-    } else if (ext.some((e) => entry.name.endsWith(e)) && !entry.name.endsWith(".test.ts") && !entry.name.endsWith(".test.tsx") && !entry.name.endsWith(".d.ts")) {
+    } else if (
+      ext.some((e) => entry.name.endsWith(e)) &&
+      !entry.name.endsWith(".test.ts") &&
+      !entry.name.endsWith(".test.tsx") &&
+      !entry.name.endsWith(".d.ts")
+    ) {
       results.push(fullPath);
     }
   }

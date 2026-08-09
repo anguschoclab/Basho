@@ -12,17 +12,15 @@ vi.mock("@/components/ui/button", () => ({
 }));
 
 vi.mock("@/components/ui/card", () => ({
-  Card: ({ children, className }: any) => (
-    <div className={className}>{children}</div>
-  ),
-  CardContent: ({ children, className }: any) => (
-    <div className={className}>{children}</div>
-  ),
+  Card: ({ children, className }: any) => <div className={className}>{children}</div>,
+  CardContent: ({ children, className }: any) => <div className={className}>{children}</div>,
 }));
 
 vi.mock("@/components/ui/badge", () => ({
   Badge: ({ children, variant, className }: any) => (
-    <span data-variant={variant} className={className}>{children}</span>
+    <span data-variant={variant} className={className}>
+      {children}
+    </span>
   ),
 }));
 

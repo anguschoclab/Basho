@@ -48,10 +48,7 @@ export function formatFinePenalty(amount: number): string {
   return "Minor fine";
 }
 
-export function formatCurrency(
-  amount: number,
-  locale: "en-US" | "ja-JP" = "ja-JP"
-): string {
+export function formatCurrency(amount: number, locale: "en-US" | "ja-JP" = "ja-JP"): string {
   const formatted = new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "JPY",

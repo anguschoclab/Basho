@@ -170,7 +170,12 @@ describe("InjuryService", () => {
       const west = mockRikishi("w1", { injured: false });
       const result = { winner: "west", kimarite: "yorikiri" } as unknown as BoutResult;
 
-      const impact = onBoutResolvedInjury(world, { match: {} as MatchSchedule, result, east, west });
+      const impact = onBoutResolvedInjury(world, {
+        match: {} as MatchSchedule,
+        result,
+        east,
+        west,
+      });
       expect(impact.entities?.rikishiUpdates?.size).toBeUndefined();
     });
 
@@ -188,7 +193,12 @@ describe("InjuryService", () => {
         uuid: () => "IJ-123",
       } as unknown as SeededRNG);
 
-      const impact = onBoutResolvedInjury(world, { match: {} as MatchSchedule, result, east, west });
+      const impact = onBoutResolvedInjury(world, {
+        match: {} as MatchSchedule,
+        result,
+        east,
+        west,
+      });
       const updates = impact.entities?.rikishiUpdates?.get("e1");
       expect(updates).toBeDefined();
       expect(updates?.injured).toBe(true);

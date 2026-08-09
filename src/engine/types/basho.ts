@@ -225,14 +225,17 @@ export interface BashoState {
    * Per-rikishi bout metrics accumulated during the basho (7.1).
    * Used to populate enriched BashoPerformance fields at basho end.
    */
-  boutMetrics?: Record<Id, {
-    kimariteUsed: Record<string, number>;
-    upsetCount: number;
-    boutDurations: number[];
-    edgeCrisisSurvived: number;
-    comebackWins: number;
-    opponentTiers: number[];
-  }>;
+  boutMetrics?: Record<
+    Id,
+    {
+      kimariteUsed: Record<string, number>;
+      upsetCount: number;
+      boutDurations: number[];
+      edgeCrisisSurvived: number;
+      comebackWins: number;
+      opponentTiers: number[];
+    }
+  >;
 
   /** True for exhibition/jungyo basho — results do not count toward records or banzuke. */
   isExhibition?: boolean;

@@ -18,9 +18,7 @@ import { Id } from "../../types/common";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { FACILITY_REGISTRY, FacilityId } from "../../types/infrastructure";
-import {
-  CONSTRUCTION_BUILD_TIME_THRESHOLD,
-} from "../../../constants/engine/economyExtended";
+import { CONSTRUCTION_BUILD_TIME_THRESHOLD } from "../../../constants/engine/economyExtended";
 import { validateConstruction, isUnexpectedFailureReason } from "./infrastructureValidation";
 
 /**
@@ -62,7 +60,12 @@ export const InfrastructureService = {
     const builder = createImpactBuilder("startConstruction");
 
     const result = validateConstruction(world, heyaId, facilityId);
-    const isInvalidResult = !result.ok || !result.heya || !result.def || result.cost === undefined || result.nextLevel === undefined;
+    const isInvalidResult =
+      !result.ok ||
+      !result.heya ||
+      !result.def ||
+      result.cost === undefined ||
+      result.nextLevel === undefined;
     if (isInvalidResult) {
       if (isUnexpectedFailureReason(result.reason)) {
         builder.logEvent(

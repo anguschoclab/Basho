@@ -12,7 +12,11 @@ function findFiles(dir: string, exts: string[]): string[] {
     const fullPath = join(dir, entry.name);
     if (entry.isDirectory()) {
       results.push(...findFiles(fullPath, exts));
-    } else if (exts.some((e) => entry.name.endsWith(e)) && !entry.name.endsWith(".test.ts") && !entry.name.endsWith(".test.tsx")) {
+    } else if (
+      exts.some((e) => entry.name.endsWith(e)) &&
+      !entry.name.endsWith(".test.ts") &&
+      !entry.name.endsWith(".test.tsx")
+    ) {
       results.push(fullPath);
     }
   }
@@ -20,7 +24,7 @@ function findFiles(dir: string, exts: string[]): string[] {
 }
 
 describe("L4.6: accessibility & UX debt", () => {
-  it("Button component defaults type to \"button\" (prevents accidental form submits)", () => {
+  it('Button component defaults type to "button" (prevents accidental form submits)', () => {
     const buttonSource = readFileSync(join(SRC_DIR, "components/ui/button.tsx"), "utf-8");
     expect(buttonSource).toContain('type = "button"');
   });
@@ -38,7 +42,13 @@ describe("L4.6: accessibility & UX debt", () => {
       const content = readFileSync(file, "utf-8");
       const lines = content.split("\n");
       lines.forEach((line, i) => {
-        if (/className=.*bg-(red|green|yellow|blue|destructive|success|warning)/.test(line) && !line.includes("text-") && !line.includes("aria-label") && !line.includes("aria-hidden") && !line.includes("children")) {
+        if (
+          /className=.*bg-(red|green|yellow|blue|destructive|success|warning)/.test(line) &&
+          !line.includes("text-") &&
+          !line.includes("aria-label") &&
+          !line.includes("aria-hidden") &&
+          !line.includes("children")
+        ) {
           violations.push(`${file}:${i + 1}: ${line.trim()}`);
         }
       });

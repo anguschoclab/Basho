@@ -84,9 +84,7 @@ function makeWorld() {
     week: 1,
     seed: "test",
     rng: { int: () => 0 } as any,
-    heyas: new Map([
-      ["h1", { id: "h1", name: "Test Heya", rikishiIds: ["r1"] }],
-    ]),
+    heyas: new Map([["h1", { id: "h1", name: "Test Heya", rikishiIds: ["r1"] }]]),
     rikishi: new Map([
       [
         "r1",
@@ -123,7 +121,9 @@ describe("InjuryRecoveryPage — domains gate", () => {
     // It should show a loading indicator instead
     expect(container.textContent).not.toContain("injurySummary");
     // Look for a loading indicator — either a skeleton or loading text
-    const loadingEl = container.querySelector("[data-testid='domains-loading'], [role='status'], .animate-pulse, .animate-spin");
+    const loadingEl = container.querySelector(
+      "[data-testid='domains-loading'], [role='status'], .animate-pulse, .animate-spin"
+    );
     expect(loadingEl ?? container.textContent).toBeTruthy();
   });
 

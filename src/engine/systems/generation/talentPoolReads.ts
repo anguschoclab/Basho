@@ -109,4 +109,3 @@ export function getForeignCountsByHeya(world: WorldState): Map<Id, number> {
 export function countsAsForeignFromRikishi(rikishi: { nationality?: string }): boolean {
   return isForeign(rikishi);
 }
-

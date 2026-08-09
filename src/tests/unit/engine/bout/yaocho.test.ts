@@ -40,7 +40,12 @@ describe("Yaocho — evaluateYaochoIndicators", () => {
   it("detects same-heya bout", () => {
     const east = mockRikishi("r-east", { heyaId: "heya-1" });
     const west = mockRikishi("r-west", { heyaId: "heya-1" });
-    const world = makeMockWorld({ rikishi: new Map([['r-east', east], ['r-west', west]]) }) as WorldState;
+    const world = makeMockWorld({
+      rikishi: new Map([
+        ["r-east", east],
+        ["r-west", west],
+      ]),
+    }) as WorldState;
     const basho = makeMockBasho({ day: 15 });
 
     const indicators = evaluateYaochoIndicators(world, makeBoutResult(), basho, 15);
@@ -50,7 +55,12 @@ describe("Yaocho — evaluateYaochoIndicators", () => {
   it("detects different heya bout", () => {
     const east = mockRikishi("r-east", { heyaId: "heya-1" });
     const west = mockRikishi("r-west", { heyaId: "heya-2" });
-    const world = makeMockWorld({ rikishi: new Map([['r-east', east], ['r-west', west]]) }) as WorldState;
+    const world = makeMockWorld({
+      rikishi: new Map([
+        ["r-east", east],
+        ["r-west", west],
+      ]),
+    }) as WorldState;
     const basho = makeMockBasho({ day: 15 });
 
     const indicators = evaluateYaochoIndicators(world, makeBoutResult(), basho, 15);
@@ -60,7 +70,12 @@ describe("Yaocho — evaluateYaochoIndicators", () => {
   it("detects 7-7 loser on senshuraku", () => {
     const east = mockRikishi("r-east", { heyaId: "heya-1" });
     const west = mockRikishi("r-west", { heyaId: "heya-2" });
-    const world = makeMockWorld({ rikishi: new Map([['r-east', east], ['r-west', west]]) }) as WorldState;
+    const world = makeMockWorld({
+      rikishi: new Map([
+        ["r-east", east],
+        ["r-west", west],
+      ]),
+    }) as WorldState;
     const basho = makeMockBasho({ day: 15 });
     basho.standings = new Map([
       ["r-east", { wins: 10, losses: 5 }],
@@ -74,7 +89,12 @@ describe("Yaocho — evaluateYaochoIndicators", () => {
   it("does not flag 7-7 on non-senshuraku days", () => {
     const east = mockRikishi("r-east", { heyaId: "heya-1" });
     const west = mockRikishi("r-west", { heyaId: "heya-2" });
-    const world = makeMockWorld({ rikishi: new Map([['r-east', east], ['r-west', west]]) }) as WorldState;
+    const world = makeMockWorld({
+      rikishi: new Map([
+        ["r-east", east],
+        ["r-west", west],
+      ]),
+    }) as WorldState;
     const basho = makeMockBasho({ day: 10 });
     basho.standings = new Map([
       ["r-east", { wins: 10, losses: 5 }],
@@ -88,7 +108,12 @@ describe("Yaocho — evaluateYaochoIndicators", () => {
   it("detects suspiciously short bout", () => {
     const east = mockRikishi("r-east", { heyaId: "heya-1" });
     const west = mockRikishi("r-west", { heyaId: "heya-2" });
-    const world = makeMockWorld({ rikishi: new Map([['r-east', east], ['r-west', west]]) }) as WorldState;
+    const world = makeMockWorld({
+      rikishi: new Map([
+        ["r-east", east],
+        ["r-west", west],
+      ]),
+    }) as WorldState;
     const basho = makeMockBasho({ day: 15 });
 
     const result = makeBoutResult("r-east", "r-west", { duration: 2 });
@@ -99,7 +124,12 @@ describe("Yaocho — evaluateYaochoIndicators", () => {
   it("does not flag fusensho as suspiciously short", () => {
     const east = mockRikishi("r-east", { heyaId: "heya-1" });
     const west = mockRikishi("r-west", { heyaId: "heya-2" });
-    const world = makeMockWorld({ rikishi: new Map([['r-east', east], ['r-west', west]]) }) as WorldState;
+    const world = makeMockWorld({
+      rikishi: new Map([
+        ["r-east", east],
+        ["r-west", west],
+      ]),
+    }) as WorldState;
     const basho = makeMockBasho({ day: 15 });
 
     const result = makeBoutResult("r-east", "r-west", {
@@ -175,7 +205,12 @@ describe("Yaocho — checkYaocho", () => {
   it("skips fusensho results", () => {
     const east = mockRikishi("r-east", { heyaId: "heya-1" });
     const west = mockRikishi("r-west", { heyaId: "heya-1" });
-    const world = makeMockWorld({ rikishi: new Map([['r-east', east], ['r-west', west]]) }) as WorldState;
+    const world = makeMockWorld({
+      rikishi: new Map([
+        ["r-east", east],
+        ["r-west", west],
+      ]),
+    }) as WorldState;
     const basho = makeMockBasho({ day: 15 });
     basho.standings = new Map([
       ["r-east", { wins: 7, losses: 7 }],
@@ -194,7 +229,12 @@ describe("Yaocho — checkYaocho", () => {
   it("does not trigger for clean bouts with no indicators", () => {
     const east = mockRikishi("r-east", { heyaId: "heya-1" });
     const west = mockRikishi("r-west", { heyaId: "heya-2" });
-    const world = makeMockWorld({ rikishi: new Map([['r-east', east], ['r-west', west]]) }) as WorldState;
+    const world = makeMockWorld({
+      rikishi: new Map([
+        ["r-east", east],
+        ["r-west", west],
+      ]),
+    }) as WorldState;
     const basho = makeMockBasho({ day: 5 });
     basho.standings = new Map([
       ["r-east", { wins: 3, losses: 2 }],
@@ -215,7 +255,12 @@ describe("Yaocho — checkYaocho", () => {
   it("can trigger for same-heya 7-7 senshuraku bout", () => {
     const east = mockRikishi("r-east", { heyaId: "heya-1" });
     const west = mockRikishi("r-west", { heyaId: "heya-1" });
-    const world = makeMockWorld({ rikishi: new Map([['r-east', east], ['r-west', west]]) }) as WorldState;
+    const world = makeMockWorld({
+      rikishi: new Map([
+        ["r-east", east],
+        ["r-west", west],
+      ]),
+    }) as WorldState;
     const basho = makeMockBasho({ day: 15 });
     basho.standings = new Map([
       ["r-east", { wins: 8, losses: 6 }],
@@ -241,7 +286,12 @@ describe("Yaocho — checkYaocho", () => {
   it("is deterministic given the same seed", () => {
     const east = mockRikishi("r-east", { heyaId: "heya-1" });
     const west = mockRikishi("r-west", { heyaId: "heya-1" });
-    const world = makeMockWorld({ rikishi: new Map([['r-east', east], ['r-west', west]]) }) as WorldState;
+    const world = makeMockWorld({
+      rikishi: new Map([
+        ["r-east", east],
+        ["r-west", west],
+      ]),
+    }) as WorldState;
     const basho = makeMockBasho({ day: 15 });
     basho.standings = new Map([
       ["r-east", { wins: 8, losses: 6 }],

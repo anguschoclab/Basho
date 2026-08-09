@@ -196,9 +196,7 @@ export function FacilitiesManagementPanel({
 
       {/* Feedback toast */}
       {toast && (
-        <div
-          className="p-3 rounded-lg border text-sm bg-success/10 border-success/30 text-success"
-        >
+        <div className="p-3 rounded-lg border text-sm bg-success/10 border-success/30 text-success">
           Upgraded {toast.axis} from {toast.oldLevel} → {toast.newLevel} for {formatYen(toast.cost)}
         </div>
       )}

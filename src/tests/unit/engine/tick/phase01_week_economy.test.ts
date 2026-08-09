@@ -18,8 +18,20 @@ describe("phase01_week_economy", () => {
     });
 
     vi.mocked(finance.calculateHeyaWeeklyFinances)
-      .mockReturnValueOnce({ revenue: 100, expenses: 50, totalBurn: 50, nextFunds: 1000, runwayMonths: 12 })
-      .mockReturnValueOnce({ revenue: 0, expenses: 100, totalBurn: 100, nextFunds: -500, runwayMonths: 0 });
+      .mockReturnValueOnce({
+        revenue: 100,
+        expenses: 50,
+        totalBurn: 50,
+        nextFunds: 1000,
+        runwayMonths: 12,
+      })
+      .mockReturnValueOnce({
+        revenue: 0,
+        expenses: 100,
+        totalBurn: 100,
+        nextFunds: -500,
+        runwayMonths: 0,
+      });
 
     const impact = phase01_week_economy(world);
 

@@ -26,7 +26,7 @@ export function AppSidebar() {
 
   const isLoaded = !!world;
   const tutorialCompleted = world?.tutorialState?.completed ?? false;
-  const playerHeya = isLoaded && world ? getPlayerHeya(world) ?? null : null;
+  const playerHeya = isLoaded && world ? (getPlayerHeya(world) ?? null) : null;
 
   const inBasho = world?.cyclePhase === "active_basho";
   const bashoDay = world?.currentBasho?.day;

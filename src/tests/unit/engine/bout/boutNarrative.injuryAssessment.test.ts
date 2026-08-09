@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 import type { PbpLine, PbpTag } from "@/engine/bout/boutNarrative";
@@ -36,17 +35,37 @@ function hasTag(l: PbpLine, tag: PbpTag): boolean {
 
 describe("post-bout injury assessment narrative (6.3)", () => {
   it("post-bout injury assessment when inBoutInjury is non-null", () => {
-    const east = mockRikishi("r1", { rank: "maegashira", division: "makuuchi", shikona: "EastRiki" });
-    const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi", shikona: "WestRiki" });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]), year: 2025 } as unknown as WorldState;
+    const east = mockRikishi("r1", {
+      rank: "maegashira",
+      division: "makuuchi",
+      shikona: "EastRiki",
+    });
+    const west = mockRikishi("r2", {
+      rank: "maegashira",
+      division: "makuuchi",
+      shikona: "WestRiki",
+    });
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+      year: 2025,
+    } as unknown as WorldState;
     const result = makeBoutResult({
-      inBoutInjury: { rikishiId: "r2", area: "shoulder", severity: "moderate", triggerEvent: "edge_crisis" },
+      inBoutInjury: {
+        rikishiId: "r2",
+        area: "shoulder",
+        severity: "moderate",
+        triggerEvent: "edge_crisis",
+      },
     });
 
     generateBoutNarrative(result, east, west, undefined, 7, "injury-assess-seed", world);
     const lines = getLines(result);
     const injuryLines = lines.filter(
-      (l) => l.phase === "post_bout" && hasTag(l, "injury") && l.text.toLowerCase().includes("westriki")
+      (l) =>
+        l.phase === "post_bout" && hasTag(l, "injury") && l.text.toLowerCase().includes("westriki")
     );
 
     expect(injuryLines.length).toBeGreaterThanOrEqual(1);
@@ -55,31 +74,55 @@ describe("post-bout injury assessment narrative (6.3)", () => {
   it("no injury assessment when inBoutInjury is null", () => {
     const east = mockRikishi("r1", { rank: "maegashira", division: "makuuchi" });
     const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi" });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]), year: 2025 } as unknown as WorldState;
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+      year: 2025,
+    } as unknown as WorldState;
     const result = makeBoutResult({ inBoutInjury: null });
 
     generateBoutNarrative(result, east, west, undefined, 7, "no-injury-seed", world);
     const lines = getLines(result);
     // Filter to post_bout injury lines that mention assessment (not pre-bout injury mentions)
-    const assessmentLines = lines.filter(
-      (l) => l.phase === "post_bout" && hasTag(l, "injury")
-    );
+    const assessmentLines = lines.filter((l) => l.phase === "post_bout" && hasTag(l, "injury"));
 
     expect(assessmentLines.length).toBe(0);
   });
 
   it("serious severity produces assessment text", () => {
-    const east = mockRikishi("r1", { rank: "maegashira", division: "makuuchi", shikona: "EastRiki" });
-    const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi", shikona: "WestRiki" });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]), year: 2025 } as unknown as WorldState;
+    const east = mockRikishi("r1", {
+      rank: "maegashira",
+      division: "makuuchi",
+      shikona: "EastRiki",
+    });
+    const west = mockRikishi("r2", {
+      rank: "maegashira",
+      division: "makuuchi",
+      shikona: "WestRiki",
+    });
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+      year: 2025,
+    } as unknown as WorldState;
     const result = makeBoutResult({
-      inBoutInjury: { rikishiId: "r2", area: "shoulder", severity: "serious", triggerEvent: "edge_crisis" },
+      inBoutInjury: {
+        rikishiId: "r2",
+        area: "shoulder",
+        severity: "serious",
+        triggerEvent: "edge_crisis",
+      },
     });
 
     generateBoutNarrative(result, east, west, undefined, 7, "serious-injury-seed", world);
     const lines = getLines(result);
     const injuryLines = lines.filter(
-      (l) => l.phase === "post_bout" && hasTag(l, "injury") && l.text.toLowerCase().includes("westriki")
+      (l) =>
+        l.phase === "post_bout" && hasTag(l, "injury") && l.text.toLowerCase().includes("westriki")
     );
 
     expect(injuryLines.length).toBeGreaterThan(0);
@@ -87,17 +130,37 @@ describe("post-bout injury assessment narrative (6.3)", () => {
   });
 
   it("injured rikishi identified correctly (east/winner)", () => {
-    const east = mockRikishi("r1", { rank: "maegashira", division: "makuuchi", shikona: "EastRiki" });
-    const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi", shikona: "WestRiki" });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]), year: 2025 } as unknown as WorldState;
+    const east = mockRikishi("r1", {
+      rank: "maegashira",
+      division: "makuuchi",
+      shikona: "EastRiki",
+    });
+    const west = mockRikishi("r2", {
+      rank: "maegashira",
+      division: "makuuchi",
+      shikona: "WestRiki",
+    });
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+      year: 2025,
+    } as unknown as WorldState;
     const result = makeBoutResult({
-      inBoutInjury: { rikishiId: "r1", area: "knee", severity: "moderate", triggerEvent: "edge_crisis" },
+      inBoutInjury: {
+        rikishiId: "r1",
+        area: "knee",
+        severity: "moderate",
+        triggerEvent: "edge_crisis",
+      },
     });
 
     generateBoutNarrative(result, east, west, undefined, 7, "east-injury-seed", world);
     const lines = getLines(result);
     const injuryLines = lines.filter(
-      (l) => l.phase === "post_bout" && hasTag(l, "injury") && l.text.toLowerCase().includes("eastriki")
+      (l) =>
+        l.phase === "post_bout" && hasTag(l, "injury") && l.text.toLowerCase().includes("eastriki")
     );
 
     expect(injuryLines.length).toBeGreaterThanOrEqual(1);

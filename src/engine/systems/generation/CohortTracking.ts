@@ -9,10 +9,7 @@
 import type { Rikishi } from "../../types/rikishi";
 
 /** Sekitori divisions (juryo and above) */
-const SEKITORI_DIVISIONS = new Set<string>([
-  "juryo",
-  "makuuchi",
-]);
+const SEKITORI_DIVISIONS = new Set<string>(["juryo", "makuuchi"]);
 
 export interface CohortSummary {
   cohortId: string;
@@ -28,10 +25,7 @@ export interface CohortSummary {
  * Assign a recruitment cohort ID to a rikishi.
  * Does not override an existing cohort assignment.
  */
-export function assignRecruitmentCohort(
-  rikishi: Rikishi,
-  cohortId: string
-): Rikishi {
+export function assignRecruitmentCohort(rikishi: Rikishi, cohortId: string): Rikishi {
   if (rikishi.recruitmentCohortId) return rikishi;
   return { ...rikishi, recruitmentCohortId: cohortId };
 }
@@ -39,10 +33,7 @@ export function assignRecruitmentCohort(
 /**
  * Get all rikishi belonging to a specific cohort.
  */
-export function getCohortMembers(
-  allRikishi: Rikishi[],
-  cohortId: string
-): Rikishi[] {
+export function getCohortMembers(allRikishi: Rikishi[], cohortId: string): Rikishi[] {
   return allRikishi.filter((r) => r.recruitmentCohortId === cohortId);
 }
 

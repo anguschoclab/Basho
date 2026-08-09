@@ -67,9 +67,7 @@ function sendCommand(cmd: EngineCommand) {
 }
 
 function getMessagesOfType(type: string): any[] {
-  return mockPostMessage.mock.calls
-    .map((call) => call[0])
-    .filter((msg: any) => msg.type === type);
+  return mockPostMessage.mock.calls.map((call) => call[0]).filter((msg: any) => msg.type === type);
 }
 
 describe("P2.2: Worker digest emission", () => {

@@ -6,8 +6,6 @@ import { makeBoutResult, makeBoutWorld } from "@/tests/helpers/boutTestHelpers";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
 import type { H2HRecord } from "@/engine/types/records";
 
- 
-
 function getPreBoutLines(result: BoutResult) {
   return (result.pbpLines ?? []).filter((l) => l.phase === "pre_bout");
 }
@@ -30,8 +28,16 @@ describe("generateBoutNarrative — true H2H streak (T20)", () => {
   });
 
   it("T20.1: streak >= 3 → H2H streak line with rivalry tag", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 5,
+      currentBashoLosses: 3,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 3,
+      currentBashoLosses: 5,
+    });
     east.h2h[west.id] = makeH2H({ streak: 5 });
     const world = makeBoutWorld(east, west);
     const result = makeBoutResult();
@@ -41,8 +47,16 @@ describe("generateBoutNarrative — true H2H streak (T20)", () => {
   });
 
   it("T20.3: streak = 2 → no streak line (below threshold)", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 5,
+      currentBashoLosses: 3,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 3,
+      currentBashoLosses: 5,
+    });
     east.h2h[west.id] = makeH2H({ streak: 2 });
     const world = makeBoutWorld(east, west);
     const result = makeBoutResult();
@@ -52,8 +66,16 @@ describe("generateBoutNarrative — true H2H streak (T20)", () => {
   });
 
   it("T20.4: streak = 0 → no streak line", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 5,
+      currentBashoLosses: 3,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 3,
+      currentBashoLosses: 5,
+    });
     east.h2h[west.id] = makeH2H({ streak: 0 });
     const world = makeBoutWorld(east, west);
     const result = makeBoutResult();
@@ -63,8 +85,16 @@ describe("generateBoutNarrative — true H2H streak (T20)", () => {
   });
 
   it("T20.5: h2h entry missing → no streak line, no error", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 5,
+      currentBashoLosses: 3,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 3,
+      currentBashoLosses: 5,
+    });
     // No h2h entry set
     const world = makeBoutWorld(east, west);
     const result = makeBoutResult();
@@ -76,8 +106,16 @@ describe("generateBoutNarrative — true H2H streak (T20)", () => {
   });
 
   it("T20.2: negative streak (losing streak) → streak line from opponent perspective", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 5,
+      currentBashoLosses: 3,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 3,
+      currentBashoLosses: 5,
+    });
     east.h2h[west.id] = makeH2H({ streak: -4 });
     const world = makeBoutWorld(east, west);
     const result = makeBoutResult();
@@ -87,8 +125,16 @@ describe("generateBoutNarrative — true H2H streak (T20)", () => {
   });
 
   it("T20.10: no [MISSING:] tokens in H2H streak lines", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 5, currentBashoLosses: 3 });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 5 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 5,
+      currentBashoLosses: 3,
+    });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 3,
+      currentBashoLosses: 5,
+    });
     east.h2h[west.id] = makeH2H({ streak: 6 });
     const world = makeBoutWorld(east, west);
     const result = makeBoutResult();

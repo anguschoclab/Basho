@@ -32,7 +32,7 @@ export interface RegressionResult {
 export function checkRegression(
   baseline: BenchmarkRun,
   current: BenchmarkRun,
-  threshold: number = THRESHOLD,
+  threshold: number = THRESHOLD
 ): RegressionResult {
   const baselineS3 = baseline.results.find((r) => r.scenario === SCENARIO);
   const currentS3 = current.results.find((r) => r.scenario === SCENARIO);
@@ -75,7 +75,10 @@ export function checkRegression(
   };
 }
 
-export function seedBaseline(current: BenchmarkRun, outputPath: string = BASELINE_PATH): RegressionResult {
+export function seedBaseline(
+  current: BenchmarkRun,
+  outputPath: string = BASELINE_PATH
+): RegressionResult {
   writeFileSync(outputPath, JSON.stringify(current, null, 2));
   return {
     passed: true,

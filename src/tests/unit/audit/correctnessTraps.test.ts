@@ -10,13 +10,16 @@ function findEngineTsFiles(dir: string): string[] {
     const fullPath = join(dir, entry.name);
     if (entry.isDirectory()) {
       results.push(...findEngineTsFiles(fullPath));
-    } else if (entry.name.endsWith(".ts") && !entry.name.endsWith(".test.ts") && !entry.name.endsWith(".d.ts")) {
+    } else if (
+      entry.name.endsWith(".ts") &&
+      !entry.name.endsWith(".test.ts") &&
+      !entry.name.endsWith(".d.ts")
+    ) {
       results.push(fullPath);
     }
   }
   return results;
 }
-
 
 describe("L4.3: correctness traps — parseInt radix", () => {
   it("all parseInt calls in engine use an explicit radix", () => {
@@ -63,7 +66,9 @@ describe("L4.3: correctness traps — .sort() without clone", () => {
       });
     }
 
-    expect(violations, `In-place sort on world state arrays:\n${violations.join("\n")}`).toEqual([]);
+    expect(violations, `In-place sort on world state arrays:\n${violations.join("\n")}`).toEqual(
+      []
+    );
   });
 });
 
@@ -89,7 +94,10 @@ describe("L4.3: correctness traps — loose equality (== / != with non-null valu
       });
     }
 
-    expect(violations, `Loose equality with non-null values (use === or !==):\n${violations.join("\n")}`).toEqual([]);
+    expect(
+      violations,
+      `Loose equality with non-null values (use === or !==):\n${violations.join("\n")}`
+    ).toEqual([]);
   });
 });
 
@@ -110,8 +118,10 @@ describe("L4.3: correctness traps — mutable default arguments", () => {
         if (/=\s*new\s+(?:Map|Set|Array)\s*\(\s*\)/.test(line)) {
           // Must be a function parameter default: has param: Type = new ... pattern
           // and the line is part of a parameter list (contains , or ) at end)
-          if (/\w+\s*:\s*[\w<>[\]|, ]+\s*=\s*new\s+(?:Map|Set|Array)/.test(line) &&
-              /[,)]\s*$/.test(trimmed)) {
+          if (
+            /\w+\s*:\s*[\w<>[\]|, ]+\s*=\s*new\s+(?:Map|Set|Array)/.test(line) &&
+            /[,)]\s*$/.test(trimmed)
+          ) {
             violations.push(`${file}:${i + 1}: ${trimmed}`);
           }
         }
@@ -120,7 +130,7 @@ describe("L4.3: correctness traps — mutable default arguments", () => {
 
     expect(
       violations.length,
-      `new Map()/Set()/Array() as default arguments:\n${violations.join("\n")}`,
+      `new Map()/Set()/Array() as default arguments:\n${violations.join("\n")}`
     ).toBe(0);
   });
 });

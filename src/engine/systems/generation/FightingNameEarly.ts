@@ -16,21 +16,13 @@ export const EARLY_SHIKONA_CHANCE = 0.15;
 export const EARLY_SHIKONA_MOTIVATION_BOOST = 3;
 
 /** Divisions eligible for early shikona */
-const LOWER_DIVISIONS = new Set([
-  "jonokuchi",
-  "jonidan",
-  "sandanme",
-  "makushita",
-]);
+const LOWER_DIVISIONS = new Set(["jonokuchi", "jonidan", "sandanme", "makushita"]);
 
 /**
  * Maybe assign `shikonaConferredEarly` flag to a rikishi during generation.
  * Only applies to lower-division rikishi (below juryo).
  */
-export function maybeAssignEarlyShikona(
-  rikishi: Rikishi,
-  rng: SeededRNG
-): Rikishi {
+export function maybeAssignEarlyShikona(rikishi: Rikishi, rng: SeededRNG): Rikishi {
   // Don't override existing flag
   if (rikishi.shikonaConferredEarly) return rikishi;
 

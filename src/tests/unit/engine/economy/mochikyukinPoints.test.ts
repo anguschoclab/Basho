@@ -15,8 +15,6 @@ import {
 } from "@/constants/engine/economic";
 import { makeMockWorld, mockRikishi } from "../utils";
 
- 
-
 function makeSekitori(id: string, overrides: Partial<any> = {}) {
   return mockRikishi(id, {
     rank: "maegashira",
@@ -450,7 +448,11 @@ describe("accumulateMochikyukinPoints — cumulative accumulation", () => {
     } as any);
     const resolved2 = resolveImpacts(resolved1, [impact2]);
     const points2 = resolved2.rikishi.get("r1")?.stats?.achievements?.mochikyukinPoints;
-    expect(points2).toBe(10 + 2 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN + 1 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN);
+    expect(points2).toBe(
+      10 +
+        2 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN +
+        1 * MOCHIKYUKIN_POINTS_KACHI_KOSHI_PER_NET_WIN
+    );
   });
 });
 
@@ -460,12 +462,23 @@ describe("payMochikyukinBonuses — sanyaku rank floors", () => {
       rank: "sekiwake",
       stats: {
         achievements: {
-          kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0,
+          kinboshiEarned: 0,
+          ginboshiEarned: 0,
+          kinboshiConceded: 0,
+          ginboshiConceded: 0,
           specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
           mochikyukinPoints: 50,
         },
       } as any,
-      economics: { cash: 0, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0, popularity: 50 } as any,
+      economics: {
+        cash: 0,
+        retirementFund: 0,
+        careerKenshoWon: 0,
+        kinboshiCount: 0,
+        totalEarnings: 0,
+        currentBashoEarnings: 0,
+        popularity: 50,
+      } as any,
     });
     const world = makeMockWorld({ rikishi: new Map([["r1", r]]) });
     const impact = payMochikyukinBonuses(world, 0);
@@ -480,12 +493,23 @@ describe("payMochikyukinBonuses — sanyaku rank floors", () => {
       rank: "komusubi",
       stats: {
         achievements: {
-          kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0,
+          kinboshiEarned: 0,
+          ginboshiEarned: 0,
+          kinboshiConceded: 0,
+          ginboshiConceded: 0,
           specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
           mochikyukinPoints: 50,
         },
       } as any,
-      economics: { cash: 0, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashoEarnings: 0, popularity: 50 } as any,
+      economics: {
+        cash: 0,
+        retirementFund: 0,
+        careerKenshoWon: 0,
+        kinboshiCount: 0,
+        totalEarnings: 0,
+        currentBashoEarnings: 0,
+        popularity: 50,
+      } as any,
     });
     const world = makeMockWorld({ rikishi: new Map([["r1", r]]) });
     const impact = payMochikyukinBonuses(world, 0);
@@ -500,12 +524,23 @@ describe("payMochikyukinBonuses — sanyaku rank floors", () => {
       rank: "maegashira",
       stats: {
         achievements: {
-          kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0,
+          kinboshiEarned: 0,
+          ginboshiEarned: 0,
+          kinboshiConceded: 0,
+          ginboshiConceded: 0,
           specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
           mochikyukinPoints: 100,
         },
       } as any,
-      economics: { cash: 0, retirementFund: 0, careerKenshoWon: 0, kinboshiCount: 0, totalEarnings: 0, currentBashhoEarnings: 0, popularity: 50 } as any,
+      economics: {
+        cash: 0,
+        retirementFund: 0,
+        careerKenshoWon: 0,
+        kinboshiCount: 0,
+        totalEarnings: 0,
+        currentBashhoEarnings: 0,
+        popularity: 50,
+      } as any,
     });
     const world = makeMockWorld({ rikishi: new Map([["r1", r]]) });
     const impact = payMochikyukinBonuses(world, 4);

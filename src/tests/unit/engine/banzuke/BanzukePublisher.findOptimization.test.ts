@@ -63,18 +63,14 @@ describe("BanzukePublisher.findOptimization — regression tests", () => {
       currentBashoLosses: 10,
       consecutiveStrongOzeki: 0,
     });
-    const standings = new Map([
-      ["r-ozeki", { wins: 5, losses: 10, absences: 0 }],
-    ]);
+    const standings = new Map([["r-ozeki", { wins: 5, losses: 10, absences: 0 }]]);
     const world = makeWorldForPublish([r], standings, {
       ozekiKadoban: { "r-ozeki": { isKadoban: true, consecutiveMakeKoshi: 1 } },
     });
     const impact = publishBanzukeUpdate(world);
 
     const movementEvents = findLoggedEvents(impact, "banzuke_movement");
-    const ozekiMovement = movementEvents.find(
-      (e: any) => e.data.rikishiId === "r-ozeki"
-    );
+    const ozekiMovement = movementEvents.find((e: any) => e.data.rikishiId === "r-ozeki");
     if (ozekiMovement) {
       const from = ozekiMovement.data.from as string;
       const to = ozekiMovement.data.to as string;
@@ -94,9 +90,7 @@ describe("BanzukePublisher.findOptimization — regression tests", () => {
       currentBashoWins: 11,
       currentBashoLosses: 4,
     });
-    const standings = new Map([
-      ["r-maegashira-1", { wins: 11, losses: 4, absences: 0 }],
-    ]);
+    const standings = new Map([["r-maegashira-1", { wins: 11, losses: 4, absences: 0 }]]);
     const world = makeWorldForPublish([r], standings);
     const impact = publishBanzukeUpdate(world);
 
@@ -123,9 +117,7 @@ describe("BanzukePublisher.findOptimization — regression tests", () => {
       currentBashoWins: 7,
       currentBashoLosses: 8,
     });
-    const standings = new Map([
-      ["r-maegashira-low", { wins: 7, losses: 8, absences: 0 }],
-    ]);
+    const standings = new Map([["r-maegashira-low", { wins: 7, losses: 8, absences: 0 }]]);
     const world = makeWorldForPublish([r], standings);
     const impact = publishBanzukeUpdate(world);
 
@@ -154,16 +146,12 @@ describe("BanzukePublisher.findOptimization — regression tests", () => {
       consecutiveStrongSekiwake: 2,
       sekiwakeThreeBashoWins: 33,
     });
-    const standings = new Map([
-      ["r-sekiwake", { wins: 12, losses: 3, absences: 0 }],
-    ]);
+    const standings = new Map([["r-sekiwake", { wins: 12, losses: 3, absences: 0 }]]);
     const world = makeWorldForPublish([r], standings);
     const impact = publishBanzukeUpdate(world);
 
     const ozekiPromoEvents = findLoggedEvents(impact, "ozeki_promotion");
-    const forRikishi = ozekiPromoEvents.find(
-      (e: any) => e.data.rikishiId === "r-sekiwake"
-    );
+    const forRikishi = ozekiPromoEvents.find((e: any) => e.data.rikishiId === "r-sekiwake");
     if (forRikishi) {
       expect(forRikishi.data.status).toBe("ozeki_promotion");
       expect(forRikishi.data.description).toContain("Ozeki");
@@ -191,9 +179,7 @@ describe("BanzukePublisher.findOptimization — regression tests", () => {
         },
       ] as any,
     });
-    const standings = new Map([
-      ["r-ozeki-yusho", { wins: 14, losses: 1, absences: 0 }],
-    ]);
+    const standings = new Map([["r-ozeki-yusho", { wins: 14, losses: 1, absences: 0 }]]);
     const world = makeWorldForPublish([r], standings);
     const impact = publishBanzukeUpdate(world);
 

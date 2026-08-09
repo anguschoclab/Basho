@@ -32,7 +32,11 @@ function makeRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikishi {
   });
 }
 
-function makePair(aId: string, bId: string, chemistry: SparringPair["chemistry"] = "neutral"): SparringPair {
+function makePair(
+  aId: string,
+  bId: string,
+  chemistry: SparringPair["chemistry"] = "neutral"
+): SparringPair {
   return {
     key: `${aId}|${bId}`,
     aId,

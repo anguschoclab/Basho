@@ -66,7 +66,11 @@ describe("LegacyService", () => {
       int: (min: number, max: number) => 0,
     };
 
-    const trait = LegacyService.rollAncestralLegend(mockWorld, { name: "Prospect" }, mockRng as any);
+    const trait = LegacyService.rollAncestralLegend(
+      mockWorld,
+      { name: "Prospect" },
+      mockRng as any
+    );
     expect(trait).toBeDefined();
     expect(trait?.ancestorShikona).toBe("Legend");
   });

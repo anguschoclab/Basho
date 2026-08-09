@@ -17,7 +17,15 @@ describe("RikishiPotentialPanel — nested .stats.* access regression (Step 3.3)
     const r = MockFactory.createRikishi("r-1", {
       potential: {
         ceilingFraction: 0.9,
-        stats: { power: 90, speed: 80, stamina: 70, technique: 85, balance: 75, mental: 65, adaptability: 60 },
+        stats: {
+          power: 90,
+          speed: 80,
+          stamina: 70,
+          technique: 85,
+          balance: 75,
+          mental: 65,
+          adaptability: 60,
+        },
         heightCm: 190,
         weightKg: 150,
         profile: "prodigy",
@@ -29,10 +37,29 @@ describe("RikishiPotentialPanel — nested .stats.* access regression (Step 3.3)
 
   it("renders stat bars using nested rikishi.stats.* values, not flat properties", () => {
     const r = MockFactory.createRikishi("r-1", {
-      stats: { power: 80, speed: 60, technique: 70, balance: 50, stamina: 65, mental: 55, adaptability: 45, aggression: 50, experience: 10, weight: 140 },
+      stats: {
+        power: 80,
+        speed: 60,
+        technique: 70,
+        balance: 50,
+        stamina: 65,
+        mental: 55,
+        adaptability: 45,
+        aggression: 50,
+        experience: 10,
+        weight: 140,
+      },
       potential: {
         ceilingFraction: 1.0,
-        stats: { power: 95, speed: 85, stamina: 75, technique: 90, balance: 80, mental: 70, adaptability: 65 },
+        stats: {
+          power: 95,
+          speed: 85,
+          stamina: 75,
+          technique: 90,
+          balance: 80,
+          mental: 70,
+          adaptability: 65,
+        },
         heightCm: 190,
         weightKg: 150,
         profile: "prodigy",

@@ -68,7 +68,10 @@ describe("scoreRecruitForOyakata — defensive scores well for innovator", () =>
       style: "hybrid" as Style,
       talentSeed: 500,
       weightPotentialKg: 120,
-      combatProfile: { archetype: "oshi", familyPreferences: { push: 1, belt: 1, trick: 1, speed: 1 } } as any,
+      combatProfile: {
+        archetype: "oshi",
+        familyPreferences: { push: 1, belt: 1, trick: 1, speed: 1 },
+      } as any,
     };
 
     const speedsterCandidate = {
@@ -76,7 +79,10 @@ describe("scoreRecruitForOyakata — defensive scores well for innovator", () =>
       style: "oshi" as Style,
       talentSeed: 500,
       weightPotentialKg: 120,
-      combatProfile: { archetype: "oshi", familyPreferences: { push: 1, belt: 1, trick: 1, speed: 1 } } as any,
+      combatProfile: {
+        archetype: "oshi",
+        familyPreferences: { push: 1, belt: 1, trick: 1, speed: 1 },
+      } as any,
     };
 
     const oyakata = MockFactory.createOyakata("strat-test", { archetype: "strategist" });

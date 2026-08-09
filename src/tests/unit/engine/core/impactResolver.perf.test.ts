@@ -42,9 +42,7 @@ describe("P2.7: ImpactResolver batched resolution", () => {
 
   it("resolveImpacts preserves world entity maps", () => {
     const world = makeMockWorld();
-    const impact = createImpactBuilder("test")
-      .updateWorldField("dayIndexGlobal", 99)
-      .build();
+    const impact = createImpactBuilder("test").updateWorldField("dayIndexGlobal", 99).build();
 
     const result = resolveImpacts(world, [impact]);
 

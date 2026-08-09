@@ -21,14 +21,18 @@ import { DEFAULT_MORALE } from "../../../constants/engine/welfare";
  * @returns The current or new WelfareState
  */
 export function ensureHeyaWelfareState(heya: Heya): WelfareState {
-  return EntityService.ensureState(heya, "welfareState", (): WelfareState => ({
-    welfareRisk: DEFAULT_WELFARE_RISK,
-    complianceState: "compliant",
-    weeksInState: 0,
-    lastReviewedWeek: 0,
-    activeDiet: "maintenance",
-    morale: DEFAULT_MORALE,
-  }));
+  return EntityService.ensureState(
+    heya,
+    "welfareState",
+    (): WelfareState => ({
+      welfareRisk: DEFAULT_WELFARE_RISK,
+      complianceState: "compliant",
+      weeksInState: 0,
+      lastReviewedWeek: 0,
+      activeDiet: "maintenance",
+      morale: DEFAULT_MORALE,
+    })
+  );
 }
 
 export const WelfareService = {

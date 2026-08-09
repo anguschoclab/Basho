@@ -308,7 +308,8 @@ const ROLE_HANDLERS: Record<StaffRole, (b: StaffBonuses, val: number) => void> =
     b.conditioning += val * STAFF_OYAKATA_BONUS_MULTIPLIER;
     b.medical += val * STAFF_OYAKATA_BONUS_MULTIPLIER;
     b.scouting += val * STAFF_OYAKATA_BONUS_MULTIPLIER;
-    b.administration -= val * STAFF_OYAKATA_BONUS_MULTIPLIER * STAFF_ADMINISTRATOR_DISCOUNT_MULTIPLIER;
+    b.administration -=
+      val * STAFF_OYAKATA_BONUS_MULTIPLIER * STAFF_ADMINISTRATOR_DISCOUNT_MULTIPLIER;
   },
   technique_coach: (b, val) => (b.technique += val),
   conditioning_coach: (b, val) => (b.conditioning += val),

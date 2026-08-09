@@ -73,10 +73,7 @@ function selectNPCHeyasForWeek(world: WorldState, npcHeyas: Heya[]): Heya[] {
   // Determine the skip range for this week's group
   const skipStart = skipGroup * groupSize;
   // The last group absorbs any remainder
-  const skipEnd =
-    skipGroup === NPC_AI_ROTATION_DIVISOR - 1
-      ? sorted.length
-      : skipStart + groupSize;
+  const skipEnd = skipGroup === NPC_AI_ROTATION_DIVISOR - 1 ? sorted.length : skipStart + groupSize;
 
   return sorted.filter((_, i) => i < skipStart || i >= skipEnd);
 }
@@ -89,13 +86,10 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
   const playerHeyaId = world.playerHeyaId;
   const leaguePerception = buildLeaguePerception(world);
 
-  const allNpcHeyas = getAvailableStables(world).filter(
-    (h) => h.id !== playerHeyaId
-  );
+  const allNpcHeyas = getAvailableStables(world).filter((h) => h.id !== playerHeyaId);
   const heyasToProcess = selectNPCHeyasForWeek(world, allNpcHeyas);
 
   for (const heya of heyasToProcess) {
-
     const perception = buildPerceptionSnapshot(world, heya.id);
     const oyakata = heya.oyakataId ? world.oyakata.get(heya.oyakataId) : undefined;
 
@@ -127,7 +121,11 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
       if (needsReplan || !currentPlan) {
         const newPlan = createPlan(aiCtx);
         if (newPlan) {
-          nextOya.memory = setActivePlan(nextOya.memory ?? getMemory(nextOya, world.week), newPlan, world.week);
+          nextOya.memory = setActivePlan(
+            nextOya.memory ?? getMemory(nextOya, world.week),
+            newPlan,
+            world.week
+          );
           currentPlan = newPlan;
         }
       }

@@ -55,11 +55,23 @@ export function applyBoutResult(
   const standings = new Map(basho.standings);
   const wRec = standings.get(winner.id) || { wins: 0, losses: 0, absences: 0 };
   const lRec = standings.get(loser.id) || { wins: 0, losses: 0, absences: 0 };
-  standings.set(winner.id, { wins: wRec.wins + 1, losses: wRec.losses, absences: wRec.absences ?? 0 });
+  standings.set(winner.id, {
+    wins: wRec.wins + 1,
+    losses: wRec.losses,
+    absences: wRec.absences ?? 0,
+  });
   if (isFusensho) {
-    standings.set(loser.id, { wins: lRec.wins, losses: lRec.losses, absences: (lRec.absences ?? 0) + 1 });
+    standings.set(loser.id, {
+      wins: lRec.wins,
+      losses: lRec.losses,
+      absences: (lRec.absences ?? 0) + 1,
+    });
   } else {
-    standings.set(loser.id, { wins: lRec.wins, losses: lRec.losses + 1, absences: lRec.absences ?? 0 });
+    standings.set(loser.id, {
+      wins: lRec.wins,
+      losses: lRec.losses + 1,
+      absences: lRec.absences ?? 0,
+    });
   }
 
   // 1.5. Update Career Records Per-Bout (Architectural Change)

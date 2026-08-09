@@ -95,10 +95,7 @@ import { offSeasonPipeline } from "./pipelines/offSeasonPipeline";
  * console.log(nextWorld.dayIndexGlobal);
  * ```
  */
-export function advanceOneDay(
-  world: WorldState,
-  opts?: AdvanceOptions
-): WorldState {
+export function advanceOneDay(world: WorldState, opts?: AdvanceOptions): WorldState {
   // P3.2: Apply autonomous flag if specified
   if (opts?.autonomous && !world._autonomousSim) {
     world = { ...world, _autonomousSim: true };
@@ -156,7 +153,13 @@ export function advanceOneDay(
         ...nextWorld,
         transientContext: {
           ...nextWorld.transientContext,
-          boundaries: { ...(nextWorld.transientContext?.boundaries ?? { monthBoundary: false, yearBoundary: false }), monthBoundary: true },
+          boundaries: {
+            ...(nextWorld.transientContext?.boundaries ?? {
+              monthBoundary: false,
+              yearBoundary: false,
+            }),
+            monthBoundary: true,
+          },
         },
       };
     }
@@ -165,7 +168,13 @@ export function advanceOneDay(
         ...nextWorld,
         transientContext: {
           ...nextWorld.transientContext,
-          boundaries: { ...(nextWorld.transientContext?.boundaries ?? { monthBoundary: false, yearBoundary: false }), yearBoundary: true },
+          boundaries: {
+            ...(nextWorld.transientContext?.boundaries ?? {
+              monthBoundary: false,
+              yearBoundary: false,
+            }),
+            yearBoundary: true,
+          },
         },
       };
     }
@@ -270,7 +279,11 @@ export function advanceDays(world: WorldState, days: number, opts?: AdvanceOptio
  * @param {number} days - Number of days to advance (capped at 365).
  * @returns {WorldState} The updated world state after N day ticks.
  */
-export function advanceDaysFast(world: WorldState, days: number, opts?: AdvanceOptions): WorldState {
+export function advanceDaysFast(
+  world: WorldState,
+  days: number,
+  opts?: AdvanceOptions
+): WorldState {
   let currentWorld = opts?.autonomous ? { ...world, _autonomousSim: true } : world;
   if (days > MAX_DAYS_ADVANCE) {
     warn(
@@ -293,13 +306,16 @@ export function advanceDaysFast(world: WorldState, days: number, opts?: AdvanceO
     const daysToPhaseTransition = daysUntilPhaseTransition(currentWorld);
 
     // The safe batch is the minimum of all breakpoints, at least 1
-    const safeBatch = Math.max(1, Math.min(
-      daysRemaining,
-      daysToWeekly,
-      daysToMonthBoundary,
-      daysToYearBoundary,
-      daysToPhaseTransition,
-    ));
+    const safeBatch = Math.max(
+      1,
+      Math.min(
+        daysRemaining,
+        daysToWeekly,
+        daysToMonthBoundary,
+        daysToYearBoundary,
+        daysToPhaseTransition
+      )
+    );
 
     if (safeBatch > 1) {
       // Batch-advance calendar and counters for (safeBatch - 1) days.

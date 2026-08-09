@@ -14,7 +14,10 @@ import { RikishiName } from "@/components/ClickableName";
 import { BaseWidget } from "./BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 // eslint-disable-next-line no-restricted-imports
-import type { PreBashoAssessment as PreBashoAssessmentType, WorldState } from "@/engine/types/world";
+import type {
+  PreBashoAssessment as PreBashoAssessmentType,
+  WorldState,
+} from "@/engine/types/world";
 
 const AssessmentRow = React.memo(
   ({
@@ -71,27 +74,29 @@ const AssessmentRow = React.memo(
   }
 );
 
-const AssessmentList = React.memo(({ assessment, world }: { assessment: PreBashoAssessmentType; world: WorldState }) => {
-  const nodes = [];
-  for (const [rikishiId, rikishiAssessment] of assessment.rikishiAssessments.entries()) {
-    const rikishi = world.rikishi.get(rikishiId);
-    if (!rikishi) continue;
+const AssessmentList = React.memo(
+  ({ assessment, world }: { assessment: PreBashoAssessmentType; world: WorldState }) => {
+    const nodes = [];
+    for (const [rikishiId, rikishiAssessment] of assessment.rikishiAssessments.entries()) {
+      const rikishi = world.rikishi.get(rikishiId);
+      if (!rikishi) continue;
 
-    nodes.push(
-      <AssessmentRow
-        key={rikishiId}
-        rikishiId={rikishiId}
-        shikona={rikishi.shikona}
-        injuryRisk={rikishiAssessment.injuryRisk}
-        withdrawalRecommended={rikishiAssessment.withdrawalRecommended}
-        recommendedFocus={rikishiAssessment.recommendedFocus}
-        healthScore={rikishiAssessment.healthScore}
-      />
-    );
+      nodes.push(
+        <AssessmentRow
+          key={rikishiId}
+          rikishiId={rikishiId}
+          shikona={rikishi.shikona}
+          injuryRisk={rikishiAssessment.injuryRisk}
+          withdrawalRecommended={rikishiAssessment.withdrawalRecommended}
+          recommendedFocus={rikishiAssessment.recommendedFocus}
+          healthScore={rikishiAssessment.healthScore}
+        />
+      );
+    }
+
+    return <>{nodes}</>;
   }
-
-  return <>{nodes}</>;
-});
+);
 
 export function PreBashoAssessment() {
   const navigate = useNavigate();
@@ -106,17 +111,22 @@ export function PreBashoAssessment() {
 
   const daysRemaining = world._interimDaysRemaining ?? 0;
 
-  const footerAction = assessment.withdrawalsThisAssessment > 0 ? {
-    label: "View Roster for Withdrawals",
-    onClick: () => navigate({ to: "/stable/roster" })
-  } : undefined;
+  const footerAction =
+    assessment.withdrawalsThisAssessment > 0
+      ? {
+          label: "View Roster for Withdrawals",
+          onClick: () => navigate({ to: "/stable/roster" }),
+        }
+      : undefined;
 
   return (
     <BaseWidget
       title="Pre-Basho Assessment"
       icon={Activity}
       footerAction={footerAction}
-      headerContent={<span className="text-[10px] text-muted-foreground">{daysRemaining} days left</span>}
+      headerContent={
+        <span className="text-[10px] text-muted-foreground">{daysRemaining} days left</span>
+      }
     >
       {assessment.rikishiAssessments.size === 0 ? (
         <EmptyState compact icon={Activity} title="No assessment data" />

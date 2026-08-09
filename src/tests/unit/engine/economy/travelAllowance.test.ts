@@ -259,7 +259,9 @@ describe("deductTsukebitoCosts", () => {
     const impact = deductTsukebitoCosts(world);
     const updated = resolveImpacts(world, [impact]);
 
-    expect(updated.rikishi.get("r1")!.economics!.cash).toBe(500_000 - TSUKEBITO_COSTS_MONTHLY.juryo);
+    expect(updated.rikishi.get("r1")!.economics!.cash).toBe(
+      500_000 - TSUKEBITO_COSTS_MONTHLY.juryo
+    );
   });
 
   it("skips non-sekitori", () => {

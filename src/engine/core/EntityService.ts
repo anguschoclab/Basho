@@ -91,7 +91,9 @@ export const EntityService = {
         "closedHeyas",
         "sparringPairs",
       ].includes(rootKey as string);
-      (world as unknown as Record<string, unknown>)[rootKey as string] = isMapField ? new Map() : {};
+      (world as unknown as Record<string, unknown>)[rootKey as string] = isMapField
+        ? new Map()
+        : {};
     }
 
     const root = world[rootKey] as unknown;

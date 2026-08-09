@@ -65,7 +65,11 @@ function buildRecommendation(ctx: CornerAdviceContext): CornerRecommendation {
   const playerFamily = familyForTactic(tactic) ?? "push";
 
   const riskLevel: CornerRecommendation["riskLevel"] =
-    tactic === "ALL_OUT" || tactic === "OSHI_THRUST" ? "high" : tactic === "HENKA" ? "medium" : "low";
+    tactic === "ALL_OUT" || tactic === "OSHI_THRUST"
+      ? "high"
+      : tactic === "HENKA"
+        ? "medium"
+        : "low";
 
   const fatigueWarning =
     (playerRikishi.fatigue ?? 0) > 70
@@ -92,7 +96,8 @@ export function getAdvice(ctx: CornerAdviceContext): AIRecommendation[] {
     {
       id: `corner-advice-${ctx.opponent.id}-${ctx.bashoDay ?? 0}`,
       category: "bout",
-      priority: rec.riskLevel === "high" ? "critical" : rec.riskLevel === "medium" ? "high" : "medium",
+      priority:
+        rec.riskLevel === "high" ? "critical" : rec.riskLevel === "medium" ? "high" : "medium",
       title: `Suggested tactic: ${rec.tactic}`,
       detail: rec.reasoning,
       relatedEntityId: ctx.opponent.id,

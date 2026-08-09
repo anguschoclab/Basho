@@ -20,7 +20,7 @@ const ENGINE_DIR = join(__dirname, "../src/engine");
 /** Strip string/comment contents so they don't trigger heuristic checks. */
 function stripLiteralAndComments(raw: string): string {
   return raw
-    .replace(/"(?:\\.|[^"\\])*"/g, "\"\"")
+    .replace(/"(?:\\.|[^"\\])*"/g, '""')
     .replace(/'(?:\\.|[^'\\])*'/g, "''")
     .replace(/`(?:\\.|[^`\\])*`/g, "``")
     .replace(/\/\/.*/, "");
@@ -31,7 +31,7 @@ function pushViolation(
   filePath: string,
   lineNum: number,
   type: string,
-  description: string,
+  description: string
 ): void {
   violations.push({
     file: filePath.replace(__dirname + "/", ""),
@@ -56,7 +56,13 @@ export function reviewSource(content: string, filePath: string): Violation[] {
 
     // Check 1: Math.random() usage (only in real code, not comments/strings)
     if (/\bMath\.random\(\)/.test(line) && !line.trim().startsWith("//")) {
-      pushViolation(violations, filePath, lineNum, "RNG Convention Breach", "Math.random() used - must use rngForWorld(), rngFromSeed(), or new SeededRNG()");
+      pushViolation(
+        violations,
+        filePath,
+        lineNum,
+        "RNG Convention Breach",
+        "Math.random() used - must use rngForWorld(), rngFromSeed(), or new SeededRNG()"
+      );
     }
 
     // Check 2: Dead function calls
@@ -68,7 +74,7 @@ export function reviewSource(content: string, filePath: string): Violation[] {
         "Dead Function Call",
         /\bprocessHeyaFinances\(\)/.test(line)
           ? "processHeyaFinances() is deprecated"
-          : "tickWeekEconomics() is deprecated",
+          : "tickWeekEconomics() is deprecated"
       );
     }
 
@@ -79,7 +85,7 @@ export function reviewSource(content: string, filePath: string): Violation[] {
         filePath,
         lineNum,
         "Incorrect Call Signature",
-        "generateGovernanceHeadline must use named-arg object, not positional arguments",
+        "generateGovernanceHeadline must use named-arg object, not positional arguments"
       );
     }
 
@@ -90,7 +96,7 @@ export function reviewSource(content: string, filePath: string): Violation[] {
         filePath,
         lineNum,
         "BardEngine Token Mismatch",
-        "Token mismatch detected - check BardEngine token conventions",
+        "Token mismatch detected - check BardEngine token conventions"
       );
     }
 
@@ -100,8 +106,12 @@ export function reviewSource(content: string, filePath: string): Violation[] {
     // @world-builder annotation marks intentional world mutations (world creation, lazy init).
     const hasWorldBuilderAnnotation = rawLine.includes("@world-builder");
     const hasWorldMutation =
-      /\bworld\.[A-Za-z_$][\w$]*(?:\[[^\]]+\])?\s*(?:(?:\+|-|\*|\/)?|\*\*|%)?=(?![=>])/.test(line) ||
-      /\bworld\.[A-Za-z_$][\w$]*(?:\[[^\]]+\])?\.(?:push|delete|splice|set|shift|unshift|pop|sort|reverse)\s*\(/.test(line);
+      /\bworld\.[A-Za-z_$][\w$]*(?:\[[^\]]+\])?\s*(?:(?:\+|-|\*|\/)?|\*\*|%)?=(?![=>])/.test(
+        line
+      ) ||
+      /\bworld\.[A-Za-z_$][\w$]*(?:\[[^\]]+\])?\.(?:push|delete|splice|set|shift|unshift|pop|sort|reverse)\s*\(/.test(
+        line
+      );
 
     if (
       hasWorldMutation &&
@@ -115,7 +125,7 @@ export function reviewSource(content: string, filePath: string): Violation[] {
         filePath,
         lineNum,
         "Potential Mutable State Leak",
-        "Direct mutation of world state - consider using structuredClone or ImpactBuilder",
+        "Direct mutation of world state - consider using structuredClone or ImpactBuilder"
       );
     }
   });

@@ -70,10 +70,7 @@ export const HistoryDashboard = () => {
           </TabsContent>
 
           <TabsContent value="stables">
-            <StablesTab
-              heyas={getAllHeyas(world)}
-              retired={selectRetiredRikishi(world)}
-            />
+            <StablesTab heyas={getAllHeyas(world)} retired={selectRetiredRikishi(world)} />
           </TabsContent>
         </Tabs>
       </div>

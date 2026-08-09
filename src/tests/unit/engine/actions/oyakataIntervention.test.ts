@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { applyOyakataIntervention } from "@/engine/actions/OyakataIntervention";
 import { makeMockWorld, mockRikishi } from "../utils";
@@ -27,8 +26,13 @@ describe("Oyakata Intervention (B2)", () => {
       rikishi: new Map([["intervene-1", r]]) as any,
       cyclePhase: "active_basho",
       currentBasho: {
-        year: 2025, bashoNumber: 1, bashoName: "hatsu", day: 7,
-        matches: [], standings: {} as any, isActive: true,
+        year: 2025,
+        bashoNumber: 1,
+        bashoName: "hatsu",
+        day: 7,
+        matches: [],
+        standings: {} as any,
+        isActive: true,
       } as any,
       activeRikishiIds: ["intervene-1"],
     } as any) as WorldState;
@@ -87,15 +91,30 @@ describe("Oyakata Intervention (B2)", () => {
 
   it("fails outside day 5-13 range (day 4)", () => {
     const r = mockRikishi("intervene-1", {
-      shikona: "Slumping", heyaId: "heya-1", motivation: 50,
-      isKyujo: false, injured: false, isRetired: false,
-      currentLossStreak: 3, currentBashoWins: 0, currentBashoLosses: 4,
-      interventionUsedThisBasho: false, frozeUp: false,
+      shikona: "Slumping",
+      heyaId: "heya-1",
+      motivation: 50,
+      isKyujo: false,
+      injured: false,
+      isRetired: false,
+      currentLossStreak: 3,
+      currentBashoWins: 0,
+      currentBashoLosses: 4,
+      interventionUsedThisBasho: false,
+      frozeUp: false,
     } as any);
     const world = makeMockWorld({
       rikishi: new Map([["intervene-1", r]]) as any,
       cyclePhase: "active_basho",
-      currentBasho: { year: 2025, bashoNumber: 1, bashoName: "hatsu", day: 4, matches: [], standings: {} as any, isActive: true } as any,
+      currentBasho: {
+        year: 2025,
+        bashoNumber: 1,
+        bashoName: "hatsu",
+        day: 4,
+        matches: [],
+        standings: {} as any,
+        isActive: true,
+      } as any,
       activeRikishiIds: ["intervene-1"],
     } as any) as WorldState;
     const result = applyOyakataIntervention(world, "intervene-1");
@@ -105,15 +124,30 @@ describe("Oyakata Intervention (B2)", () => {
 
   it("fails outside day 5-13 range (day 14)", () => {
     const r = mockRikishi("intervene-1", {
-      shikona: "Slumping", heyaId: "heya-1", motivation: 50,
-      isKyujo: false, injured: false, isRetired: false,
-      currentLossStreak: 3, currentBashoWins: 0, currentBashoLosses: 14,
-      interventionUsedThisBasho: false, frozeUp: false,
+      shikona: "Slumping",
+      heyaId: "heya-1",
+      motivation: 50,
+      isKyujo: false,
+      injured: false,
+      isRetired: false,
+      currentLossStreak: 3,
+      currentBashoWins: 0,
+      currentBashoLosses: 14,
+      interventionUsedThisBasho: false,
+      frozeUp: false,
     } as any);
     const world = makeMockWorld({
       rikishi: new Map([["intervene-1", r]]) as any,
       cyclePhase: "active_basho",
-      currentBasho: { year: 2025, bashoNumber: 1, bashoName: "hatsu", day: 14, matches: [], standings: {} as any, isActive: true } as any,
+      currentBasho: {
+        year: 2025,
+        bashoNumber: 1,
+        bashoName: "hatsu",
+        day: 14,
+        matches: [],
+        standings: {} as any,
+        isActive: true,
+      } as any,
       activeRikishiIds: ["intervene-1"],
     } as any) as WorldState;
     const result = applyOyakataIntervention(world, "intervene-1");
@@ -141,7 +175,8 @@ describe("Oyakata Intervention (B2)", () => {
     const result = applyOyakataIntervention(world, "intervene-1");
     expect(result.success).toBe(true);
     const hasEvent = (result.impact.events ?? []).some(
-      (e: any) => e.type === "GOVERNANCE_RULING" && (e.data as any)?.incident === "oyakata_intervention"
+      (e: any) =>
+        e.type === "GOVERNANCE_RULING" && (e.data as any)?.incident === "oyakata_intervention"
     );
     expect(hasEvent).toBe(true);
   });

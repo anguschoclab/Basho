@@ -102,10 +102,7 @@ const PRESERVE_FUNDS_FOR_WEIGHT_JOURNEY_RULE: StrategyRule = {
   importance: "notable",
 };
 
-const financeRules: StrategyRule[] = [
-  PRESERVE_FUNDS_FOR_WEIGHT_JOURNEY_RULE,
-  BUY_MYOSEKI_RULE,
-];
+const financeRules: StrategyRule[] = [PRESERVE_FUNDS_FOR_WEIGHT_JOURNEY_RULE, BUY_MYOSEKI_RULE];
 
 // ============================================================================
 // Public API

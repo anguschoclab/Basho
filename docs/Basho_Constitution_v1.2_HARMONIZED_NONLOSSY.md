@@ -428,7 +428,7 @@ Where Part A is silent: defer to the most directly relevant source file in Part 
 
 **Source file:** `Foundations_UI_Observability_x_Time_SaveLoad_Megacanon_v1.0_HARMONIZED_NONLOSSY.md`
 
-````md
+`````md
 # Basho × Basho — Foundations/UI/Observability ↔ Time/Calendar/SaveLoad Megacanon v1.0 (Harmonized, Non‑Lossy)
 
 **Build date:** 2026-01-12  
@@ -743,6 +743,8 @@ WorldCalendarConfig {
 }
 ```
 ````
+`````
+
 ````
 
 ### 1.3 Season Phases (Within Each Basho)
@@ -805,7 +807,7 @@ The UI must never advance time implicitly on viewing screens.
 
 ### 2.3 Player “Turn” Definition
 
-A “turn” is not a basho; it is **one day**.  
+A “turn” is not a basho; it is **one day**.
 However, many systems compute on weekly/monthly/basho boundaries.
 
 ---
@@ -1385,12 +1387,11 @@ END OF DOCUMENT
 
 ````
 
-
-
 ## SOURCE 02 — Basho_Foundations_World_Entry_UI_Observability_Canon_v2.0.md
 
 ```md
 # Basho — Foundations, World Entry, UI & Observability Canon v2.0
+
 ## Definitive, Non–High-Level System Contract
 
 Date: 2026-01-10
@@ -1463,6 +1464,7 @@ At generation:
 - Ōzeki: 2–4
 
 No beya begins:
+
 - insolvent
 - without a kabu holder
 - without rivalry exposure
@@ -1485,6 +1487,7 @@ IDs are the only authoritative identity.
 Names, titles, shikona, and nicknames are presentation-only.
 
 IDs are:
+
 - immutable
 - never reused
 - globally unique per world
@@ -1494,7 +1497,7 @@ IDs are:
 ## 5. ID Schemas
 
 ### Rikishi
-````
+```
 
 R-<WorldSeed>-<BirthYear>-<Sequence>
 

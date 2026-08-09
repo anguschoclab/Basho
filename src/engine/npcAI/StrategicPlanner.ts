@@ -108,7 +108,10 @@ const PLAN_CATALOG: PlanTemplate[] = [
       if (perception.runwayBand === "desperate") s += 60;
       else if (perception.runwayBand === "critical") s += 40;
       else if (perception.runwayBand === "tight") s += 15;
-      if (perception.governancePressureBand === "moderate" || perception.governancePressureBand === "severe")
+      if (
+        perception.governancePressureBand === "moderate" ||
+        perception.governancePressureBand === "severe"
+      )
         s += 10;
       if (ctx.oyakata?.archetype === "traditionalist") s += 10;
       return s;
@@ -129,7 +132,11 @@ const PLAN_CATALOG: PlanTemplate[] = [
     score: (ctx, perception, league) => {
       let s = 0;
       if (involvedInRivalryCluster(ctx, league)) s += 40;
-      if (perception.rivalryPressureBand === "heated" || perception.rivalryPressureBand === "fierce") s += 25;
+      if (
+        perception.rivalryPressureBand === "heated" ||
+        perception.rivalryPressureBand === "fierce"
+      )
+        s += 25;
       if (ctx.oyakata && ctx.oyakata.traits.ambition >= 70) s += 10;
       if (ctx.oyakata?.archetype === "tyrant") s += 15;
       if (ctx.oyakata?.archetype === "gambler") s += 10;
@@ -170,11 +177,7 @@ const PLAN_CATALOG: PlanTemplate[] = [
 ];
 
 /** Adjust a template score based on memory of past plan outcomes. */
-function scoreWithMemory(
-  template: PlanTemplate,
-  ctx: AIContext,
-  baseScore: number
-): number {
+function scoreWithMemory(template: PlanTemplate, ctx: AIContext, baseScore: number): number {
   const history = ctx.memory?.planHistory ?? [];
   const failures = history.filter(
     (h) => h.planId === template.planId && (h.outcome === "abandoned" || h.outcome === "partial")

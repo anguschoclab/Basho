@@ -87,7 +87,12 @@ export function phase01_week_training(world: WorldState): StateImpact {
         .filter((x): x is NonNullable<typeof x> => x !== undefined);
       if (tsukebitoRikishi.length > 0) {
         tsukebitoImpacts.push(
-          applyWeeklyTsukebitoBenefits(world, { seniorId: r.id, tsukebitoIds: r.tsukebitoIds }, r, tsukebitoRikishi)
+          applyWeeklyTsukebitoBenefits(
+            world,
+            { seniorId: r.id, tsukebitoIds: r.tsukebitoIds },
+            r,
+            tsukebitoRikishi
+          )
         );
         continue;
       }
@@ -97,9 +102,11 @@ export function phase01_week_training(world: WorldState): StateImpact {
     if (assignment.tsukebitoIds.length === 0) continue;
     // Persist the assignment on the senior rikishi
     tsukebitoImpacts.push(
-      createImpactBuilder("phase01_week_training").updateRikishi(r.id, {
-        tsukebitoIds: assignment.tsukebitoIds,
-      }).build()
+      createImpactBuilder("phase01_week_training")
+        .updateRikishi(r.id, {
+          tsukebitoIds: assignment.tsukebitoIds,
+        })
+        .build()
     );
     const tsukebitoRikishi = assignment.tsukebitoIds
       .map((id) => getRikishi(world, id))

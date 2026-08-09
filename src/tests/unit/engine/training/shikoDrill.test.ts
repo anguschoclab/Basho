@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { DRILL_EFFECTS, DRILL_METADATA } from "@/constants/engine/training";
 import type { DrillType } from "@/engine/types/training";

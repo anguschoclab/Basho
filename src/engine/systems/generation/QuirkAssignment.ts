@@ -44,11 +44,7 @@ export function hasPoorEyesight(rikishi: Rikishi): boolean {
  * Applies glasses to a rikishi with poor eyesight.
  * Does nothing if the rikishi does not have the poorEyesight quirk.
  */
-export function applyGlasses(
-  rikishi: Rikishi,
-  style: string,
-  acquiredBasho: string
-): Rikishi {
+export function applyGlasses(rikishi: Rikishi, style: string, acquiredBasho: string): Rikishi {
   if (!hasPoorEyesight(rikishi)) return rikishi;
 
   return {

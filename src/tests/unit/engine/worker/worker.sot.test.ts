@@ -58,7 +58,11 @@ vi.mock("@/engine/systems/generation/WorldFactory", () => ({
 
 vi.mock("@/engine/tick/tickOrchestrator", () => ({
   tickOrchestrator: vi.fn((world) => ({ ...world, ticked: true })),
-  advanceDaysFastOrchestrator: vi.fn((world, days) => ({ ...world, ticked: true, daysAdvanced: days })),
+  advanceDaysFastOrchestrator: vi.fn((world, days) => ({
+    ...world,
+    ticked: true,
+    daysAdvanced: days,
+  })),
   cloneWorldForTick: vi.fn((world) => world),
 }));
 

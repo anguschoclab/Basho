@@ -96,7 +96,9 @@ function makeInput(): Parameters<typeof applyPlanConstraints>[1] {
   };
 }
 
-function makePerception(runwayBand: PerceptionSnapshot["runwayBand"] = "critical"): PerceptionSnapshot {
+function makePerception(
+  runwayBand: PerceptionSnapshot["runwayBand"] = "critical"
+): PerceptionSnapshot {
   return {
     runwayBand,
   } as unknown as PerceptionSnapshot;

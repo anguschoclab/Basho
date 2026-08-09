@@ -7,8 +7,6 @@ import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BashoName, BoutResult, MatchSchedule } from "@/engine/types/basho";
 
- 
-
 function makeRikishi(id: string, opts?: Partial<Rikishi>): Rikishi {
   return mockRikishi(id, {
     shikona: id === "east" ? "East Rikishi" : "West Rikishi",
@@ -71,8 +69,22 @@ function makeWorld(opts?: {
       bashoNumber: 1,
       matches: [],
       standings: new Map([
-        ["east", { wins: opts?.eastWins ?? 0, losses: opts?.eastLosses ?? 0, absences: opts?.eastAbsences ?? 0 }],
-        ["west", { wins: opts?.westWins ?? 0, losses: opts?.westLosses ?? 0, absences: opts?.westAbsences ?? 0 }],
+        [
+          "east",
+          {
+            wins: opts?.eastWins ?? 0,
+            losses: opts?.eastLosses ?? 0,
+            absences: opts?.eastAbsences ?? 0,
+          },
+        ],
+        [
+          "west",
+          {
+            wins: opts?.westWins ?? 0,
+            losses: opts?.westLosses ?? 0,
+            absences: opts?.westAbsences ?? 0,
+          },
+        ],
       ]),
       isActive: true,
     },
@@ -282,20 +294,27 @@ describe("Bug 15 + N5: Absences tracking", () => {
       division: "makuuchi",
       careerHistory: [],
     });
-    const standings = new Map([
-      ["r1", { wins: 5, losses: 5, absences: 5 }],
-    ]);
+    const standings = new Map([["r1", { wins: 5, losses: 5, absences: 5 }]]);
     const basho = makeMockBasho({ bashoName: "hatsu", standings, isActive: false, day: 15 });
     const world = makeMockWorld({
       rikishi: new Map([["r1", r1]]),
       activeRikishiIds: new Set(["r1"]),
       currentBasho: basho,
       cyclePhase: "post_basho",
-      history: [{
-        year: 2025, bashoNumber: 1, bashoName: "hatsu",
-        yusho: "none", junYusho: [], ginoSho: "none",
-        shukunsho: "none", kantosho: "none", id: "1", prizes: [],
-      } as any],
+      history: [
+        {
+          year: 2025,
+          bashoNumber: 1,
+          bashoName: "hatsu",
+          yusho: "none",
+          junYusho: [],
+          ginoSho: "none",
+          shukunsho: "none",
+          kantosho: "none",
+          id: "1",
+          prizes: [],
+        } as any,
+      ],
     });
 
     const impact = publishBanzukeUpdate(world);

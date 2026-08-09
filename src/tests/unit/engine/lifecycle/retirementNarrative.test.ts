@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { generateRetirementNarrative } from "@/engine/lifecycle/retirementNarrative";
 import { mockRikishi } from "../utils";

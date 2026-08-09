@@ -6,7 +6,7 @@ describe("phase01_week_world_circuit", () => {
   it("does not apply style drift if enableStyleDrift is false", () => {
     const world = MockFactory.createWorld({
       settings: { archiveMode: "standard", enableStyleDrift: false },
-      heyas: new Map([["h1", MockFactory.createHeya("h1")]])
+      heyas: new Map([["h1", MockFactory.createHeya("h1")]]),
     });
 
     const impact = phase01_week_world_circuit(world);

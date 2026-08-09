@@ -1,4 +1,3 @@
- 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { advanceOneDay } from "@/engine/tick/tickDaily";
 import { makeMockWorld, makeMockBasho, mockRikishi, makeMockHeya } from "../utils";
@@ -242,9 +241,7 @@ describe("P1.2: Basho pipeline — already-played bouts are not re-simulated", (
     (worldEngine.simulateBoutForToday as any).mockImplementation((w: WorldState) => {
       const basho = w.currentBasho;
       if (!basho) return { world: w };
-      const todays = (basho.matches ?? []).filter(
-        (m) => m.day === basho.day && !m.result
-      );
+      const todays = (basho.matches ?? []).filter((m) => m.day === basho.day && !m.result);
       if (todays.length === 0) return { world: w };
       return { world: w, result: mockBoutResult };
     });

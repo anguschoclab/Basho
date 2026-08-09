@@ -61,12 +61,15 @@ export function distributePrizes(
       if (r) {
         // Generate sansho ceremony narrative (Gap 4)
         const sanshoPath =
-          type === "Shukun" ? "sansho_ceremony.shukunsho"
-          : type === "Kanto" ? "sansho_ceremony.kantosho"
-          : "sansho_ceremony.ginosho";
+          type === "Shukun"
+            ? "sansho_ceremony.shukunsho"
+            : type === "Kanto"
+              ? "sansho_ceremony.kantosho"
+              : "sansho_ceremony.ginosho";
         const sanshoRes = BardEngine.resolve(sanshoRng, sanshoPath, {
           SHIKONA: r.shikona,
-          PRIZE_NAME: type === "Shukun" ? "Shukun-sho" : type === "Kanto" ? "Kanto-sho" : "Gino-sho",
+          PRIZE_NAME:
+            type === "Shukun" ? "Shukun-sho" : type === "Kanto" ? "Kanto-sho" : "Gino-sho",
           rikishiId: r.id,
         });
         if (sanshoRes.text && !sanshoRes.text.includes("[MISSING:")) {
@@ -125,22 +128,25 @@ export function distributePrizes(
             money: SANSHO_PRIZE_AMOUNT,
             status: "special_prize",
             regimen: type as string,
-            narrative: sanshoNarrativeLines.filter((l) => l.id.includes(`sansho-${type}-${rikishiId}`)),
+            narrative: sanshoNarrativeLines.filter((l) =>
+              l.id.includes(`sansho-${type}-${rikishiId}`)
+            ),
           },
           { rikishiId: r.id, heyaId: r.heyaId }
         );
 
         // Credit sansho prize to rikishi economics (not heya funds under JSA model)
         // Use tempR.economics (with popularity boost) if available, otherwise fall back to r.economics
-        const economics = tempR.economics || r.economics || {
-          cash: 0,
-          retirementFund: 0,
-          careerKenshoWon: 0,
-          kinboshiCount: 0,
-          totalEarnings: 0,
-          currentBashoEarnings: 0,
-          popularity: 50,
-        };
+        const economics = tempR.economics ||
+          r.economics || {
+            cash: 0,
+            retirementFund: 0,
+            careerKenshoWon: 0,
+            kinboshiCount: 0,
+            totalEarnings: 0,
+            currentBashoEarnings: 0,
+            popularity: 50,
+          };
         // Split sansho: 50% cash, 50% retirement fund
         const sanshoCash = SANSHO_PRIZE_AMOUNT * 0.5;
         const sanshoRetirement = SANSHO_PRIZE_AMOUNT * 0.5;

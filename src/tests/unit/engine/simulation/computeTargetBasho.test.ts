@@ -37,6 +37,8 @@ describe("computeTargetBasho", () => {
   });
 
   it("returns 600 for untilEvent (100-year cap)", () => {
-    expect(computeTargetBasho({ type: "untilEvent", count: 0 } as unknown as SimDuration)).toBe(600);
+    expect(computeTargetBasho({ type: "untilEvent", count: 0 } as unknown as SimDuration)).toBe(
+      600
+    );
   });
 });

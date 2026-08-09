@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { consolidateOyakataMemoryPure } from "@/engine/tick/phases/npc_ai/memory";
 import { makeMockWorld } from "../../../utils";
@@ -69,9 +68,9 @@ describe("Bug K: consolidateOyakataMemoryPure does not mutate input oyakata", ()
       observations: existingObs,
       coreDirectives: [],
       lastConsolidationTick: 0,
-    planHistory: [],
-    decisionHistory: [],
-    opponentModels: {},
+      planHistory: [],
+      decisionHistory: [],
+      opponentModels: {},
     };
 
     const result = consolidateOyakataMemoryPure(

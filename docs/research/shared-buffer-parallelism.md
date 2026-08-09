@@ -13,21 +13,21 @@
 
 ### Embarrassingly Parallel Phases
 
-| Phase | Parallelizable? | Reason |
-| --- | --- | --- |
-| `phase06_yearly_boundary` — avatar aging | Yes | Per-rikishi, no cross-dependencies within the loop |
-| `phase05_monthly_boundary` — per-heya economics | Yes | Per-heya, independent financial calculations |
-| `phase01_week_npc_ai` — per-NPC-heya decisions | Yes | Per-heya perception/planning, no cross-heya reads |
-| `phase01_week_training` — weight journey | Yes | Per-rikishi, independent |
+| Phase                                           | Parallelizable? | Reason                                             |
+| ----------------------------------------------- | --------------- | -------------------------------------------------- |
+| `phase06_yearly_boundary` — avatar aging        | Yes             | Per-rikishi, no cross-dependencies within the loop |
+| `phase05_monthly_boundary` — per-heya economics | Yes             | Per-heya, independent financial calculations       |
+| `phase01_week_npc_ai` — per-NPC-heya decisions  | Yes             | Per-heya perception/planning, no cross-heya reads  |
+| `phase01_week_training` — weight journey        | Yes             | Per-rikishi, independent                           |
 
 ### Inherently Sequential Phases
 
-| Phase | Reason |
-| --- | --- |
-| `phase02_context` → `phase01_week_training` | Training consumes `activeModifiers` from context |
-| `phase01_week_economy` → `phase01_week_welfare` | Welfare checks depend on updated heya funds |
-| `phase05_monthly_boundary` → `phase01_monthly_market` | Market state depends on monthly boundary output |
-| `phase00_preflight` → all | Preflight sets boundaries/deltas consumed by all phases |
+| Phase                                                 | Reason                                                  |
+| ----------------------------------------------------- | ------------------------------------------------------- |
+| `phase02_context` → `phase01_week_training`           | Training consumes `activeModifiers` from context        |
+| `phase01_week_economy` → `phase01_week_welfare`       | Welfare checks depend on updated heya funds             |
+| `phase05_monthly_boundary` → `phase01_monthly_market` | Market state depends on monthly boundary output         |
+| `phase00_preflight` → all                             | Preflight sets boundaries/deltas consumed by all phases |
 
 ## 2. Prototype Design: Parallel Yearly Avatar Aging
 

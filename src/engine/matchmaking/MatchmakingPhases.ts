@@ -213,7 +213,12 @@ export function scorePairing(args: {
       score *= MATCH_LATE_RECORD_WEIGHT + MATCH_LATE_SIMILARITY_WEIGHT * s;
       if (s > MATCH_STRICT_RECORD_THRESHOLD) reasons.push("strict_record_match");
 
-      if (day === DRAMA_DAY_SENSHURAKU && ra.wins >= MATCH_YUSHO_CONTENDER_MIN_WINS && rb.wins >= MATCH_YUSHO_CONTENDER_MIN_WINS && Math.abs(ra.wins - rb.wins) <= 1) {
+      if (
+        day === DRAMA_DAY_SENSHURAKU &&
+        ra.wins >= MATCH_YUSHO_CONTENDER_MIN_WINS &&
+        rb.wins >= MATCH_YUSHO_CONTENDER_MIN_WINS &&
+        Math.abs(ra.wins - rb.wins) <= 1
+      ) {
         score *= MATCH_YUSHO_CONTENDER_MULTIPLIER;
         reasons.push("yusho_contenders");
       }
@@ -246,7 +251,8 @@ export function scorePairing(args: {
     }
 
     score *= MATCH_RANK_SCORE_WEIGHT + MATCH_RANK_SIMILARITY_WEIGHT * s;
-    if (s > MATCH_SIMILAR_RANK_THRESHOLD && !reasons.includes("similar_rank")) reasons.push("similar_rank");
+    if (s > MATCH_SIMILAR_RANK_THRESHOLD && !reasons.includes("similar_rank"))
+      reasons.push("similar_rank");
   }
 
   if (faced) {

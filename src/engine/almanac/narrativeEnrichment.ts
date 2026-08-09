@@ -2,15 +2,8 @@ import type { WorldState } from "../types/world";
 import type { Rikishi } from "../types/rikishi";
 import type { Id } from "../types/common";
 import type { BashoName, BoutResult, BashoResult, KeyBoutEntry } from "../types/basho";
-import type {
-  RikishiCareerRecord,
-  NotableBoutEntry,
-  NarrativeHighlight,
-} from "./types";
-import {
-  MAX_NOTABLE_BOUTS,
-  MAX_NARRATIVE_HIGHLIGHTS,
-} from "./types";
+import type { RikishiCareerRecord, NotableBoutEntry, NarrativeHighlight } from "./types";
+import { MAX_NOTABLE_BOUTS, MAX_NARRATIVE_HIGHLIGHTS } from "./types";
 import { extractNotableNarrativeLines, isNotableBout } from "../bout/boutNarrative";
 import { getRikishi } from "../queries";
 import { createImpactBuilder } from "../core/ImpactBuilder";
@@ -81,7 +74,12 @@ export function buildNotableBoutEntry(
 
 function milestoneToHighlight(m: NonNullable<Rikishi["milestones"]>[number]): NarrativeHighlight {
   const bashoMap: Record<number, BashoName> = {
-    1: "hatsu", 3: "haru", 5: "natsu", 7: "nagoya", 9: "aki", 11: "kyushu",
+    1: "hatsu",
+    3: "haru",
+    5: "natsu",
+    7: "nagoya",
+    9: "aki",
+    11: "kyushu",
   };
   return {
     year: m.date.year,
@@ -132,9 +130,7 @@ function notableBoutToHighlights(entry: NotableBoutEntry): NarrativeHighlight[] 
   return highlights;
 }
 
-function sortMostRecentFirst<T extends { year: number; bashoName: BashoName }>(
-  arr: T[]
-): T[] {
+function sortMostRecentFirst<T extends { year: number; bashoName: BashoName }>(arr: T[]): T[] {
   const bashoOrder: BashoName[] = ["hatsu", "haru", "natsu", "nagoya", "aki", "kyushu"];
   return arr.slice().sort((a, b) => {
     if (a.year !== b.year) return b.year - a.year;
@@ -184,7 +180,11 @@ export function enrichAlmanacRecord(
   const boutHighlights: NarrativeHighlight[] = allNotableBouts.flatMap(notableBoutToHighlights);
 
   // Combine and sort
-  const allHighlights = [...(record.narrativeHighlights ?? []), ...milestoneHighlights, ...boutHighlights];
+  const allHighlights = [
+    ...(record.narrativeHighlights ?? []),
+    ...milestoneHighlights,
+    ...boutHighlights,
+  ];
   // Dedupe highlights by text+year
   const seenHighlights = new Set<string>();
   const dedupedHighlights = allHighlights.filter((h) => {
@@ -195,7 +195,10 @@ export function enrichAlmanacRecord(
   });
 
   const sortedBouts = sortMostRecentFirst(allNotableBouts).slice(0, MAX_NOTABLE_BOUTS);
-  const sortedHighlights = sortMostRecentFirst(dedupedHighlights).slice(0, MAX_NARRATIVE_HIGHLIGHTS);
+  const sortedHighlights = sortMostRecentFirst(dedupedHighlights).slice(
+    0,
+    MAX_NARRATIVE_HIGHLIGHTS
+  );
 
   return {
     ...record,
@@ -242,14 +245,7 @@ export function runAlmanacNarrativeUpdate(world: WorldState): StateImpact {
       if (!isNotableBout(result, lines, winnerCareerWins)) continue;
       if (existingBoutIds.has(result.boutId)) continue;
 
-      const entry = buildNotableBoutEntry(
-        result,
-        rikishiId,
-        world,
-        bashoName,
-        year,
-        match.day
-      );
+      const entry = buildNotableBoutEntry(result, rikishiId, world, bashoName, year, match.day);
       if (entry) {
         newBouts.push(entry);
         existingBoutIds.add(result.boutId);
@@ -284,7 +280,10 @@ export function runAlmanacNarrativeUpdate(world: WorldState): StateImpact {
     });
 
     const sortedBouts = sortMostRecentFirst(allBouts).slice(0, MAX_NOTABLE_BOUTS);
-    const sortedHighlights = sortMostRecentFirst(dedupedHighlights).slice(0, MAX_NARRATIVE_HIGHLIGHTS);
+    const sortedHighlights = sortMostRecentFirst(dedupedHighlights).slice(
+      0,
+      MAX_NARRATIVE_HIGHLIGHTS
+    );
 
     // Only update if there are changes
     if (newBouts.length > 0 || newMilestoneHighlights.length > 0 || !rikishi.almanacRecord) {

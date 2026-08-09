@@ -23,8 +23,7 @@ vi.mock("@/components/charts/BanzukePyramid", () => ({
 }));
 
 vi.mock("@/components/banzuke/RikishiCell", () => ({
-  RikishiCell: ({ entry }: any) =>
-    React.createElement("td", null, entry?.shikona ?? "—"),
+  RikishiCell: ({ entry }: any) => React.createElement("td", null, entry?.shikona ?? "—"),
 }));
 
 vi.mock("@/components/banzuke/YokozunaTrajectory", () => ({
@@ -42,9 +41,12 @@ vi.mock("@/components/ui/tooltip-wrap", () => ({
 vi.mock("@/presenters/uiDigest", () => ({
   projectBanzukeUIDigest: () => ({
     divisionMap: new Map([
-      ["makuuchi", {
-        rows: mockRows,
-      }],
+      [
+        "makuuchi",
+        {
+          rows: mockRows,
+        },
+      ],
     ]),
     divisionCounts: { makuuchi: mockRows.length * 2 },
     kadobanMap: {},

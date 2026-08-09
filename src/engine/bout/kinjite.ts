@@ -55,7 +55,11 @@ export function calculateHansokuChance(
     dqChance += KINJITE_SEVEN_SEVEN_BONUS;
   }
 
-  if (winner.rank === "ozeki" && day >= KINJITE_KADOBAN_DAY_THRESHOLD && (winnerRecord?.wins ?? 0) < KINJITE_KADOBAN_WIN_THRESHOLD) {
+  if (
+    winner.rank === "ozeki" &&
+    day >= KINJITE_KADOBAN_DAY_THRESHOLD &&
+    (winnerRecord?.wins ?? 0) < KINJITE_KADOBAN_WIN_THRESHOLD
+  ) {
     dqChance += KINJITE_KADOBAN_BONUS;
   }
 

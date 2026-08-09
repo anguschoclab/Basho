@@ -35,11 +35,7 @@ function mkWorld(
 describe("selectMakuuchiStandings", () => {
   it("returns entries sorted by wins desc, then losses asc", () => {
     const world = mkWorld(
-      [
-        mkRikishi("a", "makuuchi"),
-        mkRikishi("b", "makuuchi"),
-        mkRikishi("c", "makuuchi"),
-      ],
+      [mkRikishi("a", "makuuchi"), mkRikishi("b", "makuuchi"), mkRikishi("c", "makuuchi")],
       new Map([
         ["a", { wins: 5, losses: 2 }],
         ["b", { wins: 7, losses: 0 }],
@@ -54,11 +50,7 @@ describe("selectMakuuchiStandings", () => {
 
   it("filters to makuuchi division only", () => {
     const world = mkWorld(
-      [
-        mkRikishi("a", "makuuchi"),
-        mkRikishi("b", "juryo"),
-        mkRikishi("c", "makushita"),
-      ],
+      [mkRikishi("a", "makuuchi"), mkRikishi("b", "juryo"), mkRikishi("c", "makushita")],
       new Map([
         ["a", { wins: 3, losses: 0 }],
         ["b", { wins: 10, losses: 0 }],
@@ -87,10 +79,7 @@ describe("selectMakuuchiStandings", () => {
   });
 
   it("handles rikishi with 0 wins and 0 losses", () => {
-    const world = mkWorld(
-      [mkRikishi("a", "makuuchi")],
-      new Map([["a", { wins: 0, losses: 0 }]])
-    );
+    const world = mkWorld([mkRikishi("a", "makuuchi")], new Map([["a", { wins: 0, losses: 0 }]]));
     const result = selectMakuuchiStandings(world);
     expect(result).toHaveLength(1);
     expect(result[0].wins).toBe(0);
@@ -98,20 +87,14 @@ describe("selectMakuuchiStandings", () => {
   });
 
   it("includes rikishi object in each entry", () => {
-    const world = mkWorld(
-      [mkRikishi("a", "makuuchi")],
-      new Map([["a", { wins: 3, losses: 1 }]])
-    );
+    const world = mkWorld([mkRikishi("a", "makuuchi")], new Map([["a", { wins: 3, losses: 1 }]]));
     const result = selectMakuuchiStandings(world);
     expect(result[0].rikishi).toBeDefined();
     expect(result[0].rikishi.id).toBe("a");
   });
 
   it("defaults to 0 wins/losses when standings entry missing", () => {
-    const world = mkWorld(
-      [mkRikishi("a", "makuuchi")],
-      new Map()
-    );
+    const world = mkWorld([mkRikishi("a", "makuuchi")], new Map());
     const result = selectMakuuchiStandings(world);
     expect(result).toHaveLength(1);
     expect(result[0].wins).toBe(0);

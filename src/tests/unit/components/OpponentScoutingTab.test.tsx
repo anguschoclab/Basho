@@ -73,9 +73,7 @@ function mockUseGame(world: any | null) {
 
 function getCardOrder(): string[] {
   const cards = document.querySelectorAll(".paper.cursor-pointer");
-  return Array.from(cards).map(
-    (el) => el.querySelector(".font-display")?.textContent ?? ""
-  );
+  return Array.from(cards).map((el) => el.querySelector(".font-display")?.textContent ?? "");
 }
 
 describe("OpponentScoutingTab sorting", () => {

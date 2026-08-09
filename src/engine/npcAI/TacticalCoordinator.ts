@@ -47,9 +47,7 @@ function enforceMaxIntensity(
   const allowedOrder = INTENSITY_ORDER[allowed];
   if (currentOrder > allowedOrder) {
     proposal.trainingIntensity = allowed;
-    reasoning.push(
-      `[Plan Constraint] Capped training intensity at '${allowed}' per active plan.`
-    );
+    reasoning.push(`[Plan Constraint] Capped training intensity at '${allowed}' per active plan.`);
   }
 }
 
@@ -107,9 +105,7 @@ function protectRikishi(
       personnel.individualPushes = personnel.individualPushes.filter((pid) => pid !== id);
     }
   }
-  reasoning.push(
-    `[Plan Constraint] Added ${ids.length} rikishi to protected development list.`
-  );
+  reasoning.push(`[Plan Constraint] Added ${ids.length} rikishi to protected development list.`);
 }
 
 function boostRecruitment(
@@ -149,12 +145,7 @@ export function applyPlanConstraints(
         );
         break;
       case "min_reserve":
-        enforceMinReserve(
-          input.financeResult,
-          perception,
-          Number(constraint.value),
-          reasoning
-        );
+        enforceMinReserve(input.financeResult, perception, Number(constraint.value), reasoning);
         break;
       case "avoid_rival":
         if (constraint.value === true) {
@@ -180,7 +171,8 @@ export function applyPlanConstraints(
   // Rebuild derived agent decisions from the coordinated results.
   input.agentDecisions.finance.riskLevel = input.financeResult.riskLevel;
   input.agentDecisions.finance.shouldBuyMyoseki = input.financeResult.shouldBuyMyoseki;
-  input.agentDecisions.finance.shouldInvestInFacilities = input.financeResult.shouldInvestInFacilities;
+  input.agentDecisions.finance.shouldInvestInFacilities =
+    input.financeResult.shouldInvestInFacilities;
   input.agentDecisions.finance.shouldBuildReserves = input.financeResult.shouldBuildReserves;
   input.agentDecisions.recruitment.shouldBid = input.recruitmentResult.shouldBid;
   input.agentDecisions.recruitment.maxBid = input.recruitmentResult.maxBid;

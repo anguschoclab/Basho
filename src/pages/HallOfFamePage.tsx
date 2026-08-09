@@ -287,7 +287,9 @@ function CategoryTab({
       arr.push(ind);
       map.set(ind.inductionYear, arr);
     }
-    return Array.from(map.entries()).sort((a, b) => (sortOrder === "asc" ? a[0] - b[0] : b[0] - a[0]));
+    return Array.from(map.entries()).sort((a, b) =>
+      sortOrder === "asc" ? a[0] - b[0] : b[0] - a[0]
+    );
   }, [inductees, sortKey, sortOrder]);
 
   const sortedFlat = useMemo(() => {
@@ -344,8 +346,19 @@ function CategoryTab({
 
 // === All-time view ===
 
-function AllInducteesTab({ inductees, sortKey, sortOrder }: { inductees: UIHofInductee[]; sortKey: string; sortOrder: SortDirection }) {
-  const sorted = useMemo(() => sortInductees(inductees, sortKey, sortOrder), [inductees, sortKey, sortOrder]);
+function AllInducteesTab({
+  inductees,
+  sortKey,
+  sortOrder,
+}: {
+  inductees: UIHofInductee[];
+  sortKey: string;
+  sortOrder: SortDirection;
+}) {
+  const sorted = useMemo(
+    () => sortInductees(inductees, sortKey, sortOrder),
+    [inductees, sortKey, sortOrder]
+  );
 
   const byYear = useMemo(() => {
     if (sortKey !== "year") return null;
@@ -355,7 +368,9 @@ function AllInducteesTab({ inductees, sortKey, sortOrder }: { inductees: UIHofIn
       arr.push(ind);
       map.set(ind.inductionYear, arr);
     }
-    return Array.from(map.entries()).sort((a, b) => (sortOrder === "asc" ? a[0] - b[0] : b[0] - a[0]));
+    return Array.from(map.entries()).sort((a, b) =>
+      sortOrder === "asc" ? a[0] - b[0] : b[0] - a[0]
+    );
   }, [sorted, sortKey, sortOrder]);
 
   if (inductees.length === 0) {
@@ -483,9 +498,7 @@ export default function HallOfFamePage() {
                 <div className="text-[10px] text-muted-foreground">Technicians</div>
               </div>
               <div className="text-center">
-                <div className="text-xl font-display font-bold text-primary">
-                  {totalAwards}
-                </div>
+                <div className="text-xl font-display font-bold text-primary">{totalAwards}</div>
                 <div className="text-[10px] text-muted-foreground">Awards</div>
               </div>
             </div>
@@ -559,16 +572,35 @@ export default function HallOfFamePage() {
               </TabsTrigger>
             </TabsList>
             <TabsContent value="all" className="mt-4">
-              <AllInducteesTab inductees={hof?.inductees ?? []} sortKey={sortKey} sortOrder={sortOrder} />
+              <AllInducteesTab
+                inductees={hof?.inductees ?? []}
+                sortKey={sortKey}
+                sortOrder={sortOrder}
+              />
             </TabsContent>
             <TabsContent value="champion" className="mt-4">
-              <CategoryTab category="champion" inductees={byCategory.champion} sortKey={sortKey} sortOrder={sortOrder} />
+              <CategoryTab
+                category="champion"
+                inductees={byCategory.champion}
+                sortKey={sortKey}
+                sortOrder={sortOrder}
+              />
             </TabsContent>
             <TabsContent value="iron_man" className="mt-4">
-              <CategoryTab category="iron_man" inductees={byCategory.iron_man} sortKey={sortKey} sortOrder={sortOrder} />
+              <CategoryTab
+                category="iron_man"
+                inductees={byCategory.iron_man}
+                sortKey={sortKey}
+                sortOrder={sortOrder}
+              />
             </TabsContent>
             <TabsContent value="technician" className="mt-4">
-              <CategoryTab category="technician" inductees={byCategory.technician} sortKey={sortKey} sortOrder={sortOrder} />
+              <CategoryTab
+                category="technician"
+                inductees={byCategory.technician}
+                sortKey={sortKey}
+                sortOrder={sortOrder}
+              />
             </TabsContent>
           </Tabs>
           <SortMenu

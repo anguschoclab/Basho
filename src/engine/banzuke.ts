@@ -133,8 +133,10 @@ export function compareBanzuke(
 
   // Sort by significance: sanyaku changes > major promotions > demotions > no change > new
   changes.sort((a, b) => {
-    const aSanyaku = isSanyakuRank(a.newPosition?.rank ?? "") || isSanyakuRank(a.oldPosition?.rank ?? "");
-    const bSanyaku = isSanyakuRank(b.newPosition?.rank ?? "") || isSanyakuRank(b.oldPosition?.rank ?? "");
+    const aSanyaku =
+      isSanyakuRank(a.newPosition?.rank ?? "") || isSanyakuRank(a.oldPosition?.rank ?? "");
+    const bSanyaku =
+      isSanyakuRank(b.newPosition?.rank ?? "") || isSanyakuRank(b.oldPosition?.rank ?? "");
 
     if (aSanyaku && !bSanyaku) return -1;
     if (!aSanyaku && bSanyaku) return 1;
@@ -213,7 +215,7 @@ export function updateBanzuke(
   const HEADROOM = 8;
   const makushita = 120; // Fixed at 120 per real sumo
   const sandanme = Math.max(60, Math.ceil(lowerPopulation * 0.25) + HEADROOM);
-  const jonidan = Math.max(60, Math.ceil(lowerPopulation * 0.40) + HEADROOM);
+  const jonidan = Math.max(60, Math.ceil(lowerPopulation * 0.4) + HEADROOM);
   const jonokuchi = Math.max(40, lowerPopulation - (makushita + sandanme + jonidan)) + HEADROOM;
   const fullTemplate = buildFullSlotTemplate(sanyakuCounts, {
     makuuchi: 42,
@@ -255,7 +257,13 @@ export function updateBanzuke(
         entry: e,
         oldKey,
         desiredKey,
-        eligibleBestTier: bestTierAllowed(e, p, updatedOzekiKadoban[e.rikishiId], demotedOzeki, reclaimableOzeki),
+        eligibleBestTier: bestTierAllowed(
+          e,
+          p,
+          updatedOzekiKadoban[e.rikishiId],
+          demotedOzeki,
+          reclaimableOzeki
+        ),
       };
     })
     .sort((a, b) => {
@@ -349,8 +357,16 @@ function banzukeMovementEvents(
     const fromIsSekitori = o.division === "makuuchi" || o.division === "juryo";
     const toIsSekitori = e.division === "makuuchi" || e.division === "juryo";
     const isSekitoriPromotion = !fromIsSekitori && toIsSekitori;
-    const fromIsSanyaku = o.position.rank === "yokozuna" || o.position.rank === "ozeki" || o.position.rank === "sekiwake" || o.position.rank === "komusubi";
-    const toIsSanyaku = e.position.rank === "yokozuna" || e.position.rank === "ozeki" || e.position.rank === "sekiwake" || e.position.rank === "komusubi";
+    const fromIsSanyaku =
+      o.position.rank === "yokozuna" ||
+      o.position.rank === "ozeki" ||
+      o.position.rank === "sekiwake" ||
+      o.position.rank === "komusubi";
+    const toIsSanyaku =
+      e.position.rank === "yokozuna" ||
+      e.position.rank === "ozeki" ||
+      e.position.rank === "sekiwake" ||
+      e.position.rank === "komusubi";
     const isSanyakuPromotion = !fromIsSanyaku && toIsSanyaku;
 
     events.push({

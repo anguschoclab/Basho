@@ -197,10 +197,9 @@ function simulateBashoPerformance(
   shukunsho: boolean;
   kinboshi: number;
 } {
-  const boutCount =
-    isSekitoriDivision(currentDivision)
-      ? BOUTS_PER_BASHO_SEKITORI
-      : BOUTS_PER_BASHO_LOWER_DIVISION;
+  const boutCount = isSekitoriDivision(currentDivision)
+    ? BOUTS_PER_BASHO_SEKITORI
+    : BOUTS_PER_BASHO_LOWER_DIVISION;
   const targetMult = getRankCareerMultiplier(targetRank);
   const currentMult = getRankCareerMultiplier(currentRank);
 

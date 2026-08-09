@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import {
   KORE_YORI_SANYAKU_ANNOUNCEMENT,

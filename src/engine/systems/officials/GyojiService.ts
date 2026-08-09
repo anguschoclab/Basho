@@ -9,7 +9,8 @@ import { SeededRNG } from "../../rng";
 /** Generate a gyoji with deterministic stats from a seed. */
 export function generateGyoji(seed: string, rank: Gyoji["rank"], index: number): Gyoji {
   const rng = new SeededRNG(`${seed}-gyoji-${index}`);
-  const accuracyBase = rank === "tate" ? 75 : rank === "fuku-tate" ? 70 : rank === "sanyaku" ? 65 : 55;
+  const accuracyBase =
+    rank === "tate" ? 75 : rank === "fuku-tate" ? 70 : rank === "sanyaku" ? 65 : 55;
   const accuracy = Math.max(30, Math.min(95, accuracyBase + Math.floor(rng.next() * 20 - 10)));
   const surnames = ["Kimura", "Shikimori", "Inosuke", "Hideki", "Toshio", "Masaru"];
   const givenName = rank === "tate" ? "Shonosuke" : "Kazuki";

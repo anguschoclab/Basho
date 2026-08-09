@@ -7,8 +7,6 @@ import {
 import { SeededRNG } from "@/engine/rng";
 import { PERSONALITY_TRAITS } from "@/constants/engine/generation";
 
- 
-
 describe("PersonaAssignment — press persona & trait assignment (T22)", () => {
   // ── T22.1-T22.5: Press persona assignment ──
   it("T22.1: discipline >= 75 && mediaSavvy < 40 → stoic", () => {

@@ -59,7 +59,11 @@ describe("boutAchievements", () => {
       const winner = makeRikishi("m1", "maegashira");
       const loser = makeRikishi("y1", "yokozuna");
       const result = makeResult();
-      const { winnerAchievements, loserAchievements, kinboshiDelta } = detectKinboshi(result, winner, loser);
+      const { winnerAchievements, loserAchievements, kinboshiDelta } = detectKinboshi(
+        result,
+        winner,
+        loser
+      );
       expect(kinboshiDelta).toBe(true);
       expect(winnerAchievements.kinboshiEarned).toBe(1);
       expect(loserAchievements.kinboshiConceded).toBe(1);
@@ -69,7 +73,11 @@ describe("boutAchievements", () => {
       const winner = makeRikishi("m1", "maegashira");
       const loser = makeRikishi("o1", "ozeki");
       const result = makeResult();
-      const { winnerAchievements, loserAchievements, kinboshiDelta } = detectKinboshi(result, winner, loser);
+      const { winnerAchievements, loserAchievements, kinboshiDelta } = detectKinboshi(
+        result,
+        winner,
+        loser
+      );
       expect(kinboshiDelta).toBe(false);
       expect(winnerAchievements.ginboshiEarned).toBe(1);
       expect(loserAchievements.ginboshiConceded).toBe(1);

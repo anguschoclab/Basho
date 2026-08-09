@@ -246,7 +246,11 @@ export const selectClosedHeyas = createSelector((world: WorldState) => {
   if (!world.closedHeyas) return [];
   const result: Array<{ id: string; name?: string; closedYear?: number }> = [];
   for (const [id, record] of world.closedHeyas) {
-    result.push({ id, name: (record as { name?: string }).name, closedYear: (record as { closedYear?: number }).closedYear });
+    result.push({
+      id,
+      name: (record as { name?: string }).name,
+      closedYear: (record as { closedYear?: number }).closedYear,
+    });
   }
   return result;
 });

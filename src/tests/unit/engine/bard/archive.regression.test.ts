@@ -1,8 +1,6 @@
 import { describe, it, expect } from "vitest";
 import postBout from "@/engine/bard/domains/post_bout.json";
 
- 
-
 describe("PR #731: Bard post-bout reactions expansion", () => {
   it("C.1: post_bout.reaction array has at least 10 variants", () => {
     const reaction = (postBout as any)?.reaction;

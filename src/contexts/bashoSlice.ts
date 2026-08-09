@@ -52,7 +52,11 @@ export function bashoSlice(state: GameState, action: GameAction): GameState {
         if (idx >= 0) unplayedIndex = idx;
       }
       const playerTactic = action.boutId ? state.boutTactics[action.boutId] : undefined;
-      const { world, result } = worldEngine.simulateBoutForToday(state.world, unplayedIndex, playerTactic);
+      const { world, result } = worldEngine.simulateBoutForToday(
+        state.world,
+        unplayedIndex,
+        playerTactic
+      );
       return {
         ...state,
         world,

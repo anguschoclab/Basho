@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 import type { PbpLine, PbpTag } from "@/engine/bout/boutNarrative";
@@ -38,7 +37,13 @@ describe("age-based decline narrative (6.4)", () => {
   it("battle of veterans pre-bout line when both rikishi are 30+", () => {
     const east = mockRikishi("r1", { rank: "maegashira", division: "makuuchi", birthYear: 1990 });
     const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi", birthYear: 1988 });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]), year: 2025 } as unknown as WorldState;
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+      year: 2025,
+    } as unknown as WorldState;
     const result = makeBoutResult();
 
     generateBoutNarrative(result, east, west, undefined, 7, "veterans-battle-seed", world);
@@ -53,7 +58,13 @@ describe("age-based decline narrative (6.4)", () => {
   it("no battle of veterans when one rikishi is under 30", () => {
     const east = mockRikishi("r1", { rank: "maegashira", division: "makuuchi", birthYear: 2000 });
     const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi", birthYear: 1988 });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]), year: 2025 } as unknown as WorldState;
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+      year: 2025,
+    } as unknown as WorldState;
     const result = makeBoutResult();
 
     generateBoutNarrative(result, east, west, undefined, 7, "no-veterans-seed", world);
@@ -64,8 +75,17 @@ describe("age-based decline narrative (6.4)", () => {
 
   it("father time narrative when loser is in decline phase", () => {
     const east = mockRikishi("r1", { rank: "ozeki", division: "makuuchi", declinePhase: "peak" });
-    const west = mockRikishi("r2", { rank: "ozeki", division: "makuuchi", declinePhase: "early-decline" });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]) } as unknown as WorldState;
+    const west = mockRikishi("r2", {
+      rank: "ozeki",
+      division: "makuuchi",
+      declinePhase: "early-decline",
+    });
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+    } as unknown as WorldState;
     const result = makeBoutResult({ winner: "east" });
 
     generateBoutNarrative(result, east, west, undefined, 7, "father-time-seed", world);
@@ -78,9 +98,18 @@ describe("age-based decline narrative (6.4)", () => {
   });
 
   it("defying age narrative when winner is in late-decline", () => {
-    const east = mockRikishi("r1", { rank: "ozeki", division: "makuuchi", declinePhase: "late-decline" });
+    const east = mockRikishi("r1", {
+      rank: "ozeki",
+      division: "makuuchi",
+      declinePhase: "late-decline",
+    });
     const west = mockRikishi("r2", { rank: "ozeki", division: "makuuchi", declinePhase: "peak" });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]) } as unknown as WorldState;
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+    } as unknown as WorldState;
     const result = makeBoutResult({ winner: "east" });
 
     generateBoutNarrative(result, east, west, undefined, 7, "defying-age-seed", world);
@@ -98,7 +127,12 @@ describe("age-based decline narrative (6.4)", () => {
   it("no decline narrative when both are in peak phase", () => {
     const east = mockRikishi("r1", { rank: "ozeki", division: "makuuchi", declinePhase: "peak" });
     const west = mockRikishi("r2", { rank: "ozeki", division: "makuuchi", declinePhase: "peak" });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]) } as unknown as WorldState;
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+    } as unknown as WorldState;
     const result = makeBoutResult({ winner: "east" });
 
     generateBoutNarrative(result, east, west, undefined, 7, "no-decline-seed", world);
@@ -107,10 +141,14 @@ describe("age-based decline narrative (6.4)", () => {
     // Neither father_time nor defying_age should fire when both are in peak
     // Check that no post_bout veteran-tagged lines exist from decline narrative
     // (there could be veteran lines from other sources, so we check for the specific templates)
-    const declineLines = postBoutLines.filter((l) =>
-      l.text.includes("Father time") || l.text.includes("Defying age") ||
-      l.text.includes("turns back the clock") || l.text.includes("legs aren't") ||
-      l.text.includes("late-career story") || l.text.includes("silences the doubters")
+    const declineLines = postBoutLines.filter(
+      (l) =>
+        l.text.includes("Father time") ||
+        l.text.includes("Defying age") ||
+        l.text.includes("turns back the clock") ||
+        l.text.includes("legs aren't") ||
+        l.text.includes("late-career story") ||
+        l.text.includes("silences the doubters")
     );
 
     expect(declineLines.length).toBe(0);

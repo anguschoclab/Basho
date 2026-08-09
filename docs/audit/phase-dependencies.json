@@ -24,15 +24,35 @@
     "phase_pre_basho_schedule"
   ],
   "edges": [
-    { "from": "phase00_preflight", "to": "all", "reads": "transientContext.boundaries, deltas, activeModifiers" },
+    {
+      "from": "phase00_preflight",
+      "to": "all",
+      "reads": "transientContext.boundaries, deltas, activeModifiers"
+    },
     { "from": "phase02_context", "to": "phase01_week_training", "reads": "activeModifiers" },
     { "from": "phase02_context", "to": "phase01_week_health", "reads": "recoveryMultiplier" },
     { "from": "phase01_week_economy", "to": "phase01_week_welfare", "reads": "heya.funds" },
     { "from": "phase05_monthly_boundary", "to": "phase01_monthly_market", "reads": "market state" },
-    { "from": "phase01_daily_economy", "to": "phase01_daily_welfare", "reads": "heya.funds (via fused micro phase)" },
-    { "from": "phase01_daily_welfare", "to": "phase01_daily_sponsors", "reads": "rikishi welfare state" },
-    { "from": "phase01_daily_sponsors", "to": "phase01_daily_drama", "reads": "sponsor satisfaction" },
-    { "from": "phase_pre_basho_assessment", "to": "phase_pre_basho_schedule", "reads": "rikishi assessments" }
+    {
+      "from": "phase01_daily_economy",
+      "to": "phase01_daily_welfare",
+      "reads": "heya.funds (via fused micro phase)"
+    },
+    {
+      "from": "phase01_daily_welfare",
+      "to": "phase01_daily_sponsors",
+      "reads": "rikishi welfare state"
+    },
+    {
+      "from": "phase01_daily_sponsors",
+      "to": "phase01_daily_drama",
+      "reads": "sponsor satisfaction"
+    },
+    {
+      "from": "phase_pre_basho_assessment",
+      "to": "phase_pre_basho_schedule",
+      "reads": "rikishi assessments"
+    }
   ],
   "notes": [
     "phase00_preflight sets transientContext.boundaries, deltas, activeModifiers consumed by all subsequent phases",

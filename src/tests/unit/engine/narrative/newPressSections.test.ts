@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { PostBashoPressService } from "@/engine/systems/narrative/PostBashoPressService";
 import { makeMockWorld, mockRikishi } from "../utils";
@@ -17,12 +16,20 @@ describe("PostBashoPressService — New Champion Sections", () => {
       weightJourney: { targetKg: 160, progressKg: 18, stalled: false, phases: ["bulking"] },
     } as any);
 
-    const world = makeMockWorld({ rikishi: new Map([["wj-champ", champion]]) as any, year: 2025 } as any) as WorldState;
+    const world = makeMockWorld({
+      rikishi: new Map([["wj-champ", champion]]) as any,
+      year: 2025,
+    } as any) as WorldState;
     const lines = PostBashoPressService.generatePressConference(world, {
-      yushoId: "wj-champ", junYushoIds: [], bashoName: "hatsu", year: 2025,
+      yushoId: "wj-champ",
+      junYushoIds: [],
+      bashoName: "hatsu",
+      year: 2025,
     });
 
-    const hasWeightJourney = lines.some((l) => l.text.includes("Bulk Champ") && l.id.includes("-weight-journey"));
+    const hasWeightJourney = lines.some(
+      (l) => l.text.includes("Bulk Champ") && l.id.includes("-weight-journey")
+    );
     expect(hasWeightJourney).toBe(true);
     expect(lines.every((l) => !l.text.includes("[MISSING:"))).toBe(true);
   });
@@ -39,9 +46,15 @@ describe("PostBashoPressService — New Champion Sections", () => {
       weightJourney: { targetKg: 160, progressKg: 5, stalled: false, phases: ["bulking"] },
     } as any);
 
-    const world = makeMockWorld({ rikishi: new Map([["wj-champ2", champion]]) as any, year: 2025 } as any) as WorldState;
+    const world = makeMockWorld({
+      rikishi: new Map([["wj-champ2", champion]]) as any,
+      year: 2025,
+    } as any) as WorldState;
     const lines = PostBashoPressService.generatePressConference(world, {
-      yushoId: "wj-champ2", junYushoIds: [], bashoName: "hatsu", year: 2025,
+      yushoId: "wj-champ2",
+      junYushoIds: [],
+      bashoName: "hatsu",
+      year: 2025,
     });
 
     const hasWeightJourney = lines.some((l) => l.id.includes("-weight-journey"));
@@ -60,18 +73,29 @@ describe("PostBashoPressService — New Champion Sections", () => {
       interventionUsedThisBasho: true,
     } as any);
 
-    const world = makeMockWorld({ rikishi: new Map([["int-champ", champion]]) as any, year: 2025 } as any) as WorldState;
+    const world = makeMockWorld({
+      rikishi: new Map([["int-champ", champion]]) as any,
+      year: 2025,
+    } as any) as WorldState;
     const lines = PostBashoPressService.generatePressConference(world, {
-      yushoId: "int-champ", junYushoIds: [], bashoName: "nagoya", year: 2025,
+      yushoId: "int-champ",
+      junYushoIds: [],
+      bashoName: "nagoya",
+      year: 2025,
     });
 
-    const hasIntervention = lines.some((l) => l.text.includes("Saved Champ") && l.id.includes("-intervention"));
+    const hasIntervention = lines.some(
+      (l) => l.text.includes("Saved Champ") && l.id.includes("-intervention")
+    );
     expect(hasIntervention).toBe(true);
     expect(lines.every((l) => !l.text.includes("[MISSING:"))).toBe(true);
   });
 
   it("generates early_struggle lines for champion with 5+ basho and <=1 yusho", () => {
-    const careerHistory = Array.from({ length: 6 }, () => ({ division: "makuuchi", isYusho: false } as any));
+    const careerHistory = Array.from(
+      { length: 6 },
+      () => ({ division: "makuuchi", isYusho: false }) as any
+    );
     const champion = mockRikishi("strug-champ", {
       shikona: "Long Road",
       rank: "maegashira",
@@ -82,12 +106,20 @@ describe("PostBashoPressService — New Champion Sections", () => {
       careerHistory,
     });
 
-    const world = makeMockWorld({ rikishi: new Map([["strug-champ", champion]]) as any, year: 2025 } as any) as WorldState;
+    const world = makeMockWorld({
+      rikishi: new Map([["strug-champ", champion]]) as any,
+      year: 2025,
+    } as any) as WorldState;
     const lines = PostBashoPressService.generatePressConference(world, {
-      yushoId: "strug-champ", junYushoIds: [], bashoName: "aki", year: 2025,
+      yushoId: "strug-champ",
+      junYushoIds: [],
+      bashoName: "aki",
+      year: 2025,
     });
 
-    const hasStruggle = lines.some((l) => l.text.includes("Long Road") && l.id.includes("-struggle"));
+    const hasStruggle = lines.some(
+      (l) => l.text.includes("Long Road") && l.id.includes("-struggle")
+    );
     expect(hasStruggle).toBe(true);
     expect(lines.every((l) => !l.text.includes("[MISSING:"))).toBe(true);
   });
@@ -101,20 +133,30 @@ describe("PostBashoPressService — New Champion Sections", () => {
       currentBashoLosses: 1,
       heyaId: "heya-1",
       careerHistory: [],
-      careerHighlights: [{
-        type: "seven_seven_win",
-        basho: "hatsu",
-        opponent: "rival-1",
-        description: "Won 7-7 bout on senshuraku",
-      }],
+      careerHighlights: [
+        {
+          type: "seven_seven_win",
+          basho: "hatsu",
+          opponent: "rival-1",
+          description: "Won 7-7 bout on senshuraku",
+        },
+      ],
     } as any);
 
-    const world = makeMockWorld({ rikishi: new Map([["hl-champ", champion]]) as any, year: 2025 } as any) as WorldState;
+    const world = makeMockWorld({
+      rikishi: new Map([["hl-champ", champion]]) as any,
+      year: 2025,
+    } as any) as WorldState;
     const lines = PostBashoPressService.generatePressConference(world, {
-      yushoId: "hl-champ", junYushoIds: [], bashoName: "hatsu", year: 2025,
+      yushoId: "hl-champ",
+      junYushoIds: [],
+      bashoName: "hatsu",
+      year: 2025,
     });
 
-    const hasHighlight = lines.some((l) => l.text.includes("Memory Champ") && l.id.includes("-highlight"));
+    const hasHighlight = lines.some(
+      (l) => l.text.includes("Memory Champ") && l.id.includes("-highlight")
+    );
     expect(hasHighlight).toBe(true);
     expect(lines.every((l) => !l.text.includes("[MISSING:"))).toBe(true);
   });
@@ -142,7 +184,10 @@ describe("PostBashoPressService — New Prize Winner Sections", () => {
     } as any);
 
     const world = makeMockWorld({
-      rikishi: new Map([["fn-champ", champion], ["fn-winner", prizeWinner]]) as any,
+      rikishi: new Map([
+        ["fn-champ", champion],
+        ["fn-winner", prizeWinner],
+      ]) as any,
       year: 2025,
     } as any) as WorldState;
     const lines = PostBashoPressService.generatePressConference(world, {
@@ -153,7 +198,9 @@ describe("PostBashoPressService — New Prize Winner Sections", () => {
       year: 2025,
     });
 
-    const hasFightingName = lines.some((l) => l.text.includes("Early Name") && l.id.includes("-fighting-name"));
+    const hasFightingName = lines.some(
+      (l) => l.text.includes("Early Name") && l.id.includes("-fighting-name")
+    );
     expect(hasFightingName).toBe(true);
     expect(lines.every((l) => !l.text.includes("[MISSING:"))).toBe(true);
   });
@@ -179,7 +226,10 @@ describe("PostBashoPressService — New Prize Winner Sections", () => {
     } as any);
 
     const world = makeMockWorld({
-      rikishi: new Map([["co-champ", champion], ["co-winner", prizeWinner]]) as any,
+      rikishi: new Map([
+        ["co-champ", champion],
+        ["co-winner", prizeWinner],
+      ]) as any,
       year: 2025,
     } as any) as WorldState;
     const lines = PostBashoPressService.generatePressConference(world, {

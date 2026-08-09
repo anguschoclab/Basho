@@ -1,5 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { applyWeeklyTraining, ensureHeyaTrainingState } from "@/engine/systems/training/TrainingService";
+import {
+  applyWeeklyTraining,
+  ensureHeyaTrainingState,
+} from "@/engine/systems/training/TrainingService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState, ActiveModifiers } from "@/engine/types/world";
@@ -8,7 +11,6 @@ import type { Rikishi } from "@/engine/types/rikishi";
 describe("TrainingService.applyWeeklyTraining", () => {
   let world: WorldState;
 
-   
   function makeHeya(id: string, isPlayer: boolean): any {
     return {
       id,
@@ -45,7 +47,6 @@ describe("TrainingService.applyWeeklyTraining", () => {
         balance: 50,
         experience: 10,
         aggression: 50,
-         
       } as any,
     });
   }
@@ -78,7 +79,6 @@ describe("TrainingService.applyWeeklyTraining", () => {
     rikishiMap.set("r-player", pr);
     rikishiMap.set("r-npc", nr);
 
-     
     const heyasMap = new Map<string, any>();
     heyasMap.set("heya-player", makeHeya("heya-player", true));
     heyasMap.set("heya-npc", makeHeya("heya-npc", false));

@@ -12,10 +12,7 @@ import { createDefaultTutorialState } from "@/engine/types/tutorial";
 import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import type { StateImpact } from "@/engine/core/StateImpact";
 
-export function advanceTutorialStep(
-  world: WorldState,
-  step: TutorialStep
-): StateImpact {
+export function advanceTutorialStep(world: WorldState, step: TutorialStep): StateImpact {
   const builder = createImpactBuilder("advanceTutorialStep");
   const ts = world.tutorialState;
   builder.updateWorldField(
@@ -25,10 +22,7 @@ export function advanceTutorialStep(
   return builder.build();
 }
 
-export function setTutorialFlag(
-  world: WorldState,
-  flag: keyof TutorialFlags
-): StateImpact {
+export function setTutorialFlag(world: WorldState, flag: keyof TutorialFlags): StateImpact {
   const builder = createImpactBuilder("setTutorialFlag");
   if (!world.tutorialState) return builder.build();
   builder.updateWorldField("tutorialState", {

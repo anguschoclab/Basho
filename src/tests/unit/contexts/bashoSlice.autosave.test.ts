@@ -21,10 +21,17 @@ vi.mock("@/contexts/gameHelpers", () => ({
 
 vi.mock("@/engine/world", () => ({
   startBasho: vi.fn((world: unknown) => world),
-  advanceBashoDay: vi.fn((world: any) => ({ ...world, currentBasho: { ...world.currentBasho, day: (world.currentBasho?.day ?? 0) + 1 } })),
+  advanceBashoDay: vi.fn((world: any) => ({
+    ...world,
+    currentBasho: { ...world.currentBasho, day: (world.currentBasho?.day ?? 0) + 1 },
+  })),
   simulateBoutForToday: vi.fn((world: unknown) => ({ world, result: null })),
   endBasho: vi.fn((world: unknown) => world),
-  publishBanzukeUpdate: vi.fn(() => ({ metadata: { source: "test" }, entities: {}, worldFields: {} })),
+  publishBanzukeUpdate: vi.fn(() => ({
+    metadata: { source: "test" },
+    entities: {},
+    worldFields: {},
+  })),
 }));
 
 vi.mock("@/engine/core/ImpactResolver", () => ({

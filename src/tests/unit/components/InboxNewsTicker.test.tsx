@@ -7,7 +7,9 @@ vi.mock("@/contexts/useGame", () => ({
 
 vi.mock("@tanstack/react-router", () => ({
   Link: ({ to, children }: any) => (
-    <a href={to} data-testid="router-link">{children}</a>
+    <a href={to} data-testid="router-link">
+      {children}
+    </a>
   ),
 }));
 
@@ -34,10 +36,7 @@ function makeDigestItem(
   };
 }
 
-function makeDigest(
-  items: ReturnType<typeof makeDigestItem>[],
-  sectionTitle = "Section 1"
-) {
+function makeDigest(items: ReturnType<typeof makeDigestItem>[], sectionTitle = "Section 1") {
   return {
     time: { label: "2025 — Week 5" },
     headline: "A quiet week.",
@@ -124,9 +123,7 @@ describe("InboxNewsTicker", () => {
 
   it("handles undefined detail gracefully", () => {
     vi.mocked(useGame).mockReturnValue({
-      digest: makeDigest([
-        makeDigestItem({ id: "i1", title: "No detail item" }),
-      ]),
+      digest: makeDigest([makeDigestItem({ id: "i1", title: "No detail item" })]),
     } as any);
     render(<InboxNewsTicker />);
     expect(screen.getByText("No detail item")).toBeTruthy();
@@ -135,10 +132,7 @@ describe("InboxNewsTicker", () => {
 
   it("renders section badge", () => {
     vi.mocked(useGame).mockReturnValue({
-      digest: makeDigest(
-        [makeDigestItem({ id: "i1", title: "Test" })],
-        "Training Report"
-      ),
+      digest: makeDigest([makeDigestItem({ id: "i1", title: "Test" })], "Training Report"),
     } as any);
     render(<InboxNewsTicker />);
     expect(screen.getByText("Training Report")).toBeTruthy();

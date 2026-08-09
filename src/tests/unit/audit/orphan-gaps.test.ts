@@ -22,7 +22,9 @@ function collectFiles(dir: string, files: string[] = []): string[] {
 }
 
 function isTestFile(filePath: string): boolean {
-  return filePath.includes(".test.") || filePath.includes(".spec.") || filePath.includes("__tests__");
+  return (
+    filePath.includes(".test.") || filePath.includes(".spec.") || filePath.includes("__tests__")
+  );
 }
 
 function isScriptFile(filePath: string): boolean {
@@ -106,7 +108,9 @@ describe("MyosekiTradingService — tick phase wiring", () => {
 describe("menu-core.tsx — dead code removal", () => {
   it("has been removed (was unused duplicate of dropdown-menu.tsx)", () => {
     const menuCorePath = join(SRC, "components", "ui", "menu-core.tsx");
-    expect(existsSync(menuCorePath), "menu-core.tsx should have been deleted as dead code").toBe(false);
+    expect(existsSync(menuCorePath), "menu-core.tsx should have been deleted as dead code").toBe(
+      false
+    );
   });
 });
 
@@ -114,11 +118,24 @@ describe("menu-core.tsx — dead code removal", () => {
 
 describe("Orphan route classification", () => {
   const INTENTIONAL_NON_SIDEBAR_ROUTES = ["/main-menu", "/new-game", "/settings"];
-  const REDIRECT_ROUTES = ["/infrastructure", "/economy", "/talent", "/scouting", "/sponsors", "/governance", "/banzuke", "/schedule", "/rivalries"];
+  const REDIRECT_ROUTES = [
+    "/infrastructure",
+    "/economy",
+    "/talent",
+    "/scouting",
+    "/sponsors",
+    "/governance",
+    "/banzuke",
+    "/schedule",
+    "/rivalries",
+  ];
 
   for (const route of INTENTIONAL_NON_SIDEBAR_ROUTES) {
     it(`${route} is intentionally not in sidebar (pre-game/settings route)`, () => {
-      const sidebarContent = readFileSync(join(SRC, "components", "layout", "sidebarConfig.ts"), "utf-8");
+      const sidebarContent = readFileSync(
+        join(SRC, "components", "layout", "sidebarConfig.ts"),
+        "utf-8"
+      );
       expect(sidebarContent).not.toContain(`"${route}"`);
     });
   }

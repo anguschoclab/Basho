@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { recordCareerHighlight, getFavoriteHighlight } from "@/engine/bout/CareerHighlights";
 import { mockRikishi } from "../utils";
@@ -83,9 +82,7 @@ describe("Career Highlights System (B7)", () => {
 
   it("recordCareerHighlight appends to existing highlights", () => {
     const r = mockRikishi("ch-6", {
-      careerHighlights: [
-        { type: "debut_win", basho: "2024-hatsu", description: "First win" },
-      ],
+      careerHighlights: [{ type: "debut_win", basho: "2024-hatsu", description: "First win" }],
     } as any);
 
     const updated = recordCareerHighlight(r, {

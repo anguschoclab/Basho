@@ -24,7 +24,15 @@ function makeRikishi(overrides: Partial<UIRikishi> = {}): UIRikishi {
     condition: 70,
     currentBashoWins: 8,
     currentBashoLosses: 7,
-    perceivedStats: { power: "B+", speed: "B", technique: "A-", stamina: "C", mental: "B", adaptability: "C+", balance: "B" } as any,
+    perceivedStats: {
+      power: "B+",
+      speed: "B",
+      technique: "A-",
+      stamina: "C",
+      mental: "B",
+      adaptability: "C+",
+      balance: "B",
+    } as any,
     ...overrides,
   } as unknown as UIRikishi;
 }
@@ -87,18 +95,30 @@ describe("RosterList sorting", () => {
   });
 
   it("defaults to rank order (yokozuna, ozeki, maegashira)", () => {
-    render(<TooltipProvider><RosterList rikishiList={makeRoster()} onRikishiClick={vi.fn()} /></TooltipProvider>);
+    render(
+      <TooltipProvider>
+        <RosterList rikishiList={makeRoster()} onRikishiClick={vi.fn()} />
+      </TooltipProvider>
+    );
     const order = getCardOrder();
     expect(order).toEqual(["Bravo", "Charlie", "Alpha"]);
   });
 
   it("renders a SortMenu control", () => {
-    render(<TooltipProvider><RosterList rikishiList={makeRoster()} onRikishiClick={vi.fn()} /></TooltipProvider>);
+    render(
+      <TooltipProvider>
+        <RosterList rikishiList={makeRoster()} onRikishiClick={vi.fn()} />
+      </TooltipProvider>
+    );
     expect(screen.getByRole("combobox")).toBeTruthy();
   });
 
   it("sorting by shikona ascending reorders alphabetically", () => {
-    render(<TooltipProvider><RosterList rikishiList={makeRoster()} onRikishiClick={vi.fn()} /></TooltipProvider>);
+    render(
+      <TooltipProvider>
+        <RosterList rikishiList={makeRoster()} onRikishiClick={vi.fn()} />
+      </TooltipProvider>
+    );
     // Open select and choose Shikona
     const trigger = screen.getByRole("combobox");
     fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
@@ -109,7 +129,11 @@ describe("RosterList sorting", () => {
   });
 
   it("toggling order after shikona sort reverses to descending", () => {
-    render(<TooltipProvider><RosterList rikishiList={makeRoster()} onRikishiClick={vi.fn()} /></TooltipProvider>);
+    render(
+      <TooltipProvider>
+        <RosterList rikishiList={makeRoster()} onRikishiClick={vi.fn()} />
+      </TooltipProvider>
+    );
     // Sort by shikona (default asc)
     const trigger = screen.getByRole("combobox");
     fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
@@ -122,7 +146,11 @@ describe("RosterList sorting", () => {
   });
 
   it("sorting by win percentage ascending", () => {
-    render(<TooltipProvider><RosterList rikishiList={makeRoster()} onRikishiClick={vi.fn()} /></TooltipProvider>);
+    render(
+      <TooltipProvider>
+        <RosterList rikishiList={makeRoster()} onRikishiClick={vi.fn()} />
+      </TooltipProvider>
+    );
     const trigger = screen.getByRole("combobox");
     fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
     fireEvent.click(screen.getByText("Win %"));
@@ -132,7 +160,11 @@ describe("RosterList sorting", () => {
   });
 
   it("sorting by streak ascending", () => {
-    render(<TooltipProvider><RosterList rikishiList={makeRoster()} onRikishiClick={vi.fn()} /></TooltipProvider>);
+    render(
+      <TooltipProvider>
+        <RosterList rikishiList={makeRoster()} onRikishiClick={vi.fn()} />
+      </TooltipProvider>
+    );
     const trigger = screen.getByRole("combobox");
     fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
     fireEvent.click(screen.getByText("Streak"));
@@ -142,7 +174,11 @@ describe("RosterList sorting", () => {
   });
 
   it("persists sort state to localStorage", () => {
-    render(<TooltipProvider><RosterList rikishiList={makeRoster()} onRikishiClick={vi.fn()} /></TooltipProvider>);
+    render(
+      <TooltipProvider>
+        <RosterList rikishiList={makeRoster()} onRikishiClick={vi.fn()} />
+      </TooltipProvider>
+    );
     const trigger = screen.getByRole("combobox");
     fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
     fireEvent.click(screen.getByText("Shikona"));
@@ -153,7 +189,11 @@ describe("RosterList sorting", () => {
 
   it("restores sort state from localStorage on init", () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ key: "shikona", order: "desc" }));
-    render(<TooltipProvider><RosterList rikishiList={makeRoster()} onRikishiClick={vi.fn()} /></TooltipProvider>);
+    render(
+      <TooltipProvider>
+        <RosterList rikishiList={makeRoster()} onRikishiClick={vi.fn()} />
+      </TooltipProvider>
+    );
     const order = getCardOrder();
     expect(order).toEqual(["Charlie", "Bravo", "Alpha"]);
   });

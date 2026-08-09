@@ -16,9 +16,7 @@
       "intensive_size": [
         "Mass-building specialized regimen — pushing hard to build world-class physical presence."
       ],
-      "balanced_standard": [
-        "%PHILOSOPHY% cycle — maintaining steady upward trajectory."
-      ],
+      "balanced_standard": ["%PHILOSOPHY% cycle — maintaining steady upward trajectory."],
       "punishing_dominance": [
         "Uncompromising pursuit of dominance — imposing a punishing regimen for elite prospects."
       ],
@@ -28,83 +26,37 @@
       "punishing_emotional": [
         "Oyakata's emotional state is driving punishing demands on the roster."
       ],
-      "balanced_operational": [
-        "Standard operational cycle — maintaining balanced development."
-      ],
-      "capped": [
-        "(capped by sanctions to %CAP%)"
-      ]
+      "balanced_operational": ["Standard operational cycle — maintaining balanced development."],
+      "capped": ["(capped by sanctions to %CAP%)"]
     },
     "focus": {
-      "size_matters": [
-        "Size-obsessed philosophy — power focus to bulk up roster"
-      ],
-      "innovator": [
-        "Innovator philosophy — speed & agility focus"
-      ],
-      "traditionalist": [
-        "Traditional philosophy — balance & fundamentals"
-      ],
-      "traditionalist_yotsu": [
-        "Traditionalist yotsu — emphasizing balance"
-      ],
-      "traditionalist_power": [
-        "Traditionalist approach — power focus"
-      ],
-      "developing": [
-        "Developing roster — building technique fundamentals"
-      ],
-      "oshi_biased": [
-        "Oshi-biased stable — power focus"
-      ],
-      "yotsu_biased": [
-        "Yotsu-biased stable — technique focus"
-      ],
-      "neutral": [
-        "Balanced training focus"
-      ]
+      "size_matters": ["Size-obsessed philosophy — power focus to bulk up roster"],
+      "innovator": ["Innovator philosophy — speed & agility focus"],
+      "traditionalist": ["Traditional philosophy — balance & fundamentals"],
+      "traditionalist_yotsu": ["Traditionalist yotsu — emphasizing balance"],
+      "traditionalist_power": ["Traditionalist approach — power focus"],
+      "developing": ["Developing roster — building technique fundamentals"],
+      "oshi_biased": ["Oshi-biased stable — power focus"],
+      "yotsu_biased": ["Yotsu-biased stable — technique focus"],
+      "neutral": ["Balanced training focus"]
     },
     "recovery": {
-      "critical": [
-        "Critical health situation — maximum recovery"
-      ],
-      "elevated": [
-        "Elevated welfare concern — high recovery"
-      ],
-      "minimal": [
-        "Healthy roster — minimal recovery allocation"
-      ],
-      "standard": [
-        "Standard recovery emphasis"
-      ]
+      "critical": ["Critical health situation — maximum recovery"],
+      "elevated": ["Elevated welfare concern — high recovery"],
+      "minimal": ["Healthy roster — minimal recovery allocation"],
+      "standard": ["Standard recovery emphasis"]
     },
     "scouting": {
-      "suspended": [
-        "Financial crisis — scouting suspended"
-      ],
-      "aggressive": [
-        "Roster needs rebuilding — aggressive scouting"
-      ],
-      "active_sleeper": [
-        "Sleeper Scout personality — active scouting"
-      ],
-      "active_ambitious": [
-        "Ambitious manager seeking talent"
-      ],
-      "passive_dominant": [
-        "Dominant roster — passive scouting"
-      ],
-      "passive_standard": [
-        "Standard scouting activity"
-      ]
+      "suspended": ["Financial crisis — scouting suspended"],
+      "aggressive": ["Roster needs rebuilding — aggressive scouting"],
+      "active_sleeper": ["Sleeper Scout personality — active scouting"],
+      "active_ambitious": ["Ambitious manager seeking talent"],
+      "passive_dominant": ["Dominant roster — passive scouting"],
+      "passive_standard": ["Standard scouting activity"]
     },
     "protect": {
-      "active": [
-        "Protecting %COUNT% wrestler(s) due to health concerns"
-      ],
-      "none": [
-        "No wrestlers require protection"
-      ]
+      "active": ["Protecting %COUNT% wrestler(s) due to health concerns"],
+      "none": ["No wrestlers require protection"]
     }
   }
 }

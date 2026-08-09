@@ -407,7 +407,13 @@ export function resolveBout(
       (result as BoutResult & { kenshoBanners?: unknown[] }).kenshoBanners = banners;
 
       const awardFact = result.awardFact ?? undefined;
-      result.kenshoEnvelopes = calculateKenshoEnvelopes(world, winner, banners, awardFact, kenshoRng);
+      result.kenshoEnvelopes = calculateKenshoEnvelopes(
+        world,
+        winner,
+        banners,
+        awardFact,
+        kenshoRng
+      );
     }
   }
 
@@ -499,11 +505,7 @@ export function applyRivalryToRikishi(
  * console.log(result.winner, result.kimarite);
  * ```
  */
-export function simulateBout(
-  east: Rikishi,
-  west: Rikishi,
-  seed: string
-): { result: BoutResult } {
+export function simulateBout(east: Rikishi, west: Rikishi, seed: string): { result: BoutResult } {
   const fakeBasho: BashoState = {
     // Fold the caller's seed into the basho id so it actually reaches the physics
     // RNG (resolveBoutPhysics seeds from basho.id + day + rikishi ids). Without

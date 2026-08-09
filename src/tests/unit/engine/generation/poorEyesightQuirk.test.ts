@@ -1,6 +1,9 @@
- 
 import { describe, it, expect } from "vitest";
-import { assignQuirk, hasPoorEyesight, applyGlasses } from "@/engine/systems/generation/QuirkAssignment";
+import {
+  assignQuirk,
+  hasPoorEyesight,
+  applyGlasses,
+} from "@/engine/systems/generation/QuirkAssignment";
 import { mockRikishi } from "../utils";
 import { SeededRNG } from "@/engine/rng";
 

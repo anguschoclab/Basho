@@ -106,10 +106,7 @@ describe("SortMenu", () => {
   });
 
   it("restores sort state from localStorage on init", () => {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({ key: "age", order: "desc" })
-    );
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ key: "age", order: "desc" }));
     const onSortChange = vi.fn();
     render(
       <SortMenu

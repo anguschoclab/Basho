@@ -10,7 +10,11 @@ import type { Rikishi } from "../types/rikishi";
 import type { SeededRNG } from "../rng";
 import { getFavoriteHighlight } from "../bout/CareerHighlights";
 
-export type PostRetirementPath = "oyakata" | "media_pundit" | "sumo_school_coach" | "leave_sumo_world";
+export type PostRetirementPath =
+  | "oyakata"
+  | "media_pundit"
+  | "sumo_school_coach"
+  | "leave_sumo_world";
 
 /** Minimum yusho count to be eligible for oyakata path */
 const OYAKATA_MIN_YUSHO = 1;
@@ -26,20 +30,14 @@ const OYAKATA_MIN_WINS = 300;
  * - Lower division with moderate career → sumo_school_coach or media_pundit
  * - Short/weak career → leave_sumo_world
  */
-export function determinePostRetirementPath(
-  rikishi: Rikishi,
-  rng: SeededRNG
-): PostRetirementPath {
+export function determinePostRetirementPath(rikishi: Rikishi, rng: SeededRNG): PostRetirementPath {
   const rank = rikishi.rank ?? "";
   const wins = rikishi.careerRecord?.wins ?? 0;
   const yusho = rikishi.careerRecord?.yusho ?? 0;
   const division = rikishi.division ?? "";
 
   // Elite champions → oyakata
-  if (
-    (rank === "yokozuna" || rank === "ozeki") &&
-    yusho >= OYAKATA_MIN_YUSHO
-  ) {
+  if ((rank === "yokozuna" || rank === "ozeki") && yusho >= OYAKATA_MIN_YUSHO) {
     return "oyakata";
   }
 
@@ -69,15 +67,10 @@ export function determinePostRetirementPath(
  * Generate a retirement narrative for a rikishi based on their post-retirement path.
  * Includes the rikishi's favorite career highlight if available.
  */
-export function getRetirementNarrative(
-  rikishi: Rikishi,
-  path: PostRetirementPath
-): string {
+export function getRetirementNarrative(rikishi: Rikishi, path: PostRetirementPath): string {
   const shikona = rikishi.shikona || rikishi.name || "The rikishi";
   const highlight = getFavoriteHighlight(rikishi);
-  const highlightText = highlight
-    ? ` His greatest moment: ${highlight.description}.`
-    : "";
+  const highlightText = highlight ? ` His greatest moment: ${highlight.description}.` : "";
 
   const wins = rikishi.careerRecord?.wins ?? 0;
   const losses = rikishi.careerRecord?.losses ?? 0;

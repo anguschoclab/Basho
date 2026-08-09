@@ -67,9 +67,7 @@ function mockUseGame(world: any | null) {
 
 function getRowOrder(): string[] {
   const rows = document.querySelectorAll(".flex.items-center.gap-4.p-3");
-  return Array.from(rows).map(
-    (el) => el.querySelector(".font-display")?.textContent ?? ""
-  );
+  return Array.from(rows).map((el) => el.querySelector(".font-display")?.textContent ?? "");
 }
 
 describe("StableIntelTab sorting", () => {

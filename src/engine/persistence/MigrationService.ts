@@ -89,7 +89,10 @@ const migrateToV1_1_0: MigrationStep = (save, ctx) => {
         (events as Record<string, unknown>).version = "1.0.0";
         ctx.logs.push("migrateToV1_1_0: stamped events.version");
       } else if (events !== undefined && events !== null && typeof events !== "object") {
-        warn("Migration: events field is corrupt (not an object), resetting to empty", "MigrationService");
+        warn(
+          "Migration: events field is corrupt (not an object), resetting to empty",
+          "MigrationService"
+        );
         world.events = { version: "1.0.0", log: [], dedupe: {} };
         ctx.logs.push("migrateToV1_1_0: WARN reset corrupt events");
       }

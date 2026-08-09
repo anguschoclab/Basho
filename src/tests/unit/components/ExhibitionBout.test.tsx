@@ -169,7 +169,11 @@ describe("ExhibitionBout", () => {
     fireEvent.click(screen.getByText("Begin My Career"));
     expect(finishExhibitionFn).toHaveBeenCalledWith("finishedExhibition", "FIRST_BASHO_STARTED");
     // Simulate WORLD_UPDATED re-render with completed=true
-    rerender(<TooltipProvider><ExhibitionBout onComplete={onComplete} /></TooltipProvider>);
+    rerender(
+      <TooltipProvider>
+        <ExhibitionBout onComplete={onComplete} />
+      </TooltipProvider>
+    );
     expect(onComplete).toHaveBeenCalled();
   });
 
@@ -243,7 +247,9 @@ describe("ExhibitionBout — error paths", () => {
   });
 
   it("resolveBout returns { result: null } → fallback renders", () => {
-    vi.mocked(resolveBout).mockReturnValue({ result: null } as unknown as ReturnType<typeof resolveBout>);
+    vi.mocked(resolveBout).mockReturnValue({ result: null } as unknown as ReturnType<
+      typeof resolveBout
+    >);
     mockUseGame.mockReturnValue(mockGameApi);
     renderWithProvider(<ExhibitionBout onComplete={vi.fn()} />);
     expect(screen.getByText("Preparing exhibition bout...")).toBeTruthy();

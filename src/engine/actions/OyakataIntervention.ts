@@ -39,10 +39,7 @@ export interface InterventionResult {
  *   - +5 motivation boost
  *   - Logs GOVERNANCE_RULING event
  */
-export function applyOyakataIntervention(
-  world: WorldState,
-  rikishiId: string
-): InterventionResult {
+export function applyOyakataIntervention(world: WorldState, rikishiId: string): InterventionResult {
   const builder = createImpactBuilder("applyOyakataIntervention");
 
   if (world.cyclePhase !== "active_basho") {
@@ -60,7 +57,11 @@ export function applyOyakataIntervention(
   }
 
   if (r.interventionUsedThisBasho) {
-    return { success: false, reason: "Intervention already used this basho", impact: builder.build() };
+    return {
+      success: false,
+      reason: "Intervention already used this basho",
+      impact: builder.build(),
+    };
   }
 
   const losses = r.currentLossStreak ?? 0;

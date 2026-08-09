@@ -14,7 +14,13 @@ export function kenshoTierLabel(total: number): { label: string; detail: string 
   return { label: "Unproven", detail: "Little sponsor draw so far." };
 }
 
-const RUNWAY_BANDS = new Set<RunwayBand>(["secure", "comfortable", "tight", "critical", "desperate"]);
+const RUNWAY_BANDS = new Set<RunwayBand>([
+  "secure",
+  "comfortable",
+  "tight",
+  "critical",
+  "desperate",
+]);
 const KOENKAI_BANDS = new Set<KoenkaiBandType>(["powerful", "strong", "moderate", "weak", "none"]);
 
 export function safeRunwayBand(v: unknown): RunwayBand {

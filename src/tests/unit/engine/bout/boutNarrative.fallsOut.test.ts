@@ -5,8 +5,6 @@ import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { BashoName, BoutResult } from "@/engine/types/basho";
 
- 
-
 function makeRikishi(id: string, opts?: Record<string, any>): Rikishi {
   return mockRikishi(id, {
     shikona: id === "east" ? "East Rikishi" : "West Rikishi",

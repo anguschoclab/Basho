@@ -112,7 +112,11 @@ export function rollWeeklyInjury(args: {
 
   const sevRoll = rng.next();
   const severity: InjurySeverity =
-    sevRoll < INJURY_SEVERITY_MINOR_THRESHOLD ? "minor" : sevRoll < INJURY_SEVERITY_MODERATE_THRESHOLD ? "moderate" : "serious";
+    sevRoll < INJURY_SEVERITY_MINOR_THRESHOLD
+      ? "minor"
+      : sevRoll < INJURY_SEVERITY_MODERATE_THRESHOLD
+        ? "moderate"
+        : "serious";
 
   const area = pickArea(rng);
   const type = pickType(rng, severity);
@@ -346,7 +350,9 @@ export function onBoutResolvedInjury(
   const violentKimarite = ["uwatenage", "shitatenage", "oshitaoshi", "tsukiotoshi", "hatakikomi"];
   const isViolentFinish = violentKimarite.includes(result.kimarite ?? "");
 
-  const baseBoutInjuryChance = isViolentFinish ? BOUT_INJURY_VIOLENT_CHANCE : BOUT_INJURY_NORMAL_CHANCE; // 2-4% per bout
+  const baseBoutInjuryChance = isViolentFinish
+    ? BOUT_INJURY_VIOLENT_CHANCE
+    : BOUT_INJURY_NORMAL_CHANCE; // 2-4% per bout
   const boutInjuryChance = baseBoutInjuryChance * (injuryRiskMultiplier ?? 1.0);
   const rngSeed = RNGRegistry.getSystemRNG(world, "health", `bout::${loser.id}::${world.week}`);
   const roll = rngSeed.next();
@@ -387,7 +393,8 @@ export function onBoutResolvedInjury(
   // Winner injury roll: if the winner has an elevated injury risk (e.g. competing
   // while injured via kyujo_decision "compete"), roll for them at 50% of the base chance.
   if (winner && !winner.injured && winnerInjuryRiskMultiplier && winnerInjuryRiskMultiplier > 1.0) {
-    const winnerBoutInjuryChance = baseBoutInjuryChance * WINNER_INJURY_CHANCE_MULTIPLIER * winnerInjuryRiskMultiplier;
+    const winnerBoutInjuryChance =
+      baseBoutInjuryChance * WINNER_INJURY_CHANCE_MULTIPLIER * winnerInjuryRiskMultiplier;
     const winnerRng = RNGRegistry.getSystemRNG(
       world,
       "health",

@@ -44,9 +44,7 @@ function DataTableInner<T>({
   const sortedRows = useMemo(() => {
     const col = columns.find((c) => c.key === sortKey);
     if (!col || !col.sortable) return rows;
-    return [...rows].sort((a, b) =>
-      compareBy(a, b, col.accessor, sortOrder)
-    );
+    return [...rows].sort((a, b) => compareBy(a, b, col.accessor, sortOrder));
   }, [rows, columns, sortKey, sortOrder]);
 
   const handleHeaderClick = (col: Column<T>) => {
@@ -82,9 +80,7 @@ function DataTableInner<T>({
                 key={col.key}
                 className={cn(
                   "p-4 font-semibold cursor-pointer select-none whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm",
-                  isActive
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground",
+                  isActive ? "text-primary" : "text-muted-foreground hover:text-foreground",
                   col.headerClassName
                 )}
                 onClick={() => handleHeaderClick(col)}
@@ -99,12 +95,7 @@ function DataTableInner<T>({
               >
                 <div className="flex items-center gap-2">
                   {col.label}
-                  <ArrowUpDown
-                    className={cn(
-                      "h-3 w-3",
-                      isActive ? "opacity-100" : "opacity-30"
-                    )}
-                  />
+                  <ArrowUpDown className={cn("h-3 w-3", isActive ? "opacity-100" : "opacity-30")} />
                 </div>
               </th>
             );
@@ -134,10 +125,7 @@ function DataTableInner<T>({
         ))}
         {sortedRows.length === 0 && (
           <tr>
-            <td
-              colSpan={columns.length}
-              className="py-12 text-center text-muted-foreground italic"
-            >
+            <td colSpan={columns.length} className="py-12 text-center text-muted-foreground italic">
               {emptyText}
             </td>
           </tr>

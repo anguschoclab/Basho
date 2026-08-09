@@ -73,12 +73,18 @@ export function tickPushBattle(
   // the current engagement family ("push"), reduce attacker's effective force
   let counterActivated = false;
   let counterSide: Side | null = null;
-  if (west.combatProfile?.counterFamily === "push" && east.combatProfile?.counterFamily !== "push") {
-    adjustedEastForce *= (1 - COUNTER_FORCE_REDUCTION);
+  if (
+    west.combatProfile?.counterFamily === "push" &&
+    east.combatProfile?.counterFamily !== "push"
+  ) {
+    adjustedEastForce *= 1 - COUNTER_FORCE_REDUCTION;
     counterActivated = true;
     counterSide = "west";
-  } else if (east.combatProfile?.counterFamily === "push" && west.combatProfile?.counterFamily !== "push") {
-    adjustedWestForce *= (1 - COUNTER_FORCE_REDUCTION);
+  } else if (
+    east.combatProfile?.counterFamily === "push" &&
+    west.combatProfile?.counterFamily !== "push"
+  ) {
+    adjustedWestForce *= 1 - COUNTER_FORCE_REDUCTION;
     counterActivated = true;
     counterSide = "east";
   }
@@ -98,10 +104,22 @@ export function tickPushBattle(
 
   // Archetype-specific bout behavior (2.1): apply pushVelocityBonus to force
   // Body type behavior (5.1): combine with body type push/lateral bonuses
-  const eastPushBonus = ((east.combatProfile?.archetypeBehavior?.pushVelocityBonus ?? 0) + (east.combatProfile?.bodyTypeBehavior?.pushVelocityBonus ?? 0)) / 100;
-  const westPushBonus = ((west.combatProfile?.archetypeBehavior?.pushVelocityBonus ?? 0) + (west.combatProfile?.bodyTypeBehavior?.pushVelocityBonus ?? 0)) / 100;
-  const eastLateralBonus = ((east.combatProfile?.archetypeBehavior?.lateralMovementBonus ?? 0) + (east.combatProfile?.bodyTypeBehavior?.lateralMovementBonus ?? 0)) / 100;
-  const westLateralBonus = ((west.combatProfile?.archetypeBehavior?.lateralMovementBonus ?? 0) + (west.combatProfile?.bodyTypeBehavior?.lateralMovementBonus ?? 0)) / 100;
+  const eastPushBonus =
+    ((east.combatProfile?.archetypeBehavior?.pushVelocityBonus ?? 0) +
+      (east.combatProfile?.bodyTypeBehavior?.pushVelocityBonus ?? 0)) /
+    100;
+  const westPushBonus =
+    ((west.combatProfile?.archetypeBehavior?.pushVelocityBonus ?? 0) +
+      (west.combatProfile?.bodyTypeBehavior?.pushVelocityBonus ?? 0)) /
+    100;
+  const eastLateralBonus =
+    ((east.combatProfile?.archetypeBehavior?.lateralMovementBonus ?? 0) +
+      (east.combatProfile?.bodyTypeBehavior?.lateralMovementBonus ?? 0)) /
+    100;
+  const westLateralBonus =
+    ((west.combatProfile?.archetypeBehavior?.lateralMovementBonus ?? 0) +
+      (west.combatProfile?.bodyTypeBehavior?.lateralMovementBonus ?? 0)) /
+    100;
 
   const massAdvantageEast = (st.east.mass - st.west.mass) * MASS_ADVANTAGE_MULTIPLIER;
   const jitteredForceDiff =

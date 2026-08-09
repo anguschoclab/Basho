@@ -14,7 +14,7 @@ describe("processFacilitiesMaintenance", () => {
     const world = MockFactory.createWorld();
     const heya = MockFactory.createHeya("heya1", {
       funds: 1000000,
-      facilities: { training: 10, recovery: 10, nutrition: 10 }
+      facilities: { training: 10, recovery: 10, nutrition: 10 },
     });
     const heyaUpdates: HeyaUpdates = {};
     const builder = createImpactBuilder("test");
@@ -32,7 +32,7 @@ describe("processFacilitiesMaintenance", () => {
     const heya = MockFactory.createHeya("heya2", {
       funds: 0,
       facilities: { training: 20, recovery: 20, nutrition: 20 },
-      name: "Poor Heya"
+      name: "Poor Heya",
     });
     const heyaUpdates: HeyaUpdates = {};
     const builder = createImpactBuilder("test");
@@ -57,7 +57,11 @@ describe("processFacilitiesMaintenance", () => {
     const world = MockFactory.createWorld();
     const heya = MockFactory.createHeya("heya3", {
       funds: 0,
-      facilities: { training: MIN_FACILITY_LEVEL, recovery: MIN_FACILITY_LEVEL + 1, nutrition: MIN_FACILITY_LEVEL }
+      facilities: {
+        training: MIN_FACILITY_LEVEL,
+        recovery: MIN_FACILITY_LEVEL + 1,
+        nutrition: MIN_FACILITY_LEVEL,
+      },
     });
     const heyaUpdates: HeyaUpdates = {};
     const builder = createImpactBuilder("test");
@@ -65,7 +69,9 @@ describe("processFacilitiesMaintenance", () => {
     processFacilitiesMaintenance(world, heya, heyaUpdates, builder);
 
     expect(heyaUpdates.facilities!.training).toBe(MIN_FACILITY_LEVEL);
-    expect(heyaUpdates.facilities!.recovery).toBe(Math.max(MIN_FACILITY_LEVEL, MIN_FACILITY_LEVEL + 1 - FACILITY_DECAY_AMOUNT));
+    expect(heyaUpdates.facilities!.recovery).toBe(
+      Math.max(MIN_FACILITY_LEVEL, MIN_FACILITY_LEVEL + 1 - FACILITY_DECAY_AMOUNT)
+    );
     expect(heyaUpdates.facilities!.nutrition).toBe(MIN_FACILITY_LEVEL);
   });
 });

@@ -138,7 +138,9 @@ describe("evaluateRulesExclusive", () => {
     const ctx = createMockContext();
     const result = evaluateRulesExclusive(ctx, rules);
 
-    expect(result.events?.some((e) => (e.type as any) === "test" || e.type === "rule-1" as any)).toBe(true);
+    expect(
+      result.events?.some((e) => (e.type as any) === "test" || e.type === ("rule-1" as any))
+    ).toBe(true);
     expect(action1).toHaveBeenCalledTimes(1);
     expect(action2).not.toHaveBeenCalled();
   });
@@ -165,7 +167,9 @@ describe("evaluateRulesExclusive", () => {
     const ctx = createMockContext();
     const result = evaluateRulesExclusive(ctx, rules);
 
-    expect(result.events?.some((e) => (e.type as any) === "test2" || e.type === "rule-2" as any)).toBe(true);
+    expect(
+      result.events?.some((e) => (e.type as any) === "test2" || e.type === ("rule-2" as any))
+    ).toBe(true);
     expect(action1).toHaveBeenCalledTimes(1);
     expect(action2).toHaveBeenCalledTimes(1);
   });
@@ -218,8 +222,12 @@ describe("evaluateRulesCumulative", () => {
     const ctx = createMockContext();
     const result = evaluateRulesCumulative(ctx, rules);
 
-    expect(result.events?.some((e) => (e.type as any) === "test" || e.type === "rule-1" as any)).toBe(true);
-    expect(result.events?.some((e) => (e.type as any) === "test2" || e.type === "rule-2" as any)).toBe(true);
+    expect(
+      result.events?.some((e) => (e.type as any) === "test" || e.type === ("rule-1" as any))
+    ).toBe(true);
+    expect(
+      result.events?.some((e) => (e.type as any) === "test2" || e.type === ("rule-2" as any))
+    ).toBe(true);
     expect(action1).toHaveBeenCalledTimes(1);
     expect(action2).toHaveBeenCalledTimes(1);
   });
@@ -246,8 +254,12 @@ describe("evaluateRulesCumulative", () => {
     const ctx = createMockContext();
     const result = evaluateRulesCumulative(ctx, rules);
 
-    expect(result.events?.some((e) => (e.type as any) === "test" || e.type === "rule-1" as any)).toBe(false);
-    expect(result.events?.some((e) => (e.type as any) === "test2" || e.type === "rule-2" as any)).toBe(true);
+    expect(
+      result.events?.some((e) => (e.type as any) === "test" || e.type === ("rule-1" as any))
+    ).toBe(false);
+    expect(
+      result.events?.some((e) => (e.type as any) === "test2" || e.type === ("rule-2" as any))
+    ).toBe(true);
   });
 });
 

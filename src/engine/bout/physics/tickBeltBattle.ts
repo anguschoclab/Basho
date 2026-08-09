@@ -90,21 +90,35 @@ export function tickBeltBattle(
   }
 
   // Archetype-specific bout behavior (2.1) + body type behavior (5.1): apply beltTorqueBonus to torque
-  const eastTorqueBonus = ((east.combatProfile?.archetypeBehavior?.beltTorqueBonus ?? 0) + (east.combatProfile?.bodyTypeBehavior?.beltTorqueBonus ?? 0)) / 100;
-  const westTorqueBonus = ((west.combatProfile?.archetypeBehavior?.beltTorqueBonus ?? 0) + (west.combatProfile?.bodyTypeBehavior?.beltTorqueBonus ?? 0)) / 100;
+  const eastTorqueBonus =
+    ((east.combatProfile?.archetypeBehavior?.beltTorqueBonus ?? 0) +
+      (east.combatProfile?.bodyTypeBehavior?.beltTorqueBonus ?? 0)) /
+    100;
+  const westTorqueBonus =
+    ((west.combatProfile?.archetypeBehavior?.beltTorqueBonus ?? 0) +
+      (west.combatProfile?.bodyTypeBehavior?.beltTorqueBonus ?? 0)) /
+    100;
   // Apply torque bonus as additive bonus rather than multiplier to preserve simulation balance
-  let torqueAdvantage = (belt.torqueEast - belt.torqueWest) * (1 + (eastTorqueBonus - westTorqueBonus) * TORQUE_BONUS_FACTOR);
+  let torqueAdvantage =
+    (belt.torqueEast - belt.torqueWest) *
+    (1 + (eastTorqueBonus - westTorqueBonus) * TORQUE_BONUS_FACTOR);
 
   // In-bout counter-tactic activation (2.2): when defender's counterFamily matches
   // the current engagement family ("belt"), reduce attacker's effective torque
   let counterActivated = false;
   let counterSide: Side | null = null;
-  if (west.combatProfile?.counterFamily === "belt" && east.combatProfile?.counterFamily !== "belt") {
-    torqueAdvantage *= (1 - COUNTER_TORQUE_REDUCTION);
+  if (
+    west.combatProfile?.counterFamily === "belt" &&
+    east.combatProfile?.counterFamily !== "belt"
+  ) {
+    torqueAdvantage *= 1 - COUNTER_TORQUE_REDUCTION;
     counterActivated = true;
     counterSide = "west";
-  } else if (east.combatProfile?.counterFamily === "belt" && west.combatProfile?.counterFamily !== "belt") {
-    torqueAdvantage *= (1 + COUNTER_TORQUE_REDUCTION);
+  } else if (
+    east.combatProfile?.counterFamily === "belt" &&
+    west.combatProfile?.counterFamily !== "belt"
+  ) {
+    torqueAdvantage *= 1 + COUNTER_TORQUE_REDUCTION;
     counterActivated = true;
     counterSide = "east";
   }

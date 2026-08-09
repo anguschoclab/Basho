@@ -2,11 +2,7 @@
  * Constants for TrainingWidget component.
  */
 
-import type {
-  TrainingIntensity,
-  TrainingFocus,
-  RecoveryEmphasis,
-} from "@/engine/types/training";
+import type { TrainingIntensity, TrainingFocus, RecoveryEmphasis } from "@/engine/types/training";
 
 export const INTENSITY_OPTIONS: TrainingIntensity[] = [
   "conservative",

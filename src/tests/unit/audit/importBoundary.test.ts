@@ -10,7 +10,11 @@ function findEngineFiles(dir: string): string[] {
     const fullPath = join(dir, entry.name);
     if (entry.isDirectory()) {
       results.push(...findEngineFiles(fullPath));
-    } else if ((entry.name.endsWith(".ts") || entry.name.endsWith(".tsx")) && !entry.name.endsWith(".test.ts") && !entry.name.endsWith(".test.tsx")) {
+    } else if (
+      (entry.name.endsWith(".ts") || entry.name.endsWith(".tsx")) &&
+      !entry.name.endsWith(".test.ts") &&
+      !entry.name.endsWith(".test.tsx")
+    ) {
       results.push(fullPath);
     }
   }
@@ -46,6 +50,8 @@ describe("import boundary: engine must not import from UI layers", () => {
       }
     }
 
-    expect(violations, `Engine files importing from UI layers:\n${violations.join("\n")}`).toEqual([]);
+    expect(violations, `Engine files importing from UI layers:\n${violations.join("\n")}`).toEqual(
+      []
+    );
   });
 });

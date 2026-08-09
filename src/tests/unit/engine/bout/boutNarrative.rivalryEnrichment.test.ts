@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 import type { PbpLine, PbpTag } from "@/engine/bout/boutNarrative";
@@ -62,7 +61,10 @@ function makeWorldWithRivalry(pair?: RivalryPairState, eastId = "r1", westId = "
     pairs: pair ? { [pair.key]: pair } : {},
   };
   return {
-    rikishi: new Map([[eastId, mockRikishi(eastId)], [westId, mockRikishi(westId)]]),
+    rikishi: new Map([
+      [eastId, mockRikishi(eastId)],
+      [westId, mockRikishi(westId)],
+    ]),
     rivalriesState,
   } as unknown as WorldState;
 }
@@ -142,9 +144,7 @@ describe("rivalry bout enrichment (7.2)", () => {
 
     generateBoutNarrative(result, east, west, undefined, 7, "rivalry-opening-seed", world);
     const lines = getLines(result);
-    const rivalryOpeningLines = lines.filter(
-      (l) => l.phase === "opening" && hasTag(l, "rivalry")
-    );
+    const rivalryOpeningLines = lines.filter((l) => l.phase === "opening" && hasTag(l, "rivalry"));
 
     expect(rivalryOpeningLines.length).toBeGreaterThan(0);
   });

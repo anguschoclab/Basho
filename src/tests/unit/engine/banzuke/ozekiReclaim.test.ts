@@ -6,10 +6,7 @@ import { makeMockWorld, mockRikishi } from "../utils";
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-function entry(
-  rank: "sekiwake" | "komusubi" | "ozeki",
-  id: string = "r1",
-): BanzukeEntry {
+function entry(rank: "sekiwake" | "komusubi" | "ozeki", id: string = "r1"): BanzukeEntry {
   return {
     rikishiId: id,
     position: { rank, side: "east" } as BanzukeEntry["position"],
@@ -20,7 +17,7 @@ function entry(
 function perf(
   wins: number,
   losses: number,
-  extras: Partial<BashoPerformance> = {},
+  extras: Partial<BashoPerformance> = {}
 ): BashoPerformance {
   return { rikishiId: "r1", wins, losses, ...extras };
 }
@@ -32,71 +29,36 @@ const NONE = new Set<string>();
 describe("Ozeki reclaim — bestTierAllowed", () => {
   it("demoted ozeki at sekiwake with 10 wins → tier 2 (reclaim to ozeki)", () => {
     const reclaimable = new Set(["r1"]);
-    const result = bestTierAllowed(
-      entry("sekiwake"),
-      perf(10, 5),
-      undefined,
-      NONE,
-      reclaimable,
-    );
+    const result = bestTierAllowed(entry("sekiwake"), perf(10, 5), undefined, NONE, reclaimable);
     expect(result).toBe(2);
   });
 
   it("demoted ozeki at sekiwake with 9 wins → tier 3 (not enough wins to reclaim)", () => {
     const reclaimable = new Set(["r1"]);
-    const result = bestTierAllowed(
-      entry("sekiwake"),
-      perf(9, 6),
-      undefined,
-      NONE,
-      reclaimable,
-    );
+    const result = bestTierAllowed(entry("sekiwake"), perf(9, 6), undefined, NONE, reclaimable);
     expect(result).toBe(3);
   });
 
   it("non-demoted sekiwake with 10 wins → tier 3 (no reclaim, normal rules)", () => {
-    const result = bestTierAllowed(
-      entry("sekiwake"),
-      perf(10, 5),
-      undefined,
-      NONE,
-      NONE,
-    );
+    const result = bestTierAllowed(entry("sekiwake"), perf(10, 5), undefined, NONE, NONE);
     expect(result).toBe(3);
   });
 
   it("demoted ozeki at komusubi with 10 wins → tier 3 (reclaim only from sekiwake)", () => {
     const reclaimable = new Set(["r1"]);
-    const result = bestTierAllowed(
-      entry("komusubi"),
-      perf(10, 5),
-      undefined,
-      NONE,
-      reclaimable,
-    );
+    const result = bestTierAllowed(entry("komusubi"), perf(10, 5), undefined, NONE, reclaimable);
     expect(result).toBe(3);
   });
 
   it("demoted ozeki at sekiwake with 10 wins and no reclaimableOzeki set → tier 3", () => {
     // When reclaimableOzeki is not passed (backwards compat), no reclaim
-    const result = bestTierAllowed(
-      entry("sekiwake"),
-      perf(10, 5),
-      undefined,
-      NONE,
-    );
+    const result = bestTierAllowed(entry("sekiwake"), perf(10, 5), undefined, NONE);
     expect(result).toBe(3);
   });
 
   it("demoted ozeki at sekiwake with 11 wins → tier 2 (reclaim or normal 11+ rule, both give tier 2)", () => {
     const reclaimable = new Set(["r1"]);
-    const result = bestTierAllowed(
-      entry("sekiwake"),
-      perf(11, 4),
-      undefined,
-      NONE,
-      reclaimable,
-    );
+    const result = bestTierAllowed(entry("sekiwake"), perf(11, 4), undefined, NONE, reclaimable);
     expect(result).toBe(2);
   });
 });
@@ -166,7 +128,7 @@ describe("Ozeki reclaim — updateBanzuke integration", () => {
         division: "makuuchi",
         wasDemotedFromOzeki: true,
         heyaId: "heya-1",
-      }),
+      })
     );
     for (const e of entries) {
       if (e.rikishiId === "reclaim") continue;
@@ -176,7 +138,7 @@ describe("Ozeki reclaim — updateBanzuke integration", () => {
           rank: e.position.rank as any,
           division: e.division as any,
           heyaId: "heya-1",
-        }),
+        })
       );
     }
 

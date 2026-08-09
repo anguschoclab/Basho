@@ -123,9 +123,7 @@ describe("OPFSFileSystem", () => {
       const failError = new Error("fail");
       mockRoot.getDirectoryHandle.mockRejectedValueOnce(failError);
 
-      await expect(
-        fs.getDirectoryPath(["a"], { throwOnError: true })
-      ).rejects.toBe(failError);
+      await expect(fs.getDirectoryPath(["a"], { throwOnError: true })).rejects.toBe(failError);
 
       // Clear cache so root handle is re-fetched
       fs.clearCache();

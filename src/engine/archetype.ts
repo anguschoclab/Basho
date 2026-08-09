@@ -18,7 +18,13 @@ const ARCHETYPE_DEFINITIONS: Record<CombatArchetype, Omit<CombatProfile, "archet
     preferredGripDepth: "standard",
     statModifiers: { technique: 1.2, speed: 1.1, weight: 0.9, power: 0.85, mental: 0.9 },
     counterFamily: "trick",
-    archetypeBehavior: { tachiaiSpeedBonus: 5, lateralMovementBonus: 10, edgeEscapeBonus: 5, beltTorqueBonus: -5, pushVelocityBonus: -5 },
+    archetypeBehavior: {
+      tachiaiSpeedBonus: 5,
+      lateralMovementBonus: 10,
+      edgeEscapeBonus: 5,
+      beltTorqueBonus: -5,
+      pushVelocityBonus: -5,
+    },
   },
   oshi: {
     familyPreferences: { push: 75, belt: 10, trick: 5, speed: 10 },
@@ -26,7 +32,13 @@ const ARCHETYPE_DEFINITIONS: Record<CombatArchetype, Omit<CombatProfile, "archet
     preferredGripDepth: "standard",
     statModifiers: { power: 1.1, speed: 1.1, technique: 0.8, mental: 0.85 },
     counterFamily: "push",
-    archetypeBehavior: { tachiaiSpeedBonus: 5, lateralMovementBonus: 0, edgeEscapeBonus: -5, beltTorqueBonus: 0, pushVelocityBonus: 10 },
+    archetypeBehavior: {
+      tachiaiSpeedBonus: 5,
+      lateralMovementBonus: 0,
+      edgeEscapeBonus: -5,
+      beltTorqueBonus: 0,
+      pushVelocityBonus: 10,
+    },
   },
   yotsu: {
     familyPreferences: { push: 15, belt: 75, trick: 5, speed: 5 },
@@ -34,7 +46,13 @@ const ARCHETYPE_DEFINITIONS: Record<CombatArchetype, Omit<CombatProfile, "archet
     preferredGripDepth: "deep",
     statModifiers: { power: 1.15, weight: 1.1, speed: 0.85, mental: 1.1 },
     counterFamily: "belt",
-    archetypeBehavior: { tachiaiSpeedBonus: 0, lateralMovementBonus: 0, edgeEscapeBonus: 5, beltTorqueBonus: 10, pushVelocityBonus: -5 },
+    archetypeBehavior: {
+      tachiaiSpeedBonus: 0,
+      lateralMovementBonus: 0,
+      edgeEscapeBonus: 5,
+      beltTorqueBonus: 10,
+      pushVelocityBonus: -5,
+    },
   },
   speedster: {
     familyPreferences: { push: 10, belt: 5, trick: 15, speed: 70 },
@@ -42,7 +60,13 @@ const ARCHETYPE_DEFINITIONS: Record<CombatArchetype, Omit<CombatProfile, "archet
     preferredGripDepth: "maemitsu",
     statModifiers: { speed: 1.25, technique: 1.1, weight: 0.85, power: 0.8 },
     counterFamily: "speed",
-    archetypeBehavior: { tachiaiSpeedBonus: 15, lateralMovementBonus: 20, edgeEscapeBonus: 5, beltTorqueBonus: -5, pushVelocityBonus: 5 },
+    archetypeBehavior: {
+      tachiaiSpeedBonus: 15,
+      lateralMovementBonus: 20,
+      edgeEscapeBonus: 5,
+      beltTorqueBonus: -5,
+      pushVelocityBonus: 5,
+    },
   },
   giant: {
     familyPreferences: { push: 40, belt: 50, trick: 5, speed: 5 },
@@ -50,7 +74,13 @@ const ARCHETYPE_DEFINITIONS: Record<CombatArchetype, Omit<CombatProfile, "archet
     preferredGripDepth: "deep",
     statModifiers: { weight: 1.3, power: 1.2, speed: 0.7, balance: 0.9, mental: 1.1 },
     counterFamily: "belt",
-    archetypeBehavior: { tachiaiSpeedBonus: -10, lateralMovementBonus: -15, edgeEscapeBonus: -5, beltTorqueBonus: 15, pushVelocityBonus: 5 },
+    archetypeBehavior: {
+      tachiaiSpeedBonus: -10,
+      lateralMovementBonus: -15,
+      edgeEscapeBonus: -5,
+      beltTorqueBonus: 15,
+      pushVelocityBonus: 5,
+    },
   },
   hybrid: {
     familyPreferences: { push: 40, belt: 40, trick: 10, speed: 10 },
@@ -58,7 +88,13 @@ const ARCHETYPE_DEFINITIONS: Record<CombatArchetype, Omit<CombatProfile, "archet
     preferredGripDepth: "standard",
     statModifiers: { power: 1.05, technique: 1.05, weight: 1.05 },
     counterFamily: "push",
-    archetypeBehavior: { tachiaiSpeedBonus: 0, lateralMovementBonus: 0, edgeEscapeBonus: 0, beltTorqueBonus: 0, pushVelocityBonus: 0 },
+    archetypeBehavior: {
+      tachiaiSpeedBonus: 0,
+      lateralMovementBonus: 0,
+      edgeEscapeBonus: 0,
+      beltTorqueBonus: 0,
+      pushVelocityBonus: 0,
+    },
   },
   tsuppari: {
     familyPreferences: { push: 85, belt: 2, trick: 8, speed: 5 },
@@ -67,7 +103,13 @@ const ARCHETYPE_DEFINITIONS: Record<CombatArchetype, Omit<CombatProfile, "archet
     statModifiers: { power: 1.15, speed: 1.05, stamina: 0.85, technique: 0.9, mental: 0.8 },
     favoredKimarite: ["tsukidashi", "tsukitaoshi", "tsukiotoshi", "oshidashi", "hatakikomi"],
     counterFamily: "push",
-    archetypeBehavior: { tachiaiSpeedBonus: 10, lateralMovementBonus: 5, edgeEscapeBonus: -10, beltTorqueBonus: -10, pushVelocityBonus: 15 },
+    archetypeBehavior: {
+      tachiaiSpeedBonus: 10,
+      lateralMovementBonus: 5,
+      edgeEscapeBonus: -10,
+      beltTorqueBonus: -10,
+      pushVelocityBonus: 15,
+    },
   },
   defensive: {
     familyPreferences: { push: 10, belt: 35, trick: 40, speed: 15 },
@@ -90,7 +132,13 @@ const ARCHETYPE_DEFINITIONS: Record<CombatArchetype, Omit<CombatProfile, "archet
       "katasukashi",
     ],
     counterFamily: "trick",
-    archetypeBehavior: { tachiaiSpeedBonus: -5, lateralMovementBonus: 10, edgeEscapeBonus: 15, beltTorqueBonus: 0, pushVelocityBonus: -5 },
+    archetypeBehavior: {
+      tachiaiSpeedBonus: -5,
+      lateralMovementBonus: 10,
+      edgeEscapeBonus: 15,
+      beltTorqueBonus: 0,
+      pushVelocityBonus: -5,
+    },
   },
 };
 
@@ -151,7 +199,7 @@ export function rollArchetypeWithBias(
 
   const preferred = philosophy.signatureStyle
     ? [philosophy.signatureStyle]
-    : FOCUS_BIAS_ARCHETYPES[philosophy.focusBias] ?? [];
+    : (FOCUS_BIAS_ARCHETYPES[philosophy.focusBias] ?? []);
 
   if (preferred.length === 0) return rollArchetype(rng);
 

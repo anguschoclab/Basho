@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { shouldHaltAdvance } from "@/engine/loop/shouldHaltAdvance";
 import { advanceOneDay } from "@/engine/tick/tickDaily";

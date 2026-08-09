@@ -30,7 +30,13 @@ import { compareBanzuke, formatRankPosition, RANK_HIERARCHY } from "@/engine/ban
 import { makeBashoKey } from "@/engine/historyIndex";
 import { EntityCollection } from "@/engine/core/EntityCollection";
 import { getPlayerHeya, updateHeyaInWorld } from "@/engine/queries";
-import { getHeya, getRikishi, getRikishiAnywhere, getHistory, getRikishiMap } from "@/presenters/worldAccess";
+import {
+  getHeya,
+  getRikishi,
+  getRikishiAnywhere,
+  getHistory,
+  getRikishiMap,
+} from "@/presenters/worldAccess";
 import { projectRikishi } from "@/presenters/uiModels";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { EngineEvent } from "@/engine/types/events";
@@ -78,19 +84,32 @@ function groupEventsByNarrative(events: EngineEvent[]) {
       groups.promotions.push(e);
     else if (e.type.includes("RETIRE") || e.category === "career") groups.retirements.push(e);
     else if (e.category === "injury") groups.injuries.push(e);
-    else if (e.type.includes("GOVERNANCE") && e.data?.status && typeof e.data.status === "string" && ["praise", "warning", "demand_reflection", "encouragement", "absence_criticism", "private_cynicism"].includes(e.data.status as string))
+    else if (
+      e.type.includes("GOVERNANCE") &&
+      e.data?.status &&
+      typeof e.data.status === "string" &&
+      [
+        "praise",
+        "warning",
+        "demand_reflection",
+        "encouragement",
+        "absence_criticism",
+        "private_cynicism",
+      ].includes(e.data.status as string)
+    )
       groups.ydcAccountability.push(e);
     else if (e.category === "discipline" || e.type.includes("GOVERNANCE"))
       groups.governance.push(e);
-    else if (e.data?.incident === "Post-Basho Press Conference")
-      groups.pressConference.push(e);
+    else if (e.data?.incident === "Post-Basho Press Conference") groups.pressConference.push(e);
     else if (e.category === "sponsor") groups.sponsors.push(e);
     else groups.other.push(e);
   }
   return groups;
 }
 
-function getPrestigeChanges(world: WorldState): Array<{ heya: { name: string; prestigeBand: string; reputation: number }; change: string }> {
+function getPrestigeChanges(
+  world: WorldState
+): Array<{ heya: { name: string; prestigeBand: string; reputation: number }; change: string }> {
   const changes: Array<{
     heya: { name: string; prestigeBand: string; reputation: number };
     change: string;
@@ -137,7 +156,10 @@ export default function RecapPage() {
     if (world && world.playerHeyaId) {
       const heya = getPlayerHeya(world);
       if (heya) {
-        const newReputation = Math.max(0, Math.min(100, (heya.reputation ?? 50) + effects.reputation));
+        const newReputation = Math.max(
+          0,
+          Math.min(100, (heya.reputation ?? 50) + effects.reputation)
+        );
         updateWorld(updateHeyaInWorld(world, world.playerHeyaId, { reputation: newReputation }));
       }
     }
@@ -159,8 +181,7 @@ export default function RecapPage() {
     const playerRetirements: { rikishi: UIRikishi; reason: string }[] = [];
     for (const event of retirementEvents) {
       if (event.rikishiId) {
-        const rikishi =
-          getRikishiAnywhere(world, event.rikishiId);
+        const rikishi = getRikishiAnywhere(world, event.rikishiId);
         if (rikishi && rikishi.heyaId === world.playerHeyaId) {
           playerRetirements.push({
             rikishi: projectRikishi(rikishi, world),

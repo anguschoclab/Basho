@@ -6,8 +6,6 @@ import type { BoutResult, BashoName } from "@/engine/types/basho";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 
- 
-
 function makeBoutResult(overrides: Partial<BoutResult> = {}): BoutResult {
   return {
     boutId: "test-bout-consec-kachi",
@@ -60,7 +58,11 @@ describe("generateBoutNarrative — consecutive kachi-koshi (T15)", () => {
       currentBashoWins: 8,
       currentBashoLosses: 3,
     });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 8 });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 3,
+      currentBashoLosses: 8,
+    });
     const world = makeWorld(east, west);
     const result = makeBoutResult();
     generateBoutNarrative(result, east, west, BASHO, 12, "seed-ck-3", world);
@@ -76,7 +78,11 @@ describe("generateBoutNarrative — consecutive kachi-koshi (T15)", () => {
       currentBashoWins: 8,
       currentBashoLosses: 3,
     });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 8 });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 3,
+      currentBashoLosses: 8,
+    });
     const world = makeWorld(east, west);
     const result = makeBoutResult();
     generateBoutNarrative(result, east, west, BASHO, 12, "seed-ck-0", world);
@@ -91,7 +97,11 @@ describe("generateBoutNarrative — consecutive kachi-koshi (T15)", () => {
       currentBashoWins: 8,
       currentBashoLosses: 3,
     });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 8 });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 3,
+      currentBashoLosses: 8,
+    });
     const world = makeWorld(east, west);
     const result = makeBoutResult();
     generateBoutNarrative(result, east, west, BASHO, 12, "seed-ck-5", world);
@@ -101,9 +111,17 @@ describe("generateBoutNarrative — consecutive kachi-koshi (T15)", () => {
   });
 
   it("T15.4: consecutiveKachiKoshi undefined → no error", () => {
-    const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 8, currentBashoLosses: 3 });
+    const east = mockRikishi("r-east", {
+      shikona: "Alpha",
+      currentBashoWins: 8,
+      currentBashoLosses: 3,
+    });
     delete (east as any).consecutiveKachiKoshi;
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 8 });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 3,
+      currentBashoLosses: 8,
+    });
     const world = makeWorld(east, west);
     const result = makeBoutResult();
     expect(() => {
@@ -120,7 +138,11 @@ describe("generateBoutNarrative — consecutive kachi-koshi (T15)", () => {
       currentBashoWins: 8,
       currentBashoLosses: 3,
     });
-    const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 8 });
+    const west = mockRikishi("r-west", {
+      shikona: "Beta",
+      currentBashoWins: 3,
+      currentBashoLosses: 8,
+    });
     const world = makeWorld(east, west);
     const result = makeBoutResult();
     generateBoutNarrative(result, east, west, BASHO, 12, "seed-ck-missing", world);

@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { renewSponsorContract } from "@/engine/systems/economy/SponsorContractService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";

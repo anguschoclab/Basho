@@ -23,12 +23,12 @@ describe("MediaService.resetBashoMediaTracking", () => {
   it("resets basho-scoped tracking fields", () => {
     const state: MediaState = {
       ...createDefaultMediaState(),
-      bashoStreaks: { "r1": 3 },
+      bashoStreaks: { r1: 3 },
       streakHeadlinesFired: { "r1-hatsu": [1] },
-      promoWatchFired: { "r1": true },
-      retirementWatchFired: { "r2": true },
+      promoWatchFired: { r1: true },
+      retirementWatchFired: { r2: true },
       titleRaceDayFired: { 15: true },
-      injuryWithdrawalFired: { "r3": true },
+      injuryWithdrawalFired: { r3: true },
     };
     const reset = resetBashoMediaTracking(state);
     expect(reset.bashoStreaks).toEqual({});
@@ -42,8 +42,22 @@ describe("MediaService.resetBashoMediaTracking", () => {
   it("preserves non-basho-scoped fields", () => {
     const state: MediaState = {
       ...createDefaultMediaState(),
-      headlines: [{ id: "h1", week: 1, title: "Test", subtitle: "", tier: "minor", beat: "daily_bout", tone: "neutral", rikishiIds: [], heyaIds: [], impact: 5, tags: [] } as any],
-      mediaHeat: { "r1": 50 },
+      headlines: [
+        {
+          id: "h1",
+          week: 1,
+          title: "Test",
+          subtitle: "",
+          tier: "minor",
+          beat: "daily_bout",
+          tone: "neutral",
+          rikishiIds: [],
+          heyaIds: [],
+          impact: 5,
+          tags: [],
+        } as any,
+      ],
+      mediaHeat: { r1: 50 },
     };
     const reset = resetBashoMediaTracking(state);
     expect(reset.headlines).toEqual(state.headlines);
@@ -55,7 +69,7 @@ describe("MediaService.snapshotMediaHeatForBasho", () => {
   it("snapshots current heat values to history", () => {
     const state: MediaState = {
       ...createDefaultMediaState(),
-      mediaHeat: { "r1": 60, "r2": 30 },
+      mediaHeat: { r1: 60, r2: 30 },
     };
     const snapshotted = snapshotMediaHeatForBasho(state, "hatsu");
     expect(snapshotted.mediaHeatHistory["r1"]).toHaveLength(1);
@@ -68,8 +82,8 @@ describe("MediaService.snapshotMediaHeatForBasho", () => {
   it("updates existing snapshot for same basho instead of duplicating", () => {
     const state: MediaState = {
       ...createDefaultMediaState(),
-      mediaHeat: { "r1": 60 },
-      mediaHeatHistory: { "r1": [{ basho: "hatsu", heat: 40 }] },
+      mediaHeat: { r1: 60 },
+      mediaHeatHistory: { r1: [{ basho: "hatsu", heat: 40 }] },
     };
     const snapshotted = snapshotMediaHeatForBasho(state, "hatsu");
     expect(snapshotted.mediaHeatHistory["r1"]).toHaveLength(1);
@@ -79,8 +93,8 @@ describe("MediaService.snapshotMediaHeatForBasho", () => {
   it("appends new snapshot for different basho", () => {
     const state: MediaState = {
       ...createDefaultMediaState(),
-      mediaHeat: { "r1": 70 },
-      mediaHeatHistory: { "r1": [{ basho: "hatsu", heat: 40 }] },
+      mediaHeat: { r1: 70 },
+      mediaHeatHistory: { r1: [{ basho: "hatsu", heat: 40 }] },
     };
     const snapshotted = snapshotMediaHeatForBasho(state, "haru");
     expect(snapshotted.mediaHeatHistory["r1"]).toHaveLength(2);
@@ -91,9 +105,9 @@ describe("MediaService.snapshotMediaHeatForBasho", () => {
   it("caps history at 10 entries", () => {
     const state: MediaState = {
       ...createDefaultMediaState(),
-      mediaHeat: { "r1": 50 },
+      mediaHeat: { r1: 50 },
       mediaHeatHistory: {
-        "r1": Array.from({ length: 12 }, (_, i) => ({ basho: `b${i}`, heat: i * 5 })),
+        r1: Array.from({ length: 12 }, (_, i) => ({ basho: `b${i}`, heat: i * 5 })),
       },
     };
     const snapshotted = snapshotMediaHeatForBasho(state, "new");

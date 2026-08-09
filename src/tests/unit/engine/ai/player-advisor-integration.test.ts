@@ -5,7 +5,10 @@ import { generateRecommendations, getPlayerDigest } from "@/engine/advisor/Advis
 describe("Player advisor integration", () => {
   it("derives recommendations from world state only", () => {
     const world = makeMockWorld({ playerHeyaId: "player-heya" });
-    world.heyas.set("player-heya", makeMockHeya("player-heya", { runwayBand: "critical" as const }));
+    world.heyas.set(
+      "player-heya",
+      makeMockHeya("player-heya", { runwayBand: "critical" as const })
+    );
     const recs = generateRecommendations(world);
     expect(recs.length).toBeGreaterThan(0);
     expect(recs.every((r) => r.reasoning.length > 0)).toBe(true);
@@ -18,7 +21,10 @@ describe("Player advisor integration", () => {
 
   it("produces a digest that reflects the player's situation", () => {
     const world = makeMockWorld({ playerHeyaId: "player-heya" });
-    world.heyas.set("player-heya", makeMockHeya("player-heya", { runwayBand: "critical" as const }));
+    world.heyas.set(
+      "player-heya",
+      makeMockHeya("player-heya", { runwayBand: "critical" as const })
+    );
     const digest = getPlayerDigest(world);
     expect(digest).toBeDefined();
     expect(digest!.recommendations.length).toBeGreaterThan(0);

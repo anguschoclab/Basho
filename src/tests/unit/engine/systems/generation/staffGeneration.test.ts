@@ -79,7 +79,13 @@ describe("generateStaff", () => {
   it("should produce a valid CompetenceBand for primary", () => {
     const staff = generateStaff("seed-comp", "technique_coach", "heya-1", 1);
     const validCompetenceBands = [
-      "feeble", "limited", "serviceable", "strong", "great", "dominant", "monstrous",
+      "feeble",
+      "limited",
+      "serviceable",
+      "strong",
+      "great",
+      "dominant",
+      "monstrous",
     ];
     expect(validCompetenceBands).toContain(staff.competenceBands.primary);
   });
@@ -90,7 +96,13 @@ describe("generateStaff", () => {
       const staff = generateStaff(`seed-sec-${i}`, "technique_coach", "heya-1", i);
       if (staff.competenceBands.secondary) {
         const validCompetenceBands = [
-          "feeble", "limited", "serviceable", "strong", "great", "dominant", "monstrous",
+          "feeble",
+          "limited",
+          "serviceable",
+          "strong",
+          "great",
+          "dominant",
+          "monstrous",
         ];
         expect(validCompetenceBands).toContain(staff.competenceBands.secondary);
         return;

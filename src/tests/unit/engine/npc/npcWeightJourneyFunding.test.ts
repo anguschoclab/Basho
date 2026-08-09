@@ -1,4 +1,3 @@
- 
 import { describe, it, expect, beforeEach } from "vitest";
 import { evaluateFinanceStrategy } from "@/engine/strategy/NPCFinanceCalculator";
 import { tickMonthlyNPC } from "@/engine/npcAI/ticks";

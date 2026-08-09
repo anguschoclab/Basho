@@ -45,7 +45,7 @@ export default function TrainingPage() {
   const { state, addSparringPair, removeSparringPair } = useGame();
   const sendCommand = useGameStore((s) => s.sendCommand);
   const { world, playerHeyaId } = state;
-  const heya = world ? getPlayerHeya(world) ?? null : null;
+  const heya = world ? (getPlayerHeya(world) ?? null) : null;
   const encouragementLog = useMemo(
     () => (world ? (world.encouragementLog ?? selectEncouragementLog(world)) : []),
     [world]
@@ -228,11 +228,7 @@ export default function TrainingPage() {
               {rikishiList
                 .filter((r) => r.weightJourney)
                 .map((r) => (
-                  <WeightJourneyCard
-                    key={r.id}
-                    journey={r.weightJourney}
-                    shikona={r.shikona}
-                  />
+                  <WeightJourneyCard key={r.id} journey={r.weightJourney} shikona={r.shikona} />
                 ))}
             </div>
           </div>

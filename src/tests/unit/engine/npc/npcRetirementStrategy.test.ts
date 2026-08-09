@@ -26,7 +26,7 @@ describe("npcRetirementStrategy — year source and force-retire guard", () => {
     const heya = makeMockHeya("heya-1", { rikishiIds: ["r45"] });
     const world = makeMockWorld({
       year: 2050,
-      calendar: { currentWeek: 1, },
+      calendar: { currentWeek: 1 },
       seed: "test-npc-year",
     });
     world.rikishi.set("r45", r);
@@ -44,7 +44,7 @@ describe("npcRetirementStrategy — year source and force-retire guard", () => {
     const ids: string[] = [];
     const world = makeMockWorld({
       year: 2050,
-      calendar: { currentWeek: 1, },
+      calendar: { currentWeek: 1 },
       seed: "test-npc-force",
     });
     for (let i = 0; i < 16; i++) {

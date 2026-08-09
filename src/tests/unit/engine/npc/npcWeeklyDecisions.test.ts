@@ -1,4 +1,3 @@
- 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { makeNPCWeeklyDecision } from "@/engine/npcAI";
 import * as PersonaService from "@/engine/systems/NPCPersonaService";

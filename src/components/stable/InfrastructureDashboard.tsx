@@ -129,7 +129,10 @@ export function InfrastructureDashboard({ heya, onUpgrade }: InfrastructureDashb
               <CardContent className="space-y-4">
                 {/* Construction Progress */}
                 {isBuilding && (
-                  <div className="space-y-2 p-3 bg-warning/10 rounded-lg border border-warning/20" aria-hidden="true">
+                  <div
+                    className="space-y-2 p-3 bg-warning/10 rounded-lg border border-warning/20"
+                    aria-hidden="true"
+                  >
                     <div className="flex justify-between text-[8px] font-black uppercase tracking-widest text-warning">
                       <span>Construction Underway</span>
                       <span>ETA: {project.completionYear}</span>

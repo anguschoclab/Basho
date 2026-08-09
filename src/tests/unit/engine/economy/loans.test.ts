@@ -4,8 +4,6 @@ import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { WorldState } from "@/engine/types/world";
 import { createImpactBuilder, ImpactBuilder } from "@/engine/core/ImpactBuilder";
 
- 
-
 describe("processLoanRepayments", () => {
   let world: WorldState;
   let builder: ImpactBuilder;

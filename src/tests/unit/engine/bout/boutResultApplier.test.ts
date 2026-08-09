@@ -840,7 +840,10 @@ describe("boutResultApplier", () => {
     it("Test 1.7: should update standings Map with winner wins+1", () => {
       const { world, match, result } = makeWorldForBout({ winnerWins: 4, loserLosses: 3 });
       const impact = applyBoutResult(world as WorldState, match, result);
-      const standings = impact.metadata?.updatedStandings as Map<string, { wins: number; losses: number }>;
+      const standings = impact.metadata?.updatedStandings as Map<
+        string,
+        { wins: number; losses: number }
+      >;
       expect(standings).toBeDefined();
       expect(standings.get("east")?.wins).toBe(5);
     });
@@ -848,7 +851,10 @@ describe("boutResultApplier", () => {
     it("Test 1.8: should update standings Map with loser losses+1", () => {
       const { world, match, result } = makeWorldForBout({ winnerWins: 4, loserLosses: 3 });
       const impact = applyBoutResult(world as WorldState, match, result);
-      const standings = impact.metadata?.updatedStandings as Map<string, { wins: number; losses: number }>;
+      const standings = impact.metadata?.updatedStandings as Map<
+        string,
+        { wins: number; losses: number }
+      >;
       expect(standings).toBeDefined();
       expect(standings.get("west")?.losses).toBe(4);
     });

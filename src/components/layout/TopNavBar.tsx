@@ -33,7 +33,7 @@ export function TopNavBar() {
   const navigate = useNavigate();
   const world = state.world;
 
-  const playerHeya = world ? getPlayerHeya(world) ?? null : null;
+  const playerHeya = world ? (getPlayerHeya(world) ?? null) : null;
   const inBasho = world?.cyclePhase === "active_basho";
   const bashoDay = world?.currentBasho?.day ?? 1;
   const cyclePhase = world?.cyclePhase ?? "interim";

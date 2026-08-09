@@ -95,9 +95,7 @@ function mockUseGame(world: any | null) {
 
 function getCardOrder(): string[] {
   const cards = document.querySelectorAll(".paper.cursor-pointer");
-  return Array.from(cards).map(
-    (el) => el.querySelector(".font-display")?.textContent ?? ""
-  );
+  return Array.from(cards).map((el) => el.querySelector(".font-display")?.textContent ?? "");
 }
 
 describe("RecruitingTab sorting", () => {
@@ -135,14 +133,30 @@ describe("RecruitingTab sorting", () => {
   });
 
   it("renders a SortMenu control", () => {
-    mockUseGame({ playerHeyaId: "h1", year: 2024, heyas: new Map([["h1", { id: "h1", name: "TestHeya", rikishiIds: [] }]]) });
-    render(<TooltipProvider><RecruitingTab playerHeyaId="h1" /></TooltipProvider>);
+    mockUseGame({
+      playerHeyaId: "h1",
+      year: 2024,
+      heyas: new Map([["h1", { id: "h1", name: "TestHeya", rikishiIds: [] }]]),
+    });
+    render(
+      <TooltipProvider>
+        <RecruitingTab playerHeyaId="h1" />
+      </TooltipProvider>
+    );
     expect(screen.getByRole("combobox")).toBeTruthy();
   });
 
   it("sorting by name ascending reorders alphabetically", () => {
-    mockUseGame({ playerHeyaId: "h1", year: 2024, heyas: new Map([["h1", { id: "h1", name: "TestHeya", rikishiIds: [] }]]) });
-    render(<TooltipProvider><RecruitingTab playerHeyaId="h1" /></TooltipProvider>);
+    mockUseGame({
+      playerHeyaId: "h1",
+      year: 2024,
+      heyas: new Map([["h1", { id: "h1", name: "TestHeya", rikishiIds: [] }]]),
+    });
+    render(
+      <TooltipProvider>
+        <RecruitingTab playerHeyaId="h1" />
+      </TooltipProvider>
+    );
     const trigger = screen.getByRole("combobox");
     fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
     // "Name" appears both as trigger value and dropdown option; pick the option (last match)
@@ -153,8 +167,16 @@ describe("RecruitingTab sorting", () => {
   });
 
   it("sorting by age ascending", () => {
-    mockUseGame({ playerHeyaId: "h1", year: 2024, heyas: new Map([["h1", { id: "h1", name: "TestHeya", rikishiIds: [] }]]) });
-    render(<TooltipProvider><RecruitingTab playerHeyaId="h1" /></TooltipProvider>);
+    mockUseGame({
+      playerHeyaId: "h1",
+      year: 2024,
+      heyas: new Map([["h1", { id: "h1", name: "TestHeya", rikishiIds: [] }]]),
+    });
+    render(
+      <TooltipProvider>
+        <RecruitingTab playerHeyaId="h1" />
+      </TooltipProvider>
+    );
     const trigger = screen.getByRole("combobox");
     fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
     const elements = screen.getAllByText("Age");
@@ -165,8 +187,16 @@ describe("RecruitingTab sorting", () => {
   });
 
   it("sorting by potential ascending", () => {
-    mockUseGame({ playerHeyaId: "h1", year: 2024, heyas: new Map([["h1", { id: "h1", name: "TestHeya", rikishiIds: [] }]]) });
-    render(<TooltipProvider><RecruitingTab playerHeyaId="h1" /></TooltipProvider>);
+    mockUseGame({
+      playerHeyaId: "h1",
+      year: 2024,
+      heyas: new Map([["h1", { id: "h1", name: "TestHeya", rikishiIds: [] }]]),
+    });
+    render(
+      <TooltipProvider>
+        <RecruitingTab playerHeyaId="h1" />
+      </TooltipProvider>
+    );
     const trigger = screen.getByRole("combobox");
     fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
     const elements = screen.getAllByText("Potential");
@@ -177,8 +207,16 @@ describe("RecruitingTab sorting", () => {
   });
 
   it("sorting by scout level ascending", () => {
-    mockUseGame({ playerHeyaId: "h1", year: 2024, heyas: new Map([["h1", { id: "h1", name: "TestHeya", rikishiIds: [] }]]) });
-    render(<TooltipProvider><RecruitingTab playerHeyaId="h1" /></TooltipProvider>);
+    mockUseGame({
+      playerHeyaId: "h1",
+      year: 2024,
+      heyas: new Map([["h1", { id: "h1", name: "TestHeya", rikishiIds: [] }]]),
+    });
+    render(
+      <TooltipProvider>
+        <RecruitingTab playerHeyaId="h1" />
+      </TooltipProvider>
+    );
     const trigger = screen.getByRole("combobox");
     fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
     const elements = screen.getAllByText("Scout Level");
@@ -189,8 +227,16 @@ describe("RecruitingTab sorting", () => {
   });
 
   it("persists sort state to localStorage", () => {
-    mockUseGame({ playerHeyaId: "h1", year: 2024, heyas: new Map([["h1", { id: "h1", name: "TestHeya", rikishiIds: [] }]]) });
-    render(<TooltipProvider><RecruitingTab playerHeyaId="h1" /></TooltipProvider>);
+    mockUseGame({
+      playerHeyaId: "h1",
+      year: 2024,
+      heyas: new Map([["h1", { id: "h1", name: "TestHeya", rikishiIds: [] }]]),
+    });
+    render(
+      <TooltipProvider>
+        <RecruitingTab playerHeyaId="h1" />
+      </TooltipProvider>
+    );
     const trigger = screen.getByRole("combobox");
     fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
     const elements = screen.getAllByText("Age");
@@ -202,8 +248,16 @@ describe("RecruitingTab sorting", () => {
 
   it("restores sort state from localStorage on init", () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ key: "age", order: "desc" }));
-    mockUseGame({ playerHeyaId: "h1", year: 2024, heyas: new Map([["h1", { id: "h1", name: "TestHeya", rikishiIds: [] }]]) });
-    render(<TooltipProvider><RecruitingTab playerHeyaId="h1" /></TooltipProvider>);
+    mockUseGame({
+      playerHeyaId: "h1",
+      year: 2024,
+      heyas: new Map([["h1", { id: "h1", name: "TestHeya", rikishiIds: [] }]]),
+    });
+    render(
+      <TooltipProvider>
+        <RecruitingTab playerHeyaId="h1" />
+      </TooltipProvider>
+    );
     const order = getCardOrder();
     // desc age: 20, 18, 16 → Bravo, Charlie, Alpha
     expect(order).toEqual(["Bravo", "Charlie", "Alpha"]);

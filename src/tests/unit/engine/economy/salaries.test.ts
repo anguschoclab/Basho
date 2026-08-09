@@ -22,25 +22,25 @@ describe("processHeyaEconomics", () => {
   it("should process sekitori and non-sekitori salaries and overhead correctly", () => {
     const heya = MockFactory.createHeya("heya-1", {
       funds: 10000000,
-      rikishiIds: ["r-sekitori", "r-non-sekitori"]
+      rikishiIds: ["r-sekitori", "r-non-sekitori"],
     });
 
     // Rank "yokozuna" from RANK_HIERARCHY
     const sekitori = MockFactory.createRikishi("r-sekitori", {
-        rank: "yokozuna",
-        economics: {
-            cash: 1000,
-            retirementFund: 0,
-            careerKenshoWon: 0,
-            kinboshiCount: 0,
-            totalEarnings: 1000,
-            currentBashoEarnings: 0,
-            popularity: 50,
-        }
+      rank: "yokozuna",
+      economics: {
+        cash: 1000,
+        retirementFund: 0,
+        careerKenshoWon: 0,
+        kinboshiCount: 0,
+        totalEarnings: 1000,
+        currentBashoEarnings: 0,
+        popularity: 50,
+      },
     });
 
     const nonSekitori = MockFactory.createRikishi("r-non-sekitori", {
-        rank: "makushita"
+      rank: "makushita",
     });
 
     world.rikishi.set("r-sekitori", sekitori);
@@ -452,9 +452,18 @@ describe("processHeyaEconomics — mixed-rank roster (multiple sekitori + non-se
       currentBashoEarnings: 0,
       popularity: 50,
     });
-    world.rikishi.set("r-yoko", MockFactory.createRikishi("r-yoko", { rank: "yokozuna", economics: mkEcon() }));
-    world.rikishi.set("r-juryo", MockFactory.createRikishi("r-juryo", { rank: "juryo", economics: mkEcon() }));
-    world.rikishi.set("r-komu", MockFactory.createRikishi("r-komu", { rank: "komusubi", economics: mkEcon() }));
+    world.rikishi.set(
+      "r-yoko",
+      MockFactory.createRikishi("r-yoko", { rank: "yokozuna", economics: mkEcon() })
+    );
+    world.rikishi.set(
+      "r-juryo",
+      MockFactory.createRikishi("r-juryo", { rank: "juryo", economics: mkEcon() })
+    );
+    world.rikishi.set(
+      "r-komu",
+      MockFactory.createRikishi("r-komu", { rank: "komusubi", economics: mkEcon() })
+    );
     world.rikishi.set("r-ms", MockFactory.createRikishi("r-ms", { rank: "makushita" }));
 
     const builder = createImpactBuilder("test");
@@ -462,9 +471,7 @@ describe("processHeyaEconomics — mixed-rank roster (multiple sekitori + non-se
     const totalBurn = processHeyaEconomics(world, heya, world.rikishi, heyaUpdates, builder);
 
     const expectedSalaries =
-      RANK_HIERARCHY.yokozuna.salary +
-      RANK_HIERARCHY.juryo.salary +
-      RANK_HIERARCHY.komusubi.salary;
+      RANK_HIERARCHY.yokozuna.salary + RANK_HIERARCHY.juryo.salary + RANK_HIERARCHY.komusubi.salary;
     const expectedOverhead =
       SEKITORI_OVERHEAD_MONTHLY.yokozuna +
       SEKITORI_OVERHEAD_MONTHLY.juryo +
@@ -508,13 +515,23 @@ describe("processHeyaEconomics — breakdown output parameter", () => {
       currentBashoEarnings: 0,
       popularity: 50,
     });
-    world.rikishi.set("r-yoko", MockFactory.createRikishi("r-yoko", { rank: "yokozuna", economics: mkEcon() }));
+    world.rikishi.set(
+      "r-yoko",
+      MockFactory.createRikishi("r-yoko", { rank: "yokozuna", economics: mkEcon() })
+    );
     world.rikishi.set("r-ms", MockFactory.createRikishi("r-ms", { rank: "makushita" }));
 
     const builder = createImpactBuilder("test");
     const heyaUpdates: HeyaUpdates = {};
     const breakdown = { jsaSalaries: 0, heyaOverhead: 0 };
-    const totalBurn = processHeyaEconomics(world, heya, world.rikishi, heyaUpdates, builder, breakdown);
+    const totalBurn = processHeyaEconomics(
+      world,
+      heya,
+      world.rikishi,
+      heyaUpdates,
+      builder,
+      breakdown
+    );
 
     const expectedJsaSalaries = RANK_HIERARCHY.yokozuna.salary;
     const expectedHeyaOverhead = SEKITORI_OVERHEAD_MONTHLY.yokozuna + NON_SEKITORI_OVERHEAD_MONTHLY;
@@ -538,7 +555,10 @@ describe("processHeyaEconomics — breakdown output parameter", () => {
       currentBashoEarnings: 0,
       popularity: 50,
     });
-    world.rikishi.set("r-yoko", MockFactory.createRikishi("r-yoko", { rank: "yokozuna", economics: mkEcon() }));
+    world.rikishi.set(
+      "r-yoko",
+      MockFactory.createRikishi("r-yoko", { rank: "yokozuna", economics: mkEcon() })
+    );
     world.rikishi.set("r-ms", MockFactory.createRikishi("r-ms", { rank: "makushita" }));
 
     const builder = createImpactBuilder("test");

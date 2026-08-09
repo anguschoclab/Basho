@@ -26,7 +26,11 @@ export type EngineCommand =
   | { type: "HIRE_STAFF"; heyaId: string; role: import("../types/staff").StaffRole }
   | { type: "FIRE_STAFF"; heyaId: string; staffId: string }
   | { type: "TRIGGER_SUCCESSION"; heyaId: string; successorId: string }
-  | { type: "SET_TRAINING_STATE"; heyaId: string; trainingState: import("../types/training").HeyaTrainingState }
+  | {
+      type: "SET_TRAINING_STATE";
+      heyaId: string;
+      trainingState: import("../types/training").HeyaTrainingState;
+    }
   | { type: "REQUEST_POLITICAL_FAVOR"; heyaId: string; favorId: string }
   | { type: "HANDLE_MEDIA_EVENT"; eventId: string; choice: string }
   | { type: "ISSUE_RULING"; rulingId: string; severity: "lenient" | "standard" | "harsh" }
@@ -36,8 +40,17 @@ export type EngineCommand =
   | { type: "RESOLVE_LOOP_DECISION"; decisionId: string; optionId: string }
   | { type: "WITHDRAW_RIKISHI"; rikishiId: string }
   | { type: "TREAT_INJURY"; rikishiId: string; weeks: number }
-  | { type: "INVEST_IN_FACILITY"; heyaId: string; axis: import("../facilities").FacilityAxis; points: number }
-  | { type: "BUILD_INFRASTRUCTURE"; heyaId: string; facilityId: import("../types/infrastructure").FacilityId }
+  | {
+      type: "INVEST_IN_FACILITY";
+      heyaId: string;
+      axis: import("../facilities").FacilityAxis;
+      points: number;
+    }
+  | {
+      type: "BUILD_INFRASTRUCTURE";
+      heyaId: string;
+      facilityId: import("../types/infrastructure").FacilityId;
+    }
   | { type: "ASSIGN_MENTOR"; mentorId: string; apprenticeId: string }
   | { type: "REMOVE_MENTOR"; apprenticeId: string }
   | { type: "ADD_SPARRING_PAIR"; heyaId: string; aId: string; bId: string }
@@ -47,7 +60,11 @@ export type EngineCommand =
   | { type: "UPDATE_BOOKMARK_NOTE"; entityType: string; entityId: string; note: string }
   | { type: "ADVANCE_TUTORIAL_STEP"; step: import("../types/tutorial").TutorialStep }
   | { type: "SET_TUTORIAL_FLAG"; flag: keyof import("../types/tutorial").TutorialFlags }
-  | { type: "FINISH_EXHIBITION"; flag: keyof import("../types/tutorial").TutorialFlags; step: import("../types/tutorial").TutorialStep };
+  | {
+      type: "FINISH_EXHIBITION";
+      flag: keyof import("../types/tutorial").TutorialFlags;
+      step: import("../types/tutorial").TutorialStep;
+    };
 
 /** Worker -> UI Events */
 export type EngineEvent =
@@ -57,7 +74,10 @@ export type EngineEvent =
   | { type: "WORLD_UPDATED"; world: WorldState; version: number }
   | { type: "ERROR"; message: string }
   | { type: "PROGRESS"; message: string; current: number; total: number }
-  | { type: "PERF_TRACE"; trace: Array<{ phaseName: string; durationMs: number; impactSize?: number }> };
+  | {
+      type: "PERF_TRACE";
+      trace: Array<{ phaseName: string; durationMs: number; impactSize?: number }>;
+    };
 
 export interface WorkerMessage<T = EngineCommand | EngineEvent> {
   data: T;

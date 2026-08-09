@@ -317,7 +317,14 @@ export interface Rikishi {
 
   // B7: Career highlight memories
   careerHighlights?: Array<{
-    type: "debut_win" | "seven_seven_win" | "upset_over_elite" | "yusho" | "playoff_win" | "kinboshi" | "rivalry_defining";
+    type:
+      | "debut_win"
+      | "seven_seven_win"
+      | "upset_over_elite"
+      | "yusho"
+      | "playoff_win"
+      | "kinboshi"
+      | "rivalry_defining";
     basho: string;
     opponent?: Id;
     description: string;

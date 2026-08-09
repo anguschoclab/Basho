@@ -88,7 +88,11 @@ export function resolvePlayoffs(
       }
       // Prepend playoff opening line and append playoff result line to existing pbpLines
       if (result.pbpLines && result.pbpLines.length > 0) {
-        result.pbpLines = [...playoffLines.slice(0, 1), ...result.pbpLines, ...playoffLines.slice(1)];
+        result.pbpLines = [
+          ...playoffLines.slice(0, 1),
+          ...result.pbpLines,
+          ...playoffLines.slice(1),
+        ];
       } else {
         result.pbpLines = playoffLines.length > 0 ? playoffLines : undefined;
       }
@@ -155,7 +159,11 @@ export function resolveDivisionPlayoffs(
   division: string
 ): { winner: Id; matches: MatchSchedule[]; narrativeLines: PbpLine[] } {
   const narrativeLines: PbpLine[] = [];
-  const divRng = rngFromSeed(`div-playoff-${division}-${basho.bashoName}-${world.year}`, "narrative", "playoff");
+  const divRng = rngFromSeed(
+    `div-playoff-${division}-${basho.bashoName}-${world.year}`,
+    "narrative",
+    "playoff"
+  );
 
   // Intro line
   const introLine = BardEngine.resolve(divRng, "playoff.lower_division.intro", {

@@ -1,4 +1,3 @@
- 
 /**
  * Tests for the shared bout test helpers.
  * Verifies that boutTestHelpers produce valid objects compatible with engine types.
@@ -102,7 +101,16 @@ describe("boutTestHelpers", () => {
       const east = mockRikishi("r-east", { shikona: "Alpha" });
       const west = mockRikishi("r-west", { shikona: "Beta" });
       const world = makeBoutWorld(east, west, {
-        currentBasho: { id: "b1", year: 2025, bashoNumber: 1, bashoName: "hatsu", day: 10, matches: [], standings: new Map(), isActive: true } as any,
+        currentBasho: {
+          id: "b1",
+          year: 2025,
+          bashoNumber: 1,
+          bashoName: "hatsu",
+          day: 10,
+          matches: [],
+          standings: new Map(),
+          isActive: true,
+        } as any,
       });
       expect(world.currentBasho).toBeDefined();
       expect(world.currentBasho!.day).toBe(10);

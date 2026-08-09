@@ -100,10 +100,14 @@ export const RivalryService = {
    * @returns {RivalriesState} The existing or newly created rivalries state.
    */
   ensureRivalriesState(world: WorldState): RivalriesState {
-    return EntityService.ensureState(world, "rivalriesState", (): RivalriesState => ({
-      version: "1.0.0",
-      pairs: {},
-    }));
+    return EntityService.ensureState(
+      world,
+      "rivalriesState",
+      (): RivalriesState => ({
+        version: "1.0.0",
+        pairs: {},
+      })
+    );
   },
 
   /**

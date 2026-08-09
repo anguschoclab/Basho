@@ -61,7 +61,7 @@ export function phase01_basho_bouts(world: WorldState): StateImpact {
   // Nakabi checkpoint — log a mid-basho summary on day 8
   let nakabiImpact: StateImpact | null = null;
   if (currentWorld.currentBasho && isNakabiDay(currentWorld.currentBasho.day)) {
-    const bashoRikishi = (currentWorld.activeRikishiIds)
+    const bashoRikishi = currentWorld.activeRikishiIds
       ? Array.from(currentWorld.activeRikishiIds)
           .map((id) => currentWorld.rikishi.get(id))
           .filter((r): r is NonNullable<typeof r> => r !== undefined)

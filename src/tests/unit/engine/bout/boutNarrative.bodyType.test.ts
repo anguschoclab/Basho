@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 import type { PbpLine, PbpTag } from "@/engine/bout/boutNarrative";
@@ -37,8 +36,18 @@ function hasTag(l: PbpLine, tag: PbpTag): boolean {
 describe("body type pre-bout narrative (5.1)", () => {
   it("body type line present when bodyType set on both rikishi", () => {
     const east = mockRikishi("r1", { rank: "maegashira", division: "makuuchi", bodyType: "tower" });
-    const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi", bodyType: "barrel" });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]), year: 2025 } as unknown as WorldState;
+    const west = mockRikishi("r2", {
+      rank: "maegashira",
+      division: "makuuchi",
+      bodyType: "barrel",
+    });
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+      year: 2025,
+    } as unknown as WorldState;
     const result = makeBoutResult();
 
     generateBoutNarrative(result, east, west, undefined, 7, "body-type-seed", world);
@@ -51,7 +60,13 @@ describe("body type pre-bout narrative (5.1)", () => {
   it("body type line absent when bodyType not set", () => {
     const east = mockRikishi("r1", { rank: "maegashira", division: "makuuchi" });
     const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi" });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]), year: 2025 } as unknown as WorldState;
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+      year: 2025,
+    } as unknown as WorldState;
     const result = makeBoutResult();
 
     generateBoutNarrative(result, east, west, undefined, 7, "no-body-type-seed", world);
@@ -62,9 +77,19 @@ describe("body type pre-bout narrative (5.1)", () => {
   });
 
   it("only one body type line when only one rikishi has bodyType", () => {
-    const east = mockRikishi("r1", { rank: "maegashira", division: "makuuchi", bodyType: "compact" });
+    const east = mockRikishi("r1", {
+      rank: "maegashira",
+      division: "makuuchi",
+      bodyType: "compact",
+    });
     const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi" });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]), year: 2025 } as unknown as WorldState;
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+      year: 2025,
+    } as unknown as WorldState;
     const result = makeBoutResult();
 
     generateBoutNarrative(result, east, west, undefined, 7, "one-body-type-seed", world);
@@ -75,9 +100,20 @@ describe("body type pre-bout narrative (5.1)", () => {
   });
 
   it("template interpolates shikona", () => {
-    const east = mockRikishi("r1", { rank: "maegashira", division: "makuuchi", bodyType: "lanky", shikona: "TestShikona" });
+    const east = mockRikishi("r1", {
+      rank: "maegashira",
+      division: "makuuchi",
+      bodyType: "lanky",
+      shikona: "TestShikona",
+    });
     const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi" });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]), year: 2025 } as unknown as WorldState;
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+      year: 2025,
+    } as unknown as WorldState;
     const result = makeBoutResult();
 
     generateBoutNarrative(result, east, west, undefined, 7, "interp-body-type-seed", world);

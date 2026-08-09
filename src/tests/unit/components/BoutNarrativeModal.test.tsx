@@ -27,7 +27,9 @@ vi.mock("@/components/ClickableName", () => ({
 
 // Mock BoutReplayViewer to avoid canvas/RAF in jsdom
 const MockComponent = vi.hoisted(() => {
-  return function ForwardRefMock({ onProgressUpdate }: {
+  return function ForwardRefMock({
+    onProgressUpdate,
+  }: {
     result: unknown;
     eastRikishi: unknown;
     westRikishi: unknown;

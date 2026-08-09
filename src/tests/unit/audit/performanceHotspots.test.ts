@@ -44,9 +44,22 @@ describe("L4.2: performance hotspots — O(n²) loop detection", () => {
           nestedInHeyasLoop = line.includes("{") ? true : false;
         }
         // Only flag inner loops that iterate over another world-scale collection (true O(n²))
-        const innerIsWorldCollection = line.includes("world.rikishi") || line.includes("world.heyas") || line.includes("world.historicalRikishi") || line.includes("world.staff") || line.includes("world.oyakata");
-        if ((nestedInRikishiLoop || nestedInHeyasLoop) && /for\s*\(\s*(const|let)\s+/.test(line) && innerIsWorldCollection && !isRikishiLoop && !isHeyasLoop) {
-          violations.push(`${file}:${i + 1}: nested loop inside world.rikishi/heyas iteration: ${line.trim()}`);
+        const innerIsWorldCollection =
+          line.includes("world.rikishi") ||
+          line.includes("world.heyas") ||
+          line.includes("world.historicalRikishi") ||
+          line.includes("world.staff") ||
+          line.includes("world.oyakata");
+        if (
+          (nestedInRikishiLoop || nestedInHeyasLoop) &&
+          /for\s*\(\s*(const|let)\s+/.test(line) &&
+          innerIsWorldCollection &&
+          !isRikishiLoop &&
+          !isHeyasLoop
+        ) {
+          violations.push(
+            `${file}:${i + 1}: nested loop inside world.rikishi/heyas iteration: ${line.trim()}`
+          );
           nestedInRikishiLoop = false;
           nestedInHeyasLoop = false;
         }
@@ -88,6 +101,9 @@ describe("L4.2: performance hotspots — O(n²) loop detection", () => {
       });
     }
 
-    expect(violations.length, `Repeated world.rikishi.get() inside nested loops:\n${violations.join("\n")}`).toEqual(0);
+    expect(
+      violations.length,
+      `Repeated world.rikishi.get() inside nested loops:\n${violations.join("\n")}`
+    ).toEqual(0);
   });
 });

@@ -77,7 +77,7 @@ No rank floor guarantees exist in the game. This means a veteran Yokozuna with 2
 
 ### 6. SEKITORI_OVERHEAD scales incorrectly vs income
 
-A yokozuna costs the heya ¥5,000,000/month in SEKITORI_OVERHEAD, while the heya receives only ¥150,000/month JSA subsidy for them. The gap is ¥4,850,000/month — nearly the sekitori's entire personal salary. In reality, the heya _profits_ from having a yokozuna through JSA incentives and koenkai. The overhead model has the direction of financial pressure backwards.
+A yokozuna costs the heya ¥5,000,000/month in SEKITORI*OVERHEAD, while the heya receives only ¥150,000/month JSA subsidy for them. The gap is ¥4,850,000/month — nearly the sekitori's entire personal salary. In reality, the heya \_profits* from having a yokozuna through JSA incentives and koenkai. The overhead model has the direction of financial pressure backwards.
 
 The overhead abstraction isn't entirely wrong — facilities, food, staff, and tournament logistics are real costs. But at ¥5M/month for a yokozuna (¥60M/year overhead vs ¥36M salary), it's numerically inverted. Reducing sekitori overhead to match reality's food/facilities scale requires a commensurate increase in JSA rank-based income to keep the budget balanced.
 

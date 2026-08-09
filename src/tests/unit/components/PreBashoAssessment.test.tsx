@@ -1,4 +1,3 @@
- 
 /**
  */
 import React from "react";
@@ -100,9 +99,7 @@ describe("PreBashoAssessment", () => {
         rikishiAssessments: assessments,
       },
       _interimDaysRemaining: 3,
-      rikishi: new Map([
-        ["r1", { id: "r1", shikona: "TestRikishi" }],
-      ]),
+      rikishi: new Map([["r1", { id: "r1", shikona: "TestRikishi" }]]),
     });
     renderWithProvider(<PreBashoAssessment />);
     expect(screen.getByText("75%")).toBeTruthy();

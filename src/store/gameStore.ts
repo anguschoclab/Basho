@@ -95,10 +95,19 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
         case "READY":
           break;
         case "TICK_COMPLETED":
-          set({ digest: data.digest, digestRevision: data.digestRevision ?? get().digestRevision + 1, isSimulating: false, progress: null, pendingTick: false });
+          set({
+            digest: data.digest,
+            digestRevision: data.digestRevision ?? get().digestRevision + 1,
+            isSimulating: false,
+            progress: null,
+            pendingTick: false,
+          });
           break;
         case "DIGEST_UPDATED":
-          set({ digest: data.digest, digestRevision: data.digestRevision ?? get().digestRevision + 1 });
+          set({
+            digest: data.digest,
+            digestRevision: data.digestRevision ?? get().digestRevision + 1,
+          });
           break;
         case "WORLD_UPDATED":
           set({

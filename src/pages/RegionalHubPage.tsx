@@ -24,7 +24,7 @@ interface PendingExhibition {
 export default function RegionalHubPage() {
   const { state } = useGame();
   const world = state.world;
-  const playerHeya = world ? getPlayerHeya(world) ?? null : null;
+  const playerHeya = world ? (getPlayerHeya(world) ?? null) : null;
 
   const regionalPresence = playerHeya?.regionalPresence || {};
   const pendingExhibitions = (world?.pendingExhibitions ?? []) as unknown as PendingExhibition[];

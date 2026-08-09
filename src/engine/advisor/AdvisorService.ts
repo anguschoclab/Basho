@@ -135,14 +135,13 @@ function bashoRecommendations(world: WorldState, heyaId: Id): AIRecommendation[]
   if (!world.currentBasho) return [];
   const recs: AIRecommendation[] = [];
   const today = world.currentBasho.day;
-  const matches = world.currentBasho.matches.filter(
-    (m) => m.day === today && !m.result
-  );
+  const matches = world.currentBasho.matches.filter((m) => m.day === today && !m.result);
   for (const match of matches) {
     const east = getRikishi(world, match.eastRikishiId);
     const west = getRikishi(world, match.westRikishiId);
     if (!east || !west) continue;
-    const playerId = east.heyaId === heyaId ? east.id : west.heyaId === heyaId ? west.id : undefined;
+    const playerId =
+      east.heyaId === heyaId ? east.id : west.heyaId === heyaId ? west.id : undefined;
     const opponent = east.heyaId === heyaId ? west : west.heyaId === heyaId ? east : undefined;
     if (!playerId || !opponent) continue;
     const playerRikishi = getRikishi(world, playerId);
@@ -164,10 +163,7 @@ function bashoRecommendations(world: WorldState, heyaId: Id): AIRecommendation[]
 }
 
 /** Generate a prioritized list of player-facing recommendations. */
-export function generateRecommendations(
-  world: WorldState,
-  playerHeyaId?: Id
-): AIRecommendation[] {
+export function generateRecommendations(world: WorldState, playerHeyaId?: Id): AIRecommendation[] {
   const heyaId = playerHeyaId ?? world.playerHeyaId;
   if (!heyaId) return [];
 

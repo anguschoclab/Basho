@@ -4,7 +4,10 @@ import { join, extname } from "path";
 
 const ENGINE_DIR = join(import.meta.dirname, "../../../engine");
 
-function scanForNewDate(dir: string, results: Array<{ file: string; line: number; text: string }>): void {
+function scanForNewDate(
+  dir: string,
+  results: Array<{ file: string; line: number; text: string }>
+): void {
   const entries = readdirSync(dir, { withFileTypes: true });
   for (const entry of entries) {
     const fullPath = join(dir, entry.name);
@@ -32,13 +35,11 @@ describe("L4.3: Date arithmetic guard — no new Date() in engine production cod
     scanForNewDate(ENGINE_DIR, results);
 
     const ALLOWED = ["Logger.ts", "formatters.ts", "calendar.ts", "MigrationService.ts"];
-    const violations = results.filter(
-      (r) => !ALLOWED.some((a) => r.file.endsWith(a)),
-    );
+    const violations = results.filter((r) => !ALLOWED.some((a) => r.file.endsWith(a)));
 
     expect(
       violations,
-      `Found new Date() in engine code (determinism violation):\n${violations.map((v) => `  ${v.file}:${v.line} — ${v.text}`).join("\n")}`,
+      `Found new Date() in engine code (determinism violation):\n${violations.map((v) => `  ${v.file}:${v.line} — ${v.text}`).join("\n")}`
     ).toEqual([]);
   });
 });

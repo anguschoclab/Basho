@@ -29,7 +29,11 @@ describe("EventLogPanel AI events", () => {
   });
 
   it("renders AI decision events with the correct category badge", () => {
-    const event = makeEvent("ai_decision", "AI Management Decision", "Recruitment blitz authorized.");
+    const event = makeEvent(
+      "ai_decision",
+      "AI Management Decision",
+      "Recruitment blitz authorized."
+    );
     render(
       <EventLogPanel
         eventLogData={{
@@ -45,7 +49,11 @@ describe("EventLogPanel AI events", () => {
   });
 
   it("renders AI plan change events", () => {
-    const event = makeEvent("ai_plan_change", "Strategic Plan Shift", "Switching to financial consolidation.");
+    const event = makeEvent(
+      "ai_plan_change",
+      "Strategic Plan Shift",
+      "Switching to financial consolidation."
+    );
     render(
       <EventLogPanel
         eventLogData={{

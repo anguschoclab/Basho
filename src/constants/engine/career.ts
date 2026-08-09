@@ -152,16 +152,39 @@ export const ROOKIE_MEDIA_SAVVY_RANGE = 40;
 
 // ── Body type physics behavior modifiers ───────────────────────────────────────
 
-export const BODY_TYPE_BEHAVIORS: Record<string, {
-  pushVelocityBonus: number;
-  lateralMovementBonus: number;
-  beltTorqueBonus: number;
-  tachiaiSpeedBonus: number;
-}> = {
-  tower: { pushVelocityBonus: 4, lateralMovementBonus: -2, beltTorqueBonus: -1, tachiaiSpeedBonus: 2 },
-  barrel: { pushVelocityBonus: 1, lateralMovementBonus: -3, beltTorqueBonus: 5, tachiaiSpeedBonus: -1 },
-  compact: { pushVelocityBonus: -1, lateralMovementBonus: 4, beltTorqueBonus: 2, tachiaiSpeedBonus: 4 },
-  lanky: { pushVelocityBonus: 2, lateralMovementBonus: 3, beltTorqueBonus: -2, tachiaiSpeedBonus: 3 },
+export const BODY_TYPE_BEHAVIORS: Record<
+  string,
+  {
+    pushVelocityBonus: number;
+    lateralMovementBonus: number;
+    beltTorqueBonus: number;
+    tachiaiSpeedBonus: number;
+  }
+> = {
+  tower: {
+    pushVelocityBonus: 4,
+    lateralMovementBonus: -2,
+    beltTorqueBonus: -1,
+    tachiaiSpeedBonus: 2,
+  },
+  barrel: {
+    pushVelocityBonus: 1,
+    lateralMovementBonus: -3,
+    beltTorqueBonus: 5,
+    tachiaiSpeedBonus: -1,
+  },
+  compact: {
+    pushVelocityBonus: -1,
+    lateralMovementBonus: 4,
+    beltTorqueBonus: 2,
+    tachiaiSpeedBonus: 4,
+  },
+  lanky: {
+    pushVelocityBonus: 2,
+    lateralMovementBonus: 3,
+    beltTorqueBonus: -2,
+    tachiaiSpeedBonus: 3,
+  },
 };
 
 // ── Origin stat modifiers ──────────────────────────────────────────────────────

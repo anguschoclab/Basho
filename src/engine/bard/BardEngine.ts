@@ -33,7 +33,11 @@ type VocabLevel = { adjectives: string[]; verbs: string[]; adverbs: string[] };
 type VocabTable = Record<string, VocabLevel>;
 const vocabulary = vocabularyData as unknown as VocabTable;
 
-function pickVocabWord(type: "adjectives" | "verbs" | "adverbs", intensity: number, seedText: string): string {
+function pickVocabWord(
+  type: "adjectives" | "verbs" | "adverbs",
+  intensity: number,
+  seedText: string
+): string {
   const level = vocabulary[`intensity_${intensity}`] || vocabulary.intensity_2;
   const words = level[type];
   if (!words || words.length === 0) return "";
@@ -59,17 +63,35 @@ let lruCache: string[] = [];
 const MAX_CACHE_SIZE = 50;
 
 const ALL_DOMAIN_NAMES = [
-  "combat", "medical", "scouting", "institutional", "world", "media",
-  "system", "events", "rikishi", "npc", "ui", "h2h", "training",
-  "oyakata", "strategy", "dynasty", "pre_bout", "post_bout", "kyujo",
-  "sansho_ceremony", "interview", "ydc_accountability",
-  "post_basho_press", "playoff", "dohyo_iri",
+  "combat",
+  "medical",
+  "scouting",
+  "institutional",
+  "world",
+  "media",
+  "system",
+  "events",
+  "rikishi",
+  "npc",
+  "ui",
+  "h2h",
+  "training",
+  "oyakata",
+  "strategy",
+  "dynasty",
+  "pre_bout",
+  "post_bout",
+  "kyujo",
+  "sansho_ceremony",
+  "interview",
+  "ydc_accountability",
+  "post_basho_press",
+  "playoff",
+  "dohyo_iri",
 ];
 
 async function loadDomainsInternal(): Promise<DomainMap> {
-  await Promise.all(
-    ALL_DOMAIN_NAMES.map((name) => loadDomainInternal(name))
-  );
+  await Promise.all(ALL_DOMAIN_NAMES.map((name) => loadDomainInternal(name)));
   const result: DomainMap = {};
   for (const name of ALL_DOMAIN_NAMES) {
     result[name] = domainCache.get(name);
@@ -272,9 +294,10 @@ export function interpolate(text: string, context: NarrativeContext): string {
     }
 
     const raw = typeof value === "string" ? value : String(value);
-    const capped = raw.length > MAX_CONTEXT_VALUE_LENGTH
-      ? raw.slice(0, MAX_CONTEXT_VALUE_LENGTH) + "…truncated"
-      : raw;
+    const capped =
+      raw.length > MAX_CONTEXT_VALUE_LENGTH
+        ? raw.slice(0, MAX_CONTEXT_VALUE_LENGTH) + "…truncated"
+        : raw;
     const stringValue = capped.replace(/[[\]:]/g, "");
 
     if (entityType && entityId) {
@@ -286,13 +309,17 @@ export function interpolate(text: string, context: NarrativeContext): string {
   });
 
   if (result.length > MAX_INTERPOLATED_LENGTH) {
-    warn(`BardEngine: interpolated result exceeded ${MAX_INTERPOLATED_LENGTH} chars, truncating`, "BardEngine");
+    warn(
+      `BardEngine: interpolated result exceeded ${MAX_INTERPOLATED_LENGTH} chars, truncating`,
+      "BardEngine"
+    );
     return result.slice(0, MAX_INTERPOLATED_LENGTH) + "…[truncated]";
   }
 
   if (result.includes("%") || result.includes("{{") || result.includes("}}")) {
     const leakMsg = `BardEngine Warning: Token leakage or unresolved brackets in result: "${result}"`;
-    const isTest = typeof process !== "undefined" && (process.env?.NODE_ENV === "test" || process.env?.CI);
+    const isTest =
+      typeof process !== "undefined" && (process.env?.NODE_ENV === "test" || process.env?.CI);
     if (isTest) {
       throw new Error(leakMsg);
     }

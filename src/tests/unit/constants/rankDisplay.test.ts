@@ -104,9 +104,12 @@ describe("isSanyakuRank", () => {
 });
 
 describe("isSekitoriRank", () => {
-  it.each(["yokozuna", "ozeki", "sekiwake", "komusubi", "maegashira", "juryo"])("returns true for %s", (rank) => {
-    expect(isSekitoriRank(rank)).toBe(true);
-  });
+  it.each(["yokozuna", "ozeki", "sekiwake", "komusubi", "maegashira", "juryo"])(
+    "returns true for %s",
+    (rank) => {
+      expect(isSekitoriRank(rank)).toBe(true);
+    }
+  );
 
   it.each(["makushita", "sandanme", "jonidan", "jonokuchi"])("returns false for %s", (rank) => {
     expect(isSekitoriRank(rank)).toBe(false);

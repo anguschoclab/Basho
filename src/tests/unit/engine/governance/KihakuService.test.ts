@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { KihakuService } from "@/engine/systems/governance/KihakuService";
 import type { MatchSchedule, BashoState } from "@/engine/types/basho";
@@ -45,9 +44,7 @@ describe("KihakuService — countPlayoffWins", () => {
   });
 
   it("does not count losses as wins", () => {
-    const matches: MatchSchedule[] = [
-      makeMatch("playoff-1", 15, "r2", "r1"),
-    ];
+    const matches: MatchSchedule[] = [makeMatch("playoff-1", 15, "r2", "r1")];
     expect(KihakuService.countPlayoffWins("r1", matches)).toBe(0);
   });
 });
@@ -72,17 +69,13 @@ describe("KihakuService — countYushoContentionWins", () => {
       ["r1", { wins: 10, losses: 5 }],
       ["r2", { wins: 14, losses: 1 }],
     ]);
-    const matches: MatchSchedule[] = [
-      makeMatch("day12-1", 12, "r1", "r3"),
-    ];
+    const matches: MatchSchedule[] = [makeMatch("day12-1", 12, "r1", "r3")];
     // r1 has 10 wins, leader has 14 → difference > 1 → not counted
     expect(KihakuService.countYushoContentionWins("r1", matches, standings)).toBe(0);
   });
 
   it("does not count wins before day 12", () => {
-    const standings = new Map([
-      ["r1", { wins: 14, losses: 1 }],
-    ]);
+    const standings = new Map([["r1", { wins: 14, losses: 1 }]]);
     const matches: MatchSchedule[] = [
       makeMatch("day11-1", 11, "r1", "r3"),
       makeMatch("day12-1", 12, "r1", "r4"),
@@ -126,7 +119,13 @@ describe("KihakuService — extractFromBasho", () => {
   it("detects make-koshi when losses > wins", () => {
     const basho = {
       boutMetrics: {
-        r1: { comebackWins: 0, edgeCrisisSurvived: 0, upsetCount: 0, boutDurations: [], opponentTiers: [] },
+        r1: {
+          comebackWins: 0,
+          edgeCrisisSurvived: 0,
+          upsetCount: 0,
+          boutDurations: [],
+          opponentTiers: [],
+        },
       },
       standings: new Map([["r1", { wins: 5, losses: 10 }]]),
       matches: [],
@@ -138,7 +137,13 @@ describe("KihakuService — extractFromBasho", () => {
   it("detects kachi-koshi when wins >= losses", () => {
     const basho = {
       boutMetrics: {
-        r1: { comebackWins: 0, edgeCrisisSurvived: 0, upsetCount: 0, boutDurations: [], opponentTiers: [] },
+        r1: {
+          comebackWins: 0,
+          edgeCrisisSurvived: 0,
+          upsetCount: 0,
+          boutDurations: [],
+          opponentTiers: [],
+        },
       },
       standings: new Map([["r1", { wins: 10, losses: 5 }]]),
       matches: [],
@@ -162,12 +167,16 @@ describe("KihakuService — evaluateRikishi", () => {
   it("calculates score from metrics with playoff wins", () => {
     const basho = {
       boutMetrics: {
-        r1: { comebackWins: 2, edgeCrisisSurvived: 1, upsetCount: 0, boutDurations: [], opponentTiers: [] },
+        r1: {
+          comebackWins: 2,
+          edgeCrisisSurvived: 1,
+          upsetCount: 0,
+          boutDurations: [],
+          opponentTiers: [],
+        },
       },
       standings: new Map([["r1", { wins: 13, losses: 2 }]]),
-      matches: [
-        makeMatch("playoff-1", 15, "r1", "r2"),
-      ],
+      matches: [makeMatch("playoff-1", 15, "r1", "r2")],
     } as any as BashoState;
     const rikishi = { id: "r1", currentBashoWins: 13, absentFinalDay: false } as any;
     // 2*15 + 1*10 + 1*20 + 1*8 (yusho-contention: r1 has 13 wins, leader has 14, within 1) = 68

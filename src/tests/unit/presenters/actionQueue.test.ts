@@ -140,7 +140,9 @@ describe("buildActionQueue", () => {
   it("sorts by severity (critical > warning > info)", () => {
     const world = makeWorld({
       cyclePhase: "pre_basho",
-      pendingExhibitions: [{ id: "e1", heyaId: "h1", region: "Mongolia", prestige: 5, expiresAtWeek: 10 }],
+      pendingExhibitions: [
+        { id: "e1", heyaId: "h1", region: "Mongolia", prestige: 5, expiresAtWeek: 10 },
+      ],
     });
     const training = makeTraining({ injuryRiskHighCount: 3 });
     const finance = makeFinance({ runwayBand: "critical", runwayMonths: 1 });

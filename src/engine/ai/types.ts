@@ -11,7 +11,13 @@ import type { OyakataArchetype } from "../types/oyakata";
 import type { WorldState } from "../types/world";
 import type { PerceptionSnapshot } from "../perception";
 
-export type AIGoalDomain = "rank" | "finance" | "rivalry" | "recruitment" | "reputation" | "training";
+export type AIGoalDomain =
+  | "rank"
+  | "finance"
+  | "rivalry"
+  | "recruitment"
+  | "reputation"
+  | "training";
 
 export interface AIGoal {
   domain: AIGoalDomain;
@@ -20,11 +26,7 @@ export interface AIGoal {
   deadlineWeek?: number;
 }
 
-export type AIConstraintType =
-  | "max_intensity"
-  | "min_reserve"
-  | "avoid_rival"
-  | "protect_rikishi";
+export type AIConstraintType = "max_intensity" | "min_reserve" | "avoid_rival" | "protect_rikishi";
 
 export interface AIConstraint {
   domain: AIGoalDomain;
@@ -70,7 +72,13 @@ export interface AIContext {
   oyakata?: {
     id: Id;
     archetype: OyakataArchetype;
-    traits: { ambition: number; risk: number; tradition: number; patience: number; compassion: number };
+    traits: {
+      ambition: number;
+      risk: number;
+      tradition: number;
+      patience: number;
+      compassion: number;
+    };
     mood?: string;
   };
   perception?: PerceptionSnapshot;

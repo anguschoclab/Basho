@@ -1,4 +1,3 @@
- 
 import { describe, it, expect, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import { WeightJourneyCard } from "@/components/training/WeightJourneyCard";
@@ -29,10 +28,7 @@ describe("WeightJourneyCard", () => {
 
   it("displays stalled badge when stalled === true", () => {
     render(
-      <WeightJourneyCard
-        journey={{ ...baseJourney, stalled: true }}
-        shikona="Test Rikishi"
-      />
+      <WeightJourneyCard journey={{ ...baseJourney, stalled: true }} shikona="Test Rikishi" />
     );
     expect(screen.getByText("Stalled")).not.toBeNull();
   });
@@ -49,9 +45,7 @@ describe("WeightJourneyCard", () => {
   });
 
   it("renders nothing when no weightJourney present", () => {
-    const { container } = render(
-      <WeightJourneyCard journey={undefined} shikona="Test Rikishi" />
-    );
+    const { container } = render(<WeightJourneyCard journey={undefined} shikona="Test Rikishi" />);
     expect(container.firstChild).toBeNull();
   });
 });

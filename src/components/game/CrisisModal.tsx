@@ -31,7 +31,7 @@ export function CrisisModal() {
   const [isOpen, setIsOpen] = useState(false);
 
   // Get player heya welfare state
-  const playerHeya = world ? getPlayerHeya(world) ?? null : null;
+  const playerHeya = world ? (getPlayerHeya(world) ?? null) : null;
   const welfareState = playerHeya?.welfareState;
 
   // Check for welfare crisis (investigation, sanctioned, high risk)

@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import {
   determinePostRetirementPath,
@@ -106,7 +105,12 @@ describe("Post-Retirement Path System (B8)", () => {
       careerRecord: { wins: 100, losses: 50, yusho: 1 },
     } as any);
 
-    const paths: PostRetirementPath[] = ["oyakata", "media_pundit", "sumo_school_coach", "leave_sumo_world"];
+    const paths: PostRetirementPath[] = [
+      "oyakata",
+      "media_pundit",
+      "sumo_school_coach",
+      "leave_sumo_world",
+    ];
     for (const path of paths) {
       const narrative = getRetirementNarrative(r, path);
       expect(narrative).toBeTruthy();

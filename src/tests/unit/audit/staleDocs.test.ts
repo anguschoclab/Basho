@@ -61,12 +61,18 @@ describe("L1.2: stale documentation audit", () => {
     for (const mdFile of auditMdFiles) {
       const content = readFileSync(mdFile, "utf-8");
       const mentionsRegex = /regex|grep|Grepped/i;
-      const hasStalenessNotice = /STALENESS NOTICE|superseded|retained for historical/i.test(content);
+      const hasStalenessNotice = /STALENESS NOTICE|superseded|retained for historical/i.test(
+        content
+      );
       if (mentionsRegex.test(content) && !hasStalenessNotice) {
-        missing.push(`${mdFile}: references regex/grep methodology but has no staleness annotation`);
+        missing.push(
+          `${mdFile}: references regex/grep methodology but has no staleness annotation`
+        );
       }
     }
 
-    expect(missing, `Audit reports missing staleness annotations:\n${missing.join("\n")}`).toEqual([]);
+    expect(missing, `Audit reports missing staleness annotations:\n${missing.join("\n")}`).toEqual(
+      []
+    );
   });
 });

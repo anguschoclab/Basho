@@ -38,7 +38,10 @@ export function StableIntelTab({ playerHeyaId }: { playerHeyaId: string | null }
         return sortOrder === "desc" ? -result : result;
       });
     } else {
-      const accessor: Record<string, (r: ReturnType<typeof projectRikishi>) => string | number | undefined> = {
+      const accessor: Record<
+        string,
+        (r: ReturnType<typeof projectRikishi>) => string | number | undefined
+      > = {
         shikona: (r) => r.shikona,
         power: (r) => r.powerBand,
         technique: (r) => r.techniqueBand,
@@ -53,7 +56,8 @@ export function StableIntelTab({ playerHeyaId }: { playerHeyaId: string | null }
     <div className="space-y-4">
       <div className="flex items-center justify-between gap-3">
         <p className="text-sm text-muted-foreground">
-          Full intel on your own wrestlers. You know everything about those who train under your roof.
+          Full intel on your own wrestlers. You know everything about those who train under your
+          roof.
         </p>
         <SortMenu
           options={SORT_OPTIONS}

@@ -22,7 +22,13 @@ describe("buildAlmanacSnapshot (enriched)", () => {
     const r1 = mockRikishi("r1", { shikona: "PromotedRikishi" });
     world.rikishi.set("r1", r1);
     const movements: MovementEvent[] = [
-      { rikishiId: "r1", from: "maegashira", to: "komusubi", description: "Promoted", kind: "promotion" },
+      {
+        rikishiId: "r1",
+        from: "maegashira",
+        to: "komusubi",
+        description: "Promoted",
+        kind: "promotion",
+      },
     ];
     const snapshot = buildAlmanacSnapshot(world, movements);
     expect(snapshot).not.toBeNull();
@@ -34,7 +40,13 @@ describe("buildAlmanacSnapshot (enriched)", () => {
     const r2 = mockRikishi("r2", { shikona: "DemotedRikishi" });
     world.rikishi.set("r2", r2);
     const movements: MovementEvent[] = [
-      { rikishiId: "r2", from: "komusubi", to: "maegashira", description: "Demoted", kind: "demotion" },
+      {
+        rikishiId: "r2",
+        from: "komusubi",
+        to: "maegashira",
+        description: "Demoted",
+        kind: "demotion",
+      },
     ];
     const snapshot = buildAlmanacSnapshot(world, movements);
     expect(snapshot).not.toBeNull();
@@ -46,7 +58,13 @@ describe("buildAlmanacSnapshot (enriched)", () => {
     const r3 = mockRikishi("r3", { shikona: "RetiringRikishi", isRetired: true });
     world.rikishi.set("r3", r3);
     const movements: MovementEvent[] = [
-      { rikishiId: "r3", from: "maegashira", to: "retired", description: "Retired", kind: "status" },
+      {
+        rikishiId: "r3",
+        from: "maegashira",
+        to: "retired",
+        description: "Retired",
+        kind: "status",
+      },
     ];
     const snapshot = buildAlmanacSnapshot(world, movements);
     expect(snapshot).not.toBeNull();
@@ -66,7 +84,13 @@ describe("buildAlmanacSnapshot (enriched)", () => {
     const r1 = mockRikishi("r1", { shikona: "PromotedStar" });
     world.rikishi.set("r1", r1);
     const movements: MovementEvent[] = [
-      { rikishiId: "r1", from: "maegashira", to: "sekiwake", description: "Promoted", kind: "promotion" },
+      {
+        rikishiId: "r1",
+        from: "maegashira",
+        to: "sekiwake",
+        description: "Promoted",
+        kind: "promotion",
+      },
     ];
     const snapshot = buildAlmanacSnapshot(world, movements);
     expect(snapshot!.promotions[0].shikona).toBe("PromotedStar");
@@ -76,7 +100,13 @@ describe("buildAlmanacSnapshot (enriched)", () => {
     const r1 = mockRikishi("r1", { shikona: "PromotedStar" });
     world.rikishi.set("r1", r1);
     const movements: MovementEvent[] = [
-      { rikishiId: "r1", from: "maegashira", to: "sekiwake", description: "Promoted", kind: "promotion" },
+      {
+        rikishiId: "r1",
+        from: "maegashira",
+        to: "sekiwake",
+        description: "Promoted",
+        kind: "promotion",
+      },
     ];
     const snapshot = buildAlmanacSnapshot(world, movements);
     expect(snapshot!.promotions[0].newRank).toBeDefined();

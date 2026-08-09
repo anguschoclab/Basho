@@ -57,7 +57,14 @@ export const ATTRIBUTE_PEAK: Record<
 
 /** Which attribute group each RikishiStats key belongs to. */
 export const STAT_GROUP: Record<
-  "power" | "speed" | "stamina" | "technique" | "balance" | "adaptability" | "mental" | "aggression",
+  | "power"
+  | "speed"
+  | "stamina"
+  | "technique"
+  | "balance"
+  | "adaptability"
+  | "mental"
+  | "aggression",
   AttributeGroup
 > = {
   power: "physical",

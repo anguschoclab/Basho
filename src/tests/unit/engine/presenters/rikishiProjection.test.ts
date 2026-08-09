@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { toCareerDataDTO } from "@/presenters/rikishi/transformers/lineage";
 import { mockRikishi, makeMockWorld } from "../utils";

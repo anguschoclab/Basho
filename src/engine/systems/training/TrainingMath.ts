@@ -336,7 +336,13 @@ export function calculateGrowthVector(
   world?: WorldState
 ): Record<TrainingAttribute, number> {
   const modifiers = extractTrainingModifiers(heya, world);
-  return calculateGrowthWithModifiers(profile, focus, rikishi, modifiers, world?.year ?? DEFAULT_START_YEAR);
+  return calculateGrowthWithModifiers(
+    profile,
+    focus,
+    rikishi,
+    modifiers,
+    world?.year ?? DEFAULT_START_YEAR
+  );
 }
 
 /**

@@ -127,53 +127,77 @@ Add inside `prize_winner` object:
 Add after the `growth` section (after line 152) in `@/src/engine/systems/narrative/PostBashoPressService.ts`:
 
 ```typescript
-    // Weight journey — if champion has significant weight gain progress
-    if (champion.weightJourney && champion.weightJourney.progressKg >= 15) {
-      const wjLine = BardEngine.resolve(rng, "post_basho_press.champion.weight_journey", {
-        SHIKONA: champion.shikona,
-        rikishiId: champion.id,
-      });
-      if (wjLine.text) {
-        lines.push({ text: wjLine.text, id: `${baseId}-weight-journey`, phase: "post_bout", tags: ["post_basho_press"] });
-      }
-    }
+// Weight journey — if champion has significant weight gain progress
+if (champion.weightJourney && champion.weightJourney.progressKg >= 15) {
+  const wjLine = BardEngine.resolve(rng, "post_basho_press.champion.weight_journey", {
+    SHIKONA: champion.shikona,
+    rikishiId: champion.id,
+  });
+  if (wjLine.text) {
+    lines.push({
+      text: wjLine.text,
+      id: `${baseId}-weight-journey`,
+      phase: "post_bout",
+      tags: ["post_basho_press"],
+    });
+  }
+}
 
-    // Master intervention — if oyakata intervened during this basho
-    if (champion.interventionUsedThisBasho) {
-      const intLine = BardEngine.resolve(rng, "post_basho_press.champion.master_intervention", {
-        SHIKONA: champion.shikona,
-        rikishiId: champion.id,
-      });
-      if (intLine.text) {
-        lines.push({ text: intLine.text, id: `${baseId}-intervention`, phase: "post_bout", tags: ["post_basho_press"] });
-      }
-    }
+// Master intervention — if oyakata intervened during this basho
+if (champion.interventionUsedThisBasho) {
+  const intLine = BardEngine.resolve(rng, "post_basho_press.champion.master_intervention", {
+    SHIKONA: champion.shikona,
+    rikishiId: champion.id,
+  });
+  if (intLine.text) {
+    lines.push({
+      text: intLine.text,
+      id: `${baseId}-intervention`,
+      phase: "post_bout",
+      tags: ["post_basho_press"],
+    });
+  }
+}
 
-    // Early struggle — for champions with 5+ basho before first yusho
-    const totalBashoCount = champion.careerHistory?.length ?? 0;
-    const yushoCount = champion.careerHistory?.filter(h => h.isYusho).length ?? 0;
-    if (totalBashoCount >= 5 && yushoCount <= 1) {
-      const struggleLine = BardEngine.resolve(rng, "post_basho_press.champion.early_struggle", {
-        SHIKONA: champion.shikona,
-        rikishiId: champion.id,
-      });
-      if (struggleLine.text) {
-        lines.push({ text: struggleLine.text, id: `${baseId}-struggle`, phase: "post_bout", tags: ["post_basho_press"] });
-      }
-    }
+// Early struggle — for champions with 5+ basho before first yusho
+const totalBashoCount = champion.careerHistory?.length ?? 0;
+const yushoCount = champion.careerHistory?.filter((h) => h.isYusho).length ?? 0;
+if (totalBashoCount >= 5 && yushoCount <= 1) {
+  const struggleLine = BardEngine.resolve(rng, "post_basho_press.champion.early_struggle", {
+    SHIKONA: champion.shikona,
+    rikishiId: champion.id,
+  });
+  if (struggleLine.text) {
+    lines.push({
+      text: struggleLine.text,
+      id: `${baseId}-struggle`,
+      phase: "post_bout",
+      tags: ["post_basho_press"],
+    });
+  }
+}
 
-    // Career highlight reflection — if champion has recorded career highlights
-    if (champion.careerHighlights && champion.careerHighlights.length > 0) {
-      const highlight = champion.careerHighlights[champion.careerHighlights.length - 1];
-      const highlightLine = BardEngine.resolve(rng, "post_basho_press.champion.career_highlight_reflection", {
-        SHIKONA: champion.shikona,
-        OPPONENT: highlight.opponent ?? "his rival",
-        rikishiId: champion.id,
-      });
-      if (highlightLine.text) {
-        lines.push({ text: highlightLine.text, id: `${baseId}-highlight`, phase: "post_bout", tags: ["post_basho_press"] });
-      }
+// Career highlight reflection — if champion has recorded career highlights
+if (champion.careerHighlights && champion.careerHighlights.length > 0) {
+  const highlight = champion.careerHighlights[champion.careerHighlights.length - 1];
+  const highlightLine = BardEngine.resolve(
+    rng,
+    "post_basho_press.champion.career_highlight_reflection",
+    {
+      SHIKONA: champion.shikona,
+      OPPONENT: highlight.opponent ?? "his rival",
+      rikishiId: champion.id,
     }
+  );
+  if (highlightLine.text) {
+    lines.push({
+      text: highlightLine.text,
+      id: `${baseId}-highlight`,
+      phase: "post_bout",
+      tags: ["post_basho_press"],
+    });
+  }
+}
 ```
 
 ### Step 3.2: Extend generatePrizeWinnerLines
@@ -181,28 +205,42 @@ Add after the `growth` section (after line 152) in `@/src/engine/systems/narrati
 Add after the `fought_match_not_situation` section (after line 227):
 
 ```typescript
-    // Fighting name vindication — if shikona was conferred early (before sekitori)
-    if (winner.shikonaConferredEarly) {
-      const fnLine = BardEngine.resolve(rng, "post_basho_press.prize_winner.fighting_name_vindication", {
-        SHIKONA: winner.shikona,
-        rikishiId: winner.id,
-      });
-      if (fnLine.text) {
-        lines.push({ text: fnLine.text, id: `${baseId}-fighting-name`, phase: "post_bout", tags: ["post_basho_press"] });
-      }
+// Fighting name vindication — if shikona was conferred early (before sekitori)
+if (winner.shikonaConferredEarly) {
+  const fnLine = BardEngine.resolve(
+    rng,
+    "post_basho_press.prize_winner.fighting_name_vindication",
+    {
+      SHIKONA: winner.shikona,
+      rikishiId: winner.id,
     }
+  );
+  if (fnLine.text) {
+    lines.push({
+      text: fnLine.text,
+      id: `${baseId}-fighting-name`,
+      phase: "post_bout",
+      tags: ["post_basho_press"],
+    });
+  }
+}
 
-    // Cohort pride — if all cohort members reached sekitori (check recruitmentCohortId)
-    if (winner.recruitmentCohortId) {
-      // Note: full cohort check requires world access; simplified — if field is set, generate
-      const cohortLine = BardEngine.resolve(rng, "post_basho_press.prize_winner.cohort_pride", {
-        SHIKONA: winner.shikona,
-        rikishiId: winner.id,
-      });
-      if (cohortLine.text) {
-        lines.push({ text: cohortLine.text, id: `${baseId}-cohort`, phase: "post_bout", tags: ["post_basho_press"] });
-      }
-    }
+// Cohort pride — if all cohort members reached sekitori (check recruitmentCohortId)
+if (winner.recruitmentCohortId) {
+  // Note: full cohort check requires world access; simplified — if field is set, generate
+  const cohortLine = BardEngine.resolve(rng, "post_basho_press.prize_winner.cohort_pride", {
+    SHIKONA: winner.shikona,
+    rikishiId: winner.id,
+  });
+  if (cohortLine.text) {
+    lines.push({
+      text: cohortLine.text,
+      id: `${baseId}-cohort`,
+      phase: "post_bout",
+      tags: ["post_basho_press"],
+    });
+  }
+}
 ```
 
 ---
@@ -234,10 +272,15 @@ describe("PostBashoPressService — New Champion Sections", () => {
 
     const world = makeMockWorld({ rikishi: new Map([["wj-champ", champion]]), year: 2025 });
     const lines = PostBashoPressService.generatePressConference(world, {
-      yushoId: "wj-champ", junYushoIds: [], bashoName: "hatsu", year: 2025,
+      yushoId: "wj-champ",
+      junYushoIds: [],
+      bashoName: "hatsu",
+      year: 2025,
     });
 
-    const hasWeightJourney = lines.some((l) => l.text.includes("Bulk Champ") && l.id.includes("-weight-journey"));
+    const hasWeightJourney = lines.some(
+      (l) => l.text.includes("Bulk Champ") && l.id.includes("-weight-journey")
+    );
     expect(hasWeightJourney).toBe(true);
     expect(lines.every((l) => !l.text.includes("[MISSING:"))).toBe(true);
   });
@@ -256,7 +299,10 @@ describe("PostBashoPressService — New Champion Sections", () => {
 
     const world = makeMockWorld({ rikishi: new Map([["wj-champ2", champion]]), year: 2025 });
     const lines = PostBashoPressService.generatePressConference(world, {
-      yushoId: "wj-champ2", junYushoIds: [], bashoName: "hatsu", year: 2025,
+      yushoId: "wj-champ2",
+      junYushoIds: [],
+      bashoName: "hatsu",
+      year: 2025,
     });
 
     const hasWeightJourney = lines.some((l) => l.id.includes("-weight-journey"));
@@ -277,16 +323,24 @@ describe("PostBashoPressService — New Champion Sections", () => {
 
     const world = makeMockWorld({ rikishi: new Map([["int-champ", champion]]), year: 2025 });
     const lines = PostBashoPressService.generatePressConference(world, {
-      yushoId: "int-champ", junYushoIds: [], bashoName: "nagoya", year: 2025,
+      yushoId: "int-champ",
+      junYushoIds: [],
+      bashoName: "nagoya",
+      year: 2025,
     });
 
-    const hasIntervention = lines.some((l) => l.text.includes("Saved Champ") && l.id.includes("-intervention"));
+    const hasIntervention = lines.some(
+      (l) => l.text.includes("Saved Champ") && l.id.includes("-intervention")
+    );
     expect(hasIntervention).toBe(true);
     expect(lines.every((l) => !l.text.includes("[MISSING:"))).toBe(true);
   });
 
   it("generates early_struggle lines for champion with 5+ basho and <=1 yusho", () => {
-    const careerHistory = Array.from({ length: 6 }, () => ({ division: "makuuchi", isYusho: false } as any));
+    const careerHistory = Array.from(
+      { length: 6 },
+      () => ({ division: "makuuchi", isYusho: false }) as any
+    );
     const champion = mockRikishi("strug-champ", {
       shikona: "Long Road",
       rank: "maegashira",
@@ -299,10 +353,15 @@ describe("PostBashoPressService — New Champion Sections", () => {
 
     const world = makeMockWorld({ rikishi: new Map([["strug-champ", champion]]), year: 2025 });
     const lines = PostBashoPressService.generatePressConference(world, {
-      yushoId: "strug-champ", junYushoIds: [], bashoName: "aki", year: 2025,
+      yushoId: "strug-champ",
+      junYushoIds: [],
+      bashoName: "aki",
+      year: 2025,
     });
 
-    const hasStruggle = lines.some((l) => l.text.includes("Long Road") && l.id.includes("-struggle"));
+    const hasStruggle = lines.some(
+      (l) => l.text.includes("Long Road") && l.id.includes("-struggle")
+    );
     expect(hasStruggle).toBe(true);
     expect(lines.every((l) => !l.text.includes("[MISSING:"))).toBe(true);
   });
@@ -316,20 +375,27 @@ describe("PostBashoPressService — New Champion Sections", () => {
       currentBashoLosses: 1,
       heyaId: "heya-1",
       careerHistory: [],
-      careerHighlights: [{
-        type: "seven_seven_win",
-        basho: "hatsu",
-        opponent: "rival-1",
-        description: "Won 7-7 bout on senshuraku",
-      }],
+      careerHighlights: [
+        {
+          type: "seven_seven_win",
+          basho: "hatsu",
+          opponent: "rival-1",
+          description: "Won 7-7 bout on senshuraku",
+        },
+      ],
     } as any);
 
     const world = makeMockWorld({ rikishi: new Map([["hl-champ", champion]]), year: 2025 });
     const lines = PostBashoPressService.generatePressConference(world, {
-      yushoId: "hl-champ", junYushoIds: [], bashoName: "hatsu", year: 2025,
+      yushoId: "hl-champ",
+      junYushoIds: [],
+      bashoName: "hatsu",
+      year: 2025,
     });
 
-    const hasHighlight = lines.some((l) => l.text.includes("Memory Champ") && l.id.includes("-highlight"));
+    const hasHighlight = lines.some(
+      (l) => l.text.includes("Memory Champ") && l.id.includes("-highlight")
+    );
     expect(hasHighlight).toBe(true);
     expect(lines.every((l) => !l.text.includes("[MISSING:"))).toBe(true);
   });
@@ -357,7 +423,10 @@ describe("PostBashoPressService — New Prize Winner Sections", () => {
     } as any);
 
     const world = makeMockWorld({
-      rikishi: new Map([["fn-champ", champion], ["fn-winner", prizeWinner]]),
+      rikishi: new Map([
+        ["fn-champ", champion],
+        ["fn-winner", prizeWinner],
+      ]),
       year: 2025,
     });
     const lines = PostBashoPressService.generatePressConference(world, {
@@ -368,7 +437,9 @@ describe("PostBashoPressService — New Prize Winner Sections", () => {
       year: 2025,
     });
 
-    const hasFightingName = lines.some((l) => l.text.includes("Early Name") && l.id.includes("-fighting-name"));
+    const hasFightingName = lines.some(
+      (l) => l.text.includes("Early Name") && l.id.includes("-fighting-name")
+    );
     expect(hasFightingName).toBe(true);
     expect(lines.every((l) => !l.text.includes("[MISSING:"))).toBe(true);
   });
@@ -394,7 +465,10 @@ describe("PostBashoPressService — New Prize Winner Sections", () => {
     } as any);
 
     const world = makeMockWorld({
-      rikishi: new Map([["co-champ", champion], ["co-winner", prizeWinner]]),
+      rikishi: new Map([
+        ["co-champ", champion],
+        ["co-winner", prizeWinner],
+      ]),
       year: 2025,
     });
     const lines = PostBashoPressService.generatePressConference(world, {
@@ -464,9 +538,9 @@ bun run lint
 
 ## Files to Modify
 
-| File | Change |
-|------|--------|
-| `@/src/engine/types/rikishi.ts` | Add 9 new optional fields after line 276 |
-| `@/src/engine/bard/domains/post_basho_press.json` | Add 6 new template arrays (4 champion, 2 prize_winner) |
-| `@/src/engine/systems/narrative/PostBashoPressService.ts` | Extend `generateChampionLines` (+4 sections) and `generatePrizeWinnerLines` (+2 sections) |
-| `@/src/tests/unit/engine/narrative/newPressSections.test.ts` | New test file with 7 test cases |
+| File                                                         | Change                                                                                    |
+| ------------------------------------------------------------ | ----------------------------------------------------------------------------------------- |
+| `@/src/engine/types/rikishi.ts`                              | Add 9 new optional fields after line 276                                                  |
+| `@/src/engine/bard/domains/post_basho_press.json`            | Add 6 new template arrays (4 champion, 2 prize_winner)                                    |
+| `@/src/engine/systems/narrative/PostBashoPressService.ts`    | Extend `generateChampionLines` (+4 sections) and `generatePrizeWinnerLines` (+2 sections) |
+| `@/src/tests/unit/engine/narrative/newPressSections.test.ts` | New test file with 7 test cases                                                           |

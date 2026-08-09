@@ -35,7 +35,7 @@ world.heyas.delete(id);
         "Potential Mutable State Leak",
         "Potential Mutable State Leak",
         "Potential Mutable State Leak",
-      ]),
+      ])
     );
     expect(violations.length).toBeGreaterThanOrEqual(3);
   });

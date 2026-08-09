@@ -14,7 +14,7 @@ describe("checkNaturalizations", () => {
       id: "rikishi_24",
       nationality: "Mongolia",
       careerWins: NATURALIZATION_CAREER_WINS_THRESHOLD + 1,
-      heyaId: heya.id
+      heyaId: heya.id,
     });
 
     world.heyas.set(heya.id, heya);
@@ -46,7 +46,7 @@ describe("checkNaturalizations", () => {
       id: "rikishi_fail_1",
       nationality: "Mongolia",
       careerWins: NATURALIZATION_CAREER_WINS_THRESHOLD + 1,
-      heyaId: heya.id
+      heyaId: heya.id,
     });
 
     world.heyas.set(heya.id, heya);
@@ -70,7 +70,7 @@ describe("checkNaturalizations", () => {
       nationality: "Mongolia",
       careerWins: NATURALIZATION_CAREER_WINS_THRESHOLD - 10,
       rank: "maegashira",
-      heyaId: heya.id
+      heyaId: heya.id,
     });
 
     world.heyas.set(heya.id, heya);
@@ -95,7 +95,7 @@ describe("checkNaturalizations", () => {
       birthYear: 2025 - 32,
       careerWins: 10,
       rank: "yokozuna",
-      heyaId: heya.id
+      heyaId: heya.id,
     });
 
     world.heyas.set(heya.id, heya);

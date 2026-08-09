@@ -15,17 +15,13 @@ describe("useSortState", () => {
   });
 
   it("returns default key and order when no stored value exists", () => {
-    const { result } = renderHook(() =>
-      useSortState<"rank" | "name">(STORAGE_KEY, "rank", "asc")
-    );
+    const { result } = renderHook(() => useSortState<"rank" | "name">(STORAGE_KEY, "rank", "asc"));
     expect(result.current.sortKey).toBe("rank");
     expect(result.current.sortOrder).toBe("asc");
   });
 
   it("persists sort key and order to localStorage", () => {
-    const { result } = renderHook(() =>
-      useSortState<"rank" | "name">(STORAGE_KEY, "rank", "asc")
-    );
+    const { result } = renderHook(() => useSortState<"rank" | "name">(STORAGE_KEY, "rank", "asc"));
     act(() => {
       result.current.setSortKey("name");
     });
@@ -35,22 +31,15 @@ describe("useSortState", () => {
   });
 
   it("restores sort key and order from localStorage on init", () => {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({ key: "name", order: "desc" })
-    );
-    const { result } = renderHook(() =>
-      useSortState<"rank" | "name">(STORAGE_KEY, "rank", "asc")
-    );
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ key: "name", order: "desc" }));
+    const { result } = renderHook(() => useSortState<"rank" | "name">(STORAGE_KEY, "rank", "asc"));
     expect(result.current.sortKey).toBe("name");
     expect(result.current.sortOrder).toBe("desc");
   });
 
   it("falls back to defaults when localStorage contains corrupt JSON", () => {
     localStorage.setItem(STORAGE_KEY, "{not valid json}");
-    const { result } = renderHook(() =>
-      useSortState<"rank" | "name">(STORAGE_KEY, "rank", "asc")
-    );
+    const { result } = renderHook(() => useSortState<"rank" | "name">(STORAGE_KEY, "rank", "asc"));
     expect(result.current.sortKey).toBe("rank");
     expect(result.current.sortOrder).toBe("asc");
   });
@@ -59,18 +48,14 @@ describe("useSortState", () => {
     const spy = vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
       throw new Error("storage error");
     });
-    const { result } = renderHook(() =>
-      useSortState<"rank" | "name">(STORAGE_KEY, "rank", "asc")
-    );
+    const { result } = renderHook(() => useSortState<"rank" | "name">(STORAGE_KEY, "rank", "asc"));
     expect(result.current.sortKey).toBe("rank");
     expect(result.current.sortOrder).toBe("asc");
     spy.mockRestore();
   });
 
   it("toggleOrder flips asc to desc", () => {
-    const { result } = renderHook(() =>
-      useSortState<"rank" | "name">(STORAGE_KEY, "rank", "asc")
-    );
+    const { result } = renderHook(() => useSortState<"rank" | "name">(STORAGE_KEY, "rank", "asc"));
     act(() => {
       result.current.toggleOrder();
     });
@@ -78,9 +63,7 @@ describe("useSortState", () => {
   });
 
   it("toggleOrder flips desc to asc", () => {
-    const { result } = renderHook(() =>
-      useSortState<"rank" | "name">(STORAGE_KEY, "rank", "desc")
-    );
+    const { result } = renderHook(() => useSortState<"rank" | "name">(STORAGE_KEY, "rank", "desc"));
     act(() => {
       result.current.toggleOrder();
     });
@@ -88,9 +71,7 @@ describe("useSortState", () => {
   });
 
   it("setSortKey changes key and resets to default order", () => {
-    const { result } = renderHook(() =>
-      useSortState<"rank" | "name">(STORAGE_KEY, "rank", "desc")
-    );
+    const { result } = renderHook(() => useSortState<"rank" | "name">(STORAGE_KEY, "rank", "desc"));
     act(() => {
       result.current.toggleOrder(); // now asc
     });
@@ -104,9 +85,7 @@ describe("useSortState", () => {
   });
 
   it("setSortKey persists new key and reset order to localStorage", () => {
-    const { result } = renderHook(() =>
-      useSortState<"rank" | "name">(STORAGE_KEY, "rank", "desc")
-    );
+    const { result } = renderHook(() => useSortState<"rank" | "name">(STORAGE_KEY, "rank", "desc"));
     act(() => {
       result.current.setSortKey("name");
     });
@@ -116,9 +95,7 @@ describe("useSortState", () => {
   });
 
   it("toggleOrder persists flipped order to localStorage", () => {
-    const { result } = renderHook(() =>
-      useSortState<"rank" | "name">(STORAGE_KEY, "rank", "asc")
-    );
+    const { result } = renderHook(() => useSortState<"rank" | "name">(STORAGE_KEY, "rank", "asc"));
     act(() => {
       result.current.toggleOrder();
     });
@@ -127,14 +104,10 @@ describe("useSortState", () => {
   });
 
   it("does not crash when localStorage.setItem throws", () => {
-    const spy = vi
-      .spyOn(Storage.prototype, "setItem")
-      .mockImplementation(() => {
-        throw new Error("quota exceeded");
-      });
-    const { result } = renderHook(() =>
-      useSortState<"rank" | "name">(STORAGE_KEY, "rank", "asc")
-    );
+    const spy = vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new Error("quota exceeded");
+    });
+    const { result } = renderHook(() => useSortState<"rank" | "name">(STORAGE_KEY, "rank", "asc"));
     act(() => {
       result.current.setSortKey("name");
     });

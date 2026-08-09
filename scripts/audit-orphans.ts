@@ -19,7 +19,12 @@ interface OrphanEntry {
   id: string;
   file: string;
   symbol: string;
-  orphanType: "unreferenced-export" | "orphan-route" | "unticked-service" | "unused-component" | "write-only-state";
+  orphanType:
+    | "unreferenced-export"
+    | "orphan-route"
+    | "unticked-service"
+    | "unused-component"
+    | "write-only-state";
   priority: "P0" | "P1" | "P2" | "P3";
   uiRoute: string;
   npcConsumer: string;
@@ -77,7 +82,8 @@ function collectFiles(dir: string, files: string[] = []): string[] {
     const fullPath = join(dir, entry);
     const stat = statSync(fullPath);
     if (stat.isDirectory()) {
-      if (entry === "node_modules" || entry === ".git" || entry === "dist" || entry === "release") continue;
+      if (entry === "node_modules" || entry === ".git" || entry === "dist" || entry === "release")
+        continue;
       collectFiles(fullPath, files);
     } else if (FILE_EXTENSIONS.includes(extname(fullPath))) {
       files.push(fullPath);
@@ -140,7 +146,12 @@ function extractExports(filePath: string): { name: string; line: number }[] {
     // export { foo, bar }
     m = line.match(/^export\s+\{([^}]+)\}/);
     if (m) {
-      const names = m[1].split(",").map((s) => s.trim().split(/\s+as\s+/)[0].trim());
+      const names = m[1].split(",").map((s) =>
+        s
+          .trim()
+          .split(/\s+as\s+/)[0]
+          .trim()
+      );
       for (const n of names) {
         if (n && !n.startsWith("//")) exports.push({ name: n, line: i + 1 });
       }
@@ -184,7 +195,29 @@ function findUnreferencedExports(): OrphanEntry[] {
   const entries: OrphanEntry[] = [];
 
   // Only scan engine systems, agents, and key utility files
-  const scanDirs = [SYSTEMS_DIR, AGENTS_DIR, NPC_AI_DIR, join(ENGINE_DIR, "actions"), join(ENGINE_DIR, "advisor"), join(ENGINE_DIR, "ai"), join(ENGINE_DIR, "almanac"), join(ENGINE_DIR, "banzuke"), join(ENGINE_DIR, "bard"), join(ENGINE_DIR, "bout"), join(ENGINE_DIR, "core"), join(ENGINE_DIR, "governance"), join(ENGINE_DIR, "lifecycle"), join(ENGINE_DIR, "matchmaking"), join(ENGINE_DIR, "npcAI"), join(ENGINE_DIR, "prestige"), join(ENGINE_DIR, "shikona"), join(ENGINE_DIR, "strategy"), join(ENGINE_DIR, "training"), join(ENGINE_DIR, "utils"), join(ENGINE_DIR, "worker")];
+  const scanDirs = [
+    SYSTEMS_DIR,
+    AGENTS_DIR,
+    NPC_AI_DIR,
+    join(ENGINE_DIR, "actions"),
+    join(ENGINE_DIR, "advisor"),
+    join(ENGINE_DIR, "ai"),
+    join(ENGINE_DIR, "almanac"),
+    join(ENGINE_DIR, "banzuke"),
+    join(ENGINE_DIR, "bard"),
+    join(ENGINE_DIR, "bout"),
+    join(ENGINE_DIR, "core"),
+    join(ENGINE_DIR, "governance"),
+    join(ENGINE_DIR, "lifecycle"),
+    join(ENGINE_DIR, "matchmaking"),
+    join(ENGINE_DIR, "npcAI"),
+    join(ENGINE_DIR, "prestige"),
+    join(ENGINE_DIR, "shikona"),
+    join(ENGINE_DIR, "strategy"),
+    join(ENGINE_DIR, "training"),
+    join(ENGINE_DIR, "utils"),
+    join(ENGINE_DIR, "worker"),
+  ];
 
   const scannedFiles = new Set<string>();
   for (const dir of scanDirs) {
@@ -220,9 +253,22 @@ function findUnreferencedExports(): OrphanEntry[] {
 
 function classifyPriority(filePath: string): "P0" | "P1" | "P2" | "P3" {
   const rel = relPath(filePath);
-  if (rel.includes("/economy/") || rel.includes("/health/") || rel.includes("/training/") || rel.includes("/welfare/")) return "P0";
-  if (rel.includes("/governance/") || rel.includes("/media/") || rel.includes("/recruitment/") || rel.includes("/narrative/")) return "P1";
-  if (rel.includes("/legacy/") || rel.includes("/meta/") || rel.includes("/worldCircuit/")) return "P2";
+  if (
+    rel.includes("/economy/") ||
+    rel.includes("/health/") ||
+    rel.includes("/training/") ||
+    rel.includes("/welfare/")
+  )
+    return "P0";
+  if (
+    rel.includes("/governance/") ||
+    rel.includes("/media/") ||
+    rel.includes("/recruitment/") ||
+    rel.includes("/narrative/")
+  )
+    return "P1";
+  if (rel.includes("/legacy/") || rel.includes("/meta/") || rel.includes("/worldCircuit/"))
+    return "P2";
   return "P3";
 }
 
@@ -237,7 +283,8 @@ function findOrphanRoutes(): OrphanEntry[] {
 
   // Extract route variable names and their paths from createRoute calls.
   // Pattern: const <varName> = createRoute({ ... path: "/something" ... })
-  const createRoutePattern = /const\s+(\w+)\s*=\s*createRoute\s*\(\s*\{[^}]*?path:\s*["'`]([^"'`]+)["'`]/g;
+  const createRoutePattern =
+    /const\s+(\w+)\s*=\s*createRoute\s*\(\s*\{[^}]*?path:\s*["'`]([^"'`]+)["'`]/g;
   let match: RegExpExecArray | null;
   const routeVars: Array<{ varName: string; path: string }> = [];
   while ((match = createRoutePattern.exec(routesContent)) !== null) {
@@ -306,7 +353,9 @@ function findUntickedServices(): OrphanEntry[] {
   const entries: OrphanEntry[] = [];
 
   // Collect all service files
-  const serviceFiles = collectFiles(SYSTEMS_DIR).filter((f) => !isTestFile(f) && extname(f) === ".ts");
+  const serviceFiles = collectFiles(SYSTEMS_DIR).filter(
+    (f) => !isTestFile(f) && extname(f) === ".ts"
+  );
 
   // Build a map of import paths → importing file, across all runtime (non-test) engine files.
   // A service is "ticked" if at least one of its exported symbols is imported by another runtime file.
@@ -353,7 +402,9 @@ function findUntickedServices(): OrphanEntry[] {
 function findUnusedComponents(): OrphanEntry[] {
   const entries: OrphanEntry[] = [];
 
-  const componentFiles = collectFiles(COMPONENTS_DIR).filter((f) => !isTestFile(f) && extname(f) === ".tsx");
+  const componentFiles = collectFiles(COMPONENTS_DIR).filter(
+    (f) => !isTestFile(f) && extname(f) === ".tsx"
+  );
 
   for (const compFile of componentFiles) {
     const compName = basename(compFile, ".tsx");
@@ -402,7 +453,21 @@ function findWriteOnlyState(): OrphanEntry[] {
   while ((match = fieldPattern.exec(worldTypeContent)) !== null) {
     const field = match[1];
     // Skip common non-state fields
-    if (["type", "import", "export", "interface", "class", "enum", "const", "let", "var", "function"].includes(field)) continue;
+    if (
+      [
+        "type",
+        "import",
+        "export",
+        "interface",
+        "class",
+        "enum",
+        "const",
+        "let",
+        "var",
+        "function",
+      ].includes(field)
+    )
+      continue;
     stateFields.push(field);
   }
 
@@ -424,14 +489,46 @@ function findWriteOnlyState(): OrphanEntry[] {
 
   // For each state field, check if it's read anywhere in the codebase
   for (const field of stateFields) {
-    if (["id", "version", "seed", "rng", "tick", "day", "week", "month", "year", "cyclePhase", "currentBasho", "currentDate", "date", "time", "timestamp", "history", "eventLog", "events", "pendingEvents", "rikishi", "stables", "oyakata", "managers", "heya", "freeAgents"].includes(field)) continue;
+    if (
+      [
+        "id",
+        "version",
+        "seed",
+        "rng",
+        "tick",
+        "day",
+        "week",
+        "month",
+        "year",
+        "cyclePhase",
+        "currentBasho",
+        "currentDate",
+        "date",
+        "time",
+        "timestamp",
+        "history",
+        "eventLog",
+        "events",
+        "pendingEvents",
+        "rikishi",
+        "stables",
+        "oyakata",
+        "managers",
+        "heya",
+        "freeAgents",
+      ].includes(field)
+    )
+      continue;
 
     // Check if field is read anywhere in the codebase (world.field, state.world.field, etc.)
     const readPattern = new RegExp(`\\.${escapeRegex(field)}\\b`);
     const isRead = readPattern.test(allSourceBlob);
 
     // Check if field is written by any phase
-    const isWritten = writtenFields.has(field) || runtimeBlob.includes(`world.${field} =`) || runtimeBlob.includes(`.${field}:`);
+    const isWritten =
+      writtenFields.has(field) ||
+      runtimeBlob.includes(`world.${field} =`) ||
+      runtimeBlob.includes(`.${field}:`);
 
     if (isWritten && !isRead) {
       entries.push({
@@ -471,7 +568,13 @@ function main() {
   const writeOnlyState = findWriteOnlyState();
   console.log(`  Write-only state fields: ${writeOnlyState.length}`);
 
-  const allEntries = [...unreferencedExports, ...orphanRoutes, ...untickedServices, ...unusedComponents, ...writeOnlyState];
+  const allEntries = [
+    ...unreferencedExports,
+    ...orphanRoutes,
+    ...untickedServices,
+    ...unusedComponents,
+    ...writeOnlyState,
+  ];
 
   const report: AuditReport = {
     generatedAt: new Date().toISOString(),
@@ -511,9 +614,22 @@ function main() {
   // Write CSV tracker (skip in test mode when custom --json path is provided)
   if (!customJsonPath) {
     const csvPath = join(auditDir, "orphan-tracker.csv");
-    const csvHeader = "ID,File,Symbol,OrphanType,Priority,UIRoute,NPCConsumer,TickPhase,TestFile,Status,PR\n";
+    const csvHeader =
+      "ID,File,Symbol,OrphanType,Priority,UIRoute,NPCConsumer,TickPhase,TestFile,Status,PR\n";
     const csvRows = allEntries.map((e) =>
-      [e.id, e.file, e.symbol, e.orphanType, e.priority, e.uiRoute, e.npcConsumer, e.tickPhase, "", e.status, ""]
+      [
+        e.id,
+        e.file,
+        e.symbol,
+        e.orphanType,
+        e.priority,
+        e.uiRoute,
+        e.npcConsumer,
+        e.tickPhase,
+        "",
+        e.status,
+        "",
+      ]
         .map((v) => `"${v.replace(/"/g, '""')}"`)
         .join(",")
     );
@@ -527,7 +643,13 @@ function main() {
   console.log("─".repeat(60));
 
   // Print top entries per category
-  const categories: (keyof AuditReport["summary"])[] = ["unreferencedExports", "orphanRoutes", "untickedServices", "unusedComponents", "writeOnlyState"];
+  const categories: (keyof AuditReport["summary"])[] = [
+    "unreferencedExports",
+    "orphanRoutes",
+    "untickedServices",
+    "unusedComponents",
+    "writeOnlyState",
+  ];
   for (const cat of categories) {
     const catName = cat.replace(/([A-Z])/g, " $1").replace(/^./, (c) => c.toUpperCase());
     const catEntries = allEntries.filter((e) => {

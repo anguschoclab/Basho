@@ -13,7 +13,7 @@ function makushitaEntry(rankNumber: number, id: string = "r1"): BanzukeEntry {
 function perf(
   wins: number,
   losses: number,
-  extras: Partial<BashoPerformance> = {},
+  extras: Partial<BashoPerformance> = {}
 ): BashoPerformance {
   return { rikishiId: "r1", wins, losses, ...extras };
 }

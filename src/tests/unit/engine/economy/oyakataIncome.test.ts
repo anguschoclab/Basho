@@ -3,8 +3,6 @@ import { calculateHeyaWeeklyFinances } from "@/engine/systems/economy/FinanceCal
 import { OYAKATA_SALARY_MONTHLY, JSA_STABLE_WEEKLY_GRANT } from "@/constants/engine/economic";
 import { makeMockHeya, makeMockWorld } from "../utils";
 
- 
-
 describe("Oyakata salary as heya income", () => {
   it("zero-wrestler heya earns at least ¥350K/week (oyakata ¥300K + JSA grant ¥50K)", () => {
     const heya = makeMockHeya("heya-1", {

@@ -5,8 +5,6 @@
  * Each transformer handles a specific domain of rikishi data.
  */
 
- 
-
 // Identity
 export { toIdentityDTO } from "./identity";
 
@@ -14,7 +12,13 @@ export { toIdentityDTO } from "./identity";
 export { toRankDTO, toStyleDTO } from "./rank";
 
 // Stats & Status
-export { toStatusDTO, toBandsDTO, toPerceivedStatsDTO, calculatePerceivedStats, toDescriptorDTO } from "./stats";
+export {
+  toStatusDTO,
+  toBandsDTO,
+  toPerceivedStatsDTO,
+  calculatePerceivedStats,
+  toDescriptorDTO,
+} from "./stats";
 export { calculateInjurySummary } from "./injury";
 
 // Career

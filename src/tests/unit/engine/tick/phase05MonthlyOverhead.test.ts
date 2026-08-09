@@ -80,7 +80,11 @@ describe("phase05_monthly_boundary — runway band excludes JSA salaries from bu
     // Funds after deductions = 20,000,000 - 1,500,000 - 450,000 = 18,050,000
     // Pre-fix runway = 18,050,000 / 5,250,000 ≈ 3.44 → TIGHT
     // Post-fix runway = 18,050,000 / 1,950,000 ≈ 9.26 → COMFORTABLE
-    const r1 = mockRikishi("r-yoko", { rank: "yokozuna", division: "makuuchi", heyaId: "heya-fix1" });
+    const r1 = mockRikishi("r-yoko", {
+      rank: "yokozuna",
+      division: "makuuchi",
+      heyaId: "heya-fix1",
+    });
     const rikishiMap = new Map([["r-yoko", r1]]);
 
     const heya = makeMockHeya("heya-fix1", {
@@ -112,7 +116,11 @@ describe("phase05_monthly_boundary — NPC investment uses overhead-only burn", 
     // maintenance = (50+50+50) * 3000 = 450,000
     // Pre-fix burn = 5,250,000 → runway = 23,050,000 / 5,250,000 ≈ 4.39 → ≤ 6, no invest
     // Post-fix burn = 1,950,000 → runway = 23,050,000 / 1,950,000 ≈ 11.82 → > 6, invests
-    const r1 = mockRikishi("r-yoko-npc", { rank: "yokozuna", division: "makuuchi", heyaId: "heya-npc" });
+    const r1 = mockRikishi("r-yoko-npc", {
+      rank: "yokozuna",
+      division: "makuuchi",
+      heyaId: "heya-npc",
+    });
     const rikishiMap = new Map([["r-yoko-npc", r1]]);
 
     const heya = makeMockHeya("heya-npc", {

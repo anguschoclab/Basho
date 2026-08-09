@@ -5,7 +5,7 @@ import { join } from "path";
 const DIST_DIR = join(import.meta.dirname, "../../../..", "dist", "assets");
 
 const BUDGETS: Record<string, number> = {
-  "index": 500_000,
+  index: 500_000,
   "engine-core": 500_000,
   "engine-systems": 500_000,
   "engine-tick": 500_000,
@@ -33,7 +33,10 @@ function findChunk(prefix: string): string | null {
 
 describe("bundle size budget", () => {
   it("dist/assets exists (run `bun run build` before this test)", () => {
-    expect(existsSync(DIST_DIR), "dist/assets directory not found — run `bun run build` first").toBe(true);
+    expect(
+      existsSync(DIST_DIR),
+      "dist/assets directory not found — run `bun run build` first"
+    ).toBe(true);
   });
 
   for (const [prefix, maxBytes] of Object.entries(BUDGETS)) {
@@ -44,7 +47,10 @@ describe("bundle size budget", () => {
         return;
       }
       const size = statSync(join(DIST_DIR, chunk)).size;
-      expect(size, `${chunk} is ${(size / 1_000_000).toFixed(2)} MB, exceeds budget of ${(maxBytes / 1_000_000).toFixed(1)} MB`).toBeLessThanOrEqual(maxBytes);
+      expect(
+        size,
+        `${chunk} is ${(size / 1_000_000).toFixed(2)} MB, exceeds budget of ${(maxBytes / 1_000_000).toFixed(1)} MB`
+      ).toBeLessThanOrEqual(maxBytes);
     });
   }
 });

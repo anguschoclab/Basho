@@ -142,7 +142,10 @@ export default function BanzukePage() {
     if (world.playerHeyaId) {
       const heya = getPlayerHeya(world);
       if (heya) {
-        const newReputation = Math.max(0, Math.min(100, (heya.reputation ?? 50) + effects.reputation));
+        const newReputation = Math.max(
+          0,
+          Math.min(100, (heya.reputation ?? 50) + effects.reputation)
+        );
         updateWorld(updateHeyaInWorld(world, world.playerHeyaId, { reputation: newReputation }));
       }
     }

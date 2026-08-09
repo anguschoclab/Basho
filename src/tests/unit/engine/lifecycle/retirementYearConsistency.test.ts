@@ -11,7 +11,7 @@ describe("retirementYearConsistency — all paths stamp world.year", () => {
     const heya = makeMockHeya("heya-1", { rikishiIds: ["r45a"] });
     const world = makeMockWorld({
       year: 2050,
-      calendar: { currentWeek: 1, },
+      calendar: { currentWeek: 1 },
       seed: "test-career-year",
     });
     world.rikishi.set("r45a", r);
@@ -30,7 +30,7 @@ describe("retirementYearConsistency — all paths stamp world.year", () => {
     const heya = makeMockHeya("heya-2", { rikishiIds: ["r45b"] });
     const world = makeMockWorld({
       year: 2050,
-      calendar: { currentWeek: 1, },
+      calendar: { currentWeek: 1 },
       seed: "test-gov-year",
     });
     world.rikishi.set("r45b", r);

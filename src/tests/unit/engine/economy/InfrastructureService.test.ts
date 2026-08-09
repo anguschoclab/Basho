@@ -168,7 +168,9 @@ describe("InfrastructureService", () => {
     });
 
     it("returns true for an unexpected reason string", () => {
-      expect(isUnexpectedFailureReason("Insufficient presence in mongolia. Need 80, have 10.")).toBe(true);
+      expect(
+        isUnexpectedFailureReason("Insufficient presence in mongolia. Need 80, have 10.")
+      ).toBe(true);
     });
   });
 

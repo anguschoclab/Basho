@@ -1,4 +1,3 @@
- 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { bashoSlice } from "@/contexts/bashoSlice";
 import type { GameState, GameAction } from "@/contexts/gameTypes";
@@ -9,7 +8,12 @@ vi.mock("@/contexts/gameHelpers", () => ({
   autosaveWithSignal: vi.fn(),
 }));
 
-function makeMatch(boutId: string, day: number, eastId: string = "east", westId: string = "west"): MatchSchedule {
+function makeMatch(
+  boutId: string,
+  day: number,
+  eastId: string = "east",
+  westId: string = "west"
+): MatchSchedule {
   return { boutId, day, eastRikishiId: eastId, westRikishiId: westId };
 }
 
@@ -29,22 +33,75 @@ function makeState(matches: MatchSchedule[], day: number = 1): GameState {
     kinboshiThisBasho: {},
   };
   const eastRikishi = MockFactory.createRikishi("east", {
-    division: "makuuchi", rank: "maegashira", rankNumber: 1, side: "east",
-    heyaId: "test-heya", careerWins: 0, careerLosses: 0,
-    currentBashoWins: 0, currentBashoLosses: 0,
-    stats: { power: 60, speed: 60, technique: 60, weight: 140, stamina: 60, mental: 60, adaptability: 60, balance: 60, aggression: 60, experience: 10, achievements: { kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0, specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 }, mochikyukinPoints: 0 } },
+    division: "makuuchi",
+    rank: "maegashira",
+    rankNumber: 1,
+    side: "east",
+    heyaId: "test-heya",
+    careerWins: 0,
+    careerLosses: 0,
+    currentBashoWins: 0,
+    currentBashoLosses: 0,
+    stats: {
+      power: 60,
+      speed: 60,
+      technique: 60,
+      weight: 140,
+      stamina: 60,
+      mental: 60,
+      adaptability: 60,
+      balance: 60,
+      aggression: 60,
+      experience: 10,
+      achievements: {
+        kinboshiEarned: 0,
+        ginboshiEarned: 0,
+        kinboshiConceded: 0,
+        ginboshiConceded: 0,
+        specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
+        mochikyukinPoints: 0,
+      },
+    },
   });
   const westRikishi = MockFactory.createRikishi("west", {
-    division: "makuuchi", rank: "maegashira", rankNumber: 2, side: "west",
-    heyaId: "test-heya", careerWins: 0, careerLosses: 0,
-    currentBashoWins: 0, currentBashoLosses: 0,
-    stats: { power: 60, speed: 60, technique: 60, weight: 140, stamina: 60, mental: 60, adaptability: 60, balance: 60, aggression: 60, experience: 10, achievements: { kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0, specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 }, mochikyukinPoints: 0 } },
+    division: "makuuchi",
+    rank: "maegashira",
+    rankNumber: 2,
+    side: "west",
+    heyaId: "test-heya",
+    careerWins: 0,
+    careerLosses: 0,
+    currentBashoWins: 0,
+    currentBashoLosses: 0,
+    stats: {
+      power: 60,
+      speed: 60,
+      technique: 60,
+      weight: 140,
+      stamina: 60,
+      mental: 60,
+      adaptability: 60,
+      balance: 60,
+      aggression: 60,
+      experience: 10,
+      achievements: {
+        kinboshiEarned: 0,
+        ginboshiEarned: 0,
+        kinboshiConceded: 0,
+        ginboshiConceded: 0,
+        specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
+        mochikyukinPoints: 0,
+      },
+    },
   });
   const heya = MockFactory.createHeya("test-heya", { rikishiIds: ["east", "west"] });
   const world = MockFactory.createWorld({
     currentBasho: basho,
     cyclePhase: "active_basho",
-    rikishi: new Map([["east", eastRikishi], ["west", westRikishi]]),
+    rikishi: new Map([
+      ["east", eastRikishi],
+      ["west", westRikishi],
+    ]),
     heyas: new Map([["test-heya", heya]]),
     sponsorPool: { sponsors: new Map(), koenkais: new Map() } as any,
     rivalriesState: { pairs: {}, version: "1.0.0" },
@@ -78,7 +135,12 @@ describe("bashoSlice - indexing and bout result handling", () => {
   });
 
   it("Test 5.2: SIMULATE_ALL_BOUTS does not skip bouts due to index mismatch", () => {
-    const matches = [makeMatch("b1", 1), makeMatch("b2", 1), makeMatch("b3", 1), makeMatch("b4", 1)];
+    const matches = [
+      makeMatch("b1", 1),
+      makeMatch("b2", 1),
+      makeMatch("b3", 1),
+      makeMatch("b4", 1),
+    ];
     const state = makeState(matches);
 
     const action: GameAction = { type: "SIMULATE_ALL_BOUTS" };

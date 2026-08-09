@@ -72,7 +72,11 @@ export const calculatePerceivedStats = toPerceivedStatsDTO;
 /**
  * Transform descriptors and potential bands.
  */
-export function toDescriptorDTO(r: Rikishi, rng: SeededRNG, world?: WorldState): RikishiDescriptorDTO {
+export function toDescriptorDTO(
+  r: Rikishi,
+  rng: SeededRNG,
+  world?: WorldState
+): RikishiDescriptorDTO {
   const age = world ? world.year - r.birthYear : 0;
   return {
     descriptor: toRikishiDescriptor(rng, r, r.descriptor),

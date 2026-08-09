@@ -33,7 +33,8 @@ import { RNGRegistry } from "../../core/RNGRegistry";
 
 export function ensureCandidatePoolState(world: WorldState): TalentPoolWorldState {
   if (!world.candidatePool) {
-    world.candidatePool = { // @world-builder
+    world.candidatePool = {
+      // @world-builder
       version: "1.0.0",
       lastYearlyRefreshYear: world.year ?? DEFAULT_START_YEAR,
       candidates: {},
@@ -134,9 +135,19 @@ export function simulateNPCInterest(world: WorldState): StateImpact {
         const probability = 0.15 + talentFactor + repFactor;
         if (rng.next() < probability) {
           const interestBand: SuitorInterestBand =
-            candidate.talentSeed > 80 ? "all_in" : candidate.talentSeed > 65 ? "high" : candidate.talentSeed > 45 ? "medium" : "low";
+            candidate.talentSeed > 80
+              ? "all_in"
+              : candidate.talentSeed > 65
+                ? "high"
+                : candidate.talentSeed > 45
+                  ? "medium"
+                  : "low";
           const offerType: SuitorOfferType =
-            interestBand === "all_in" ? "aggressive" : interestBand === "high" ? "prestige_pitch" : "standard";
+            interestBand === "all_in"
+              ? "aggressive"
+              : interestBand === "high"
+                ? "prestige_pitch"
+                : "standard";
           suitors.push({
             heyaId: npc.id,
             interestBand,
@@ -256,7 +267,9 @@ export function tickWeekCandidatePool(world: WorldState): StateImpact {
     if (!candidate) continue;
     if (candidate.availabilityState !== "in_talks") continue;
 
-    const hasExpiredDeadline = candidate.competingSuitors.some((s) => currentWeek >= s.deadlineWeek);
+    const hasExpiredDeadline = candidate.competingSuitors.some(
+      (s) => currentWeek >= s.deadlineWeek
+    );
     if (!hasExpiredDeadline) continue;
 
     // Resolve: pick the suitor with the highest interest band
@@ -290,7 +303,11 @@ export function tickWeekCandidatePool(world: WorldState): StateImpact {
     for (const id in nextCandidates) {
       if (!Object.prototype.hasOwnProperty.call(nextCandidates, id)) continue;
       const mainCandidate = tp.candidates[id];
-      if (!mainCandidate || mainCandidate.availabilityState === "signed" || mainCandidate.availabilityState === "withdrawn") {
+      if (
+        !mainCandidate ||
+        mainCandidate.availabilityState === "signed" ||
+        mainCandidate.availabilityState === "withdrawn"
+      ) {
         removeSet.add(id);
       }
     }

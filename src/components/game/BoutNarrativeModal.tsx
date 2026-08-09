@@ -42,7 +42,11 @@ const PHASE_STYLE: Record<string, { label: string; color: string; bg: string }> 
   post_bout: { label: "後取", color: "text-accent", bg: "bg-accent/10 border-accent/20" },
   replay: { label: "再放", color: "text-accent", bg: "bg-accent/10 border-accent/20" },
   interview: { label: "会見", color: "text-warning", bg: "bg-warning/10 border-warning/20" },
-  mono_ii: { label: "物言", color: "text-destructive", bg: "bg-destructive/10 border-destructive/20" },
+  mono_ii: {
+    label: "物言",
+    color: "text-destructive",
+    bg: "bg-destructive/10 border-destructive/20",
+  },
   award: { label: "殊勲", color: "text-success", bg: "bg-success/10 border-success/20" },
   ceremony: { label: "礼", color: "text-muted-foreground", bg: "bg-muted/10 border-muted/20" },
   closing: { label: "結び", color: "text-primary", bg: "bg-primary/10 border-primary/20" },

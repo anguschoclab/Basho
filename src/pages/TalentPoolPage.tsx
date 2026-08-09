@@ -80,7 +80,7 @@ export default function TalentPoolPage() {
   const sendCommand = useGameStore((s) => s.sendCommand);
 
   const playerHeyaId = world?.playerHeyaId;
-  const playerHeya = world ? getPlayerHeya(world) ?? null : null;
+  const playerHeya = world ? (getPlayerHeya(world) ?? null) : null;
   const foreignCount = useMemo(() => {
     if (!world || !playerHeyaId) return 0;
     return talentpool.getForeignCountInHeya(world, playerHeyaId);
@@ -206,7 +206,8 @@ export default function TalentPoolPage() {
                   <div key={s.pool} className="text-xs">
                     <span className="font-medium">{poolLabel(s.pool)}</span>
                     <span className="text-muted-foreground">
-                      {" "}: {s.visible} visible / {s.hidden} hidden
+                      {" "}
+                      : {s.visible} visible / {s.hidden} hidden
                     </span>
                   </div>
                 ))}

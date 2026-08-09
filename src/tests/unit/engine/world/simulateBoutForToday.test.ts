@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { simulateBoutForToday } from "@/engine/world";
 import type { WorldState } from "@/engine/types/world";
@@ -64,12 +63,20 @@ function makeWorldWithMatches(
     ]),
     currentBasho: basho,
     cyclePhase: "active_basho",
-    sponsorPool: { sponsors: new Map(), koenkais: new Map() } as unknown as import("@/engine/types/sponsors").SponsorPool,
+    sponsorPool: {
+      sponsors: new Map(),
+      koenkais: new Map(),
+    } as unknown as import("@/engine/types/sponsors").SponsorPool,
     rivalriesState: { pairs: {}, version: "1.0.0" },
   });
 }
 
-function makeMatch(boutId: string, day: number, eastId: string = "east", westId: string = "west"): MatchSchedule {
+function makeMatch(
+  boutId: string,
+  day: number,
+  eastId: string = "east",
+  westId: string = "west"
+): MatchSchedule {
   return { boutId, day, eastRikishiId: eastId, westRikishiId: westId };
 }
 
@@ -101,10 +108,7 @@ describe("simulateBoutForToday", () => {
   });
 
   it("Test 2.4: with index 0 after one bout resolved simulates the second match", () => {
-    const matches = [
-      makeMatch("b1", 1),
-      makeMatch("b2", 1),
-    ];
+    const matches = [makeMatch("b1", 1), makeMatch("b2", 1)];
     // Mark b1 as already resolved
     matches[0].result = {
       boutId: "b1",

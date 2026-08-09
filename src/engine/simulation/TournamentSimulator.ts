@@ -95,7 +95,13 @@ export function simulateEntireBasho(
 
       if (!east || !west) continue;
 
-      const eitherAbsent = east.injured || west.injured || east.isKyujo || west.isKyujo || east.isRetired || west.isRetired;
+      const eitherAbsent =
+        east.injured ||
+        west.injured ||
+        east.isKyujo ||
+        west.isKyujo ||
+        east.isRetired ||
+        west.isRetired;
       if (eitherAbsent) {
         // Fusen-sho / Fusen-paku (standardization point)
         const eastAbsent = east.injured || east.isKyujo || east.isRetired;
@@ -164,9 +170,19 @@ export function simulateEntireBasho(
   }
 
   // Determine yusho winner with canonical tie-breaking
-  const sortedStandings: Array<{ id: string; rikishi: ReturnType<typeof getRikishi>; wins: number; losses: number }> = [];
+  const sortedStandings: Array<{
+    id: string;
+    rikishi: ReturnType<typeof getRikishi>;
+    wins: number;
+    losses: number;
+  }> = [];
   for (const [id, stats] of standings.entries()) {
-    sortedStandings.push({ id, rikishi: getRikishi(workingWorld, id), wins: stats.wins, losses: stats.losses });
+    sortedStandings.push({
+      id,
+      rikishi: getRikishi(workingWorld, id),
+      wins: stats.wins,
+      losses: stats.losses,
+    });
   }
   const finalStandings = sortStandings(sortedStandings, (a, b) => stableTieBreak(a.id, b.id));
 

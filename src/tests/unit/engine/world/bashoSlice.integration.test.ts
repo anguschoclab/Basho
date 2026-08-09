@@ -8,15 +8,35 @@ import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 
 function makeRikishi(id: string, overrides: Partial<Rikishi> = {}): Rikishi {
   return MockFactory.createRikishi(id, {
-    division: "makuuchi", rank: "maegashira", rankNumber: 1, side: "east",
-    careerWins: 10, careerLosses: 5, currentBashoWins: 0, currentBashoLosses: 0,
+    division: "makuuchi",
+    rank: "maegashira",
+    rankNumber: 1,
+    side: "east",
+    careerWins: 10,
+    careerLosses: 5,
+    currentBashoWins: 0,
+    currentBashoLosses: 0,
     heyaId: "test-heya",
-    stats: { power: 60, speed: 60, technique: 60, weight: 140, stamina: 60, mental: 60, adaptability: 60, balance: 60, aggression: 60, experience: 10 },
+    stats: {
+      power: 60,
+      speed: 60,
+      technique: 60,
+      weight: 140,
+      stamina: 60,
+      mental: 60,
+      adaptability: 60,
+      balance: 60,
+      aggression: 60,
+      experience: 10,
+    },
     ...overrides,
   });
 }
 
-function makeWorld(day: number = 1, matchesPerDay: number = 1): ReturnType<typeof MockFactory.createWorld> {
+function makeWorld(
+  day: number = 1,
+  matchesPerDay: number = 1
+): ReturnType<typeof MockFactory.createWorld> {
   const east = makeRikishi("east");
   const west = makeRikishi("west", { side: "west" });
   const matches: MatchSchedule[] = [];
@@ -26,16 +46,28 @@ function makeWorld(day: number = 1, matchesPerDay: number = 1): ReturnType<typeo
     }
   }
   const basho: BashoState = {
-    id: "test-basho", year: 2026, bashoNumber: 1, bashoName: "hatsu" as BashoName,
-    day, matches, standings: new Map([
+    id: "test-basho",
+    year: 2026,
+    bashoNumber: 1,
+    bashoName: "hatsu" as BashoName,
+    day,
+    matches,
+    standings: new Map([
       ["east", { wins: 0, losses: 0 }],
       ["west", { wins: 0, losses: 0 }],
-    ]), isActive: true,
+    ]),
+    isActive: true,
   };
   return MockFactory.createWorld({
-    rikishi: new Map([["east", east], ["west", west]]),
-    heyas: new Map([["test-heya", MockFactory.createHeya("test-heya", { rikishiIds: ["east", "west"] })]]),
-    currentBasho: basho, cyclePhase: "active_basho",
+    rikishi: new Map([
+      ["east", east],
+      ["west", west],
+    ]),
+    heyas: new Map([
+      ["test-heya", MockFactory.createHeya("test-heya", { rikishiIds: ["east", "west"] })],
+    ]),
+    currentBasho: basho,
+    cyclePhase: "active_basho",
     sponsorPool: { sponsors: new Map(), koenkais: new Map() } as any,
     rivalriesState: { pairs: {}, version: "1.0.0" },
   });

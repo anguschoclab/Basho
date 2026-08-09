@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { mockRikishi } from "../utils";
 import type { Rikishi } from "@/engine/types/rikishi";
@@ -71,7 +70,12 @@ describe("in-bout counter activation (2.2)", () => {
     const entry = {
       phase: "counter_tactic" as const,
       clock: 0,
-      data: { event: "counter_tactic", side: "east" as const, counterFamily: "push" as const, attackerFamily: "push" as const },
+      data: {
+        event: "counter_tactic",
+        side: "east" as const,
+        counterFamily: "push" as const,
+        attackerFamily: "push" as const,
+      },
     };
     expect(entry.phase).toBe("counter_tactic");
   });

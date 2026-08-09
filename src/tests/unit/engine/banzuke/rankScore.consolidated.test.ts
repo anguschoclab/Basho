@@ -73,9 +73,7 @@ describe("decomposed rankScore parity with monolith", () => {
       for (const num of [undefined, 1, 5]) {
         const label = `${rank} ${side} #${num ?? "undefined"}`;
         it(label, () => {
-          expect(decomposedRankScore(rank, num, side)).toBe(
-            monolithRankScore(rank, num, side)
-          );
+          expect(decomposedRankScore(rank, num, side)).toBe(monolithRankScore(rank, num, side));
         });
       }
     }

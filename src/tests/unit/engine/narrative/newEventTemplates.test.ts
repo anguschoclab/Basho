@@ -1,4 +1,3 @@
- 
 import { describe, it, expect, beforeAll } from "vitest";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { rngFromSeed } from "@/engine/rng";
@@ -54,17 +53,25 @@ describe("New Event Narrative Templates", () => {
 
   describe("Fighting name conferred early", () => {
     it("fighting_name_conferred_early_title resolves", () => {
-      const result = BardEngine.resolve(rng, "events.narrative.fighting_name_conferred_early_title", {
-        SHIKONA: "Early Name",
-      });
+      const result = BardEngine.resolve(
+        rng,
+        "events.narrative.fighting_name_conferred_early_title",
+        {
+          SHIKONA: "Early Name",
+        }
+      );
       expect(result.text).toBeTruthy();
       expect(result.text).not.toContain("[MISSING:");
     });
 
     it("fighting_name_conferred_early_summary resolves", () => {
-      const result = BardEngine.resolve(rng, "events.narrative.fighting_name_conferred_early_summary", {
-        SHIKONA: "Early Name",
-      });
+      const result = BardEngine.resolve(
+        rng,
+        "events.narrative.fighting_name_conferred_early_summary",
+        {
+          SHIKONA: "Early Name",
+        }
+      );
       expect(result.text).toBeTruthy();
       expect(result.text).not.toContain("[MISSING:");
     });
@@ -120,9 +127,13 @@ describe("New Event Narrative Templates", () => {
     });
 
     it("veteran_decline_acceptance_summary resolves", () => {
-      const result = BardEngine.resolve(rng, "events.narrative.veteran_decline_acceptance_summary", {
-        SHIKONA: "Old Timer",
-      });
+      const result = BardEngine.resolve(
+        rng,
+        "events.narrative.veteran_decline_acceptance_summary",
+        {
+          SHIKONA: "Old Timer",
+        }
+      );
       expect(result.text).toBeTruthy();
       expect(result.text).not.toContain("[MISSING:");
     });
@@ -138,11 +149,15 @@ describe("New Event Narrative Templates", () => {
     });
 
     it("retirement_favorite_memory_summary resolves with OPPONENT and BASHO", () => {
-      const result = BardEngine.resolve(rng, "events.narrative.retirement_favorite_memory_summary", {
-        SHIKONA: "Retiring Riki",
-        OPPONENT: "Old Rival",
-        BASHO: "Hatsu",
-      });
+      const result = BardEngine.resolve(
+        rng,
+        "events.narrative.retirement_favorite_memory_summary",
+        {
+          SHIKONA: "Retiring Riki",
+          OPPONENT: "Old Rival",
+          BASHO: "Hatsu",
+        }
+      );
       expect(result.text).toBeTruthy();
       expect(result.text).toContain("Old Rival");
       expect(result.text).toContain("Hatsu");
@@ -152,8 +167,14 @@ describe("New Event Narrative Templates", () => {
 
   describe("Post-retirement paths", () => {
     it("retirement_post_path_oyakata resolves", () => {
-      const title = BardEngine.resolve(rng, "events.narrative.retirement_post_path_oyakata_title", { SHIKONA: "Coach" });
-      const summary = BardEngine.resolve(rng, "events.narrative.retirement_post_path_oyakata_summary", { SHIKONA: "Coach" });
+      const title = BardEngine.resolve(rng, "events.narrative.retirement_post_path_oyakata_title", {
+        SHIKONA: "Coach",
+      });
+      const summary = BardEngine.resolve(
+        rng,
+        "events.narrative.retirement_post_path_oyakata_summary",
+        { SHIKONA: "Coach" }
+      );
       expect(title.text).toBeTruthy();
       expect(summary.text).toBeTruthy();
       expect(title.text).not.toContain("[MISSING:");
@@ -161,8 +182,14 @@ describe("New Event Narrative Templates", () => {
     });
 
     it("retirement_post_path_media resolves", () => {
-      const title = BardEngine.resolve(rng, "events.narrative.retirement_post_path_media_title", { SHIKONA: "Pundit" });
-      const summary = BardEngine.resolve(rng, "events.narrative.retirement_post_path_media_summary", { SHIKONA: "Pundit" });
+      const title = BardEngine.resolve(rng, "events.narrative.retirement_post_path_media_title", {
+        SHIKONA: "Pundit",
+      });
+      const summary = BardEngine.resolve(
+        rng,
+        "events.narrative.retirement_post_path_media_summary",
+        { SHIKONA: "Pundit" }
+      );
       expect(title.text).toBeTruthy();
       expect(summary.text).toBeTruthy();
       expect(title.text).not.toContain("[MISSING:");
@@ -170,8 +197,14 @@ describe("New Event Narrative Templates", () => {
     });
 
     it("retirement_post_path_coach resolves", () => {
-      const title = BardEngine.resolve(rng, "events.narrative.retirement_post_path_coach_title", { SHIKONA: "Hometown" });
-      const summary = BardEngine.resolve(rng, "events.narrative.retirement_post_path_coach_summary", { SHIKONA: "Hometown" });
+      const title = BardEngine.resolve(rng, "events.narrative.retirement_post_path_coach_title", {
+        SHIKONA: "Hometown",
+      });
+      const summary = BardEngine.resolve(
+        rng,
+        "events.narrative.retirement_post_path_coach_summary",
+        { SHIKONA: "Hometown" }
+      );
       expect(title.text).toBeTruthy();
       expect(summary.text).toBeTruthy();
       expect(title.text).not.toContain("[MISSING:");
@@ -179,8 +212,14 @@ describe("New Event Narrative Templates", () => {
     });
 
     it("retirement_post_path_leave resolves", () => {
-      const title = BardEngine.resolve(rng, "events.narrative.retirement_post_path_leave_title", { SHIKONA: "Gone" });
-      const summary = BardEngine.resolve(rng, "events.narrative.retirement_post_path_leave_summary", { SHIKONA: "Gone" });
+      const title = BardEngine.resolve(rng, "events.narrative.retirement_post_path_leave_title", {
+        SHIKONA: "Gone",
+      });
+      const summary = BardEngine.resolve(
+        rng,
+        "events.narrative.retirement_post_path_leave_summary",
+        { SHIKONA: "Gone" }
+      );
       expect(title.text).toBeTruthy();
       expect(summary.text).toBeTruthy();
       expect(title.text).not.toContain("[MISSING:");

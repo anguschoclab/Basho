@@ -13,7 +13,7 @@ function jonokuchiEntry(id: string = "r1"): BanzukeEntry {
 function perf(
   wins: number,
   losses: number,
-  extras: Partial<BashoPerformance> = {},
+  extras: Partial<BashoPerformance> = {}
 ): BashoPerformance {
   return { rikishiId: "r1", wins, losses, ...extras };
 }
@@ -24,62 +24,32 @@ const NONE = new Set<string>();
 
 describe("Jonokuchi special promotion (bestTierAllowed)", () => {
   it("7-0 yusho at jonokuchi → tier 8 (can reach sandanme)", () => {
-    const result = bestTierAllowed(
-      jonokuchiEntry(),
-      perf(7, 0, { yusho: true }),
-      undefined,
-      NONE,
-    );
+    const result = bestTierAllowed(jonokuchiEntry(), perf(7, 0, { yusho: true }), undefined, NONE);
     expect(result).toBeLessThanOrEqual(8);
   });
 
   it("6-1 yusho at jonokuchi → tier 8 (can reach sandanme)", () => {
-    const result = bestTierAllowed(
-      jonokuchiEntry(),
-      perf(6, 1, { yusho: true }),
-      undefined,
-      NONE,
-    );
+    const result = bestTierAllowed(jonokuchiEntry(), perf(6, 1, { yusho: true }), undefined, NONE);
     expect(result).toBeLessThanOrEqual(8);
   });
 
   it("5-2 kachi-koshi at jonokuchi (no yusho) → tier 9 (can reach jonidan)", () => {
-    const result = bestTierAllowed(
-      jonokuchiEntry(),
-      perf(5, 2),
-      undefined,
-      NONE,
-    );
+    const result = bestTierAllowed(jonokuchiEntry(), perf(5, 2), undefined, NONE);
     expect(result).toBeLessThanOrEqual(9);
   });
 
   it("4-3 kachi-koshi at jonokuchi → tier 9 (can reach jonidan)", () => {
-    const result = bestTierAllowed(
-      jonokuchiEntry(),
-      perf(4, 3),
-      undefined,
-      NONE,
-    );
+    const result = bestTierAllowed(jonokuchiEntry(), perf(4, 3), undefined, NONE);
     expect(result).toBeLessThanOrEqual(9);
   });
 
   it("3-4 make-koshi at jonokuchi → tier 10 (stays in jonokuchi)", () => {
-    const result = bestTierAllowed(
-      jonokuchiEntry(),
-      perf(3, 4),
-      undefined,
-      NONE,
-    );
+    const result = bestTierAllowed(jonokuchiEntry(), perf(3, 4), undefined, NONE);
     expect(result).toBe(10);
   });
 
   it("0-7 at jonokuchi → tier 10 (stays in jonokuchi)", () => {
-    const result = bestTierAllowed(
-      jonokuchiEntry(),
-      perf(0, 7),
-      undefined,
-      NONE,
-    );
+    const result = bestTierAllowed(jonokuchiEntry(), perf(0, 7), undefined, NONE);
     expect(result).toBe(10);
   });
 });

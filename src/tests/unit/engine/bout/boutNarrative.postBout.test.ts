@@ -5,8 +5,6 @@ import { mockRikishi } from "../utils";
 import { makeBoutResult, makeBoutWorld } from "@/tests/helpers/boutTestHelpers";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
 
- 
-
 function getPostBoutLines(result: BoutResult) {
   return (result.pbpLines ?? []).filter((l) => l.phase === "post_bout");
 }
@@ -25,8 +23,16 @@ describe("generateBoutNarrative — post-bout context", () => {
   // ── T10: Post-bout records ──
   describe("T10: post-bout records", () => {
     it("T10.1: winner improves → post_bout line with winner name", () => {
-      const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 8, currentBashoLosses: 2 });
-      const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 7 });
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        currentBashoWins: 8,
+        currentBashoLosses: 2,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "Beta",
+        currentBashoWins: 3,
+        currentBashoLosses: 7,
+      });
       const world = makeBoutWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 10, "seed-post-1", world);
@@ -38,8 +44,18 @@ describe("generateBoutNarrative — post-bout context", () => {
 
     it("T10.3: winner reaches 8 wins → kachi-koshi line", () => {
       // For maegashira, kachi-koshi threshold is 8 wins
-      const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 8, currentBashoLosses: 5, rank: "maegashira" });
-      const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 5, currentBashoLosses: 8, rank: "maegashira" });
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        currentBashoWins: 8,
+        currentBashoLosses: 5,
+        rank: "maegashira",
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "Beta",
+        currentBashoWins: 5,
+        currentBashoLosses: 8,
+        rank: "maegashira",
+      });
       const world = makeBoutWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 14, "seed-kachi-1", world);
@@ -48,8 +64,16 @@ describe("generateBoutNarrative — post-bout context", () => {
     });
 
     it("T10.10: deterministic — same seed → same post_bout lines", () => {
-      const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 7, currentBashoLosses: 3 });
-      const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 4, currentBashoLosses: 6 });
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        currentBashoWins: 7,
+        currentBashoLosses: 3,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "Beta",
+        currentBashoWins: 4,
+        currentBashoLosses: 6,
+      });
       const world = makeBoutWorld(east, west);
       const r1 = makeBoutResult();
       const r2 = makeBoutResult();
@@ -61,8 +85,16 @@ describe("generateBoutNarrative — post-bout context", () => {
     });
 
     it("T10.11: no [MISSING:] tokens in post_bout lines", () => {
-      const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 8, currentBashoLosses: 3 });
-      const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 8 });
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        currentBashoWins: 8,
+        currentBashoLosses: 3,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "Beta",
+        currentBashoWins: 3,
+        currentBashoLosses: 8,
+      });
       const world = makeBoutWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 12, "seed-post-missing", world);
@@ -75,8 +107,18 @@ describe("generateBoutNarrative — post-bout context", () => {
   // ── T11: Career milestones ──
   describe("T11: career milestones", () => {
     it("T11.1: careerWins at 99 (pre-bout) → milestone line with 100 after win", () => {
-      const east = mockRikishi("r-east", { shikona: "Alpha", careerWins: 99, currentBashoWins: 5, currentBashoLosses: 3 });
-      const west = mockRikishi("r-west", { shikona: "Beta", careerWins: 50, currentBashoWins: 3, currentBashoLosses: 5 });
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        careerWins: 99,
+        currentBashoWins: 5,
+        currentBashoLosses: 3,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "Beta",
+        careerWins: 50,
+        currentBashoWins: 3,
+        currentBashoLosses: 5,
+      });
       const world = makeBoutWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 8, "seed-milestone-100", world);
@@ -86,8 +128,18 @@ describe("generateBoutNarrative — post-bout context", () => {
     });
 
     it("T11.3: careerWins = 100 (pre-bout, 101 post) → no milestone line", () => {
-      const east = mockRikishi("r-east", { shikona: "Alpha", careerWins: 100, currentBashoWins: 5, currentBashoLosses: 3 });
-      const west = mockRikishi("r-west", { shikona: "Beta", careerWins: 50, currentBashoWins: 3, currentBashoLosses: 5 });
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        careerWins: 100,
+        currentBashoWins: 5,
+        currentBashoLosses: 3,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "Beta",
+        careerWins: 50,
+        currentBashoWins: 3,
+        currentBashoLosses: 5,
+      });
       const world = makeBoutWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 8, "seed-milestone-99", world);
@@ -96,8 +148,18 @@ describe("generateBoutNarrative — post-bout context", () => {
     });
 
     it("T11.6: no [MISSING:] tokens in milestone lines", () => {
-      const east = mockRikishi("r-east", { shikona: "Alpha", careerWins: 199, currentBashoWins: 5, currentBashoLosses: 3 });
-      const west = mockRikishi("r-west", { shikona: "Beta", careerWins: 50, currentBashoWins: 3, currentBashoLosses: 5 });
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        careerWins: 199,
+        currentBashoWins: 5,
+        currentBashoLosses: 3,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "Beta",
+        careerWins: 50,
+        currentBashoWins: 3,
+        currentBashoLosses: 5,
+      });
       const world = makeBoutWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 8, "seed-milestone-missing", world);
@@ -110,8 +172,17 @@ describe("generateBoutNarrative — post-bout context", () => {
   // ── T15: Consecutive kachi-koshi ──
   describe("T15: consecutive kachi-koshi in post-bout", () => {
     it("T15.1: consecutiveKachiKoshi: 2 + winner reaches kachi-koshi → consecutive line in pre_bout", () => {
-      const east = mockRikishi("r-east", { shikona: "Alpha", consecutiveKachiKoshi: 2, currentBashoWins: 8, currentBashoLosses: 3 });
-      const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 8 });
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        consecutiveKachiKoshi: 2,
+        currentBashoWins: 8,
+        currentBashoLosses: 3,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "Beta",
+        currentBashoWins: 3,
+        currentBashoLosses: 8,
+      });
       const world = makeBoutWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 12, "seed-consec-post-1", world);
@@ -122,9 +193,17 @@ describe("generateBoutNarrative — post-bout context", () => {
     });
 
     it("T15.4: consecutiveKachiKoshi undefined → no error", () => {
-      const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 8, currentBashoLosses: 3 });
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        currentBashoWins: 8,
+        currentBashoLosses: 3,
+      });
       delete (east as any).consecutiveKachiKoshi;
-      const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 8 });
+      const west = mockRikishi("r-west", {
+        shikona: "Beta",
+        currentBashoWins: 3,
+        currentBashoLosses: 8,
+      });
       const world = makeBoutWorld(east, west);
       const result = makeBoutResult();
       expect(() => {
@@ -133,8 +212,17 @@ describe("generateBoutNarrative — post-bout context", () => {
     });
 
     it("T15.5: no [MISSING:] tokens", () => {
-      const east = mockRikishi("r-east", { shikona: "Alpha", consecutiveKachiKoshi: 3, currentBashoWins: 8, currentBashoLosses: 3 });
-      const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 3, currentBashoLosses: 8 });
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        consecutiveKachiKoshi: 3,
+        currentBashoWins: 8,
+        currentBashoLosses: 3,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "Beta",
+        currentBashoWins: 3,
+        currentBashoLosses: 8,
+      });
       const world = makeBoutWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 12, "seed-consec-missing", world);
@@ -149,8 +237,16 @@ describe("generateBoutNarrative — post-bout context", () => {
     it("T16.1: winner 4-3, loser 4-4 → both_even line emitted (both at 5-3 and 4-4... no, 5-3 vs 4-4 not even)", () => {
       // Winner: 4 wins + 1 = 5, 3 losses. Loser: 4 wins, 3 losses + 1 = 4.
       // 5 !== 4, so both_even should NOT fire
-      const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 4, currentBashoLosses: 3 });
-      const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 4, currentBashoLosses: 3 });
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        currentBashoWins: 4,
+        currentBashoLosses: 3,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "Beta",
+        currentBashoWins: 4,
+        currentBashoLosses: 3,
+      });
       const world = makeBoutWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 8, "seed-both-even-no", world);
@@ -161,8 +257,16 @@ describe("generateBoutNarrative — post-bout context", () => {
     it("T16.2: winner 3-4, loser 4-3 → both end 4-4 → both_even line emitted", () => {
       // Winner: 3 wins + 1 = 4, 4 losses. Loser: 4 wins, 3 losses + 1 = 4.
       // Both at 4-4 → both_even should fire
-      const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 3, currentBashoLosses: 4 });
-      const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 4, currentBashoLosses: 3 });
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        currentBashoWins: 3,
+        currentBashoLosses: 4,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "Beta",
+        currentBashoWins: 4,
+        currentBashoLosses: 3,
+      });
       const world = makeBoutWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 8, "seed-both-even-yes", world);
@@ -172,8 +276,16 @@ describe("generateBoutNarrative — post-bout context", () => {
     });
 
     it("T16.3: no [MISSING:] tokens in both_even lines", () => {
-      const east = mockRikishi("r-east", { shikona: "Alpha", currentBashoWins: 3, currentBashoLosses: 4 });
-      const west = mockRikishi("r-west", { shikona: "Beta", currentBashoWins: 4, currentBashoLosses: 3 });
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        currentBashoWins: 3,
+        currentBashoLosses: 4,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "Beta",
+        currentBashoWins: 4,
+        currentBashoLosses: 3,
+      });
       const world = makeBoutWorld(east, west);
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 8, "seed-both-even-missing", world);

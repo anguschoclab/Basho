@@ -14,7 +14,12 @@ import { mergeImpacts } from "../core/ImpactResolver";
 import { accumulateMochikyukinPoints } from "../systems/economy/MochikyukinService";
 import type { WorldState } from "../types/world";
 import type { StateImpact } from "../core/StateImpact";
-import { resolvePlayoffs, calculateStandings, calculateDivisionStandings, resolveDivisionPlayoffs } from "./PlayoffResolver";
+import {
+  resolvePlayoffs,
+  calculateStandings,
+  calculateDivisionStandings,
+  resolveDivisionPlayoffs,
+} from "./PlayoffResolver";
 import { distributePrizes, payBashoTeate, payKinboshiStipends } from "./PrizeDistribution";
 import { recordBashoHistory, checkYokozunaPromotions } from "./BashoHistory";
 import { getRikishi } from "../queries";
@@ -71,9 +76,7 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
     playoffMatches.push(...playoffResult.matches);
 
     const champ = getRikishi(world, yusho);
-    const playoffPbpLines = playoffResult.matches.flatMap(
-      (m) => m.result?.pbpLines ?? []
-    );
+    const playoffPbpLines = playoffResult.matches.flatMap((m) => m.result?.pbpLines ?? []);
     builder.logEvent(
       "BOUT_RESOLVED",
       "narrative",
@@ -100,7 +103,12 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
       // Record division yusho winner (top candidate, or playoff winner if playoff occurred)
       if (divStandings.topCandidates.length > 1) {
         divisionPlayoffCount++;
-        const divResult = resolveDivisionPlayoffs(world, basho, divStandings.topCandidates, division);
+        const divResult = resolveDivisionPlayoffs(
+          world,
+          basho,
+          divStandings.topCandidates,
+          division
+        );
         allDivisionPlayoffLines.push(...divResult.narrativeLines);
         playoffMatches.push(...divResult.matches);
         // Playoff winner is the last match's winner
@@ -118,7 +126,11 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
   // Schedule delay narrative if multiple division playoffs occurred OR total playoff bouts > 3
   const totalPlayoffBouts = playoffMatches.length;
   if (divisionPlayoffCount >= 2 || totalPlayoffBouts > 3) {
-    const scheduleRng = rngFromSeed(`schedule-delay-${basho.bashoName}-${world.year}`, "narrative", "playoff");
+    const scheduleRng = rngFromSeed(
+      `schedule-delay-${basho.bashoName}-${world.year}`,
+      "narrative",
+      "playoff"
+    );
     const delayLine = BardEngine.resolve(scheduleRng, "playoff.schedule_delay", {});
     if (delayLine.text) {
       allDivisionPlayoffLines.push({
@@ -147,7 +159,11 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
   }
 
   // Justice done narrative — if yusho winner suffered a monoii loss earlier in the basho
-  const justiceDoneRng = rngFromSeed(`justice-${basho.bashoName}-${world.year}`, "narrative", "playoff");
+  const justiceDoneRng = rngFromSeed(
+    `justice-${basho.bashoName}-${world.year}`,
+    "narrative",
+    "playoff"
+  );
   for (const match of basho.matches ?? []) {
     if (match.result?.monoii && match.result.loserRikishiId === yusho) {
       const r = getRikishi(world, yusho);
@@ -213,7 +229,11 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
   // Ozeki demotion comeback yusho detection
   const yushoWinner = getRikishi(world, yusho);
   if (yushoWinner?.wasDemotedFromOzeki === true) {
-    const comebackRng = rngFromSeed(`comeback-yusho-${yusho}-${basho.bashoName}-${world.year}`, "narrative", "comeback");
+    const comebackRng = rngFromSeed(
+      `comeback-yusho-${yusho}-${basho.bashoName}-${world.year}`,
+      "narrative",
+      "comeback"
+    );
     const comebackLine = BardEngine.resolve(comebackRng, "post_basho_press.ozeki_comeback_yusho", {
       SHIKONA: yushoWinner.shikona,
       rikishiId: yusho,
@@ -227,10 +247,14 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
         tags: ["comeback", "ozeki_demotion"],
       });
     }
-    const reflectionLine = BardEngine.resolve(comebackRng, "post_basho_press.ozeki_comeback_reflection", {
-      SHIKONA: yushoWinner.shikona,
-      rikishiId: yusho,
-    });
+    const reflectionLine = BardEngine.resolve(
+      comebackRng,
+      "post_basho_press.ozeki_comeback_reflection",
+      {
+        SHIKONA: yushoWinner.shikona,
+        rikishiId: yusho,
+      }
+    );
     if (reflectionLine.text) {
       comebackPbpLines.push({
         text: reflectionLine.text,

@@ -64,7 +64,14 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
     const maintenance = processFacilitiesMaintenance(world, heya, heyaUpdates, builder);
 
     // -- NPC Auto-Investment (uses overhead-only burn, not JSA salaries) --
-    processNpcAutoInvestment(world, heya, breakdown.heyaOverhead, maintenance, heyaUpdates, builder);
+    processNpcAutoInvestment(
+      world,
+      heya,
+      breakdown.heyaOverhead,
+      maintenance,
+      heyaUpdates,
+      builder
+    );
 
     // Runway Band Sync (overhead-only burn — JSA salaries don't leave heya.funds)
     const burn = Math.max(1, breakdown.heyaOverhead + maintenance);
@@ -131,7 +138,11 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
       .filter((r): r is NonNullable<typeof r> => r !== undefined)
       .filter((r) => isSekitoriDivision(r.division) && !r.isRetired);
     if (sekitoriParticipants.length > 0) {
-      const exhibitionImpact = simulateExhibitionBasho(world, jungyoEvent.name, sekitoriParticipants);
+      const exhibitionImpact = simulateExhibitionBasho(
+        world,
+        jungyoEvent.name,
+        sekitoriParticipants
+      );
       exhibitionImpacts.push(exhibitionImpact);
       // Log the exhibition tour event
       builder.logEvent("BASHO_STATUS", "basho", {

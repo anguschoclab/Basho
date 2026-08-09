@@ -269,11 +269,7 @@ describe("ImpactResolver", () => {
       } as any;
     }
 
-    function setupRikishi(
-      world: WorldState,
-      ids: string[],
-      heyaId: string = "h1"
-    ): void {
+    function setupRikishi(world: WorldState, ids: string[], heyaId: string = "h1"): void {
       for (const id of ids) {
         world.rikishi.set(id, mockRikishi(id, { heyaId } as never));
       }

@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 import type { PbpLine } from "@/engine/bout/boutNarrative";
@@ -34,13 +33,24 @@ describe("bout timeout narrative (8.5)", () => {
   it("bout_timeout log entry generates timeout narrative", () => {
     const east = mockRikishi("r1", { rank: "ozeki", division: "makuuchi" });
     const west = mockRikishi("r2", { rank: "ozeki", division: "makuuchi" });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]) } as unknown as WorldState;
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+    } as unknown as WorldState;
     const log: BoutLogEntry[] = [
-      { phase: "bout_timeout", clock: 480, data: {
-        eastForce: 30, westForce: 10,
-        eastMomentum: 5, westMomentum: 0,
-        decisionBasis: "east_stability",
-      }},
+      {
+        phase: "bout_timeout",
+        clock: 480,
+        data: {
+          eastForce: 30,
+          westForce: 10,
+          eastMomentum: 5,
+          westMomentum: 0,
+          decisionBasis: "east_stability",
+        },
+      },
     ];
     const result = makeBoutResult(log, { isTimeout: true });
 
@@ -54,13 +64,24 @@ describe("bout timeout narrative (8.5)", () => {
   it("east advantage timeout mentions east shikona", () => {
     const east = mockRikishi("r1", { rank: "ozeki", division: "makuuchi" });
     const west = mockRikishi("r2", { rank: "ozeki", division: "makuuchi" });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]) } as unknown as WorldState;
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+    } as unknown as WorldState;
     const log: BoutLogEntry[] = [
-      { phase: "bout_timeout", clock: 480, data: {
-        eastForce: 50, westForce: 5,
-        eastMomentum: 10, westMomentum: 0,
-        decisionBasis: "east_stability",
-      }},
+      {
+        phase: "bout_timeout",
+        clock: 480,
+        data: {
+          eastForce: 50,
+          westForce: 5,
+          eastMomentum: 10,
+          westMomentum: 0,
+          decisionBasis: "east_stability",
+        },
+      },
     ];
     const result = makeBoutResult(log, { isTimeout: true, winner: "east" });
 
@@ -75,13 +96,24 @@ describe("bout timeout narrative (8.5)", () => {
   it("west advantage timeout mentions west shikona", () => {
     const east = mockRikishi("r1", { rank: "ozeki", division: "makuuchi" });
     const west = mockRikishi("r2", { rank: "ozeki", division: "makuuchi" });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]) } as unknown as WorldState;
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+    } as unknown as WorldState;
     const log: BoutLogEntry[] = [
-      { phase: "bout_timeout", clock: 480, data: {
-        eastForce: 5, westForce: 50,
-        eastMomentum: 0, westMomentum: 10,
-        decisionBasis: "west_stability",
-      }},
+      {
+        phase: "bout_timeout",
+        clock: 480,
+        data: {
+          eastForce: 5,
+          westForce: 50,
+          eastMomentum: 0,
+          westMomentum: 10,
+          decisionBasis: "west_stability",
+        },
+      },
     ];
     const result = makeBoutResult(log, { isTimeout: true, winner: "west" });
 
@@ -96,7 +128,12 @@ describe("bout timeout narrative (8.5)", () => {
   it("no timeout narrative when no bout_timeout log entry", () => {
     const east = mockRikishi("r1", { rank: "ozeki", division: "makuuchi" });
     const west = mockRikishi("r2", { rank: "ozeki", division: "makuuchi" });
-    const world = { rikishi: new Map([["r1", east], ["r2", west]]) } as unknown as WorldState;
+    const world = {
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+    } as unknown as WorldState;
     const result = makeBoutResult([]);
 
     generateBoutNarrative(result, east, west, undefined, 7, "no-timeout-seed", world);

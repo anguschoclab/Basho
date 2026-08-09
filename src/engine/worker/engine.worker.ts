@@ -322,12 +322,7 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
     },
     INVEST_IN_FACILITY: (cmd) => {
       if (currentWorld) {
-        const impact = investInFacility(
-          currentWorld,
-          cmd.heyaId,
-          cmd.axis,
-          cmd.points
-        );
+        const impact = investInFacility(currentWorld, cmd.heyaId, cmd.axis, cmd.points);
         currentWorld = resolveImpacts(currentWorld, [impact]);
         syncAndDigest();
       }
@@ -345,11 +340,7 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
     },
     ASSIGN_MENTOR: (cmd) => {
       if (currentWorld) {
-        const { ok, impact } = assignMentor(
-          currentWorld,
-          cmd.apprenticeId,
-          cmd.mentorId
-        );
+        const { ok, impact } = assignMentor(currentWorld, cmd.apprenticeId, cmd.mentorId);
         if (!ok || !impact) return;
         currentWorld = resolveImpacts(currentWorld, [impact]);
         syncAndDigest();
@@ -377,47 +368,28 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
     },
     REMOVE_SPARRING_PAIR: (cmd) => {
       if (currentWorld) {
-        const impact = removeSparringPair(
-          currentWorld,
-          cmd.heyaId,
-          cmd.aId,
-          cmd.bId
-        );
+        const impact = removeSparringPair(currentWorld, cmd.heyaId, cmd.aId, cmd.bId);
         currentWorld = resolveImpacts(currentWorld, [impact]);
         syncAndDigest();
       }
     },
     BOOKMARK_ENTITY: (cmd) => {
       if (currentWorld) {
-        const impact = addBookmark(
-          currentWorld,
-          cmd.entityType,
-          cmd.entityId,
-          cmd.note
-        );
+        const impact = addBookmark(currentWorld, cmd.entityType, cmd.entityId, cmd.note);
         currentWorld = resolveImpacts(currentWorld, [impact]);
         syncWorld();
       }
     },
     UNBOOKMARK_ENTITY: (cmd) => {
       if (currentWorld) {
-        const impact = removeBookmark(
-          currentWorld,
-          cmd.entityType,
-          cmd.entityId
-        );
+        const impact = removeBookmark(currentWorld, cmd.entityType, cmd.entityId);
         currentWorld = resolveImpacts(currentWorld, [impact]);
         syncWorld();
       }
     },
     UPDATE_BOOKMARK_NOTE: (cmd) => {
       if (currentWorld) {
-        const impact = updateBookmarkNote(
-          currentWorld,
-          cmd.entityType,
-          cmd.entityId,
-          cmd.note
-        );
+        const impact = updateBookmarkNote(currentWorld, cmd.entityType, cmd.entityId, cmd.note);
         currentWorld = resolveImpacts(currentWorld, [impact]);
         syncWorld();
       }
@@ -549,7 +521,9 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
 
   try {
     // Explicit generic function type to assert that the handler will process the correct command.
-    const handler = COMMAND_HANDLERS[command.type] as ((cmd: EngineCommand) => void | Promise<void>) | undefined;
+    const handler = COMMAND_HANDLERS[command.type] as
+      | ((cmd: EngineCommand) => void | Promise<void>)
+      | undefined;
     if (handler) {
       await handler(command);
     } else {

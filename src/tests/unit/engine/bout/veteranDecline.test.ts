@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 import { mockRikishi } from "../utils";
@@ -44,7 +43,11 @@ function makeWorld(): WorldState {
   } as any;
 }
 
-function runNarrative(winnerDecline: string | undefined, loserDecline: string | undefined, winner: "east" | "west") {
+function runNarrative(
+  winnerDecline: string | undefined,
+  loserDecline: string | undefined,
+  winner: "east" | "west"
+) {
   const east = mockRikishi("east-1", {
     shikona: "EastMan",
     currentBashoWins: 5,
@@ -61,15 +64,7 @@ function runNarrative(winnerDecline: string | undefined, loserDecline: string | 
   const result = makeBoutResult(winner);
   const world = makeWorld();
 
-  generateBoutNarrative(
-    result,
-    east,
-    west,
-    "hatsu" as BashoName,
-    10,
-    "test-vet-decline",
-    world
-  );
+  generateBoutNarrative(result, east, west, "hatsu" as BashoName, 10, "test-vet-decline", world);
 
   return result.pbpLines ?? [];
 }
@@ -78,8 +73,12 @@ describe("Veteran Decline Narrative (B9)", () => {
   it("post-bout: adds father_time narrative when loser is in early-decline", () => {
     const lines = runNarrative(undefined, "early-decline", "east");
     const postBoutLines = lines.filter((e: any) => e.phase === "post_bout");
-    const hasDeclineLine = postBoutLines.some((e: any) =>
-      e.tags?.includes("veteran") || e.text.includes("Father time") || e.text.includes("clock") || e.text.includes("years")
+    const hasDeclineLine = postBoutLines.some(
+      (e: any) =>
+        e.tags?.includes("veteran") ||
+        e.text.includes("Father time") ||
+        e.text.includes("clock") ||
+        e.text.includes("years")
     );
     expect(hasDeclineLine).toBe(true);
   });
@@ -87,8 +86,12 @@ describe("Veteran Decline Narrative (B9)", () => {
   it("post-bout: adds father_time narrative when loser is in late-decline", () => {
     const lines = runNarrative(undefined, "late-decline", "east");
     const postBoutLines = lines.filter((e: any) => e.phase === "post_bout");
-    const hasDeclineLine = postBoutLines.some((e: any) =>
-      e.tags?.includes("veteran") || e.text.includes("Father time") || e.text.includes("clock") || e.text.includes("years")
+    const hasDeclineLine = postBoutLines.some(
+      (e: any) =>
+        e.tags?.includes("veteran") ||
+        e.text.includes("Father time") ||
+        e.text.includes("clock") ||
+        e.text.includes("years")
     );
     expect(hasDeclineLine).toBe(true);
   });
@@ -96,8 +99,12 @@ describe("Veteran Decline Narrative (B9)", () => {
   it("post-bout: adds father_time narrative when loser is in twilight", () => {
     const lines = runNarrative(undefined, "twilight", "east");
     const postBoutLines = lines.filter((e: any) => e.phase === "post_bout");
-    const hasDeclineLine = postBoutLines.some((e: any) =>
-      e.tags?.includes("veteran") || e.text.includes("Father time") || e.text.includes("clock") || e.text.includes("years")
+    const hasDeclineLine = postBoutLines.some(
+      (e: any) =>
+        e.tags?.includes("veteran") ||
+        e.text.includes("Father time") ||
+        e.text.includes("clock") ||
+        e.text.includes("years")
     );
     expect(hasDeclineLine).toBe(true);
   });
@@ -105,8 +112,12 @@ describe("Veteran Decline Narrative (B9)", () => {
   it("post-bout: adds defying_age narrative when winner is in late-decline", () => {
     const lines = runNarrative("late-decline", undefined, "east");
     const postBoutLines = lines.filter((e: any) => e.phase === "post_bout");
-    const hasDefyingAge = postBoutLines.some((e: any) =>
-      e.tags?.includes("veteran") || e.text.includes("Defying") || e.text.includes("turns back") || e.text.includes("silences")
+    const hasDefyingAge = postBoutLines.some(
+      (e: any) =>
+        e.tags?.includes("veteran") ||
+        e.text.includes("Defying") ||
+        e.text.includes("turns back") ||
+        e.text.includes("silences")
     );
     expect(hasDefyingAge).toBe(true);
   });
@@ -114,8 +125,12 @@ describe("Veteran Decline Narrative (B9)", () => {
   it("post-bout: adds defying_age narrative when winner is in twilight", () => {
     const lines = runNarrative("twilight", undefined, "east");
     const postBoutLines = lines.filter((e: any) => e.phase === "post_bout");
-    const hasDefyingAge = postBoutLines.some((e: any) =>
-      e.tags?.includes("veteran") || e.text.includes("Defying") || e.text.includes("turns back") || e.text.includes("silences")
+    const hasDefyingAge = postBoutLines.some(
+      (e: any) =>
+        e.tags?.includes("veteran") ||
+        e.text.includes("Defying") ||
+        e.text.includes("turns back") ||
+        e.text.includes("silences")
     );
     expect(hasDefyingAge).toBe(true);
   });
@@ -123,8 +138,8 @@ describe("Veteran Decline Narrative (B9)", () => {
   it("post-bout: does not add decline narrative when neither rikishi is in decline", () => {
     const lines = runNarrative("peak", "peak", "east");
     const postBoutLines = lines.filter((e: any) => e.phase === "post_bout");
-    const hasDeclineLine = postBoutLines.some((e: any) =>
-      e.text.includes("Father time") || e.text.includes("Defying age")
+    const hasDeclineLine = postBoutLines.some(
+      (e: any) => e.text.includes("Father time") || e.text.includes("Defying age")
     );
     expect(hasDeclineLine).toBe(false);
   });

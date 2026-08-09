@@ -14,13 +14,7 @@
 import { useReducer, useCallback, useMemo, useEffect, ReactNode } from "react";
 import { error as logError } from "@/engine/utils/Logger";
 import type { WorldState } from "@/engine/types/world";
-import {
-  saveGame,
-  loadGame,
-  hasAutosave,
-  loadAutosave,
-  getSaveSlotInfos,
-} from "@/engine/saveload";
+import { saveGame, loadGame, hasAutosave, loadAutosave, getSaveSlotInfos } from "@/engine/saveload";
 import { runHoliday, type HolidayConfig, type HolidayResult } from "@/engine/holiday";
 import { runAutoSim, type AutoSimConfig, type AutoSimResult } from "@/engine/autoSim";
 import { registerElectronStorage } from "./electronStorageProvider";
@@ -164,7 +158,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const recruitSponsorAction = useCallback(
     (sponsorId: string) => {
       if (!state.world || !state.world.playerHeyaId || !state.world.rng) return;
-      const impact = recruitSponsor(state.world, state.world.playerHeyaId, sponsorId, state.world.rng);
+      const impact = recruitSponsor(
+        state.world,
+        state.world.playerHeyaId,
+        sponsorId,
+        state.world.rng
+      );
       const nextWorld = applyImpact(state, impact).world;
       if (nextWorld) updateWorld(nextWorld);
     },
@@ -232,15 +231,18 @@ export function GameProvider({ children }: { children: ReactNode }) {
     [state.world]
   );
 
-  const loadFromSlot = useCallback((slotName: string) => {
-    const world = loadGame(slotName);
-    if (world) {
-      dispatch(actions.loadWorld(world));
-      sendCommand({ type: "LOAD_WORLD", world });
-      return true;
-    }
-    return false;
-  }, [sendCommand]);
+  const loadFromSlot = useCallback(
+    (slotName: string) => {
+      const world = loadGame(slotName);
+      if (world) {
+        dispatch(actions.loadWorld(world));
+        sendCommand({ type: "LOAD_WORLD", world });
+        return true;
+      }
+      return false;
+    },
+    [sendCommand]
+  );
 
   const quickSaveAction = useCallback(() => {
     if (!state.world) return false;
@@ -319,11 +321,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   );
 
   const investInFacilityAction = useCallback(
-    (
-      heyaId: string,
-      axis: import("@/engine/facilities").FacilityAxis,
-      points: number
-    ) => {
+    (heyaId: string, axis: import("@/engine/facilities").FacilityAxis, points: number) => {
       sendCommand({ type: "INVEST_IN_FACILITY", heyaId, axis, points });
     },
     [sendCommand]

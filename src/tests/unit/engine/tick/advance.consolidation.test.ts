@@ -1,5 +1,10 @@
 import { describe, it, expect } from "vitest";
-import { advanceOneDay, advanceDaysFast, advanceDays, type AdvanceOptions } from "@/engine/tick/tickDaily";
+import {
+  advanceOneDay,
+  advanceDaysFast,
+  advanceDays,
+  type AdvanceOptions,
+} from "@/engine/tick/tickDaily";
 import { makeMockWorld } from "../utils";
 
 /**

@@ -58,7 +58,10 @@ async function verifyTrainingDecay() {
   }
 
   const finalRikishi = world.rikishi.get("old-vet");
-  if (!finalRikishi) { console.error("Rikishi not found"); return; }
+  if (!finalRikishi) {
+    console.error("Rikishi not found");
+    return;
+  }
   console.log(`Final Power: ${finalRikishi.stats?.power}`);
 
   if ((finalRikishi.stats?.power ?? 90) < 90) {

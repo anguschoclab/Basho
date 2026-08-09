@@ -27,7 +27,13 @@ describe("HeyaPreview", () => {
 
   it("renders null when no heya", () => {
     const { container } = render(
-      <HeyaPreview heya={null} onClose={vi.fn()} onConfirm={vi.fn()} sekitoriCount={0} rosterWithAge={[]} />
+      <HeyaPreview
+        heya={null}
+        onClose={vi.fn()}
+        onConfirm={vi.fn()}
+        sekitoriCount={0}
+        rosterWithAge={[]}
+      />
     );
     expect(container.firstChild).toBeNull();
   });

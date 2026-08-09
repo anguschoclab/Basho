@@ -74,9 +74,7 @@ describe("spawnFinanceAgent", () => {
     const world = makeMockWorld({
       myosekiMarket: { stocks: { s1: makeStock("s1") }, history: [] },
     });
-    const result = spawnFinanceAgent(
-      makeCtx({ world, runwayBand: "desperate" })
-    );
+    const result = spawnFinanceAgent(makeCtx({ world, runwayBand: "desperate" }));
     expect(result.shouldBuyMyoseki).toBe(false);
   });
 
@@ -89,7 +87,13 @@ describe("spawnFinanceAgent", () => {
       traits: { ambition: 80, patience: 50, risk: 50, tradition: 30, compassion: 50 },
     });
     const result = spawnFinanceAgent(
-      makeCtx({ oyakata, world, runwayBand: "comfortable", funds: 500_000_000, monthlyBurn: 10_000_000 })
+      makeCtx({
+        oyakata,
+        world,
+        runwayBand: "comfortable",
+        funds: 500_000_000,
+        monthlyBurn: 10_000_000,
+      })
     );
     expect(result.shouldBuyMyoseki).toBe(true);
     expect(result.myosekiId).toBe("s1");
@@ -105,7 +109,13 @@ describe("spawnFinanceAgent", () => {
       traits: { ambition: 80, patience: 50, risk: 50, tradition: 30, compassion: 50 },
     });
     const result = spawnFinanceAgent(
-      makeCtx({ oyakata, world, runwayBand: "comfortable", funds: 500_000_000, monthlyBurn: 10_000_000 })
+      makeCtx({
+        oyakata,
+        world,
+        runwayBand: "comfortable",
+        funds: 500_000_000,
+        monthlyBurn: 10_000_000,
+      })
     );
     expect(result.shouldBuyMyoseki).toBe(true);
     expect(result.myosekiId).toBe("elite");
@@ -125,7 +135,13 @@ describe("spawnFinanceAgent", () => {
       traits: { ambition: 80, patience: 50, risk: 50, tradition: 30, compassion: 50 },
     });
     const result = spawnFinanceAgent(
-      makeCtx({ oyakata, world, runwayBand: "comfortable", funds: 500_000_000, monthlyBurn: 10_000_000 })
+      makeCtx({
+        oyakata,
+        world,
+        runwayBand: "comfortable",
+        funds: 500_000_000,
+        monthlyBurn: 10_000_000,
+      })
     );
     expect(result.shouldBuyMyoseki).toBe(false);
   });

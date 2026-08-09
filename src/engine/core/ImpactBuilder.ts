@@ -259,7 +259,11 @@ export class ImpactBuilder {
   /**
    * Retire a rikishi: moves from active to historical and sets retirement metadata.
    */
-  retireRikishi(id: string, year: number = DEFAULT_START_YEAR, reason: string = "Retirement"): ImpactBuilder {
+  retireRikishi(
+    id: string,
+    year: number = DEFAULT_START_YEAR,
+    reason: string = "Retirement"
+  ): ImpactBuilder {
     this.updateRikishi(id, {
       isRetired: true,
       retirementYear: year,
@@ -593,7 +597,9 @@ export function retireRikishiImpact(
   arg4?: string
 ): StateImpact {
   if (typeof arg2 === "number") {
-    return createImpactBuilder(arg4 ?? "retireRikishi").retireRikishi(id, arg2, arg3 ?? "").build();
+    return createImpactBuilder(arg4 ?? "retireRikishi")
+      .retireRikishi(id, arg2, arg3 ?? "")
+      .build();
   }
   return createImpactBuilder(arg2).retireRikishi(id).build();
 }

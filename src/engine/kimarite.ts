@@ -13,12 +13,7 @@
  * @see kimariteStrategies for the bout-time strategy selection data
  */
 
-export type {
-  Kimarite,
-  KimariteClass,
-  JsaCategory,
-  KimariteRequirements,
-} from "./types/kimarite";
+export type { Kimarite, KimariteClass, JsaCategory, KimariteRequirements } from "./types/kimarite";
 
 export {
   KIMARITE_REGISTRY,

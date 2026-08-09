@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { generateBoutNarrative } from "@/engine/bout/boutNarrative";
 import type { PbpLine, PbpTag } from "@/engine/bout/boutNarrative";
@@ -47,7 +46,10 @@ describe("heya style pre-bout narrative (5.3)", () => {
     const east = mockRikishi("r1", { rank: "maegashira", division: "makuuchi", heyaId: "h1" });
     const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi", heyaId: "h2" });
     const world = {
-      rikishi: new Map([["r1", east], ["r2", west]]),
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
       heyas: new Map([["h1", heya]]),
       year: 2025,
     } as unknown as WorldState;
@@ -65,7 +67,10 @@ describe("heya style pre-bout narrative (5.3)", () => {
     const east = mockRikishi("r1", { rank: "maegashira", division: "makuuchi", heyaId: "h1" });
     const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi", heyaId: "h2" });
     const world = {
-      rikishi: new Map([["r1", east], ["r2", west]]),
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
       heyas: new Map([["h1", heya]]),
       year: 2025,
     } as unknown as WorldState;
@@ -89,7 +94,10 @@ describe("heya style pre-bout narrative (5.3)", () => {
     const east = mockRikishi("r1", { rank: "maegashira", division: "makuuchi", heyaId: "h1" });
     const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi", heyaId: "h2" });
     const world = {
-      rikishi: new Map([["r1", east], ["r2", west]]),
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
       heyas: new Map([["h1", heya]]),
       year: 2025,
     } as unknown as WorldState;
@@ -114,7 +122,10 @@ describe("heya style pre-bout narrative (5.3)", () => {
     const east = mockRikishi("r1", { rank: "maegashira", division: "makuuchi", heyaId: "h1" });
     const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi", heyaId: "h1" });
     const world = {
-      rikishi: new Map([["r1", east], ["r2", west]]),
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
       heyas: new Map([["h1", heya]]),
       year: 2025,
     } as unknown as WorldState;
@@ -147,8 +158,14 @@ describe("heya style pre-bout narrative (5.3)", () => {
     const east = mockRikishi("r1", { rank: "maegashira", division: "makuuchi", heyaId: "h1" });
     const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi", heyaId: "h2" });
     const world = {
-      rikishi: new Map([["r1", east], ["r2", west]]),
-      heyas: new Map([["h1", heya1], ["h2", heya2]]),
+      rikishi: new Map([
+        ["r1", east],
+        ["r2", west],
+      ]),
+      heyas: new Map([
+        ["h1", heya1],
+        ["h2", heya2],
+      ]),
       year: 2025,
     } as unknown as WorldState;
     const result = makeBoutResult();

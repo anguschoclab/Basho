@@ -184,7 +184,15 @@ export const LegacyService = {
   },
 
   findPeakStat(stats: Partial<RikishiStats>): string {
-    const keys: Array<keyof RikishiStats> = ["power", "technique", "speed", "stamina", "mental", "adaptability", "balance"];
+    const keys: Array<keyof RikishiStats> = [
+      "power",
+      "technique",
+      "speed",
+      "stamina",
+      "mental",
+      "adaptability",
+      "balance",
+    ];
     let peak = "technique";
     let peakVal = -1;
     for (const key of keys) {

@@ -24,20 +24,27 @@ describe("phase01_week_rivalries", () => {
   describe("Rivalry Decay", () => {
     it("decays heat, closeness, and spite for a recently met pair (SHORT_TERM)", () => {
       const world = MockFactory.createWorld();
-      world.calendar = { month: 1, currentWeek: 10, currentDay: 1, next: vi.fn(), clone: vi.fn() as any, cyclePhase: "basho" } as any;
+      world.calendar = {
+        month: 1,
+        currentWeek: 10,
+        currentDay: 1,
+        next: vi.fn(),
+        clone: vi.fn() as any,
+        cyclePhase: "basho",
+      } as any;
       world.rivalriesState = {
         pairs: {
-          "id1_id2": {
+          id1_id2: {
             heat: 50,
             closeness: 30,
             spite: 40,
             meetings: 5,
             lastMetWeek: 8, // 2 weeks ago -> SHORT_TERM
             lastWinnerId: "id1",
-            tone: "grudge"
-          } as any
+            tone: "grudge",
+          } as any,
         },
-        pairIndex: {}
+        pairIndex: {},
       } as any;
 
       const impact = phase01_week_rivalries(world);
@@ -52,29 +59,36 @@ describe("phase01_week_rivalries", () => {
 
     it("applies MEDIUM_TERM and LONG_TERM decay rates and clamps to zero", () => {
       const world = MockFactory.createWorld();
-      world.calendar = { month: 1, currentWeek: 50, currentDay: 1, next: vi.fn(), clone: vi.fn() as any, cyclePhase: "basho" } as any;
+      world.calendar = {
+        month: 1,
+        currentWeek: 50,
+        currentDay: 1,
+        next: vi.fn(),
+        clone: vi.fn() as any,
+        cyclePhase: "basho",
+      } as any;
       world.rivalriesState = {
         pairs: {
-          "med_pair": {
+          med_pair: {
             heat: 10,
             closeness: 0.1, // will clamp to 0
             spite: 0.1, // will clamp to 0
             meetings: 5,
             lastMetWeek: 40, // 10 weeks ago -> MEDIUM_TERM
             lastWinnerId: "id1",
-            tone: "grudge"
+            tone: "grudge",
           } as any,
-          "long_pair": {
+          long_pair: {
             heat: 10,
             closeness: 30,
             spite: 40,
             meetings: 5,
             lastMetWeek: 10, // 40 weeks ago -> LONG_TERM
             lastWinnerId: "id1",
-            tone: "grudge"
-          } as any
+            tone: "grudge",
+          } as any,
         },
-        pairIndex: {}
+        pairIndex: {},
       } as any;
 
       const impact = phase01_week_rivalries(world);
@@ -91,24 +105,31 @@ describe("phase01_week_rivalries", () => {
 
     it("skips decay for cold pairs", () => {
       const world = MockFactory.createWorld();
-      world.calendar = { month: 1, currentWeek: 50, currentDay: 1, next: vi.fn(), clone: vi.fn() as any, cyclePhase: "basho" } as any;
+      world.calendar = {
+        month: 1,
+        currentWeek: 50,
+        currentDay: 1,
+        next: vi.fn(),
+        clone: vi.fn() as any,
+        cyclePhase: "basho",
+      } as any;
 
       const heatThreshold = RIVALRY_PRUNING.MIN_HEAT;
       const meetingThreshold = RIVALRY_PRUNING.MIN_MEETINGS;
 
       world.rivalriesState = {
         pairs: {
-          "cold_pair": {
+          cold_pair: {
             heat: heatThreshold - 1, // Below minimum
             closeness: 10,
             spite: 10,
             meetings: meetingThreshold - 1, // Below minimum
             lastMetWeek: 50 - RIVALRY_DECAY_THRESHOLDS.LONG_TERM - 1, // Very old
             lastWinnerId: "id1",
-            tone: "respect"
-          } as any
+            tone: "respect",
+          } as any,
         },
-        pairIndex: {}
+        pairIndex: {},
       } as any;
 
       const impact = phase01_week_rivalries(world);
@@ -117,7 +138,6 @@ describe("phase01_week_rivalries", () => {
       // Should be completely untouched
       const coldPair = nextWorld.rivalriesState!.pairs["cold_pair"];
       expect(coldPair).toBeUndefined();
-
     });
   });
 
@@ -178,7 +198,7 @@ describe("phase01_week_rivalries", () => {
       world.events = {
         version: "1.0.0",
         log: [oldUnimportantEvent, oldHeadlineEvent, oldBashoEvent, recentUnimportantEvent],
-        dedupe: {}
+        dedupe: {},
       };
 
       const impact = phase01_week_rivalries(world);
@@ -187,10 +207,10 @@ describe("phase01_week_rivalries", () => {
       const nextLog = nextWorld.events!.log;
 
       expect(nextLog.length).toBe(3);
-      expect(nextLog.map(e => e.id)).not.toContain("old1");
-      expect(nextLog.map(e => e.id)).toContain("old2");
-      expect(nextLog.map(e => e.id)).toContain("old3");
-      expect(nextLog.map(e => e.id)).toContain("recent1");
+      expect(nextLog.map((e) => e.id)).not.toContain("old1");
+      expect(nextLog.map((e) => e.id)).toContain("old2");
+      expect(nextLog.map((e) => e.id)).toContain("old3");
+      expect(nextLog.map((e) => e.id)).toContain("recent1");
     });
   });
 });

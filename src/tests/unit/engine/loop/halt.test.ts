@@ -57,20 +57,14 @@ describe("P1.4: shouldHaltAdvance", () => {
 
   it("returns true when multiple required decisions exist", () => {
     const world = makeWorld({
-      pendingDecisions: [
-        { id: "d1", required: true } as any,
-        { id: "d2", required: true } as any,
-      ],
+      pendingDecisions: [{ id: "d1", required: true } as any, { id: "d2", required: true } as any],
     });
     expect(shouldHaltAdvance(world)).toBe(true);
   });
 
   it("returns true when pendingDecisions has mixed required and non-required", () => {
     const world = makeWorld({
-      pendingDecisions: [
-        { id: "d1", required: false } as any,
-        { id: "d2", required: true } as any,
-      ],
+      pendingDecisions: [{ id: "d1", required: false } as any, { id: "d2", required: true } as any],
     });
     expect(shouldHaltAdvance(world)).toBe(true);
   });

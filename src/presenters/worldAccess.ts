@@ -67,10 +67,7 @@ export function getRikishiMap(world: WorldState): Map<string, Rikishi> {
   return world.rikishi;
 }
 
-export function getHistoricalRikishi(
-  world: WorldState,
-  id: string
-): Rikishi | undefined {
+export function getHistoricalRikishi(world: WorldState, id: string): Rikishi | undefined {
   return world.historicalRikishi?.get(id);
 }
 

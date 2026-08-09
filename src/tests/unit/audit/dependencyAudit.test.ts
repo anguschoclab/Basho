@@ -10,10 +10,11 @@ const DEV_DEPS = Object.keys(PKG.devDependencies || {});
 
 describe("L1.3: dependency duplicates & bloat", () => {
   it("no @typescript-eslint packages in runtime dependencies (should be devDeps)", () => {
-    const eslintInRuntime = RUNTIME_DEPS.filter((d: string) =>
-      d.startsWith("@typescript-eslint/")
-    );
-    expect(eslintInRuntime, `ESLint packages in runtime deps: ${eslintInRuntime.join(", ")}`).toEqual([]);
+    const eslintInRuntime = RUNTIME_DEPS.filter((d: string) => d.startsWith("@typescript-eslint/"));
+    expect(
+      eslintInRuntime,
+      `ESLint packages in runtime deps: ${eslintInRuntime.join(", ")}`
+    ).toEqual([]);
   });
 
   it("no dependency appears in both dependencies and devDependencies", () => {

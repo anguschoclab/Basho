@@ -1,4 +1,3 @@
- 
 import { describe, it, expect, beforeAll } from "vitest";
 import { processDramaTick, checkBashoDayDrama } from "@/engine/bard/dramaGenerator";
 import { makeMockWorld, mockRikishi } from "../utils";
@@ -61,7 +60,15 @@ describe("Oversleeping Event (B1)", () => {
     const w = makeMockWorld({
       rikishi: new Map([["injured-1", injuredR]]) as any,
       cyclePhase: "active_basho",
-      currentBasho: { year: 2025, bashoNumber: 1, bashoName: "hatsu", day: 5, matches: [], standings: {} as any, isActive: true } as any,
+      currentBasho: {
+        year: 2025,
+        bashoNumber: 1,
+        bashoName: "hatsu",
+        day: 5,
+        matches: [],
+        standings: {} as any,
+        isActive: true,
+      } as any,
       activeRikishiIds: ["injured-1"],
     } as any) as WorldState;
     const impact = checkBashoDayDrama(w);
@@ -80,7 +87,15 @@ describe("Oversleeping Event (B1)", () => {
     const w = makeMockWorld({
       rikishi: new Map([["retired-1", retiredR]]) as any,
       cyclePhase: "active_basho",
-      currentBasho: { year: 2025, bashoNumber: 1, bashoName: "hatsu", day: 5, matches: [], standings: {} as any, isActive: true } as any,
+      currentBasho: {
+        year: 2025,
+        bashoNumber: 1,
+        bashoName: "hatsu",
+        day: 5,
+        matches: [],
+        standings: {} as any,
+        isActive: true,
+      } as any,
       activeRikishiIds: ["retired-1"],
     } as any) as WorldState;
     const impact = checkBashoDayDrama(w);
@@ -99,7 +114,15 @@ describe("Oversleeping Event (B1)", () => {
     const w = makeMockWorld({
       rikishi: new Map([["kyujo-1", kyujoR]]) as any,
       cyclePhase: "active_basho",
-      currentBasho: { year: 2025, bashoNumber: 1, bashoName: "hatsu", day: 5, matches: [], standings: {} as any, isActive: true } as any,
+      currentBasho: {
+        year: 2025,
+        bashoNumber: 1,
+        bashoName: "hatsu",
+        day: 5,
+        matches: [],
+        standings: {} as any,
+        isActive: true,
+      } as any,
       activeRikishiIds: ["kyujo-1"],
     } as any) as WorldState;
     const impact = checkBashoDayDrama(w);
@@ -114,20 +137,31 @@ describe("Oversleeping Event (B1)", () => {
     for (let i = 0; i < 200; i++) {
       const id = `bulk-sleepy-${i}`;
       ids.push(id);
-      rikishiMap.set(id, mockRikishi(id, {
-        shikona: `Bulk-${i}`,
-        heyaId: "heya-1",
-        motivation: 60,
-        isKyujo: false,
-        injured: false,
-        isRetired: false,
-      }));
+      rikishiMap.set(
+        id,
+        mockRikishi(id, {
+          shikona: `Bulk-${i}`,
+          heyaId: "heya-1",
+          motivation: 60,
+          isKyujo: false,
+          injured: false,
+          isRetired: false,
+        })
+      );
     }
 
     const w = makeMockWorld({
       rikishi: rikishiMap as any,
       cyclePhase: "active_basho",
-      currentBasho: { year: 2025, bashoNumber: 1, bashoName: "hatsu", day: 7, matches: [], standings: {} as any, isActive: true } as any,
+      currentBasho: {
+        year: 2025,
+        bashoNumber: 1,
+        bashoName: "hatsu",
+        day: 7,
+        matches: [],
+        standings: {} as any,
+        isActive: true,
+      } as any,
       activeRikishiIds: ids,
     } as any) as WorldState;
 
@@ -157,20 +191,31 @@ describe("Oversleeping Event (B1)", () => {
     for (let i = 0; i < 500; i++) {
       const id = `force-sleepy-${i}`;
       ids.push(id);
-      rikishiMap.set(id, mockRikishi(id, {
-        shikona: `Force-${i}`,
-        heyaId: "heya-1",
-        motivation: 60,
-        isKyujo: false,
-        injured: false,
-        isRetired: false,
-      }));
+      rikishiMap.set(
+        id,
+        mockRikishi(id, {
+          shikona: `Force-${i}`,
+          heyaId: "heya-1",
+          motivation: 60,
+          isKyujo: false,
+          injured: false,
+          isRetired: false,
+        })
+      );
     }
 
     const w = makeMockWorld({
       rikishi: rikishiMap as any,
       cyclePhase: "active_basho",
-      currentBasho: { year: 2025, bashoNumber: 1, bashoName: "hatsu", day: 7, matches: [], standings: {} as any, isActive: true } as any,
+      currentBasho: {
+        year: 2025,
+        bashoNumber: 1,
+        bashoName: "hatsu",
+        day: 7,
+        matches: [],
+        standings: {} as any,
+        isActive: true,
+      } as any,
       activeRikishiIds: ids,
     } as any) as WorldState;
 

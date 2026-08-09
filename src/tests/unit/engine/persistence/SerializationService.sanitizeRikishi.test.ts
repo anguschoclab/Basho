@@ -146,7 +146,13 @@ describe("SerializationService.deserializeWorld — invalid rank integration", (
       history: [],
       lineage: [],
       records: {
-        allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
+        allTime: {
+          careerWins: [],
+          makuuchiWins: [],
+          yusho: [],
+          consecutiveYusho: [],
+          kinboshi: [],
+        },
         active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
       },
       events: { version: "1.0.0", log: [], dedupe: {} },

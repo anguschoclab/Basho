@@ -476,7 +476,12 @@ const routeTree = rootRoute.addChildren([
   sponsorsRedirectRoute,
 
   // Association
-  jsaBaseRoute.addChildren([jsaGovernanceNestedRoute, jsaTrendsRoute, jsaTalentNestedRoute, jsaCandidatePoolRoute]),
+  jsaBaseRoute.addChildren([
+    jsaGovernanceNestedRoute,
+    jsaTrendsRoute,
+    jsaTalentNestedRoute,
+    jsaCandidatePoolRoute,
+  ]),
   governanceRedirectRoute,
   talentRedirectRoute,
   jsaMyosekiRoute,

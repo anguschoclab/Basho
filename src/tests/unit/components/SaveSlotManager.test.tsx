@@ -93,7 +93,13 @@ describe("SaveSlotManager", () => {
 
   it("getSaveSlots throws → renders empty without crash", () => {
     renderWithProvider(
-      <SaveSlotManager {...makeProps({ getSaveSlots: vi.fn(() => { throw new Error("fail"); }) })} />
+      <SaveSlotManager
+        {...makeProps({
+          getSaveSlots: vi.fn(() => {
+            throw new Error("fail");
+          }),
+        })}
+      />
     );
     fireEvent.click(screen.getByText("Archive Management"));
     expect(screen.getByText("No archival records detected.")).toBeTruthy();
@@ -161,9 +167,7 @@ describe("SaveSlotManager", () => {
     fireEvent.change(input);
 
     await waitFor(() => {
-      expect(mockToast).toHaveBeenCalledWith(
-        expect.objectContaining({ variant: "destructive" })
-      );
+      expect(mockToast).toHaveBeenCalledWith(expect.objectContaining({ variant: "destructive" }));
     });
     expect(props.onLoadSuccess).not.toHaveBeenCalled();
     // isImporting reset

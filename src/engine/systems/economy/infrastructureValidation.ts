@@ -53,7 +53,8 @@ export function validateConstruction(
   const nextLevel = currentLevel + 1;
   const cost = def.baseCost * (1 + (nextLevel - 1) * CONSTRUCTION_COST_LEVEL_MULTIPLIER);
 
-  if (heya.funds < cost) return { ok: false, reason: "insufficient_funds", heya, def, cost, nextLevel };
+  if (heya.funds < cost)
+    return { ok: false, reason: "insufficient_funds", heya, def, cost, nextLevel };
 
   if (def.requirements?.regionalPresence) {
     const presence = heya.regionalPresence || {};

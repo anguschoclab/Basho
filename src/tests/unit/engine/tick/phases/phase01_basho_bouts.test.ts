@@ -64,12 +64,20 @@ function makeWorldForPhase(
     ]),
     currentBasho: basho,
     cyclePhase: "active_basho",
-    sponsorPool: { sponsors: new Map(), koenkais: new Map() } as unknown as import("@/engine/types/sponsors").SponsorPool,
+    sponsorPool: {
+      sponsors: new Map(),
+      koenkais: new Map(),
+    } as unknown as import("@/engine/types/sponsors").SponsorPool,
     rivalriesState: { pairs: {}, version: "1.0.0" },
   });
 }
 
-function makeMatch(boutId: string, day: number, eastId: string = "east", westId: string = "west"): MatchSchedule {
+function makeMatch(
+  boutId: string,
+  day: number,
+  eastId: string = "east",
+  westId: string = "west"
+): MatchSchedule {
   return { boutId, day, eastRikishiId: eastId, westRikishiId: westId };
 }
 

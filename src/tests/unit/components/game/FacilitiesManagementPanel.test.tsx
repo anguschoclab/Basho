@@ -4,9 +4,7 @@ import { FacilitiesManagementPanel } from "@/components/game/FacilitiesManagemen
 import { MockFactory } from "@/tests/helpers/utils/MockFactory";
 import type { Heya } from "@/engine/types/heya";
 
-function makeHeya(
-  overrides: Partial<Heya> = {}
-): Heya {
+function makeHeya(overrides: Partial<Heya> = {}): Heya {
   return MockFactory.createHeya("h1", {
     facilities: { training: 10, recovery: 10, nutrition: 10 },
     funds: 10_000_000,
@@ -14,17 +12,9 @@ function makeHeya(
   });
 }
 
-function renderPanel(
-  heya: Heya,
-  onUpgrade: ReturnType<typeof vi.fn> = vi.fn(),
-  isOwner = true
-) {
+function renderPanel(heya: Heya, onUpgrade: ReturnType<typeof vi.fn> = vi.fn(), isOwner = true) {
   return render(
-    <FacilitiesManagementPanel
-      heya={heya}
-      isOwner={isOwner}
-      onUpgrade={onUpgrade as any}
-    />
+    <FacilitiesManagementPanel heya={heya} isOwner={isOwner} onUpgrade={onUpgrade as any} />
   );
 }
 
@@ -49,11 +39,7 @@ describe("FacilitiesManagementPanel — real cost from world diff", () => {
       funds: 9_000_000, // 10M - 1M real cost
     });
     rerender(
-      <FacilitiesManagementPanel
-        heya={updatedHeya}
-        isOwner={true}
-        onUpgrade={onUpgrade as any}
-      />
+      <FacilitiesManagementPanel heya={updatedHeya} isOwner={true} onUpgrade={onUpgrade as any} />
     );
 
     // Toast should show real cost ¥1,000,000, NOT ¥500 (points * 100)
@@ -77,11 +63,7 @@ describe("FacilitiesManagementPanel — real cost from world diff", () => {
       funds: 9_800_000, // 10M - 200k
     });
     rerender(
-      <FacilitiesManagementPanel
-        heya={updatedHeya}
-        isOwner={true}
-        onUpgrade={onUpgrade as any}
-      />
+      <FacilitiesManagementPanel heya={updatedHeya} isOwner={true} onUpgrade={onUpgrade as any} />
     );
 
     expect(screen.getByText(/Upgraded training from 10 → 11 for ¥200,000/)).not.toBeNull();

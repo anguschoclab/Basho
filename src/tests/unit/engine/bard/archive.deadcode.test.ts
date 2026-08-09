@@ -4,8 +4,6 @@ import { SeededRNG } from "@/engine/rng";
 import * as fs from "fs";
 import * as path from "path";
 
- 
-
 describe("Phase 1: Dead-code removal — digests, matrix, vocabulary", () => {
   beforeEach(() => {
     BardEngine.resetCache();

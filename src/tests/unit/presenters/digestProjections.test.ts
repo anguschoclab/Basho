@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { buildWeeklyDigest } from "@/presenters/projections/digestProjections";
 import { makeMockWorld } from "../engine/utils";

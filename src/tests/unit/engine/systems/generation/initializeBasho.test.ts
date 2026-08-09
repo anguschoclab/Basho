@@ -1,4 +1,3 @@
- 
 import { describe, it, expect } from "vitest";
 import { initializeBasho } from "@/engine/systems/generation/WorldFactory";
 import type { WorldState } from "@/engine/types/world";

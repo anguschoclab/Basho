@@ -29,8 +29,20 @@ interface NarrativeSummaryProps {
     promotions: { title: string; summary: string; type: string }[];
     retirements: { title: string; summary: string }[];
     governance: { title: string; summary: string }[];
-    ydcAccountability?: { title: string; summary: string; status: string; chairmanName?: string; references?: string[]; publicStatement?: string; privateSentiment?: string }[];
-    pressConference?: { title: string; summary: string; narrative?: { text: string; id: string }[] }[];
+    ydcAccountability?: {
+      title: string;
+      summary: string;
+      status: string;
+      chairmanName?: string;
+      references?: string[];
+      publicStatement?: string;
+      privateSentiment?: string;
+    }[];
+    pressConference?: {
+      title: string;
+      summary: string;
+      narrative?: { text: string; id: string }[];
+    }[];
   };
   prestigeChanges: {
     heya: { name: string; prestigeBand: string; reputation: number };
@@ -225,7 +237,11 @@ export function NarrativeSummary({
                 <EventCard key={i} title={e.title} summary={e.summary} isRetirement icon={UserX} />
               ))}
               {groupedEvents.retirements.length === 0 && (
-                <EmptyState icon={UserX} title="No veteran departures recorded this basho." compact />
+                <EmptyState
+                  icon={UserX}
+                  title="No veteran departures recorded this basho."
+                  compact
+                />
               )}
             </div>
           </section>
@@ -270,7 +286,11 @@ export function NarrativeSummary({
                     )
                   )}
                   {groupedEvents.governance.length === 0 && (
-                    <EmptyState icon={ShieldAlert} title="No disciplinary or political directives issued." compact />
+                    <EmptyState
+                      icon={ShieldAlert}
+                      title="No disciplinary or political directives issued."
+                      compact
+                    />
                   )}
                 </div>
               </CardContent>
@@ -409,10 +429,7 @@ export function NarrativeSummary({
           </div>
           <div className="space-y-4">
             {(groupedEvents.pressConference ?? []).map((e, i) => (
-              <div
-                key={i}
-                className="dossier-paper p-5 rounded-lg border-l-4 border-l-primary"
-              >
+              <div key={i} className="dossier-paper p-5 rounded-lg border-l-4 border-l-primary">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="h-8 w-8 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
                     <Newspaper className="h-4 w-4 text-primary" />

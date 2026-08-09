@@ -48,11 +48,7 @@ export function phase01_daily_welfare(world: WorldState): StateImpact {
 
     // 1. Sync Descriptor
     const rikishiRng = rngFromSeed(`desc-${world.dayIndexGlobal}-${id}`, "narrative", "rikishi");
-    next.descriptor = toRikishiDescriptor(
-      rikishiRng,
-      next,
-      next.descriptor
-    );
+    next.descriptor = toRikishiDescriptor(rikishiRng, next, next.descriptor);
 
     // 2. Diet Effects
     const diet = heyaDietCache.get(next.heyaId);

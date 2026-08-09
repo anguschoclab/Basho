@@ -35,7 +35,8 @@ export function recordBashoHistory(
   let yushoPrize = SIMULATION_CONFIG.prizes.yusho;
   if (yushoRikishi) {
     const division = yushoRikishi.division || "makuuchi";
-    yushoPrize = SIMULATION_CONFIG.prizes.yushoByDivision[division] ?? SIMULATION_CONFIG.prizes.yusho;
+    yushoPrize =
+      SIMULATION_CONFIG.prizes.yushoByDivision[division] ?? SIMULATION_CONFIG.prizes.yusho;
 
     const yushoEconomics = yushoRikishi.economics || {
       cash: 0,

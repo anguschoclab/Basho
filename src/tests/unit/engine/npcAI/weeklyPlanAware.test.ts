@@ -6,9 +6,16 @@ import type { AIPlan } from "@/engine/ai/types";
 describe("makeNPCWeeklyDecision plan-aware", () => {
   function setupWorld(archetype: string) {
     const world = makeMockWorld();
-    const heya = makeMockHeya("h1", { oyakataId: "o1", runwayBand: "comfortable", rikishiIds: ["r1"] });
+    const heya = makeMockHeya("h1", {
+      oyakataId: "o1",
+      runwayBand: "comfortable",
+      rikishiIds: ["r1"],
+    });
     world.heyas.set("h1", heya);
-    world.rikishi.set("r1", mockRikishi("r1", { heyaId: "h1", rank: "maegashira", division: "makuuchi" }));
+    world.rikishi.set(
+      "r1",
+      mockRikishi("r1", { heyaId: "h1", rank: "maegashira", division: "makuuchi" })
+    );
     world.activeRikishiIds.add("r1");
     world.oyakata.set("o1", {
       id: "o1",
