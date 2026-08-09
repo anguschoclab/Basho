@@ -23,6 +23,7 @@ import {
   INTERIM_DAYS,
 } from "../../constants/engine/npcStrategy";
 import { DAYS_IN_MONTH, DEFAULT_MAX_DAY, MAX_MONTH } from "../../constants/engine/calendarExtended";
+import { DEFAULT_START_YEAR } from "../../constants/engine/calendar";
 import { warn } from "../utils/Logger";
 import { shouldHaltAdvance } from "../loop/shouldHaltAdvance";
 import { clearQueryCaches } from "../queries";
@@ -348,7 +349,7 @@ function batchAdvanceCalendar(world: WorldState, days: number): WorldState {
   // Advance calendar by N days (replicating advanceCalendarDay logic)
   let currentDay = world.calendar?.currentDay ?? 1;
   let month = world.calendar?.month ?? 1;
-  let year = world.calendar?.year ?? 2026;
+  let year = world.year ?? DEFAULT_START_YEAR;
   let currentWeek = world.calendar?.currentWeek ?? 1;
 
   for (let i = 0; i < days; i++) {
@@ -374,11 +375,11 @@ function batchAdvanceCalendar(world: WorldState, days: number): WorldState {
     _interimDaysRemaining,
     _postBashoDays,
     _daysSinceLastWeeklyTick: daysSinceTick,
+    year,
     calendar: {
       ...world.calendar,
       currentDay,
       month,
-      year,
       currentWeek,
     },
     week: currentWeek,

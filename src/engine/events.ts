@@ -10,6 +10,7 @@
 
 import { stableTieBreak } from "./utils/sort";
 import { rngForWorld } from "./rng";
+import { DEFAULT_START_YEAR } from "../constants/engine/calendar";
 import type { WorldState } from "./types/world";
 import {
   type EngineEvent,
@@ -82,7 +83,7 @@ interface LogEngineEventParams {
 export function logEngineEvent(world: WorldState, params: LogEngineEventParams): EngineEvent {
   const events = ensureEventsState(world);
 
-  const year = world.calendar?.year ?? world.year ?? 2025;
+  const year = world.year ?? DEFAULT_START_YEAR;
   const week = world.calendar?.currentWeek ?? world.week ?? 0;
   const month = world.calendar?.month ?? 1;
   const day = world.calendar?.currentDay ?? 1;
@@ -175,7 +176,7 @@ export function tickWeekEvents(world: WorldState): number {
   const eventsState = ensureEventsState(world);
   if (!eventsState.log.length) return 0;
 
-  const currentYear = world.calendar?.year ?? world.year ?? 2025;
+  const currentYear = world.year ?? DEFAULT_START_YEAR;
   const currentWeek = world.calendar?.currentWeek ?? world.week ?? 0;
   const MAX_AGE_WEEKS = 52;
   const currentTotalWeeks = currentYear * 52 + currentWeek;

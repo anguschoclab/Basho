@@ -11,6 +11,7 @@
  */
 
 import type { WorldState } from "../../types/world";
+import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
@@ -186,13 +187,12 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
     reason: hofNames.length > 0 ? hofNames.join("|") : "None",
   });
 
-  // 8. Sync & Increment Authoritative Year (E4/C5)
-  const nextYear = (world.calendar?.year || world.year) + 1;
+  // 8. Increment Authoritative Year (E4/C5)
+  const nextYear = (world.year ?? DEFAULT_START_YEAR) + 1;
   builder.updateWorldField("year", nextYear);
   builder.updateWorldField("calendar", {
     ...world.calendar,
     currentWeek: world.calendar?.currentWeek ?? 1,
-    year: nextYear,
   });
 
   // Bound history arrays to prevent unbounded growth (B2.5)

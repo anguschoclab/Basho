@@ -1,4 +1,5 @@
 import type { WorldState } from "./types/world";
+import { DEFAULT_START_YEAR } from "../constants/engine/calendar";
 import type { RecordEntry } from "./types/records";
 import type { Id } from "./types/common";
 import type { Rikishi } from "./types/rikishi";
@@ -113,7 +114,7 @@ export function onBashoEnded(world: WorldState): StateImpact {
     active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
   };
 
-  const year = world.calendar?.year ?? world.year;
+  const year = world.year ?? DEFAULT_START_YEAR;
   const month = world.calendar?.month ?? 1;
 
   // Create deep copies of leaderboards to avoid mutating

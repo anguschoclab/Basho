@@ -3,7 +3,7 @@
  */
 
 /** Default starting year for new games */
-export const DEFAULT_START_YEAR = 2025;
+export const DEFAULT_START_YEAR = 2026;
 
 /** Default starting month (0-indexed) */
 export const DEFAULT_START_MONTH = 0;

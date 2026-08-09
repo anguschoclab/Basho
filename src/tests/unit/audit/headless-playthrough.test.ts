@@ -162,9 +162,7 @@ function buildPlaythroughWorld(): WorldState {
     _daysSinceLastWeeklyTick: 0,
     sponsorPool,
     calendar: {
-      year: 2025,
       month: 1,
-      week: 1,
       currentDay: 1,
       currentWeek: 1,
     } as any,

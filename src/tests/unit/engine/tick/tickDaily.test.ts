@@ -15,7 +15,7 @@ describe("tickDaily", () => {
     it("increments dayIndexGlobal and advances calendar", () => {
       const world = makeMockWorld({
         dayIndexGlobal: 10,
-        calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
+        calendar: { month: 1, currentWeek: 1, currentDay: 1 },
       });
 
       const nextWorld = advanceOneDay(world);
@@ -23,13 +23,13 @@ describe("tickDaily", () => {
       expect(nextWorld.dayIndexGlobal).toBe(11);
       expect(nextWorld.calendar!.currentDay).toBe(2);
       expect(nextWorld.calendar!.month).toBe(1);
-      expect(nextWorld.calendar!.year).toBe(2025);
+      expect(nextWorld.year).toBe(2026);
     });
 
     it("resets _daysSinceLastWeeklyTick on weekly tick (7 days)", () => {
       const world = makeMockWorld({
         _daysSinceLastWeeklyTick: 6,
-        calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 7 },
+        calendar: { month: 1, currentWeek: 1, currentDay: 7 },
       });
 
       const nextWorld = advanceOneDay(world);
@@ -40,7 +40,7 @@ describe("tickDaily", () => {
     it("increments _daysSinceLastWeeklyTick when not a weekly tick", () => {
       const world = makeMockWorld({
         _daysSinceLastWeeklyTick: 3,
-        calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 4 },
+        calendar: { month: 1, currentWeek: 1, currentDay: 4 },
       });
 
       const nextWorld = advanceOneDay(world);
@@ -50,7 +50,7 @@ describe("tickDaily", () => {
 
     it("runs month boundary logic when calendar crosses month", () => {
       const world = makeMockWorld({
-        calendar: { year: 2025, month: 1, currentWeek: 4, currentDay: 31 },
+        calendar: { month: 1, currentWeek: 4, currentDay: 31 },
       });
 
       const runPipelineSpy = vi.spyOn(pipelineRunner, "runPipeline");
@@ -69,7 +69,7 @@ describe("tickDaily", () => {
 
     it("runs year boundary logic when calendar crosses year", () => {
       const world = makeMockWorld({
-        calendar: { year: 2025, month: 12, currentWeek: 52, currentDay: 31 },
+        calendar: { month: 12, currentWeek: 52, currentDay: 31 },
         _daysSinceLastWeeklyTick: 6, // make it a weekly tick
       });
 
@@ -79,9 +79,9 @@ describe("tickDaily", () => {
 
       expect(nextWorld.calendar!.currentDay).toBe(1);
       expect(nextWorld.calendar!.month).toBe(1);
-      expect(nextWorld.calendar!.year).toBe(2026);
+      expect(nextWorld.year).toBe(2027);
 
-      // Year boundary logic depends on if phase6 runs. For this test, verifying calendar is enough.
+      // Year boundary logic depends on if phase6 runs. For this test, verifying year is enough.
 
       expect(runPipelineSpy).toHaveBeenCalled();
 
@@ -90,7 +90,7 @@ describe("tickDaily", () => {
 
     it("fires yearly boundary during active_basho phase", () => {
       const world = makeMockWorld({
-        calendar: { year: 2025, month: 12, currentWeek: 52, currentDay: 31 },
+        calendar: { month: 12, currentWeek: 52, currentDay: 31 },
         cyclePhase: "active_basho",
         _daysSinceLastWeeklyTick: 6, // weekly tick
         currentBasho: {
@@ -108,7 +108,7 @@ describe("tickDaily", () => {
       const nextWorld = advanceOneDay(world);
 
       // Calendar should cross to new year
-      expect(nextWorld.calendar!.year).toBe(2026);
+      expect(nextWorld.year).toBe(2027);
       expect(nextWorld.calendar!.month).toBe(1);
       // Year boundary flag should be set
       expect(nextWorld.transientContext?.boundaries?.yearBoundary).toBe(true);
@@ -174,7 +174,7 @@ describe("tickDaily", () => {
       const world = makeMockWorld({
         cyclePhase: "interim",
         dayIndexGlobal: 0,
-        calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
+        calendar: { month: 1, currentWeek: 1, currentDay: 1 },
       });
 
       // Slow path: 7 individual advanceOneDay calls

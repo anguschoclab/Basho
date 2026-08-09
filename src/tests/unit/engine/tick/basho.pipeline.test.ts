@@ -51,9 +51,7 @@ function makeBashoWorld(day = 1, overrides: Partial<WorldState> = {}): WorldStat
     ]),
     calendar: {
       currentWeek: 1,
-      year: 2025,
       month: 1,
-      week: 1,
       currentDay: 1,
     } as any,
     ...overrides,

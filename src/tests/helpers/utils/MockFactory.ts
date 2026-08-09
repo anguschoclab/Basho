@@ -56,7 +56,7 @@ export const MockFactory = {
         },
         active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
       },
-      calendar: { year: 2026, currentWeek: 1 },
+      calendar: { currentWeek: 1 },
       mediaState: {
         heyaPressure: {},
         mediaHeat: {},

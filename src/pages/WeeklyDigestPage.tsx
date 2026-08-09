@@ -1,4 +1,5 @@
 import { AppLayout } from "@/components/layout/AppLayout";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import { DigestWidget } from "@/components/dashboard/DigestWidget";
 import { useGame } from "@/contexts/useGame";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -22,7 +23,7 @@ export default function WeeklyDigestPage() {
     );
   }
 
-  const weekLabel = `${world.year ?? 2025} — Week ${world.week ?? 0}`;
+  const weekLabel = `${world.year ?? DEFAULT_START_YEAR} — Week ${world.week ?? 0}`;
 
   return (
     <AppLayout pageTitle="Weekly Report">

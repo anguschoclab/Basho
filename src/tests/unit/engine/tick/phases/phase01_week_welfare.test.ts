@@ -26,7 +26,7 @@ describe("Phase 01: Week Welfare", () => {
     for (const h of heyas) heyaMap.set(h.id, h);
     return {
       heyas: heyaMap,
-      calendar: { currentWeek: 1, year: 2025 },
+      calendar: { currentWeek: 1, },
       mediaState: mediaState ?? {
         heyaPressure: {},
         mediaHeat: {},

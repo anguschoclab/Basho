@@ -412,7 +412,6 @@ export const sampleWorldState: WorldState = {
   year: 2024,
   week: 1,
   calendar: {
-    year: 2024,
     month: 1,
     currentDay: 1,
     currentWeek: 1,

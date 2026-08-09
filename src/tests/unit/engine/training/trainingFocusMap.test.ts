@@ -17,7 +17,7 @@ function makeMinimalWorld(overrides: Partial<WorldState> = {}): WorldState {
     events: { log: [], pendingEvents: [] } as any,
     history: [],
     ftue: {} as any,
-    calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
+    calendar: { month: 1, currentWeek: 1, currentDay: 1 },
     year: 2025,
     week: 1,
     dayIndexGlobal: 0,

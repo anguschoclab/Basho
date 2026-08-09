@@ -49,7 +49,7 @@ describe("P3.7: Monthly market placement", () => {
     // Advance one day in interim — no month boundary should fire
     const world = makeMockWorld({
       cyclePhase: "interim",
-      calendar: { year: 2025, month: 1, currentDay: 3, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 3, currentWeek: 1 } as any,
       _daysSinceLastWeeklyTick: 0,
     });
 

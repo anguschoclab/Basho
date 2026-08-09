@@ -23,7 +23,7 @@ function makeWorld(overrides: Partial<WorldState> = {}): WorldState {
       allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
       active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
     },
-    calendar: { year: 2026, currentWeek: 1 },
+    calendar: { currentWeek: 1 },
     ...overrides,
   } as WorldState;
 }

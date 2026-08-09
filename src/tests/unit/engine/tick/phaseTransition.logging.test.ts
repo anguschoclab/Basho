@@ -8,7 +8,7 @@ describe("P1.5: Phase transition logging", () => {
     const spy = vi.spyOn(Logger, "info").mockImplementation(() => {});
     const world = makeMockWorld({
       cyclePhase: "interim",
-      calendar: { year: 2025, month: 1, currentDay: 1, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 1, currentWeek: 1 } as any,
     });
 
     advanceOneDay(world);
@@ -26,7 +26,7 @@ describe("P1.5: Phase transition logging", () => {
     const world = makeMockWorld({
       cyclePhase: "pre_basho",
       currentBashoName: "hatsu",
-      calendar: { year: 2025, month: 1, currentDay: 1, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 1, currentWeek: 1 } as any,
     });
 
     advanceOneDay(world);

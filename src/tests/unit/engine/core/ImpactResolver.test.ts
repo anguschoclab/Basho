@@ -28,7 +28,7 @@ describe("ImpactResolver", () => {
       events: { version: "1.0.0", log: [], dedupe: {} },
       history: [],
       ftue: {} as any,
-      calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
+      calendar: { month: 1, currentWeek: 1, currentDay: 1 },
       records: {} as any,
       settings: { archiveMode: "standard" },
     } as unknown as WorldState;

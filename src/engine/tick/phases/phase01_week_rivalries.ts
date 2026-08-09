@@ -79,7 +79,7 @@ export function phase01_week_rivalries(world: WorldState): StateImpact {
   // 2. Event Log Trimming
   if (world.events) {
     const eventsState = { ...world.events };
-    const currentYear = world.calendar?.year ?? world.year ?? DEFAULT_START_YEAR;
+    const currentYear = world.year ?? DEFAULT_START_YEAR;
     const currentWeek = world.calendar?.currentWeek ?? world.week ?? 0;
     const currentTotalWeeks = currentYear * WEEKS_PER_YEAR + currentWeek;
 

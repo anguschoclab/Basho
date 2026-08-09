@@ -67,7 +67,7 @@ describe("boutResultApplier", () => {
             } as unknown as import("@/engine/types/heya").Heya,
           ],
         ]),
-        calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
+        calendar: { currentWeek: 1, month: 1, currentDay: 1 },
         currentBasho: {
           id: "test-basho",
           year: 2025,
@@ -179,7 +179,7 @@ describe("boutResultApplier", () => {
             } as unknown as import("@/engine/types/heya").Heya,
           ],
         ]),
-        calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
+        calendar: { currentWeek: 1, month: 1, currentDay: 1 },
         currentBasho: {
           id: "test-basho",
           year: 2025,
@@ -290,7 +290,7 @@ describe("boutResultApplier", () => {
             } as unknown as import("@/engine/types/heya").Heya,
           ],
         ]),
-        calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
+        calendar: { currentWeek: 1, month: 1, currentDay: 1 },
         currentBasho: {
           id: "test-basho",
           year: 2025,
@@ -401,7 +401,7 @@ describe("boutResultApplier", () => {
             } as unknown as import("@/engine/types/heya").Heya,
           ],
         ]),
-        calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
+        calendar: { currentWeek: 1, month: 1, currentDay: 1 },
         currentBasho: {
           id: "test-basho",
           year: 2025,
@@ -512,7 +512,7 @@ describe("boutResultApplier", () => {
             } as unknown as import("@/engine/types/heya").Heya,
           ],
         ]),
-        calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
+        calendar: { currentWeek: 1, month: 1, currentDay: 1 },
         currentBasho: {
           id: "test-basho",
           year: 2025,
@@ -624,7 +624,7 @@ describe("boutResultApplier", () => {
             } as unknown as import("@/engine/types/heya").Heya,
           ],
         ]),
-        calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
+        calendar: { currentWeek: 1, month: 1, currentDay: 1 },
         currentBasho: {
           id: "test-basho",
           year: 2025,
@@ -749,7 +749,7 @@ describe("boutResultApplier", () => {
             } as unknown as import("@/engine/types/heya").Heya,
           ],
         ]),
-        calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
+        calendar: { currentWeek: 1, month: 1, currentDay: 1 },
         currentBasho: {
           id: "test-basho",
           year: 2025,
@@ -865,7 +865,7 @@ describe("boutResultApplier", () => {
       const worldNoBasho: Partial<WorldState> = {
         rikishi: new Map(),
         heyas: new Map(),
-        calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
+        calendar: { currentWeek: 1, month: 1, currentDay: 1 },
       };
       const impact = applyBoutResult(worldNoBasho as WorldState, match, result);
       expect(impact.entities?.rikishiUpdates).toBeUndefined();

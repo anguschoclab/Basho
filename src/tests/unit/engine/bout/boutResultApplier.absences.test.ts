@@ -61,7 +61,7 @@ function makeWorld(opts?: {
         } as any,
       ],
     ]),
-    calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
+    calendar: { currentWeek: 1, month: 1, currentDay: 1 },
     currentBasho: {
       id: "test-basho",
       year: 2025,
@@ -138,7 +138,7 @@ function makeFusenshoWorld(opts?: {
         } as any,
       ],
     ]),
-    calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
+    calendar: { currentWeek: 1, month: 1, currentDay: 1 },
     currentBasho: {
       id: "test-basho",
       year: 2025,

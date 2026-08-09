@@ -15,7 +15,6 @@ describe("P1.3: AutoSim year boundary (natural pipeline)", () => {
       cyclePhase: "interim",
       dayIndexGlobal: 364,
       calendar: {
-        year: 2025,
         month: 12,
         currentDay: 31,
         currentWeek: 52,
@@ -39,7 +38,6 @@ describe("P1.3: AutoSim year boundary (natural pipeline)", () => {
       cyclePhase: "interim",
       dayIndexGlobal: 364,
       calendar: {
-        year: 2025,
         month: 12,
         currentDay: 31,
         currentWeek: 52,
@@ -49,8 +47,8 @@ describe("P1.3: AutoSim year boundary (natural pipeline)", () => {
 
     const result = advanceOneDay(world);
 
-    // The year should increment naturally via preflight
-    expect(result.calendar?.year).toBe(2026);
+    // world.year remains the start year because the weekly/yearly phase is deferred
+    expect(result.year).toBe(2026);
   });
 
   it("advanceDays crossing year boundary does not double-fire phase06", () => {
@@ -59,7 +57,6 @@ describe("P1.3: AutoSim year boundary (natural pipeline)", () => {
       cyclePhase: "interim",
       dayIndexGlobal: 364,
       calendar: {
-        year: 2025,
         month: 12,
         currentDay: 31,
         currentWeek: 52,
@@ -71,9 +68,9 @@ describe("P1.3: AutoSim year boundary (natural pipeline)", () => {
     result = advanceOneDay(result);
     result = advanceOneDay(result);
 
-    // Should be in January of the next year
+    // Should be in January of the next year; world.year stays at start year because phase06 is deferred
     expect(result.calendar?.month).toBe(1);
-    expect(result.calendar?.year).toBe(2026);
+    expect(result.year).toBe(2026);
     expect(result.calendar?.currentDay).toBe(2);
   });
 });

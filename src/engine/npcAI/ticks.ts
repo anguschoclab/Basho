@@ -1,4 +1,5 @@
 import type { WorldState } from "../types/world";
+import { DEFAULT_START_YEAR } from "../../constants/engine/calendar";
 import type { Id } from "../types/common";
 import { getAvailableStables } from "../selectors";
 import { stableSort } from "../utils/sort";
@@ -213,7 +214,7 @@ export function tickYear(world: WorldState): StateImpact {
         "NPC_MANAGER_DECISION",
         "narrative",
         {
-          year: world.calendar?.year ?? 0,
+          year: world.year ?? DEFAULT_START_YEAR,
           strategy: "rebuild",
           ambition: persona.traits.ambition,
         },

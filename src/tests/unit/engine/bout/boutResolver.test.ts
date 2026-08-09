@@ -105,7 +105,7 @@ describe("resolveBout — henka momentum penalty", () => {
       momentum: 70,
     });
     const west = mockRikishi("r-west", { power: 80, speed: 40, balance: 50, momentum: 70 });
-    const basho = makeMockBasho();
+    const basho = makeMockBasho({ year: 2025 }); // fixed seed for deterministic momentum outcome
     const ctx = makeBoutContext({ playerSide: "east", playerTactic: "HENKA" });
 
     // Run enough times to capture a case where east wins with henka

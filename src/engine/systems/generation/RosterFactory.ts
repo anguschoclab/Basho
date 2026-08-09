@@ -16,6 +16,7 @@ import {
   YOKOZUNA_COUNT_MAX,
   ROSTER_TIER_FALLBACK_CHANCE,
 } from "../../../constants/engine/generation";
+import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
 
 export function createRosters(
   worldRng: SeededRNG,
@@ -85,7 +86,7 @@ export function createRosters(
       const r = generateFullRikishi({
         id: rikishiId,
         rng: worldRng,
-        currentYear: 2025,
+        currentYear: DEFAULT_START_YEAR,
         rank: config.rank,
         division: config.division,
         side,

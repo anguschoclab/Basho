@@ -121,6 +121,11 @@ export const GlobalCupService = {
     const builder = createImpactBuilder("GlobalCupService.initializeTournament");
     const participants = this.selectParticipants(world);
 
+    // Cannot run a meaningful tournament without a full bracket.
+    if (participants.length < 8) {
+      return builder.build();
+    }
+
     const bracket: GlobalCupMatch[] = [];
     // Quarterfinals: 1v8, 2v7, 3v6, 4v5
     const pairings = [

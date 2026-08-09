@@ -7,6 +7,7 @@
 
 import type { Id } from "../../engine/types/common";
 import type { WorldState } from "../../engine/types/world";
+import { DEFAULT_START_YEAR } from "../../constants/engine/calendar";
 import type { RivalryPairState } from "../../engine/rivalries";
 import { queryEvents } from "../../engine/events";
 import { generateH2HCommentary } from "../../engine/h2h";
@@ -64,7 +65,7 @@ export interface UIDigest {
  * Label for world.
  */
 export function labelForWorld(world: WorldState): string {
-  const year = world.year ?? 2025;
+  const year = world.year ?? DEFAULT_START_YEAR;
   const week = world.week ?? 0;
   const phase = world.cyclePhase ?? "interim";
   return `${year} — Week ${week} (${phase})`;

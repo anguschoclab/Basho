@@ -12,7 +12,7 @@ describe("P3.6: advanceWithGates", () => {
     const world = makeMockWorld({
       cyclePhase: "interim",
       dayIndexGlobal: 0,
-      calendar: { year: 2025, month: 1, currentDay: 1, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 1, currentWeek: 1 } as any,
     });
 
     const result = advanceWithGates(world, {
@@ -28,7 +28,7 @@ describe("P3.6: advanceWithGates", () => {
     const world = makeMockWorld({
       cyclePhase: "interim",
       dayIndexGlobal: 0,
-      calendar: { year: 2025, month: 1, currentDay: 1, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 1, currentWeek: 1 } as any,
     });
 
     const result = advanceWithGates(world, {
@@ -44,7 +44,7 @@ describe("P3.6: advanceWithGates", () => {
     const world = makeMockWorld({
       cyclePhase: "interim",
       dayIndexGlobal: 0,
-      calendar: { year: 2025, month: 1, currentDay: 1, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 1, currentWeek: 1 } as any,
     });
 
     const result = advanceWithGates(world, {
@@ -63,7 +63,7 @@ describe("P3.6: advanceWithGates", () => {
     const world = makeMockWorld({
       cyclePhase: "interim",
       dayIndexGlobal: 0,
-      calendar: { year: 2025, month: 1, currentDay: 1, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 1, currentWeek: 1 } as any,
     });
 
     const result = advanceWithGates(world, {
@@ -78,7 +78,7 @@ describe("P3.6: advanceWithGates", () => {
     const world = makeMockWorld({
       cyclePhase: "interim",
       dayIndexGlobal: 0,
-      calendar: { year: 2025, month: 1, currentDay: 1, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 1, currentWeek: 1 } as any,
       _autonomousSim: false,
     });
 
@@ -94,7 +94,7 @@ describe("P3.6: advanceWithGates", () => {
     const world = makeMockWorld({
       cyclePhase: "interim",
       dayIndexGlobal: 0,
-      calendar: { year: 2025, month: 1, currentDay: 1, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 1, currentWeek: 1 } as any,
     });
     const originalDayIndex = world.dayIndexGlobal;
 

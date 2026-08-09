@@ -363,7 +363,7 @@ export const KENSHO_RNG_MIN = 0.8;
 export const KENSHO_RNG_RANGE = 0.4;
 export const RIVALRY_HEAT_AGGRESSION_MULTIPLIER = 0.15;
 export const RIVALRY_SPITE_MENTAL_MULTIPLIER = 0.2;
-export const DEFAULT_YEAR = 2025;
+export const DEFAULT_YEAR = 2026;
 export const DEFAULT_DAY = 1;
 export const DEFAULT_BASHO_NUMBER = 1;
 

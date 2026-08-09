@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { phase06_yearly_boundary } from "@/engine/tick/phases/phase06_yearly_boundary";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
 import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
+import { makeMockWorld } from "../../utils";
 
 describe("Single-pass yearly iteration (B2.1)", () => {
   it("phase06_yearly_boundary produces valid StateImpact with metadata", () => {
@@ -69,5 +70,22 @@ describe("Single-pass yearly iteration (B2.1)", () => {
         expect(r.age).toBe(worldWithYearBoundary.year - r.birthYear);
       }
     }
+  });
+
+  it("phase06_yearly_boundary increments world.year by exactly one", () => {
+    const world = makeMockWorld({
+      year: 2026,
+      calendar: { currentWeek: 1, month: 1, currentDay: 1 } as any,
+      globalCup: { isActive: true } as any,
+      transientContext: {
+        boundaries: { monthBoundary: false, yearBoundary: true },
+        pendingYearBoundary: true,
+      },
+    });
+
+    const impact = phase06_yearly_boundary(world);
+    const result = resolveImpacts(world, [impact]);
+
+    expect(result.year).toBe(2027);
   });
 });

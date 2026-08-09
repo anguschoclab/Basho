@@ -8,6 +8,7 @@ import { RNGRegistry } from "../../core/RNGRegistry";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import type { WorldState } from "../../types/world";
+import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
 import type { Id } from "../../types/common";
 import type { Rikishi } from "../../types/rikishi";
 import { TalentPoolType, TalentCandidate, TalentPoolWorldState } from "../../types/talent";
@@ -23,7 +24,7 @@ export function ensureTalentPoolState(world: WorldState): TalentPoolWorldState {
   if (!world.talentPool) {
     world.talentPool = { // @world-builder
       version: "1.0.0",
-      lastYearlyRefreshYear: world.year ?? 2025,
+      lastYearlyRefreshYear: world.year ?? DEFAULT_START_YEAR,
       candidates: {},
       pools: {
         high_school: {
@@ -259,7 +260,7 @@ function filterAgedOutCandidates(
 export function tickYear(world: WorldState): StateImpact {
   const builder = createImpactBuilder("tickYear");
   const tp = ensureTalentPoolState(world);
-  const currentYear = world.year ?? 2025;
+  const currentYear = world.year ?? DEFAULT_START_YEAR;
   const rng = RNGRegistry.getSystemRNG(world, "scouting", `yearly_refresh_${currentYear}`);
 
   const poolTypes: TalentPoolType[] = ["high_school", "university", "foreign"];

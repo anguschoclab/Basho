@@ -6,6 +6,7 @@
  */
 
 import { WorldState } from "../../types/world";
+import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
 import type { Rikishi } from "../../types/rikishi";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
@@ -21,7 +22,7 @@ export const HistoryService = {
     const records = world.records || this.createEmptyRecords();
 
     let changed = false;
-    const currentYear = world.year ?? 2026;
+    const currentYear = world.year ?? DEFAULT_START_YEAR;
     const currentMonth = world.calendar?.month ?? 1;
 
     const checkRecord = (list: RecordEntry[], value: number, limit: number = 5): boolean => {

@@ -60,7 +60,7 @@ function makeWorld(overrides: Partial<WorldState> = {}): WorldState {
     meta: { tone: "classic", drift: {} },
     globalKimariteStats: {},
     currentBasho: basho,
-    calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: 1 },
+    calendar: { currentWeek: 1, month: 1, currentDay: 1 },
     ...overrides,
   } as unknown as WorldState;
 }

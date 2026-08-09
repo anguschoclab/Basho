@@ -27,6 +27,7 @@ import type { BashoName, BashoState } from "../../types/basho";
 import type { Faction, IchimonName } from "../../types/economy";
 import { TARGET_ROSTER_SIZE } from "../../../constants/engine/recruitmentExtended";
 import { getBashoNumber } from "../../calendar";
+import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
 import { RivalryService } from "../narrative/RivalryService";
 import { resetImpactTimestampCounter } from "../../core/StateImpact";
 import { createStables } from "./HeyaFactory";
@@ -75,7 +76,7 @@ export function generateInitialWorld(seed: string): WorldState {
   const world: WorldState = {
     id: worldRng.uuid("WD"),
     seed,
-    year: 2025,
+    year: DEFAULT_START_YEAR,
     week: 1,
     dayIndexGlobal: 0,
     // Start in interim: preflight transitions interim → banzuke_reveal → pre_basho → active_basho.
@@ -100,7 +101,7 @@ export function generateInitialWorld(seed: string): WorldState {
     playerHeyaId: Array.from(heyaMap.keys())[0],
     almanacSnapshots: [],
     factions: createInitialFactions(worldRng),
-    calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
+    calendar: { month: 1, currentWeek: 1, currentDay: 1 },
     records: {
       allTime: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },
       active: { careerWins: [], makuuchiWins: [], yusho: [], consecutiveYusho: [], kinboshi: [] },

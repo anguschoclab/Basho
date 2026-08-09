@@ -14,6 +14,7 @@
  */
 
 import type { WorldState } from "../../types/world";
+import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { mergeImpacts } from "../../core/ImpactResolver";
@@ -98,7 +99,7 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
     status: "meta_shift",
     incident: "monthly_boundary",
     day: world.calendar?.month ?? 1,
-    score: world.calendar?.year ?? 2026,
+    score: world.year ?? DEFAULT_START_YEAR,
   });
 
   // NPC Monthly Strategy: finance decisions, sponsor recruitment, governance,

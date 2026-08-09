@@ -82,15 +82,13 @@ export function phase00_preflight(world: WorldState): StateImpact {
 }
 
 function advanceCalendarDay(world: WorldState): {
-  calendar: { currentWeek: number; year: number; month: number; week: number; currentDay: number };
+  calendar: { currentWeek: number; month: number; currentDay: number };
   monthBoundary: boolean;
   yearBoundary: boolean;
 } {
   const cal = {
     currentWeek: world.calendar?.currentWeek ?? 1,
-    year: world.calendar?.year ?? 2026,
     month: world.calendar?.month ?? 1,
-    week: world.calendar?.week ?? 1,
     currentDay: world.calendar?.currentDay ?? 1,
   };
 
@@ -106,7 +104,6 @@ function advanceCalendarDay(world: WorldState): {
     monthBoundary = true;
     if (cal.month > MAX_MONTH) {
       cal.month = 1;
-      cal.year += 1;
       yearBoundary = true;
     }
   }
@@ -189,7 +186,7 @@ function checkPhaseTransition(
 function logTransition(world: WorldState, from: CyclePhase, to: CyclePhase, summary: string) {
   info(`Phase transition: ${from} → ${to} — ${summary}`, "Pipeline", {
     dayIndexGlobal: world.dayIndexGlobal,
-    year: world.calendar?.year,
+    year: world.year,
     month: world.calendar?.month,
   });
 }

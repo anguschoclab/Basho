@@ -17,7 +17,7 @@ describe("detectKinboshi ordering and awardFact assignment", () => {
   it("sets result.awardFact = 'kinboshi' and generates award line in pbpLines", () => {
     const east = mockRikishi("r-east", { rank: "maegashira", injured: false });
     const west = mockRikishi("r-west", { rank: "yokozuna", injured: false });
-    const basho = makeMockBasho();
+    const basho = makeMockBasho({ year: 2025 }); // fixed seed for deterministic award outcome
     const ctx = makeBoutContext();
 
     const { result } = resolveBout(ctx, east, west, basho);
@@ -34,7 +34,7 @@ describe("detectKinboshi ordering and awardFact assignment", () => {
   it("sets result.awardFact = 'ginboshi' and generates award line in pbpLines", () => {
     const east = mockRikishi("r-east", { rank: "maegashira", injured: false });
     const west = mockRikishi("r-west", { rank: "ozeki", injured: false });
-    const basho = makeMockBasho();
+    const basho = makeMockBasho({ year: 2025 }); // fixed seed for deterministic award outcome
     const ctx = makeBoutContext();
 
     const { result } = resolveBout(ctx, east, west, basho);

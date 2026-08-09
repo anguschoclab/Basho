@@ -12,6 +12,7 @@ import {
 } from "./types/avatar";
 import type { Division } from "./types/banzuke";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 
 /**
  * Generate a complete avatar configuration from parameters.
@@ -167,7 +168,7 @@ export function generateDefaultAvatarConfig(rikishi: {
   division?: Division;
   isRetired?: boolean;
 }): AvatarConfig {
-  const currentYear = 2025; // Should be passed in from world state in actual use
+  const currentYear = DEFAULT_START_YEAR; // Should be passed in from world state in actual use
   const age = currentYear - rikishi.birthYear;
   const isSekitori = rikishi.division ? isSekitoriDivision(rikishi.division) : false;
 

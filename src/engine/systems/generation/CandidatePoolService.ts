@@ -19,6 +19,7 @@
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import type { WorldState } from "../../types/world";
+import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
 import type { Id } from "../../types/common";
 import type {
   TalentPoolWorldState,
@@ -34,7 +35,7 @@ export function ensureCandidatePoolState(world: WorldState): TalentPoolWorldStat
   if (!world.candidatePool) {
     world.candidatePool = { // @world-builder
       version: "1.0.0",
-      lastYearlyRefreshYear: world.year ?? 2025,
+      lastYearlyRefreshYear: world.year ?? DEFAULT_START_YEAR,
       candidates: {},
       pools: {
         high_school: {

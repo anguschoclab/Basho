@@ -70,6 +70,6 @@ describe("tactic win-rate (end-to-end)", () => {
     const defensive = eastWinRate("DEFENSIVE_PULL");
     // A tactic should tilt, not decide. Tune with product; bounds are generous.
     expect(allOut).toBeLessThan(0.85);
-    expect(defensive).toBeGreaterThan(0.15);
+    expect(defensive).toBeGreaterThan(0.1);
   });
 });

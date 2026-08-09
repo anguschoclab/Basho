@@ -323,9 +323,7 @@ export interface WorldState {
 
   calendar?: {
     currentWeek: number;
-    year?: number;
     month?: number;
-    week?: number;
     currentDay?: number;
   };
 

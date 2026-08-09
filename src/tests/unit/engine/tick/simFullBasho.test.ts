@@ -13,7 +13,7 @@ describe("P2.4: SIM_FULL_BASHO bout resolution", () => {
     const world = makeMockWorld({
       cyclePhase: "active_basho",
       dayIndexGlobal: 2,
-      calendar: { year: 2025, month: 1, currentDay: 3, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 3, currentWeek: 1 } as any,
       currentBasho: {
         year: 2025,
         bashoNumber: 1,
@@ -43,7 +43,7 @@ describe("P2.4: SIM_FULL_BASHO bout resolution", () => {
     const world = makeMockWorld({
       cyclePhase: "active_basho",
       dayIndexGlobal: 2,
-      calendar: { year: 2025, month: 1, currentDay: 3, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 3, currentWeek: 1 } as any,
       currentBasho: {
         year: 2025,
         bashoNumber: 1,
@@ -72,7 +72,7 @@ describe("P2.4: SIM_FULL_BASHO bout resolution", () => {
     const world = makeMockWorld({
       cyclePhase: "active_basho",
       dayIndexGlobal: 2,
-      calendar: { year: 2025, month: 1, currentDay: 3, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 3, currentWeek: 1 } as any,
       currentBasho: {
         year: 2025,
         bashoNumber: 1,

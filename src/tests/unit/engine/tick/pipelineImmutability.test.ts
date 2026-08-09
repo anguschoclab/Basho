@@ -32,7 +32,7 @@ describe("pipeline immutability", () => {
   it("advanceOneDay does not mutate the input world", () => {
     const world = makeMockWorld({
       dayIndexGlobal: 0,
-      calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
+      calendar: { month: 1, currentWeek: 1, currentDay: 1 },
     });
 
     const frozen = deepFreeze(world);
@@ -44,7 +44,7 @@ describe("pipeline immutability", () => {
   it("runPipeline does not mutate the input world for each phase", () => {
     const world = makeMockWorld({
       dayIndexGlobal: 0,
-      calendar: { year: 2025, month: 1, currentWeek: 1, currentDay: 1 },
+      calendar: { month: 1, currentWeek: 1, currentDay: 1 },
     });
 
     const frozen = deepFreeze(world);

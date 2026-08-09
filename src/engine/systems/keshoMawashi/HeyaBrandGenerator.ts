@@ -10,6 +10,7 @@ import type { Heya } from "../../types/heya";
 import type { HeyaBrandIdentity, CrestMotif } from "../../types/keshoMawashi";
 import type { SeededRNG } from "../../rng";
 import { rngFromSeed } from "../../rng";
+import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
 
 /** Heya names and their traditional color associations (when applicable) */
 const HEYA_NAME_TRADITIONS: Record<string, { colors: string[]; motifs: CrestMotif[] }> = {
@@ -210,7 +211,7 @@ function generateSingleHeyaBrand(rng: SeededRNG, heya: Heya): HeyaBrandIdentity 
     crestMotif,
     crestStyle,
     traditionLevel,
-    createdAt: { year: 2025, basho: "hatsu" }, // Default world start
+    createdAt: { year: DEFAULT_START_YEAR, basho: "hatsu" }, // Default world start
   };
 }
 

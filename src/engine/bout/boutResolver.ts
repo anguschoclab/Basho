@@ -21,6 +21,7 @@ import type { BoutContext } from "../bout/boutPhysics";
 import type { Rikishi } from "../types/rikishi";
 import type { BashoState, BoutResult, BashoName } from "../types/basho";
 import type { WorldState } from "../types/world";
+import { DEFAULT_START_YEAR } from "../../constants/engine/calendar";
 import type { Side } from "../types/banzuke";
 // We import the B+ spatial physics runner
 import { resolveBoutPhysics, conditionMultiplier } from "./boutPhysics";
@@ -249,7 +250,7 @@ export function resolveBout(
   }
 
   // 2.1. Record career highlights for the winner
-  const bashoLabel = `${basho.year ?? world?.year ?? 2025}-${bashoName ?? "unknown"}`;
+  const bashoLabel = `${basho.year ?? world?.year ?? DEFAULT_START_YEAR}-${bashoName ?? "unknown"}`;
   const winnerHighlights: CareerHighlight[] = [];
   const winnerWins = winner.currentBashoWins ?? 0;
   const winnerLosses = winner.currentBashoLosses ?? 0;

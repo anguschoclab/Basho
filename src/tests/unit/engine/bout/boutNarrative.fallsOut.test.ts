@@ -39,7 +39,7 @@ function makeWorld(opts?: {
     heyas: new Map([
       ["test-heya", { id: "test-heya", name: "Test Heya", rikishiIds: ["east", "west"] } as any],
     ]),
-    calendar: { currentWeek: 1, month: 1, year: 2025, currentDay: opts?.day ?? 7 },
+    calendar: { currentWeek: 1, month: 1, currentDay: opts?.day ?? 7 },
     currentBasho: {
       id: "test-basho",
       year: 2025,

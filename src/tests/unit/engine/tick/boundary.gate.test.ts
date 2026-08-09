@@ -19,9 +19,7 @@ describe("P1.1: Boundary gate — month boundary", () => {
       _interimDaysRemaining: 42,
       calendar: {
         currentWeek: 1,
-        year: 2025,
         month: 1,
-        week: 1,
         currentDay: 31, // last day of Jan (31-day month) → next tick is month boundary
       } as any,
     });
@@ -44,9 +42,7 @@ describe("P1.1: Boundary gate — month boundary", () => {
       _interimDaysRemaining: 42,
       calendar: {
         currentWeek: 1,
-        year: 2025,
         month: 1,
-        week: 1,
         currentDay: 31, // last day of Jan (31-day month) → next tick is month boundary
       } as any,
     });
@@ -68,9 +64,7 @@ describe("P1.1: Boundary gate — month boundary", () => {
       _interimDaysRemaining: 42,
       calendar: {
         currentWeek: 1,
-        year: 2025,
         month: 1,
-        week: 1,
         currentDay: 31, // last day of Jan (31-day month) → next tick is month boundary
       } as any,
     });
@@ -105,9 +99,7 @@ describe("P1.1: Boundary gate — year boundary", () => {
       _interimDaysRemaining: 42,
       calendar: {
         currentWeek: 1,
-        year: 2025,
         month: 12,
-        week: 1,
         currentDay: 31, // last day of December → next tick is year boundary
       } as any,
     });
@@ -124,9 +116,7 @@ describe("P1.1: Boundary gate — year boundary", () => {
       _interimDaysRemaining: 42,
       calendar: {
         currentWeek: 1,
-        year: 2025,
         month: 12,
-        week: 1,
         currentDay: 31, // last day of December → next tick is year boundary
       } as any,
     });
@@ -134,7 +124,7 @@ describe("P1.1: Boundary gate — year boundary", () => {
     const result = advanceOneDay(world);
     expect(result._daysSinceLastWeeklyTick).toBe(0); // weekly tick reset
     expect(result.transientContext?.pendingYearBoundary).toBeFalsy();
-    expect(result.calendar?.year).toBe(2026);
+    expect(result.year).toBe(2027);
   });
 
   it("defers year boundary from day 3 to day 7", () => {
@@ -144,9 +134,7 @@ describe("P1.1: Boundary gate — year boundary", () => {
       _interimDaysRemaining: 42,
       calendar: {
         currentWeek: 1,
-        year: 2025,
         month: 12,
-        week: 1,
         currentDay: 31,
       } as any,
     });
@@ -154,7 +142,7 @@ describe("P1.1: Boundary gate — year boundary", () => {
     // Day 3 → year boundary detected, deferred
     world = advanceOneDay(world);
     expect(world.transientContext?.pendingYearBoundary).toBe(true);
-    expect(world.calendar?.year).toBe(2026);
+    expect(world.year).toBe(2026); // phase06 deferred; world.year not yet incremented
 
     // Days 4-6: pending flag persists
     for (let i = 0; i < 3; i++) {
@@ -166,6 +154,7 @@ describe("P1.1: Boundary gate — year boundary", () => {
     world = advanceOneDay(world);
     expect(world._daysSinceLastWeeklyTick).toBe(0);
     expect(world.transientContext?.pendingYearBoundary).toBeFalsy();
+    expect(world.year).toBe(2027);
   });
 });
 
@@ -177,9 +166,7 @@ describe("P1.1: Boundary gate — both boundaries", () => {
       _interimDaysRemaining: 42,
       calendar: {
         currentWeek: 1,
-        year: 2025,
         month: 12,
-        week: 1,
         currentDay: 31, // Dec 31 → Jan 1 (both month + year boundary)
       } as any,
     });
@@ -188,7 +175,7 @@ describe("P1.1: Boundary gate — both boundaries", () => {
     world = advanceOneDay(world);
     expect(world.transientContext?.pendingMonthBoundary).toBe(true);
     expect(world.transientContext?.pendingYearBoundary).toBe(true);
-    expect(world.calendar?.year).toBe(2026);
+    expect(world.year).toBe(2026); // phase06 deferred; world.year not yet incremented
     expect(world.calendar?.month).toBe(1);
 
     // Advance to day 7
@@ -200,6 +187,7 @@ describe("P1.1: Boundary gate — both boundaries", () => {
     expect(world._daysSinceLastWeeklyTick).toBe(0);
     expect(world.transientContext?.pendingMonthBoundary).toBeFalsy();
     expect(world.transientContext?.pendingYearBoundary).toBeFalsy();
+    expect(world.year).toBe(2027);
   });
 });
 
@@ -211,9 +199,7 @@ describe("P1.1: Boundary gate — non-boundary weekly tick", () => {
       _interimDaysRemaining: 42,
       calendar: {
         currentWeek: 1,
-        year: 2025,
         month: 1,
-        week: 1,
         currentDay: 10, // mid-month, no boundary
       } as any,
     });
@@ -236,9 +222,7 @@ describe("P3.7: Monthly market placement", () => {
       _interimDaysRemaining: 42,
       calendar: {
         currentWeek: 1,
-        year: 2025,
         month: 1,
-        week: 1,
         currentDay: 10, // mid-month, no boundary
       } as any,
     });

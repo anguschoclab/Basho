@@ -1,4 +1,5 @@
 import type { WorldState } from "../types/world";
+import { DEFAULT_START_YEAR } from "../../constants/engine/calendar";
 import type { Rikishi } from "../types/rikishi";
 import type { Oyakata } from "../types/oyakata";
 import { EntityCollection } from "../core/EntityCollection";
@@ -86,7 +87,7 @@ export const SimTuningService = {
 
     // 2. Age Distribution
     const ageDistribution: Record<number, number> = {};
-    const calYear = world.calendar?.year ?? world.year;
+    const calYear = world.year ?? DEFAULT_START_YEAR;
     activeRikishi.forEach((r) => {
       const age = calYear - r.birthYear;
       ageDistribution[age] = (ageDistribution[age] || 0) + 1;
@@ -222,7 +223,7 @@ export const SimTuningService = {
           activeRikishi.length > 0
             ? (() => {
                 let sum = 0;
-                const year = world.calendar?.year ?? world.year;
+                const year = world.year ?? DEFAULT_START_YEAR;
                 for (const r of activeRikishi) sum += year - r.birthYear;
                 return sum / activeRikishi.length;
               })()

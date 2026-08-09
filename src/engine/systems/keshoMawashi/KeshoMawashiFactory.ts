@@ -8,6 +8,7 @@
 
 import type { Rikishi } from "../../types/rikishi";
 import type { WorldState } from "../../types/world";
+import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
 import type {
   KeshoMawashi,
   KeshoTier,
@@ -201,7 +202,7 @@ export function buildDesignPalette(world: WorldState, rikishi: Rikishi): Mawashi
     crestMotif: "dragon",
     crestStyle: "circular",
     traditionLevel: 0.5,
-    createdAt: { year: 2025, basho: "hatsu" },
+    createdAt: { year: DEFAULT_START_YEAR, basho: "hatsu" },
   };
 
   return {

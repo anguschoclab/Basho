@@ -1,4 +1,5 @@
 import type { WorldState } from "../types/world";
+import { DEFAULT_START_YEAR } from "../../constants/engine/calendar";
 import type { Rikishi } from "../types/rikishi";
 import type { BashoSimResult, BanzukeUpdateHook } from "../types/basho";
 import { getNextBasho, getBashoNumber } from "../calendar";
@@ -129,7 +130,7 @@ export function runAutoSim(
     if (config.verbosity !== "minimal") {
       ChronicleService.addHighlight(
         chronicle,
-        `${titleCase(bashoName)} ${currentWorld.calendar?.year ?? currentWorld.year}: ${bashoResult.yushoWinner.shikona} wins (${bashoResult.yushoWinner.wins}-${bashoResult.yushoWinner.losses})`
+        `${titleCase(bashoName)} ${currentWorld.year ?? DEFAULT_START_YEAR}: ${bashoResult.yushoWinner.shikona} wins (${bashoResult.yushoWinner.wins}-${bashoResult.yushoWinner.losses})`
       );
     }
 

@@ -13,12 +13,12 @@ describe("P3.2: Advance consolidation", () => {
     const world1 = makeMockWorld({
       cyclePhase: "interim",
       dayIndexGlobal: 0,
-      calendar: { year: 2025, month: 1, currentDay: 1, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 1, currentWeek: 1 } as any,
     });
     const world2 = makeMockWorld({
       cyclePhase: "interim",
       dayIndexGlobal: 0,
-      calendar: { year: 2025, month: 1, currentDay: 1, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 1, currentWeek: 1 } as any,
     });
 
     // advanceDaysFast uses advanceOneDay with skipDailyMicroPhases: true
@@ -37,7 +37,7 @@ describe("P3.2: Advance consolidation", () => {
     const world = makeMockWorld({
       cyclePhase: "interim",
       dayIndexGlobal: 0,
-      calendar: { year: 2025, month: 1, currentDay: 1, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 1, currentWeek: 1 } as any,
     });
 
     const result = advanceOneDay(world, { skipDailyMicroPhases: true });
@@ -50,7 +50,7 @@ describe("P3.2: Advance consolidation", () => {
     const world = makeMockWorld({
       cyclePhase: "interim",
       dayIndexGlobal: 0,
-      calendar: { year: 2025, month: 1, currentDay: 1, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 1, currentWeek: 1 } as any,
     });
 
     const result = advanceOneDay(world);
@@ -63,7 +63,7 @@ describe("P3.2: Advance consolidation", () => {
     const world = makeMockWorld({
       cyclePhase: "interim",
       dayIndexGlobal: 0,
-      calendar: { year: 2025, month: 1, currentDay: 1, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 1, currentWeek: 1 } as any,
       _autonomousSim: false,
     });
 
@@ -75,7 +75,7 @@ describe("P3.2: Advance consolidation", () => {
     const world = makeMockWorld({
       cyclePhase: "interim",
       dayIndexGlobal: 0,
-      calendar: { year: 2025, month: 1, currentDay: 1, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 1, currentWeek: 1 } as any,
       _autonomousSim: false,
     });
 
@@ -87,7 +87,7 @@ describe("P3.2: Advance consolidation", () => {
     const world = makeMockWorld({
       cyclePhase: "interim",
       dayIndexGlobal: 0,
-      calendar: { year: 2025, month: 1, currentDay: 1, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 1, currentWeek: 1 } as any,
       _autonomousSim: false,
     });
 
@@ -99,7 +99,7 @@ describe("P3.2: Advance consolidation", () => {
     const world = makeMockWorld({
       cyclePhase: "interim",
       dayIndexGlobal: 0,
-      calendar: { year: 2025, month: 1, currentDay: 1, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 1, currentWeek: 1 } as any,
     });
 
     const progressCalls: number[] = [];
@@ -114,7 +114,7 @@ describe("P3.2: Advance consolidation", () => {
     const world = makeMockWorld({
       cyclePhase: "interim",
       dayIndexGlobal: 0,
-      calendar: { year: 2025, month: 1, currentDay: 1, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 1, currentWeek: 1 } as any,
     });
 
     const progressCalls: number[] = [];

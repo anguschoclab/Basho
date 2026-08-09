@@ -13,7 +13,7 @@ describe("P2.3: advanceDaysFast", () => {
     const world = makeMockWorld({
       cyclePhase: "interim",
       dayIndexGlobal: 0,
-      calendar: { year: 2025, month: 1, currentDay: 1, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 1, currentWeek: 1 } as any,
     });
 
     const result = advanceDaysFast(world, 7);
@@ -24,7 +24,7 @@ describe("P2.3: advanceDaysFast", () => {
     const world = makeMockWorld({
       cyclePhase: "interim",
       dayIndexGlobal: 0,
-      calendar: { year: 2025, month: 1, currentDay: 1, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 1, currentWeek: 1 } as any,
     });
 
     const result = advanceDaysFast(world, 42);
@@ -36,13 +36,13 @@ describe("P2.3: advanceDaysFast", () => {
       seed: "determinism-test",
       cyclePhase: "interim",
       dayIndexGlobal: 0,
-      calendar: { year: 2025, month: 1, currentDay: 1, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 1, currentWeek: 1 } as any,
     });
     const world2 = makeMockWorld({
       seed: "determinism-test",
       cyclePhase: "interim",
       dayIndexGlobal: 0,
-      calendar: { year: 2025, month: 1, currentDay: 1, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 1, currentWeek: 1 } as any,
     });
 
     const result1 = advanceDaysFast(world1, 7);
@@ -54,12 +54,27 @@ describe("P2.3: advanceDaysFast", () => {
     const world = makeMockWorld({
       cyclePhase: "interim",
       dayIndexGlobal: 0,
-      calendar: { year: 2025, month: 1, currentDay: 1, currentWeek: 1 } as any,
+      calendar: { month: 1, currentDay: 1, currentWeek: 1 } as any,
     });
     const originalDayIndex = world.dayIndexGlobal;
 
     advanceDaysFast(world, 7);
 
     expect(world.dayIndexGlobal).toBe(originalDayIndex);
+  });
+
+  it("fast advance across a year boundary updates world.year", () => {
+    const world = makeMockWorld({
+      cyclePhase: "interim",
+      dayIndexGlobal: 0,
+      _daysSinceLastWeeklyTick: 6, // tomorrow is a weekly tick so phase06 runs
+      calendar: { month: 12, currentDay: 31, currentWeek: 52 } as any,
+    });
+
+    const result = advanceDaysFast(world, 1);
+
+    expect(result.year).toBe(2027);
+    expect(result.calendar?.month).toBe(1);
+    expect(result.calendar?.currentDay).toBe(1);
   });
 });

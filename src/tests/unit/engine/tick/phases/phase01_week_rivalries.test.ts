@@ -128,7 +128,8 @@ describe("phase01_week_rivalries", () => {
       const currentWeek = 10;
       const currentTotalWeeks = currentYear * WEEKS_PER_YEAR + currentWeek;
 
-      world.calendar = { year: currentYear, month: 1, week: 1, currentWeek: currentWeek, day: 1, next: vi.fn(), clone: vi.fn() as any, cyclePhase: "basho" } as any;
+      world.year = currentYear;
+      world.calendar = { month: 1, currentWeek: currentWeek } as any;
 
       const staleTotalWeeks = currentTotalWeeks - MAX_EVENT_AGE_WEEKS - 5;
       const staleYear = Math.floor(staleTotalWeeks / WEEKS_PER_YEAR);
