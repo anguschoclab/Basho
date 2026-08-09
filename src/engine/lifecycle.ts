@@ -244,7 +244,7 @@ export function _generateRookie(
   if (origin.balanceMod) stats.balance *= origin.balanceMod;
 
   // Get oyakata's former shikona for legacy patterns if assigned to a heya
-  let legacyShikona: string | undefined;
+  const legacyShikona: string | undefined = undefined;
   // Note: generateRookie creates rikishi in scout pool, so no heya assignment yet
   // Legacy shikona will be applied when they join a stable
 

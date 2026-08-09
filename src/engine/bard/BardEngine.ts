@@ -134,7 +134,7 @@ function updateCache(template: string) {
 function getOptions(path: string, intensity: number): string[] {
   const keys = path.split(".");
   let current: unknown;
-  let startIndex = 0;
+  let startIndex: number;
 
   // Check if path starts with the registry root key
   const isRootKey = keys[0] === "registry";
@@ -404,8 +404,8 @@ export const BardEngine = {
 
     // LRU Cache Anti-Repetition Logic
     let attempts = 0;
-    let idx = 0;
-    let template = "";
+    let idx: number;
+    let template: string;
 
     const isTest = typeof process !== "undefined" && process.env?.NODE_ENV === "test";
 

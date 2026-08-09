@@ -47,7 +47,7 @@ export function spawnGovernanceAgent(ctx: GovernanceAgentContext): GovernanceAge
   let scandalReductionMethod: "cooperate" | "deny" | "ignore" | undefined;
   let shouldUsePoliticalFavor = false;
   let favorType: "matchmaking" | "payout_advance" | "governance_pardon" | undefined;
-  let favorTarget: string | undefined;
+  const favorTarget: string | undefined = undefined;
   let shouldSabotageRival = false;
   let rivalTarget: string | undefined;
 

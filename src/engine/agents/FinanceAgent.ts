@@ -42,12 +42,12 @@ export function spawnFinanceAgent(ctx: FinanceAgentContext): FinanceAgentResult 
   const isTraditionalist = oyakata.traits.tradition > 70;
   const isScientist = oyakata.archetype === "scientist";
 
-  let riskLevel: "conservative" | "moderate" | "aggressive" = "moderate";
+  let riskLevel: "conservative" | "moderate" | "aggressive";
   let shouldBuyMyoseki = false;
   let shouldInvestInFacilities = false;
   let shouldBuildReserves = false;
   let facilityType: string | undefined;
-  let reserveTarget: number = 0;
+  let reserveTarget: number;
   let prioritized: MyosekiStock[] = [];
 
   // Determine risk level based on personality and runway

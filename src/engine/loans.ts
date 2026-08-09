@@ -27,10 +27,10 @@ export function determineLoanTerms(
   _rng: SeededRNG,
   deficit: number
 ): LoanTerms {
-  let loanType: LoanType = "emergency";
-  let interestRate = 0;
+  let loanType: LoanType;
+  let interestRate: number;
   let providerName = "Sumo Association";
-  let stringsAttached: string[] = [];
+  let stringsAttached: string[];
 
   const existingLoans = heya.activeLoans?.length || 0;
   const scandalScore = heya.scandalScore || 0;

@@ -14,7 +14,6 @@ import {
   YUSHO_THRESHOLD_7_DAY,
   CLIMBING_WIN_RATE_BASE,
   CLIMBING_WIN_RATE_RNG_RANGE,
-  BASE_WIN_RATE,
   DECLINING_WIN_RATE_BASE,
   DECLINING_WIN_RATE_RNG_RANGE,
   WIN_RATE_VARIANCE_MULTIPLIER,
@@ -206,7 +205,7 @@ function simulateBashoPerformance(
   const isClimbing = targetMult > currentMult;
   const atTarget = targetRank === currentRank;
 
-  let baseWinRate = BASE_WIN_RATE;
+  let baseWinRate: number;
   if (isClimbing) baseWinRate = CLIMBING_WIN_RATE_BASE + rng() * CLIMBING_WIN_RATE_RNG_RANGE;
   else if (atTarget) baseWinRate = AT_TARGET_WIN_RATE_BASE + rng() * AT_TARGET_WIN_RATE_RNG_RANGE;
   else baseWinRate = DECLINING_WIN_RATE_BASE + rng() * DECLINING_WIN_RATE_RNG_RANGE;

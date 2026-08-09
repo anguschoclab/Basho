@@ -2,7 +2,7 @@ import type { WorldState } from "../types/world";
 import { DEFAULT_START_YEAR } from "../../constants/engine/calendar";
 import type { Rikishi } from "../types/rikishi";
 import type { BashoSimResult, BanzukeUpdateHook } from "../types/basho";
-import { getNextBasho, getBashoNumber } from "../calendar";
+import { getBashoNumber } from "../calendar";
 import { enterPostBasho, enterInterim } from "../tick/tickDaily";
 import { advanceWithGates } from "../tick/advanceWithGates";
 import { resolveImpacts } from "../core/ImpactResolver";
@@ -99,7 +99,7 @@ export function runAutoSim(
     _autonomousPolicy: config.delegationPolicy,
   };
   while (bashoSimulated < targetBasho) {
-    let bashoName = currentWorld.currentBashoName || "hatsu";
+    const bashoName = currentWorld.currentBashoName || "hatsu";
     const bashoSeed = `${currentWorld.seed}-basho-${currentWorld.year}-${bashoName}`;
 
     const bashoResult = simulateEntireBasho(currentWorld, bashoName, bashoSeed, {
@@ -141,8 +141,6 @@ export function runAutoSim(
       }
     }
     if (stoppedBy !== "completed") break;
-
-    const nextBashoName = getNextBasho(bashoName);
 
     // 1. Build standings map in the format publishBanzukeUpdate expects
     const standingsForPublish = new Map<
@@ -234,7 +232,7 @@ export function runAutoSim(
     }
 
     // Preparation for next basho
-    bashoName = nextBashoName;
+    // bashoName is reassigned at the top of the loop from currentWorld
 
     if (
       config.duration.type === "untilEvent" &&

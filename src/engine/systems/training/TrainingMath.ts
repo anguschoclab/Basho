@@ -85,7 +85,7 @@ export function getEffectiveCeiling(
   const potential = rikishi.potential;
   const age = world?.year && rikishi.birthYear ? world.year - rikishi.birthYear : 25;
 
-  let baseCeiling = 0;
+  let baseCeiling: number;
   if (potential?.stats && stat in potential.stats) {
     const pa = (potential.stats[stat] as number) ?? 0;
     baseCeiling = pa * (potential.ceilingFraction ?? 1.0);

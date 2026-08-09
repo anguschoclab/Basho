@@ -2525,7 +2525,7 @@ export function generateBoutNarrative(
   if (result.excitementScore !== undefined && result.excitementScore > 30) {
     const replayRng = rngFromSeed(seed, "pbp", "replay");
     // Select replay sub-path based on bout characteristics
-    let replayPath = "post_bout.replay.generic";
+    let replayPath: string;
     const hasEdgeCrisis = result.log.some((e) => e.phase === "edge_crisis");
     const hasHenka = result.log.some((e) => e.data?.event === "henka_success");
     const isQuickFinish = result.log.length <= 3;

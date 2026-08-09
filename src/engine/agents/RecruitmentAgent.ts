@@ -55,10 +55,9 @@ export function spawnRecruitmentAgent(ctx: RecruitmentAgentContext): Recruitment
   const isElite = talent >= 85;
   const isHigh = talent >= 70;
 
-  let maxBid = 0;
-  let shouldBid = false;
-  let bidStrategy: "aggressive" | "moderate" | "conservative" = "moderate";
-  let confidence = 50;
+  let maxBid: number;
+  let bidStrategy: "aggressive" | "moderate" | "conservative";
+  let confidence: number;
 
   reasoning.push(`[Recruitment Agent] Evaluating candidate with talent ${talent}`);
   reasoning.push(
@@ -130,7 +129,7 @@ export function spawnRecruitmentAgent(ctx: RecruitmentAgentContext): Recruitment
   }
 
   // Final decision
-  shouldBid = maxBid > 500000 && funds > maxBid * 2;
+  const shouldBid = maxBid > 500000 && funds > maxBid * 2;
 
   if (!shouldBid) {
     reasoning.push("[Recruitment Agent] Insufficient funds or bid too low - not bidding");

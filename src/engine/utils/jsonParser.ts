@@ -69,7 +69,8 @@ export function parseLLMResponse<T>(rawText: string): T {
   } catch (finalError) {
     error("Critical Parse Failure on output", "jsonParser", cleanedText);
     throw new Error(
-      `Failed to parse LLM payload after sanitization. Ensure generationConfig.responseMimeType is 'application/json'. Error: ${(finalError as Error).message}`
+      `Failed to parse LLM payload after sanitization. Ensure generationConfig.responseMimeType is 'application/json'. Error: ${(finalError as Error).message}`,
+      { cause: finalError }
     );
   }
 }

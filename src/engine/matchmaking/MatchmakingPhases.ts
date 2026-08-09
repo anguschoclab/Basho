@@ -190,7 +190,7 @@ export function scorePairing(args: {
 
   if (rules.avoidSameHeya && a.heyaId && b.heyaId && a.heyaId === b.heyaId) return null;
 
-  let faced = false;
+  let faced: boolean;
   if (args.facedPairs) {
     const key = a.id < b.id ? `${a.id}-${b.id}` : `${b.id}-${a.id}`;
     faced = args.facedPairs.has(key);

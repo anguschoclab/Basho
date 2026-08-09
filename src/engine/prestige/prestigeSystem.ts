@@ -165,7 +165,7 @@ export function runPrestigeDecay(world: WorldState): StateImpact {
     }
 
     // Calculate new stature band
-    let newStatureBand = heya.statureBand;
+    let newStatureBand: typeof heya.statureBand;
     let maxRankWeight = 0;
     let rosterScore = 0;
     const RANK_WEIGHT: Record<string, number> = {
