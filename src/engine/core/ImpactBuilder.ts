@@ -18,6 +18,7 @@ import type {
 } from "../types/events";
 import type { HeyaTrainingState } from "../types/training";
 import type { MyosekiStock, MyosekiTransaction } from "../types/myoseki";
+import { DEFAULT_START_YEAR } from "../../constants/engine/calendar";
 import type { Staff } from "../types/staff";
 import type { StateImpact } from "./StateImpact";
 import { createEmptyImpact, getNextTimestamp } from "./StateImpact";
@@ -258,7 +259,7 @@ export class ImpactBuilder {
   /**
    * Retire a rikishi: moves from active to historical and sets retirement metadata.
    */
-  retireRikishi(id: string, year: number = 2026, reason: string = "Retirement"): ImpactBuilder {
+  retireRikishi(id: string, year: number = DEFAULT_START_YEAR, reason: string = "Retirement"): ImpactBuilder {
     this.updateRikishi(id, {
       isRetired: true,
       retirementYear: year,

@@ -24,7 +24,7 @@ function makeWorld(overrides: Partial<WorldState> = {}): WorldState {
     week: 5,
     cyclePhase: "interim",
     currentBashoName: "hatsu",
-    calendar: { year: 2026, currentWeek: 5 },
+    calendar: { currentWeek: 5 },
     rikishi: new Map(),
     activeRikishiIds: new Set(),
     heyas: new Map(),

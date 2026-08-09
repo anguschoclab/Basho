@@ -37,6 +37,9 @@ export const SENSHURAKU_FINAL_DAY = 15;
 // Default year for calendar calculations
 export const DEFAULT_YEAR = 2026;
 
+// Copyright year for UI display
+export const COPYRIGHT_YEAR = 2026;
+
 // Key days for narrative weight
 export const KEY_DAYS = [1, 7, 8, 14, 15];
 

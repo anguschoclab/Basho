@@ -24,7 +24,7 @@ describe("phase01_week_rivalries", () => {
   describe("Rivalry Decay", () => {
     it("decays heat, closeness, and spite for a recently met pair (SHORT_TERM)", () => {
       const world = MockFactory.createWorld();
-      world.calendar = { year: 2025, month: 1, week: 1, currentWeek: 10, day: 1, next: vi.fn(), clone: vi.fn() as any, cyclePhase: "basho" } as any;
+      world.calendar = { month: 1, currentWeek: 10, currentDay: 1, next: vi.fn(), clone: vi.fn() as any, cyclePhase: "basho" } as any;
       world.rivalriesState = {
         pairs: {
           "id1_id2": {
@@ -52,7 +52,7 @@ describe("phase01_week_rivalries", () => {
 
     it("applies MEDIUM_TERM and LONG_TERM decay rates and clamps to zero", () => {
       const world = MockFactory.createWorld();
-      world.calendar = { year: 2025, month: 1, week: 1, currentWeek: 50, day: 1, next: vi.fn(), clone: vi.fn() as any, cyclePhase: "basho" } as any;
+      world.calendar = { month: 1, currentWeek: 50, currentDay: 1, next: vi.fn(), clone: vi.fn() as any, cyclePhase: "basho" } as any;
       world.rivalriesState = {
         pairs: {
           "med_pair": {
@@ -91,7 +91,7 @@ describe("phase01_week_rivalries", () => {
 
     it("skips decay for cold pairs", () => {
       const world = MockFactory.createWorld();
-      world.calendar = { year: 2025, month: 1, week: 1, currentWeek: 50, day: 1, next: vi.fn(), clone: vi.fn() as any, cyclePhase: "basho" } as any;
+      world.calendar = { month: 1, currentWeek: 50, currentDay: 1, next: vi.fn(), clone: vi.fn() as any, cyclePhase: "basho" } as any;
 
       const heatThreshold = RIVALRY_PRUNING.MIN_HEAT;
       const meetingThreshold = RIVALRY_PRUNING.MIN_MEETINGS;

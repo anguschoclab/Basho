@@ -13,6 +13,7 @@ import type { Heya } from "@/engine/types/heya";
 import type { HeyaBrandIdentity, KeshoMawashi, YokozunaTsuna } from "@/engine/types/keshoMawashi";
 import { SeededRNG } from "@/engine/rng";
 import type { Id } from "@/engine/types/common";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 
 // ── Rikishi ────────────────────────────────────────────────────────────────
 
@@ -159,7 +160,7 @@ export function makeMockWorld(overrides: Partial<WorldState> = {}): WorldState {
     events: { version: "1.0.0", log: [], dedupe: {} },
     history: [],
     ftue: { isActive: false, bashoCompleted: 0, suppressedEvents: [] },
-    year: 2026,
+    year: DEFAULT_START_YEAR,
     week: 1,
     dayIndexGlobal: 0,
     id: "world-test",
@@ -182,7 +183,7 @@ export function makeMockWorld(overrides: Partial<WorldState> = {}): WorldState {
 export function makeMockBasho(overrides: Partial<BashoState> = {}): BashoState {
   return {
     id: "test-basho",
-    year: 2026,
+    year: DEFAULT_START_YEAR,
     bashoNumber: 1,
     bashoName: "hatsu",
     day: 1,
@@ -222,7 +223,7 @@ export function mockHeyaBrandIdentity(
       "square",
     ]) as HeyaBrandIdentity["crestStyle"],
     traditionLevel: 0.5 + rng.next() * 0.5, // 0.5-1.0
-    createdAt: { year: 2026, basho: "hatsu" },
+    createdAt: { year: DEFAULT_START_YEAR, basho: "hatsu" },
     ...overrides,
   };
 }
@@ -243,7 +244,7 @@ export function mockHeyaWithBrand(
 export function mockKeshoMawashi(overrides: Partial<KeshoMawashi> = {}): KeshoMawashi {
   return {
     rikishiId: overrides.rikishiId || "test-rikishi",
-    createdAt: overrides.createdAt || { year: 2026, basho: "hatsu", tier: "juryo" },
+    createdAt: overrides.createdAt || { year: DEFAULT_START_YEAR, basho: "hatsu", tier: "juryo" },
     tier: (overrides.tier as KeshoMawashi["tier"]) || "juryo",
     origin: (overrides.origin as KeshoMawashi["origin"]) || "traditional",
     basePattern: (overrides.basePattern as KeshoMawashi["basePattern"]) || "striped",
@@ -268,7 +269,7 @@ export function mockKeshoMawashi(overrides: Partial<KeshoMawashi> = {}): KeshoMa
 export function mockYokozunaTsuna(overrides: Partial<YokozunaTsuna> = {}): YokozunaTsuna {
   return {
     rikishiId: overrides.rikishiId || "test-rikishi",
-    conferredAt: overrides.conferredAt || { year: 2026, basho: "hatsu" },
+    conferredAt: overrides.conferredAt || { year: DEFAULT_START_YEAR, basho: "hatsu" },
     style: (overrides.style as YokozunaTsuna["style"]) || "traditional",
     ropeColor: (overrides.ropeColor as YokozunaTsuna["ropeColor"]) || "gold_accented",
     paperTassels: overrides.paperTassels ?? 5,

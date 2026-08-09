@@ -46,6 +46,7 @@ import {
   FINANCIAL_PENALTY_MULTIPLIER,
 } from "../../../constants/engine/multipliers";
 import { DEFAULT_FACILITY_LEVEL } from "../../../constants/engine/rikishi";
+import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
 import { clamp } from "../../utils/math";
 import { ATTRIBUTE_PEAK, STAT_GROUP, maturityFactor } from "../../../constants/engine/development";
 
@@ -335,7 +336,7 @@ export function calculateGrowthVector(
   world?: WorldState
 ): Record<TrainingAttribute, number> {
   const modifiers = extractTrainingModifiers(heya, world);
-  return calculateGrowthWithModifiers(profile, focus, rikishi, modifiers, world?.year ?? 2026);
+  return calculateGrowthWithModifiers(profile, focus, rikishi, modifiers, world?.year ?? DEFAULT_START_YEAR);
 }
 
 /**

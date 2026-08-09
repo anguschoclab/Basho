@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { RefreshCw, Dices, Database } from "lucide-react";
 import { safeShortSeed } from "@/utils/engineUtils";
+import { COPYRIGHT_YEAR } from "@/constants/engine/calendar";
 
 interface Props {
   seed: string;
@@ -68,7 +69,7 @@ export function MainMenuFooter({
           Reach the Summit — 頂点を目指せ
         </p>
         <p className="text-[9px] font-mono text-muted-foreground/30 uppercase tracking-widest">
-          © 2026 Sumo Manager Pro · Institutional Grade Simulation
+          © {COPYRIGHT_YEAR} Sumo Manager Pro · Institutional Grade Simulation
         </p>
       </div>
     </footer>

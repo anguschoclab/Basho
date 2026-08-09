@@ -4,6 +4,7 @@ import type { Heya } from "@/engine/types/heya";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { Id } from "@/engine/types/common";
 import type { BashoState } from "@/engine/types/basho";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 
 /**
  * MockFactory
@@ -35,7 +36,7 @@ export const MockFactory = {
     return {
       id: "world_default",
       seed: "test-seed",
-      year: 2026,
+      year: DEFAULT_START_YEAR,
       week: 1,
       dayIndexGlobal: 0,
       cyclePhase: "pre_basho",
@@ -165,7 +166,7 @@ export const MockFactory = {
   createBasho(overrides: Partial<BashoState> = {}): BashoState {
     return {
       id: "basho_default",
-      year: 2026,
+      year: DEFAULT_START_YEAR,
       bashoNumber: 1,
       bashoName: "hatsu",
       day: 1,
@@ -276,7 +277,7 @@ export const MockFactory = {
   ): import("@/engine/types/talent").TalentPoolWorldState {
     return {
       version: "1.0.0",
-      lastYearlyRefreshYear: 2026,
+      lastYearlyRefreshYear: DEFAULT_START_YEAR,
       candidates: {},
       pools: {
         high_school: {

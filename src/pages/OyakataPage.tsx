@@ -17,6 +17,7 @@ import { menteesOf } from "@/engine/lineage";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { getPlayerHeya } from "@/engine/queries";
 import { getOyakata, getHeya, getRikishi, getAllOyakata } from "@/presenters/worldAccess";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 import { SortMenu } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
 
@@ -169,7 +170,7 @@ export default function OyakataPage() {
                       <YokozunaTsunaDisplay
                         tsuna={{
                           rikishiId: selectedOyakata.id,
-                          conferredAt: { year: 2020, basho: "unknown" },
+                          conferredAt: { year: DEFAULT_START_YEAR, basho: "unknown" },
                           style: "traditional",
                           ropeColor: "gold_accented",
                           paperTassels: 5,

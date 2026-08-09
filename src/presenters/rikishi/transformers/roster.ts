@@ -14,6 +14,7 @@ import { resolveRegistryLabel, resolveRegistryLabelJa } from "../../uiUtilities"
 import type { UIRosterEntry, UIRankDelta } from "../types";
 import { rankScore, calculateStreak } from "./career";
 import type { KeshoMawashi } from "../../../engine/types/keshoMawashi";
+import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
 
 /**
  * Project a rikishi into a roster entry for banzuke/roster display.
@@ -88,8 +89,8 @@ export function projectRosterEntry(
     councilWarnings: r.councilWarnings ?? 0,
     streakLabel: calculateStreak(r.history ?? []).label,
     winPercentage: r.careerWins / Math.max(1, r.careerWins + r.careerLosses),
-    citizenshipStatus: getCitizenshipStatus(r, world?.year ?? 2020),
-    yearsToNaturalization: yearsUntilNaturalization(r, world?.year ?? 2020),
+    citizenshipStatus: getCitizenshipStatus(r, world?.year ?? DEFAULT_START_YEAR),
+    yearsToNaturalization: yearsUntilNaturalization(r, world?.year ?? DEFAULT_START_YEAR),
     weightJourney: r.weightJourney,
     oversleptBasho: r.oversleptBasho ?? null,
   };

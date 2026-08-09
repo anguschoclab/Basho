@@ -10,6 +10,7 @@ import type { Rikishi } from "@/engine/types/rikishi";
 import type { Heya } from "@/engine/types/heya";
 import type { Oyakata } from "@/engine/types/oyakata";
 import { SeededRNG } from "@/engine/rng";
+import { DEFAULT_START_YEAR } from "@/constants/engine/calendar";
 
 /**
  * Sample Heya fixture - player stable.
@@ -409,7 +410,7 @@ export const sampleOyakata2: Oyakata = {
  */
 export const sampleWorldState: WorldState = {
   seed: "fixture-seed-123",
-  year: 2024,
+  year: DEFAULT_START_YEAR,
   week: 1,
   calendar: {
     month: 1,
