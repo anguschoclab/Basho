@@ -155,7 +155,7 @@ export interface Rikishi {
   sekiwakeThreeBashoWins?: number;
 
   careerHistory: CareerSnapshot[];
-  milestones: Milestone[];
+  milestones?: Milestone[];
   shikonaHistory?: Array<{ shikona: string; fromYear: number; toYear?: number }>;
   /** Phase 5: Alumni & Legacy tracking */
   heyaHistory: Array<{ heyaId: string; joinWeek: number; leaveWeek?: number }>;

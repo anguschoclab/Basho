@@ -18,6 +18,7 @@ describe("P2.4: SIM_FULL_BASHO bout resolution", () => {
         year: 2025,
         bashoNumber: 1,
         bashoName: "hatsu",
+        day: 1,
         currentDay: 1,
         matches: [
           { boutId: "b1", day: 1, eastRikishiId: "r1", westRikishiId: "r2", result: undefined },
@@ -47,6 +48,7 @@ describe("P2.4: SIM_FULL_BASHO bout resolution", () => {
         year: 2025,
         bashoNumber: 1,
         bashoName: "hatsu",
+        day: 1,
         currentDay: 1,
         matches: [
           { boutId: "b1", day: 1, eastRikishiId: "r1", westRikishiId: "r2", result: undefined },
@@ -75,6 +77,7 @@ describe("P2.4: SIM_FULL_BASHO bout resolution", () => {
         year: 2025,
         bashoNumber: 1,
         bashoName: "hatsu",
+        day: 1,
         currentDay: 1,
         matches: [
           { boutId: "b1", day: 1, eastRikishiId: "r1", westRikishiId: "r2", result: undefined },

@@ -67,8 +67,8 @@ export function DebtSection({ activeLoans }: DebtSectionProps) {
   }
 
   return (
-    <Card className="border-destructive/20 bg-destructive/5 paper overflow-hidden">
-      <div className="bg-destructive/10 px-4 py-2 border-b border-destructive/20 flex items-center justify-between gap-2">
+    <Card className="border-destructive/20 bg-destructive/5 text-inherit paper overflow-hidden">
+      <div className="bg-destructive/10 text-inherit px-4 py-2 border-b border-destructive/20 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <AlertTriangle className="h-4 w-4 text-destructive" />
           <span className="text-xs font-bold text-destructive uppercase tracking-widest">

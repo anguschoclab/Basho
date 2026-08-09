@@ -113,8 +113,11 @@ function pruneToTier3(r: Rikishi): void {
   delete r.pbpLogs;
   delete r.trainingHistory;
   delete r.perceptionHistory;
-  r.milestones = [];
+  delete r.milestones;
   delete r.economics;
+  delete r.baseStats;
+  delete r.currentStats;
+  delete r.skills;
 
   // Keep: Shikona, HeyaId, Debut/Retire Dates, Total Wins/Losses
 }

@@ -77,7 +77,7 @@ describe("applyMentorshipBonuses", () => {
   });
 
   it("handles multiple apprentices of the same mentor", () => {
-    const mentor = mockRikishi("mentor", { rank: "maegashira", heyaId: "h1"});
+    const mentor = mockRikishi("mentor", { rank: "maegashira", heyaId: "h1", technique: 70 });
     const apprentice1 = mockRikishi("apprentice1", {
       rank: "makushita",
       heyaId: "h1",

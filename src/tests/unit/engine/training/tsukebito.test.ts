@@ -25,6 +25,7 @@ function makeSenior(id: string, rankNum: number): Rikishi {
     rankNumber: rankNum,
     stats: { power: 60, speed: 60, technique: 60, balance: 60, stamina: 60, mental: 60, weight: 120, experience: 50, adaptability: 60 } as any,
   });
+  aggression: 50,
 }
 
 function makeJunior(id: string, rankNum: number): Rikishi {
@@ -34,6 +35,7 @@ function makeJunior(id: string, rankNum: number): Rikishi {
     rankNumber: rankNum,
     stats: { power: 40, speed: 40, technique: 40, balance: 40, stamina: 40, mental: 40, weight: 90, experience: 10, adaptability: 40 } as any,
   });
+  aggression: 50,
 }
 
 describe("Tsukebito eligibility", () => {
