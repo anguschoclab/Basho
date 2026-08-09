@@ -116,7 +116,7 @@ describe("Audit runner self-test", () => {
   });
 });
 
-describe.serial("Audit runner consistency — two runs produce same orphan set", () => {
+describe("Audit runner consistency — two runs produce same orphan set", () => {
   beforeAll(() => {
     // Clean up any lingering temp files from the injection test
     if (existsSync(TEMP_ORPHAN_DIR)) {
@@ -160,7 +160,7 @@ describe.serial("Audit runner consistency — two runs produce same orphan set",
   });
 });
 
-describe.serial("Audit runner injection — detects a deliberately orphaned export", () => {
+describe("Audit runner injection — detects a deliberately orphaned export", () => {
   it("detects a temp file with an unreferenced export", { timeout: 240000 }, async () => {
     // Use a unique temp directory to avoid interference with consistency tests
     const injectDir = join(SYSTEMS_DIR, `__audit_injection_${Date.now()}__`);
@@ -199,7 +199,7 @@ describe.serial("Audit runner injection — detects a deliberately orphaned expo
   });
 });
 
-describe.serial("Audit import-statement parsing — namespace imports and name collisions", () => {
+describe("Audit import-statement parsing — namespace imports and name collisions", () => {
   it("does not flag services imported via namespace imports as unticked", { timeout: 240000 }, async () => {
     // Create a temp service file with an export, and a temp consumer that uses `import * as X`
     const nsDir = join(SYSTEMS_DIR, `__audit_ns_${Date.now()}__`);
