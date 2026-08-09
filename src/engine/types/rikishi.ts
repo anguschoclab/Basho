@@ -149,6 +149,8 @@ export interface Rikishi {
   tachimochiId?: Id;
   /** Dew-sweeper attendant (tsuyuharai) for yokozuna dohyo-iri */
   tsuyuharaiId?: Id;
+  /** IDs of junior rikishi assigned as tsukebito (personal attendants) */
+  tsukebitoIds?: Id[];
   /** True after the rikishi has completed the maezumo assessment stage */
   maezumoCompleted?: boolean;
   /** Rolling 3-basho win total for sekiwake/komusubi for Ozeki promotion qualification */

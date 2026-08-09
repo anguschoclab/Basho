@@ -181,7 +181,7 @@ export default function RikishiPage() {
               value="profile"
               className="space-y-8 animate-in fade-in slide-in-from-left-2 duration-300"
             >
-              <RikishiProfileTab rikishi={rikishi} rawRikishi={rawRikishi} worldSeed={world.seed} />
+              <RikishiProfileTab rikishi={rikishi} rawRikishi={rawRikishi} worldSeed={world.seed} world={world} />
             </TabsContent>
 
             <TabsContent

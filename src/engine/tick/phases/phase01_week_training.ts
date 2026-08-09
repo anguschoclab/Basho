@@ -28,8 +28,15 @@ import { TrainingService } from "../../systems/training/TrainingService";
 import { BloodlineService } from "../../systems/legacy/BloodlineService";
 import { applyMentorshipBonuses } from "../../systems/training/MentorshipService";
 import { applyWeeklySparring } from "../../systems/training/SparringService";
+import {
+  assignTsukebito,
+  applyWeeklyTsukebitoBenefits,
+  applyWeeklyOtotodeshiEffects,
+  isEligibleForTsukebito,
+} from "../../systems/training/TsukebitoService";
 import { applyWeightJourneyTick } from "../../training/WeightJourney";
 import { EntityCollection } from "../../core/EntityCollection";
+import { getRikishi } from "../../queries";
 
 /**
  * Weekly training tick phase.
@@ -61,9 +68,32 @@ export function phase01_week_training(world: WorldState): StateImpact {
   const mentorshipImpact = applyMentorshipBonuses(world);
   const sparringImpact = applyWeeklySparring(world);
 
+  // Tsukebito / ototodeshi system
+  const tsukebitoImpacts: StateImpact[] = [];
+  const activeRikishi = EntityCollection.getActiveRikishi(world);
+  const rikishiByHeya = new Map<string, typeof activeRikishi>();
+  for (const r of activeRikishi) {
+    const list = rikishiByHeya.get(r.heyaId) ?? [];
+    list.push(r);
+    rikishiByHeya.set(r.heyaId, list);
+  }
+  for (const r of activeRikishi) {
+    if (!isEligibleForTsukebito(r)) continue;
+    const heyaMates = rikishiByHeya.get(r.heyaId) ?? [];
+    const assignment = assignTsukebito(world, r, heyaMates);
+    if (assignment.tsukebitoIds.length === 0) continue;
+    const tsukebitoRikishi = assignment.tsukebitoIds
+      .map((id) => getRikishi(world, id))
+      .filter((x): x is NonNullable<typeof x> => x !== undefined);
+    tsukebitoImpacts.push(applyWeeklyTsukebitoBenefits(world, assignment, r, tsukebitoRikishi));
+  }
+  for (const [heyaId, heyaRikishi] of rikishiByHeya) {
+    tsukebitoImpacts.push(applyWeeklyOtotodeshiEffects(world, heyaId, heyaRikishi));
+  }
+
   // Weight journey tick — process all active rikishi
   const weightJourneyImpacts: StateImpact[] = [];
-  for (const rikishi of EntityCollection.getActiveRikishi(world)) {
+  for (const rikishi of activeRikishi) {
     const heya = EntityCollection.getHeya(world, rikishi.heyaId);
     weightJourneyImpacts.push(applyWeightJourneyTick(rikishi, heya, world));
   }
@@ -73,6 +103,7 @@ export function phase01_week_training(world: WorldState): StateImpact {
     heritageImpact,
     mentorshipImpact,
     sparringImpact,
+    ...tsukebitoImpacts,
     ...weightJourneyImpacts,
   ]);
 }

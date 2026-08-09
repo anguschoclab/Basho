@@ -6,13 +6,15 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Activity, Award as AwardIcon, Info, Shield, Target, TrendingUp, Zap } from "lucide-react";
+import { Activity, Award as AwardIcon, Info, Shield, Sword, Target, TrendingUp, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
 import { rngFromSeed, type SeededRNG } from "@/engine/rng";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { Rikishi } from "@/engine/types";
+// eslint-disable-next-line no-restricted-imports
+import type { WorldState } from "@/engine/types/world";
 import { RankBadge } from "./RankBadge";
 
 // ── Scout Note Generator ──────────────────────────────────────────────────────
@@ -156,12 +158,17 @@ interface RikishiProfileTabProps {
   rikishi: UIRikishi;
   rawRikishi: Rikishi;
   worldSeed: string;
+  world?: WorldState;
 }
 
-export function RikishiProfileTab({ rikishi, rawRikishi, worldSeed }: RikishiProfileTabProps) {
+export function RikishiProfileTab({ rikishi, rawRikishi, worldSeed, world }: RikishiProfileTabProps) {
   const noteRng = rngFromSeed(worldSeed, "scout-note", rikishi.id);
   const note = generateScoutNote(rikishi, rawRikishi, noteRng);
   const badges = generateBadges(rikishi, rawRikishi);
+
+  const dohyoIriStyle = rawRikishi.dohyoIriStyle;
+  const tachimochi = rawRikishi.tachimochiId ? world?.rikishi.get(rawRikishi.tachimochiId) : undefined;
+  const tsuyuharai = rawRikishi.tsuyuharaiId ? world?.rikishi.get(rawRikishi.tsuyuharaiId) : undefined;
 
   return (
     <div className="grid md:grid-cols-2 gap-8">
@@ -235,6 +242,24 @@ export function RikishiProfileTab({ rikishi, rawRikishi, worldSeed }: RikishiPro
           variant="pill"
           showJapanese
         />
+        {dohyoIriStyle && (
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge
+              variant="outline"
+              className="text-[10px] font-bold uppercase tracking-widest bg-gold/10 border-gold/40 text-gold"
+            >
+              {dohyoIriStyle === "unryu" ? "Unryu-style" : "Shiranui-style"} Dohyo-iri
+            </Badge>
+            {(tachimochi || tsuyuharai) && (
+              <div className="flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
+                <Sword className="h-3 w-3" />
+                {tachimochi && <span>Tachimochi: {tachimochi.shikona}</span>}
+                {tachimochi && tsuyuharai && <span className="text-border">|</span>}
+                {tsuyuharai && <span>Tsuyuharai: {tsuyuharai.shikona}</span>}
+              </div>
+            )}
+          </div>
+        )}
         <h3 className="text-xl font-display font-black flex items-center gap-2 uppercase tracking-tight">
           <AwardIcon className="h-5 w-5 text-primary" /> Notes
         </h3>

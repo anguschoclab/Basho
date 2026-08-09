@@ -102,7 +102,6 @@ function relPath(absPath: string): string {
 
 const allFiles = collectFiles(SRC);
 const runtimeFiles = allFiles.filter((f) => !isTestFile(f) && !isScriptFile(f));
-const testAndScriptFiles = allFiles.filter((f) => isTestFile(f) || isScriptFile(f));
 
 // Build a single blob of all runtime source for fast searching
 const runtimeBlob = runtimeFiles.map((f) => readContent(f)).join("\n");
@@ -167,16 +166,12 @@ function extractExports(filePath: string): { name: string; line: number }[] {
 }
 
 function isReferenced(name: string, selfPath: string): boolean {
-  // Search for the name in all runtime files except the declaring file
-  // Also search test/script files since they count as consumers for coverage
-  const allContent = runtimeBlob + "\n" + testAndScriptFiles.map((f) => readContent(f)).join("\n");
-
-  // Look for import references or bare identifier usage
-  // Exclude the declaring file's content from the blob check
+  // Search for the name in all runtime files except the declaring file.
+  // Test files and scripts do NOT count as consumers — only runtime code does.
   const selfContent = readContent(selfPath);
-  const otherContent = allContent.replace(selfContent, "");
+  const otherContent = runtimeBlob.replace(selfContent, "");
 
-  // Check for import { name } or import { name as
+  // Check for the identifier appearing in any runtime file other than the declaring file
   const importPattern = new RegExp(`\\b${escapeRegex(name)}\\b`);
   return importPattern.test(otherContent);
 }
@@ -313,47 +308,27 @@ function findUntickedServices(): OrphanEntry[] {
   // Collect all service files
   const serviceFiles = collectFiles(SYSTEMS_DIR).filter((f) => !isTestFile(f) && extname(f) === ".ts");
 
-  // Collect tick phase content for reference (not directly used in service check)
-  const _tickBlob = [
-    readContent(join(ENGINE_DIR, "world.ts")),
-    readContent(join(NPC_AI_DIR, "weekly.ts")),
-    readContent(join(ENGINE_DIR, "npcAIWorkers.ts")),
-    readContent(join(ENGINE_DIR, "lifecycle.ts")),
-    readContent(join(ENGINE_DIR, "economics.ts")),
-    readContent(join(ENGINE_DIR, "facilities.ts")),
-    readContent(join(ENGINE_DIR, "rivalries.ts")),
-    readContent(join(ENGINE_DIR, "history.ts")),
-    readContent(join(ENGINE_DIR, "hallOfFame.ts")),
-    readContent(join(ENGINE_DIR, "lineage.ts")),
-    readContent(join(ENGINE_DIR, "loans.ts")),
-    readContent(join(ENGINE_DIR, "staff.ts")),
-    readContent(join(ENGINE_DIR, "myosekiMarket.ts")),
-    readContent(join(ENGINE_DIR, "scoutingStore.ts")),
-    readContent(join(ENGINE_DIR, "overflow.ts")),
-    readContent(join(ENGINE_DIR, "mergers.ts")),
-    readContent(join(ENGINE_DIR, "naturalization.ts")),
-    readContent(join(ENGINE_DIR, "schedule.ts")),
-    readContent(join(ENGINE_DIR, "scheduleHelpers.ts")),
-    readContent(join(ENGINE_DIR, "holiday.ts")),
-    readContent(join(ENGINE_DIR, "prestige", "prestigeSystem.ts")),
-  ].join("\n");
-  void _tickBlob;
-
-  // Also check all other engine files for cross-references
-  const engineBlob = collectFiles(ENGINE_DIR)
-    .filter((f) => !isTestFile(f))
-    .map((f) => readContent(f))
-    .join("\n");
+  // Build a map of import paths → importing file, across all runtime (non-test) engine files.
+  // A service is "ticked" if at least one of its exported symbols is imported by another runtime file.
+  const engineRuntimeFiles = collectFiles(ENGINE_DIR).filter((f) => !isTestFile(f));
 
   for (const serviceFile of serviceFiles) {
     const serviceName = basename(serviceFile, ".ts");
-    // Extract exported function/class names
     const exports = extractExports(serviceFile);
     if (exports.length === 0) continue;
 
-    // Check if the service file itself is imported anywhere in the engine
-    const importPattern = new RegExp(escapeRegex(serviceName.replace(/Service$/, "")));
-    const isImported = engineBlob.includes(serviceName) || importPattern.test(engineBlob);
+    // Check if any exported symbol from this service appears in another runtime file
+    // (not the service file itself). We look for the symbol name as a word boundary
+    // match in the runtime blob, excluding the service's own content.
+    const otherBlob = engineRuntimeFiles
+      .filter((f) => f !== serviceFile)
+      .map((f) => readContent(f))
+      .join("\n");
+
+    const isImported = exports.some((exp) => {
+      const pattern = new RegExp(`\\b${escapeRegex(exp.name)}\\b`);
+      return pattern.test(otherBlob);
+    });
 
     if (!isImported) {
       entries.push({

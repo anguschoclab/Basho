@@ -37,7 +37,12 @@ import {
   SPONSOR_MIN_LOYALTY_FOR_RENEWAL,
 } from "../../../constants/engine/time";
 import { clampFundsToDebtLimit } from "../../../constants/engine/economic";
+import { isSekitoriDivision } from "../../../constants/engine/rankDisplay";
 import { getRikishi } from "../../queries";
+import {
+  getExhibitionBashoSchedule,
+  simulateExhibitionBasho,
+} from "../../systems/basho/ExhibitionBashoService";
 
 export function phase05_monthly_boundary(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase05_monthly_boundary");
@@ -115,6 +120,22 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
   // Distribute kōenkai income portion to sekitori
   const koenkaiDistributionImpact = distributeKoenkaiToSekitori(world);
 
+  // Exhibition basho (jungyo) — simulate on non-honbasho months
+  const currentMonth = world.calendar?.month ?? 1;
+  const exhibitionSchedule = getExhibitionBashoSchedule(world.year ?? DEFAULT_START_YEAR);
+  const jungyoEvent = exhibitionSchedule.find((e) => e.month === currentMonth);
+  const exhibitionImpacts: StateImpact[] = [];
+  if (jungyoEvent && !isBashoMonth(currentMonth)) {
+    const sekitoriParticipants = Array.from(world.activeRikishiIds ?? [])
+      .map((id) => getRikishi(world, id))
+      .filter((r): r is NonNullable<typeof r> => r !== undefined)
+      .filter((r) => isSekitoriDivision(r.division) && !r.isRetired);
+    if (sekitoriParticipants.length > 0) {
+      const exhibitionImpact = simulateExhibitionBasho(world, jungyoEvent.name, sekitoriParticipants);
+      exhibitionImpacts.push(exhibitionImpact);
+    }
+  }
+
   // Pay mochikyukin bonuses to sekitori (every 2 months)
   const mochikyukinPayoutImpact = payMochikyukinBonuses(world, world.calendar?.month ?? 1);
 
@@ -143,6 +164,7 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
     tsukebitoImpact,
     koenkaiDistributionImpact,
     mochikyukinPayoutImpact,
+    ...exhibitionImpacts,
     ...sponsorRenewalImpacts,
   ]);
 }

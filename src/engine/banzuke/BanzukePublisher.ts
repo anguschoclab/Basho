@@ -24,6 +24,7 @@ import { createEmptyAlmanacRecord } from "../almanac/narrativeEnrichment";
 import { MAX_PROMOTION_HISTORY } from "../almanac/types";
 import type { PromotionHistoryEntry } from "../almanac/types";
 import { assignDohyoIriStyle } from "../governance/dohyoIri";
+import { assignYokozunaAttendants } from "../governance/yokozunaAttendants";
 
 /**
  * Helper to retrieve the current basho state from the world.
@@ -404,6 +405,13 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
         },
         { rikishiId: evt.rikishiId, heyaId: promotedRikishi.heyaId, importance: "headline" }
       );
+
+      // Assign tachimochi and tsuyuharai attendants for the new yokozuna
+      const attendantImpact = assignYokozunaAttendants(
+        { ...promotedRikishi, dohyoIriStyle: styleUpdate.dohyoIriStyle },
+        world
+      );
+      builder.merge(attendantImpact);
     }
   }
 

@@ -19,6 +19,12 @@ import type { StateImpact } from "../../core/StateImpact";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { simulateBoutForToday, advanceBashoDay } from "../../world";
 import { buildBashoMatchIndex } from "../../bout/bashoMatchIndex";
+import {
+  generateNakabiSummary,
+  logNakabiCheckpoint,
+  isNakabiDay,
+} from "../../systems/basho/NakabiService";
+import { mergeImpacts } from "../../core/ImpactResolver";
 
 export function phase01_basho_bouts(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_basho_bouts");
@@ -52,6 +58,22 @@ export function phase01_basho_bouts(world: WorldState): StateImpact {
   // Advance the basho day after all bouts for today are resolved
   currentWorld = advanceBashoDay(currentWorld);
 
+  // Nakabi checkpoint — log a mid-basho summary on day 8
+  let nakabiImpact: StateImpact | null = null;
+  if (currentWorld.currentBasho && isNakabiDay(currentWorld.currentBasho.day)) {
+    const bashoRikishi = (currentWorld.activeRikishiIds)
+      ? Array.from(currentWorld.activeRikishiIds)
+          .map((id) => currentWorld.rikishi.get(id))
+          .filter((r): r is NonNullable<typeof r> => r !== undefined)
+      : [];
+    const summary = generateNakabiSummary(
+      currentWorld,
+      currentWorld.currentBasho.bashoName ?? "basho",
+      bashoRikishi
+    );
+    nakabiImpact = logNakabiCheckpoint(currentWorld, summary);
+  }
+
   // Emit the final currentBasho as a world field update
   if (currentWorld.currentBasho) {
     builder.updateWorldField("currentBasho", currentWorld.currentBasho);
@@ -74,6 +96,10 @@ export function phase01_basho_bouts(world: WorldState): StateImpact {
         builder.updateRikishi(rId, updated);
       }
     }
+  }
+
+  if (nakabiImpact) {
+    return mergeImpacts([builder.build(), nakabiImpact]);
   }
 
   return builder.build();

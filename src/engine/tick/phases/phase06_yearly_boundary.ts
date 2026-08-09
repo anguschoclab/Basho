@@ -27,6 +27,7 @@ import { DynastyService } from "../../systems/legacy/DynastyService";
 import { WorldCircuitService } from "../../systems/worldCircuit/WorldCircuitService";
 import { TrainingPhilosophyService } from "../../systems/legacy/TrainingPhilosophyService";
 import { TalentPoolService } from "../../systems/generation/TalentPoolService";
+import { performKanrekiCeremony, isEligibleForKanreki } from "../../governance/kanrekiCeremony";
 import { getRikishi } from "../../queries";
 import { boundHistoryArrays } from "./boundHistoryArrays";
 
@@ -142,6 +143,11 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
       // All-Time Records (fused from separate loop — B2.1)
       if (r.careerWins > 100 || r.rank === "yokozuna") {
         builder.merge(HistoryService.updateAllTimeRecords(world, r));
+      }
+
+      // Kanreki ceremony — rare 60th-year dohyo-iri for yokozuna
+      if (isEligibleForKanreki(r, world)) {
+        builder.merge(performKanrekiCeremony(world, r));
       }
     }
   }
