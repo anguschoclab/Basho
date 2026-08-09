@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-08-09T20:38:11.769Z",
+  "generatedAt": "2026-08-09T21:14:13.208Z",
   "summary": {
-    "total": 227,
+    "total": 226,
     "unreferencedExports": 223,
     "orphanRoutes": 0,
-    "untickedServices": 1,
+    "untickedServices": 0,
     "unusedComponents": 1,
     "writeOnlyState": 2
   },
@@ -2464,17 +2464,6 @@
     },
     {
       "id": "ORPH-0224",
-      "file": "src/engine/systems/generation/applyOyakataConfig.ts",
-      "symbol": "applyOyakataConfig",
-      "orphanType": "unticked-service",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "candidate"
-    },
-    {
-      "id": "ORPH-0225",
       "file": "src/components/RequireWorld.tsx",
       "symbol": "RequireWorld",
       "orphanType": "unused-component",
@@ -2485,7 +2474,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0226",
+      "id": "ORPH-0225",
       "file": "src/engine/types/world.ts",
       "symbol": "matchmakingOverride",
       "orphanType": "write-only-state",
@@ -2496,7 +2485,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0227",
+      "id": "ORPH-0226",
       "file": "src/engine/types/world.ts",
       "symbol": "shimpanPool",
       "orphanType": "write-only-state",

@@ -371,6 +371,16 @@ function resolveImportPath(importPath: string, fromFile: string): string {
     if (existsSync(resolved + "/index.tsx")) return resolved + "/index.tsx";
     return resolved + ".ts";
   }
+  // Resolve @/ path alias → src/
+  if (importPath.startsWith("@/")) {
+    const resolved = join(SRC, importPath.slice(2));
+    for (const ext of FILE_EXTENSIONS) {
+      if (existsSync(resolved + ext)) return resolved + ext;
+    }
+    if (existsSync(resolved + "/index.ts")) return resolved + "/index.ts";
+    if (existsSync(resolved + "/index.tsx")) return resolved + "/index.tsx";
+    return resolved + ".ts";
+  }
   return importPath;
 }
 
@@ -450,8 +460,16 @@ function findUntickedServices(): OrphanEntry[] {
   );
 
   // Build import map: resolvedModulePath → Set<importedSymbolNames>
-  // across all runtime (non-test) engine files.
-  const engineRuntimeFiles = collectFiles(ENGINE_DIR).filter((f) => !isTestFile(f));
+  // across all runtime (non-test) files — engine, contexts, and pages.
+  // Including contexts/pages avoids false positives for services consumed
+  // by the UI layer (e.g. applyOyakataConfig in gameReducer.ts).
+  const CONTEXTS_DIR = join(SRC, "contexts");
+  const PAGES_DIR = join(SRC, "pages");
+  const engineRuntimeFiles = [
+    ...collectFiles(ENGINE_DIR).filter((f) => !isTestFile(f)),
+    ...collectFiles(CONTEXTS_DIR).filter((f) => !isTestFile(f)),
+    ...collectFiles(PAGES_DIR).filter((f) => !isTestFile(f)),
+  ];
 
   const importMap = new Map<string, Set<string>>();
   const namespaceImportedModules = new Set<string>();
