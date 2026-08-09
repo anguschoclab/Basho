@@ -65,6 +65,31 @@ describe("TrainingPhilosophyService — tick phase wiring", () => {
   });
 });
 
+describe("TsukebitoService — tick phase wiring", () => {
+  it("assignTsukebito is imported and called by phase01_week_training", () => {
+    const phase = readFile("engine/tick/phases/phase01_week_training.ts");
+    expect(phase).toContain("assignTsukebito");
+    expect(phase).toMatch(/assignTsukebito\s*\(/);
+  });
+
+  it("applyWeeklyTsukebitoBenefits is imported and called by phase01_week_training", () => {
+    const phase = readFile("engine/tick/phases/phase01_week_training.ts");
+    expect(phase).toContain("applyWeeklyTsukebitoBenefits");
+    expect(phase).toMatch(/applyWeeklyTsukebitoBenefits\s*\(/);
+  });
+
+  it("applyWeeklyOtotodeshiEffects is imported and called by phase01_week_training", () => {
+    const phase = readFile("engine/tick/phases/phase01_week_training.ts");
+    expect(phase).toContain("applyWeeklyOtotodeshiEffects");
+    expect(phase).toMatch(/applyWeeklyOtotodeshiEffects\s*\(/);
+  });
+
+  it("persists tsukebitoIds on senior rikishi", () => {
+    const phase = readFile("engine/tick/phases/phase01_week_training.ts");
+    expect(phase).toContain("tsukebitoIds");
+  });
+});
+
 describe("TrainingPage — UI surface", () => {
   it("mounts SparringPanel", () => {
     const page = readFile("pages/TrainingPage.tsx");

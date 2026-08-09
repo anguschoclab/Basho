@@ -31,7 +31,9 @@ import {
   SCANDAL_SCORE_LOW_THRESHOLD,
 } from "../../../constants/engine/governanceExtended";
 import { purchaseMyoseki, findAvailableStock } from "../../systems/governance/MyosekiTradingService";
+import { assignYokozunaAttendants } from "../../governance/yokozunaAttendants";
 import { rngForWorld } from "../../rng";
+import { getRikishi } from "../../queries";
 
 export function phase01_week_governance(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_week_governance");
@@ -45,6 +47,14 @@ export function phase01_week_governance(world: WorldState): StateImpact {
 
     const careerImpact = CareerService.processRetirements(world);
     builder.merge(careerImpact);
+
+    // Recovery path: assign attendants to any yokozuna missing them
+    for (const rikishiId of world.activeRikishiIds) {
+      const r = getRikishi(world, rikishiId);
+      if (!r || r.rank !== "yokozuna") continue;
+      if (r.tachimochiId && r.tsuyuharaiId) continue;
+      builder.merge(assignYokozunaAttendants(r, world));
+    }
   }
 
   for (const [id, heya] of world.heyas) {

@@ -133,6 +133,15 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
     if (sekitoriParticipants.length > 0) {
       const exhibitionImpact = simulateExhibitionBasho(world, jungyoEvent.name, sekitoriParticipants);
       exhibitionImpacts.push(exhibitionImpact);
+      // Log the exhibition tour event
+      builder.logEvent("BASHO_STATUS", "basho", {
+        status: "exhibition_tour",
+        description: `The ${jungyoEvent.displayName} begins — ${sekitoriParticipants.length} sekitori participate in the regional tour.`,
+        bashoName: jungyoEvent.name,
+        month: currentMonth,
+        location: jungyoEvent.location,
+        participantCount: sekitoriParticipants.length,
+      });
     }
   }
 

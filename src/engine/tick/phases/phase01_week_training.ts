@@ -24,6 +24,7 @@
 import type { WorldState } from "../../types/world";
 import type { StateImpact } from "../../core/StateImpact";
 import { mergeImpacts } from "../../core/ImpactResolver";
+import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { TrainingService } from "../../systems/training/TrainingService";
 import { BloodlineService } from "../../systems/legacy/BloodlineService";
 import { applyMentorshipBonuses } from "../../systems/training/MentorshipService";
@@ -79,9 +80,27 @@ export function phase01_week_training(world: WorldState): StateImpact {
   }
   for (const r of activeRikishi) {
     if (!isEligibleForTsukebito(r)) continue;
+    // Skip if already has tsukebito assigned
+    if (r.tsukebitoIds && r.tsukebitoIds.length > 0) {
+      const tsukebitoRikishi = r.tsukebitoIds
+        .map((id) => getRikishi(world, id))
+        .filter((x): x is NonNullable<typeof x> => x !== undefined);
+      if (tsukebitoRikishi.length > 0) {
+        tsukebitoImpacts.push(
+          applyWeeklyTsukebitoBenefits(world, { seniorId: r.id, tsukebitoIds: r.tsukebitoIds }, r, tsukebitoRikishi)
+        );
+        continue;
+      }
+    }
     const heyaMates = rikishiByHeya.get(r.heyaId) ?? [];
     const assignment = assignTsukebito(world, r, heyaMates);
     if (assignment.tsukebitoIds.length === 0) continue;
+    // Persist the assignment on the senior rikishi
+    tsukebitoImpacts.push(
+      createImpactBuilder("phase01_week_training").updateRikishi(r.id, {
+        tsukebitoIds: assignment.tsukebitoIds,
+      }).build()
+    );
     const tsukebitoRikishi = assignment.tsukebitoIds
       .map((id) => getRikishi(world, id))
       .filter((x): x is NonNullable<typeof x> => x !== undefined);

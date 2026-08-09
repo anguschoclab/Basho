@@ -30,6 +30,9 @@ export function assignYokozunaAttendants(
 
   if (!yokozuna.dohyoIriStyle) return builder.build();
 
+  // Skip reassignment if attendants are already set
+  if (yokozuna.tachimochiId && yokozuna.tsuyuharaiId) return builder.build();
+
   // Get same-heya rikishi, excluding the yokozuna and retired rikishi
   const candidates = EntityCollection.getActiveRikishi(world)
     .filter((r) => r.heyaId === yokozuna.heyaId && r.id !== yokozuna.id)

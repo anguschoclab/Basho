@@ -108,10 +108,18 @@ export interface SerializedWorldState {
   chronicle?: import("./world").WorldState["chronicle"];
 }
 
-/** Type representing save version. */
-export type SaveVersion = "1.0.0";
-/** c u r r e n t_ s a v e_ v e r s i o n. */
-export const CURRENT_SAVE_VERSION: SaveVersion = "1.0.0";
+/**
+ * Type representing save version.
+ * When adding a new version: add the literal here, add it to KNOWN_SAVE_VERSIONS,
+ * bump CURRENT_SAVE_VERSION, and register a migration step in MigrationService.
+ */
+export type SaveVersion = "1.0.0" | "1.1.0";
+
+/** All recognized save versions (oldest first). Used by SaveSlotService and MigrationService. */
+export const KNOWN_SAVE_VERSIONS: readonly SaveVersion[] = ["1.0.0", "1.1.0"] as const;
+
+/** The version new saves are written with. */
+export const CURRENT_SAVE_VERSION: SaveVersion = "1.1.0";
 
 /** Defines the structure for save game. */
 export interface SaveGame {

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { saveGame, loadGame } from "@/engine/saveload";
+import { saveGame, loadGame, importSave } from "@/engine/saveload";
 import {
   setStorageProvider,
   resetStorageProvider,
@@ -8,6 +8,8 @@ import {
 import { makeMockWorld } from "../utils";
 import { runArchivalPruning } from "@/engine/archival";
 import { SerializationService } from "@/engine/persistence/SerializationService";
+import { MigrationService } from "@/engine/persistence/MigrationService";
+import { CURRENT_SAVE_VERSION } from "@/engine/types/save";
 import { logger } from "@/engine/utils/Logger";
 
 // Mock dependencies
@@ -19,6 +21,15 @@ vi.mock("@/engine/persistence/SerializationService", () => ({
   SerializationService: {
     serializeWorld: vi.fn((world) => world),
     deserializeWorld: vi.fn((serialized) => serialized),
+  },
+}));
+
+vi.mock("@/engine/persistence/MigrationService", () => ({
+  MigrationService: {
+    migrateSave: vi.fn((save) => ({
+      save: { ...save, version: "1.1.0" },
+      context: { fromVersion: save.version, toVersion: "1.1.0", logs: ["mock"] },
+    })),
   },
 }));
 
@@ -294,5 +305,126 @@ describe("saveload - loadGame error paths", () => {
 
     expect(result).not.toBeNull();
     expect(result).toBe(mockWorld);
+  });
+});
+
+describe("saveload - migration persistence", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    resetStorageProvider();
+  });
+
+  afterEach(() => {
+    resetStorageProvider();
+    vi.restoreAllMocks();
+  });
+
+  it("writes the upgraded save back to storage when loading a 1.0.0 save", () => {
+    const mockStorage = createMockStorage(false, false);
+    setStorageProvider(mockStorage);
+
+    const mockWorld = makeMockWorld();
+    const legacySave = {
+      version: "1.0.0",
+      createdAtISO: "2025-01-01T00:00:00Z",
+      lastSavedAtISO: "2025-06-01T00:00:00Z",
+      ruleset: { banzukeAlgorithm: "slot_fill_v1", kimariteRegistryVersion: "82_official_v1" },
+      world: mockWorld,
+    };
+    mockStorage.setItem("basho_save_slot_1", JSON.stringify(legacySave));
+
+    (SerializationService.deserializeWorld as ReturnType<typeof vi.fn>).mockReturnValue(mockWorld);
+    (MigrationService.migrateSave as ReturnType<typeof vi.fn>).mockReturnValue({
+      save: { ...legacySave, version: CURRENT_SAVE_VERSION },
+      context: { fromVersion: "1.0.0", toVersion: CURRENT_SAVE_VERSION, logs: ["migrated"] },
+    });
+
+    loadGame("slot_1");
+
+    const stored = mockStorage.getItem("basho_save_slot_1");
+    expect(stored).not.toBeNull();
+    const parsed = JSON.parse(stored as string);
+    expect(parsed.version).toBe(CURRENT_SAVE_VERSION);
+  });
+
+  it("does not overwrite storage when loading an already-current save", () => {
+    const mockStorage = createMockStorage(false, false);
+    setStorageProvider(mockStorage);
+
+    const mockWorld = makeMockWorld();
+    const currentSave = {
+      version: CURRENT_SAVE_VERSION,
+      createdAtISO: "2025-01-01T00:00:00Z",
+      lastSavedAtISO: "2025-06-01T00:00:00Z",
+      ruleset: { banzukeAlgorithm: "slot_fill_v1", kimariteRegistryVersion: "82_official_v1" },
+      world: mockWorld,
+    };
+    const key = "basho_save_slot_1";
+    const originalJson = JSON.stringify(currentSave);
+    mockStorage.setItem(key, originalJson);
+
+    (SerializationService.deserializeWorld as ReturnType<typeof vi.fn>).mockReturnValue(mockWorld);
+    (MigrationService.migrateSave as ReturnType<typeof vi.fn>).mockReturnValue({
+      save: currentSave,
+      context: { fromVersion: CURRENT_SAVE_VERSION, toVersion: CURRENT_SAVE_VERSION, logs: [] },
+    });
+
+    const setItemSpy = vi.spyOn(mockStorage, "setItem");
+
+    loadGame("slot_1");
+
+    // setItem should not have been called to write back the save (no migration needed)
+    const writeBackCall = setItemSpy.mock.calls.find(([k]) => k === key);
+    expect(writeBackCall).toBeUndefined();
+  });
+
+  it("returns null for a save with an unknown version", () => {
+    const mockStorage = createMockStorage(false, false);
+    setStorageProvider(mockStorage);
+
+    const badSave = {
+      version: "0.9.0",
+      world: { seed: "test", year: 2025, week: 1 },
+    };
+    mockStorage.setItem("basho_save_slot_1", JSON.stringify(badSave));
+
+    const result = loadGame("slot_1");
+    expect(result).toBe(null);
+  });
+});
+
+describe("saveload - importSave migration", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    resetStorageProvider();
+  });
+
+  afterEach(() => {
+    resetStorageProvider();
+    vi.restoreAllMocks();
+  });
+
+  it("runs migration on an imported 1.0.0 save and returns a valid WorldState", async () => {
+    const mockWorld = makeMockWorld();
+    const legacySave = {
+      version: "1.0.0",
+      createdAtISO: "2025-01-01T00:00:00Z",
+      lastSavedAtISO: "2025-06-01T00:00:00Z",
+      ruleset: { banzukeAlgorithm: "slot_fill_v1", kimariteRegistryVersion: "82_official_v1" },
+      world: mockWorld,
+    };
+
+    const file = new File([JSON.stringify(legacySave)], "save.json", { type: "application/json" });
+
+    (SerializationService.deserializeWorld as ReturnType<typeof vi.fn>).mockReturnValue(mockWorld);
+    (MigrationService.migrateSave as ReturnType<typeof vi.fn>).mockReturnValue({
+      save: { ...legacySave, version: CURRENT_SAVE_VERSION },
+      context: { fromVersion: "1.0.0", toVersion: CURRENT_SAVE_VERSION, logs: ["migrated"] },
+    });
+
+    const result = await importSave(file);
+    expect(result).not.toBeNull();
+    expect(result).toBe(mockWorld);
+    expect(MigrationService.migrateSave).toHaveBeenCalled();
   });
 });

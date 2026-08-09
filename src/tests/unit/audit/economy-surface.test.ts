@@ -130,3 +130,84 @@ describe("Economy selectors — state field reachability", () => {
     expect(proj).toContain("projectHeyaData");
   });
 });
+
+// ─── Exhibition basho (jungyo) surface ────────────────────────────────────────
+
+describe("ExhibitionBashoService — tick phase wiring", () => {
+  it("getExhibitionBashoSchedule is imported and called by phase05_monthly_boundary", () => {
+    const phase = readFile("engine/tick/phases/phase05_monthly_boundary.ts");
+    expect(phase).toContain("getExhibitionBashoSchedule");
+    expect(phase).toMatch(/getExhibitionBashoSchedule\s*\(/);
+  });
+
+  it("simulateExhibitionBasho is imported and called by phase05_monthly_boundary", () => {
+    const phase = readFile("engine/tick/phases/phase05_monthly_boundary.ts");
+    expect(phase).toContain("simulateExhibitionBasho");
+    expect(phase).toMatch(/simulateExhibitionBasho\s*\(/);
+  });
+
+  it("logs an exhibition_tour event", () => {
+    const phase = readFile("engine/tick/phases/phase05_monthly_boundary.ts");
+    expect(phase).toContain("exhibition_tour");
+  });
+});
+
+// ─── Nakabi (mid-basho checkpoint) surface ───────────────────────────────────
+
+describe("NakabiService — tick phase wiring", () => {
+  it("generateNakabiSummary is imported and called by phase01_basho_bouts", () => {
+    const phase = readFile("engine/tick/phases/phase01_basho_bouts.ts");
+    expect(phase).toContain("generateNakabiSummary");
+    expect(phase).toMatch(/generateNakabiSummary\s*\(/);
+  });
+
+  it("logNakabiCheckpoint is imported and called by phase01_basho_bouts", () => {
+    const phase = readFile("engine/tick/phases/phase01_basho_bouts.ts");
+    expect(phase).toContain("logNakabiCheckpoint");
+    expect(phase).toMatch(/logNakabiCheckpoint\s*\(/);
+  });
+
+  it("isNakabiDay is imported and called by phase01_basho_bouts", () => {
+    const phase = readFile("engine/tick/phases/phase01_basho_bouts.ts");
+    expect(phase).toContain("isNakabiDay");
+    expect(phase).toMatch(/isNakabiDay\s*\(/);
+  });
+});
+
+// ─── Kanreki ceremony surface ─────────────────────────────────────────────────
+
+describe("kanrekiCeremony — tick phase wiring", () => {
+  it("performKanrekiCeremony is imported and called by phase06_yearly_boundary", () => {
+    const phase = readFile("engine/tick/phases/phase06_yearly_boundary.ts");
+    expect(phase).toContain("performKanrekiCeremony");
+    expect(phase).toMatch(/performKanrekiCeremony\s*\(/);
+  });
+
+  it("isEligibleForKanreki is imported and called by phase06_yearly_boundary", () => {
+    const phase = readFile("engine/tick/phases/phase06_yearly_boundary.ts");
+    expect(phase).toContain("isEligibleForKanreki");
+    expect(phase).toMatch(/isEligibleForKanreki\s*\(/);
+  });
+});
+
+// ─── Yokozuna attendants surface ──────────────────────────────────────────────
+
+describe("yokozunaAttendants — wiring", () => {
+  it("assignYokozunaAttendants is imported and called by BanzukePublisher", () => {
+    const pub = readFile("engine/banzuke/BanzukePublisher.ts");
+    expect(pub).toContain("assignYokozunaAttendants");
+    expect(pub).toMatch(/assignYokozunaAttendants\s*\(/);
+  });
+
+  it("assignYokozunaAttendants is imported and called by phase01_week_governance", () => {
+    const phase = readFile("engine/tick/phases/phase01_week_governance.ts");
+    expect(phase).toContain("assignYokozunaAttendants");
+    expect(phase).toMatch(/assignYokozunaAttendants\s*\(/);
+  });
+
+  it("has a guard to skip reassignment if attendants already set", () => {
+    const svc = readFile("engine/governance/yokozunaAttendants.ts");
+    expect(svc).toContain("tachimochiId");
+    expect(svc).toContain("tsuyuharaiId");
+  });
+});
