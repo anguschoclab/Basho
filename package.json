@@ -109,7 +109,7 @@
     "clsx": "^2.1.1",
     "destr": "^2.0.5",
     "electron-store": "^8.2.0",
-    "framer-motion": "^12.43.0",
+    "framer-motion": "^13.0.0",
     "lucide-react": "^0.462.0",
     "next-themes": "^0.3.0",
     "react": "^18.3.1",
