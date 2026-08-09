@@ -338,8 +338,14 @@ export function scoreDrama(
   // Debut showcase: rookie's first makuuchi bout against sanyaku
   const aTotalBouts = (a.careerWins ?? 0) + (a.careerLosses ?? 0);
   const bTotalBouts = (b.careerWins ?? 0) + (b.careerLosses ?? 0);
-  const aMakuuchiBouts = (a.careerHistory ?? []).filter((h) => h.division === "makuuchi").length;
-  const bMakuuchiBouts = (b.careerHistory ?? []).filter((h) => h.division === "makuuchi").length;
+
+  // PERF: Prevent intermediate O(N) array allocation in hot path loop.
+  // Replaces `.filter((h) => h.division === "makuuchi").length`.
+  let aMakuuchiBouts = 0;
+  for (const h of a.careerHistory ?? []) if (h.division === "makuuchi") aMakuuchiBouts++;
+  let bMakuuchiBouts = 0;
+  for (const h of b.careerHistory ?? []) if (h.division === "makuuchi") bMakuuchiBouts++;
+
   const aIsDebut = isMakuuchiDebut(aMakuuchiBouts, a.division, aTotalBouts, a.rank);
   const bIsDebut = isMakuuchiDebut(bMakuuchiBouts, b.division, bTotalBouts, b.rank);
   if ((aIsDebut && bIsSanyaku) || (bIsDebut && aIsSanyaku)) {
