@@ -40,6 +40,7 @@ describe("post-bout injury assessment narrative (6.3)", () => {
     const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi", shikona: "WestRiki" });
     const world = { rikishi: new Map([["r1", east], ["r2", west]]), year: 2025 } as unknown as WorldState;
     const result = makeBoutResult({
+      inBoutInjury: { rikishiId: "r2", area: "shoulder", severity: "moderate", triggerEvent: "edge_crisis" },
     });
 
     generateBoutNarrative(result, east, west, undefined, 7, "injury-assess-seed", world);
@@ -72,6 +73,7 @@ describe("post-bout injury assessment narrative (6.3)", () => {
     const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi", shikona: "WestRiki" });
     const world = { rikishi: new Map([["r1", east], ["r2", west]]), year: 2025 } as unknown as WorldState;
     const result = makeBoutResult({
+      inBoutInjury: { rikishiId: "r2", area: "shoulder", severity: "serious", triggerEvent: "edge_crisis" },
     });
 
     generateBoutNarrative(result, east, west, undefined, 7, "serious-injury-seed", world);
@@ -89,6 +91,7 @@ describe("post-bout injury assessment narrative (6.3)", () => {
     const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi", shikona: "WestRiki" });
     const world = { rikishi: new Map([["r1", east], ["r2", west]]), year: 2025 } as unknown as WorldState;
     const result = makeBoutResult({
+      inBoutInjury: { rikishiId: "r1", area: "knee", severity: "moderate", triggerEvent: "edge_crisis" },
     });
 
     generateBoutNarrative(result, east, west, undefined, 7, "east-injury-seed", world);

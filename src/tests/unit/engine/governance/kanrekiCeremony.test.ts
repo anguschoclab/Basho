@@ -140,7 +140,7 @@ describe("performKanrekiCeremony", () => {
     });
 
     const impact = performKanrekiCeremony(world, yoko);
-    expect((impact.events! ?? []).length).toBe(0);
+    expect((impact.events ?? []).length).toBe(0);
   });
 
   it("does nothing if ceremony already performed", () => {
@@ -161,7 +161,7 @@ describe("performKanrekiCeremony", () => {
     };
 
     const impact = performKanrekiCeremony(world, yoko);
-    expect((impact.events! ?? []).length).toBe(0);
+    expect((impact.events ?? []).length).toBe(0);
   });
 
   it("KANREKI_AGE is 60", () => {
