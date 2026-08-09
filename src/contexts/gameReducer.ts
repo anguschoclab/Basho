@@ -16,7 +16,6 @@ function generateWorld(opts: {
 import { timeSlice } from "./timeSlice";
 import { heyaSlice } from "./heyaSlice";
 import { rosterSlice } from "./rosterSlice";
-import { financeSlice } from "./financeSlice";
 import { bashoSlice } from "./bashoSlice";
 import { bookmarkSlice } from "./bookmarkSlice";
 import { tutorialSlice } from "./tutorialSlice";
@@ -95,7 +94,6 @@ const baseReducer = combineReducers<GameState, GameAction>([
   timeSlice,
   heyaSlice,
   rosterSlice,
-  financeSlice,
   bashoSlice,
   bookmarkSlice,
   tutorialSlice,

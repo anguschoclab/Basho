@@ -29,6 +29,7 @@ import { issueGovernanceRuling } from "../systems/governance/ScandalService";
 import { handleMediaEvent } from "../systems/media/MediaEventService";
 import { withdrawRikishi, treatInjury } from "../systems/health/HealthActions";
 import { investInFacility } from "../facilities";
+import { InfrastructureService } from "../systems/economy/InfrastructureService";
 
 /**
  * Adapter matching the { seed, playerConfig? } call shape used in this worker.
@@ -313,6 +314,17 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
           cmd.heyaId,
           cmd.axis,
           cmd.points
+        );
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        syncAndDigest();
+      }
+    },
+    BUILD_INFRASTRUCTURE: (cmd) => {
+      if (currentWorld) {
+        const impact = InfrastructureService.startConstruction(
+          currentWorld,
+          cmd.heyaId,
+          cmd.facilityId
         );
         currentWorld = resolveImpacts(currentWorld, [impact]);
         syncAndDigest();

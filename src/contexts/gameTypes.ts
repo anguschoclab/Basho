@@ -91,11 +91,6 @@ export type GameAction =
   | { type: "SET_BOUT_TACTIC"; boutId: string; tactic: import("@/engine/types/combat").BoutTactic }
   | { type: "UPDATE_WORLD"; world: WorldState }
   | { type: "LOAD_WORLD"; world: WorldState }
-  | {
-      type: "BUILD_INFRASTRUCTURE";
-      heyaId: string;
-      facilityId: import("@/engine/types/infrastructure").FacilityId;
-    }
   | { type: "TICK_DAY" }
   | { type: "TICK_MULTIPLE_DAYS"; payload: { days: number } }
   | { type: "ADVANCE_TUTORIAL_STEP"; step: import("@/engine/types/tutorial").TutorialStep }

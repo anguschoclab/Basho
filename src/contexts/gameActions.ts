@@ -183,22 +183,6 @@ export const loadWorld = (world: WorldState): GameAction => ({
 });
 
 /**
- * Builds infrastructure for a heya.
- *
- * @param {string} heyaId - The heya ID.
- * @param {import("@/engine/types/infrastructure").FacilityId} facilityId - The facility ID to build.
- * @returns {GameAction} BUILD_INFRASTRUCTURE action.
- */
-export const buildInfrastructure = (
-  heyaId: string,
-  facilityId: import("@/engine/types/infrastructure").FacilityId
-): GameAction => ({
-  type: "BUILD_INFRASTRUCTURE",
-  heyaId,
-  facilityId,
-});
-
-/**
  * Advances the tutorial to the next step.
  *
  * @param {import("@/engine/types/tutorial").TutorialStep} step - The tutorial step.

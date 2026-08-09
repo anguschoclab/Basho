@@ -149,9 +149,9 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const buildInfrastructureAction = useCallback(
     (heyaId: string, facilityId: import("@/engine/types/infrastructure").FacilityId) => {
-      dispatch(actions.buildInfrastructure(heyaId, facilityId));
+      sendCommand({ type: "BUILD_INFRASTRUCTURE", heyaId, facilityId });
     },
-    []
+    [sendCommand]
   );
 
   const issueRuling = useCallback(

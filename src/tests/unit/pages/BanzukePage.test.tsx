@@ -117,7 +117,15 @@ describe("BanzukePage sorting", () => {
     expect(screen.getByRole("combobox")).toBeTruthy();
   });
 
-  it("sorting by shikona ascending reorders alphabetically", () => {
+  it("preserves official rank order when sort key is default (rank)", () => {
+    mockUseGame({ year: 2024, cyclePhase: "pre_basho" });
+    render(<BanzukePage />);
+    const order = getRikishiNames();
+    // Default sort key is "rank" — rows should stay in original order: r1, r2, r3
+    expect(order).toEqual(["Charlie", "Delta", "Alpha", "Beta", "Echo", "Foxtrot"]);
+  });
+
+  it("within-division reordering works when sort key is changed to shikona", () => {
     mockUseGame({ year: 2024, cyclePhase: "pre_basho" });
     render(<BanzukePage />);
     const trigger = screen.getByRole("combobox");
@@ -127,6 +135,23 @@ describe("BanzukePage sorting", () => {
     const order = getRikishiNames();
     // Should contain Alpha, Beta, Charlie, Delta, Echo, Foxtrot in asc order
     expect(order).toEqual(["Alpha", "Beta", "Charlie", "Delta", "Echo", "Foxtrot"]);
+  });
+
+  it("reverts to official rank order when sort key is changed back to rank", () => {
+    mockUseGame({ year: 2024, cyclePhase: "pre_basho" });
+    render(<BanzukePage />);
+    // First sort by shikona
+    const trigger = screen.getByRole("combobox");
+    fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
+    fireEvent.click(screen.getAllByText("Shikona").pop()!);
+    let order = getRikishiNames();
+    expect(order).toEqual(["Alpha", "Beta", "Charlie", "Delta", "Echo", "Foxtrot"]);
+    // Now switch back to rank
+    fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
+    fireEvent.click(screen.getAllByText("Rank").pop()!);
+    order = getRikishiNames();
+    // Back to official order: r1, r2, r3
+    expect(order).toEqual(["Charlie", "Delta", "Alpha", "Beta", "Echo", "Foxtrot"]);
   });
 
   it("persists sort state to localStorage", () => {
