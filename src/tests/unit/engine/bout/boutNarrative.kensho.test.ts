@@ -35,7 +35,7 @@ function getLines(result: BoutResult): PbpLine[] {
 }
 
 function findKenshoLines(lines: PbpLine[]): PbpLine[] {
-  return lines.filter((l) => l.tags.includes("kensho"));
+  return lines.filter((l) => l.tags?.includes("kensho"));
 }
 
 describe("kensho narrative (7.3)", () => {
@@ -111,7 +111,7 @@ describe("kensho narrative (7.3)", () => {
 
     generateBoutNarrative(result, east, west, undefined, 7, "kensho-low-seed", world);
     const lines = getLines(result);
-    const preBoutKensho = lines.filter((l) => l.phase === "pre_bout" && l.tags.includes("kensho"));
+    const preBoutKensho = lines.filter((l) => l.phase === "pre_bout" && l.tags?.includes("kensho"));
 
     expect(preBoutKensho.length).toBe(0);
   });

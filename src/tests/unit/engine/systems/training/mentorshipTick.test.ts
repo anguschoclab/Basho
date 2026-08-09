@@ -3,9 +3,11 @@ import { applyMentorshipBonuses } from "@/engine/systems/training/MentorshipServ
 import { MAX_STAT_CEILING } from "@/constants/engine/training";
 import { mockRikishi, makeMockWorld, makeMockHeya } from "../../utils";
 
+type MockRikishiOverrides = Parameters<typeof mockRikishi>[1];
+
 function makeWorldWithPair(
-  mentorOverrides: Partial<ReturnType<typeof mockRikishi>> = {},
-  apprenticeOverrides: Partial<ReturnType<typeof mockRikishi>> = {},
+  mentorOverrides: MockRikishiOverrides = {},
+  apprenticeOverrides: MockRikishiOverrides = {},
   extraRikishi: ReturnType<typeof mockRikishi>[] = []
 ) {
   const mentor = mockRikishi("mentor", { rank: "maegashira", heyaId: "h1", ...mentorOverrides });

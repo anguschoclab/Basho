@@ -257,7 +257,7 @@ describe("Holistic System Alignment — 10 Gaps", () => {
         injuryWeeksRemaining: 1,
         isKyujo: true,
         kyujoReason: "injury",
-        injuryStatus: { type: "muscle", severity: "moderate", weeksRemaining: 1 },
+        injuryStatus: { type: "strain", severity: "moderate", weeksRemaining: 1 },
       });
       expect(rikishi.recentlyReturnedFromInjury).toBeUndefined();
       const recovered = tickRikishiRecovery(rikishi, 1.0);

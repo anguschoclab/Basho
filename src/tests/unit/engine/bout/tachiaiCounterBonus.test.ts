@@ -47,6 +47,8 @@ describe("resolveTachiaiV2 — counter-tactic bonus integration", () => {
       preferredGrip: "migi",
       preferredGripDepth: "deep",
       statModifiers: {},
+      counterFamily: "push",
+      archetypeBehavior: { tachiaiSpeedBonus: 0, lateralMovementBonus: 0, edgeEscapeBonus: 0, beltTorqueBonus: 0, pushVelocityBonus: 0 },
     };
     const bout = makeBoutContext({
       playerSide: "east",
@@ -67,6 +69,8 @@ describe("resolveTachiaiV2 — counter-tactic bonus integration", () => {
       preferredGrip: "migi",
       preferredGripDepth: "deep",
       statModifiers: {},
+      counterFamily: "push",
+      archetypeBehavior: { tachiaiSpeedBonus: 0, lateralMovementBonus: 0, edgeEscapeBonus: 0, beltTorqueBonus: 0, pushVelocityBonus: 0 },
     };
     const west = mockRikishi("r-west", { power: 50, speed: 50 });
     const bout = makeBoutContext({
@@ -89,6 +93,8 @@ describe("resolveTachiaiV2 — counter-tactic bonus integration", () => {
       preferredGrip: "migi",
       preferredGripDepth: "deep",
       statModifiers: {},
+      counterFamily: "push",
+      archetypeBehavior: { tachiaiSpeedBonus: 0, lateralMovementBonus: 0, edgeEscapeBonus: 0, beltTorqueBonus: 0, pushVelocityBonus: 0 },
     };
     const bout = makeBoutContext({
       playerSide: "east",
@@ -103,7 +109,7 @@ describe("resolveTachiaiV2 — counter-tactic bonus integration", () => {
   it("does NOT apply counter bonus when opponent has no combatProfile", () => {
     const east = mockRikishi("r-east", { power: 50, speed: 50 });
     const west = mockRikishi("r-west", { power: 50, speed: 50 });
-    west.combatProfile = undefined;
+    west.combatProfile = undefined as unknown as import("@/engine/types/combat").CombatProfile;
     const bout = makeBoutContext({
       playerSide: "east",
       playerTactic: "OSHI_THRUST",
@@ -124,6 +130,8 @@ describe("resolveTachiaiV2 — counter-tactic bonus integration", () => {
       preferredGrip: "none",
       preferredGripDepth: "standard",
       statModifiers: {},
+      counterFamily: "belt",
+      archetypeBehavior: { tachiaiSpeedBonus: 0, lateralMovementBonus: 0, edgeEscapeBonus: 0, beltTorqueBonus: 0, pushVelocityBonus: 0 },
     };
     const bout = makeBoutContext({
       playerSide: "east",
@@ -144,6 +152,8 @@ describe("resolveTachiaiV2 — counter-tactic bonus integration", () => {
       preferredGrip: "migi",
       preferredGripDepth: "deep",
       statModifiers: {},
+      counterFamily: "push",
+      archetypeBehavior: { tachiaiSpeedBonus: 0, lateralMovementBonus: 0, edgeEscapeBonus: 0, beltTorqueBonus: 0, pushVelocityBonus: 0 },
     };
     const bout = makeBoutContext({
       playerSide: "east",
@@ -167,6 +177,8 @@ describe("resolveTachiaiV2 — counter-tactic bonus integration", () => {
       preferredGrip: "migi",
       preferredGripDepth: "deep",
       statModifiers: {},
+      counterFamily: "push",
+      archetypeBehavior: { tachiaiSpeedBonus: 0, lateralMovementBonus: 0, edgeEscapeBonus: 0, beltTorqueBonus: 0, pushVelocityBonus: 0 },
     };
     const bout = makeBoutContext({
       playerSide: "east",
