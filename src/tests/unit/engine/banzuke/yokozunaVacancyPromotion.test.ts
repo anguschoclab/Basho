@@ -12,19 +12,19 @@ function makeBashoWorld(overrides: Partial<WorldState> = {}): WorldState {
   const world = makeMockWorld(overrides);
   world.cyclePhase = "post_basho";
   world.currentBasho = {
-    bashoName: "Hatsu",
+    bashoName: "hatsu",
     standings: new Map(),
     divisionStandings: {},
   } as any;
   world.history = [
     {
       year: 2025,
-      bashoName: "Hatsu",
+      bashoName: "hatsu",
       yusho: "oz-1",
       junYusho: [],
-      ginoSho: null,
-      shukunsho: null,
-      kantosho: null,
+      ginoSho: undefined,
+      shukunsho: undefined,
+      kantosho: undefined,
       results: {},
     },
   ];

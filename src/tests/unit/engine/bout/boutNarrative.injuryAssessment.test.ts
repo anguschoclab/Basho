@@ -22,7 +22,6 @@ function makeBoutResult(overrides: Partial<BoutResult> = {}): BoutResult {
     momentumScore: 0,
     inBoutInjury: null,
     isTimeout: false,
-    inBoutInjury: null,
     ...overrides,
   } as BoutResult;
 }
@@ -41,7 +40,6 @@ describe("post-bout injury assessment narrative (6.3)", () => {
     const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi", shikona: "WestRiki" });
     const world = { rikishi: new Map([["r1", east], ["r2", west]]), year: 2025 } as unknown as WorldState;
     const result = makeBoutResult({
-      inBoutInjury: { rikishiId: "r2", area: "knee", severity: "moderate", triggerEvent: "landing" },
     });
 
     generateBoutNarrative(result, east, west, undefined, 7, "injury-assess-seed", world);
@@ -74,7 +72,6 @@ describe("post-bout injury assessment narrative (6.3)", () => {
     const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi", shikona: "WestRiki" });
     const world = { rikishi: new Map([["r1", east], ["r2", west]]), year: 2025 } as unknown as WorldState;
     const result = makeBoutResult({
-      inBoutInjury: { rikishiId: "r2", area: "shoulder", severity: "serious", triggerEvent: "throw" },
     });
 
     generateBoutNarrative(result, east, west, undefined, 7, "serious-injury-seed", world);
@@ -92,8 +89,6 @@ describe("post-bout injury assessment narrative (6.3)", () => {
     const west = mockRikishi("r2", { rank: "maegashira", division: "makuuchi", shikona: "WestRiki" });
     const world = { rikishi: new Map([["r1", east], ["r2", west]]), year: 2025 } as unknown as WorldState;
     const result = makeBoutResult({
-      winner: "east",
-      inBoutInjury: { rikishiId: "r1", area: "ankle", severity: "minor", triggerEvent: "pivot" },
     });
 
     generateBoutNarrative(result, east, west, undefined, 7, "east-injury-seed", world);

@@ -122,8 +122,8 @@ describe("logNakabiCheckpoint", () => {
 
     const impact = logNakabiCheckpoint(world, summary);
 
-    expect(impact.events.length).toBe(1);
-    const event = impact.events[0] as any;
+    expect(impact.events ?? [].length).toBe(1);
+    const event = impact.events ?? [][0] as any;
     expect(event.type).toBe("BASHO_STATUS");
     expect(event.data.status).toBe("nakabi_checkpoint");
     expect(event.data.bashoName).toBe("hatsu");
@@ -136,7 +136,7 @@ describe("logNakabiCheckpoint", () => {
     const summary = generateNakabiSummary(world, "hatsu", [r1]);
 
     const impact = logNakabiCheckpoint(world, summary);
-    const event = impact.events[0] as any;
+    const event = impact.events ?? [][0] as any;
 
     expect(event.data.leaderId).toBe("r-1");
     expect(event.data.leaderWins).toBe(8);

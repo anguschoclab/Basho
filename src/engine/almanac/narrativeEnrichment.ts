@@ -79,7 +79,7 @@ export function buildNotableBoutEntry(
   };
 }
 
-function milestoneToHighlight(m: Rikishi["milestones"][number]): NarrativeHighlight {
+function milestoneToHighlight(m: NonNullable<Rikishi["milestones"]>[number]): NarrativeHighlight {
   const bashoMap: Record<number, BashoName> = {
     1: "hatsu", 3: "haru", 5: "natsu", 7: "nagoya", 9: "aki", 11: "kyushu",
   };

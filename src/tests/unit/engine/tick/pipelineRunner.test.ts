@@ -43,7 +43,7 @@ describe("pipelineRunner", () => {
 
     expect(phase1).toHaveBeenCalled();
     expect(phase2).toHaveBeenCalled();
-    expect(result.count).toBe(2);
+    expect((result as any).count).toBe(2);
   });
 
   it("rolls back to snapshot on phase error", () => {
@@ -70,7 +70,7 @@ describe("pipelineRunner", () => {
     expect(consoleErrorSpy).toHaveBeenCalled();
 
     // badPhase throws, rolling back to phase1's result (10), then phase3 adds 5
-    expect(result.count).toBe(15);
+    expect((result as any).count).toBe(15);
 
     consoleErrorSpy.mockRestore();
   });
@@ -97,7 +97,7 @@ describe("pipelineRunner", () => {
     expect(consoleErrorSpy).toHaveBeenCalled();
 
     // badPhase throws validation error, rolling back to phase1's result (10)
-    expect(result.count).toBe(15);
+    expect((result as any).count).toBe(15);
 
     consoleErrorSpy.mockRestore();
   });

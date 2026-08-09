@@ -23,8 +23,8 @@ describe("AI memory and decision determinism", () => {
   });
 
   it("BoutAI.chooseTactic is deterministic for identical inputs", () => {
-    const cpu = mockRikishi("cpu", { style: "yotsu", stats: { technique: 70, speed: 60 } });
-    const opponent = mockRikishi("opp", { style: "oshi", stats: { technique: 50, speed: 50 } });
+    const cpu = mockRikishi("cpu", { style: "yotsu", stats: { technique: 70, speed: 60 } as any });
+    const opponent = mockRikishi("opp", { style: "oshi", stats: { technique: 50, speed: 50 } as any });
     const rng = new SeededRNG("seed");
     const a = chooseTactic(cpu, opponent, { rng, bashoDay: 8, cpuRecord: { wins: 5, losses: 3 }, rivalryHeat: 0 });
     const rng2 = new SeededRNG("seed");

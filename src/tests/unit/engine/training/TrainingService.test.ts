@@ -44,7 +44,6 @@ describe("TrainingService.applyWeeklyTraining", () => {
         adaptability: 50,
         balance: 50,
         experience: 10,
-        power: 50,
         aggression: 50,
          
       } as any,
@@ -57,12 +56,6 @@ describe("TrainingService.applyWeeklyTraining", () => {
       nutritionMult: 1.0,
       degeikoMult: 1.0,
       styleDriftMults: {
-        power: 1.0,
-        speed: 1.0,
-        technique: 1.0,
-        balance: 1.0,
-        stamina: 1.0,
-        mental: 1.0,
       },
       recoveryMultiplier: 1.0,
       financialPenalty: false,

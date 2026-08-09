@@ -10,7 +10,7 @@ import { SeededRNG } from "@/engine/rng";
 
 describe("initBeltBattle", () => {
   it("gives tachiai winner inside arm advantage", () => {
-    const east = mockRikishi("r1", { combatProfile: { preferredGrip: "migi" } });
+    const east = mockRikishi("r1", { combatProfile: { preferredGrip: "migi" } as any });
     const west = mockRikishi("r2");
     const rng = new SeededRNG("test-seed");
     const belt = initBeltBattle(rng, east, west, "east");
@@ -21,7 +21,7 @@ describe("initBeltBattle", () => {
   });
 
   it("sets initial gripClass correctly for migi-preference east winner", () => {
-    const east = mockRikishi("r1", { combatProfile: { preferredGrip: "migi" } });
+    const east = mockRikishi("r1", { combatProfile: { preferredGrip: "migi" } as any });
     const west = mockRikishi("r2");
     const rng = new SeededRNG("test-seed");
     const belt = initBeltBattle(rng, east, west, "east");

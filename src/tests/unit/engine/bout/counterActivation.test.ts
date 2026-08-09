@@ -13,11 +13,15 @@ function makeCombatProfile(counterFamily: TacticalFamily): CombatProfile {
     statModifiers: {},
     counterFamily,
     archetypeBehavior: {
+      tachiaiSpeedBonus: 0,
+      edgeEscapeBonus: 0,
       pushVelocityBonus: 0,
       lateralMovementBonus: 0,
       beltTorqueBonus: 0,
     },
     bodyTypeBehavior: {
+      tachiaiSpeedBonus: 0,
+      edgeEscapeBonus: 0,
       pushVelocityBonus: 0,
       lateralMovementBonus: 0,
       beltTorqueBonus: 0,

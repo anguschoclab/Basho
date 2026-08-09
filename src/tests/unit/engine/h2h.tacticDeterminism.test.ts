@@ -5,7 +5,7 @@ import { mockRikishi } from "./utils";
 
 describe("determineCPUTactic determinism", () => {
   it("returns the same tactic for the same seed and rikishi", () => {
-    const cpu = mockRikishi("cpu", { style: "yotsu", stats: { technique: 70, speed: 60 } });
+    const cpu = mockRikishi("cpu", { style: "yotsu", stats: { technique: 70, speed: 60 } as any });
     const rng = new SeededRNG("stable-seed");
     const a = determineCPUTactic(cpu, rng);
 
@@ -16,7 +16,7 @@ describe("determineCPUTactic determinism", () => {
   });
 
   it("produces a stable sequence for repeated calls", () => {
-    const cpu = mockRikishi("cpu", { style: "oshi", stats: { technique: 80, speed: 80 } });
+    const cpu = mockRikishi("cpu", { style: "oshi", stats: { technique: 80, speed: 80 } as any });
     const rng = new SeededRNG("seq");
     const first = determineCPUTactic(cpu, rng);
     const second = determineCPUTactic(cpu, rng);

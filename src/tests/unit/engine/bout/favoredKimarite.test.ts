@@ -63,6 +63,10 @@ describe("evaluateKimariteAttempt — favoredKimarite boost", () => {
       westLeadFoot,
       eastMomentum: 80,
       westMomentum: 30,
+      eastLateral: 0,
+      westLateral: 0,
+      eastLateralMomentum: 0,
+      westLateralMomentum: 0,
     };
     st.phase = { tag: "push_battle", state: push };
 
@@ -122,6 +126,10 @@ describe("evaluateKimariteAttempt — favoredKimarite boost", () => {
       westLeadFoot,
       eastMomentum: 80,
       westMomentum: 30,
+      eastLateral: 0,
+      westLateral: 0,
+      eastLateralMomentum: 0,
+      westLateralMomentum: 0,
     };
     st.phase = { tag: "push_battle", state: push };
 
@@ -176,6 +184,10 @@ describe("evaluateKimariteAttempt — favoredKimarite boost", () => {
       westLeadFoot,
       eastMomentum: 80,
       westMomentum: 20,
+      eastLateral: 0,
+      westLateral: 0,
+      eastLateralMomentum: 0,
+      westLateralMomentum: 0,
     };
     st.phase = { tag: "push_battle", state: push };
 
