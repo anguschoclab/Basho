@@ -18,6 +18,7 @@ A comprehensive consolidation review of the `sumo-manager-pro` repository was co
 |----|-------|---------|-----------|
 | #790 | Bard: yokozuna promotion variety | **APPROVED & MERGED** | `BardEngine.getOptions()` natively handles arrays (line 153) and strings (line 154). `testing` state fills a genuine blank-text gap. 168 bard tests pass. |
 | #791 | Scout: phase01_week_npc_ai sparring test | **APPROVED & MERGED** | CI fix alone justifies merge (perf-gate upgraded from `setup-node`/`npm ci` to `oven-sh/setup-bun`/`bun install`). Test adds combined-scenario value. 9 npc_ai tests pass. |
+| #792 | chore(deps-dev): bump vite 5.4.21 → 8.2.1 | **APPROVED & MERGED** | 3-major-version jump (5→8) verified: build succeeds, 0 type errors, 0 lint errors, 6800/6800 tests pass. Vite 8 is backward compatible with this project's config. |
 
 ---
 
@@ -26,7 +27,7 @@ A comprehensive consolidation review of the `sumo-manager-pro` repository was co
 | Stash | Description | Verdict | Rationale |
 |-------|-------------|---------|-----------|
 | @{0} | orphan-tracker CSV timestamp change | **DROPPED** | Trivial 1-line CSV timestamp change; no value. |
-| @{1} | Bout Physics V2 rewrite | **REJECTED** | 30+ merge conflicts. Main evolved past stash: `combat-spatial.ts` already exists with different API, `boutPhysics.ts` is now a 49-line barrel, `boutCalculations.ts` and `kimariteEvaluator.ts` were deleted. V2 files (`boutGripV2.ts`, `boutPhysicsV2.ts`) depend on stash's version of `combat-spatial.ts` which has `BoutLogEntryV2` and richer `PhysicalBody` fields not on main. Re-integration would require significant API reconciliation. |
+| @{1} | Bout Physics V2 rewrite | **REJECTED** | 32 merge conflicts across core engine files. Attempted full merge: resolved all conflicts by taking stash versions, but resulted in **2756 type errors** — stash reverts `Rikishi`, `RikishiStats`, `BoutLogEntry`, `BashoResult`, and many other types to older versions, breaking all downstream components. The stash is based on a commit from before major type system evolution. Re-integration would require reconciling every type change between the stash base and current main. |
 | @{2} | Scouting/Stable page formatting | **DROPPED** | Pure cosmetic formatting (line wrapping, indentation). No logic value. Current code is already properly formatted. |
 
 ---
