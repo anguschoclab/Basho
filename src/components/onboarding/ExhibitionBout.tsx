@@ -4,7 +4,7 @@
  * with step-by-step PbP log entries and MentorOverlay tooltips.
  */
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useGame } from "@/contexts/useGame";
 import { resolveBout } from "@/engine/bout/boutResolver";
 import type { BoutContext } from "@/engine/bout/boutPhysics";
@@ -48,8 +48,18 @@ interface ExhibitionBoutProps {
 }
 
 export function ExhibitionBout({ onComplete }: ExhibitionBoutProps) {
-  const { state, advanceTutorialStep, setTutorialFlag, completeTutorial } = useGame();
+  const { state, setTutorialFlag, finishExhibition } = useGame();
   const world = state.world;
+
+  const finishRequestedRef = useRef(false);
+  const tutorialCompleted = world?.tutorialState?.completed ?? false;
+
+  useEffect(() => {
+    if (finishRequestedRef.current && tutorialCompleted) {
+      finishRequestedRef.current = false;
+      onComplete();
+    }
+  }, [tutorialCompleted, onComplete]);
 
   const pair = useMemo(() => (world ? pickExhibitionPair(world) : null), [world]);
 
@@ -124,11 +134,9 @@ export function ExhibitionBout({ onComplete }: ExhibitionBoutProps) {
   }, [mentorStepIdx, setTutorialFlag, handleMentorDismiss]);
 
   const handleFinish = useCallback(() => {
-    setTutorialFlag("finishedExhibition");
-    advanceTutorialStep("FIRST_BASHO_STARTED");
-    completeTutorial();
-    onComplete();
-  }, [setTutorialFlag, advanceTutorialStep, completeTutorial, onComplete]);
+    finishRequestedRef.current = true;
+    finishExhibition("finishedExhibition", "FIRST_BASHO_STARTED");
+  }, [finishExhibition]);
 
   if (!world || !pair || !boutResult) {
     return (

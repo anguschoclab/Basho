@@ -173,21 +173,27 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const advanceTutorialStepAction = useCallback(
     (step: import("@/engine/types/tutorial").TutorialStep) => {
-      dispatch(actions.advanceTutorialStep(step));
+      sendCommand({ type: "ADVANCE_TUTORIAL_STEP", step });
     },
-    []
+    [sendCommand]
   );
 
   const setTutorialFlagAction = useCallback(
     (flag: keyof import("@/engine/types/tutorial").TutorialFlags) => {
-      dispatch(actions.setTutorialFlag(flag));
+      sendCommand({ type: "SET_TUTORIAL_FLAG", flag });
     },
-    []
+    [sendCommand]
   );
 
-  const completeTutorialAction = useCallback(() => {
-    dispatch(actions.completeTutorial());
-  }, []);
+  const finishExhibitionAction = useCallback(
+    (
+      flag: keyof import("@/engine/types/tutorial").TutorialFlags,
+      step: import("@/engine/types/tutorial").TutorialStep
+    ) => {
+      sendCommand({ type: "FINISH_EXHIBITION", flag, step });
+    },
+    [sendCommand]
+  );
 
   const goOnHoliday = useCallback(
     (config: HolidayConfig): HolidayResult | null => {
@@ -255,38 +261,53 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const hasAutosaveCheck = useCallback(() => hasAutosave(), []);
   const getSaveSlots = useCallback(() => getSaveSlotInfos(), []);
 
-  const assignMentorAction = useCallback((mentorId: string, apprenticeId: string) => {
-    dispatch(actions.assignMentor(mentorId, apprenticeId));
-  }, []);
+  const assignMentorAction = useCallback(
+    (mentorId: string, apprenticeId: string) => {
+      sendCommand({ type: "ASSIGN_MENTOR", mentorId, apprenticeId });
+    },
+    [sendCommand]
+  );
 
-  const removeMentorAction = useCallback((apprenticeId: string) => {
-    dispatch(actions.removeMentor(apprenticeId));
-  }, []);
+  const removeMentorAction = useCallback(
+    (apprenticeId: string) => {
+      sendCommand({ type: "REMOVE_MENTOR", apprenticeId });
+    },
+    [sendCommand]
+  );
 
-  const addSparringPairAction = useCallback((heyaId: string, aId: string, bId: string) => {
-    dispatch(actions.addSparringPair(heyaId, aId, bId));
-  }, []);
+  const addSparringPairAction = useCallback(
+    (heyaId: string, aId: string, bId: string) => {
+      sendCommand({ type: "ADD_SPARRING_PAIR", heyaId, aId, bId });
+    },
+    [sendCommand]
+  );
 
-  const removeSparringPairAction = useCallback((heyaId: string, aId: string, bId: string) => {
-    dispatch(actions.removeSparringPair(heyaId, aId, bId));
-  }, []);
+  const removeSparringPairAction = useCallback(
+    (heyaId: string, aId: string, bId: string) => {
+      sendCommand({ type: "REMOVE_SPARRING_PAIR", heyaId, aId, bId });
+    },
+    [sendCommand]
+  );
 
   const bookmarkEntityAction = useCallback(
     (entityType: string, entityId: string, note?: string) => {
-      dispatch(actions.bookmarkEntity(entityType, entityId, note));
+      sendCommand({ type: "BOOKMARK_ENTITY", entityType, entityId, note });
     },
-    []
+    [sendCommand]
   );
 
-  const unbookmarkEntityAction = useCallback((entityType: string, entityId: string) => {
-    dispatch(actions.unbookmarkEntity(entityType, entityId));
-  }, []);
+  const unbookmarkEntityAction = useCallback(
+    (entityType: string, entityId: string) => {
+      sendCommand({ type: "UNBOOKMARK_ENTITY", entityType, entityId });
+    },
+    [sendCommand]
+  );
 
   const updateBookmarkNoteAction = useCallback(
     (entityType: string, entityId: string, note: string) => {
-      dispatch(actions.updateBookmarkNote(entityType, entityId, note));
+      sendCommand({ type: "UPDATE_BOOKMARK_NOTE", entityType, entityId, note });
     },
-    []
+    [sendCommand]
   );
 
   const isBookmarkedCheck = useCallback(
@@ -342,7 +363,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       recruitSponsor: recruitSponsorAction,
       advanceTutorialStep: advanceTutorialStepAction,
       setTutorialFlag: setTutorialFlagAction,
-      completeTutorial: completeTutorialAction,
+      finishExhibition: finishExhibitionAction,
       buildInfrastructure: buildInfrastructureAction,
       assignMentor: assignMentorAction,
       removeMentor: removeMentorAction,
@@ -388,7 +409,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       recruitSponsorAction,
       advanceTutorialStepAction,
       setTutorialFlagAction,
-      completeTutorialAction,
+      finishExhibitionAction,
       buildInfrastructureAction,
       assignMentorAction,
       removeMentorAction,

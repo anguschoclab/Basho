@@ -92,17 +92,7 @@ export type GameAction =
   | { type: "UPDATE_WORLD"; world: WorldState }
   | { type: "LOAD_WORLD"; world: WorldState }
   | { type: "TICK_DAY" }
-  | { type: "TICK_MULTIPLE_DAYS"; payload: { days: number } }
-  | { type: "ADVANCE_TUTORIAL_STEP"; step: import("@/engine/types/tutorial").TutorialStep }
-  | { type: "SET_TUTORIAL_FLAG"; flag: keyof import("@/engine/types/tutorial").TutorialFlags }
-  | { type: "COMPLETE_TUTORIAL" }
-  | { type: "ASSIGN_MENTOR"; mentorId: string; apprenticeId: string }
-  | { type: "REMOVE_MENTOR"; apprenticeId: string }
-  | { type: "ADD_SPARRING_PAIR"; heyaId: string; aId: string; bId: string }
-  | { type: "REMOVE_SPARRING_PAIR"; heyaId: string; aId: string; bId: string }
-  | { type: "BOOKMARK_ENTITY"; entityType: string; entityId: string; note?: string }
-  | { type: "UNBOOKMARK_ENTITY"; entityType: string; entityId: string }
-  | { type: "UPDATE_BOOKMARK_NOTE"; entityType: string; entityId: string; note: string };
+  | { type: "TICK_MULTIPLE_DAYS"; payload: { days: number } };
 
 /**
  * Initial game state.

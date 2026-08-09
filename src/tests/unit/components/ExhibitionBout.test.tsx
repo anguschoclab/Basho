@@ -91,18 +91,16 @@ const mockWorld = {
 
 const mockGameApi = {
   state: { world: mockWorld },
-  advanceTutorialStep: vi.fn(),
   setTutorialFlag: vi.fn(),
-  completeTutorial: vi.fn(),
+  finishExhibition: vi.fn(),
 };
 
 describe("ExhibitionBout", () => {
   it("renders preparing message when no world", () => {
     mockUseGame.mockReturnValue({
       state: { world: null },
-      advanceTutorialStep: vi.fn(),
       setTutorialFlag: vi.fn(),
-      completeTutorial: vi.fn(),
+      finishExhibition: vi.fn(),
     });
     renderWithProvider(<ExhibitionBout onComplete={vi.fn()} />);
     expect(screen.getByText("Preparing exhibition bout...")).toBeTruthy();
@@ -139,13 +137,36 @@ describe("ExhibitionBout", () => {
     expect(screen.getByText(/Your Role as Oyakata/i)).toBeTruthy();
   });
 
-  it("Begin My Career calls onComplete", () => {
+  it("Begin My Career calls finishExhibition, onComplete fires after world update", () => {
     const onComplete = vi.fn();
-    mockUseGame.mockReturnValue(mockGameApi);
-    renderWithProvider(<ExhibitionBout onComplete={onComplete} />);
+    const worldWithTutorial = {
+      ...mockWorld,
+      tutorialState: { completed: false, currentStep: "EXHIBITION_INTRO", flags: {} },
+    };
+    let currentWorld = worldWithTutorial;
+    const finishExhibitionFn = vi.fn(() => {
+      currentWorld = {
+        ...currentWorld,
+        tutorialState: { ...currentWorld.tutorialState, completed: true, currentStep: "DONE" },
+      };
+      mockUseGame.mockReturnValue({
+        ...mockGameApi,
+        state: { world: currentWorld },
+        finishExhibition: finishExhibitionFn,
+      });
+    });
+    mockUseGame.mockReturnValue({
+      ...mockGameApi,
+      state: { world: currentWorld },
+      finishExhibition: finishExhibitionFn,
+    });
+    const { rerender } = renderWithProvider(<ExhibitionBout onComplete={onComplete} />);
     fireEvent.click(screen.getByText("Next"));
     fireEvent.click(screen.getByText("Next"));
     fireEvent.click(screen.getByText("Begin My Career"));
+    expect(finishExhibitionFn).toHaveBeenCalledWith("finishedExhibition", "FIRST_BASHO_STARTED");
+    // Simulate WORLD_UPDATED re-render with completed=true
+    rerender(<TooltipProvider><ExhibitionBout onComplete={onComplete} /></TooltipProvider>);
     expect(onComplete).toHaveBeenCalled();
   });
 
@@ -177,9 +198,8 @@ describe("ExhibitionBout — error paths", () => {
 
   const mockGameApi = {
     state: { world: mockWorld },
-    advanceTutorialStep: vi.fn(),
     setTutorialFlag: vi.fn(),
-    completeTutorial: vi.fn(),
+    finishExhibition: vi.fn(),
   };
 
   beforeEach(() => {
@@ -240,9 +260,8 @@ describe("ExhibitionBout — error paths", () => {
     };
     mockUseGame.mockReturnValue({
       state: { world: jonokuchiWorld },
-      advanceTutorialStep: vi.fn(),
       setTutorialFlag: vi.fn(),
-      completeTutorial: vi.fn(),
+      finishExhibition: vi.fn(),
     });
     renderWithProvider(<ExhibitionBout onComplete={vi.fn()} />);
     // pickExhibitionPair falls back to any 2 rikishi, so bout should render
@@ -256,9 +275,8 @@ describe("ExhibitionBout — error paths", () => {
     };
     mockUseGame.mockReturnValue({
       state: { world: singleRikishiWorld },
-      advanceTutorialStep: vi.fn(),
       setTutorialFlag: vi.fn(),
-      completeTutorial: vi.fn(),
+      finishExhibition: vi.fn(),
     });
     renderWithProvider(<ExhibitionBout onComplete={vi.fn()} />);
     expect(screen.getByText("Preparing exhibition bout...")).toBeTruthy();

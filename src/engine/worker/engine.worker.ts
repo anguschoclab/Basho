@@ -30,6 +30,19 @@ import { handleMediaEvent } from "../systems/media/MediaEventService";
 import { withdrawRikishi, treatInjury } from "../systems/health/HealthActions";
 import { investInFacility } from "../facilities";
 import { InfrastructureService } from "../systems/economy/InfrastructureService";
+import { assignMentor } from "../lineage";
+import { removeMentor } from "../systems/training/MentorshipService";
+import { assignSparringPair, removeSparringPair } from "../systems/training/SparringService";
+import {
+  addBookmark,
+  removeBookmark,
+  updateBookmarkNote,
+} from "../systems/bookmark/BookmarkService";
+import {
+  advanceTutorialStep as svcAdvanceTutorialStep,
+  setTutorialFlag as svcSetTutorialFlag,
+  finishExhibition as svcFinishExhibition,
+} from "../systems/tutorial/TutorialService";
 
 /**
  * Adapter matching the { seed, playerConfig? } call shape used in this worker.
@@ -328,6 +341,106 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
         );
         currentWorld = resolveImpacts(currentWorld, [impact]);
         syncAndDigest();
+      }
+    },
+    ASSIGN_MENTOR: (cmd) => {
+      if (currentWorld) {
+        const { ok, impact } = assignMentor(
+          currentWorld,
+          cmd.apprenticeId,
+          cmd.mentorId
+        );
+        if (!ok || !impact) return;
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        syncAndDigest();
+      }
+    },
+    REMOVE_MENTOR: (cmd) => {
+      if (currentWorld) {
+        const impact = removeMentor(currentWorld, cmd.apprenticeId);
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        syncAndDigest();
+      }
+    },
+    ADD_SPARRING_PAIR: (cmd) => {
+      if (currentWorld) {
+        const impact = assignSparringPair(
+          currentWorld,
+          cmd.heyaId,
+          cmd.aId,
+          cmd.bId,
+          currentWorld.week
+        );
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        syncAndDigest();
+      }
+    },
+    REMOVE_SPARRING_PAIR: (cmd) => {
+      if (currentWorld) {
+        const impact = removeSparringPair(
+          currentWorld,
+          cmd.heyaId,
+          cmd.aId,
+          cmd.bId
+        );
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        syncAndDigest();
+      }
+    },
+    BOOKMARK_ENTITY: (cmd) => {
+      if (currentWorld) {
+        const impact = addBookmark(
+          currentWorld,
+          cmd.entityType,
+          cmd.entityId,
+          cmd.note
+        );
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        syncWorld();
+      }
+    },
+    UNBOOKMARK_ENTITY: (cmd) => {
+      if (currentWorld) {
+        const impact = removeBookmark(
+          currentWorld,
+          cmd.entityType,
+          cmd.entityId
+        );
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        syncWorld();
+      }
+    },
+    UPDATE_BOOKMARK_NOTE: (cmd) => {
+      if (currentWorld) {
+        const impact = updateBookmarkNote(
+          currentWorld,
+          cmd.entityType,
+          cmd.entityId,
+          cmd.note
+        );
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        syncWorld();
+      }
+    },
+    ADVANCE_TUTORIAL_STEP: (cmd) => {
+      if (currentWorld) {
+        const impact = svcAdvanceTutorialStep(currentWorld, cmd.step);
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        syncWorld();
+      }
+    },
+    SET_TUTORIAL_FLAG: (cmd) => {
+      if (currentWorld) {
+        const impact = svcSetTutorialFlag(currentWorld, cmd.flag);
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        syncWorld();
+      }
+    },
+    FINISH_EXHIBITION: (cmd) => {
+      if (currentWorld) {
+        const impact = svcFinishExhibition(currentWorld, cmd.flag, cmd.step);
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        syncWorld();
       }
     },
     BUY_MYOSEKI: (cmd) => {

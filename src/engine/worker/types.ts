@@ -37,7 +37,17 @@ export type EngineCommand =
   | { type: "WITHDRAW_RIKISHI"; rikishiId: string }
   | { type: "TREAT_INJURY"; rikishiId: string; weeks: number }
   | { type: "INVEST_IN_FACILITY"; heyaId: string; axis: import("../facilities").FacilityAxis; points: number }
-  | { type: "BUILD_INFRASTRUCTURE"; heyaId: string; facilityId: import("../types/infrastructure").FacilityId };
+  | { type: "BUILD_INFRASTRUCTURE"; heyaId: string; facilityId: import("../types/infrastructure").FacilityId }
+  | { type: "ASSIGN_MENTOR"; mentorId: string; apprenticeId: string }
+  | { type: "REMOVE_MENTOR"; apprenticeId: string }
+  | { type: "ADD_SPARRING_PAIR"; heyaId: string; aId: string; bId: string }
+  | { type: "REMOVE_SPARRING_PAIR"; heyaId: string; aId: string; bId: string }
+  | { type: "BOOKMARK_ENTITY"; entityType: string; entityId: string; note?: string }
+  | { type: "UNBOOKMARK_ENTITY"; entityType: string; entityId: string }
+  | { type: "UPDATE_BOOKMARK_NOTE"; entityType: string; entityId: string; note: string }
+  | { type: "ADVANCE_TUTORIAL_STEP"; step: import("../types/tutorial").TutorialStep }
+  | { type: "SET_TUTORIAL_FLAG"; flag: keyof import("../types/tutorial").TutorialFlags }
+  | { type: "FINISH_EXHIBITION"; flag: keyof import("../types/tutorial").TutorialFlags; step: import("../types/tutorial").TutorialStep };
 
 /** Worker -> UI Events */
 export type EngineEvent =

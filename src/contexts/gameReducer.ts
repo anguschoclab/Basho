@@ -15,10 +15,7 @@ function generateWorld(opts: {
 
 import { timeSlice } from "./timeSlice";
 import { heyaSlice } from "./heyaSlice";
-import { rosterSlice } from "./rosterSlice";
 import { bashoSlice } from "./bashoSlice";
-import { bookmarkSlice } from "./bookmarkSlice";
-import { tutorialSlice } from "./tutorialSlice";
 
 /**
  * Core generic actions that don't fit cleanly into a domain slice
@@ -93,10 +90,7 @@ const baseReducer = combineReducers<GameState, GameAction>([
   coreSlice,
   timeSlice,
   heyaSlice,
-  rosterSlice,
   bashoSlice,
-  bookmarkSlice,
-  tutorialSlice,
 ]);
 
 /**

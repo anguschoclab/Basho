@@ -49,7 +49,10 @@ export interface GameContextValue {
   updateWorld: (world: WorldState) => void;
   advanceTutorialStep: (step: import("@/engine/types/tutorial").TutorialStep) => void;
   setTutorialFlag: (flag: keyof import("@/engine/types/tutorial").TutorialFlags) => void;
-  completeTutorial: () => void;
+  finishExhibition: (
+    flag: keyof import("@/engine/types/tutorial").TutorialFlags,
+    step: import("@/engine/types/tutorial").TutorialStep
+  ) => void;
   buildInfrastructure: (
     heyaId: string,
     facilityId: import("@/engine/types/infrastructure").FacilityId

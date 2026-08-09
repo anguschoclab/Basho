@@ -38,7 +38,7 @@ export function useTutorialActions() {
   return {
     advanceTutorialStep: game.advanceTutorialStep,
     setTutorialFlag: game.setTutorialFlag,
-    completeTutorial: game.completeTutorial,
+    finishExhibition: game.finishExhibition,
   };
 }
 
