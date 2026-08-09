@@ -343,6 +343,15 @@ export const BardEngine = {
   },
 
   /**
+   * Returns true only when ALL domains have been bulk-loaded via loadDomains().
+   * Partial loads via ensureDomains() do not set this — they populate domainCache
+   * individually but don't set domainsData.
+   */
+  areDomainsLoaded(): boolean {
+    return domainsData !== null;
+  },
+
+  /**
    * Resets all domain caches. Used in test cleanup to prevent state pollution.
    */
   resetDomains(): void {

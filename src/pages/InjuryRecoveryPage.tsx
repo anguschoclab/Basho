@@ -15,11 +15,13 @@ import { resolveRegistryLabel } from "@/presenters/uiUtilities";
 import { BardEngine } from "@/engine/bard/BardEngine";
 import { SeededRNG } from "@/engine/rng";
 import { getHeyaRoster } from "@/engine/queries";
+import { useDomainsReady } from "@/hooks/useDomainsReady";
 
 /** injury recovery page. */
 export default function InjuryRecoveryPage() {
   const navigate = useNavigate();
   const { state, updateWorld } = useGame();
+  const domainsReady = useDomainsReady();
 
   useEffect(() => {
     if (!state.world) navigate({ to: "/main-menu", replace: true });
@@ -30,7 +32,7 @@ export default function InjuryRecoveryPage() {
   );
 
   const rikishiList = useMemo(() => {
-    if (!state.world || !state.playerHeyaId) return [];
+    if (!state.world || !state.playerHeyaId || !domainsReady) return [];
     const rng = state.world.rng || new SeededRNG(state.world.seed || "medical_heatmap");
     return getHeyaRoster(state.world, state.playerHeyaId)
       .filter((r) => !r.isRetired)
@@ -64,7 +66,7 @@ export default function InjuryRecoveryPage() {
           injurySummary,
         };
       });
-  }, [state.world, state.playerHeyaId]);
+  }, [state.world, state.playerHeyaId, domainsReady]);
 
   const handleSetDiet = useCallback(
     (diet: DietRegimen) => {
@@ -79,6 +81,16 @@ export default function InjuryRecoveryPage() {
 
   if (!digest) {
     return null;
+  }
+
+  if (!domainsReady) {
+    return (
+      <AppLayout pageTitle="Performance Center" subNavTabs={STABLE_TABS} activeSubTab="medical">
+        <div className="flex items-center justify-center py-20" data-testid="domains-loading">
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-muted-foreground border-t-transparent" />
+        </div>
+      </AppLayout>
+    );
   }
 
   return (
