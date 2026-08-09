@@ -140,6 +140,8 @@ export interface BoutResult {
   dramaticContext?: DramaContext;
   /** Whether this bout required a mono-ii (judge consultation). */
   monoii?: boolean;
+  /** ID of the gyoji who officiated this bout. */
+  gyojiId?: string;
   /** Momentum score (positive = east dominated, negative = west dominated). */
   momentumScore: number;
   /** In-bout injury if one occurred during the bout. */

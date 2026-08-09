@@ -48,6 +48,10 @@ import { tryHansoku } from "./kinjite";
 import { checkYaocho } from "./yaocho";
 import { reportScandal } from "../systems/governance/ScandalService";
 import {
+  assignGyojiToBout,
+  recordGyojiBout,
+} from "../systems/officials/GyojiService";
+import {
   KENSHO_BASE_COUNT_LOW,
   KENSHO_BASE_COUNT_MID,
   KENSHO_BASE_COUNT_HIGH,
@@ -419,6 +423,26 @@ export function resolveBout(
 
   // Merge rivalry impact into main builder
   builder.merge(rivalryImpact);
+
+  // 6. Gyoji officiation — assign a gyoji to this bout and record career stats
+  if (world?.gyojiPool && world.gyojiPool.length > 0) {
+    const boutImportance = result.isTitleStakes
+      ? 90
+      : result.isYushoRace
+        ? 75
+        : 50;
+    const gyoji = assignGyojiToBout(world.gyojiPool, result.boutId, boutImportance);
+    if (gyoji) {
+      result.gyojiId = gyoji.id;
+      const bashoNameStr = (basho.bashoName ?? basho.name ?? "unknown") as string;
+      const bashoYear = basho.year ?? world?.year ?? DEFAULT_START_YEAR;
+      const updatedGyoji = recordGyojiBout(gyoji, bashoNameStr, bashoYear, !!result.monoii);
+      const updatedPool = world.gyojiPool.map((g) =>
+        g.id === updatedGyoji.id ? updatedGyoji : g
+      );
+      builder.updateWorldField("gyojiPool", updatedPool);
+    }
+  }
 
   return { result, impact: builder.build() };
 }

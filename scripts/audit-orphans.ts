@@ -354,6 +354,93 @@ function findOrphanRoutes(): OrphanEntry[] {
 
 // ─── 3. Unticked services ────────────────────────────────────────────────────
 
+interface ParsedImport {
+  resolvedPath: string;
+  symbols: string[];
+  isNamespace: boolean;
+}
+
+function resolveImportPath(importPath: string, fromFile: string): string {
+  if (importPath.startsWith(".")) {
+    const dir = fromFile.substring(0, fromFile.lastIndexOf("/"));
+    const resolved = join(dir, importPath);
+    for (const ext of FILE_EXTENSIONS) {
+      if (existsSync(resolved + ext)) return resolved + ext;
+    }
+    if (existsSync(resolved + "/index.ts")) return resolved + "/index.ts";
+    if (existsSync(resolved + "/index.tsx")) return resolved + "/index.tsx";
+    return resolved + ".ts";
+  }
+  return importPath;
+}
+
+function parseImports(filePath: string): ParsedImport[] {
+  const content = readContent(filePath);
+  const imports: ParsedImport[] = [];
+
+  // import { foo, bar } from "./path"
+  const namedImportPattern =
+    /import\s+\{([^}]+)\}\s+from\s+["']([^"']+)["']/g;
+  let m: RegExpExecArray | null;
+  while ((m = namedImportPattern.exec(content)) !== null) {
+    const symbols = m[1]
+      .split(",")
+      .map((s) => s.trim().split(/\s+as\s+/)[0].trim())
+      .filter((s) => s && !s.startsWith("//"));
+    imports.push({
+      resolvedPath: resolveImportPath(m[2], filePath),
+      symbols,
+      isNamespace: false,
+    });
+  }
+
+  // import * as X from "./path"
+  const namespacePattern = /import\s+\*\s+as\s+(\w+)\s+from\s+["']([^"']+)["']/g;
+  while ((m = namespacePattern.exec(content)) !== null) {
+    imports.push({
+      resolvedPath: resolveImportPath(m[2], filePath),
+      symbols: [],
+      isNamespace: true,
+    });
+  }
+
+  // import DefaultName from "./path"
+  const defaultImportPattern = /import\s+(\w+)\s+from\s+["']([^"']+)["']/g;
+  while ((m = defaultImportPattern.exec(content)) !== null) {
+    imports.push({
+      resolvedPath: resolveImportPath(m[2], filePath),
+      symbols: [m[1]],
+      isNamespace: false,
+    });
+  }
+
+  // import "path" (side-effect only — no symbols, but module is referenced)
+  const sideEffectPattern = /import\s+["']([^"']+)["']/g;
+  while ((m = sideEffectPattern.exec(content)) !== null) {
+    imports.push({
+      resolvedPath: resolveImportPath(m[1], filePath),
+      symbols: [],
+      isNamespace: false,
+    });
+  }
+
+  // re-export { foo } from "./path"
+  const reExportPattern = /export\s+\{([^}]+)\}\s+from\s+["']([^"']+)["']/g;
+  while ((m = reExportPattern.exec(content)) !== null) {
+    const symbols = m[1]
+      .split(",")
+      .map((s) => s.trim().split(/\s+as\s+/)[0].trim())
+      .filter((s) => s && !s.startsWith("//"));
+    imports.push({
+      resolvedPath: resolveImportPath(m[2], filePath),
+      symbols,
+      isNamespace: false,
+    });
+  }
+
+  return imports;
+}
+
 function findUntickedServices(): OrphanEntry[] {
   const entries: OrphanEntry[] = [];
 
@@ -362,27 +449,45 @@ function findUntickedServices(): OrphanEntry[] {
     (f) => !isTestFile(f) && extname(f) === ".ts"
   );
 
-  // Build a map of import paths → importing file, across all runtime (non-test) engine files.
-  // A service is "ticked" if at least one of its exported symbols is imported by another runtime file.
+  // Build import map: resolvedModulePath → Set<importedSymbolNames>
+  // across all runtime (non-test) engine files.
   const engineRuntimeFiles = collectFiles(ENGINE_DIR).filter((f) => !isTestFile(f));
+
+  const importMap = new Map<string, Set<string>>();
+  const namespaceImportedModules = new Set<string>();
+
+  for (const file of engineRuntimeFiles) {
+    const imports = parseImports(file);
+    for (const imp of imports) {
+      if (imp.isNamespace) {
+        namespaceImportedModules.add(imp.resolvedPath);
+      }
+      for (const sym of imp.symbols) {
+        let set = importMap.get(imp.resolvedPath);
+        if (!set) {
+          set = new Set();
+          importMap.set(imp.resolvedPath, set);
+        }
+        set.add(sym);
+      }
+    }
+  }
 
   for (const serviceFile of serviceFiles) {
     const serviceName = basename(serviceFile, ".ts");
     const exports = extractExports(serviceFile);
     if (exports.length === 0) continue;
 
-    // Check if any exported symbol from this service appears in another runtime file
-    // (not the service file itself). We look for the symbol name as a word boundary
-    // match in the runtime blob, excluding the service's own content.
-    const otherBlob = engineRuntimeFiles
-      .filter((f) => f !== serviceFile)
-      .map((f) => readContent(f))
-      .join("\n");
+    // A service is "ticked" if:
+    // 1. Any of its exports appear in the import map (named import by another file)
+    // 2. OR it was imported via namespace import (all exports considered imported)
+    const namedSymbols = importMap.get(serviceFile);
+    const hasNamedImport = namedSymbols
+      ? exports.some((exp) => namedSymbols.has(exp.name))
+      : false;
+    const hasNamespaceImport = namespaceImportedModules.has(serviceFile);
 
-    const isImported = exports.some((exp) => {
-      const pattern = new RegExp(`\\b${escapeRegex(exp.name)}\\b`);
-      return pattern.test(otherBlob);
-    });
+    const isImported = hasNamedImport || hasNamespaceImport;
 
     if (!isImported) {
       entries.push({

@@ -22,6 +22,7 @@ import type {
   InjuryType,
 } from "../../systems/health/BodyDefinitions";
 import { getRikishi } from "../../queries";
+import { recordGomenfuda } from "../../systems/governance/GomenfudaService";
 
 interface CurrentInjury {
   id: string;
@@ -124,6 +125,17 @@ function processInjuryRoll(
       },
       { rikishiId: r.id, heyaId: r.heyaId }
     );
+
+    // Post gomenfuda (apology notice) when a rikishi is injured before a basho
+    // and will miss the upcoming tournament.
+    if (world.cyclePhase === "pre_basho" || world.cyclePhase === "interim") {
+      const heya = world.heyas.get(r.heyaId);
+      if (heya) {
+        const bashoName = world.currentBashoName ?? "upcoming";
+        const gomenfudaImpact = recordGomenfuda(world, heya, r, bashoName, "injury");
+        builder.merge(gomenfudaImpact);
+      }
+    }
 
     return true;
   }

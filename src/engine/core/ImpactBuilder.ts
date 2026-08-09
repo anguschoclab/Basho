@@ -348,6 +348,8 @@ export class ImpactBuilder {
       | "encouragementLog"
       | "matchmakingOverride"
       | "tutorialState"
+      | "gyojiPool"
+      | "shimpanPool"
     >,
   >(field: K, value: WorldState[K]): ImpactBuilder {
     if (!this.impact.worldFields) {

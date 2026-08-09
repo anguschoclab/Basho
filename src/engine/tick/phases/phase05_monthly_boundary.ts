@@ -26,6 +26,7 @@ import {
 } from "../../systems/economy/TravelAllowanceService";
 import { tickMonthlyNPC } from "../../npcAI";
 import { payMochikyukinBonuses } from "../../systems/economy/MochikyukinService";
+import { getKachiNokoriForRikishi } from "../../systems/economy/KachiNokoriService";
 import { renewSponsorContract } from "../../systems/economy/SponsorContractService";
 import { processHeyaEconomics, processLoanRepayments } from "./monthly/economics";
 import { processFacilitiesMaintenance, processNpcAutoInvestment } from "./monthly/facilities";
@@ -158,6 +159,27 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
 
   // Pay mochikyukin bonuses to sekitori (every 2 months)
   const mochikyukinPayoutImpact = payMochikyukinBonuses(world, world.calendar?.month ?? 1);
+
+  // Surface kachi-nokori (surplus wins) for sekitori after mochikyukin payout
+  if (isBashoMonth(world.calendar?.month ?? 1)) {
+    for (const id of world.activeRikishiIds) {
+      const r = getRikishi(world, id);
+      if (!r) continue;
+      if (r.division !== "makuuchi" && r.division !== "juryo") continue;
+      const kachiNokori = getKachiNokoriForRikishi(r);
+      if (kachiNokori > 0) {
+        builder.logEvent("BASHO_STATUS", "narrative", {
+          status: "kachi_nokori",
+          rikishiId: r.id,
+          shikona: r.shikona || r.name,
+          heyaId: r.heyaId,
+          kachiNokori,
+          wins: r.currentBashoWins ?? 0,
+          losses: r.currentBashoLosses ?? 0,
+        });
+      }
+    }
+  }
 
   // Auto-renew sponsor contracts expiring within window for high-loyalty sponsors
   const sponsorRenewalImpacts: StateImpact[] = [];

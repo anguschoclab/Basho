@@ -47,6 +47,7 @@ import type { TutorialState } from "./tutorial";
 import type { TalentPoolWorldState } from "./talent";
 import type { ActiveCrisis } from "./crises";
 import type { WorldRecords } from "./records";
+import type { Gyoji, Shimpan } from "./gyoji";
 
 /** Type representing cycle phase. */
 export type CyclePhase = "pre_basho" | "active_basho" | "post_basho" | "interim" | "banzuke_reveal";
@@ -387,6 +388,10 @@ export interface WorldState {
 
   // B6: Injured rikishi encouragement log
   encouragementLog?: Array<{ from: string; to: string; basho: string }>;
+
+  // Officials: gyoji and shimpan pools for bout officiation
+  gyojiPool?: Gyoji[];
+  shimpanPool?: Shimpan[];
 }
 
 /** Pending exhibition tour invitation (WorldCircuitService). */

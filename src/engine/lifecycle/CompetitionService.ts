@@ -12,6 +12,7 @@
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import { mergeImpacts } from "../core/ImpactResolver";
 import { accumulateMochikyukinPoints } from "../systems/economy/MochikyukinService";
+import { calculateKachiNokori } from "../systems/economy/KachiNokoriService";
 import type { WorldState } from "../types/world";
 import type { StateImpact } from "../core/StateImpact";
 import {
@@ -337,7 +338,7 @@ export function concludeBashoCompetition(world: WorldState): StateImpact {
     const bashoWins = r.currentBashoWins ?? 0;
     const bashoLosses = r.currentBashoLosses ?? 0;
     const netWins = bashoWins - bashoLosses;
-    const kachiNokori = Math.max(0, bashoWins - 8);
+    const kachiNokori = calculateKachiNokori(bashoWins);
     const isYusho = id === yusho;
     const isJunYusho = topCandidates.length > 1 && id === topCandidates[1];
     const kinboshiThisBasho = basho.kinboshiThisBasho?.[id] ?? 0;

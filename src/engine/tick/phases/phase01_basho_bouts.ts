@@ -25,6 +25,7 @@ import {
   isNakabiDay,
 } from "../../systems/basho/NakabiService";
 import { mergeImpacts } from "../../core/ImpactResolver";
+import { applyOyakataIntervention } from "../../actions/OyakataIntervention";
 
 export function phase01_basho_bouts(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_basho_bouts");
@@ -53,6 +54,26 @@ export function phase01_basho_bouts(world: WorldState): StateImpact {
     const { world: nextWorld, result } = simulateBoutForToday(currentWorld, 0);
     currentWorld = nextWorld;
     if (!result) break;
+  }
+
+  // Oyakata intervention: NPC oyakata may intervene with slumping rikishi
+  // Check after all bouts are resolved for the day, before advancing the day
+  if (basho.day >= 5 && basho.day <= 13) {
+    for (const rId of currentWorld.activeRikishiIds) {
+      const r = currentWorld.rikishi.get(rId);
+      if (!r) continue;
+      // Skip player's heya — only NPC oyakata auto-apply interventions
+      if (r.heyaId === currentWorld.playerHeyaId) continue;
+      if (r.interventionUsedThisBasho) continue;
+      if ((r.currentLossStreak ?? 0) < 2) continue;
+      if (r.injured || r.isRetired || r.isKyujo) continue;
+
+      const { success, impact: intImpact } = applyOyakataIntervention(currentWorld, rId);
+      if (success) {
+        builder.merge(intImpact);
+        currentWorld = { ...currentWorld };
+      }
+    }
   }
 
   // Advance the basho day after all bouts for today are resolved

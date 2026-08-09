@@ -21,6 +21,7 @@ import {
 import { clamp } from "../../utils/math";
 import { WelfareService } from "../../systems/welfare/WelfareService";
 import { getHeyaRoster } from "../../queries";
+import { canEncourage, provideEncouragement } from "../../actions/InjuredEncouragement";
 import {
   handleCompliantTransition,
   handleWatchTransition,
@@ -118,6 +119,25 @@ export function phase01_week_welfare(world: WorldState): StateImpact {
     }
 
     builder.updateHeya(id, heyaUpdates);
+  }
+
+  // Injured encouragement: injured rikishi encourage active stablemates
+  const bashoName = world.currentBasho?.bashoName ?? "off-season";
+  for (const [, heya] of world.heyas) {
+    const roster = getHeyaRoster(world, heya.id);
+    const injured = roster.filter((r) => r.injured && !r.isRetired);
+    const active = roster.filter((r) => !r.injured && !r.isRetired);
+    if (injured.length === 0 || active.length === 0) continue;
+
+    // Limit to 1 encouragement per injured rikishi per week
+    for (const from of injured) {
+      for (const to of active) {
+        if (!canEncourage(from, to)) continue;
+        const encImpact = provideEncouragement(world, from, to, bashoName);
+        builder.merge(encImpact);
+        break; // 1 encouragement per injured rikishi per week
+      }
+    }
   }
 
   // Apply media pressure changes
