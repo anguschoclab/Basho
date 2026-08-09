@@ -9,6 +9,8 @@ import type { BoutResult, BashoState, BashoName } from "@/engine/types/basho";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { DramaContext } from "@/engine/matchmaking/DramaMatchmaker";
+import type { CareerSnapshot } from "@/engine/types/history";
+import type { Rank, Division } from "@/engine/types/banzuke";
 
  
 
@@ -49,6 +51,23 @@ function makeWorld(east: Rikishi, west: Rikishi, overrides: Partial<WorldState> 
 
 function hasMissingTokens(text: string): boolean {
   return text.includes("[MISSING:");
+}
+
+function makeCareerSnapshot(overrides: Partial<CareerSnapshot> & { rank: Rank; division: Division; wins: number; losses: number; bashoName: string; year: number }): CareerSnapshot {
+  return {
+    id: "snap-1",
+    bashoId: "basho-1",
+    month: 1,
+    rankNumber: 0,
+    side: "east",
+    absences: 0,
+    isYusho: false,
+    isJunYusho: false,
+    specialPrizes: { shukunsho: false, kantosho: false, ginosho: false },
+    weight: 120,
+    momentum: 0,
+    ...overrides,
+  };
 }
 
 const BASHO = "hatsu" as BashoName;
@@ -321,7 +340,7 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
         shikona: "FallenStar",
         rank: "maegashira",
         rankNumber: 10,
-        careerHistory: [{ rank: "ozeki", division: "makuuchi", wins: 10, losses: 5, bashoName: "hatsu", year: 2024 }],
+        careerHistory: [makeCareerSnapshot({ rank: "ozeki", division: "makuuchi", wins: 10, losses: 5, bashoName: "hatsu", year: 2024 })],
         currentBashoWins: 3,
         currentBashoLosses: 8,
       });
@@ -349,7 +368,7 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
         shikona: "EastMan",
         rank: "maegashira",
         rankNumber: 5,
-        careerHistory: [{ rank: "maegashira", division: "makuuchi", wins: 8, losses: 7, bashoName: "hatsu", year: 2024 }],
+        careerHistory: [makeCareerSnapshot({ rank: "maegashira", division: "makuuchi", wins: 8, losses: 7, bashoName: "hatsu", year: 2024 })],
         currentBashoWins: 5,
         currentBashoLosses: 5,
       });
@@ -379,7 +398,7 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
         shikona: "NewSekiwake",
         rank: "sekiwake",
         rankNumber: 3,
-        careerHistory: [{ rank: "maegashira", division: "makuuchi", wins: 9, losses: 6, bashoName: "kyushu", year: 2024, rankNumber: 1 }],
+        careerHistory: [makeCareerSnapshot({ rank: "maegashira", division: "makuuchi", wins: 9, losses: 6, bashoName: "kyushu", year: 2024, rankNumber: 1 })],
         currentBashoWins: 5,
         currentBashoLosses: 3,
       });
@@ -402,7 +421,7 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
         shikona: "NewKomusubi",
         rank: "komusubi",
         rankNumber: 4,
-        careerHistory: [{ rank: "maegashira", division: "makuuchi", wins: 10, losses: 5, bashoName: "kyushu", year: 2024, rankNumber: 2 }],
+        careerHistory: [makeCareerSnapshot({ rank: "maegashira", division: "makuuchi", wins: 10, losses: 5, bashoName: "kyushu", year: 2024, rankNumber: 2 })],
         currentBashoWins: 5,
         currentBashoLosses: 3,
       });
@@ -425,7 +444,7 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
         shikona: "SameRank",
         rank: "maegashira",
         rankNumber: 5,
-        careerHistory: [{ rank: "maegashira", division: "makuuchi", wins: 8, losses: 7, bashoName: "kyushu", year: 2024, rankNumber: 5 }],
+        careerHistory: [makeCareerSnapshot({ rank: "maegashira", division: "makuuchi", wins: 8, losses: 7, bashoName: "kyushu", year: 2024, rankNumber: 5 })],
         currentBashoWins: 5,
         currentBashoLosses: 3,
       });
@@ -453,7 +472,7 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
         currentBashoLosses: 2,
         rank: "sekiwake",
         rankNumber: 3,
-        careerHistory: [{ rank: "maegashira", division: "makuuchi", wins: 9, losses: 6, bashoName: "kyushu", year: 2024, rankNumber: 1 }],
+        careerHistory: [makeCareerSnapshot({ rank: "maegashira", division: "makuuchi", wins: 9, losses: 6, bashoName: "kyushu", year: 2024, rankNumber: 1 })],
       });
       const west = mockRikishi("r-west", {
         shikona: "TestWest",
