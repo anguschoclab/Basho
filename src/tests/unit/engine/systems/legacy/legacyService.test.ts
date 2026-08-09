@@ -55,7 +55,7 @@ describe("LegacyService", () => {
       int: (min: number, max: number) => min,
     };
 
-    const trait = LegacyService.rollEmergentBloodline(registryWorld, mockRng);
+    const trait = LegacyService.rollEmergentBloodline(registryWorld, mockRng as any);
     expect(trait).toBeDefined();
     expect(trait?.traitId).toBe("bl_rikishi1");
   });
@@ -66,7 +66,7 @@ describe("LegacyService", () => {
       int: (min: number, max: number) => 0,
     };
 
-    const trait = LegacyService.rollAncestralLegend(mockWorld, { name: "Prospect" }, mockRng);
+    const trait = LegacyService.rollAncestralLegend(mockWorld, { name: "Prospect" }, mockRng as any);
     expect(trait).toBeDefined();
     expect(trait?.ancestorShikona).toBe("Legend");
   });

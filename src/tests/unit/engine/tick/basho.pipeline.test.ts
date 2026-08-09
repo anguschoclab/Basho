@@ -71,7 +71,7 @@ const mockBoutResult: BoutResult = {
   tachiaiWinner: "east" as any,
   duration: 10,
   upset: false,
-};
+} as any;
 
 describe("P1.2: Basho pipeline — bout resolution in advanceOneDay", () => {
   beforeEach(() => {

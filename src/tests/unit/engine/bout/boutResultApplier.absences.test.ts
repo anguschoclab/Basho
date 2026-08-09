@@ -294,8 +294,8 @@ describe("Bug 15 + N5: Absences tracking", () => {
       history: [{
         year: 2025, bashoNumber: 1, bashoName: "hatsu",
         yusho: "none", junYusho: [], ginoSho: "none",
-        shukunsho: "none", kantosho: "none", stats: [], id: "1",
-      }],
+        shukunsho: "none", kantosho: "none", id: "1", prizes: [],
+      } as any],
     });
 
     const impact = publishBanzukeUpdate(world);

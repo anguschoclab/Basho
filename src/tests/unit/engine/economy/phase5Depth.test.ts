@@ -41,10 +41,9 @@ describe("Phase 5 Depth: Institutional Power & Regional Mastery", () => {
             birthYear: 2006,
             talentSeed: 50,
             weightPotentialKg: 140,
-            poolType: "foreign",
             style: "yotsu",
             archetype: "yotsu",
-          },
+          } as any,
           c_2: {
             candidateId: "c_2",
             name: "Candidate 2",
@@ -54,10 +53,9 @@ describe("Phase 5 Depth: Institutional Power & Regional Mastery", () => {
             birthYear: 2006,
             talentSeed: 50,
             weightPotentialKg: 140,
-            poolType: "foreign",
             style: "oshi",
             archetype: "oshi",
-          },
+          } as any,
         },
         pools: {
           foreign: {
@@ -80,7 +78,7 @@ describe("Phase 5 Depth: Institutional Power & Regional Mastery", () => {
           } as any,
         },
         lastYearlyRefreshYear: 2025,
-      },
+      } as any,
     });
 
     // Mock records separately if needed, but WorldState now has proper structures

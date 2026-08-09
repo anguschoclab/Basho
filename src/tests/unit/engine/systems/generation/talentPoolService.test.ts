@@ -115,7 +115,7 @@ describe("fillVacanciesForNPC", () => {
 
     const nextWorld = resolveImpacts(world, [impact]);
     const updatedHeya = nextWorld.heyas.get(heyaId);
-    expect(updatedHeya?.rikishiIds.length).toBeGreaterThan(0);
+    expect(updatedHeya?.rikishiIds!.length).toBeGreaterThan(0);
   });
 });
 
@@ -210,7 +210,7 @@ describe("finalizeSignedCandidates", () => {
     const nextWorld = resolveImpacts(world, [impact]);
     expect(nextWorld.rikishi.size).toBeGreaterThan(0);
     const updatedHeya = nextWorld.heyas.get(heyaId);
-    expect(updatedHeya?.rikishiIds.length).toBeGreaterThan(0);
+    expect(updatedHeya?.rikishiIds!.length).toBeGreaterThan(0);
   });
 
   it("returns empty impact when no candidates are signed", () => {

@@ -202,9 +202,7 @@ describe("UI Digest: Rikishi Perception Boundary", () => {
     it("includes injury section when rikishi are injured", () => {
       const mockR = generateMockRikishi("r1", {
         shikona: "InjuredRikishi",
-        injury: { isInjured: true, severity: "moderate", weeksRemaining: 2 },
-        type: "strain",
-        type: "strain",
+        injury: { isInjured: true, severity: "moderate", weeksRemaining: 2, type: "strain" } as any,
         injured: true,
       });
       const mockWorld = {

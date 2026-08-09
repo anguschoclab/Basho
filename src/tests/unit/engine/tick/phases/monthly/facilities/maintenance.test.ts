@@ -17,7 +17,7 @@ describe("processFacilitiesMaintenance", () => {
       facilities: { training: 10, recovery: 10, nutrition: 10 }
     });
     const heyaUpdates: HeyaUpdates = {};
-    const builder = createImpactBuilder(world);
+    const builder = createImpactBuilder("test");
 
     const maintenanceCost = processFacilitiesMaintenance(world, heya, heyaUpdates, builder);
 
@@ -35,7 +35,7 @@ describe("processFacilitiesMaintenance", () => {
       name: "Poor Heya"
     });
     const heyaUpdates: HeyaUpdates = {};
-    const builder = createImpactBuilder(world);
+    const builder = createImpactBuilder("test");
 
     const maintenanceCost = processFacilitiesMaintenance(world, heya, heyaUpdates, builder);
 
@@ -60,7 +60,7 @@ describe("processFacilitiesMaintenance", () => {
       facilities: { training: MIN_FACILITY_LEVEL, recovery: MIN_FACILITY_LEVEL + 1, nutrition: MIN_FACILITY_LEVEL }
     });
     const heyaUpdates: HeyaUpdates = {};
-    const builder = createImpactBuilder(world);
+    const builder = createImpactBuilder("test");
 
     processFacilitiesMaintenance(world, heya, heyaUpdates, builder);
 

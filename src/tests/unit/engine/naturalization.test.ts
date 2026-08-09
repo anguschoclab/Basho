@@ -19,7 +19,7 @@ describe("checkNaturalizations", () => {
 
     world.heyas.set(heya.id, heya);
     world.rikishi.set(rikishi.id, rikishi);
-    world.activeRikishiIds = [rikishi.id];
+    world.activeRikishiIds = [rikishi.id] as any;
 
     const impact = checkNaturalizations(world);
 
@@ -51,7 +51,7 @@ describe("checkNaturalizations", () => {
 
     world.heyas.set(heya.id, heya);
     world.rikishi.set(rikishi.id, rikishi);
-    world.activeRikishiIds = [rikishi.id];
+    world.activeRikishiIds = [rikishi.id] as any;
 
     const impact = checkNaturalizations(world);
 
@@ -75,7 +75,7 @@ describe("checkNaturalizations", () => {
 
     world.heyas.set(heya.id, heya);
     world.rikishi.set(rikishi.id, rikishi);
-    world.activeRikishiIds = [rikishi.id];
+    world.activeRikishiIds = [rikishi.id] as any;
 
     const impact = checkNaturalizations(world);
 
@@ -100,7 +100,7 @@ describe("checkNaturalizations", () => {
 
     world.heyas.set(heya.id, heya);
     world.rikishi.set(rikishi.id, rikishi);
-    world.activeRikishiIds = [rikishi.id];
+    world.activeRikishiIds = [rikishi.id] as any;
 
     const impact = checkNaturalizations(world);
 

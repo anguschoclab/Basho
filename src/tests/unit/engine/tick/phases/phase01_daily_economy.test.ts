@@ -87,6 +87,6 @@ describe("phase01_daily_economy", () => {
     const impact = phase01_daily_economy(world);
     const updatedState = resolveImpacts(world, [impact]);
 
-    expect(updatedState.transientContext?.deltas.expenses).toBe(50 + DIET_COSTS["maintenance"] * 1);
+    expect(updatedState.transientContext?.deltas!.expenses).toBe(50 + DIET_COSTS["maintenance"] * 1);
   });
 });

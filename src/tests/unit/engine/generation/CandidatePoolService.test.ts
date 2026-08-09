@@ -175,7 +175,7 @@ describe("CandidatePoolService", () => {
         visibilityBand: "public",
         reputationSeed: 50,
         tags: [],
-        combatProfile: { archetype: "hybrid", power: 50, speed: 50, technique: 50, balance: 50, stamina: 50, mental: 50, adaptability: 50 },
+        combatProfile: { archetype: "hybrid", speed: 50, technique: 50, balance: 50, stamina: 50, mental: 50, adaptability: 50 } as any,
         availabilityState: "available",
         competingSuitors: [{ heyaId: playerHeyaId, interestBand: "high", offerType: "standard", deadlineWeek: 999 }],
         archetype: "hybrid",
@@ -183,7 +183,7 @@ describe("CandidatePoolService", () => {
         weightPotentialKg: 100,
         talentSeed: 50,
         temperament: { discipline: 50, volatility: 50 },
-      };
+      } as any;
 
       const result = poachCandidate(world, candidateId, playerHeyaId);
       expect(result.ok).toBe(false);
@@ -211,7 +211,7 @@ describe("CandidatePoolService", () => {
         visibilityBand: "public",
         reputationSeed: 70,
         tags: [],
-        combatProfile: { archetype: "hybrid", power: 60, speed: 60, technique: 60, balance: 60, stamina: 60, mental: 60, adaptability: 60 },
+        combatProfile: { archetype: "hybrid", speed: 60, technique: 60, balance: 60, stamina: 60, mental: 60, adaptability: 60 } as any,
         availabilityState: "available",
         competingSuitors: [{ heyaId: npcHeyaId, interestBand: "medium", offerType: "standard", deadlineWeek: 999 }],
         archetype: "hybrid",
@@ -219,7 +219,7 @@ describe("CandidatePoolService", () => {
         weightPotentialKg: 100,
         talentSeed: 70,
         temperament: { discipline: 60, volatility: 40 },
-      };
+      } as any;
 
       const result = poachCandidate(world, candidateId, playerHeyaId);
       expect(result.ok).toBe(true);
@@ -251,7 +251,7 @@ describe("CandidatePoolService", () => {
         visibilityBand: "public",
         reputationSeed: 50,
         tags: [],
-        combatProfile: { archetype: "hybrid", power: 50, speed: 50, technique: 50, balance: 50, stamina: 50, mental: 50, adaptability: 50 },
+        combatProfile: { archetype: "hybrid", speed: 50, technique: 50, balance: 50, stamina: 50, mental: 50, adaptability: 50 } as any,
         availabilityState: "in_talks",
         competingSuitors: [{ heyaId: "npc-1", interestBand: "low", offerType: "standard", deadlineWeek: 1 }],
         archetype: "hybrid",
@@ -259,7 +259,7 @@ describe("CandidatePoolService", () => {
         weightPotentialKg: 100,
         talentSeed: 50,
         temperament: { discipline: 50, volatility: 50 },
-      };
+      } as any;
 
       // Set world week past the deadline
       world.week = 5;
@@ -298,7 +298,7 @@ describe("CandidatePoolService", () => {
         visibilityBand: "public",
         reputationSeed: 60,
         tags: [],
-        combatProfile: { archetype: "hybrid", power: 55, speed: 55, technique: 55, balance: 55, stamina: 55, mental: 55, adaptability: 55 },
+        combatProfile: { archetype: "hybrid", speed: 55, technique: 55, balance: 55, stamina: 55, mental: 55, adaptability: 55 } as any,
         availabilityState: "available",
         competingSuitors: [{ heyaId: npcHeyaIds[0], interestBand: "high", offerType: "standard", deadlineWeek: 999 }],
         archetype: "hybrid",
@@ -306,7 +306,7 @@ describe("CandidatePoolService", () => {
         weightPotentialKg: 100,
         talentSeed: 60,
         temperament: { discipline: 55, volatility: 45 },
-      };
+      } as any;
       cp.candidates["unwatched-1"] = {
         candidateId: "unwatched-1",
         personId: "unwatched-1",
@@ -317,7 +317,7 @@ describe("CandidatePoolService", () => {
         visibilityBand: "public",
         reputationSeed: 40,
         tags: [],
-        combatProfile: { archetype: "hybrid", power: 40, speed: 40, technique: 40, balance: 40, stamina: 40, mental: 40, adaptability: 40 },
+        combatProfile: { archetype: "hybrid", speed: 40, technique: 40, balance: 40, stamina: 40, mental: 40, adaptability: 40 } as any,
         availabilityState: "available",
         competingSuitors: [],
         archetype: "hybrid",
@@ -325,7 +325,7 @@ describe("CandidatePoolService", () => {
         weightPotentialKg: 90,
         talentSeed: 40,
         temperament: { discipline: 40, volatility: 60 },
-      };
+      } as any;
 
       const watched = listNPCWatchedCandidates(world);
       expect(watched.length).toBeGreaterThanOrEqual(1);

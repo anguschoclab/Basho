@@ -115,6 +115,7 @@ export const SerializationService = {
       candidatePool: world.candidatePool,
       trainingState: this.mapToObject(world.trainingState || new Map()),
       settings: world.settings,
+      ftue: world.ftue,
     };
   },
 

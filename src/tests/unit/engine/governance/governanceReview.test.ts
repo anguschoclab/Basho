@@ -149,8 +149,8 @@ describe("governanceReview", () => {
       const heya = makeMockHeya("heya-sanctioned", {
         welfareState: {
           complianceState: "sanctioned",
-          welfareRisk: "high",
-        },
+          welfareRisk: 80,
+        } as any,
         prestigeBand: PRESTIGE_ORDER[2],
       });
       world.heyas.set("heya-sanctioned", heya);

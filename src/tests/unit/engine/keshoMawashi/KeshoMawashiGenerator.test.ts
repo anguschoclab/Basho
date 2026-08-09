@@ -278,7 +278,7 @@ describe("KeshoMawashiGenerator", () => {
         description: "Old kesho",
       };
 
-      const upgraded = upgradeKeshoMawashi(baseKesho, "makuuchi", world as any);
+      const upgraded = upgradeKeshoMawashi(baseKesho as any, "makuuchi", world as any);
 
       expect(upgraded.tier).toBe("makuuchi");
       expect(upgraded.goldThreadDensity).toBeGreaterThan(baseKesho.goldThreadDensity);
@@ -314,7 +314,7 @@ describe("KeshoMawashiGenerator", () => {
         description: "Old kesho",
       };
 
-      const upgraded = upgradeKeshoMawashi(baseKesho, "yokozuna", world as any);
+      const upgraded = upgradeKeshoMawashi(baseKesho as any, "yokozuna", world as any);
 
       expect(upgraded.description).toContain("yokozuna");
     });

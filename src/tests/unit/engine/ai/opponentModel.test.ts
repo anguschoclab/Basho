@@ -32,7 +32,7 @@ describe("buildOpponentModel", () => {
       history: [],
       combatProfile: {
         familyPreferences: { push: 20, belt: 60, trick: 10, speed: 10 },
-      },
+      } as any,
     });
 
     const model = buildOpponentModel(rikishi, 10);

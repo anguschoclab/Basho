@@ -52,6 +52,9 @@ describe("TrainingMath", () => {
           ceilingFraction: 0.8,
           developmentSpeed: 1,
           peakAgeOffset: 0,
+          heightCm: 180,
+          weightKg: 120,
+          profile: "standard",
         },
       });
 

@@ -15,7 +15,7 @@ function makeHistoricalRikishi(id: string, rank: string, overrides?: Partial<Rik
     pbpLogs: [{ log: "test" }],
     trainingHistory: [{ week: 1 }],
     perceptionHistory: [{ event: "test" }],
-    milestones: [{ type: "debut", year: 2020 } as unknown],
+    milestones: [{ type: "debut", year: 2020 } as any],
     economics: { salary: 100000 } as unknown as Rikishi["economics"],
     baseStats: {
       power: 50,

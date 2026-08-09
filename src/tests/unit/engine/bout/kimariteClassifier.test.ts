@@ -48,6 +48,9 @@ function makeEngineState(
       gripAdvantage: "neutral",
     },
     tachiaiWinner: "east",
+    momentumScore: 0,
+    prevDominantSide: null,
+    inBoutInjury: null,
   };
 }
 
@@ -61,7 +64,7 @@ function makePushState(overrides: Partial<PushBattleState> = {}): PushBattleStat
     eastMomentum: 5,
     westMomentum: 5,
     ...overrides,
-  };
+  } as PushBattleState;
 }
 
 function makeBeltState(overrides: Partial<BeltBattleState> = {}): BeltBattleState {
@@ -89,10 +92,8 @@ function makeBeltState(overrides: Partial<BeltBattleState> = {}): BeltBattleStat
     torqueEast: 20,
     torqueWest: 10,
     ...overrides,
-  };
+  } as BeltBattleState;
 }
-
-// ---------------------------------------------------------------------------
 // Edge kimarite classification
 // ---------------------------------------------------------------------------
 

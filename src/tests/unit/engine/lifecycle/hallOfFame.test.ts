@@ -109,7 +109,7 @@ describe("HoF iron man - processYearEndInduction", () => {
         losses: 7,
         isYusho: false,
         isJunYusho: false,
-      })),
+      })) as any,
     });
     world.rikishi.set("r1", retired);
 
@@ -132,7 +132,7 @@ describe("HoF iron man - processYearEndInduction", () => {
         losses: 3,
         isYusho: false,
         isJunYusho: false,
-      })),
+      })) as any,
     });
     world.rikishi.set("r2", rookie);
 
