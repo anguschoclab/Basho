@@ -169,8 +169,7 @@ export function InjuryRiskHeatmap({ rikishiList }: InjuryRiskHeatmapProps) {
           </div>
           <div className="flex items-center gap-1.5">
             <span
-              aria-hidden="true"
-              className="inline-block h-3 w-3 rounded-sm bg-destructive/30"
+              aria-hidden="true" className="inline-block h-3 w-3 rounded-sm bg-destructive/30"
             />
             <span>High Risk / Injured</span>
           </div>

@@ -11,7 +11,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import type { PotentialBand } from "@/presenters/engineAccess";
 import { toPotentialBand } from "@/presenters/engineAccess";
 import type { WorldState } from "@/presenters/uiDigest";
-import * as talentpool from "@/presenters/engineAccess";
+import { talentpool } from "@/presenters/engineAccess";
 import type { TalentCandidate, TalentPoolType } from "@/engine/types/talent";
 import { POTENTIAL_LABELS } from "@/constants/ui/labels";
 import { getCombatArchetypeDescription } from "@/presenters/engineAccess";

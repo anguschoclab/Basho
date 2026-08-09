@@ -209,8 +209,7 @@ export function SponsorshipHub({ data }: SponsorshipHubProps) {
 
       {/* ═══ SPONSOR APPEAL CTA ═══ */}
       <div
-        className="dossier-paper p-8 rounded-2xl flex flex-col md:flex-row items-center gap-10 border-2 border-success/20 shadow-2xl bg-success/[0.03] relative overflow-hidden"
-        aria-hidden="true"
+        className="dossier-paper p-8 rounded-2xl flex flex-col md:flex-row items-center gap-10 border-2 border-success/20 shadow-2xl bg-success/[0.03] relative overflow-hidden" aria-hidden="true"
       >
         <div className="absolute -bottom-10 -right-10 opacity-[0.03] rotate-12 pointer-events-none">
           <TrendingUp className="h-64 w-64 text-success" />

@@ -38,9 +38,9 @@ describe("RecruitmentAgent — NPC wiring", () => {
 });
 
 describe("TalentPoolPage — UI surface", () => {
-  it("imports TalentPoolService for candidate listing", () => {
+  it("imports talent pool functions via presenters/engineAccess", () => {
     const page = readFile("pages/TalentPoolPage.tsx");
-    expect(page).toContain("TalentPoolService");
+    expect(page).toContain("engineAccess");
   });
 
   it("lists visible candidates via listVisibleCandidates", () => {

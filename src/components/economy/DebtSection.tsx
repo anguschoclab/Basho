@@ -142,8 +142,7 @@ export function DebtSection({ activeLoans }: DebtSectionProps) {
                   </div>
                   <div className="w-full h-2 bg-muted/40 rounded-full overflow-hidden">
                     <div
-                      aria-hidden="true"
-                      className="h-full bg-success rounded-full transition-all duration-500"
+                      aria-hidden="true" className="h-full bg-success rounded-full transition-all duration-500"
                       style={{
                         width: `${Math.min(100, (1 - loan.remainingBalance / loan.principal) * 100)}%`,
                       }}

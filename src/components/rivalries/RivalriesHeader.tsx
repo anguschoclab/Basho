@@ -26,8 +26,7 @@ export function RivalriesHeader({
     <div className="flex items-center justify-between gap-4 flex-wrap">
       <div className="flex items-center gap-3">
         <div
-          className="h-8 w-8 rounded-md bg-destructive/20 flex items-center justify-center"
-          aria-hidden="true"
+          className="h-8 w-8 rounded-md bg-destructive/20 flex items-center justify-center" aria-hidden="true"
         >
           <Swords className="h-4 w-4 text-destructive" />
         </div>
