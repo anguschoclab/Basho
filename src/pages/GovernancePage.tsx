@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
 import { PageHeader, StatCard, ListCard, SectionHeader } from "@/components/layout/control-center";
@@ -12,6 +12,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Scale, Landmark, Globe, Trophy, ShieldAlert, Coins, AlertTriangle } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { StatItem, ProgressItem } from "@/components/layout/control-center";
+import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
+import { compareBy, type SortDirection } from "@/lib/sortUtils";
 import {
   SCANDAL_LABELS,
   formatFinePenalty,
@@ -23,11 +25,21 @@ import { getPlayerHeya } from "@/engine/queries";
 import { projectGovernanceDerived } from "@/presenters/projections/governanceProjections";
 import { selectClosedHeyas, selectYokozunaVacancyStreak } from "@/presenters/selectors";
 import { getOyakata, getGlobalCupChampion } from "@/presenters/worldAccess";
+import type { Faction } from "@/engine/types/economy";
+
+const FACTION_SORT_OPTIONS: SortOption[] = [
+  { key: "influence", label: "Influence" },
+  { key: "name", label: "Name" },
+  { key: "rikishiCount", label: "Rikishi Count" },
+];
 
 export default function GovernancePage() {
   const { state, issueRuling, updateWorld } = useGame();
   const sendCommand = useGameStore((s) => s.sendCommand);
   const world = state.world;
+
+  const [factionSortKey, setFactionSortKey] = useState<string>("influence");
+  const [factionSortOrder, setFactionSortOrder] = useState<SortDirection>("desc");
 
   const heya = useMemo(() => {
     if (!world || !world.playerHeyaId) return null;
@@ -164,6 +176,43 @@ export default function GovernancePage() {
       pendingRulings: gov.pendingRulings,
     };
   }, [world, heya]);
+
+  const sortedFactionRows = useMemo(() => {
+    if (!derived || !world || derived.factionList.length === 0) return [];
+    const accessor: Record<string, (fac: Faction) => string | number | undefined> = {
+      influence: (f) => f.influence,
+      name: (f) => f.name,
+      rikishiCount: () => 0,
+    };
+    const fn = accessor[factionSortKey];
+    if (!fn) return derived.factionRows;
+    const sorted = [...derived.factionList].sort((a, b) => compareBy(a, b, fn, factionSortOrder));
+    const maxInfluence = sorted.length > 0 ? sorted[0].influence : 0;
+    return sorted.map((fac) => ({
+      id: fac.id,
+      label: (
+        <span className="flex items-center gap-1.5 flex-wrap">
+          {fac.name}
+          {fac.influence === maxInfluence && (
+            <Badge variant="default" className="text-[9px] px-1.5 py-0 h-3.5">
+              Chairman
+            </Badge>
+          )}
+          {heya?.ichimon === fac.id && (
+            <Badge
+              variant="outline"
+              className="text-[9px] px-1.5 py-0 h-3.5 border-primary text-primary"
+            >
+              Yours
+            </Badge>
+          )}
+        </span>
+      ),
+      sub: `Leader: ${getOyakata(world, fac.oyakataLeaderId ?? "")?.name ?? "Unknown"}`,
+      value: fac.influence,
+      tone: (heya?.ichimon === fac.id ? "gold" : "default") as StatItem["tone"],
+    }));
+  }, [derived, world, factionSortKey, factionSortOrder, heya]);
 
   if (!world || !heya || !derived) {
     return (
@@ -569,12 +618,26 @@ export default function GovernancePage() {
               </div>
 
               <div className="space-y-4">
-                <SectionHeader eyebrow="── RANKINGS ──" title="Ichimon Influence Rankings" />
+                <div className="flex items-center justify-between gap-2">
+                  <SectionHeader eyebrow="── RANKINGS ──" title="Ichimon Influence Rankings" />
+                  {derived.factionList.length > 0 && (
+                    <SortMenu
+                      options={FACTION_SORT_OPTIONS}
+                      storageKey="basho_sort_governance_faction"
+                      defaultSortKey="influence"
+                      defaultSortOrder="desc"
+                      onSortChange={(key, order) => {
+                        setFactionSortKey(key);
+                        setFactionSortOrder(order);
+                      }}
+                    />
+                  )}
+                </div>
                 {derived.factionList.length > 0 ? (
                   <ListCard
                     eyebrow=""
                     title="Current Standing"
-                    rows={derived.factionRows}
+                    rows={sortedFactionRows}
                     icon={Trophy}
                   />
                 ) : (

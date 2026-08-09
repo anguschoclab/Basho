@@ -25,6 +25,7 @@ const SCENARIO = "S3_year";
 export interface RegressionResult {
   passed: boolean;
   degradation: number;
+  p99Degradation: number;
   message: string;
 }
 
@@ -40,24 +41,37 @@ export function checkRegression(
     return {
       passed: true,
       degradation: 0,
+      p99Degradation: 0,
       message: `S3_year scenario missing in ${!baselineS3 ? "baseline" : "current"} — skipping regression check`,
     };
   }
 
   const degradation = (currentS3.p50_ms - baselineS3.p50_ms) / baselineS3.p50_ms;
+  const p99Degradation = (currentS3.p99_ms - baselineS3.p99_ms) / baselineS3.p99_ms;
 
   if (degradation > threshold) {
     return {
       passed: false,
       degradation,
+      p99Degradation,
       message: `Performance regression: S3 p50 degraded by ${(degradation * 100).toFixed(1)}% (baseline: ${baselineS3.p50_ms}ms, current: ${currentS3.p50_ms}ms)`,
+    };
+  }
+
+  if (p99Degradation > threshold) {
+    return {
+      passed: false,
+      degradation,
+      p99Degradation,
+      message: `Performance regression: S3 p99 degraded by ${(p99Degradation * 100).toFixed(1)}% (baseline: ${baselineS3.p99_ms}ms, current: ${currentS3.p99_ms}ms)`,
     };
   }
 
   return {
     passed: true,
     degradation,
-    message: `S3 p50: ${currentS3.p50_ms}ms (baseline: ${baselineS3.p50_ms}ms, degradation: ${(degradation * 100).toFixed(1)}%)`,
+    p99Degradation,
+    message: `S3 p50: ${currentS3.p50_ms}ms (baseline: ${baselineS3.p50_ms}ms, degradation: ${(degradation * 100).toFixed(1)}%) | p99: ${currentS3.p99_ms}ms (baseline: ${baselineS3.p99_ms}ms, degradation: ${(p99Degradation * 100).toFixed(1)}%)`,
   };
 }
 
@@ -66,6 +80,7 @@ export function seedBaseline(current: BenchmarkRun, outputPath: string = BASELIN
   return {
     passed: true,
     degradation: 0,
+    p99Degradation: 0,
     message: `Seeded new baseline from current run at ${outputPath}`,
   };
 }

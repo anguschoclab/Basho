@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { computeStats, worldChecksum, writeResults, runBenchmark } from "../../../../scripts/bench-pipelines";
+import { computeStats, worldChecksum, writeResults, runBenchmark, runScenario } from "../../../../scripts/bench-pipelines";
 import type { WorldState } from "../../../../src/engine/types/world";
 import { readFileSync, rmSync, existsSync } from "node:fs";
 import { join } from "node:path";
@@ -81,5 +81,18 @@ describe("runBenchmark", () => {
     expect(run.results[0].total_days).toBe(1);
     expect(run.results[0].p50_ms).toBeGreaterThan(0);
     expect(run.timestamp).toBeTruthy();
+  });
+});
+
+describe("runScenario", () => {
+  it("with a tiny one-run config returns a BenchmarkResult with all required fields and plausible elapsed time", () => {
+    const result = runScenario("S1_single_day", { days: 1, fast: false, runs: 1, warmup: 0 });
+    expect(result.scenario).toBe("S1_single_day");
+    expect(result.runs).toBe(1);
+    expect(result.total_days).toBe(1);
+    expect(result.p50_ms).toBeGreaterThan(0);
+    expect(result.p99_ms).toBeGreaterThan(0);
+    expect(result.mean_ms).toBeGreaterThan(0);
+    expect(typeof result.p50_ms).toBe("number");
   });
 });

@@ -40,6 +40,29 @@ describe("checkRegression", () => {
     expect(result.degradation).toBeCloseTo(0.1, 5);
   });
 
+  it("fails when p99 degradation exceeds 15% even if p50 is fine", () => {
+    const baseline = makeRun(100);
+    const current: BenchmarkRun = {
+      timestamp: "2026-01-01T00:00:00.000Z",
+      results: [{ scenario: "S3_year", p50_ms: 105, p99_ms: 250, mean_ms: 105, runs: 50, total_days: 365 }],
+    };
+    const result = checkRegression(baseline, current);
+    expect(result.passed).toBe(false);
+    expect(result.message).toContain("p99");
+    expect(result.p99Degradation).toBeCloseTo(0.25, 5);
+  });
+
+  it("passes when p99 degradation is within 15%", () => {
+    const baseline = makeRun(100);
+    const current: BenchmarkRun = {
+      timestamp: "2026-01-01T00:00:00.000Z",
+      results: [{ scenario: "S3_year", p50_ms: 100, p99_ms: 220, mean_ms: 100, runs: 50, total_days: 365 }],
+    };
+    const result = checkRegression(baseline, current);
+    expect(result.passed).toBe(true);
+    expect(result.p99Degradation).toBeCloseTo(0.1, 5);
+  });
+
   it("handles missing S3_year scenario in current gracefully", () => {
     const baseline = makeRun(100);
     const current: BenchmarkRun = {

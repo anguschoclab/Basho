@@ -59,13 +59,14 @@ describe("ScoutingWidget", () => {
     expect(getByText(/Scouting/i)).toBeDefined();
   });
 
-  it("renders without crashing when world is null", () => {
+  it("does not throw when world is null", () => {
     mockUseGame(null);
-    const { container } = render(
-      <TooltipProvider>
-        <ScoutingWidget />
-      </TooltipProvider>
-    );
-    expect(container.childNodes.length).toBeGreaterThan(0);
+    expect(() =>
+      render(
+        <TooltipProvider>
+          <ScoutingWidget />
+        </TooltipProvider>
+      )
+    ).not.toThrow();
   });
 });

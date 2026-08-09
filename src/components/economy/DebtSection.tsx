@@ -4,10 +4,13 @@
  * Active institutional debt section for economy page.
  */
 
+import { useMemo, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AlertTriangle } from "lucide-react";
 import { formatYen } from "@/utils/engineUtils";
+import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
+import { compareBy, type SortDirection } from "@/lib/sortUtils";
 
 interface Loan {
   id: string;
@@ -26,7 +29,34 @@ interface DebtSectionProps {
   activeLoans: Loan[];
 }
 
+const LOAN_SORT_OPTIONS: SortOption[] = [
+  { key: "remainingBalance", label: "Remaining" },
+  { key: "principal", label: "Principal" },
+  { key: "interestRate", label: "Interest" },
+  { key: "monthlyPayment", label: "Monthly" },
+  { key: "dueWeek", label: "Due Week" },
+  { key: "providerName", label: "Provider" },
+];
+
 export function DebtSection({ activeLoans }: DebtSectionProps) {
+  const [sortKey, setSortKey] = useState<string>("remainingBalance");
+  const [sortOrder, setSortOrder] = useState<SortDirection>("desc");
+
+  const sortedLoans = useMemo(() => {
+    if (!activeLoans || activeLoans.length === 0) return [];
+    const accessor: Record<string, (l: Loan) => string | number | undefined> = {
+      remainingBalance: (l) => l.remainingBalance,
+      principal: (l) => l.principal,
+      interestRate: (l) => l.interestRate,
+      monthlyPayment: (l) => l.monthlyPayment,
+      dueWeek: (l) => l.dueWeek,
+      providerName: (l) => l.providerName,
+    };
+    const fn = accessor[sortKey];
+    if (!fn) return activeLoans;
+    return [...activeLoans].sort((a, b) => compareBy(a, b, fn, sortOrder));
+  }, [activeLoans, sortKey, sortOrder]);
+
   if (!activeLoans || activeLoans.length === 0) {
     return (
       <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-success/8 border border-success/20 text-success">
@@ -37,16 +67,28 @@ export function DebtSection({ activeLoans }: DebtSectionProps) {
   }
 
   return (
-    <Card className="border-destructive/20 bg-destructive/5 paper overflow-hidden" aria-hidden="true">
-      <div className="bg-destructive/10 px-4 py-2 border-b border-destructive/20 flex items-center gap-2" aria-hidden="true">
-        <AlertTriangle className="h-4 w-4 text-destructive" />
-        <span className="text-xs font-bold text-destructive uppercase tracking-widest">
-          Active Institutional Debt
-        </span>
+    <Card className="border-destructive/20 bg-destructive/5 paper overflow-hidden">
+      <div className="bg-destructive/10 px-4 py-2 border-b border-destructive/20 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <AlertTriangle className="h-4 w-4 text-destructive" />
+          <span className="text-xs font-bold text-destructive uppercase tracking-widest">
+            Active Institutional Debt
+          </span>
+        </div>
+        <SortMenu
+          options={LOAN_SORT_OPTIONS}
+          storageKey="basho_sort_debt"
+          defaultSortKey="remainingBalance"
+          defaultSortOrder="desc"
+          onSortChange={(key, order) => {
+            setSortKey(key);
+            setSortOrder(order);
+          }}
+        />
       </div>
       <CardContent className="pt-6">
         <div className="space-y-4">
-          {activeLoans.map((loan) => (
+          {sortedLoans.map((loan) => (
             <div
               key={loan.id}
               className="p-4 rounded-lg bg-background/50 border border-destructive/10 space-y-3"
