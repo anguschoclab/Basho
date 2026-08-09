@@ -20,6 +20,7 @@ export default defineConfig({
       "src/tests/perf/**",
     ],
     testTimeout: 30000,
+    fileParallelism: false,
     server: {
       deps: {
         inline: ["seedrandom"],
