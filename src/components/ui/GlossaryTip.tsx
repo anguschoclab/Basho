@@ -7,7 +7,7 @@
 
 import React from "react";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import { GlossaryService } from "@/engine/glossary/GlossaryService";
+import { GlossaryService } from "@/presenters/engineAccess";
 import { cn } from "@/lib/utils";
 
 interface GlossaryTipProps {

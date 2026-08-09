@@ -8,7 +8,7 @@ import { BookmarkButton } from "@/components/bookmark/BookmarkButton";
 import type { MatchRowData } from "./boutCardTypes.tsx";
 import { HEAT_CONFIG } from "./boutCardTypes.tsx";
 import { RikishiSide, H2HCenter, MatchFooter } from "./boutCardComponents";
-import { TACTIC_PROFILES, type TacticProfile } from "@/engine/bout/tacticProfiles";
+import { TACTIC_PROFILES, type TacticProfile } from "@/presenters/engineAccess";
 import type { BoutTactic } from "@/engine/types/combat";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 

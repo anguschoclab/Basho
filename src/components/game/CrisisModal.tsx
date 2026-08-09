@@ -20,7 +20,7 @@ import { Button } from "../ui/button";
 import { ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
 import { decisionToastMessage } from "./decisionFeedback";
-import { getPlayerHeya } from "@/engine/queries";
+import { getPlayerHeya } from "@/presenters/engineAccess";
 import type { CrisisOption } from "@/engine/types/crises";
 
 export function CrisisModal() {

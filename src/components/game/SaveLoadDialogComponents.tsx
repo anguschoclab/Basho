@@ -8,9 +8,9 @@ import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import { formatSaveDate } from "@/engine/utils/formatters";
+import { formatSaveDate } from "@/presenters/engineAccess";
 import { Save, Trash2, Clock } from "lucide-react";
-import type { SaveSlotInfo } from "@/engine/saveload";
+import type { SaveSlotInfo } from "@/presenters/engineAccess";
 
 export const SaveSlotItem = React.memo(
   ({

@@ -18,8 +18,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
-import { rngFromSeed, type SeededRNG } from "@/engine/rng";
+import { NarrativeService } from "@/presenters/engineAccess";
+import { rngFromSeed, type SeededRNG } from "@/presenters/engineAccess";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { Rikishi } from "@/engine/types";
 import type { WorldState } from "@/presenters/uiDigest";

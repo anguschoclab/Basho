@@ -17,7 +17,7 @@ import { isSekitoriRank } from "@/constants/engine/rankDisplay";
 import { projectTrainingSummary } from "@/presenters/projections/trainingProjections";
 import { buildActionQueue } from "@/presenters/projections/actionQueue";
 import { FATIGUE_LABELS } from "@/constants/ui/labels";
-import { getPlayerHeya } from "@/engine/queries";
+import { getPlayerHeya } from "@/presenters/engineAccess";
 import { getHeyaCount, getRikishi, getOyakata } from "@/presenters/worldAccess";
 
 import { OnboardingTourDialog } from "@/components/onboarding/OnboardingTourDialog";

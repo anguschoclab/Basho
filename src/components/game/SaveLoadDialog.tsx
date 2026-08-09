@@ -2,7 +2,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { useGame } from "@/contexts/useGame";
 import { useToast } from "@/hooks/use-toast";
-import type { SaveSlotInfo } from "@/engine/saveload";
+import type { SaveSlotInfo } from "@/presenters/engineAccess";
 import {
   Dialog,
   DialogContent,
@@ -25,7 +25,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import { deleteSave, exportSave, importSave } from "@/engine/saveload";
+import { deleteSave, exportSave, importSave } from "@/presenters/engineAccess";
 import { Save, FolderOpen, Download, Upload, HardDrive, Loader2 } from "lucide-react";
 import { SaveSlotItem, EmptySlotItem } from "./SaveLoadDialogComponents";
 import { openListeners } from "./saveLoadDialogSignal";

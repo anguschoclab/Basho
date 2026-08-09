@@ -1,7 +1,7 @@
 // InjuryRiskHeatmap.tsx — Roster-wide injury risk matrix visualization
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import { toFatigueBand } from "@/engine/descriptorBands";
+import { toFatigueBand } from "@/presenters/engineAccess";
 import { FATIGUE_LABELS } from "@/constants/ui/labels";
 
 interface InjuryRiskHeatmapProps {

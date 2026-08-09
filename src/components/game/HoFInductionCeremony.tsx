@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Trophy, Shield, Target } from "lucide-react";
-import type { HoFInductee, HoFCategory } from "@/engine/hallOfFame";
+import type { HoFInductee, HoFCategory } from "@/presenters/engineAccess";
 import { NarrativeCeremonyDialog } from "./NarrativeCeremonyDialog";
 
 const CATEGORY_CEREMONY: Record<

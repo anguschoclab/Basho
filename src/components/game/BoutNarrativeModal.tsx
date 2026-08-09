@@ -15,7 +15,7 @@ import { BoutResultDisplay } from "./BoutResultDisplay";
 import { BoutLog } from "./BoutLog";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
-import type { PbpLine } from "@/engine/bout/boutNarrative";
+import type { PbpLine } from "@/presenters/engineAccess";
 import { RotateCcw, MessageSquareText, BookOpen, Terminal } from "lucide-react";
 import { PbpLineText } from "./PbpLineText";
 import { computeActiveLineIndices } from "./boutReplay/boutCanvas";

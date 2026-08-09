@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Sparkles, TrendingUp, Swords, Coins, Users, Dumbbell } from "lucide-react";
-import type { AIRecommendation } from "@/engine/ai/types";
+import type { AIRecommendation } from "@/presenters/engineAccess";
 
 interface IntelligencePanelProps {
   recommendations: AIRecommendation[];

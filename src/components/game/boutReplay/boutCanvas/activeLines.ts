@@ -1,4 +1,4 @@
-import type { PbpLine } from "@/engine/bout/boutNarrative";
+import type { PbpLine } from "@/presenters/engineAccess";
 import { PHASES, CANVAS_PHASE_TO_PBP_PHASE } from "./constants";
 
 export function computeActiveLineIndices(phaseIndex: number, pbpLines: PbpLine[]): Set<number> {

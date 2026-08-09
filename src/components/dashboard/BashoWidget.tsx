@@ -6,7 +6,7 @@ import { RikishiName } from "@/components/ClickableName";
 import { Trophy, Crown, Star, Swords, HeartPulse } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
 import { selectInjuredRikishi } from "@/presenters/selectors";
-import { sortStandings } from "@/engine/utils/sort";
+import { sortStandings } from "@/presenters/engineAccess";
 import { EmptyState } from "@/components/ui/EmptyState";
 
 const LeaderboardRow = React.memo(

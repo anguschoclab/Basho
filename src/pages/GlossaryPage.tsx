@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
-import { GlossaryService, type GlossaryTerm } from "@/engine/glossary/GlossaryService";
+import { GlossaryService, type GlossaryTerm } from "@/presenters/engineAccess";
 import { cn } from "@/lib/utils";
 
 const CATEGORY_LABELS: Record<GlossaryTerm["category"], string> = {

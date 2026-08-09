@@ -18,7 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import type { MyosekiStock } from "@/engine/types/myoseki";
-import { getPlayerHeya } from "@/engine/queries";
+import { getPlayerHeya } from "@/presenters/engineAccess";
 import { SortMenu } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
 

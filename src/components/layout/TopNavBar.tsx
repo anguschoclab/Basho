@@ -8,7 +8,7 @@ import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { Sun, Moon, ChevronRight, Settings } from "lucide-react";
 import { formatYen } from "@/utils/engineUtils";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { getPlayerHeya } from "@/engine/queries";
+import { getPlayerHeya } from "@/presenters/engineAccess";
 
 const RUNWAY_COLORS: Record<string, string> = {
   secure: "hsl(var(--success))",

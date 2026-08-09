@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Sword, RotateCcw, TrendingUp, TrendingDown, Minus } from "lucide-react";
-import { simulateBout } from "@/engine/bout/boutResolver";
+import { simulateBout } from "@/presenters/engineAccess";
 import { useGame } from "@/contexts/useGame";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { cn } from "@/lib/utils";

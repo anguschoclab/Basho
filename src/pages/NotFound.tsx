@@ -2,7 +2,7 @@ import { useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Home } from "lucide-react";
-import { error } from "@/engine/utils/Logger";
+import { error } from "@/presenters/engineAccess";
 
 const NotFound = () => {
   const location = useLocation();

@@ -6,10 +6,10 @@ import { OFFICE_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/useGame";
 import { FacilitiesManagementPanel } from "@/components/game/FacilitiesManagementPanel";
 import { InfrastructurePanel } from "@/components/game/InfrastructurePanel";
-import type { FacilityAxis } from "@/engine/facilities";
+import type { FacilityAxis } from "@/presenters/engineAccess";
 import type { FacilityId } from "@/engine/types/infrastructure";
 import { FacilityROIChart } from "@/components/economy/FacilityROIChart";
-import { getPlayerHeya } from "@/engine/queries";
+import { getPlayerHeya } from "@/presenters/engineAccess";
 
 /** facilities page. */
 export default function FacilitiesPage() {

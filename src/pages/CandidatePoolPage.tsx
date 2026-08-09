@@ -24,8 +24,8 @@ import type { TalentCandidate, SuitorInterestBand } from "@/engine/types/talent"
 import {
   listNPCWatchedCandidates,
   getTopSuitor,
-} from "@/engine/systems/generation/CandidatePoolService";
-import { getPlayerHeya, getHeya } from "@/engine/queries";
+} from "@/presenters/engineAccess";
+import { getPlayerHeya, getHeya } from "@/presenters/engineAccess";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
 

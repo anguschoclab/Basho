@@ -5,7 +5,7 @@
  */
 
 import { HEAT_BAND_CONFIG } from "../../constants/ui/rivalry";
-import type { RivalryHeatBand } from "@/engine/rivalries";
+import type { RivalryHeatBand } from "@/presenters/engineAccess";
 
 export function HeatLegend() {
   return (

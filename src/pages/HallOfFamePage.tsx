@@ -29,7 +29,7 @@ import {
   Calendar,
 } from "lucide-react";
 import { HoFTimeline } from "@/components/game/HoFTimeline";
-import type { HoFCategory } from "@/engine/hallOfFame";
+import type { HoFCategory } from "@/presenters/engineAccess";
 import { HOF_CATEGORY_LABELS, projectHOFUIDigest } from "@/presenters/uiDigest";
 import { getRikishi } from "@/presenters/worldAccess";
 import { selectAwardLog } from "@/presenters/selectors";

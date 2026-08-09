@@ -1,5 +1,5 @@
 import type { BoutResult } from "@/engine/types/basho";
-import { sortStandings } from "@/engine/utils/sort";
+import { sortStandings } from "@/presenters/engineAccess";
 
 type ChartDataPoint = { day: number } & Record<string, number>;
 

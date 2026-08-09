@@ -7,7 +7,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Globe } from "lucide-react";
-import { getCombatArchetypeDescription } from "@/engine/archetype";
+import { getCombatArchetypeDescription } from "@/presenters/engineAccess";
 import { BookmarkButton } from "@/components/bookmark/BookmarkButton";
 
 interface RikishiCardProps {

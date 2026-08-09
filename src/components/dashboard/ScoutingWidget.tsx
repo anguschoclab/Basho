@@ -8,13 +8,13 @@ import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { Search, Globe, GraduationCap, School, Sparkles } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
-import type { PotentialBand } from "@/engine/descriptorBands";
-import { toPotentialBand } from "@/engine/descriptorBands";
+import type { PotentialBand } from "@/presenters/engineAccess";
+import { toPotentialBand } from "@/presenters/engineAccess";
 import type { WorldState } from "@/presenters/uiDigest";
-import * as talentpool from "@/engine/systems/generation/TalentPoolService";
+import * as talentpool from "@/presenters/engineAccess";
 import type { TalentCandidate, TalentPoolType } from "@/engine/types/talent";
 import { POTENTIAL_LABELS } from "@/constants/ui/labels";
-import { getCombatArchetypeDescription } from "@/engine/archetype";
+import { getCombatArchetypeDescription } from "@/presenters/engineAccess";
 
 const POTENTIAL_COLORS: Record<PotentialBand, string> = {
   generational: "text-gold",

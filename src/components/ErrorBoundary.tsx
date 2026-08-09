@@ -18,7 +18,7 @@
  */
 
 import { Component, ErrorInfo, ReactNode } from "react";
-import { error } from "@/engine/utils/Logger";
+import { error } from "@/presenters/engineAccess";
 
 /**
  * Props for ErrorBoundary component.

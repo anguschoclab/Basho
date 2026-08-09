@@ -1,5 +1,5 @@
 import type { ReplayPhase, RikishiState, BodyPhase } from "./types";
-import type { BoutScript, BoutAnimationFamily } from "@/engine/bout/ReplayMetadata";
+import type { BoutScript, BoutAnimationFamily } from "@/presenters/engineAccess";
 import { lerp, easeOut, easeInOut } from "./math";
 
 export function computeArcProgress(finishProgress: number, family: BoutAnimationFamily): number {

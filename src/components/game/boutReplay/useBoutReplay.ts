@@ -9,9 +9,9 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import type { BoutResult } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/uiModels";
-import { getReplayPhaseDurations, buildBoutScript } from "@/engine/bout/ReplayMetadata";
-import type { BoutScript } from "@/engine/bout/ReplayMetadata";
-import { SeededRNG } from "@/engine/rng";
+import { getReplayPhaseDurations, buildBoutScript } from "@/presenters/engineAccess";
+import type { BoutScript } from "@/presenters/engineAccess";
+import { SeededRNG } from "@/presenters/engineAccess";
 import {
   PHASES,
   clamp,

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Eye, GitCompareArrows, Swords, Building2, User } from "lucide-react";
 import { useGame } from "@/contexts/useGame";
 import { buildPerceptionSnapshot } from "@/presenters/uiDigest";
-import type { PerceptionSnapshot } from "@/engine/perception";
+import type { PerceptionSnapshot } from "@/presenters/engineAccess";
 import {
   StableMetricGrid,
   RikishiComparisonGrid,

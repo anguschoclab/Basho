@@ -12,7 +12,7 @@ import { formatRank, clamp } from "@/presenters/uiDigest";
 import { getHeatBand } from "./rivalryUtils.pure";
 import { H2HBar, HeatGauge } from "./rivalryUtils";
 import { HEAT_BAND_CONFIG, TONE_CONFIG, TRIGGER_LABELS } from "../../constants/ui/rivalry";
-import type { RivalryPairState, RivalryTrigger } from "@/engine/rivalries";
+import type { RivalryPairState, RivalryTrigger } from "@/presenters/engineAccess";
 import { toRankPosition } from "@/engine/types/banzuke";
 import type { Rank, Side } from "@/engine/types/banzuke";
 

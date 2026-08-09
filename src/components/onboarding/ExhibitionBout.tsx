@@ -6,8 +6,8 @@
 
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useGame } from "@/contexts/useGame";
-import { resolveBout } from "@/engine/bout/boutResolver";
-import type { BoutContext } from "@/engine/bout/boutPhysics";
+import { resolveBout } from "@/presenters/engineAccess";
+import type { BoutContext } from "@/presenters/engineAccess";
 import type { BashoState } from "@/engine/types/basho";
 import type { BoutResult } from "@/engine/types/basho";
 import { Button } from "@/components/ui/button";

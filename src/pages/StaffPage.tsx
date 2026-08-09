@@ -44,9 +44,9 @@ import { cn } from "@/lib/utils";
 import { UserPlus, ShieldCheck, Zap, Heart, Award, Briefcase, Trash2 } from "lucide-react";
 import type { Staff, StaffRole } from "@/engine/types/staff";
 import { toast } from "sonner";
-import { toFatigueBand, toScandalBand } from "@/engine/descriptorBands";
+import { toFatigueBand, toScandalBand } from "@/presenters/engineAccess";
 import { FATIGUE_LABELS, SCANDAL_LABELS } from "@/constants/ui/labels";
-import { getPlayerHeya } from "@/engine/queries";
+import { getPlayerHeya } from "@/presenters/engineAccess";
 import { getStaffMember } from "@/presenters/worldAccess";
 
 const ROLE_LABELS: Record<StaffRole, string> = {

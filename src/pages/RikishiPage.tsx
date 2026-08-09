@@ -18,7 +18,7 @@ import { PageHeader } from "@/components/layout/control-center";
 import { STABLE_TABS } from "@/constants/ui/navigation";
 import { projectRikishi } from "@/presenters/uiModels";
 import { RosterList } from "@/components/rikishi/RosterList";
-import { getMentor, menteesOf } from "@/engine/lineage";
+import { getMentor, menteesOf } from "@/presenters/engineAccess";
 import { getHeya } from "@/presenters/worldAccess";
 import { getHealthBadge } from "@/presenters/PerceptionPresenter";
 import type { CareerSnapshot, Milestone } from "@/engine/types/history";
@@ -33,9 +33,9 @@ import { useCareerProgressionData } from "@/components/rikishi/useRikishiData";
 import { RikishiGlobalCup } from "@/components/rikishi/RikishiGlobalCup";
 import { IntaiCeremony } from "@/components/game/IntaiCeremony";
 import { Trash2 } from "lucide-react";
-import { retireRikishiImpact } from "@/engine/core/ImpactBuilder";
-import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { EntityCollection } from "@/engine/core/EntityCollection";
+import { retireRikishiImpact } from "@/presenters/engineAccess";
+import { resolveImpacts } from "@/presenters/engineAccess";
+import { EntityCollection } from "@/presenters/engineAccess";
 
 export default function RikishiPage() {
   const { rikishiId } = useParams({ strict: false });

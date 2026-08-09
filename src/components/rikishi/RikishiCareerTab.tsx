@@ -26,7 +26,7 @@ import type {
   NotableBoutEntry,
   NarrativeHighlight,
   PromotionHistoryEntry,
-} from "@/engine/almanac/types";
+} from "@/presenters/engineAccess";
 import { useState } from "react";
 import {
   ComposedChart,
@@ -39,8 +39,8 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
-import { SeededRNG } from "@/engine/rng";
+import { NarrativeService } from "@/presenters/engineAccess";
+import { SeededRNG } from "@/presenters/engineAccess";
 
 const RANK_LABELS: Record<number, string> = {
   1: "Yokozuna",

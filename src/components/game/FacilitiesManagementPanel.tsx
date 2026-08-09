@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import type { Heya } from "@/engine/types/heya";
 import type { FacilitiesBand } from "@/engine/types/narrative";
-import type { FacilityAxis } from "@/engine/facilities";
+import type { FacilityAxis } from "@/presenters/engineAccess";
 import {
   getFacilityLevelColor as getLevelColor,
   getMonthlyMaintenanceCost,

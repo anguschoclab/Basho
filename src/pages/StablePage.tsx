@@ -6,8 +6,8 @@ import { useNavigate, useParams } from "@tanstack/react-router";
 import { useGame } from "@/contexts/useGame";
 import { useRequireWorld } from "@/hooks/useRequireWorld";
 import { projectRikishi } from "@/presenters/rikishi";
-import { InfrastructureService } from "@/engine/systems/economy/InfrastructureService";
-import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { InfrastructureService } from "@/presenters/engineAccess";
+import { resolveImpacts } from "@/presenters/engineAccess";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,7 +26,7 @@ import { GlobalStrategicHub } from "@/components/stable/GlobalStrategicHub";
 import type { FacilityId } from "@/engine/types/infrastructure";
 import { KeshoMawashiGallery } from "@/components/stable/KeshoMawashiGallery";
 import { MentorAssignmentPanel } from "@/components/game/MentorAssignmentPanel";
-import { getHeyaRoster } from "@/engine/queries";
+import { getHeyaRoster } from "@/presenters/engineAccess";
 
 export default function StablePage() {
   const navigate = useNavigate();

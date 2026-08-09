@@ -6,8 +6,8 @@ import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { useMemo, useState } from "react";
 import { useGame } from "@/contexts/useGame";
 import { Users, Flame, Swords, Landmark } from "lucide-react";
-import type { RivalryPairState } from "@/engine/rivalries";
-import { createDefaultRivalriesState, type RivalriesState } from "@/engine/rivalries";
+import type { RivalryPairState } from "@/presenters/engineAccess";
+import { createDefaultRivalriesState, type RivalriesState } from "@/presenters/engineAccess";
 import { RivalriesHeader } from "@/components/rivalries/RivalriesHeader";
 import { RivalryCard } from "@/components/rivalries/RivalryCard";
 import { RivalriesEmptyState } from "@/components/rivalries/RivalriesEmptyState";
@@ -17,9 +17,9 @@ import {
   type RivalriesPageData,
 } from "@/presenters/projections/rivalriesProjections";
 import { Badge } from "@/components/ui/badge";
-import { toRivalryHeatBand } from "@/engine/descriptorBands";
+import { toRivalryHeatBand } from "@/presenters/engineAccess";
 import { RIVALRY_HEAT_LABELS } from "@/constants/ui/labels";
-import { getPlayerHeya } from "@/engine/queries";
+import { getPlayerHeya } from "@/presenters/engineAccess";
 import { SortMenu } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
 

@@ -38,7 +38,7 @@ import type { DrillType, DaySchedule } from "@/engine/types/training";
 import type { Rikishi } from "@/engine/types/rikishi";
 
 import { useGameStore } from "@/store/gameStore";
-import { getPlayerHeya } from "@/engine/queries";
+import { getPlayerHeya } from "@/presenters/engineAccess";
 import { selectEncouragementLog } from "@/presenters/selectors";
 
 export default function TrainingPage() {

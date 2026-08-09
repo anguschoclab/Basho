@@ -20,8 +20,8 @@ import {
   getStatusLabel,
   spendPoliticalCapital,
 } from "@/presenters/uiDigest";
-import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { getPlayerHeya } from "@/engine/queries";
+import { resolveImpacts } from "@/presenters/engineAccess";
+import { getPlayerHeya } from "@/presenters/engineAccess";
 import { projectGovernanceDerived } from "@/presenters/projections/governanceProjections";
 import { selectClosedHeyas, selectYokozunaVacancyStreak } from "@/presenters/selectors";
 import { getOyakata, getGlobalCupChampion } from "@/presenters/worldAccess";

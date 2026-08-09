@@ -3,7 +3,7 @@ import type { UIRikishi } from "@/presenters/uiModels";
 import type { ReplayPhase } from "./types";
 import { PHASES } from "./constants";
 import { clamp } from "./math";
-import { warn } from "@/engine/utils/Logger";
+import { warn } from "@/presenters/engineAccess";
 
 export function getNarrationLines(result: BoutResult, east: UIRikishi, west: UIRikishi): string[] {
   if (result.pbpLines && result.pbpLines.length > 0) {

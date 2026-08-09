@@ -13,7 +13,7 @@ import { Swords, Plus, X } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import type { Rikishi } from "@/engine/types/rikishi";
 import type { SparringPair } from "@/engine/types/training";
-import { SparringService } from "@/engine/systems/training/SparringService";
+import { SparringService } from "@/presenters/engineAccess";
 
 interface Props {
   heyaRikishi: Rikishi[];

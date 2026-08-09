@@ -15,9 +15,9 @@ import { toast } from "@/hooks/use-toast";
 import { Search, UserPlus, Globe, GraduationCap, School } from "lucide-react";
 
 import type { TalentPoolType, TalentCandidate, VisibilityBand } from "@/engine/types/talent";
-import * as talentpool from "@/engine/systems/generation/TalentPoolService";
-import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/engine/systems/generation/TalentPoolService";
-import { getPlayerHeya } from "@/engine/queries";
+import * as talentpool from "@/presenters/engineAccess";
+import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/presenters/engineAccess";
+import { getPlayerHeya } from "@/presenters/engineAccess";
 import { getHeya, getOyakata, getTalentPool } from "@/presenters/worldAccess";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";

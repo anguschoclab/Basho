@@ -10,9 +10,9 @@
 
 import type { Rikishi, RikishiStats } from "@/engine/types";
 import { TrendingUp } from "lucide-react";
-import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
-import { SeededRNG } from "@/engine/rng";
-import { toStatBand } from "@/engine/descriptorBands";
+import { NarrativeService } from "@/presenters/engineAccess";
+import { SeededRNG } from "@/presenters/engineAccess";
+import { toStatBand } from "@/presenters/engineAccess";
 import { STAT_LABELS as STAT_BAND_LABELS } from "@/constants/ui/labels";
 
 interface Props {

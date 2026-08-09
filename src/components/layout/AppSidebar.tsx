@@ -15,7 +15,7 @@ import { Link, useLocation } from "@tanstack/react-router";
 import { useRef, useEffect } from "react";
 import { useGame } from "@/contexts/useGame";
 import { getMenuGroups } from "./sidebarConfig";
-import { getPlayerHeya } from "@/engine/queries";
+import { getPlayerHeya } from "@/presenters/engineAccess";
 
 export function AppSidebar() {
   const { state } = useGame();

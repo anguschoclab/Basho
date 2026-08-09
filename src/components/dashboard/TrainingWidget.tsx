@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { BaseWidget } from "./BaseWidget";
 import { Dumbbell, Zap, Target, Shield, Activity } from "lucide-react";
 import { INTENSITY_MULTIPLIERS, RECOVERY_MULTIPLIERS } from "@/presenters/uiDigest";
-import { computeDisplayTrainingMultiplier } from "@/engine/systems/training/TrainingMath";
+import { computeDisplayTrainingMultiplier } from "@/presenters/engineAccess";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { INTENSITY_ICONS, FOCUS_LABELS, RECOVERY_LABELS } from "@/constants/ui/trainingWidget";
 import { useTrainingProfile } from "@/hooks/useTrainingProfile";

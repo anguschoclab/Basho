@@ -1,4 +1,4 @@
-import { clamp } from "@/engine/utils/math";
+import { clamp } from "@/presenters/engineAccess";
 
 export { clamp };
 

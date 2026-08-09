@@ -9,7 +9,7 @@ import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { projectRosterEntry, type UIRosterEntry } from "@/presenters/uiModels";
 import { BaseWidget } from "./BaseWidget";
 import { RankInline } from "@/components/rikishi/RankBadge";
-import { getActiveRikishi } from "@/engine/selectors";
+import { getActiveRikishi } from "@/presenters/engineAccess";
 
 import type { AvatarConfig } from "@/engine/types/avatar";
 

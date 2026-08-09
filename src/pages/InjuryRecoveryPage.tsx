@@ -12,9 +12,9 @@ import { projectMedicalUIDigest, setHeyaDietAction } from "@/presenters/uiDigest
 import { InjuryRiskHeatmap } from "@/components/training/InjuryRiskHeatmap";
 import type { DietRegimen } from "@/engine/types/economy";
 import { resolveRegistryLabel } from "@/presenters/uiUtilities";
-import { BardEngine } from "@/engine/bard/BardEngine";
-import { SeededRNG } from "@/engine/rng";
-import { getHeyaRoster } from "@/engine/queries";
+import { BardEngine } from "@/presenters/engineAccess";
+import { SeededRNG } from "@/presenters/engineAccess";
+import { getHeyaRoster } from "@/presenters/engineAccess";
 import { useDomainsReady } from "@/hooks/useDomainsReady";
 
 /** injury recovery page. */

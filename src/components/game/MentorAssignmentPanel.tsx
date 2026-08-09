@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/select";
 import { UserMinus, GraduationCap } from "lucide-react";
 import type { Rikishi } from "@/engine/types/rikishi";
-import { MentorshipService } from "@/engine/systems/training/MentorshipService";
+import { MentorshipService } from "@/presenters/engineAccess";
 
 /**
  * Props for MentorAssignmentPanel component.

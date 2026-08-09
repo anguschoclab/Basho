@@ -21,7 +21,7 @@ import { RikishiCell } from "@/components/banzuke/RikishiCell";
 import { YokozunaTrajectory } from "@/components/banzuke/YokozunaTrajectory";
 import { getYokozunaCandidates } from "@/presenters/projections/promotionProjections";
 import type { UIRankRow } from "@/presenters/banzukeUI";
-import { getPlayerHeya, updateHeyaInWorld } from "@/engine/queries";
+import { getPlayerHeya, updateHeyaInWorld } from "@/presenters/engineAccess";
 import { SortMenu } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
 

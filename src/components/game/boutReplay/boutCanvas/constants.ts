@@ -1,5 +1,5 @@
 import type { ReplayPhase } from "./types";
-import type { PbpPhase } from "@/engine/bout/boutNarrative";
+import type { PbpPhase } from "@/presenters/engineAccess";
 
 export const PHASES: ReplayPhase[] = [
   "ritual",

@@ -6,7 +6,7 @@ import { Globe, GraduationCap, MapPin, TrendingUp, Users, Trophy } from "lucide-
 import { Link } from "@tanstack/react-router";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { Id } from "@/engine/types/common";
-import { listVisibleCandidates } from "@/engine/systems/generation/TalentPoolScouting";
+import { listVisibleCandidates } from "@/presenters/engineAccess";
 import { FACILITY_REGISTRY, type FacilityId } from "@/engine/types/infrastructure";
 
 interface GlobalStrategicHubProps {

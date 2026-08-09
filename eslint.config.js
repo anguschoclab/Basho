@@ -17,6 +17,7 @@ export default tseslint.config(
       "resources",
       "*.lock",
       "*.config.*",
+      "src/**/__audit_test__/**",
     ],
   },
   {
@@ -129,6 +130,8 @@ export default tseslint.config(
               group: [
                 "@/engine/ai",
                 "@/engine/ai/*",
+                "@/engine/almanac",
+                "@/engine/almanac/*",
                 "@/engine/archetype",
                 "@/engine/banzuke",
                 "@/engine/bard",

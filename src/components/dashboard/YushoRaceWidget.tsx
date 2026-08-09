@@ -12,8 +12,8 @@ import { BaseWidget } from "./BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { Trophy, Medal, Award } from "lucide-react";
-import { getRikishiByDivision } from "@/engine/queries";
-import { sortStandings } from "@/engine/utils/sort";
+import { getRikishiByDivision } from "@/presenters/engineAccess";
+import { sortStandings } from "@/presenters/engineAccess";
 import { type UIRosterEntry, projectRosterEntry } from "@/presenters/rikishi";
 import type { Rikishi } from "@/engine/types/rikishi";
 

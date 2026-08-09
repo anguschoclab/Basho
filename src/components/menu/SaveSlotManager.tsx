@@ -29,8 +29,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Save, Trash2, Upload, Clock, ArrowRight, Database, History, Star } from "lucide-react";
-import type { SaveSlotInfo } from "@/engine/saveload";
-import { formatSaveDate } from "@/engine/utils/formatters";
+import type { SaveSlotInfo } from "@/presenters/engineAccess";
+import { formatSaveDate } from "@/presenters/engineAccess";
 import { useSaveSlotManager } from "@/hooks/useSaveSlotManager";
 
 interface SaveSlotManagerProps {

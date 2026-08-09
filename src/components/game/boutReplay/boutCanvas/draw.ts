@@ -1,6 +1,6 @@
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { RikishiState, Particle, ReplayPhase } from "./types";
-import type { BoutAnimationFamily } from "@/engine/bout/ReplayMetadata";
+import type { BoutAnimationFamily } from "@/presenters/engineAccess";
 import { clamp } from "./math";
 
 export function drawDohyo(

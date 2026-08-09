@@ -5,7 +5,7 @@
  * Extracted to comply with react-refresh/only-export-components rule.
  */
 
-import type { RivalryHeatBand } from "@/engine/rivalries";
+import type { RivalryHeatBand } from "@/presenters/engineAccess";
 
 export function getHeatBand(heat: number): RivalryHeatBand {
   if (heat >= 85) return "legendary";

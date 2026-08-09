@@ -12,7 +12,7 @@ import { SumoAvatar } from "@/components/avatar/SumoAvatar";
 import { ArrowLeft, Globe, MapPin, Calendar, Ruler, Scale, Moon } from "lucide-react";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import type { UIRikishi } from "@/presenters/uiModels";
-import { getCombatArchetypeDescription } from "@/engine/archetype";
+import { getCombatArchetypeDescription } from "@/presenters/engineAccess";
 
 interface RikishiProfileHeaderProps {
   rikishi: UIRikishi;

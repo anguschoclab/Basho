@@ -29,7 +29,7 @@ import {
 } from "lucide-react";
 import { RANK_HIERARCHY } from "@/presenters/uiDigest";
 import type { UIRikishi } from "@/presenters/uiModels";
-import { getCombatArchetypeDescription } from "@/engine/archetype";
+import { getCombatArchetypeDescription } from "@/presenters/engineAccess";
 import {
   RIKISHI_QUICK_STATS,
   RIKISHI_BASIC_INFO,

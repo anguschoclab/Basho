@@ -28,7 +28,7 @@ import {
   selectStablesByStature,
   selectRecommendedStables,
 } from "@/presenters/projections/stableSelectionProjections";
-import { getSekitoriInHeya } from "@/engine/queries";
+import { getSekitoriInHeya } from "@/presenters/engineAccess";
 import { getAllHeyas } from "@/presenters/worldAccess";
 import type { Heya } from "@/engine/types/heya";
 import type { StatureBand, StableSelectionMode } from "@/engine/types/narrative";

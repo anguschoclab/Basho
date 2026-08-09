@@ -3,7 +3,7 @@
 
 import { useMemo } from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import type { HoFInductee } from "@/engine/hallOfFame";
+import type { HoFInductee } from "@/presenters/engineAccess";
 import type { UIRikishi } from "@/presenters/uiModels";
 
 /** Defines the structure for ho f timeline props. */

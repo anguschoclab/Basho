@@ -4,7 +4,7 @@ import { useGame } from "@/contexts/useGame";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import type { PerceptionSnapshot } from "@/engine/perception";
+import type { PerceptionSnapshot } from "@/presenters/engineAccess";
 import { BaseWidget } from "./BaseWidget";
 import { getCachedPerception } from "@/presenters/uiDigest";
 import { Building2, Heart, Shield, Users, Handshake, UserPlus, Briefcase, Zap } from "lucide-react";

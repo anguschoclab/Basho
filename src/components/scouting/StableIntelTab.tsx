@@ -6,7 +6,7 @@ import { useGame } from "@/contexts/useGame";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChevronRight } from "lucide-react";
-import { EntityCollection } from "@/engine/core/EntityCollection";
+import { EntityCollection } from "@/presenters/engineAccess";
 import { projectRikishi, RANK_HIERARCHY, RANK_NAMES } from "@/presenters/uiDigest";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";

@@ -11,8 +11,8 @@ import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useGame } from "@/contexts/useGame";
 import { Helmet } from "react-helmet";
 import { makeDeterministicSeed } from "@/utils/engineUtils";
-import { generateToshiyoriName } from "@/engine/shikona/toshiyoriNames";
-import { SeededRNG } from "@/engine/rng";
+import { generateToshiyoriName } from "@/presenters/engineAccess";
+import { SeededRNG } from "@/presenters/engineAccess";
 import type { Heya } from "@/engine/types/heya";
 import { ExhibitionBout } from "@/components/onboarding/ExhibitionBout";
 import { WizardHeader } from "@/components/wizard/WizardHeader";
@@ -22,7 +22,7 @@ import { FactionStep } from "@/components/wizard/FactionStep";
 import { StableStep } from "@/components/wizard/StableStep";
 import { LoadingState } from "@/components/wizard/LoadingState";
 import { OYAKATA_BACKSTORIES, ICHIMON_FACTIONS } from "@/constants/ui/wizard";
-import { EntityCollection } from "@/engine/core/EntityCollection";
+import { EntityCollection } from "@/presenters/engineAccess";
 
 export default function NewGameWizard() {
   const navigate = useNavigate();

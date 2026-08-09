@@ -26,10 +26,10 @@ import { PlayoffBracket } from "@/components/game/PlayoffBracket";
 import { BanzukeReveal } from "@/components/game/BanzukeReveal";
 import { KeyBoutsSection } from "@/components/game/KeyBoutsSection";
 import { selectKeyBouts } from "@/presenters/projections/recapProjections";
-import { compareBanzuke, formatRankPosition, RANK_HIERARCHY } from "@/engine/banzuke";
-import { makeBashoKey } from "@/engine/historyIndex";
-import { EntityCollection } from "@/engine/core/EntityCollection";
-import { getPlayerHeya, updateHeyaInWorld } from "@/engine/queries";
+import { compareBanzuke, formatRankPosition, RANK_HIERARCHY } from "@/presenters/engineAccess";
+import { makeBashoKey } from "@/presenters/engineAccess";
+import { EntityCollection } from "@/presenters/engineAccess";
+import { getPlayerHeya, updateHeyaInWorld } from "@/presenters/engineAccess";
 import {
   getHeya,
   getRikishi,
@@ -40,7 +40,7 @@ import {
 import { projectRikishi } from "@/presenters/uiModels";
 import type { WorldState } from "@/presenters/uiDigest";
 import type { EngineEvent } from "@/engine/types/events";
-import type { HoFInductee } from "@/engine/hallOfFame";
+import type { HoFInductee } from "@/presenters/engineAccess";
 import type { UIRikishi } from "@/presenters/uiModels";
 import {
   projectPressConferenceData,

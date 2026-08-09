@@ -9,8 +9,8 @@ import { Coins, TrendingUp, Building2 } from "lucide-react";
 import { formatYen } from "@/utils/engineUtils";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { recruitSponsor } from "@/presenters/uiDigest";
-import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { getPlayerHeya } from "@/engine/queries";
+import { resolveImpacts } from "@/presenters/engineAccess";
+import { getPlayerHeya } from "@/presenters/engineAccess";
 
 const TIER_LABELS: Record<string, { label: string; color: string }> = {
   T0: { label: "Local", color: "text-muted-foreground" },
