@@ -16,6 +16,7 @@
 
 import { Helmet } from "react-helmet";
 import { useNavigate } from "@tanstack/react-router";
+import { useState, useMemo } from "react";
 import { useGame } from "@/contexts/useGame";
 import { useRequireWorld } from "@/hooks/useRequireWorld";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -35,6 +36,8 @@ import {
 import type { Rank } from "@/engine/types/banzuke";
 import type { BashoName } from "@/engine/types/basho";
 import { getHistory, getHeya } from "@/presenters/worldAccess";
+import { SortMenu } from "@/components/ui/SortMenu";
+import { compareBy, type SortDirection } from "@/lib/sortUtils";
 
 /** Type representing history record. */
 type HistoryRecord = {
@@ -72,16 +75,37 @@ function safeRankJa(rank: string | null | undefined): string {
   return info?.nameJa ?? String(rank ?? "—");
 }
 
+const HISTORY_SORT_OPTIONS = [
+  { key: "year", label: "Year" },
+  { key: "basho", label: "Basho" },
+];
+
+const historyAccessor: Record<string, (r: HistoryRecord) => string | number | undefined> = {
+  year: (r) => r.year,
+  basho: (r) => r.bashoNumber,
+};
+
 /** history page. */
 export default function HistoryPage() {
   const navigate = useNavigate();
   const { state, getRikishi } = useGame();
   const hasWorld = useRequireWorld("/dashboard");
   const { world } = state;
+  const [sortKey, setSortKey] = useState<string>("year");
+  const [sortOrder, setSortOrder] = useState<SortDirection>("asc");
+
+  const rawHistory = useMemo(
+    () => (world ? (getHistory(world) as HistoryRecord[]) : []),
+    [world]
+  );
+
+  const history = useMemo(() => {
+    const fn = historyAccessor[sortKey];
+    if (!fn) return [...rawHistory].reverse();
+    return [...rawHistory].sort((a, b) => compareBy(a, b, fn, sortOrder));
+  }, [rawHistory, sortKey, sortOrder]);
 
   if (!hasWorld || !world) return null;
-
-  const history = [...(getHistory(world) as HistoryRecord[])].reverse();
 
   return (
     <AppLayout pageTitle="Stable History" subNavTabs={RECORDS_TABS} activeSubTab="history">
@@ -98,6 +122,16 @@ export default function HistoryPage() {
             eyebrow="── RECORDS ──"
             title="Basho History"
             lede={`${history.length} tournaments completed`}
+          />
+          <SortMenu
+            options={HISTORY_SORT_OPTIONS}
+            storageKey="basho_sort_history"
+            defaultSortKey="year"
+            defaultSortOrder="asc"
+            onSortChange={(key, order) => {
+              setSortKey(key);
+              setSortOrder(order);
+            }}
           />
         </div>
 

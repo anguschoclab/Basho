@@ -11,6 +11,8 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
+import { SortMenu } from "@/components/ui/SortMenu";
+import { compareBy, type SortDirection } from "@/lib/sortUtils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -69,6 +71,13 @@ const ROLE_DESCRIPTIONS: Record<StaffRole, string> = {
   administrator: "Reduces costs and manages institutional relationships.",
 };
 
+const SORT_OPTIONS = [
+  { key: "name", label: "Name" },
+  { key: "role", label: "Role" },
+  { key: "tenure", label: "Tenure" },
+  { key: "competence", label: "Competence" },
+];
+
 const BAND_COLORS: Record<string, string> = {
   monstrous: "text-primary",
   dominant: "text-primary",
@@ -90,6 +99,8 @@ export default function StaffPage() {
   const sendCommand = useGameStore((s) => s.sendCommand);
   const [isRecruitOpen, setIsRecruitOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<StaffRole>("assistant_oyakata");
+  const [sortKey, setSortKey] = useState<string>("name");
+  const [sortOrder, setSortOrder] = useState<SortDirection>("asc");
 
   const world = state.world;
 
@@ -104,8 +115,16 @@ export default function StaffPage() {
       const staffMember = getStaffMember(world, id);
       if (staffMember) list.push(staffMember);
     }
-    return list;
-  }, [world, heya]);
+    const accessor: Record<string, (s: Staff) => string | number | undefined> = {
+      name: (s) => s.name,
+      role: (s) => s.role,
+      tenure: (s) => s.yearsAtBeya,
+      competence: (s) => s.competenceBands.primary,
+    };
+    const fn = accessor[sortKey];
+    if (!fn) return list;
+    return [...list].sort((a, b) => compareBy(a, b, fn, sortOrder));
+  }, [world, heya, sortKey, sortOrder]);
 
   const handleHire = useCallback(() => {
     if (!world || !heya) return;
@@ -165,6 +184,16 @@ export default function StaffPage() {
               <div className="text-lg font-bold leading-none">{staffList.length} / 12</div>
             </div>
           </div>
+          <SortMenu
+            options={SORT_OPTIONS}
+            storageKey="basho_sort_staff"
+            defaultSortKey="name"
+            defaultSortOrder="asc"
+            onSortChange={(key, order) => {
+              setSortKey(key);
+              setSortOrder(order);
+            }}
+          />
         </div>
 
         {/* Staff Grid */}

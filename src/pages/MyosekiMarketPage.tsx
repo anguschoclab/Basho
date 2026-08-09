@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
 import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
@@ -19,14 +19,40 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "sonner";
 import type { MyosekiStock } from "@/engine/types/myoseki";
 import { getPlayerHeya } from "@/engine/queries";
+import { SortMenu } from "@/components/ui/SortMenu";
+import { compareBy, type SortDirection } from "@/lib/sortUtils";
+
+const STOCK_SORT_OPTIONS = [
+  { key: "name", label: "Name" },
+  { key: "price", label: "Price" },
+  { key: "prestige", label: "Prestige" },
+];
 
 export default function MyosekiMarketPage() {
   const { state } = useGame();
   const world = state.world;
   const [activeTab, setActiveTab] = useState("market");
+  const [sortKey, setSortKey] = useState<string>("name");
+  const [sortOrder, setSortOrder] = useState<SortDirection>("asc");
   const sendCommand = useGameStore((s) => s.sendCommand);
 
-  if (!world || !world.myosekiMarket) {
+  const market = world?.myosekiMarket;
+  const stocks = useMemo(() => (market ? Object.values(market.stocks) : []), [market]);
+
+  const availableStocks = useMemo(() => {
+    if (!market) return [];
+    const available = Object.values(market.stocks).filter((s) => s.status === "available");
+    const accessor: Record<string, (s: MyosekiStock) => string | number | undefined> = {
+      name: (s) => s.name,
+      price: (s) => s.askingPrice ?? 0,
+      prestige: (s) => s.prestigeTier,
+    };
+    const fn = accessor[sortKey];
+    if (!fn) return available;
+    return [...available].sort((a, b) => compareBy(a, b, fn, sortOrder));
+  }, [market, sortKey, sortOrder]);
+
+  if (!world || !market) {
     return (
       <AppLayout
         subNavTabs={ASSOCIATION_TABS}
@@ -38,12 +64,11 @@ export default function MyosekiMarketPage() {
     );
   }
 
-  const market = world.myosekiMarket;
-  const stocks = Object.values(market.stocks);
+  const m = market;
+
   const playerHeya = getPlayerHeya(world) ?? null;
   const playerFunds = playerHeya?.funds ?? 0;
 
-  const availableStocks = stocks.filter((s) => s.status === "available");
   const leasedStocks = stocks.filter((s) => s.status === "leased");
 
   const myStocks = stocks.filter(
@@ -133,10 +158,24 @@ export default function MyosekiMarketPage() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Available for Acquisition</CardTitle>
-                <CardDescription>
-                  Acquiring Elder Stock is required to run a stable or keep retired stars on staff.
-                </CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Available for Acquisition</CardTitle>
+                    <CardDescription>
+                      Acquiring Elder Stock is required to run a stable or keep retired stars on staff.
+                    </CardDescription>
+                  </div>
+                  <SortMenu
+                    options={STOCK_SORT_OPTIONS}
+                    storageKey="basho_sort_myoseki"
+                    defaultSortKey="name"
+                    defaultSortOrder="asc"
+                    onSortChange={(key, order) => {
+                      setSortKey(key);
+                      setSortOrder(order);
+                    }}
+                  />
+                </div>
               </CardHeader>
               <CardContent>
                 {availableStocks.length === 0 ? (
@@ -255,12 +294,12 @@ export default function MyosekiMarketPage() {
                 <CardTitle>Market Transactions</CardTitle>
               </CardHeader>
               <CardContent>
-                {market.history.length === 0 ? (
+                {m.history.length === 0 ? (
                   <p className="text-muted-foreground">No recent transactions.</p>
                 ) : (
                   <ScrollArea className="h-[400px]">
                     <div className="space-y-4">
-                      {market.history.map((tx) => (
+                      {m.history.map((tx) => (
                         <div
                           key={tx.id}
                           className="flex justify-between items-center border-b pb-2"
@@ -272,7 +311,7 @@ export default function MyosekiMarketPage() {
                                 : tx.type === "lease"
                                   ? "Lease"
                                   : "Return"}{" "}
-                              of {market.stocks[tx.myosekiId]?.name || tx.myosekiId}
+                              of {m.stocks[tx.myosekiId]?.name || tx.myosekiId}
                             </p>
                             <p className="text-xs text-muted-foreground">
                               {tx.date} | From: {tx.fromId} To: {tx.toId}

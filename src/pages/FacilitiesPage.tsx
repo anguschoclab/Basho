@@ -6,15 +6,14 @@ import { OFFICE_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/useGame";
 import { FacilitiesManagementPanel } from "@/components/game/FacilitiesManagementPanel";
 import { InfrastructurePanel } from "@/components/game/InfrastructurePanel";
-import { investInFacility } from "@/engine/facilities";
-import type { FacilityAxis, UpgradeResult } from "@/engine/facilities";
+import type { FacilityAxis } from "@/engine/facilities";
 import type { FacilityId } from "@/engine/types/infrastructure";
 import { FacilityROIChart } from "@/components/economy/FacilityROIChart";
 import { getPlayerHeya } from "@/engine/queries";
 
 /** facilities page. */
 export default function FacilitiesPage() {
-  const { state, buildInfrastructure, updateWorld } = useGame();
+  const { state, buildInfrastructure, investInFacility: investInFacilityAction } = useGame();
   const world = state.world;
   const heya = useMemo(() => {
     if (!world || !state.playerHeyaId) return null;
@@ -22,30 +21,11 @@ export default function FacilitiesPage() {
   }, [world, state.playerHeyaId]);
 
   const handleUpgrade = useCallback(
-    (axis: FacilityAxis, points: number): UpgradeResult | undefined => {
-      if (!world || !state.playerHeyaId) return undefined;
-
-      const oldLevel = heya?.facilities[axis] ?? 0;
-      const result = investInFacility(world, state.playerHeyaId, axis, points);
-
-      // Convert StateImpact to UpgradeResult
-      const upgradeResult: UpgradeResult = {
-        success: !!result.entities?.heyaUpdates?.has(state.playerHeyaId),
-        axis,
-        oldLevel,
-        newLevel:
-          result.entities?.heyaUpdates?.get(state.playerHeyaId)?.facilities?.[axis] || oldLevel,
-        cost: points * 100, // Simplified cost calculation
-      };
-
-      if (upgradeResult.success) {
-        // Trigger context update to sync React state with engine mutations
-        updateWorld(world);
-      }
-
-      return upgradeResult;
+    (axis: FacilityAxis, points: number) => {
+      if (!state.playerHeyaId) return;
+      investInFacilityAction(state.playerHeyaId, axis, points);
     },
-    [world, state.playerHeyaId, updateWorld, heya]
+    [state.playerHeyaId, investInFacilityAction]
   );
 
   const handleBuildInfrastructure = useCallback(

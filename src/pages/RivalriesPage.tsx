@@ -20,6 +20,18 @@ import { Badge } from "@/components/ui/badge";
 import { toRivalryHeatBand } from "@/engine/descriptorBands";
 import { RIVALRY_HEAT_LABELS } from "@/constants/ui/labels";
 import { getPlayerHeya } from "@/engine/queries";
+import { SortMenu } from "@/components/ui/SortMenu";
+import { compareBy, type SortDirection } from "@/lib/sortUtils";
+
+const RIVALRY_SORT_OPTIONS = [
+  { key: "heat", label: "Heat" },
+  { key: "wins", label: "Wins" },
+];
+
+const rivalryAccessor: Record<string, (p: RivalryPairState) => string | number | undefined> = {
+  heat: (p) => p.heat ?? 0,
+  wins: (p) => (p.aWins ?? 0) + (p.bWins ?? 0),
+};
 
 // Page
 /** rivalries page. */
@@ -27,6 +39,8 @@ export default function RivalriesPage() {
   const { state } = useGame();
   const { world, playerHeyaId } = state;
   const [searchQuery, setSearchQuery] = useState("");
+  const [sortKey, setSortKey] = useState<string>("heat");
+  const [sortOrder, setSortOrder] = useState<SortDirection>("asc");
 
   const rivalriesState = useMemo<RivalriesState>(() => {
     if (!world) return createDefaultRivalriesState();
@@ -86,9 +100,17 @@ export default function RivalriesPage() {
     }
 
     const byHeat = (a: RivalryPairState, b: RivalryPairState) => (b.heat ?? 0) - (a.heat ?? 0);
+    const sortFn = rivalryAccessor[sortKey];
+    const applySort = (arr: RivalryPairState[]) => {
+      if (!sortFn) return arr.sort(byHeat);
+      return [...arr].sort((a, b) => compareBy(a, b, sortFn, sortOrder));
+    };
     player.sort(byHeat);
     hot.sort(byHeat);
     cool.sort(byHeat);
+    const playerSorted = applySort(player);
+    const hotSorted = applySort(hot);
+    const coolSorted = applySort(cool);
 
     let infernoCount = 0;
     let hotCount = 0;
@@ -101,13 +123,13 @@ export default function RivalriesPage() {
     const projections = projectRivalriesPage(world);
 
     return {
-      playerRivalries: player,
-      hotRivalries: hot,
-      coolRivalries: cool,
+      playerRivalries: playerSorted,
+      hotRivalries: hotSorted,
+      coolRivalries: coolSorted,
       stableRivalries: projections.stableRivalries,
       stats: { total: normalized.length, inferno: infernoCount, hot: hotCount },
     };
-  }, [rivalriesState, playerRikishiIds, searchQuery, world]);
+  }, [rivalriesState, playerRikishiIds, searchQuery, world, sortKey, sortOrder]);
 
   if (!world) {
     return (
@@ -141,6 +163,19 @@ export default function RivalriesPage() {
           onSearchChange={setSearchQuery}
           onSearchClear={() => setSearchQuery("")}
         />
+
+        <div className="flex justify-end">
+          <SortMenu
+            options={RIVALRY_SORT_OPTIONS}
+            storageKey="basho_sort_rivalries"
+            defaultSortKey="heat"
+            defaultSortOrder="asc"
+            onSortChange={(key, order) => {
+              setSortKey(key);
+              setSortOrder(order);
+            }}
+          />
+        </div>
 
         {!hasRivalries ? (
           <RivalriesEmptyState />

@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import React from "react";
 import { HistoryDashboard } from "@/pages/HistoryDashboard";
 import * as GameContext from "@/contexts/useGame";
@@ -432,13 +432,13 @@ describe("HistoryDashboard — Stables tab", () => {
   it("caps retired legends at 40 entries", () => {
     mockUseGame(makeWorld({ heyas: new Map([["h1", makeHeya("h1", "Test")]]) }));
     const retired = Array.from({ length: 45 }, (_, i) =>
-      makeRikishi(`r${i}`, `R${i}`, "h1", "yokozuna")
+      makeRikishi(`r${i}`, `R${String(i).padStart(2, "0")}`, "h1", "yokozuna")
     );
     vi.mocked(selectRetiredRikishi).mockReturnValue(retired);
     render(<HistoryDashboard />);
     fireEvent.click(screen.getByRole("tab", { name: "Stables" }));
-    for (let i = 0; i <= 39; i++) expect(screen.getByText(`R${i}`)).toBeTruthy();
-    for (let i = 40; i <= 44; i++) expect(screen.queryByText(`R${i}`)).toBeNull();
+    for (let i = 0; i <= 39; i++) expect(screen.getByText(`R${String(i).padStart(2, "0")}`)).toBeTruthy();
+    for (let i = 40; i <= 44; i++) expect(screen.queryByText(`R${String(i).padStart(2, "0")}`)).toBeNull();
   });
 });
 
@@ -461,5 +461,100 @@ describe("HistoryDashboard — tab switching", () => {
     fireEvent.click(screen.getByRole("tab", { name: "Records" }));
     expect(screen.getByText("All-Time Wins")).toBeTruthy();
     expect(screen.queryByText("Stable Lineages")).toBeNull();
+  });
+});
+
+// ── Retired Legends sorting tests ─────────────────────────────
+
+const STORAGE_KEY = "basho_sort_retired_legends";
+
+function getRetiredNames(): string[] {
+  const names = document.querySelectorAll(".font-display.font-semibold.text-sm");
+  return Array.from(names).map((el) => el.textContent ?? "");
+}
+
+describe("HistoryDashboard — Retired Legends sorting", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    cleanup();
+    localStorage.clear();
+    vi.clearAllMocks();
+  });
+
+  it("renders a SortMenu control on Stables tab", () => {
+    mockUseGame(makeWorld({ heyas: new Map([["h1", makeHeya("h1", "Test")]]) }));
+    vi.mocked(selectRetiredRikishi).mockReturnValue([]);
+    render(<HistoryDashboard />);
+    fireEvent.click(screen.getByRole("tab", { name: "Stables" }));
+    expect(screen.getByRole("combobox")).toBeTruthy();
+  });
+
+  it("sorting by name ascending reorders alphabetically", () => {
+    mockUseGame(makeWorld({ heyas: new Map([["h1", makeHeya("h1", "Test")]]) }));
+    vi.mocked(selectRetiredRikishi).mockReturnValue([
+      makeRikishi("r1", "Charlie", "h1", "yokozuna"),
+      makeRikishi("r2", "Alpha", "h1", "ozeki"),
+      makeRikishi("r3", "Bravo", "h1", "sekiwake"),
+    ]);
+    render(<HistoryDashboard />);
+    fireEvent.click(screen.getByRole("tab", { name: "Stables" }));
+    const trigger = screen.getByRole("combobox");
+    fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
+    const elements = screen.getAllByText("Name");
+    fireEvent.click(elements[elements.length - 1]);
+    const order = getRetiredNames();
+    expect(order).toEqual(["Alpha", "Bravo", "Charlie"]);
+  });
+
+  it("sorting by rank ascending", () => {
+    mockUseGame(makeWorld({ heyas: new Map([["h1", makeHeya("h1", "Test")]]) }));
+    vi.mocked(selectRetiredRikishi).mockReturnValue([
+      makeRikishi("r1", "Charlie", "h1", "maegashira"),
+      makeRikishi("r2", "Alpha", "h1", "yokozuna"),
+      makeRikishi("r3", "Bravo", "h1", "ozeki"),
+    ]);
+    render(<HistoryDashboard />);
+    fireEvent.click(screen.getByRole("tab", { name: "Stables" }));
+    const trigger = screen.getByRole("combobox");
+    fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
+    const elements = screen.getAllByText("Rank");
+    fireEvent.click(elements[elements.length - 1]);
+    const order = getRetiredNames();
+    // asc rank: yokozuna(1), ozeki(2), maegashira(5) → Alpha, Bravo, Charlie
+    expect(order).toEqual(["Alpha", "Bravo", "Charlie"]);
+  });
+
+  it("persists sort state to localStorage", () => {
+    mockUseGame(makeWorld({ heyas: new Map([["h1", makeHeya("h1", "Test")]]) }));
+    vi.mocked(selectRetiredRikishi).mockReturnValue([
+      makeRikishi("r1", "Alpha", "h1", "yokozuna"),
+    ]);
+    render(<HistoryDashboard />);
+    fireEvent.click(screen.getByRole("tab", { name: "Stables" }));
+    const trigger = screen.getByRole("combobox");
+    fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
+    const elements = screen.getAllByText("Rank");
+    fireEvent.click(elements[elements.length - 1]);
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
+    expect(stored.key).toBe("rank");
+    expect(stored.order).toBe("asc");
+  });
+
+  it("restores sort state from localStorage on init", () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ key: "name", order: "desc" }));
+    mockUseGame(makeWorld({ heyas: new Map([["h1", makeHeya("h1", "Test")]]) }));
+    vi.mocked(selectRetiredRikishi).mockReturnValue([
+      makeRikishi("r1", "Charlie", "h1", "yokozuna"),
+      makeRikishi("r2", "Alpha", "h1", "ozeki"),
+      makeRikishi("r3", "Bravo", "h1", "sekiwake"),
+    ]);
+    render(<HistoryDashboard />);
+    fireEvent.click(screen.getByRole("tab", { name: "Stables" }));
+    const order = getRetiredNames();
+    // desc name: Charlie, Bravo, Alpha
+    expect(order).toEqual(["Charlie", "Bravo", "Alpha"]);
   });
 });

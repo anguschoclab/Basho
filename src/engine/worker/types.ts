@@ -35,7 +35,8 @@ export type EngineCommand =
   | { type: "GET_DIGEST" }
   | { type: "RESOLVE_LOOP_DECISION"; decisionId: string; optionId: string }
   | { type: "WITHDRAW_RIKISHI"; rikishiId: string }
-  | { type: "TREAT_INJURY"; rikishiId: string; weeks: number };
+  | { type: "TREAT_INJURY"; rikishiId: string; weeks: number }
+  | { type: "INVEST_IN_FACILITY"; heyaId: string; axis: import("../facilities").FacilityAxis; points: number };
 
 /** Worker -> UI Events */
 export type EngineEvent =

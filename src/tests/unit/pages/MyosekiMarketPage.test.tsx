@@ -1,8 +1,8 @@
  
 /**
  */
-import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import MyosekiMarketPage from "@/pages/MyosekiMarketPage";
 
 vi.mock("@/contexts/useGame", () => ({
@@ -93,5 +93,110 @@ describe("MyosekiMarketPage", () => {
     render(<MyosekiMarketPage />);
     const buyButton = screen.getByText("Buy").closest("button");
     expect(buyButton?.disabled).toBe(false);
+  });
+});
+
+// ── Sorting tests ─────────────────────────────────────────────
+
+const STORAGE_KEY = "basho_sort_myoseki";
+
+function getStockNames(): string[] {
+  const titles = document.querySelectorAll(".text-lg");
+  return Array.from(titles).map((el) => el.textContent ?? "").filter((t) => t.length > 0);
+}
+
+function makeSortWorld(stocks: any[]): any {
+  const stockMap: Record<string, any> = {};
+  for (const s of stocks) stockMap[s.id] = s;
+  return {
+    myosekiMarket: { stocks: stockMap, history: [] },
+  };
+}
+
+describe("MyosekiMarketPage sorting", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    cleanup();
+    localStorage.clear();
+    vi.clearAllMocks();
+  });
+
+  it("renders a SortMenu control", () => {
+    mockState(
+      makeSortWorld([
+        { id: "m1", name: "Alpha", prestigeTier: "elite", askingPrice: 1000000, status: "available", ownerId: "JSA" },
+      ])
+    );
+    render(<MyosekiMarketPage />);
+    expect(screen.getByRole("combobox")).toBeTruthy();
+  });
+
+  it("sorting by name ascending reorders alphabetically", () => {
+    mockState(
+      makeSortWorld([
+        { id: "m1", name: "Charlie", prestigeTier: "respected", askingPrice: 500000, status: "available", ownerId: "JSA" },
+        { id: "m2", name: "Alpha", prestigeTier: "elite", askingPrice: 1000000, status: "available", ownerId: "JSA" },
+        { id: "m3", name: "Bravo", prestigeTier: "standard", askingPrice: 300000, status: "available", ownerId: "JSA" },
+      ])
+    );
+    render(<MyosekiMarketPage />);
+    const trigger = screen.getByRole("combobox");
+    fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
+    const elements = screen.getAllByText("Name");
+    fireEvent.click(elements[elements.length - 1]);
+    const order = getStockNames();
+    expect(order).toEqual(["Alpha", "Bravo", "Charlie"]);
+  });
+
+  it("sorting by price ascending", () => {
+    mockState(
+      makeSortWorld([
+        { id: "m1", name: "Charlie", prestigeTier: "respected", askingPrice: 500000, status: "available", ownerId: "JSA" },
+        { id: "m2", name: "Alpha", prestigeTier: "elite", askingPrice: 1000000, status: "available", ownerId: "JSA" },
+        { id: "m3", name: "Bravo", prestigeTier: "standard", askingPrice: 300000, status: "available", ownerId: "JSA" },
+      ])
+    );
+    render(<MyosekiMarketPage />);
+    const trigger = screen.getByRole("combobox");
+    fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
+    const elements = screen.getAllByText("Price");
+    fireEvent.click(elements[elements.length - 1]);
+    const order = getStockNames();
+    // asc: 300k, 500k, 1M → Bravo, Charlie, Alpha
+    expect(order).toEqual(["Bravo", "Charlie", "Alpha"]);
+  });
+
+  it("persists sort state to localStorage", () => {
+    mockState(
+      makeSortWorld([
+        { id: "m1", name: "Alpha", prestigeTier: "elite", askingPrice: 1000000, status: "available", ownerId: "JSA" },
+      ])
+    );
+    render(<MyosekiMarketPage />);
+    const trigger = screen.getByRole("combobox");
+    fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
+    const elements = screen.getAllByText("Price");
+    fireEvent.click(elements[elements.length - 1]);
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
+    expect(stored.key).toBe("price");
+    expect(stored.order).toBe("asc");
+  });
+
+  it("restores sort state from localStorage on init", () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ key: "name", order: "desc" }));
+    mockState(
+      makeSortWorld([
+        { id: "m1", name: "Charlie", prestigeTier: "respected", askingPrice: 500000, status: "available", ownerId: "JSA" },
+        { id: "m2", name: "Alpha", prestigeTier: "elite", askingPrice: 1000000, status: "available", ownerId: "JSA" },
+        { id: "m3", name: "Bravo", prestigeTier: "standard", askingPrice: 300000, status: "available", ownerId: "JSA" },
+      ])
+    );
+    render(<MyosekiMarketPage />);
+    const order = getStockNames();
+    // desc name: Charlie, Bravo, Alpha
+    expect(order).toEqual(["Charlie", "Bravo", "Alpha"]);
   });
 });

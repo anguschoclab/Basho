@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { RECORDS_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/useGame";
@@ -11,6 +11,10 @@ import { Trophy, Building2, ScrollText, Crown } from "lucide-react";
 import type { Rikishi, Heya } from "@/presenters/uiDigest";
 import type { RecordEntry, WorldRecords } from "@/engine/types/records";
 import { getAllHeyas } from "@/presenters/worldAccess";
+import { SortMenu } from "@/components/ui/SortMenu";
+import { compareBy, type SortDirection } from "@/lib/sortUtils";
+import { RANK_HIERARCHY } from "@/presenters/uiDigest";
+import type { Rank } from "@/engine/types/banzuke";
 
 /**
  * HistoryDashboard - The Museum of Sumo
@@ -163,7 +167,25 @@ interface LineageTenure {
   };
 }
 
+const RETIRED_SORT_OPTIONS = [
+  { key: "name", label: "Name" },
+  { key: "rank", label: "Rank" },
+];
+
+const retiredAccessor: Record<string, (r: Rikishi) => string | number | undefined> = {
+  name: (r) => r.shikona,
+  rank: (r) => RANK_HIERARCHY[r.rank as Rank]?.tier ?? 99,
+};
+
 const StablesTab = ({ heyas, retired }: { heyas: Heya[]; retired: Rikishi[] }) => {
+  const [sortKey, setSortKey] = useState<string>("name");
+  const [sortOrder, setSortOrder] = useState<SortDirection>("asc");
+
+  const sortedRetired = useMemo(() => {
+    const fn = retiredAccessor[sortKey];
+    if (!fn) return retired;
+    return [...retired].sort((a, b) => compareBy(a, b, fn, sortOrder));
+  }, [retired, sortKey, sortOrder]);
 
   return (
     <div className="space-y-8">
@@ -218,16 +240,28 @@ const StablesTab = ({ heyas, retired }: { heyas: Heya[]; retired: Rikishi[] }) =
 
       {/* Retired Legends */}
       <section className="space-y-6">
-        <h2 className="text-xl font-display font-semibold border-b border-border pb-3">
-          Retired Legends
-        </h2>
-        {retired.length === 0 ? (
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-display font-semibold border-b border-border pb-3">
+            Retired Legends
+          </h2>
+          <SortMenu
+            options={RETIRED_SORT_OPTIONS}
+            storageKey="basho_sort_retired_legends"
+            defaultSortKey="name"
+            defaultSortOrder="asc"
+            onSortChange={(key, order) => {
+              setSortKey(key);
+              setSortOrder(order);
+            }}
+          />
+        </div>
+        {sortedRetired.length === 0 ? (
           <Card className="paper py-12 text-center">
             <p className="text-muted-foreground font-body">No retirements on record yet.</p>
           </Card>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {retired.slice(0, 40).map((r: Rikishi) => {
+            {sortedRetired.slice(0, 40).map((r: Rikishi) => {
               const heyaName = heyas.find((h) => h.id === r.heyaId)?.name || r.heyaId;
               return (
                 <Card key={r.id} className="paper p-3 text-center">

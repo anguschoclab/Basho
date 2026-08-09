@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import type { Heya } from "@/engine/types/heya";
 import type { FacilitiesBand } from "@/engine/types/narrative";
-import type { FacilityAxis, UpgradeResult } from "@/engine/facilities";
+import type { FacilityAxis } from "@/engine/facilities";
 import {
   getFacilityLevelColor as getLevelColor,
   getMonthlyMaintenanceCost,
@@ -100,7 +100,15 @@ function getEffectPercent(axis: FacilityAxis, level: number): string {
 interface FacilitiesManagementPanelProps {
   heya: Heya;
   isOwner: boolean;
-  onUpgrade: (axis: FacilityAxis, points: number) => UpgradeResult | undefined;
+  onUpgrade: (axis: FacilityAxis, points: number) => void;
+}
+
+/** Toast shown after an upgrade lands via WORLD_UPDATED. */
+interface UpgradeToast {
+  axis: FacilityAxis;
+  oldLevel: number;
+  newLevel: number;
+  cost: number;
 }
 
 /**
@@ -112,15 +120,35 @@ export function FacilitiesManagementPanel({
   isOwner,
   onUpgrade,
 }: FacilitiesManagementPanelProps) {
-  const [lastResult, setLastResult] = useState<UpgradeResult | null>(null);
+  const [toast, setToast] = useState<UpgradeToast | null>(null);
+  const prevHeyaRef = useRef<Heya | null>(null);
+  const pendingUpgradeRef = useRef<{ axis: FacilityAxis; points: number } | null>(null);
+
+  // Detect heya changes from WORLD_UPDATED and derive toast from real world diff
+  useEffect(() => {
+    const prev = prevHeyaRef.current;
+    if (prev) {
+      const axes: FacilityAxis[] = ["training", "recovery", "nutrition"];
+      for (const axis of axes) {
+        const oldLevel = prev.facilities[axis] ?? 0;
+        const newLevel = heya.facilities[axis] ?? 0;
+        if (newLevel > oldLevel) {
+          const cost = prev.funds - heya.funds;
+          setToast({ axis, oldLevel, newLevel, cost });
+          break;
+        }
+      }
+    }
+    prevHeyaRef.current = heya;
+  }, [heya]);
 
   const monthlyMaintenance = useMemo(() => getMonthlyMaintenanceCost(heya), [heya]);
 
   const axes: FacilityAxis[] = ["training", "recovery", "nutrition"];
 
   const handleUpgrade = (axis: FacilityAxis, points: number) => {
-    const result = onUpgrade(axis, points);
-    if (result) setLastResult(result);
+    pendingUpgradeRef.current = { axis, points };
+    onUpgrade(axis, points);
   };
 
   return (
@@ -167,17 +195,11 @@ export function FacilitiesManagementPanel({
       </Card>
 
       {/* Feedback toast */}
-      {lastResult && (
+      {toast && (
         <div
-          className={`p-3 rounded-lg border text-sm ${
-            lastResult.success
-              ? "bg-success/10 border-success/30 text-success"
-              : "bg-destructive/10 border-destructive/30 text-destructive"
-          }`}
+          className="p-3 rounded-lg border text-sm bg-success/10 border-success/30 text-success"
         >
-          {lastResult.success
-            ? `Upgraded ${lastResult.axis} from ${lastResult.oldLevel} → ${lastResult.newLevel} for ${formatYen(lastResult.cost)}`
-            : `Cannot upgrade: ${lastResult.reason}`}
+          Upgraded {toast.axis} from {toast.oldLevel} → {toast.newLevel} for {formatYen(toast.cost)}
         </div>
       )}
 

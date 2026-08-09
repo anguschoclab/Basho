@@ -79,5 +79,6 @@ export function useEconomyActions() {
   return {
     recruitSponsor: game.recruitSponsor,
     buildInfrastructure: game.buildInfrastructure,
+    investInFacility: game.investInFacility,
   };
 }

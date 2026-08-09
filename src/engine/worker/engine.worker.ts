@@ -28,6 +28,7 @@ import { shouldHaltAdvance } from "../loop/shouldHaltAdvance";
 import { issueGovernanceRuling } from "../systems/governance/ScandalService";
 import { handleMediaEvent } from "../systems/media/MediaEventService";
 import { withdrawRikishi, treatInjury } from "../systems/health/HealthActions";
+import { investInFacility } from "../facilities";
 
 /**
  * Adapter matching the { seed, playerConfig? } call shape used in this worker.
@@ -302,6 +303,18 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
         currentWorld = resolveImpacts(currentWorld, [
           treatInjury(currentWorld, cmd.rikishiId, cmd.weeks),
         ]);
+        syncAndDigest();
+      }
+    },
+    INVEST_IN_FACILITY: (cmd) => {
+      if (currentWorld) {
+        const impact = investInFacility(
+          currentWorld,
+          cmd.heyaId,
+          cmd.axis,
+          cmd.points
+        );
+        currentWorld = resolveImpacts(currentWorld, [impact]);
         syncAndDigest();
       }
     },

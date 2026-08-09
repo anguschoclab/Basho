@@ -64,6 +64,11 @@ export interface GameContextValue {
   isBookmarked: (entityType: string, entityId: string) => boolean;
   runAutoSim: (config: AutoSimConfig) => Promise<AutoSimResult | null>;
   recruitSponsor: (sponsorId: string) => void;
+  investInFacility: (
+    heyaId: string,
+    axis: import("@/engine/facilities").FacilityAxis,
+    points: number
+  ) => void;
 }
 
 export const GameContext = createContext<GameContextValue | null>(null);

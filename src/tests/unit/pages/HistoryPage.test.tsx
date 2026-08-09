@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import React from "react";
 import HistoryPage from "@/pages/HistoryPage";
 import * as GameContext from "@/contexts/useGame";
@@ -23,6 +23,18 @@ vi.mock("@/components/ClickableName", () => ({
 vi.mock("react-helmet", () => ({
   Helmet: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
+
+vi.mock("@/components/layout/control-center", () => ({
+  PageHeader: ({ title }: { title: string }) => <div>{title}</div>,
+}));
+
+vi.mock("@/presenters/uiDigest", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/presenters/uiDigest")>();
+  return {
+    ...actual,
+    getBashoIndex: () => 0,
+  };
+});
 
 describe("HistoryPage", () => {
   beforeEach(() => {
@@ -121,5 +133,114 @@ describe("HistoryPage", () => {
 
     // Should fallback to stringified rank
     expect(screen.queryByText(/99999/)).toBeTruthy();
+  });
+});
+
+// ── Sorting tests ─────────────────────────────────────────────
+
+const STORAGE_KEY = "basho_sort_history";
+
+function getHistoryCardTitles(): string[] {
+  const titles = document.querySelectorAll(".font-display.text-2xl");
+  return Array.from(titles)
+    .map((el) => {
+      const first = el.childNodes[0];
+      return first?.textContent ?? "";
+    })
+    .filter((t) => t.length > 0);
+}
+
+describe("HistoryPage sorting", () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  afterEach(() => {
+    cleanup();
+    localStorage.clear();
+    vi.clearAllMocks();
+  });
+
+  it("renders a SortMenu control", () => {
+    vi.spyOn(GameContext, "useGame").mockReturnValue({
+      state: {
+        world: {
+          history: [
+            { year: 2024, bashoNumber: 1, bashoName: "Hatsu", yusho: "r1" },
+          ],
+          heyas: new Map([["h1", { id: "h1", name: "Stable" }]]),
+        },
+      },
+      getRikishi: () => ({ id: "r1", shikona: "Test", rank: "yokozuna", heyaId: "h1" }),
+    } as any);
+
+    render(<HistoryPage />);
+    expect(screen.getByRole("combobox")).toBeTruthy();
+  });
+
+  it("sorting by year ascending reorders correctly", () => {
+    vi.spyOn(GameContext, "useGame").mockReturnValue({
+      state: {
+        world: {
+          history: [
+            { year: 2024, bashoNumber: 0, bashoName: "Hatsu", yusho: "r1" },
+            { year: 2022, bashoNumber: 0, bashoName: "Aki", yusho: "r2" },
+            { year: 2023, bashoNumber: 0, bashoName: "Kyushu", yusho: "r3" },
+          ],
+          heyas: new Map([["h1", { id: "h1", name: "Stable" }]]),
+        },
+      },
+      getRikishi: (id: string) => ({ id, shikona: `R-${id}`, rank: "yokozuna", heyaId: "h1" }),
+    } as any);
+
+    render(<HistoryPage />);
+    const order = getHistoryCardTitles();
+    // asc year: 2022, 2023, 2024 → Aki, Kyushu, Hatsu
+    expect(order).toEqual(["Aki", "Kyushu", "Hatsu"]);
+  });
+
+  it("persists sort state to localStorage", () => {
+    vi.spyOn(GameContext, "useGame").mockReturnValue({
+      state: {
+        world: {
+          history: [
+            { year: 2024, bashoNumber: 0, bashoName: "Hatsu", yusho: "r1" },
+          ],
+          heyas: new Map([["h1", { id: "h1", name: "Stable" }]]),
+        },
+      },
+      getRikishi: () => ({ id: "r1", shikona: "Test", rank: "yokozuna", heyaId: "h1" }),
+    } as any);
+
+    render(<HistoryPage />);
+    const trigger = screen.getByRole("combobox");
+    fireEvent.keyDown(trigger, { key: "Enter", code: "Enter", charCode: 13 });
+    const elements = screen.getAllByText("Basho");
+    fireEvent.click(elements[elements.length - 1]);
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
+    expect(stored.key).toBe("basho");
+    expect(stored.order).toBe("asc");
+  });
+
+  it("restores sort state from localStorage on init", () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ key: "year", order: "desc" }));
+    vi.spyOn(GameContext, "useGame").mockReturnValue({
+      state: {
+        world: {
+          history: [
+            { year: 2024, bashoNumber: 0, bashoName: "Hatsu", yusho: "r1" },
+            { year: 2022, bashoNumber: 0, bashoName: "Aki", yusho: "r2" },
+            { year: 2023, bashoNumber: 0, bashoName: "Kyushu", yusho: "r3" },
+          ],
+          heyas: new Map([["h1", { id: "h1", name: "Stable" }]]),
+        },
+      },
+      getRikishi: (id: string) => ({ id, shikona: `R-${id}`, rank: "yokozuna", heyaId: "h1" }),
+    } as any);
+
+    render(<HistoryPage />);
+    const order = getHistoryCardTitles();
+    // desc year: 2024, 2023, 2022 → Hatsu, Kyushu, Aki
+    expect(order).toEqual(["Hatsu", "Kyushu", "Aki"]);
   });
 });

@@ -22,6 +22,8 @@ import { YokozunaTrajectory } from "@/components/banzuke/YokozunaTrajectory";
 import { getYokozunaCandidates } from "@/presenters/projections/promotionProjections";
 import type { UIRankRow } from "@/presenters/banzukeUI";
 import { getPlayerHeya, updateHeyaInWorld } from "@/engine/queries";
+import { SortMenu } from "@/components/ui/SortMenu";
+import { compareBy, type SortDirection } from "@/lib/sortUtils";
 
 const DIVISION_KEYS: Division[] = [
   "makuuchi",
@@ -32,6 +34,16 @@ const DIVISION_KEYS: Division[] = [
   "jonokuchi",
 ];
 
+const BANZUKE_SORT_OPTIONS = [
+  { key: "rank", label: "Rank" },
+  { key: "shikona", label: "Shikona" },
+];
+
+const banzukeAccessor: Record<string, (r: UIRankRow) => string | number | undefined> = {
+  rank: (r) => r.rankKey,
+  shikona: (r) => r.east?.shikona ?? r.west?.shikona ?? "",
+};
+
 /** banzuke page. */
 export default function BanzukePage() {
   const { state, updateWorld } = useGame();
@@ -39,6 +51,8 @@ export default function BanzukePage() {
   const [showChanges, setShowChanges] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [showPressConference, setShowPressConference] = useState(false);
+  const [sortKey, setSortKey] = useState<string>("rank");
+  const [sortOrder, setSortOrder] = useState<SortDirection>("asc");
 
   // Check if Media Day is active (D1)
   const isMediaDay = useMemo(() => {
@@ -107,10 +121,14 @@ export default function BanzukePage() {
             r.west?.shikona?.toLowerCase().includes(normalizedSearchQuery)
         );
       }
+      const fn = banzukeAccessor[sortKey];
+      if (fn && sortKey !== "rank") {
+        rows = [...rows].sort((a, b) => compareBy(a, b, fn, sortOrder));
+      }
       map.set(div, rows);
     }
     return map;
-  }, [banzukeDigest, normalizedSearchQuery]);
+  }, [banzukeDigest, normalizedSearchQuery, sortKey, sortOrder]);
 
   if (!world || !banzukeDigest) return null;
 
@@ -231,6 +249,16 @@ export default function BanzukePage() {
                   </TooltipWrap>
                 </div>
               )}
+              <SortMenu
+                options={BANZUKE_SORT_OPTIONS}
+                storageKey="basho_sort_banzuke"
+                defaultSortKey="rank"
+                defaultSortOrder="asc"
+                onSortChange={(key, order) => {
+                  setSortKey(key);
+                  setSortOrder(order);
+                }}
+              />
             </div>
           </div>
         </div>

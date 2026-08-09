@@ -297,6 +297,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
     [state.world]
   );
 
+  const investInFacilityAction = useCallback(
+    (
+      heyaId: string,
+      axis: import("@/engine/facilities").FacilityAxis,
+      points: number
+    ) => {
+      sendCommand({ type: "INVEST_IN_FACILITY", heyaId, axis, points });
+    },
+    [sendCommand]
+  );
+
   const value: GameContextValue = useMemo(
     () => ({
       state,
@@ -342,6 +353,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       updateBookmarkNote: updateBookmarkNoteAction,
       isBookmarked: isBookmarkedCheck,
       runAutoSimAction,
+      investInFacility: investInFacilityAction,
     }),
     [
       state,
@@ -386,6 +398,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       unbookmarkEntityAction,
       updateBookmarkNoteAction,
       isBookmarkedCheck,
+      investInFacilityAction,
     ]
   );
 

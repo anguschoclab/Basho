@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useState } from "react";
 import { useGameStore } from "@/store/gameStore";
 import { Helmet } from "react-helmet";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -25,6 +25,8 @@ import { IncomeExpensesCards } from "@/components/economy/IncomeExpensesCards";
 import { SponsorDrawCard } from "@/components/economy/SponsorDrawCard";
 import { EconomyInfoNote } from "@/components/economy/EconomyInfoNote";
 import { FinancialTrendsChart } from "@/components/economy/FinancialTrendsChart";
+import { SortMenu } from "@/components/ui/SortMenu";
+import { compareBy, type SortDirection } from "@/lib/sortUtils";
 
 /** Loan type matching DebtSection component requirements. */
 interface DebtLoan {
@@ -40,11 +42,18 @@ interface DebtLoan {
   stringsAttached?: string[];
 }
 
+const EARNER_SORT_OPTIONS = [
+  { key: "name", label: "Name" },
+  { key: "kensho", label: "Kensho" },
+];
+
 /** economy page. */
 export default function EconomyPage() {
   const { state } = useGame();
   const sendCommand = useGameStore((s) => s.sendCommand);
   const world = state.world;
+  const [earnerSortKey, setEarnerSortKey] = useState<string>("kensho");
+  const [earnerSortOrder, setEarnerSortOrder] = useState<SortDirection>("asc");
 
   const playerHeya = useMemo(() => {
     if (!world || !state.playerHeyaId) return null;
@@ -98,15 +107,20 @@ export default function EconomyPage() {
 
   // Top earners
   const topEarners = useMemo(() => {
-    return (playerRikishi as Array<NonNullable<(typeof playerRikishi)[number]>>)
-      .filter((r): r is NonNullable<typeof r> => r && typeof r === "object")
-      .sort((a, b) => {
-        const av = Number(a.economics?.careerKenshoWon ?? 0) || 0;
-        const bv = Number(b.economics?.careerKenshoWon ?? 0) || 0;
-        return bv - av;
-      })
-      .slice(0, 5);
-  }, [playerRikishi]);
+    const list = (playerRikishi as Array<NonNullable<(typeof playerRikishi)[number]>>)
+      .filter((r): r is NonNullable<typeof r> => r && typeof r === "object");
+    const accessor: Record<string, (r: NonNullable<(typeof playerRikishi)[number]>) => string | number | undefined> = {
+      name: (r) => r.shikona,
+      kensho: (r) => Number(r.economics?.careerKenshoWon ?? 0) || 0,
+    };
+    const fn = accessor[earnerSortKey];
+    if (!fn) return list.sort((a, b) => {
+      const av = Number(a.economics?.careerKenshoWon ?? 0) || 0;
+      const bv = Number(b.economics?.careerKenshoWon ?? 0) || 0;
+      return bv - av;
+    }).slice(0, 5);
+    return [...list].sort((a, b) => compareBy(a, b, fn, earnerSortOrder)).slice(0, 5);
+  }, [playerRikishi, earnerSortKey, earnerSortOrder]);
 
   // Calculate actual weekly finances - moved before early return for React Hook rules
   const weeklyFinances = useMemo(() => {
@@ -215,7 +229,22 @@ export default function EconomyPage() {
         <IncomeExpensesCards weeklyFinances={weeklyFinances} />
 
         {/* Sponsor Draw */}
-        <SponsorDrawCard topEarners={topEarners} />
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-display font-semibold">Top Earners</h3>
+            <SortMenu
+              options={EARNER_SORT_OPTIONS}
+              storageKey="basho_sort_economy"
+              defaultSortKey="kensho"
+              defaultSortOrder="asc"
+              onSortChange={(key, order) => {
+                setEarnerSortKey(key);
+                setEarnerSortOrder(order);
+              }}
+            />
+          </div>
+          <SponsorDrawCard topEarners={topEarners} />
+        </div>
 
         {/* Info Note */}
         <EconomyInfoNote />

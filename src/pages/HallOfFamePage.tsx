@@ -1,7 +1,7 @@
 // HallOfFamePage.tsx — Dedicated Hall of Fame shrine
 // Yearly inductees with portraits, career stats, and greatest fights
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -15,6 +15,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { RikishiName } from "@/components/ClickableName";
+import { SortMenu } from "@/components/ui/SortMenu";
+import { compareBy, type SortDirection } from "@/lib/sortUtils";
 import {
   Trophy,
   Shield,
@@ -238,27 +240,60 @@ function StatBox({
   );
 }
 
+const HOF_SORT_OPTIONS = [
+  { key: "name", label: "Name" },
+  { key: "year", label: "Year" },
+  { key: "yusho", label: "Yusho" },
+];
+
+const hofAccessor: Record<string, (ind: UIHofInductee) => string | number | undefined> = {
+  name: (ind) => ind.shikona,
+  year: (ind) => ind.inductionYear,
+  yusho: (ind) => ind.stats?.yushoCount ?? 0,
+};
+
+function sortInductees(
+  inductees: UIHofInductee[],
+  sortKey: string,
+  sortOrder: SortDirection
+): UIHofInductee[] {
+  const fn = hofAccessor[sortKey];
+  if (!fn) return inductees;
+  return [...inductees].sort((a, b) => compareBy(a, b, fn, sortOrder));
+}
+
 // === Category Tab ===
 
 function CategoryTab({
   category,
   inductees,
+  sortKey,
+  sortOrder,
 }: {
   category: HoFCategory;
   inductees: UIHofInductee[];
+  sortKey: string;
+  sortOrder: SortDirection;
 }) {
   const label = HOF_CATEGORY_LABELS[category];
   const Icon = CATEGORY_ICONS[category];
 
   const byYear = useMemo(() => {
+    if (sortKey !== "year") return null;
+    const sorted = sortInductees(inductees, sortKey, sortOrder);
     const map = new Map<number, UIHofInductee[]>();
-    for (const ind of inductees) {
+    for (const ind of sorted) {
       const arr = map.get(ind.inductionYear) ?? [];
       arr.push(ind);
       map.set(ind.inductionYear, arr);
     }
-    return Array.from(map.entries()).sort((a, b) => b[0] - a[0]); // newest first
-  }, [inductees]);
+    return Array.from(map.entries()).sort((a, b) => (sortOrder === "asc" ? a[0] - b[0] : b[0] - a[0]));
+  }, [inductees, sortKey, sortOrder]);
+
+  const sortedFlat = useMemo(() => {
+    if (sortKey === "year") return null;
+    return sortInductees(inductees, sortKey, sortOrder);
+  }, [inductees, sortKey, sortOrder]);
 
   if (inductees.length === 0) {
     return (
@@ -271,24 +306,36 @@ function CategoryTab({
     );
   }
 
+  if (byYear) {
+    return (
+      <ScrollArea className="max-h-[600px]">
+        <div className="space-y-6 pr-2">
+          {byYear.map(([year, inds]) => (
+            <div key={year}>
+              <div className="flex items-center gap-2 mb-3">
+                <Star className="h-4 w-4 text-gold" />
+                <h3 className="text-sm font-display font-semibold">Class of {year}</h3>
+                <Badge variant="secondary" className="text-[10px]">
+                  {inds.length}
+                </Badge>
+              </div>
+              <div className="space-y-3">
+                {inds.map((ind, i) => (
+                  <InducteeFullCard key={`${ind.rikishiId}-${i}`} inductee={ind} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </ScrollArea>
+    );
+  }
+
   return (
     <ScrollArea className="max-h-[600px]">
-      <div className="space-y-6 pr-2">
-        {byYear.map(([year, inds]) => (
-          <div key={year}>
-            <div className="flex items-center gap-2 mb-3">
-              <Star className="h-4 w-4 text-gold" />
-              <h3 className="text-sm font-display font-semibold">Class of {year}</h3>
-              <Badge variant="secondary" className="text-[10px]">
-                {inds.length}
-              </Badge>
-            </div>
-            <div className="space-y-3">
-              {inds.map((ind, i) => (
-                <InducteeFullCard key={`${ind.rikishiId}-${i}`} inductee={ind} />
-              ))}
-            </div>
-          </div>
+      <div className="space-y-3 pr-2">
+        {(sortedFlat ?? []).map((ind, i) => (
+          <InducteeFullCard key={`${ind.rikishiId}-${i}`} inductee={ind} />
         ))}
       </div>
     </ScrollArea>
@@ -297,16 +344,19 @@ function CategoryTab({
 
 // === All-time view ===
 
-function AllInducteesTab({ inductees }: { inductees: UIHofInductee[] }) {
+function AllInducteesTab({ inductees, sortKey, sortOrder }: { inductees: UIHofInductee[]; sortKey: string; sortOrder: SortDirection }) {
+  const sorted = useMemo(() => sortInductees(inductees, sortKey, sortOrder), [inductees, sortKey, sortOrder]);
+
   const byYear = useMemo(() => {
+    if (sortKey !== "year") return null;
     const map = new Map<number, UIHofInductee[]>();
-    for (const ind of inductees) {
+    for (const ind of sorted) {
       const arr = map.get(ind.inductionYear) ?? [];
       arr.push(ind);
       map.set(ind.inductionYear, arr);
     }
-    return Array.from(map.entries()).sort((a, b) => b[0] - a[0]);
-  }, [inductees]);
+    return Array.from(map.entries()).sort((a, b) => (sortOrder === "asc" ? a[0] - b[0] : b[0] - a[0]));
+  }, [sorted, sortKey, sortOrder]);
 
   if (inductees.length === 0) {
     return (
@@ -319,22 +369,34 @@ function AllInducteesTab({ inductees }: { inductees: UIHofInductee[] }) {
     );
   }
 
+  if (byYear) {
+    return (
+      <ScrollArea className="max-h-[600px]">
+        <div className="space-y-6 pr-2">
+          {byYear.map(([year, inds]) => (
+            <div key={year}>
+              <div className="flex items-center gap-2 mb-3">
+                <Star className="h-4 w-4 text-gold" />
+                <h3 className="text-sm font-display font-semibold">Class of {year}</h3>
+                <Separator className="flex-1" />
+              </div>
+              <div className="space-y-3">
+                {inds.map((ind, i) => (
+                  <InducteeFullCard key={`${ind.rikishiId}-${i}`} inductee={ind} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </ScrollArea>
+    );
+  }
+
   return (
     <ScrollArea className="max-h-[600px]">
-      <div className="space-y-6 pr-2">
-        {byYear.map(([year, inds]) => (
-          <div key={year}>
-            <div className="flex items-center gap-2 mb-3">
-              <Star className="h-4 w-4 text-gold" />
-              <h3 className="text-sm font-display font-semibold">Class of {year}</h3>
-              <Separator className="flex-1" />
-            </div>
-            <div className="space-y-3">
-              {inds.map((ind, i) => (
-                <InducteeFullCard key={`${ind.rikishiId}-${i}`} inductee={ind} />
-              ))}
-            </div>
-          </div>
+      <div className="space-y-3 pr-2">
+        {sorted.map((ind, i) => (
+          <InducteeFullCard key={`${ind.rikishiId}-${i}`} inductee={ind} />
         ))}
       </div>
     </ScrollArea>
@@ -346,6 +408,8 @@ function AllInducteesTab({ inductees }: { inductees: UIHofInductee[] }) {
 export default function HallOfFamePage() {
   const { state } = useGame();
   const world = state.world;
+  const [sortKey, setSortKey] = useState<string>("year");
+  const [sortOrder, setSortOrder] = useState<SortDirection>("asc");
 
   const hof = useMemo(() => (world ? projectHOFUIDigest(world) : null), [world]);
   const awardLog = useMemo(() => (world ? selectAwardLog(world) : []), [world]);
@@ -478,34 +542,46 @@ export default function HallOfFamePage() {
         )}
 
         {/* Tabs */}
-        <Tabs defaultValue="all">
-          <TabsList className="grid w-full max-w-lg grid-cols-4">
-            <TabsTrigger value="all" className="gap-1">
-              <Award className="h-3.5 w-3.5" /> All ({totalInductees})
-            </TabsTrigger>
-            <TabsTrigger value="champion" className="gap-1">
-              <Trophy className="h-3.5 w-3.5" /> Champions
-            </TabsTrigger>
-            <TabsTrigger value="iron_man" className="gap-1">
-              <Shield className="h-3.5 w-3.5" /> Iron Men
-            </TabsTrigger>
-            <TabsTrigger value="technician" className="gap-1">
-              <Target className="h-3.5 w-3.5" /> Technicians
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="all" className="mt-4">
-            <AllInducteesTab inductees={hof?.inductees ?? []} />
-          </TabsContent>
-          <TabsContent value="champion" className="mt-4">
-            <CategoryTab category="champion" inductees={byCategory.champion} />
-          </TabsContent>
-          <TabsContent value="iron_man" className="mt-4">
-            <CategoryTab category="iron_man" inductees={byCategory.iron_man} />
-          </TabsContent>
-          <TabsContent value="technician" className="mt-4">
-            <CategoryTab category="technician" inductees={byCategory.technician} />
-          </TabsContent>
-        </Tabs>
+        <div className="flex items-center justify-between">
+          <Tabs defaultValue="all" className="flex-1">
+            <TabsList className="grid w-full max-w-lg grid-cols-4">
+              <TabsTrigger value="all" className="gap-1">
+                <Award className="h-3.5 w-3.5" /> All ({totalInductees})
+              </TabsTrigger>
+              <TabsTrigger value="champion" className="gap-1">
+                <Trophy className="h-3.5 w-3.5" /> Champions
+              </TabsTrigger>
+              <TabsTrigger value="iron_man" className="gap-1">
+                <Shield className="h-3.5 w-3.5" /> Iron Men
+              </TabsTrigger>
+              <TabsTrigger value="technician" className="gap-1">
+                <Target className="h-3.5 w-3.5" /> Technicians
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="all" className="mt-4">
+              <AllInducteesTab inductees={hof?.inductees ?? []} sortKey={sortKey} sortOrder={sortOrder} />
+            </TabsContent>
+            <TabsContent value="champion" className="mt-4">
+              <CategoryTab category="champion" inductees={byCategory.champion} sortKey={sortKey} sortOrder={sortOrder} />
+            </TabsContent>
+            <TabsContent value="iron_man" className="mt-4">
+              <CategoryTab category="iron_man" inductees={byCategory.iron_man} sortKey={sortKey} sortOrder={sortOrder} />
+            </TabsContent>
+            <TabsContent value="technician" className="mt-4">
+              <CategoryTab category="technician" inductees={byCategory.technician} sortKey={sortKey} sortOrder={sortOrder} />
+            </TabsContent>
+          </Tabs>
+          <SortMenu
+            options={HOF_SORT_OPTIONS}
+            storageKey="basho_sort_hof"
+            defaultSortKey="year"
+            defaultSortOrder="asc"
+            onSortChange={(key, order) => {
+              setSortKey(key);
+              setSortOrder(order);
+            }}
+          />
+        </div>
       </div>
     </AppLayout>
   );

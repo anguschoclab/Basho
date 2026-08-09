@@ -17,12 +17,22 @@ import { menteesOf } from "@/engine/lineage";
 import { RikishiName, StableName } from "@/components/ClickableName";
 import { getPlayerHeya } from "@/engine/queries";
 import { getOyakata, getHeya, getRikishi, getAllOyakata } from "@/presenters/worldAccess";
+import { SortMenu } from "@/components/ui/SortMenu";
+import { compareBy, type SortDirection } from "@/lib/sortUtils";
+
+const OYAKATA_SORT_OPTIONS = [
+  { key: "name", label: "Name" },
+  { key: "age", label: "Age" },
+  { key: "tenure", label: "Tenure" },
+];
 
 /** oyakata page. */
 export default function OyakataPage() {
   const { state } = useGame();
   const world = state.world;
   const [selectedOyakata, setSelectedOyakata] = useState<Oyakata | null>(null);
+  const [sortKey, setSortKey] = useState<string>("name");
+  const [sortOrder, setSortOrder] = useState<SortDirection>("asc");
 
   useEffect(() => {
     if (world && world.playerHeyaId) {
@@ -221,12 +231,35 @@ export default function OyakataPage() {
         {/* ALL OYAKATA */}
         <Card>
           <CardHeader>
-            <CardTitle>All Oyakata</CardTitle>
-            <CardDescription>Browse all stable masters in the sumo world.</CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>All Oyakata</CardTitle>
+                <CardDescription>Browse all stable masters in the sumo world.</CardDescription>
+              </div>
+              <SortMenu
+                options={OYAKATA_SORT_OPTIONS}
+                storageKey="basho_sort_oyakata"
+                defaultSortKey="name"
+                defaultSortOrder="asc"
+                onSortChange={(key, order) => {
+                  setSortKey(key);
+                  setSortOrder(order);
+                }}
+              />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {getAllOyakata(world).map((o) => {
+              {(() => {
+                const all = getAllOyakata(world);
+                const accessor: Record<string, (o: Oyakata) => string | number | undefined> = {
+                  name: (o) => o.name,
+                  age: (o) => o.age,
+                  tenure: (o) => o.yearsInCharge,
+                };
+                const fn = accessor[sortKey];
+                const sorted = fn ? [...all].sort((a, b) => compareBy(a, b, fn, sortOrder)) : all;
+                return sorted.map((o) => {
                 const heya = getHeya(world, o.heyaId);
                 const isSelected = o.id === selectedOyakata.id;
                 return (
@@ -274,7 +307,8 @@ export default function OyakataPage() {
                     </CardContent>
                   </Card>
                 );
-              })}
+                });
+              })()}
             </div>
           </CardContent>
         </Card>
