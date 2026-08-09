@@ -6,7 +6,7 @@
  * Architecturally decomposed into modular sub-components for maintainability.
  */
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Helmet } from "react-helmet";
 import { useNavigate } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
@@ -53,17 +53,19 @@ export default function MainMenu() {
   const [selectedHeyaId, setSelectedHeyaId] = useState<string | null>(null);
   const [previewHeya, setPreviewHeya] = useState<Heya | null>(null);
 
+  const seedRef = useRef(seed);
+  seedRef.current = seed;
+
   // Sync world seed
   useEffect(() => {
     if (!state?.world) {
       const worldSeed = makeDeterministicSeed("world");
       setSeed(worldSeed);
       if (typeof createWorld === "function") createWorld(worldSeed);
-    } else if (state.world?.seed && seed !== state.world.seed) {
+    } else if (state.world?.seed && seedRef.current !== state.world.seed) {
       setSeed(state.world.seed);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- createWorld is stable from context; seed is managed internally
-  }, [state?.world]);
+  }, [state?.world, createWorld]);
 
   const stables = useMemo(() => {
     if (!state?.world) return [];

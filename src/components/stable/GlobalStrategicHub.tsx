@@ -4,8 +4,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Globe, GraduationCap, MapPin, TrendingUp, Users, Trophy } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-// eslint-disable-next-line no-restricted-imports
-import type { WorldState } from "@/engine/types/world";
+import type { WorldState } from "@/presenters/uiDigest";
 import type { Id } from "@/engine/types/common";
 import { listVisibleCandidates } from "@/engine/systems/generation/TalentPoolScouting";
 import { FACILITY_REGISTRY, type FacilityId } from "@/engine/types/infrastructure";

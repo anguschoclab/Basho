@@ -1,6 +1,5 @@
 import { vi } from "vitest";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file global mock
-// @ts-ignore
+// @ts-expect-error -- Test file global mock: calculatePerceivedStats is not typed on global
 global.calculatePerceivedStats = vi.fn(() => ({ power: "Dominant" }));
 import { describe, it, expect } from "vitest";
 import { projectRikishi, projectHeya } from "@/presenters/uiModels";

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { ArrowUp, ArrowDown } from "lucide-react";
 import {
   Select,
@@ -40,10 +40,13 @@ function SortMenuInner({
     defaultSortOrder
   );
 
+  const initRef = useRef(true);
   useEffect(() => {
-    onSortChange(sortKey, sortOrder);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (initRef.current) {
+      initRef.current = false;
+      onSortChange(sortKey, sortOrder);
+    }
+  }, [onSortChange, sortKey, sortOrder]);
 
   const handleKeyChange = (newKey: string) => {
     setSortKey(newKey);

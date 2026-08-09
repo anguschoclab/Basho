@@ -39,14 +39,14 @@ function getRankTier(rikishi: Rikishi): number {
 
 function makeMoment(
   label: KeyBoutLabel,
+  result: BoutResult,
   match: MatchSchedule,
   bashoName: BashoName
 ): KeyBoutMoment {
   return {
     label,
     labelText: LABEL_TEXT[label],
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    bout: match.result!,
+    bout: result,
     day: match.day,
     bashoName,
     eastRikishiId: match.eastRikishiId,
@@ -99,7 +99,9 @@ function selectFromMatches(
   matches: MatchSchedule[],
   bashoName: BashoName
 ): KeyBoutMoment[] {
-  const completed = matches.filter((m) => m.result != null);
+  const completed = matches.filter(
+    (m): m is MatchSchedule & { result: BoutResult } => m.result != null
+  );
   if (completed.length === 0) return [];
 
   const moments: KeyBoutMoment[] = [];
@@ -116,11 +118,11 @@ function selectFromMatches(
   let yushoMoment: KeyBoutMoment | null = null;
 
   if (yushoDecider) {
-    yushoMoment = makeMoment("yusho_decider", yushoDecider, bashoName);
+    yushoMoment = makeMoment("yusho_decider", yushoDecider.result, yushoDecider, bashoName);
   } else {
     // Fallback: highest drama score across all completed bouts
     let bestScore = -1;
-    let bestMatch: MatchSchedule | null = null;
+    let bestMatch: (MatchSchedule & { result: BoutResult }) | null = null;
     for (const m of completed) {
       const score = m.dramaticContext?.score ?? m.result?.dramaticContext?.score ?? 0;
       if (score > bestScore) {
@@ -130,12 +132,12 @@ function selectFromMatches(
     }
 
     if (bestMatch && bestScore > 0) {
-      yushoMoment = makeMoment("yusho_decider", bestMatch, bashoName);
+      yushoMoment = makeMoment("yusho_decider", bestMatch.result, bestMatch, bashoName);
     } else {
       // Fallback: last day-15 bout
       const day15Bouts = completed.filter((m) => m.day === 15);
       if (day15Bouts.length > 0) {
-        yushoMoment = makeMoment("yusho_decider", day15Bouts[day15Bouts.length - 1], bashoName);
+        yushoMoment = makeMoment("yusho_decider", day15Bouts[day15Bouts.length - 1].result, day15Bouts[day15Bouts.length - 1], bashoName);
       }
     }
   }
@@ -147,7 +149,7 @@ function selectFromMatches(
 
   // 2. Biggest upset (by rank tier differential)
   let bestUpsetDiff = -1;
-  let bestUpsetMatch: MatchSchedule | null = null;
+  let bestUpsetMatch: (MatchSchedule & { result: BoutResult }) | null = null;
 
   for (const m of completed) {
     if (!m.result?.upset) continue;
@@ -165,7 +167,7 @@ function selectFromMatches(
   }
 
   if (bestUpsetMatch) {
-    const moment = makeMoment("biggest_upset", bestUpsetMatch, bashoName);
+    const moment = makeMoment("biggest_upset", bestUpsetMatch.result, bestUpsetMatch, bashoName);
     moments.push(moment);
     usedBoutIds.add(moment.bout.boutId);
   }
@@ -176,7 +178,7 @@ function selectFromMatches(
   );
 
   if (kinboshiMatch) {
-    const moment = makeMoment("kinboshi", kinboshiMatch, bashoName);
+    const moment = makeMoment("kinboshi", kinboshiMatch.result, kinboshiMatch, bashoName);
     moments.push(moment);
     usedBoutIds.add(moment.bout.boutId);
   }

@@ -7,7 +7,7 @@ import { EventLogPanel } from "./EventLogPanel";
 import { Breadcrumbs } from "./Breadcrumbs";
 import { MobileEventLog } from "./MobileEventLog";
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
-import { openSaveLoadDialog } from "@/components/game/SaveLoadDialog";
+import { openSaveLoadDialog } from "@/components/game/saveLoadDialogSignal";
 import { MainContentPane } from "./MainContentPane";
 import { FloatingShortcuts } from "./FloatingShortcuts";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";

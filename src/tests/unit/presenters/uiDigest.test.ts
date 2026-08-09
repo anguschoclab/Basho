@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment -- Test file global mock
-// @ts-ignore
+// @ts-expect-error -- Test file global mock: calculatePerceivedStats is not typed on global
 global.calculatePerceivedStats = vi.fn(() => ({ strength: "Dominant" }));
 vi.mock("@/engine/events", () => ({
   queryEvents: vi.fn(

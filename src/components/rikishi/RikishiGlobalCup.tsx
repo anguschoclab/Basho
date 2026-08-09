@@ -7,8 +7,7 @@
 import { Trophy } from "lucide-react";
 import { WidgetCard } from "@/components/ui/WidgetCard";
 import { WidgetHeader } from "@/components/ui/WidgetHeader";
-// eslint-disable-next-line no-restricted-imports
-import type { WorldState } from "@/engine/types/world";
+import type { WorldState } from "@/presenters/uiDigest";
 import type { GlobalCupHistoryEntry } from "@/engine/types/globalCup";
 
 interface RikishiGlobalCupProps {

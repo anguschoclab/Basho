@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import { readFileSync, existsSync, writeFileSync, unlinkSync, mkdirSync, rmSync } from "fs";
 import { join } from "path";
 import { exec } from "child_process";
@@ -104,6 +104,13 @@ describe("Audit runner self-test", () => {
 });
 
 describe("Audit runner consistency — two runs produce same orphan set", () => {
+  beforeAll(() => {
+    // Clean up any lingering temp files from the injection test
+    if (existsSync(TEMP_ORPHAN_DIR)) {
+      rmSync(TEMP_ORPHAN_DIR, { recursive: true, force: true });
+    }
+  });
+
   async function runAudit(): Promise<{ summary: AuditReport["summary"]; symbols: string[] }> {
     const tmpJson = uniqueJsonPath();
     await execAsync(`npx tsx scripts/audit-orphans.ts --json "${tmpJson}"`, {
@@ -120,7 +127,9 @@ describe("Audit runner consistency — two runs produce same orphan set", () => 
   }
 
   it("produces identical orphan counts across two runs", { timeout: 240000 }, async () => {
+    if (existsSync(TEMP_ORPHAN_DIR)) rmSync(TEMP_ORPHAN_DIR, { recursive: true, force: true });
     const run1 = await runAudit();
+    if (existsSync(TEMP_ORPHAN_DIR)) rmSync(TEMP_ORPHAN_DIR, { recursive: true, force: true });
     const run2 = await runAudit();
     expect(run1.summary.total).toBe(run2.summary.total);
     expect(run1.summary.unreferencedExports).toBe(run2.summary.unreferencedExports);
@@ -129,7 +138,10 @@ describe("Audit runner consistency — two runs produce same orphan set", () => 
   });
 
   it("produces identical orphan symbol set across two runs", { timeout: 240000 }, async () => {
+    // Clean up any temp files from concurrent test files before each run
+    if (existsSync(TEMP_ORPHAN_DIR)) rmSync(TEMP_ORPHAN_DIR, { recursive: true, force: true });
     const run1 = await runAudit();
+    if (existsSync(TEMP_ORPHAN_DIR)) rmSync(TEMP_ORPHAN_DIR, { recursive: true, force: true });
     const run2 = await runAudit();
     expect(run1.symbols).toEqual(run2.symbols);
   });

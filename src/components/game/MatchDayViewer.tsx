@@ -10,8 +10,7 @@ import { compareRanks, buildBoutPreviewUI } from "@/presenters/uiDigest";
 import type { RankPosition } from "@/engine/types/banzuke";
 import { BoutPreMatchOverlay } from "./BoutPreMatchOverlay";
 import type { BoutMatchUI } from "@/presenters/uiDigestTypes";
-// eslint-disable-next-line no-restricted-imports
-import type { WorldState } from "@/engine/types/world";
+import type { WorldState } from "@/presenters/uiDigest";
 import type { MatchRowData } from "./boutCardTypes";
 
 // ── Types ──────────────────────────────────────────────

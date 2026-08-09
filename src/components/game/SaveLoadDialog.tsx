@@ -1,5 +1,4 @@
 // SaveLoadDialog.tsx — In-game save/load dialog with slot management
-/* eslint-disable react-refresh/only-export-components */
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { useGame } from "@/contexts/useGame";
 import { useToast } from "@/hooks/use-toast";
@@ -29,13 +28,7 @@ import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { deleteSave, exportSave, importSave } from "@/engine/saveload";
 import { Save, FolderOpen, Download, Upload, HardDrive, Loader2 } from "lucide-react";
 import { SaveSlotItem, EmptySlotItem } from "./SaveLoadDialogComponents";
-
-// Global open signal for keyboard shortcut integration
-const openListeners = new Set<() => void>();
-/** Open save load dialog. */
-export function openSaveLoadDialog() {
-  openListeners.forEach((fn) => fn());
-}
+import { openListeners } from "./saveLoadDialogSignal";
 
 /** Defines the structure for save load dialog props. */
 interface SaveLoadDialogProps {

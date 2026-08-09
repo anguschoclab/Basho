@@ -10,8 +10,7 @@ import { BaseWidget } from "./BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
 import type { PotentialBand } from "@/engine/descriptorBands";
 import { toPotentialBand } from "@/engine/descriptorBands";
-// eslint-disable-next-line no-restricted-imports
-import type { WorldState } from "@/engine/types/world";
+import type { WorldState } from "@/presenters/uiDigest";
 import * as talentpool from "@/engine/systems/generation/TalentPoolService";
 import type { TalentCandidate, TalentPoolType } from "@/engine/types/talent";
 import { POTENTIAL_LABELS } from "@/constants/ui/labels";

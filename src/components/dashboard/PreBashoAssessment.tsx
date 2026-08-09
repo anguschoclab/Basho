@@ -13,11 +13,10 @@ import { TooltipWrap } from "../ui/tooltip-wrap";
 import { RikishiName } from "@/components/ClickableName";
 import { BaseWidget } from "./BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
-// eslint-disable-next-line no-restricted-imports
 import type {
   PreBashoAssessment as PreBashoAssessmentType,
   WorldState,
-} from "@/engine/types/world";
+} from "@/presenters/uiDigest";
 
 const AssessmentRow = React.memo(
   ({

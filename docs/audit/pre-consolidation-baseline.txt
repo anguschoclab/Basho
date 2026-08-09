@@ -1,0 +1,13 @@
+PRE-CONSOLIDATION BASELINE (Aug 9, 2026)
+========================================
+Git SHA: cf995214ae76a51b2302e9decef5270932204b44
+Tag: pre-exhaustive-review-2026-08-09
+
+Type-check: 2 errors (MigrationService.test.ts - SponsorRelationship type mismatch)
+Lint:strict: 0 errors (passes)
+Build: SUCCESS (17.93s)
+Tests: 6791 passed, 3 failed (6794 total)
+  - src/tests/unit/audit/knipGuard.test.ts (flaky in full suite, passes in isolation)
+  - src/tests/unit/audit/lintStrictGate.test.ts (flaky in full suite, passes in isolation)
+  - src/tests/unit/audit/orphan-audit.test.ts (flaky: orphan count 236 vs 190 across runs)
+Test files: 697 passed, 3 failed (700 total)

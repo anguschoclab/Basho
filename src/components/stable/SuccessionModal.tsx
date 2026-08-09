@@ -12,8 +12,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { User, Award, History, ArrowRight } from "lucide-react";
 import { DynastyService } from "@/engine/systems/legacy/DynastyService";
-// eslint-disable-next-line no-restricted-imports
-import type { WorldState } from "@/engine/types/world";
+import type { WorldState } from "@/presenters/uiDigest";
 import type { Id } from "@/engine/types/common";
 import { cn } from "@/lib/utils";
 

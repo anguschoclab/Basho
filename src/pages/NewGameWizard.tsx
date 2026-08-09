@@ -6,7 +6,7 @@
  * Architecturally cleaned up to use centralized engine utilities.
  */
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useGame } from "@/contexts/useGame";
 import { Helmet } from "react-helmet";
@@ -33,8 +33,7 @@ export default function NewGameWizard() {
     if (!state.world) {
       createWorld(makeDeterministicSeed("world"));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- createWorld is stable from context, only run once when world is missing
-  }, [state.world]);
+  }, [state.world, createWorld]);
 
   const [step, setStep] = useState(1);
   const [oyakataName, setOyakataName] = useState("");
@@ -57,11 +56,13 @@ export default function NewGameWizard() {
   const handlePrev = () => setStep((s) => Math.max(1, s - 1));
 
   // Autosave once the world is fully initialized with player heya
+  const quickSaveRef = useRef(quickSave);
+  quickSaveRef.current = quickSave;
   useEffect(() => {
-    if (state.world?.playerHeyaId && quickSave) {
-      quickSave();
+    if (state.world?.playerHeyaId && quickSaveRef.current) {
+      quickSaveRef.current();
     }
-  }, [state.world?.playerHeyaId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [state.world?.playerHeyaId]);
 
   const handleFinish = () => {
     if (!world || !selectedHeyaId) return;

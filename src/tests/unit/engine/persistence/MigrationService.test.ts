@@ -168,7 +168,7 @@ describe("MigrationService", () => {
         koenkais: {},
       };
       const result = MigrationService.migrateSave(save);
-      const pool = result.save.world.sponsorPool as {
+      const pool = result.save.world.sponsorPool as unknown as {
         sponsors: Record<string, typeof validSponsor>;
       };
       expect(pool.sponsors["sp_1"]).toEqual(validSponsor);
@@ -189,7 +189,7 @@ describe("MigrationService", () => {
         koenkais: { k_1: validKoenkai },
       };
       const result = MigrationService.migrateSave(save);
-      const pool = result.save.world.sponsorPool as {
+      const pool = result.save.world.sponsorPool as unknown as {
         koenkais: Record<string, typeof validKoenkai>;
       };
       expect(pool.koenkais["k_1"]).toEqual(validKoenkai);

@@ -1,4 +1,5 @@
 import { vi, afterEach, beforeAll } from "vitest";
+import { cleanup as tlCleanup } from "@testing-library/react";
 import { setSeed } from "../../engine/rng";
 import { resetImpactTimestampCounter } from "../../engine/core/StateImpact";
 import { BardEngine } from "../../engine/bard/BardEngine";
@@ -11,15 +12,7 @@ beforeAll(async () => {
 // Guard for node environment where DOM APIs don't exist.
 const hasDOM = typeof Element !== "undefined" && typeof HTMLElement !== "undefined";
 
-let cleanup: (() => void) | undefined;
-if (hasDOM) {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    cleanup = require("@testing-library/react").cleanup;
-  } catch {
-    cleanup = undefined;
-  }
-}
+const cleanup: (() => void) | undefined = hasDOM ? tlCleanup : undefined;
 
 // jsdom does not implement pointer capture, but Radix Select relies on it.
 beforeAll(() => {

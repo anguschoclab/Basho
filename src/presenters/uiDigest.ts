@@ -174,7 +174,7 @@ export {
 } from "../engine/descriptorBands";
 
 // Type exports for UI layer (re-exported from engine to comply with no-restricted-imports rule)
-export type { WorldState } from "../engine/types/world";
+export type { WorldState, PreBashoAssessment } from "../engine/types/world";
 export type { Rikishi } from "../engine/types/rikishi";
 export type { Heya } from "../engine/types/heya";
 export type { BashoHistorySummary } from "../engine/historyIndex";

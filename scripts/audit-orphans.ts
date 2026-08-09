@@ -77,7 +77,7 @@ function isScriptFile(filePath: string): boolean {
 
 function collectFiles(dir: string, files: string[] = []): string[] {
   if (!existsSync(dir)) return files;
-  const entries = readdirSync(dir);
+  const entries = readdirSync(dir).sort();
   for (const entry of entries) {
     const fullPath = join(dir, entry);
     const stat = statSync(fullPath);
@@ -109,8 +109,12 @@ function relPath(absPath: string): string {
 const allFiles = collectFiles(SRC);
 const runtimeFiles = allFiles.filter((f) => !isTestFile(f) && !isScriptFile(f));
 
-// Build a single blob of all runtime source for fast searching
-const runtimeBlob = runtimeFiles.map((f) => readContent(f)).join("\n");
+// Pre-compute file contents for deterministic reference checking
+const fileContents = new Map<string, string>();
+for (const f of runtimeFiles) {
+  fileContents.set(f, readContent(f));
+}
+const runtimeBlob = Array.from(fileContents.values()).join("\n");
 
 // ─── 1. Unreferenced exports ─────────────────────────────────────────────────
 
@@ -179,12 +183,13 @@ function extractExports(filePath: string): { name: string; line: number }[] {
 function isReferenced(name: string, selfPath: string): boolean {
   // Search for the name in all runtime files except the declaring file.
   // Test files and scripts do NOT count as consumers — only runtime code does.
-  const selfContent = readContent(selfPath);
-  const otherContent = runtimeBlob.replace(selfContent, "");
-
-  // Check for the identifier appearing in any runtime file other than the declaring file
   const importPattern = new RegExp(`\\b${escapeRegex(name)}\\b`);
-  return importPattern.test(otherContent);
+  for (const f of runtimeFiles) {
+    if (f === selfPath) continue;
+    const content = fileContents.get(f);
+    if (content && importPattern.test(content)) return true;
+  }
+  return false;
 }
 
 function escapeRegex(s: string): string {

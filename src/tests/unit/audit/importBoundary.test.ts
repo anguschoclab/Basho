@@ -21,6 +21,24 @@ function findEngineFiles(dir: string): string[] {
   return results;
 }
 
+function findUIFiles(dir: string): string[] {
+  const results: string[] = [];
+  if (!readdirSync(dir, { withFileTypes: true }).length) return results;
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const fullPath = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      results.push(...findUIFiles(fullPath));
+    } else if (
+      (entry.name.endsWith(".ts") || entry.name.endsWith(".tsx")) &&
+      !entry.name.endsWith(".test.ts") &&
+      !entry.name.endsWith(".test.tsx")
+    ) {
+      results.push(fullPath);
+    }
+  }
+  return results;
+}
+
 const PROHIBITED_PATTERNS = [
   /from\s+["']@\/components\//,
   /from\s+["']@\/pages\//,
@@ -53,5 +71,38 @@ describe("import boundary: engine must not import from UI layers", () => {
     expect(violations, `Engine files importing from UI layers:\n${violations.join("\n")}`).toEqual(
       []
     );
+  });
+});
+
+describe("import boundary: UI must not import WorldState from engine directly", () => {
+  it("no UI component imports WorldState from @/engine/types/world", () => {
+    const uiDirs = ["components", "pages"];
+    const violations: string[] = [];
+
+    for (const uiDir of uiDirs) {
+      const fullPath = join(SRC_DIR, uiDir);
+      try {
+        const files = findUIFiles(fullPath);
+        for (const file of files) {
+          const content = readFileSync(file, "utf-8");
+          const lines = content.split("\n");
+          lines.forEach((line, i) => {
+            if (
+              /from\s+["']@\/engine\/types\/world["']/.test(line) &&
+              !line.includes("eslint-disable")
+            ) {
+              violations.push(`${file}:${i + 1}: ${line.trim()}`);
+            }
+          });
+        }
+      } catch {
+        // dir might not exist
+      }
+    }
+
+    expect(
+      violations,
+      `UI components importing WorldState from @/engine/types/world:\n${violations.join("\n")}`
+    ).toEqual([]);
   });
 });

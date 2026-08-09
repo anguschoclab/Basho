@@ -22,8 +22,7 @@ import { NarrativeService } from "@/engine/systems/narrative/NarrativeService";
 import { rngFromSeed, type SeededRNG } from "@/engine/rng";
 import type { UIRikishi } from "@/presenters/uiModels";
 import type { Rikishi } from "@/engine/types";
-// eslint-disable-next-line no-restricted-imports
-import type { WorldState } from "@/engine/types/world";
+import type { WorldState } from "@/presenters/uiDigest";
 import { RankBadge } from "./RankBadge";
 
 // ── Scout Note Generator ──────────────────────────────────────────────────────
