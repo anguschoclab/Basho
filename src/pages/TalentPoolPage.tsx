@@ -15,7 +15,7 @@ import { toast } from "@/hooks/use-toast";
 import { Search, UserPlus, Globe, GraduationCap, School } from "lucide-react";
 
 import type { TalentPoolType, TalentCandidate, VisibilityBand } from "@/engine/types/talent";
-import * as talentpool from "@/presenters/engineAccess";
+import { talentpool } from "@/presenters/engineAccess";
 import { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "@/presenters/engineAccess";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import { getHeya, getOyakata, getTalentPool } from "@/presenters/worldAccess";

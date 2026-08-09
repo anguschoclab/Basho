@@ -60,7 +60,11 @@ export {
   listNPCWatchedCandidates,
   getTopSuitor,
 } from "../engine/systems/generation/CandidatePoolService";
-export { listVisibleCandidates } from "../engine/systems/generation/TalentPoolScouting";
+export {
+  listVisibleCandidates,
+  getCandidateScoutingLevel,
+  getForeignCountInHeya,
+} from "../engine/systems/generation/TalentPoolScouting";
 export { FOREIGN_RIKISHI_LIMIT_PER_HEYA } from "../engine/systems/generation/TalentPoolService";
 export * as talentpool from "../engine/systems/generation/TalentPoolService";
 export { DynastyService } from "../engine/systems/legacy/DynastyService";
