@@ -204,7 +204,6 @@ describe("UI Digest: Rikishi Perception Boundary", () => {
         shikona: "InjuredRikishi",
         injury: { isInjured: true, severity: "moderate", weeksRemaining: 2 },
         type: "strain",
-        type: "muscle_strain",
         injured: true,
       });
       const mockWorld = {
@@ -259,7 +258,6 @@ describe("UI Digest: Rikishi Perception Boundary", () => {
         events: {
           log: [
             {
-              type: "TRAINING",
               id: "e1",
               category: "training",
               title: "Training Camp",
@@ -267,7 +265,6 @@ describe("UI Digest: Rikishi Perception Boundary", () => {
               timestamp: Date.now(),
             },
             {
-              type: "ECONOMY",
               id: "e2",
               category: "economy",
               title: "Sponsor Bonus",
@@ -275,7 +272,6 @@ describe("UI Digest: Rikishi Perception Boundary", () => {
               timestamp: Date.now(),
             },
             {
-              type: "SCOUTING",
               id: "e3",
               category: "scouting",
               title: "New Recruit",
@@ -283,7 +279,6 @@ describe("UI Digest: Rikishi Perception Boundary", () => {
               timestamp: Date.now(),
             },
             {
-              type: "NARRATIVE",
               id: "e4",
               category: "narrative",
               title: "Rumor",

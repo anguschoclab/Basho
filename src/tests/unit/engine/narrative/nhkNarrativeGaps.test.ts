@@ -74,7 +74,7 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
       generateBoutNarrative(result, east, west, BASHO, 8, "seed-bout-milestone-pre", world);
       const preLines = (result.pbpLines ?? []).filter((l) => l.phase === "pre_bout" && l.tags?.includes("milestone"));
       const boutMilestoneLines = preLines.filter((l) => l.text.includes("500"));
-      expect(boutMilestoneLines.length).toBeGreaterThan(0);
+      expect((boutMilestoneLines)?.length ?? 0).toBeGreaterThan(0);
     });
 
     it("post-bout: winner careerBouts at 499 → milestone line mentioning 500", () => {
@@ -91,7 +91,7 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
       generateBoutNarrative(result, east, west, BASHO, 8, "seed-bout-milestone-post", world);
       const postLines = (result.pbpLines ?? []).filter((l) => l.phase === "post_bout" && l.tags?.includes("milestone"));
       const boutMilestoneLines = postLines.filter((l) => l.text.includes("500"));
-      expect(boutMilestoneLines.length).toBeGreaterThan(0);
+      expect((boutMilestoneLines)?.length ?? 0).toBeGreaterThan(0);
     });
 
     it("no milestone when careerBouts not at threshold", () => {
@@ -109,7 +109,7 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
       const preMilestoneLines = (result.pbpLines ?? []).filter(
         (l) => l.phase === "pre_bout" && l.tags?.includes("milestone") && l.text.includes("500")
       );
-      expect(preMilestoneLines.length).toBe(0);
+      expect((preMilestoneLines)?.length ?? 0).toBe(0);
     });
   });
 
@@ -118,7 +118,7 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
     it("generateKyujoNarrative — injury_withdrawal produces narrative line", () => {
       const r = mockRikishi("r-kyujo", { shikona: "Gamma", injured: true });
       const lines = generateKyujoNarrative(r, "injury_withdrawal", { area: "knee", day: 7 }, "test-kyujo-1");
-      expect(lines.length).toBeGreaterThan(0);
+      expect((lines)?.length ?? 0).toBeGreaterThan(0);
       expect(lines[0].phase).toBe("kyujo");
       expect(lines[0].tags).toContain("injury");
       expect(hasMissingTokens(lines[0].text)).toBe(false);
@@ -128,7 +128,7 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
     it("generateKyujoNarrative — pre_basho_withdrawal produces narrative line", () => {
       const r = mockRikishi("r-kyujo", { shikona: "Delta" });
       const lines = generateKyujoNarrative(r, "pre_basho_withdrawal", { reason: "knee surgery" }, "test-kyujo-2");
-      expect(lines.length).toBeGreaterThan(0);
+      expect((lines)?.length ?? 0).toBeGreaterThan(0);
       expect(hasMissingTokens(lines[0].text)).toBe(false);
       expect(lines[0].text).toContain("Delta");
     });
@@ -136,7 +136,7 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
     it("generateKyujoNarrative — return_from_kyujo produces narrative line", () => {
       const r = mockRikishi("r-kyujo", { shikona: "Epsilon" });
       const lines = generateKyujoNarrative(r, "return_from_kyujo", { bashosMissed: 2 }, "test-kyujo-3");
-      expect(lines.length).toBeGreaterThan(0);
+      expect((lines)?.length ?? 0).toBeGreaterThan(0);
       expect(hasMissingTokens(lines[0].text)).toBe(false);
       expect(lines[0].text).toContain("Epsilon");
     });
@@ -159,7 +159,7 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
       expect(withdrawEvent).toBeDefined();
       expect(withdrawEvent!.data?.narrative).toBeDefined();
       expect(Array.isArray(withdrawEvent!.data?.narrative)).toBe(true);
-      expect(withdrawEvent!.data.narrative.length).toBeGreaterThan(0);
+      expect((withdrawEvent!.data?.narrative as any[])?.length ?? 0).toBeGreaterThan(0);
     });
   });
 
@@ -177,10 +177,10 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
       }) as WorldState;
       const basho = makeMockBasho({ bashoName: "hatsu", year: 2025 }) as BashoState;
       const result = resolvePlayoffs(world, basho, [r1.id, r2.id]);
-      expect(result.matches.length).toBeGreaterThan(0);
+      expect((result as any).matches?.length ?? 0).toBeGreaterThan(0);
       const allLines = result.matches.flatMap((m) => m.result?.pbpLines ?? []);
       const playoffLines = allLines.filter((l) => l.tags?.includes("yusho_race"));
-      expect(playoffLines.length).toBeGreaterThan(0);
+      expect((playoffLines)?.length ?? 0).toBeGreaterThan(0);
       // Check for playoff-specific text
       const hasPlayoffText = playoffLines.some((l) =>
         l.text.includes("playoff") || l.text.includes("championship") || l.text.includes("yusho")
@@ -242,7 +242,7 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
         expect(narrative).toBeDefined();
         expect(Array.isArray(narrative)).toBe(true);
         const narrativeLines = narrative as Array<{ text: string }>;
-        expect(narrativeLines.length).toBeGreaterThan(0);
+        expect((narrativeLines)?.length ?? 0).toBeGreaterThan(0);
         for (const line of narrativeLines) {
           expect(hasMissingTokens(line.text)).toBe(false);
         }
@@ -265,7 +265,7 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
       });
       generateBoutNarrative(result, east, west, BASHO, 8, "seed-comeback-1", world);
       const comebackLines = (result.pbpLines ?? []).filter((l) => l.tags?.includes("comeback"));
-      expect(comebackLines.length).toBeGreaterThan(0);
+      expect((comebackLines)?.length ?? 0).toBeGreaterThan(0);
       expect(hasMissingTokens(comebackLines[0].text)).toBe(false);
     });
 
@@ -276,7 +276,7 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
       const result = makeBoutResult();
       generateBoutNarrative(result, east, west, BASHO, 8, "seed-comeback-none", world);
       const comebackLines = (result.pbpLines ?? []).filter((l) => l.tags?.includes("comeback"));
-      expect(comebackLines.length).toBe(0);
+      expect((comebackLines)?.length ?? 0).toBe(0);
     });
   });
 
@@ -292,7 +292,7 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
       const botdLines = (result.pbpLines ?? []).filter(
         (l) => l.phase === "pre_bout" && l.tags?.includes("tournament_context")
       );
-      expect(botdLines.length).toBeGreaterThan(0);
+      expect((botdLines)?.length ?? 0).toBeGreaterThan(0);
       const allText = botdLines.map((l) => l.text).join(" ");
       expect(allText).toContain("StarEast");
       expect(allText).toContain("StarWest");
@@ -310,7 +310,7 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
         l.tags?.includes("tournament_context") &&
         (l.text.includes("bout of the day") || l.text.includes("featured bout") || l.text.includes("marquee"))
       );
-      expect(botdLines.length).toBe(0);
+      expect((botdLines)?.length ?? 0).toBe(0);
     });
   });
 
@@ -368,7 +368,7 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
         l.tags?.includes("title_stakes") &&
         (l.text.includes("spoiler") || l.text.includes("derail"))
       );
-      expect(spoilerLines.length).toBe(0);
+      expect((spoilerLines)?.length ?? 0).toBe(0);
     });
   });
 
@@ -390,7 +390,7 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
       const debutLines = (result.pbpLines ?? []).filter(
         (l) => l.phase === "pre_bout" && l.tags?.includes("debut")
       );
-      expect(debutLines.length).toBeGreaterThan(0);
+      expect((debutLines)?.length ?? 0).toBeGreaterThan(0);
       const hasSekiwakeText = debutLines.some((l) =>
         l.text.includes("sekiwake") || l.text.includes("Sekiwake")
       );
@@ -413,7 +413,7 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
       const debutLines = (result.pbpLines ?? []).filter(
         (l) => l.phase === "pre_bout" && l.tags?.includes("debut")
       );
-      expect(debutLines.length).toBeGreaterThan(0);
+      expect((debutLines)?.length ?? 0).toBeGreaterThan(0);
       const hasKomusubiText = debutLines.some((l) =>
         l.text.includes("komusubi") || l.text.includes("Komusubi")
       );
@@ -438,7 +438,7 @@ describe("NHK Narrative Integration — 8 Gaps", () => {
         l.tags?.includes("debut") &&
         (l.text.includes("shin-") || l.text.includes("Shin-") || l.text.includes("debut"))
       );
-      expect(debutLines.length).toBe(0);
+      expect((debutLines)?.length ?? 0).toBe(0);
     });
   });
 
