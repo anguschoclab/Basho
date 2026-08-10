@@ -87,6 +87,7 @@ export function AppSidebar() {
         <Link
           to="/dashboard"
           className="flex items-center gap-3 px-1 py-1 rounded hover:opacity-85 transition-opacity group"
+          aria-label="Go to Dashboard"
         >
           {/* 力 kanji in a lacquer-box style */}
           <div
