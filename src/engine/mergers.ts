@@ -39,7 +39,8 @@ export function executeMerger(
 
   // 1. Transfer rikishi
   const transferredRikishiIds: Id[] = [];
-  for (const rId of getHeyaRoster(world, source.id).map((r) => r.id)) {
+  for (const r of getHeyaRoster(world, source.id)) {
+    const rId = r.id;
     const rikishi = getRikishi(world, rId);
     if (rikishi) {
       builder.updateRikishi(rId, { heyaId: target.id });
