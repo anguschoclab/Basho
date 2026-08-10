@@ -131,10 +131,19 @@ test("Golden Path: Boot -> Start Game -> View Stable -> Auto-Sim Tournament -> V
   await expect(simAllBtn).toBeVisible({ timeout: 10000 });
   await simAllBtn.click();
 
+  // handleSimFullBasho navigates to /basho immediately after sending
+  // TICK_MULTIPLE_DAYS to the worker. Wait for the navigation.
+  await page.waitForURL("**/basho", { timeout: 10000 });
+
   // 5. Verify: Wait for simulation to complete.
   // The worker processes TICK_MULTIPLE_DAYS for the remaining basho days.
-  // When complete, the dashboard will update — Sim All button disappears.
-  await expect(simAllBtn).not.toBeVisible({ timeout: 120000 });
+  // When complete, currentBasho becomes null and BashoPage shows
+  // "No Active Tournament" with a return button.
+  await expect(page.getByText(/No Active Tournament/i)).toBeVisible({ timeout: 120000 });
+
+  // Navigate back to the dashboard
+  await page.getByRole("button", { name: /Return to Control Center/i }).click();
+  await page.waitForURL("**/dashboard", { timeout: 10000 });
 
   // Verify the dashboard still has content (world didn't become null)
   const dashboardHeading = page.locator("h1").first();
