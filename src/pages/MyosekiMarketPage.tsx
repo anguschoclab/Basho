@@ -21,6 +21,8 @@ import type { MyosekiStock } from "@/engine/types/myoseki";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import { SortMenu } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Store, History } from "lucide-react";
 
 const STOCK_SORT_OPTIONS = [
   { key: "name", label: "Name" },
@@ -180,7 +182,11 @@ export default function MyosekiMarketPage() {
               </CardHeader>
               <CardContent>
                 {availableStocks.length === 0 ? (
-                  <p className="text-muted-foreground">No shares are currently on the market.</p>
+                  <EmptyState
+                    icon={Store}
+                    title="No shares available"
+                    description="No shares are currently on the market."
+                  />
                 ) : (
                   <ScrollArea className="h-[400px]">
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -252,9 +258,11 @@ export default function MyosekiMarketPage() {
               </CardHeader>
               <CardContent>
                 {myStocks.length === 0 ? (
-                  <p className="text-muted-foreground">
-                    Your stable does not currently hold any Myoseki.
-                  </p>
+                  <EmptyState
+                    icon={Store}
+                    title="No shares owned"
+                    description="Your stable does not currently hold any Myoseki."
+                  />
                 ) : (
                   <div className="space-y-4">
                     {myStocks.map((stock) => (
@@ -296,7 +304,11 @@ export default function MyosekiMarketPage() {
               </CardHeader>
               <CardContent>
                 {m.history.length === 0 ? (
-                  <p className="text-muted-foreground">No recent transactions.</p>
+                  <EmptyState
+                    icon={History}
+                    title="No transactions"
+                    description="No recent transactions."
+                  />
                 ) : (
                   <ScrollArea className="h-[400px]">
                     <div className="space-y-4">
