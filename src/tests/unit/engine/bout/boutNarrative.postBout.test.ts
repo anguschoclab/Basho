@@ -4,6 +4,7 @@ import { BardEngine } from "@/engine/bard/BardEngine";
 import { mockRikishi } from "../utils";
 import { makeBoutResult, makeBoutWorld } from "@/tests/helpers/boutTestHelpers";
 import type { BoutResult, BashoName } from "@/engine/types/basho";
+import postBoutJson from "@/engine/bard/domains/post_bout.json";
 
 function getPostBoutLines(result: BoutResult) {
   return (result.pbpLines ?? []).filter((l) => l.phase === "post_bout");
@@ -291,6 +292,79 @@ describe("generateBoutNarrative — post-bout context", () => {
       generateBoutNarrative(result, east, west, BASHO, 8, "seed-both-even-missing", world);
       for (const line of result.pbpLines ?? []) {
         expect(hasMissingTokens(line.text)).toBe(false);
+      }
+    });
+  });
+
+  // ── T17: 7-7 pressure bout variants (PR #806) ──
+  describe("T17: seven_seven variants resolve without missing tokens", () => {
+    it("T17.1: 7-7 win produces post_bout line with no [MISSING:] tokens", () => {
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        currentBashoWins: 7,
+        currentBashoLosses: 7,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "Beta",
+        currentBashoWins: 7,
+        currentBashoLosses: 7,
+      });
+      const world = makeBoutWorld(east, west);
+      const result = makeBoutResult();
+      generateBoutNarrative(result, east, west, BASHO, 15, "seed-77-win", world);
+      const postLines = getPostBoutLines(result);
+      expect(postLines.length).toBeGreaterThan(0);
+      for (const line of postLines) {
+        expect(hasMissingTokens(line.text)).toBe(false);
+      }
+    });
+
+    it("T17.2: 7-7 loss produces post_bout line with no [MISSING:] tokens", () => {
+      const east = mockRikishi("r-east", {
+        shikona: "Alpha",
+        currentBashoWins: 7,
+        currentBashoLosses: 7,
+      });
+      const west = mockRikishi("r-west", {
+        shikona: "Beta",
+        currentBashoWins: 7,
+        currentBashoLosses: 7,
+      });
+      const world = makeBoutWorld(east, west);
+      const result = makeBoutResult();
+      // Swap winner/loser by using different seed to get loss variant
+      generateBoutNarrative(result, east, west, BASHO, 15, "seed-77-loss", world);
+      const postLines = getPostBoutLines(result);
+      expect(postLines.length).toBeGreaterThan(0);
+      for (const line of postLines) {
+        expect(hasMissingTokens(line.text)).toBe(false);
+      }
+    });
+
+    it("T17.3: all 7 seven_seven_win variants use only %WINNER% and %LOSER% tokens", () => {
+      const winVariants = (postBoutJson as any).storylines.seven_seven_win;
+      expect(winVariants.length).toBe(7);
+      for (const variant of winVariants) {
+        expect(hasMissingTokens(variant)).toBe(false);
+        // Should only use WINNER or LOSER tokens (no unresolved tokens)
+        const tokenPattern = /%[A-Z_]+%/g;
+        const tokens = variant.match(tokenPattern) ?? [];
+        for (const token of tokens) {
+          expect(["%WINNER%", "%LOSER%"]).toContain(token);
+        }
+      }
+    });
+
+    it("T17.4: all 7 seven_seven_loss variants use only %WINNER% and %LOSER% tokens", () => {
+      const lossVariants = (postBoutJson as any).storylines.seven_seven_loss;
+      expect(lossVariants.length).toBe(7);
+      for (const variant of lossVariants) {
+        expect(hasMissingTokens(variant)).toBe(false);
+        const tokenPattern = /%[A-Z_]+%/g;
+        const tokens = variant.match(tokenPattern) ?? [];
+        for (const token of tokens) {
+          expect(["%WINNER%", "%LOSER%"]).toContain(token);
+        }
       }
     });
   });

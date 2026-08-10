@@ -491,4 +491,108 @@ describe("DramaMatchmaker", () => {
       expect(isMakuuchiDebut(0, "makuuchi", 15, "maegashira")).toBe(false);
     });
   });
+
+  // ── PR #808 equivalence: for...of loop produces same result as .filter().length ──
+  describe("debut showcase equivalence (PR #808)", () => {
+    it("scoreDrama triggers debut_showcase when rookie has 0 makuuchi bouts via careerHistory", () => {
+      const rookie = mockRikishi("rookie", {
+        shikona: "Rookie",
+        rank: "maegashira",
+        division: "makuuchi",
+        currentBashoWins: 5,
+        currentBashoLosses: 5,
+        careerWins: 3,
+        careerLosses: 4,
+        careerHistory: [
+          { division: "juryo" } as never,
+        ],
+      });
+      const sanyaku = mockRikishi("sanyaku", {
+        shikona: "Sanyaku",
+        rank: "komusubi",
+        division: "makuuchi",
+        currentBashoWins: 8,
+        currentBashoLosses: 2,
+        careerWins: 100,
+        careerLosses: 50,
+        careerHistory: [
+          { division: "makuuchi" } as never,
+        ],
+      });
+      const standings = new Map([
+        ["rookie", { wins: 5, losses: 5 }],
+        ["sanyaku", { wins: 8, losses: 2 }],
+      ]);
+
+      const result = scoreDrama(rookie, sanyaku, 10, standings);
+      expect(result).not.toBeNull();
+      expect(result?.label).toBe("debut_showcase");
+      expect(result?.reason).toBe("rookie_debut_vs_sanyaku");
+    });
+
+    it("scoreDrama does not trigger debut_showcase when rookie has prior makuuchi bouts", () => {
+      const notRookie = mockRikishi("not-rookie", {
+        shikona: "NotRookie",
+        rank: "maegashira",
+        division: "makuuchi",
+        currentBashoWins: 5,
+        currentBashoLosses: 5,
+        careerWins: 8,
+        careerLosses: 7,
+        careerHistory: [
+          { division: "makuuchi" } as never,
+          { division: "juryo" } as never,
+        ],
+      });
+      const sanyaku = mockRikishi("sanyaku2", {
+        shikona: "Sanyaku2",
+        rank: "komusubi",
+        division: "makuuchi",
+        currentBashoWins: 8,
+        currentBashoLosses: 2,
+        careerWins: 100,
+        careerLosses: 50,
+        careerHistory: [
+          { division: "makuuchi" } as never,
+        ],
+      });
+      const standings = new Map([
+        ["not-rookie", { wins: 5, losses: 5 }],
+        ["sanyaku2", { wins: 8, losses: 2 }],
+      ]);
+
+      const result = scoreDrama(notRookie, sanyaku, 10, standings);
+      // Should NOT be debut_showcase since notRookie has 1 makuuchi bout
+      expect(result?.label).not.toBe("debut_showcase");
+    });
+
+    it("scoreDrama handles undefined careerHistory without crashing", () => {
+      const rookie = mockRikishi("rookie-no-history", {
+        shikona: "NoHistory",
+        rank: "maegashira",
+        division: "makuuchi",
+        currentBashoWins: 3,
+        currentBashoLosses: 3,
+        careerWins: 0,
+        careerLosses: 0,
+      });
+      const sanyaku = mockRikishi("sanyaku3", {
+        shikona: "Sanyaku3",
+        rank: "komusubi",
+        division: "makuuchi",
+        currentBashoWins: 7,
+        currentBashoLosses: 3,
+        careerWins: 50,
+        careerLosses: 30,
+      });
+      const standings = new Map([
+        ["rookie-no-history", { wins: 3, losses: 3 }],
+        ["sanyaku3", { wins: 7, losses: 3 }],
+      ]);
+
+      // Should not crash — careerHistory ?? [] handles undefined
+      const result = scoreDrama(rookie, sanyaku, 10, standings);
+      expect(result).toBeDefined();
+    });
+  });
 });

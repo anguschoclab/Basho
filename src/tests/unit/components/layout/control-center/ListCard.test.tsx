@@ -149,4 +149,35 @@ describe("ListCard", () => {
     const card = container.firstChild as HTMLElement;
     expect(card.classList.contains("custom-card")).toBe(true);
   });
+
+  // ── Accessibility: aria-label on interactive rows (PR #805) ──
+  it("sets aria-label to row.label when label is a string and onClick is present", () => {
+    const rows: ListRow[] = [{ id: "r1", label: "Clickable Row", onClick: vi.fn() }];
+    const { container } = render(<ListCard eyebrow="E" title="T" rows={rows} />);
+    const row = container.querySelector('[role="button"]') as HTMLElement;
+    expect(row).not.toBeNull();
+    expect(row.getAttribute("aria-label")).toBe("Clickable Row");
+  });
+
+  it("does not set aria-label when label is a string but no onClick", () => {
+    const rows: ListRow[] = [{ id: "r1", label: "Static Row" }];
+    const { container } = render(<ListCard eyebrow="E" title="T" rows={rows} />);
+    const row = container.querySelector(".flex.items-center.gap-2") as HTMLElement;
+    expect(row.getAttribute("role")).toBeNull();
+    expect(row.getAttribute("aria-label")).toBeNull();
+  });
+
+  it("does not set aria-label when onClick is present but label is non-string ReactNode", () => {
+    const rows: ListRow[] = [
+      {
+        id: "r1",
+        label: <span data-testid="complex-label">Complex</span>,
+        onClick: vi.fn(),
+      },
+    ];
+    const { container } = render(<ListCard eyebrow="E" title="T" rows={rows} />);
+    const row = container.querySelector('[role="button"]') as HTMLElement;
+    expect(row).not.toBeNull();
+    expect(row.getAttribute("aria-label")).toBeNull();
+  });
 });
