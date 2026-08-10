@@ -115,7 +115,7 @@ export const BoutCard = React.memo(
 
         {match.isPlayerBout && !hasResult && onTacticChange && (
           <div
-            className="mt-3 p-3 bg-card border rounded-md shadow-sm"
+            className="mt-3 p-3 bg-card border rounded-md shadow-xs"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-2 mb-2 pb-2 border-b">

@@ -1,5 +1,4 @@
 import { createRoot } from "react-dom/client";
-import type { ReactElement } from "react";
 import App from "./App";
 import { SplashScreen } from "./components/SplashScreen";
 import { BardEngine } from "./engine/bard/BardEngine";
@@ -22,7 +21,7 @@ export async function initializeApp(rootElement: HTMLElement | null): Promise<vo
   const root = createRoot(rootElement);
 
   // 1. Show splash immediately
-  root.render((<SplashScreen />) as ReactElement);
+  root.render(<SplashScreen />);
 
   // 2. Await domain loading
   try {
@@ -32,5 +31,5 @@ export async function initializeApp(rootElement: HTMLElement | null): Promise<vo
   }
 
   // 3. Render the app (regardless of success/failure — graceful degradation)
-  root.render((<App />) as ReactElement);
+  root.render(<App />);
 }

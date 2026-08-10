@@ -130,7 +130,7 @@ export function KeshoEditor({ rikishi, open, onClose }: KeshoEditorProps) {
 
             <div className="relative z-10 text-center space-y-4">
               {/* Large Preview */}
-              <div className="p-8 rounded-full bg-background/50 border border-primary/10 shadow-2xl backdrop-blur-sm">
+              <div className="p-8 rounded-full bg-background/50 border border-primary/10 shadow-2xl backdrop-blur-xs">
                 <SumoAvatar
                   config={previewAvatarConfig as AvatarConfig}
                   size="xl"
@@ -186,7 +186,7 @@ export function KeshoEditor({ rikishi, open, onClose }: KeshoEditorProps) {
                         key={m}
                         onClick={() => updateSymbol(m)}
                         className={cn(
-                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                          "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
                           "px-2 py-3 rounded-lg border text-[10px] uppercase font-bold transition-all truncate",
                           config.mainSymbol?.value === m
                             ? "bg-primary text-primary-foreground border-primary shadow-md"
@@ -214,7 +214,7 @@ export function KeshoEditor({ rikishi, open, onClose }: KeshoEditorProps) {
                           updateField("accentColor", p.accent);
                         }}
                         className={cn(
-                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
+                          "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
                           "flex flex-col gap-2 min-w-[80px] group transition-all rounded-md"
                         )}
                       >

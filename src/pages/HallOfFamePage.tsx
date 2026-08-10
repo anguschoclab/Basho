@@ -2,7 +2,6 @@
 // Yearly inductees with portraits, career stats, and greatest fights
 
 import { useMemo, useState } from "react";
-import { Helmet } from "react-helmet";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { RECORDS_TABS } from "@/constants/ui/navigation";
@@ -460,9 +459,9 @@ export default function HallOfFamePage() {
 
   return (
     <AppLayout pageTitle="Hall of Fame" subNavTabs={RECORDS_TABS} activeSubTab="hall-of-fame">
-      <Helmet>
+
         <title>Hall of Fame — Sumo Manager</title>
-      </Helmet>
+
       <div className="space-y-6">
         {/* Hero Header */}
         <div className="relative overflow-hidden rounded-lg border bg-gradient-to-br from-gold/10 via-background to-primary/5 p-6">

@@ -35,7 +35,7 @@ export function KeshoBadge({ kesho, size = "md", showTier = true, className }: K
   return (
     <div
       className={cn(
-        "relative rounded-sm overflow-hidden shadow-md cursor-pointer hover:shadow-lg transition-shadow",
+        "relative rounded-xs overflow-hidden shadow-md cursor-pointer hover:shadow-lg transition-shadow",
         sizeClasses[size],
         className
       )}
@@ -65,7 +65,7 @@ export function KeshoBadge({ kesho, size = "md", showTier = true, className }: K
 
       {/* Border */}
       <div
-        className="absolute inset-0 rounded-sm border-2"
+        className="absolute inset-0 rounded-xs border-2"
         style={{ borderColor: kesho.accentColor }}
       />
 

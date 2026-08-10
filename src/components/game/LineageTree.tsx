@@ -13,7 +13,7 @@ interface LineageTreeProps {
  * LineageTree Component
  * Visualizes the mentorship spirit lineage of a rikishi (Ancestors).
  */
-export const LineageTree: React.FC<LineageTreeProps> = ({ rikishiId }) => {
+export const LineageTree = ({ rikishiId }: LineageTreeProps) => {
   const { state } = useGame();
 
   const lineage = useMemo(() => {

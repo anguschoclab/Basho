@@ -105,7 +105,7 @@ export function SaveSlotManager({
           </Button>
         </DialogTrigger>
 
-        <DialogContent className="max-w-lg border-t-8 border-t-primary shadow-2xl backdrop-blur-sm bg-background/95">
+        <DialogContent className="max-w-lg border-t-8 border-t-primary shadow-2xl backdrop-blur-xs bg-background/95">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-2xl font-display font-bold">
               <Save className="w-6 h-6 text-primary" />
@@ -126,7 +126,7 @@ export function SaveSlotManager({
                 saveSlots.map((slot) => (
                   <Card
                     key={slot.key}
-                    className="hover:border-primary/50 transition-all cursor-pointer group shadow-sm hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ring-offset-background"
+                    className="hover:border-primary/50 transition-all cursor-pointer group shadow-xs hover:shadow-md focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ring-offset-background"
                     onClick={() => handleLoadSlot(slot.slotName)}
                     role="button"
                     tabIndex={0}

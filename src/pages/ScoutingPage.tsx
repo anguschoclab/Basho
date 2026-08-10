@@ -4,7 +4,6 @@
 import { OpponentScoutingTab } from "@/components/scouting/OpponentScoutingTab";
 import { StableIntelTab } from "@/components/scouting/StableIntelTab";
 import { RecruitingTab } from "@/components/scouting/RecruitingTab";
-import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { OFFICE_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/useGame";
@@ -28,13 +27,13 @@ export default function ScoutingPage() {
 
   return (
     <AppLayout pageTitle="Scouting Network" subNavTabs={OFFICE_TABS} activeSubTab="scouting">
-      <Helmet>
+
         <title>Scouting & Recruitment — Basho</title>
         <meta
           name="description"
           content="Scout opponents, evaluate prospects, and build your roster in Basho sumo management simulation."
         />
-      </Helmet>
+
 
       <div className="space-y-6">
         <PageHeader

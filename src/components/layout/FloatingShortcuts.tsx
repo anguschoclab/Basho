@@ -15,7 +15,7 @@ export function FloatingShortcuts({ eventLogOpen, setEventLogOpen }: FloatingSho
         <Button
           variant="outline"
           size="icon"
-          className="h-9 w-9 bg-card shadow-sm border-border/50 hover:bg-accent"
+          className="h-9 w-9 bg-card shadow-xs border-border/50 hover:bg-accent"
           onClick={() => setEventLogOpen(true)}
           aria-label="Open Event Log"
           tooltip="Open Event Log"
@@ -28,7 +28,7 @@ export function FloatingShortcuts({ eventLogOpen, setEventLogOpen }: FloatingSho
       <Button
         variant="outline"
         size="icon"
-        className="h-9 w-9 bg-card/80 shadow-sm border-border/50 hover:bg-accent"
+        className="h-9 w-9 bg-card/80 shadow-xs border-border/50 hover:bg-accent"
         aria-label="Keyboard Shortcuts"
         tooltip={
           <div className="space-y-2 w-64">

@@ -230,7 +230,7 @@ export function WeeklyDrillPlanner({
             <button
               type="button"
               onClick={toggleSelectAll}
-              className="h-8 w-8 flex items-center justify-center hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-sm"
+              className="h-8 w-8 flex items-center justify-center hover:text-primary transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-xs"
               aria-label={isAllSelected ? "Deselect all rikishi" : "Select all rikishi"}
             >
               {isAllSelected ? <CheckSquare className="h-4 w-4" /> : <Square className="h-4 w-4" />}
@@ -267,7 +267,7 @@ export function WeeklyDrillPlanner({
                 <button
                   onClick={() => toggleSelect(rikishi.id)}
                   className={cn(
-                    "transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-sm",
+                    "transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-xs",
                     isSelected ? "text-primary" : "text-muted-foreground/30 hover:text-primary"
                   )}
                   aria-label={
@@ -328,7 +328,7 @@ export function WeeklyDrillPlanner({
                           drill === "teppo" && "border-primary/40 text-primary bg-primary/5",
                           drill === "moushi-ai" && "border-west/40 text-west bg-west/5",
                           drill === "shindo" && "border-success/40 text-success bg-success/5",
-                          "hover:border-primary hover:bg-primary/5 hover:scale-[1.02] shadow-sm"
+                          "hover:border-primary hover:bg-primary/5 hover:scale-[1.02] shadow-xs"
                         )}
                       >
                         <div className="shrink-0">{DRILL_ICONS[drill]}</div>

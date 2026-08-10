@@ -123,7 +123,7 @@ export function BoutPreMatchOverlay({ preview, onDismiss, onBegin }: BoutPreMatc
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-xs">
       <div className="w-full max-w-md mx-4 bg-card border border-border rounded-lg shadow-xl overflow-hidden">
         {/* Top color accent bars */}
         <div className="flex h-1">

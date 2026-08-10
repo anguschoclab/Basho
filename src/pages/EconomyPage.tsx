@@ -1,6 +1,5 @@
 import { useMemo, useCallback, useState } from "react";
 import { useGameStore } from "@/store/gameStore";
-import { Helmet } from "react-helmet";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Loader2, AlertCircle } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
@@ -181,9 +180,9 @@ export default function EconomyPage() {
 
   return (
     <AppLayout subNavTabs={OFFICE_TABS} activeSubTab="economy" pageTitle="Financial Management">
-      <Helmet>
+
         <title>Economy — {playerHeya.name} | Basho</title>
-      </Helmet>
+
 
       <div className="space-y-6">
         <PageHeader

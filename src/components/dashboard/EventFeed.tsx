@@ -60,7 +60,7 @@ const EventFeedItem = React.memo(
 
     return (
       <div
-        className={`flex gap-3 p-2 rounded hover:bg-slate-800/50 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${importanceClass}`}
+        className={`flex gap-3 p-2 rounded hover:bg-slate-800/50 transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${importanceClass}`}
         role="button"
         tabIndex={0}
         onClick={() => onSelect(event)}

@@ -99,7 +99,7 @@ export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 px-3 text-[10px] font-black uppercase tracking-widest bg-background shadow-sm"
+              className="h-8 px-3 text-[10px] font-black uppercase tracking-widest bg-background shadow-xs"
               tooltip="Toggle official Association registry view"
             >
               <LayoutGrid className="h-3 w-3 mr-1.5" /> Registry
@@ -134,7 +134,7 @@ export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
             side="top"
           >
             <Card
-              className="paper group hover:border-primary/50 cursor-pointer overflow-hidden relative animate-in zoom-in-95 fill-mode-both focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ring-offset-background"
+              className="paper group hover:border-primary/50 cursor-pointer overflow-hidden relative animate-in zoom-in-95 fill-mode-both focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ring-offset-background"
               style={{ animationDelay: `${idx * 40}ms` }}
               onClick={() => onRikishiClick(r.id)}
               role="button"

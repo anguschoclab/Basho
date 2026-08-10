@@ -104,10 +104,10 @@ export function StatCard({
                   {p.value}%
                 </p>
               </div>
-              <div className="h-1 w-full rounded-sm bg-muted/40 overflow-hidden">
+              <div className="h-1 w-full rounded-xs bg-muted/40 overflow-hidden">
                 <div
                   className={cn(
-                    "h-full rounded-sm transition-all duration-500",
+                    "h-full rounded-xs transition-all duration-500",
                     PROGRESS_TONE[p.tone ?? "default"]
                   )}
                   style={{ width: `${Math.min(p.value, 100)}%` }}

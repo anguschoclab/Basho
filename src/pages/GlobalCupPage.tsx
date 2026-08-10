@@ -4,7 +4,6 @@
  * Main tournament page for the Global Cup (Worlds Exhibition).
  */
 
-import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/useGame";
@@ -49,9 +48,9 @@ export default function GlobalCupPage() {
   if (!cup || !cup.isActive) {
     return (
       <AppLayout pageTitle="Global Cup" subNavTabs={TOURNAMENT_TABS} activeSubTab="global-cup">
-        <Helmet>
+
           <title>Global Cup | Basho</title>
-        </Helmet>
+
         <div className="flex flex-col items-center justify-center h-[60vh] text-center space-y-4">
           <Trophy className="h-16 w-16 text-gold/50" />
           <h1 className="text-3xl font-display font-bold">世界大相撲</h1>
@@ -88,9 +87,9 @@ export default function GlobalCupPage() {
 
   return (
     <AppLayout pageTitle="Global Cup">
-      <Helmet>
+
         <title>Global Cup | Basho</title>
-      </Helmet>
+
 
       <div className="space-y-8">
         {/* Hero Section */}

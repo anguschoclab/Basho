@@ -150,7 +150,7 @@ export function HeyaCard({
             Review Roster
           </Button>
           {isSelected && (
-            <div className="bg-primary h-5 w-5 rounded-sm flex items-center justify-center text-primary-foreground text-[10px]">
+            <div className="bg-primary h-5 w-5 rounded-xs flex items-center justify-center text-primary-foreground text-[10px]">
               ✓
             </div>
           )}

@@ -57,7 +57,7 @@ export function SubNavTabs({
                   }
                 }}
                 className={cn(
-                  "relative h-full px-4 flex items-center transition-all duration-150 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
+                  "relative h-full px-4 flex items-center transition-all duration-150 group focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
                   isActive
                     ? "text-[hsl(var(--primary))]"
                     : "text-[hsl(var(--muted-foreground))] hover:text-[hsl(var(--foreground))]"

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
 import { STABLE_TABS } from "@/constants/ui/navigation";
@@ -80,9 +79,9 @@ export default function OyakataPage() {
 
   return (
     <AppLayout subNavTabs={STABLE_TABS} activeSubTab="oyakata" pageTitle="Oyakata Profile">
-      <Helmet>
+
         <title>Oyakata Profile | Basho</title>
-      </Helmet>
+
       <div className="space-y-6">
         <PageHeader
           eyebrow="── MY STABLE ──"

@@ -36,7 +36,7 @@ const YushoContender = React.memo(({ entry, rank }: YushoContenderProps) => {
 
   return (
     <div
-      className="flex flex-col items-center gap-2 p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
+      className="flex flex-col items-center gap-2 p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
       onClick={() => navigate({ to: "/rikishi", params: { id: entry.id } })}
       role="button"
       tabIndex={0}
@@ -61,7 +61,7 @@ const YushoContender = React.memo(({ entry, rank }: YushoContenderProps) => {
         />
         {medal && MedalIcon && (
           <div
-            className={`absolute -bottom-1 -right-1 w-7 h-7 rounded-full ${medal.bg} border-2 border-background flex items-center justify-center shadow-sm`}
+            className={`absolute -bottom-1 -right-1 w-7 h-7 rounded-full ${medal.bg} border-2 border-background flex items-center justify-center shadow-xs`}
           >
             <MedalIcon className={`w-4 h-4 ${medal.color}`} />
           </div>
@@ -93,7 +93,7 @@ const YushoContender = React.memo(({ entry, rank }: YushoContenderProps) => {
   );
 });
 
-export const YushoRaceWidget: React.FC = () => {
+export const YushoRaceWidget = () => {
   const { state } = useGame();
   const navigate = useNavigate();
 

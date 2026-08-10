@@ -14,10 +14,15 @@ interface TooltipWrapProps {
  * A reusable wrapper to provide consistent tooltips with standard 500ms delay.
  * quality over speed: handles asChild correctly for Radix triggers.
  */
-export const TooltipWrap = React.forwardRef<HTMLDivElement, TooltipWrapProps>(function TooltipWrap(
-  { children, content, side = "top", align = "center", delayDuration = 500, className },
-  ref
-) {
+export function TooltipWrap({
+  children,
+  content,
+  side = "top",
+  align = "center",
+  delayDuration = 500,
+  className,
+  ref,
+}: TooltipWrapProps & { ref?: React.Ref<HTMLDivElement> }) {
   if (!content) {
     if (ref && React.isValidElement(children)) {
       return React.cloneElement(children as React.ReactElement<{ ref?: React.Ref<unknown> }>, {
@@ -35,5 +40,5 @@ export const TooltipWrap = React.forwardRef<HTMLDivElement, TooltipWrapProps>(fu
       </TooltipContent>
     </Tooltip>
   );
-});
+}
 TooltipWrap.displayName = "TooltipWrap";

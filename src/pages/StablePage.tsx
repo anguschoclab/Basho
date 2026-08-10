@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { STABLE_TABS } from "@/constants/ui/navigation";
 import { useNavigate, useParams } from "@tanstack/react-router";
@@ -73,9 +72,9 @@ export default function StablePage() {
 
   return (
     <AppLayout pageTitle="Stable Operations" subNavTabs={STABLE_TABS} activeSubTab="stable">
-      <Helmet>
+
         <title>{heya.name} — Stable Profile</title>
-      </Helmet>
+
 
       <div className="space-y-8">
         <PageHeader

@@ -95,7 +95,7 @@ describe("StatCard", () => {
       <StatCard eyebrow="E" title="T" stats={baseStats} progress={progress} />
     );
     expect(screen.getByText("80%")).toBeTruthy();
-    expect(container.querySelector(".h-full.rounded-sm")).toBeTruthy();
+    expect(container.querySelector(".h-full.rounded-xs")).toBeTruthy();
   });
 
   it("clamps progress bar width to 100% for value > 100", () => {
@@ -103,7 +103,7 @@ describe("StatCard", () => {
     const { container } = render(
       <StatCard eyebrow="E" title="T" stats={baseStats} progress={progress} />
     );
-    const bar = container.querySelector(".h-full.rounded-sm") as HTMLElement;
+    const bar = container.querySelector(".h-full.rounded-xs") as HTMLElement;
     expect(bar.style.width).toBe("100%");
   });
 

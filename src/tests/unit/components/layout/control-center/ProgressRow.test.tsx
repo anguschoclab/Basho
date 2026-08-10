@@ -50,13 +50,13 @@ describe("ProgressRow", () => {
 
   it("sets bar width style to clamped value", () => {
     const { container } = render(<ProgressRow name="Fatigue" value={150} />);
-    const bar = container.querySelector(".h-full.rounded-sm") as HTMLElement;
+    const bar = container.querySelector(".h-full.rounded-xs") as HTMLElement;
     expect(bar.style.width).toBe("100%");
   });
 
   it("sets bar width to 0% for negative value", () => {
     const { container } = render(<ProgressRow name="Fatigue" value={-10} />);
-    const bar = container.querySelector(".h-full.rounded-sm") as HTMLElement;
+    const bar = container.querySelector(".h-full.rounded-xs") as HTMLElement;
     expect(bar.style.width).toBe("0%");
   });
 
@@ -70,7 +70,7 @@ describe("ProgressRow", () => {
     ["destructive", "bg-destructive"],
   ] as const)("applies BAR_TONE class for tone=%s", (tone, expectedClass) => {
     const { container } = render(<ProgressRow name="Test" value={50} tone={tone} />);
-    const bar = container.querySelector(".h-full.rounded-sm") as HTMLElement;
+    const bar = container.querySelector(".h-full.rounded-xs") as HTMLElement;
     expect(bar.classList.contains(expectedClass)).toBe(true);
   });
 
@@ -90,7 +90,7 @@ describe("ProgressRow", () => {
 
   it("defaults tone to 'default'", () => {
     const { container } = render(<ProgressRow name="Test" value={50} />);
-    const bar = container.querySelector(".h-full.rounded-sm") as HTMLElement;
+    const bar = container.querySelector(".h-full.rounded-xs") as HTMLElement;
     expect(bar.classList.contains("bg-primary")).toBe(true);
   });
 

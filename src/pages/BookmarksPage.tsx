@@ -1,5 +1,4 @@
 import { useMemo } from "react";
-import { Helmet } from "react-helmet";
 import { useGame } from "@/contexts/useGame";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -113,9 +112,9 @@ export default function BookmarksPage() {
 
   return (
     <AppLayout pageTitle="Bookmarks">
-      <Helmet>
+
         <title>Bookmarks | Basho Manager</title>
-      </Helmet>
+
 
       <div className="max-w-4xl mx-auto space-y-6 pb-20 animate-in fade-in duration-700">
         {bookmarks.length === 0 ? (

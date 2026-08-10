@@ -46,7 +46,7 @@ export function ClickableName({ type, id, name, className, children }: Clickable
     <Link
       to={to}
       className={cn(
-        "cursor-pointer hover:text-primary hover:underline underline-offset-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-sm",
+        "cursor-pointer hover:text-primary hover:underline underline-offset-2 transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 rounded-xs",
         className
       )}
       onClick={(e) => e.stopPropagation()}

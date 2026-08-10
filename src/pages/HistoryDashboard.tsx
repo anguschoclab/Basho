@@ -202,7 +202,7 @@ const StablesTab = ({ heyas, retired }: { heyas: Heya[]; retired: Rikishi[] }) =
                   {(heya.lineage || []).map((tenure: LineageTenure, idx: number) => (
                     <div
                       key={idx}
-                      className="flex-shrink-0 w-56 bg-secondary/50 p-4 border border-border rounded-sm relative"
+                      className="flex-shrink-0 w-56 bg-secondary/50 p-4 border border-border rounded-xs relative"
                     >
                       <div className="absolute -left-2 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-primary" />
                       <div className="text-muted-foreground text-[10px] uppercase tracking-wider font-mono mb-1">

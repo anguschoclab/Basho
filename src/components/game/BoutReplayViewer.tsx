@@ -1,7 +1,8 @@
 // BoutReplayViewer.tsx — 2D bout visualizer (composition root)
 // Canvas rendering, animation state, and controls are in boutReplay/.
 
-import { forwardRef, useImperativeHandle } from "react";
+import { useImperativeHandle } from "react";
+import type { Ref } from "react";
 import { cn } from "@/lib/utils";
 import type { BoutResult } from "@/engine/types/basho";
 import type { UIRikishi } from "@/presenters/uiModels";
@@ -25,11 +26,16 @@ interface BoutReplayViewerProps {
   onProgressUpdate?: (progress: BoutReplayProgress) => void;
 }
 
-export const BoutReplayViewer = forwardRef<BoutReplayViewerHandle, BoutReplayViewerProps>(
-  function BoutReplayViewer(
-    { result, eastRikishi, westRikishi, className, autoPlay = false, onComplete, onProgressUpdate },
-    ref
-  ) {
+export function BoutReplayViewer({
+  result,
+  eastRikishi,
+  westRikishi,
+  className,
+  autoPlay = false,
+  onComplete,
+  onProgressUpdate,
+  ref,
+}: BoutReplayViewerProps & { ref?: Ref<BoutReplayViewerHandle> }) {
     const {
       canvasRef,
       isPlaying,
@@ -151,5 +157,4 @@ export const BoutReplayViewer = forwardRef<BoutReplayViewerHandle, BoutReplayVie
         />
       </div>
     );
-  }
-);
+}

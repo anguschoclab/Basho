@@ -1,4 +1,3 @@
-import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
 import { Card, CardContent } from "@/components/ui/card";
@@ -147,9 +146,9 @@ export default function RivalriesPage() {
 
   return (
     <AppLayout pageTitle="Rivalries & Feuds" subNavTabs={TOURNAMENT_TABS} activeSubTab="rivalries">
-      <Helmet>
+
         <title>Rivalries & Feuds - Basho</title>
-      </Helmet>
+
 
       <div className="space-y-6 animate-fade-in">
         <PageHeader

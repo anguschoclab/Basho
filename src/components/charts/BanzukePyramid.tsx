@@ -40,7 +40,7 @@ export function BanzukePyramid({ data, className }: BanzukePyramidProps) {
           <div className="flex-1 flex items-center">
             <div
               className={cn(
-                "h-6 rounded-sm flex items-center justify-end px-2",
+                "h-6 rounded-xs flex items-center justify-end px-2",
                 rankColors[item.rank] || "bg-muted"
               )}
               style={{ width: `${(item.count / maxCount) * 100}%` }}

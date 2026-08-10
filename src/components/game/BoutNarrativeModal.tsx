@@ -225,7 +225,7 @@ export function BoutNarrativeModal({
             westRikishi={west}
             autoPlay={autoPlay}
             onProgressUpdate={setAnimProgress}
-            className="shadow-sm mx-auto max-w-lg bg-background rounded-md"
+            className="shadow-xs mx-auto max-w-lg bg-background rounded-md"
           />
           <div className="flex justify-center mt-1.5 mb-1">
             <Button

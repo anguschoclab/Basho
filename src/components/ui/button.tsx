@@ -15,61 +15,57 @@ export interface ButtonProps
   tooltipSide?: "top" | "right" | "bottom" | "left";
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      className,
-      variant,
-      size,
-      asChild = false,
-      tooltip,
-      tooltipSide = "top",
-      type = "button",
-      ...props
-    },
-    ref
-  ) => {
-    const Comp = asChild ? Slot : "button";
+function Button({
+  className,
+  variant,
+  size,
+  asChild = false,
+  tooltip,
+  tooltipSide = "top",
+  type = "button",
+  ref,
+  ...props
+}: ButtonProps & { ref?: React.Ref<HTMLButtonElement> }) {
+  const Comp = asChild ? Slot : "button";
 
-    const derivedProps = { type, ...props };
-    if (!derivedProps["aria-label"] && typeof tooltip === "string" && tooltip.trim().length > 0) {
-      derivedProps["aria-label"] = tooltip;
-    }
+  const derivedProps = { type, ...props };
+  if (!derivedProps["aria-label"] && typeof tooltip === "string" && tooltip.trim().length > 0) {
+    derivedProps["aria-label"] = tooltip;
+  }
 
-    const button = (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...derivedProps}
-      />
-    );
+  const button = (
+    <Comp
+      className={cn(buttonVariants({ variant, size, className }))}
+      ref={ref}
+      {...derivedProps}
+    />
+  );
 
-    if (tooltip) {
-      if (props.disabled) {
-        // Native disabled elements swallow pointer events in browsers.
-        // We wrap disabled buttons in a span that has cursor-not-allowed so the tooltip triggers properly.
-        return (
-          <TooltipWrap content={tooltip} side={tooltipSide}>
-            <span className="inline-block cursor-not-allowed">
-              <Comp
-                className={cn(buttonVariants({ variant, size, className }), "pointer-events-none")}
-                ref={ref}
-                {...derivedProps}
-              />
-            </span>
-          </TooltipWrap>
-        );
-      }
+  if (tooltip) {
+    if (props.disabled) {
+      // Native disabled elements swallow pointer events in browsers.
+      // We wrap disabled buttons in a span that has cursor-not-allowed so the tooltip triggers properly.
       return (
         <TooltipWrap content={tooltip} side={tooltipSide}>
-          {button}
+          <span className="inline-block cursor-not-allowed">
+            <Comp
+              className={cn(buttonVariants({ variant, size, className }), "pointer-events-none")}
+              ref={ref}
+              {...derivedProps}
+            />
+          </span>
         </TooltipWrap>
       );
     }
-
-    return button;
+    return (
+      <TooltipWrap content={tooltip} side={tooltipSide}>
+        {button}
+      </TooltipWrap>
+    );
   }
-);
+
+  return button;
+}
 Button.displayName = "Button";
 
 export { Button };

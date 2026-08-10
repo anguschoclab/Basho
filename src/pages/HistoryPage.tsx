@@ -14,7 +14,6 @@
 // - Guards missing rank in RANK_HIERARCHY
 // - Safer prize display (shows yusho prize only when available)
 
-import { Helmet } from "react-helmet";
 import { useNavigate } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import { useGame } from "@/contexts/useGame";
@@ -106,9 +105,9 @@ export default function HistoryPage() {
 
   return (
     <AppLayout pageTitle="Stable History" subNavTabs={RECORDS_TABS} activeSubTab="history">
-      <Helmet>
+
         <title>History - Basho</title>
-      </Helmet>
+
 
       <div className="space-y-6">
         <div className="flex items-center gap-4">

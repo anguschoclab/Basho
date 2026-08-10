@@ -47,7 +47,7 @@ function TrackBox({ state }: { state: "yusho" | "jun-yusho" | "empty" }) {
   if (state === "yusho") {
     return (
       <div
-        className="h-5 w-5 rounded-sm bg-gold border border-gold/60 flex items-center justify-center"
+        className="h-5 w-5 rounded-xs bg-gold border border-gold/60 flex items-center justify-center"
         title="Yusho (Tournament Win)"
         aria-label="Yusho"
       >
@@ -58,7 +58,7 @@ function TrackBox({ state }: { state: "yusho" | "jun-yusho" | "empty" }) {
   if (state === "jun-yusho") {
     return (
       <div
-        className="h-5 w-5 rounded-sm border border-gold/60 flex items-center justify-center overflow-hidden"
+        className="h-5 w-5 rounded-xs border border-gold/60 flex items-center justify-center overflow-hidden"
         title="Jun-Yusho (Runner-up)"
         aria-label="Jun-Yusho"
         style={{ background: "linear-gradient(to top, rgb(var(--gold)) 50%, transparent 50%)" }}
@@ -69,7 +69,7 @@ function TrackBox({ state }: { state: "yusho" | "jun-yusho" | "empty" }) {
   }
   return (
     <div
-      className="h-5 w-5 rounded-sm border border-border/40 bg-muted/30"
+      className="h-5 w-5 rounded-xs border border-border/40 bg-muted/30"
       title="No notable result"
       aria-label="Empty"
     />

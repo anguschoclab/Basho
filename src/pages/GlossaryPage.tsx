@@ -1,5 +1,4 @@
 import { useState, useMemo } from "react";
-import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -46,9 +45,9 @@ export default function GlossaryPage() {
 
   return (
     <AppLayout pageTitle="Glossary">
-      <Helmet>
+
         <title>Glossary — Sumo Manager Pro</title>
-      </Helmet>
+
 
       <div className="space-y-6">
         <PageHeader

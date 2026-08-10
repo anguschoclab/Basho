@@ -292,7 +292,7 @@ export function AppSidebar() {
               </span>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <div
-                  className="w-1.5 h-1.5 rounded-sm shrink-0"
+                  className="w-1.5 h-1.5 rounded-xs shrink-0"
                   style={{
                     background:
                       playerHeya.runwayBand === "secure"
@@ -330,11 +330,11 @@ export function AppSidebar() {
               </span>
             </div>
             <div
-              className="w-full rounded-sm h-1.5 overflow-hidden"
+              className="w-full rounded-xs h-1.5 overflow-hidden"
               style={{ background: "hsl(var(--sidebar-border))" }}
             >
               <div
-                className="h-full rounded-sm transition-all duration-700"
+                className="h-full rounded-xs transition-all duration-700"
                 style={{
                   width: `${((bashoDay ?? 1) / 15) * 100}%`,
                   background: "linear-gradient(to right, hsl(var(--east)), hsl(var(--gold)))",

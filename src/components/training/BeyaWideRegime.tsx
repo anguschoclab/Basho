@@ -58,7 +58,7 @@ export function BeyaWideRegime({
                   onClick={() => onIntensityChange(intensity)}
                   aria-label={`Set intensity to ${intensity}`}
                   className={cn(
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
+                    "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
                     "dossier-paper p-4 text-left rounded-lg transition-all relative overflow-hidden group w-full",
                     isActive
                       ? "border-primary bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl border-2"
@@ -106,7 +106,7 @@ export function BeyaWideRegime({
                   onClick={() => onFocusChange(focus)}
                   aria-label={`Set tactical focus to ${getFocusLabel(focus)}`}
                   className={cn(
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
+                    "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
                     "dossier-paper p-4 text-left rounded-lg transition-all relative overflow-hidden w-full",
                     isActive
                       ? "border-primary bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl border-2"
@@ -146,7 +146,7 @@ export function BeyaWideRegime({
                   onClick={() => onRecoveryChange(recovery)}
                   aria-label={`Set recovery discipline to ${getRecoveryLabel(recovery)}`}
                   className={cn(
-                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
+                    "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
                     "dossier-paper p-4 text-left rounded-lg transition-all relative overflow-hidden w-full",
                     isActive
                       ? "border-primary bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl border-2"

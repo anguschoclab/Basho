@@ -95,7 +95,7 @@ export function StableStatsTable({ rikishiList }: StableStatsTableProps) {
       </CardHeader>
 
       <CardContent className="px-0">
-        <ScrollArea className="h-[600px] w-full rounded-md border border-border/50 bg-card/30 backdrop-blur-sm">
+        <ScrollArea className="h-[600px] w-full rounded-md border border-border/50 bg-card/30 backdrop-blur-xs">
           <table className="w-full text-sm">
             <thead className="bg-muted/50 sticky top-0 z-10">
               <tr className="text-left border-b border-border/50">
@@ -178,7 +178,7 @@ const TableHeader = React.memo(function TableHeader({
   return (
     <th
       className={cn(
-        "p-4 font-semibold cursor-pointer select-none whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm",
+        "p-4 font-semibold cursor-pointer select-none whitespace-nowrap focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary rounded-xs",
         isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
       )}
       onClick={() => onClick(id)}
@@ -211,7 +211,7 @@ const DivisionFilterBadge = React.memo(function DivisionFilterBadge({
   return (
     <Badge
       variant={isActive ? "default" : "outline"}
-      className="cursor-pointer capitalize px-3 py-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
+      className="cursor-pointer capitalize px-3 py-0.5 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
       onClick={() => onClick(division)}
       role="button"
       tabIndex={0}

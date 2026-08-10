@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import type { ComponentType } from "react";
-import { Helmet } from "react-helmet";
 import { Link } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { RECORDS_TABS } from "@/constants/ui/navigation";
@@ -135,9 +134,9 @@ export default function AlmanacPage() {
 
   return (
     <AppLayout pageTitle="Almanac" subNavTabs={RECORDS_TABS} activeSubTab="almanac">
-      <Helmet>
+
         <title>Almanac - The Memory of the World</title>
-      </Helmet>
+
 
       <div className="space-y-6">
         <PageHeader

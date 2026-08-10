@@ -68,7 +68,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   }, [storeDigest, state.world]);
 
   // Initialize worker once on mount and wire world-update sync
-  useMemo(() => {
+  useEffect(() => {
     initWorker();
     setOnWorldUpdated((world: WorldState) => {
       dispatch(actions.updateWorld(world));

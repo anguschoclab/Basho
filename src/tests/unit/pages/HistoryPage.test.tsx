@@ -20,9 +20,6 @@ vi.mock("@/components/ClickableName", () => ({
   StableName: ({ name }: { name: string }) => <span>{name}</span>,
 }));
 
-vi.mock("react-helmet", () => ({
-  Helmet: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-}));
 
 vi.mock("@/components/layout/control-center", () => ({
   PageHeader: ({ title }: { title: string }) => <div>{title}</div>,

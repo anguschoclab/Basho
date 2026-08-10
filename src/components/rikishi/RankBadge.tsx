@@ -142,7 +142,7 @@ export function RankBadge({
           className={cn(
             "inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-black uppercase tracking-tight font-mono",
             // Sanyaku - gold treatment
-            division === "sanyaku" && "bg-gold text-black shadow-sm",
+            division === "sanyaku" && "bg-gold text-black shadow-xs",
             division === "sanyaku" && rank === "ozeki" && "bg-silver text-black",
             division === "sanyaku" &&
               (rank === "sekiwake" || rank === "komusubi") &&

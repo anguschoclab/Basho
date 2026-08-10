@@ -10,7 +10,7 @@
  * - Filter mentors by eligibility (juryo+, same heya, not injured/retired)
  */
 
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -67,7 +67,7 @@ export function MentorAssignmentPanel({
   roster,
   onAssignMentor,
   onRemoveMentor,
-}: MentorAssignmentPanelProps): JSX.Element {
+}: MentorAssignmentPanelProps): React.JSX.Element {
   /**
    * Filter eligible mentors from the heya roster.
    * Uses MentorshipService.canMentor so the UI and engine share one source of truth.

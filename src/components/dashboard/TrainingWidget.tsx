@@ -53,7 +53,7 @@ const ProfileRow = React.memo(
                   opt.disabled
                     ? "opacity-40 cursor-not-allowed border-border bg-muted/30 text-muted-foreground"
                     : value === opt.value
-                      ? "bg-primary text-primary-foreground border-primary shadow-sm hover:bg-primary/90"
+                      ? "bg-primary text-primary-foreground border-primary shadow-xs hover:bg-primary/90"
                       : "bg-muted/50 text-muted-foreground border-border hover:bg-muted hover:border-border"
                 }`}
               >
@@ -204,7 +204,7 @@ export function TrainingWidget() {
         onClick={toggleExpanded}
         aria-expanded={expanded}
         aria-controls="training-quick-change-panel"
-        className="h-auto p-0 text-[11px] text-primary hover:underline underline-offset-2 rounded-sm"
+        className="h-auto p-0 text-[11px] text-primary hover:underline underline-offset-2 rounded-xs"
       >
         {expanded ? "Hide quick-change ▲" : "Quick-change ▼"}
       </Button>

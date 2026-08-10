@@ -122,7 +122,7 @@ const ProspectList = React.memo(
           <Button
             variant="ghost"
             onClick={onViewAll}
-            className="w-full h-auto py-1 text-[11px] text-primary hover:text-primary/80 hover:bg-transparent rounded-sm"
+            className="w-full h-auto py-1 text-[11px] text-primary hover:text-primary/80 hover:bg-transparent rounded-xs"
           >
             +{prospectsLength - 6} more prospects →
           </Button>

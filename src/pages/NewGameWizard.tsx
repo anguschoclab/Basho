@@ -9,7 +9,6 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useGame } from "@/contexts/useGame";
-import { Helmet } from "react-helmet";
 import { makeDeterministicSeed } from "@/utils/engineUtils";
 import { generateToshiyoriName } from "@/presenters/engineAccess";
 import { SeededRNG } from "@/presenters/engineAccess";
@@ -94,9 +93,9 @@ export default function NewGameWizard() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col items-center hero-gradient scroll-smooth">
-      <Helmet>
+
         <title>New Career Setup | Basho</title>
-      </Helmet>
+
 
       <WizardHeader currentStep={step} totalSteps={totalSteps} />
 

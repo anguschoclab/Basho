@@ -1,5 +1,4 @@
 import { memo, useMemo, useState } from "react";
-import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/useGame";
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
@@ -155,15 +154,15 @@ export default function BanzukePage() {
 
   return (
     <AppLayout pageTitle="Official Banzuke" subNavTabs={TOURNAMENT_TABS} activeSubTab="banzuke">
-      <Helmet>
+
         <title>Official Banzuke — Rankings | Basho</title>
-      </Helmet>
+
       {/* Media Day Trigger (D1) */}
       {isMediaDay && !showPressConference && (
         <div className="mb-6 bg-gradient-to-r from-gold/10 to-west/10 border border-gold/30 rounded p-6 flex flex-col md:flex-row items-center justify-between gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
           <div className="space-y-1 text-center md:text-left">
             <h2 className="text-xl font-display font-bold uppercase tracking-tight flex items-center gap-3 sumi-e-ink">
-              <span className="h-2 w-2 rounded-sm bg-gold animate-pulse" />
+              <span className="h-2 w-2 rounded-xs bg-gold animate-pulse" />
               Media Day
             </h2>
             <p className="text-sm text-muted-foreground font-body">
@@ -207,7 +206,7 @@ export default function BanzukePage() {
             <div className="flex items-center gap-3">
               {/* Player stable legend */}
               <div className="flex items-center gap-2 text-[10px] font-mono font-bold uppercase text-gold border border-gold/30 rounded px-2 py-1 bg-gold/5 tracking-wider">
-                <span className="h-1.5 w-1.5 rounded-sm bg-gold" />
+                <span className="h-1.5 w-1.5 rounded-xs bg-gold" />
                 Your Stable
               </div>
               <div className="relative">

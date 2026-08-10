@@ -7,7 +7,6 @@
  */
 
 import { useMemo, useState } from "react";
-import { Helmet } from "react-helmet";
 import { useGame } from "@/contexts/useGame";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { STABLE_TABS } from "@/constants/ui/navigation";
@@ -178,9 +177,9 @@ export default function TrainingPage() {
 
   return (
     <AppLayout pageTitle="Training Management" subNavTabs={STABLE_TABS} activeSubTab="training">
-      <Helmet>
+
         <title>Training Ground — {heya.name} | Basho</title>
-      </Helmet>
+
 
       <div className="max-w-6xl mx-auto space-y-10 pb-20 animate-in fade-in duration-700">
         <TrainingHeader heya={heya} rikishiList={rikishiList} currentIntensity={currentIntensity} />

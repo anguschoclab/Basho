@@ -3,10 +3,7 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 
-export const SidebarInput = React.forwardRef<
-  React.ElementRef<typeof Input>,
-  React.ComponentProps<typeof Input>
->(({ className, ...props }, ref) => {
+export function SidebarInput({ ref, className, ...props }: React.ComponentProps<typeof Input> & { ref?: React.Ref<React.ElementRef<typeof Input>> }) {
   return (
     <Input
       ref={ref}
@@ -18,11 +15,10 @@ export const SidebarInput = React.forwardRef<
       {...props}
     />
   );
-});
+}
 SidebarInput.displayName = "SidebarInput";
 
-export const SidebarHeader = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(
-  ({ className, ...props }, ref) => {
+export function SidebarHeader({ ref, className, ...props }: React.ComponentProps<"div"> & { ref?: React.Ref<HTMLDivElement> }) {
     return (
       <div
         ref={ref}
@@ -32,11 +28,9 @@ export const SidebarHeader = React.forwardRef<HTMLDivElement, React.ComponentPro
       />
     );
   }
-);
 SidebarHeader.displayName = "SidebarHeader";
 
-export const SidebarFooter = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(
-  ({ className, ...props }, ref) => {
+export function SidebarFooter({ ref, className, ...props }: React.ComponentProps<"div"> & { ref?: React.Ref<HTMLDivElement> }) {
     return (
       <div
         ref={ref}
@@ -46,13 +40,9 @@ export const SidebarFooter = React.forwardRef<HTMLDivElement, React.ComponentPro
       />
     );
   }
-);
 SidebarFooter.displayName = "SidebarFooter";
 
-export const SidebarSeparator = React.forwardRef<
-  React.ElementRef<typeof Separator>,
-  React.ComponentProps<typeof Separator>
->(({ className, ...props }, ref) => {
+export function SidebarSeparator({ ref, className, ...props }: React.ComponentProps<typeof Separator> & { ref?: React.Ref<React.ElementRef<typeof Separator>> }) {
   return (
     <Separator
       ref={ref}
@@ -61,11 +51,10 @@ export const SidebarSeparator = React.forwardRef<
       {...props}
     />
   );
-});
+}
 SidebarSeparator.displayName = "SidebarSeparator";
 
-export const SidebarContent = React.forwardRef<HTMLDivElement, React.ComponentProps<"div">>(
-  ({ className, ...props }, ref) => {
+export function SidebarContent({ ref, className, ...props }: React.ComponentProps<"div"> & { ref?: React.Ref<HTMLDivElement> }) {
     return (
       <div
         ref={ref}
@@ -78,5 +67,4 @@ export const SidebarContent = React.forwardRef<HTMLDivElement, React.ComponentPr
       />
     );
   }
-);
 SidebarContent.displayName = "SidebarContent";

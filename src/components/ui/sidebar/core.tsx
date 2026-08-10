@@ -108,10 +108,7 @@ export const Sidebar = React.forwardRef<
 );
 Sidebar.displayName = "Sidebar";
 
-export const SidebarTrigger = React.forwardRef<
-  React.ElementRef<typeof Button>,
-  React.ComponentProps<typeof Button>
->(({ className, onClick, ...props }, ref) => {
+export function SidebarTrigger({ ref, className, onClick, ...props }: React.ComponentProps<typeof Button> & { ref?: React.Ref<React.ElementRef<typeof Button>> }) {
   const { toggleSidebar } = useSidebar();
 
   return (
@@ -134,11 +131,10 @@ export const SidebarTrigger = React.forwardRef<
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );
-});
+}
 SidebarTrigger.displayName = "SidebarTrigger";
 
-export const SidebarRail = React.forwardRef<HTMLButtonElement, React.ComponentProps<"button">>(
-  ({ className, ...props }, ref) => {
+export function SidebarRail({ ref, className, ...props }: React.ComponentProps<"button"> & { ref?: React.Ref<HTMLButtonElement> }) {
     const { toggleSidebar } = useSidebar();
 
     return (
@@ -163,11 +159,9 @@ export const SidebarRail = React.forwardRef<HTMLButtonElement, React.ComponentPr
       </TooltipWrap>
     );
   }
-);
 SidebarRail.displayName = "SidebarRail";
 
-export const SidebarInset = React.forwardRef<HTMLDivElement, React.ComponentProps<"main">>(
-  ({ className, ...props }, ref) => {
+export function SidebarInset({ ref, className, ...props }: React.ComponentProps<"main"> & { ref?: React.Ref<HTMLDivElement> }) {
     return (
       <main
         ref={ref}
@@ -180,5 +174,4 @@ export const SidebarInset = React.forwardRef<HTMLDivElement, React.ComponentProp
       />
     );
   }
-);
 SidebarInset.displayName = "SidebarInset";

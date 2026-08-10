@@ -14,7 +14,7 @@ interface RikishiCardProps {
   rikishi: UIRikishi;
 }
 
-export const RikishiCard: React.FC<RikishiCardProps> = React.memo(({ rikishi }) => {
+export const RikishiCard = React.memo(function RikishiCard({ rikishi }: RikishiCardProps) {
   const stanceLabel = useMemo(() => {
     if (rikishi.preferredGrip === "none") return "Oshi-Specialist";
 

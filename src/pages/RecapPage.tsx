@@ -7,7 +7,6 @@
  */
 
 import { useState, useMemo, useEffect, useCallback } from "react";
-import { Helmet } from "react-helmet";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/useGame";
 import { useRequireWorld } from "@/hooks/useRequireWorld";
@@ -309,9 +308,9 @@ export default function RecapPage() {
 
   return (
     <AppLayout pageTitle="Post-Basho Recap" subNavTabs={dashboardTabs} activeSubTab="recap">
-      <Helmet>
+
         <title>{bashoTitle} Recap | Basho</title>
-      </Helmet>
+
 
       <div className="max-w-6xl mx-auto space-y-12 pb-24">
         {/* ═══ HERO SECTION ═══ */}

@@ -572,7 +572,7 @@ export default function GovernancePage() {
                   ].map((favor) => (
                     <Card
                       key={favor.id}
-                      className="relative overflow-hidden group border-border/40 bg-card/30 backdrop-blur-sm"
+                      className="relative overflow-hidden group border-border/40 bg-card/30 backdrop-blur-xs"
                     >
                       <CardContent className="p-3.5 flex items-center justify-between">
                         <div className="flex items-center gap-3">

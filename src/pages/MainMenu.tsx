@@ -7,7 +7,6 @@
  */
 
 import { useState, useMemo, useEffect, useRef } from "react";
-import { Helmet } from "react-helmet";
 import { useNavigate } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 import { useGame } from "@/contexts/useGame";
@@ -128,7 +127,7 @@ export default function MainMenu() {
   if (!state?.world) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 bg-arena-ground">
-        <div className="h-2 w-48 bg-muted rounded-sm overflow-hidden mb-6">
+        <div className="h-2 w-48 bg-muted rounded-xs overflow-hidden mb-6">
           <div className="h-full bg-primary animate-progress-flow" />
         </div>
         <p className="text-[10px] font-mono font-bold uppercase tracking-[0.3em] text-gold/60">
@@ -140,9 +139,9 @@ export default function MainMenu() {
 
   return (
     <>
-      <Helmet>
+
         <title>BASHO — Sumo Management Simulator</title>
-      </Helmet>
+
 
       <div className="min-h-screen bg-background text-foreground flex flex-col items-center">
         {/* ═══ HERO HEADER ═══ */}

@@ -1,7 +1,6 @@
 // MediaPage.tsx — Media & Press coverage dashboard
 // Surfaces headlines, media heat, and heya pressure from media.ts engine
 import { useMemo, useState } from "react";
-import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/useGame";
@@ -177,8 +176,8 @@ function HeatSparkline({ data }: { data: Array<{ basho: string; heat: number }> 
           <YAxis domain={[0, 100]} hide />
           <Tooltip
             contentStyle={{ fontSize: 10, padding: "2px 6px" }}
-            formatter={(v: number) => [`${Math.round(v)}`, "Heat"]}
-            labelFormatter={(l: string) => l.toUpperCase()}
+            formatter={(v) => [`${Math.round(Number(v) || 0)}`, "Heat"]}
+            labelFormatter={(l) => String(l).toUpperCase()}
           />
           <Line
             type="monotone"
@@ -241,9 +240,9 @@ export default function MediaPage() {
 
   return (
     <AppLayout pageTitle="Media & Press" subNavTabs={ASSOCIATION_TABS} activeSubTab="media">
-      <Helmet>
+
         <title>Media & Press — Sumo Manager</title>
-      </Helmet>
+
       <div className="space-y-6">
         <PageHeader
           eyebrow="── ASSOCIATION ──"

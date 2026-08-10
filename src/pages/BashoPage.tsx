@@ -2,7 +2,6 @@
 // Clean layout with prominent day controls, better standings, and bout cards
 
 import { useState, useMemo, useEffect, useCallback, useRef } from "react";
-import { Helmet } from "react-helmet";
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/useGame";
@@ -239,9 +238,9 @@ export default function BashoPage() {
   if (!bashoDigest) {
     return (
       <AppLayout pageTitle="Current Basho" subNavTabs={TOURNAMENT_TABS} activeSubTab="basho">
-        <Helmet>
+
           <title>Current Basho | Basho</title>
-        </Helmet>
+
         <div className="flex flex-col items-center justify-center min-h-[50vh] gap-6 text-center">
           <Trophy className="h-12 w-12 text-muted-foreground/30" />
           <div className="space-y-2">
@@ -280,9 +279,9 @@ export default function BashoPage() {
       subNavTabs={TOURNAMENT_TABS}
       activeSubTab="basho"
     >
-      <Helmet>
+
         <title>{`${bashoInfo?.nameEn || "Tournament"} Day ${day}`}</title>
-      </Helmet>
+
 
       <div className="space-y-4">
         {/* ═══════════ DAY HEADER ═══════════ */}

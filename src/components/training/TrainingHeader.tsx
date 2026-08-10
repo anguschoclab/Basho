@@ -34,7 +34,7 @@ export function TrainingHeader({ heya, rikishiList, currentIntensity }: Training
       </div>
 
       <div className="flex gap-4">
-        <div className="dossier-paper p-3 px-6 rounded-lg flex items-center gap-6 shadow-sm">
+        <div className="dossier-paper p-3 px-6 rounded-lg flex items-center gap-6 shadow-xs">
           <div className="text-center border-r pr-6">
             <p className="pro-header">Current Regime</p>
             <p className="font-display font-black text-sm uppercase tracking-tighter text-primary">

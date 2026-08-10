@@ -32,7 +32,7 @@ describe("useOpfsQuotaListener", () => {
 
   it("registers listener on mount", () => {
     renderHook(() => useOpfsQuotaListener());
-    const calls = addSpy.mock.calls.filter(([type]) => type === EVENT_NAME);
+    const calls = addSpy.mock.calls.filter((call: unknown[]) => call[0] === EVENT_NAME);
     expect(calls).toHaveLength(1);
     expect(typeof calls[0][1]).toBe("function");
   });
@@ -71,7 +71,7 @@ describe("useOpfsQuotaListener", () => {
   it("listener removed on unmount", () => {
     const { unmount } = renderHook(() => useOpfsQuotaListener());
     unmount();
-    const calls = removeSpy.mock.calls.filter(([type]) => type === EVENT_NAME);
+    const calls = removeSpy.mock.calls.filter((call: unknown[]) => call[0] === EVENT_NAME);
     expect(calls).toHaveLength(1);
   });
 
@@ -84,11 +84,11 @@ describe("useOpfsQuotaListener", () => {
 
   it("re-subscribes on re-render (old listener removed, new added)", () => {
     const { rerender } = renderHook(() => useOpfsQuotaListener());
-    const initialAddCount = addSpy.mock.calls.filter(([t]) => t === EVENT_NAME).length;
-    const initialRemoveCount = removeSpy.mock.calls.filter(([t]) => t === EVENT_NAME).length;
+    const initialAddCount = addSpy.mock.calls.filter((call: unknown[]) => call[0] === EVENT_NAME).length;
+    const initialRemoveCount = removeSpy.mock.calls.filter((call: unknown[]) => call[0] === EVENT_NAME).length;
     rerender();
-    const afterAddCount = addSpy.mock.calls.filter(([t]) => t === EVENT_NAME).length;
-    const afterRemoveCount = removeSpy.mock.calls.filter(([t]) => t === EVENT_NAME).length;
+    const afterAddCount = addSpy.mock.calls.filter((call: unknown[]) => call[0] === EVENT_NAME).length;
+    const afterRemoveCount = removeSpy.mock.calls.filter((call: unknown[]) => call[0] === EVENT_NAME).length;
     // Effect with [] deps should NOT re-run on rerender, so counts stay equal.
     expect(afterAddCount).toBe(initialAddCount);
     expect(afterRemoveCount).toBe(initialRemoveCount);

@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, use } from "react";
 
 export type Theme = "dark" | "light" | "system";
 
@@ -14,4 +14,4 @@ export const ThemeContext = createContext<ThemeProviderState>({
   resolvedTheme: "dark",
 });
 
-export const useTheme = () => useContext(ThemeContext);
+export const useTheme = () => use(ThemeContext);

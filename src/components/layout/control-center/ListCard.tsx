@@ -68,9 +68,9 @@ export function ListCard({
             <div
               key={row.id}
               className={cn(
-                "flex items-center gap-2 px-2 py-1.5 rounded-sm text-xs transition-colors",
+                "flex items-center gap-2 px-2 py-1.5 rounded-xs text-xs transition-colors",
                 row.onClick
-                  ? "cursor-pointer hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ring-offset-background"
+                  ? "cursor-pointer hover:bg-muted/50 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ring-offset-background"
                   : ""
               )}
               onClick={row.onClick}

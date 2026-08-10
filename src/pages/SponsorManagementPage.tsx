@@ -1,6 +1,5 @@
 // SponsorManagementPage.tsx — Sponsor contract management
 import { useMemo } from "react";
-import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { OFFICE_TABS } from "@/constants/ui/navigation";
 import { PageHeader } from "@/components/layout/control-center";
@@ -30,9 +29,9 @@ export default function SponsorManagementPage() {
 
   return (
     <AppLayout subNavTabs={OFFICE_TABS} activeSubTab="sponsors" pageTitle="Sponsor Relations">
-      <Helmet>
+
         <title>Sponsor Relations | Basho</title>
-      </Helmet>
+
       <div className="space-y-8">
         <PageHeader
           eyebrow="── OFFICE ──"

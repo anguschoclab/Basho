@@ -1,7 +1,6 @@
 // InjuryRecoveryPage.tsx — Dedicated health & welfare management screen
 import { useCallback, useMemo, useEffect } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { STABLE_TABS } from "@/constants/ui/navigation";
 import { PageHeader } from "@/components/layout/control-center";
@@ -95,9 +94,9 @@ export default function InjuryRecoveryPage() {
 
   return (
     <AppLayout pageTitle="Performance Center" subNavTabs={STABLE_TABS} activeSubTab="medical">
-      <Helmet>
+
         <title>Performance Center — {digest.heyaName} | Basho</title>
-      </Helmet>
+
 
       <div className="space-y-8">
         <PageHeader

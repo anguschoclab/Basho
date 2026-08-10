@@ -7,7 +7,6 @@
  */
 
 import { useState, useMemo } from "react";
-import { Helmet } from "react-helmet";
 import { useNavigate, useParams } from "@tanstack/react-router";
 import { useGame } from "@/contexts/useGame";
 import { useRequireWorld } from "@/hooks/useRequireWorld";
@@ -70,9 +69,9 @@ export default function RikishiPage() {
   if (!rikishiId) {
     return (
       <AppLayout pageTitle="Roster Management" subNavTabs={STABLE_TABS} activeSubTab="roster">
-        <Helmet>
+
           <title>Roster Management | Basho</title>
-        </Helmet>
+
         <div className="space-y-6">
           <PageHeader
             eyebrow="── MY STABLE ──"
@@ -133,9 +132,9 @@ export default function RikishiPage() {
         { label: rikishi.shikona, href: `/rikishi/${rikishiId}`, isCurrent: true },
       ]}
     >
-      <Helmet>
+
         <title>{rikishi.shikona} — Official Association Profile | Basho</title>
-      </Helmet>
+
 
       <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in duration-700">
         <RikishiProfileHeader

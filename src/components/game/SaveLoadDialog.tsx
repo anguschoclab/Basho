@@ -227,7 +227,7 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
             <TooltipWrap content="Switch to Save Mode: Create new save points" side="top">
               <Button
                 variant="ghost"
-                className={`flex-1 ${mode === "save" ? "bg-background text-foreground shadow-sm hover:bg-background" : "text-muted-foreground hover:text-foreground hover:bg-transparent"}`}
+                className={`flex-1 ${mode === "save" ? "bg-background text-foreground shadow-xs hover:bg-background" : "text-muted-foreground hover:text-foreground hover:bg-transparent"}`}
                 onClick={() => setMode("save")}
               >
                 <Save className="h-3.5 w-3.5 inline mr-1.5" />
@@ -237,7 +237,7 @@ export function SaveLoadDialog({ trigger }: SaveLoadDialogProps) {
             <TooltipWrap content="Switch to Load Mode: Restore previous save points" side="top">
               <Button
                 variant="ghost"
-                className={`flex-1 ${mode === "load" ? "bg-background text-foreground shadow-sm hover:bg-background" : "text-muted-foreground hover:text-foreground hover:bg-transparent"}`}
+                className={`flex-1 ${mode === "load" ? "bg-background text-foreground shadow-xs hover:bg-background" : "text-muted-foreground hover:text-foreground hover:bg-transparent"}`}
                 onClick={() => setMode("load")}
               >
                 <FolderOpen className="h-3.5 w-3.5 inline mr-1.5" />

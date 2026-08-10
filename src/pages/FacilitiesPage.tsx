@@ -1,5 +1,4 @@
 import { useMemo, useCallback } from "react";
-import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
 import { OFFICE_TABS } from "@/constants/ui/navigation";
@@ -49,9 +48,9 @@ export default function FacilitiesPage() {
 
   return (
     <AppLayout subNavTabs={OFFICE_TABS} activeSubTab="facilities" pageTitle="Infrastructure">
-      <Helmet>
+
         <title>Infrastructure — {heya.name} | Basho</title>
-      </Helmet>
+
 
       <div className="space-y-8">
         <PageHeader

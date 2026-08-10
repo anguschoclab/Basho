@@ -48,7 +48,7 @@ export function BaseWidget({
         "widget-card p-4 space-y-3",
         className,
         onInteract &&
-          "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
+          "cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
       )}
       onClick={onInteract}
       role={onInteract ? "button" : undefined}

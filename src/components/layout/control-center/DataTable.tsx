@@ -79,7 +79,7 @@ function DataTableInner<T>({
               <th
                 key={col.key}
                 className={cn(
-                  "p-4 font-semibold cursor-pointer select-none whitespace-nowrap focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-sm",
+                  "p-4 font-semibold cursor-pointer select-none whitespace-nowrap focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary rounded-xs",
                   isActive ? "text-primary" : "text-muted-foreground hover:text-foreground",
                   col.headerClassName
                 )}

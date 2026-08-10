@@ -1,6 +1,7 @@
-import { resolve } from "path";
+import { fileURLToPath, URL } from "node:url";
 import { defineConfig, externalizeDepsPlugin } from "electron-vite";
-import react from "@vitejs/plugin-react-swc";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
 // VitePWA intentionally excluded — service workers are not used in Electron
 
 export default defineConfig({
@@ -8,7 +9,7 @@ export default defineConfig({
     plugins: [externalizeDepsPlugin()],
     build: {
       lib: {
-        entry: resolve(__dirname, "electron/main.ts"),
+        entry: fileURLToPath(new URL("electron/main.ts", import.meta.url)),
         fileName: () => "index.js",
         formats: ["cjs"],
       },
@@ -18,7 +19,7 @@ export default defineConfig({
     plugins: [externalizeDepsPlugin()],
     build: {
       lib: {
-        entry: resolve(__dirname, "electron/preload.ts"),
+        entry: fileURLToPath(new URL("electron/preload.ts", import.meta.url)),
         fileName: () => "index.js",
         formats: ["es"],
       },
@@ -26,18 +27,18 @@ export default defineConfig({
   },
   renderer: {
     root: ".",
-    plugins: [react()],
+    plugins: [react(), tailwindcss()],
     worker: {
       format: "es",
     },
     build: {
       rollupOptions: {
-        input: resolve(__dirname, "index.html"),
+        input: fileURLToPath(new URL("index.html", import.meta.url)),
       },
     },
     resolve: {
       alias: {
-        "@": resolve(__dirname, "./src"),
+        "@": fileURLToPath(new URL("./src", import.meta.url)),
       },
     },
   },

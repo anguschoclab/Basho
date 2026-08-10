@@ -1,5 +1,4 @@
 // SettingsPage.tsx — Game settings with autosave toggle, theme, keybinds reference
-import { Helmet } from "react-helmet";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useTheme } from "@/hooks/useTheme";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -28,10 +27,10 @@ export default function SettingsPage() {
 
   return (
     <AppLayout pageTitle="Settings" subNavTabs={managementTabs} activeSubTab="settings">
-      <Helmet>
+
         <title>Settings - Basho</title>
         <meta name="description" content="Game settings and preferences" />
-      </Helmet>
+
 
       <div className="space-y-6 max-w-2xl">
         <h1 className="font-display text-3xl font-bold flex items-center gap-3">

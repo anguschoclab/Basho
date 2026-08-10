@@ -33,11 +33,11 @@ const defaultClasses = [
   "hover:underline",
   "underline-offset-2",
   "transition-colors",
-  "focus-visible:outline-none",
+  "focus-visible:outline-hidden",
   "focus-visible:ring-2",
   "focus-visible:ring-primary",
   "focus-visible:ring-offset-1",
-  "rounded-sm",
+  "rounded-xs",
 ];
 
 describe("ClickableName", () => {
