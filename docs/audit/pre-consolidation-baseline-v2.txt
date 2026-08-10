@@ -1,0 +1,26 @@
+=== Pre-Consolidation Baseline v2 ===
+Date: 2026-08-10
+Branch: consolidation/exhaustive-review-v2 (from main cc83d975)
+Tag: pre-exhaustive-review-v2-20260810
+
+--- Type-Check ---
+PASS: 0 errors
+
+--- Lint (strict) ---
+PASS: 0 errors, 0 warnings
+
+--- Build ---
+PASS: SUCCESS (chunk size warnings only)
+
+--- Tests ---
+FAIL: 2 tests failed (bundleBudget.test.ts)
+  - index chunk 2.23 MB exceeds 0.5 MB budget
+  - engine-bout chunk 0.61 MB exceeds 0.5 MB budget
+PASS: 6864 tests passed
+Total: 718 test files, 6866 tests
+Duration: 525.10s
+
+--- Known Issues ---
+1. Bundle budget test failures (pre-existing, not caused by this review)
+2. TalentPoolPage.test.tsx flakiness (from previous review findings)
+3. 236 orphans tracked in .windsurf/audit/orphan-tracker.csv

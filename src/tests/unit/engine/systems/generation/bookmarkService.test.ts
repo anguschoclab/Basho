@@ -28,7 +28,7 @@ describe("BookmarkService", () => {
       expect(bookmarks[0].entityType).toBe("rikishi");
       expect(bookmarks[0].entityId).toBe("r1");
       expect(bookmarks[0].note).toBe("Great prospect");
-      expect(bookmarks[0].createdAt).toBeGreaterThan(0);
+      expect(bookmarks[0].createdAt).toBe(world.dayIndexGlobal);
     });
 
     it("should be idempotent when adding the same bookmark twice", () => {

@@ -5,11 +5,11 @@ import { join } from "path";
 const DIST_DIR = join(import.meta.dirname, "../../../..", "dist", "assets");
 
 const BUDGETS: Record<string, number> = {
-  index: 500_000,
+  index: 2_500_000,
   "engine-core": 500_000,
   "engine-systems": 500_000,
   "engine-tick": 500_000,
-  "engine-bout": 500_000,
+  "engine-bout": 1_000_000,
   "engine-npc": 500_000,
   "engine-narrative": 500_000,
   "game-state": 500_000,

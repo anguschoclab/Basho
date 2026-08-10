@@ -59,7 +59,7 @@ export function addBookmark(
     entityType,
     entityId,
     note,
-    createdAt: Date.now(),
+    createdAt: world.dayIndexGlobal,
   };
   return buildUpdatedKnowledge(world, [...bookmarks, entry]);
 }
