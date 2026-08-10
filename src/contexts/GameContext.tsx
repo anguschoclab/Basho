@@ -11,7 +11,7 @@
  * @see gameTypes for type definitions
  */
 
-import { useReducer, useCallback, useMemo, useEffect, ReactNode } from "react";
+import { useReducer, useCallback, useMemo, useEffect, useTransition, ReactNode } from "react";
 import { error as logError } from "@/engine/utils/Logger";
 import type { WorldState } from "@/engine/types/world";
 import { saveGame, loadGame, hasAutosave, loadAutosave, getSaveSlotInfos } from "@/engine/saveload";
@@ -47,6 +47,7 @@ import { useGameStore } from "@/store/gameStore";
  */
 export function GameProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(gameReducer, initialGameState);
+  const [isPending, startTransition] = useTransition();
   const sendCommand = useGameStore((s) => s.sendCommand);
   const initWorker = useGameStore((s) => s.initWorker);
   const setOnWorldUpdated = useGameStore((s) => s.setOnWorldUpdated);
@@ -71,7 +72,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     initWorker();
     setOnWorldUpdated((world: WorldState) => {
-      dispatch(actions.updateWorld(world));
+      startTransition(() => dispatch(actions.updateWorld(world)));
     });
   }, [initWorker, setOnWorldUpdated]);
 
@@ -119,7 +120,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
       dispatch(actions.setBoutTactic(id, tactic)),
     []
   );
-  const simulateAllBouts = useCallback(() => dispatch(actions.simulateAllBouts()), []);
+  const simulateAllBouts = useCallback(
+    () => startTransition(() => dispatch(actions.simulateAllBouts())),
+    []
+  );
   const endDay = useCallback(() => dispatch(actions.endDay()), []);
   const endBasho = useCallback(() => dispatch(actions.endBasho()), []);
   const simFullBasho = useCallback(() => {
@@ -331,6 +335,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     () => ({
       state,
       digest,
+      isPending,
       createWorld,
       setPhase,
       startBasho,
@@ -377,6 +382,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
     [
       state,
       digest,
+      isPending,
       createWorld,
       setPhase,
       startBasho,

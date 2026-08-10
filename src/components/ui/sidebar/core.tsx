@@ -7,25 +7,20 @@ import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { useSidebar } from "./context";
 import { SIDEBAR_WIDTH_MOBILE } from "./constants";
 
-export const Sidebar = React.forwardRef<
-  HTMLDivElement,
-  React.ComponentProps<"div"> & {
-    side?: "left" | "right";
-    variant?: "sidebar" | "floating" | "inset";
-    collapsible?: "offcanvas" | "icon" | "none";
-  }
->(
-  (
-    {
-      side = "left",
-      variant = "sidebar",
-      collapsible = "offcanvas",
-      className,
-      children,
-      ...props
-    },
-    ref
-  ) => {
+export function Sidebar({
+  ref,
+  side = "left",
+  variant = "sidebar",
+  collapsible = "offcanvas",
+  className,
+  children,
+  ...props
+}: React.ComponentProps<"div"> & {
+  ref?: React.Ref<HTMLDivElement>;
+  side?: "left" | "right";
+  variant?: "sidebar" | "floating" | "inset";
+  collapsible?: "offcanvas" | "icon" | "none";
+}) {
     const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
 
     if (collapsible === "none") {
@@ -105,8 +100,6 @@ export const Sidebar = React.forwardRef<
       </div>
     );
   }
-);
-Sidebar.displayName = "Sidebar";
 
 export function SidebarTrigger({ ref, className, onClick, ...props }: React.ComponentProps<typeof Button> & { ref?: React.Ref<React.ElementRef<typeof Button>> }) {
   const { toggleSidebar } = useSidebar();

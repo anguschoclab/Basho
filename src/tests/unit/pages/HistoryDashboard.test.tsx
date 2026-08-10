@@ -43,7 +43,7 @@ vi.mock("@/components/ui/tabs", () => {
     React.createElement("div", { role: "tablist", ...props }, children);
 
   const TabsTrigger = ({ value, children, ...props }: any) => {
-    const ctx = React.useContext(TabsContext);
+    const ctx = React.use(TabsContext);
     return React.createElement(
       "button",
       {
@@ -58,7 +58,7 @@ vi.mock("@/components/ui/tabs", () => {
   };
 
   const TabsContent = ({ value, children, ...props }: any) => {
-    const ctx = React.useContext(TabsContext);
+    const ctx = React.use(TabsContext);
     if (ctx.value !== value) return null;
     return React.createElement(
       "div",

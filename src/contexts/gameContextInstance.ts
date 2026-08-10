@@ -14,6 +14,7 @@ export type { GamePhase, GameState } from "./gameTypes";
 export interface GameContextValue {
   state: GameState;
   digest: UIDigest | null;
+  isPending: boolean;
   createWorld: (
     seed: string,
     playerHeyaId?: string,

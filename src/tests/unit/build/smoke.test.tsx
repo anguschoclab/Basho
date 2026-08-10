@@ -1,10 +1,18 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render } from "@testing-library/react";
 import { GameProvider } from "@/contexts/GameContext";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
+
+vi.stubGlobal("Worker", class {
+  onmessage: ((e: MessageEvent) => void) | null = null;
+  postMessage = vi.fn();
+  terminate = vi.fn();
+  addEventListener = vi.fn();
+  removeEventListener = vi.fn();
+});
 
 const queryClient = new QueryClient();
 

@@ -51,26 +51,21 @@ const sidebarMenuButtonVariants = cva(
   }
 );
 
-export const SidebarMenuButton = React.forwardRef<
-  HTMLButtonElement,
-  React.ComponentProps<"button"> & {
-    asChild?: boolean;
-    isActive?: boolean;
-    tooltip?: string | React.ComponentProps<typeof TooltipContent>;
-  } & VariantProps<typeof sidebarMenuButtonVariants>
->(
-  (
-    {
-      asChild = false,
-      isActive = false,
-      variant = "default",
-      size = "default",
-      tooltip,
-      className,
-      ...props
-    },
-    ref
-  ) => {
+export function SidebarMenuButton({
+  ref,
+  asChild = false,
+  isActive = false,
+  variant = "default",
+  size = "default",
+  tooltip,
+  className,
+  ...props
+}: React.ComponentProps<"button"> & {
+  ref?: React.Ref<HTMLButtonElement>;
+  asChild?: boolean;
+  isActive?: boolean;
+  tooltip?: string | React.ComponentProps<typeof TooltipContent>;
+} & VariantProps<typeof sidebarMenuButtonVariants>) {
     const Comp = asChild ? Slot : "button";
     const { isMobile, state } = useSidebar();
 
@@ -89,10 +84,11 @@ export const SidebarMenuButton = React.forwardRef<
       return button;
     }
 
+    let tooltipProps: React.ComponentProps<typeof TooltipContent>;
     if (typeof tooltip === "string") {
-      tooltip = {
-        children: tooltip,
-      };
+      tooltipProps = { children: tooltip };
+    } else {
+      tooltipProps = tooltip;
     }
 
     return (
@@ -102,12 +98,11 @@ export const SidebarMenuButton = React.forwardRef<
           side="right"
           align="center"
           hidden={state !== "collapsed" || isMobile}
-          {...tooltip}
+          {...tooltipProps}
         />
       </Tooltip>
     );
   }
-);
 SidebarMenuButton.displayName = "SidebarMenuButton";
 
 export function SidebarMenuAction({ ref, className, asChild = false, showOnHover = false, ...props }: React.ComponentProps<"button"> & {
@@ -208,9 +203,9 @@ export function SidebarMenuSub({ ref, className, ...props }: React.ComponentProp
 }
 SidebarMenuSub.displayName = "SidebarMenuSub";
 
-export const SidebarMenuSubItem = React.forwardRef<HTMLLIElement, React.ComponentProps<"li">>(
-  ({ ...props }, ref) => <li ref={ref} {...props} />
-);
+export function SidebarMenuSubItem({ ref, ...props }: React.ComponentProps<"li"> & { ref?: React.Ref<HTMLLIElement> }) {
+  return <li ref={ref} {...props} />;
+}
 SidebarMenuSubItem.displayName = "SidebarMenuSubItem";
 
 export function SidebarMenuSubButton({ ref, asChild = false, size = "md", isActive, className, ...props }: React.ComponentProps<"a"> & {

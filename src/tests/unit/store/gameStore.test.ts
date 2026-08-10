@@ -20,7 +20,16 @@ const mockWorkerObj: {
   removeEventListener: vi.fn(),
 };
 
-const MockWorkerCtor = vi.fn(() => mockWorkerObj);
+class MockWorkerCtor {
+  onmessage = mockWorkerObj.onmessage;
+  postMessage = mockWorkerObj.postMessage;
+  terminate = mockWorkerObj.terminate;
+  addEventListener = mockWorkerObj.addEventListener;
+  removeEventListener = mockWorkerObj.removeEventListener;
+  constructor() {
+    return mockWorkerObj;
+  }
+}
 vi.stubGlobal("Worker", MockWorkerCtor);
 
 describe("gameStore - pendingTick lifecycle", () => {
@@ -40,7 +49,6 @@ describe("gameStore - pendingTick lifecycle", () => {
     });
     mockWorkerObj.onmessage = null;
     mockWorkerObj.postMessage = vi.fn();
-    MockWorkerCtor.mockClear();
   });
 
   afterEach(() => {
