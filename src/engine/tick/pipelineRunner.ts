@@ -23,6 +23,10 @@ import { error } from "../utils/Logger";
 /**
  * A single pipeline phase: pure function returning either WorldState or StateImpact.
  *
+ * CONTRACT:
+ * - Determinism: Must not rely on external non-deterministic factors.
+ * - Immutability: Must not mutate the input `world` state. Return a new `WorldState` or `StateImpact`.
+ *
  * WARNING: If returning a StateImpact, it MUST include the `metadata` property.
  * The runner uses `"metadata" in result` to distinguish migrated StateImpact
  * responses from legacy WorldState responses. StateImpacts missing metadata
@@ -93,6 +97,10 @@ function createShallowSnapshot(
  * is restored, so the remaining phases still execute against a valid world.
  * This closes H7: a phase that mutates shared maps in-place before throwing
  * will not corrupt the recovered state.
+ *
+ * Performance:
+ * - When `globalThis.__PERF__ === true`, this records phase execution times
+ *   and impact sizes and emits a "PERF_TRACE" message via `postMessage`.
  */
 export function runPipeline(initialWorld: WorldState, phases: PipelinePhase[]): WorldState {
   let currentWorld = initialWorld;
