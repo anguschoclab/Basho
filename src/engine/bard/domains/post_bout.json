@@ -76,12 +76,20 @@
     "seven_seven_win": [
       "%WINNER% vowed to win at all costs that day — and delivered when it mattered most.",
       "The 7-7 pressure was immense, but %WINNER% rose to the occasion.",
-      "Everything on the line at 7-7 — %WINNER% finds a way to secure the winning record."
+      "Everything on the line at 7-7 — %WINNER% finds a way to secure the winning record.",
+      "Clutch performance from %WINNER%, snatching kachi-koshi from the jaws of a 7-7 deadlock.",
+      "When the lights shone brightest at 7-7, %WINNER% stood tall and secured the win.",
+      "A do-or-die situation at 7-7, and %WINNER% answers the call with a brilliant victory.",
+      "Survival of the fittest at 7-7. %WINNER% emerges with the coveted kachi-koshi."
     ],
     "seven_seven_loss": [
       "Devastation for %LOSER% — the 7-7 bout ends in defeat and make-koshi is confirmed.",
       "%LOSER% couldn't find the extra gear at 7-7 — a crushing end to the tournament.",
-      "The pressure of 7-7 proved too much for %LOSER% — make-koshi is the bitter result."
+      "The pressure of 7-7 proved too much for %LOSER% — make-koshi is the bitter result.",
+      "Heartbreak for %LOSER% at 7-7. A losing record confirmed on the most crucial stage.",
+      "The margin between success and failure is razor-thin at 7-7. %LOSER% falls on the wrong side today.",
+      "Agony at 7-7. %LOSER% falls short when everything was on the line, condemning him to make-koshi.",
+      "A grueling battle ends in despair for %LOSER%, succumbing to the 7-7 pressure and make-koshi."
     ],
     "crowd_gasps_horror": [
       "Dozens of gasps of horror ripple through the crowd — a senshuraku shock as %WINNER% pulls off the impossible.",
