@@ -43,8 +43,20 @@ export default defineConfig({
           }
           if (id.includes("/src/engine/tick/")) return "engine-tick";
           if (id.includes("/src/engine/systems/")) return "engine-systems";
+          if (id.includes("/src/engine/bout/boutNarrative")) return "engine-bout-narrative";
+          if (id.includes("/src/engine/bout/physics/")) return "engine-bout-physics";
+          if (
+            id.includes("/src/engine/bout/boutResolver") ||
+            id.includes("/src/engine/bout/boutPhysics") ||
+            id.includes("/src/engine/bout/boutPhaseLoop") ||
+            id.includes("/src/engine/bout/boutSpatial") ||
+            id.includes("/src/engine/bout/boutGrip") ||
+            id.includes("/src/engine/bout/BoutAI") ||
+            id.includes("/src/engine/bout/tacticProfiles")
+          )
+            return "engine-bout-core";
           if (id.includes("/src/engine/bout/") || id.includes("/src/engine/banzuke/"))
-            return "engine-bout";
+            return "engine-bout-support";
           if (id.includes("/src/engine/npcAI/") || id.includes("/src/engine/ai/"))
             return "engine-npc";
           if (id.includes("/src/engine/bard/") || id.includes("/src/engine/narrative"))
@@ -57,6 +69,14 @@ export default defineConfig({
           if (id.includes("/src/components/dashboard/") || id.includes("/src/components/layout/"))
             return "ui-layout";
           if (id.includes("/src/components/")) return "ui-features";
+          if (id.includes("/src/presenters/")) return "presenters";
+          if (id.includes("/src/store/")) return "store";
+          if (id.includes("/src/utils/")) return "utils";
+          if (id.includes("/src/constants/")) return "constants";
+          if (id.includes("/src/pages/")) {
+            const match = id.match(/\/src\/pages\/([^/]+)\./);
+            if (match) return `page-${match[1]}`;
+          }
           return "misc";
         },
       },

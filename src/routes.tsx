@@ -10,9 +10,9 @@ import {
 import { lazy } from "react";
 import { warn, error } from "./engine/utils/Logger";
 import { SaveSlotService } from "./engine/persistence/SaveSlotService";
-import MainMenu from "./pages/MainMenu";
-import NewGameWizard from "./pages/NewGameWizard";
-import Dashboard from "./pages/Dashboard";
+const MainMenu = lazy(() => import("./pages/MainMenu"));
+const NewGameWizard = lazy(() => import("./pages/NewGameWizard"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
 import { withSuspense } from "./routes-helpers";
 
 const StablePage = lazy(() => import("./pages/StablePage"));
@@ -115,7 +115,7 @@ const indexRoute = createRoute({
 const mainMenuRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/main-menu",
-  component: MainMenu,
+  component: () => withSuspense(MainMenu),
 });
 const newGameRoute = createRoute({
   getParentRoute: () => rootRoute,
@@ -123,12 +123,12 @@ const newGameRoute = createRoute({
   validateSearch: (search: Record<string, unknown>) => ({
     heyaId: typeof search.heyaId === "string" ? search.heyaId : undefined,
   }),
-  component: NewGameWizard,
+  component: () => withSuspense(NewGameWizard),
 });
 const dashboardRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/dashboard",
-  component: Dashboard,
+  component: () => withSuspense(Dashboard),
 });
 const settingsRoute = createRoute({
   getParentRoute: () => rootRoute,

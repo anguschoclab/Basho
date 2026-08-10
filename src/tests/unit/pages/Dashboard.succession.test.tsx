@@ -4,11 +4,16 @@
  * Mocks all dashboard widgets, AppLayout, and companion modals to isolate the
  * succession dismissal behavior.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, beforeAll } from "vitest";
 import { render } from "@testing-library/react";
-import Dashboard from "@/pages/Dashboard";
 import * as GameContext from "@/contexts/useGame";
 import type { GameState } from "@/contexts/gameTypes";
+
+let Dashboard: React.ComponentType;
+beforeAll(async () => {
+  const mod = await import("@/pages/Dashboard");
+  Dashboard = mod.default;
+});
 
 // ── Mocks (hoisted by vitest) ──────────────────────────────
 
