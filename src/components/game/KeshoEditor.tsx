@@ -56,7 +56,7 @@ interface KeshoEditorProps {
 }
 
 export function KeshoEditor({ rikishi, open, onClose }: KeshoEditorProps) {
-  const { state, updateWorld } = useGame();
+  const { state, setKeshoConfig } = useGame();
   const world = state.world;
 
   // Initialize with current config or default
@@ -79,15 +79,7 @@ export function KeshoEditor({ rikishi, open, onClose }: KeshoEditorProps) {
   if (!world) return null;
 
   const handleSave = () => {
-    const updatedCustomConfigs = {
-      ...(world.customKeshoConfigs || {}),
-      [rikishi.id]: config,
-    };
-
-    updateWorld({
-      ...world,
-      customKeshoConfigs: updatedCustomConfigs,
-    });
+    setKeshoConfig(rikishi.id, config);
     onClose();
   };
 

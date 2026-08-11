@@ -14,13 +14,7 @@ import { Link } from "@tanstack/react-router";
 import type { StatItem, ProgressItem } from "@/components/layout/control-center";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
-import {
-  SCANDAL_LABELS,
-  formatFinePenalty,
-  getStatusLabel,
-  spendPoliticalCapital,
-} from "@/presenters/uiDigest";
-import { resolveImpacts } from "@/presenters/engineAccess";
+import { SCANDAL_LABELS, formatFinePenalty, getStatusLabel } from "@/presenters/uiDigest";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import { projectGovernanceDerived } from "@/presenters/projections/governanceProjections";
 import { selectClosedHeyas, selectYokozunaVacancyStreak } from "@/presenters/selectors";
@@ -34,7 +28,7 @@ const FACTION_SORT_OPTIONS: SortOption[] = [
 ];
 
 export default function GovernancePage() {
-  const { state, issueRuling, updateWorld } = useGame();
+  const { state, issueRuling, spendPoliticalCapital } = useGame();
   const sendCommand = useGameStore((s) => s.sendCommand);
   const world = state.world;
 
@@ -524,9 +518,7 @@ export default function GovernancePage() {
                       size="sm"
                       onClick={() => {
                         if (heya && (heya.politicalCapital ?? 0) >= 100 && world) {
-                          const impact = spendPoliticalCapital(world, heya.id, 100);
-                          const nextWorld = resolveImpacts(world, [impact]);
-                          updateWorld(nextWorld);
+                          spendPoliticalCapital(heya.id, 100);
                         } else {
                           toast.error("Not enough Political Capital (need 100).");
                         }

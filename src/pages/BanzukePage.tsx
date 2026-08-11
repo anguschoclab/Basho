@@ -20,7 +20,6 @@ import { RikishiCell } from "@/components/banzuke/RikishiCell";
 import { YokozunaTrajectory } from "@/components/banzuke/YokozunaTrajectory";
 import { getYokozunaCandidates } from "@/presenters/projections/promotionProjections";
 import type { UIRankRow } from "@/presenters/banzukeUI";
-import { getPlayerHeya, updateHeyaInWorld } from "@/presenters/engineAccess";
 import { SortMenu } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
 
@@ -45,7 +44,7 @@ const banzukeAccessor: Record<string, (r: UIRankRow) => string | number | undefi
 
 /** banzuke page. */
 export default function BanzukePage() {
-  const { state, updateWorld } = useGame();
+  const { state, applyPressConference } = useGame();
   const world = state.world;
   const [showChanges, setShowChanges] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -137,16 +136,9 @@ export default function BanzukePage() {
     mediaHeat: number;
   }) => {
     setShowPressConference(false);
-    // Apply effects to world via game context (similar to RecapPage)
+    // Apply effects through the worker so the change survives the next tick.
     if (world.playerHeyaId) {
-      const heya = getPlayerHeya(world);
-      if (heya) {
-        const newReputation = Math.max(
-          0,
-          Math.min(100, (heya.reputation ?? 50) + effects.reputation)
-        );
-        updateWorld(updateHeyaInWorld(world, world.playerHeyaId, { reputation: newReputation }));
-      }
+      applyPressConference(world.playerHeyaId, effects.reputation);
     }
   };
 

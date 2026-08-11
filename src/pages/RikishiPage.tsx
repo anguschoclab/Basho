@@ -32,13 +32,11 @@ import { useCareerProgressionData } from "@/components/rikishi/useRikishiData";
 import { RikishiGlobalCup } from "@/components/rikishi/RikishiGlobalCup";
 import { IntaiCeremony } from "@/components/game/IntaiCeremony";
 import { Trash2 } from "lucide-react";
-import { retireRikishiImpact } from "@/presenters/engineAccess";
-import { resolveImpacts } from "@/presenters/engineAccess";
 import { EntityCollection } from "@/presenters/engineAccess";
 
 export default function RikishiPage() {
   const { rikishiId } = useParams({ strict: false });
-  const { state, updateWorld } = useGame();
+  const { state, retireRikishi } = useGame();
   const { world, playerHeyaId } = state;
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("profile");
@@ -113,9 +111,9 @@ export default function RikishiPage() {
   const mentees = menteesOf(world, rawRikishi);
 
   const finalizeRetirement = () => {
-    // Stage 2: Actually apply retirement to the world
-    const impact = retireRikishiImpact(rikishi.id, "player_initiated_intai");
-    updateWorld(resolveImpacts(world, [impact]));
+    // Stage 2: Actually apply retirement to the world (via the worker, so it
+    // survives the next tick).
+    retireRikishi(rikishi.id, "player_initiated_intai");
     setShowIntaiCeremony(false);
     // Navigate back to roster
     navigate({ to: "/stable/roster" });

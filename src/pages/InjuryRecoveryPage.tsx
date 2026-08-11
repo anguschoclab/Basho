@@ -7,7 +7,7 @@ import { PageHeader } from "@/components/layout/control-center";
 import { useGame } from "@/contexts/useGame";
 import { InjuryRecoveryPanel } from "@/components/game/InjuryRecoveryPanel";
 import { WelfarePanel } from "@/components/game/WelfarePanel";
-import { projectMedicalUIDigest, setHeyaDietAction } from "@/presenters/uiDigest";
+import { projectMedicalUIDigest } from "@/presenters/uiDigest";
 import { InjuryRiskHeatmap } from "@/components/training/InjuryRiskHeatmap";
 import type { DietRegimen } from "@/engine/types/economy";
 import { resolveRegistryLabel } from "@/presenters/uiUtilities";
@@ -19,7 +19,7 @@ import { useDomainsReady } from "@/hooks/useDomainsReady";
 /** injury recovery page. */
 export default function InjuryRecoveryPage() {
   const navigate = useNavigate();
-  const { state, updateWorld } = useGame();
+  const { state, setHeyaDiet } = useGame();
   const domainsReady = useDomainsReady();
 
   useEffect(() => {
@@ -69,13 +69,10 @@ export default function InjuryRecoveryPage() {
 
   const handleSetDiet = useCallback(
     (diet: DietRegimen) => {
-      if (!state.world || !state.playerHeyaId) return;
-      const success = setHeyaDietAction(state.world, state.playerHeyaId, diet);
-      if (success) {
-        updateWorld({ ...state.world });
-      }
+      if (!state.playerHeyaId) return;
+      setHeyaDiet(state.playerHeyaId, diet);
     },
-    [state.world, state.playerHeyaId, updateWorld]
+    [state.playerHeyaId, setHeyaDiet]
   );
 
   if (!digest) {

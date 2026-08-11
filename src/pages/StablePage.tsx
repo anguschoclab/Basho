@@ -5,8 +5,6 @@ import { useNavigate, useParams } from "@tanstack/react-router";
 import { useGame } from "@/contexts/useGame";
 import { useRequireWorld } from "@/hooks/useRequireWorld";
 import { projectRikishi } from "@/presenters/rikishi";
-import { InfrastructureService } from "@/presenters/engineAccess";
-import { resolveImpacts } from "@/presenters/engineAccess";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,7 +28,7 @@ import { getHeyaRoster } from "@/presenters/engineAccess";
 export default function StablePage() {
   const navigate = useNavigate();
   const { id: routeId } = useParams({ strict: false });
-  const { state, updateWorld, assignMentor, removeMentor } = useGame();
+  const { state, buildInfrastructure, assignMentor, removeMentor } = useGame();
   const { world, playerHeyaId } = state;
 
   const viewingHeyaId = routeId || playerHeyaId || "";
@@ -65,9 +63,7 @@ export default function StablePage() {
 
   const handleUpgrade = (facilityId: FacilityId) => {
     if (!world) return;
-    const impact = InfrastructureService.startConstruction(world, viewingHeyaId, facilityId);
-    const nextWorld = resolveImpacts(world, [impact]);
-    updateWorld(nextWorld);
+    buildInfrastructure(viewingHeyaId, facilityId);
   };
 
   return (

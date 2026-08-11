@@ -28,7 +28,7 @@ import { selectKeyBouts } from "@/presenters/projections/recapProjections";
 import { compareBanzuke, formatRankPosition, RANK_HIERARCHY } from "@/presenters/engineAccess";
 import { makeBashoKey } from "@/presenters/engineAccess";
 import { EntityCollection } from "@/presenters/engineAccess";
-import { getPlayerHeya, updateHeyaInWorld } from "@/presenters/engineAccess";
+import { getPlayerHeya } from "@/presenters/engineAccess";
 import {
   getHeya,
   getRikishi,
@@ -130,7 +130,7 @@ function getPrestigeChanges(
 }
 
 export default function RecapPage() {
-  const { state, setPhase, updateWorld } = useGame();
+  const { state, setPhase, applyPressConference } = useGame();
   const navigate = useNavigate();
   const world = state.world;
 
@@ -152,15 +152,9 @@ export default function RecapPage() {
     mediaHeat: number;
   }) => {
     setShowPressConference(false);
-    if (world && world.playerHeyaId) {
-      const heya = getPlayerHeya(world);
-      if (heya) {
-        const newReputation = Math.max(
-          0,
-          Math.min(100, (heya.reputation ?? 50) + effects.reputation)
-        );
-        updateWorld(updateHeyaInWorld(world, world.playerHeyaId, { reputation: newReputation }));
-      }
+    // Apply effects through the worker so the change survives the next tick.
+    if (world?.playerHeyaId) {
+      applyPressConference(world.playerHeyaId, effects.reputation);
     }
   };
 

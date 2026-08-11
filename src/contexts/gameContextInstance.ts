@@ -66,6 +66,18 @@ export interface GameContextValue {
   isBookmarked: (entityType: string, entityId: string) => boolean;
   runAutoSim: (config: AutoSimConfig) => Promise<AutoSimResult | null>;
   recruitSponsor: (sponsorId: string) => void;
+  applyPressConference: (heyaId: string, reputationDelta: number) => void;
+  setHeyaDiet: (heyaId: string, diet: import("@/engine/types/economy").DietRegimen) => void;
+  retireRikishi: (rikishiId: string, reason: string) => void;
+  spendPoliticalCapital: (heyaId: string, amount: number) => void;
+  setScoutingInvestment: (
+    rikishiId: string,
+    investment: import("@/engine/types/narrative").ScoutingInvestment
+  ) => void;
+  setKeshoConfig: (
+    rikishiId: string,
+    config: Partial<import("@/engine/types/keshoMawashi").KeshoMawashi>
+  ) => void;
   investInFacility: (
     heyaId: string,
     axis: import("@/engine/facilities").FacilityAxis,

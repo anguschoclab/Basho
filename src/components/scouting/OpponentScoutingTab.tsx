@@ -12,7 +12,6 @@ import { Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   projectOpponentScoutingUIDigest,
-  setScoutingInvestment,
   RANK_NAMES,
   RANK_HIERARCHY,
 } from "@/presenters/uiDigest";
@@ -28,7 +27,7 @@ const SORT_OPTIONS: SortOption[] = [
 
 export function OpponentScoutingTab({ playerHeyaId }: { playerHeyaId: string | null }) {
   const navigate = useNavigate();
-  const { state, updateWorld } = useGame();
+  const { state, setScoutingInvestment: setScoutingInvestmentAction } = useGame();
   const world = state.world;
   const { toast } = useToast();
   const [filterDivision, setFilterDivision] = useState<string>("makuuchi");
@@ -66,8 +65,7 @@ export function OpponentScoutingTab({ playerHeyaId }: { playerHeyaId: string | n
     level: "none" | "light" | "standard" | "deep"
   ) => {
     if (!world) return;
-    setScoutingInvestment(world, rikishiId, level);
-    updateWorld({ ...world });
+    setScoutingInvestmentAction(rikishiId, level);
     toast({
       title: "Scouting updated",
       description: `Investment set to ${level}.`,

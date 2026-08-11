@@ -8,8 +8,6 @@ import { useGame } from "@/contexts/useGame";
 import { Coins, TrendingUp, Building2 } from "lucide-react";
 import { formatYen } from "@/utils/engineUtils";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { recruitSponsor } from "@/presenters/uiDigest";
-import { resolveImpacts } from "@/presenters/engineAccess";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 
 const TIER_LABELS: Record<string, { label: string; color: string }> = {
@@ -91,7 +89,7 @@ const SponsorRow = React.memo(
 );
 
 export function SponsorRecruitmentWidget() {
-  const { state, updateWorld } = useGame();
+  const { state, recruitSponsor: recruitSponsorAction } = useGame();
   const { toast } = useToast();
   const world = state.world;
 
@@ -143,10 +141,7 @@ export function SponsorRecruitmentWidget() {
       return;
     }
 
-    if (!world.rng) return;
-    const impact = recruitSponsor(world, world.playerHeyaId, sponsor.sponsorId, world.rng);
-    const nextWorld = resolveImpacts(world, [impact]);
-    updateWorld(nextWorld);
+    recruitSponsorAction(sponsor.sponsorId);
     toast({
       title: "Sponsor recruited",
       description: `${sponsor.displayName} has joined your Kōenkai.`,

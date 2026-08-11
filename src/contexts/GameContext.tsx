@@ -24,9 +24,9 @@ registerElectronStorage();
 
 import { initialGameState } from "./gameTypes";
 import { gameReducer } from "./gameReducer";
-import { autosaveWithSignal, getMatchesForDay, applyImpact } from "./gameHelpers";
+import { autosaveWithSignal, getMatchesForDay } from "./gameHelpers";
 import { selectMakuuchiStandings } from "@/presenters/selectors";
-import { recruitSponsor, buildWeeklyDigest } from "@/presenters/uiDigest";
+import { buildWeeklyDigest } from "@/presenters/uiDigest";
 
 // Re-export types so existing imports from GameContext still work
 export type { GamePhase, GameState } from "./gameTypes";
