@@ -116,6 +116,56 @@ export const SerializationService = {
       trainingState: this.mapToObject(world.trainingState || new Map()),
       settings: world.settings,
       ftue: world.ftue,
+
+      globalCup: world.globalCup,
+      chronicle: world.chronicle,
+
+      calendar: world.calendar,
+      _interimDaysRemaining: world._interimDaysRemaining,
+      _postBashoDays: world._postBashoDays,
+      _daysSinceLastWeeklyTick: world._daysSinceLastWeeklyTick,
+
+      meta: world.meta,
+      globalKimariteStats: world.globalKimariteStats,
+
+      playerKnowledge: world.playerKnowledge,
+      tutorialState: world.tutorialState,
+      boutTactics: world.boutTactics,
+
+      governanceLog: world.governanceLog,
+      factions: world.factions,
+      scandals: world.scandals,
+      gyojiPool: world.gyojiPool,
+      shimpanPool: world.shimpanPool,
+
+      awardLog: world.awardLog,
+      retirements: world.retirements,
+      bloodlineRegistry: world.bloodlineRegistry,
+      yokozunaVacancyStreak: world.yokozunaVacancyStreak,
+      planetRating: world.planetRating,
+
+      sparringPairs: world.sparringPairs ? this.mapToObject(world.sparringPairs) : undefined,
+      heyaBrandIdentities: world.heyaBrandIdentities
+        ? this.mapToObject(world.heyaBrandIdentities)
+        : undefined,
+      customKeshoConfigs: world.customKeshoConfigs,
+      encouragementLog: world.encouragementLog,
+
+      pendingCrisis: world.pendingCrisis,
+      pendingDecisions: world.pendingDecisions,
+      pendingExhibitions: world.pendingExhibitions,
+      matchmakingOverride: world.matchmakingOverride,
+      activeBasho: world.activeBasho,
+      lastBoutResult: world.lastBoutResult,
+      eventLog: world.eventLog,
+
+      npcScoutingPriorities: world.npcScoutingPriorities,
+      _populationTarget: world._populationTarget,
+      _recruitmentWindow: world._recruitmentWindow,
+      _postBashoMeta: world._postBashoMeta,
+      _preBashoAssessment: world._preBashoAssessment,
+      _preGeneratedSchedules: world._preGeneratedSchedules,
+      isInitialSeed: world.isInitialSeed,
     };
   },
 
@@ -180,11 +230,10 @@ export const SerializationService = {
       myosekiMarket: s.myosekiMarket,
 
       ftue: serialized.ftue,
-      meta: {
-        tone: "classic" as const,
-        drift: {},
-      },
-      globalKimariteStats: {},
+      // Restore era drift rather than resetting it — a loaded save must continue
+      // the metagame it was saved in, not revert to a fresh "classic" era.
+      meta: s.meta ?? { tone: "classic" as const, drift: {} },
+      globalKimariteStats: s.globalKimariteStats ?? {},
       playerHeyaId: serialized.playerHeyaId,
       currentBanzuke: serialized.currentBanzuke,
       talentPool: s.talentPool,
@@ -195,6 +244,53 @@ export const SerializationService = {
       mediaState: s.mediaState,
       trainingState: this.objectToMap(s.trainingState || {}),
       settings: s.settings || { archiveMode: "standard" },
+
+      globalCup: s.globalCup,
+      chronicle: s.chronicle,
+
+      calendar: s.calendar,
+      _interimDaysRemaining: s._interimDaysRemaining,
+      _postBashoDays: s._postBashoDays,
+      _daysSinceLastWeeklyTick: s._daysSinceLastWeeklyTick,
+
+      playerKnowledge: s.playerKnowledge,
+      tutorialState: s.tutorialState,
+      boutTactics: s.boutTactics,
+
+      governanceLog: s.governanceLog,
+      factions: s.factions,
+      scandals: s.scandals,
+      gyojiPool: s.gyojiPool,
+      shimpanPool: s.shimpanPool,
+
+      awardLog: s.awardLog,
+      retirements: s.retirements,
+      bloodlineRegistry: s.bloodlineRegistry,
+      yokozunaVacancyStreak: s.yokozunaVacancyStreak,
+      planetRating: s.planetRating,
+
+      sparringPairs: s.sparringPairs ? this.objectToMap(s.sparringPairs) : undefined,
+      heyaBrandIdentities: s.heyaBrandIdentities
+        ? this.objectToMap(s.heyaBrandIdentities)
+        : undefined,
+      customKeshoConfigs: s.customKeshoConfigs,
+      encouragementLog: s.encouragementLog,
+
+      pendingCrisis: s.pendingCrisis,
+      pendingDecisions: s.pendingDecisions,
+      pendingExhibitions: s.pendingExhibitions,
+      matchmakingOverride: s.matchmakingOverride,
+      activeBasho: s.activeBasho,
+      lastBoutResult: s.lastBoutResult,
+      eventLog: s.eventLog,
+
+      npcScoutingPriorities: s.npcScoutingPriorities,
+      _populationTarget: s._populationTarget,
+      _recruitmentWindow: s._recruitmentWindow,
+      _postBashoMeta: s._postBashoMeta,
+      _preBashoAssessment: s._preBashoAssessment,
+      _preGeneratedSchedules: s._preGeneratedSchedules,
+      isInitialSeed: s.isInitialSeed,
     };
 
     // Rebuild ephemeral transientContext so the UI has valid activeModifiers

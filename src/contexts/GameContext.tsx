@@ -161,17 +161,56 @@ export function GameProvider({ children }: { children: ReactNode }) {
 
   const recruitSponsorAction = useCallback(
     (sponsorId: string) => {
-      if (!state.world || !state.world.playerHeyaId || !state.world.rng) return;
-      const impact = recruitSponsor(
-        state.world,
-        state.world.playerHeyaId,
-        sponsorId,
-        state.world.rng
-      );
-      const nextWorld = applyImpact(state, impact).world;
-      if (nextWorld) updateWorld(nextWorld);
+      const heyaId = state.world?.playerHeyaId;
+      if (!heyaId) return;
+      sendCommand({ type: "RECRUIT_SPONSOR", heyaId, sponsorId });
     },
-    [state, updateWorld]
+    [state.world?.playerHeyaId, sendCommand]
+  );
+
+  const applyPressConferenceAction = useCallback(
+    (heyaId: string, reputationDelta: number) => {
+      sendCommand({ type: "APPLY_PRESS_CONFERENCE", heyaId, reputationDelta });
+    },
+    [sendCommand]
+  );
+
+  const setHeyaDietAction = useCallback(
+    (heyaId: string, diet: import("@/engine/types/economy").DietRegimen) => {
+      sendCommand({ type: "SET_HEYA_DIET", heyaId, diet });
+    },
+    [sendCommand]
+  );
+
+  const retireRikishiAction = useCallback(
+    (rikishiId: string, reason: string) => {
+      sendCommand({ type: "RETIRE_RIKISHI", rikishiId, reason });
+    },
+    [sendCommand]
+  );
+
+  const spendPoliticalCapitalAction = useCallback(
+    (heyaId: string, amount: number) => {
+      sendCommand({ type: "SPEND_POLITICAL_CAPITAL", heyaId, amount });
+    },
+    [sendCommand]
+  );
+
+  const setScoutingInvestmentAction = useCallback(
+    (rikishiId: string, investment: import("@/engine/types/narrative").ScoutingInvestment) => {
+      sendCommand({ type: "SET_SCOUTING_INVESTMENT", rikishiId, investment });
+    },
+    [sendCommand]
+  );
+
+  const setKeshoConfigAction = useCallback(
+    (
+      rikishiId: string,
+      config: Partial<import("@/engine/types/keshoMawashi").KeshoMawashi>
+    ) => {
+      sendCommand({ type: "SET_KESHO_CONFIG", rikishiId, config });
+    },
+    [sendCommand]
   );
 
   const advanceTutorialStepAction = useCallback(
@@ -364,6 +403,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
       runAutoSim: runAutoSimAction,
       tickMultipleDays,
       recruitSponsor: recruitSponsorAction,
+      applyPressConference: applyPressConferenceAction,
+      setHeyaDiet: setHeyaDietAction,
+      retireRikishi: retireRikishiAction,
+      spendPoliticalCapital: spendPoliticalCapitalAction,
+      setScoutingInvestment: setScoutingInvestmentAction,
+      setKeshoConfig: setKeshoConfigAction,
       advanceTutorialStep: advanceTutorialStepAction,
       setTutorialFlag: setTutorialFlagAction,
       finishExhibition: finishExhibitionAction,
@@ -411,6 +456,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
       runAutoSimAction,
       tickMultipleDays,
       recruitSponsorAction,
+      applyPressConferenceAction,
+      setHeyaDietAction,
+      retireRikishiAction,
+      spendPoliticalCapitalAction,
+      setScoutingInvestmentAction,
+      setKeshoConfigAction,
       advanceTutorialStepAction,
       setTutorialFlagAction,
       finishExhibitionAction,

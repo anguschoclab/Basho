@@ -10,7 +10,7 @@ import type { Oyakata } from "./oyakata";
 import type { Rikishi } from "./rikishi";
 import type { Heya } from "./heya";
 import type { TalentPoolWorldState } from "./talent";
-import type { CyclePhase } from "./world";
+import type { CyclePhase, WorldState } from "./world";
 import type { BashoResult } from "./basho";
 import type { Sponsor, Koenkai } from "./sponsors";
 import type { ClosedHeyaRecord } from "./world";
@@ -105,8 +105,82 @@ export interface SerializedWorldState {
   /** Global Cup tournament state (Phase 5+) */
   globalCup?: import("./globalCup").GlobalCupState;
   /** Chronicle records (Phase 5+) */
-  chronicle?: import("./world").WorldState["chronicle"];
+  chronicle?: WorldState["chronicle"];
+
+  // ── Calendar & phase counters ───────────────────────────────────────────
+  // Without these the tick pipeline restarts mid-cycle on load: phase00_preflight
+  // falls back to its own defaults and the weekly gate fires immediately.
+  calendar?: WorldState["calendar"];
+  _interimDaysRemaining?: number;
+  _postBashoDays?: number;
+  _daysSinceLastWeeklyTick?: number;
+
+  // ── Era drift & meta ────────────────────────────────────────────────────
+  meta?: WorldState["meta"];
+  globalKimariteStats?: Record<string, number>;
+
+  // ── Player-owned state ──────────────────────────────────────────────────
+  playerKnowledge?: WorldState["playerKnowledge"];
+  tutorialState?: WorldState["tutorialState"];
+  boutTactics?: Record<string, string>;
+
+  // ── Institutional / governance ──────────────────────────────────────────
+  governanceLog?: WorldState["governanceLog"];
+  factions?: WorldState["factions"];
+  scandals?: WorldState["scandals"];
+  gyojiPool?: WorldState["gyojiPool"];
+  shimpanPool?: WorldState["shimpanPool"];
+
+  // ── Long-horizon career state ───────────────────────────────────────────
+  awardLog?: WorldState["awardLog"];
+  retirements?: WorldState["retirements"];
+  bloodlineRegistry?: WorldState["bloodlineRegistry"];
+  yokozunaVacancyStreak?: number;
+  planetRating?: number;
+
+  // ── Relationships & assignments ─────────────────────────────────────────
+  /** Runtime Map — stored as a record, rehydrated by objectToMap. */
+  sparringPairs?: IdMap<import("./training").SparringState>;
+  /** Runtime Map — stored as a record, rehydrated by objectToMap. */
+  heyaBrandIdentities?: IdMap<import("./keshoMawashi").HeyaBrandIdentity>;
+  customKeshoConfigs?: WorldState["customKeshoConfigs"];
+  encouragementLog?: WorldState["encouragementLog"];
+
+  // ── Pending / in-flight state ───────────────────────────────────────────
+  pendingCrisis?: WorldState["pendingCrisis"];
+  pendingDecisions?: WorldState["pendingDecisions"];
+  pendingExhibitions?: WorldState["pendingExhibitions"];
+  matchmakingOverride?: WorldState["matchmakingOverride"];
+  activeBasho?: WorldState["activeBasho"];
+  lastBoutResult?: WorldState["lastBoutResult"];
+  eventLog?: WorldState["eventLog"];
+
+  // ── NPC & scheduling internals ──────────────────────────────────────────
+  npcScoutingPriorities?: WorldState["npcScoutingPriorities"];
+  _populationTarget?: number;
+  _recruitmentWindow?: WorldState["_recruitmentWindow"];
+  _postBashoMeta?: WorldState["_postBashoMeta"];
+  _preBashoAssessment?: WorldState["_preBashoAssessment"];
+  _preGeneratedSchedules?: WorldState["_preGeneratedSchedules"];
+  isInitialSeed?: boolean;
 }
+
+/**
+ * WorldState fields deliberately NOT persisted, with the reason.
+ * `saveLoadIntegrity.test.ts` asserts that every WorldState key is either
+ * present in SerializedWorldState or listed here — so adding a new field to
+ * WorldState fails the suite until an explicit persist-or-exclude decision
+ * is made.
+ */
+export const NON_PERSISTED_WORLD_FIELDS: Record<string, string> = {
+  id: "Regenerated deterministically as `world_${seed}` on load.",
+  rng: "Stateless — rngForWorld derives from world.seed on every call.",
+  transientContext: "Ephemeral tick context; rebuilt by phase02_context on load.",
+  perceptionCache: "Derived cache; repopulated on demand.",
+  selectedRikishiId: "UI selection, not simulation state.",
+  _autonomousSim: "Run-mode flag for autonomous sims; never part of a player save.",
+  _autonomousPolicy: "Run-mode policy for autonomous sims; never part of a player save.",
+};
 
 /**
  * Type representing save version.

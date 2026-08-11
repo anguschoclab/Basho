@@ -43,6 +43,12 @@ import {
   setTutorialFlag as svcSetTutorialFlag,
   finishExhibition as svcFinishExhibition,
 } from "../systems/tutorial/TutorialService";
+import { updateHeyaInWorld } from "../queries";
+import { retireRikishiImpact } from "../core/ImpactBuilder";
+import { spendPoliticalCapital } from "../systems/governance/ScandalService";
+import { recruitSponsor } from "../systems/economy/sponsorshipMutations";
+import { setScoutingInvestment } from "../scoutingStore";
+import { rngForWorld } from "../rng";
 
 /**
  * Adapter matching the { seed, playerConfig? } call shape used in this worker.
@@ -413,6 +419,78 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
         const impact = svcFinishExhibition(currentWorld, cmd.flag, cmd.step);
         currentWorld = resolveImpacts(currentWorld, [impact]);
         syncWorld();
+      }
+    },
+    APPLY_PRESS_CONFERENCE: (cmd) => {
+      if (currentWorld) {
+        const heya = currentWorld.heyas.get(cmd.heyaId);
+        if (!heya) return;
+        const reputation = Math.max(
+          0,
+          Math.min(100, (heya.reputation ?? 50) + cmd.reputationDelta)
+        );
+        currentWorld = updateHeyaInWorld(currentWorld, cmd.heyaId, { reputation });
+        syncAndDigest();
+      }
+    },
+    SET_HEYA_DIET: (cmd) => {
+      if (currentWorld) {
+        const heya = currentWorld.heyas.get(cmd.heyaId);
+        if (!heya) return;
+        const welfareState = heya.welfareState
+          ? { ...heya.welfareState, activeDiet: cmd.diet }
+          : {
+              welfareRisk: 0,
+              activeDiet: cmd.diet,
+              complianceState: "compliant" as const,
+              weeksInState: 0,
+            };
+        currentWorld = updateHeyaInWorld(currentWorld, cmd.heyaId, { welfareState });
+        syncAndDigest();
+      }
+    },
+    RETIRE_RIKISHI: (cmd) => {
+      if (currentWorld) {
+        const impact = retireRikishiImpact(cmd.rikishiId, cmd.reason);
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        syncAndDigest();
+      }
+    },
+    SPEND_POLITICAL_CAPITAL: (cmd) => {
+      if (currentWorld) {
+        const impact = spendPoliticalCapital(currentWorld, cmd.heyaId, cmd.amount);
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        syncAndDigest();
+      }
+    },
+    RECRUIT_SPONSOR: (cmd) => {
+      if (currentWorld) {
+        const rng = rngForWorld(
+          currentWorld,
+          "sponsors",
+          `recruit_${cmd.heyaId}_${cmd.sponsorId}_${currentWorld.dayIndexGlobal}`
+        );
+        const impact = recruitSponsor(currentWorld, cmd.heyaId, cmd.sponsorId, rng);
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        syncAndDigest();
+      }
+    },
+    SET_SCOUTING_INVESTMENT: (cmd) => {
+      if (currentWorld) {
+        setScoutingInvestment(currentWorld, cmd.rikishiId, cmd.investment);
+        syncAndDigest();
+      }
+    },
+    SET_KESHO_CONFIG: (cmd) => {
+      if (currentWorld) {
+        currentWorld = {
+          ...currentWorld,
+          customKeshoConfigs: {
+            ...(currentWorld.customKeshoConfigs || {}),
+            [cmd.rikishiId]: cmd.config,
+          },
+        };
+        syncAndDigest();
       }
     },
     BUY_MYOSEKI: (cmd) => {

@@ -64,6 +64,21 @@ export type EngineCommand =
       type: "FINISH_EXHIBITION";
       flag: keyof import("../types/tutorial").TutorialFlags;
       step: import("../types/tutorial").TutorialStep;
+    }
+  | { type: "APPLY_PRESS_CONFERENCE"; heyaId: string; reputationDelta: number }
+  | { type: "SET_HEYA_DIET"; heyaId: string; diet: import("../types/economy").DietRegimen }
+  | { type: "RETIRE_RIKISHI"; rikishiId: string; reason: string }
+  | { type: "SPEND_POLITICAL_CAPITAL"; heyaId: string; amount: number }
+  | { type: "RECRUIT_SPONSOR"; heyaId: string; sponsorId: string }
+  | {
+      type: "SET_SCOUTING_INVESTMENT";
+      rikishiId: string;
+      investment: import("../types/narrative").ScoutingInvestment;
+    }
+  | {
+      type: "SET_KESHO_CONFIG";
+      rikishiId: string;
+      config: Partial<import("../types/keshoMawashi").KeshoMawashi>;
     };
 
 /** Worker -> UI Events */

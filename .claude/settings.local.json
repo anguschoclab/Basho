@@ -168,7 +168,8 @@
       "Bash(node_modules/@typescript/native/bin/tsc --version)",
       "Bash(awk '/export interface WorldState/,/^}/' src/engine/types/world.ts)",
       "Bash(awk '/^export interface WorldState/,/^}/' src/engine/types/world.ts)",
-      "Bash(awk '/^export interface SerializedWorldState/,/^}/' src/engine/types/save.ts)"
+      "Bash(awk '/^export interface SerializedWorldState/,/^}/' src/engine/types/save.ts)",
+      "Bash(cd \"/Users/amauricia/Documents/GitHub/sumo-manager-pro\" *)"
     ]
   },
   "outputStyle": "default"
