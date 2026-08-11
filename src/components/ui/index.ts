@@ -1,5 +1,4 @@
 export * from "./alert-dialog";
-export * from "./avatar";
 export * from "./badge";
 export * from "./button";
 export * from "./card";
@@ -20,7 +19,6 @@ export * from "./switch";
 export * from "./tabs";
 export * from "./toast";
 export * from "./toaster";
-export * from "./toggle";
 export * from "./tooltip";
 
 // New UI primitives

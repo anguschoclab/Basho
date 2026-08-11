@@ -164,7 +164,11 @@
       "Bash(xargs -I{} dirname {})",
       "Bash(npx tsx *)",
       "Bash(npx eslint *)",
-      "Bash(echo \"ESLINT_EXIT=$?\")"
+      "Bash(echo \"ESLINT_EXIT=$?\")",
+      "Bash(node_modules/@typescript/native/bin/tsc --version)",
+      "Bash(awk '/export interface WorldState/,/^}/' src/engine/types/world.ts)",
+      "Bash(awk '/^export interface WorldState/,/^}/' src/engine/types/world.ts)",
+      "Bash(awk '/^export interface SerializedWorldState/,/^}/' src/engine/types/save.ts)"
     ]
   },
   "outputStyle": "default"

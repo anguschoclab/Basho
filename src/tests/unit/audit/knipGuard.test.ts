@@ -25,9 +25,6 @@ describe("knip dead code scan", () => {
 
     const output = stdout + stderr;
     const knownBarrelReExports = new Set([
-      "src/components/ui/toggle.tsx",
-      "src/components/ui/toggle-variants.ts",
-      "src/components/ui/avatar.tsx",
       "src/components/ui/Sparkline.tsx",
       "src/components/media/PressConference.tsx",
       "src/constants/ui/kesho.ts",
