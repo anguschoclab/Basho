@@ -58,11 +58,14 @@ export const GlobalCupService = {
 
     RNGRegistry.getSystemRNG(world, "global_cup", `challengers_${world.year}`);
     const talentPool = world.talentPool;
-    const foreignCandidates = talentPool
-      ? Object.values(talentPool.candidates).filter(
-          (c) => isForeign(c) && c.availabilityState === "available"
-        )
-      : [];
+    const foreignCandidates = [];
+    if (talentPool) {
+      for (const c of Object.values(talentPool.candidates)) {
+        if (isForeign(c) && c.availabilityState === "available") {
+          foreignCandidates.push(c);
+        }
+      }
+    }
     const sortedForeignCandidates = [...foreignCandidates].sort(
       (a, b) => (b.talentSeed || 0) - (a.talentSeed || 0)
     );

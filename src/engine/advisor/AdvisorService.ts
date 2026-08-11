@@ -113,10 +113,18 @@ function rivalryRecommendations(world: WorldState, heyaId: Id): AIRecommendation
   const heya = getHeya(world, heyaId);
   if (!heya || !world.rivalriesState) return [];
   const ids = new Set(heya.rikishiIds ?? []);
-  const involved = Object.values(world.rivalriesState.pairs).filter(
-    (p) => ids.has(p.aId) || ids.has(p.bId)
-  );
-  const heated = involved.filter((p) => p.heat >= 60);
+  const involved = [];
+  for (const p of Object.values(world.rivalriesState.pairs)) {
+    if (ids.has(p.aId) || ids.has(p.bId)) {
+      involved.push(p);
+    }
+  }
+  const heated = [];
+  for (const p of involved) {
+    if (p.heat >= 60) {
+      heated.push(p);
+    }
+  }
   if (heated.length === 0) return [];
   return [
     rec(
