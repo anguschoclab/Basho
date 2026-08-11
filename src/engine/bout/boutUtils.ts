@@ -42,12 +42,15 @@ export interface BoutContext {
 
 /** Safe stat read — prefers canonical rikishi.stats, falls back to top-level for bout copies */
 export function stat(r: Rikishi, key: string, fallback = 50): number {
-  const statsObj = r.stats as unknown as Record<string, unknown> | undefined;
-  let v = statsObj?.[key];
-  if (typeof v !== "number" || !Number.isFinite(v)) {
-    v = (r as unknown as Record<string, unknown>)[key];
+  if (r.stats && key in r.stats) {
+    const v = r.stats[key as keyof typeof r.stats];
+    if (typeof v === "number" && Number.isFinite(v)) return v;
   }
-  return typeof v === "number" && Number.isFinite(v) ? v : fallback;
+  if (key in r) {
+    const v = r[key as keyof typeof r];
+    if (typeof v === "number" && Number.isFinite(v)) return v;
+  }
+  return fallback;
 }
 
 export function jitter(rng: SeededRNG, scale = 1): number {
