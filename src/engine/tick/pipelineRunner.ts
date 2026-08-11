@@ -93,6 +93,10 @@ function createShallowSnapshot(
  * is restored, so the remaining phases still execute against a valid world.
  * This closes H7: a phase that mutates shared maps in-place before throwing
  * will not corrupt the recovered state.
+ *
+ * @param initialWorld - The starting world state.
+ * @param phases - An array of pipeline phases to execute sequentially.
+ * @returns The final world state after executing all phases, with StateImpacts fully resolved.
  */
 export function runPipeline(initialWorld: WorldState, phases: PipelinePhase[]): WorldState {
   let currentWorld = initialWorld;
