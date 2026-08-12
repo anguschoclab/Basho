@@ -62,7 +62,15 @@ export function projectMedicalUIDigest(world: WorldState) {
             : "mutinous";
 
   const rosterSize = roster.length;
-  const sekitoriCount = roster.filter((r) => isSekitoriDivision(r.division)).length;
+
+  // PERF: Prevent intermediate O(N) array allocation in projection hot path.
+  // Replaces: const sekitoriCount = roster.filter((r) => isSekitoriDivision(r.division)).length;
+  let sekitoriCount = 0;
+  for (const r of roster) {
+    if (isSekitoriDivision(r.division)) {
+      sekitoriCount++;
+    }
+  }
   const rosterStrengthBand: "dominant" | "strong" | "competitive" | "developing" | "weak" =
     sekitoriCount >= 6
       ? "dominant"
