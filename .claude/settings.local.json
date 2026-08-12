@@ -170,7 +170,8 @@
       "Bash(awk '/^export interface WorldState/,/^}/' src/engine/types/world.ts)",
       "Bash(awk '/^export interface SerializedWorldState/,/^}/' src/engine/types/save.ts)",
       "Bash(cd \"/Users/amauricia/Documents/GitHub/sumo-manager-pro\" *)",
-      "Bash(echo \"LINT_EXIT=$?\")"
+      "Bash(echo \"LINT_EXIT=$?\")",
+      "Bash(git update-index *)"
     ]
   },
   "outputStyle": "default"

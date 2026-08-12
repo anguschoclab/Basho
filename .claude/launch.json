@@ -1,10 +1,11 @@
 {
   "version": "0.0.1",
+  "autoPort": true,
   "configurations": [
     {
       "name": "dev",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["vite", "--port", "5173"],
+      "runtimeArgs": ["vite"],
       "port": 5173
     }
   ]
