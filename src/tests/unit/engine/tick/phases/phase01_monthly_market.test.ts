@@ -54,14 +54,14 @@ describe("phase01_monthly_market", () => {
 
     const newMarket = impact.worldFields?.myosekiMarket;
     expect(newMarket).toBeDefined();
-    expect(newMarket?.stocks).toBeDefined();
+    expect(newMarket!.stocks).toBeDefined();
 
     // With RNG=0.9, mid=0.5, range=0.06: drift = 1 + (0.9 - 0.5) * 0.06 = 1.024
     // New asking price = 100,000,000 * 1.024 = 102,400,000
-    expect(newMarket?.stocks?.["stock1"].askingPrice).toBe(102400000);
+    expect(newMarket!.stocks["stock1"].askingPrice).toBe(102400000);
 
     // Owned stock shouldn't get an asking price
-    expect(newMarket?.stocks?.["stock2"].askingPrice).toBeUndefined();
+    expect(newMarket!.stocks["stock2"].askingPrice).toBeUndefined();
 
     vi.restoreAllMocks();
   });
