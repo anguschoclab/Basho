@@ -40,11 +40,10 @@ export const EntityService = {
     key: Key,
     factory: () => NonNullable<Parent[Key]>
   ): NonNullable<Parent[Key]> {
-    const record = parent as Record<string, unknown>;
-    if (!record[key as string]) {
-      record[key as string] = factory() as unknown as Parent[Key];
+    if (!parent[key]) {
+      Object.assign(parent, { [key]: factory() });
     }
-    return record[key as string] as NonNullable<Parent[Key]>;
+    return parent[key] as NonNullable<Parent[Key]>;
   },
 
   /**
@@ -91,9 +90,7 @@ export const EntityService = {
         "closedHeyas",
         "sparringPairs",
       ].includes(rootKey as string);
-      (world as unknown as Record<string, unknown>)[rootKey as string] = isMapField
-        ? new Map()
-        : {};
+      Object.assign(world, { [rootKey]: isMapField ? new Map() : {} });
     }
 
     const root = world[rootKey] as unknown;
