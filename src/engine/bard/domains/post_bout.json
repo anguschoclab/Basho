@@ -315,45 +315,65 @@
   "replay": {
     "tachiai_decisive": [
       "The speed of the left hand into the tachi was the winning move for %WINNER%.",
-      "Watch the tachiai again — %WINNER% got the jump and never looked back."
+      "Watch the tachiai again — %WINNER% got the jump and never looked back.",
+      "The replay highlights how %WINNER% seized the initiative right at the tachiai.",
+      "A textbook charge from %WINNER% — the initial impact made all the difference."
     ],
     "grip_battle": [
       "Right hand in, left hand out. Bread and butter sumo from %WINNER%.",
-      "The grip battle was key — %WINNER% secured his favorite hold and took control."
+      "The grip battle was key — %WINNER% secured his favorite hold and took control.",
+      "Once %WINNER% locked in that grip, %LOSER% was always fighting an uphill battle.",
+      "The hand fighting in this replay tells the whole story. %WINNER% wanted it more."
     ],
     "edge_drama": [
       "%LOSER% almost goes out, but look at his footwork. Stays inside the ring — remarkable balance.",
-      "At the tawara, %LOSER% somehow stays in. The crowd gasps at that footwork."
+      "At the tawara, %LOSER% somehow stays in. The crowd gasps at that footwork.",
+      "The slow motion shows %LOSER% walking the tightrope on the edge of the dohyo.",
+      "Incredible balance on the straw bales by %LOSER%, refusing to concede the bout."
     ],
     "counter": [
       "Good defense and then good offense from %WINNER%. A great technique sequence.",
-      "%WINNER% absorbs the pressure, then counters beautifully. That's sumo at its finest."
+      "%WINNER% absorbs the pressure, then counters beautifully. That's sumo at its finest.",
+      "A perfect display of patience by %WINNER%, waiting for the exact moment to strike back.",
+      "The replay shows %WINNER% turning defense into attack in the blink of an eye."
     ],
     "size_overcame": [
       "Just overpowered. Too big, too strong — %WINNER% used every kilogram to advantage.",
-      "The size difference was telling. %WINNER% simply outmuscled %LOSER%."
+      "The size difference was telling. %WINNER% simply outmuscled %LOSER%.",
+      "%WINNER% imposed his sheer physical presence, leaving %LOSER% with nowhere to go.",
+      "You can see in the replay how %WINNER% leveraged his superior mass effectively."
     ],
     "reversal": [
       "What a reversal move by %WINNER%! Look at that hip shift.",
-      "An incredible reversal — %LOSER% thought he had it, but %WINNER% turned the tables."
+      "An incredible reversal — %LOSER% thought he had it, but %WINNER% turned the tables.",
+      "Just when %LOSER% seemed dominant, %WINNER% pulled a magnificent reversal out of nowhere.",
+      "The replay perfectly captures the sudden momentum shift orchestrated by %WINNER%."
     ],
     "quick_finish": [
       "This happened oh so quickly — blink and you missed it.",
-      "A flash finish. %WINNER% ended it before %LOSER% could react."
+      "A flash finish. %WINNER% ended it before %LOSER% could react.",
+      "The bout was over almost as soon as it began. Decisive action from %WINNER%.",
+      "No time wasted by %WINNER% here. A lightning-fast execution."
     ],
     "control": [
       "%WINNER% was in total control from start to finish.",
-      "A masterclass from %WINNER% — never threatened, always in command."
+      "A masterclass from %WINNER% — never threatened, always in command.",
+      "The replay shows a clinic in ring generalship by %WINNER%.",
+      "%LOSER% couldn't find an opening against %WINNER%'s airtight performance."
     ],
     "stamina_issue": [
       "%LOSER% looks like he's bothered with stamina issues in this replay. The energy just wasn't there.",
       "Watch the late stages — %LOSER% fades badly. The conditioning wasn't enough today.",
-      "The replay tells the story — %LOSER% simply ran out of gas against %WINNER%."
+      "The replay tells the story — %LOSER% simply ran out of gas against %WINNER%.",
+      "As the bout dragged on, you could see %LOSER%'s strength visibly draining.",
+      "The longer this went, the more %WINNER% capitalized on %LOSER%'s fading endurance."
     ],
     "generic": [
       "Let's see that again — %WINNER%'s %KIMARITE% in slow motion.",
       "The replay shows the precision of %WINNER%'s winning technique.",
-      "One more look at that spectacular finish — %KIMARITE% seals it for %WINNER%."
+      "One more look at that spectacular finish — %KIMARITE% seals it for %WINNER%.",
+      "A beautiful execution of %KIMARITE% by %WINNER%. Let's watch the replay.",
+      "The slow-motion angle really highlights how %WINNER% set up that %KIMARITE%."
     ]
   }
 }
