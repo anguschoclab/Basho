@@ -84,6 +84,7 @@ export const EntityService = {
     if (!world[rootKey]) {
       const isMapField = [
         "rikishi",
+        "historicalRikishi",
         "heyas",
         "oyakata",
         "staff",
