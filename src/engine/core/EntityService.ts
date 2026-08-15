@@ -21,6 +21,11 @@ export const EntityService = {
    * Type-safe generic state hydrator.
    * Ensures a state property exists on the parent object, creating it with the factory if missing.
    *
+   * CONTRACT / WARNING: This function MUTATES the parent object directly. It bypasses
+   * standard TypeScript assignment checks by casting to Record<string, unknown>.
+   * It does not return a new clone of the parent. Do not use this in pure/reducer
+   * phases unless you are explicitly building a mutation (e.g., within ImpactResolver).
+   *
    * @param {any} parent - The object containing the state (e.g., WorldState or Heya).
    * @param {string} key - The property key for the state.
    * @param {() => T} factory - A function returning the default state if it doesn't exist.
