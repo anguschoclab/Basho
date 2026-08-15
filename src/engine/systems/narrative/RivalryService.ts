@@ -24,7 +24,7 @@ import {
   type RivalryPairState,
   type RivalryKey,
   type RivalryTone,
-} from "../../../constants/engine/rivalry";
+} from "@/constants/engine/rivalry";
 import { applyBoutToPairState, deriveTone } from "./RivalryHeatService";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
@@ -67,7 +67,7 @@ import {
   SPARRING_INITIAL_HEAT_MAX,
   HEYA_HEAT_GAIN_TITLE_STAKES,
   HEYA_HEAT_GAIN_NORMAL,
-} from "../../../constants/engine/rivalry";
+} from "@/constants/engine/rivalry";
 import { getRikishi } from "../../queries";
 
 /**
