@@ -129,6 +129,7 @@ export function SaveSlotManager({
                     className="hover:border-primary/50 transition-all cursor-pointer group shadow-xs hover:shadow-md focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ring-offset-background"
                     onClick={() => handleLoadSlot(slot.slotName)}
                     role="button"
+                    aria-label={`Load save slot ${slot.slotName}`}
                     tabIndex={0}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {

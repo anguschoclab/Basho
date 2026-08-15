@@ -183,6 +183,7 @@ const TableHeader = React.memo(function TableHeader({
       )}
       onClick={() => onClick(id)}
       role="button"
+      aria-label={`Sort by ${label}`}
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -214,6 +215,7 @@ const DivisionFilterBadge = React.memo(function DivisionFilterBadge({
       className="cursor-pointer capitalize px-3 py-0.5 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1"
       onClick={() => onClick(division)}
       role="button"
+      aria-label={`Filter by division ${division}`}
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
