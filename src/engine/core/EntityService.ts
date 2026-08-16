@@ -18,8 +18,12 @@ import type { WorldState } from "../types/world";
  */
 export const EntityService = {
   /**
-   * Type-safe generic state hydrator.
+   * Generic state hydrator.
    * Ensures a state property exists on the parent object, creating it with the factory if missing.
+   *
+   * CONTRACT / WARNING: This function MUTATES the `parent` object in-place.
+   * It bypasses TypeScript assignment checks via generic casts. Do not assume deep
+   * structural type safety when using this to attach missing nested state.
    *
    * @param {any} parent - The object containing the state (e.g., WorldState or Heya).
    * @param {string} key - The property key for the state.
