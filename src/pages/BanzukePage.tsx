@@ -11,6 +11,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { projectBanzukeUIDigest, projectPressConferenceData } from "@/presenters/uiDigest";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import { PressConference } from "@/components/game/PressConference";
@@ -146,8 +147,7 @@ export default function BanzukePage() {
 
   return (
     <AppLayout pageTitle="Official Banzuke" subNavTabs={TOURNAMENT_TABS} activeSubTab="banzuke">
-
-        <title>Official Banzuke — Rankings | Basho</title>
+      <title>Official Banzuke — Rankings | Basho</title>
 
       {/* Media Day Trigger (D1) */}
       {isMediaDay && !showPressConference && (
@@ -392,10 +392,17 @@ const DivisionTable = memo(function DivisionTable({
               ))}
               {rows.length === 0 && (
                 <tr>
-                  <td colSpan={3} className="p-8 text-center text-muted-foreground font-display">
-                    {searchQuery
-                      ? "No wrestlers match your search"
-                      : "No wrestlers in this division"}
+                  <td colSpan={3} className="p-0">
+                    <EmptyState
+                      icon={Search}
+                      title={searchQuery ? "No matches found" : "Division empty"}
+                      description={
+                        searchQuery
+                          ? "No wrestlers match your search"
+                          : "No wrestlers in this division"
+                      }
+                      compact
+                    />
                   </td>
                 </tr>
               )}
