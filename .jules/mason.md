@@ -1,0 +1,4 @@
+## 2024-03-05 - Remove weak casts in EntityService
+**Finding:** `EntityService.ensureState` and `EntityService.ensureNestedState` were bypassing compiler assignment checks by casting the target object (`as unknown as Record<string, unknown>`) when dynamically initializing empty states.
+**Learning:** `Object.assign` is a safer, type-compliant way to mutate generic object states without resorting to `as any` or `as unknown` value casts. For `ensureNestedState`, explicitly passing the generic types to `new Map<string, T>()` and casting the existing `root` reference when it is structurally validated as a Map allows safe usage without `as unknown`.
+**Constraint:** Future modifications to generic object state injection should utilize `Object.assign(target, { [key]: value })` rather than casting the target to weakly typed objects.
