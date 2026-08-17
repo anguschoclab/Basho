@@ -46,6 +46,7 @@ const RosterEntryRow = React.memo(
         )}
         onClick={() => onToggleSelect(id)}
         role="button"
+        aria-label={`Toggle selection for ${shikona}`}
         tabIndex={0}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {

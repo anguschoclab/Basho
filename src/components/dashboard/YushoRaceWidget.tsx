@@ -39,6 +39,7 @@ const YushoContender = React.memo(({ entry, rank }: YushoContenderProps) => {
       className="flex flex-col items-center gap-2 p-3 rounded-lg hover:bg-muted/50 transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
       onClick={() => navigate({ to: "/rikishi", params: { id: entry.id } })}
       role="button"
+      aria-label={`View profile for ${entry.shikona}`}
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {

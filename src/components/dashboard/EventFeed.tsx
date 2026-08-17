@@ -62,6 +62,7 @@ const EventFeedItem = React.memo(
       <div
         className={`flex gap-3 p-2 rounded hover:bg-slate-800/50 transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1 ${importanceClass}`}
         role="button"
+        aria-label={`View details for event: ${event.title}`}
         tabIndex={0}
         onClick={() => onSelect(event)}
         onKeyDown={(e) => {
