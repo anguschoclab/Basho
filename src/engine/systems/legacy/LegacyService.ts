@@ -144,7 +144,8 @@ export const LegacyService = {
    */
   applyLegacyTrait(candidateStats: RikishiStats, trait: BloodlineTrait): RikishiStats {
     const boosted: RikishiStats = { ...candidateStats };
-    const numericKeys = new Set<keyof RikishiStats>([
+    type NumericStatKey = "power" | "technique" | "speed" | "weight" | "stamina" | "mental" | "adaptability" | "balance" | "aggression" | "experience";
+    const numericKeys = new Set<string>([
       "power",
       "technique",
       "speed",
@@ -159,10 +160,10 @@ export const LegacyService = {
 
     // Apply Floor Bonuses
     for (const [stat, bonus] of Object.entries(trait.statFloorBonus)) {
-      const s = stat as keyof RikishiStats;
-      if (numericKeys.has(s)) {
-        (boosted as unknown as Record<string, unknown>)[s] = clampInt(
-          ((boosted[s] as number) || 0) + (bonus || 0),
+      if (numericKeys.has(stat)) {
+        const s = stat as NumericStatKey;
+        boosted[s] = clampInt(
+          (boosted[s] || 0) + (bonus || 0),
           0,
           99
         );
@@ -171,10 +172,10 @@ export const LegacyService = {
 
     // Apply Ceiling Bonus to the peak stat in the trait
     const peakStat = this.findPeakStat(trait.statFloorBonus);
-    const p = peakStat as keyof RikishiStats;
-    if (peakStat && numericKeys.has(p)) {
-      (boosted as unknown as Record<string, unknown>)[p] = clampInt(
-        ((boosted[p] as number) || 0) + trait.ceilingBonus,
+    if (peakStat && numericKeys.has(peakStat)) {
+      const p = peakStat as NumericStatKey;
+      boosted[p] = clampInt(
+        (boosted[p] || 0) + trait.ceilingBonus,
         0,
         99
       );

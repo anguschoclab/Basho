@@ -40,11 +40,10 @@ export const EntityService = {
     key: Key,
     factory: () => NonNullable<Parent[Key]>
   ): NonNullable<Parent[Key]> {
-    const record = parent as Record<string, unknown>;
-    if (!record[key as string]) {
-      record[key as string] = factory() as unknown as Parent[Key];
+    if (!parent[key]) {
+      Object.assign(parent, { [key]: factory() });
     }
-    return record[key as string] as NonNullable<Parent[Key]>;
+    return parent[key] as NonNullable<Parent[Key]>;
   },
 
   /**
