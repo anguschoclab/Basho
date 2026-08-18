@@ -8,9 +8,24 @@
     },
     "promotion": {
       "ozeki_run": {
-        "imminent": "Has reached the traditional 33-win threshold. An Ozeki promotion is imminent.",
-        "brink": "On the brink. A few more wins will secure the rank.",
-        "building": "Building a solid case, but needs a spectacular finish."
+        "imminent": [
+          "Has reached the traditional 33-win threshold. An Ozeki promotion is imminent.",
+          "The numbers are undeniable. The Ozeki rank awaits.",
+          "A spectacular run culminates here. Promotion to Ozeki is all but guaranteed.",
+          "Surpassed the 33-win mark. The Association will be preparing the official messengers."
+        ],
+        "brink": [
+          "On the brink. A few more wins will secure the rank.",
+          "Agonizingly close to the threshold. Every remaining bout is critical.",
+          "Just steps away from Ozeki. The pressure is immense as the final wins are needed.",
+          "Knocking on the door of the Ozeki rank. A strong finish here seals it."
+        ],
+        "building": [
+          "Building a solid case, but needs a spectacular finish.",
+          "Quietly assembling the numbers for an Ozeki run.",
+          "Laying the groundwork for promotion, though there's still a mountain to climb.",
+          "On the radar for Ozeki, but must find another gear to reach the threshold."
+        ]
       },
       "yokozuna_run": {
         "standard": [
