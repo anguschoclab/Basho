@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { getOrCreateScouted } from "@/engine/scoutingStore";
+import { getOrCreateScouted, tickWeekScouting } from "@/engine/scoutingStore";
 import { makeMockWorld } from "@/tests/unit/engine/utils";
 import { logger } from "@/engine/utils/Logger";
 
@@ -96,5 +96,43 @@ describe("scoutingStore - Logger integration", () => {
     getOrCreateScouted(world, "existing-id");
 
     expect(warnSpy).not.toHaveBeenCalled();
+  });
+});
+
+describe("scoutingStore - tickWeekScouting", () => {
+  it("applies decay to scouting levels correctly", () => {
+    const world = makeMockWorld();
+    world.week = 10;
+    world.playerKnowledge = {
+      scouting: {
+        "rikishi-1": {
+          rikishiId: "rikishi-1",
+          publicInfo: { id: "rikishi-1", shikona: "Test Wrestler", rank: "maegashira", height: 180, weight: 140 },
+          isOwned: false,
+          timesObserved: 1,
+          lastObservedWeek: 5,
+          scoutingInvestment: "none",
+          scoutingLevel: 80,
+          attributes: { power: 0, speed: 0, balance: 0, technique: 0, aggression: 0, experience: 0 },
+        },
+        "owned-rikishi": {
+          rikishiId: "owned-rikishi",
+          publicInfo: { id: "owned-rikishi", shikona: "Owned Wrestler", rank: "maegashira", height: 180, weight: 140 },
+          isOwned: true,
+          timesObserved: 1,
+          lastObservedWeek: 5,
+          scoutingInvestment: "none",
+          scoutingLevel: 100,
+          attributes: { power: 0, speed: 0, balance: 0, technique: 0, aggression: 0, experience: 0 },
+        }
+      }
+    };
+
+    const impact = tickWeekScouting(world);
+
+    // Decay is 0.02 * weeksSince * 100 = 2 * (10 - 5) = 10
+    expect(impact.worldFields?.playerKnowledge?.scouting["rikishi-1"]?.scoutingLevel).toBe(70);
+    // Owned rikishi don't decay
+    expect(impact.worldFields?.playerKnowledge?.scouting["owned-rikishi"]?.scoutingLevel).toBe(100);
   });
 });
