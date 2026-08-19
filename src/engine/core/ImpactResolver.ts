@@ -440,7 +440,8 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
     // Merge entity updates with lazy sub-map creation
     if (impact.entities) {
       if (!merged.entities) merged.entities = {};
-      for (const field of ENTITY_UPDATE_CONFIGS.map((c) => c.impactField)) {
+      for (const config of ENTITY_UPDATE_CONFIGS) {
+        const field = config.impactField;
         const sourceMap = (impact.entities as Record<string, Map<string, unknown> | undefined>)[
           field
         ];
@@ -519,9 +520,10 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
 
   // Convert accumulated array appends back to array format
   if (appendMap.size > 0) {
-    merged.arrayAppends = Array.from(appendMap.entries()).map(
-      ([field, items]) => ({ field, items }) as never
-    );
+    merged.arrayAppends = [];
+    for (const [field, items] of appendMap.entries()) {
+      merged.arrayAppends.push({ field, items } as never);
+    }
   }
 
   return merged;
