@@ -12,3 +12,8 @@
 **Gap:** applyWeeklyScoutingDecay (and tickWeekScouting) in scoutingStore.ts was completely untested.
 **Learning:** `tickWeekScouting` does not mutate `world` directly; it returns a `StateImpact` that updates the `playerKnowledge` field. We must assert on `impact.worldFields?.playerKnowledge?.scouting` to verify the decay logic.
 **Pattern:** Mock world, manually set `world.week` and `world.playerKnowledge.scouting` entries (with a `lastObservedWeek` in the past), run `tickWeekScouting`, and inspect the returned `StateImpact`.
+## 2025-02-13 - Scout: type check failure on StateImpact resolution
+
+**Gap:** `worldFields` in `StateImpact` was missing `playerKnowledge` property in TypeScript type definitions, causing `type-check` CI step to fail.
+**Learning:** `createImpactBuilder` accepts partial `WorldState` fields based on `Pick<WorldState, ...>` defined in `StateImpact.ts`. If a top-level `world` field is modified (e.g. `playerKnowledge` via `updateWorldField`), it must be explicitly listed in the `worldFields` type union in `src/engine/core/StateImpact.ts`.
+**Pattern:** Add missing keys to the `worldFields` type union when extracting world mutations into the `StateImpact` pattern.

@@ -193,6 +193,7 @@ export interface StateImpact {
       | "pendingCrisis"
       | "lineage"
       | "matchmakingOverride"
+      | "playerKnowledge"
     >
   >;
 
