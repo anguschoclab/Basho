@@ -130,22 +130,19 @@ export default function SchedulePage() {
           <div className="space-y-4">
             {!isValidFightDay ? (
               <Card>
-                <CardContent className="py-12 text-center">
-                  <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
-                    <CalendarDays className="h-6 w-6 text-muted-foreground" />
-                  </div>
-                  <h3 className="text-lg font-medium">Rest Day</h3>
-                  <p className="text-muted-foreground mt-1">
-                    The {DIVISION_NAMES[selectedDivision]} division does not hold bouts on Day{" "}
-                    {selectedDay}.
-                  </p>
-                </CardContent>
+                <EmptyState
+                  icon={CalendarDays}
+                  title="Rest Day"
+                  description={`The ${DIVISION_NAMES[selectedDivision]} division does not hold bouts on Day ${selectedDay}.`}
+                />
               </Card>
             ) : matches.length === 0 ? (
               <Card>
-                <CardContent className="py-12 text-center text-muted-foreground">
-                  No bouts scheduled for this division and day yet.
-                </CardContent>
+                <EmptyState
+                  icon={Swords}
+                  title="No Bouts Scheduled"
+                  description="No bouts scheduled for this division and day yet."
+                />
               </Card>
             ) : (
               <div className="grid gap-3">
