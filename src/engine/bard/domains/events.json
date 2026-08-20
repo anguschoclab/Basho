@@ -396,7 +396,10 @@
     "banzuke_movement_sekitori_promotion": [
       "%SHIKONA% crosses the sekitori threshold — promoted from %FROM% to %TO%. The paid ranks await.",
       "From %FROM% to %TO% — %SHIKONA% is now a sekitori. A career milestone achieved.",
-      "The sekitori barrier is broken: %SHIKONA% rises from %FROM% to %TO% with salary and status."
+      "The sekitori barrier is broken: %SHIKONA% rises from %FROM% to %TO% with salary and status.",
+      "A life-changing promotion for %SHIKONA%, ascending from %FROM% to %TO% to claim the white mawashi.",
+      "%SHIKONA% earns the right to wear silk, stepping up from %FROM% to %TO% as a newly minted sekitori.",
+      "The grueling days of the un-salaried lower divisions are over: %SHIKONA% leaps from %FROM% to %TO%."
     ],
     "banzuke_movement_sanyaku_promotion": [
       "%SHIKONA% enters the sanyaku — promoted from %FROM% to %TO%. The elite ranks await.",
@@ -406,7 +409,10 @@
     "banzuke_movement_shin_debut": [
       "Shin-%TO% %SHIKONA% takes his place among the titled ranks — a new sanyaku debut from %FROM%.",
       "A debut in the elite: %SHIKONA% rises from %FROM% to shin-%TO%. The banzuke tells a new story.",
-      "The crowd awaits shin-%TO% %SHIKONA% — promoted from %FROM%, a new name among the titled."
+      "The crowd awaits shin-%TO% %SHIKONA% — promoted from %FROM%, a new name among the titled.",
+      "Breaking into the true upper echelon, %SHIKONA% leaves %FROM% behind to make a shin-%TO% debut.",
+      "The committee rewards a stellar record, elevating %SHIKONA% from %FROM% to become the newest shin-%TO%.",
+      "A momentous shift in the elite ranks: %SHIKONA% climbs from %FROM% to step onto the dohyo as shin-%TO%."
     ],
     "banzuke_movement_standard_promotion": [
       "%SHIKONA% moves up the banzuke — from %FROM% to %TO%.",
