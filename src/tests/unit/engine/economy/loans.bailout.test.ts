@@ -1,0 +1,132 @@
+import { describe, it, expect, beforeEach } from "vitest";
+import { issueBailoutLoanIfNeeded } from "@/engine/loans";
+import { MockFactory } from "@/tests/helpers/utils/MockFactory";
+import type { WorldState } from "@/engine/types/world";
+import { LOAN_ISSUANCE_THRESHOLD } from "@/constants/engine/economic";
+import type { Loan } from "@/engine/types/economy";
+
+describe("issueBailoutLoanIfNeeded", () => {
+  let world: WorldState;
+
+  beforeEach(() => {
+    world = MockFactory.createWorld();
+  });
+
+  it("should issue an emergency loan with 0 active loans and low scandal", () => {
+    const heya = MockFactory.createHeya("heya-1", {
+      funds: LOAN_ISSUANCE_THRESHOLD - 1000, // Deficit of 1000 beyond threshold
+      activeLoans: [],
+      scandalScore: 0,
+      reputation: 50,
+    });
+    world.heyas.set("heya-1", heya);
+
+    const impact = issueBailoutLoanIfNeeded(world, "heya-1");
+
+    expect(impact.entities?.heyaUpdates).toBeDefined();
+    const heyaUpdate = impact.entities?.heyaUpdates?.get("heya-1");
+    expect(heyaUpdate?.activeLoans?.length).toBe(1);
+
+    const loan = heyaUpdate?.activeLoans?.[0];
+    expect(loan?.type).toBe("emergency");
+    expect(loan?.interestRate).toBe(0);
+    expect(heyaUpdate?.funds).toBeGreaterThan(heya.funds);
+    expect(heyaUpdate?.reputation).toBe(40);
+  });
+
+  it("should issue a supporter loan if there is 1 active loan", () => {
+    const heya = MockFactory.createHeya("heya-1", {
+      funds: LOAN_ISSUANCE_THRESHOLD - 1000,
+      activeLoans: [
+        {
+          id: "loan-old",
+          type: "emergency",
+          providerName: "Association",
+          principal: 50000,
+          interestRate: 0,
+        } as Loan,
+      ],
+      scandalScore: 0,
+      reputation: 50,
+    });
+    world.heyas.set("heya-1", heya);
+
+    const impact = issueBailoutLoanIfNeeded(world, "heya-1");
+
+    const heyaUpdate = impact.entities?.heyaUpdates?.get("heya-1");
+    expect(heyaUpdate?.activeLoans?.length).toBe(2);
+
+    const newLoan = heyaUpdate?.activeLoans?.[1];
+    expect(newLoan?.type).toBe("supporter");
+    expect(newLoan?.interestRate).toBe(0.03);
+    expect(newLoan?.providerName).toBe(`${heya.name} Kōenkai`);
+    // Scandal score increases for supporter
+    expect(heyaUpdate?.scandalScore).toBe(10);
+  });
+
+  it("should issue a benefactor loan if there are 2 active loans", () => {
+    const heya = MockFactory.createHeya("heya-1", {
+      funds: LOAN_ISSUANCE_THRESHOLD - 1000,
+      activeLoans: [
+        {
+          id: "loan-old",
+          type: "emergency",
+          providerName: "Association",
+          principal: 50000,
+          interestRate: 0,
+        } as Loan,
+        {
+          id: "loan-old2",
+          type: "supporter",
+          providerName: "Koenkai",
+          principal: 50000,
+          interestRate: 0.03,
+        } as Loan,
+      ],
+      scandalScore: 0,
+      reputation: 50,
+    });
+    world.heyas.set("heya-1", heya);
+
+    const impact = issueBailoutLoanIfNeeded(world, "heya-1");
+
+    const heyaUpdate = impact.entities?.heyaUpdates?.get("heya-1");
+    expect(heyaUpdate?.activeLoans?.length).toBe(3);
+
+    const newLoan = heyaUpdate?.activeLoans?.[2];
+    expect(newLoan?.type).toBe("benefactor");
+    expect(newLoan?.interestRate).toBe(0.06);
+    expect(heyaUpdate?.scandalScore).toBe(10);
+  });
+
+  it("should not issue a loan if already has a benefactor loan", () => {
+    const heya = MockFactory.createHeya("heya-1", {
+      funds: LOAN_ISSUANCE_THRESHOLD - 1000,
+      activeLoans: [
+        {
+          id: "loan-1",
+          type: "benefactor",
+          providerName: "Rich Sponsor",
+          principal: 50000,
+          interestRate: 0.05,
+        } as Loan,
+      ],
+    });
+    world.heyas.set("heya-1", heya);
+
+    const impact = issueBailoutLoanIfNeeded(world, "heya-1");
+
+    expect(impact.entities?.heyaUpdates).toBeUndefined();
+  });
+
+  it("should not issue a loan if funds are above threshold", () => {
+    const heya = MockFactory.createHeya("heya-1");
+    heya.funds = LOAN_ISSUANCE_THRESHOLD + 1000;
+    world.heyas.set("heya-1", heya);
+
+    const impact = issueBailoutLoanIfNeeded(world, "heya-1");
+
+    expect(impact.entities?.heyaUpdates).toBeUndefined();
+    expect(impact.events).toBeUndefined();
+  });
+});
