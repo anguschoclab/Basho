@@ -13,7 +13,7 @@
 
 import type { WorldState } from "../../types/world";
 import type { Id } from "../../types/common";
-import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
+import { isSekitoriDivision } from "../../../constants/engine/rankDisplay";
 import { EntityCollection } from "../../core/EntityCollection";
 import { RNGRegistry } from "../../core/RNGRegistry";
 import { EntityService } from "../../core/EntityService";

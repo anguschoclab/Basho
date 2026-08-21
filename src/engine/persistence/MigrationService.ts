@@ -93,7 +93,8 @@ const migrateToV1_1_0: MigrationStep = (save, ctx) => {
           "Migration: events field is corrupt (not an object), resetting to empty",
           "MigrationService"
         );
-        next.world = { ...next.world, events: { version: "1.0.0", log: [], dedupe: {} } } as any;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (next.world as any).events = { version: "1.0.0", log: [], dedupe: {} };
         ctx.logs.push("migrateToV1_1_0: WARN reset corrupt events");
       }
     } catch (e) {
@@ -129,7 +130,8 @@ const migrateToV1_1_0: MigrationStep = (save, ctx) => {
         }
       } else if (pool !== undefined && pool !== null) {
         // Corrupt sponsorPool — reset to empty
-        next.world = { ...next.world, sponsorPool: { sponsors: {}, koenkais: {} } } as any;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (next.world as any).sponsorPool = { sponsors: {}, koenkais: {} };
         warn("Migration: reset corrupt sponsorPool to empty", "MigrationService");
         ctx.logs.push("migrateToV1_1_0: WARN reset corrupt sponsorPool");
       }

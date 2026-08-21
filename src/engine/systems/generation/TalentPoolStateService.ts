@@ -67,7 +67,8 @@ export function ensureTalentPoolState(world: WorldState): TalentPoolWorldState {
       },
     }, enumerable: true, configurable: true, writable: true });
   }
-  return world.talentPool;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return world.talentPool!;
 }
 
 /**

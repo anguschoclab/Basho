@@ -78,7 +78,8 @@ export function ensureCandidatePoolState(world: WorldState): TalentPoolWorldStat
       },
     }, enumerable: true, configurable: true, writable: true });
   }
-  return world.candidatePool;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return world.candidatePool!;
 }
 
 // ── NPC Interest Simulation ───────────────────────────────────────────────
