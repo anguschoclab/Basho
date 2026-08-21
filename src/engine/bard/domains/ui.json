@@ -8,9 +8,21 @@
     },
     "promotion": {
       "ozeki_run": {
-        "imminent": "Has reached the traditional 33-win threshold. An Ozeki promotion is imminent.",
-        "brink": "On the brink. A few more wins will secure the rank.",
-        "building": "Building a solid case, but needs a spectacular finish."
+        "imminent": [
+          "Has reached the traditional 33-win threshold. An Ozeki promotion is imminent.",
+          "The 33-win benchmark is secured. The Association will surely act to promote.",
+          "Ozeki promotion is practically confirmed after clearing the 33-win hurdle."
+        ],
+        "brink": [
+          "On the brink. A few more wins will secure the rank.",
+          "Teetering on the edge of promotion. One final push is all it takes.",
+          "A stone's throw from Ozeki. The pressure mounts to get the last few wins."
+        ],
+        "building": [
+          "Building a solid case, but needs a spectacular finish.",
+          "Putting together a strong resume for Ozeki, though a dramatic climax is required.",
+          "The foundation is there, but only a flawless final stretch will sway the judges."
+        ]
       },
       "yokozuna_run": {
         "standard": [
@@ -46,10 +58,26 @@
       }
     },
     "kadoban": {
-      "fighting": "Fighting for survival as Kadoban Ozeki.",
-      "demoted": "Failed to clear Kadoban. Demotion to Sekiwake confirmed.",
-      "cleared": "Cleared Kadoban. Retains Ozeki rank.",
-      "danger": "In danger of falling to Kadoban status with another losing record."
+      "fighting": [
+        "Fighting for survival as Kadoban Ozeki.",
+        "Under immense pressure, battling to clear Kadoban and save the rank.",
+        "Every bout matters now: fighting to shed the Kadoban status."
+      ],
+      "demoted": [
+        "Failed to clear Kadoban. Demotion to Sekiwake confirmed.",
+        "The Ozeki rank is lost. Make-koshi seals a demotion to Sekiwake.",
+        "Unable to reach eight wins. A tragic fall from Ozeki to Sekiwake is certain."
+      ],
+      "cleared": [
+        "Cleared Kadoban. Retains Ozeki rank.",
+        "Kachi-koshi secured. The Ozeki rank is safe for another tournament.",
+        "Kadoban cleared. A massive sigh of relief as the rank is retained."
+      ],
+      "danger": [
+        "In danger of falling to Kadoban status with another losing record.",
+        "Facing the threat of Kadoban. A make-koshi here will trigger the warning.",
+        "On thin ice. Another losing tournament means Kadoban next time."
+      ]
     },
     "sections": {
       "injuries": "Injuries",
