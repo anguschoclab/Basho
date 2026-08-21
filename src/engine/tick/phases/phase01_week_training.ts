@@ -82,9 +82,13 @@ export function phase01_week_training(world: WorldState): StateImpact {
     if (!isEligibleForTsukebito(r)) continue;
     // Skip if already has tsukebito assigned
     if (r.tsukebitoIds && r.tsukebitoIds.length > 0) {
-      const tsukebitoRikishi = r.tsukebitoIds
-        .map((id) => getRikishi(world, id))
-        .filter((x): x is NonNullable<typeof x> => x !== undefined);
+      // ⚡ Bolt Optimization: Replaced .map().filter() with a for...of loop
+      // to avoid O(N) intermediate array allocations in this hot path.
+      const tsukebitoRikishi: NonNullable<ReturnType<typeof getRikishi>>[] = [];
+      for (const id of r.tsukebitoIds) {
+        const tr = getRikishi(world, id);
+        if (tr !== undefined) tsukebitoRikishi.push(tr);
+      }
       if (tsukebitoRikishi.length > 0) {
         tsukebitoImpacts.push(
           applyWeeklyTsukebitoBenefits(
@@ -108,9 +112,13 @@ export function phase01_week_training(world: WorldState): StateImpact {
         })
         .build()
     );
-    const tsukebitoRikishi = assignment.tsukebitoIds
-      .map((id) => getRikishi(world, id))
-      .filter((x): x is NonNullable<typeof x> => x !== undefined);
+    // ⚡ Bolt Optimization: Replaced .map().filter() with a for...of loop
+    // to prevent intermediate array GC overhead during weekly tick calculations.
+    const tsukebitoRikishi: NonNullable<ReturnType<typeof getRikishi>>[] = [];
+    for (const id of assignment.tsukebitoIds) {
+      const tr = getRikishi(world, id);
+      if (tr !== undefined) tsukebitoRikishi.push(tr);
+    }
     tsukebitoImpacts.push(applyWeeklyTsukebitoBenefits(world, assignment, r, tsukebitoRikishi));
   }
   for (const [heyaId, heyaRikishi] of rikishiByHeya) {
