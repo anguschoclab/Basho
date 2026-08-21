@@ -93,7 +93,7 @@ const migrateToV1_1_0: MigrationStep = (save, ctx) => {
           "Migration: events field is corrupt (not an object), resetting to empty",
           "MigrationService"
         );
-        world.events = { version: "1.0.0", log: [], dedupe: {} };
+        next.world = { ...next.world, events: { version: "1.0.0", log: [], dedupe: {} } } as any;
         ctx.logs.push("migrateToV1_1_0: WARN reset corrupt events");
       }
     } catch (e) {
@@ -129,7 +129,7 @@ const migrateToV1_1_0: MigrationStep = (save, ctx) => {
         }
       } else if (pool !== undefined && pool !== null) {
         // Corrupt sponsorPool — reset to empty
-        world.sponsorPool = { sponsors: {}, koenkais: {} };
+        next.world = { ...next.world, sponsorPool: { sponsors: {}, koenkais: {} } } as any;
         warn("Migration: reset corrupt sponsorPool to empty", "MigrationService");
         ctx.logs.push("migrateToV1_1_0: WARN reset corrupt sponsorPool");
       }

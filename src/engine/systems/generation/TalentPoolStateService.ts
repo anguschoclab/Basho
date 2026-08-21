@@ -22,7 +22,7 @@ import { buildCombatProfile } from "../../archetype";
  */
 export function ensureTalentPoolState(world: WorldState): TalentPoolWorldState {
   if (!world.talentPool) {
-    world.talentPool = {
+    Object.defineProperty(world, "talentPool", { value: {
       // @world-builder
       version: "1.0.0",
       lastYearlyRefreshYear: world.year ?? DEFAULT_START_YEAR,
@@ -65,7 +65,7 @@ export function ensureTalentPoolState(world: WorldState): TalentPoolWorldState {
           qualityBand: "normal",
         },
       },
-    };
+    }, enumerable: true, configurable: true, writable: true });
   }
   return world.talentPool;
 }

@@ -33,7 +33,7 @@ import { RNGRegistry } from "../../core/RNGRegistry";
 
 export function ensureCandidatePoolState(world: WorldState): TalentPoolWorldState {
   if (!world.candidatePool) {
-    world.candidatePool = {
+    Object.defineProperty(world, "candidatePool", { value: {
       // @world-builder
       version: "1.0.0",
       lastYearlyRefreshYear: world.year ?? DEFAULT_START_YEAR,
@@ -76,7 +76,7 @@ export function ensureCandidatePoolState(world: WorldState): TalentPoolWorldStat
           qualityBand: "normal",
         },
       },
-    };
+    }, enumerable: true, configurable: true, writable: true });
   }
   return world.candidatePool;
 }
