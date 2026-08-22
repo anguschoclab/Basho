@@ -53,8 +53,9 @@ export const EntityService = {
    *
    * CONTRACT / WARNING: This does NOT automatically detect Map vs POJO types.
    * It uses a hardcoded allowlist to initialize as a Map.
-   * If a new Map field (like 'sparringPairs') is added to WorldState but not the allowlist here,
-   * it will be silently initialized as a POJO ({}), causing runtime type errors when .set() or .get() is called.
+   * If a new Map field (like 'heyaBrandIdentities') is added to WorldState
+   * but not the allowlist here, it will be silently initialized as a POJO ({}), causing runtime type
+   * errors when .set() or .get() is called.
    *
    * To safely add a new IdMapRuntime field, you MUST update the allowlist array inside 'ensureNestedState' below.
    *
