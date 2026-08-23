@@ -93,6 +93,10 @@ function createShallowSnapshot(
  * is restored, so the remaining phases still execute against a valid world.
  * This closes H7: a phase that mutates shared maps in-place before throwing
  * will not corrupt the recovered state.
+ *
+ * @param initialWorld - The starting state before any phases have executed.
+ * @param phases - Sequence of reducer functions. Phases are expected to be pure but may mutate shared entity maps in-place before throwing; error recovery protects against this.
+ * @returns The fully reduced state, incorporating all successful impacts and rolled-back snapshots from failed phases.
  */
 export function runPipeline(initialWorld: WorldState, phases: PipelinePhase[]): WorldState {
   let currentWorld = initialWorld;
