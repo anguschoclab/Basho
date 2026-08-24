@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
 import { GlossaryService, type GlossaryTerm } from "@/presenters/engineAccess";
 import { cn } from "@/lib/utils";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 const CATEGORY_LABELS: Record<GlossaryTerm["category"], string> = {
   rank: "Ranks",
@@ -108,10 +109,10 @@ export default function GlossaryPage() {
         </div>
 
         {filteredTerms.length === 0 && (
-          <div className="text-center py-12 text-muted-foreground">
-            <Search className="h-8 w-8 mx-auto mb-2 opacity-40" />
-            <p>No terms found for "{query}"</p>
-          </div>
+          <EmptyState
+            icon={Search}
+            title={`No terms found for "${query}"`}
+          />
         )}
       </div>
     </AppLayout>

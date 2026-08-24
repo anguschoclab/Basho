@@ -2,7 +2,8 @@ import React, { useState, useMemo, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ArrowUpDown, TrendingUp, TrendingDown } from "lucide-react";
+import { ArrowUpDown, TrendingUp, TrendingDown, Search } from "lucide-react";
+import { EmptyState } from "@/components/ui/EmptyState";
 import type { UIRikishi } from "@/presenters/uiModels";
 import { cn } from "@/lib/utils";
 import { useSortState } from "@/hooks/useSortState";
@@ -150,8 +151,12 @@ export function StableStatsTable({ rikishiList }: StableStatsTableProps) {
               ))}
               {filteredAndSortedRikishi.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-muted-foreground italic">
-                    No rikishi found matching this filter.
+                  <td colSpan={8} className="p-0">
+                    <EmptyState
+                      icon={Search}
+                      title="No rikishi found matching this filter."
+                      compact
+                    />
                   </td>
                 </tr>
               )}
