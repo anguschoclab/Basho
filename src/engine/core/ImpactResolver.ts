@@ -440,7 +440,9 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
     // Merge entity updates with lazy sub-map creation
     if (impact.entities) {
       if (!merged.entities) merged.entities = {};
-      for (const field of ENTITY_UPDATE_CONFIGS.map((c) => c.impactField)) {
+      // PERF: Avoid intermediate array allocation from `.map()` in this highly active hot path
+      for (const config of ENTITY_UPDATE_CONFIGS) {
+        const field = config.impactField;
         const sourceMap = (impact.entities as Record<string, Map<string, unknown> | undefined>)[
           field
         ];
