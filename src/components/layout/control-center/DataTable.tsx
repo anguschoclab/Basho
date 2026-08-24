@@ -108,9 +108,18 @@ function DataTableInner<T>({
             key={rowKey(row)}
             className={cn(
               "border-b border-border/30 hover:bg-muted/30 transition-colors",
-              onRowClick && "cursor-pointer"
+              onRowClick &&
+                "cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:-outline-offset-2"
             )}
             onClick={onRowClick ? () => onRowClick(row) : undefined}
+            role={onRowClick ? "button" : undefined}
+            tabIndex={onRowClick ? 0 : undefined}
+            onKeyDown={(e) => {
+              if (onRowClick && (e.key === "Enter" || e.key === " ")) {
+                e.preventDefault();
+                onRowClick(row);
+              }
+            }}
           >
             {columns.map((col) => (
               <td
