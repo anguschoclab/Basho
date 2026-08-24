@@ -93,6 +93,11 @@ function createShallowSnapshot(
  * is restored, so the remaining phases still execute against a valid world.
  * This closes H7: a phase that mutates shared maps in-place before throwing
  * will not corrupt the recovered state.
+ *
+ * WARNING: Error recovery ONLY restores explicit top-level maps (`heyas`, `rikishi`, etc.).
+ * Mutations to nested state, scalars (e.g., `dayIndexGlobal`), or unlisted maps
+ * prior to a phase throwing an exception will NOT be rolled back and WILL persist,
+ * corrupting the recovered state. Phases must use pure operations.
  */
 export function runPipeline(initialWorld: WorldState, phases: PipelinePhase[]): WorldState {
   let currentWorld = initialWorld;
