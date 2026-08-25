@@ -36,6 +36,10 @@ export default defineConfig({
         "src/presenters/**/*.ts",
         "src/components/**/*.ts",
         "src/contexts/**/*.ts",
+        "src/store/**/*.ts",
+        "src/hooks/**/*.ts",
+        "src/lib/**/*.ts",
+        "src/utils/**/*.ts",
       ],
       exclude: [
         "src/tests/**",
