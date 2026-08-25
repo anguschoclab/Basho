@@ -140,10 +140,10 @@ export function calculateDivisionStandings(
   if (sortedTable.length === 0) return { topCandidates: [], bestWins: 0, table: sortedTable };
 
   const bestWins = sortedTable[0].wins;
-  const topCandidates = sortedTable.reduce<Id[]>((acc, t) => {
-    if (t.wins === bestWins) acc.push(t.id);
-    return acc;
-  }, []);
+  const topCandidates: Id[] = [];
+  for (const t of sortedTable) {
+    if (t.wins === bestWins) topCandidates.push(t.id);
+  }
 
   return { topCandidates, bestWins, table: sortedTable };
 }
@@ -237,10 +237,10 @@ export function calculateStandings(basho: BashoState): {
   if (sortedTable.length === 0) return { topCandidates: [], bestWins: 0, table: sortedTable };
 
   const bestWins = sortedTable[0].wins;
-  const topCandidates = sortedTable.reduce<Id[]>((acc, t) => {
-    if (t.wins === bestWins) acc.push(t.id);
-    return acc;
-  }, []);
+  const topCandidates: Id[] = [];
+  for (const t of sortedTable) {
+    if (t.wins === bestWins) topCandidates.push(t.id);
+  }
 
   return { topCandidates, bestWins, table: sortedTable };
 }

@@ -82,9 +82,11 @@ export function phase01_week_training(world: WorldState): StateImpact {
     if (!isEligibleForTsukebito(r)) continue;
     // Skip if already has tsukebito assigned
     if (r.tsukebitoIds && r.tsukebitoIds.length > 0) {
-      const tsukebitoRikishi = r.tsukebitoIds
-        .map((id) => getRikishi(world, id))
-        .filter((x): x is NonNullable<typeof x> => x !== undefined);
+      const tsukebitoRikishi = [];
+      for (const id of r.tsukebitoIds) {
+        const rikishi = getRikishi(world, id);
+        if (rikishi) tsukebitoRikishi.push(rikishi);
+      }
       if (tsukebitoRikishi.length > 0) {
         tsukebitoImpacts.push(
           applyWeeklyTsukebitoBenefits(
@@ -108,9 +110,11 @@ export function phase01_week_training(world: WorldState): StateImpact {
         })
         .build()
     );
-    const tsukebitoRikishi = assignment.tsukebitoIds
-      .map((id) => getRikishi(world, id))
-      .filter((x): x is NonNullable<typeof x> => x !== undefined);
+    const tsukebitoRikishi = [];
+    for (const id of assignment.tsukebitoIds) {
+      const rikishi = getRikishi(world, id);
+      if (rikishi) tsukebitoRikishi.push(rikishi);
+    }
     tsukebitoImpacts.push(applyWeeklyTsukebitoBenefits(world, assignment, r, tsukebitoRikishi));
   }
   for (const [heyaId, heyaRikishi] of rikishiByHeya) {
