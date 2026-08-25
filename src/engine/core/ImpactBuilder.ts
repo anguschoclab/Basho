@@ -371,7 +371,6 @@ export class ImpactBuilder {
       | "almanacSnapshots"
       | "basho.matches"
       | "governanceLog"
-      | "awardLog"
       | "myosekiMarket.history"
       | "pendingExhibitions",
   >(field: K, items: ArrayAppendItem<K>): ImpactBuilder {
