@@ -54,12 +54,16 @@ export const EntityService = {
    * Hydrate a state in a nested record.
    * Useful for per-heya states (world.trainingState[heyaId]).
    *
-   * CONTRACT / WARNING: This does NOT automatically detect Map vs POJO types.
-   * It uses a hardcoded allowlist (`isMapField` array) inside this function to initialize as a Map.
-   * If a new Map field (like 'sparringPairs') is added to WorldState but not the allowlist here,
-   * it will be silently initialized as a POJO ({}), causing runtime type errors when .set() or .get() is called.
+   * ⚠️ CONTRACT / WARNING - SILENT POJO CORRUPTION:
+   * This function does NOT automatically detect `Map` vs POJO types from generic arguments.
+   * It relies entirely on a hardcoded allowlist (`isMapField`) inside this function body.
    *
-   * To safely add a new IdMapRuntime field, you MUST add its key to the `isMapField` array below.
+   * 🛑 If you add a new `IdMapRuntime<T>` (or `Map`) field to `WorldState`, you MUST
+   * manually add its string key (e.g. 'factions', 'bloodlines') to the `isMapField` array below.
+   *
+   * Failing to do so causes the state to silently initialize as a POJO `{}` instead of a `Map`.
+   * The TypeScript compiler will NOT catch this, and the game will crash at runtime
+   * with `TypeError: world.[yourField].get is not a function` the first time you try to read it.
    *
    * @param {WorldState} world - The WorldState.
    * @param {keyof WorldState} rootKey - The top-level key (e.g., 'trainingState').
