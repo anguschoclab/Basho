@@ -12,6 +12,7 @@ import { useGame } from "@/contexts/useGame";
 import { useGameStore } from "@/store/gameStore";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -249,13 +250,11 @@ export default function CandidatePoolPage() {
             )}
 
             {watchedCandidates.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <AlertCircle className="h-8 w-8 text-muted-foreground/40 mb-2" />
-                <p className="text-sm text-muted-foreground">
-                  No NPC-watched candidates detected. Rival stables haven't identified any prospects
-                  yet.
-                </p>
-              </div>
+              <EmptyState
+                icon={AlertCircle}
+                title="No prospects identified"
+                description="No NPC-watched candidates detected. Rival stables haven't identified any prospects yet."
+              />
             ) : (
               <div className="space-y-2">
                 {watchedCandidates.map((candidate) => {
