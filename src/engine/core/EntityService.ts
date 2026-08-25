@@ -18,8 +18,12 @@ import type { WorldState } from "../types/world";
  */
 export const EntityService = {
   /**
-   * Type-safe generic state hydrator.
+   * Generic state hydrator.
    * Ensures a state property exists on the parent object, creating it with the factory if missing.
+   *
+   * CONTRACT / WARNING: This function MUTATES the `parent` object in-place.
+   * It bypasses TypeScript assignment checks via generic casts. Do not assume deep
+   * structural type safety when using this to attach missing nested state.
    *
    * @param {any} parent - The object containing the state (e.g., WorldState or Heya).
    * @param {string} key - The property key for the state.
@@ -51,11 +55,11 @@ export const EntityService = {
    * Useful for per-heya states (world.trainingState[heyaId]).
    *
    * CONTRACT / WARNING: This does NOT automatically detect Map vs POJO types.
-   * It uses a hardcoded allowlist to initialize as a Map.
+   * It uses a hardcoded allowlist (`isMapField` array) inside this function to initialize as a Map.
    * If a new Map field (like 'sparringPairs') is added to WorldState but not the allowlist here,
    * it will be silently initialized as a POJO ({}), causing runtime type errors when .set() or .get() is called.
    *
-   * To safely add a new IdMapRuntime field, you MUST update the allowlist array inside 'ensureNestedState' below.
+   * To safely add a new IdMapRuntime field, you MUST add its key to the `isMapField` array below.
    *
    * @param {WorldState} world - The WorldState.
    * @param {keyof WorldState} rootKey - The top-level key (e.g., 'trainingState').

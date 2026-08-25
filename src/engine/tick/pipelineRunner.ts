@@ -91,8 +91,10 @@ function createShallowSnapshot(
  *
  * On phase failure the pre-phase snapshot (shallow clone of entity maps)
  * is restored, so the remaining phases still execute against a valid world.
- * This closes H7: a phase that mutates shared maps in-place before throwing
- * will not corrupt the recovered state.
+ * WARNING: Only maps explicitly listed in `touches` or `ENTITY_MAP_FIELDS`
+ * (heyas, rikishi, oyakata, staff) are restored. If a phase mutates nested
+ * state, scalars, or unlisted maps in-place before throwing, that corruption persists.
+ * This closes H7 for explicitly tracked maps only.
  */
 export function runPipeline(initialWorld: WorldState, phases: PipelinePhase[]): WorldState {
   let currentWorld = initialWorld;
