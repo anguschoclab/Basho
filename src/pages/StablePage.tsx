@@ -7,11 +7,11 @@ import { useRequireWorld } from "@/hooks/useRequireWorld";
 import { projectRikishi } from "@/presenters/rikishi";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/layout/control-center";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Users } from "lucide-react";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
 import { StableStatsTable } from "@/components/game/StableStatsTable";
 import { projectHeyaData } from "@/presenters/projections/heyaProjections";
@@ -129,13 +129,16 @@ export default function StablePage() {
 
           <TabsContent value="roster" className="space-y-4">
             {rikishiList.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-20 gap-4 border-2 border-dashed rounded-lg text-muted-foreground">
-                <div className="text-5xl font-display animate-pulse">∅</div>
-                <p className="text-sm font-display italic">Your stable has no rikishi yet.</p>
-                <Button variant="outline" onClick={() => navigate({ to: "/dashboard" })}>
-                  Visit Dashboard to Recruit
-                </Button>
-              </div>
+              <EmptyState
+                icon={Users}
+                title="Empty Roster"
+                description="Your stable has no rikishi yet."
+                action={{
+                  label: "Visit Dashboard to Recruit",
+                  onClick: () => navigate({ to: "/dashboard" }),
+                  variant: "outline",
+                }}
+              />
             ) : (
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {rikishiList.map((r) => {

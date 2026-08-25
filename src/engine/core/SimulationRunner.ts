@@ -3,7 +3,7 @@
  * Delegates to specific systems for business logic.
  */
 
-import { WorldState } from "../types/world";
+import type { WorldState } from "../types/world";
 import * as MediaService from "../systems/media/MediaService";
 import { rngForWorld } from "../rng";
 import { resolveImpacts } from "./ImpactResolver";

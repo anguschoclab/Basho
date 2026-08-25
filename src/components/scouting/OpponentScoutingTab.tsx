@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Progress } from "@/components/ui/progress";
 import { Search } from "lucide-react";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { useToast } from "@/hooks/use-toast";
 import {
   projectOpponentScoutingUIDigest,
@@ -180,9 +181,11 @@ export function OpponentScoutingTab({ playerHeyaId }: { playerHeyaId: string | n
           })}
 
           {digest.opponents.length === 0 && (
-            <p className="text-sm text-muted-foreground text-center py-8">
-              No opponents found in this division.
-            </p>
+            <EmptyState
+              icon={Search}
+              title="No opponents found in this division."
+              compact
+            />
           )}
         </div>
       </ScrollArea>

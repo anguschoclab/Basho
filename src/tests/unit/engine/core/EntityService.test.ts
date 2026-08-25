@@ -140,5 +140,12 @@ describe("EntityService", () => {
 
       expect(world.closedHeyas).toBeInstanceOf(Map);
     });
+
+    it("historicalRikishi root is initialized as a Map", () => {
+      const world = {} as WorldState;
+      EntityService.ensureNestedState(world, "historicalRikishi", "r1", () => ({ id: "r1" } as any));
+
+      expect(world.historicalRikishi).toBeInstanceOf(Map);
+    });
   });
 });

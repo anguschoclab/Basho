@@ -51,7 +51,10 @@
     "upset_elite": [
       "A kinboshi! %WINNER% defeats a %LOSER_RANK% on day %DAY% — an upset that will be talked about.",
       "What an upset! %WINNER% takes down the %LOSER_RANK% — pillows fly in the crowd.",
-      "Big upset on day %DAY% — %WINNER% topples %LOSER%, a %LOSER_RANK% falls to a maegashira."
+      "Big upset on day %DAY% — %WINNER% topples %LOSER%, a %LOSER_RANK% falls to a maegashira.",
+      "The Kokugikan shakes! %WINNER% pulls off a stunning day %DAY% victory over the %LOSER_RANK%.",
+      "Absolutely sensational from %WINNER%, handing the %LOSER_RANK% a shocking defeat.",
+      "Giant killer! %WINNER% conquers %LOSER% to claim a massive upset."
     ],
     "consecutive_kachi": [
       "Kachi-koshi for the %ORDINAL% consecutive tournament for %SHIKONA%!",
@@ -61,7 +64,9 @@
     "sole_leader": [
       "%WINNER% is now the sole leader of the tournament.",
       "%WINNER% stands alone at the top — sole leader after %DAY% days.",
-      "A clear leader emerges: %WINNER% alone in first place."
+      "A clear leader emerges: %WINNER% alone in first place.",
+      "The rest of the field is chasing %WINNER% now.",
+      "%WINNER% breaks the tie and takes outright control of the basho."
     ],
     "falls_out": [
       "%LOSER% falls out of a share of first place.",
@@ -71,7 +76,9 @@
     "ties_leader": [
       "%WINNER% ties the leader with this win.",
       "%WINNER% pulls level with the tournament leader.",
-      "We have a tie at the top — %WINNER% joins the leader."
+      "We have a tie at the top — %WINNER% joins the leader.",
+      "%WINNER% forces a deadlock for first place.",
+      "The championship race tightens as %WINNER% climbs into a tie for the lead."
     ],
     "seven_seven_win": [
       "%WINNER% vowed to win at all costs that day — and delivered when it mattered most.",

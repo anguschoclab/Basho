@@ -65,8 +65,9 @@ The core engine is strictly deterministic to ensure that simulations are reprodu
 
 **Run tests:**
 
+Tests should be executed directly via Vitest targeting specific files to avoid runner timeouts:
 ```bash
-bun run test
+npx vitest run <filepath>
 ```
 
 **Verify determinism (static analysis for RNG & mutable state violations):**

@@ -138,6 +138,7 @@ export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
               style={{ animationDelay: `${idx * 40}ms` }}
               onClick={() => onRikishiClick(r.id)}
               role="button"
+              aria-label={`View ${r.shikona}`}
               tabIndex={0}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {

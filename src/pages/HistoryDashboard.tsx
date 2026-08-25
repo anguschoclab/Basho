@@ -7,7 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/layout/control-center";
-import { Trophy, Building2, ScrollText, Crown } from "lucide-react";
+import { Trophy, Building2, ScrollText, Crown, AlertCircle } from "lucide-react";
+import { EmptyState } from "@/components/ui/EmptyState";
 import type { Rikishi, Heya } from "@/presenters/uiDigest";
 import type { RecordEntry, WorldRecords } from "@/engine/types/records";
 import { getAllHeyas } from "@/presenters/worldAccess";
@@ -30,16 +31,13 @@ export const HistoryDashboard = () => {
   if (!world) {
     return (
       <AppLayout pageTitle="Museum" subNavTabs={RECORDS_TABS} activeSubTab="museum">
-        <Card className="paper py-12 text-center">
-          <CardHeader>
-            <CardTitle className="font-display">Museum Unavailable</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground font-body">
-              No world loaded. Start a game to explore the archives.
-            </p>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col items-center justify-center min-h-[60vh]">
+          <EmptyState
+            icon={AlertCircle}
+            title="Museum Unavailable"
+            description="No world loaded. Start a game to explore the archives."
+          />
+        </div>
       </AppLayout>
     );
   }
@@ -98,9 +96,7 @@ function LeaderboardCard({
       <CardContent>
         <div className="space-y-1">
           {entries.length === 0 ? (
-            <p className="text-muted-foreground text-center py-6 text-sm font-body">
-              No records yet recorded...
-            </p>
+            <EmptyState title="No records yet recorded..." compact />
           ) : (
             entries.slice(0, 5).map((entry, idx) => (
               <div
@@ -253,9 +249,7 @@ const StablesTab = ({ heyas, retired }: { heyas: Heya[]; retired: Rikishi[] }) =
           />
         </div>
         {sortedRetired.length === 0 ? (
-          <Card className="paper py-12 text-center">
-            <p className="text-muted-foreground font-body">No retirements on record yet.</p>
-          </Card>
+          <EmptyState title="No retirements on record yet." />
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {sortedRetired.slice(0, 40).map((r: Rikishi) => {

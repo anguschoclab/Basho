@@ -126,6 +126,7 @@ export function EventLogPanel({ eventLogData, className }: EventLogPanelProps) {
                       }
                     }}
                     role="button"
+                    aria-label={e.title}
                     tabIndex={0}
                     className={cn(
                       "w-full text-left p-2.5 rounded-md transition-all mb-1 cursor-pointer border border-transparent hover:border-zinc-800",

@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { StableName, RikishiName } from "@/components/ClickableName";
 import { Building2, Eye, Shield, Heart, TrendingUp, Flame, Users, Swords } from "lucide-react";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { useGame } from "@/contexts/useGame";
 import { projectH2HBetweenHeyas } from "@/presenters/uiDigest";
 import type { PerceptionSnapshot } from "@/presenters/engineAccess";
@@ -271,15 +272,12 @@ export function H2HPanel({ heyaAId, heyaBId }: { heyaAId: string; heyaBId: strin
 
   if (h2hData.totalBouts === 0) {
     return (
-      <div className="text-center py-6">
-        <Swords className="h-8 w-8 mx-auto mb-2 text-muted-foreground/50" />
-        <p className="text-xs text-muted-foreground">
-          No bouts recorded between these stables yet.
-        </p>
-        <p className="text-[10px] text-muted-foreground mt-1">
-          H2H records build up as basho are played.
-        </p>
-      </div>
+      <EmptyState
+        icon={Swords}
+        title="No bouts recorded between these stables yet."
+        description="H2H records build up as basho are played."
+        compact
+      />
     );
   }
 

@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { EmptyState } from "@/components/ui/EmptyState";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -238,23 +239,20 @@ export default function BashoPage() {
   if (!bashoDigest) {
     return (
       <AppLayout pageTitle="Current Basho" subNavTabs={TOURNAMENT_TABS} activeSubTab="basho">
+        <title>Current Basho | Basho</title>
 
-          <title>Current Basho | Basho</title>
-
-        <div className="flex flex-col items-center justify-center min-h-[50vh] gap-6 text-center">
-          <Trophy className="h-12 w-12 text-muted-foreground/30" />
-          <div className="space-y-2">
-            <p className="font-display text-xl font-bold uppercase tracking-tight">
-              No Active Tournament
-            </p>
-            <p className="text-sm text-muted-foreground max-w-xs">
-              Advance time on the Control Center to begin the next basho.
-            </p>
-          </div>
-          <Button variant="outline" onClick={() => navigate({ to: "/dashboard" })}>
-            Return to Control Center
-          </Button>
-        </div>
+        <Card className="m-6 border-dashed">
+          <EmptyState
+            icon={Trophy}
+            title="No Active Tournament"
+            description="Advance time on the Control Center to begin the next basho."
+            action={{
+              label: "Return to Control Center",
+              onClick: () => navigate({ to: "/dashboard" }),
+              variant: "outline",
+            }}
+          />
+        </Card>
       </AppLayout>
     );
   }
@@ -279,9 +277,7 @@ export default function BashoPage() {
       subNavTabs={TOURNAMENT_TABS}
       activeSubTab="basho"
     >
-
-        <title>{`${bashoInfo?.nameEn || "Tournament"} Day ${day}`}</title>
-
+      <title>{`${bashoInfo?.nameEn || "Tournament"} Day ${day}`}</title>
 
       <div className="space-y-4">
         {/* ═══════════ DAY HEADER ═══════════ */}
