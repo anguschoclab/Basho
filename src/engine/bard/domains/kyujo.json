@@ -2,12 +2,20 @@
   "injury_withdrawal": [
     "%SHIKONA% has withdrawn from the basho due to a %AREA% injury sustained on day %DAY%.",
     "A tough blow for %SHIKONA% — the %AREA% injury forces a kyujo withdrawal.",
-    "%SHIKONA% pulls out of the tournament on day %DAY% — the %AREA% injury proves too much."
+    "%SHIKONA% pulls out of the tournament on day %DAY% — the %AREA% injury proves too much.",
+    "The %AREA% injury proves too severe to continue; %SHIKONA% has officially withdrawn.",
+    "Disappointment for the fans as %SHIKONA% goes kyujo, unable to push through a painful %AREA% injury.",
+    "Medical staff has ruled %SHIKONA% out of the basho following a serious %AREA% injury on day %DAY%.",
+    "Forced to the sidelines, %SHIKONA% exits the tournament early due to a debilitating %AREA% injury.",
+    "The toll of the dohyo catches up: %SHIKONA% withdraws, citing a severe %AREA% injury."
   ],
   "pre_basho_withdrawal": [
     "%SHIKONA% will sit out the entire basho — %REASON%.",
     "%SHIKONA% has withdrawn from the tournament before it begins — %REASON%.",
-    "A full kyujo for %SHIKONA% — the %REASON% keeps him off the dohyo."
+    "A full kyujo for %SHIKONA% — the %REASON% keeps him off the dohyo.",
+    "Missing the basho entirely, %SHIKONA% is confirmed kyujo, citing %REASON%.",
+    "The tournament begins without %SHIKONA%, who has been forced to withdraw due to %REASON%.",
+    "No appearances this month for %SHIKONA% — %REASON% forces a full tournament absence."
   ],
   "return_from_kyujo": [
     "%SHIKONA% returns to the dohyo after missing %BASHOS_MISSED% basho(s) — welcome back.",
