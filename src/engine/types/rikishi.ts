@@ -55,6 +55,37 @@ export interface RikishiStats {
   achievements?: RikishiAchievements; // Career milestone record, not a trainable stat
 }
 
+export type NumericStat = Extract<
+  keyof RikishiStats,
+  | "power"
+  | "technique"
+  | "speed"
+  | "weight"
+  | "stamina"
+  | "mental"
+  | "adaptability"
+  | "balance"
+  | "aggression"
+  | "experience"
+>;
+
+const NUMERIC_STAT_KEYS = new Set<string>([
+  "power",
+  "technique",
+  "speed",
+  "weight",
+  "stamina",
+  "mental",
+  "adaptability",
+  "balance",
+  "aggression",
+  "experience",
+]);
+
+export function isNumericStat(key: string): key is NumericStat {
+  return NUMERIC_STAT_KEYS.has(key);
+}
+
 /** Defines the structure for rikishi. */
 export interface Rikishi {
   mentorId?: Id;
