@@ -54,6 +54,8 @@ async function createWindow(): Promise<void> {
       contextIsolation: true,
       nodeIntegration: false,
       navigateOnDragDrop: false,
+      webviewTag: false,
+      disableBlinkFeatures: "Auxclick",
     },
   });
 
