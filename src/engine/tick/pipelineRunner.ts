@@ -38,7 +38,11 @@ export type PipelinePhase = ((world: WorldState) => WorldState | StateImpact) &
  * to snapshot only those fields for error recovery (B3.2).
  */
 export interface PipelinePhaseMetadata {
-  /** World fields this phase may modify. Runner snapshots these before execution. */
+  /**
+   * World fields this phase may modify. Runner snapshots these before execution for error recovery.
+   * Note: The runner only respects fields listed in ENTITY_MAP_FIELDS (heyas, rikishi, oyakata, staff).
+   * Listing other top-level fields here will not cause them to be snapshotted or rolled back on failure.
+   */
   touches?: string[];
   /** If true, phase is read-only and runner skips snapshotting (B3.2). */
   pure?: boolean;
