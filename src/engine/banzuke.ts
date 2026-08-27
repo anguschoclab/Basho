@@ -13,7 +13,7 @@ import {
   type BanzukeSnapshot,
 } from "./types/banzuke";
 export type { BanzukeEntry, BashoPerformance };
-import { isSanyakuRank } from "@/constants/engine/rankDisplay";
+import { isSanyakuRank } from "../constants/engine/rankDisplay";
 import type { Rikishi } from "./types/rikishi";
 import type { Heya } from "./types/heya";
 

@@ -13,7 +13,7 @@ import type { Division } from "./types/banzuke";
 import type { StyleBias } from "./types/training";
 import type { Staff } from "./types/staff";
 import type { Id } from "./types/common";
-import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
+import { isSekitoriDivision } from "../constants/engine/rankDisplay";
 import { getAvailableStables, getActiveRikishi as getSelectorsActiveRikishi } from "./selectors";
 
 // ─── Single-Entity Lookups ──────────────────────────────

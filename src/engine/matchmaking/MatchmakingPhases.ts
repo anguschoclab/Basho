@@ -10,7 +10,7 @@
 import { clamp } from "../utils";
 import { stableTieBreak } from "../utils/sort";
 import { rngFromSeed } from "../rng";
-import { isSanyakuRank } from "@/constants/engine/rankDisplay";
+import { isSanyakuRank } from "../../constants/engine/rankDisplay";
 import {
   RECORD_SIMILARITY_DIFF_MULT,
   RANK_SIMILARITY_DIFF_RANK_SCORE,

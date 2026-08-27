@@ -5,7 +5,7 @@ import type { Rikishi } from "./types/rikishi";
 import type { Id } from "./types/common";
 import { getRivalry, makeRivalryKey } from "./rivalries";
 import { getHeya, getRikishi } from "./queries";
-import { isSekitoriRank } from "@/constants/engine/rankDisplay";
+import { isSekitoriRank } from "../constants/engine/rankDisplay";
 import type { Heya } from "./types/heya";
 import { MentorshipService } from "./systems/training/MentorshipService";
 import type { HistoricalOyakata, OyakataAchievements } from "./types/history";

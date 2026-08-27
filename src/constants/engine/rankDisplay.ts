@@ -1,5 +1,5 @@
-import type { Rank, Division } from "@/engine/types/banzuke";
-import { RANK_HIERARCHY } from "@/engine/types/banzuke";
+import type { Rank, Division } from "../../engine/types/banzuke";
+import { RANK_HIERARCHY } from "../../engine/types/banzuke";
 
 export interface RankDisplayEntry {
   en: string;

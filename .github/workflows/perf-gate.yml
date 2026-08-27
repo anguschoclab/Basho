@@ -22,9 +22,9 @@ jobs:
       - name: Phase purity lint
         run: bash scripts/purity-lint.sh
       - name: Run benchmark
-        run: npx tsx scripts/bench-pipelines.ts 2>&1 | tee bench-output.txt
+        run: npx tsx --tsconfig tsconfig.node.json scripts/bench-pipelines.ts 2>&1 | tee bench-output.txt
       - name: Check performance regression
-        run: npx tsx scripts/perf-gate-check.ts
+        run: npx tsx --tsconfig tsconfig.node.json scripts/perf-gate-check.ts
       - name: Update baseline on main/develop
         if: success() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
         run: |

@@ -2,7 +2,7 @@ import type { WorldState } from "../types/world";
 import type { Rikishi } from "../types/rikishi";
 import type { BashoName } from "../types/basho";
 import type { Division, Rank } from "../types/banzuke";
-import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
+import { isSekitoriDivision } from "../../constants/engine/rankDisplay";
 import type { BashoPerformance, RikishiCareerRecord } from "./types";
 import {
   CAREER_BASHO_BASE,
