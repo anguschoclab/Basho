@@ -287,7 +287,7 @@ export function RikishiProfileHeader({
                   </div>
                 )}
                 {(rikishi.rank === "sekiwake" || rikishi.rank === "komusubi") &&
-                  (rikishi.consecutiveStrongSekiwake ?? 0) > 0 && (
+                  (rikishi.sekiwakeThreeBashoWins ?? 0) > 0 && (
                     <div className="pt-2">
                       <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-widest mb-1.5">
                         <span className="text-silver flex items-center gap-1">
@@ -297,14 +297,14 @@ export function RikishiProfileHeader({
                           Ozeki Promotion Watch
                         </span>
                         <span className="opacity-70">
-                          {rikishi.consecutiveStrongSekiwake} / 2 Strong Basho
+                          {rikishi.sekiwakeThreeBashoWins} / 33 Wins (Last 3 Basho)
                         </span>
                       </div>
                       <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
                         <div
                           className="h-full bg-silver transition-all duration-1000 ease-out"
                           style={{
-                            width: `${Math.min(100, Math.max(0, (rikishi.consecutiveStrongSekiwake / 2) * 100))}%`,
+                            width: `${Math.min(100, Math.max(0, ((rikishi.sekiwakeThreeBashoWins ?? 0) / 33) * 100))}%`,
                           }}
                         />
                       </div>
