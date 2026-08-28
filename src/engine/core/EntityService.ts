@@ -25,10 +25,10 @@ export const EntityService = {
    * It bypasses TypeScript assignment checks via generic casts. Do not assume deep
    * structural type safety when using this to attach missing nested state.
    *
-   * @param {any} parent - The object containing the state (e.g., WorldState or Heya).
-   * @param {string} key - The property key for the state.
-   * @param {() => T} factory - A function returning the default state if it doesn't exist.
-   * @returns {T} The existing or newly created state.
+   * @param {Parent} parent - The object containing the state (e.g., WorldState or Heya).
+   * @param {Key} key - The property key for the state.
+   * @param {() => NonNullable<Parent[Key]>} factory - A function returning the default state if it doesn't exist.
+   * @returns {NonNullable<Parent[Key]>} The existing or newly created state.
    *
    * @example
    * ```ts
