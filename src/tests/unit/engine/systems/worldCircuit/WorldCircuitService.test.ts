@@ -21,7 +21,7 @@ describe("WorldCircuitService", () => {
         regionalPresence: { Mongolia: 10 },
       });
       const rikishi = MockFactory.createRikishi("r1", {
-        stats: { technique: 50, speed: 50, mental: 50, power: 50, stamina: 50 },
+        stats: { technique: 50, speed: 50, mental: 50, power: 50, stamina: 50, weight: 150, adaptability: 50, balance: 50, aggression: 50, experience: 50 },
       });
       const world = MockFactory.createWorld({
         heyas: new Map([["h1", heya]]),
