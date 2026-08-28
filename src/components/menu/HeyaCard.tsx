@@ -50,8 +50,8 @@ export function HeyaCard({
     <Card
       role="button"
       tabIndex={0}
-      aria-label={`Select stable: ${heya.name}`}
-      className={`cursor-pointer transition-all hover:border-primary/50 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary animate-in fade-in slide-in-from-bottom-2 duration-300 ${
+      aria-label={`Select ${heya.name} heya`}
+      className={`cursor-pointer transition-all hover:border-primary/50 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring animate-in fade-in slide-in-from-bottom-2 duration-300 ${
         isSelected ? "border-primary ring-2 ring-primary/30 bg-primary/5" : ""
       }`}
       onClick={onSelect}
