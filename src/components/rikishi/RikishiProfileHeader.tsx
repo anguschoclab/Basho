@@ -375,6 +375,17 @@ export function RikishiProfileHeader({
                   tooltip:
                     "Number of times defeated by a Maegashira while holding the Yokozuna rank",
                 },
+                {
+                  label: "Upset Losses",
+                  value: rikishi.achievements?.ginboshiConceded ?? 0,
+                  sub: "To Maegashira",
+                  color: "text-destructive",
+                  condition:
+                    rikishi.rank === "ozeki" &&
+                    (rikishi.achievements?.ginboshiConceded ?? 0) > 0,
+                  tooltip:
+                    "Number of times defeated by a Maegashira while holding the Ozeki rank",
+                },
               ].map((stat, i) => (
                 <React.Fragment key={i}>
                   {(stat.condition ?? true) && (
