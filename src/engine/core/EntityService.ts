@@ -54,6 +54,10 @@ export const EntityService = {
    * Hydrate a state in a nested record.
    * Useful for per-heya states (world.trainingState[heyaId]).
    *
+   * CONTRACT / WARNING: This function MUTATES the `world` object in-place if `rootKey`
+   * or `id` is missing. The returned object is a reference to the nested state, so
+   * modifications to it will mutate the parent world.
+   *
    * CONTRACT / WARNING: This does NOT automatically detect Map vs POJO types.
    * It uses a hardcoded allowlist (`isMapField` array) inside this function to initialize as a Map.
    * If a new Map field (like 'sparringPairs') is added to WorldState but not the allowlist here,
@@ -61,9 +65,9 @@ export const EntityService = {
    *
    * To safely add a new IdMapRuntime field, you MUST add its key to the `isMapField` array below.
    *
-   * @param {WorldState} world - The WorldState.
+   * @param {WorldState} world - The WorldState (mutated if missing keys).
    * @param {keyof WorldState} rootKey - The top-level key (e.g., 'trainingState').
-   * @param {string} id - The nested key (e.g., heyaId).
+   * @param {string} id - The entity ID to use as a nested key (e.g., heyaId).
    * @param {() => T} factory - The default state factory.
    * @returns {T} The existing or newly created nested state.
    *
@@ -75,6 +79,7 @@ export const EntityService = {
    *   heyaId,
    *   () => createDefaultTrainingState(heyaId)
    * );
+   * // heyaTrainingState is now guaranteed to exist in world.trainingState.get(heyaId)
    * ```
    */
   ensureNestedState<T>(
