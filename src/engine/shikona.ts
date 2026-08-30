@@ -13,9 +13,11 @@ import type { Rank } from "./types/banzuke";
 // ----------------------------
 // Replaces seedrandom to avoid external dependencies
 /**
- * Seeded random.
- *  * @param seed - The Seed.
- *  * @returns The result.
+ * Creates a deterministic random number generator (LCG) from a string seed.
+ * Replaces external seedrandom dependencies.
+ *
+ * @param seed - The string seed (e.g., combination of world seed, heya, nationality).
+ * @returns A function that returns deterministic pseudo-random numbers between 0 and 1.
  */
 function seededRandom(seed: string): () => number {
   let hash = 0;
@@ -101,20 +103,23 @@ export function generateShikona(
 
 // Legacy compat export
 /**
- * Generate rikishi name.
- *  * @param seed - The Seed.
- *  * @param rng - Optional injected RNG.
- *  * @returns The result.
+ * Generates a basic Shikona (wrestler name) for a rikishi using a seed.
+ * Provided for backwards compatibility with legacy generation paths.
+ *
+ * @param seed - The base world or wrestler seed.
+ * @param rng - Optional injected SeededRNG instance for deterministic testing.
+ * @returns The generated Shikona string.
  */
 export function generateRikishiName(seed: string, rng?: SeededRNG): string {
   return generateShikona(seed, { rng });
 }
 
 /**
- * Generate oyakata name.
- *  * @param seed - The Seed.
- *  * @param rng - Optional injected RNG.
- *  * @returns The result.
+ * Selects a deterministic Oyakata (elder) name from a predefined historical list.
+ *
+ * @param seed - The base string seed used for deterministic selection.
+ * @param rng - Optional injected SeededRNG instance to bypass local seededRandom.
+ * @returns A valid Oyakata name string from the static names list.
  */
 export function generateOyakataName(seed: string, rng?: SeededRNG): string {
   const names = [
