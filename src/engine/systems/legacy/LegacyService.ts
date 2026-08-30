@@ -23,6 +23,23 @@ const REGISTER_THRESHOLDS = {
   sekiwake: { minYusho: 0, ceilingBonus: 3, label: "Stoic Foundation" },
 } as const;
 
+const numericKeys = new Set<keyof Pick<RikishiStats, "power" | "technique" | "speed" | "weight" | "stamina" | "mental" | "adaptability" | "balance" | "aggression" | "experience">>([
+  "power",
+  "technique",
+  "speed",
+  "weight",
+  "stamina",
+  "mental",
+  "adaptability",
+  "balance",
+  "aggression",
+  "experience",
+]);
+
+function isNumericStat(key: string): key is keyof Pick<RikishiStats, "power" | "technique" | "speed" | "weight" | "stamina" | "mental" | "adaptability" | "balance" | "aggression" | "experience"> {
+  return numericKeys.has(key as any);
+}
+
 export const LegacyService = {
   /**
    * Called on retirement: if the rikishi meets thresholds, register a trait.
@@ -144,25 +161,12 @@ export const LegacyService = {
    */
   applyLegacyTrait(candidateStats: RikishiStats, trait: BloodlineTrait): RikishiStats {
     const boosted: RikishiStats = { ...candidateStats };
-    const numericKeys = new Set<keyof RikishiStats>([
-      "power",
-      "technique",
-      "speed",
-      "weight",
-      "stamina",
-      "mental",
-      "adaptability",
-      "balance",
-      "aggression",
-      "experience",
-    ]);
 
     // Apply Floor Bonuses
     for (const [stat, bonus] of Object.entries(trait.statFloorBonus)) {
-      const s = stat as keyof RikishiStats;
-      if (numericKeys.has(s)) {
-        (boosted as unknown as Record<string, unknown>)[s] = clampInt(
-          ((boosted[s] as number) || 0) + (bonus || 0),
+      if (isNumericStat(stat)) {
+        boosted[stat] = clampInt(
+          (boosted[stat] || 0) + (bonus || 0),
           0,
           99
         );
@@ -171,10 +175,9 @@ export const LegacyService = {
 
     // Apply Ceiling Bonus to the peak stat in the trait
     const peakStat = this.findPeakStat(trait.statFloorBonus);
-    const p = peakStat as keyof RikishiStats;
-    if (peakStat && numericKeys.has(p)) {
-      (boosted as unknown as Record<string, unknown>)[p] = clampInt(
-        ((boosted[p] as number) || 0) + trait.ceilingBonus,
+    if (peakStat && isNumericStat(peakStat)) {
+      boosted[peakStat] = clampInt(
+        (boosted[peakStat] || 0) + trait.ceilingBonus,
         0,
         99
       );
