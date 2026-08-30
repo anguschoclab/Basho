@@ -7,3 +7,7 @@
 **Gap:** Sparring pair assignments were untested in NPC AI weekly tick.
 **Learning:** `sparringPairs` structure has a top level `Map` keyed by `heyaId` where each entry is a state object containing a `pairs` dictionary. We should assert on `Object.values(newPairs)` checking for matching `aId` and `bId` rather than guessing keys.
 **Pattern:** Provide `world.sparringPairs` with an existing set of pairs, run `phase01_week_npc_ai`, and inspect `impact.worldFields?.sparringPairs?.get(heyaId)?.pairs` for correct assignments.
+## 2025-02-28 - Testing AI Model Builders
+**Gap:** `src/engine/npcAI/OpponentModel.ts` had 0% coverage.
+**Learning:** Found that this file constructs a statistical model of an opponent based on recent match history or, falling back, on combat style, without relying on hidden internal states.
+**Pattern:** Directly mock simple partial objects for rikishi (including `id`, `style`, and `history`) and assert on the counters (like `familyCounts` and `mostUsedTactic`) that guide the AI's fallback strategy (e.g. `suggestCounterTactic`).
