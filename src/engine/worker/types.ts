@@ -65,6 +65,7 @@ export type EngineCommand =
       flag: keyof import("../types/tutorial").TutorialFlags;
       step: import("../types/tutorial").TutorialStep;
     }
+  | { type: "COMPLETE_TUTORIAL" }
   | { type: "APPLY_PRESS_CONFERENCE"; heyaId: string; reputationDelta: number }
   | { type: "SET_HEYA_DIET"; heyaId: string; diet: import("../types/economy").DietRegimen }
   | { type: "RETIRE_RIKISHI"; rikishiId: string; reason: string }

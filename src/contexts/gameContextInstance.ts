@@ -52,6 +52,7 @@ export interface GameContextValue {
     flag: keyof import("@/engine/types/tutorial").TutorialFlags,
     step: import("@/engine/types/tutorial").TutorialStep
   ) => void;
+  completeTutorial: () => void;
   buildInfrastructure: (
     heyaId: string,
     facilityId: import("@/engine/types/infrastructure").FacilityId

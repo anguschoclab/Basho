@@ -160,4 +160,49 @@ describe("engine.worker — ADVANCE_TUTORIAL_STEP / SET_TUTORIAL_FLAG / COMPLETE
       expect.objectContaining({ type: "WORLD_UPDATED" })
     );
   });
+
+  it("COMPLETE_TUTORIAL sets completed=true and currentStep=DONE", async () => {
+    const world = makeWorldWithTutorial();
+    await triggerMessage({ type: "LOAD_WORLD", world });
+    vi.clearAllMocks();
+
+    await triggerMessage({ type: "COMPLETE_TUTORIAL" });
+
+    const updated = getWorldUpdated();
+    expect(updated).toBeDefined();
+    expect(updated!.tutorialState?.completed).toBe(true);
+    expect(updated!.tutorialState?.currentStep).toBe("DONE");
+  });
+
+  it("COMPLETE_TUTORIAL creates default tutorialState if missing", async () => {
+    const world = makeMockWorld({} as any);
+    await triggerMessage({ type: "LOAD_WORLD", world });
+    vi.clearAllMocks();
+
+    await triggerMessage({ type: "COMPLETE_TUTORIAL" });
+
+    const updated = getWorldUpdated();
+    expect(updated).toBeDefined();
+    expect(updated!.tutorialState?.completed).toBe(true);
+    expect(updated!.tutorialState?.currentStep).toBe("DONE");
+  });
+
+  it("COMPLETE_TUTORIAL preserves existing flags", async () => {
+    const world = makeWorldWithTutorial({
+      ...createDefaultTutorialState(),
+      flags: {
+        ...createDefaultTutorialState().flags,
+        seenStaminaTooltip: true,
+      },
+    });
+    await triggerMessage({ type: "LOAD_WORLD", world });
+    vi.clearAllMocks();
+
+    await triggerMessage({ type: "COMPLETE_TUTORIAL" });
+
+    const updated = getWorldUpdated();
+    expect(updated).toBeDefined();
+    expect(updated!.tutorialState?.flags.seenStaminaTooltip).toBe(true);
+    expect(updated!.tutorialState?.completed).toBe(true);
+  });
 });

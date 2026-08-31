@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useGameStore } from "@/store/gameStore";
+import { useGame } from "@/contexts/useGame";
 import { Trophy, Swords, Clock, ChevronRight, Sparkles, PartyPopper } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -44,6 +45,7 @@ const STEPS = [
 export function OnboardingTourDialog() {
   const showTour = useGameStore((state) => state.showTour);
   const dismissTour = useGameStore((state) => state.dismissTour);
+  const { completeTutorial } = useGame();
   const [currentStep, setCurrentStep] = useState(0);
 
   const stepData = STEPS[currentStep];
@@ -51,6 +53,7 @@ export function OnboardingTourDialog() {
 
   const handleNext = () => {
     if (isLastStep) {
+      completeTutorial();
       dismissTour("completed");
     } else {
       setCurrentStep(currentStep + 1);
@@ -58,6 +61,7 @@ export function OnboardingTourDialog() {
   };
 
   const handleSkip = () => {
+    completeTutorial();
     dismissTour("skipped");
   };
 

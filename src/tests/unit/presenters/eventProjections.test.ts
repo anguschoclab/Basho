@@ -108,6 +108,39 @@ describe("projectBashoResults", () => {
     expect(result.junYusho[0].rikishi.id).toBe("r1");
   });
 
+  it("returns empty junYusho list when input is empty", () => {
+    const world = makeMockWorld({ rikishi: new Map() });
+    const basho = makeBashoResult({ junYusho: [] });
+    const result = projectBashoResults(world, basho);
+    expect(result.junYusho).toEqual([]);
+  });
+
+  it("returns empty junYusho list when all entries are missing", () => {
+    const world = makeMockWorld({ rikishi: new Map() });
+    const basho = makeBashoResult({ junYusho: ["ghost1", "ghost2"] });
+    const result = projectBashoResults(world, basho);
+    expect(result.junYusho).toEqual([]);
+  });
+
+  it("preserves junYusho order when valid entries are interspersed with missing ids", () => {
+    const r1 = mockRikishi("r1", { shikona: "Runner1", heyaId: "h1" });
+    const r2 = mockRikishi("r2", { shikona: "Runner2", heyaId: "h1" });
+    const world = makeMockWorld({
+      rikishi: new Map([
+        ["r1", r1],
+        ["r2", r2],
+      ]),
+    });
+    world.heyas.set("h1", { id: "h1", name: "Stable One" } as any);
+
+    const basho = makeBashoResult({ junYusho: ["missing", "r1", "missing", "r2"] });
+    const result = projectBashoResults(world, basho);
+
+    expect(result.junYusho).toHaveLength(2);
+    expect(result.junYusho[0].rikishi.id).toBe("r1");
+    expect(result.junYusho[1].rikishi.id).toBe("r2");
+  });
+
   it("returns kinboshi entries from matches with isKinboshi", () => {
     const maegashira = mockRikishi("m1", { shikona: "Giant Killer", heyaId: "h1" });
     const yokozuna = mockRikishi("y1", { shikona: "Yokozuna", heyaId: "h2" });

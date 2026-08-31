@@ -39,6 +39,7 @@ export function useTutorialActions() {
     advanceTutorialStep: game.advanceTutorialStep,
     setTutorialFlag: game.setTutorialFlag,
     finishExhibition: game.finishExhibition,
+    completeTutorial: game.completeTutorial,
   };
 }
 

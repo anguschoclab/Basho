@@ -32,7 +32,7 @@ export function assignYokozunaAttendants(yokozuna: Rikishi, world: WorldState): 
 
   // Get same-heya rikishi, excluding the yokozuna and retired rikishi
   const candidates = EntityCollection.getActiveRikishi(world)
-    .filter((r) => r.heyaId === yokozuna.heyaId && r.id !== yokozuna.id)
+    .filter((r) => isEligibleAttendant(r, yokozuna))
     .sort((a, b) => (a.rankNumber ?? 99) - (b.rankNumber ?? 99));
 
   if (candidates.length < 2) return builder.build();

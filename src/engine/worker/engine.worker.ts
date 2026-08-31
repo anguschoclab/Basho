@@ -42,6 +42,7 @@ import {
   advanceTutorialStep as svcAdvanceTutorialStep,
   setTutorialFlag as svcSetTutorialFlag,
   finishExhibition as svcFinishExhibition,
+  completeTutorial as svcCompleteTutorial,
 } from "../systems/tutorial/TutorialService";
 import { updateHeyaInWorld } from "../queries";
 import { retireRikishiImpact } from "../core/ImpactBuilder";
@@ -417,6 +418,13 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
     FINISH_EXHIBITION: (cmd) => {
       if (currentWorld) {
         const impact = svcFinishExhibition(currentWorld, cmd.flag, cmd.step);
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        syncWorld();
+      }
+    },
+    COMPLETE_TUTORIAL: () => {
+      if (currentWorld) {
+        const impact = svcCompleteTutorial(currentWorld);
         currentWorld = resolveImpacts(currentWorld, [impact]);
         syncWorld();
       }

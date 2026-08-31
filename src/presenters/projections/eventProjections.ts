@@ -75,9 +75,11 @@ export function projectBashoResults(world: WorldState, lastBasho: BashoResult) {
   const champion = lastBasho.yusho ? getRikishiData(lastBasho.yusho) : null;
   const isPlayerChampion = champion?.rikishi?.heyaId === world.playerHeyaId;
 
-  const junYusho = (lastBasho.junYusho ?? [])
-    .map(getRikishiData)
-    .filter((x): x is NonNullable<typeof x> => x !== null);
+  const junYusho: { rikishi: ReturnType<typeof projectRikishi>; heyaName: string }[] = [];
+  for (const id of lastBasho.junYusho ?? []) {
+    const entry = getRikishiData(id);
+    if (entry) junYusho.push(entry);
+  }
 
   const matches = world.currentBasho?.matches || [];
   const kinboshi = [];

@@ -51,6 +51,7 @@ describe("domain hooks", () => {
     expect(result.current.advanceTutorialStep).toBeTypeOf("function");
     expect(result.current.setTutorialFlag).toBeTypeOf("function");
     expect(result.current.finishExhibition).toBeTypeOf("function");
+    expect(result.current.completeTutorial).toBeTypeOf("function");
   });
 
   it("useRosterActions returns expected actions", () => {

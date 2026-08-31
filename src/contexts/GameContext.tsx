@@ -237,6 +237,10 @@ export function GameProvider({ children }: { children: ReactNode }) {
     [sendCommand]
   );
 
+  const completeTutorialAction = useCallback(() => {
+    sendCommand({ type: "COMPLETE_TUTORIAL" });
+  }, [sendCommand]);
+
   const goOnHoliday = useCallback(
     (config: HolidayConfig): HolidayResult | null => {
       if (!state.world) return null;
@@ -412,6 +416,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       advanceTutorialStep: advanceTutorialStepAction,
       setTutorialFlag: setTutorialFlagAction,
       finishExhibition: finishExhibitionAction,
+      completeTutorial: completeTutorialAction,
       buildInfrastructure: buildInfrastructureAction,
       assignMentor: assignMentorAction,
       removeMentor: removeMentorAction,
@@ -465,6 +470,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
       advanceTutorialStepAction,
       setTutorialFlagAction,
       finishExhibitionAction,
+      completeTutorialAction,
       buildInfrastructureAction,
       assignMentorAction,
       removeMentorAction,
