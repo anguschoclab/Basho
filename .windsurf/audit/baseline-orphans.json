@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-08-11T16:38:49.100Z",
+  "generatedAt": "2026-08-31T16:29:32.925Z",
   "summary": {
-    "total": 226,
-    "unreferencedExports": 223,
+    "total": 223,
+    "unreferencedExports": 222,
     "orphanRoutes": 0,
     "untickedServices": 0,
     "unusedComponents": 1,
-    "writeOnlyState": 2
+    "writeOnlyState": 0
   },
   "entries": [
     {
@@ -1100,17 +1100,6 @@
     },
     {
       "id": "ORPH-0100",
-      "file": "src/engine/systems/tutorial/TutorialService.ts",
-      "symbol": "completeTutorial",
-      "orphanType": "unreferenced-export",
-      "priority": "P3",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "candidate"
-    },
-    {
-      "id": "ORPH-0101",
       "file": "src/engine/systems/welfare/WelfareCalculations.ts",
       "symbol": "getSeverityWeight",
       "orphanType": "unreferenced-export",
@@ -1121,7 +1110,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0102",
+      "id": "ORPH-0101",
       "file": "src/engine/agents/CrisisAgent.ts",
       "symbol": "CrisisAgentResult",
       "orphanType": "unreferenced-export",
@@ -1132,7 +1121,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0103",
+      "id": "ORPH-0102",
       "file": "src/engine/agents/MediaAgent.ts",
       "symbol": "MediaAgentResult",
       "orphanType": "unreferenced-export",
@@ -1143,7 +1132,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0104",
+      "id": "ORPH-0103",
       "file": "src/engine/agents/NarrativeAgent.ts",
       "symbol": "NarrativeAgentResult",
       "orphanType": "unreferenced-export",
@@ -1154,7 +1143,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0105",
+      "id": "ORPH-0104",
       "file": "src/engine/npcAI/LeaguePerception.ts",
       "symbol": "emptyLeaguePerception",
       "orphanType": "unreferenced-export",
@@ -1165,7 +1154,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0106",
+      "id": "ORPH-0105",
       "file": "src/engine/npcAI/MemoryStore.ts",
       "symbol": "type OyakataMemory",
       "orphanType": "unreferenced-export",
@@ -1176,7 +1165,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0107",
+      "id": "ORPH-0106",
       "file": "src/engine/npcAI/MemoryStore.ts",
       "symbol": "emptyOyakataMemory",
       "orphanType": "unreferenced-export",
@@ -1187,7 +1176,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0108",
+      "id": "ORPH-0107",
       "file": "src/engine/npcAI/MemoryStore.ts",
       "symbol": "archiveActivePlan",
       "orphanType": "unreferenced-export",
@@ -1198,7 +1187,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0109",
+      "id": "ORPH-0108",
       "file": "src/engine/npcAI/MemoryStore.ts",
       "symbol": "recordOpponentModel",
       "orphanType": "unreferenced-export",
@@ -1209,7 +1198,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0110",
+      "id": "ORPH-0109",
       "file": "src/engine/npcAI/MemoryStore.ts",
       "symbol": "getOpponentModel",
       "orphanType": "unreferenced-export",
@@ -1220,7 +1209,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0111",
+      "id": "ORPH-0110",
       "file": "src/engine/npcAI/OpponentModel.ts",
       "symbol": "observeBoutResult",
       "orphanType": "unreferenced-export",
@@ -1231,7 +1220,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0112",
+      "id": "ORPH-0111",
       "file": "src/engine/npcAI/OpponentModel.ts",
       "symbol": "getOpponentDominantFamily",
       "orphanType": "unreferenced-export",
@@ -1242,7 +1231,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0113",
+      "id": "ORPH-0112",
       "file": "src/engine/npcAI/OpponentModel.ts",
       "symbol": "suggestCounterTactic",
       "orphanType": "unreferenced-export",
@@ -1253,7 +1242,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0114",
+      "id": "ORPH-0113",
       "file": "src/engine/npcAI/TacticalCoordinator.ts",
       "symbol": "CoordinationInput",
       "orphanType": "unreferenced-export",
@@ -1264,7 +1253,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0115",
+      "id": "ORPH-0114",
       "file": "src/engine/npcAI/TacticalCoordinator.ts",
       "symbol": "coordinateDecision",
       "orphanType": "unreferenced-export",
@@ -1275,7 +1264,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0116",
+      "id": "ORPH-0115",
       "file": "src/engine/npcAI/contextBuilder.ts",
       "symbol": "buildAIContext",
       "orphanType": "unreferenced-export",
@@ -1286,7 +1275,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0117",
+      "id": "ORPH-0116",
       "file": "src/engine/actions/InjuredEncouragement.ts",
       "symbol": "ENCOURAGEMENT_MOTIVATION_BOOST",
       "orphanType": "unreferenced-export",
@@ -1297,7 +1286,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0118",
+      "id": "ORPH-0117",
       "file": "src/engine/actions/OyakataIntervention.ts",
       "symbol": "InterventionResult",
       "orphanType": "unreferenced-export",
@@ -1308,7 +1297,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0119",
+      "id": "ORPH-0118",
       "file": "src/engine/advisor/AdvisorService.ts",
       "symbol": "getPlayerDigest",
       "orphanType": "unreferenced-export",
@@ -1319,7 +1308,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0120",
+      "id": "ORPH-0119",
       "file": "src/engine/ai/types.ts",
       "symbol": "AIConstraintType",
       "orphanType": "unreferenced-export",
@@ -1330,7 +1319,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0121",
+      "id": "ORPH-0120",
       "file": "src/engine/ai/types.ts",
       "symbol": "AIRecommendationCategory",
       "orphanType": "unreferenced-export",
@@ -1341,7 +1330,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0122",
+      "id": "ORPH-0121",
       "file": "src/engine/ai/types.ts",
       "symbol": "AIRecommendationPriority",
       "orphanType": "unreferenced-export",
@@ -1352,7 +1341,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0123",
+      "id": "ORPH-0122",
       "file": "src/engine/banzuke/banzukeHelpers.ts",
       "symbol": "getRankTitleJa",
       "orphanType": "unreferenced-export",
@@ -1363,7 +1352,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0124",
+      "id": "ORPH-0123",
       "file": "src/engine/banzuke/banzukeMovementNarrative.ts",
       "symbol": "BanzukeMovementNarrativeLine",
       "orphanType": "unreferenced-export",
@@ -1374,7 +1363,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0125",
+      "id": "ORPH-0124",
       "file": "src/engine/bard/BardEngine.ts",
       "symbol": "ResolutionPath",
       "orphanType": "unreferenced-export",
@@ -1385,7 +1374,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0126",
+      "id": "ORPH-0125",
       "file": "src/engine/bard/BardEngine.ts",
       "symbol": "BardResult",
       "orphanType": "unreferenced-export",
@@ -1396,7 +1385,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0127",
+      "id": "ORPH-0126",
       "file": "src/engine/bard/BardEngine.ts",
       "symbol": "RegistryEntry",
       "orphanType": "unreferenced-export",
@@ -1407,7 +1396,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0128",
+      "id": "ORPH-0127",
       "file": "src/engine/bard/BardEngine.ts",
       "symbol": "BardArchive",
       "orphanType": "unreferenced-export",
@@ -1418,7 +1407,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0129",
+      "id": "ORPH-0128",
       "file": "src/engine/bard/BardEngine.ts",
       "symbol": "interpolate",
       "orphanType": "unreferenced-export",
@@ -1429,7 +1418,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0130",
+      "id": "ORPH-0129",
       "file": "src/engine/bard/dramaGenerator.ts",
       "symbol": "DramaEvent",
       "orphanType": "unreferenced-export",
@@ -1440,7 +1429,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0131",
+      "id": "ORPH-0130",
       "file": "src/engine/bard/dramaGenerator.ts",
       "symbol": "checkBashoDayDrama",
       "orphanType": "unreferenced-export",
@@ -1451,7 +1440,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0132",
+      "id": "ORPH-0131",
       "file": "src/engine/bard/narrativeContext.ts",
       "symbol": "CrowdStyle",
       "orphanType": "unreferenced-export",
@@ -1462,7 +1451,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0133",
+      "id": "ORPH-0132",
       "file": "src/engine/bard/narrativeContext.ts",
       "symbol": "VENUE_PROFILES",
       "orphanType": "unreferenced-export",
@@ -1473,7 +1462,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0134",
+      "id": "ORPH-0133",
       "file": "src/engine/bard/narrativeEventMap.ts",
       "symbol": "NarrativeEventMapEntry",
       "orphanType": "unreferenced-export",
@@ -1484,7 +1473,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0135",
+      "id": "ORPH-0134",
       "file": "src/engine/bout/BoutAI.ts",
       "symbol": "BoutAIContext",
       "orphanType": "unreferenced-export",
@@ -1495,7 +1484,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0136",
+      "id": "ORPH-0135",
       "file": "src/engine/bout/BoutAI.ts",
       "symbol": "chooseBaseTactic",
       "orphanType": "unreferenced-export",
@@ -1506,7 +1495,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0137",
+      "id": "ORPH-0136",
       "file": "src/engine/bout/BoutAI.ts",
       "symbol": "chooseTactic",
       "orphanType": "unreferenced-export",
@@ -1517,7 +1506,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0138",
+      "id": "ORPH-0137",
       "file": "src/engine/bout/CareerHighlights.ts",
       "symbol": "CareerHighlightType",
       "orphanType": "unreferenced-export",
@@ -1528,7 +1517,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0139",
+      "id": "ORPH-0138",
       "file": "src/engine/bout/CornerAdvice.ts",
       "symbol": "CornerAdviceContext",
       "orphanType": "unreferenced-export",
@@ -1539,7 +1528,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0140",
+      "id": "ORPH-0139",
       "file": "src/engine/bout/ReplayMetadata.ts",
       "symbol": "getBoutAnimationFamily",
       "orphanType": "unreferenced-export",
@@ -1550,7 +1539,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0141",
+      "id": "ORPH-0140",
       "file": "src/engine/bout/boutContention.ts",
       "symbol": "getLeaderWins",
       "orphanType": "unreferenced-export",
@@ -1561,7 +1550,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0142",
+      "id": "ORPH-0141",
       "file": "src/engine/bout/boutGrip.ts",
       "symbol": "calculateTorque",
       "orphanType": "unreferenced-export",
@@ -1572,7 +1561,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0143",
+      "id": "ORPH-0142",
       "file": "src/engine/bout/boutGrip.ts",
       "symbol": "computeNetTorque",
       "orphanType": "unreferenced-export",
@@ -1583,7 +1572,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0144",
+      "id": "ORPH-0143",
       "file": "src/engine/bout/boutNarrative.ts",
       "symbol": "isSanyakuPromotionByRank",
       "orphanType": "unreferenced-export",
@@ -1594,7 +1583,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0145",
+      "id": "ORPH-0144",
       "file": "src/engine/bout/boutNarrative.ts",
       "symbol": "PbpVoice",
       "orphanType": "unreferenced-export",
@@ -1605,7 +1594,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0146",
+      "id": "ORPH-0145",
       "file": "src/engine/bout/boutResolver.ts",
       "symbol": "applyRivalryToRikishi",
       "orphanType": "unreferenced-export",
@@ -1616,7 +1605,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0147",
+      "id": "ORPH-0146",
       "file": "src/engine/bout/boutSpatial.ts",
       "symbol": "isOutOfRing",
       "orphanType": "unreferenced-export",
@@ -1627,7 +1616,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0148",
+      "id": "ORPH-0147",
       "file": "src/engine/bout/honbasho.ts",
       "symbol": "HONBASHO_NAMES",
       "orphanType": "unreferenced-export",
@@ -1638,7 +1627,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0149",
+      "id": "ORPH-0148",
       "file": "src/engine/bout/honbasho.ts",
       "symbol": "isHonbashoName",
       "orphanType": "unreferenced-export",
@@ -1649,7 +1638,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0150",
+      "id": "ORPH-0149",
       "file": "src/engine/bout/honbasho.ts",
       "symbol": "isHonbashoState",
       "orphanType": "unreferenced-export",
@@ -1660,7 +1649,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0151",
+      "id": "ORPH-0150",
       "file": "src/engine/bout/honbasho.ts",
       "symbol": "isHonbashoInfo",
       "orphanType": "unreferenced-export",
@@ -1671,7 +1660,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0152",
+      "id": "ORPH-0151",
       "file": "src/engine/bout/honbasho.ts",
       "symbol": "makeExhibitionBasho",
       "orphanType": "unreferenced-export",
@@ -1682,7 +1671,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0153",
+      "id": "ORPH-0152",
       "file": "src/engine/bout/kachiNokori.ts",
       "symbol": "KACHI_KOSHI_WINS",
       "orphanType": "unreferenced-export",
@@ -1693,7 +1682,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0154",
+      "id": "ORPH-0153",
       "file": "src/engine/bout/kachiNokori.ts",
       "symbol": "hasKachiKoshi",
       "orphanType": "unreferenced-export",
@@ -1704,7 +1693,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0155",
+      "id": "ORPH-0154",
       "file": "src/engine/bout/kachiNokori.ts",
       "symbol": "isMakeKoshiConfirmed",
       "orphanType": "unreferenced-export",
@@ -1715,7 +1704,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0156",
+      "id": "ORPH-0155",
       "file": "src/engine/bout/kachiNokori.ts",
       "symbol": "calculateKachiNokoriForStandings",
       "orphanType": "unreferenced-export",
@@ -1726,7 +1715,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0157",
+      "id": "ORPH-0156",
       "file": "src/engine/bout/kachiNokori.ts",
       "symbol": "getYushoRaceLeaders",
       "orphanType": "unreferenced-export",
@@ -1737,7 +1726,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0158",
+      "id": "ORPH-0157",
       "file": "src/engine/bout/kinjite.ts",
       "symbol": "calculateHansokuChance",
       "orphanType": "unreferenced-export",
@@ -1748,7 +1737,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0159",
+      "id": "ORPH-0158",
       "file": "src/engine/bout/shinitai.ts",
       "symbol": "SHINITAI_INSTABILITY_DIFF_THRESHOLD",
       "orphanType": "unreferenced-export",
@@ -1759,7 +1748,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0160",
+      "id": "ORPH-0159",
       "file": "src/engine/bout/yaocho.ts",
       "symbol": "YaochoIndicators",
       "orphanType": "unreferenced-export",
@@ -1770,7 +1759,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0161",
+      "id": "ORPH-0160",
       "file": "src/engine/bout/yaocho.ts",
       "symbol": "evaluateYaochoIndicators",
       "orphanType": "unreferenced-export",
@@ -1781,7 +1770,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0162",
+      "id": "ORPH-0161",
       "file": "src/engine/bout/yaocho.ts",
       "symbol": "calculateYaochoChance",
       "orphanType": "unreferenced-export",
@@ -1792,7 +1781,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0163",
+      "id": "ORPH-0162",
       "file": "src/engine/core/EntityCollection.ts",
       "symbol": "EntityQueryOptions",
       "orphanType": "unreferenced-export",
@@ -1803,7 +1792,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0164",
+      "id": "ORPH-0163",
       "file": "src/engine/core/ImpactBuilder.ts",
       "symbol": "updateHeyaImpact",
       "orphanType": "unreferenced-export",
@@ -1814,7 +1803,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0165",
+      "id": "ORPH-0164",
       "file": "src/engine/core/ImpactBuilder.ts",
       "symbol": "updateRikishiImpact",
       "orphanType": "unreferenced-export",
@@ -1825,7 +1814,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0166",
+      "id": "ORPH-0165",
       "file": "src/engine/core/ImpactBuilder.ts",
       "symbol": "logEventImpact",
       "orphanType": "unreferenced-export",
@@ -1836,7 +1825,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0167",
+      "id": "ORPH-0166",
       "file": "src/engine/core/ImpactBuilder.ts",
       "symbol": "updateWorldFieldImpact",
       "orphanType": "unreferenced-export",
@@ -1847,7 +1836,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0168",
+      "id": "ORPH-0167",
       "file": "src/engine/core/RNGRegistry.ts",
       "symbol": "SystemRNGKey",
       "orphanType": "unreferenced-export",
@@ -1858,7 +1847,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0169",
+      "id": "ORPH-0168",
       "file": "src/engine/governance/kanrekiCeremony.ts",
       "symbol": "KANREKI_AGE",
       "orphanType": "unreferenced-export",
@@ -1869,7 +1858,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0170",
+      "id": "ORPH-0169",
       "file": "src/engine/governance/kanrekiCeremony.ts",
       "symbol": "KANREKI_POPULARITY_BOOST",
       "orphanType": "unreferenced-export",
@@ -1880,7 +1869,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0171",
+      "id": "ORPH-0170",
       "file": "src/engine/governance/kanrekiCeremony.ts",
       "symbol": "hasHadKanrekiCeremony",
       "orphanType": "unreferenced-export",
@@ -1891,7 +1880,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0172",
+      "id": "ORPH-0171",
       "file": "src/engine/governance/yokozunaAttendants.ts",
       "symbol": "ATTENDANT_POPULARITY_BOOST",
       "orphanType": "unreferenced-export",
@@ -1902,7 +1891,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0173",
+      "id": "ORPH-0172",
       "file": "src/engine/governance/yokozunaAttendants.ts",
       "symbol": "isEligibleAttendant",
       "orphanType": "unreferenced-export",
@@ -1913,7 +1902,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0174",
+      "id": "ORPH-0173",
       "file": "src/engine/lifecycle/retirementNarrative.ts",
       "symbol": "RetirementNarrativeLine",
       "orphanType": "unreferenced-export",
@@ -1924,7 +1913,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0175",
+      "id": "ORPH-0174",
       "file": "src/engine/matchmaking/DramaMatchmaker.ts",
       "symbol": "isMakuuchiDebut",
       "orphanType": "unreferenced-export",
@@ -1935,7 +1924,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0176",
+      "id": "ORPH-0175",
       "file": "src/engine/matchmaking/DramaMatchmaker.ts",
       "symbol": "scoreDrama",
       "orphanType": "unreferenced-export",
@@ -1946,7 +1935,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0177",
+      "id": "ORPH-0176",
       "file": "src/engine/matchmaking/MatchmakingPhases.ts",
       "symbol": "DEFAULT_MATCHMAKING_RULES",
       "orphanType": "unreferenced-export",
@@ -1957,7 +1946,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0178",
+      "id": "ORPH-0177",
       "file": "src/engine/matchmaking/MatchmakingPhases.ts",
       "symbol": "CandidateBuildOptions",
       "orphanType": "unreferenced-export",
@@ -1968,7 +1957,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0179",
+      "id": "ORPH-0178",
       "file": "src/engine/matchmaking/MatchmakingPhases.ts",
       "symbol": "buildCandidatePairs",
       "orphanType": "unreferenced-export",
@@ -1979,7 +1968,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0180",
+      "id": "ORPH-0179",
       "file": "src/engine/matchmaking/MatchmakingPhases.ts",
       "symbol": "buildPlayoffPairs",
       "orphanType": "unreferenced-export",
@@ -1990,7 +1979,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0181",
+      "id": "ORPH-0180",
       "file": "src/engine/matchmaking/MatchmakingPhases.ts",
       "symbol": "buildExhibitionPairs",
       "orphanType": "unreferenced-export",
@@ -2001,7 +1990,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0182",
+      "id": "ORPH-0181",
       "file": "src/engine/prestige/prestigeSystem.ts",
       "symbol": "updateStatureBand",
       "orphanType": "unreferenced-export",
@@ -2012,7 +2001,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0183",
+      "id": "ORPH-0182",
       "file": "src/engine/shikona/constants.ts",
       "symbol": "BASE_PATTERN_WEIGHTS",
       "orphanType": "unreferenced-export",
@@ -2023,7 +2012,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0184",
+      "id": "ORPH-0183",
       "file": "src/engine/shikona/helpers.ts",
       "symbol": "mergePatternWeights",
       "orphanType": "unreferenced-export",
@@ -2034,7 +2023,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0185",
+      "id": "ORPH-0184",
       "file": "src/engine/shikona/helpers.ts",
       "symbol": "choosePattern",
       "orphanType": "unreferenced-export",
@@ -2045,7 +2034,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0186",
+      "id": "ORPH-0185",
       "file": "src/engine/shikona/helpers.ts",
       "symbol": "nationalityPool",
       "orphanType": "unreferenced-export",
@@ -2056,7 +2045,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0187",
+      "id": "ORPH-0186",
       "file": "src/engine/shikona/legacy.ts",
       "symbol": "extractLegacyPrefix",
       "orphanType": "unreferenced-export",
@@ -2067,7 +2056,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0188",
+      "id": "ORPH-0187",
       "file": "src/engine/shikona/legacy.ts",
       "symbol": "extractLegacySuffix",
       "orphanType": "unreferenced-export",
@@ -2078,7 +2067,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0189",
+      "id": "ORPH-0188",
       "file": "src/engine/shikona/rankRules.ts",
       "symbol": "RANK_RULES",
       "orphanType": "unreferenced-export",
@@ -2089,7 +2078,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0190",
+      "id": "ORPH-0189",
       "file": "src/engine/shikona/rankRules.ts",
       "symbol": "resolveRankTier",
       "orphanType": "unreferenced-export",
@@ -2100,7 +2089,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0191",
+      "id": "ORPH-0190",
       "file": "src/engine/shikona/types.ts",
       "symbol": "PatternWeights",
       "orphanType": "unreferenced-export",
@@ -2111,7 +2100,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0192",
+      "id": "ORPH-0191",
       "file": "src/engine/shikona/types.ts",
       "symbol": "HouseStyleId",
       "orphanType": "unreferenced-export",
@@ -2122,7 +2111,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0193",
+      "id": "ORPH-0192",
       "file": "src/engine/strategy/NPCFinanceCalculator.ts",
       "symbol": "getFinanceStrategy",
       "orphanType": "unreferenced-export",
@@ -2133,7 +2122,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0194",
+      "id": "ORPH-0193",
       "file": "src/engine/strategy/NPCGovernanceCalculator.ts",
       "symbol": "getGovernanceStrategy",
       "orphanType": "unreferenced-export",
@@ -2144,7 +2133,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0195",
+      "id": "ORPH-0194",
       "file": "src/engine/strategy/NPCStrategyService.ts",
       "symbol": "OyakataScoutingObservation",
       "orphanType": "unreferenced-export",
@@ -2155,7 +2144,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0196",
+      "id": "ORPH-0195",
       "file": "src/engine/strategy/NPCStrategyService.ts",
       "symbol": "OyakataPersonnelObservation",
       "orphanType": "unreferenced-export",
@@ -2166,7 +2155,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0197",
+      "id": "ORPH-0196",
       "file": "src/engine/training/WeightJourney.ts",
       "symbol": "WEIGHT_JOURNEY_MIN_GAP",
       "orphanType": "unreferenced-export",
@@ -2177,7 +2166,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0198",
+      "id": "ORPH-0197",
       "file": "src/engine/training/WeightJourney.ts",
       "symbol": "WEIGHT_JOURNEY_WEEKLY_GAIN",
       "orphanType": "unreferenced-export",
@@ -2188,7 +2177,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0199",
+      "id": "ORPH-0198",
       "file": "src/engine/training/WeightJourney.ts",
       "symbol": "WEIGHT_JOURNEY_POWER_BOOST",
       "orphanType": "unreferenced-export",
@@ -2199,7 +2188,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0200",
+      "id": "ORPH-0199",
       "file": "src/engine/training/WeightJourney.ts",
       "symbol": "WEIGHT_JOURNEY_BALANCE_BOOST",
       "orphanType": "unreferenced-export",
@@ -2210,7 +2199,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0201",
+      "id": "ORPH-0200",
       "file": "src/engine/training/WeightJourney.ts",
       "symbol": "shouldEnterWeightJourney",
       "orphanType": "unreferenced-export",
@@ -2221,7 +2210,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0202",
+      "id": "ORPH-0201",
       "file": "src/engine/utils/Logger.ts",
       "symbol": "LogLevel",
       "orphanType": "unreferenced-export",
@@ -2232,7 +2221,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0203",
+      "id": "ORPH-0202",
       "file": "src/engine/utils/Logger.ts",
       "symbol": "logger",
       "orphanType": "unreferenced-export",
@@ -2243,7 +2232,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0204",
+      "id": "ORPH-0203",
       "file": "src/engine/utils/citizenshipUtils.ts",
       "symbol": "countsAsForeign",
       "orphanType": "unreferenced-export",
@@ -2254,7 +2243,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0205",
+      "id": "ORPH-0204",
       "file": "src/engine/utils/citizenshipUtils.ts",
       "symbol": "isAtForeignLimit",
       "orphanType": "unreferenced-export",
@@ -2265,7 +2254,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0206",
+      "id": "ORPH-0205",
       "file": "src/engine/utils/collectionOperations.ts",
       "symbol": "mapIdsToEntities",
       "orphanType": "unreferenced-export",
@@ -2276,7 +2265,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0207",
+      "id": "ORPH-0206",
       "file": "src/engine/utils/collectionOperations.ts",
       "symbol": "mapIdsToRikishi",
       "orphanType": "unreferenced-export",
@@ -2287,7 +2276,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0208",
+      "id": "ORPH-0207",
       "file": "src/engine/utils/collectionOperations.ts",
       "symbol": "mapIdsToHeya",
       "orphanType": "unreferenced-export",
@@ -2298,7 +2287,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0209",
+      "id": "ORPH-0208",
       "file": "src/engine/utils/collectionOperations.ts",
       "symbol": "mapIdsToOyakata",
       "orphanType": "unreferenced-export",
@@ -2309,7 +2298,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0210",
+      "id": "ORPH-0209",
       "file": "src/engine/utils/collectionOperations.ts",
       "symbol": "filterEntities",
       "orphanType": "unreferenced-export",
@@ -2320,7 +2309,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0211",
+      "id": "ORPH-0210",
       "file": "src/engine/utils/collectionOperations.ts",
       "symbol": "getEntitiesByIds",
       "orphanType": "unreferenced-export",
@@ -2331,7 +2320,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0212",
+      "id": "ORPH-0211",
       "file": "src/engine/utils/collectionOperations.ts",
       "symbol": "groupBy",
       "orphanType": "unreferenced-export",
@@ -2342,7 +2331,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0213",
+      "id": "ORPH-0212",
       "file": "src/engine/utils/collectionOperations.ts",
       "symbol": "countBy",
       "orphanType": "unreferenced-export",
@@ -2353,7 +2342,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0214",
+      "id": "ORPH-0213",
       "file": "src/engine/utils/entityAccess.ts",
       "symbol": "getHeyaOrThrow",
       "orphanType": "unreferenced-export",
@@ -2364,7 +2353,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0215",
+      "id": "ORPH-0214",
       "file": "src/engine/utils/entityAccess.ts",
       "symbol": "getRikishiOrThrow",
       "orphanType": "unreferenced-export",
@@ -2375,7 +2364,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0216",
+      "id": "ORPH-0215",
       "file": "src/engine/utils/entityAccess.ts",
       "symbol": "getHeyaRikishi",
       "orphanType": "unreferenced-export",
@@ -2386,7 +2375,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0217",
+      "id": "ORPH-0216",
       "file": "src/engine/utils/entityAccess.ts",
       "symbol": "getAllActiveRikishi",
       "orphanType": "unreferenced-export",
@@ -2397,7 +2386,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0218",
+      "id": "ORPH-0217",
       "file": "src/engine/utils/jsonParser.ts",
       "symbol": "parseLLMResponse",
       "orphanType": "unreferenced-export",
@@ -2408,7 +2397,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0219",
+      "id": "ORPH-0218",
       "file": "src/engine/utils/jsonParser.ts",
       "symbol": "safeParse",
       "orphanType": "unreferenced-export",
@@ -2419,7 +2408,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0220",
+      "id": "ORPH-0219",
       "file": "src/engine/utils/math.ts",
       "symbol": "localClampInt",
       "orphanType": "unreferenced-export",
@@ -2430,7 +2419,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0221",
+      "id": "ORPH-0220",
       "file": "src/engine/utils/random.ts",
       "symbol": "seededWeightedPick",
       "orphanType": "unreferenced-export",
@@ -2441,7 +2430,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0222",
+      "id": "ORPH-0221",
       "file": "src/engine/utils/string.ts",
       "symbol": "formatShikona",
       "orphanType": "unreferenced-export",
@@ -2452,7 +2441,7 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0223",
+      "id": "ORPH-0222",
       "file": "src/engine/worker/types.ts",
       "symbol": "WorkerMessage",
       "orphanType": "unreferenced-export",
@@ -2463,33 +2452,11 @@
       "status": "candidate"
     },
     {
-      "id": "ORPH-0224",
+      "id": "ORPH-0223",
       "file": "src/components/RequireWorld.tsx",
       "symbol": "RequireWorld",
       "orphanType": "unused-component",
       "priority": "P2",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "candidate"
-    },
-    {
-      "id": "ORPH-0225",
-      "file": "src/engine/types/world.ts",
-      "symbol": "matchmakingOverride",
-      "orphanType": "write-only-state",
-      "priority": "P1",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "candidate"
-    },
-    {
-      "id": "ORPH-0226",
-      "file": "src/engine/types/world.ts",
-      "symbol": "shimpanPool",
-      "orphanType": "write-only-state",
-      "priority": "P1",
       "uiRoute": "",
       "npcConsumer": "",
       "tickPhase": "",
