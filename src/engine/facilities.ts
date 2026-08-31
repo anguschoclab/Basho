@@ -320,11 +320,13 @@ function npcFacilityInvestment(world: WorldState, heya: Heya): StateImpact {
 // === QUERY HELPERS (for UI) ===
 
 /**
- * Get upgrade cost estimate.
- *  * @param heya - The Heya.
- *  * @param axis - The Axis.
- *  * @param points - The Points.
- *  * @returns The result.
+ * Calculates the total monetary cost to upgrade the given facility axis.
+ * The cost scales non-linearly as the facility level increases.
+ *
+ * @param heya - The target heya containing the current facility levels.
+ * @param axis - Which facility axis to estimate the upgrade for.
+ * @param points - The number of points to upgrade (capped dynamically by MAX_FACILITY).
+ * @returns The total accumulated cost for the requested points.
  */
 export function getUpgradeCostEstimate(heya: Heya, axis: FacilityAxis, points: number = 5): number {
   const current = heya.facilities[axis];
@@ -335,9 +337,11 @@ export function getUpgradeCostEstimate(heya: Heya, axis: FacilityAxis, points: n
 }
 
 /**
- * Get monthly maintenance cost.
- *  * @param heya - The Heya.
- *  * @returns The result.
+ * Calculates the total monthly maintenance cost across all three facility axes
+ * required to prevent facility degradation.
+ *
+ * @param heya - The target heya containing the current facility levels.
+ * @returns The total sum of maintenance costs for training, recovery, and nutrition.
  */
 export function getMonthlyMaintenanceCost(heya: Heya): number {
   return (
