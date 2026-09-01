@@ -9,12 +9,12 @@ import {
   nativeImage,
   session,
 } from "electron";
-import { join } from "path";
+import path, { join } from "path";
 import { is } from "@electron-toolkit/utils";
-import path from "path";
 import { promises as fs } from "fs";
 import { validatePath as validatePathImpl } from "../src/utils/validatePath";
 import { isValidStorageKey } from "../src/utils/storageKeyValidation";
+import { logger } from "./logger";
 
 // Initialize electron-store for configuration persistence
 // Using dynamic import to handle ESM/CommonJS compatibility
@@ -395,47 +395,47 @@ function validatePath(filePath: string): boolean {
 // IPC Handlers for file system operations
 ipcMain.handle("fs:writeFile", async (event, filePath: string, content: string) => {
   if (typeof filePath !== "string" || typeof content !== "string") {
-    console.error("Path and content must be strings");
+    logger.error("Path and content must be strings");
     return false;
   }
   if (!validatePath(filePath)) {
-    console.error("Path validation failed - not in allowed directory:", filePath);
+    logger.error("Path validation failed - not in allowed directory:", filePath);
     return false;
   }
   try {
     await fs.writeFile(filePath, content, "utf-8");
     return true;
   } catch (error) {
-    console.error("Failed to write file:", error);
+    logger.error("Failed to write file:", error);
     return false;
   }
 });
 
 ipcMain.handle("fs:readFile", async (event, filePath: string) => {
   if (typeof filePath !== "string") {
-    console.error("Path must be a string");
+    logger.error("Path must be a string");
     return null;
   }
   if (!validatePath(filePath)) {
-    console.error("Path validation failed - not in allowed directory:", filePath);
+    logger.error("Path validation failed - not in allowed directory:", filePath);
     return null;
   }
   try {
     const content = await fs.readFile(filePath, "utf-8");
     return content;
   } catch (error) {
-    console.error("Failed to read file:", error);
+    logger.error("Failed to read file:", error);
     return null;
   }
 });
 
 ipcMain.handle("fs:exists", async (event, filePath: string) => {
   if (typeof filePath !== "string") {
-    console.error("Path must be a string");
+    logger.error("Path must be a string");
     return false;
   }
   if (!validatePath(filePath)) {
-    console.error("Path validation failed - not in allowed directory:", filePath);
+    logger.error("Path validation failed - not in allowed directory:", filePath);
     return false;
   }
   try {
@@ -448,54 +448,54 @@ ipcMain.handle("fs:exists", async (event, filePath: string) => {
 
 ipcMain.handle("fs:mkdir", async (event, dirPath: string, recursive: boolean = true) => {
   if (typeof dirPath !== "string" || typeof recursive !== "boolean") {
-    console.error("Invalid arguments for mkdir");
+    logger.error("Invalid arguments for mkdir");
     return false;
   }
   if (!validatePath(dirPath)) {
-    console.error("Path validation failed - not in allowed directory:", dirPath);
+    logger.error("Path validation failed - not in allowed directory:", dirPath);
     return false;
   }
   try {
     await fs.mkdir(dirPath, { recursive });
     return true;
   } catch (error) {
-    console.error("Failed to create directory:", error);
+    logger.error("Failed to create directory:", error);
     return false;
   }
 });
 
 ipcMain.handle("fs:readDir", async (event, dirPath: string) => {
   if (typeof dirPath !== "string") {
-    console.error("Path must be a string");
+    logger.error("Path must be a string");
     return [];
   }
   if (!validatePath(dirPath)) {
-    console.error("Path validation failed - not in allowed directory:", dirPath);
+    logger.error("Path validation failed - not in allowed directory:", dirPath);
     return [];
   }
   try {
     const files = await fs.readdir(dirPath);
     return files;
   } catch (error) {
-    console.error("Failed to read directory:", error);
+    logger.error("Failed to read directory:", error);
     return [];
   }
 });
 
 ipcMain.handle("fs:deleteFile", async (event, filePath: string) => {
   if (typeof filePath !== "string") {
-    console.error("Path must be a string");
+    logger.error("Path must be a string");
     return false;
   }
   if (!validatePath(filePath)) {
-    console.error("Path validation failed - not in allowed directory:", filePath);
+    logger.error("Path validation failed - not in allowed directory:", filePath);
     return false;
   }
   try {
     await fs.unlink(filePath);
     return true;
   } catch (error) {
-    console.error("Failed to delete file:", error);
+    logger.error("Failed to delete file:", error);
     return false;
   }
 });
@@ -522,7 +522,7 @@ ipcMain.handle("app:getPath", (event, name: string) => {
     throw new TypeError("Path name must be a string");
   }
   if (!ALLOWED_PATHS.includes(name as AllowedPath)) {
-    console.error(`Blocked attempt to get unauthorized path via IPC: ${name}`);
+    logger.error(`Blocked attempt to get unauthorized path via IPC: ${name}`);
     throw new Error(`Unauthorized path requested: ${name}`);
   }
 
@@ -558,12 +558,12 @@ app.on("web-contents-created", (_, contents) => {
       if (parsedUrl.protocol === "https:") {
         shell
           .openExternal(parsedUrl.href)
-          .catch((e) => console.error("Failed to open external URL:", e));
+          .catch((e) => logger.error("Failed to open external URL:", e));
       } else {
-        console.warn(`Blocked attempt to open non-HTTPS URL: ${url}`);
+        logger.warn(`Blocked attempt to open non-HTTPS URL: ${url}`);
       }
     } catch (e) {
-      console.error(`Blocked attempt to open invalid URL: ${url}`, e);
+      logger.error(`Blocked attempt to open invalid URL: ${url}`, e);
     }
     return { action: "deny" };
   });
@@ -595,7 +595,7 @@ app.whenReady().then(async () => {
     createMenu();
     createTray();
   } catch (error) {
-    console.error("Failed to initialize Electron app:", error);
+    logger.error("Failed to initialize Electron app:", error);
     dialog.showErrorBox(
       "Startup Error",
       "Failed to initialize the application. Please check the console for details."
@@ -607,7 +607,7 @@ app.whenReady().then(async () => {
     try {
       if (BrowserWindow.getAllWindows().length === 0) await createWindow();
     } catch (error) {
-      console.error("Failed to create window on activate:", error);
+      logger.error("Failed to create window on activate:", error);
     }
   });
 });
