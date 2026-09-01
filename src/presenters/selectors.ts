@@ -154,9 +154,7 @@ export const selectTopRivals = createSelector((world: WorldState) => {
  */
 export const selectRetiredRikishi = createSelector((world: WorldState): Rikishi[] => {
   if (!world.historicalRikishi) return [];
-  const result: Rikishi[] = [];
-  for (const r of world.historicalRikishi.values()) result.push(r);
-  return result;
+  return Array.from(world.historicalRikishi.values());
 });
 
 /**
@@ -229,9 +227,12 @@ export const selectAwardLog = createSelector((world: WorldState) => {
 
 export const selectKimariteStats = createSelector((world: WorldState) => {
   const stats = world.globalKimariteStats ?? {};
-  return Object.entries(stats)
-    .sort((a, b) => b[1] - a[1])
-    .map(([kimarite, count]) => ({ kimarite, count }));
+  const result: { kimarite: string; count: number }[] = [];
+  for (const kimarite of Object.keys(stats)) {
+    result.push({ kimarite, count: stats[kimarite] });
+  }
+  result.sort((a, b) => b.count - a.count);
+  return result;
 });
 
 export const selectPlayerKnowledge = createSelector((world: WorldState) => {

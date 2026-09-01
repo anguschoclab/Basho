@@ -4,6 +4,8 @@ import {
   selectPromotionCandidates,
   selectYokozunaCandidates,
   selectRecentEvents,
+  selectRetiredRikishi,
+  selectKimariteStats,
 } from "@/presenters/selectors";
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
@@ -485,5 +487,163 @@ describe("selectRecentEvents", () => {
     const result2 = selectRecentEvents(world);
 
     expect(result1).toBe(result2);
+  });
+});
+
+describe("selectRetiredRikishi", () => {
+  it("should return an empty array if world.historicalRikishi is undefined", () => {
+    const world = {
+      historicalRikishi: undefined,
+    } as unknown as WorldState;
+
+    const result = selectRetiredRikishi(world);
+    expect(result).toEqual([]);
+  });
+
+  it("should return an empty array if historicalRikishi is an empty Map", () => {
+    const world = {
+      historicalRikishi: new Map(),
+    } as unknown as WorldState;
+
+    const result = selectRetiredRikishi(world);
+    expect(result).toEqual([]);
+  });
+
+  it("should return all entries from a populated historicalRikishi Map", () => {
+    const r1 = mockRikishi("r1");
+    const r2 = mockRikishi("r2");
+    const r3 = mockRikishi("r3");
+
+    const historical = new Map<string, Rikishi>([
+      ["r1", r1],
+      ["r2", r2],
+      ["r3", r3],
+    ]);
+
+    const world = {
+      historicalRikishi: historical,
+    } as unknown as WorldState;
+
+    const result = selectRetiredRikishi(world);
+    expect(result).toHaveLength(3);
+    expect(result).toContain(r1);
+    expect(result).toContain(r2);
+    expect(result).toContain(r3);
+  });
+
+  it("should preserve Map insertion order", () => {
+    const r1 = mockRikishi("r1");
+    const r2 = mockRikishi("r2");
+    const r3 = mockRikishi("r3");
+
+    const historical = new Map<string, Rikishi>([
+      ["r3", r3],
+      ["r1", r1],
+      ["r2", r2],
+    ]);
+
+    const world = {
+      historicalRikishi: historical,
+    } as unknown as WorldState;
+
+    const result = selectRetiredRikishi(world);
+    expect(result.map((r) => r.id)).toEqual(["r3", "r1", "r2"]);
+  });
+
+  it("should memoize the result if the world object is the same", () => {
+    const r1 = mockRikishi("r1");
+
+    const world = {
+      historicalRikishi: new Map<string, Rikishi>([["r1", r1]]),
+    } as unknown as WorldState;
+
+    const result1 = selectRetiredRikishi(world);
+    const result2 = selectRetiredRikishi(world);
+
+    // Strict equality: same array reference due to createSelector memoization
+    expect(result1).toBe(result2);
+  });
+
+  it("should return distinct results for different world objects", () => {
+    const r1 = mockRikishi("r1");
+    const r2 = mockRikishi("r2");
+
+    const worldA = {
+      historicalRikishi: new Map<string, Rikishi>([["r1", r1]]),
+    } as unknown as WorldState;
+    const worldB = {
+      historicalRikishi: new Map<string, Rikishi>([["r2", r2]]),
+    } as unknown as WorldState;
+
+    const resultA = selectRetiredRikishi(worldA);
+    const resultB = selectRetiredRikishi(worldB);
+
+    expect(resultA).not.toBe(resultB);
+    expect(resultA.map((r) => r.id)).toEqual(["r1"]);
+    expect(resultB.map((r) => r.id)).toEqual(["r2"]);
+  });
+});
+
+describe("selectKimariteStats", () => {
+  it("returns an empty array if globalKimariteStats is undefined", () => {
+    const world = { globalKimariteStats: undefined } as unknown as WorldState;
+    const result = selectKimariteStats(world);
+    expect(result).toEqual([]);
+  });
+
+  it("returns an empty array if globalKimariteStats is empty", () => {
+    const world = { globalKimariteStats: {} } as unknown as WorldState;
+    const result = selectKimariteStats(world);
+    expect(result).toEqual([]);
+  });
+
+  it("returns { kimarite, count } objects for populated stats", () => {
+    const world = {
+      globalKimariteStats: { yorikiri: 10, uwatenage: 3 },
+    } as unknown as WorldState;
+    const result = selectKimariteStats(world);
+    expect(result).toHaveLength(2);
+    expect(result).toContainEqual({ kimarite: "yorikiri", count: 10 });
+    expect(result).toContainEqual({ kimarite: "uwatenage", count: 3 });
+  });
+
+  it("sorts descending by count", () => {
+    const world = {
+      globalKimariteStats: { oshidashi: 5, yorikiri: 20, uwatenage: 3 },
+    } as unknown as WorldState;
+    const result = selectKimariteStats(world);
+    expect(result.map((r) => r.kimarite)).toEqual(["yorikiri", "oshidashi", "uwatenage"]);
+    expect(result.map((r) => r.count)).toEqual([20, 5, 3]);
+  });
+
+  it("preserves all keys from input", () => {
+    const input: Record<string, number> = {
+      yorikiri: 1,
+      oshidashi: 1,
+      uwatenage: 1,
+      hatakikomi: 1,
+      tsukiotoshi: 1,
+    };
+    const world = { globalKimariteStats: input } as unknown as WorldState;
+    const result = selectKimariteStats(world);
+    expect(result).toHaveLength(5);
+    expect(new Set(result.map((r) => r.kimarite))).toEqual(new Set(Object.keys(input)));
+  });
+
+  it("memoizes: same world reference returns same array reference", () => {
+    const world = { globalKimariteStats: { yorikiri: 10 } } as unknown as WorldState;
+    const result1 = selectKimariteStats(world);
+    const result2 = selectKimariteStats(world);
+    expect(result1).toBe(result2);
+  });
+
+  it("returns distinct results for different world objects", () => {
+    const worldA = { globalKimariteStats: { yorikiri: 10 } } as unknown as WorldState;
+    const worldB = { globalKimariteStats: { oshidashi: 5 } } as unknown as WorldState;
+    const resultA = selectKimariteStats(worldA);
+    const resultB = selectKimariteStats(worldB);
+    expect(resultA).not.toBe(resultB);
+    expect(resultA.map((r) => r.kimarite)).toEqual(["yorikiri"]);
+    expect(resultB.map((r) => r.kimarite)).toEqual(["oshidashi"]);
   });
 });
