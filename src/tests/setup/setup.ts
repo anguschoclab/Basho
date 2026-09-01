@@ -57,6 +57,77 @@ beforeAll(() => {
 const BROWSER_GLOBALS = ["window", "document", "navigator", "history", "localStorage"] as const;
 
 const g = globalThis as unknown as Record<string, unknown>;
+
+// Node 26 declares a native `localStorage` global (lazy getter) that returns
+// `undefined` unless `--localstorage-file` is passed. Its presence on globalThis
+// makes vitest's `populateGlobal` skip copying jsdom's `window.localStorage`
+// (because localStorage isn't in vitest's hardcoded LIVING_KEYS/OTHER_KEYS and
+// `k in global` is true). The result: both `globalThis.localStorage` and
+// `window.localStorage` are `undefined` under jsdom, breaking any test that calls
+// `localStorage.clear()` / `getItem` / `setItem`. Install a spec-compliant
+// in-memory polyfill once, before stashing pristine globals, so every test file
+// sees a working localStorage.
+function createInMemoryLocalStorage(): Storage {
+  const store = new Map<string, string>();
+  return {
+    get length() {
+      return store.size;
+    },
+    clear() {
+      store.clear();
+    },
+    getItem(key: string) {
+      return store.has(key) ? (store.get(key) as string) : null;
+    },
+    key(index: number) {
+      const keys = Array.from(store.keys());
+      return index >= 0 && index < keys.length ? (keys[index] as string) : null;
+    },
+    removeItem(key: string) {
+      store.delete(key);
+    },
+    setItem(key: string, value: string) {
+      store.set(key, String(value));
+    },
+  };
+}
+
+function ensureLocalStorage(): Storage {
+  const existing = g.localStorage;
+  if (existing && typeof (existing as Storage).getItem === "function") {
+    return existing as Storage;
+  }
+  const polyfill = createInMemoryLocalStorage();
+  // Replace Node 26's native lazy getter (non-configurable at the global level
+  // under some builds) with our polyfill. defineProperty first; fall back to
+  // direct assignment if the descriptor rejects.
+  try {
+    Object.defineProperty(g, "localStorage", {
+      value: polyfill,
+      writable: true,
+      configurable: true,
+    });
+  } catch {
+    g.localStorage = polyfill;
+  }
+  // Also expose on window so code reading `window.localStorage` is consistent.
+  const win = g.window as Record<string, unknown> | undefined;
+  if (win && !win.localStorage) {
+    try {
+      Object.defineProperty(win, "localStorage", {
+        value: polyfill,
+        writable: true,
+        configurable: true,
+      });
+    } catch {
+      win.localStorage = polyfill;
+    }
+  }
+  return polyfill;
+}
+
+ensureLocalStorage();
+
 if (!g.__PRISTINE_BROWSER_GLOBALS__) {
   g.__PRISTINE_BROWSER_GLOBALS__ = {
     window: g.window,
@@ -96,4 +167,8 @@ afterEach(() => {
   setSeed("test-reset");
   resetImpactTimestampCounter();
   restoreBrowserGlobals();
+  // Clear the in-memory localStorage polyfill between tests so persisted sort
+  // state / tour-dismissal flags from one test don't leak into the next.
+  const ls = g.localStorage as Storage | undefined;
+  if (ls && typeof ls.clear === "function") ls.clear();
 });
