@@ -397,6 +397,8 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Utility function retained for future wiring",
   "src/engine/governance/yokozunaAttendants.ts:ATTENDANT_POPULARITY_BOOST":
     "Config constant retained for engine configuration",
+  "src/engine/governance/yokozunaAttendants.ts:isEligibleAttendant":
+    "Internal validation helper used by assignYokozunaAttendants (same file); audit's same-file exclusion is a false positive",
   "src/engine/matchmaking/DramaMatchmaker.ts:isMakuuchiDebut":
     "Utility function retained for future wiring",
   "src/engine/matchmaking/DramaMatchmaker.ts:scoreDrama":
@@ -448,12 +450,7 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
  * Symbols that are genuine orphans and should be wired or removed.
  * Listed here to track them — each should have a TODO or issue.
  */
-const GENUINE_ORPHANS: Record<string, string> = {
-  "src/engine/systems/tutorial/TutorialService.ts:completeTutorial":
-    "Tutorial completion not yet wired into game flow; separate from the orphaned systems wiring plan",
-  "src/engine/governance/yokozunaAttendants.ts:isEligibleAttendant":
-    "Validation helper only used in tests; assignYokozunaAttendants is wired but this predicate is not called at runtime",
-};
+const GENUINE_ORPHANS: Record<string, string> = {};
 
 function loadAuditEntries(): AuditEntry[] {
   if (!existsSync(AUDIT_JSON)) return [];
