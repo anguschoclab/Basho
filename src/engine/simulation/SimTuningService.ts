@@ -94,11 +94,10 @@ export const SimTuningService = {
     });
 
     // 3. Retirement Ages (Check Historical Collection)
-    const allRikishi: Rikishi[] = [];
-    for (const r of world.rikishi.values()) allRikishi.push(r);
-    if (world.historicalRikishi) {
-      for (const r of world.historicalRikishi.values()) allRikishi.push(r);
-    }
+    const allRikishi: Rikishi[] = [
+      ...Array.from(world.rikishi.values()),
+      ...(world.historicalRikishi ? Array.from(world.historicalRikishi.values()) : []),
+    ];
     const retiredRikishi: Rikishi[] = [];
     for (const r of allRikishi) {
       if (r.isRetired) retiredRikishi.push(r);
@@ -165,8 +164,7 @@ export const SimTuningService = {
     const topKimarite = kimariteArr.sort((a, b) => b.count - a.count).slice(0, 10);
 
     // 8. Oyakata Metrics
-    const oyakata: Oyakata[] = [];
-    for (const o of world.oyakata.values()) oyakata.push(o);
+    const oyakata: Oyakata[] = Array.from(world.oyakata.values());
     let newOyakataFromRikishi = 0;
     for (const o of oyakata) {
       if (o.formerRikishiId) newOyakataFromRikishi++;

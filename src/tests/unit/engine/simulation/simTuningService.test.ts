@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { makeMockWorld, mockRikishi } from "../utils";
 import { SimTuningService } from "@/engine/simulation/SimTuningService";
+import type { Oyakata } from "@/engine/types/oyakata";
 
 describe("SimTuningService.topKimarite", () => {
   it("uses cumulative kimarite totals from historyStats when provided", () => {
@@ -46,5 +47,26 @@ describe("SimTuningService.averageRetirementAge", () => {
     const metrics = SimTuningService.calculateMetrics(world);
     expect(metrics.retirementAges.sort((a, b) => a - b)).toEqual([20, 35]);
     expect(metrics.averageRetirementAge).toBe(27.5);
+  });
+});
+
+describe("SimTuningService.oyakataMetrics", () => {
+  it("counts total oyakata and those promoted from former rikishi", () => {
+    const world = makeMockWorld();
+    world.oyakata.set("o1", { id: "o1", formerRikishiId: "r-old-1" } as Oyakata);
+    world.oyakata.set("o2", { id: "o2" } as Oyakata); // no formerRikishiId
+    world.oyakata.set("o3", { id: "o3", formerRikishiId: "r-old-3" } as Oyakata);
+
+    const metrics = SimTuningService.calculateMetrics(world);
+    expect(metrics.oyakataMetrics.totalOyakata).toBe(3);
+    expect(metrics.oyakataMetrics.newOyakataFromRikishi).toBe(2);
+  });
+
+  it("returns zero oyakata metrics for an empty oyakata map", () => {
+    const world = makeMockWorld(); // makeMockWorld defaults oyakata to new Map()
+    const metrics = SimTuningService.calculateMetrics(world);
+    expect(metrics.oyakataMetrics.totalOyakata).toBe(0);
+    expect(metrics.oyakataMetrics.newOyakataFromRikishi).toBe(0);
+    expect(metrics.oyakataMetrics.promotionRate).toBe(0);
   });
 });

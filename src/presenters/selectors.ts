@@ -34,9 +34,7 @@ function createSelector<T>(fn: (world: WorldState) => T) {
  */
 const selectAllRikishi = createSelector((world: WorldState): Rikishi[] => {
   if (!world.rikishi) return [];
-  const result: Rikishi[] = [];
-  for (const r of world.rikishi.values()) result.push(r);
-  return result;
+  return Array.from(world.rikishi.values());
 });
 
 /**

@@ -122,9 +122,11 @@ export function buildEventSections(world: WorldState): DigestSection[] {
     ...mapEventToItem(e),
     kind: "narrative" as const,
   }));
-  const trainingItems = eventBuckets.training
-    .filter((e) => e.type !== "TRAINING_STAT_DELTA")
-    .map(mapEventToItem);
+  const trainingItems = eventBuckets.training.reduce<DigestItem[]>((acc, e) => {
+    if (e.type === "TRAINING_STAT_DELTA") return acc;
+    acc.push(mapEventToItem(e));
+    return acc;
+  }, []);
   const scoutItems = eventBuckets.scouting.map(mapEventToItem);
   const econItems = eventBuckets.economy.map(mapEventToItem);
 

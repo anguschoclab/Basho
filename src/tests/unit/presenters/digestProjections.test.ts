@@ -214,4 +214,60 @@ describe("buildWeeklyDigest — Training Report section", () => {
     const section = digest!.sections.find((s) => s.id === "training-report");
     expect(section).toBeUndefined();
   });
+
+  it("training section excludes TRAINING_STAT_DELTA and includes other training events in order", () => {
+    const events = [
+      makeEvent({
+        id: "t1",
+        type: "TRAINING_STAT_DELTA",
+        week: 5,
+        heyaId: "h1",
+        rikishiId: "r1",
+        title: "R1 — Training Gains",
+        summary: "power +0.3",
+        data: { shikona: "R1", title: "R1 — Training Gains", summary: "power +0.3" },
+      }),
+      makeEvent({
+        id: "t2",
+        type: "TRAINING_UPDATE",
+        week: 5,
+        heyaId: "h1",
+        rikishiId: "r2",
+        title: "R2 milestone",
+        summary: "Power threshold crossed",
+        data: { shikona: "R2", title: "R2 milestone", summary: "Power threshold crossed" },
+      }),
+      makeEvent({
+        id: "t3",
+        type: "TRAINING_STAT_DELTA",
+        week: 5,
+        heyaId: "h1",
+        rikishiId: "r3",
+        title: "R3 — Training Gains",
+        summary: "speed +0.2",
+        data: { shikona: "R3", title: "R3 — Training Gains", summary: "speed +0.2" },
+      }),
+      makeEvent({
+        id: "t4",
+        type: "MEDICAL_REPORT",
+        week: 5,
+        heyaId: "h1",
+        rikishiId: "r4",
+        category: "training",
+        title: "R4 medical",
+        summary: "Cleared to train",
+        data: {},
+      }),
+    ];
+
+    const world = makeWorldWithEvents(events);
+    const digest = buildWeeklyDigest(world);
+
+    const training = digest!.sections.find((s) => s.id === "training");
+    expect(training).toBeDefined();
+    const ids = training!.items.map((i) => i.id);
+    expect(ids).toEqual(["t4", "t2"]); // STAT_DELTA entries dropped, order preserved (queryEvents returns most-recent-first)
+    expect(training!.items.every((i) => i.kind === "training")).toBe(true);
+    expect(training!.items.find((i) => i.id === "t2")?.title).toBe("R2 milestone");
+  });
 });
