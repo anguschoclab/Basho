@@ -66,7 +66,7 @@ function createShallowSnapshot(
 ): { snapshot: Partial<WorldState>; restore: (w: WorldState) => WorldState } {
   const validTouches = new Set<string>(ENTITY_MAP_FIELDS);
   const fieldsToSnapshot: EntityMapField[] =
-    touches && touches.length > 0
+    touches !== undefined
       ? touches.filter((f): f is EntityMapField => validTouches.has(f))
       : [...ENTITY_MAP_FIELDS];
 
@@ -105,8 +105,8 @@ export function runPipeline(initialWorld: WorldState, phases: PipelinePhase[]): 
   const perfTrace: Array<{ phaseName: string; durationMs: number; impactSize?: number }> = [];
 
   for (const phase of phases) {
-    const phaseMeta = phase.touches ? { touches: phase.touches } : undefined;
-    const { restore } = createShallowSnapshot(currentWorld, phaseMeta?.touches);
+    const touches = phase.pure ? [] : phase.touches;
+    const { restore } = createShallowSnapshot(currentWorld, touches);
 
     const perfStart = perfEnabled ? performance.now() : 0;
 
