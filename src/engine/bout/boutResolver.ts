@@ -27,7 +27,7 @@ import type { Side } from "../types/banzuke";
 import { resolveBoutPhysics, conditionMultiplier } from "./boutPhysics";
 // We import the pure narrative translator
 import { generateBoutNarrative } from "./boutNarrative";
-import { KIMARITE_REGISTRY } from "../kimarite";
+import { getKimarite } from "../kimarite";
 import { RivalryService } from "../systems/narrative/RivalryService";
 import { RNGRegistry } from "../core/RNGRegistry";
 import {
@@ -235,7 +235,8 @@ export function resolveBout(
   const loser = result.winner === "east" ? west : east;
 
   // Enrich kimariteName from registry (classifier returns id; registry has display name)
-  const k = KIMARITE_REGISTRY.find((k) => k.id === result.kimarite);
+  // ⚡ Bolt: Replace O(N) array find with O(1) Map lookup in boutResolver
+  const k = getKimarite(result.kimarite);
   if (k) result.kimariteName = k.name;
 
   const bashoName = (basho.bashoName ?? basho.name) as BashoName | undefined;

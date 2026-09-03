@@ -28,9 +28,11 @@ class HistoryLRUCache {
   }
 
   /**
-   * Get a year from cache or OPFS.
-   *  * @param year - The Year.
-   *  * @returns The result.
+   * Retrieves a full year of historical data (bouts, awards, banzuke),
+   * checking the LRU RAM cache first before falling back to OPFS load.
+   *
+   * @param year - The simulation year to load.
+   * @returns The archived year data, or null if the year has no data or archive is unavailable.
    */
   public async getYear(year: number): Promise<ArchivedYear | null> {
     if (this.cache.has(year)) {
@@ -54,9 +56,11 @@ class HistoryLRUCache {
   }
 
   /**
-   * Put a year into the cache.
-   *  * @param year - The Year.
-   *  * @param data - The Data.
+   * Stores a year in the LRU cache, updating its MRU position if it exists.
+   * If capacity is reached, evicts the oldest (least recently used) year from RAM.
+   *
+   * @param year - The simulation year being cached.
+   * @param data - The full archived dataset for that year.
    */
   public putYear(year: number, data: ArchivedYear): void {
     if (this.cache.has(year)) {

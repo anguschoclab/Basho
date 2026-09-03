@@ -48,13 +48,23 @@ export function FactionStep({ ichimon, onIchimonChange, onNext, onPrev }: Factio
             return (
               <div
                 key={faction.id}
+                role="button"
+                tabIndex={0}
+                aria-label={`Select ${faction.name} faction`}
                 className={cn(
                   "dossier-paper p-6 rounded-lg cursor-pointer transition-all group relative overflow-hidden",
+                  "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background",
                   isSelected
                     ? "border-primary border-2 bg-primary/[0.03] ring-4 ring-primary/5 shadow-xl"
                     : "opacity-70 hover:opacity-100"
                 )}
                 onClick={() => onIchimonChange(faction.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    onIchimonChange(faction.id);
+                  }
+                }}
               >
                 <div className="absolute top-2 right-4 opacity-5 font-display text-4xl font-black">
                   {faction.ja}

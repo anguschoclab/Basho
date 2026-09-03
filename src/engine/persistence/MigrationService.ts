@@ -80,7 +80,7 @@ const migrateToV1_1_0: MigrationStep = (save, ctx) => {
   }
 
   // 2. Structural world fixes
-  const world = next.world as unknown as Record<string, unknown>;
+  let world = next.world as unknown as Record<string, unknown>;
   if (world) {
     // 2a. Events version stamping
     try {
@@ -93,7 +93,8 @@ const migrateToV1_1_0: MigrationStep = (save, ctx) => {
           "Migration: events field is corrupt (not an object), resetting to empty",
           "MigrationService"
         );
-        world.events = { version: "1.0.0", log: [], dedupe: {} };
+        world = { ...world, events: { version: "1.0.0", log: [], dedupe: {} } };
+        next.world = world as unknown as typeof next.world;
         ctx.logs.push("migrateToV1_1_0: WARN reset corrupt events");
       }
     } catch (e) {
@@ -129,7 +130,8 @@ const migrateToV1_1_0: MigrationStep = (save, ctx) => {
         }
       } else if (pool !== undefined && pool !== null) {
         // Corrupt sponsorPool — reset to empty
-        world.sponsorPool = { sponsors: {}, koenkais: {} };
+        world = { ...world, sponsorPool: { sponsors: {}, koenkais: {} } };
+        next.world = world as unknown as typeof next.world;
         warn("Migration: reset corrupt sponsorPool to empty", "MigrationService");
         ctx.logs.push("migrateToV1_1_0: WARN reset corrupt sponsorPool");
       }

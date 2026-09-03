@@ -35,12 +35,19 @@ export type PipelinePhase = ((world: WorldState) => WorldState | StateImpact) &
 /**
  * Optional metadata for pipeline phases.
  * Phases can declare which world fields they touch, allowing the runner
- * to snapshot only those fields for error recovery (B3.2).
+ * to snapshot only those fields for error recovery.
  */
 export interface PipelinePhaseMetadata {
-  /** World fields this phase may modify. Runner snapshots these before execution. */
+  /**
+   * World fields this phase may modify. Runner snapshots these before execution.
+   * Note: The runner only respects fields listed in ENTITY_MAP_FIELDS (heyas, rikishi, oyakata, staff).
+   * Listing other top-level fields here will not cause them to be snapshotted or rolled back on failure.
+   */
   touches?: string[];
-  /** If true, phase is read-only and runner skips snapshotting (B3.2). */
+  /**
+   * Indicates if phase is read-only.
+   * When true, the runner passes an empty touches array to skip snapshotting.
+   */
   pure?: boolean;
 }
 
@@ -57,8 +64,9 @@ type EntitySnapshot = Partial<Record<EntityMapField, EntityMap>>;
 
 /**
  * Create a shallow snapshot of the specified entity maps for error recovery.
- * Only clones maps that the phase is declared to touch (via metadata.touches),
- * or all entity maps if no touches are declared.
+ * Clones maps that the phase is declared to touch (via metadata.touches).
+ * Note: If touches is undefined (not declared), it falls back to cloning all
+ * trackable entity maps. An empty array `[]` snapshots nothing (used for pure phases).
  */
 function createShallowSnapshot(
   world: WorldState,
@@ -66,7 +74,7 @@ function createShallowSnapshot(
 ): { snapshot: Partial<WorldState>; restore: (w: WorldState) => WorldState } {
   const validTouches = new Set<string>(ENTITY_MAP_FIELDS);
   const fieldsToSnapshot: EntityMapField[] =
-    touches && touches.length > 0
+    touches !== undefined
       ? touches.filter((f): f is EntityMapField => validTouches.has(f))
       : [...ENTITY_MAP_FIELDS];
 
@@ -105,8 +113,8 @@ export function runPipeline(initialWorld: WorldState, phases: PipelinePhase[]): 
   const perfTrace: Array<{ phaseName: string; durationMs: number; impactSize?: number }> = [];
 
   for (const phase of phases) {
-    const phaseMeta = phase.touches ? { touches: phase.touches } : undefined;
-    const { restore } = createShallowSnapshot(currentWorld, phaseMeta?.touches);
+    const touches = phase.pure ? [] : phase.touches;
+    const { restore } = createShallowSnapshot(currentWorld, touches);
 
     const perfStart = perfEnabled ? performance.now() : 0;
 

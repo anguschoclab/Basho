@@ -39,6 +39,33 @@ export interface RikishiAchievements {
   mochikyukinPoints: number; // Cumulative bonus points for sekitori
 }
 
+export type NumericStat =
+  | "power"
+  | "technique"
+  | "speed"
+  | "weight"
+  | "stamina"
+  | "mental"
+  | "adaptability"
+  | "balance"
+  | "aggression"
+  | "experience";
+
+export function isNumericStat(key: string): key is NumericStat {
+  return [
+    "power",
+    "technique",
+    "speed",
+    "weight",
+    "stamina",
+    "mental",
+    "adaptability",
+    "balance",
+    "aggression",
+    "experience",
+  ].includes(key);
+}
+
 /** Defines the structure for rikishi stats. */
 export interface RikishiStats {
   power: number;

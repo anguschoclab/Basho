@@ -1,0 +1,34 @@
+# Pre-Consolidation Baseline v4
+# Date: 2026-09-03
+# Branch: main (commit c5c909e6)
+
+## Gates
+
+| Gate | Result | Notes |
+|------|--------|-------|
+| type-check | PASS (0 errors) | via `node node_modules/@typescript/native/bin/tsc --build --force` |
+| lint:strict | PASS (0 errors) | via `npx eslint . --max-warnings 0` |
+| build | PASS | index.js = 485.12 kB (gzip: 154.15 kB), built in 16.93s |
+| engine-reviewer | 4 violations | MigrationService.ts:96, MigrationService.ts:132, CandidatePoolService.ts:36, TalentPoolStateService.ts:25 |
+
+## Test Status (targeted verification)
+
+| Test File | Result | Notes |
+|-----------|--------|-------|
+| mathRandomScan.test.ts | 1 FAILED | Test bug: comment-stripping regex doesn't skip comment-only lines (calendar.ts:5 flagged) |
+| gameStore.test.ts | 6 PASSED | localStorage polyfill (commit eef684d5) resolved the failure |
+| smoke.test.tsx | 1 PASSED | localStorage polyfill resolved |
+| DataTable.test.tsx | 13 PASSED | localStorage polyfill resolved |
+| BanzukePage.test.tsx | PASSED | localStorage polyfill resolved |
+| EconomyPage.test.tsx | PASSED | localStorage polyfill resolved |
+| HistoryDashboard.test.tsx | PASSED | localStorage polyfill resolved |
+| accessibilityAudit.test.ts | 3 PASSED | Already fixed (was 1 failure in v3 baseline) |
+| orphan-audit.test.ts | 2 FAILED (expected) | Namespace import parsing issues (test takes ~8min, not re-run) |
+
+## Summary
+
+- v3 baseline had 160 test failures (26 test files)
+- Commit eef684d5 (2026-09-01) added localStorage polyfill, fixing ~157 of those
+- Remaining failures: ~3 (mathRandomScan test bug ×1, orphan-audit parsing ×2)
+- Engine-reviewer: 4 mutable-state warnings (unchanged from v3)
+- Bundle size: 485.12 kB (unchanged from v3)

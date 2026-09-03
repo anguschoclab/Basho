@@ -10,7 +10,7 @@
  */
 
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync, mkdirSync } from "fs";
-import { join, relative, extname, basename } from "path";
+import { join, relative, extname, basename, dirname } from "path";
 import { fileURLToPath } from "url";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -362,7 +362,7 @@ interface ParsedImport {
 
 function resolveImportPath(importPath: string, fromFile: string): string {
   if (importPath.startsWith(".")) {
-    const dir = fromFile.substring(0, fromFile.lastIndexOf("/"));
+    const dir = dirname(fromFile);
     const resolved = join(dir, importPath);
     for (const ext of FILE_EXTENSIONS) {
       if (existsSync(resolved + ext)) return resolved + ext;

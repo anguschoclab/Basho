@@ -31,6 +31,10 @@ describe("L2.3: determinism gate — Math.random scan", () => {
       const content = readFileSync(file, "utf-8");
       const lines = content.split("\n");
       lines.forEach((line, i) => {
+        const trimmed = line.trim();
+        if (trimmed.startsWith("//") || trimmed.startsWith("*") || trimmed.startsWith("/*")) {
+          return;
+        }
         const stripped = line.replace(/\/\/.*$/, "").replace(/\/\*.*?\*\//g, "");
         if (/\bMath\.random\s*\(/.test(stripped)) {
           violations.push(`${file}:${i + 1}: ${line.trim()}`);
