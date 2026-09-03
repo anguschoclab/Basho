@@ -104,7 +104,11 @@
     "injury_sustained": [
       "%SHIKONA% leaves training with an injury. Recovery timeline pending.",
       "Concern in the heya: %SHIKONA% has sustained an injury.",
-      "%SHIKONA% will be sidelined. The medical staff is evaluating."
+      "%SHIKONA% will be sidelined. The medical staff is evaluating.",
+      "A difficult blow: %SHIKONA% is pulled from practice after an apparent injury.",
+      "Word from the stable confirms %SHIKONA% has suffered a physical setback.",
+      "%SHIKONA% winces in pain and steps off the clay. An injury is suspected.",
+      "Training halts as %SHIKONA% requires medical attention for a new injury."
     ],
     "financial_crisis": [
       "%HEYANAME% is operating at a deficit. Immediate action required.",
