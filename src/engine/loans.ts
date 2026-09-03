@@ -215,7 +215,7 @@ export function processMonthlyLoanRepayments(world: WorldState): StateImpact {
 
     const updates: Partial<Heya> = {};
 
-    if (heya.activeLoans.length !== remainingLoans.length) {
+    if (totalPayment > 0 || heya.activeLoans.length !== remainingLoans.length) {
       updates.activeLoans = remainingLoans;
     }
 

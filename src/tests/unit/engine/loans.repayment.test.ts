@@ -37,8 +37,9 @@ describe("loan repayment and prepayment", () => {
 
       expect(heyaUpdates).toBeDefined();
       expect(heyaUpdates?.funds).toBe(900); // 1000 - 100
-      // if array length matches it doesn't add activeLoans to updates, so let's check it's not present
-      expect(heyaUpdates?.activeLoans).toBeUndefined();
+      // Partial payment: activeLoans must be persisted with updated remainingBalance
+      expect(heyaUpdates?.activeLoans).toBeDefined();
+      expect(heyaUpdates?.activeLoans?.[0]?.remainingBalance).toBe(400); // 500 - 100
     });
 
     it("should remove loan when fully paid off", () => {
