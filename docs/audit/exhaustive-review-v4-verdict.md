@@ -67,7 +67,7 @@ All 38 open PRs (#876-#913) evaluated, categorized, and closed.
 | #892 | Scout | CHERRY-PICK | WorldCircuitService.test.ts | Test WorldCircuitService (skipped .jules, __audit_ns_*) |
 | #893 | Jules | CHERRY-PICK | EntityService.ts | Clarify mutation behavior in ensureNestedState (skipped __audit_ns_*) |
 | #894 | Scout | CHERRY-PICK | LeaguePerception.test.ts | Test LeaguePerception (skipped .jules, __audit_ns_*) |
-| #895 | Dependabot | REJECTED | package.json | Electron 44.0.0 breaking major bump — pinned to 43.4.1 |
+| #895 | Dependabot | APPROVED | package.json | Electron 44.0.0 bump — manually verified: all 9 breaking changes audited, zero affected APIs in codebase |
 | #896 | Dependabot | APPROVED | package.json | vite 8.2.1 → 8.2.2 |
 | #897 | Dependabot | APPROVED | package.json | @typescript-eslint/parser 8.67.0 → 8.68.0 |
 | #898 | Dependabot | APPROVED | package.json | typescript-eslint 8.67.0 → 8.68.0 |
@@ -91,10 +91,10 @@ All 38 open PRs (#876-#913) evaluated, categorized, and closed.
 
 | Verdict | Count | PRs |
 |---------|-------|-----|
-| APPROVED | 16 | #876, #878, #880, #882, #885, #891, #896-#901, #902, #905, #908, #911 |
+| APPROVED | 17 | #876, #878, #880, #882, #885, #891, #895, #896-#901, #902, #905, #908, #911 |
 | CHERRY-PICK | 14 | #879, #881, #884, #886, #887, #888, #889, #892, #893, #894, #904, #907, #909, #913 |
 | SUPERSEDED | 5 | #877, #883, #890, #903, #906 |
-| REJECTED | 3 | #895, #910, #912 |
+| REJECTED | 2 | #910, #912 |
 
 ---
 

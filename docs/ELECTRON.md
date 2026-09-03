@@ -10,7 +10,7 @@ Sumo Manager Pro ships as both a **web PWA** (`bun run dev`) and a **native desk
 | ----------------------------- | --------------- | ------------------------------------------------------------------- |
 | [Bun](https://bun.sh)         | 1.3+            | Package manager and script runner                                   |
 | [Node.js](https://nodejs.org) | 18+             | Required by Electron internals                                      |
-| macOS                         | 12 Monterey+    | For Mac builds and `.icns` icon generation                          |
+| macOS                         | 13 Ventura+     | For Mac builds and `.icns` icon generation (Electron 44+ requires macOS 13) |
 | Windows                       | 10+             | For Windows builds (or cross-compile from Mac via Wine — see below) |
 
 ---
