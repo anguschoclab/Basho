@@ -33,8 +33,21 @@ export const SaveSlotItem = React.memo(
           side="left"
         >
           <div
-            className="flex-1 min-w-0 cursor-pointer"
+            className="flex-1 min-w-0 cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm ring-offset-background"
             onClick={() => (mode === "load" ? onLoad(slot.slotName) : onSave(slot.slotName))}
+            role="button"
+            aria-label={mode === "load" ? `Load save slot ${slot.slotName}` : `Save to slot ${slot.slotName}`}
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                if (mode === "load") {
+                  onLoad(slot.slotName);
+                } else {
+                  onSave(slot.slotName);
+                }
+              }
+            }}
           >
             <div className="flex items-center gap-2">
               <span className="font-medium text-sm truncate">
@@ -81,8 +94,17 @@ export const EmptySlotItem = React.memo(
     return (
       <TooltipWrap content="Save current progress to this empty slot" side="top">
         <div
-          className="flex items-center gap-2 p-2.5 rounded-lg border border-dashed border-border/50 hover:bg-muted/30 transition-colors cursor-pointer"
+          className="flex items-center gap-2 p-2.5 rounded-lg border border-dashed border-border/50 hover:bg-muted/30 transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ring-offset-background"
           onClick={() => onSave(slotName)}
+          role="button"
+          aria-label={`Save to empty slot ${slotName}`}
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onSave(slotName);
+            }
+          }}
         >
           <Save className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm text-muted-foreground">
