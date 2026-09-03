@@ -35,12 +35,18 @@ export type PipelinePhase = ((world: WorldState) => WorldState | StateImpact) &
 /**
  * Optional metadata for pipeline phases.
  * Phases can declare which world fields they touch, allowing the runner
- * to snapshot only those fields for error recovery (B3.2).
+ * to snapshot only those fields for error recovery.
  */
 export interface PipelinePhaseMetadata {
-  /** World fields this phase may modify. Runner snapshots these before execution. */
+  /**
+   * World fields this phase may modify. Runner snapshots these before execution.
+   * Note: passing an empty array `[]` will fall back to snapshotting all fields.
+   */
   touches?: string[];
-  /** If true, phase is read-only and runner skips snapshotting (B3.2). */
+  /**
+   * Indicates if phase is read-only.
+   * Note: Currently ignored by the runner; snapshots are always taken.
+   */
   pure?: boolean;
 }
 
@@ -57,8 +63,9 @@ type EntitySnapshot = Partial<Record<EntityMapField, EntityMap>>;
 
 /**
  * Create a shallow snapshot of the specified entity maps for error recovery.
- * Only clones maps that the phase is declared to touch (via metadata.touches),
- * or all entity maps if no touches are declared.
+ * Clones maps that the phase is declared to touch (via metadata.touches).
+ * Note: If no touches are declared, or if the array is empty, it falls back
+ * to cloning all trackable entity maps.
  */
 function createShallowSnapshot(
   world: WorldState,
