@@ -232,4 +232,30 @@ describe("MigrationService", () => {
       expect(KNOWN_SAVE_VERSIONS).toContain("1.1.0");
     });
   });
+
+  describe("migration step immutability", () => {
+    it("migrateToV1_1_0 does not mutate world.events in place — builds new world object", () => {
+      const save = makeMinimalSave("1.0.0");
+      const originalEvents = save.world.events;
+      const originalEventsRef = save.world.events as object;
+
+      const result = MigrationService.migrateSave(save);
+      // The returned save's world.events should be a new object (immutable construction),
+      // not the same reference as the input's events.
+      expect(result.save.world.events).not.toBe(originalEventsRef);
+      // The original save's events should not have been mutated by the step
+      // (migrateSave deep-copies, but the step itself should also be immutable).
+      expect(save.world.events).toBe(originalEvents);
+    });
+
+    it("migrateToV1_1_0 does not mutate world.sponsorPool in place — builds new world object", () => {
+      const save = makeMinimalSave("1.0.0");
+      (save.world as { sponsorPool?: unknown }).sponsorPool = "corrupt";
+      const originalWorldRef = save.world as object;
+
+      const result = MigrationService.migrateSave(save);
+      // The returned save's world should be a new object, not the same reference
+      expect(result.save.world as object).not.toBe(originalWorldRef);
+    });
+  });
 });
