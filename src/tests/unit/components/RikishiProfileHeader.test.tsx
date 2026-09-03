@@ -335,10 +335,10 @@ describe("RikishiProfileHeader", () => {
     expect(screen.queryAllByText("2").length).toBeGreaterThan(0);
   });
 
-  it("shows Ozeki Promotion Watch with / 2 denominator for sekiwake with consecutiveStrongSekiwake > 0", () => {
+  it("shows Ozeki Promotion Watch with / 33 denominator for sekiwake with sekiwakeThreeBashoWins > 0", () => {
     const rikishi = makeUIRikishi({
       rank: "sekiwake",
-      consecutiveStrongSekiwake: 1,
+      sekiwakeThreeBashoWins: 10,
     });
     render(
       <RikishiProfileHeader
@@ -349,13 +349,13 @@ describe("RikishiProfileHeader", () => {
       />
     );
     expect(screen.getByText("Ozeki Promotion Watch")).toBeTruthy();
-    expect(screen.getByText("1 / 2 Strong Basho")).toBeTruthy();
+    expect(screen.getByText("10 / 33 Wins (Last 3 Basho)")).toBeTruthy();
   });
 
   it("does not render Ozeki Promotion Watch for maegashira rank", () => {
     const rikishi = makeUIRikishi({
       rank: "maegashira",
-      consecutiveStrongSekiwake: 2,
+      sekiwakeThreeBashoWins: 20,
     });
     render(
       <RikishiProfileHeader

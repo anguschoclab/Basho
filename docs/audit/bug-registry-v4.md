@@ -3,6 +3,8 @@
 **Date:** 2026-09-03
 **Consolidation:** v4 (supersedes v3)
 
+> **STALENESS NOTICE:** This document is current as of v4 consolidation. The "regex" references in V4-B01 describe a bug fix in a test's regular expression pattern, not an audit methodology.
+
 ## Bugs Found and Fixed
 
 ### V4-B01: mathRandomScan test false positive on comment-only lines

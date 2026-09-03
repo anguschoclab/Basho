@@ -33,7 +33,7 @@ export const SaveSlotItem = React.memo(
           side="left"
         >
           <div
-            className="flex-1 min-w-0 cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-sm ring-offset-background"
+            className="flex-1 min-w-0 cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 rounded-xs ring-offset-background"
             onClick={() => (mode === "load" ? onLoad(slot.slotName) : onSave(slot.slotName))}
             role="button"
             aria-label={mode === "load" ? `Load save slot ${slot.slotName}` : `Save to slot ${slot.slotName}`}
