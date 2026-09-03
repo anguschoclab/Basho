@@ -187,6 +187,7 @@ export interface RikishiCareerDataDTO {
   yearsToNaturalization: number;
   consecutiveStrongOzeki: number;
   consecutiveStrongSekiwake: number;
+  sekiwakeThreeBashoWins?: number;
   consecutiveMakeKoshi?: number;
   consecutiveKyujo?: number;
   consecutiveKachiKoshi?: number;
@@ -284,6 +285,7 @@ export interface UIRosterEntry {
   archetypeLabel?: string;
   consecutiveStrongOzeki: number;
   consecutiveStrongSekiwake: number;
+  sekiwakeThreeBashoWins?: number;
   consecutiveMakeKoshi?: number;
   consecutiveKyujo?: number;
   consecutiveKachiKoshi?: number;

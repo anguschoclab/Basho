@@ -87,6 +87,7 @@ export function projectRosterEntry(
       : r.keshoMawashi,
     consecutiveStrongOzeki: r.consecutiveStrongOzeki ?? 0,
     consecutiveStrongSekiwake: r.consecutiveStrongSekiwake ?? 0,
+    sekiwakeThreeBashoWins: r.sekiwakeThreeBashoWins ?? 0,
     consecutiveMakeKoshi: r.consecutiveMakeKoshi ?? 0,
     consecutiveKyujo: r.consecutiveKyujo ?? 0,
     consecutiveKachiKoshi: r.consecutiveKachiKoshi ?? 0,
