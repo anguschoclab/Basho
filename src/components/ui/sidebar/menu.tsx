@@ -5,7 +5,11 @@ import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useSidebar } from "./context";
 
-export function SidebarMenu({ ref, className, ...props }: React.ComponentProps<"ul"> & { ref?: React.Ref<HTMLUListElement> }) {
+export function SidebarMenu({
+  ref,
+  className,
+  ...props
+}: React.ComponentProps<"ul"> & { ref?: React.Ref<HTMLUListElement> }) {
   return (
     <ul
       ref={ref}
@@ -17,7 +21,11 @@ export function SidebarMenu({ ref, className, ...props }: React.ComponentProps<"
 }
 SidebarMenu.displayName = "SidebarMenu";
 
-export function SidebarMenuItem({ ref, className, ...props }: React.ComponentProps<"li"> & { ref?: React.Ref<HTMLLIElement> }) {
+export function SidebarMenuItem({
+  ref,
+  className,
+  ...props
+}: React.ComponentProps<"li"> & { ref?: React.Ref<HTMLLIElement> }) {
   return (
     <li
       ref={ref}
@@ -66,49 +74,55 @@ export function SidebarMenuButton({
   isActive?: boolean;
   tooltip?: string | React.ComponentProps<typeof TooltipContent>;
 } & VariantProps<typeof sidebarMenuButtonVariants>) {
-    const Comp = asChild ? Slot : "button";
-    const { isMobile, state } = useSidebar();
+  const Comp = asChild ? Slot : "button";
+  const { isMobile, state } = useSidebar();
 
-    const button = (
-      <Comp
-        ref={ref}
-        data-sidebar="menu-button"
-        data-size={size}
-        data-active={isActive}
-        className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
-        {...props}
-      />
-    );
+  const button = (
+    <Comp
+      ref={ref}
+      data-sidebar="menu-button"
+      data-size={size}
+      data-active={isActive}
+      className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
+      {...props}
+    />
+  );
 
-    if (!tooltip) {
-      return button;
-    }
-
-    let tooltipProps: React.ComponentProps<typeof TooltipContent>;
-    if (typeof tooltip === "string") {
-      tooltipProps = { children: tooltip };
-    } else {
-      tooltipProps = tooltip;
-    }
-
-    return (
-      <Tooltip>
-        <TooltipTrigger asChild>{button}</TooltipTrigger>
-        <TooltipContent
-          side="right"
-          align="center"
-          hidden={state !== "collapsed" || isMobile}
-          {...tooltipProps}
-        />
-      </Tooltip>
-    );
+  if (!tooltip) {
+    return button;
   }
+
+  let tooltipProps: React.ComponentProps<typeof TooltipContent>;
+  if (typeof tooltip === "string") {
+    tooltipProps = { children: tooltip };
+  } else {
+    tooltipProps = tooltip;
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>{button}</TooltipTrigger>
+      <TooltipContent
+        side="right"
+        align="center"
+        hidden={state !== "collapsed" || isMobile}
+        {...tooltipProps}
+      />
+    </Tooltip>
+  );
+}
 SidebarMenuButton.displayName = "SidebarMenuButton";
 
-export function SidebarMenuAction({ ref, className, asChild = false, showOnHover = false, ...props }: React.ComponentProps<"button"> & {
-    asChild?: boolean;
-    showOnHover?: boolean;
-  } & { ref?: React.Ref<HTMLButtonElement> }) {
+export function SidebarMenuAction({
+  ref,
+  className,
+  asChild = false,
+  showOnHover = false,
+  ...props
+}: React.ComponentProps<"button"> & {
+  asChild?: boolean;
+  showOnHover?: boolean;
+} & { ref?: React.Ref<HTMLButtonElement> }) {
   const Comp = asChild ? Slot : "button";
 
   return (
@@ -132,7 +146,11 @@ export function SidebarMenuAction({ ref, className, asChild = false, showOnHover
 }
 SidebarMenuAction.displayName = "SidebarMenuAction";
 
-export function SidebarMenuBadge({ ref, className, ...props }: React.ComponentProps<"div"> & { ref?: React.Ref<HTMLDivElement> }) {
+export function SidebarMenuBadge({
+  ref,
+  className,
+  ...props
+}: React.ComponentProps<"div"> & { ref?: React.Ref<HTMLDivElement> }) {
   return (
     <div
       ref={ref}
@@ -152,9 +170,14 @@ export function SidebarMenuBadge({ ref, className, ...props }: React.ComponentPr
 }
 SidebarMenuBadge.displayName = "SidebarMenuBadge";
 
-export function SidebarMenuSkeleton({ ref, className, showIcon = false, ...props }: React.ComponentProps<"div"> & {
-    showIcon?: boolean;
-  } & { ref?: React.Ref<HTMLDivElement> }) {
+export function SidebarMenuSkeleton({
+  ref,
+  className,
+  showIcon = false,
+  ...props
+}: React.ComponentProps<"div"> & {
+  showIcon?: boolean;
+} & { ref?: React.Ref<HTMLDivElement> }) {
   const width = React.useMemo(() => {
     const key = `${className ?? ""}::${showIcon ? "1" : "0"}`;
     let h = 0;
@@ -187,7 +210,11 @@ export function SidebarMenuSkeleton({ ref, className, showIcon = false, ...props
 }
 SidebarMenuSkeleton.displayName = "SidebarMenuSkeleton";
 
-export function SidebarMenuSub({ ref, className, ...props }: React.ComponentProps<"ul"> & { ref?: React.Ref<HTMLUListElement> }) {
+export function SidebarMenuSub({
+  ref,
+  className,
+  ...props
+}: React.ComponentProps<"ul"> & { ref?: React.Ref<HTMLUListElement> }) {
   return (
     <ul
       ref={ref}
@@ -203,16 +230,26 @@ export function SidebarMenuSub({ ref, className, ...props }: React.ComponentProp
 }
 SidebarMenuSub.displayName = "SidebarMenuSub";
 
-export function SidebarMenuSubItem({ ref, ...props }: React.ComponentProps<"li"> & { ref?: React.Ref<HTMLLIElement> }) {
+export function SidebarMenuSubItem({
+  ref,
+  ...props
+}: React.ComponentProps<"li"> & { ref?: React.Ref<HTMLLIElement> }) {
   return <li ref={ref} {...props} />;
 }
 SidebarMenuSubItem.displayName = "SidebarMenuSubItem";
 
-export function SidebarMenuSubButton({ ref, asChild = false, size = "md", isActive, className, ...props }: React.ComponentProps<"a"> & {
-    asChild?: boolean;
-    size?: "sm" | "md";
-    isActive?: boolean;
-  } & { ref?: React.Ref<HTMLAnchorElement> }) {
+export function SidebarMenuSubButton({
+  ref,
+  asChild = false,
+  size = "md",
+  isActive,
+  className,
+  ...props
+}: React.ComponentProps<"a"> & {
+  asChild?: boolean;
+  size?: "sm" | "md";
+  isActive?: boolean;
+} & { ref?: React.Ref<HTMLAnchorElement> }) {
   const Comp = asChild ? Slot : "a";
 
   return (

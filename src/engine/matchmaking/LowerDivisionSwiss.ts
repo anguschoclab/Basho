@@ -151,9 +151,11 @@ function phase2(
   if (day === 7) {
     const threeThreeBucket = bucketMap.get(3);
     if (threeThreeBucket) {
-      const threeThreePool = threeThreeBucket
-        .filter((r: Rikishi) => !paired.has(r.id))
-        .sort((a: Rikishi, b: Rikishi) => banzukeOrdinal(a) - banzukeOrdinal(b));
+      const threeThreePool: Rikishi[] = [];
+      for (const r of threeThreeBucket) {
+        if (!paired.has(r.id)) threeThreePool.push(r);
+      }
+      threeThreePool.sort((a: Rikishi, b: Rikishi) => banzukeOrdinal(a) - banzukeOrdinal(b));
 
       for (let i = 0; i < threeThreePool.length - 1; i += 2) {
         const a = threeThreePool[i];
@@ -170,17 +172,21 @@ function phase2(
 
   for (let i = 0; i < bucketKeys.length; i++) {
     const wins = bucketKeys[i];
-    const bucket = (bucketMap.get(wins) ?? [])
-      .filter((r) => !paired.has(r.id))
-      .sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
+    const bucket: Rikishi[] = [];
+    for (const r of bucketMap.get(wins) ?? []) {
+      if (!paired.has(r.id)) bucket.push(r);
+    }
+    bucket.sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
 
     let extraFromBelow: Rikishi | undefined;
     if (bucket.length % 2 !== 0) {
       const lowerWins = bucketKeys[i + 1];
       if (lowerWins !== undefined) {
-        const lowerBucket = (bucketMap.get(lowerWins) ?? [])
-          .filter((r) => !paired.has(r.id) && !pulledUp.has(r.id))
-          .sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
+        const lowerBucket: Rikishi[] = [];
+        for (const r of bucketMap.get(lowerWins) ?? []) {
+          if (!paired.has(r.id) && !pulledUp.has(r.id)) lowerBucket.push(r);
+        }
+        lowerBucket.sort((a, b) => banzukeOrdinal(a) - banzukeOrdinal(b));
         if (lowerBucket.length > 0) {
           extraFromBelow = lowerBucket[0];
           pulledUp.add(extraFromBelow.id);
@@ -206,7 +212,10 @@ function phase2(
     }
   }
 
-  const unpaired = pool.filter((r) => !paired.has(r.id));
+  const unpaired: Rikishi[] = [];
+  for (const r of pool) {
+    if (!paired.has(r.id)) unpaired.push(r);
+  }
   for (let i = 0; i < unpaired.length - 1; i += 2) {
     const a = unpaired[i];
     const b = unpaired[i + 1];
@@ -379,11 +388,12 @@ export function buildLowerDivisionSwiss(
     rules?: Partial<MatchmakingRules>;
   }
 ): MatchPairing[] {
-  const pool = rikishi.filter((r) => {
-    if (r.isRetired || r.injured || r.isKyujo) return false;
-    if (options.division && r.division !== options.division) return false;
-    return true;
-  });
+  const pool: Rikishi[] = [];
+  for (const r of rikishi) {
+    if (r.isRetired || r.injured || r.isKyujo) continue;
+    if (options.division && r.division !== options.division) continue;
+    pool.push(r);
+  }
 
   const facedSet = buildFacedSet(basho);
   const day = basho.day ?? 1;

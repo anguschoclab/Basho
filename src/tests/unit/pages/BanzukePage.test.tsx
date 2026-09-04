@@ -14,7 +14,6 @@ vi.mock("@/components/layout/control-center", () => ({
   PageHeader: ({ title }: any) => React.createElement("div", null, title),
 }));
 
-
 vi.mock("@/components/charts/BanzukePyramid", () => ({
   BanzukePyramid: () => React.createElement("div", null, "Pyramid"),
 }));

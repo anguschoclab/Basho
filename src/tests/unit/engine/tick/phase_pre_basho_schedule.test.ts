@@ -50,8 +50,7 @@ describe("phase_pre_basho_schedule", () => {
     expect(impact.metadata?.preGeneratedSchedules).toBeDefined();
 
     const meta = impact.metadata?.preGeneratedSchedules as
-      | { day1: string[]; day2: string[]; announcedAtWeek: number }
-      | undefined;
+      { day1: string[]; day2: string[]; announcedAtWeek: number } | undefined;
     expect(meta!.day1.length).toBeGreaterThan(0);
     expect(meta!.day2.length).toBeGreaterThan(0);
     expect(meta!.announcedAtWeek).toBe(12);

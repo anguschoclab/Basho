@@ -11,13 +11,7 @@ import type { SeededRNG } from "../../rng";
 import { clampInt } from "../../utils/math";
 
 export type PreSumoBackgroundId =
-  | "gymnast"
-  | "judoka"
-  | "baseball"
-  | "soccer"
-  | "wrestler"
-  | "track"
-  | "none";
+  "gymnast" | "judoka" | "baseball" | "soccer" | "wrestler" | "track" | "none";
 
 interface BackgroundDef {
   id: PreSumoBackgroundId;

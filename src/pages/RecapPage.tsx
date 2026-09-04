@@ -302,9 +302,7 @@ export default function RecapPage() {
 
   return (
     <AppLayout pageTitle="Post-Basho Recap" subNavTabs={dashboardTabs} activeSubTab="recap">
-
-        <title>{bashoTitle} Recap | Basho</title>
-
+      <title>{bashoTitle} Recap | Basho</title>
 
       <div className="max-w-6xl mx-auto space-y-12 pb-24">
         {/* ═══ HERO SECTION ═══ */}

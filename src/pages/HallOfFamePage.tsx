@@ -459,8 +459,7 @@ export default function HallOfFamePage() {
 
   return (
     <AppLayout pageTitle="Hall of Fame" subNavTabs={RECORDS_TABS} activeSubTab="hall-of-fame">
-
-        <title>Hall of Fame — Sumo Manager</title>
+      <title>Hall of Fame — Sumo Manager</title>
 
       <div className="space-y-6">
         {/* Hero Header */}

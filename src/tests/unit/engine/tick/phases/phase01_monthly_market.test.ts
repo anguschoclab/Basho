@@ -38,8 +38,20 @@ describe("phase01_monthly_market", () => {
       } as any,
       myosekiMarket: {
         stocks: {
-          "stock1": { id: "stock1", name: "Test Myoseki", status: "available", askingPrice: 100000000, value: 100000000 },
-          "stock2": { id: "stock2", name: "Owned Myoseki", status: "owned", heyaId: "heya1", value: 100000000 },
+          stock1: {
+            id: "stock1",
+            name: "Test Myoseki",
+            status: "available",
+            askingPrice: 100000000,
+            value: 100000000,
+          },
+          stock2: {
+            id: "stock2",
+            name: "Owned Myoseki",
+            status: "owned",
+            heyaId: "heya1",
+            value: 100000000,
+          },
         },
       } as any,
     });

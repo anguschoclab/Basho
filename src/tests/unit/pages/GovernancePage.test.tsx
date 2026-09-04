@@ -274,9 +274,23 @@ describe("GovernancePage — Resolved Rulings filter", () => {
         },
       },
       governanceLog: [
-        { id: "g1", date: "2024-W01", type: "fine", severity: "low", reason: "x", playerSeverity: "harsh" },
+        {
+          id: "g1",
+          date: "2024-W01",
+          type: "fine",
+          severity: "low",
+          reason: "x",
+          playerSeverity: "harsh",
+        },
         { id: "g2", date: "2024-W02", type: "warning", severity: "low", reason: "y" },
-        { id: "g3", date: "2024-W03", type: "fine", severity: "low", reason: "z", playerSeverity: "lenient" },
+        {
+          id: "g3",
+          date: "2024-W03",
+          type: "fine",
+          severity: "low",
+          reason: "z",
+          playerSeverity: "lenient",
+        },
       ],
     });
     render(React.createElement(GovernancePage));
@@ -302,9 +316,7 @@ describe("GovernancePage — Resolved Rulings filter", () => {
           governanceStatus: "good_standing",
         },
       },
-      governanceLog: [
-        { id: "g1", date: "2024-W01", type: "fine", severity: "low", reason: "x" },
-      ],
+      governanceLog: [{ id: "g1", date: "2024-W01", type: "fine", severity: "low", reason: "x" }],
     });
     render(React.createElement(GovernancePage));
     const cards = screen.getAllByTestId("list-card");
@@ -355,9 +367,23 @@ describe("GovernancePage — Resolved Rulings filter", () => {
         // g1 first occurrence: no playerSeverity → should be EXCLUDED
         { id: "g1", date: "2024-W01", type: "fine", severity: "low", reason: "x" },
         // g1 duplicate: has playerSeverity → must NOT override the first match
-        { id: "g1", date: "2024-W01", type: "fine", severity: "low", reason: "x", playerSeverity: "harsh" },
+        {
+          id: "g1",
+          date: "2024-W01",
+          type: "fine",
+          severity: "low",
+          reason: "x",
+          playerSeverity: "harsh",
+        },
         // g2 first (and only) occurrence: has playerSeverity → should be INCLUDED
-        { id: "g2", date: "2024-W02", type: "fine", severity: "low", reason: "y", playerSeverity: "lenient" },
+        {
+          id: "g2",
+          date: "2024-W02",
+          type: "fine",
+          severity: "low",
+          reason: "y",
+          playerSeverity: "lenient",
+        },
       ],
     });
     render(React.createElement(GovernancePage));

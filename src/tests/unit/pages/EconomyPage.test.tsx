@@ -22,7 +22,6 @@ vi.mock("@/components/ui/EmptyState", () => ({
   EmptyState: () => React.createElement("div", null, "Loading"),
 }));
 
-
 vi.mock("sonner", () => ({
   toast: { success: vi.fn(), error: vi.fn(), info: vi.fn() },
 }));

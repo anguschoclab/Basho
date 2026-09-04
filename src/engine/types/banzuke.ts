@@ -22,12 +22,7 @@ export type Rank =
 
 /** Type representing numbered rank. */
 export type NumberedRank =
-  | "maegashira"
-  | "juryo"
-  | "makushita"
-  | "sandanme"
-  | "jonidan"
-  | "jonokuchi";
+  "maegashira" | "juryo" | "makushita" | "sandanme" | "jonidan" | "jonokuchi";
 /** Type representing unnumbered rank. */
 export type UnnumberedRank = "yokozuna" | "ozeki" | "sekiwake" | "komusubi";
 

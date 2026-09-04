@@ -24,12 +24,7 @@ import { getHeya, getRikishi } from "./queries";
 
 /** Type representing holiday target. */
 export type HolidayTarget =
-  | "nextDay"
-  | "nextWeek"
-  | "nextBashoDay1"
-  | "endOfBasho"
-  | "postBasho"
-  | "nextMonth";
+  "nextDay" | "nextWeek" | "nextBashoDay1" | "endOfBasho" | "postBasho" | "nextMonth";
 
 /** Type representing safety gate. */
 export type SafetyGate =

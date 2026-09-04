@@ -48,9 +48,7 @@ export default function FacilitiesPage() {
 
   return (
     <AppLayout subNavTabs={OFFICE_TABS} activeSubTab="facilities" pageTitle="Infrastructure">
-
-        <title>Infrastructure — {heya.name} | Basho</title>
-
+      <title>Infrastructure — {heya.name} | Basho</title>
 
       <div className="space-y-8">
         <PageHeader

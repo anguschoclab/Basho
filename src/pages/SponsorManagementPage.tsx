@@ -29,8 +29,7 @@ export default function SponsorManagementPage() {
 
   return (
     <AppLayout subNavTabs={OFFICE_TABS} activeSubTab="sponsors" pageTitle="Sponsor Relations">
-
-        <title>Sponsor Relations | Basho</title>
+      <title>Sponsor Relations | Basho</title>
 
       <div className="space-y-8">
         <PageHeader

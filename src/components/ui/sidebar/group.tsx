@@ -2,19 +2,28 @@ import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cn } from "@/lib/utils";
 
-export function SidebarGroup({ ref, className, ...props }: React.ComponentProps<"div"> & { ref?: React.Ref<HTMLDivElement> }) {
-    return (
-      <div
-        ref={ref}
-        data-sidebar="group"
-        className={cn("relative flex w-full min-w-0 flex-col p-2", className)}
-        {...props}
-      />
-    );
-  }
+export function SidebarGroup({
+  ref,
+  className,
+  ...props
+}: React.ComponentProps<"div"> & { ref?: React.Ref<HTMLDivElement> }) {
+  return (
+    <div
+      ref={ref}
+      data-sidebar="group"
+      className={cn("relative flex w-full min-w-0 flex-col p-2", className)}
+      {...props}
+    />
+  );
+}
 SidebarGroup.displayName = "SidebarGroup";
 
-export function SidebarGroupLabel({ ref, className, asChild = false, ...props }: React.ComponentProps<"div"> & { asChild?: boolean } & { ref?: React.Ref<HTMLDivElement> }) {
+export function SidebarGroupLabel({
+  ref,
+  className,
+  asChild = false,
+  ...props
+}: React.ComponentProps<"div"> & { asChild?: boolean } & { ref?: React.Ref<HTMLDivElement> }) {
   const Comp = asChild ? Slot : "div";
 
   return (
@@ -32,7 +41,14 @@ export function SidebarGroupLabel({ ref, className, asChild = false, ...props }:
 }
 SidebarGroupLabel.displayName = "SidebarGroupLabel";
 
-export function SidebarGroupAction({ ref, className, asChild = false, ...props }: React.ComponentProps<"button"> & { asChild?: boolean } & { ref?: React.Ref<HTMLButtonElement> }) {
+export function SidebarGroupAction({
+  ref,
+  className,
+  asChild = false,
+  ...props
+}: React.ComponentProps<"button"> & { asChild?: boolean } & {
+  ref?: React.Ref<HTMLButtonElement>;
+}) {
   const Comp = asChild ? Slot : "button";
 
   return (
@@ -51,7 +67,11 @@ export function SidebarGroupAction({ ref, className, asChild = false, ...props }
 }
 SidebarGroupAction.displayName = "SidebarGroupAction";
 
-export function SidebarGroupContent({ ref, className, ...props }: React.ComponentProps<"div"> & { ref?: React.Ref<HTMLDivElement> }) {
+export function SidebarGroupContent({
+  ref,
+  className,
+  ...props
+}: React.ComponentProps<"div"> & { ref?: React.Ref<HTMLDivElement> }) {
   return (
     <div
       ref={ref}

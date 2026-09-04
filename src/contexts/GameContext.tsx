@@ -204,10 +204,7 @@ export function GameProvider({ children }: { children: ReactNode }) {
   );
 
   const setKeshoConfigAction = useCallback(
-    (
-      rikishiId: string,
-      config: Partial<import("@/engine/types/keshoMawashi").KeshoMawashi>
-    ) => {
+    (rikishiId: string, config: Partial<import("@/engine/types/keshoMawashi").KeshoMawashi>) => {
       sendCommand({ type: "SET_KESHO_CONFIG", rikishiId, config });
     },
     [sendCommand]

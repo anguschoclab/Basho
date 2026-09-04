@@ -71,7 +71,8 @@ describe("electron/preload.ts API surface", () => {
   it("exposes onMenuEvent returning a cleanup function", async () => {
     await import("../../../../electron/preload");
     const [, api] = exposeInMainWorld.mock.calls.find(([name]) => name === "electronCustom") ?? [];
-    const onMenuEvent = (api as { onMenuEvent: (cb: (e: string) => void) => () => void }).onMenuEvent;
+    const onMenuEvent = (api as { onMenuEvent: (cb: (e: string) => void) => () => void })
+      .onMenuEvent;
     expect(typeof onMenuEvent).toBe("function");
     const cleanup = onMenuEvent(() => {});
     expect(typeof cleanup).toBe("function");

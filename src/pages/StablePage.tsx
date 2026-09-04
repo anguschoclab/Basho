@@ -68,9 +68,7 @@ export default function StablePage() {
 
   return (
     <AppLayout pageTitle="Stable Operations" subNavTabs={STABLE_TABS} activeSubTab="stable">
-
-        <title>{heya.name} — Stable Profile</title>
-
+      <title>{heya.name} — Stable Profile</title>
 
       <div className="space-y-8">
         <PageHeader

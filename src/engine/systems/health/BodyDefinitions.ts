@@ -5,16 +5,7 @@
 export type InjurySeverity = "minor" | "moderate" | "serious" | "none";
 
 export type InjuryBodyArea =
-  | "shoulder"
-  | "elbow"
-  | "wrist"
-  | "back"
-  | "hip"
-  | "knee"
-  | "ankle"
-  | "neck"
-  | "rib"
-  | "other";
+  "shoulder" | "elbow" | "wrist" | "back" | "hip" | "knee" | "ankle" | "neck" | "rib" | "other";
 
 export type InjuryType =
   | "sprain"

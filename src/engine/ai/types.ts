@@ -12,12 +12,7 @@ import type { WorldState } from "../types/world";
 import type { PerceptionSnapshot } from "../perception";
 
 export type AIGoalDomain =
-  | "rank"
-  | "finance"
-  | "rivalry"
-  | "recruitment"
-  | "reputation"
-  | "training";
+  "rank" | "finance" | "rivalry" | "recruitment" | "reputation" | "training";
 
 export interface AIGoal {
   domain: AIGoalDomain;
@@ -46,11 +41,7 @@ export interface AIPlan {
 }
 
 export type AIRecommendationCategory =
-  | "training"
-  | "recruitment"
-  | "finance"
-  | "bout"
-  | "governance";
+  "training" | "recruitment" | "finance" | "bout" | "governance";
 
 export type AIRecommendationPriority = "low" | "medium" | "high" | "critical";
 

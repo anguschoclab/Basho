@@ -11,11 +11,7 @@ import { Progress } from "@/components/ui/progress";
 import { Search } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { useToast } from "@/hooks/use-toast";
-import {
-  projectOpponentScoutingUIDigest,
-  RANK_NAMES,
-  RANK_HIERARCHY,
-} from "@/presenters/uiDigest";
+import { projectOpponentScoutingUIDigest, RANK_NAMES, RANK_HIERARCHY } from "@/presenters/uiDigest";
 import { AttrChip } from "./AttrChip";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
@@ -181,11 +177,7 @@ export function OpponentScoutingTab({ playerHeyaId }: { playerHeyaId: string | n
           })}
 
           {digest.opponents.length === 0 && (
-            <EmptyState
-              icon={Search}
-              title="No opponents found in this division."
-              compact
-            />
+            <EmptyState icon={Search} title="No opponents found in this division." compact />
           )}
         </div>
       </ScrollArea>
