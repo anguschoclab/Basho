@@ -215,7 +215,10 @@ export default function GovernancePage() {
 
   const resolvedRulingIds = useMemo(() => {
     const ids = new Set<string>();
+    const seen = new Set<string>();
     for (const g of world?.governanceLog ?? []) {
+      if (seen.has(g.id)) continue;
+      seen.add(g.id);
       if (g.playerSeverity !== undefined) ids.add(g.id);
     }
     return ids;

@@ -335,4 +335,37 @@ describe("GovernancePage — Resolved Rulings filter", () => {
     expect(resolved).toBeTruthy();
     expect(resolved!.querySelector("[data-testid='list-empty']")).toBeTruthy();
   });
+
+  it("uses first-match semantics for duplicate ids in governanceLog (matches Array.find)", () => {
+    setMockWorld({
+      heyas: {
+        h1: {
+          id: "h1",
+          name: "Test Stable",
+          ichimon: "f1",
+          funds: 1000000,
+          governanceHistory: [
+            { id: "g1", date: "2024-W01", type: "fine", severity: "low", reason: "x" },
+            { id: "g2", date: "2024-W02", type: "fine", severity: "low", reason: "y" },
+          ],
+          governanceStatus: "good_standing",
+        },
+      },
+      governanceLog: [
+        // g1 first occurrence: no playerSeverity → should be EXCLUDED
+        { id: "g1", date: "2024-W01", type: "fine", severity: "low", reason: "x" },
+        // g1 duplicate: has playerSeverity → must NOT override the first match
+        { id: "g1", date: "2024-W01", type: "fine", severity: "low", reason: "x", playerSeverity: "harsh" },
+        // g2 first (and only) occurrence: has playerSeverity → should be INCLUDED
+        { id: "g2", date: "2024-W02", type: "fine", severity: "low", reason: "y", playerSeverity: "lenient" },
+      ],
+    });
+    render(React.createElement(GovernancePage));
+    const cards = screen.getAllByTestId("list-card");
+    const resolved = cards.find((c) => c.getAttribute("data-title") === "Resolved Rulings");
+    expect(resolved).toBeTruthy();
+    const rows = resolved!.querySelectorAll("[data-testid='faction-row']");
+    // Only g2 included (g1's first occurrence lacks playerSeverity)
+    expect(rows.length).toBe(1);
+  });
 });
