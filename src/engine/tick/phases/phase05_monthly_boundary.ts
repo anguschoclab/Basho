@@ -187,13 +187,19 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
     const currentWeek = world.week ?? 0;
     for (const sponsor of world.sponsorPool.sponsors.values()) {
       if (!sponsor.active || sponsor.loyalty < SPONSOR_MIN_LOYALTY_FOR_RENEWAL) continue;
-      for (const rel of sponsor.relationships) {
+      for (let i = 0; i < sponsor.relationships.length; i++) {
+        const rel = sponsor.relationships[i];
         if (
           rel.endsAtTick !== undefined &&
           rel.endsAtTick - currentWeek <= SPONSOR_RENEWAL_WINDOW_WEEKS &&
           rel.endsAtTick > currentWeek
         ) {
-          sponsorRenewalImpacts.push(renewSponsorContract(world, rel.relId, sponsor.sponsorId));
+          sponsorRenewalImpacts.push(
+            renewSponsorContract(world, rel.relId, sponsor.sponsorId, {
+              sponsor,
+              relIndex: i,
+            })
+          );
         }
       }
     }

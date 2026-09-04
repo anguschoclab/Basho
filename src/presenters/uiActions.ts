@@ -9,51 +9,6 @@ import type { WorldState } from "../engine/types/world";
 import type { DietRegimen } from "../engine/types/economy";
 
 /**
- * Perform a contract renewal.
- * Decouples the UI from direct engine mutations.
- */
-export function renewSponsorContract(
-  world: WorldState,
-  relId: string,
-  sponsorId?: string
-): boolean {
-  const pool = world.sponsorPool;
-  if (!pool) return false;
-
-  if (sponsorId) {
-    const sponsor = pool.sponsors.get(sponsorId);
-    if (sponsor) {
-      const relIdx = sponsor.relationships.findIndex((r) => r.relId === relId);
-      if (relIdx >= 0) {
-        const rel = sponsor.relationships[relIdx];
-        sponsor.relationships[relIdx] = {
-          ...rel,
-          endsAtTick: (world.week ?? 0) + 52,
-          strength: Math.min(5, rel.strength + 1) as 1 | 2 | 3 | 4 | 5,
-        };
-        sponsor.loyalty = Math.min(100, sponsor.loyalty + 3);
-        return true;
-      }
-    }
-  }
-
-  for (const sponsor of pool.sponsors.values()) {
-    const relIdx = sponsor.relationships.findIndex((r) => r.relId === relId);
-    if (relIdx >= 0) {
-      const rel = sponsor.relationships[relIdx];
-      sponsor.relationships[relIdx] = {
-        ...rel,
-        endsAtTick: (world.week ?? 0) + 52,
-        strength: Math.min(5, rel.strength + 1) as 1 | 2 | 3 | 4 | 5,
-      };
-      sponsor.loyalty = Math.min(100, sponsor.loyalty + 3);
-      return true;
-    }
-  }
-  return false;
-}
-
-/**
  * Update heya diet via presenter.
  */
 export function setHeyaDietAction(world: WorldState, heyaId: string, diet: DietRegimen): boolean {
