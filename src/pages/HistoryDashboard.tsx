@@ -180,6 +180,12 @@ const StablesTab = ({ heyas, retired }: { heyas: Heya[]; retired: Rikishi[] }) =
     return [...retired].sort((a, b) => compareBy(a, b, fn, sortOrder));
   }, [retired, sortKey, sortOrder]);
 
+  const heyasById = useMemo(() => {
+    const map: Record<string, Heya> = {};
+    for (const h of heyas) map[h.id] = h;
+    return map;
+  }, [heyas]);
+
   return (
     <div className="space-y-8">
       {/* Stables Ancestry */}
@@ -253,7 +259,7 @@ const StablesTab = ({ heyas, retired }: { heyas: Heya[]; retired: Rikishi[] }) =
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             {sortedRetired.slice(0, 40).map((r: Rikishi) => {
-              const heyaName = heyas.find((h) => h.id === r.heyaId)?.name || r.heyaId;
+              const heyaName = heyasById[r.heyaId]?.name || r.heyaId;
               return (
                 <Card key={r.id} className="paper p-3 text-center">
                   <div className="font-display font-semibold text-sm mb-1">{r.shikona}</div>

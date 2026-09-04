@@ -421,6 +421,30 @@ describe("HistoryDashboard — Stables tab", () => {
     expect(screen.getByText("missing-heya")).toBeTruthy();
   });
 
+  it("resolves distinct heya names per rikishi via lookup (multi-heya)", () => {
+    mockUseGame(
+      makeWorld({
+        heyas: new Map([
+          ["h1", makeHeya("h1", "Miyagino")],
+          ["h2", makeHeya("h2", "Kokonoe")],
+          ["h3", makeHeya("h3", "Tatsunami")],
+        ]),
+      })
+    );
+    vi.mocked(selectRetiredRikishi).mockReturnValue([
+      makeRikishi("r1", "Hakuho", "h1", "yokozuna"),
+      makeRikishi("r2", "Kakuryu", "h2", "yokozuna"),
+      makeRikishi("r3", "Tochinoshin", "h3", "sekiwake"),
+    ]);
+    render(<HistoryDashboard />);
+    fireEvent.click(screen.getByRole("tab", { name: "Stables" }));
+    // Each retired card shows its own heya name — catches a lookup that
+    // returns the wrong heya (e.g. always-first or always-undefined).
+    expect(screen.getAllByText("Miyagino").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Kokonoe").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("Tatsunami").length).toBeGreaterThanOrEqual(1);
+  });
+
   it("shows empty state when no retired rikishi exist", () => {
     mockUseGame(makeWorld({ heyas: new Map([["h1", makeHeya("h1", "Test")]]) }));
     vi.mocked(selectRetiredRikishi).mockReturnValue([]);

@@ -213,6 +213,14 @@ export default function GovernancePage() {
     }));
   }, [derived, world, factionSortKey, factionSortOrder, heya]);
 
+  const resolvedRulingIds = useMemo(() => {
+    const ids = new Set<string>();
+    for (const g of world?.governanceLog ?? []) {
+      if (g.playerSeverity !== undefined) ids.add(g.id);
+    }
+    return ids;
+  }, [world?.governanceLog]);
+
   if (!world || !heya || !derived) {
     return (
       <AppLayout
@@ -488,10 +496,7 @@ export default function GovernancePage() {
             <ListCard
               eyebrow="── RECORD ──"
               title="Resolved Rulings"
-              rows={derived.historyRows.filter((r) => {
-                const ruling = (world.governanceLog ?? []).find((g) => g.id === r.id);
-                return ruling?.playerSeverity !== undefined;
-              })}
+              rows={derived.historyRows.filter((r) => resolvedRulingIds.has(r.id))}
               emptyText="No resolved rulings yet."
             />
           </TabsContent>

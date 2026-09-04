@@ -3,41 +3,41 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import GovernancePage from "@/pages/GovernancePage";
 
-vi.mock("@/contexts/useGame", () => {
-  return {
-    useGame: () => {
-      return {
-        state: {
-          world: {
-            year: 2024,
-            week: 10,
-            playerHeyaId: "h1",
-            factions: {
-              f1: { id: "f1", name: "Alpha Faction", influence: 80, oyakataLeaderId: "o1" },
-              f2: { id: "f2", name: "Beta Faction", influence: 50, oyakataLeaderId: "o2" },
-              f3: { id: "f3", name: "Gamma Faction", influence: 30, oyakataLeaderId: "o3" },
-            },
-            heyas: {
-              h1: {
-                id: "h1",
-                name: "Test Stable",
-                ichimon: "f1",
-                funds: 1000000,
-                governanceHistory: [],
-                governanceStatus: "good_standing",
-              },
-            },
-            governanceLog: [],
-            closedHeyas: [],
-            yokozunaVacancyStreak: 0,
-          },
-        },
-        issueRuling: vi.fn(),
-        updateWorld: vi.fn(),
-      };
+let mockWorld: any = null;
+vi.mock("@/contexts/useGame", () => ({
+  useGame: () => ({
+    state: { world: mockWorld },
+    issueRuling: vi.fn(),
+    updateWorld: vi.fn(),
+  }),
+}));
+
+function setMockWorld(overrides: Record<string, any> = {}) {
+  mockWorld = {
+    year: 2024,
+    week: 10,
+    playerHeyaId: "h1",
+    factions: {
+      f1: { id: "f1", name: "Alpha Faction", influence: 80, oyakataLeaderId: "o1" },
+      f2: { id: "f2", name: "Beta Faction", influence: 50, oyakataLeaderId: "o2" },
+      f3: { id: "f3", name: "Gamma Faction", influence: 30, oyakataLeaderId: "o3" },
     },
+    heyas: {
+      h1: {
+        id: "h1",
+        name: "Test Stable",
+        ichimon: "f1",
+        funds: 1000000,
+        governanceHistory: [],
+        governanceStatus: "good_standing",
+      },
+    },
+    governanceLog: [],
+    closedHeyas: [],
+    yokozunaVacancyStreak: 0,
+    ...overrides,
   };
-});
+}
 
 vi.mock("@/store/gameStore", () => ({
   useGameStore: () => ({ sendCommand: vi.fn() }),
@@ -54,23 +54,25 @@ vi.mock("@/components/layout/AppLayout", () => ({
 vi.mock("@/components/layout/control-center", () => ({
   PageHeader: ({ title }: any) => React.createElement("div", null, title),
   StatCard: ({ label, value }: any) => React.createElement("div", null, label, ": ", String(value)),
-  ListCard: ({ rows }: any) =>
+  ListCard: ({ rows, title, emptyText }: any) =>
     React.createElement(
       "div",
-      { "data-testid": "faction-list" },
-      rows.map((r: any) =>
-        React.createElement(
-          "div",
-          { key: r.id, "data-testid": "faction-row" },
-          React.createElement(
-            "span",
-            { className: "flex-1 min-w-0 font-medium truncate" },
-            r.label
-          ),
-          r.value !== undefined &&
-            React.createElement("span", { className: "font-mono font-bold" }, String(r.value))
-        )
-      )
+      { "data-testid": "list-card", "data-title": title },
+      rows.length === 0
+        ? React.createElement("div", { "data-testid": "list-empty" }, emptyText)
+        : rows.map((r: any) =>
+            React.createElement(
+              "div",
+              { key: r.id, "data-testid": "faction-row" },
+              React.createElement(
+                "span",
+                { className: "flex-1 min-w-0 font-medium truncate" },
+                r.label
+              ),
+              r.value !== undefined &&
+                React.createElement("span", { className: "font-mono font-bold" }, String(r.value))
+            )
+          )
     ),
   SectionHeader: ({ title }: any) => React.createElement("div", null, title),
 }));
@@ -91,7 +93,9 @@ vi.mock("@/components/ui/tabs", () => ({
   Tabs: ({ children, defaultValue }: any) =>
     React.createElement("div", { "data-default-value": defaultValue }, children),
   TabsContent: ({ children, value }: any) =>
-    value === "politics" ? React.createElement("div", null, children) : null,
+    value === "politics" || value === "rulings"
+      ? React.createElement("div", { "data-tab": value }, children)
+      : null,
   TabsList: ({ children }: any) => React.createElement("div", null, children),
   TabsTrigger: ({ children, value }: any) => React.createElement("button", { value }, children),
 }));
@@ -108,14 +112,10 @@ vi.mock("@/engine/core/ImpactResolver", () => ({
 }));
 
 vi.mock("@/engine/queries", () => ({
-  getPlayerHeya: (_world: any, id: string) => ({
-    id,
-    name: "Test Stable",
-    ichimon: "f1",
-    funds: 1_000_000,
-    governanceHistory: [],
-    governanceStatus: "good_standing",
-  }),
+  getPlayerHeya: (world: any) => {
+    const id = world?.playerHeyaId;
+    return world?.heyas?.[id] ?? null;
+  },
 }));
 
 vi.mock("@/presenters/projections/governanceProjections", () => ({
@@ -194,6 +194,7 @@ function getFactionNames(): string[] {
 describe("GovernancePage faction sorting", () => {
   beforeEach(() => {
     localStorage.clear();
+    setMockWorld();
   });
 
   afterEach(() => {
@@ -240,5 +241,98 @@ describe("GovernancePage faction sorting", () => {
     const order = getFactionNames();
     // asc: Alpha, Beta, Gamma
     expect(order).toEqual(["Alpha Faction", "Beta Faction", "Gamma Faction"]);
+  });
+});
+
+describe("GovernancePage — Resolved Rulings filter", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    setMockWorld();
+  });
+
+  afterEach(() => {
+    cleanup();
+    localStorage.clear();
+    vi.clearAllMocks();
+    vi.resetModules();
+  });
+
+  it("includes only history rows whose governanceLog entry has playerSeverity", () => {
+    setMockWorld({
+      heyas: {
+        h1: {
+          id: "h1",
+          name: "Test Stable",
+          ichimon: "f1",
+          funds: 1000000,
+          governanceHistory: [
+            { id: "g1", date: "2024-W01", type: "fine", severity: "low", reason: "x" },
+            { id: "g2", date: "2024-W02", type: "warning", severity: "low", reason: "y" },
+            { id: "g3", date: "2024-W03", type: "fine", severity: "low", reason: "z" },
+          ],
+          governanceStatus: "good_standing",
+        },
+      },
+      governanceLog: [
+        { id: "g1", date: "2024-W01", type: "fine", severity: "low", reason: "x", playerSeverity: "harsh" },
+        { id: "g2", date: "2024-W02", type: "warning", severity: "low", reason: "y" },
+        { id: "g3", date: "2024-W03", type: "fine", severity: "low", reason: "z", playerSeverity: "lenient" },
+      ],
+    });
+    render(React.createElement(GovernancePage));
+    const cards = screen.getAllByTestId("list-card");
+    const resolved = cards.find((c) => c.getAttribute("data-title") === "Resolved Rulings");
+    expect(resolved).toBeTruthy();
+    const rows = resolved!.querySelectorAll("[data-testid='faction-row']");
+    // Only g1 and g3 have playerSeverity → 2 rows
+    expect(rows.length).toBe(2);
+  });
+
+  it("shows empty state when no rulings have playerSeverity", () => {
+    setMockWorld({
+      heyas: {
+        h1: {
+          id: "h1",
+          name: "Test Stable",
+          ichimon: "f1",
+          funds: 1000000,
+          governanceHistory: [
+            { id: "g1", date: "2024-W01", type: "fine", severity: "low", reason: "x" },
+          ],
+          governanceStatus: "good_standing",
+        },
+      },
+      governanceLog: [
+        { id: "g1", date: "2024-W01", type: "fine", severity: "low", reason: "x" },
+      ],
+    });
+    render(React.createElement(GovernancePage));
+    const cards = screen.getAllByTestId("list-card");
+    const resolved = cards.find((c) => c.getAttribute("data-title") === "Resolved Rulings");
+    expect(resolved).toBeTruthy();
+    expect(resolved!.querySelector("[data-testid='list-empty']")).toBeTruthy();
+  });
+
+  it("handles missing governanceLog gracefully (treated as empty)", () => {
+    setMockWorld({
+      governanceLog: undefined,
+      heyas: {
+        h1: {
+          id: "h1",
+          name: "Test Stable",
+          ichimon: "f1",
+          funds: 1000000,
+          governanceHistory: [
+            { id: "g1", date: "2024-W01", type: "fine", severity: "low", reason: "x" },
+          ],
+          governanceStatus: "good_standing",
+        },
+      },
+    });
+    render(React.createElement(GovernancePage));
+    const cards = screen.getAllByTestId("list-card");
+    const resolved = cards.find((c) => c.getAttribute("data-title") === "Resolved Rulings");
+    expect(resolved).toBeTruthy();
+    expect(resolved!.querySelector("[data-testid='list-empty']")).toBeTruthy();
   });
 });

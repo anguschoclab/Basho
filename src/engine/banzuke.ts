@@ -280,31 +280,69 @@ export function updateBanzuke(
     });
 
   const assigned: BanzukeEntry[] = [];
-  const used = new Set<string>();
+
+  // --- Bucket candidates by eligibleBestTier for O(N) slot assignment ---
+  // `scored` is already sorted by priority, so each candidate's index IS its
+  // priority key (lower index = better). Buckets inherit this sort order.
+  // Template slots are processed in non-decreasing tier order, so bucket
+  // activation is incremental — a candidate becomes eligible once slotTier
+  // reaches its eligibleBestTier and stays eligible for all subsequent slots.
+  const MAX_TIER = 10;
+  const buckets: { indices: number[]; ptr: number }[] = Array.from(
+    { length: MAX_TIER + 1 },
+    () => ({ indices: [], ptr: 0 })
+  );
+  for (let i = 0; i < scored.length; i++) {
+    const t = Math.max(1, Math.min(MAX_TIER, scored[i].eligibleBestTier));
+    buckets[t].indices.push(i);
+  }
+
+  const taken = new Set<number>();
+  const usedRikishiIds = new Set<string>();
+  let activatedTier = 0;
 
   for (const slot of fullTemplate) {
-    // 1. Try to find the best candidate who is ELIGIBLE for this tier
-    let idx = scored.findIndex(
-      (cand) =>
-        !used.has(cand.entry.rikishiId) &&
-        RANK_HIERARCHY[slot.position.rank].tier >= cand.eligibleBestTier
-    );
+    const slotTier = RANK_HIERARCHY[slot.position.rank].tier;
 
-    // 2. FALLBACK: If no eligible candidate found, take the absolute next best available candidate
-    // to ensure division quotas are met (as requested by user).
-    // Guard: a demoted ozeki must never be re-seated in an ozeki slot via fallback.
-    if (idx === -1) {
-      const isOzekiSlot = slot.position.rank === "ozeki";
-      idx = scored.findIndex(
-        (cand) =>
-          !used.has(cand.entry.rikishiId) &&
-          !(isOzekiSlot && demotedOzeki.has(cand.entry.rikishiId))
-      );
+    // Activate buckets up to slotTier (incremental — only new tiers).
+    while (activatedTier < slotTier) {
+      activatedTier++;
     }
 
-    if (idx !== -1) {
-      const winner = scored.splice(idx, 1)[0];
-      used.add(winner.entry.rikishiId);
+    // 1. Find best eligible candidate: lowest scored-index among active bucket heads.
+    let winnerIdx = -1;
+    for (let t = 1; t <= activatedTier; t++) {
+      const b = buckets[t];
+      while (b.ptr < b.indices.length && taken.has(b.indices[b.ptr])) b.ptr++;
+      if (b.ptr < b.indices.length) {
+        const candIdx = b.indices[b.ptr];
+        if (winnerIdx === -1 || candIdx < winnerIdx) winnerIdx = candIdx;
+      }
+    }
+
+    // 2. FALLBACK: no eligible candidate — take best available from inactive buckets.
+    // Guard: a demoted ozeki must never be re-seated in an ozeki slot via fallback.
+    if (winnerIdx === -1) {
+      const isOzekiSlot = slot.position.rank === "ozeki";
+      for (let t = activatedTier + 1; t <= MAX_TIER; t++) {
+        const b = buckets[t];
+        while (b.ptr < b.indices.length && taken.has(b.indices[b.ptr])) b.ptr++;
+        for (let i = b.ptr; i < b.indices.length; i++) {
+          const candIdx = b.indices[i];
+          if (taken.has(candIdx)) continue;
+          const cand = scored[candIdx];
+          if (usedRikishiIds.has(cand.entry.rikishiId)) continue;
+          if (isOzekiSlot && demotedOzeki.has(cand.entry.rikishiId)) continue;
+          if (winnerIdx === -1 || candIdx < winnerIdx) winnerIdx = candIdx;
+          break; // first passing candidate in this bucket = best in bucket
+        }
+      }
+    }
+
+    if (winnerIdx !== -1) {
+      taken.add(winnerIdx);
+      const winner = scored[winnerIdx];
+      usedRikishiIds.add(winner.entry.rikishiId);
       assigned.push({ ...winner.entry, division: slot.division, position: slot.position });
     }
   }
