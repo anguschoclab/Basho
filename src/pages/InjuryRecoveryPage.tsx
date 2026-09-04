@@ -91,9 +91,7 @@ export default function InjuryRecoveryPage() {
 
   return (
     <AppLayout pageTitle="Performance Center" subNavTabs={STABLE_TABS} activeSubTab="medical">
-
-        <title>Performance Center — {digest.heyaName} | Basho</title>
-
+      <title>Performance Center — {digest.heyaName} | Basho</title>
 
       <div className="space-y-8">
         <PageHeader

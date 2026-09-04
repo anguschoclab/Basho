@@ -93,9 +93,7 @@ export default function NewGameWizard() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col items-center hero-gradient scroll-smooth">
-
-        <title>New Career Setup | Basho</title>
-
+      <title>New Career Setup | Basho</title>
 
       <WizardHeader currentStep={step} totalSteps={totalSteps} />
 

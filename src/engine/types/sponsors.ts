@@ -18,11 +18,7 @@ export type SponsorTone = "traditional" | "modern" | "luxury" | "local" | "indus
 
 /** Type representing sponsor role. */
 export type SponsorRole =
-  | "kensho"
-  | "koenkai_member"
-  | "koenkai_pillar"
-  | "benefactor"
-  | "creditor";
+  "kensho" | "koenkai_member" | "koenkai_pillar" | "benefactor" | "creditor";
 
 /** Defines the structure for sponsor relationship. */
 export interface SponsorRelationship {

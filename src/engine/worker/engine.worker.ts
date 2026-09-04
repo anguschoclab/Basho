@@ -608,8 +608,7 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
   try {
     // Explicit generic function type to assert that the handler will process the correct command.
     const handler = COMMAND_HANDLERS[command.type] as
-      | ((cmd: EngineCommand) => void | Promise<void>)
-      | undefined;
+      ((cmd: EngineCommand) => void | Promise<void>) | undefined;
     if (handler) {
       await handler(command);
     } else {

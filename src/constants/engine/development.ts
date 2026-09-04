@@ -9,11 +9,7 @@
 import type { Rank } from "../../engine/types/banzuke";
 
 export type DevelopmentProfile =
-  | "prodigy"
-  | "standard"
-  | "late_bloomer"
-  | "journeyman"
-  | "early_peaker";
+  "prodigy" | "standard" | "late_bloomer" | "journeyman" | "early_peaker";
 
 export type AttributeGroup = "size_height" | "size_weight" | "physical" | "technical" | "mental";
 

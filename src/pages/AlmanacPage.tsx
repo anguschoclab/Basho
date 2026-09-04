@@ -134,9 +134,7 @@ export default function AlmanacPage() {
 
   return (
     <AppLayout pageTitle="Almanac" subNavTabs={RECORDS_TABS} activeSubTab="almanac">
-
-        <title>Almanac - The Memory of the World</title>
-
+      <title>Almanac - The Memory of the World</title>
 
       <div className="space-y-6">
         <PageHeader

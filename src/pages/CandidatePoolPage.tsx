@@ -22,10 +22,7 @@ import { toast } from "@/hooks/use-toast";
 import { Eye, Swords, TrendingUp, AlertCircle } from "lucide-react";
 
 import type { TalentCandidate, SuitorInterestBand } from "@/engine/types/talent";
-import {
-  listNPCWatchedCandidates,
-  getTopSuitor,
-} from "@/presenters/engineAccess";
+import { listNPCWatchedCandidates, getTopSuitor } from "@/presenters/engineAccess";
 import { getPlayerHeya, getHeya } from "@/presenters/engineAccess";
 import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";

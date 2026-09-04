@@ -30,7 +30,6 @@ function getBookmarksFromImpact(impact: { worldFields?: any }): any[] {
 }
 
 describe("BookmarkService determinism", () => {
-
   it("addBookmark uses deterministic timestamp (world.dayIndexGlobal, not Date.now)", () => {
     const world = makeWorld();
     world.dayIndexGlobal = 42;

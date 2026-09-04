@@ -27,10 +27,8 @@ export default function SettingsPage() {
 
   return (
     <AppLayout pageTitle="Settings" subNavTabs={managementTabs} activeSubTab="settings">
-
-        <title>Settings - Basho</title>
-        <meta name="description" content="Game settings and preferences" />
-
+      <title>Settings - Basho</title>
+      <meta name="description" content="Game settings and preferences" />
 
       <div className="space-y-6 max-w-2xl">
         <h1 className="font-display text-3xl font-bold flex items-center gap-3">

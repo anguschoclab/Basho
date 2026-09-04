@@ -33,11 +33,11 @@ mockGlobal.onmessage = null;
 if (!mockGlobal.self) mockGlobal.self = globalThis;
 
 afterAll(() => {
-  if (originalPostMessage === undefined) delete (globalThis as never as Record<string, unknown>)
-    .postMessage;
+  if (originalPostMessage === undefined)
+    delete (globalThis as never as Record<string, unknown>).postMessage;
   else mockGlobal.postMessage = originalPostMessage;
-  if (originalOnmessage === undefined) delete (globalThis as never as Record<string, unknown>)
-    .onmessage;
+  if (originalOnmessage === undefined)
+    delete (globalThis as never as Record<string, unknown>).onmessage;
   else mockGlobal.onmessage = originalOnmessage;
   if (originalSelf === undefined) delete (globalThis as never as Record<string, unknown>).self;
   else mockGlobal.self = originalSelf;

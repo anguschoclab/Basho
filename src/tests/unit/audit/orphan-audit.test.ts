@@ -1,5 +1,13 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { readFileSync, existsSync, writeFileSync, unlinkSync, mkdirSync, rmSync, readdirSync } from "fs";
+import {
+  readFileSync,
+  existsSync,
+  writeFileSync,
+  unlinkSync,
+  mkdirSync,
+  rmSync,
+  readdirSync,
+} from "fs";
 import { join } from "path";
 import { exec } from "child_process";
 import { promisify } from "util";
@@ -200,74 +208,94 @@ describe("Audit runner injection — detects a deliberately orphaned export", ()
 });
 
 describe("Audit import-statement parsing — namespace imports and name collisions", () => {
-  it("does not flag services imported via namespace imports as unticked", { timeout: 240000 }, async () => {
-    // Create a temp service file with an export, and a temp consumer that uses `import * as X`
-    const nsDir = join(SYSTEMS_DIR, `__audit_ns_${Date.now()}__`);
-    const svcFile = join(nsDir, "NsProbeService.ts");
-    const consumerFile = join(nsDir, "NsProbeConsumer.ts");
-    mkdirSync(nsDir, { recursive: true });
+  it(
+    "does not flag services imported via namespace imports as unticked",
+    { timeout: 240000 },
+    async () => {
+      // Create a temp service file with an export, and a temp consumer that uses `import * as X`
+      const nsDir = join(SYSTEMS_DIR, `__audit_ns_${Date.now()}__`);
+      const svcFile = join(nsDir, "NsProbeService.ts");
+      const consumerFile = join(nsDir, "NsProbeConsumer.ts");
+      mkdirSync(nsDir, { recursive: true });
 
-    const probeName = "__nsProbeFn_" + Date.now() + "__";
-    writeFileSync(svcFile, `export function ${probeName}(): string { return "ns"; }\n`);
-    // Consumer uses namespace import — individual export names won't appear as bare words
-    writeFileSync(consumerFile, `import * as NsProbe from "./NsProbeService";\nexport function useNsProbe(): string { return NsProbe.${probeName}(); }\n`);
-
-    try {
-      const tmpJson = uniqueJsonPath();
-      await execAsync(`npx tsx scripts/audit-orphans.ts --json "${tmpJson}"`, {
-        cwd: ROOT,
-        timeout: 180000,
-      });
-      const raw = readFileSync(tmpJson, "utf-8");
-      const report = JSON.parse(raw) as AuditReport;
-      unlinkSync(tmpJson);
-
-      // The service should NOT be flagged as unticked because it's imported via namespace
-      const found = report.entries.some(
-        (e) => e.symbol === "NsProbeService" && e.orphanType === "unticked-service"
+      const probeName = "__nsProbeFn_" + Date.now() + "__";
+      writeFileSync(svcFile, `export function ${probeName}(): string { return "ns"; }\n`);
+      // Consumer uses namespace import — individual export names won't appear as bare words
+      writeFileSync(
+        consumerFile,
+        `import * as NsProbe from "./NsProbeService";\nexport function useNsProbe(): string { return NsProbe.${probeName}(); }\n`
       );
-      expect(found, "Service imported via namespace import should NOT be flagged as unticked").toBe(false);
-    } finally {
-      rmSync(nsDir, { recursive: true, force: true });
+
+      try {
+        const tmpJson = uniqueJsonPath();
+        await execAsync(`npx tsx scripts/audit-orphans.ts --json "${tmpJson}"`, {
+          cwd: ROOT,
+          timeout: 180000,
+        });
+        const raw = readFileSync(tmpJson, "utf-8");
+        const report = JSON.parse(raw) as AuditReport;
+        unlinkSync(tmpJson);
+
+        // The service should NOT be flagged as unticked because it's imported via namespace
+        const found = report.entries.some(
+          (e) => e.symbol === "NsProbeService" && e.orphanType === "unticked-service"
+        );
+        expect(
+          found,
+          "Service imported via namespace import should NOT be flagged as unticked"
+        ).toBe(false);
+      } finally {
+        rmSync(nsDir, { recursive: true, force: true });
+      }
     }
-  });
+  );
 
-  it("flags services with same-named exports when only one is imported (no false negative)", { timeout: 240000 }, async () => {
-    // Create two service files with the same export name, import only one
-    const collDir = join(SYSTEMS_DIR, `__audit_coll_${Date.now()}__`);
-    const svcA = join(collDir, "CollisionSvcA.ts");
-    const svcB = join(collDir, "CollisionSvcB.ts");
-    const consumer = join(collDir, "CollisionConsumer.ts");
-    mkdirSync(collDir, { recursive: true });
+  it(
+    "flags services with same-named exports when only one is imported (no false negative)",
+    { timeout: 240000 },
+    async () => {
+      // Create two service files with the same export name, import only one
+      const collDir = join(SYSTEMS_DIR, `__audit_coll_${Date.now()}__`);
+      const svcA = join(collDir, "CollisionSvcA.ts");
+      const svcB = join(collDir, "CollisionSvcB.ts");
+      const consumer = join(collDir, "CollisionConsumer.ts");
+      mkdirSync(collDir, { recursive: true });
 
-    const sharedName = "__collisionFn_" + Date.now() + "__";
-    writeFileSync(svcA, `export function ${sharedName}(): string { return "a"; }\n`);
-    writeFileSync(svcB, `export function ${sharedName}(): string { return "b"; }\n`);
-    // Consumer imports only from svcA
-    writeFileSync(consumer, `import { ${sharedName} } from "./CollisionSvcA";\nexport function useCollision(): string { return ${sharedName}(); }\n`);
-
-    try {
-      const tmpJson = uniqueJsonPath();
-      await execAsync(`npx tsx scripts/audit-orphans.ts --json "${tmpJson}"`, {
-        cwd: ROOT,
-        timeout: 180000,
-      });
-      const raw = readFileSync(tmpJson, "utf-8");
-      const report = JSON.parse(raw) as AuditReport;
-      unlinkSync(tmpJson);
-
-      // CollisionSvcB should BE flagged as unticked (its export is not imported by anyone)
-      const bFlagged = report.entries.some(
-        (e) => e.symbol === "CollisionSvcB" && e.orphanType === "unticked-service"
+      const sharedName = "__collisionFn_" + Date.now() + "__";
+      writeFileSync(svcA, `export function ${sharedName}(): string { return "a"; }\n`);
+      writeFileSync(svcB, `export function ${sharedName}(): string { return "b"; }\n`);
+      // Consumer imports only from svcA
+      writeFileSync(
+        consumer,
+        `import { ${sharedName} } from "./CollisionSvcA";\nexport function useCollision(): string { return ${sharedName}(); }\n`
       );
-      // CollisionSvcA should NOT be flagged (it IS imported)
-      const aFlagged = report.entries.some(
-        (e) => e.symbol === "CollisionSvcA" && e.orphanType === "unticked-service"
-      );
-      expect(bFlagged, "Service B (not imported) should be flagged as unticked despite name collision").toBe(true);
-      expect(aFlagged, "Service A (imported) should NOT be flagged as unticked").toBe(false);
-    } finally {
-      rmSync(collDir, { recursive: true, force: true });
+
+      try {
+        const tmpJson = uniqueJsonPath();
+        await execAsync(`npx tsx scripts/audit-orphans.ts --json "${tmpJson}"`, {
+          cwd: ROOT,
+          timeout: 180000,
+        });
+        const raw = readFileSync(tmpJson, "utf-8");
+        const report = JSON.parse(raw) as AuditReport;
+        unlinkSync(tmpJson);
+
+        // CollisionSvcB should BE flagged as unticked (its export is not imported by anyone)
+        const bFlagged = report.entries.some(
+          (e) => e.symbol === "CollisionSvcB" && e.orphanType === "unticked-service"
+        );
+        // CollisionSvcA should NOT be flagged (it IS imported)
+        const aFlagged = report.entries.some(
+          (e) => e.symbol === "CollisionSvcA" && e.orphanType === "unticked-service"
+        );
+        expect(
+          bFlagged,
+          "Service B (not imported) should be flagged as unticked despite name collision"
+        ).toBe(true);
+        expect(aFlagged, "Service A (imported) should NOT be flagged as unticked").toBe(false);
+      } finally {
+        rmSync(collDir, { recursive: true, force: true });
+      }
     }
-  });
+  );
 });

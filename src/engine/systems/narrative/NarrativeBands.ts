@@ -90,13 +90,7 @@ export interface BandDef<T extends string> {
 
 // === Stat Bands (0–100) ===
 export type StatBand =
-  | "exceptional"
-  | "outstanding"
-  | "strong"
-  | "capable"
-  | "developing"
-  | "limited"
-  | "struggling";
+  "exceptional" | "outstanding" | "strong" | "capable" | "developing" | "limited" | "struggling";
 
 export const STAT_BANDS: BandDef<StatBand>[] = [
   { band: "struggling", min: 0, max: STAT_BAND_STRUGGLING_MAX },

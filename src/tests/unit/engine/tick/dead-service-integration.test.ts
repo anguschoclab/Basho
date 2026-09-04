@@ -115,9 +115,23 @@ describe("KachiNokoriService — functional integration", () => {
       currentBashoWins: 11,
       currentBashoLosses: 4,
       stats: {
-        power: 50, speed: 50, technique: 50, balance: 50, weight: 140,
-        stamina: 100, mental: 50, adaptability: 50, experience: 50, aggression: 50,
-        achievements: { kinboshiEarned: 0, ginboshiEarned: 0, kinboshiConceded: 0, ginboshiConceded: 0, specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 } },
+        power: 50,
+        speed: 50,
+        technique: 50,
+        balance: 50,
+        weight: 140,
+        stamina: 100,
+        mental: 50,
+        adaptability: 50,
+        experience: 50,
+        aggression: 50,
+        achievements: {
+          kinboshiEarned: 0,
+          ginboshiEarned: 0,
+          kinboshiConceded: 0,
+          ginboshiConceded: 0,
+          specialPrizes: { shukunSho: 0, kantoSho: 0, ginoSho: 0 },
+        },
       } as any,
     });
 
@@ -133,7 +147,8 @@ describe("KachiNokoriService — functional integration", () => {
     // The phase should have events or impacts that reference kachi-nokori
     expect(impact.events).toBeDefined();
     const kachiEvents = (impact.events ?? []).filter(
-      (e) => JSON.stringify(e.data).includes("kachiNokori") || JSON.stringify(e.data).includes("kachi")
+      (e) =>
+        JSON.stringify(e.data).includes("kachiNokori") || JSON.stringify(e.data).includes("kachi")
     );
     expect(kachiEvents.length).toBeGreaterThan(0);
   });
@@ -158,7 +173,10 @@ describe("InjuredEncouragement — functional integration", () => {
     });
 
     const world = makeMockWorld({
-      rikishi: new Map([[injured.id, injured], [active.id, active]]),
+      rikishi: new Map([
+        [injured.id, injured],
+        [active.id, active],
+      ]),
       heyas: new Map([[heya.id, heya]]),
       cyclePhase: "interim",
       calendar: { currentWeek: 5 } as any,

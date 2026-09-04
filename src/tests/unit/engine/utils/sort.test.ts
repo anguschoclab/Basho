@@ -62,14 +62,21 @@ describe("stableSort", () => {
   });
 
   it("does not mutate input array", () => {
-    const input = [{ id: 1, key: "c" }, { id: 2, key: "a" }, { id: 3, key: "b" }];
+    const input = [
+      { id: 1, key: "c" },
+      { id: 2, key: "a" },
+      { id: 3, key: "b" },
+    ];
     const originalKeys = input.map((x) => x.key);
     stableSort(input, (x) => x.key);
     expect(input.map((x) => x.key)).toEqual(originalKeys);
   });
 
   it("accepts iterable input (Set)", () => {
-    const input = new Set([{ id: 1, key: "b" }, { id: 2, key: "a" }]);
+    const input = new Set([
+      { id: 1, key: "b" },
+      { id: 2, key: "a" },
+    ]);
     const result = stableSort(input, (x) => x.key);
     expect(result.map((x) => x.id)).toEqual([2, 1]);
   });

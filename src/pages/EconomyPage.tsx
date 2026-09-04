@@ -180,9 +180,7 @@ export default function EconomyPage() {
 
   return (
     <AppLayout subNavTabs={OFFICE_TABS} activeSubTab="economy" pageTitle="Financial Management">
-
-        <title>Economy — {playerHeya.name} | Basho</title>
-
+      <title>Economy — {playerHeya.name} | Basho</title>
 
       <div className="space-y-6">
         <PageHeader

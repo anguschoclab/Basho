@@ -62,8 +62,7 @@ export default function SchedulePage() {
 
   return (
     <AppLayout subNavTabs={TOURNAMENT_TABS} activeSubTab="schedule" pageTitle="Schedule">
-
-        <title>Schedule | Basho</title>
+      <title>Schedule | Basho</title>
 
       <div className="space-y-6">
         <PageHeader

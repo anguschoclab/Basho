@@ -20,13 +20,7 @@ export type StaffCareerPhase = "apprentice" | "established" | "senior" | "declin
 
 /** Type representing competence bands (qualitative descriptors). */
 export type CompetenceBand =
-  | "feeble"
-  | "limited"
-  | "serviceable"
-  | "strong"
-  | "great"
-  | "dominant"
-  | "monstrous";
+  "feeble" | "limited" | "serviceable" | "strong" | "great" | "dominant" | "monstrous";
 
 export interface StaffCompetenceBands {
   primary: CompetenceBand;

@@ -84,11 +84,19 @@ describe("useOpfsQuotaListener", () => {
 
   it("re-subscribes on re-render (old listener removed, new added)", () => {
     const { rerender } = renderHook(() => useOpfsQuotaListener());
-    const initialAddCount = addSpy.mock.calls.filter((call: unknown[]) => call[0] === EVENT_NAME).length;
-    const initialRemoveCount = removeSpy.mock.calls.filter((call: unknown[]) => call[0] === EVENT_NAME).length;
+    const initialAddCount = addSpy.mock.calls.filter(
+      (call: unknown[]) => call[0] === EVENT_NAME
+    ).length;
+    const initialRemoveCount = removeSpy.mock.calls.filter(
+      (call: unknown[]) => call[0] === EVENT_NAME
+    ).length;
     rerender();
-    const afterAddCount = addSpy.mock.calls.filter((call: unknown[]) => call[0] === EVENT_NAME).length;
-    const afterRemoveCount = removeSpy.mock.calls.filter((call: unknown[]) => call[0] === EVENT_NAME).length;
+    const afterAddCount = addSpy.mock.calls.filter(
+      (call: unknown[]) => call[0] === EVENT_NAME
+    ).length;
+    const afterRemoveCount = removeSpy.mock.calls.filter(
+      (call: unknown[]) => call[0] === EVENT_NAME
+    ).length;
     // Effect with [] deps should NOT re-run on rerender, so counts stay equal.
     expect(afterAddCount).toBe(initialAddCount);
     expect(afterRemoveCount).toBe(initialRemoveCount);

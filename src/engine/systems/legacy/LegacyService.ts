@@ -149,22 +149,14 @@ export const LegacyService = {
     // Apply Floor Bonuses
     for (const [stat, bonus] of Object.entries(trait.statFloorBonus)) {
       if (isNumericStat(stat)) {
-        boosted[stat] = clampInt(
-          (boosted[stat] || 0) + (bonus || 0),
-          0,
-          99
-        );
+        boosted[stat] = clampInt((boosted[stat] || 0) + (bonus || 0), 0, 99);
       }
     }
 
     // Apply Ceiling Bonus to the peak stat in the trait
     const peakStat = this.findPeakStat(trait.statFloorBonus);
     if (peakStat && isNumericStat(peakStat)) {
-      boosted[peakStat] = clampInt(
-        (boosted[peakStat] || 0) + trait.ceilingBonus,
-        0,
-        99
-      );
+      boosted[peakStat] = clampInt((boosted[peakStat] || 0) + trait.ceilingBonus, 0, 99);
     }
 
     return boosted;

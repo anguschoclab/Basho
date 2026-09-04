@@ -177,9 +177,7 @@ export default function TrainingPage() {
 
   return (
     <AppLayout pageTitle="Training Management" subNavTabs={STABLE_TABS} activeSubTab="training">
-
-        <title>Training Ground — {heya.name} | Basho</title>
-
+      <title>Training Ground — {heya.name} | Basho</title>
 
       <div className="max-w-6xl mx-auto space-y-10 pb-20 animate-in fade-in duration-700">
         <TrainingHeader heya={heya} rikishiList={rikishiList} currentIntensity={currentIntensity} />

@@ -100,14 +100,10 @@ export const RivalryService = {
    * @returns {RivalriesState} The existing or newly created rivalries state.
    */
   ensureRivalriesState(world: WorldState): RivalriesState {
-    return EntityService.ensureState(
-      world,
-      "rivalriesState",
-      (): RivalriesState => ({
-        version: "1.0.0",
-        pairs: {},
-      })
-    );
+    return EntityService.ensureState(world, "rivalriesState", (): RivalriesState => ({
+      version: "1.0.0",
+      pairs: {},
+    }));
   },
 
   /**
@@ -296,13 +292,11 @@ export const RivalryService = {
       };
 
       // Auto-cull
-      if (
-        !(
-          updatedPair.heat < RIVALRY_HEAT_MIN &&
-          updatedPair.meetings < RIVALRY_MEETINGS_MIN &&
-          weeksSince > RIVALRY_DECAY_WEEKS_LONG
-        )
-      ) {
+      if (!(
+        updatedPair.heat < RIVALRY_HEAT_MIN &&
+        updatedPair.meetings < RIVALRY_MEETINGS_MIN &&
+        weeksSince > RIVALRY_DECAY_WEEKS_LONG
+      )) {
         finalPairs[key] = updatedPair;
       }
     }

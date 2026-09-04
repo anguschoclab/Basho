@@ -113,7 +113,9 @@ describe("L4.9: save/load integrity — field parity", () => {
   it("NON_PERSISTED_WORLD_FIELDS has no stale entries", () => {
     const worldFields = new Set(interfaceFields("engine/types/world.ts", "WorldState"));
     const stale = Object.keys(NON_PERSISTED_WORLD_FIELDS).filter((f) => !worldFields.has(f));
-    expect(stale, `Listed as excluded but no longer on WorldState: ${stale.join(", ")}`).toEqual([]);
+    expect(stale, `Listed as excluded but no longer on WorldState: ${stale.join(", ")}`).toEqual(
+      []
+    );
   });
 
   it("serializeWorld writes every field declared on SerializedWorldState", () => {

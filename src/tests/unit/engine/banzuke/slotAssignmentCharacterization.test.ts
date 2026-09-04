@@ -11,7 +11,13 @@
  */
 import { describe, it, expect } from "vitest";
 import { updateBanzuke } from "@/engine/banzuke";
-import type { BanzukeEntry, BashoPerformance, RankPosition, Division, Rank } from "@/engine/types/banzuke";
+import type {
+  BanzukeEntry,
+  BashoPerformance,
+  RankPosition,
+  Division,
+  Rank,
+} from "@/engine/types/banzuke";
 import { toRankPosition, RANK_HIERARCHY } from "@/engine/types/banzuke";
 import { makeMockWorld, mockRikishi } from "../utils";
 import type { WorldState } from "@/engine/types/world";
@@ -53,7 +59,10 @@ function snapshotAssignment(result: ReturnType<typeof updateBanzuke>): string[] 
     .sort();
 }
 
-function buildWorld(entries: BanzukeEntry[], extraRikishi: { id: string; overrides?: Partial<ReturnType<typeof mockRikishi>> }[] = []): WorldState {
+function buildWorld(
+  entries: BanzukeEntry[],
+  extraRikishi: { id: string; overrides?: Partial<ReturnType<typeof mockRikishi>> }[] = []
+): WorldState {
   const world = makeMockWorld();
   for (const e of entries) {
     world.rikishi.set(

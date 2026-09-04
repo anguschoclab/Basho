@@ -112,9 +112,7 @@ export default function BookmarksPage() {
 
   return (
     <AppLayout pageTitle="Bookmarks">
-
-        <title>Bookmarks | Basho Manager</title>
-
+      <title>Bookmarks | Basho Manager</title>
 
       <div className="max-w-4xl mx-auto space-y-6 pb-20 animate-in fade-in duration-700">
         {bookmarks.length === 0 ? (

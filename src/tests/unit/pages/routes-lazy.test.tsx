@@ -129,8 +129,7 @@ vi.mock("@/components/ui/SkeletonCard", () => ({
 }));
 
 vi.mock("@/store/gameStore", () => ({
-  useGameStore: (selector: (s: unknown) => unknown) =>
-    selector({ sendCommand: vi.fn() }),
+  useGameStore: (selector: (s: unknown) => unknown) => selector({ sendCommand: vi.fn() }),
 }));
 
 import { router } from "@/routes";
@@ -169,9 +168,7 @@ describe("routes lazy loading — Suspense fallback for MainMenu, NewGameWizard,
       options: { component: () => React.ReactElement };
     };
     const result = route.options.component();
-    expect(result.type).toBe(
-      (await import("react")).Suspense
-    );
+    expect(result.type).toBe((await import("react")).Suspense);
   });
 
   it("Dashboard component renders inside a Suspense boundary", async () => {
@@ -179,8 +176,6 @@ describe("routes lazy loading — Suspense fallback for MainMenu, NewGameWizard,
       options: { component: () => React.ReactElement };
     };
     const result = route.options.component();
-    expect(result.type).toBe(
-      (await import("react")).Suspense
-    );
+    expect(result.type).toBe((await import("react")).Suspense);
   });
 });

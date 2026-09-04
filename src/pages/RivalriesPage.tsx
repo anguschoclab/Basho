@@ -146,9 +146,7 @@ export default function RivalriesPage() {
 
   return (
     <AppLayout pageTitle="Rivalries & Feuds" subNavTabs={TOURNAMENT_TABS} activeSubTab="rivalries">
-
-        <title>Rivalries & Feuds - Basho</title>
-
+      <title>Rivalries & Feuds - Basho</title>
 
       <div className="space-y-6 animate-fade-in">
         <PageHeader

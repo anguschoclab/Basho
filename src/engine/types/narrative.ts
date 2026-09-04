@@ -13,12 +13,7 @@ export type {
 } from "../systems/narrative/NarrativeBands";
 
 export type StatureBand =
-  | "legendary"
-  | "powerful"
-  | "established"
-  | "rebuilding"
-  | "fragile"
-  | "new";
+  "legendary" | "powerful" | "established" | "rebuilding" | "fragile" | "new";
 /** Type representing prestige band. */
 export type PrestigeBand = "elite" | "respected" | "modest" | "struggling" | "unknown";
 /** Type representing facilities band. */

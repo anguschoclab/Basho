@@ -137,7 +137,12 @@ function selectFromMatches(
       // Fallback: last day-15 bout
       const day15Bouts = completed.filter((m) => m.day === 15);
       if (day15Bouts.length > 0) {
-        yushoMoment = makeMoment("yusho_decider", day15Bouts[day15Bouts.length - 1].result, day15Bouts[day15Bouts.length - 1], bashoName);
+        yushoMoment = makeMoment(
+          "yusho_decider",
+          day15Bouts[day15Bouts.length - 1].result,
+          day15Bouts[day15Bouts.length - 1],
+          bashoName
+        );
       }
     }
   }

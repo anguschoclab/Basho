@@ -103,9 +103,7 @@ describe("renewSponsorContract — hints optimization", () => {
     });
     const update = impact.entities?.sponsorUpdates?.get("s1");
     expect(update).toBeDefined();
-    const updatedRel = (update as any).relationships.find(
-      (r: any) => r.relId === "rel1"
-    );
+    const updatedRel = (update as any).relationships.find((r: any) => r.relId === "rel1");
     expect(updatedRel?.strength).toBe(4); // 3 + 1, proving correct rel was found
   });
 
@@ -130,9 +128,7 @@ describe("renewSponsorContract — hints optimization", () => {
     });
     const update = impact.entities?.sponsorUpdates?.get("s1");
     expect(update).toBeDefined();
-    const updatedRel1 = (update as any).relationships.find(
-      (r: any) => r.relId === "rel1"
-    );
+    const updatedRel1 = (update as any).relationships.find((r: any) => r.relId === "rel1");
     expect(updatedRel1?.strength).toBe(4); // "rel1" was renewed, not "rel2"
   });
 

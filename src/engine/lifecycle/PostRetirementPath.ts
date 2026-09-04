@@ -11,10 +11,7 @@ import type { SeededRNG } from "../rng";
 import { getFavoriteHighlight } from "../bout/CareerHighlights";
 
 export type PostRetirementPath =
-  | "oyakata"
-  | "media_pundit"
-  | "sumo_school_coach"
-  | "leave_sumo_world";
+  "oyakata" | "media_pundit" | "sumo_school_coach" | "leave_sumo_world";
 
 /** Minimum yusho count to be eligible for oyakata path */
 const OYAKATA_MIN_YUSHO = 1;

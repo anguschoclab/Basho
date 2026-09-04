@@ -67,8 +67,7 @@ export default function RikishiPage() {
   if (!rikishiId) {
     return (
       <AppLayout pageTitle="Roster Management" subNavTabs={STABLE_TABS} activeSubTab="roster">
-
-          <title>Roster Management | Basho</title>
+        <title>Roster Management | Basho</title>
 
         <div className="space-y-6">
           <PageHeader
@@ -130,9 +129,7 @@ export default function RikishiPage() {
         { label: rikishi.shikona, href: `/rikishi/${rikishiId}`, isCurrent: true },
       ]}
     >
-
-        <title>{rikishi.shikona} — Official Association Profile | Basho</title>
-
+      <title>{rikishi.shikona} — Official Association Profile | Basho</title>
 
       <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in duration-700">
         <RikishiProfileHeader

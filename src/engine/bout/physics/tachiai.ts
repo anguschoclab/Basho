@@ -110,8 +110,7 @@ export function resolveTachiaiV2(
     if (npcCounterFamily && opponentPrefs) {
       const sorted = Object.entries(opponentPrefs).sort((a, b) => b[1] - a[1]);
       const opponentDominantFamily = sorted[0]?.[0] as
-        | import("../../types/combat").TacticalFamily
-        | undefined;
+        import("../../types/combat").TacticalFamily | undefined;
       const second = sorted[1]?.[1] ?? 0;
       if (opponentDominantFamily && (sorted[0]?.[1] ?? 0) > second) {
         if (npcCounterFamily === opponentDominantFamily) {
