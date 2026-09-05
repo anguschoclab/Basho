@@ -205,6 +205,29 @@ const migrateToV1_2_0: MigrationStep = (save, ctx) => {
   return next;
 };
 
+/**
+ * Migration 1.2.0 → 1.3.0
+ *
+ * Initializes new optional fields added in the feature expansion:
+ * - heya.jungyoOptOut (exhibition opt-out)
+ * - heya.foreignAcademies (world circuit academies)
+ * - heya.youthAcademy (player-owned youth academy)
+ * - rikishi.tsukebitoPlayerSet (player-controlled tsukebito flag)
+ *
+ * All fields are optional (undefined) on existing saves — they default
+ * to falsy/empty behavior. This migration just ensures the save version
+ * is bumped so future migrations can detect the schema.
+ */
+const migrateToV1_3_0: MigrationStep = (save, ctx) => {
+  const next = { ...save };
+  // New fields are all optional — no data transformation needed.
+  // Existing saves will have undefined for these fields, which is the
+  // correct default (no academy, no opt-out, auto-assign tsukebito).
+  next.version = "1.3.0";
+  ctx.logs.push("migrateToV1_3_0: version bump to 1.3.0 (new optional fields)");
+  return next;
+};
+
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 const REQUIRED_SPONSOR_FIELDS = [
@@ -250,6 +273,7 @@ function isValidSponsor(entry: Record<string, unknown>): boolean {
 const migrations: Partial<Record<SaveVersion, MigrationStep>> = {
   "1.0.0": migrateToV1_1_0,
   "1.1.0": migrateToV1_2_0,
+  "1.2.0": migrateToV1_3_0,
 };
 
 // ── Public API ─────────────────────────────────────────────────────────────
