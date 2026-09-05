@@ -24,11 +24,17 @@ import type { FacilityId } from "@/engine/types/infrastructure";
 import { KeshoMawashiGallery } from "@/components/stable/KeshoMawashiGallery";
 import { MentorAssignmentPanel } from "@/components/game/MentorAssignmentPanel";
 import { getHeyaRoster } from "@/presenters/engineAccess";
+import { TsukebitoPanel } from "@/components/training/TsukebitoPanel";
+import { YouthAcademyPanel } from "@/components/recruitment/YouthAcademyPanel";
+import { projectTsukebito } from "@/presenters/tsukebitoProjections";
+import { projectYouthAcademy } from "@/presenters/youthAcademyProjections";
+import { useGameStore } from "@/store/gameStore";
 
 export default function StablePage() {
   const navigate = useNavigate();
   const { id: routeId } = useParams({ strict: false });
   const { state, buildInfrastructure, assignMentor, removeMentor } = useGame();
+  const sendCommand = useGameStore((s) => s.sendCommand);
   const { world, playerHeyaId } = state;
 
   const viewingHeyaId = routeId || playerHeyaId || "";
@@ -101,6 +107,12 @@ export default function StablePage() {
             </TabsTrigger>
             <TabsTrigger value="global" className="flex-1 min-w-20">
               Global
+            </TabsTrigger>
+            <TabsTrigger value="attendants" className="flex-1 min-w-20">
+              Attendants
+            </TabsTrigger>
+            <TabsTrigger value="academy" className="flex-1 min-w-20">
+              Academy
             </TabsTrigger>
             <TabsTrigger value="chronicle" className="flex-1 min-w-20">
               Chronicle
@@ -226,6 +238,35 @@ export default function StablePage() {
                   />
                 );
               })()}
+          </TabsContent>
+
+          <TabsContent value="attendants" className="space-y-4">
+            {world && heya && (
+              <TsukebitoPanel
+                projection={projectTsukebito(world, heya.id)}
+                onSet={(seniorId, juniorId) =>
+                  sendCommand({ type: "SET_TSUKEBITO", seniorId, juniorId })
+                }
+                onClear={(seniorId, juniorId) =>
+                  sendCommand({ type: "CLEAR_TSUKEBITO", seniorId, juniorId })
+                }
+              />
+            )}
+          </TabsContent>
+
+          <TabsContent value="academy" className="space-y-4">
+            {world && heya && (
+              <YouthAcademyPanel
+                projection={projectYouthAcademy(world, heya.id)}
+                cash={heya.economics?.cash ?? 0}
+                onBuild={() =>
+                  sendCommand({ type: "BUILD_YOUTH_ACADEMY", heyaId: heya.id })
+                }
+                onUpgrade={() =>
+                  sendCommand({ type: "UPGRADE_YOUTH_ACADEMY", heyaId: heya.id })
+                }
+              />
+            )}
           </TabsContent>
         </Tabs>
       </div>

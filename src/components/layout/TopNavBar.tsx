@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/useGame";
 import { SaveLoadDialog } from "@/components/game/SaveLoadDialog";
@@ -10,6 +11,7 @@ import { formatYen } from "@/utils/engineUtils";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import { EraToneBadge } from "@/components/layout/EraToneBadge";
+import { HolidayDialog } from "@/components/layout/HolidayDialog";
 import type { EraTone } from "@/presenters/eraTone";
 
 const RUNWAY_COLORS: Record<string, string> = {
@@ -29,11 +31,12 @@ const PHASE_LABELS: Record<string, { label: string; color: string }> = {
 };
 
 export function TopNavBar() {
-  const { state, advanceOneDay } = useGame();
+  const { state, advanceOneDay, goOnHoliday } = useGame();
   const { setTheme, resolvedTheme } = useTheme();
   const autosaveStatus = useAutosaveIndicator();
   const navigate = useNavigate();
   const world = state.world;
+  const [showHolidayDialog, setShowHolidayDialog] = useState(false);
 
   const playerHeya = world ? (getPlayerHeya(world) ?? null) : null;
   const inBasho = world?.cyclePhase === "active_basho";
@@ -167,6 +170,33 @@ export function TopNavBar() {
                 animation: autosaveStatus === "saving" ? "pulse 1s ease-in-out infinite" : "none",
               }}
             />
+          )}
+
+          {/* Go on Holiday button — only during interim */}
+          {world && !inBasho && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 text-[10px] uppercase font-mono tracking-widest text-muted-foreground hover:text-foreground"
+              onClick={() => setShowHolidayDialog(true)}
+              tooltip="Skip ahead with safety gates"
+              tooltipSide="bottom"
+            >
+              Holiday
+            </Button>
+          )}
+          {showHolidayDialog && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setShowHolidayDialog(false)}>
+              <div onClick={(e) => e.stopPropagation()}>
+                <HolidayDialog
+                  onConfirm={(config) => {
+                    goOnHoliday(config);
+                    setShowHolidayDialog(false);
+                  }}
+                  onCancel={() => setShowHolidayDialog(false)}
+                />
+              </div>
+            </div>
           )}
 
           <SaveLoadDialog />

@@ -2,6 +2,7 @@ import { Globe, Trophy, Building2, MapPin, ArrowRight } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
 import { useGame } from "@/contexts/useGame";
+import { useGameStore } from "@/store/gameStore";
 import { TOURNAMENT_TABS } from "@/constants/ui/navigation";
 import { WidgetCard } from "@/components/ui/WidgetCard";
 import { WidgetHeader } from "@/components/ui/WidgetHeader";
@@ -10,6 +11,8 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getPlayerHeya } from "@/presenters/engineAccess";
+import { AcademyManagementPanel } from "@/components/stable/AcademyManagementPanel";
+import { projectAcademyManagement, type ExhibitionRegion } from "@/presenters/academyManagementProjections";
 
 interface PendingExhibition {
   id: string;
@@ -25,6 +28,10 @@ export default function RegionalHubPage() {
   const { state } = useGame();
   const world = state.world;
   const playerHeya = world ? (getPlayerHeya(world) ?? null) : null;
+  const sendCommand = useGameStore((s) => s.sendCommand);
+  const academyProjection = world && playerHeya
+    ? projectAcademyManagement(world, playerHeya.id)
+    : { academies: [], buildableRegions: [], hasAcademies: false };
 
   const regionalPresence = playerHeya?.regionalPresence || {};
   const pendingExhibitions = (world?.pendingExhibitions ?? []) as unknown as PendingExhibition[];
@@ -114,11 +121,17 @@ export default function RegionalHubPage() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          disabled
-                          title="Academy management coming soon"
                           className="w-full mt-4 text-[10px] uppercase font-bold text-primary hover:text-primary/80 hover:bg-primary/5 font-mono"
+                          onClick={() =>
+                            playerHeya &&
+                            sendCommand({
+                              type: "BUILD_FOREIGN_ACADEMY",
+                              heyaId: playerHeya.id,
+                              region: region as ExhibitionRegion,
+                            })
+                          }
                         >
-                          Manage Academy <ArrowRight className="w-3 h-3 ml-1" />
+                          Build Academy <ArrowRight className="w-3 h-3 ml-1" />
                         </Button>
                       )}
                     </div>
@@ -129,15 +142,18 @@ export default function RegionalHubPage() {
 
             <WidgetCard className="border-border bg-card/40">
               <WidgetHeader title="Academy Infrastructure" icon={Building2} />
-              <div className="mt-4 p-8 border-2 border-dashed border-border rounded-lg flex flex-col items-center justify-center text-center">
-                <Building2 className="w-12 h-12 text-muted-foreground/50 mb-4" />
-                <h3 className="text-lg font-bold text-foreground font-display">
-                  No Active Academies
-                </h3>
-                <p className="text-sm text-muted-foreground max-w-xs mt-1 font-body">
-                  Reach 80% presence in a region to unlock the ability to construct a specialized
-                  training academy.
-                </p>
+              <div className="mt-4">
+                <AcademyManagementPanel
+                  projection={academyProjection}
+                  onBuild={(region) =>
+                    playerHeya &&
+                    sendCommand({
+                      type: "BUILD_FOREIGN_ACADEMY",
+                      heyaId: playerHeya.id,
+                      region: region as ExhibitionRegion,
+                    })
+                  }
+                />
               </div>
             </WidgetCard>
           </div>
@@ -180,9 +196,15 @@ export default function RegionalHubPage() {
                         </p>
                         <Button
                           size="sm"
-                          disabled
-                          title="Exhibition acceptance coming soon"
                           className="w-full text-[10px] font-bold h-7 font-mono"
+                          onClick={() =>
+                            playerHeya &&
+                            sendCommand({
+                              type: "ACCEPT_EXHIBITION",
+                              heyaId: playerHeya.id,
+                              invitationId: inv.id,
+                            })
+                          }
                         >
                           ACCEPT INVITATION
                         </Button>

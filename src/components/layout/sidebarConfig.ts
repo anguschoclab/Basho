@@ -30,6 +30,8 @@ import {
   Globe,
   Crown,
   Bookmark,
+  GraduationCap,
+  UsersRound,
 } from "lucide-react";
 
 export interface MenuItem {
@@ -73,6 +75,7 @@ export function getMenuGroups(
         { title: "Staff", url: "/stable/staff", icon: Briefcase },
         { title: "Oyakata", url: "/stable/oyakata", icon: Crown },
         { title: "Scouting", url: "/office/scouting", icon: Search, locked: !tutorialCompleted },
+        { title: "Youth Academy", url: "/academy", icon: GraduationCap },
         { title: "Bookmarks", url: "/bookmarks", icon: Bookmark },
       ],
     },
@@ -92,6 +95,7 @@ export function getMenuGroups(
         { title: "Rivalries", url: "/basho/rivalries", icon: Swords },
         { title: "Global Cup", url: "/global-cup", icon: Trophy },
         { title: "World Circuit", url: "/world-circuit", icon: Globe },
+        { title: "Rival Stables", url: "/rival-stables", icon: UsersRound },
       ],
     },
     {

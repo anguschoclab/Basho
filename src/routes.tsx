@@ -49,6 +49,8 @@ const HistoryDashboard = lazy(() =>
 const GlobalCupPage = lazy(() => import("./pages/GlobalCupPage"));
 const RegionalHubPage = lazy(() => import("./pages/RegionalHubPage"));
 const GlossaryPage = lazy(() => import("./pages/GlossaryPage"));
+const RivalStablesPage = lazy(() => import("./pages/RivalStablesPage"));
+const YouthAcademyPage = lazy(() => import("./pages/YouthAcademyPage"));
 
 // In Electron production the app loads from file://, where browser history
 // path traversal fails (e.g. /dashboard → file:///dashboard — not found).
@@ -436,6 +438,18 @@ const glossaryRoute = createRoute({
   component: () => withSuspense(GlossaryPage),
 });
 
+const rivalStablesRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/rival-stables",
+  component: () => withSuspense(RivalStablesPage),
+});
+
+const youthAcademyRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/academy",
+  component: () => withSuspense(YouthAcademyPage),
+});
+
 const notFoundRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "$",
@@ -519,6 +533,10 @@ const routeTree = rootRoute.addChildren([
 
   // Glossary
   glossaryRoute,
+
+  // Rival Stables & Youth Academy
+  rivalStablesRoute,
+  youthAcademyRoute,
 
   notFoundRoute,
 ]);

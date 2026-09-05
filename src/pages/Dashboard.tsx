@@ -50,6 +50,10 @@ import { SkeletonCard } from "@/components/ui/SkeletonCard";
 import { formatYen } from "@/utils/engineUtils";
 import { useGameStore } from "@/store/gameStore";
 import { useSuccessionDismissal } from "@/hooks/useSuccessionDismissal";
+import { JungyoInvitationCard } from "@/components/basho/JungyoInvitationCard";
+import { GomenfudaStatusBadge } from "@/components/game/GomenfudaStatusBadge";
+import { projectExhibitions } from "@/presenters/exhibitionProjections";
+import { projectGomenfuda } from "@/presenters/projections/governanceProjections";
 
 /** Control Center — main dashboard. */
 export default function Dashboard() {
@@ -160,6 +164,16 @@ export default function Dashboard() {
 
     return { rows, sekitoriCount };
   }, [world, playerHeya, navigate]);
+
+  const exhibitionProjection = useMemo(() => {
+    if (!world || !playerHeya) return { invitations: [], hasInvitations: false };
+    return projectExhibitions(world, playerHeya.id);
+  }, [world, playerHeya]);
+
+  const gomenfudaProjection = useMemo(() => {
+    if (!world || !playerHeya) return { count: 0, threshold: 3, hasWarning: false, history: [] };
+    return projectGomenfuda(world, playerHeya.id);
+  }, [world, playerHeya]);
 
   const phase = world?.cyclePhase ?? "interim";
   const phaseLabel =
@@ -394,6 +408,27 @@ export default function Dashboard() {
           <FinancesWidget />
           <EventFeed maxEvents={12} minImportance="notable" />
         </div>
+
+        {/* ── EXHIBITION INVITATIONS & GOMENFUDA STATUS ── */}
+        {(exhibitionProjection.hasInvitations || gomenfudaProjection.hasWarning) && (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {exhibitionProjection.invitations.map((inv) => (
+              <JungyoInvitationCard
+                key={inv.id}
+                invitation={inv}
+                onAccept={(id) =>
+                  sendCommand({ type: "ACCEPT_EXHIBITION", heyaId: playerHeya?.id ?? "", invitationId: id })
+                }
+                onDecline={(id) =>
+                  sendCommand({ type: "DECLINE_EXHIBITION", heyaId: playerHeya?.id ?? "", invitationId: id })
+                }
+              />
+            ))}
+            {gomenfudaProjection.hasWarning && (
+              <GomenfudaStatusBadge projection={gomenfudaProjection} />
+            )}
+          </div>
+        )}
 
         {/* ── ADDITIONAL WIDGETS GRID ── */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

@@ -54,6 +54,10 @@ import type { BoutTactic } from "@/engine/types/combat";
 import type { BashoName, BoutResult } from "@/engine/types/basho";
 import type { BoutMatchUI, StandingEntry } from "@/presenters/uiDigestTypes";
 import { getRikishiMap } from "@/presenters/worldAccess";
+import { NakabiHighlightCard } from "@/components/basho/NakabiHighlightCard";
+import { OfficialsPanel } from "@/components/officials/OfficialsPanel";
+import { projectNakabi } from "@/presenters/nakabiProjections";
+import { projectOfficials } from "@/presenters/officialsProjections";
 
 /** Defines the structure for selected bout. */
 interface SelectedBout {
@@ -154,6 +158,17 @@ export default function BashoPage() {
   const bashoDigest = useMemo(() => {
     if (!world) return null;
     return projectBashoUIDigest(world);
+  }, [world]);
+
+  const nakabiProjection = useMemo(() => {
+    if (!world) return { summary: null, isNakabiDay: false };
+    return projectNakabi(world);
+  }, [world]);
+
+  const officialsProjection = useMemo(() => {
+    if (!world)
+      return { gyoji: [], shimpan: [], topGyoji: null, totalBoutsOfficiated: 0, totalReversals: 0 };
+    return projectOfficials(world);
   }, [world]);
 
   const cornerAdvice = useMemo(() => {
@@ -348,6 +363,16 @@ export default function BashoPage() {
 
         {/* Day progress */}
         <Progress value={dayProgress} className="h-1" />
+
+        {/* Nakabi highlight card — shown on day 8 */}
+        {bashoDigest?.isNakabiDay && (
+          <NakabiHighlightCard projection={nakabiProjection} />
+        )}
+
+        {/* Officials panel — gyoji & shimpan */}
+        {officialsProjection.gyoji.length > 0 && (
+          <OfficialsPanel projection={officialsProjection} />
+        )}
 
         {/* Global Cup Banner - During Interim Weeks */}
         {world.globalCup?.isActive && day >= 15 && (
