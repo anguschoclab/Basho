@@ -10,6 +10,8 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { useGameStore } from "@/store/gameStore";
 import type { projectMedicalUIDigest } from "@/presenters/uiDigest";
 import { getSeverityColor, getSeverityBadge } from "./severityHelpers";
+import { GomenfudaStatusBadge } from "./GomenfudaStatusBadge";
+import { projectGomenfuda } from "@/presenters/projections/governanceProjections";
 
 interface InjuryRecoveryPanelProps {
   digest: NonNullable<ReturnType<typeof projectMedicalUIDigest>>;
@@ -25,6 +27,12 @@ interface InjuryRecoveryPanelProps {
 export function InjuryRecoveryPanel({ digest }: InjuryRecoveryPanelProps) {
   const { facilityLevel, facilityLabel, injuredRikishi } = digest;
   const sendCommand = useGameStore((s) => s.sendCommand);
+  const workerWorld = useGameStore((s) => s.workerWorld);
+  const playerHeyaId = workerWorld?.playerHeyaId;
+  const gomenfudaProjection =
+    workerWorld && playerHeyaId
+      ? projectGomenfuda(workerWorld, playerHeyaId)
+      : null;
 
   return (
     <div className="space-y-4">
@@ -132,15 +140,20 @@ export function InjuryRecoveryPanel({ digest }: InjuryRecoveryPanelProps) {
                             Treat 1wk (¥500k)
                           </Button>
                           {!info.isKyujo && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() =>
-                                sendCommand({ type: "WITHDRAW_RIKISHI", rikishiId: info.id })
-                              }
-                            >
-                              Withdraw
-                            </Button>
+                            <>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() =>
+                                  sendCommand({ type: "WITHDRAW_RIKISHI", rikishiId: info.id })
+                                }
+                              >
+                                Withdraw
+                              </Button>
+                              {gomenfudaProjection && (
+                                <GomenfudaStatusBadge projection={gomenfudaProjection} />
+                              )}
+                            </>
                           )}
                         </div>
                       </div>

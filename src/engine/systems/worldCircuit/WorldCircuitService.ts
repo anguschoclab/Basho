@@ -193,7 +193,57 @@ export const WorldCircuitService = {
   hasForeignAcademy(world: WorldState, heyaId: string, region: ExhibitionRegion): boolean {
     const heya = getHeya(world, heyaId);
     if (!heya) return false;
-    return this.getRegionVisibility(heya, region) === "academy";
+    // Academy is "had" if either built (in foreignAcademies) or presence is at academy threshold
+    const hasBuilt = (heya.foreignAcademies ?? []).some((a) => a.region === region);
+    const hasPresence = this.getRegionVisibility(heya, region) === "academy";
+    return hasBuilt || hasPresence;
+  },
+
+  /**
+   * Build a foreign academy in a region where the heya has sufficient presence.
+   * Requires presence >= ACADEMY_THRESHOLD (80). Refuses duplicates.
+   */
+  buildForeignAcademy(
+    world: WorldState,
+    heyaId: string,
+    region: ExhibitionRegion
+  ): StateImpact {
+    const builder = createImpactBuilder("buildForeignAcademy");
+    const heya = getHeya(world, heyaId);
+    if (!heya) return builder.build();
+
+    const presence = heya.regionalPresence?.[region] ?? 0;
+    if (presence < PRESENCE_GATES.ACADEMY_THRESHOLD) return builder.build();
+
+    // Check for duplicate
+    const existing = heya.foreignAcademies ?? [];
+    if (existing.some((a) => a.region === region)) return builder.build();
+
+    const academy = {
+      region,
+      builtAtYear: world.year,
+      builtAtWeek: world.week ?? 0,
+      candidateQualityBonus: 5 + Math.floor(presence / 20),
+    };
+
+    builder.updateHeya(heyaId, {
+      foreignAcademies: [...existing, academy],
+    });
+
+    builder.logEvent(
+      "NARRATIVE_CRISIS_TRIGGERED",
+      "narrative",
+      {
+        eventId: "academy_built",
+        title: `${region} Academy Established`,
+        description: `${heya.name} has established a Foreign Academy in ${region}.`,
+        incident: `Elite regional candidates from ${region} will now be available for recruitment.`,
+        region,
+      },
+      { heyaId, importance: "headline" }
+    );
+
+    return builder.build();
   },
 
   /**

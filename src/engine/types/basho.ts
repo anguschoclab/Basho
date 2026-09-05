@@ -142,6 +142,10 @@ export interface BoutResult {
   monoii?: boolean;
   /** ID of the gyoji who officiated this bout. */
   gyojiId?: string;
+  /** IDs of the shimpan (judges) on the mono-ii panel, if a mono-ii occurred. */
+  shimpanPanelIds?: string[];
+  /** Outcome of the mono-ii consultation (if one occurred). */
+  monoiiOutcome?: "upheld" | "reversed" | "rematch";
   /** Momentum score (positive = east dominated, negative = west dominated). */
   momentumScore: number;
   /** In-bout injury if one occurred during the bout. */

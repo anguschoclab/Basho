@@ -301,6 +301,14 @@ export default function BashoPage() {
               {isKeyDay(day) && (
                 <Badge className="bg-gold/20 text-gold border-gold/30 text-xs">Key Day</Badge>
               )}
+              {bashoDigest?.isNakabiDay && (
+                <Badge
+                  className="bg-primary/20 text-primary border-primary/40 text-xs"
+                  data-testid="nakabi-badge"
+                >
+                  Nakabi (Mid-Basho)
+                </Badge>
+              )}
             </div>
           }
         />

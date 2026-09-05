@@ -80,6 +80,42 @@ export type EngineCommand =
       type: "SET_KESHO_CONFIG";
       rikishiId: string;
       config: Partial<import("../types/keshoMawashi").KeshoMawashi>;
+    }
+  | {
+      type: "ACCEPT_EXHIBITION";
+      invitationId: string;
+      rikishiId: string;
+    }
+  | {
+      type: "DECLINE_EXHIBITION";
+      invitationId: string;
+    }
+  | {
+      type: "GO_ON_HOLIDAY";
+      config: import("../holiday").HolidayConfig;
+    }
+  | {
+      type: "SET_TSUKEBITO";
+      seniorId: string;
+      juniorId: string;
+    }
+  | {
+      type: "CLEAR_TSUKEBITO";
+      seniorId: string;
+      juniorId: string;
+    }
+  | {
+      type: "BUILD_FOREIGN_ACADEMY";
+      heyaId: string;
+      region: import("../systems/worldCircuit/WorldCircuitService").ExhibitionRegion;
+    }
+  | {
+      type: "BUILD_YOUTH_ACADEMY";
+      heyaId: string;
+    }
+  | {
+      type: "UPGRADE_YOUTH_ACADEMY";
+      heyaId: string;
     };
 
 /** Worker -> UI Events */

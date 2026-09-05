@@ -17,6 +17,15 @@ import {
 import { formatMetaTrends } from "@/presenters/uiDigest";
 import { TrendingUp, Info, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import type { EraTone } from "@/presenters/eraTone";
+import { ERA_TONE_DESCRIPTIONS } from "@/presenters/eraTone";
+
+const TONE_LABELS: Record<EraTone, string> = {
+  classic: "CLASSIC (Yotsu)",
+  explosive: "EXPLOSIVE (Oshi)",
+  technical: "TECHNICAL (Hybrid)",
+  defensive: "DEFENSIVE (Counter)",
+};
 
 export default function TrendsPage() {
   const { state } = useGame();
@@ -28,6 +37,10 @@ export default function TrendsPage() {
   }, [world]);
 
   if (!world) return null;
+
+  const currentTone: EraTone = (world.meta?.tone as EraTone) ?? "classic";
+  const toneLabel = TONE_LABELS[currentTone] ?? "CLASSIC";
+  const toneDescription = ERA_TONE_DESCRIPTIONS[currentTone] ?? "";
 
   return (
     <AppLayout subNavTabs={ASSOCIATION_TABS} activeSubTab="trends" pageTitle="JSA Trends">
@@ -45,14 +58,14 @@ export default function TrendsPage() {
               <div>
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-primary" />
-                  Technical Dominance (Last 12 Basho)
+                  Technical Dominance (Last 6 Basho)
                 </CardTitle>
                 <CardDescription>
                   Shift in winning styles across the top division over time.
                 </CardDescription>
               </div>
-              <Badge variant="outline" className="border-primary/30 text-primary">
-                CURRENT BIAS: OSHI-STRONG
+              <Badge variant="outline" className="border-primary/30 text-primary" data-testid="era-tone-badge">
+                ERA: {toneLabel}
               </Badge>
             </div>
           </CardHeader>
@@ -126,14 +139,12 @@ export default function TrendsPage() {
             <CardHeader>
               <CardTitle className="text-sm font-bold flex items-center gap-2">
                 <Info className="h-4 w-4 text-primary" />
-                The Thriving Meta
+                Current Era: {toneLabel}
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                Wrestlers matching the current Meta Bias (Oshi) receive a subtle advantage in bout
-                outcomes and faster momentum gains. Stables specializing in Oshi-Zumo will find
-                their techniques more effective in this era.
+              <p className="text-xs text-muted-foreground leading-relaxed" data-testid="era-tone-description">
+                {toneDescription}
               </p>
             </CardContent>
           </Card>

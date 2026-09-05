@@ -210,3 +210,97 @@ describe("hasSanctionWarning", () => {
     expect(hasSanctionWarning(world, "heya-1")).toBe(false);
   });
 });
+
+// ── Bug fix tests: recordGomenfuda must write `year` to event data ────────
+// The original implementation did not include `year` in the event data,
+// so countGomenfudaForHeya (which filters by e.data.year === year) always
+// returned 0 for events created by recordGomenfuda itself. This made the
+// consecutive-withdrawal multiplier and sanction threshold non-functional.
+// ──────────────────────────────────────────────────────────────────────────
+
+describe("recordGomenfuda year-field bug fix", () => {
+  it("countGomenfudaForHeya returns 1 after a single recordGomenfuda call", () => {
+    const heya = makeHeya("heya-1");
+    const riki = mockRikishi("r-1", { shikona: "Test Rikishi" });
+    const world = makeMockWorld({
+      rikishi: new Map([[riki.id, riki]]),
+      heyas: new Map([["heya-1", heya as any]]),
+    });
+
+    const impact = recordGomenfuda(world, heya as Heya, riki, "hatsu", "injury");
+    const updated = resolveImpacts(world, [impact]);
+
+    // The event created by recordGomenfuda should be countable
+    expect(countGomenfudaForHeya(updated, "heya-1", world.year)).toBe(1);
+  });
+
+  it("countGomenfudaForHeya returns 3 after three recordGomenfuda calls in same year", () => {
+    const heya = makeHeya("heya-1");
+    const r1 = mockRikishi("r-1", { shikona: "Rikishi 1" });
+    const r2 = mockRikishi("r-2", { shikona: "Rikishi 2" });
+    const r3 = mockRikishi("r-3", { shikona: "Rikishi 3" });
+    const world = makeMockWorld({
+      rikishi: new Map([[r1.id, r1], [r2.id, r2], [r3.id, r3]]),
+      heyas: new Map([["heya-1", heya as any]]),
+    });
+
+    let current = world;
+    for (const riki of [r1, r2, r3]) {
+      const impact = recordGomenfuda(current, heya as Heya, riki, "hatsu", "injury");
+      current = resolveImpacts(current, [impact]);
+    }
+
+    expect(countGomenfudaForHeya(current, "heya-1", world.year)).toBe(3);
+  });
+
+  it("hasSanctionWarning returns true after 3 recordGomenfuda calls", () => {
+    const heya = makeHeya("heya-1");
+    const r1 = mockRikishi("r-1", { shikona: "Rikishi 1" });
+    const r2 = mockRikishi("r-2", { shikona: "Rikishi 2" });
+    const r3 = mockRikishi("r-3", { shikona: "Rikishi 3" });
+    const world = makeMockWorld({
+      rikishi: new Map([[r1.id, r1], [r2.id, r2], [r3.id, r3]]),
+      heyas: new Map([["heya-1", heya as any]]),
+    });
+
+    let current = world;
+    for (const riki of [r1, r2, r3]) {
+      const impact = recordGomenfuda(current, heya as Heya, riki, "hatsu", "injury");
+      current = resolveImpacts(current, [impact]);
+    }
+
+    expect(hasSanctionWarning(current, "heya-1")).toBe(true);
+  });
+
+  it("consecutive multiplier applies when second recordGomenfuda sees first", () => {
+    const heya = makeHeya("heya-1");
+    const r1 = mockRikishi("r-1", { shikona: "Rikishi 1" });
+    const r2 = mockRikishi("r-2", { shikona: "Rikishi 2" });
+    const world = makeMockWorld({
+      rikishi: new Map([[r1.id, r1], [r2.id, r2]]),
+      heyas: new Map([["heya-1", heya as any]]),
+    });
+
+    // First withdrawal
+    const impact1 = recordGomenfuda(world, heya as Heya, r1, "hatsu", "injury");
+    const after1 = resolveImpacts(world, [impact1]);
+    const repAfter1 = (after1.heyas.get("heya-1") as any).reputation;
+
+    // Second withdrawal — pass the UPDATED heya from after1 so reputation
+    // is read from the post-first-withdrawal state.
+    const updatedHeya = after1.heyas.get("heya-1") as Heya;
+    const impact2 = recordGomenfuda(after1, updatedHeya, r2, "haru", "injury");
+    const after2 = resolveImpacts(after1, [impact2]);
+    const repAfter2 = (after2.heyas.get("heya-1") as any).reputation;
+
+    // First penalty = 5 (base), second penalty = round(5 * 1.5 * 1) = 8
+    const firstPenalty = GOMENFUDA_REPUTATION_PENALTY;
+    const secondPenalty = Math.round(
+      GOMENFUDA_REPUTATION_PENALTY * CONSECUTIVE_WITHDRAWAL_MULTIPLIER * 1
+    );
+    expect(repAfter1).toBe(50 - firstPenalty);
+    expect(repAfter2).toBe(50 - firstPenalty - secondPenalty);
+    // The key assertion: second penalty > first penalty (multiplier applied)
+    expect(secondPenalty).toBeGreaterThan(firstPenalty);
+  });
+});

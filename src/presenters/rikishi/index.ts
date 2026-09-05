@@ -73,6 +73,7 @@ import {
   toCareerDataDTO,
   toLineageDTO,
   toH2HDTO,
+  toKihakuDTO,
 } from "./transformers";
 
 /**
@@ -131,5 +132,8 @@ export function projectRikishi(r: Rikishi, world: WorldState): UIRikishiDTO {
 
     // H2H
     ...toH2HDTO(r),
+
+    // Kihaku (fighting spirit)
+    ...toKihakuDTO(r),
   };
 }

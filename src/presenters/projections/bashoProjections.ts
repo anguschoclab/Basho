@@ -15,6 +15,7 @@ import { compareRanks } from "../../engine/banzuke";
 import { toRankPosition } from "../../engine/types/banzuke";
 import { sortStandings } from "../../engine/utils/sort";
 import { isKeyDay, getSeasonalFlavor, BASHO_CALENDAR } from "../../engine/calendar";
+import { isNakabiDay } from "../../engine/systems/basho/NakabiService";
 import { getRikishiByDivision, getPlayerHeya } from "../../engine/queries";
 
 /**
@@ -104,6 +105,7 @@ export function projectBashoUIDigest(world: WorldState): BashoUIDigest | null {
     totalBouts: matches.length,
     dayProgress,
     isKeyDay: isKeyDay(day),
+    isNakabiDay: isNakabiDay(day),
     seasonalFlavor: getSeasonalFlavor(
       BASHO_CALENDAR[basho.bashoName]?.season ?? "autumn",
       world.seed

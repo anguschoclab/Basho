@@ -137,7 +137,12 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
     const sekitoriParticipants = Array.from(world.activeRikishiIds ?? [])
       .map((id) => getRikishi(world, id))
       .filter((r): r is NonNullable<typeof r> => r !== undefined)
-      .filter((r) => isSekitoriDivision(r.division) && !r.isRetired);
+      .filter((r) => isSekitoriDivision(r.division) && !r.isRetired)
+      .filter((r) => {
+        // Skip rikishi from heya that opted out of jungyo
+        const heya = world.heyas.get(r.heyaId);
+        return !heya?.jungyoOptOut;
+      });
     if (sekitoriParticipants.length > 0) {
       const exhibitionImpact = simulateExhibitionBasho(
         world,

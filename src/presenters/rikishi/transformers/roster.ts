@@ -18,6 +18,7 @@ import type { UIRosterEntry, UIRankDelta } from "../types";
 import { rankScore, calculateStreak } from "./career";
 import type { KeshoMawashi } from "../../../engine/types/keshoMawashi";
 import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
+import { computeKachiNokori } from "../../kachiNokori";
 
 /**
  * Project a rikishi into a roster entry for banzuke/roster display.
@@ -67,6 +68,7 @@ export function projectRosterEntry(
         : `${r.careerWins}-${r.careerLosses}`,
     currentBashoWins: r.currentBashoWins ?? 0,
     currentBashoLosses: r.currentBashoLosses ?? 0,
+    kachiNokori: computeKachiNokori(r),
     careerWins: r.careerWins,
     careerLosses: r.careerLosses,
     careerAbsences: r.careerAbsences ?? 0,

@@ -48,3 +48,7 @@ export { toVisualDTO, toH2HDTO } from "./visual";
 
 // Roster
 export { projectRosterEntry } from "./roster";
+
+// Kihaku (fighting spirit)
+export { toKihakuDTO } from "./kihaku";
+export type { RikishiKihakuDTO } from "./kihaku";

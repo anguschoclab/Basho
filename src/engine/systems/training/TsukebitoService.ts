@@ -153,3 +153,74 @@ export function applyWeeklyOtotodeshiEffects(
 
   return builder.build();
 }
+
+/**
+ * Player-controlled tsukebito assignment.
+ * Assigns a junior rikishi as a tsukebito to a senior sekitori.
+ * Validates eligibility and respects the MAX_TSUKEBITO_PER_SENIOR limit.
+ * Refuses if the junior is already assigned to another senior.
+ */
+export function setTsukebito(
+  world: WorldState,
+  seniorId: Id,
+  juniorId: Id
+): StateImpact {
+  const builder = createImpactBuilder("setTsukebito");
+
+  const senior = world.rikishi.get(seniorId);
+  const junior = world.rikishi.get(juniorId);
+  if (!senior || !junior) return builder.build();
+
+  // Validate eligibility
+  if (!isEligibleForTsukebito(senior)) return builder.build();
+  if (!isEligibleTsukebito(junior, senior)) return builder.build();
+
+  // Check if junior is already assigned to another senior
+  for (const r of world.rikishi.values()) {
+    if (r.id !== seniorId && r.tsukebitoIds?.includes(juniorId)) {
+      // Junior is already a tsukebito for another senior — refuse
+      return builder.build();
+    }
+  }
+
+  // Check if already assigned to this senior
+  const currentIds = senior.tsukebitoIds ?? [];
+  if (currentIds.includes(juniorId)) return builder.build();
+
+  // Respect max limit
+  if (currentIds.length >= MAX_TSUKEBITO_PER_SENIOR) return builder.build();
+
+  builder.updateRikishi(seniorId, {
+    tsukebitoIds: [...currentIds, juniorId],
+    tsukebitoPlayerSet: true,
+  });
+
+  return builder.build();
+}
+
+/**
+ * Player-controlled tsukebito removal.
+ * Removes a junior rikishi from a senior's tsukebito list.
+ */
+export function clearTsukebito(
+  world: WorldState,
+  seniorId: Id,
+  juniorId: Id
+): StateImpact {
+  const builder = createImpactBuilder("clearTsukebito");
+
+  const senior = world.rikishi.get(seniorId);
+  if (!senior) return builder.build();
+
+  const currentIds = senior.tsukebitoIds ?? [];
+  if (!currentIds.includes(juniorId)) return builder.build();
+
+  const remainingIds = currentIds.filter((id) => id !== juniorId);
+  builder.updateRikishi(seniorId, {
+    tsukebitoIds: remainingIds,
+    // Keep playerSet flag true even after clearing — player explicitly chose this state
+    tsukebitoPlayerSet: true,
+  });
+
+  return builder.build();
+}

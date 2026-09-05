@@ -212,6 +212,14 @@ export interface RikishiH2HDTO {
   h2h?: Record<string, { wins: number; losses: number; streak: number }>;
 }
 
+/** Kihaku (fighting spirit) score and label */
+export interface RikishiKihakuDTO {
+  /** 0-100 fighting spirit score (50 = neutral default) */
+  kihakuIsenScore: number;
+  /** Human-readable tier label */
+  label: string;
+}
+
 // ============================================================================
 // Composite DTO
 // ============================================================================
@@ -234,7 +242,8 @@ export interface UIRikishiDTO
     RikishiVisualDTO,
     RikishiCareerDataDTO,
     RikishiLineageDTO,
-    RikishiH2HDTO {
+    RikishiH2HDTO,
+    RikishiKihakuDTO {
   perceivedStats: RikishiPerceivedStatsDTO;
 }
 
@@ -267,6 +276,8 @@ export interface UIRosterEntry {
   careerRecord: string;
   currentBashoWins: number;
   currentBashoLosses: number;
+  /** Wins needed to achieve kachi-koshi (0 if already achieved) */
+  kachiNokori: number | null;
   careerWins: number;
   careerLosses: number;
   careerAbsences: number;

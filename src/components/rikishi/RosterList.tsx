@@ -202,6 +202,22 @@ export function RosterList({ rikishiList, onRikishiClick }: RosterListProps) {
                     <div className="text-[8px] uppercase font-black text-muted-foreground tracking-tighter mt-1">
                       Basho Record
                     </div>
+                    {r.kachiNokori !== null && r.kachiNokori > 0 && (
+                      <div
+                        className="text-[9px] font-mono uppercase tracking-widest text-gold/80 mt-1"
+                        data-testid={`kachi-nokori-${r.id}`}
+                      >
+                        {r.kachiNokori} to kachi-koshi
+                      </div>
+                    )}
+                    {r.kachiNokori === 0 && (
+                      <div
+                        className="text-[9px] font-mono uppercase tracking-widest text-primary mt-1"
+                        data-testid={`kachi-koshi-${r.id}`}
+                      >
+                        Kachi-koshi
+                      </div>
+                    )}
                   </div>
                 </div>
 

@@ -79,6 +79,7 @@ export function recordGomenfuda(
       bashoName,
       reason,
       reputationPenalty: penalty,
+      year: world.year,
     },
     { heyaId: heya.id, rikishiId: rikishi.id, importance: "notable" }
   );

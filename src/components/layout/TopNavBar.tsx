@@ -9,6 +9,8 @@ import { Sun, Moon, ChevronRight, Settings } from "lucide-react";
 import { formatYen } from "@/utils/engineUtils";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { getPlayerHeya } from "@/presenters/engineAccess";
+import { EraToneBadge } from "@/components/layout/EraToneBadge";
+import type { EraTone } from "@/presenters/eraTone";
 
 const RUNWAY_COLORS: Record<string, string> = {
   secure: "hsl(var(--success))",
@@ -107,6 +109,9 @@ export function TopNavBar() {
               {inBasho ? `Day ${bashoDay}` : phaseMeta.label}
             </span>
           </div>
+
+          {/* Era Tone badge — surfaces real world.meta.tone */}
+          {world?.meta?.tone && <EraToneBadge tone={world.meta.tone as EraTone} />}
 
           {/* Funds block */}
           {playerHeya && (

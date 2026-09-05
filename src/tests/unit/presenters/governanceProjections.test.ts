@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { projectGovernanceDerived } from "@/presenters/projections/governanceProjections";
+import { projectGovernanceDerived, projectGomenfuda } from "@/presenters/projections/governanceProjections";
 import type { Heya } from "@/engine/types/heya";
 import type { WorldState } from "@/engine/types/world";
 
@@ -170,5 +170,102 @@ describe("projectGovernanceDerived", () => {
     const result = projectGovernanceDerived(world, heya);
     expect(result.pendingRulings).toHaveLength(1);
     expect((result.pendingRulings[0] as { id: string }).id).toBe("r1");
+  });
+});
+
+describe("projectGomenfuda", () => {
+  function makeWorldWithEvents(events: any[], year = 2024): WorldState {
+    return {
+      heyas: new Map([["h1", { id: "h1", name: "Test" } as any]]),
+      playerHeyaId: "h1",
+      year,
+      events: { version: "1.0.0", log: events, dedupe: {} },
+    } as any;
+  }
+
+  function gomenfudaEvent(heyaId: string, year: number, rikishiId = "r1", reason = "injury"): any {
+    return {
+      type: "BASHO_STATUS",
+      category: "discipline",
+      data: {
+        status: "gomenfuda_posted",
+        heyaId,
+        rikishiId,
+        bashoName: "hatsu",
+        reason,
+        reputationPenalty: 5,
+        year,
+      },
+    };
+  }
+
+  it("returns count 0 when no gomenfuda events exist", () => {
+    const world = makeWorldWithEvents([]);
+    const result = projectGomenfuda(world, "h1");
+    expect(result.count).toBe(0);
+    expect(result.hasSanctionWarning).toBe(false);
+    expect(result.sanctionRiskPercent).toBe(0);
+  });
+
+  it("returns correct count for current year events", () => {
+    const world = makeWorldWithEvents([
+      gomenfudaEvent("h1", 2024, "r1"),
+      gomenfudaEvent("h1", 2024, "r2"),
+      gomenfudaEvent("h2", 2024, "r3"),
+    ]);
+    const result = projectGomenfuda(world, "h1");
+    expect(result.count).toBe(2);
+  });
+
+  it("does not count events from other years", () => {
+    const world = makeWorldWithEvents([
+      gomenfudaEvent("h1", 2023, "r1"),
+      gomenfudaEvent("h1", 2024, "r2"),
+    ]);
+    const result = projectGomenfuda(world, "h1");
+    expect(result.count).toBe(1);
+  });
+
+  it("returns hasSanctionWarning=true when count reaches threshold (3)", () => {
+    const world = makeWorldWithEvents([
+      gomenfudaEvent("h1", 2024, "r1"),
+      gomenfudaEvent("h1", 2024, "r2"),
+      gomenfudaEvent("h1", 2024, "r3"),
+    ]);
+    const result = projectGomenfuda(world, "h1");
+    expect(result.count).toBe(3);
+    expect(result.hasSanctionWarning).toBe(true);
+  });
+
+  it("computes sanctionRiskPercent as count/threshold * 100", () => {
+    const world = makeWorldWithEvents([
+      gomenfudaEvent("h1", 2024, "r1"),
+    ]);
+    const result = projectGomenfuda(world, "h1");
+    expect(result.count).toBe(1);
+    expect(result.threshold).toBe(3);
+    expect(result.sanctionRiskPercent).toBe(33);
+  });
+
+  it("clamps sanctionRiskPercent to 100", () => {
+    const world = makeWorldWithEvents([
+      gomenfudaEvent("h1", 2024, "r1"),
+      gomenfudaEvent("h1", 2024, "r2"),
+      gomenfudaEvent("h1", 2024, "r3"),
+      gomenfudaEvent("h1", 2024, "r4"),
+    ]);
+    const result = projectGomenfuda(world, "h1");
+    expect(result.sanctionRiskPercent).toBe(100);
+  });
+
+  it("returns recent events with details", () => {
+    const world = makeWorldWithEvents([
+      gomenfudaEvent("h1", 2024, "r1", "injury"),
+      gomenfudaEvent("h1", 2024, "r2", "scandal"),
+    ]);
+    const result = projectGomenfuda(world, "h1");
+    expect(result.recentEvents).toHaveLength(2);
+    expect(result.recentEvents[0].rikishiId).toBe("r2");
+    expect(result.recentEvents[0].reason).toBe("scandal");
   });
 });

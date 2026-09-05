@@ -15,7 +15,7 @@ import { useReducer, useCallback, useMemo, useEffect, useTransition, ReactNode }
 import { error as logError } from "@/engine/utils/Logger";
 import type { WorldState } from "@/engine/types/world";
 import { saveGame, loadGame, hasAutosave, loadAutosave, getSaveSlotInfos } from "@/engine/saveload";
-import { runHoliday, type HolidayConfig, type HolidayResult } from "@/engine/holiday";
+import { type HolidayConfig, type HolidayResult } from "@/engine/holiday";
 import { runAutoSim, type AutoSimConfig, type AutoSimResult } from "@/engine/autoSim";
 import { registerElectronStorage } from "./electronStorageProvider";
 
@@ -244,11 +244,12 @@ export function GameProvider({ children }: { children: ReactNode }) {
   const goOnHoliday = useCallback(
     (config: HolidayConfig): HolidayResult | null => {
       if (!state.world) return null;
-      const result = runHoliday(state.world, config);
-      dispatch(actions.runHoliday(result));
-      return result;
+      // Route through the worker so the holiday runs on the worker thread
+      // and the world state is synced back via the normal command pipeline.
+      sendCommand({ type: "GO_ON_HOLIDAY", config });
+      return null;
     },
-    [state.world]
+    [sendCommand]
   );
 
   const runAutoSimAction = useCallback(

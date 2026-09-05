@@ -9,6 +9,7 @@
 import type { SaveGame, SaveVersion } from "../types/save";
 import { CURRENT_SAVE_VERSION, KNOWN_SAVE_VERSIONS } from "../types/save";
 import { warn } from "../utils/Logger";
+import { generateGyoji, generateShimpan } from "../systems/officials/GyojiService";
 
 export interface MigrationContext {
   fromVersion: SaveVersion;
@@ -146,6 +147,64 @@ const migrateToV1_1_0: MigrationStep = (save, ctx) => {
   return next;
 };
 
+/**
+ * Migration 1.1.0 → 1.2.0
+ *
+ * Generates gyoji and shimpan pools for existing saves that predate
+ * the officials system. These pools are required for bout officiation
+ * (gyoji assignment, mono-ii shimpan panels).
+ */
+const migrateToV1_2_0: MigrationStep = (save, ctx) => {
+  const next = { ...save };
+  let world = next.world as unknown as Record<string, unknown>;
+
+  if (world) {
+    // Generate gyojiPool if missing
+    try {
+      if (!world.gyojiPool || !Array.isArray(world.gyojiPool)) {
+        const seed = (world.seed as string) ?? "migrated-save";
+        const ranks = [
+          "tate", "tate",
+          "fuku-tate", "fuku-tate",
+          "sanyaku", "sanyaku",
+          "makuuchi", "makuuchi", "makuuchi",
+          "juryo", "juryo", "juryo",
+          "makushita", "makushita",
+        ] as const;
+        world = {
+          ...world,
+          gyojiPool: ranks.map((rank, i) => generateGyoji(seed, rank, i)),
+        };
+        next.world = world as unknown as typeof next.world;
+        ctx.logs.push("migrateToV1_2_0: generated gyojiPool");
+      }
+    } catch (e) {
+      warn(`Migration: failed to generate gyojiPool: ${e}`, "MigrationService");
+      ctx.logs.push("migrateToV1_2_0: WARN gyojiPool generation failed");
+    }
+
+    // Generate shimpanPool if missing
+    try {
+      if (!world.shimpanPool || !Array.isArray(world.shimpanPool)) {
+        const seed = (world.seed as string) ?? "migrated-save";
+        world = {
+          ...world,
+          shimpanPool: Array.from({ length: 10 }, (_, i) => generateShimpan(seed, i)),
+        };
+        next.world = world as unknown as typeof next.world;
+        ctx.logs.push("migrateToV1_2_0: generated shimpanPool");
+      }
+    } catch (e) {
+      warn(`Migration: failed to generate shimpanPool: ${e}`, "MigrationService");
+      ctx.logs.push("migrateToV1_2_0: WARN shimpanPool generation failed");
+    }
+  }
+
+  next.version = "1.2.0";
+  ctx.logs.push("migrateToV1_2_0: version bump to 1.2.0");
+  return next;
+};
+
 // ── Helpers ────────────────────────────────────────────────────────────────
 
 const REQUIRED_SPONSOR_FIELDS = [
@@ -190,6 +249,7 @@ function isValidSponsor(entry: Record<string, unknown>): boolean {
  */
 const migrations: Partial<Record<SaveVersion, MigrationStep>> = {
   "1.0.0": migrateToV1_1_0,
+  "1.1.0": migrateToV1_2_0,
 };
 
 // ── Public API ─────────────────────────────────────────────────────────────

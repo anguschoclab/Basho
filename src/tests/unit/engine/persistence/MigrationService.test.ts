@@ -258,4 +258,51 @@ describe("MigrationService", () => {
       expect(result.save.world as object).not.toBe(originalWorldRef);
     });
   });
+
+  describe("version bump 1.1.0 → 1.2.0 (officials pools)", () => {
+    it("upgrades a 1.1.0 save to CURRENT_SAVE_VERSION", () => {
+      const save = makeMinimalSave("1.1.0");
+      const result = MigrationService.migrateSave(save);
+      expect(result.save.version).toBe(CURRENT_SAVE_VERSION);
+    });
+
+    it("generates gyojiPool when missing", () => {
+      const save = makeMinimalSave("1.1.0");
+      expect((save.world as any).gyojiPool).toBeUndefined();
+      const result = MigrationService.migrateSave(save);
+      const world = result.save.world as any;
+      expect(world.gyojiPool).toBeDefined();
+      expect(Array.isArray(world.gyojiPool)).toBe(true);
+      expect(world.gyojiPool.length).toBeGreaterThanOrEqual(6);
+    });
+
+    it("generates shimpanPool when missing", () => {
+      const save = makeMinimalSave("1.1.0");
+      expect((save.world as any).shimpanPool).toBeUndefined();
+      const result = MigrationService.migrateSave(save);
+      const world = result.save.world as any;
+      expect(world.shimpanPool).toBeDefined();
+      expect(Array.isArray(world.shimpanPool)).toBe(true);
+      expect(world.shimpanPool.length).toBeGreaterThanOrEqual(5);
+    });
+
+    it("does not overwrite existing gyojiPool", () => {
+      const save = makeMinimalSave("1.1.0");
+      const existingGyoji = [{ id: "existing-gyoji", name: "Test", rank: "tate", accuracy: 80, yearsActive: 5, boutsOfficiated: 10, callsReversed: 1 }];
+      (save.world as any).gyojiPool = existingGyoji;
+      const result = MigrationService.migrateSave(save);
+      const world = result.save.world as any;
+      // migrateSave deep-copies, so check by content not reference
+      expect(world.gyojiPool.length).toBe(1);
+      expect(world.gyojiPool[0].id).toBe("existing-gyoji");
+    });
+
+    it("includes at least one tate-gyoji in generated pool", () => {
+      const save = makeMinimalSave("1.1.0");
+      const result = MigrationService.migrateSave(save);
+      const world = result.save.world as any;
+      const tate = world.gyojiPool.find((g: any) => g.rank === "tate");
+      expect(tate).toBeDefined();
+    });
+  });
 });

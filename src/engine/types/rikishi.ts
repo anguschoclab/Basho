@@ -178,6 +178,8 @@ export interface Rikishi {
   tsuyuharaiId?: Id;
   /** IDs of junior rikishi assigned as tsukebito (personal attendants) */
   tsukebitoIds?: Id[];
+  /** True when the player has manually set tsukebito — skips auto-assignment */
+  tsukebitoPlayerSet?: boolean;
   /** True after the rikishi has completed the maezumo assessment stage */
   maezumoCompleted?: boolean;
   /** Rolling 3-basho win total for sekiwake/komusubi for Ozeki promotion qualification */

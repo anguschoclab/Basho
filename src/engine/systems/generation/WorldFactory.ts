@@ -33,6 +33,8 @@ import { resetImpactTimestampCounter } from "../../core/StateImpact";
 import { createStables } from "./HeyaFactory";
 import { createRosters } from "./RosterFactory";
 import { ensureCandidatePoolState } from "./CandidatePoolService";
+import { generateGyoji, generateShimpan } from "../officials/GyojiService";
+import type { Gyoji, Shimpan } from "../../types/gyoji";
 
 // Re-export factory functions for backward compatibility
 export { createHeyaWithOyakata, foundStable, createStables } from "./HeyaFactory";
@@ -111,6 +113,9 @@ export function generateInitialWorld(seed: string): WorldState {
     isInitialSeed: true,
     sponsorPool: generateInitialSponsorPool(seed),
     trainingState: new Map(),
+    // Officials: gyoji and shimpan pools for bout officiation
+    gyojiPool: generateInitialGyojiPool(seed),
+    shimpanPool: generateInitialShimpanPool(seed),
   };
 
   // 3. Generate Heya Brand Identities (for kesho-mawashi designs)
@@ -201,4 +206,27 @@ function createInitialFactions(rng: SeededRNG): Record<string, Faction> {
   });
 
   return factions;
+}
+
+/**
+ * Generate the initial gyoji pool: 2 tate, 2 fuku-tate, 2 sanyaku,
+ * 3 makuuchi, 3 juryo, 2 makushita = 14 gyoji total.
+ */
+function generateInitialGyojiPool(seed: string): Gyoji[] {
+  const ranks: Gyoji["rank"][] = [
+    "tate", "tate",
+    "fuku-tate", "fuku-tate",
+    "sanyaku", "sanyaku",
+    "makuuchi", "makuuchi", "makuuchi",
+    "juryo", "juryo", "juryo",
+    "makushita", "makushita",
+  ];
+  return ranks.map((rank, i) => generateGyoji(seed, rank, i));
+}
+
+/**
+ * Generate the initial shimpan pool: 10 judges.
+ */
+function generateInitialShimpanPool(seed: string): Shimpan[] {
+  return Array.from({ length: 10 }, (_, i) => generateShimpan(seed, i));
 }

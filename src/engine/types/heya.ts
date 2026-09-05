@@ -112,7 +112,21 @@ export interface Heya {
   trainingPhilosophy?: TrainingPhilosophy;
   legacyTier?: "emerging" | "established" | "dynasty" | "legend";
   regionalPresence?: Record<string, number>;
+  /** Phase 5: Foreign academies built in regions with sufficient presence. */
+  foreignAcademies?: ForeignAcademy[];
+  /** Player-owned youth academy for developing young prospects. */
+  youthAcademy?: import("../systems/recruitment/YouthAcademyService").YouthAcademyState;
+  /** Player opt-out from exhibition (jungyo) basho participation */
+  jungyoOptOut?: boolean;
 
   /** Consecutive basho of underperformance (no sekitori kachi-koshi). Used for non-financial merger. */
   consecutiveUnderperformanceBasho?: number;
+}
+
+/** A foreign academy built in a region with sufficient presence. */
+export interface ForeignAcademy {
+  region: string;
+  builtAtYear: number;
+  builtAtWeek: number;
+  candidateQualityBonus: number;
 }

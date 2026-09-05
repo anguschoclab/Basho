@@ -24,6 +24,7 @@ import type { UIRikishi } from "@/presenters/uiModels";
 import type { Rikishi } from "@/engine/types";
 import type { WorldState } from "@/presenters/uiDigest";
 import { RankBadge } from "./RankBadge";
+import { KihakuStatRow } from "./KihakuStatRow";
 
 // ── Scout Note Generator ──────────────────────────────────────────────────────
 
@@ -258,6 +259,10 @@ export function RikishiProfileTab({
           side={rikishi.side}
           variant="pill"
           showJapanese
+        />
+        <KihakuStatRow
+          kihakuIsenScore={rikishi.kihakuIsenScore ?? 50}
+          label={rikishi.label ?? "Steady Resolve"}
         />
         {dohyoIriStyle && (
           <div className="flex flex-wrap items-center gap-2">

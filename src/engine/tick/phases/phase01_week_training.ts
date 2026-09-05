@@ -80,7 +80,29 @@ export function phase01_week_training(world: WorldState): StateImpact {
   }
   for (const r of activeRikishi) {
     if (!isEligibleForTsukebito(r)) continue;
-    // Skip if already has tsukebito assigned
+    // Skip auto-assignment if the player has manually set tsukebito for this senior
+    if (r.tsukebitoPlayerSet) {
+      // Still apply weekly benefits for any existing player-set assignments
+      if (r.tsukebitoIds && r.tsukebitoIds.length > 0) {
+        const tsukebitoRikishi = [];
+        for (const id of r.tsukebitoIds) {
+          const rikishi = getRikishi(world, id);
+          if (rikishi) tsukebitoRikishi.push(rikishi);
+        }
+        if (tsukebitoRikishi.length > 0) {
+          tsukebitoImpacts.push(
+            applyWeeklyTsukebitoBenefits(
+              world,
+              { seniorId: r.id, tsukebitoIds: r.tsukebitoIds },
+              r,
+              tsukebitoRikishi
+            )
+          );
+        }
+      }
+      continue;
+    }
+    // Skip if already has tsukebito assigned (auto-assigned from a previous tick)
     if (r.tsukebitoIds && r.tsukebitoIds.length > 0) {
       const tsukebitoRikishi = [];
       for (const id of r.tsukebitoIds) {

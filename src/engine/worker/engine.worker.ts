@@ -28,6 +28,13 @@ import { shouldHaltAdvance } from "../loop/shouldHaltAdvance";
 import { issueGovernanceRuling } from "../systems/governance/ScandalService";
 import { handleMediaEvent } from "../systems/media/MediaEventService";
 import { withdrawRikishi, treatInjury } from "../systems/health/HealthActions";
+import { WorldCircuitService } from "../systems/worldCircuit/WorldCircuitService";
+import { runHoliday } from "../holiday";
+import { setTsukebito, clearTsukebito } from "../systems/training/TsukebitoService";
+import {
+  buildYouthAcademy,
+  upgradeYouthAcademy,
+} from "../systems/recruitment/YouthAcademyService";
 import { investInFacility } from "../facilities";
 import { InfrastructureService } from "../systems/economy/InfrastructureService";
 import { assignMentor } from "../lineage";
@@ -498,6 +505,86 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
             [cmd.rikishiId]: cmd.config,
           },
         };
+        syncAndDigest();
+      }
+    },
+    ACCEPT_EXHIBITION: (cmd) => {
+      if (currentWorld) {
+        const pending = currentWorld.pendingExhibitions ?? [];
+        const invitation = pending.find((i) => i.id === cmd.invitationId);
+        if (invitation) {
+          const heyaId = invitation.heyaId;
+          const impact = WorldCircuitService.processExhibitionResult(
+            currentWorld,
+            heyaId,
+            cmd.rikishiId,
+            invitation
+          );
+          currentWorld = resolveImpacts(currentWorld, [impact]);
+          // Remove the accepted invitation from pending
+          const remaining = (currentWorld.pendingExhibitions ?? []).filter(
+            (i) => i.id !== cmd.invitationId
+          );
+          currentWorld = { ...currentWorld, pendingExhibitions: remaining };
+          syncAndDigest();
+        }
+      }
+    },
+    DECLINE_EXHIBITION: (cmd) => {
+      if (currentWorld) {
+        const remaining = (currentWorld.pendingExhibitions ?? []).filter(
+          (i) => i.id !== cmd.invitationId
+        );
+        currentWorld = { ...currentWorld, pendingExhibitions: remaining };
+        syncAndDigest();
+      }
+    },
+    GO_ON_HOLIDAY: (cmd) => {
+      if (currentWorld) {
+        const result = runHoliday(currentWorld, cmd.config);
+        // runHoliday returns reports[] — the last report is the final world state
+        if (result && result.reports.length > 0) {
+          currentWorld = result.reports[result.reports.length - 1];
+        }
+        syncAndDigest();
+      }
+    },
+    SET_TSUKEBITO: (cmd) => {
+      if (currentWorld) {
+        const impact = setTsukebito(currentWorld, cmd.seniorId, cmd.juniorId);
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        syncAndDigest();
+      }
+    },
+    CLEAR_TSUKEBITO: (cmd) => {
+      if (currentWorld) {
+        const impact = clearTsukebito(currentWorld, cmd.seniorId, cmd.juniorId);
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        syncAndDigest();
+      }
+    },
+    BUILD_FOREIGN_ACADEMY: (cmd) => {
+      if (currentWorld) {
+        const impact = WorldCircuitService.buildForeignAcademy(
+          currentWorld,
+          cmd.heyaId,
+          cmd.region
+        );
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        syncAndDigest();
+      }
+    },
+    BUILD_YOUTH_ACADEMY: (cmd) => {
+      if (currentWorld) {
+        const impact = buildYouthAcademy(currentWorld, cmd.heyaId);
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        syncAndDigest();
+      }
+    },
+    UPGRADE_YOUTH_ACADEMY: (cmd) => {
+      if (currentWorld) {
+        const impact = upgradeYouthAcademy(currentWorld, cmd.heyaId);
+        currentWorld = resolveImpacts(currentWorld, [impact]);
         syncAndDigest();
       }
     },

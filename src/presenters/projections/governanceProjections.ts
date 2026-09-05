@@ -183,3 +183,69 @@ export function projectGovernancePage(world: WorldState, heyaId: string): Govern
     governanceLog: world.governanceLog ?? [],
   };
 }
+
+// ── Gomenfuda (withdrawal apology) projection ──────────────────────────────
+
+export interface GomenfudaProjection {
+  /** Current year's gomenfuda count for the heya */
+  count: number;
+  /** Sanction threshold (3 per year) */
+  threshold: number;
+  /** Whether the heya has a sanction warning */
+  hasSanctionWarning: boolean;
+  /** Sanction risk percentage (0-100) based on count/threshold */
+  sanctionRiskPercent: number;
+  /** Recent gomenfuda events for this heya */
+  recentEvents: Array<{
+    rikishiId: string;
+    bashoName: string;
+    reason: string;
+    reputationPenalty: number;
+    year: number;
+  }>;
+}
+
+/**
+ * Project gomenfuda state for a heya. Reads the real event log and
+ * countGomenfudaForHeya from GomenfudaService.
+ */
+export function projectGomenfuda(world: WorldState, heyaId: string): GomenfudaProjection {
+  const year = world.year;
+  const log = world.events?.log ?? [];
+  const SANCTION_THRESHOLD = 3;
+
+  const gomenfudaEvents = log.filter(
+    (e: { type: string; category: string; data: Record<string, unknown> }) =>
+      e.type === "BASHO_STATUS" &&
+      e.category === "discipline" &&
+      e.data?.status === "gomenfuda_posted" &&
+      e.data?.heyaId === heyaId
+  );
+
+  const currentYearEvents = gomenfudaEvents.filter(
+    (e: { data: Record<string, unknown> }) => e.data?.year === year
+  );
+
+  const count = currentYearEvents.length;
+  const hasSanctionWarning = count >= SANCTION_THRESHOLD;
+  const sanctionRiskPercent = Math.min(100, Math.round((count / SANCTION_THRESHOLD) * 100));
+
+  const recentEvents = gomenfudaEvents
+    .slice(-5)
+    .reverse()
+    .map((e: { data: Record<string, unknown> }) => ({
+      rikishiId: String(e.data?.rikishiId ?? ""),
+      bashoName: String(e.data?.bashoName ?? ""),
+      reason: String(e.data?.reason ?? ""),
+      reputationPenalty: Number(e.data?.reputationPenalty ?? 0),
+      year: Number(e.data?.year ?? 0),
+    }));
+
+  return {
+    count,
+    threshold: SANCTION_THRESHOLD,
+    hasSanctionWarning,
+    sanctionRiskPercent,
+    recentEvents,
+  };
+}

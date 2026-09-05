@@ -54,6 +54,7 @@ export interface BashoUIDigest {
   totalBouts: number;
   dayProgress: number;
   isKeyDay: boolean;
+  isNakabiDay: boolean;
   seasonalFlavor?: string;
 }
 
