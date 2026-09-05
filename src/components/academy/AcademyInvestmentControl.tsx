@@ -2,7 +2,6 @@
  * AcademyInvestmentControl — budget display and investment controls.
  */
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { Coins } from "lucide-react";
 
 interface AcademyInvestmentControlProps {
@@ -22,7 +21,6 @@ export function AcademyInvestmentControl({ budget, onInvest }: AcademyInvestment
         </span>
         <span className="font-mono">¥{budget.toLocaleString()}</span>
       </div>
-      <Progress value={Math.min(100, budget / 1000)} className="h-1.5" />
       {onInvest && (
         <div className="flex gap-2">
           {INVEST_AMOUNTS.map((amount) => (

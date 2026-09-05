@@ -8,6 +8,10 @@
 import type { WorldState } from "../../engine/types/world";
 import type { Heya } from "../../engine/types/heya";
 import type { GovernanceRuling, Faction } from "../../engine/types/economy";
+import { POLITICAL_FAVORS } from "../../engine/systems/governance/PoliticalFavorsService";
+
+// Re-export for UI access (engine imports are restricted in pages)
+export { POLITICAL_FAVORS };
 import type { StatItem } from "@/components/layout/control-center";
 import { selectHeyasWithCriticalWelfare, selectMergerCandidates } from "../selectors";
 import { toScandalBand } from "@/engine/descriptorBands";

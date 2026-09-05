@@ -16,7 +16,7 @@ import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
 import { SCANDAL_LABELS, formatFinePenalty, getStatusLabel } from "@/presenters/uiDigest";
 import { getPlayerHeya } from "@/presenters/engineAccess";
-import { projectGovernanceDerived, projectGomenfuda } from "@/presenters/projections/governanceProjections";
+import { projectGovernanceDerived, projectGomenfuda, POLITICAL_FAVORS } from "@/presenters/projections/governanceProjections";
 import { getYokozunaCandidates } from "@/presenters/projections/promotionProjections";
 import { selectClosedHeyas, selectYokozunaVacancyStreak } from "@/presenters/selectors";
 import { getOyakata, getGlobalCupChampion } from "@/presenters/worldAccess";
@@ -597,7 +597,7 @@ export default function GovernancePage() {
                       label: "Political Capital",
                       value: heya.politicalCapital ?? 0,
                       tone: (heya.politicalCapital ?? 0) >= 100 ? "gold" : "default",
-                      sub: "Spending 100 boosts Ichimon influence by 20",
+                      sub: "Spend capital to fuel political favors",
                     },
                   ]}
                   actions={
@@ -627,29 +627,11 @@ export default function GovernancePage() {
               <div className="space-y-4">
                 <SectionHeader eyebrow="── FAVORS ──" title="JSA Political Favors" />
                 <div className="grid gap-3">
-                  {[
-                    {
-                      id: "matchmaking_avoid",
-                      label: "Matchmaking Influence",
-                      description: "Avoid a specific rival for one day.",
-                      cost: 15,
-                      icon: ShieldAlert,
-                    },
-                    {
-                      id: "advance_payout",
-                      label: "Emergency Stipend",
-                      description: "Immediate ¥5,000,000 cash infusion.",
-                      cost: 25,
-                      icon: Coins,
-                    },
-                    {
-                      id: "governance_pardon",
-                      label: "Council Clemency",
-                      description: "Wipe 10 points from your Scandal Score.",
-                      cost: 40,
-                      icon: Scale,
-                    },
-                  ].map((favor) => (
+                  {POLITICAL_FAVORS.map((favor) => {
+                    const icon = favor.id === "matchmaking_avoid" ? ShieldAlert
+                      : favor.id === "advance_payout" ? Coins
+                      : Scale;
+                    return (
                     <Card
                       key={favor.id}
                       className="relative overflow-hidden group border-border/40 bg-card/30 backdrop-blur-xs"
@@ -657,7 +639,7 @@ export default function GovernancePage() {
                       <CardContent className="p-3.5 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <div className="p-2 bg-muted/40 rounded shadow-inner">
-                            <favor.icon className="h-4.5 w-4.5 text-primary/80" />
+                            {(() => { const Icon = icon; return <Icon className="h-4.5 w-4.5 text-primary/80" />; })()}
                           </div>
                           <div>
                             <div className="text-[13px] font-bold text-foreground/90">
@@ -695,7 +677,8 @@ export default function GovernancePage() {
                         </div>
                       </CardContent>
                     </Card>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 

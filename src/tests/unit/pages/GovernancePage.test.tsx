@@ -149,6 +149,11 @@ vi.mock("@/presenters/projections/governanceProjections", () => ({
     sanctionRiskPercent: 0,
     recentEvents: [],
   }),
+  POLITICAL_FAVORS: [
+    { id: "matchmaking_avoid", label: "Matchmaking Influence", description: "Request the Shimpan to avoid a specific rival on Day 1 of the tournament.", cost: 15 },
+    { id: "advance_payout", label: "JSA Payout Advance", description: "Request an immediate advance on your stable's monthly stipend.", cost: 25 },
+    { id: "governance_pardon", label: "Governance Clemency", description: "Use faction influence to wipe a minor governance warning from your record.", cost: 40 },
+  ],
 }));
 
 vi.mock("@/presenters/selectors", () => ({
