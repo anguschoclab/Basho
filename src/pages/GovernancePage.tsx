@@ -16,7 +16,7 @@ import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
 import { SCANDAL_LABELS, formatFinePenalty, getStatusLabel } from "@/presenters/uiDigest";
 import { getPlayerHeya } from "@/presenters/engineAccess";
-import { projectGovernanceDerived } from "@/presenters/projections/governanceProjections";
+import { projectGovernanceDerived, projectGomenfuda } from "@/presenters/projections/governanceProjections";
 import { selectClosedHeyas, selectYokozunaVacancyStreak } from "@/presenters/selectors";
 import { getOyakata, getGlobalCupChampion } from "@/presenters/worldAccess";
 import type { Faction } from "@/engine/types/economy";
@@ -352,6 +352,38 @@ export default function GovernancePage() {
               rows={derived.historyRows}
               emptyText="No rulings on record. Keep it that way."
             />
+
+            {/* Gomenfuda (Withdrawal Apology) History */}
+            {(() => {
+              const gomen = projectGomenfuda(world, heya?.id ?? "");
+              if (!gomen || gomen.recentEvents.length === 0) return null;
+              return (
+                <Card data-testid="gomenfuda-panel">
+                  <CardHeader>
+                    <CardTitle className="text-sm">Gomenfuda History</CardTitle>
+                    <CardDescription>
+                      Withdrawal apologies: {gomen.count}/{gomen.threshold} this year
+                      {gomen.hasSanctionWarning && (
+                        <span className="text-destructive ml-2">— sanction risk</span>
+                      )}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-1">
+                    {gomen.recentEvents.map((e, i) => (
+                      <div
+                        key={i}
+                        className="text-xs p-2 rounded border border-border/50"
+                        data-testid={`gomenfuda-entry-${i}`}
+                      >
+                        <span className="font-medium">{e.rikishiId}</span>
+                        <span className="text-muted-foreground ml-2">{e.reason}</span>
+                        <span className="text-muted-foreground ml-2">({e.bashoName})</span>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              );
+            })()}
 
             {derived.welfareRows.length > 0 && (
               <ListCard

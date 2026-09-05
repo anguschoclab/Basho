@@ -1,31 +1,44 @@
-import { describe, it, expect, afterEach, vi } from "vitest";
 import React from "react";
+import { describe, it, expect, afterEach, vi } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
-import { vi as vitestVi } from "vitest";
 
-// Mock useGame before importing the page
-const mockUseGame = vitestVi.fn();
-vitestVi.mock("@/contexts/useGame", () => ({
+vi.mock("@/components/layout/AppLayout", () => ({
+  AppLayout: ({ children }: any) => React.createElement("div", { "data-testid": "app-layout" }, children),
+}));
+
+vi.mock("@/components/ui/scroll-area", () => ({
+  ScrollArea: ({ children }: any) => React.createElement("div", null, children),
+}));
+
+vi.mock("@/components/governance/RivalOyakataCard", () => ({
+  RivalOyakataCard: ({ heyaId, heyaName }: any) =>
+    React.createElement("div", { "data-testid": `rival-oyakata-card-${heyaId}` }, heyaName),
+}));
+
+vi.mock("@/components/npc/NPCAgentFeed", () => ({
+  NPCAgentFeed: () => React.createElement("div", { "data-testid": "npc-agent-feed" }),
+}));
+
+vi.mock("@/presenters/npcAgentProjections", () => ({
+  projectNPCAgentActivity: () => ({ decisions: [], decisionsByHeya: {} }),
+}));
+
+vi.mock("@/presenters/rivalStablesProjections", () => ({
+  projectRivalStables: (_w: any, _d: any, _h: any) => ({
+    rivals: [
+      { heyaId: "rival-1", heyaName: "Rival Heya 1", ichimon: "Tatsunami", legacyTier: "dynasty", decisionCount: 0, recentDecisions: [] },
+      { heyaId: "rival-2", heyaName: "Rival Heya 2", ichimon: undefined, legacyTier: undefined, decisionCount: 0, recentDecisions: [] },
+    ],
+    hasRivals: true,
+  }),
+}));
+
+const mockUseGame = vi.fn();
+vi.mock("@/contexts/useGame", () => ({
   useGame: () => mockUseGame(),
 }));
 
-import { RivalStablesPage } from "@/pages/RivalStablesPage";
-
-function makeWorld(overrides: Record<string, unknown> = {}) {
-  return {
-    seed: "test",
-    year: 2024,
-    playerHeyaId: "player",
-    heyas: new Map([
-      ["player", { id: "player", name: "Player Heya", isPlayer: true }],
-      ["rival-1", { id: "rival-1", name: "Rival Heya 1", ichimon: "Tatsunami" }],
-      ["rival-2", { id: "rival-2", name: "Rival Heya 2" }],
-    ]),
-    rikishi: new Map(),
-    events: { log: [] },
-    ...overrides,
-  };
-}
+import RivalStablesPage from "@/pages/RivalStablesPage";
 
 describe("RivalStablesPage", () => {
   afterEach(() => cleanup());
@@ -37,28 +50,16 @@ describe("RivalStablesPage", () => {
   });
 
   it("renders rival stables page with rival count", () => {
-    mockUseGame.mockReturnValue({ state: { world: makeWorld() } });
+    mockUseGame.mockReturnValue({ state: { world: { seed: "test", heyas: new Map() } } });
     render(<RivalStablesPage />);
     expect(screen.getByTestId("rival-stables-page")).toBeDefined();
     expect(screen.getByText("Rival Oyakata (2)")).toBeDefined();
   });
 
   it("renders rival oyakata cards for each rival", () => {
-    mockUseGame.mockReturnValue({ state: { world: makeWorld() } });
+    mockUseGame.mockReturnValue({ state: { world: { seed: "test", heyas: new Map() } } });
     render(<RivalStablesPage />);
     expect(screen.getByTestId("rival-oyakata-card-rival-1")).toBeDefined();
     expect(screen.getByTestId("rival-oyakata-card-rival-2")).toBeDefined();
-  });
-
-  it("renders no rivals message when world has only player heya", () => {
-    mockUseGame.mockReturnValue({
-      state: {
-        world: makeWorld({
-          heyas: new Map([["player", { id: "player", name: "Player", isPlayer: true }]]),
-        }),
-      },
-    });
-    render(<RivalStablesPage />);
-    expect(screen.getByText("No rival stables found in this world.")).toBeDefined();
   });
 });

@@ -101,6 +101,8 @@ interface BoutNarrativeModalProps {
   bashoName?: BashoName;
   day?: number;
   autoPlay?: boolean;
+  gyojiName?: string;
+  gyojiAccuracy?: number;
 }
 
 /**
@@ -131,6 +133,8 @@ export function BoutNarrativeModal({
   west,
   result,
   autoPlay = true,
+  gyojiName,
+  gyojiAccuracy,
 }: BoutNarrativeModalProps) {
   const handleClose = onClose ?? (() => onOpenChange?.(false));
   const pbpLines: PbpLine[] = useMemo(() => result.pbpLines ?? [], [result.pbpLines]);
@@ -215,6 +219,20 @@ export function BoutNarrativeModal({
               <p className="text-[10px] text-west uppercase tracking-widest">West</p>
             </div>
           </div>
+
+          {/* Gyoji badge */}
+          {gyojiName && (
+            <div className="flex items-center justify-center gap-2 mb-2" data-testid="gyoji-badge">
+              <Badge variant="outline" className="text-[10px]">
+                Gyoji: {gyojiName}
+              </Badge>
+              {gyojiAccuracy !== undefined && (
+                <Badge variant="secondary" className="text-[10px]">
+                  Accuracy {gyojiAccuracy}%
+                </Badge>
+              )}
+            </div>
+          )}
 
           {/* Replay viewer */}
           <BoutReplayViewer

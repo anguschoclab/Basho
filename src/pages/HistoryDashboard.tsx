@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/layout/control-center";
-import { Trophy, Building2, ScrollText, Crown, AlertCircle } from "lucide-react";
+import { Trophy, Building2, ScrollText, Crown, AlertCircle, Users } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import type { Rikishi, Heya } from "@/presenters/uiDigest";
 import type { RecordEntry, WorldRecords } from "@/engine/types/records";
@@ -15,7 +15,9 @@ import { getAllHeyas } from "@/presenters/worldAccess";
 import { SortMenu } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
 import { RANK_HIERARCHY } from "@/presenters/uiDigest";
+import type { WorldState } from "@/presenters/uiDigest";
 import type { Rank } from "@/engine/types/banzuke";
+import { selectCohortSummaries } from "@/presenters/projections/historyCohortProjections";
 
 /**
  * HistoryDashboard - The Museum of Sumo
@@ -52,7 +54,7 @@ export const HistoryDashboard = () => {
         />
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full max-w-2xl grid-cols-2">
+          <TabsList className="grid w-full max-w-2xl grid-cols-3">
             <TabsTrigger value="records" className="flex items-center gap-2">
               <Trophy className="h-4 w-4" />
               Records
@@ -60,6 +62,10 @@ export const HistoryDashboard = () => {
             <TabsTrigger value="stables" className="flex items-center gap-2">
               <Building2 className="h-4 w-4" />
               Stables
+            </TabsTrigger>
+            <TabsTrigger value="cohorts" className="flex items-center gap-2">
+              <Users className="h-4 w-4" />
+              Cohorts
             </TabsTrigger>
           </TabsList>
 
@@ -69,6 +75,10 @@ export const HistoryDashboard = () => {
 
           <TabsContent value="stables">
             <StablesTab heyas={getAllHeyas(world)} retired={selectRetiredRikishi(world)} />
+          </TabsContent>
+
+          <TabsContent value="cohorts">
+            <CohortsTab world={world} />
           </TabsContent>
         </Tabs>
       </div>
@@ -276,3 +286,71 @@ const StablesTab = ({ heyas, retired }: { heyas: Heya[]; retired: Rikishi[] }) =
     </div>
   );
 };
+
+function CohortsTab({ world }: { world: WorldState }) {
+  const cohorts = selectCohortSummaries(world);
+
+  if (cohorts.length === 0) {
+    return (
+      <EmptyState
+        icon={Users}
+        title="No Cohorts Available"
+        description="Recruitment cohorts will appear here once rikishi have been recruited."
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-4" data-testid="cohorts-tab">
+      <PageHeader
+        eyebrow="── INTAKE CLASSES ──"
+        title="Recruitment Cohorts"
+        lede="Track recruit classes and their development trajectories over time."
+      />
+      <div className="grid gap-3 md:grid-cols-2">
+        {cohorts.map((c) => (
+          <Card key={c.cohortId} data-testid={`cohort-${c.cohortId}`}>
+            <CardHeader>
+              <CardTitle className="text-sm font-mono">{c.cohortId}</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <div className="grid grid-cols-4 gap-2 text-xs">
+                <div>
+                  <div className="text-muted-foreground">Members</div>
+                  <div className="font-medium tabular-nums">{c.totalMembers}</div>
+                </div>
+                <div>
+                  <div className="text-muted-foreground">Active</div>
+                  <div className="font-medium tabular-nums">{c.activeMembers}</div>
+                </div>
+                <div>
+                  <div className="text-muted-foreground">Sekitori</div>
+                  <div className="font-medium tabular-nums">{c.sekitoriCount}</div>
+                </div>
+                <div>
+                  <div className="text-muted-foreground">Yusho</div>
+                  <div className="font-medium tabular-nums">{c.totalYusho}</div>
+                </div>
+              </div>
+              {c.topProspects.length > 0 && (
+                <div className="space-y-1 pt-2 border-t border-border/30">
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-wider">
+                    Top Prospects
+                  </span>
+                  {c.topProspects.map((p) => (
+                    <div key={p.rikishiId} className="flex justify-between text-xs">
+                      <span className={p.isRetired ? "text-muted-foreground line-through" : ""}>
+                        {p.shikona}
+                      </span>
+                      <Badge variant="outline" className="text-[9px]">{p.rank}</Badge>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}

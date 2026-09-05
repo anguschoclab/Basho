@@ -25,6 +25,7 @@ import { HistoryService } from "../../systems/meta/HistoryService";
 import { runElections } from "../../systems/governance/ScandalService";
 import { DynastyService } from "../../systems/legacy/DynastyService";
 import { WorldCircuitService } from "../../systems/worldCircuit/WorldCircuitService";
+import { generateYearlyIntake, getYouthAcademy } from "../../systems/recruitment/YouthAcademyService";
 import { TrainingPhilosophyService } from "../../systems/legacy/TrainingPhilosophyService";
 import { TalentPoolService } from "../../systems/generation/TalentPoolService";
 import { performKanrekiCeremony, isEligibleForKanreki } from "../../governance/kanrekiCeremony";
@@ -47,6 +48,13 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
   // 0. Era Drift & Meta Evolution (E6)
   const eraImpact = processYearlyEraDrift(world);
   builder.merge(eraImpact);
+
+  // 0.0 Youth Academy — yearly intake generation
+  for (const heya of world.heyas.values()) {
+    if (getYouthAcademy(heya)) {
+      builder.merge(generateYearlyIntake(world, heya.id));
+    }
+  }
 
   // 0.1 Infrastructure Construction Tick (P2)
   const infraImpact = InfrastructureService.processCompletionTick(world);

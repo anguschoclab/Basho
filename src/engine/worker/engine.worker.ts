@@ -34,6 +34,9 @@ import { setTsukebito, clearTsukebito } from "../systems/training/TsukebitoServi
 import {
   buildYouthAcademy,
   upgradeYouthAcademy,
+  investInAcademy,
+  hireAcademyStaff,
+  promoteIntake,
 } from "../systems/recruitment/YouthAcademyService";
 import { investInFacility } from "../facilities";
 import { InfrastructureService } from "../systems/economy/InfrastructureService";
@@ -584,6 +587,27 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
     UPGRADE_YOUTH_ACADEMY: (cmd) => {
       if (currentWorld) {
         const impact = upgradeYouthAcademy(currentWorld, cmd.heyaId);
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        syncAndDigest();
+      }
+    },
+    INVEST_ACADEMY: (cmd) => {
+      if (currentWorld) {
+        const impact = investInAcademy(currentWorld, cmd.heyaId, cmd.amount);
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        syncAndDigest();
+      }
+    },
+    HIRE_ACADEMY_STAFF: (cmd) => {
+      if (currentWorld) {
+        const impact = hireAcademyStaff(currentWorld, cmd.heyaId, cmd.role);
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        syncAndDigest();
+      }
+    },
+    PROMOTE_INTAKE: (cmd) => {
+      if (currentWorld) {
+        const impact = promoteIntake(currentWorld, cmd.heyaId, cmd.prospectId);
         currentWorld = resolveImpacts(currentWorld, [impact]);
         syncAndDigest();
       }

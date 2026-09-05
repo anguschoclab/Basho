@@ -1,36 +1,29 @@
 import { describe, it, expect } from "vitest";
 import { generateInitialWorld } from "@/engine/systems/generation/WorldFactory";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
-import { createImpactBuilder } from "@/engine/core/ImpactBuilder";
 import { setTsukebito, clearTsukebito } from "@/engine/systems/training/TsukebitoService";
-import { getRikishi } from "@/engine/queries";
 import type { WorldState } from "@/engine/types/world";
-import type { StateImpact } from "@/engine/core/StateImpact";
+import type { Rikishi } from "@/engine/types/rikishi";
 
-function findSeniorAndJunior(world: WorldState) {
-  const rikishi = Array.from(world.rikishi.values()).filter((r) => !r.isRetired);
-  // Find a senior (sekitori) and a junior (lower rank)
-  const seniors = rikishi.filter((r) => {
-    const rank = r.rank ?? "";
-    return ["Yokozuna", "Ozeki", "Sekiwake", "Komusubi", "Maegashira-1", "Maegashira-2"].some(
-      (s) => rank.startsWith(s)
-    );
-  });
-  const juniors = rikishi.filter((r) => {
-    const rank = r.rank ?? "";
-    return ["Jonokuchi", "Jonidan", "Sandanme", "Makushita"].some((s) => rank.startsWith(s));
-  });
-  return {
-    senior: seniors[0] ?? rikishi[0],
-    junior: juniors[0] ?? rikishi[1],
-  };
+function findSenior(world: WorldState): Rikishi {
+  for (const r of world.rikishi.values()) {
+    if ((r.rankNumber ?? 99) <= 3 && !r.isRetired) return r;
+  }
+  throw new Error("No senior rikishi found");
+}
+
+function findJunior(world: WorldState, senior: Rikishi): Rikishi {
+  for (const r of world.rikishi.values()) {
+    if ((r.rankNumber ?? 99) > 10 && !r.isRetired && r.heyaId === senior.heyaId) return r;
+  }
+  throw new Error("No junior rikishi found in same heya");
 }
 
 describe("Phase 01 — Tsukebito player-set skip", () => {
   it("setTsukebito marks the senior with tsukebitoPlayerSet=true", () => {
     const world = generateInitialWorld("tsukebito-playerset-1");
-    const { senior, junior } = findSeniorAndJunior(world);
-    if (!senior || !junior) return;
+    const senior = findSenior(world);
+    const junior = findJunior(world, senior);
 
     const impact = setTsukebito(world, senior.id, junior.id);
     const updated = resolveImpacts(world, [impact]);
@@ -41,8 +34,8 @@ describe("Phase 01 — Tsukebito player-set skip", () => {
 
   it("clearTsukebito keeps tsukebitoPlayerSet=true (player explicitly chose)", () => {
     const world = generateInitialWorld("tsukebito-playerset-2");
-    const { senior, junior } = findSeniorAndJunior(world);
-    if (!senior || !junior) return;
+    const senior = findSenior(world);
+    const junior = findJunior(world, senior);
 
     let current = resolveImpacts(world, [setTsukebito(world, senior.id, junior.id)]);
     const s1 = current.rikishi.get(senior.id);
@@ -56,8 +49,7 @@ describe("Phase 01 — Tsukebito player-set skip", () => {
 
   it("tsukebitoPlayerSet defaults to undefined on new rikishi", () => {
     const world = generateInitialWorld("tsukebito-playerset-3");
-    const { senior } = findSeniorAndJunior(world);
-    if (!senior) return;
+    const senior = findSenior(world);
     expect(senior.tsukebitoPlayerSet).toBeUndefined();
   });
 });

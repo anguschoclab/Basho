@@ -25,6 +25,9 @@ import { PlayoffBracket } from "@/components/game/PlayoffBracket";
 import { BanzukeReveal } from "@/components/game/BanzukeReveal";
 import { KeyBoutsSection } from "@/components/game/KeyBoutsSection";
 import { selectKeyBouts } from "@/presenters/projections/recapProjections";
+import { selectTopKihakuPerformers } from "@/presenters/projections/recapKihakuProjections";
+import { selectKachiNokoriLeaders } from "@/presenters/projections/recapKachiNokoriProjections";
+import { selectExhibitionResults } from "@/presenters/projections/recapExhibitionProjections";
 import { compareBanzuke, formatRankPosition, RANK_HIERARCHY } from "@/presenters/engineAccess";
 import { makeBashoKey } from "@/presenters/engineAccess";
 import { EntityCollection } from "@/presenters/engineAccess";
@@ -384,6 +387,95 @@ export default function RecapPage() {
 
         {/* ═══ BOUTS OF THE BASHO HIGHLIGHT REEL ═══ */}
         <KeyBoutsSection moments={keyMoments} getRikishi={getRikishiForBout} />
+
+        {/* ═══ KIHAKU TOP-5 PERFORMERS ═══ */}
+        {selectTopKihakuPerformers(world).length > 0 && (
+          <section data-testid="kihaku-performers-section">
+            <div className="flex items-center gap-4 mb-3">
+              <h2 className="text-xl font-semibold">Fighting Spirit Leaders</h2>
+            </div>
+            <div className="space-y-2">
+              {selectTopKihakuPerformers(world).map((p, i) => (
+                <div
+                  key={p.rikishiId}
+                  className="flex items-center justify-between p-3 rounded border border-border/50"
+                  data-testid={`kihaku-performer-${i}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-muted-foreground tabular-nums text-sm">#{i + 1}</span>
+                    <span className="font-medium">{p.shikona}</span>
+                    <span className="text-xs text-muted-foreground">{p.heyaName}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm tabular-nums">{p.kihakuIsenScore}</span>
+                    <span className="text-xs text-muted-foreground">{p.label}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ═══ KACHI-NOKORI WIN MARGINS ═══ */}
+        {selectKachiNokoriLeaders(world).length > 0 && (
+          <section data-testid="kachi-nokori-section">
+            <div className="flex items-center gap-4 mb-3">
+              <h2 className="text-xl font-semibold">Win Margins (Kachi-nokori)</h2>
+            </div>
+            <div className="space-y-2">
+              {selectKachiNokoriLeaders(world).map((k, i) => (
+                <div
+                  key={k.rikishiId}
+                  className="flex items-center justify-between p-3 rounded border border-border/50"
+                  data-testid={`kachi-nokori-${i}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-muted-foreground tabular-nums text-sm">#{i + 1}</span>
+                    <span className="font-medium">{k.shikona}</span>
+                    <span className="text-xs text-muted-foreground">{k.heyaName}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-sm tabular-nums">
+                    <span className="text-muted-foreground">{k.wins}W</span>
+                    <span>+{k.kachiNokori}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* ═══ EXHIBITION / JUNGYO RESULTS ═══ */}
+        {selectExhibitionResults(world, world.playerHeyaId).length > 0 && (
+          <section data-testid="exhibition-results-section">
+            <div className="flex items-center gap-4 mb-3">
+              <h2 className="text-xl font-semibold">Exhibition Tour Results</h2>
+            </div>
+            <div className="space-y-3">
+              {selectExhibitionResults(world, world.playerHeyaId).map((ex) => (
+                <div
+                  key={ex.exhibitionId}
+                  className="p-3 rounded border border-border/50 space-y-2"
+                  data-testid={`exhibition-result-${ex.exhibitionId}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">{ex.name}</span>
+                    <span className="text-xs text-muted-foreground">{ex.location}</span>
+                  </div>
+                  {ex.results.length > 0 && (
+                    <div className="text-xs space-y-1">
+                      {ex.results.slice(0, 5).map((r, i) => (
+                        <div key={i} className="flex justify-between">
+                          <span>{r.shikona}</span>
+                          <span className="tabular-nums">{r.wins}-{r.losses}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* ═══ MODALS & CEREMONIES ═══ */}
         {showPressConference && (

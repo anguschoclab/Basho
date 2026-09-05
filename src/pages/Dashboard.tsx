@@ -54,6 +54,7 @@ import { JungyoInvitationCard } from "@/components/basho/JungyoInvitationCard";
 import { GomenfudaStatusBadge } from "@/components/game/GomenfudaStatusBadge";
 import { projectExhibitions } from "@/presenters/exhibitionProjections";
 import { projectGomenfuda } from "@/presenters/projections/governanceProjections";
+import { selectHolidayDigest } from "@/presenters/projections/holidayDigestProjections";
 
 /** Control Center — main dashboard. */
 export default function Dashboard() {
@@ -429,6 +430,40 @@ export default function Dashboard() {
             )}
           </div>
         )}
+
+        {/* ── HOLIDAY RETURN DIGEST ── */}
+        {(() => {
+          const digest = selectHolidayDigest(world);
+          if (!digest) return null;
+          return (
+            <div
+              className="rounded-lg border border-primary/30 bg-primary/5 p-4 space-y-2"
+              data-testid="holiday-digest-banner"
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium">Holiday Return Digest</h3>
+                <Badge variant="outline" className="text-xs">
+                  {digest.daysAdvanced} days advanced
+                </Badge>
+              </div>
+              <p className="text-xs text-muted-foreground">{digest.summary}</p>
+              {digest.incidents.length > 0 && (
+                <div className="space-y-1">
+                  {digest.incidents.slice(0, 5).map((inc, i) => (
+                    <div
+                      key={i}
+                      className="text-xs p-2 rounded border border-border/50"
+                      data-testid={`holiday-incident-${i}`}
+                    >
+                      <span className="font-medium">{inc.type}</span>
+                      <span className="text-muted-foreground ml-2">{inc.description}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        })()}
 
         {/* ── ADDITIONAL WIDGETS GRID ── */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

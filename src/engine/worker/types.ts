@@ -116,6 +116,21 @@ export type EngineCommand =
   | {
       type: "UPGRADE_YOUTH_ACADEMY";
       heyaId: string;
+    }
+  | {
+      type: "INVEST_ACADEMY";
+      heyaId: string;
+      amount: number;
+    }
+  | {
+      type: "HIRE_ACADEMY_STAFF";
+      heyaId: string;
+      role: import("../types/academy").AcademyStaffRole;
+    }
+  | {
+      type: "PROMOTE_INTAKE";
+      heyaId: string;
+      prospectId: string;
     };
 
 /** Worker -> UI Events */

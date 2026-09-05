@@ -142,6 +142,13 @@ vi.mock("@/presenters/projections/governanceProjections", () => ({
       { id: "f3", name: "Gamma Faction", influence: 30, oyakataLeaderId: "o3" },
     ],
   }),
+  projectGomenfuda: () => ({
+    count: 0,
+    threshold: 3,
+    hasSanctionWarning: false,
+    sanctionRiskPercent: 0,
+    recentEvents: [],
+  }),
 }));
 
 vi.mock("@/presenters/selectors", () => ({

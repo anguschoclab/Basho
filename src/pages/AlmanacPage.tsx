@@ -10,9 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { RecordEntry } from "@/engine/types/records";
 import type { BashoResult } from "@/engine/types/basho";
-import { Medal, Star, TrendingUp, Trophy, Users, History, Award } from "lucide-react";
+import { Medal, Star, TrendingUp, Trophy, Users, History, Award, Gavel } from "lucide-react";
 import { PageHeader } from "@/components/layout/control-center";
 import { getAllRikishi, getRikishi, getHistory } from "@/presenters/worldAccess";
+import { projectOfficials } from "@/presenters/officialsProjections";
+import { OfficialsPanel } from "@/components/officials/OfficialsPanel";
 
 /** Leaderboard widget for record book displays. */
 function LeaderboardWidget({
@@ -162,7 +164,7 @@ export default function AlmanacPage() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full max-w-2xl grid-cols-3">
+          <TabsList className="grid w-full max-w-2xl grid-cols-4">
             <TabsTrigger value="past-bashos" className="flex items-center gap-2">
               <History className="h-4 w-4" />
               Past Bashos
@@ -174,6 +176,10 @@ export default function AlmanacPage() {
             <TabsTrigger value="hof" className="flex items-center gap-2">
               <Award className="h-4 w-4" />
               Hall of Fame
+            </TabsTrigger>
+            <TabsTrigger value="officials" className="flex items-center gap-2">
+              <Gavel className="h-4 w-4" />
+              Officials
             </TabsTrigger>
           </TabsList>
 
@@ -311,6 +317,12 @@ export default function AlmanacPage() {
                 </Badge>
               </div>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="officials">
+            <div data-testid="officials-tab">
+              <OfficialsPanel projection={projectOfficials(world)} />
+            </div>
           </TabsContent>
         </Tabs>
       </div>

@@ -2,7 +2,24 @@
  * youthAcademyProjections.ts — projects youth academy state for UI.
  */
 import type { WorldState } from "../engine/types/world";
-import { getYouthAcademy, getMaxProspects, MAX_ACADEMY_LEVEL } from "../engine/systems/recruitment/YouthAcademyService";
+import {
+  getYouthAcademy,
+  getMaxProspects,
+  getMaxStaff,
+  getUpgradeCost,
+  MAX_ACADEMY_LEVEL,
+} from "../engine/systems/recruitment/YouthAcademyService";
+import type { AcademyStaff } from "../engine/types/academy";
+
+export interface YouthProspectDTO {
+  id: string;
+  shikona: string;
+  age: number;
+  region: string;
+  potential: number;
+  currentAbility: number;
+  developmentPoints: number;
+}
 
 export interface YouthAcademyDTO {
   level: number;
@@ -10,14 +27,11 @@ export interface YouthAcademyDTO {
   prospectCount: number;
   maxProspects: number;
   totalGraduated: number;
-  prospects: Array<{
-    id: string;
-    shikona: string;
-    age: number;
-    region: string;
-    potential: number;
-    developmentPoints: number;
-  }>;
+  budget: number;
+  staff: AcademyStaff[];
+  maxStaff: number;
+  lastIntakeYear: number;
+  prospects: YouthProspectDTO[];
 }
 
 export interface YouthAcademyProjection {
@@ -31,6 +45,8 @@ const UPGRADE_COST: Record<number, number> = {
   1: 50_000,
   2: 150_000,
   3: 400_000,
+  4: 1_000_000,
+  5: 2_500_000,
 };
 
 export function projectYouthAcademy(
@@ -51,7 +67,6 @@ export function projectYouthAcademy(
   }
 
   const canUpgrade = academy.level < MAX_ACADEMY_LEVEL;
-  const nextLevel = academy.level + 1;
 
   return {
     academy: {
@@ -60,17 +75,22 @@ export function projectYouthAcademy(
       prospectCount: academy.prospects.length,
       maxProspects: getMaxProspects(academy),
       totalGraduated: academy.totalGraduated,
+      budget: academy.budget,
+      staff: academy.staff,
+      maxStaff: getMaxStaff(academy),
+      lastIntakeYear: academy.lastIntakeYear,
       prospects: academy.prospects.map((p) => ({
         id: p.id,
         shikona: p.shikona,
         age: p.age,
         region: p.region,
         potential: p.potential,
+        currentAbility: p.currentAbility,
         developmentPoints: p.developmentPoints,
       })),
     },
     hasAcademy: true,
     canUpgrade,
-    upgradeCost: canUpgrade ? (UPGRADE_COST[nextLevel] ?? 0) : 0,
+    upgradeCost: getUpgradeCost(academy),
   };
 }

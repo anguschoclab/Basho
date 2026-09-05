@@ -4,18 +4,22 @@
  * Surfaces NPC_MANAGER_DECISION events so the player can see what rival
  * oyakata are doing — their archetypes, focus areas, and recent decisions.
  */
+import { useState } from "react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Users } from "lucide-react";
 import { useGame } from "@/contexts/useGame";
 import { projectNPCAgentActivity } from "@/presenters/npcAgentProjections";
 import { projectRivalStables } from "@/presenters/rivalStablesProjections";
+import type { RivalStableDTO } from "@/presenters/rivalStablesProjections";
 import { RivalOyakataCard } from "@/components/governance/RivalOyakataCard";
+import { OyakataProfileDrawer } from "@/components/governance/OyakataProfileDrawer";
 import { NPCAgentFeed } from "@/components/npc/NPCAgentFeed";
 
 export default function RivalStablesPage() {
   const { state } = useGame();
   const world = state.world;
+  const [selectedRival, setSelectedRival] = useState<RivalStableDTO | null>(null);
 
   if (!world) {
     return (
@@ -52,14 +56,15 @@ export default function RivalStablesPage() {
         ) : (
           <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
             {projection.rivals.map((rival) => (
-              <RivalOyakataCard
-                key={rival.heyaId}
-                heyaId={rival.heyaId}
-                heyaName={rival.heyaName}
-                ichimon={rival.ichimon}
-                legacyTier={rival.legacyTier}
-                decisions={rival.recentDecisions}
-              />
+              <div key={rival.heyaId} onClick={() => setSelectedRival(rival)} className="cursor-pointer">
+                <RivalOyakataCard
+                  heyaId={rival.heyaId}
+                  heyaName={rival.heyaName}
+                  ichimon={rival.ichimon}
+                  legacyTier={rival.legacyTier}
+                  decisions={rival.recentDecisions}
+                />
+              </div>
             ))}
           </div>
         )}
@@ -70,6 +75,12 @@ export default function RivalStablesPage() {
             <NPCAgentFeed projection={npcProjection} />
           </ScrollArea>
         </div>
+
+        <OyakataProfileDrawer
+          open={selectedRival !== null}
+          onOpenChange={(open) => { if (!open) setSelectedRival(null); }}
+          rival={selectedRival}
+        />
       </div>
     </AppLayout>
   );

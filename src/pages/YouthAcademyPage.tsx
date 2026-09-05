@@ -1,8 +1,8 @@
 /**
  * YouthAcademyPage — player-facing youth academy management page.
  *
- * Lets the player build, upgrade, and view their youth academy.
- * The academy develops young prospects before they enter the formal banzuke.
+ * Lets the player build, upgrade, invest, hire staff, promote prospects,
+ * and view their youth academy development pipeline.
  */
 import { AppLayout } from "@/components/layout/AppLayout";
 import { useGame } from "@/contexts/useGame";
@@ -10,6 +10,7 @@ import { useGameStore } from "@/store/gameStore";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import { projectYouthAcademy } from "@/presenters/youthAcademyProjections";
 import { YouthAcademyPanel } from "@/components/recruitment/YouthAcademyPanel";
+import type { AcademyStaffRole } from "@/engine/types/academy";
 
 export default function YouthAcademyPage() {
   const { state } = useGame();
@@ -51,6 +52,15 @@ export default function YouthAcademyPage() {
           }
           onUpgrade={() =>
             sendCommand({ type: "UPGRADE_YOUTH_ACADEMY", heyaId: playerHeya.id })
+          }
+          onInvest={(amount) =>
+            sendCommand({ type: "INVEST_ACADEMY", heyaId: playerHeya.id, amount })
+          }
+          onHireStaff={(role: AcademyStaffRole) =>
+            sendCommand({ type: "HIRE_ACADEMY_STAFF", heyaId: playerHeya.id, role })
+          }
+          onPromote={(prospectId) =>
+            sendCommand({ type: "PROMOTE_INTAKE", heyaId: playerHeya.id, prospectId })
           }
         />
       </div>

@@ -105,23 +105,24 @@ describe("YouthAcademyService", () => {
     });
 
     it("refuses upgrade at max level", () => {
-      const world = generateInitialWorld("youth-academy-upgrade-3");
+      const world = generateInitialWorld("youth-academy-upgrade-5");
       const heyaId = world.playerHeyaId;
-      setCash(world, heyaId, 1_000_000);
+      setCash(world, heyaId, 10_000_000);
 
       let current = world;
       const buildImpact = buildYouthAcademy(current, heyaId);
       current = resolveImpacts(current, [buildImpact]);
 
-      const up1 = upgradeYouthAcademy(current, heyaId);
-      current = resolveImpacts(current, [up1]);
+      // Upgrade from level 1 to MAX_ACADEMY_LEVEL (5)
+      for (let i = 1; i < MAX_ACADEMY_LEVEL; i++) {
+        const up = upgradeYouthAcademy(current, heyaId);
+        current = resolveImpacts(current, [up]);
+      }
+      expect(getYouthAcademy(current.heyas.get(heyaId)!)!.level).toBe(MAX_ACADEMY_LEVEL);
 
-      const up2 = upgradeYouthAcademy(current, heyaId);
-      current = resolveImpacts(current, [up2]);
-
-      // Try to upgrade beyond max
-      const up3 = upgradeYouthAcademy(current, heyaId);
-      current = resolveImpacts(current, [up3]);
+      // Try to upgrade beyond max — should be refused
+      const overUpgrade = upgradeYouthAcademy(current, heyaId);
+      current = resolveImpacts(current, [overUpgrade]);
       expect(getYouthAcademy(current.heyas.get(heyaId)!)!.level).toBe(MAX_ACADEMY_LEVEL);
     });
   });
