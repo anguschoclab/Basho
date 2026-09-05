@@ -10,6 +10,10 @@ vi.mock("@/components/layout/AppLayout", () => ({
   AppLayout: ({ children }: any) => React.createElement("div", null, children),
 }));
 
+vi.mock("@/hooks/useRequireWorld", () => ({
+  useRequireWorld: () => true,
+}));
+
 vi.mock("@/contexts/useGame", () => ({
   useGame: () => ({
     state: {
@@ -36,15 +40,6 @@ vi.mock("@/store/gameStore", () => ({
 
 vi.mock("@/presenters/projections/recapProjections", () => ({
   selectKeyBouts: () => [],
-  projectBashoResults: () => null,
-}));
-
-vi.mock("@/presenters/projections/governanceProjections", () => ({
-  projectGovernanceSummary: () => null,
-}));
-
-vi.mock("@/presenters/projections/financeProjections", () => ({
-  projectFinanceSummary: () => null,
 }));
 
 vi.mock("@/presenters/projections/recapKihakuProjections", () => ({
@@ -68,18 +63,35 @@ vi.mock("@/presenters/engineAccess", () => ({
   RANK_HIERARCHY: {},
   makeBashoKey: vi.fn(),
   EntityCollection: vi.fn(),
-  getRikishi: vi.fn(),
-  getHeya: vi.fn(),
+  getPlayerHeya: () => ({ id: "h1", name: "Test Heya" }),
+  getHeya: () => ({ id: "h1", name: "Test Heya" }),
+  getRikishi: () => null,
+  getRikishiAnywhere: () => null,
+  getRikishiMap: () => new Map(),
+  selectRetiredRikishi: () => [],
 }));
 
 vi.mock("@/presenters/worldAccess", () => ({
+  getHeya: () => ({ id: "h1", name: "Test Heya" }),
   getRikishi: () => null,
-  getHeya: () => null,
+  getRikishiAnywhere: () => null,
   getHistory: () => [],
+  getRikishiMap: () => new Map(),
 }));
 
 vi.mock("@/presenters/uiDigest", () => ({
   projectPressConferenceData: () => null,
+  projectGovernanceSummary: () => ({
+    governanceLog: [],
+    unresolvedRulings: [],
+    pendingRulings: [],
+    summary: { status: "good_standing" },
+  }),
+  projectBashoResults: () => null,
+}));
+
+vi.mock("@/presenters/uiModels", () => ({
+  projectRikishi: () => null,
 }));
 
 vi.mock("@/components/game/KeyBoutsSection", () => ({
@@ -90,16 +102,40 @@ vi.mock("@/components/game/PressConference", () => ({
   PressConference: () => null,
 }));
 
-vi.mock("@/components/game/YokozunaDeliberationModal", () => ({
-  YokozunaDeliberationModal: () => null,
+vi.mock("@/components/game/YokozunaDeliberation", () => ({
+  YokozunaDeliberation: () => null,
 }));
 
-vi.mock("@/components/game/RetirementModal", () => ({
-  RetirementModal: () => null,
+vi.mock("@/components/game/HoFInductionCeremony", () => ({
+  HoFInductionCeremony: () => null,
 }));
 
-vi.mock("@/components/game/RecapPhaseGate", () => ({
-  RecapPhaseGate: ({ children }: any) => children,
+vi.mock("@/components/game/IntaiCeremony", () => ({
+  IntaiCeremony: () => null,
+}));
+
+vi.mock("@/components/game/PlayoffBracket", () => ({
+  PlayoffBracket: () => null,
+}));
+
+vi.mock("@/components/game/BanzukeReveal", () => ({
+  BanzukeReveal: () => null,
+}));
+
+vi.mock("@/components/recap/TournamentCeremony", () => ({
+  TournamentCeremony: () => null,
+}));
+
+vi.mock("@/components/recap/NarrativeSummary", () => ({
+  NarrativeSummary: () => null,
+}));
+
+vi.mock("@/components/ui/button", () => ({
+  Button: ({ children, ...props }: any) => React.createElement("button", props, children),
+}));
+
+vi.mock("@tanstack/react-router", () => ({
+  useNavigate: () => vi.fn(),
 }));
 
 import RecapPage from "@/pages/RecapPage";
