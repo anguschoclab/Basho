@@ -7,7 +7,6 @@ export type EngineCommand =
   | { type: "LOAD_WORLD"; world: WorldState }
   | { type: "TICK_DAY" }
   | { type: "TICK_MULTIPLE_DAYS"; days: number }
-  | { type: "START_BASHO" }
   | { type: "AUTO_SIM_DAYS"; days: number }
   | { type: "OFFER_CONTRACT"; candidateId: string; heyaId: string }
   | { type: "SCOUT_POOL"; pool: import("../types/talent").TalentPoolType; revealCount: number }
@@ -83,11 +82,13 @@ export type EngineCommand =
     }
   | {
       type: "ACCEPT_EXHIBITION";
+      heyaId: string;
       invitationId: string;
-      rikishiId: string;
+      rikishiId?: string;
     }
   | {
       type: "DECLINE_EXHIBITION";
+      heyaId: string;
       invitationId: string;
     }
   | {

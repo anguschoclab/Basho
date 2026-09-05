@@ -90,7 +90,7 @@ export function buildYouthAcademy(
   if (getYouthAcademy(heya)) return builder.build();
 
   const cost = UPGRADE_COST[1];
-  const cash = heya.economics?.cash ?? 0;
+  const cash = heya.funds;
   if (cash < cost) return builder.build();
 
   const academy: YouthAcademyState = {
@@ -103,13 +103,9 @@ export function buildYouthAcademy(
   };
 
   builder.updateHeya(heyaId, {
-    ...(heya as unknown as { youthAcademy?: YouthAcademyState }),
     youthAcademy: academy,
-    economics: {
-      ...(heya.economics ?? {}),
-      cash: cash - cost,
-    },
-  } as Partial<Heya>);
+    funds: cash - cost,
+  });
 
   builder.logEvent(
     "NARRATIVE_CRISIS_TRIGGERED",
@@ -144,20 +140,16 @@ export function upgradeYouthAcademy(
 
   const nextLevel = (academy.level + 1) as AcademyLevel;
   const cost = UPGRADE_COST[nextLevel];
-  const cash = heya.economics?.cash ?? 0;
+  const cash = heya.funds;
   if (cash < cost) return builder.build();
 
   builder.updateHeya(heyaId, {
-    ...(heya as unknown as Record<string, unknown>),
     youthAcademy: {
       ...academy,
       level: nextLevel,
     },
-    economics: {
-      ...(heya.economics ?? {}),
-      cash: cash - cost,
-    },
-  } as Partial<Heya>);
+    funds: cash - cost,
+  });
 
   builder.logEvent(
     "NARRATIVE_CRISIS_TRIGGERED",
@@ -400,23 +392,19 @@ export function investInAcademy(
 
   if (amount <= 0) return builder.build();
 
-  const cash = heya.economics?.cash ?? 0;
+  const cash = heya.funds;
   if (cash < amount) return builder.build();
 
   // Convert investment to weekly budget increase
   const budgetIncrease = Math.floor(amount / INVEST_COST_PER_POINT) * 1_000;
 
   builder.updateHeya(heyaId, {
-    ...(heya as unknown as Record<string, unknown>),
     youthAcademy: {
       ...academy,
       budget: academy.budget + budgetIncrease,
     },
-    economics: {
-      ...(heya.economics ?? {}),
-      cash: cash - amount,
-    },
-  } as Partial<Heya>);
+    funds: cash - amount,
+  });
 
   builder.logEvent(
     "NARRATIVE_CRISIS_TRIGGERED",
@@ -455,7 +443,7 @@ export function hireAcademyStaff(
   const maxStaff = Math.min(4, academy.level);
   if (academy.staff.length >= maxStaff) return builder.build();
 
-  const cash = heya.economics?.cash ?? 0;
+  const cash = heya.funds;
   if (cash < STAFF_HIRE_COST) return builder.build();
 
   const rng = rngFromSeed(world.seed, "academy-staff", `${heyaId}-${role}-${world.year}`);
@@ -472,16 +460,12 @@ export function hireAcademyStaff(
   };
 
   builder.updateHeya(heyaId, {
-    ...(heya as unknown as Record<string, unknown>),
     youthAcademy: {
       ...academy,
       staff: [...academy.staff, newStaff],
     },
-    economics: {
-      ...(heya.economics ?? {}),
-      cash: cash - STAFF_HIRE_COST,
-    },
-  } as Partial<Heya>);
+    funds: cash - STAFF_HIRE_COST,
+  });
 
   builder.logEvent(
     "NARRATIVE_CRISIS_TRIGGERED",

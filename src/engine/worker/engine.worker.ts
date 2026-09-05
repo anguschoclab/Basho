@@ -513,14 +513,24 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
     },
     ACCEPT_EXHIBITION: (cmd) => {
       if (currentWorld) {
-        const pending = currentWorld.pendingExhibitions ?? [];
+        const w = currentWorld;
+        const pending = w.pendingExhibitions ?? [];
         const invitation = pending.find((i) => i.id === cmd.invitationId);
         if (invitation) {
           const heyaId = invitation.heyaId;
+          // Auto-select the highest-ranked active rikishi from the heya if not provided
+          const rikishiId = cmd.rikishiId || (() => {
+            const heyaRikishi = [...w.activeRikishiIds]
+              .map((id) => w.rikishi.get(id))
+              .filter((r): r is NonNullable<typeof r> => r !== undefined && r.heyaId === heyaId && !r.isRetired)
+              .sort((a, b) => (b.rankNumber ?? 99) - (a.rankNumber ?? 99));
+            return heyaRikishi[0]?.id ?? "";
+          })();
+          if (!rikishiId) return;
           const impact = WorldCircuitService.processExhibitionResult(
             currentWorld,
             heyaId,
-            cmd.rikishiId,
+            rikishiId,
             invitation
           );
           currentWorld = resolveImpacts(currentWorld, [impact]);

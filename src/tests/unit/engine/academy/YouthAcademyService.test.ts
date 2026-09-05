@@ -25,7 +25,7 @@ function makeWorld(cash = 10_000_000): WorldState {
       ["h1", {
         id: "h1",
         name: "Test Heya",
-        economics: { cash },
+        funds: cash,
         rikishiIds: [],
       } as any],
     ]),
@@ -59,7 +59,7 @@ describe("YouthAcademyService", () => {
       const world = makeWorld(200_000);
       const impact = buildYouthAcademy(world, "h1");
       const next = apply(world, [impact]);
-      const cash = next.heyas.get("h1")!.economics?.cash ?? 0;
+      const cash = next.heyas.get("h1")!.funds ?? 0;
       expect(cash).toBe(200_000 - 50_000);
     });
 
@@ -67,7 +67,7 @@ describe("YouthAcademyService", () => {
       const world = makeWorld();
       const w1 = apply(world, [buildYouthAcademy(world, "h1")]);
       const w2 = apply(w1, [buildYouthAcademy(w1, "h1")]);
-      const cash = w2.heyas.get("h1")!.economics?.cash ?? 0;
+      const cash = w2.heyas.get("h1")!.funds ?? 0;
       // Should not deduct twice
       expect(cash).toBe(10_000_000 - 50_000);
     });
@@ -87,7 +87,7 @@ describe("YouthAcademyService", () => {
       const w2 = apply(w1, [upgradeYouthAcademy(w1, "h1")]);
       const academy = getYouthAcademy(w2.heyas.get("h1")!);
       expect(academy!.level).toBe(2);
-      const cash = w2.heyas.get("h1")!.economics?.cash ?? 0;
+      const cash = w2.heyas.get("h1")!.funds ?? 0;
       expect(cash).toBe(10_000_000 - 50_000 - 150_000);
     });
 
@@ -199,7 +199,7 @@ describe("YouthAcademyService", () => {
       const w2 = apply(w1, [investInAcademy(w1, "h1", 100_000)]);
       const after = getYouthAcademy(w2.heyas.get("h1")!)!.budget;
       expect(after).toBeGreaterThan(before);
-      const cash = w2.heyas.get("h1")!.economics?.cash ?? 0;
+      const cash = w2.heyas.get("h1")!.funds ?? 0;
       expect(cash).toBeLessThan(1_000_000 - 50_000);
     });
 
@@ -227,9 +227,9 @@ describe("YouthAcademyService", () => {
     it("deducts hire cost from cash", () => {
       const world = makeWorld(1_000_000);
       const w1 = apply(world, [buildYouthAcademy(world, "h1")]);
-      const cashBefore = w1.heyas.get("h1")!.economics?.cash ?? 0;
+      const cashBefore = w1.heyas.get("h1")!.funds ?? 0;
       const w2 = apply(w1, [hireAcademyStaff(w1, "h1", "head_coach")]);
-      const cashAfter = w2.heyas.get("h1")!.economics?.cash ?? 0;
+      const cashAfter = w2.heyas.get("h1")!.funds ?? 0;
       expect(cashAfter).toBeLessThan(cashBefore);
     });
 

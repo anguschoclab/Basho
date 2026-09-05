@@ -50,6 +50,7 @@ vi.mock("@/components/dashboard", () => ({
   YushoRaceWidget: () => <div data-testid="yusho-widget" />,
   PreBashoAssessment: () => <div data-testid="pre-basho-widget" />,
   ActionQueueWidget: () => <div data-testid="action-queue-widget" />,
+  AcademyWidget: () => <div data-testid="academy-widget" />,
 }));
 
 vi.mock("@/components/game/ProgressionTracker", () => ({

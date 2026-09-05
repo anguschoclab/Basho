@@ -13,7 +13,7 @@ function makeBasho(day: number): Partial<BashoState> {
     day,
     isActive: true,
     schedule: [],
-    results: new Map(),
+    results: [],
   };
 }
 

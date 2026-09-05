@@ -374,6 +374,41 @@ export default function BashoPage() {
           <OfficialsPanel projection={officialsProjection} />
         )}
 
+        {/* Jungyo (exhibition) results from event log */}
+        {(() => {
+          const jungyoEvents = (world.events?.log ?? []).filter(
+            (e) =>
+              e.category === "discipline" &&
+              (e.data?.incident === "exhibition_victory" ||
+                e.data?.incident === "exhibition_defeat")
+          );
+          if (jungyoEvents.length === 0) return null;
+          return (
+            <Card data-testid="jungyo-results-section">
+              <CardContent className="p-4">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                  Jungyo (Exhibition) Results
+                </h3>
+                <div className="space-y-2">
+                  {jungyoEvents.slice(0, 10).map((e, i) => (
+                    <div key={`${e.id ?? i}`} className="flex items-center gap-2 text-xs">
+                      <Badge
+                        variant={e.data?.incident === "exhibition_victory" ? "default" : "outline"}
+                        className="text-[9px]"
+                      >
+                        {e.data?.incident === "exhibition_victory" ? "WIN" : "LOSS"}
+                      </Badge>
+                      <span className="flex-1 truncate">
+                        {typeof e.data?.reason === "string" ? e.data.reason : "Exhibition bout"}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })()}
+
         {/* Global Cup Banner - During Interim Weeks */}
         {world.globalCup?.isActive && day >= 15 && (
           <Card className="border-amber-500/30 bg-amber-950/10">
@@ -460,6 +495,16 @@ export default function BashoPage() {
                       <span className="font-mono shrink-0">
                         {entry?.wins ?? 0}-{entry?.losses ?? 0}
                       </span>
+                      {entry?.rikishi?.kihakuIsenScore !== undefined &&
+                        entry?.rikishi?.kihakuIsenScore > 0 && (
+                          <span
+                            className="text-[9px] font-mono text-gold/70 shrink-0"
+                            title="Kihaku (fighting spirit)"
+                            data-testid={`kihaku-standings-${rid}`}
+                          >
+                            {entry.rikishi.kihakuIsenScore}
+                          </span>
+                        )}
                     </div>
                   );
                 })}
@@ -509,6 +554,8 @@ export default function BashoPage() {
           result={selectedBout.result}
           bashoName={bashoName as BashoName}
           day={day}
+          gyojiName={officialsProjection.topGyoji?.name}
+          gyojiAccuracy={officialsProjection.topGyoji?.accuracy}
         />
       )}
       {autoShowPlayerBout && !selectedBout && (
@@ -520,6 +567,8 @@ export default function BashoPage() {
           result={autoShowPlayerBout.result}
           bashoName={bashoName as BashoName}
           day={day}
+          gyojiName={officialsProjection.topGyoji?.name}
+          gyojiAccuracy={officialsProjection.topGyoji?.accuracy}
         />
       )}
       <AlertDialog open={showEndBashoConfirm} onOpenChange={setShowEndBashoConfirm}>

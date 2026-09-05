@@ -87,6 +87,8 @@ export interface RikishiCareerDTO {
   currentBashoWins: number;
   currentBashoLosses: number;
   currentBashoRecord: string;
+  /** Wins needed to achieve kachi-koshi (0 if already achieved) */
+  kachiNokori: number | null;
   careerWins: number;
   careerLosses: number;
   careerAbsences: number;

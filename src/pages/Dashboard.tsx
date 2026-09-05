@@ -45,15 +45,19 @@ import {
   YushoRaceWidget,
   PreBashoAssessment,
   ActionQueueWidget,
+  AcademyWidget,
 } from "@/components/dashboard";
 import { SkeletonCard } from "@/components/ui/SkeletonCard";
 import { formatYen } from "@/utils/engineUtils";
 import { useGameStore } from "@/store/gameStore";
 import { useSuccessionDismissal } from "@/hooks/useSuccessionDismissal";
 import { JungyoInvitationCard } from "@/components/basho/JungyoInvitationCard";
+import { NakabiHighlightCard } from "@/components/basho/NakabiHighlightCard";
 import { GomenfudaStatusBadge } from "@/components/game/GomenfudaStatusBadge";
 import { projectExhibitions } from "@/presenters/exhibitionProjections";
 import { projectGomenfuda } from "@/presenters/projections/governanceProjections";
+import { projectNakabi } from "@/presenters/nakabiProjections";
+import { projectYouthAcademy } from "@/presenters/youthAcademyProjections";
 import { selectHolidayDigest } from "@/presenters/projections/holidayDigestProjections";
 
 /** Control Center — main dashboard. */
@@ -172,7 +176,7 @@ export default function Dashboard() {
   }, [world, playerHeya]);
 
   const gomenfudaProjection = useMemo(() => {
-    if (!world || !playerHeya) return { count: 0, threshold: 3, hasWarning: false, history: [] };
+    if (!world || !playerHeya) return { count: 0, threshold: 3, hasSanctionWarning: false, sanctionRiskPercent: 0, recentEvents: [] };
     return projectGomenfuda(world, playerHeya.id);
   }, [world, playerHeya]);
 
@@ -334,6 +338,11 @@ export default function Dashboard() {
           <div className="space-y-4">
             <CalendarWidget />
             <BashoWidget />
+            {world && (() => {
+              const nakabiProjection = projectNakabi(world);
+              if (!nakabiProjection.isNakabiDay || !nakabiProjection.summary) return null;
+              return <NakabiHighlightCard projection={nakabiProjection} />;
+            })()}
           </div>
 
           {/* ── COL 3: TRAINING + TRENDS ── */}
@@ -411,7 +420,7 @@ export default function Dashboard() {
         </div>
 
         {/* ── EXHIBITION INVITATIONS & GOMENFUDA STATUS ── */}
-        {(exhibitionProjection.hasInvitations || gomenfudaProjection.hasWarning) && (
+        {(exhibitionProjection.hasInvitations || gomenfudaProjection.hasSanctionWarning) && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {exhibitionProjection.invitations.map((inv) => (
               <JungyoInvitationCard
@@ -425,7 +434,7 @@ export default function Dashboard() {
                 }
               />
             ))}
-            {gomenfudaProjection.hasWarning && (
+            {gomenfudaProjection.hasSanctionWarning && (
               <GomenfudaStatusBadge projection={gomenfudaProjection} />
             )}
           </div>
@@ -499,6 +508,12 @@ export default function Dashboard() {
             </>
           )}
           <RosterWidget />
+          {world && playerHeya && (
+            <AcademyWidget
+              projection={projectYouthAcademy(world, playerHeya.id)}
+              currentYear={world.year}
+            />
+          )}
         </div>
       </div>
 

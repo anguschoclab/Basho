@@ -63,6 +63,12 @@ describe("router", () => {
     expect(routeIds).toContain("/rikishi/$rikishiId");
   });
 
+  it("should register rival-stables and academy routes", () => {
+    const routeIds = Object.keys(router.routesById);
+    expect(routeIds).toContain("/rival-stables");
+    expect(routeIds).toContain("/academy");
+  });
+
   it("should register a not-found catch-all route", () => {
     const routeIds = Object.keys(router.routesById);
     expect(routeIds).toContain("/$");

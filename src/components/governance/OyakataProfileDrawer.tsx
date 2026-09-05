@@ -55,7 +55,7 @@ export function OyakataProfileDrawer({
                   className="p-2 rounded border border-border/50 text-xs space-y-1"
                   data-testid={`drawer-decision-${i}`}
                 >
-                  <div className="font-medium">{d.archetype}</div>
+                  <div className="font-medium">{d.category}</div>
                   <div className="text-muted-foreground">{d.reasoning}</div>
                 </div>
               ))}

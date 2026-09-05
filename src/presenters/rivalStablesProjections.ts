@@ -28,7 +28,7 @@ export function projectRivalStables(
   const rivals: RivalStableDTO[] = [];
 
   for (const heya of world.heyas.values()) {
-    if (heya.id === world.playerHeyaId || heya.isPlayer) continue;
+    if (heya.id === world.playerHeyaId) continue;
     const recentDecisions = npcDecisions.filter((d) => d.heyaId === heya.id);
     rivals.push({
       heyaId: heya.id,

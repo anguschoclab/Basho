@@ -1,4 +1,5 @@
 // InjuryRecoveryPanel.tsx — Rehabilitation management for injured rikishi
+import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -7,6 +8,15 @@ import { RikishiName } from "@/components/ClickableName";
 import { Heart, Activity, AlertTriangle, Clock, Shield, Thermometer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/EmptyState";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 import { useGameStore } from "@/store/gameStore";
 import type { projectMedicalUIDigest } from "@/presenters/uiDigest";
 import { getSeverityColor, getSeverityBadge } from "./severityHelpers";
@@ -33,6 +43,11 @@ export function InjuryRecoveryPanel({ digest }: InjuryRecoveryPanelProps) {
     workerWorld && playerHeyaId
       ? projectGomenfuda(workerWorld, playerHeyaId)
       : null;
+  const [pendingWithdrawId, setPendingWithdrawId] = useState<string | null>(null);
+  const pendingRikishi = injuredRikishi.find((r) => r.id === pendingWithdrawId);
+  const gomenfudaCount = gomenfudaProjection?.count ?? 0;
+  const sanctionThreshold = gomenfudaProjection?.threshold ?? 3;
+  const sanctionRiskPercent = gomenfudaProjection?.sanctionRiskPercent ?? 0;
 
   return (
     <div className="space-y-4">
@@ -144,9 +159,8 @@ export function InjuryRecoveryPanel({ digest }: InjuryRecoveryPanelProps) {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() =>
-                                  sendCommand({ type: "WITHDRAW_RIKISHI", rikishiId: info.id })
-                                }
+                                onClick={() => setPendingWithdrawId(info.id)}
+                                data-testid={`withdraw-btn-${info.id}`}
                               >
                                 Withdraw
                               </Button>
@@ -177,6 +191,63 @@ export function InjuryRecoveryPanel({ digest }: InjuryRecoveryPanelProps) {
           </ScrollArea>
         </div>
       )}
+
+      {/* Withdrawal confirmation dialog */}
+      <Dialog
+        open={pendingWithdrawId !== null}
+        onOpenChange={(open) => !open && setPendingWithdrawId(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Withdrawal</DialogTitle>
+            <DialogDescription>
+              Withdrawing {pendingRikishi?.shikona ?? "this rikishi"} will post a gomenfuda
+              (withdrawal apology). Three gomenfuda in a calendar year trigger JSA sanctions.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-muted-foreground">Gomenfuda this year:</span>
+              <span
+                className="font-mono font-bold"
+                data-testid="gomenfuda-count-display"
+              >
+                {gomenfudaCount}/{sanctionThreshold}
+              </span>
+            </div>
+            {gomenfudaCount >= sanctionThreshold - 1 && (
+              <div className="flex items-center gap-2 text-sm text-destructive">
+                <AlertTriangle className="h-4 w-4" />
+                <span data-testid="sanction-warning">
+                  Sanction risk: {sanctionRiskPercent}% — withdrawing will trigger JSA sanctions!
+                </span>
+              </div>
+            )}
+            {gomenfudaCount < sanctionThreshold - 1 && (
+              <p className="text-xs text-muted-foreground">
+                Sanction risk: {sanctionRiskPercent}%
+              </p>
+            )}
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <Button
+              variant="destructive"
+              data-testid="confirm-withdraw"
+              onClick={() => {
+                if (pendingWithdrawId) {
+                  sendCommand({ type: "WITHDRAW_RIKISHI", rikishiId: pendingWithdrawId });
+                  setPendingWithdrawId(null);
+                }
+              }}
+            >
+              Confirm Withdrawal
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

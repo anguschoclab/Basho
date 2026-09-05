@@ -29,7 +29,7 @@ export function selectKachiNokoriLeaders(
     const bashoRecord = (r as unknown as { bashoRecord?: { wins: number; losses: number } }).bashoRecord;
     if (!bashoRecord || bashoRecord.wins === undefined) continue;
 
-    const payload = buildPostBashoPayload(r.id, bashoRecord.wins);
+    const payload = buildPostBashoPayload(r, bashoRecord.wins, bashoRecord.losses ?? 0);
     if (!payload) continue;
 
     results.push({

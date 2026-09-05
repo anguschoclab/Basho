@@ -25,8 +25,8 @@ function makeRival(overrides: Partial<RivalStableDTO> = {}): RivalStableDTO {
     legacyTier: "A",
     decisionCount: 3,
     recentDecisions: [
-      { heyaId: "h1", archetype: "Aggressive", reasoning: "Signed a top recruit", timestamp: 1 },
-      { heyaId: "h1", archetype: "Aggressive", reasoning: "Invested in facilities", timestamp: 2 },
+      { heyaId: "h1", heyaName: "Test Heya", category: "Aggressive", decision: "recruit", reasoning: "Signed a top recruit", week: 1 },
+      { heyaId: "h1", heyaName: "Test Heya", category: "Aggressive", decision: "facility", reasoning: "Invested in facilities", week: 2 },
     ],
     ...overrides,
   };

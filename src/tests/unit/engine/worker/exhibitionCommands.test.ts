@@ -19,7 +19,7 @@ function makeInvitation(heyaId: string, overrides: Partial<PendingExhibition> = 
 describe("Exhibition command — accept/decline via WorldCircuitService", () => {
   it("processExhibitionResult updates regional presence on accept", () => {
     const world = generateInitialWorld("exhibition-test-1");
-    const heyaId = world.playerHeyaId;
+    const heyaId = world.playerHeyaId ?? "";
     const rikishiId = Array.from(world.rikishi.keys())[0];
     const invitation = makeInvitation(heyaId);
 
@@ -37,7 +37,7 @@ describe("Exhibition command — accept/decline via WorldCircuitService", () => 
 
   it("processExhibitionResult logs an exhibition event", () => {
     const world = generateInitialWorld("exhibition-test-2");
-    const heyaId = world.playerHeyaId;
+    const heyaId = world.playerHeyaId ?? "";
     const rikishiId = Array.from(world.rikishi.keys())[0];
     const invitation = makeInvitation(heyaId);
 
@@ -57,7 +57,7 @@ describe("Exhibition command — accept/decline via WorldCircuitService", () => 
 
   it("decline removes invitation from pendingExhibitions", () => {
     const world = generateInitialWorld("exhibition-test-3");
-    const heyaId = world.playerHeyaId;
+    const heyaId = world.playerHeyaId ?? "";
     const invitation = makeInvitation(heyaId);
     world.pendingExhibitions = [invitation];
 
@@ -70,7 +70,7 @@ describe("Exhibition command — accept/decline via WorldCircuitService", () => 
 
   it("accept removes the accepted invitation from pendingExhibitions", () => {
     const world = generateInitialWorld("exhibition-test-4");
-    const heyaId = world.playerHeyaId;
+    const heyaId = world.playerHeyaId ?? "";
     const rikishiId = Array.from(world.rikishi.keys())[0];
     const invitation = makeInvitation(heyaId);
     world.pendingExhibitions = [invitation, makeInvitation(heyaId, { id: "ex-test-2" })];

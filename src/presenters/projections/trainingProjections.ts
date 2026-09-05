@@ -2,13 +2,16 @@
  * trainingProjections.ts
  *
  * Training summary projection for the Control Center and Training page.
+ * Also includes tsukebito (attendant) projections for player assignment.
  */
 
 import type { WorldState } from "../../engine/types/world";
+import type { Rikishi } from "../../engine/types/rikishi";
 import type { FatigueBand } from "../../engine/systems/narrative/NarrativeBands";
 import { ensureHeyaTrainingState } from "../../presenters/uiDigest";
 import { toFatigueBand } from "../../engine/descriptorBands";
 import { FATIGUE_LABELS } from "../../constants/ui/labels";
+import { isEligibleForTsukebito, isEligibleTsukebito } from "../../engine/systems/training/TsukebitoService";
 
 export interface TrainingRikishiStatus {
   id: string;
@@ -84,5 +87,68 @@ export function projectTrainingSummary(world: WorldState, heyaId: string): Train
     avgFatigue,
     avgFatigueBand,
     hasHighRisk: injuryRiskHighCount > 0 || injuredCount > 0,
+  };
+}
+
+// ── Tsukebito projections ──
+
+export interface TsukebitoSeniorDTO {
+  id: string;
+  shikona: string;
+  rankLabel: string;
+  tsukebitoIds: string[];
+  tsukebitoPlayerSet: boolean;
+  eligibleJuniors: TsukebitoJuniorDTO[];
+}
+
+export interface TsukebitoJuniorDTO {
+  id: string;
+  shikona: string;
+  rankLabel: string;
+  isAssigned: boolean;
+}
+
+export interface TsukebitoProjection {
+  seniors: TsukebitoSeniorDTO[];
+  hasSeniors: boolean;
+}
+
+/**
+ * Project tsukebito state for a heya — which seniors are eligible,
+ * who their current tsukebito are, and which juniors are available.
+ */
+export function projectTsukebito(world: WorldState, heyaId: string): TsukebitoProjection {
+  const heya = world.heyas.get(heyaId);
+  if (!heya) return { seniors: [], hasSeniors: false };
+
+  const roster = (heya.rikishiIds ?? [])
+    .map((id) => world.rikishi.get(id))
+    .filter((r): r is Rikishi => r !== undefined);
+
+  const seniors = roster
+    .filter((r) => isEligibleForTsukebito(r))
+    .map((senior) => {
+      const tsukebitoIds = senior.tsukebitoIds ?? [];
+      const eligibleJuniors = roster
+        .filter((j) => isEligibleTsukebito(j, senior))
+        .map((j) => ({
+          id: j.id,
+          shikona: j.shikona ?? j.name ?? j.id,
+          rankLabel: j.rank ?? "—",
+          isAssigned: tsukebitoIds.includes(j.id),
+        }));
+      return {
+        id: senior.id,
+        shikona: senior.shikona ?? senior.name ?? senior.id,
+        rankLabel: senior.rank ?? "—",
+        tsukebitoIds,
+        tsukebitoPlayerSet: senior.tsukebitoPlayerSet ?? false,
+        eligibleJuniors,
+      };
+    });
+
+  return {
+    seniors,
+    hasSeniors: seniors.length > 0,
   };
 }

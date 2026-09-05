@@ -234,6 +234,41 @@ export function BoutNarrativeModal({
             </div>
           )}
 
+          {/* Shimpan panel on mono-ii */}
+          {result.monoii && (
+            <div
+              className="flex items-center justify-center gap-2 mb-2 flex-wrap"
+              data-testid="shimpan-panel"
+            >
+              <Badge variant="outline" className="text-[10px]">
+                Mono-ii
+              </Badge>
+              {result.shimpanPanelIds && result.shimpanPanelIds.length > 0 && (
+                <Badge variant="secondary" className="text-[10px]">
+                  Shimpan: {result.shimpanPanelIds.length} judges
+                </Badge>
+              )}
+              {result.monoiiOutcome && (
+                <Badge
+                  variant={
+                    result.monoiiOutcome === "reversed"
+                      ? "destructive"
+                      : result.monoiiOutcome === "rematch"
+                        ? "default"
+                        : "secondary"
+                  }
+                  className="text-[10px]"
+                >
+                  {result.monoiiOutcome === "upheld"
+                    ? "Decision upheld"
+                    : result.monoiiOutcome === "reversed"
+                      ? "Decision reversed"
+                      : "Rematch ordered"}
+                </Badge>
+              )}
+            </div>
+          )}
+
           {/* Replay viewer */}
           <BoutReplayViewer
             key={replayKey}

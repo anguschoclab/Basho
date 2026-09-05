@@ -12,7 +12,7 @@ function setPresence(world: WorldState, heyaId: string, region: string, value: n
 describe("WorldCircuitService.buildForeignAcademy", () => {
   it("builds an academy when presence >= ACADEMY_THRESHOLD (80)", () => {
     const world = generateInitialWorld("academy-test-1");
-    const heyaId = world.playerHeyaId;
+    const heyaId = world.playerHeyaId ?? "";
     setPresence(world, heyaId, "Mongolia", 85);
 
     const impact = (WorldCircuitService as any).buildForeignAcademy(world, heyaId, "Mongolia");
@@ -26,7 +26,7 @@ describe("WorldCircuitService.buildForeignAcademy", () => {
 
   it("refuses to build when presence < ACADEMY_THRESHOLD", () => {
     const world = generateInitialWorld("academy-test-2");
-    const heyaId = world.playerHeyaId;
+    const heyaId = world.playerHeyaId ?? "";
     setPresence(world, heyaId, "Mongolia", 50);
 
     const impact = (WorldCircuitService as any).buildForeignAcademy(world, heyaId, "Mongolia");
@@ -38,7 +38,7 @@ describe("WorldCircuitService.buildForeignAcademy", () => {
 
   it("refuses to build duplicate academy in same region", () => {
     const world = generateInitialWorld("academy-test-3");
-    const heyaId = world.playerHeyaId;
+    const heyaId = world.playerHeyaId ?? "";
     setPresence(world, heyaId, "Mongolia", 90);
 
     // Build first academy
@@ -54,7 +54,7 @@ describe("WorldCircuitService.buildForeignAcademy", () => {
 
   it("academy provides a candidate quality bonus", () => {
     const world = generateInitialWorld("academy-test-4");
-    const heyaId = world.playerHeyaId;
+    const heyaId = world.playerHeyaId ?? "";
     setPresence(world, heyaId, "Europe", 85);
 
     const impact = (WorldCircuitService as any).buildForeignAcademy(world, heyaId, "Europe");

@@ -23,6 +23,7 @@ const phaseLabels: Record<string, string> = {
   clinch: "Clinch",
   momentum: "Struggle",
   finish: "Finish",
+  mono_ii: "Mono-ii",
 };
 
 const phaseColors: Record<string, string> = {
@@ -30,6 +31,7 @@ const phaseColors: Record<string, string> = {
   clinch: "phase-clinch",
   momentum: "phase-momentum",
   finish: "phase-finish",
+  mono_ii: "bg-gold/20 text-gold",
 };
 
 /**

@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { projectTsukebito } from "@/presenters/tsukebitoProjections";
-import type { WorldState, Rikishi } from "@/engine/types/world";
+import type { WorldState } from "@/engine/types/world";
+import type { Rikishi } from "@/engine/types/rikishi";
 
 function makeRikishi(id: string, rankNumber: number, heyaId: string, shikona?: string): Rikishi {
   return {

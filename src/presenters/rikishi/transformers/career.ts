@@ -80,10 +80,17 @@ export function toCareerDTO(r: Rikishi): RikishiCareerDTO {
   const streakInfo = calculateStreak(history);
   const careerHistory = r.careerHistory ?? [];
 
+  // Compute kachi-nokori (wins needed for kachi-koshi)
+  const wins = r.currentBashoWins ?? 0;
+  const losses = r.currentBashoLosses ?? 0;
+  const boutsPlayed = wins + losses;
+  const kachiNokori = boutsPlayed < 8 ? Math.max(0, 8 - wins) : (wins >= 8 ? 0 : null);
+
   return {
     currentBashoWins: r.currentBashoWins ?? 0,
     currentBashoLosses: r.currentBashoLosses ?? 0,
     currentBashoRecord: `${r.currentBashoWins ?? 0}-${r.currentBashoLosses ?? 0}`,
+    kachiNokori,
     careerWins: r.careerWins,
     careerLosses: r.careerLosses,
     careerAbsences: r.careerAbsences ?? 0,
