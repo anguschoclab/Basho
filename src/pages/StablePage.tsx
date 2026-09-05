@@ -24,6 +24,7 @@ import type { FacilityId } from "@/engine/types/infrastructure";
 import { KeshoMawashiGallery } from "@/components/stable/KeshoMawashiGallery";
 import { MentorAssignmentPanel } from "@/components/game/MentorAssignmentPanel";
 import { getHeyaRoster } from "@/presenters/engineAccess";
+import { getRikishi } from "@/presenters/worldAccess";
 import { TsukebitoPanel } from "@/components/training/TsukebitoPanel";
 import { YouthAcademyPanel } from "@/components/recruitment/YouthAcademyPanel";
 import { projectTsukebito } from "@/presenters/tsukebitoProjections";
@@ -245,11 +246,15 @@ export default function StablePage() {
               <TsukebitoPanel
                 projection={projectTsukebito(world, heya.id)}
                 onSet={(seniorId, juniorId) =>
-                  sendCommand({ type: "SET_TSUKEBITO", seniorId, juniorId })
+                  sendCommand({ type: "SET_TSUKEBITO", seniorId, tsukebitoIds: [juniorId] })
                 }
-                onClear={(seniorId, juniorId) =>
-                  sendCommand({ type: "CLEAR_TSUKEBITO", seniorId, juniorId })
-                }
+                onClear={(seniorId, juniorId) => {
+                  const senior = getRikishi(world, seniorId);
+                  const remaining = (senior?.tsukebitoIds ?? []).filter(
+                    (id) => id !== juniorId
+                  );
+                  sendCommand({ type: "SET_TSUKEBITO", seniorId, tsukebitoIds: remaining });
+                }}
               />
             )}
           </TabsContent>

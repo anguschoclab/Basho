@@ -420,7 +420,8 @@ export default function Dashboard() {
         </div>
 
         {/* ── EXHIBITION INVITATIONS & GOMENFUDA STATUS ── */}
-        {(exhibitionProjection.hasInvitations || gomenfudaProjection.hasSanctionWarning) && (
+        {(exhibitionProjection.hasInvitations ||
+          gomenfudaProjection.count >= gomenfudaProjection.threshold - 1) && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {exhibitionProjection.invitations.map((inv) => (
               <JungyoInvitationCard
@@ -434,7 +435,7 @@ export default function Dashboard() {
                 }
               />
             ))}
-            {gomenfudaProjection.hasSanctionWarning && (
+            {gomenfudaProjection.count >= gomenfudaProjection.threshold - 1 && (
               <GomenfudaStatusBadge projection={gomenfudaProjection} />
             )}
           </div>

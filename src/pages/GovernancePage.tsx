@@ -17,6 +17,7 @@ import { compareBy, type SortDirection } from "@/lib/sortUtils";
 import { SCANDAL_LABELS, formatFinePenalty, getStatusLabel } from "@/presenters/uiDigest";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import { projectGovernanceDerived, projectGomenfuda } from "@/presenters/projections/governanceProjections";
+import { getYokozunaCandidates } from "@/presenters/projections/promotionProjections";
 import { selectClosedHeyas, selectYokozunaVacancyStreak } from "@/presenters/selectors";
 import { getOyakata, getGlobalCupChampion } from "@/presenters/worldAccess";
 import type { Faction } from "@/engine/types/economy";
@@ -378,6 +379,53 @@ export default function GovernancePage() {
                         <span className="font-medium">{e.rikishiId}</span>
                         <span className="text-muted-foreground ml-2">{e.reason}</span>
                         <span className="text-muted-foreground ml-2">({e.bashoName})</span>
+                      </div>
+                    ))}
+                  </CardContent>
+                </Card>
+              );
+            })()}
+
+            {/* YDC Kihaku — borderline Yokozuna candidates */}
+            {(() => {
+              if (!world) return null;
+              const candidates = getYokozunaCandidates(world);
+              if (candidates.length === 0) return null;
+              return (
+                <Card data-testid="ydc-kihaku-card">
+                  <CardHeader>
+                    <CardTitle className="text-sm">Yokozuna Deliberation — Fighting Spirit</CardTitle>
+                    <CardDescription>
+                      Kihaku scores for borderline Yokozuna candidates
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-2">
+                    {candidates.map((c) => (
+                      <div
+                        key={c.rikishi.id}
+                        className="flex items-center justify-between text-xs p-2 rounded border border-border/50"
+                        data-testid={`ydc-candidate-${c.rikishi.id}`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">{c.rikishi.shikona}</span>
+                          <Badge
+                            variant={c.supportLevel === "strong" ? "default" : "outline"}
+                            className="text-[9px]"
+                          >
+                            {c.supportLevel}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-muted-foreground">
+                            Yusho: {c.recentYushos} · Jun-Yusho: {c.recentJunYushos}
+                          </span>
+                          {c.rikishi.kihakuIsenScore !== undefined &&
+                            c.rikishi.kihakuIsenScore > 0 && (
+                              <Badge variant="secondary" className="text-[9px]">
+                                Kihaku: {c.rikishi.kihakuIsenScore}
+                              </Badge>
+                            )}
+                        </div>
                       </div>
                     ))}
                   </CardContent>

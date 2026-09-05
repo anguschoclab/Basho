@@ -28,7 +28,7 @@ import { shouldHaltAdvance } from "../loop/shouldHaltAdvance";
 import { issueGovernanceRuling } from "../systems/governance/ScandalService";
 import { handleMediaEvent } from "../systems/media/MediaEventService";
 import { withdrawRikishi, treatInjury } from "../systems/health/HealthActions";
-import { WorldCircuitService } from "../systems/worldCircuit/WorldCircuitService";
+import { WorldCircuitService, manageAcademy } from "../systems/worldCircuit/WorldCircuitService";
 import { runHoliday } from "../holiday";
 import { setTsukebito, clearTsukebito } from "../systems/training/TsukebitoService";
 import {
@@ -564,15 +564,27 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
     },
     SET_TSUKEBITO: (cmd) => {
       if (currentWorld) {
-        const impact = setTsukebito(currentWorld, cmd.seniorId, cmd.juniorId);
-        currentWorld = resolveImpacts(currentWorld, [impact]);
+        // Apply each tsukebito ID sequentially — setTsukebito validates eligibility per junior
+        let world = currentWorld;
+        for (const juniorId of cmd.tsukebitoIds) {
+          const impact = setTsukebito(world, cmd.seniorId, juniorId);
+          world = resolveImpacts(world, [impact]);
+        }
+        currentWorld = world;
         syncAndDigest();
       }
     },
     CLEAR_TSUKEBITO: (cmd) => {
       if (currentWorld) {
-        const impact = clearTsukebito(currentWorld, cmd.seniorId, cmd.juniorId);
-        currentWorld = resolveImpacts(currentWorld, [impact]);
+        // Clear all tsukebito from this senior
+        const senior = currentWorld.rikishi.get(cmd.seniorId);
+        const currentIds = senior?.tsukebitoIds ?? [];
+        let world = currentWorld;
+        for (const juniorId of currentIds) {
+          const impact = clearTsukebito(world, cmd.seniorId, juniorId);
+          world = resolveImpacts(world, [impact]);
+        }
+        currentWorld = world;
         syncAndDigest();
       }
     },
@@ -618,6 +630,13 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
     PROMOTE_INTAKE: (cmd) => {
       if (currentWorld) {
         const impact = promoteIntake(currentWorld, cmd.heyaId, cmd.prospectId);
+        currentWorld = resolveImpacts(currentWorld, [impact]);
+        syncAndDigest();
+      }
+    },
+    MANAGE_ACADEMY: (cmd) => {
+      if (currentWorld) {
+        const impact = manageAcademy(currentWorld, cmd.heyaId, cmd.region, cmd.config);
         currentWorld = resolveImpacts(currentWorld, [impact]);
         syncAndDigest();
       }

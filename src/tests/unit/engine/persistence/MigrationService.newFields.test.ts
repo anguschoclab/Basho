@@ -17,11 +17,24 @@ function makeV1_2_0Save(): SaveGame {
       year: 2025,
       week: 1,
       cyclePhase: "interim",
-      heyas: {},
+      heyas: {
+        "h1": {
+          id: "h1",
+          name: "Test Heya",
+          funds: 1_000_000,
+          rikishiIds: ["r1"],
+        },
+      } as any,
       closedHeyas: {},
-      rikishi: {},
+      rikishi: {
+        "r1": {
+          id: "r1",
+          name: "Test Rikishi",
+          heyaId: "h1",
+        },
+      } as any,
       historicalRikishi: {},
-      activeRikishiIds: [],
+      activeRikishiIds: ["r1"],
       oyakata: {},
       staff: {},
       history: [],
@@ -81,5 +94,47 @@ describe("MigrationService — new fields (1.2.0 → 1.3.0)", () => {
   it("migration path from 1.2.0 to 1.3.0 has exactly one step", () => {
     const steps = MigrationService.getMigrationPath("1.2.0", "1.3.0");
     expect(steps).toHaveLength(1);
+  });
+
+  it("explicitly initializes heya.jungyoOptOut on existing saves", () => {
+    const save = makeV1_2_0Save();
+    const result = MigrationService.migrateSave(save);
+    const heya = (result.save.world as any).heyas["h1"];
+    expect(heya).toBeDefined();
+    expect("jungyoOptOut" in heya).toBe(true);
+    expect(heya.jungyoOptOut).toBeUndefined();
+  });
+
+  it("explicitly initializes heya.foreignAcademies on existing saves", () => {
+    const save = makeV1_2_0Save();
+    const result = MigrationService.migrateSave(save);
+    const heya = (result.save.world as any).heyas["h1"];
+    expect("foreignAcademies" in heya).toBe(true);
+    expect(heya.foreignAcademies).toBeUndefined();
+  });
+
+  it("explicitly initializes heya.youthAcademy on existing saves", () => {
+    const save = makeV1_2_0Save();
+    const result = MigrationService.migrateSave(save);
+    const heya = (result.save.world as any).heyas["h1"];
+    expect("youthAcademy" in heya).toBe(true);
+    expect(heya.youthAcademy).toBeUndefined();
+  });
+
+  it("explicitly initializes rikishi.tsukebitoPlayerSet on existing saves", () => {
+    const save = makeV1_2_0Save();
+    const result = MigrationService.migrateSave(save);
+    const r = (result.save.world as any).rikishi["r1"];
+    expect(r).toBeDefined();
+    expect("tsukebitoPlayerSet" in r).toBe(true);
+    expect(r.tsukebitoPlayerSet).toBeUndefined();
+  });
+
+  it("preserves existing heya data (funds, name) during migration", () => {
+    const save = makeV1_2_0Save();
+    const result = MigrationService.migrateSave(save);
+    const heya = (result.save.world as any).heyas["h1"];
+    expect(heya.name).toBe("Test Heya");
+    expect(heya.funds).toBe(1_000_000);
   });
 });

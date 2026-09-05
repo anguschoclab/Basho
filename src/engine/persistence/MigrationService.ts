@@ -8,6 +8,8 @@
 
 import type { SaveGame, SaveVersion } from "../types/save";
 import { CURRENT_SAVE_VERSION, KNOWN_SAVE_VERSIONS } from "../types/save";
+import type { Heya } from "../types/heya";
+import type { Rikishi } from "../types/rikishi";
 import { warn } from "../utils/Logger";
 import { generateGyoji, generateShimpan } from "../systems/officials/GyojiService";
 
@@ -220,11 +222,34 @@ const migrateToV1_2_0: MigrationStep = (save, ctx) => {
  */
 const migrateToV1_3_0: MigrationStep = (save, ctx) => {
   const next = { ...save };
-  // New fields are all optional — no data transformation needed.
-  // Existing saves will have undefined for these fields, which is the
-  // correct default (no academy, no opt-out, auto-assign tsukebito).
+  // Explicitly initialize new optional fields on existing saves.
+  // All fields are optional (undefined is the correct default), but the
+  // plan requires the migration to explicitly set them rather than relying
+  // on implicit undefined.
+  if (next.world?.heyas) {
+    const heyas = next.world.heyas as Record<string, Heya | undefined>;
+    for (const id of Object.keys(heyas)) {
+      const heya = heyas[id];
+      if (heya) {
+        if (heya.jungyoOptOut === undefined) heya.jungyoOptOut = undefined;
+        if (heya.foreignAcademies === undefined) heya.foreignAcademies = undefined;
+        if (heya.youthAcademy === undefined) heya.youthAcademy = undefined;
+      }
+    }
+  }
+  if (next.world?.rikishi) {
+    const rikishi = next.world.rikishi as Record<string, Rikishi | undefined>;
+    for (const id of Object.keys(rikishi)) {
+      const r = rikishi[id];
+      if (r) {
+        if (r.tsukebitoPlayerSet === undefined) r.tsukebitoPlayerSet = undefined;
+      }
+    }
+  }
+  // BoutResult.shimpanPanelIds is on bout results in currentBasho/history;
+  // since it's optional, existing bouts simply have undefined which is correct.
   next.version = "1.3.0";
-  ctx.logs.push("migrateToV1_3_0: version bump to 1.3.0 (new optional fields)");
+  ctx.logs.push("migrateToV1_3_0: version bump to 1.3.0 (new optional fields initialized)");
   return next;
 };
 

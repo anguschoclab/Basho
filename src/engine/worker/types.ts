@@ -98,12 +98,11 @@ export type EngineCommand =
   | {
       type: "SET_TSUKEBITO";
       seniorId: string;
-      juniorId: string;
+      tsukebitoIds: string[];
     }
   | {
       type: "CLEAR_TSUKEBITO";
       seniorId: string;
-      juniorId: string;
     }
   | {
       type: "BUILD_FOREIGN_ACADEMY";
@@ -132,6 +131,12 @@ export type EngineCommand =
       type: "PROMOTE_INTAKE";
       heyaId: string;
       prospectId: string;
+    }
+  | {
+      type: "MANAGE_ACADEMY";
+      heyaId: string;
+      region: import("../systems/worldCircuit/WorldCircuitService").ExhibitionRegion;
+      config: import("../types/academy").AcademyConfig;
     };
 
 /** Worker -> UI Events */

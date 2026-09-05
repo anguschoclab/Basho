@@ -8,6 +8,7 @@
 
 import { WorldState } from "../../types/world";
 import type { Rank } from "../../types/banzuke";
+import type { AcademyConfig } from "../../types/academy";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { RNGRegistry } from "../../core/RNGRegistry";
@@ -330,3 +331,54 @@ export const WorldCircuitService = {
     return builder.build();
   },
 };
+
+/**
+ * Manage a foreign academy — adjust budget (quality bonus) and optionally hire staff.
+ * Unified management function per plan Feature 11.
+ */
+export function manageAcademy(
+  world: WorldState,
+  heyaId: string,
+  region: ExhibitionRegion,
+  config: AcademyConfig
+): StateImpact {
+  const builder = createImpactBuilder("manageAcademy");
+
+  const heya = getHeya(world, heyaId);
+  if (!heya) return builder.build();
+
+  const academies = heya.foreignAcademies ?? [];
+  const academy = academies.find((a) => a.region === region);
+  if (!academy) return builder.build();
+
+  // Update the academy's quality bonus based on budget investment
+  const updatedAcademies = academies.map((a) =>
+    a.region === region
+      ? {
+          ...a,
+          candidateQualityBonus: a.candidateQualityBonus + Math.floor(config.budget / 50_000),
+        }
+      : a
+  );
+
+  builder.updateHeya(heyaId, { foreignAcademies: updatedAcademies });
+
+  // Deduct budget from heya funds
+  if (config.budget > 0) {
+    builder.updateHeya(heyaId, { funds: Math.max(0, heya.funds - config.budget) });
+  }
+
+  builder.logEvent(
+    "GOVERNANCE_RULING",
+    "discipline",
+    {
+      incident: "academy_managed",
+      status: "success",
+      reason: `${heya.name} invested ¥${config.budget.toLocaleString()} in ${region} academy.`,
+      score: updatedAcademies.find((a) => a.region === region)?.candidateQualityBonus ?? 0,
+    },
+    { heyaId, importance: "minor" }
+  );
+
+  return builder.build();
+}

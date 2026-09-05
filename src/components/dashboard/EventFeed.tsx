@@ -15,6 +15,7 @@ import {
   Zap,
   Target,
   CheckCircle2,
+  Sparkles,
 } from "lucide-react";
 import { useGameStore } from "@/store/gameStore";
 import { BaseWidget } from "./BaseWidget";
@@ -46,6 +47,7 @@ const typeIcons: Record<string, React.ReactNode> = {
   STRATEGY_SHIFT: <TrendingUp className="w-4 h-4 text-emerald-400" />,
   DECISION_RESOLVED: <CheckCircle2 className="w-4 h-4 text-emerald-400" />,
   DECISION_AUTO_RESOLVED: <CheckCircle2 className="w-4 h-4 text-emerald-400" />,
+  WORLD_META_EVOLUTION: <Sparkles className="w-4 h-4 text-purple-400" />,
   default: <Info className="w-4 h-4 text-muted-foreground" />,
 };
 
