@@ -1,0 +1,198 @@
+- generic [active] [ref=f17e1]:
+  - generic [ref=f17e2]:
+    - region "Notifications (F8)":
+      - list
+    - region "Notifications alt+T"
+    - generic [ref=f17e1152]:
+      - generic [ref=f17e1154]:
+        - link "力 Basho Manager Pro Edition" [ref=f17e1156] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=f17e1157]: 力
+          - generic [ref=f17e1159]:
+            - generic [ref=f17e1160]: Basho Manager
+            - generic [ref=f17e1161]: Pro Edition
+        - generic [ref=f17e1163]:
+          - list [ref=f17e1166]:
+            - listitem [ref=f17e1167]:
+              - link "Control Center" [ref=f17e1168] [cursor=pointer]:
+                - /url: /dashboard
+            - listitem [ref=f17e1175]:
+              - link "Events & Recap" [ref=f17e1176] [cursor=pointer]:
+                - /url: /recap
+            - listitem [ref=f17e1181]:
+              - link "Weekly Report" [ref=f17e1182] [cursor=pointer]:
+                - /url: /digest
+          - generic [ref=f17e1187]:
+            - generic [ref=f17e1188]: My Stable
+            - list [ref=f17e1192]:
+              - listitem [ref=f17e1193]:
+                - link "Overview" [ref=f17e1194] [cursor=pointer]:
+                  - /url: /stable
+              - listitem [ref=f17e1199]:
+                - link "Roster" [ref=f17e1200] [cursor=pointer]:
+                  - /url: /stable/roster
+              - listitem [ref=f17e1207]:
+                - link "Training" [ref=f17e1208] [cursor=pointer]:
+                  - /url: /stable/training
+              - listitem [ref=f17e1216]:
+                - link "Medical" [ref=f17e1217] [cursor=pointer]:
+                  - /url: /stable/medical
+              - listitem [ref=f17e1221]:
+                - link "Staff" [ref=f17e1222] [cursor=pointer]:
+                  - /url: /stable/staff
+              - listitem [ref=f17e1227]:
+                - link "Oyakata" [ref=f17e1228] [cursor=pointer]:
+                  - /url: /stable/oyakata
+              - listitem [ref=f17e1232]:
+                - button "Scouting" [ref=f17e1233]
+              - listitem [ref=f17e1242]:
+                - link "Youth Academy" [ref=f17e1243] [cursor=pointer]:
+                  - /url: /academy
+              - listitem [ref=f17e1248]:
+                - link "Bookmarks" [ref=f17e1249] [cursor=pointer]:
+                  - /url: /bookmarks
+          - generic [ref=f17e1253]:
+            - generic [ref=f17e1254]: Tournament
+            - list [ref=f17e1258]:
+              - listitem [ref=f17e1259]:
+                - link "Current Basho" [ref=f17e1260] [cursor=pointer]:
+                  - /url: /basho
+              - listitem [ref=f17e1268]:
+                - link "Banzuke" [ref=f17e1269] [cursor=pointer]:
+                  - /url: /basho/banzuke
+              - listitem [ref=f17e1274]:
+                - link "Schedule" [ref=f17e1275] [cursor=pointer]:
+                  - /url: /basho/schedule
+              - listitem [ref=f17e1279]:
+                - link "Rivalries" [ref=f17e1280] [cursor=pointer]:
+                  - /url: /basho/rivalries
+              - listitem [ref=f17e1291]:
+                - link "Global Cup" [ref=f17e1292] [cursor=pointer]:
+                  - /url: /global-cup
+              - listitem [ref=f17e1300]:
+                - link "World Circuit" [ref=f17e1301] [cursor=pointer]:
+                  - /url: /world-circuit
+              - listitem [ref=f17e1306]:
+                - link "Rival Stables" [ref=f17e1307] [cursor=pointer]:
+                  - /url: /rival-stables
+          - generic [ref=f17e1313]:
+            - generic [ref=f17e1314]: Management
+            - list [ref=f17e1318]:
+              - listitem [ref=f17e1319]:
+                - button "Finances" [ref=f17e1320]
+              - listitem [ref=f17e1331]:
+                - link "Facilities" [ref=f17e1332] [cursor=pointer]:
+                  - /url: /office/facilities
+              - listitem [ref=f17e1338]:
+                - link "Sponsors" [ref=f17e1339] [cursor=pointer]:
+                  - /url: /office/sponsors
+          - generic [ref=f17e1346]:
+            - generic [ref=f17e1347]: Association
+            - list [ref=f17e1351]:
+              - listitem [ref=f17e1352]:
+                - link "Governance" [ref=f17e1353] [cursor=pointer]:
+                  - /url: /jsa/governance
+              - listitem [ref=f17e1357]:
+                - link "Elder Market" [ref=f17e1358] [cursor=pointer]:
+                  - /url: /myoseki
+              - listitem [ref=f17e1362]:
+                - link "Press & Rep" [ref=f17e1363] [cursor=pointer]:
+                  - /url: /media
+              - listitem [ref=f17e1368]:
+                - link "Trends" [ref=f17e1369] [cursor=pointer]:
+                  - /url: /jsa/trends
+          - generic [ref=f17e1374]:
+            - generic [ref=f17e1375]: Records
+            - list [ref=f17e1379]:
+              - listitem [ref=f17e1380]:
+                - link "Stable History" [ref=f17e1381] [cursor=pointer]:
+                  - /url: /records/history
+              - listitem [ref=f17e1386]:
+                - link "Almanac" [ref=f17e1387] [cursor=pointer]:
+                  - /url: /records/almanac
+              - listitem [ref=f17e1391]:
+                - link "Hall of Fame" [ref=f17e1392] [cursor=pointer]:
+                  - /url: /records/hall-of-fame
+              - listitem [ref=f17e1397]:
+                - link "Museum" [ref=f17e1398] [cursor=pointer]:
+                  - /url: /records/museum
+              - listitem [ref=f17e1402]:
+                - link "Glossary" [ref=f17e1403] [cursor=pointer]:
+                  - /url: /glossary
+        - generic [ref=f17e1415]:
+          - generic [ref=f17e1416]: Dewanoumi
+          - generic [ref=f17e1417]: secure
+        - button "Toggle Sidebar" [ref=f17e1420]
+      - main [ref=f17e1421]:
+        - generic [ref=f17e1423]:
+          - button "Toggle Sidebar" [ref=f17e1424]
+          - generic [ref=f17e1427]:
+            - generic [ref=f17e1429]:
+              - generic [ref=f17e1430]: Date
+              - generic [ref=f17e1431]: Year 2026 · Wk 1
+            - generic [ref=f17e1432]: Interim
+            - generic [ref=f17e1435]:
+              - generic [ref=f17e1436]: Era
+              - generic [ref=f17e1437]: Classic
+            - generic [ref=f17e1438]:
+              - generic [ref=f17e1439]: Funds
+              - generic [ref=f17e1440]: ¥40,000,000
+          - generic [ref=f17e1441]:
+            - button "Skip ahead with safety gates" [ref=f17e1442]: Holiday
+            - button "Open save and load dialog" [ref=f17e1443]
+            - button "Toggle theme" [ref=f17e1444]
+            - button "Settings" [ref=f17e1445]
+            - button "Continue" [ref=f17e1447]
+        - navigation "Breadcrumb" [ref=f17e1451]:
+          - link "Home" [ref=f17e1452] [cursor=pointer]:
+            - /url: /dashboard
+          - link "Association" [ref=f17e1459] [cursor=pointer]:
+            - /url: /jsa
+          - generic [ref=f17e1463]: Trends
+        - main [ref=f17e1465]:
+          - generic [ref=f17e1467]:
+            - navigation "Sub navigation" [ref=f17e1470]:
+              - button "Governance" [ref=f17e1471]
+              - button "Elder Market" [ref=f17e1474]
+              - button "Press & Rep" [ref=f17e1477]
+              - button "Trends" [ref=f17e1480]
+            - generic [ref=f17e1483]: JSA Trends
+          - generic [ref=f17e1485]:
+            - generic [ref=f17e1487]:
+              - paragraph [ref=f17e1488]: ── ASSOCIATION ──
+              - heading "JSA Meta Trends" [level=1] [ref=f17e1489]
+              - paragraph [ref=f17e1490]: Historical analysis of technical biases and institutional drifts.
+            - generic [ref=f17e1491]:
+              - generic [ref=f17e1493]:
+                - generic [ref=f17e1494]:
+                  - heading "Technical Dominance (Last 6 Basho)" [level=3] [ref=f17e1495]
+                  - paragraph [ref=f17e1499]: Shift in winning styles across the top division over time.
+                - generic [ref=f17e1500]: "ERA: CLASSIC (Yotsu)"
+              - generic [ref=f17e1504]:
+                - list [ref=f17e1506]:
+                  - listitem [ref=f17e1507]:
+                    - img "Hybrid/Varied Styles legend icon" [ref=f17e1508]
+                    - text: Hybrid/Varied Styles
+                  - listitem [ref=f17e1510]:
+                    - img "Oshi-Zumo (Thrusting) legend icon" [ref=f17e1511]
+                    - text: Oshi-Zumo (Thrusting)
+                  - listitem [ref=f17e1513]:
+                    - img "Yotsu-Zumo (Grappling) legend icon" [ref=f17e1514]
+                    - text: Yotsu-Zumo (Grappling)
+                - application [ref=f17e1516]:
+                  - generic [ref=f17e1521]:
+                    - generic [ref=f17e1522]: 0%
+                    - generic [ref=f17e1524]: 25%
+                    - generic [ref=f17e1526]: 50%
+                    - generic [ref=f17e1528]: 75%
+                    - generic [ref=f17e1530]: 100%
+            - generic [ref=f17e1532]:
+              - generic [ref=f17e1533]:
+                - 'heading "Current Era: CLASSIC (Yotsu)" [level=3] [ref=f17e1535]'
+                - paragraph [ref=f17e1539]: The 'Golden Belt' revival. Standard mawashi techniques and traditional grit define the current circuit.
+              - generic [ref=f17e1540]:
+                - heading "Adapting to Shifts" [level=3] [ref=f17e1542]
+                - paragraph [ref=f17e1546]: Macro trends are determined by the collective success of Yokozuna and Ozeki. If the top ranks are dominated by grappling specialists, the Meta will shift towards Yotsu within 2-3 years.
+        - button "Keyboard Shortcuts" [ref=f17e1548]
+        - button "Open Event Log" [ref=f17e1549]
+  - generic [aria-hidden] [ref=f17e1150]: "0"

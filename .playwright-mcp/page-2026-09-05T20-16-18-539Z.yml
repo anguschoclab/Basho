@@ -1,0 +1,15 @@
+- generic [ref=f12e2]:
+  - region "Notifications (F8)":
+    - list
+  - region "Notifications alt+T"
+  - generic [ref=f12e6]:
+    - heading "404" [level=1] [ref=f12e7]
+    - paragraph [ref=f12e8]: Page not found
+    - paragraph [ref=f12e9]:
+      - text: The route
+      - code [ref=f12e10]: /trends
+      - text: does not exist.
+    - generic [ref=f12e11]:
+      - button "Go Back" [ref=f12e12]
+      - link "Dashboard" [ref=f12e13] [cursor=pointer]:
+        - /url: /dashboard

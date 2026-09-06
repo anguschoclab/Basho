@@ -1,0 +1,336 @@
+- generic [active] [ref=f10e1]:
+  - generic [ref=f10e2]:
+    - region "Notifications (F8)":
+      - list
+    - region "Notifications alt+T"
+    - generic [ref=f10e1151]:
+      - generic [ref=f10e1153]:
+        - link "力 Basho Manager Pro Edition" [ref=f10e1155] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=f10e1156]: 力
+          - generic [ref=f10e1158]:
+            - generic [ref=f10e1159]: Basho Manager
+            - generic [ref=f10e1160]: Pro Edition
+        - generic [ref=f10e1162]:
+          - list [ref=f10e1165]:
+            - listitem [ref=f10e1166]:
+              - link "Control Center" [ref=f10e1167] [cursor=pointer]:
+                - /url: /dashboard
+            - listitem [ref=f10e1174]:
+              - link "Events & Recap" [ref=f10e1175] [cursor=pointer]:
+                - /url: /recap
+            - listitem [ref=f10e1180]:
+              - link "Weekly Report" [ref=f10e1181] [cursor=pointer]:
+                - /url: /digest
+          - generic [ref=f10e1186]:
+            - generic [ref=f10e1187]: My Stable
+            - list [ref=f10e1191]:
+              - listitem [ref=f10e1192]:
+                - link "Overview" [ref=f10e1193] [cursor=pointer]:
+                  - /url: /stable
+              - listitem [ref=f10e1198]:
+                - link "Roster" [ref=f10e1199] [cursor=pointer]:
+                  - /url: /stable/roster
+              - listitem [ref=f10e1206]:
+                - link "Training" [ref=f10e1207] [cursor=pointer]:
+                  - /url: /stable/training
+              - listitem [ref=f10e1215]:
+                - link "Medical" [ref=f10e1216] [cursor=pointer]:
+                  - /url: /stable/medical
+              - listitem [ref=f10e1220]:
+                - link "Staff" [ref=f10e1221] [cursor=pointer]:
+                  - /url: /stable/staff
+              - listitem [ref=f10e1226]:
+                - link "Oyakata" [ref=f10e1227] [cursor=pointer]:
+                  - /url: /stable/oyakata
+              - listitem [ref=f10e1231]:
+                - button "Scouting" [ref=f10e1232]
+              - listitem [ref=f10e1241]:
+                - link "Youth Academy" [ref=f10e1242] [cursor=pointer]:
+                  - /url: /academy
+              - listitem [ref=f10e1247]:
+                - link "Bookmarks" [ref=f10e1248] [cursor=pointer]:
+                  - /url: /bookmarks
+          - generic [ref=f10e1252]:
+            - generic [ref=f10e1253]: Tournament
+            - list [ref=f10e1257]:
+              - listitem [ref=f10e1258]:
+                - link "Current Basho" [ref=f10e1259] [cursor=pointer]:
+                  - /url: /basho
+              - listitem [ref=f10e1267]:
+                - link "Banzuke" [ref=f10e1268] [cursor=pointer]:
+                  - /url: /basho/banzuke
+              - listitem [ref=f10e1273]:
+                - link "Schedule" [ref=f10e1274] [cursor=pointer]:
+                  - /url: /basho/schedule
+              - listitem [ref=f10e1278]:
+                - link "Rivalries" [ref=f10e1279] [cursor=pointer]:
+                  - /url: /basho/rivalries
+              - listitem [ref=f10e1290]:
+                - link "Global Cup" [ref=f10e1291] [cursor=pointer]:
+                  - /url: /global-cup
+              - listitem [ref=f10e1299]:
+                - link "World Circuit" [ref=f10e1300] [cursor=pointer]:
+                  - /url: /world-circuit
+              - listitem [ref=f10e1305]:
+                - link "Rival Stables" [ref=f10e1306] [cursor=pointer]:
+                  - /url: /rival-stables
+          - generic [ref=f10e1312]:
+            - generic [ref=f10e1313]: Management
+            - list [ref=f10e1317]:
+              - listitem [ref=f10e1318]:
+                - button "Finances" [ref=f10e1319]
+              - listitem [ref=f10e1330]:
+                - link "Facilities" [ref=f10e1331] [cursor=pointer]:
+                  - /url: /office/facilities
+              - listitem [ref=f10e1337]:
+                - link "Sponsors" [ref=f10e1338] [cursor=pointer]:
+                  - /url: /office/sponsors
+          - generic [ref=f10e1345]:
+            - generic [ref=f10e1346]: Association
+            - list [ref=f10e1350]:
+              - listitem [ref=f10e1351]:
+                - link "Governance" [ref=f10e1352] [cursor=pointer]:
+                  - /url: /jsa/governance
+              - listitem [ref=f10e1356]:
+                - link "Elder Market" [ref=f10e1357] [cursor=pointer]:
+                  - /url: /myoseki
+              - listitem [ref=f10e1361]:
+                - link "Press & Rep" [ref=f10e1362] [cursor=pointer]:
+                  - /url: /media
+              - listitem [ref=f10e1367]:
+                - link "Trends" [ref=f10e1368] [cursor=pointer]:
+                  - /url: /jsa/trends
+          - generic [ref=f10e1373]:
+            - generic [ref=f10e1374]: Records
+            - list [ref=f10e1378]:
+              - listitem [ref=f10e1379]:
+                - link "Stable History" [ref=f10e1380] [cursor=pointer]:
+                  - /url: /records/history
+              - listitem [ref=f10e1385]:
+                - link "Almanac" [ref=f10e1386] [cursor=pointer]:
+                  - /url: /records/almanac
+              - listitem [ref=f10e1390]:
+                - link "Hall of Fame" [ref=f10e1391] [cursor=pointer]:
+                  - /url: /records/hall-of-fame
+              - listitem [ref=f10e1396]:
+                - link "Museum" [ref=f10e1397] [cursor=pointer]:
+                  - /url: /records/museum
+              - listitem [ref=f10e1401]:
+                - link "Glossary" [ref=f10e1402] [cursor=pointer]:
+                  - /url: /glossary
+        - generic [ref=f10e1414]:
+          - generic [ref=f10e1415]: Dewanoumi
+          - generic [ref=f10e1416]: secure
+        - button "Toggle Sidebar" [ref=f10e1419]
+      - main [ref=f10e1420]:
+        - generic [ref=f10e1422]:
+          - button "Toggle Sidebar" [ref=f10e1423]
+          - generic [ref=f10e1426]:
+            - generic [ref=f10e1428]:
+              - generic [ref=f10e1429]: Date
+              - generic [ref=f10e1430]: Year 2026 · Wk 1
+            - generic [ref=f10e1431]: Interim
+            - generic [ref=f10e1434]:
+              - generic [ref=f10e1435]: Era
+              - generic [ref=f10e1436]: Classic
+            - generic [ref=f10e1437]:
+              - generic [ref=f10e1438]: Funds
+              - generic [ref=f10e1439]: ¥40,000,000
+          - generic [ref=f10e1440]:
+            - button "Skip ahead with safety gates" [ref=f10e1441]: Holiday
+            - button "Open save and load dialog" [ref=f10e1442]
+            - button "Toggle theme" [ref=f10e1443]
+            - button "Settings" [ref=f10e1444]
+            - button "Continue" [ref=f10e1446]
+        - navigation "Breadcrumb" [ref=f10e1450]:
+          - link "Home" [ref=f10e1451] [cursor=pointer]:
+            - /url: /dashboard
+          - generic [ref=f10e1458]: rival-stables
+        - main [ref=f10e1460]:
+          - heading "Rival Stables" [level=1] [ref=f10e1462]
+          - generic [ref=f10e1464]:
+            - heading "Rival Oyakata (44)" [level=2] [ref=f10e1471]
+            - generic [ref=f10e1472]:
+              - generic [ref=f10e1475] [cursor=pointer]:
+                - generic [ref=f10e1476]: Nakagawa
+                - generic [ref=f10e1480]: "Ichimon: Nishonoseki"
+                - paragraph [ref=f10e1481]: No recent decisions logged.
+              - generic [ref=f10e1484] [cursor=pointer]:
+                - generic [ref=f10e1485]: Shikihide
+                - generic [ref=f10e1489]: "Ichimon: Isegahama"
+                - paragraph [ref=f10e1490]: No recent decisions logged.
+              - generic [ref=f10e1493] [cursor=pointer]:
+                - generic [ref=f10e1494]: Tagonoura
+                - generic [ref=f10e1498]: "Ichimon: Tokitsukaze"
+                - paragraph [ref=f10e1499]: No recent decisions logged.
+              - generic [ref=f10e1502] [cursor=pointer]:
+                - generic [ref=f10e1503]: Naruto
+                - generic [ref=f10e1507]: "Ichimon: Dewanoumi"
+                - paragraph [ref=f10e1508]: No recent decisions logged.
+              - generic [ref=f10e1511] [cursor=pointer]:
+                - generic [ref=f10e1512]: Oshogatsu
+                - generic [ref=f10e1516]: "Ichimon: Dewanoumi"
+                - paragraph [ref=f10e1517]: No recent decisions logged.
+              - generic [ref=f10e1520] [cursor=pointer]:
+                - generic [ref=f10e1521]: Arashio
+                - generic [ref=f10e1525]: "Ichimon: Isegahama"
+                - paragraph [ref=f10e1526]: No recent decisions logged.
+              - generic [ref=f10e1529] [cursor=pointer]:
+                - generic [ref=f10e1530]: Katsushika
+                - generic [ref=f10e1534]: "Ichimon: Tokitsukaze"
+                - paragraph [ref=f10e1535]: No recent decisions logged.
+              - generic [ref=f10e1538] [cursor=pointer]:
+                - generic [ref=f10e1539]: Asakayama
+                - generic [ref=f10e1543]: "Ichimon: Takasago"
+                - paragraph [ref=f10e1544]: No recent decisions logged.
+              - generic [ref=f10e1547] [cursor=pointer]:
+                - generic [ref=f10e1548]: Magaki
+                - generic [ref=f10e1552]: "Ichimon: Nishonoseki"
+                - paragraph [ref=f10e1553]: No recent decisions logged.
+              - generic [ref=f10e1556] [cursor=pointer]:
+                - generic [ref=f10e1557]: Shibatayama
+                - generic [ref=f10e1561]: "Ichimon: Isegahama"
+                - paragraph [ref=f10e1562]: No recent decisions logged.
+              - generic [ref=f10e1565] [cursor=pointer]:
+                - generic [ref=f10e1566]: Takadagawa
+                - generic [ref=f10e1570]: "Ichimon: Dewanoumi"
+                - paragraph [ref=f10e1571]: No recent decisions logged.
+              - generic [ref=f10e1574] [cursor=pointer]:
+                - generic [ref=f10e1575]: Michinoku
+                - generic [ref=f10e1579]: "Ichimon: Tokitsukaze"
+                - paragraph [ref=f10e1580]: No recent decisions logged.
+              - generic [ref=f10e1583] [cursor=pointer]:
+                - generic [ref=f10e1584]: Fujishima
+                - generic [ref=f10e1588]: "Ichimon: Dewanoumi"
+                - paragraph [ref=f10e1589]: No recent decisions logged.
+              - generic [ref=f10e1592] [cursor=pointer]:
+                - generic [ref=f10e1593]: Miyagino
+                - generic [ref=f10e1597]: "Ichimon: Takasago"
+                - paragraph [ref=f10e1598]: No recent decisions logged.
+              - generic [ref=f10e1601] [cursor=pointer]:
+                - generic [ref=f10e1602]: Futagoyama
+                - generic [ref=f10e1606]: "Ichimon: Tokitsukaze"
+                - paragraph [ref=f10e1607]: No recent decisions logged.
+              - generic [ref=f10e1610] [cursor=pointer]:
+                - generic [ref=f10e1611]: Oigami
+                - generic [ref=f10e1615]: "Ichimon: Nishonoseki"
+                - paragraph [ref=f10e1616]: No recent decisions logged.
+              - generic [ref=f10e1619] [cursor=pointer]:
+                - generic [ref=f10e1620]: Shirane
+                - generic [ref=f10e1624]: "Ichimon: Tokitsukaze"
+                - paragraph [ref=f10e1625]: No recent decisions logged.
+              - generic [ref=f10e1628] [cursor=pointer]:
+                - generic [ref=f10e1629]: Hanahago
+                - generic [ref=f10e1633]: "Ichimon: Nishonoseki"
+                - paragraph [ref=f10e1634]: No recent decisions logged.
+              - generic [ref=f10e1637] [cursor=pointer]:
+                - generic [ref=f10e1638]: Irumagawa
+                - generic [ref=f10e1642]: "Ichimon: Tokitsukaze"
+                - paragraph [ref=f10e1643]: No recent decisions logged.
+              - generic [ref=f10e1646] [cursor=pointer]:
+                - generic [ref=f10e1647]: Yamahibiki
+                - generic [ref=f10e1651]: "Ichimon: Dewanoumi"
+                - paragraph [ref=f10e1652]: No recent decisions logged.
+              - generic [ref=f10e1655] [cursor=pointer]:
+                - generic [ref=f10e1656]: Sakaigawa
+                - generic [ref=f10e1660]: "Ichimon: Isegahama"
+                - paragraph [ref=f10e1661]: No recent decisions logged.
+              - generic [ref=f10e1664] [cursor=pointer]:
+                - generic [ref=f10e1665]: Kasugano
+                - generic [ref=f10e1669]: "Ichimon: Nishonoseki"
+                - paragraph [ref=f10e1670]: No recent decisions logged.
+              - generic [ref=f10e1673] [cursor=pointer]:
+                - generic [ref=f10e1674]: Tokitsukaze
+                - generic [ref=f10e1678]: "Ichimon: Takasago"
+                - paragraph [ref=f10e1679]: No recent decisions logged.
+              - generic [ref=f10e1682] [cursor=pointer]:
+                - generic [ref=f10e1683]: Isegahama
+                - generic [ref=f10e1687]: "Ichimon: Tokitsukaze"
+                - paragraph [ref=f10e1688]: No recent decisions logged.
+              - generic [ref=f10e1691] [cursor=pointer]:
+                - generic [ref=f10e1692]: Nishonoseki
+                - generic [ref=f10e1696]: "Ichimon: Takasago"
+                - paragraph [ref=f10e1697]: No recent decisions logged.
+              - generic [ref=f10e1700] [cursor=pointer]:
+                - generic [ref=f10e1701]: Takasago
+                - generic [ref=f10e1705]: "Ichimon: Nishonoseki"
+                - paragraph [ref=f10e1706]: No recent decisions logged.
+              - generic [ref=f10e1709] [cursor=pointer]:
+                - generic [ref=f10e1710]: Kokonoe
+                - generic [ref=f10e1714]: "Ichimon: Takasago"
+                - paragraph [ref=f10e1715]: No recent decisions logged.
+              - generic [ref=f10e1718] [cursor=pointer]:
+                - generic [ref=f10e1719]: Kise
+                - generic [ref=f10e1723]: "Ichimon: Nishonoseki"
+                - paragraph [ref=f10e1724]: No recent decisions logged.
+              - generic [ref=f10e1727] [cursor=pointer]:
+                - generic [ref=f10e1728]: Tamanoi
+                - generic [ref=f10e1732]: "Ichimon: Takasago"
+                - paragraph [ref=f10e1733]: No recent decisions logged.
+              - generic [ref=f10e1736] [cursor=pointer]:
+                - generic [ref=f10e1737]: Minezaki
+                - generic [ref=f10e1741]: "Ichimon: Takasago"
+                - paragraph [ref=f10e1742]: No recent decisions logged.
+              - generic [ref=f10e1745] [cursor=pointer]:
+                - generic [ref=f10e1746]: Ajigawa
+                - generic [ref=f10e1750]: "Ichimon: Takasago"
+                - paragraph [ref=f10e1751]: No recent decisions logged.
+              - generic [ref=f10e1754] [cursor=pointer]:
+                - generic [ref=f10e1755]: Hanakago
+                - generic [ref=f10e1759]: "Ichimon: Isegahama"
+                - paragraph [ref=f10e1760]: No recent decisions logged.
+              - generic [ref=f10e1763] [cursor=pointer]:
+                - generic [ref=f10e1764]: Isenoumi
+                - generic [ref=f10e1768]: "Ichimon: Dewanoumi"
+                - paragraph [ref=f10e1769]: No recent decisions logged.
+              - generic [ref=f10e1772] [cursor=pointer]:
+                - generic [ref=f10e1773]: Oguruma
+                - generic [ref=f10e1777]: "Ichimon: Nishonoseki"
+                - paragraph [ref=f10e1778]: No recent decisions logged.
+              - generic [ref=f10e1781] [cursor=pointer]:
+                - generic [ref=f10e1782]: Kataonami
+                - generic [ref=f10e1786]: "Ichimon: Nishonoseki"
+                - paragraph [ref=f10e1787]: No recent decisions logged.
+              - generic [ref=f10e1790] [cursor=pointer]:
+                - generic [ref=f10e1791]: Shikoroyama
+                - generic [ref=f10e1795]: "Ichimon: Takasago"
+                - paragraph [ref=f10e1796]: No recent decisions logged.
+              - generic [ref=f10e1799] [cursor=pointer]:
+                - generic [ref=f10e1800]: Musashigawa
+                - generic [ref=f10e1804]: "Ichimon: Isegahama"
+                - paragraph [ref=f10e1805]: No recent decisions logged.
+              - generic [ref=f10e1808] [cursor=pointer]:
+                - generic [ref=f10e1809]: Kagamiyama
+                - generic [ref=f10e1813]: "Ichimon: Takasago"
+                - paragraph [ref=f10e1814]: No recent decisions logged.
+              - generic [ref=f10e1817] [cursor=pointer]:
+                - generic [ref=f10e1818]: Tatsunami
+                - generic [ref=f10e1822]: "Ichimon: Nishonoseki"
+                - paragraph [ref=f10e1823]: No recent decisions logged.
+              - generic [ref=f10e1826] [cursor=pointer]:
+                - generic [ref=f10e1827]: Chiganoura
+                - generic [ref=f10e1831]: "Ichimon: Tokitsukaze"
+                - paragraph [ref=f10e1832]: No recent decisions logged.
+              - generic [ref=f10e1835] [cursor=pointer]:
+                - generic [ref=f10e1836]: Onoe
+                - generic [ref=f10e1840]: "Ichimon: Nishonoseki"
+                - paragraph [ref=f10e1841]: No recent decisions logged.
+              - generic [ref=f10e1844] [cursor=pointer]:
+                - generic [ref=f10e1845]: Minato
+                - generic [ref=f10e1849]: "Ichimon: Isegahama"
+                - paragraph [ref=f10e1850]: No recent decisions logged.
+              - generic [ref=f10e1853] [cursor=pointer]:
+                - generic [ref=f10e1854]: Hakkaku
+                - generic [ref=f10e1858]: "Ichimon: Dewanoumi"
+                - paragraph [ref=f10e1859]: No recent decisions logged.
+              - generic [ref=f10e1862] [cursor=pointer]:
+                - generic [ref=f10e1863]: Sadogatake
+                - generic [ref=f10e1867]: "Ichimon: Nishonoseki"
+                - paragraph [ref=f10e1868]: No recent decisions logged.
+            - generic [ref=f10e1869]:
+              - heading "Recent NPC Activity Feed" [level=3] [ref=f10e1870]
+              - generic [ref=f10e1871]: No recent rival activity.
+        - button "Keyboard Shortcuts" [ref=f10e1882]
+        - button "Open Event Log" [ref=f10e1883]
+  - generic [aria-hidden] [ref=f10e1149]: Yokozuna

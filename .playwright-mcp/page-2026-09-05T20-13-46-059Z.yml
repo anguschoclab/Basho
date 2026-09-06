@@ -1,0 +1,329 @@
+- generic [active] [ref=f4e1]:
+  - generic [ref=f4e2]:
+    - region "Notifications (F8)":
+      - list
+    - region "Notifications alt+T"
+    - generic [ref=f4e4]:
+      - generic [ref=f4e6]:
+        - link "力 Basho Manager Pro Edition" [ref=f4e8] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=f4e9]: 力
+          - generic [ref=f4e11]:
+            - generic [ref=f4e12]: Basho Manager
+            - generic [ref=f4e13]: Pro Edition
+        - generic [ref=f4e15]:
+          - list [ref=f4e18]:
+            - listitem [ref=f4e19]:
+              - link "Control Center" [ref=f4e20] [cursor=pointer]:
+                - /url: /dashboard
+            - listitem [ref=f4e27]:
+              - link "Events & Recap" [ref=f4e28] [cursor=pointer]:
+                - /url: /recap
+            - listitem [ref=f4e33]:
+              - link "Weekly Report" [ref=f4e34] [cursor=pointer]:
+                - /url: /digest
+          - generic [ref=f4e39]:
+            - generic [ref=f4e40]: My Stable
+            - list [ref=f4e44]:
+              - listitem [ref=f4e45]:
+                - link "Overview" [ref=f4e46] [cursor=pointer]:
+                  - /url: /stable
+              - listitem [ref=f4e51]:
+                - link "Roster" [ref=f4e52] [cursor=pointer]:
+                  - /url: /stable/roster
+              - listitem [ref=f4e59]:
+                - link "Training" [ref=f4e60] [cursor=pointer]:
+                  - /url: /stable/training
+              - listitem [ref=f4e68]:
+                - link "Medical" [ref=f4e69] [cursor=pointer]:
+                  - /url: /stable/medical
+              - listitem [ref=f4e73]:
+                - link "Staff" [ref=f4e74] [cursor=pointer]:
+                  - /url: /stable/staff
+              - listitem [ref=f4e79]:
+                - link "Oyakata" [ref=f4e80] [cursor=pointer]:
+                  - /url: /stable/oyakata
+              - listitem [ref=f4e84]:
+                - link "Scouting" [ref=f4e85] [cursor=pointer]:
+                  - /url: /office/scouting
+              - listitem [ref=f4e90]:
+                - link "Youth Academy" [ref=f4e91] [cursor=pointer]:
+                  - /url: /academy
+              - listitem [ref=f4e96]:
+                - link "Bookmarks" [ref=f4e97] [cursor=pointer]:
+                  - /url: /bookmarks
+          - generic [ref=f4e101]:
+            - generic [ref=f4e102]: Tournament
+            - list [ref=f4e106]:
+              - listitem [ref=f4e107]:
+                - link "Current Basho" [ref=f4e108] [cursor=pointer]:
+                  - /url: /basho
+              - listitem [ref=f4e116]:
+                - link "Banzuke" [ref=f4e117] [cursor=pointer]:
+                  - /url: /basho/banzuke
+              - listitem [ref=f4e122]:
+                - link "Schedule" [ref=f4e123] [cursor=pointer]:
+                  - /url: /basho/schedule
+              - listitem [ref=f4e127]:
+                - link "Rivalries" [ref=f4e128] [cursor=pointer]:
+                  - /url: /basho/rivalries
+              - listitem [ref=f4e139]:
+                - link "Global Cup" [ref=f4e140] [cursor=pointer]:
+                  - /url: /global-cup
+              - listitem [ref=f4e148]:
+                - link "World Circuit" [ref=f4e149] [cursor=pointer]:
+                  - /url: /world-circuit
+              - listitem [ref=f4e154]:
+                - link "Rival Stables" [ref=f4e155] [cursor=pointer]:
+                  - /url: /rival-stables
+          - generic [ref=f4e161]:
+            - generic [ref=f4e162]: Management
+            - list [ref=f4e166]:
+              - listitem [ref=f4e167]:
+                - link "Finances" [ref=f4e168] [cursor=pointer]:
+                  - /url: /office/finances
+              - listitem [ref=f4e175]:
+                - link "Facilities" [ref=f4e176] [cursor=pointer]:
+                  - /url: /office/facilities
+              - listitem [ref=f4e182]:
+                - link "Sponsors" [ref=f4e183] [cursor=pointer]:
+                  - /url: /office/sponsors
+          - generic [ref=f4e190]:
+            - generic [ref=f4e191]: Association
+            - list [ref=f4e195]:
+              - listitem [ref=f4e196]:
+                - link "Governance" [ref=f4e197] [cursor=pointer]:
+                  - /url: /jsa/governance
+              - listitem [ref=f4e201]:
+                - link "Elder Market" [ref=f4e202] [cursor=pointer]:
+                  - /url: /myoseki
+              - listitem [ref=f4e206]:
+                - link "Press & Rep" [ref=f4e207] [cursor=pointer]:
+                  - /url: /media
+              - listitem [ref=f4e212]:
+                - link "Trends" [ref=f4e213] [cursor=pointer]:
+                  - /url: /jsa/trends
+          - generic [ref=f4e218]:
+            - generic [ref=f4e219]: Records
+            - list [ref=f4e223]:
+              - listitem [ref=f4e224]:
+                - link "Stable History" [ref=f4e225] [cursor=pointer]:
+                  - /url: /records/history
+              - listitem [ref=f4e230]:
+                - link "Almanac" [ref=f4e231] [cursor=pointer]:
+                  - /url: /records/almanac
+              - listitem [ref=f4e235]:
+                - link "Hall of Fame" [ref=f4e236] [cursor=pointer]:
+                  - /url: /records/hall-of-fame
+              - listitem [ref=f4e241]:
+                - link "Museum" [ref=f4e242] [cursor=pointer]:
+                  - /url: /records/museum
+              - listitem [ref=f4e246]:
+                - link "Glossary" [ref=f4e247] [cursor=pointer]:
+                  - /url: /glossary
+        - button "Toggle Sidebar" [ref=f4e253]
+      - main [ref=f4e254]:
+        - generic [ref=f4e256]:
+          - button "Toggle Sidebar" [ref=f4e257]
+          - generic [ref=f4e260]:
+            - generic [ref=f4e262]:
+              - generic [ref=f4e263]: Date
+              - generic [ref=f4e264]: Year 2026 · Wk 1
+            - generic [ref=f4e265]: Interim
+            - generic [ref=f4e268]:
+              - generic [ref=f4e269]: Era
+              - generic [ref=f4e270]: Classic
+          - generic [ref=f4e271]:
+            - button "Skip ahead with safety gates" [ref=f4e272]: Holiday
+            - button "Open save and load dialog" [ref=f4e273]
+            - button "Toggle theme" [ref=f4e274]
+            - button "Settings" [ref=f4e275]
+            - button "Continue" [ref=f4e277]
+        - navigation "Breadcrumb" [ref=f4e281]:
+          - link "Home" [ref=f4e282] [cursor=pointer]:
+            - /url: /dashboard
+          - generic [ref=f4e289]: Dashboard
+        - main [ref=f4e291]:
+          - generic [ref=f4e293]:
+            - generic [ref=f4e294]:
+              - generic [ref=f4e295]:
+                - paragraph [ref=f4e296]: ── CONTROL CENTER ──
+                - heading "Your Stable" [level=1] [ref=f4e297]
+                - paragraph [ref=f4e298]: Year 2026 · Week 1 · Off-Season
+              - generic [ref=f4e299]: 司令塔
+            - generic [ref=f4e301]:
+              - generic [ref=f4e302]:
+                - generic [ref=f4e303]:
+                  - generic [ref=f4e304]: Institution
+                  - heading "No stable selected" [level=3] [ref=f4e317]
+                - generic [ref=f4e318]:
+                  - generic [ref=f4e319]:
+                    - generic [ref=f4e320]:
+                      - paragraph [ref=f4e321]: ── MY STABLE ──
+                      - heading "Roster Status" [level=3] [ref=f4e328]
+                    - button "Roster →" [ref=f4e330]
+                  - generic [ref=f4e331]:
+                    - generic [ref=f4e332]:
+                      - paragraph [ref=f4e333]: Active
+                      - paragraph [ref=f4e334]: "0"
+                    - generic [ref=f4e335]:
+                      - paragraph [ref=f4e336]: Injured
+                      - paragraph [ref=f4e337]: "0"
+                    - generic [ref=f4e338]:
+                      - paragraph [ref=f4e339]: Sekitori
+                      - paragraph [ref=f4e340]: "0"
+                    - generic [ref=f4e341]:
+                      - paragraph [ref=f4e342]: Fatigue
+                      - paragraph [ref=f4e343]: Fresh
+                - generic [ref=f4e344]:
+                  - generic [ref=f4e345]:
+                    - generic [ref=f4e346]:
+                      - paragraph [ref=f4e347]: ── TOP WRESTLERS ──
+                      - heading "Active Roster" [level=3] [ref=f4e349]
+                    - button "Full Roster →" [ref=f4e351]
+                  - heading "No data." [level=3] [ref=f4e353]
+                - generic [ref=f4e354]:
+                  - generic [ref=f4e355]:
+                    - generic [ref=f4e356]:
+                      - paragraph [ref=f4e357]: ── FINANCES ──
+                      - heading "Treasury" [level=3] [ref=f4e364]
+                    - button "Finances →" [ref=f4e366]
+                  - generic [ref=f4e367]:
+                    - generic [ref=f4e368]:
+                      - paragraph [ref=f4e369]: Funds
+                      - paragraph [ref=f4e370]: ¥0
+                    - generic [ref=f4e371]:
+                      - paragraph [ref=f4e372]: Weekly Rev
+                      - paragraph [ref=f4e373]: ¥0
+                    - generic [ref=f4e374]:
+                      - paragraph [ref=f4e375]: Weekly Burn
+                      - paragraph [ref=f4e376]: ¥0
+                    - generic [ref=f4e377]:
+                      - paragraph [ref=f4e378]: Runway
+                      - paragraph [ref=f4e379]: —
+              - generic [ref=f4e380]:
+                - generic [ref=f4e381]:
+                  - generic [ref=f4e382]:
+                    - generic [ref=f4e383]: Calendar
+                    - generic [ref=f4e387]: Off-Season
+                  - generic [ref=f4e390]:
+                    - generic [ref=f4e391]: Hatsu 2026
+                    - generic [ref=f4e392]: Week 1
+                  - generic [ref=f4e393]:
+                    - generic [ref=f4e394]:
+                      - text: "Next:"
+                      - generic [ref=f4e395]: January Basho
+                      - generic [ref=f4e396]: · Tokyo
+                    - paragraph [ref=f4e397]: Steam rises from the chanko pots as rikishi prepare for the first basho.
+                  - generic [ref=f4e398]:
+                    - button "Advance the simulation by one day" [ref=f4e399]: Day
+                    - button "Progress simulation by one full week of interim training" [ref=f4e400]: Week
+                - generic [ref=f4e401]:
+                  - generic [ref=f4e402]: Tournament
+                  - generic [ref=f4e411]:
+                    - heading "No active basho" [level=3] [ref=f4e419]
+                    - paragraph [ref=f4e420]: Advance time to begin the tournament
+              - generic [ref=f4e421]:
+                - generic [ref=f4e422]:
+                  - generic [ref=f4e423]:
+                    - generic [ref=f4e424]:
+                      - paragraph [ref=f4e425]: ── TRAINING ──
+                      - heading "Weekly Regime" [level=3] [ref=f4e433]
+                    - button "Training →" [ref=f4e435]
+                  - generic [ref=f4e436]:
+                    - generic [ref=f4e437]:
+                      - paragraph [ref=f4e438]: Intensity
+                      - paragraph [ref=f4e439]: —
+                    - generic [ref=f4e440]:
+                      - paragraph [ref=f4e441]: Focus
+                      - paragraph [ref=f4e442]: —
+                    - generic [ref=f4e443]:
+                      - paragraph [ref=f4e444]: High Risk
+                      - paragraph [ref=f4e445]: "0"
+                    - generic [ref=f4e446]:
+                      - paragraph [ref=f4e447]: Recovery
+                      - paragraph [ref=f4e448]: —
+                - generic [ref=f4e449]:
+                  - generic [ref=f4e450]: JSA Meta Trends
+                  - generic [ref=f4e456]:
+                    - heading "Insufficient Data" [level=3] [ref=f4e461]
+                    - paragraph [ref=f4e462]: Complete 6 more Basho to surface macro trends.
+            - generic [ref=f4e464]:
+              - generic [ref=f4e465]: Event Feed
+              - heading "No recent events" [level=3] [ref=f4e477]
+            - generic [ref=f4e478]:
+              - generic [ref=f4e479]:
+                - generic [ref=f4e480]:
+                  - generic [ref=f4e481]: Scouting
+                  - button "Full Board" [ref=f4e487]
+                - generic [ref=f4e488]:
+                  - generic [ref=f4e489]: "0"
+                  - generic [ref=f4e496]: "0"
+                  - generic [ref=f4e501]: "0"
+                  - generic [ref=f4e506]: 0 visible
+                - heading "No prospects scouted yet" [level=3] [ref=f4e513]
+              - generic [ref=f4e514]:
+                - generic [ref=f4e515]:
+                  - generic [ref=f4e516]: Stable Overview
+                  - button "Manage" [ref=f4e523]
+                - generic [ref=f4e524]:
+                  - generic [ref=f4e525]:
+                    - generic [ref=f4e530]:
+                      - generic [ref=f4e531]: Stature
+                      - generic [ref=f4e532]: NEW
+                    - generic [ref=f4e533]: unknown
+                  - generic [ref=f4e534]:
+                    - generic [ref=f4e535]:
+                      - generic [ref=f4e536]: Morale
+                      - generic [ref=f4e539]: NEUTRAL
+                    - generic [ref=f4e540]:
+                      - generic [ref=f4e541]: Security
+                      - generic [ref=f4e544]: SAFE
+                    - generic [ref=f4e545]:
+                      - generic [ref=f4e546]: Roster
+                      - generic [ref=f4e552]: WEAK
+                    - generic [ref=f4e553]:
+                      - generic [ref=f4e554]: Koenkai
+                      - generic [ref=f4e560]: NONE
+                  - generic [ref=f4e561]:
+                    - generic [ref=f4e562]:
+                      - generic [ref=f4e563]:
+                        - generic [ref=f4e564]: Staff Development
+                        - generic [ref=f4e568]: Level 3 / 5
+                      - progressbar [ref=f4e569]
+                    - generic [ref=f4e571]:
+                      - generic [ref=f4e572]:
+                        - generic [ref=f4e573]: Naturalization
+                        - generic [ref=f4e577]: "Years: 4 / 10"
+                      - progressbar [ref=f4e578]
+              - generic [ref=f4e580]:
+                - generic [ref=f4e581]:
+                  - generic [ref=f4e582]: Promotion Pipeline
+                  - button "View the full banzuke and promotion standings" [ref=f4e588]: Banzuke
+                - generic [ref=f4e589]:
+                  - generic [ref=f4e590]:
+                    - paragraph [ref=f4e591]: Rank Distribution
+                    - application [ref=f4e595]:
+                      - generic [ref=f4e622]:
+                        - generic [ref=f4e623]: Yokozuna
+                        - generic [ref=f4e625]: Ozeki
+                        - generic [ref=f4e627]: Sekiwake
+                        - generic [ref=f4e629]: Komusubi
+                        - generic [ref=f4e631]: Maegashira
+                        - generic [ref=f4e633]: Juryo
+                        - generic [ref=f4e635]: Makushita
+                  - heading "No promotion activity this cycle" [level=3] [ref=f4e643]
+                  - button "Full Banzuke →" [ref=f4e644]
+              - generic [ref=f4e645]:
+                - generic [ref=f4e646]:
+                  - generic [ref=f4e647]: My Roster
+                  - button "All Rikishi" [ref=f4e655]
+                - generic [ref=f4e656]:
+                  - generic [ref=f4e657]:
+                    - generic [ref=f4e663]: "0"
+                    - generic [ref=f4e664]: active
+                  - generic [ref=f4e665]: "Avg: Fresh"
+                - heading "No wrestlers in roster" [level=3] [ref=f4e678]
+        - button "Keyboard Shortcuts" [ref=f4e680]
+        - button "Open Event Log" [ref=f4e681]
+  - generic [aria-hidden] [ref=f4e682]: Yokozuna

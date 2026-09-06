@@ -1,0 +1,160 @@
+- generic [active] [ref=f8e1]:
+  - generic [ref=f8e2]:
+    - region "Notifications (F8)":
+      - list
+    - region "Notifications alt+T"
+    - generic [ref=f8e6]:
+      - generic [ref=f8e8]:
+        - link "力 Basho Manager Pro Edition" [ref=f8e10] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=f8e11]: 力
+          - generic [ref=f8e13]:
+            - generic [ref=f8e14]: Basho Manager
+            - generic [ref=f8e15]: Pro Edition
+        - generic [ref=f8e17]:
+          - list [ref=f8e20]:
+            - listitem [ref=f8e21]:
+              - link "Control Center" [ref=f8e22] [cursor=pointer]:
+                - /url: /dashboard
+            - listitem [ref=f8e29]:
+              - link "Events & Recap" [ref=f8e30] [cursor=pointer]:
+                - /url: /recap
+            - listitem [ref=f8e35]:
+              - link "Weekly Report" [ref=f8e36] [cursor=pointer]:
+                - /url: /digest
+          - generic [ref=f8e41]:
+            - generic [ref=f8e42]: My Stable
+            - list [ref=f8e46]:
+              - listitem [ref=f8e47]:
+                - link "Overview" [ref=f8e48] [cursor=pointer]:
+                  - /url: /stable
+              - listitem [ref=f8e53]:
+                - link "Roster" [ref=f8e54] [cursor=pointer]:
+                  - /url: /stable/roster
+              - listitem [ref=f8e61]:
+                - link "Training" [ref=f8e62] [cursor=pointer]:
+                  - /url: /stable/training
+              - listitem [ref=f8e70]:
+                - link "Medical" [ref=f8e71] [cursor=pointer]:
+                  - /url: /stable/medical
+              - listitem [ref=f8e75]:
+                - link "Staff" [ref=f8e76] [cursor=pointer]:
+                  - /url: /stable/staff
+              - listitem [ref=f8e81]:
+                - link "Oyakata" [ref=f8e82] [cursor=pointer]:
+                  - /url: /stable/oyakata
+              - listitem [ref=f8e86]:
+                - button "Scouting" [ref=f8e87]
+              - listitem [ref=f8e96]:
+                - link "Youth Academy" [ref=f8e97] [cursor=pointer]:
+                  - /url: /academy
+              - listitem [ref=f8e102]:
+                - link "Bookmarks" [ref=f8e103] [cursor=pointer]:
+                  - /url: /bookmarks
+          - generic [ref=f8e107]:
+            - generic [ref=f8e108]: Tournament
+            - list [ref=f8e112]:
+              - listitem [ref=f8e113]:
+                - link "Current Basho" [ref=f8e114] [cursor=pointer]:
+                  - /url: /basho
+              - listitem [ref=f8e122]:
+                - link "Banzuke" [ref=f8e123] [cursor=pointer]:
+                  - /url: /basho/banzuke
+              - listitem [ref=f8e128]:
+                - link "Schedule" [ref=f8e129] [cursor=pointer]:
+                  - /url: /basho/schedule
+              - listitem [ref=f8e133]:
+                - link "Rivalries" [ref=f8e134] [cursor=pointer]:
+                  - /url: /basho/rivalries
+              - listitem [ref=f8e145]:
+                - link "Global Cup" [ref=f8e146] [cursor=pointer]:
+                  - /url: /global-cup
+              - listitem [ref=f8e154]:
+                - link "World Circuit" [ref=f8e155] [cursor=pointer]:
+                  - /url: /world-circuit
+              - listitem [ref=f8e160]:
+                - link "Rival Stables" [ref=f8e161] [cursor=pointer]:
+                  - /url: /rival-stables
+          - generic [ref=f8e167]:
+            - generic [ref=f8e168]: Management
+            - list [ref=f8e172]:
+              - listitem [ref=f8e173]:
+                - button "Finances" [ref=f8e174]
+              - listitem [ref=f8e185]:
+                - link "Facilities" [ref=f8e186] [cursor=pointer]:
+                  - /url: /office/facilities
+              - listitem [ref=f8e192]:
+                - link "Sponsors" [ref=f8e193] [cursor=pointer]:
+                  - /url: /office/sponsors
+          - generic [ref=f8e200]:
+            - generic [ref=f8e201]: Association
+            - list [ref=f8e205]:
+              - listitem [ref=f8e206]:
+                - link "Governance" [ref=f8e207] [cursor=pointer]:
+                  - /url: /jsa/governance
+              - listitem [ref=f8e211]:
+                - link "Elder Market" [ref=f8e212] [cursor=pointer]:
+                  - /url: /myoseki
+              - listitem [ref=f8e216]:
+                - link "Press & Rep" [ref=f8e217] [cursor=pointer]:
+                  - /url: /media
+              - listitem [ref=f8e222]:
+                - link "Trends" [ref=f8e223] [cursor=pointer]:
+                  - /url: /jsa/trends
+          - generic [ref=f8e228]:
+            - generic [ref=f8e229]: Records
+            - list [ref=f8e233]:
+              - listitem [ref=f8e234]:
+                - link "Stable History" [ref=f8e235] [cursor=pointer]:
+                  - /url: /records/history
+              - listitem [ref=f8e240]:
+                - link "Almanac" [ref=f8e241] [cursor=pointer]:
+                  - /url: /records/almanac
+              - listitem [ref=f8e245]:
+                - link "Hall of Fame" [ref=f8e246] [cursor=pointer]:
+                  - /url: /records/hall-of-fame
+              - listitem [ref=f8e251]:
+                - link "Museum" [ref=f8e252] [cursor=pointer]:
+                  - /url: /records/museum
+              - listitem [ref=f8e256]:
+                - link "Glossary" [ref=f8e257] [cursor=pointer]:
+                  - /url: /glossary
+        - generic [ref=f8e269]:
+          - generic [ref=f8e270]: Dewanoumi
+          - generic [ref=f8e271]: secure
+        - button "Toggle Sidebar" [ref=f8e274]
+      - main [ref=f8e275]:
+        - generic [ref=f8e277]:
+          - button "Toggle Sidebar" [ref=f8e278]
+          - generic [ref=f8e281]:
+            - generic [ref=f8e283]:
+              - generic [ref=f8e284]: Date
+              - generic [ref=f8e285]: Year 2026 · Wk 1
+            - generic [ref=f8e286]: Interim
+            - generic [ref=f8e289]:
+              - generic [ref=f8e290]: Era
+              - generic [ref=f8e291]: Classic
+            - generic [ref=f8e292]:
+              - generic [ref=f8e293]: Funds
+              - generic [ref=f8e294]: ¥40,000,000
+          - generic [ref=f8e295]:
+            - button "Skip ahead with safety gates" [ref=f8e296]: Holiday
+            - button "Open save and load dialog" [ref=f8e297]
+            - button "Toggle theme" [ref=f8e298]
+            - button "Settings" [ref=f8e299]
+            - button "Continue" [ref=f8e301]
+        - navigation "Breadcrumb" [ref=f8e305]:
+          - link "Home" [ref=f8e306] [cursor=pointer]:
+            - /url: /dashboard
+          - generic [ref=f8e313]: academy
+        - main [ref=f8e315]:
+          - heading "Youth Academy" [level=1] [ref=f8e317]
+          - generic [ref=f8e321]:
+            - generic [ref=f8e322]: Youth Academy
+            - paragraph [ref=f8e327]: Build a Youth Academy to develop young prospects before they enter the formal banzuke. A level-1 academy can hold up to 3 prospects.
+            - generic [ref=f8e328]:
+              - generic [ref=f8e329]: "Cost: 50,000"
+              - button "Build Academy" [ref=f8e330]
+        - button "Keyboard Shortcuts" [ref=f8e332]
+        - button "Open Event Log" [ref=f8e333]
+  - generic [aria-hidden] [ref=f8e334]: Yokozuna

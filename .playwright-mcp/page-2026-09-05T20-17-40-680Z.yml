@@ -1,0 +1,597 @@
+- generic [active] [ref=f17e1]:
+  - generic [ref=f17e2]:
+    - region "Notifications (F8)":
+      - list
+    - region "Notifications alt+T"
+    - generic [ref=f17e6]:
+      - generic [ref=f17e8]:
+        - link "力 Basho Manager Pro Edition" [ref=f17e10] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=f17e11]: 力
+          - generic [ref=f17e13]:
+            - generic [ref=f17e14]: Basho Manager
+            - generic [ref=f17e15]: Pro Edition
+        - generic [ref=f17e17]:
+          - list [ref=f17e20]:
+            - listitem [ref=f17e21]:
+              - link "Control Center" [ref=f17e22] [cursor=pointer]:
+                - /url: /dashboard
+            - listitem [ref=f17e29]:
+              - link "Events & Recap" [ref=f17e30] [cursor=pointer]:
+                - /url: /recap
+            - listitem [ref=f17e35]:
+              - link "Weekly Report" [ref=f17e36] [cursor=pointer]:
+                - /url: /digest
+          - generic [ref=f17e41]:
+            - generic [ref=f17e42]: My Stable
+            - list [ref=f17e46]:
+              - listitem [ref=f17e47]:
+                - link "Overview" [ref=f17e48] [cursor=pointer]:
+                  - /url: /stable
+              - listitem [ref=f17e53]:
+                - link "Roster" [ref=f17e54] [cursor=pointer]:
+                  - /url: /stable/roster
+              - listitem [ref=f17e61]:
+                - link "Training" [ref=f17e62] [cursor=pointer]:
+                  - /url: /stable/training
+              - listitem [ref=f17e70]:
+                - link "Medical" [ref=f17e71] [cursor=pointer]:
+                  - /url: /stable/medical
+              - listitem [ref=f17e75]:
+                - link "Staff" [ref=f17e76] [cursor=pointer]:
+                  - /url: /stable/staff
+              - listitem [ref=f17e81]:
+                - link "Oyakata" [ref=f17e82] [cursor=pointer]:
+                  - /url: /stable/oyakata
+              - listitem [ref=f17e86]:
+                - button "Scouting" [ref=f17e87]
+              - listitem [ref=f17e96]:
+                - link "Youth Academy" [ref=f17e97] [cursor=pointer]:
+                  - /url: /academy
+              - listitem [ref=f17e102]:
+                - link "Bookmarks" [ref=f17e103] [cursor=pointer]:
+                  - /url: /bookmarks
+          - generic [ref=f17e107]:
+            - generic [ref=f17e108]: Tournament
+            - list [ref=f17e112]:
+              - listitem [ref=f17e113]:
+                - link "Current Basho" [ref=f17e114] [cursor=pointer]:
+                  - /url: /basho
+              - listitem [ref=f17e122]:
+                - link "Banzuke" [ref=f17e123] [cursor=pointer]:
+                  - /url: /basho/banzuke
+              - listitem [ref=f17e128]:
+                - link "Schedule" [ref=f17e129] [cursor=pointer]:
+                  - /url: /basho/schedule
+              - listitem [ref=f17e133]:
+                - link "Rivalries" [ref=f17e134] [cursor=pointer]:
+                  - /url: /basho/rivalries
+              - listitem [ref=f17e145]:
+                - link "Global Cup" [ref=f17e146] [cursor=pointer]:
+                  - /url: /global-cup
+              - listitem [ref=f17e154]:
+                - link "World Circuit" [ref=f17e155] [cursor=pointer]:
+                  - /url: /world-circuit
+              - listitem [ref=f17e160]:
+                - link "Rival Stables" [ref=f17e161] [cursor=pointer]:
+                  - /url: /rival-stables
+          - generic [ref=f17e167]:
+            - generic [ref=f17e168]: Management
+            - list [ref=f17e172]:
+              - listitem [ref=f17e173]:
+                - button "Finances" [ref=f17e174]
+              - listitem [ref=f17e185]:
+                - link "Facilities" [ref=f17e186] [cursor=pointer]:
+                  - /url: /office/facilities
+              - listitem [ref=f17e192]:
+                - link "Sponsors" [ref=f17e193] [cursor=pointer]:
+                  - /url: /office/sponsors
+          - generic [ref=f17e200]:
+            - generic [ref=f17e201]: Association
+            - list [ref=f17e205]:
+              - listitem [ref=f17e206]:
+                - link "Governance" [ref=f17e207] [cursor=pointer]:
+                  - /url: /jsa/governance
+              - listitem [ref=f17e211]:
+                - link "Elder Market" [ref=f17e212] [cursor=pointer]:
+                  - /url: /myoseki
+              - listitem [ref=f17e216]:
+                - link "Press & Rep" [ref=f17e217] [cursor=pointer]:
+                  - /url: /media
+              - listitem [ref=f17e222]:
+                - link "Trends" [ref=f17e223] [cursor=pointer]:
+                  - /url: /jsa/trends
+          - generic [ref=f17e228]:
+            - generic [ref=f17e229]: Records
+            - list [ref=f17e233]:
+              - listitem [ref=f17e234]:
+                - link "Stable History" [ref=f17e235] [cursor=pointer]:
+                  - /url: /records/history
+              - listitem [ref=f17e240]:
+                - link "Almanac" [ref=f17e241] [cursor=pointer]:
+                  - /url: /records/almanac
+              - listitem [ref=f17e245]:
+                - link "Hall of Fame" [ref=f17e246] [cursor=pointer]:
+                  - /url: /records/hall-of-fame
+              - listitem [ref=f17e251]:
+                - link "Museum" [ref=f17e252] [cursor=pointer]:
+                  - /url: /records/museum
+              - listitem [ref=f17e256]:
+                - link "Glossary" [ref=f17e257] [cursor=pointer]:
+                  - /url: /glossary
+        - generic [ref=f17e269]:
+          - generic [ref=f17e270]: Dewanoumi
+          - generic [ref=f17e271]: secure
+        - button "Toggle Sidebar" [ref=f17e274]
+      - main [ref=f17e275]:
+        - generic [ref=f17e277]:
+          - button "Toggle Sidebar" [ref=f17e278]
+          - generic [ref=f17e281]:
+            - generic [ref=f17e283]:
+              - generic [ref=f17e284]: Date
+              - generic [ref=f17e285]: Year 2026 · Wk 1
+            - generic [ref=f17e286]: Interim
+            - generic [ref=f17e289]:
+              - generic [ref=f17e290]: Era
+              - generic [ref=f17e291]: Classic
+            - generic [ref=f17e292]:
+              - generic [ref=f17e293]: Funds
+              - generic [ref=f17e294]: ¥40,000,000
+          - generic [ref=f17e295]:
+            - button "Skip ahead with safety gates" [ref=f17e296]: Holiday
+            - button "Open save and load dialog" [ref=f17e297]
+            - button "Toggle theme" [ref=f17e298]
+            - button "Settings" [ref=f17e299]
+            - button "Continue" [ref=f17e301]
+        - navigation "Breadcrumb" [ref=f17e305]:
+          - link "Home" [ref=f17e306] [cursor=pointer]:
+            - /url: /dashboard
+          - generic [ref=f17e313]: Dashboard
+        - main [ref=f17e315]:
+          - generic [ref=f17e317]:
+            - generic [ref=f17e318]:
+              - generic [ref=f17e319]:
+                - paragraph [ref=f17e320]: ── CONTROL CENTER ──
+                - heading "Dewanoumi" [level=1] [ref=f17e321]
+                - paragraph [ref=f17e322]: Year 2026 · Week 1 · Off-Season
+              - generic [ref=f17e323]: 司令塔
+            - generic [ref=f17e325]:
+              - generic [ref=f17e326]:
+                - generic [ref=f17e327]:
+                  - generic [ref=f17e328]: Institution
+                  - generic [ref=f17e336]:
+                    - generic [ref=f17e337]:
+                      - heading "Institutional Health" [level=3] [ref=f17e338]
+                      - paragraph [ref=f17e341]: Welfare responsibility, compliance posture, and manager persona.
+                    - generic [ref=f17e342]:
+                      - generic [ref=f17e343]:
+                        - generic [ref=f17e344]:
+                          - generic [ref=f17e345]:
+                            - generic [ref=f17e349]: Welfare Risk
+                            - generic [ref=f17e350]: Managed
+                          - generic [ref=f17e351]: Compliant
+                        - progressbar [ref=f17e353]
+                        - generic [ref=f17e355]: Normal monitoring.
+                      - generic [ref=f17e356]:
+                        - generic [ref=f17e357]:
+                          - generic [ref=f17e364]: Governance
+                          - generic [ref=f17e365]: Good Standing
+                        - generic [ref=f17e366]: Scandal score decays slowly over time. Welfare issues can escalate scrutiny even faster.
+                      - generic [ref=f17e367]:
+                        - generic [ref=f17e368]:
+                          - generic [ref=f17e381]: Oyakata Persona
+                          - generic [ref=f17e382]: gambler
+                        - generic [ref=f17e383]: High risk, high reward. Pushes rikishi to the breaking point for glory.
+                        - generic [ref=f17e384]:
+                          - generic [ref=f17e385]:
+                            - generic [ref=f17e386]:
+                              - generic [ref=f17e387]: Ambition
+                              - generic [ref=f17e388]: Dominant
+                            - progressbar [ref=f17e389]
+                          - generic [ref=f17e391]:
+                            - generic [ref=f17e392]:
+                              - generic [ref=f17e393]: Patience
+                              - generic [ref=f17e394]: Minor
+                            - progressbar [ref=f17e395]
+                          - generic [ref=f17e397]:
+                            - generic [ref=f17e398]:
+                              - generic [ref=f17e399]: Risk
+                              - generic [ref=f17e400]: Dominant
+                            - progressbar [ref=f17e401]
+                          - generic [ref=f17e403]:
+                            - generic [ref=f17e404]:
+                              - generic [ref=f17e405]: Tradition
+                              - generic [ref=f17e406]: Minor
+                            - progressbar [ref=f17e407]
+                          - generic [ref=f17e409]:
+                            - generic [ref=f17e410]:
+                              - generic [ref=f17e411]: Compassion
+                              - generic [ref=f17e412]: Negligible
+                            - progressbar [ref=f17e413]
+                        - generic [ref=f17e415]:
+                          - generic [ref=f17e416]: Weight-Cutter
+                          - generic [ref=f17e417]: Cold Pragmatist
+                          - generic [ref=f17e418]: Keiko Romantic
+                - generic [ref=f17e419]:
+                  - generic [ref=f17e420]:
+                    - generic [ref=f17e421]:
+                      - paragraph [ref=f17e422]: ── MY STABLE ──
+                      - heading "Roster Status" [level=3] [ref=f17e429]
+                    - button "Roster →" [ref=f17e431]
+                  - generic [ref=f17e432]:
+                    - generic [ref=f17e433]:
+                      - paragraph [ref=f17e434]: Active
+                      - paragraph [ref=f17e435]: "13"
+                    - generic [ref=f17e436]:
+                      - paragraph [ref=f17e437]: Injured
+                      - paragraph [ref=f17e438]: "0"
+                    - generic [ref=f17e439]:
+                      - paragraph [ref=f17e440]: Sekitori
+                      - paragraph [ref=f17e441]: "2"
+                    - generic [ref=f17e442]:
+                      - paragraph [ref=f17e443]: Fatigue
+                      - paragraph [ref=f17e444]: Fresh
+                - generic [ref=f17e445]:
+                  - generic [ref=f17e446]:
+                    - generic [ref=f17e447]:
+                      - paragraph [ref=f17e448]: ── TOP WRESTLERS ──
+                      - heading "Active Roster" [level=3] [ref=f17e450]
+                    - button "Full Roster →" [ref=f17e452]
+                  - generic [ref=f17e453]:
+                    - button "Terahime" [ref=f17e454] [cursor=pointer]:
+                      - generic [ref=f17e456]: Maegashira 11E
+                    - button "Dewashima" [ref=f17e457] [cursor=pointer]:
+                      - generic [ref=f17e459]: Juryo 11E
+                    - button "Dewaryu" [ref=f17e460] [cursor=pointer]:
+                      - generic [ref=f17e462]: Makushita 51E
+                    - button "Dewaomi" [ref=f17e463] [cursor=pointer]:
+                      - generic [ref=f17e465]: Sandanme 12W
+                    - button "Dewazan" [ref=f17e466] [cursor=pointer]:
+                      - generic [ref=f17e468]: Sandanme 30E
+                    - button "Kazesei" [ref=f17e469] [cursor=pointer]:
+                      - generic [ref=f17e471]: Sandanme 45W
+                    - button "Tamawaka" [ref=f17e472] [cursor=pointer]:
+                      - generic [ref=f17e474]: Jonidan 18W
+                    - button "Aotaki" [ref=f17e475] [cursor=pointer]:
+                      - generic [ref=f17e477]: Jonidan 22E
+                - generic [ref=f17e478]:
+                  - generic [ref=f17e479]:
+                    - generic [ref=f17e480]:
+                      - paragraph [ref=f17e481]: ── FINANCES ──
+                      - heading "Treasury" [level=3] [ref=f17e488]
+                    - button "Finances →" [ref=f17e490]
+                  - generic [ref=f17e491]:
+                    - generic [ref=f17e492]:
+                      - paragraph [ref=f17e493]: Funds
+                      - paragraph [ref=f17e494]: ¥40,000,000
+                    - generic [ref=f17e495]:
+                      - paragraph [ref=f17e496]: Weekly Rev
+                      - paragraph [ref=f17e497]: ¥2,815,000
+                    - generic [ref=f17e498]:
+                      - paragraph [ref=f17e499]: Weekly Burn
+                      - paragraph [ref=f17e500]: ¥1,050,000
+                    - generic [ref=f17e501]:
+                      - paragraph [ref=f17e502]: Runway
+                      - paragraph [ref=f17e503]: 10mo
+              - generic [ref=f17e504]:
+                - generic [ref=f17e505]:
+                  - generic [ref=f17e506]:
+                    - generic [ref=f17e507]: Calendar
+                    - generic [ref=f17e511]: Off-Season
+                  - generic [ref=f17e514]:
+                    - generic [ref=f17e515]: Hatsu 2026
+                    - generic [ref=f17e516]: Week 1
+                  - generic [ref=f17e517]:
+                    - generic [ref=f17e518]:
+                      - text: "Next:"
+                      - generic [ref=f17e519]: January Basho
+                      - generic [ref=f17e520]: · Tokyo
+                    - paragraph [ref=f17e521]: The fresh spirit of the new year fills the arena.
+                  - generic [ref=f17e522]:
+                    - button "Advance the simulation by one day" [ref=f17e523]: Day
+                    - button "Progress simulation by one full week of interim training" [ref=f17e524]: Week
+                - generic [ref=f17e525]:
+                  - generic [ref=f17e526]: Tournament
+                  - generic [ref=f17e535]:
+                    - heading "No active basho" [level=3] [ref=f17e543]
+                    - paragraph [ref=f17e544]: Advance time to begin the tournament
+              - generic [ref=f17e545]:
+                - generic [ref=f17e546]:
+                  - generic [ref=f17e547]:
+                    - generic [ref=f17e548]:
+                      - paragraph [ref=f17e549]: ── TRAINING ──
+                      - heading "Weekly Regime" [level=3] [ref=f17e557]
+                    - button "Training →" [ref=f17e559]
+                  - generic [ref=f17e560]:
+                    - generic [ref=f17e561]:
+                      - paragraph [ref=f17e562]: Intensity
+                      - paragraph [ref=f17e563]: Balanced
+                    - generic [ref=f17e564]:
+                      - paragraph [ref=f17e565]: Focus
+                      - paragraph [ref=f17e566]: Neutral
+                    - generic [ref=f17e567]:
+                      - paragraph [ref=f17e568]: High Risk
+                      - paragraph [ref=f17e569]: "0"
+                    - generic [ref=f17e570]:
+                      - paragraph [ref=f17e571]: Recovery
+                      - paragraph [ref=f17e572]: Normal
+                - generic [ref=f17e573]:
+                  - paragraph [ref=f17e574]: ── FATIGUE LEVELS ──
+                  - generic [ref=f17e577]:
+                    - generic [ref=f17e578]: Terahime
+                    - text: Fresh
+                  - generic [ref=f17e582]:
+                    - generic [ref=f17e583]: Dewashima
+                    - text: Fresh
+                  - generic [ref=f17e587]:
+                    - generic [ref=f17e588]: Dewaryu
+                    - text: Fresh
+                  - generic [ref=f17e592]:
+                    - generic [ref=f17e593]: Dewaomi
+                    - text: Fresh
+                  - generic [ref=f17e597]:
+                    - generic [ref=f17e598]: Dewazan
+                    - text: Fresh
+                  - generic [ref=f17e602]:
+                    - generic [ref=f17e603]: Kazesei
+                    - text: Fresh
+                - generic [ref=f17e605]:
+                  - generic [ref=f17e606]: JSA Meta Trends
+                  - generic [ref=f17e612]:
+                    - heading "Insufficient Data" [level=3] [ref=f17e617]
+                    - paragraph [ref=f17e618]: Complete 6 more Basho to surface macro trends.
+            - generic [ref=f17e619]:
+              - generic [ref=f17e620]:
+                - generic [ref=f17e621]:
+                  - generic [ref=f17e622]: Finances
+                  - button "Analyze stable financial health and project future runway" [ref=f17e630]: Deep Dive
+                - generic [ref=f17e631]:
+                  - generic [ref=f17e632]:
+                    - generic [ref=f17e638]:
+                      - generic [ref=f17e639]: Status
+                      - generic [ref=f17e640]: Secure
+                    - generic [ref=f17e641]:
+                      - generic [ref=f17e642]: Balance
+                      - generic [ref=f17e643]: ¥40,000,000
+                  - application [ref=f17e647]
+                  - generic [ref=f17e654]:
+                    - generic [ref=f17e655]:
+                      - generic [ref=f17e656]: Revenue
+                      - generic [ref=f17e660]: ¥2,815,000
+                    - generic [ref=f17e661]:
+                      - generic [ref=f17e662]: Burn
+                      - generic [ref=f17e666]: ¥1,050,000
+                    - generic [ref=f17e667]:
+                      - generic [ref=f17e668]: Net/wk
+                      - generic [ref=f17e672]: +¥1,765,000
+              - generic [ref=f17e673]:
+                - generic [ref=f17e674]: Event Feed
+                - heading "No recent events" [level=3] [ref=f17e686]
+            - generic [ref=f17e687]:
+              - generic [ref=f17e688]:
+                - generic [ref=f17e689]:
+                  - generic [ref=f17e690]: Scouting
+                  - button "Full Board" [ref=f17e696]
+                - generic [ref=f17e697]:
+                  - generic [ref=f17e698]: "0"
+                  - generic [ref=f17e705]: "0"
+                  - generic [ref=f17e710]: "0"
+                  - generic [ref=f17e715]: 0 visible
+                - heading "No prospects scouted yet" [level=3] [ref=f17e722]
+              - generic [ref=f17e723]:
+                - generic [ref=f17e724]:
+                  - generic [ref=f17e725]: Stable Overview
+                  - button "Manage" [ref=f17e732]
+                - generic [ref=f17e733]:
+                  - generic [ref=f17e734]:
+                    - generic [ref=f17e739]:
+                      - generic [ref=f17e740]: Stature
+                      - generic [ref=f17e741]: LEGENDARY
+                    - generic [ref=f17e742]: elite
+                  - generic [ref=f17e743]:
+                    - generic [ref=f17e744]:
+                      - generic [ref=f17e745]: Morale
+                      - generic [ref=f17e748]: INSPIRED
+                    - generic [ref=f17e749]:
+                      - generic [ref=f17e750]: Security
+                      - generic [ref=f17e753]: SAFE
+                    - generic [ref=f17e754]:
+                      - generic [ref=f17e755]: Roster
+                      - generic [ref=f17e761]: WEAK
+                    - generic [ref=f17e762]:
+                      - generic [ref=f17e763]: Koenkai
+                      - generic [ref=f17e769]: NONE
+                  - generic [ref=f17e770]:
+                    - generic [ref=f17e771]:
+                      - generic [ref=f17e772]:
+                        - generic [ref=f17e773]: Staff Development
+                        - generic [ref=f17e777]: Level 3 / 5
+                      - progressbar [ref=f17e778]
+                    - generic [ref=f17e780]:
+                      - generic [ref=f17e781]:
+                        - generic [ref=f17e782]: Naturalization
+                        - generic [ref=f17e786]: "Years: 4 / 10"
+                      - progressbar [ref=f17e787]
+              - generic [ref=f17e789]:
+                - generic [ref=f17e790]:
+                  - generic [ref=f17e791]: Promotion Pipeline
+                  - button "View the full banzuke and promotion standings" [ref=f17e797]: Banzuke
+                - generic [ref=f17e798]:
+                  - generic [ref=f17e799]:
+                    - paragraph [ref=f17e800]: Rank Distribution
+                    - application [ref=f17e804]:
+                      - generic [ref=f17e831]:
+                        - generic [ref=f17e832]: Yokozuna
+                        - generic [ref=f17e834]: Ozeki
+                        - generic [ref=f17e836]: Sekiwake
+                        - generic [ref=f17e838]: Komusubi
+                        - generic [ref=f17e840]: Maegashira
+                        - generic [ref=f17e842]: Juryo
+                        - generic [ref=f17e844]: Makushita
+                  - heading "No promotion activity this cycle" [level=3] [ref=f17e852]
+                  - button "Full Banzuke →" [ref=f17e853]
+              - generic [ref=f17e854]:
+                - generic [ref=f17e855]:
+                  - heading "Sponsor Recruitment" [level=3] [ref=f17e856]
+                  - paragraph [ref=f17e861]: Recruit new sponsors to expand your Kōenkai and increase monthly income.
+                - generic [ref=f17e866]:
+                  - generic [ref=f17e867]:
+                    - generic [ref=f17e868]:
+                      - generic [ref=f17e869]:
+                        - generic [ref=f17e870]: Zenith Kato Holdings
+                        - generic [ref=f17e871]: Premier
+                      - generic [ref=f17e872]:
+                        - generic [ref=f17e873]: ¥1,500,000
+                        - generic [ref=f17e879]: "Prestige: 88"
+                        - generic [ref=f17e883]: local_business
+                    - button "Recruit" [ref=f17e884]
+                  - generic [ref=f17e885]:
+                    - generic [ref=f17e886]:
+                      - generic [ref=f17e887]:
+                        - generic [ref=f17e888]: Golden Nakamura Holdings
+                        - generic [ref=f17e889]: Premier
+                      - generic [ref=f17e890]:
+                        - generic [ref=f17e891]: ¥1,500,000
+                        - generic [ref=f17e897]: "Prestige: 84"
+                        - generic [ref=f17e901]: local_business
+                    - button "Recruit" [ref=f17e902]
+                  - generic [ref=f17e903]:
+                    - generic [ref=f17e904]:
+                      - generic [ref=f17e905]:
+                        - generic [ref=f17e906]: Imperial Ito Holdings
+                        - generic [ref=f17e907]: Premier
+                      - generic [ref=f17e908]:
+                        - generic [ref=f17e909]: ¥1,500,000
+                        - generic [ref=f17e915]: "Prestige: 80"
+                        - generic [ref=f17e919]: local_business
+                    - button "Recruit" [ref=f17e920]
+                  - generic [ref=f17e921]:
+                    - generic [ref=f17e922]:
+                      - generic [ref=f17e923]:
+                        - generic [ref=f17e924]: Apex Watanabe Holdings
+                        - generic [ref=f17e925]: Premier
+                      - generic [ref=f17e926]:
+                        - generic [ref=f17e927]: ¥1,500,000
+                        - generic [ref=f17e933]: "Prestige: 80"
+                        - generic [ref=f17e937]: private_benefactor
+                    - button "Recruit" [ref=f17e938]
+                  - generic [ref=f17e939]:
+                    - generic [ref=f17e940]:
+                      - generic [ref=f17e941]:
+                        - generic [ref=f17e942]: Imperial Kato Holdings
+                        - generic [ref=f17e943]: Premier
+                      - generic [ref=f17e944]:
+                        - generic [ref=f17e945]: ¥1,500,000
+                        - generic [ref=f17e951]: "Prestige: 78"
+                        - generic [ref=f17e955]: regional_corporation
+                    - button "Recruit" [ref=f17e956]
+                  - generic [ref=f17e957]:
+                    - generic [ref=f17e958]:
+                      - generic [ref=f17e959]:
+                        - generic [ref=f17e960]: Diamond Sato Holdings
+                        - generic [ref=f17e961]: Premier
+                      - generic [ref=f17e962]:
+                        - generic [ref=f17e963]: ¥1,500,000
+                        - generic [ref=f17e969]: "Prestige: 77"
+                        - generic [ref=f17e973]: alumni_association
+                    - button "Recruit" [ref=f17e974]
+                  - generic [ref=f17e975]:
+                    - generic [ref=f17e976]:
+                      - generic [ref=f17e977]:
+                        - generic [ref=f17e978]: Golden Kato Holdings
+                        - generic [ref=f17e979]: Premier
+                      - generic [ref=f17e980]:
+                        - generic [ref=f17e981]: ¥1,500,000
+                        - generic [ref=f17e987]: "Prestige: 74"
+                        - generic [ref=f17e991]: regional_corporation
+                    - button "Recruit" [ref=f17e992]
+                  - generic [ref=f17e993]:
+                    - generic [ref=f17e994]:
+                      - generic [ref=f17e995]:
+                        - generic [ref=f17e996]: Royal Tanaka Holdings
+                        - generic [ref=f17e997]: Premier
+                      - generic [ref=f17e998]:
+                        - generic [ref=f17e999]: ¥1,500,000
+                        - generic [ref=f17e1005]: "Prestige: 68"
+                        - generic [ref=f17e1009]: national_brand
+                    - button "Recruit" [ref=f17e1010]
+                  - generic [ref=f17e1011]:
+                    - generic [ref=f17e1012]:
+                      - generic [ref=f17e1013]:
+                        - generic [ref=f17e1014]: Platinum Watanabe Holdings
+                        - generic [ref=f17e1015]: Premier
+                      - generic [ref=f17e1016]:
+                        - generic [ref=f17e1017]: ¥1,500,000
+                        - generic [ref=f17e1023]: "Prestige: 60"
+                        - generic [ref=f17e1027]: alumni_association
+                    - button "Recruit" [ref=f17e1028]
+                  - generic [ref=f17e1029]:
+                    - generic [ref=f17e1030]:
+                      - generic [ref=f17e1031]:
+                        - generic [ref=f17e1032]: Zenith Nakamura Holdings
+                        - generic [ref=f17e1033]: Premier
+                      - generic [ref=f17e1034]:
+                        - generic [ref=f17e1035]: ¥1,500,000
+                        - generic [ref=f17e1041]: "Prestige: 56"
+                        - generic [ref=f17e1045]: alumni_association
+                    - button "Recruit" [ref=f17e1046]
+              - generic [ref=f17e1047]:
+                - generic [ref=f17e1048]:
+                  - generic [ref=f17e1049]: My Roster
+                  - button "All Rikishi" [ref=f17e1057]
+                - generic [ref=f17e1058]:
+                  - generic [ref=f17e1059]:
+                    - generic [ref=f17e1065]: "13"
+                    - generic [ref=f17e1066]: active
+                  - generic [ref=f17e1067]: "Avg: Fresh"
+                - generic [ref=f17e1072]:
+                  - button "Select Terahime" [ref=f17e1073] [cursor=pointer]:
+                    - link "Terahime" [ref=f17e1075]:
+                      - /url: /rikishi/RK-B130320B
+                    - generic [ref=f17e1076]: maegashira
+                    - generic [ref=f17e1077]: Str
+                  - button "Select Dewashima" [ref=f17e1081] [cursor=pointer]:
+                    - link "Dewashima" [ref=f17e1083]:
+                      - /url: /rikishi/RK-433A123D
+                    - generic [ref=f17e1084]: juryo
+                    - generic [ref=f17e1085]: Wor
+                  - button "Select Dewaryu" [ref=f17e1089] [cursor=pointer]:
+                    - link "Dewaryu" [ref=f17e1091]:
+                      - /url: /rikishi/RK-E727E777
+                    - generic [ref=f17e1092]: makushita
+                    - generic [ref=f17e1093]: Wor
+                  - button "Select Dewaomi" [ref=f17e1097] [cursor=pointer]:
+                    - link "Dewaomi" [ref=f17e1099]:
+                      - /url: /rikishi/RK-96C86529
+                    - generic [ref=f17e1100]: sandanme
+                    - generic [ref=f17e1101]: Str
+                  - button "Select Dewazan" [ref=f17e1105] [cursor=pointer]:
+                    - link "Dewazan" [ref=f17e1107]:
+                      - /url: /rikishi/RK-29D48585
+                    - generic [ref=f17e1108]: sandanme
+                    - generic [ref=f17e1109]: Str
+                  - button "Select Kazesei" [ref=f17e1113] [cursor=pointer]:
+                    - link "Kazesei" [ref=f17e1115]:
+                      - /url: /rikishi/RK-A0D77F71
+                    - generic [ref=f17e1116]: sandanme
+                    - generic [ref=f17e1117]: Str
+                  - button "Select Tamawaka" [ref=f17e1121] [cursor=pointer]:
+                    - link "Tamawaka" [ref=f17e1123]:
+                      - /url: /rikishi/RK-AF42D8A6
+                    - generic [ref=f17e1124]: jonidan
+                    - generic [ref=f17e1125]: Str
+                  - button "Select Aotaki" [ref=f17e1129] [cursor=pointer]:
+                    - link "Aotaki" [ref=f17e1131]:
+                      - /url: /rikishi/RK-403B6E24
+                    - generic [ref=f17e1132]: jonidan
+                    - generic [ref=f17e1133]: Str
+                  - button "+ 5 more wrestlers →" [ref=f17e1137]:
+                    - text: +
+                    - generic [ref=f17e1138]: "5"
+                    - text: more wrestlers →
+              - generic [ref=f17e1139]:
+                - generic [ref=f17e1140]: Youth Academy
+                - paragraph [ref=f17e1146]: No youth academy built. Visit the Stable page to build one.
+        - button "Keyboard Shortcuts" [ref=f17e1148]
+        - button "Open Event Log" [ref=f17e1149]
+  - generic [aria-hidden] [ref=f17e1150]: Yokozuna

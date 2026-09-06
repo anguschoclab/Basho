@@ -1,0 +1,220 @@
+- generic [active] [ref=f17e1]:
+  - generic [ref=f17e2]:
+    - region "Notifications (F8)":
+      - list
+    - region "Notifications alt+T"
+    - generic [ref=f17e1551]:
+      - generic [ref=f17e1553]:
+        - link "力 Basho Manager Pro Edition" [ref=f17e1555] [cursor=pointer]:
+          - /url: /dashboard
+          - generic [ref=f17e1556]: 力
+          - generic [ref=f17e1558]:
+            - generic [ref=f17e1559]: Basho Manager
+            - generic [ref=f17e1560]: Pro Edition
+        - generic [ref=f17e1562]:
+          - list [ref=f17e1565]:
+            - listitem [ref=f17e1566]:
+              - link "Control Center" [ref=f17e1567] [cursor=pointer]:
+                - /url: /dashboard
+            - listitem [ref=f17e1574]:
+              - link "Events & Recap" [ref=f17e1575] [cursor=pointer]:
+                - /url: /recap
+            - listitem [ref=f17e1580]:
+              - link "Weekly Report" [ref=f17e1581] [cursor=pointer]:
+                - /url: /digest
+          - generic [ref=f17e1586]:
+            - generic [ref=f17e1587]: My Stable
+            - list [ref=f17e1591]:
+              - listitem [ref=f17e1592]:
+                - link "Overview" [ref=f17e1593] [cursor=pointer]:
+                  - /url: /stable
+              - listitem [ref=f17e1598]:
+                - link "Roster" [ref=f17e1599] [cursor=pointer]:
+                  - /url: /stable/roster
+              - listitem [ref=f17e1606]:
+                - link "Training" [ref=f17e1607] [cursor=pointer]:
+                  - /url: /stable/training
+              - listitem [ref=f17e1615]:
+                - link "Medical" [ref=f17e1616] [cursor=pointer]:
+                  - /url: /stable/medical
+              - listitem [ref=f17e1620]:
+                - link "Staff" [ref=f17e1621] [cursor=pointer]:
+                  - /url: /stable/staff
+              - listitem [ref=f17e1626]:
+                - link "Oyakata" [ref=f17e1627] [cursor=pointer]:
+                  - /url: /stable/oyakata
+              - listitem [ref=f17e1631]:
+                - button "Scouting" [ref=f17e1632]
+              - listitem [ref=f17e1641]:
+                - link "Youth Academy" [ref=f17e1642] [cursor=pointer]:
+                  - /url: /academy
+              - listitem [ref=f17e1647]:
+                - link "Bookmarks" [ref=f17e1648] [cursor=pointer]:
+                  - /url: /bookmarks
+          - generic [ref=f17e1652]:
+            - generic [ref=f17e1653]: Tournament
+            - list [ref=f17e1657]:
+              - listitem [ref=f17e1658]:
+                - link "Current Basho" [ref=f17e1659] [cursor=pointer]:
+                  - /url: /basho
+              - listitem [ref=f17e1667]:
+                - link "Banzuke" [ref=f17e1668] [cursor=pointer]:
+                  - /url: /basho/banzuke
+              - listitem [ref=f17e1673]:
+                - link "Schedule" [ref=f17e1674] [cursor=pointer]:
+                  - /url: /basho/schedule
+              - listitem [ref=f17e1678]:
+                - link "Rivalries" [ref=f17e1679] [cursor=pointer]:
+                  - /url: /basho/rivalries
+              - listitem [ref=f17e1690]:
+                - link "Global Cup" [ref=f17e1691] [cursor=pointer]:
+                  - /url: /global-cup
+              - listitem [ref=f17e1699]:
+                - link "World Circuit" [ref=f17e1700] [cursor=pointer]:
+                  - /url: /world-circuit
+              - listitem [ref=f17e1705]:
+                - link "Rival Stables" [ref=f17e1706] [cursor=pointer]:
+                  - /url: /rival-stables
+          - generic [ref=f17e1712]:
+            - generic [ref=f17e1713]: Management
+            - list [ref=f17e1717]:
+              - listitem [ref=f17e1718]:
+                - button "Finances" [ref=f17e1719]
+              - listitem [ref=f17e1730]:
+                - link "Facilities" [ref=f17e1731] [cursor=pointer]:
+                  - /url: /office/facilities
+              - listitem [ref=f17e1737]:
+                - link "Sponsors" [ref=f17e1738] [cursor=pointer]:
+                  - /url: /office/sponsors
+          - generic [ref=f17e1745]:
+            - generic [ref=f17e1746]: Association
+            - list [ref=f17e1750]:
+              - listitem [ref=f17e1751]:
+                - link "Governance" [ref=f17e1752] [cursor=pointer]:
+                  - /url: /jsa/governance
+              - listitem [ref=f17e1756]:
+                - link "Elder Market" [ref=f17e1757] [cursor=pointer]:
+                  - /url: /myoseki
+              - listitem [ref=f17e1761]:
+                - link "Press & Rep" [ref=f17e1762] [cursor=pointer]:
+                  - /url: /media
+              - listitem [ref=f17e1767]:
+                - link "Trends" [ref=f17e1768] [cursor=pointer]:
+                  - /url: /jsa/trends
+          - generic [ref=f17e1773]:
+            - generic [ref=f17e1774]: Records
+            - list [ref=f17e1778]:
+              - listitem [ref=f17e1779]:
+                - link "Stable History" [ref=f17e1780] [cursor=pointer]:
+                  - /url: /records/history
+              - listitem [ref=f17e1785]:
+                - link "Almanac" [ref=f17e1786] [cursor=pointer]:
+                  - /url: /records/almanac
+              - listitem [ref=f17e1790]:
+                - link "Hall of Fame" [ref=f17e1791] [cursor=pointer]:
+                  - /url: /records/hall-of-fame
+              - listitem [ref=f17e1796]:
+                - link "Museum" [ref=f17e1797] [cursor=pointer]:
+                  - /url: /records/museum
+              - listitem [ref=f17e1801]:
+                - link "Glossary" [ref=f17e1802] [cursor=pointer]:
+                  - /url: /glossary
+        - generic [ref=f17e1814]:
+          - generic [ref=f17e1815]: Dewanoumi
+          - generic [ref=f17e1816]: secure
+        - button "Toggle Sidebar" [ref=f17e1819]
+      - main [ref=f17e1820]:
+        - generic [ref=f17e1822]:
+          - button "Toggle Sidebar" [ref=f17e1823]
+          - generic [ref=f17e1826]:
+            - generic [ref=f17e1828]:
+              - generic [ref=f17e1829]: Date
+              - generic [ref=f17e1830]: Year 2026 · Wk 1
+            - generic [ref=f17e1831]: Interim
+            - generic [ref=f17e1834]:
+              - generic [ref=f17e1835]: Era
+              - generic [ref=f17e1836]: Classic
+            - generic [ref=f17e1837]:
+              - generic [ref=f17e1838]: Funds
+              - generic [ref=f17e1839]: ¥40,000,000
+          - generic [ref=f17e1840]:
+            - button "Skip ahead with safety gates" [ref=f17e1841]: Holiday
+            - button "Open save and load dialog" [ref=f17e1842]
+            - button "Toggle theme" [ref=f17e1843]
+            - button "Settings" [ref=f17e1844]
+            - button "Continue" [ref=f17e1846]
+        - navigation "Breadcrumb" [ref=f17e1850]:
+          - link "Home" [ref=f17e1851] [cursor=pointer]:
+            - /url: /dashboard
+          - link "Association" [ref=f17e1858] [cursor=pointer]:
+            - /url: /jsa
+          - generic [ref=f17e1862]: Governance
+        - main [ref=f17e1864]:
+          - generic [ref=f17e1866]:
+            - navigation "Sub navigation" [ref=f17e1869]:
+              - button "Governance" [ref=f17e1870]
+              - button "Elder Market" [ref=f17e1873]
+              - button "Press & Rep" [ref=f17e1876]
+              - button "Trends" [ref=f17e1879]
+            - generic [ref=f17e1882]: Governance & Compliance
+          - generic [ref=f17e1884]:
+            - generic [ref=f17e1885]:
+              - generic [ref=f17e1886]:
+                - paragraph [ref=f17e1887]: ── ASSOCIATION ──
+                - heading "Governance & Compliance" [level=1] [ref=f17e1888]
+                - paragraph [ref=f17e1889]: Official records of the Sumo Association regarding Dewanoumi.
+              - generic [ref=f17e1890]: Clean Record
+            - generic [ref=f17e1896]:
+              - tablist [ref=f17e1897]:
+                - tab "Overview" [selected] [ref=f17e1898]
+                - tab "Rulings" [ref=f17e1899]
+                - tab "Politics" [ref=f17e1904]
+              - tabpanel "Overview" [ref=f17e1907]:
+                - generic [ref=f17e1908]:
+                  - generic [ref=f17e1909]:
+                    - generic [ref=f17e1911]:
+                      - paragraph [ref=f17e1912]: ── REPUTATION ──
+                      - heading "Public Perception" [level=3] [ref=f17e1914]
+                    - generic [ref=f17e1916]:
+                      - paragraph [ref=f17e1917]: Scandal Index
+                      - paragraph [ref=f17e1918]: Clean
+                    - generic [ref=f17e1921]:
+                      - paragraph [ref=f17e1922]: Scandal Score
+                      - paragraph [ref=f17e1923]: 0%
+                  - generic [ref=f17e1925]:
+                    - generic [ref=f17e1927]:
+                      - paragraph [ref=f17e1928]: ── COMPLIANCE ──
+                      - heading "Welfare & Safety" [level=3] [ref=f17e1930]
+                    - generic [ref=f17e1931]:
+                      - generic [ref=f17e1932]:
+                        - paragraph [ref=f17e1933]: Risk Level
+                        - paragraph [ref=f17e1934]: Safe
+                      - generic [ref=f17e1935]:
+                        - paragraph [ref=f17e1936]: Status
+                        - paragraph [ref=f17e1937]: COMPLIANT
+                    - generic [ref=f17e1940]:
+                      - paragraph [ref=f17e1941]: Welfare Risk
+                      - paragraph [ref=f17e1942]: 10%
+                  - generic [ref=f17e1945]:
+                    - generic [ref=f17e1947]:
+                      - paragraph [ref=f17e1948]: ── JSA COUNCIL ──
+                      - heading "Council Status" [level=3] [ref=f17e1950]
+                    - generic [ref=f17e1952]:
+                      - paragraph [ref=f17e1953]: Standing
+                      - paragraph [ref=f17e1954]: Clean Record
+                      - paragraph [ref=f17e1955]: No active concerns
+                  - generic [ref=f17e1956]:
+                    - generic [ref=f17e1958]:
+                      - paragraph [ref=f17e1959]: ── RECORD ──
+                      - heading "Disciplinary Record" [level=3] [ref=f17e1961]
+                    - generic [ref=f17e1963]:
+                      - paragraph [ref=f17e1964]: Decisions on File
+                      - paragraph [ref=f17e1965]: "0"
+                - generic [ref=f17e1966]:
+                  - generic [ref=f17e1968]:
+                    - paragraph [ref=f17e1969]: ── RULINGS ──
+                    - heading "Ruling History" [level=3] [ref=f17e1971]
+                  - heading "No rulings on record. Keep it that way." [level=3] [ref=f17e1973]
+        - button "Keyboard Shortcuts" [ref=f17e1975]
+        - button "Open Event Log" [ref=f17e1976]
+  - generic [aria-hidden] [ref=f17e1150]: "0"
