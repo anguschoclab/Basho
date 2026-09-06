@@ -153,6 +153,15 @@ export default function RegionalHubPage() {
                       region: region as ExhibitionRegion,
                     })
                   }
+                  onManage={(region, budget) =>
+                    playerHeya &&
+                    sendCommand({
+                      type: "MANAGE_ACADEMY",
+                      heyaId: playerHeya.id,
+                      region: region as ExhibitionRegion,
+                      config: { budget },
+                    })
+                  }
                 />
               </div>
             </WidgetCard>

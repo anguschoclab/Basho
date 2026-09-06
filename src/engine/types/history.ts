@@ -30,6 +30,9 @@ export interface CareerSnapshot {
 
   weight: number;
   momentum: number;
+
+  /** Cumulative career earnings (¥) at the moment this snapshot was taken. */
+  totalEarningsAtBasho?: number;
 }
 
 /**

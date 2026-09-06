@@ -538,6 +538,18 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
           recentlyReturnedFromInjury: wasKyujoFromInjury || undefined,
           sanyakuPromotionThisBasho: isSanyakuPromotion || undefined,
           shikona: newShikona,
+          economics: {
+            ...(rikishi.economics ?? {
+              cash: 0,
+              retirementFund: 0,
+              careerKenshoWon: 0,
+              kinboshiCount: 0,
+              totalEarnings: 0,
+              currentBashoEarnings: 0,
+              popularity: 50,
+            }),
+            currentBashoEarnings: 0,
+          },
         });
       } else {
         builder.updateRikishi(newEntry.rikishiId, {
@@ -553,6 +565,18 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
           kyujoReason: undefined,
           recentlyReturnedFromInjury: wasKyujoFromInjury || undefined,
           sanyakuPromotionThisBasho: isSanyakuPromotion || undefined,
+          economics: {
+            ...(rikishi.economics ?? {
+              cash: 0,
+              retirementFund: 0,
+              careerKenshoWon: 0,
+              kinboshiCount: 0,
+              totalEarnings: 0,
+              currentBashoEarnings: 0,
+              popularity: 50,
+            }),
+            currentBashoEarnings: 0,
+          },
         });
       }
 

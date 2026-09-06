@@ -26,7 +26,9 @@ export function selectKachiNokoriLeaders(
 
   for (const r of allRikishi) {
     if (r.isRetired) continue;
-    const bashoRecord = (r as unknown as { bashoRecord?: { wins: number; losses: number } }).bashoRecord;
+    // Engine writes `currentBashoRecord` (rikishi.ts:262, boutResultApplier.ts:150,157),
+    // not `bashoRecord`. Reading the wrong field silently returned an empty list.
+    const bashoRecord = r.currentBashoRecord;
     if (!bashoRecord || bashoRecord.wins === undefined) continue;
 
     const payload = buildPostBashoPayload(r, bashoRecord.wins, bashoRecord.losses ?? 0);

@@ -66,4 +66,35 @@ describe("AcademyManagementPanel", () => {
     fireEvent.click(screen.getByTestId("build-academy-Mongolia"));
     expect(onBuild).toHaveBeenCalledWith("Mongolia");
   });
+
+  it("calls onManage with region and budget when invest is confirmed", () => {
+    // Regression: MANAGE_ACADEMY command existed in the worker but had zero UI
+    // dispatchers — it was dead code. This test verifies the AcademyManagementPanel
+    // now wires the onManage callback that RegionalHubPage dispatches to the worker.
+    const onManage = vi.fn();
+    const proj = makeProjection({
+      academies: [
+        { region: "Mongolia", builtAtYear: 2024, candidateQualityBonus: 10 },
+      ],
+      hasAcademies: true,
+    });
+    render(<AcademyManagementPanel projection={proj} onBuild={vi.fn()} onManage={onManage} />);
+
+    // Select a budget preset
+    fireEvent.click(screen.getByTestId("invest-preset-Mongolia-100000"));
+    // Confirm the investment
+    fireEvent.click(screen.getByTestId("invest-academy-Mongolia"));
+    expect(onManage).toHaveBeenCalledWith("Mongolia", 100_000);
+  });
+
+  it("does not render invest controls when onManage is not provided", () => {
+    const proj = makeProjection({
+      academies: [
+        { region: "Mongolia", builtAtYear: 2024, candidateQualityBonus: 10 },
+      ],
+      hasAcademies: true,
+    });
+    render(<AcademyManagementPanel projection={proj} onBuild={vi.fn()} />);
+    expect(screen.queryByTestId("invest-academy-Mongolia")).toBeNull();
+  });
 });

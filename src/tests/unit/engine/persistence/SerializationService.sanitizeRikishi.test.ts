@@ -116,6 +116,29 @@ describe("SerializationService.sanitizeRikishi — rank validation", () => {
   });
 });
 
+describe("SerializationService.sanitizeRikishi — economics numeric defaults", () => {
+  it("defaults missing economics numeric fields to 0", () => {
+    const r = makeRikishi({
+      economics: { cash: 100 } as any,
+    });
+    SerializationService.sanitizeRikishi(r);
+    expect(r.economics!.cash).toBe(100);
+    expect(r.economics!.retirementFund).toBe(0);
+    expect(r.economics!.careerKenshoWon).toBe(0);
+    expect(r.economics!.kinboshiCount).toBe(0);
+    expect(r.economics!.totalEarnings).toBe(0);
+    expect(r.economics!.currentBashoEarnings).toBe(0);
+  });
+
+  it("defaults popularity to 30 when not a number", () => {
+    const r = makeRikishi({
+      economics: { cash: 100, popularity: "bad" } as any,
+    });
+    SerializationService.sanitizeRikishi(r);
+    expect(r.economics!.popularity).toBe(30);
+  });
+});
+
 describe("SerializationService.deserializeWorld — invalid rank integration", () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
 

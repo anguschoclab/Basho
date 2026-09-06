@@ -326,6 +326,10 @@ export const SerializationService = {
       if (typeof e.cash !== "number") e.cash = 0;
       if (typeof e.retirementFund !== "number") e.retirementFund = 0;
       if (typeof e.popularity !== "number") e.popularity = 30;
+      if (typeof e.careerKenshoWon !== "number") e.careerKenshoWon = 0;
+      if (typeof e.kinboshiCount !== "number") e.kinboshiCount = 0;
+      if (typeof e.totalEarnings !== "number") e.totalEarnings = 0;
+      if (typeof e.currentBashoEarnings !== "number") e.currentBashoEarnings = 0;
     }
     if (typeof r.talentSeed !== "number") {
       let hash = 0;

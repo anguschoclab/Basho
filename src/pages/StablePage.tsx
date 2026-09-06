@@ -24,7 +24,6 @@ import type { FacilityId } from "@/engine/types/infrastructure";
 import { KeshoMawashiGallery } from "@/components/stable/KeshoMawashiGallery";
 import { MentorAssignmentPanel } from "@/components/game/MentorAssignmentPanel";
 import { getHeyaRoster } from "@/presenters/engineAccess";
-import { getRikishi } from "@/presenters/worldAccess";
 import { TsukebitoPanel } from "@/components/training/TsukebitoPanel";
 import { YouthAcademyPanel } from "@/components/recruitment/YouthAcademyPanel";
 import { projectTsukebito } from "@/presenters/tsukebitoProjections";
@@ -249,11 +248,11 @@ export default function StablePage() {
                   sendCommand({ type: "SET_TSUKEBITO", seniorId, tsukebitoIds: [juniorId] })
                 }
                 onClear={(seniorId, juniorId) => {
-                  const senior = getRikishi(world, seniorId);
-                  const remaining = (senior?.tsukebitoIds ?? []).filter(
-                    (id) => id !== juniorId
-                  );
-                  sendCommand({ type: "SET_TSUKEBITO", seniorId, tsukebitoIds: remaining });
+                  // SET_TSUKEBITO only appends and early-returns if the junior is
+                  // already present, so dispatching it with the remaining list is a
+                  // no-op and never removes anyone. Dispatch REMOVE_TSUKEBITO instead,
+                  // which calls clearTsukebito(seniorId, juniorId) for the one junior.
+                  sendCommand({ type: "REMOVE_TSUKEBITO", seniorId, juniorId });
                 }}
               />
             )}

@@ -554,8 +554,8 @@ export default function BashoPage() {
           result={selectedBout.result}
           bashoName={bashoName as BashoName}
           day={day}
-          gyojiName={officialsProjection.topGyoji?.name}
-          gyojiAccuracy={officialsProjection.topGyoji?.accuracy}
+          gyojiName={officialsProjection.gyoji.find((g) => g.id === selectedBout.result.gyojiId)?.name}
+          gyojiAccuracy={officialsProjection.gyoji.find((g) => g.id === selectedBout.result.gyojiId)?.accuracy}
         />
       )}
       {autoShowPlayerBout && !selectedBout && (
@@ -567,8 +567,8 @@ export default function BashoPage() {
           result={autoShowPlayerBout.result}
           bashoName={bashoName as BashoName}
           day={day}
-          gyojiName={officialsProjection.topGyoji?.name}
-          gyojiAccuracy={officialsProjection.topGyoji?.accuracy}
+          gyojiName={officialsProjection.gyoji.find((g) => g.id === autoShowPlayerBout.result.gyojiId)?.name}
+          gyojiAccuracy={officialsProjection.gyoji.find((g) => g.id === autoShowPlayerBout.result.gyojiId)?.accuracy}
         />
       )}
       <AlertDialog open={showEndBashoConfirm} onOpenChange={setShowEndBashoConfirm}>

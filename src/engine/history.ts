@@ -58,6 +58,8 @@ export function generateCareerSnapshot(world: WorldState, rikishi: Rikishi): Car
 
     weight: rikishi.weight,
     momentum: rikishi.momentum,
+
+    totalEarningsAtBasho: rikishi.economics?.totalEarnings ?? 0,
   };
 }
 

@@ -52,3 +52,26 @@ export function useKimariteDistributionData(rikishi: UIRikishi | null) {
       .sort((a, b) => b.percentage - a.percentage);
   }, [rikishi?.favoredKimariteDetailed]);
 }
+
+/**
+ * Derives cumulative and per-basho earnings from careerHistory snapshots.
+ * careerHistory is stored newest-first; this hook reverses to chronological order.
+ * Per-basho earnings are computed as deltas between consecutive cumulative totals.
+ */
+export function useEarningsProgressionData(history: CareerSnapshot[] | undefined) {
+  return useMemo(() => {
+    if (!history || history.length === 0) return [];
+    const chronological = history.slice().reverse();
+    let cumulative = 0;
+    return chronological.map((snap) => {
+      const earnings = snap.totalEarningsAtBasho ?? 0;
+      const bashoEarnings = earnings - cumulative;
+      cumulative = earnings;
+      return {
+        basho: `${snap.bashoName} ${snap.year}`,
+        cumulativeEarnings: earnings,
+        bashoEarnings,
+      };
+    });
+  }, [history]);
+}

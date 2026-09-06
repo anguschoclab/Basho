@@ -105,6 +105,11 @@ export type EngineCommand =
       seniorId: string;
     }
   | {
+      type: "REMOVE_TSUKEBITO";
+      seniorId: string;
+      juniorId: string;
+    }
+  | {
       type: "BUILD_FOREIGN_ACADEMY";
       heyaId: string;
       region: import("../systems/worldCircuit/WorldCircuitService").ExhibitionRegion;

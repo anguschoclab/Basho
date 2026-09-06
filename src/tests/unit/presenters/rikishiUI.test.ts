@@ -283,3 +283,49 @@ describe("projectRikishi - new band calculations", () => {
     expect(projected.achievements.mochikyukinPoints).toBe(0);
   });
 });
+
+describe("projectRikishi - economics DTO projection", () => {
+  const baseWorld = {
+    year: 2020,
+    heyas: new Map([["h1", { id: "h1", name: "Test Heya", isPlayerOwned: true }]]),
+    rikishi: new Map(),
+  } as unknown as WorldState;
+
+  it("exposes totalEarnings and cash from economics", () => {
+    const rikishi = mockRikishi("r1", {
+      shikona: "Testyama",
+      heyaId: "h1",
+      birthYear: 1995,
+      height: 180,
+      weight: 95,
+      economics: {
+        cash: 100000,
+        retirementFund: 50000,
+        careerKenshoWon: 3,
+        kinboshiCount: 2,
+        totalEarnings: 500000,
+        currentBashoEarnings: 21000,
+        popularity: 75,
+      },
+    });
+
+    const projected = projectRikishi(rikishi, baseWorld);
+    expect(projected.totalEarnings).toBe(500000);
+    expect(projected.cash).toBe(100000);
+  });
+
+  it("defaults economics fields to 0 when economics is undefined", () => {
+    const rikishi = mockRikishi("r1", {
+      shikona: "Testyama",
+      heyaId: "h1",
+      birthYear: 1995,
+      height: 180,
+      weight: 95,
+    });
+
+    const projected = projectRikishi(rikishi, baseWorld);
+    expect(projected.totalEarnings).toBe(0);
+    expect(projected.cash).toBe(0);
+    expect(projected.retirementFund).toBe(0);
+  });
+});

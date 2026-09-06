@@ -25,12 +25,26 @@ describe("selectKachiNokoriLeaders", () => {
 
   it("returns leaders sorted by kachi-nokori descending", () => {
     const world = makeWorld([
-      { id: "r1", shikona: "Low", heyaId: "h1", isRetired: false, bashoRecord: { wins: 8, losses: 7 } },
-      { id: "r2", shikona: "High", heyaId: "h1", isRetired: false, bashoRecord: { wins: 14, losses: 1 } },
+      { id: "r1", shikona: "Low", heyaId: "h1", isRetired: false, currentBashoRecord: { wins: 8, losses: 7 } },
+      { id: "r2", shikona: "High", heyaId: "h1", isRetired: false, currentBashoRecord: { wins: 14, losses: 1 } },
     ]);
     const result = selectKachiNokoriLeaders(world);
     expect(result.length).toBeGreaterThan(0);
     expect(result[0].shikona).toBe("High");
     expect(result[0].wins).toBe(14);
+  });
+
+  it("reads currentBashoRecord (the field the engine actually writes)", () => {
+    // Engine writes `currentBashoRecord` (rikishi.ts:262, boutResultApplier.ts:150,157),
+    // NOT `bashoRecord`. A previous version of this test mocked the wrong field,
+    // masking a projection bug that always returned an empty array in production.
+    const world = makeWorld([
+      { id: "r1", shikona: "Engine", heyaId: "h1", isRetired: false, currentBashoRecord: { wins: 11, losses: 4 } },
+      { id: "r2", shikona: "NoRecord", heyaId: "h1", isRetired: false },
+    ]);
+    const result = selectKachiNokoriLeaders(world);
+    expect(result).toHaveLength(1);
+    expect(result[0].shikona).toBe("Engine");
+    expect(result[0].wins).toBe(11);
   });
 });

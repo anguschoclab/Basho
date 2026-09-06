@@ -28,6 +28,8 @@ import { shouldHaltAdvance } from "../loop/shouldHaltAdvance";
 import { issueGovernanceRuling } from "../systems/governance/ScandalService";
 import { handleMediaEvent } from "../systems/media/MediaEventService";
 import { withdrawRikishi, treatInjury } from "../systems/health/HealthActions";
+import { recordGomenfuda } from "../systems/governance/GomenfudaService";
+import type { StateImpact } from "../core/StateImpact";
 import { WorldCircuitService, manageAcademy } from "../systems/worldCircuit/WorldCircuitService";
 import { runHoliday } from "../holiday";
 import { setTsukebito, clearTsukebito } from "../systems/training/TsukebitoService";
@@ -55,7 +57,7 @@ import {
   completeTutorial as svcCompleteTutorial,
 } from "../systems/tutorial/TutorialService";
 import { updateHeyaInWorld } from "../queries";
-import { retireRikishiImpact } from "../core/ImpactBuilder";
+import { retireRikishiImpact, logEventImpact } from "../core/ImpactBuilder";
 import { spendPoliticalCapital } from "../systems/governance/ScandalService";
 import { recruitSponsor } from "../systems/economy/sponsorshipMutations";
 import { setScoutingInvestment } from "../scoutingStore";
@@ -325,7 +327,20 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
     },
     WITHDRAW_RIKISHI: (cmd) => {
       if (currentWorld) {
-        currentWorld = resolveImpacts(currentWorld, [withdrawRikishi(currentWorld, cmd.rikishiId)]);
+        const impacts: StateImpact[] = [withdrawRikishi(currentWorld, cmd.rikishiId)];
+        // Post a gomenfuda (apology notice) when the player withdraws a
+        // rikishi mid-basho. Without this, player-initiated withdrawals never
+        // increment the gomenfuda count or trigger JSA sanctions — only
+        // auto-injuries from phase01_week_health did. The gomenfuda UI
+        // (GomenfudaStatusBadge, GovernancePage history) would show 0/3
+        // forever regardless of how many rikishi the player withdrew.
+        const r = currentWorld.rikishi.get(cmd.rikishiId);
+        const heya = r ? currentWorld.heyas.get(r.heyaId) : undefined;
+        if (r && heya && currentWorld.cyclePhase === "active_basho") {
+          const bashoName = currentWorld.currentBashoName ?? "current";
+          impacts.push(recordGomenfuda(currentWorld, heya, r, bashoName, "injury"));
+        }
+        currentWorld = resolveImpacts(currentWorld, impacts);
         syncAndDigest();
       }
     },
@@ -554,10 +569,41 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
     },
     GO_ON_HOLIDAY: (cmd) => {
       if (currentWorld) {
-        const result = runHoliday(currentWorld, cmd.config);
+        // Inject playerHeyaId from the world so evaluateGates can fire.
+        // HolidayDialog doesn't know the heya id; the worker does.
+        const config = cmd.config.playerHeyaId
+          ? cmd.config
+          : { ...cmd.config, playerHeyaId: currentWorld.playerHeyaId };
+        const result = runHoliday(currentWorld, config);
         // runHoliday returns reports[] — the last report is the final world state
         if (result && result.reports.length > 0) {
           currentWorld = result.reports[result.reports.length - 1];
+        }
+        // Log a holiday_return event so selectHolidayDigest can surface the
+        // digest on the Dashboard. Without this, the "Holiday Return Digest"
+        // section never renders — the projection scans world.events.log for
+        // data.eventId === "holiday_return" / data.status === "holiday_return".
+        if (result) {
+          const incidents = result.digest.categories.flatMap((c) =>
+            c.items.map((item) => ({ type: c.id, description: item }))
+          );
+          const holidayEventImpact = logEventImpact(
+            "MANAGEMENT_DECISION",
+            "ai_decision",
+            {
+              status: "holiday_return",
+              eventId: "holiday_return",
+              target: config.target,
+              daysAdvanced: result.daysAdvanced,
+              summary: result.digest.headline,
+              incidents,
+              gateTriggered: result.gateTriggered?.gate ?? null,
+              phaseOnExit: result.phaseOnExit,
+            },
+            "GO_ON_HOLIDAY",
+            { importance: "headline" }
+          );
+          currentWorld = resolveImpacts(currentWorld, [holidayEventImpact]);
         }
         syncAndDigest();
       }
@@ -585,6 +631,16 @@ self.onmessage = async (event: MessageEvent<EngineCommand>) => {
           world = resolveImpacts(world, [impact]);
         }
         currentWorld = world;
+        syncAndDigest();
+      }
+    },
+    REMOVE_TSUKEBITO: (cmd) => {
+      if (currentWorld) {
+        // Remove a single junior from this senior's tsukebito list.
+        // SET_TSUKEBITO only appends (early-returns if already present), so it
+        // cannot be used to remove — the Remove button must dispatch this.
+        const impact = clearTsukebito(currentWorld, cmd.seniorId, cmd.juniorId);
+        currentWorld = resolveImpacts(currentWorld, [impact]);
         syncAndDigest();
       }
     },

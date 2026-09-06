@@ -15,6 +15,9 @@ vi.mock("recharts", () => ({
     React.createElement("div", { "data-testid": "chart" }, children),
   ComposedChart: ({ children }: { children?: React.ReactNode }) =>
     React.createElement("div", null, children),
+  Area: () => React.createElement("div"),
+  AreaChart: ({ children }: { children?: React.ReactNode }) =>
+    React.createElement("div", null, children),
   Bar: () => React.createElement("div"),
   Line: () => React.createElement("div"),
   XAxis: () => React.createElement("div"),
@@ -278,5 +281,127 @@ describe("RikishiCareerTab narrative sections", () => {
     fireEvent.click(boutId);
     // After clicking, narrative lines should be visible
     expect(screen.getByText("Kinboshi secured!")).toBeTruthy();
+  });
+});
+
+// ── Earnings tracker tests ──────────────────────────────────────────────────
+
+function makeEarningsSnapshot(
+  year: number,
+  bashoName: string,
+  totalEarningsAtBasho?: number
+): CareerSnapshot {
+  return {
+    id: `snap-${bashoName}-${year}`,
+    bashoId: `${bashoName}-${year}`,
+    year,
+    month: 1,
+    bashoName,
+    rank: "maegashira" as any,
+    division: "makuuchi",
+    rankNumber: 5,
+    side: "east",
+    wins: 8,
+    losses: 7,
+    absences: 0,
+    isYusho: false,
+    isJunYusho: false,
+    specialPrizes: { shukunsho: false, kantosho: false, ginosho: false },
+    weight: 140,
+    momentum: 0,
+    ...(totalEarningsAtBasho !== undefined ? { totalEarningsAtBasho } : {}),
+  } as CareerSnapshot;
+}
+
+const sampleEconomics = {
+  totalEarnings: 500000,
+  cash: 100000,
+  retirementFund: 50000,
+  careerKenshoWon: 3,
+  kinboshiCount: 2,
+  popularity: 75,
+  currentBashoEarnings: 21000,
+};
+
+const sampleEarningsProgressionData = [
+  { basho: "hatsu 2024", cumulativeEarnings: 100000, bashoEarnings: 100000 },
+  { basho: "natsu 2024", cumulativeEarnings: 250000, bashoEarnings: 150000 },
+  { basho: "aki 2024", cumulativeEarnings: 500000, bashoEarnings: 250000 },
+];
+
+describe("RikishiCareerTab earnings tracker", () => {
+  it("renders earnings chart when earningsProgressionData is populated", () => {
+    render(
+      <RikishiCareerTab
+        history={[]}
+        milestones={emptyMilestones}
+        careerProgressionData={emptyProgressionData}
+        earningsProgressionData={sampleEarningsProgressionData}
+        economics={sampleEconomics}
+      />
+    );
+    expect(screen.getByText(/Career Earnings/i)).toBeTruthy();
+  });
+
+  it("renders cumulative earnings summary values from economics prop", () => {
+    render(
+      <RikishiCareerTab
+        history={[]}
+        milestones={emptyMilestones}
+        careerProgressionData={emptyProgressionData}
+        earningsProgressionData={sampleEarningsProgressionData}
+        economics={sampleEconomics}
+      />
+    );
+    // 500000 formatted with toLocaleString should contain "500,000"
+    expect(screen.getByText(/500,000/)).toBeTruthy();
+    // 100000 formatted should contain "100,000"
+    expect(screen.getByText(/100,000/)).toBeTruthy();
+  });
+
+  it("renders cumulative ¥ column in basho history table for snapshots with totalEarningsAtBasho", () => {
+    const historyWithEarnings: CareerSnapshot[] = [
+      makeEarningsSnapshot(2024, "hatsu", 100000),
+      makeEarningsSnapshot(2024, "natsu", 250000),
+    ];
+    render(
+      <RikishiCareerTab
+        history={historyWithEarnings}
+        milestones={emptyMilestones}
+        careerProgressionData={emptyProgressionData}
+      />
+    );
+    // The cumulative ¥ column header should be present
+    expect(screen.getByText(/Cumulative/i)).toBeTruthy();
+    // 250000 formatted should appear (newest snapshot shown first in table)
+    expect(screen.getByText(/250,000/)).toBeTruthy();
+  });
+
+  it("renders — for snapshots without totalEarningsAtBasho", () => {
+    const historyWithoutEarnings: CareerSnapshot[] = [
+      makeEarningsSnapshot(2024, "hatsu"), // no totalEarningsAtBasho
+    ];
+    render(
+      <RikishiCareerTab
+        history={historyWithoutEarnings}
+        milestones={emptyMilestones}
+        careerProgressionData={emptyProgressionData}
+      />
+    );
+    // Snapshots without earnings should show an em-dash
+    expect(screen.getByText("—")).toBeTruthy();
+  });
+
+  it("does not render earnings chart when earningsProgressionData is empty", () => {
+    render(
+      <RikishiCareerTab
+        history={[]}
+        milestones={emptyMilestones}
+        careerProgressionData={emptyProgressionData}
+        earningsProgressionData={[]}
+        economics={sampleEconomics}
+      />
+    );
+    expect(screen.queryByText(/Career Earnings/i)).toBeNull();
   });
 });

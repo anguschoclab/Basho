@@ -8,6 +8,7 @@ import {
   CONSECUTIVE_WITHDRAWAL_MULTIPLIER,
 } from "@/engine/systems/governance/GomenfudaService";
 import { resolveImpacts } from "@/engine/core/ImpactResolver";
+import { withdrawRikishi } from "@/engine/systems/health/HealthActions";
 import { mockRikishi, makeMockWorld } from "../utils";
 import type { Heya } from "@/engine/types/heya";
 
@@ -302,5 +303,51 @@ describe("recordGomenfuda year-field bug fix", () => {
     expect(repAfter2).toBe(50 - firstPenalty - secondPenalty);
     // The key assertion: second penalty > first penalty (multiplier applied)
     expect(secondPenalty).toBeGreaterThan(firstPenalty);
+  });
+});
+
+// ── Player withdrawal path: WITHDRAW_RIKISHI must post gomenfuda mid-basho ──
+// The worker's WITHDRAW_RIKISHI handler previously only called withdrawRikishi
+// (which sets isKyujo + logs LIFECYCLE_EVENT) but never called recordGomenfuda.
+// So player-initiated withdrawals didn't increment the gomenfuda count or
+// trigger sanctions — only auto-injuries from phase01_week_health did.
+// ─────────────────────────────────────────────────────────────────────────────
+
+describe("WITHDRAW_RIKISHI + recordGomenfuda integration", () => {
+  it("player withdrawal mid-basho posts a gomenfuda when combined with recordGomenfuda", () => {
+    const heya = makeHeya("heya-1");
+    const riki = mockRikishi("r-1", { shikona: "Test Rikishi", heyaId: "heya-1" });
+    const world = makeMockWorld({
+      rikishi: new Map([[riki.id, riki]]),
+      heyas: new Map([["heya-1", heya as any]]),
+    });
+    (world as any).cyclePhase = "active_basho";
+    (world as any).currentBashoName = "hatsu";
+
+    // Mirror the worker handler: withdrawRikishi + recordGomenfuda when active_basho
+    const withdrawImpact = withdrawRikishi(world, "r-1");
+    const gomenfudaImpact = recordGomenfuda(world, heya as Heya, riki, "hatsu", "injury");
+    const updated = resolveImpacts(world, [withdrawImpact, gomenfudaImpact]);
+
+    expect(updated.rikishi.get("r-1")?.isKyujo).toBe(true);
+    expect(updated.rikishi.get("r-1")?.absentFinalDay).toBe(true);
+    expect(countGomenfudaForHeya(updated, "heya-1", world.year)).toBe(1);
+  });
+
+  it("player withdrawal outside basho does NOT post a gomenfuda", () => {
+    const heya = makeHeya("heya-1");
+    const riki = mockRikishi("r-1", { shikona: "Test Rikishi", heyaId: "heya-1" });
+    const world = makeMockWorld({
+      rikishi: new Map([[riki.id, riki]]),
+      heyas: new Map([["heya-1", heya as any]]),
+    });
+    (world as any).cyclePhase = "interim";
+
+    // Worker handler only calls recordGomenfuda when cyclePhase === "active_basho"
+    const withdrawImpact = withdrawRikishi(world, "r-1");
+    const updated = resolveImpacts(world, [withdrawImpact]);
+
+    expect(updated.rikishi.get("r-1")?.isKyujo).toBe(true);
+    expect(countGomenfudaForHeya(updated, "heya-1", world.year)).toBe(0);
   });
 });

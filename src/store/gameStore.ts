@@ -151,6 +151,10 @@ export const useGameStore = create<GameStoreState>((set, get) => ({
       set({ isSimulating: true, error: null, pendingTick: true });
     } else if (command.type === "TICK_DAY") {
       set({ pendingTick: true });
+    } else if (command.type === "GO_ON_HOLIDAY") {
+      // GO_ON_HOLIDAY advances the sim on the worker thread; serialize it so
+      // repeated clicks can't interleave with the holiday advance loop.
+      set({ isSimulating: true, error: null, pendingTick: true });
     }
 
     get().worker?.postMessage(command);

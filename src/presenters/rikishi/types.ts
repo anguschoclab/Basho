@@ -171,6 +171,13 @@ export interface RikishiAchievementsDTO {
 /** Salary and financial */
 export interface RikishiEconomicsDTO {
   salaryBreakdown: SalaryBreakdown;
+  totalEarnings: number;
+  cash: number;
+  retirementFund: number;
+  careerKenshoWon: number;
+  kinboshiCount: number;
+  popularity: number;
+  currentBashoEarnings: number;
 }
 
 /** Kesho-mawashi and visual customization */
