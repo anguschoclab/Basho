@@ -39,7 +39,7 @@ vi.mock("@/engine/naturalization", () => ({
 }));
 
 vi.mock("@/engine/archival", () => ({
-  runArchivalPruning: vi.fn(() => ({ metadata: { source: "archival", timestamp: 0 } })),
+  runRetiredRikishiSummarization: vi.fn(() => ({ metadata: { source: "runRetiredRikishiSummarization", timestamp: 0 } })),
 }));
 
 vi.mock("@/engine/lifecycle/RegistryService", () => ({
@@ -80,7 +80,7 @@ import {
 import { onBashoEnded } from "@/engine/records";
 import * as ImpactResolver from "@/engine/core/ImpactResolver";
 import { openRecruitmentWindow } from "@/engine/lifecycle/RegistryService";
-import { runArchivalPruning } from "@/engine/archival";
+import { runRetiredRikishiSummarization } from "@/engine/archival";
 import type { WorldState } from "@/engine/types/world";
 import type { StateImpact } from "@/engine/core/StateImpact";
 
@@ -150,13 +150,13 @@ describe("runPostBashoResolution", () => {
     expect(resolveCalls.length).toBeGreaterThan(0);
   });
 
-  it("skips archival pruning when month is not November", () => {
+  it("skips retired-rikishi summarization when month is not November", () => {
     runPostBashoResolution(makeWorld(1)); // January
-    expect((runArchivalPruning as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(0);
+    expect((runRetiredRikishiSummarization as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(0);
   });
 
-  it("runs archival pruning in November (month 11)", () => {
+  it("runs retired-rikishi summarization in November (month 11)", () => {
     runPostBashoResolution(makeWorld(11));
-    expect((runArchivalPruning as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(1);
+    expect((runRetiredRikishiSummarization as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(1);
   });
 });

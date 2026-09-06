@@ -22,7 +22,7 @@ import {
   adjustKoenkaiBandToPrestige,
 } from "../systems/economy/SponsorshipService";
 import { checkNaturalizations } from "../naturalization";
-import { runArchivalPruning } from "../archival";
+import { runRetiredRikishiSummarization } from "../archival";
 import { runCareerJournalUpdates, openRecruitmentWindow } from "../lifecycle/RegistryService";
 import { runHistoryUpdates } from "../history";
 import { runElections } from "../systems/governance/ScandalService";
@@ -78,10 +78,13 @@ export function runPostBashoResolution(world: WorldState): WorldState {
   const recordsImpact = onBashoEnded(world);
   impacts.push(recordsImpact);
 
-  // Only prune at year-end (November Basho)
+  // Only summarize at year-end (November Basho).
+  // Full retired Rikishi are converted to compact RetiredRikishiSummary entries
+  // in world.historicalRikishi. Full career detail is preserved in cold storage
+  // (archived at retirement time via CareerService / governanceReview).
   if (world.calendar?.month === 11) {
-    const archivalImpact = runArchivalPruning(world);
-    impacts.push(archivalImpact);
+    const summarizationImpact = runRetiredRikishiSummarization(world);
+    impacts.push(summarizationImpact);
   }
 
   // Resolve all collected impacts atomically

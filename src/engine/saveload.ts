@@ -1,7 +1,6 @@
 import { SerializationService } from "./persistence/SerializationService";
 import { SaveSlotService, type SaveSlotInfo } from "./persistence/SaveSlotService";
 import { MigrationService } from "./persistence/MigrationService";
-import { runArchivalPruning } from "./archival";
 import { destr } from "destr";
 import { error } from "./utils/Logger";
 import type { WorldState, SaveGame } from "./types/index";
@@ -18,7 +17,11 @@ export function saveGame(world: WorldState, slotName: string, _timestampISO?: st
 
   try {
     const key = SaveSlotService.toSlotKey(slotName);
-    runArchivalPruning(world);
+    // Note: retired-rikishi summarization now happens at year-end in
+    // SimulationRunner (runRetiredRikishiSummarization), not at save time.
+    // The old runArchivalPruning call was removed because it mutated world
+    // in place and wrote to the wrong map (world.rikishi instead of
+    // world.historicalRikishi).
 
     const existingRaw = storage.getItem(key);
     const existingParsed = existingRaw ? destr(existingRaw) : null;

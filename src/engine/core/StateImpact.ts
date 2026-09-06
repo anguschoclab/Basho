@@ -23,6 +23,7 @@ import type {
 import type { Id } from "../types/common";
 import type { Heya } from "../types/heya";
 import type { Rikishi } from "../types/rikishi";
+import type { RetiredRikishiSummary } from "../types/history";
 import type { Oyakata } from "../types/oyakata";
 
 /**
@@ -104,6 +105,8 @@ export interface StateImpact {
     myosekiUpdates?: Map<string, Partial<MyosekiStock>>;
     /** Map of staff ID → partial staff update */
     staffUpdates?: Map<string, Partial<Staff>>;
+    /** Map of historical rikishi ID → full replacement (RetiredRikishiSummary or full Rikishi) */
+    historicalRikishiUpdates?: Map<string, RetiredRikishiSummary | Rikishi>;
     // Add other entity types as needed
   };
 

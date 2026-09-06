@@ -88,6 +88,19 @@ function applyEntityUpdates(world: WorldState, entities: StateImpact["entities"]
     }
   }
 
+  // Historical rikishi updates: full replacement (no merge).
+  // Summaries are atomic replacements for full Rikishi objects, not partial patches.
+  const histUpdates = entityMap["historicalRikishiUpdates"];
+  if (histUpdates && histUpdates.size > 0) {
+    const nextHist = new Map(
+      (result.historicalRikishi as Map<string, unknown> | undefined) || new Map()
+    );
+    for (const [id, update] of histUpdates) {
+      nextHist.set(id, update);
+    }
+    result = { ...result, historicalRikishi: nextHist as WorldState["historicalRikishi"] };
+  }
+
   return result;
 }
 
@@ -295,10 +308,15 @@ function _applyImpact(result: WorldState, impact: StateImpact): WorldState {
       const nextRikishi = new Map(result.rikishi);
       const nextHistorical = new Map(result.historicalRikishi);
       for (const id of impact.collections.rikishiFromHistorical) {
-        const rikishi = nextHistorical.get(id);
-        if (rikishi) {
+        const entry = nextHistorical.get(id);
+        if (entry) {
           nextHistorical.delete(id);
-          nextRikishi.set(id, rikishi);
+          // Only move full Rikishi back to active. Summaries are compact
+          // records that cannot be re-activated directly; re-activation would
+          // need to load the full record from cold storage first.
+          if ("stats" in entry && (entry as { isSummary?: unknown }).isSummary !== true) {
+            nextRikishi.set(id, entry);
+          }
         }
       }
       result = { ...result, rikishi: nextRikishi, historicalRikishi: nextHistorical };
@@ -459,6 +477,25 @@ export function mergeImpacts(impacts: StateImpact[]): StateImpact {
             id,
             existing ? { ...existing, ...(update as Record<string, unknown>) } : update
           );
+        }
+      }
+
+      // Historical rikishi updates: full replacement (last wins, no merge)
+      const histSource = (impact.entities as Record<string, Map<string, unknown> | undefined>)[
+        "historicalRikishiUpdates"
+      ];
+      if (histSource && histSource.size > 0) {
+        let histTarget = (merged.entities as Record<string, Map<string, unknown> | undefined>)[
+          "historicalRikishiUpdates"
+        ];
+        if (!histTarget) {
+          histTarget = new Map();
+          (merged.entities as Record<string, Map<string, unknown>>)[
+            "historicalRikishiUpdates"
+          ] = histTarget;
+        }
+        for (const [id, update] of histSource) {
+          histTarget.set(id, update); // full replacement
         }
       }
     }

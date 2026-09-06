@@ -36,6 +36,7 @@ import type { BloodlineRegistry } from "./dynasty";
 import type { LineageEdge } from "../lineage";
 import type { HallOfFameState } from "../hallOfFame";
 import type { HistoryIndex } from "../historyIndex";
+import type { RetiredRikishiSummary } from "./history";
 import type { SeededRNG } from "../rng";
 import type { ScoutedRikishi } from "../systems/recruitment/ScoutingService";
 import type { OzekiKadobanMap } from "../banzuke";
@@ -185,7 +186,13 @@ export interface WorldState {
   heyas: IdMapRuntime<Heya>;
 
   rikishi: IdMapRuntime<Rikishi>;
-  historicalRikishi: IdMapRuntime<Rikishi>;
+  /**
+   * Retired rikishi. Entries may be either full Rikishi (between retirement
+   * and year-end summarization, so the retirement ceremony UI has full data)
+   * or compact RetiredRikishiSummary objects (after year-end summarization).
+   * Use isRetiredRikishiSummary() to discriminate.
+   */
+  historicalRikishi: IdMapRuntime<Rikishi | RetiredRikishiSummary>;
   /** Set of active (non-retired) rikishi IDs for efficient iteration. */
   activeRikishiIds: Set<string>;
   oyakata: IdMapRuntime<Oyakata>;

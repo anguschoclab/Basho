@@ -7,6 +7,7 @@
 
 import type { WorldState } from "./types/world";
 import type { Rikishi } from "./types/rikishi";
+import type { RetiredRikishiSummary } from "./types/history";
 import type { Heya } from "./types/heya";
 import type { Oyakata } from "./types/oyakata";
 import type { Division } from "./types/banzuke";
@@ -15,6 +16,8 @@ import type { Staff } from "./types/staff";
 import type { Id } from "./types/common";
 import { isSekitoriDivision } from "@/constants/engine/rankDisplay";
 import { getAvailableStables, getActiveRikishi as getSelectorsActiveRikishi } from "./selectors";
+import { opfsArchiveService } from "./storage/opfsArchive";
+import { electronArchiveService } from "./storage/electronArchive";
 
 // ─── Single-Entity Lookups ──────────────────────────────
 
@@ -28,10 +31,58 @@ export function getRikishi(world: WorldState, id: Id): Rikishi | undefined {
 
 /**
  * Get a rikishi by ID from either active or historical collection.
- * @returns The Rikishi, or undefined if not found.
+ * The returned entry may be a full Rikishi (active, or retired-but-not-yet-summarized)
+ * or a compact RetiredRikishiSummary (after year-end summarization).
+ * Use isRetiredRikishiSummary() to discriminate, or getRetiredRikishiSummary() to
+ * narrow to summaries only.
+ * @returns The Rikishi | RetiredRikishiSummary, or undefined if not found.
  */
-export function getRikishiAnywhere(world: WorldState, id: Id): Rikishi | undefined {
+export function getRikishiAnywhere(
+  world: WorldState,
+  id: Id
+): Rikishi | RetiredRikishiSummary | undefined {
   return world.rikishi.get(id) || world.historicalRikishi?.get(id);
+}
+
+/**
+ * Returns a RetiredRikishiSummary from historicalRikishi, or undefined if the
+ * entry is missing or is a full Rikishi (not yet summarized).
+ */
+export function getRetiredRikishiSummary(
+  world: WorldState,
+  id: Id
+): RetiredRikishiSummary | undefined {
+  const entry = world.historicalRikishi?.get(id);
+  if (!entry) return undefined;
+  if (isRetiredRikishiSummaryEntry(entry)) return entry;
+  return undefined;
+}
+
+/**
+ * Type guard: returns true if the entry is a RetiredRikishiSummary.
+ */
+export function isRetiredRikishiSummaryEntry(
+  entry: unknown
+): entry is RetiredRikishiSummary {
+  return (
+    !!entry &&
+    typeof entry === "object" &&
+    (entry as { isSummary?: unknown }).isSummary === true
+  );
+}
+
+/**
+ * Load a full Rikishi record from cold storage by ID.
+ * Use this when a RetiredRikishiSummary is present but the caller needs the
+ * full career detail (e.g., a deep historical profile view).
+ * @returns The full Rikishi, or null if not archived / not found.
+ */
+export async function loadFullRikishiRecord(id: Id): Promise<Rikishi | null> {
+  const archiveService =
+    typeof window !== "undefined" && window.__ELECTRON__ === true
+      ? electronArchiveService
+      : opfsArchiveService;
+  return archiveService.retrieveFullRikishiRecord(id);
 }
 
 /**

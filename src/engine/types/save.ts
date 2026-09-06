@@ -16,6 +16,7 @@ import type { Sponsor, Koenkai } from "./sponsors";
 import type { ClosedHeyaRecord } from "./world";
 import type { Staff } from "./staff";
 import type { HistoryIndex } from "../historyIndex";
+import type { RetiredRikishiSummary } from "./history";
 import type { LineageEdge } from "../lineage";
 import type { WorldRecords } from "./records";
 import type { HallOfFameState } from "../hallOfFame";
@@ -59,7 +60,7 @@ export interface SerializedWorldState {
   heyas: IdMap<Heya>;
   closedHeyas: IdMap<ClosedHeyaRecord>;
   rikishi: IdMap<Rikishi>;
-  historicalRikishi: IdMap<Rikishi>;
+  historicalRikishi: IdMap<Rikishi | RetiredRikishiSummary>;
   /** Array of active (non-retired) rikishi IDs for efficient iteration. */
   activeRikishiIds: string[];
   oyakata: IdMap<Oyakata>;

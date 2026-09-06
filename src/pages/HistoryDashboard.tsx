@@ -10,6 +10,7 @@ import { PageHeader } from "@/components/layout/control-center";
 import { Trophy, Building2, ScrollText, Crown, AlertCircle, Users } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import type { Rikishi, Heya } from "@/presenters/uiDigest";
+import type { RetiredRikishiSummary } from "@/engine/types/history";
 import type { RecordEntry, WorldRecords } from "@/engine/types/records";
 import { getAllHeyas } from "@/presenters/worldAccess";
 import { SortMenu } from "@/components/ui/SortMenu";
@@ -175,12 +176,30 @@ const RETIRED_SORT_OPTIONS = [
   { key: "rank", label: "Rank" },
 ];
 
-const retiredAccessor: Record<string, (r: Rikishi) => string | number | undefined> = {
+type RetiredEntry = Rikishi | RetiredRikishiSummary;
+
+function isSummaryEntry(entry: RetiredEntry): entry is RetiredRikishiSummary {
+  return (entry as RetiredRikishiSummary).isSummary === true;
+}
+
+const retiredAccessor: Record<string, (r: RetiredEntry) => string | number | undefined> = {
   name: (r) => r.shikona,
-  rank: (r) => RANK_HIERARCHY[r.rank as Rank]?.tier ?? 99,
+  // Summaries expose peakRank; full Rikishi expose rank (current rank at retirement).
+  rank: (r) => {
+    if (isSummaryEntry(r)) {
+      return RANK_HIERARCHY[r.peakRank as Rank]?.tier ?? 99;
+    }
+    return RANK_HIERARCHY[r.rank as Rank]?.tier ?? 99;
+  },
 };
 
-const StablesTab = ({ heyas, retired }: { heyas: Heya[]; retired: Rikishi[] }) => {
+const StablesTab = ({
+  heyas,
+  retired,
+}: {
+  heyas: Heya[];
+  retired: Array<Rikishi | RetiredRikishiSummary>;
+}) => {
   const [sortKey, setSortKey] = useState<string>("name");
   const [sortOrder, setSortOrder] = useState<SortDirection>("asc");
 
@@ -268,13 +287,14 @@ const StablesTab = ({ heyas, retired }: { heyas: Heya[]; retired: Rikishi[] }) =
           <EmptyState title="No retirements on record yet." />
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {sortedRetired.slice(0, 40).map((r: Rikishi) => {
+            {sortedRetired.slice(0, 40).map((r: RetiredEntry) => {
               const heyaName = heyasById[r.heyaId]?.name || r.heyaId;
+              const rankLabel = isSummaryEntry(r) ? r.peakRank : r.rank;
               return (
                 <Card key={r.id} className="paper p-3 text-center">
                   <div className="font-display font-semibold text-sm mb-1">{r.shikona}</div>
                   <div className="text-[10px] text-muted-foreground uppercase tracking-wider font-mono mb-1">
-                    {r.rank || "—"}
+                    {rankLabel || "—"}
                   </div>
                   <div className="text-[10px] text-muted-foreground truncate">{heyaName}</div>
                 </Card>

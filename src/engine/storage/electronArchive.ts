@@ -9,6 +9,7 @@
 import type { ArchiveService } from "./opfsArchive";
 import { type BoutResult, type BashoResult } from "../types/basho";
 import { type AlmanacSnapshot } from "../almanac";
+import type { Rikishi } from "../types/rikishi";
 import { destr } from "destr";
 import { warn, error } from "../utils/Logger";
 
@@ -247,6 +248,70 @@ export class ElectronArchiveService implements ArchiveService {
     } catch (err) {
       error(
         `Failed to retrieve banzuke for season ${season}, basho ${bashoNumber}`,
+        "ElectronArchive",
+        err
+      );
+      return null;
+    }
+  }
+
+  // --- FULL RIKISHI RECORDS (cold storage for retired rikishi) ---
+
+  public async archiveFullRikishiRecord(rikishiId: string, rikishi: Rikishi): Promise<void> {
+    if (!this.isElectron) {
+      warn("ElectronArchiveService not available in web build", "ElectronArchive");
+      return;
+    }
+
+    if (!rikishi || typeof rikishi !== "object") {
+      warn("archiveFullRikishiRecord: invalid rikishi (not an object)", "ElectronArchive");
+      return;
+    }
+    if (typeof rikishi.id !== "string" || typeof rikishi.shikona !== "string") {
+      warn("archiveFullRikishiRecord: invalid rikishi (missing id or shikona)", "ElectronArchive");
+      return;
+    }
+
+    try {
+      const dirPath = `rikishi/${rikishiId}`;
+      await this.ensureDir(dirPath);
+
+      const filePath = `${this.baseDir}/${dirPath}/full_record.json`;
+      const content = JSON.stringify(rikishi, null, 2);
+      await this.getElectronAPI().fs.writeFile(filePath, content);
+    } catch (err) {
+      error(
+        `Failed to archive full rikishi record for ${rikishiId}`,
+        "ElectronArchive",
+        err
+      );
+    }
+  }
+
+  public async retrieveFullRikishiRecord(rikishiId: string): Promise<Rikishi | null> {
+    if (!this.isElectron) {
+      warn("ElectronArchiveService not available in web build", "ElectronArchive");
+      return null;
+    }
+
+    try {
+      const filePath = `${this.baseDir}/rikishi/${rikishiId}/full_record.json`;
+      const content = await this.getElectronAPI().fs.readFile(filePath);
+
+      if (content) {
+        const parsed = destr<unknown>(content);
+        if (!parsed || typeof parsed !== "object") return null;
+        const obj = parsed as Record<string, unknown>;
+        if (typeof obj.id !== "string" || typeof obj.shikona !== "string") {
+          warn("retrieveFullRikishiRecord: invalid record (missing id or shikona)", "ElectronArchive");
+          return null;
+        }
+        return parsed as Rikishi;
+      }
+      return null;
+    } catch (err) {
+      error(
+        `Failed to retrieve full rikishi record for ${rikishiId}`,
         "ElectronArchive",
         err
       );

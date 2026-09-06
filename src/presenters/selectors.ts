@@ -5,6 +5,7 @@
 
 import type { WorldState } from "../engine/types/world";
 import type { Rikishi } from "../engine/types/rikishi";
+import type { RetiredRikishiSummary } from "../engine/types/history";
 import type { Heya } from "../engine/types/heya";
 import type { EngineEvent } from "../engine/types/events";
 import { queryEvents } from "../engine/events";
@@ -149,11 +150,16 @@ export const selectTopRivals = createSelector((world: WorldState) => {
 
 /**
  * Select all retired rikishi (from historicalRikishi).
+ * Entries may be full Rikishi (pre-year-end-summarization) or compact
+ * RetiredRikishiSummary objects (post-summarization). Callers should use
+ * isRetiredRikishiSummary() to discriminate when accessing summary-only fields.
  */
-export const selectRetiredRikishi = createSelector((world: WorldState): Rikishi[] => {
-  if (!world.historicalRikishi) return [];
-  return Array.from(world.historicalRikishi.values());
-});
+export const selectRetiredRikishi = createSelector(
+  (world: WorldState): Array<Rikishi | RetiredRikishiSummary> => {
+    if (!world.historicalRikishi) return [];
+    return Array.from(world.historicalRikishi.values());
+  }
+);
 
 /**
  * Select heyas with critical welfare risk (welfareRisk >= 55 or non-compliant).

@@ -14,6 +14,34 @@ import { checkRetirement } from "@/engine/lifecycle";
 import { getRikishi } from "@/engine/queries";
 import { processRetireeOyakataConversion } from "@/engine/lifecycle/retireeOyakataConversion";
 import { generateRetirementNarrative } from "@/engine/lifecycle/retirementNarrative";
+import { opfsArchiveService } from "@/engine/storage/opfsArchive";
+import { electronArchiveService } from "@/engine/storage/electronArchive";
+import { warn } from "@/engine/utils/Logger";
+
+/**
+ * Archive a retiring rikishi's full record to cold storage.
+ * Fire-and-forget: failures are logged but do not block retirement.
+ * The full record remains in world.historicalRikishi until year-end summarization,
+ * so a failure here means the summary will still be produced but the full career
+ * detail will not be retrievable from cold storage.
+ */
+function archiveRikishiToColdStorage(rikishi: Rikishi): void {
+  const archiveService =
+    typeof window !== "undefined" && window.__ELECTRON__ === true
+      ? electronArchiveService
+      : opfsArchiveService;
+
+  // Fire-and-forget; errors are caught and logged.
+  archiveService.archiveFullRikishiRecord(rikishi.id, rikishi).catch((err) => {
+    warn(
+      `Cold-storage archival failed for rikishi ${rikishi.id} (${rikishi.shikona}). ` +
+        `Full career detail will not be retrievable from cold storage. ` +
+        `Summary conversion at year-end will still proceed.`,
+      "CareerService",
+      err
+    );
+  });
+}
 
 export const CareerService = {
   /**
@@ -45,6 +73,11 @@ export const CareerService = {
           `retirement-${rikishi.id}-${world.year}`
         );
         builder.retireRikishi(rikishi.id, world.year, reason);
+
+        // Archive full record to cold storage (fire-and-forget).
+        // The full Rikishi remains in historicalRikishi until year-end summarization,
+        // so the retirement ceremony UI still has access to a full object.
+        archiveRikishiToColdStorage(rikishi);
 
         builder.logEvent(
           "RETIREMENT_ANNOUNCED",

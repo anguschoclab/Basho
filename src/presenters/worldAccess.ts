@@ -1,5 +1,6 @@
 import type { WorldState } from "@/engine/types/world";
 import type { Rikishi } from "@/engine/types/rikishi";
+import type { RetiredRikishiSummary } from "@/engine/types/history";
 import type { Heya } from "@/engine/types/heya";
 import type { Oyakata } from "@/engine/types/oyakata";
 import type { Staff } from "@/engine/types/staff";
@@ -13,6 +14,8 @@ import {
   getActiveRikishi as engineGetActiveRikishi,
   getHeyaRoster as engineGetHeyaRoster,
   getHeyaStaff as engineGetHeyaStaff,
+  getRetiredRikishiSummary as engineGetRetiredRikishiSummary,
+  loadFullRikishiRecord as engineLoadFullRikishiRecord,
 } from "@/engine/queries";
 
 export function getRikishi(world: WorldState, id: string): Rikishi | undefined {
@@ -67,12 +70,39 @@ export function getRikishiMap(world: WorldState): Map<string, Rikishi> {
   return world.rikishi;
 }
 
-export function getHistoricalRikishi(world: WorldState, id: string): Rikishi | undefined {
+export function getHistoricalRikishi(
+  world: WorldState,
+  id: string
+): Rikishi | RetiredRikishiSummary | undefined {
   return world.historicalRikishi?.get(id);
 }
 
-export function getRikishiAnywhere(world: WorldState, id: string): Rikishi | undefined {
+export function getRikishiAnywhere(
+  world: WorldState,
+  id: string
+): Rikishi | RetiredRikishiSummary | undefined {
   return world.rikishi.get(id) || world.historicalRikishi?.get(id);
+}
+
+/**
+ * Returns a RetiredRikishiSummary from historicalRikishi, or undefined if the
+ * entry is missing or is a full Rikishi (not yet summarized).
+ */
+export function getRetiredRikishiSummary(
+  world: WorldState,
+  id: string
+): RetiredRikishiSummary | undefined {
+  return engineGetRetiredRikishiSummary(world, id);
+}
+
+/**
+ * Load a full Rikishi record from cold storage by ID.
+ * Use this when a RetiredRikishiSummary is present but the caller needs the
+ * full career detail (e.g., a deep historical profile view).
+ * @returns The full Rikishi, or null if not archived / not found.
+ */
+export async function loadFullRikishiRecord(id: string): Promise<Rikishi | null> {
+  return engineLoadFullRikishiRecord(id);
 }
 
 export function getGlobalCupChampion(world: WorldState): Rikishi | undefined {

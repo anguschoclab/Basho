@@ -1,5 +1,6 @@
 import { type BoutResult, type BashoResult } from "../types/basho";
 import { type AlmanacSnapshot } from "../almanac";
+import type { Rikishi } from "../types/rikishi";
 import { OPFSFileSystem } from "./OPFSFileSystem";
 import { warn, error } from "../utils/Logger";
 import { destr } from "destr";
@@ -89,6 +90,20 @@ function validateAlmanacSnapshot(data: unknown): AlmanacSnapshot | null {
   return data as AlmanacSnapshot;
 }
 
+function validateRikishiRecord(data: unknown): Rikishi | null {
+  if (!data || typeof data !== "object") {
+    return null;
+  }
+
+  const obj = data as Record<string, unknown>;
+  if (typeof obj.id !== "string" || typeof obj.shikona !== "string") {
+    warn("Invalid Rikishi record: missing or invalid 'id' or 'shikona'", "OPFS Validation");
+    return null;
+  }
+
+  return data as Rikishi;
+}
+
 /**
  * OPFS Archival System
  * * Handles the "Cold Storage" of the engine. Huge payloads like Play-By-Play arrays
@@ -138,6 +153,8 @@ export interface ArchiveService {
   retrieveAwards: (season: number) => Promise<BashoResult[]>;
   archiveBanzuke: (season: number, bashoNumber: number, snapshot: AlmanacSnapshot) => Promise<void>;
   retrieveBanzuke: (season: number, bashoNumber: number) => Promise<AlmanacSnapshot | null>;
+  archiveFullRikishiRecord: (rikishiId: string, rikishi: Rikishi) => Promise<void>;
+  retrieveFullRikishiRecord: (rikishiId: string) => Promise<Rikishi | null>;
 }
 
 export class OPFSArchiveService extends OPFSFileSystem implements ArchiveService {
@@ -376,6 +393,63 @@ export class OPFSArchiveService extends OPFSFileSystem implements ArchiveService
       const parsed = destr<unknown>(contents, { strict: true });
       return validateAlmanacSnapshot(parsed);
     } catch {
+      return null;
+    }
+  }
+
+  // --- FULL RIKISHI RECORDS (cold storage for retired rikishi) ---
+
+  public async archiveFullRikishiRecord(rikishiId: string, rikishi: Rikishi): Promise<void> {
+    // Validate input
+    if (!rikishi || typeof rikishi !== "object") {
+      warn("archiveFullRikishiRecord: invalid rikishi (not an object)", "OPFS");
+      return;
+    }
+    if (typeof rikishi.id !== "string" || typeof rikishi.shikona !== "string") {
+      warn("archiveFullRikishiRecord: invalid rikishi (missing id or shikona)", "OPFS");
+      return;
+    }
+
+    let dir: FileSystemDirectoryHandle | null;
+    try {
+      dir = await this.getDirectoryPath(["rikishi", rikishiId], { throwOnError: true });
+    } catch (e) {
+      this.handleQuotaError(e);
+      return;
+    }
+    if (!dir) return;
+
+    try {
+      const fileHandle = await dir.getFileHandle("full_record.json", {
+        create: true,
+      });
+      const writable = await fileHandle.createWritable();
+      await writable.write(JSON.stringify(rikishi));
+      await writable.close();
+    } catch (e) {
+      this.handleQuotaError(e);
+    }
+  }
+
+  public async retrieveFullRikishiRecord(rikishiId: string): Promise<Rikishi | null> {
+    const dir = await this.getDirectoryPath(["rikishi", rikishiId]);
+    if (!dir) return null;
+
+    try {
+      const fileHandle = await dir.getFileHandle("full_record.json", {
+        create: false,
+      });
+      const file = await fileHandle.getFile();
+      const contents = await file.text();
+      const parsed = destr<unknown>(contents, { strict: true });
+      return validateRikishiRecord(parsed);
+    } catch (e: unknown) {
+      if ((e instanceof Error || e instanceof DOMException) && e.name === "NotFoundError")
+        return null;
+      error(
+        `Error reading rikishi record ${rikishiId}: ${e instanceof Error ? e.message : String(e)}`,
+        "OPFS"
+      );
       return null;
     }
   }

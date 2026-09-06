@@ -178,7 +178,9 @@ export default function RecapPage() {
     for (const event of retirementEvents) {
       if (event.rikishiId) {
         const rikishi = getRikishiAnywhere(world, event.rikishiId);
-        if (rikishi && rikishi.heyaId === world.playerHeyaId) {
+        // Retirement ceremony runs before year-end summarization, so the entry
+        // is still a full Rikishi. Guard against summaries defensively.
+        if (rikishi && "stats" in rikishi && rikishi.heyaId === world.playerHeyaId) {
           playerRetirements.push({
             rikishi: projectRikishi(rikishi, world),
             reason: event.summary || (event.type as string) || "Retirement",

@@ -1,6 +1,7 @@
 import type { WorldState } from "../types/world";
 import { DEFAULT_START_YEAR } from "../../constants/engine/calendar";
 import type { Rikishi } from "../types/rikishi";
+import type { RetiredRikishiSummary } from "../types/history";
 import type { Oyakata } from "../types/oyakata";
 import { EntityCollection } from "../core/EntityCollection";
 import { getRikishi } from "../queries";
@@ -94,11 +95,14 @@ export const SimTuningService = {
     });
 
     // 3. Retirement Ages (Check Historical Collection)
-    const allRikishi: Rikishi[] = [
+    // historicalRikishi may contain full Rikishi (pre-summarization) or
+    // RetiredRikishiSummary objects (post-summarization). Both carry
+    // isRetired, retirementYear, and birthYear, so the metrics work on either.
+    const allRikishi: Array<Rikishi | RetiredRikishiSummary> = [
       ...Array.from(world.rikishi.values()),
       ...(world.historicalRikishi ? Array.from(world.historicalRikishi.values()) : []),
     ];
-    const retiredRikishi: Rikishi[] = [];
+    const retiredRikishi: Array<Rikishi | RetiredRikishiSummary> = [];
     for (const r of allRikishi) {
       if (r.isRetired) retiredRikishi.push(r);
     }

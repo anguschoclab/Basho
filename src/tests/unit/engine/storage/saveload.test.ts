@@ -6,15 +6,17 @@ import {
   type IStorageProvider,
 } from "@/engine/storageProvider";
 import { makeMockWorld } from "../utils";
-import { runArchivalPruning } from "@/engine/archival";
 import { SerializationService } from "@/engine/persistence/SerializationService";
 import { MigrationService } from "@/engine/persistence/MigrationService";
 import { CURRENT_SAVE_VERSION } from "@/engine/types/save";
 import { logger } from "@/engine/utils/Logger";
 
-// Mock dependencies
+// Note: runArchivalPruning was removed from the save path.
+// Retired-rikishi summarization now happens at year-end in SimulationRunner.
 vi.mock("@/engine/archival", () => ({
-  runArchivalPruning: vi.fn(() => ({ metadata: { source: "archival", timestamp: 0 } })),
+  runRetiredRikishiSummarization: vi.fn(() => ({
+    metadata: { source: "runRetiredRikishiSummarization", timestamp: 0 },
+  })),
 }));
 
 vi.mock("@/engine/persistence/SerializationService", () => ({
@@ -111,29 +113,6 @@ describe("saveload - saveGame error paths", () => {
     errorSpy.mockRestore();
   });
 
-  it("returns false and logs error when runArchivalPruning throws", () => {
-    const world = makeMockWorld();
-    const mockStorage = createMockStorage(false, false);
-    setStorageProvider(mockStorage);
-
-    (runArchivalPruning as ReturnType<typeof vi.fn>).mockImplementation(() => {
-      throw new Error("Archival pruning failed");
-    });
-
-    const errorSpy = vi.spyOn(logger, "error").mockImplementation(() => {});
-
-    const result = saveGame(world, "slot_1");
-
-    expect(result).toBe(false);
-    expect(errorSpy).toHaveBeenCalledWith(
-      expect.stringContaining("Failed to save game"),
-      "SaveLoad",
-      undefined
-    );
-
-    errorSpy.mockRestore();
-  });
-
   it("returns false and logs error when SerializationService.serializeWorld throws", () => {
     const world = makeMockWorld();
     const mockStorage = createMockStorage(false, false);
@@ -163,9 +142,6 @@ describe("saveload - saveGame error paths", () => {
     setStorageProvider(mockStorage);
 
     // Reset mocks to default behavior
-    (runArchivalPruning as ReturnType<typeof vi.fn>).mockReturnValue({
-      metadata: { source: "archival", timestamp: 0 },
-    });
     (SerializationService.serializeWorld as ReturnType<typeof vi.fn>).mockReturnValue({
       seed: world.seed,
       year: world.year,

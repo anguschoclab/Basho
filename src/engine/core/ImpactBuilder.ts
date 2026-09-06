@@ -8,6 +8,7 @@
 import type { Id } from "../types/common";
 import type { Heya } from "../types/heya";
 import type { Rikishi } from "../types/rikishi";
+import type { RetiredRikishiSummary } from "../types/history";
 import type { Oyakata } from "../types/oyakata";
 import type { WorldState } from "../types/world";
 import type {
@@ -147,6 +148,18 @@ export class ImpactBuilder {
    */
   updateOyakata(id: string, update: Partial<Oyakata>): ImpactBuilder {
     return this.setEntityUpdate("oyakataUpdates", id, update);
+  }
+
+  /**
+   * Replace an entry in world.historicalRikishi with a RetiredRikishiSummary (or full Rikishi).
+   * Uses full replacement (no deep merge) — summaries are atomic replacements.
+   * This is the corrected path for retired-rikishi summarization; the old
+   * archival.ts incorrectly used updateRikishi, which wrote to world.rikishi.
+   */
+  updateHistoricalRikishi(id: string, update: RetiredRikishiSummary | Rikishi): ImpactBuilder {
+    const map = this.ensureEntityMap<RetiredRikishiSummary | Rikishi>("historicalRikishiUpdates");
+    map.set(id, update);
+    return this;
   }
 
   /**
@@ -472,6 +485,14 @@ export class ImpactBuilder {
           case "staffUpdates":
             for (const [id, update] of map as Map<string, unknown>) {
               this.updateStaff(id, update as Partial<Staff>);
+            }
+            break;
+          case "historicalRikishiUpdates":
+            for (const [id, update] of map as Map<string, unknown>) {
+              this.updateHistoricalRikishi(
+                id,
+                update as RetiredRikishiSummary | Rikishi
+              );
             }
             break;
         }

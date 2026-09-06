@@ -32,6 +32,30 @@ import {
   NON_FINANCIAL_MERGER_MAX_ROSTER,
 } from "../../../constants/engine/economic";
 import { processRetireeOyakataConversion } from "../../lifecycle/retireeOyakataConversion";
+import { opfsArchiveService } from "../../storage/opfsArchive";
+import { electronArchiveService } from "../../storage/electronArchive";
+import { warn } from "../../utils/Logger";
+
+/**
+ * Archive a retiring rikishi's full record to cold storage.
+ * Fire-and-forget: failures are logged but do not block retirement.
+ */
+function archiveRikishiToColdStorage(rikishi: import("../../types/rikishi").Rikishi): void {
+  const archiveService =
+    typeof window !== "undefined" && window.__ELECTRON__ === true
+      ? electronArchiveService
+      : opfsArchiveService;
+
+  archiveService.archiveFullRikishiRecord(rikishi.id, rikishi).catch((err) => {
+    warn(
+      `Cold-storage archival failed for rikishi ${rikishi.id} (${rikishi.shikona}). ` +
+        `Full career detail will not be retrievable from cold storage. ` +
+        `Summary conversion at year-end will still proceed.`,
+      "governanceReview",
+      err
+    );
+  });
+}
 
 /**
  * Post-basho governance: institutional sanctions, council reactions,
@@ -419,6 +443,9 @@ export function runRetirements(world: WorldState): StateImpact {
     const r = getRikishi(world, id);
     const reason = r ? checkRetirement(r, world.year, world.seed) : "Retirement";
     builder.retireRikishi(id, world.year, reason ?? "Retirement");
+
+    // Archive full record to cold storage (fire-and-forget).
+    if (r) archiveRikishiToColdStorage(r);
   }
 
   // Add vacancy count to metadata

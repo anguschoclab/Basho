@@ -240,16 +240,10 @@ export interface Rikishi {
     profile: "prodigy" | "standard" | "late_bloomer" | "journeyman" | "early_peaker";
   };
 
-  // Archival pruning (Phase 5 Depth)
-  isPruned?: boolean;
-  pruningTier?: 1 | 2 | 3;
-  bashoHistory?: unknown[]; // Legacy basho results
-  pbpLogs?: unknown[]; // Play-by-play logs
-  trainingHistory?: unknown[]; // Training history
-  perceptionHistory?: unknown[]; // Perception history
-  baseStats?: RikishiStats; // Snapshotted base stats
-  currentStats?: RikishiStats; // Snapshotted current stats
-  skills?: unknown; // Skill tree
+  // Note: legacy archival-pruning fields (isPruned, pruningTier, bashoHistory,
+  // pbpLogs, trainingHistory, perceptionHistory, baseStats, currentStats, skills)
+  // were removed when the broken tiered-pruning system was replaced by
+  // RetiredRikishiSummary + cold-storage archival. See archival.ts.
 
   // Dynamic properties set by subsystems
 

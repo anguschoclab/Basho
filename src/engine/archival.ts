@@ -1,123 +1,120 @@
 /**
  * archival.ts
  * ============
- * The 'Great Pruning' Engine.
+ * Retired-Rikishi Summarization Engine.
  *
- * Implements a tiered archival strategy to prevent save file bloat over decades of simulation.
- * Legendaries (Sekiwake+) are preserved in full fidelity; others are summarized or minimalized.
+ * Replaces the old broken tiered-pruning system. At year-end, full Rikishi
+ * objects in world.historicalRikishi are converted to compact RetiredRikishiSummary
+ * entries. Full data is preserved in cold storage (OPFS/Electron) at retirement
+ * time, so the summary is a hot-state optimization, not data loss.
+ *
+ * Key fixes vs. the old system:
+ *  - Writes to world.historicalRikishi (via updateHistoricalRikishi), NOT world.rikishi.
+ *  - Uses peak rank from careerHistory, not retirement rank.
+ *  - Produces a compact RetiredRikishiSummary with per-year aggregates.
+ *  - Idempotent: entries already marked isSummary are skipped.
  */
 
 import type { WorldState } from "./types/world";
 import type { Rikishi } from "./types/rikishi";
-import type { Id } from "./types/common";
+import type { RetiredRikishiSummary } from "./types/history";
 import { createImpactBuilder } from "./core/ImpactBuilder";
 import type { StateImpact } from "./core/StateImpact";
+import { buildRetiredRikishiSummary } from "./lifecycle/buildRetiredRikishiSummary";
+import { opfsArchiveService } from "./storage/opfsArchive";
+import { electronArchiveService } from "./storage/electronArchive";
+import { warn } from "./utils/Logger";
 
-/** Defines the structure for archived rikishi summary. */
-export interface ArchivedRikishiSummary {
-  id: Id;
-  shikona: string;
-  heyaId: Id;
-  highestRank: string;
-  debutYear: number;
-  retiredYear: number;
-  totalWins: number;
-  totalLosses: number;
-  yushoCount: number;
-  isLegendary: boolean;
+/**
+ * Returns the active archive service (OPFS or Electron) based on environment.
+ */
+function getArchiveService() {
+  return typeof window !== "undefined" && window.__ELECTRON__ === true
+    ? electronArchiveService
+    : opfsArchiveService;
 }
 
 /**
- * Runs the archival process on a world state (usually before save).
- * Returns StateImpact describing archival updates instead of mutating state directly.
+ * Year-end summarization: convert full Rikishi in historicalRikishi to
+ * compact RetiredRikishiSummary entries. Returns a StateImpact that, when
+ * resolved, replaces the full objects with summaries in world.historicalRikishi.
+ *
+ * Pre-conditions:
+ *  - Full retired Rikishi remain in historicalRikishi until this runs (so the
+ *    retirement ceremony UI in RecapPage still has access to a full Rikishi).
+ *  - Cold-storage archival of the full record happens at retirement time
+ *    (see CareerService / governanceReview), not here.
+ *
+ * Safety net (Risk #3 mitigation):
+ *  - Before converting each full Rikishi to a summary, this function attempts
+ *    to archive the full record to cold storage again (fire-and-forget). This
+ *    catches cases where the retirement-time archival failed (OPFS unavailable,
+ *    transient error, etc.). If this also fails, the summary is still produced
+ *    — the full record is lost, but the simulation continues.
+ *
+ * Post-conditions:
+ *  - Each full Rikishi in historicalRikishi is replaced by a RetiredRikishiSummary.
+ *  - Entries already marked isSummary are left untouched (idempotent).
+ *  - world.rikishi is NOT touched (no ghost entries).
  */
-export function runArchivalPruning(world: WorldState): StateImpact {
-  const builder = createImpactBuilder("runArchivalPruning");
+export function runRetiredRikishiSummarization(world: WorldState): StateImpact {
+  const builder = createImpactBuilder("runRetiredRikishiSummarization");
 
   if (!world.historicalRikishi) return builder.build();
 
-  // Create a map of updated rikishi
-  const updatedHistoricalRikishi = new Map(world.historicalRikishi);
+  const archiveService = getArchiveService();
 
-  for (const [id, r] of world.historicalRikishi) {
-    // If already pruned (is a summary object), skip
-    if (r.isPruned) continue;
+  for (const [id, entry] of world.historicalRikishi) {
+    // Skip entries that are already summaries (idempotent)
+    if (isRetiredRikishiSummary(entry)) continue;
 
-    const tier = determineArchivalTier(r);
+    // Only convert full Rikishi objects
+    if (!isFullRikishi(entry)) continue;
 
-    if (tier === 1) {
-      // Tier 1: Legendary. Keep 100% data.
-      continue;
-    }
+    // Safety net: attempt to archive the full record before conversion.
+    // Fire-and-forget — failures are logged but do not block conversion.
+    archiveService.archiveFullRikishiRecord(id, entry).catch((err) => {
+      warn(
+        `Cold-storage archival failed during year-end summarization for rikishi ${id} ` +
+          `(${entry.shikona}). Full career detail will not be retrievable from cold storage. ` +
+          `Summary conversion will still proceed.`,
+        "runRetiredRikishiSummarization",
+        err
+      );
+    });
 
-    if (tier === 2) {
-      // Tier 2: Sekitori. Summarize career but keep milestones.
-      const prunedRikishi = { ...r };
-      pruneToTier2(prunedRikishi);
-      updatedHistoricalRikishi.set(id, prunedRikishi);
-    } else {
-      // Tier 3: Clerical. Minimal record.
-      const prunedRikishi = { ...r };
-      pruneToTier3(prunedRikishi);
-      updatedHistoricalRikishi.set(id, prunedRikishi);
-    }
-  }
-
-  // Update the historicalRikishi map
-  for (const [id, r] of updatedHistoricalRikishi) {
-    builder.updateRikishi(id, r);
+    const summary = buildRetiredRikishiSummary(entry);
+    builder.updateHistoricalRikishi(id, summary);
   }
 
   return builder.build();
 }
 
 /**
- * Tier 1: Sekiwake or higher, OR any Top Division Yusho.
+ * Type guard: returns true if the entry is a RetiredRikishiSummary.
  */
-function determineArchivalTier(r: Rikishi): 1 | 2 | 3 {
-  const sanyaku = ["yokozuna", "ozeki", "sekiwake"];
-  const currentRank = r.rank;
-  const yushoCount = r.careerRecord?.yusho || 0;
-
-  if (sanyaku.includes(currentRank.toLowerCase()) || yushoCount > 0) {
-    return 1;
-  }
-
-  const sekitori = ["komusubi", "maegashira", "juryo"];
-  if (sekitori.includes(currentRank.toLowerCase())) {
-    return 2;
-  }
-
-  return 3;
+export function isRetiredRikishiSummary(
+  entry: unknown
+): entry is RetiredRikishiSummary {
+  return (
+    !!entry &&
+    typeof entry === "object" &&
+    (entry as { isSummary?: unknown }).isSummary === true
+  );
 }
 
-function pruneToTier2(r: Rikishi): void {
-  r.isPruned = true;
-  r.pruningTier = 2;
-
-  // Purge session-heavy data
-  delete r.bashoHistory;
-  delete r.pbpLogs;
-  delete r.trainingHistory;
-  delete r.perceptionHistory;
-
-  // Keep: Shikona, Career Stats, Milestones, Mentor
+/**
+ * Type guard: returns true if the entry is a full Rikishi (not a summary).
+ * A full Rikishi has `stats` and does not have `isSummary: true`.
+ */
+function isFullRikishi(entry: unknown): entry is Rikishi {
+  return (
+    !!entry &&
+    typeof entry === "object" &&
+    "stats" in (entry as Record<string, unknown>) &&
+    (entry as { isSummary?: unknown }).isSummary !== true
+  );
 }
 
-function pruneToTier3(r: Rikishi): void {
-  r.isPruned = true;
-  r.pruningTier = 3;
-
-  // Purge almost everything
-  delete r.bashoHistory;
-  delete r.pbpLogs;
-  delete r.trainingHistory;
-  delete r.perceptionHistory;
-  delete r.milestones;
-  delete r.economics;
-  delete r.baseStats;
-  delete r.currentStats;
-  delete r.skills;
-
-  // Keep: Shikona, HeyaId, Debut/Retire Dates, Total Wins/Losses
-}
+// Re-export for consumers that imported the old symbol name.
+export { buildRetiredRikishiSummary } from "./lifecycle/buildRetiredRikishiSummary";

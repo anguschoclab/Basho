@@ -21,8 +21,19 @@ import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { StateImpact } from "../../core/StateImpact";
 import { TrainingPhilosophyService } from "./TrainingPhilosophyService";
 import { getHeya, getRikishi } from "../../queries";
+import type { RetiredRikishiSummary } from "../../types/history";
 
-function computeHighestRank(rikishi: Rikishi): Rank {
+function isSummary(entry: unknown): entry is RetiredRikishiSummary {
+  return (
+    !!entry &&
+    typeof entry === "object" &&
+    (entry as { isSummary?: unknown }).isSummary === true
+  );
+}
+
+function computeHighestRank(rikishi: Rikishi | RetiredRikishiSummary): Rank {
+  // Summaries already carry peakRank (computed from careerHistory at summarization).
+  if (isSummary(rikishi)) return rikishi.peakRank;
   let best: Rank = rikishi.rank;
   let bestTier = RANK_HIERARCHY[best]?.tier ?? 99;
   for (const snap of rikishi.careerHistory ?? []) {
@@ -158,10 +169,17 @@ export const DynastyService = {
     const heya = getHeya(world, heyaId);
     const currentOyakata = world.oyakata?.get(heya?.oyakataId ?? "");
     const successorIsActive = world.rikishi.has(successorRikishiId);
-    const successorRikishi =
+    const successorEntry =
       getRikishi(world, successorRikishiId) ?? world.historicalRikishi?.get(successorRikishiId);
 
-    if (!heya || !currentOyakata || !successorRikishi) return builder.build();
+    if (!heya || !currentOyakata || !successorEntry) return builder.build();
+
+    // Succession needs a full Rikishi for rank/avatarConfig. If the entry is
+    // a summary (post-year-end-summarization), load from cold storage or skip.
+    if (isSummary(successorEntry)) {
+      return builder.build();
+    }
+    const successorRikishi = successorEntry;
 
     // 1. Write the dynasty record for the retiring Oyakata
     const record: DynastyRecord = {

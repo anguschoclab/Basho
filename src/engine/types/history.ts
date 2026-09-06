@@ -80,6 +80,63 @@ export interface HistoricalOyakata {
 }
 
 /**
+ * Per-year aggregate for a retired rikishi's career.
+ */
+export interface CareerYearAggregate {
+  year: number;
+  division: Division;
+  rank: Rank;
+  wins: number;
+  losses: number;
+  yusho: number;
+  junYusho: number;
+  sansho: number;
+}
+
+/**
+ * Compact summary replacing full Rikishi in historicalRikishi after year-end pruning.
+ * Contains enough data for retired-rikishi listings, stable/history pages, career summaries,
+ * retirement-age metrics, Hall of Fame, and lineage/legacy references without the full
+ * Rikishi object's heavy fields (stats, h2h, combatProfile, etc.).
+ */
+export interface RetiredRikishiSummary {
+  id: Id;
+  shikona: string;
+  birthYear: number;
+  heyaId: Id;
+  origin?: string;
+
+  // Career totals
+  careerWins: number;
+  careerLosses: number;
+  yushoCount: number;
+  junYushoCount: number;
+  sanshoCount: number;
+  kinboshiCount: number;
+  totalEarnings: number;
+
+  // Peak
+  peakRank: Rank;
+  peakRankYear: number;
+  peakDivision: Division;
+
+  // Retirement
+  retirementYear: number;
+  retirementReason: string;
+  isRetired: true;
+
+  // Per-year aggregates
+  yearlyAggregates: CareerYearAggregate[];
+
+  // Lineage/legacy
+  lineage?: import("./rikishi").Rikishi["lineage"];
+  bloodlineTraitId?: string;
+
+  // Marker for type narrowing (distinguish from full Rikishi)
+  isSummary: true;
+}
+
+/**
  * Historical record of a closed/defunct Heya.
  */
 export interface HistoricalHeya {
