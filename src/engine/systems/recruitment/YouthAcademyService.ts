@@ -72,7 +72,7 @@ export interface YouthAcademyState {
  * Get the youth academy state for a heya, or null if not built.
  */
 export function getYouthAcademy(heya: Heya): YouthAcademyState | null {
-  return (heya as unknown as { youthAcademy?: YouthAcademyState }).youthAcademy ?? null;
+  return heya.youthAcademy ?? null;
 }
 
 /**
@@ -218,7 +218,7 @@ export function generateYearlyIntake(
   }
 
   builder.updateHeya(heyaId, {
-    ...(heya as unknown as Record<string, unknown>),
+    ...heya,
     youthAcademy: {
       ...academy,
       prospects: [...academy.prospects, ...newProspects],
@@ -285,7 +285,7 @@ export function applyWeeklyDevelopment(
   });
 
   builder.updateHeya(heyaId, {
-    ...(heya as unknown as Record<string, unknown>),
+    ...heya,
     youthAcademy: {
       ...academy,
       prospects: updatedProspects,
@@ -318,7 +318,7 @@ export function promoteIntake(
   const remainingProspects = academy.prospects.filter((p) => p.id !== prospectId);
 
   builder.updateHeya(heyaId, {
-    ...(heya as unknown as Record<string, unknown>),
+    ...heya,
     youthAcademy: {
       ...academy,
       prospects: remainingProspects,
