@@ -6,7 +6,7 @@
  */
 import { describe, it, expect } from "vitest";
 import { generateCareerSnapshot } from "@/engine/history";
-import { makeMockWorld, mockRikishi } from "../utils";
+import { makeMockWorld, mockRikishi } from "./utils";
 import type { RikishiEconomics } from "@/engine/types/economy";
 
 describe("generateCareerSnapshot — totalEarningsAtBasho", () => {

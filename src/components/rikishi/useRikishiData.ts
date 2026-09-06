@@ -64,7 +64,16 @@ export function useEarningsProgressionData(history: CareerSnapshot[] | undefined
     const chronological = history.slice().reverse();
     let cumulative = 0;
     return chronological.map((snap) => {
-      const earnings = snap.totalEarningsAtBasho ?? 0;
+      const earnings = snap.totalEarningsAtBasho;
+      // Snapshots without totalEarningsAtBasho are pre-feature; treat as no data
+      // (keep previous cumulative, report 0 basho earnings) rather than resetting.
+      if (earnings === undefined) {
+        return {
+          basho: `${snap.bashoName} ${snap.year}`,
+          cumulativeEarnings: cumulative,
+          bashoEarnings: 0,
+        };
+      }
       const bashoEarnings = earnings - cumulative;
       cumulative = earnings;
       return {

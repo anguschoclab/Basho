@@ -340,7 +340,7 @@ describe("RikishiCareerTab earnings tracker", () => {
         economics={sampleEconomics}
       />
     );
-    expect(screen.getByText(/Career Earnings/i)).toBeTruthy();
+    expect(screen.getAllByText(/Career Earnings/i).length).toBeGreaterThan(0);
   });
 
   it("renders cumulative earnings summary values from economics prop", () => {
@@ -402,6 +402,6 @@ describe("RikishiCareerTab earnings tracker", () => {
         economics={sampleEconomics}
       />
     );
-    expect(screen.queryByText(/Career Earnings/i)).toBeNull();
+    expect(screen.queryAllByText(/Career Earnings/i).length).toBe(0);
   });
 });

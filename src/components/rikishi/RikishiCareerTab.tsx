@@ -19,6 +19,7 @@ import {
   ArrowDownCircle,
   Zap,
   Crown,
+  Wallet,
 } from "lucide-react";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
 import type { CareerSnapshot, Milestone } from "@/engine/types/history";
@@ -32,6 +33,7 @@ import {
   ComposedChart,
   Line,
   Bar,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -104,6 +106,20 @@ interface RikishiCareerTabProps {
   notableBouts?: NotableBoutEntry[];
   narrativeHighlights?: NarrativeHighlight[];
   promotionHistory?: PromotionHistoryEntry[];
+  earningsProgressionData?: Array<{
+    basho: string;
+    cumulativeEarnings: number;
+    bashoEarnings: number;
+  }>;
+  economics?: {
+    totalEarnings: number;
+    cash: number;
+    retirementFund: number;
+    careerKenshoWon: number;
+    kinboshiCount: number;
+    popularity: number;
+    currentBashoEarnings: number;
+  };
 }
 
 const HIGHLIGHT_ICONS: Partial<Record<NarrativeHighlight["type"], typeof Star>> = {
@@ -134,6 +150,8 @@ export function RikishiCareerTab({
   notableBouts,
   narrativeHighlights,
   promotionHistory,
+  earningsProgressionData,
+  economics,
 }: RikishiCareerTabProps) {
   const [expandedBoutId, setExpandedBoutId] = useState<string | null>(null);
   return (
@@ -246,6 +264,128 @@ export function RikishiCareerTab({
         </Card>
       )}
 
+      {/* Career Earnings */}
+      {earningsProgressionData && earningsProgressionData.length >= 2 && economics && (
+        <Card className="paper">
+          <CardHeader>
+            <CardTitle className="text-lg font-display font-black flex items-center gap-2 uppercase tracking-tight">
+              <Wallet className="h-5 w-5 text-primary" />
+              Career Earnings
+            </CardTitle>
+            <CardDescription className="text-xs uppercase font-black tracking-widest opacity-50">
+              Cumulative career earnings trajectory
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <div className="space-y-1">
+                <div className="text-[10px] uppercase font-black tracking-widest opacity-50">
+                  Total Earnings
+                </div>
+                <div className="text-lg font-display font-black tabular-nums">
+                  ¥{economics.totalEarnings.toLocaleString("ja-JP")}
+                </div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-[10px] uppercase font-black tracking-widest opacity-50">
+                  Cash
+                </div>
+                <div className="text-lg font-display font-black tabular-nums">
+                  ¥{economics.cash.toLocaleString("ja-JP")}
+                </div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-[10px] uppercase font-black tracking-widest opacity-50">
+                  Retirement Fund
+                </div>
+                <div className="text-lg font-display font-black tabular-nums">
+                  ¥{economics.retirementFund.toLocaleString("ja-JP")}
+                </div>
+              </div>
+              <div className="space-y-1">
+                <div className="text-[10px] uppercase font-black tracking-widest opacity-50">
+                  Kensho Won
+                </div>
+                <div className="text-lg font-display font-black tabular-nums">
+                  {economics.careerKenshoWon}
+                </div>
+              </div>
+            </div>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <ComposedChart
+                  data={earningsProgressionData}
+                  margin={{
+                    top: 10,
+                    right: 30,
+                    left: 0,
+                    bottom: earningsProgressionData.length > 6 ? 40 : 10,
+                  }}
+                >
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    stroke="hsl(var(--border))"
+                  />
+                  <XAxis
+                    dataKey="basho"
+                    tick={{
+                      fontSize: 9,
+                      fontFamily: "inherit",
+                      fill: "hsl(var(--muted-foreground))",
+                    }}
+                    tickLine={false}
+                    axisLine={false}
+                    angle={earningsProgressionData.length > 6 ? -35 : 0}
+                    textAnchor={earningsProgressionData.length > 6 ? "end" : "middle"}
+                    interval={0}
+                  />
+                  <YAxis
+                    tickFormatter={(v: number) => `¥${(v / 10000).toFixed(0)}万`}
+                    tick={{
+                      fontSize: 9,
+                      fontFamily: "inherit",
+                      fill: "hsl(var(--muted-foreground))",
+                    }}
+                    tickLine={false}
+                    axisLine={false}
+                    width={48}
+                  />
+                  <Tooltip
+                    formatter={(value, name) =>
+                      [`¥${Number(value).toLocaleString("ja-JP")}`, String(name)]
+                    }
+                  />
+                  <Legend
+                    verticalAlign="top"
+                    height={28}
+                    iconType="circle"
+                    iconSize={8}
+                    wrapperStyle={{ fontSize: 10, fontFamily: "inherit" }}
+                  />
+                  <Bar
+                    dataKey="bashoEarnings"
+                    name="Basho Earnings"
+                    fill="hsl(var(--success) / 0.45)"
+                    radius={[3, 3, 0, 0]}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="cumulativeEarnings"
+                    name="Cumulative"
+                    stroke="hsl(var(--primary))"
+                    strokeWidth={2.5}
+                    fill="hsl(var(--primary) / 0.15)"
+                    dot={{ fill: "hsl(var(--primary))", r: 4, strokeWidth: 0 }}
+                    activeDot={{ r: 6, strokeWidth: 2, stroke: "hsl(var(--background))" }}
+                  />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <Card className="paper border-0 shadow-none bg-transparent overflow-hidden">
         <CardHeader className="px-0 pb-6 border-b border-dashed border-border mb-6">
           <CardTitle className="text-2xl font-display font-black flex items-center gap-3 uppercase tracking-tight">
@@ -265,6 +405,7 @@ export function RikishiCareerTab({
                   <th className="pb-4 px-6 text-center">Association Rank</th>
                   <th className="pb-4 px-6 text-center">Final Record</th>
                   <th className="pb-4 px-6 text-center">Accolades</th>
+                  <th className="pb-4 px-6 text-right">Cumulative ¥</th>
                   <th className="pb-4 pl-6 text-right">Physicality</th>
                 </tr>
               </thead>
@@ -336,6 +477,13 @@ export function RikishiCareerTab({
                             )}
                         </div>
                       </td>
+                      <td className="py-4 px-6 text-right tabular-nums">
+                        <div className="text-xs font-black">
+                          {snap.totalEarningsAtBasho !== undefined
+                            ? `¥${snap.totalEarningsAtBasho.toLocaleString("ja-JP")}`
+                            : "—"}
+                        </div>
+                      </td>
                       <td className="py-4 pl-6 text-right tabular-nums">
                         <div className="text-xs font-black opacity-60">
                           Weight: <span className="text-foreground">{snap.weight}kg</span>
@@ -353,7 +501,7 @@ export function RikishiCareerTab({
                   ))}
                 {(!history || history.length === 0) && (
                   <tr>
-                    <td colSpan={5} className="py-20 text-center space-y-4 opacity-50">
+                    <td colSpan={6} className="py-20 text-center space-y-4 opacity-50">
                       <div className="text-5xl text-muted-foreground animate-pulse font-display">
                         ∅
                       </div>

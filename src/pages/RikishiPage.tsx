@@ -28,7 +28,7 @@ import { RikishiProfileTab } from "@/components/rikishi/RikishiProfileTab";
 import { RikishiCombatTab } from "@/components/rikishi/RikishiCombatTab";
 import { RikishiCareerTab } from "@/components/rikishi/RikishiCareerTab";
 import { RikishiKeshoMawashi } from "@/components/rikishi/RikishiKeshoMawashi";
-import { useCareerProgressionData } from "@/components/rikishi/useRikishiData";
+import { useCareerProgressionData, useEarningsProgressionData } from "@/components/rikishi/useRikishiData";
 import { RikishiGlobalCup } from "@/components/rikishi/RikishiGlobalCup";
 import { IntaiCeremony } from "@/components/game/IntaiCeremony";
 import { Trash2 } from "lucide-react";
@@ -59,6 +59,7 @@ export default function RikishiPage() {
 
   // Prepare data using custom hooks
   const careerProgressionData = useCareerProgressionData(history as CareerSnapshot[] | undefined);
+  const earningsProgressionData = useEarningsProgressionData(history as CareerSnapshot[] | undefined);
 
   const hasWorld = useRequireWorld();
   if (!hasWorld || !world) return null;
@@ -200,6 +201,16 @@ export default function RikishiPage() {
                 notableBouts={undefined}
                 narrativeHighlights={undefined}
                 promotionHistory={undefined}
+                earningsProgressionData={earningsProgressionData}
+                economics={rikishi ? {
+                  totalEarnings: rikishi.totalEarnings,
+                  cash: rikishi.cash,
+                  retirementFund: rikishi.retirementFund,
+                  careerKenshoWon: rikishi.careerKenshoWon,
+                  kinboshiCount: rikishi.kinboshiCount,
+                  popularity: rikishi.popularity,
+                  currentBashoEarnings: rikishi.currentBashoEarnings,
+                } : undefined}
               />
               <RikishiGlobalCup rikishiId={rikishi.id} world={world} />
             </TabsContent>
