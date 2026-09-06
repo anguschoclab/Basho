@@ -4,7 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { RECORDS_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/useGame";
-import { selectAlmanacSnapshots, selectKimariteStats } from "@/presenters/selectors";
+import { selectKimariteStats } from "@/presenters/selectors";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -77,15 +77,18 @@ export default function AlmanacPage() {
 
   const [activeTab, setActiveTab] = useState("past-bashos");
 
-  const almanacSnapshots = useMemo(
-    () => (world ? (world.almanacSnapshots ?? selectAlmanacSnapshots(world)) : []),
-    [world]
-  );
   const kimariteStats = useMemo(
     () => (world ? (world.globalKimariteStats ? selectKimariteStats(world) : []) : []),
     [world]
   );
-  const snapshotCount = almanacSnapshots.length;
+  // Use getHistory(world).length for the count — it reflects the total number
+  // of completed bashos (capped at 500), which is what the "Past Bashos" tab
+  // actually displays. world.almanacSnapshots is bounded to 6 (hot-state
+  // window); older snapshots are in cold storage (OPFS) but not counted here.
+  const history = world ? getHistory(world) : [];
+  const snapshotCount = history.length;
+  // Hot-state almanac window (most recent 6). Older snapshots live in OPFS.
+  const hotSnapshotWindow = world?.almanacSnapshots?.length ?? 0;
   const topKimarite = kimariteStats.slice(0, 5);
 
   // Compute giant slayers data before any early returns
@@ -150,7 +153,7 @@ export default function AlmanacPage() {
           <div>
             <p className="text-muted-foreground">The authoritative history of the Sumo world.</p>
             <p className="text-xs text-muted-foreground mt-1">
-              {snapshotCount} almanac snapshots archived · {kimariteStats.length} kimarite recorded
+              {snapshotCount} bashos recorded · {hotSnapshotWindow} in hot window · {kimariteStats.length} kimarite recorded
             </p>
             {topKimarite.length > 0 && (
               <p className="text-xs text-muted-foreground mt-1">

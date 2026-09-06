@@ -22,7 +22,7 @@ vi.mock("@/engine/naturalization", () => ({
   checkNaturalizations: vi.fn(() => ({ metadata: { source: "naturalization" } })),
 }));
 vi.mock("@/engine/archival", () => ({
-  runArchivalPruning: vi.fn(() => ({ metadata: { source: "archival" } })),
+  runRetiredRikishiSummarization: vi.fn(() => ({ metadata: { source: "runRetiredRikishiSummarization" } })),
 }));
 vi.mock("@/engine/lifecycle/RegistryService", () => ({
   runCareerJournalUpdates: vi.fn(() => ({ metadata: { source: "careerJournal" } })),

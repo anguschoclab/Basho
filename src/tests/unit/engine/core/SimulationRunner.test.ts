@@ -150,13 +150,13 @@ describe("runPostBashoResolution", () => {
     expect(resolveCalls.length).toBeGreaterThan(0);
   });
 
-  it("skips retired-rikishi summarization when month is not November", () => {
+  it("does NOT call retired-rikishi summarization (moved to phase06_yearly_boundary)", () => {
+    // Summarization was moved from runPostBashoResolution to the tick pipeline
+    // (phase06_yearly_boundary) so it fires in BOTH player flow AND AutoSim.
+    // runPostBashoResolution should NOT call it in any month.
     runPostBashoResolution(makeWorld(1)); // January
     expect((runRetiredRikishiSummarization as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(0);
-  });
-
-  it("runs retired-rikishi summarization in November (month 11)", () => {
-    runPostBashoResolution(makeWorld(11));
-    expect((runRetiredRikishiSummarization as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(1);
+    runPostBashoResolution(makeWorld(11)); // November
+    expect((runRetiredRikishiSummarization as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(0);
   });
 });

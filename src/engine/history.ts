@@ -100,8 +100,14 @@ export function recordMilestones(world: WorldState, rikishi: Rikishi) {
 }
 
 /**
- * Updates career history for all active Rikishi.
- * Returns StateImpact describing history updates instead of mutating state.
+ * Records milestones for all active Rikishi.
+ * Returns StateImpact describing milestone updates instead of mutating state.
+ *
+ * NOTE: careerHistory appending is NOT done here. That is the sole
+ * responsibility of publishBanzukeUpdate (which also truncates to 6).
+ * The old version of this function appended a duplicate careerSnapshot,
+ * causing 2 entries per basho → only 3 bashos of unique history retained
+ * after the slice(-6) truncation in publishBanzukeUpdate.
  */
 export function runHistoryUpdates(world: WorldState): StateImpact {
   const builder = createImpactBuilder("historyUpdates");
@@ -109,11 +115,6 @@ export function runHistoryUpdates(world: WorldState): StateImpact {
   for (const rikishiId of world.activeRikishiIds) {
     const rikishi = getRikishi(world, rikishiId);
     if (!rikishi) continue;
-    const careerHistory = rikishi.careerHistory || [];
-
-    // Generate new snapshot
-    const newSnapshot = generateCareerSnapshot(world, rikishi);
-    const updatedCareerHistory = [...careerHistory, newSnapshot];
 
     // Record milestones
     const milestones = rikishi.milestones || [];
@@ -148,9 +149,9 @@ export function runHistoryUpdates(world: WorldState): StateImpact {
       });
     }
 
-    // Queue rikishi update
+    // Queue rikishi update — milestones only, NOT careerHistory.
+    // careerHistory is appended by publishBanzukeUpdate (with slice(-6)).
     builder.updateRikishi(rikishi.id, {
-      careerHistory: updatedCareerHistory,
       milestones: updatedMilestones,
     });
   }

@@ -42,6 +42,19 @@ describe("AlmanacPage — UI surface", () => {
     const page = readFile("pages/AlmanacPage.tsx");
     expect(page).toContain("world.records");
   });
+
+  it("uses getHistory(world).length for snapshot count, not bounded almanacSnapshots", () => {
+    // almanacSnapshots is bounded to 6 in hot state; older snapshots are in
+    // cold storage (OPFS). The count displayed should reflect the total
+    // number of completed bashos (getHistory(world).length, capped at 500),
+    // which is what the "Past Bashos" tab actually displays.
+    const page = readFile("pages/AlmanacPage.tsx");
+    expect(page).toContain("getHistory(world)");
+    expect(page).not.toContain("selectAlmanacSnapshots");
+    // world.almanacSnapshots is still read for the hot-window indicator, but
+    // must NOT be the primary count source.
+    expect(page).toContain("almanacSnapshots");
+  });
 });
 
 describe("HistoryPage — UI surface", () => {

@@ -31,6 +31,7 @@ import { TalentPoolService } from "../../systems/generation/TalentPoolService";
 import { performKanrekiCeremony, isEligibleForKanreki } from "../../governance/kanrekiCeremony";
 import { getRikishi } from "../../queries";
 import { boundHistoryArrays } from "./boundHistoryArrays";
+import { runRetiredRikishiSummarization } from "../../archival";
 
 export function phase06_yearly_boundary(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase06_yearly_boundary");
@@ -217,6 +218,17 @@ export function phase06_yearly_boundary(world: WorldState): StateImpact {
   if (bounded.awardLog && bounded.awardLog !== world.awardLog) {
     builder.updateWorldField("awardLog", bounded.awardLog);
   }
+  if (bounded.almanacSnapshots && bounded.almanacSnapshots !== world.almanacSnapshots) {
+    builder.updateWorldField("almanacSnapshots", bounded.almanacSnapshots);
+  }
+
+  // Retired-rikishi summarization: convert full Rikishi in historicalRikishi to
+  // compact RetiredRikishiSummary entries at the year boundary. This fires in
+  // BOTH the player flow AND AutoSim (since both advance days through the tick
+  // pipeline). Full career detail is preserved in cold storage (archived at
+  // retirement time via CareerService / governanceReview). Idempotent — entries
+  // already marked isSummary are skipped.
+  builder.merge(runRetiredRikishiSummarization(world));
 
   return builder.build();
 }

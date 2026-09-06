@@ -22,7 +22,6 @@ import {
   adjustKoenkaiBandToPrestige,
 } from "../systems/economy/SponsorshipService";
 import { checkNaturalizations } from "../naturalization";
-import { runRetiredRikishiSummarization } from "../archival";
 import { runCareerJournalUpdates, openRecruitmentWindow } from "../lifecycle/RegistryService";
 import { runHistoryUpdates } from "../history";
 import { runElections } from "../systems/governance/ScandalService";
@@ -78,14 +77,10 @@ export function runPostBashoResolution(world: WorldState): WorldState {
   const recordsImpact = onBashoEnded(world);
   impacts.push(recordsImpact);
 
-  // Only summarize at year-end (November Basho).
-  // Full retired Rikishi are converted to compact RetiredRikishiSummary entries
-  // in world.historicalRikishi. Full career detail is preserved in cold storage
-  // (archived at retirement time via CareerService / governanceReview).
-  if (world.calendar?.month === 11) {
-    const summarizationImpact = runRetiredRikishiSummarization(world);
-    impacts.push(summarizationImpact);
-  }
+  // Note: retired-rikishi summarization now happens at the year boundary in
+  // phase06_yearly_boundary (tick pipeline), so it fires in BOTH the player
+  // flow AND AutoSim. The old November-specific call here only covered the
+  // player flow, leaving AutoSim's historicalRikishi unbounded.
 
   // Resolve all collected impacts atomically
   const resolvedWorld = resolveImpacts(world, impacts);

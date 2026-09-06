@@ -1,13 +1,14 @@
 /**
  * Simulation invariants verification (Plan Step 3.4)
  *
- * Runs a short AutoSim and verifies the history-storage invariants:
+ * Runs a multi-year AutoSim and verifies the history-storage invariants:
  *  - historicalRikishi entries are summaries after year-end (have isSummary)
  *  - almanacSnapshots is bounded to <= 6 after the first year-end
  *  - world.rikishi has no ghost entries from summarization
  *  - full records are archived to cold storage (archiveFullRikishiRecord called)
  *
- * Uses a 1-year sim for speed in CI; the full 25-year run is done manually.
+ * Uses a 3-year sim to ensure year boundaries are crossed and summarization
+ * actually fires in the AutoSim path (the primary mode for long sims).
  */
 
 import { describe, it, expect, vi } from "vitest";
@@ -47,7 +48,7 @@ vi.mock("@/engine/storage/electronArchive", () => ({
 }));
 
 const SIM_CONFIG = {
-  duration: { type: "years" as const, count: 1 },
+  duration: { type: "years" as const, count: 3 },
   stopConditions: [] as never[],
   verbosity: "minimal" as const,
   delegationPolicy: "balanced" as const,
@@ -64,31 +65,29 @@ describe("simulation history-storage invariants (Plan Step 3.4)", () => {
       const finalWorld = result.finalWorld;
       expect(finalWorld.historicalRikishi).toBeDefined();
 
-      // If there are retired rikishi, they should be summaries after year-end
-      if (finalWorld.historicalRikishi.size > 0) {
-        let summaryCount = 0;
-        let fullCount = 0;
-        for (const entry of finalWorld.historicalRikishi.values()) {
-          if ((entry as RetiredRikishiSummary).isSummary === true) {
-            summaryCount++;
-            expect((entry as RetiredRikishiSummary).yearlyAggregates).toBeDefined();
-            expect("stats" in entry).toBe(false);
-          } else {
-            fullCount++;
-          }
-        }
-        // At least some should be summaries (retired before the last year-end)
-        // If all are full, that means they all retired after the last year-end
-        // (edge case with 1-year sim) — so just verify no ghost entries
-        if (summaryCount === 0 && fullCount > 0) {
-          // All retired after year-end — acceptable for short sim
-          for (const entry of finalWorld.historicalRikishi.values()) {
-            expect((entry as RetiredRikishiSummary).isSummary).not.toBe(true);
-          }
+      // In a 3-year sim with ~440 rikishi, at least some should retire and
+      // be summarized at the year boundary. If all are full, the summarization
+      // is not firing in AutoSim (the bug that was fixed by moving it to
+      // phase06_yearly_boundary).
+      const size = finalWorld.historicalRikishi.size;
+      let summaryCount = 0;
+      let fullCount = 0;
+      for (const entry of finalWorld.historicalRikishi.values()) {
+        if ((entry as RetiredRikishiSummary).isSummary === true) {
+          summaryCount++;
+          expect((entry as RetiredRikishiSummary).yearlyAggregates).toBeDefined();
+          expect("stats" in entry).toBe(false);
+        } else {
+          fullCount++;
         }
       }
+
+      // There must be retired rikishi in a 3-year sim, and at least some
+      // must be summaries (retired before the last year boundary).
+      expect(size).toBeGreaterThan(0);
+      expect(summaryCount).toBeGreaterThan(0);
     },
-    120000
+    300000
   );
 
   it("almanacSnapshots is bounded to <= 6 after year-end", async () => {
@@ -99,7 +98,7 @@ describe("simulation history-storage invariants (Plan Step 3.4)", () => {
     if (finalWorld.almanacSnapshots) {
       expect(finalWorld.almanacSnapshots.length).toBeLessThanOrEqual(6);
     }
-  });
+  }, 300000);
 
   it("world.rikishi has no ghost entries from summarization", async () => {
     const world = generateInitialWorld("sim-invariant-v3");
@@ -114,7 +113,7 @@ describe("simulation history-storage invariants (Plan Step 3.4)", () => {
         expect.fail(`Rikishi ${id} found in both world.rikishi and world.historicalRikishi`);
       }
     }
-  });
+  }, 300000);
 
   it("full records are archived to cold storage at retirement (if any retire)", async () => {
     // Note: This test verifies that the archive service is wired correctly.
@@ -127,5 +126,5 @@ describe("simulation history-storage invariants (Plan Step 3.4)", () => {
 
     // If there are historical rikishi, the sim ran without archival crashes
     expect(result.finalWorld).toBeDefined();
-  });
+  }, 300000);
 });
