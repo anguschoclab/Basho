@@ -69,6 +69,7 @@ const DigestItemRow = React.memo(
       <div
         className={`flex items-start gap-2 text-xs py-0.5 ${hasEntity ? "cursor-pointer hover:bg-muted/30 rounded transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-1" : ""}`}
         role={hasEntity ? "button" : undefined}
+        aria-label={hasEntity ? title : undefined}
         tabIndex={hasEntity ? 0 : undefined}
         onClick={entityPath ? () => onNavigate(entityPath) : undefined}
         onKeyDown={
