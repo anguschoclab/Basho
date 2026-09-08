@@ -78,9 +78,7 @@ export default function StablePage() {
 
   return (
     <AppLayout pageTitle="Stable Operations" subNavTabs={STABLE_TABS} activeSubTab="stable">
-
-        <title>{heya.name} — Stable Profile</title>
-
+      <title>{heya.name} — Stable Profile</title>
 
       <div className="space-y-8">
         <PageHeader
@@ -267,12 +265,8 @@ export default function StablePage() {
               <YouthAcademyPanel
                 projection={projectYouthAcademy(world, heya.id)}
                 cash={heya.funds}
-                onBuild={() =>
-                  sendCommand({ type: "BUILD_YOUTH_ACADEMY", heyaId: heya.id })
-                }
-                onUpgrade={() =>
-                  sendCommand({ type: "UPGRADE_YOUTH_ACADEMY", heyaId: heya.id })
-                }
+                onBuild={() => sendCommand({ type: "BUILD_YOUTH_ACADEMY", heyaId: heya.id })}
+                onUpgrade={() => sendCommand({ type: "UPGRADE_YOUTH_ACADEMY", heyaId: heya.id })}
                 onInvest={(amount) =>
                   sendCommand({ type: "INVEST_ACADEMY", heyaId: heya.id, amount })
                 }

@@ -18,7 +18,11 @@ import { SortMenu, type SortOption } from "@/components/ui/SortMenu";
 import { compareBy, type SortDirection } from "@/lib/sortUtils";
 import { SCANDAL_LABELS, formatFinePenalty, getStatusLabel } from "@/presenters/uiDigest";
 import { getPlayerHeya } from "@/presenters/engineAccess";
-import { projectGovernanceDerived, projectGomenfuda, POLITICAL_FAVORS } from "@/presenters/projections/governanceProjections";
+import {
+  projectGovernanceDerived,
+  projectGomenfuda,
+  POLITICAL_FAVORS,
+} from "@/presenters/projections/governanceProjections";
 import { getYokozunaCandidates } from "@/presenters/projections/promotionProjections";
 import { selectClosedHeyas, selectYokozunaVacancyStreak } from "@/presenters/selectors";
 import { getOyakata, getGlobalCupChampion } from "@/presenters/worldAccess";
@@ -400,7 +404,9 @@ export default function GovernancePage() {
               return (
                 <Card data-testid="ydc-kihaku-card">
                   <CardHeader>
-                    <CardTitle className="text-sm">Yokozuna Deliberation — Fighting Spirit</CardTitle>
+                    <CardTitle className="text-sm">
+                      Yokozuna Deliberation — Fighting Spirit
+                    </CardTitle>
                     <CardDescription>
                       Kihaku scores for borderline Yokozuna candidates
                     </CardDescription>
@@ -634,55 +640,61 @@ export default function GovernancePage() {
                 <SectionHeader eyebrow="── FAVORS ──" title="JSA Political Favors" />
                 <div className="grid gap-3">
                   {POLITICAL_FAVORS.map((favor) => {
-                    const icon = favor.id === "matchmaking_avoid" ? ShieldAlert
-                      : favor.id === "advance_payout" ? Coins
-                      : Scale;
+                    const icon =
+                      favor.id === "matchmaking_avoid"
+                        ? ShieldAlert
+                        : favor.id === "advance_payout"
+                          ? Coins
+                          : Scale;
                     return (
-                    <Card
-                      key={favor.id}
-                      className="relative overflow-hidden group border-border/40 bg-card/30 backdrop-blur-xs"
-                    >
-                      <CardContent className="p-3.5 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="p-2 bg-muted/40 rounded shadow-inner">
-                            {(() => { const Icon = icon; return <Icon className="h-4.5 w-4.5 text-primary/80" />; })()}
-                          </div>
-                          <div>
-                            <div className="text-[13px] font-bold text-foreground/90">
-                              {favor.label}
+                      <Card
+                        key={favor.id}
+                        className="relative overflow-hidden group border-border/40 bg-card/30 backdrop-blur-xs"
+                      >
+                        <CardContent className="p-3.5 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="p-2 bg-muted/40 rounded shadow-inner">
+                              {(() => {
+                                const Icon = icon;
+                                return <Icon className="h-4.5 w-4.5 text-primary/80" />;
+                              })()}
                             </div>
-                            <div className="text-[10px] text-muted-foreground/80 leading-tight">
-                              {favor.description}
+                            <div>
+                              <div className="text-[13px] font-bold text-foreground/90">
+                                {favor.label}
+                              </div>
+                              <div className="text-[10px] text-muted-foreground/80 leading-tight">
+                                {favor.description}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                        <div className="flex items-center gap-4">
-                          <div className="text-[11px] font-mono font-bold text-primary">
-                            {favor.cost} CAP
+                          <div className="flex items-center gap-4">
+                            <div className="text-[11px] font-mono font-bold text-primary">
+                              {favor.cost} CAP
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-7 px-3 text-[9px] uppercase font-black tracking-tighter border-primary/20 hover:border-primary/50 transition-all"
+                              disabled={(heya.politicalCapital ?? 0) < favor.cost}
+                              tooltip={
+                                (heya.politicalCapital ?? 0) < favor.cost
+                                  ? `Not enough Political Capital (need ${favor.cost})`
+                                  : undefined
+                              }
+                              onClick={() => {
+                                sendCommand({
+                                  type: "REQUEST_POLITICAL_FAVOR",
+                                  heyaId: heya.id,
+                                  favorId: favor.id,
+                                });
+                              }}
+                            >
+                              Request
+                            </Button>
                           </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="h-7 px-3 text-[9px] uppercase font-black tracking-tighter border-primary/20 hover:border-primary/50 transition-all"
-                            disabled={(heya.politicalCapital ?? 0) < favor.cost}
-                            tooltip={
-                              (heya.politicalCapital ?? 0) < favor.cost
-                                ? `Not enough Political Capital (need ${favor.cost})`
-                                : undefined
-                            }
-                            onClick={() => {
-                              sendCommand({
-                                type: "REQUEST_POLITICAL_FAVOR",
-                                heyaId: heya.id,
-                                favorId: favor.id,
-                              });
-                            }}
-                          >
-                            Request
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
+                        </CardContent>
+                      </Card>
                     );
                   })}
                 </div>
