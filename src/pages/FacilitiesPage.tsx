@@ -1,4 +1,6 @@
 import { useMemo, useCallback } from "react";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Loader2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
 import { OFFICE_TABS } from "@/constants/ui/navigation";
@@ -38,9 +40,13 @@ export default function FacilitiesPage() {
   if (!heya || !world) {
     return (
       <AppLayout subNavTabs={OFFICE_TABS} activeSubTab="facilities" pageTitle="Infrastructure">
-        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-muted-foreground">
-          <div className="text-4xl animate-pulse font-display">⋯</div>
-          <p className="text-sm font-display italic uppercase tracking-widest">Loading…</p>
+        <div className="flex flex-col items-center justify-center min-h-[60vh]">
+          <EmptyState
+            icon={Loader2}
+            title="Loading Infrastructure"
+            description="Fetching facility status..."
+            className="animate-pulse"
+          />
         </div>
       </AppLayout>
     );

@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Loader2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
 import { STABLE_TABS } from "@/constants/ui/navigation";
@@ -47,7 +49,14 @@ export default function OyakataPage() {
   if (!world || !selectedOyakata) {
     return (
       <AppLayout subNavTabs={STABLE_TABS} activeSubTab="oyakata">
-        <div className="flex items-center justify-center h-full">Loading Oyakata...</div>
+        <div className="flex flex-col items-center justify-center min-h-[60vh]">
+          <EmptyState
+            icon={Loader2}
+            title="Loading Oyakata"
+            description="Fetching elder profile..."
+            className="animate-pulse"
+          />
+        </div>
       </AppLayout>
     );
   }

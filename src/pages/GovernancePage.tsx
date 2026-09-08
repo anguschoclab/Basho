@@ -1,4 +1,6 @@
 import { useMemo, useState } from "react";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Loader2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
 import { PageHeader, StatCard, ListCard, SectionHeader } from "@/components/layout/control-center";
@@ -232,9 +234,13 @@ export default function GovernancePage() {
         subNavTabs={ASSOCIATION_TABS}
         activeSubTab="governance"
       >
-        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-muted-foreground">
-          <div className="text-4xl animate-pulse font-display">⋯</div>
-          <p className="text-sm font-display italic uppercase tracking-widest">Loading…</p>
+        <div className="flex flex-col items-center justify-center min-h-[60vh]">
+          <EmptyState
+            icon={Loader2}
+            title="Loading Governance"
+            description="Fetching association records..."
+            className="animate-pulse"
+          />
         </div>
       </AppLayout>
     );
