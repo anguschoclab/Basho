@@ -143,9 +143,36 @@ describe("EntityService", () => {
 
     it("historicalRikishi root is initialized as a Map", () => {
       const world = {} as WorldState;
-      EntityService.ensureNestedState(world, "historicalRikishi", "r1", () => ({ id: "r1" } as any));
+      EntityService.ensureNestedState(
+        world,
+        "historicalRikishi",
+        "r1",
+        () => ({ id: "r1" }) as any
+      );
 
       expect(world.historicalRikishi).toBeInstanceOf(Map);
+    });
+
+    it("initializes an unknown field as a POJO Record and supports field assignment", () => {
+      const world = {} as unknown as WorldState;
+      // "nonMapField" is not in the hardcoded Map field list
+      const result = EntityService.ensureNestedState(world, "nonMapField" as any, "id1", () => ({
+        val: 1,
+      }));
+
+      expect(result).toEqual({ val: 1 });
+      expect((world as any).nonMapField).not.toBeInstanceOf(Map);
+      expect(typeof (world as any).nonMapField).toBe("object");
+      expect((world as any).nonMapField["id1"]).toEqual({ val: 1 });
+    });
+
+    it("fetches an existing entry from a POJO Record", () => {
+      const world = { nonMapField: { id1: { val: 42 } } } as unknown as WorldState;
+      const factory = vi.fn(() => ({ val: 1 }));
+      const result = EntityService.ensureNestedState(world, "nonMapField" as any, "id1", factory);
+
+      expect(factory).not.toHaveBeenCalled();
+      expect(result).toEqual({ val: 42 });
     });
   });
 });
