@@ -56,7 +56,19 @@ export default function RivalStablesPage() {
         ) : (
           <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
             {projection.rivals.map((rival) => (
-              <div key={rival.heyaId} onClick={() => setSelectedRival(rival)} className="cursor-pointer">
+              <div
+                key={rival.heyaId}
+                onClick={() => setSelectedRival(rival)}
+                className="cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background rounded"
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setSelectedRival(rival);
+                  }
+                }}
+              >
                 <RivalOyakataCard
                   heyaId={rival.heyaId}
                   heyaName={rival.heyaName}
