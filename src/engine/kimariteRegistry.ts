@@ -804,9 +804,13 @@ export function getKimariteByClass(kimariteClass: KimariteClass): KimariteDefini
 }
 
 export function getKimariteCount(): number {
-  return KIMARITE_REGISTRY.filter(
-    (k) => k.id !== "fusensho" && k.id !== "hansoku" && k.jsaCategory !== "Hiwaza"
-  ).length;
+  let count = 0;
+  for (const k of KIMARITE_REGISTRY) {
+    if (k.id !== "fusensho" && k.id !== "hansoku" && k.jsaCategory !== "Hiwaza") {
+      count++;
+    }
+  }
+  return count;
 }
 
 /** Get kimarite for tactical family */

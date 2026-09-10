@@ -56,9 +56,12 @@ export function perceivedTalentSeed(
   heyaId: Id,
   candidate: TalentCandidate
 ): number {
-  const scoutCount = getHeyaStaff(world, heyaId).filter(
-    (s) => s.role === "scout" && s.careerPhase !== "retired"
-  ).length;
+  let scoutCount = 0;
+  for (const s of getHeyaStaff(world, heyaId)) {
+    if (s.role === "scout" && s.careerPhase !== "retired") {
+      scoutCount++;
+    }
+  }
 
   const heya = getHeya(world, heyaId);
   const hasScoutingOffice = heya?.infrastructure?.scouting_office?.status === "active";

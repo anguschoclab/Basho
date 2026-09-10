@@ -179,9 +179,12 @@ const PLAN_CATALOG: PlanTemplate[] = [
 /** Adjust a template score based on memory of past plan outcomes. */
 function scoreWithMemory(template: PlanTemplate, ctx: AIContext, baseScore: number): number {
   const history = ctx.memory?.planHistory ?? [];
-  const failures = history.filter(
-    (h) => h.planId === template.planId && (h.outcome === "abandoned" || h.outcome === "partial")
-  ).length;
+  let failures = 0;
+  for (const h of history) {
+    if (h.planId === template.planId && (h.outcome === "abandoned" || h.outcome === "partial")) {
+      failures++;
+    }
+  }
   return baseScore - failures * 8;
 }
 

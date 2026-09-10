@@ -1,3 +1,4 @@
 ## 2025-05-18 - Optimize Matchmaking Array Allocations
 **Learning:** Hot paths, such as the matchmaking loop `scoreDrama` in `DramaMatchmaker.ts`, get called many times. Using `.filter(cond).length` causes O(N) intermediate array allocations that build up garbage collector pressure, increasing execution time in hot algorithms like Swiss matchmaking.
 **Action:** Replace `.filter(cond).length` with direct `for...of` loops and a counter variable in all algorithmic hot paths.
+## 2026-09-10 - Avoid intermediate array allocations in hot paths\n**Learning:** Hot paths that calculate counts using `.filter(condition).length` create intermediate O(N) array allocations that build up garbage collection pressure. This is a common JavaScript performance anti-pattern that can cause micro-stutters in heavy simulation loops.\n**Action:** Always replace `.filter(condition).length` with a direct `for...of` loop and a counter variable in algorithmic hot paths.
