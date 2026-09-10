@@ -8,7 +8,7 @@
  * the scouting views instead.
  */
 
-import type { Rikishi, RikishiStats } from "@/engine/types";
+import type { Rikishi } from "@/engine/types";
 import { TrendingUp } from "lucide-react";
 import { NarrativeService } from "@/presenters/engineAccess";
 import { SeededRNG } from "@/presenters/engineAccess";
@@ -20,7 +20,9 @@ interface Props {
   isOwned: boolean;
 }
 
-const STAT_LABELS: Array<[keyof NonNullable<Rikishi["potential"]>["stats"], string]> = [
+type PanelStatKey = "power" | "speed" | "stamina" | "technique" | "balance" | "mental" | "adaptability";
+
+const STAT_LABELS: Array<[PanelStatKey, string]> = [
   ["power", "Strength"],
   ["speed", "Speed"],
   ["stamina", "Stamina"],
@@ -30,7 +32,7 @@ const STAT_LABELS: Array<[keyof NonNullable<Rikishi["potential"]>["stats"], stri
   ["adaptability", "Adaptability"],
 ];
 
-const CURRENT_KEY: Record<string, keyof RikishiStats> = {
+const CURRENT_KEY: Record<PanelStatKey, PanelStatKey> = {
   power: "power",
   speed: "speed",
   stamina: "stamina",
@@ -55,12 +57,8 @@ export function RikishiPotentialPanel({ rikishi, isOwned }: Props) {
 
       <div className="bg-muted/30 border-2 border-border/50 rounded-lg p-6 space-y-3">
         {STAT_LABELS.map(([paKey, label]) => {
-          const paValue = Math.round(
-            (pa.stats as unknown as Record<string, number>)[paKey] * ceiling
-          );
-          const currentValue = Math.round(
-            (rikishi.stats as unknown as Record<string, number>)[CURRENT_KEY[paKey]] ?? 0
-          );
+          const paValue = Math.round(pa.stats[paKey] * ceiling);
+          const currentValue = Math.round(rikishi.stats[CURRENT_KEY[paKey]] ?? 0);
           const paPct = Math.min(100, paValue);
           const caPct = Math.min(100, currentValue);
           const gap = Math.max(0, paPct - caPct);
