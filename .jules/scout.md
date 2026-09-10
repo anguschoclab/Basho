@@ -7,3 +7,7 @@
 **Gap:** Sparring pair assignments were untested in NPC AI weekly tick.
 **Learning:** `sparringPairs` structure has a top level `Map` keyed by `heyaId` where each entry is a state object containing a `pairs` dictionary. We should assert on `Object.values(newPairs)` checking for matching `aId` and `bId` rather than guessing keys.
 **Pattern:** Provide `world.sparringPairs` with an existing set of pairs, run `phase01_week_npc_ai`, and inspect `impact.worldFields?.sparringPairs?.get(heyaId)?.pairs` for correct assignments.
+## 2025-02-12 - Scout: Unawaited Promises in electronArchive.test.ts
+**Gap:** Unawaited promises in test assertions testing ElectronArchiveService.
+**Learning:** `expect(result).resolves.toBeNull()` returns a Promise that must be awaited. Unawaited promises create hanging assertions, which Vitest flags as warnings and can eventually lead to false positives if the promise rejects after the test context closes.
+**Pattern:** Always mark `it` callbacks as `async` and use `await expect(result).resolves...` when asserting on Promise resolutions in Vitest.
