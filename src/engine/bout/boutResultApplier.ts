@@ -104,9 +104,12 @@ export function applyBoutResult(
     wMetrics.boutDurations.push(result.duration ?? 0);
     if (result.upset) wMetrics.upsetCount++;
     // Edge crisis survived: count edge_crisis log entries where escaped=true for winner
-    const edgeEscapes = (result.log ?? []).filter(
-      (e) => e.phase === "edge_crisis" && (e.data as Record<string, unknown>)?.escaped === true
-    ).length;
+    let edgeEscapes = 0;
+    for (const e of result.log ?? []) {
+      if (e.phase === "edge_crisis" && (e.data as Record<string, unknown>)?.escaped === true) {
+        edgeEscapes++;
+      }
+    }
     wMetrics.edgeCrisisSurvived += edgeEscapes;
     // Comeback win: winner was in edge crisis and survived
     if (edgeEscapes > 0) wMetrics.comebackWins++;
