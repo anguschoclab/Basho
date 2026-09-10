@@ -8,7 +8,7 @@
  * the scouting views instead.
  */
 
-import type { Rikishi, RikishiStats, NumericStat } from "@/engine/types";
+import type { Rikishi } from "@/engine/types";
 import { TrendingUp } from "lucide-react";
 import { NarrativeService } from "@/presenters/engineAccess";
 import { SeededRNG } from "@/presenters/engineAccess";
@@ -20,7 +20,9 @@ interface Props {
   isOwned: boolean;
 }
 
-const STAT_LABELS: Array<[NumericStat, string]> = [
+type PanelStatKey = "power" | "speed" | "stamina" | "technique" | "balance" | "mental" | "adaptability";
+
+const STAT_LABELS: Array<[PanelStatKey, string]> = [
   ["power", "Strength"],
   ["speed", "Speed"],
   ["stamina", "Stamina"],
@@ -30,7 +32,7 @@ const STAT_LABELS: Array<[NumericStat, string]> = [
   ["adaptability", "Adaptability"],
 ];
 
-const CURRENT_KEY: Record<NumericStat, keyof Pick<RikishiStats, NumericStat>> = {
+const CURRENT_KEY: Record<PanelStatKey, PanelStatKey> = {
   power: "power",
   speed: "speed",
   stamina: "stamina",
@@ -38,9 +40,6 @@ const CURRENT_KEY: Record<NumericStat, keyof Pick<RikishiStats, NumericStat>> = 
   balance: "balance",
   mental: "mental",
   adaptability: "adaptability",
-  weight: "weight",
-  aggression: "aggression",
-  experience: "experience",
 };
 
 export function RikishiPotentialPanel({ rikishi, isOwned }: Props) {
