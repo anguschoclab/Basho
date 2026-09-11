@@ -18,8 +18,16 @@
     ]
   },
   "economy": {
-    "kensho_title": ["Kensho prize money"],
-    "kensho_summary": ["%ENVELOPES% envelope(s) awarded (¥%AMOUNT%)."],
+    "kensho_title": [
+      "Kensho prize money",
+      "Sponsor Envelopes Awarded",
+      "Bout Bounties Claimed"
+    ],
+    "kensho_summary": [
+      "%ENVELOPES% envelope(s) awarded (¥%AMOUNT%).",
+      "The winner collects %ENVELOPES% kensho envelopes, totaling ¥%AMOUNT%.",
+      "A haul of ¥%AMOUNT% from %ENVELOPES% sponsor envelopes."
+    ],
     "special_prize_title": ["Special Prize Awarded!"],
     "special_prize_summary": ["Awarded %PRIZETYPE%-shō for outstanding performance (¥%AMOUNT%)."],
     "insolvency_title": ["Financial Insolvency"],
@@ -72,16 +80,32 @@
     "alert_summary": ["%HEYANAME% is under scrutiny for welfare compliance. Status: %STATUS%"]
   },
   "basho": {
-    "day_title": ["Day %DAY%"],
-    "day_summary": ["Tournament day %DAY% begins."],
+    "day_title": [
+      "Day %DAY%",
+      "Tournament Action: Day %DAY%",
+      "Basho Progress: Day %DAY%"
+    ],
+    "day_summary": [
+      "Tournament day %DAY% begins.",
+      "The action resumes on day %DAY% of the basho.",
+      "Rikishi prepare for the challenges of day %DAY%."
+    ],
     "status_title": ["Basho Status Update", "Tournament News", "Kokugikan Report"],
     "status_summary": [
       "Tournament progress: %DAY% days concluded. Standing: %SHIKONA% (%WINS%-%LOSSES%).",
       "The race for the Cup continues. %SHIKONA% currently holds a %WINS%-%LOSSES% record.",
       "Basho Update: %SHIKONA% is %WINS%-%LOSSES% after a crucial day of action."
     ],
-    "bout_title": ["Bout concluded"],
-    "bout_summary": ["Winner decided by %KIMARITE%."],
+    "bout_title": [
+      "Bout concluded",
+      "Match Result",
+      "Dohyo Decision"
+    ],
+    "bout_summary": [
+      "Winner decided by %KIMARITE%.",
+      "The bout ends with a decisive %KIMARITE%.",
+      "Victory claimed via %KIMARITE%."
+    ],
     "concluded_title": ["%BASHONAME% Basho Concluded"],
     "concluded_summary": [
       "%SHIKONA% wins the tournament with a dominant %WINS%-%LOSSES% record!",
