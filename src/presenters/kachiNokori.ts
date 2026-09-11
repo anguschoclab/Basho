@@ -38,10 +38,14 @@ export interface CohortStats {
 export function projectCohortStats(rikishi: Rikishi[]): CohortStats {
   let kachiKoshi = 0;
   let makeKoshi = 0;
+  let total = 0;
 
   for (const r of rikishi) {
     if (r.isRetired) continue;
     if (!r.rank) continue;
+
+    total++;
+
     const wins = r.currentBashoWins ?? 0;
     const losses = r.currentBashoLosses ?? 0;
     if (isKachiKoshi(wins, losses, r.rank as Rank)) {
@@ -51,7 +55,6 @@ export function projectCohortStats(rikishi: Rikishi[]): CohortStats {
     }
   }
 
-  const total = rikishi.filter((r) => !r.isRetired && r.rank).length;
   return {
     total,
     kachiKoshi,
