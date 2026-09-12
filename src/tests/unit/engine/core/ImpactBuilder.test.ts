@@ -5,6 +5,8 @@ import {
   updateRikishiImpact,
   retireRikishiImpact,
   updateWorldFieldImpact,
+  updateHeyaImpact,
+  logEventImpact,
 } from "@/engine/core/ImpactBuilder";
 
 describe("ImpactBuilder", () => {
@@ -663,6 +665,50 @@ describe("ImpactBuilder", () => {
 });
 
 describe("ImpactBuilder - Convenience Functions", () => {
+  describe("updateHeyaImpact", () => {
+    it("should create an impact to update a heya with the given properties", () => {
+      const id = "test-heya-1";
+      const update = { funds: 1500, prestigeBand: "unknown" as const };
+      const source = "test_source";
+
+      const impact = updateHeyaImpact(id, update, source);
+
+      expect(impact.entities?.heyaUpdates?.has(id)).toBe(true);
+      expect(impact.entities?.heyaUpdates?.get(id)).toEqual(update);
+      expect(impact.metadata?.source).toBe(source);
+      expect(impact.metadata?.timestamp).toBeDefined();
+    });
+  });
+
+  describe("logEventImpact", () => {
+    it("should create an impact to log an event", () => {
+      const type = "governance.sanction";
+      const category = "governance";
+      const data = { severity: "high" };
+      const source = "test_source";
+      const options = { heyaId: "h1", rikishiId: "r1" };
+
+      const impact = logEventImpact(type as any, category as any, data, source, options);
+
+      expect(impact.events).toHaveLength(1);
+      const eventDef = impact.events![0];
+      expect(eventDef.type).toBe(type);
+      expect(eventDef.category).toBe(category);
+      expect(eventDef.data).toEqual(data);
+      expect(eventDef.heyaId).toBe("h1");
+      expect(eventDef.rikishiId).toBe("r1");
+      expect(impact.metadata?.source).toBe(source);
+    });
+
+    it("should allow creating an event without options", () => {
+      const impact = logEventImpact("news" as any, "news" as any, {}, "test_source");
+      expect(impact.events).toHaveLength(1);
+      const eventDef = impact.events![0];
+      expect(eventDef.heyaId).toBeUndefined();
+      expect(eventDef.rikishiId).toBeUndefined();
+    });
+  });
+
   describe("updateRikishiImpact", () => {
     it("should create an impact to update a rikishi with the given properties", () => {
       const id = "test-rikishi-1";

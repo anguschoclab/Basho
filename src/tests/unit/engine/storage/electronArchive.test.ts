@@ -185,7 +185,7 @@ describe("ElectronArchiveService", () => {
       expect(result).toBeNull();
     });
 
-    it("logs warning and returns null in web build", () => {
+    it("logs warning and returns null in web build", async () => {
       clearElectronMock();
       service = new ElectronArchiveService();
       const warnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
@@ -197,7 +197,7 @@ describe("ElectronArchiveService", () => {
         "ElectronArchive",
         undefined
       );
-      expect(result).resolves.toBeNull();
+      await expect(result).resolves.toBeNull();
       warnSpy.mockRestore();
     });
   });
@@ -267,7 +267,7 @@ describe("ElectronArchiveService", () => {
       expect(result).toBe(markdown);
     });
 
-    it("logs warning and returns null in web build", () => {
+    it("logs warning and returns null in web build", async () => {
       clearElectronMock();
       service = new ElectronArchiveService();
       const warnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
@@ -279,7 +279,7 @@ describe("ElectronArchiveService", () => {
         "ElectronArchive",
         undefined
       );
-      expect(result).resolves.toBeNull();
+      await expect(result).resolves.toBeNull();
       warnSpy.mockRestore();
     });
   });
@@ -305,7 +305,7 @@ describe("ElectronArchiveService", () => {
       errorSpy.mockRestore();
     });
 
-    it("logs warning and returns empty array in web build", () => {
+    it("logs warning and returns empty array in web build", async () => {
       clearElectronMock();
       service = new ElectronArchiveService();
       const warnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
@@ -317,7 +317,7 @@ describe("ElectronArchiveService", () => {
         "ElectronArchive",
         undefined
       );
-      expect(result).resolves.toEqual([]);
+      await expect(result).resolves.toEqual([]);
       warnSpy.mockRestore();
     });
   });
@@ -393,7 +393,7 @@ describe("ElectronArchiveService", () => {
       expect(result).toEqual([]);
     });
 
-    it("logs warning and returns empty array in web build", () => {
+    it("logs warning and returns empty array in web build", async () => {
       clearElectronMock();
       service = new ElectronArchiveService();
       const warnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
@@ -405,7 +405,7 @@ describe("ElectronArchiveService", () => {
         "ElectronArchive",
         undefined
       );
-      expect(result).resolves.toEqual([]);
+      await expect(result).resolves.toEqual([]);
       warnSpy.mockRestore();
     });
   });
@@ -481,7 +481,7 @@ describe("ElectronArchiveService", () => {
       expect(result).toBeNull();
     });
 
-    it("logs warning and returns null in web build", () => {
+    it("logs warning and returns null in web build", async () => {
       clearElectronMock();
       service = new ElectronArchiveService();
       const warnSpy = vi.spyOn(logger, "warn").mockImplementation(() => {});
@@ -493,7 +493,7 @@ describe("ElectronArchiveService", () => {
         "ElectronArchive",
         undefined
       );
-      expect(result).resolves.toBeNull();
+      await expect(result).resolves.toBeNull();
       warnSpy.mockRestore();
     });
   });

@@ -160,7 +160,7 @@ function assignSides(
  * 7. Apply kadoban pressure logic
  * 8. Assign sides and honor existing side preferences
  *
- * @param {{ basho: BashoState; a: Rikishi; b: Rikishi; rules?: Partial<MatchmakingRules>; allowRepeatOverride?: boolean; facedPairs?: Set<string> }} args - Scoring parameters.
+ * @param {Object} args - Scoring parameters.
  * @param {BashoState} args.basho - Current basho state.
  * @param {Rikishi} args.a - First rikishi.
  * @param {Rikishi} args.b - Second rikishi.

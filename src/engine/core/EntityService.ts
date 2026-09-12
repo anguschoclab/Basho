@@ -25,6 +25,11 @@ export const EntityService = {
    * It bypasses TypeScript assignment checks via generic casts. Do not assume deep
    * structural type safety when using this to attach missing nested state.
    *
+   * ⚠️ CONTRACT / WARNING - FALSY VALUE OVERWRITE:
+   * This function uses a loose falsy check (`!parent[key]`). If the property exists but
+   * is initialized to a valid falsy value (like `0`, `false`, or `""`), it will be incorrectly
+   * overwritten by the factory function. Only use this for object/map hydration.
+   *
    * @param {Parent} parent - The object containing the state (e.g., WorldState or Heya).
    * @param {Key} key - The property key for the state.
    * @param {() => NonNullable<Parent[Key]>} factory - A function returning the default state if it doesn't exist.
