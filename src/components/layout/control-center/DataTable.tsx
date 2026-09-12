@@ -85,6 +85,7 @@ function DataTableInner<T>({
                 )}
                 onClick={() => handleHeaderClick(col)}
                 role="button"
+                aria-label={`Sort by ${col.label}`}
                 tabIndex={0}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
@@ -113,6 +114,7 @@ function DataTableInner<T>({
             )}
             onClick={onRowClick ? () => onRowClick(row) : undefined}
             role={onRowClick ? "button" : undefined}
+            aria-label={onRowClick ? `Select row ${rowKey(row)}` : undefined}
             tabIndex={onRowClick ? 0 : undefined}
             onKeyDown={(e) => {
               if (onRowClick && (e.key === "Enter" || e.key === " ")) {
