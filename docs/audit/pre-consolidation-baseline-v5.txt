@@ -1,0 +1,59 @@
+PRE-CONSOLIDATION BASELINE v5
+=============================
+Date: 2026-09-12
+Branch: main @ 96857362 (tag: pre-consolidation-v5-20260912)
+Machine: macOS arm64 (Darwin 25.6.0), bun 1.4.0, node (vitest 4.1.10)
+
+GATE RESULTS (all measured, not assumed)
+----------------------------------------
+bun run type-check        : PASS (0 errors) — @typescript/native tsc --build --force
+bun run lint:strict       : PASS (0 errors, 0 warnings) — eslint --max-warnings 0
+bun run build             : PASS in 7.05s — index bundle 485.67 kB (gzip 154.30 kB)
+bun run test              : PASS — Test Files 820/820, Tests 7437/7437, Duration 884s
+bun scripts/engine-reviewer.ts : PASS — 0 violations
+bash scripts/purity-lint.sh    : PASS — 0 phase purity violations
+
+PERFORMANCE (bun scripts/bench-pipelines.ts — after tsconfig paths fix, see V5-B01)
+  S1_single_day  p50:    5.4 ms
+  S2_weekly      p50:  219.0 ms
+  S3_year        p50: 2145.4 ms   (stale Aug-9 baseline: 3277.4 ms — faster now)
+  S4_25yr        p50: 30133.4 ms
+  NOTE: docs/audit/perf-baseline.json is from 2026-08-09 (stale, ~1 month).
+        perf-gate-check "pass" before this run was against a stale perf-current.json.
+
+DETERMINISM / CAST AUDIT (grep counts in src/engine)
+--------------------------------------------------
+Math.random   : 2  (both comments — CLEAN)
+Date.now      : 0  (CLEAN)
+as any        : 2  (both inside comment text — CLEAN)
+as unknown    : 16 (v4 reported 8 — grew via YouthAcademyService x~6, MigrationService, opfsArchive)
+as never      : 10 (v4 reported 11)
+
+REPO INVENTORY
+--------------
+Tracked files           : ~1950
+src TS/TSX files        : ~1700
+Test files (*.test.ts(x)): 824 tracked (CLAUDE.md claims "195 files / 1703 tests" — STALE)
+Open PRs                : 31 (#914–#944), all map 1:1 to remote branches
+Remote branches         : 31 non-main
+PR comments             : 27 issue comments total (all google-labs-jules greeting), 0 review threads, 0 reviews
+
+CI STATUS
+---------
+All 4 gate jobs (lint, typecheck, build, perf-gate) FAIL on main and every PR —
+root cause: `bun install` → "error: ConnectionRefused downloading tarball <pkg>"
+(registry connectivity refusal on runners, NOT a code failure).
+Secondary defect: scripts/bench-pipelines.ts cannot resolve '@/…' imports under
+bun/tsx because root tsconfig.json lacks compilerOptions.paths (alias only in
+tsconfig.app.json). perf-gate's benchmark step therefore fails even when install
+succeeds; perf-gate-check reads a stale perf-current.json.
+
+TRACKED-BUT-GITIGNORED JUNK (in tree despite .gitignore rules)
+------------------------------------------------------------
+tsconfig.electron.tsbuildinfo, tsconfig.node.tsbuildinfo (.gitignore:35 *.tsbuildinfo)
+.jules/bolt.md, .jules/palette.md, .jules/scout.md (.gitignore:92 .jules/)
+src/tests/unit/helpers/__audit_verification.test.ts (v4-flagged pattern)
+NOTE: .Jules/ persona docs are untracked; on case-insensitive macOS the tracked
+lowercase .jules/ journals physically share that directory.
+package-lock.json: untracked stale local artifact (pins lucide-react 1.31.0 vs
+package.json 1.34.0) — delete locally; no git action needed.
