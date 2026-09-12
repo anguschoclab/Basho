@@ -1,8 +1,20 @@
 {
   "digest": {
     "status": {
-      "injured": "%INJURY_COUNT% injury update this week.",
-      "no_events": "No major events recorded this week.",
+      "injured": [
+        "%INJURY_COUNT% injury update this week.",
+        "Medical report: %INJURY_COUNT% injury noted this week.",
+        "Trainer's desk: %INJURY_COUNT% new injury concern.",
+        "Health update: %INJURY_COUNT% rikishi injured this week.",
+        "Clinic report: %INJURY_COUNT% injury logged."
+      ],
+      "no_events": [
+        "No major events recorded this week.",
+        "A quiet week across the association.",
+        "Business as usual: no significant events this week.",
+        "A peaceful week with no major updates.",
+        "Routine operations: nothing major to report this week."
+      ],
       "basho_day": "Basho Day %DAY%: %DETAIL%",
       "healthy": "Healthy"
     },
