@@ -1,4 +1,5 @@
 import type { WorldState } from "../types/world";
+import type { NarrativeContext } from "../types/events";
 import type { StateImpact } from "./StateImpact";
 import { logEngineEvent } from "../events";
 import { getNextTimestamp } from "./StateImpact";
@@ -396,6 +397,34 @@ function _applyImpact(result: WorldState, impact: StateImpact): WorldState {
   return result;
 }
 
+/** "BOUT_RESOLVED" -> "Bout Resolved" */
+function humanizeEventType(type: string): string {
+  return type
+    .toLowerCase()
+    .split("_")
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
+/**
+ * Builds a factual one-line summary from whichever context fields the producer
+ * populated. Never fabricates entities — falls back to the event type itself.
+ */
+function summarizeEventData(type: string, data: NarrativeContext): string {
+  const winner = typeof data.winner === "string" && data.winner ? data.winner : undefined;
+  const loser = typeof data.loser === "string" && data.loser ? data.loser : undefined;
+  const kimarite = typeof data.kimarite === "string" && data.kimarite ? data.kimarite : undefined;
+  if (winner && loser) {
+    return kimarite
+      ? `${winner} defeated ${loser} by ${kimarite}.`
+      : `${winner} defeated ${loser}.`;
+  }
+  const shikona = typeof data.shikona === "string" && data.shikona ? data.shikona : undefined;
+  const label = humanizeEventType(type);
+  return shikona ? `${label}: ${shikona}.` : `${label}.`;
+}
+
 /**
  * Resolves an array of StateImpact objects against a base WorldState.
  * Sequentially applies immutable patches, returning a new WorldState reference
@@ -414,7 +443,24 @@ export function resolveImpacts(world: WorldState, impacts: StateImpact[]): World
 
       // Log events (side effect isolated to coordinator)
       if (impact.events && impact.events.length > 0) {
+        // logEngineEvent mutates world.events in place. The shallow copy above
+        // shares that object with the caller's input, so detach it first or the
+        // event log/dedupe writes would leak into the pre-resolution world.
+        if (result.events !== undefined && result.events === world.events) {
+          result = {
+            ...result,
+            events: {
+              ...result.events,
+              log: [...result.events.log],
+              dedupe: { ...result.events.dedupe },
+            },
+          };
+        }
         for (const eventDef of impact.events) {
+          const data = (eventDef.data ?? {}) as NarrativeContext & {
+            title?: string;
+            summary?: string;
+          };
           logEngineEvent(result, {
             type: eventDef.type,
             category: eventDef.category,
@@ -422,8 +468,8 @@ export function resolveImpacts(world: WorldState, impacts: StateImpact[]): World
             rikishiId: eventDef.rikishiId,
             data: eventDef.data,
             importance: eventDef.importance || "notable",
-            title: (eventDef.data as { title?: string }).title ?? "",
-            summary: (eventDef.data as { summary?: string }).summary ?? "",
+            title: data.title || humanizeEventType(eventDef.type),
+            summary: data.summary || summarizeEventData(eventDef.type, data),
           });
         }
       }
