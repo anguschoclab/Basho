@@ -68,4 +68,19 @@ describe("HolidayDialog", () => {
     fireEvent.click(screen.getByTestId("holiday-confirm"));
     // Just verify it doesn't crash — the exact gate set is tested by the confirm call
   });
+
+  it("safety gates are keyboard-operable (PR #941)", () => {
+    const onConfirm = vi.fn();
+    render(<HolidayDialog onConfirm={onConfirm} onCancel={vi.fn()} />);
+    const gate = screen.getByTestId("holiday-gate-sponsorChurn");
+    // Post-#941: gate badges expose role="button" + tabIndex + keyboard toggle.
+    expect(gate.getAttribute("role")).toBe("button");
+    expect(gate.getAttribute("tabindex")).toBe("0");
+
+    // sponsorChurn is NOT in the default gate set — pressing Enter must enable it.
+    fireEvent.keyDown(gate, { key: "Enter" });
+    fireEvent.click(screen.getByTestId("holiday-confirm"));
+    const config = onConfirm.mock.calls[0][0];
+    expect(config.gates).toContain("sponsorChurn");
+  });
 });

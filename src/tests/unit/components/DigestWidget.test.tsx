@@ -261,4 +261,23 @@ describe("DigestWidget", () => {
     expect(screen.queryByText("Item 4")).toBeNull();
     expect(screen.getByText("+6 more")).toBeTruthy();
   });
+
+  it("gives entity-linked rows an accessible name (PR #928)", () => {
+    const digest = makeDigest([
+      {
+        id: "sec-1",
+        title: "News",
+        items: [
+          makeDigestItem({ id: "i1", title: "Wins by yorikiri", rikishiId: "r-9" }),
+          makeDigestItem({ id: "i2", title: "Plain news item" }),
+        ],
+      },
+    ]);
+    vi.mocked(useGame).mockReturnValue({ state: { world: {} } } as any);
+    vi.mocked(buildWeeklyDigest).mockReturnValue(digest as any);
+    render(<DigestWidget />);
+    // Post-#928: rows with role="button" expose aria-label equal to the title.
+    const row = screen.getByRole("button", { name: "Wins by yorikiri" });
+    expect(row).toBeTruthy();
+  });
 });

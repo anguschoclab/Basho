@@ -1,0 +1,697 @@
+[
+  {
+    "additions": 9,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 4,
+    "createdAt": "2026-09-11T22:54:06Z",
+    "deletions": 3,
+    "headRefName": "bolt-kachi-nokori-optimization-182292836363957621",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "BLOCKED",
+    "mergeable": "MERGEABLE",
+    "number": 944,
+    "title": "\u26a1 Bolt: Combine loop passes and remove intermediate array allocation in projectCohortStats",
+    "verdict": "APPROVED",
+    "rationale": "projectCohortStats loop fusion; verified equivalent (same continue-guards, total++ inside loop)."
+  },
+  {
+    "additions": 30,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 1,
+    "createdAt": "2026-09-11T22:49:34Z",
+    "deletions": 6,
+    "headRefName": "bard-enrich-events-14310382764820623570",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "BLOCKED",
+    "mergeable": "MERGEABLE",
+    "number": 943,
+    "title": "\ud83c\udfad Bard: Enrich common basho and economy event texts",
+    "verdict": "CHERRY-PICK",
+    "rationale": "Hand-merge kensho_*/day_* keys into events.json alongside #920 bout variants."
+  },
+  {
+    "additions": 177,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 1,
+    "createdAt": "2026-09-11T22:33:10Z",
+    "deletions": 0,
+    "headRefName": "scout-heya-economics-salaries-test-12654197837753433015",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "BLOCKED",
+    "mergeable": "MERGEABLE",
+    "number": 942,
+    "title": "\ud83e\uddea Scout: test monthly salaries/economics logic",
+    "verdict": "APPROVED",
+    "rationale": "processHeyaEconomics tests; expectations derived from RANK_HIERARCHY + constants, not tautological."
+  },
+  {
+    "additions": 17,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 2,
+    "createdAt": "2026-09-11T22:19:45Z",
+    "deletions": 18,
+    "headRefName": "palette-holiday-dialog-a11y-11777663873599128726",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "BLOCKED",
+    "mergeable": "MERGEABLE",
+    "number": 941,
+    "title": "\ud83c\udfa8 Palette: Make HolidayDialog safety gates keyboard accessible",
+    "verdict": "APPROVED",
+    "rationale": "HolidayDialog keyboard-accessible safety gates."
+  },
+  {
+    "additions": 14,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 2,
+    "createdAt": "2026-09-10T22:52:23Z",
+    "deletions": 10,
+    "headRefName": "scout-electron-archive-tests-11202388293191794189",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "BLOCKED",
+    "mergeable": "MERGEABLE",
+    "number": 940,
+    "title": "\ud83e\uddea Scout: test electron archive returns correctly in web build",
+    "verdict": "CHERRY-PICK",
+    "rationale": "Fixes 5 un-awaited expect().resolves assertions \u2014 latent false-positive tests. Strip tsbuildinfo/journal."
+  },
+  {
+    "additions": 26,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 5,
+    "createdAt": "2026-09-10T22:48:44Z",
+    "deletions": 12,
+    "headRefName": "bolt-optimize-filter-length-9284730836353342052",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "BLOCKED",
+    "mergeable": "MERGEABLE",
+    "number": 939,
+    "title": "\u26a1 Bolt: Remove intermediate array allocations from hot paths",
+    "verdict": "APPROVED",
+    "rationale": ".filter().length -> counter loops in 4 hot paths; verified semantically equivalent."
+  },
+  {
+    "additions": 23,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 1,
+    "createdAt": "2026-09-10T22:32:49Z",
+    "deletions": 0,
+    "headRefName": "curator-surface-ozeki-watch-6248815441082531970",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "BLOCKED",
+    "mergeable": "MERGEABLE",
+    "number": 938,
+    "title": "\ud83c\udfdb\ufe0f Curator: surface Ozeki Promotion Watch",
+    "verdict": "REJECT",
+    "rationale": "Duplicates existing Ozeki watch with wrong proxy metric (consecutiveStrongSekiwake/3 vs real sekiwakeThreeBashoWins>=33 && wins>=10, BanzukePublisher.ts:313)."
+  },
+  {
+    "additions": 7,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 1,
+    "createdAt": "2026-09-10T22:29:31Z",
+    "deletions": 3,
+    "headRefName": "polish-academy-widget-empty-state-13218165389862134932",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "BLOCKED",
+    "mergeable": "MERGEABLE",
+    "number": 937,
+    "title": "\u2728 Polish: Add EmptyState to AcademyWidget",
+    "verdict": "APPROVED",
+    "rationale": "AcademyWidget EmptyState for missing academy."
+  },
+  {
+    "additions": 9,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 3,
+    "createdAt": "2026-09-10T22:18:32Z",
+    "deletions": 11,
+    "headRefName": "mason-tighten-rikishi-potential-panel-17075725701570248911",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "BLOCKED",
+    "mergeable": "MERGEABLE",
+    "number": 936,
+    "title": "\ud83e\uddf1 Mason: tighten types in RikishiPotentialPanel",
+    "verdict": "SUPERSEDED",
+    "rationale": "Keeps local PanelStatKey union + CURRENT_KEY identity map; no guard on pa.stats lookup."
+  },
+  {
+    "additions": 32,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 2,
+    "createdAt": "2026-09-09T22:53:54Z",
+    "deletions": 1,
+    "headRefName": "scout-entity-service-pojo-12958874737382207842",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "BLOCKED",
+    "mergeable": "MERGEABLE",
+    "number": 935,
+    "title": "\ud83e\uddea Scout: test EntityService POJO fallback",
+    "verdict": "APPROVED",
+    "rationale": "EntityService POJO-fallback tests (ensureNestedState non-Map branch)."
+  },
+  {
+    "additions": 6,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 3,
+    "createdAt": "2026-09-09T22:46:06Z",
+    "deletions": 20,
+    "headRefName": "mason-potential-panel-typing-1800266415487377346",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "BLOCKED",
+    "mergeable": "MERGEABLE",
+    "number": 934,
+    "title": "\ud83e\uddf1 Mason: Tighten RikishiPotentialPanel stat typing",
+    "verdict": "CHERRY-PICK",
+    "rationale": "Wins vs #936 \u2014 VERIFIED head-to-head: imports shared NumericStat, deletes CURRENT_KEY identity map + RikishiStats import, `?? 0` guards on both lookups."
+  },
+  {
+    "additions": 16,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 2,
+    "createdAt": "2026-09-09T22:29:37Z",
+    "deletions": 1,
+    "headRefName": "palette-rival-stables-a11y-12931539511625746643",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "BLOCKED",
+    "mergeable": "MERGEABLE",
+    "number": 933,
+    "title": "\ud83c\udfa8 Palette: Make Rival Oyakata card clickable keyboard accessible",
+    "verdict": "APPROVED",
+    "rationale": "Rival Stables card keyboard a11y."
+  },
+  {
+    "additions": 121,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 8,
+    "createdAt": "2026-09-08T22:33:57Z",
+    "deletions": 79,
+    "headRefName": "polish-standardize-loading-states-15241944192308628920",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "BLOCKED",
+    "mergeable": "MERGEABLE",
+    "number": 932,
+    "title": "\u2728 Polish: [UX] Standardize page loading states",
+    "verdict": "APPROVED",
+    "rationale": "Loading-state standardization; replaces decorative pulse/italic-uppercase with EmptyState+Loader2 (ui-honesty positive). Page collisions w/ #919 resolve to #932's version."
+  },
+  {
+    "additions": 7,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 5,
+    "createdAt": "2026-09-07T22:24:13Z",
+    "deletions": 2,
+    "headRefName": "palette-aria-labels-9074062803965100687",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "BLOCKED",
+    "mergeable": "MERGEABLE",
+    "number": 931,
+    "title": "\ud83c\udfa8 Palette: Add missing ARIA labels to interactive elements",
+    "verdict": "APPROVED",
+    "rationale": "Shared-UI missing ARIA labels."
+  },
+  {
+    "additions": 8,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 2,
+    "createdAt": "2026-09-06T23:16:18Z",
+    "deletions": 4,
+    "headRefName": "mason-tighten-youth-academy-types-8231912179752649878",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "BLOCKED",
+    "mergeable": "MERGEABLE",
+    "number": 930,
+    "title": "\ud83e\uddf1 Mason: tighten types in YouthAcademyService",
+    "verdict": "APPROVED",
+    "rationale": "Removes redundant `as unknown as` casts; heya.youthAcademy verified on Heya type."
+  },
+  {
+    "additions": 5,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 2,
+    "createdAt": "2026-09-06T22:57:47Z",
+    "deletions": 1,
+    "headRefName": "scribe-fix-scorepairing-jsdoc-8841946985399827904",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "BLOCKED",
+    "mergeable": "MERGEABLE",
+    "number": 929,
+    "title": "\ud83d\udcdc Scribe: fix scorePairing JSDoc param type",
+    "verdict": "APPROVED",
+    "rationale": "scorePairing JSDoc @param fix."
+  },
+  {
+    "additions": 1,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 1,
+    "createdAt": "2026-09-06T22:28:34Z",
+    "deletions": 0,
+    "headRefName": "jules-9189899009295992146-7b293c0e",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "BLOCKED",
+    "mergeable": "MERGEABLE",
+    "number": 928,
+    "title": "\u2728 Polish: Accessibility fix for DigestWidget button",
+    "verdict": "APPROVED",
+    "rationale": "DigestWidget button a11y."
+  },
+  {
+    "additions": 14,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 1,
+    "createdAt": "2026-09-06T22:17:29Z",
+    "deletions": 2,
+    "headRefName": "bard-ui-digest-variety-9023391969542812931",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "BLOCKED",
+    "mergeable": "MERGEABLE",
+    "number": 927,
+    "title": "\ud83c\udfad Bard: UI Digest Status Variety",
+    "verdict": "APPROVED",
+    "rationale": "ui.json status strings -> variant arrays; BardEngine.getOptions handles arrays (BardEngine.ts:175)."
+  },
+  {
+    "additions": 1,
+    "author": {
+      "is_bot": true,
+      "login": "app/dependabot"
+    },
+    "changedFiles": 1,
+    "createdAt": "2026-09-06T00:27:49Z",
+    "deletions": 1,
+    "headRefName": "dependabot/npm_and_yarn/typescript-eslint/eslint-plugin-8.69.0",
+    "isDraft": false,
+    "labels": [
+      {
+        "id": "LA_kwDOQ4QykM8AAAACvmRfuA",
+        "name": "dependencies",
+        "description": "Pull requests that update a dependency file",
+        "color": "0366d6"
+      },
+      {
+        "id": "LA_kwDOQ4QykM8AAAACvmRfug",
+        "name": "javascript",
+        "description": "Pull requests that update javascript code",
+        "color": "168700"
+      }
+    ],
+    "mergeStateStatus": "BEHIND",
+    "mergeable": "MERGEABLE",
+    "number": 926,
+    "title": "chore(deps-dev): bump @typescript-eslint/eslint-plugin from 8.68.0 to 8.69.0",
+    "verdict": "APPROVED",
+    "rationale": "typescript-eslint plugin 8.68->8.69; batch with #923/#925."
+  },
+  {
+    "additions": 1,
+    "author": {
+      "is_bot": true,
+      "login": "app/dependabot"
+    },
+    "changedFiles": 1,
+    "createdAt": "2026-09-06T00:26:21Z",
+    "deletions": 1,
+    "headRefName": "dependabot/npm_and_yarn/typescript-eslint-8.69.0",
+    "isDraft": false,
+    "labels": [
+      {
+        "id": "LA_kwDOQ4QykM8AAAACvmRfuA",
+        "name": "dependencies",
+        "description": "Pull requests that update a dependency file",
+        "color": "0366d6"
+      },
+      {
+        "id": "LA_kwDOQ4QykM8AAAACvmRfug",
+        "name": "javascript",
+        "description": "Pull requests that update javascript code",
+        "color": "168700"
+      }
+    ],
+    "mergeStateStatus": "BEHIND",
+    "mergeable": "MERGEABLE",
+    "number": 925,
+    "title": "chore(deps-dev): bump typescript-eslint from 8.68.0 to 8.69.0",
+    "verdict": "APPROVED",
+    "rationale": "typescript-eslint meta 8.68->8.69; batch with #923/#926."
+  },
+  {
+    "additions": 1,
+    "author": {
+      "is_bot": true,
+      "login": "app/dependabot"
+    },
+    "changedFiles": 1,
+    "createdAt": "2026-09-06T00:24:57Z",
+    "deletions": 1,
+    "headRefName": "dependabot/npm_and_yarn/lucide-react-1.39.0",
+    "isDraft": false,
+    "labels": [
+      {
+        "id": "LA_kwDOQ4QykM8AAAACvmRfuA",
+        "name": "dependencies",
+        "description": "Pull requests that update a dependency file",
+        "color": "0366d6"
+      },
+      {
+        "id": "LA_kwDOQ4QykM8AAAACvmRfug",
+        "name": "javascript",
+        "description": "Pull requests that update javascript code",
+        "color": "168700"
+      }
+    ],
+    "mergeStateStatus": "BEHIND",
+    "mergeable": "MERGEABLE",
+    "number": 924,
+    "title": "chore(deps): bump lucide-react from 1.34.0 to 1.39.0",
+    "verdict": "APPROVED",
+    "rationale": "lucide-react 1.34->1.39 (published 2026-09-01 = 11d, newest version >=7 days old). Regen bun.lock."
+  },
+  {
+    "additions": 1,
+    "author": {
+      "is_bot": true,
+      "login": "app/dependabot"
+    },
+    "changedFiles": 1,
+    "createdAt": "2026-09-06T00:24:10Z",
+    "deletions": 1,
+    "headRefName": "dependabot/npm_and_yarn/typescript-eslint/parser-8.69.0",
+    "isDraft": false,
+    "labels": [
+      {
+        "id": "LA_kwDOQ4QykM8AAAACvmRfuA",
+        "name": "dependencies",
+        "description": "Pull requests that update a dependency file",
+        "color": "0366d6"
+      },
+      {
+        "id": "LA_kwDOQ4QykM8AAAACvmRfug",
+        "name": "javascript",
+        "description": "Pull requests that update javascript code",
+        "color": "168700"
+      }
+    ],
+    "mergeStateStatus": "BEHIND",
+    "mergeable": "MERGEABLE",
+    "number": 923,
+    "title": "chore(deps-dev): bump @typescript-eslint/parser from 8.68.0 to 8.69.0",
+    "verdict": "APPROVED",
+    "rationale": "typescript-eslint parser 8.68->8.69; dev-only, batch with #925/#926, regen bun.lock."
+  },
+  {
+    "additions": 5,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 2,
+    "createdAt": "2026-09-05T22:49:55Z",
+    "deletions": 0,
+    "headRefName": "palette-add-kesho-editor-aria-labels-7525657856494683671",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "BEHIND",
+    "mergeable": "MERGEABLE",
+    "number": 922,
+    "title": "\ud83c\udfa8 Palette: Add ARIA labels to Kesho-Mawashi editor buttons",
+    "verdict": "APPROVED",
+    "rationale": "Kesho editor ARIA labels."
+  },
+  {
+    "additions": 97,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 2,
+    "createdAt": "2026-09-05T22:29:06Z",
+    "deletions": 0,
+    "headRefName": "scout-npc-investment-tests-11819403435177862169",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "BEHIND",
+    "mergeable": "MERGEABLE",
+    "number": 921,
+    "title": "\ud83e\uddea Scout: test processNpcAutoInvestment",
+    "verdict": "APPROVED",
+    "rationale": "processNpcAutoInvestment tests; MockFactory at src/tests/helpers/utils/ + signature verified."
+  },
+  {
+    "additions": 15,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 2,
+    "createdAt": "2026-09-05T22:10:55Z",
+    "deletions": 2,
+    "headRefName": "bard-enrich-bout-resolution-text-variety-6176294888266007920",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "BEHIND",
+    "mergeable": "MERGEABLE",
+    "number": 920,
+    "title": "\ud83c\udfad Bard: Enrich bout resolution text variety",
+    "verdict": "CHERRY-PICK",
+    "rationale": "Merge bout_title/bout_summary variants into events.json together with #943's unique keys. Dead path (V5-B04) but token-valid."
+  },
+  {
+    "additions": 1547,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 114,
+    "createdAt": "2026-09-04T22:39:54Z",
+    "deletions": 1220,
+    "headRefName": "bolt/matchmaking-perf-optimization-7523672055090595822",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "DIRTY",
+    "mergeable": "CONFLICTING",
+    "number": 919,
+    "title": "\u26a1 Bolt: Optimize Swiss matchmaking array allocations",
+    "verdict": "CHERRY-PICK",
+    "rationale": "114f megadiff; take only matchmaking/LowerDivisionSwiss.ts + SwissAlgorithm.ts (.filter().sort()->loop+sort, equivalent). ~90f are prettier churn incl. trailing-comma REMOVAL vs repo config + test reformat + tsbuildinfo."
+  },
+  {
+    "additions": 18,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 2,
+    "createdAt": "2026-09-04T22:29:51Z",
+    "deletions": 11,
+    "headRefName": "palette-opponent-card-a11y-10233334125017813722",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "BEHIND",
+    "mergeable": "MERGEABLE",
+    "number": 918,
+    "title": "\ud83c\udfa8 Palette: Make Opponent Scouting cards keyboard accessible",
+    "verdict": "APPROVED",
+    "rationale": "OpponentScoutingTab keyboard a11y; collides with #919 \u2014 take #918's version of that file."
+  },
+  {
+    "additions": 6,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 2,
+    "createdAt": "2026-09-04T22:17:52Z",
+    "deletions": 1,
+    "headRefName": "scribe-pure-flag-2270461119509382829",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "BEHIND",
+    "mergeable": "MERGEABLE",
+    "number": 917,
+    "title": "\ud83d\udcdc Scribe: fix misleading PipelinePhaseMetadata docs",
+    "verdict": "REJECT",
+    "rationale": "Doc 'fix' is false: pipelineRunner.ts:116 honors `pure`; touches:[] snapshots nothing (lines 76-79)."
+  },
+  {
+    "additions": 11,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 4,
+    "createdAt": "2026-09-03T23:28:59Z",
+    "deletions": 2,
+    "headRefName": "scribe-entity-service-docs-4344339828865081261",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "DIRTY",
+    "mergeable": "CONFLICTING",
+    "number": 916,
+    "title": "\ud83d\udcdc Scribe: document EntityService.ensureState falsy overwrite bug",
+    "verdict": "APPROVED",
+    "rationale": "Doc warning re falsy overwrite is factually true \u2014 EntityService.ts:47 uses `!parent[key]`."
+  },
+  {
+    "additions": 20,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 4,
+    "createdAt": "2026-09-03T23:12:15Z",
+    "deletions": 19,
+    "headRefName": "mason-tighten-ensurecollectionarray-11496125198854889215",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "DIRTY",
+    "mergeable": "CONFLICTING",
+    "number": 915,
+    "title": "\ud83e\uddf1 Mason: Tighten ensureCollectionArray return type",
+    "verdict": "APPROVED",
+    "rationale": "ensureCollectionArray generic K extends keyof collections \u2014 verified vs ImpactBuilder.ts:72."
+  },
+  {
+    "additions": 50,
+    "author": {
+      "id": "MDQ6VXNlcjU5MjMwNDcy",
+      "is_bot": false,
+      "login": "anguschoclab",
+      "name": ""
+    },
+    "changedFiles": 2,
+    "createdAt": "2026-09-03T22:52:59Z",
+    "deletions": 0,
+    "headRefName": "scout/impactbuilder-convenience-tests-14810578436818961105",
+    "isDraft": false,
+    "labels": [],
+    "mergeStateStatus": "BEHIND",
+    "mergeable": "MERGEABLE",
+    "number": 914,
+    "title": "\ud83e\uddea Scout: test ImpactBuilder convenience functions",
+    "verdict": "APPROVED",
+    "rationale": "ImpactBuilder convenience-fn tests; correct API usage (updateHeyaImpact, logEventImpact)."
+  }
+]
