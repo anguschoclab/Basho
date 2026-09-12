@@ -444,6 +444,8 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Utility function retained for future wiring",
   "src/engine/utils/collectionOperations.ts:groupBy": "Utility function retained for future wiring",
   "src/engine/utils/collectionOperations.ts:countBy": "Utility function retained for future wiring",
+  "src/engine/systems/recruitment/YouthAcademyService.ts:getQualityBonus":
+    "Public helper exercised directly by youthAcademy.test.ts",
 };
 
 /**

@@ -94,6 +94,16 @@ export function logEngineEvent(world: WorldState, params: LogEngineEventParams):
 
   // Include day index to scope deduplication to current tick only
   const dayIndex = world.dayIndexGlobal ?? 0;
+
+  // Dedupe keys are versioned with `@dayIndex`, so keys from prior days can
+  // never match. Reset the map on day rollover instead of letting it grow
+  // unboundedly — ImpactResolver detaches (copies) this map for every
+  // eventful impact, so dead keys have real cost in long sims.
+  if (events.dedupeDay !== dayIndex) {
+    events.dedupe = {};
+    events.dedupeDay = dayIndex;
+  }
+
   const versionedDedupeKey = `${baseDedupeKey}@${dayIndex}`;
 
   if (events.dedupe[versionedDedupeKey]) {

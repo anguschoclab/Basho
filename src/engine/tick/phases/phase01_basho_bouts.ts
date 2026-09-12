@@ -108,6 +108,25 @@ export function phase01_basho_bouts(world: WorldState): StateImpact {
     builder.updateWorldField("currentBasho", currentWorld.currentBasho);
   }
 
+  // simulateBoutForToday / advanceBashoDay resolve their sub-impacts into
+  // currentWorld, but this phase only returns a delta impact — any world field
+  // they touched must be re-exported or it is silently dropped. Previously
+  // events survived via input-world mutation (removed by the V5-B11
+  // immutability fix); mediaState/rivalriesState/etc. were already being lost.
+  const PASSTHROUGH_FIELDS = [
+    "events",
+    "boutTactics",
+    "mediaState",
+    "rivalriesState",
+    "transientContext",
+    "playerKnowledge",
+  ] as const;
+  for (const field of PASSTHROUGH_FIELDS) {
+    if (currentWorld[field] !== world[field]) {
+      builder.updateWorldField(field, currentWorld[field]);
+    }
+  }
+
   // Collect any rikishi stat changes by diffing — the simulateBoutForToday
   // function resolves impacts internally, so we capture the final rikishi state
   // for any rikishi that appear in the basho matches.

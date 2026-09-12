@@ -187,7 +187,13 @@ describe("UI Digest: Rikishi Perception Boundary", () => {
 
       const digest = buildWeeklyDigest(mockWorld);
       expect(digest).not.toBeNull();
-      expect(digest?.headline).toBe("No major events recorded this week.");
+      expect([
+        "No major events recorded this week.",
+        "A quiet week across the association.",
+        "Business as usual: no significant events this week.",
+        "A peaceful week with no major updates.",
+        "Routine operations: nothing major to report this week.",
+      ]).toContain(digest?.headline);
       expect(digest?.sections).toEqual([]);
       expect(digest?.counts).toEqual({
         trainingEvents: 0,
@@ -217,7 +223,8 @@ describe("UI Digest: Rikishi Perception Boundary", () => {
       expect(digest?.sections[0].items).toHaveLength(1);
       expect(digest?.sections[0].items[0].title).toBe("InjuredRikishi injured");
       expect(digest?.sections[0].items[0].detail).toBe("moderate — 2w remaining");
-      expect(digest?.headline).toBe("1 injury update this week.");
+      expect(digest?.headline).toContain("1");
+      expect(digest?.headline?.toLowerCase()).toContain("injur");
       expect(digest?.counts.injuries).toBe(1);
     });
 

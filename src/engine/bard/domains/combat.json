@@ -335,6 +335,18 @@
         "A pivotal moment in the basho.",
         "The crowd holds its breath as %EAST% and %WEST% face off.",
         "The dohyo is silent before the storm."
+      ],
+      "debut_showcase": [
+        "A makuuchi debut to remember — %EAST% steps onto the dohyo against sanyaku opposition for the first time.",
+        "All eyes on the newcomer: %EAST% faces %WEST% in a true test of top-division credentials.",
+        "The rookie's baptism by fire — %EAST% draws elite company in %WEST% for this showcase bout.",
+        "First taste of the big stage for %EAST%, who must prove he belongs against the battle-tested %WEST%."
+      ],
+      "yokozuna_hunt": [
+        "The hunt is on — %EAST% squares up against the yokozuna %WEST% with a kinboshi in his sights.",
+        "Late-basho stakes: %EAST% gets his shot at the grand champion %WEST%.",
+        "A career-defining opportunity for %EAST% — topple the yokozuna %WEST% and write his name in the record books.",
+        "The yokozuna hunt continues as %EAST% takes aim at %WEST% in the tournament's decisive stretch."
       ]
     },
     "tactical": {

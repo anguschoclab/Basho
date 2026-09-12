@@ -9,7 +9,7 @@
  * - Every wired state field is read by at least one presenter/selector
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import { readFileSync, readdirSync, existsSync, statSync } from "fs";
 import { join } from "path";
 import { advanceDaysFast } from "@/engine/tick/tickDaily";
@@ -204,6 +204,13 @@ function buildPlaythroughWorld(): WorldState {
 }
 
 describe("Phase 5: Headless 52-week playthrough", () => {
+  // Mirror the app bootstrap (src/bootstrap.tsx): narrative domains must be
+  // loaded before synchronous resolve() calls or templates return empty text.
+  beforeAll(async () => {
+    const { BardEngine } = await import("@/engine/bard/BardEngine");
+    await BardEngine.loadDomains();
+  });
+
   it("advances 364 days without throwing", () => {
     const world = buildPlaythroughWorld();
     let result: WorldState | null = null;

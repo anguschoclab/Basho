@@ -280,4 +280,11 @@ export interface EventsState {
   log: EngineEvent[];
   /** Deduplication map to prevent duplicate events. */
   dedupe: Record<string, true>;
+  /**
+   * The dayIndexGlobal the dedupe map is scoped to. Keys are versioned with
+   * `@dayIndex`, so only same-day keys can ever match; when the day advances
+   * the map is reset rather than accumulating dead keys. Optional for
+   * backward compatibility with older saves.
+   */
+  dedupeDay?: number;
 }

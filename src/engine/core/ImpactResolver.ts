@@ -447,12 +447,18 @@ export function resolveImpacts(world: WorldState, impacts: StateImpact[]): World
         // shares that object with the caller's input, so detach it first or the
         // event log/dedupe writes would leak into the pre-resolution world.
         if (result.events !== undefined && result.events === world.events) {
+          // dedupe keys are versioned with @dayIndex — keys from prior days
+          // are unreachable dead weight, so don't pay to copy them.
+          const dedupe =
+            result.events.dedupeDay === result.dayIndexGlobal
+              ? { ...result.events.dedupe }
+              : {};
           result = {
             ...result,
             events: {
               ...result.events,
               log: [...result.events.log],
-              dedupe: { ...result.events.dedupe },
+              dedupe,
             },
           };
         }

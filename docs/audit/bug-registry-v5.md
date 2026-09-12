@@ -87,6 +87,27 @@
 - **Fix:** Phase 4/8 — wire the panel into RegionalHubPage (replace inline JSX) or delete it; delete RequireWorld wrapper; pass the real basho pair to getInterimWeeks.
 - **Status:** OPEN
 
+### V5-B12: `phase01_basho_bouts` silently drops world-field updates resolved inside `simulateBoutForToday`
+- **Files:** `src/engine/tick/phases/phase01_basho_bouts.ts`, `src/engine/world.ts` (`simulateBoutForToday`, `advanceBashoDay`)
+- **Severity:** Medium-High — latent data-loss defect exposed by the V5-B11 fix
+- **Root Cause:** The phase resolves bout impacts into an intermediate `currentWorld` via internal `resolveImpacts` calls, then returns only a delta `StateImpact` — the pipeline applies that delta to the *input* world, discarding `currentWorld`. At baseline this only "worked" for `events` because `logEngineEvent` mutated the input world's `events.log` through the shared reference (the exact leak V5-B11 removed). Every other world field written inside bout resolution — `mediaState`, `rivalriesState`, `transientContext`, `playerKnowledge` — was silently dropped even at baseline; bout-driven media/rivalry/scouting updates never reached the pipeline output.
+- **Symptom (post-V5-B11):** `headless-playthrough.test.ts` failed with missing `economy` + `match` event categories — all 50 bouts resolved but zero `BOUT_RESOLVED`/`AWARD_CONFERRED` events in the log.
+- **Fix:** The phase now re-exports any changed world field (`events`, `boutTactics`, `mediaState`, `rivalriesState`, `transientContext`, `playerKnowledge`) through its returned impact, so internally-resolved state reaches the pipeline output.
+- **Verification:** `headless-playthrough.test.ts` 9/9 green — `match/BOUT_RESOLVED: 50`, `economy` restored.
+- **Status:** FIXED (this branch)
+
+### V5-B13: Missing `combat.phases.drama` templates for `debut_showcase` and `yokozuna_hunt`
+- **Files:** `src/engine/bard/domains/combat.json`, `src/engine/matchmaking/DramaMatchmaker.ts:82-84,353,368`, `src/engine/bout/boutNarrative.ts:246`
+- **Severity:** Low — `BardEngine.resolve` returns `{ text: "" }` for unmapped paths, pushing a blank line into bout PBP whenever `DramaMatchmaker` labels a bout `debut_showcase` (rookie vs sanyaku) or `yokozuna_hunt` (komusubi/sekiwake vs yokozuna, days 10-14). Pre-existing; surfaced as warnings in the full suite.
+- **Fix:** Added 4 variants each for both labels in `combat.json`, matching existing drama-template style and `%EAST%`/`%WEST%` tokens.
+- **Status:** FIXED (this branch)
+
+### V5-B14: BardEngine domains never preloaded in headless/test sims
+- **Files:** `src/engine/bard/BardEngine.ts:93-106` (async `import()` loading), `src/bootstrap.tsx:28` (app preloads; tests do not)
+- **Severity:** Low — in `advanceDaysFast`-style synchronous sims the dynamic `import()` never resolves mid-run, so every domain-path `resolve()` returns `""` (the `npc.strategy.*` warnings in the full suite). App behavior is correct (bootstrap awaits `loadDomains()`); test-only fidelity gap.
+- **Fix:** `headless-playthrough.test.ts` now `await BardEngine.loadDomains()` in `beforeAll`, mirroring app bootstrap.
+- **Status:** FIXED (this branch)
+
 ## PR-Level Findings (rolled into verdict table)
 
 | PR | Finding | Disposition |
