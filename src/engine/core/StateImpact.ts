@@ -197,6 +197,7 @@ export interface StateImpact {
       | "lineage"
       | "matchmakingOverride"
       | "playerKnowledge"
+      | "boutTactics"
     >
   >;
 

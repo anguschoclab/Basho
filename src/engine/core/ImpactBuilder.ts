@@ -365,6 +365,7 @@ export class ImpactBuilder {
       | "tutorialState"
       | "gyojiPool"
       | "shimpanPool"
+      | "boutTactics"
     >,
   >(field: K, value: WorldState[K]): ImpactBuilder {
     if (!this.impact.worldFields) {

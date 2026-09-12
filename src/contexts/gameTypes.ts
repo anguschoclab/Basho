@@ -60,8 +60,15 @@ export interface GameState {
   playerOyakataId: string | null;
   /** Whether auto-play mode is enabled. */
   isAutoPlaying: boolean;
-  /** Map of bout IDs to tactics set by the player. */
+  /** Map of bout IDs to tactics set by the player (UI cache; the authoritative
+   * copy lives on world.boutTactics so it reaches the worker). */
   boutTactics: Record<string, import("@/engine/types/combat").BoutTactic>;
+  /**
+   * Monotonic counter bumped by reducer actions that mutate state.world on the
+   * main thread (interactive basho path). GameContext watches this and pushes
+   * LOAD_WORLD to the worker so its authoritative copy can't go stale (V5-B09).
+   */
+  uiWorldRevision?: number;
   /** True when the digest is stale and needs rebuild (set during bulk advances). */
   digestStale?: boolean;
 }
@@ -108,5 +115,6 @@ export const initialGameState: GameState = {
   playerOyakataId: null,
   isAutoPlaying: false,
   boutTactics: {},
+  uiWorldRevision: 0,
   digestStale: false,
 };

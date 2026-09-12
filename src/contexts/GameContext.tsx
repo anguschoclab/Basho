@@ -11,7 +11,7 @@
  * @see gameTypes for type definitions
  */
 
-import { useReducer, useCallback, useMemo, useEffect, useTransition, ReactNode } from "react";
+import { useReducer, useCallback, useMemo, useEffect, useRef, useTransition, ReactNode } from "react";
 import { error as logError } from "@/engine/utils/Logger";
 import type { WorldState } from "@/engine/types/world";
 import { saveGame, loadGame, hasAutosave, loadAutosave, getSaveSlotInfos } from "@/engine/saveload";
@@ -87,6 +87,23 @@ export function GameProvider({ children }: { children: ReactNode }) {
       }
     }
   }, [state.world]);
+
+  // V5-B09: the interactive basho path (SIMULATE_BOUT / SIMULATE_ALL_BOUTS /
+  // SET_BOUT_TACTIC / END_BASHO) still resolves on the main thread for
+  // synchronous match animation. Those slice cases bump state.uiWorldRevision;
+  // this effect pushes the resulting world to the worker via LOAD_WORLD so the
+  // worker's authoritative copy can't go stale and re-resolve the day without
+  // player tactics on the next TICK_DAY.
+  // Gated on pendingTick: sendCommand drops commands mid-tick, so we wait for
+  // the flag to clear and re-run rather than silently losing the sync.
+  const pendingTick = useGameStore((s) => s.pendingTick);
+  const lastSyncedUiRevision = useRef(0);
+  useEffect(() => {
+    const rev = state.uiWorldRevision ?? 0;
+    if (!state.world || rev <= lastSyncedUiRevision.current || pendingTick) return;
+    lastSyncedUiRevision.current = rev;
+    sendCommand({ type: "LOAD_WORLD", world: state.world });
+  }, [state.world, state.uiWorldRevision, pendingTick, sendCommand]);
 
   const createWorld = useCallback(
     (

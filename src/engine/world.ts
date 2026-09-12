@@ -79,13 +79,16 @@ export function advanceBashoDay(world: WorldState): WorldState {
 
   const nextDay = basho.day + 1;
 
-  // Update basho day immutably via impacts
+  // Update basho day immutably via impacts.
+  // boutTactics are per-day — clear them so stale entries can't leak into the
+  // next day's bouts (V5-B09).
   const dayUpdateImpact = createImpactBuilder("advanceBashoDay")
     .updateWorldField("currentBasho", {
       ...basho,
       day: nextDay,
       currentDay: nextDay,
     })
+    .updateWorldField("boutTactics", {})
     .build();
   currentWorld = resolveImpacts(currentWorld, [dayUpdateImpact]);
 
@@ -199,6 +202,19 @@ export function simulateBoutForToday(
           ...currentWorld.currentBasho,
           matches: updatedMatches,
         })
+        .build(),
+    ]);
+  }
+
+  // Consume the applied tactic so it cannot be re-applied to another bout
+  // or leak into a later day (V5-B09).
+  if (match.boutId && currentWorld.boutTactics?.[match.boutId] !== undefined) {
+    const nextTactics = Object.fromEntries(
+      Object.entries(currentWorld.boutTactics).filter(([k]) => k !== match.boutId)
+    );
+    currentWorld = resolveImpacts(currentWorld, [
+      createImpactBuilder("simulateBoutForToday")
+        .updateWorldField("boutTactics", nextTactics)
         .build(),
     ]);
   }

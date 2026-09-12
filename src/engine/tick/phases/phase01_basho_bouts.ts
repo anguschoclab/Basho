@@ -15,6 +15,7 @@
  */
 
 import type { WorldState } from "../../types/world";
+import type { BoutTactic } from "../../types/combat";
 import type { StateImpact } from "../../core/StateImpact";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { simulateBoutForToday, advanceBashoDay } from "../../world";
@@ -51,7 +52,14 @@ export function phase01_basho_bouts(world: WorldState): StateImpact {
     const todays = dayMatches.filter((m) => !m.result);
     if (todays.length === 0) break;
 
-    const { world: nextWorld, result } = simulateBoutForToday(currentWorld, 0);
+    // V5-B09: player tactics live on world.boutTactics so they survive the
+    // main-thread -> worker boundary. Forward the stored tactic for the bout
+    // being resolved instead of always passing no tactic.
+    const boutId = todays[0].boutId;
+    const tactic = (
+      boutId ? currentWorld.boutTactics?.[boutId] : undefined
+    ) as BoutTactic | undefined;
+    const { world: nextWorld, result } = simulateBoutForToday(currentWorld, 0, tactic);
     currentWorld = nextWorld;
     if (!result) break;
   }
