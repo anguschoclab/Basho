@@ -1,0 +1,377 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/app[39m
+      [2mCoverage enabled with [22m[33mv8[39m
+
+[90mstdout[2m | src/tests/unit/engine/tick/advanceCalendarDays.test.ts[2m > [22m[2mBatch preflight (B1.1)[2m > [22m[2madvanceCalendarDays equivalence[2m > [22m[2madvanceDaysFast(N) produces same dayIndexGlobal as N × advanceOneDay with skipDailyMicroPhases
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m2[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m5[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/advanceCalendarDays.test.ts[2m > [22m[2mBatch preflight (B1.1)[2m > [22m[2madvanceCalendarDays equivalence[2m > [22m[2madvanceDaysFast(N) produces same calendar as N × advanceOneDay
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m2[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m5[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/advanceCalendarDays.test.ts[2m > [22m[2mBatch preflight (B1.1)[2m > [22m[2madvanceCalendarDays equivalence[2m > [22m[2madvanceDaysFast(N) produces same _daysSinceLastWeeklyTick as N × advanceOneDay
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m2[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m5[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/advanceCalendarDays.test.ts[2m > [22m[2mBatch preflight (B1.1)[2m > [22m[2madvanceCalendarDays equivalence[2m > [22m[2madvanceDaysFast(N) produces same cyclePhase as N × advanceOneDay
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m2[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m5[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/advanceCalendarDays.test.ts[2m > [22m[2mBatch preflight (B1.1)[2m > [22m[2madvanceCalendarDays equivalence[2m > [22m[2madvanceDaysFast(N) produces same week as N × advanceOneDay
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m2[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m5[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/advanceCalendarDays.test.ts[2m > [22m[2mBatch preflight (B1.1)[2m > [22m[2madvanceCalendarDays equivalence[2m > [22m[2madvanceDaysFast(7) triggers exactly one weekly tick
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m5[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/advanceCalendarDays.test.ts[2m > [22m[2mBatch preflight (B1.1)[2m > [22m[2madvanceCalendarDays equivalence[2m > [22m[2madvanceDaysFast(1) is equivalent to advanceOneDay with skipDailyMicroPhases
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+
+ [32m✓[39m src/tests/unit/engine/tick/advanceCalendarDays.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 66532[2mms[22m[39m
+       [33m[2m✓[22m[39m advanceDaysFast(N) produces same dayIndexGlobal as N × advanceOneDay with skipDailyMicroPhases [33m 16880[2mms[22m[39m
+       [33m[2m✓[22m[39m advanceDaysFast(N) produces same calendar as N × advanceOneDay [33m 14720[2mms[22m[39m
+       [33m[2m✓[22m[39m advanceDaysFast(N) produces same _daysSinceLastWeeklyTick as N × advanceOneDay [33m 14944[2mms[22m[39m
+       [33m[2m✓[22m[39m advanceDaysFast(N) produces same cyclePhase as N × advanceOneDay [33m 2515[2mms[22m[39m
+       [33m[2m✓[22m[39m advanceDaysFast(N) produces same week as N × advanceOneDay [33m 16868[2mms[22m[39m
+[90mstdout[2m | src/tests/unit/engine/tick/tickDaily.test.ts[2m > [22m[2mtickDaily[2m > [22m[2madvanceOneDay[2m > [22m[2mincrements dayIndexGlobal and advances calendar
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m10[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/tickDaily.test.ts[2m > [22m[2mtickDaily[2m > [22m[2madvanceOneDay[2m > [22m[2mresets _daysSinceLastWeeklyTick on weekly tick (7 days)
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/tickDaily.test.ts[2m > [22m[2mtickDaily[2m > [22m[2madvanceOneDay[2m > [22m[2mincrements _daysSinceLastWeeklyTick when not a weekly tick
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/tickDaily.test.ts[2m > [22m[2mtickDaily[2m > [22m[2madvanceOneDay[2m > [22m[2mruns month boundary logic when calendar crosses month
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/tickDaily.test.ts[2m > [22m[2mtickDaily[2m > [22m[2madvanceOneDay[2m > [22m[2mruns year boundary logic when calendar crosses year
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m12[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/tickDaily.test.ts[2m > [22m[2mtickDaily[2m > [22m[2madvanceDays[2m > [22m[2madvances the world state by the specified number of days
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [90mundefined[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m2[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/tickDaily.test.ts[2m > [22m[2mtickDaily[2m > [22m[2madvanceDays[2m > [22m[2mclamps days to at least 1
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [90mundefined[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/tickDaily.test.ts[2m > [22m[2mtickDaily[2m > [22m[2madvanceDays[2m > [22m[2mclamps days to at most 365
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [90mundefined[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m2[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/tickDaily.test.ts[2m > [22m[2mtickDaily[2m > [22m[2madvanceDaysFast[2m > [22m[2madvances the world state by the specified number of days
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [90mundefined[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m4[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/tickDaily.test.ts[2m > [22m[2mtickDaily[2m > [22m[2madvanceDaysFast[2m > [22m[2mclamps days to at least 1
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [90mundefined[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/tickDaily.test.ts[2m > [22m[2mtickDaily[2m > [22m[2madvanceDaysFast[2m > [22m[2mclamps days to at most 365
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [90mundefined[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m5[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/tickDaily.test.ts[2m > [22m[2mtickDaily[2m > [22m[2madvanceDaysFast[2m > [22m[2mis deterministic: produces same end-state as individual advanceOneDay calls
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m2[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m5[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/tickDaily.test.ts[2m > [22m[2mtickDaily[2m > [22m[2madvanceDays - Logger integration[2m > [22m[2mwarns via Logger when input exceeds MAX_DAYS_ADVANCE
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [90mundefined[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m2[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/tickDaily.test.ts[2m > [22m[2mtickDaily[2m > [22m[2madvanceDays - Logger integration[2m > [22m[2mdoes not warn when input is within bounds
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [90mundefined[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m2[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/tickDaily.test.ts[2m > [22m[2mtickDaily[2m > [22m[2madvanceDaysFast - Logger integration[2m > [22m[2mwarns via Logger when input exceeds MAX_DAYS_ADVANCE
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [90mundefined[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m5[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/tickDaily.test.ts[2m > [22m[2mtickDaily[2m > [22m[2madvanceDaysFast - Logger integration[2m > [22m[2mdoes not warn when input is within bounds
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [90mundefined[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m4[39m, year: [33m2026[39m, month: [33m1[39m }
+
+ [32m✓[39m src/tests/unit/engine/tick/tickDaily.test.ts [2m([22m[2m20 tests[22m[2m)[22m[33m 1266[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/phase01_daily_micro.fused.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 1113[2mms[22m[39m
+     [33m[2m✓[22m[39m phase01_daily_micro produces same WorldState as running 4 phases sequentially [33m 376[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/phase06.singlePass.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 974[2mms[22m[39m
+     [33m[2m✓[22m[39m phase06_yearly_boundary produces valid StateImpact with metadata [33m 379[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/phase05.batchedImpacts.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 470[2mms[22m[39m
+[90mstdout[2m | src/tests/unit/engine/tick/clearQueryCaches.weekly.test.ts[2m > [22m[2mclearQueryCaches weekly cadence (B1.2)[2m > [22m[2mdoes not clear roster cache on non-weekly daily ticks
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/clearQueryCaches.weekly.test.ts[2m > [22m[2mclearQueryCaches weekly cadence (B1.2)[2m > [22m[2mcalls clearQueryCaches on weekly tick entry
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+
+ [32m✓[39m src/tests/unit/engine/tick/clearQueryCaches.weekly.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 587[2mms[22m[39m
+     [33m[2m✓[22m[39m calls clearQueryCaches on weekly tick entry [33m 356[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/phase05_exhibition.gating.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 935[2mms[22m[39m
+     [33m[2m✓[22m[39m jungyoOptOut field can be set on a heya [33m 383[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/npc_ai/rotation.test.ts [2m([22m[2m13 tests[22m[2m)[22m[33m 372[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/phase05.sponsorBatch.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 469[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/phase01_week_training.tsukebito.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 478[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/boundary.gate.test.ts [2m([22m[2m9 tests[22m[2m)[22m[33m 417[2mms[22m[39m
+[90mstdout[2m | src/tests/unit/engine/tick/advanceDaysFast.test.ts[2m > [22m[2mP2.3: advanceDaysFast[2m > [22m[2m7-day fast advance increments dayIndexGlobal by 7
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m5[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/advanceDaysFast.test.ts[2m > [22m[2mP2.3: advanceDaysFast[2m > [22m[2m42-day fast advance increments dayIndexGlobal by 42
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m5[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/advanceDaysFast.test.ts[2m > [22m[2mP2.3: advanceDaysFast[2m > [22m[2mdeterminism: same seed produces same final dayIndexGlobal
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m5[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m5[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/advanceDaysFast.test.ts[2m > [22m[2mP2.3: advanceDaysFast[2m > [22m[2madvanceDaysFast does not mutate input world
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m5[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/advanceDaysFast.test.ts[2m > [22m[2mP2.3: advanceDaysFast[2m > [22m[2mfast advance across a year boundary updates world.year
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m12[39m }
+
+ [32m✓[39m src/tests/unit/engine/tick/advanceDaysFast.test.ts [2m([22m[2m5 tests[22m[2m)[22m[33m 357[2mms[22m[39m
+[90mstdout[2m | src/tests/unit/engine/tick/advanceWithGates.test.ts[2m > [22m[2mP3.6: advanceWithGates[2m > [22m[2madvances until target reached, then stops
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m2[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/advanceWithGates.test.ts[2m > [22m[2mP3.6: advanceWithGates[2m > [22m[2madvances until gate triggered, then stops
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m2[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/advanceWithGates.test.ts[2m > [22m[2mP3.6: advanceWithGates[2m > [22m[2madvances until shouldHaltAdvance, then stops
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m2[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/advanceWithGates.test.ts[2m > [22m[2mP3.6: advanceWithGates[2m > [22m[2mrespects maxDays cap
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m2[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/advanceWithGates.test.ts[2m > [22m[2mP3.6: advanceWithGates[2m > [22m[2mautonomous flag sets _autonomousSim on world
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/advanceWithGates.test.ts[2m > [22m[2mP3.6: advanceWithGates[2m > [22m[2mdoes not mutate input world
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m2[39m, year: [33m2026[39m, month: [33m1[39m }
+
+ [32m✓[39m src/tests/unit/engine/tick/advanceWithGates.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 227[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/phase01_daily_welfare.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 164[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/dead-service-integration.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 111[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/phase01_basho_bouts.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 118[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/pipelineRunner.snapshot.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 61[2mms[22m[39m
+[90mstdout[2m | src/tests/unit/engine/tick/advance.consolidation.test.ts[2m > [22m[2mP3.2: Advance consolidation[2m > [22m[2madvanceDaysFast(world, 7) produces same dayIndexGlobal as 7 × advanceOneDay with skipDailyMicroPhases
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m5[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m2[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/advance.consolidation.test.ts[2m > [22m[2mP3.2: Advance consolidation[2m > [22m[2madvanceOneDay with skipDailyMicroPhases skips daily micro-phases
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/advance.consolidation.test.ts[2m > [22m[2mP3.2: Advance consolidation[2m > [22m[2madvanceOneDay without skipDailyMicroPhases sets lastReport
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/advance.consolidation.test.ts[2m > [22m[2mP3.2: Advance consolidation[2m > [22m[2madvanceOneDay with autonomous flag sets _autonomousSim
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/advance.consolidation.test.ts[2m > [22m[2mP3.2: Advance consolidation[2m > [22m[2madvanceDays with autonomous flag sets _autonomousSim
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m2[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/advance.consolidation.test.ts[2m > [22m[2mP3.2: Advance consolidation[2m > [22m[2madvanceDaysFast with autonomous flag sets _autonomousSim
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m2[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/advance.consolidation.test.ts[2m > [22m[2mP3.2: Advance consolidation[2m > [22m[2madvanceDays calls onProgress after each day
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m2[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/advance.consolidation.test.ts[2m > [22m[2mP3.2: Advance consolidation[2m > [22m[2madvanceDaysFast calls onProgress after each day
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: banzuke_reveal → pre_basho — Final preparations for the upcoming basho begin. { dayIndexGlobal: [33m1[39m, year: [33m2026[39m, month: [33m1[39m }
+[Pipeline] Phase transition: pre_basho → active_basho — The hatsu basho begins! { dayIndexGlobal: [33m2[39m, year: [33m2026[39m, month: [33m1[39m }
+
+ [32m✓[39m src/tests/unit/engine/tick/advance.consolidation.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 78[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/phase01_week_npc_ai.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 84[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/npcSparringAssignment.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 74[2mms[22m[39m
+[90mstdout[2m | src/tests/unit/engine/tick/basho.pipeline.test.ts[2m > [22m[2mP1.2: Basho pipeline — phase does not run outside active_basho[2m > [22m[2madvanceOneDay during interim does NOT call phase01_basho_bouts
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+
+ [32m✓[39m src/tests/unit/engine/tick/basho.pipeline.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 75[2mms[22m[39m
+[90mstdout[2m | src/tests/unit/engine/tick/pipelineImmutability.test.ts[2m > [22m[2mpipeline immutability[2m > [22m[2madvanceOneDay does not mutate the input world
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+
+[90mstdout[2m | src/tests/unit/engine/tick/pipelineImmutability.test.ts[2m > [22m[2mpipeline immutability[2m > [22m[2mrunPipeline does not mutate the input world for each phase
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+
+ [32m✓[39m src/tests/unit/engine/tick/pipelineImmutability.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 55[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/phase06_narrative.agent.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 61[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/simFullBasho.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 54[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/pipelineRunner.hardening.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 52[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/orchestrator.clone.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 52[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/phase06_narrative.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 57[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/phase01_week_academy.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+[90mstdout[2m | src/tests/unit/engine/tick/monthlyMarket.placement.test.ts[2m > [22m[2mP3.7: Monthly market placement[2m > [22m[2madvanceOneDay does not run monthly market on non-boundary days
+[22m[39m[Pipeline] Phase transition: interim → banzuke_reveal — The official banzuke has been published. { dayIndexGlobal: [33m0[39m, year: [33m2026[39m, month: [33m1[39m }
+
+ [32m✓[39m src/tests/unit/engine/tick/monthlyMarket.placement.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 60[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/phase01_week_governance.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 52[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phaseTransition.logging.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 53[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/pipelineRunner.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/advanceWeek.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 55[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/phase01_week_health.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phase05MonthlyOverhead.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 52[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/phase01_week_welfare.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 53[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/phase02_context.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 49[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/history.bounding.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/phase01_week_rivalries.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 47[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/transientContext.serialization.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 50[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/almanacBounding.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 49[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/phase01_monthly_market.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 46[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phasePreBashoAssessment.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/pipelines/offSeasonPipeline.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/phase01_week_training.merge.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/phase01_daily_drama.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 48[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phase_pre_basho_schedule.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phase01_week_staff.integration.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/monthly/training/archetypeDrift.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 45[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/npc_ai/memory.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 49[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phase01_week_scouting.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 43[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/pipelines/bashoPipeline.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/phase01_daily_economy.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/npc_ai/mood.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phase01_week_staff.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phase01_week_talent_pool.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 45[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phase01_week_world_circuit.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 43[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phases/monthly/facilities/maintenance.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 44[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/digest.memo.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 43[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/pipelineRunner.legacyRemoval.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 42[2mms[22m[39m
+ [32m✓[39m src/tests/unit/engine/tick/phase01_week_economy.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 43[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m61 passed[39m[22m[90m (61)[39m
+[2m      Tests [22m [1m[32m311 passed[39m[22m[90m (311)[39m
+[2m   Start at [22m 22:36:12
+[2m   Duration [22m 190.26s[2m (transform 9.15s, setup 15.46s, import 17.20s, tests 76.89s, environment 60.33s)[22m
+
+[34m % [39m[2mCoverage report from [22m[33mv8[39m
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   86.19 |    70.03 |   94.44 |   88.06 |
+ tick              |   91.26 |    77.41 |   95.23 |   92.42 |
+  ...eWithGates.ts |   93.33 |       90 |     100 |   92.85 | 56
+  conditionTick.ts |     100 |    78.57 |     100 |     100 | 28-29,42
+  index.ts         |       0 |        0 |       0 |       0 |
+  ...lineRunner.ts |    92.5 |    66.66 |     100 |    92.5 | 131,146,160
+  tickDaily.ts     |   90.51 |    79.36 |     100 |    92.3 | ...80,455-456,459
+  ...chestrator.ts |   66.66 |      100 |   66.66 |   66.66 | 16
+ tick/phases       |   87.91 |    71.74 |     100 |   90.15 |
+  ...toryArrays.ts |     100 |    95.23 |     100 |     100 | 30
+  index.ts         |       0 |        0 |       0 |       0 |
+  ..._preflight.ts |   86.11 |     86.2 |     100 |   86.11 | ...50-154,174,181
+  ...asho_bouts.ts |   96.82 |    83.01 |     100 |     100 | ...,72,85-108,116
+  ...aily_drama.ts |     100 |      100 |     100 |     100 |
+  ...ly_economy.ts |     100 |    61.11 |     100 |     100 | 20,24-25,38-41
+  ...aily_micro.ts |     100 |      100 |     100 |     100 |
+  ...y_sponsors.ts |   86.66 |    66.66 |     100 |   85.71 | 31-32
+  ...ly_welfare.ts |   96.87 |    65.78 |     100 |     100 | ...62,68-73,79-95
+  ...hly_market.ts |   94.73 |    83.33 |     100 |     100 | 29-34
+  ...ek_academy.ts |     100 |      100 |     100 |     100 |
+  ...idate_pool.ts |     100 |      100 |     100 |     100 |
+  ...ek_economy.ts |   92.85 |     87.5 |     100 |     100 | 18
+  ...governance.ts |    62.9 |    65.78 |     100 |   68.42 | 48-59,183-192
+  ...eek_health.ts |   97.43 |       80 |     100 |     100 | ...00,112-121,133
+  ...eek_npc_ai.ts |   96.59 |    78.26 |     100 |   96.87 | 154-157
+  ...ecruitment.ts |   80.48 |    63.04 |     100 |    82.5 | 31-33,53-63
+  ..._rivalries.ts |   96.87 |     77.5 |     100 |   98.27 | 128
+  ...k_scouting.ts |     100 |      100 |     100 |     100 |
+  ...week_staff.ts |     100 |      100 |     100 |     100 |
+  ...alent_pool.ts |     100 |      100 |     100 |     100 |
+  ...k_training.ts |    64.7 |    35.71 |     100 |   67.39 | 86-103,107-121
+  ...ek_welfare.ts |   84.28 |    70.45 |     100 |   90.32 | 194-211
+  ...ld_circuit.ts |   42.85 |       50 |     100 |   33.33 | 17-22
+  ...02_context.ts |   95.83 |       85 |     100 |     100 | 119-125
+  ...y_boundary.ts |   89.85 |    70.27 |     100 |   93.54 | 176,196-202
+  ..._narrative.ts |   96.92 |    88.46 |     100 |   98.11 | 168
+  ...y_boundary.ts |   75.82 |    51.28 |     100 |   80.95 | ...87,216,219,222
+  ...global_cup.ts |      60 |       50 |     100 |      50 | 18-19
+  ...assessment.ts |   87.03 |    64.15 |     100 |   88.67 | ...26-127,146,156
+  ...o_schedule.ts |   95.23 |       75 |     100 |   95.23 | 40
+ ...phases/monthly |       0 |        0 |       0 |       0 |
+  types.ts         |       0 |        0 |       0 |       0 |
+ ...thly/economics |      60 |       50 |     100 |   61.76 |
+  index.ts         |       0 |        0 |       0 |       0 |
+  loans.ts         |    8.33 |    22.22 |     100 |    8.33 | 20-46
+  salaries.ts      |   86.95 |     61.9 |     100 |    90.9 | 51-52
+ ...hly/facilities |   88.63 |    63.33 |     100 |   92.68 |
+  index.ts         |       0 |        0 |       0 |       0 |
+  maintenance.ts   |     100 |       80 |     100 |     100 | 28
+  npcInvestment.ts |   86.11 |       60 |     100 |    90.9 | 55,57,63
+ ...nthly/training |     100 |    88.88 |     100 |     100 |
+  ...etypeDrift.ts |     100 |    88.88 |     100 |     100 | 20,39
+  index.ts         |       0 |        0 |       0 |       0 |
+ .../phases/npc_ai |   93.33 |    95.23 |   88.88 |   96.15 |
+  events.ts        |     100 |      100 |     100 |     100 |
+  index.ts         |       0 |        0 |       0 |       0 |
+  memory.ts        |    87.5 |    88.88 |     100 |    87.5 | 38
+  mood.ts          |     100 |      100 |     100 |     100 |
+  training.ts      |   92.85 |      100 |      80 |     100 |
+ ...phases/welfare |   24.39 |    17.85 |   42.85 |   24.39 |
+  index.ts         |       0 |        0 |       0 |       0 |
+  transitions.ts   |   24.39 |    17.85 |   42.85 |   24.39 | 102-253
+ tick/pipelines    |     100 |      100 |     100 |     100 |
+  bashoPipeline.ts |     100 |      100 |     100 |     100 |
+  ...onPipeline.ts |     100 |      100 |     100 |     100 |
+-------------------|---------|----------|---------|---------|-------------------
