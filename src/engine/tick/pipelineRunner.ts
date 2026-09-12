@@ -42,11 +42,12 @@ export interface PipelinePhaseMetadata {
    * World fields this phase may modify. Runner snapshots these before execution.
    * Note: The runner only respects fields listed in ENTITY_MAP_FIELDS (heyas, rikishi, oyakata, staff).
    * Listing other top-level fields here will not cause them to be snapshotted or rolled back on failure.
+   * WARNING: Setting touches to `[]` does NOT skip snapshotting; a length check in `createShallowSnapshot` causes it to fall back to snapshotting all trackable entity fields.
    */
   touches?: string[];
   /**
    * Indicates if phase is read-only.
-   * When true, the runner passes an empty touches array to skip snapshotting.
+   * WARNING: This flag is currently completely ignored by the pipeline runner.
    */
   pure?: boolean;
 }
