@@ -684,7 +684,7 @@ describe("ImpactBuilder - Convenience Functions", () => {
     it("should create an impact to log an event", () => {
       const type = "governance.sanction";
       const category = "governance";
-      const data = { severity: "high" };
+      const data = { severity: "serious" as const };
       const source = "test_source";
       const options = { heyaId: "h1", rikishiId: "r1" };
 

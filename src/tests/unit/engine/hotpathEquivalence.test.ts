@@ -154,7 +154,7 @@ describe("perceivedTalentSeed scout count (PR #939)", () => {
       archetype: "balanced",
       style: "oshizumo",
       talentSeed: 70,
-    } as TalentCandidate;
+    } as unknown as TalentCandidate;
   }
 
   function makeWorldWithScouts(scoutCount: number): WorldState {
@@ -168,7 +168,7 @@ describe("perceivedTalentSeed scout count (PR #939)", () => {
         heyaId: "h1",
         role: "scout",
         careerPhase: "active",
-      } as Staff);
+      } as unknown as Staff);
       staffIds.push(id);
     }
     heya.staffIds = staffIds;
@@ -222,7 +222,7 @@ describe("createPlan planHistory failure penalty (PR #939)", () => {
         rosterStrengthBand: "dominant",
         financesBand: "stable",
         prestigeBand: "elite",
-      } as AIContext["perception"],
+      } as unknown as AIContext["perception"],
       leaguePerception: {
         yushoRace: { leaders: [] },
         rivalryClusters: [],

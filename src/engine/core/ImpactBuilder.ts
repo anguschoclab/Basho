@@ -70,7 +70,9 @@ export class ImpactBuilder {
     return entities[field] as Map<string, T>;
   }
 
-  private ensureCollectionArray(field: string): unknown[] {
+  private ensureCollectionArray<K extends keyof NonNullable<StateImpact["collections"]>>(
+    field: K
+  ): NonNullable<NonNullable<StateImpact["collections"]>[K]> {
     if (!this.impact.collections) {
       this.impact.collections = {};
     }
@@ -78,7 +80,7 @@ export class ImpactBuilder {
     if (!collections[field]) {
       collections[field] = [];
     }
-    return collections[field] as unknown[];
+    return collections[field] as NonNullable<NonNullable<StateImpact["collections"]>[K]>;
   }
 
   private ensureDeletedArray(field: string): string[] {
@@ -208,7 +210,7 @@ export class ImpactBuilder {
    * Add a new staff member to the world.
    */
   addStaff(staff: Staff): ImpactBuilder {
-    (this.ensureCollectionArray("staffToAdd") as Staff[]).push(staff);
+    this.ensureCollectionArray("staffToAdd").push(staff);
     return this;
   }
 
@@ -216,7 +218,7 @@ export class ImpactBuilder {
    * Add a new oyakata member to the world.
    */
   addOyakata(oyakata: Oyakata): ImpactBuilder {
-    (this.ensureCollectionArray("oyakataToAdd") as Oyakata[]).push(oyakata);
+    this.ensureCollectionArray("oyakataToAdd").push(oyakata);
     return this;
   }
 
@@ -224,7 +226,7 @@ export class ImpactBuilder {
    * Add a new heya to the world (stable founding).
    */
   addHeya(heya: Heya): ImpactBuilder {
-    (this.ensureCollectionArray("heyaToAdd") as Heya[]).push(heya);
+    this.ensureCollectionArray("heyaToAdd").push(heya);
     return this;
   }
 
@@ -232,7 +234,7 @@ export class ImpactBuilder {
    * Remove an oyakata from the world.
    */
   removeOyakata(id: string): ImpactBuilder {
-    (this.ensureCollectionArray("oyakataToRemove") as string[]).push(id);
+    this.ensureCollectionArray("oyakataToRemove").push(id);
     return this;
   }
 
@@ -240,7 +242,7 @@ export class ImpactBuilder {
    * Remove a staff member from the world.
    */
   removeStaff(id: string): ImpactBuilder {
-    (this.ensureCollectionArray("staffToRemove") as string[]).push(id);
+    this.ensureCollectionArray("staffToRemove").push(id);
     return this;
   }
 
@@ -255,8 +257,8 @@ export class ImpactBuilder {
    * Add a rikishi to the active roster.
    */
   addRikishi(rikishi: Rikishi): ImpactBuilder {
-    (this.ensureCollectionArray("rikishiToAdd") as Rikishi[]).push(rikishi);
-    (this.ensureCollectionArray("activeRikishiIdsToAdd") as string[]).push(rikishi.id);
+    this.ensureCollectionArray("rikishiToAdd").push(rikishi);
+    this.ensureCollectionArray("activeRikishiIdsToAdd").push(rikishi.id);
     return this;
   }
 
@@ -264,8 +266,8 @@ export class ImpactBuilder {
    * Remove a rikishi from the active roster.
    */
   removeRikishi(id: string): ImpactBuilder {
-    (this.ensureCollectionArray("rikishiToRemove") as string[]).push(id);
-    (this.ensureCollectionArray("activeRikishiIdsToRemove") as string[]).push(id);
+    this.ensureCollectionArray("rikishiToRemove").push(id);
+    this.ensureCollectionArray("activeRikishiIdsToRemove").push(id);
     return this;
   }
 
@@ -282,8 +284,8 @@ export class ImpactBuilder {
       retirementYear: year,
       retirementReason: reason,
     });
-    (this.ensureCollectionArray("rikishiToHistorical") as string[]).push(id);
-    (this.ensureCollectionArray("activeRikishiIdsToRemove") as string[]).push(id);
+    this.ensureCollectionArray("rikishiToHistorical").push(id);
+    this.ensureCollectionArray("activeRikishiIdsToRemove").push(id);
     return this;
   }
 
@@ -291,8 +293,8 @@ export class ImpactBuilder {
    * Move a rikishi from historical back to active collection.
    */
   unretireRikishi(id: string): ImpactBuilder {
-    (this.ensureCollectionArray("rikishiFromHistorical") as string[]).push(id);
-    (this.ensureCollectionArray("activeRikishiIdsToAdd") as string[]).push(id);
+    this.ensureCollectionArray("rikishiFromHistorical").push(id);
+    this.ensureCollectionArray("activeRikishiIdsToAdd").push(id);
     return this;
   }
 
@@ -513,7 +515,7 @@ export class ImpactBuilder {
             for (const id of arr) this.removeRikishi(id as string);
             break;
           case "rikishiToHistorical":
-            (this.ensureCollectionArray("rikishiToHistorical") as string[]).push(
+            this.ensureCollectionArray("rikishiToHistorical").push(
               ...(arr as string[])
             );
             break;
@@ -521,7 +523,7 @@ export class ImpactBuilder {
             for (const id of arr) this.unretireRikishi(id as string);
             break;
           default:
-            (this.ensureCollectionArray(key) as unknown[]).push(...arr);
+            (this.ensureCollectionArray(key as keyof NonNullable<StateImpact["collections"]>) as unknown[]).push(...(arr as unknown[]));
         }
       }
     }
