@@ -72,7 +72,7 @@ export interface YouthAcademyState {
  * Get the youth academy state for a heya, or null if not built.
  */
 export function getYouthAcademy(heya: Heya): YouthAcademyState | null {
-  return (heya as unknown as { youthAcademy?: YouthAcademyState }).youthAcademy ?? null;
+  return heya.youthAcademy ?? null;
 }
 
 /**
@@ -218,13 +218,12 @@ export function generateYearlyIntake(
   }
 
   builder.updateHeya(heyaId, {
-    ...(heya as unknown as Record<string, unknown>),
     youthAcademy: {
       ...academy,
       prospects: [...academy.prospects, ...newProspects],
       lastIntakeYear: world.year,
     },
-  } as Partial<Heya>);
+  });
 
   if (newProspects.length > 0) {
     builder.logEvent(
@@ -285,12 +284,11 @@ export function applyWeeklyDevelopment(
   });
 
   builder.updateHeya(heyaId, {
-    ...(heya as unknown as Record<string, unknown>),
     youthAcademy: {
       ...academy,
       prospects: updatedProspects,
     },
-  } as Partial<Heya>);
+  });
 
   return builder.build();
 }
@@ -318,13 +316,12 @@ export function promoteIntake(
   const remainingProspects = academy.prospects.filter((p) => p.id !== prospectId);
 
   builder.updateHeya(heyaId, {
-    ...(heya as unknown as Record<string, unknown>),
     youthAcademy: {
       ...academy,
       prospects: remainingProspects,
       totalGraduated: academy.totalGraduated + 1,
     },
-  } as Partial<Heya>);
+  });
 
   // Create a new rikishi from the prospect and add to roster
   const newRikishiId = prospectId;
