@@ -10,11 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Plane, ShieldCheck } from "lucide-react";
-import type {
-  HolidayTarget,
-  SafetyGate,
-  DelegationPolicy,
-} from "@/engine/holiday";
+import type { HolidayTarget, SafetyGate, DelegationPolicy } from "@/engine/holiday";
 
 const TARGETS: { value: HolidayTarget; label: string }[] = [
   { value: "nextDay", label: "Next Day" },
@@ -62,9 +58,7 @@ export function HolidayDialog({
   const [policy, setPolicy] = useState<DelegationPolicy>("balanced");
 
   const toggleGate = (gate: SafetyGate) => {
-    setGates((prev) =>
-      prev.includes(gate) ? prev.filter((g) => g !== gate) : [...prev, gate]
-    );
+    setGates((prev) => (prev.includes(gate) ? prev.filter((g) => g !== gate) : [...prev, gate]));
   };
 
   return (
@@ -76,9 +70,7 @@ export function HolidayDialog({
         </div>
 
         <div className="space-y-2">
-          <Label className="text-xs uppercase tracking-widest text-muted-foreground">
-            Target
-          </Label>
+          <Label className="text-xs uppercase tracking-widest text-muted-foreground">Target</Label>
           <div className="grid grid-cols-3 gap-2">
             {TARGETS.map((t) => (
               <Button
@@ -103,8 +95,17 @@ export function HolidayDialog({
               <Badge
                 key={g.value}
                 variant={gates.includes(g.value) ? "default" : "outline"}
-                className="cursor-pointer text-[10px]"
+                className="cursor-pointer text-[10px] focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
                 onClick={() => toggleGate(g.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    toggleGate(g.value);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                aria-label={`Toggle ${g.label} safety gate`}
                 data-testid={`holiday-gate-${g.value}`}
               >
                 <ShieldCheck className="h-3 w-3 mr-1" />
@@ -143,12 +144,7 @@ export function HolidayDialog({
             <Plane className="h-3 w-3 mr-1" />
             Go on Holiday
           </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={onCancel}
-            data-testid="holiday-cancel"
-          >
+          <Button size="sm" variant="outline" onClick={onCancel} data-testid="holiday-cancel">
             Cancel
           </Button>
         </div>

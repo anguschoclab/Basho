@@ -52,6 +52,7 @@ export function BaseWidget({
       )}
       onClick={onInteract}
       role={onInteract ? "button" : undefined}
+      aria-label={onInteract ? title : undefined}
       tabIndex={onInteract ? 0 : undefined}
       onKeyDown={(e) => {
         if (onInteract && e.target === e.currentTarget && (e.key === "Enter" || e.key === " ")) {

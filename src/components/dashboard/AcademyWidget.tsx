@@ -4,6 +4,7 @@
  */
 import { GraduationCap } from "lucide-react";
 import { BaseWidget } from "./BaseWidget";
+import { EmptyState } from "@/components/ui/EmptyState";
 import type { YouthAcademyProjection } from "@/presenters/youthAcademyProjections";
 
 interface AcademyWidgetProps {
@@ -15,9 +16,12 @@ export function AcademyWidget({ projection, currentYear }: AcademyWidgetProps) {
   if (!projection.academy) {
     return (
       <BaseWidget title="Youth Academy" icon={GraduationCap}>
-        <p className="text-xs text-muted-foreground">
-          No youth academy built. Visit the Stable page to build one.
-        </p>
+        <EmptyState
+          icon={GraduationCap}
+          title="No youth academy built"
+          description="Visit the Stable page to build one."
+          compact
+        />
       </BaseWidget>
     );
   }

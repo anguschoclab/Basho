@@ -176,6 +176,7 @@ export function KeshoEditor({ rikishi, open, onClose }: KeshoEditorProps) {
                     {MOTIFS.map((m) => (
                       <button
                         key={m}
+                        aria-label={`Select motif ${m.replace("_", " ")}`}
                         onClick={() => updateSymbol(m)}
                         className={cn(
                           "focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring",
@@ -200,6 +201,7 @@ export function KeshoEditor({ rikishi, open, onClose }: KeshoEditorProps) {
                     {PRESET_PALETTES.map((p) => (
                       <button
                         key={p.name}
+                        aria-label={`Select preset ${p.name}`}
                         onClick={() => {
                           updateField("primaryColor", p.primary);
                           updateField("secondaryColor", p.secondary);

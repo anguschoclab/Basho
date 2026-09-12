@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/layout/control-center";
 import { TooltipWrap } from "@/components/ui/tooltip-wrap";
-import { AlertTriangle, Users } from "lucide-react";
+import { AlertTriangle, Users, Loader2 } from "lucide-react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { InstitutionPanel } from "@/components/game/InstitutionPanel";
 import { StableStatsTable } from "@/components/game/StableStatsTable";
@@ -57,9 +57,13 @@ export default function StablePage() {
   if (!heya) {
     return (
       <AppLayout pageTitle="Stable Operations" subNavTabs={STABLE_TABS} activeSubTab="stable">
-        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-muted-foreground">
-          <div className="text-4xl animate-pulse font-display">⋯</div>
-          <p className="text-sm font-display italic uppercase tracking-widest">Loading stable…</p>
+        <div className="flex flex-col items-center justify-center min-h-[60vh]">
+          <EmptyState
+            icon={Loader2}
+            title="Loading Stable"
+            description="Fetching stable operations..."
+            className="animate-pulse"
+          />
         </div>
       </AppLayout>
     );
@@ -74,9 +78,7 @@ export default function StablePage() {
 
   return (
     <AppLayout pageTitle="Stable Operations" subNavTabs={STABLE_TABS} activeSubTab="stable">
-
-        <title>{heya.name} — Stable Profile</title>
-
+      <title>{heya.name} — Stable Profile</title>
 
       <div className="space-y-8">
         <PageHeader
@@ -263,12 +265,8 @@ export default function StablePage() {
               <YouthAcademyPanel
                 projection={projectYouthAcademy(world, heya.id)}
                 cash={heya.funds}
-                onBuild={() =>
-                  sendCommand({ type: "BUILD_YOUTH_ACADEMY", heyaId: heya.id })
-                }
-                onUpgrade={() =>
-                  sendCommand({ type: "UPGRADE_YOUTH_ACADEMY", heyaId: heya.id })
-                }
+                onBuild={() => sendCommand({ type: "BUILD_YOUTH_ACADEMY", heyaId: heya.id })}
+                onUpgrade={() => sendCommand({ type: "UPGRADE_YOUTH_ACADEMY", heyaId: heya.id })}
                 onInvest={(amount) =>
                   sendCommand({ type: "INVEST_ACADEMY", heyaId: heya.id, amount })
                 }

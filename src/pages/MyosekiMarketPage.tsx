@@ -1,4 +1,6 @@
 import { useState, useMemo } from "react";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { Loader2 } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
 import { ASSOCIATION_TABS } from "@/constants/ui/navigation";
@@ -59,7 +61,14 @@ export default function MyosekiMarketPage() {
         activeSubTab="myoseki"
         pageTitle="Elder Stock Market (Myoseki)"
       >
-        <div className="flex items-center justify-center h-full">Loading Market Records...</div>
+        <div className="flex flex-col items-center justify-center min-h-[60vh]">
+          <EmptyState
+            icon={Loader2}
+            title="Loading Market Records"
+            description="Fetching elder stock exchange..."
+            className="animate-pulse"
+          />
+        </div>
       </AppLayout>
     );
   }

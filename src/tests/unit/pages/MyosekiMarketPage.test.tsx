@@ -57,13 +57,13 @@ describe("MyosekiMarketPage", () => {
   it("shows loading state when no world", () => {
     mockState(null);
     render(<MyosekiMarketPage />);
-    expect(screen.getByText("Loading Market Records...")).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Loading Market Records" })).toBeTruthy();
   });
 
   it("shows loading state when no myosekiMarket", () => {
     mockState({ heyas: new Map() });
     render(<MyosekiMarketPage />);
-    expect(screen.getByText("Loading Market Records...")).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Loading Market Records" })).toBeTruthy();
   });
 
   it("disables Buy button when playerFunds < askingPrice", () => {
