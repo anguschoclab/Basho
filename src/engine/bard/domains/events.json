@@ -80,8 +80,20 @@
       "The race for the Cup continues. %SHIKONA% currently holds a %WINS%-%LOSSES% record.",
       "Basho Update: %SHIKONA% is %WINS%-%LOSSES% after a crucial day of action."
     ],
-    "bout_title": ["Bout concluded"],
-    "bout_summary": ["Winner decided by %KIMARITE%."],
+    "bout_title": [
+      "Bout concluded",
+      "Result: %WINNER% vs %LOSER%",
+      "Day %DAY% Matchup Decided",
+      "Victory for %WINNER%",
+      "Match ends in %KIMARITE%"
+    ],
+    "bout_summary": [
+      "Winner decided by %KIMARITE%.",
+      "%WINNER% defeats %LOSER% via %KIMARITE%.",
+      "A decisive %KIMARITE% secures the win for %WINNER%.",
+      "%LOSER% falls to %WINNER%'s %KIMARITE%.",
+      "The bout concludes with %WINNER% executing a clean %KIMARITE%."
+    ],
     "concluded_title": ["%BASHONAME% Basho Concluded"],
     "concluded_summary": [
       "%SHIKONA% wins the tournament with a dominant %WINS%-%LOSSES% record!",
