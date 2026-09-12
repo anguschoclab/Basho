@@ -1,3 +1,9 @@
+[install]
+# Always resolve packages from the public npm registry. The lockfile must not
+# bake in private-mirror tarball URLs (e.g. artifactory.*) — they break
+# `bun install` for CI and anyone off that network.
+registry = "https://registry.npmjs.org"
+
 [test]
 # This project uses vitest, not bun's built-in test runner.
 # Run tests with: bun run test
