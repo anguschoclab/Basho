@@ -97,7 +97,7 @@ Test-first gate (Phase 3) committed all regression/equivalence/coverage tests **
 
 ## 7. Post-v5 PR triage (#945–#956)
 
-After the v5 cutoff (PR #944, 2026-09-11), 12 additional PRs opened (#945–#956, through 2026-09-13). They were triaged with the same method: per-PR diff review, bot-junk exclusion (`.jules/`, `plan.md`, `*.tsbuildinfo`), and the 7-day vetting rule for dependency bumps. Results:
+After the v5 cutoff (PR #944, 2026-09-11), 12 additional PRs opened (#945–#956, through 2026-09-13). They were triaged with the same method: per-PR diff review and bot-junk exclusion (`.jules/`, `plan.md`, `*.tsbuildinfo`). The 7-day vetting rule for dependency bumps was initially applied (deferring #949–#956), then **overridden per owner request** to merge everything and leave only `main`. Results:
 
 | PR | Verdict | Evidence |
 |----|---------|----------|
@@ -105,27 +105,27 @@ After the v5 cutoff (PR #944, 2026-09-11), 12 additional PRs opened (#945–#956
 | #946 Mason YouthAcademy types | **INTEGRATED** (complementary) | `getYouthAcademy` change already landed via #930; remaining `as Partial<Heya>` casts + redundant `...heya` spreads removed from 3 `updateHeya` calls. Resolver shallow-merges (StateImpact.ts:87-90), so behavior-preserving. Bot junk (`.jules/mason.md`, `plan.md`, `*.tsbuildinfo`) excluded. |
 | #947 Polish SponsorDrawCard empty state | **REJECTED** — empty PR | 0 additions, 0 deletions, 0 changed files. |
 | #948 Scout pipelineRunner PERF test | **INTEGRATED** | +1 test asserting `__PERF__` trace emission via `postMessage`. Bot junk (`.jules/scout.md`) excluded. |
-| #949 typescript-eslint 8.70.0 | **DEFERRED** — fails 7-day rule | Published 2026-09-07 (6 days old; rule requires ≥7). |
-| #950 @vitest/coverage-v8 5.0.0 | **DEFERRED** — major bump | 4.1.11 → 5.0.0; published 2026-09-03 (passes 7-day) but major-version test-framework bump needs separate validation. |
-| #951 @typescript-eslint/parser 8.70.0 | **DEFERRED** — fails 7-day rule | Published 2026-09-07 (6 days old). |
-| #952 @typescript-eslint/eslint-plugin 8.70.0 | **DEFERRED** — fails 7-day rule | Published 2026-09-07 (6 days old). |
-| #953 lucide-react 1.43.0 | **DEFERRED** — fails 7-day rule | Published 2026-09-08 (5 days old). |
-| #954 react-dom 19.3.0 | **DEFERRED** — fails 7-day rule | Published 2026-09-09 (4 days old). |
-| #955 react 19.3.0 | **DEFERRED** — fails 7-day rule | Published 2026-09-09 (4 days old). |
-| #956 vitest 5.0.0 | **DEFERRED** — major bump | 4.1.11 → 5.0.0; same rationale as #950. |
+| #949 typescript-eslint 8.70.0 | **INTEGRATED** (7-day overridden) | Published 2026-09-07 (6 days old); owner authorized merge of all deferred deps. |
+| #950 @vitest/coverage-v8 5.0.0 | **INTEGRATED** (major bump, verified) | 4.1.11 → 5.0.0; full suite re-run green under v5.0.0. |
+| #951 @typescript-eslint/parser 8.70.0 | **INTEGRATED** (7-day overridden) | Published 2026-09-07 (6 days old). |
+| #952 @typescript-eslint/eslint-plugin 8.70.0 | **INTEGRATED** (7-day overridden) | Published 2026-09-07 (6 days old). |
+| #953 lucide-react 1.43.0 | **INTEGRATED** (7-day overridden) | Published 2026-09-08 (5 days old). |
+| #954 react-dom 19.3.0 | **INTEGRATED** (7-day overridden) | Published 2026-09-09 (4 days old); @types/react-dom 19.2.5 → 19.3.0. |
+| #955 react 19.3.0 | **INTEGRATED** (7-day overridden) | Published 2026-09-09 (4 days old); @types/react 19.2.18 → 19.3.0. |
+| #956 vitest 5.0.0 | **INTEGRATED** (major bump, verified) | 4.1.11 → 5.0.0; full suite re-run green under v5.0.0. |
 
-**Tally:** 2 integrated · 2 rejected · 8 deferred (left open).
+**Tally:** 10 integrated · 2 rejected · 0 deferred.
 
-### Re-verification after post-v5 integrations
+### Re-verification after post-v5 integrations (incl. vitest 5.0.0 + react 19.3.0)
 
 | Gate | Result |
 |------|--------|
 | `bun run type-check` | clean |
 | `bun run lint:strict` | clean |
-| `bun run build` | succeeds (7.21s) |
-| `bun run test` (full suite) | 828 files, **7474 passed**, 0 failed (+1 vs v5 baseline from #948) |
+| `bun run build` | succeeds |
+| `bun run test` (full suite, vitest 5.0.0) | 828 files, **7474 passed**, 0 failed |
 
 ### Disposition of open PRs at merge
 
-- **Closed (31):** #914–#922, #927–#944 (27 v5-decided) + #945 (rejected dup) + #946 (integrated) + #947 (rejected empty) + #948 (integrated). #923–#926 (v5 batch F) were already closed.
-- **Left open (8):** #949–#956 (dependabot — fail 7-day vetting or are major-version bumps requiring separate validation).
+- **Closed (39):** #914–#922, #927–#948 (31 v5 + post-v5) + #949–#956 (8 dependabot). #923–#926 (v5 batch F) were already closed.
+- **Left open:** none — owner requested only `main` remain.
