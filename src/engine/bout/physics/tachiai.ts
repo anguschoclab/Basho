@@ -34,6 +34,7 @@ import {
   computeTachiaiPower,
   tachiaiPowerWithMatchupPenalty,
   h2hConfidence,
+  sideTactic,
   type BoutContext,
 } from "../boutUtils";
 import { getTacticProfile } from "../tacticProfiles";
@@ -72,37 +73,41 @@ export function resolveTachiaiV2(
     h2hConfidence(west, east.id) +
     jitter(rng, TACHIAI_JITTER_MAGNITUDE);
 
-  // Apply tactic-driven tachiai power modifier to the player-side rikishi
-  if (bout.playerTactic && bout.playerSide) {
-    const mod = getTacticProfile(bout.playerTactic).tachiaiPowerModifier;
-    if (bout.playerSide === "east") {
+  // Apply tactic-driven tachiai power modifier to whichever side holds a
+  // resolved tactic (player choice or NPC AI — symmetric per side).
+  for (const tacticSide of ["east", "west"] as const) {
+    const tactic = sideTactic(bout, tacticSide);
+    if (!tactic) continue;
+    const mod = getTacticProfile(tactic).tachiaiPowerModifier;
+    if (tacticSide === "east") {
       eastPower += mod;
     } else {
       westPower += mod;
     }
 
-    // Counter-tactic bonus: player's tactic family vs opponent's dominant family
-    if (bout.playerTactic) {
-      const opponent = bout.playerSide === "east" ? west : east;
-      if (opponent.combatProfile) {
-        const counterBonus = resolveCounterTacticBonus(bout.playerTactic, opponent.combatProfile);
-        if (counterBonus > 0) {
-          if (bout.playerSide === "east") eastPower += counterBonus;
-          else westPower += counterBonus;
-          boutLog.push({
-            phase: "tachiai",
-            clock: 0,
-            data: { event: "counter_tactic_advantage", counterBonus },
-          });
-        }
+    // Counter-tactic bonus: tactic family vs opponent's dominant family
+    const opponent = tacticSide === "east" ? west : east;
+    if (opponent.combatProfile) {
+      const counterBonus = resolveCounterTacticBonus(tactic, opponent.combatProfile);
+      if (counterBonus > 0) {
+        if (tacticSide === "east") eastPower += counterBonus;
+        else westPower += counterBonus;
+        boutLog.push({
+          phase: "tachiai",
+          clock: 0,
+          data: { event: "counter_tactic_advantage", side: tacticSide, counterBonus },
+        });
       }
     }
   }
 
   // NPC counter-tactic system activation (2.2): NPCs with counterFamily matching
-  // opponent's dominant family get a counter bonus
-  const npcSide = bout.playerSide === "east" ? "west" : bout.playerSide === "west" ? "east" : null;
-  if (npcSide) {
+  // opponent's dominant family get a counter bonus. Applies to the non-player
+  // side in player bouts, and to both sides in NPC-vs-NPC bouts.
+  const npcSides: Side[] = bout.playerSide
+    ? [bout.playerSide === "east" ? "west" : "east"]
+    : ["east", "west"];
+  for (const npcSide of npcSides) {
     const npc = npcSide === "east" ? east : west;
     const opponent = npcSide === "east" ? west : east;
     const npcCounterFamily = npc.combatProfile?.counterFamily;
@@ -208,21 +213,20 @@ export function resolveTachiaiV2(
   // CR-02: Henka resolution — must check before phase loop
   // NPC Henka Gap (1.6): high-technique, high-speed NPCs can attempt henka
   // without explicit tactic override when facing a much stronger opponent
-  let henkaSide: Side | null =
-    bout.playerTactic === "HENKA"
-      ? (bout.playerSide ?? null)
-      : bout.cpuTacticOverride === "HENKA"
-        ? bout.playerSide === "east"
-          ? "west"
-          : "east"
-        : null;
+  // HENKA may come from either side's resolved tactic (east wins ties).
+  const eastHenka = sideTactic(bout, "east") === "HENKA";
+  const westHenka = sideTactic(bout, "west") === "HENKA";
+  let henkaSide: Side | null = eastHenka ? "east" : westHenka ? "west" : null;
 
   // NPC spontaneous henka: when no explicit henka is set, a high-technique NPC
-  // facing a significantly stronger opponent may attempt a henka
+  // facing a significantly stronger opponent may attempt a henka. In player
+  // bouts only the NPC side qualifies; in NPC-vs-NPC bouts both sides are
+  // eligible (evaluated east then west for determinism).
   if (henkaSide === null) {
-    const npcSide =
-      bout.playerSide === "east" ? "west" : bout.playerSide === "west" ? "east" : null;
-    if (npcSide) {
+    const candidates: Side[] = bout.playerSide
+      ? [bout.playerSide === "east" ? "west" : "east"]
+      : ["east", "west"];
+    for (const npcSide of candidates) {
       const npc = npcSide === "east" ? east : west;
       const opponent = npcSide === "east" ? west : east;
       const npcTech = stat(npc, "technique");
@@ -248,6 +252,7 @@ export function resolveTachiaiV2(
           clock: 0,
           data: { event: "npc_spontaneous_henka", attackerSide: henkaSide, henkaChance },
         });
+        break;
       }
     }
   }

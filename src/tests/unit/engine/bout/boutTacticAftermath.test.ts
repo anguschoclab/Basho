@@ -64,26 +64,26 @@ describe("boutTacticAftermath", () => {
     const west = makeRikishi("west");
     const bout = makeBout("east");
     const result = makeResult("east");
-    const { playerUpdate, cpuUpdate, injuryMultiplier } = computeTacticAftermath(
+    const { eastUpdate, westUpdate, injuryMultiplier } = computeTacticAftermath(
       bout,
       result,
       east,
-      west,
-      undefined
+      west
     );
-    expect(playerUpdate).toEqual({});
-    expect(cpuUpdate).toEqual({});
+    expect(eastUpdate).toEqual({});
+    expect(westUpdate).toEqual({});
     expect(injuryMultiplier).toBe(1.0);
   });
 
-  it("applies fatigue cost for player tactic", () => {
+  it("applies fatigue cost for player tactic on the player side", () => {
     const east = makeRikishi("east", 10, 50);
     const west = makeRikishi("west");
     const bout = makeBout("east", "ALL_OUT");
     const result = makeResult("east");
-    const { playerUpdate } = computeTacticAftermath(bout, result, east, west, undefined);
-    expect(playerUpdate.fatigue).toBeDefined();
-    expect(playerUpdate.fatigue).toBeGreaterThan(10);
+    const { eastUpdate, westUpdate } = computeTacticAftermath(bout, result, east, west);
+    expect(eastUpdate.fatigue).toBeDefined();
+    expect(eastUpdate.fatigue).toBeGreaterThan(10);
+    expect(westUpdate).toEqual({});
   });
 
   it("applies momentum delta on win", () => {
@@ -91,9 +91,9 @@ describe("boutTacticAftermath", () => {
     const west = makeRikishi("west");
     const bout = makeBout("east", "ALL_OUT");
     const result = makeResult("east");
-    const { playerUpdate } = computeTacticAftermath(bout, result, east, west, undefined);
-    expect(playerUpdate.momentum).toBeDefined();
-    expect(playerUpdate.momentum).not.toBe(50);
+    const { eastUpdate } = computeTacticAftermath(bout, result, east, west);
+    expect(eastUpdate.momentum).toBeDefined();
+    expect(eastUpdate.momentum).not.toBe(50);
   });
 
   it("applies momentum delta on loss", () => {
@@ -101,16 +101,16 @@ describe("boutTacticAftermath", () => {
     const west = makeRikishi("west");
     const bout = makeBout("east", "ALL_OUT");
     const result = makeResult("west");
-    const { playerUpdate } = computeTacticAftermath(bout, result, east, west, undefined);
-    expect(playerUpdate.momentum).toBeDefined();
+    const { eastUpdate } = computeTacticAftermath(bout, result, east, west);
+    expect(eastUpdate.momentum).toBeDefined();
   });
 
-  it("sets injury multiplier when player loses with tactic", () => {
+  it("sets injury multiplier when a tactician loses", () => {
     const east = makeRikishi("east", 0, 50);
     const west = makeRikishi("west");
     const bout = makeBout("east", "ALL_OUT");
     const result = makeResult("west");
-    const { injuryMultiplier } = computeTacticAftermath(bout, result, east, west, undefined);
+    const { injuryMultiplier } = computeTacticAftermath(bout, result, east, west);
     expect(injuryMultiplier).toBeGreaterThanOrEqual(1.0);
   });
 
@@ -119,24 +119,31 @@ describe("boutTacticAftermath", () => {
     const west = makeRikishi("west");
     const bout = makeBout("east", "ALL_OUT");
     const result = makeResult("east", "fusensho");
-    const { playerUpdate, injuryMultiplier } = computeTacticAftermath(
-      bout,
-      result,
-      east,
-      west,
-      undefined
-    );
-    expect(playerUpdate).toEqual({});
+    const { eastUpdate, injuryMultiplier } = computeTacticAftermath(bout, result, east, west);
+    expect(eastUpdate).toEqual({});
     expect(injuryMultiplier).toBe(1.0);
   });
 
-  it("applies CPU tactic effects", () => {
+  it("applies NPC-side tactic effects via cpuTacticOverride (legacy)", () => {
     const east = makeRikishi("east", 0, 50);
     const west = makeRikishi("west", 0, 50);
-    const bout = makeBout("east");
+    const bout = { ...makeBout("east"), cpuTacticOverride: "ALL_OUT" as BoutTactic };
     const result = makeResult("east");
-    const { cpuUpdate } = computeTacticAftermath(bout, result, east, west, "ALL_OUT" as BoutTactic);
-    expect(cpuUpdate.fatigue).toBeDefined();
+    const { westUpdate } = computeTacticAftermath(bout, result, east, west);
+    expect(westUpdate.fatigue).toBeDefined();
+  });
+
+  it("applies tactic effects to BOTH sides of an NPC-vs-NPC bout", () => {
+    const east = makeRikishi("east", 0, 50);
+    const west = makeRikishi("west", 0, 50);
+    const bout = makeBout(undefined);
+    const result = makeResult("east");
+    const { eastUpdate, westUpdate } = computeTacticAftermath(bout, result, east, west, {
+      east: "ALL_OUT",
+      west: "YOTSU_BELT",
+    });
+    expect(eastUpdate.fatigue).toBeGreaterThan(0);
+    expect(westUpdate.fatigue).toBeGreaterThan(0);
   });
 
   it("applies henka momentum penalty on win", () => {
@@ -144,9 +151,21 @@ describe("boutTacticAftermath", () => {
     const west = makeRikishi("west");
     const bout = makeBout("east", "HENKA");
     const result = makeResult("east");
-    const { playerUpdate } = computeTacticAftermath(bout, result, east, west, undefined);
-    expect(playerUpdate.momentum).toBeDefined();
-    expect(playerUpdate.momentum).toBeLessThan(50);
+    const { eastUpdate } = computeTacticAftermath(bout, result, east, west);
+    expect(eastUpdate.momentum).toBeDefined();
+    expect(eastUpdate.momentum).toBeLessThan(50);
+  });
+
+  it("applies henka momentum penalty to a winning NPC henka side", () => {
+    const east = makeRikishi("east", 0, 50);
+    const west = makeRikishi("west", 0, 50);
+    const bout = makeBout(undefined);
+    const result = makeResult("west");
+    const { westUpdate } = computeTacticAftermath(bout, result, east, west, {
+      west: "HENKA",
+    });
+    expect(westUpdate.momentum).toBeDefined();
+    expect(westUpdate.momentum).toBeLessThan(50);
   });
 
   it("clamps fatigue to max", () => {
@@ -154,7 +173,7 @@ describe("boutTacticAftermath", () => {
     const west = makeRikishi("west");
     const bout = makeBout("east", "ALL_OUT");
     const result = makeResult("east");
-    const { playerUpdate } = computeTacticAftermath(bout, result, east, west, undefined);
-    expect(playerUpdate.fatigue).toBeLessThanOrEqual(100);
+    const { eastUpdate } = computeTacticAftermath(bout, result, east, west);
+    expect(eastUpdate.fatigue).toBeLessThanOrEqual(100);
   });
 });

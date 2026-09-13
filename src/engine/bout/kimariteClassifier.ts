@@ -27,7 +27,7 @@ export function evaluateKimariteAttempt(
   rng: SeededRNG,
   division?: Division,
   meta?: { tone: string; drift: Record<string, number> },
-  playerTactic?: import("../types/combat").BoutTactic
+  tactics?: import("./boutUtils").SideTactics
 ): KimariteAttempt | null {
   // Build spatial context
   const torqueDiff = belt ? belt.torqueEast - belt.torqueWest : 0;
@@ -70,6 +70,6 @@ export function evaluateKimariteAttempt(
     division,
     meta,
     rng,
-    playerTactic
+    tactics
   );
 }

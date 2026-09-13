@@ -48,6 +48,7 @@ import {
 import type { AgentDecisions, NPCWeeklyDecision } from "./types";
 import type { AIPlan } from "../ai/types";
 import { applyPlanConstraints } from "./TacticalCoordinator";
+import { executeAgentDecisions } from "./execution";
 
 export function makeNPCWeeklyDecision(
   world: WorldState,
@@ -214,7 +215,13 @@ export function makeNPCWeeklyDecision(
       narrative: {
         shouldTriggerEvent: narrativeResult.shouldTriggerEvent,
         eventType: narrativeResult.eventType,
+        rikishiId: narrativeResult.rikishiId,
         narrativeTone: narrativeResult.narrativeTone,
+      },
+      infrastructure: {
+        shouldHireStaff: false,
+        shouldBuildAcademy: false,
+        shouldUpgradeAcademy: false,
       },
     };
 
@@ -301,55 +308,8 @@ export function makeNPCWeeklyDecision(
     }
   }
 
-  if (agentDecisions) {
-    if (agentDecisions.finance.shouldBuyMyoseki) {
-      builder.logEvent(
-        "NPC_MANAGER_DECISION",
-        "economy",
-        { heyaId, decision: "buy_myoseki" },
-        { heyaId }
-      );
-    }
-    if (agentDecisions.governance.shouldReduceScandal) {
-      builder.logEvent(
-        "NPC_MANAGER_DECISION",
-        "welfare",
-        { heyaId, decision: "reduce_scandal" },
-        { heyaId }
-      );
-    }
-    if (agentDecisions.rivalry.escalateRivalry) {
-      builder.logEvent(
-        "NPC_MANAGER_DECISION",
-        "rivalry",
-        { heyaId, decision: "escalate_rivalry" },
-        { heyaId }
-      );
-    }
-    if (agentDecisions.rivalry.targetRivalForMatchmaking) {
-      builder.logEvent(
-        "RIVAL_POSTURE",
-        "ai_rival_posture",
-        { heyaId, target: agentDecisions.rivalry.targetRivalForMatchmaking, posture: "aggressive" },
-        { heyaId, importance: "minor" }
-      );
-    }
-    if (agentDecisions.rivalry.deescalateRivalry) {
-      builder.logEvent(
-        "RIVAL_POSTURE",
-        "ai_rival_posture",
-        { heyaId, posture: "conciliatory" },
-        { heyaId, importance: "minor" }
-      );
-    }
-    if (agentDecisions.narrative.shouldTriggerEvent) {
-      builder.logEvent(
-        "NPC_MANAGER_DECISION",
-        "narrative",
-        { heyaId, decision: "trigger_event", eventType: agentDecisions.narrative.eventType },
-        { heyaId }
-      );
-    }
+  if (agentDecisions && oyakata) {
+    builder.merge(executeAgentDecisions(world, heyaId, agentDecisions, oyakata));
   }
 
   const decision: NPCWeeklyDecision = {

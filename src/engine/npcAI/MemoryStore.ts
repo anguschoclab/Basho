@@ -114,13 +114,15 @@ export function recordDecision(
   year: number,
   week: number,
   summary: string,
-  planId?: string
+  planId?: string,
+  metricOrdinal?: number
 ): OyakataMemory {
   return {
     ...memory,
-    decisionHistory: [...(memory.decisionHistory ?? []), { year, week, summary, planId }].slice(
-      -52
-    ),
+    decisionHistory: [
+      ...(memory.decisionHistory ?? []),
+      { year, week, summary, planId, metricOrdinal },
+    ].slice(-52),
   };
 }
 

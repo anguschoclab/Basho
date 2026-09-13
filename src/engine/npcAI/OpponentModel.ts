@@ -48,10 +48,23 @@ function familyFromKimarite(kimarite?: string): TacticalFamily {
   return FAMILY_BY_KIMARITE[kimarite.toLowerCase()] ?? "push";
 }
 
-function familyFromStyle(style?: string): TacticalFamily {
+export function familyFromStyle(style?: string): TacticalFamily {
   if (style === "oshi") return "push";
   if (style === "yotsu") return "belt";
   return "push";
+}
+
+/** Deterministic argmax over tactic counts (count desc, label asc on ties). */
+function dominantTactic(counts: Record<string, number>): string | undefined {
+  let best: string | undefined;
+  let bestCount = -1;
+  for (const label of Object.keys(counts).sort()) {
+    if (counts[label] > bestCount) {
+      best = label;
+      bestCount = counts[label];
+    }
+  }
+  return bestCount > 0 ? best : undefined;
 }
 
 function dominantFamily(counts: OpponentTacticModel["familyCounts"]): TacticalFamily {
@@ -96,7 +109,33 @@ export function buildOpponentModel(rikishi: Rikishi, currentWeek = 0): OpponentT
     rikishiId: rikishi.id,
     sampleSize,
     familyCounts: counts,
+    tacticCounts: kimariteCounts,
     mostUsedTactic: mostUsedKimarite || undefined,
+    lastUpdated: currentWeek,
+  };
+}
+
+function observe(
+  model: OpponentTacticModel,
+  opponentId: Id,
+  family: TacticalFamily,
+  tacticLabel: string | undefined,
+  currentWeek: number
+): OpponentTacticModel {
+  const tacticCounts = { ...(model.tacticCounts ?? {}) };
+  if (tacticLabel) {
+    tacticCounts[tacticLabel] = (tacticCounts[tacticLabel] ?? 0) + 1;
+  }
+  return {
+    ...model,
+    rikishiId: opponentId,
+    sampleSize: model.sampleSize + 1,
+    familyCounts: {
+      ...model.familyCounts,
+      [family]: (model.familyCounts[family] ?? 0) + 1,
+    },
+    tacticCounts,
+    mostUsedTactic: dominantTactic(tacticCounts) ?? model.mostUsedTactic,
     lastUpdated: currentWeek,
   };
 }
@@ -108,19 +147,24 @@ export function observeBoutResult(
   model: OpponentTacticModel,
   opponentId: Id,
   kimarite: string,
-  currentWeek: number
+  currentWeek: number,
+  tacticLabel?: string
 ): OpponentTacticModel {
-  const family = familyFromKimarite(kimarite);
-  return {
-    ...model,
-    rikishiId: opponentId,
-    sampleSize: model.sampleSize + 1,
-    familyCounts: {
-      ...model.familyCounts,
-      [family]: (model.familyCounts[family] ?? 0) + 1,
-    },
-    lastUpdated: currentWeek,
-  };
+  return observe(model, opponentId, familyFromKimarite(kimarite), tacticLabel ?? kimarite, currentWeek);
+}
+
+/**
+ * Update an existing model with a tactical-family observation (e.g., the
+ * tactic a losing rikishi was resolved with, which produced no kimarite).
+ */
+export function observeOpponentFamily(
+  model: OpponentTacticModel,
+  opponentId: Id,
+  family: TacticalFamily,
+  currentWeek: number,
+  tacticLabel?: string
+): OpponentTacticModel {
+  return observe(model, opponentId, family, tacticLabel, currentWeek);
 }
 
 /** Return the inferred dominant tactical family of an opponent. */

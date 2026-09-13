@@ -48,13 +48,24 @@ export function spawnCrisisAgent(ctx: CrisisAgentContext): CrisisAgentResult {
   let politicalCapitalChange = 0;
   let welfareRiskChange = 0;
 
-  // Analyze crisis type and personality match
-  const crisisId = crisis.id;
+  // Analyze crisis type and personality match. Generated crises carry RNG
+  // ids, so match on the semantic type first and fall back to the id.
+  const crisisId = crisis.type ?? crisis.id;
 
   reasoning.push(`[Crisis Agent] Evaluating ${crisis.title}`);
 
   // Base decision on personality
-  if (isDisciplined) {
+  if (isRiskTaker && crisisId === "financial_insolvency") {
+    selectedChoiceId = "emergency_loan";
+    reasoning.push("[Crisis Agent] Risk-taker takes the predatory loan to survive");
+    reputationChange = -5;
+    politicalCapitalChange = -5;
+  } else if (crisisId === "financial_insolvency") {
+    selectedChoiceId = "seek_pardon";
+    reasoning.push("[Crisis Agent] Pleading with the JSA for a grace period");
+    reputationChange = -15;
+    politicalCapitalChange = -10;
+  } else if (isDisciplined) {
     // Discipline hawk prefers structured, rule-based responses
     if (crisisId === "governance_audit") {
       selectedChoiceId = "cooperate";
@@ -167,6 +178,11 @@ export function spawnCrisisAgent(ctx: CrisisAgentContext): CrisisAgentResult {
       reasoning.push("[Crisis Agent] Emotional override: defiant stance");
       reputationChange = -10;
     }
+  }
+
+  // Guard: the selected option must actually exist on the crisis.
+  if (!crisis.options.some((o) => o.id === selectedChoiceId)) {
+    selectedChoiceId = crisis.options[0]?.id || "";
   }
 
   reasoning.push(`[Crisis Agent] Final choice: ${selectedChoiceId}`);

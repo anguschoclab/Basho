@@ -24,7 +24,7 @@ export function resolveCrisis(world: WorldState, crisisId: string, choiceId: str
     const option = crisis.options.find((o) => o.id === choiceId);
     if (option) {
       // Execute the specific impact generator for this choice
-      const impact = option.impactGenerator(world);
+      const impact = option.impactGenerator(world, playerHeyaId);
 
       // Clear the pending crisis from the world state
       builder.updateWorldField("pendingCrisis", undefined);

@@ -155,6 +155,44 @@ export function applyPlanConstraints(
       case "protect_rikishi":
         protectRikishi(input.personnelProposal, constraint.value, reasoning);
         break;
+      case "focus_rival": {
+        input.rivalryResult.escalateRivalry = true;
+        input.rivalryResult.deescalateRivalry = false;
+        input.agentDecisions.rivalry.escalateRivalry = true;
+        input.agentDecisions.rivalry.deescalateRivalry = false;
+        const rivalHeya = typeof constraint.value === "string" ? constraint.value : undefined;
+        if (
+          rivalHeya &&
+          !input.agentDecisions.rivalry.targetRivalForMatchmaking.includes(rivalHeya)
+        ) {
+          input.agentDecisions.rivalry.targetRivalForMatchmaking = [
+            ...input.agentDecisions.rivalry.targetRivalForMatchmaking,
+            rivalHeya,
+          ];
+        }
+        reasoning.push(`[Plan Directive] Rivalry focus mandated by active plan.`);
+        break;
+      }
+      case "invest_academy":
+        if (constraint.value === true) {
+          const infra = input.agentDecisions.infrastructure ?? {
+            shouldHireStaff: false,
+            shouldBuildAcademy: false,
+            shouldUpgradeAcademy: false,
+          };
+          infra.shouldBuildAcademy = true;
+          infra.shouldHireStaff = true;
+          infra.staffRole = infra.staffRole ?? "scout";
+          input.agentDecisions.infrastructure = infra;
+          reasoning.push(`[Plan Directive] Talent pipeline: investing in academy and scouting staff.`);
+        }
+        break;
+      case "use_favors":
+        if (constraint.value === true) {
+          input.agentDecisions.governance.shouldUsePoliticalFavor = true;
+          reasoning.push(`[Plan Directive] Political favor usage authorized by active plan.`);
+        }
+        break;
     }
   }
 

@@ -46,6 +46,7 @@ import {
   PreBashoAssessment,
   ActionQueueWidget,
   AcademyWidget,
+  IntelligencePanel,
 } from "@/components/dashboard";
 import { SkeletonCard } from "@/components/ui/SkeletonCard";
 import { formatYen } from "@/utils/engineUtils";
@@ -59,6 +60,7 @@ import { projectGomenfuda } from "@/presenters/projections/governanceProjections
 import { projectNakabi } from "@/presenters/nakabiProjections";
 import { projectYouthAcademy } from "@/presenters/youthAcademyProjections";
 import { selectHolidayDigest } from "@/presenters/projections/holidayDigestProjections";
+import { projectAdvisorRecommendations } from "@/presenters/projections/advisorProjections";
 
 /** Control Center — main dashboard. */
 export default function Dashboard() {
@@ -123,6 +125,11 @@ export default function Dashboard() {
     if (!world) return [];
     return buildActionQueue(world, playerHeya, training, finance);
   }, [world, playerHeya, training, finance]);
+
+  const advisorRecs = useMemo(
+    () => (world && playerHeya ? projectAdvisorRecommendations(world, playerHeya.id) : []),
+    [world, playerHeya]
+  );
 
   const rosterData = useMemo(() => {
     let sekitoriCount = 0;
@@ -509,6 +516,7 @@ export default function Dashboard() {
             </>
           )}
           <RosterWidget />
+          <IntelligencePanel recommendations={advisorRecs} />
           {world && playerHeya && (
             <AcademyWidget
               projection={projectYouthAcademy(world, playerHeya.id)}

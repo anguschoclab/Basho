@@ -132,6 +132,8 @@ export interface BoutResult {
   kenshoBanners?: import("./sponsors").KenshoBannerSlot[];
   /** Injury risk multiplier from tactics (applied to loser's post-bout injury roll). */
   tacticInjuryRiskMultiplier?: number;
+  /** Resolved tactic per side (player choice, NPC AI, or explicit override). */
+  tactics?: { east?: import("./combat").BoutTactic; west?: import("./combat").BoutTactic };
   /** Log of key events during the bout. */
   log: BoutLogEntry[];
   /** Play-by-play lines for detailed bout description. */

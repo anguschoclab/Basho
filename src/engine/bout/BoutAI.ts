@@ -11,6 +11,7 @@ import type { BoutTactic } from "../types/combat";
 import type { SeededRNG } from "../rng";
 import { decideBoutTacticOverride } from "../strategy/NPCStrategyService";
 import type { OpponentTacticModel } from "../ai/types";
+import { getOpponentDominantFamily } from "../npcAI/OpponentModel";
 import {
   TACTIC_YOTSU_BELT_THRESHOLD,
   TACTIC_YOTSU_STANDARD_THRESHOLD,
@@ -119,7 +120,7 @@ export function chooseTactic(
 
   // 3. Opponent-model counter.
   if (ctx.opponentModel && opponent) {
-    const dominantFamily = getDominantFamily(ctx.opponentModel);
+    const dominantFamily = getOpponentDominantFamily(ctx.opponentModel);
     const counter = counterForFamily(dominantFamily);
     // If the base tactic does not counter the opponent's dominant family and
     // the CPU has the adaptability/speed to switch, nudge toward the counter.
@@ -150,15 +151,6 @@ export function chooseTactic(
   }
 
   return tactic;
-}
-
-function getDominantFamily(model: OpponentTacticModel): "push" | "belt" | "trick" | "speed" {
-  const entries = Object.entries(model.familyCounts) as [
-    "push" | "belt" | "trick" | "speed",
-    number,
-  ][];
-  entries.sort((a, b) => b[1] - a[1]);
-  return entries[0]?.[0] ?? "push";
 }
 
 function counterForFamily(family: "push" | "belt" | "trick" | "speed"): BoutTactic {

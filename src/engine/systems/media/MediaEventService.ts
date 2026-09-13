@@ -128,6 +128,88 @@ export function handleMediaEvent(world: WorldState, eventId: string, choice: str
 }
 
 /**
+ * Actor-aware variant of handleMediaEvent for NPC heyas.
+ *
+ * Applies media effects scoped to the acting heya — never the global
+ * heat/pressure sweep of the player path — and records the resolution on
+ * the ruling as `actorChoice`/`actorId` rather than `playerChoice`.
+ * "deflect" shifts pressure onto the acting heya's hottest heya rival.
+ */
+export function handleMediaEventForHeya(
+  world: WorldState,
+  eventId: string,
+  choice: string,
+  heyaId: string
+): StateImpact {
+  const builder = createImpactBuilder("handleMediaEventForHeya");
+
+  if (!world.mediaState) return builder.build();
+
+  // Record the NPC's resolution on the ruling (only when the ruling belongs
+  // to the acting heya — never touch player or foreign rulings).
+  const eventIndex = world.governanceLog?.findIndex((r) => r.id === eventId);
+  if (eventIndex !== undefined && eventIndex >= 0 && world.governanceLog) {
+    const ruling = world.governanceLog[eventIndex] as GovernanceRuling;
+    if (ruling.heyaId === heyaId) {
+      const updatedRuling: GovernanceRuling = {
+        ...ruling,
+        actorChoice: choice,
+        actorId: heyaId,
+      };
+      const updatedGovernanceLog = [...world.governanceLog];
+      updatedGovernanceLog[eventIndex] = updatedRuling;
+      builder.updateWorldField("governanceLog", updatedGovernanceLog);
+    }
+  }
+
+  const updatedHeyaPressure = { ...world.mediaState.heyaPressure };
+  const own = updatedHeyaPressure[heyaId] ?? 0;
+
+  if (choice === "apologize") {
+    updatedHeyaPressure[heyaId] = Math.max(0, own - 5);
+  } else if (choice === "deny") {
+    updatedHeyaPressure[heyaId] = Math.min(100, own + 5);
+  } else if (choice === "deflect") {
+    updatedHeyaPressure[heyaId] = Math.max(0, own - 3);
+    // Shift the narrative onto the acting heya's hottest rival stable.
+    const rivalId = hottestHeyaRival(world, heyaId);
+    if (rivalId) {
+      updatedHeyaPressure[rivalId] = Math.min(100, (updatedHeyaPressure[rivalId] ?? 0) + 3);
+    }
+    const heya = getHeya(world, heyaId);
+    if (heya) {
+      builder.updateHeya(heyaId, {
+        reputation: Math.max(0, (heya.reputation ?? 50) - 1),
+      });
+    }
+  }
+  // "ignore" has no immediate effect; natural decay handles the rest.
+
+  builder.updateWorldField("mediaState", {
+    ...world.mediaState,
+    heyaPressure: updatedHeyaPressure,
+  });
+
+  return builder.build();
+}
+
+/** Deterministically pick the acting heya's hottest rival stable. */
+function hottestHeyaRival(world: WorldState, heyaId: string): string | undefined {
+  const pairs = world.rivalriesState?.heyaRivalryPairs;
+  if (!pairs) return undefined;
+  let best: { id: string; heat: number } | undefined;
+  for (const key of Object.keys(pairs).sort()) {
+    const p = pairs[key];
+    if (p.heyaAId !== heyaId && p.heyaBId !== heyaId) continue;
+    const other = p.heyaAId === heyaId ? p.heyaBId : p.heyaAId;
+    if (!best || p.heat > best.heat || (p.heat === best.heat && other < best.id)) {
+      best = { id: other, heat: p.heat };
+    }
+  }
+  return best?.id;
+}
+
+/**
  * Evaluates active scandals and applies ongoing pressure/heat effects.
  * Called every week during the media tick to keep scandal dynamics alive.
  * Returns StateImpact describing scandal evaluation instead of mutating state directly.

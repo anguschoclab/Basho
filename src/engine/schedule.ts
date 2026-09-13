@@ -12,6 +12,7 @@
 
 import type { BashoState, MatchSchedule } from "./types/basho";
 import type { Division } from "./types/banzuke";
+import type { Rikishi } from "./types/rikishi";
 import type { WorldState } from "./types/world";
 import {
   buildSwissTorikumi,
@@ -130,6 +131,20 @@ export function scheduleDivisionDay(args: {
   } else {
     // Unsupported division fallback
     return { scheduled: [], impact: builder.build() };
+  }
+
+  // ── Political favor: matchmaking_avoid (day 1, one-shot) ──────────────
+  // The requester's rikishi must not face their hottest rival heya today.
+  const override = world.matchmakingOverride;
+  if (day === 1 && override?.type === "avoid_rival") {
+    const { pairings, consumed } = applyMatchmakingAvoid(
+      finalPairings,
+      pool,
+      override.requesterId,
+      world
+    );
+    finalPairings = pairings;
+    if (consumed) builder.updateWorldField("matchmakingOverride", undefined);
   }
 
   const scheduled: MatchSchedule[] = finalPairings.map((p) => ({
@@ -336,4 +351,73 @@ export function ensureDaySchedule(world: WorldState, day: number): StateImpact {
   }
 
   return builder.build();
+}
+
+// ── Matchmaking override consumer (political favor) ─────────────────────────
+
+/**
+ * Repair pass for the `matchmaking_avoid` political favor: on day 1, no
+ * rikishi from the requesting heya may be paired against a rikishi from their
+ * hottest rival heya (per `rivalriesState.heyaRivalryPairs` heat).
+ *
+ * Deterministic swap repair: for each forbidden pairing, swap the rival-heya
+ * rikishi with the same-side rikishi of the next pairing where the swap keeps
+ * same-heya avoidance intact on both pairings.
+ */
+function applyMatchmakingAvoid(
+  pairings: MatchPairing[],
+  pool: Rikishi[],
+  requesterHeyaId: string,
+  world: WorldState
+): { pairings: MatchPairing[]; consumed: boolean } {
+  const heyaOf = new Map(pool.map((r) => [r.id, r.heyaId]));
+  const requesterInPool = pool.some((r) => r.heyaId === requesterHeyaId);
+  if (!requesterInPool) return { pairings, consumed: false };
+
+  // Requester's hottest rival heya.
+  const rivalPairs = world.rivalriesState?.heyaRivalryPairs;
+  const rivalHeyaId = rivalPairs
+    ? Object.values(rivalPairs)
+        .filter((p) => p.heyaAId === requesterHeyaId || p.heyaBId === requesterHeyaId)
+        .sort((a, b) => b.heat - a.heat)
+        .map((p) => (p.heyaAId === requesterHeyaId ? p.heyaBId : p.heyaAId))[0]
+    : undefined;
+  // Favor is consumed once the requester's division is scheduled on day 1,
+  // even if no rival pairing needed repair.
+  if (!rivalHeyaId) return { pairings, consumed: true };
+
+  const out = pairings.map((p) => ({ ...p }));
+  const isForbidden = (p: MatchPairing): boolean => {
+    const a = heyaOf.get(p.eastId);
+    const b = heyaOf.get(p.westId);
+    return (
+      (a === requesterHeyaId && b === rivalHeyaId) ||
+      (a === rivalHeyaId && b === requesterHeyaId)
+    );
+  };
+  const sameHeya = (x: string | undefined, y: string | undefined) =>
+    x !== undefined && x === y;
+
+  for (let i = 0; i < out.length; i++) {
+    if (!isForbidden(out[i])) continue;
+    // Which side holds the rival rikishi?
+    const rivalSide: "eastId" | "westId" =
+      heyaOf.get(out[i].eastId) === rivalHeyaId ? "eastId" : "westId";
+    // Find a swap partner on the same side in a later pairing.
+    for (let j = i + 1; j < out.length; j++) {
+      const cand = out[j][rivalSide];
+      const candHeya = heyaOf.get(cand);
+      if (candHeya === rivalHeyaId || candHeya === requesterHeyaId) continue;
+      // Check both pairings stay same-heya-safe after the swap.
+      const iOther = out[i][rivalSide === "eastId" ? "westId" : "eastId"];
+      const jOther = out[j][rivalSide === "eastId" ? "westId" : "eastId"];
+      if (sameHeya(heyaOf.get(cand), heyaOf.get(iOther))) continue;
+      if (sameHeya(heyaOf.get(out[i][rivalSide]), heyaOf.get(jOther))) continue;
+      const tmp = out[i][rivalSide];
+      out[i] = { ...out[i], [rivalSide]: cand, reasons: [...out[i].reasons, "favor_avoid_rival"] };
+      out[j] = { ...out[j], [rivalSide]: tmp };
+      break;
+    }
+  }
+  return { pairings: out, consumed: true };
 }

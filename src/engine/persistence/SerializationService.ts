@@ -160,6 +160,7 @@ export const SerializationService = {
       eventLog: world.eventLog,
 
       npcScoutingPriorities: world.npcScoutingPriorities,
+      npcBidPolicies: world.npcBidPolicies,
       _populationTarget: world._populationTarget,
       _recruitmentWindow: world._recruitmentWindow,
       _postBashoMeta: world._postBashoMeta,
@@ -285,6 +286,7 @@ export const SerializationService = {
       eventLog: s.eventLog,
 
       npcScoutingPriorities: s.npcScoutingPriorities,
+      npcBidPolicies: s.npcBidPolicies,
       _populationTarget: s._populationTarget,
       _recruitmentWindow: s._recruitmentWindow,
       _postBashoMeta: s._postBashoMeta,

@@ -158,6 +158,7 @@ export interface SerializedWorldState {
 
   // ── NPC & scheduling internals ──────────────────────────────────────────
   npcScoutingPriorities?: WorldState["npcScoutingPriorities"];
+  npcBidPolicies?: WorldState["npcBidPolicies"];
   _populationTarget?: number;
   _recruitmentWindow?: WorldState["_recruitmentWindow"];
   _postBashoMeta?: WorldState["_postBashoMeta"];

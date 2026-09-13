@@ -28,7 +28,7 @@ import { EDGE_THRESHOLD } from "../../types/combat-spatial";
 import type { EngineStateV2 } from "../../types/combat-spatial";
 import { isBodyFalling, classifyFallKimarite } from "../boutSpatial";
 import { evaluateKimariteAttempt } from "../kimariteClassifier";
-import { stat, jitter, boutFatigueIncrement } from "../boutUtils";
+import { stat, jitter, boutFatigueIncrement, type SideTactics } from "../boutUtils";
 import { buildEdgeCrisis } from "./edgeCrisis";
 
 export function tickPushBattle(
@@ -39,7 +39,7 @@ export function tickPushBattle(
   boutLog: BoutLogEntry[],
   division: Division,
   meta: { tone: string; drift: Record<string, number> },
-  playerTactic?: import("../../types/combat").BoutTactic
+  tactics?: SideTactics
 ): { winner?: Side; kimarite?: KimariteId } | undefined {
   if (st.phase.tag !== "push_battle") return undefined;
 
@@ -225,7 +225,7 @@ export function tickPushBattle(
     rng,
     division,
     meta,
-    playerTactic
+    tactics
   );
   if (attempt) {
     const succeeded = rng.next() < attempt.successProbability;

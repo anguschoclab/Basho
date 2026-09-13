@@ -247,6 +247,11 @@ export interface WorldState {
   perceptionCache?: Record<Id, PerceptionSnapshot>;
 
   npcScoutingPriorities?: Record<Id, "none" | "passive" | "active" | "aggressive">;
+  /** Standing recruitment bid policies written by weekly NPC AI (WS4). */
+  npcBidPolicies?: Record<
+    Id,
+    { shouldBid: boolean; maxBid: number; bidStrategy: "aggressive" | "moderate" | "conservative" }
+  >;
 
   _interimDaysRemaining?: number;
   _postBashoDays?: number;

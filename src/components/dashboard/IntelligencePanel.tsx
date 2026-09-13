@@ -3,7 +3,7 @@ import { BaseWidget } from "./BaseWidget";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { Sparkles, TrendingUp, Swords, Coins, Users, Dumbbell } from "lucide-react";
+import { Sparkles, TrendingUp, Swords, Coins, Users, Dumbbell, Trophy, Star } from "lucide-react";
 import type { AIRecommendation } from "@/presenters/engineAccess";
 
 interface IntelligencePanelProps {
@@ -18,6 +18,8 @@ const CATEGORY_ICON: Record<string, React.ElementType> = {
   bout: TrendingUp,
   governance: Sparkles,
   generic: Sparkles,
+  rank: Trophy,
+  reputation: Star,
 };
 
 const PRIORITY_VARIANT: Record<string, "default" | "destructive" | "secondary" | "outline"> = {

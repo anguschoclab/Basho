@@ -47,7 +47,7 @@ export const KimariteSelectionEngine = {
     division: Division | undefined,
     meta: { tone: string; drift: Record<string, number> } | undefined,
     rng: SeededRNG,
-    playerTactic?: import("../types/combat").BoutTactic
+    tactics?: import("./boutUtils").SideTactics
   ): KimariteAttempt | null {
     const effectiveMeta = meta ?? { tone: "classic", drift: {} };
     // 1. Determine attacker and defender candidates
@@ -113,9 +113,11 @@ export const KimariteSelectionEngine = {
         if (effectiveMeta.tone === "defensive" && tacticalFamily === "trick")
           weight *= KIMARITE_TONE_MATCH_BOOST;
 
-        // Tactic-driven kimarite family bias
-        if (playerTactic && tacticalFamily) {
-          const bias = getTacticProfile(playerTactic).kimariteWeightBias[tacticalFamily];
+        // Tactic-driven kimarite family bias — the attacker's own resolved
+        // tactic biases which family of techniques they attempt.
+        const attackerTactic = side === "east" ? tactics?.east : tactics?.west;
+        if (attackerTactic && tacticalFamily) {
+          const bias = getTacticProfile(attackerTactic).kimariteWeightBias[tacticalFamily];
           if (bias) weight *= bias;
         }
 

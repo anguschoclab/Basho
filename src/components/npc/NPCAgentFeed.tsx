@@ -17,6 +17,11 @@ const CATEGORY_LABELS: Record<string, string> = {
   media: "Media",
   strategy: "Strategy",
   general: "General",
+  plan_shift: "Plan Shift",
+  crisis: "Crisis",
+  rivalry: "Rivalry",
+  ai_decision: "Decision",
+  economy: "Finance",
 };
 
 export function NPCAgentFeed({ projection }: { projection: NPCAgentProjection }) {

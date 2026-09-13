@@ -51,7 +51,11 @@ describe("NPC agents — weekly decision wiring", () => {
   });
 
   it("emits NPC_MANAGER_DECISION events for agent results", () => {
-    expect(weekly).toContain("NPC_MANAGER_DECISION");
+    // WS4: execution moved to executeAgentDecisions, which owns the
+    // NPC_MANAGER_DECISION emission for each executed domain.
+    const execution = readFile("engine/npcAI/execution.ts");
+    expect(weekly).toContain("executeAgentDecisions");
+    expect(execution).toContain("NPC_MANAGER_DECISION");
   });
 });
 

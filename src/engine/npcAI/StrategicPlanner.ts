@@ -11,12 +11,15 @@ import type { AIContext, AIPlan, AIGoal, AIConstraint } from "../ai/types";
 import type { PerceptionSnapshot } from "../perception";
 import type { LeaguePerception } from "../ai/types";
 import { getHeya } from "../queries";
+import { computePlanBaseline, computeStallPenalty } from "./planOutcomes";
 
 interface PlanTemplate {
   planId: string;
   estimatedWeeks: number;
   goals: AIGoal[];
   constraints: AIConstraint[];
+  /** Constraints resolved against the concrete heya at plan creation. */
+  dynamicConstraints?: (ctx: AIContext) => AIConstraint[];
   score: (ctx: AIContext, perception: PerceptionSnapshot, league: LeaguePerception) => number;
   reason: string;
 }
@@ -41,6 +44,27 @@ function hasStrongRoster(perception: PerceptionSnapshot): boolean {
 
 function hasWeakRoster(perception: PerceptionSnapshot): boolean {
   return perception.rosterStrengthBand === "developing" || perception.rosterStrengthBand === "weak";
+}
+
+/** Heya rikishi ids currently kadoban (ozeki at demotion risk). */
+function kadobanRikishiIds(ctx: AIContext): string[] {
+  const heya = getHeya(ctx.world, ctx.heyaId);
+  if (!heya) return [];
+  const out: string[] = [];
+  for (const id of heya.rikishiIds ?? []) {
+    const r = ctx.world.rikishi.get(id);
+    if (r?.rank === "ozeki" && ctx.world.ozekiKadoban?.[id]?.isKadoban) out.push(id);
+  }
+  return out;
+}
+
+/** Heya rikishi ids that won the most recent basho. */
+function reigningChampionIds(ctx: AIContext): string[] {
+  const heya = getHeya(ctx.world, ctx.heyaId);
+  const last = ctx.world.history[ctx.world.history.length - 1];
+  if (!heya || !last?.yusho) return [];
+  const ids = new Set(heya.rikishiIds ?? []);
+  return ids.has(last.yusho) ? [last.yusho] : [];
 }
 
 const PLAN_CATALOG: PlanTemplate[] = [
@@ -129,6 +153,19 @@ const PLAN_CATALOG: PlanTemplate[] = [
       { domain: "training", type: "max_intensity", value: "intensive" },
       { domain: "rivalry", type: "avoid_rival", value: false },
     ],
+    dynamicConstraints: (ctx) => {
+      // Focus the plan on the heya's hottest inter-heya rivalry.
+      const pairs = ctx.world.rivalriesState?.heyaRivalryPairs ?? {};
+      const top = Object.values(pairs)
+        .filter((p) => p.heyaAId === ctx.heyaId || p.heyaBId === ctx.heyaId)
+        .sort((a, b) => b.heat - a.heat)[0];
+      const rival = top
+        ? top.heyaAId === ctx.heyaId
+          ? top.heyaBId
+          : top.heyaAId
+        : undefined;
+      return rival ? [{ domain: "rivalry", type: "focus_rival", value: rival }] : [];
+    },
     score: (ctx, perception, league) => {
       let s = 0;
       if (involvedInRivalryCluster(ctx, league)) s += 40;
@@ -167,6 +204,104 @@ const PLAN_CATALOG: PlanTemplate[] = [
     reason: "Market conditions favor aggressive recruitment.",
   },
   {
+    planId: "kadoban_survival",
+    estimatedWeeks: 8,
+    goals: [
+      { domain: "rank", target: "clear_kadoban", priority: 10 },
+      { domain: "training", target: "protect_injured_stars", priority: 8 },
+    ],
+    constraints: [{ domain: "training", type: "max_intensity", value: "intensive" }],
+    dynamicConstraints: (ctx) => {
+      const ids = kadobanRikishiIds(ctx);
+      return ids.length > 0
+        ? [{ domain: "training", type: "protect_rikishi", value: ids }]
+        : [];
+    },
+    score: (ctx, _perception) => {
+      const kadoban = kadobanRikishiIds(ctx).length;
+      let s = 0;
+      if (kadoban > 0) s += 70;
+      if (ctx.oyakata && ctx.oyakata.traits.compassion >= 60) s += 5;
+      return s;
+    },
+    reason: "An Ozeki is kadoban — survival takes precedence over everything.",
+  },
+  {
+    planId: "yusho_defense",
+    estimatedWeeks: 8,
+    goals: [
+      { domain: "rank", target: "defend_title", priority: 10 },
+      { domain: "reputation", target: "assert_dominance", priority: 6 },
+    ],
+    constraints: [{ domain: "training", type: "max_intensity", value: "intensive" }],
+    dynamicConstraints: (ctx) => {
+      const ids = reigningChampionIds(ctx);
+      return ids.length > 0
+        ? [{ domain: "training", type: "protect_rikishi", value: ids }]
+        : [];
+    },
+    score: (ctx, perception) => {
+      let s = 0;
+      if (reigningChampionIds(ctx).length > 0) s += 45;
+      if (hasStrongRoster(perception)) s += 10;
+      if (ctx.oyakata && ctx.oyakata.traits.ambition >= 60) s += 10;
+      return s;
+    },
+    reason: "The stable holds the crown — the campaign is to defend it.",
+  },
+  {
+    planId: "faction_ascension",
+    estimatedWeeks: 16,
+    goals: [
+      { domain: "reputation", target: "lead_ichimon", priority: 9 },
+      { domain: "finance", target: "fund_political_maneuvers", priority: 5 },
+    ],
+    constraints: [{ domain: "reputation", type: "use_favors", value: true }],
+    score: (ctx, perception, league) => {
+      const heya = getHeya(ctx.world, ctx.heyaId);
+      if (!heya?.ichimon) return 0;
+      const leader = league.ichimonLeaders?.[heya.ichimon];
+      if (!leader || leader.heyaId === ctx.heyaId) return 0;
+      const capital = heya.politicalCapital ?? 0;
+      let s = 0;
+      if (capital >= 40) s += 35;
+      else if (capital >= 20) s += 15;
+      if (leader.capitalBand === "modest") s += 10; // weak leader — contestable
+      if (ctx.oyakata && ctx.oyakata.traits.ambition >= 70) s += 15;
+      if (ctx.oyakata?.archetype === "strategist") s += 10;
+      if (perception.runwayBand === "desperate" || perception.runwayBand === "critical") s -= 20;
+      return s;
+    },
+    reason: "Faction leadership is within reach — spend influence to ascend.",
+  },
+  {
+    planId: "talent_pipeline",
+    estimatedWeeks: 24,
+    goals: [
+      { domain: "recruitment", target: "build_academy", priority: 9 },
+      { domain: "rank", target: "develop_homegrown_sekitori", priority: 8 },
+    ],
+    constraints: [
+      { domain: "recruitment", type: "invest_academy", value: true },
+      { domain: "finance", type: "min_reserve", value: 6 },
+    ],
+    score: (ctx, perception, league) => {
+      // A pipeline only makes sense when there is a real development need.
+      if (!hasWeakRoster(perception) && perception.rosterSize >= 12) return 0;
+      let s = 0;
+      if (hasWeakRoster(perception)) s += 25;
+      if (perception.rosterSize < 10) s += 10;
+      if (league.topRecruitAvailable) s += 15;
+      const heya = getHeya(ctx.world, ctx.heyaId);
+      if (!heya?.youthAcademy) s += 10;
+      if (perception.runwayBand === "comfortable" || perception.runwayBand === "secure") s += 10;
+      if (ctx.oyakata?.archetype === "nurturer") s += 10;
+      if (ctx.oyakata && ctx.oyakata.traits.patience >= 60) s += 10;
+      return s;
+    },
+    reason: "Long-term strength comes from a homegrown talent pipeline.",
+  },
+  {
     planId: "status_quo",
     estimatedWeeks: 4,
     goals: [{ domain: "rank", target: "maintain_position", priority: 5 }],
@@ -185,7 +320,8 @@ function scoreWithMemory(template: PlanTemplate, ctx: AIContext, baseScore: numb
       failures++;
     }
   }
-  return baseScore - failures * 8;
+  const stall = ctx.memory ? computeStallPenalty(template.planId, ctx.memory) : 0;
+  return baseScore - failures * 8 - stall;
 }
 
 /** Create a strategic plan from the current AI context. */
@@ -224,10 +360,11 @@ export function createPlan(ctx: AIContext): AIPlan | undefined {
     archetype,
     planId: chosen.planId,
     goals: chosen.goals,
-    constraints: chosen.constraints,
+    constraints: [...chosen.constraints, ...(chosen.dynamicConstraints?.(ctx) ?? [])],
     estimatedWeeks: chosen.estimatedWeeks,
     startedWeek: week,
     reasoning,
+    baseline: computePlanBaseline(ctx.world, ctx.heyaId),
   };
 }
 

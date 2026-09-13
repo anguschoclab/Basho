@@ -182,8 +182,7 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Matchmaking exhibition pair builder utility",
   "src/engine/npcAI/LeaguePerception.ts:emptyLeaguePerception":
     "Empty league perception factory utility",
-  "src/engine/npcAI/OpponentModel.ts:getOpponentDominantFamily":
-    "Opponent model dominant family getter utility",
+
   "src/engine/shikona/rankRules.ts:resolveRankTier": "Rank tier resolution utility",
   "src/engine/strategy/NPCFinanceCalculator.ts:getFinanceStrategy":
     "NPC finance strategy getter utility",
@@ -326,17 +325,17 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Public type for CoordinationInput contract",
   "src/engine/npcAI/TacticalCoordinator.ts:coordinateDecision":
     "Utility function retained for future wiring",
-  "src/engine/npcAI/OpponentModel.ts:observeBoutResult":
-    "Utility function retained for future wiring",
   "src/engine/npcAI/OpponentModel.ts:suggestCounterTactic":
     "Utility function retained for future wiring",
   "src/engine/npcAI/MemoryStore.ts:emptyOyakataMemory":
     "Utility function retained for future wiring",
-  "src/engine/npcAI/MemoryStore.ts:archiveActivePlan":
-    "Utility function retained for future wiring",
-  "src/engine/npcAI/MemoryStore.ts:recordOpponentModel":
-    "Utility function retained for future wiring",
-  "src/engine/npcAI/MemoryStore.ts:getOpponentModel": "Utility function retained for future wiring",
+  "src/engine/npcAI/opponentLearning.ts:BoutLearningCtx":
+    "Public type for the bout-learning hook context",
+  "src/engine/npcAI/opponentLearning.ts:MAX_OPPONENT_MODELS":
+    "Config constant for the opponent-model eviction cap",
+  "src/engine/npcAI/planOutcomes.ts:PlanOutcome":
+    "Public type for the plan-outcome classification result",
+
   "src/engine/npcAI/contextBuilder.ts:buildAIContext":
     "Utility function retained for future wiring",
   "src/engine/actions/OyakataIntervention.ts:applyOyakataIntervention":
@@ -351,9 +350,12 @@ const INTENTIONAL_EXPORTS: Record<string, string> = {
     "Utility function retained for future wiring",
   "src/engine/bard/dramaGenerator.ts:checkBashoDayDrama":
     "Utility function retained for future wiring",
+  "src/engine/bard/dramaGenerator.ts:checkTriggeredDrama":
+    "Internal drama trigger invoked by processDramaTick; exported for unit testing",
+  "src/engine/bard/dramaGenerator.ts:triggerCrisis":
+    "Internal crisis factory invoked by checkTriggeredDrama; exported for unit testing",
   "src/engine/bard/BardEngine.ts:interpolate": "Utility function retained for future wiring",
   "src/engine/bout/BoutAI.ts:BoutAIContext": "Public type for BoutAIContext contract",
-  "src/engine/bout/BoutAI.ts:chooseTactic": "Utility function retained for future wiring",
   "src/engine/bout/boutNarrative.ts:isSanyakuPromotionByRank":
     "Utility function retained for future wiring",
   "src/engine/bout/yaocho.ts:YaochoIndicators": "Public type for YaochoIndicators contract",

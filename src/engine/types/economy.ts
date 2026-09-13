@@ -67,6 +67,10 @@ export interface GovernanceRuling {
   };
   /** Player's choice when responding to this ruling/event */
   playerChoice?: string;
+  /** NPC actor's choice when an NPC heya resolved this ruling/event */
+  actorChoice?: string;
+  /** Heya ID of the NPC actor that resolved this ruling/event */
+  actorId?: string;
   /** Player's custom response text */
   playerResponse?: string;
   /** Severity chosen by player when issuing a ruling */

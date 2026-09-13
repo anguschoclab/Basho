@@ -37,7 +37,11 @@ import {
 } from "../systems/economy/KenshoService";
 
 import { clamp } from "../utils/math";
-import { decideBoutTacticOverride } from "../strategy/NPCStrategyService";
+import { chooseTactic, type BoutAIContext } from "./BoutAI";
+import { buildOpponentModel } from "../npcAI/OpponentModel";
+import { getOpponentModel } from "../npcAI/MemoryStore";
+import { rngFromSeed } from "../rng";
+import type { BoutTactic } from "../types/combat";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import type { StateImpact } from "../core/StateImpact";
 import { isYushoContention, isPlayoffScenario } from "./boutContention";
@@ -175,25 +179,69 @@ export function resolveBout(
   const eastBout = applyRivalryToRikishi(east, eastRivalry);
   const westBout = applyRivalryToRikishi(west, westRivalry);
 
-  // NPC tactic override: desperation/rivalry pressure on key days
-  let cpuTacticOverride = bout.cpuTacticOverride;
-  if (!cpuTacticOverride && world) {
-    const bashoDay = basho.day ?? 1;
-    const standings = basho.standings;
-    // Determine which side is the NPC (the non-player side)
-    const npcSide =
-      bout.playerSide === "east" ? "west" : bout.playerSide === "west" ? "east" : null;
-    if (npcSide) {
-      const npcRikishi = npcSide === "east" ? east : west;
-      const npcRecord = standings?.get(npcRikishi.id) ?? { wins: 0, losses: 0 };
-      const rivalryKey = RivalryService.makeRivalryKey(east.id, west.id);
-      const rivalryState = RivalryService.ensureRivalriesState(world);
-      const rivalryHeat = rivalryState.pairs[rivalryKey]?.heat ?? 0;
-      cpuTacticOverride = decideBoutTacticOverride(npcRecord, rivalryHeat, bashoDay);
+  // Per-side tactic resolution (WS1):
+  // - Player side: caller-supplied playerTactic param wins, then bout.playerTactic.
+  // - NPC side: explicit per-side ctx field, then legacy cpuTacticOverride,
+  //   then a full BoutAI.chooseTactic fed by standings, rivalry, fatigue, and
+  //   the acting heya's learned opponent model.
+  // - NPC-vs-NPC: both sides get a resolved tactic (legacy cpuTacticOverride
+  //   maps to east for back-compat).
+  const rivalryHeat = eastRivalry.heat;
+  let eastTactic: BoutTactic | undefined = bout.eastTactic;
+  let westTactic: BoutTactic | undefined = bout.westTactic;
+  const playerSide = bout.playerSide;
+
+  if (playerSide === "east" || playerSide === "west") {
+    const resolvedPlayerTactic = playerTactic ?? bout.playerTactic;
+    if (playerSide === "east") eastTactic = resolvedPlayerTactic ?? eastTactic;
+    else westTactic = resolvedPlayerTactic ?? westTactic;
+
+    const npcSide: Side = playerSide === "east" ? "west" : "east";
+    const npcRikishi = npcSide === "east" ? east : west;
+    const npcOpponent = npcSide === "east" ? west : east;
+    const explicit =
+      (npcSide === "east" ? eastTactic : westTactic) ?? bout.cpuTacticOverride;
+    const npcTactic =
+      explicit ??
+      (world
+        ? chooseNpcSideTactic(
+            world,
+            basho,
+            bout,
+            npcSide,
+            npcRikishi,
+            npcOpponent,
+            rivalryHeat
+          )
+        : undefined);
+    if (npcSide === "east") eastTactic = npcTactic;
+    else westTactic = npcTactic;
+  } else {
+    if (!eastTactic) {
+      eastTactic =
+        bout.cpuTacticOverride ??
+        (world
+          ? chooseNpcSideTactic(world, basho, bout, "east", east, west, rivalryHeat)
+          : undefined);
+    }
+    if (!westTactic && world) {
+      westTactic = chooseNpcSideTactic(world, basho, bout, "west", west, east, rivalryHeat);
     }
   }
 
-  const ctxFinal = cpuTacticOverride ? { ...ctxWithTactic, cpuTacticOverride } : ctxWithTactic;
+  // cpuTacticOverride keeps its legacy meaning on the ctx (non-player side;
+  // east when no playerSide) for any consumer still reading it.
+  const cpuTacticOverride = playerSide
+    ? playerSide === "east"
+      ? westTactic
+      : eastTactic
+    : eastTactic;
+  const ctxFinal: BoutContext = {
+    ...ctxWithTactic,
+    eastTactic,
+    westTactic,
+    cpuTacticOverride,
+  };
 
   // 1. Run B+ spatial physics engine
   const meta = world?.meta;
@@ -215,6 +263,10 @@ export function resolveBout(
     ? tryHansoku(bout, physicsResult, eastBout as Rikishi, westBout as Rikishi, basho, hansokuSeed)
     : { result: physicsResult, fouledHeyaId: null };
   const result = hansokuResult;
+  // Record resolved per-side tactics for observability, UI, and tests.
+  if (eastTactic || westTactic) {
+    result.tactics = { east: eastTactic, west: westTactic };
+  }
 
   // Trigger scandal for the fouled rikishi's heya
   if (fouledHeyaId && world) {
@@ -338,22 +390,19 @@ export function resolveBout(
     });
   }
 
-  // 3. Tactic aftermath (fatigue, momentum, injury multiplier)
-  const { playerUpdate, cpuUpdate, injuryMultiplier } = computeTacticAftermath(
+  // 3. Tactic aftermath (fatigue, momentum, injury multiplier) — per side.
+  const { eastUpdate, westUpdate, injuryMultiplier } = computeTacticAftermath(
     bout,
     result,
-    winner,
-    loser,
-    cpuTacticOverride
+    east,
+    west,
+    { east: eastTactic, west: westTactic }
   );
-  if (Object.keys(playerUpdate).length > 0) {
-    const playerRikishiId = bout.playerSide === "east" ? east.id : west.id;
-    builder.updateRikishi(playerRikishiId, playerUpdate);
+  if (Object.keys(eastUpdate).length > 0) {
+    builder.updateRikishi(east.id, eastUpdate);
   }
-  if (Object.keys(cpuUpdate).length > 0) {
-    const cpuRikishiId =
-      bout.playerSide === "east" ? west.id : bout.playerSide === "west" ? east.id : undefined;
-    if (cpuRikishiId) builder.updateRikishi(cpuRikishiId, cpuUpdate);
+  if (Object.keys(westUpdate).length > 0) {
+    builder.updateRikishi(west.id, westUpdate);
   }
   result.tacticInjuryRiskMultiplier = injuryMultiplier;
 
@@ -486,6 +535,60 @@ export function resolveBout(
   }
 
   return { result, impact: builder.build() };
+}
+
+/**
+ * Rank-pressure inference for NPC tactic selection.
+ * Demotion pressure when make-koshi is confirmed/threatened late in the
+ * basho; promotion pressure during a strong late-basho run.
+ */
+function deriveRankPressure(
+  record: { wins: number; losses: number },
+  bashoDay: number
+): "demotion" | "promotion" | "neutral" {
+  if (bashoDay >= 12 && record.losses >= 7) return "demotion";
+  if (bashoDay >= 12 && record.wins >= 10) return "promotion";
+  return "neutral";
+}
+
+/**
+ * Choose a contextual tactic for an NPC-controlled side via BoutAI.
+ * Feeds chooseTactic with the side's record, rivalry heat, both rikishi's
+ * fatigue, the acting heya's learned opponent model (seeded from public
+ * history when absent), and rank pressure — all banded/public information.
+ * RNG is seeded per bout+side so the draw stream is stable and isolated.
+ */
+function chooseNpcSideTactic(
+  world: WorldState,
+  basho: BashoState,
+  bout: BoutContext,
+  side: Side,
+  rikishi: Rikishi,
+  opponent: Rikishi,
+  rivalryHeat: number
+): BoutTactic {
+  const record = basho.standings?.get(rikishi.id) ?? { wins: 0, losses: 0 };
+  const heya = rikishi.heyaId ? world.heyas?.get(rikishi.heyaId) : undefined;
+  const oyakata = heya?.oyakataId ? world.oyakata?.get(heya.oyakataId) : undefined;
+  const opponentModel =
+    (oyakata?.memory ? getOpponentModel(oyakata.memory, opponent.id) : undefined) ??
+    buildOpponentModel(opponent, world.week ?? 0);
+  const bashoDay = basho.day ?? bout.day ?? 1;
+  const ctx: BoutAIContext = {
+    rng: rngFromSeed(
+      world.seed ?? "world",
+      "boutAI",
+      `${basho.id ?? "basho"}:${bout.id}:${side}`
+    ),
+    bashoDay,
+    cpuRecord: { wins: record.wins ?? 0, losses: record.losses ?? 0 },
+    rivalryHeat,
+    fatigue: rikishi.fatigue,
+    opponentFatigue: opponent.fatigue,
+    opponentModel,
+    rankPressure: deriveRankPressure(record, bashoDay),
+  };
+  return chooseTactic(rikishi, opponent, ctx);
 }
 
 /**

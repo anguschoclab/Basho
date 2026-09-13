@@ -21,9 +21,15 @@ import { buildLeaguePerception } from "../../npcAI/LeaguePerception";
 import { createPlan, shouldReplan } from "../../npcAI/StrategicPlanner";
 import { makeNPCWeeklyDecision } from "../../npcAI";
 import { enforceHardCapRosterOverflow } from "../../overflow";
-import { getMemory, setActivePlan, recordDecision } from "../../npcAI/MemoryStore";
+import {
+  getMemory,
+  setActivePlan,
+  archiveActivePlan,
+  recordDecision,
+} from "../../npcAI/MemoryStore";
+import { evaluatePlanOutcome, planPrimaryMetricOrdinal } from "../../npcAI/planOutcomes";
 import type { AIContext } from "../../ai/types";
-import { getMediaStrategy } from "../../npcMediaStrategy";
+import { handleNPCMediaEvent, resolveNPCCrisis } from "../../npcAI/handlers";
 import {
   processOyakataMood,
   consolidateOyakataMemoryPure,
@@ -119,6 +125,18 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
       const needsReplan = shouldReplan(aiCtx, activePlan);
       let currentPlan = activePlan;
       if (needsReplan || !currentPlan) {
+        if (activePlan) {
+          // Archive the outgoing plan with its measured outcome so future
+          // plan scoring can learn from it (scoreWithMemory).
+          const outcome = evaluatePlanOutcome(world, heya.id, activePlan);
+          nextOya.memory = archiveActivePlan(
+            nextOya.memory ?? getMemory(nextOya, world.week),
+            outcome.outcome,
+            outcome.summary,
+            world.week
+          );
+          aiCtx.memory = nextOya.memory;
+        }
         const newPlan = createPlan(aiCtx);
         if (newPlan) {
           nextOya.memory = setActivePlan(
@@ -127,6 +145,17 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
             world.week
           );
           currentPlan = newPlan;
+          builder.logEvent(
+            "STRATEGY_SHIFT",
+            "ai_plan_change",
+            {
+              heyaId: heya.id,
+              planId: newPlan.planId,
+              previousPlanId: activePlan?.planId,
+              reasoning: newPlan.reasoning.join(" | "),
+            },
+            { heyaId: heya.id, importance: "minor" }
+          );
         }
       }
 
@@ -139,7 +168,8 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
           world.year,
           world.week,
           `Plan ${currentPlan.planId}: intensity ${decision.trainingIntensity}, scouting ${decision.scoutingPriority}`,
-          currentPlan.planId
+          currentPlan.planId,
+          planPrimaryMetricOrdinal(world, heya.id, currentPlan.planId)
         );
       }
 
@@ -149,13 +179,32 @@ export function phase01_week_npc_ai(world: WorldState): StateImpact {
       collectManagementDecisionEvents(heya.id, decision, builder);
       collectStrategyShiftEvents(heya.id, decision, builder);
 
-      // Handle media events for NPCs
+      // Resolve any active crisis autonomously via the CrisisAgent.
+      if (heya.activeCrisis) {
+        builder.merge(resolveNPCCrisis(world, heya.id, heya.activeCrisis));
+      }
+
+      // Handle media events for NPCs via the MediaAgent (actor-scoped
+      // effects; rulings already resolved by anyone are skipped).
       if (world.governanceLog) {
-        const mediaStrat = getMediaStrategy(oyakata.archetype);
         for (const event of world.governanceLog) {
-          if (event.heyaId === heya.id && !event.playerChoice) {
-            builder.merge(mediaStrat.evaluateMediaEventResponse(world, heya, oyakata, event.id));
-          }
+          if (event.heyaId !== heya.id) continue;
+          if (event.playerChoice || event.actorChoice) continue;
+          const severity =
+            event.severity === "high" || event.severity === "terminal"
+              ? "major"
+              : event.severity === "medium"
+                ? "moderate"
+                : "minor";
+          builder.merge(
+            handleNPCMediaEvent(
+              world,
+              heya.id,
+              event.id,
+              event.incident ?? event.type,
+              severity
+            ).impact
+          );
         }
       }
 

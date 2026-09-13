@@ -28,7 +28,15 @@ export interface AgentDecisions {
   narrative: {
     shouldTriggerEvent: boolean;
     eventType?: string;
+    rikishiId?: Id;
     narrativeTone: "heroic" | "tragic" | "dramatic" | "underdog" | "neutral";
+  };
+  /** Strategic infrastructure actions (staff, academy) driven by active plan. */
+  infrastructure?: {
+    shouldHireStaff: boolean;
+    staffRole?: string;
+    shouldBuildAcademy: boolean;
+    shouldUpgradeAcademy: boolean;
   };
 }
 

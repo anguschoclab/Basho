@@ -82,3 +82,13 @@ export function isSponsorPlayerRelevant(tier: string): EventImportance {
   if (tier === "T5" || tier === "T4") return "notable";
   return "minor";
 }
+
+/**
+ * Checks if an NPC crisis response is relevant to the player.
+ * Crises at the player's own stable are always headlines; crises at
+ * rival stables are at least notable since they reshape the league.
+ */
+export function isCrisisPlayerRelevant(world: WorldState, heyaId: Id): EventImportance {
+  if (world.playerHeyaId && heyaId === world.playerHeyaId) return "headline";
+  return "notable";
+}

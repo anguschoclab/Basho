@@ -18,7 +18,8 @@ export interface CrisisOption {
   label: string;
   description?: string;
   impactGenerator: (
-    world: import("./world").WorldState
+    world: import("./world").WorldState,
+    heyaId?: import("./common").Id
   ) => import("../core/StateImpact").StateImpact;
 }
 

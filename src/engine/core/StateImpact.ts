@@ -185,6 +185,7 @@ export interface StateImpact {
       | "pendingExhibitions"
       | "bloodlineRegistry"
       | "npcScoutingPriorities"
+      | "npcBidPolicies"
       | "talentPool"
       | "candidatePool"
       | "sparringPairs"

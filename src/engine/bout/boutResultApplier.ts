@@ -14,6 +14,7 @@ import * as rivalries from "../rivalries";
 import * as economics from "../economics";
 import type { NarrativeContext } from "../types/events";
 import * as scoutingStore from "../scoutingStore";
+import { onBoutResolvedOpponentModels } from "../npcAI/opponentLearning";
 import { updateMediaFromBout, createDefaultMediaState } from "../systems/media/MediaService";
 import { applyAchievementImpact } from "../systems/economy/SponsorshipService";
 import { createImpactBuilder } from "../core/ImpactBuilder";
@@ -293,6 +294,7 @@ export function applyBoutResult(
   builder.merge(rivalries.onBoutResolvedRivalries(world, { match, result, east, west }));
   builder.merge(economics.onBoutResolvedEconomics(world, { match, result, east, west }));
   builder.merge(scoutingStore.onBoutResolvedScouting(world, { match, result, east, west }));
+  builder.merge(onBoutResolvedOpponentModels(world, { match, result, east, west }));
 
   // 5. Update Media (generates headlines, heat, etc.)
   const mediaState = world.mediaState ?? createDefaultMediaState();

@@ -160,6 +160,8 @@ export function fillVacanciesForNPCWithBidding(
     const oyakata = world.oyakata.get(heya.oyakataId);
     if (!oyakata) continue;
 
+    const bidPolicy = world.npcBidPolicies?.[heyaId as Id];
+    if (bidPolicy && !bidPolicy.shouldBid) continue;
     const recruitmentStrat = getRecruitmentStrategy(oyakata.archetype);
     const rivalHeyaId = rivalHeyaMap.get(heyaId as Id);
     const balanceMult = balanceMap.get(heyaId as Id) ?? 1;
@@ -171,7 +173,10 @@ export function fillVacanciesForNPCWithBidding(
         candidate.candidateId,
         rivalHeyaId
       );
-      const bidAmount = Math.round(rawBid * balanceMult);
+      let bidAmount = Math.round(rawBid * balanceMult);
+      if (bidPolicy && bidPolicy.maxBid > 0) {
+        bidAmount = Math.min(bidAmount, bidPolicy.maxBid);
+      }
       bids.push({ heyaId, candidateId: candidate.candidateId, bidAmount, oyakata });
     }
   }

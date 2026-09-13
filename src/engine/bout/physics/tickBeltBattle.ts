@@ -26,7 +26,7 @@ import type { EngineStateV2 } from "../../types/combat-spatial";
 import { isBodyFalling, classifyBeltFallKimarite } from "../boutSpatial";
 import { evolveGripGeometry } from "../boutGrip";
 import { evaluateKimariteAttempt } from "../kimariteClassifier";
-import { stat, boutFatigueIncrement } from "../boutUtils";
+import { stat, boutFatigueIncrement, type SideTactics } from "../boutUtils";
 import { buildEdgeCrisis } from "./edgeCrisis";
 
 export function tickBeltBattle(
@@ -37,7 +37,7 @@ export function tickBeltBattle(
   boutLog: BoutLogEntry[],
   division: Division,
   meta: { tone: string; drift: Record<string, number> },
-  playerTactic?: import("../../types/combat").BoutTactic
+  tactics?: SideTactics
 ): { winner?: Side; kimarite?: KimariteId } | undefined {
   if (st.phase.tag !== "belt_battle") return undefined;
 
@@ -248,7 +248,7 @@ export function tickBeltBattle(
     rng,
     division,
     meta,
-    playerTactic
+    tactics
   );
   if (attempt) {
     const succeeded = rng.next() < attempt.successProbability;

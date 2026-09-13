@@ -20,7 +20,7 @@ import {
   INSTABILITY_FLOOR,
 } from "../../constants/engine/bout";
 import type { EngineStateV2 } from "../types/combat-spatial";
-import { type BoutContext } from "./boutUtils";
+import { sideTactics, type BoutContext, type SideTactics } from "./boutUtils";
 
 import { initEngineStateV2 } from "./physics/initState";
 import { resolveTachiaiV2 } from "./physics/tachiai";
@@ -40,7 +40,7 @@ function runPhaseLoop(
   boutLog: BoutLogEntry[],
   division: import("../types/banzuke").Division,
   meta: { tone: string; drift: Record<string, number> },
-  playerTactic?: import("../types/combat").BoutTactic
+  tactics?: SideTactics
 ): { winner: Side; kimarite: KimariteId; isTimeout: boolean } {
   // CR-02: Henka may have resolved the bout at tachiai
   if (st.phase.tag === "resolved") {
@@ -93,12 +93,12 @@ function runPhaseLoop(
       });
     }
 
-    const pushResult = tickPushBattle(rng, east, west, st, boutLog, division, meta, playerTactic);
+    const pushResult = tickPushBattle(rng, east, west, st, boutLog, division, meta, tactics);
     if (pushResult?.winner && pushResult?.kimarite) {
       return { winner: pushResult.winner, kimarite: pushResult.kimarite, isTimeout: false };
     }
 
-    const beltResult = tickBeltBattle(rng, east, west, st, boutLog, division, meta, playerTactic);
+    const beltResult = tickBeltBattle(rng, east, west, st, boutLog, division, meta, tactics);
     if (beltResult?.winner && beltResult?.kimarite) {
       return { winner: beltResult.winner, kimarite: beltResult.kimarite, isTimeout: false };
     }
@@ -203,7 +203,7 @@ export function resolveBoutPhysicsImpl(
     boutLog,
     division,
     effectiveMeta,
-    bout.playerTactic
+    sideTactics(bout)
   );
 
   const result = buildBoutResultV2(bout, east, west, st, winner, kimarite, boutLog, isTimeout);

@@ -46,6 +46,33 @@ export function consolidateOyakataMemoryPure(
     );
   }
 
+  // Record this week's heya-scoped incidents (governance rulings, rivalry
+  // losses, sanctions) so crisis and plan scoring have recent context.
+  const log = world.events?.log;
+  if (log && log.length > 0) {
+    const tail = log.slice(-100);
+    for (const e of tail) {
+      if (e.heyaId !== oyakata.heyaId) continue;
+      if (e.week !== tick || e.year !== world.year) continue;
+      if (e.category !== "discipline" && e.category !== "rivalry" && e.category !== "welfare") {
+        continue;
+      }
+      const already = memory.observations.some(
+        (o) => o.tick === tick && o.summary === e.summary
+      );
+      if (already) continue;
+      memory = addObservation(
+        memory,
+        {
+          type: "incident",
+          summary: e.summary,
+          importance: e.importance === "major" ? 9 : 6,
+        },
+        tick
+      );
+    }
+  }
+
   memory = { ...memory, lastConsolidationTick: tick };
   return memory;
 }

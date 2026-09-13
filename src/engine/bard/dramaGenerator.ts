@@ -114,11 +114,12 @@ function generateRandomDrama(world: WorldState): StateImpact {
   return builder.build();
 }
 
-function checkTriggeredDrama(world: WorldState): StateImpact {
+export function checkTriggeredDrama(world: WorldState): StateImpact {
   const builder = createImpactBuilder("checkTriggeredDrama");
   const crisisImpacts: StateImpact[] = [];
 
   // Check for financial crisis
+  let npcCrisisTriggered = false;
   for (const heya of stableSort(world.heyas.values(), (x) => x.id)) {
     if (heya.funds < 0 && !heya.riskIndicators?.financial) {
       builder.logEvent(
@@ -135,6 +136,13 @@ function checkTriggeredDrama(world: WorldState): StateImpact {
         // This triggers a CrisisModal in the UI by attaching an ActiveCrisis to the heya
         const crisisImpact = triggerCrisis(world, heya.id, "financial_insolvency");
         crisisImpacts.push(crisisImpact);
+      } else if (!heya.activeCrisis && !npcCrisisTriggered) {
+        // NPC heyas get the same crisis object, resolved autonomously by the
+        // weekly NPC AI phase via the CrisisAgent. Bounded: at most one NPC
+        // crisis may trigger per tick; a heya with an open crisis is skipped.
+        const crisisImpact = triggerCrisis(world, heya.id, "financial_insolvency");
+        crisisImpacts.push(crisisImpact);
+        npcCrisisTriggered = true;
       }
     }
   }
@@ -194,7 +202,7 @@ export function checkBashoDayDrama(world: WorldState): StateImpact {
   return builder.build();
 }
 
-function triggerCrisis(world: WorldState, heyaId: string, type: CrisisType): StateImpact {
+export function triggerCrisis(world: WorldState, heyaId: string, type: CrisisType): StateImpact {
   const builder = createImpactBuilder("triggerCrisis");
   const rng = rngForWorld(world, "narrative", `crisis_${heyaId}_${world.week}`);
 
@@ -214,8 +222,15 @@ function triggerCrisis(world: WorldState, heyaId: string, type: CrisisType): Sta
           id: "seek_pardon",
           label: "Plead with JSA",
           description: "Beg the JSA for a grace period. High risk of prestige loss and sanctions.",
-          impactGenerator: (_world: WorldState) => {
+          impactGenerator: (_world: WorldState, targetHeyaId?: string) => {
             const b = createImpactBuilder("crisis_seek_pardon");
+            const h = targetHeyaId ? _world.heyas.get(targetHeyaId) : undefined;
+            if (h && targetHeyaId) {
+              b.updateHeya(targetHeyaId, {
+                reputation: Math.max(0, (h.reputation ?? 50) - 15),
+                politicalCapital: Math.max(0, (h.politicalCapital ?? 50) - 10),
+              });
+            }
             b.logEvent("GOVERNANCE_RULING", "narrative", {
               incident: "crisis_resolved",
               choice: "seek_pardon",
@@ -231,8 +246,16 @@ function triggerCrisis(world: WorldState, heyaId: string, type: CrisisType): Sta
           id: "emergency_loan",
           label: "Take Predatory Loan",
           description: "Borrow ¥10,000,000 from loan sharks at exorbitant interest rates.",
-          impactGenerator: (_world: WorldState) => {
+          impactGenerator: (_world: WorldState, targetHeyaId?: string) => {
             const b = createImpactBuilder("crisis_emergency_loan");
+            const h = targetHeyaId ? _world.heyas.get(targetHeyaId) : undefined;
+            if (h && targetHeyaId) {
+              b.updateHeya(targetHeyaId, {
+                funds: (h.funds ?? 0) + 10_000_000,
+                scandalScore: (h.scandalScore ?? 0) + 10,
+                reputation: Math.max(0, (h.reputation ?? 50) - 5),
+              });
+            }
             b.logEvent("GOVERNANCE_RULING", "narrative", {
               incident: "crisis_resolved",
               choice: "emergency_loan",

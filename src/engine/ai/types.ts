@@ -26,12 +26,35 @@ export interface AIGoal {
   deadlineWeek?: number;
 }
 
-export type AIConstraintType = "max_intensity" | "min_reserve" | "avoid_rival" | "protect_rikishi";
+export type AIConstraintType =
+  | "max_intensity"
+  | "min_reserve"
+  | "avoid_rival"
+  | "protect_rikishi"
+  | "focus_rival"
+  | "invest_academy"
+  | "use_favors";
 
 export interface AIConstraint {
   domain: AIGoalDomain;
   type: AIConstraintType;
   value: unknown;
+}
+
+/** World-state snapshot taken when a plan starts; used to score its outcome. */
+export interface PlanBaseline {
+  /** Runway band as an ordinal (desperate=0 … secure=4). */
+  runwayOrdinal: number;
+  rosterSize: number;
+  sekitoriCount: number;
+  /** Highest rivalry heat across pairs involving heya rikishi. */
+  maxRivalryHeat: number;
+  /** Basho titles won by heya rikishi at plan start. */
+  yushoWins: number;
+  /** Political capital at plan start (faction_ascension outcomes). */
+  politicalCapital?: number;
+  /** Whether the heya operated a youth academy at plan start. */
+  hasAcademy?: boolean;
 }
 
 export interface AIPlan {
@@ -43,6 +66,8 @@ export interface AIPlan {
   estimatedWeeks: number;
   startedWeek: number;
   reasoning: string[];
+  /** Baseline snapshot captured when the plan was created. */
+  baseline?: PlanBaseline;
 }
 
 export type AIRecommendationCategory =
@@ -107,6 +132,8 @@ export interface OpponentTacticModel {
     trick: number;
     speed: number;
   };
+  /** Tally of observed tactic/kimarite labels behind mostUsedTactic. */
+  tacticCounts?: Record<string, number>;
   /** Most frequently observed BoutTactic. */
   mostUsedTactic?: string;
   /** Last updated week. */
@@ -133,10 +160,14 @@ export interface OyakataMemory {
     week: number;
     year: number;
     planId?: string;
+    /** Ordinal of the active plan's primary metric that week (higher = better). */
+    metricOrdinal?: number;
     summary: string;
   }[];
   /** Learned opponent tactic models keyed by rikishi id. */
   opponentModels: Record<Id, OpponentTacticModel>;
+  /** Last week each agent-decision domain executed (cooldowns). */
+  lastExecutedAt?: Record<string, number>;
 }
 
 /** Promotion / demotion pressure snapshot for one division. */
@@ -175,4 +206,8 @@ export interface LeaguePerception {
   rivalryClusters: RivalryCluster[];
   /** True if a high-potential recruit is visible in the talent pool. */
   topRecruitAvailable: boolean;
+  /** Banded political standing: which heya leads each ichimon. */
+  ichimonLeaders?: Partial<
+    Record<string, { heyaId: Id; capitalBand: "dominant" | "strong" | "modest" }>
+  >;
 }

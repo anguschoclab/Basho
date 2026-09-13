@@ -34,6 +34,39 @@ export interface BoutContext {
   playerSide?: Side;
   playerTactic?: import("../types/combat").BoutTactic;
   cpuTacticOverride?: import("../types/combat").BoutTactic;
+  /** Resolved tactic for the east rikishi (set by resolveBout or callers). */
+  eastTactic?: import("../types/combat").BoutTactic;
+  /** Resolved tactic for the west rikishi (set by resolveBout or callers). */
+  westTactic?: import("../types/combat").BoutTactic;
+}
+
+/** Resolved tactic for each side of a bout. */
+export interface SideTactics {
+  east?: import("../types/combat").BoutTactic;
+  west?: import("../types/combat").BoutTactic;
+}
+
+/**
+ * Resolve the effective tactic for one side of a bout.
+ * Precedence: explicit per-side field → playerTactic on the player side →
+ * legacy cpuTacticOverride on the non-player side (or east when no
+ * playerSide exists, matching historical physics semantics).
+ */
+export function sideTactic(
+  bout: BoutContext,
+  side: Side
+): import("../types/combat").BoutTactic | undefined {
+  const explicit = side === "east" ? bout.eastTactic : bout.westTactic;
+  if (explicit) return explicit;
+  if (bout.playerSide) {
+    return side === bout.playerSide ? bout.playerTactic : bout.cpuTacticOverride;
+  }
+  return side === "east" ? bout.cpuTacticOverride : undefined;
+}
+
+/** Resolve both sides' tactics from a bout context. */
+export function sideTactics(bout: BoutContext): SideTactics {
+  return { east: sideTactic(bout, "east"), west: sideTactic(bout, "west") };
 }
 
 // ---------------------------------------------------------------------------

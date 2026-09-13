@@ -12,7 +12,11 @@ import type { AIRecommendation, AIGoalDomain } from "../ai/types";
 import { buildPerceptionSnapshot } from "../perception";
 import { buildLeaguePerception } from "../npcAI/LeaguePerception";
 import { getAdvice } from "../bout/CornerAdvice";
-import { getRikishi, getHeya } from "../queries";
+import { getRikishi, getHeya, getOyakataForHeya } from "../queries";
+import { getOpponentModel } from "../npcAI/MemoryStore";
+import { getOpponentDominantFamily } from "../npcAI/OpponentModel";
+
+const MAX_ROSTER = 30;
 
 const ROSTER_LOW_THRESHOLD = 10;
 
@@ -166,7 +170,81 @@ function bashoRecommendations(world: WorldState, heyaId: Id): AIRecommendation[]
         category: "bout",
       });
     }
+
+    // Opponent-model intel: if the player's oyakata has learned this
+    // opponent's tactical family, surface it as a banded scout hint.
+    const oyakata = getOyakataForHeya(world, heyaId);
+    const model = oyakata?.memory
+      ? getOpponentModel(oyakata.memory, opponent.id)
+      : undefined;
+    const family = model ? getOpponentDominantFamily(model) : undefined;
+    if (family) {
+      recs.push(
+        rec(
+          `opponent-model-${match.boutId ?? `${today}-${opponent.id}`}`,
+          "bout",
+          "medium",
+          `Scout report: ${opponent.shikona}`,
+          `Your stable's notes say ${opponent.shikona} favors the ${family} family. Prepare counters in training.`,
+          "Open bout prep",
+          opponent.id
+        )
+      );
+    }
   }
+  return recs;
+}
+
+/** League-aware recommendations — rival plans, contested recruits. */
+function leagueRecommendations(world: WorldState, heyaId: Id): AIRecommendation[] {
+  const recs: AIRecommendation[] = [];
+  const league = buildLeaguePerception(world);
+  const heya = getHeya(world, heyaId);
+  if (!heya) return recs;
+
+  // A rival stable leads the yusho race while the player is in contention.
+  const leader = league.yushoRace.leaders[0];
+  if (leader && !league.yushoRace.isClinched) {
+    const leaderRikishi = getRikishi(world, leader.rikishiId);
+    const playerInRace = league.yushoRace.leaders.some((l) =>
+      (heya.rikishiIds ?? []).includes(l.rikishiId)
+    );
+    if (leaderRikishi && leaderRikishi.heyaId !== heyaId && playerInRace) {
+      const rivalHeya = getHeya(world, leaderRikishi.heyaId ?? "");
+      recs.push(
+        rec(
+          "rival-yusho-leader",
+          "rank",
+          "high",
+          "Rival leads the yusho race",
+          `${leader.shikona} of ${rivalHeya?.name ?? "a rival stable"} leads the tournament at ${leader.wins}-${leader.losses}. Your rikishi are still in the race — every bout matters.`,
+          "Open standings",
+          leader.rikishiId
+        )
+      );
+    }
+  }
+
+  // A top recruit is visible and rival stables have roster vacancies.
+  if (league.topRecruitAvailable) {
+    const rivalWithVacancy = [...world.heyas.values()].some(
+      (h) => h.id !== heyaId && (h.rikishiIds?.length ?? 0) < MAX_ROSTER
+    );
+    if (rivalWithVacancy) {
+      recs.push(
+        rec(
+          "contested-recruit",
+          "recruitment",
+          "medium",
+          "Contested top recruit",
+          "A high-potential recruit is available and rival stables have roster room. Expect bidding competition.",
+          "Open recruitment panel",
+          heyaId
+        )
+      );
+    }
+  }
+
   return recs;
 }
 
@@ -180,6 +258,7 @@ export function generateRecommendations(world: WorldState, playerHeyaId?: Id): A
     ...rosterRecommendations(world, heyaId),
     ...rivalryRecommendations(world, heyaId),
     ...bashoRecommendations(world, heyaId),
+    ...leagueRecommendations(world, heyaId),
   ];
 
   const priorityOrder = { critical: 4, high: 3, medium: 2, low: 1 };

@@ -92,3 +92,69 @@ describe("projectNPCAgentActivity", () => {
     expect(result.decisions[0].heyaName).toBe("Unknown");
   });
 });
+
+describe("WS6 — extended AI surfacing", () => {
+  it("surfaces CRISIS_RESPONSE events as crisis-category rows", () => {
+    const events = [
+      {
+        type: "CRISIS_RESPONSE",
+        week: 7,
+        category: "narrative",
+        data: { heyaId: "h1", crisisId: "c1", choiceId: "comply" },
+      },
+    ];
+    const result = projectNPCAgentActivity(makeWorld(events, [{ id: "h1", name: "H1" }]));
+    expect(result.decisions).toHaveLength(1);
+    expect(result.decisions[0].category).toBe("crisis");
+    expect(result.decisions[0].decision).toContain("comply");
+  });
+
+  it("surfaces ai_plan_change events with planId", () => {
+    const events = [
+      {
+        type: "STRATEGY_SHIFT",
+        week: 9,
+        category: "ai_plan_change",
+        data: { heyaId: "h1", planId: "yokozuna_push", previousPlanId: "status_quo" },
+      },
+    ];
+    const result = projectNPCAgentActivity(makeWorld(events, [{ id: "h1", name: "H1" }]));
+    expect(result.decisions).toHaveLength(1);
+    expect(result.decisions[0].category).toBe("plan_shift");
+    expect(result.decisions[0].planId).toBe("yokozuna_push");
+  });
+
+  it("surfaces RIVAL_POSTURE events as rivalry rows", () => {
+    const events = [
+      {
+        type: "RIVAL_POSTURE",
+        week: 4,
+        category: "ai_rival_posture",
+        data: { heyaId: "h1", posture: "aggressive", rivalHeyaId: "h2" },
+      },
+    ];
+    const result = projectNPCAgentActivity(
+      makeWorld(events, [
+        { id: "h1", name: "H1" },
+        { id: "h2", name: "H2" },
+      ])
+    );
+    expect(result.decisions).toHaveLength(1);
+    expect(result.decisions[0].category).toBe("rivalry");
+    expect(result.decisions[0].decision).toContain("aggressive");
+  });
+
+  it("surfaces MEDIA_RESPONSE events as media rows", () => {
+    const events = [
+      {
+        type: "MEDIA_RESPONSE",
+        week: 3,
+        category: "media",
+        data: { heyaId: "h1", response: "deflect" },
+      },
+    ];
+    const result = projectNPCAgentActivity(makeWorld(events, [{ id: "h1", name: "H1" }]));
+    expect(result.decisions).toHaveLength(1);
+    expect(result.decisions[0].category).toBe("media");
+  });
+});

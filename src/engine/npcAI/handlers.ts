@@ -12,6 +12,30 @@ import {
 } from "../agents";
 
 import type { PerceptionSnapshot } from "../perception";
+import type { ActiveCrisis } from "../types/crises";
+import { handleMediaEventForHeya } from "../systems/media/MediaEventService";
+
+/**
+ * Resolve an NPC heya's active crisis end-to-end: CrisisAgent picks an
+ * option, the option's impactGenerator applies its real effects to the
+ * acting heya, and `heya.activeCrisis` is cleared.
+ */
+export function resolveNPCCrisis(
+  world: WorldState,
+  heyaId: Id,
+  crisis: ActiveCrisis
+): StateImpact {
+  const builder = createImpactBuilder("resolveNPCCrisis");
+  const { choiceId, impact } = handleNPCCrisis(world, heyaId, crisis);
+  builder.merge(impact);
+
+  const option = crisis.options.find((o) => o.id === choiceId) ?? crisis.options[0];
+  if (option) {
+    builder.merge(option.impactGenerator(world, heyaId));
+  }
+  builder.updateHeya(heyaId, { activeCrisis: undefined });
+  return builder.build();
+}
 
 export function handleNPCCrisis(
   world: WorldState,
@@ -101,6 +125,9 @@ export function handleNPCMediaEvent(
     },
     { heyaId }
   );
+
+  // Apply the actor-scoped media effects (never the global player sweep).
+  builder.merge(handleMediaEventForHeya(world, eventId, mediaResult.response, heyaId));
 
   return {
     response: mediaResult.response,
