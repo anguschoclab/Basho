@@ -383,15 +383,21 @@
   "heya_style": {
     "oshi": [
       "Trained in the pusher's tradition at %HEYA_NAME%, %SHIKONA% embodies the stable's aggressive oshi style.",
-      "%HEYA_NAME%'s emphasis on forward pressure shows in %SHIKONA%'s relentless attacking."
+      "%HEYA_NAME%'s emphasis on forward pressure shows in %SHIKONA%'s relentless attacking.",
+      "Rooted in %HEYA_NAME%'s core teachings, %SHIKONA% looks to drive forward immediately.",
+      "%SHIKONA% is a classic product of %HEYA_NAME% — it's all about straight ahead, overwhelming force."
     ],
     "yotsu": [
       "From the belt-focused dojo of %HEYA_NAME%, %SHIKONA% carries the stable's yotsu tradition.",
-      "%HEYA_NAME% breeds belt specialists — %SHIKONA% is no exception, favoring the inside grip."
+      "%HEYA_NAME% breeds belt specialists — %SHIKONA% is no exception, favoring the inside grip.",
+      "A true disciple of %HEYA_NAME%, %SHIKONA% will be looking to get both hands on the mawashi early.",
+      "The grappling heritage of %HEYA_NAME% is clearly visible in the way %SHIKONA% controls the belt."
     ],
     "tsuppari": [
       "The tsuppari heritage of %HEYA_NAME% is alive in %SHIKONA%'s rapid-fire thrusting attack.",
-      "%SHIKONA% channels %HEYA_NAME%'s tradition of blistering tsuppari at the tachiai."
+      "%SHIKONA% channels %HEYA_NAME%'s tradition of blistering tsuppari at the tachiai.",
+      "%HEYA_NAME% teaches their rikishi to keep the opponent away, and %SHIKONA% executes it perfectly with flying hands.",
+      "Expect a barrage of strikes from %SHIKONA%, honoring the fierce thrusting style of %HEYA_NAME%."
     ],
     "defensive": [
       "%HEYA_NAME% teaches patience — %SHIKONA% waits for the mistake, then punishes it.",
@@ -403,7 +409,9 @@
     ],
     "speedster": [
       "%HEYA_NAME% values speed above all — %SHIKONA%'s quick feet are the product of that philosophy.",
-      "The speed-first training at %HEYA_NAME% shows in %SHIKONA%'s explosive lateral movement."
+      "The speed-first training at %HEYA_NAME% shows in %SHIKONA%'s explosive lateral movement.",
+      "Agility is the hallmark of %HEYA_NAME%, and %SHIKONA% uses that footwork to dance around heavier opponents.",
+      "%SHIKONA% represents the new wave of lightning-fast rikishi cultivated at %HEYA_NAME%."
     ],
     "trickster": [
       "%HEYA_NAME% embraces the unconventional — %SHIKONA% brings trickery and feints to the dohyo.",
