@@ -67,6 +67,10 @@ type EntitySnapshot = Partial<Record<EntityMapField, EntityMap>>;
  * Clones maps that the phase is declared to touch (via metadata.touches).
  * Note: If touches is undefined (not declared), it falls back to cloning all
  * trackable entity maps. An empty array `[]` snapshots nothing (used for pure phases).
+ *
+ * CONTRACT: This mechanism ONLY rolls back top-level maps listed in ENTITY_MAP_FIELDS.
+ * It does NOT deeply clone entities. If a phase mutates entity fields in-place (e.g. `rikishi.stats`)
+ * or modifies unlisted top-level fields before throwing an error, that corruption WILL persist.
  */
 function createShallowSnapshot(
   world: WorldState,
