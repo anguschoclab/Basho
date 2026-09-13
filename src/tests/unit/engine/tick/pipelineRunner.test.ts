@@ -27,6 +27,70 @@ describe("defaultActiveModifiers", () => {
   });
 });
 
+describe("pipelineRunner - PERF flag", () => {
+  it("tracks performance and posts message when __PERF__ is true", () => {
+    const world = {
+      id: "world",
+      heyas: new Map(),
+      rikishi: new Map(),
+      count: 0,
+    } as any;
+
+    const originalPerf = (globalThis as any).__PERF__;
+    const originalPostMessage = (globalThis as any).postMessage;
+
+    (globalThis as any).__PERF__ = true;
+    (globalThis as any).postMessage = vi.fn();
+
+    try {
+      // Test with StateImpact
+      const phase1 = vi.fn(function mockPhase1(w) {
+        const impact = {
+          metadata: {},
+          entities: {
+            heyaUpdates: new Map([["h1", {} as any]])
+          }
+        };
+        return impact as any;
+      });
+
+      const phase2 = vi.fn(function mockPhase2(w) {
+        return { ...w, count: w.count * 2 };
+      });
+
+      runPipeline(world, [phase1, phase2]);
+
+      expect(globalThis.postMessage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: "PERF_TRACE",
+          trace: expect.arrayContaining([
+            expect.objectContaining({
+              phaseName: expect.any(String), // name may be "Mock" or "mockPhase1"
+              impactSize: 1, // 1 heyaUpdate
+            }),
+            expect.objectContaining({
+               phaseName: expect.any(String),
+               impactSize: undefined
+            })
+          ])
+        })
+      );
+    } finally {
+      if (originalPerf === undefined) {
+        delete (globalThis as any).__PERF__;
+      } else {
+        (globalThis as any).__PERF__ = originalPerf;
+      }
+
+      if (originalPostMessage === undefined) {
+        delete (globalThis as any).postMessage;
+      } else {
+        (globalThis as any).postMessage = originalPostMessage;
+      }
+    }
+  });
+});
+
 describe("pipelineRunner", () => {
   it("runs phases in sequence", () => {
     const world = {
