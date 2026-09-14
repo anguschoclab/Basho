@@ -165,21 +165,23 @@ export default function RegionalHubPage() {
             <ExhibitionInvitationsPanel
               projection={exhibitionProjection}
               onAccept={(invitationId, rikishiId) => {
-                playerHeya &&
+                if (playerHeya) {
                   sendCommand({
                     type: "ACCEPT_EXHIBITION",
                     heyaId: playerHeya.id,
                     invitationId,
                     rikishiId: rikishiId || undefined,
                   });
+                }
               }}
               onDecline={(invitationId) => {
-                playerHeya &&
+                if (playerHeya) {
                   sendCommand({
                     type: "DECLINE_EXHIBITION",
                     heyaId: playerHeya.id,
                     invitationId,
                   });
+                }
               }}
               eligibleRikishiCount={playerHeya?.rikishiIds?.length ?? 0}
             />

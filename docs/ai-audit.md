@@ -11,10 +11,13 @@ Perf baseline (`docs/audit/perf-baseline.json`): S1_single_day p50 4.6ms, S2_wee
 S3_year p50 3277ms / p99 3410ms. Gate: S3 within 15% on p50/p99.
 
 Post-implementation measurement (same-session A/B, 30 runs each, 2026-09-13): pre-AI base
-commit `14b3eaf5` S3 p50 = 3861ms; integrated tree S3 p50 = 4215ms → **+9.2% real AI cost**,
-under the 15% gate. The committed baseline (5-run sample, 2026-08-09) is stale relative to
-current machine state — the pre-AI commit itself measures +18% over it — so the gate was
-refreshed against a current-tree measurement after documenting this delta.
+commit `14b3eaf5` S3 p50 = 3861ms; integrated tree S3 p50 = 4215ms (clean 50-run bench:
+4079ms) → **~+9% real AI cost**, under the 15% gate threshold. Note: the committed baseline
+is a 5-run sample from 2026-08-09 and is stale relative to current machine state — the
+pre-AI commit itself measures +18% over it — so `perf-gate-check` will report a false-positive
+regression until the baseline is regenerated (`cp docs/audit/perf-current.json
+docs/audit/perf-baseline.json`). Deliberately left for maintainer decision rather than
+baking the AI cost in silently.
 
 ## Decision points
 
