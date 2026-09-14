@@ -164,6 +164,11 @@ console.error = (...args: unknown[]) => {
   origError(...args);
 };
 
+// Preload narrative domains — BardEngine.resolve() warns and returns empty
+// text when domain JSON hasn't been loaded (headless scripts never bootstrap).
+const { BardEngine } = await import("../src/engine/bard/BardEngine");
+await BardEngine.loadDomains();
+
 let world = generateInitialWorld(SEED);
 world = { ...world, playerHeyaId: undefined };
 

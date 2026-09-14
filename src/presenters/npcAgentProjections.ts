@@ -33,6 +33,8 @@ type LogEvent = {
   type: string;
   category?: string;
   week?: number;
+  importance?: string;
+  heyaId?: string;
   data?: Record<string, unknown>;
 };
 
@@ -103,6 +105,19 @@ function surfaceEvent(e: LogEvent): SurfacedRow | null {
         }`,
         reasoning: "",
       };
+    case "MANAGEMENT_DECISION":
+      // Weekly training directives — only surface the strategically
+      // interesting ones (punishing/conservative shifts), not routine weeks.
+      if (e.importance !== "notable" && e.importance !== "major" && e.importance !== "headline") {
+        return null;
+      }
+      return {
+        category: "training",
+        decision: `Training shift: ${String(data.intensity ?? "unknown")}${
+          data.focus ? ` · focus ${String(data.focus)}` : ""
+        }`,
+        reasoning: String(data.reasoningLog ?? ""),
+      };
     case "MEDIA_RESPONSE":
       return {
         category: "media",
@@ -123,7 +138,7 @@ export function projectNPCAgentActivity(world: WorldState): NPCAgentProjection {
     .reverse()
     .map(({ e, row }) => {
       const data = e.data ?? {};
-      const heyaId = String(data.heyaId ?? "");
+      const heyaId = String(data.heyaId ?? e.heyaId ?? "");
       const heya = world.heyas.get(heyaId);
       return {
         heyaId,

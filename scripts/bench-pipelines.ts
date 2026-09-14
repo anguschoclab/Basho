@@ -143,6 +143,8 @@ export function writeResults(path: string, run: BenchmarkRun): void {
 }
 
 if (import.meta.main) {
+  const { BardEngine } = await import("../src/engine/bard/BardEngine");
+  await BardEngine.loadDomains();
   const outputPath = join(__dirname, "..", "docs", "audit", "perf-current.json");
   const run = runBenchmark();
   writeResults(outputPath, run);

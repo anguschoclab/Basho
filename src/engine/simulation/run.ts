@@ -26,8 +26,12 @@ function parseArgs(argv: string[]): SimArgs {
   return args;
 }
 
-function run() {
+async function run() {
   const { seed, bashoCount } = parseArgs(process.argv.slice(2));
+  // Headless runs must preload narrative domains or BardEngine.resolve()
+  // warns on every template lookup and produces empty text.
+  const { BardEngine } = await import("../bard/BardEngine");
+  await BardEngine.loadDomains();
   const world = generateInitialWorld(seed);
   const result = runAutoSim(world, {
     duration: { type: "basho", count: bashoCount },
@@ -49,4 +53,4 @@ function run() {
   process.stdout.write(JSON.stringify(summary, null, 2) + "\n");
 }
 
-run();
+await run();

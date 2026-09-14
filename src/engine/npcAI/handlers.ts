@@ -14,6 +14,7 @@ import {
 import type { PerceptionSnapshot } from "../perception";
 import type { ActiveCrisis } from "../types/crises";
 import { handleMediaEventForHeya } from "../systems/media/MediaEventService";
+import { isCrisisPlayerRelevant } from "./eventSurfacing";
 
 /**
  * Resolve an NPC heya's active crisis end-to-end: CrisisAgent picks an
@@ -74,7 +75,7 @@ export function handleNPCCrisis(
       reputationChange: crisisResult.expectedImpact.reputationChange,
       politicalCapitalChange: crisisResult.expectedImpact.politicalCapitalChange,
     },
-    { heyaId }
+    { heyaId, importance: isCrisisPlayerRelevant(world, heyaId) }
   );
 
   return {
