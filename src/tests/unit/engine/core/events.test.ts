@@ -205,6 +205,90 @@ describe("events.test.ts - Core Bus", () => {
       expect(results.length).toBeGreaterThanOrEqual(1);
       expect(results.some((e) => e.importance === "headline")).toBe(true);
     });
+
+    it("filters by types array and scope correctly", () => {
+      const world = MockFactory.createWorld();
+      logEngineEvent(world, {
+        type: "BOUT_RESOLVED" as EngineEventType,
+        category: "match",
+        scope: "world",
+        title: "Bout 1",
+        summary: "Bout resolved",
+        data: {},
+      });
+      logEngineEvent(world, {
+        type: "INJURY" as EngineEventType,
+        category: "health",
+        scope: "heya",
+        title: "Injury 1",
+        summary: "Injury reported",
+        data: {},
+      });
+      logEngineEvent(world, {
+        type: "GOVERNANCE_RULING" as EngineEventType,
+        category: "career",
+        scope: "world",
+        title: "Ruling 1",
+        summary: "Ruling issued",
+        data: {},
+      });
+
+      const typesFilter = queryEvents(world, { types: ["BOUT_RESOLVED", "INJURY"] });
+      expect(typesFilter.length).toBe(2);
+      expect(typesFilter.every((e) => e.type === "BOUT_RESOLVED" || e.type === "INJURY")).toBe(true);
+
+      const scopeFilter = queryEvents(world, { scope: "heya" });
+      expect(scopeFilter.length).toBe(1);
+      expect(scopeFilter[0].scope).toBe("heya");
+    });
+
+    it("filters by heyaId and rikishiId simultaneously and preserves sort order", () => {
+      const world = MockFactory.createWorld();
+      world.year = 2026;
+      if (world.calendar) world.calendar.currentWeek = 5;
+      world.week = 5;
+
+      const e1 = logEngineEvent(world, {
+        type: "TRAINING_UPDATE" as EngineEventType,
+        category: "training",
+        heyaId: "h1",
+        rikishiId: "r1",
+        title: "E1",
+        summary: "S1",
+        day: 1,
+        data: {},
+      });
+
+      if (world.calendar) world.calendar.currentWeek = 6;
+      world.week = 6;
+      const e2 = logEngineEvent(world, {
+        type: "TRAINING_UPDATE" as EngineEventType,
+        category: "training",
+        heyaId: "h1",
+        rikishiId: "r1",
+        title: "E2",
+        summary: "S2",
+        day: 3,
+        data: {},
+      });
+
+      logEngineEvent(world, {
+        type: "TRAINING_UPDATE" as EngineEventType,
+        category: "training",
+        heyaId: "h2",
+        rikishiId: "r1",
+        title: "E3",
+        summary: "S3",
+        day: 2,
+        data: {},
+      });
+
+      const matched = queryEvents(world, { heyaId: "h1", rikishiId: "r1" });
+      expect(matched.length).toBe(2);
+      // Descending time: e2 (week 6) before e1 (week 5)
+      expect(matched[0].id).toBe(e2.id);
+      expect(matched[1].id).toBe(e1.id);
+    });
   });
 });
 

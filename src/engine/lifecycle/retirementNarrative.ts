@@ -122,11 +122,18 @@ export function generateRetirementNarrative(
 
   // 7. Favorite career memory (B7 integration)
   if (rikishi.careerHighlights && rikishi.careerHighlights.length > 0) {
+    const highlight =
+      rikishi.careerHighlights.find((h) => h.opponent) ?? rikishi.careerHighlights[0];
+    const opponent = highlight.opponent
+      ? world.rikishi.get(highlight.opponent)
+      : undefined;
     const favoriteMemoryRes = BardEngine.resolve(
       rng,
       "events.narrative.retirement_favorite_memory_summary",
       {
         SHIKONA: shikona,
+        OPPONENT: opponent?.shikona ?? "a great rival",
+        BASHO: highlight.basho ?? "a past tournament",
         rikishiId: rikishi.id,
       }
     );
