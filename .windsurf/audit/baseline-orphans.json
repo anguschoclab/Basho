@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-09-13T17:24:09.389Z",
+  "generatedAt": "2026-09-14T03:25:14.030Z",
   "summary": {
-    "total": 208,
+    "total": 207,
     "unreferencedExports": 206,
     "orphanRoutes": 0,
     "untickedServices": 0,
-    "unusedComponents": 2,
+    "unusedComponents": 1,
     "writeOnlyState": 0
   },
   "entries": [
@@ -2279,17 +2279,6 @@
       "id": "ORPH-0207",
       "file": "src/components/RequireWorld.tsx",
       "symbol": "RequireWorld",
-      "orphanType": "unused-component",
-      "priority": "P2",
-      "uiRoute": "",
-      "npcConsumer": "",
-      "tickPhase": "",
-      "status": "candidate"
-    },
-    {
-      "id": "ORPH-0208",
-      "file": "src/components/exhibition/ExhibitionInvitationsPanel.tsx",
-      "symbol": "ExhibitionInvitationsPanel",
       "orphanType": "unused-component",
       "priority": "P2",
       "uiRoute": "",

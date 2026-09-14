@@ -206,4 +206,3 @@ ID,File,Symbol,OrphanType,Priority,UIRoute,NPCConsumer,TickPhase,TestFile,Status
 "ORPH-0205","src/engine/utils/string.ts","formatShikona","unreferenced-export","P3","","","","","candidate",""
 "ORPH-0206","src/engine/worker/types.ts","WorkerMessage","unreferenced-export","P3","","","","","candidate",""
 "ORPH-0207","src/components/RequireWorld.tsx","RequireWorld","unused-component","P2","","","","","candidate",""
-"ORPH-0208","src/components/exhibition/ExhibitionInvitationsPanel.tsx","ExhibitionInvitationsPanel","unused-component","P2","","","","","candidate",""

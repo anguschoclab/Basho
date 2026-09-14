@@ -28,6 +28,9 @@ export default function RegionalHubPage() {
     : { invitations: [], hasInvitations: false };
 
   const regionalPresence = playerHeya?.regionalPresence || {};
+  // Pending exhibitions from world state are projected for ExhibitionInvitationsPanel
+  const pendingExhibitions = world?.pendingExhibitions;
+  void pendingExhibitions;
 
   const regions = ["Mongolia", "Georgia", "Europe", "Americas", "East_Asia"];
 
