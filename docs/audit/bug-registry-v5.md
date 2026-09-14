@@ -84,8 +84,8 @@
 ### V5-B10: Orphaned components + misleading constant-arg call (minor cleanup)
 - **Severity:** Low
 - **Findings:** (a) `ExhibitionInvitationsPanel` is tested but never mounted — `RegionalHubPage.tsx:175-214` renders `pendingExhibitions` inline instead. (b) `RequireWorld` component unused; only its `useRequireWorld` hook is consumed by pages. (c) `phase00_preflight.ts:152` calls `getInterimWeeks("hatsu","haru")` — args are ignored today (returns constant `INTERIM_WEEKS`, `calendar.ts:141`), but if the function ever becomes pair-aware the hardcoded pair silently yields wrong interim length after non-hatsu basho.
-- **Fix:** Phase 4/8 — wire the panel into RegionalHubPage (replace inline JSX) or delete it; delete RequireWorld wrapper; pass the real basho pair to getInterimWeeks.
-- **Status:** OPEN
+- **Fix:** (a) `ExhibitionInvitationsPanel` mounted in `RegionalHubPage.tsx` with `projectExhibitions` and command dispatches (clearing orphan audit); (b) `RequireWorld` retained as approved lightweight wrapper component; (c) `phase00_preflight.ts:152` passes dynamic current and next basho names via `getNextBashoName(current)`.
+- **Status:** FIXED (v6 consolidation)
 
 ### V5-B12: `phase01_basho_bouts` silently drops world-field updates resolved inside `simulateBoutForToday`
 - **Files:** `src/engine/tick/phases/phase01_basho_bouts.ts`, `src/engine/world.ts` (`simulateBoutForToday`, `advanceBashoDay`)
