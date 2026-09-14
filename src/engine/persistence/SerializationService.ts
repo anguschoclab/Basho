@@ -5,7 +5,7 @@ import type { WorldState } from "../types/world";
 import type { BashoState } from "../types/basho";
 import type { SerializedBashoState } from "../types/save";
 import type { SponsorPool } from "../types/sponsors";
-import type { SerializedSponsorPoolFixed } from "../types/save";
+import type { SerializedSponsorPool } from "../types/save";
 import type { SerializedWorldState } from "../types/save";
 import type { Rikishi } from "../types/rikishi";
 import type { Heya } from "../types/heya";
@@ -306,7 +306,7 @@ export const SerializationService = {
     }
   },
 
-  serializeSponsorPool(pool?: SponsorPool): SerializedSponsorPoolFixed | undefined {
+  serializeSponsorPool(pool?: SponsorPool): SerializedSponsorPool | undefined {
     if (!pool) return undefined;
     return {
       sponsors: this.mapToObject(pool.sponsors || new Map()),
@@ -314,7 +314,7 @@ export const SerializationService = {
     };
   },
 
-  deserializeSponsorPool(data?: SerializedSponsorPoolFixed): SponsorPool | undefined {
+  deserializeSponsorPool(data?: SerializedSponsorPool): SponsorPool | undefined {
     if (!data) return undefined;
     return {
       sponsors: this.objectToMap(data.sponsors || {}),

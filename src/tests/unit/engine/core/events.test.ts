@@ -209,7 +209,7 @@ describe("events.test.ts - Core Bus", () => {
     it("filters by types array and scope correctly", () => {
       const world = MockFactory.createWorld();
       logEngineEvent(world, {
-        type: "BOUT_RESOLVED" as EngineEventType,
+        type: "BOUT_RESOLVED",
         category: "match",
         scope: "world",
         title: "Bout 1",
@@ -217,15 +217,15 @@ describe("events.test.ts - Core Bus", () => {
         data: {},
       });
       logEngineEvent(world, {
-        type: "INJURY" as EngineEventType,
-        category: "health",
+        type: "MEDICAL_REPORT",
+        category: "injury",
         scope: "heya",
         title: "Injury 1",
         summary: "Injury reported",
         data: {},
       });
       logEngineEvent(world, {
-        type: "GOVERNANCE_RULING" as EngineEventType,
+        type: "GOVERNANCE_RULING",
         category: "career",
         scope: "world",
         title: "Ruling 1",
@@ -233,9 +233,9 @@ describe("events.test.ts - Core Bus", () => {
         data: {},
       });
 
-      const typesFilter = queryEvents(world, { types: ["BOUT_RESOLVED", "INJURY"] });
+      const typesFilter = queryEvents(world, { types: ["BOUT_RESOLVED", "MEDICAL_REPORT"] });
       expect(typesFilter.length).toBe(2);
-      expect(typesFilter.every((e) => e.type === "BOUT_RESOLVED" || e.type === "INJURY")).toBe(true);
+      expect(typesFilter.every((e) => e.type === "BOUT_RESOLVED" || e.type === "MEDICAL_REPORT")).toBe(true);
 
       const scopeFilter = queryEvents(world, { scope: "heya" });
       expect(scopeFilter.length).toBe(1);
@@ -245,41 +245,44 @@ describe("events.test.ts - Core Bus", () => {
     it("filters by heyaId and rikishiId simultaneously and preserves sort order", () => {
       const world = MockFactory.createWorld();
       world.year = 2026;
-      if (world.calendar) world.calendar.currentWeek = 5;
+      if (world.calendar) {
+        world.calendar.currentWeek = 5;
+        world.calendar.currentDay = 1;
+      }
       world.week = 5;
 
       const e1 = logEngineEvent(world, {
-        type: "TRAINING_UPDATE" as EngineEventType,
+        type: "TRAINING_UPDATE",
         category: "training",
         heyaId: "h1",
         rikishiId: "r1",
         title: "E1",
         summary: "S1",
-        day: 1,
         data: {},
       });
 
-      if (world.calendar) world.calendar.currentWeek = 6;
+      if (world.calendar) {
+        world.calendar.currentWeek = 6;
+        world.calendar.currentDay = 3;
+      }
       world.week = 6;
       const e2 = logEngineEvent(world, {
-        type: "TRAINING_UPDATE" as EngineEventType,
+        type: "TRAINING_UPDATE",
         category: "training",
         heyaId: "h1",
         rikishiId: "r1",
         title: "E2",
         summary: "S2",
-        day: 3,
         data: {},
       });
 
       logEngineEvent(world, {
-        type: "TRAINING_UPDATE" as EngineEventType,
+        type: "TRAINING_UPDATE",
         category: "training",
         heyaId: "h2",
         rikishiId: "r1",
         title: "E3",
         summary: "S3",
-        day: 2,
         data: {},
       });
 

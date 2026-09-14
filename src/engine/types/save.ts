@@ -29,12 +29,6 @@ import type { HeyaTrainingState } from "./training";
 
 /** Serialized form of sponsor pool for JSON storage. */
 export interface SerializedSponsorPool {
-  sponsors: Record<string, Rikishi>; // Note: This should likely be Sponsor, but keeping it broad for now or importing Sponsor
-  koenkais: Record<string, Koenkai>;
-}
-
-// Fixed version with correct internal imports
-export interface SerializedSponsorPoolFixed {
   sponsors: Record<string, Sponsor>;
   koenkais: Record<string, Koenkai>;
 }
@@ -84,7 +78,7 @@ export interface SerializedWorldState {
   ozekiKadoban?: OzekiKadobanMap;
 
   talentPool?: TalentPoolWorldState;
-  sponsorPool?: SerializedSponsorPoolFixed;
+  sponsorPool?: SerializedSponsorPool;
   mediaState?: MediaState;
 
   dayIndexGlobal: number;

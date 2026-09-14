@@ -1,4 +1,4 @@
-import { Globe, Trophy, Building2, MapPin, ArrowRight } from "lucide-react";
+import { Globe, Building2, MapPin, ArrowRight } from "lucide-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
 import { useGame } from "@/contexts/useGame";
@@ -9,20 +9,11 @@ import { WidgetHeader } from "@/components/ui/WidgetHeader";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { getPlayerHeya } from "@/presenters/engineAccess";
 import { AcademyManagementPanel } from "@/components/stable/AcademyManagementPanel";
 import { projectAcademyManagement, type ExhibitionRegion } from "@/presenters/academyManagementProjections";
-
-interface PendingExhibition {
-  id: string;
-  region: string;
-  prestige: number;
-  dominantStyle?: string;
-  requiresRank?: string;
-  expiresAtWeek: number;
-  heyaId: string;
-}
+import { ExhibitionInvitationsPanel } from "@/components/exhibition/ExhibitionInvitationsPanel";
+import { projectExhibitions } from "@/presenters/exhibitionProjections";
 
 export default function RegionalHubPage() {
   const { state } = useGame();
@@ -32,9 +23,11 @@ export default function RegionalHubPage() {
   const academyProjection = world && playerHeya
     ? projectAcademyManagement(world, playerHeya.id)
     : { academies: [], buildableRegions: [], hasAcademies: false };
+  const exhibitionProjection = world && playerHeya
+    ? projectExhibitions(world, playerHeya.id)
+    : { invitations: [], hasInvitations: false };
 
   const regionalPresence = playerHeya?.regionalPresence || {};
-  const pendingExhibitions = (world?.pendingExhibitions ?? []) as unknown as PendingExhibition[];
 
   const regions = ["Mongolia", "Georgia", "Europe", "Americas", "East_Asia"];
 
@@ -169,60 +162,27 @@ export default function RegionalHubPage() {
 
           {/* Pending Invitations Column */}
           <div className="space-y-6">
-            <WidgetCard className="h-full border-border bg-card/40 flex flex-col">
-              <WidgetHeader title="Pending Invitations" icon={Trophy} />
-              <ScrollArea className="flex-1 mt-4 pr-4">
-                {pendingExhibitions.length === 0 ? (
-                  <div className="py-12 text-center">
-                    <Trophy className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
-                    <p className="text-xs text-muted-foreground italic font-body">
-                      No invitations at this time
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {pendingExhibitions.map((inv) => (
-                      <div
-                        key={inv.id}
-                        className="p-3 rounded border border-border bg-secondary/60 hover:bg-secondary transition-colors"
-                      >
-                        <div className="flex justify-between items-start mb-2">
-                          <Badge
-                            variant="outline"
-                            className="text-[10px] border-primary/30 text-primary font-mono"
-                          >
-                            {inv.region}
-                          </Badge>
-                          <span className="text-[10px] text-muted-foreground font-mono">
-                            EXP: W{inv.expiresAtWeek}
-                          </span>
-                        </div>
-                        <h4 className="font-bold text-sm text-foreground font-display">
-                          Prestige Exhibition
-                        </h4>
-                        <p className="text-[10px] text-muted-foreground mb-3 font-mono">
-                          Req: {inv.requiresRank || "Any"}
-                        </p>
-                        <Button
-                          size="sm"
-                          className="w-full text-[10px] font-bold h-7 font-mono"
-                          onClick={() =>
-                            playerHeya &&
-                            sendCommand({
-                              type: "ACCEPT_EXHIBITION",
-                              heyaId: playerHeya.id,
-                              invitationId: inv.id,
-                            })
-                          }
-                        >
-                          ACCEPT INVITATION
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </ScrollArea>
-            </WidgetCard>
+            <ExhibitionInvitationsPanel
+              projection={exhibitionProjection}
+              onAccept={(invitationId, rikishiId) => {
+                playerHeya &&
+                  sendCommand({
+                    type: "ACCEPT_EXHIBITION",
+                    heyaId: playerHeya.id,
+                    invitationId,
+                    rikishiId: rikishiId || undefined,
+                  });
+              }}
+              onDecline={(invitationId) => {
+                playerHeya &&
+                  sendCommand({
+                    type: "DECLINE_EXHIBITION",
+                    heyaId: playerHeya.id,
+                    invitationId,
+                  });
+              }}
+              eligibleRikishiCount={playerHeya?.rikishiIds?.length ?? 0}
+            />
           </div>
         </div>
       </div>

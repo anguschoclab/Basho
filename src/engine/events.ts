@@ -160,18 +160,23 @@ export function queryEvents(
     i === "headline" ? 3 : i === "major" ? 2 : i === "notable" ? 1 : 0;
   const minImp = filters.minImportance ? impScore(filters.minImportance) : -1;
 
-  let out = events;
-  if (filters.category) out = out.filter((e) => e.category === filters.category);
-  if (filters.scope) out = out.filter((e) => e.scope === filters.scope);
-  if (filters.heyaId) out = out.filter((e) => e.heyaId === filters.heyaId);
-  if (filters.rikishiId) out = out.filter((e) => e.rikishiId === filters.rikishiId);
-  if (filters.types?.length) {
-    const typesSet = new Set(filters.types);
-    out = out.filter((e) => typesSet.has(e.type));
-  }
-  if (minImp >= 0) out = out.filter((e) => impScore(e.importance) >= minImp);
+  const typesSet = filters.types?.length ? new Set(filters.types) : undefined;
 
-  return [...out]
+  // ⚡ Bolt: Use a single-pass loop instead of multiple chained .filter() calls
+  // to avoid O(N * filters) intermediate array allocations on large event logs.
+  const out: EngineEvent[] = [];
+  for (let i = 0; i < events.length; i++) {
+    const e = events[i];
+    if (filters.category && e.category !== filters.category) continue;
+    if (filters.scope && e.scope !== filters.scope) continue;
+    if (filters.heyaId && e.heyaId !== filters.heyaId) continue;
+    if (filters.rikishiId && e.rikishiId !== filters.rikishiId) continue;
+    if (typesSet && !typesSet.has(e.type)) continue;
+    if (minImp >= 0 && impScore(e.importance) < minImp) continue;
+    out.push(e);
+  }
+
+  return out
     .sort((a, b) => {
       const ta = a.year * 1e6 + a.week * 100 + (a.day ?? 0);
       const tb = b.year * 1e6 + b.week * 100 + (b.day ?? 0);

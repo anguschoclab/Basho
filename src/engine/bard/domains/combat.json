@@ -347,6 +347,24 @@
         "Late-basho stakes: %EAST% gets his shot at the grand champion %WEST%.",
         "A career-defining opportunity for %EAST% — topple the yokozuna %WEST% and write his name in the record books.",
         "The yokozuna hunt continues as %EAST% takes aim at %WEST% in the tournament's decisive stretch."
+      ],
+      "origin_matchup": [
+        "Countrymen collide — %EAST% and %WEST% share the same roots, and neither wants to lose face back home.",
+        "A hometown derby on the dohyo: %EAST% and %WEST% grew up in the same soil and know each other well.",
+        "Pride of a shared homeland is at stake as %EAST% squares off against %WEST%.",
+        "Two products of the same region meet — %EAST% versus %WEST% carries extra weight for the faithful watching from home."
+      ],
+      "grudge_match": [
+        "There is history between these two — %EAST% and %WEST% have scores to settle.",
+        "The air is thick with bad blood as %EAST% stares down %WEST%.",
+        "No love lost here: %EAST% and %WEST% meet in a genuine grudge match.",
+        "Old grievances resurface as %EAST% and %WEST% take their places on the dohyo."
+      ],
+      "relegation_battle": [
+        "A basement battle — %EAST% and %WEST% are both fighting to keep their division status alive.",
+        "Winless and desperate, %EAST% and %WEST% clash with demotion looming over the loser.",
+        "Someone has to fall further today — %EAST% and %WEST% scrap for survival at the foot of the banzuke.",
+        "The stakes are quiet but real: %EAST% versus %WEST% is a relegation six-pointer."
       ]
     },
     "tactical": {

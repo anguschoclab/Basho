@@ -16,7 +16,6 @@ import {
   createDefaultTrainingState,
   RANK_HIERARCHY,
 } from "@/presenters/uiDigest";
-import type { Heya } from "@/engine/types/heya";
 import type {
   IndividualFocusType,
   TrainingIntensity,
@@ -53,10 +52,7 @@ export default function TrainingPage() {
 
   const [trainingState, setTrainingState] = useState<HeyaTrainingState>(() => {
     if (!world || !playerHeyaId) return createDefaultTrainingState(playerHeyaId || "");
-    const existing = world.trainingState?.get(playerHeyaId);
-    if (existing) return existing;
-    const legacy = (heya as Heya & { trainingState?: HeyaTrainingState }).trainingState;
-    return legacy ?? createDefaultTrainingState(playerHeyaId || "");
+    return world.trainingState?.get(playerHeyaId) ?? createDefaultTrainingState(playerHeyaId || "");
   });
 
   const rikishiList = useMemo<Rikishi[]>(() => {

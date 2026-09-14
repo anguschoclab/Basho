@@ -11,7 +11,7 @@ import { info } from "../../utils/Logger";
 import { assertNever } from "../../utils/types";
 import { initializeBasho } from "../../systems/generation/WorldFactory";
 import { resetBashoMediaTracking } from "../../systems/media/MediaService";
-import { getInterimWeeks } from "../../calendar";
+import { getInterimWeeks, getNextBasho } from "../../calendar";
 import { emptyDeltas, defaultActiveModifiers } from "../pipelineRunner";
 import {
   DAYS_IN_MONTH,
@@ -149,7 +149,9 @@ function checkPhaseTransition(
       if ((world._postBashoDays ?? 0) <= 0) {
         const nextPhase: CyclePhase = "interim";
         builder.updateWorldField("cyclePhase", nextPhase);
-        builder.updateWorldField("_interimDaysRemaining", getInterimWeeks("hatsu", "haru") * 7 - 7);
+        const current = world.currentBashoName ?? "hatsu";
+        const next = getNextBasho(current);
+        builder.updateWorldField("_interimDaysRemaining", getInterimWeeks(current, next) * 7 - 7);
         logTransition(world, prev, nextPhase, "The inter-basho period begins.");
         return { from: prev, to: nextPhase };
       }
