@@ -164,7 +164,8 @@ export function generateH2HCommentary(r1: Rikishi, r2: Rikishi): string {
 
   // Case 3: Streak Narrative
   if (Math.abs(record.streak) >= H2H_STREAK_THRESHOLD) {
-    return BardEngine.resolve(rng, "h2h.streak", {
+    const path = record.streak > 0 ? "h2h.winning_streak" : "h2h.losing_streak";
+    return BardEngine.resolve(rng, path, {
       P1: p1Name,
       P2: p2Name,
       STREAK: Math.abs(record.streak).toString(),

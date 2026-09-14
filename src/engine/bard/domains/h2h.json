@@ -15,9 +15,17 @@
     "A true rivalry! The record stands at %WINS% wins to %LOSSES%.",
     "Neither man has been able to gain a decisive edge in this series."
   ],
-  "streak": [
+  "winning_streak": [
     "%P1% enters the ring confident, having won the last %STREAK% meetings against %P2%.",
-    "%P1% is desperate to snap a %STREAK%-bout losing streak against %P2%."
+    "%P1% looks to maintain dominance, carrying a %STREAK%-bout winning streak into today's matchup against %P2%.",
+    "A strong psychological edge for %P1%, who rides a %STREAK%-bout winning streak over %P2%.",
+    "%P1% has %P2%'s number lately, bringing a %STREAK%-bout winning streak to the dohyo."
+  ],
+  "losing_streak": [
+    "%P1% is desperate to snap a %STREAK%-bout losing streak against %P2%.",
+    "It's been a tough stretch for %P1%, who has lost %STREAK% in a row to %P2%.",
+    "%P1% seeks a breakthrough today, having dropped the last %STREAK% meetings against %P2%.",
+    "A mental hurdle for %P1%, coming into this bout with a %STREAK%-bout losing streak against %P2%."
   ],
   "recent": [
     "Last time they met on Day %DAY%, %WINNER% won decisively by %KIMARITE%.",
