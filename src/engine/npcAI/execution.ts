@@ -51,6 +51,18 @@ const FACILITY_MAX_LEVEL = 5;
 
 const RIVALRY_HEAT_DELTA = 6;
 
+/** Player-facing surface text per executed decision domain. */
+const DOMAIN_SURFACE: Record<string, [string, string]> = {
+  myoseki: ["economy", "Purchased a Myoseki stock"],
+  facilities: ["economy", "Upgraded stable facilities"],
+  scandal: ["governance", "Moved to reduce scandal pressure"],
+  favor: ["governance", "Called in a political favor"],
+  rivalry: ["rivalry", "Shifted posture toward a rival stable"],
+  staff: ["strategy", "Hired new staff"],
+  academy: ["recruitment", "Invested in the youth academy"],
+  narrative: ["media", "Issued a public statement"],
+};
+
 function currentWeek(world: WorldState): number {
   return world.calendar?.currentWeek ?? world.week ?? 0;
 }
@@ -280,10 +292,11 @@ export function executeAgentDecisions(
     // One canonical decision event per executed domain — feeds the NPC agent
     // feed and keeps the NPC_MANAGER_DECISION audit contract.
     for (const d of executedDomains) {
+      const [category, decision] = DOMAIN_SURFACE[d] ?? ["strategy", `Acted on ${d}`];
       builder.logEvent(
         "NPC_MANAGER_DECISION",
         "ai_decision",
-        { heyaId, decision: `exec_${d}`, executed: true },
+        { heyaId, category, decision, domain: d, executed: true },
         { heyaId }
       );
     }

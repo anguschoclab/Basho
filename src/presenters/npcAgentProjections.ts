@@ -48,9 +48,35 @@ function surfaceEvent(e: LogEvent): SurfacedRow | null {
   const data = e.data ?? {};
   switch (e.type) {
     case "NPC_MANAGER_DECISION":
+      if (data.strategy === "recruitment_bidding") {
+        return {
+          category: "recruitment",
+          decision: `Bid on recruit ${String(data.candidateName ?? "unknown")}`,
+          reasoning: "",
+        };
+      }
+      if (data.action === "sponsor_recruited") {
+        return {
+          category: "sponsorship",
+          decision: `Recruited sponsor ${String(data.sponsor ?? "")}`.trim(),
+          reasoning: String(data.reasoning ?? ""),
+        };
+      }
+      if (data.strategy === "rebuild") {
+        return { category: "strategy", decision: "Shifted to a rebuild posture", reasoning: "" };
+      }
+      if (data.intensity !== undefined) {
+        return {
+          category: "training",
+          decision: `Set ${String(data.intensity)} training${
+            data.focus ? `, focus ${String(data.focus)}` : ""
+          }`,
+          reasoning: String(data.reasoningLog ?? ""),
+        };
+      }
       return {
         category: String(data.category ?? "general"),
-        decision: String(data.decision ?? data.action ?? ""),
+        decision: String(data.decision ?? data.action ?? "Management decision"),
         reasoning: String(data.reasoning ?? data.reason ?? ""),
       };
     case "STRATEGY_SHIFT":
