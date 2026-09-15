@@ -252,7 +252,12 @@
   "yusho_race": [
     "%WINNER% stays alive in the yusho race at %WINS% wins. The crowd roars.",
     "The championship chase tightens — %WINNER% is right in the thick of it at %WINS%.",
-    "A massive win for %WINNER% in the yusho race. %WINS% wins and counting."
+    "A massive win for %WINNER% in the yusho race. %WINS% wins and counting.",
+    "The dream is still alive! %WINNER% moves to %WINS% wins to keep pace with the leaders.",
+    "With %WINS% victories, %WINNER% firmly establishes himself as a genuine contender for the championship.",
+    "%WINNER% handles the pressure masterfully, advancing to %WINS% wins in the championship race.",
+    "The race for the yusho heats up as %WINNER% notches win number %WINS%.",
+    "Every bout is a final now. %WINNER% steps up to claim another critical victory, reaching %WINS% wins to stay in the hunt."
   ],
   "birthday_kachi": [
     "Kachi-koshi on his birthday! %SHIKONA% celebrates with a winning record.",
