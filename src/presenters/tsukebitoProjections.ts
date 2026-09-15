@@ -50,35 +50,50 @@ export function projectTsukebito(
     (r) => r.heyaId === heyaId && !r.isRetired
   );
 
-  // Seniors: rankNumber <= 3
-  const seniors = heyaRikishi.filter((r) => (r.rankNumber ?? 99) <= 3);
-  // Juniors: rankNumber > 10
-  const juniors = heyaRikishi.filter((r) => (r.rankNumber ?? 99) > 10);
-
-  // Build a map of junior -> assigned senior
+  const seniors: Rikishi[] = [];
+  const juniors: Rikishi[] = [];
   const juniorAssignments: Record<string, string> = {};
-  for (const s of seniors) {
-    for (const jId of s.tsukebitoIds ?? []) {
-      juniorAssignments[jId] = s.id;
+  const assignments: TsukebitoAssignmentDTO[] = [];
+
+  // Single pass loop to eliminate intermediate O(N) allocations
+  // replacing multiple .filter() and .map() chains
+  for (let i = 0; i < heyaRikishi.length; i++) {
+    const r = heyaRikishi[i];
+    const rankNumber = r.rankNumber ?? 99;
+
+    // Seniors: rankNumber <= 3
+    if (rankNumber <= 3) {
+      seniors.push(r);
+      const tsukebitoIds = r.tsukebitoIds;
+      if (tsukebitoIds !== undefined && tsukebitoIds.length > 0) {
+        const tsukebito: Array<{id: string; shikona: string; rankLabel: string}> = [];
+        for (let j = 0; j < tsukebitoIds.length; j++) {
+          const tId = tsukebitoIds[j];
+          juniorAssignments[tId] = r.id;
+          const t = world.rikishi.get(tId);
+          if (t) {
+            tsukebito.push({
+              id: t.id,
+              shikona: t.shikona,
+              rankLabel: rankLabel(t),
+            });
+          }
+        }
+
+        assignments.push({
+          seniorId: r.id,
+          seniorShikona: r.shikona,
+          seniorRankLabel: rankLabel(r),
+          tsukebitoIds,
+          tsukebito,
+        });
+      }
+    }
+    // Juniors: rankNumber > 10
+    else if (rankNumber > 10) {
+      juniors.push(r);
     }
   }
-
-  const assignments: TsukebitoAssignmentDTO[] = seniors
-    .filter((s) => (s.tsukebitoIds ?? []).length > 0)
-    .map((s) => ({
-      seniorId: s.id,
-      seniorShikona: s.shikona,
-      seniorRankLabel: rankLabel(s),
-      tsukebitoIds: s.tsukebitoIds ?? [],
-      tsukebito: (s.tsukebitoIds ?? [])
-        .map((jId) => world.rikishi.get(jId))
-        .filter((r): r is Rikishi => !!r)
-        .map((r) => ({
-          id: r.id,
-          shikona: r.shikona,
-          rankLabel: rankLabel(r),
-        })),
-    }));
 
   const eligibleSeniors = seniors.map((s) => ({
     id: s.id,
