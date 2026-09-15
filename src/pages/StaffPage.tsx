@@ -2,6 +2,7 @@ import { useMemo, useState, useCallback } from "react";
 import { useGameStore } from "@/store/gameStore";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { PageHeader } from "@/components/layout/control-center";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { STABLE_TABS } from "@/constants/ui/navigation";
 import { useGame } from "@/contexts/useGame";
 import { useRequireWorld } from "@/hooks/useRequireWorld";
@@ -197,13 +198,24 @@ export default function StaffPage() {
         </div>
 
         {/* Staff Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {staffList.map((staff) => (
-            <StaffCard key={staff.id} staff={staff} onFire={handleFire} />
-          ))}
+        {staffList.length === 0 ? (
+          <EmptyState
+            icon={Briefcase}
+            title="No Staff Members"
+            description="Your stable currently has no specialized staff. Hire experts to improve training, reduce costs, and discover new talent."
+            action={{
+              label: "Recruit Specialist",
+              onClick: () => setIsRecruitOpen(true)
+            }}
+          />
+        ) : (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {staffList.map((staff) => (
+              <StaffCard key={staff.id} staff={staff} onFire={handleFire} />
+            ))}
 
-          {/* Recruit Slot */}
-          {staffList.length < 12 && (
+            {/* Recruit Slot */}
+            {staffList.length < 12 && (
             <Dialog open={isRecruitOpen} onOpenChange={setIsRecruitOpen}>
               <DialogTrigger asChild>
                 <TooltipWrap
@@ -271,6 +283,7 @@ export default function StaffPage() {
             </Dialog>
           )}
         </div>
+        )}
       </div>
     </AppLayout>
   );
