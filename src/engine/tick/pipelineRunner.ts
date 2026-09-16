@@ -71,6 +71,8 @@ type EntitySnapshot = Partial<Record<EntityMapField, EntityMap>>;
  * CONTRACT: This mechanism ONLY rolls back top-level maps listed in ENTITY_MAP_FIELDS.
  * It does NOT deeply clone entities. If a phase mutates entity fields in-place (e.g. `rikishi.stats`)
  * or modifies unlisted top-level fields before throwing an error, that corruption WILL persist.
+ * Furthermore, if a phase is marked `pure: true`, it passes an empty array `[]` and bypasses
+ * snapshotting entirely, offering zero rollback protection if it throws.
  */
 function createShallowSnapshot(
   world: WorldState,
