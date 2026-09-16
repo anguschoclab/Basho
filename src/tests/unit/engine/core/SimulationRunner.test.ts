@@ -127,6 +127,16 @@ describe("runPostBashoResolution", () => {
     expect((runRetirements as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(1);
   });
 
+  it("falls back to empty object when vacanciesByHeyaId is undefined", () => {
+    // Temporarily change the mock for this test
+    (runRetirements as ReturnType<typeof vi.fn>).mockImplementationOnce(() => ({
+      metadata: { source: "retirements", timestamp: 0 }, // no vacanciesByHeyaId
+    }));
+    runPostBashoResolution(makeWorld());
+    const recruitCalls = (openRecruitmentWindow as ReturnType<typeof vi.fn>).mock.calls;
+    expect(recruitCalls[0][1]).toEqual({});
+  });
+
   it("calls onBashoEnded exactly once — no double-fire from CompetitionService", () => {
     runPostBashoResolution(makeWorld());
     expect((onBashoEnded as ReturnType<typeof vi.fn>).mock.calls).toHaveLength(1);
