@@ -14,7 +14,7 @@ import type { StateImpact } from "../core/StateImpact";
 import { createImpactBuilder } from "../core/ImpactBuilder";
 import { NUTRITION_MULTIPLIERS } from "../../constants/engine/multipliers";
 import { DEFAULT_FACILITY_LEVEL } from "../../constants/engine/rikishi";
-import { clamp } from "../utils/math";
+import { clamp, finiteOr } from "../utils/math";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
@@ -85,6 +85,12 @@ export function applyWeightJourneyTick(
   const journey = rikishi.weightJourney;
   if (!journey) return builder.build();
 
+  // The breakthrough is one-shot: once complete, progressKg stays above the
+  // target forever — without this guard the +power/+balance boost and the
+  // milestone event would re-fire on every weekly tick for the rest of the
+  // rikishi's career.
+  if (journey.phases.includes("complete")) return builder.build();
+
   const journeyUpdate = { ...journey };
   const updates: Partial<Rikishi> = {
     weightJourney: journeyUpdate,
@@ -114,8 +120,8 @@ export function applyWeightJourneyTick(
     journeyUpdate.phases = [...journey.phases, "complete"];
     updates.stats = {
       ...(rikishi.stats || {}),
-      power: (rikishi.stats?.power ?? 50) + WEIGHT_JOURNEY_POWER_BOOST,
-      balance: (rikishi.stats?.balance ?? 50) + WEIGHT_JOURNEY_BALANCE_BOOST,
+      power: finiteOr(rikishi.stats?.power, 50) + WEIGHT_JOURNEY_POWER_BOOST,
+      balance: finiteOr(rikishi.stats?.balance, 50) + WEIGHT_JOURNEY_BALANCE_BOOST,
     };
     builder.logEvent(
       "NARRATIVE_CRISIS_TRIGGERED",

@@ -27,6 +27,7 @@ import {
   FATIGUE_RECOVERY_GOOD,
 } from "../../../constants/engine/condition";
 import { getRikishi } from "../../queries";
+import { finiteOr } from "../../utils/math";
 
 export function phase01_daily_welfare(world: WorldState): StateImpact {
   const builder = createImpactBuilder("phase01_daily_welfare");
@@ -59,7 +60,7 @@ export function phase01_daily_welfare(world: WorldState): StateImpact {
           ...next.stats,
           mental: Math.max(
             MIN_MENTAL_STAT,
-            (next.stats.mental ?? DEFAULT_MENTAL_STAT) - MENTAL_LOSS_STARVATION
+            finiteOr(next.stats.mental, DEFAULT_MENTAL_STAT) - MENTAL_LOSS_STARVATION
           ),
         };
       }
@@ -70,7 +71,7 @@ export function phase01_daily_welfare(world: WorldState): StateImpact {
           ...next.stats,
           mental: Math.max(
             MIN_MENTAL_STAT,
-            (next.stats.mental ?? DEFAULT_MENTAL_STAT) - MENTAL_LOSS_POOR
+            finiteOr(next.stats.mental, DEFAULT_MENTAL_STAT) - MENTAL_LOSS_POOR
           ),
         };
       }
@@ -81,7 +82,7 @@ export function phase01_daily_welfare(world: WorldState): StateImpact {
           ...next.stats,
           mental: Math.min(
             MAX_MENTAL_STAT,
-            (next.stats.mental ?? DEFAULT_MENTAL_STAT) + MENTAL_GAIN_GOOD
+            finiteOr(next.stats.mental, DEFAULT_MENTAL_STAT) + MENTAL_GAIN_GOOD
           ),
         };
       }

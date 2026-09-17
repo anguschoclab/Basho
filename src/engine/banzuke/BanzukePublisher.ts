@@ -15,6 +15,7 @@ import {
   YOKOZUNA_VACANCY_PRESTIGE_WINS,
 } from "../../constants/engine/governanceExtended";
 import { warn } from "../utils/Logger";
+import { finiteOr } from "../utils/math";
 import { isKachiKoshi } from "./banzukeHelpers";
 import { BASHO_CALENDAR } from "../calendar";
 import { generateBanzukeMovementNarrative } from "./banzukeMovementNarrative";
@@ -193,8 +194,8 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
           councilWarnings = (rikishi.councilWarnings ?? 0) + 1;
 
           // Apply Stat Debuff: 10% reduction in Mental and Technique (Dignity loss)
-          const currentMental = rikishi.stats.mental ?? 50;
-          const currentTechnique = rikishi.stats.technique ?? 50;
+          const currentMental = finiteOr(rikishi.stats?.mental, 50);
+          const currentTechnique = finiteOr(rikishi.stats?.technique, 50);
           statsUpdate = {
             mental: currentMental * 0.9,
             technique: currentTechnique * 0.9,
@@ -268,7 +269,10 @@ export function publishBanzukeUpdate(world: WorldState): StateImpact {
         consecutiveKyujo,
         pressureScore,
         councilWarnings,
-        stats: statsUpdate as import("../types/rikishi").RikishiStats,
+        stats: {
+          ...rikishi.stats,
+          ...statsUpdate,
+        } as import("../types/rikishi").RikishiStats,
         careerHistory: updatedHistory.slice(-6),
         absentFinalDay,
         kihakuIsenScore,

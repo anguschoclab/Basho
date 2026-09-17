@@ -15,6 +15,7 @@ import type { WorldState } from "../../types/world";
 import type { StateImpact } from "../../core/StateImpact";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import { rngForWorld } from "../../rng";
+import { finiteOr } from "../../utils/math";
 
 /** Minimum rank number to be eligible for tsukebito (sekiwake and above = rankNum <= 3) */
 export const TSUKEBITO_SENIOR_RANK_THRESHOLD = 3;
@@ -112,14 +113,14 @@ export function applyWeeklyTsukebitoBenefits(
   // Senior gets training boost
   const seniorBoost = assignment.tsukebitoIds.length * TSUKEBITO_TRAINING_BOOST;
   const seniorStats = { ...(senior.stats ?? {}) };
-  seniorStats.technique = (seniorStats.technique ?? 50) + seniorBoost;
+  seniorStats.technique = finiteOr(seniorStats.technique, 50) + seniorBoost;
   builder.updateRikishi(senior.id, { stats: seniorStats });
 
   // Each tsukebito gets morale + technique exposure
   for (const tsukebito of tsukebitoRikishi) {
     const stats = { ...(tsukebito.stats ?? {}) };
-    stats.technique = (stats.technique ?? 50) + TSUKEBITO_TECHNIQUE_EXPOSURE;
-    stats.mental = (stats.mental ?? 50) + TSUKEBITO_MORALE_BOOST * 0.01;
+    stats.technique = finiteOr(stats.technique, 50) + TSUKEBITO_TECHNIQUE_EXPOSURE;
+    stats.mental = finiteOr(stats.mental, 50) + TSUKEBITO_MORALE_BOOST * 0.01;
     builder.updateRikishi(tsukebito.id, { stats });
   }
 
@@ -144,7 +145,7 @@ export function applyWeeklyOtotodeshiEffects(
 
   for (const riki of ototodeshi) {
     const stats = { ...(riki.stats ?? {}) };
-    stats.mental = (stats.mental ?? 50) + OTOTODESHI_MENTAL_GAIN;
+    stats.mental = finiteOr(stats.mental, 50) + OTOTODESHI_MENTAL_GAIN;
     builder.updateRikishi(riki.id, {
       stats,
       fatigue: (riki.fatigue ?? 0) + OTOTODESHI_FATIGUE_PENALTY,

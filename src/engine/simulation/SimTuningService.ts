@@ -5,6 +5,7 @@ import type { RetiredRikishiSummary } from "../types/history";
 import type { Oyakata } from "../types/oyakata";
 import { EntityCollection } from "../core/EntityCollection";
 import { getRikishi } from "../queries";
+import { finiteOr } from "../utils/math";
 
 export interface TuningMetrics {
   statAverages: {
@@ -74,10 +75,11 @@ export const SimTuningService = {
 
     if (activeRikishi.length > 0) {
       activeRikishi.forEach((r) => {
-        statAverages.power += r.stats.power ?? 50;
-        statAverages.speed += r.stats.speed ?? 50;
-        statAverages.technique += r.stats.technique ?? 50;
-        statAverages.stamina += r.stats.stamina ?? 50;
+        // finiteOr: `?? 50` misses NaN — a single corrupt stat would poison the average.
+        statAverages.power += finiteOr(r.stats.power, 50);
+        statAverages.speed += finiteOr(r.stats.speed, 50);
+        statAverages.technique += finiteOr(r.stats.technique, 50);
+        statAverages.stamina += finiteOr(r.stats.stamina, 50);
       });
 
       statAverages.power /= activeRikishi.length;

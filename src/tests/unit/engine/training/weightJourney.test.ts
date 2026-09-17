@@ -121,6 +121,24 @@ describe("Weight Journey System (B3)", () => {
     expect(milestoneEvent).toBeDefined();
   });
 
+  it("applyWeightJourneyTick does not re-fire the breakthrough once the journey is complete", () => {
+    const r = mockRikishi("wj-10", {
+      stats: { weight: 100, power: 90, balance: 80 } as any,
+      potential: { weightKg: 130 } as any,
+      weightJourney: { targetKg: 9.5, progressKg: 12, stalled: false, phases: ["bulking", "complete"] },
+      injured: false,
+    } as any);
+    const heya = makeHeya(100000);
+    const world = makeWorld();
+
+    const impact = applyWeightJourneyTick(r, heya, world);
+    const updates = impact.entities?.rikishiUpdates?.get("wj-10");
+    // A completed journey must not keep stacking the boost or re-log the milestone.
+    expect(updates?.stats?.power).toBeUndefined();
+    const events = impact.events ?? [];
+    expect(events.some((e: any) => e.data?.eventId === "weight_milestone")).toBe(false);
+  });
+
   it("applyWeightJourneyTick does nothing for rikishi without weightJourney and not eligible", () => {
     const r = mockRikishi("wj-8", {
       stats: { weight: 125 } as any,

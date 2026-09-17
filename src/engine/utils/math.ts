@@ -11,6 +11,15 @@ export function clamp01(n: number): number {
 }
 
 /**
+ * Returns `n` when it is a finite number, otherwise `fallback`.
+ * Unlike `n ?? fallback`, this also catches NaN and ±Infinity — stat fields can
+ * arrive as NaN after upstream corruption and `??` does not filter them.
+ */
+export function finiteOr(n: number | undefined | null, fallback: number): number {
+  return typeof n === "number" && Number.isFinite(n) ? n : fallback;
+}
+
+/**
  * Standardizes the 'localClampInt' pattern used in banzuke logic.
  */
 export function localClampInt(val: number, min: number, max: number): number {

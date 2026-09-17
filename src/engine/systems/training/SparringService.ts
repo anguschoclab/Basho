@@ -18,7 +18,7 @@ import type { Rikishi } from "../../types/rikishi";
 import type { WorldState } from "../../types/world";
 import type { SparringPair, SparringState, SparringChemistry } from "../../types/training";
 import type { CombatArchetype } from "../../types/combat";
-import { clamp } from "../../utils/math";
+import { clamp, finiteOr } from "../../utils/math";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
 import { RivalryService } from "../narrative/RivalryService";
@@ -206,7 +206,7 @@ export const SparringService = {
     let totalGap = 0;
 
     for (const stat of stats) {
-      const gap = (a.stats[stat] ?? 50) - (b.stats[stat] ?? 50);
+      const gap = finiteOr(a.stats?.[stat], 50) - finiteOr(b.stats?.[stat], 50);
       totalGap += Math.abs(gap);
     }
 
@@ -433,21 +433,23 @@ export function applyWeeklySparring(world: WorldState): StateImpact {
       // Calculate growth delta
       const growthDelta = SparringService.calculateGrowthDelta(a, b, pair.chemistry);
 
-      if (growthDelta === 0) continue;
+      if (!Number.isFinite(growthDelta) || growthDelta === 0) continue;
 
       // Determine which rikishi is weaker (lower average stats)
-      const aAvg = (a.stats.power + a.stats.speed + a.stats.balance + a.stats.technique) / 4;
-      const bAvg = (b.stats.power + b.stats.speed + b.stats.balance + b.stats.technique) / 4;
+      const bleedStats = ["power", "speed", "balance", "technique"] as const;
+      const aAvg =
+        bleedStats.reduce((sum, s) => sum + finiteOr(a.stats?.[s], 50), 0) / bleedStats.length;
+      const bAvg =
+        bleedStats.reduce((sum, s) => sum + finiteOr(b.stats?.[s], 50), 0) / bleedStats.length;
       const weaker = aAvg < bAvg ? a : b;
 
       // Apply growth delta to weaker rikishi's stats
       // Distribute delta proportionally across stats
-      const stats = ["power", "speed", "balance", "technique"] as const;
       const nextStats = { ...weaker.stats };
 
-      for (const stat of stats) {
-        const current = nextStats[stat] ?? 50;
-        const bonus = Math.ceil(growthDelta / stats.length);
+      for (const stat of bleedStats) {
+        const current = finiteOr(nextStats[stat], 50);
+        const bonus = Math.ceil(growthDelta / bleedStats.length);
         nextStats[stat] = clamp(current + bonus, 0, 99);
       }
       builder.updateRikishi(weaker.id, { stats: nextStats });

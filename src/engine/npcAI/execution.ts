@@ -49,6 +49,13 @@ const SCANDAL_PR_REDUCTION = 8;
 const FACILITY_UPGRADE_COST = 20_000_000;
 const FACILITY_MAX_LEVEL = 5;
 
+/**
+ * Minimum operating cash the AI must leave after any discretionary spend.
+ * Sized at roughly one month of burn for a mid-size stable — prevents agent
+ * spending from driving a heya to zero or below between weekly finance ticks.
+ */
+const MIN_OPERATING_RESERVE = 5_000_000;
+
 const RIVALRY_HEAT_DELTA = 6;
 
 /** Player-facing surface text per executed decision domain. */
@@ -90,6 +97,14 @@ export function executeAgentDecisions(
   const week = currentWeek(world);
   const executedDomains: string[] = [];
 
+  // Discretionary spending guard: never execute a spend that would push the
+  // heya below the operating reserve or that fires while the runway band is
+  // already critical/desperate.
+  const spendConstrained =
+    heya.runwayBand === "desperate" || heya.runwayBand === "critical";
+  const canSpend = (cost: number) =>
+    !spendConstrained && heya.funds - cost >= MIN_OPERATING_RESERVE;
+
   // ── Finance ────────────────────────────────────────────────────────────
   if (decisions.finance.shouldBuyMyoseki && !onCooldown(oyakata.memory, "myoseki", week)) {
     const stocks = Object.values(world.myosekiMarket?.stocks ?? {})
@@ -98,7 +113,7 @@ export function executeAgentDecisions(
           s.status === "available" &&
           s.askingPrice !== undefined &&
           s.askingPrice > 0 &&
-          s.askingPrice <= heya.funds
+          canSpend(s.askingPrice)
       )
       .sort((a, b) => (a.askingPrice ?? 0) - (b.askingPrice ?? 0));
     const target = stocks[0];
@@ -111,7 +126,7 @@ export function executeAgentDecisions(
   if (
     decisions.finance.shouldInvestInFacilities &&
     !onCooldown(oyakata.memory, "facilities", week) &&
-    heya.funds >= FACILITY_UPGRADE_COST
+    canSpend(FACILITY_UPGRADE_COST)
   ) {
     const facilities = { ...heya.facilities };
     const keys = ["training", "recovery", "nutrition"] as const;
@@ -138,7 +153,7 @@ export function executeAgentDecisions(
       POLITICAL_FAVORS.find((f) => f.id === "governance_pardon")?.cost ?? Infinity;
     if ((heya.politicalCapital ?? 0) >= pardonCost) {
       builder.merge(PoliticalFavorsService.requestFavor(world, heyaId, "governance_pardon"));
-    } else if (heya.funds >= SCANDAL_PR_COST) {
+    } else if (canSpend(SCANDAL_PR_COST)) {
       builder.updateHeya(heyaId, {
         scandalScore: Math.max(0, (heya.scandalScore ?? 0) - SCANDAL_PR_REDUCTION),
         funds: heya.funds - SCANDAL_PR_COST,
@@ -213,7 +228,10 @@ export function executeAgentDecisions(
   // ── Infrastructure: staff + youth academy ──────────────────────────────
   const infra = decisions.infrastructure;
   if (infra) {
-    if (infra.shouldHireStaff && !onCooldown(oyakata.memory, "staff", week)) {
+    // Staff hires and academy work are small discretionary spends — require
+    // the heya to hold the full operating reserve before committing them.
+    const hasReserveForSmallSpend = !spendConstrained && heya.funds >= MIN_OPERATING_RESERVE;
+    if (infra.shouldHireStaff && !onCooldown(oyakata.memory, "staff", week) && hasReserveForSmallSpend) {
       const impact = hireStaff(world, heyaId, (infra.staffRole ?? "scout") as StaffRole);
       if ((impact.collections?.staffToAdd?.length ?? 0) > 0) {
         builder.merge(impact);
@@ -222,7 +240,7 @@ export function executeAgentDecisions(
     }
 
     const wantsAcademy = infra.shouldBuildAcademy || infra.shouldUpgradeAcademy;
-    if (wantsAcademy && !onCooldown(oyakata.memory, "academy", week)) {
+    if (wantsAcademy && !onCooldown(oyakata.memory, "academy", week) && hasReserveForSmallSpend) {
       const hasAcademy = !!heya.youthAcademy;
       const impact = hasAcademy
         ? upgradeYouthAcademy(world, heyaId)

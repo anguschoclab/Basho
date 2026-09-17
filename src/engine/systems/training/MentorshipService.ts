@@ -17,7 +17,7 @@
 
 import type { Rikishi } from "../../types/rikishi";
 import type { WorldState } from "../../types/world";
-import { clamp } from "../../utils/math";
+import { clamp, finiteOr } from "../../utils/math";
 import { EntityCollection } from "../../core/EntityCollection";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
@@ -132,7 +132,8 @@ export const MentorshipService = {
    * ```
    */
   calculateTechniqueBleed(mentor: Rikishi, apprentice: Rikishi): number {
-    const gap = mentor.stats.technique - apprentice.stats.technique;
+    const gap =
+      finiteOr(mentor.stats?.technique, 50) - finiteOr(apprentice.stats?.technique, 50);
 
     // No bleed if gap is too small
     if (gap < BLEED_THRESHOLD) return 0;
@@ -169,7 +170,8 @@ export const MentorshipService = {
   calculateAdaptabilityPenalty(mentor: Rikishi, apprentice: Rikishi): number {
     if (!MentorshipService.canMentor(mentor, apprentice)) return 0;
 
-    const gap = mentor.stats.technique - apprentice.stats.technique;
+    const gap =
+      finiteOr(mentor.stats?.technique, 50) - finiteOr(apprentice.stats?.technique, 50);
     if (gap < BLEED_THRESHOLD) return 0;
 
     return -1;
@@ -250,9 +252,13 @@ export function applyMentorshipBonuses(world: WorldState): StateImpact {
     builder.updateRikishi(apprentice.id, {
       stats: {
         ...apprentice.stats,
-        technique: clamp(apprentice.stats.technique + techniqueBleed, 0, MAX_STAT_CEILING),
+        technique: clamp(
+          finiteOr(apprentice.stats?.technique, 50) + techniqueBleed,
+          0,
+          MAX_STAT_CEILING
+        ),
         adaptability: clamp(
-          apprentice.stats.adaptability + adaptabilityPenalty,
+          finiteOr(apprentice.stats?.adaptability, 50) + adaptabilityPenalty,
           0,
           MAX_STAT_CEILING
         ),

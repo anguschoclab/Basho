@@ -75,6 +75,32 @@ baking the AI cost in silently.
 - NPC crises must never set `world.pendingCrisis` or halt `advanceOneDay`.
 - `world.boutTactics` (player-selected) always wins on the player side.
 
+## Post-implementation findings (WS7)
+
+Long-horizon validation (25-yr diagnostic, seed `sim-25yr-diagnostic-v1`) surfaced and fixed
+three pre-existing data-integrity defects the AI work had exposed:
+
+- **BanzukePublisher stats wipe**: `publishBanzukeUpdate` wrote `stats: statsUpdate` (an empty
+  object for most rikishi) through the shallow `updateRikishi` merge, wholesale-replacing every
+  standings rikishi's stats each basho — silently dropping weight/achievements/experience and
+  collapsing stats toward ~50. Now merges `statsUpdate` over the existing stats object.
+- **NaN propagation**: `TrainingService` ceiling enforcement ran `Math.min(ceiling, undefined)`
+  for `aggression` (never assigned in the growth block) and for any key on a wiped stats object;
+  `MentorshipService`/`SparringService`/`TsukebitoService`/welfare arithmetic used `?? 50`,
+  which does not catch NaN. All now use `finiteOr` (`utils/math.ts`), and the enforcement loop
+  heals non-finite values to 50 rather than persisting them.
+- **WeightJourney unbounded breakthrough**: `progressKg >= targetKg` stays true forever after
+  completion — the +3 power/+2 balance boost and `weight_milestone` event re-fired every week
+  for the rest of a career (avg power reached 380 by year 25; the basho stats wipe had been
+  masking it). Now one-shot via a `phases.includes("complete")` guard.
+
+NPC discretionary spending (myoseki, facilities, scandal PR, staff, academy) is gated in
+`executeAgentDecisions` by a ¥5M operating reserve plus a critical/desperate `runwayBand`
+block, so agent spending can no longer drive a heya to zero between weekly finance ticks.
+Post-fix diagnostic: 0 engine errors, stat averages 36-41 (all finite, max world stat 97),
+insolvency 5-11 heyas/yr — concentrated in the same structurally income-poor stables serviced
+by the existing loan/bailout machinery, not AI spending churn.
+
 ## Risks
 
 - Per-side tactic RNG draws in the bout hot path → dedicated seed labels; WS1 RED pins double-run

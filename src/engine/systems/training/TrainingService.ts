@@ -339,6 +339,9 @@ export function applyWeeklyTraining(world: WorldState): StateImpact {
           world
         );
         let val = newStats[statsKey];
+        // Recover missing/corrupt values (e.g. aggression is never assigned
+        // above; a wiped or partial stats object yields undefined/NaN here).
+        if (typeof val !== "number" || !Number.isFinite(val)) val = 50;
 
         // Enforce Ceiling
         val = Math.min(ceiling, val);

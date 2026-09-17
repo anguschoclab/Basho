@@ -133,6 +133,88 @@ describe("executeAgentDecisions — finance", () => {
     expect(f.training + f.recovery + f.nutrition).toBe(4);
     expect(resolved.heyas.get("heya-a")!.funds).toBeLessThan(999_999_999);
   });
+
+  it("discretionary spending is blocked when the runway band is critical or desperate", () => {
+    for (const band of ["critical", "desperate"] as const) {
+      const { world } = makeWorld({
+        myosekiMarket: makeMarket(1_000_000),
+        heyaOverrides: {
+          funds: 50_000_000,
+          runwayBand: band,
+          facilities: { training: 1, recovery: 1, nutrition: 1 },
+        },
+      });
+      const impact = executeAgentDecisions(
+        world,
+        "heya-a",
+        makeDecisions({
+          finance: {
+            shouldBuyMyoseki: true,
+            shouldInvestInFacilities: true,
+            shouldBuildReserves: false,
+            riskLevel: "aggressive",
+          },
+        }),
+        world.oyakata.get("oya-a")!
+      );
+      const resolved = applyImpact(world, impact);
+      const heya = resolved.heyas.get("heya-a")!;
+      expect(heya.funds).toBe(50_000_000);
+      const f = heya.facilities;
+      expect(f.training + f.recovery + f.nutrition).toBe(3);
+      expect(resolved.myosekiMarket?.stocks["stock-1"].status).toBe("available");
+    }
+  });
+
+  it("a spend that would breach the operating reserve is skipped even when affordable", () => {
+    // 21M funds can nominally afford the 20M facility upgrade, but it would
+    // leave less than the operating reserve — the AI must decline it.
+    const { world } = makeWorld({
+      heyaOverrides: { funds: 21_000_000, facilities: { training: 1, recovery: 1, nutrition: 1 } },
+    });
+    const impact = executeAgentDecisions(
+      world,
+      "heya-a",
+      makeDecisions({
+        finance: {
+          shouldBuyMyoseki: false,
+          shouldInvestInFacilities: true,
+          shouldBuildReserves: false,
+          riskLevel: "moderate",
+        },
+      }),
+      world.oyakata.get("oya-a")!
+    );
+    const resolved = applyImpact(world, impact);
+    const heya = resolved.heyas.get("heya-a")!;
+    expect(heya.funds).toBe(21_000_000);
+    const f = heya.facilities;
+    expect(f.training + f.recovery + f.nutrition).toBe(3);
+  });
+
+  it("a spend that preserves the operating reserve still executes", () => {
+    const { world } = makeWorld({
+      heyaOverrides: { funds: 30_000_000, facilities: { training: 1, recovery: 1, nutrition: 1 } },
+    });
+    const impact = executeAgentDecisions(
+      world,
+      "heya-a",
+      makeDecisions({
+        finance: {
+          shouldBuyMyoseki: false,
+          shouldInvestInFacilities: true,
+          shouldBuildReserves: false,
+          riskLevel: "moderate",
+        },
+      }),
+      world.oyakata.get("oya-a")!
+    );
+    const resolved = applyImpact(world, impact);
+    const heya = resolved.heyas.get("heya-a")!;
+    const f = heya.facilities;
+    expect(f.training + f.recovery + f.nutrition).toBe(4);
+    expect(heya.funds).toBe(30_000_000 - 20_000_000);
+  });
 });
 
 describe("executeAgentDecisions — governance", () => {
