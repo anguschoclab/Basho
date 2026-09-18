@@ -165,4 +165,32 @@ describe("pipelineRunner", () => {
 
     consoleErrorSpy.mockRestore();
   });
+
+  it("does not snapshot state for pure phases, allowing in-place mutations to persist on error", () => {
+    const world = {
+      id: "world",
+      heyas: new Map([["h1", { name: "Test Heya", prestige: 10 }]]),
+      rikishi: new Map(),
+      count: 0,
+    } as any;
+
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const purePhase = vi.fn((w) => {
+      // Illegal in-place mutation
+      w.heyas.get("h1").prestige = 99;
+      throw new Error("Boom");
+    }) as any;
+    purePhase.pure = true;
+
+    runPipeline(world, [purePhase]);
+
+    expect(purePhase).toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+
+    // Mutation persists because pure phases don't snapshot
+    expect(world.heyas.get("h1").prestige).toBe(99);
+
+    consoleErrorSpy.mockRestore();
+  });
 });
