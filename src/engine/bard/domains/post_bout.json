@@ -24,19 +24,31 @@
     "both_even": [
       "Both men are now at %WINNER_WINS% and %WINNER_LOSSES% after %DAY% days.",
       "%WINNER% and %LOSER% both sitting at %WINNER_WINS%-%WINNER_LOSSES% after this one.",
-      "Even records now — %WINNER_WINS% wins and %WINNER_LOSSES% losses for both."
+      "Even records now — %WINNER_WINS% wins and %WINNER_LOSSES% losses for both.",
+      "Nothing to separate them now: %WINNER% and %LOSER% are deadlocked at %WINNER_WINS%-%WINNER_LOSSES%.",
+      "With that result, both rikishi leave the dohyo today holding identical %WINNER_WINS%-%WINNER_LOSSES% records.",
+      "A crucial result that leaves %WINNER% and %LOSER% standing shoulder-to-shoulder at %WINNER_WINS% wins and %WINNER_LOSSES% losses.",
+      "Parity restored between these two — they each boast a %WINNER_WINS%-%WINNER_LOSSES% record after %DAY% days of competition."
     ]
   },
   "storylines": {
     "streak_snapped": [
       "That %STREAK%-bout winning streak comes to an end for %LOSER%.",
       "%LOSER%'s %STREAK% straight wins are no more — %WINNER% stops the run.",
-      "The streak is over. %LOSER% had won %STREAK% in a row before today."
+      "The streak is over. %LOSER% had won %STREAK% in a row before today.",
+      "A stunning halt to the momentum! %WINNER% abruptly ends %LOSER%'s impressive %STREAK%-bout run.",
+      "%LOSER% had looked invincible during that %STREAK%-match streak, but %WINNER% had other plans today.",
+      "The winning run hits a brick wall. %LOSER%'s streak concludes at %STREAK% victories.",
+      "No more streak for %LOSER%. %WINNER% plays spoiler and snaps the %STREAK%-bout run."
     ],
     "streak_continued": [
       "%WINNER% makes it %STREAK% straight victories.",
       "%STREAK% in a row now for %WINNER% — can anyone stop the run?",
-      "%WINNER% keeps rolling — %STREAK% consecutive wins and counting."
+      "%WINNER% keeps rolling — %STREAK% consecutive wins and counting.",
+      "The momentum is building! That makes it %STREAK% victories on the bounce for %WINNER%.",
+      "%WINNER% continues to pile on the wins, extending the streak to %STREAK% straight.",
+      "There is no slowing down %WINNER% right now — the winning streak stretches to %STREAK% matches.",
+      "Another day, another victory. %WINNER% is riding high on a %STREAK%-bout streak."
     ],
     "loss_streak": [
       "%LOSER% loses for the %STREAK%th straight day.",
