@@ -240,11 +240,12 @@ export function determineCPUTactic(cpu: Rikishi, rng: SeededRNG): BoutTactic {
 }
 
 /**
- * Resolves the rock-paper-scissors tactical clash between two rikishi.
- * RPS Rules:
+ * Resolves the tactical clash between two rikishi.
+ * Rules:
  * YOTSU (Belt) counters OSHI (Thrust)
  * OSHI (Thrust) counters HENKA
  * HENKA counters YOTSU (Belt)
+ * NEKODAMASHI counters YOTSU (Belt) and OSHI (Thrust)
  * STANDARD provides no modifiers.
  */
 export function resolveTacticalClash(
