@@ -14,6 +14,7 @@
  */
 
 import type { WorldState } from "../../types/world";
+import type { Rikishi } from "../../types/rikishi";
 import { DEFAULT_START_YEAR } from "../../../constants/engine/calendar";
 import { createImpactBuilder } from "../../core/ImpactBuilder";
 import type { StateImpact } from "../../core/StateImpact";
@@ -134,15 +135,15 @@ export function phase05_monthly_boundary(world: WorldState): StateImpact {
   const jungyoEvent = exhibitionSchedule.find((e) => e.month === currentMonth);
   const exhibitionImpacts: StateImpact[] = [];
   if (jungyoEvent && !isBashoMonth(currentMonth)) {
-    const sekitoriParticipants = Array.from(world.activeRikishiIds ?? [])
-      .map((id) => getRikishi(world, id))
-      .filter((r): r is NonNullable<typeof r> => r !== undefined)
-      .filter((r) => isSekitoriDivision(r.division) && !r.isRetired)
-      .filter((r) => {
-        // Skip rikishi from heya that opted out of jungyo
-        const heya = world.heyas.get(r.heyaId);
-        return !heya?.jungyoOptOut;
-      });
+    const sekitoriParticipants: Rikishi[] = [];
+    for (const id of world.activeRikishiIds ?? []) {
+      const r = getRikishi(world, id);
+      if (!r) continue;
+      if (!isSekitoriDivision(r.division) || r.isRetired) continue;
+      const heya = world.heyas.get(r.heyaId);
+      if (heya?.jungyoOptOut) continue;
+      sekitoriParticipants.push(r);
+    }
     if (sekitoriParticipants.length > 0) {
       const exhibitionImpact = simulateExhibitionBasho(
         world,
