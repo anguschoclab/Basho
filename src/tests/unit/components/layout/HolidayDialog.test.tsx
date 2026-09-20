@@ -2,18 +2,23 @@ import { describe, it, expect, afterEach, vi } from "vitest";
 import React from "react";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
 import { HolidayDialog } from "@/components/layout/HolidayDialog";
+import { Dialog } from "@/components/ui/dialog";
+
+const renderDialog = (ui: React.ReactElement) => {
+  return render(<Dialog open={true}>{ui}</Dialog>);
+};
 
 describe("HolidayDialog", () => {
   afterEach(() => cleanup());
 
   it("renders dialog with target selector", () => {
-    render(<HolidayDialog onConfirm={vi.fn()} onCancel={vi.fn()} />);
+    renderDialog(<HolidayDialog onConfirm={vi.fn()} onCancel={vi.fn()} />);
     expect(screen.getByTestId("holiday-dialog")).toBeDefined();
     expect(screen.getByTestId("holiday-target-nextWeek")).toBeDefined();
   });
 
   it("renders all 6 targets", () => {
-    render(<HolidayDialog onConfirm={vi.fn()} onCancel={vi.fn()} />);
+    renderDialog(<HolidayDialog onConfirm={vi.fn()} onCancel={vi.fn()} />);
     expect(screen.getByTestId("holiday-target-nextDay")).toBeDefined();
     expect(screen.getByTestId("holiday-target-nextWeek")).toBeDefined();
     expect(screen.getByTestId("holiday-target-nextBashoDay1")).toBeDefined();
@@ -23,7 +28,7 @@ describe("HolidayDialog", () => {
   });
 
   it("renders all 7 safety gates", () => {
-    render(<HolidayDialog onConfirm={vi.fn()} onCancel={vi.fn()} />);
+    renderDialog(<HolidayDialog onConfirm={vi.fn()} onCancel={vi.fn()} />);
     expect(screen.getByTestId("holiday-gate-topRikishiInjury")).toBeDefined();
     expect(screen.getByTestId("holiday-gate-insolvencyWarning")).toBeDefined();
     expect(screen.getByTestId("holiday-gate-scandalSeverity")).toBeDefined();
@@ -34,7 +39,7 @@ describe("HolidayDialog", () => {
   });
 
   it("renders all 4 delegation policies", () => {
-    render(<HolidayDialog onConfirm={vi.fn()} onCancel={vi.fn()} />);
+    renderDialog(<HolidayDialog onConfirm={vi.fn()} onCancel={vi.fn()} />);
     expect(screen.getByTestId("holiday-policy-conservative")).toBeDefined();
     expect(screen.getByTestId("holiday-policy-balanced")).toBeDefined();
     expect(screen.getByTestId("holiday-policy-aggressive")).toBeDefined();
@@ -43,25 +48,29 @@ describe("HolidayDialog", () => {
 
   it("calls onConfirm with selected config when confirm is clicked", () => {
     const onConfirm = vi.fn();
-    render(<HolidayDialog onConfirm={onConfirm} onCancel={vi.fn()} />);
-    fireEvent.click(screen.getByTestId("holiday-target-nextMonth"));
+    renderDialog(<HolidayDialog onConfirm={onConfirm} onCancel={vi.fn()} />);
+
+    // Default target is nextWeek
+    // Default gates are topRikishiInjury, insolvencyWarning, scandalSeverity
+    // Default policy is balanced
     fireEvent.click(screen.getByTestId("holiday-confirm"));
-    expect(onConfirm).toHaveBeenCalled();
-    const config = onConfirm.mock.calls[0][0];
-    expect(config.target).toBe("nextMonth");
-    expect(config.gates).toContain("topRikishiInjury");
-    expect(config.delegationPolicy).toBe("balanced");
+
+    expect(onConfirm).toHaveBeenCalledWith({
+      target: "nextWeek",
+      gates: ["topRikishiInjury", "insolvencyWarning", "scandalSeverity"],
+      delegationPolicy: "balanced",
+    });
   });
 
   it("calls onCancel when cancel is clicked", () => {
     const onCancel = vi.fn();
-    render(<HolidayDialog onConfirm={vi.fn()} onCancel={onCancel} />);
+    renderDialog(<HolidayDialog onConfirm={vi.fn()} onCancel={onCancel} />);
     fireEvent.click(screen.getByTestId("holiday-cancel"));
     expect(onCancel).toHaveBeenCalled();
   });
 
   it("toggles safety gates on click", () => {
-    render(<HolidayDialog onConfirm={vi.fn()} onCancel={vi.fn()} />);
+    renderDialog(<HolidayDialog onConfirm={vi.fn()} onCancel={vi.fn()} />);
     const gate = screen.getByTestId("holiday-gate-sponsorChurn");
     // Click to enable
     fireEvent.click(gate);
@@ -71,7 +80,7 @@ describe("HolidayDialog", () => {
 
   it("safety gates are keyboard-operable (PR #941)", () => {
     const onConfirm = vi.fn();
-    render(<HolidayDialog onConfirm={onConfirm} onCancel={vi.fn()} />);
+    renderDialog(<HolidayDialog onConfirm={onConfirm} onCancel={vi.fn()} />);
     const gate = screen.getByTestId("holiday-gate-sponsorChurn");
     // Post-#941: gate badges expose role="button" + tabIndex + keyboard toggle.
     expect(gate.getAttribute("role")).toBe("button");

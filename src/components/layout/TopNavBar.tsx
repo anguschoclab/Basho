@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useGame } from "@/contexts/useGame";
 import { SaveLoadDialog } from "@/components/game/SaveLoadDialog";
+import { Dialog } from "@/components/ui/dialog";
 import { useAutosaveIndicator } from "@/hooks/useAutosaveIndicator";
 import { useTheme } from "@/hooks/useTheme";
 import { Button } from "@/components/ui/button";
@@ -185,19 +186,15 @@ export function TopNavBar() {
               Holiday
             </Button>
           )}
-          {showHolidayDialog && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setShowHolidayDialog(false)}>
-              <div onClick={(e) => e.stopPropagation()}>
-                <HolidayDialog
-                  onConfirm={(config) => {
-                    goOnHoliday(config);
-                    setShowHolidayDialog(false);
-                  }}
-                  onCancel={() => setShowHolidayDialog(false)}
-                />
-              </div>
-            </div>
-          )}
+          <Dialog open={showHolidayDialog} onOpenChange={setShowHolidayDialog}>
+            <HolidayDialog
+              onConfirm={(config) => {
+                goOnHoliday(config);
+                setShowHolidayDialog(false);
+              }}
+              onCancel={() => setShowHolidayDialog(false)}
+            />
+          </Dialog>
 
           <SaveLoadDialog />
 

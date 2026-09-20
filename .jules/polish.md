@@ -1,0 +1,4 @@
+## $(date +%Y-%m-%d) - Refactored HolidayDialog to standard Dialog
+**Issue:** `HolidayDialog` was implemented as a `<Card>` manually wrapped in a `<div className="fixed inset-0 bg-black/50">` overlay inside `TopNavBar.tsx`.
+**Learning:** This custom implementation lacked native modal accessibility features (like focus trapping and closing on 'Escape') and broke from the design system's `Dialog` pattern used elsewhere in the codebase. Testing the dialog also required wrapping it in a `<Dialog open={true}>` provider because `DialogContent` expects a parent context.
+**Rule:** When building or updating modals, always use the `@/components/ui/dialog` primitives (`Dialog`, `DialogContent`, `DialogHeader`, `DialogTitle`) rather than custom `div` overlays. When unit testing `DialogContent`, wrap the component in `<Dialog open={true}>` to avoid context errors.

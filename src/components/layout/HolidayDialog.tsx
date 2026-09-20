@@ -5,7 +5,7 @@
  * and delegation policy. Dispatches the GO_ON_HOLIDAY worker command.
  */
 import { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
@@ -62,12 +62,14 @@ export function HolidayDialog({
   };
 
   return (
-    <Card className="border-primary/30" data-testid="holiday-dialog">
-      <CardContent className="p-4 space-y-4">
-        <div className="flex items-center gap-2">
+    <DialogContent className="max-w-md bg-card border-primary/30 p-0" data-testid="holiday-dialog">
+      <DialogHeader className="p-4 pb-0">
+        <DialogTitle className="flex items-center gap-2 text-sm font-medium">
           <Plane className="h-4 w-4 text-primary" />
-          <span className="text-sm font-medium">Go on Holiday</span>
-        </div>
+          Go on Holiday
+        </DialogTitle>
+      </DialogHeader>
+      <div className="p-4 pt-0 space-y-4">
 
         <div className="space-y-2">
           <Label className="text-xs uppercase tracking-widest text-muted-foreground">Target</Label>
@@ -148,7 +150,7 @@ export function HolidayDialog({
             Cancel
           </Button>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </DialogContent>
   );
 }
