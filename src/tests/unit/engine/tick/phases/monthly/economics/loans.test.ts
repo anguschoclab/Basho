@@ -27,8 +27,8 @@ describe("processLoanRepayments", () => {
   it("deducts monthly payments and retains loans with remaining balance", () => {
     const heya = MockFactory.createHeya("h-1", { funds: 10000 });
     heya.activeLoans = [
-      { id: "L1", type: "bank", providerName: "Bank A", remainingBalance: 1000, monthlyPayment: 200 },
-      { id: "L2", type: "bank", providerName: "Bank B", remainingBalance: 500, monthlyPayment: 150 },
+      { id: "L1", type: "emergency", providerName: "Bank A", remainingBalance: 1000, monthlyPayment: 200, principal: 1000, interestRate: 0.1, issuedAtYear: 2023, issuedAtMonth: 1 },
+      { id: "L2", type: "emergency", providerName: "Bank B", remainingBalance: 500, monthlyPayment: 150, principal: 500, interestRate: 0.1, issuedAtYear: 2023, issuedAtMonth: 1 },
     ];
     const heyaUpdates: any = { funds: 10000 };
 
@@ -44,7 +44,7 @@ describe("processLoanRepayments", () => {
   it("pays off loan and triggers event when remaining balance is less than or equal to monthly payment", () => {
     const heya = MockFactory.createHeya("h-1", { funds: 10000, name: "Test Heya" });
     heya.activeLoans = [
-      { id: "L1", type: "bank", providerName: "Bank A", remainingBalance: 100, monthlyPayment: 200 },
+      { id: "L1", type: "emergency", providerName: "Bank A", remainingBalance: 100, monthlyPayment: 200, principal: 1000, interestRate: 0.1, issuedAtYear: 2023, issuedAtMonth: 1 },
     ];
     const heyaUpdates: any = { funds: 10000 };
 
@@ -62,7 +62,7 @@ describe("processLoanRepayments", () => {
   it("uses heya.funds if heyaUpdates.funds is undefined", () => {
     const heya = MockFactory.createHeya("h-1", { funds: 10000 });
     heya.activeLoans = [
-      { id: "L1", type: "bank", providerName: "Bank A", remainingBalance: 500, monthlyPayment: 200 },
+      { id: "L1", type: "emergency", providerName: "Bank A", remainingBalance: 500, monthlyPayment: 200, principal: 1000, interestRate: 0.1, issuedAtYear: 2023, issuedAtMonth: 1 },
     ];
     const heyaUpdates: any = {};
 
