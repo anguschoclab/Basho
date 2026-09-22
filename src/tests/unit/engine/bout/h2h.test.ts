@@ -1,5 +1,6 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, beforeAll } from "vitest";
 import { updateH2H, generateH2HCommentary, getH2HReport } from "@/engine/h2h";
+import { BardEngine } from "@/engine/bard/BardEngine";
 import { MockFactory } from "../../../helpers/utils/MockFactory";
 import type { MatchResultLog } from "@/engine/types/records";
 import type { BoutResult } from "@/engine/types/basho";
@@ -478,6 +479,10 @@ describe("updateH2H", () => {
 // ---------------------------------------------------------------------------
 
 describe("generateH2HCommentary", () => {
+  beforeAll(async () => {
+    await BardEngine.ensureDomains(["h2h", "pre_bout"]);
+  });
+
   it("returns a non-empty string for first meeting", () => {
     const a = MockFactory.createRikishi({ id: "a", h2h: {} });
     const b = MockFactory.createRikishi({ id: "b", h2h: {} });
@@ -486,6 +491,7 @@ describe("generateH2HCommentary", () => {
 
     expect(typeof text).toBe("string");
     expect(text.length).toBeGreaterThan(0);
+    expect(text).not.toContain("leads the series");
   });
 
   it("returns a non-empty string for established rivalry", () => {
@@ -537,9 +543,8 @@ describe("generateH2HCommentary", () => {
     const b = MockFactory.createRikishi({ id: "b", shikona: "Beta" });
 
     const text = generateH2HCommentary(a, b);
-    expect(text).toContain("Alpha");
-    expect(text.length).toBeGreaterThan(0);
-    expect(text).not.toContain("leads the series"); // Should not be generic
+    expect(text).toMatch(/Alpha.*dominate|Beta.*struggle|History is heavily on Alpha's side/);
+    expect(text).not.toContain("leads the series 4 to 0"); // Should not be generic
   });
 
   it("handles lopsided domination (P2 > P1)", () => {
@@ -553,8 +558,8 @@ describe("generateH2HCommentary", () => {
     const b = MockFactory.createRikishi({ id: "b", shikona: "Beta" });
 
     const text = generateH2HCommentary(a, b);
-    expect(text).toContain("Beta");
-    expect(text.length).toBeGreaterThan(0);
+    expect(text).toMatch(/Beta.*dominate|Alpha.*struggle|History is heavily on Beta's side/);
+    expect(text).not.toContain("leads the series 0 to 4"); // Should not be generic
   });
 
   it("handles deadlock", () => {
@@ -568,7 +573,8 @@ describe("generateH2HCommentary", () => {
     const b = MockFactory.createRikishi({ id: "b", shikona: "Beta" });
 
     const text = generateH2HCommentary(a, b);
-    expect(text.length).toBeGreaterThan(0);
+    expect(text).toMatch(/close as it gets|true rivalry|Neither man has been able to gain/);
+    expect(text).not.toContain("leads the series"); // Should not be generic
   });
 
   it("falls back to generic text", () => {
@@ -583,5 +589,31 @@ describe("generateH2HCommentary", () => {
 
     const text = generateH2HCommentary(a, b);
     expect(text).toBe("Alpha leads the series 3 to 1.");
+  });
+
+  it("handles recent match fallback if lastMatch is present", () => {
+    const a = MockFactory.createRikishi({
+      id: "a",
+      shikona: "Alpha",
+      h2h: {
+        b: {
+          wins: 3,
+          losses: 1,
+          streak: 1,
+          lastMatch: {
+            winnerId: "a",
+            kimarite: "yorikiri",
+            bashoId: "2025-01",
+            day: 14,
+            year: 2025,
+          },
+        },
+      },
+    });
+    const b = MockFactory.createRikishi({ id: "b", shikona: "Beta" });
+
+    const text = generateH2HCommentary(a, b);
+    expect(text).toMatch(/yorikiri/);
+    expect(text).not.toContain("leads the series"); // Should not be generic
   });
 });
