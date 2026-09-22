@@ -42,15 +42,18 @@ export function detectDueDecisions(world: WorldState): LoopDecision[] {
 
   // Decision 1: Pre-basho readiness (BLOCKING)
   if (world.cyclePhase === "pre_basho") {
-    const atRisk = (playerHeya.rikishiIds ?? []).filter((id) => {
+    let atRiskCount = 0;
+    for (const id of playerHeya.rikishiIds ?? []) {
       const r = world.rikishi.get(id);
-      return !!r && ((r.fatigue ?? 0) > 60 || r.injured === true);
-    });
-    if (atRisk.length > 0 && !existing.some((d) => d.type === "pre_basho_readiness")) {
+      if (r && ((r.fatigue ?? 0) > 60 || r.injured === true)) {
+        atRiskCount++;
+      }
+    }
+    if (atRiskCount > 0 && !existing.some((d) => d.type === "pre_basho_readiness")) {
       out.push({
         id: makeId("prebasho", world.seed, world),
         type: "pre_basho_readiness",
-        description: `${atRisk.length} wrestler(s) enter the basho fatigued or injured. Rest them or push for rank?`,
+        description: `${atRiskCount} wrestler(s) enter the basho fatigued or injured. Rest them or push for rank?`,
         deadlineWeek: currentWeek + 1,
         required: true,
         options: [
@@ -356,10 +359,13 @@ function decisionConsequenceSummary(
   switch (decisionType) {
     case "pre_basho_readiness": {
       if (optionId !== "rest") return "Pushed for rank — no rest, injury risk accepted.";
-      const n = (heya?.rikishiIds ?? []).filter((id) => {
+      let n = 0;
+      for (const id of heya?.rikishiIds ?? []) {
         const r = world.rikishi.get(id);
-        return !!r && ((r.fatigue ?? 0) > 60 || r.injured);
-      }).length;
+        if (r && ((r.fatigue ?? 0) > 60 || r.injured)) {
+          n++;
+        }
+      }
       return `Rested ${n} at-risk wrestler${n === 1 ? "" : "s"} (−20 fatigue each, −5 momentum).`;
     }
     case "insolvency_response":
