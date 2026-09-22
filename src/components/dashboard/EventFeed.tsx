@@ -20,6 +20,7 @@ import {
 import { useGameStore } from "@/store/gameStore";
 import { BaseWidget } from "./BaseWidget";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import type { EngineEvent, EventImportance } from "@/engine/types/events";
 import { MentionText } from "@/components/MentionText";
 import { EventDetailDialog } from "@/components/EventDetailDialog";
@@ -124,15 +125,17 @@ export function EventFeed({ maxEvents = 10, filterTypes, minImportance }: EventF
 
   return (
     <BaseWidget title="Event Feed" icon={Bell}>
-      <div className="space-y-2 max-h-[400px] overflow-y-auto">
-        {events.length === 0 ? (
-          <EmptyState icon={Bell} title="No recent events" compact />
-        ) : (
-          events.map((event: EngineEvent) => (
-            <EventFeedItem key={event.id} event={event} onSelect={handleSelect} />
-          ))
-        )}
-      </div>
+      <ScrollArea className="max-h-[400px]">
+        <div className="space-y-2 pr-3">
+          {events.length === 0 ? (
+            <EmptyState icon={Bell} title="No recent events" compact />
+          ) : (
+            events.map((event: EngineEvent) => (
+              <EventFeedItem key={event.id} event={event} onSelect={handleSelect} />
+            ))
+          )}
+        </div>
+      </ScrollArea>
       <EventDetailDialog
         event={selectedEvent}
         isOpen={!!selectedEvent}
