@@ -525,4 +525,63 @@ describe("generateH2HCommentary", () => {
 
     expect(generateH2HCommentary(a, b)).toBe(generateH2HCommentary(a, b));
   });
+
+  it("handles lopsided domination (P1 > P2)", () => {
+    const a = MockFactory.createRikishi({
+      id: "a",
+      shikona: "Alpha",
+      h2h: {
+        b: { wins: 4, losses: 0, streak: 4, lastMatch: null },
+      },
+    });
+    const b = MockFactory.createRikishi({ id: "b", shikona: "Beta" });
+
+    const text = generateH2HCommentary(a, b);
+    expect(text).toContain("Alpha");
+    expect(text.length).toBeGreaterThan(0);
+    expect(text).not.toContain("leads the series"); // Should not be generic
+  });
+
+  it("handles lopsided domination (P2 > P1)", () => {
+    const a = MockFactory.createRikishi({
+      id: "a",
+      shikona: "Alpha",
+      h2h: {
+        b: { wins: 0, losses: 4, streak: -4, lastMatch: null },
+      },
+    });
+    const b = MockFactory.createRikishi({ id: "b", shikona: "Beta" });
+
+    const text = generateH2HCommentary(a, b);
+    expect(text).toContain("Beta");
+    expect(text.length).toBeGreaterThan(0);
+  });
+
+  it("handles deadlock", () => {
+    const a = MockFactory.createRikishi({
+      id: "a",
+      shikona: "Alpha",
+      h2h: {
+        b: { wins: 3, losses: 2, streak: 1, lastMatch: null },
+      },
+    });
+    const b = MockFactory.createRikishi({ id: "b", shikona: "Beta" });
+
+    const text = generateH2HCommentary(a, b);
+    expect(text.length).toBeGreaterThan(0);
+  });
+
+  it("falls back to generic text", () => {
+    const a = MockFactory.createRikishi({
+      id: "a",
+      shikona: "Alpha",
+      h2h: {
+        b: { wins: 3, losses: 1, streak: 1, lastMatch: null }, // 75% WR is NOT > 75%, diff 2 is NOT <= 1, streak is < 3
+      },
+    });
+    const b = MockFactory.createRikishi({ id: "b", shikona: "Beta" });
+
+    const text = generateH2HCommentary(a, b);
+    expect(text).toBe("Alpha leads the series 3 to 1.");
+  });
 });

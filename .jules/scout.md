@@ -1,0 +1,1 @@
+## 2025-02-27 - Test H2H commentary logic **Gap:** generateH2HCommentary logic **Learning:** It has branching logic that are not covered **Pattern:** Provide correct h2h state to a and b and verify the correct text is generated.
