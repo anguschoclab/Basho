@@ -543,8 +543,7 @@ describe("generateH2HCommentary", () => {
     const b = MockFactory.createRikishi({ id: "b", shikona: "Beta" });
 
     const text = generateH2HCommentary(a, b);
-    expect(text).toMatch(/Alpha.*dominate|Beta.*struggle|History is heavily on Alpha's side/);
-    expect(text).not.toContain("leads the series 4 to 0"); // Should not be generic
+    expect(text).toBe("History is heavily on Alpha's side today with a commanding 4-0 record.");
   });
 
   it("handles lopsided domination (P2 > P1)", () => {
@@ -558,8 +557,7 @@ describe("generateH2HCommentary", () => {
     const b = MockFactory.createRikishi({ id: "b", shikona: "Beta" });
 
     const text = generateH2HCommentary(a, b);
-    expect(text).toMatch(/Beta.*dominate|Alpha.*struggle|History is heavily on Beta's side/);
-    expect(text).not.toContain("leads the series 0 to 4"); // Should not be generic
+    expect(text).toBe("Beta has absolutely dominated this matchup, leading the series 4-0.");
   });
 
   it("handles deadlock", () => {
@@ -573,8 +571,7 @@ describe("generateH2HCommentary", () => {
     const b = MockFactory.createRikishi({ id: "b", shikona: "Beta" });
 
     const text = generateH2HCommentary(a, b);
-    expect(text).toMatch(/close as it gets|true rivalry|Neither man has been able to gain/);
-    expect(text).not.toContain("leads the series"); // Should not be generic
+    expect(text).toBe("This is as close as it gets—a 3-2 career split between them.");
   });
 
   it("falls back to generic text", () => {
@@ -613,7 +610,6 @@ describe("generateH2HCommentary", () => {
     const b = MockFactory.createRikishi({ id: "b", shikona: "Beta" });
 
     const text = generateH2HCommentary(a, b);
-    expect(text).toMatch(/yorikiri/);
-    expect(text).not.toContain("leads the series"); // Should not be generic
+    expect(text).toBe("Last time they met on Day 14, Alpha won decisively by yorikiri.");
   });
 });
